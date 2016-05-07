@@ -1,11 +1,7 @@
-/*
- * mb.c
- *
- *  Created on: Oct 27, 2015
- *      Author: tgil
- */
+//Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
+#include <string.h>
 #include "mg.h"
 
 static int mg_op_bitmap(mg_bmap_t * mg, mg_point_t p_dest, const mg_bmap_t * bitmap, mg_point_t p_src, mg_dim_t d, mg_bitmap_t (*op)(mg_bitmap_t current, mg_bitmap_t input));

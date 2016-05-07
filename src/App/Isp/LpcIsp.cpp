@@ -48,11 +48,11 @@ int LpcIsp::copy_names(char * device, char * pio0, char * pio1){
 
 int LpcIsp::program(const char * filename, int crystal, const char * dev, int (*progress)(float)){
 	FILE * f;
-	uint8_t * image_buffer;
-	uint32_t size;
-	uint32_t bytes_read;
-	uint32_t start_address;
-	uint8_t failed;
+	u8 * image_buffer;
+	u32 size;
+	u32 bytes_read;
+	u32 start_address;
+	u8 failed;
 
 	device = dev;
 
@@ -82,7 +82,7 @@ int LpcIsp::program(const char * filename, int crystal, const char * dev, int (*
 	}
 
 	isplib_debug(DEBUG_LEVEL, "File size is %d\n", (int)size);
-	image_buffer = (uint8_t*)malloc( size );
+	image_buffer = (u8*)malloc( size );
 	if (!image_buffer){
 		isplib_error("Failed to allocate memory\n");
 		return -3;
@@ -153,7 +153,7 @@ int LpcIsp::read(const char * filename, int crystal, int (*progress)(float)){
 	}
 
 	while( (bytes_read = (int)read_progmem(data, 0, 256*1024, progress)) > 0 ){
-		if ( fwrite(data, 1, bytes_read, f) != (uint32_t)bytes_read ){
+		if ( fwrite(data, 1, bytes_read, f) != (u32)bytes_read ){
 			fclose(f);
 			isplib_error("Failed to write data to file\n");
 			return -1;
@@ -194,23 +194,22 @@ int LpcIsp::init_prog_interface(int crystal){
  *
  * \return Number of bytes read
  */
-uint32_t LpcIsp::read_progmem(void * data, uint32_t addr, uint32_t size, int (*update_disp)(float)){
-	uint32_t buffer_size;
-	uint32_t bytes_read;
-	uint16_t page_size;
-	int16_t err;
+u32 LpcIsp::read_progmem(void * data, u32 addr, u32 size, int (*update_disp)(float)){
+	u32 buffer_size;
+	u32 bytes_read;
+	u16 page_size;
 
 	//First read the buffer size
 	buffer_size = LPCPHY_RAM_BUFFER_SIZE;
 	bytes_read = 0;
-	err = 0;
 
 	do {
 		if ( (size-bytes_read) > buffer_size ) page_size = buffer_size;
 		else page_size = size-bytes_read;
 
 		if ( phy.readmem(addr + bytes_read, &((char*)data)[bytes_read], page_size) != page_size ){
-			isplib_error("Error (%d) reading data at address 0x%04X\n", err, (uint32_t)(addr + bytes_read));
+
+			isplib_error("Error (%d) reading data at address 0x%04X\n", (u32)(addr + bytes_read));
 			return bytes_read;
 		}
 
@@ -229,7 +228,7 @@ uint32_t LpcIsp::read_progmem(void * data, uint32_t addr, uint32_t size, int (*u
 	return bytes_read;
 }
 
-uint32_t LpcIsp::write_progmem(void * data, uint32_t addr, uint32_t size, int (*update_disp)(float)){
+u32 LpcIsp::write_progmem(void * data, u32 addr, u32 size, int (*update_disp)(float)){
 	int buffer_size;
 	int bytes_written;
 	int page_size;
@@ -242,7 +241,7 @@ uint32_t LpcIsp::write_progmem(void * data, uint32_t addr, uint32_t size, int (*
 	bytes_written = 0;
 	do {
 
-		if ( (size-bytes_written) > buffer_size ) page_size = buffer_size;
+		if ( (int)(size-bytes_written) > buffer_size ) page_size = buffer_size;
 		else page_size = size-bytes_written;
 
 		//Check to see if data is already all 0xFF
@@ -256,7 +255,7 @@ uint32_t LpcIsp::write_progmem(void * data, uint32_t addr, uint32_t size, int (*
 			if ( phy.writemem(addr + bytes_written,
 					&((char*)data)[bytes_written], page_size,
 					sector ) != page_size ){
-				isplib_error("writing data at address 0x%04X\n", (uint32_t)(addr + bytes_written));
+				isplib_error("writing data at address 0x%04X\n", (u32)(addr + bytes_written));
 				return 0;
 			}
 		}
@@ -305,7 +304,7 @@ int LpcIsp::erase_dev(void){
 int LpcIsp::write_vector_checksum(unsigned char * hex_buffer, const char * dev){
 	unsigned long checksum;
 	checksum = 0;
-	uint16_t i;
+	u16 i;
 	int32_t addr;
 
 	//Get the device specific checksum address

@@ -4,9 +4,9 @@
 #define MGFX_HPP_
 
 #include <mcu/mcu.h>
-#include "mg_types.h"
+#include <stfy/mg_types.h>
 
-#include "Var/Item.hpp"
+#include "../Var/Item.hpp"
 #include "MBitmap.hpp"
 #include "MPoint.hpp"
 

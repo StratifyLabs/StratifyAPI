@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stfy/mg.h>
-#include "Var/Data.hpp"
+#include "../Var/Data.hpp"
 #include "MPoint.hpp"
 
 namespace Draw {
