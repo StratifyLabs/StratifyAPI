@@ -12,6 +12,7 @@ namespace Draw {
 
 #include "Draw/MBFont.hpp"
 #include "Draw/MBFontFile.hpp"
+#include "Draw/MBFontMemory.hpp"
 #include "Draw/MBitmap.hpp"
 #include "Draw/MFont.hpp"
 #include "Draw/MGfx.hpp"

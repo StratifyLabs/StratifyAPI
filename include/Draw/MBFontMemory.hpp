@@ -14,14 +14,22 @@ namespace Draw {
 class MBFontMemory: public MBFont {
 public:
 
-	/*! \brief Construct an object pointing to the font. */
+	/*! \brief Construct an object */
 	MBFontMemory();
+
+	/*! \brief Construct an object pointing to the font. */
 	MBFontMemory(const void * ptr);
 
+	/*! \details Set the location of the font in memory
+	 *
+	 * @param ptr A pointer to the font (mbfont_hdr_t*)
+	 */
 	void set(const void * ptr);
 
+	/*! \details Returns a pointer to the font (\sa set())
+	 *
+	 */
 	const void * font_memory() const { return _font; }
-
 	const MBitmap * bitmap(char c, bool ascii = true) const;
 
 protected:
