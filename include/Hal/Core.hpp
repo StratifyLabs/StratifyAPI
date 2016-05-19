@@ -127,7 +127,7 @@ public:
 	 *
 	 * @param periph The peripheral (e.g. Core::UART)
 	 * @param port The peripheral port
-	 * @param prio The priority (remember a lower number is a higher priority)
+	 * @param prio The priority (signed value) negative to decrease prio and positive to increase
 	 * @return
 	 */
 	inline int setirqprio(u8 periph, u8 port, u8 prio){
