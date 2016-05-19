@@ -14,12 +14,12 @@
 #define SysTick_IRQn 0
 #define __NVIC_PRIO_BITS 4
 typedef int IRQn_Type;
-#include <mcu/arch/core_cm4.h>
+#include <mcu/arch/cmsis/core_cm4.h>
 #elif defined __armv7m
 #define SysTick_IRQn 0
 #define __NVIC_PRIO_BITS 4
 typedef int IRQn_Type;
-#include <mcu/arch/core_cm3.h>
+#include <mcu/arch/cmsis/core_cm3.h>
 #endif
 
 #include "mg.h"
