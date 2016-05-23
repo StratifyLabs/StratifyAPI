@@ -22,7 +22,7 @@ int MLcdDevice::init(const char * name){
 	mlcd_attr_t attr;
 
 	if( name != 0 ){
-		if ( Device::open(name, READWRITE) < 0 ){
+		if ( Phy::open(name, READWRITE) < 0 ){
 			return -1;
 		}
 

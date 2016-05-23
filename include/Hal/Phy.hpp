@@ -169,9 +169,9 @@ public:
 
 #ifndef __link
 	/*! \details Asyncronous read */
-	virtual int read(Aio & aio) const;
+	virtual int read(Sys::Aio & aio) const;
 	/*! \details Asyncronous write */
-	virtual int write(Aio & aio) const;
+	virtual int write(Sys::Aio & aio) const;
 #endif
 
 	/*! \details reads the device at the location */

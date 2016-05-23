@@ -47,8 +47,8 @@ public:
 	int read(void * buf, int nbyte) const;
 	int write(const void * buf, int nbyte) const;
 	#ifndef __link
-	int read(Aio & aio) const;
-	int write(Aio & aio) const;
+	int read(Sys::Aio & aio) const;
+	int write(Sys::Aio & aio) const;
 	#endif
 	int close();
 

@@ -77,14 +77,15 @@ int Dir::size(){
 
 
 const char * Dir::read(void){
-	struct link_dirent * result;
 
 #if defined __link
+	struct link_dirent * result;
 	if( link_readdir_r(driver(), dirp, &entry, &result) < 0 ){
 		return 0;
 	}
 #else
-	if( readdir_r(dirp, &entry, (struct direct*)&result) < 0 ){
+	struct dirent * result;
+	if( readdir_r(dirp, &entry, &result) < 0 ){
 		return 0;
 	}
 #endif

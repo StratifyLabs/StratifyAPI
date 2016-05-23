@@ -102,13 +102,12 @@ int Phy::write(const void * buf, int nbyte) const {
 }
 
 #ifndef __link
-int Phy::read(Aio & aio){
+int Phy::read(Sys::Aio & aio) const {
 	aio.aio_var.aio_fildes = fd;
 	return ::aio_read(&(aio.aio_var));
 }
 
-int Phy::write(Aio & aio){
-	update_fileno();
+int Phy::write(Sys::Aio & aio) const {
 	aio.aio_var.aio_fildes = fd;
 	return ::aio_write(&(aio.aio_var));
 }
