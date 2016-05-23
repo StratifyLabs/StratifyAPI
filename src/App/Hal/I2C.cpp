@@ -27,13 +27,13 @@ int I2C::geterr(void){
 }
 
 
-int I2C::read(int loc, uint8_t & reg){
+int I2C::read(int loc, u8 & reg){
 	int ret;
 	ret = read(loc, &reg, 1);
 	return ret;
 }
 
-int I2C::write(int loc, uint8_t reg){
+int I2C::write(int loc, u8 reg){
 	int ret;
 	ret = write(loc, &reg, 1);
 	return ret;

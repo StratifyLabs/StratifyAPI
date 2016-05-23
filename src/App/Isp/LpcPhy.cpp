@@ -92,7 +92,7 @@ int LpcPhy::init(int pinassign){
 		}
 
 		if( (ret = uart->setattr(9600, pinassign)) < 0 ){
-			isplib_error("Failed to setattr UART %ld\n", ret);
+			isplib_error("Failed to setattr UART %d\n", ret);
 			return -2;
 		}
 	}
@@ -113,8 +113,8 @@ int LpcPhy::init(int pinassign){
 
 int LpcPhy::exit(void){
 	uart->close();
-	rst->setinput();
-	ispreq->setinput();
+	rst->set_attr(Pin::INPUT);
+	ispreq->set_attr(Pin::INPUT);
 	rst->close();
 	ispreq->close();
 	return 0;
@@ -164,7 +164,7 @@ int LpcPhy::open(int crystal){
 		//Clear the UART receive buffer
 		err = this->flush();
 		if ( err < 0 ){
-			isplib_error("failed to clear the RX buffers (%ld) (%ld)\n", err, link_errno);
+			isplib_error("failed to clear the RX buffers (%d) (%d)\n", err, link_errno);
 			return -1;
 		}
 
@@ -180,11 +180,11 @@ int LpcPhy::open(int crystal){
 			//The first command after unlock seems to fail so this is called twice
 			id = this->rd_part_id();
 			if ( id ){
-				isplib_debug(DEBUG_LEVEL, "Part ID is %ld\n", id);
+				isplib_debug(DEBUG_LEVEL, "Part ID is %d\n", id);
 			}
 			version = this->rd_boot_version();
 			if( version ){
-				isplib_debug(DEBUG_LEVEL, "Bootloader Version is %ld.%ld\n", (version>>8)&0xFF, version&0xFF);
+				isplib_debug(DEBUG_LEVEL, "Bootloader Version is %d.%d\n", (version>>8)&0xFF, version&0xFF);
 			}
 			return 0;
 		}
@@ -248,7 +248,7 @@ int LpcPhy::writemem(u32 loc, const void * buf, int nbyte, u32 sector){
 
 		//Prepare the target sector
 		if ( (err = this->prep_sector(sector, sector)) ){
-			isplib_error("Failed to prepare sector (%ld)\n", err);
+			isplib_error("Failed to prepare sector (%d)\n", err);
 			return 0;
 		}
 
@@ -327,7 +327,7 @@ int LpcPhy::reset(void){
 	Timer::wait_msec(50);
 
 	//Hold the reset line low
-	if ( rst->clr() ){
+	if ( rst->clear() ){
 		isplib_error("failed to clear RESET\n");
 		return -1;
 	}
@@ -359,7 +359,7 @@ int LpcPhy::start_bootloader(void){
 	}
 	isplib_debug(DEBUG_LEVEL+1, "RST is high\n");
 
-	if ( ispreq->clr() < 0 ){
+	if ( ispreq->clear() < 0 ){
 		isplib_error("failed to clear ispreq\n");
 		return -1;
 	}
@@ -367,7 +367,7 @@ int LpcPhy::start_bootloader(void){
 	Timer::wait_msec(150);
 
 
-	if ( rst->clr() < 0 ){
+	if ( rst->clear() < 0 ){
 		isplib_error("failed to clear reset\n");
 		return -1;
 	}
@@ -446,7 +446,7 @@ int LpcPhy::sync_bootloader(u32 crystal /*! Crystal frequency in KHz */){
 
 	if( uart->read(&c,1) ){
 		if( c == '\n' ){
-			setlpc177x_8x(true);
+			set_lpc177x_8x(true);
 			if( lpc_wait_response("OK\r\n", QUICK_TIMEOUT) ){
 				isplib_error("failed to get OK for lpc177x_8x\n");
 				return -1;
@@ -454,7 +454,7 @@ int LpcPhy::sync_bootloader(u32 crystal /*! Crystal frequency in KHz */){
 
 			//send crystal freq
 			isplib_debug(DEBUG_LEVEL+1, "Sending Crystal Value\n");
-			sprintf(buf, "%ld\r\n", crystal);
+			sprintf(buf, "%d\r\n", crystal);
 			bytes = uart->write(buf, strlen(buf));
 			if ( bytes != strlen(buf) ){
 				isplib_error("failed to write crystal value\n");
@@ -463,7 +463,7 @@ int LpcPhy::sync_bootloader(u32 crystal /*! Crystal frequency in KHz */){
 			//Wait for the echo
 			isplib_debug(DEBUG_LEVEL+1, "Waiting for Crystal echo\n");
 
-			sprintf(buf, "%ld\r\n", crystal);
+			sprintf(buf, "%d\r\n", crystal);
 			if( lpc_wait_response(buf, QUICK_TIMEOUT) ){
 				isplib_error("failed to wait for crystal Echo\n");
 				return -1;
@@ -478,14 +478,14 @@ int LpcPhy::sync_bootloader(u32 crystal /*! Crystal frequency in KHz */){
 				return -1;
 			}
 		} else {
-			setlpc177x_8x(false);
+			set_lpc177x_8x(false);
 			if( lpc_wait_response("K\r\n", QUICK_TIMEOUT) ){
 				isplib_error("failed to get OK on lpc17xx\n");
 				return -1;
 			}
 			//send crystal freq
 			isplib_debug(DEBUG_LEVEL+1, "Sending Crystal Value\n");
-			sprintf(buf, "%ld\r\n", crystal);
+			sprintf(buf, "%d\r\n", crystal);
 			bytes = uart->write(buf, strlen(buf));
 			if ( bytes != strlen(buf) ){
 				isplib_error("failed to write crystal value\n");
@@ -494,7 +494,7 @@ int LpcPhy::sync_bootloader(u32 crystal /*! Crystal frequency in KHz */){
 			//Wait for the echo
 			isplib_debug(DEBUG_LEVEL+1, "Waiting for Crystal OK\n");
 
-			sprintf(buf, "%ld\rOK\r\n", crystal);
+			sprintf(buf, "%d\rOK\r\n", crystal);
 			if( lpc_wait_response(buf, QUICK_TIMEOUT) ){
 				isplib_error("failed to wait for crystal OK\n");
 				return -1;
@@ -584,9 +584,9 @@ int LpcPhy::wr_ram(u32 ram_dest /*! The RAM destination address--must be a word 
 	char buf[64];
 	u32 bytes_written;
 	int ret;
-	isplib_debug(DEBUG_LEVEL+1, "wr ram 0x%X %ld\n", ram_dest, size);
+	isplib_debug(DEBUG_LEVEL+1, "wr ram 0x%X %d\n", ram_dest, size);
 
-	sprintf(buf, "W %ld %ld", ram_dest, size);
+	sprintf(buf, "W %d %d", ram_dest, size);
 	if( (ret = sendcommand(buf, QUICK_TIMEOUT)) < 0 ){
 		isplib_error("Failed to write ram\n");
 		return -1;
@@ -596,7 +596,7 @@ int LpcPhy::wr_ram(u32 ram_dest /*! The RAM destination address--must be a word 
 	if ( ret == 0 ){
 		bytes_written = lpc_write_data(src, size);
 		if ( bytes_written != size ){
-			isplib_error("failed to write ram %ld != %ld\n", bytes_written, size);
+			isplib_error("failed to write ram %d != %d\n", bytes_written, size);
 			return -1;
 		}
 	}
@@ -626,27 +626,27 @@ u32 LpcPhy::rd_mem(void * dest /*! A pointer to the destination memory */,
 		size_read = size_read + 4 - ( size_read % 4 );
 	}
 
-	sprintf(buf, "R %ld %ld", src_addr, size_read);
+	sprintf(buf, "R %d %d", src_addr, size_read);
 	if( (ret = sendcommand(buf, QUICK_TIMEOUT)) < 0 ){
 		isplib_error("Failed to read ram\n");
 		return -1;
 	}
 
 	if ( ret ){
-		isplib_debug(DEBUG_LEVEL+1, "Error reading memory (%ld)\n", ret);
+		isplib_debug(DEBUG_LEVEL+1, "Error reading memory (%d)\n", ret);
 		return 0;
 	}
 
 
 	bytes_read = lpc_read_data(tmp, size_read);
 	if ( bytes_read != size_read ){
-		isplib_debug(DEBUG_LEVEL+1, "Byte read mismatch (%ld != %ld)\n", bytes_read, size);
+		isplib_debug(DEBUG_LEVEL+1, "Byte read mismatch (%d != %d)\n", bytes_read, size);
 		//free(tmp);
 		return 0;
 	}
 
 	bytes_read = size;
-	isplib_debug(DEBUG_LEVEL+1, "Read %ld bytes\n", bytes_read);
+	isplib_debug(DEBUG_LEVEL+1, "Read %d bytes\n", bytes_read);
 	memcpy(dest, tmp, size);
 	return bytes_read;
 }
@@ -664,9 +664,9 @@ int LpcPhy::prep_sector(u32 start /*! The first sector to prepare */,
 	char buf[64];
 	int ret;
 	isplib_debug(DEBUG_LEVEL+1, "prep sectors\n");
-	sprintf(buf, "P %ld %ld", start, end);
+	sprintf(buf, "P %d %d", start, end);
 	if( (ret = sendcommand(buf, QUICK_TIMEOUT)) < 0 ){
-		isplib_error("Failed to prep sector %ld %ld\n", start, end);
+		isplib_error("Failed to prep sector %d %d\n", start, end);
 		return -1;
 	}
 	return ret;
@@ -684,9 +684,9 @@ int LpcPhy::cpy_ram_to_flash(u32 flash_addr /*! The flash address (destination m
 	char buf[64];
 	int ret;
 	isplib_debug(DEBUG_LEVEL+1, "ram to flash\n");
-	sprintf(buf, "C %ld %ld %ld", flash_addr, ram_addr, size);
+	sprintf(buf, "C %d %d %d", flash_addr, ram_addr, size);
 	if( (ret = sendcommand(buf, QUICK_TIMEOUT)) < 0 ){
-		isplib_error("Failed to copy ram to flash %ld %ld %ld\n", flash_addr, ram_addr, size);
+		isplib_error("Failed to copy ram to flash %d %d %d\n", flash_addr, ram_addr, size);
 		return -1;
 	}
 	return ret;
@@ -702,9 +702,9 @@ int LpcPhy::go(u32 addr /*! Where to start code execution */,
 	char buf[64];
 	int ret;
 	isplib_debug(DEBUG_LEVEL+1, "go\n");
-	sprintf(buf, "G %ld %c", addr, mode);
+	sprintf(buf, "G %d %c", addr, mode);
 	if( (ret = sendcommand(buf, QUICK_TIMEOUT)) < 0 ){
-		isplib_error("Failed to go %ld %c\n", addr, mode);
+		isplib_error("Failed to go %d %c\n", addr, mode);
 		return -1;
 	}
 	return ret;
@@ -721,9 +721,9 @@ int LpcPhy::erase_sector(u32 start /*! The first sector to erase */,
 	char buf[64];
 	u16 ret;
 	isplib_debug(DEBUG_LEVEL+1, "erase sector\n");
-	sprintf(buf, "E %ld %ld", start, end);
+	sprintf(buf, "E %d %d", start, end);
 	if( (ret = sendcommand(buf, TIMEOUT, 150)) < 0 ){
-		isplib_error("Failed to erase sector %ld %ld\n", start, end);
+		isplib_error("Failed to erase sector %d %d\n", start, end);
 		return -1;
 	}
 	return ret;
@@ -738,9 +738,9 @@ int LpcPhy::blank_check_sector(u32 start /*! The first sector to blank check */,
 	char buf[LPCPHY_RAM_BUFFER_SIZE];
 	u16 ret;
 	isplib_debug(DEBUG_LEVEL+1, "blank check\n");
-	sprintf(buf, "I %ld %ld", start, end);
+	sprintf(buf, "I %d %d", start, end);
 	if( (ret = sendcommand(buf, TIMEOUT)) < 0 ){
-		isplib_error("Failed to blank check sector %ld %ld\n", start, end);
+		isplib_error("Failed to blank check sector %d %d\n", start, end);
 		return -1;
 	}
 
@@ -812,9 +812,9 @@ int LpcPhy::memcmp(u32 addr0 /*! The beginning of the first block */,
 	char buf[64];
 	int ret;
 	isplib_debug(DEBUG_LEVEL+1, "compare mem\n");
-	sprintf(buf, "M %ld %ld %ld", addr0, addr1, size);
+	sprintf(buf, "M %d %d %d", addr0, addr1, size);
 	if( (ret = sendcommand(buf, QUICK_TIMEOUT)) < 0 ){
-		isplib_error("Failed to compare memory %ld %ld %ld\n", addr0, addr1, size);
+		isplib_error("Failed to compare memory %d %d %d\n", addr0, addr1, size);
 		return -1;
 	}
 	return ret;
@@ -832,15 +832,15 @@ int LpcPhy::lpc_rd_return_code(u16 timeout){
 	bytes_read = get_line((char*)buf, 3, timeout);
 	if ( bytes_read < 3 ){
 		for(i=0; i < bytes_read; i++){
-			isplib_debug(5, "ret code buf[%ld]=%ld (%c)\n", i, buf[i], buf[i]);
+			isplib_debug(5, "ret code buf[%d]=%d (%c)\n", i, buf[i], buf[i]);
 		}
 		return -2;
 	}
 	for(i=0; i < bytes_read; i++){
-		isplib_debug(5, "ret code buf[%ld]=%ld (%c)\n", i, buf[i], buf[i]);
+		isplib_debug(5, "ret code buf[%d]=%d (%c)\n", i, buf[i], buf[i]);
 	}
 	ret = atoi(buf);
-	isplib_debug(DEBUG_LEVEL+1, "ret code is %ld\n", ret);
+	isplib_debug(DEBUG_LEVEL+1, "ret code is %d\n", ret);
 	return ret;
 }
 
@@ -857,25 +857,25 @@ int LpcPhy::lpc_wait_response(const char * response, u16 timeout){
 	len = strlen(response);
 	memset(buf, 0, 1024);
 	bytes_recv = get_line((char*)buf, len, timeout);
-	isplib_debug(DEBUG_LEVEL+1, "Waiting for response (%ld)\n", bytes_recv);
+	isplib_debug(DEBUG_LEVEL+1, "Waiting for response (%d)\n", bytes_recv);
 
 	if ( !bytes_recv ){
 		return -1;
 	}
 
 	for(i=0; i < bytes_recv; i++){
-		isplib_debug(5, "buf[%ld]=%ld (%c)\n", i, buf[i], buf[i]);
+		isplib_debug(5, "buf[%d]=%d (%c)\n", i, buf[i], buf[i]);
 	}
 
 	if ( strncmp(buf, response, bytes_recv)){
 		isplib_debug(DEBUG_LEVEL+1, "Mismatch -%s- and -%s-\n", buf, response);
 		for(i=0; i < bytes_recv; i++){
 			if ( buf[i] == '\n'){
-				isplib_debug(DEBUG_LEVEL+1, "[%ld] = %ld (<LF>)\n", i, buf[i]);
+				isplib_debug(DEBUG_LEVEL+1, "[%d] = %d (<LF>)\n", i, buf[i]);
 			} else if ( buf[i] == '\r' ){
-				isplib_debug(DEBUG_LEVEL+1, "[%ld] = %ld (<CR>)\n", i, buf[i]);
+				isplib_debug(DEBUG_LEVEL+1, "[%d] = %d (<CR>)\n", i, buf[i]);
 			} else {
-				isplib_debug(DEBUG_LEVEL+1, "[%ld] = %ld (%c)\n", i, buf[i], buf[i]);
+				isplib_debug(DEBUG_LEVEL+1, "[%d] = %d (%c)\n", i, buf[i], buf[i]);
 			}
 		}
 	} else {
@@ -921,13 +921,13 @@ i32 LpcPhy::lpc_write_data(void * src /*! A pointer to the source data */,
 		for(i=0; i < line_size; i++){
 			checksum+=((unsigned char*)src)[i+bytes_written];
 		}
-		isplib_debug(DEBUG_LEVEL+1, "Line size is %ld (checksum=%ld)\n", line_size, checksum);
+		isplib_debug(DEBUG_LEVEL+1, "Line size is %d (checksum=%d)\n", line_size, checksum);
 		uu_encode_line(buf, &(srcp[bytes_written]), line_size);
 		bytes = uart->write(buf, strlen(buf));
 		if ( bytes != strlen(buf) ){
 			return -1;
 		}
-		isplib_debug(DEBUG_LEVEL+1, "Sending %s (%ld)\n", buf, (int)strlen(buf));
+		isplib_debug(DEBUG_LEVEL+1, "Sending %s (%d)\n", buf, (int)strlen(buf));
 		if ( echo ) {
 			if ( lpc_wait_response(buf, QUICK_TIMEOUT) ){
 				isplib_debug(DEBUG_LEVEL+1, "Failed echo\n");
@@ -942,14 +942,14 @@ i32 LpcPhy::lpc_write_data(void * src /*! A pointer to the source data */,
 			}
 			line = 0;
 			//send and reset the checksum
-			isplib_debug(DEBUG_LEVEL+1, "Sending checksum (%ld)\n", checksum);
-			sprintf(buf, "%ld\r\n", checksum);
+			isplib_debug(DEBUG_LEVEL+1, "Sending checksum (%d)\n", checksum);
+			sprintf(buf, "%d\r\n", checksum);
 			bytes = uart->write(buf, strlen(buf));
 			if ( bytes != strlen(buf) ){
 				return -1;
 			}
 			if ( echo ){
-				sprintf(buf, "%ld\rOK\r\n", checksum);
+				sprintf(buf, "%d\rOK\r\n", checksum);
 				checksum_ok = !(lpc_wait_response(buf, QUICK_TIMEOUT));
 			} else {
 				memset(buf, 0, 64);
@@ -1012,7 +1012,7 @@ i32 LpcPhy::lpc_read_data(void * dest /*! A pointer to the destination buffer */
 		isplib_debug(4, "rx'd:%s\n", buf);
 		if ( (bytes_decoded = uu_decode_line(buf_dec, buf, 64)) ){
 			//The line did uu decode--so copy the data to the destination buffer
-			isplib_debug(4, "read %ld bytes\n", bytes_decoded);
+			isplib_debug(4, "read %d bytes\n", bytes_decoded);
 			memcpy(&((char*)dest)[bytes_read], buf_dec, bytes_decoded);
 			bytes_read += bytes_decoded;
 			line++;
@@ -1036,7 +1036,7 @@ i32 LpcPhy::lpc_read_data(void * dest /*! A pointer to the destination buffer */
 			isplib_debug(4, "This is a checksum line:  %s\n", buf);
 
 			if ( checksum == atoi(buf) ){
-				isplib_debug(DEBUG_LEVEL+1, "Checksum is Good (%ld)\n", checksum);
+				isplib_debug(DEBUG_LEVEL+1, "Checksum is Good (%d)\n", checksum);
 				sprintf(buf, "OK\r\n");
 				bytes = uart->write(buf, strlen(buf));
 				if ( bytes != strlen(buf) ){
@@ -1085,7 +1085,7 @@ int LpcPhy::get_line(void * buf, int nbyte, int max_wait){
 			return -1;
 		}
 
-		isplib_debug(DEBUG_LEVEL+3, "Read %ld bytes\n", bytes_read);
+		isplib_debug(DEBUG_LEVEL+3, "Read %d bytes\n", bytes_read);
 		bytes_recv+=bytes_read;
 		p+=bytes_read;
 
@@ -1101,7 +1101,7 @@ int LpcPhy::get_line(void * buf, int nbyte, int max_wait){
 			if ( start[i] == '\n' ){
 				start[i+1] = 0; //zero terminate
 				if ( i+1 < bytes_recv ){
-					isplib_debug(DEBUG_LEVEL+2, "-----------------------Extra bytes %ld------------------\n", bytes_recv - i - 1);
+					isplib_debug(DEBUG_LEVEL+2, "-----------------------Extra bytes %d------------------\n", bytes_recv - i - 1);
 				}
 				return i+1;
 			}
@@ -1126,7 +1126,7 @@ int LpcPhy::sendcommand(const char * cmd, int timeout, int wait_ms){
 	sprintf(buffer, "%s\r\n", cmd);
 	bytes = uart->write(buffer, strlen(buffer));
 	if ( bytes != strlen(buffer) ){
-		isplib_error("send command failed %ld != %ld\n", bytes, (int)strlen(buffer));
+		isplib_error("send command failed %d != %d\n", bytes, (int)strlen(buffer));
 		return -1;
 	}
 
@@ -1135,7 +1135,7 @@ int LpcPhy::sendcommand(const char * cmd, int timeout, int wait_ms){
 	}
 
 	if( echo ){
-		if( islpc177x_8x() ){
+		if( is_lpc177x_8x() ){
 			ret = lpc_wait_response(buffer, timeout);
 			if( ret < 0 ){
 				return ret;

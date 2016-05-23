@@ -6,8 +6,8 @@
 
 #include <mcu/types.h>
 
-#include "Hal/Uart.hpp"
-#include "Hal/Pin.hpp"
+#include "../Hal/Uart.hpp"
+#include "../Hal/Pin.hpp"
 
 #define LPC_ISP_UNLOCK_CODE "23130"
 
@@ -23,6 +23,7 @@ public:
 		this->ispreq = ispreq;
 		echo = 0;
 		ram_buffer = 0x40000200;
+		_is_lpc177x_8x = false;
 	}
 
 
@@ -76,9 +77,9 @@ private:
 	int lpc_wait_response(const char * response, u16 timeout);
 	int lpc_wait_ok(u16 timeout);
 
-	bool islpc177x_8x_;
-	bool islpc177x_8x(){ return islpc177x_8x_; }
-	void setlpc177x_8x(bool enabled = true){ islpc177x_8x_ = enabled; }
+	bool _is_lpc177x_8x;
+	bool is_lpc177x_8x(){ return _is_lpc177x_8x; }
+	void set_lpc177x_8x(bool enabled = true){ _is_lpc177x_8x = enabled; }
 
 	int sendcommand(const char * cmd, int timeout, int wait_ms = 0);
 

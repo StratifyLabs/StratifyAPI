@@ -54,7 +54,7 @@ public:
 	 * @return Zero on success or -1 with errno set accordingly
 	 *
 	 */
-	static int create(const char * name, const void * buf, int nbyte, const char * mount = "/app", link_transport_phy_t h = LINK_PHY_OPEN_ERROR);
+	static int create(const char * name, const void * buf, int nbyte, const char * mount = "/app", link_transport_mdriver_t * driver = 0);
 
 	/*! \details Returns the page size for writing data */
 	static int pagesize(){ return APPFS_PAGE_SIZE; }

@@ -3,6 +3,8 @@
 #ifndef MQ_HPP_
 #define MQ_HPP_
 
+#ifndef __link
+
 #include <iface/link.h>
 #include <mqueue.h>
 #include <fcntl.h>
@@ -129,5 +131,7 @@ private:
 };
 
 };
+
+#endif
 
 #endif /* MQ_HPP_ */

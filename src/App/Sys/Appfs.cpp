@@ -11,7 +11,7 @@
 
 using namespace Sys;
 
-int Appfs::create(const char * name, const void * buf, int nbyte, const char * mount, link_transport_phy_t h){
+int Appfs::create(const char * name, const void * buf, int nbyte, const char * mount, link_transport_mdriver_t * driver){
 	char buffer[LINK_PATH_MAX];
 	File file;
 	int tmp;
@@ -24,7 +24,7 @@ int Appfs::create(const char * name, const void * buf, int nbyte, const char * m
 	strcat(buffer, "/flash/");
 	strcat(buffer, name);
 #ifdef __link
-	file.sethandle(h);
+	file.set_driver(driver);
 #endif
 
 	//delete the settings if they exist
@@ -37,7 +37,7 @@ int Appfs::create(const char * name, const void * buf, int nbyte, const char * m
 	f.exec.code_size = nbyte + sizeof(f); //total number of bytes in file
 	f.exec.signature = APPFS_CREATE_SIGNATURE;
 
-	File::remove(buffer, h);
+	File::remove(buffer, driver);
 
 
 	if( file.open("/app/.install", File::WRONLY) < 0 ){

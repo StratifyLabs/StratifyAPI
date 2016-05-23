@@ -15,7 +15,11 @@ namespace Sys {
 class Dir {
 public:
 	/*! \details Construct a Dir object */
+#if defined __link
+	Dir(link_transport_mdriver_t * driver);
+#else
 	Dir();
+#endif
 	/*! \details Open a directory */
 	int open(const char * name);
 	/*! \details Close the directory */
@@ -28,7 +32,6 @@ public:
 	 */
 	const char * read(void);
 
-	int size();
 
 	/*! \details The name of the most recently read entry */
 	inline const char * name(void){ return entry.d_name; }
@@ -40,6 +43,7 @@ public:
 	inline int ino(void){ return entry.d_ino; }
 
 #ifndef __link
+	int size();
 	/*! \details Count the total number of entries in the directory */
 	int count(void);
 	/*! \details Rewind the directory pointer */
@@ -48,6 +52,8 @@ public:
 	inline void seek(long loc){ if( dirp ) seekdir(dirp, loc); }
 	/*! \details The current pointer location in the directory */
 	inline long tell(void){ if( dirp ){ return telldir(dirp); } return 0; }
+#else
+	void set_driver(link_transport_mdriver_t * d){ _driver = d; }
 #endif
 
 	int ioctl(int req, void * arg){ return -1; }
@@ -56,6 +62,8 @@ private:
 #ifdef __link
 	int dirp;
 	struct link_dirent entry;
+	link_transport_mdriver_t * _driver;
+	link_transport_mdriver_t * driver(){ return _driver; }
 #else
 	DIR * dirp;
 	struct dirent entry;

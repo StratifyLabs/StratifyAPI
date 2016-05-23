@@ -108,8 +108,7 @@ public:
 		return setattr(&attr);
 	}
 
-	/*! \brief See details below.
-	 * \details Initialize the UART to
+	/*! \details Initialize the UART to
 	 * - 19200 baudrate
 	 * - default pin assignment
 	 * - No parity

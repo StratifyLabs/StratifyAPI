@@ -14,10 +14,10 @@ namespace Draw {
 class MBFontMemory: public MBFont {
 public:
 
-	/*! \brief Construct an object */
+	/*! \details Construct an object */
 	MBFontMemory();
 
-	/*! \brief Construct an object pointing to the font. */
+	/*! \details Construct an object pointing to the font. */
 	MBFontMemory(const void * ptr);
 
 	/*! \details Set the location of the font in memory

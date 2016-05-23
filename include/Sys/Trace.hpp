@@ -8,6 +8,8 @@
 #ifndef TRACE_HPP_
 #define TRACE_HPP_
 
+#ifndef __link
+
 
 #include <iface/link.h>
 #include <trace.h>
@@ -31,5 +33,7 @@ public:
 };
 
 };
+
+#endif
 
 #endif /* TRACE_HPP_ */

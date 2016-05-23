@@ -5,11 +5,11 @@
 
 #include <iface/dev/hio.h>
 
-#include "../Hal/Device.hpp"
+#include "../Hal/Phy.hpp"
 
 namespace Sys {
 
-class Hio : public Hal::Device {
+class Hio : public Hal::Phy {
 public:
 
 	int attr(hio_attr_t & a);

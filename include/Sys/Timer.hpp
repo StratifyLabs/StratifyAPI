@@ -44,7 +44,6 @@ namespace Sys {
  */
 class Timer {
 public:
-	Timer();
 #ifdef __MCU_ONLY__
 	static int init(Tmr::port_t port, u32 heartbeat = 10000);
 #endif
@@ -65,6 +64,12 @@ public:
 	 * @param timeout Time to wait in microseconds
 	 */
 	static void wait_usec(u32 timeout);
+
+
+#if !defined __link
+
+	Timer();
+
 
 	/*! \details The the usec's on the real-time clock */
 	static int clock_usec(void);
@@ -113,6 +118,7 @@ public:
 	 * will return the same number.
 	 */
 	void stop(void); //stop counting
+#endif
 
 private:
 #ifdef __MCU_ONLY__
@@ -120,7 +126,7 @@ private:
 	u32 start_;
 	u32 stop_;
 	u32 timeout_stop_;
-#else
+#elif !defined __link
 	struct timespec start_;
 	struct timespec stop_;
 #endif

@@ -3,13 +3,25 @@
 #include "Sys/Dir.hpp"
 using namespace Sys;
 
+#if defined __link
+Dir::Dir(link_transport_mdriver_t * driver){
+	dirp = 0;
+	_driver = driver;
+}
 
+#else
 Dir::Dir(){
 	dirp = 0;
 }
 
+#endif
+
 int Dir::open(const char * name){
+#if defined __link
+	dirp = link_opendir(driver(), name);
+#else
 	dirp = opendir(name);
+#endif
 	if( dirp == 0 ){
 		return -1;
 	}
@@ -17,13 +29,23 @@ int Dir::open(const char * name){
 	return 0;
 }
 
+
+#if !defined __link
 int Dir::count(void){
 	long loc;
 	int count;
 
-	loc = tell();
+#if defined __link
 
+#else
+	loc = tell();
+#endif
+
+#if defined __link
+
+#else
 	rewind();
+#endif
 
 	count = 0;
 	while( read() != 0 ){
@@ -35,6 +57,7 @@ int Dir::count(void){
 	return count;
 
 }
+
 
 int Dir::size(){
 	int i;
@@ -50,19 +73,31 @@ int Dir::size(){
 	return i;
 }
 
+#endif
 
 
 const char * Dir::read(void){
-	struct dirent * result;
-	if( readdir_r(dirp, &entry, &result) < 0 ){
+	struct link_dirent * result;
+
+#if defined __link
+	if( link_readdir_r(driver(), dirp, &entry, &result) < 0 ){
 		return 0;
 	}
+#else
+	if( readdir_r(dirp, &entry, (struct direct*)&result) < 0 ){
+		return 0;
+	}
+#endif
 	return entry.d_name;
 }
 
 int Dir::close(void){
 	if( dirp ){
+#if defined __link
+		link_closedir(driver(), dirp);
+#else
 		closedir(dirp);
+#endif
 		dirp = 0;
 	}
 	return 0;

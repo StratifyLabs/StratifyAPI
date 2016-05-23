@@ -7,6 +7,27 @@
 #include "Sys/Timer.hpp"
 using namespace Sys;
 
+
+void Timer::wait_sec(u32 timeout){
+	sleep(timeout);
+}
+
+void Timer::wait_msec(u32 timeout){
+	if( (timeout * 1000) < 1000000 ){
+		usleep(timeout*1000);
+	} else {
+		for(u32 i = 0; i < timeout; i++){
+			usleep(1000);
+		}
+	}
+}
+
+void Timer::wait_usec(u32 timeout){
+	usleep(timeout);
+}
+
+#if !defined __link
+
 static struct timespec diff(struct timespec now, struct timespec then){
 	struct timespec d;
 	d.tv_nsec = now.tv_nsec - then.tv_nsec;
@@ -46,26 +67,6 @@ int Timer::clock_sec(void){
 	struct timespec now;
 	clock_gettime(CLOCK_REALTIME, &now);
 	return now.tv_sec;
-}
-
-
-
-void Timer::wait_sec(u32 timeout){
-	sleep(timeout);
-}
-
-void Timer::wait_msec(u32 timeout){
-	if( (timeout * 1000) < 1000000 ){
-		usleep(timeout*1000);
-	} else {
-		for(u32 i = 0; i < timeout; i++){
-			usleep(1000);
-		}
-	}
-}
-
-void Timer::wait_usec(u32 timeout){
-	usleep(timeout);
 }
 
 void Timer::start(void){
@@ -133,3 +134,5 @@ u32 Timer::usec(void){
 void Timer::stop(void){
 	clock_gettime(CLOCK_REALTIME, &stop_);
 }
+
+#endif

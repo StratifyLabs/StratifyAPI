@@ -64,12 +64,11 @@ namespace Hal {
 class Tmr : public Periph {
 public:
 	Tmr(port_t port);
-	/*! \brief Get the TMR attributes */
+	/*! \details Get the TMR attributes */
 	int attr(tmr_attr_t * attr);
-	/*! \brief Set the TMR attributes */
+	/*! \details Set the TMR attributes */
 	int setattr(const tmr_attr_t * attr);
 
-	/*! \brief These are the events associated with timer actions */
 	/*! \details This lists the values for the event when using setaction().  The values
 	 * can be Or'd (|) together such as Tmr::RESET|Tmr::INTERRUPT.
 	 */
@@ -84,9 +83,9 @@ public:
 	};
 
 
-	/*! \brief Set the TMR action */
+	/*! \details Set the TMR action */
 	int setaction(const tmr_action_t * action);
-	/*! \brief Set the TMR action */
+	/*! \details Set the TMR action */
 	int setaction(int channel /*! The channel to use */,
 			int event /*! The event such as Tmr::INTERRUPT */,
 			mcu_callback_t callback /*! Callback executed if Tmr::INTERRUPT is used */ =0,
@@ -98,53 +97,53 @@ public:
 		action.context = context;
 		return setaction(&action);
 	}
-	/*! \brief Turn the TMR on (start counting) */
+	/*! \details Turn the TMR on (start counting) */
 	int on(void);
-	/*! \brief Turn the TMR off (stop counting) */
+	/*! \details Turn the TMR off (stop counting) */
 	int off(void);
-	/*! \brief Set the output compare attributes */
+	/*! \details Set the output compare attributes */
 	int setoc(const tmr_reqattr_t * req);
-	/*! \brief Set the output compare unit with given parameters */
+	/*! \details Set the output compare unit with given parameters */
 	int setoc(int channel, uint32_t value){
 		tmr_reqattr_t req;
 		req.channel = channel;
 		req.value = value;
 		return setoc(&req);
 	}
-	/*! \brief Get the output compare attributes */
+	/*! \details Get the output compare attributes */
 	int getoc(tmr_reqattr_t * req);
-	/*! \brief Get the output compare attributes (no error checking) */
+	/*! \details Get the output compare attributes (no error checking) */
 	int getoc(int channel){
 		tmr_reqattr_t req;
 		req.channel = channel;
 		getoc(&req);
 		return req.value;
 	}
-	/*! \brief Set the input capture attributes */
+	/*! \details Set the input capture attributes */
 	int setic(const tmr_reqattr_t * req);
-	/*! \brief Set the input capture unit with given parameters */
+	/*! \details Set the input capture unit with given parameters */
 	int setic(int channel, uint32_t value){
 		tmr_reqattr_t req;
 		req.channel = channel;
 		req.value = value;
 		return setic(&req);
 	}
-	/*! \brief Get the input capture attributes */
+	/*! \details Get the input capture attributes */
 	int getic(tmr_reqattr_t * req);
-	/*! \brief Get the input capture value (no error checking)*/
+	/*! \details Get the input capture value (no error checking)*/
 	int getic(int channel){
 		tmr_reqattr_t req;
 		req.channel = channel;
 		getic(&req);
 		return req.value;
 	}
-	/*! \brief Return the value of the TMR */
+	/*! \details Return the value of the TMR */
 	tmr_sample_t get(void);
 
-	/*! \brief Return the value of the TMR */
+	/*! \details Return the value of the TMR */
 	tmr_sample_t value(void){ return get(); }
 
-	/*! \brief Set the value of the TMR */
+	/*! \details Set the value of the TMR */
 	int set(tmr_sample_t value);
 
 #ifdef __MCU_ONLY__
@@ -153,7 +152,6 @@ public:
 	int close(void);
 #endif
 
-	/*! \brief Set the TMR attributes using specified values */
 	/*! \details See init() for details. */
 	int setattr(uint32_t freq,
 			uint8_t clksrc = TMR_CLKSRC_CPU,
@@ -169,7 +167,6 @@ public:
 		return setattr(&attr);
 	}
 
-	/*! \brief List of timer clock sources */
 	/*! \details This is a list of the timer clock sources.  Not all clock
 	 * sources are available on all devices.
 	 */
@@ -185,7 +182,6 @@ public:
 		COUNTDOWN /*! Modifier for a countdown timer */ = TMR_CLKSRC_COUNTDOWN
 	};
 
-	/*! \brief Open TMR and set attributes as specified */
 	/*! \details This opens and sets the timer attributes
 	 *
 	 */

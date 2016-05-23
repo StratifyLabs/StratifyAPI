@@ -3,6 +3,8 @@
 #ifndef SIGNAL_HPP_
 #define SIGNAL_HPP_
 
+#ifndef __link
+
 #include <pthread.h>
 #include <signal.h>
 #include <stratify/stratify.h>
@@ -205,5 +207,7 @@ private:
 };
 
 };
+
+#endif
 
 #endif /* SIGNAL_HPP_ */

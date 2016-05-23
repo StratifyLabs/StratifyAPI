@@ -19,7 +19,6 @@ class Rle {
 public:
 	Rle();
 
-	/*! \brief Encode a chunk of data */
 	/*! \details This method encodes a block of data.
 	 *
 	 * @param dest A pointer to the destination data
@@ -30,7 +29,6 @@ public:
 	 */
 	static int encode(void * dest, ssize_t & dest_size, const void * src, ssize_t src_size);
 
-	/*! \brief Decode a chunk of data */
 	/*! \details This method decodes a block of data.
 	 *
 	 * @param dest A pointer to the destination data
@@ -41,8 +39,7 @@ public:
 	 */
 	static int decode(void * dest, ssize_t & dest_size, const void * src, ssize_t src_size);
 
-	/*! \brief Calculate the size of the encoded data */
-	/*! \details This methods calculate the number of bytes that will be used by the
+	/*! \details This methods calculates the number of bytes that will be used by the
 	 * compressed data.
 	 *
 	 * @param src A pointer to the source memory
@@ -68,7 +65,6 @@ private:
 class RleFile : public Rle, public Sys::File {
 public:
 
-	/*! \brief Encode and write data to a file */
 	/*! \details This method encodes then writes the data to a file.
 	 *
 	 * @param buf The source data
@@ -78,7 +74,6 @@ public:
 	int write(const void * buf, int nbyte);
 
 
-	/*! brief Read and decode data from a file */
 	/*! \details This method reads and decodes data from a file.
 	 *
 	 * @param buf A pointer to the destination memory
@@ -99,7 +94,6 @@ class RleAppfs : public Rle, public Sys::Appfs {
 public:
 	RleAppfs();
 
-	/*! \brief Encode and write data to a file */
 	/*! \details This method encodes then writes the data to a file.
 	 *
 	 * @param buf The source data
@@ -109,7 +103,6 @@ public:
 	int write(const void * buf, int nbyte);
 
 
-	/*! brief Read and decode data from a file */
 	/*! \details This method reads and decodes data from a file.
 	 *
 	 * @param buf A pointer to the destination memory

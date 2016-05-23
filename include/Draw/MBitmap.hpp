@@ -22,7 +22,7 @@ public:
 	static int byte_width(int w);
 	static int word_width(int w);
 
-	/*! \brief Set data pointer and size for bitmap */
+	/*! \details Set data pointer and size for bitmap */
 	void set_data(mg_bitmap_hdr_t * hdr, bool readonly = false);
 	void set_data(mg_bitmap_t * mem, mg_size_t w, mg_size_t h, bool readonly = false);
 	inline void set_data(mg_bitmap_t * mem, const MDim & dim){
@@ -39,10 +39,10 @@ public:
 	int save(const char * path) const;
 
 
-	/*! \brief Allocate memory for the bitmap data */
+	/*! \details Allocate memory for the bitmap data */
 	int alloc(mg_size_t w, mg_size_t h);
 	inline int alloc(const MDim & d){ return alloc(d.w(), d.h()); }
-	/*! \brief Free memory associated with bitmap (auto freed on ~MBitmap) */
+	/*! \details Free memory associated with bitmap (auto freed on ~MBitmap) */
 	void free(void);
 
 
@@ -58,20 +58,19 @@ public:
 	void set(mg_point_t p, mg_dim_t d, mg_bitmap_t v = 0xFF){ mg_set_area(bmap(), p, d, v); }
 	void clear(mg_point_t p, mg_dim_t d, mg_bitmap_t v = 0xFF){ mg_clr_area(bmap(), p, d, v); }
 
-	/*! \brief Rotation values */
+	/*! \details Rotation values */
 	enum Rotation {
-		ROT0 /*! Zero degress */,
-		ROT90 /*! 90 degress */,
-		ROT180 /*! 180 degress */,
-		ROT270 /*! 270 degress */,
-		ROT360 /*! 360 degress */,
+		ROT0 /*! \brief Zero degress */,
+		ROT90 /*! \brief 90 degress */,
+		ROT180 /*! \brief 180 degress */,
+		ROT270 /*! \brief 270 degress */,
+		ROT360 /*! \brief 360 degress */,
 		ROT_SCALE = 65536
 	};
 
 
 
-	/*! \brief Set the pixels of a bitmap.
-	 * \details This method sets a bitmap on to the
+	/*! \details This method sets a bitmap on to the
 	 * current bitmap.  It only has bit level positioning but is
 	 * slower than the copy() method
 	 *
@@ -88,27 +87,26 @@ public:
 
 	int clr_bitmap(const MBitmap * bitmap, mg_point_t p){ return mg_clr_bitmap(bmap(), bitmap->bmap_const(), p); }
 
-	/*! \brief Change effective size without free/alloc sequence */
+	/*! \details Change effective size without free/alloc sequence */
 	int setsize(mg_size_t w, mg_size_t h, mg_size_t offset = 0);
 	inline int set_size(mg_size_t w, mg_size_t h, mg_size_t offset = 0){
 		return setsize(w,h,offset);
 	}
 
 
-	/*! \brief Return the size of a bitmap of specified size */
+	/*! \details Return the size of a bitmap of specified size */
 	static size_t size(int w, int h){ return h*byte_width(w); }
 
-	/*! \brief The effective data size of the bitmap
-	 * \details size() is the current size of the bitmap.  capacity() will
+	/*! \details size() is the current size of the bitmap.  capacity() will
 	 * return total memory allocated for the size of the object
 	 * @return The effective memory size of the bitmap
 	 */
 	size_t size() const { return mg_size(&_bmap); }
 
 
-	/*! \brief Maximum x value */
+	/*! \details Maximum x value */
 	inline mg_int_t xmax() const { return w()-1; }
-	/*! \brief Maximum y value */
+	/*! \details Maximum y value */
 	inline mg_int_t ymax() const { return h()-1; }
 
 
@@ -118,10 +116,10 @@ public:
 	void clr_vline(mg_int_t x, mg_int_t ymin, mg_int_t ymax, mg_size_t thickness = 1);
 	void clr_hline(mg_int_t xmin, mg_int_t xmax, mg_int_t y, mg_size_t thickness = 1);
 
-	/*! \brief Set the pixels of a line */
+	/*! \details Set the pixels of a line */
 	virtual void set_line(mg_point_t p1, mg_point_t p2, mg_size_t thickness = 1);
 
-	/*! \brief clear the pixels in a line */
+	/*! \details clear the pixels in a line */
 	virtual void clr_line(mg_point_t p1, mg_point_t p2, mg_size_t thickness = 1);
 
 

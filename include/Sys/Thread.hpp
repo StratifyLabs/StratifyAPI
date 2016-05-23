@@ -3,6 +3,8 @@
 #ifndef THREAD_HPP_
 #define THREAD_HPP_
 
+#ifndef __link
+
 #include <pthread.h>
 
 namespace Sys {
@@ -79,5 +81,7 @@ private:
 };
 
 };
+
+#endif
 
 #endif /* THREAD_HPP_ */

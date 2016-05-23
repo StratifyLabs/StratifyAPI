@@ -4,6 +4,8 @@
 #ifndef AIO_HPP_
 #define AIO_HPP_
 
+#ifndef __link
+
 #include <errno.h>
 #include <aio.h>
 
@@ -173,6 +175,8 @@ private:
 };
 
 };
+
+#endif
 
 
 #endif /* AIO_HPP_ */

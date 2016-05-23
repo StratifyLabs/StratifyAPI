@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <iface/dev/fifo.h>
 
-#include "../Hal/Device.hpp"
+#include "../Hal/Phy.hpp"
 
 namespace Sys {
 
@@ -53,7 +53,7 @@ private:
  * \endcode
  *
  */
-class Fifo : public Hal::Device {
+class Fifo : public Hal::Phy {
 public:
 	Fifo();
 

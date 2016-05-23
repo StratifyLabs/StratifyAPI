@@ -91,6 +91,14 @@
 #include <iface/link.h>
 #include <fcntl.h>
 
+#ifndef __link
+#include "../Sys/Aio.hpp"
+#else
+#undef fileno
+#endif
+
+#include "../Var/String.hpp"
+
 namespace Hal {
 
 
@@ -129,26 +137,103 @@ public:
 
 	};
 
+	/*! \details Get the name of the file from a given path */
+	static const char * name(const char * path);
 
-#ifdef __link
-	void sethandle(link_phy_t h){ handle = h; }
+	/*! \details Open the specified file or device */
+	virtual int open(const char * name, int flags);
+
+	/*! \details IO Ctl requests */
+	virtual int ioctl(int req, void * arg) const;
+
+	/*! \details Seek to a location in the file or on the device */
+	virtual int seek(int loc, int whence = LINK_SEEK_SET) const;
+
+	/*! \details Returns the location of the cursor in the device or file */
+	int loc(void) const;
+
+	/*! \details Return the current flags for the file */
+	int flags() const;
+
+	/*! \details Return the file number for accessing the file or device */
+	int fileno(void) const;
+
+	/*! \details Close the file or device */
+	virtual int close();
+
+	/*! \details reads the device. */
+	virtual int read(void * buf, int nbyte) const;
+
+	/*! \details writes data to the device */
+	virtual int write(const void * buf, int nbyte) const;
+
+#ifndef __link
+	/*! \details Asyncronous read */
+	virtual int read(Aio & aio) const;
+	/*! \details Asyncronous write */
+	virtual int write(Aio & aio) const;
 #endif
 
-#ifndef __MCU_ONLY__
-	/*! \details Return the file descriptor for the peripheral */
-	virtual int ioctl(int req, void * arg) = 0;
+	/*! \details reads the device at the location */
+	int read(int loc, void * buf, int nbyte) const;
+
+	/*! \details writes the device at the location
+	 *
+	 * @param loc Location to read (not application to character devices)
+	 * @param buf Pointer to the source data
+	 * @param nbyte Number of bytes to write
+	 * @return Number of bytes successfully written or -1 with errno set
+	 */
+	int write(int loc, const void * buf, int nbyte) const;
+
+	/*! \details writes a string to the device */
+	int write(const char * s) const { return write(s, strlen(s)); }
+
+	/*! \details Read a line from the device or file */
+	int readline(char * buf, int nbyte, int timeout, char term) const;
+
+
+	/*! \details Write a Var::String to the file
+	 *
+	 * @param str The string to write
+	 * @return The number of bytes written
+	 */
+	inline int write(const Var::String & str) const {
+		return write(str.c_str(), str.size());
+	}
+
+	enum {
+		GETS_BUFFER_SIZE = 128
+	};
+
+
+	/*! \details Read up to n-1 bytes to \a s until end-of-file or \a term is reached.  */
+	char * gets(char * s, int n, char term = '\n') const;
+
+	/*! \details Read a line in to the string */
+	char * gets(Var::String * s, char term = '\n') const { return gets(s->cdata(), s->capacity(), term); }
+
+	/*! \details Read a line in to the string */
+	char * gets(Var::String & s, char term = '\n') const { return gets(s.cdata(), s.capacity(), term); }
+
+
+#ifdef __link
+	void set_driver(link_transport_mdriver_t * d){ _driver = d; }
+	link_transport_mdriver_t * driver() const { return _driver; }
+#endif
 
 	/*! \details ioctl() with request and const arg pointer */
-	int ioctl(int req, const void * arg){ return ioctl(req, (void*)arg); }
+	int ioctl(int req, const void * arg) const { return ioctl(req, (void*)arg); }
 	/*! \details ioctl() with just a request */
-	int ioctl(int req){ return ioctl(req, (void*)NULL); }
+	int ioctl(int req) const { return ioctl(req, (void*)NULL); }
 	/*! \details ioctl() with request and integer arg */
-	int ioctl(int req, int arg){ return ioctl(req, (void*)(size_t)arg); }
-#endif
+	int ioctl(int req, int arg) const { return ioctl(req, (void*)(size_t)arg); }
 
 protected:
+	mutable int fd;
+
 #ifdef __link
-	link_phy_t handle;
+	link_transport_mdriver_t * _driver;
 #endif
 
 

@@ -9,7 +9,6 @@ namespace Hal {};
 
 #include "Hal/Adc.hpp"
 #include "Hal/Core.hpp"
-#include "Hal/Device.hpp"
 #include "Hal/Eint.hpp"
 #include "Hal/I2C.hpp"
 #include "Hal/Pin.hpp"

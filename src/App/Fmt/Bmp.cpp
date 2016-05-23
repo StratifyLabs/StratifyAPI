@@ -17,7 +17,7 @@ Bmp::Bmp(const char * name){
 	dib.height = -1;
 	dib.bits_per_pixel = 0;
 
-	if( this->open(name) < 0 ){
+	if( this->open(name, RDWR) < 0 ){
 		return;
 	}
 

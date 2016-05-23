@@ -6,8 +6,8 @@
 #include <mcu/types.h>
 #include "IspObject.hpp"
 #include "LpcPhy.hpp"
-#include "Hal/Uart.hpp"
-#include "Hal/Pin.hpp"
+#include "../Hal/Uart.hpp"
+#include "../Hal/Pin.hpp"
 
 namespace Isp {
 

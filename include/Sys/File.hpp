@@ -55,7 +55,7 @@ public:
 	File();
 
 	/*! \details Delete a file */
-	static int remove(const char * name, link_transport_phy_t handle = LINK_PHY_OPEN_ERROR);
+	static int remove(const char * name, link_transport_mdriver_t * driver = 0);
 
 	/*! \details Get file stat data
 	 *
@@ -63,13 +63,10 @@ public:
 	 * @param st A pointer to the stat structure
 	 *
 	 */
-	static int stat(const char * name, struct link_stat * st, link_transport_phy_t handle = LINK_PHY_OPEN_ERROR);
+	static int stat(const char * name, struct link_stat * st, link_transport_mdriver_t * driver = 0);
 
 	/*! \details Get the size of the file */
-	static ssize_t size(const char * name, link_transport_phy_t handle = LINK_PHY_OPEN_ERROR);
-
-	/*! \details Get the name of the file from a given path */
-	static const char * name(const char * path);
+	static ssize_t size(const char * name, link_transport_mdriver_t * driver = 0);
 
 
 	/*! \details This opens a file.  If the object already has a file open, the open
@@ -80,11 +77,12 @@ public:
 	 * @param perms Permission settings
 	 * @return Zero on success
 	 */
-	int open(const char * name, int access = RDWR, int perms = 0666);
+	int open(const char * name, int access, int perms);
+	using Phy::open;
 
 	/*! \details Open file for read/write */
 	inline int open_readwrite(const char * name){
-		return open(name);
+		return open(name, RDWR);
 	}
 
 	/*! \details Open a read only file */
@@ -96,80 +94,10 @@ public:
 	/*! \details Create a new file (using the open() method) */
 	int create(const char * name, bool overwrite = true, int perms = 0666);
 
-	/*! \details Read the file at the current location */
-	int read(void * buf, int nbyte) const;
-
-	/*! \details Read the file from the specified location */
-	int read(int loc, void * buf, int nbyte) const;
-
-	/*! \details Write the file */
-	int write(const void * buf, int nbyte) const;
-
-	/*! \details Write the file at the specified location */
-	int write(int loc, const void * buf, int nbyte) const;
-
-	/*! \details Write a Var::String to the file
-	 *
-	 * @param str The string to write
-	 * @return The number of bytes written
-	 */
-	inline int write(const Var::String & str) const {
-		return write(str.c_str(), str.size());
-	}
-
-	/*! \details Write a string to the file
-	 *
-	 * @param str A pointer to the string
-	 * @return The number of bytes written
-	 */
-	inline int write(const char * str) const {
-		return write(str, strlen(str));
-	}
-
-	/*! \details Seek to the specified location in the file
-	 *
-	 * @param loc Location parameter
-	 * @param whence How to interpret location (SEEK_SET, SEEK_CUR, or SEEK_END)
-	 */
-	int seek(int loc, int whence = SEEK_SET) const;
-
 	/*! \details Return the file size */
 	ssize_t size(void) const;
 
-	/*! \details Close the file */
-	int close(void);
-
-	/*! \details Return the file descriptor */
-	int fileno() const;
-
-	/*! \details Return the current offset location in the file */
-	int loc() const;
-
-	/*! \details Return the current flags for the file */
-	int flags() const;
-
-	/*! \details Read up to n-1 bytes to \a s until end-of-file or \a term is reached.  */
-	char * gets(char * s, int n, char term = '\n') const;
-
-	/*! \details Read a line in to the string */
-	char * gets(Var::String * s, char term = '\n') const { return gets(s->cdata(), s->capacity(), term); }
-
-	/*! \details Read a line in to the string */
-	char * gets(Var::String & s, char term = '\n') const { return gets(s.cdata(), s.capacity(), term); }
-
-#ifndef __MCU_ONLY__
-	/*! \details Return the file descriptor for the peripheral */
-	using Phy::ioctl;
-	int ioctl(int req, void * arg);
-#endif
-
-
 private:
-	int fd;
-
-	enum {
-		GETS_BUFFER_SIZE = 128
-	};
 
 };
 

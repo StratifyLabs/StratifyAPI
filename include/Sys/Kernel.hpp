@@ -6,11 +6,11 @@
 #include <iface/dev/sys.h>
 #include <iface/link.h>
 
-#include "../Hal/Device.hpp"
+#include "../Hal/Phy.hpp"
 
 namespace Sys {
 
-class Kernel : public Hal::Device {
+class Kernel : public Hal::Phy {
 public:
 	Kernel();
 
@@ -52,7 +52,7 @@ public:
 	 *
 	 * \sa reclaim_ram()
 	 */
-	static int free_ram(const char * path);
+	static int free_ram(const char * path, link_transport_mdriver_t * driver = 0);
 
 	/*! \details Reclaim RAM that was freed using free_ram()
 	 *
@@ -61,8 +61,9 @@ public:
 	 *
 	 * \sa free_ram()
 	 */
-	static int reclaim_ram(const char * path);
+	static int reclaim_ram(const char * path, link_transport_mdriver_t * driver = 0);
 
+#if !defined __link
 	/*! \details Put the kernel in powerdown mode
 	 *
 	 * @param count The number of milliseconds before the
@@ -78,15 +79,18 @@ public:
 	 * the device will stay in hibernation until woken up externally
 	 */
 	static int hibernate(int count = 0);
+#endif
 
 	/*! \details This will open /dev/sys
 	 *
 	 * @param mode Usually Kernel::READWRITE
 	 * @return Zero on success
 	 */
-	inline int open(int mode = Device::READWRITE){
-		return Device::open("/dev/sys", mode);
+	inline int open(){
+		return Phy::open("/dev/sys", RDWR);
 	}
+
+	using Phy::open;
 
 	/*! \details Load the current kernel attributes
 	 *

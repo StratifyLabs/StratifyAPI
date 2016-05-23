@@ -15,11 +15,11 @@ class Usb : public Periph {
 public:
 	Usb(port_t port);
 
-	/*! \brief Get USB attributes */
+	/*! \details Get USB attributes */
 	int attr(usb_attr_t * attr);
-	/*! \brief Set USB attributes */
+	/*! \details Set USB attributes */
 	int setattr(usb_attr_t * attr);
-	/*! \brief Reset USB */
+	/*! \details Reset USB */
 	int reset(void);
 	int attach(void);
 	int configure(void);

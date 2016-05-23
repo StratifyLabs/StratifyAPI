@@ -3,6 +3,9 @@
 #ifndef SEM_HPP_
 #define SEM_HPP_
 
+#ifndef __link
+
+
 #include <semaphore.h>
 #include <fcntl.h>
 
@@ -78,5 +81,7 @@ private:
 };
 
 };
+
+#endif
 
 #endif /* SEM_HPP_ */

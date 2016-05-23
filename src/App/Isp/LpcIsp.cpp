@@ -209,7 +209,7 @@ u32 LpcIsp::read_progmem(void * data, u32 addr, u32 size, int (*update_disp)(flo
 
 		if ( phy.readmem(addr + bytes_read, &((char*)data)[bytes_read], page_size) != page_size ){
 
-			isplib_error("Error (%d) reading data at address 0x%04X\n", (u32)(addr + bytes_read));
+			isplib_error("Error reading data at address 0x%04X\n", (u32)(addr + bytes_read));
 			return bytes_read;
 		}
 

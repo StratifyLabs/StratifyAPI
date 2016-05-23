@@ -14,23 +14,23 @@ int Pio::attr(pio_attr_t * attr){
 	return ioctl(I_PIO_GETATTR, attr);
 }
 
-int Pio::setattr(const pio_attr_t * attr){
+int Pio::set_attr(const pio_attr_t * attr){
 	return ioctl(I_PIO_SETATTR, attr);
 }
 
-int Pio::setaction(const pio_action_t * action){
+int Pio::set_action(const pio_action_t * action){
 	return ioctl(I_PIO_SETACTION, action);
 }
 
-int Pio::setmask(unsigned int mask){
+int Pio::set_mask(unsigned int mask){
 	return ioctl(I_PIO_SETMASK, mask);
 }
 
-int Pio::clrmask(unsigned int mask){
+int Pio::clear_mask(unsigned int mask){
 	return ioctl(I_PIO_CLRMASK, mask);
 }
 
-unsigned int Pio::get(void){
+u32 Pio::value(void){
 	return ioctl(I_PIO_GET);
 }
 

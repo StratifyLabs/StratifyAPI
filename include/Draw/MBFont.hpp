@@ -16,8 +16,6 @@ public:
 
 	MBFont();
 
-
-	/*! \brief Return a pointer to the character bitmap */
 	/*! \details This methods draws a character (\a c) on the font's
 	 * bitmap and returns a pointer to the bitmap.
 	 * @param c The character to draw

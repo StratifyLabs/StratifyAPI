@@ -57,12 +57,12 @@ public:
 		BOTH /*! Specifies both edges on the PIO */ = PIO_ACTION_EVENT_BOTH
 	};
 
-	/*! \brief Get the attributes for the port */
+	/*! \details Get the attributes for the port */
 	int attr(pio_attr_t * attr);
-	/*! \brief Set the attributes for the port */
-	int setattr(const pio_attr_t * attr);
+	/*! \details Set the attributes for the port */
+	int set_attr(const pio_attr_t * attr);
 	/*! \details Set the action for the port using pio_action_t */
-	int setaction(const pio_action_t * action);
+	int set_action(const pio_action_t * action);
 
 	/*! \details Set the action for an event
 	 *
@@ -72,38 +72,36 @@ public:
 	 * @param context The first argument passed to the callback
 	 * @return Zero on success
 	 */
-	int setaction(u32 channel, u32 event, mcu_callback_t callback = 0, void * context = 0){
+	int set_action(u32 channel, u32 event, s8 prio = 0, mcu_callback_t callback = 0, void * context = 0){
 		pio_action_t action;
+		action.prio = prio;
 		action.channel = channel;
 		action.event = event;
 		action.callback = callback;
 		action.context = context;
-		return setaction(&action);
+		return set_action(&action);
 	}
 
-	/*! \brief Set the specified pin mask */
-	int setmask(unsigned int mask);
-	/*! \brief Clear the specified mask */
-	int clrmask(unsigned int mask);
-	/*! \brief Get the value of the port */
-	unsigned int get(void);
-	/*! \brief Get the value of the port */
-	inline unsigned int value(void){ return get(); }
+	/*! \details Set the specified pin mask */
+	int set_mask(unsigned int mask);
+	/*! \details Clear the specified mask */
+	int clear_mask(unsigned int mask);
+	/*! \details Get the value of the port */
+	u32 value(void);
 
-	/*! \brief Set the value of the port */
+	/*! \details Set the value of the port */
 	int set(unsigned int value);
 
 
-	/*! \brief Set the attributes for the port */
-	int setattr(pio_sample_t mask, int mode){
+	/*! \details Set the attributes for the port */
+	int set_attr(pio_sample_t mask, int mode){
 		pio_attr_t attr;
 		attr.mask = mask;
 		attr.mode = mode;
-		return setattr(&attr);
+		return set_attr(&attr);
 	}
 
-	/*! \brief Initialize the port.
-	 * \details This method opens the port
+	/*! \details This method opens the port
 	 * then sets the attributes using the specified mask and mode.
 	 * \code
 	 * Pio p(0);
@@ -114,56 +112,10 @@ public:
 		if( open() <  0 ){
 			return -1;
 		}
-		return setattr(mask, mode);
+		return set_attr(mask, mode);
 	}
 
-	/*! \brief Initialize a single pin as an output
-	 * \details This method initializes a single
-	 * pin to the specified output mode.
-	 *
-	 * \code
-	 *  //configure as an output
-	 * Pio p(0);
-	 * p.open();
-	 * p.setoutput(1<<10);
-	 * \endcode
-	 * Or:
-	 * \code
-	 *   //configure as open drain output
-	 * Pio p(0);
-	 * p.open();
-	 * p.setoutput(1<<10, PIO_MODE_OPENDRAIN);
-	 * \endcode
-	 *
-	 * \sa setattr(), init()
-	 *
-	 */
-	int setoutput(pio_sample_t mask, int mode = 0){	return setattr(mask, mode | PIO_MODE_OUTPUT); }
-
-	/*! \brief Initialize a single pin as an input
-	 * \details This method initializes a single
-	 * pin to the specified mode.  This uses setattr() to
-	 * configure the pin as at output.
-	 *
-	 * \code
-	 *  //configure as an input
-	 * Pio p(0);
-	 * p.open();
-	 * p.setinput(1<<10);
-	 * \endcode
-	 * Or:
-	 * \code
-	 *   //configure as open input with pullup enabled
-	 * Pio p(0);
-	 * p.open();
-	 * p.setinput(1<<10, PIO_MODE_PULLUP);
-	 * \endcode
-	 *
-	 * \sa setattr(), init()
-	 *
-	 */
-	int setinput(pio_sample_t mask, int mode = 0){ 	return setattr(mask, mode | PIO_MODE_INPUT); }
-
+	/*! \details PIO Pin mode types */
 	enum {
 		INPUT /*! Input mode */ = PIO_MODE_INPUT,
 		OUTPUT /*! Output mode */ = PIO_MODE_OUTPUT,
