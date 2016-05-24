@@ -134,7 +134,7 @@ int Periph::write(const void * buf, int nbyte) const {
 
 #ifndef __link
 int Periph::read(Aio & aio) const {
-	aio.aio_var.aio_fildes = fd;
+	update_fileno();
 	return Phy::read(aio);
 }
 

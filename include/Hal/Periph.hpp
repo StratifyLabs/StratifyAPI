@@ -46,22 +46,15 @@ public:
 	int fileno(void) const;
 	int read(void * buf, int nbyte) const;
 	int write(const void * buf, int nbyte) const;
-	#ifndef __link
+#ifndef __link
 	int read(Sys::Aio & aio) const;
 	int write(Sys::Aio & aio) const;
-	#endif
+#endif
 	int close();
 
 	using Phy::ioctl;
 	using Phy::read;
 	using Phy::write;
-
-#ifndef __link
-	/*! \brief Asynchronous read */
-	virtual int read(Sys::Aio & aio);
-	/*! \brief Asynchronous write */
-	virtual int write(Sys::Aio & aio);
-#endif
 
 
 	port_t port() const{ return periph_port & 0xFF; }

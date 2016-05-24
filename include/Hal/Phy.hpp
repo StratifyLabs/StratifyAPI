@@ -198,9 +198,7 @@ public:
 	 * @param str The string to write
 	 * @return The number of bytes written
 	 */
-	inline int write(const Var::String & str) const {
-		return write(str.c_str(), str.size());
-	}
+	inline int write(const Var::String & str) const { return write(str.c_str(), str.size()); }
 
 	enum {
 		GETS_BUFFER_SIZE = 128
