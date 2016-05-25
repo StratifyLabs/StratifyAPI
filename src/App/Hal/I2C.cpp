@@ -22,7 +22,7 @@ int I2C::setup(const i2c_reqattr_t * req){
 	return ioctl(I_I2C_SETUP, req);
 }
 
-int I2C::geterr(void){
+int I2C::err(void){
 	return ioctl(I_I2C_GETERR);
 }
 

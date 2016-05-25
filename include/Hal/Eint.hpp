@@ -62,13 +62,14 @@ namespace Hal {
 class Eint : public Periph {
 public:
 	Eint(port_t port);
-	/*! \brief Get the attributes for the external interrupt. */
+	/*! \details Get the attributes for the external interrupt. */
 	int attr(eint_attr_t * attr);
-	/*! \brief Set the attributes for the external interrupt. */
+	/*! \details Set the attributes for the external interrupt. */
 	int setattr(const eint_attr_t * attr);
-	/*! \brief Set the action associated with the external interrupt. */
+	/*! \details Set the action associated with the external interrupt. */
 	int setaction(const eint_action_t & action);
 
+	/*! \details Read the value of the pin */
 	bool value(void){
 		eint_attr_t a;
 		attr(&a);
@@ -77,7 +78,7 @@ public:
 
 	inline bool get(void){ return value(); }
 
-	/*! \brief Set the action using the specified parameters */
+	/*! \details Set the action using the specified parameters */
 	int setaction(int channel, int event, mcu_callback_t callback, void * context){
 		eint_action_t action;
 		action.channel = channel;
@@ -87,7 +88,7 @@ public:
 		return setaction(action);
 	}
 
-	/*! \brief Set the attributes using the specified pin assignment. */
+	/*! \details Set the attributes using the specified pin assignment. */
 	int setattr(uint8_t pin_assign = 0, uint16_t mode = Pin::INPUT | Pin::PULLUP){
 		eint_attr_t attr;
 		attr.pin_assign = pin_assign;
@@ -95,7 +96,7 @@ public:
 		return setattr(&attr);
 	}
 
-	/*! \brief Open and set attributes using specified pin assignment. */
+	/*! \details Open and set attributes using specified pin assignment. */
 	int init(uint8_t pin_assign = 0, uint16_t mode = Pin::INPUT | Pin::PULLUP){
 		if( open() < 0 ){
 			return -1;
@@ -103,7 +104,7 @@ public:
 		return setattr(pin_assign, mode);
 	}
 
-	/*! \brief Events used with setaction() */
+	/*! \details Events used with setaction() */
 	enum {
 		 EVENT_UNCONFIGURED /*! \brief Unconfigured */ = EINT_ACTION_EVENT_UNCONFIGURED,
 		 EVENT_RISING /*! \brief Event on rising edge */ = EINT_ACTION_EVENT_RISING,

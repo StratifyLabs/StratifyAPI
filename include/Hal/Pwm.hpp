@@ -36,11 +36,11 @@ namespace Hal {
 class Pwm : public Periph {
 public:
 	Pwm(port_t port);
-	/*! \brief Get PWM attributes */
+	/*! \details Get PWM attributes */
 	int attr(pwm_attr_t * attr);
-	/*! \brief Set PWM attributes */
+	/*! \details Set PWM attributes */
 	int setattr(const pwm_attr_t * attr);
-	/*! \brief Set PWM duty cycle */
+	/*! \details Set PWM duty cycle */
 	int set(const pwm_reqattr_t * req);
 
 #ifdef __MCU_ONLY__
@@ -48,7 +48,7 @@ public:
 	int write(const void * buf, int nbyte);
 #endif
 
-	/*! \brief Set the PWM duty cycle (specify individual values) */
+	/*! \details Set the PWM duty cycle (specify individual values) */
 	int set(uint8_t channel, pwm_duty_t duty){
 		pwm_reqattr_t req;
 		req.channel = channel;
@@ -56,7 +56,7 @@ public:
 		return set(&req);
 	}
 
-	/*! \brief Set PWM attributes (specify individual values) */
+	/*! \details Set PWM attributes (specify individual values) */
 	int setattr(uint8_t enabled_channels,
 			uint32_t freq = 1000000,
 			pwm_duty_t top = 1000,
@@ -71,7 +71,7 @@ public:
 		return setattr(&attr);
 	}
 
-	/*! \brief Open PWM and set attributes as specified */
+	/*! \details Open PWM and set attributes as specified */
 	int init(uint8_t enabled_channels,
 			uint32_t freq = 1000000,
 			pwm_duty_t top = 1000,

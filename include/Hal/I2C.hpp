@@ -15,20 +15,19 @@ namespace Hal {
  */
 class I2C : public Periph {
 public:
-	/*! \brief Initialize the instance with \a port */
+	/*! \details Initialize the instance with \a port */
 	I2C(port_t port);
 
-	/*! \brief Get the I2C attributes */
+	/*! \details Get the I2C attributes */
 	int attr(i2c_attr_t * attr);
-	/*! \brief Set the I2C attributes */
+	/*! \details Set the I2C attributes */
 	int setattr(const i2c_attr_t * attr);
-	/*! \brief Setup an I2C transaction */
+	/*! \details Setup an I2C transaction */
 	int setup(const i2c_reqattr_t * req);
 
-	/*! \brief Get the last error */
-	int geterr(void);
-
-	inline int err(){ return geterr(); }
+	/*! \details Get the last error */
+	int err(void);
+	int geterr(void){ return err(); }
 
 #ifdef __MCU_ONLY__
 	using Pblock::read;
@@ -39,7 +38,7 @@ public:
 #endif
 
 
-	/*! \brief Setup an I2C transaction using the slave addr and type */
+	/*! \details Setup an I2C transaction using the slave addr and type */
 	int setup(uint16_t slave_addr, i2c_transfer_t type = I2C_TRANSFER_NORMAL){
 		i2c_reqattr_t req;
 		req.slave_addr = slave_addr;
@@ -47,16 +46,15 @@ public:
 		return setup(&req);
 	}
 
-	/*! \brief Set attributes using specified bitrate and pin assignment. */
-	int setattr(uint32_t bitrate = 100000, uint8_t pin_assign = 0){
+	/*! \details Set attributes using specified bitrate and pin assignment. */
+	int setattr(uint32_t bitrate = 100000, u8 pin_assign = 0){
 		i2c_attr_t attr;
 		attr.bitrate = bitrate;
 		attr.pin_assign = pin_assign;
 		return setattr(&attr);
 	}
 
-	/*! \brief Initialize the I2C
-	 * \details This method initializes the I2C port.  It opens the port
+	/*! \details This method initializes the I2C port.  It opens the port
 	 * and sets the attributes as specified.
 	 * \code
 	 * I2c i2c(0);  //Use port 0
@@ -75,12 +73,11 @@ public:
 	using Periph::read;
 	using Periph::write;
 
-	/*! \brief Read the value of a register on an I2C device */
-	int read(int loc, uint8_t & reg);
-	/*! \brief Write the value of a register on an I2C device */
-	int write(int loc, uint8_t reg);
+	/*! \details Read the value of a register on an I2C device */
+	int read(int loc, u8 & reg);
+	/*! \details Write the value of a register on an I2C device */
+	int write(int loc, u8 reg);
 
-	/*! \brief Set (or clear) the bit in a register on an I2C device */
 	/*! \details This sets (or clears) a specific bit in a a register
 	 * on an I2C device
 	 * @param loc The register offset value
@@ -89,7 +86,7 @@ public:
 	 * @return Zero on success
 	 */
 	int set(int loc, int bit, bool high = true);
-	/*! \brief Clear the bit in a register on an I2C device */
+	/*! \details Clear the bit in a register on an I2C device */
 	inline int clear(int loc, int bit){ return set(loc, bit, false); }
 
 private:

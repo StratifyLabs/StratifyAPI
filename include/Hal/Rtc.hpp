@@ -16,21 +16,21 @@ namespace Hal {
 class Rtc : public Periph {
 public:
 	Rtc(port_t port);
-	/*! \brief Get RTC attributes */
+	/*! \details Get RTC attributes */
 	int attr(rtc_attr_t * attr);
-	/*! \brief Set RTC attributes */
+	/*! \details Set RTC attributes */
 	int setattr(rtc_attr_t * attr);
-	/*! \brief Set RTC action */
+	/*! \details Set RTC action */
 	int setaction(rtc_action_t * action);
-	/*! \brief Set RTC alarm */
+	/*! \details Set RTC alarm */
 	int setalarm(rtc_alarm_t * alarm);
-	/*! \brief Get RTC alarm */
+	/*! \details Get RTC alarm */
 	int getalarm(rtc_alarm_t * alarm);
-	/*! \brief Disable RTC alarm */
+	/*! \details Disable RTC alarm */
 	int disablealarm(void);
-	/*! \brief Set RTC time */
+	/*! \details Set RTC time */
 	int set(rtc_time_t * time);
-	/*! \brief Get RTC time */
+	/*! \details Get RTC time */
 	int get(rtc_time_t * time);
 
 #ifdef __MCU_ONLY__

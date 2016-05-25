@@ -109,6 +109,7 @@ namespace Hal {
 class Phy {
 public:
 	Phy();
+
 	enum {
 		RDONLY /*! Open as read-only */ = LINK_O_RDONLY,
 		READONLY /*! Open as read-only */ = LINK_O_RDONLY,

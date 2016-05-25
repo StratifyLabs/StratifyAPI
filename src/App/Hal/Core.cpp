@@ -32,10 +32,6 @@ void Core::invokebootloader(void){
 	ioctl(I_CORE_INVOKEBOOTLOADER);
 }
 
-int Core::setirqprio(const core_irqprio_t & req){
-	return -1;
-}
-
 int Core::setclkout(const core_clkout_t * clkout){
 	return ioctl(I_CORE_SETCLKOUT, clkout);
 }

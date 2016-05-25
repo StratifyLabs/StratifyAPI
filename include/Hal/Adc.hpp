@@ -37,9 +37,9 @@ public:
 	/*! \details Set the ADC attributes */
 	int setattr(const adc_attr_t * attr);
 	/*! \details Set the ADC attributes */
-	int setattr(uint16_t enabled_channels /*! Enabled Channels */,
-			int freq = ADC_MAX_FREQ /*! ADC clock frequency (use ADC_MAX_FREQ for maximum speed) */,
-			uint8_t pin_assign = 0 /*! Pin assignment value */){
+	int setattr(u16 enabled_channels /*! Enabled Channels */,
+			u32 freq = ADC_MAX_FREQ /*! ADC clock frequency (use ADC_MAX_FREQ for maximum speed) */,
+			u8 pin_assign = 0 /*! Pin assignment value */){
 		adc_attr_t attr;
 		attr.enabled_channels = enabled_channels;
 		attr.freq = freq;
@@ -50,9 +50,9 @@ public:
 	/*! \details This method opens the ADC then sets the ADC
 	 * attributes as specified.
 	 */
-	int init(uint16_t enabled_channels /*! Enabled Channels */,
-			int freq = ADC_MAX_FREQ /*! ADC clock frequency (use ADC_MAX_FREQ for maximum speed)  */,
-			uint8_t pin_assign = 0 /*! Pin assignment value */){
+	int init(u16 enabled_channels /*! Enabled Channels */,
+			u32 freq = ADC_MAX_FREQ /*! ADC clock frequency (use ADC_MAX_FREQ for maximum speed)  */,
+			u8 pin_assign = 0 /*! Pin assignment value */){
 		if( open() < 0 ){
 			return -1;
 		}

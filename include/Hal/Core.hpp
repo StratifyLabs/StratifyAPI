@@ -120,23 +120,6 @@ public:
 	 * normal reset will occur.
 	 */
 	void invokebootloader(void);
-	/*! \details Set the interrupt request priority according to \a req. */
-	int setirqprio(const core_irqprio_t & req);
-
-	/*! \details Set the interrupt priority
-	 *
-	 * @param periph The peripheral (e.g. Core::UART)
-	 * @param port The peripheral port
-	 * @param prio The priority (signed value) negative to decrease prio and positive to increase
-	 * @return
-	 */
-	inline int setirqprio(u8 periph, u8 port, u8 prio){
-		core_irqprio_t req;
-		req.periph = periph;
-		req.prio = prio;
-		req.port = port;
-		return setirqprio(req);
-	}
 
 
 	/*! \details Configure the clock output pin. */

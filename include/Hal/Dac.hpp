@@ -56,9 +56,9 @@ public:
 	dac_sample_t get(u32 channel = 0){ return value(channel); }
 
 	/*! \details Set the DAC attributes  using specified values */
-	int setattr(uint16_t enabled_channels /*! Enabled Channels */,
-			int freq = 1000000 /*! DAC output frequency */,
-			uint8_t pin_assign = 0 /*! Pin assignment value */){
+	int setattr(u16 enabled_channels /*! Enabled Channels */,
+			u32 freq = 1000000 /*! DAC output frequency */,
+			u8 pin_assign = 0 /*! Pin assignment value */){
 		dac_attr_t attr;
 		attr.enabled_channels = enabled_channels;
 		attr.freq = freq;
@@ -69,9 +69,9 @@ public:
 	/*! \details This method opens the DAC then sets the DAC
 	 * attributes as specified.
 	 */
-	int init(uint16_t enabled_channels /*! Enabled Channels */,
-			int freq = 1000000 /*! DAC clock frequency */,
-			uint8_t pin_assign = 0 /*! Pin assignment value */){
+	int init(u16 enabled_channels /*! Enabled Channels */,
+			u32 freq = 1000000 /*! DAC clock frequency */,
+			u8 pin_assign = 0 /*! Pin assignment value */){
 		if( open() < 0 ){
 			return -1;
 		}
