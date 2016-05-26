@@ -3,11 +3,11 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <fcntl.h>
-#include "Hal/Periph.hpp"
-#include "Sys/Timer.hpp"
+#include <hal/Periph.hpp>
+#include <sys/Timer.hpp>
 
-using namespace Hal;
-using namespace Sys;
+using namespace hal;
+using namespace sys;
 
 
 #define NO_PORT_NUMBER 6

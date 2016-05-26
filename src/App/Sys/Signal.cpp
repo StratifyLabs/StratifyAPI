@@ -1,8 +1,8 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include "Sys/Signal.hpp"
-using namespace Sys;
+#include <sys/Signal.hpp>
+using namespace sys;
 
 
 int SignalEvent::set_handler(const SignalHandler & handler) const {

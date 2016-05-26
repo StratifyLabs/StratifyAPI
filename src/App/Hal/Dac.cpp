@@ -2,10 +2,10 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <hal/Dac.hpp>
 #include <stdlib.h>
 
-#include "Hal/Dac.hpp"
-using namespace Hal;
+using namespace hal;
 
 Dac::Dac(port_t port) : Periph(CORE_PERIPH_DAC, port){}
 

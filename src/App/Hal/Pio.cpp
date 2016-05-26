@@ -4,8 +4,8 @@
 #include <cstdio>
 #include <unistd.h>
 #include <fcntl.h>
-#include "Hal/Pio.hpp"
-using namespace Hal;
+#include <hal/Pio.hpp>
+using namespace hal;
 
 Pio::Pio(port_t port) : Periph(CORE_PERIPH_PIO, port){}
 

@@ -2,10 +2,10 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <hal/Spi.hpp>
 #include <stdlib.h>
 
-#include "Hal/Spi.hpp"
-using namespace Hal;
+using namespace hal;
 
 Spi::Spi(port_t port) : Periph(CORE_PERIPH_SPI, port){}
 

@@ -10,8 +10,8 @@
 #include <reent.h>
 #endif
 
-#include "Var/Data.hpp"
-using namespace Var;
+#include <var/Data.hpp>
+using namespace var;
 
 const int Data::m_zero_value = 0;
 

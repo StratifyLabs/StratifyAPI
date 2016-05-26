@@ -5,11 +5,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "Sys/Appfs.hpp"
-#include "Sys/File.hpp"
-#include "Sys/Dir.hpp"
+#include <sys/Appfs.hpp>
+#include <sys/Dir.hpp>
+#include <sys/File.hpp>
 
-using namespace Sys;
+using namespace sys;
 
 int Appfs::create(const char * name, const void * buf, int nbyte, const char * mount, link_transport_mdriver_t * driver){
 	char buffer[LINK_PATH_MAX];

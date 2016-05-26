@@ -1,10 +1,10 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include <Var/Packet.hpp>
+#include <var/Packet.hpp>
 #include <cstring>
 
-using namespace Var;
+using namespace var;
 
 Packet::Packet() {
 	// TODO Auto-generated constructor stub

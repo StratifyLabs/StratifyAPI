@@ -1,9 +1,9 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#include "Sys/Appfs.hpp"
-#include "Fmt/Bmp.hpp"
-using namespace Fmt;
-using namespace Sys;
+#include <fmt/Bmp.hpp>
+#include <sys/Appfs.hpp>
+using namespace fmt;
+using namespace sys;
 
 
 Bmp::Bmp(){

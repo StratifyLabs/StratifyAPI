@@ -2,8 +2,8 @@
 
 
 #include <mcu/task.h>
-#include "Sys/Thread.hpp"
-using namespace Sys;
+#include <sys/Thread.hpp>
+using namespace sys;
 
 Thread::Thread(int stack_size, bool detached) {
 	// TODO Auto-generated constructor stub

@@ -1,14 +1,14 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
+#include <calc/Rle.hpp>
+#include <draw/MBitmap.hpp>
 #include <stdlib.h>
-#include "Draw/MBitmap.hpp"
-#include "Sys/File.hpp"
-#include "Calc/Rle.hpp"
+#include "sys/File.hpp"
 
-using namespace Draw;
-using namespace Sys;
-using namespace Calc;
+using namespace draw;
+using namespace sys;
+using namespace calc;
 
 
 void MBitmap::calc_members(mg_size_t w, mg_size_t h){

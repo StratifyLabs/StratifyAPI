@@ -1,11 +1,11 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
+#include <calc/Base64.hpp>
 #include <stdint.h>
 #include <cstdio>
 #include <cstring>
 
-#include "Calc/Base64.hpp"
-using namespace Calc;
+using namespace calc;
 
 
 static char base64_encode_six(uint8_t six_bit_value);

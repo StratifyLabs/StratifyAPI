@@ -2,8 +2,8 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include "Hal/Usb.hpp"
-using namespace Hal;
+#include <hal/Usb.hpp>
+using namespace hal;
 
 Usb::Usb(port_t port) : Periph(CORE_PERIPH_USB, port){}
 

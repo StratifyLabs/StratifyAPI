@@ -5,10 +5,10 @@
  *      Author: tgil
  */
 
-#include <Isp/Lpc.hpp>
+#include <isp/Lpc.hpp>
 #include <unistd.h>
 #include <stdlib.h>
-using namespace Isp;
+using namespace isp;
 
 #include "isplib.h"
 #include "lpc_devices.h"

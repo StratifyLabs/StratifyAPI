@@ -1,8 +1,8 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include "Draw/MPoint.hpp"
-using namespace Draw;
+#include <draw/MPoint.hpp>
+using namespace draw;
 
 
 MPoint::MPoint(const mg_t & a){

@@ -1,8 +1,8 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include "Draw/MFont.hpp"
-using namespace Draw;
+#include <draw/MFont.hpp>
+using namespace draw;
 
 
 static const char ascii_charset_[MFont::CHARSET_SIZE+1] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";

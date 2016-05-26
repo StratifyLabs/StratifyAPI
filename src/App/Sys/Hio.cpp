@@ -2,8 +2,8 @@
 
 
 
-#include "Sys/Hio.hpp"
-using namespace Sys;
+#include <sys/Hio.hpp>
+using namespace sys;
 
 int Hio::attr(hio_attr_t & attr){
 	//return ioctl(I_HIO_GETATTR, &attr);

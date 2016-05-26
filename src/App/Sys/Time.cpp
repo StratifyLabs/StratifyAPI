@@ -2,9 +2,9 @@
 
 
 #include <sys/time.h>
-#include "Sys/Time.hpp"
+#include <sys/Time.hpp>
 
-using namespace Sys;
+using namespace sys;
 
 
 const char * month_names[] = {

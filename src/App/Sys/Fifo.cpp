@@ -1,8 +1,8 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include "Sys/Fifo.hpp"
-using namespace Sys;
+#include <sys/Fifo.hpp>
+using namespace sys;
 
 Fifo::Fifo(){}
 

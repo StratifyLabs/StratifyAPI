@@ -3,8 +3,8 @@
 
 #include <stdio.h>
 
-#include "Sys/File.hpp"
-using namespace Sys;
+#include <sys/File.hpp>
+using namespace sys;
 
 File::File() {
 	// TODO Auto-generated constructor stub

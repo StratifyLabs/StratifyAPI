@@ -2,10 +2,10 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <hal/Adc.hpp>
 #include <stdlib.h>
 
-#include "Hal/Adc.hpp"
-using namespace Hal;
+using namespace hal;
 
 Adc::Adc(port_t port) : Periph(CORE_PERIPH_ADC, port){}
 

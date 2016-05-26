@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "../Hal/util.h"
+#include "../hal/util.h"
 
 int phylib_util_open(const char * name, u8 port, int * fd, int total, bool * init){
 	char buffer[12];

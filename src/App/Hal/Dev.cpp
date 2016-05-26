@@ -1,14 +1,14 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include <Hal/Dev.hpp>
-#include "Sys/Timer.hpp"
-using namespace Sys;
-
-using namespace Hal;
+#include <hal/Dev.hpp>
+#include <sys/Timer.hpp>
+using namespace sys;
+using namespace hal;
 
 Dev::Dev() {
 	// TODO Auto-generated constructor stub
+	fd = -1;
 #if defined __link
 	_driver = 0;
 #endif
@@ -102,12 +102,12 @@ int Dev::write(const void * buf, int nbyte) const {
 }
 
 #ifndef __link
-int Dev::read(Sys::Aio & aio) const {
+int Dev::read(sys::Aio & aio) const {
 	aio.aio_var.aio_fildes = fd;
 	return ::aio_read(&(aio.aio_var));
 }
 
-int Dev::write(Sys::Aio & aio) const {
+int Dev::write(sys::Aio & aio) const {
 	aio.aio_var.aio_fildes = fd;
 	return ::aio_write(&(aio.aio_var));
 }

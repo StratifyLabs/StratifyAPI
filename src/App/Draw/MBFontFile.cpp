@@ -1,9 +1,9 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include "Draw/MBFontFile.hpp"
-using namespace Draw;
-using namespace Sys;
+#include <draw/MBFontFile.hpp>
+using namespace draw;
+using namespace sys;
 
 MBFontFile::MBFontFile() {
 	// TODO Auto-generated constructor stub

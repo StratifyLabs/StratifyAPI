@@ -5,8 +5,8 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include "Hal/Eint.hpp"
-using namespace Hal;
+#include <hal/Eint.hpp>
+using namespace hal;
 
 Eint::Eint(port_t port) : Periph(CORE_PERIPH_EINT, port){}
 

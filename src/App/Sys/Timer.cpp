@@ -1,11 +1,11 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
+#include <sys/Timer.hpp>
 #include <cstdio>
 #include <unistd.h>
 #include <time.h>
-#include "Sys/Timer.hpp"
-using namespace Sys;
+using namespace sys;
 
 
 void Timer::wait_sec(u32 timeout){

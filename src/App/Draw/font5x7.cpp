@@ -1,8 +1,9 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
+#include <draw/Font8Util.hpp>
+
 #include "binary.h"
-#include "Draw/Font8Util.hpp"
 //using namespace Draw;
 
 #ifndef __link

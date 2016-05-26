@@ -1,12 +1,12 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include <Var/String.hpp>
+#include <var/String.hpp>
 #include <cctype>
 #include <cstdio>
 #include <cstring>
 
-using namespace Var;
+using namespace var;
 
 String::String(){
 	set_capacity(min_size());

@@ -1,8 +1,8 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include "Draw/MGfx.hpp"
-using namespace Draw;
+#include <draw/MGfx.hpp>
+using namespace draw;
 
 
 

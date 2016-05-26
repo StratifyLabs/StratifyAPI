@@ -2,12 +2,12 @@
 
 
 #include <limits.h>
-#include <Var/StringUtil.hpp>
+#include <var/StringUtil.hpp>
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
 
-using namespace Var;
+using namespace var;
 
 
 

@@ -1,10 +1,10 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
+#include <draw/MBFont.hpp>
 #include <errno.h>
 
-#include "Draw/MBFont.hpp"
-using namespace Draw;
+using namespace draw;
 
 
 MBFont::MBFont() {
@@ -63,7 +63,7 @@ int MBFont::clear_char(char c, MBitmap * bitmap, mg_point_t point) const {
 	point.x += m_char.xoffset;
 	point.y += m_char.yoffset;
 
-	bitmap->clear_bitmap(cbp, point);
+	bitmap->clr_bitmap(cbp, point);
 
 	return m_char.xadvance;
 }

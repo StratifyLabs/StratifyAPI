@@ -1,9 +1,9 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include "Sys/Sem.hpp"
+#include <sys/Sem.hpp>
 
-using namespace Sys;
+using namespace sys;
 
 Sem::Sem() { handle = 0; }
 int Sem::close(){ return sem_close(handle); }

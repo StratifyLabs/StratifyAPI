@@ -1,13 +1,13 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
+#include <draw/MLcdDevice.hpp>
 #include <errno.h>
 #include <iface/dev/mlcd.h>
-#include "Draw/MLcdDevice.hpp"
-#include "Sys/Timer.hpp"
+#include <sys/Timer.hpp>
 
-using namespace Sys;
-using namespace Draw;
+using namespace sys;
+using namespace draw;
 
 
 

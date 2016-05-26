@@ -1,8 +1,8 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include "Sys/Mq.hpp"
-using namespace Sys;
+#include <sys/Mq.hpp>
+using namespace sys;
 
 Mq::Mq(){
 	m_handle = -1;

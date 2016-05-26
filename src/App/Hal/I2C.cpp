@@ -3,9 +3,9 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <hal/I2C.hpp>
 #include <stdlib.h>
-#include "Hal/I2C.hpp"
-using namespace Hal;
+using namespace hal;
 
 
 I2C::I2C(port_t port) : Periph(CORE_PERIPH_I2C, port){}

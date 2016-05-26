@@ -1,8 +1,8 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
+#include <calc/Rle.hpp>
 #include <cstdio>
-#include "Calc/Rle.hpp"
-using namespace Calc;
+using namespace calc;
 
 
 Rle::Rle(){}

@@ -1,12 +1,12 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
+#include <draw/Font8.hpp>
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <cstdio>
-#include "Draw/Font8.hpp"
-using namespace Draw;
+using namespace draw;
 
 
 Font8::Font8(const font8_t * f){

@@ -3,8 +3,8 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include "Hal/Core.hpp"
-using namespace Hal;
+#include <hal/Core.hpp>
+using namespace hal;
 
 Core::Core(port_t port) : Periph(CORE_PERIPH_CORE, port){}
 

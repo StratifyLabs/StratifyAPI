@@ -1,9 +1,9 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
+#include <draw/Font8Util.hpp>
 #include <unistd.h>
 #include <fcntl.h>
-#include "Draw/Font8Util.hpp"
 
 Font8Util::Font8Util() {
 	// TODO Auto-generated constructor stub

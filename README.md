@@ -7,30 +7,32 @@ Stratify Lib uses the following naming conventions
 
 ### Classes and Namespaces
 
-Classes and Namespaces use upper CamelCase with a strong preference for a single word.  The exception is pure virtual classes have "Object" appended to the name.
+Classes use upper CamelCase with a strong preference for a single word.  The exception is pure virtual classes have "Object" appended to the name.
 
     class PureObject {
     public:
       virtual int method() = 0;
     }
 
+Namespaces use all lowercase letters and are preferably concise and a single word.
+
 ### File and Directory Names
 
-File names follow the class names with hpp appended to header files and cpp appended to C++ source files.  Namespaces have their own directories which contain the header files of all the classes in the namespace.  The namespaces include a header file that includes the classes uses the namespace.  See this example:
+File names follow the class names and namespace names with hpp appended to header files and cpp appended to C++ source files.  Namespaces have their own directories which contain the header files of all the classes in the namespace.  The namespaces include a header file that includes the classes uses the namespace.  See this example:
 
     /*! \brief Standard Calculation and Software Routines
     *
     */
-    namespace Calc {}
-    #include "Calc/Base64.hpp"
-    #include "Calc/Ema.hpp"
-    #include "Calc/Lookup.hpp"
-    #include "Calc/Pid.hpp"
-    #include "Calc/Rle.hpp"
+    namespace calc {}
+    #include "calc/Base64.hpp"
+    #include "calc/Ema.hpp"
+    #include "calc/Lookup.hpp"
+    #include "calc/Pid.hpp"
+    #include "calc/Rle.hpp"
     
-    using namespace Calc;
+    using namespace calc;
 
-In an application, #include <stfy/Calc.hpp> will allow you to declare Pid objects without using Calc::Pid.  If you don't want to use the namespace, just #include <stfy/Calc/Ema.hpp> instead.  All library headers (including those in Stratify Lib) should use this approach and should never include a namespace header in any header file.
+In an application, #include <stfy/calc.hpp> will allow you to declare Pid objects without using calc::Pid.  If you don't want to use the namespace, just #include <stfy/calc/Ema.hpp> instead.  All library headers (including those in Stratify Lib) should use this approach and should never include a namespace header (or use a namespace) in any header file other than the namespace's hpp file.
 
 ### Methods and Functions
 

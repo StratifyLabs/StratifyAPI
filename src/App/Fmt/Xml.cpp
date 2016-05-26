@@ -2,12 +2,12 @@
 
 
 #include <errno.h>
+#include <fmt/Xml.hpp>
 #include <limits.h>
 
-#include "Var/Token.hpp"
-#include "Fmt/Xml.hpp"
-using namespace Fmt;
-using namespace Var;
+#include <var/Token.hpp>
+using namespace fmt;
+using namespace var;
 
 
 //static const char * white_space = "\r\n\t ";

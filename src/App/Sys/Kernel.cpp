@@ -3,8 +3,8 @@
 #include <stratify/stratify.h>
 #include <iface/link.h>
 
-#include "Sys/Kernel.hpp"
-using namespace Sys;
+#include <sys/Kernel.hpp>
+using namespace sys;
 
 Kernel::Kernel() {
 	// TODO Auto-generated constructor stub

@@ -2,10 +2,10 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <hal/Pwm.hpp>
 #include <stdlib.h>
 
-#include "Hal/Pwm.hpp"
-using namespace Hal;
+using namespace hal;
 
 Pwm::Pwm(port_t port) : Periph(CORE_PERIPH_PWM, port){}
 

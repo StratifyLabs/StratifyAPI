@@ -1,11 +1,11 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
+#include <hal/Tmr.hpp>
 #include <unistd.h>
 #include <stdlib.h>
-#include "Hal/Tmr.hpp"
 
-using namespace Hal;
+using namespace hal;
 
 
 Tmr::Tmr(port_t port) : Periph(CORE_PERIPH_TMR, port) {}

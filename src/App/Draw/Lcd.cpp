@@ -1,7 +1,7 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include "Draw/Lcd.hpp"
+#include <draw/Lcd.hpp>
 
 
 Lcd::Lcd() {

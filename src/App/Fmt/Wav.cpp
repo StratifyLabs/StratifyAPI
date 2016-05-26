@@ -2,9 +2,9 @@
 
 
 
-#include "Fmt/Wav.hpp"
-using namespace Fmt;
-using namespace Sys;
+#include <fmt/Wav.hpp>
+using namespace fmt;
+using namespace sys;
 
 Wav::Wav(const char * name) {
 	// TODO Auto-generated constructor stub

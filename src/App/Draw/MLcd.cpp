@@ -1,23 +1,22 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
+#include <draw/MLcd.hpp>
 #include <unistd.h>
 #include <cstring>
 #include <cstdio>
 #include <semaphore.h>
-#include "Sys/Timer.hpp"
-#include "Draw/MLcd.hpp"
-
 #include <iface/link.h>
 #include <errno.h>
+#include <sys/Timer.hpp>
 
 #ifdef __link
 #undef errno
 #define errno link_errno
 #endif
 
-using namespace Draw;
-using namespace Sys;
+using namespace draw;
+using namespace sys;
 
 
 #ifndef __HWPL_ONLY__

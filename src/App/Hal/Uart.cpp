@@ -3,8 +3,8 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include "Hal/Uart.hpp"
-using namespace Hal;
+#include <hal/Uart.hpp>
+using namespace hal;
 
 Uart::Uart(port_t port) : Periph(CORE_PERIPH_UART, port) {}
 

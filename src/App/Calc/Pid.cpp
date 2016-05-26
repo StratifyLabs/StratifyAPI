@@ -1,10 +1,10 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
+#include <calc/Pid.hpp>
 #include <cstdio>
-#include "calc/Pid.hpp"
 
-using namespace Calc;
+using namespace calc;
 
 Pid_f::Pid_f(float target, float kp, float ki, float kd, float min, float max) {
 	m_kp = kp;

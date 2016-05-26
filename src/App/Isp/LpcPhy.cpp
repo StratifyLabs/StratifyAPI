@@ -5,11 +5,11 @@
 
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#include "Isp/LpcPhy.hpp"
-#include "Sys/Timer.hpp"
-using namespace Sys;
-using namespace Isp;
-using namespace Hal;
+#include <isp/LpcPhy.hpp>
+#include <sys/Timer.hpp>
+using namespace sys;
+using namespace isp;
+using namespace hal;
 
 
 #include "isplib.h"

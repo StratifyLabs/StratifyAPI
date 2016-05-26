@@ -1,8 +1,8 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include "Draw/MBFontMemory.hpp"
-using namespace Draw;
+#include <draw/MBFontMemory.hpp>
+using namespace draw;
 
 
 

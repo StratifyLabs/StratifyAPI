@@ -1,10 +1,10 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include <Var/Token.hpp>
+#include <var/Token.hpp>
 #include <cstdio>
 
-using namespace Var;
+using namespace var;
 
 Token::Token(){
 	init_members();

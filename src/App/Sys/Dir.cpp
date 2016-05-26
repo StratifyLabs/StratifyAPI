@@ -1,7 +1,7 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#include "Sys/Dir.hpp"
-using namespace Sys;
+#include <sys/Dir.hpp>
+using namespace sys;
 
 #if defined __link
 Dir::Dir(link_transport_mdriver_t * driver){
