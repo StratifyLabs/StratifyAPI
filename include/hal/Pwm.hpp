@@ -4,8 +4,8 @@
 #ifndef PWM_HPP_
 #define PWM_HPP_
 
-#include <hal/Periph.hpp>
 #include <iface/dev/pwm.h>
+#include "Periph.hpp"
 
 namespace hal {
 

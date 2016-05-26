@@ -3,8 +3,8 @@
 #ifndef STFY_APP_I2C_HPP_
 #define STFY_APP_I2C_HPP_
 
-#include <hal/Periph.hpp>
 #include <iface/dev/i2c.h>
+#include "Periph.hpp"
 
 
 

@@ -3,8 +3,8 @@
 #ifndef DAC_HPP_
 #define DAC_HPP_
 
-#include <hal/Periph.hpp>
 #include <iface/dev/dac.h>
+#include "Periph.hpp"
 
 namespace hal {
 

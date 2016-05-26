@@ -3,12 +3,12 @@
 #ifndef MGFX_HPP_
 #define MGFX_HPP_
 
-#include <draw/MBitmap.hpp>
-#include <draw/MPoint.hpp>
 #include <mcu/mcu.h>
 #include <stfy/mg_types.h>
 
-#include <var/Item.hpp>
+#include "../var/Item.hpp"
+#include "MBitmap.hpp"
+#include "MPoint.hpp"
 
 namespace draw {
 

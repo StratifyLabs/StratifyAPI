@@ -3,9 +3,8 @@
 #ifndef STFY_APP_ADC_HPP_
 #define STFY_APP_ADC_HPP_
 
-#include <hal/Periph.hpp>
 #include <iface/dev/adc.h>
-
+#include "Periph.hpp"
 
 namespace hal {
 

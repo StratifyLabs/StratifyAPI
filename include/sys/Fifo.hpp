@@ -8,11 +8,8 @@
 #ifndef FIFO_HPP_
 #define FIFO_HPP_
 
-#include <hal/Dev.hpp>
-#include <mcu/types.h>
 #include <iface/dev/fifo.h>
-
-
+#include "../hal/Dev.hpp"
 
 namespace sys {
 

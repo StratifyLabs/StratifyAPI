@@ -2,9 +2,8 @@
 #ifndef STFY_APP_CORE_HPP_
 #define STFY_APP_CORE_HPP_
 
-#include <hal/Periph.hpp>
 #include <iface/dev/core.h>
-
+#include "Periph.hpp"
 
 
 namespace hal {

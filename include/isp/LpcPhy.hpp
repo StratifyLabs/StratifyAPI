@@ -3,11 +3,8 @@
 #ifndef LPCPHY_HPP_
 #define LPCPHY_HPP_
 
-
-#include <hal/Pin.hpp>
-#include <hal/Uart.hpp>
-#include <mcu/types.h>
-
+#include "../hal/Uart.hpp"
+#include "../hal/Pin.hpp"
 
 #define LPC_ISP_UNLOCK_CODE "23130"
 

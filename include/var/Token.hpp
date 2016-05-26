@@ -3,7 +3,7 @@
 #ifndef TOKEN_HPP_
 #define TOKEN_HPP_
 
-#include <var/String.hpp>
+#include "String.hpp"
 
 namespace var {
 

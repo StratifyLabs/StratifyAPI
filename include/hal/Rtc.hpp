@@ -3,8 +3,8 @@
 #ifndef STFY_APP_RTC_HPP_
 #define STFY_APP_RTC_HPP_
 
-#include <hal/Periph.hpp>
 #include <iface/dev/rtc.h>
+#include "Periph.hpp"
 
 
 namespace hal {

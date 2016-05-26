@@ -3,8 +3,8 @@
 #ifndef STFY_APP_SPI_HPP_
 #define STFY_APP_SPI_HPP_
 
-#include <hal/Periph.hpp>
 #include <iface/dev/spi.h>
+#include "Periph.hpp"
 
 
 namespace hal {

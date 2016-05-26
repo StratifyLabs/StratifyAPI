@@ -3,10 +3,7 @@
 #ifndef PID_HPP_
 #define PID_HPP_
 
-#include <stdint.h>
-
 namespace calc {
-
 
 class Pid_f {
 public:

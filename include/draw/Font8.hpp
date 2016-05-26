@@ -3,8 +3,8 @@
 #ifndef FONT8_HPP_
 #define FONT8_HPP_
 
-#include <draw/Font8Util.hpp>
-#include <draw/MBFont.hpp>
+#include "Font8Util.hpp"
+#include "MBFont.hpp"
 
 namespace draw {
 

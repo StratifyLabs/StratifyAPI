@@ -4,8 +4,8 @@
 #define STFY_APP_UART_HPP_
 
 
-#include <hal/Periph.hpp>
 #include <iface/dev/uart.h>
+#include "Periph.hpp"
 
 
 namespace hal {

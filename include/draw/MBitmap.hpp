@@ -3,11 +3,11 @@
 #ifndef MBITMAP_HPP_
 #define MBITMAP_HPP_
 
-#include <draw/MPoint.hpp>
 #include <stdint.h>
 #include <string.h>
 #include <stfy/mg.h>
-#include <var/Data.hpp>
+#include "../var/Data.hpp"
+#include "MPoint.hpp"
 
 namespace draw {
 

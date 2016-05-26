@@ -5,14 +5,12 @@
 
 
 #include <iface/link.h>
-#include <var/Data.hpp>
-#include <var/StringUtil.hpp>
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
 
-
-
+#include "Data.hpp"
+#include "StringUtil.hpp"
 
 namespace var {
 

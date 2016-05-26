@@ -4,8 +4,7 @@
 #define WAV_HPP_
 
 #include <mcu/types.h>
-
-#include <sys/File.hpp>
+#include "../sys/File.hpp"
 
 namespace fmt {
 

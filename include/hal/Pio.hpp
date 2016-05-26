@@ -3,8 +3,8 @@
 #ifndef STFY_APP_PIO_HPP_
 #define STFY_APP_PIO_HPP_
 
-#include <hal/Periph.hpp>
 #include <iface/dev/pio.h>
+#include "Periph.hpp"
 
 namespace hal {
 

@@ -3,8 +3,8 @@
 #ifndef MBFONTFILE_HPP_
 #define MBFONTFILE_HPP_
 
-#include <draw/MBFont.hpp>
-#include <sys/File.hpp>
+#include "MBFont.hpp"
+#include "../sys/File.hpp"
 
 namespace draw {
 

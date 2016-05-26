@@ -5,11 +5,12 @@
 
 #include <iface/link.h>
 #include <fcntl.h>
-#include <hal/Dev.hpp>
 #include <cstdlib>
 #include <cstring>
 #include <signal.h>
 #include <stratify/stratify.h>
+
+#include "Dev.hpp"
 
 
 namespace hal {

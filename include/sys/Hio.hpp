@@ -3,8 +3,8 @@
 #ifndef HIO_HPP_
 #define HIO_HPP_
 
-#include <hal/Dev.hpp>
 #include <iface/dev/hio.h>
+#include "../hal/Dev.hpp"
 
 
 namespace sys {

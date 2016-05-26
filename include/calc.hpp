@@ -8,11 +8,11 @@
  */
 namespace calc {}
 
-#include <calc/Base64.hpp>
-#include <calc/Ema.hpp>
-#include <calc/Lookup.hpp>
-#include <calc/Pid.hpp>
-#include <calc/Rle.hpp>
+#include "calc/Base64.hpp"
+#include "calc/Ema.hpp"
+#include "calc/Lookup.hpp"
+#include "calc/Pid.hpp"
+#include "calc/Rle.hpp"
 
 using namespace calc;
 

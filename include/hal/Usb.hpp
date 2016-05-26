@@ -3,8 +3,8 @@
 #ifndef STFY_APP_USB_HPP_
 #define STFY_APP_USB_HPP_
 
-#include <hal/Periph.hpp>
 #include <iface/dev/usb.h>
+#include "Periph.hpp"
 
 namespace hal {
 

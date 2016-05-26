@@ -3,9 +3,9 @@
 #ifndef MBFONT_HPP_
 #define MBFONT_HPP_
 
-#include <draw/mbfont.h>
-#include <draw/MBitmap.hpp>
-#include <draw/MFont.hpp>
+#include "mbfont.h"
+#include "MBitmap.hpp"
+#include "MFont.hpp"
 
 namespace draw {
 

@@ -4,12 +4,9 @@
 #ifndef STRINGTYPES_HPP_
 #define STRINGTYPES_HPP_
 
-
 #include <cstdlib>
 #include <stdint.h>
-#include <var/String.hpp>
 #include <cstdio>
+#include "String.hpp"
 
-
-
-#endif /* STRINGFIXED_HPP_ */
+#endif /* STRINGTYPES_HPP_ */

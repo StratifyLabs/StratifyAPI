@@ -4,8 +4,8 @@
 #define STFY_APP_TMR_HPP_
 
 
-#include <hal/Periph.hpp>
 #include <iface/dev/tmr.h>
+#include "Periph.hpp"
 
 
 namespace hal {

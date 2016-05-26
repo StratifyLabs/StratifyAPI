@@ -4,9 +4,9 @@
 #define STFY_APP_EINT_HPP_
 
 
-#include <hal/Periph.hpp>
-#include <hal/Pin.hpp>
 #include <iface/dev/eint.h>
+#include "Periph.hpp"
+#include "Pin.hpp"
 
 
 namespace hal {

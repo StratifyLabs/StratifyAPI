@@ -3,9 +3,9 @@
 #ifndef KERNEL_HPP_
 #define KERNEL_HPP_
 
-#include <hal/Dev.hpp>
 #include <iface/dev/sys.h>
 #include <iface/link.h>
+#include "../hal/Dev.hpp"
 
 
 namespace sys {

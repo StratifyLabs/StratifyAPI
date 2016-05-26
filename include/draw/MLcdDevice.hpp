@@ -3,9 +3,9 @@
 #ifndef MLCDDEVICE_HPP_
 #define MLCDDEVICE_HPP_
 
-#include <draw/MLcd.hpp>
-#include <hal/Dev.hpp>
 #include <iface/dev/mlcd.h>
+#include "../draw/MLcd.hpp"
+#include "../hal/Dev.hpp"
 
 namespace draw {
 

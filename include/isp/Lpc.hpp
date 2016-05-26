@@ -3,11 +3,12 @@
 #ifndef LPCISP_HPP_
 #define LPCISP_HPP_
 
-#include <isp/IspObject.hpp>
-#include <isp/LpcPhy.hpp>
+
 #include <mcu/types.h>
 #include "../hal/Uart.hpp"
 #include "../hal/Pin.hpp"
+#include "IspObject.hpp"
+#include "LpcPhy.hpp"
 
 namespace isp {
 

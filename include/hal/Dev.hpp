@@ -92,12 +92,12 @@
 #include <fcntl.h>
 
 #ifndef __link
-#include <sys/Aio.hpp>
+#include "../sys/Aio.hpp"
 #else
 #undef fileno
 #endif
 
-#include <var/String.hpp>
+#include "../var/String.hpp"
 
 namespace hal {
 

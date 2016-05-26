@@ -7,18 +7,16 @@
 /*! \brief Var is a collection of volatile data storage mechanisms and routines
  * such as buffers and strings.
  */
-namespace var {
+namespace var {};
 
-};
-
-#include <var/Data.hpp>
-#include <var/Flags.hpp>
-#include <var/Item.hpp>
-#include <var/Packet.hpp>
-#include <var/String.hpp>
-#include <var/StringTypes.hpp>
+#include "var/Data.hpp"
+#include "var/Flags.hpp"
+#include "var/Item.hpp"
+#include "var/Packet.hpp"
+#include "var/String.hpp"
+#include "var/StringTypes.hpp"
 #include "var/StringUtil.hpp"
-#include <var/Token.hpp>
+#include "var/Token.hpp"
 
 using namespace var;
 

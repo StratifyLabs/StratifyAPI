@@ -7,16 +7,16 @@
  */
 namespace hal {};
 
-#include <hal/Adc.hpp>
-#include <hal/Core.hpp>
-#include <hal/Eint.hpp>
-#include <hal/I2C.hpp>
+#include "hal/Adc.hpp"
+#include "hal/Core.hpp"
+#include "hal/Eint.hpp"
+#include "hal/I2C.hpp"
 #include "hal/Pin.hpp"
-#include <hal/Pwm.hpp>
-#include <hal/Rtc.hpp>
-#include <hal/Tmr.hpp>
-#include <hal/Spi.hpp>
-#include <hal/Uart.hpp>
+#include "hal/Pwm.hpp"
+#include "hal/Rtc.hpp"
+#include "hal/Tmr.hpp"
+#include "hal/Spi.hpp"
+#include "hal/Uart.hpp"
 
 using namespace hal;
 

@@ -116,9 +116,9 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
-						<entry excluding="draw/|sys/Signal.cpp|hal/MLcdDevice.cpp|sys/Fifo.cpp|calc/|hal/Lcd.cpp|hal/Usb.cpp|hal/util_c.c|hal/util.h|Data/|sys/Mq.cpp|sys/Time.cpp|sys/Thread.cpp|sys/Sem.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/App"/>
+						<entry excluding="hal/MLcdDevice.cpp|sys/Signal.cpp|draw/|data|sys/Fifo.cpp|hal/Lcd.cpp|calc/|hal/util_c.c|hal/Usb.cpp|hal/util.h|sys/Time.cpp|sys/Mq.cpp|sys/Thread.cpp|sys/Sem.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/App"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -225,7 +225,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="draw/|mg_types.h|isp/|sys/|fmt/|hal/|calc/|var/|mg.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="draw/|mg_types.h|sys/|isp/|hal/|fmt/|mg.h|var/|calc/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/son"/>
 					</sourceEntries>
 				</configuration>
@@ -330,7 +330,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="draw/|mg_types.h|isp/|sys/|fmt/|hal/|calc/|var/|mg.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="draw/|mg_types.h|sys/|isp/|hal/|fmt/|mg.h|var/|calc/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/son"/>
 					</sourceEntries>
 				</configuration>
@@ -434,7 +434,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="draw/|mg_types.h|isp/|sys/|fmt/|hal/|calc/|var/|mg.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="draw/|mg_types.h|sys/|isp/|hal/|fmt/|mg.h|var/|calc/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/son"/>
 					</sourceEntries>
 				</configuration>
@@ -539,7 +539,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="draw/|mg_types.h|isp/|sys/|fmt/|hal/|calc/|var/|mg.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="draw/|mg_types.h|sys/|isp/|hal/|fmt/|mg.h|var/|calc/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/son"/>
 					</sourceEntries>
 				</configuration>
@@ -641,7 +641,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="draw|isp|sys|mcu/|hal|fmt|son_phy.h|calc|var|Son.hpp|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="draw|sys|isp|mcu/|fmt|hal|var|calc|son_phy.h|Son.hpp|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/mg"/>
 					</sourceEntries>
 				</configuration>
@@ -756,7 +756,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="mg_types.h|mg.h|son_phy.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="mg_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/App"/>
 					</sourceEntries>
 				</configuration>
@@ -868,7 +868,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="mg_types.h|mg.h|son_phy.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="mg_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/App"/>
 					</sourceEntries>
 				</configuration>
@@ -982,7 +982,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="mg_types.h|mg.h|son_phy.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="mg_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/App"/>
 					</sourceEntries>
 				</configuration>
@@ -1081,7 +1081,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="draw|isp|sys|mcu/|hal|fmt|son_phy.h|calc|var|Son.hpp|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="draw|sys|isp|mcu/|fmt|hal|var|calc|son_phy.h|Son.hpp|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/mg"/>
 					</sourceEntries>
 				</configuration>

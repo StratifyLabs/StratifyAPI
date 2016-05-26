@@ -3,7 +3,7 @@
 #ifndef PIN_HPP_
 #define PIN_HPP_
 
-#include <hal/Pio.hpp>
+#include "Pio.hpp"
 
 namespace hal {
 
