@@ -93,6 +93,8 @@ When dealing with pixels or single bits (like a high/low signal on a single pin)
 
 When not dealing with a single bit, clear_ or invert_ is used (i.e. clr_pixel() and bitmap.clear()).
 
+For fonts and bitmaps, the methods w() and h() are used to access width and height respectively.
+
 
 
 
