@@ -35,7 +35,7 @@ namespace Hal {
  *
  * 	eint.init(); //open and set attributes
  *
- * 	eint.setaction(0, //use channel 0
+ * 	eint.set_action(0, //use channel 0
  * 		EINT_ACTION_EVENT_FALLING, //trigger on a falling edge
  * 		event_callback, //execute this function (in privileged mode when complete)
  * 		&done //pass this to event_callback as the first argumen
@@ -47,7 +47,7 @@ namespace Hal {
  *
  * }
  *
- *  //alternatively you can configure (setaction() and block by writing hwpl_action_t to the device)
+ *  //alternatively you can configure (set_action() and block by writing hwpl_action_t to the device)
  *
  *  hwpl_action_t action;
  *  action.channel = 0;
@@ -63,37 +63,35 @@ class Eint : public Periph {
 public:
 	Eint(port_t port);
 	/*! \details Get the attributes for the external interrupt. */
-	int attr(eint_attr_t * attr);
+	int get_attr(eint_attr_t * attr);
 	/*! \details Set the attributes for the external interrupt. */
-	int setattr(const eint_attr_t * attr);
+	int set_attr(const eint_attr_t * attr);
 	/*! \details Set the action associated with the external interrupt. */
-	int setaction(const eint_action_t & action);
+	int set_action(const eint_action_t & action);
 
 	/*! \details Read the value of the pin */
-	bool value(void){
+	bool get_value(){
 		eint_attr_t a;
-		attr(&a);
+		get_attr(&a);
 		return a.value != 0;
 	}
 
-	inline bool get(void){ return value(); }
-
 	/*! \details Set the action using the specified parameters */
-	int setaction(int channel, int event, mcu_callback_t callback, void * context){
+	int set_action(int channel, int event, mcu_callback_t callback, void * context){
 		eint_action_t action;
 		action.channel = channel;
 		action.event = event;
 		action.callback = callback;
 		action.context = context;
-		return setaction(action);
+		return set_action(action);
 	}
 
 	/*! \details Set the attributes using the specified pin assignment. */
-	int setattr(uint8_t pin_assign = 0, uint16_t mode = Pin::INPUT | Pin::PULLUP){
+	int set_attr(uint8_t pin_assign = 0, uint16_t mode = Pin::INPUT | Pin::PULLUP){
 		eint_attr_t attr;
 		attr.pin_assign = pin_assign;
 		attr.mode = mode;
-		return setattr(&attr);
+		return set_attr(&attr);
 	}
 
 	/*! \details Open and set attributes using specified pin assignment. */
@@ -101,10 +99,10 @@ public:
 		if( open() < 0 ){
 			return -1;
 		}
-		return setattr(pin_assign, mode);
+		return set_attr(pin_assign, mode);
 	}
 
-	/*! \details Events used with setaction() */
+	/*! \details Events used with set_action() */
 	enum {
 		 EVENT_UNCONFIGURED /*! \brief Unconfigured */ = EINT_ACTION_EVENT_UNCONFIGURED,
 		 EVENT_RISING /*! \brief Event on rising edge */ = EINT_ACTION_EVENT_RISING,

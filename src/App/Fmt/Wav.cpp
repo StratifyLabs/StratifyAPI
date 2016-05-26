@@ -9,7 +9,7 @@ using namespace Sys;
 Wav::Wav(const char * name) {
 	// TODO Auto-generated constructor stub
 	open(name, File::READONLY);
-	if( read(&hdr_, sizeof(hdr_)) < 0 ){
+	if( read(&m_hdr, sizeof(m_hdr)) < 0 ){
 		close();
 	}
 }

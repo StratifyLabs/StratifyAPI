@@ -102,13 +102,13 @@
 namespace Hal {
 
 
-/*! \brief Base Applib Class for Physical devices
+/*! \brief Base Applib Class for physical devices
  * \details This is the base class for physical devices.
  *
  */
-class Phy {
+class Dev {
 public:
-	Phy();
+	Dev();
 
 	enum {
 		RDONLY /*! Open as read-only */ = LINK_O_RDONLY,
@@ -151,13 +151,13 @@ public:
 	virtual int seek(int loc, int whence = LINK_SEEK_SET) const;
 
 	/*! \details Returns the location of the cursor in the device or file */
-	int loc(void) const;
+	int loc() const;
 
 	/*! \details Return the current flags for the file */
 	int flags() const;
 
 	/*! \details Return the file number for accessing the file or device */
-	int fileno(void) const;
+	int fileno() const;
 
 	/*! \details Close the file or device */
 	virtual int close();

@@ -8,7 +8,7 @@ using namespace Sys;
 Sem::Sem() { handle = 0; }
 int Sem::close(){ return sem_close(handle); }
 int Sem::destroy(){ return sem_destroy(handle); }
-int Sem::getvalue(int *sval){ return sem_getvalue(handle, sval); }
+int Sem::get_value(int *sval){ return sem_getvalue(handle, sval); }
 int Sem::init(sem_t * sem, int pshared, unsigned int value){
 	handle = sem;
 	return sem_init(handle, pshared, value);

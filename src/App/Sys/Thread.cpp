@@ -7,100 +7,97 @@ using namespace Sys;
 
 Thread::Thread(int stack_size, bool detached) {
 	// TODO Auto-generated constructor stub
-	if( pthread_attr_init(&pthread_attr) < 0 ){
-		set_id_var_error();
+	if( pthread_attr_init(&m_pthread_attr) < 0 ){
+		set_id_error();
 		return;
 	}
 
-	if( pthread_attr_setstacksize(&pthread_attr, stack_size) < 0 ){
-		set_id_var_error();
+	if( pthread_attr_setstacksize(&m_pthread_attr, stack_size) < 0 ){
+		set_id_error();
 		return;
 	}
 
 	if( detached == true ){
-		if( pthread_attr_setdetachstate(&pthread_attr, PTHREAD_CREATE_DETACHED) < 0 ){
-			set_id_var_error();
+		if( pthread_attr_setdetachstate(&m_pthread_attr, PTHREAD_CREATE_DETACHED) < 0 ){
+			set_id_error();
 			return;
 		}
 	} else {
-		if( pthread_attr_setdetachstate(&pthread_attr, PTHREAD_CREATE_JOINABLE) < 0 ){
-			set_id_var_error();
+		if( pthread_attr_setdetachstate(&m_pthread_attr, PTHREAD_CREATE_JOINABLE) < 0 ){
+			set_id_error();
 			return;
 		}
 	}
 
-	set_id_var_default();
+	set_id_default();
 
 }
 
-int Thread::setstacksize(int size){
-	return pthread_attr_setstacksize(&pthread_attr, size);
+int Thread::set_stacksize(int size){
+	return pthread_attr_setstacksize(&m_pthread_attr, size);
 }
 
-int Thread::stacksize(void) const {
+int Thread::get_stacksize() const {
 	size_t stacksize;
-	pthread_attr_getstacksize(&pthread_attr, &stacksize);
+	pthread_attr_getstacksize(&m_pthread_attr, &stacksize);
 	return stacksize;
 }
 
-int Thread::setpriority(int prio, int policy){
+int Thread::set_priority(int prio, int policy){
 	struct sched_param param;
-	if( (int)id_var == -1 ){
+	if( (int)m_id == -1 ){
 		return -1;
 	}
 	param.sched_priority = prio;
 
-	return pthread_setschedparam(id_var, policy, &param);
+	return pthread_setschedparam(m_id, policy, &param);
 }
 
-void Thread::yield(void){
+void Thread::yield(){
 	//sched_yield();
 }
 
-int Thread::priority(void) const {
+int Thread::get_priority() const {
 	struct sched_param param;
 	int policy;
-	if( pthread_getschedparam(id_var, &policy, &param) < 0 ){
+	if( pthread_getschedparam(m_id, &policy, &param) < 0 ){
 		return -1;
 	}
 	return param.sched_priority;
 }
 
-int Thread::policy(void) const {
+int Thread::get_policy() const {
 	struct sched_param param;
 	int policy;
-	if( pthread_getschedparam(id_var, &policy, &param) < 0 ){
+	if( pthread_getschedparam(m_id, &policy, &param) < 0 ){
 		return -1;
 	}
 	return policy;
 }
 
 
-int Thread::id(void) const {
-	return id_var;
-}
 
 int Thread::create(void * (*func)(void*), void * args, int prio, int policy){
-	if( (int)id_var != -1 ){
+	if( (int)m_id != -1 ){
 		return -1;
 	}
 
 	//First create the thread
-	if( pthread_create(&id_var, &pthread_attr, func, args) < 0 ){
+	if( pthread_create(&m_id, &m_pthread_attr, func, args) < 0 ){
 		return -1;
 	}
 
 	//now set the priority
-	if( setpriority(prio, policy) < 0 ){
+	if( set_priority(prio, policy) < 0 ){
 		return -1;
 	}
 
 	return 0;
 }
 
-bool Thread::isrunning(void) const {
+bool Thread::is_running() const {
 	//check to see if the thread is running
-	if( pthread_kill(id_var, 0) == 0 ){
+	if( pthread_kill(m_id, 0) == 0 ){
 		return true;
 	}
 	return false;

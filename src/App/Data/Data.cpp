@@ -13,7 +13,7 @@
 #include "Var/Data.hpp"
 using namespace Var;
 
-const int Data::zero_value = 0;
+const int Data::m_zero_value = 0;
 
 #define MIN_CHUNK_SIZE 56
 
@@ -38,8 +38,8 @@ Data::Data(size_t s){
 
 int Data::free(){
 #ifndef __HWPL_ONLY__
-	if( needs_free ){
-		::free(mem_write);
+	if( m_needs_free ){
+		::free(m_mem_write);
 	}
 #endif
 	zero();
@@ -53,24 +53,24 @@ Data::~Data(){
 #endif
 
 void Data::set(void * mem, size_t s, bool readonly){
-	mem_write = mem;
-	needs_free = false;
-	_capacity = s;
-	if( mem_write ){
-		this->mem = mem_write;
+	m_mem_write = mem;
+	m_needs_free = false;
+	m_capacity = s;
+	if( m_mem_write ){
+		this->m_mem = m_mem_write;
 	} else {
-		mem = (void*)&zero_value;
+		mem = (void*)&m_zero_value;
 	}
 	if( readonly ){
-		mem_write = 0;
+		m_mem_write = 0;
 	}
 }
 
-void Data::zero(void){
-	mem = &zero_value;
-	mem_write = 0;
-	needs_free = false;
-	_capacity = 0;
+void Data::zero(){
+	m_mem = &m_zero_value;
+	m_mem_write = 0;
+	m_needs_free = false;
+	m_capacity = 0;
 }
 
 
@@ -78,13 +78,13 @@ int Data::alloc(size_t s, bool resize){
 #ifndef __HWPL_ONLY__
 
 	void * new_data;
-	if( (needs_free == false) && (mem != &zero_value) ){
+	if( (m_needs_free == false) && (m_mem != &m_zero_value) ){
 		//this data object can't be resized -- it was created using a pointer (not dyn memory)
 		return -1;
 	}
 
-	if( s < _capacity + MIN_CHUNK_SIZE ){
-		s = _capacity + MIN_CHUNK_SIZE;
+	if( s < m_capacity + MIN_CHUNK_SIZE ){
+		s = m_capacity + MIN_CHUNK_SIZE;
 	}
 
 	new_data = malloc(s);
@@ -93,22 +93,22 @@ int Data::alloc(size_t s, bool resize){
 	}
 
 	if( resize ){
-		memcpy(new_data, mem, s > _capacity ? _capacity : s);
+		memcpy(new_data, m_mem, s > m_capacity ? m_capacity : s);
 	}
 
 	free();
 
-	mem_write = new_data;
-	needs_free = true;
-	mem = mem_write;
-	_capacity = s;
+	m_mem_write = new_data;
+	m_needs_free = true;
+	m_mem = m_mem_write;
+	m_capacity = s;
 	return 0;
 #else
 	return -1;
 #endif
 }
 
-int Data::set_capacity(size_t s){
+int Data::set_min_capacity(size_t s){
 	if( s <= capacity() ){
 		return 0;
 	}
@@ -116,11 +116,11 @@ int Data::set_capacity(size_t s){
 	return alloc(s, true);
 }
 
-void Data::clear(void){ fill(0); }
+void Data::clear(){ fill(0); }
 
 void Data::fill(unsigned char d){
-	if( mem_write ){
-		memset(mem_write, d, capacity());
+	if( m_mem_write ){
+		memset(m_mem_write, d, capacity());
 	}
 }
 

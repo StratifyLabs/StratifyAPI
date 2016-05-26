@@ -5,16 +5,16 @@
 using namespace Sys;
 
 Mq::Mq(){
-	handle = -1;
-	msg_prio_ = 0;
+	m_handle = -1;
+	m_msg_prio = 0;
 }
 
 int Mq::open(const char * name,
 		int oflag,
 		mode_t mode,
 		const struct mq_attr * attr){
-	handle = mq_open(name, oflag, mode, attr);
-	return handle;
+	m_handle = mq_open(name, oflag, mode, attr);
+	return m_handle;
 }
 
 int Mq::create(const char * name,
@@ -28,60 +28,60 @@ int Mq::create(const char * name,
 	attr.mq_maxmsg = maxmsg;
 	attr.mq_msgsize = msgsize;
 	attr.mq_curmsgs = 0;
-	handle = mq_open(name, CREATE | oflag, mode, &attr);
-	return handle;
+	m_handle = mq_open(name, CREATE | oflag, mode, &attr);
+	return m_handle;
 }
 
 int Mq::close(){
 	int ret;
-	ret = mq_close(handle);
-	handle = -1;
+	ret = mq_close(m_handle);
+	m_handle = -1;
 	return ret;
 }
 
 int Mq::notify(const struct sigevent *notification){
-	return mq_notify(handle, notification);
+	return mq_notify(m_handle, notification);
 }
 
-int Mq::attr(struct mq_attr *mqstat){
-	return mq_getattr(handle, mqstat);
+int Mq::get_attr(struct mq_attr *mqstat){
+	return mq_getattr(m_handle, mqstat);
 }
-MqAttr Mq::attr(){
+MqAttr Mq::get_attr(){
 	MqAttr a;
-	mq_getattr(handle, &(a._attr));
+	mq_getattr(m_handle, &(a.m_attr));
 	return a;
 }
 
-int Mq::setattr(const struct mq_attr * mqstat,
+int Mq::set_attr(const struct mq_attr * mqstat,
 		struct mq_attr * omqstat){
-	return mq_setattr(handle, mqstat, omqstat);
+	return mq_setattr(m_handle, mqstat, omqstat);
 }
 
-int Mq::setattr(const MqAttr & attr){
-	return mq_setattr(handle, &(attr._attr), 0);
+int Mq::set_attr(const MqAttr & attr){
+	return mq_setattr(m_handle, &(attr.m_attr), 0);
 }
 
 ssize_t Mq::receive(char * msg_ptr,
 		size_t msg_len){
-	return mq_receive(handle, msg_ptr, msg_len, &msg_prio_);
+	return mq_receive(m_handle, msg_ptr, msg_len, &m_msg_prio);
 }
 ssize_t Mq::timedreceive(char * msg_ptr,
 		size_t msg_len,
 		const struct timespec * abs_timeout){
-	return mq_timedreceive(handle, msg_ptr, msg_len, &msg_prio_, abs_timeout);
+	return mq_timedreceive(m_handle, msg_ptr, msg_len, &m_msg_prio, abs_timeout);
 }
 
 int Mq::send(const char * msg_ptr,
 		size_t msg_len,
 		unsigned msg_prio){
-	return mq_send(handle, msg_ptr, msg_len, msg_prio);
+	return mq_send(m_handle, msg_ptr, msg_len, msg_prio);
 }
 
 int Mq::timedsend(const char * msg_ptr,
 		size_t msg_len,
 		unsigned msg_prio,
 		const struct timespec * abs_timeout){
-	return mq_timedsend(handle, msg_ptr, msg_len, msg_prio, abs_timeout);
+	return mq_timedsend(m_handle, msg_ptr, msg_len, msg_prio, abs_timeout);
 
 }
 

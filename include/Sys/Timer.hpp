@@ -72,63 +72,72 @@ public:
 
 
 	/*! \details The the usec's on the real-time clock */
-	static int clock_usec(void);
+	static int get_clock_usec();
 	/*! \details The the msec's on the real-time clock */
-	static int clock_msec(void);
+	static int get_clock_msec();
 	/*! \details The the sec's on the real-time clock */
-	static int clock_sec(void);
+	static int get_clock_sec();
 
 	/*! \details Start the timer.
 	 * \details This starts the timer.  It is used with value() and stop().
 	 *
 	 */
-	void start(void); //start counting
+	void start(); //start counting
 
 
 	/*! \details This resumes counting after a stop().
 	 *
 	 */
-	void resume(void); //resume counting
+	void resume(); //resume counting
 
 	/*! \details Check if timer is running */
 	bool is_running();
-	inline bool isrunning(){ return is_running(); }
 
 	/*! \details Reset the value of the timer */
-	void reset(void);
+	void reset();
 
 	/*! \details Timer value in milliseconds
 	 * @return The number of milliseconds that have elapsed since start.
 	 */
-	u32 msec(void);
+	u32 calc_msec();
+
+	/*! \details Shortcut for calc_msec(); */
+	u32 msec(){ return calc_msec(); }
 
 	/*! \details Timer value in microseconds
 	 * @return The number of microseconds that have elapsed since start.
 	 */
-	u32 usec(void);
-	u32 value(void){ return usec(); }
+	u32 calc_usec();
+
+	/*! \details Shortcut for calc_usec(); */
+	u32 usec(){ return calc_usec(); }
+
+	u32 value(){ return calc_usec(); }
 
 	/*! \details Timer value in seconds
 	 * @return The number of seconds that have elapsed since start.
 	 */
-	u32 sec(void);
+	u32 calc_sec();
+
+	/*! \details Shortcut for calc_sec(); */
+	u32 sec(){ return calc_sec(); }
 
 	/*! \details Stop the current timer.
 	 * \details This stops the timer from counting.  Subsequent calls to value()
 	 * will return the same number.
 	 */
-	void stop(void); //stop counting
+	void stop(); //stop counting
 #endif
 
 private:
 #ifdef __MCU_ONLY__
 	static Tmr::port_t port;
-	u32 start_;
-	u32 stop_;
+	u32 m_start;
+	u32 m_stop;
 	u32 timeout_stop_;
 #elif !defined __link
-	struct timespec start_;
-	struct timespec stop_;
+	struct timespec m_start;
+	struct timespec m_stop;
 #endif
 
 

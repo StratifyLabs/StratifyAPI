@@ -24,12 +24,14 @@ public:
 	 *
 	 * @param ptr A pointer to the font (mbfont_hdr_t*)
 	 */
-	void set(const void * ptr);
+	void set_font_memory(const void * ptr);
 
 	/*! \details Returns a pointer to the font (\sa set())
 	 *
 	 */
-	const void * font_memory() const { return _font; }
+	const void * font_memory() const { return m_font; }
+
+
 	const MBitmap * bitmap(char c, bool ascii = true) const;
 
 protected:
@@ -42,8 +44,8 @@ private:
 	int load_char_ptr(mbfont_char_t & ch, char c, bool ascii) const;
 	int load_bitmap_ptr(const mbfont_char_t & ch) const;
 
-	const void * _font;
-	mutable MBitmap _bitmap;
+	const void * m_font;
+	mutable MBitmap m_bitmap;
 
 };
 

@@ -3,7 +3,7 @@
 #ifndef RLE_HPP_
 #define RLE_HPP_
 
-#include <stdint.h>
+#include <mcu/types.h>
 
 #include "../Sys/Appfs.hpp"
 #include "../Sys/File.hpp"
@@ -46,17 +46,17 @@ public:
 	 * @param size The number of bytes to process
 	 * @return The number of bytes the data would occupy after compression
 	 */
-	static int size(const void * src, int nbyte);
+	static int calc_size(const void * src, int nbyte);
 
 private:
 	typedef struct MCU_PACK {
-		uint8_t size;
-		uint8_t data;
+		u8 size;
+		u8 data;
 	} element_t;
 
 	typedef struct MCU_PACK {
-		uint32_t size;
-		uint32_t data;
+		u32 size;
+		u32 data;
 	} element32_t;
 
 };

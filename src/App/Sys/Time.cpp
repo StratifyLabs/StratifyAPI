@@ -17,26 +17,26 @@ Time::Time(){
 }
 /*! \brief Construct using an amount of time */
 Time::Time(u32 sec, u32 min, u32 hour){
-	set(sec, min, hour);
+	set_value(sec, min, hour);
 }
 
 Time& Time::operator+=(const Time & a){
-	t += a.value();
+	m_time += a.value();
 	return *this;
 }
 
 Time& Time::operator=(const Time & a){
-	t = a.value();
+	m_time = a.value();
 	return *this;
 }
 
 Time& Time::operator=(u32 a){
-	t = a;
+	m_time = a;
 	return *this;
 }
 
 Time& Time::operator-=(const Time & a){
-	t -= a.value();
+	m_time -= a.value();
 	return *this;
 }
 
@@ -53,52 +53,52 @@ int Time::set_time_of_day(){
 }
 
 void Time::set_current(){
-	t = time(0);
+	m_time = time(0);
 }
 
-void Time::set(u32 hour, u32 min, u32 sec){
-	t = sec + min*60 + hour*3600;
+void Time::set_value(u32 hour, u32 min, u32 sec){
+	m_time = sec + min*60 + hour*3600;
 }
 
 u32 Time::second() const {
-	return t % 60;
+	return m_time % 60;
 }
 
 u32 Time::minute() const {
-	return (t % 3600) / 60;
+	return (m_time % 3600) / 60;
 }
 
 u32 Time::hour() const {
-	return t / 3600 % 24;
+	return m_time / 3600 % 24;
 }
 
-u32 Time::day() const{
-	return tm().tm_mday;
+u32 Time::get_day() const{
+	return get_tm().tm_mday;
 }
-u32 Time::weekday() const{
-	return tm().tm_wday;
+u32 Time::get_weekday() const{
+	return get_tm().tm_wday;
 }
-u32 Time::yearday() const{
-	return tm().tm_yday;
+u32 Time::get_yearday() const{
+	return get_tm().tm_yday;
 }
-u32 Time::month() const{
-	return tm().tm_mon;
+u32 Time::get_month() const{
+	return get_tm().tm_mon;
 }
-u32 Time::year() const{
-	return tm().tm_year + 1900;
+u32 Time::get_year() const{
+	return get_tm().tm_year + 1900;
 }
 
 const char * Time::month_name() const {
-	u32 mon = month();
+	u32 mon = get_month();
 	if( mon < 12 ){
 		return month_names[mon];
 	}
 	return "";
 }
 
-struct tm Time::tm() const{
+struct tm Time::get_tm() const{
 	struct tm time_struct;
-	gmtime_r(&t, &time_struct);
+	gmtime_r(&m_time, &time_struct);
 	return time_struct;
 }
 

@@ -15,18 +15,18 @@ public:
 	Bmp(const char * name);
 	Bmp();
 
-	i32 width() const { return dib.width; }
-	i32 height() const { return dib.height; }
-	u16 bits_per_pixel() const { return dib.bits_per_pixel; }
-	u16 planes() const { return dib.planes; }
+	i32 w() const { return m_dib.width; }
+	i32 h() const { return m_dib.height; }
+	u16 bits_per_pixel() const { return m_dib.bits_per_pixel; }
+	u16 planes() const { return m_dib.planes; }
 
 
-	unsigned int row_size() const;
+	unsigned int calc_row_size() const;
 
 	int create(const char * name, i32 width, i32 height, u16 planes, u16 bits_per_pixel);
 	static int create_appfs(const char * name, i32 width, i32 height, u16 planes, u16 bits_per_pixel, char * img, size_t nbyte);
 
-	void rewind(void){ seek(_offset); }
+	void rewind(){ seek(m_offset); }
 
 	int seek_row(i32 y);
 
@@ -54,8 +54,8 @@ public:
 
 private:
 
-	bmp_dib_t dib;
-	u32 _offset;
+	bmp_dib_t m_dib;
+	u32 m_offset;
 };
 
 };

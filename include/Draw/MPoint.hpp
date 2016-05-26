@@ -20,7 +20,7 @@ public:
 	inline void set_w(mg_size_t w){ v.w = w; }
 	inline void set_h(mg_size_t h){ v.h = h; }
 
-	inline uint32_t size() const { return v.w * v.h; }
+	inline u32 size() const { return v.w * v.h; }
 
 	inline mg_size_t w() const { return v.w; }
 	inline mg_size_t h() const { return v.h; }
@@ -59,9 +59,9 @@ public:
 	MPoint & operator+(const mg_point_t & a){ mg_point_shift(&d, a); return *this; }
 	MPoint & operator-(const mg_point_t & a){ mg_point_subtract(&d, &a); return *this; }
 
-	void rotate(int16_t angle){ mg_point_rotate(&d, angle); }
-	void scale(uint16_t a){ mg_point_scale(&d, a); }
-	void shift(int16_t x, int16_t y){ mg_point_shift(&d, mg_point(x,y)); }
+	void rotate(i16 angle){ mg_point_rotate(&d, angle); }
+	void scale(u16 a){ mg_point_scale(&d, a); }
+	void shift(i16 x, i16 y){ mg_point_shift(&d, mg_point(x,y)); }
 	void shift(mg_point_t p){ mg_point_shift(&d, p); }
 
 private:

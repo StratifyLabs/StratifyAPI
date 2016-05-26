@@ -3,8 +3,8 @@
 #ifndef FILE_HPP_
 #define FILE_HPP_
 
+#include <Hal/Dev.hpp>
 #include "../Var/String.hpp"
-#include "../Hal/Phy.hpp"
 
 #ifdef fileno
 #undef fileno
@@ -50,7 +50,7 @@ namespace Sys {
  * \endcode
  *
  */
-class File : public Hal::Phy {
+class File : public Hal::Dev {
 public:
 	File();
 
@@ -78,7 +78,7 @@ public:
 	 * @return Zero on success
 	 */
 	int open(const char * name, int access, int perms);
-	using Phy::open;
+	using Dev::open;
 
 	/*! \details Open file for read/write */
 	inline int open_readwrite(const char * name){
@@ -95,7 +95,7 @@ public:
 	int create(const char * name, bool overwrite = true, int perms = 0666);
 
 	/*! \details Return the file size */
-	ssize_t size(void) const;
+	ssize_t size() const;
 
 private:
 

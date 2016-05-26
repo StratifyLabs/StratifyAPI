@@ -19,22 +19,21 @@ public:
 	I2C(port_t port);
 
 	/*! \details Get the I2C attributes */
-	int attr(i2c_attr_t * attr);
+	int get_attr(i2c_attr_t * attr);
 	/*! \details Set the I2C attributes */
-	int setattr(const i2c_attr_t * attr);
+	int set_attr(const i2c_attr_t * attr);
 	/*! \details Setup an I2C transaction */
 	int setup(const i2c_reqattr_t * req);
 
 	/*! \details Get the last error */
-	int err(void);
-	int geterr(void){ return err(); }
+	int err();
 
 #ifdef __MCU_ONLY__
 	using Pblock::read;
 	using Pblock::write;
 	int read(void * buf, int nbyte);
 	int write(const void * buf, int nbyte);
-	int close(void);
+	int close();
 #endif
 
 
@@ -47,11 +46,11 @@ public:
 	}
 
 	/*! \details Set attributes using specified bitrate and pin assignment. */
-	int setattr(uint32_t bitrate = 100000, u8 pin_assign = 0){
+	int set_attr(uint32_t bitrate = 100000, u8 pin_assign = 0){
 		i2c_attr_t attr;
 		attr.bitrate = bitrate;
 		attr.pin_assign = pin_assign;
-		return setattr(&attr);
+		return set_attr(&attr);
 	}
 
 	/*! \details This method initializes the I2C port.  It opens the port
@@ -66,7 +65,7 @@ public:
 		if( open() < 0 ){
 			return -1;
 		}
-		return setattr(bitrate, pin_assign);
+		return set_attr(bitrate, pin_assign);
 	}
 
 

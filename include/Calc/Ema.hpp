@@ -57,7 +57,7 @@ public:
 	 * @param start Initial value
 	 * @param alpha Averaging value
 	 */
-	Ema(intmedium start, intsmall alpha){ _average = start;  this->alpha = alpha; }
+	Ema(intmedium start, intsmall alpha){ m_average = start;  this->m_alpha = alpha; }
 	static intmedium small_max(){ return 1<<(8*sizeof(intsmall)); }
 
 	/*! \details Calculate the next average using an input value
@@ -67,27 +67,28 @@ public:
 	 */
 	intmedium calc(intmedium in){
 		intlarge tmp0;
-		tmp0 = (intlarge)in * (alpha) + (intlarge)_average * (small_max() - alpha);
-		_average = (intmedium)(((intlarge)tmp0 + (intlarge)small_max()) >> (sizeof(intsmall)*8));
-		return _average;
+		tmp0 = (intlarge)in * (m_alpha) + (intlarge)m_average * (small_max() - m_alpha);
+		m_average = (intmedium)(((intlarge)tmp0 + (intlarge)small_max()) >> (sizeof(intsmall)*8));
+		return m_average;
 	}
 
 	/*! \details Access the current average (no calculations are made here)
 	 *
 	 * @return The current average value
 	 */
-	intmedium average() const { return _average; }
-	intmedium avg() const { return _average; }
+	intmedium average() const { return m_average; }
+	intmedium avg() const { return m_average; }
 
 	/*! \details Set the average value.  This method can be
 	 * used to update the initial value
 	 *
 	 * @param v The new initial value
 	 */
-	void set(intmedium v){ _average = v; }
+	void set_average(intmedium v){ m_average = v; }
+	void set(intmedium v){ m_average = v; }
 private:
-	intmedium _average;
-	intsmall alpha;
+	intmedium m_average;
+	intsmall m_alpha;
 };
 
 /*! \brief Exponential Moving Average class (i32) */
@@ -122,23 +123,25 @@ public:
 /*! \details See \ref Ema for details */
 class Ema_float {
 public:
-	Ema_float(float start, float alpha){ this->alpha = alpha; average_ = start; }
+	Ema_float(float start, float alpha){ m_alpha = alpha; m_average = start; }
 	static float small_max(){ return 1.0; }
 	float calc(float in){
 		float tmp;
-		average_ = in * (alpha) + average_ * (1.0 - alpha);
-		return average_;
+		m_average = in * (m_alpha) + m_average * (1.0 - m_alpha);
+		return m_average;
 	}
-	float avg() const { return average_; }
-	float average() const { return average_; }
-	void set(float v){ average_ = v; }
+	float average() const { return m_average; }
+	void set_average(float v){ m_average = v; }
+
+	//depreacted methods
+	void set(float v){ m_average = v; }
+	float avg() const { return m_average; }
+
 private:
-	float average_;
-	float alpha;
+	float m_average;
+	float m_alpha;
 };
 
 
 }
-
-/* namespace Dsp */
 #endif /* EMA_HPP_ */

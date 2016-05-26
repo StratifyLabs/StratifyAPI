@@ -15,6 +15,7 @@ namespace Draw {
 #include "Draw/MBFontMemory.hpp"
 #include "Draw/MBitmap.hpp"
 #include "Draw/MFont.hpp"
+#include "Draw/MLcdDevice.hpp"
 #include "Draw/MGfx.hpp"
 #include "Draw/MLcd.hpp"
 #include "Draw/MPoint.hpp"

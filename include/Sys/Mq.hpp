@@ -18,12 +18,12 @@ class Mq;
 class MqAttr {
 	friend class Mq;
 public:
-	MqAttr(){ memset(&_attr, 0, sizeof(_attr)); };
+	MqAttr(){ memset(&m_attr, 0, sizeof(m_attr)); };
 	MqAttr(long f, long m, long s){
-		_attr.mq_flags = f;
-		_attr.mq_curmsgs = 0;
-		_attr.mq_maxmsg = m;
-		_attr.mq_msgsize = s;
+		m_attr.mq_flags = f;
+		m_attr.mq_curmsgs = 0;
+		m_attr.mq_maxmsg = m;
+		m_attr.mq_msgsize = s;
 	}
 
 	/*! \details Message queue attribute flags */
@@ -35,18 +35,18 @@ public:
 		READONLY /*! \brief Read only queue */ = LINK_O_RDONLY
 	};
 
-	inline long flags() const { return _attr.mq_flags; }
-	inline long curmsgs() const { return _attr.mq_curmsgs; }
-	inline long maxmsg() const { return _attr.mq_maxmsg; }
-	inline long msgsize() const { return _attr.mq_msgsize; }
+	inline long flags() const { return m_attr.mq_flags; }
+	inline long curmsgs() const { return m_attr.mq_curmsgs; }
+	inline long maxmsg() const { return m_attr.mq_maxmsg; }
+	inline long msgsize() const { return m_attr.mq_msgsize; }
 
-	inline void setflags(long v) { _attr.mq_flags = v; }
-	inline void setcurmsgs(long v) { _attr.mq_curmsgs = v; }
-	inline void setmaxmsg(long v) { _attr.mq_maxmsg = v; }
-	inline void setmsgsize(long v) { _attr.mq_msgsize = v; }
+	inline void set_flags(long v) { m_attr.mq_flags = v; }
+	inline void set_curmsgs(long v) { m_attr.mq_curmsgs = v; }
+	inline void set_maxmsg(long v) { m_attr.mq_maxmsg = v; }
+	inline void set_msgsize(long v) { m_attr.mq_msgsize = v; }
 
 private:
-	struct mq_attr _attr;
+	struct mq_attr m_attr;
 };
 
 /*! \brief Message Queue Class */
@@ -94,40 +94,42 @@ public:
 	/*! \brief Close the message queue */
 	int close();
 
-	inline bool is_open() const { return handle != -1; }
+	inline bool is_open() const { return m_handle != -1; }
 
 	/*! \details Not currently supported */
 	int notify(const struct sigevent *notification);
 
 	/*! \details Copy message queue attributes to mqstat */
-	int attr(struct mq_attr *mqstat);
+	int get_attr(struct mq_attr *mqstat);
 
 	/*! \details Return the message queue attributes */
-	MqAttr attr();
-	int setattr(const struct mq_attr * mqstat, struct mq_attr * omqstat = 0);
-	int setattr(const MqAttr & attr);
+	MqAttr get_attr();
+	int set_attr(const struct mq_attr * mqstat, struct mq_attr * omqstat = 0);
+	int set_attr(const MqAttr & attr);
 
 	/*! \details Receive a message from the queue */
 	ssize_t receive(char * msg_ptr, size_t msg_len);
 
 	/*! \details Receive a message from the queue with a timeout */
 	ssize_t timedreceive(char * msg_ptr, size_t msg_len, const struct timespec * abs_timeout);
+	ssize_t receive_timed(char * msg_ptr, size_t msg_len, const struct timespec * abs_timeout){ return timedreceive(msg_ptr, msg_len, abs_timeout); }
 
 	/*! \details Send a message to the queue */
 	int send(const char * msg_ptr, size_t msg_len, unsigned msg_prio = 0);
 
 	/*! \details Send a message to the queue with a timeout */
 	int timedsend(const char * msg_ptr, size_t msg_len, unsigned msg_prio, const struct timespec * abs_timeout);
+	int send_timed(const char * msg_ptr, size_t msg_len, unsigned msg_prio, const struct timespec * abs_timeout){ return timedsend(msg_ptr, msg_len, msg_prio, abs_timeout); }
 
 	/*! \details Delete a message queue */
 	static int unlink(const char * name);
 
 	/*! \details Message priority of last message received */
-	unsigned msg_prio() const { return msg_prio_; }
+	unsigned msg_prio() const { return m_msg_prio; }
 
 private:
-	mqd_t handle;
-	unsigned msg_prio_;
+	mqd_t m_handle;
+	unsigned m_msg_prio;
 };
 
 };

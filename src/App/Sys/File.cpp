@@ -46,7 +46,7 @@ int File::create(const char * name, bool overwrite, int perms){
 	return open(name, access, perms);
 }
 
-ssize_t File::size(void) const {
+ssize_t File::size() const {
 	struct link_stat st;
 #if defined __link
 	if ( link_fstat(driver(), fd, &st) < 0 ){

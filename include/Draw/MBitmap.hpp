@@ -19,8 +19,8 @@ public:
 	MBitmap(mg_size_t w, mg_size_t h);
 	virtual ~MBitmap();
 
-	static int byte_width(int w);
-	static int word_width(int w);
+	static int calc_byte_width(int w);
+	static int calc_word_width(int w);
 
 	/*! \details Set data pointer and size for bitmap */
 	void set_data(mg_bitmap_hdr_t * hdr, bool readonly = false);
@@ -43,15 +43,15 @@ public:
 	int alloc(mg_size_t w, mg_size_t h);
 	inline int alloc(const MDim & d){ return alloc(d.w(), d.h()); }
 	/*! \details Free memory associated with bitmap (auto freed on ~MBitmap) */
-	void free(void);
+	void free();
 
 
-	void flipx(void);
-	void flipy(void);
-	void flipxy(void);
+	void flip_x();
+	void flip_y();
+	void flip_xy();
 
 
-	mg_point_t center() const;
+	mg_point_t calc_center() const;
 	void invert();
 	void invert(mg_point_t p, mg_dim_t d, mg_bitmap_t v = 0xFF);
 
@@ -85,29 +85,26 @@ public:
 	int set_bitmap_column(const MBitmap * bitmap, mg_point_t p, mg_int_t col, mg_size_t h);
 	int set_bitmap_column(const MBitmap * bitmap, mg_point_t p, mg_int_t col);
 
-	int clr_bitmap(const MBitmap * bitmap, mg_point_t p){ return mg_clr_bitmap(bmap(), bitmap->bmap_const(), p); }
+	int clear_bitmap(const MBitmap * bitmap, mg_point_t p){ return mg_clr_bitmap(bmap(), bitmap->bmap_const(), p); }
 
 	/*! \details Change effective size without free/alloc sequence */
-	int setsize(mg_size_t w, mg_size_t h, mg_size_t offset = 0);
-	inline int set_size(mg_size_t w, mg_size_t h, mg_size_t offset = 0){
-		return setsize(w,h,offset);
-	}
+	int set_size(mg_size_t w, mg_size_t h, mg_size_t offset = 0);
 
 
 	/*! \details Return the size of a bitmap of specified size */
-	static size_t size(int w, int h){ return h*byte_width(w); }
+	static size_t calc_size(int w, int h){ return h*calc_byte_width(w); }
 
 	/*! \details size() is the current size of the bitmap.  capacity() will
 	 * return total memory allocated for the size of the object
 	 * @return The effective memory size of the bitmap
 	 */
-	size_t size() const { return mg_size(&_bmap); }
+	size_t calc_size() const { return mg_size(&m_bmap); }
 
 
 	/*! \details Maximum x value */
-	inline mg_int_t xmax() const { return w()-1; }
+	inline mg_int_t x_max() const { return w()-1; }
 	/*! \details Maximum y value */
-	inline mg_int_t ymax() const { return h()-1; }
+	inline mg_int_t y_max() const { return h()-1; }
 
 
 	void set_vline(mg_int_t x, mg_int_t ymin, mg_int_t ymax, mg_size_t thickness = 1);
@@ -123,30 +120,30 @@ public:
 	virtual void clr_line(mg_point_t p1, mg_point_t p2, mg_size_t thickness = 1);
 
 
-	inline bool is_empty(void) const { return size() == 0; }
-	inline mg_size_t h() const { return _bmap.dim.h; }
-	inline mg_size_t w() const { return _bmap.dim.w; }
+	inline bool is_empty() const { return calc_size() == 0; }
+	inline mg_size_t h() const { return m_bmap.dim.h; }
+	inline mg_size_t w() const { return m_bmap.dim.w; }
 	inline const MDim dim() const {
-		MDim d(_bmap.dim);
+		MDim d(m_bmap.dim);
 		return d;
 	}
 
-	inline mg_size_t byte_width() const { return mg_byte_width(&_bmap); }
+	inline mg_size_t calc_byte_width() const { return mg_byte_width(&m_bmap); }
 
-	inline mg_size_t cols(void) const { return _bmap.columns; }
+	inline mg_size_t columns() const { return m_bmap.columns; }
 
 	/*! \brief Function for filling a bounded area in local LCD memory */
 	virtual void pour(mg_point_t p);
 
-	inline mg_size_t margin_left() const { return _bmap.margin_top_left.w; }
-	inline mg_size_t margin_right() const { return _bmap.margin_bottom_right.w; }
-	inline mg_size_t margin_top() const { return _bmap.margin_top_left.h; }
-	inline mg_size_t margin_bottom() const { return _bmap.margin_bottom_right.h; }
+	inline mg_size_t margin_left() const { return m_bmap.margin_top_left.w; }
+	inline mg_size_t margin_right() const { return m_bmap.margin_bottom_right.w; }
+	inline mg_size_t margin_top() const { return m_bmap.margin_top_left.h; }
+	inline mg_size_t margin_bottom() const { return m_bmap.margin_bottom_right.h; }
 
-	inline void set_margin_left(mg_size_t v) { _bmap.margin_top_left.w = v; }
-	inline void set_margin_right(mg_size_t v) { _bmap.margin_bottom_right.w = v; }
-	inline void set_margin_top(mg_size_t v) { _bmap.margin_top_left.h = v; }
-	inline void set_margin_bottom(mg_size_t v) { _bmap.margin_bottom_right.h = v; }
+	inline void set_margin_left(mg_size_t v) { m_bmap.margin_top_left.w = v; }
+	inline void set_margin_right(mg_size_t v) { m_bmap.margin_bottom_right.w = v; }
+	inline void set_margin_top(mg_size_t v) { m_bmap.margin_top_left.h = v; }
+	inline void set_margin_bottom(mg_size_t v) { m_bmap.margin_bottom_right.h = v; }
 
 	virtual void shift_right(int count);
 	virtual void shift_right(int count, mg_size_t h);
@@ -167,7 +164,7 @@ public:
 
 
 
-	void show(void) const;
+	void show() const;
 
 	inline mg_bitmap_t * data() const __attribute__((always_inline)) { return (mg_bitmap_t *)Data::data(); }
 	inline const mg_bitmap_t * data_const() const { return (const mg_bitmap_t *)Data::data_const(); }
@@ -177,8 +174,8 @@ public:
 	const mg_bitmap_t * data_const(mg_point_t p) const;
 
 
-	mg_bmap_t * bmap() MCU_ALWAYS_INLINE { return &_bmap; }
-	const mg_bmap_t * bmap_const() const  MCU_ALWAYS_INLINE { return &_bmap; }
+	mg_bmap_t * bmap() MCU_ALWAYS_INLINE { return &m_bmap; }
+	const mg_bmap_t * bmap_const() const  MCU_ALWAYS_INLINE { return &m_bmap; }
 
 
 protected:
@@ -193,10 +190,10 @@ protected:
 
 	//routines for calculating pixel memory locations and masks
 	inline const mg_bitmap_t * target_const(mg_int_t x, mg_int_t y) const {
-		return data_const() + (x/8) + y*(_bmap.columns);
+		return data_const() + (x/8) + y*(m_bmap.columns);
 	}
 	inline mg_bitmap_t * target(mg_int_t x, mg_int_t y) const {
-		return data() + (x/8) + y*(_bmap.columns);
+		return data() + (x/8) + y*(m_bmap.columns);
 	}
 	inline static mg_bitmap_t mask(mg_int_t x){
 		return ( 0x80 >> (x&0x07) );
@@ -205,7 +202,7 @@ protected:
 
 private:
 
-	mg_bmap_t _bmap;
+	mg_bmap_t m_bmap;
 
 	void init_members();
 	void calc_members(mg_size_t w, mg_size_t h);

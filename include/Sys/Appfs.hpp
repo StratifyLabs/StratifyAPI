@@ -57,7 +57,7 @@ public:
 	static int create(const char * name, const void * buf, int nbyte, const char * mount = "/app", link_transport_mdriver_t * driver = 0);
 
 	/*! \details Returns the page size for writing data */
-	static int pagesize(){ return APPFS_PAGE_SIZE; }
+	static int page_size(){ return APPFS_PAGE_SIZE; }
 
 	static int cleanup(bool data = false);
 };

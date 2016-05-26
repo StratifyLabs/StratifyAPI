@@ -1,13 +1,13 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include "Hal/Phy.hpp"
+#include <Hal/Dev.hpp>
 #include "Sys/Timer.hpp"
 using namespace Sys;
 
 using namespace Hal;
 
-Phy::Phy() {
+Dev::Dev() {
 	// TODO Auto-generated constructor stub
 #if defined __link
 	_driver = 0;
@@ -15,7 +15,7 @@ Phy::Phy() {
 }
 
 
-int Phy::read(int loc, void * buf, int nbyte) const {
+int Dev::read(int loc, void * buf, int nbyte) const {
 	if( seek(loc) < 0 ){
 		return -1;
 	}
@@ -23,7 +23,7 @@ int Phy::read(int loc, void * buf, int nbyte) const {
 	return read(buf, nbyte);
 }
 
-int Phy::write(int loc, const void * buf, int nbyte) const {
+int Dev::write(int loc, const void * buf, int nbyte) const {
 	if( seek(loc) < 0 ){
 		return -1;
 	}
@@ -31,7 +31,7 @@ int Phy::write(int loc, const void * buf, int nbyte) const {
 }
 
 
-int Phy::readline(char * buf, int nbyte, int timeout, char term) const {
+int Dev::readline(char * buf, int nbyte, int timeout, char term) const {
 	int t;
 	int bytes_recv;
 	char c;
@@ -54,7 +54,7 @@ int Phy::readline(char * buf, int nbyte, int timeout, char term) const {
 	return bytes_recv;
 }
 
-int Phy::open(const char * name, int flags){
+int Dev::open(const char * name, int flags){
 
 	if( fd != -1 ){
 		close(); //close and re-open
@@ -72,7 +72,7 @@ int Phy::open(const char * name, int flags){
 	return 0;
 }
 
-int Phy::close(){
+int Dev::close(){
 	int ret = 0;
 	if( fd >= 0 ){
 #if defined __link
@@ -85,7 +85,7 @@ int Phy::close(){
 	return ret;
 }
 
-int Phy::read(void * buf, int nbyte) const {
+int Dev::read(void * buf, int nbyte) const {
 #if defined __link
 	return link_read(driver(), fd, buf, nbyte);
 #else
@@ -93,7 +93,7 @@ int Phy::read(void * buf, int nbyte) const {
 #endif
 }
 
-int Phy::write(const void * buf, int nbyte) const {
+int Dev::write(const void * buf, int nbyte) const {
 #if defined __link
 	return link_write(driver(), fd, buf, nbyte);
 #else
@@ -102,18 +102,18 @@ int Phy::write(const void * buf, int nbyte) const {
 }
 
 #ifndef __link
-int Phy::read(Sys::Aio & aio) const {
+int Dev::read(Sys::Aio & aio) const {
 	aio.aio_var.aio_fildes = fd;
 	return ::aio_read(&(aio.aio_var));
 }
 
-int Phy::write(Sys::Aio & aio) const {
+int Dev::write(Sys::Aio & aio) const {
 	aio.aio_var.aio_fildes = fd;
 	return ::aio_write(&(aio.aio_var));
 }
 #endif
 
-int Phy::ioctl(int req, void * arg) const {
+int Dev::ioctl(int req, void * arg) const {
 #if defined __link
 	return link_ioctl(driver(), fd, req, arg);
 #else
@@ -121,7 +121,7 @@ int Phy::ioctl(int req, void * arg) const {
 #endif
 }
 
-int Phy::seek(int loc, int whence) const {
+int Dev::seek(int loc, int whence) const {
 #if defined __link
 	return link_lseek(driver(), fd, loc, whence);
 #else
@@ -129,15 +129,15 @@ int Phy::seek(int loc, int whence) const {
 #endif
 }
 
-int Phy::fileno(void) const {
+int Dev::fileno() const {
 	return fd;
 }
 
-int Phy::loc(void) const {
+int Dev::loc() const {
 	return seek(0, CURRENT);
 }
 
-int Phy::flags() const{
+int Dev::flags() const{
 	if( fd < 0 ){
 		return -1;
 	}
@@ -148,7 +148,7 @@ int Phy::flags() const{
 #endif
 }
 
-char * Phy::gets(char * s, int n, char term) const {
+char * Dev::gets(char * s, int n, char term) const {
 	int t;
 	int ret;
 	int i;
@@ -188,7 +188,7 @@ char * Phy::gets(char * s, int n, char term) const {
 }
 
 
-const char * Phy::name(const char * path){
+const char * Dev::name(const char * path){
 	int len;
 	int i;
 	len = strlen(path);

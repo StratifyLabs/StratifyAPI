@@ -23,35 +23,34 @@ public:
 	/*! \details Open a directory */
 	int open(const char * name);
 	/*! \details Close the directory */
-	int close(void);
+	int close();
 
 	inline bool is_open() const { return dirp != 0; }
 
 	/*! \details This methods reads the next entry in the directory.
 	 * @return A pointer to the name of the entry or 0 if no more entries exist
 	 */
-	const char * read(void);
+	const char * read();
 
 
 	/*! \details The name of the most recently read entry */
-	inline const char * name(void){ return entry.d_name; }
+	inline const char * name(){ return entry.d_name; }
 
 	/*! \details The name of the most recently read entry */
-	inline char * data(void){ return entry.d_name; }
+	inline char * data(){ return entry.d_name; }
 
 	/*! \details The serial number of the most recently read entry */
-	inline int ino(void){ return entry.d_ino; }
+	inline int ino(){ return entry.d_ino; }
 
 #ifndef __link
-	int size();
 	/*! \details Count the total number of entries in the directory */
-	int count(void);
+	int count();
 	/*! \details Rewind the directory pointer */
 	inline void rewind(){ if( dirp ) rewinddir(dirp); }
 	/*! \details Seek to a location in the directory */
 	inline void seek(long loc){ if( dirp ) seekdir(dirp, loc); }
 	/*! \details The current pointer location in the directory */
-	inline long tell(void){ if( dirp ){ return telldir(dirp); } return 0; }
+	inline long tell(){ if( dirp ){ return telldir(dirp); } return 0; }
 #else
 	void set_driver(link_transport_mdriver_t * d){ _driver = d; }
 #endif

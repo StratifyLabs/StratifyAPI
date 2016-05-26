@@ -3,18 +3,18 @@
 #ifndef HIO_HPP_
 #define HIO_HPP_
 
+#include <Hal/Dev.hpp>
 #include <iface/dev/hio.h>
 
-#include "../Hal/Phy.hpp"
 
 namespace Sys {
 
-class Hio : public Hal::Phy {
+class Hio : public Hal::Dev {
 public:
 
 	int attr(hio_attr_t & a);
 	int report(void * dest, int size);
-	int setreport(const void * src, int size);
+	int set_report(const void * src, int size);
 
 };
 

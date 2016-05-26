@@ -10,46 +10,46 @@ using namespace Hal;
 
 Tmr::Tmr(port_t port) : Periph(CORE_PERIPH_TMR, port) {}
 
-int Tmr::attr(tmr_attr_t * attr){
+int Tmr::get_attr(tmr_attr_t * attr){
 	return ioctl(I_TMR_GETATTR, attr);
 }
 
-int Tmr::setattr(const tmr_attr_t * attr){
+int Tmr::set_attr(const tmr_attr_t * attr){
 	return ioctl(I_TMR_SETATTR, attr);
 }
 
-int Tmr::setaction(const tmr_action_t * action){
+int Tmr::set_action(const tmr_action_t * action){
 	return ioctl(I_TMR_SETACTION, action);
 }
 
-int Tmr::on(void){
+int Tmr::on(){
 	return ioctl(I_TMR_ON);
 }
 
-int Tmr::off(void){
+int Tmr::off(){
 	return ioctl(I_TMR_OFF);
 }
 
-int Tmr::setoc(const tmr_reqattr_t * req){
+int Tmr::set_output_compare(const tmr_reqattr_t * req){
 	return ioctl(I_TMR_SETOC, req);
 }
 
-int Tmr::getoc(tmr_reqattr_t * req){
+int Tmr::get_output_compare(tmr_reqattr_t * req){
 	return ioctl(I_TMR_GETOC, req);
 }
 
-int Tmr::setic(const tmr_reqattr_t * req){
+int Tmr::set_input_capture(const tmr_reqattr_t * req){
 	return ioctl(I_TMR_SETIC, req);
 }
 
-int Tmr::getic(tmr_reqattr_t * req){
+int Tmr::get_input_capture(tmr_reqattr_t * req){
 	return ioctl(I_TMR_GETIC, req);}
 
-tmr_sample_t Tmr::get(void){
+tmr_sample_t Tmr::get_value(){
 	return ioctl(I_TMR_GET);
 }
 
-int Tmr::set(tmr_sample_t value){
+int Tmr::set_value(tmr_sample_t value){
 	return ioctl(I_TMR_SET, value);
 }
 

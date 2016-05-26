@@ -5,12 +5,12 @@
 
 #include <iface/link.h>
 #include <fcntl.h>
+#include <Hal/Dev.hpp>
 #include <cstdlib>
 #include <cstring>
 #include <signal.h>
 #include <stratify/stratify.h>
 
-#include "Phy.hpp"
 
 namespace Hal {
 
@@ -27,10 +27,10 @@ namespace Hal {
  *
  * The classes that inherit Periph implement a method for each ioctl() call available
  * on the peripheral.  For example, the UART has an ioctl request called I_UART_SETATTR so
- * the method Uart::setattr() implements the ioctl request.
+ * the method Uart::set_attr() implements the ioctl request.
  *
  */
-class Periph : public Phy {
+class Periph : public Dev {
 public:
 	typedef unsigned int port_t;
 	Periph(core_periph_t periph, port_t port);
@@ -43,7 +43,7 @@ public:
 	int open(int flags = READWRITE);
 	int ioctl(int req, void * arg) const;
 	int seek(int loc, int whence) const;
-	int fileno(void) const;
+	int fileno() const;
 	int read(void * buf, int nbyte) const;
 	int write(const void * buf, int nbyte) const;
 #ifndef __link
@@ -52,9 +52,9 @@ public:
 #endif
 	int close();
 
-	using Phy::ioctl;
-	using Phy::read;
-	using Phy::write;
+	using Dev::ioctl;
+	using Dev::read;
+	using Dev::write;
 
 
 	port_t port() const{ return periph_port & 0xFF; }

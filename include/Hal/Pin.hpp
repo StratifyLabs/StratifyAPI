@@ -31,7 +31,7 @@ namespace Hal {
  * pin.clr();
  *
  *  //now convert to an input
- * pin.setattr(Pin::INPUT | Pin::PULLUP); //or use Pin::FLOAT, Pin::PULLDOWN, etc
+ * pin.set_attr(Pin::INPUT | Pin::PULLUP); //or use Pin::FLOAT, Pin::PULLDOWN, etc
  *  //or to init as an input use pin.init(Pin::INPUT);
  *
  *  //now check to see if the value is high or low
@@ -51,48 +51,49 @@ public:
 	/*! \details Initialize the object with a port/pin combination. */
 	Pin(port_t port, uint32_t pin, bool ismask = false) : Pio(port){
 		if( ismask ){
-			_pinmask = pin;
+			m_pinmask = pin;
 		} else {
-			_pinmask = (1<<pin);
+			m_pinmask = (1<<pin);
 		}
 	}
 
-	Pin(pio_t p) : Pio(p.port) { _pinmask = 1<<p.pin; }
+	Pin(pio_t p) : Pio(p.port) { m_pinmask = 1<<p.pin; }
 
 	using Pio::set_attr;
 
 	/*! \details Initialize the pin with the specified mode */
 	inline int init(int mode){
-		return Pio::init(_pinmask, mode);
+		return Pio::init(m_pinmask, mode);
 	}
 
 	/*! \details Set the pin attributes */
 	inline int set_attr(int mode){
-		return Pio::set_attr(_pinmask, mode);
+		return Pio::set_attr(m_pinmask, mode);
 	}
 
 	/*! \details Assign a boolean to the pin (true is high, false is low) */
 	Pin& operator = (bool on){
 		if( on ){
-			set_mask(_pinmask);
+			set_mask(m_pinmask);
 		} else {
-			clear_mask(_pinmask);
+			clear_mask(m_pinmask);
 		}
 		return *this;
 	}
 
 	/*! \details Get the value of the pin (true is high, false is low) */
-	inline bool value(){ return (Pio::value() & _pinmask) != 0; }
+	inline bool get_value(){ return (Pio::get_value() & m_pinmask) != 0; }
+	inline bool value(){ return (Pio::get_value() & m_pinmask) != 0; }
 
 	/*! \details Set the pin high (assign value 1) */
-	inline int set(void){ return set_mask(_pinmask); }
+	inline int set(){ return set_mask(m_pinmask); }
 	/*! \details Clear the pin low (assign value 0) */
-	inline int clear(void){ return clear_mask(_pinmask); }
+	inline int clear(){ return clear_mask(m_pinmask); }
 
-	pio_sample_t pinmask() const { return _pinmask; }
+	pio_sample_t pinmask() const { return m_pinmask; }
 
 private:
-	pio_sample_t _pinmask;
+	pio_sample_t m_pinmask;
 };
 
 };

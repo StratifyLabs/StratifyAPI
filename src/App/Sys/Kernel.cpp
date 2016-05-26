@@ -65,12 +65,12 @@ int Kernel::hibernate(int count){
 }
 #endif
 
-int Kernel::attr(sys_attr_t & attr){
+int Kernel::get_attr(sys_attr_t & attr){
 	return ioctl(I_SYS_GETATTR, &attr);
 }
 
 
-int Kernel::taskattr(sys_taskattr_t * attr, int task){
+int Kernel::get_taskattr(sys_taskattr_t * attr, int task){
 
 	if( task == -1 ){
 		task = current_task;

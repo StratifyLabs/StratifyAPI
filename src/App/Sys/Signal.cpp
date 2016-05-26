@@ -7,10 +7,10 @@ using namespace Sys;
 
 int SignalEvent::set_handler(const SignalHandler & handler) const {
 	if( handler.sigaction()->sa_flags & (1<<SA_SIGINFO) ){
-		return ::sigaction(signo_, handler.sigaction(), 0);
+		return ::sigaction(m_signo, handler.sigaction(), 0);
 	} else {
 		_sig_func_ptr ptr = handler.sigaction()->sa_handler;
-		::signal(signo_, ptr);
+		::signal(m_signo, ptr);
 		return 0;
 	}
 }

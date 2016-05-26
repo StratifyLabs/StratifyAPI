@@ -14,6 +14,6 @@ int Hio::report(void * dest, int size){
 	return ioctl(I_HIO_REPORT, dest);
 }
 
-int Hio::setreport(const void * src, int size){
+int Hio::set_report(const void * src, int size){
 	return ioctl(I_HIO_SETREPORT, src);
 }

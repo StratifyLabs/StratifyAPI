@@ -10,7 +10,7 @@ using namespace Hal;
 Pio::Pio(port_t port) : Periph(CORE_PERIPH_PIO, port){}
 
 
-int Pio::attr(pio_attr_t * attr){
+int Pio::get_attr(pio_attr_t * attr){
 	return ioctl(I_PIO_GETATTR, attr);
 }
 
@@ -30,11 +30,11 @@ int Pio::clear_mask(unsigned int mask){
 	return ioctl(I_PIO_CLRMASK, mask);
 }
 
-u32 Pio::value(void){
+u32 Pio::get_value(){
 	return ioctl(I_PIO_GET);
 }
 
-int Pio::set(unsigned int value){
+int Pio::set_value(unsigned int value){
 	return ioctl(I_PIO_SET, value);
 }
 

@@ -81,15 +81,15 @@ public:
 
 	/*! \details Get attributes of the Core peripheral and stores them in \a attr.
 	 */
-	int attr(core_attr_t * attr);
+	int get_attr(core_attr_t * attr);
 	/*! \details Set the attributes for the Core device */
-	int setattr(const core_attr_t * attr);
+	int set_attr(const core_attr_t * attr);
 	/*! \details Execute a request to set the functionality of a pin.
 	 */
-	int setpinfunc(const core_pinfunc_t * req);
+	int set_pin_function(const core_pinfunc_t * req);
 
 	/*! \details Change pin functionality using a core_pinfunc_t structure */
-	inline int setpinfunc(const core_pinfunc_t & req){ return setpinfunc(&req); }
+	inline int set_pin_function(const core_pinfunc_t & req){ return set_pin_function(&req); }
 
 	/*! \details Change pin function.  This can be used
 	 * if the default pinassign values are not adequate for your
@@ -101,13 +101,13 @@ public:
 	 * @param func_port The functional port (e.g. 0 for UART0)
 	 * @return Zero on success
 	 */
-	inline int setpinfunc(int port, int pin, int func, int func_port){
+	inline int set_pin_function(int port, int pin, int func, int func_port){
 		core_pinfunc_t f;
 		f.io.port = port;
 		f.io.pin = pin;
 		f.periph_func = func;
 		f.periph_port = func_port;
-		return setpinfunc(&f);
+		return set_pin_function(&f);
 	}
 
 
@@ -115,15 +115,15 @@ public:
 	 */
 	int sleep(core_sleep_t level);
 	/*! \details Reset the device. */
-	void reset(void);
+	void reset();
 	/*! \details Invoke the device's bootloader. If no bootloader is availble, a
 	 * normal reset will occur.
 	 */
-	void invokebootloader(void);
+	void invoke_bootloader();
 
 
 	/*! \details Configure the clock output pin. */
-	int setclkout(const core_clkout_t * clkout);
+	int set_clkout(const core_clkout_t * clkout);
 
 #ifdef __MCU_ONLY__
 	int close();

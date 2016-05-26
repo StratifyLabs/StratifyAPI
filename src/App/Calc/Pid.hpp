@@ -17,7 +17,7 @@ class Pid_f {
 public:
 	Pid_f(float target = 0.0, float kp = 1.0, float ki = 0.1, float kd = 0.0, float min = 1.0, float max = 0.0);
 
-	void reset(void);
+	void reset();
 
 	inline void set_kp(float v){ _kp = v; }
 	inline void set_ki(float v){ _ki = v; }

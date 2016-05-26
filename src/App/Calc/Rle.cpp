@@ -8,7 +8,7 @@ using namespace Calc;
 Rle::Rle(){}
 
 
-int Rle::size(const void * src, int nbyte){
+int Rle::calc_size(const void * src, int nbyte){
 	int bp; //bytes processed
 	uint8_t size;
 	int next_dest_size;

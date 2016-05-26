@@ -43,96 +43,96 @@ Timer::Timer() {
 	reset();
 }
 
-void Timer::reset(void){
-	start_.tv_nsec = 0;
-	start_.tv_sec = 0;
-	stop_.tv_nsec = 0;
-	stop_.tv_sec = 0;
+void Timer::reset(){
+	m_start.tv_nsec = 0;
+	m_start.tv_sec = 0;
+	m_stop.tv_nsec = 0;
+	m_stop.tv_sec = 0;
 }
 
 
-int Timer::clock_usec(void){
+int Timer::get_clock_usec(){
 	struct timespec now;
 	clock_gettime(CLOCK_REALTIME, &now);
 	return now.tv_sec*1000000 + (now.tv_nsec) / 1000;
 }
 
-int Timer::clock_msec(void){
+int Timer::get_clock_msec(){
 	struct timespec now;
 	clock_gettime(CLOCK_REALTIME, &now);
 	return now.tv_sec*1000 + (now.tv_nsec) / 1000000;
 }
 
-int Timer::clock_sec(void){
+int Timer::get_clock_sec(){
 	struct timespec now;
 	clock_gettime(CLOCK_REALTIME, &now);
 	return now.tv_sec;
 }
 
-void Timer::start(void){
-	clock_gettime(CLOCK_REALTIME, &start_);
-	stop_.tv_sec = -1;
+void Timer::start(){
+	clock_gettime(CLOCK_REALTIME, &m_start);
+	m_stop.tv_sec = -1;
 }
 
-void Timer::resume(void){
+void Timer::resume(){
 	struct timespec new_start;
 	struct timespec now;
 
-	if( stop_.tv_sec < 0 ){
+	if( m_stop.tv_sec < 0 ){
 		return; //timer is not stopped
 	}
 
-	new_start = diff(stop_, start_);
+	new_start = diff(m_stop, m_start);
 	clock_gettime(CLOCK_REALTIME, &now);
-	start_ = diff(now, new_start);
-	stop_.tv_sec = -1;
+	m_start = diff(now, new_start);
+	m_stop.tv_sec = -1;
 }
 
 
-bool Timer::is_running(void){
-	if( stop_.tv_sec == -1 ){
+bool Timer::is_running(){
+	if( m_stop.tv_sec == -1 ){
 		return true;
 	}
 	return false;
 }
 
-u32 Timer::sec(void){
+u32 Timer::calc_sec(){
 	struct timespec now;
-	if( stop_.tv_sec < 0 ){
+	if( m_stop.tv_sec < 0 ){
 		clock_gettime(CLOCK_REALTIME, &now);
 	} else {
-		now = stop_;
+		now = m_stop;
 	}
 	//difference between now and start_
-	return now.tv_sec - start_.tv_sec;
+	return now.tv_sec - m_start.tv_sec;
 }
 
-u32 Timer::msec(void){
+u32 Timer::calc_msec(){
 	struct timespec now;
-	if( stop_.tv_sec < 0 ){
+	if( m_stop.tv_sec < 0 ){
 		clock_gettime(CLOCK_REALTIME, &now);
 	} else {
-		now = stop_;
+		now = m_stop;
 	}
 	//difference between now and start_
-	now = diff(now, start_);
+	now = diff(now, m_start);
 	return now.tv_sec*1000 + (now.tv_nsec + 500000) / 1000000;
 }
 
-u32 Timer::usec(void){
+u32 Timer::calc_usec(){
 	struct timespec now;
-	if( stop_.tv_sec < 0 ){
+	if( m_stop.tv_sec < 0 ){
 		clock_gettime(CLOCK_REALTIME, &now);
 	} else {
-		now = stop_;
+		now = m_stop;
 	}
 	//difference between now and start_
-	now = diff(now, start_);
+	now = diff(now, m_start);
 	return now.tv_sec*1000000 + (now.tv_nsec + 500) / 1000;
 }
 
-void Timer::stop(void){
-	clock_gettime(CLOCK_REALTIME, &stop_);
+void Timer::stop(){
+	clock_gettime(CLOCK_REALTIME, &m_stop);
 }
 
 #endif

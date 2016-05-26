@@ -12,19 +12,19 @@ Token::Token(){
 
 Token::Token(char * mem, size_t s, const char * src, const char * delim, const char * ignore, bool count_empty) : String(mem, s, false){
 	init_members();
-	count_empty_tokens = count_empty;
+	m_count_empty_tokens = count_empty;
 	clear(); assign(src); parse(delim, ignore);
 }
 
 Token::Token(const char * src, const char * delim, const char * ignore, bool count_empty) : String(src){
 	init_members();
-	count_empty_tokens = count_empty;
+	m_count_empty_tokens = count_empty;
 	parse(delim, ignore);
 }
 
 Token::Token(const String & src, const char * delim, const char * ignore, bool count_empty) : String(src){
 	init_members();
-	count_empty_tokens = count_empty;
+	m_count_empty_tokens = count_empty;
 	parse(delim, ignore);
 }
 
@@ -40,8 +40,8 @@ bool Token::belongs_to(const char c, const char * str, unsigned int len){
 	return false;
 }
 
-void Token::init_members(void){
-	num_tokens = 0; string_size = 0;
+void Token::init_members(){
+	m_num_tokens = 0; m_string_size = 0;
 }
 
 
@@ -51,17 +51,17 @@ void Token::parse(const char * delim, const char * ignore){
 	unsigned int len0, len1;
 	bool on_token = false;
 	char end_match;
-	num_tokens = 0;
+	m_num_tokens = 0;
 	len0 = strlen(delim);
 	if( ignore ){
 		len1 = strlen(ignore);
 	}
 
 	p = cdata();
-	string_size = String::size();
-	end = p + string_size;
-	if( count_empty_tokens == true ){
-		num_tokens++;
+	m_string_size = String::size();
+	end = p + m_string_size;
+	if( m_count_empty_tokens == true ){
+		m_num_tokens++;
 	}
 	while( p < end ){
 		if( ignore != 0 ){
@@ -79,15 +79,15 @@ void Token::parse(const char * delim, const char * ignore){
 
 		if( belongs_to(*p, delim, len0) ){
 			*p = 0;
-			if( count_empty_tokens == true ){
-				num_tokens++;
+			if( m_count_empty_tokens == true ){
+				m_num_tokens++;
 			}
 		}
 
-		if( count_empty_tokens == false ){
+		if( m_count_empty_tokens == false ){
 			if( *p != 0 ){
 				if( on_token == false ){
-					num_tokens++;
+					m_num_tokens++;
 					on_token = true;
 				}
 			} else {
@@ -105,11 +105,11 @@ const char * Token::at(size_t n) const {
 	unsigned int token = 0;
 	p = c_str();
 
-	if( num_tokens <= n ){
+	if( m_num_tokens <= n ){
 		return 0;
 	}
 
-	if( count_empty_tokens ){
+	if( m_count_empty_tokens ){
 		while( token != n ){
 			if( *p == 0 ){
 				token++;
@@ -118,7 +118,7 @@ const char * Token::at(size_t n) const {
 		}
 	} else {
 		i = 0;
-		while( (i < string_size) && (*p == 0) ){
+		while( (i < m_string_size) && (*p == 0) ){
 			i++;
 			p++;
 		}

@@ -19,7 +19,7 @@ public:
 	/*! \details Construct using an amount of time */
 	Time(u32 sec, u32 min = 0, u32 hour = 0);
 
-	inline operator u32(){ return t; }
+	inline operator u32(){ return m_time; }
 
 
 	/*! \details Add to the current value */
@@ -46,20 +46,19 @@ public:
 	 * @param min Number of minutes
 	 * @param sec Number of seconds
 	 */
-	void set(u32 hour, u32 min, u32 sec);
-
-	/*! \details Get the name of the month */
-	const char * month_name() const;
-
-	/*! \details The time value (number of seconds since epoch) */
-	inline time_t value() const { return t; }
+	void set_value(u32 hour, u32 min, u32 sec);
 
 	/*! \details Set the current value
 	 *
 	 * @param tm Number of seconds since epoch
 	 */
+	inline void set_value(time_t tm){ m_time = tm; }
 
-	inline void set_value(time_t tm){ t = tm; }
+	/*! \details Get the name of the month */
+	const char * month_name() const;
+
+	/*! \details The time value (number of seconds since epoch) */
+	inline time_t value() const { return m_time; }
 
 	/*! \details Seconds (from 0 to 59) */
 	u32 second() const;
@@ -69,22 +68,22 @@ public:
 	u32 hour() const;
 
 	/*! \details Day of Month (from 1 to 31) */
-	u32 day() const;
+	u32 get_day() const;
 	/*! \details Day of Week (from 1 to 7) */
-	u32 weekday() const;
+	u32 get_weekday() const;
 	/*! \details Day of the year (1 to 366) */
-	u32 yearday() const;
+	u32 get_yearday() const;
 	/*! \details Month (from 1 to 12) */
-	u32 month() const;
+	u32 get_month() const;
 	/*! \details Year (e.g. 2014) */
-	u32 year() const;
+	u32 get_year() const;
 
 	/*! \details Convert the time to a struct tm */
-	struct tm tm() const;
+	struct tm get_tm() const;
 
 
 private:
-	time_t t;
+	time_t m_time;
 
 };
 

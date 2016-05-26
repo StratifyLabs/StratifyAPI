@@ -7,15 +7,15 @@ using namespace Sys;
 
 
 Bmp::Bmp(){
-	_offset = 0;
+	m_offset = 0;
 }
 
 Bmp::Bmp(const char * name){
 	bmp_header_t hdr;
 
-	dib.width = -1;
-	dib.height = -1;
-	dib.bits_per_pixel = 0;
+	m_dib.width = -1;
+	m_dib.height = -1;
+	m_dib.bits_per_pixel = 0;
 
 	if( this->open(name, RDWR) < 0 ){
 		return;
@@ -26,20 +26,20 @@ Bmp::Bmp(const char * name){
 		return;
 	}
 
-	if( read(&dib, sizeof(dib)) != sizeof(dib) ){
+	if( read(&m_dib, sizeof(m_dib)) != sizeof(m_dib) ){
 		close();
 		return;
 	}
 
 	if( seek(hdr.offset) != (int)hdr.offset ){
-		dib.width = -1;
-		dib.height = -1;
-		dib.bits_per_pixel = 0;
+		m_dib.width = -1;
+		m_dib.height = -1;
+		m_dib.bits_per_pixel = 0;
 		close();
 		return;
 	}
 
-	_offset = hdr.offset;
+	m_offset = hdr.offset;
 }
 
 int Bmp::create(const char * name, i32 width, i32 height, u16 planes, u16 bits_per_pixel){
@@ -50,8 +50,8 @@ int Bmp::create(const char * name, i32 width, i32 height, u16 planes, u16 bits_p
 		return -1;
 	}
 
-	hdr.size = sizeof(hdr) + sizeof(dib) + (width*height*bits_per_pixel + 7) / 8;
-	hdr.offset = sizeof(hdr) + sizeof(dib);
+	hdr.size = sizeof(hdr) + sizeof(m_dib) + (width*height*bits_per_pixel + 7) / 8;
+	hdr.offset = sizeof(hdr) + sizeof(m_dib);
 	hdr.signature = SIGNATURE;
 	hdr.resd1 = 0;
 	hdr.resd2 = 0;
@@ -60,13 +60,13 @@ int Bmp::create(const char * name, i32 width, i32 height, u16 planes, u16 bits_p
 		return -1;
 	}
 
-	dib.bits_per_pixel = bits_per_pixel;
-	dib.hdr_size = sizeof(dib);
-	dib.height = height;
-	dib.width = width;
-	dib.planes = planes;
+	m_dib.bits_per_pixel = bits_per_pixel;
+	m_dib.hdr_size = sizeof(m_dib);
+	m_dib.height = height;
+	m_dib.width = width;
+	m_dib.planes = planes;
 
-	if( write(&dib, sizeof(dib)) < 0 ){
+	if( write(&m_dib, sizeof(m_dib)) < 0 ){
 		return -1;
 	}
 
@@ -100,17 +100,17 @@ int Bmp::create_appfs(const char * name, i32 width, i32 height, u16 planes, u16 
 	return 0;
 }
 
-unsigned int Bmp::row_size() const{
-	return (((dib.bits_per_pixel/8)*dib.width + 3) / 4) * 4;
+unsigned int Bmp::calc_row_size() const{
+	return (((m_dib.bits_per_pixel/8)*m_dib.width + 3) / 4) * 4;
 }
 
 int Bmp::seek_row(i32 y){
-	if( dib.height > 0 ){
+	if( m_dib.height > 0 ){
 		//image is upside down -- seek to beginning of row
-		return seek(_offset + row_size() * (dib.height - (y + 1)));
+		return seek(m_offset + calc_row_size() * (m_dib.height - (y + 1)));
 	}
 
-	return seek(_offset + row_size() * y);
+	return seek(m_offset + calc_row_size() * y);
 }
 
 int Bmp::read_pixel(uint8_t * pixel, ssize_t pixel_size, bool mono, uint8_t thres){

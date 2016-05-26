@@ -17,13 +17,11 @@
 namespace Var {
 
 /*! \brief String class
- * \details This is an embedded friendly string class.  It is
- * based on fixed capacity c-strings and uses many of the cstring
- * functions for implementation.  To keep things familiar, the API
- * is similar to std::string.
+ * \details This is an embedded friendly string class.  It is similar
+ * to the C++ string type but is built on Var::Data and
+ * cstring functions.  The naming convetion follows that of std::string
+ * rather than the typical Stratify Library naming convention.
  *
- * It also uses lightweight number formatting code in cases where
- * sprintf() is not available or is too large.
  *
  * \code
  * #include <stfy/Var.hpp>
@@ -69,7 +67,7 @@ public:
 
 	String(char * mem, size_t cap, bool readonly = false);
 
-	inline int set_capacity(size_t s){ return Data::set_capacity(s+1); }
+	inline int set_capacity(size_t s){ return Data::set_min_capacity(s+1); }
 
 	/*! \details Assign a c-string */
 	String& operator=(const char * a){ assign(a); return *this; }
@@ -91,6 +89,7 @@ public:
 	/*! \details Convert to a float */
 	float atoff() const;
 
+	/*! \details Get a sub string of the string */
 	String substr(size_t pos = 0, size_t len = npos) const;
 
 	/*! \details Insert \a s (zero terminated) into string at \a pos */
@@ -130,9 +129,9 @@ public:
 	inline void push_back(char c) { append(c); }
 
 	/*! \details Copy the \a nth element (separated by \a sep) of the string to to \a dest */
-	bool csv(String & dest, int n, char sep = ',', char term = '\n');
+	bool get_delimited_data(String & dest, int n, char sep = ',', char term = '\n');
 	/*! \details Return the number of elements in the String */
-	int csv_size(char sep = ',', char term = '\n');
+	int calc_delimited_data_size(char sep = ',', char term = '\n');
 
 	/*! \details Copy a portion of the string to \a s */
 	size_t copy(char * s, size_t len, size_t pos = 0) const;
@@ -193,7 +192,7 @@ class StringPath : public String {
 public:
 	StringPath() : String(LINK_PATH_MAX){}
 
-	void strip_suffix(void);
+	void strip_suffix();
 	const char * file_name() const;
 	const char * filename() const { return file_name(); }
 };

@@ -8,10 +8,11 @@
 #ifndef FIFO_HPP_
 #define FIFO_HPP_
 
-#include <sys/types.h>
+#include <mcu/types.h>
 #include <iface/dev/fifo.h>
 
-#include "../Hal/Phy.hpp"
+#include "../Hal/Dev.hpp"
+
 
 namespace Sys {
 
@@ -21,8 +22,8 @@ class FifoAttr {
 	friend class Fifo;
 public:
 	FifoAttr(){ memset(&attr_, 0, sizeof(attr_)); }
-	uint32_t used() const { return attr_.used; }
-	uint32_t size() const { return attr_.size; }
+	u32 used() const { return attr_.used; }
+	u32 size() const { return attr_.size; }
 	bool overflow() const { return attr_.overflow != 0; }
 private:
 	fifo_attr_t attr_;
@@ -53,17 +54,17 @@ private:
  * \endcode
  *
  */
-class Fifo : public Hal::Phy {
+class Fifo : public Hal::Dev {
 public:
 	Fifo();
 
 	/*! \details Copy the fifo attributes */
-	int attr(fifo_attr_t * attr);
+	int get_attr(fifo_attr_t * attr);
 
 	/*! \details Return the fifo attributes */
-	const FifoAttr attr(){
+	const FifoAttr get_attr(){
 		FifoAttr a;
-		attr(&a.attr_);
+		get_attr(&a.attr_);
 		return a;
 	};
 
@@ -74,7 +75,7 @@ public:
 	/*! \details Exit the FIFO */
 	int exit();
 	/*! \details Set the FIFO write block */
-	int setwriteblock();
+	int set_writeblock();
 
 };
 

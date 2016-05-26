@@ -79,7 +79,7 @@ int Periph::open(const char * name, int flags){
 	int fileno;
 	fileno = lookup_fileno();
 	if( fileno < 0 ){
-		Phy::open(name, flags);
+		Dev::open(name, flags);
 		if( fd > 0 ){
 			fd_map[fd] = periph_port;
 		} else {
@@ -116,7 +116,7 @@ int Periph::close(){
 	update_fileno();
 	if( fd >= 0 ){
 		fd_map[fd] = 0;
-		Phy::close();
+		Dev::close();
 		fd = -1;
 	}
 	return ret;
@@ -124,39 +124,39 @@ int Periph::close(){
 
 int Periph::read(void * buf, int nbyte) const {
 	update_fileno();
-	return Phy::read(buf, nbyte);
+	return Dev::read(buf, nbyte);
 }
 
 int Periph::write(const void * buf, int nbyte) const {
 	update_fileno();
-	return Phy::write(buf, nbyte);
+	return Dev::write(buf, nbyte);
 }
 
 #ifndef __link
 int Periph::read(Aio & aio) const {
 	update_fileno();
-	return Phy::read(aio);
+	return Dev::read(aio);
 }
 
 int Periph::write(Aio & aio) const {
 	update_fileno();
-	return Phy::write(aio);
+	return Dev::write(aio);
 }
 #endif
 
 int Periph::ioctl(int req, void * arg) const {
 	update_fileno();
-	return Phy::ioctl(req, arg);
+	return Dev::ioctl(req, arg);
 }
 
 int Periph::seek(int loc, int whence) const {
 	update_fileno();
-	return Phy::seek(loc, whence);
+	return Dev::seek(loc, whence);
 }
 
-int Periph::fileno(void) const {
+int Periph::fileno() const {
 	update_fileno();
-	return Phy::fileno();
+	return Dev::fileno();
 }
 
 

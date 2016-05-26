@@ -92,14 +92,14 @@ public:
 	 *
 	 *  \return Zero if str is successfully fetched
 	 */
-	int value(Var::String & dest, const char * key = 0) const;
-	inline int value(Var::String * dest, const char * key = 0) const {
-		return value(*dest, key);
+	int get_value(Var::String & dest, const char * key = 0) const;
+	inline int get_value(Var::String * dest, const char * key = 0) const {
+		return get_value(*dest, key);
 	}
 
-	int setvalue(const Var::String * src, const char * key) const;
-	inline int setvalue(const Var::String & src, const char * key) const {
-		return setvalue(&src, key);
+	int set_value(const Var::String * src, const char * key) const;
+	inline int set_value(const Var::String & src, const char * key) const {
+		return set_value(&src, key);
 	}
 
 
@@ -251,10 +251,10 @@ public:
 	} context_t;
 
 	inline const context_t & context() const { return content; }
-	inline void setcontext(const context_t & context) { content = context; }
+	inline void set_context(const context_t & context) { content = context; }
 
 
-	inline void reset(void){ reset_context(); }
+	inline void reset(){ reset_context(); }
 
 private:
 
@@ -263,7 +263,7 @@ private:
 
 	int indent;
 
-	void reset_context(void);
+	void reset_context();
 
 	int find_context(const char * str, const context_t & current, context_t & target) const;
 

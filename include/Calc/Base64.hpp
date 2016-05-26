@@ -31,7 +31,7 @@ public:
 	 * @param nbyte Number of bytes to encode
 	 * @return The string length if the bytes are encoded
 	 */
-	static int esize(int nbyte);
+	static int calc_encoded_size(int nbyte);
 	/*! \details This methods decodes base64 encoded data.
 	 *
 	 * @param dest Pointer to destination memory (binary format)
@@ -48,7 +48,7 @@ public:
 	 * @return The string length if the bytes are encoded
 	 *
 	 */
-	static int dsize(int nbyte);
+	static int calc_decoded_size(int nbyte);
 
 };
 };

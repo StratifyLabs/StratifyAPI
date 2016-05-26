@@ -10,10 +10,10 @@ using namespace Draw;
 MBFont::MBFont() {
 	//max_byte_width_ = 0;
 	//max_height_ = 0;
-	_bitmap = 0;
-	_offset = 0;
-	_space_size = 8;
-	_letter_spacing = 1;
+	m_bitmap = 0;
+	m_offset = 0;
+	m_space_size = 8;
+	m_letter_spacing = 1;
 }
 
 int MBFont::len(const char * str) const {
@@ -25,10 +25,10 @@ int MBFont::len(const char * str) const {
 		if( *str == ' ' ){
 			l += space_size();
 		} else {
-			if( load_char(_ch, *str, true) < 0){
+			if( load_char(m_char, *str, true) < 0){
 				return -1;
 			}
-			l += _ch.xadvance;
+			l += m_char.xadvance;
 		}
 		str++;
 	}
@@ -43,16 +43,16 @@ int MBFont::set_char(char c, MBitmap * bitmap, mg_point_t point) const {
 		return -1;
 	}
 
-	point.x += _ch.xoffset;
-	point.y += _ch.yoffset;
+	point.x += m_char.xoffset;
+	point.y += m_char.yoffset;
 
 	bitmap->set_bitmap(cbp, point);
 
 	//this needs to be char width not bitmap width
-	return _ch.xadvance;
+	return m_char.xadvance;
 }
 
-int MBFont::clr_char(char c, MBitmap * bitmap, mg_point_t point) const {
+int MBFont::clear_char(char c, MBitmap * bitmap, mg_point_t point) const {
 	const MBitmap * cbp;
 
 	cbp = this->bitmap(c, true);
@@ -60,16 +60,16 @@ int MBFont::clr_char(char c, MBitmap * bitmap, mg_point_t point) const {
 		return -1;
 	}
 
-	point.x += _ch.xoffset;
-	point.y += _ch.yoffset;
+	point.x += m_char.xoffset;
+	point.y += m_char.yoffset;
 
-	bitmap->clr_bitmap(cbp, point);
+	bitmap->clear_bitmap(cbp, point);
 
-	return _ch.xadvance;
+	return m_char.xadvance;
 }
 
 
-int MBFont::clr_str(const char * str, MBitmap * bitmap, mg_point_t point) const {
+int MBFont::clear_str(const char * str, MBitmap * bitmap, mg_point_t point) const {
 	char c;
 	mg_size_t w;
 	if( bitmap == 0 ){
@@ -80,7 +80,7 @@ int MBFont::clr_str(const char * str, MBitmap * bitmap, mg_point_t point) const 
 		if( c == ' ' ){
 			w = space_size();
 		} else {
-			w = clr_char(c, bitmap, point);
+			w = clear_char(c, bitmap, point);
 		}
 		if( w < 0 ){
 			return -1;
@@ -105,7 +105,7 @@ int MBFont::set_str(const char * str, MBitmap * bitmap, mg_point_t point) const 
 			w = space_size();
 		} else {
 			set_char(c, bitmap, point);
-			w = _ch.xadvance;
+			w = m_char.xadvance;
 		}
 
 		//apply kerning

@@ -3,14 +3,14 @@
 #ifndef KERNEL_HPP_
 #define KERNEL_HPP_
 
+#include <Hal/Dev.hpp>
 #include <iface/dev/sys.h>
 #include <iface/link.h>
 
-#include "../Hal/Phy.hpp"
 
 namespace Sys {
 
-class Kernel : public Hal::Phy {
+class Kernel : public Hal::Dev {
 public:
 	Kernel();
 
@@ -87,18 +87,18 @@ public:
 	 * @return Zero on success
 	 */
 	inline int open(){
-		return Phy::open("/dev/sys", RDWR);
+		return Dev::open("/dev/sys", RDWR);
 	}
 
-	using Phy::open;
+	using Dev::open;
 
 	/*! \details Load the current kernel attributes
 	 *
 	 * @param attr  A reference to where the data should be stored
 	 * @return Zero on success
 	 */
-	int attr(sys_attr_t & attr);
-	inline int attr(sys_attr_t * v){ return attr(*v); }
+	int get_attr(sys_attr_t & attr);
+	inline int attr(sys_attr_t * v){ return get_attr(*v); }
 
 	/*! \details Load the kernel's task attributes
 	 *
@@ -106,10 +106,10 @@ public:
 	 * @param task Which task to load
 	 * @return
 	 */
-	int taskattr(sys_taskattr_t * attr, int task = -1);
+	int get_taskattr(sys_taskattr_t * attr, int task = -1);
 
-	inline int taskattr(sys_taskattr_t & attr, int task = -1){
-		return taskattr(&attr, task);
+	inline int get_taskattr(sys_taskattr_t & attr, int task = -1){
+		return get_taskattr(&attr, task);
 	}
 
 

@@ -22,11 +22,11 @@ public:
 	 */
 	int load(const char * path);
 	MBitmap bitmap(char c) const;
-	inline int height() const { return f->h; }
-	inline int width() const { return f->w; }
+	inline int h() const { return m_font->h; }
+	inline int w() const { return m_font->w; }
 
 private:
-	const font8_t * f;
+	const font8_t * m_font;
 };
 
 };

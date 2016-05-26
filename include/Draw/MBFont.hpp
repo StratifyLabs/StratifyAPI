@@ -25,34 +25,33 @@ public:
 	 */
 	virtual const MBitmap * bitmap(char c, bool ascii = true) const = 0;
 
-	int offset() const { return _ch.offset; }
-	int yoffset() const { return _ch.yoffset; }
+	//Attribute access methods
+	int offset() const { return m_char.offset; }
+	int yoffset() const { return m_char.yoffset; }
 	int len(const char * str) const;
-	int size() const { return hdr.num_chars; }
+	int size() const { return m_hdr.num_chars; }
+	inline void set_letter_spacing(mg_size_t spacing){ m_letter_spacing = spacing; }
+	inline mg_size_t letter_spacing() const { return m_letter_spacing; }
+	inline void set_space_size(int s){ m_space_size = s; }
+	inline int space_size() const { return m_space_size; }
 
 	int set_str(const char * str, MBitmap * bitmap, mg_point_t point) const;
-	int clr_str(const char * str, MBitmap * bitmap, mg_point_t point) const;
+	int clear_str(const char * str, MBitmap * bitmap, mg_point_t point) const;
 	int set_char(char c, MBitmap * bitmap, mg_point_t point) const;
-	int clr_char(char c, MBitmap * bitmap, mg_point_t point) const;
-
-	inline void set_letter_spacing(mg_size_t spacing){ _letter_spacing = spacing; }
-	inline mg_size_t letter_spacing() const { return _letter_spacing; }
-
-	inline void set_space_size(int s){ _space_size = s; }
-	inline int space_size() const { return _space_size; }
+	int clear_char(char c, MBitmap * bitmap, mg_point_t point) const;
 
 protected:
 	virtual int load_char(mbfont_char_t & ch, char c, bool ascii) const = 0;
 	virtual int load_bitmap(const mbfont_char_t & ch) const = 0;
 	virtual int load_kerning(u16 first, u16 second) const { return 0; }
 
-	mutable MBitmap * _bitmap;
-	mutable int _offset;
-	mutable mbfont_char_t _ch;
+	mutable MBitmap * m_bitmap;
+	mutable int m_offset;
+	mutable mbfont_char_t m_char;
 
-	mg_size_t _letter_spacing;
-	int _space_size;
-	mbfont_hdr_t hdr;
+	mg_size_t m_letter_spacing;
+	int m_space_size;
+	mbfont_hdr_t m_hdr;
 
 private:
 

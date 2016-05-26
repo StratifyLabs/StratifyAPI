@@ -8,11 +8,11 @@
 
 namespace Var {
 
-class ItemAbstract {
+class ItemObject {
 public:
 	int save(const char * path, size_t offset = 0) const;
 	int load(const char * path, size_t offset = 0);
-	void clear(void);
+	void clear();
 
 protected:
 	virtual void * data_ptr() = 0;
@@ -22,7 +22,7 @@ protected:
 };
 
 
-template<typename data_type> class Item: public ItemAbstract {
+template<typename data_type> class Item: public ItemObject {
 public:
 	inline Item(){ memset(&_item, 0, sizeof(_item)); }
 	inline Item(const data_type & item){ set(item); }

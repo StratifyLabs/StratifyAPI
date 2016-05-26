@@ -28,19 +28,19 @@ public:
 
 
 	int init(int pinassign);
-	int exit(void);
+	int exit();
 	int open(int crystal);
-	int close(void);
+	int close();
 	int writemem(u32 loc, const void * buf, int nbyte, u32 sector);
 	void set_ram_buffer(u32 addr);
 	int readmem(u32 loc, void * buf, int nbyte);
-	int reset(void);
-	int start_bootloader(void);
+	int reset();
+	int start_bootloader();
 	int sync_bootloader(u32 crystal);
 	int sync_bootloader_lpc177x_8x(u32 crystal);
 	int unlock(const char * unlock_code);
-	int echo_off(void);
-	int echo_on(void);
+	int echo_off();
+	int echo_on();
 	int wr_ram(u32 ram_dest /*! The RAM destination address--must be a word boundary */,
 			void * src /*! A pointer to the source data */,
 			u32 size /*! The number of bytes to write--must be a multiple of 4 */);
@@ -58,8 +58,8 @@ public:
 			u32 end /*! The last sector to erase--must be >= start */);
 	int blank_check_sector(u32 start /*! The first sector to blank check */,
 			u32 end /*! The last sector to blank check--must be >= start */);
-	u32 rd_part_id(void);
-	u32 rd_boot_version(void);
+	u32 rd_part_id();
+	u32 rd_boot_version();
 	int memcmp(u32 addr0 /*! The beginning of the first block */,
 			u32 addr1 /*! The beginning of the second block */,
 			u32 size /*! The number of bytes to compare */);
@@ -83,7 +83,7 @@ private:
 
 	int sendcommand(const char * cmd, int timeout, int wait_ms = 0);
 
-	int flush(void);
+	int flush();
 
 };
 

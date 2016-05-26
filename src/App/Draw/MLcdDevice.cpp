@@ -20,7 +20,7 @@ int MLcdDevice::init(const char * name){
 	mlcd_attr_t attr;
 
 	if( name != 0 ){
-		if ( Phy::open(name, READWRITE) < 0 ){
+		if ( Dev::open(name, READWRITE) < 0 ){
 			return -1;
 		}
 
@@ -40,12 +40,12 @@ int MLcdDevice::init(const char * name){
 	return -1;
 }
 
-void MLcdDevice::clear(void){
+void MLcdDevice::clear(){
 	MBitmap::clear();
 }
 
 /*! \brief Pure virtual function that copies local LCD memory to the LCD screen */
-void MLcdDevice::refresh(void){
+void MLcdDevice::refresh(){
 	ioctl(I_MLCD_TOUCH);
 }
 

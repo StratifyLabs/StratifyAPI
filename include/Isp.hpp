@@ -10,7 +10,7 @@ namespace Isp {
 
 }
 
-#include "Isp/LpcIsp.hpp"
+#include <Isp/Lpc.hpp>
 
 using namespace Isp;
 

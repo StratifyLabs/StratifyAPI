@@ -39,7 +39,7 @@ namespace Hal {
  * 	char buffer[256];
  * 	uart.open(Uart::NONBLOCK|Uart::RDWR);
  *  //now set the attributes
- * 	uart.setattr(115200, //115200 baud rate
+ * 	uart.set_attr(115200, //115200 baud rate
  * 	0, //pin assignment 0 (P0.2 and P0.3 on LPC17xx)
  * 	Uart::NONE, // no parity
  * 	Uart::STOP1, //one stop bit
@@ -56,16 +56,16 @@ public:
 	Uart(port_t port);
 
 	/*! \details Get UART attributes in \a attr */
-	int attr(uart_attr_t * attr);
+	int get_attr(uart_attr_t * attr);
 	/*! \details Set UART attributes to \a attr */
-	int setattr(const uart_attr_t * attr);
+	int set_attr(const uart_attr_t * attr);
 	/*! \details This method gets a single byte (if available from the UART).  Upon
 	 * success, the byte is written to the value pointed to by \a c.
 	 * \returns Zero on successfully reading a byte, -1 if no bytes are available.
 	 */
-	int getbyte(char * c);
+	int get_byte(char * c);
 	/*! \details Flush the TX/RX buffers */
-	int flush(void);
+	int flush();
 
 	using Periph::write;
 
@@ -73,7 +73,7 @@ public:
 	void setfifo(const device_cfg_t * cfg){ fifocfg[port_] = cfg; }
 	int read(void * buf, int nbyte);
 	int write(const void * buf, int nbyte);
-	int close(void);
+	int close();
 #endif
 
 
@@ -93,7 +93,7 @@ public:
 	};
 
 	/*! \brief Set the attributes as specified */
-	int setattr(int baudrate /*! Baudrate */ = 19200,
+	int set_attr(int baudrate /*! Baudrate */ = 19200,
 			int pin_assign /*! Pin assignment */ = 0,
 			int parity /*! Parity */ = UART_PARITY_NONE,
 			int stop /*! Number of stop bits */ = UART_ATTR_STOP_BITS_2,
@@ -105,7 +105,7 @@ public:
 		attr.stop = stop;
 		attr.width = width;
 		attr.start = UART_ATTR_START_BITS_1;
-		return setattr(&attr);
+		return set_attr(&attr);
 	}
 
 	/*! \details Initialize the UART to
@@ -124,7 +124,7 @@ public:
 		if( open() < 0 ){
 			return -1;
 		}
-		return setattr(baudrate, pin_assign, parity, stop, width);
+		return set_attr(baudrate, pin_assign, parity, stop, width);
 	}
 
 private:

@@ -59,35 +59,34 @@ public:
 	 * @param s The number of minimum bytes needed
 	 * @return Zero on success
 	 */
-	int set_capacity(size_t s);
-	inline int mincapacity(size_t s){ return set_capacity(s); }
+	int set_min_capacity(size_t s);
 
 	/*! \details Retrieve a pointer to the data.
 	 * This will return zero if the data is readonly.
 	 */
-	inline void * data() const __attribute__((always_inline)) { return mem_write; }
+	inline void * data() const __attribute__((always_inline)) { return m_mem_write; }
 	/*! \details Retrieve a char pointer to the data.
 	 * This will return zero if the data is readonly.
 	 */
-	inline char * cdata() const __attribute__((always_inline)) { return (char *)mem_write; }
+	inline char * cdata() const __attribute__((always_inline)) { return (char *)m_mem_write; }
 	/*! \details Retrieve a pointer to const char data.
 	 */
-	inline const char * cdata_const() const { return (const char *)mem; }
+	inline const char * cdata_const() const { return (const char *)m_mem; }
 	/*! \details Retrieve a pointer to const data.
 	 */
-	inline const void * data_const() const { return mem; }
+	inline const void * data_const() const { return m_mem; }
 
 	/*! \details This method will return the current capcity of the data storage object.
 	 *
 	 * @return Number of bytes in the data object
 	 */
-	inline size_t capacity() const { return _capacity; }
+	inline size_t capacity() const { return m_capacity; }
 	int free();
 
 	/*! \details Write all zeros to the data.
 	 * This will not attempt to write read-only data.
 	 */
-	void clear(void);
+	void clear();
 
 	/*! \details Fill the data with the specified value.
 	 * This will not attempt to write read-only data.
@@ -106,18 +105,18 @@ public:
 	 * @return The number of bytes availabe in a data object
 	 *
 	 */
-	virtual size_t size() const { return _capacity; }
+	virtual size_t calc_size() const { return m_capacity; }
 
 private:
 
-	void zero(void);
+	void zero();
 
-	static const int zero_value;
+	static const int m_zero_value;
 
-	const void * mem;
-	void * mem_write;
-	size_t _capacity;
-	bool needs_free;
+	const void * m_mem;
+	void * m_mem_write;
+	size_t m_capacity;
+	bool m_needs_free;
 
 };
 

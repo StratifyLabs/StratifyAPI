@@ -62,23 +62,23 @@ public:
 
 
 	/*! \brief Return the buffer pointer */
-	volatile void * buf(void) const { return aio_var.buf; }
+	volatile void * buf() const { return aio_var.buf; }
 	/*! \brief Set the buffer pointer */
-	void setbuf(volatile void * buf){ aio_var.buf = (void*)buf; }
+	void set_buf(volatile void * buf){ aio_var.buf = (void*)buf; }
 	/*! \brief Return the number of bytes to transfer */
-	int nbytes(void) const { return aio_var.nbyte; }
+	int nbytes() const { return aio_var.nbyte; }
 	/*! \brief Set the number of bytes to transfer */
-	void setnbytes(int nbytes){ aio_var.nbyte = nbytes; }
+	void set_nbytes(int nbytes){ aio_var.nbyte = nbytes; }
 	/*! \brief Return the offset (or channel for Dac, Adc, Pwm, etc) */
-	int offset(void) const { return aio_var.loc; }
+	int offset() const { return aio_var.loc; }
 	/*! \brief Set the offset (or channel for Dac, Adc, Pwm, etc) */
-	void setoffset(int offset){ aio_var.loc = offset; }
+	void set_offset(int offset){ aio_var.loc = offset; }
 	/*! \brief Return the return value of the operation */
-	int ret(void) const { return aio_var.nbyte; }
+	int ret() const { return aio_var.nbyte; }
 	/*! \brief Return the error number of the operation */
-	int error(void) const { return aio_var.nbyte; }
+	int error() const { return aio_var.nbyte; }
 	/*! \brief Check to see if operation is complete */
-	bool done(void) const {
+	bool done() const {
 		if(  aio_var.flags & BUSY_FLAG ){
 			return false;
 		} else {
@@ -113,23 +113,23 @@ public:
 	}
 
 	/*! \details Return the buffer pointer */
-	volatile void * buf(void) const { return aio_var.aio_buf; }
+	volatile void * buf() const { return aio_var.aio_buf; }
 	/*! \details Set the buffer pointer */
-	void setbuf(volatile void * buf){ aio_var.aio_buf = buf; }
+	void set_buf(volatile void * buf){ aio_var.aio_buf = buf; }
 	/*! \details Return the number of bytes to transfer */
-	int nbytes(void) const { return aio_var.aio_nbytes; }
+	int nbytes() const { return aio_var.aio_nbytes; }
 	/*! \details Set the number of bytes to transfer */
-	void setnbytes(int nbytes){ aio_var.aio_nbytes = nbytes; }
+	void set_nbytes(int nbytes){ aio_var.aio_nbytes = nbytes; }
 	/*! \details Return the offset (or channel for Dac, Adc, Pwm, etc) */
-	int offset(void) const { return aio_var.aio_offset; }
+	int offset() const { return aio_var.aio_offset; }
 	/*! \details Set the offset (or channcel for Dac, Adc, Pwm, etc) */
-	void setoffset(int offset){ aio_var.aio_offset = offset; }
+	void set_offset(int offset){ aio_var.aio_offset = offset; }
 	/*! \details Return the return value of the operation */
-	int ret(void){ return aio_return(&aio_var); }
+	int ret(){ return aio_return(&aio_var); }
 	/*! \details Return the error number of the operation */
-	int error(void){ return aio_error(&aio_var); }
+	int error(){ return aio_error(&aio_var); }
 	/*! \details Check to see if operation is complete */
-	bool done(void) const {
+	bool done() const {
 		if( aio_error(&aio_var) == EINPROGRESS ){
 			return false;
 		} else {
@@ -157,7 +157,7 @@ public:
 #endif
 
 	/*! \details Check to see if operation is still in progress */
-	inline bool inprogress(void) const { return !done(); }
+	inline bool inprogress() const { return !done(); }
 
 
 	struct aiocb aio_var;

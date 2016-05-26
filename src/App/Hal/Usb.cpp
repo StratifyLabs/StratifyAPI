@@ -7,51 +7,51 @@ using namespace Hal;
 
 Usb::Usb(port_t port) : Periph(CORE_PERIPH_USB, port){}
 
-int Usb::attr(usb_attr_t * attr){
+int Usb::get_attr(usb_attr_t * attr){
 	return ioctl(I_USB_GETATTR, attr);
 }
 
-int Usb::setattr(usb_attr_t * attr){
+int Usb::set_attr(usb_attr_t * attr){
 	return ioctl(I_USB_GETATTR, attr);
 }
-int Usb::reset(void){
+int Usb::reset(){
 	return ioctl(I_USB_RESET);
 }
-int Usb::attach(void){
+int Usb::attach(){
 	return ioctl(I_USB_ATTACH);
 }
-int Usb::configure(void){
+int Usb::configure(){
 	return ioctl(I_USB_CONFIGURE);
 }
 
-int Usb::detach(void){
+int Usb::detach(){
 	return ioctl(I_USB_DETACH);
 }
 
-int Usb::disableep(int ep){
+int Usb::disable_endpoint(int ep){
 	return ioctl(I_USB_DISABLEEP, ep);
 }
 
-int Usb::enableep(int ep){
+int Usb::enable_endpoint(int ep){
 	return ioctl(I_USB_ENABLEEP, ep);
 }
 
-bool Usb::isconnected(void){
+bool Usb::is_connected(){
 	return ioctl(I_USB_ISCONNECTED);
 }
 
-int Usb::resetep(int ep){
+int Usb::reset_endpoint(int ep){
 	return ioctl(I_USB_RESETEP, ep);
 }
 
-int Usb::setaddr(int addr){
+int Usb::set_addr(int addr){
 	return ioctl(I_USB_SETATTR, addr);
 }
 
-int Usb::stallep(int ep){
+int Usb::stall_endpoint(int ep){
 	return ioctl(I_USB_STALLEP, ep);
 }
 
-int Usb::unstallep(int ep){
+int Usb::unstall_endpoint(int ep){
 	return ioctl(I_USB_UNSTALLEP, ep);
 }

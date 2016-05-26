@@ -50,7 +50,7 @@ namespace Hal {
  * Tmr tmr(0);
  * tmr.init(); //use default settings (1MHz CPU timer)
  *
- * tmr.setaction(0,
+ * tmr.set_action(0,
  * 	Tmr::RESET); //reset the timer to zero when the event happens
  * 	//Now assign a value to output compare channel 0
  * tmr.setoc(0, //we are using output compare channel 0
@@ -65,11 +65,11 @@ class Tmr : public Periph {
 public:
 	Tmr(port_t port);
 	/*! \details Get the TMR attributes */
-	int attr(tmr_attr_t * attr);
+	int get_attr(tmr_attr_t * attr);
 	/*! \details Set the TMR attributes */
-	int setattr(const tmr_attr_t * attr);
+	int set_attr(const tmr_attr_t * attr);
 
-	/*! \details This lists the values for the event when using setaction().  The values
+	/*! \details This lists the values for the event when using set_action().  The values
 	 * can be Or'd (|) together such as Tmr::RESET|Tmr::INTERRUPT.
 	 */
 	enum {
@@ -84,9 +84,9 @@ public:
 
 
 	/*! \details Set the TMR action */
-	int setaction(const tmr_action_t * action);
+	int set_action(const tmr_action_t * action);
 	/*! \details Set the TMR action */
-	int setaction(int channel /*! The channel to use */,
+	int set_action(int channel /*! The channel to use */,
 			int event /*! The event such as Tmr::INTERRUPT */,
 			mcu_callback_t callback /*! Callback executed if Tmr::INTERRUPT is used */ =0,
 			void * context /*! First argument passed to callback */ = 0){
@@ -95,65 +95,62 @@ public:
 		action.event = event;
 		action.callback = callback;
 		action.context = context;
-		return setaction(&action);
+		return set_action(&action);
 	}
 	/*! \details Turn the TMR on (start counting) */
-	int on(void);
+	int on();
 	/*! \details Turn the TMR off (stop counting) */
-	int off(void);
+	int off();
 	/*! \details Set the output compare attributes */
-	int setoc(const tmr_reqattr_t * req);
+	int set_output_compare(const tmr_reqattr_t * req);
 	/*! \details Set the output compare unit with given parameters */
-	int setoc(int channel, uint32_t value){
+	int set_output_compare(int channel, uint32_t value){
 		tmr_reqattr_t req;
 		req.channel = channel;
 		req.value = value;
-		return setoc(&req);
+		return set_output_compare(&req);
 	}
 	/*! \details Get the output compare attributes */
-	int getoc(tmr_reqattr_t * req);
+	int get_output_compare(tmr_reqattr_t * req);
 	/*! \details Get the output compare attributes (no error checking) */
-	int getoc(int channel){
+	int get_output_compare(int channel){
 		tmr_reqattr_t req;
 		req.channel = channel;
-		getoc(&req);
+		get_output_compare(&req);
 		return req.value;
 	}
 	/*! \details Set the input capture attributes */
-	int setic(const tmr_reqattr_t * req);
+	int set_input_capture(const tmr_reqattr_t * req);
 	/*! \details Set the input capture unit with given parameters */
-	int setic(int channel, uint32_t value){
+	int set_input_capture(int channel, uint32_t value){
 		tmr_reqattr_t req;
 		req.channel = channel;
 		req.value = value;
-		return setic(&req);
+		return set_input_capture(&req);
 	}
 	/*! \details Get the input capture attributes */
-	int getic(tmr_reqattr_t * req);
+	int get_input_capture(tmr_reqattr_t * req);
 	/*! \details Get the input capture value (no error checking)*/
-	int getic(int channel){
+	int get_input_capture(int channel){
 		tmr_reqattr_t req;
 		req.channel = channel;
-		getic(&req);
+		get_input_capture(&req);
 		return req.value;
 	}
 	/*! \details Return the value of the TMR */
-	tmr_sample_t get(void);
-
-	/*! \details Return the value of the TMR */
-	tmr_sample_t value(void){ return get(); }
+	tmr_sample_t get_value();
 
 	/*! \details Set the value of the TMR */
-	int set(tmr_sample_t value);
+	int set_value(tmr_sample_t value);
 
 #ifdef __MCU_ONLY__
 	int read(void * buf, int nbyte);
 	int write(const void * buf, int nbyte);
-	int close(void);
+	int close();
 #endif
 
 	/*! \details See init() for details. */
-	int setattr(uint32_t freq,
+	int set_attr(uint32_t freq,
 			uint8_t clksrc = TMR_CLKSRC_CPU,
 			uint8_t pin_assign = 0,
 			uint8_t enabled_oc_chans = 0,
@@ -164,7 +161,7 @@ public:
 		attr.pin_assign = pin_assign;
 		attr.enabled_ic_chans = enabled_ic_chans;
 		attr.enabled_oc_chans = enabled_oc_chans;
-		return setattr(&attr);
+		return set_attr(&attr);
 	}
 
 	/*! \details This is a list of the timer clock sources.  Not all clock
@@ -193,7 +190,7 @@ public:
 		if( open() < 0 ){
 			return -1;
 		}
-		return setattr(freq, clksrc, pin_assign, enabled_oc_chans, enabled_ic_chans);
+		return set_attr(freq, clksrc, pin_assign, enabled_oc_chans, enabled_ic_chans);
 	}
 
 private:

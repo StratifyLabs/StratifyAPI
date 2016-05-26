@@ -84,15 +84,15 @@ int LpcPhy::init(int pinassign){
 		return -1;
 	}
 
-	if( (ret = uart->setattr(9600, pinassign)) < 0 ){
+	if( (ret = uart->set_attr(9600, pinassign)) < 0 ){
 		uart->close();
 
 		if( uart->open(Uart::NONBLOCK) <  0 ){
 			isplib_error("Failed to open UART (second try)\n");
 		}
 
-		if( (ret = uart->setattr(9600, pinassign)) < 0 ){
-			isplib_error("Failed to setattr UART %d\n", ret);
+		if( (ret = uart->set_attr(9600, pinassign)) < 0 ){
+			isplib_error("Failed to set_attr UART %d\n", ret);
 			return -2;
 		}
 	}
@@ -111,7 +111,7 @@ int LpcPhy::init(int pinassign){
 	return 0;
 }
 
-int LpcPhy::exit(void){
+int LpcPhy::exit(){
 	uart->close();
 	rst->set_attr(Pin::INPUT);
 	ispreq->set_attr(Pin::INPUT);
@@ -137,7 +137,7 @@ int LpcPhy::open(int crystal){
 		return -1;
 	}
 
-	if( uart->attr(&attr) < 0 ){
+	if( uart->get_attr(&attr) < 0 ){
 		isplib_error("Failed to get attributes");
 		return -1;
 	}
@@ -148,7 +148,7 @@ int LpcPhy::open(int crystal){
 
 		attr.baudrate = atoi(uart_speeds[i]);
 
-		if ( uart->setattr(&attr) < 0 ){
+		if ( uart->set_attr(&attr) < 0 ){
 			isplib_error("Failed to set baud rate\n");
 			return -1;
 		}
@@ -196,11 +196,11 @@ int LpcPhy::open(int crystal){
 }
 
 
-int LpcPhy::close(void){
+int LpcPhy::close(){
 	return 0;
 }
 
-int LpcPhy::flush(void){
+int LpcPhy::flush(){
 	char buf[64];
 	while( uart->read(buf, 64) > 0 ){
 
@@ -314,7 +314,7 @@ int LpcPhy::readmem(u32 loc, void * buf, int nbyte){
  * holding the reset line low then releasing it high.
  * \return Zero on success or an HWPL error code.
  */
-int LpcPhy::reset(void){
+int LpcPhy::reset(){
 
 	isplib_debug(DEBUG_LEVEL, "RESET\n");
 
@@ -348,7 +348,7 @@ int LpcPhy::reset(void){
  * \details This function resets the MCU and holds the ISP hardware request line low.
  * \return Zero on success
  */
-int LpcPhy::start_bootloader(void){
+int LpcPhy::start_bootloader(){
 	isplib_debug(DEBUG_LEVEL, "start bootloader\n");
 
 	isplib_debug(DEBUG_LEVEL+1, "RST and REQ are high\n");
@@ -539,7 +539,7 @@ int LpcPhy::unlock(const char * unlock_code){
  * \details This function turns the echo off.
  * \return Zero on success
  */
-int LpcPhy::echo_off(void){
+int LpcPhy::echo_off(){
 	int ret;
 	isplib_debug(DEBUG_LEVEL+1, "echo off\n");
 
@@ -562,7 +562,7 @@ int LpcPhy::echo_off(void){
  * \details This function causes the device to echo the serial data which it receives.
  * \return Zero on sucess or an LPC return code.
  */
-int LpcPhy::echo_on(void){
+int LpcPhy::echo_on(){
 	int ret;
 	isplib_debug(DEBUG_LEVEL+1, "echo on\n");
 
@@ -758,7 +758,7 @@ int LpcPhy::blank_check_sector(u32 start /*! The first sector to blank check */,
  * \details This function reads the part ID.
  * \return The part ID value
  */
-u32 LpcPhy::rd_part_id(void){
+u32 LpcPhy::rd_part_id(){
 	char buf[64];
 	int ret;
 	isplib_debug(DEBUG_LEVEL+1, "read part id\n");
@@ -778,7 +778,7 @@ u32 LpcPhy::rd_part_id(void){
  * \details This function reads the boot loader version.
  * \return The bootloader version
  */
-u32 LpcPhy::rd_boot_version(void){
+u32 LpcPhy::rd_boot_version(){
 	char buf[64];
 	u16 ret;
 	uint8_t minor;

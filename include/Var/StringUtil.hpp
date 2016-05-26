@@ -7,7 +7,7 @@
 
 namespace Var {
 
-#if defined __lpc17xx || defined __lpc407x_8x
+#if defined __armv7m || defined __armv7em
 #define USE_SPRINTF
 #endif
 

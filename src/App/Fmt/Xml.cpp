@@ -57,7 +57,7 @@ int Xml::init(const char * path, int mode, int perms){
 
 
 //this doesn't modify the context -- just grabs the values
-int Xml::value(String & dest, const char * key) const {
+int Xml::get_value(String & dest, const char * key) const {
 	return set_get_value(dest, key, false);
 }
 
@@ -126,7 +126,7 @@ int Xml::set_get_value(String & dest, const char * key, bool set) const {
 	return 0;
 }
 
-int Xml::setvalue(const String * src, const char * key) const {
+int Xml::set_value(const String * src, const char * key) const {
 	return set_get_value((String&)*src, key, true);
 }
 
@@ -251,7 +251,7 @@ int Xml::child(String & name, String * value){
 	}
 
 	if( value != 0 ){
-		this->value(*value, name);
+		this->get_value(*value, name);
 	}
 
 	content.cursor += target.size;
@@ -690,7 +690,7 @@ void Xml::show_context(context_t & context){
 	} while( bytes_read < content.size );
 }
 
-void Xml::reset_context(void){
+void Xml::reset_context(){
 	memset(&content, 0, sizeof(content));
 	content.size = file_size;
 }

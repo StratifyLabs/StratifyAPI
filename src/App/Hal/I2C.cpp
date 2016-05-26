@@ -10,11 +10,11 @@ using namespace Hal;
 
 I2C::I2C(port_t port) : Periph(CORE_PERIPH_I2C, port){}
 
-int I2C::attr(i2c_attr_t * attr){
+int I2C::get_attr(i2c_attr_t * attr){
 	return ioctl(I_I2C_GETATTR, attr);
 }
 
-int I2C::setattr(const i2c_attr_t * attr){
+int I2C::set_attr(const i2c_attr_t * attr){
 	return ioctl(I_I2C_SETATTR, attr);
 }
 
@@ -22,7 +22,7 @@ int I2C::setup(const i2c_reqattr_t * req){
 	return ioctl(I_I2C_SETUP, req);
 }
 
-int I2C::err(void){
+int I2C::err(){
 	return ioctl(I_I2C_GETERR);
 }
 

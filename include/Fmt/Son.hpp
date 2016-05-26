@@ -81,10 +81,10 @@ namespace Fmt {
  */
 template<int stacksize> class Son {
 public:
-	Son(){ memset(&_son, 0, sizeof(_son)); }
+	Son(){ memset(&m_son, 0, sizeof(m_son)); }
 
 #if defined __link
-	void set_handle(link_phy_t handle){ son_set_handle(&_son, handle); }
+	void set_handle(link_phy_t handle){ son_set_handle(&m_son, handle); }
 #else
 	void reset(son_t * obj){ lseek(obj->phy.fd, 0, SEEK_SET); }
 #endif
@@ -95,13 +95,13 @@ public:
 	 */
 	int fileno() const {
 #if defined __link
-		if( _son.phy.handle == 0 ){
+		if( m_son.phy.handle == 0 ){
 			return 0;
 		} else {
-			return _son.phy.fd;
+			return m_son.phy.fd;
 		}
 #else
-		return _son.phy.fd;
+		return m_son.phy.fd;
 #endif
 	}
 
@@ -110,37 +110,37 @@ public:
 	 * @param name The name of the file
 	 * @return Zero on success
 	 */
-	int create(const char * name){ return son_create(&_son, name, _stack, stacksize); }
-	int append(const char * name){ return son_append(&_son, name, _stack, stacksize); }
+	int create(const char * name){ return son_create(&m_son, name, m_stack, stacksize); }
+	int append(const char * name){ return son_append(&m_son, name, m_stack, stacksize); }
 
 	/*! \details Open a SON file for reading
 	 *
 	 * @param name Name of the file
 	 * @return Zero on success
 	 */
-	int open(const char * name){ return son_open(&_son, name); }
+	int open(const char * name){ return son_open(&m_son, name); }
 
 
-	int close(bool close_all = false){ return son_close(&_son, close_all); }
-	int seek(const char * access, son_size_t * data_size){ return son_seek(&_son, access, data_size); }
+	int close(bool close_all = false){ return son_close(&m_son, close_all); }
+	int seek(const char * access, son_size_t * data_size){ return son_seek(&m_son, access, data_size); }
 	/*! \brief Convert the data file to JSON */
-	int to_json(const char * path){ return son_to_json(&_son, path); }
+	int to_json(const char * path){ return son_to_json(&m_son, path); }
 
 	/*! \details Open an object */
-	int open_obj(const char * key){ return son_open_obj(&_son, key); }
+	int open_obj(const char * key){ return son_open_obj(&m_son, key); }
 	/*! \details Close an object */
-	int close_obj(){ return son_close_obj(&_son); }
+	int close_obj(){ return son_close_obj(&m_son); }
 
 	/*! \details Open an object */
-	int open_array(const char * key, int fixed_size = 0){ return son_open_array(&_son, key, fixed_size); }
+	int open_array(const char * key, int fixed_size = 0){ return son_open_array(&m_son, key, fixed_size); }
 
 	/*! \details Close an array */
-	int close_array(){ return son_close_array(&_son); }
+	int close_array(){ return son_close_array(&m_son); }
 
 	/*! \details Open a data object */
-	int open_data(const char * key){ return son_open_data(&_son, key); }
+	int open_data(const char * key){ return son_open_data(&m_son, key); }
 	/*! \details Close a data object */
-	int close_data(){ return son_close_data(&_son); }
+	int close_data(){ return son_close_data(&m_son); }
 
 	/*! \details Write a key/string pair to the file
 	 *
@@ -150,9 +150,9 @@ public:
 	 */
 	int write(const char * key, const char * v){
 		if( v ){
-			return son_write_str(&_son, key, v);
+			return son_write_str(&m_son, key, v);
 		} else {
-			return son_write_null(&_son, key);
+			return son_write_null(&m_son, key);
 		}
 	}
 
@@ -162,7 +162,7 @@ public:
 	 * @param v The number to write
 	 * @return Number of bytes stored (4) if successful
 	 */
-	int write(const char * key, i32 v){ return son_write_num(&_son, key, v); }
+	int write(const char * key, i32 v){ return son_write_num(&m_son, key, v); }
 
 	/*! \details Write a key/number pair to the file (u32)
 	 *
@@ -170,7 +170,7 @@ public:
 	 * @param v The number to write
 	 * @return Number of bytes stored (4) if successful
 	 */
-	int write(const char * key, u32 v){ return son_write_unum(&_son, key, v); }
+	int write(const char * key, u32 v){ return son_write_unum(&m_son, key, v); }
 
 	/*! \details Write a key/number pair to the file (float)
 	 *
@@ -178,7 +178,7 @@ public:
 	 * @param v The number to write
 	 * @return Number of bytes stored (4) if successful
 	 */
-	int write(const char * key, float v){ return son_write_float(&_son, key, v); }
+	int write(const char * key, float v){ return son_write_float(&m_son, key, v); }
 
 	/*! \details Write a key/bool pair to the file
 	 *
@@ -188,9 +188,9 @@ public:
 	 */
 	int write(const char * key, bool v){
 		if( v ){
-			return son_write_true(&_son, key);
+			return son_write_true(&m_son, key);
 		} else {
-			return son_write_false(&_son, key);
+			return son_write_false(&m_son, key);
 		}
 	}
 
@@ -202,7 +202,7 @@ public:
 	 * @param size The number of bytes to write
 	 * @return Number of bytes stored (4) if successful
 	 */
-	int write(const char * key, const void * v, son_size_t size){ return son_write_data(&_son, key, v, size); }
+	int write(const char * key, const void * v, son_size_t size){ return son_write_data(&m_son, key, v, size); }
 
 	/*! \details Add data to an open key.  This is used with open_data() and close_data().   These
 	 * methods are useful for writing data to the file when the amount of data to be written is unknown
@@ -223,7 +223,7 @@ public:
 	 * @param size The number of bytes to write
 	 * @return Number of bytes stored (4) if successful
 	 */
-	int write_open_data(const void * v, son_size_t size){ return son_write_open_data(&_son, v, size); }
+	int write_open_data(const void * v, son_size_t size){ return son_write_open_data(&m_son, v, size); }
 
 	/*! \details Read the specified key as a string.  If the original
 	 * key was not written as a string, it will be converted to a string.  For example,
@@ -234,7 +234,7 @@ public:
 	 * @param capacity Size of \a str buffer
 	 * @return The number of bytes actually read
 	 */
-	int read_str(const char * access, char * str, son_size_t capacity){ return son_read_str(&_son, access, str, capacity); }
+	int read_str(const char * access, char * str, son_size_t capacity){ return son_read_str(&m_son, access, str, capacity); }
 
 	/*! \details Read the specified key as a number (i32).  If the original
 	 * key was not written as a i32, it will be converted to one.  A string
@@ -243,7 +243,7 @@ public:
 	 * @param access Key parameters
 	 * @return The number
 	 */
-	i32 read_num(const char * access){ return son_read_num(&_son, access); }
+	i32 read_num(const char * access){ return son_read_num(&m_son, access); }
 
 	/*! \details Read the specified key as a number (u32).  If the original
 	 * key was not written as a i32, it will be converted to one.  A string
@@ -252,7 +252,7 @@ public:
 	 * @param access Key parameters
 	 * @return The number
 	 */
-	u32 read_unum(const char * access){ return son_read_unum(&_son, access); }
+	u32 read_unum(const char * access){ return son_read_unum(&m_son, access); }
 
 	/*! \details Read the specified key as a number (float).  If the original
 	 * key was not written as a i32, it will be converted to one.  A string
@@ -261,7 +261,7 @@ public:
 	 * @param access Key parameters
 	 * @return The number
 	 */
-	float read_float(const char * access){ return son_read_float(&_son, access); }
+	float read_float(const char * access){ return son_read_float(&m_son, access); }
 
 	/*! \details Read the specified key as data.  Regardless of the storage
 	 * type, the key will be returned as binary data.
@@ -271,13 +271,13 @@ public:
 	 * @param size The number of bytes to read
 	 * @return The number of bytes read
 	 */
-	int read_data(const char * access, void * data, son_size_t size){ return son_read_data(&_son, access, data, size); }
+	int read_data(const char * access, void * data, son_size_t size){ return son_read_data(&m_son, access, data, size); }
 
-	son_t & son(){ return _son; }
+	son_t & son(){ return m_son; }
 
 private:
-	son_t _son;
-	son_stack_t _stack[stacksize];
+	son_t m_son;
+	son_stack_t m_stack[stacksize];
 };
 
 };

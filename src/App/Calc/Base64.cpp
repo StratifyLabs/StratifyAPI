@@ -54,7 +54,7 @@ int Base64::encode(char * dest, const void * src, int nbyte){
     return strlen(dest);
 }
 
-int Base64::esize(int nbyte){
+int Base64::calc_encoded_size(int nbyte){
 	return ((((nbyte*4+2)/3) + 3)/4)*4;
 }
 
@@ -80,7 +80,7 @@ int Base64::decode(void * dest, const char * src, int nbyte){
 	return 0;
 }
 
-int Base64::dsize(int nbyte){
+int Base64::calc_decoded_size(int nbyte){
 	return (nbyte*3+3)/4;
 }
 

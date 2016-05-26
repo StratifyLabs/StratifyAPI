@@ -3,13 +3,13 @@
 #ifndef MLCDDEVICE_HPP_
 #define MLCDDEVICE_HPP_
 
+#include <Hal/Dev.hpp>
 #include "MLcd.hpp"
-#include "../Hal/Phy.hpp"
 #include <iface/dev/mlcd.h>
 
 namespace Draw {
 
-class MLcdDevice : public Hal::Phy, public MLcd {
+class MLcdDevice : public Hal::Dev, public MLcd {
 public:
 	MLcdDevice();
 

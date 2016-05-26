@@ -5,9 +5,9 @@
  *      Author: tgil
  */
 
+#include <Isp/Lpc.hpp>
 #include <unistd.h>
 #include <stdlib.h>
-#include "Isp/LpcIsp.hpp"
 using namespace Isp;
 
 #include "isplib.h"
@@ -38,7 +38,7 @@ static const char * device_list[] = {
 };
 
 
-int LpcIsp::copy_names(char * device, char * pio0, char * pio1){
+int Lpc::copy_names(char * device, char * pio0, char * pio1){
 	strcpy(device, "lpc");
 	strcpy(pio0, "Reset");
 	strcpy(pio1, "ISP Req");
@@ -46,7 +46,7 @@ int LpcIsp::copy_names(char * device, char * pio0, char * pio1){
 }
 
 
-int LpcIsp::program(const char * filename, int crystal, const char * dev, int (*progress)(float)){
+int Lpc::program(const char * filename, int crystal, const char * dev, int (*progress)(float)){
 	FILE * f;
 	u8 * image_buffer;
 	u32 size;
@@ -137,7 +137,7 @@ int LpcIsp::program(const char * filename, int crystal, const char * dev, int (*
 
 }
 
-int LpcIsp::read(const char * filename, int crystal, int (*progress)(float)){
+int Lpc::read(const char * filename, int crystal, int (*progress)(float)){
 	FILE * f;
 	int bytes_read;
 	char data[256*1024];
@@ -165,7 +165,7 @@ int LpcIsp::read(const char * filename, int crystal, int (*progress)(float)){
 	return 0;
 }
 
-char ** LpcIsp::getlist(void){
+char ** Lpc::getlist(){
 	return (char**)device_list;
 }
 
@@ -176,7 +176,7 @@ char ** LpcIsp::getlist(void){
  * speed.
  */
 
-int LpcIsp::init_prog_interface(int crystal){
+int Lpc::init_prog_interface(int crystal){
 
 	//Open the ISP interface using phy.open()
 	if ( phy.open(crystal) == 0 ){
@@ -194,7 +194,7 @@ int LpcIsp::init_prog_interface(int crystal){
  *
  * \return Number of bytes read
  */
-u32 LpcIsp::read_progmem(void * data, u32 addr, u32 size, int (*update_disp)(float)){
+u32 Lpc::read_progmem(void * data, u32 addr, u32 size, int (*update_disp)(float)){
 	u32 buffer_size;
 	u32 bytes_read;
 	u16 page_size;
@@ -228,7 +228,7 @@ u32 LpcIsp::read_progmem(void * data, u32 addr, u32 size, int (*update_disp)(flo
 	return bytes_read;
 }
 
-u32 LpcIsp::write_progmem(void * data, u32 addr, u32 size, int (*update_disp)(float)){
+u32 Lpc::write_progmem(void * data, u32 addr, u32 size, int (*update_disp)(float)){
 	int buffer_size;
 	int bytes_written;
 	int page_size;
@@ -272,7 +272,7 @@ u32 LpcIsp::write_progmem(void * data, u32 addr, u32 size, int (*update_disp)(fl
 }
 
 
-int LpcIsp::erase_dev(void){
+int Lpc::erase_dev(){
 	int sectors;
 	int ret;
 
@@ -301,7 +301,7 @@ int LpcIsp::erase_dev(void){
 	return 0;
 }
 
-int LpcIsp::write_vector_checksum(unsigned char * hex_buffer, const char * dev){
+int Lpc::write_vector_checksum(unsigned char * hex_buffer, const char * dev){
 	unsigned long checksum;
 	checksum = 0;
 	u16 i;
@@ -347,7 +347,7 @@ int LpcIsp::write_vector_checksum(unsigned char * hex_buffer, const char * dev){
  * closes the UART connection.
  * \return Zero on success
  */
-int LpcIsp::prog_shutdown(void){
+int Lpc::prog_shutdown(){
 	int err;
 	isplib_debug(DEBUG_LEVEL, "Restarting the device\n");
 

@@ -48,8 +48,7 @@ public:
 
 
 	/*! \details Return the total number of tokens */
-	inline size_t count() const { return num_tokens; }
-	inline size_t size() const { return count(); }
+	inline size_t size() const { return m_num_tokens; }
 
 	/*! \details Return a pointer to the token specified by offset */
 	const char * at(size_t n) const;
@@ -59,16 +58,16 @@ public:
 		return belongs_to(c, str, strlen(str));
 	}
 
-	bool count_empty() const { return count_empty_tokens; }
-	void set_count_empty(bool v = true){ count_empty_tokens = v; }
+	bool count_empty_tokens() const { return m_count_empty_tokens; }
+	void set_count_empty_tokens(bool v = true){ m_count_empty_tokens = v; }
 
 protected:
 
 private:
-	void init_members(void);
-	unsigned int num_tokens;
-	unsigned int string_size;
-	bool count_empty_tokens;
+	void init_members();
+	unsigned int m_num_tokens;
+	unsigned int m_string_size;
+	bool m_count_empty_tokens;
 
 
 };

@@ -15,19 +15,19 @@ class Usb : public Periph {
 public:
 	Usb(port_t port);
 
-	int attr(usb_attr_t * attr);
-	int setattr(usb_attr_t * attr);
-	int reset(void);
-	int attach(void);
-	int configure(void);
-	int detach(void);
-	int disableep(int ep);
-	int enableep(int ep);
-	bool isconnected(void);
-	int resetep(int ep);
-	int setaddr(int addr);
-	int stallep(int ep);
-	int unstallep(int ep);
+	int get_attr(usb_attr_t * attr);
+	int set_attr(usb_attr_t * attr);
+	int reset();
+	int attach();
+	int configure();
+	int detach();
+	int disable_endpoint(int ep);
+	int enable_endpoint(int ep);
+	bool is_connected();
+	int reset_endpoint(int ep);
+	int set_addr(int addr);
+	int stall_endpoint(int ep);
+	int unstall_endpoint(int ep);
 
 #ifdef __MCU_ONLY__
 	using Pblock::read;
@@ -36,7 +36,7 @@ public:
 	int write(const void * buf, int nbyte);
 	int read(Aio & aio);
 	int write(Aio & aio);
-	int close(void);
+	int close();
 #endif
 
 private:

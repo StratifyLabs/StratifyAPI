@@ -28,7 +28,7 @@ public:
 	virtual int init(const char * name = 0) = 0;
 
 	/*! \details Pure virtual function that copies local LCD memory to the LCD screen */
-	virtual void refresh(void){}
+	virtual void refresh(){}
 
 	/*! \details Turn the LCD pixels on */
 	virtual int on(){ return -1; };

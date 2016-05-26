@@ -11,7 +11,7 @@ using namespace Draw;
 
 Font8::Font8(const font8_t * f){
 	// TODO Auto-generated constructor stub
-	this->f = f;
+	this->m_font = f;
 
 }
 
@@ -21,10 +21,10 @@ int Font8::load(const char * path){
 	int ret;
 	font8_t * tmp;
 
-	if( f == 0 ){
+	if( m_font == 0 ){
 		tmp = (font8_t *)malloc(sizeof(font8_t));
 	} else {
-		tmp = (font8_t *)f;
+		tmp = (font8_t *)m_font;
 	}
 
 	fd = ::open(path, O_RDWR);
@@ -40,7 +40,7 @@ int Font8::load(const char * path){
 	}
 
 	::close(fd);
-	f = tmp;
+	m_font = tmp;
 	return 0;
 }
 
@@ -53,11 +53,11 @@ MBitmap Font8::bitmap(char c) const{
 	}
 
 	if( i < FONT8_COUNT ){
-		w = f->characters[i][7];
-		if( f->characters[i][7] == 0 ){
-			w = f->w;
+		w = m_font->characters[i][7];
+		if( m_font->characters[i][7] == 0 ){
+			w = m_font->w;
 		}
-		return MBitmap((mg_bitmap_t*)&(f->characters[i][0]), w, f->h, true);
+		return MBitmap((mg_bitmap_t*)&(m_font->characters[i][0]), w, m_font->h, true);
 	}
 
 	return MBitmap((mg_bitmap_t*)0, 0, 0);

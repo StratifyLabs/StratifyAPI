@@ -47,23 +47,22 @@ class Dac : public Periph {
 public:
 	Dac(port_t port);
 	/*! \details Get the DAC attributes */
-	int attr(dac_attr_t * attr);
+	int get_attr(dac_attr_t * attr);
 	/*! \details Set the DAC attributes */
-	int setattr(const dac_attr_t * attr);
+	int set_attr(const dac_attr_t * attr);
 
 	/*! \details Get the current value of the dac */
 	dac_sample_t value(u32 channel = 0);
-	dac_sample_t get(u32 channel = 0){ return value(channel); }
 
 	/*! \details Set the DAC attributes  using specified values */
-	int setattr(u16 enabled_channels /*! Enabled Channels */,
+	int set_attr(u16 enabled_channels /*! Enabled Channels */,
 			u32 freq = 1000000 /*! DAC output frequency */,
 			u8 pin_assign = 0 /*! Pin assignment value */){
 		dac_attr_t attr;
 		attr.enabled_channels = enabled_channels;
 		attr.freq = freq;
 		attr.pin_assign = pin_assign;
-		return setattr(&attr);
+		return set_attr(&attr);
 	}
 
 	/*! \details This method opens the DAC then sets the DAC
@@ -75,7 +74,7 @@ public:
 		if( open() < 0 ){
 			return -1;
 		}
-		return setattr(enabled_channels, freq, pin_assign);
+		return set_attr(enabled_channels, freq, pin_assign);
 	}
 
 	/*! \details Set the value of the DAC
@@ -89,7 +88,7 @@ public:
 #ifdef __MCU_ONLY__
 	using Pblock::write;
 	int write(void * buf, int nbyte);
-	int close(void);
+	int close();
 #endif
 
 private:

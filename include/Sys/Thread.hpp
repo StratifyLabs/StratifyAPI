@@ -32,34 +32,34 @@ public:
 	};
 
 	/*! \details Sets the stacksize (no effect after create) */
-	int setstacksize(int size);
+	int set_stacksize(int size);
 
 	/*! \details Gets the stacksize */
-	int stacksize(void) const;
+	int get_stacksize() const;
 
 	/*! \details Sets the thread priority */
-	int setpriority(int prio, int policy = ROUND_ROBIN);
+	int set_priority(int prio, int policy = ROUND_ROBIN);
 
 	/*! \details Gets the thread priority */
-	int priority(void) const;
+	int get_priority() const;
 
 	/*! \details Get the thread policy */
-	int policy(void) const;
+	int get_policy() const;
 
 	/*! \details Gets the ID of the thread */
-	int id(void) const;
+	int id() const;
 
 	/*! \details Start the thread */
 	int create(void * (*func)(void*), void * args = NULL, int prio = 0, int policy = OTHER);
 
 	/*! \details Check if the thread is running */
-	bool isrunning(void) const;
+	bool is_running() const;
 
 	/*! \details Wait for the thread to complete (joins thread if it is not detached) */
 	int wait(void**ret, int interval = 1000);
 
 	/*! \details Yield the processor to another thread */
-	static void yield(void);
+	static void yield();
 
 	/*! \details Join the current thread to the specified thread
 	 *
@@ -70,14 +70,14 @@ public:
 	static int join(int ident, void ** value_ptr);
 
 	/*! \details Reset the object (thread must not be running) */
-	inline void reset(){ set_id_var_default(); }
+	inline void reset(){ set_id_default(); }
 
 private:
-	pthread_attr_t pthread_attr;
-	pthread_t id_var;
+	pthread_attr_t m_pthread_attr;
+	pthread_t m_id;
 
-	void set_id_var_default(){ id_var = -1; }
-	void set_id_var_error(){ id_var = -2; }
+	void set_id_default(){ m_id = -1; }
+	void set_id_error(){ m_id = -2; }
 };
 
 };

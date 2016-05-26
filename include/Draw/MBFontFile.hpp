@@ -26,8 +26,8 @@ protected:
 
 
 private:
-	mutable Sys::File f;
-	mbfont_kerning_pair_t * pairs;
+	mutable Sys::File m_file;
+	mbfont_kerning_pair_t * m_kerning_pairs;
 
 };
 

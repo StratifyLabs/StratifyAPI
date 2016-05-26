@@ -98,7 +98,7 @@ void String::append(char c){
 	strncat(cdata(),&c,1);
 }
 
-bool String::csv(String & dest, int n, char sep, char term){
+bool String::get_delimited_data(String & dest, int n, char sep, char term){
 	dest.clear();
 	int element = 0;
 	int start = 0;
@@ -119,7 +119,7 @@ bool String::csv(String & dest, int n, char sep, char term){
 	return false;
 }
 
-int String::csv_size(char sep, char term){
+int String::calc_delimited_data_size(char sep, char term){
 	int elements = 1;
 	//return the total number of elements
 	for(size_t i=0; i < size(); i++){
@@ -334,7 +334,7 @@ int String::compare(size_t pos, size_t len, const char * s, size_t n) const {
 	return strncmp(str, s, n);
 }
 
-void StringPath::strip_suffix(void){
+void StringPath::strip_suffix(){
 	size_t dot;
 	dot = rfind('.');
 	if( dot != npos ){

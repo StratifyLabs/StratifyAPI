@@ -37,11 +37,11 @@ class Pwm : public Periph {
 public:
 	Pwm(port_t port);
 	/*! \details Get PWM attributes */
-	int attr(pwm_attr_t * attr);
+	int get_attr(pwm_attr_t * attr);
 	/*! \details Set PWM attributes */
-	int setattr(const pwm_attr_t * attr);
+	int set_attr(const pwm_attr_t * attr);
 	/*! \details Set PWM duty cycle */
-	int set(const pwm_reqattr_t * req);
+	int set_duty_cycle(const pwm_reqattr_t * req);
 
 #ifdef __MCU_ONLY__
 	using Pblock::write;
@@ -49,15 +49,15 @@ public:
 #endif
 
 	/*! \details Set the PWM duty cycle (specify individual values) */
-	int set(uint8_t channel, pwm_duty_t duty){
+	int set_duty_cycle(uint8_t channel, pwm_duty_t duty){
 		pwm_reqattr_t req;
 		req.channel = channel;
 		req.duty = duty;
-		return set(&req);
+		return set_duty_cycle(&req);
 	}
 
 	/*! \details Set PWM attributes (specify individual values) */
-	int setattr(uint8_t enabled_channels,
+	int set_attr(uint8_t enabled_channels,
 			uint32_t freq = 1000000,
 			pwm_duty_t top = 1000,
 			uint16_t flags = 0,
@@ -68,7 +68,7 @@ public:
 		attr.top = top;
 		attr.pin_assign = pin_assign;
 		attr.flags = flags;
-		return setattr(&attr);
+		return set_attr(&attr);
 	}
 
 	/*! \details Open PWM and set attributes as specified */
@@ -81,7 +81,7 @@ public:
 			return -1;
 		}
 
-		return setattr(enabled_channels, freq, top, flags, pin_assign);
+		return set_attr(enabled_channels, freq, top, flags, pin_assign);
 	}
 
 #ifdef __MCU_ONLY__

@@ -12,20 +12,20 @@ using namespace Calc;
 
 
 void MBitmap::calc_members(mg_size_t w, mg_size_t h){
-	_bmap.columns = mg_calc_byte_width(w);
-	_bmap.dim.w = w;
-	_bmap.dim.h = h;
-	_bmap.data = (mg_bitmap_t*)data_const();
+	m_bmap.columns = mg_calc_byte_width(w);
+	m_bmap.dim.w = w;
+	m_bmap.dim.h = h;
+	m_bmap.data = (mg_bitmap_t*)data_const();
 }
 
 void MBitmap::init_members(){
-	_bmap.margin_bottom_right.dim = 0;
-	_bmap.margin_top_left.dim = 0;
+	m_bmap.margin_bottom_right.dim = 0;
+	m_bmap.margin_top_left.dim = 0;
 }
 
 
 void MBitmap::set_data(mg_bitmap_t * mem, mg_size_t w, mg_size_t h, bool readonly){
-	Data::set(mem, size(w,h), readonly);
+	Data::set(mem, calc_size(w,h), readonly);
 	calc_members(w,h);
 }
 
@@ -33,19 +33,19 @@ void MBitmap::set_data(mg_bitmap_hdr_t * hdr, bool readonly){
 	char * ptr;
 	ptr = (char*)hdr;
 	ptr += sizeof(mg_bitmap_hdr_t);
-	Data::set(ptr, size(hdr->w, hdr->h), readonly);
+	Data::set(ptr, calc_size(hdr->w, hdr->h), readonly);
 	calc_members(hdr->w, hdr->h);
 }
 
 int MBitmap::alloc(mg_size_t w, mg_size_t h){
-	if( Data::alloc(size(w,h)) < 0 ){
+	if( Data::alloc(calc_size(w,h)) < 0 ){
 		return -1;
 	}
 	calc_members(w,h);
 	return 0;
 }
 
-void MBitmap::free(void){
+void MBitmap::free(){
 	if( Data::free() == 0 ){
 		calc_members(0, 0);
 	}
@@ -76,26 +76,26 @@ MBitmap::~MBitmap(){
 	free();
 }
 
-int MBitmap::byte_width(int w){
+int MBitmap::calc_byte_width(int w){
 	return (w + 7) >> 3;
 }
 
-int MBitmap::word_width(int w){
+int MBitmap::calc_word_width(int w){
 	return (w + 31) / 32;
 }
 
-mg_point_t MBitmap::center() const{
+mg_point_t MBitmap::calc_center() const{
 	mg_point_t p;
 	p.x = w()/2;
 	p.y = h()/2;
 	return p;
 }
 
-int MBitmap::setsize(mg_size_t w, mg_size_t h, mg_size_t offset){
-	if( size(w,h) <= capacity() ){
-		_bmap.dim.w = w;
-		_bmap.dim.h = h;
-		_bmap.columns = mg_calc_byte_width(w);
+int MBitmap::set_size(mg_size_t w, mg_size_t h, mg_size_t offset){
+	if( calc_size(w,h) <= capacity() ){
+		m_bmap.dim.w = w;
+		m_bmap.dim.h = h;
+		m_bmap.columns = mg_calc_byte_width(w);
 		return 0;
 	}
 	return -1;
@@ -119,7 +119,7 @@ const mg_bitmap_t * MBitmap::data_const(mg_point_t p) const {
 		return 0;
 	}
 
-	return data_const() + p.x / 8 + p.y * _bmap.columns;
+	return data_const() + p.x / 8 + p.y * m_bmap.columns;
 }
 
 
@@ -140,7 +140,7 @@ int MBitmap::load(const char * path){
 		return -1;
 	}
 
-	if( setsize(hdr.w, hdr.h) < 0 ){
+	if( set_size(hdr.w, hdr.h) < 0 ){
 		//couln't resize using existing memory -- try resizing
 		if( alloc(hdr.w, hdr.h) < 0 ){
 			f.close();
@@ -198,9 +198,9 @@ int MBitmap::load(const char * path, mg_point_t p){
 
 	//see if bitmap will fit
 
-	w = byte_width(hdr.w);
-	if( (int)w > (cols() - p.x/8) ){
-		w = cols() - p.x/8;
+	w = calc_byte_width(hdr.w);
+	if( (int)w > (columns() - p.x/8) ){
+		w = columns() - p.x/8;
 	}
 
 	for(j=0; (j < hdr.h) && (p.y+j < h()); j++){
@@ -223,7 +223,7 @@ int MBitmap::save(const char * path) const{
 
 	hdr.w = w();
 	hdr.h = h();
-	hdr.size = size();
+	hdr.size = calc_size();
 
 	File f;
 	if( f.create(path, true) < 0 ){
@@ -306,7 +306,7 @@ void MBitmap::fill(mg_bitmap_t v, mg_int_t start, mg_size_t h){
 }
 
 void MBitmap::fill(mg_bitmap_t v){
-	memset(data(), v, size());
+	memset(data(), v, calc_size());
 }
 
 
@@ -357,19 +357,19 @@ void MBitmap::shift_left(int count, mg_size_t h){
 }
 
 
-void MBitmap::show(void) const{
+void MBitmap::show() const{
 	mg_show(bmap_const());
 }
 
-void MBitmap::flipx(void){
+void MBitmap::flip_x(){
 	mg_flip_x(bmap());
 }
 
-void MBitmap::flipy(void){
+void MBitmap::flip_y(){
 	mg_flip_y(bmap());
 }
 
-void MBitmap::flipxy(void){
+void MBitmap::flip_xy(){
 	mg_flip_xy(bmap());
 }
 

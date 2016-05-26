@@ -31,9 +31,13 @@ int Dir::open(const char * name){
 
 
 #if !defined __link
-int Dir::count(void){
+int Dir::count(){
 	long loc;
 	int count;
+
+	if( !is_open() ){
+		return -1;
+	}
 
 #if defined __link
 
@@ -58,25 +62,10 @@ int Dir::count(void){
 
 }
 
-
-int Dir::size(){
-	int i;
-	if( !is_open() ){
-		return -1;
-	}
-	rewind();
-	i = 0;
-	while( read() != 0 ){
-		i++;
-	}
-	rewind();
-	return i;
-}
-
 #endif
 
 
-const char * Dir::read(void){
+const char * Dir::read(){
 
 #if defined __link
 	struct link_dirent * result;
@@ -92,7 +81,7 @@ const char * Dir::read(void){
 	return entry.d_name;
 }
 
-int Dir::close(void){
+int Dir::close(){
 	if( dirp ){
 #if defined __link
 		link_closedir(driver(), dirp);

@@ -24,7 +24,7 @@ namespace Hal {
  *	//This allocates a PIO object but does not affect HW state
  * 	Pio pio(2); //use pio port 2
  *
- * 	//This opens the port and sets the attributes -- same as pio.open(); pio.setattr(1<<10, PIO_MODE_OUTPUT);
+ * 	//This opens the port and sets the attributes -- same as pio.open(); pio.set_attr(1<<10, PIO_MODE_OUTPUT);
  * 	pio.init(1<<10, PIO_MODE_OUTPUT);
  *
  * 	//Bits can be manipulated using clrmask() and setmask()
@@ -32,7 +32,7 @@ namespace Hal {
  * 	pio.setmask(1<<10); //set bit 10
  *
  *	//the pin can be reconfigured as an input
- * 	pio.setattr(1<<10, PIO_MODE_INPUT | PIO_MODE_PULLDOWN); //set as an input with internal pulldown
+ * 	pio.set_attr(1<<10, PIO_MODE_INPUT | PIO_MODE_PULLDOWN); //set as an input with internal pulldown
  *
  * 	//get() is used to read the port
  * 	if( pio.get() & (1<<10) ){
@@ -58,7 +58,7 @@ public:
 	};
 
 	/*! \details Get the attributes for the port */
-	int attr(pio_attr_t * attr);
+	int get_attr(pio_attr_t * attr);
 	/*! \details Set the attributes for the port */
 	int set_attr(const pio_attr_t * attr);
 	/*! \details Set the action for the port using pio_action_t */
@@ -87,10 +87,11 @@ public:
 	/*! \details Clear the specified mask */
 	int clear_mask(unsigned int mask);
 	/*! \details Get the value of the port */
-	u32 value(void);
+	u32 get_value();
+	u32 value(){ return get_value(); }
 
 	/*! \details Set the value of the port */
-	int set(unsigned int value);
+	int set_value(unsigned int value);
 
 
 	/*! \details Set the attributes for the port */

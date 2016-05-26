@@ -17,21 +17,21 @@ class Rtc : public Periph {
 public:
 	Rtc(port_t port);
 	/*! \details Get RTC attributes */
-	int attr(rtc_attr_t * attr);
+	int get_attr(rtc_attr_t * attr);
 	/*! \details Set RTC attributes */
-	int setattr(rtc_attr_t * attr);
+	int set_attr(rtc_attr_t * attr);
 	/*! \details Set RTC action */
-	int setaction(rtc_action_t * action);
+	int set_action(rtc_action_t * action);
 	/*! \details Set RTC alarm */
-	int setalarm(rtc_alarm_t * alarm);
+	int set_alarm(rtc_alarm_t * alarm);
 	/*! \details Get RTC alarm */
-	int getalarm(rtc_alarm_t * alarm);
+	int get_alarm(rtc_alarm_t * alarm);
 	/*! \details Disable RTC alarm */
-	int disablealarm(void);
+	int disable_alarm();
 	/*! \details Set RTC time */
-	int set(rtc_time_t * time);
+	int set_time(rtc_time_t * time);
 	/*! \details Get RTC time */
-	int get(rtc_time_t * time);
+	int get_time(rtc_time_t * time);
 
 #ifdef __MCU_ONLY__
 	int close();

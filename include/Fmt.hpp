@@ -13,6 +13,7 @@ namespace Fmt {
 #include "Fmt/Bmp.hpp"
 #include "Fmt/Wav.hpp"
 #include "Fmt/Xml.hpp"
+#include "Fmt/Son.hpp"
 
 using namespace Fmt;
 

@@ -8,19 +8,19 @@ using namespace Hal;
 
 Uart::Uart(port_t port) : Periph(CORE_PERIPH_UART, port) {}
 
-int Uart::attr(uart_attr_t * attr){
+int Uart::get_attr(uart_attr_t * attr){
 	return ioctl(I_UART_GETATTR, attr);
 }
 
-int Uart::setattr(const uart_attr_t * attr){
+int Uart::set_attr(const uart_attr_t * attr){
 	return ioctl(I_UART_SETATTR, attr);
 }
 
-int Uart::getbyte(char * c){
+int Uart::get_byte(char * c){
 	return ioctl(I_UART_GETBYTE, c);
 }
 
-int Uart::flush(void){
+int Uart::flush(){
 	return ioctl(I_UART_FLUSH);
 }
 

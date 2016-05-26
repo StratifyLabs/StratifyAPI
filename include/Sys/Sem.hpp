@@ -19,9 +19,9 @@ public:
 	Sem();
 
 	enum flags {
-		CREATE = O_CREAT,
-		EXCL = O_EXCL,
-		EXCLUSIVE = O_EXCL
+		CREATE /*! Create Semaphore flag */ = O_CREAT,
+		EXCL /*! Create exclusive */ = O_EXCL,
+		EXCLUSIVE /*! Create exclusive */ = O_EXCL
 	};
 
 	/*! \details Get the semaphore value
@@ -29,10 +29,10 @@ public:
 	 * @param sval A pointer to the destination to write the value
 	 * @return Zero on success
 	 */
-	int getvalue(int *sval);
+	int get_value(int *sval);
 
 	/*! \details See getvalue() */
-	inline int value(int *sval){ return getvalue(sval); }
+	inline int value(int *sval){ return get_value(sval); }
 
 	/*! \details Initialize an unnamed semaphore
 	 *
@@ -66,10 +66,15 @@ public:
 	 */
 	int post();
 
-	/*! \details Wait for semaphore to become available with a timeout */
 	int timedwait(const struct timespec * timeout);
-	/*! \details Check to see if semaphore is available */
+
+	/*! \details Wait for semaphore to become available with a timeout */
+	int wait_timed(const struct timespec * timeout){ return timedwait(timeout); }
+
 	int trywait();
+	/*! \details Check to see if semaphore is available */
+	int try_wait(){ return trywait(); }
+
 	/*! \details Wait for the semaphore to become available */
 	int wait();
 	/*! \details Delete a named semaphore */
