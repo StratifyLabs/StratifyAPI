@@ -327,7 +327,7 @@ int LpcPhy::reset(){
 	Timer::wait_msec(50);
 
 	//Hold the reset line low
-	if ( rst->clear() ){
+	if ( rst->clr() ){
 		isplib_error("failed to clear RESET\n");
 		return -1;
 	}
@@ -359,7 +359,7 @@ int LpcPhy::start_bootloader(){
 	}
 	isplib_debug(DEBUG_LEVEL+1, "RST is high\n");
 
-	if ( ispreq->clear() < 0 ){
+	if ( ispreq->clr() < 0 ){
 		isplib_error("failed to clear ispreq\n");
 		return -1;
 	}
@@ -367,7 +367,7 @@ int LpcPhy::start_bootloader(){
 	Timer::wait_msec(150);
 
 
-	if ( rst->clear() < 0 ){
+	if ( rst->clr() < 0 ){
 		isplib_error("failed to clear reset\n");
 		return -1;
 	}

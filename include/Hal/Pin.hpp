@@ -88,6 +88,7 @@ public:
 	/*! \details Set the pin high (assign value 1) */
 	inline int set(){ return set_mask(m_pinmask); }
 	/*! \details Clear the pin low (assign value 0) */
+	inline int clr(){ return clear_mask(m_pinmask); }
 	inline int clear(){ return clear_mask(m_pinmask); }
 
 	pio_sample_t pinmask() const { return m_pinmask; }

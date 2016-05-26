@@ -127,7 +127,6 @@ public:
 		NONBLOCK /*! Open as non-blocking */ = LINK_O_NONBLOCK,
 		NDELAY /*! Open as non-blocking */ = LINK_O_NONBLOCK,
 		ACCMODE /*! Access mode mask */ = LINK_O_ACCMODE
-
 	};
 
 	/*! \details List of options for \a whence argument of seek() */
