@@ -10,53 +10,53 @@
 #include "mg.h"
 
 
-void mg_set_data(mg_bmap_t * mg, mg_bitmap_t * mem, mg_size_t w, mg_size_t h){
+void sg_set_data(sg_bmap_t * mg, sg_bmap_data_t * mem, sg_size_t w, sg_size_t h){
 	mg->dim.w = w;
 	mg->dim.h = h;
-	mg->columns = mg_calc_byte_width(w);
+	mg->columns = sg_calc_byte_width(w);
 	mg->data = mem;
 }
 
-size_t mg_calc_size(mg_int_t w, mg_int_t h){
+size_t sg_calc_size(sg_int_t w, sg_int_t h){
 	return 0;
 }
 
-size_t mg_size(const mg_bmap_t * mg){
-	return mg_calc_byte_width(mg->dim.w) * mg->dim.h;
+size_t sg_size(const sg_bmap_t * mg){
+	return sg_calc_byte_width(mg->dim.w) * mg->dim.h;
 }
 
-size_t mg_byte_width(const mg_bmap_t * mg){
-	return mg_calc_byte_width(mg->dim.w);
+size_t sg_byte_width(const sg_bmap_t * mg){
+	return sg_calc_byte_width(mg->dim.w);
 }
 
-size_t mg_word_width(const mg_bmap_t * mg){
-	return mg_calc_word_width(mg->dim.w);
+size_t sg_word_width(const sg_bmap_t * mg){
+	return sg_calc_word_width(mg->dim.w);
 }
 
-size_t mg_calc_byte_width(mg_size_t w){
+size_t sg_calc_byte_width(sg_size_t w){
 	return (w + 7) >> 3;
 }
 
-size_t mg_calc_word_width(mg_size_t w){
+size_t sg_calc_word_width(sg_size_t w){
 	return (w + 31) >> 5;
 }
 
 /*! \brief Change effective size without free/alloc sequence */
-mg_bitmap_t * mg_data(const mg_bmap_t * mg, mg_point_t p){
-	return mg->data + mg_offset(p, mg_calc_byte_width(mg->dim.w));
+sg_bmap_data_t * sg_data(const sg_bmap_t * mg, sg_point_t p){
+	return mg->data + sg_offset(p, sg_calc_byte_width(mg->dim.w));
 }
 
-int mg_set_size(mg_bmap_t * mg, mg_size_t w, mg_size_t h, mg_size_t offset){
+int sg_set_size(sg_bmap_t * mg, sg_size_t w, sg_size_t h, sg_size_t offset){
 	return 0;
 }
 
-void mg_bound(const mg_bmap_t * mg, mg_point_t * p){
-	mg_bound_x(mg, &(p->x));
-	mg_bound_y(mg, &(p->y));
+void sg_bound(const sg_bmap_t * mg, sg_point_t * p){
+	sg_bound_x(mg, &(p->x));
+	sg_bound_y(mg, &(p->y));
 }
 
-void mg_bound_x(const mg_bmap_t * mg, mg_int_t * x){
-	mg_int_t t = *x;
+void sg_bound_x(const sg_bmap_t * mg, sg_int_t * x){
+	sg_int_t t = *x;
 	if( t < 0 ){
 		t = 0;
 	}
@@ -68,8 +68,8 @@ void mg_bound_x(const mg_bmap_t * mg, mg_int_t * x){
 	*x = t;
 }
 
-void mg_bound_y(const mg_bmap_t * mg, mg_int_t * y){
-	mg_int_t t = *y;
+void sg_bound_y(const sg_bmap_t * mg, sg_int_t * y){
+	sg_int_t t = *y;
 	if( t < 0 ){
 		t = 0;
 	}
@@ -83,15 +83,15 @@ void mg_bound_y(const mg_bmap_t * mg, mg_int_t * y){
 
 
 
-mg_int_t mg_x_max(const mg_bmap_t * mg){
+sg_int_t sg_x_max(const sg_bmap_t * mg){
 	return mg->dim.w -1;
 }
 
-mg_int_t mg_y_max(const mg_bmap_t * mg){
+sg_int_t sg_y_max(const sg_bmap_t * mg){
 	return mg->dim.h -1;
 }
 
 
-void mg_show(const mg_bmap_t * mg){
+void sg_show(const sg_bmap_t * mg){
 
 }

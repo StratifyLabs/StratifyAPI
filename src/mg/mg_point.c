@@ -12,7 +12,7 @@ typedef struct {
 	i16 sine;
 } trig_t;
 
-static const trig_t trig_table[MG_TRIG_POINTS] = {
+static const trig_t trig_table[SG_TRIG_POINTS] = {
 		{ 32767, 0 },
 		{ 32764, 402 },
 		{ 32757, 804 },
@@ -529,83 +529,83 @@ static const trig_t trig_table[MG_TRIG_POINTS] = {
 
 
 
-void mg_point_set(mg_point_t * d, mg_point_t p){
+void sg_point_set(sg_point_t * d, sg_point_t p){
 	d->x = p.x;
 	d->y = p.y;
 }
 
-void mg_point_map(mg_point_t * d, const mg_map_t * m){
-	mg_point_rotate(d, m->rotation);
+void sg_point_map(sg_point_t * d, const sg_map_t * m){
+	sg_point_rotate(d, m->rotation);
 	//map to the space
 	int32_t tmp;
-	tmp = ((d->x + MG_MAX) * m->size.w + MG_MAX) / (MG_MAX-MG_MIN);
+	tmp = ((d->x + SG_MAX) * m->size.w + SG_MAX) / (SG_MAX-SG_MIN);
 	d->x = tmp - (m->size.w>>1) + m->shift.x;
-	tmp = ((d->y + MG_MAX) * m->size.h + MG_MAX) / (MG_MAX-MG_MIN);
+	tmp = ((d->y + SG_MAX) * m->size.h + SG_MAX) / (SG_MAX-SG_MIN);
 	d->y = tmp - (m->size.h>>1) + m->shift.y;
 }
 
-mg_size_t mg_point_map_pixel_size(const mg_map_t * m){
-	mg_size_t p;
-	mg_size_t max = m->size.w > m->size.h ? m->size.w : m->size.h;
+sg_size_t sg_point_map_pixel_size(const sg_map_t * m){
+	sg_size_t p;
+	sg_size_t max = m->size.w > m->size.h ? m->size.w : m->size.h;
 	int32_t tmp;
 	//how many map space units maps to one pixel
-	tmp = ((MG_MAX-MG_MIN) + (max>>1)) / max;
+	tmp = ((SG_MAX-SG_MIN) + (max>>1)) / max;
 	p = tmp;
 	return p;
 }
 
 
-void mg_point_add(mg_point_t * d, const mg_point_t * a){
-	mg_point_shift(d, *a);
+void sg_point_add(sg_point_t * d, const sg_point_t * a){
+	sg_point_shift(d, *a);
 }
 
-void mg_point_subtract(mg_point_t * d, const mg_point_t * a){
-	mg_point_shift_x(d, -1*a->x);
-	mg_point_shift_y(d, -1*a->y);
+void sg_point_subtract(sg_point_t * d, const sg_point_t * a){
+	sg_point_shift_x(d, -1*a->x);
+	sg_point_shift_y(d, -1*a->y);
 }
 
-void mg_point_arc(mg_point_t * d, mg_size_t rx, mg_size_t ry, i16 angle){
+void sg_point_arc(sg_point_t * d, sg_size_t rx, sg_size_t ry, i16 angle){
 	int x, y;
 	int rc, rs;
-	angle = angle % MG_TRIG_POINTS;
+	angle = angle % SG_TRIG_POINTS;
 	rc = trig_table[angle].cosine;
 	rs = trig_table[angle].sine;
-	x = (rx*rc + MG_MAX/2)/MG_MAX;
-	y = (ry*rs + MG_MAX/2)/MG_MAX;
+	x = (rx*rc + SG_MAX/2)/SG_MAX;
+	y = (ry*rs + SG_MAX/2)/SG_MAX;
 	d->x = x;
 	d->y = y;
 }
 
-void mg_point_rotate(mg_point_t * d, i16 angle){
+void sg_point_rotate(sg_point_t * d, i16 angle){
 	int x, y;
 	int rc, rs;
 	if( angle < 0 ){
-		angle += MG_TRIG_POINTS;
+		angle += SG_TRIG_POINTS;
 	}
-	angle = angle % MG_TRIG_POINTS;
+	angle = angle % SG_TRIG_POINTS;
 	rc = trig_table[angle].cosine;
 	rs = trig_table[angle].sine;
-	x = ((int)d->x * rc - (int)d->y * rs) / MG_MAX;
-	y = ((int)d->x * rs + (int)d->y * rc) / MG_MAX;
+	x = ((int)d->x * rc - (int)d->y * rs) / SG_MAX;
+	y = ((int)d->x * rs + (int)d->y * rc) / SG_MAX;
 	d->x = x;
 	d->y = y;
 }
 
-void mg_point_scale(mg_point_t * d, uint16_t a){
+void sg_point_scale(sg_point_t * d, uint16_t a){
 	d->x *= a;
 	d->y *= a;
 }
 
-void mg_point_shift(mg_point_t * d, mg_point_t p){
+void sg_point_shift(sg_point_t * d, sg_point_t p){
 	d->x += p.x;
 	d->y += p.y;
 }
 
-void mg_point_shift_x(mg_point_t * d, mg_int_t a){
+void sg_point_shift_x(sg_point_t * d, sg_int_t a){
 	d->x += a;
 }
 
-void mg_point_shift_y(mg_point_t * d, mg_int_t a){
+void sg_point_shift_y(sg_point_t * d, sg_int_t a){
 	d->y += a;
 }
 

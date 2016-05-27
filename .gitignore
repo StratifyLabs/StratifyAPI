@@ -3,8 +3,8 @@
 /build_release_app_armv7em_fpu/
 /build_debug_son_armv7em_fpu/
 /build_debug_son_armv7m/
-/build_release_mg_armv7em_fpu/
-/build_release_mg_armv7m/
+/build_release_sg_armv7em_fpu/
+/build_release_sg_armv7m/
 /build_release_son_armv7em_fpu/
 /build_release_son_armv7m/
 /build_release_link/

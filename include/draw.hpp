@@ -10,15 +10,18 @@ namespace draw {
 
 }
 
-#include "draw/MBFont.hpp"
-#include "draw/MBFontFile.hpp"
-#include "draw/MBFontMemory.hpp"
-#include "draw/MBitmap.hpp"
-#include "draw/MFont.hpp"
-#include "draw/MLcdDevice.hpp"
-#include "draw/MGfx.hpp"
-#include "draw/MLcd.hpp"
-#include "draw/MPoint.hpp"
+#include "draw/Animation.hpp"
+#include "draw/Drawing.hpp"
+#include "draw/GraphObject.hpp"
+#include "draw/GraphLine.hpp"
+#include "draw/GraphBar.hpp"
+#include "draw/Icon.hpp"
+#include "draw/Panel.hpp"
+#include "draw/ProgressBar.hpp"
+#include "draw/ProgressArc.hpp"
+#include "draw/Rect.hpp"
+#include "draw/Text.hpp"
+#include "draw/TextBox.hpp"
 
 using namespace draw;
 

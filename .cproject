@@ -188,7 +188,7 @@
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_son_armv7em"/>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7m"/>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7em"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_mg_armv7m"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_sg_armv7m"/>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_app_armv7m"/>
 								</outputEntries>
 							</builder>
@@ -232,7 +232,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="mg_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="sg_icon_primitive_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/App"/>
 					</sourceEntries>
 				</configuration>
@@ -300,7 +300,7 @@
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_son_armv7em"/>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7m"/>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7em"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_mg_armv7m"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_sg_armv7m"/>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_app_armv7m"/>
 								</outputEntries>
 							</builder>
@@ -344,7 +344,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="mg_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="sg_icon_primitive_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/App"/>
 					</sourceEntries>
 				</configuration>
@@ -412,7 +412,7 @@
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_son_armv7em"/>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7m"/>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7em"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_mg_armv7m"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_sg_armv7m"/>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_app_armv7m"/>
 								</outputEntries>
 							</builder>
@@ -458,7 +458,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="mg_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="sg_icon_primitive_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/App"/>
 					</sourceEntries>
 				</configuration>
@@ -526,7 +526,7 @@
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_son_armv7em"/>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7m"/>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7em"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_mg_armv7m"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_sg_armv7m"/>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_app_armv7m"/>
 								</outputEntries>
 							</builder>
@@ -570,7 +570,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="mg_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="sg_icon_primitive_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/App"/>
 					</sourceEntries>
 				</configuration>
@@ -600,7 +600,7 @@
 		<configuration configurationName="Default">
 			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
 		</configuration>
-		<configuration configurationName="Release_mg_arm_cm4_kernel"/>
+		<configuration configurationName="Release_sg_arm_cm4_kernel"/>
 		<configuration configurationName="build_debug_son_armv7em"/>
 		<configuration configurationName="lpc17xx">
 			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
@@ -609,7 +609,7 @@
 		<configuration configurationName="Release_CoActionOS_link">
 			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
 		</configuration>
-		<configuration configurationName="build_release_mg_armv7em_fpu"/>
+		<configuration configurationName="build_release_sg_armv7em_fpu"/>
 		<configuration configurationName="Release_Codec2_arm"/>
 		<configuration configurationName="Release_hwpl_lpc82x"/>
 		<configuration configurationName="build_release_son_armv7m"/>
@@ -618,7 +618,7 @@
 		<configuration configurationName="Release_opus_arm"/>
 		<configuration configurationName="Release_fatfs_arm_cm4_kernel"/>
 		<configuration configurationName="Release_Codec2_arm_cm4"/>
-		<configuration configurationName="Release_mg_arm_cm4"/>
+		<configuration configurationName="Release_sg_arm_cm4"/>
 		<configuration configurationName="Release_CoActionOS_lpc177x_8x"/>
 		<configuration configurationName="build_release_son_armv7em_fpu"/>
 		<configuration configurationName="Release_AES_arm_cm4"/>
@@ -626,13 +626,13 @@
 			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
 		</configuration>
 		<configuration configurationName="build_release_armv7em"/>
-		<configuration configurationName="Release_mg_arm_kernel"/>
-		<configuration configurationName="Release_mg_arm"/>
+		<configuration configurationName="Release_sg_arm_kernel"/>
+		<configuration configurationName="Release_sg_arm"/>
 		<configuration configurationName="build_debug_son_armv7m"/>
 		<configuration configurationName="Release_hwpl_lpc17xx">
 			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
 		</configuration>
-		<configuration configurationName="build_release_mg_armv7m"/>
+		<configuration configurationName="build_release_sg_armv7m"/>
 		<configuration configurationName="Release_CoActionOS_lpc17xx">
 			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
 		</configuration>

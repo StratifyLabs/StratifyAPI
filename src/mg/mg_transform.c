@@ -1,5 +1,5 @@
 /*
- * mg_transform.c
+ * sg_icon_primitive_transform.c
  *
  *  Created on: Oct 27, 2015
  *      Author: tgil
@@ -24,31 +24,31 @@ typedef int IRQn_Type;
 
 #include "mg.h"
 
-static int mg_animate_push_right(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_push_left(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_push_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_push_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_slide_right(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_undo_slide_right(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_slide_left(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_undo_slide_left(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_slide_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_undo_slide_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_slide_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_undo_slide_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_none(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_bounce_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_bounce_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_bounce_left(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
-static int mg_animate_bounce_right(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation);
+static int sg_animate_push_right(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_push_left(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_push_up(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_push_down(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_slide_right(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_undo_slide_right(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_slide_left(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_undo_slide_left(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_slide_up(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_undo_slide_up(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_slide_down(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_undo_slide_down(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_none(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_bounce_up(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_bounce_down(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_bounce_left(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
+static int sg_animate_bounce_right(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation);
 
 
-void mg_flip_xy(mg_bmap_t * mg){
+void sg_flip_xy(sg_bmap_t * mg){
 #ifndef __link
 	size_t i;
 	uint32_t tmp;
-	uint32_t * ptr = (uint32_t*)mg_data(mg,mg_point_origin());
-	size_t s = mg_size(mg) / 4;
+	uint32_t * ptr = (uint32_t*)sg_data(mg,sg_point_origin());
+	size_t s = sg_size(mg) / 4;
 	uint32_t rev;
 
 	for(i=0; i < s/2; i++){
@@ -62,19 +62,19 @@ void mg_flip_xy(mg_bmap_t * mg){
 #endif
 }
 
-void mg_flip_x(mg_bmap_t * mg){
+void sg_flip_x(sg_bmap_t * mg){
 
 }
 
-void mg_flip_y(mg_bmap_t * mg){
+void sg_flip_y(sg_bmap_t * mg){
 
 }
 
-void mg_shift_right(mg_bmap_t * mg, int count, mg_point_t start, mg_dim_t d){
+void sg_shift_right(sg_bmap_t * mg, int count, sg_point_t start, sg_dim_t d){
 	uint32_t tmp0, tmp1;
-	mg_int_t i, j;
+	sg_int_t i, j;
 	uint32_t * ptr;
-	size_t w = mg_byte_width(mg)/4 - 1;
+	size_t w = sg_byte_width(mg)/4 - 1;
 
 	int page_size;
 	int bytes_shifted = 0;
@@ -87,8 +87,8 @@ void mg_shift_right(mg_bmap_t * mg, int count, mg_point_t start, mg_dim_t d){
 		}
 
 		for(i=start.y; i < start.y+d.h; i++){
-			if( mg_y_visible(mg, i) ){
-				ptr = (uint32_t *)mg_data(mg, mg_point_origin()) + i*(w+1); //point to beg of each row
+			if( sg_y_visible(mg, i) ){
+				ptr = (uint32_t *)sg_data(mg, sg_point_origin()) + i*(w+1); //point to beg of each row
 				for(j = w; j > 0; j--){
 					//need to do a byte reversal
 					tmp0 = __REV(ptr[j]);
@@ -105,11 +105,11 @@ void mg_shift_right(mg_bmap_t * mg, int count, mg_point_t start, mg_dim_t d){
 	}
 }
 
-void mg_shift_left(mg_bmap_t * mg, int count, mg_point_t start, mg_dim_t d){
+void sg_shift_left(sg_bmap_t * mg, int count, sg_point_t start, sg_dim_t d){
 	uint32_t tmp0, tmp1;
-	mg_int_t i, j;
+	sg_int_t i, j;
 	uint32_t * ptr;
-	ssize_t w = mg_byte_width(mg)/4 - 1;
+	ssize_t w = sg_byte_width(mg)/4 - 1;
 	int page_size;
 	int bytes_shifted = 0;
 
@@ -121,8 +121,8 @@ void mg_shift_left(mg_bmap_t * mg, int count, mg_point_t start, mg_dim_t d){
 		}
 
 		for(i=start.y; i < start.y+d.h; i++){
-			if( mg_y_visible(mg, i) ){
-				ptr = (uint32_t *)mg_data(mg, mg_point_origin()) + i*(w+1); //point to beg of each row
+			if( sg_y_visible(mg, i) ){
+				ptr = (uint32_t *)sg_data(mg, sg_point_origin()) + i*(w+1); //point to beg of each row
 				for(j = 0; j < w; j++){
 					//need to do a byte reversal
 					tmp0 = __REV(ptr[j]);
@@ -137,11 +137,11 @@ void mg_shift_left(mg_bmap_t * mg, int count, mg_point_t start, mg_dim_t d){
 	}
 }
 
-void mg_shift_up(mg_bmap_t * mg, int count, mg_point_t start, mg_dim_t d){
-	mg_point_t dest;
-	mg_point_t src;
-	mg_size_t rows_shifted;
-	mg_dim_t shift_dim;
+void sg_shift_up(sg_bmap_t * mg, int count, sg_point_t start, sg_dim_t d){
+	sg_point_t dest;
+	sg_point_t src;
+	sg_size_t rows_shifted;
+	sg_dim_t shift_dim;
 
 	if( count > mg->dim.h ){
 		count = mg->dim.h;
@@ -172,21 +172,21 @@ void mg_shift_up(mg_bmap_t * mg, int count, mg_point_t start, mg_dim_t d){
 			shift_dim.h = d.h - rows_shifted;
 		}
 
-		mg_assign_bitmap_area(mg, dest, mg, src, shift_dim);
+		sg_assign_bitmap_area(mg, dest, mg, src, shift_dim);
 		rows_shifted += shift_dim.h;
 
 		if( rows_shifted < (d.h - count) ){
-			//mg_clr_area(mg, src, shift_dim, 0xFF);
+			//sg_clr_area(mg, src, shift_dim, 0xFF);
 		}
 
 	}
 }
 
-void mg_shift_down(mg_bmap_t * mg, int count, mg_point_t start, mg_dim_t d){
-	mg_point_t dest;
-	mg_point_t src;
-	mg_dim_t shift_dim;
-	mg_size_t rows_shifted;
+void sg_shift_down(sg_bmap_t * mg, int count, sg_point_t start, sg_dim_t d){
+	sg_point_t dest;
+	sg_point_t src;
+	sg_dim_t shift_dim;
+	sg_size_t rows_shifted;
 
 	if( count > mg->dim.h ){
 		count = mg->dim.h;
@@ -221,11 +221,11 @@ void mg_shift_down(mg_bmap_t * mg, int count, mg_point_t start, mg_dim_t d){
 			dest.y = rows_shifted - shift_dim.h;
 		}
 
-		mg_assign_bitmap_area(mg, dest, mg, src, shift_dim);
+		sg_assign_bitmap_area(mg, dest, mg, src, shift_dim);
 		rows_shifted += shift_dim.h;
 
 		if( rows_shifted < (d.h - count) ){
-			//mg_clr_area(mg, src, shift_dim, 0xFF);
+			//sg_clr_area(mg, src, shift_dim, 0xFF);
 		}
 
 	}
@@ -241,7 +241,7 @@ static u32 sum_of_squares(u32 x){
 	return sum;
 }
 
-static u32 animation_step_size(mg_animation_t * animation, u32 i){
+static u32 animation_step_size(sg_animation_t * animation, u32 i){
 	u32 step_size;
 	u32 m;
 
@@ -264,7 +264,7 @@ static u32 animation_step_size(mg_animation_t * animation, u32 i){
 	return step_size;
 }
 
-static u32 sum_of_steps(mg_animation_t * animation){
+static u32 sum_of_steps(sg_animation_t * animation){
 	u32 i;
 	u32 steps = 0;
 	for(i=0; i < animation->path.step_total; i++){
@@ -273,29 +273,29 @@ static u32 sum_of_steps(mg_animation_t * animation){
 	return steps;
 }
 
-static mg_size_t mg_animate_calc_count(mg_animation_t * animation){
-	mg_size_t count;
+static sg_size_t sg_animate_calc_count(sg_animation_t * animation){
+	sg_size_t count;
 	u32 sum;
-	u16 step = animation->path.step & ~MG_ANIMATION_STEP_FLAG;
+	u16 step = animation->path.step & ~SG_ANIMATION_STEP_FLAG;
 	count = animation_step_size(animation, step);
 	if( step == 0 ){
 		sum = sum_of_steps(animation);
 		count = count + (animation->path.motion_total-sum);
 	}
-	animation->path.step++; //must come mg_animate_calc_count calc_count
+	animation->path.step++; //must come sg_animate_calc_count calc_count
 	return count;
 }
 
-int mg_animate_push_right(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
-	mg_point_t dest;
-	mg_point_t src;
-	mg_dim_t shift_dim;
-	mg_size_t count;
-	mg_point_t start;
-	mg_dim_t d;
+int sg_animate_push_right(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
+	sg_point_t dest;
+	sg_point_t src;
+	sg_dim_t shift_dim;
+	sg_size_t count;
+	sg_point_t start;
+	sg_dim_t d;
 
 	if( animation->path.step < animation->path.step_total ){
-		count = mg_animate_calc_count(animation);
+		count = sg_animate_calc_count(animation);
 		//no work to be performed
 		if( count == 0 ){
 			return 1;
@@ -315,9 +315,9 @@ int mg_animate_push_right(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * a
 		dest.x = start.x;
 		dest.y = start.y;
 
-		mg_shift_right(mg, count, start, d);
-		mg_clr_area(mg, dest, shift_dim, 0xFF);
-		mg_set_bitmap_area(mg, dest, bitmap, src, shift_dim);
+		sg_shift_right(mg, count, start, d);
+		sg_clr_area(mg, dest, shift_dim, 0xFF);
+		sg_set_bitmap_area(mg, dest, bitmap, src, shift_dim);
 
 
 		return 1;
@@ -327,16 +327,16 @@ int mg_animate_push_right(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * a
 
 }
 
-int mg_animate_push_left(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
-	mg_point_t dest;
-	mg_point_t src;
-	mg_dim_t shift_dim;
-	mg_point_t start;
-	mg_dim_t d;
-	mg_size_t count;
+int sg_animate_push_left(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
+	sg_point_t dest;
+	sg_point_t src;
+	sg_dim_t shift_dim;
+	sg_point_t start;
+	sg_dim_t d;
+	sg_size_t count;
 
 	if( animation->path.step < animation->path.step_total ){
-		count = mg_animate_calc_count(animation);
+		count = sg_animate_calc_count(animation);
 
 		if( count == 0 ){
 			return 1;
@@ -354,9 +354,9 @@ int mg_animate_push_left(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * an
 		src.x = start.x + animation->path.motion;
 		src.y = start.y;
 
-		mg_shift_left(mg, count, start, d);
-		mg_clr_area(mg, dest, shift_dim, 0xFF);
-		mg_set_bitmap_area(mg, dest, bitmap, src, shift_dim);
+		sg_shift_left(mg, count, start, d);
+		sg_clr_area(mg, dest, shift_dim, 0xFF);
+		sg_set_bitmap_area(mg, dest, bitmap, src, shift_dim);
 
 		animation->path.motion += count;
 
@@ -365,17 +365,17 @@ int mg_animate_push_left(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * an
 	return 0;
 }
 
-int mg_animate_push_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
-	mg_point_t dest;
-	mg_point_t src;
-	mg_dim_t d;
-	mg_size_t count;
+int sg_animate_push_up(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
+	sg_point_t dest;
+	sg_point_t src;
+	sg_dim_t d;
+	sg_size_t count;
 
-	mg_point_t start;
+	sg_point_t start;
 
 	if( animation->path.step < animation->path.step_total ){
 		start = animation->start;
-		count = mg_animate_calc_count(animation);
+		count = sg_animate_calc_count(animation);
 
 		src.x = start.x;
 		src.y = start.y + animation->path.motion;
@@ -386,8 +386,8 @@ int mg_animate_push_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * anim
 		dest.x = start.x;
 		dest.y = start.y + animation->dim.h - d.h;
 
-		mg_shift_up(mg, count, start, animation->dim);
-		mg_assign_bitmap_area(mg, dest, bitmap, src, d);
+		sg_shift_up(mg, count, start, animation->dim);
+		sg_assign_bitmap_area(mg, dest, bitmap, src, d);
 
 		animation->path.motion += count;
 
@@ -396,16 +396,16 @@ int mg_animate_push_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * anim
 	return 0;
 }
 
-int mg_animate_push_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
-	mg_point_t src;
-	mg_dim_t d;
-	mg_size_t count;
+int sg_animate_push_down(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
+	sg_point_t src;
+	sg_dim_t d;
+	sg_size_t count;
 
-	mg_point_t start;
+	sg_point_t start;
 
 	if( animation->path.step < animation->path.step_total ){
 		start = animation->start;
-		count = mg_animate_calc_count(animation);
+		count = sg_animate_calc_count(animation);
 		animation->path.motion += count;
 
 		src.x = start.x;
@@ -414,8 +414,8 @@ int mg_animate_push_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * an
 		d.w = animation->dim.w;
 		d.h = count;
 
-		mg_shift_down(mg, count, start, animation->dim);
-		mg_assign_bitmap_area(mg, start, bitmap, src, d);
+		sg_shift_down(mg, count, start, animation->dim);
+		sg_assign_bitmap_area(mg, start, bitmap, src, d);
 
 
 		return 1;
@@ -423,36 +423,36 @@ int mg_animate_push_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * an
 	return 0;
 }
 
-int mg_animate_slide_right(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
+int sg_animate_slide_right(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
 	//this could be used for drawers
 	return 0;
 }
 
-int mg_animate_undo_slide_right(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
+int sg_animate_undo_slide_right(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
 	//this could be used for drawers
 	return 0;
 }
 
-int mg_animate_slide_left(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
+int sg_animate_slide_left(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
 	//this could be used for drawers
 	return 0;
 }
 
-int mg_animate_undo_slide_left(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
+int sg_animate_undo_slide_left(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
 	//this could be used for drawers
 	return 0;
 }
 
-int mg_animate_slide_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
-	mg_point_t dest;
-	mg_point_t src;
-	mg_dim_t d;
+int sg_animate_slide_up(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
+	sg_point_t dest;
+	sg_point_t src;
+	sg_dim_t d;
 
-	mg_point_t start;
+	sg_point_t start;
 
 	if( animation->path.step < animation->path.step_total ){
 		start = animation->start;
-		animation->path.motion += mg_animate_calc_count(animation);
+		animation->path.motion += sg_animate_calc_count(animation);
 
 		src.x = start.x;
 		src.y = start.y;
@@ -463,8 +463,8 @@ int mg_animate_slide_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * ani
 		d.w = animation->dim.w;
 		d.h = animation->path.motion;
 
-		mg_clr_area(mg, dest, d, 0xFF);
-		mg_set_bitmap_area(mg, dest, bitmap, src, d);
+		sg_clr_area(mg, dest, d, 0xFF);
+		sg_set_bitmap_area(mg, dest, bitmap, src, d);
 
 
 		return 1;
@@ -472,17 +472,17 @@ int mg_animate_slide_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * ani
 	return 0;
 }
 
-int mg_animate_undo_slide_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
-	mg_point_t dest;
-	mg_point_t src;
-	mg_dim_t d;
-	mg_size_t count;
+int sg_animate_undo_slide_up(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
+	sg_point_t dest;
+	sg_point_t src;
+	sg_dim_t d;
+	sg_size_t count;
 
-	mg_point_t start;
+	sg_point_t start;
 
 	if( animation->path.step < animation->path.step_total ){
 		start = animation->start;
-		count = mg_animate_calc_count(animation);
+		count = sg_animate_calc_count(animation);
 		animation->path.motion += count;
 
 		src.x = start.x;
@@ -494,26 +494,26 @@ int mg_animate_undo_slide_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t 
 		d.w = animation->dim.w;
 		d.h = animation->path.motion;
 
-		mg_shift_down(mg, count, start, animation->dim);
+		sg_shift_down(mg, count, start, animation->dim);
 
-		mg_clr_area(mg, dest, d, 0xFF);
-		mg_set_bitmap_area(mg, dest, bitmap, src, d);
+		sg_clr_area(mg, dest, d, 0xFF);
+		sg_set_bitmap_area(mg, dest, bitmap, src, d);
 
 		return 1;
 	}
 	return 0;
 }
 
-int mg_animate_slide_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
-	mg_point_t src;
-	mg_point_t dest;
-	mg_dim_t d;
+int sg_animate_slide_down(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
+	sg_point_t src;
+	sg_point_t dest;
+	sg_dim_t d;
 
-	mg_point_t start;
+	sg_point_t start;
 
 	if( animation->path.step < animation->path.step_total ){
 		start = animation->start;
-		animation->path.motion += mg_animate_calc_count(animation);
+		animation->path.motion += sg_animate_calc_count(animation);
 		dest.x = start.x;
 		dest.y = start.y;
 
@@ -523,24 +523,24 @@ int mg_animate_slide_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * a
 		d.w = animation->dim.w;
 		d.h = animation->path.motion;
 
-		mg_clr_area(mg, start, d, 0xFF);
-		mg_set_bitmap_area(mg, dest, bitmap, src, d);
+		sg_clr_area(mg, start, d, 0xFF);
+		sg_set_bitmap_area(mg, dest, bitmap, src, d);
 		return 1;
 	}
 	return 0;
 }
 
-int mg_animate_undo_slide_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
-	mg_point_t dest;
-	mg_point_t src;
-	mg_dim_t d;
-	mg_size_t count;
+int sg_animate_undo_slide_down(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
+	sg_point_t dest;
+	sg_point_t src;
+	sg_dim_t d;
+	sg_size_t count;
 
-	mg_point_t start;
+	sg_point_t start;
 
 	if( animation->path.step < animation->path.step_total ){
 		start = animation->start;
-		count = mg_animate_calc_count(animation);
+		count = sg_animate_calc_count(animation);
 
 		animation->path.motion += count;
 
@@ -552,12 +552,12 @@ int mg_animate_undo_slide_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_
 		d.w = animation->dim.w;
 		d.h = animation->dim.h - animation->path.motion + count;
 
-		mg_shift_up(mg, count, start, d);
+		sg_shift_up(mg, count, start, d);
 
 		d.h = count;
 
-		mg_clr_area(mg, dest, d, 0xFF);
-		mg_set_bitmap_area(mg, dest, bitmap, src, d);
+		sg_clr_area(mg, dest, d, 0xFF);
+		sg_set_bitmap_area(mg, dest, bitmap, src, d);
 
 		return 1;
 	}
@@ -565,30 +565,30 @@ int mg_animate_undo_slide_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_
 
 }
 
-int mg_animate_none(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
+int sg_animate_none(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
 	if( animation->path.step < animation->path.step_total ){
-		animation->path.motion = mg_animate_calc_count(animation);
+		animation->path.motion = sg_animate_calc_count(animation);
 		return 1;
 	}
 	return 0;
 }
 
-int mg_animate_bounce_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
-	mg_point_t dest;
-	mg_point_t src;
-	mg_dim_t d;
-	mg_size_t count;
+int sg_animate_bounce_up(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
+	sg_point_t dest;
+	sg_point_t src;
+	sg_dim_t d;
+	sg_size_t count;
 	u16 step;
 
-	mg_point_t start;
+	sg_point_t start;
 
-	step = animation->path.step & ~(MG_ANIMATION_STEP_FLAG);
+	step = animation->path.step & ~(SG_ANIMATION_STEP_FLAG);
 
 	if( step < animation->path.step_total ){
 		start = animation->start;
-		count = mg_animate_calc_count(animation);
+		count = sg_animate_calc_count(animation);
 
-		if( animation->path.step & (MG_ANIMATION_STEP_FLAG) ){
+		if( animation->path.step & (SG_ANIMATION_STEP_FLAG) ){
 			//bounce back phase
 
 			dest.x = animation->start.x;
@@ -597,12 +597,12 @@ int mg_animate_bounce_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * an
 			d.w = animation->dim.w;
 			d.h = animation->dim.h - animation->path.motion_total + animation->path.motion;
 
-			mg_assign_bitmap_area(mg, dest, bitmap, start, d);
+			sg_assign_bitmap_area(mg, dest, bitmap, start, d);
 
 		} else {
 			//bounce phase
 			if( step == 0 ){
-				mg_assign_bitmap_area(mg, animation->start, bitmap, animation->start, animation->dim);
+				sg_assign_bitmap_area(mg, animation->start, bitmap, animation->start, animation->dim);
 			}
 
 			src.x = start.x;
@@ -614,15 +614,15 @@ int mg_animate_bounce_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * an
 			dest.x = start.x;
 			dest.y = start.y;
 
-			mg_shift_down(mg, count, src, d);
+			sg_shift_down(mg, count, src, d);
 
 			d.h = animation->path.motion + count;
 
-			mg_clr_area(mg, dest, d, 0xFF);
-			mg_set_area(mg, dest, d, 0xAA);
+			sg_clr_area(mg, dest, d, 0xFF);
+			sg_set_area(mg, dest, d, 0xAA);
 
 			if( animation->path.step == animation->path.step_total ){
-				animation->path.step = MG_ANIMATION_STEP_FLAG;
+				animation->path.step = SG_ANIMATION_STEP_FLAG;
 				animation->path.motion = 0;
 			}
 		}
@@ -634,22 +634,22 @@ int mg_animate_bounce_up(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * an
 	return 0;
 }
 
-static int mg_animate_bounce_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
-	mg_point_t dest;
-	mg_point_t src;
-	mg_dim_t d;
-	mg_size_t count;
+static int sg_animate_bounce_down(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
+	sg_point_t dest;
+	sg_point_t src;
+	sg_dim_t d;
+	sg_size_t count;
 	u16 step;
 
-	mg_point_t start;
+	sg_point_t start;
 
-	step = animation->path.step & ~(MG_ANIMATION_STEP_FLAG);
+	step = animation->path.step & ~(SG_ANIMATION_STEP_FLAG);
 
 	if( step < animation->path.step_total ){
 		start = animation->start;
-		count = mg_animate_calc_count(animation);
+		count = sg_animate_calc_count(animation);
 
-		if( animation->path.step & (MG_ANIMATION_STEP_FLAG) ){
+		if( animation->path.step & (SG_ANIMATION_STEP_FLAG) ){
 			//bounce back phase
 
 			src.x = start.x;
@@ -661,14 +661,14 @@ static int mg_animate_bounce_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animati
 			d.w = animation->dim.w;
 			d.h = animation->dim.h - animation->path.motion_total + animation->path.motion;
 
-			mg_assign_bitmap_area(mg, dest, bitmap, src, d);
+			sg_assign_bitmap_area(mg, dest, bitmap, src, d);
 
 		} else {
 			//bounce phase
 
 			if( step == 0 ){
 				//copy the drawing to the scratch area
-				mg_assign_bitmap_area(mg, animation->start, bitmap, animation->start, animation->dim);
+				sg_assign_bitmap_area(mg, animation->start, bitmap, animation->start, animation->dim);
 			}
 
 			src.x = start.x;
@@ -677,17 +677,17 @@ static int mg_animate_bounce_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animati
 			d.w = animation->dim.w;
 			d.h = animation->dim.h - animation->path.motion;
 
-			mg_shift_up(mg, count, src, d);
+			sg_shift_up(mg, count, src, d);
 
 			d.h = animation->path.motion + count;
 			dest.x = start.x;
 			dest.y = start.y + animation->dim.h - d.h;
 
-			mg_clr_area(mg, dest, d, 0xFF);
-			mg_set_area(mg, dest, d, 0xAA);
+			sg_clr_area(mg, dest, d, 0xFF);
+			sg_set_area(mg, dest, d, 0xAA);
 
 			if( animation->path.step == animation->path.step_total ){
-				animation->path.step = MG_ANIMATION_STEP_FLAG;
+				animation->path.step = SG_ANIMATION_STEP_FLAG;
 				animation->path.motion = 0;
 			}
 		}
@@ -699,22 +699,22 @@ static int mg_animate_bounce_down(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animati
 	return 0;
 }
 
-static int mg_animate_bounce_left(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
-	mg_point_t dest;
-	mg_point_t src;
-	mg_dim_t d;
-	mg_size_t count;
+static int sg_animate_bounce_left(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
+	sg_point_t dest;
+	sg_point_t src;
+	sg_dim_t d;
+	sg_size_t count;
 	u16 step;
 
-	mg_point_t start;
+	sg_point_t start;
 
-	step = animation->path.step & ~(MG_ANIMATION_STEP_FLAG);
+	step = animation->path.step & ~(SG_ANIMATION_STEP_FLAG);
 
 	if( step < animation->path.step_total ){
 		start = animation->start;
-		count = mg_animate_calc_count(animation);
+		count = sg_animate_calc_count(animation);
 
-		if( animation->path.step & (MG_ANIMATION_STEP_FLAG) ){
+		if( animation->path.step & (SG_ANIMATION_STEP_FLAG) ){
 			//bounce back phase
 
 			dest.x = animation->start.x + animation->path.motion_total - animation->path.motion;
@@ -723,12 +723,12 @@ static int mg_animate_bounce_left(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animati
 			d.w = animation->dim.w - animation->path.motion_total + animation->path.motion;
 			d.h = animation->dim.h;
 
-			mg_assign_bitmap_area(mg, dest, bitmap, start, d);
+			sg_assign_bitmap_area(mg, dest, bitmap, start, d);
 
 		} else {
 			//bounce phase
 			if( step == 0 ){
-				mg_assign_bitmap_area(mg, animation->start, bitmap, animation->start, animation->dim);
+				sg_assign_bitmap_area(mg, animation->start, bitmap, animation->start, animation->dim);
 			}
 
 			src.x = start.x + animation->path.motion;
@@ -740,15 +740,15 @@ static int mg_animate_bounce_left(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animati
 			dest.x = start.x;
 			dest.y = start.y;
 
-			mg_shift_right(mg, count, src, d);
+			sg_shift_right(mg, count, src, d);
 
 			d.w = animation->path.motion + count;
 
-			mg_clr_area(mg, dest, d, 0xFF);
-			mg_set_area(mg, dest, d, 0xAA);
+			sg_clr_area(mg, dest, d, 0xFF);
+			sg_set_area(mg, dest, d, 0xAA);
 
 			if( animation->path.step == animation->path.step_total ){
-				animation->path.step = MG_ANIMATION_STEP_FLAG;
+				animation->path.step = SG_ANIMATION_STEP_FLAG;
 				animation->path.motion = 0;
 			}
 		}
@@ -760,22 +760,22 @@ static int mg_animate_bounce_left(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animati
 	return 0;
 }
 
-static int mg_animate_bounce_right(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
-	mg_point_t dest;
-	mg_point_t src;
-	mg_dim_t d;
-	mg_size_t count;
+static int sg_animate_bounce_right(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
+	sg_point_t dest;
+	sg_point_t src;
+	sg_dim_t d;
+	sg_size_t count;
 	u16 step;
 
-	mg_point_t start;
+	sg_point_t start;
 
-	step = animation->path.step & ~(MG_ANIMATION_STEP_FLAG);
+	step = animation->path.step & ~(SG_ANIMATION_STEP_FLAG);
 
 	if( step < animation->path.step_total ){
 		start = animation->start;
-		count = mg_animate_calc_count(animation);
+		count = sg_animate_calc_count(animation);
 
-		if( animation->path.step & (MG_ANIMATION_STEP_FLAG) ){
+		if( animation->path.step & (SG_ANIMATION_STEP_FLAG) ){
 			//bounce back phase
 
 			src.x = start.x + animation->path.motion_total - animation->path.motion;
@@ -787,14 +787,14 @@ static int mg_animate_bounce_right(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animat
 			d.w = animation->dim.w - animation->path.motion_total + animation->path.motion;
 			d.h = animation->dim.h;
 
-			mg_assign_bitmap_area(mg, dest, bitmap, src, d);
+			sg_assign_bitmap_area(mg, dest, bitmap, src, d);
 
 		} else {
 			//bounce phase
 
 			if( step == 0 ){
 				//copy the drawing to the scratch area
-				mg_assign_bitmap_area(mg, animation->start, bitmap, animation->start, animation->dim);
+				sg_assign_bitmap_area(mg, animation->start, bitmap, animation->start, animation->dim);
 			}
 
 			src.x = start.x;
@@ -803,17 +803,17 @@ static int mg_animate_bounce_right(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animat
 			d.w = animation->dim.w - animation->path.motion;
 			d.h = animation->dim.h;
 
-			mg_shift_left(mg, count, src, d);
+			sg_shift_left(mg, count, src, d);
 
 			d.w = animation->path.motion + count;
 			dest.x = start.x + animation->dim.w - d.w;
 			dest.y = start.y;
 
-			mg_clr_area(mg, dest, d, 0xFF);
-			mg_set_area(mg, dest, d, 0xAA);
+			sg_clr_area(mg, dest, d, 0xFF);
+			sg_set_area(mg, dest, d, 0xAA);
 
 			if( animation->path.step == animation->path.step_total ){
-				animation->path.step = MG_ANIMATION_STEP_FLAG;
+				animation->path.step = SG_ANIMATION_STEP_FLAG;
 				animation->path.motion = 0;
 			}
 		}
@@ -824,40 +824,40 @@ static int mg_animate_bounce_right(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animat
 	}
 	return 0;}
 
-int (* const animations[ANIMATION_TYPE_TOTAL])(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation) = {
-		mg_animate_push_left,
-		mg_animate_push_right,
-		mg_animate_push_up,
-		mg_animate_push_down,
-		mg_animate_slide_left,
-		mg_animate_undo_slide_left,
-		mg_animate_slide_right,
-		mg_animate_undo_slide_right,
-		mg_animate_slide_up,
-		mg_animate_undo_slide_up,
-		mg_animate_slide_down,
-		mg_animate_undo_slide_down,
-		mg_animate_none,
-		mg_animate_bounce_up,
-		mg_animate_bounce_down,
-		mg_animate_bounce_left,
-		mg_animate_bounce_right
+int (* const animations[ANIMATION_TYPE_TOTAL])(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation) = {
+		sg_animate_push_left,
+		sg_animate_push_right,
+		sg_animate_push_up,
+		sg_animate_push_down,
+		sg_animate_slide_left,
+		sg_animate_undo_slide_left,
+		sg_animate_slide_right,
+		sg_animate_undo_slide_right,
+		sg_animate_slide_up,
+		sg_animate_undo_slide_up,
+		sg_animate_slide_down,
+		sg_animate_undo_slide_down,
+		sg_animate_none,
+		sg_animate_bounce_up,
+		sg_animate_bounce_down,
+		sg_animate_bounce_left,
+		sg_animate_bounce_right
 };
 
-int mg_animate(mg_bmap_t * mg, mg_bmap_t * bitmap, mg_animation_t * animation){
+int sg_animate(sg_bmap_t * mg, sg_bmap_t * bitmap, sg_animation_t * animation){
 	if( animation->type < ANIMATION_TYPE_TOTAL ){
 		return animations[animation->type](mg, bitmap, animation);
 	}
 	return -1;
 }
 
-int mg_animate_init(mg_animation_t * animation,
+int sg_animate_init(sg_animation_t * animation,
 		u8 type,
 		u8 path,
 		u8 step_total,
-		mg_size_t motion_total,
-		mg_point_t start,
-		mg_dim_t dim){
+		sg_size_t motion_total,
+		sg_point_t start,
+		sg_dim_t dim){
 	animation->type = type;
 	animation->path.type = path;
 	animation->path.step = 0;
