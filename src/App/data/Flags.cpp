@@ -7,7 +7,7 @@ using namespace var;
 
 Flags::Flags() {
 	// TODO Auto-generated constructor stub
-	_flags = 0;
+	m_flags = 0;
 }
 
 

@@ -15,14 +15,19 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 	int h;
 	Dim d = attr.d();
 	sg_point_t p = attr.p();
+	FontObject * font;
 
 	if( text() ){
 		if( font_size() == 0 ){
-			//h = App::select_system_font(d, text(), font_bold());
+			h = d.h();
 		} else {
-			//h = App::select_system_font(font_size(), font_bold());
+			h = font_size();
 		}
-		//len = App::font()->len(text());
+		font = FontSystem::get_font(h, font_bold());
+		if( font == 0 ){
+			return;
+		}
+		len = font->calc_len(text());
 		top_left.y = p.y;
 		if( align_left() ){
 			top_left.x = p.x;
@@ -46,9 +51,9 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 
 
 		if( dark() ){
-			//App::font()->clear_str(text(), attr.b(), top_left);
+			font->clear_str(text(), *attr.b(), top_left);
 		} else {
-			//App::font()->set_str(text(), attr.b(), top_left);
+			font->set_str(text(), *attr.b(), top_left);
 		}
 	}
 

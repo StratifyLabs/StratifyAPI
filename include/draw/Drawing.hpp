@@ -52,8 +52,8 @@ public:
 	DrawingAttr(drawing_attr_t & attr);
 	operator drawing_attr_t (){ return m_attr; }
 
-	void set(sgfx::Bitmap * b, drawing_point_t p, drawing_dim_t d);
-	void set_bitmap(sgfx::Bitmap * b){ m_attr.b = b; }
+	void set(sgfx::Bitmap & b, drawing_point_t p, drawing_dim_t d);
+	void set_bitmap(sgfx::Bitmap & b){ m_attr.b = &b; }
 	void set_dim(drawing_dim_t d){ m_attr.d = d; }
 	void set_dim(drawing_size_t w, drawing_size_t h){ m_attr.d.w = w; m_attr.d.h = h; }
 	void set_point(drawing_point_t p){ m_attr.p = p; }
@@ -64,7 +64,7 @@ public:
 	drawing_int_t x() const { return m_attr.p.x; }
 	drawing_int_t y() const { return m_attr.p.y; }
 
-	sgfx::Bitmap * b() const { return m_attr.b; }
+	sgfx::Bitmap & b() const { return *(m_attr.b); }
 	drawing_point_t p() const { return m_attr.p; }
 	drawing_dim_t d() const { return m_attr.d; }
 	drawing_attr_t & attr(){ return m_attr; }
@@ -88,8 +88,8 @@ class DrawingScaledAttr {
 public:
 	operator drawing_scaled_attr_t (){ return m_attr; }
 
-	void set(sgfx::Bitmap * b, sg_point_t p, sg_dim_t d);
-	void set_bitmap(sgfx::Bitmap * b){ m_attr.b = b; }
+	void set(sgfx::Bitmap & b, sg_point_t p, sg_dim_t d);
+	void set_bitmap(sgfx::Bitmap & b){ m_attr.b = &b; }
 	void set_dim(sg_dim_t d){ m_attr.d = d; }
 	void set_height(sg_size_t h){ m_attr.d.h = h; }
 	void set_width(sg_size_t w){ m_attr.d.h = w; }
@@ -162,7 +162,7 @@ public:
 	 * @return The screen dimensions where the element was drawn
 	 */
 	virtual void draw(const DrawingAttr & attr);
-	void draw(sgfx::Bitmap * b, drawing_int_t x, drawing_int_t y, drawing_size_t w, drawing_size_t h);
+	void draw(sgfx::Bitmap & b, drawing_int_t x, drawing_int_t y, drawing_size_t w, drawing_size_t h);
 
 	static void set(const DrawingAttr & attr, sg_bmap_data_t v = 0xFF);
 	static void clear(const DrawingAttr & attr, sg_bmap_data_t v = 0xFF);
@@ -206,7 +206,7 @@ public:
 	 * @param padding Padding (in bitmap dimensions)
 	 */
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);
-	void draw_to_scale(sgfx::Bitmap * b, sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h);
+	void draw_to_scale(sgfx::Bitmap & b, sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h);
 
 
 	/*! \brief Return the dimensions (in pixels) if any Element is drawn on the specified bitmap */
@@ -227,8 +227,6 @@ public:
 	inline void set_align_top(bool v = true){ set_flag(FLAG_ALIGN_TOP, v); }
 	inline bool align_bottom() const { return flag(FLAG_ALIGN_BOTTOM); }
 	inline void set_align_bottom(bool v = true){ set_flag(FLAG_ALIGN_BOTTOM, v); }
-	inline bool font_bold() const { return flag(FLAG_FONT_BOLD); }
-	inline void set_font_bold(bool v = true){ set_flag(FLAG_FONT_BOLD, v); }
 
 	inline bool dark() const { return flag(FLAG_DARK); }
 	inline void set_dark(bool v = true){ set_flag(FLAG_DARK, v); }
@@ -240,8 +238,8 @@ public:
 
 protected:
 
-	sg_point_t point_on_bitmap(sgfx::Bitmap * b, drawing_size_t x, drawing_size_t y, sg_dim_t d);
-	sg_dim_t dim_on_bitmap(sgfx::Bitmap * b) const;
+	sg_point_t point_on_bitmap(sgfx::Bitmap & b, drawing_size_t x, drawing_size_t y, sg_dim_t d);
+	sg_dim_t dim_on_bitmap(sgfx::Bitmap & b) const;
 
 	enum {
 		FLAG_VISIBLE,
@@ -253,7 +251,6 @@ protected:
 		FLAG_ALIGN_RIGHT,
 		FLAG_ALIGN_TOP,
 		FLAG_ALIGN_BOTTOM,
-		FLAG_FONT_BOLD,
 		FLAG_BUSY,
 		FLAG_CANCELLED,
 		FLAG_DARK,

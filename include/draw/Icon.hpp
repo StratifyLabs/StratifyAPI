@@ -3,6 +3,7 @@
 #ifndef DRAW_ICON_HPP_
 #define DRAW_ICON_HPP_
 
+
 #include "Drawing.hpp"
 
 namespace draw {
@@ -22,15 +23,15 @@ public:
 	};
 
 	/*! \brief Construct with no graphic */
-	IconAttr(){ set(TOTAL); }
+	IconAttr(){ set_value(0); }
 
 	/*! \brief Construct by setting the graphic, thickness, and rotation */
-	IconAttr(enum sys_gfx gfx, u8 thickness = 3, i16 rotation = 0){
-		set(gfx, thickness, rotation);
+	IconAttr(const sg_icon_t * icon, u8 thickness = 3, i16 rotation = 0){
+		set_value(icon, thickness, rotation);
 	}
 
 
-	/*! \brief Gfx rotation orienations */
+	/*! \details Gfx rotation orienations */
 	enum {
 		RIGHT /*! \brief Point to the right */ = 0,
 		DOWN /*! \brief Point down */ = SG_TRIG_POINTS/4,
@@ -42,27 +43,39 @@ public:
 		EIGHTH_COUNTER_CLOCKWISE /*! \brief Add/subtract to/from RIGHT, DOWN, etc */  = -SG_TRIG_POINTS/8,
 	};
 
-	/*! \brief Set the graphic, thickness, and rotation */
-	inline void set(enum sys_gfx gfx, u8 thickness = 3, i16 rotation = 0){
-		m_gfx = gfx; m_thickness = thickness; m_rotation = rotation;
+	/*! \details Set the graphic, thickness, and rotation */
+	void set_value(const sg_icon_t * icon, u8 thickness = 3, i16 rotation = 0){
+		m_icon = icon; m_thickness = thickness; m_rotation = rotation;
 	}
 
-	/*! \brief Set the thickness */
-	inline void set_thickness(u8 thickness){ m_thickness = thickness; }
-	/*! \brief Set the graphic */
-	inline void set_gfx(enum sys_gfx gfx){ m_gfx = gfx; }
-	/*! \brief Set the rotation */
-	inline void set_rotation(i16 rotation){ m_rotation = rotation; }
+	/*! \details Set the icon */
+	void set_icon(const sg_icon_t * icon){ m_icon = icon; }
 
-	/*! \brief Returns the graphic */
-	inline enum sys_gfx gfx() const { return m_gfx; }
-	/*! \brief Returns the thickness */
-	inline u8 thickness() const { return m_thickness; }
-	/*! \brief Returns the rotation */
-	inline i16 rotation() const { return m_rotation; }
+	/*! \details Set the thickness */
+	void set_thickness(u8 thickness){ m_thickness = thickness | (m_thickness & SG_MAP_FILL_FLAG); }
+
+	/*! \details Set the fill flag */
+	void set_fill(bool v = true){ if( v ){ m_thickness |= SG_MAP_FILL_FLAG; } else { m_thickness &= ~SG_MAP_FILL_FLAG; } }
+
+	/*! \details Set the graphic */
+	void set_gfx(const sg_icon_t * icon){ m_icon = icon; }
+
+	/*! \details Set the rotation */
+	void set_rotation(i16 rotation){ m_rotation = rotation; }
+
+	/*! \details Returns the graphic */
+	const sg_icon_t & icon() const { return *m_icon; }
+
+	/*! \details Returns the thickness */
+	u8 thickness() const { return m_thickness & ~SG_MAP_FILL_FLAG; }
+	/*! \details Returns the rotation */
+	i16 rotation() const { return m_rotation; }
+
+	/*! \details Returns the value of the fill flag */
+	bool fill() const { return (m_thickness & SG_MAP_FILL_FLAG) == SG_MAP_FILL_FLAG; }
 
 private:
-	enum sys_gfx m_gfx;
+	const sg_icon_t * m_icon;
 	u8 m_thickness;
 	i16 m_rotation;
 };
@@ -76,20 +89,20 @@ class Icon : public Drawing {
 public:
 	/*! \brief Construct an empty graphic */
 	Icon();
-	/*! \brief Construct a graphic using \a gfx */
-	Icon(enum IconAttr::sys_gfx gfx);
 
-	Icon(const IconAttr & gfx);
-
-	IconAttr & icon(){ return m_attr; }
 	/*! \brief Access a reference to the attributes */
 	IconAttr & attr(){ return m_attr; }
 
-	static const sg_icon_t * load_icon(enum IconAttr::sys_gfx gfx);
+	static const sg_icon_t * get_system_icon(int icon);
 
 	/*! \brief Draws the graphic to scale on the specified bitmap */
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);
 
+	/*! \details This returns the bounds of the icon.  It is only valid after
+	 * the icon has been drawn on a bitmap.
+	 *
+	 * @return The bounds of the last time this icon was drawn on a bitmap using draw_to_scale()
+	 */
 	sg_bounds_t & bounds(){ return m_bounds; }
 
 private:

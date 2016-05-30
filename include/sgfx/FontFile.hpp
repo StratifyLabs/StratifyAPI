@@ -3,12 +3,12 @@
 #ifndef SGFX_FONTFILE_HPP_
 #define SGFX_FONTFILE_HPP_
 
-#include "Font.hpp"
+#include <sgfx/FontObject.hpp>
 #include "../sys/File.hpp"
 
 namespace sgfx {
 
-class FontFile : public Font {
+class FontFile : public FontObject {
 public:
 	FontFile();
 	FontFile(const char * name, int offset = 0);
@@ -16,7 +16,8 @@ public:
 
 	int set_file(const char * name, int offset = 0);
 
-	const Bitmap * bitmap(char c, bool ascii = true) const;
+	u16 get_h() const;
+	const Bitmap & bitmap(char c, bool ascii = true) const;
 
 protected:
 	int load_char(sg_font_char_t & ch, char c, bool ascii) const;

@@ -62,6 +62,11 @@ Bitmap::Bitmap(sg_size_t w, sg_size_t h){
 	alloc(w,h);
 }
 
+Bitmap::Bitmap(sg_dim_t d){
+	init_members();
+	alloc(d.w,d.h);
+}
+
 
 Bitmap::Bitmap(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly){
 	init_members();
@@ -253,23 +258,23 @@ int Bitmap::save(const char * path) const{
 }
 
 
-int Bitmap::set_bitmap_column(const Bitmap * bitmap, sg_point_t p, sg_int_t col){
-	return set_bitmap_column(bitmap, p, col, bitmap->h());
+int Bitmap::set_bitmap_column(const Bitmap & bitmap, sg_point_t p, sg_int_t col){
+	return set_bitmap_column(bitmap, p, col, bitmap.h());
 }
 
-int Bitmap::set_bitmap_column(const Bitmap * bitmap, sg_point_t p, sg_int_t col, sg_size_t h){
+int Bitmap::set_bitmap_column(const Bitmap & bitmap, sg_point_t p, sg_int_t col, sg_size_t h){
 	sg_point_t i;
-	if( (bitmap == 0) || (data() == 0) ){
+	if( data() == 0 ){
 		return -1;
 	}
 
-	if( col >= bitmap->w() ){
+	if( col >= bitmap.w() ){
 		return 0; //nothing to do
 	}
 
 	i.x = col;
 	for(i.y=0; i.y < h; i.y++){
-		if( bitmap->tst_pixel(i) ){
+		if( bitmap.tst_pixel(i) ){
 			set_pixel(p);
 		} else {
 			clr_pixel(p);

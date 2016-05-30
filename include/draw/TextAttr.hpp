@@ -5,6 +5,7 @@
 
 #include "Drawing.hpp"
 #include "../var/String.hpp"
+#include "../var/Flags.hpp"
 
 namespace draw {
 
@@ -12,28 +13,37 @@ class TextAttr {
 public:
 	TextAttr() { set_font_size(0); }
 
-	/*! \brief Assign a value to the string */
+	/*! \details Assign a value to the string */
 	void assign(const char * str){ m_str.assign(str); }
 
-	/*! \brief Get a pointer to a const char of the string */
+	/*! \details Get a pointer to a const char of the string */
 	const char * text() const { return m_str.c_str(); }
 
-	/*! \brief Set the font size */
+	/*! \details Set the font size */
 	inline void set_font_size(sg_size_t v){ m_font_size = v; }
 
-	/*! \brief Return the font size */
+	/*! \details Return the font size */
 	sg_size_t font_size() const { return m_font_size; }
 
-	/*! \brief Direct access to object's String */
+	/*! \details Direct access to object's String */
 	var::String & str(){ return m_str; }
 
-	//void set_font_bold(bool v = true ){ m_font_bold = v; }
-	//bool font_bold() const { return m_font_bold; }
+	/*! \details Set the font to bold (or not) */
+	void set_font_bold(bool v = true){ m_flags.set_value(FLAG_BOLD, v); }
+
+	/*! \details Returns whether font is bold or not */
+	bool font_bold() const { return m_flags.value(FLAG_BOLD); }
 
 private:
 	var::String m_str;
 	sg_size_t m_font_size;
-	//bool m_font_bold;
+
+	enum {
+		FLAG_BOLD,
+		FLAG_TOTAL
+	};
+
+	var::Flags m_flags;
 };
 
 };

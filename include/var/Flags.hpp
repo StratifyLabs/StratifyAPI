@@ -11,20 +11,30 @@ class Flags {
 public:
 	Flags();
 
-	inline void set(int flag, bool v){
+	/*! \details Set the value of the specified flag
+	 *
+	 * @param flag The flag to set
+	 * @param v The value to set for the flag
+	 */
+	inline void set_value(int flag, bool v = true){
 		if( v ){
-			_flags |= (1<<flag);
+			m_flags |= (1<<flag);
 		} else {
-			_flags &= ~(1<<flag);
+			m_flags &= ~(1<<flag);
 		}
 	}
 
+	/*! \details Return the value of the flag
+	 *
+	 * @param flag The flag to read
+	 * @return The flag value (true or false)
+	 */
 	inline bool value(int flag) const {
-		return (_flags & (1<<flag)) != 0;
+		return (m_flags & (1<<flag)) != 0;
 	}
 
 private:
-	u32 _flags;
+	u32 m_flags;
 };
 
 };

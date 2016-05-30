@@ -2,18 +2,20 @@
 
 
 #include <errno.h>
-#include "sgfx/Font.hpp"
+#include <sgfx/FontObject.hpp>
 
 using namespace sgfx;
 
-static const char ascii_charset_[Font::CHARSET_SIZE+1] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+static const char ascii_charset_[FontObject::CHARSET_SIZE+1] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
 
-const char * Font::charset(){
+const char * FontObject::charset(){
 	return ascii_charset_;
 }
 
-int Font::to_charset(char ascii){
+
+
+int FontObject::to_charset(char ascii){
 	if( (ascii < ' ') ||
 			(ascii > '~') ){
 		return -1;
@@ -22,16 +24,14 @@ int Font::to_charset(char ascii){
 }
 
 
-Font::Font() {
-	//max_byte_width_ = 0;
-	//max_height_ = 0;
+FontObject::FontObject() {
 	m_bitmap = 0;
 	m_offset = 0;
 	m_space_size = 8;
 	m_letter_spacing = 1;
 }
 
-int Font::len(const char * str) const {
+int FontObject::calc_len(const char * str) const {
 	int l;
 	l = 0;
 
@@ -50,46 +50,32 @@ int Font::len(const char * str) const {
 	return l;
 }
 
-int Font::set_char(char c, Bitmap * bitmap, sg_point_t point) const {
-	const Bitmap * cbp;
-
-	cbp = this->bitmap(c, true);
-	if( cbp == 0 ){
-		return -1;
-	}
+int FontObject::set_char(char c, Bitmap & bitmap, sg_point_t point) const {
 
 	point.x += m_char.xoffset;
 	point.y += m_char.yoffset;
 
-	bitmap->set_bitmap(cbp, point);
+	bitmap.set_bitmap(this->bitmap(c, true), point);
 
 	//this needs to be char width not bitmap width
 	return m_char.xadvance;
 }
 
-int Font::clear_char(char c, Bitmap * bitmap, sg_point_t point) const {
-	const Bitmap * cbp;
-
-	cbp = this->bitmap(c, true);
-	if( cbp == 0 ){
-		return -1;
-	}
+int FontObject::clear_char(char c, Bitmap & bitmap, sg_point_t point) const {
 
 	point.x += m_char.xoffset;
 	point.y += m_char.yoffset;
 
-	bitmap->clr_bitmap(cbp, point);
+	bitmap.clr_bitmap(this->bitmap(c, true), point);
 
 	return m_char.xadvance;
 }
 
 
-int Font::clear_str(const char * str, Bitmap * bitmap, sg_point_t point) const {
+int FontObject::clear_str(const char * str, Bitmap & bitmap, sg_point_t point) const {
 	char c;
 	sg_size_t w;
-	if( bitmap == 0 ){
-		return -1;
-	}
+
 	//draw characters on the bitmap
 	while( (c = *(str++)) != 0){
 		if( c == ' ' ){
@@ -108,12 +94,10 @@ int Font::clear_str(const char * str, Bitmap * bitmap, sg_point_t point) const {
 	return 0;
 }
 
-int Font::set_str(const char * str, Bitmap * bitmap, sg_point_t point) const {
+int FontObject::set_str(const char * str, Bitmap & bitmap, sg_point_t point) const {
 	char c;
 	sg_size_t w;
-	if( bitmap == 0 ){
-		return -1;
-	}
+
 	//draw characters on the bitmap
 	while( (c = *(str++)) != 0){
 		if( c == ' ' ){

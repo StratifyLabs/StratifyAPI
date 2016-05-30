@@ -15,49 +15,32 @@
 namespace ui {
 
 /*! \brief List Item Class
- * \ingroup list
- *
  * \details A ListItem represents an item in a List.
  *
  */
 class ListItem : public ElementLinked {
 public:
-	//item in a list -- label and icon -- as well as action
-	ListItem(const char * label, ElementLinked * parent = 0);
-	ListItem(const char * label, ElementLinked * child, ElementLinked * parent);
-	ListItem(const char * label, enum draw::IconAttr::sys_gfx gfx, ElementLinked * parent = 0);
-	ListItem(const char * label, enum draw::IconAttr::sys_gfx gfx, ElementLinked * child, ElementLinked * parent);
-	ListItem(const char * label, const sg_bitmap_hdr_t * icon, ElementLinked * parent = 0);
-
-	inline void set_app_icon(const sg_bitmap_hdr_t * icon){ m_app_icon = icon; }
-	inline void set_sys_gfx(enum draw::IconAttr::sys_gfx gfx){
-		//gfx_attr().set_gfx(gfx);
-	}
-	void load_icon(draw::Icon & icon, sg_size_t w = 24, sg_size_t h = 24, const draw::IconAttr * gfx = 0, sg_bounds_t * attr = 0) const;
-
-	inline void set_thickness(uint8_t t){
-		gfx_attr().set_thickness(t);
-	}
-	inline void set_rotation(sg_size_t r){
-		gfx_attr().set_rotation(r);
-	}
-
-	inline const char * label() const { return m_label.text(); }
-	inline void set_label(const char * l){ m_label.assign(l); }
-
-	void set_font_size(sg_size_t v){ m_label.set_font_size(v); }
+	/*! \details Construct a new list item */
+	ListItem(const char * label, const sg_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
 
 	void draw_to_scale(const draw::DrawingScaledAttr & attr);
 
-	draw::IconAttr & gfx_attr(){ return m_icon_attr; }
+	/*! \details This methods gives read/write access to the icon attributes */
+	draw::IconAttr & icon_attr(){ return m_icon_attr; }
 
+	/*! \details This methods gives read only access to the icon attributes */
 	const draw::IconAttr & icon_attr_const() const { return m_icon_attr; }
+
+	/*! \details This methods gives read/write access to the text label attributes */
+	draw::TextAttr & label_attr(){ return m_label; }
+
+	/*! \details This methods gives read only access to the text label attributes */
+	const draw::TextAttr & label_attr_const() const { return m_label; }
 
 	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
 
 private:
 	draw::TextAttr m_label;
-	const sg_bitmap_hdr_t * m_app_icon;
 	draw::IconAttr m_icon_attr;
 };
 
@@ -72,10 +55,22 @@ class ListItemToggle : public ListItem {
 public:
 	ListItemToggle(const char * label, ElementLinked * parent = 0);
 
-	/*! \brief This method will toggle the value of the item and return the parent list */
+	/*! \details This method will toggle the value of the item and return the parent list */
 	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
 
+	/*! \details This methods will set the enabled flag as specified */
 	void set_enabled(bool v = true);
+
+	/*! \details This method will set the icon used when the item is enabled */
+	void set_toggle_enabled_icon(const sg_icon_t * icon){ m_toggle_enabled_icon = icon; }
+
+	/*! \details This method will set the icon used when the item is enabled */
+	void set_toggle_disabled_icon(const sg_icon_t * icon){ m_toggle_disabled_icon = icon; }
+
+private:
+	const sg_icon_t * m_toggle_enabled_icon;
+	const sg_icon_t * m_toggle_disabled_icon;
+
 };
 
 
@@ -84,7 +79,7 @@ public:
  */
 class ListItemCheck : public ListItem {
 public:
-	ListItemCheck() : ListItem(0, draw::IconAttr::TOTAL) {}
+	ListItemCheck() : ListItem(0, 0) {}
 	ListItemCheck(const char * label, List * parent = 0);
 	void set_enabled(bool v = true);
 	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
@@ -100,8 +95,7 @@ class ListItemCallback : public ListItem {
 public:
 	typedef ElementLinked * (*list_item_callback_t)(ElementLinked * list, ListItemCallback * obj, int event);
 
-	ListItemCallback(list_item_callback_t callback, const char * label, enum draw::IconAttr::sys_gfx gfx, ElementLinked * parent = 0);
-	ListItemCallback(list_item_callback_t callback, const char * label, const sg_bitmap_hdr_t * icon, ElementLinked * parent = 0);
+	ListItemCallback(list_item_callback_t callback, const char * label, const sg_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
 
 	//execute the callback
 	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
@@ -119,23 +113,19 @@ private:
  */
 class ListItemElement : public ListItem {
 public:
-	ListItemElement(ElementLinked * child, const char * label, ElementLinked * parent = 0);
-	ListItemElement(ElementLinked * child, const char * label, enum draw::IconAttr::sys_gfx gfx, ElementLinked * parent = 0);
-	ListItemElement(ElementLinked * child, const char * label, const sg_bitmap_hdr_t * icon, ElementLinked * parent = 0);
 
-	inline void set_target(ElementLinked * list){ set_child(list); }
-	inline Element * target(){ return child(); }
+	ListItemElement(const char * label, const sg_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
 };
 
 class ListItemBack : public ListItem {
 public:
-	ListItemBack(ElementLinked * parent = 0);
+	ListItemBack(const sg_icon_t * icon = 0, ElementLinked * parent = 0);
 	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
 };
 
 class ListItemExit : public ListItemBack {
 public:
-	ListItemExit(ElementLinked * parent = 0);
+	ListItemExit(const sg_icon_t * icon = 0, ElementLinked * parent = 0);
 };
 
 
@@ -180,7 +170,7 @@ class ListDir : public List {
 public:
 	typedef void (*list_dir_callback_t)(ListDir * list);
 
-	ListDir(const char * path, ElementLinked * child, ElementLinked * parent = 0);
+	ListDir(const char * path, const sg_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
 	~ListDir();
 
 	void set_path(const char * path);

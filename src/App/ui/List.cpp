@@ -58,7 +58,7 @@ void List::draw_to_scale(const DrawingScaledAttr & attr){
 	index_offset = calc_visible_offset();
 	display_items = calc_display_items();
 	item_attr.set_dim(d.w() - x_offset, list_item_height );
-	item_attr.set_bitmap(b);
+	item_attr.set_bitmap(*b);
 
 	b->clear(p,d);
 
@@ -173,13 +173,11 @@ Element * List::event_handler(int event, const DrawingAttr & attr){
 		}
 		return this;
 
-		/*
-	case RIGHT_HOLD:
-	case CENTER_PRESS:
+	case SELECT:
 		//invoke menu event handler on a transition
 		return current()->event_handler(event, attr);
 
-	case LEFT_PRESS:
+	case DOWN:
 		animate_scroll(1);
 		if( selected() < size() - 1){
 			inc_selected();
@@ -187,7 +185,7 @@ Element * List::event_handler(int event, const DrawingAttr & attr){
 		current()->event_handler(event, attr);
 
 		return this;
-	case RIGHT_PRESS:
+	case UP:
 		animate_scroll(-1);
 		if( selected() > 0 ){
 			dec_selected();
@@ -195,17 +193,15 @@ Element * List::event_handler(int event, const DrawingAttr & attr){
 		current()->event_handler(event, attr);
 		return this;
 	case ENTER:
-		App::set_update_period(0);
-		App::bar().set_left( IconAttr::CHEVRON, 3, SG_TRIG_POINTS/4 );
-		App::bar().set_right( IconAttr::CHEVRON, 3, SG_TRIG_POINTS*3/4 );
-		App::bar().set_center( IconAttr::CHEVRON ); //set this based on the selected item
+		//App::set_update_period(0);
+		//App::bar().set_left( IconAttr::CHEVRON, 3, SG_TRIG_POINTS/4 );
+		//App::bar().set_right( IconAttr::CHEVRON, 3, SG_TRIG_POINTS*3/4 );
+		//App::bar().set_center( IconAttr::CHEVRON ); //set this based on the selected item
 		current()->event_handler(event, attr);
 		return this;
-		*/
 	case UPDATE:
 		//execute the animation
 		return this;
-
 
 	default:
 		return ElementLinked::event_handler(event, attr);

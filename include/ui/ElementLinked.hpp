@@ -12,8 +12,7 @@ namespace ui {
 
 class ElementLinked : public Element {
 public:
-	ElementLinked(ElementLinked * parent = 0);
-	ElementLinked(ElementLinked * child, ElementLinked * parent);
+	ElementLinked(ElementLinked * parent, ElementLinked * child = 0);
 
 	/*! \brief Return the parent element */
 	inline ElementLinked * parent() const { return m_parent; }

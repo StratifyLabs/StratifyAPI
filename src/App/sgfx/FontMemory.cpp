@@ -1,8 +1,8 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
+#include <sgfx/FontMemory.hpp>
 #include <cstring>
 
-#include "sgfx/FontMemory.hpp"
 using namespace sgfx;
 
 
@@ -28,20 +28,25 @@ void FontMemory::set_font_memory(const void * ptr){
 	}
 }
 
+u16 FontMemory::get_h() const {
+	const sg_font_hdr_t * hdr_ptr;
+	if( m_font != 0 ){
+		hdr_ptr = (const sg_font_hdr_t*)m_font;
+		return hdr_ptr->max_height;
+	}
+	return 0;
+}
 
-const Bitmap * FontMemory::bitmap(char c, bool ascii) const {
+
+
+
+const Bitmap & FontMemory::bitmap(char c, bool ascii) const {
 
 	//load character header info
-	if( load_char(m_char, c, ascii) < 0 ){
-		return 0;
-	}
-
+	load_char(m_char, c, ascii);
 	//load bitmap
-	if ( load_bitmap(m_char) < 0 ){
-		return 0;
-	}
-
-	return &m_bitmap;
+	load_bitmap(m_char);
+	return m_bitmap;
 }
 
 int FontMemory::load_kerning(u16 first, u16 second) const {

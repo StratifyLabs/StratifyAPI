@@ -4,14 +4,14 @@
 #define SGFX_FONTMEMORY_HPP_
 
 
-#include "Font.hpp"
+#include <sgfx/FontObject.hpp>
 
 namespace sgfx {
 
 /*! \brief Monochrome Bitmap Font class (stored in flash memory)
  *
  */
-class FontMemory: public Font {
+class FontMemory: public FontObject {
 public:
 
 	/*! \details Construct an object */
@@ -32,7 +32,9 @@ public:
 	const void * font_memory() const { return m_font; }
 
 
-	const Bitmap * bitmap(char c, bool ascii = true) const;
+	u16 get_h() const;
+
+	const Bitmap & bitmap(char c, bool ascii = true) const;
 
 protected:
 	int load_char(sg_font_char_t & ch, char c, bool ascii) const;

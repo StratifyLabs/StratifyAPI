@@ -16,11 +16,12 @@ void Panel::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_point_t p;
 	sg_dim_t d;
 
-	/*
+
 	w = attr.d().w;
 	h = attr.d().h;
 	gfx.set_dark(false);
 
+	/*
 	if( h == w ){
 		gfx.attr().set(IconAttr::PANEL, 0, 0);
 		gfx.draw_to_scale(attr);

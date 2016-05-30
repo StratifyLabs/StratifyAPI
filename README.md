@@ -52,6 +52,15 @@ The above code uses set_* and get_* but not perhaps in the traditional way.  If 
 
     area(){ return m_width*m_height; }
 
+#### References and Pointers
+
+Parameters passed to methods and functions should be passed as references unless a pointer is more appropriate.  For example, if the item is a member of an array then a pointer would be appropriate. 
+However, if the item will be operated on as a stand alone entity, a reference is preferred.  Also if the object uses only read-only methods, a const reference is best.
+
+	void copy_mem(const char * src, char * dest, int nbytes); //a pointer here is best because src points to the data
+	void print_string(const String & str); //this is better as a reference because we are just reading str
+	
+Pointers are also appropriate if 0 is a valid value even if there is only one item.
 
 ### Variables and Member Variables
 

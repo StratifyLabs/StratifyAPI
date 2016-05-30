@@ -17,16 +17,8 @@ ListItemInfo::ListItemInfo(const char * l, const char * v, ElementLinked * paren
 }
 
 void ListItemInfo::set(const char * l, const char * v){
-	set_label(l);
-	set_value(v);
-}
-
-void ListItemInfo::set_label(const char * v){
-	m_label.assign(v);
-}
-
-void ListItemInfo::set_value(const char * v){
-	m_value.assign(v);
+	label().assign(l);
+	value().assign(v);
 }
 
 
@@ -37,20 +29,21 @@ void ListItemInfo::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_dim_t d = attr.d();
 	sg_point_t p = attr.p();
 	Bitmap * b = attr.b();
+	FontObject * font;
 
-	char buffer[PATH_MAX];
 
-	/*
+
 	//draw the label and the icon
 	Dim padded;
-	sprintf(buffer, "%s %s", label(), value());
-	padded.set_dim(d.w, d.h);
+	padded.set_value(d.w, d.h);
 
-	if( font_size() == 0 ){
-		height = App::select_system_font(padded, buffer, font_bold());
+	if( label().font_size() == 0 ){
+		height = padded.h();
 	} else {
-		height = App::select_system_font(font_size(), font_bold());
+		height = label().font_size();
 	}
+
+	font = FontSystem::get_font(height, label().font_bold());
 
 	if( align_top() ){
 		;
@@ -60,13 +53,13 @@ void ListItemInfo::draw_to_scale(const DrawingScaledAttr & attr){
 		p.y = p.y + d.h/2 - height/2;
 	}
 
-	App::font()->set_str(label(), attr.b(), p);
+	font->set_str(label().text(), *b, p);
 
 	//draw the value on the right side
-	len = App::font()->len(value());
+	len = font->calc_len(value().text());
 	p.x = p.x + d.w - len - d.w/40;
-	App::font()->set_str(value(), b, p);
-	*/
+	font->set_str(value().text(), *b, p);
+
 
 }
 

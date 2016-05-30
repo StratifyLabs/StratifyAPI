@@ -40,6 +40,13 @@ public:
 	 * @param h Height of the new bitmap
 	 */
 	Bitmap(sg_size_t w, sg_size_t h);
+	/*! \details Construct a new bitmap (dynamic memory allocation)
+	 *
+	 * @param d Dimensions of the bitmap
+	 */
+	Bitmap(sg_dim_t d);
+
+
 	virtual ~Bitmap();
 
 	static int calc_byte_width(int w);
@@ -103,13 +110,13 @@ public:
 	 * @param pos true to set pixels and false to clear them
 	 * @return Zero on success
 	 */
-	int set_bitmap(const Bitmap * bitmap, sg_point_t p){ return sg_set_bitmap(bmap(), bitmap->bmap_const(), p); }
+	int set_bitmap(const Bitmap & bitmap, sg_point_t p){ return sg_set_bitmap(bmap(), bitmap.bmap_const(), p); }
 
-	int set_bitmap_column(const Bitmap * bitmap, sg_point_t p, sg_int_t col, sg_size_t h);
-	int set_bitmap_column(const Bitmap * bitmap, sg_point_t p, sg_int_t col);
+	int set_bitmap_column(const Bitmap & bitmap, sg_point_t p, sg_int_t col, sg_size_t h);
+	int set_bitmap_column(const Bitmap & bitmap, sg_point_t p, sg_int_t col);
 
-	int clr_bitmap(const Bitmap * bitmap, sg_point_t p){ return sg_clr_bitmap(bmap(), bitmap->bmap_const(), p); }
-	int clear_bitmap(const Bitmap * bitmap, sg_point_t p){ return sg_clr_bitmap(bmap(), bitmap->bmap_const(), p); }
+	int clr_bitmap(const Bitmap & bitmap, sg_point_t p){ return sg_clr_bitmap(bmap(), bitmap.bmap_const(), p); }
+	int clear_bitmap(const Bitmap & bitmap, sg_point_t p){ return sg_clr_bitmap(bmap(), bitmap.bmap_const(), p); }
 
 	/*! \details Change effective size without free/alloc sequence */
 	int set_size(sg_size_t w, sg_size_t h, sg_size_t offset = 0);

@@ -4,15 +4,10 @@
 #include "ui/ElementLinked.hpp"
 using namespace ui;
 
-ElementLinked::ElementLinked(ElementLinked * parent) {
+ElementLinked::ElementLinked(ElementLinked * parent, ElementLinked * child) {
 	// TODO Auto-generated constructor stub
 	set_parent(parent);
-	set_child(0);
-}
-
-ElementLinked::ElementLinked(ElementLinked * child, ElementLinked * parent){
 	set_child(child);
-	set_parent(parent);
 }
 
 Element * ElementLinked::event_handler(int event, const DrawingAttr & attr){

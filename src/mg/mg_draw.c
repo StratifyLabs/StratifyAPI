@@ -25,7 +25,7 @@ void sg_draw(sg_bmap_t * bitmap, const sg_icon_primitive_t * prim, const sg_map_
 
 void sg_draw_icon(sg_bmap_t * bitmap, const sg_icon_t * icon, const sg_map_t * map, sg_bounds_t * attr){
 	unsigned int total;
-	if( map->thickness_fill == 0 ){
+	if( map->o_thickness_fill == 0 ){
 		total = icon->total;
 	} else {
 		total = icon->total - icon->fill_total;
@@ -58,7 +58,7 @@ void draw_line(const sg_icon_primitive_t * p, sg_bmap_t * bm, const sg_map_t * m
 	p2 = p->line.p;
 	sg_size_t thickness;
 
-	thickness = map->thickness_fill;
+	thickness = map->o_thickness_fill;
 	if( thickness == 0 ){
 		thickness = 1;
 	}
@@ -106,7 +106,7 @@ void draw_arc(const sg_icon_primitive_t * p, sg_bmap_t * bm, const sg_map_t * ma
 	sg_size_t thickness;
 
 
-	thickness = map->thickness_fill;
+	thickness = map->o_thickness_fill;
 	if( thickness == 0 ){
 		thickness = 1;
 	}

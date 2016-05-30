@@ -27,7 +27,7 @@ void ProgressCircle::draw_to_scale(const DrawingScaledAttr & attr){
 	map.size.w = d.w()*2;
 	map.size.h = d.h()*2;
 	map.rotation = 0;
-	map.thickness_fill = 2;
+	map.o_thickness_fill = 2;
 	map.op = SG_OP_SET;
 	Point end;
 
@@ -43,6 +43,6 @@ void ProgressCircle::draw_to_scale(const DrawingScaledAttr & attr){
 	icon.total = 3;
 	icon.fill_total = 0;
 
-	sgfx::Gfx::draw(b, &icon, map);
+	Gfx::draw(*b, icon, map);
 
 }

@@ -68,8 +68,15 @@ public:
 	/*! \brief Element events */
 	enum {
 		ENTER /*! \brief Enter the element (ie, transition to the Element) */,
-		UPDATE /*! \brief Update the element (use App::set_update_period() to set frequency of execution) */,
+		UPDATE /*! \brief Update the element */,
 		SETUP /*! \brief Setup the element (called at program startup */,
+		UP /*! Up Event (like up button pushed) */,
+		DOWN /*! Down Event */,
+		LEFT /*! Left event */,
+		RIGHT /*! Right event */,
+		SELECT /*! Select Event */,
+		BACK /*! Back event */,
+		EXIT /*! Exit event */,
 		EVENT_TOTAL
 	};
 

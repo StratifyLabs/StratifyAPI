@@ -1,7 +1,7 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include "sgfx/FontFile.hpp"
+#include <sgfx/FontFile.hpp>
 using namespace sgfx;
 using namespace sys;
 
@@ -69,22 +69,17 @@ int FontFile::set_file(const char * name, int offset){
 
 }
 
-const Bitmap * FontFile::bitmap(char c, bool ascii) const {
-	if( m_bitmap == 0 ){
-		return 0;
-	}
+u16 FontFile::get_h() const { return m_hdr.max_height; }
+
+const Bitmap & FontFile::bitmap(char c, bool ascii) const {
 
 	//load character header info
-	if( load_char(m_char, c, ascii) < 0 ){
-		return 0;
-	}
+	load_char(m_char, c, ascii);
 
 	//load bitmap
-	if ( load_bitmap(m_char) < 0 ){
-		return 0;
-	}
+	load_bitmap(m_char);
 
-	return m_bitmap;
+	return *m_bitmap;
 }
 
 int FontFile::load_char(sg_font_char_t & ch, char c, bool ascii) const {
