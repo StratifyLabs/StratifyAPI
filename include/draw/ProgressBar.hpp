@@ -3,7 +3,7 @@
 #ifndef DRAW_PROGRESSBAR_HPP_
 #define DRAW_PROGRESSBAR_HPP_
 
-#include <draw/ProgressObject.hpp>
+#include "ProgressObject.hpp"
 
 namespace draw {
 
@@ -15,8 +15,8 @@ namespace draw {
 class ProgressBar : public ProgressObject {
 public:
 	ProgressBar();
-	ProgressBar(u16 value, u16 max);
 
+	/*! \details Draws a scaled version of the progress bar within \a attr */
 	void draw_to_scale(const DrawingScaledAttr & attr);
 
 };

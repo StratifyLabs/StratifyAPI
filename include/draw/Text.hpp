@@ -9,17 +9,21 @@
 namespace draw {
 
 
-/*! \brief Label Element
- * \ingroup element
+/*! \brief Text Class
  * \details This is a text label.  The object automatically
- * changes the font size so that the label will fit within the
- * specified dimensions (if possible).
+ * chooses the correct font height to fit within the area
+ * specified.
+ *
+ * In order for this class to work correctly, sgfx::FontSystem::load_fonts() must
+ * be invoked so that the application is aware of the system fonts.
  *
  */
 class Text : public Drawing, public TextAttr {
 public:
-	/*! \brief Construct a label with text */
+	/*! \details Construct a label with text */
 	Text(const char * text = 0);
+
+	/*! \details Draw the scaled text as specified by \a attr */
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);
 
 private:

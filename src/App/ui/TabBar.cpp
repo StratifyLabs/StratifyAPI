@@ -19,7 +19,59 @@ u8 TabBar::animation_path() const { return m_animation.attr().path(); }
 Element * TabBar::event_handler(int event, const DrawingAttr & attr){
 	int i;
 
-	return 0;
+		switch(event){
+		case SETUP:
+			for(i=0; i < size(); i++){
+				at(i)->element()->event_handler(SETUP, attr);
+			}
+			break;
+		case ENTER:
+			m_animation.attr().set_drawing_start(0,0);
+			m_animation.attr().set_drawing_dim(1000,1000);
+			m_animation.attr().set_step_total(8);
+			m_animation.attr().set_drawing_motion_total(1000);
+
+			//animate the tab bar
+			m_animation.init(0, this);
+			m_animation.exec();
+
+			//subsequent animations will only deal with the screen area
+			m_animation.attr().set_drawing_start(0, h());
+			m_animation.attr().set_drawing_dim(1000, 1000-h());
+			at(selected())->element()->event_handler(ENTER, attr);
+			return this;
+
+		case RIGHT:
+			if( at(selected())->element()->event_handler(event, attr) == 0 ){
+				scroll(1, false, attr);
+			}
+			return this;
+
+		case LEFT:
+			if( at(selected())->element()->event_handler(event, attr) == 0 ){
+				scroll(-1, false, attr);
+			}
+			return this;
+
+		case UPDATE:
+			/*
+			if( Button::right_held() > Button::long_press()*3 ){
+				scroll(1, true, attr);
+				return this;
+			} else if( Button::left_held() > Button::long_press()*3 ){
+				scroll(-1, true, attr);
+				return this;
+			}
+			*/
+
+			break;
+		}
+
+		if( at(selected())->element()->event_handler(event, attr) > 0 ){
+			return this;
+		}
+
+		return 0;
 }
 
 void TabBar::scroll(int dir, bool repeat, const DrawingAttr & attr){

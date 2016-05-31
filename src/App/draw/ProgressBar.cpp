@@ -5,7 +5,6 @@
 using namespace draw;
 
 ProgressBar::ProgressBar(){}
-ProgressBar::ProgressBar(u16 value, u16 max) : ProgressObject(value, max){}
 
 void ProgressBar::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner

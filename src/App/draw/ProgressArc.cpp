@@ -7,8 +7,6 @@ using namespace draw;
 
 ProgressArc::ProgressArc() {}
 
-ProgressArc::ProgressArc(uint16_t value, uint16_t max) : ProgressObject(value, max){}
-
 void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
 	Bitmap * b = attr.b();

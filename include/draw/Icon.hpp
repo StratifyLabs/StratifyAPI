@@ -22,16 +22,16 @@ public:
 		TOTAL
 	};
 
-	/*! \brief Construct with no graphic */
+	/*! \details Construct with no graphic */
 	IconAttr(){ set_value(0); }
 
-	/*! \brief Construct by setting the graphic, thickness, and rotation */
+	/*! \details Construct by setting the graphic, thickness, and rotation */
 	IconAttr(const sg_icon_t * icon, u8 thickness = 3, i16 rotation = 0){
 		set_value(icon, thickness, rotation);
 	}
 
 
-	/*! \details Gfx rotation orienations */
+	/*! \details Icon rotation orientations */
 	enum {
 		RIGHT /*! \brief Point to the right */ = 0,
 		DOWN /*! \brief Point down */ = SG_TRIG_POINTS/4,
@@ -56,9 +56,6 @@ public:
 
 	/*! \details Set the fill flag */
 	void set_fill(bool v = true){ if( v ){ m_thickness |= SG_MAP_FILL_FLAG; } else { m_thickness &= ~SG_MAP_FILL_FLAG; } }
-
-	/*! \details Set the graphic */
-	void set_gfx(const sg_icon_t * icon){ m_icon = icon; }
 
 	/*! \details Set the rotation */
 	void set_rotation(i16 rotation){ m_rotation = rotation; }
@@ -87,15 +84,15 @@ private:
 
 class Icon : public Drawing {
 public:
-	/*! \brief Construct an empty graphic */
+	/*! \details Construct an empty graphic */
 	Icon();
 
-	/*! \brief Access a reference to the attributes */
+	/*! \details Access a reference to the attributes */
 	IconAttr & attr(){ return m_attr; }
 
 	static const sg_icon_t * get_system_icon(int icon);
 
-	/*! \brief Draws the graphic to scale on the specified bitmap */
+	/*! \details Draws the graphic to scale on the specified bitmap */
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);
 
 	/*! \details This returns the bounds of the icon.  It is only valid after

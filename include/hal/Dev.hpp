@@ -9,12 +9,12 @@
  *
  * Here are some useful namespaces to check out:
  *
- * - Hal - Hardware Abstraction Layer
- * - Calc - Useful software algorithms
- * - Draw - Drawing on an LCD
- * - Fmt - Common file formats
- * - Sys - Access to timers and files and such
- * - Var - Variable storage in data and strings
+ * - hal - Hardware Abstraction Layer
+ * - calc - Useful software algorithms
+ * - draw - Drawing on an LCD
+ * - fmt - Common file formats
+ * - sys - Access to timers and files and such
+ * - var - Variable storage in data and strings
  *
  * You can also use standard \ref POSIX and \ref STDC functions.
  *

@@ -3,7 +3,7 @@
 #ifndef DRAW_GRAPHLINE_HPP_
 #define DRAW_GRAPHLINE_HPP_
 
-#include <draw/GraphObject.hpp>
+#include "GraphObject.hpp"
 
 namespace draw {
 

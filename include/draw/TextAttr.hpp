@@ -9,6 +9,11 @@
 
 namespace draw {
 
+/*! \brief Text Attribute Class
+ * \details This class contains the
+ * information needed to draw text.  It allows
+ * the text to be stored separate from the drawing object.
+ */
 class TextAttr {
 public:
 	TextAttr() { set_font_size(0); }

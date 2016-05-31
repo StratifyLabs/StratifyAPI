@@ -7,8 +7,6 @@ using namespace draw;
 
 ProgressCircle::ProgressCircle(){}
 
-ProgressCircle::ProgressCircle(uint16_t value, uint16_t max) : ProgressObject(value, max){}
-
 void ProgressCircle::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
 	sg_map_t map;

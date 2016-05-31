@@ -3,7 +3,7 @@
 #ifndef DRAW_PROGRESSCIRCLE_HPP_
 #define DRAW_PROGRESSCIRCLE_HPP_
 
-#include <draw/ProgressObject.hpp>
+#include "ProgressObject.hpp"
 
 namespace draw {
 
@@ -14,10 +14,11 @@ namespace draw {
 class ProgressCircle : public ProgressObject {
 public:
 	ProgressCircle();
-	ProgressCircle(u16 value, u16 max);
+
+	/*! \details Draw a scaled version of the circle as specified by \a attr */
+	void draw_to_scale(const DrawingScaledAttr & attr);
 
 private:
-	void draw_to_scale(const DrawingScaledAttr & attr);
 };
 
 };

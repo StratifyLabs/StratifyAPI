@@ -11,9 +11,9 @@
 
 namespace ui {
 
-class TabProgress : public Tab {
+class TabProgressObject : public Tab {
 public:
-	TabProgress();
+	TabProgressObject();
 	virtual void draw(const draw::DrawingAttr & attr);
 
 	virtual draw::ProgressObject * progress() = 0;
@@ -21,7 +21,7 @@ public:
 
 };
 
-class TabProgressArc : public TabProgress {
+class TabProgressArc : public TabProgressObject {
 public:
 	TabProgressArc(){}
 	draw::ProgressObject * progress(){ return &m_progress; }
@@ -29,7 +29,7 @@ private:
 	draw::ProgressArc m_progress;
 };
 
-class TabProgressCircle : public TabProgress {
+class TabProgressCircle : public TabProgressObject {
 public:
 	TabProgressCircle(){}
 	draw::ProgressObject * progress(){ return &m_progress; }

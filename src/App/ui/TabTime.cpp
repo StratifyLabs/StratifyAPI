@@ -5,10 +5,7 @@
 #include "ui/TabTime.hpp"
 using namespace ui;
 
-TabTime::TabTime() {
-	// TODO Auto-generated constructor stub
-
-}
+TabTime::TabTime(){}
 
 void TabTime::draw(const DrawingAttr & attr){
 	Time t;

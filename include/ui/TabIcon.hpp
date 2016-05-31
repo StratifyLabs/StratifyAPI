@@ -20,7 +20,7 @@ public:
 	draw::IconAttr & attr(){ return m_icon.attr(); }
 
 private:
-	Icon m_icon;
+	draw::Icon m_icon;
 };
 
 };

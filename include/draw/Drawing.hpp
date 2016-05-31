@@ -120,6 +120,11 @@ private:
 };
 
 
+/*! \brief Drawing Class
+ * \details This is the base class for creating drawings.  A Drawing class
+ * allows for nesting and positioning of graphics within a bitmap.
+ *
+ */
 class Drawing {
 public:
 	Drawing();
@@ -137,17 +142,7 @@ public:
 	 * Here is an example of drawing a labeled graphic:
 	 *
 	 * \code
-	 * 	Label label;
-	 * 	Gfx gfx;
-	 *
-	 * 	label.set_text("Hello");
-	 * 	label.set_dim(100, 20); //can occupy entire width and 20% of height
-	 * 	label.set_center_align();
-	 * 	label.draw(b, 0, 5); //draw centered near top of bitmap
-	 *
-	 * 	gfx.set(GfxAttr::MIC);
-	 * 	gfx.set_dim(50, 50);
-	 * 	gfx.draw(b, 25, 30);  //draw centered horizontal and below label
+	 * #include <sgfx/draw.hpp>
 	 *
 	 * \endcode
 	 *
@@ -164,32 +159,32 @@ public:
 	virtual void draw(const DrawingAttr & attr);
 	void draw(sgfx::Bitmap & b, drawing_int_t x, drawing_int_t y, drawing_size_t w, drawing_size_t h);
 
+	/*! \details This method will set the pixels in the area of the bitmap
+	 * specified.
+	 *
+	 * @param attr Specifies the bitmap and area
+	 * @param v Specifies the fill pattern
+	 */
 	static void set(const DrawingAttr & attr, sg_bmap_data_t v = 0xFF);
+
+	/*! \details This method will clear the pixels in the area of the bitmap
+	 * specified.
+	 *
+	 * @param attr Specifies the bitmap and area
+	 * @param v Specifies the fill pattern
+	 */
 	static void clear(const DrawingAttr & attr, sg_bmap_data_t v = 0xFF);
+
+	/*! \details This method will invert the pixels in the area of the bitmap
+	 * specified.
+	 *
+	 * @param attr Specifies the bitmap and area
+	 * @param v Specifies the fill pattern
+	 */
 	static void invert(const DrawingAttr & attr, sg_bmap_data_t v = 0xFF);
 
-	/*! \brief Scale value
-	 * \details This value determines how all objects are scaled.
-	 * The default value is 100. This means a value of 50 is half the target bitmap.
-	 * For example, by default the following code sets the element dimensions to be half
-	 * the size of the target bitmap.
-	 * \code
-	 * #include <fogo/Ui/Label.hpp>
-	 *
-	 * Label l;
-	 * l.set_dim(50,50);
-	 * \endcode
-	 *
-	 * To get better resolution, the scale value can be increased.  For example:
-	 *
-	 * \code
-	 * #include <fogo/Ui/Label.hpp>
-	 * Element::set_scale(1000);  //this will apply to all elements in the application
-	 *
-	 * Label l;
-	 * l.set_dim(500,500); //sets dimensions to half the size of the target bitmap
-	 * \endcode
-	 *
+	/*! \details This value determines how all objects are scaled.
+	 * The default value is 1000. This means a value of 500 is half the target bitmap.
 	 *
 	 */
 	static inline drawing_size_t scale(){ return 1000; }
@@ -197,19 +192,15 @@ public:
 	/*! \brief Sets the scale value (see Element::scale() for details) */
 	static inline void set_scale(drawing_size_t s){ m_scale = s; }
 
-	/*! \brief Draw the element on a bitmap
+	/*! \details This methods draws the drawing on the specified attributes.
 	 *
-	 * @param b Bitmap to draw on
-	 * @param x Actually x coord of bitmap
-	 * @param y Actually y coord of bitmap
-	 * @param d Dimensions on bitmap to draw
-	 * @param padding Padding (in bitmap dimensions)
+	 * @param attr Specifies the bitmap, point and area to draw the drawing
 	 */
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);
 	void draw_to_scale(sgfx::Bitmap & b, sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h);
 
 
-	/*! \brief Return the dimensions (in pixels) if any Element is drawn on the specified bitmap */
+	/*! \details Return the dimensions (in pixels) if any Element is drawn on the specified bitmap */
 	static sg_dim_t dim_on_bitmap(const DrawingAttr & attr);
 	static sg_size_t height_on_bitmap(const DrawingAttr & attr);
 	static sg_size_t width_on_bitmap(const DrawingAttr & attr);
