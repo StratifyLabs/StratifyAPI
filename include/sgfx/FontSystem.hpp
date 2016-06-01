@@ -5,8 +5,8 @@
 
 #include <sgfx/sg_font_types.h>
 
-#include "sgfx/FontFile.hpp"
-#include "sgfx/FontMemory.hpp"
+#include "FontFile.hpp"
+#include "FontMemory.hpp"
 
 namespace sgfx {
 

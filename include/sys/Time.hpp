@@ -55,7 +55,7 @@ public:
 	inline void set_value(time_t tm){ m_time = tm; }
 
 	/*! \details Get the name of the month */
-	const char * month_name() const;
+	const char * get_month_name() const;
 
 	/*! \details The time value (number of seconds since epoch) */
 	inline time_t value() const { return m_time; }

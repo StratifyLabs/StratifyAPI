@@ -88,7 +88,7 @@ u32 Time::get_year() const{
 	return get_tm().tm_year + 1900;
 }
 
-const char * Time::month_name() const {
+const char * Time::get_month_name() const {
 	u32 mon = get_month();
 	if( mon < 12 ){
 		return month_names[mon];

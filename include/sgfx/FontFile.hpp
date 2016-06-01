@@ -3,7 +3,7 @@
 #ifndef SGFX_FONTFILE_HPP_
 #define SGFX_FONTFILE_HPP_
 
-#include <sgfx/FontObject.hpp>
+#include "FontObject.hpp"
 #include "../sys/File.hpp"
 
 namespace sgfx {

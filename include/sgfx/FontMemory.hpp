@@ -4,7 +4,7 @@
 #define SGFX_FONTMEMORY_HPP_
 
 
-#include <sgfx/FontObject.hpp>
+#include "FontObject.hpp"
 
 namespace sgfx {
 
