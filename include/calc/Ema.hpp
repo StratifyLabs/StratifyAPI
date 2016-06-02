@@ -26,8 +26,8 @@ namespace calc {
  *
  * The following is an example of using the Ema class using 32-bit integers.
  * \code
- * #include <stfy/Hal.hpp>
- * #include <stfy/Calc.hpp>
+ * #include <stfy/hal.hpp>
+ * #include <stfy/calc.hpp>
  * #include <cstdio>
  *
  *  //first initialize a filter with a value of 0 and with an averaging constant of 0.1

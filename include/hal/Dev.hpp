@@ -7,28 +7,34 @@
  *
  * \section INTRO Introduction
  *
+ * Stratify Lib is a library for Stratify OS applications that makes it easy to access hardware
+ * and other system functions (you can also use standard \ref POSIX and \ref STDC functions if that
+ * is your style).
+ *
+ * If you are new, it would be highly beneficial to quickly read through the naming conventions:
+ * https://github.com/StratifyLabs/StratifyLib#naming-conventions.
+ *
  * Here are some useful namespaces to check out:
  *
- * - hal - Hardware Abstraction Layer
- * - calc - Useful software algorithms
- * - draw - Drawing on an LCD
- * - fmt - Common file formats
- * - sys - Access to timers and files and such
- * - var - Variable storage in data and strings
+ * - \ref hal - Hardware Abstraction Layer
+ * - \ref calc - Useful software algorithms
+ * - \ref draw - Drawing on an LCD
+ * - \ref fmt - Common file formats
+ * - \ref sys - Access to timers and files and such
+ * - \ref var - Variable storage in data and strings
  *
- * You can also use standard \ref POSIX and \ref STDC functions.
  *
  * Here are a couple of examples to give you an idea about how things work.  These are the objects
  * used in the examples.
  *
- * - Hal::Uart - access to UART hardware
- * - Hal::Pin - read and write pin values
- * - Var::String - string manipulation
- * - Sys::Timer - Timing and delays
+ * - hal::Uart - access to UART hardware
+ * - hal::Pin - read and write pin values
+ * - var::String - string manipulation
+ * - sys::Timer - Timing and delays
  *
  * \code
- * #include <stfy/Hal.hpp> //this will include all namespace classes and add the namespace i.e. "using namespace Hal;"
- * #include <stfy/Sys.hpp>
+ * #include <stfy/hal.hpp> //this will include all namespace classes and add the namespace i.e. "using namespace hal;"
+ * #include <stfy/sys.hpp>
  *
  * int main(int argc, char * argv[]){
  *  Pin p(2, 10);
@@ -53,8 +59,8 @@
  *
  *
  * \code
- * #include <stfy/Hal.hpp>
- * #include <stfy/Var.hpp>
+ * #include <stfy/hal.hpp>
+ * #include <stfy/var.hpp>
  *
  * int main(int argc, char * argv[]){
  *  Uart uart(0);
@@ -78,7 +84,7 @@
  * }
  * \endcode
  *
- * The best way to learn is to get started.
+ * The best way to learn is to get started:  https://github.com/StratifyLabs/HelloWorld#helloworld.
  *
  */
 

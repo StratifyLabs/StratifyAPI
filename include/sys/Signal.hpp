@@ -122,7 +122,7 @@ private:
  * \code
  *
  * #include <stfy/Sys.hpp>
- * #include <stfy/Hal.hpp>
+ * #include <stfy/hal.hpp>
  *
  * volatile bool my_var;
  * void my_handler(int a){

@@ -14,7 +14,7 @@ namespace hal {
  * The DAC class is used to write data to the digital to analog converter.  Here is an example:
  *
  * \code
- * #include <stfy/Hal.hpp>
+ * #include <stfy/hal.hpp>
  * #include <stfy/Sys.hpp>
  *
  * int main(int argc, char * argv[]){

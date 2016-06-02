@@ -15,7 +15,7 @@ namespace hal {
  * Here is an example of using the Pin class:
  *
  * \code
- * #include <stfy/Hal.hpp>
+ * #include <stfy/hal.hpp>
  *
  * Pin pin(1,0); //control pin P1.0
  *  //Or if working with the pinmask Pin  pin(1, 1<<0, true);

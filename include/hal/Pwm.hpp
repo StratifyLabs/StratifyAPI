@@ -15,7 +15,7 @@ namespace hal {
  * Here is an example of how to use the Pwm class
  *
  * \code
- * #include <stfy/Hal.hpp>
+ * #include <stfy/hal.hpp>
  *
  *
  * Pwm pwm(1); //use PWM port 1

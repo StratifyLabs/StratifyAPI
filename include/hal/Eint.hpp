@@ -19,7 +19,7 @@ namespace hal {
  *
  * \code
  *
- * #include <stfy/Hal.hpp>
+ * #include <stfy/hal.hpp>
  * #include <stfy/Sys.hpp>
  *
  *  //This will be executed when the event is triggered

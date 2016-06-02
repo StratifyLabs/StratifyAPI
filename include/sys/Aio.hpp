@@ -21,7 +21,7 @@ namespace sys {
  * This can be avoided by using the Aio class.  Consider the following example:
  *
  * \code
- * #include <stfy/Hal.hpp>
+ * #include <stfy/hal.hpp>
  * #include <stfy/Sys.hpp>
  * #include <stfy/Var.hpp>
  *

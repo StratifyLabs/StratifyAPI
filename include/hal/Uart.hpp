@@ -16,7 +16,7 @@ namespace hal {
  * Here is an example of how to use the UART.
  *
  * \code
- * #include <stfy/Hal.hpp>
+ * #include <stfy/hal.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	Uart uart(0); //use UART0
@@ -32,7 +32,7 @@ namespace hal {
  * to read the UART without blocking until a byte arrives, you can use non-blocking mode.
  *
  * \code
- * #include <stfy/Hal.hpp>
+ * #include <stfy/hal.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	Uart uart(0);

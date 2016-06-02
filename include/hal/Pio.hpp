@@ -17,7 +17,7 @@ namespace hal {
  * Example:
  * \code
  *
- * #include <stfy/Hal.hpp>
+ * #include <stfy/hal.hpp>
  *
  * int main(int argc, char * argv[]){
  *

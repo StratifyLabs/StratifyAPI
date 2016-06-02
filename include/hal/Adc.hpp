@@ -13,7 +13,7 @@ namespace hal {
  * \details This class implements ADC device peripherals.
  *
  * \code
- * #include <stfy/Hal.hpp>
+ * #include <stfy/hal.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	Adc adc(0);  //create an instance of ADC to access port 0
