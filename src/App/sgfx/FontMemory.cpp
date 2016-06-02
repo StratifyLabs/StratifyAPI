@@ -43,7 +43,7 @@ u16 FontMemory::get_h() const {
 const Bitmap & FontMemory::bitmap(char c, bool ascii) const {
 
 	//load character header info
-	load_char(m_char, c, ascii);
+	//load_char(m_char, c, ascii);
 	//load bitmap
 	load_bitmap(m_char);
 	return m_bitmap;

@@ -73,9 +73,6 @@ u16 FontFile::get_h() const { return m_hdr.max_height; }
 
 const Bitmap & FontFile::bitmap(char c, bool ascii) const {
 
-	//load character header info
-	load_char(m_char, c, ascii);
-
 	//load bitmap
 	load_bitmap(m_char);
 

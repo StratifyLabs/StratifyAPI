@@ -52,6 +52,8 @@ int FontObject::calc_len(const char * str) const {
 
 int FontObject::set_char(char c, Bitmap & bitmap, sg_point_t point) const {
 
+	load_char(m_char, c, true);
+
 	point.x += m_char.xoffset;
 	point.y += m_char.yoffset;
 
@@ -62,6 +64,8 @@ int FontObject::set_char(char c, Bitmap & bitmap, sg_point_t point) const {
 }
 
 int FontObject::clear_char(char c, Bitmap & bitmap, sg_point_t point) const {
+
+	load_char(m_char, c, true);
 
 	point.x += m_char.xoffset;
 	point.y += m_char.yoffset;
