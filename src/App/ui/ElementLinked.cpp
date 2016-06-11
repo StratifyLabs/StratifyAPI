@@ -10,17 +10,19 @@ ElementLinked::ElementLinked(ElementLinked * parent, ElementLinked * child) {
 	set_child(child);
 }
 
-Element * ElementLinked::event_handler(int event, const DrawingAttr & attr){
-	switch(event){
-	case SETUP:
+Element * ElementLinked::handle_event(const Event  & event, const DrawingAttr & attr){
+	switch(event.type()){
+	case Event::SETUP:
 		if( parent() ){
 			//set_dim(parent());
 		}
 
 		if( child() ){
-			child()->event_handler(SETUP, attr);
+			child()->handle_event(event, attr);
 		}
 		break;
+	default:
+		break;
 	}
-	return Element::event_handler(event, attr);
+	return Element::handle_event(event, attr);
 }

@@ -3,7 +3,7 @@
 #ifndef DRAW_GRAPHBAR_HPP_
 #define DRAW_GRAPHBAR_HPP_
 
-#include "GraphObject.hpp"
+#include "Graph.hpp"
 
 namespace draw {
 
@@ -11,7 +11,7 @@ namespace draw {
  * \ingroup graph
  * \details This class can be used to draw a scalable bar graph.
  */
-class GraphBar : public GraphObject {
+class GraphBar : public Graph {
 public:
 	GraphBar();
 

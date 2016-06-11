@@ -3,7 +3,7 @@
 #ifndef DRAW_PROGRESSCIRCLE_HPP_
 #define DRAW_PROGRESSCIRCLE_HPP_
 
-#include "ProgressObject.hpp"
+#include "Progress.hpp"
 
 namespace draw {
 
@@ -11,7 +11,7 @@ namespace draw {
  * \ingroup element
  * \details The Progress Class displays a progress circle on the screen.
  */
-class ProgressCircle : public ProgressObject {
+class ProgressCircle : public Progress {
 public:
 	ProgressCircle();
 

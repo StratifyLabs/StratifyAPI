@@ -4,14 +4,14 @@
 #define SGFX_FONTMEMORY_HPP_
 
 
-#include "FontObject.hpp"
+#include "Font.hpp"
 
 namespace sgfx {
 
 /*! \brief Monochrome Bitmap Font class (stored in flash memory)
  *
  */
-class FontMemory: public FontObject {
+class FontMemory: public Font {
 public:
 
 	/*! \details Construct an object */

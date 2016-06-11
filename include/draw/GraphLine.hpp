@@ -3,14 +3,14 @@
 #ifndef DRAW_GRAPHLINE_HPP_
 #define DRAW_GRAPHLINE_HPP_
 
-#include "GraphObject.hpp"
+#include "Graph.hpp"
 
 namespace draw {
 
 /*! \brief Line Graph Element
  * \ingroup graph
  */
-class GraphLine : public GraphObject {
+class GraphLine : public Graph {
 public:
 	GraphLine();
 

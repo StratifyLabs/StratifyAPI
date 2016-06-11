@@ -19,7 +19,7 @@ public:
 
 	void set(const char * l, const char * v);
 
-	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
+	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
 	draw::TextAttr & label(){ return m_label; }
 	draw::TextAttr & value(){ return m_value; }

@@ -10,6 +10,10 @@
 
 namespace sgfx {
 
+/*! \brief Font System Class
+ * \details This class is used to manage fonts that are installed
+ * on the system.
+ */
 class FontSystem {
 public:
 
@@ -19,7 +23,7 @@ public:
 	 * @param fonts A pointer to a table that holds the system fonts
 	 * @return True if all fonts loaded successfully
 	 */
-	static bool load_fonts(const sg_font_ref_t * fonts);
+	static bool load_fonts(const sg_font_ref_t * fonts, int count);
 
 
 	/*! \details Load the system font that most closely matches the
@@ -29,12 +33,13 @@ public:
 	 * @param bold Whether or not to use a bold font
 	 * @return
 	 */
-	static FontObject * get_font(sg_size_t h, bool bold = false);
+	static Font * get_font(sg_size_t h, bool bold = false);
 
 
 private:
 	static const sg_font_ref_t * m_system_fonts;
-	static FontObject ** m_font_array;
+	static Font ** m_font_array;
+	static int m_font_count;
 };
 
 };

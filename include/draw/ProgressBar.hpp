@@ -3,7 +3,7 @@
 #ifndef DRAW_PROGRESSBAR_HPP_
 #define DRAW_PROGRESSBAR_HPP_
 
-#include "ProgressObject.hpp"
+#include "Progress.hpp"
 
 namespace draw {
 
@@ -12,7 +12,7 @@ namespace draw {
  * \ingroup element
  * \details The Progress Class displays a progress bar on the screen.
  */
-class ProgressBar : public ProgressObject {
+class ProgressBar : public Progress {
 public:
 	ProgressBar();
 

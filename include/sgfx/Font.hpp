@@ -1,8 +1,8 @@
 
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#ifndef SGFX_FONTOBJECT_HPP_
-#define SGFX_FONTOBJECT_HPP_
+#ifndef SGFX_FONT_HPP_
+#define SGFX_FONT_HPP_
 
 #include <sgfx/sg_font_types.h>
 #include "Bitmap.hpp"
@@ -13,10 +13,10 @@ namespace sgfx {
 /*! \brief Font class
  *
  */
-class FontObject {
+class Font {
 public:
 
-	FontObject();
+	Font();
 
 	/*! \details Returns a string of the available character set */
 	static const char * charset();
@@ -105,4 +105,4 @@ private:
 
 
 
-#endif /* SGFX_FONTOBJECT_HPP_ */
+#endif /* SGFX_FONT_HPP_ */

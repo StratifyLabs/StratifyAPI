@@ -12,6 +12,11 @@
 
 namespace sgfx {
 
+
+/*! \brief Gfx System Class
+ * \details This class manages icon data (sg_icon_t) that is installed
+ * in the system.
+ */
 class GfxSystem {
 public:
 
@@ -21,7 +26,7 @@ public:
 	 * @param count The total number of system icons available
 	 * @return True if all fonts loaded successfully
 	 */
-	static bool load_icons(const sg_icon_t * icons, int count);
+	static bool load_icons(const sg_icon_t * icons, u32 count);
 
 
 	/*! \details Load the system icon specified by the location in the icon table.
@@ -30,7 +35,7 @@ public:
 	 * @param bold Whether or not to use a bold font
 	 * @return
 	 */
-	static const sg_icon_t * get_icon(int icon);
+	static const sg_icon_t * get_icon(u32 icon);
 
 private:
 	static const sg_icon_t * m_icons;

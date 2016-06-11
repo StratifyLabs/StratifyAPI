@@ -3,7 +3,7 @@
 #ifndef DRAW_PROGRESSARC_HPP_
 #define DRAW_PROGRESSARC_HPP_
 
-#include "ProgressObject.hpp"
+#include "Progress.hpp"
 
 namespace draw {
 
@@ -11,7 +11,7 @@ namespace draw {
  * \ingroup element
  * \details The Progress Class displays a progress arc on the screen.
  */
-class ProgressArc : public ProgressObject {
+class ProgressArc : public Progress {
 public:
 	ProgressArc();
 

@@ -15,7 +15,7 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 	int h;
 	Dim d = attr.d();
 	sg_point_t p = attr.p();
-	FontObject * font;
+	Font * font;
 
 	if( text() ){
 		if( font_size() == 0 ){
@@ -27,6 +27,7 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 		if( font == 0 ){
 			return;
 		}
+		h = font->get_h();
 		len = font->calc_len(text());
 		top_left.y = p.y;
 		if( align_left() ){

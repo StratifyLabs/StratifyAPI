@@ -6,9 +6,9 @@
 #define UI_LIST_HPP_
 
 
-#include "ListAttr.hpp"
 #include "../draw/Animation.hpp"
 #include "../sys/Timer.hpp"
+#include "ListAttrObject.hpp"
 #include "ElementLinked.hpp"
 
 namespace ui {
@@ -19,17 +19,17 @@ namespace ui {
  * elements that are drawn in a vertical list.  This
  * is the primary Element used in menus.
  */
-class List : public ElementLinked, public ListAttr {
+class List : public ElementLinked, public ListAttrObject {
 public:
 	List(ElementLinked * parent = 0);
 
-	/*! \brief Return a points to item \a i in the list */
+	/*! \details Return a points to item \a i in the list */
 	virtual ElementLinked * at(list_attr_size_t i) = 0;
 
-	/*! \brief Return a pointer to the currently selected item */
+	/*! \details Return a pointer to the currently selected item */
 	inline ElementLinked * current(){ return at(selected()); }
 
-	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
+	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
 	virtual void draw(const draw::DrawingAttr & attr);
 	virtual void draw_to_scale(const draw::DrawingScaledAttr & attr);

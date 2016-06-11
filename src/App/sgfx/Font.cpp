@@ -2,20 +2,20 @@
 
 
 #include <errno.h>
-#include <sgfx/FontObject.hpp>
+#include "sgfx/Font.hpp"
 
 using namespace sgfx;
 
-static const char ascii_charset_[FontObject::CHARSET_SIZE+1] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+static const char ascii_charset_[Font::CHARSET_SIZE+1] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
 
-const char * FontObject::charset(){
+const char * Font::charset(){
 	return ascii_charset_;
 }
 
 
 
-int FontObject::to_charset(char ascii){
+int Font::to_charset(char ascii){
 	if( (ascii < ' ') ||
 			(ascii > '~') ){
 		return -1;
@@ -24,14 +24,14 @@ int FontObject::to_charset(char ascii){
 }
 
 
-FontObject::FontObject() {
+Font::Font() {
 	m_bitmap = 0;
 	m_offset = 0;
 	m_space_size = 8;
 	m_letter_spacing = 1;
 }
 
-int FontObject::calc_len(const char * str) const {
+int Font::calc_len(const char * str) const {
 	int l;
 	l = 0;
 
@@ -50,7 +50,7 @@ int FontObject::calc_len(const char * str) const {
 	return l;
 }
 
-int FontObject::set_char(char c, Bitmap & bitmap, sg_point_t point) const {
+int Font::set_char(char c, Bitmap & bitmap, sg_point_t point) const {
 
 	load_char(m_char, c, true);
 
@@ -63,7 +63,7 @@ int FontObject::set_char(char c, Bitmap & bitmap, sg_point_t point) const {
 	return m_char.xadvance;
 }
 
-int FontObject::clear_char(char c, Bitmap & bitmap, sg_point_t point) const {
+int Font::clear_char(char c, Bitmap & bitmap, sg_point_t point) const {
 
 	load_char(m_char, c, true);
 
@@ -76,7 +76,7 @@ int FontObject::clear_char(char c, Bitmap & bitmap, sg_point_t point) const {
 }
 
 
-int FontObject::clear_str(const char * str, Bitmap & bitmap, sg_point_t point) const {
+int Font::clear_str(const char * str, Bitmap & bitmap, sg_point_t point) const {
 	char c;
 	sg_size_t w;
 
@@ -98,7 +98,7 @@ int FontObject::clear_str(const char * str, Bitmap & bitmap, sg_point_t point) c
 	return 0;
 }
 
-int FontObject::set_str(const char * str, Bitmap & bitmap, sg_point_t point) const {
+int Font::set_str(const char * str, Bitmap & bitmap, sg_point_t point) const {
 	char c;
 	sg_size_t w;
 

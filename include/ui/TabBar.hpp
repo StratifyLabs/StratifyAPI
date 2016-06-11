@@ -5,7 +5,7 @@
 #ifndef UI_TABBAR_HPP_
 #define UI_TABBAR_HPP_
 
-#include "ListAttr.hpp"
+#include <ui/ListAttrObject.hpp>
 #include "../draw/Drawing.hpp"
 #include "../sgfx/Bitmap.hpp"
 #include "../draw/Animation.hpp"
@@ -14,7 +14,7 @@
 
 namespace ui {
 
-class TabBar : public Element, public ListAttr {
+class TabBar : public Element, public ListAttrObject {
 public:
 	TabBar();
 
@@ -24,7 +24,7 @@ public:
 	sg_size_t highlight() const { return m_highlight; }
 	void set_highlight(sg_size_t h){ m_highlight = h; }
 
-	Element * event_handler(int event, const draw::DrawingAttr & attr);
+	Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 	void draw(const draw::DrawingAttr & attr);
 
 	//Return a point to the Tab at \a i

@@ -29,7 +29,7 @@ void ListItemInfo::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_dim_t d = attr.d();
 	sg_point_t p = attr.p();
 	Bitmap * b = attr.b();
-	FontObject * font;
+	Font * font;
 
 
 
@@ -44,6 +44,7 @@ void ListItemInfo::draw_to_scale(const DrawingScaledAttr & attr){
 	}
 
 	font = FontSystem::get_font(height, label().font_bold());
+	height = font->get_h();
 
 	if( align_top() ){
 		;
@@ -63,7 +64,7 @@ void ListItemInfo::draw_to_scale(const DrawingScaledAttr & attr){
 
 }
 
-Element * ListItemInfo::event_handler(int event, const DrawingAttr & attr){
+Element * ListItemInfo::handle_event(const Event  & event, const DrawingAttr & attr){
 	/*
 	switch(event){
 	case RIGHT_HOLD:
@@ -75,6 +76,6 @@ Element * ListItemInfo::event_handler(int event, const DrawingAttr & attr){
 		break;
 	}
 	*/
-	return Element::event_handler(event, attr);
+	return Element::handle_event(event, attr);
 }
 

@@ -37,7 +37,7 @@ public:
 	/*! \details This methods gives read only access to the text label attributes */
 	const draw::TextAttr & label_attr_const() const { return m_label; }
 
-	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
+	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
 private:
 	draw::TextAttr m_label;
@@ -56,7 +56,7 @@ public:
 	ListItemToggle(const char * label, ElementLinked * parent = 0);
 
 	/*! \details This method will toggle the value of the item and return the parent list */
-	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
+	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
 	/*! \details This methods will set the enabled flag as specified */
 	void set_enabled(bool v = true);
@@ -82,7 +82,7 @@ public:
 	ListItemCheck() : ListItem(0, 0) {}
 	ListItemCheck(const char * label, List * parent = 0);
 	void set_enabled(bool v = true);
-	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
+	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
 };
 
@@ -98,7 +98,7 @@ public:
 	ListItemCallback(list_item_callback_t callback, const char * label, const sg_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
 
 	//execute the callback
-	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
+	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
 private:
 	list_item_callback_t m_callback;
@@ -120,7 +120,7 @@ public:
 class ListItemBack : public ListItem {
 public:
 	ListItemBack(const sg_icon_t * icon = 0, ElementLinked * parent = 0);
-	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
+	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 };
 
 class ListItemExit : public ListItemBack {
@@ -191,7 +191,7 @@ public:
 	inline sys::Dir & dir(){ return m_dir; }
 	inline ListItemElement & item(){ return m_item; }
 
-	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
+	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
 protected:
 

@@ -11,25 +11,11 @@
 
 #include "../draw/Drawing.hpp"
 #include "../sgfx/Bitmap.hpp"
+#include "Event.hpp"
 
 namespace ui {
 
-
-class ElementAttr {
-public:
-	sgfx::Bitmap * display(){ return m_display; }
-	sgfx::Bitmap * scratch(){ return m_scratch; }
-	draw::DrawingAttr & drawing_attr(){ return m_drawing_attr; }
-
-private:
-	draw::DrawingAttr m_drawing_attr;
-	sgfx::Bitmap * m_display;
-	sgfx::Bitmap * m_scratch;
-
-};
-
 /*! \brief Element Class
- * \ingroup element
  * \details An Element is a basic building block of the UI.  Elements are
  * designed to be scalable so they can be adjusted to different screen sizes
  * so that Apps based on elements are future proof.
@@ -38,25 +24,56 @@ private:
 class Element : public draw::Drawing {
 public:
 
-	/*! \brief Construct an element with a parent */
+	/*! \details Construct an element */
 	Element();
 
-	/*! \brief Returns true if element is enabled */
-	inline bool enabled() const { return flag(FLAG_ENABLED); }
+	/*! \details Returns true if element is enabled */
+	inline bool is_enabled() const { return flag(FLAG_ENABLED); }
 	inline void set_enabled(bool v = true){ set_flag(FLAG_ENABLED, v); }
 
-	/*! \brief Returns true if element is visible */
-	inline bool cancelled() const { return flag(FLAG_CANCELLED); }
+	/*! \details Returns true if element is visible */
+	inline bool is_cancelled() const { return flag(FLAG_CANCELLED); }
 	inline void set_cancel(bool v = true){ set_flag(FLAG_CANCELLED, v); }
 
-	inline bool confirmed() const { return flag(FLAG_CONFIRMED); }
+	inline bool is_confirmed() const { return flag(FLAG_CONFIRMED); }
 	inline void set_confirm(bool v = true){ set_flag(FLAG_CONFIRMED, v); }
 
-	/*! \brief Returns true if element's scroll is visible */
-	inline bool scroll_visible() const { return flag(FLAG_SCROLL_VISIBLE); }
+	/*! \details Returns true if element's scroll is visible */
+	inline bool is_scroll_visible() const { return flag(FLAG_SCROLL_VISIBLE); }
 	inline void set_scroll_visible(bool v = true){ set_flag(FLAG_SCROLL_VISIBLE, v); }
 
-	inline bool exclusive_checklist() const { return flag(FLAG_EXCLUSIVE_CHECKLIST); }
+	/*! \details This methods returns true if the handle_event()
+	 * called the draw() method and the underlying device needs to be
+	 * redrawn
+	 *
+	 * @return True if it is time to redraw the element on the LCD or bitmap
+	 */
+	inline bool is_redraw_pending() const { return flag(FLAG_REDRAW_PENDING); }
+
+	/*! \details This methods sets whether a redraw is pending.  A control
+	 * loop that handles the element might look like this:
+	 *
+	 * \code
+	 *  LCD lcd; //lcd that inherits Bitmap
+	 *  DrawingAttr drawing_attr; //holds the info about the bitmap and
+	 *  drawing_attr.set(lcd, drawing_point(0,0), drawing_dim(1000, 1000)); //full screen element
+	 *  My element; //my special element that inherits Element and re-implements the handle_event() and draw() methods
+	 * 	while(1){
+	 * 		element.handle_event(Element::UPDATE, drawing_attr);
+	 * 		if( element.is_redraw_pending() ){
+	 * 			lcd.refresh(); //copy the bitmap to the hardware device -- redraw
+	 * 			element.set_redraw_pending(false); //clear the redraw flag
+	 * 		}
+	 *		Timer::wait_msec(100);  //update loop once every ten seconds
+	 * 	}
+	 *
+	 * \endcode
+	 *
+	 * @param v The value of the redraw pending flags
+	 */
+	inline void set_redraw_pending(bool v = true){ set_flag(FLAG_REDRAW_PENDING, v); }
+
+	inline bool is_exclusive_checklist() const { return flag(FLAG_EXCLUSIVE_CHECKLIST); }
 	inline void set_exclusive_checklist(bool v = true){ set_flag(FLAG_EXCLUSIVE_CHECKLIST, v); }
 
 	virtual void set_animation_type(u8 v);
@@ -65,38 +82,20 @@ public:
 	virtual u8 animation_type() const;
 	virtual u8 animation_path() const;
 
-	/*! \brief Element events */
-	enum {
-		ENTER /*! \brief Enter the element (ie, transition to the Element) */,
-		UPDATE /*! \brief Update the element */,
-		SETUP /*! \brief Setup the element (called at program startup */,
-		UP /*! Up Event (like up button pushed) */,
-		DOWN /*! Down Event */,
-		LEFT /*! Left event */,
-		RIGHT /*! Right event */,
-		SELECT /*! Select Event */,
-		BACK /*! Back event */,
-		EXIT /*! Exit event */,
-		EVENT_TOTAL
-	};
 
-
-	/*! \brief Element event handler
-	 *
-	 * \details This method is called on the current Element when an event (e.g., Element::ENTER,
+	/*! \details This method is called on the current Element when an event (e.g., Element::ENTER,
 	 * Element::UPDATE, Element::TOP_PRESS) happens.
 	 *
 	 * @param event The event to execute
 	 * @return For transitions, the new element is returned; otherwise this
 	 */
-	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
-
-	//void set_dim(sg_size_t w, sg_size_t h);
+	virtual Element * handle_event(const Event & event, const draw::DrawingAttr & attr);
 
 protected:
 
 	enum {
 		FLAG_ENABLED = FLAG_DRAWING_TOTAL,
+		FLAG_REDRAW_PENDING,
 		FLAG_EXCLUSIVE_CHECKLIST,
 		FLAG_SCROLL_VISIBLE,
 		FLAG_BUSY,
@@ -109,8 +108,6 @@ protected:
 	void adjust_x_center(sg_size_t w, sg_int_t & x);
 
 private:
-
-	//ElementAttr _attr;
 
 };
 

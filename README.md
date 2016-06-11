@@ -7,14 +7,7 @@ Stratify Lib uses the following naming conventions
 
 ### Classes and Namespaces
 
-Classes use upper CamelCase with a strong preference for a single word.  The exception is pure virtual classes have "Object" appended to the name.
-
-    class PureObject {
-    public:
-      virtual int method() = 0;
-    }
-
-Namespaces use all lowercase letters and are preferably concise and a single word.
+Classes use upper CamelCase with a strong preference for a single word. Namespaces use all lowercase letters and are preferably concise and a single word.
 
 ### File and Directory Names
 

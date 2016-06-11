@@ -10,7 +10,7 @@ namespace sgfx {}
 
 #include "sgfx/Bitmap.hpp"
 #include "sgfx/Dim.hpp"
-#include "sgfx/FontObject.hpp"
+#include "sgfx/Font.hpp"
 #include "sgfx/FontFile.hpp"
 #include "sgfx/FontMemory.hpp"
 #include "sgfx/FontSystem.hpp"

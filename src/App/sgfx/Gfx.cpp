@@ -28,11 +28,16 @@ void GfxMap::set_shift(sg_int_t x, sg_int_t y){
 }
 
 GfxMap::GfxMap(const Bitmap & bitmap, u8 o_thickness_fill, s16 rotation){
-	data()->shift.x = bitmap.w()/2;
-	data()->shift.y = bitmap.h()/2;
-	data()->size.w = bitmap.w()*2;
-	data()->size.h = bitmap.h()*2;
-	data()->o_thickness_fill = 3;
+	set_bitmap_center(bitmap, o_thickness_fill, rotation);
+}
+
+void GfxMap::set_bitmap_center(const Bitmap & bitmap, u8 o_thickness_fill, s16 rotation){
+	u8 thickness = o_thickness_fill & SG_MAP_THICKNESS_MASK;
+	data()->size.w = (bitmap.w() - 2*thickness)*2;
+	data()->size.h = (bitmap.h() - 2*thickness)*2;
+	data()->shift.x = (data()->size.w + 2*thickness)/4;
+	data()->shift.y = (data()->size.h + 2*thickness)/4;
+	data()->o_thickness_fill = o_thickness_fill;
 	data()->rotation = rotation;
 }
 

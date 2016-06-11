@@ -3,12 +3,12 @@
 #ifndef SGFX_FONTFILE_HPP_
 #define SGFX_FONTFILE_HPP_
 
-#include "FontObject.hpp"
+#include "Font.hpp"
 #include "../sys/File.hpp"
 
 namespace sgfx {
 
-class FontFile : public FontObject {
+class FontFile : public Font {
 public:
 	FontFile();
 	FontFile(const char * name, int offset = 0);

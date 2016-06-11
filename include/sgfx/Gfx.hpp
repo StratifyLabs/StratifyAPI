@@ -10,6 +10,9 @@
 
 namespace sgfx {
 
+/*! \brief Gfx Map Class
+ * \details This class is a wrapper for a sg_map_t data structure.
+ */
 class GfxMap : public var::Item<sg_map_t> {
 public:
 
@@ -21,6 +24,7 @@ public:
 	GfxMap(){}
 	GfxMap(const Bitmap & bitmap, u8 o_thickness_fill = FILL | 1, s16 rotation = 0);
 
+	void set_bitmap_center(const Bitmap & bitmap, u8 o_thickness_fill = FILL | 1, s16 rotation = 0);
 
 	void set_dim(sg_size_t w, sg_size_t h);
 	void set_shift(sg_int_t x, sg_int_t y);
@@ -32,10 +36,17 @@ public:
 	void set_op(u8 op){ data()->op = op; }
 };
 
+
+/*! \brief Gfx Class
+ * \details The Gfx class can be used to draw scalable graphics on bitmaps.
+ *
+ */
 class Gfx {
 public:
 
+	/*! \details Maximum x,y value in abstract graphic space */
 	static inline sg_int_t max(){ return SG_MAX; }
+	/*! \details Minimum x,y value in abstract graphic space */
 	static inline sg_int_t min(){ return SG_MIN; }
 
 	/*! \details Draw the icon centered in the bitmap
@@ -55,7 +66,14 @@ public:
 	 */
 	static void draw(Bitmap & bitmap, const sg_icon_t & icon, const sg_map_t & map, sg_bounds_t * bounds = 0);
 
+	/*! \details Fill primitive
+	 *
+	 * @param x1 The x point to start the fill algorithm
+	 * @param y1 The y point to start the fill algorithm
+	 * @return
+	 */
 	static sg_icon_primitive_t fill(sg_int_t x1, sg_int_t y1);
+
 	static sg_icon_primitive_t line(sg_int_t x1, sg_int_t y1, sg_int_t x2, sg_int_t y2);
 
 	static sg_icon_primitive_t line(Point p1, Point p2){

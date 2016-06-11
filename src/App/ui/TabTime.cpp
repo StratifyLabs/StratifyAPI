@@ -10,7 +10,7 @@ TabTime::TabTime(){}
 void TabTime::draw(const DrawingAttr & attr){
 	Time t;
 	u32 hour;
-	t.set_current();
+	t.get_time_of_day();
 	char buffer[8];
 	hour = t.hour() % 12;
 	if( hour == 0 ){

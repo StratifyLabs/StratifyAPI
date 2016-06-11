@@ -150,6 +150,33 @@ public:
 	/*! \details clear the pixels in a line */
 	virtual void clr_line(sg_point_t p1, sg_point_t p2, sg_size_t thickness = 1);
 
+	/*! \details This method is designated as an interface
+	 * for classes that inherit Bitmap to copy the bitmap to a physical
+	 * device (such as an LCD).  The implementation in this class is simple
+	 * an empty method.  Here is an example:
+	 *
+	 * \code
+	 * LcdDev lcd; //this class inherits bitmap and re-implments refresh()
+	 *
+	 * lcd.clear(); //clear the bitmap in memory
+	 * lcd.refresh(); //copy the memory to the physical device (or notify the underlying driver that it is time to copy)
+	 * \endcode
+	 *
+	 */
+	virtual void refresh(){}
+
+	/*! \details This method is designated as an interface for classes
+	 * that inherit Bitmap and use refresh() to copy the bitmap memory to a physical
+	 * device. The default implementation always returns false.
+	 *
+	 * The bitmap should not be modified while a refresh is in progress to prevent a frame from
+	 * being partially copied.
+	 *
+	 * See refresh() for an example.
+	 *
+	 * @return True if the refresh() is still in progress, false if the bitmap can be modified again
+	 */
+	virtual bool busy(){ return false; }
 
 	inline bool is_empty() const { return calc_size() == 0; }
 	inline sg_size_t h() const { return m_bmap.dim.h; }

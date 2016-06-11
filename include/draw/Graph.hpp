@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_GRAPHOBJECT_HPP_
-#define DRAW_GRAPHOBJECT_HPP_
+#ifndef DRAW_GRAPH_HPP_
+#define DRAW_GRAPH_HPP_
 
 #include "Drawing.hpp"
 #include "../var/String.hpp"
@@ -88,9 +88,9 @@ private:
 
 /*! \brief Abstract Graph Class
  */
-class GraphObject : public Drawing {
+class Graph : public Drawing {
 public:
-	GraphObject();
+	Graph();
 
 	/*! \brief Return a reference to the graph's X axis */
 	Axis & x_axis(){ return m_x_axis; }
@@ -114,4 +114,4 @@ private:
 
 };
 
-#endif /* DRAW_GRAPHOBJECT_HPP_ */
+#endif /* DRAW_GRAPH_HPP_ */

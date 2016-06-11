@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_PROGRESSOBJECT_HPP_
-#define DRAW_PROGRESSOBJECT_HPP_
+#ifndef DRAW_PROGRESS_HPP_
+#define DRAW_PROGRESS_HPP_
 
 #include "Drawing.hpp"
 
@@ -50,9 +50,9 @@ private:
  * \ingroup element
  * \details The Progress Class defines the top level object for progress bars etc.
  */
-class ProgressObject : public Drawing {
+class Progress : public Drawing {
 public:
-	ProgressObject(){}
+	Progress(){}
 
 	ProgressAttr & progress(){ return m_progress; }
 
@@ -72,4 +72,4 @@ protected:
 
 };
 
-#endif /* DRAW_PROGRESSOBJECT_HPP_ */
+#endif /* DRAW_PROGRESS_HPP_ */

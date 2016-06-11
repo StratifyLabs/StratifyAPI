@@ -18,7 +18,7 @@ namespace sys {
  *
  *
  *
- * Physical timers are controlled using the Tmr class.
+ * Physical timers are controlled using the hal::Tmr class.
  *
  * Here is an example of using the timer to time events.
  * \code
@@ -48,18 +48,19 @@ public:
 	static int init(Tmr::port_t port, u32 heartbeat = 10000);
 #endif
 
-	/*! \details Wait for a number of seconds.
+	/*! \details This method will delay the specified number of seconds.
 	 *
 	 * @param timeout Time to wait in seconds
 	 */
 	static void wait_sec(u32 timeout);
 
-	/*! \details Wait for a number of milliseconds.
+	/*! \details This method will delay the specified number of milliseconds.
 	 *
 	 * @param timeout Time to wait in milliseconds
 	 */
 	static void wait_msec(u32 timeout);
-	/*! \details Wait for a number of microseconds.
+
+	/*! \details This method will delay the specified number of microseconds.
 	 *
 	 * @param timeout Time to wait in microseconds
 	 */
@@ -71,63 +72,116 @@ public:
 	Timer();
 
 
-	/*! \details The the usec's on the real-time clock */
+	/*! \details The the microseconds on the real-time clock (starts counting on reset) */
 	static int get_clock_usec();
-	/*! \details The the msec's on the real-time clock */
+
+	/*! \details The the milliseconds on the real-time clock (starts counting on reset) */
 	static int get_clock_msec();
-	/*! \details The the sec's on the real-time clock */
+
+	/*! \details The the seconds on the real-time clock (starts counting on reset) */
 	static int get_clock_sec();
 
-	/*! \details Start the timer.
-	 * \details This starts the timer.  It is used with value() and stop().
+	/*! \details This starts the timer. If the
+	 * timer is currently running, this method has no effect.  If the timer has been
+	 * stopped, it will restart.  Use resume() to resume running a stopped timer.
 	 *
 	 */
 	void start(); //start counting
 
-
-	/*! \details This resumes counting after a stop().
+	/*! \details This method restarts the timer.  If the timer is currently running,
+	 * it starts over.  If it is not running, it is started.
 	 *
+	 */
+	void restart();
+
+
+	/*! \details This resumes counting after a stop().  If the timer is currently running
+	 * this method has no effect.  If the timer has not been started, this method will
+	 * start the timer.
 	 */
 	void resume(); //resume counting
 
-	/*! \details Check if timer is running */
-	bool is_running();
+	/*! \details This method returns true if the timer is currently counting meaning
+	 * it has been started but has not been stopped.  If the timer has been
+	 * stopped and resumed, this method will return true;
+	 *
+	 */
+	bool is_running() const { return !is_stopped(); }
 
-	/*! \details Reset the value of the timer */
+	/*! \details This method returns true if the timer has been started.
+	 * It the timer has been started and stopped, this method will return true.
+	 * If the timer has been reset() or never started, this method will return false.
+	 *
+	 */
+	bool is_started() const { return (m_start.tv_nsec + m_start.tv_sec) != 0; }
+
+	/*! \details This method returns true if the timer is stopped.
+	 * If the timer has not yet been started or has been reset(), this method will return true.
+	 * If the timer is currently running, this method will return false.
+	 *
+	 *
+	 */
+	bool is_stopped() const { return (m_stop.tv_sec != (time_t)-1) || (m_stop.tv_sec == 0); }
+
+
+	/*! \details This method returns true if the timer is in a reset state.
+	 *
+	 */
+	bool is_reset() const { return m_stop.tv_sec == 0; }
+
+
+
+	/*! \details Reset the value of the timer
+	 *  After calling this method, is_running(), and is_started() will both
+	 *  all return false;
+	 *
+	 *
+	 */
 	void reset();
 
 	/*! \details Timer value in milliseconds
-	 * @return The number of milliseconds that have elapsed since start.
+	 * @return The number of milliseconds that have elapsed since start.  This value
+	 * can be read when the timer is running to get a live value or after it has
+	 * been stopped to get the time elapsed between start() and stop()
 	 */
-	u32 calc_msec();
+	u32 calc_msec() const;
 
 	/*! \details Shortcut for calc_msec(); */
-	u32 msec(){ return calc_msec(); }
+	u32 msec() const { return calc_msec(); }
 
-	/*! \details Timer value in microseconds
+	/*! \details Timer value in microseconds. This is similar to calc_msec() but returns
+	 * the value in microseconds rather than milliseconds.
+	 *
 	 * @return The number of microseconds that have elapsed since start.
 	 */
-	u32 calc_usec();
+	u32 calc_usec() const;
 
 	/*! \details Shortcut for calc_usec(); */
-	u32 usec(){ return calc_usec(); }
+	u32 usec() const { return calc_usec(); }
 
-	u32 value(){ return calc_usec(); }
+	u32 value() const { return calc_usec(); }
 
-	/*! \details Timer value in seconds
+	/*! \details Timer value in seconds.  This is similar to calc_msec() but returns
+	 * the value in seconds rather than milliseconds.
+	 *
 	 * @return The number of seconds that have elapsed since start.
 	 */
-	u32 calc_sec();
+	u32 calc_sec() const;
 
 	/*! \details Shortcut for calc_sec(); */
-	u32 sec(){ return calc_sec(); }
+	u32 sec() const { return calc_sec(); }
 
 	/*! \details Stop the current timer.
 	 * \details This stops the timer from counting.  Subsequent calls to value()
-	 * will return the same number.
+	 * will return the same number.  Once the timer has been stopped(), a call
+	 * to resume() will resume counting and a call to start() or restart() will restart
+	 * counting from zero.
 	 */
-	void stop(); //stop counting
+	void stop();
+
 #endif
+
+
 
 private:
 #ifdef __MCU_ONLY__

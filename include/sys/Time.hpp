@@ -31,12 +31,16 @@ public:
 	/*! \details Subtract from the current value */
 	Time& operator-=(const Time & a);
 
+	/*! \details Set the system time */
 	static int set_time_of_day(const Time & t);
+
+	/*! \details Set the system time to the time stored in this object */
 	int set_time_of_day();
 
-	/*! \details This method sets the time to the current time.
+	/*! \details Assign the system time of day to the time stored in this object
+	 * and return the current system time.
 	 */
-	void set_current();
+	time_t get_time_of_day();
 
 	/*! \brief Set the time
 	 * \details This method is for setting a finite time rather than

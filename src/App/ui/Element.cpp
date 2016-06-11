@@ -25,12 +25,7 @@ void Element::draw_scroll(const DrawingScaledAttr & attr,
 	b->clear(p, bar);
 }
 
-Element * Element::event_handler(int event, const DrawingAttr & attr){
-	switch(event){
-	case UPDATE:
-		return 0;
-	}
-
+Element * Element::handle_event(const Event & event, const DrawingAttr & attr){
 	return this;
 }
 

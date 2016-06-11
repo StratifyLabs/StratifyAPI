@@ -3,6 +3,7 @@
 #include "sgfx.hpp"
 #include "draw.hpp"
 #include "ui/ListItem.hpp"
+#include "ui/Button.hpp"
 
 using namespace ui;
 
@@ -30,7 +31,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 
 	Bitmap icon_bitmap(icon_height, icon_height);
 
-	FontObject * font = FontSystem::get_font(padded.h(), label_attr().font_bold());
+	Font * font;
 
 	Gfx::draw(icon_bitmap,
 			icon_attr_const().icon(),
@@ -49,6 +50,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 	}
 
 	font = FontSystem::get_font(height, label_attr().font_bold());
+	height = font->get_h();
 
 	icon_point.x = p.x + d.w() - bounds.bottom_right.x;
 
@@ -88,8 +90,8 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 
 }
 
-Element * ListItem::event_handler(int event, const DrawingAttr & attr){
-	switch(event){
+Element * ListItem::handle_event(const Event  & event, const DrawingAttr & attr){
+	switch(event.type()){
 	/*
 	case LEFT_PRESS:
 	case RIGHT_PRESS:
@@ -106,8 +108,10 @@ Element * ListItem::event_handler(int event, const DrawingAttr & attr){
 		}
 		break;
 	 */
+	default:
+		break;
 	}
-	return ElementLinked::event_handler(event, attr);
+	return ElementLinked::handle_event(event, attr);
 }
 
 /*
@@ -134,7 +138,7 @@ void ListItemToggle::set_enabled(bool v){
 }
 
 
-Element * ListItemToggle::event_handler(int event, const DrawingAttr & attr){
+Element * ListItemToggle::handle_event(const Event  & event, const DrawingAttr & attr){
 	/*
 	switch(event){
 	case SETUP:
@@ -145,7 +149,7 @@ Element * ListItemToggle::event_handler(int event, const DrawingAttr & attr){
 		} else {
 			set_sys_gfx(0);
 		}
-		return ListItem::event_handler(SETUP, attr);
+		return ListItem::handle_event(SETUP, attr);
 
 	case RIGHT_HOLD:
 	case CENTER_PRESS:
@@ -156,11 +160,11 @@ Element * ListItemToggle::event_handler(int event, const DrawingAttr & attr){
 	case RIGHT_PRESS:
 	case ENTER:
 		App::bar().set_center( IconAttr::OK, 0 );
-		return Element::event_handler(event, attr);
+		return Element::handle_event(event, attr);
 	}
 	 */
 
-	return ListItem::event_handler(event, attr);
+	return ListItem::handle_event(event, attr);
 
 }
 
@@ -169,14 +173,14 @@ ListItemCallback::ListItemCallback(list_item_callback_t callback,
 		const sg_icon_t * icon,
 		ElementLinked * parent,
 		ElementLinked * child) :
-		ListItem(label, icon, parent, child){
+				ListItem(label, icon, parent, child){
 	m_callback = callback;
 }
 
 
 
 
-Element * ListItemCallback::event_handler(int event, const DrawingAttr & attr){
+Element * ListItemCallback::handle_event(const Event  & event, const DrawingAttr & attr){
 	/*
 	switch(event){
 	case RIGHT_HOLD:
@@ -186,17 +190,17 @@ Element * ListItemCallback::event_handler(int event, const DrawingAttr & attr){
 		}
 		return parent();
 	default:
-		return ListItem::event_handler(event, attr);
+		return ListItem::handle_event(event, attr);
 	}
 	 */
-	return ListItem::event_handler(event, attr);
+	return ListItem::handle_event(event, attr);
 }
 
 ListItemElement::ListItemElement(const char * label,
 		const sg_icon_t * icon,
 		ElementLinked * parent,
 		ElementLinked * child) :
-		ListItem(label, icon, parent, child) {
+				ListItem(label, icon, parent, child) {
 	if( this->child() ){
 		this->child()->set_parent(parent);
 	}
@@ -207,7 +211,7 @@ ListItemBack::ListItemBack(const sg_icon_t * icon, ElementLinked * parent) : Lis
 	icon_attr().set_rotation(IconAttr::LEFT);
 }
 
-Element * ListItemBack::event_handler(int event, const DrawingAttr & attr){
+Element * ListItemBack::handle_event(const Event  & event, const DrawingAttr & attr){
 	/*
 	switch(event){
 	case RIGHT_HOLD:
@@ -218,7 +222,7 @@ Element * ListItemBack::event_handler(int event, const DrawingAttr & attr){
 		}
 	}
 	 */
-	return ListItem::event_handler(event, attr);
+	return ListItem::handle_event(event, attr);
 }
 
 
@@ -230,7 +234,7 @@ ListItemExit::ListItemExit(const sg_icon_t * icon, ElementLinked * parent) : Lis
 
 
 ListItemCheck::ListItemCheck(const char * label, List * parent) :
-								ListItem(label, 0, parent){
+										ListItem(label, 0, parent){
 	set_enabled(false);
 }
 
@@ -239,8 +243,8 @@ ListDir::ListDir(const char * path,
 		const sg_icon_t * icon,
 		ElementLinked * parent,
 		ElementLinked * child) :
-				List(parent),
-				m_item("TBD", icon, this, child) {
+						List(parent),
+						m_item("TBD", icon, this, child) {
 	set_path(path);
 }
 
@@ -298,13 +302,16 @@ void ListDir::recount(void){
 	}
 }
 
-Element * ListDir::event_handler(int event, const DrawingAttr & attr){
-	switch(event){
-	case SELECT:
-		if( m_callback ){ m_callback(this); }
+Element * ListDir::handle_event(const Event  & event, const DrawingAttr & attr){
+	switch(event.type()){
+
+	case Event::BUTTON_ACTUATION:
+		if( event.button()->event_id() == Event::SELECT_BUTTON ){
+			if( m_callback ){ m_callback(this); }
+		}
 		// no break
 	default:
-		return List::event_handler(event, attr);
+		return List::handle_event(event, attr);
 	}
 
 }

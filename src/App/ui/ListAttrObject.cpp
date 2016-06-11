@@ -1,17 +1,17 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 #include <cstdio>
+#include "ui/ListAttrObject.hpp"
 
-#include "ui/ListAttr.hpp"
 using namespace ui;
 
-ListAttr::ListAttr() {
+ListAttrObject::ListAttrObject() {
 	// TODO Auto-generated constructor stub
 	m_selected = 0;
 	m_visible_items = 3;
 }
 
-void ListAttr::set_visible_items(list_attr_size_t v){
+void ListAttrObject::set_visible_items(list_attr_size_t v){
 	if( v == 0 ){
 		v = 1;
 	}
@@ -19,25 +19,25 @@ void ListAttr::set_visible_items(list_attr_size_t v){
 }
 
 
-void ListAttr::set_selected(u8 v){
+void ListAttrObject::set_selected(u8 v){
 	if( v < size() ){
 		m_selected = v;
 	}
 }
 
-void ListAttr::inc_selected(void){
+void ListAttrObject::inc_selected(void){
 	if( selected() < size() - 1 ){
 		m_selected++;
 	}
 }
 
-void ListAttr::dec_selected(void){
+void ListAttrObject::dec_selected(void){
 	if( selected() > 0 ){
 		m_selected--;
 	}
 }
 
-list_attr_size_t ListAttr::calc_visible_offset(void) const{
+list_attr_size_t ListAttrObject::calc_visible_offset(void) const{
 	list_attr_size_t offset;
 	list_attr_size_t half;
 	if( size() > visible_items() ){
@@ -58,11 +58,11 @@ list_attr_size_t ListAttr::calc_visible_offset(void) const{
 	return offset;
 }
 
-list_attr_size_t ListAttr::calc_display_items() const {
+list_attr_size_t ListAttrObject::calc_display_items() const {
 	return visible_items() > size() ? size() : visible_items();
 }
 
-list_attr_size_t ListAttr::calc_next_visible(i8 dir) const {
+list_attr_size_t ListAttrObject::calc_next_visible(s8 dir) const {
 	list_attr_size_t next_visible;
 	list_attr_size_t visible_offset;
 	list_attr_size_t display_items;

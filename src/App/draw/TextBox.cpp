@@ -11,11 +11,11 @@ TextBox::TextBox(){ set_font_size(16); m_scroll = 0; m_scroll_max = 0; }
 TextBox::TextBox(const char * text){ assign(text); set_font_size(16); m_scroll = 0; m_scroll_max = 0; }
 
 
-int TextBox::count_lines(const FontObject * font, sg_size_t w){
+int TextBox::count_lines(const Font * font, sg_size_t w){
 	return count_lines(font, w, *this);
 }
 
-int TextBox::count_lines(const FontObject * font, sg_size_t w, const TextAttr & text_attr){
+int TextBox::count_lines(const Font * font, sg_size_t w, const TextAttr & text_attr){
 	Token tokens(text_attr.text(), " ");
 	u32 i;
 	String line;
@@ -49,7 +49,7 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_size_t visible_lines;
 	sg_size_t draw_line;
 	int len;
-	FontObject * font;
+	Font * font;
 
 	//draw the message and wrap the text
 	font = FontSystem::get_font(font_size(), font_bold());
@@ -99,7 +99,7 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 	} while( i < tokens.size() );
 }
 
-void TextBox::build_line(const FontObject * font, u32 & i, String & line, Token & tokens, int & build_len, sg_size_t w){
+void TextBox::build_line(const Font * font, u32 & i, String & line, Token & tokens, int & build_len, sg_size_t w){
 	int len;
 	int line_len;
 	u32 j;

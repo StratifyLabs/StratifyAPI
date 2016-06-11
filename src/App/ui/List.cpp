@@ -3,6 +3,7 @@
 #include "draw.hpp"
 #include "sgfx.hpp"
 #include "ui/List.hpp"
+#include "ui/Button.hpp"
 
 using namespace ui;
 
@@ -161,49 +162,62 @@ void List::animate_scroll(i8 dir){
 
 
 
-Element * List::event_handler(int event, const DrawingAttr & attr){
+Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 	size_t i;
-	switch(event){
-	case SETUP:
-		Element::event_handler(SETUP, attr); //sets dim of this item
+	switch(event.type()){
+	case Event::SETUP:
+		Element::handle_event(event, attr); //sets dim of this item
 		m_draw_animation_item = size();
 		//setup all the items in the list
 		for(i=0; i < size(); i++){
-			at(i)->event_handler(SETUP, attr);
+			at(i)->handle_event(event, attr);
 		}
 		return this;
 
-	case SELECT:
-		//invoke menu event handler on a transition
-		return current()->event_handler(event, attr);
 
-	case DOWN:
-		animate_scroll(1);
-		if( selected() < size() - 1){
-			inc_selected();
-		}
-		current()->event_handler(event, attr);
+	case Event::BUTTON_ACTUATION:
 
-		return this;
-	case UP:
-		animate_scroll(-1);
-		if( selected() > 0 ){
-			dec_selected();
+		if(1){
+			switch(event.button()->event_id()){
+
+			case Event::SELECT_BUTTON:
+				//invoke menu event handler on a transition
+				return current()->handle_event(event, attr);
+
+			case Event::DOWN_BUTTON:
+				animate_scroll(1);
+				if( selected() < size() - 1){
+					inc_selected();
+				}
+				current()->handle_event(event, attr);
+
+				return this;
+			case Event::UP_BUTTON:
+				animate_scroll(-1);
+				if( selected() > 0 ){
+					dec_selected();
+				}
+				current()->handle_event(event, attr);
+				return this;
+			default:
+				break;
+			}
 		}
-		current()->event_handler(event, attr);
-		return this;
-	case ENTER:
+		break;
+
+	case Event::ENTER:
 		//App::set_update_period(0);
 		//App::bar().set_left( IconAttr::CHEVRON, 3, SG_TRIG_POINTS/4 );
 		//App::bar().set_right( IconAttr::CHEVRON, 3, SG_TRIG_POINTS*3/4 );
 		//App::bar().set_center( IconAttr::CHEVRON ); //set this based on the selected item
-		current()->event_handler(event, attr);
+		current()->handle_event(event, attr);
 		return this;
-	case UPDATE:
+	case Event::UPDATE:
 		//execute the animation
 		return this;
 
 	default:
-		return ElementLinked::event_handler(event, attr);
+		break;
 	}
+	return ElementLinked::handle_event(event, attr);
 }

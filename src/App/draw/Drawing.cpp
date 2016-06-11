@@ -13,14 +13,14 @@ static sg_int_t scale_to_bitmap(drawing_size_t d, sg_size_t s, drawing_size_t ma
 	return tmp;
 }
 
-drawing_point_t drawing_point(drawing_int_t x, drawing_int_t y){
+drawing_point_t draw::drawing_point(drawing_int_t x, drawing_int_t y){
 	drawing_point_t p;
 	p.x = x;
 	p.y = y;
 	return p;
 }
 
-drawing_dim_t drawing_dim(drawing_size_t w, drawing_size_t h){
+drawing_dim_t draw::drawing_dim(drawing_size_t w, drawing_size_t h){
 	drawing_dim_t d;
 	d.w = w;
 	d.h = h;
@@ -31,7 +31,7 @@ DrawingAttr::DrawingAttr(){
 	memset(&m_attr, 0, sizeof(drawing_attr_t));
 }
 
-DrawingAttr::DrawingAttr(drawing_attr_t & attr){
+DrawingAttr::DrawingAttr(const drawing_attr_t & attr){
 	m_attr = attr;
 }
 
@@ -42,33 +42,33 @@ void DrawingAttr::set(Bitmap & b, drawing_point_t p, drawing_dim_t d){
 	set_dim(d);
 }
 
-drawing_size_t DrawingAttr::w(drawing_size_t v) const {
+drawing_size_t DrawingAttr::calc_w(drawing_size_t v) const {
 	return m_attr.d.w * v / Drawing::scale();
 }
 
-drawing_size_t DrawingAttr::h(drawing_size_t v) const {
+drawing_size_t DrawingAttr::calc_h(drawing_size_t v) const {
 	return m_attr.d.h * v / Drawing::scale();
 }
 
 DrawingAttr DrawingAttr::operator+ (drawing_point_t p) const {
 	DrawingAttr attr;
 	attr = *this;
-	attr.attr().p.x += w(p.x);
-	attr.attr().p.y += h(p.y);
+	attr.attr().p.x += calc_w(p.x);
+	attr.attr().p.y += calc_h(p.y);
 	return attr;
 }
 
 DrawingAttr DrawingAttr::operator+ (drawing_dim_t d) const {
 	DrawingAttr attr;
 	attr = *this;
-	attr.attr().d.w = w(d.w);
-	attr.attr().d.h = h(d.h);
+	attr.attr().d.w = calc_w(d.w);
+	attr.attr().d.h = calc_h(d.h);
 	return attr;
 }
 
-drawing_dim_t DrawingAttr::square(drawing_size_t v) const {
+drawing_dim_t DrawingAttr::calc_square(drawing_size_t v) const {
 	drawing_dim_t dim;
-	if( w() > h() ){
+	if( b().w() > b().h() ){
 		dim.h = v;
 		dim.w = v * h() / w();
 	} else {
@@ -79,17 +79,18 @@ drawing_dim_t DrawingAttr::square(drawing_size_t v) const {
 }
 
 
-drawing_dim_t DrawingAttr::square_w(drawing_size_t v) const {
+drawing_dim_t DrawingAttr::calc_square_w(drawing_size_t v) const {
 	drawing_dim_t dim;
 	dim.w = v;
-	dim.h = v * w() / h();
+	dim.h = v * b().w() / b().h();
+
 	return dim;
 }
 
-drawing_dim_t DrawingAttr::square_h(drawing_size_t v) const {
+drawing_dim_t DrawingAttr::calc_square_h(drawing_size_t v) const {
 	drawing_dim_t dim;
 	dim.h = v;
-	dim.w = v * h() / w();
+	dim.w = v * b().h() / b().w();
 	return dim;
 }
 

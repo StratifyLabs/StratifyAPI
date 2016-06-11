@@ -16,7 +16,7 @@ public:
 	TabProgressObject();
 	virtual void draw(const draw::DrawingAttr & attr);
 
-	virtual draw::ProgressObject * progress() = 0;
+	virtual draw::Progress * progress() = 0;
 	draw::ProgressAttr & attr(){ return progress()->attr(); }
 
 };
@@ -24,7 +24,7 @@ public:
 class TabProgressArc : public TabProgressObject {
 public:
 	TabProgressArc(){}
-	draw::ProgressObject * progress(){ return &m_progress; }
+	draw::Progress * progress(){ return &m_progress; }
 private:
 	draw::ProgressArc m_progress;
 };
@@ -32,7 +32,7 @@ private:
 class TabProgressCircle : public TabProgressObject {
 public:
 	TabProgressCircle(){}
-	draw::ProgressObject * progress(){ return &m_progress; }
+	draw::Progress * progress(){ return &m_progress; }
 private:
 	draw::ProgressCircle m_progress;
 };

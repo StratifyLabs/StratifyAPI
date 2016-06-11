@@ -13,7 +13,7 @@ const char * month_names[] = {
 
 /*! \brief Construct using current time */
 Time::Time(){
-	set_current();
+	get_time_of_day();
 }
 /*! \brief Construct using an amount of time */
 Time::Time(u32 sec, u32 min, u32 hour){
@@ -52,8 +52,9 @@ int Time::set_time_of_day(){
 	return set_time_of_day(*this);
 }
 
-void Time::set_current(){
+time_t Time::get_time_of_day(){
 	m_time = time(0);
+	return m_time;
 }
 
 void Time::set_value(u32 hour, u32 min, u32 sec){

@@ -10,23 +10,30 @@
 
 namespace ui {
 
+/*! \brief Linked Element
+ * \details The ElementLinked class uses links elements
+ * together to create navigational options between the elements.
+ *
+ */
 class ElementLinked : public Element {
 public:
+
+	/*! \details Construct a Linked  Element */
 	ElementLinked(ElementLinked * parent, ElementLinked * child = 0);
 
-	/*! \brief Return the parent element */
+	/*! \details Return the parent element */
 	inline ElementLinked * parent() const { return m_parent; }
 
-	/*! \brief Set the element's parent */
+	/*! \details Set the element's parent */
 	inline void set_parent(ElementLinked * p){ m_parent = p; }
 
-	/*! \brief Return the element's child (0 if there is no child) */
+	/*! \details Return the element's child (0 if there is no child) */
 	inline virtual ElementLinked * child() const { return m_child; }
 
-	/*! \brief Set the element's child */
+	/*! \details Set the element's child */
 	inline void set_child(ElementLinked * c){ m_child = c; }
 
-	virtual Element * event_handler(int event, const draw::DrawingAttr & attr);
+	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
 	u8 animation_type() const { return m_animation_type; }
 	void set_animation_type(u8 v){ m_animation_type = v; }
