@@ -8,24 +8,38 @@
 
 namespace draw {
 
+/*! \details Drawing size (unsigned) */
 typedef u16 drawing_size_t;
+/*! \details Drawing position (signed) */
 typedef i16 drawing_int_t;
 
+/*! \brief Holds a coordinate (point) in the drawing system */
 typedef struct MCU_PACK {
-	drawing_int_t x;
-	drawing_int_t y;
+	drawing_int_t x /*! X position */;
+	drawing_int_t y /*! Y position */;
 } drawing_point_t;
 
+/*! \brief Holds a dimension in the drawing system */
 typedef struct MCU_PACK {
-	drawing_size_t w;
-	drawing_size_t h;
+	drawing_size_t w /*! Width of the object */;
+	drawing_size_t h /*! Height of the object */;
 } drawing_dim_t;
 
 
+/*! \brief Data used for drawing a draw::Drawing on a bitmap
+ * \details This data structure holds a real bitmap but the point
+ * and dimensions haven't been mapped to the bitmap.
+ * The point \a p and dimension \a d are both in a universal coordinate
+ * system from 0 to draw::Drawing::scale().  For example
+ * if draw::Drawing::scale() is 1000 and p.x and p.y both are equal to 500,
+ * the top left corner of any item drawn using these attibutes will be
+ * in the center of the target bitmap (regardless of the target bitmap's
+ * size).
+ */
 typedef struct MCU_PACK {
-	sgfx::Bitmap * b;
-	drawing_point_t p;
-	drawing_dim_t d;
+	sgfx::Bitmap * b /*! A pointer to the target bitmap */;
+	drawing_point_t p /*! The point on the bitmap where the draw::Drawing will be drawn */;
+	drawing_dim_t d /*! The size of the draw::Drawing on the target bitmap */;
 } drawing_attr_t;
 
 typedef struct MCU_PACK {
@@ -35,14 +49,23 @@ typedef struct MCU_PACK {
 } drawing_animation_attr_t;
 
 
+/*! \brief Attributes for drawing directly on a bitmap using bitmap coordinates */
 typedef struct MCU_PACK {
-	sgfx::Bitmap * b;
-	sg_point_t p;
-	sg_dim_t d;
+	sgfx::Bitmap * b /*! The target bitmap */;
+	sg_point_t p /*! The point on the bitmap */;
+	sg_dim_t d /*! The dimesions of where to fit the item within the bitmap */;
 } drawing_scaled_attr_t;
 
 
+/*! \details This returns a drawing_point_t populated with x and y */
 drawing_point_t drawing_point(drawing_int_t x, drawing_int_t y);
+
+/*! \details This returns a drawing_dim_t populated with the width and height.
+ *
+ * @param w Width of the returned data
+ * @param h Height of the retured data
+ * @return A drawing_dim_t with w and h populated as specified
+ */
 drawing_dim_t drawing_dim(drawing_size_t w, drawing_size_t h);
 
 /*! \brief Drawing Attribute Class
@@ -144,35 +167,63 @@ private:
 	drawing_attr_t m_attr;
 };
 
+/*! \brief Scaled Drawing Attributes
+ * \details This is similar to draw::DrawingAttr but the point
+ * and dimensions have been scaled to fit in the target bitmap.
+ */
 class DrawingScaledAttr {
 public:
 	operator drawing_scaled_attr_t (){ return m_attr; }
 
 	void set(sgfx::Bitmap & b, sg_point_t p, sg_dim_t d);
+
+	/*! \details Assign a value to the bitmap pointer using a reference */
 	void set_bitmap(sgfx::Bitmap & b){ m_attr.b = &b; }
+	/*! \details Assign dimensions */
 	void set_dim(sg_dim_t d){ m_attr.d = d; }
+	/*! \details Set the height of the object */
 	void set_height(sg_size_t h){ m_attr.d.h = h; }
+	void set_h(sg_size_t h){ m_attr.d.h = h; }
+	/*! \details Set the width of the object */
 	void set_width(sg_size_t w){ m_attr.d.h = w; }
+	void set_w(sg_size_t w){ m_attr.d.h = w; }
+	/*! \details Set the x value of the object */
 	void set_x(sg_int_t x){ m_attr.p.x = x; }
+	/*! \details Set the y value of the object */
 	void set_y(sg_int_t y){ m_attr.p.x = y; }
+	/*! \details Assign dimensions using width and height parameters */
 	void set_dim(sg_size_t w, sg_size_t h){ m_attr.d.w = w; m_attr.d.h = h; }
+
+	/*! \details Assign the position */
 	void set_point(sg_point_t p){ m_attr.p = p; }
 
-	sgfx::Bitmap * b() const { return m_attr.b; }
+	sgfx::Bitmap & b() const { return *m_attr.b; }
+	sgfx::Bitmap & bitmap() const { return *m_attr.b; }
 	sg_point_t p() const { return m_attr.p; }
 	sg_dim_t d() const { return m_attr.d; }
 	drawing_scaled_attr_t & attr(){ return m_attr; }
 
+	/*! \details Return the width */
 	sg_size_t w() const { return m_attr.d.w; }
+	/*! \details Return the height */
 	sg_size_t h() const { return m_attr.d.h; }
+	/*! \details Return the x value */
 	sg_int_t x() const { return m_attr.p.x; }
+	/*! \details Return the y value */
 	sg_int_t y() const { return m_attr.p.y; }
 
+	/*! \details Add an sg_point_t */
 	DrawingScaledAttr operator+ (sg_point_t d) const;
+	/*! \details Add an sg_dim_t */
 	DrawingScaledAttr operator+ (sg_dim_t d) const;
 
-	sg_size_t w(sg_size_t v) const;
-	sg_size_t h(sg_size_t v) const;
+	/*! \details Calculate a width value
+	 *
+	 * @param v Unscaled drawing dimensions
+	 * @return
+	 */
+	sg_size_t calc_w(drawing_size_t v) const;
+	sg_size_t calc_h(drawing_size_t v) const;
 
 
 private:

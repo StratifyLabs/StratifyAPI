@@ -10,7 +10,9 @@
 
 namespace ui {
 
-
+/*! \brief Tab Icon Class
+ * \details This class is a Tab that shows an Icon.
+ */
 class TabIcon : public Tab {
 public:
 	TabIcon();

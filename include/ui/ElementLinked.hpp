@@ -19,6 +19,9 @@ class ElementLinked : public Element {
 public:
 
 	/*! \details Construct a Linked  Element */
+	ElementLinked();
+
+	/*! \details Construct a Linked  Element */
 	ElementLinked(ElementLinked * parent, ElementLinked * child = 0);
 
 	/*! \details Return the parent element */

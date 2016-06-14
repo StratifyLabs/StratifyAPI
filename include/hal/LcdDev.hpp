@@ -3,13 +3,16 @@
 #ifndef MLCDDEVICE_HPP_
 #define MLCDDEVICE_HPP_
 
+#ifndef __link
+
 #include <iface/dev/mlcd.h>
 #include "Dev.hpp"
-#include "LcdObject.hpp"
+#include "Lcd.hpp"
+
 
 namespace hal {
 
-class LcdDev : public Dev, public LcdObject {
+class LcdDev : public Lcd, public Dev {
 public:
 	LcdDev();
 
@@ -31,5 +34,7 @@ protected:
 };
 
 };
+
+#endif
 
 #endif /* MLCDDEVICE_HPP_ */

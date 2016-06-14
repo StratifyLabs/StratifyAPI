@@ -117,6 +117,10 @@ public:
 	ListItemElement(const char * label, const sg_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
 };
 
+/*! \brief List Item Back Entry
+ * \details This is an item that
+ * returns the list's parent element when selected.
+ */
 class ListItemBack : public ListItem {
 public:
 	ListItemBack(const sg_icon_t * icon = 0, ElementLinked * parent = 0);
@@ -166,43 +170,64 @@ public:
  */
 
 
+/*! \brief Directory List Class
+ * \details This class will create a list from directory
+ * entries in the filesystem
+ */
 class ListDir : public List {
 public:
+	/*! \details Callback for actions on a list directory */
 	typedef void (*list_dir_callback_t)(ListDir * list);
 
+	/*! \details Contruct a new list */
 	ListDir(const char * path, const sg_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
 	~ListDir();
 
+	/*! \details Set the path for the directory */
 	void set_path(const char * path);
+	/*! \details Access the path */
 	const var::String & path() const { return m_path; }
 
-
+	/*! \details Return a pointer to the element in the specfied location in the
+	 * list
+	 * @param i The offset within the list
+	 * @return A pointer to the object
+	 */
 	virtual ElementLinked * at(list_attr_size_t i);
+
+	/*! \details Return the total entries in the list */
 	inline list_attr_size_t size() const { return m_total; }
 
+	/*! \details This method changes the visibility of the file suffix in the list */
 	inline void set_suffix_visible(bool v = true){
 		set_flag(FLAG_SUFFIX_VISIBLE, v);
 	}
 
-	inline bool suffix_visible() const { return flag(FLAG_SUFFIX_VISIBLE); }
+	/*! \details Returns true if the filename suffixes should be visible */
+	bool is_suffix_visible() const { return flag(FLAG_SUFFIX_VISIBLE); }
 
-	inline void set_callback(list_dir_callback_t callback){ m_callback = callback; }
+	/*! \details Assign the callback for when an item in the list is selected */
+	void set_callback(list_dir_callback_t callback){ m_callback = callback; }
 
-	inline sys::Dir & dir(){ return m_dir; }
-	inline ListItemElement & item(){ return m_item; }
+	/*! \details Accces the sys::Dir object used to read the directory */
+	sys::Dir & dir(){ return m_dir; }
+
+	/*! \details Access the currently selected item in the list */
+	ListItemElement & item(){ return m_item; }
 
 	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
 protected:
 
 	enum {
-		FLAG_SUFFIX_VISIBLE = Element::FLAG_TOTAL
+		FLAG_SUFFIX_VISIBLE = Element::FLAG_ELEMENT_TOTAL
 	};
 
 	inline void set_total(size_t total){ m_total = total; }
 
 private:
 	sys::Dir m_dir;
+	/*! \todo List inherits ListAttr so the total entries should already be stored somewhere */
 	size_t m_total;
 	ListItemElement m_item;
 	void recount(void);

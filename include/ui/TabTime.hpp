@@ -10,6 +10,9 @@
 
 namespace ui {
 
+/*! \brief Tab Time Class
+ * \details This class shows a Tab with the time on it.
+ */
 class TabTime : public Tab {
 public:
 	TabTime();

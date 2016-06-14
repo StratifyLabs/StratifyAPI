@@ -6,14 +6,14 @@
 				<macros>
 					<stringMacro name="POSTPROCESS_win64" type="VALUE_TEXT" value="${POSTPROCESS_win32}"/>
 					<stringMacro name="TOOLSPATH_linux" type="VALUE_TEXT" value="${TOOLSPATH_macosx}"/>
-					<stringMacro name="RM_linux" type="VALUE_TEXT" value="${RM_macosx}"/>
 					<stringMacro name="POSTPROCESS_macosx" type="VALUE_TEXT" value="sh ${TOOLSPATH}/${HOST}/lib/ldscripts/lib-post-process.sh"/>
+					<stringMacro name="RM_linux" type="VALUE_TEXT" value="${RM_macosx}"/>
 					<stringMacro name="CXX_win64" type="VALUE_TEXT" value="${CXX_win32}"/>
-					<stringMacro name="INSTALLPATH_win32" type="VALUE_TEXT" value="C:\StratifyLabs-SDK\Tools\gcc"/>
 					<stringMacro name="CC_linux" type="VALUE_TEXT" value="gcc"/>
+					<stringMacro name="INSTALLPATH_win32" type="VALUE_TEXT" value="C:\StratifyLabs-SDK\Tools\gcc"/>
 					<stringMacro name="POSTPROCESS_linux" type="VALUE_TEXT" value="${POSTPROCESS_macosx}"/>
-					<stringMacro name="INSTALLPATH" type="VALUE_TEXT" value="${INSTALLPATH_${OsType}}"/>
 					<stringMacro name="TOOLSPATH" type="VALUE_TEXT" value="${TOOLSPATH_${OsType}}"/>
+					<stringMacro name="INSTALLPATH" type="VALUE_TEXT" value="${INSTALLPATH_${OsType}}"/>
 					<stringMacro name="BUILD_FLOAT" type="VALUE_TEXT" value="."/>
 					<stringMacro name="RM" type="VALUE_TEXT" value="${RM_${OsType}}"/>
 					<stringMacro name="RM_win64" type="VALUE_TEXT" value="${RM_win32}"/>
@@ -34,12 +34,12 @@
 					<stringMacro name="TOOLSPATH_win64" type="VALUE_TEXT" value="${TOOLSPATH_win32}"/>
 					<stringMacro name="CXX_linux" type="VALUE_TEXT" value="g++"/>
 					<stringMacro name="CC" type="VALUE_TEXT" value="${CC_${OsType}}"/>
-					<stringMacro name="POSTPROCESS" type="VALUE_TEXT" value="${POSTPROCESS_${OsType}}"/>
 					<stringMacro name="CXX" type="VALUE_TEXT" value="${CXX_${OsType}}"/>
+					<stringMacro name="POSTPROCESS" type="VALUE_TEXT" value="${POSTPROCESS_${OsType}}"/>
 					<stringMacro name="POSTPROCESS_win32" type="VALUE_TEXT" value="${INSTALLPATH}/${HOST}/lib/ldscripts/lib-post-process.bat"/>
 					<stringMacro name="CC_win64" type="VALUE_TEXT" value="${CC_win32}"/>
-					<stringMacro name="INSTALLPATH_macosx" type="VALUE_TEXT" value="${TOOLSPATH_macosx}"/>
 					<stringMacro name="INSTALLPATH_linux" type="VALUE_TEXT" value="${INSTALLPATH_macosx}"/>
+					<stringMacro name="INSTALLPATH_macosx" type="VALUE_TEXT" value="${TOOLSPATH_macosx}"/>
 					<stringMacro name="C_FLAGS_ARMV7EM_FPU" type="VALUE_TEXT" value="-mfloat-abi=hard -mfpu=fpv4-sp-d16 -U__SOFTFP__ -D__FPU_USED=1"/>
 					<stringMacro name="BUILD_ARCH" type="VALUE_TEXT" value="."/>
 				</macros>
@@ -116,9 +116,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
-						<entry excluding="hal/MLcdDevice.cpp|sys/Signal.cpp|draw/|data|sys/Fifo.cpp|hal/Lcd.cpp|calc/|hal/util_c.c|hal/Usb.cpp|hal/util.h|sys/Time.cpp|sys/Mq.cpp|sys/Thread.cpp|sys/Sem.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/App"/>
+						<entry excluding="calc/|draw/|sgfx/|ui/|var/|calc.hpp|draw.hpp|sgfx.hpp|ui.hpp|var.hpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="sgfx/|draw/|ui/|var|calc/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -129,12 +128,12 @@
 				<macros>
 					<stringMacro name="POSTPROCESS_win64" type="VALUE_TEXT" value="${POSTPROCESS_win32}"/>
 					<stringMacro name="TOOLSPATH_linux" type="VALUE_TEXT" value="${TOOLSPATH_macosx}"/>
-					<stringMacro name="RM_linux" type="VALUE_TEXT" value="${RM_macosx}"/>
 					<stringMacro name="POSTPROCESS_macosx" type="VALUE_TEXT" value="sh ${TOOLSPATH}/${HOST}/lib/ldscripts/lib-post-process.sh"/>
+					<stringMacro name="RM_linux" type="VALUE_TEXT" value="${RM_macosx}"/>
 					<stringMacro name="INSTALLPATH_win32" type="VALUE_TEXT" value="C:\StratifyLabs-SDK\StratifyLabs"/>
 					<stringMacro name="POSTPROCESS_linux" type="VALUE_TEXT" value="${POSTPROCESS_macosx}"/>
-					<stringMacro name="INSTALLPATH" type="VALUE_TEXT" value="${INSTALLPATH_${OsType}}"/>
 					<stringMacro name="TOOLSPATH" type="VALUE_TEXT" value="${TOOLSPATH_${OsType}}"/>
+					<stringMacro name="INSTALLPATH" type="VALUE_TEXT" value="${INSTALLPATH_${OsType}}"/>
 					<stringMacro name="BUILD_FLOAT" type="VALUE_TEXT" value="."/>
 					<stringMacro name="RM" type="VALUE_TEXT" value="${RM_${OsType}}"/>
 					<stringMacro name="RM_win64" type="VALUE_TEXT" value="${RM_win32}"/>
@@ -153,8 +152,8 @@
 					<stringMacro name="TOOLSPATH_win64" type="VALUE_TEXT" value="${TOOLSPATH_win32}"/>
 					<stringMacro name="POSTPROCESS" type="VALUE_TEXT" value="${POSTPROCESS_${OsType}}"/>
 					<stringMacro name="POSTPROCESS_win32" type="VALUE_TEXT" value="${TOOLSPATH}/${HOST}/lib/ldscripts/lib-post-process.bat"/>
-					<stringMacro name="INSTALLPATH_macosx" type="VALUE_TEXT" value="/usr/local/StratifyLabs"/>
 					<stringMacro name="INSTALLPATH_linux" type="VALUE_TEXT" value="${INSTALLPATH_macosx}"/>
+					<stringMacro name="INSTALLPATH_macosx" type="VALUE_TEXT" value="/usr/local/StratifyLabs"/>
 					<stringMacro name="C_FLAGS_ARMV7EM_FPU" type="VALUE_TEXT" value="-mfloat-abi=hard -mfpu=fpv4-sp-d16 -U__SOFTFP__ -D__FPU_USED=1"/>
 					<stringMacro name="BUILD_ARCH" type="VALUE_TEXT" value="armv7-m"/>
 				</macros>
@@ -164,6 +163,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/StratifyLib"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/stfy/build_release_app_armv7m"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/StratifyLib/build_release_app_armv7m"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/StratifyLib/build_release_armv7m"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="stfy" srcPrefixMapping="" srcRootPath=""/>
 						<entry flags="RESOLVED" kind="libraryFile" name="StratifyLib" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
@@ -232,8 +232,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="sg_icon_primitive_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/App"/>
+						<entry excluding="mg.h|son_phy.h|sg_icon_primitive_types.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -244,12 +244,12 @@
 				<macros>
 					<stringMacro name="POSTPROCESS_win64" type="VALUE_TEXT" value="${POSTPROCESS_win32}"/>
 					<stringMacro name="TOOLSPATH_linux" type="VALUE_TEXT" value="${TOOLSPATH_macosx}"/>
-					<stringMacro name="RM_linux" type="VALUE_TEXT" value="${RM_macosx}"/>
 					<stringMacro name="POSTPROCESS_macosx" type="VALUE_TEXT" value="sh ${TOOLSPATH}/${HOST}/lib/ldscripts/lib-post-process.sh"/>
+					<stringMacro name="RM_linux" type="VALUE_TEXT" value="${RM_macosx}"/>
 					<stringMacro name="INSTALLPATH_win32" type="VALUE_TEXT" value="C:\StratifyLabs-SDK\StratifyLabs"/>
 					<stringMacro name="POSTPROCESS_linux" type="VALUE_TEXT" value="${POSTPROCESS_macosx}"/>
-					<stringMacro name="INSTALLPATH" type="VALUE_TEXT" value="${INSTALLPATH_${OsType}}"/>
 					<stringMacro name="TOOLSPATH" type="VALUE_TEXT" value="${TOOLSPATH_${OsType}}"/>
+					<stringMacro name="INSTALLPATH" type="VALUE_TEXT" value="${INSTALLPATH_${OsType}}"/>
 					<stringMacro name="BUILD_FLOAT" type="VALUE_TEXT" value="fpu${SL}fpv5-sp-d16"/>
 					<stringMacro name="RM" type="VALUE_TEXT" value="${RM_${OsType}}"/>
 					<stringMacro name="RM_win64" type="VALUE_TEXT" value="${RM_win32}"/>
@@ -268,8 +268,8 @@
 					<stringMacro name="TOOLSPATH_win64" type="VALUE_TEXT" value="${TOOLSPATH_win32}"/>
 					<stringMacro name="POSTPROCESS" type="VALUE_TEXT" value="${POSTPROCESS_${OsType}}"/>
 					<stringMacro name="POSTPROCESS_win32" type="VALUE_TEXT" value="${TOOLSPATH}/${HOST}/lib/ldscripts/lib-post-process.bat"/>
-					<stringMacro name="INSTALLPATH_macosx" type="VALUE_TEXT" value="/usr/local/StratifyLabs"/>
 					<stringMacro name="INSTALLPATH_linux" type="VALUE_TEXT" value="${INSTALLPATH_macosx}"/>
+					<stringMacro name="INSTALLPATH_macosx" type="VALUE_TEXT" value="/usr/local/StratifyLabs"/>
 					<stringMacro name="C_FLAGS_ARMV7EM_FPU" type="VALUE_TEXT" value="-mfloat-abi=hard -mfpu=fpv4-sp-d16 -U__SOFTFP__ -D__FPU_USED=1"/>
 					<stringMacro name="BUILD_ARCH" type="VALUE_TEXT" value="armv7e-m"/>
 				</macros>
@@ -277,6 +277,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/StratifyLib"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/StratifyLib/build_debug_app_armv7em_fpu"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/StratifyLib/build_debug_armv7em_fpu"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="StratifyLib" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -344,8 +345,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="sg_icon_primitive_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/App"/>
+						<entry excluding="mg.h|son_phy.h|sg_icon_primitive_types.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -356,12 +357,12 @@
 				<macros>
 					<stringMacro name="POSTPROCESS_win64" type="VALUE_TEXT" value="${POSTPROCESS_win32}"/>
 					<stringMacro name="TOOLSPATH_linux" type="VALUE_TEXT" value="${TOOLSPATH_macosx}"/>
-					<stringMacro name="RM_linux" type="VALUE_TEXT" value="${RM_macosx}"/>
 					<stringMacro name="POSTPROCESS_macosx" type="VALUE_TEXT" value="sh ${TOOLSPATH}/${HOST}/lib/ldscripts/lib-post-process.sh"/>
+					<stringMacro name="RM_linux" type="VALUE_TEXT" value="${RM_macosx}"/>
 					<stringMacro name="INSTALLPATH_win32" type="VALUE_TEXT" value="${TOOLSPATH}"/>
 					<stringMacro name="POSTPROCESS_linux" type="VALUE_TEXT" value="${POSTPROCESS_macosx}"/>
-					<stringMacro name="INSTALLPATH" type="VALUE_TEXT" value="${INSTALLPATH_${OsType}}"/>
 					<stringMacro name="TOOLSPATH" type="VALUE_TEXT" value="${TOOLSPATH_${OsType}}"/>
+					<stringMacro name="INSTALLPATH" type="VALUE_TEXT" value="${INSTALLPATH_${OsType}}"/>
 					<stringMacro name="BUILD_FLOAT" type="VALUE_TEXT" value="fpu${SL}fpv5-sp-d16"/>
 					<stringMacro name="RM" type="VALUE_TEXT" value="${RM_${OsType}}"/>
 					<stringMacro name="RM_win64" type="VALUE_TEXT" value="${RM_win32}"/>
@@ -380,8 +381,8 @@
 					<stringMacro name="TOOLSPATH_win64" type="VALUE_TEXT" value="${TOOLSPATH_win32}"/>
 					<stringMacro name="POSTPROCESS" type="VALUE_TEXT" value="${POSTPROCESS_${OsType}}"/>
 					<stringMacro name="POSTPROCESS_win32" type="VALUE_TEXT" value="${TOOLSPATH}/${HOST}/lib/ldscripts/lib-post-process.bat"/>
-					<stringMacro name="INSTALLPATH_macosx" type="VALUE_TEXT" value="${TOOLSPATH}"/>
 					<stringMacro name="INSTALLPATH_linux" type="VALUE_TEXT" value="${INSTALLPATH_macosx}"/>
+					<stringMacro name="INSTALLPATH_macosx" type="VALUE_TEXT" value="${TOOLSPATH}"/>
 					<stringMacro name="C_FLAGS_ARMV7EM_FPU" type="VALUE_TEXT" value="-mfloat-abi=hard -mfpu=fpv4-sp-d16 -U__SOFTFP__ -D__FPU_USED=1"/>
 					<stringMacro name="BUILD_ARCH" type="VALUE_TEXT" value="armv7e-m"/>
 				</macros>
@@ -389,6 +390,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/StratifyLib"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/StratifyLib/build_release_app_armv7em_fpu"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/StratifyLib/build_release_armv7em_fpu"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="StratifyLib" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -458,8 +460,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="sg_icon_primitive_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/App"/>
+						<entry excluding="mg.h|son_phy.h|sg_icon_primitive_types.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -470,12 +472,12 @@
 				<macros>
 					<stringMacro name="POSTPROCESS_win64" type="VALUE_TEXT" value="${POSTPROCESS_win32}"/>
 					<stringMacro name="TOOLSPATH_linux" type="VALUE_TEXT" value="${TOOLSPATH_macosx}"/>
-					<stringMacro name="POSTPROCESS_macosx" type="VALUE_TEXT" value="sh ${TOOLSPATH}/${HOST}/lib/ldscripts/lib-post-process.sh"/>
 					<stringMacro name="RM_linux" type="VALUE_TEXT" value="${RM_macosx}"/>
+					<stringMacro name="POSTPROCESS_macosx" type="VALUE_TEXT" value="sh ${TOOLSPATH}/${HOST}/lib/ldscripts/lib-post-process.sh"/>
 					<stringMacro name="INSTALLPATH_win32" type="VALUE_TEXT" value="C:\StratifyLabs-SDK\StratifyLabs"/>
 					<stringMacro name="POSTPROCESS_linux" type="VALUE_TEXT" value="${POSTPROCESS_macosx}"/>
-					<stringMacro name="TOOLSPATH" type="VALUE_TEXT" value="${TOOLSPATH_${OsType}}"/>
 					<stringMacro name="INSTALLPATH" type="VALUE_TEXT" value="${INSTALLPATH_${OsType}}"/>
+					<stringMacro name="TOOLSPATH" type="VALUE_TEXT" value="${TOOLSPATH_${OsType}}"/>
 					<stringMacro name="BUILD_FLOAT" type="VALUE_TEXT" value="."/>
 					<stringMacro name="RM" type="VALUE_TEXT" value="${RM_${OsType}}"/>
 					<stringMacro name="RM_win64" type="VALUE_TEXT" value="${RM_win32}"/>
@@ -494,8 +496,8 @@
 					<stringMacro name="TOOLSPATH_win64" type="VALUE_TEXT" value="${TOOLSPATH_win32}"/>
 					<stringMacro name="POSTPROCESS" type="VALUE_TEXT" value="${POSTPROCESS_${OsType}}"/>
 					<stringMacro name="POSTPROCESS_win32" type="VALUE_TEXT" value="${TOOLSPATH}/${HOST}/lib/ldscripts/lib-post-process.bat"/>
-					<stringMacro name="INSTALLPATH_linux" type="VALUE_TEXT" value="${INSTALLPATH_macosx}"/>
 					<stringMacro name="INSTALLPATH_macosx" type="VALUE_TEXT" value="/usr/local/StratifyLabs"/>
+					<stringMacro name="INSTALLPATH_linux" type="VALUE_TEXT" value="${INSTALLPATH_macosx}"/>
 					<stringMacro name="C_FLAGS_ARMV7EM_FPU" type="VALUE_TEXT" value="-mfloat-abi=hard -mfpu=fpv4-sp-d16 -U__SOFTFP__ -D__FPU_USED=1"/>
 					<stringMacro name="BUILD_ARCH" type="VALUE_TEXT" value="armv7-m"/>
 				</macros>
@@ -570,8 +572,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="sg_icon_primitive_types.h|son_phy.h|mg.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/App"/>
+						<entry excluding="mg.h|son_phy.h|sg_icon_primitive_types.h|son.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -664,10 +666,10 @@
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.552729876.2052148269;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.552729876.2052148269.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.784454844;cdt.managedbuild.tool.gnu.cpp.compiler.input.1814263994">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1161952140.1036461142;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1161952140.1036461142.;cdt.managedbuild.tool.gnu.cross.c.compiler.1618646288;cdt.managedbuild.tool.gnu.c.compiler.input.1163455821">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1161952140.1036461142;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1161952140.1036461142.;cdt.managedbuild.tool.gnu.cross.c.compiler.1618646288;cdt.managedbuild.tool.gnu.c.compiler.input.1163455821">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.552729876.2052148269;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.552729876.2052148269.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.784454844;cdt.managedbuild.tool.gnu.cpp.compiler.input.1814263994">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.;cdt.managedbuild.tool.gnu.cross.c.compiler.1871455105;cdt.managedbuild.tool.gnu.c.compiler.input.163328204">
@@ -679,13 +681,13 @@
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.552729876.2052148269;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.552729876.2052148269.;cdt.managedbuild.tool.gnu.cross.c.compiler.1847644243;cdt.managedbuild.tool.gnu.c.compiler.input.1181633422">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.2143011122.794212684;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.2143011122.794212684.;cdt.managedbuild.tool.gnu.cross.c.compiler.1391004880;cdt.managedbuild.tool.gnu.c.compiler.input.1155152528">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.808127882;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.808127882.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.448978849;cdt.managedbuild.tool.gnu.cpp.compiler.input.752882593">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.;cdt.managedbuild.tool.gnu.cross.c.compiler.2023404432;cdt.managedbuild.tool.gnu.c.compiler.input.13091732">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.808127882;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.808127882.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.448978849;cdt.managedbuild.tool.gnu.cpp.compiler.input.752882593">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.2143011122.794212684;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.2143011122.794212684.;cdt.managedbuild.tool.gnu.cross.c.compiler.1391004880;cdt.managedbuild.tool.gnu.c.compiler.input.1155152528">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1161952140;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1161952140.;cdt.managedbuild.tool.gnu.cross.c.compiler.767167800;cdt.managedbuild.tool.gnu.c.compiler.input.1993634475">
@@ -712,6 +714,9 @@
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.27667365.799598744;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.27667365.799598744.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1676419681;cdt.managedbuild.tool.gnu.cpp.compiler.input.1312386326">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.27667365.799598744.2139255798.503947593;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.27667365.799598744.2139255798.503947593.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1248601320;cdt.managedbuild.tool.gnu.cpp.compiler.input.866518192">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.1846177941;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.1846177941.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1393959239;cdt.managedbuild.tool.gnu.cpp.compiler.input.121696780">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
@@ -719,6 +724,9 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1049993716;cdt.managedbuild.tool.gnu.cpp.compiler.input.671117055">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.27667365.799598744.2139255798.503947593;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.27667365.799598744.2139255798.503947593.;cdt.managedbuild.tool.gnu.cross.c.compiler.1577342698;cdt.managedbuild.tool.gnu.c.compiler.input.1616981940">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.2098279823.1966231010;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.2098279823.1966231010.;cdt.managedbuild.tool.gnu.cross.c.compiler.1897303644;cdt.managedbuild.tool.gnu.c.compiler.input.1263495642">
@@ -745,19 +753,19 @@
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.552729876.2024949225;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.552729876.2024949225.;cdt.managedbuild.tool.gnu.cross.c.compiler.1385147712;cdt.managedbuild.tool.gnu.c.compiler.input.1036169113">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.;cdt.managedbuild.tool.gnu.cross.c.compiler.82889161;cdt.managedbuild.tool.gnu.c.compiler.input.1573107560">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.;cdt.managedbuild.tool.gnu.cross.c.compiler.2134032346;cdt.managedbuild.tool.gnu.c.compiler.input.1172806443">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1161952140;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1161952140.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1149469516;cdt.managedbuild.tool.gnu.cpp.compiler.input.1728257229">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.;cdt.managedbuild.tool.gnu.cross.c.compiler.82889161;cdt.managedbuild.tool.gnu.c.compiler.input.1573107560">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.339327541;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.339327541.;cdt.managedbuild.tool.gnu.cross.c.compiler.456975560;cdt.managedbuild.tool.gnu.c.compiler.input.461072112">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1260421941.1357314249;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1260421941.1357314249.;cdt.managedbuild.tool.gnu.cross.c.compiler.1294912141;cdt.managedbuild.tool.gnu.c.compiler.input.1248318059">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.339327541;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.339327541.;cdt.managedbuild.tool.gnu.cross.c.compiler.456975560;cdt.managedbuild.tool.gnu.c.compiler.input.461072112">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1161952140;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1161952140.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1149469516;cdt.managedbuild.tool.gnu.cpp.compiler.input.1728257229">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.2125207240;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.2125207240.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.552430442;cdt.managedbuild.tool.gnu.cpp.compiler.input.319874751">
@@ -787,10 +795,10 @@
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.552729876;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.552729876.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1021745182;cdt.managedbuild.tool.gnu.cpp.compiler.input.914689402">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.2098279823;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.2098279823.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.2000551609;cdt.managedbuild.tool.gnu.cpp.compiler.input.307636234">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1428311154.1531651903;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1428311154.1531651903.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1552694459;cdt.managedbuild.tool.gnu.cpp.compiler.input.1723007534">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1428311154.1531651903;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1428311154.1531651903.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1552694459;cdt.managedbuild.tool.gnu.cpp.compiler.input.1723007534">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.2098279823;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.1742192579.1095616799.1131086887.1296985718.2098279823.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.2000551609;cdt.managedbuild.tool.gnu.cpp.compiler.input.307636234">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319;cdt.managedbuild.config.gnu.cross.lib.release.388924090.1536021794.652448319.;cdt.managedbuild.tool.gnu.cross.c.compiler.2129619795;cdt.managedbuild.tool.gnu.c.compiler.input.70477560">

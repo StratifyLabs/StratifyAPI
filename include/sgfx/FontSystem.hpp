@@ -33,8 +33,33 @@ public:
 	 * @param bold Whether or not to use a bold font
 	 * @return
 	 */
-	static Font * get_font(sg_size_t h, bool bold = false);
+	static Font * get_font(sg_size_t h, bool bold);
 
+
+	/*! \details Load the specified font
+	 *
+	 * @param num The offset of the system font
+	 * @return A pointer to the font
+	 *
+	 * Here is an example of how to adjust the spacing of
+	 * the system fonts.
+	 *
+	 * \code
+	 * int i;
+	 * for(i = 0; i < FontSystem::count(); i++){
+	 * 	Font * font = FontSystem::font(i);
+	 * 	font->set_space_size(4);
+	 * }
+	 * \endcode
+	 *
+	 */
+	static Font * font(int num){
+		return num < m_font_count ? m_font_array[num] : 0;
+	}
+
+
+	/*! \details Returns the number of system fonts available */
+	static int count(){ return m_font_count; }
 
 private:
 	static const sg_font_ref_t * m_system_fonts;

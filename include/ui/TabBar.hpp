@@ -5,16 +5,19 @@
 #ifndef UI_TABBAR_HPP_
 #define UI_TABBAR_HPP_
 
-#include <ui/ListAttrObject.hpp>
 #include "../draw/Drawing.hpp"
 #include "../sgfx/Bitmap.hpp"
 #include "../draw/Animation.hpp"
 #include "Tab.hpp"
+#include "ListAttr.hpp"
 
 
 namespace ui {
 
-class TabBar : public Element, public ListAttrObject {
+/*! \brief Tab Bar Class
+ * \details This class is used for UI navigation using a Tab bar.
+ */
+class TabBar : public Element, public ListAttr {
 public:
 	TabBar();
 

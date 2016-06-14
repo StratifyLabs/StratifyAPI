@@ -8,8 +8,8 @@
 
 #include "../draw/Animation.hpp"
 #include "../sys/Timer.hpp"
-#include "ListAttrObject.hpp"
 #include "ElementLinked.hpp"
+#include "ListAttr.hpp"
 
 namespace ui {
 
@@ -19,7 +19,7 @@ namespace ui {
  * elements that are drawn in a vertical list.  This
  * is the primary Element used in menus.
  */
-class List : public ElementLinked, public ListAttrObject {
+class List : public ElementLinked, public ListAttr {
 public:
 	List(ElementLinked * parent = 0);
 

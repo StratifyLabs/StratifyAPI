@@ -6,11 +6,9 @@
 /*! \brief In-circuit Serial Programming
  *
  */
-namespace isp {
+namespace isp {}
 
-}
-
-#include "isp/Lpc.hpp"
+#include "isp/IspLpc.hpp"
 
 using namespace isp;
 

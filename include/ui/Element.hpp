@@ -101,7 +101,7 @@ protected:
 		FLAG_BUSY,
 		FLAG_CANCELLED,
 		FLAG_CONFIRMED,
-		FLAG_TOTAL
+		FLAG_ELEMENT_TOTAL
 	};
 
 	virtual void draw_scroll(const draw::DrawingScaledAttr & attr, int selected, int total, int visible);
