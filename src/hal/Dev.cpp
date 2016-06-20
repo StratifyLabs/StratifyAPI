@@ -61,9 +61,9 @@ int Dev::open(const char * name, int flags){
 	}
 
 #if defined __link
-		fd = link_open(driver(), name, O_RDWR | flags);
+	fd = link_open(driver(), name, flags);
 #else
-	fd = ::open(name, O_RDWR | flags);
+	fd = ::open(name, flags);
 #endif
 
 	if( fd < 0 ){

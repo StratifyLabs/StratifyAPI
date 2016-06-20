@@ -27,24 +27,28 @@ void GfxMap::set_shift(sg_int_t x, sg_int_t y){
 	data()->shift.y = y;
 }
 
-GfxMap::GfxMap(const Bitmap & bitmap, u8 o_thickness_fill, s16 rotation){
-	set_bitmap_center(bitmap, o_thickness_fill, rotation);
+GfxMap::GfxMap(const Pen & pen){
+	data()->pen = pen;
+	set_shift(0,0);
+	set_dim(0,0);
 }
 
-void GfxMap::set_bitmap_center(const Bitmap & bitmap, u8 o_thickness_fill, s16 rotation){
-	u8 thickness = o_thickness_fill & SG_MAP_THICKNESS_MASK;
+
+GfxMap::GfxMap(const Bitmap & bitmap, const Pen & pen, s16 rotation){
+	set_bitmap_center(bitmap, pen, rotation);
+}
+
+void GfxMap::set_bitmap_center(const Bitmap & bitmap, const Pen & pen, s16 rotation){
+	u8 thickness = pen.thickness();
 	data()->size.w = (bitmap.w() - 2*thickness)*2;
 	data()->size.h = (bitmap.h() - 2*thickness)*2;
 	data()->shift.x = (data()->size.w + 2*thickness)/4;
 	data()->shift.y = (data()->size.h + 2*thickness)/4;
-	data()->o_thickness_fill = o_thickness_fill;
 	data()->rotation = rotation;
+
+	data()->pen = pen;
 }
 
-void Gfx::draw(Bitmap & bitmap, const sg_icon_t & icon, u8 o_thickness_fill, s16 rotation, sg_bounds_t * bounds){
-	GfxMap map(bitmap, o_thickness_fill, rotation);
-	sg_draw_icon(bitmap.bmap(), &icon, &(map.item()), bounds);
-}
 
 void Gfx::draw(Bitmap & bitmap, const sg_icon_t & icon, const sg_map_t & map, sg_bounds_t * bounds){
 	sg_draw_icon(bitmap.bmap(), &icon, &map, bounds);

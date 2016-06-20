@@ -22,7 +22,7 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 
 	bitmap.clear();
 
-	GfxMap map(bitmap, this->attr().o_thickness_fill(), this->attr().rotation());
+	GfxMap map(bitmap, this->attr().pen(), this->attr().rotation());
 
 	Gfx::draw(bitmap, (this->attr().icon()), map.item(), &bounds);
 

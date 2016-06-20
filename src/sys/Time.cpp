@@ -2,6 +2,8 @@
 
 
 #include <sys/time.h>
+#include <iface/dev/rtc.h>
+#include "hal.hpp"
 #include "sys/Time.hpp"
 
 using namespace sys;
@@ -41,11 +43,16 @@ Time& Time::operator-=(const Time & a){
 }
 
 int Time::set_time_of_day(const Time & t){
-	struct timeval tv;
-	struct timezone tz;
-	tv.tv_sec = t.value();
-	tv.tv_usec = 0;
-	return settimeofday(&tv, &tz);
+	int ret;
+	int fd = ::open("/dev/rtc", O_RDWR);
+	if( fd < 0 ){
+		return -1;
+	}
+	struct tm t_data = t.get_tm();
+	ret = ::ioctl(fd, I_RTC_SET, &t_data);
+	close(fd);
+	return ret;
+
 }
 
 int Time::set_time_of_day(){

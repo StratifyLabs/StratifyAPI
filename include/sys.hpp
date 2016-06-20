@@ -10,6 +10,7 @@ namespace sys {};
 #if !defined __link
 #include "sys/Aio.hpp"
 #include "sys/Mq.hpp"
+#include "sys/Mutex.hpp"
 #include "sys/Sem.hpp"
 #include "sys/Signal.hpp"
 #include "sys/Thread.hpp"

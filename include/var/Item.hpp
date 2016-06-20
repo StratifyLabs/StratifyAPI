@@ -28,6 +28,8 @@ public:
 	inline Item(const data_type & item){ set(item); }
 	inline Item(const data_type * item){ set(item); }
 
+	operator data_type() const { return m_item; }
+
 	inline const data_type & item() const { return m_item; }
 	inline const data_type & value() const { return m_item; }
 	inline size_t size() const { return sizeof(data_type); }

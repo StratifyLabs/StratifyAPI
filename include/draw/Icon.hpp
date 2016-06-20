@@ -24,7 +24,7 @@ public:
 	};
 
 	/*! \details Construct with no graphic */
-	IconAttr(){ set_value(0); }
+	IconAttr(){ set_value(0, sgfx::Pen()); }
 
 	/*! \details Construct by setting the graphic, thickness, and rotation */
 	IconAttr(const sg_icon_t * icon, u8 thickness = 3, i16 rotation = 0){
@@ -45,21 +45,15 @@ public:
 	};
 
 	/*! \details Set the graphic, thickness, and rotation */
-	void set_value(const sg_icon_t * icon, u8 thickness = 3, i16 rotation = 0){
-		m_icon = icon; m_o_thickness_fill = thickness; m_rotation = rotation;
+	void set_value(const sg_icon_t * icon, const sgfx::Pen & pen, i16 rotation = 0){
+		m_icon = icon; m_rotation = rotation; m_pen = pen;
 	}
+
+	sgfx::Pen & pen(){ return m_pen; }
+	const sgfx::Pen & pen_const() const { return m_pen; }
 
 	/*! \details Set the icon */
 	void set_icon(const sg_icon_t * icon){ m_icon = icon; }
-
-	/*! \details Set the thickness */
-	void set_thickness(u8 thickness){
-		u8 o_thickness_fill = m_o_thickness_fill;
-		m_o_thickness_fill = thickness | (o_thickness_fill & SG_MAP_FILL_FLAG);
-	}
-
-	/*! \details Set the fill flag */
-	void set_fill(bool v = true){ if( v ){ m_o_thickness_fill |= SG_MAP_FILL_FLAG; } else { m_o_thickness_fill &= ~SG_MAP_FILL_FLAG; } }
 
 	/*! \details Set the rotation */
 	void set_rotation(i16 rotation){ m_rotation = rotation; }
@@ -67,21 +61,15 @@ public:
 	/*! \details Returns the graphic */
 	const sg_icon_t & icon() const { return *m_icon; }
 
-	/*! \details Returns the thickness */
-	u8 thickness() const { return m_o_thickness_fill & ~SG_MAP_FILL_FLAG; }
 
-	/*! \details Returns the thickness fill flags */
-	u8 o_thickness_fill() const { return m_o_thickness_fill; }
 	/*! \details Returns the rotation */
-	i16 rotation() const { return m_rotation; }
+	s16 rotation() const { return m_rotation; }
 
-	/*! \details Returns the value of the fill flag */
-	bool fill() const { return (m_o_thickness_fill & SG_MAP_FILL_FLAG) == SG_MAP_FILL_FLAG; }
 
 private:
 	const sg_icon_t * m_icon;
-	u8 m_o_thickness_fill;
-	i16 m_rotation;
+	sgfx::Pen m_pen;
+	s16 m_rotation;
 };
 
 /*! \brief Gfx Class

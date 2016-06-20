@@ -63,14 +63,15 @@ int Appfs::create(const char * name, const void * buf, int nbyte, const char * m
 			}
 			memcpy(attr.buffer, p, attr.nbyte);
 		}
+
+		//location gets modified by the driver so it needs to be fixed on each loop
 		attr.loc = loc;
 
-		if( file.ioctl(I_APPFS_CREATE, &attr) < 0 ){
+		if( (tmp = file.ioctl(I_APPFS_CREATE, &attr)) < 0 ){
 			file.close();
-			return -1;
+			printf("Didn't exec create at %d %ld\n", loc, attr.nbyte);
+			return tmp;
 		}
-
-
 
 		if( loc != 0 ){
 			p += attr.nbyte;
@@ -81,7 +82,7 @@ int Appfs::create(const char * name, const void * buf, int nbyte, const char * m
 		loc += attr.nbyte;
 
 		if( update ){
-			update(context, bw, attr.nbyte);
+			update(context, bw, f.exec.code_size);
 		}
 
 	} while( bw < f.exec.code_size);

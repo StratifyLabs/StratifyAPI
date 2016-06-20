@@ -6,6 +6,7 @@
 #include <sgfx/sg_types.h>
 
 #include "Bitmap.hpp"
+#include "Pen.hpp"
 #include "../var/Item.hpp"
 
 namespace sgfx {
@@ -22,18 +23,19 @@ public:
 	};
 
 	GfxMap(){}
-	GfxMap(const Bitmap & bitmap, u8 o_thickness_fill = FILL | 1, s16 rotation = 0);
+	GfxMap(const Pen & pen);
+	GfxMap(const Bitmap & bitmap, const Pen & pen, s16 rotation = 0);
 
-	void set_bitmap_center(const Bitmap & bitmap, u8 o_thickness_fill = FILL | 1, s16 rotation = 0);
+	void set_bitmap_center(const Bitmap & bitmap, const Pen & pen, s16 rotation = 0);
 
 	void set_dim(sg_size_t w, sg_size_t h);
 	void set_shift(sg_int_t x, sg_int_t y);
 	void set_dim(const Dim & dim);
 	void set_shift(const Point & p);
 	void set_rotation(s16 rot){ data()->rotation = rot; }
-	void set_fill(){ data()->o_thickness_fill = 0; }
-	void set_thickness(u8 thickness){ data()->o_thickness_fill = thickness; }
-	void set_op(u8 op){ data()->op = op; }
+
+	void set_pen(const Pen & pen);
+
 };
 
 
@@ -48,14 +50,6 @@ public:
 	static inline sg_int_t max(){ return SG_MAX; }
 	/*! \details Minimum x,y value in abstract graphic space */
 	static inline sg_int_t min(){ return SG_MIN; }
-
-	/*! \details Draw the icon centered in the bitmap
-	 *
-	 * @param bitmap The target bitmap
-	 * @param icon The icon to draw
-	 * @param bounds A pointer to the bounds or null if not needed
-	 */
-	static void draw(Bitmap & bitmap, const sg_icon_t & icon, u8 o_thickness_fill, s16 rotation = 0, sg_bounds_t * bounds = 0);
 
 	/*! \details Draw the icon using the specified map
 	 *

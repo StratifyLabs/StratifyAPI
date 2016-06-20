@@ -143,9 +143,17 @@ public:
 	/*! \details Convert to lower case */
 	void tolower();
 
-
+	/*! \details Find a var::String within the object
+	 *
+	 * @param str The String to find
+	 * @param pos The position to start searching
+	 * @return The position of the string or var::String::npos if the String was not found
+	 */
 	size_t find(const String & str, size_t pos = 0) const;
+
+	/*! \details Find a c string within the object */
 	size_t find(const char * str, size_t pos = 0) const;
+	/*! \details Find a character within the object */
 	size_t find(const char c, size_t pos = 0) const;
 	size_t find(const char * s, size_t pos, size_t n) const;
 

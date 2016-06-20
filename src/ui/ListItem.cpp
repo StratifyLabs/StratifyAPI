@@ -33,10 +33,11 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 
 	Font * font;
 
+	GfxMap map(icon_bitmap, icon_attr().pen(), icon_attr().rotation());
+
 	Gfx::draw(icon_bitmap,
 			icon_attr_const().icon(),
-			icon_attr_const().thickness(),
-			icon_attr_const().rotation(),
+			map,
 			&bounds);
 
 	icon_dim = sg_draw_attr_dim(&bounds);
