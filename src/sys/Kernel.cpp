@@ -8,7 +8,7 @@ using namespace sys;
 
 Kernel::Kernel() {
 	// TODO Auto-generated constructor stub
-	current_task = 0;
+	m_current_task = 0;
 }
 
 int Kernel::launch(const char * path, char * exec_path, const char * args, int options, int ram_size, int (*update_progress)(int, int), char *const envp[]){
@@ -74,16 +74,13 @@ int Kernel::get_attr(sys_attr_t & attr){
 
 
 int Kernel::get_taskattr(sys_taskattr_t * attr, int task){
-
 	if( task == -1 ){
-		task = current_task;
+		task = m_current_task;
 	} else {
-		current_task = task;
+		m_current_task = task;
 	}
 
-	attr->tid = current_task;
-	current_task++;
-
+	attr->tid = m_current_task;
+	m_current_task++;
 	return ioctl(I_SYS_GETTASK, attr);
-
 }

@@ -1,5 +1,6 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
+#if !defined __link
 
 #include <sys/time.h>
 #include <iface/dev/rtc.h>
@@ -109,4 +110,6 @@ struct tm Time::get_tm() const{
 	gmtime_r(&m_time, &time_struct);
 	return time_struct;
 }
+
+#endif
 

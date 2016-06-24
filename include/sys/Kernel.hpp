@@ -104,7 +104,7 @@ public:
 	 *
 	 * @param attr Pointer to the destination attributes
 	 * @param task Which task to load
-	 * @return
+	 * @return 1 if task is active, 0 if task is not being used, -1 is task is invalid
 	 */
 	int get_taskattr(sys_taskattr_t * attr, int task = -1);
 
@@ -112,10 +112,13 @@ public:
 		return get_taskattr(&attr, task);
 	}
 
+	int current_task() const { return m_current_task; }
+	void set_current_task(int v){ m_current_task = v; }
+
 
 
 private:
-	int current_task;
+	int m_current_task;
 
 };
 };
