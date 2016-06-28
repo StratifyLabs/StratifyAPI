@@ -87,8 +87,8 @@ public:
 	/*! \details Clear the specified mask */
 	int clear_mask(unsigned int mask);
 	/*! \details Get the value of the port */
-	u32 get_value();
-	u32 value(){ return get_value(); }
+	u32 get_value() const;
+	u32 value() const { return get_value(); }
 
 	/*! \details Set the value of the port */
 	int set_value(unsigned int value);

@@ -27,7 +27,7 @@ int Pio::clear_mask(unsigned int mask){
 	return ioctl(I_PIO_CLRMASK, mask);
 }
 
-u32 Pio::get_value(){
+u32 Pio::get_value() const {
 	return ioctl(I_PIO_GET);
 }
 

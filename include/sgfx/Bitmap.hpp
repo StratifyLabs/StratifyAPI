@@ -163,7 +163,7 @@ public:
 	 * \endcode
 	 *
 	 */
-	virtual void refresh(){}
+	virtual void refresh() const {}
 
 	/*! \details This method is designated as an interface for classes
 	 * that inherit Bitmap and use refresh() to copy the bitmap memory to a physical
@@ -176,7 +176,11 @@ public:
 	 *
 	 * @return True if the refresh() is still in progress, false if the bitmap can be modified again
 	 */
-	virtual bool busy(){ return false; }
+	virtual bool busy() const { return false; }
+
+	/*! \details This method will block until the refresh operation is complete */
+	virtual void wait(u16 resolution) const {}
+
 
 	inline bool is_empty() const { return calc_size() == 0; }
 	inline sg_size_t h() const { return m_bmap.dim.h; }

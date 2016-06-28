@@ -40,6 +40,7 @@ typedef struct MCU_PACK {
 	sgfx::Bitmap * b /*! A pointer to the target bitmap */;
 	drawing_point_t p /*! The point on the bitmap where the draw::Drawing will be drawn */;
 	drawing_dim_t d /*! The size of the draw::Drawing on the target bitmap */;
+	sgfx::Bitmap * scratch /*! A pointer to the scratch bitmap used for animations (0 if not available) */;
 } drawing_attr_t;
 
 typedef struct MCU_PACK {
@@ -89,10 +90,13 @@ public:
 	operator drawing_attr_t (){ return m_attr; }
 
 	/*! \details Assign the bitmap point and dimensions */
-	void set(sgfx::Bitmap & b, drawing_point_t p, drawing_dim_t d);
+	void set(sgfx::Bitmap & b, drawing_point_t p, drawing_dim_t d, sgfx::Bitmap * scratch = 0);
 
 	/*! \details Set the bitmap */
 	void set_bitmap(sgfx::Bitmap & b){ m_attr.b = &b; }
+
+	/*! \details Set the scratch bitmap */
+	void set_scratch(sgfx::Bitmap * b){ m_attr.scratch = b; }
 
 	/*! \details Set the dimensions.  Both width and height are from 0 to 1000. */
 	void set_dim(drawing_dim_t d){ m_attr.d = d; }
@@ -117,6 +121,10 @@ public:
 
 	/*! \details Access the bitmap */
 	sgfx::Bitmap & bitmap() const { return *(m_attr.b); }
+
+	/*! \details Access the scratch bitmap */
+	sgfx::Bitmap * scratch() const { return (m_attr.scratch); }
+
 	sgfx::Bitmap & b() const { return *(m_attr.b); }
 	/*! \details Access the position (point) */
 	drawing_point_t point() const { return m_attr.p; }
@@ -199,7 +207,9 @@ public:
 
 	sgfx::Bitmap & b() const { return *m_attr.b; }
 	sgfx::Bitmap & bitmap() const { return *m_attr.b; }
+	sg_point_t point() const { return m_attr.p; }
 	sg_point_t p() const { return m_attr.p; }
+	sg_dim_t dim() const { return m_attr.d; }
 	sg_dim_t d() const { return m_attr.d; }
 	drawing_scaled_attr_t & attr(){ return m_attr; }
 
@@ -269,6 +279,7 @@ public:
 	 *
 	 */
 	virtual void draw(const DrawingAttr & attr);
+	virtual void draw_scratch(const DrawingAttr & attr);
 	void draw(sgfx::Bitmap & b, drawing_int_t x, drawing_int_t y, drawing_size_t w, drawing_size_t h);
 
 	/*! \details This method will set the pixels in the area of the bitmap

@@ -7,7 +7,7 @@ using namespace draw;
 Icon::Icon(){}
 
 
-const sg_icon_t * Icon::get_system_icon(int icon){
+const sg_icon_t * IconAttr::get_system_icon(int icon){
 	return IconSystem::get_icon(icon);
 }
 

@@ -1,6 +1,7 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 #include "draw/Animation.hpp"
+#include "sys.hpp"
 using namespace draw;
 
 AnimationAttr::AnimationAttr(){
@@ -17,63 +18,40 @@ AnimationAttr::AnimationAttr(){
 
 Animation::Animation() {
 	// TODO Auto-generated constructor stub
-	m_animate_bar = false;
+	m_drawing_attr = 0;
 }
 
 void Animation::init(Drawing * current,
-		Drawing * target){
+		Drawing * target,
+		const DrawingAttr & drawing_attr){
 
-	DrawingAttr drawing_attr;
-	//App::display().wait_busy();
+
+	m_drawing_attr = &drawing_attr;
 
 	if( current != 0 ){
-		//draw current on display screen
-		//App::set_draw_display();
-		//drawing_attr.set(&(App::display_screen()), attr().drawing_start(), attr().drawing_dim());
-		//App::draw(current, drawing_attr);
+		while( m_drawing_attr->bitmap().busy() == true ){
+			//wait
+			Timer::wait_msec(1);
+		}
+		current->draw(*m_drawing_attr);
+		m_drawing_attr->bitmap().refresh();
 	}
 
 	//draw target on animation screen
 	if( target != 0 ){
-		//App::set_draw_scratch();
-		//drawing_attr.set(&(App::display_screen()), attr().drawing_start(), attr().drawing_dim());
-		//target->draw(drawing_attr);
+		target->draw_scratch(*m_drawing_attr);
 	}
-
-	//scale the dimensions
-	if( animate_bar() ){
-		//drawing_attr.set_bitmap(&App::display());
-		//App::set_draw_scratch();
-		//App::bar().draw( &(App::display_bar()), 0, 0, 1000, 1000 );
-	} else {
-		//App::set_draw_display();
-		//App::bar().draw( &(App::display_bar()), 0, 0, 1000, 1000 );
-	}
-
-	if( current != 0 ){
-		//App::display().set_pending();
-	}
-
-	//App::set_draw_display();
 
 	update_motion_total();
-
 }
 
-void Animation::update_motion_total(void){
-	DrawingAttr drawing_attr;
-
-	//drawing_attr.set(&(App::display_screen()), attr().drawing_start(), attr().drawing_dim());
-
-	//if( animate_bar() ){
-	//	drawing_attr.set_bitmap(&App::display());
-	//}
+void Animation::update_motion_total(){
 
 	sg_dim_t d;
 	sg_point_t p;
 
-	d = Drawing::dim_on_bitmap( drawing_attr );
-	p = Drawing::point_on_bitmap( drawing_attr );
+	d = Drawing::dim_on_bitmap( *m_drawing_attr );
+	p = Drawing::point_on_bitmap( *m_drawing_attr );
 
 	//convert motion total
 	switch(attr().type()){
@@ -113,9 +91,37 @@ void Animation::update_motion_total(void){
 
 
 bool Animation::exec(void (*draw)(void *, int, int), void * obj){
-	//while(App::display().animate_frame(&App::animate(), pattr(), draw, obj) > 0){
-	//	;
-	//}
+	while(animate_frame(draw, obj) > 0){
+		;
+	}
 	return false;
 }
+
+int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
+	const u16 delay = 18;
+	int ret = 0;
+
+
+	if( draw ){
+		draw(obj, attr().data()->path.step, attr().data()->path.step_total);
+	}
+
+	ret = sg_animate(m_drawing_attr->bitmap().bmap(),
+			m_drawing_attr->scratch()->bmap(),
+			attr().data());
+
+	m_drawing_attr->bitmap().refresh();
+
+	Timer::wait_msec(delay);
+
+	if( ret == 0 ){ //check for last frame
+		while( m_drawing_attr->bitmap().busy() ){
+			Timer::wait_msec(1);
+		}
+	}
+
+	return ret;
+}
+
+
 

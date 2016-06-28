@@ -16,9 +16,8 @@ namespace ui {
 class TabIcon : public Tab {
 public:
 	TabIcon();
-	//Gfx & gfx(){ return m_gfx; }
 	virtual void draw(const draw::DrawingAttr & attr);
-
+	draw::Icon & icon(){ return m_icon; }
 	draw::IconAttr & attr(){ return m_icon.attr(); }
 
 private:

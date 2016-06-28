@@ -34,7 +34,7 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 		m_animation.attr().set_drawing_motion_total(1000);
 
 		//animate the tab bar
-		m_animation.init(0, this);
+		m_animation.init(0, this, attr);
 		m_animation.exec();
 
 		//subsequent animations will only deal with the screen area
@@ -43,11 +43,11 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 		at(selected())->element()->handle_event(event, attr);
 		return this;
 
-	case Event::BUTTON_ACTUATION:
+	case Event::BUTTON_HOLD:
 
 		if(1){
 			switch(event.button()->event_id()){
-
+			default: break;
 			case Event::RIGHT_BUTTON:
 				if( at(selected())->element()->handle_event(event, attr) == 0 ){
 					scroll(1, false, attr);
@@ -58,8 +58,6 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 				if( at(selected())->element()->handle_event(event, attr) == 0 ){
 					scroll(-1, false, attr);
 				}
-				break;
-			default:
 				break;
 			}
 		}
@@ -126,7 +124,7 @@ void TabBar::scroll(int dir, bool repeat, const DrawingAttr & attr){
 		}
 	}
 
-	m_animation.init(0, t->element());
+	m_animation.init(0, t->element(), attr);
 	m_animation.exec();
 	set_selected(next_selected);
 

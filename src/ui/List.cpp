@@ -94,7 +94,7 @@ void List::draw_to_scale(const DrawingScaledAttr & attr){
 
 }
 
-void List::animate_scroll(i8 dir){
+void List::animate_scroll(i8 dir, const DrawingAttr & attr){
 	u8 type;
 	list_attr_size_t item;
 
@@ -143,11 +143,11 @@ void List::animate_scroll(i8 dir){
 
 		m_scroll_animation.attr().set_type(type);
 		m_select_top_bottom = dir;
-		m_scroll_animation.init(this, 0);
+		m_scroll_animation.init(this, 0, attr);
 
 		m_select_top_bottom = 0;
 		m_draw_animation_item = item;
-		m_scroll_animation.init(0, this);
+		m_scroll_animation.init(0, this, attr);
 		m_scroll_animation.exec();
 
 	}
@@ -183,7 +183,7 @@ Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 				return current()->handle_event(event, attr);
 
 			case Event::DOWN_BUTTON:
-				animate_scroll(1);
+				animate_scroll(1, attr);
 				if( selected() < size() - 1){
 					inc_selected();
 				}
@@ -191,7 +191,7 @@ Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 
 				return this;
 			case Event::UP_BUTTON:
-				animate_scroll(-1);
+				animate_scroll(-1, attr);
 				if( selected() > 0 ){
 					dec_selected();
 				}

@@ -10,6 +10,8 @@
 #include <stratify/stratify.h>
 #include <mcu/mcu.h>
 
+#include "../ui/Event.hpp"
+
 namespace sys {
 
 /*! \brief Class for handling Signal events
@@ -73,10 +75,12 @@ private:
 class SignalEvent {
 public:
 
-	/*! \brief Construct an event based on a signal number */
-	SignalEvent(int signo){ m_signo = signo; }
+	/*! \details Construct an event based on a signal number */
+	SignalEvent(int signo, int sigvalue = 0){ m_signo = signo; m_sigvalue.sival_int = sigvalue; }
 
-	/*! \brief Send a signal to a process */
+	/*! \details Create a UI Event from this Signal event */
+	ui::Event event(){ return ui::Event(ui::Event::SIGNAL, this); }
+
 	/*! \details This method sends a signal to a process
 	 *
 	 * @param pid  The process ID of the receiving signal
@@ -91,9 +95,8 @@ public:
 	 * @param value The value associated with the signal (user defined)
 	 * @return Zero on success
 	 */
-	int trigger(pid_t pid, int value) const {
-		union sigval v; v.sival_int = value;
-		return ::sigqueue(pid, m_signo, v);
+	int trigger_value(pid_t pid) const {
+		return ::sigqueue(pid, m_signo, m_sigvalue);
 	}
 
 	/*! \brief Send a signal to a thread within a process */
@@ -112,6 +115,7 @@ public:
 
 private:
 	int m_signo;
+	union sigval m_sigvalue;
 
 };
 
@@ -121,7 +125,7 @@ private:
  * can cause the system to send a signal to a thread.  Here is an example:
  * \code
  *
- * #include <stfy/Sys.hpp>
+ * #include <stfy/sys.hpp>
  * #include <stfy/hal.hpp>
  *
  * volatile bool my_var;
@@ -155,7 +159,7 @@ private:
  *
  * \endcode
  */
-class SignalEventPhy: public SignalEvent {
+class SignalEventDev: public SignalEvent {
 public:
 
 	/*! \brief Construct a physical event for the current thread */
@@ -166,7 +170,7 @@ public:
 	 * @param sigcode The signal code
 	 * @param sigvalue The signal value
 	 */
-	SignalEventPhy(bool persistant, int signo, int sigcode = 0, int sigvalue = 0) : SignalEvent(signo){
+	SignalEventDev(bool persistant, int signo, int sigcode = 0, int sigvalue = 0) : SignalEvent(signo){
 		m_context.tid = pthread_self();
 		m_context.si_sigcode = sigcode;
 		m_context.si_signo = signo;
@@ -180,7 +184,7 @@ public:
 	 *
 	 * @param context A copy of the signal_callback_t data to use to handle the event.
 	 */
-	SignalEventPhy(signal_callback_t context) : SignalEvent(context.si_signo){
+	SignalEventDev(signal_callback_t context) : SignalEvent(context.si_signo){
 		this->m_context = context;
 	}
 

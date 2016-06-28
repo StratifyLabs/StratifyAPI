@@ -38,7 +38,7 @@ public:
 protected:
 	void init(void);
 
-	void animate_scroll(i8 dir);
+	void animate_scroll(i8 dir, const draw::DrawingAttr & attr);
 	draw::Animation m_scroll_animation;
 	list_attr_size_t m_draw_animation_item;
 	list_attr_size_t m_draw_animation_offset;

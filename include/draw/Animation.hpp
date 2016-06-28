@@ -70,20 +70,21 @@ private:
 class Animation {
 public:
 	Animation();
-	void init(Drawing * current, Drawing * target);
+	void init(Drawing * current,
+			Drawing * target,
+			const DrawingAttr & attr);
 	bool exec(void (*draw)(void*,int,int) = 0, void * obj = 0);
 
-	void update_motion_total(void);
+	void update_motion_total();
 
-	bool animate_bar() const { return m_animate_bar; }
-	void set_animate_bar(bool v = true){ m_animate_bar = v; }
 	AnimationAttr & attr(){ return m_attr; }
 	const AnimationAttr & attr_const() const { return m_attr; }
 
 private:
+	int animate_frame(void (*draw)(void*,int,int), void * obj);
 	sg_animation_t * pattr(){ return m_attr.data(); }
 	AnimationAttr m_attr;
-	bool m_animate_bar;
+	const DrawingAttr * m_drawing_attr;
 
 };
 

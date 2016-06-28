@@ -3,13 +3,16 @@
 #ifndef UI_EVENT_HPP_
 #define UI_EVENT_HPP_
 
+namespace sys {
+class SignalEvent;
+};
+
 namespace ui {
 
 class Button;
 
 class Event {
 public:
-	Event();
 
 	enum {
 		BUTTON_FLAG = 0x80
@@ -17,13 +20,17 @@ public:
 
 	enum event_type {
 		NONE = 0,
-		SETUP = 1,
-		ENTER = 2,
-		UPDATE = 3,
-		BUTTON_ACTUATION = BUTTON_FLAG | 4,
-		BUTTON_HOLD = BUTTON_FLAG | 5,
-		BUTTON_PRESSED = BUTTON_FLAG | 6,
-		BUTTON_RELEASED = BUTTON_FLAG | 7,
+		SETUP /*! This event is called at startup after all object have been constructed */ = 1,
+		ENTER /*! This event is called when the element becomes active */ = 2,
+		UPDATE /*! This event is called in a loop while the element is active */ = 3,
+		BUTTON_ACTUATION /*! This event is called when a button is actuated (pressed and released). Use button() to access button details. */ = BUTTON_FLAG | 4,
+		BUTTON_HOLD /*! This event is called when a button is held. Use button() to access button details. */ = BUTTON_FLAG | 5,
+		BUTTON_PRESSED /*! This event is called when a button is pressed. Use button() to access button details. */ = BUTTON_FLAG | 6,
+		BUTTON_RELEASED /*! This event is called when a button is released. Use button() to access button details. */ = BUTTON_FLAG | 7,
+		NETWORK_DATA /*! This event is called when data arrives on the network */ = 8,
+		SIGNAL /*! This event is called when data arrives on the network */ = 9,
+		APPLICATION /*! This event is an application specific where the data is specified by the application */ = 10,
+
 		//EVENT_TYPE_TOTAL //omit TOTAL so that the compiler doesn't complain about not handling the case
 
 	};
@@ -42,6 +49,9 @@ public:
 	};
 
 
+	Event();
+
+	/*! \details Construct a new event with the specified type and object */
 	Event(enum event_type type, void * object = 0){
 		m_type = type;
 		m_objects.object = object;
@@ -56,6 +66,20 @@ public:
 	ui::Button * button() const {
 		if( m_type & BUTTON_FLAG ){
 			return m_objects.button;
+		}
+		return 0;
+	}
+
+	sys::SignalEvent * signal() const {
+		if( m_type == SIGNAL ){
+			return m_objects.signal;
+		}
+		return 0;
+	}
+
+	void * application() const {
+		if( m_type == APPLICATION ){
+			return m_objects.object;
 		}
 		return 0;
 	}
@@ -82,6 +106,7 @@ private:
 	union event_objects {
 		void * object;
 		Button * button;
+		sys::SignalEvent * signal;
 	} m_objects;
 
 

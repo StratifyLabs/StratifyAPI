@@ -1,7 +1,6 @@
-/* Copyright 2014-2016 Fogo Digital, Inc; All Rights Reserved
+/* Copyright 2014-2016 Tyler Gilbert, Inc; All Rights Reserved
  *
  */
-
 
 #ifndef UI_ELEMENT_HPP_
 #define UI_ELEMENT_HPP_

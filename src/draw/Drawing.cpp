@@ -36,10 +36,11 @@ DrawingAttr::DrawingAttr(const drawing_attr_t & attr){
 }
 
 
-void DrawingAttr::set(Bitmap & b, drawing_point_t p, drawing_dim_t d){
+void DrawingAttr::set(Bitmap & b, drawing_point_t p, drawing_dim_t d, Bitmap * scratch){
 	set_bitmap(b);
 	set_point(p);
 	set_dim(d);
+	set_scratch(scratch);
 }
 
 drawing_size_t DrawingAttr::calc_w(drawing_size_t v) const {
@@ -205,6 +206,14 @@ void Drawing::draw(const DrawingAttr & attr){
 	DrawingScaledAttr attr_scaled;
 	attr_scaled.set(attr.b(), point_on_bitmap(attr), dim_on_bitmap(attr));
 	draw_to_scale(attr_scaled);
+}
+
+void Drawing::draw_scratch(const DrawingAttr & attr){
+	if( attr.scratch() ){
+		DrawingAttr scratch_attr = attr;
+		scratch_attr.set_bitmap(*attr.scratch());
+		draw(scratch_attr);
+	}
 }
 
 void Drawing::draw_to_scale(Bitmap & b, sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h){

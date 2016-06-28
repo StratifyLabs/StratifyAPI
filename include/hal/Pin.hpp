@@ -82,7 +82,7 @@ public:
 	}
 
 	/*! \details Get the value of the pin (true is high, false is low) */
-	inline bool get_value(){ return (Pio::get_value() & m_pinmask) != 0; }
+	inline bool get_value() const { return (Pio::get_value() & m_pinmask) != 0; }
 	inline bool value(){ return (Pio::get_value() & m_pinmask) != 0; }
 
 	/*! \details Set the pin high (assign value 1) */

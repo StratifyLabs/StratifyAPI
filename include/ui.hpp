@@ -18,6 +18,12 @@ namespace ui {}
 #include "ui/ListItemInfo.hpp"
 #include "ui/Button.hpp"
 #include "ui/ButtonPin.hpp"
+#include "ui/TabIcon.hpp"
+#include "ui/TabTime.hpp"
+#include "ui/TabText.hpp"
+#include "ui/TabProgress.hpp"
+#include "ui/TabBar.hpp"
+#include "ui/Tab.hpp"
 
 using namespace ui;
 

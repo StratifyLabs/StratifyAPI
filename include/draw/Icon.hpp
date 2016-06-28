@@ -49,6 +49,11 @@ public:
 		m_icon = icon; m_rotation = rotation; m_pen = pen;
 	}
 
+	/*! \details Set the graphic, thickness, and rotation */
+	void set_value(int system_icon, const sgfx::Pen & pen, i16 rotation = 0){
+		get_system_icon(system_icon); m_rotation = rotation; m_pen = pen;
+	}
+
 	sgfx::Pen & pen(){ return m_pen; }
 	const sgfx::Pen & pen_const() const { return m_pen; }
 
@@ -65,6 +70,7 @@ public:
 	/*! \details Returns the rotation */
 	s16 rotation() const { return m_rotation; }
 
+	static const sg_icon_t * get_system_icon(int icon);
 
 private:
 	const sg_icon_t * m_icon;
@@ -84,8 +90,6 @@ public:
 
 	/*! \details Access a reference to the attributes */
 	IconAttr & attr(){ return m_attr; }
-
-	static const sg_icon_t * get_system_icon(int icon);
 
 	/*! \details Draws the graphic to scale on the specified bitmap */
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);

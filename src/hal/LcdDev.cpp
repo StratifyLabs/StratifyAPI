@@ -10,10 +10,7 @@
 using namespace sys;
 using namespace hal;
 
-
-LcdDev::LcdDev() {
-
-}
+LcdDev::LcdDev(){}
 
 
 /*! \brief Pure virtual function to initialize the LCD */
@@ -42,12 +39,8 @@ int LcdDev::init(const char * name){
 	return -1;
 }
 
-void LcdDev::clear(){
-	Bitmap::clear();
-}
-
 /*! \brief Pure virtual function that copies local LCD memory to the LCD screen */
-void LcdDev::refresh(){
+void LcdDev::refresh() const {
 	ioctl(I_MLCD_TOUCH);
 }
 
@@ -60,38 +53,19 @@ int LcdDev::off(){
 	return ioctl(I_MLCD_OFF);
 }
 
-int LcdDev::hold(){
-	return ioctl(I_MLCD_HOLD);
-}
-
-int LcdDev::wait(){
-	int ret;
+void LcdDev::wait(u16 resolution) const{
+	bool ret;
 	do {
-		errno = 0;
-		ret = hold();
-		if( ret < 0 ){
-			Timer::wait_usec(2000);
+		if( (ret = busy()) ){
+			Timer::wait_usec(resolution);
 		}
-	} while( errno == EAGAIN );
-	return ret;
+	} while( ret );
 }
 
-int LcdDev::release(){
-	return ioctl(I_MLCD_RELEASE);
+bool LcdDev::busy() const {
+	return ioctl(I_MLCD_BUSY) == 1;
 }
 
-
-int LcdDev::orient_y() const {
-	return -1;
-}
-
-bool LcdDev::busy(){
-	return (ioctl(I_MLCD_BUSY) != 0 );
-}
-
-int LcdDev::orient_x() const {
-	return -1;
-}
 
 #endif //__link not defined
 

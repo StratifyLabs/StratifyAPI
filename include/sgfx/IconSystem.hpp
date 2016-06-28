@@ -13,7 +13,7 @@
 namespace sgfx {
 
 
-/*! \brief Gfx System Class
+/*! \brief Icon System Class
  * \details This class manages icon data (sg_icon_t) that is installed
  * in the system.
  */
