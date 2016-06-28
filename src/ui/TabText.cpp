@@ -4,7 +4,9 @@
 #include "draw.hpp"
 using namespace ui;
 
-TabText::TabText(){}
+TabText::TabText(){
+	text().set_align_bottom();
+}
 
 void TabText::draw(const DrawingAttr & attr){
 	text().draw(attr);

@@ -8,15 +8,29 @@
 
 namespace ui {
 
+/*! \brief Button Pin Class
+ * \details This class implements a button using a hal::Pin object.
+ */
 class ButtonPin : public Button, public hal::Pin {
 public:
 
-	ButtonPin(int port, int pin, bool active = active_high());
+	/*! \details Construct a new ButtonPin
+	 *
+	 * @param port The port associated with the pin
+	 * @param pin The pin number on the port for the button input
+	 * @param active_value true for active high and false for active low
+	 */
+	ButtonPin(int port, int pin, bool active_value = true);
 
-protected:
-	virtual bool get_is_active() const;
+	/*! \details This method accesses the active value.
+	 *
+	 * @return True for active high and false for active low.
+	 */
+	bool active_value() const { return m_active_value; }
 
 private:
+	bool get_is_active() const;
+	bool m_active_value;
 
 };
 

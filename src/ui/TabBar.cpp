@@ -21,13 +21,17 @@ u8 TabBar::animation_path() const { return m_animation.attr().path(); }
 Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 	int i;
 
+	DrawingAttr view_attr = attr + drawing_point(0,h()) + drawing_dim(1000, 1000-h());
+	DrawingAttr tab_attr = attr + drawing_point(0,0) + drawing_dim(1000, h());
+
 	switch(event.type()){
 	case Event::SETUP:
 		for(i=0; i < size(); i++){
-			at(i)->element()->handle_event(event, attr);
+			at(i)->element()->handle_event(event, view_attr);
 		}
 		break;
 	case Event::ENTER:
+
 		m_animation.attr().set_drawing_start(0,0);
 		m_animation.attr().set_drawing_dim(1000,1000);
 		m_animation.attr().set_step_total(8);
@@ -38,9 +42,7 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 		m_animation.exec();
 
 		//subsequent animations will only deal with the screen area
-		m_animation.attr().set_drawing_start(0, h());
-		m_animation.attr().set_drawing_dim(1000, 1000-h());
-		at(selected())->element()->handle_event(event, attr);
+		at(selected())->element()->handle_event(event, view_attr);
 		return this;
 
 	case Event::BUTTON_HOLD:
@@ -49,15 +51,15 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 			switch(event.button()->event_id()){
 			default: break;
 			case Event::RIGHT_BUTTON:
-				if( at(selected())->element()->handle_event(event, attr) == 0 ){
-					scroll(1, false, attr);
-				}
+				at(selected())->element()->handle_event(event, view_attr);
+				scroll(1, false, view_attr);
+				draw_tab_bar(tab_attr, selected());
 				break;
 
 			case Event::LEFT_BUTTON:
-				if( at(selected())->element()->handle_event(event, attr) == 0 ){
-					scroll(-1, false, attr);
-				}
+				at(selected())->element()->handle_event(event, view_attr);
+				scroll(-1, false, view_attr);
+				draw_tab_bar(tab_attr, selected());
 				break;
 			}
 		}
@@ -79,7 +81,7 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 		break;
 	}
 
-	if( at(selected())->element()->handle_event(event, attr) > 0 ){
+	if( at(selected())->element()->handle_event(event, view_attr) > 0 ){
 		return this;
 	}
 
@@ -157,19 +159,16 @@ void TabBar::set_animate_push(int type, bool repeat){
 
 void TabBar::draw(const DrawingAttr & attr){
 	Tab * t;
-	DrawingAttr element_attr = attr;
 
 	t = at(selected());
 
 	if( visible() ){
-		element_attr.set_point( drawing_point(attr.x(), attr.y() + h()) );
-		element_attr.set_dim( drawing_dim(1000, attr.h() - attr.calc_h( h() ) ));
-		t->element()->draw(element_attr);
+		t->element()->draw(attr + drawing_point(0, h()) + drawing_dim(1000, 1000-h()));
 		draw_tab_bar(attr + drawing_dim(1000, h()), selected());
 	} else {
 		t->element()->draw(attr);
 	}
-
+	set_redraw_pending();
 }
 
 
@@ -199,6 +198,8 @@ void TabBar::draw_tab_bar(const DrawingAttr & attr, int selected){
 
 
 	Drawing::set(attr + drawing_point(tab_width*(selected - offset) + tab_width/4, 1000 - highlight()) + drawing_dim(tab_width/2, highlight()));
+
+	set_redraw_pending();
 }
 
 

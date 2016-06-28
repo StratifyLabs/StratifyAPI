@@ -69,29 +69,35 @@ DrawingAttr DrawingAttr::operator+ (drawing_dim_t d) const {
 
 drawing_dim_t DrawingAttr::calc_square(drawing_size_t v) const {
 	drawing_dim_t dim;
-	if( b().w() > b().h() ){
-		dim.h = v;
-		dim.w = v * h() / w();
+	if( w() > h() ){
+		dim = calc_square_h(v);
 	} else {
-		dim.w = v;
-		dim.h = v * w() / h();
+		dim = calc_square_w(v);
 	}
 	return dim;
 }
 
-
 drawing_dim_t DrawingAttr::calc_square_w(drawing_size_t v) const {
+	u32 pixel_width;
+	u32 drawing_height;
 	drawing_dim_t dim;
+	sg_dim_t bitmap_dim = Drawing::dim_on_bitmap(*this);
 	dim.w = v;
-	dim.h = v * b().w() / b().h();
-
+	pixel_width = bitmap_dim.w * v / Drawing::scale();
+	drawing_height = pixel_width * Drawing::scale() * Drawing::scale() / (h() * bitmap().h());
+	dim.h = drawing_height;
 	return dim;
 }
 
 drawing_dim_t DrawingAttr::calc_square_h(drawing_size_t v) const {
+	u32 pixel_height;
+	u32 drawing_width;
 	drawing_dim_t dim;
+	sg_dim_t bitmap_dim = Drawing::dim_on_bitmap(*this);
 	dim.h = v;
-	dim.w = v * b().h() / b().w();
+	pixel_height = bitmap_dim.h * v / Drawing::scale();
+	drawing_width = pixel_height * Drawing::scale() * Drawing::scale() / (w() * bitmap().w());
+	dim.w = drawing_width;
 	return dim;
 }
 

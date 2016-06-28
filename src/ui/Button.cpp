@@ -7,9 +7,8 @@ using namespace ui;
 
 u32 Button::m_held_duration = 800;
 
-Button::Button(bool active_value){
+Button::Button(){
 	m_event_id = Event::NO_BUTTON;
-	m_flags.active = active_value;
 	m_flags.press_reported = false;
 	m_flags.release_reported = true;
 	m_flags.held_reported = false;
@@ -37,9 +36,8 @@ Event Button::event(){
 }
 
 void Button::update(void){
-	if( get_value() == (bool)m_flags.active ){ //check to see if Pin is in the active state
+	if( get_is_active() == true ){ //check to see if Pin is in the active state
 		m_timer.start(); //start the timer if it hasn't been started
-		printf("Start timer for %d %d\n", m_event_id, m_timer.msec());
 	} else {
 		m_timer.stop(); //stop the timer (if it hasn't been stopped yet)
 	}

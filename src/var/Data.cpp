@@ -75,7 +75,7 @@ void Data::zero(){
 
 
 int Data::alloc(size_t s, bool resize){
-#ifndef __HWPL_ONLY__
+#ifndef __MCU_ONLY__
 
 	void * new_data;
 	if( (m_needs_free == false) && (m_mem != &m_zero_value) ){

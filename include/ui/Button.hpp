@@ -11,15 +11,31 @@
 
 namespace ui {
 
+/*! \brief Button Class
+ * \details This class implements a button
+ * that can be pressed by the user.  It implements the timing
+ * for button actuations, button holds, presses and releases.  It
+ * is an abstract class where the inheriting classes must implement
+ * the ui::Button::get_value() method which returns the value of input.
+ */
 class Button {
 public:
-	Button(bool active_value = true);
 
+	/*! \details This constructs a new button
+	 */
+	Button();
+
+	/*! \details This method access how long the user must hold the
+	 * button in the application before the ui::Event::BUTTON_HOLD is triggered
+	 * when calling event()
+	 *
+	 * @return The duration in milliseconds
+	 */
 	static u32 held_duration(){ return m_held_duration; }
-	static void set_held_duration(u32 v){ m_held_duration = v; }
 
-	static bool active_high(){ return true; }
-	static bool active_low(){ return false; }
+	/*! \details This method sets the duration of the hold event.
+	 */
+	static void set_held_duration(u32 v){ m_held_duration = v; }
 
 	/*! \details This method checks the state of the actuation and then returns
 	 * an Event if needed.
@@ -38,11 +54,9 @@ public:
 	virtual bool get_held(u32 msec);
 	virtual void update();
 
-	bool active_value() const { return m_flags.active != 0; }
-
 protected:
 
-	virtual bool get_value() const = 0;
+	virtual bool get_is_active() const = 0;
 
 	static u32 m_held_duration;
 	enum ui::Event::button_id m_event_id;
@@ -52,7 +66,6 @@ private:
 	sys::Timer m_timer;
 
 	struct button_flags {
-		unsigned active:1;
 		unsigned press_reported:1;
 		unsigned release_reported:1;
 		unsigned held_reported:1;

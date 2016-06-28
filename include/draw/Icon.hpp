@@ -51,7 +51,7 @@ public:
 
 	/*! \details Set the graphic, thickness, and rotation */
 	void set_value(int system_icon, const sgfx::Pen & pen, i16 rotation = 0){
-		get_system_icon(system_icon); m_rotation = rotation; m_pen = pen;
+		m_icon = get_system_icon(system_icon); m_rotation = rotation; m_pen = pen;
 	}
 
 	sgfx::Pen & pen(){ return m_pen; }

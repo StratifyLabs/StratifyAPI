@@ -29,10 +29,7 @@ void Animation::init(Drawing * current,
 	m_drawing_attr = &drawing_attr;
 
 	if( current != 0 ){
-		while( m_drawing_attr->bitmap().busy() == true ){
-			//wait
-			Timer::wait_msec(1);
-		}
+		m_drawing_attr->bitmap().wait(1000);
 		current->draw(*m_drawing_attr);
 		m_drawing_attr->bitmap().refresh();
 	}
@@ -77,7 +74,6 @@ void Animation::update_motion_total(){
 		attr().set_motion_total( attr().drawing_motion_total() * d.w / 1000 );
 		break;
 	};
-
 
 	sg_animate_init(pattr(),
 			attr().type(),

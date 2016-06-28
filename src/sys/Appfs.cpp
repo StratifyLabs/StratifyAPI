@@ -69,7 +69,6 @@ int Appfs::create(const char * name, const void * buf, int nbyte, const char * m
 
 		if( (tmp = file.ioctl(I_APPFS_CREATE, &attr)) < 0 ){
 			file.close();
-			printf("Didn't exec create at %d %ld\n", loc, attr.nbyte);
 			return tmp;
 		}
 

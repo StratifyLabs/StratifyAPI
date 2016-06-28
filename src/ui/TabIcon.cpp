@@ -5,9 +5,7 @@
 using namespace ui;
 
 
-TabIcon::TabIcon(){
-
-}
+TabIcon::TabIcon(){}
 
 void TabIcon::draw(const draw::DrawingAttr & attr){
 	drawing_point_t p;
@@ -21,5 +19,6 @@ void TabIcon::draw(const draw::DrawingAttr & attr){
 	icon_draw_attr = attr;
 	icon_draw_attr.set_point(p);
 	icon_draw_attr.set_dim(d);
+
 	icon().draw(icon_draw_attr);
 }

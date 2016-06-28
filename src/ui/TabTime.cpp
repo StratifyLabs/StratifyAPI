@@ -18,7 +18,7 @@ void TabTime::draw(const DrawingAttr & attr){
 	}
 	sprintf(buffer, "%ld:%02ld", hour, t.minute());
 	Text label;
-	label.set_font_size( height_on_bitmap(attr) * 900 / 1000 );
+	label.set_font_size( height_on_bitmap(attr) * 800 / 1000 );
 	label.assign(buffer);
 	label.draw(attr);
 }

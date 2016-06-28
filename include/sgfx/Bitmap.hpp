@@ -69,7 +69,10 @@ public:
 	int save(const char * path) const;
 
 
-	/*! \details Allocate memory for the bitmap data */
+	/*! \details Allocate memory for the bitmap data using the specified
+	 * width and height.  If the bitmap already has a memory associated
+	 * with it, it will be freed before the new memory is assigned.
+	 */
 	int alloc(sg_size_t w, sg_size_t h);
 	inline int alloc(const Dim & d){ return alloc(d.w(), d.h()); }
 	/*! \details Free memory associated with bitmap (auto freed on ~Bitmap) */

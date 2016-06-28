@@ -31,15 +31,7 @@ float Pid_f::calc_value(float input){
 	m_error = err;
 
 	output = err * m_kp  + (m_integral + err) * m_ki + de*m_kd;
-	printf("%f = %f * %f + (%f + %f) * %f + %f*%f\n",
-			output,
-			err,
-			m_kp,
-			(m_integral),
-			err,
-			m_ki,
-			de,
-			m_kd);
+
 	if( output > m_max ){
 		output = m_max;
 	} else if( output < m_min ){
@@ -48,7 +40,6 @@ float Pid_f::calc_value(float input){
 		m_integral += (err);
 	}
 
-	printf("Final output is %f\n", output);
 	return output;
 }
 
