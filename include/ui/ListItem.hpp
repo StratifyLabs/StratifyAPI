@@ -32,16 +32,21 @@ public:
 	const draw::IconAttr & icon_attr_const() const { return m_icon_attr; }
 
 	/*! \details This methods gives read/write access to the text label attributes */
-	draw::TextAttr & label_attr(){ return m_label; }
+	draw::TextAttr & text_attr(){ return m_text_attr; }
 
 	/*! \details This methods gives read only access to the text label attributes */
-	const draw::TextAttr & label_attr_const() const { return m_label; }
+	const draw::TextAttr & label_attr_const() const { return m_text_attr; }
 
 	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
+protected:
+	ElementLinked * item_selected(const Event  & event, const draw::DrawingAttr & attr);
+
 private:
-	draw::TextAttr m_label;
+
+	draw::TextAttr m_text_attr;
 	draw::IconAttr m_icon_attr;
+
 };
 
 /*! \brief Toggle Item
@@ -86,36 +91,6 @@ public:
 
 };
 
-/*! \brief List Item Callback Class
- * \ingroup list
- * \details The ListItemCallback object allows the application to call a function
- * whenever the item in the list is selected.
- */
-class ListItemCallback : public ListItem {
-public:
-	typedef ElementLinked * (*list_item_callback_t)(ElementLinked * list, ListItemCallback * obj, int event);
-
-	ListItemCallback(list_item_callback_t callback, const char * label, const sg_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
-
-	//execute the callback
-	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
-
-private:
-	list_item_callback_t m_callback;
-};
-
-/*! \brief List Item Element Class
- * \ingroup list
- * \details The ListItemElement class allows the current element to switch
- * to a child (or target) element.  For example, a List that jumps to another list
- * can use this class as the list item.
- *
- */
-class ListItemElement : public ListItem {
-public:
-
-	ListItemElement(const char * label, const sg_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
-};
 
 /*! \brief List Item Back Entry
  * \details This is an item that
@@ -213,7 +188,7 @@ public:
 	sys::Dir & dir(){ return m_dir; }
 
 	/*! \details Access the currently selected item in the list */
-	ListItemElement & item(){ return m_item; }
+	ListItem & item(){ return m_item; }
 
 	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
@@ -229,7 +204,7 @@ private:
 	sys::Dir m_dir;
 	/*! \todo List inherits ListAttr so the total entries should already be stored somewhere */
 	size_t m_total;
-	ListItemElement m_item;
+	ListItem m_item;
 	void recount(void);
 	list_dir_callback_t m_callback;
 	var::String m_path;

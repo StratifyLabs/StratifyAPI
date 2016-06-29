@@ -25,6 +25,7 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 	DrawingAttr tab_attr = attr + drawing_point(0,0) + drawing_dim(1000, h());
 
 	switch(event.type()){
+	default: break;
 	case Event::SETUP:
 		for(i=0; i < size(); i++){
 			at(i)->element()->handle_event(event, view_attr);
@@ -41,7 +42,6 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 		m_animation.init(0, this, attr);
 		m_animation.exec();
 
-		//subsequent animations will only deal with the screen area
 		at(selected())->element()->handle_event(event, view_attr);
 		return this;
 
@@ -64,21 +64,48 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 			}
 		}
 		return this;
+	case Event::BUTTON_PRESSED:
+		if(1){
+			switch(event.button()->event_id()){
+			default: break;
+			case Event::RIGHT_BUTTON:
+				m_right_timer.restart();
+				break;
+
+			case Event::LEFT_BUTTON:
+				m_left_timer.restart();
+				break;
+			}
+		}
+		break;
+
+	case Event::BUTTON_RELEASED:
+		if(1){
+			switch(event.button()->event_id()){
+			default: break;
+			case Event::RIGHT_BUTTON:
+				m_right_timer.reset();
+				break;
+
+			case Event::LEFT_BUTTON:
+				m_left_timer.reset();
+				break;
+			}
+		}
+		break;
 
 	case Event::UPDATE:
-		/*
-			if( Button::right_held() > Button::long_press()*3 ){
-				scroll(1, true, attr);
-				return this;
-			} else if( Button::left_held() > Button::long_press()*3 ){
-				scroll(-1, true, attr);
-				return this;
-			}
-		 */
+		if( m_right_timer.is_running() && (m_right_timer.msec() > Button::held_duration()*3) ){
+			scroll(1, true, view_attr);
+			draw_tab_bar(tab_attr, selected());
+			return this;
+		} else if( m_left_timer.is_running() && m_left_timer.msec() > Button::held_duration()*3 ){
+			scroll(-1, true, view_attr);
+			draw_tab_bar(tab_attr, selected());
+			return this;
+		}
+		break;
 
-		break;
-	default:
-		break;
 	}
 
 	if( at(selected())->element()->handle_event(event, view_attr) > 0 ){

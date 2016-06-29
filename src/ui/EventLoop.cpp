@@ -59,11 +59,15 @@ void EventLoop::handle_event(const Event & event){
 void EventLoop::run(){
 
 	if( m_current_element) m_current_element->handle_event(Event(Event::SETUP), drawing_attr());
-	if( m_current_element) m_current_element->handle_event(Event(Event::ENTER), drawing_attr());
+
+	if( m_current_element) {
+		m_current_element->handle_event(Event(Event::ENTER), drawing_attr());
+	}
 
 	m_loop_timer.start();
 
 	while( m_current_element != 0 ){
+
 
 		m_drawing_attr.bitmap().wait(attr().refresh_wait_resolution()); //wait until video memory is free to write
 		process_events(); //process all events (this will modify the video memory)
@@ -72,6 +76,7 @@ void EventLoop::run(){
 			m_loop_timer.restart();
 			handle_event(Event(Event::UPDATE));
 		}
+
 
 		if( m_current_element ){
 			//update the screen
@@ -88,6 +93,8 @@ void EventLoop::run(){
 
 
 	}
+
+	printf("Event loop complete\n");
 }
 
 } /* namespace ui */

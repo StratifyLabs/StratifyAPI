@@ -14,7 +14,6 @@ List::List(ElementLinked * parent) : ElementLinked(parent) {
 	m_draw_animation_item = 0;
 	m_draw_animation_offset = 0;
 	m_select_top_bottom = 0;
-	m_attr_h = 1000;
 }
 
 void List::draw_item_to_scale(const DrawingScaledAttr & attr, sg_size_t x_offset, list_attr_size_t item){
@@ -30,9 +29,10 @@ void List::draw(const DrawingAttr & attr){
 	m_scroll_animation.attr().set_drawing_start(attr.p());
 	m_scroll_animation.attr().set_drawing_dim(attr.d());
 	//scroll_animation.attr().set_drawing_motion_total(attr.h()/visible_items());
-	m_attr_h = attr.h();
 
 	ElementLinked::draw(attr);
+
+	set_redraw_pending();
 }
 
 void List::draw_to_scale(const DrawingScaledAttr & attr){
@@ -102,9 +102,8 @@ void List::animate_scroll(i8 dir, const DrawingAttr & attr){
 
 	type = AnimationAttr::NONE;
 
-
 	if( item < size() ){
-		m_scroll_animation.attr().set_drawing_motion_total(m_attr_h/visible_items());
+		m_scroll_animation.attr().set_drawing_motion_total(attr.h()/visible_items());
 		if( dir < 0 ){
 			m_draw_animation_offset = visible_items() - 1;
 		} else {
@@ -128,13 +127,13 @@ void List::animate_scroll(i8 dir, const DrawingAttr & attr){
 	} else if( (selected() == 0) && (dir < 0) ){
 		m_scroll_animation.attr().set_path(AnimationAttr::SQUARED);
 		m_scroll_animation.attr().set_step_total(3);
-		m_scroll_animation.attr().set_drawing_motion_total((m_attr_h/3)/visible_items());
+		m_scroll_animation.attr().set_drawing_motion_total((attr.h()/3)/visible_items());
 		type = AnimationAttr::BOUNCE_UP;
 		dir = 0;
 	} else if( (selected() == (size()-1)) && (dir > 0)){
 		m_scroll_animation.attr().set_path(AnimationAttr::SQUARED);
 		m_scroll_animation.attr().set_step_total(3);
-		m_scroll_animation.attr().set_drawing_motion_total((m_attr_h/3)/visible_items());
+		m_scroll_animation.attr().set_drawing_motion_total((attr.h()/3)/visible_items());
 		type = AnimationAttr::BOUNCE_DOWN;
 		dir = 0;
 	}
@@ -152,19 +151,38 @@ void List::animate_scroll(i8 dir, const DrawingAttr & attr){
 
 	}
 
-
 	m_scroll_timer.start();
 	m_draw_animation_offset = 0;
 	m_draw_animation_item = size();
 }
 
 
+void List::handle_down_button_actuation(const Event  & event, const DrawingAttr & attr){
+	animate_scroll(1, attr);
+	if( selected() < size() - 1){
+		inc_selected();
+	}
+	draw(attr);
+}
+
+void List::handle_up_button_actuation(const Event  & event, const DrawingAttr & attr){
+	animate_scroll(-1, attr);
+	if( selected() > 0 ){
+		dec_selected();
+	}
+	draw(attr);
+}
+
+void List::handle_select_button_actuation(const Event  & event, const DrawingAttr & attr){
+	current()->handle_event(event, attr);
+}
+
 
 Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 	size_t i;
 	switch(event.type()){
+	default: break;
 	case Event::SETUP:
-		Element::handle_event(event, attr); //sets dim of this item
 		m_draw_animation_item = size();
 		//setup all the items in the list
 		for(i=0; i < size(); i++){
@@ -172,49 +190,26 @@ Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 		}
 		return this;
 
-
 	case Event::BUTTON_ACTUATION:
-
 		if(1){
 			switch(event.button()->event_id()){
-
+			default: break;
 			case Event::SELECT_BUTTON:
 				//invoke menu event handler on a transition
-				return current()->handle_event(event, attr);
+				return current()->handle_event(Event(Event::LIST_ITEM_SELECTED), attr);
 
 			case Event::DOWN_BUTTON:
-				animate_scroll(1, attr);
-				if( selected() < size() - 1){
-					inc_selected();
-				}
-				current()->handle_event(event, attr);
-
-				return this;
+				handle_down_button_actuation(event, attr);
+				break;
 			case Event::UP_BUTTON:
-				animate_scroll(-1, attr);
-				if( selected() > 0 ){
-					dec_selected();
-				}
-				current()->handle_event(event, attr);
-				return this;
-			default:
+				handle_up_button_actuation(event, attr);
 				break;
 			}
 		}
 		break;
 
 	case Event::ENTER:
-		//App::set_update_period(0);
-		//App::bar().set_left( IconAttr::CHEVRON, 3, SG_TRIG_POINTS/4 );
-		//App::bar().set_right( IconAttr::CHEVRON, 3, SG_TRIG_POINTS*3/4 );
-		//App::bar().set_center( IconAttr::CHEVRON ); //set this based on the selected item
 		current()->handle_event(event, attr);
-		return this;
-	case Event::UPDATE:
-		//execute the animation
-		return this;
-
-	default:
 		break;
 	}
 	return ElementLinked::handle_event(event, attr);

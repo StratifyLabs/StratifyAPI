@@ -4,12 +4,13 @@
 #include "draw.hpp"
 #include "ui/ListItem.hpp"
 #include "ui/Button.hpp"
+#include "ui/Event.hpp"
 
 using namespace ui;
 
 ListItem::ListItem(const char * label, const sg_icon_t * icon, ElementLinked * parent, ElementLinked * child) : ElementLinked(parent, child){
-	m_label.assign(label);
-	icon_attr().set_value(icon, 5, 0);
+	m_text_attr.assign(label);
+	icon_attr().set_value(icon, Pen(), 0);
 	set_animation_type(AnimationAttr::PUSH_LEFT);
 }
 
@@ -30,6 +31,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 	icon_height = d.h()/2;
 
 	Bitmap icon_bitmap(icon_height, icon_height);
+	icon_bitmap.clear();
 
 	Font * font;
 
@@ -44,13 +46,13 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 
 	padded.set_value(d.w() - icon_dim.w, d.h()*80/100 );
 
-	if( m_label.font_size() == 0 ){
+	if( m_text_attr.font_size() == 0 ){
 		height = padded.h();
 	} else {
-		height = m_label.font_size();
+		height = m_text_attr.font_size();
 	}
 
-	font = FontSystem::get_font(height, label_attr().font_bold());
+	font = FontSystem::get_font(height, text_attr().font_bold());
 	height = font->get_h();
 
 	icon_point.x = p.x + d.w() - bounds.bottom_right.x;
@@ -66,15 +68,15 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 		p.y = p.y + d.h()/2 - height/2;
 	}
 
-	strcpy(buffer, label_attr().text());
+	strcpy(buffer, text_attr().text());
 
 	if( icon_dim.w > 0 ){
-		if( m_label.font_size() != 0 ){
+		if( m_text_attr.font_size() != 0 ){
 			int len;
-			len = font->calc_len(label_attr().text());
+			len = font->calc_len(text_attr().text());
 			if( len > (icon_point.x - p.x) ){
 				memset(buffer, 0, 32);
-				strncpy(buffer, label_attr().text(), 6);
+				strncpy(buffer, text_attr().text(), 6);
 				strcat(buffer, "...");
 			}
 		}
@@ -91,27 +93,26 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 
 }
 
-Element * ListItem::handle_event(const Event  & event, const DrawingAttr & attr){
-	switch(event.type()){
-	/*
-	case LEFT_PRESS:
-	case RIGHT_PRESS:
-	case ENTER:
-		if( gfx_attr().gfx() != 0 ){
-			App::bar().set_center( gfx_attr().gfx(), 3, gfx_attr().rotation() );
-		}
-		break;
-	case RIGHT_HOLD:
-	case CENTER_PRESS:
-		if( child() ){
-			child()->set_animation_type(AnimationAttr::PUSH_LEFT);
-			return child();
-		}
-		break;
-	 */
-	default:
-		break;
+ElementLinked * ListItem::item_selected(const Event  & event, const DrawingAttr & attr){
+
+	if( parent() ){
+		parent()->handle_event(Event(Event::LIST_ITEM_SELECTED, this), attr);
 	}
+
+	if ( child() ){
+		child()->set_animation_type(AnimationAttr::PUSH_LEFT);
+		return child();
+	}
+	return this;
+}
+
+
+Element * ListItem::handle_event(const Event  & event, const DrawingAttr & attr){
+
+	if( event.type() == Event::LIST_ITEM_SELECTED ){
+		return item_selected(event, attr);
+	}
+
 	return ElementLinked::handle_event(event, attr);
 }
 
@@ -166,46 +167,9 @@ Element * ListItemToggle::handle_event(const Event  & event, const DrawingAttr &
 	 */
 
 	return ListItem::handle_event(event, attr);
-
-}
-
-ListItemCallback::ListItemCallback(list_item_callback_t callback,
-		const char * label,
-		const sg_icon_t * icon,
-		ElementLinked * parent,
-		ElementLinked * child) :
-				ListItem(label, icon, parent, child){
-	m_callback = callback;
 }
 
 
-
-
-Element * ListItemCallback::handle_event(const Event  & event, const DrawingAttr & attr){
-	/*
-	switch(event){
-	case RIGHT_HOLD:
-	case CENTER_PRESS:
-		if( m_callback != 0 ){
-			return m_callback(parent(), this, 0);
-		}
-		return parent();
-	default:
-		return ListItem::handle_event(event, attr);
-	}
-	 */
-	return ListItem::handle_event(event, attr);
-}
-
-ListItemElement::ListItemElement(const char * label,
-		const sg_icon_t * icon,
-		ElementLinked * parent,
-		ElementLinked * child) :
-				ListItem(label, icon, parent, child) {
-	if( this->child() ){
-		this->child()->set_parent(parent);
-	}
-}
 
 
 ListItemBack::ListItemBack(const sg_icon_t * icon, ElementLinked * parent) : ListItem("Back", icon, parent){
@@ -229,13 +193,13 @@ Element * ListItemBack::handle_event(const Event  & event, const DrawingAttr & a
 
 
 ListItemExit::ListItemExit(const sg_icon_t * icon, ElementLinked * parent) : ListItemBack(icon, parent){
-	label_attr().assign("Exit");
+	text_attr().assign("Exit");
 	icon_attr().set_rotation(IconAttr::DOWN);
 }
 
 
 ListItemCheck::ListItemCheck(const char * label, List * parent) :
-										ListItem(label, 0, parent){
+												ListItem(label, 0, parent){
 	set_enabled(false);
 }
 
@@ -244,8 +208,8 @@ ListDir::ListDir(const char * path,
 		const sg_icon_t * icon,
 		ElementLinked * parent,
 		ElementLinked * child) :
-						List(parent),
-						m_item("TBD", icon, this, child) {
+								List(parent),
+								m_item("TBD", icon, this, child) {
 	set_path(path);
 }
 
@@ -276,7 +240,7 @@ ElementLinked * ListDir::at(list_attr_size_t i){
 		}
 	}
 
-	m_item.label_attr().assign(m_dir.name());
+	m_item.text_attr().assign(m_dir.name());
 
 	return &m_item;
 }
@@ -299,7 +263,7 @@ void ListDir::recount(void){
 		m_total = ret;
 	} else {
 		m_total = 1;
-		m_item.label_attr().assign("Empty");
+		m_item.text_attr().assign("Empty");
 	}
 }
 

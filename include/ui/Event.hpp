@@ -10,6 +10,7 @@ class SignalEvent;
 namespace ui {
 
 class Button;
+class ListItem;
 
 class Event {
 public:
@@ -30,6 +31,7 @@ public:
 		NETWORK_DATA /*! This event is called when data arrives on the network */ = 8,
 		SIGNAL /*! This event is called when data arrives on the network */ = 9,
 		APPLICATION /*! This event is an application specific where the data is specified by the application */ = 10,
+		LIST_ITEM_SELECTED /*! This event is used for when an item in a list has been selected */ = 11
 
 		//EVENT_TYPE_TOTAL //omit TOTAL so that the compiler doesn't complain about not handling the case
 
@@ -61,6 +63,14 @@ public:
 		m_type = type;
 		m_objects.button = button;
 	}
+
+	ui::Button * list_item() const {
+		if( m_type == LIST_ITEM_SELECTED ){
+			return m_objects.button;
+		}
+		return 0;
+	}
+
 
 
 	ui::Button * button() const {
@@ -106,6 +116,7 @@ private:
 	union event_objects {
 		void * object;
 		Button * button;
+		ListItem * list_item;
 		sys::SignalEvent * signal;
 	} m_objects;
 

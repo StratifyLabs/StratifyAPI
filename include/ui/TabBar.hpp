@@ -5,6 +5,7 @@
 #ifndef UI_TABBAR_HPP_
 #define UI_TABBAR_HPP_
 
+#include "../sys/Timer.hpp"
 #include "../draw/Drawing.hpp"
 #include "../sgfx/Bitmap.hpp"
 #include "../draw/Animation.hpp"
@@ -56,6 +57,9 @@ private:
 	sg_size_t tab_selected_offset();
 	void set_animate_bounce(int type);
 	void set_animate_push(int type, bool repeat);
+
+	sys::Timer m_left_timer;
+	sys::Timer m_right_timer;
 
 	int animate_frame(sgfx::Bitmap * bitmap, sg_animation_t * animation);
 

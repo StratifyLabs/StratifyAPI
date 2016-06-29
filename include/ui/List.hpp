@@ -38,6 +38,10 @@ public:
 protected:
 	void init(void);
 
+	void handle_down_button_actuation(const ui::Event  & event, const draw::DrawingAttr & attr);
+	void handle_up_button_actuation(const ui::Event  & event, const draw::DrawingAttr & attr);
+	void handle_select_button_actuation(const ui::Event  & event, const draw::DrawingAttr & attr);
+
 	void animate_scroll(i8 dir, const draw::DrawingAttr & attr);
 	draw::Animation m_scroll_animation;
 	list_attr_size_t m_draw_animation_item;
@@ -46,7 +50,6 @@ protected:
 	sys::Timer m_scroll_timer;
 
 private:
-	draw::drawing_size_t m_attr_h;
 
 };
 
