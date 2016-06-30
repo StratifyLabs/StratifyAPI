@@ -94,7 +94,7 @@ void List::animate_scroll(i8 dir, const DrawingAttr & attr){
 	type = AnimationAttr::NONE;
 
 	if( item < size() ){
-		m_scroll_animation.attr().set_drawing_motion_total(attr.h()/visible_items());
+		m_scroll_animation.attr().set_drawing_motion_total(scale()/visible_items());
 		if( dir < 0 ){
 			m_draw_animation_offset = visible_items() - 1;
 		} else {
@@ -109,22 +109,22 @@ void List::animate_scroll(i8 dir, const DrawingAttr & attr){
 		}
 
 		if( m_scroll_timer.msec() < 250 ){
-			m_scroll_animation.attr().set_step_total(3);
+			m_scroll_animation.attr().set_step_total(6);
 			m_scroll_animation.attr().set_path(AnimationAttr::LINEAR);
 		} else {
-			m_scroll_animation.attr().set_step_total(6);
-			m_scroll_animation.attr().set_path(AnimationAttr::SQUARED);
+			m_scroll_animation.attr().set_step_total(10);
+			m_scroll_animation.attr().set_path(AnimationAttr::SQUARED_UNDO);
 		}
 	} else if( (selected() == 0) && (dir < 0) ){
 		m_scroll_animation.attr().set_path(AnimationAttr::SQUARED);
-		m_scroll_animation.attr().set_step_total(3);
-		m_scroll_animation.attr().set_drawing_motion_total((attr.h()/3)/visible_items());
+		m_scroll_animation.attr().set_step_total(6);
+		m_scroll_animation.attr().set_drawing_motion_total((scale()/3)/visible_items());
 		type = AnimationAttr::BOUNCE_UP;
 		dir = 0;
 	} else if( (selected() == (size()-1)) && (dir > 0)){
 		m_scroll_animation.attr().set_path(AnimationAttr::SQUARED);
-		m_scroll_animation.attr().set_step_total(3);
-		m_scroll_animation.attr().set_drawing_motion_total((attr.h()/3)/visible_items());
+		m_scroll_animation.attr().set_step_total(6);
+		m_scroll_animation.attr().set_drawing_motion_total((scale()/3)/visible_items());
 		type = AnimationAttr::BOUNCE_DOWN;
 		dir = 0;
 	}
@@ -142,7 +142,7 @@ void List::animate_scroll(i8 dir, const DrawingAttr & attr){
 
 	}
 
-	m_scroll_timer.start();
+	m_scroll_timer.restart();
 	m_draw_animation_offset = 0;
 	m_draw_animation_item = size();
 }

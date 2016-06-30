@@ -87,6 +87,8 @@ void Animation::update_motion_total(){
 
 
 bool Animation::exec(void (*draw)(void *, int, int), void * obj){
+	m_drawing_attr->bitmap().wait(1000);
+
 	while(animate_frame(draw, obj) > 0){
 		;
 	}
@@ -111,9 +113,7 @@ int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
 	Timer::wait_msec(delay);
 
 	if( ret == 0 ){ //check for last frame
-		while( m_drawing_attr->bitmap().busy() ){
-			Timer::wait_msec(1);
-		}
+		m_drawing_attr->bitmap().wait(1000);
 	}
 
 	return ret;

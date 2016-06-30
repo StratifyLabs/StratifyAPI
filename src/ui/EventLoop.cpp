@@ -27,6 +27,7 @@ EventLoop::EventLoop(ui::Element & start_element, sgfx::Bitmap & bitmap, sgfx::B
 	m_attr.set_refresh_wait_resolution(5000);
 	m_attr.set_hibernate_timeout(0);
 	m_attr.set_update_period(20);
+	m_attr.set_period(50);
 }
 
 Element * EventLoop::handle_event(Element * current_element, const ui::Event & event, const DrawingAttr & drawing_attr){
@@ -57,6 +58,7 @@ void EventLoop::handle_event(const Event & event){
 }
 
 void EventLoop::run(){
+	u32 msec;
 
 	if( m_current_element) m_current_element->handle_event(Event(Event::SETUP), drawing_attr());
 
@@ -64,16 +66,17 @@ void EventLoop::run(){
 		m_current_element->handle_event(Event(Event::ENTER), drawing_attr());
 	}
 
-	m_loop_timer.start();
+	m_update_timer.start();
 
 	while( m_current_element != 0 ){
 
+		//m_loop_timer.restart();
 
 		m_drawing_attr.bitmap().wait(attr().refresh_wait_resolution()); //wait until video memory is free to write
 		process_events(); //process all events (this will modify the video memory)
 
-		if( m_loop_timer.msec() > attr().update_period() ){
-			m_loop_timer.restart();
+		if( m_update_timer.msec() > attr().update_period() ){
+			m_update_timer.restart();
 			handle_event(Event(Event::UPDATE));
 		}
 
@@ -83,6 +86,8 @@ void EventLoop::run(){
 			if( m_current_element->is_redraw_pending() ){
 				m_drawing_attr.bitmap().refresh();
 				m_current_element->set_redraw_pending(false);
+			} else {
+				Timer::wait_msec(10);
 			}
 
 
@@ -90,6 +95,14 @@ void EventLoop::run(){
 
 			// \todo Check for tick period delay
 		}
+
+		/*
+		msec = m_loop_timer.msec();
+		if( msec < attr().period() ){
+			printf("wait %ld msec\n", msec);
+			Timer::wait_msec(attr().period() - msec);
+		}
+		*/
 
 
 	}

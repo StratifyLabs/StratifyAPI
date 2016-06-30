@@ -15,6 +15,7 @@ typedef struct MCU_PACK {
 	u16 hibernate_timeout;
 	u16 update_period;
 	u16 refresh_wait_resolution;
+	u16 period;
 } event_loop_attr_t;
 
 
@@ -36,14 +37,24 @@ public:
 	/*! \details This method sets the hibernate timeout in milliseconds */
 	void set_hibernate_timeout(u16 v) { m_attr.hibernate_timeout = v; }
 
-	/*! \details This method returns the current event loop period */
+	/*! \details This method returns the period for firing the Event::UPDATE */
 	u16 update_period() const { return m_attr.update_period; }
-	/*! \details This method sets the event loop period
+
+	/*! \details This method returns the period for the loop */
+	u16 period() const { return m_attr.period; }
+
+	/*! \details This method sets the Event loop period.
+	 *
+	 * @param v The loop period in milliseconds.
+	 */
+	void set_period(u16 v){ m_attr.period = v; }
+
+
+	/*! \details This method set the Event::UPDATE period which defines
+	 * how often the event loop will trigger the Event::UPDATE command for the
+	 * current element.
 	 *
 	 * @param v The period in milliseconds
-	 *
-	 * If the period is greater than the hibernate timeout, the event loop
-	 * will hibernate between loops.  This will cause the entire chip to hibernate.
 	 *
 	 */
 	void set_update_period(u16 v){ m_attr.update_period = v; }
@@ -114,7 +125,8 @@ private:
 	EventLoopAttr m_attr;
 	draw::DrawingAttr m_drawing_attr;
 	Element * m_current_element;
-	sys::Timer m_loop_timer;
+	//sys::Timer m_loop_timer;
+	sys::Timer m_update_timer;
 
 
 
