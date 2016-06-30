@@ -16,7 +16,8 @@ class Event {
 public:
 
 	enum {
-		BUTTON_FLAG = 0x80
+		BUTTON_FLAG = 0x80,
+		LIST_ITEM_FLAG = 0x40
 	};
 
 	enum event_type {
@@ -31,7 +32,13 @@ public:
 		NETWORK_DATA /*! This event is called when data arrives on the network */ = 8,
 		SIGNAL /*! This event is called when data arrives on the network */ = 9,
 		APPLICATION /*! This event is an application specific where the data is specified by the application */ = 10,
-		LIST_ITEM_SELECTED /*! This event is used for when an item in a list has been selected */ = 11
+		LIST_ITEM_SELECTED /*! Select an item in a list */ = LIST_ITEM_FLAG | 11,
+		LIST_ITEM_ACTUATED /*! Actuate an item in a list */ = LIST_ITEM_FLAG | 12,
+		LIST_ACTUATE /*! Select an item in a list or menu */ = 13,
+		LIST_UP /*! Scroll up in a list or menu */ = 14,
+		LIST_DOWN /*! Scroll down in a list or menu */ = 15,
+		MENU_BACK /*! Go back in the menu */ = 16,
+
 
 		//EVENT_TYPE_TOTAL //omit TOTAL so that the compiler doesn't complain about not handling the case
 
@@ -64,9 +71,9 @@ public:
 		m_objects.button = button;
 	}
 
-	ui::Button * list_item() const {
-		if( m_type == LIST_ITEM_SELECTED ){
-			return m_objects.button;
+	ui::ListItem * list_item() const {
+		if( m_type & LIST_ITEM_FLAG ){
+			return m_objects.list_item;
 		}
 		return 0;
 	}

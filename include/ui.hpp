@@ -9,6 +9,7 @@
  */
 namespace ui {}
 
+#include "draw.hpp"
 #include "ui/Event.hpp"
 #include "ui/Element.hpp"
 #include "ui/ElementLinked.hpp"
@@ -16,6 +17,8 @@ namespace ui {}
 #include "ui/ListAttr.hpp"
 #include "ui/ListItem.hpp"
 #include "ui/ListItemInfo.hpp"
+#include "ui/Menu.hpp"
+#include "ui/MenuList.hpp"
 #include "ui/Button.hpp"
 #include "ui/ButtonPin.hpp"
 #include "ui/TabIcon.hpp"

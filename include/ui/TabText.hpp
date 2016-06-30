@@ -1,4 +1,4 @@
-/* Copyright 2014-2016 Fogo Digital, Inc; All Rights Reserved
+/* Copyright 2014-2016 Tyler Gilbert, Inc; All Rights Reserved
  *
  */
 

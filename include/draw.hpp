@@ -10,6 +10,7 @@ namespace draw {
 
 }
 
+#include "sgfx.hpp"
 #include "draw/Animation.hpp"
 #include "draw/Drawing.hpp"
 #include "draw/GraphLine.hpp"

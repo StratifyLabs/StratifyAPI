@@ -24,17 +24,6 @@ void List::draw_item_to_scale(const DrawingScaledAttr & attr, sg_size_t x_offset
 	attr.bitmap().set_hline(p.x - x_offset, p.x + d.w + x_offset, p.y + d.h -1);
 }
 
-
-void List::draw(const DrawingAttr & attr){
-	m_scroll_animation.attr().set_drawing_start(attr.p());
-	m_scroll_animation.attr().set_drawing_dim(attr.d());
-	//scroll_animation.attr().set_drawing_motion_total(attr.h()/visible_items());
-
-	ElementLinked::draw(attr);
-
-	set_redraw_pending();
-}
-
 void List::draw_to_scale(const DrawingScaledAttr & attr){
 	int i;
 	sg_point_t p = attr.p();
@@ -91,6 +80,8 @@ void List::draw_to_scale(const DrawingScaledAttr & attr){
 	if( !dark() ){
 		attr.bitmap().invert(p, d);
 	}
+
+	set_redraw_pending();
 
 }
 
@@ -161,6 +152,7 @@ void List::handle_down_button_actuation(const Event  & event, const DrawingAttr 
 	animate_scroll(1, attr);
 	if( selected() < size() - 1){
 		inc_selected();
+		current()->handle_event(Event(Event::LIST_ITEM_SELECTED, current()), attr);
 	}
 	draw(attr);
 }
@@ -169,6 +161,7 @@ void List::handle_up_button_actuation(const Event  & event, const DrawingAttr & 
 	animate_scroll(-1, attr);
 	if( selected() > 0 ){
 		dec_selected();
+		current()->handle_event(Event(Event::LIST_ITEM_SELECTED, current()), attr);
 	}
 	draw(attr);
 }
@@ -190,22 +183,15 @@ Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 		}
 		return this;
 
-	case Event::BUTTON_ACTUATION:
-		if(1){
-			switch(event.button()->event_id()){
-			default: break;
-			case Event::SELECT_BUTTON:
-				//invoke menu event handler on a transition
-				return current()->handle_event(Event(Event::LIST_ITEM_SELECTED), attr);
+	case Event::LIST_ACTUATE:
+		return current()->handle_event(Event(Event::LIST_ITEM_ACTUATED), attr);
 
-			case Event::DOWN_BUTTON:
-				handle_down_button_actuation(event, attr);
-				break;
-			case Event::UP_BUTTON:
-				handle_up_button_actuation(event, attr);
-				break;
-			}
-		}
+	case Event::LIST_UP:
+		handle_up_button_actuation(event, attr);
+		break;
+
+	case Event::LIST_DOWN:
+		handle_down_button_actuation(event, attr);
 		break;
 
 	case Event::ENTER:

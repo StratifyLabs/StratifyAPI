@@ -28,6 +28,11 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 
 	//draw the label and the icon
 	Dim padded;
+
+	if( &(icon_attr().icon()) == 0 ){
+		return;
+	}
+
 	icon_height = d.h()/2;
 
 	Bitmap icon_bitmap(icon_height, icon_height);
@@ -82,35 +87,26 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 		}
 	}
 
-
 	font->set_str(buffer, attr.bitmap(), p);
 
 	//draw the icon -- on the right side
 	if( icon_dim.w > 0 ){
 		attr.bitmap().set_bitmap(icon_bitmap, icon_point);
 	}
-
-
-}
-
-ElementLinked * ListItem::item_selected(const Event  & event, const DrawingAttr & attr){
-
-	if( parent() ){
-		parent()->handle_event(Event(Event::LIST_ITEM_SELECTED, this), attr);
-	}
-
-	if ( child() ){
-		child()->set_animation_type(AnimationAttr::PUSH_LEFT);
-		return child();
-	}
-	return this;
 }
 
 
 Element * ListItem::handle_event(const Event  & event, const DrawingAttr & attr){
 
+	if( event.type() == Event::LIST_ITEM_ACTUATED ){
+		if ( child() ){
+			return child();
+		}
+		return parent();
+	}
+
 	if( event.type() == Event::LIST_ITEM_SELECTED ){
-		return item_selected(event, attr);
+		return parent()->handle_event(event, attr);
 	}
 
 	return ElementLinked::handle_event(event, attr);
@@ -174,20 +170,9 @@ Element * ListItemToggle::handle_event(const Event  & event, const DrawingAttr &
 
 ListItemBack::ListItemBack(const sg_icon_t * icon, ElementLinked * parent) : ListItem("Back", icon, parent){
 	icon_attr().set_rotation(IconAttr::LEFT);
-}
-
-Element * ListItemBack::handle_event(const Event  & event, const DrawingAttr & attr){
-	/*
-	switch(event){
-	case RIGHT_HOLD:
-	case CENTER_PRESS:
-		if( parent() && parent()->parent() ){
-			parent()->parent()->set_animation_type(AnimationAttr::PUSH_RIGHT);
-			return parent()->parent();
-		}
+	if( parent ){
+		set_child(parent->parent());
 	}
-	 */
-	return ListItem::handle_event(event, attr);
 }
 
 

@@ -1,4 +1,4 @@
-/* Copyright 2014-2016 Fogo Digital, Inc; All Rights Reserved
+/* Copyright 2014-2016 Tyler Gilbert, Inc; All Rights Reserved
  *
  */
 
@@ -39,11 +39,7 @@ public:
 
 	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
-protected:
-	ElementLinked * item_selected(const Event  & event, const draw::DrawingAttr & attr);
-
 private:
-
 	draw::TextAttr m_text_attr;
 	draw::IconAttr m_icon_attr;
 
@@ -99,7 +95,6 @@ public:
 class ListItemBack : public ListItem {
 public:
 	ListItemBack(const sg_icon_t * icon = 0, ElementLinked * parent = 0);
-	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 };
 
 class ListItemExit : public ListItemBack {

@@ -1,4 +1,4 @@
-/* Copyright 2014-2016 Fogo Digital, Inc; All Rights Reserved
+/* Copyright 2014-2016 Tyler Gilbert, Inc; All Rights Reserved
  *
  */
 
@@ -31,7 +31,6 @@ public:
 
 	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
-	virtual void draw(const draw::DrawingAttr & attr);
 	virtual void draw_to_scale(const draw::DrawingScaledAttr & attr);
 	void draw_item_to_scale(const draw::DrawingScaledAttr & attr, sg_size_t x_offset, list_attr_size_t item);
 
