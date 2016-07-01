@@ -6,12 +6,12 @@
 
 using namespace ui;
 
-ListItemInfo::ListItemInfo(ElementLinked * parent) : ElementLinked(parent) {
+ListItemInfo::ListItemInfo(ElementLinked * parent) : ListItem("Label", 0, parent, 0) {
 	// TODO Auto-generated constructor stub
 	set(0,0);
 }
 
-ListItemInfo::ListItemInfo(const char * l, const char * v, ElementLinked * parent) : ElementLinked(parent) {
+ListItemInfo::ListItemInfo(const char * l, const char * v, ElementLinked * parent) : ListItem(l, 0, parent, 0) {
 	// TODO Auto-generated constructor stub
 	set(l,v);
 }

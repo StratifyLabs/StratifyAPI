@@ -18,5 +18,5 @@ void TabProgress::draw(const DrawingAttr & attr){
 	da = attr;
 	da.set_point(p);
 	da.set_dim(d);
-	progress()->draw(da);
+	progress().draw(da);
 }

@@ -26,16 +26,19 @@ public:
 	void draw_to_scale(const draw::DrawingScaledAttr & attr);
 
 	/*! \details This methods gives read/write access to the icon attributes */
+	draw::IconAttr & icon(){ return m_icon_attr; }
 	draw::IconAttr & icon_attr(){ return m_icon_attr; }
 
 	/*! \details This methods gives read only access to the icon attributes */
+	const draw::IconAttr & icon_const() const { return m_icon_attr; }
 	const draw::IconAttr & icon_attr_const() const { return m_icon_attr; }
 
 	/*! \details This methods gives read/write access to the text label attributes */
+	draw::TextAttr & text(){ return m_text_attr; }
 	draw::TextAttr & text_attr(){ return m_text_attr; }
 
-	/*! \details This methods gives read only access to the text label attributes */
-	const draw::TextAttr & label_attr_const() const { return m_text_attr; }
+	const draw::TextAttr & text_const() const { return m_text_attr; }
+
 
 	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 

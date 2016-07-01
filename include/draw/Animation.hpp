@@ -67,23 +67,19 @@ private:
 	drawing_animation_attr_t m_drawing_attr;
 };
 
-class Animation {
+class Animation : public AnimationAttr {
 public:
 	Animation();
 	void init(Drawing * current,
 			Drawing * target,
 			const DrawingAttr & attr);
 	bool exec(void (*draw)(void*,int,int) = 0, void * obj = 0);
-
 	void update_motion_total();
 
-	AnimationAttr & attr(){ return m_attr; }
-	const AnimationAttr & attr_const() const { return m_attr; }
 
 private:
 	int animate_frame(void (*draw)(void*,int,int), void * obj);
-	sg_animation_t * pattr(){ return m_attr.data(); }
-	AnimationAttr m_attr;
+	sg_animation_t * pattr(){ return data(); }
 	const DrawingAttr * m_drawing_attr;
 
 };

@@ -13,10 +13,10 @@ TabBar::TabBar() {
 	m_bounced = false;
 }
 
-void TabBar::set_animation_type(u8 v){ m_animation.attr().set_type(v); }
-u8 TabBar::animation_type() const { return m_animation.attr().type(); }
-void TabBar::set_animation_path(u8 v){ m_animation.attr().set_path(v); }
-u8 TabBar::animation_path() const { return m_animation.attr().path(); }
+void TabBar::set_animation_type(u8 v){ m_animation.set_type(v); }
+u8 TabBar::animation_type() const { return m_animation.type(); }
+void TabBar::set_animation_path(u8 v){ m_animation.set_path(v); }
+u8 TabBar::animation_path() const { return m_animation.path(); }
 
 Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 	int i;
@@ -33,10 +33,10 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 		break;
 	case Event::ENTER:
 
-		m_animation.attr().set_drawing_start(0,0);
-		m_animation.attr().set_drawing_dim(1000,1000);
-		m_animation.attr().set_step_total(8);
-		m_animation.attr().set_drawing_motion_total(1000);
+		m_animation.set_drawing_start(0,0);
+		m_animation.set_drawing_dim(1000,1000);
+		m_animation.set_step_total(8);
+		m_animation.set_drawing_motion_total(1000);
 
 		//animate the tab bar
 		m_animation.init(0, this, attr);
@@ -164,23 +164,23 @@ void TabBar::scroll(int dir, bool repeat, const DrawingAttr & attr){
 }
 
 void TabBar::set_animate_bounce(int type){
-	m_animation.attr().set_path(AnimationAttr::SQUARED);
-	m_animation.attr().set_type(type);
-	m_animation.attr().set_drawing_motion_total(100);
-	m_animation.attr().set_step_total(4);
+	m_animation.set_path(AnimationAttr::SQUARED);
+	m_animation.set_type(type);
+	m_animation.set_drawing_motion_total(100);
+	m_animation.set_step_total(4);
 	m_bounced = true;
 }
 
 void TabBar::set_animate_push(int type, bool repeat){
 	u8 step_mult = 3;
-	m_animation.attr().set_path(AnimationAttr::SQUARED);
+	m_animation.set_path(AnimationAttr::SQUARED);
 	if( repeat ){
-		m_animation.attr().set_path(AnimationAttr::LINEAR);
+		m_animation.set_path(AnimationAttr::LINEAR);
 		step_mult = 1;
 	}
-	m_animation.attr().set_type(type);
-	m_animation.attr().set_drawing_motion_total(1000);
-	m_animation.attr().set_step_total(3*step_mult);
+	m_animation.set_type(type);
+	m_animation.set_drawing_motion_total(1000);
+	m_animation.set_step_total(3*step_mult);
 }
 
 

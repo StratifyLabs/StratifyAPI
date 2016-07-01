@@ -16,11 +16,15 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_point_t p = attr.p();
 	sg_dim_t d = attr.d();
 
+	if( &(this->icon()) == 0 ){
+		return;
+	}
+
 	Bitmap bitmap(d);
 	bitmap.clear();
 
-	GfxMap map(bitmap, this->attr().pen(), this->attr().rotation());
-	Gfx::draw(bitmap, (this->attr().icon()), map.item(), &m_bounds);
+	GfxMap map(bitmap, this->pen(), this->rotation());
+	Gfx::draw(bitmap, (this->icon()), map.item(), &m_bounds);
 
 	//check for alignment values left/right/top/bottom
 	if( align_top() ){

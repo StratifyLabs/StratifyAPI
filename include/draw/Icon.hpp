@@ -24,11 +24,11 @@ public:
 	};
 
 	/*! \details Construct with no graphic */
-	IconAttr(){ set_value(0, sgfx::Pen()); }
+	IconAttr(){ set_attr((const sg_icon_t*)0, sgfx::Pen()); }
 
 	/*! \details Construct by setting the graphic, thickness, and rotation */
 	IconAttr(const sg_icon_t * icon, u8 thickness = 3, i16 rotation = 0){
-		set_value(icon, thickness, rotation);
+		set_attr(icon, thickness, rotation);
 	}
 
 
@@ -45,12 +45,12 @@ public:
 	};
 
 	/*! \details Set the graphic, thickness, and rotation */
-	void set_value(const sg_icon_t * icon, const sgfx::Pen & pen, i16 rotation = 0){
+	void set_attr(const sg_icon_t * icon, const sgfx::Pen & pen, i16 rotation = 0){
 		m_icon = icon; m_rotation = rotation; m_pen = pen;
 	}
 
 	/*! \details Set the graphic, thickness, and rotation */
-	void set_value(int system_icon, const sgfx::Pen & pen, i16 rotation = 0){
+	void set_attr(int system_icon, const sgfx::Pen & pen, i16 rotation = 0){
 		m_icon = get_system_icon(system_icon); m_rotation = rotation; m_pen = pen;
 	}
 
@@ -78,18 +78,14 @@ private:
 	s16 m_rotation;
 };
 
-/*! \brief Gfx Class
- * \ingroup element
- * \details This class draws scalable graphics that can be rotated on the screen.
+/*! \brief Icon Class
+ * \details This class draws icons that can be scaled and rotated on a bitmap.
  */
 
-class Icon : public Drawing {
+class Icon : public Drawing, public IconAttr {
 public:
 	/*! \details Construct an empty graphic */
 	Icon();
-
-	/*! \details Access a reference to the attributes */
-	IconAttr & attr(){ return m_attr; }
 
 	/*! \details Draws the graphic to scale on the specified bitmap */
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);
@@ -102,7 +98,6 @@ public:
 	sg_bounds_t & bounds(){ return m_bounds; }
 
 private:
-	IconAttr m_attr;
 	sg_bounds_t m_bounds;
 
 };

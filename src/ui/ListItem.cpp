@@ -10,7 +10,7 @@ using namespace ui;
 
 ListItem::ListItem(const char * label, const sg_icon_t * icon, ElementLinked * parent, ElementLinked * child) : ElementLinked(parent, child){
 	m_text_attr.assign(label);
-	icon_attr().set_value(icon, Pen(), 0);
+	icon_attr().set_attr(icon, Pen(), 0);
 	set_animation_type(AnimationAttr::PUSH_LEFT);
 }
 

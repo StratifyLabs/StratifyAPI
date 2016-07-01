@@ -18,7 +18,6 @@ public:
 	TabIcon();
 	virtual void draw(const draw::DrawingAttr & attr);
 	draw::Icon & icon(){ return m_icon; }
-	draw::IconAttr & attr(){ return m_icon.attr(); }
 
 private:
 	draw::Icon m_icon;

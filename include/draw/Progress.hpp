@@ -21,7 +21,7 @@ typedef struct MCU_PACK {
 class ProgressAttr {
 public:
 	ProgressAttr(){ memset(&m_progress, 0, sizeof(progress_t)); }
-	ProgressAttr(u16 value, u16 max){ set(value, max); }
+	ProgressAttr(u16 value, u16 max){ set_attr(value, max); }
 
 	/*! \details The progress value */
 	u16 value() const { return m_progress.value; }
@@ -35,12 +35,12 @@ public:
 	void set_max(u16 max){ m_progress.max = max; }
 
 	/*! \details Set both the value and the max */
-	void set(u16 value, u16 max){ set_value(value); set_max(max); }
+	void set_attr(u16 value, u16 max){ set_value(value); set_max(max); }
 
-	void set(const ProgressAttr * progress){ set(progress->value(), progress->max()); }
-	void set(const ProgressAttr & progress){ set(&progress); }
-	void set(const progress_t * progress){ m_progress = *progress; }
-	void set(const progress_t & progress){ m_progress = progress; }
+	operator progress_t(){ return m_progress; }
+
+	void set_attr(const progress_t * progress){ m_progress = *progress; }
+	void set_attr(const progress_t & progress){ m_progress = progress; }
 
 private:
 	progress_t m_progress;
@@ -50,24 +50,12 @@ private:
  * \ingroup element
  * \details The Progress Class defines the top level object for progress bars etc.
  */
-class Progress : public Drawing {
+class Progress : public Drawing, public ProgressAttr {
 public:
 	Progress(){}
 
-	ProgressAttr & progress(){ return m_progress; }
-
-	/*! \details Access the progress attributes */
-	ProgressAttr & attr(){ return m_progress; }
-
-	/*! \details Shortcut to access attribute value */
-	u16 value() const { return m_progress.value(); }
-
-	/*! \details Shortcut to access attribute max */
-	u16 max() const { return m_progress.max(); }
-
-
 protected:
-	ProgressAttr m_progress;
+
 };
 
 };

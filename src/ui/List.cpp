@@ -10,7 +10,7 @@ using namespace ui;
 List::List(ElementLinked * parent) : ElementLinked(parent) {
 	set_scroll_visible();
 	set_animation_type(AnimationAttr::PUSH_LEFT);
-	m_scroll_animation.attr().set_drawing_motion_total(1000/visible_items());
+	m_scroll_animation.set_drawing_motion_total(1000/visible_items());
 	m_draw_animation_item = 0;
 	m_draw_animation_offset = 0;
 	m_select_top_bottom = 0;
@@ -94,7 +94,7 @@ void List::animate_scroll(i8 dir, const DrawingAttr & attr){
 	type = AnimationAttr::NONE;
 
 	if( item < size() ){
-		m_scroll_animation.attr().set_drawing_motion_total(scale()/visible_items());
+		m_scroll_animation.set_drawing_motion_total(scale()/visible_items());
 		if( dir < 0 ){
 			m_draw_animation_offset = visible_items() - 1;
 		} else {
@@ -109,29 +109,29 @@ void List::animate_scroll(i8 dir, const DrawingAttr & attr){
 		}
 
 		if( m_scroll_timer.msec() < 250 ){
-			m_scroll_animation.attr().set_step_total(6);
-			m_scroll_animation.attr().set_path(AnimationAttr::LINEAR);
+			m_scroll_animation.set_step_total(6);
+			m_scroll_animation.set_path(AnimationAttr::LINEAR);
 		} else {
-			m_scroll_animation.attr().set_step_total(10);
-			m_scroll_animation.attr().set_path(AnimationAttr::SQUARED_UNDO);
+			m_scroll_animation.set_step_total(10);
+			m_scroll_animation.set_path(AnimationAttr::SQUARED_UNDO);
 		}
 	} else if( (selected() == 0) && (dir < 0) ){
-		m_scroll_animation.attr().set_path(AnimationAttr::SQUARED);
-		m_scroll_animation.attr().set_step_total(6);
-		m_scroll_animation.attr().set_drawing_motion_total((scale()/3)/visible_items());
+		m_scroll_animation.set_path(AnimationAttr::SQUARED);
+		m_scroll_animation.set_step_total(6);
+		m_scroll_animation.set_drawing_motion_total((scale()/3)/visible_items());
 		type = AnimationAttr::BOUNCE_UP;
 		dir = 0;
 	} else if( (selected() == (size()-1)) && (dir > 0)){
-		m_scroll_animation.attr().set_path(AnimationAttr::SQUARED);
-		m_scroll_animation.attr().set_step_total(6);
-		m_scroll_animation.attr().set_drawing_motion_total((scale()/3)/visible_items());
+		m_scroll_animation.set_path(AnimationAttr::SQUARED);
+		m_scroll_animation.set_step_total(6);
+		m_scroll_animation.set_drawing_motion_total((scale()/3)/visible_items());
 		type = AnimationAttr::BOUNCE_DOWN;
 		dir = 0;
 	}
 
 	if( type != AnimationAttr::NONE ){
 
-		m_scroll_animation.attr().set_type(type);
+		m_scroll_animation.set_type(type);
 		m_select_top_bottom = dir;
 		m_scroll_animation.init(this, 0, attr);
 
