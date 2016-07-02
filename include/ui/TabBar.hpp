@@ -20,9 +20,19 @@ namespace ui {
  */
 class TabBar : public Element, public ListAttr {
 public:
+
+	/*! \details Tab Bar construction */
 	TabBar();
 
+	/*! \details Access the height of the tab bar as a ratio to Drawing::scale() */
 	sg_size_t h() const { return m_height; }
+
+	/*! \details Set the height of the tab bar where Drawing::scale() height will set the height
+	 * to fill the entire screen.
+	 *
+	 * @param h Height of the tab bar as a ratio to Drawing::scale()
+	 *
+	 */
 	void set_height(sg_size_t h){ m_height = h; }
 
 	sg_size_t highlight() const { return m_highlight; }
@@ -31,8 +41,15 @@ public:
 	Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 	void draw(const draw::DrawingAttr & attr);
 
-	//Return a point to the Tab at \a i
-	virtual Tab * at(list_attr_size_t i) = 0;
+	/*! \details This method access a refernence
+	 * to the tab at the specified offset.  This
+	 * method must be implemented by a class that inherits
+	 * ui::TabBar.
+	 *
+	 * @param i The offset of the tab to access
+	 * @return A reference to the tab at the specified offset.
+	 */
+	virtual Tab & at(list_attr_size_t i) = 0;
 
 	void set_animation_type(u8 v);
 	u8 animation_type() const;

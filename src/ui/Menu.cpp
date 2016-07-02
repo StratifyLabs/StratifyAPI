@@ -18,7 +18,7 @@ Menu::Menu() {
 	animation.set_drawing_start(0,0);
 }
 
-void Menu::set_animation_type(u8 v){ current()->set_animation_type(v); }
+void Menu::set_animation_type(u8 v){ m_current->set_animation_type(v); }
 u8 Menu::animation_type() const{ return m_current->animation_type(); }
 
 
@@ -33,40 +33,43 @@ Element * Menu::handle_event(const Event & event, const DrawingAttr & attr){
 
 
 	case Event::MENU_BACK:
-		next = current()->parent();
+		next = current().parent();
 		if( next ){
 			//start the animation to the left
 			animation.set_type(AnimationAttr::PUSH_RIGHT);
 			animation.init(0, next, attr);
 			animation.exec();
-			set_current(next);
-			current()->handle_event(Event(Event::ENTER), attr);
+			set_current(*next);
+			current().handle_event(Event(Event::ENTER), attr);
 			return this;
+		} else {
+			//if there is no parent, then let the list handle the menu back event
+			current().handle_event(event, attr);
 		}
 		break;
 
 	case Event::LIST_ACTUATE:
-		next = current()->handle_event(event, attr);
-		if( next && (next != current()) ){
+		next = current().handle_event(event, attr);
+		if( next && (next != m_current) ){
 			type = ((ElementLinked*)next)->animation_type();
 			animation.set_type( type );
 			animation.init(0, next, attr);
 			animation.exec();
-			set_current(next);
-			current()->handle_event(Event(Event::ENTER), attr);
+			set_current(*next);
+			current().handle_event(Event(Event::ENTER), attr);
 		}
 		return this;
 
 	case Event::ENTER:
-		type = current()->animation_type();
+		type = current().animation_type();
 		animation.set_type( type );
-		animation.init(0, current(), attr);
+		animation.init(0, m_current, attr);
 		animation.exec();
 		break;
 	}
 
-	if( current() ){
-		current()->handle_event(event, attr);
+	if( m_current ){
+		current().handle_event(event, attr);
 	}
 
 	return this;
@@ -74,8 +77,8 @@ Element * Menu::handle_event(const Event & event, const DrawingAttr & attr){
 }
 
 void Menu::draw(const DrawingAttr & attr){
-	if( current() == 0 ){
+	if( m_current == 0 ){
 		return Element::draw(attr);
 	}
-	return current()->draw(attr);
+	return current().draw(attr);
 }

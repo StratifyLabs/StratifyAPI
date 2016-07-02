@@ -9,8 +9,21 @@
 
 namespace ui {
 
+/*! \brief Menu Class
+ * \details This class implements a menu with navigation
+ * to the left and right including animations (if supported by the system).
+ *
+ * You must provide another ui::ElementLinked object to be the starting element.
+ * Menu::handle_event() handles these events to navigate between linked elements:
+ * - Event::LIST_ACTUATE
+ * - Event::MENU_BACK
+ *
+ *
+ */
 class Menu : public ElementLinked {
 public:
+
+	/*! \details Construct a new Menu object */
 	Menu();
 
 	virtual Element * handle_event(const Event & event, const draw::DrawingAttr & attr);
@@ -20,8 +33,11 @@ public:
 	virtual u8 animation_type() const;
 
 
-	ElementLinked * current(){ return m_current; }
-	void set_current(Element * v){ m_current = (ElementLinked*)v; }
+	/*! \details Access a reference to the current element */
+	ElementLinked & current(){ return *m_current; }
+
+	/*! \details Set the reference of the current element */
+	void set_current(Element & v){ m_current = (ElementLinked*)&v; }
 
 private:
 

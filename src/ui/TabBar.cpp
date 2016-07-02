@@ -28,7 +28,7 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 	default: break;
 	case Event::SETUP:
 		for(i=0; i < size(); i++){
-			at(i)->element()->handle_event(event, view_attr);
+			at(i).element()->handle_event(event, view_attr);
 		}
 		break;
 	case Event::ENTER:
@@ -42,7 +42,7 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 		m_animation.init(0, this, attr);
 		m_animation.exec();
 
-		at(selected())->element()->handle_event(event, view_attr);
+		at(selected()).element()->handle_event(event, view_attr);
 		return this;
 
 	case Event::BUTTON_HOLD:
@@ -51,13 +51,13 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 			switch(event.button()->event_id()){
 			default: break;
 			case Event::RIGHT_BUTTON:
-				at(selected())->element()->handle_event(event, view_attr);
+				at(selected()).element()->handle_event(event, view_attr);
 				scroll(1, false, view_attr);
 				draw_tab_bar(tab_attr, selected());
 				break;
 
 			case Event::LEFT_BUTTON:
-				at(selected())->element()->handle_event(event, view_attr);
+				at(selected()).element()->handle_event(event, view_attr);
 				scroll(-1, false, view_attr);
 				draw_tab_bar(tab_attr, selected());
 				break;
@@ -108,7 +108,7 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 
 	}
 
-	if( at(selected())->element()->handle_event(event, view_attr) > 0 ){
+	if( at(selected()).element()->handle_event(event, view_attr) > 0 ){
 		return this;
 	}
 
@@ -116,7 +116,7 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 }
 
 void TabBar::scroll(int dir, bool repeat, const DrawingAttr & attr){
-	Tab * t = at(selected());
+	Tab * t = &at(selected());
 	Element * current;
 	current = t->element();
 	u8 next_selected;
@@ -126,7 +126,7 @@ void TabBar::scroll(int dir, bool repeat, const DrawingAttr & attr){
 	if( dir > 0 ){
 		if( selected() < size() - 1 ){
 			next_selected = selected() + 1;
-			t = at(next_selected);
+			t = &at(next_selected);
 			if( current != t->element() ){
 				t->element()->handle_event(Event(Event::ENTER), attr);
 				set_animate_push(AnimationAttr::PUSH_LEFT, repeat);
@@ -140,7 +140,7 @@ void TabBar::scroll(int dir, bool repeat, const DrawingAttr & attr){
 	} else {
 		if( selected() ){
 			next_selected = selected() - 1;
-			t = at(next_selected);
+			t = &at(next_selected);
 			if( current != t->element() ){
 				t->element()->handle_event(Event(Event::ENTER), attr);
 				set_animate_push(AnimationAttr::PUSH_RIGHT, repeat);
@@ -187,7 +187,7 @@ void TabBar::set_animate_push(int type, bool repeat){
 void TabBar::draw(const DrawingAttr & attr){
 	Tab * t;
 
-	t = at(selected());
+	t = &at(selected());
 
 	if( visible() ){
 		t->element()->draw(attr + drawing_point(0, h()) + drawing_dim(1000, 1000-h()));
@@ -218,7 +218,7 @@ void TabBar::draw_tab_bar(const DrawingAttr & attr, int selected){
 	//draw the tabs
 	for(tabs = 0; tabs < visible_items(); tabs++){
 		offset_tab = tabs+offset;
-		t = at(offset_tab);
+		t = &at(offset_tab);
 		t->draw(attr + drawing_point(tab_width * tabs, 0) + drawing_dim(tab_width, 800));
 	}
 

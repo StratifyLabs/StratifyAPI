@@ -19,6 +19,11 @@ public:
 	TabProgress();
 	virtual void draw(const draw::DrawingAttr & attr);
 
+	/*! \details This method gives access to the draw::Progress
+	 * object so that the user can set the attributes of the progress.
+	 *
+	 * @return A reference to the draw::Progress object.
+	 */
 	virtual draw::Progress & progress() = 0;
 
 };
@@ -28,6 +33,8 @@ public:
  */
 class TabProgressArc : public TabProgress {
 public:
+
+	/*! \details Construct a progress arc tab */
 	TabProgressArc(){}
 	draw::Progress & progress(){ return m_progress; }
 private:
@@ -39,6 +46,7 @@ private:
  */
 class TabProgressCircle : public TabProgress {
 public:
+	/*! \details Construct a progress circle tab */
 	TabProgressCircle(){}
 	draw::Progress & progress(){ return m_progress; }
 private:

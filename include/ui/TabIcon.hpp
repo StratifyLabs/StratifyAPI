@@ -15,8 +15,11 @@ namespace ui {
  */
 class TabIcon : public Tab {
 public:
+	/*! \details Construct an icon tab */
 	TabIcon();
 	virtual void draw(const draw::DrawingAttr & attr);
+
+	/*! \details This method accesses the draw::Icon object that is drawn on the tab */
 	draw::Icon & icon(){ return m_icon; }
 
 private:
