@@ -33,8 +33,8 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 		break;
 	case Event::ENTER:
 
-		m_animation.set_drawing_start(0,0);
-		m_animation.set_drawing_dim(1000,1000);
+		//m_animation.set_drawing_start(0,0);
+		//m_animation.set_drawing_dim(1000,1000);
 		m_animation.set_step_total(8);
 		m_animation.set_drawing_motion_total(1000);
 
@@ -45,72 +45,29 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 		at(selected()).element()->handle_event(event, view_attr);
 		return this;
 
-	case Event::BUTTON_HOLD:
-
-		if(1){
-			switch(event.button()->event_id()){
-			default: break;
-			case Event::RIGHT_BUTTON:
-				at(selected()).element()->handle_event(event, view_attr);
-				scroll(1, false, view_attr);
-				draw_tab_bar(tab_attr, selected());
-				break;
-
-			case Event::LEFT_BUTTON:
-				at(selected()).element()->handle_event(event, view_attr);
-				scroll(-1, false, view_attr);
-				draw_tab_bar(tab_attr, selected());
-				break;
-			}
-		}
+	case Event::TAB_LEFT:
+		at(selected()).element()->handle_event(event, view_attr);
+		scroll(-1, false, view_attr);
+		draw_tab_bar(tab_attr, selected());
 		return this;
-	case Event::BUTTON_PRESSED:
-		if(1){
-			switch(event.button()->event_id()){
-			default: break;
-			case Event::RIGHT_BUTTON:
-				m_right_timer.restart();
-				break;
 
-			case Event::LEFT_BUTTON:
-				m_left_timer.restart();
-				break;
-			}
-		}
-		break;
-
-	case Event::BUTTON_RELEASED:
-		if(1){
-			switch(event.button()->event_id()){
-			default: break;
-			case Event::RIGHT_BUTTON:
-				m_right_timer.reset();
-				break;
-
-			case Event::LEFT_BUTTON:
-				m_left_timer.reset();
-				break;
-			}
-		}
-		break;
-
-	case Event::UPDATE:
-		if( m_right_timer.is_running() && (m_right_timer.msec() > Button::held_duration()*3) ){
-			scroll(1, true, view_attr);
-			draw_tab_bar(tab_attr, selected());
-			return this;
-		} else if( m_left_timer.is_running() && m_left_timer.msec() > Button::held_duration()*3 ){
-			scroll(-1, true, view_attr);
-			draw_tab_bar(tab_attr, selected());
-			return this;
-		}
-		break;
-
+	case Event::TAB_RIGHT:
+		at(selected()).element()->handle_event(event, view_attr);
+		scroll(1, false, view_attr);
+		draw_tab_bar(tab_attr, selected());
+		return this;
 	}
 
 	if( at(selected()).element()->handle_event(event, view_attr) > 0 ){
+
+		if( at(selected()).element()->is_redraw_pending() ){
+			draw_tab_bar(tab_attr, selected());
+		}
+
 		return this;
 	}
+
+
 
 	return 0;
 }
@@ -194,8 +151,8 @@ void TabBar::draw(const DrawingAttr & attr){
 		draw_tab_bar(attr + drawing_dim(1000, h()), selected());
 	} else {
 		t->element()->draw(attr);
+		set_redraw_pending();
 	}
-	set_redraw_pending();
 }
 
 
@@ -221,8 +178,6 @@ void TabBar::draw_tab_bar(const DrawingAttr & attr, int selected){
 		t = &at(offset_tab);
 		t->draw(attr + drawing_point(tab_width * tabs, 0) + drawing_dim(tab_width, 800));
 	}
-
-
 
 	Drawing::set(attr + drawing_point(tab_width*(selected - offset) + tab_width/4, 1000 - highlight()) + drawing_dim(tab_width/2, highlight()));
 

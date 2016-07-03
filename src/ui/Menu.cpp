@@ -14,8 +14,6 @@ Menu::Menu() {
 	animation.set_type(AnimationAttr::PUSH_LEFT);
 	animation.set_path(AnimationAttr::SQUARED);
 	animation.set_drawing_motion_total(1000);
-	animation.set_drawing_dim(1000, 1000);
-	animation.set_drawing_start(0,0);
 }
 
 void Menu::set_animation_type(u8 v){ m_current->set_animation_type(v); }

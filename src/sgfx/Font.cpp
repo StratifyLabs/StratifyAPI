@@ -25,7 +25,7 @@ int Font::to_charset(char ascii){
 
 
 Font::Font() {
-	m_bitmap = 0;
+	//m_bitmap = 0;
 	m_offset = 0;
 	m_space_size = 8;
 	m_letter_spacing = 1;

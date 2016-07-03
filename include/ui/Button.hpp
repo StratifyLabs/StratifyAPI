@@ -54,6 +54,8 @@ public:
 	virtual bool get_held(u32 msec);
 	virtual void update();
 
+	virtual void reset();
+
 protected:
 
 	virtual bool get_is_active() const = 0;

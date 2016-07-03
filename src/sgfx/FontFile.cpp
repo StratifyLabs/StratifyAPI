@@ -13,15 +13,11 @@ FontFile::FontFile() {
 
 FontFile::FontFile(const char * name, int offset) {
 	// TODO Auto-generated constructor stub
-	m_bitmap = 0;
 	m_kerning_pairs = 0;
 	set_file(name, offset);
 }
 
 FontFile::~FontFile(){
-	if( m_bitmap != 0 ){
-		delete m_bitmap;
-	}
 	if( m_kerning_pairs != 0 ){
 		free(m_kerning_pairs);
 	}
@@ -30,10 +26,6 @@ FontFile::~FontFile(){
 
 int FontFile::set_file(const char * name, int offset){
 	size_t pair_size;
-
-	if( m_bitmap != 0 ){
-		delete m_bitmap;
-	}
 
 	if( m_kerning_pairs ){
 		free(m_kerning_pairs);
@@ -51,7 +43,8 @@ int FontFile::set_file(const char * name, int offset){
 		return -1;
 	}
 
-	m_bitmap = new Bitmap(m_hdr.max_byte_width*8, m_hdr.max_height);
+	m_bitmap.free();
+	m_bitmap.alloc(m_hdr.max_byte_width*8, m_hdr.max_height);
 	m_offset = offset;
 
 	pair_size = sizeof(sg_font_kerning_pair_t)*m_hdr.kerning_pairs;
@@ -72,11 +65,9 @@ int FontFile::set_file(const char * name, int offset){
 u16 FontFile::get_h() const { return m_hdr.max_height; }
 
 const Bitmap & FontFile::bitmap(char c, bool ascii) const {
-
 	//load bitmap
 	load_bitmap(m_char);
-
-	return *m_bitmap;
+	return m_bitmap;
 }
 
 int FontFile::load_char(sg_font_char_t & ch, char c, bool ascii) const {
@@ -117,9 +108,9 @@ int FontFile::load_bitmap(const sg_font_char_t & ch) const {
 	int s;
 	//calculate number of bytes to read
 	s = Bitmap::calc_size(ch.width, ch.height);
-	if( m_file.read(ch.offset + m_offset, m_bitmap->data(), s) != s ){
+	if( m_file.read(ch.offset + m_offset, m_bitmap.data(), s) != s ){
 		return -1;
 	}
-	m_bitmap->set_size(ch.width, ch.height);
+	m_bitmap.set_size(ch.width, ch.height);
 	return 0;
 }

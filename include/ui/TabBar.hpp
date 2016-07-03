@@ -50,6 +50,7 @@ public:
 	 * @return A reference to the tab at the specified offset.
 	 */
 	virtual Tab & at(list_attr_size_t i) = 0;
+	Tab & current(){ return at(selected()); }
 
 	void set_animation_type(u8 v);
 	u8 animation_type() const;
@@ -74,11 +75,6 @@ private:
 	sg_size_t tab_selected_offset();
 	void set_animate_bounce(int type);
 	void set_animate_push(int type, bool repeat);
-
-	sys::Timer m_left_timer;
-	sys::Timer m_right_timer;
-
-	int animate_frame(sgfx::Bitmap * bitmap, sg_animation_t * animation);
 
 };
 

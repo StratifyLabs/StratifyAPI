@@ -9,9 +9,14 @@ u32 Button::m_held_duration = 800;
 
 Button::Button(){
 	m_event_id = Event::NO_BUTTON;
+	reset();
+}
+
+void Button::reset(){
 	m_flags.press_reported = false;
 	m_flags.release_reported = true;
 	m_flags.held_reported = false;
+	m_timer.reset();
 }
 
 Event Button::event(){

@@ -43,12 +43,6 @@ typedef struct MCU_PACK {
 	sgfx::Bitmap * scratch /*! A pointer to the scratch bitmap used for animations (0 if not available) */;
 } drawing_attr_t;
 
-typedef struct MCU_PACK {
-	drawing_point_t start /*! \brief Animation start point */;
-	drawing_dim_t dim /*! \brief Animate within these dimensions with start in the top left corner */;
-	drawing_size_t motion_total /*! \brief Total amount of animation movement */;
-} drawing_animation_attr_t;
-
 
 /*! \brief Attributes for drawing directly on a bitmap using bitmap coordinates */
 typedef struct MCU_PACK {

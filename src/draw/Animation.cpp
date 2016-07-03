@@ -9,11 +9,7 @@ AnimationAttr::AnimationAttr(){
 	attr().path.type = SQUARED;
 	attr().path.step_total = 10;
 	attr().path.motion_total = 100;
-	m_drawing_attr.dim.w = 1000;
-	m_drawing_attr.dim.h = 1000;
-	m_drawing_attr.start.x = 0;
-	m_drawing_attr.start.y = 0;
-	m_drawing_attr.motion_total = 1000;
+	m_drawing_motion_total = 1000;
 }
 
 Animation::Animation() {
@@ -30,13 +26,13 @@ void Animation::init(Drawing * current,
 
 	if( current != 0 ){
 		m_drawing_attr->bitmap().wait(1000);
-		current->draw(*m_drawing_attr);
+		current->draw(drawing_attr);
 		m_drawing_attr->bitmap().refresh();
 	}
 
 	//draw target on animation screen
 	if( target != 0 ){
-		target->draw_scratch(*m_drawing_attr);
+		target->draw_scratch(drawing_attr);
 	}
 
 	update_motion_total();
@@ -88,7 +84,6 @@ void Animation::update_motion_total(){
 
 bool Animation::exec(void (*draw)(void *, int, int), void * obj){
 	m_drawing_attr->bitmap().wait(1000);
-
 	while(animate_frame(draw, obj) > 0){
 		;
 	}

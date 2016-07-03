@@ -28,6 +28,7 @@ protected:
 
 private:
 	mutable sys::File m_file;
+	mutable Bitmap m_bitmap;
 	sg_font_kerning_pair_t * m_kerning_pairs;
 
 };

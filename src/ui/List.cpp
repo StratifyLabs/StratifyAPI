@@ -19,7 +19,7 @@ List::List(ElementLinked * parent) : ElementLinked(parent) {
 void List::draw_item_to_scale(const DrawingScaledAttr & attr, sg_size_t x_offset, list_attr_size_t item){
 	sg_point_t p = attr.p();
 	sg_dim_t d = attr.d();
-	at(item)->draw_to_scale(attr);
+	at(item).draw_to_scale(attr);
 	attr.bitmap().set_hline(p.x - x_offset, p.x + d.w + x_offset, p.y);
 	attr.bitmap().set_hline(p.x - x_offset, p.x + d.w + x_offset, p.y + d.h -1);
 }
@@ -109,10 +109,10 @@ void List::animate_scroll(i8 dir, const DrawingAttr & attr){
 		}
 
 		if( m_scroll_timer.msec() < 250 ){
-			m_scroll_animation.set_step_total(6);
+			m_scroll_animation.set_step_total(4);
 			m_scroll_animation.set_path(AnimationAttr::LINEAR);
 		} else {
-			m_scroll_animation.set_step_total(10);
+			m_scroll_animation.set_step_total(6);
 			m_scroll_animation.set_path(AnimationAttr::SQUARED_UNDO);
 		}
 	} else if( (selected() == 0) && (dir < 0) ){
@@ -132,11 +132,11 @@ void List::animate_scroll(i8 dir, const DrawingAttr & attr){
 	if( type != AnimationAttr::NONE ){
 
 		m_scroll_animation.set_type(type);
-		m_select_top_bottom = dir;
+		m_select_top_bottom = dir; //select the next item as highlighted when drawing the animation
 		m_scroll_animation.init(this, 0, attr);
 
 		m_select_top_bottom = 0;
-		m_draw_animation_item = item;
+		m_draw_animation_item = item; //this will cause draw to draw the item which will be new on the list
 		m_scroll_animation.init(0, this, attr);
 		m_scroll_animation.exec();
 
@@ -152,7 +152,7 @@ void List::handle_down_button_actuation(const Event  & event, const DrawingAttr 
 	animate_scroll(1, attr);
 	if( selected() < size() - 1){
 		inc_selected();
-		current()->handle_event(Event(Event::LIST_ITEM_SELECTED, current()), attr);
+		current().handle_event(Event(Event::LIST_ITEM_SELECTED, &current()), attr);
 	}
 	draw(attr);
 }
@@ -161,13 +161,13 @@ void List::handle_up_button_actuation(const Event  & event, const DrawingAttr & 
 	animate_scroll(-1, attr);
 	if( selected() > 0 ){
 		dec_selected();
-		current()->handle_event(Event(Event::LIST_ITEM_SELECTED, current()), attr);
+		current().handle_event(Event(Event::LIST_ITEM_SELECTED, &current()), attr);
 	}
 	draw(attr);
 }
 
 void List::handle_select_button_actuation(const Event  & event, const DrawingAttr & attr){
-	current()->handle_event(event, attr);
+	current().handle_event(event, attr);
 }
 
 
@@ -179,12 +179,12 @@ Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 		m_draw_animation_item = size();
 		//setup all the items in the list
 		for(i=0; i < size(); i++){
-			at(i)->handle_event(event, attr);
+			at(i).handle_event(event, attr);
 		}
 		return this;
 
 	case Event::LIST_ACTUATE:
-		return current()->handle_event(Event(Event::LIST_ITEM_ACTUATED), attr);
+		return current().handle_event(Event(Event::LIST_ITEM_ACTUATED), attr);
 
 	case Event::LIST_UP:
 		handle_up_button_actuation(event, attr);
@@ -195,7 +195,7 @@ Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 		break;
 
 	case Event::ENTER:
-		current()->handle_event(event, attr);
+		current().handle_event(event, attr);
 		break;
 	}
 	return ElementLinked::handle_event(event, attr);

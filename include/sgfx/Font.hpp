@@ -89,7 +89,6 @@ protected:
 	virtual int load_bitmap(const sg_font_char_t & ch) const = 0;
 	virtual int load_kerning(u16 first, u16 second) const { return 0; }
 
-	mutable Bitmap * m_bitmap;
 	mutable int m_offset;
 	mutable sg_font_char_t m_char;
 

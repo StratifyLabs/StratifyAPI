@@ -24,10 +24,10 @@ public:
 	List(ElementLinked * parent = 0);
 
 	/*! \details Return a points to item \a i in the list */
-	virtual ElementLinked * at(list_attr_size_t i) = 0;
+	virtual ElementLinked & at(list_attr_size_t i) = 0;
 
 	/*! \details Return a pointer to the currently selected item */
-	inline ElementLinked * current(){ return at(selected()); }
+	inline ElementLinked & current(){ return at(selected()); }
 
 	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 

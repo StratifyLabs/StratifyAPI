@@ -25,29 +25,24 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 	int height;
 	sg_point_t icon_point;
 	sg_size_t icon_height;
+	Font * font;
 
 	//draw the label and the icon
 	Dim padded;
-
-	if( &(icon_attr().icon()) == 0 ){
-		return;
-	}
-
 	icon_height = d.h()/2;
-
 	Bitmap icon_bitmap(icon_height, icon_height);
-	icon_bitmap.clear();
 
-	Font * font;
-
-	GfxMap map(icon_bitmap, icon_attr().pen(), icon_attr().rotation());
-
-	Gfx::draw(icon_bitmap,
-			icon_attr_const().icon(),
-			map,
-			&bounds);
-
-	icon_dim = sg_draw_attr_dim(&bounds);
+	if( &(icon_attr().icon()) != 0 ){
+		icon_bitmap.clear();
+		GfxMap map(icon_bitmap, icon_attr().pen(), icon_attr().rotation());
+		Gfx::draw(icon_bitmap,
+				icon_attr_const().icon(),
+				map,
+				&bounds);
+		icon_dim = sg_draw_attr_dim(&bounds);
+	} else {
+		icon_dim.dim = 0;
+	}
 
 	padded.set_value(d.w() - icon_dim.w, d.h()*80/100 );
 
@@ -67,9 +62,9 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 		icon_point.y = p.y;
 	} else if( align_bottom() ){
 		p.y = d.h() - height;
-		icon_point.y = d.h() - icon_bitmap.h();
+		icon_point.y = d.h() - icon_dim.h;
 	} else {
-		icon_point.y = p.y + d.h()/2 - icon_bitmap.h()/2;
+		icon_point.y = p.y + d.h()/2 - icon_dim.h/2;
 		p.y = p.y + d.h()/2 - height/2;
 	}
 
@@ -98,14 +93,17 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 
 Element * ListItem::handle_event(const Event  & event, const DrawingAttr & attr){
 
-	if( event.type() == Event::LIST_ITEM_ACTUATED ){
+	if( event.type() == Event::SETUP ){
+		if( child() ){
+			child()->set_parent(parent());
+		}
+	} else if( event.type() == Event::LIST_ITEM_ACTUATED ){
 		if ( child() ){
+			child()->set_animation_type(AnimationAttr::PUSH_LEFT);
 			return child();
 		}
 		return parent();
-	}
-
-	if( event.type() == Event::LIST_ITEM_SELECTED ){
+	} else if( event.type() == Event::LIST_ITEM_SELECTED ){
 		return parent()->handle_event(event, attr);
 	}
 
@@ -184,7 +182,7 @@ ListItemExit::ListItemExit(const sg_icon_t * icon, ElementLinked * parent) : Lis
 
 
 ListItemCheck::ListItemCheck(const char * label, List * parent) :
-												ListItem(label, 0, parent){
+																ListItem(label, 0, parent){
 	set_enabled(false);
 }
 
@@ -193,8 +191,8 @@ ListDir::ListDir(const char * path,
 		const sg_icon_t * icon,
 		ElementLinked * parent,
 		ElementLinked * child) :
-								List(parent),
-								m_item("TBD", icon, this, child) {
+												List(parent),
+												m_item("TBD", icon, this, child) {
 	set_path(path);
 }
 
@@ -202,7 +200,7 @@ ListDir::~ListDir(){
 	m_dir.close();
 }
 
-ElementLinked * ListDir::at(list_attr_size_t i){
+ElementLinked & ListDir::at(list_attr_size_t i){
 	m_dir.rewind();
 	size_t j;
 	j=0;
@@ -227,7 +225,7 @@ ElementLinked * ListDir::at(list_attr_size_t i){
 
 	m_item.text_attr().assign(m_dir.name());
 
-	return &m_item;
+	return m_item;
 }
 
 

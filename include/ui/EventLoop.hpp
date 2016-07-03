@@ -62,30 +62,41 @@ public:
 	u16 refresh_wait_resolution() const { return m_attr.refresh_wait_resolution; }
 	void set_refresh_wait_resolution(u16 v){ m_attr.refresh_wait_resolution = v; }
 
-private:
+protected:
 	event_loop_attr_t m_attr;
 };
 
 /*! \brief Event Loop Class
  * \details This class processes events.
  */
-class EventLoop {
+class EventLoop: public EventLoopAttr {
 public:
 
 	/*! \details Construct a new Event loop */
 	EventLoop(ui::Element & start_element, sgfx::Bitmap & bitmap, sgfx::Bitmap * scratch = 0);
 
-	/*! \details Run the event loop */
-	virtual void run();
+
+	/*! \details Execute the event loop */
+	virtual void execute();
+
+	/*! \details This is called just before the loop starts executing.
+	 * This method will send the Event::SETUP and Event::ENTER events
+	 * to the primary element.
+	 */
+	virtual void start();
+
+	/*! \details This method will loop while the current element is valid.
+	 * It handles sending events to the active element.  Event::UPDATE
+	 * is sent based on upate_period().  Whenever the active element
+	 * changes, Event::ENTER is sent to the new element.
+	 */
+	virtual void loop();
 
 	/*! \details Access the current element */
 	Element * current_element() const { return m_current_element; }
 
 	/*! \details Set the current element */
 	void set_current_element(Element * v){ m_current_element = v; }
-
-	/*! \details Access the Event loop attributes */
-	EventLoopAttr & attr(){ return m_attr; }
 
 	/*! \details Access the drawing attributes */
 	draw::DrawingAttr & drawing_attr(){ return m_drawing_attr; }
@@ -122,7 +133,6 @@ protected:
 
 private:
 
-	EventLoopAttr m_attr;
 	draw::DrawingAttr m_drawing_attr;
 	Element * m_current_element;
 	//sys::Timer m_loop_timer;

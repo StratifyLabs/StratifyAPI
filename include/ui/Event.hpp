@@ -38,6 +38,9 @@ public:
 		LIST_UP /*! Scroll up in a list or menu */ = 14,
 		LIST_DOWN /*! Scroll down in a list or menu */ = 15,
 		MENU_BACK /*! Go back in the menu */ = 16,
+		TAB_LEFT /*! Slide to the tab on the left */ = 17,
+		TAB_RIGHT /*! Slide to the tab on the left */ = 18,
+
 
 
 		//EVENT_TYPE_TOTAL //omit TOTAL so that the compiler doesn't complain about not handling the case

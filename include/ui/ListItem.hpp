@@ -166,7 +166,7 @@ public:
 	 * @param i The offset within the list
 	 * @return A pointer to the object
 	 */
-	virtual ElementLinked * at(list_attr_size_t i);
+	virtual ElementLinked & at(list_attr_size_t i);
 
 	/*! \details Return the total entries in the list */
 	inline list_attr_size_t size() const { return m_total; }

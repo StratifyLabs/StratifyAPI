@@ -34,7 +34,7 @@ public:
 	void set_shift(const Point & p);
 	void set_rotation(s16 rot){ data()->rotation = rot; }
 
-	void set_pen(const Pen & pen);
+	void set_pen(const Pen & pen){ data()->pen = pen; }
 
 };
 
