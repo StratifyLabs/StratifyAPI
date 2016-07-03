@@ -18,13 +18,16 @@ namespace draw {
  */
 class TextBox : public TextAttr, public Drawing {
 public:
+	/*! \details Construct a new text box */
 	TextBox();
-	TextBox(const char * text);
 
-	inline sg_size_t scroll() const { return m_scroll; }
-	inline sg_size_t scroll_max() const { return m_scroll_max; }
+	/*! \details Access the scroll value */
+	sg_size_t scroll() const { return m_scroll; }
+	/*! \details Access the max scroll value */
+	sg_size_t scroll_max() const { return m_scroll_max; }
 
-	int count_lines(const sgfx::Font * font, sg_size_t w);
+
+	int count_lines(sg_size_t w);
 	static int count_lines(const sgfx::Font * font, sg_size_t w, const TextAttr & text_attr);
 
 	inline void inc_scroll(){ m_scroll++; }

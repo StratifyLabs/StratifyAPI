@@ -8,10 +8,8 @@ using namespace draw;
 TextBox::TextBox(){ set_font_size(16); m_scroll = 0; m_scroll_max = 0; }
 
 
-TextBox::TextBox(const char * text){ assign(text); set_font_size(16); m_scroll = 0; m_scroll_max = 0; }
-
-
-int TextBox::count_lines(const Font * font, sg_size_t w){
+int TextBox::count_lines(sg_size_t w){
+	const Font * font = resolve_font(20);
 	return count_lines(font, w, *this);
 }
 
@@ -23,6 +21,10 @@ int TextBox::count_lines(const Font * font, sg_size_t w, const TextAttr & text_a
 	int num_lines;
 	i = 0;
 	num_lines = 0;
+
+	if( font == 0 ){
+		return -1;
+	}
 
 	do {
 		line.clear();
@@ -47,22 +49,29 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_size_t num_lines;
 	sg_size_t visible_lines;
 	sg_size_t draw_line;
+	sg_size_t line_spacing;
 	int len;
-	Font * font;
+	const Font * font;
 
 	//draw the message and wrap the text
-	font = FontSystem::get_font(font_size(), font_bold());
+	font = resolve_font(20);
 	if( font == 0 ){ return; }
 
 	font_height = font->get_h();
+	line_spacing = font_height/10;
 
 	//draw each line of text; make sure it doesn't overlap
 	w = d.w;
 	line_y = 0;
 
-	num_lines = count_lines(font, w);
+	num_lines = count_lines(w);
+	if( num_lines < 0 ){
+		printf("No Lines to draw\n");
+		return;
+	}
 
-	visible_lines = (d.h) / font_height;
+	visible_lines = (d.h) / (font_height + line_spacing);
+	printf("height is %d vs %d\n", d.h, font_height + line_spacing);
 
 	if( visible_lines >= num_lines ){
 		m_scroll = 0;
@@ -76,11 +85,14 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 		}
 	}
 
+	printf("Draw %d lines of %d lines\n", num_lines, visible_lines);
+
 	draw_line = 0;
 	i = 0;
 	do {
 		line.clear();
 		build_line(font, i, line, tokens, len, w);
+		printf("Draw line %d %d %d\n", draw_line, m_scroll, visible_lines);
 		if( (draw_line >= m_scroll) && (draw_line - m_scroll < visible_lines) ){
 
 			start.y = p.y + line_y;
@@ -92,7 +104,7 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 				start.x = p.x + (w - len)/2;
 			}
 			font->set_str(line.c_str(), attr.bitmap(), start);
-			line_y += (font_height + font_height/10);
+			line_y += (font_height + line_spacing);
 		}
 		draw_line++;
 	} while( i < tokens.size() );

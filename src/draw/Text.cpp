@@ -15,15 +15,12 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 	int h;
 	Dim d = attr.d();
 	sg_point_t p = attr.p();
-	Font * font;
+	const Font * font;
 
 	if( text() ){
-		if( font_size() == 0 ){
-			h = d.h();
-		} else {
-			h = font_size();
-		}
-		font = FontSystem::get_font(h, font_bold());
+
+		font = resolve_font(d.h());
+
 		if( font == 0 ){
 			return;
 		}
