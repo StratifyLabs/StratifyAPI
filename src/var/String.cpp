@@ -9,7 +9,7 @@
 using namespace var;
 
 String::String(){
-	set_capacity(min_size());
+	set_capacity(min_size()-1);
 }
 
 String::String(size_t capacity){

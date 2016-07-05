@@ -17,6 +17,8 @@ namespace hal {};
 #include "hal/Tmr.hpp"
 #include "hal/Spi.hpp"
 #include "hal/Uart.hpp"
+#include "hal/Lcd.hpp"
+#include "hal/LcdDev.hpp"
 
 using namespace hal;
 

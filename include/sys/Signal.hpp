@@ -14,7 +14,7 @@
 
 namespace sys {
 
-/*! \brief Class for handling Signal events
+/*! \brief Signal Handler Class
  * \details This class is used for handling signal events.
  *
  * Here is an example of setting up a signal handler.
@@ -51,20 +51,24 @@ namespace sys {
  */
 class SignalHandler {
 public:
-	/*! \brief Construct a signal handler */
+	/*! \details Construct a signal handler
+	 *
+	 *
+	 */
 	SignalHandler(void (*handler)(int) ){
 		m_sig_action.sa_handler = (_sig_func_ptr)handler;
 		m_sig_action.sa_flags = 0;
 		m_sig_action.sa_mask = 0;
 	}
 
-	/*! \brief Construct a sigaction handler */
+	/*! \details Construct a sigaction handler */
 	SignalHandler(void (*sigaction)(int, siginfo_t*, void*), int flags = 0, sigset_t mask = 0){
 		m_sig_action.sa_sigaction = sigaction;
 		m_sig_action.sa_flags = flags | (1<<SA_SIGINFO);
 		m_sig_action.sa_mask = mask;
 	}
 
+	/*! \details Access the sigaction member */
 	const struct sigaction * sigaction() const { return &m_sig_action; }
 
 private:
@@ -99,7 +103,6 @@ public:
 		return ::sigqueue(pid, m_signo, m_sigvalue);
 	}
 
-	/*! \brief Send a signal to a thread within a process */
 	/*! \details This method sends a signal to a thread within a process.
 	 *
 	 * @param t The thread ID
@@ -107,10 +110,10 @@ public:
 	 */
 	int trigger(pthread_t t) const { return ::pthread_kill(t, m_signo); }
 
-	/*! \brief Trigger the event on the current thread */
+	/*! \details Trigger the event on the current thread */
 	int trigger() const { return ::pthread_kill(pthread_self(), m_signo); }
 
-	/*! \brief Set the event handler */
+	/*! \details Set the event handler */
 	int set_handler(const SignalHandler & handler) const;
 
 private:
@@ -162,7 +165,6 @@ private:
 class SignalEventDev: public SignalEvent {
 public:
 
-	/*! \brief Construct a physical event for the current thread */
 	/*! \details This constructs a physical event.
 	 *
 	 * @param persistant If false, the signal will be sent only on the first hardware event
@@ -179,7 +181,6 @@ public:
 	}
 
 
-	/*! \brief Construct a physical event. */
 	/*! \details Construct a physical event using a signal_callback_t data structure.
 	 *
 	 * @param context A copy of the signal_callback_t data to use to handle the event.
@@ -188,7 +189,6 @@ public:
 		this->m_context = context;
 	}
 
-	/*! \brief Return a mcu_action_t data structure for a hardware event */
 	/*! \details This returns a mcu_action_t data structure that can
 	 * be used to set the action associated with a hardware event.
 	 *

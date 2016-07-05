@@ -72,12 +72,9 @@ public:
 	String& operator<<(const char * a){ append(a); return *this; }
 	String& operator<<(char c){ append(c); return *this; }
 
-	/*! \details Compare to another String */
-	bool operator==(const String & cmp) const { return (strcmp(this->c_str(), cmp.c_str()) == 0); }
+
 	/*! \details Compare to a c-string */
 	bool operator==(const char * cmp) const { return (strcmp(this->c_str(), cmp) == 0); }
-	/*! \details Compare (not equal) to another String */
-	bool operator!=(const String & cmp) const { return (strcmp(this->c_str(), cmp.c_str()) != 0); }
 	/*! \details Compare to a c-string */
 	bool operator!=(const char * cmp) const { return (strcmp(this->c_str(), cmp) != 0); }
 

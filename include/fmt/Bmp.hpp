@@ -49,7 +49,7 @@ public:
 	} bmp_dib_t;
 
 	enum {
-		SIGNATURE = 0x424D
+		SIGNATURE = 0x4D42
 	};
 
 private:

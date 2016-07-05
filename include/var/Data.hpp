@@ -49,7 +49,7 @@ public:
 	 * @param s The number of new bytes
 	 * @return Zero on success or -1 with errno set
 	 */
-	inline int resize(size_t s) { return alloc(s, true); }
+	int resize(size_t s) { return alloc(s, true); }
 
 	/*! \details Set the minimum capacity of the data storage area
 	 *
@@ -64,23 +64,23 @@ public:
 	/*! \details Retrieve a pointer to the data.
 	 * This will return zero if the data is readonly.
 	 */
-	inline void * data() const __attribute__((always_inline)) { return m_mem_write; }
+	void * data() const { return m_mem_write; }
 	/*! \details Retrieve a char pointer to the data.
 	 * This will return zero if the data is readonly.
 	 */
-	inline char * cdata() const __attribute__((always_inline)) { return (char *)m_mem_write; }
+	char * cdata() const { return (char *)m_mem_write; }
 	/*! \details Retrieve a pointer to const char data.
 	 */
-	inline const char * cdata_const() const { return (const char *)m_mem; }
+	const char * cdata_const() const { return (const char *)m_mem; }
 	/*! \details Retrieve a pointer to const data.
 	 */
-	inline const void * data_const() const { return m_mem; }
+	const void * data_const() const { return m_mem; }
 
 	/*! \details This method will return the current capcity of the data storage object.
 	 *
 	 * @return Number of bytes in the data object
 	 */
-	inline size_t capacity() const { return m_capacity; }
+	size_t capacity() const { return m_capacity; }
 	int free();
 
 	/*! \details Write all zeros to the data.

@@ -66,12 +66,10 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 
 	num_lines = count_lines(w);
 	if( num_lines < 0 ){
-		printf("No Lines to draw\n");
 		return;
 	}
 
 	visible_lines = (d.h) / (font_height + line_spacing);
-	printf("height is %d vs %d\n", d.h, font_height + line_spacing);
 
 	if( visible_lines >= num_lines ){
 		m_scroll = 0;
@@ -85,14 +83,12 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 		}
 	}
 
-	printf("Draw %d lines of %d lines\n", num_lines, visible_lines);
 
 	draw_line = 0;
 	i = 0;
 	do {
 		line.clear();
 		build_line(font, i, line, tokens, len, w);
-		printf("Draw line %d %d %d\n", draw_line, m_scroll, visible_lines);
 		if( (draw_line >= m_scroll) && (draw_line - m_scroll < visible_lines) ){
 
 			start.y = p.y + line_y;

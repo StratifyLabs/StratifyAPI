@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
+#include <mcu/types.h>
 
 #if !defined __link
 #include <reent.h>
@@ -98,10 +99,12 @@ int Data::alloc(size_t s, bool resize){
 
 	free();
 
+
 	m_mem_write = new_data;
 	m_needs_free = true;
 	m_mem = m_mem_write;
 	m_capacity = s;
+
 	return 0;
 #else
 	return -1;

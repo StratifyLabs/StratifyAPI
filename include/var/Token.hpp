@@ -27,9 +27,16 @@ public:
 	 * \sa parse()
 	 */
 	Token(const char * src, const char * delim, const char * ignore = 0, bool count_empty = false);
-	Token(const String & src, const char * delim, const char * ignore = 0, bool count_empty = false);
 
-	/*! \details Construct and parse a new Token.
+
+	enum sort_options {
+		SORT_NONE,
+		SORT_AZ,
+		SORT_ZA
+	};
+
+
+	/*! \details This method updates the token by parsing a new string.
 	 *
 	 * This method will re-parse the current string.  The \a delim value
 	 * contains all separators.  For example, " \t" will create a new token
@@ -46,9 +53,11 @@ public:
 	 */
 	void parse(const char * delim, const char * ignore = 0);
 
+	void sort(enum sort_options sort_option = SORT_NONE);
+
 
 	/*! \details Return the total number of tokens */
-	inline size_t size() const { return m_num_tokens; }
+	size_t size() const { return m_num_tokens; }
 
 	/*! \details Return a pointer to the token specified by offset */
 	const char * at(size_t n) const;
@@ -60,6 +69,9 @@ public:
 
 	bool count_empty_tokens() const { return m_count_empty_tokens; }
 	void set_count_empty_tokens(bool v = true){ m_count_empty_tokens = v; }
+
+
+	Token& operator=(const Token & token);
 
 protected:
 
