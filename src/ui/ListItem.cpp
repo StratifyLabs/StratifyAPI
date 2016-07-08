@@ -110,14 +110,12 @@ Element * ListItem::handle_event(const Event  & event, const DrawingAttr & attr)
 	return ElementLinked::handle_event(event, attr);
 }
 
-/*
+
 ListItemToggle::ListItemToggle(const char * label, ElementLinked * parent) :
-													//SettingInt(label, Setting::bool_attrs()),
-													ListItem(key().name(), parent){
-	set_sys_gfx(GfxAttr::TOTAL);
-	set_thickness(0);
+															ListItem(label, 0, parent){
+	m_toggle_enabled_icon = 0;
+	m_toggle_disabled_icon = 0;
 }
- */
 
 void ListItemToggle::set_enabled(bool v){
 	ListItem::set_enabled(v);
@@ -126,40 +124,13 @@ void ListItemToggle::set_enabled(bool v){
 	} else {
 		icon_attr().set_icon(m_toggle_disabled_icon);
 	}
-
-	//save key to file
-	//set_value( enabled() );
-
-	//save();
 }
 
 
 Element * ListItemToggle::handle_event(const Event  & event, const DrawingAttr & attr){
-	/*
-	switch(event){
-	case SETUP:
-		//load();
-		//set_enabled( value() );
-		if( enabled() ){
-			set_sys_gfx(IconAttr::OK);
-		} else {
-			set_sys_gfx(0);
-		}
-		return ListItem::handle_event(SETUP, attr);
-
-	case RIGHT_HOLD:
-	case CENTER_PRESS:
-		set_enabled(!enabled());
-		return parent();
-
-	case LEFT_PRESS:
-	case RIGHT_PRESS:
-	case ENTER:
-		App::bar().set_center( IconAttr::OK, 0 );
-		return Element::handle_event(event, attr);
+	if( event.type() == Event::LIST_ITEM_ACTUATED ){
+		set_enabled( !is_enabled() );
 	}
-	 */
-
 	return ListItem::handle_event(event, attr);
 }
 
@@ -182,7 +153,7 @@ ListItemExit::ListItemExit(const sg_icon_t * icon, ElementLinked * parent) : Lis
 
 
 ListItemCheck::ListItemCheck(const char * label, List * parent) :
-																ListItem(label, 0, parent){
+																		ListItem(label, 0, parent){
 	set_enabled(false);
 }
 
@@ -191,8 +162,8 @@ ListDir::ListDir(const char * path,
 		const sg_icon_t * icon,
 		ElementLinked * parent,
 		ElementLinked * child) :
-												List(parent),
-												m_item("TBD", icon, this, child) {
+								List(parent),
+								m_item("TBD", icon, this, child) {
 	set_path(path);
 }
 

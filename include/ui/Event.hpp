@@ -37,9 +37,12 @@ public:
 		LIST_ACTUATE /*! Select an item in a list or menu */ = 13,
 		LIST_UP /*! Scroll up in a list or menu */ = 14,
 		LIST_DOWN /*! Scroll down in a list or menu */ = 15,
+		SCROLL_UP /*! Scroll up (same as LIST_UP) */ = LIST_UP,
+		SCROLL_DOWN /*! Scroll down (same as LIST_DOWN) */ = LIST_DOWN,
 		MENU_BACK /*! Go back in the menu */ = 16,
 		TAB_LEFT /*! Slide to the tab on the left */ = 17,
 		TAB_RIGHT /*! Slide to the tab on the left */ = 18,
+
 
 
 

@@ -177,7 +177,8 @@ Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 	default: break;
 	case Event::SETUP:
 		m_draw_animation_item = size();
-		//setup all the items in the list
+		/* no break */
+	case Event::ENTER:
 		for(i=0; i < size(); i++){
 			at(i).handle_event(event, attr);
 		}
@@ -194,9 +195,7 @@ Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 		handle_down_button_actuation(event, attr);
 		break;
 
-	case Event::ENTER:
-		current().handle_event(event, attr);
-		break;
+
 	}
 	return ElementLinked::handle_event(event, attr);
 }
