@@ -11,6 +11,8 @@ TabBar::TabBar() {
 	m_highlight = 100;
 	set_visible();
 	m_bounced = false;
+	set_bounce_left_enabled();
+	set_bounce_right_enabled();
 }
 
 void TabBar::set_animation_type(u8 v){ m_animation.set_type(v); }
@@ -89,7 +91,7 @@ void TabBar::scroll(int dir, bool repeat, const DrawingAttr & attr){
 				set_animate_push(AnimationAttr::PUSH_LEFT, repeat);
 			}
 		} else {
-			if( repeat && m_bounced ){
+			if( (repeat && m_bounced) || !is_bounce_right_enabled()){
 				return;
 			}
 			set_animate_bounce(AnimationAttr::BOUNCE_RIGHT);
@@ -103,7 +105,7 @@ void TabBar::scroll(int dir, bool repeat, const DrawingAttr & attr){
 				set_animate_push(AnimationAttr::PUSH_RIGHT, repeat);
 			}
 		} else {
-			if( repeat && m_bounced ){
+			if( (repeat && m_bounced) || !is_bounce_left_enabled() ){
 				return;
 			}
 			set_animate_bounce(AnimationAttr::BOUNCE_LEFT);

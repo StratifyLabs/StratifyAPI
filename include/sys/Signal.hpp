@@ -116,6 +116,10 @@ public:
 	/*! \details Set the event handler */
 	int set_handler(const SignalHandler & handler) const;
 
+	int signo() const { return m_signo; }
+	int sigvalue() const { return m_sigvalue.sival_int; }
+	void * sigptr() const { return m_sigvalue.sival_ptr; }
+
 private:
 	int m_signo;
 	union sigval m_sigvalue;

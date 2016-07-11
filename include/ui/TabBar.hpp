@@ -59,10 +59,22 @@ public:
 
 	draw::Animation & animation(){ return m_animation; }
 
+	bool is_bounce_left_enabled() const { return flag(FLAG_BOUNCE_LEFT_ENABLE); }
+	void set_bounce_left_enabled(bool v = true){ set_flag(FLAG_BOUNCE_LEFT_ENABLE, v); }
+
+	bool is_bounce_right_enabled() const { return flag(FLAG_BOUNCE_LEFT_ENABLE); }
+	void set_bounce_right_enabled(bool v = true){ set_flag(FLAG_BOUNCE_LEFT_ENABLE, v); }
+
 protected:
 	void draw_tab_bar(const draw::DrawingAttr & attr, int selected);
 
 private:
+
+	enum {
+		FLAG_BOUNCE_LEFT_ENABLE = FLAG_ELEMENT_TOTAL,
+		FLAG_BOUNCE_RIGHT_ENABLE,
+		FLAG_TAB_BAR_TOTAL
+	};
 
 	draw::drawing_size_t m_height;
 	draw::drawing_size_t m_highlight;
