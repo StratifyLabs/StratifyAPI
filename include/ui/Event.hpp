@@ -1,5 +1,6 @@
-/* Copyright 2016 tgil All Rights Reserved */
-
+/* Copyright 2014-2016 Tyler Gilbert, Inc; All Rights Reserved
+ *
+ */
 #ifndef UI_EVENT_HPP_
 #define UI_EVENT_HPP_
 
@@ -12,6 +13,12 @@ namespace ui {
 class Button;
 class ListItem;
 
+/*! \brief Event Class
+ * \details This class defines actionable events (such as
+ * button presses) that occur within and EventLoop and are handled
+ * by Element::handle_event().
+ *
+ */
 class Event {
 public:
 
@@ -20,6 +27,7 @@ public:
 		LIST_ITEM_FLAG = 0x40
 	};
 
+	/*! \details The event type */
 	enum event_type {
 		NONE = 0,
 		SETUP /*! This event is called at startup after all object have been constructed */ = 1,
@@ -50,16 +58,16 @@ public:
 
 	};
 
-	/*! \details Element events */
+	/*! \details Button definitions */
 	enum button_id {
-		NO_BUTTON,
-		UP_BUTTON,
-		DOWN_BUTTON,
-		LEFT_BUTTON,
-		RIGHT_BUTTON,
-		SELECT_BUTTON,
-		BACK_BUTTON,
-		EXIT_BUTTON,
+		NO_BUTTON /*! No Button */,
+		UP_BUTTON /*! Up Button */,
+		DOWN_BUTTON /*! Down Button */,
+		LEFT_BUTTON /*! LeftButton */,
+		RIGHT_BUTTON /*! Right Button */,
+		SELECT_BUTTON /*! Select Button */,
+		BACK_BUTTON /*! Back Button */,
+		EXIT_BUTTON /*! Exit Button */,
 		//EVENT_BUTTON_TOTAL //omit TOTAL so that the compiler doesn't complain about not handling the case
 	};
 

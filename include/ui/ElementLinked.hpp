@@ -12,7 +12,7 @@ namespace ui {
 
 /*! \brief Linked Element
  * \details The ElementLinked class uses links elements
- * together to create navigational options between the elements.
+ * together to create navigation options between the elements.
  *
  */
 class ElementLinked : public Element {

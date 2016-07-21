@@ -24,6 +24,8 @@ typedef struct MCU_PACK {
  */
 class EventLoopAttr {
 public:
+
+	/*! \details Construct new Event Loop attributes */
 	EventLoopAttr();
 
 	operator event_loop_attr_t() const { return m_attr; }
@@ -67,7 +69,10 @@ protected:
 };
 
 /*! \brief Event Loop Class
- * \details This class processes events.
+ * \details This class processes events.  The events are passed to the
+ * current_element() and handled using Element::handle_event().  If Element::handle_event(),
+ * returns a pointed to a new element, the event loop will pass the Event::ENTER event to the
+ * new element and pass subsequent events to the new element.
  */
 class EventLoop: public EventLoopAttr {
 public:
@@ -120,16 +125,16 @@ public:
 	 *
 	 * }
 	 *
+	 * \endcode
+	 *
 	 */
 	virtual void process_events() = 0;
-
-	virtual void handle_element_changed(){}
 
 	static Element * handle_event(Element * current_element, const Event & event, const draw::DrawingAttr & drawing_attr);
 
 
 protected:
-	void handle_event(const ui::Event & event);
+	bool handle_event(const ui::Event & event);
 
 private:
 

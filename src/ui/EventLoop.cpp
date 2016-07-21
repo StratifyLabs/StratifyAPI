@@ -46,13 +46,14 @@ Element * EventLoop::handle_event(Element * current_element, const ui::Event & e
 	return ret;
 }
 
-void EventLoop::handle_event(const Event & event){
+bool EventLoop::handle_event(const Event & event){
 	Element * tmp = m_current_element;
 	tmp = handle_event(m_current_element, event, m_drawing_attr);
 	if( tmp != m_current_element ){
 		m_current_element = tmp;
-		handle_element_changed();
+		return true;
 	}
+	return false;
 }
 
 void EventLoop::start(){
