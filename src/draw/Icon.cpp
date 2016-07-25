@@ -15,6 +15,7 @@ const sg_icon_t * IconAttr::get_system_icon(int icon){
 void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_point_t p = attr.p();
 	sg_dim_t d = attr.d();
+	Pen tmp_pen = this->pen();
 
 	if( &(this->icon()) == 0 ){
 		return;
@@ -23,7 +24,8 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	Bitmap bitmap(d);
 	bitmap.clear();
 
-	GfxMap map(bitmap, this->pen(), this->rotation());
+	tmp_pen.set_mode(Pen::SET);
+	GfxMap map(bitmap, tmp_pen, this->rotation());
 	Gfx::draw(bitmap, (this->icon()), map.item(), &m_bounds);
 
 	//check for alignment values left/right/top/bottom
@@ -39,14 +41,6 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 		p.y += bitmap.w() - m_bounds.bottom_right.x;
 	}
 
-	if( dark() ){
-		attr.bitmap().clr_bitmap(bitmap, p);
-	} else {
-		attr.bitmap().set_bitmap(bitmap, p);
-	}
-
-	if( invert() ){
-		attr.bitmap().invert(p, d);
-	}
+	attr.bitmap().draw_bitmap(bitmap, p, pen());
 
 }

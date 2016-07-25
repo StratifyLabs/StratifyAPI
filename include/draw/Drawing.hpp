@@ -5,6 +5,7 @@
 
 #include <mcu/types.h>
 #include "../sgfx/Bitmap.hpp"
+#include "../sgfx/Pen.hpp"
 
 namespace draw {
 

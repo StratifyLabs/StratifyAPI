@@ -7,6 +7,7 @@
 
 #include "../var/Data.hpp"
 #include "Region.hpp"
+#include "Pen.hpp"
 
 namespace sgfx {
 
@@ -101,6 +102,8 @@ public:
 		ROT_SCALE = 65536
 	};
 
+
+	int draw_bitmap(const Bitmap & bitmap, sg_point_t p, const Pen & pen);
 
 
 	/*! \details This method sets a bitmap on to the
@@ -198,7 +201,7 @@ public:
 	inline sg_size_t columns() const { return m_bmap.columns; }
 
 	/*! \brief Function for filling a bounded area in local LCD memory */
-	virtual void pour(sg_point_t p);
+	virtual void pour(sg_point_t p, const sg_pen_t & pen);
 
 	inline sg_size_t margin_left() const { return m_bmap.margin_top_left.w; }
 	inline sg_size_t margin_right() const { return m_bmap.margin_bottom_right.w; }

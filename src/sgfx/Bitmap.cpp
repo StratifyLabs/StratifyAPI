@@ -341,8 +341,8 @@ void Bitmap::set_line(sg_point_t p1, sg_point_t p2, sg_size_t thickness){
 	sg_set_line(bmap(), p1, p2, thickness);
 }
 
-void Bitmap::pour(sg_point_t p){
-	sg_pour(bmap(), p);
+void Bitmap::pour(sg_point_t p, const sg_pen_t & pen){
+	sg_pour(bmap(), p, &pen);
 }
 
 
@@ -377,6 +377,17 @@ void Bitmap::flip_y(){
 
 void Bitmap::flip_xy(){
 	sg_flip_xy(bmap());
+}
+
+int Bitmap::draw_bitmap(const Bitmap & bitmap, sg_point_t p, const Pen & pen){
+	if( pen.is_set() ){
+		return sg_set_bitmap(bmap(), bitmap.bmap_const(), p);
+	} else if( pen.is_clr() ){
+		return sg_clr_bitmap(bmap(), bitmap.bmap_const(), p);
+	} else if( pen.is_invert() ){
+		return sg_inv_bitmap(bmap(), bitmap.bmap_const(), p);
+	}
+	return -1;
 }
 
 

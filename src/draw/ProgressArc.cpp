@@ -91,7 +91,7 @@ void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 	}
 
 	if( (center.x() + 1) < x_max ){
-		attr.bitmap().pour(sg_point(center.x() + 1, center.y() - ry + 3));
+		attr.bitmap().pour(sg_point(center.x() + 1, center.y() - ry + 3), Pen(1,1,true));
 	}
 
 	if( dark() ){
