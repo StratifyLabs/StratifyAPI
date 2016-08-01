@@ -14,6 +14,7 @@ namespace sys {};
 #include "sys/Sem.hpp"
 #include "sys/Signal.hpp"
 #include "sys/Thread.hpp"
+#include "sys/Sched.hpp"
 #include "sys/Timer.hpp"
 #include "sys/Time.hpp"
 #include "sys/Trace.hpp"

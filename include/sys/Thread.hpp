@@ -6,6 +6,7 @@
 #ifndef __link
 
 #include <pthread.h>
+#include "Sched.hpp"
 
 namespace sys {
 
@@ -24,13 +25,6 @@ public:
 	 */
 	Thread(int stack_size = 4096, bool detached = true);
 
-	/*! \brief Scheduling policies */
-	enum {
-		OTHER /*! Default scheduling algorithm (SCHED_OTHER), the thread uses a round robin algorithm with a 0 priority value.  */ = SCHED_OTHER,
-		ROUND_ROBIN /*! Spend up to the total round robin time on a task before switching, variable priority allowed */ = SCHED_RR,
-		FIFO /*! Stay in the thread until the thread yields (usleep(), read()/write(), other Thread::yield()), variable priority allowed */ = SCHED_FIFO
-	};
-
 	/*! \details Sets the stacksize (no effect after create) */
 	int set_stacksize(int size);
 
@@ -38,7 +32,7 @@ public:
 	int get_stacksize() const;
 
 	/*! \details Sets the thread priority */
-	int set_priority(int prio, int policy = ROUND_ROBIN);
+	int set_priority(int prio, enum Sched::policy policy = Sched::RR);
 
 	/*! \details Gets the thread priority */
 	int get_priority() const;
@@ -50,7 +44,7 @@ public:
 	int id() const;
 
 	/*! \details Start the thread */
-	int create(void * (*func)(void*), void * args = NULL, int prio = 0, int policy = OTHER);
+	int create(void * (*func)(void*), void * args = NULL, int prio = 0, enum Sched::policy policy = Sched::OTHER);
 
 	/*! \details Check if the thread is running */
 	bool is_running() const;
@@ -71,6 +65,15 @@ public:
 
 	/*! \details Reset the object (thread must not be running) */
 	inline void reset(){ set_id_default(); }
+
+	/*! \details Set the scheduler
+	 *
+	 * @param pid The process ID
+	 * @param value The polic (such as Sched::FIFO)
+	 * @param priority The priority (higher is higher priority)
+	 * @return Zero on success of -1 with errno set
+	 */
+	static int set_scheduler(int id, enum Sched::policy value, int priority);
 
 private:
 	pthread_attr_t m_pthread_attr;

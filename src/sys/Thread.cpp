@@ -44,7 +44,7 @@ int Thread::get_stacksize() const {
 	return stacksize;
 }
 
-int Thread::set_priority(int prio, int policy){
+int Thread::set_priority(int prio, enum Sched::policy policy){
 	struct sched_param param;
 	if( (int)m_id == -1 ){
 		return -1;
@@ -55,8 +55,9 @@ int Thread::set_priority(int prio, int policy){
 }
 
 void Thread::yield(){
-	//sched_yield();
+	sched_yield();
 }
+
 
 int Thread::get_priority() const {
 	struct sched_param param;
@@ -78,7 +79,7 @@ int Thread::get_policy() const {
 
 
 
-int Thread::create(void * (*func)(void*), void * args, int prio, int policy){
+int Thread::create(void * (*func)(void*), void * args, int prio, enum Sched::policy policy){
 	if( (int)m_id != -1 ){
 		return -1;
 	}
