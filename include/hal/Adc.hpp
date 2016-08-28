@@ -32,9 +32,9 @@ public:
 	Adc(port_t port);
 
 	/*! \details Get the ADC attributes */
-	int get_attr(adc_attr_t * attr);
+	int get_attr(adc_attr_t & attr);
 	/*! \details Set the ADC attributes */
-	int set_attr(const adc_attr_t * attr);
+	int set_attr(const adc_attr_t & attr);
 	/*! \details Set the ADC attributes */
 	int set_attr(u16 enabled_channels /*! Enabled Channels */,
 			u32 freq = ADC_MAX_FREQ /*! ADC clock frequency (use ADC_MAX_FREQ for maximum speed) */,
@@ -43,7 +43,7 @@ public:
 		attr.enabled_channels = enabled_channels;
 		attr.freq = freq;
 		attr.pin_assign = pin_assign;
-		return set_attr(&attr);
+		return set_attr(attr);
 	}
 
 	/*! \details This method opens the ADC then sets the ADC

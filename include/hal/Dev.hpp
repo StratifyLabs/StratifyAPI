@@ -215,9 +215,6 @@ public:
 	char * gets(char * s, int n, char term = '\n') const;
 
 	/*! \details Read a line in to the string */
-	char * gets(var::String * s, char term = '\n') const { return gets(s->cdata(), s->capacity(), term); }
-
-	/*! \details Read a line in to the string */
 	char * gets(var::String & s, char term = '\n') const { return gets(s.cdata(), s.capacity(), term); }
 
 

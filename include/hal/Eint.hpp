@@ -63,22 +63,23 @@ class Eint : public Periph {
 public:
 	Eint(port_t port);
 	/*! \details Get the attributes for the external interrupt. */
-	int get_attr(eint_attr_t * attr);
+	int get_attr(eint_attr_t & attr);
 	/*! \details Set the attributes for the external interrupt. */
-	int set_attr(const eint_attr_t * attr);
+	int set_attr(const eint_attr_t & attr);
 	/*! \details Set the action associated with the external interrupt. */
 	int set_action(const eint_action_t & action);
 
 	/*! \details Read the value of the pin */
 	bool get_value(){
 		eint_attr_t a;
-		get_attr(&a);
+		get_attr(a);
 		return a.value != 0;
 	}
 
 	/*! \details Set the action using the specified parameters */
 	int set_action(int channel, int event, mcu_callback_t callback, void * context){
 		eint_action_t action;
+		action.prio = 0;
 		action.channel = channel;
 		action.event = event;
 		action.callback = callback;
@@ -91,7 +92,7 @@ public:
 		eint_attr_t attr;
 		attr.pin_assign = pin_assign;
 		attr.mode = mode;
-		return set_attr(&attr);
+		return set_attr(attr);
 	}
 
 	/*! \details Open and set attributes using specified pin assignment. */

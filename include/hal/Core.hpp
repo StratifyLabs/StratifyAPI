@@ -80,9 +80,9 @@ public:
 
 	/*! \details Get attributes of the Core peripheral and stores them in \a attr.
 	 */
-	int get_attr(core_attr_t * attr);
+	int get_attr(core_attr_t & attr);
 	/*! \details Set the attributes for the Core device */
-	int set_attr(const core_attr_t * attr);
+	int set_attr(const core_attr_t & attr);
 	/*! \details Execute a request to set the functionality of a pin.
 	 */
 	int set_pin_function(const core_pinfunc_t * req);

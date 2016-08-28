@@ -19,11 +19,11 @@ public:
 	I2C(port_t port);
 
 	/*! \details Get the I2C attributes */
-	int get_attr(i2c_attr_t * attr);
+	int get_attr(i2c_attr_t & attr);
 	/*! \details Set the I2C attributes */
-	int set_attr(const i2c_attr_t * attr);
+	int set_attr(const i2c_attr_t & attr);
 	/*! \details Setup an I2C transaction */
-	int setup(const i2c_reqattr_t * req);
+	int setup(const i2c_reqattr_t & req);
 
 	/*! \details Get the last error */
 	int err();
@@ -42,7 +42,7 @@ public:
 		i2c_reqattr_t req;
 		req.slave_addr = slave_addr;
 		req.transfer = type;
-		return setup(&req);
+		return setup(req);
 	}
 
 	/*! \details Set attributes using specified bitrate and pin assignment. */
@@ -50,7 +50,7 @@ public:
 		i2c_attr_t attr;
 		attr.bitrate = bitrate;
 		attr.pin_assign = pin_assign;
-		return set_attr(&attr);
+		return set_attr(attr);
 	}
 
 	/*! \details This method initializes the I2C port.  It opens the port

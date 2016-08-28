@@ -18,6 +18,9 @@ namespace sys {};
 #include "sys/Timer.hpp"
 #include "sys/Time.hpp"
 #include "sys/Trace.hpp"
+#include "sys/Dbug.hpp"
+#include "sys/DbugStdout.hpp"
+#include "sys/DbugUart.hpp"
 #endif
 
 #include "sys/Appfs.hpp"

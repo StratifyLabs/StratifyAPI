@@ -47,9 +47,9 @@ class Dac : public Periph {
 public:
 	Dac(port_t port);
 	/*! \details Get the DAC attributes */
-	int get_attr(dac_attr_t * attr);
+	int get_attr(dac_attr_t & attr);
 	/*! \details Set the DAC attributes */
-	int set_attr(const dac_attr_t * attr);
+	int set_attr(const dac_attr_t & attr);
 
 	/*! \details Get the current value of the dac */
 	dac_sample_t value(u32 channel = 0);
@@ -62,7 +62,7 @@ public:
 		attr.enabled_channels = enabled_channels;
 		attr.freq = freq;
 		attr.pin_assign = pin_assign;
-		return set_attr(&attr);
+		return set_attr(attr);
 	}
 
 	/*! \details This method opens the DAC then sets the DAC

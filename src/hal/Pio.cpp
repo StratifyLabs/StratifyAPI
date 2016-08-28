@@ -7,16 +7,16 @@ using namespace hal;
 Pio::Pio(port_t port) : Periph(CORE_PERIPH_PIO, port){}
 
 
-int Pio::get_attr(pio_attr_t * attr){
-	return ioctl(I_PIO_GETATTR, attr);
+int Pio::get_attr(pio_attr_t & attr){
+	return ioctl(I_PIO_GETATTR, &attr);
 }
 
-int Pio::set_attr(const pio_attr_t * attr){
-	return ioctl(I_PIO_SETATTR, attr);
+int Pio::set_attr(const pio_attr_t & attr){
+	return ioctl(I_PIO_SETATTR, &attr);
 }
 
-int Pio::set_action(const pio_action_t * action){
-	return ioctl(I_PIO_SETACTION, action);
+int Pio::set_action(const pio_action_t & action){
+	return ioctl(I_PIO_SETACTION, &action);
 }
 
 int Pio::set_mask(unsigned int mask){

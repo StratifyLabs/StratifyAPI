@@ -37,11 +37,11 @@ class Pwm : public Periph {
 public:
 	Pwm(port_t port);
 	/*! \details Get PWM attributes */
-	int get_attr(pwm_attr_t * attr);
+	int get_attr(pwm_attr_t & attr);
 	/*! \details Set PWM attributes */
-	int set_attr(const pwm_attr_t * attr);
+	int set_attr(const pwm_attr_t & attr);
 	/*! \details Set PWM duty cycle */
-	int set_duty_cycle(const pwm_reqattr_t * req);
+	int set_duty_cycle(const pwm_reqattr_t & req);
 
 #ifdef __MCU_ONLY__
 	using Pblock::write;
@@ -53,7 +53,7 @@ public:
 		pwm_reqattr_t req;
 		req.channel = channel;
 		req.duty = duty;
-		return set_duty_cycle(&req);
+		return set_duty_cycle(req);
 	}
 
 	/*! \details Set PWM attributes (specify individual values) */
@@ -68,7 +68,7 @@ public:
 		attr.top = top;
 		attr.pin_assign = pin_assign;
 		attr.flags = flags;
-		return set_attr(&attr);
+		return set_attr(attr);
 	}
 
 	/*! \details Open PWM and set attributes as specified */

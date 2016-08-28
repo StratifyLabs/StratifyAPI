@@ -56,9 +56,9 @@ public:
 	Uart(port_t port);
 
 	/*! \details Get UART attributes in \a attr */
-	int get_attr(uart_attr_t * attr);
+	int get_attr(uart_attr_t & attr);
 	/*! \details Set UART attributes to \a attr */
-	int set_attr(const uart_attr_t * attr);
+	int set_attr(const uart_attr_t & attr);
 	/*! \details This method gets a single byte (if available from the UART).  Upon
 	 * success, the byte is written to the value pointed to by \a c.
 	 * \returns Zero on successfully reading a byte, -1 if no bytes are available.
@@ -105,7 +105,7 @@ public:
 		attr.stop = stop;
 		attr.width = width;
 		attr.start = UART_ATTR_START_BITS_1;
-		return set_attr(&attr);
+		return set_attr(attr);
 	}
 
 	/*! \details Initialize the UART to

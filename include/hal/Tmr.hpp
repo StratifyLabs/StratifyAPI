@@ -65,9 +65,9 @@ class Tmr : public Periph {
 public:
 	Tmr(port_t port);
 	/*! \details Get the TMR attributes */
-	int get_attr(tmr_attr_t * attr);
+	int get_attr(tmr_attr_t & attr);
 	/*! \details Set the TMR attributes */
-	int set_attr(const tmr_attr_t * attr);
+	int set_attr(const tmr_attr_t & attr);
 
 	/*! \details This lists the values for the event when using set_action().  The values
 	 * can be Or'd (|) together such as Tmr::RESET|Tmr::INTERRUPT.
@@ -84,57 +84,58 @@ public:
 
 
 	/*! \details Set the TMR action */
-	int set_action(const tmr_action_t * action);
+	int set_action(const tmr_action_t & action);
 	/*! \details Set the TMR action */
 	int set_action(int channel /*! The channel to use */,
 			int event /*! The event such as Tmr::INTERRUPT */,
 			mcu_callback_t callback /*! Callback executed if Tmr::INTERRUPT is used */ =0,
 			void * context /*! First argument passed to callback */ = 0){
 		tmr_action_t action;
+		action.prio = 0;
 		action.channel = channel;
 		action.event = event;
 		action.callback = callback;
 		action.context = context;
-		return set_action(&action);
+		return set_action(action);
 	}
 	/*! \details Turn the TMR on (start counting) */
 	int on();
 	/*! \details Turn the TMR off (stop counting) */
 	int off();
 	/*! \details Set the output compare attributes */
-	int set_output_compare(const tmr_reqattr_t * req);
+	int set_output_compare(const tmr_reqattr_t & req);
 	/*! \details Set the output compare unit with given parameters */
 	int set_output_compare(int channel, uint32_t value){
 		tmr_reqattr_t req;
 		req.channel = channel;
 		req.value = value;
-		return set_output_compare(&req);
+		return set_output_compare(req);
 	}
 	/*! \details Get the output compare attributes */
-	int get_output_compare(tmr_reqattr_t * req);
+	int get_output_compare(tmr_reqattr_t & req);
 	/*! \details Get the output compare attributes (no error checking) */
 	int get_output_compare(int channel){
 		tmr_reqattr_t req;
 		req.channel = channel;
-		get_output_compare(&req);
+		get_output_compare(req);
 		return req.value;
 	}
 	/*! \details Set the input capture attributes */
-	int set_input_capture(const tmr_reqattr_t * req);
+	int set_input_capture(const tmr_reqattr_t & req);
 	/*! \details Set the input capture unit with given parameters */
 	int set_input_capture(int channel, uint32_t value){
 		tmr_reqattr_t req;
 		req.channel = channel;
 		req.value = value;
-		return set_input_capture(&req);
+		return set_input_capture(req);
 	}
 	/*! \details Get the input capture attributes */
-	int get_input_capture(tmr_reqattr_t * req);
+	int get_input_capture(tmr_reqattr_t & req);
 	/*! \details Get the input capture value (no error checking)*/
 	int get_input_capture(int channel){
 		tmr_reqattr_t req;
 		req.channel = channel;
-		get_input_capture(&req);
+		get_input_capture(req);
 		return req.value;
 	}
 	/*! \details Return the value of the TMR */
@@ -161,7 +162,7 @@ public:
 		attr.pin_assign = pin_assign;
 		attr.enabled_ic_chans = enabled_ic_chans;
 		attr.enabled_oc_chans = enabled_oc_chans;
-		return set_attr(&attr);
+		return set_attr(attr);
 	}
 
 	/*! \details This is a list of the timer clock sources.  Not all clock

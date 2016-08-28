@@ -137,7 +137,7 @@ int LpcPhy::open(int crystal){
 		return -1;
 	}
 
-	if( uart->get_attr(&attr) < 0 ){
+	if( uart->get_attr(attr) < 0 ){
 		isplib_error("Failed to get attributes");
 		return -1;
 	}
@@ -148,7 +148,7 @@ int LpcPhy::open(int crystal){
 
 		attr.baudrate = atoi(uart_speeds[i]);
 
-		if ( uart->set_attr(&attr) < 0 ){
+		if ( uart->set_attr(attr) < 0 ){
 			isplib_error("Failed to set baud rate\n");
 			return -1;
 		}

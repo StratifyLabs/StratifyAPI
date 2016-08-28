@@ -17,9 +17,9 @@ class Spi : public Periph {
 public:
 	Spi(port_t port);
 	/*! \details get the SPI attributes */
-	int get_attr(spi_attr_t * attr);
+	int get_attr(spi_attr_t & attr);
 	/*! \details set the SPI attributes */
-	int set_attr(const spi_attr_t * attr);
+	int set_attr(const spi_attr_t & attr);
 	/*! \details swap a byte on the SPI bus */
 	int swap(int byte);
 	/*! \details This method sets the duplex buffer for full duplex operations.
@@ -88,7 +88,7 @@ public:
 		attr.format = format;
 		attr.width = width;
 		attr.master = master;
-		return set_attr(&attr);
+		return set_attr(attr);
 	}
 
 	/*! \details initialize the SPI port */

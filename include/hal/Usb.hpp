@@ -15,8 +15,8 @@ class Usb : public Periph {
 public:
 	Usb(port_t port);
 
-	int get_attr(usb_attr_t * attr);
-	int set_attr(usb_attr_t * attr);
+	int get_attr(usb_attr_t & attr);
+	int set_attr(const usb_attr_t & attr);
 	int reset();
 	int attach();
 	int configure();

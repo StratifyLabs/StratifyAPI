@@ -11,27 +11,27 @@ namespace hal {
 
 
 /*! \brief RTC Class
- * \details This class implements an RTC.
+ * \details This class implements an RTC. (Not yet implemented)
  */
 class Rtc : public Periph {
 public:
 	Rtc(port_t port);
 	/*! \details Get RTC attributes */
-	int get_attr(rtc_attr_t * attr);
+	int get_attr(rtc_attr_t & attr);
 	/*! \details Set RTC attributes */
-	int set_attr(rtc_attr_t * attr);
+	int set_attr(const rtc_attr_t & attr);
 	/*! \details Set RTC action */
-	int set_action(rtc_action_t * action);
+	int set_action(rtc_action_t & action);
 	/*! \details Set RTC alarm */
-	int set_alarm(rtc_alarm_t * alarm);
+	int set_alarm(const rtc_alarm_t & alarm);
 	/*! \details Get RTC alarm */
-	int get_alarm(rtc_alarm_t * alarm);
+	int get_alarm(rtc_alarm_t & alarm);
 	/*! \details Disable RTC alarm */
 	int disable_alarm();
 	/*! \details Set RTC time */
-	int set_time(rtc_time_t * time);
+	int set_time(const rtc_time_t & time);
 	/*! \details Get RTC time */
-	int get_time(rtc_time_t * time);
+	int get_time(rtc_time_t & time);
 
 #ifdef __MCU_ONLY__
 	int close();

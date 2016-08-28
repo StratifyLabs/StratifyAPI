@@ -20,7 +20,7 @@ typedef struct MCU_PACK {
  */
 class ProgressAttr {
 public:
-	ProgressAttr(){ memset(&m_progress, 0, sizeof(progress_t)); }
+	ProgressAttr() : m_pen(1,3,false) { memset(&m_progress, 0, sizeof(progress_t)); }
 	ProgressAttr(u16 value, u16 max){ set_attr(value, max); }
 
 	/*! \details The progress value */
@@ -42,8 +42,12 @@ public:
 	void set_attr(const progress_t * progress){ m_progress = *progress; }
 	void set_attr(const progress_t & progress){ m_progress = progress; }
 
+	sgfx::Pen & pen(){ return m_pen; }
+
 private:
 	progress_t m_progress;
+	sgfx::Pen m_pen;
+
 };
 
 /*! \brief Progress Class

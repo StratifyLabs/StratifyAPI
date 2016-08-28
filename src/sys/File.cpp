@@ -52,9 +52,10 @@ ssize_t File::size() const {
 		return -1;
 	}
 #else
-	if ( fstat(fd, (struct stat*)&st) < 0 ){
-		return -1;
-	}
+	u32 loc;
+	loc = lseek(fd, 0, SEEK_CUR);
+	st.st_size = lseek(fd, 0, SEEK_END);
+	lseek(fd, loc, SEEK_SET);
 #endif
 	return st.st_size;
 }

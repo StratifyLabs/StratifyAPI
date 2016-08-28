@@ -9,7 +9,7 @@ ProgressCircle::ProgressCircle(){}
 
 void ProgressCircle::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
-	sg_map_t map;
+	sgfx::GfxMap map;
 
 	sg_point_t p = attr.p();
 	Dim d = attr.d();
@@ -19,13 +19,9 @@ void ProgressCircle::draw_to_scale(const DrawingScaledAttr & attr){
 
 	int16_t end_angle;
 
-	map.shift.x = p.x + d.w()/2;
-	map.shift.y = p.y + d.h()/2;
-	map.size.w = d.w()*2;
-	map.size.h = d.h()*2;
-	map.rotation = 0;
-	map.pen.thickness = 2;
-	map.pen.o_flags = SG_PEN_FLAG_SET;
+	map.set_shift(p.x + d.w()/2, p.y + d.h()/2);
+	map.set_dim(d.w()*2, d.h()*2);
+	map.set_pen(pen());
 	Point end;
 
 	end_angle = value() * SG_TRIG_POINTS / max() + SG_TRIG_POINTS*3/4;

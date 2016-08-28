@@ -58,11 +58,11 @@ public:
 	};
 
 	/*! \details Get the attributes for the port */
-	int get_attr(pio_attr_t * attr);
+	int get_attr(pio_attr_t & attr);
 	/*! \details Set the attributes for the port */
-	int set_attr(const pio_attr_t * attr);
+	int set_attr(const pio_attr_t & attr);
 	/*! \details Set the action for the port using pio_action_t */
-	int set_action(const pio_action_t * action);
+	int set_action(const pio_action_t & action);
 
 	/*! \details Set the action for an event
 	 *
@@ -79,7 +79,7 @@ public:
 		action.event = event;
 		action.callback = callback;
 		action.context = context;
-		return set_action(&action);
+		return set_action(action);
 	}
 
 	/*! \details Set the specified pin mask */
@@ -99,7 +99,7 @@ public:
 		pio_attr_t attr;
 		attr.mask = mask;
 		attr.mode = mode;
-		return set_attr(&attr);
+		return set_attr(attr);
 	}
 
 	/*! \details This method opens the port
