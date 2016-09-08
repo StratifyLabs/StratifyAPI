@@ -100,6 +100,15 @@ public:
 	int get_attr(sys_attr_t & attr);
 	inline int attr(sys_attr_t * v){ return get_attr(*v); }
 
+
+	/*! \details Load the board configuration provided as
+	 * part of the board support package.
+	 *
+	 * @param config A reference to the destination object
+	 * @return Zero on success
+	 */
+	int get_board_config(stratify_board_config_t & config);
+
 	/*! \details Load the kernel's task attributes
 	 *
 	 * @param attr Pointer to the destination attributes

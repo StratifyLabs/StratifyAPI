@@ -110,6 +110,14 @@ public:
 	}
 
 
+	/*! \details Load the MCU board configuration data
+	 * provided by the board support package
+	 *
+	 * @param config A reference to the destination data
+	 * @return Zero on success
+	 */
+	int get_mcu_board_config(mcu_board_config_t & config);
+
 	/*! \details Cause the device to sleep at the specified sleep level.
 	 */
 	int sleep(core_sleep_t level);

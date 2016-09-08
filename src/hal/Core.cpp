@@ -24,6 +24,10 @@ int Core::sleep(core_sleep_t level){
 	return ioctl(I_CORE_SLEEP, level);
 }
 
+int Core::get_mcu_board_config(mcu_board_config_t & config){
+	return ioctl(I_CORE_GETMCUBOARDCONFIG, &config);
+}
+
 void Core::reset(){
 	ioctl(I_CORE_RESET);
 }
