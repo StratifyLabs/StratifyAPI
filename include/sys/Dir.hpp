@@ -55,8 +55,6 @@ public:
 	void set_driver(link_transport_mdriver_t * d){ _driver = d; }
 #endif
 
-	int ioctl(int req, void * arg){ return -1; }
-
 private:
 #ifdef __link
 	int dirp;
@@ -67,6 +65,7 @@ private:
 	DIR * dirp;
 	struct dirent entry;
 #endif
+
 
 };
 

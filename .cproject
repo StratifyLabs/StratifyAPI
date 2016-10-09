@@ -49,15 +49,18 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/SON"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/stfy"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/StratifyLib"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/StratifyLibapp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/CoActionOS-Applib/Release_eon_link"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/SON/Release_eon_link"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/SON/build_release_link"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/stfy/build_release_link"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/StratifyLib/build_release_link"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/StratifyLibapp/build_release_link"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="CoActionOS-Applib" srcPrefixMapping="" srcRootPath=""/>
 						<entry flags="RESOLVED" kind="libraryFile" name="SON" srcPrefixMapping="" srcRootPath=""/>
 						<entry flags="RESOLVED" kind="libraryFile" name="stfy" srcPrefixMapping="" srcRootPath=""/>
 						<entry flags="RESOLVED" kind="libraryFile" name="StratifyLib" srcPrefixMapping="" srcRootPath=""/>
+						<entry flags="RESOLVED" kind="libraryFile" name="StratifyLibapp" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
 				<extensions>
@@ -117,7 +120,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="calc/|draw/|sgfx/|ui/|var/|calc.hpp|draw.hpp|sgfx.hpp|ui.hpp|var.hpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
-						<entry excluding="sgfx/|draw/|ui/|var|calc/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+						<entry excluding="sgfx/|draw/|ui/|var|calc/|sys/Sched.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

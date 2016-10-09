@@ -62,6 +62,9 @@ int Time::set_time_of_day(){
 
 time_t Time::get_time_of_day(){
 	m_time = time(0);
+	if( m_time < 962668800 ){
+		m_time = 962668800;
+	}
 	return m_time;
 }
 

@@ -79,6 +79,15 @@ public:
 	 * the device will stay in hibernation until woken up externally
 	 */
 	static int hibernate(int count = 0);
+
+
+	/*! \details Load the board configuration provided as
+	 * part of the board support package.
+	 *
+	 * @param config A reference to the destination object
+	 * @return Zero on success
+	 */
+	int get_board_config(stratify_board_config_t & config);
 #endif
 
 	/*! \details This will open /dev/sys
@@ -100,14 +109,6 @@ public:
 	int get_attr(sys_attr_t & attr);
 	inline int attr(sys_attr_t * v){ return get_attr(*v); }
 
-
-	/*! \details Load the board configuration provided as
-	 * part of the board support package.
-	 *
-	 * @param config A reference to the destination object
-	 * @return Zero on success
-	 */
-	int get_board_config(stratify_board_config_t & config);
 
 	/*! \details Load the kernel's task attributes
 	 *

@@ -17,6 +17,19 @@ public:
 
 	/*! \details Draw a scaled version of the arc using the specified \a attr */
 	void draw_to_scale(const DrawingScaledAttr & attr);
+
+	void set_direction(s8 dir){
+		m_direction = dir;
+	}
+
+	void set_offset(s16 offset){
+		m_offset = offset;
+	}
+
+
+private:
+	s16 m_offset;
+	s8 m_direction;
 };
 
 };

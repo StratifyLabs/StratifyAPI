@@ -66,14 +66,14 @@ void Kernel::powerdown(int count){
 int Kernel::hibernate(int count){
 	return hibernate(count);
 }
+
+int Kernel::get_board_config(stratify_board_config_t & config){
+	return ioctl(I_SYS_GETBOARDCONFIG, &config);
+}
 #endif
 
 int Kernel::get_attr(sys_attr_t & attr){
 	return ioctl(I_SYS_GETATTR, &attr);
-}
-
-int Kernel::get_board_config(stratify_board_config_t & config){
-	return ioctl(I_SYS_GETBOARDCONFIG, &config);
 }
 
 int Kernel::get_taskattr(sys_taskattr_t * attr, int task){
