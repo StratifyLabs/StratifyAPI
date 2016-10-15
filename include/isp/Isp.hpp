@@ -14,8 +14,8 @@ class Isp {
 public:
 	Isp(){}
 
-	virtual int program(const char * filename, int crystal, const char * dev, int (*progress)(float)) = 0;
-	virtual int read(const char * filename, int crystal, int (*progress)(float)) = 0;
+	virtual int program(const char * filename, int crystal, const char * dev, bool (*progress)(void*,int,int), void * context) = 0;
+	virtual int read(const char * filename, int crystal, bool (*progress)(void*,int,int), void * context) = 0;
 	virtual char ** getlist() = 0;
 	virtual int copy_names(char * device, char * pio0, char * pio1) = 0;
 	virtual int init_phy(int uart_pinassign) = 0;

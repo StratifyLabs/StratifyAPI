@@ -14,13 +14,10 @@ namespace isp {
 
 class LpcPhy {
 public:
-	LpcPhy(hal::Uart * uart, hal::Pin * reset, hal::Pin * ispreq){
-		this->uart = uart;
-		this->rst = reset;
-		this->ispreq = ispreq;
-		echo = 0;
-		ram_buffer = 0x40000200;
-		_is_lpc177x_8x = false;
+	LpcPhy(hal::Uart & uart, hal::Pin & reset, hal::Pin & ispreq) : m_uart(uart), m_reset(reset), m_ispreq(ispreq){
+		m_echo = 0;
+		m_ram_buffer = 0x40000200;
+		m_is_lpc177x_8x = false;
 	}
 
 
@@ -62,11 +59,11 @@ public:
 			u32 size /*! The number of bytes to compare */);
 
 private:
-	char echo;
-	hal::Uart * uart;
-	hal::Pin * ispreq;
-	hal::Pin * rst;
-	u32 ram_buffer;
+	char m_echo;
+	hal::Uart & m_uart;
+	hal::Pin & m_reset;
+	hal::Pin & m_ispreq;
+	u32 m_ram_buffer;
 	int32_t lpc_write_data(void * src, u32 size);
 	int32_t lpc_read_data(void * dest, u32 size);
 	int get_line(void * buf, int nbyte, int max_wait);
@@ -74,9 +71,9 @@ private:
 	int lpc_wait_response(const char * response, u16 timeout);
 	int lpc_wait_ok(u16 timeout);
 
-	bool _is_lpc177x_8x;
-	bool is_lpc177x_8x(){ return _is_lpc177x_8x; }
-	void set_lpc177x_8x(bool enabled = true){ _is_lpc177x_8x = enabled; }
+	bool m_is_lpc177x_8x;
+	bool is_lpc177x_8x(){ return m_is_lpc177x_8x; }
+	void set_lpc177x_8x(bool enabled = true){ m_is_lpc177x_8x = enabled; }
 
 	int sendcommand(const char * cmd, int timeout, int wait_ms = 0);
 

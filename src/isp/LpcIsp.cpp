@@ -5,7 +5,7 @@
  *      Author: tgil
  */
 
-#include <isp/IspLpc.hpp>
+#include <isp/LpcIsp.hpp>
 #include <unistd.h>
 #include <stdlib.h>
 using namespace isp;
@@ -38,7 +38,7 @@ static const char * device_list[] = {
 };
 
 
-int IspLpc::copy_names(char * device, char * pio0, char * pio1){
+int LpcIsp::copy_names(char * device, char * pio0, char * pio1){
 	strcpy(device, "lpc");
 	strcpy(pio0, "Reset");
 	strcpy(pio1, "ISP Req");
@@ -46,7 +46,7 @@ int IspLpc::copy_names(char * device, char * pio0, char * pio1){
 }
 
 
-int IspLpc::program(const char * filename, int crystal, const char * dev, int (*progress)(float)){
+int LpcIsp::program(const char * filename, int crystal, const char * dev, bool (*progress)(void*,int,int), void * context){
 	FILE * f;
 	u8 * image_buffer;
 	u32 size;
@@ -113,11 +113,11 @@ int IspLpc::program(const char * filename, int crystal, const char * dev, int (*
 		return -1;
 	}
 
-	phy.set_ram_buffer( lpc_device_get_ram_start(dev) + 0x300 );
+	m_phy.set_ram_buffer( lpc_device_get_ram_start(dev) + 0x300 );
 
 	//Write the program memory
 	failed = 0;
-	if ( !write_progmem(image_buffer, start_address, size, progress) ){
+	if ( !write_progmem(image_buffer, start_address, size, progress, context) ){
 		failed = 1;
 		isplib_error("Failed to write program memory\n");
 		return -1;
@@ -137,7 +137,7 @@ int IspLpc::program(const char * filename, int crystal, const char * dev, int (*
 
 }
 
-int IspLpc::read(const char * filename, int crystal, int (*progress)(float)){
+int LpcIsp::read(const char * filename, int crystal, bool (*progress)(void*,int,int), void * context){
 	FILE * f;
 	int bytes_read;
 	char data[256*1024];
@@ -152,7 +152,7 @@ int IspLpc::read(const char * filename, int crystal, int (*progress)(float)){
 		return -2;
 	}
 
-	while( (bytes_read = (int)read_progmem(data, 0, 256*1024, progress)) > 0 ){
+	while( (bytes_read = (int)read_progmem(data, 0, 256*1024, progress, context)) > 0 ){
 		if ( fwrite(data, 1, bytes_read, f) != (u32)bytes_read ){
 			fclose(f);
 			isplib_error("Failed to write data to file\n");
@@ -165,7 +165,7 @@ int IspLpc::read(const char * filename, int crystal, int (*progress)(float)){
 	return 0;
 }
 
-char ** IspLpc::getlist(){
+char ** LpcIsp::getlist(){
 	return (char**)device_list;
 }
 
@@ -176,14 +176,14 @@ char ** IspLpc::getlist(){
  * speed.
  */
 
-int IspLpc::init_prog_interface(int crystal){
+int LpcIsp::init_prog_interface(int crystal){
 
 	//Open the ISP interface using phy.open()
-	if ( phy.open(crystal) == 0 ){
+	if ( m_phy.open(crystal) == 0 ){
 		return 0;
 	}
 
-	phy.close();
+	m_phy.close();
 	return -1;
 }
 
@@ -194,7 +194,7 @@ int IspLpc::init_prog_interface(int crystal){
  *
  * \return Number of bytes read
  */
-u32 IspLpc::read_progmem(void * data, u32 addr, u32 size, int (*update_disp)(float)){
+u32 LpcIsp::read_progmem(void * data, u32 addr, u32 size, bool (*progress)(void*,int, int), void * context){
 	u32 buffer_size;
 	u32 bytes_read;
 	u16 page_size;
@@ -207,7 +207,7 @@ u32 IspLpc::read_progmem(void * data, u32 addr, u32 size, int (*update_disp)(flo
 		if ( (size-bytes_read) > buffer_size ) page_size = buffer_size;
 		else page_size = size-bytes_read;
 
-		if ( phy.readmem(addr + bytes_read, &((char*)data)[bytes_read], page_size) != page_size ){
+		if ( m_phy.readmem(addr + bytes_read, &((char*)data)[bytes_read], page_size) != page_size ){
 
 			isplib_error("Error reading data at address 0x%04X\n", (u32)(addr + bytes_read));
 			return bytes_read;
@@ -217,8 +217,8 @@ u32 IspLpc::read_progmem(void * data, u32 addr, u32 size, int (*update_disp)(flo
 		usleep(2*1000);
 		bytes_read += page_size;
 
-		if ( update_disp ){
-			if ( update_disp((float)(bytes_read*100.0 / size)) ){
+		if ( progress ){
+			if ( progress(context, bytes_read, size) != 0 ){
 				return 0; //abort requested
 			}
 		}
@@ -228,7 +228,7 @@ u32 IspLpc::read_progmem(void * data, u32 addr, u32 size, int (*update_disp)(flo
 	return bytes_read;
 }
 
-u32 IspLpc::write_progmem(void * data, u32 addr, u32 size, int (*update_disp)(float)){
+u32 LpcIsp::write_progmem(void * data, u32 addr, u32 size, bool (*progress)(void*,int, int), void * context){
 	int buffer_size;
 	int bytes_written;
 	int page_size;
@@ -252,7 +252,7 @@ u32 IspLpc::write_progmem(void * data, u32 addr, u32 size, int (*update_disp)(fl
 		if ( j < page_size ){ //only write if data has non 0xFF values
 			isplib_debug(DEBUG_LEVEL+1, "lpc_wr_pgmmem():Writing page starting at %d\n", addr + bytes_written);
 			sector = lpc_device_get_sector_number(device, addr+bytes_written);
-			if ( phy.writemem(addr + bytes_written,
+			if ( m_phy.writemem(addr + bytes_written,
 					&((char*)data)[bytes_written], page_size,
 					sector ) != page_size ){
 				isplib_error("writing data at address 0x%04X\n", (u32)(addr + bytes_written));
@@ -261,8 +261,8 @@ u32 IspLpc::write_progmem(void * data, u32 addr, u32 size, int (*update_disp)(fl
 		}
 		//delay_ms(2);
 		bytes_written+=page_size;
-		if ( update_disp ){
-			if ( update_disp((float)(bytes_written*100.0 / size)) ){
+		if ( progress ){
+			if ( progress(context, bytes_written, size) ){
 				return 0; //abort requested
 			}
 		}
@@ -272,27 +272,27 @@ u32 IspLpc::write_progmem(void * data, u32 addr, u32 size, int (*update_disp)(fl
 }
 
 
-int IspLpc::erase_dev(){
+int LpcIsp::erase_dev(){
 	int sectors;
 	int ret;
 
 	//first see how many sectors there are
 	sectors = 0;
 	do {
-		ret = phy.prep_sector(0, sectors);
+		ret = m_phy.prep_sector(0, sectors);
 		if ( !ret ){
 			sectors++;
 		}
 	} while ( !ret );
 
 	//Now erase all the sectors
-	ret = phy.erase_sector(0, --sectors);
+	ret = m_phy.erase_sector(0, --sectors);
 	if ( ret != 0 ){
 		isplib_error("Failed to erase device\n");
 		return -1;
 	}
 
-	ret = phy.blank_check_sector(1, sectors);
+	ret = m_phy.blank_check_sector(1, sectors);
 	if ( ret < 0 ){
 		isplib_error("Device not blank\n");
 		return ret;
@@ -301,7 +301,7 @@ int IspLpc::erase_dev(){
 	return 0;
 }
 
-int IspLpc::write_vector_checksum(unsigned char * hex_buffer, const char * dev){
+int LpcIsp::write_vector_checksum(unsigned char * hex_buffer, const char * dev){
 	unsigned long checksum;
 	checksum = 0;
 	u16 i;
@@ -347,17 +347,17 @@ int IspLpc::write_vector_checksum(unsigned char * hex_buffer, const char * dev){
  * closes the UART connection.
  * \return Zero on success
  */
-int IspLpc::prog_shutdown(){
+int LpcIsp::prog_shutdown(){
 	int err;
 	isplib_debug(DEBUG_LEVEL, "Restarting the device\n");
 
-	err = phy.reset();
+	err = m_phy.reset();
 	if ( err ){
 		isplib_error("Could not reset device (%d)\n", err);
 		return -1;
 	}
 
-	err = phy.close();
+	err = m_phy.close();
 	if ( err ){
 		isplib_error("Failed to close ISP interface (%d)\n", err);
 		return -1;

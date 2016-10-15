@@ -79,31 +79,31 @@ enum {
 int LpcPhy::init(int pinassign){
 	//Open UART
 	int ret;
-	if( uart->open(Uart::NONBLOCK) < 0 ){
+	if( m_uart.open(Uart::NONBLOCK | Uart::RDWR) < 0 ){
 		isplib_error("Failed to open UART\n");
 		return -1;
 	}
 
-	if( (ret = uart->set_attr(9600, pinassign)) < 0 ){
-		uart->close();
+	if( (ret = m_uart.set_attr(9600, pinassign)) < 0 ){
+		m_uart.close();
 
-		if( uart->open(Uart::NONBLOCK) <  0 ){
+		if( m_uart.open(Uart::NONBLOCK) <  0 ){
 			isplib_error("Failed to open UART (second try)\n");
 		}
 
-		if( (ret = uart->set_attr(9600, pinassign)) < 0 ){
+		if( (ret = m_uart.set_attr(9600, pinassign)) < 0 ){
 			isplib_error("Failed to set_attr UART %d\n", ret);
 			return -2;
 		}
 	}
 
 
-	if( rst->init(Pio::OUTPUT) < 0 ){
+	if( m_reset.init(Pio::OUTPUT) < 0 ){
 		isplib_error("Failed to init PIO reset\n");
 		return -3;
 	}
 
-	if( ispreq->init(Pio::OUTPUT) < 0 ){
+	if( m_ispreq.init(Pio::OUTPUT) < 0 ){
 		isplib_error("Failed to init PIO ispreq\n");
 		return -4;
 	}
@@ -112,11 +112,11 @@ int LpcPhy::init(int pinassign){
 }
 
 int LpcPhy::exit(){
-	uart->close();
-	rst->set_attr(Pin::INPUT);
-	ispreq->set_attr(Pin::INPUT);
-	rst->close();
-	ispreq->close();
+	m_uart.close();
+	m_reset.set_attr(Pin::INPUT);
+	m_ispreq.set_attr(Pin::INPUT);
+	m_reset.close();
+	m_ispreq.close();
 	return 0;
 }
 
@@ -127,17 +127,17 @@ int LpcPhy::open(int crystal){
 	int err;
 	uart_attr_t attr;
 
-	if ( rst->set() < 0 ){
+	if ( m_reset.set() < 0 ){
 		isplib_error("Failed to set reset\n");
 		return -1;
 	}
 
-	if ( ispreq->set() < 0 ){
+	if ( m_ispreq.set() < 0 ){
 		isplib_error("Failed to set ispreq\n");
 		return -1;
 	}
 
-	if( uart->get_attr(attr) < 0 ){
+	if( m_uart.get_attr(attr) < 0 ){
 		isplib_error("Failed to get attributes");
 		return -1;
 	}
@@ -148,7 +148,7 @@ int LpcPhy::open(int crystal){
 
 		attr.baudrate = atoi(uart_speeds[i]);
 
-		if ( uart->set_attr(attr) < 0 ){
+		if ( m_uart.set_attr(attr) < 0 ){
 			isplib_error("Failed to set baud rate\n");
 			return -1;
 		}
@@ -202,10 +202,10 @@ int LpcPhy::close(){
 
 int LpcPhy::flush(){
 	char buf[64];
-	while( uart->read(buf, 64) > 0 ){
+	while( m_uart.read(buf, 64) > 0 ){
 
 	}
-	return uart->flush();
+	return m_uart.flush();
 }
 
 
@@ -215,7 +215,7 @@ int LpcPhy::flush(){
  *
  */
 void LpcPhy::set_ram_buffer(u32 addr){
-	ram_buffer = addr;
+	m_ram_buffer = addr;
 }
 
 
@@ -241,7 +241,7 @@ int LpcPhy::writemem(u32 loc, const void * buf, int nbyte, u32 sector){
 		memcpy(page_buffer, &((char*)buf)[bytes_written], page_size);
 
 		//first copy the data to RAM
-		if ( this->wr_ram(ram_buffer, page_buffer, LPCPHY_RAM_BUFFER_SIZE) ){
+		if ( this->wr_ram(m_ram_buffer, page_buffer, LPCPHY_RAM_BUFFER_SIZE) ){
 			isplib_error("Failed to write RAM\n");
 			return 0;
 		}
@@ -253,13 +253,13 @@ int LpcPhy::writemem(u32 loc, const void * buf, int nbyte, u32 sector){
 		}
 
 		//copy from RAM to flash
-		if ( this->cpy_ram_to_flash(loc, ram_buffer, LPCPHY_RAM_BUFFER_SIZE) ){
+		if ( this->cpy_ram_to_flash(loc, m_ram_buffer, LPCPHY_RAM_BUFFER_SIZE) ){
 			isplib_error("Failed to copy RAM to flash\n");
 			return 0;
 		}
 
 		//Copy to RAM again, then compare the RAM to the flash
-		if ( this->wr_ram(ram_buffer, page_buffer, LPCPHY_RAM_BUFFER_SIZE) ){
+		if ( this->wr_ram(m_ram_buffer, page_buffer, LPCPHY_RAM_BUFFER_SIZE) ){
 			isplib_error("Failed to write RAM second time\n");
 			return 0;
 		}
@@ -267,7 +267,7 @@ int LpcPhy::writemem(u32 loc, const void * buf, int nbyte, u32 sector){
 		if ( sector ){ //First sector is mapped to the bootloader and won't compare properly
 
 			//Now compare the ram to the flash to see if the operation was successful
-			if ( this->memcmp(ram_buffer, loc, LPCPHY_RAM_BUFFER_SIZE) ){
+			if ( this->memcmp(m_ram_buffer, loc, LPCPHY_RAM_BUFFER_SIZE) ){
 				isplib_error("Write failed\n");
 				//isplib_debug(4, "Dumping RAM\n");
 				//debug_dump_mem(4, page_buffer, LPCPHY_RAM_BUFFER_SIZE);
@@ -319,7 +319,7 @@ int LpcPhy::reset(){
 	isplib_debug(DEBUG_LEVEL, "RESET\n");
 
 	//Make sure the ISP request is high (disabled)
-	if ( rst->set() ){
+	if ( m_reset.set() ){
 		isplib_error("failed to set ISP REQ\n");
 		return -1;
 	}
@@ -327,7 +327,7 @@ int LpcPhy::reset(){
 	Timer::wait_msec(50);
 
 	//Hold the reset line low
-	if ( rst->clr() ){
+	if ( m_reset.clr() ){
 		isplib_error("failed to clear RESET\n");
 		return -1;
 	}
@@ -335,7 +335,7 @@ int LpcPhy::reset(){
 	Timer::wait_msec(50);
 
 	//Now push the reset line high
-	if ( rst->set() ){
+	if ( m_reset.set() ){
 		isplib_error("failed to set RESET\n");
 		return -1;
 	}
@@ -353,13 +353,13 @@ int LpcPhy::start_bootloader(){
 
 	isplib_debug(DEBUG_LEVEL+1, "RST and REQ are high\n");
 
-	if( rst->set() || ispreq->set() ){
+	if( m_reset.set() || m_ispreq.set() ){
 		isplib_error("failed to set reset/ispreq()\n");
 		return -1;
 	}
 	isplib_debug(DEBUG_LEVEL+1, "RST is high\n");
 
-	if ( ispreq->clr() < 0 ){
+	if ( m_ispreq.clr() < 0 ){
 		isplib_error("failed to clear ispreq\n");
 		return -1;
 	}
@@ -367,21 +367,21 @@ int LpcPhy::start_bootloader(){
 	Timer::wait_msec(150);
 
 
-	if ( rst->clr() < 0 ){
+	if ( m_reset.clr() < 0 ){
 		isplib_error("failed to clear reset\n");
 		return -1;
 	}
 	isplib_debug(DEBUG_LEVEL+1, "RST is low\n");
 	Timer::wait_msec(150);
 
-	if ( rst->set() < 0 ){
+	if ( m_reset.set() < 0 ){
 		isplib_error("failed to set reset\n");
 		return -1;
 	}
 	isplib_debug(DEBUG_LEVEL+1, "RST is high\n");
 	Timer::wait_msec(150);
 
-	if ( ispreq->set() < 0 ){
+	if ( m_ispreq.set() < 0 ){
 		isplib_error("failed to set ispreq\n");
 		return -1;
 	}
@@ -414,9 +414,9 @@ int LpcPhy::sync_bootloader(u32 crystal /*! Crystal frequency in KHz */){
 	char c;
 	isplib_debug(DEBUG_LEVEL+1, "Sending ?\n");
 	sprintf(buf, "?");
-	bytes = uart->write(buf, strlen(buf));
+	bytes = m_uart.write(buf, strlen(buf));
 	if ( bytes != strlen(buf) ){
-		isplib_error("failed to write ?\n");
+		isplib_error("failed to write ? (%d, %d)\n", bytes, link_errno);
 		return -1;
 	}
 
@@ -430,7 +430,7 @@ int LpcPhy::sync_bootloader(u32 crystal /*! Crystal frequency in KHz */){
 	//send "Synchronized<CR><LF>"
 	isplib_debug(DEBUG_LEVEL+1, "Sending 'Synchronized'\n");
 	sprintf(buf, "Synchronized\r\n");
-	bytes = uart->write(buf, strlen(buf));
+	bytes = m_uart.write(buf, strlen(buf));
 	if ( bytes != strlen(buf) ){
 		isplib_error("failed to write synchronized\n");
 		return -1;
@@ -444,7 +444,7 @@ int LpcPhy::sync_bootloader(u32 crystal /*! Crystal frequency in KHz */){
 	}
 
 
-	if( uart->read(&c,1) ){
+	if( m_uart.read(&c,1) ){
 		if( c == '\n' ){
 			set_lpc177x_8x(true);
 			if( lpc_wait_response("OK\r\n", QUICK_TIMEOUT) ){
@@ -455,7 +455,7 @@ int LpcPhy::sync_bootloader(u32 crystal /*! Crystal frequency in KHz */){
 			//send crystal freq
 			isplib_debug(DEBUG_LEVEL+1, "Sending Crystal Value\n");
 			sprintf(buf, "%d\r\n", crystal);
-			bytes = uart->write(buf, strlen(buf));
+			bytes = m_uart.write(buf, strlen(buf));
 			if ( bytes != strlen(buf) ){
 				isplib_error("failed to write crystal value\n");
 				return -1;
@@ -486,7 +486,7 @@ int LpcPhy::sync_bootloader(u32 crystal /*! Crystal frequency in KHz */){
 			//send crystal freq
 			isplib_debug(DEBUG_LEVEL+1, "Sending Crystal Value\n");
 			sprintf(buf, "%d\r\n", crystal);
-			bytes = uart->write(buf, strlen(buf));
+			bytes = m_uart.write(buf, strlen(buf));
 			if ( bytes != strlen(buf) ){
 				isplib_error("failed to write crystal value\n");
 				return -1;
@@ -508,7 +508,7 @@ int LpcPhy::sync_bootloader(u32 crystal /*! Crystal frequency in KHz */){
 
 
 
-	echo = 1; //by default echo is on
+	m_echo = 1; //by default echo is on
 	this->echo_off();
 
 	return 0;
@@ -549,10 +549,10 @@ int LpcPhy::echo_off(){
 	}
 
 	if ( !ret ){
-		echo = 0;
+		m_echo = 0;
 	} else{
 		isplib_debug(DEBUG_LEVEL+1, "Echo is still on\n");
-		echo = 1;
+		m_echo = 1;
 	}
 
 	return ret;
@@ -923,12 +923,12 @@ i32 LpcPhy::lpc_write_data(void * src /*! A pointer to the source data */,
 		}
 		isplib_debug(DEBUG_LEVEL+1, "Line size is %d (checksum=%d)\n", line_size, checksum);
 		uu_encode_line(buf, &(srcp[bytes_written]), line_size);
-		bytes = uart->write(buf, strlen(buf));
+		bytes = m_uart.write(buf, strlen(buf));
 		if ( bytes != strlen(buf) ){
 			return -1;
 		}
 		isplib_debug(DEBUG_LEVEL+1, "Sending %s (%d)\n", buf, (int)strlen(buf));
-		if ( echo ) {
+		if ( m_echo ) {
 			if ( lpc_wait_response(buf, QUICK_TIMEOUT) ){
 				isplib_debug(DEBUG_LEVEL+1, "Failed echo\n");
 			}
@@ -944,11 +944,11 @@ i32 LpcPhy::lpc_write_data(void * src /*! A pointer to the source data */,
 			//send and reset the checksum
 			isplib_debug(DEBUG_LEVEL+1, "Sending checksum (%d)\n", checksum);
 			sprintf(buf, "%d\r\n", checksum);
-			bytes = uart->write(buf, strlen(buf));
+			bytes = m_uart.write(buf, strlen(buf));
 			if ( bytes != strlen(buf) ){
 				return -1;
 			}
-			if ( echo ){
+			if ( m_echo ){
 				sprintf(buf, "%d\rOK\r\n", checksum);
 				checksum_ok = !(lpc_wait_response(buf, QUICK_TIMEOUT));
 			} else {
@@ -1038,22 +1038,22 @@ i32 LpcPhy::lpc_read_data(void * dest /*! A pointer to the destination buffer */
 			if ( checksum == atoi(buf) ){
 				isplib_debug(DEBUG_LEVEL+1, "Checksum is Good (%d)\n", checksum);
 				sprintf(buf, "OK\r\n");
-				bytes = uart->write(buf, strlen(buf));
+				bytes = m_uart.write(buf, strlen(buf));
 				if ( bytes != strlen(buf) ){
 					return -1;
 				}
-				if ( echo) {
+				if ( m_echo) {
 					lpc_wait_response(buf, TIMEOUT);
 				}
 				bytes_verified = bytes_read;
 			} else {
 				isplib_debug(DEBUG_LEVEL+1, "TODO--Re-read the data\n");
 				sprintf(buf, "RESEND\r\n");
-				bytes = uart->write(buf, strlen(buf));
+				bytes = m_uart.write(buf, strlen(buf));
 				if ( bytes != strlen(buf) ){
 					return -1;
 				}
-				if ( echo) lpc_wait_response(buf, TIMEOUT);
+				if ( m_echo) lpc_wait_response(buf, TIMEOUT);
 				bytes_read = bytes_verified;
 				retry++;
 				if (retry == 3 ) return bytes_read;
@@ -1081,7 +1081,7 @@ int LpcPhy::get_line(void * buf, int nbyte, int max_wait){
 	do {
 		//this needs to read up to the newline
 		page_size = (( nbyte - bytes_recv ) > 64) ? 64 : (nbyte - bytes_recv);
-		if ( (bytes_read = uart->read(p,  page_size)) < 0 ){
+		if ( (bytes_read = m_uart.read(p,  page_size)) < 0 ){
 			return -1;
 		}
 
@@ -1124,7 +1124,7 @@ int LpcPhy::sendcommand(const char * cmd, int timeout, int wait_ms){
 	char buffer[len+16];
 
 	sprintf(buffer, "%s\r\n", cmd);
-	bytes = uart->write(buffer, strlen(buffer));
+	bytes = m_uart.write(buffer, strlen(buffer));
 	if ( bytes != strlen(buffer) ){
 		isplib_error("send command failed %d != %d\n", bytes, (int)strlen(buffer));
 		return -1;
@@ -1134,7 +1134,7 @@ int LpcPhy::sendcommand(const char * cmd, int timeout, int wait_ms){
 		Timer::wait_msec(wait_ms);
 	}
 
-	if( echo ){
+	if( m_echo ){
 		if( is_lpc177x_8x() ){
 			ret = lpc_wait_response(buffer, timeout);
 			if( ret < 0 ){

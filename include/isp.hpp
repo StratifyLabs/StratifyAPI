@@ -8,7 +8,7 @@
  */
 namespace isp {}
 
-#include "isp/IspLpc.hpp"
+#include "isp/LpcIsp.hpp"
 
 using namespace isp;
 
