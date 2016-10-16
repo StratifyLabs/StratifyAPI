@@ -99,7 +99,7 @@ int LpcPhy::init(int pinassign){
 
 
 	if( m_reset.init(Pio::OUTPUT) < 0 ){
-		isplib_error("Failed to init PIO reset\n");
+		isplib_error("Failed to init PIO reset %d\n", link_errno);
 		return -3;
 	}
 
@@ -857,6 +857,9 @@ int LpcPhy::lpc_wait_response(const char * response, u16 timeout){
 	len = strlen(response);
 	memset(buf, 0, 1024);
 	bytes_recv = get_line((char*)buf, len, timeout);
+	if( bytes_recv > 1024 ){
+		bytes_recv = 1024;
+	}
 	isplib_debug(DEBUG_LEVEL+1, "Waiting for response (%d)\n", bytes_recv);
 
 	if ( !bytes_recv ){
