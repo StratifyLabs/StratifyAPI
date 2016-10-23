@@ -28,6 +28,7 @@ public:
 
 	inline void message() MCU_ALWAYS_INLINE { stratify_trace_event(POSIX_TRACE_MESSAGE, c_str(), size()); }
 	inline void warning() MCU_ALWAYS_INLINE { stratify_trace_event(POSIX_TRACE_WARNING, c_str(), size()); }
+	inline void error() MCU_ALWAYS_INLINE { stratify_trace_event(POSIX_TRACE_ERROR, c_str(), size()); }
 	inline void critical() MCU_ALWAYS_INLINE { stratify_trace_event(POSIX_TRACE_CRITICAL, c_str(), size()); }
 	inline void fatal() MCU_ALWAYS_INLINE { stratify_trace_event(POSIX_TRACE_FATAL, c_str(), size()); }
 
