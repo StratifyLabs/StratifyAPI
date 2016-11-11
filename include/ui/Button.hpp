@@ -25,7 +25,7 @@ public:
 	 */
 	Button();
 
-	/*! \details This method access how long the user must hold the
+	/*! \details This method accesses how long the user must hold the
 	 * button in the application before the ui::Event::BUTTON_HOLD is triggered
 	 * when calling event()
 	 *
@@ -40,21 +40,61 @@ public:
 	/*! \details This method checks the state of the actuation and then returns
 	 * an Event if needed.
 	 *
-	 * @return
+	 * It will report the following events
+	 *
+	 *  - ui::Event::BUTTON_PRESSED
+	 *  - ui::Event::BUTTON_RELEASED
+	 *  - ui::Event::BUTTON_ACTUATED
+	 *  - ui::Event::BUTTON_HOLD
+	 *
 	 */
 	ui::Event event();
 
 	void set_event_id(enum ui::Event::button_id v){ m_event_id = v; }
 	enum ui::Event::button_id event_id() const { return m_event_id; }
 
+	/*! \details Returns the duration of the last button press.
+	 * This method will only return a non-zero value once per button press.
+	 */
 	virtual u32 get_duration();
+
+	/*! \details Returns true if the button has been pressed. This will
+	 * only return true once per button press.
+	 *
+	 */
 	virtual bool get_pressed();
+
+	/*! \details Returns true if the button has been released.
+	 * This will only return true one time for each button press.
+	 */
 	virtual bool get_released();
+
+	/*! \details Returns true if the button was pressed then released
+	 * This will return true only once per button press.
+	 */
 	virtual bool get_actuated();
+
+	/*! \details Returns true if the button has been held for the specified duration
+	 * This will only return true once per button press.
+	 *
+	 *
+	 * @param msec The number of milliseconds the button has been held for
+	 */
 	virtual bool get_held(u32 msec);
+
+	/*! \details This will update the state of the button. This method
+	 * should be called periodically.
+	 */
 	virtual void update();
 
+	/*! \details Reset the state of the button */
 	virtual void reset();
+
+	/*! \details Returns true if the button is currently in the active state.
+	 * The active state is updated each time Button::update() is called.
+	 *
+	 */
+	bool is_active(){ return m_timer.is_running(); }
 
 protected:
 

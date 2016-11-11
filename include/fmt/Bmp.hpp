@@ -12,24 +12,52 @@ namespace fmt {
 /*! \brief BMP File format */
 class Bmp: public sys::File {
 public:
+
+	/*! \details Construct a bitmap from the file (readonly) */
 	Bmp(const char * name);
+
+	/*! \details Construct an empty bitmap object */
 	Bmp();
 
-	i32 w() const { return m_dib.width; }
-	i32 h() const { return m_dib.height; }
+	/*! \details Access the bitmap width (after bitmap has been opened) */
+	s32 w() const { return m_dib.width; }
+	/*! \details Access the bitmap height (after bitmap has been opened) */
+	s32 h() const { return m_dib.height; }
+	/*! \details Access the bitmap bits per pixel (after bitmap has been opened) */
 	u16 bits_per_pixel() const { return m_dib.bits_per_pixel; }
+	/*! \details Access the bitmap planes (after bitmap has been opened) */
 	u16 planes() const { return m_dib.planes; }
 
-
+	/*! \details Calculates the bytes needed to store one row of data (after bitmap has been opened) */
 	unsigned int calc_row_size() const;
 
-	int create(const char * name, i32 width, i32 height, u16 planes, u16 bits_per_pixel);
-	static int create_appfs(const char * name, i32 width, i32 height, u16 planes, u16 bits_per_pixel, char * img, size_t nbyte);
+	/*! \details Open the specified bitmap as readonly */
+	int open_readonly(const char * name);
 
+	/*! \details Open the specified bitmap as read write */
+	int open_readwrite(const char * name);
+
+	/*! \details Open the specified bitmap with the specified access (e.g., Bmp::READONLY) */
+	int open(const char * name, int access);
+
+	/*! \details Create a new bitmap using the specified parameters */
+	int create(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel);
+
+	/*! \details Create a new bitmap and save it to the /app filesystem (flash memory) */
+	static int create_appfs(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, size_t nbyte);
+
+	/*! \details Move file pointer to the start of the bitmap data */
 	void rewind(){ seek(m_offset); }
 
-	int seek_row(i32 y);
+	/*! \details Seek the file to the data at the specified row */
+	int seek_row(s32 y);
 
+	/*! \details Read a pixel from the bitmap (optionally convert to a mono value)
+	 * @param pixel Data pointing to destination
+	 * @param pixel_size
+	 * @param mono true to convert to a mono pixel
+	 * @param thres threshold brightness for a mono pixel to be on
+	 */
 	int read_pixel(u8 * pixel, ssize_t pixel_size, bool mono = false, u8 thres = 128);
 
 	typedef struct MCU_PACK {
@@ -42,8 +70,8 @@ public:
 
 	typedef struct MCU_PACK {
 		u32 hdr_size;
-		i32 width;
-		i32 height;
+		s32 width;
+		s32 height;
 		u16 planes;
 		u16 bits_per_pixel;
 	} bmp_dib_t;

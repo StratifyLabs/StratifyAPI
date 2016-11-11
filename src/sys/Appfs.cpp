@@ -11,7 +11,7 @@
 
 using namespace sys;
 
-int Appfs::create(const char * name, const void * buf, int nbyte, const char * mount, int (*update)(void *, int, int), void * context, link_transport_mdriver_t * driver){
+int Appfs::create(const char * name, const void * buf, int nbyte, const char * mount, bool (*update)(void *, int, int), void * context, link_transport_mdriver_t * driver){
 	char buffer[LINK_PATH_MAX];
 	File file;
 	int tmp;

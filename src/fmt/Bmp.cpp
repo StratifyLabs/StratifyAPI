@@ -11,24 +11,37 @@ Bmp::Bmp(){
 }
 
 Bmp::Bmp(const char * name){
+	open_readonly(name);
+}
+
+
+int Bmp::open_readonly(const char * name){
+	return open(name, Bmp::READONLY);
+}
+
+int Bmp::open_readwrite(const char * name){
+	return open(name, Bmp::RDWR);
+}
+
+int Bmp::open(const char * name, int access){
 	bmp_header_t hdr;
 
 	m_dib.width = -1;
 	m_dib.height = -1;
 	m_dib.bits_per_pixel = 0;
 
-	if( this->open(name, RDWR) < 0 ){
-		return;
+	if( File::open(name, access) < 0 ){
+		return -1;
 	}
 
 	if( read(&hdr, sizeof(hdr)) != sizeof(hdr) ){
 		close();
-		return;
+		return -1;
 	}
 
 	if( read(&m_dib, sizeof(m_dib)) != sizeof(m_dib) ){
 		close();
-		return;
+		return -1;
 	}
 
 	if( seek(hdr.offset) != (int)hdr.offset ){
@@ -36,13 +49,14 @@ Bmp::Bmp(const char * name){
 		m_dib.height = -1;
 		m_dib.bits_per_pixel = 0;
 		close();
-		return;
+		return -1;
 	}
 
 	m_offset = hdr.offset;
+	return 0;
 }
 
-int Bmp::create(const char * name, i32 width, i32 height, u16 planes, u16 bits_per_pixel){
+int Bmp::create(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel){
 
 	bmp_header_t hdr;
 
@@ -73,7 +87,7 @@ int Bmp::create(const char * name, i32 width, i32 height, u16 planes, u16 bits_p
 	return 0;
 }
 
-int Bmp::create_appfs(const char * name, i32 width, i32 height, u16 planes, u16 bits_per_pixel, char * img, size_t nbyte){
+int Bmp::create_appfs(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, size_t nbyte){
 	bmp_header_t hdr;
 	bmp_dib_t dib;
 
@@ -104,7 +118,7 @@ unsigned int Bmp::calc_row_size() const{
 	return (((m_dib.bits_per_pixel/8)*m_dib.width + 3) / 4) * 4;
 }
 
-int Bmp::seek_row(i32 y){
+int Bmp::seek_row(s32 y){
 	if( m_dib.height > 0 ){
 		//image is upside down -- seek to beginning of row
 		return seek(m_offset + calc_row_size() * (m_dib.height - (y + 1)));

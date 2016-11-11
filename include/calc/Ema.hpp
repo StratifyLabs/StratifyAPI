@@ -31,8 +31,8 @@ namespace calc {
  * #include <cstdio>
  *
  *  //first initialize a filter with a value of 0 and with an averaging constant of 0.1
- * Ema_i32 filter(0, DSP_EMA_I32_ALPHA(0.1));
- *  //Or do:  Ema<u16, i32, i64> filter(0, DSP_EMA_I32_ALPHA(0.1));
+ * Ema_s32 filter(0, DSP_EMA_I32_ALPHA(0.1));
+ *  //Or do:  Ema<u16, s32, i64> filter(0, DSP_EMA_I32_ALPHA(0.1));
  *
  *  //now use the ADC to get some data
  * Adc adc(0);
@@ -91,16 +91,16 @@ private:
 	intsmall m_alpha;
 };
 
-/*! \brief Exponential Moving Average class (i32) */
+/*! \brief Exponential Moving Average class (s32) */
 /*! \details See \ref Ema for details */
-class Ema_i32 : public Ema<u16, i32, i64> {
+class Ema_s32 : public Ema<u16, s32, i64> {
 public:
-	Ema_i32(i32 start, u16 alpha) : Ema(start, alpha){}
+	Ema_s32(s32 start, u16 alpha) : Ema(start, alpha){}
 };
 
 /*! \brief Exponential Moving Average class (i16) */
 /*! \details See \ref Ema for details */
-class Ema_i16 : public Ema<u8, i16, i32> {
+class Ema_i16 : public Ema<u8, i16, s32> {
 public:
 	Ema_i16(i16 start, u8 alpha) : Ema(start, alpha){}
 };

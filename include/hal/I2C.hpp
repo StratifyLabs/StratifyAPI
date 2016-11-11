@@ -18,6 +18,13 @@ public:
 	/*! \details Initialize the instance with \a port */
 	I2C(port_t port);
 
+	enum {
+		SETUP_NORMAL_TRANSFER /*! \brief Normal I2C transfer writes 8-bit pointer then reads or writes data */ = I2C_TRANSFER_NORMAL,
+		SETUP_NORMAL_16_TRANSFER /*! \brief Normal I2C transfer writes 16-bit pointer then reads or writes data */ = I2C_TRANSFER_NORMAL_16,
+		SETUP_DATA_ONLY_TRANSFER /*! \brief I2C transfer that does not write a pointer (just reads or writes data) */ = I2C_TRANSFER_DATA_ONLY,
+		SETUP_WRITE_PTR_TRANSFER /*! \brief I2C transfer that only writes the pointer (no data is transferred) */ = I2C_TRANSFER_WRITE_PTR
+	};
+
 	/*! \details Get the I2C attributes */
 	int get_attr(i2c_attr_t & attr);
 	/*! \details Set the I2C attributes */
@@ -38,7 +45,7 @@ public:
 
 
 	/*! \details Setup an I2C transaction using the slave addr and type */
-	int setup(uint16_t slave_addr, i2c_transfer_t type = I2C_TRANSFER_NORMAL){
+	int setup(u16 slave_addr, u8 type = SETUP_NORMAL_TRANSFER){
 		i2c_reqattr_t req;
 		req.slave_addr = slave_addr;
 		req.transfer = type;
@@ -46,7 +53,7 @@ public:
 	}
 
 	/*! \details Set attributes using specified bitrate and pin assignment. */
-	int set_attr(uint32_t bitrate = 100000, u8 pin_assign = 0){
+	int set_attr(u32 bitrate = 100000, u8 pin_assign = 0){
 		i2c_attr_t attr;
 		attr.bitrate = bitrate;
 		attr.pin_assign = pin_assign;
@@ -85,6 +92,7 @@ public:
 	 * @return Zero on success
 	 */
 	int set(int loc, int bit, bool high = true);
+
 	/*! \details Clear the bit in a register on an I2C device */
 	inline int clear(int loc, int bit){ return set(loc, bit, false); }
 

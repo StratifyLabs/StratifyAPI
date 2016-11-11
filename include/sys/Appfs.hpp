@@ -54,7 +54,13 @@ public:
 	 * @return Zero on success or -1 with errno set accordingly
 	 *
 	 */
-	static int create(const char * name, const void * buf, int nbyte, const char * mount = "/app", int (*update)(void *, int, int) = 0, void * context = 0, link_transport_mdriver_t * driver = 0);
+	static int create(const char * name,
+			const void * buf,
+			int nbyte,
+			const char * mount = "/app",
+			bool (*update)(void *, int, int) = 0,
+			void * context = 0,
+			link_transport_mdriver_t * driver = 0);
 
 
 	/*! \details Returns the page size for writing data */

@@ -16,6 +16,8 @@ public:
 
 	/*! \details Construct a new ButtonPin
 	 *
+	 * The pin must be initialized using Pin::init()
+	 *
 	 * @param port The port associated with the pin
 	 * @param pin The pin number on the port for the button input
 	 * @param active_value true for active high and false for active low

@@ -895,7 +895,7 @@ int LpcPhy::lpc_wait_response(const char * response, u16 timeout){
  * UU encoding.
  * \return Number of bytes written, <0 on error
  */
-i32 LpcPhy::lpc_write_data(void * src /*! A pointer to the source data */,
+s32 LpcPhy::lpc_write_data(void * src /*! A pointer to the source data */,
 		u32 size /*! The number of bytes to write */){
 	char buf[1024];
 	uint8_t line;
@@ -990,7 +990,7 @@ i32 LpcPhy::lpc_write_data(void * src /*! A pointer to the source data */,
  * read is UU decoded and stored in the destination buffer.
  * \return Number of bytes read, <0 on error
  */
-i32 LpcPhy::lpc_read_data(void * dest /*! A pointer to the destination buffer */,
+s32 LpcPhy::lpc_read_data(void * dest /*! A pointer to the destination buffer */,
 		u32 size /*! The size of the destination buffer */){
 	u16 j;
 	uint8_t retry;

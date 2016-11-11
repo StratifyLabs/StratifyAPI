@@ -156,13 +156,13 @@ public:
 		}
 	}
 
-	/*! \details Write a key/number pair to the file (i32)
+	/*! \details Write a key/number pair to the file (s32)
 	 *
 	 * @param key The value key
 	 * @param v The number to write
 	 * @return Number of bytes stored (4) if successful
 	 */
-	int write(const char * key, i32 v){ return son_write_num(&m_son, key, v); }
+	int write(const char * key, s32 v){ return son_write_num(&m_son, key, v); }
 
 	/*! \details Write a key/number pair to the file (u32)
 	 *
@@ -236,17 +236,17 @@ public:
 	 */
 	int read_str(const char * access, char * str, son_size_t capacity){ return son_read_str(&m_son, access, str, capacity); }
 
-	/*! \details Read the specified key as a number (i32).  If the original
-	 * key was not written as a i32, it will be converted to one.  A string
-	 * of "100" will be converted to (i32)100.  Objects that cannot be converted will return 0.
+	/*! \details Read the specified key as a number (s32).  If the original
+	 * key was not written as a s32, it will be converted to one.  A string
+	 * of "100" will be converted to (s32)100.  Objects that cannot be converted will return 0.
 	 *
 	 * @param access Key parameters
 	 * @return The number
 	 */
-	i32 read_num(const char * access){ return son_read_num(&m_son, access); }
+	s32 read_num(const char * access){ return son_read_num(&m_son, access); }
 
 	/*! \details Read the specified key as a number (u32).  If the original
-	 * key was not written as a i32, it will be converted to one.  A string
+	 * key was not written as a s32, it will be converted to one.  A string
 	 * of "100" will be converted to (u32)100.  Objects that cannot be converted will return 0.
 	 *
 	 * @param access Key parameters
@@ -255,7 +255,7 @@ public:
 	u32 read_unum(const char * access){ return son_read_unum(&m_son, access); }
 
 	/*! \details Read the specified key as a number (float).  If the original
-	 * key was not written as a i32, it will be converted to one.  A string
+	 * key was not written as a s32, it will be converted to one.  A string
 	 * of "100" will be converted to (float)100.  Objects that cannot be converted will return 0.
 	 *
 	 * @param access Key parameters

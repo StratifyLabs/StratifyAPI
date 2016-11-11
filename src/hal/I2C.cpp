@@ -42,7 +42,7 @@ int I2C::write(int loc, u8 reg){
 
 int I2C::set(int loc, int bit, bool high){
 	int ret;
-	uint8_t tmp;
+	u8 tmp;
 	ret = read(loc, tmp);
 	if( ret < 0 ){
 		return ret;

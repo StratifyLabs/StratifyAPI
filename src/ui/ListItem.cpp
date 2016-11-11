@@ -185,7 +185,7 @@ ElementLinked & ListDir::at(list_attr_size_t i){
 	}
 
 	if( !is_suffix_visible() ){
-		i32 k;
+		s32 k;
 		for(k=strlen(m_dir.name())-1; k>=0; k--){
 			if( m_dir.name()[k] == '.' ){
 				m_dir.data()[k] = 0;
