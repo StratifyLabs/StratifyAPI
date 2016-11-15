@@ -93,11 +93,11 @@
 #ifndef STFY_APP_PHY_HPP_
 #define STFY_APP_PHY_HPP_
 
-#include <unistd.h>
 #include <iface/link.h>
 #include <fcntl.h>
 
 #ifndef __link
+#include <unistd.h>
 #include "../sys/Aio.hpp"
 #else
 #undef fileno
