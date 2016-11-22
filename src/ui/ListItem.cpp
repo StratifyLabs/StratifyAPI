@@ -214,9 +214,9 @@ void ListDir::recount(void){
 	int ret;
 	ret = m_dir.count();
 	if( ret > 0 ){
-		m_total = ret;
+		m_size = ret;
 	} else {
-		m_total = 1;
+		m_size = 1;
 		m_item.text_attr().assign("Empty");
 	}
 }

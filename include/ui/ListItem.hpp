@@ -169,7 +169,7 @@ public:
 	virtual ElementLinked & at(list_attr_size_t i);
 
 	/*! \details Return the total entries in the list */
-	inline list_attr_size_t size() const { return m_total; }
+	inline list_attr_size_t size() const { return m_size; }
 
 	/*! \details This method changes the visibility of the file suffix in the list */
 	inline void set_suffix_visible(bool v = true){
@@ -196,12 +196,12 @@ protected:
 		FLAG_SUFFIX_VISIBLE = Element::FLAG_ELEMENT_TOTAL
 	};
 
-	inline void set_total(size_t total){ m_total = total; }
+	inline void set_size(size_t total){ m_size = total; }
 
 private:
 	sys::Dir m_dir;
 	/*! \todo List inherits ListAttr so the total entries should already be stored somewhere */
-	size_t m_total;
+	size_t m_size;
 	ListItem m_item;
 	void recount(void);
 	list_dir_callback_t m_callback;

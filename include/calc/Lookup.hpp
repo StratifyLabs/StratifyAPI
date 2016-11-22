@@ -8,6 +8,30 @@ namespace calc {
 /*! \brief Lookup Table Template Class
  * \details This class is for implementing lookup tables
  * using linear extrapolation.
+ *
+ * \code
+ *
+ * #include <stfy/calc.hpp>
+ *
+ * #define ENTRIES 4
+ *
+ * const float lookup_table[ENTRIES*2] = {  //for each entry there are 2 float values
+ * 	0.0, 2.0,  //this is an x,y pair where x is 0.0 and y is 2.0, list must have x values in ascending order
+ * 	1.0, 4.0,
+ * 	2.0, 16.0,
+ * 	3.0, 25.0
+ * };
+ *
+ * float lookup_value(float x){
+ * 	Lookup<float> lookup(lookup_table, ENTRIES);
+ * 	return lookup.calc_value(x);
+ * }
+ *
+ *
+ * \endcode
+ *
+ *
+ *
  */
 template<typename data_type>class Lookup {
 public:

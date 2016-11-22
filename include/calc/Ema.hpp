@@ -95,20 +95,23 @@ private:
 /*! \details See \ref Ema for details */
 class Ema_s32 : public Ema<u16, s32, i64> {
 public:
+	/*! \details Construct a EMA object for a signed 32 bit calculations */
 	Ema_s32(s32 start, u16 alpha) : Ema(start, alpha){}
 };
 
 /*! \brief Exponential Moving Average class (i16) */
 /*! \details See \ref Ema for details */
-class Ema_i16 : public Ema<u8, i16, s32> {
+class Ema_s16 : public Ema<u8, s16, s32> {
 public:
-	Ema_i16(i16 start, u8 alpha) : Ema(start, alpha){}
+	/*! \details Construct a EMA object for a signed 16 bit calculations */
+	Ema_s16(i16 start, u8 alpha) : Ema(start, alpha){}
 };
 
 /*! \brief Exponential Moving Average class (u32) */
 /*! \details See \ref Ema for details */
 class Ema_u32 : public Ema<u16, u32, u64> {
 public:
+	/*! \details Construct a EMA object for a unsigned 32 bit calculations */
 	Ema_u32(u32 start, u16 alpha) : Ema(start, alpha){}
 };
 
@@ -116,6 +119,7 @@ public:
 /*! \details See \ref Ema for details */
 class Ema_u16 : public Ema<u8, u16, u32> {
 public:
+	/*! \details Construct a EMA object for a unsigned 16 bit calculations */
 	Ema_u16(u16 start, u8 alpha) : Ema(start, alpha){}
 };
 
@@ -123,17 +127,21 @@ public:
 /*! \details See \ref Ema for details */
 class Ema_float {
 public:
+	/*! \details Construct a EMA object for floating point calculations */
 	Ema_float(float start, float alpha){ m_alpha = alpha; m_average = start; }
 	static float small_max(){ return 1.0; }
+	/*! \details Calculate the next value based on the given input */
 	float calc(float in){
 		float tmp;
 		m_average = in * (m_alpha) + m_average * (1.0 - m_alpha);
 		return m_average;
 	}
+	/*! \details Access the current average value */
 	float average() const { return m_average; }
+	/*! \details Set the average value */
 	void set_average(float v){ m_average = v; }
 
-	//depreacted methods
+	//deprecated methods
 	void set(float v){ m_average = v; }
 	float avg() const { return m_average; }
 
