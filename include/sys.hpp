@@ -17,12 +17,12 @@ namespace sys {};
 #include "sys/Sched.hpp"
 #include "sys/Timer.hpp"
 #include "sys/Time.hpp"
-#include "sys/Trace.hpp"
 #include "sys/Dbug.hpp"
 #include "sys/DbugStdout.hpp"
 #include "sys/DbugUart.hpp"
 #endif
 
+#include "sys/Trace.hpp"
 #include "sys/Kernel.hpp"
 #include "sys/Appfs.hpp"
 #include "sys/Dir.hpp"

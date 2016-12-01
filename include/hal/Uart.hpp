@@ -96,7 +96,7 @@ public:
 	int set_attr(int baudrate /*! Baudrate */ = 19200,
 			int pin_assign /*! Pin assignment */ = 0,
 			int parity /*! Parity */ = UART_PARITY_NONE,
-			int stop /*! Number of stop bits */ = UART_ATTR_STOP_BITS_2,
+			int stop /*! Number of stop bits */ = STOP1,
 			int width /*! bits per character */ = 8){
 		uart_attr_t attr;
 		attr.baudrate = baudrate;

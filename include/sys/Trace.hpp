@@ -26,11 +26,19 @@ public:
 	Trace& operator=(const char * a){ var::String::operator=(a); return *this; }
 	Trace& operator=(const var::String & a){ var::String::operator=(a); return *this; }
 
+#if !defined __link
 	inline void message() MCU_ALWAYS_INLINE { stratify_trace_event(POSIX_TRACE_MESSAGE, c_str(), size()); }
 	inline void warning() MCU_ALWAYS_INLINE { stratify_trace_event(POSIX_TRACE_WARNING, c_str(), size()); }
 	inline void error() MCU_ALWAYS_INLINE { stratify_trace_event(POSIX_TRACE_ERROR, c_str(), size()); }
 	inline void critical() MCU_ALWAYS_INLINE { stratify_trace_event(POSIX_TRACE_CRITICAL, c_str(), size()); }
 	inline void fatal() MCU_ALWAYS_INLINE { stratify_trace_event(POSIX_TRACE_FATAL, c_str(), size()); }
+#else
+	inline void message(){}
+	inline void warning(){}
+	inline void error(){}
+	inline void critical(){}
+	inline void fatal(){}
+#endif
 
 };
 

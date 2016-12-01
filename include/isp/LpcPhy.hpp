@@ -5,6 +5,7 @@
 
 #include "../hal/Uart.hpp"
 #include "../hal/Pin.hpp"
+#include "../sys/Trace.hpp"
 
 #define LPC_ISP_UNLOCK_CODE "23130"
 
@@ -17,7 +18,10 @@ public:
 	LpcPhy(hal::Uart & uart, hal::Pin & reset, hal::Pin & ispreq) : m_uart(uart), m_reset(reset), m_ispreq(ispreq){
 		m_echo = 0;
 		m_ram_buffer = 0x40000200;
-		m_is_lpc177x_8x = false;
+		m_is_return_code_newline = false;
+		m_is_uuencode = false;
+		m_pinassign = 0;
+		m_max_speed = MAX_SPEED_115200;
 	}
 
 
@@ -25,20 +29,20 @@ public:
 	int exit();
 	int open(int crystal);
 	int close();
-	int writemem(u32 loc, const void * buf, int nbyte, u32 sector);
+	int write_memory(u32 loc, const void * buf, int nbyte, u32 sector);
 	void set_ram_buffer(u32 addr);
-	int readmem(u32 loc, void * buf, int nbyte);
+	int read_memory(u32 loc, void * buf, int nbyte);
 	int reset();
 	int start_bootloader();
 	int sync_bootloader(u32 crystal);
 	int sync_bootloader_lpc177x_8x(u32 crystal);
 	int unlock(const char * unlock_code);
-	int echo_off();
-	int echo_on();
-	int wr_ram(u32 ram_dest /*! The RAM destination address--must be a word boundary */,
+	int disable_echo();
+	int enable_echo();
+	int write_ram(u32 ram_dest /*! The RAM destination address--must be a word boundary */,
 			void * src /*! A pointer to the source data */,
 			u32 size /*! The number of bytes to write--must be a multiple of 4 */);
-	u32 rd_mem(void * dest /*! A pointer to the destination memory */,
+	u32 read_mem(void * dest /*! A pointer to the destination memory */,
 			u32 src_addr /*! The source address to read--must be a word boundary */,
 			u32 size /*! The number of bytes to read--must be a multiple of 4 */);
 	int prep_sector(u32 start /*! The first sector to prepare */,
@@ -52,11 +56,30 @@ public:
 			u32 end /*! The last sector to erase--must be >= start */);
 	int blank_check_sector(u32 start /*! The first sector to blank check */,
 			u32 end /*! The last sector to blank check--must be >= start */);
-	u32 rd_part_id();
-	u32 rd_boot_version();
-	int memcmp(u32 addr0 /*! The beginning of the first block */,
+	u32 read_part_id();
+	u32 read_boot_version();
+	int compare_memory(u32 addr0 /*! The beginning of the first block */,
 			u32 addr1 /*! The beginning of the second block */,
 			u32 size /*! The number of bytes to compare */);
+
+	void set_uuencode(bool v = true){ m_is_uuencode = v; }
+	bool is_uuencode() const  { return m_is_uuencode; }
+
+	void set_max_speed(u16 v){
+		m_max_speed = v;
+		if( m_max_speed > MAX_SPEED_9600 ){
+			m_max_speed = MAX_SPEED_9600;
+		}
+	}
+
+	enum {
+		MAX_SPEED_115200,
+		MAX_SPEED_78600,
+		MAX_SPEED_57600,
+		MAX_SPEED_38400,
+		MAX_SPEED_19200,
+		MAX_SPEED_9600
+	};
 
 private:
 	char m_echo;
@@ -64,19 +87,25 @@ private:
 	hal::Pin & m_reset;
 	hal::Pin & m_ispreq;
 	u32 m_ram_buffer;
-	int32_t lpc_write_data(void * src, u32 size);
-	int32_t lpc_read_data(void * dest, u32 size);
+	int m_pinassign;
+	bool m_is_return_code_newline;
+	bool m_is_uuencode;
+	u16 m_max_speed;
+
+	int send_command(const char * cmd, int timeout, int wait_ms = 0);
+	s32 write_data(void * src, u32 size);
+	s32 read_data(void * dest, u32 size);
 	int get_line(void * buf, int nbyte, int max_wait);
-	int lpc_rd_return_code(u16 timeout);
-	int lpc_wait_response(const char * response, u16 timeout);
-	int lpc_wait_ok(u16 timeout);
+	int read_return_code(u16 timeout);
+	int wait_response(const char * response, u16 timeout);
+	int wait_ok(u16 timeout);
 
-	bool m_is_lpc177x_8x;
-	bool is_lpc177x_8x(){ return m_is_lpc177x_8x; }
-	void set_lpc177x_8x(bool enabled = true){ m_is_lpc177x_8x = enabled; }
 
-	int sendcommand(const char * cmd, int timeout, int wait_ms = 0);
+	bool is_return_code_newline(){ return m_is_return_code_newline; }
+	void set_return_code_newline(bool enabled = true){ m_is_return_code_newline = enabled; }
 
+
+	sys::Trace m_trace;
 	int flush();
 
 };

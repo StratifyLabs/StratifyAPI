@@ -6,6 +6,7 @@
 #include <mcu/types.h>
 #include "../hal/Uart.hpp"
 #include "../hal/Pin.hpp"
+#include "../sys/Trace.hpp"
 #include "Isp.hpp"
 #include "LpcPhy.hpp"
 
@@ -13,9 +14,11 @@ namespace isp {
 
 class LpcIsp : public Isp {
 public:
+
+	/*! \details Construct an LPC ISP object using the specified UART, reset pin and isp request pin */
 	LpcIsp(hal::Uart & uart, hal::Pin & rst, hal::Pin & ispreq) : m_phy(uart, rst, ispreq){}
 
-	int program(const char * filename, int crystal, const char * dev, bool (*progress)(void*,int, int), void * context);
+	int program(const char * filename, int crystal, const char * dev, bool (*progress)(void*,int, int), void * context = 0);
 	int read(const char * filename, int crystal, bool (*progress)(void*,int, int), void * context);
 	char ** getlist();
 
@@ -40,6 +43,8 @@ private:
 
 	int write_vector_checksum(unsigned char * hex_buffer, const char * dev);
 	int prog_shutdown();
+
+	sys::Trace m_trace;
 };
 
 };

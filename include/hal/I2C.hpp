@@ -25,6 +25,13 @@ public:
 		SETUP_WRITE_PTR_TRANSFER /*! \brief I2C transfer that only writes the pointer (no data is transferred) */ = I2C_TRANSFER_WRITE_PTR
 	};
 
+	enum {
+		MASTER /*! \brief I2C acts as master */ = I2C_ATTR_FLAG_MASTER,
+		SLAVE /*! \brief I2C acts as slave */ = I2C_ATTR_FLAG_SLAVE,
+		SLAVE_ACK_GENERAL_CALL /*! \brief I2C slave will ack the general call */ = I2C_ATTR_FLAG_SLAVE_ACK_GENERAL_CALL,
+		PULLUP /*! \brief Enable internal resistor pullups where available */ = I2C_ATTR_FLAG_PULLUP
+	};
+
 	/*! \details Get the I2C attributes */
 	int get_attr(i2c_attr_t & attr);
 	/*! \details Set the I2C attributes */
@@ -53,10 +60,11 @@ public:
 	}
 
 	/*! \details Set attributes using specified bitrate and pin assignment. */
-	int set_attr(u32 bitrate = 100000, u8 pin_assign = 0){
+	int set_attr(u32 bitrate = 100000, u8 pin_assign = 0, u16 o_flags = MASTER){
 		i2c_attr_t attr;
 		attr.bitrate = bitrate;
 		attr.pin_assign = pin_assign;
+		attr.o_flags = o_flags;
 		return set_attr(attr);
 	}
 

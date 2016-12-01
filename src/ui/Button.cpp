@@ -42,9 +42,18 @@ Event Button::event(){
 
 void Button::update(void){
 	if( get_is_active() == true ){ //check to see if Pin is in the active state
-		m_timer.start(); //start the timer if it hasn't been started
+		if( m_timer.is_running() == false ){
+			m_flags.press_reported = 0;
+			m_flags.release_reported = 0;
+			m_flags.held_reported = 0;
+			m_flags.actuation_reported = 0;
+			m_flags.duration_reported = 0;
+			m_timer.restart(); //start the timer if it hasn't been started
+		}
 	} else {
-		m_timer.stop(); //stop the timer (if it hasn't been stopped yet)
+		if( m_timer.is_running() == true ){
+			m_timer.stop(); //stop the timer (if it hasn't been stopped yet)
+		}
 	}
 }
 
@@ -53,7 +62,12 @@ u32 Button::get_duration(){
 
 	//reset the timer so the duration is only returned once after the button is released
 	if( m_timer.is_stopped() ){
-		m_timer.reset();
+		if( m_flags.duration_reported == 0 ){
+			m_flags.duration_reported = 1;
+		} else {
+			value = 0;
+		}
+		//m_timer.reset();
 	}
 
 	return value;
@@ -63,9 +77,6 @@ bool Button::get_pressed(){
 	if( m_flags.press_reported == 0 ){
 		if( m_timer.is_running() ){
 			m_flags.press_reported = 1;
-			m_flags.release_reported = 0;
-			m_flags.held_reported = 0;
-			m_flags.actuation_reported = 0;
 			return true;
 		}
 	}
@@ -75,9 +86,7 @@ bool Button::get_pressed(){
 bool Button::get_released(){
 	if( m_flags.release_reported == 0 ){
 		if( !m_timer.is_running() ){
-			m_flags.press_reported = 0;
 			m_flags.release_reported = 1;
-			m_flags.held_reported = 0;
 			return true;
 		}
 	}

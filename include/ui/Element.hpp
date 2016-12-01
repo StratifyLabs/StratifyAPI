@@ -28,6 +28,8 @@ public:
 
 	/*! \details Returns true if element is enabled */
 	inline bool is_enabled() const { return flag(FLAG_ENABLED); }
+	/*! \details Enable the element */
+	inline void set_enable(bool v = true){ set_flag(FLAG_ENABLED, v); }
 	inline void set_enabled(bool v = true){ set_flag(FLAG_ENABLED, v); }
 
 	/*! \details Returns true if element is visible */

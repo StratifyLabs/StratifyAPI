@@ -30,6 +30,44 @@ static lpc_device_t devices[] = {
 				.ram_start = 0x40000000
 		},
 		{
+				.prefix = "lpc8",
+				.checksum_addr = 0x1C,
+				.ram_start = 0x10000400,
+				.sectors = 32,
+				.sector_table[0] = 1024,
+				.sector_table[1] = 1024,
+				.sector_table[2] = 1024,
+				.sector_table[3] = 1024,
+				.sector_table[4] = 1024,
+				.sector_table[5] = 1024,
+				.sector_table[6] = 1024,
+				.sector_table[7] = 1024,
+				.sector_table[8] = 1024,
+				.sector_table[9] = 1024,
+				.sector_table[10] = 1024,
+				.sector_table[11] = 1024,
+				.sector_table[12] = 1024,
+				.sector_table[13] = 1024,
+				.sector_table[14] = 1024,
+				.sector_table[15] = 1024,
+				.sector_table[16] = 1024,
+				.sector_table[17] = 1024,
+				.sector_table[18] = 1024,
+				.sector_table[19] = 1024,
+				.sector_table[20] = 1024,
+				.sector_table[21] = 1024,
+				.sector_table[22] = 1024,
+				.sector_table[23] = 1024,
+				.sector_table[24] = 1024,
+				.sector_table[25] = 1024,
+				.sector_table[26] = 1024,
+				.sector_table[27] = 1024,
+				.sector_table[28] = 1024,
+				.sector_table[29] = 1024,
+				.sector_table[30] = 1024,
+				.sector_table[31] = 1024
+		},
+		{
 				.prefix = "lpc13",
 				.checksum_addr = 0x1C,
 				.ram_start = 0x10000000,
@@ -81,8 +119,6 @@ static lpc_device_t devices[] = {
 				.sector_table[29] = 32768,
 				.sector_table[30] = 32768,
 				.sector_table[31] = 32768
-
-
 		}
 };
 
@@ -93,7 +129,7 @@ int32_t lpc_device_get_checksum_addr(const char * dev){
 	int i;
 	for(i=0; i < TOTAL_DEVICES; i++){
 		isplib_debug(3, "Checking for %s at 0x%X\n", devices[i].prefix, devices[i].checksum_addr);
-		if ( !strncmp(dev, devices[i].prefix, 5) ){
+		if ( !strncmp(dev, devices[i].prefix, strlen(devices[i].prefix)) ){
 			return devices[i].checksum_addr;
 		}
 	}
@@ -104,7 +140,7 @@ int32_t lpc_device_get_checksum_addr(const char * dev){
 uint32_t lpc_device_get_ram_start(const char * dev){
 	int i;
 	for(i=0; i < TOTAL_DEVICES; i++){
-		if ( !strncmp(dev, devices[i].prefix, 5) ){
+		if ( !strncmp(dev, devices[i].prefix, strlen(devices[i].prefix)) ){
 			return devices[i].ram_start;
 		}
 	}
@@ -114,7 +150,7 @@ uint32_t lpc_device_get_ram_start(const char * dev){
 uint32_t lpc_device_get_sector_number(const char * dev, uint32_t addr){
 	int i;
 	for(i=0; i < TOTAL_DEVICES; i++){
-		if ( !strncmp(dev, devices[i].prefix, 5) ){
+		if ( !strncmp(dev, devices[i].prefix, strlen(devices[i].prefix)) ){
 			return lpc_device_lookup_sector_by_dev(i, addr);
 		}
 	}

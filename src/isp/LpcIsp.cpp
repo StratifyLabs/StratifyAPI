@@ -5,9 +5,10 @@
  *      Author: tgil
  */
 
-#include <isp/LpcIsp.hpp>
 #include <unistd.h>
 #include <stdlib.h>
+#include "isp/LpcIsp.hpp"
+#include "sys/Timer.hpp"
 using namespace isp;
 
 #include "isplib.h"
@@ -47,6 +48,7 @@ int LpcIsp::copy_names(char * device, char * pio0, char * pio1){
 
 
 int LpcIsp::program(const char * filename, int crystal, const char * dev, bool (*progress)(void*,int,int), void * context){
+	int ret;
 	FILE * f;
 	u8 * image_buffer;
 	u32 size;
@@ -56,35 +58,68 @@ int LpcIsp::program(const char * filename, int crystal, const char * dev, bool (
 
 	device = dev;
 
-	if ( init_prog_interface(crystal) ){
-		isplib_error("Failed to start interface\n");
-		return -1;
+	if( strncmp(dev, "lpc8", 4) == 0 ){
+		printf("LPC8xx mode\n");
+		m_phy.set_max_speed(LpcPhy::MAX_SPEED_38400);
+		m_phy.set_uuencode(false);
+
+		m_trace.assign("Program LPC8 mode");
+		m_trace.message();
+	} else {
+		m_phy.set_uuencode(true);
 	}
 
+	sys::Timer::wait_msec(10);
+
+	if ( (ret = init_prog_interface(crystal)) < 0 ){
+		m_trace.assign("Start interface");
+		m_trace.error();
+		isplib_error("Failed to start interface\n");
+		return ret;
+	}
+
+	sys::Timer::wait_msec(10);
+	printf("Erase device\n");
 	if ( erase_dev() ){
+		m_trace.assign("Erase device");
+		m_trace.error();
 		isplib_error("Failed to erase device\n");
 		return -1;
 	}
 
+	sys::Timer::wait_msec(10);
 	f = fopen(filename, "rb");
 	if ( f != NULL ){
 		fseek(f, 0, SEEK_END); // seek to end of file
 		size = ftell(f); // get current file pointer
-		fclose(f);
+		fclose(f); //close the file
+
+		sys::Timer::wait_msec(10);
+		sprintf(m_trace.cdata(), "Image size:%d", (int)size);
+		m_trace.message();
 	} else {
+		printf("Failed to open %s\n", filename);
+		perror("Failed to open");
+		m_trace.assign("Didn't open file");
+		m_trace.error();
 		isplib_error("Could not open file %s\n", filename);
 		return -1;
 	}
 
 	if (!size){
 		isplib_error("Error:  Binary File Error\n");
+		m_trace.assign("Size error");
+		m_trace.error();
 		return -2;
 	}
 
 	isplib_debug(DEBUG_LEVEL, "File size is %d\n", (int)size);
+	printf("malloc buffer\n");
 	image_buffer = (u8*)malloc( size );
 	if (!image_buffer){
 		isplib_error("Failed to allocate memory\n");
+		m_trace.assign("Malloc error");
+		m_trace.error();
 		return -3;
 	}
 	memset(image_buffer, 0xFF, size);
@@ -93,12 +128,16 @@ int LpcIsp::program(const char * filename, int crystal, const char * dev, bool (
 
 	if ( f != NULL ){
 		if ( (bytes_read = fread(image_buffer, 1, size, f)) != size ){
+			m_trace.assign("Failed to read file");
+			m_trace.error();
 			isplib_error("Could not read file %s (%d of %d bytes read)\n", filename, bytes_read, size);
 			fclose(f);
 			return -1;
 		}
 		fclose(f);
 	} else {
+		m_trace.assign("Failed to open file");
+		m_trace.error();
 		isplib_error("Could not open file %s to read image\n", filename);
 		return -1;
 	}
@@ -109,6 +148,9 @@ int LpcIsp::program(const char * filename, int crystal, const char * dev, bool (
 
 	//Write the patch to the vector checksum
 	if ( write_vector_checksum(image_buffer, dev) ) {
+		sys::Timer::wait_msec(10);
+		m_trace.assign("failed to set checksum");
+		m_trace.error();
 		isplib_error("Device %s is not supported\n", dev);
 		return -1;
 	}
@@ -118,6 +160,8 @@ int LpcIsp::program(const char * filename, int crystal, const char * dev, bool (
 	//Write the program memory
 	failed = 0;
 	if ( !write_progmem(image_buffer, start_address, size, progress, context) ){
+		m_trace.assign("failed to write image");
+		m_trace.error();
 		failed = 1;
 		isplib_error("Failed to write program memory\n");
 		return -1;
@@ -177,14 +221,14 @@ char ** LpcIsp::getlist(){
  */
 
 int LpcIsp::init_prog_interface(int crystal){
-
+	int ret;
 	//Open the ISP interface using phy.open()
-	if ( m_phy.open(crystal) == 0 ){
+	if ( ( ret = m_phy.open(crystal)) == 0 ){
 		return 0;
 	}
 
 	m_phy.close();
-	return -1;
+	return ret;
 }
 
 
@@ -207,7 +251,7 @@ u32 LpcIsp::read_progmem(void * data, u32 addr, u32 size, bool (*progress)(void*
 		if ( (size-bytes_read) > buffer_size ) page_size = buffer_size;
 		else page_size = size-bytes_read;
 
-		if ( m_phy.readmem(addr + bytes_read, &((char*)data)[bytes_read], page_size) != page_size ){
+		if ( m_phy.read_memory(addr + bytes_read, &((char*)data)[bytes_read], page_size) != page_size ){
 
 			isplib_error("Error reading data at address 0x%04X\n", (u32)(addr + bytes_read));
 			return bytes_read;
@@ -252,10 +296,12 @@ u32 LpcIsp::write_progmem(void * data, u32 addr, u32 size, bool (*progress)(void
 		if ( j < page_size ){ //only write if data has non 0xFF values
 			isplib_debug(DEBUG_LEVEL+1, "lpc_wr_pgmmem():Writing page starting at %d\n", addr + bytes_written);
 			sector = lpc_device_get_sector_number(device, addr+bytes_written);
-			if ( m_phy.writemem(addr + bytes_written,
+			if ( m_phy.write_memory(addr + bytes_written,
 					&((char*)data)[bytes_written], page_size,
 					sector ) != page_size ){
 				isplib_error("writing data at address 0x%04X\n", (u32)(addr + bytes_written));
+				sprintf(m_trace.cdata(), "failed to write 0x%04X", (u32)(addr + bytes_written));
+				m_trace.error();
 				return 0;
 			}
 		}
@@ -263,6 +309,8 @@ u32 LpcIsp::write_progmem(void * data, u32 addr, u32 size, bool (*progress)(void
 		bytes_written+=page_size;
 		if ( progress ){
 			if ( progress(context, bytes_written, size) ){
+				m_trace.assign("Aborted");
+				m_trace.warning();
 				return 0; //abort requested
 			}
 		}
@@ -311,14 +359,15 @@ int LpcIsp::write_vector_checksum(unsigned char * hex_buffer, const char * dev){
 	addr = lpc_device_get_checksum_addr(dev);
 
 	if ( addr < 0 ){
+		m_trace.assign("Device not supported");
+		m_trace.error();
 		isplib_error("Device %s not supported\n", dev);
 		return -1;
 	}
 
 
-	// Clear the vector at 0x14 so it doesn't affect the checksum:
-	for (i = 0; i < 4; i++)
-	{
+	// Clear the vector
+	for (i = 0; i < 4; i++){
 		hex_buffer[i + addr] = 0;
 	}
 
@@ -332,8 +381,7 @@ int LpcIsp::write_vector_checksum(unsigned char * hex_buffer, const char * dev){
 
 
 	checksum = (unsigned long) (0 - checksum);
-	for (i = 0; i < 4; i++)
-	{
+	for (i = 0; i < 4; i++){
 		hex_buffer[i + addr] = (unsigned char)(checksum >> (8 * i));
 	}
 

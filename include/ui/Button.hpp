@@ -37,6 +37,16 @@ public:
 	 */
 	static void set_held_duration(u32 v){ m_held_duration = v; }
 
+	/*! \details This method returns the max held duration which will effectively disable the
+	 * reporting of button holds
+	 *
+	 *
+	 *  \code
+	 *  Button::set_held_duration( Button::max_held_duration() );
+	 *  \endcode
+	 */
+	static u32 max_held_duration(){ return (u32)-1; }
+
 	/*! \details This method checks the state of the actuation and then returns
 	 * an Event if needed.
 	 *
@@ -50,7 +60,9 @@ public:
 	 */
 	ui::Event event();
 
+	/*! \details Set the event ID of the button */
 	void set_event_id(enum ui::Event::button_id v){ m_event_id = v; }
+	/*! \details Access the event ID of the button */
 	enum ui::Event::button_id event_id() const { return m_event_id; }
 
 	/*! \details Returns the duration of the last button press.
@@ -99,7 +111,6 @@ public:
 protected:
 
 	virtual bool get_is_active() const = 0;
-
 	static u32 m_held_duration;
 	enum ui::Event::button_id m_event_id;
 
@@ -112,6 +123,7 @@ private:
 		unsigned release_reported:1;
 		unsigned held_reported:1;
 		unsigned actuation_reported:1;
+		unsigned duration_reported:1;
 	};
 
 	struct button_flags m_flags;
