@@ -45,6 +45,7 @@ private:
 	int prog_shutdown();
 
 	sys::Trace m_trace;
+
 };
 
 };

@@ -5,6 +5,7 @@
 
 #include "../hal/Uart.hpp"
 #include "../hal/Pin.hpp"
+
 #include "../sys/Trace.hpp"
 
 #define LPC_ISP_UNLOCK_CODE "23130"
@@ -103,7 +104,6 @@ private:
 
 	bool is_return_code_newline(){ return m_is_return_code_newline; }
 	void set_return_code_newline(bool enabled = true){ m_is_return_code_newline = enabled; }
-
 
 	sys::Trace m_trace;
 	int flush();
