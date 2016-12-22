@@ -50,16 +50,17 @@ int LpcIsp::copy_names(char * device, char * pio0, char * pio1){
 int LpcIsp::program(const char * filename, int crystal, const char * dev, bool (*progress)(void*,int,int), void * context){
 	int ret;
 	FILE * f;
-	u8 * image_buffer;
+	u8 image_buffer[LPCPHY_RAM_BUFFER_SIZE];
+	const int image_page_size = LPCPHY_RAM_BUFFER_SIZE;
 	u32 size;
 	u32 bytes_read;
 	u32 start_address;
 	u8 failed;
+	u32 bytes_written = 0;
 
 	device = dev;
 
 	if( strncmp(dev, "lpc8", 4) == 0 ){
-		printf("LPC8xx mode\n");
 		m_phy.set_max_speed(LpcPhy::MAX_SPEED_38400);
 		m_phy.set_uuencode(false);
 
@@ -79,7 +80,6 @@ int LpcIsp::program(const char * filename, int crystal, const char * dev, bool (
 	}
 
 	sys::Timer::wait_msec(10);
-	printf("Erase device\n");
 	if ( erase_dev() ){
 		m_trace.assign("Erase device");
 		m_trace.error();
@@ -98,8 +98,6 @@ int LpcIsp::program(const char * filename, int crystal, const char * dev, bool (
 		sprintf(m_trace.cdata(), "Image size:%d", (int)size);
 		m_trace.message();
 	} else {
-		printf("Failed to open %s\n", filename);
-		perror("Failed to open");
 		m_trace.assign("Didn't open file");
 		m_trace.error();
 		isplib_error("Could not open file %s\n", filename);
@@ -114,31 +112,23 @@ int LpcIsp::program(const char * filename, int crystal, const char * dev, bool (
 	}
 
 	isplib_debug(DEBUG_LEVEL, "File size is %d\n", (int)size);
-	printf("malloc buffer\n");
-	image_buffer = (u8*)malloc( size );
-	if (!image_buffer){
-		isplib_error("Failed to allocate memory\n");
-		m_trace.assign("Malloc error");
-		m_trace.error();
-		return -3;
-	}
-	memset(image_buffer, 0xFF, size);
+	memset(image_buffer, 0xFF, image_page_size);
 
 	f = fopen(filename, "rb");
 
 	if ( f != NULL ){
-		if ( (bytes_read = fread(image_buffer, 1, size, f)) != size ){
+		if ( (bytes_read = fread(image_buffer, 1, image_page_size, f)) != image_page_size ){
 			m_trace.assign("Failed to read file");
 			m_trace.error();
 			isplib_error("Could not read file %s (%d of %d bytes read)\n", filename, bytes_read, size);
 			fclose(f);
 			return -1;
 		}
-		fclose(f);
 	} else {
 		m_trace.assign("Failed to open file");
 		m_trace.error();
 		isplib_error("Could not open file %s to read image\n", filename);
+		fclose(f);
 		return -1;
 	}
 
@@ -152,6 +142,7 @@ int LpcIsp::program(const char * filename, int crystal, const char * dev, bool (
 		m_trace.assign("failed to set checksum");
 		m_trace.error();
 		isplib_error("Device %s is not supported\n", dev);
+		fclose(f);
 		return -1;
 	}
 
@@ -159,23 +150,49 @@ int LpcIsp::program(const char * filename, int crystal, const char * dev, bool (
 
 	//Write the program memory
 	failed = 0;
-	if ( !write_progmem(image_buffer, start_address, size, progress, context) ){
-		m_trace.assign("failed to write image");
-		m_trace.error();
-		failed = 1;
-		isplib_error("Failed to write program memory\n");
-		return -1;
-	}
+	bytes_written = 0;
+	do {
 
+		if( bytes_written > 0 ){
+			bytes_read = fread(image_buffer, 1, image_page_size, f);
+		}
+
+		if( bytes_read > 0 ){
+
+			if ( !write_progmem(image_buffer, start_address + bytes_written, bytes_read, 0, 0) ){
+				m_trace.assign("failed to write image");
+				m_trace.error();
+				failed = 1;
+				isplib_error("Failed to write program memory\n");
+				fclose(f);
+				return -1;
+			}
+
+			bytes_written += bytes_read;
+		} else {
+			break;
+		}
+
+		if ( progress ){
+			if ( progress(context, bytes_written, size) ){
+				m_trace.assign("Aborted");
+				m_trace.warning();
+				return 0; //abort requested
+			}
+		}
+
+	} while( bytes_written < size );
 	prog_shutdown();
 
-	if ( !failed ){
+	fclose(f);
+
+	if ( !failed && (bytes_written == size) ){
 		isplib_debug(DEBUG_LEVEL, "Device Successfully Programmed\n");
 	} else {
 		isplib_error("Device Failed to program correctly\n");
+		return -1;
 	}
 
-	free(image_buffer);
 
 	return 0;
 
@@ -273,7 +290,6 @@ u32 LpcIsp::read_progmem(void * data, u32 addr, u32 size, bool (*progress)(void*
 }
 
 u32 LpcIsp::write_progmem(void * data, u32 addr, u32 size, bool (*progress)(void*,int, int), void * context){
-	int buffer_size;
 	int bytes_written;
 	int page_size;
 	int j;
@@ -281,16 +297,20 @@ u32 LpcIsp::write_progmem(void * data, u32 addr, u32 size, bool (*progress)(void
 	//char err;
 
 	//First read the buffer size
-	buffer_size = LPCPHY_RAM_BUFFER_SIZE;
 	bytes_written = 0;
 	do {
 
-		if ( (int)(size-bytes_written) > buffer_size ) page_size = buffer_size;
-		else page_size = size-bytes_written;
+		if ( (int)(size-bytes_written) > LPCPHY_RAM_BUFFER_SIZE ){
+			page_size = LPCPHY_RAM_BUFFER_SIZE;
+		} else {
+			page_size = size-bytes_written;
+		}
 
 		//Check to see if data is already all 0xFF
 		for(j=0; j < page_size; j++){
-			if ( ((unsigned char*)data)[bytes_written+j] != 0xFF ) break;
+			if ( ((unsigned char*)data)[bytes_written+j] != 0xFF ){
+				break;
+			}
 		}
 
 		if ( j < page_size ){ //only write if data has non 0xFF values
@@ -300,20 +320,13 @@ u32 LpcIsp::write_progmem(void * data, u32 addr, u32 size, bool (*progress)(void
 					&((char*)data)[bytes_written], page_size,
 					sector ) != page_size ){
 				isplib_error("writing data at address 0x%04X\n", (u32)(addr + bytes_written));
-				sprintf(m_trace.cdata(), "failed to write 0x%04X", (u32)(addr + bytes_written));
+				sprintf(m_trace.cdata(), "failed to write 0x%04lX", (u32)(addr + bytes_written));
 				m_trace.error();
 				return 0;
 			}
 		}
 		//delay_ms(2);
 		bytes_written+=page_size;
-		if ( progress ){
-			if ( progress(context, bytes_written, size) ){
-				m_trace.assign("Aborted");
-				m_trace.warning();
-				return 0; //abort requested
-			}
-		}
 	} while( bytes_written < (int)size );
 
 	return bytes_written;

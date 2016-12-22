@@ -37,9 +37,9 @@ public:
 	inline void critical() MCU_ALWAYS_INLINE { stratify_trace_event(POSIX_TRACE_CRITICAL, c_str(), size()); }
 	inline void fatal() MCU_ALWAYS_INLINE { stratify_trace_event(POSIX_TRACE_FATAL, c_str(), size()); }
 #else
-	Trace& operator=(const char * a){ return *this; }
+	Trace& operator=(const char * a){ a = 0; return *this; }
 	char * cdata(){ return m_cdata; }
-	void assign(const char * str){}
+	void assign(const char * str){ str = 0; } //suppress warnings
 	inline void message(){}
 	inline void warning(){}
 	inline void error(){}

@@ -21,7 +21,7 @@ typedef struct {
 } lpc_device_t;
 
 
-#define TOTAL_DEVICES 3
+#define TOTAL_DEVICES 4
 
 static lpc_device_t devices[] = {
 		{
