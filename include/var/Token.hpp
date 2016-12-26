@@ -29,10 +29,11 @@ public:
 	Token(const char * src, const char * delim, const char * ignore = 0, bool count_empty = false);
 
 
+	/*! \details Sorting Options */
 	enum sort_options {
-		SORT_NONE,
-		SORT_AZ,
-		SORT_ZA
+		SORT_NONE /*! Don't sort */,
+		SORT_AZ /*! Sort from A to Z */,
+		SORT_ZA /*! Sort from Z to A */
 	};
 
 
@@ -53,6 +54,8 @@ public:
 	 */
 	void parse(const char * delim, const char * ignore = 0);
 
+
+	/*! \details This method sorts the tokens as specified */
 	void sort(enum sort_options sort_option = SORT_NONE);
 
 
@@ -67,8 +70,13 @@ public:
 		return belongs_to(c, str, strlen(str));
 	}
 
-	bool count_empty_tokens() const { return m_count_empty_tokens; }
-	void set_count_empty_tokens(bool v = true){ m_count_empty_tokens = v; }
+	bool count_empty_tokens() const { return m_is_count_empty_tokens; }
+
+	/*! \details Access whether or not parse() will count empty tokens */
+	bool is_count_empty_tokens() const { return m_is_count_empty_tokens; }
+
+	/*! \details Set whether or not parse() should include empty tokens */
+	void set_count_empty_tokens(bool v = true){ m_is_count_empty_tokens = v; }
 
 
 	Token& operator=(const Token & token);
@@ -79,7 +87,7 @@ private:
 	void init_members();
 	unsigned int m_num_tokens;
 	unsigned int m_string_size;
-	bool m_count_empty_tokens;
+	bool m_is_count_empty_tokens;
 
 
 };

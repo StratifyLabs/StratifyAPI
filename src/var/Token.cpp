@@ -8,18 +8,18 @@ using namespace var;
 
 Token::Token(){
 	init_members();
-	m_count_empty_tokens = false;
+	m_is_count_empty_tokens = false;
 }
 
 Token::Token(char * mem, size_t s, const char * src, const char * delim, const char * ignore, bool count_empty) : String(mem, s, false){
 	init_members();
-	m_count_empty_tokens = count_empty;
+	m_is_count_empty_tokens = count_empty;
 	clear(); assign(src); parse(delim, ignore);
 }
 
 Token::Token(const char * src, const char * delim, const char * ignore, bool count_empty) : String(src){
 	init_members();
-	m_count_empty_tokens = count_empty;
+	m_is_count_empty_tokens = count_empty;
 	parse(delim, ignore);
 }
 
@@ -55,7 +55,7 @@ void Token::parse(const char * delim, const char * ignore){
 	p = cdata();
 	m_string_size = String::size();
 	end = p + m_string_size;
-	if( m_count_empty_tokens == true ){
+	if( m_is_count_empty_tokens == true ){
 		m_num_tokens++;
 	}
 	while( p < end ){
@@ -75,13 +75,13 @@ void Token::parse(const char * delim, const char * ignore){
 		//check to see if the current character is part of the delimiter string
 		if( belongs_to(*p, delim, len0) ){
 			*p = 0; //set the character to zero
-			if( m_count_empty_tokens == true ){
+			if( m_is_count_empty_tokens == true ){
 				m_num_tokens++;
 			}
 		}
 
 		//check for an empty token
-		if( m_count_empty_tokens == false ){
+		if( m_is_count_empty_tokens == false ){
 			if( *p != 0 ){
 				if( on_token == false ){
 					m_num_tokens++;
@@ -102,11 +102,11 @@ const char * Token::at(size_t n) const {
 	unsigned int token = 0;
 	p = c_str();
 
-	if( m_num_tokens <= n ){
+	if( n >= size() ){
 		return 0;
 	}
 
-	if( m_count_empty_tokens ){
+	if( m_is_count_empty_tokens ){
 		while( token != n ){
 			if( *p == 0 ){
 				token++;
@@ -202,7 +202,7 @@ Token & Token::operator=(const Token & token){
 	memcpy(data(), token.data_const(), token.capacity());
 	m_num_tokens = token.m_num_tokens;
 	m_string_size = token.m_string_size;
-	m_count_empty_tokens = token.m_count_empty_tokens;
+	m_is_count_empty_tokens = token.m_is_count_empty_tokens;
 	return *this;
 }
 
