@@ -20,6 +20,7 @@ namespace sys {};
 #include "sys/Dbug.hpp"
 #include "sys/DbugStdout.hpp"
 #include "sys/DbugUart.hpp"
+#include "sys/Cli.hpp"
 #endif
 
 #include "sys/Trace.hpp"
