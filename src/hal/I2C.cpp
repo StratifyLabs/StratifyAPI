@@ -18,8 +18,16 @@ int I2C::set_attr(const i2c_attr_t & attr){
 	return ioctl(I_I2C_SETATTR, &attr);
 }
 
-int I2C::setup(const i2c_reqattr_t & req){
-	return ioctl(I_I2C_SETUP, &req);
+int I2C::setup(const i2c_reqattr_t & setup){
+	return ioctl(I_I2C_SETUP, &setup);
+}
+
+int I2C::slave_setup(const i2c_slave_setup_t & setup){
+	return ioctl(I_I2C_SLAVE_SETUP, &setup);
+}
+
+int I2C::reset(){
+	return ioctl(I_I2C_RESET);
 }
 
 int I2C::err(){

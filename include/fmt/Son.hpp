@@ -3,6 +3,11 @@
 #ifndef SON_HPP_
 #define SON_HPP_
 
+
+#if defined __link
+#include <iface/link.h>
+#endif
+
 #include <mcu/types.h>
 #include <cstring>
 #include <unistd.h>
@@ -81,10 +86,17 @@ namespace fmt {
  */
 template<int stacksize> class Son {
 public:
-	Son(){ memset(&m_son, 0, sizeof(m_son)); }
+	Son(){
+		memset(&m_son, 0, sizeof(m_son));
+#if defined __link
+		set_driver(0);
+#endif
+	}
 
 #if defined __link
-	void set_handle(link_phy_t handle){ son_set_handle(&m_son, handle); }
+	void set_driver(void * driver){ son_set_driver(&m_son, driver); }
+	//deprecated
+	void set_handle(void * handle){ set_driver(handle); }
 #else
 	void reset(son_t * obj){ lseek(obj->phy.fd, 0, SEEK_SET); }
 #endif
@@ -95,7 +107,7 @@ public:
 	 */
 	int fileno() const {
 #if defined __link
-		if( m_son.phy.handle == 0 ){
+		if( m_son.phy.driver == 0 ){
 			return 0;
 		} else {
 			return m_son.phy.fd;

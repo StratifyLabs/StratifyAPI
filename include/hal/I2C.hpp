@@ -37,7 +37,25 @@ public:
 	/*! \details Set the I2C attributes */
 	int set_attr(const i2c_attr_t & attr);
 	/*! \details Setup an I2C transaction */
-	int setup(const i2c_reqattr_t & req);
+	int setup(const i2c_setup_t & setup);
+
+	/*! \details Reset the I2C bus state */
+	int reset();
+
+	/*! \details Setup the bus to listen for transactions as a slave */
+	int slave_setup(const i2c_slave_setup_t & setup);
+
+	/*! \details Setup the bus to listen for transactions as a slave */
+	int slave_setup(u8 addr, char * data, u16 size, u8 o_flags = 0){
+		i2c_slave_setup_t setup;
+		setup.addr = addr;
+		setup.data = data;
+		setup.size = size;
+		setup.o_flags = o_flags;
+		return slave_setup(setup);
+	}
+
+
 
 	/*! \details Get the last error */
 	int err();
