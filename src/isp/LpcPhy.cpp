@@ -107,12 +107,14 @@ int LpcPhy::init(int pinassign){
 		}
 	}
 
-
-	if( m_reset.init(Pio::OUTPUT) < 0 ){
+	if( m_reset.open() <  0 ){
 		isplib_error("Failed to init PIO reset %d\n", link_errno);
 		m_trace.assign("Init PIO reset");
 		m_trace.error();
 		return -3;
+	} else {
+		m_reset.set();
+		m_reset.set_attr(Pin::OUTPUT);
 	}
 
 	if( m_ispreq.init(Pio::OUTPUT) < 0 ){

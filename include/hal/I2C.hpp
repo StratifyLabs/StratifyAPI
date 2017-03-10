@@ -43,16 +43,16 @@ public:
 	int reset();
 
 	/*! \details Setup the bus to listen for transactions as a slave */
-	int slave_setup(const i2c_slave_setup_t & setup);
+	int setup_slave(const i2c_slave_setup_t & setup);
 
 	/*! \details Setup the bus to listen for transactions as a slave */
-	int slave_setup(u8 addr, char * data, u16 size, u8 o_flags = 0){
+	int setup_slave(u8 addr, char * data, u16 size, u8 o_flags = 0){
 		i2c_slave_setup_t setup;
 		setup.addr = addr;
 		setup.data = data;
 		setup.size = size;
 		setup.o_flags = o_flags;
-		return slave_setup(setup);
+		return setup_slave(setup);
 	}
 
 
@@ -94,7 +94,7 @@ public:
 	 * \endcode
 	 *
 	 */
-	int init(int bitrate = 100000, int pin_assign = 0){
+	int init(int bitrate = 100000, int pin_assign = 0, u16 o_flags = MASTER){
 		if( open() < 0 ){
 			return -1;
 		}

@@ -45,18 +45,15 @@
 				</macros>
 				<externalSettings>
 					<externalSetting>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/CoActionOS-Applib"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/SON"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/stfy"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/StratifyLib"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/StratifyLibapp"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/CoActionOS-Applib/Release_eon_link"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/SON/Release_eon_link"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/SON/build_release_link"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/stfy/build_release_link"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/StratifyLib/build_release_link"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/StratifyLibapp/build_release_link"/>
-						<entry flags="RESOLVED" kind="libraryFile" name="CoActionOS-Applib" srcPrefixMapping="" srcRootPath=""/>
 						<entry flags="RESOLVED" kind="libraryFile" name="SON" srcPrefixMapping="" srcRootPath=""/>
 						<entry flags="RESOLVED" kind="libraryFile" name="stfy" srcPrefixMapping="" srcRootPath=""/>
 						<entry flags="RESOLVED" kind="libraryFile" name="StratifyLib" srcPrefixMapping="" srcRootPath=""/>
@@ -76,7 +73,7 @@
 							<option id="cdt.managedbuild.option.gnu.cross.prefix.1483384405" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix" useByScannerDiscovery="false" value="" valueType="string"/>
 							<option id="cdt.managedbuild.option.gnu.cross.path.695301900" name="Path" superClass="cdt.managedbuild.option.gnu.cross.path" useByScannerDiscovery="false" value=" ${PathDelimiter}${TOOLSPATH}/bin" valueType="string"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1340364576" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
-							<builder autoBuildTarget="all" buildPath="${workspace_loc:/CoActionOS-Applib/Release_CoActionOS_lpc17xx}" cleanBuildTarget="clean" errorParsers="" id="org.eclipse.cdt.build.core.internal.builder.1391487503" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
+							<builder autoBuildTarget="all" buildPath="${workspace_loc:/StratifyLibapp}/build_release_link" cleanBuildTarget="clean" id="org.eclipse.cdt.build.core.internal.builder.820432942" incrementalBuildTarget="all" managedBuildOn="true" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
 							<tool command="${CC}" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.cross.c.compiler.2132321540" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
 								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.option.optimization.level.1550063230" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.size" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.737637840" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.none" valueType="enumerated"/>
@@ -184,17 +181,7 @@
 							<option id="cdt.managedbuild.option.gnu.cross.prefix.909834010" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix" value="${HOST}-" valueType="string"/>
 							<option id="cdt.managedbuild.option.gnu.cross.path.373596867" name="Path" superClass="cdt.managedbuild.option.gnu.cross.path" value=" ${PathDelimiter}${TOOLSPATH}/bin" valueType="string"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1519449066" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
-							<builder autoBuildTarget="all" buildPath="${workspace_loc:/CoActionOS-Applib/Release_CoActionOS_lpc17xx}" cleanBuildTarget="clean" errorParsers="" id="org.eclipse.cdt.build.core.internal.builder.1917232400" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder">
-								<outputEntries>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_link"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_son_armv7m"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_son_armv7em"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7m"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7em"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_sg_armv7m"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_app_armv7m"/>
-								</outputEntries>
-							</builder>
+							<builder autoBuildTarget="all" buildPath="${workspace_loc:/StratifyLibapp}/build_release_armv7m" cleanBuildTarget="clean" id="org.eclipse.cdt.build.core.internal.builder.112520020" incrementalBuildTarget="all" managedBuildOn="true" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
 							<tool command="gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.cross.c.compiler.1155613880" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
 								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.option.optimization.level.1430182407" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.size" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.382637404" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.none" valueType="enumerated"/>
@@ -297,17 +284,7 @@
 							<option id="cdt.managedbuild.option.gnu.cross.prefix.1286527200" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix" value="${HOST}-" valueType="string"/>
 							<option id="cdt.managedbuild.option.gnu.cross.path.579077873" name="Path" superClass="cdt.managedbuild.option.gnu.cross.path" value=" ${PathDelimiter}${TOOLSPATH}/bin" valueType="string"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.983737025" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
-							<builder autoBuildTarget="all" buildPath="${workspace_loc:/CoActionOS-Applib/Release_CoActionOS_lpc17xx}" cleanBuildTarget="clean" errorParsers="" id="org.eclipse.cdt.build.core.internal.builder.780910814" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder">
-								<outputEntries>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_link"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_son_armv7m"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_son_armv7em"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7m"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7em"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_sg_armv7m"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_app_armv7m"/>
-								</outputEntries>
-							</builder>
+							<builder autoBuildTarget="all" buildPath="${workspace_loc:/StratifyLibapp}/build_debug_armv7em_fpu" cleanBuildTarget="clean" id="org.eclipse.cdt.build.core.internal.builder.349412127" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
 							<tool command="gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.cross.c.compiler.1522861270" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
 								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.option.optimization.level.1925943024" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.size" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.656630409" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.none" valueType="enumerated"/>
@@ -410,17 +387,7 @@
 							<option id="cdt.managedbuild.option.gnu.cross.prefix.821843082" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix" value="${HOST}-" valueType="string"/>
 							<option id="cdt.managedbuild.option.gnu.cross.path.2023350382" name="Path" superClass="cdt.managedbuild.option.gnu.cross.path" value=" ${PathDelimiter}${TOOLSPATH}/bin" valueType="string"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1895365730" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
-							<builder autoBuildTarget="all" buildPath="${workspace_loc:/CoActionOS-Applib/Release_CoActionOS_lpc17xx}" cleanBuildTarget="clean" errorParsers="" id="org.eclipse.cdt.build.core.internal.builder.362085476" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder">
-								<outputEntries>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_link"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_son_armv7m"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_son_armv7em"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7m"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7em"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_sg_armv7m"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_app_armv7m"/>
-								</outputEntries>
-							</builder>
+							<builder autoBuildTarget="all" buildPath="${workspace_loc:/StratifyLibapp}/build_release_armv7em_fpu" cleanBuildTarget="clean" id="org.eclipse.cdt.build.core.internal.builder.1817355677" incrementalBuildTarget="all" managedBuildOn="true" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
 							<tool command="gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.cross.c.compiler.1577342698" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
 								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.option.optimization.level.360604942" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.size" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.1078246809" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.none" valueType="enumerated"/>
@@ -524,17 +491,7 @@
 							<option id="cdt.managedbuild.option.gnu.cross.prefix.1787952350" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix" value="${HOST}-" valueType="string"/>
 							<option id="cdt.managedbuild.option.gnu.cross.path.1364082653" name="Path" superClass="cdt.managedbuild.option.gnu.cross.path" value=" ${PathDelimiter}${TOOLSPATH}/bin" valueType="string"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.36848835" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
-							<builder autoBuildTarget="all" buildPath="${workspace_loc:/CoActionOS-Applib/Release_CoActionOS_lpc17xx}" cleanBuildTarget="clean" errorParsers="" id="org.eclipse.cdt.build.core.internal.builder.1100031474" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder">
-								<outputEntries>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_link"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_son_armv7m"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_son_armv7em"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7m"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_debug_son_armv7em"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_sg_armv7m"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="build_release_app_armv7m"/>
-								</outputEntries>
-							</builder>
+							<builder autoBuildTarget="all" buildPath="${workspace_loc:/StratifyLibapp}/build_debug_armv7m" cleanBuildTarget="clean" id="org.eclipse.cdt.build.core.internal.builder.712567466" incrementalBuildTarget="all" managedBuildOn="true" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
 							<tool command="gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.cross.c.compiler.1318113621" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
 								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.option.optimization.level.1776892532" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.size" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.299847881" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.none" valueType="enumerated"/>
@@ -583,85 +540,7 @@
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 		</cconfiguration>
 	</storageModule>
-	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="CoActionOS-Phylib.org.eclipse.linuxtools.cdt.autotools.core.projectType.2126067177" name="GNU Autotools" projectType="org.eclipse.linuxtools.cdt.autotools.core.projectType"/>
-	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Release_eon_arm_cm4_kernel"/>
-		<configuration configurationName="build_debug_son_armv7em_fpu"/>
-		<configuration configurationName="Release_fatfs_arm_cm4"/>
-		<configuration configurationName="Release_AES_link"/>
-		<configuration configurationName="build_release_son_armv7em"/>
-		<configuration configurationName="build_release_armv7m">
-			<resource resourceType="PROJECT" workspacePath="/SON"/>
-		</configuration>
-		<configuration configurationName="Release_hwpl_lpc13xx"/>
-		<configuration configurationName="Release_AES_arm">
-			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
-		</configuration>
-		<configuration configurationName="build_release_app_armv7m"/>
-		<configuration configurationName="Release_speex_arm"/>
-		<configuration configurationName="Default">
-			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
-		</configuration>
-		<configuration configurationName="Release_sg_arm_cm4_kernel"/>
-		<configuration configurationName="build_debug_son_armv7em"/>
-		<configuration configurationName="lpc17xx">
-			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
-		</configuration>
-		<configuration configurationName="Release_CMSIS_DSP_lpc17xx"/>
-		<configuration configurationName="Release_CoActionOS_link">
-			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
-		</configuration>
-		<configuration configurationName="build_release_sg_armv7em_fpu"/>
-		<configuration configurationName="Release_Codec2_arm"/>
-		<configuration configurationName="Release_hwpl_lpc82x"/>
-		<configuration configurationName="build_release_son_armv7m"/>
-		<configuration configurationName="Release_eon_link"/>
-		<configuration configurationName="Release_fatfs_arm"/>
-		<configuration configurationName="Release_opus_arm"/>
-		<configuration configurationName="Release_fatfs_arm_cm4_kernel"/>
-		<configuration configurationName="Release_Codec2_arm_cm4"/>
-		<configuration configurationName="Release_sg_arm_cm4"/>
-		<configuration configurationName="Release_CoActionOS_lpc177x_8x"/>
-		<configuration configurationName="build_release_son_armv7em_fpu"/>
-		<configuration configurationName="Release_AES_arm_cm4"/>
-		<configuration configurationName="Release_AES_arm_eabi">
-			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
-		</configuration>
-		<configuration configurationName="build_release_armv7em"/>
-		<configuration configurationName="Release_sg_arm_kernel"/>
-		<configuration configurationName="Release_sg_arm"/>
-		<configuration configurationName="build_debug_son_armv7m"/>
-		<configuration configurationName="Release_hwpl_lpc17xx">
-			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
-		</configuration>
-		<configuration configurationName="build_release_sg_armv7m"/>
-		<configuration configurationName="Release_CoActionOS_lpc17xx">
-			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
-		</configuration>
-		<configuration configurationName="Release_hwpl_lpc13uxx"/>
-		<configuration configurationName="build_debug_app_armv7em_fpu"/>
-		<configuration configurationName="build_release_link">
-			<resource resourceType="PROJECT" workspacePath="/SON"/>
-		</configuration>
-		<configuration configurationName="build_debug_armv7em"/>
-		<configuration configurationName="Multiple configurations">
-			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
-		</configuration>
-		<configuration configurationName="Release_CoActionOS_lpc407x_8x"/>
-		<configuration configurationName="Release_CMSIS_DSP_lpc407x_8x"/>
-		<configuration configurationName="Release_hwpl_lpc407x_8x"/>
-		<configuration configurationName="build_release_app_armv7em_fpu"/>
-		<configuration configurationName="Release_eon_arm_cm4"/>
-		<configuration configurationName="build_release_hal_armv7m"/>
-		<configuration configurationName="build_debug_armv7m"/>
-		<configuration configurationName="Release_hwpl_lpc177x_8x"/>
-		<configuration configurationName="Build (GNU)">
-			<resource resourceType="PROJECT" workspacePath="/CoActionOS-Applib"/>
-		</configuration>
-	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings">
 		<doc-comment-owner id="org.eclipse.cdt.ui.doxygen">
 			<path value=""/>

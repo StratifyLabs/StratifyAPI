@@ -22,7 +22,7 @@ int I2C::setup(const i2c_reqattr_t & setup){
 	return ioctl(I_I2C_SETUP, &setup);
 }
 
-int I2C::slave_setup(const i2c_slave_setup_t & setup){
+int I2C::setup_slave(const i2c_slave_setup_t & setup){
 	return ioctl(I_I2C_SLAVE_SETUP, &setup);
 }
 
