@@ -8,7 +8,6 @@ using namespace draw;
 ProgressArc::ProgressArc() {
 	m_offset = 0;
 	m_direction = 1;
-
 }
 
 void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){

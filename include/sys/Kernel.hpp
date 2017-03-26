@@ -80,6 +80,18 @@ public:
 	 */
 	static int hibernate(int count = 0);
 
+	/*! \details Execute a kernel request. The kernel request must
+	 * be defined and implemented by the board support package.
+	 *
+	 * @param req The request number
+	 * @param arg Argument pointer
+	 * @return The result of the execution of the request. (-1 if request is not available)
+	 */
+	static int request(int req, void * arg = 0);
+
+
+	/*! \details Force a reset of the device */
+	static void reset();
 
 	/*! \details Load the board configuration provided as
 	 * part of the board support package.

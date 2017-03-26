@@ -68,6 +68,10 @@ Element * Menu::handle_event(const Event & event, const DrawingAttr & attr){
 
 	if( m_current ){
 		current().handle_event(event, attr);
+		if( current().is_redraw_pending() ){
+			set_redraw_pending();
+			current().set_redraw_pending(false);
+		}
 	}
 
 	return this;

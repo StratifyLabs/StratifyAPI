@@ -3,6 +3,7 @@
 #include <stratify/stratify.h>
 #include <iface/link.h>
 
+#include "hal.hpp"
 #include "sys/Kernel.hpp"
 using namespace sys;
 
@@ -65,6 +66,16 @@ void Kernel::powerdown(int count){
 
 int Kernel::hibernate(int count){
 	return hibernate(count);
+}
+
+int Kernel::request(int req, void * arg){
+	return kernel_request(req, arg);
+}
+
+void Kernel::reset(){
+	Core core(0);
+	core.open();
+	core.reset();
 }
 
 int Kernel::get_board_config(stratify_board_config_t & config){

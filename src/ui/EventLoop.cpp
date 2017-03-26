@@ -57,9 +57,11 @@ bool EventLoop::handle_event(const Event & event){
 }
 
 void EventLoop::start(){
-	if( m_current_element) m_current_element->handle_event(Event(Event::SETUP), drawing_attr());
+	if( m_current_element ){
+		m_current_element->handle_event(Event(Event::SETUP), drawing_attr());
+	}
 
-	if( m_current_element) {
+	if( m_current_element ) {
 		m_current_element->handle_event(Event(Event::ENTER), drawing_attr());
 	}
 
@@ -68,8 +70,6 @@ void EventLoop::start(){
 
 void EventLoop::loop(){
 	while( m_current_element != 0 ){
-
-			//m_loop_timer.restart();
 
 			m_drawing_attr.bitmap().wait(refresh_wait_resolution()); //wait until video memory is free to write
 			process_events(); //process all events (this will modify the video memory)
@@ -94,15 +94,6 @@ void EventLoop::loop(){
 
 				// \todo Check for tick period delay
 			}
-
-			/*
-			msec = m_loop_timer.msec();
-			if( msec < period() ){
-				printf("wait %ld msec\n", msec);
-				Timer::wait_msec(period() - msec);
-			}
-			*/
-
 
 		}
 
