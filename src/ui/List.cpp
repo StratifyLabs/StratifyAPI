@@ -187,7 +187,7 @@ Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 		}
 		return this;
 
-	case Event::LIST_ACTUATE:
+	case Event::LIST_ACTUATED:
 		return current().handle_event(Event(Event::LIST_ITEM_ACTUATED), attr);
 
 	case Event::LIST_UP:

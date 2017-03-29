@@ -44,7 +44,8 @@ public:
 		APPLICATION /*! This event is an application specific where the data is specified by the application */ = 10,
 		LIST_ITEM_SELECTED /*! Select an item in a list */ = LIST_ITEM_FLAG | 11,
 		LIST_ITEM_ACTUATED /*! Actuate an item in a list */ = LIST_ITEM_FLAG | 12,
-		LIST_ACTUATE /*! Select an item in a list or menu */ = 13,
+		LIST_ACTUATED /*! Select an item in a list or menu */ = 13,
+		LIST_ACTUATE = 13,
 		LIST_UP /*! Scroll up in a list or menu */ = 14,
 		LIST_DOWN /*! Scroll down in a list or menu */ = 15,
 		SCROLL_UP /*! Scroll up (same as LIST_UP) */ = LIST_UP,
@@ -52,6 +53,9 @@ public:
 		MENU_BACK /*! Go back in the menu */ = 16,
 		TAB_LEFT /*! Slide to the tab on the left */ = 17,
 		TAB_RIGHT /*! Slide to the tab on the left */ = 18,
+		MENU_ACTUATED /*! Select the item in the menu */ = 19,
+		MENU_ACTUATE = 19,
+
 
 		//EVENT_TYPE_TOTAL //omit TOTAL so that the compiler doesn't complain about not handling the case
 

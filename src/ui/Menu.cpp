@@ -31,6 +31,7 @@ Element * Menu::handle_event(const Event & event, const DrawingAttr & attr){
 
 
 	case Event::MENU_BACK:
+		current().handle_event(event, attr);
 		next = current().parent();
 		if( next ){
 			//start the animation to the left
@@ -41,12 +42,12 @@ Element * Menu::handle_event(const Event & event, const DrawingAttr & attr){
 			current().handle_event(Event(Event::ENTER), attr);
 			return this;
 		} else {
-			//if there is no parent, then let the list handle the menu back event
+			//if there is no parent, then let the element handle the menu back event
 			current().handle_event(event, attr);
 		}
 		break;
 
-	case Event::LIST_ACTUATE:
+	case Event::MENU_ACTUATED:
 		next = current().handle_event(event, attr);
 		if( next && (next != m_current) ){
 			type = ((ElementLinked*)next)->animation_type();
