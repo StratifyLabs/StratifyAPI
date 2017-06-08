@@ -50,17 +50,17 @@ static const char * const periph_name[CORE_PERIPH_TOTAL] = {
 		"trace" /* CORE_PERIPH_TRACE Trace data */
 };
 
-u16 Periph::fd_map[LINK_OPEN_MAX];
+u16 Periph::m_fd_map[LINK_OPEN_MAX];
 
 Periph::Periph(core_periph_t periph, port_t port) {
-	periph_port = (periph << 8) | port;
-	fd = lookup_fileno();
+	m_periph_port = (periph << 8) | port;
+	m_fd = lookup_fileno();
 }
 
 int Periph::lookup_fileno() const {
 	int i;
 	for(i=0; i < LINK_OPEN_MAX; i++){
-		if( fd_map[i] == periph_port ){
+		if( m_fd_map[i] == m_periph_port ){
 			return i;
 		}
 	}
@@ -68,8 +68,8 @@ int Periph::lookup_fileno() const {
 }
 
 void Periph::update_fileno() const {
-	if( (fd >= 0) && (fd_map[fd] == 0) ){ //fd is no longer valid
-		fd = -1; //kill the fileno
+	if( (m_fd >= 0) && (m_fd_map[m_fd] == 0) ){ //fd is no longer valid
+		m_fd = -1; //kill the fileno
 	}
 }
 
@@ -80,13 +80,13 @@ int Periph::open(const char * name, int flags){
 	fileno = lookup_fileno();
 	if( fileno < 0 ){
 		Dev::open(name, flags);
-		if( fd > 0 ){
-			fd_map[fd] = periph_port;
+		if( m_fd > 0 ){
+			m_fd_map[m_fd] = m_periph_port;
 		} else {
 			return -1;
 		}
 	} else {
-		fd = fileno;
+		m_fd = fileno;
 	}
 
 	return 0;
@@ -97,13 +97,13 @@ int Periph::open(int flags){
 	int len;
 	const char * name;
 
-	name = periph_name[periph_port>>8];
+	name = periph_name[m_periph_port>>8];
 
 	strcpy(buffer, "/dev/");
 	strcat(buffer, name);
 	len = strlen(buffer);
-	if( periph_port != 0 ){
-		buffer[len] = '0' + (periph_port & 0xFF);
+	if( m_periph_port != 0 ){
+		buffer[len] = '0' + (m_periph_port & 0xFF);
 		buffer[len+1] = '\0';
 	} else {
 		return -1;
@@ -114,10 +114,10 @@ int Periph::open(int flags){
 int Periph::close(){
 	int ret = 0;
 	update_fileno();
-	if( fd >= 0 ){
-		fd_map[fd] = 0;
+	if( m_fd >= 0 ){
+		m_fd_map[m_fd] = 0;
 		Dev::close();
-		fd = -1;
+		m_fd = -1;
 	}
 	return ret;
 }

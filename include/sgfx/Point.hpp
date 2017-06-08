@@ -35,13 +35,13 @@ public:
 	static sg_size_t map_pixel_size(const sg_map_t & m){ return sg_point_map_pixel_size(&m); }
 
 	Point & operator=(const sg_point_t & a){ d = a; return *this; }
-	Point & operator+(const sg_point_t & a){ sg_point_shift(&d, a); return *this; }
-	Point & operator-(const sg_point_t & a){ sg_point_subtract(&d, &a); return *this; }
+	Point & operator+(const sg_point_t & a){ sg_api()->point_shift(&d, a); return *this; }
+	Point & operator-(const sg_point_t & a){ sg_api()->point_subtract(&d, &a); return *this; }
 
-	void rotate(i16 angle){ sg_point_rotate(&d, angle); }
-	void scale(u16 a){ sg_point_scale(&d, a); }
-	void shift(i16 x, i16 y){ sg_point_shift(&d, sg_point(x,y)); }
-	void shift(sg_point_t p){ sg_point_shift(&d, p); }
+	void rotate(i16 angle){ sg_api()->point_rotate(&d, angle); }
+	void scale(u16 a){ sg_api()->point_scale(&d, a); }
+	void shift(i16 x, i16 y){ sg_api()->point_shift(&d, sg_point(x,y)); }
+	void shift(sg_point_t p){ sg_api()->point_shift(&d, p); }
 
 private:
 	sg_point_t d;

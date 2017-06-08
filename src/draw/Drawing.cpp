@@ -182,14 +182,15 @@ sg_point_t Drawing::point_on_bitmap(const DrawingAttr & attr){
 }
 
 void Drawing::set(const DrawingAttr & attr, sg_bmap_data_t v){
-	attr.b().set( point_on_bitmap(attr), dim_on_bitmap(attr), v);
+	//attr.b().set( point_on_bitmap(attr), dim_on_bitmap(attr), v);
+
 }
 
 void Drawing::clear(const DrawingAttr & attr, sg_bmap_data_t v){
-	attr.b().clear( point_on_bitmap(attr), dim_on_bitmap(attr), v);
+	//attr.b().clear( point_on_bitmap(attr), dim_on_bitmap(attr), v);
 }
 void Drawing::invert(const DrawingAttr & attr, sg_bmap_data_t v){
-	attr.b().invert( point_on_bitmap(attr), dim_on_bitmap(attr), v);
+	//attr.b().invert( point_on_bitmap(attr), dim_on_bitmap(attr), v);
 }
 
 

@@ -58,10 +58,10 @@ public:
 	using Dev::write;
 
 
-	port_t port() const{ return periph_port & 0xFF; }
+	port_t port() const{ return m_periph_port & 0xFF; }
 
 protected:
-	u16 periph_port;
+	u16 m_periph_port;
 #ifndef __MCU_ONLY__
 #else
 	int flags;
@@ -71,7 +71,7 @@ protected:
 
 
 private:
-	static u16 fd_map[LINK_OPEN_MAX];
+	static u16 m_fd_map[LINK_OPEN_MAX];
 
 	void update_fileno() const;
 	int lookup_fileno() const;

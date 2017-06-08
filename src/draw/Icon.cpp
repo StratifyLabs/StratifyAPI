@@ -24,7 +24,6 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	Bitmap bitmap(d);
 	bitmap.clear();
 
-	tmp_pen.set_mode(Pen::SET);
 	GfxMap map(bitmap, tmp_pen, this->rotation());
 	Gfx::draw(bitmap, (this->icon()), map.item(), &m_bounds);
 
@@ -41,6 +40,6 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 		p.y += bitmap.w() - m_bounds.bottom_right.x;
 	}
 
-	attr.bitmap().draw_bitmap(bitmap, p, pen());
+	attr.bitmap().draw_bitmap(p, bitmap);
 
 }

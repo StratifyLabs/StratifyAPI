@@ -17,11 +17,15 @@ List::List(ElementLinked * parent) : ElementLinked(parent) {
 }
 
 void List::draw_item_to_scale(const DrawingScaledAttr & attr, sg_size_t x_offset, list_attr_size_t item){
-	sg_point_t p = attr.p();
+	sg_point_t p1 = attr.p();
+	sg_point_t p2 = attr.p();
 	sg_dim_t d = attr.d();
 	at(item).draw_to_scale(attr);
-	attr.bitmap().set_hline(p.x - x_offset, p.x + d.w + x_offset, p.y);
-	attr.bitmap().set_hline(p.x - x_offset, p.x + d.w + x_offset, p.y + d.h -1);
+	p1.x =- x_offset;
+	p2.x += d.w + x_offset;
+	attr.bitmap().draw_line(p1, p2);
+	p2.y += d.h - 1;
+	attr.bitmap().draw_line(p1, p2);
 }
 
 void List::draw_to_scale(const DrawingScaledAttr & attr){
@@ -48,7 +52,7 @@ void List::draw_to_scale(const DrawingScaledAttr & attr){
 	item_attr.set_dim(d.w() - x_offset, list_item_height );
 	item_attr.set_bitmap(attr.bitmap());
 
-	attr.bitmap().clear(p,d);
+	attr.bitmap().clear_rectangle(p,d);
 
 	//draw items on b at x,y within d
 	for(i=0; i < display_items; i++){
@@ -67,7 +71,7 @@ void List::draw_to_scale(const DrawingScaledAttr & attr){
 			draw_item_to_scale(item_attr, x_offset, i+index_offset);
 			//highlight the selected item
 			if( (i+index_offset) == selected() + m_select_top_bottom ){
-				attr.bitmap().invert( sg_point(p.x, top_left.y+1), sg_dim(d.w(), (list_item_height+remainder)-2));
+				attr.bitmap().invert_rectangle( sg_point(p.x, top_left.y+1), sg_dim(d.w(), (list_item_height+remainder)-2));
 			}
 		}
 
@@ -77,9 +81,6 @@ void List::draw_to_scale(const DrawingScaledAttr & attr){
 		}
 	}
 
-	if( !dark() ){
-		attr.bitmap().invert(p, d);
-	}
 
 	set_redraw_pending();
 
@@ -161,7 +162,7 @@ void List::handle_up_button_actuation(const Event  & event, const DrawingAttr & 
 	animate_scroll(-1, attr);
 	if( selected() > 0 ){
 		dec_selected();
-		current().handle_event(Event(Event::LIST_ITEM_SELECTED, &current()), attr);
+		current().handle_event(Event(Event::LIST_ITEM_SELECTED, &current()), attr); //send the event to the list item
 	}
 	draw(attr);
 }

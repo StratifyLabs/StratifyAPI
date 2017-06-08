@@ -8,7 +8,7 @@ using namespace hal;
 
 Dev::Dev() {
 	// TODO Auto-generated constructor stub
-	fd = -1;
+	m_fd = -1;
 #if defined __link
 	_driver = 0;
 #endif
@@ -56,17 +56,17 @@ int Dev::readline(char * buf, int nbyte, int timeout, char term) const {
 
 int Dev::open(const char * name, int flags){
 
-	if( fd != -1 ){
+	if( m_fd != -1 ){
 		close(); //close and re-open
 	}
 
 #if defined __link
-	fd = link_open(driver(), name, flags);
+	m_fd = link_open(driver(), name, flags);
 #else
-	fd = ::open(name, flags);
+	m_fd = ::open(name, flags);
 #endif
 
-	if( fd < 0 ){
+	if( m_fd < 0 ){
 		return -1;
 	}
 	return 0;
@@ -74,63 +74,63 @@ int Dev::open(const char * name, int flags){
 
 int Dev::close(){
 	int ret = 0;
-	if( fd >= 0 ){
+	if( m_fd >= 0 ){
 #if defined __link
-		ret = link_close(driver(), fd);
+		ret = link_close(driver(), m_fd);
 #else
-		ret = ::close(fd);
+		ret = ::close(m_fd);
 #endif
-		fd = -1;
+		m_fd = -1;
 	}
 	return ret;
 }
 
 int Dev::read(void * buf, int nbyte) const {
 #if defined __link
-	return link_read(driver(), fd, buf, nbyte);
+	return link_read(driver(), m_fd, buf, nbyte);
 #else
-	return ::read(fd, buf, nbyte);
+	return ::read(m_fd, buf, nbyte);
 #endif
 }
 
 int Dev::write(const void * buf, int nbyte) const {
 #if defined __link
-	return link_write(driver(), fd, buf, nbyte);
+	return link_write(driver(), m_fd, buf, nbyte);
 #else
-	return ::write(fd, buf, nbyte);
+	return ::write(m_fd, buf, nbyte);
 #endif
 }
 
 #ifndef __link
 int Dev::read(sys::Aio & aio) const {
-	aio.aio_var.aio_fildes = fd;
+	aio.aio_var.aio_fildes = m_fd;
 	return ::aio_read(&(aio.aio_var));
 }
 
 int Dev::write(sys::Aio & aio) const {
-	aio.aio_var.aio_fildes = fd;
+	aio.aio_var.aio_fildes = m_fd;
 	return ::aio_write(&(aio.aio_var));
 }
 #endif
 
 int Dev::ioctl(int req, void * arg) const {
 #if defined __link
-	return link_ioctl(driver(), fd, req, arg);
+	return link_ioctl(driver(), m_fd, req, arg);
 #else
-	return ::ioctl(fd, req, arg);
+	return ::ioctl(m_fd, req, arg);
 #endif
 }
 
 int Dev::seek(int loc, int whence) const {
 #if defined __link
-	return link_lseek(driver(), fd, loc, whence);
+	return link_lseek(driver(), m_fd, loc, whence);
 #else
-	return ::lseek(fd, loc, whence);
+	return ::lseek(m_fd, loc, whence);
 #endif
 }
 
 int Dev::fileno() const {
-	return fd;
+	return m_fd;
 }
 
 int Dev::loc() const {
@@ -138,13 +138,13 @@ int Dev::loc() const {
 }
 
 int Dev::flags() const{
-	if( fd < 0 ){
+	if( m_fd < 0 ){
 		return -1;
 	}
 #if defined __link
 	return -1;
 #else
-	return _global_impure_ptr->procmem_base->open_file[fd].flags;
+	return _global_impure_ptr->procmem_base->open_file[m_fd].flags;
 #endif
 }
 

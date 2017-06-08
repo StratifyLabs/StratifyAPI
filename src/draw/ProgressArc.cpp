@@ -70,36 +70,22 @@ void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 		arc_inner = arc_inner + center;
 
 		if( i == 0 ){
-			if( !dark() ){
-				attr.bitmap().set_line(arc_inner, arc);
-			} else {
-				attr.bitmap().clr_line(arc_inner, arc);
-			}
+
+			attr.bitmap().draw_line(arc_inner, arc);
 		}
 
 		if( i == 1 ){
 			first_point = arc;
 		}
 
-		if( !dark() ){
-			attr.bitmap().set_pixel(arc);
-			attr.bitmap().set_pixel(arc_inner);
-		} else {
-			attr.bitmap().clr_pixel(arc);
-			attr.bitmap().clr_pixel(arc_inner);
-		}
+
+		attr.bitmap().draw_pixel(arc);
+		attr.bitmap().draw_pixel(arc_inner);
+
 		i++;
 	} while( i < progress );
 
-	if( !dark() ){
-		attr.bitmap().set_line(arc_inner, arc);
-	} else {
-		attr.bitmap().clr_line(arc_inner, arc);
-	}
-
-	if( dark() ){
-		attr.bitmap().invert(p,d);
-	}
+	attr.bitmap().draw_line(arc_inner, arc);
 
 	if( progress > 0 ){
 		theta = (two_pi * 1 / points - half_pi) + offset;
@@ -107,11 +93,7 @@ void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 		yf = ((ry + ry_inner)/2)* sinf(theta);
 		arc.set(xf, yf);
 		arc = arc + center;
-		attr.bitmap().pour(arc, Pen(1,1,true));
-	}
-
-	if( dark() ){
-		attr.bitmap().invert(p,d);
+		attr.bitmap().draw_pour(arc);
 	}
 
 }

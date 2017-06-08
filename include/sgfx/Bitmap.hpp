@@ -50,18 +50,23 @@ public:
 
 	virtual ~Bitmap();
 
-	static int calc_byte_width(int w);
-	static int calc_word_width(int w);
-
 	/*! \details Set data pointer and size for bitmap */
 	void set_data(sg_bitmap_hdr_t * hdr, bool readonly = false);
 	void set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly = false);
-	inline void set_data(sg_bmap_data_t * mem, const Dim & dim){
-		set_data(mem, dim.w(), dim.h());
-	}
-	inline void set_data(sg_bmap_data_t * mem, bool readonly = false){
-		set_data(mem, w(), h(), readonly);
-	}
+	void set_data(sg_bmap_data_t * mem, const Dim & dim){ set_data(mem, dim.w(), dim.h()); }
+	void set_data(sg_bmap_data_t * mem, bool readonly = false){ set_data(mem, w(), h(), readonly); }
+
+	/*! \details Change effective size without free/alloc sequence */
+	bool set_size(sg_size_t w, sg_size_t h, sg_size_t offset = 0);
+
+	/*! \details Return the size of a bitmap of specified size */
+	static size_t calc_size(int w, int h){ return sg_api()->calc_bmap_size(sg_dim(w,h)); }
+	sg_point_t calc_center() const;
+
+	/*! \details Maximum x value */
+	inline sg_int_t x_max() const { return w()-1; }
+	/*! \details Maximum y value */
+	inline sg_int_t y_max() const { return h()-1; }
 
 	static Dim load_dim(const char * path);
 
@@ -79,82 +84,53 @@ public:
 	/*! \details Free memory associated with bitmap (auto freed on ~Bitmap) */
 	void free();
 
-
-	void flip_x();
-	void flip_y();
-	void flip_xy();
+	void clear(){ clear_rectangle(sg_point(0,0), dim()); }
+	void invert(){ invert_rectangle(sg_point(0,0), dim()); }
 
 
-	sg_point_t calc_center() const;
-	void invert();
-	void invert(sg_point_t p, sg_dim_t d, sg_bmap_data_t v = 0xFF);
-
-	void set(sg_point_t p, sg_dim_t d, sg_bmap_data_t v = 0xFF){ sg_set_area(bmap(), p, d, v); }
-	void clear(sg_point_t p, sg_dim_t d, sg_bmap_data_t v = 0xFF){ sg_clr_area(bmap(), p, d, v); }
-
-	/*! \details Rotation values */
-	enum Rotation {
-		ROT0 /*! \brief Zero degress */,
-		ROT90 /*! \brief 90 degress */,
-		ROT180 /*! \brief 180 degress */,
-		ROT270 /*! \brief 270 degress */,
-		ROT360 /*! \brief 360 degress */,
-		ROT_SCALE = 65536
-	};
+	void transform_flip_x() const { sg_api()->transform_flip_x(bmap_const()); }
+	void transform_flip_y() const { sg_api()->transform_flip_y(bmap_const()); }
+	void transform_flip_xy() const { sg_api()->transform_flip_xy(bmap_const()); }
+	void transform_shift(sg_point_t shift, sg_point_t p, sg_dim_t d) const { sg_api()->transform_shift(bmap_const(), shift, p, d); }
 
 
-	int draw_bitmap(const Bitmap & bitmap, sg_point_t p, const Pen & pen);
+	sg_color_t get_pixel(sg_point_t p) const { return sg_api()->get_pixel(bmap_const(), p); }
+	void draw_pixel(sg_point_t p) const { sg_api()->draw_pixel(bmap_const(), p); }
+	void draw_line(sg_point_t p1, sg_point_t p2) const { sg_api()->draw_line(bmap_const(), p1, p2); }
+	void draw_quadtratic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3) const { sg_api()->draw_quadtratic_bezier(bmap_const(), p1, p2, p3); }
+	void draw_cubic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3, sg_point_t p4) const { sg_api()->draw_cubic_bezier(bmap_const(), p1, p2, p3, p4); }
+	void draw_rectangle(sg_point_t p, sg_dim_t d) const { sg_api()->draw_rectangle(bmap_const(), p, d); }
+	void invert_rectangle(sg_point_t p, sg_dim_t d) const { sg_api()->invert_rectangle(bmap_const(), p, d); }
+	void clear_rectangle(sg_point_t p, sg_dim_t d) const { sg_api()->clear_rectangle(bmap_const(), p, d); }
+	void draw_pour(sg_point_t p) const { sg_api()->draw_pour(bmap_const(), p); }
 
-
-	/*! \details This method sets a bitmap on to the
-	 * current bitmap.  It only has bit level positioning but is
-	 * slower than the copy() method
+	/*! \details This function sets the pixels in a bitmap
+	 * based on the pixels of the source bitmap
 	 *
-	 * @param bitmap The bitmap to set
-	 * @param x The x location to start copying
-	 * @param y The y location to start copying
-	 * @param pos true to set pixels and false to clear them
+	 * @param p_dest The point in the destination bitmap of the top left corner of \a bitmap
+	 * @param src The source bitmap
 	 * @return Zero on success
 	 */
-	int set_bitmap(const Bitmap & bitmap, sg_point_t p){ return sg_set_bitmap(bmap(), bitmap.bmap_const(), p); }
+	void draw_bitmap(sg_point_t p_dest, const Bitmap & src) const {
+		sg_api()->draw_bitmap(bmap_const(), p_dest, src.bmap_const());
+	}
 
-	int set_bitmap_column(const Bitmap & bitmap, sg_point_t p, sg_int_t col, sg_size_t h);
-	int set_bitmap_column(const Bitmap & bitmap, sg_point_t p, sg_int_t col);
-
-	int clr_bitmap(const Bitmap & bitmap, sg_point_t p){ return sg_clr_bitmap(bmap(), bitmap.bmap_const(), p); }
-	int clear_bitmap(const Bitmap & bitmap, sg_point_t p){ return sg_clr_bitmap(bmap(), bitmap.bmap_const(), p); }
-
-	/*! \details Change effective size without free/alloc sequence */
-	int set_size(sg_size_t w, sg_size_t h, sg_size_t offset = 0);
-
-
-	/*! \details Return the size of a bitmap of specified size */
-	static size_t calc_size(int w, int h){ return h*calc_byte_width(w); }
-
-	/*! \details size() is the current size of the bitmap.  capacity() will
-	 * return total memory allocated for the size of the object
-	 * @return The effective memory size of the bitmap
+	/*! \details This function draws a subset of
+	 * the source bitmap on the destination bitmap.
+	 *
+	 * @param p_dest The point in the destination bitmap to start setting pixels
+	 * @param src The source bitmap
+	 * @param p_src The top left corner of the source bitmap to copy
+	 * @param d_src The dimensions of the area to copy
+	 * @return Zero on success
 	 */
-	size_t calc_size() const { return sg_size(&m_bmap); }
+	void draw_sub_bitmap(sg_point_t p_dest, const Bitmap & src, sg_point_t p_src, sg_dim_t d_src) const {
+		sg_api()->draw_sub_bitmap(bmap_const(), p_dest, src.bmap_const(), p_src, d_src);
+	}
 
 
-	/*! \details Maximum x value */
-	inline sg_int_t x_max() const { return w()-1; }
-	/*! \details Maximum y value */
-	inline sg_int_t y_max() const { return h()-1; }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-	void set_vline(sg_int_t x, sg_int_t ymin, sg_int_t ymax, sg_size_t thickness = 1);
-	void set_hline(sg_int_t xmin, sg_int_t xmax, sg_int_t y, sg_size_t thickness = 1);
-
-	void clr_vline(sg_int_t x, sg_int_t ymin, sg_int_t ymax, sg_size_t thickness = 1);
-	void clr_hline(sg_int_t xmin, sg_int_t xmax, sg_int_t y, sg_size_t thickness = 1);
-
-	/*! \details Set the pixels of a line */
-	virtual void set_line(sg_point_t p1, sg_point_t p2, sg_size_t thickness = 1);
-
-	/*! \details clear the pixels in a line */
-	virtual void clr_line(sg_point_t p1, sg_point_t p2, sg_size_t thickness = 1);
 
 	/*! \details This method is designated as an interface
 	 * for classes that inherit Bitmap to copy the bitmap to a physical
@@ -169,7 +145,7 @@ public:
 	 * \endcode
 	 *
 	 */
-	virtual void refresh() const {}
+	virtual void refresh() const{}
 
 	/*! \details This method is designated as an interface for classes
 	 * that inherit Bitmap and use refresh() to copy the bitmap memory to a physical
@@ -188,20 +164,14 @@ public:
 	virtual void wait(u16 resolution) const {}
 
 
-	inline bool is_empty() const { return calc_size() == 0; }
-	inline sg_size_t h() const { return m_bmap.dim.h; }
-	inline sg_size_t w() const { return m_bmap.dim.w; }
-	inline const Dim dim() const {
+	sg_size_t h() const { return m_bmap.dim.h; }
+	sg_size_t w() const { return m_bmap.dim.w; }
+	const Dim dim() const {
 		Dim d(m_bmap.dim);
 		return d;
 	}
 
-	inline sg_size_t calc_byte_width() const { return sg_byte_width(&m_bmap); }
-
 	inline sg_size_t columns() const { return m_bmap.columns; }
-
-	/*! \brief Function for filling a bounded area in local LCD memory */
-	virtual void pour(sg_point_t p, const sg_pen_t & pen);
 
 	inline sg_size_t margin_left() const { return m_bmap.margin_top_left.w; }
 	inline sg_size_t margin_right() const { return m_bmap.margin_bottom_right.w; }
@@ -213,29 +183,11 @@ public:
 	inline void set_margin_top(sg_size_t v) { m_bmap.margin_top_left.h = v; }
 	inline void set_margin_bottom(sg_size_t v) { m_bmap.margin_bottom_right.h = v; }
 
-	virtual void shift_right(int count);
-	virtual void shift_right(int count, sg_size_t h);
-	virtual void shift_left(int count);
-	virtual void shift_left(int count, sg_size_t h);
-
-	bool tst_pixel(sg_point_t p) const { return sg_tst_pixel(bmap_const(), p) != 0; }
-	void set_pixel(sg_point_t p){ sg_set_pixel(bmap(), p); }
-	void inv_pixel(sg_point_t p){ sg_inv_pixel(bmap(), p); }
-	void clr_pixel(sg_point_t p){ sg_clr_pixel(bmap(), p); }
-
-	virtual void fill(sg_bmap_data_t v);
-	virtual void fill(sg_bmap_data_t v, sg_int_t start, sg_size_t h);
-
-	virtual inline void clear(){
-		fill(0x00);
-	}
-
-
 
 	void show() const;
 
-	inline sg_bmap_data_t * data() const __attribute__((always_inline)) { return (sg_bmap_data_t *)Data::data(); }
-	inline const sg_bmap_data_t * data_const() const { return (const sg_bmap_data_t *)Data::data_const(); }
+	sg_bmap_data_t * data() const{ return (sg_bmap_data_t *)Data::data(); }
+	const sg_bmap_data_t * data_const() const { return (const sg_bmap_data_t *)Data::data_const(); }
 
 	sg_bmap_data_t * data(sg_point_t p) const;
 	sg_bmap_data_t * data(sg_int_t x, sg_int_t y) const;

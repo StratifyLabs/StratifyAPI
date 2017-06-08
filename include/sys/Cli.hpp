@@ -26,7 +26,7 @@ public:
 	void set_publisher(const char * publisher){ m_publisher = publisher; }
 
 	/*! \details Print the version, name and publisher on the stdout */
-	void print_version();
+	void print_version() const;
 
 	/*! \details Access the program version */
 	const char * version() const { return m_version; }
@@ -38,13 +38,13 @@ public:
 	const char * name() const { return m_name; }
 
 	/*! \details Return the argument offset by value as a var::String */
-	var::String at(u16 value);
+	var::String at(u16 value) const;
 
 	/*! \details Return the argument offset by value as a pio_t value */
-	pio_t pio_at(u16 value);
+	pio_t pio_at(u16 value) const;
 
 	/*! \details Return the argument offset by value as an int value */
-	int value_at(u16 value);
+	int value_at(u16 value) const;
 
 	/*! \details This method returns true if \a value is one of the options
 	 *
@@ -53,12 +53,12 @@ public:
 	 *
 	 * For example,
 	 *
-	 *    program --version -i text.txt
+	 * > program -v -i text.txt
 	 *
-	 * is_option("--version") will return true.
+	 * `is_option("-v")` will return true.
 	 *
 	 */
-	bool is_option(const char * value);
+	bool is_option(const char * value) const;
 
 	/*! \details Get the argument of an option as a var::String
 	 *
@@ -66,13 +66,14 @@ public:
 	 * @return A String containing the option argument
 	 *
 	 * For example, take the given command line
-	 *    program -i filename.txt
 	 *
-	 *  get_option_argument("-i") will return a String containing "filename.txt"
+	 * > program -i filename.txt
+	 *
+	 * `get_option_argument("-i")` will return a String containing "filename.txt"
 	 *
 	 *
 	 */
-	var::String get_option_argument(const char * option);
+	var::String get_option_argument(const char * option) const;
 
 	/*! \details Get the argument of an option as a var::String
 	 *
@@ -80,13 +81,14 @@ public:
 	 * @return The value of the argument or 0 if the option wasn't found
 	 *
 	 * For example, take the given command line
-	 *    program -i 10
 	 *
-	 *  get_option_argument("-i") will return 10
+	 * > program -i 10
+	 *
+	 * `get_option_value("-i")` will return 10.
 	 *
 	 *
 	 */
-	int get_option_value(const char * option);
+	int get_option_value(const char * option) const;
 
 	/*! \details Get the argument of an option as a var::String
 	 *
@@ -94,13 +96,14 @@ public:
 	 * @return The value of the argument or 0 if the option wasn't found
 	 *
 	 * For example, take the given command line
-	 *    program -i 2.1
 	 *
-	 *  get_option_argument("-i") will return port = 2 and pin = 1
+	 * > program -i 2.1
+	 *
+	 * `get_option_pio("-i")` will return a pio_t structure with port = 2 and pin = 1.
 	 *
 	 *
 	 */
-	pio_t get_option_pio(const char * option);
+	pio_t get_option_pio(const char * option) const;
 
 
 	int size() const { return m_argc; }

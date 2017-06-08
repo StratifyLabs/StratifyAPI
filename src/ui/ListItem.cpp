@@ -39,7 +39,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 				icon_attr_const().icon(),
 				map,
 				&bounds);
-		icon_dim = sg_draw_attr_dim(&bounds);
+		icon_dim = sg_point_bounds_dim(&bounds);
 	} else {
 		icon_dim.dim = 0;
 	}
@@ -82,11 +82,11 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 		}
 	}
 
-	font->set_str(buffer, attr.bitmap(), p);
+	font->draw_str(buffer, attr.bitmap(), p);
 
 	//draw the icon -- on the right side
 	if( icon_dim.w > 0 ){
-		attr.bitmap().set_bitmap(icon_bitmap, icon_point);
+		attr.bitmap().draw_bitmap(icon_point, icon_bitmap);
 	}
 }
 

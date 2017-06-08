@@ -18,11 +18,11 @@ Cli::Cli(int argc, char * argv[]){
 	}
 }
 
-void Cli::print_version(){
+void Cli::print_version() const {
 	printf("%s version: %s by %s\n", m_name.c_str(), m_version.c_str(), m_publisher.c_str());
 }
 
-String Cli::at(u16 value){
+String Cli::at(u16 value) const {
 	String arg;
 	if( value < m_argc ){
 		arg.assign(m_argv[value]);
@@ -30,7 +30,7 @@ String Cli::at(u16 value){
 	return arg;
 }
 
-String Cli::get_option_argument(const char * option){
+String Cli::get_option_argument(const char * option) const {
 	u16 args;
 	for(args = 0; args < m_argc; args++){
 		if( at(args) == option ){
@@ -40,7 +40,7 @@ String Cli::get_option_argument(const char * option){
 	return String();
 }
 
-bool Cli::is_option(const char * value){
+bool Cli::is_option(const char * value) const {
 	u16 i;
 	for(i=0; i < m_argc; i++){
 		if( at(i) == value ){
@@ -50,7 +50,7 @@ bool Cli::is_option(const char * value){
 	return false;
 }
 
-int Cli::get_option_value(const char * option){
+int Cli::get_option_value(const char * option) const {
 	String arg = get_option_argument(option);
 	if( arg.empty() ){
 		return 0;
@@ -58,7 +58,7 @@ int Cli::get_option_value(const char * option){
 	return arg.atoi();
 }
 
-pio_t Cli::get_option_pio(const char * option){
+pio_t Cli::get_option_pio(const char * option) const {
 	pio_t pio;
 	Token arg;
 	arg.assign(get_option_argument(option).c_str());
@@ -75,7 +75,7 @@ pio_t Cli::get_option_pio(const char * option){
 	return pio;
 }
 
-pio_t Cli::pio_at(u16 value){
+pio_t Cli::pio_at(u16 value) const {
 	pio_t pio;
 	Token arg;
 
@@ -93,7 +93,7 @@ pio_t Cli::pio_at(u16 value){
 	return pio;
 }
 
-int Cli::value_at(u16 value){
+int Cli::value_at(u16 value) const {
 	return at(value).atoi();
 }
 

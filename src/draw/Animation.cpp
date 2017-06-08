@@ -71,7 +71,7 @@ void Animation::update_motion_total(){
 		break;
 	};
 
-	sg_animate_init(pattr(),
+	sg_api()->animate_init(pattr(),
 			type(),
 			path(),
 			step_total(),
@@ -99,7 +99,7 @@ int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
 		draw(obj, data()->path.step, data()->path.step_total);
 	}
 
-	ret = sg_animate(m_drawing_attr->bitmap().bmap(),
+	ret = sg_api()->animate(m_drawing_attr->bitmap().bmap(),
 			m_drawing_attr->scratch()->bmap(),
 			data());
 

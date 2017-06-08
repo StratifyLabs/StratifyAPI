@@ -5,27 +5,104 @@
 
 namespace calc {
 
+/*! \brief PID Control Loop Class (float)
+ * \details This class implements a PID control loop using floating point
+ * values.
+ *
+ * A PID control loop uses three constant values in order to calculate a control
+ * variable such that the input converges on the target variable.
+ *
+ * The following terminology is used in this documentation.
+ *
+ * - kp: Proportional constant
+ * - ki: Integral constant
+ * - kd: Differential constant
+ * - present value: the current value of the system output
+ * - target variable: desired output value of the system
+ * - control variable: calculated value to apply such that the input tends to the target variable
+ * - error variable: the error variable is the difference between the target variable and the present value
+ *
+ * An example for using a PID control loop is temperature control. Consider a system
+ * that uses a PWM value to heat an element and a temperature sensor to read the output.
+ * The above terminology is applied as follows:
+ *
+ * - kp: Value selected by the developer to tune the control loop
+ * - ki: Value selected by the developer to tune the control loop
+ * - kd: Value selected by the developer to tune the control loop
+ * - present value: the value of the temperature sensor output
+ * - target variable: the desired temperature sensor output
+ * - control variable: the PWM duty cycle that should be applied to the heater
+ * - error variable: the different between the desired temperature output and the present temperature output
+ *
+ * \code
+ * #include <stfy/calc.hpp>
+ * #include <stfy/hal.hpp>
+ *
+ * Pid_f pid_loop;
+ * Pwm control(0);
+ * Adc present_value(0);
+ * u16 adc_value;
+ *
+ * volatile bool is_active = true;
+ *
+ * pid_loop.set_kp(1.0);
+ * pid_loop.set_ki(0.1);
+ * pid_loop.set_kd(0.001);
+ * pid_loop.set_maximum(1000); //max duty cycle
+ * pid_loop.set_minimum(0); //min duty cycle
+ *
+ *  //Init the PWM output and ADC input
+ *
+ * while( is_active ){
+ *  present_value.read(0, &adc_value, 2);
+ *	control.set_duty( pid_looop.calc_control_variable( 3.3 * adc_value / 4096 ) );
+ * }
+ *
+ * \endcode
+ *
+ *
+ */
 class Pid_f {
 public:
 	Pid_f(float target = 0.0, float kp = 1.0, float ki = 0.1, float kd = 0.0, float min = 1.0, float max = 0.0);
 
+	/*! \details This method resets the state of the PID control loop. */
 	void reset();
 
-	inline void set_kp(float v){ m_kp = v; }
-	inline void set_ki(float v){ m_ki = v; }
-	inline void set_kd(float v){ m_kd = v; }
-	inline void set_max(float v){ m_max = v; }
-	inline void set_min(float v){ m_min = v; }
-	inline void set_target(float v){ m_target = v; }
+	/*! \details This method sets the proportional constant value. */
+	void set_kp(float v){ m_kp = v; }
+	/*! \details This method sets the integral constant value. */
+	void set_ki(float v){ m_ki = v; }
+	/*! \details This method sets the differential constant value. */
+	void set_kd(float v){ m_kd = v; }
+	/*! \details This method sets the maximum allowed value of the target variable. */
+	void set_max(float v){ m_max = v; }
+	/*! \details This method sets the minimum allowed value of the target variable. */
+	void set_min(float v){ m_min = v; }
+	/*! \details This method sets the value for the target variable. */
+	void set_target(float v){ m_target = v; }
 
-	inline float kp() const { return m_kp; }
-	inline float ki() const { return m_ki; }
-	inline float kd() const { return m_kd; }
-	inline float max() const { return m_max; }
-	inline float min() const { return m_min; }
-	inline float target() const { return m_target; }
+	/*! \details This method accesses the proportional constant. */
+	float kp() const { return m_kp; }
+	/*! \details This method accesses the integral constant. */
+	float ki() const { return m_ki; }
+	/*! \details This method accesses the differential constant. */
+	float kd() const { return m_kd; }
+	/*! \details This method accesses the maximum value for the control variable. */
+	float max() const { return m_max; }
+	/*! \details This method accesses the minimum value for the control variable. */
+	float min() const { return m_min; }
+	/*! \details This method accesses the target variable. */
+	float target() const { return m_target; }
 
-	float calc_value(float input);
+	/*! \details This method calculates the control variable based on
+	 * the current state of the system.
+	 *
+	 * @param present_value The present value of the system
+	 * @return The updated control variable to be applied to the system
+	 */
+	float calc_control_variable(float present_value);
+	float calc_value(float present_value){ return calc_control_variable(present_value); }
 
 private:
 	float m_target;

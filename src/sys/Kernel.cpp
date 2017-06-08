@@ -98,3 +98,8 @@ int Kernel::get_taskattr(sys_taskattr_t * attr, int task){
 	m_current_task++;
 	return ioctl(I_SYS_GETTASK, attr);
 }
+
+int Kernel::get_id(sys_id_t & id){
+	return ioctl(I_SYS_GETID, &id);
+}
+

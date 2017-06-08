@@ -99,23 +99,28 @@
 #ifndef __link
 #include <unistd.h>
 #include "../sys/Aio.hpp"
+#include "../var/String.hpp"
 #else
 #undef fileno
 #endif
 
-#include "../var/String.hpp"
 
 namespace hal {
 
 
 /*! \brief Base Applib Class for physical devices
- * \details This is the base class for physical devices.
+ * \details This is a device class used for accessing physical devices or files.
+ *
+ * - MCU peripheral hardware (most devices have a class that inherits this class)
+ * - Devices with built in drivers (see "/dev" folder on the device)
+ * - Regular files (sys::File inherits this class)
  *
  */
 class Dev {
 public:
 	Dev();
 
+	/*! \details These values are used as flags when opening devices or files */
 	enum {
 		RDONLY /*! Open as read-only */ = LINK_O_RDONLY,
 		READONLY /*! Open as read-only */ = LINK_O_RDONLY,
@@ -137,10 +142,9 @@ public:
 
 	/*! \details List of options for \a whence argument of seek() */
 	enum {
-		SET = SEEK_SET,
-		CURRENT = SEEK_CUR,
-		END = SEEK_END
-
+		SET /*! Set the location of the file descriptor */ = SEEK_SET,
+		CURRENT /*! Set the location relative to the current location */ = SEEK_CUR,
+		END /*! Set the location relative to the end of the file or device */ = SEEK_END
 	};
 
 	/*! \details Get the name of the file from a given path */
@@ -199,12 +203,14 @@ public:
 	int readline(char * buf, int nbyte, int timeout, char term) const;
 
 
+#ifndef __link
 	/*! \details Write a Var::String to the file
 	 *
 	 * @param str The string to write
 	 * @return The number of bytes written
 	 */
-	inline int write(const var::String & str) const { return write(str.c_str(), str.size()); }
+	int write(const var::String & str) const { return write(str.c_str(), str.size()); }
+#endif
 
 	enum {
 		GETS_BUFFER_SIZE = 128
@@ -214,8 +220,10 @@ public:
 	/*! \details Read up to n-1 bytes to \a s until end-of-file or \a term is reached.  */
 	char * gets(char * s, int n, char term = '\n') const;
 
+#ifndef __link
 	/*! \details Read a line in to the string */
 	char * gets(var::String & s, char term = '\n') const { return gets(s.cdata(), s.capacity(), term); }
+#endif
 
 
 #ifdef __link
@@ -231,7 +239,7 @@ public:
 	int ioctl(int req, int arg) const { return ioctl(req, (void*)(size_t)arg); }
 
 protected:
-	mutable int fd;
+	mutable int m_fd;
 
 #ifdef __link
 	link_transport_mdriver_t * _driver;

@@ -14,8 +14,8 @@ int Uart::set_attr(const uart_attr_t & attr){
 	return ioctl(I_UART_SETATTR, &attr);
 }
 
-int Uart::get_byte(char * c){
-	return ioctl(I_UART_GETBYTE, c);
+int Uart::get_byte(char & c){
+	return ioctl(I_UART_GETBYTE, &c);
 }
 
 int Uart::flush(){

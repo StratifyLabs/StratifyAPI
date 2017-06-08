@@ -32,7 +32,7 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 		for(i=0; i < size(); i++){
 			at(i).element()->handle_event(event, view_attr);
 		}
-		break;
+		return this;
 	case Event::ENTER:
 
 		//m_animation.set_drawing_start(0,0);
@@ -71,7 +71,7 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 
 
 
-	return 0;
+	return Element::handle_event(event, attr);
 }
 
 void TabBar::scroll(int dir, bool repeat, const DrawingAttr & attr){

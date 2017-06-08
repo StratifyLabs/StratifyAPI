@@ -27,11 +27,11 @@ void ProgressBar::draw_to_scale(const DrawingScaledAttr & attr){
 	x_progress = p.x + 2 + tmp;
 
 	//draw bar
-	attr.bitmap().set(p, d);
+	attr.bitmap().draw_rectangle(p, d);
 
 	//clear un-progressed section
 	for(i=2; i < d.h() - 2; i++){
-		attr.bitmap().clr_hline(x_progress, end.x-3, p.y+i);
+		//attr.bitmap().clr_hline(x_progress, end.x-3, p.y+i);
 	}
 
 }

@@ -87,7 +87,7 @@ int FontMemory::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 }
 
 int FontMemory::load_bitmap(const sg_font_char_t & ch) const {
-	m_bitmap.set_data((uint8_t*)m_font + ch.offset, ch.width, ch.height, true);
+	m_bitmap.set_data((sg_bmap_data_t*)m_font + ch.offset, ch.width, ch.height, true);
 	return 0;
 }
 

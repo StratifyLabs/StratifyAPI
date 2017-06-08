@@ -20,7 +20,7 @@ namespace hal {
  * \code
  *
  * #include <stfy/hal.hpp>
- * #include <stfy/Sys.hpp>
+ * #include <stfy/sys.hpp>
  *
  *  //This will be executed when the event is triggered
  * int event_callback(void * args, const void * data){
@@ -49,7 +49,7 @@ namespace hal {
  *
  *  //alternatively you can configure (set_action() and block by writing hwpl_action_t to the device)
  *
- *  hwpl_action_t action;
+ *  mcu_action_t action;
  *  action.channel = 0;
  *  action.event = EINT_ACTION_EVENT_FALLING;
  *  action.callback = 0; //this is ignored and doesn't need to be set

@@ -21,7 +21,7 @@ void ProgressCircle::draw_to_scale(const DrawingScaledAttr & attr){
 
 	map.set_shift(p.x + d.w()/2, p.y + d.h()/2);
 	map.set_dim(d.w()*2, d.h()*2);
-	map.set_pen(pen());
+
 	Point end;
 
 	end_angle = value() * SG_TRIG_POINTS / max() + SG_TRIG_POINTS*3/4;

@@ -48,11 +48,8 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 		}
 
 
-		if( dark() ){
-			font->clear_str(text(), attr.bitmap(), top_left);
-		} else {
-			font->set_str(text(), attr.bitmap(), top_left);
-		}
+		font->draw_str(text(), attr.bitmap(), top_left);
+
 	}
 
 }

@@ -137,6 +137,15 @@ public:
 	int current_task() const { return m_current_task; }
 	void set_current_task(int v){ m_current_task = v; }
 
+	/*! \details Load the cloud kernel ID
+	 *
+	 * @param A reference to the destination data
+	 *
+	 * @return Less than zero if the operation failed
+	 *
+	 */
+	int get_id(sys_id_t & id);
+
 
 
 private:

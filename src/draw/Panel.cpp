@@ -23,7 +23,7 @@ void Panel::draw_to_scale(const DrawingScaledAttr & attr){
 
 	map.set_dim(attr.w() * 2, attr.h() *2);
 	map.set_shift(attr.x() + attr.w()/2, attr.y() + attr.h()/2);
-	map.set_pen(m_pen);
+	//map.set_pen(m_pen);
 
 	radius = m_radius * SG_MAX/4 / scale();
 

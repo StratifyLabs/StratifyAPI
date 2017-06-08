@@ -53,12 +53,12 @@ void ListItemInfo::draw_to_scale(const DrawingScaledAttr & attr){
 		p.y = p.y + d.h/2 - height/2;
 	}
 
-	font->set_str(label().text(), attr.bitmap(), p);
+	font->draw_str(label().text(), attr.bitmap(), p);
 
 	//draw the value on the right side
 	len = font->calc_len(value().text());
 	p.x = p.x + d.w - len - d.w/40;
-	font->set_str(value().text(), attr.bitmap(), p);
+	font->draw_str(value().text(), attr.bitmap(), p);
 
 
 }

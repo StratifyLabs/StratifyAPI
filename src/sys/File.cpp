@@ -7,7 +7,7 @@ using namespace sys;
 
 File::File() {
 	// TODO Auto-generated constructor stub
-	fd = -1; //The file is not open
+	m_fd = -1; //The file is not open
 }
 
 int File::remove(const char * name, link_transport_mdriver_t * driver){
@@ -21,17 +21,17 @@ int File::remove(const char * name, link_transport_mdriver_t * driver){
 
 
 int File::open(const char * name, int access, int perms){
-	if( fd != -1 ){
+	if( m_fd != -1 ){
 		close(); //close and re-open
 	}
 
 #if defined __link
-		fd = link_open(driver(), name, access, perms);
+		m_fd = link_open(driver(), name, access, perms);
 #else
-	fd = ::open(name, access, perms);
+	m_fd = ::open(name, access, perms);
 #endif
 
-	if( fd < 0 ){
+	if( m_fd < 0 ){
 		return -1;
 	}
 	return 0;
@@ -48,14 +48,14 @@ int File::create(const char * name, bool overwrite, int perms){
 ssize_t File::size() const {
 	struct link_stat st;
 #if defined __link
-	if ( link_fstat(driver(), fd, &st) < 0 ){
+	if ( link_fstat(driver(), m_fd, &st) < 0 ){
 		return -1;
 	}
 #else
 	u32 loc;
-	loc = lseek(fd, 0, SEEK_CUR);
-	st.st_size = lseek(fd, 0, SEEK_END);
-	lseek(fd, loc, SEEK_SET);
+	loc = lseek(m_fd, 0, SEEK_CUR);
+	st.st_size = lseek(m_fd, 0, SEEK_END);
+	lseek(m_fd, loc, SEEK_SET);
 #endif
 	return st.st_size;
 }

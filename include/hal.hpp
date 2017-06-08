@@ -12,6 +12,7 @@ namespace hal {};
 #include "hal/Dac.hpp"
 #include "hal/Core.hpp"
 #include "hal/Eint.hpp"
+#include "hal/Fifo.hpp"
 #include "hal/I2C.hpp"
 #include "hal/Pin.hpp"
 #include "hal/Pwm.hpp"

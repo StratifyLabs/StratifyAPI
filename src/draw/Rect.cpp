@@ -7,5 +7,5 @@ Rect::Rect(){
 
 }
 void Rect::draw_to_scale(const DrawingScaledAttr & attr){
-	attr.b().set(attr.p(), attr.d());
+	attr.b().draw_rectangle(attr.p(), attr.d());
 }

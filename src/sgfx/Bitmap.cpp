@@ -11,21 +11,21 @@ using namespace sgfx;
 using namespace sys;
 using namespace calc;
 
-
 void Bitmap::calc_members(sg_size_t w, sg_size_t h){
-	m_bmap.columns = sg_calc_byte_width(w);
-	m_bmap.dim.w = w;
-	m_bmap.dim.h = h;
-	m_bmap.data = (sg_bmap_data_t*)data_const();
+	sg_api()->bmap_set_data(&m_bmap, (sg_bmap_data_t*)data_const(), sg_dim(w,h));
 }
 
 void Bitmap::init_members(){
 	m_bmap.margin_bottom_right.dim = 0;
 	m_bmap.margin_top_left.dim = 0;
+	m_bmap.pen.thickness = 1;
+	m_bmap.pen.o_flags = 0;
+	m_bmap.pen.color = 65535;
 }
 
 
 void Bitmap::set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly){
+
 	Data::set(mem, calc_size(w,h), readonly);
 	calc_members(w,h);
 }
@@ -82,14 +82,6 @@ Bitmap::~Bitmap(){
 	free();
 }
 
-int Bitmap::calc_byte_width(int w){
-	return (w + 7) >> 3;
-}
-
-int Bitmap::calc_word_width(int w){
-	return (w + 31) / 32;
-}
-
 sg_point_t Bitmap::calc_center() const{
 	sg_point_t p;
 	p.x = w()/2;
@@ -97,14 +89,12 @@ sg_point_t Bitmap::calc_center() const{
 	return p;
 }
 
-int Bitmap::set_size(sg_size_t w, sg_size_t h, sg_size_t offset){
+bool Bitmap::set_size(sg_size_t w, sg_size_t h, sg_size_t offset){
 	if( calc_size(w,h) <= capacity() ){
-		m_bmap.dim.w = w;
-		m_bmap.dim.h = h;
-		m_bmap.columns = sg_calc_byte_width(w);
-		return 0;
+		sg_api()->bmap_set_data(&m_bmap, (sg_bmap_data_t*)data_const(), sg_dim(w,h));
+		return true;
 	}
-	return -1;
+	return false;
 }
 
 sg_bmap_data_t * Bitmap::data(sg_point_t p) const {
@@ -113,11 +103,11 @@ sg_bmap_data_t * Bitmap::data(sg_point_t p) const {
 		return 0;
 	}
 
-	return sg_data(bmap_const(),p);
+	return sg_api()->bmap_data(bmap_const(),p);
 }
 
 sg_bmap_data_t * Bitmap::data(sg_int_t x, sg_int_t y) const{
-	return sg_data(bmap_const(), sg_point(x,y));
+	return sg_api()->bmap_data(bmap_const(), sg_point(x,y));
 }
 
 const sg_bmap_data_t * Bitmap::data_const(sg_point_t p) const {
@@ -134,8 +124,6 @@ int Bitmap::load(const char * path){
 	sg_bitmap_hdr_t hdr;
 	File f;
 	void * src;
-
-
 
 	if( f.open(path, File::READONLY) < 0 ){
 		return -1;
@@ -202,12 +190,6 @@ int Bitmap::load(const char * path, sg_point_t p){
 		return -1;
 	}
 
-	//see if bitmap will fit
-
-	w = calc_byte_width(hdr.w);
-	if( (int)w > (columns() - p.x/8) ){
-		w = columns() - p.x/8;
-	}
 
 	for(j=0; (j < hdr.h) && (p.y+j < h()); j++){
 		src = data(sg_point(p.x,p.y+j));
@@ -229,7 +211,7 @@ int Bitmap::save(const char * path) const{
 
 	hdr.w = w();
 	hdr.h = h();
-	hdr.size = calc_size();
+	hdr.size = calc_size(w(), h());
 
 	File f;
 	if( f.create(path, true) < 0 ){
@@ -258,136 +240,37 @@ int Bitmap::save(const char * path) const{
 }
 
 
-int Bitmap::set_bitmap_column(const Bitmap & bitmap, sg_point_t p, sg_int_t col){
-	return set_bitmap_column(bitmap, p, col, bitmap.h());
-}
-
-int Bitmap::set_bitmap_column(const Bitmap & bitmap, sg_point_t p, sg_int_t col, sg_size_t h){
-	sg_point_t i;
-	if( data() == 0 ){
-		return -1;
-	}
-
-	if( col >= bitmap.w() ){
-		return 0; //nothing to do
-	}
-
-	i.x = col;
-	for(i.y=0; i.y < h; i.y++){
-		if( bitmap.tst_pixel(i) ){
-			set_pixel(p);
-		} else {
-			clr_pixel(p);
-		}
-		p.y++;
-	}
-
-	return 0;
-}
-
-/*
-bool Bitmap::tst_pixel(sg_point_t p) const {
-	return sg_icon_primitive_tst_pixel(bmap_const(), p) != 0;
-}
-
-void Bitmap::set_pixel(sg_point_t p){
-	sg_set_pixel(bmap(), p);
-}
-
-void Bitmap::inv_pixel(sg_point_t p){
-	sg_inv_pixel(bmap(), p);
-}
-*/
-
-void Bitmap::invert(){
-	sg_inv_area(bmap(), sg_point_origin(), dim().dim(), 0xFF);
-}
-
-void Bitmap::invert(sg_point_t p, sg_dim_t d, sg_bmap_data_t v){
-	sg_inv_area(bmap(), p, d, v);
-}
-
-void Bitmap::fill(sg_bmap_data_t v, sg_int_t start, sg_size_t h){
-	sg_fill(bmap(), v, start, h);
-}
-
-void Bitmap::fill(sg_bmap_data_t v){
-	memset(data(), v, calc_size());
-}
-
-
-void Bitmap::set_vline(sg_int_t x, sg_int_t ymin, sg_int_t ymax, sg_size_t thickness){
-	sg_set_vline(bmap(),x,ymin,ymax,thickness);
-}
-
-void Bitmap::set_hline(sg_int_t xmin, sg_int_t xmax, sg_int_t y, sg_size_t thickness){
-	sg_set_hline(bmap(),xmin,xmax,y,thickness);
-}
-
-void Bitmap::clr_vline(sg_int_t x, sg_int_t ymin, sg_int_t ymax, sg_size_t thickness){
-	sg_clr_vline(bmap(),x,ymin,ymax,thickness);
-}
-
-void Bitmap::clr_hline(sg_int_t xmin, sg_int_t xmax, sg_int_t y, sg_size_t thickness){
-	sg_clr_hline(bmap(),xmin,xmax,y,thickness);
-}
-
-void Bitmap::clr_line(sg_point_t p1, sg_point_t p2, sg_size_t thickness){
-	sg_clr_line(bmap(), p1, p2, thickness);
-}
-
-
-void Bitmap::set_line(sg_point_t p1, sg_point_t p2, sg_size_t thickness){
-	sg_set_line(bmap(), p1, p2, thickness);
-}
-
-void Bitmap::pour(sg_point_t p, const sg_pen_t & pen){
-	sg_pour(bmap(), p, &pen);
-}
-
-
-void Bitmap::shift_right(int count){
-	shift_right(count, h());
-}
-
-void Bitmap::shift_right(int count, sg_size_t h){
-	//sg_shift_right(bmap(), count, 0, h);
-}
-
-void Bitmap::shift_left(int count){
-	shift_left(count, h());
-}
-
-void Bitmap::shift_left(int count, sg_size_t h){
-	//sg_shift_left(bmap(), count, 0, h);
-}
 
 
 void Bitmap::show() const{
-	sg_show(bmap_const());
-}
+	//sg_api()->show(bmap_const());
+	sg_size_t i,j;
 
-void Bitmap::flip_x(){
-	sg_flip_x(bmap());
-}
+	sg_color_t color;
+	sg_cursor_t y_cursor;
+	sg_cursor_t x_cursor;
 
-void Bitmap::flip_y(){
-	sg_flip_y(bmap());
-}
+	sg_api()->cursor_set(&y_cursor, bmap_const(), sg_point(0,0));
 
-void Bitmap::flip_xy(){
-	sg_flip_xy(bmap());
-}
-
-int Bitmap::draw_bitmap(const Bitmap & bitmap, sg_point_t p, const Pen & pen){
-	if( pen.is_set() ){
-		return sg_set_bitmap(bmap(), bitmap.bmap_const(), p);
-	} else if( pen.is_clr() ){
-		return sg_clr_bitmap(bmap(), bitmap.bmap_const(), p);
-	} else if( pen.is_invert() ){
-		return sg_inv_bitmap(bmap(), bitmap.bmap_const(), p);
+	for(i=0; i < bmap_const()->dim.h; i++){
+		sg_cursor_copy(&x_cursor, &y_cursor);
+		for(j=0; j < bmap_const()->dim.w; j++){
+			color = sg_api()->cursor_get_pixel(&x_cursor);
+			if( sg_api()->bits_per_pixel > 8 ){
+				printf("%04X", color);
+			} else if(sg_api()->bits_per_pixel > 4){
+				printf("%02X", color);
+			} else {
+				printf("%X", color);
+			}
+			sg_api()->cursor_inc_x(&x_cursor);
+			if( j < bmap_const()->dim.w - 1){
+				printf(" ");
+			}
+		}
+		printf("\n");
+		sg_api()->cursor_inc_y(&y_cursor);
 	}
-	return -1;
 }
 
 

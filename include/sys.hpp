@@ -27,7 +27,6 @@ namespace sys {};
 #include "sys/Kernel.hpp"
 #include "sys/Appfs.hpp"
 #include "sys/Dir.hpp"
-#include "sys/Fifo.hpp"
 #include "sys/File.hpp"
 #include "sys/Hio.hpp"
 

@@ -11,8 +11,6 @@ using namespace calc;
 static char base64_encode_six(uint8_t six_bit_value);
 static char base64_decode_eigth(uint8_t eight_bit_value);
 
-Base64::Base64(){}
-
 
 int Base64::encode(char * dest, const void * src, int nbyte){
     int i;

@@ -63,11 +63,11 @@ public:
 	 * success, the byte is written to the value pointed to by \a c.
 	 * \returns Zero on successfully reading a byte, -1 if no bytes are available.
 	 */
-	int get_byte(char * c);
+	int get_byte(char & c);
+	int get_byte(char * c){ return get_byte(*c); }
 	/*! \details Flush the TX/RX buffers */
 	int flush();
 
-	using Periph::write;
 
 #ifdef __MCU_ONLY__
 	void setfifo(const device_cfg_t * cfg){ fifocfg[port_] = cfg; }
@@ -95,7 +95,7 @@ public:
 	/*! \brief Set the attributes as specified */
 	int set_attr(int baudrate /*! Baudrate */ = 19200,
 			int pin_assign /*! Pin assignment */ = 0,
-			int parity /*! Parity */ = UART_PARITY_NONE,
+			int parity /*! Parity */ = NONE,
 			int stop /*! Number of stop bits */ = STOP1,
 			int width /*! bits per character */ = 8){
 		uart_attr_t attr;
@@ -113,14 +113,14 @@ public:
 	 * - default pin assignment
 	 * - No parity
 	 * - 8 bit width
-	 * - 2 stop bits
+	 * - 1 stop bits
 	 * \return Zero on success.
 	 */
-	int init(int baudrate = 19200,
-			int pin_assign = 0,
-			uart_parity_t parity = UART_PARITY_NONE,
-			int stop = UART_ATTR_STOP_BITS_2,
-			int width = 8){
+	int init(int baudrate /*! Baudrate */ = 19200,
+			int pin_assign /*! Pin assignment */ = 0,
+			int parity /*! Parity */ = NONE,
+			int stop /*! Number of stop bits */ = STOP1,
+			int width /*! bits per character */ = 8){
 		if( open() < 0 ){
 			return -1;
 		}

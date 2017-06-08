@@ -12,6 +12,33 @@ namespace hal {
 
 /*! \brief I2C Peripheral Class
  * \details This class implements I2C device peripherals.
+ *
+ * A normal I2C transfer (I2C::SETUP_NORMAL_TRANSFER) updates the register
+ * pointer and then either reads or writes data.  For example:
+ * \code
+ * #include <stfy/hal.hpp>
+ *
+ * u16 data;
+ * I2C i2c(0); //use I2C port 0
+ * i2c.init(100000); //100KHz
+ *
+ * i2c.setup(0x4C, I2C::SETUP_NORMAL_TRANSFER); //slave addr is 0x4C
+ *
+ * i2c.read(5, &data, sizeof(data)); //read 2 bytes from register 5
+ * \endcode
+ *
+ * The code above will execute 2 I2C transactions. It will write 5 to the
+ * I2C slave device register pointer. It will then read 2 bytes from the
+ * slave device.
+ *
+ * If the slave device is not configured with a register pointer, you can
+ * use the I2C::setup() method to perform other types of transactions.
+ *
+ * \code
+ * i2c.setup(0x4C, SETUP_DATA_ONLY_TRANSFER);
+ * i2c.write(&data, sizeof(data)); //this will write 2 bytes contained in data (location is ignored)
+ * \endcode
+ *
  */
 class I2C : public Periph {
 public:
@@ -55,8 +82,6 @@ public:
 		return setup_slave(setup);
 	}
 
-
-
 	/*! \details Get the last error */
 	int err();
 
@@ -89,7 +114,7 @@ public:
 	/*! \details This method initializes the I2C port.  It opens the port
 	 * and sets the attributes as specified.
 	 * \code
-	 * I2c i2c(0);  //Use port 0
+	 * I2C i2c(0);  //Use port 0
 	 * i2c.init(400000); //400KHz bitrate
 	 * \endcode
 	 *

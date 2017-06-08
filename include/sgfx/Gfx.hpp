@@ -23,7 +23,6 @@ public:
 	};
 
 	GfxMap(){}
-	GfxMap(const Pen & pen);
 	GfxMap(const Bitmap & bitmap, const Pen & pen, s16 rotation = 0);
 
 	void set_bitmap_center(const Bitmap & bitmap, const Pen & pen, s16 rotation = 0);
@@ -33,8 +32,6 @@ public:
 	void set_dim(const Dim & dim);
 	void set_shift(const Point & p);
 	void set_rotation(s16 rot){ data()->rotation = rot; }
-
-	void set_pen(const Pen & pen){ data()->pen = pen; }
 
 };
 

@@ -27,12 +27,6 @@ void GfxMap::set_shift(sg_int_t x, sg_int_t y){
 	data()->shift.y = y;
 }
 
-GfxMap::GfxMap(const Pen & pen){
-	data()->pen = pen;
-	set_shift(0,0);
-	set_dim(0,0);
-}
-
 
 GfxMap::GfxMap(const Bitmap & bitmap, const Pen & pen, s16 rotation){
 	set_bitmap_center(bitmap, pen, rotation);
@@ -45,13 +39,11 @@ void GfxMap::set_bitmap_center(const Bitmap & bitmap, const Pen & pen, s16 rotat
 	data()->shift.x = (data()->size.w + 2*thickness)/4;
 	data()->shift.y = (data()->size.h + 2*thickness)/4;
 	data()->rotation = rotation;
-
-	data()->pen = pen;
 }
 
 
 void Gfx::draw(Bitmap & bitmap, const sg_icon_t & icon, const sg_map_t & map, sg_bounds_t * bounds){
-	sg_draw_icon(bitmap.bmap(), &icon, &map, bounds);
+	sg_api()->vector_draw_icon(bitmap.bmap(), &icon, &map, bounds);
 }
 
 sg_icon_primitive_t Gfx::line(sg_int_t x1, sg_int_t y1, sg_int_t x2, sg_int_t y2){

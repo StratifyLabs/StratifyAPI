@@ -21,7 +21,7 @@ void Pid_f::reset(){
 	m_error = 0.0;
 }
 
-float Pid_f::calc_value(float input){
+float Pid_f::calc_control_variable(float input){
 	float err;
 	float output;
 	float de;

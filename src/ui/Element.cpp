@@ -17,11 +17,11 @@ void Element::draw_scroll(const DrawingScaledAttr & attr,
 	int bar_size;
 	sg_dim_t bar;
 	bar_size = d.h() / total;
-	attr.b().set(p, d);
+	attr.b().draw_rectangle(p, d);
 	p.y = p.y + selected*bar_size;
 	bar.w = d.w();
 	bar.h = bar_size;
-	attr.b().clear(p, bar);
+	//attr.b().clear(p, bar);
 }
 
 Element * Element::handle_event(const Event & event, const DrawingAttr & attr){

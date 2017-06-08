@@ -99,7 +99,7 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 			} else {
 				start.x = p.x + (w - len)/2;
 			}
-			font->set_str(line.c_str(), attr.bitmap(), start);
+			font->draw_str(line.c_str(), attr.bitmap(), start);
 			line_y += (font_height + line_spacing);
 		}
 		draw_line++;

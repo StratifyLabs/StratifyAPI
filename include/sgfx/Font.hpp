@@ -66,20 +66,10 @@ public:
 	 * @param point The top left corner to start drawing the string
 	 * @return Zero on success
 	 */
-	int set_str(const char * str, Bitmap & bitmap, sg_point_t point) const;
-
-	/*! \details Clear the string pixels in the bitmap
-	 *
-	 * @param str The string to draw (or clear)
-	 * @param bitmap The bitmap to draw the string on
-	 * @param point The top left corner to start drawing the string
-	 * @return Zero on success
-	 */
-	int clear_str(const char * str, Bitmap & bitmap, sg_point_t point) const;
+	int draw_str(const char * str, Bitmap & bitmap, sg_point_t point) const;
 
 
-	int set_char(char c, Bitmap & bitmap, sg_point_t point) const;
-	int clear_char(char c, Bitmap & bitmap, sg_point_t point) const;
+	int draw_char(char c, Bitmap & bitmap, sg_point_t point) const;
 
 protected:
 
