@@ -19,6 +19,7 @@ class Bitmap : public var::Data {
 public:
 	/*! \details Construct an empty bitmap */
 	Bitmap();
+
 	/*! \details Construct a bitmap using an existing sg_bitmap_hdr_t
 	 *
 	 * @param hdr A pointer to the existing bitmap structure
@@ -47,6 +48,8 @@ public:
 	 */
 	Bitmap(sg_dim_t d);
 
+	void set_pen_color(sg_color_t v){ m_bmap.pen.color = v; }
+	void set_pen_thickness(sg_size_t v){ m_bmap.pen.thickness = v; }
 
 	virtual ~Bitmap();
 
@@ -70,7 +73,6 @@ public:
 
 	static Dim load_dim(const char * path);
 
-	int load(const char * path, sg_point_t p);
 	int load(const char * path);
 	int save(const char * path) const;
 
@@ -129,19 +131,16 @@ public:
 	}
 
 
-//------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 	/*! \details This method is designated as an interface
 	 * for classes that inherit Bitmap to copy the bitmap to a physical
-	 * device (such as an LCD).  The implementation in this class is simple
+	 * device (such as hal::DisplayDev).  The implementation in this class is simple
 	 * an empty method.  Here is an example:
 	 *
 	 * \code
-	 * LcdDev lcd; //this class inherits bitmap and re-implments refresh()
+	 * DisplayDev display; //this class inherits bitmap and re-implments refresh()
 	 *
-	 * lcd.clear(); //clear the bitmap in memory
-	 * lcd.refresh(); //copy the memory to the physical device (or notify the underlying driver that it is time to copy)
+	 * display.clear(); //clear the bitmap in memory
+	 * display.refresh(); //copy the memory to the physical device (or notify the underlying driver that it is time to copy)
 	 * \endcode
 	 *
 	 */

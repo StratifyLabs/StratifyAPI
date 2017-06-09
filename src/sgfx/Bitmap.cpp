@@ -134,7 +134,12 @@ int Bitmap::load(const char * path){
 		return -1;
 	}
 
-	if( set_size(hdr.w, hdr.h) < 0 ){
+	if( (hdr.version != sg_api()->version) || (hdr.bits_per_pixel != sg_api()->bits_per_pixel) ){
+		f.close();
+		return -1;
+	}
+
+	if( set_size(hdr.w, hdr.h) == false ){
 		//couln't resize using existing memory -- try resizing
 		if( alloc(hdr.w, hdr.h) < 0 ){
 			f.close();
@@ -171,39 +176,12 @@ Dim Bitmap::load_dim(const char * path){
 	}
 
 	f.close();
+
+	if( (hdr.version != sg_api()->version) || (hdr.bits_per_pixel != sg_api()->bits_per_pixel) ){
+		return Dim(0,0);
+	}
+
 	return Dim(hdr.w, hdr.h);
-}
-
-int Bitmap::load(const char * path, sg_point_t p){
-	sg_bitmap_hdr_t hdr;
-	File f;
-	void * src;
-	sg_int_t j;
-	size_t w;
-
-	if( f.open(path, File::READONLY) < 0 ){
-		return -1;
-	}
-
-	if( f.read(&hdr, sizeof(hdr)) != sizeof(hdr) ){
-		f.close();
-		return -1;
-	}
-
-
-	for(j=0; (j < hdr.h) && (p.y+j < h()); j++){
-		src = data(sg_point(p.x,p.y+j));
-		if( f.read(src, w) != (int)w ){
-			f.close();
-			return -1;
-		}
-	}
-
-	if( f.close() < 0 ){
-		return -1;
-	}
-
-	return 0;
 }
 
 int Bitmap::save(const char * path) const{
@@ -212,12 +190,13 @@ int Bitmap::save(const char * path) const{
 	hdr.w = w();
 	hdr.h = h();
 	hdr.size = calc_size(w(), h());
+	hdr.bits_per_pixel = sg_api()->bits_per_pixel;
+	hdr.version = sg_api()->version;
 
 	File f;
 	if( f.create(path, true) < 0 ){
 		return -1;
 	}
-
 
 	if( f.write(&hdr, sizeof(hdr)) < 0 ){
 		f.close();
@@ -231,16 +210,12 @@ int Bitmap::save(const char * path) const{
 		return -1;
 	}
 
-
 	if( f.close() < 0 ){
 		return -1;
 	}
 
 	return 0;
 }
-
-
-
 
 void Bitmap::show() const{
 	//sg_api()->show(bmap_const());
@@ -263,8 +238,7 @@ void Bitmap::show() const{
 			} else {
 				printf("%X", color);
 			}
-			sg_api()->cursor_inc_x(&x_cursor);
-			if( j < bmap_const()->dim.w - 1){
+			if( (j < bmap_const()->dim.w - 1) && (sg_api()->bits_per_pixel > 1)){
 				printf(" ");
 			}
 		}

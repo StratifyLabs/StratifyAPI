@@ -13,7 +13,7 @@ namespace fmt {
 class Bmp: public sys::File {
 public:
 
-	/*! \details Construct a bitmap from the file (readonly) */
+	/*! \details Construct a new bitmap object and open the bitmap as a read-only file */
 	Bmp(const char * name);
 
 	/*! \details Construct an empty bitmap object */
@@ -54,7 +54,7 @@ public:
 
 	/*! \details Read a pixel from the bitmap (optionally convert to a mono value)
 	 * @param pixel Data pointing to destination
-	 * @param pixel_size
+	 * @param pixel_size in bytes
 	 * @param mono true to convert to a mono pixel
 	 * @param thres threshold brightness for a mono pixel to be on
 	 */

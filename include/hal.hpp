@@ -23,6 +23,8 @@ namespace hal {};
 #include "hal/Usb.hpp"
 #include "hal/Lcd.hpp"
 #include "hal/LcdDev.hpp"
+#include "hal/Display.hpp"
+#include "hal/DisplayDev.hpp"
 
 using namespace hal;
 
