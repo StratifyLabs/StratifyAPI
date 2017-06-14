@@ -69,14 +69,26 @@ public:
 
 	/*! \details Assign a c-string */
 	String& operator=(const char * a){ assign(a); return *this; }
+
+	/*! \details Assigns the value of a String to another String.
+	 *
+	 * @param a The new String to assign
+	 * @return A reference to the destination String
+	 *
+	 * This method will make a copy of the string in a new memory
+	 * location rather than just using the data location
+	 * of the source string.
+	 */
+	String& operator=(String & a){ assign(a.c_str()); return *this; }
+
 	String& operator<<(const char * a){ append(a); return *this; }
 	String& operator<<(char c){ append(c); return *this; }
 
 
 	/*! \details Compare to a c-string */
-	bool operator==(const char * cmp) const { return (strcmp(this->c_str(), cmp) == 0); }
+	bool operator==(const char * cmp) const { return (strncmp(this->c_str(), cmp, this->capacity()) == 0); }
 	/*! \details Compare to a c-string */
-	bool operator!=(const char * cmp) const { return (strcmp(this->c_str(), cmp) != 0); }
+	bool operator!=(const char * cmp) const { return (strncmp(this->c_str(), cmp, this->capacity()) != 0); }
 
 	/*! \details Convert to an integer */
 	int atoi() const { return ::atoi(c_str()); }

@@ -6,6 +6,7 @@
 #include <iface/dev/display.h>
 
 #include "../var/Item.hpp"
+#include "../var/Data.hpp"
 #include "../sgfx/Bitmap.hpp"
 
 namespace hal {
@@ -20,11 +21,13 @@ public:
 		PIXEL_FORMAT_RGB888 = DISPLAY_PALETTE_ATTR_PIXEL_FORMAT_RGB888
 	};
 
+	int save(const char * path) const;
+	int load(const char * path);
 
 	void set_pixel_format(int v){ data()->pixel_format = v; }
-	void set_count(int v){ data()->count = v; }
-	void set_pixel_size(int v){ data()->pixel_size = v; }
-	void set_colors(void * v){ data()->colors = v; }
+	void set_colors(void * v, int count, int pixel_size, bool readonly = false);
+
+	int alloc_colors(int count, int pixel_size);
 
 	void set_color(size_t v, u8 r, u8 g, u8 b);
 
@@ -39,6 +42,8 @@ public:
 	}
 
 private:
+
+	var::Data m_colors;
 
 
 };

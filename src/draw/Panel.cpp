@@ -13,9 +13,9 @@ Panel::Panel(){
 
 
 void Panel::draw_to_scale(const DrawingScaledAttr & attr){
-	sg_icon_primitive_t objs[9];
-	sg_icon_t icon;
-	GfxMap map;
+	sg_vector_primitive_t objs[9];
+	sg_vector_icon_t icon;
+	VectorMap map;
 	sg_size_t x_radius;
 	sg_size_t y_radius;
 
@@ -40,19 +40,19 @@ void Panel::draw_to_scale(const DrawingScaledAttr & attr){
 
 	icon.total = 9;
 	icon.fill_total = 1;
-	icon.elements = objs;
+	icon.primitives = objs;
 
-	objs[0] = Gfx::line(SG_LEFT+x_radius, SG_TOP, SG_RIGHT-x_radius, SG_TOP);
-	objs[1] = Gfx::line(SG_LEFT+x_radius, SG_BOT, SG_RIGHT-x_radius, SG_BOT);
-	objs[2] = Gfx::line(SG_LEFT, SG_TOP+y_radius, SG_LEFT, SG_BOT-y_radius);
-	objs[3] = Gfx::line(SG_RIGHT, SG_TOP+y_radius, SG_RIGHT, SG_BOT-y_radius);
-	objs[4] = Gfx::arc(SG_LEFT+x_radius, SG_TOP+y_radius, x_radius, y_radius, SG_TRIG_POINTS/2, SG_TRIG_POINTS*3/4);
-	objs[5] = Gfx::arc(SG_LEFT+x_radius, SG_BOT-y_radius, x_radius, y_radius, SG_TRIG_POINTS/4, SG_TRIG_POINTS/2);
-	objs[6] = Gfx::arc(SG_RIGHT-x_radius, SG_TOP+y_radius, x_radius, y_radius, SG_TRIG_POINTS*3/4, SG_TRIG_POINTS);
-	objs[7] = Gfx::arc(SG_RIGHT-x_radius, SG_BOT-y_radius, x_radius, y_radius, 0, SG_TRIG_POINTS/4);
+	objs[0] = Vector::line(SG_LEFT+x_radius, SG_TOP, SG_RIGHT-x_radius, SG_TOP);
+	objs[1] = Vector::line(SG_LEFT+x_radius, SG_BOT, SG_RIGHT-x_radius, SG_BOT);
+	objs[2] = Vector::line(SG_LEFT, SG_TOP+y_radius, SG_LEFT, SG_BOT-y_radius);
+	objs[3] = Vector::line(SG_RIGHT, SG_TOP+y_radius, SG_RIGHT, SG_BOT-y_radius);
+	objs[4] = Vector::arc(SG_LEFT+x_radius, SG_TOP+y_radius, x_radius, y_radius, SG_TRIG_POINTS/2, SG_TRIG_POINTS*3/4);
+	objs[5] = Vector::arc(SG_LEFT+x_radius, SG_BOT-y_radius, x_radius, y_radius, SG_TRIG_POINTS/4, SG_TRIG_POINTS/2);
+	objs[6] = Vector::arc(SG_RIGHT-x_radius, SG_TOP+y_radius, x_radius, y_radius, SG_TRIG_POINTS*3/4, SG_TRIG_POINTS);
+	objs[7] = Vector::arc(SG_RIGHT-x_radius, SG_BOT-y_radius, x_radius, y_radius, 0, SG_TRIG_POINTS/4);
 
-	objs[8] = Gfx::fill(0, 0);
+	objs[8] = Vector::fill(0, 0);
 
-	Gfx::draw(attr.bitmap(), icon, map);
+	Vector::draw(attr.bitmap(), icon, map);
 
 }

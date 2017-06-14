@@ -16,7 +16,7 @@ typedef struct MCU_PACK {
  * \details This class defines the attributes of any
  * progress object.  This class is available as a minimal
  * way to store progress without having to inherit Drawing by using
- * ProgressObject.
+ * Progress object.
  */
 class ProgressAttr {
 public:

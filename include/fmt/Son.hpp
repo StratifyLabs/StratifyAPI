@@ -14,8 +14,6 @@
 #include "../var/String.hpp"
 #endif
 
-
-
 namespace fmt {
 
 /*! \brief Stratify Object Notation
@@ -101,7 +99,8 @@ public:
 	//deprecated
 	void set_handle(void * handle){ set_driver(handle); }
 #else
-	void reset(son_t * obj){ lseek(obj->phy.fd, 0, SEEK_SET); }
+	static void reset(son_t * son){ lseek(son->phy.fd, 0, SEEK_SET); }
+	void reset(){ reset(&m_son); }
 #endif
 
 	/*! \brief The file descriptor of the SON file.
@@ -149,7 +148,8 @@ public:
 	int open_edit(const char * name){ return son_api()->edit(&m_son, name); }
 
 
-	int close(bool close_all = false){ return son_api()->close(&m_son, close_all); }
+	/*! \details Closes a SON file */
+	int close(){ return son_api()->close(&m_son); }
 
 
 	int seek(const char * access, son_size_t * data_size){ return son_api()->seek(&m_son, access, data_size); }
@@ -162,7 +162,7 @@ public:
 	int close_obj(){ return son_api()->close_obj(&m_son); }
 
 	/*! \details Open an object */
-	int open_array(const char * key, int fixed_size = 0){ return son_api()->open_array(&m_son, key, fixed_size); }
+	int open_array(const char * key){ return son_api()->open_array(&m_son, key); }
 
 	/*! \details Close an array */
 	int close_array(){ return son_api()->close_array(&m_son); }
@@ -343,6 +343,8 @@ public:
 	int edit(const char * access, s32 v){ return son_api()->edit_num(&m_son, access, v); }
 	int edit(const char * access, u32 v){ return son_api()->edit_unum(&m_son, access, v); }
 	int edit(const char * access, bool v){ return son_api()->edit_bool(&m_son, access, v); }
+
+	int err() const { return m_son.err; }
 
 	son_t & son(){ return m_son; }
 

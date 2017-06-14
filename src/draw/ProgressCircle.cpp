@@ -9,13 +9,13 @@ ProgressCircle::ProgressCircle(){}
 
 void ProgressCircle::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
-	sgfx::GfxMap map;
+	sgfx::VectorMap map;
 
 	sg_point_t p = attr.p();
 	Dim d = attr.d();
-	sg_icon_t icon;
+	sg_vector_icon_t icon;
 
-	sg_icon_primitive_t elements[3];
+	sg_vector_primitive_t primitives[3];
 
 	int16_t end_angle;
 
@@ -29,13 +29,13 @@ void ProgressCircle::draw_to_scale(const DrawingScaledAttr & attr){
 	end.set(0, SG_TOP);
 	end.rotate(value() * SG_TRIG_POINTS / max());
 
-	elements[0] = sgfx::Gfx::line(0, 0, 0, SG_TOP);
-	elements[1] = sgfx::Gfx::line(0, 0, end.x(),end.y());
-	elements[2] =  sgfx::Gfx::arc(0, 0, SG_MAX/2, SG_MAX/2, SG_TRIG_POINTS*3/4, end_angle);
-	icon.elements = elements;
+	primitives[0] = sgfx::Vector::line(0, 0, 0, SG_TOP);
+	primitives[1] = sgfx::Vector::line(0, 0, end.x(),end.y());
+	primitives[2] =  sgfx::Vector::arc(0, 0, SG_MAX/2, SG_MAX/2, SG_TRIG_POINTS*3/4, end_angle);
+	icon.primitives = primitives;
 	icon.total = 3;
 	icon.fill_total = 0;
 
-	Gfx::draw(attr.bitmap(), icon, map);
+	Vector::draw(attr.bitmap(), icon, map);
 
 }

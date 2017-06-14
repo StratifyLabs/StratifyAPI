@@ -21,7 +21,7 @@ namespace ui {
 class ListItem : public ElementLinked {
 public:
 	/*! \details Construct a new list item */
-	ListItem(const char * label, const sg_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
+	ListItem(const char * label, const sg_vector_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
 
 	void draw_to_scale(const draw::DrawingScaledAttr & attr);
 
@@ -66,14 +66,14 @@ public:
 	void set_enabled(bool v = true);
 
 	/*! \details This method will set the icon used when the item is enabled */
-	void set_toggle_enabled_icon(const sg_icon_t * icon){ m_toggle_enabled_icon = icon; }
+	void set_toggle_enabled_icon(const sg_vector_icon_t * icon){ m_toggle_enabled_icon = icon; }
 
 	/*! \details This method will set the icon used when the item is enabled */
-	void set_toggle_disabled_icon(const sg_icon_t * icon){ m_toggle_disabled_icon = icon; }
+	void set_toggle_disabled_icon(const sg_vector_icon_t * icon){ m_toggle_disabled_icon = icon; }
 
 private:
-	const sg_icon_t * m_toggle_enabled_icon;
-	const sg_icon_t * m_toggle_disabled_icon;
+	const sg_vector_icon_t * m_toggle_enabled_icon;
+	const sg_vector_icon_t * m_toggle_disabled_icon;
 
 };
 
@@ -97,12 +97,12 @@ public:
  */
 class ListItemBack : public ListItem {
 public:
-	ListItemBack(const sg_icon_t * icon = 0, ElementLinked * parent = 0);
+	ListItemBack(const sg_vector_icon_t * icon = 0, ElementLinked * parent = 0);
 };
 
 class ListItemExit : public ListItemBack {
 public:
-	ListItemExit(const sg_icon_t * icon = 0, ElementLinked * parent = 0);
+	ListItemExit(const sg_vector_icon_t * icon = 0, ElementLinked * parent = 0);
 };
 
 
@@ -153,7 +153,7 @@ public:
 	typedef void (*list_dir_callback_t)(ListDir * list);
 
 	/*! \details Contruct a new list */
-	ListDir(const char * path, const sg_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
+	ListDir(const char * path, const sg_vector_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
 	~ListDir();
 
 	/*! \details Set the path for the directory */

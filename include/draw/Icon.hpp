@@ -5,7 +5,7 @@
 
 
 #include "Drawing.hpp"
-#include "../sgfx/Gfx.hpp"
+#include "../sgfx/Vector.hpp"
 
 namespace draw {
 
@@ -24,10 +24,10 @@ public:
 	};
 
 	/*! \details Construct with no graphic */
-	IconAttr(){ set_attr((const sg_icon_t*)0, sgfx::Pen()); }
+	IconAttr(){ set_attr((const sg_vector_icon_t*)0, sgfx::Pen()); }
 
 	/*! \details Construct by setting the graphic, thickness, and rotation */
-	IconAttr(const sg_icon_t * icon, u8 thickness = 3, i16 rotation = 0){
+	IconAttr(const sg_vector_icon_t * icon, u8 thickness = 3, i16 rotation = 0){
 		set_attr(icon, thickness, rotation);
 	}
 
@@ -45,7 +45,7 @@ public:
 	};
 
 	/*! \details Set the graphic, thickness, and rotation */
-	void set_attr(const sg_icon_t * icon, const sgfx::Pen & pen, i16 rotation = 0){
+	void set_attr(const sg_vector_icon_t * icon, const sgfx::Pen & pen, i16 rotation = 0){
 		m_icon = icon; m_rotation = rotation; m_pen = pen;
 	}
 
@@ -58,22 +58,22 @@ public:
 	const sgfx::Pen & pen_const() const { return m_pen; }
 
 	/*! \details Set the icon */
-	void set_icon(const sg_icon_t * icon){ m_icon = icon; }
+	void set_icon(const sg_vector_icon_t * icon){ m_icon = icon; }
 
 	/*! \details Set the rotation */
 	void set_rotation(i16 rotation){ m_rotation = rotation; }
 
 	/*! \details Returns the graphic */
-	const sg_icon_t & icon() const { return *m_icon; }
+	const sg_vector_icon_t & icon() const { return *m_icon; }
 
 
 	/*! \details Returns the rotation */
 	s16 rotation() const { return m_rotation; }
 
-	static const sg_icon_t * get_system_icon(int icon);
+	static const sg_vector_icon_t * get_system_icon(int icon);
 
 private:
-	const sg_icon_t * m_icon;
+	const sg_vector_icon_t * m_icon;
 	sgfx::Pen m_pen;
 	s16 m_rotation;
 };

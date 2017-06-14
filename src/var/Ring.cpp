@@ -1,9 +1,4 @@
-/*
- * Ring.cpp
- *
- *  Created on: Apr 11, 2017
- *      Author: tgil
- */
+//Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 #include "var/Ring.hpp"
 

@@ -7,8 +7,8 @@ using namespace draw;
 Icon::Icon(){}
 
 
-const sg_icon_t * IconAttr::get_system_icon(int icon){
-	return IconSystem::get_icon(icon);
+const sg_vector_icon_t * IconAttr::get_system_icon(int icon){
+	return VectorIconSystem::get_icon(icon);
 }
 
 
@@ -24,8 +24,8 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	Bitmap bitmap(d);
 	bitmap.clear();
 
-	GfxMap map(bitmap, tmp_pen, this->rotation());
-	Gfx::draw(bitmap, (this->icon()), map.item(), &m_bounds);
+	VectorMap map(bitmap, tmp_pen, this->rotation());
+	Vector::draw(bitmap, (this->icon()), map.item(), &m_bounds);
 
 	//check for alignment values left/right/top/bottom
 	if( align_top() ){

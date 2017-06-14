@@ -22,9 +22,6 @@ size_t Data::min_size(){
 	return MIN_CHUNK_SIZE;
 }
 
-
-
-
 Data::Data(){
 	zero();
 }
@@ -38,22 +35,22 @@ Data::Data(size_t s){
 }
 
 int Data::free(){
-#ifndef __HWPL_ONLY__
 	if( m_needs_free ){
 		::free(m_mem_write);
 	}
-#endif
 	zero();
 	return 0;
 }
 
-#ifndef __HWPL_ONLY__
 Data::~Data(){
 	free();
 }
-#endif
 
 void Data::set(void * mem, size_t s, bool readonly){
+
+	//free the data if it was previously allocated dynamically
+	free();
+
 	m_mem_write = mem;
 	m_needs_free = false;
 	m_capacity = s;
@@ -62,6 +59,7 @@ void Data::set(void * mem, size_t s, bool readonly){
 	} else {
 		mem = (void*)&m_zero_value;
 	}
+
 	if( readonly ){
 		m_mem_write = 0;
 	}
@@ -76,7 +74,6 @@ void Data::zero(){
 
 
 int Data::alloc(size_t s, bool resize){
-#ifndef __MCU_ONLY__
 
 	void * new_data;
 	if( (m_needs_free == false) && (m_mem != &m_zero_value) ){
@@ -106,9 +103,6 @@ int Data::alloc(size_t s, bool resize){
 	m_capacity = s;
 
 	return 0;
-#else
-	return -1;
-#endif
 }
 
 int Data::set_min_capacity(size_t s){

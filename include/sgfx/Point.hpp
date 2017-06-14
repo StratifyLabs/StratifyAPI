@@ -16,7 +16,7 @@ class Point {
 public:
 	Point(){ d.x = 0; d.y = 0; }
 	Point(sg_point_t p){ d = p; }
-	Point(const sg_icon_primitive_t & a);
+	Point(const sg_vector_primitive_t & a);
 	Point(sg_int_t x, sg_int_t y){ d.x = x; d.y = y; }
 
 	sg_point_t point() const { return d; }
@@ -30,9 +30,9 @@ public:
 	inline sg_int_t y() const { return d.y; }
 
 
-	void map(const sg_map_t & m){ sg_point_map(&d, &m); }
+	void map(const sg_vector_map_t & m){ sg_point_map(&d, &m); }
 
-	static sg_size_t map_pixel_size(const sg_map_t & m){ return sg_point_map_pixel_size(&m); }
+	static sg_size_t map_pixel_size(const sg_vector_map_t & m){ return sg_point_map_pixel_size(&m); }
 
 	Point & operator=(const sg_point_t & a){ d = a; return *this; }
 	Point & operator+(const sg_point_t & a){ sg_api()->point_shift(&d, a); return *this; }

@@ -5,8 +5,8 @@
  *      Author: tgil
  */
 
-#ifndef SGFX_ICONSYSTEM_HPP_
-#define SGFX_ICONSYSTEM_HPP_
+#ifndef SGFX_VECTORICONSYSTEM_HPP_
+#define SGFX_VECTORICONSYSTEM_HPP_
 
 #include <sgfx/sg_types.h>
 
@@ -14,10 +14,10 @@ namespace sgfx {
 
 
 /*! \brief Icon System Class
- * \details This class manages icon data (sg_icon_t) that is installed
+ * \details This class manages icon data (sg_vector_icon_t) that is installed
  * in the system.
  */
-class IconSystem {
+class VectorIconSystem {
 public:
 
 	/*! \details This initializes the system graphics table.
@@ -26,7 +26,7 @@ public:
 	 * @param count The total number of system icons available
 	 * @return True if all fonts loaded successfully
 	 */
-	static bool load_icons(const sg_icon_t * icons, u32 count);
+	static bool load_icons(const sg_vector_icon_t * icons, u32 count);
 
 
 	/*! \details Load the system icon specified by the location in the icon table.
@@ -35,14 +35,14 @@ public:
 	 * @param bold Whether or not to use a bold font
 	 * @return
 	 */
-	static const sg_icon_t * get_icon(u32 icon);
+	static const sg_vector_icon_t * get_icon(u32 icon);
 
 private:
-	static const sg_icon_t * m_icons;
+	static const sg_vector_icon_t * m_icons;
 	static u16 m_count;
 
 };
 
 };
 
-#endif /* SGFX_ICONSYSTEM_HPP_ */
+#endif /* SGFX_VECTORICONSYSTEM_HPP_ */

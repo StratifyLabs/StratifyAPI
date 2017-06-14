@@ -10,10 +10,12 @@ using namespace var;
 
 String::String(){
 	set_capacity(min_size()-1);
+	clear();
 }
 
 String::String(size_t capacity){
 	set_capacity(capacity);
+	clear();
 }
 
 String::String(const char * s){
@@ -78,9 +80,7 @@ void String::assign(const char * a, size_t n){
 }
 
 void String::append(const char * a){
-	if( a == 0 ){
-		return;
-	}
+	if( a == 0 ){ return; }
 	size_t len = size();
 	size_t alen = strlen(a);
 	set_capacity(len + alen); //try to make min capacity
@@ -90,6 +90,7 @@ void String::append(const char * a){
 	if( cdata() == 0 ){ return; }
 	strncat(cdata(), a, capacity() - len);
 }
+
 void String::append(char c){
 	size_t len = size();
 	size_t alen = 1;
