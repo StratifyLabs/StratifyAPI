@@ -27,6 +27,14 @@ public:
 	void set_pixel_format(int v){ data()->pixel_format = v; }
 	void set_colors(void * v, int count, int pixel_size, bool readonly = false);
 
+	/*! \details Allocates memory for \a count colors with \a pixel_size bytes
+	 * each.
+	 *
+	 * @param count The total number of colors
+	 * @param pixel_size The number of bytes occupied by each color
+	 * @return Less than zero if there were an error allocating memory
+	 *
+	 */
 	int alloc_colors(int count, int pixel_size);
 
 	void set_color(size_t v, u8 r, u8 g, u8 b);
@@ -34,12 +42,7 @@ public:
 	u8 pixel_format() const { return item().pixel_format; }
 	u8 count() const { return item().count; }
 	u8 pixel_size() const { return item().pixel_size; }
-	u8 * color(size_t v) const {
-		if( v < count() ){
-			return ((u8*)(item().colors)) + (v*pixel_size());
-		}
-		return 0;
-	}
+	u8 * color(size_t v) const;
 
 private:
 

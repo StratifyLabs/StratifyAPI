@@ -48,8 +48,17 @@ public:
 	 */
 	Bitmap(sg_dim_t d);
 
-	void set_pen_color(sg_color_t v){ m_bmap.pen.color = v; }
-	void set_pen_thickness(sg_size_t v){ m_bmap.pen.thickness = v; }
+	/*! \details Sets the color of the pen.
+	 *
+	 * @param color The color of the pen
+	 */
+	void set_pen_color(sg_color_t color){ m_bmap.pen.color = color; }
+
+	/*! \details Sets the thickness of the pen.
+	 *
+	 * @param thickness The thickness in pixels
+	 */
+	void set_pen_thickness(sg_size_t thickness){ m_bmap.pen.thickness = thickness; }
 
 	virtual ~Bitmap();
 
@@ -77,12 +86,12 @@ public:
 	int save(const char * path) const;
 
 
-	/*! \details Allocate memory for the bitmap data using the specified
+	/*! \details Allocates memory for the bitmap data using the specified
 	 * width and height.  If the bitmap already has a memory associated
 	 * with it, it will be freed before the new memory is assigned.
 	 */
 	int alloc(sg_size_t w, sg_size_t h);
-	inline int alloc(const Dim & d){ return alloc(d.w(), d.h()); }
+	int alloc(const Dim & d){ return alloc(d.w(), d.h()); }
 	/*! \details Free memory associated with bitmap (auto freed on ~Bitmap) */
 	void free();
 

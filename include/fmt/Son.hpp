@@ -346,6 +346,8 @@ public:
 
 	int err() const { return m_son.err; }
 
+	int get_error(){ return son_api()->get_error(&m_son); }
+
 	son_t & son(){ return m_son; }
 
 private:

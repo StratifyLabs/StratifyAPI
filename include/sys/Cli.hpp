@@ -16,17 +16,52 @@ namespace sys {
 class Cli {
 public:
 
+	enum {
+		FORMAT_TEXT /*! Displays messages as plain text */,
+		FORMAT_JSON /*! Display messages as JSON formatted strings */,
+		FORMAT_TOTAL
+	};
+
 	/*! \details Construct a new object to parse and handle command line interface arguments */
 	Cli(int argc, char * argv[]);
 
-	/*! \details Set the version of the program */
+	/*! \details Sets the version of the program */
 	void set_version(const char * version){ m_version = version; }
 
-	/*! \details Set the publisher of the program */
+	/*! \details Sets the publisher of the program
+	 *
+	 * @param publisher A pointer to the publisher's name
+	 *
+	 */
 	void set_publisher(const char * publisher){ m_publisher = publisher; }
 
-	/*! \details Print the version, name and publisher on the stdout */
+	/*! \details Prints the version, name and publisher on the stdout */
 	void print_version() const;
+
+	enum {
+		PRINT_DEBUG,
+		PRINT_INFO,
+		PRINT_WARNING,
+		PRINT_ERROR,
+		PRINT_FATAL,
+		PRINT_TOTAL
+	};
+
+	/*! \details Prints a message to the user.
+	 *
+	 * @param value A pointer to the message
+	 *
+	 * The message will be formatted based on the Cli format's settings.
+	 *
+	 */
+	//void print(char char * type, const char * value);
+
+	/*! \details Prints the progress of an operation.
+	 *
+	 * @param value The current value of the progress
+	 * @param max The maximum value of the progress
+	 */
+	//void print_progress(int value, int max);
 
 	/*! \details Access the program version */
 	const char * version() const { return m_version; }

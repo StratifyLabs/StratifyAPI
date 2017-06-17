@@ -28,10 +28,18 @@ void DisplayPalette::set_color(size_t v, u8 r, u8 g, u8 b){
 }
 
 void DisplayPalette::set_colors(void * v, int count, int pixel_size, bool readonly){
+	m_colors.free();
 	data()->pixel_size = pixel_size;
 	data()->count = count;
 	data()->colors = v;
 	m_colors.set(v, item().count*item().pixel_size, readonly);
+}
+
+u8 * DisplayPalette::color(size_t v) const {
+	if( v < count() ){
+		return ((u8*)(item().colors)) + (v*pixel_size());
+	}
+	return 0;
 }
 
 int DisplayPalette::alloc_colors(int count, int pixel_size){
@@ -39,8 +47,13 @@ int DisplayPalette::alloc_colors(int count, int pixel_size){
 	data()->count = count;
 
 	if( m_colors.alloc(item().count * item().pixel_size) < 0 ){
+		data()->pixel_size = 0;
+		data()->count = 0;
+		data()->colors = 0;
 		return -1;
 	}
+
+	data()->colors = m_colors.data();
 
 	return 0;
 }
@@ -52,24 +65,16 @@ int DisplayPalette::save(const char * path) const{
 
 	if( f.create(path, true) < 0 ){ return -1; }
 
-
 	palette = item();
-
 	palette.colors = 0;
-
-
 	if( f.write(&palette, size()) != (int)size() ){
 		f.close();
 		return -1;
 	}
-
 	ret = f.write(item().colors, item().count * item().pixel_size);
-
 	f.close();
 
-	if( ret < 0 ){
-		return ret;
-	}
+	if( ret < 0 ){ return ret; }
 	return 0;
 }
 

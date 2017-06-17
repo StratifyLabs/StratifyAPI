@@ -36,22 +36,45 @@ namespace var {
  */
 class Data {
 public:
-	/*! \details Data object with no data */
+	/*! \details Constructs a data object with no data */
 	Data();
-	/*! \details Data object with non-mutable data (not memory managed) */
-	Data(void * mem, size_t s, bool readonly = false); //read/write bitmap
-	/*! \details Data oject with dynamically allocated memory with \a s bytes (resizeable) */
-	Data(size_t s);
 
-	/*! \details The deconstructor will free any dynamically allocated memory associated with the object */
+	/*! \details Constructs a data object with non-mutable data pointers (not memory managed)
+	 *
+	 * @param mem A pointer to the data
+	 * @param size The number of bytes available
+	 * @param readonly If true, the data will be accessible as read-only
+	 *
+	 * The function does not manage the memory provided. The alloc() and free()
+	 * methods will have no effect.
+	 *
+	 */
+	Data(void * mem, size_t size, bool readonly = false); //read/write bitmap
+
+	/*! \details Constructs data oject with dynamically allocated memory with \a size bytes (resizeable)
+	 *
+	 *  @param size The number of bytes to allocate
+	 *
+	 */
+	Data(size_t size);
+
+	/*! \details Deconstructs a Data object.
+	 *
+	 * This method will free any data that was allocated dynamically.
+	 *
+	 */
 	virtual ~Data();
 
-	/*! \details The minimum data storage size of any data object */
+	/*! \details Returns the minimum data storage size of any Data object. */
 	static size_t min_size();
 
-	/*! \details Set the storage object of the data. This object
+	/*! \details Sets the storage object of the data. This object
 	 * will treat the data as statically allocated and will not free the memory
 	 * if free() is called or the object is destroyed.
+	 *
+	 * @param mem A pointer to a fixed place in memory to use as storage
+	 * @param size The number of bytes allocated
+	 * @param readonly true if readonly (used for data stored in flash)
 	 *
 	 * If the memory is specified as read-only, data() will return 0 and data_const()
 	 * will return a pointer to the memory.
@@ -59,30 +82,28 @@ public:
 	 * If this object had previously allocated memory dynamically, the memory will be freed
 	 * when this method is called.
 	 *
-	 * @param mem A pointer to a fixed place in memory to use as storage
-	 * @param s The number of bytes allocated
-	 * @param readonly true if readonly (used for data stored in flash)
 	 */
-	void set(void * mem, size_t s, bool readonly = false);
+	void set(void * mem, size_t size, bool readonly = false);
 
-	/*! \details Reallocate the data storage
+	/*! \details Allocates (or reallocates) memory for the Data object.
 	 *
-	 * If the memory was specified using the set() method, this will return an error.
+	 * @param size The number of bytes to allocate
+	 * @param resize If true, the old data is copied to the new data location
+	 * @return Zero If the operation was successful and -1 if it failed
 	 *
-	 * @param s The number of bytes to allocate
-	 * @param resize if true, the old data is copied to the new data location
-	 * @return Zero if the operation was successful and -1 if it failed
+	 * If the memory was specified using the set() method or constructed as
+	 * statically allocated memory, this will return an error.
 	 */
-	int alloc(size_t s, bool resize = false);
+	int alloc(size_t size, bool resize = false);
 
-	/*! \details Resize the data
+	/*! \details Resizes the data (equivalent to alloc()).
 	 *
 	 * This is the same as alloc() with \a resize set to true
 	 *
 	 * @param s The number of new bytes
 	 * @return Zero on success or -1 with errno set
 	 */
-	int resize(size_t s) { return alloc(s, true); }
+	int resize(size_t size) { return alloc(size, true); }
 
 	/*! \details Set the minimum capacity of the data storage area.
 	 *

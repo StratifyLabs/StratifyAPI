@@ -108,6 +108,8 @@ public:
 	/*! \details Return character at \a pos */
 	char at(size_t pos) const;
 
+	int printf(const char * format, ...);
+
 
 	size_t capacity() const;
 

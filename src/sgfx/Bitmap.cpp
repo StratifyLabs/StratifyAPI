@@ -238,7 +238,7 @@ void Bitmap::show() const{
 			} else {
 				printf("%X", color);
 			}
-			if( (j < bmap_const()->dim.w - 1) && (sg_api()->bits_per_pixel > 1)){
+			if( (j < bmap_const()->dim.w - 1) && (sg_api()->bits_per_pixel > 4)){
 				printf(" ");
 			}
 		}
