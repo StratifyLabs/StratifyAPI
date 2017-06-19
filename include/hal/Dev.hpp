@@ -119,9 +119,6 @@ public:
 
 protected:
 
-#ifdef __link
-	link_transport_mdriver_t * _driver;
-#endif
 
 
 

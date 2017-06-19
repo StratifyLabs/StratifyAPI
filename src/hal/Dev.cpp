@@ -9,9 +9,6 @@ using namespace hal;
 Dev::Dev() {
 	// TODO Auto-generated constructor stub
 	m_fd = -1;
-#if defined __link
-	_driver = 0;
-#endif
 }
 
 

@@ -9,6 +9,9 @@ using namespace sys;
 File::File() {
 	// TODO Auto-generated constructor stub
 	m_fd = -1; //The file is not open
+#if defined __link
+	m_driver = 0;
+#endif
 }
 
 int File::open(const char * name, int flags){

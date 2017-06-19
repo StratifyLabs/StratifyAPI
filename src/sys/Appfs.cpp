@@ -28,10 +28,6 @@ int Appfs::create(const char * name, const void * buf, int nbyte, const char * m
 #endif
 
 	//delete the settings if they exist
-	tmp = errno;
-	unlink(buffer);
-	errno = tmp;
-
 	strncpy(f.hdr.name, name, LINK_NAME_MAX);
 	f.hdr.mode = 0666;
 	f.exec.code_size = nbyte + sizeof(f); //total number of bytes in file

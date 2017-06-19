@@ -231,8 +231,8 @@ public:
 
 
 #ifdef __link
-	void set_driver(link_transport_mdriver_t * d){ _driver = d; }
-	link_transport_mdriver_t * driver() const { return _driver; }
+	void set_driver(link_transport_mdriver_t * d){ m_driver = d; }
+	link_transport_mdriver_t * driver() const { return m_driver; }
 #endif
 
 	/*! \details Executes an IO control request
@@ -253,6 +253,9 @@ public:
 
 protected:
 	mutable int m_fd;
+#ifdef __link
+	link_transport_mdriver_t * m_driver;
+#endif
 
 };
 
