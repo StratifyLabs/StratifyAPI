@@ -27,16 +27,27 @@ public:
 	};
 
 
-	/*! \details Construct a Mutex with default values */
+	/*! \details Constructs a Mutex attributes object with default values */
 	MutexAttr();
 	~MutexAttr();
-	/*! \details Construct a Mutex with the specified values */
+	/*! \details Constructs a mutex attributs object with the specified values
+	 *
+	 * @param t Mutex type (NORMAL or RECURSIVE)
+	 * @param prio_ceiling The priority ceiling (0 is default, lowest priority)
+	 * @param pshared True if mutex is to be shared between processes
+	 *
+	 */
 	MutexAttr(enum type t, int prio_ceiling = 0, bool pshared = false);
 
 
-	/*! \details Set the priority ceiling */
-	int set_prio_ceiling(int value);
-	/*! \details Set the protocol */
+	/*! \details Sets the priority ceiling.
+	 *
+	 * @param ceiling The priority ceiling of the mutex
+	 * @return Zero on success
+	 *
+	 */
+	int set_prio_ceiling(int ceiling);
+	/*! \details Sets the protocol. */
 	int set_protocol(enum protocol value);
 	/*! \details Set whether this is shared between processes */
 	int set_pshared(bool value = true);
@@ -44,9 +55,13 @@ public:
 	/*! \details Set the mutex type (NORMAL_TYPE or RECURSIVE_TYPE) */
 	int set_type(enum type value);
 
+	/*! \details Returns the priority ceiling. */
 	int get_prio_ceiling() const;
+	/*! \details Returns the protocol */
 	int get_protocol() const;
+	/*! \details Returns the type */
 	int get_type() const;
+	/*! \details Returns true if the mutex attributes are for process sharing. */
 	bool get_pshared() const;
 
 	const pthread_mutexattr_t & value() const { return m_item; }
@@ -63,13 +78,13 @@ private:
  */
 class Mutex {
 public:
-	/*! \details Construct a Mutex with the default settings */
+	/*! \details Constructs a Mutex with the default settings. */
 	Mutex();
 
-	/*! \details Construct a Mutex using the specified attributes */
+	/*! \details Constructs a Mutex using the specified attributes. */
 	Mutex(const MutexAttr & attr);
 
-	/*! \details This method attempts to lock the mutex.  If the mutex is locked by
+	/*! \details Attempts to lock the mutex.  If the mutex is locked by
 	 * another thread, the thread will block until the mutex becomes available.
 	 *
 	 * If the thread already holds a lock on the mutex, it will
@@ -79,7 +94,7 @@ public:
 	 */
 	int lock();
 
-	/*! \details Try to lock the mutex but force a timeout
+	/*! \details Attempts to lock the mutex but force a timeout
 	 * after the specified duration
 	 *
 	 * @param sec The number of seconds to wait before a timeout
@@ -88,7 +103,7 @@ public:
 	 */
 	int lock_timed(u32 sec, u32 usec = 0);
 
-	/*! \details This methods attempts to lock the mutex.  If the mutex is
+	/*! \details Attempts to lock the mutex.  If the mutex is
 	 * locked by another thread, the method returns immediately, returns less than zero,
 	 * and sets errno to EBUSY.
 	 *
@@ -98,7 +113,7 @@ public:
 	 */
 	int try_lock();
 
-	/*! \details Unlock the mutex */
+	/*! \details Unlocks the mutex. */
 	int unlock();
 
 private:

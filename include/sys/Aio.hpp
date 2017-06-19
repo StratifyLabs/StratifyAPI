@@ -9,6 +9,10 @@
 #include <errno.h>
 #include <aio.h>
 
+namespace hal {
+class Dev;
+}
+
 namespace sys {
 
 /*! \brief Asynchronous IO Class */
@@ -22,8 +26,8 @@ namespace sys {
  *
  * \code
  * #include <stfy/hal.hpp>
- * #include <stfy/Sys.hpp>
- * #include <stfy/Var.hpp>
+ * #include <stfy/sys.hpp>
+ * #include <stfy/var.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	String buf = "Hello World!\n";
@@ -51,50 +55,31 @@ namespace sys {
  *
  */
 class Aio {
+	friend class hal::Dev;
 public:
 
-#ifdef __MCU_ONLY__
+	/*! \details Constructs a new Aio object.
+	 *
+	 * @param buf The buffer for data transactions
+	 * @param nbytes The number of bytes to transfer on transactions
+	 * @param offset The file/device offset location
+	 *
+	 */
 	Aio(volatile void * buf, int nbytes, int offset = 0){
-		aio_var.buf = (void*)buf;
-		aio_var.nbyte = nbytes;
-		aio_var.loc = offset;
+		m_aio_var.aio_buf = buf;
+		m_aio_var.aio_nbytes = nbytes;
+		m_aio_var.aio_offset = offset;
+		m_aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
 	}
 
-
-	/*! \brief Return the buffer pointer */
-	volatile void * buf() const { return aio_var.buf; }
-	/*! \brief Set the buffer pointer */
-	void set_buf(volatile void * buf){ aio_var.buf = (void*)buf; }
-	/*! \brief Return the number of bytes to transfer */
-	int nbytes() const { return aio_var.nbyte; }
-	/*! \brief Set the number of bytes to transfer */
-	void set_nbytes(int nbytes){ aio_var.nbyte = nbytes; }
-	/*! \brief Return the offset (or channel for Dac, Adc, Pwm, etc) */
-	int offset() const { return aio_var.loc; }
-	/*! \brief Set the offset (or channel for Dac, Adc, Pwm, etc) */
-	void set_offset(int offset){ aio_var.loc = offset; }
-	/*! \brief Return the return value of the operation */
-	int ret() const { return aio_var.nbyte; }
-	/*! \brief Return the error number of the operation */
-	int error() const { return aio_var.nbyte; }
-	/*! \brief Check to see if operation is complete */
-	bool done() const {
-		if(  aio_var.flags & BUSY_FLAG ){
-			return false;
-		} else {
-			return true;
-		}
-	}
-#else
-	/*! \details Declare an Aio object. */
-	Aio(volatile void * buf, int nbytes, int offset = 0){
-		aio_var.aio_buf = buf;
-		aio_var.aio_nbytes = nbytes;
-		aio_var.aio_offset = offset;
-		aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
-	}
-
-	/*! \details Block until all transfers in list have completed or timeout is reached */
+	/*! \details Blocks until all transfers in list have completed or timeout is reached.
+	 *
+	 * @param list A list of AIO structures
+	 * @param nent The number of entities in the list
+	 * @param timeout_usec Timeout in microseconds to block (0 to block indefinitely)
+	 *
+	 *
+	 */
 	static int suspend(struct aiocb * const list[], int nent, int timeout_usec = 0){
 		struct timespec timeout;
 		timeout.tv_sec = timeout_usec / 1000000;
@@ -106,38 +91,50 @@ public:
 		}
 	}
 
-	/*! \details Block until the operation completes or timeout is reached */
+	/*! \details Blocks until the operation completes or timeout is reached.
+	 *
+	 * @param timeout_usec The timeout in microseconds (0 to block indefinitely)
+	 *
+	 *
+	 */
 	int suspend(int timeout_usec = 0){
-		struct aiocb * const list[1] = { &aio_var };
+		struct aiocb * const list[1] = { &m_aio_var };
 		return suspend(list, 1, timeout_usec);
 	}
 
-	/*! \details Return the buffer pointer */
-	volatile void * buf() const { return aio_var.aio_buf; }
-	/*! \details Set the buffer pointer */
-	void set_buf(volatile void * buf){ aio_var.aio_buf = buf; }
-	/*! \details Return the number of bytes to transfer */
-	int nbytes() const { return aio_var.aio_nbytes; }
-	/*! \details Set the number of bytes to transfer */
-	void set_nbytes(int nbytes){ aio_var.aio_nbytes = nbytes; }
-	/*! \details Return the offset (or channel for Dac, Adc, Pwm, etc) */
-	int offset() const { return aio_var.aio_offset; }
-	/*! \details Set the offset (or channcel for Dac, Adc, Pwm, etc) */
-	void set_offset(int offset){ aio_var.aio_offset = offset; }
-	/*! \details Return the return value of the operation */
-	int ret(){ return aio_return(&aio_var); }
-	/*! \details Return the error number of the operation */
-	int error(){ return aio_error(&aio_var); }
-	/*! \details Check to see if operation is complete */
+	/*! \details Returns the buffer pointer. */
+	volatile void * buf() const { return m_aio_var.aio_buf; }
+	/*! \details Sets the buffer pointer.
+	 *
+	 * @param buf A pointer to the data buffer
+	 * @param nbytes The number of bytes to transfer
+	 *
+	 */
+	void set_buf(volatile void * buf, int nbytes){
+		m_aio_var.aio_buf = buf;
+		m_aio_var.aio_nbytes = nbytes;
+	}
+
+	/*! \details Returns the number of bytes to transfer. */
+	int nbytes() const { return m_aio_var.aio_nbytes; }
+	/*! \details Returns the offset (or channel for Dac, Adc, Pwm, etc). */
+	int offset() const { return m_aio_var.aio_offset; }
+	/*! \details Sets the offset (or channcel for Dac, Adc, Pwm, etc). */
+	void set_offset(int offset){ m_aio_var.aio_offset = offset; }
+	/*! \details Returns the return value of the operation. */
+	int ret(){ return aio_return(&m_aio_var); }
+	/*! \details Returns the error number of the operation. */
+	int error(){ return aio_error(&m_aio_var); }
+	/*! \details Returns true if operation is complete. */
 	bool done() const {
-		if( aio_error(&aio_var) == EINPROGRESS ){
+		if( aio_error(&m_aio_var) == EINPROGRESS ){
 			return false;
 		} else {
 			return true;
 		}
 	}
 
-	/*! \details This method will cause the thread to receive a signal when the operation
+	/*! \details Causes the calling thread to receive a signal when the operation
 	 * completes.
 	 *
 	 * @param number The signal number (ie SIGTERM) use -1 to prevent a signal from being sent
@@ -146,32 +143,20 @@ public:
 	 */
 	void signal(int number, int value){
 		if( number >= 0 ){
-			aio_var.aio_sigevent.sigev_notify = SIGEV_SIGNAL;
-			aio_var.aio_sigevent.sigev_signo = number;
-			aio_var.aio_sigevent.sigev_value.sival_int = value;
+			m_aio_var.aio_sigevent.sigev_notify = SIGEV_SIGNAL;
+			m_aio_var.aio_sigevent.sigev_signo = number;
+			m_aio_var.aio_sigevent.sigev_value.sival_int = value;
 		} else {
-			aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
+			m_aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
 		}
 	}
 
-#endif
-
-	/*! \details Check to see if operation is still in progress */
+	/*! \details Returns true if operation is still in progress */
 	inline bool inprogress() const { return !done(); }
 
-
-	struct aiocb aio_var;
-
 private:
-#ifdef __MCU_ONLY__
-	friend class Usb;
-	friend class Spi;
-	device_transfer_t aio_var;
-	enum {
-		BUSY_FLAG = (1<<16)
-	};
-#else
-#endif
+	struct aiocb m_aio_var;
+
 };
 
 };

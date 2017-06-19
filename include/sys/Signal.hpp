@@ -21,7 +21,7 @@ namespace sys {
  *
  * \code
  *
- * #include <stfy/Sys.hpp>
+ * #include <stfy/sys.hpp>
  *
  * volatile bool wait_for_signal;
  * void my_handler(int a){
@@ -51,9 +51,9 @@ namespace sys {
  */
 class SignalHandler {
 public:
-	/*! \details Construct a signal handler
+	/*! \details Constructs a signal handler.
 	 *
-	 *
+	 * @param handler The function to execute with an associated signal
 	 */
 	SignalHandler(void (*handler)(int) ){
 		m_sig_action.sa_handler = (_sig_func_ptr)handler;
@@ -61,14 +61,20 @@ public:
 		m_sig_action.sa_mask = 0;
 	}
 
-	/*! \details Construct a sigaction handler */
+	/*! \details Constructs a sigaction handler.
+	 *
+	 * @param sigaction The action to execute with an associated signal
+	 * @param flags Not used
+	 * @param mask Not used
+	 *
+	 */
 	SignalHandler(void (*sigaction)(int, siginfo_t*, void*), int flags = 0, sigset_t mask = 0){
 		m_sig_action.sa_sigaction = sigaction;
 		m_sig_action.sa_flags = flags | (1<<SA_SIGINFO);
 		m_sig_action.sa_mask = mask;
 	}
 
-	/*! \details Access the sigaction member */
+	/*! \details Accesses the sigaction member. */
 	const struct sigaction * sigaction() const { return &m_sig_action; }
 
 private:
@@ -79,21 +85,25 @@ private:
 class SignalEvent {
 public:
 
-	/*! \details Construct an event based on a signal number */
+	/*! \details Constructs an event based on a signal number.
+	 *
+	 * @param signo The signal number
+	 * @param sigvalue The signal value
+	 *
+	 */
 	SignalEvent(int signo, int sigvalue = 0){ m_signo = signo; m_sigvalue.sival_int = sigvalue; }
 
-	/*! \details Create a UI Event from this Signal event */
+	/*! \details Returns a UI Event based on this signal event. */
 	ui::Event event(){ return ui::Event(ui::Event::SIGNAL, this); }
 
-	/*! \details This method sends a signal to a process
+	/*! \details Sends a signal to a process.
 	 *
-	 * @param pid  The process ID of the receiving signal
+	 * @param pid The process ID of the receiving signal
 	 * @return Zero on success
 	 */
 	int trigger(pid_t pid) const { return ::kill(pid, m_signo); }
 
-	/*! \brief Send a signal to a process with a value associated with the signal */
-	/*! \details This method sends a signal and associated value to a process.
+	/*! \details Sends a signal and associated value to a process.
 	 *
 	 * @param pid  The process ID of the receiving signal
 	 * @param value The value associated with the signal (user defined)
@@ -103,17 +113,21 @@ public:
 		return ::sigqueue(pid, m_signo, m_sigvalue);
 	}
 
-	/*! \details This method sends a signal to a thread within a process.
+	/*! \details Sends a signal to a thread within a process.
 	 *
 	 * @param t The thread ID
 	 * @return Zero on success
 	 */
 	int trigger(pthread_t t) const { return ::pthread_kill(t, m_signo); }
 
-	/*! \details Trigger the event on the current thread */
+	/*! \details Triggers the event on the current thread. */
 	int trigger() const { return ::pthread_kill(pthread_self(), m_signo); }
 
-	/*! \details Set the event handler */
+	/*! \details Sets the event handler.
+	 *
+	 * @param handler A reference to the SignalHandler object
+	 * @return Zero on success
+	 */
 	int set_handler(const SignalHandler & handler) const;
 
 	int signo() const { return m_signo; }
@@ -169,23 +183,23 @@ private:
 class SignalEventDev: public SignalEvent {
 public:
 
-	/*! \details This constructs a physical event.
+	/*! \details Constructs a signal event based on a hardware device action.
 	 *
-	 * @param persistant If false, the signal will be sent only on the first hardware event
+	 * @param persistent If false, the signal will be sent only on the first hardware event
 	 * @param signo The signal number
 	 * @param sigcode The signal code
 	 * @param sigvalue The signal value
 	 */
-	SignalEventDev(bool persistant, int signo, int sigcode = 0, int sigvalue = 0) : SignalEvent(signo){
+	SignalEventDev(bool persistent, int signo, int sigcode = 0, int sigvalue = 0) : SignalEvent(signo){
 		m_context.tid = pthread_self();
 		m_context.si_sigcode = sigcode;
 		m_context.si_signo = signo;
-		m_context.keep = persistant;
+		m_context.keep = persistent;
 		m_context.sig_value = sigvalue;
 	}
 
 
-	/*! \details Construct a physical event using a signal_callback_t data structure.
+	/*! \details Constructs a signal event based on a hardware device action using a signal_callback_t data structure.
 	 *
 	 * @param context A copy of the signal_callback_t data to use to handle the event.
 	 */

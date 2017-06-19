@@ -124,12 +124,12 @@ int Periph::close(){
 
 int Periph::read(void * buf, int nbyte) const {
 	update_fileno();
-	return Dev::read(buf, nbyte);
+	return File::read(buf, nbyte);
 }
 
 int Periph::write(const void * buf, int nbyte) const {
 	update_fileno();
-	return Dev::write(buf, nbyte);
+	return File::write(buf, nbyte);
 }
 
 #ifndef __link

@@ -21,10 +21,13 @@ namespace hal {};
 #include "hal/Spi.hpp"
 #include "hal/Uart.hpp"
 #include "hal/Usb.hpp"
+
+#if !defined __link
 #include "hal/Lcd.hpp"
 #include "hal/LcdDev.hpp"
 #include "hal/Display.hpp"
 #include "hal/DisplayDev.hpp"
+#endif
 
 using namespace hal;
 

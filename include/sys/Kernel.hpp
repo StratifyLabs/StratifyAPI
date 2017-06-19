@@ -10,6 +10,9 @@
 
 namespace sys {
 
+/*! \brief Kernel Class
+ * \details This class allows access to kernel attributes and functions.
+ */
 class Kernel : public hal::Dev {
 public:
 	Kernel();
@@ -24,7 +27,7 @@ public:
 		LAUNCH_RAM_SIZE_DEFAULT = 0
 	};
 
-	/*! \details Launch a new application
+	/*! \details Launches a new application
 	 *
 	 * @param path The path to the application
 	 * @param exec_dest A pointer to a buffer where the execution path will be written (null if not needed)
@@ -34,6 +37,8 @@ public:
 	 * @param update_progress A callback to show the progress if the app needs to be installed (copied to flash/RAM)
 	 * @param envp Not used (set to zero)
 	 * @return The process ID of the new app if successful
+	 *
+	 * This method must be called locally in an app. It can't be executed over the link protocol.
 	 */
 	static int launch(const char * path,
 			char * exec_dest = 0,
@@ -44,17 +49,21 @@ public:
 			char *const envp[] = 0
 	);
 
-	/*! \details This method will free the RAM associated with the app without deleting the code from flash.
+	/*! \details Frees the RAM associated with the app without deleting the code from flash.
 	 * This should not be called when the app is currently running.
 	 *
 	 * @param path The path to the app (use \a exec_dest from launch())
 	 * @return Zero on success
 	 *
+	 * This method can causes problems if not used correctly. The RAM associated with
+	 * the app will be free and available for other applications. Any applications
+	 * that are using the RAM must quit before the RAM can be reclaimed using reclaim_ram().
+	 *
 	 * \sa reclaim_ram()
 	 */
 	static int free_ram(const char * path, link_transport_mdriver_t * driver = 0);
 
-	/*! \details Reclaim RAM that was freed using free_ram()
+	/*! \details Reclaims RAM that was freed using free_ram()
 	 *
 	 * @param path The path to the app
 	 * @return Zero on success
@@ -64,23 +73,23 @@ public:
 	static int reclaim_ram(const char * path, link_transport_mdriver_t * driver = 0);
 
 #if !defined __link
-	/*! \details Put the kernel in powerdown mode
+	/*! \details Puts the kernel in powerdown mode.
 	 *
-	 * @param count The number of milliseconds before the
+	 * @param timeout_ms The number of milliseconds before the
 	 * device will power on (reset).  If this isn't supported,
 	 * the device will power off until reset by an external signal
 	 */
-	static void powerdown(int count = 0);
+	static void powerdown(int timeout_ms = 0);
 
-	/*! \details Put the kernel in hibernate mode
+	/*! \details Puts the kernel in hibernate mode.
 	 *
-	 * @param count The number of milliseconds before the
+	 * @param timeout_ms The number of milliseconds before the
 	 * device will wake up from hibernation.  If this isn't supported,
 	 * the device will stay in hibernation until woken up externally
 	 */
-	static int hibernate(int count = 0);
+	static int hibernate(int timeout_ms = 0);
 
-	/*! \details Execute a kernel request. The kernel request must
+	/*! \details Executes a kernel request. The kernel request must
 	 * be defined and implemented by the board support package.
 	 *
 	 * @param req The request number
@@ -90,22 +99,26 @@ public:
 	static int request(int req, void * arg = 0);
 
 
-	/*! \details Force a reset of the device */
+	/*! \details Forces a reset of the device. */
 	static void reset();
 
-	/*! \details Load the board configuration provided as
+	/*! \details Loads the board configuration provided as
 	 * part of the board support package.
 	 *
 	 * @param config A reference to the destination object
 	 * @return Zero on success
+	 *
+	 * The object must be opened before calling this method.
+	 *
+	 * \sa open()
 	 */
 	int get_board_config(stratify_board_config_t & config);
 #endif
 
-	/*! \details This will open /dev/sys
+	/*! \details Opens /dev/sys.
 	 *
-	 * @param mode Usually Kernel::READWRITE
 	 * @return Zero on success
+	 *
 	 */
 	inline int open(){
 		return Dev::open("/dev/sys", RDWR);
@@ -113,40 +126,51 @@ public:
 
 	using Dev::open;
 
-	/*! \details Load the current kernel attributes
+	/*! \details Loads the current kernel attributes.
 	 *
 	 * @param attr  A reference to where the data should be stored
 	 * @return Zero on success
+	 *
+	 * The object must be opened before calling this method.
+	 *
+	 * \sa open()
+	 *
 	 */
 	int get_attr(sys_attr_t & attr);
 	inline int attr(sys_attr_t * v){ return get_attr(*v); }
 
 
-	/*! \details Load the kernel's task attributes
+	/*! \details Loads the kernel's task attributes.
 	 *
-	 * @param attr Pointer to the destination attributes
-	 * @param task Which task to load
+	 * @param attr A reference to the destination object
+	 * @param task Which task to load (-1 to auto-increment)
 	 * @return 1 if task is active, 0 if task is not being used, -1 is task is invalid
+	 *
+	 * The object must be opened before calling this method.
+	 *
 	 */
-	int get_taskattr(sys_taskattr_t * attr, int task = -1);
+	int get_taskattr(sys_taskattr_t & attr, int task = -1);
 
-	inline int get_taskattr(sys_taskattr_t & attr, int task = -1){
-		return get_taskattr(&attr, task);
+	inline int get_taskattr(sys_taskattr_t * attr, int task = -1){
+		return get_taskattr(*attr, task);
 	}
 
+	/*! \details Returns the current task that is accessed by get_taskattr().
+	 */
 	int current_task() const { return m_current_task; }
+
+	/*! \details Sets the current task to read using get_taskattr(). */
 	void set_current_task(int v){ m_current_task = v; }
 
-	/*! \details Load the cloud kernel ID
+	/*! \details Loads the cloud kernel ID.
 	 *
 	 * @param A reference to the destination data
-	 *
 	 * @return Less than zero if the operation failed
+	 *
+	 * The object must be opened before calling this method.
 	 *
 	 */
 	int get_id(sys_id_t & id);
-
-
 
 private:
 	int m_current_task;

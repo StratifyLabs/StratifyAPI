@@ -65,7 +65,7 @@ public:
 	};
 
 
-	/*! \detailsls This method opens a message queue
+	/*! \detailsls Opens a message queue.
 	 *
 	 * @param name The name of the message queue
 	 * @param oflag Open flags
@@ -75,7 +75,7 @@ public:
 	 */
 	int open(const char * name, int oflag, mode_t mode = 0, const struct mq_attr * attr = 0);
 
-	/*! \details This method creates a new message queue.
+	/*! \details Creates a new message queue.
 	 *
 	 * @param name  The name of the queue
 	 * @param oflag EXCLUSIVE or 0
@@ -91,40 +91,53 @@ public:
 			long flags,
 			long maxmsg,
 			long msgsize);
-	/*! \brief Close the message queue */
+	/*! \brief Closes the message queue. */
 	int close();
 
-	inline bool is_open() const { return m_handle != -1; }
+	/*! \details Returns true if the message queue is open. */
+	bool is_open() const { return m_handle != -1; }
 
-	/*! \details Not currently supported */
+	/*! \details Is not currently supported. */
 	int notify(const struct sigevent *notification);
 
-	/*! \details Copy message queue attributes to mqstat */
-	int get_attr(struct mq_attr *mqstat);
+	/*! \details Copies message queue attributes to mqstat. */
+	int get_attr(struct mq_attr & mqstat);
 
-	/*! \details Return the message queue attributes */
+	/*! \details Returns a copy of the message queue attributes. */
 	MqAttr get_attr();
 	int set_attr(const struct mq_attr * mqstat, struct mq_attr * omqstat = 0);
 	int set_attr(const MqAttr & attr);
 
-	/*! \details Receive a message from the queue */
+	/*! \details Receives a message from the queue.
+	 *
+	 * @param msg_ptr A pointer to the destination message
+	 * @param msg_len The number of bytes available in \a msg_ptr
+	 * @return The number of bytes read
+	 *
+	 */
 	ssize_t receive(char * msg_ptr, size_t msg_len);
 
-	/*! \details Receive a message from the queue with a timeout */
 	ssize_t timedreceive(char * msg_ptr, size_t msg_len, const struct timespec * abs_timeout);
 	ssize_t receive_timed(char * msg_ptr, size_t msg_len, const struct timespec * abs_timeout){ return timedreceive(msg_ptr, msg_len, abs_timeout); }
 
-	/*! \details Send a message to the queue */
+	/*! \details Sends a message to the queue.
+	 *
+	 * @param msg_ptr A pointer to the message to send
+	 * @param msg_len The number of bytes to send
+	 * @param msg_prio The message priority (default is 0, lowest priority)
+	 * @return The number of bytes sent
+	 *
+	 */
 	int send(const char * msg_ptr, size_t msg_len, unsigned msg_prio = 0);
 
 	/*! \details Send a message to the queue with a timeout */
 	int timedsend(const char * msg_ptr, size_t msg_len, unsigned msg_prio, const struct timespec * abs_timeout);
 	int send_timed(const char * msg_ptr, size_t msg_len, unsigned msg_prio, const struct timespec * abs_timeout){ return timedsend(msg_ptr, msg_len, msg_prio, abs_timeout); }
 
-	/*! \details Delete a message queue */
+	/*! \details Deletes a named message queue. */
 	static int unlink(const char * name);
 
-	/*! \details Message priority of last message received */
+	/*! \details Returns the message priority of last message received. */
 	unsigned msg_prio() const { return m_msg_prio; }
 
 private:

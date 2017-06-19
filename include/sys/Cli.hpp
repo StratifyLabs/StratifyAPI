@@ -22,13 +22,31 @@ public:
 		FORMAT_TOTAL
 	};
 
-	/*! \details Construct a new object to parse and handle command line interface arguments */
+	/*! \details Constructs a new object to parse and handle command line interface arguments.
+	 *
+	 * @param argc The number of arguments
+	 * @param argv A pointer to the arguments
+	 *
+	 * The Cli is construted as shown in the following example.
+	 * \code
+	 * int main(int argc, char * argv[]){
+	 * 	Cli cli(argc, argv);
+	 *
+	 * }
+	 *
+	 */
 	Cli(int argc, char * argv[]);
 
-	/*! \details Sets the version of the program */
+	/*! \details Sets the version of the program.
+	 *
+	 * @param version A pointer to the version
+	 *
+	 * \sa print_version()
+	 *
+	 */
 	void set_version(const char * version){ m_version = version; }
 
-	/*! \details Sets the publisher of the program
+	/*! \details Sets the publisher of the program.
 	 *
 	 * @param publisher A pointer to the publisher's name
 	 *
@@ -63,25 +81,25 @@ public:
 	 */
 	//void print_progress(int value, int max);
 
-	/*! \details Access the program version */
+	/*! \details Accesses the program version. */
 	const char * version() const { return m_version; }
 
-	/*! \details Access the program publisher */
+	/*! \details Accesses the program publisher. */
 	const char * publisher() const { return m_publisher; }
 
-	/*! \details Access the program name */
+	/*! \details Accesses the program name. */
 	const char * name() const { return m_name; }
 
-	/*! \details Return the argument offset by value as a var::String */
+	/*! \details Returns the argument offset by value as a var::String. */
 	var::String at(u16 value) const;
 
-	/*! \details Return the argument offset by value as a pio_t value */
+	/*! \details Returns the argument offset by value as a pio_t value. */
 	pio_t pio_at(u16 value) const;
 
 	/*! \details Return the argument offset by value as an int value */
 	int value_at(u16 value) const;
 
-	/*! \details This method returns true if \a value is one of the options
+	/*! \details Checks to see if the option exists as a command line argument.
 	 *
 	 * @param value A pointer to the option string to search for
 	 * @return True if value is any of the options available
@@ -95,7 +113,7 @@ public:
 	 */
 	bool is_option(const char * value) const;
 
-	/*! \details Get the argument of an option as a var::String
+	/*! \details Gets the argument of an option as a var::String.
 	 *
 	 * @param option The option to match
 	 * @return A String containing the option argument
@@ -110,7 +128,7 @@ public:
 	 */
 	var::String get_option_argument(const char * option) const;
 
-	/*! \details Get the argument of an option as a var::String
+	/*! \details Gets the argument of an option as a var::String.
 	 *
 	 * @param option The option to match
 	 * @return The value of the argument or 0 if the option wasn't found
@@ -125,7 +143,7 @@ public:
 	 */
 	int get_option_value(const char * option) const;
 
-	/*! \details Get the argument of an option as a var::String
+	/*! \details Gets the argument of an option as a var::String.
 	 *
 	 * @param option The option to match
 	 * @return The value of the argument or 0 if the option wasn't found
@@ -140,7 +158,8 @@ public:
 	 */
 	pio_t get_option_pio(const char * option) const;
 
-
+	/*! \details Returns the number of arguments. */
+	int count() const { return m_argc; }
 	int size() const { return m_argc; }
 
 private:

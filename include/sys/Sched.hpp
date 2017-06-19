@@ -27,30 +27,31 @@ public:
 		OTHER = SCHED_OTHER
 	};
 
-	/*! \details This method will yield the process to another thread or process.  It is the
-	 * same as calling sched_yield().
+	/*! \details Yields the processor to another thread or process.
+	 *
+	 * It is the same as calling sched_yield().
 	 *
 	 */
 	static void yield(){ sched_yield(); }
 
-	/*! \details Get the max priority for the specified policy */
+	/*! \details Gets the max priority for the specified policy. */
 	static int get_priority_max(enum policy value);
-	/*! \details Get the min priority for the specified policy */
+	/*! \details Gets the min priority for the specified policy. */
 	static int get_priority_min(enum policy value);
-	/*! \details Get the max priority for the specified policy */
+	/*! \details Gets the max priority for the specified policy. */
 	static int get_priority(pid_t pid);
 
-	/*! \details Get the current proccess ID (equivalent to getpid()) */
+	/*! \details Gets the current proccess ID (equivalent to getpid()). */
 	static pid_t get_pid(){ return getpid(); }
 
-	/*! \details Get the RR interval for the pid
+	/*! \details Gets the RR interval for the pid.
 	 *
 	 * @param pid  The process ID
 	 * @return The RR interval in microseconds
 	 */
 	static int get_rr_interval(pid_t pid);
 
-	/*! \details Set the scheduler
+	/*! \details Sets the scheduler with the given parameters.
 	 *
 	 * @param pid The process ID
 	 * @param value The polic (such as Sched::FIFO)

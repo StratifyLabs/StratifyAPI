@@ -117,7 +117,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="calc/|draw/|sgfx/|ui/|var/|calc.hpp|draw.hpp|sgfx.hpp|ui.hpp|var.hpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
-						<entry excluding="sgfx/|draw/|ui/|var|calc/|sys/Sched.cpp|hal/util_c.c|hal/util.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+						<entry excluding="sgfx/|draw/|ui/|var|calc/|sys/Sched.cpp|hal/util_c.c|hal/util.h|hal/Display.cpp|hal/DisplayDev.cpp|hal/Lcd.cpp|hal/LcdDev.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

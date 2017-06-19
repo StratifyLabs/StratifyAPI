@@ -14,7 +14,7 @@ namespace sys {
  * The following is a basic example of creating a data file in flash and then reading from it.
  *
  * \code
- * #include <stfy/Sys.hpp>
+ * #include <stfy/sys.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	char my_user_data[16];
@@ -29,7 +29,7 @@ namespace sys {
  * to filesystems built on external chips.
  *
  * \code
- * #include <stfy/Sys.hpp>
+ * #include <stfy/sys.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	char my_user_data[16];
@@ -45,8 +45,9 @@ namespace sys {
 class Appfs {
 public:
 
-	/*! \details This method creates a file in flash memory consisting
-	 * of the data specified
+	/*! \details Creates a file in flash memory consisting
+	 * of the data specified.
+	 *
 	 * @param name The name of the data file (no path info)
 	 * @param buf A pointer to the data to be saved
 	 * @param nbyte The number of bytes to save
@@ -63,7 +64,7 @@ public:
 			link_transport_mdriver_t * driver = 0);
 
 
-	/*! \details Returns the page size for writing data */
+	/*! \details Returns the page size for writing data. */
 	static int page_size(){ return APPFS_PAGE_SIZE; }
 
 #if !defined __link

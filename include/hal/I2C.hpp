@@ -42,35 +42,35 @@ namespace hal {
  */
 class I2C : public Periph {
 public:
-	/*! \details Initialize the instance with \a port */
+	/*! \details Constructs an I2C object using the specified port. */
 	I2C(port_t port);
 
 	enum {
-		SETUP_NORMAL_TRANSFER /*! \brief Normal I2C transfer writes 8-bit pointer then reads or writes data */ = I2C_TRANSFER_NORMAL,
-		SETUP_NORMAL_16_TRANSFER /*! \brief Normal I2C transfer writes 16-bit pointer then reads or writes data */ = I2C_TRANSFER_NORMAL_16,
-		SETUP_DATA_ONLY_TRANSFER /*! \brief I2C transfer that does not write a pointer (just reads or writes data) */ = I2C_TRANSFER_DATA_ONLY,
-		SETUP_WRITE_PTR_TRANSFER /*! \brief I2C transfer that only writes the pointer (no data is transferred) */ = I2C_TRANSFER_WRITE_PTR
+		SETUP_NORMAL_TRANSFER /*! Normal I2C transfer writes 8-bit pointer then reads or writes data */ = I2C_TRANSFER_NORMAL,
+		SETUP_NORMAL_16_TRANSFER /*! Normal I2C transfer writes 16-bit pointer then reads or writes data */ = I2C_TRANSFER_NORMAL_16,
+		SETUP_DATA_ONLY_TRANSFER /*! I2C transfer that does not write a pointer (just reads or writes data) */ = I2C_TRANSFER_DATA_ONLY,
+		SETUP_WRITE_PTR_TRANSFER /*! I2C transfer that only writes the pointer (no data is transferred) */ = I2C_TRANSFER_WRITE_PTR
 	};
 
 	enum {
-		MASTER /*! \brief I2C acts as master */ = I2C_ATTR_FLAG_MASTER,
-		SLAVE /*! \brief I2C acts as slave */ = I2C_ATTR_FLAG_SLAVE,
-		SLAVE_ACK_GENERAL_CALL /*! \brief I2C slave will ack the general call */ = I2C_ATTR_FLAG_SLAVE_ACK_GENERAL_CALL,
-		PULLUP /*! \brief Enable internal resistor pullups where available */ = I2C_ATTR_FLAG_PULLUP
+		MASTER /*! I2C acts as master */ = I2C_ATTR_FLAG_MASTER,
+		SLAVE /*! I2C acts as slave */ = I2C_ATTR_FLAG_SLAVE,
+		SLAVE_ACK_GENERAL_CALL /*! I2C slave will ack the general call */ = I2C_ATTR_FLAG_SLAVE_ACK_GENERAL_CALL,
+		PULLUP /*! Enable internal resistor pullups where available */ = I2C_ATTR_FLAG_PULLUP
 	};
 
 	/*! \details Get the I2C attributes */
-	int get_attr(i2c_attr_t & attr);
+	int get_attr(i2c_attr_t & attr) const;
 	/*! \details Set the I2C attributes */
-	int set_attr(const i2c_attr_t & attr);
+	int set_attr(const i2c_attr_t & attr) const;
 	/*! \details Setup an I2C transaction */
-	int setup(const i2c_setup_t & setup);
+	int setup(const i2c_setup_t & setup) const;
 
 	/*! \details Reset the I2C bus state */
-	int reset();
+	int reset() const;
 
 	/*! \details Setup the bus to listen for transactions as a slave */
-	int setup_slave(const i2c_slave_setup_t & setup);
+	int setup_slave(const i2c_slave_setup_t & setup) const;
 
 	/*! \details Setup the bus to listen for transactions as a slave */
 	int setup_slave(u8 addr, char * data, u16 size, u8 o_flags = 0){
@@ -83,27 +83,20 @@ public:
 	}
 
 	/*! \details Get the last error */
-	int err();
-
-#ifdef __MCU_ONLY__
-	using Pblock::read;
-	using Pblock::write;
-	int read(void * buf, int nbyte);
-	int write(const void * buf, int nbyte);
-	int close();
-#endif
+	int get_err() const;
+	int err() const { return get_err(); }
 
 
-	/*! \details Setup an I2C transaction using the slave addr and type */
-	int setup(u16 slave_addr, u8 type = SETUP_NORMAL_TRANSFER){
+	/*! \details Sets up an I2C transaction using the slave addr and type */
+	int setup(u16 slave_addr, u8 type = SETUP_NORMAL_TRANSFER) const {
 		i2c_reqattr_t req;
 		req.slave_addr = slave_addr;
 		req.transfer = type;
 		return setup(req);
 	}
 
-	/*! \details Set attributes using specified bitrate and pin assignment. */
-	int set_attr(u32 bitrate = 100000, u8 pin_assign = 0, u16 o_flags = MASTER){
+	/*! \details Sets the attributes using specified bitrate and pin assignment. */
+	int set_attr(u32 bitrate = 100000, u8 pin_assign = 0, u16 o_flags = MASTER) const {
 		i2c_attr_t attr;
 		attr.bitrate = bitrate;
 		attr.pin_assign = pin_assign;
@@ -135,8 +128,9 @@ public:
 	/*! \details Write the value of a register on an I2C device */
 	int write(int loc, u8 reg);
 
-	/*! \details This sets (or clears) a specific bit in a a register
-	 * on an I2C device
+	/*! \details Sets (or clears) a specific bit in a a register
+	 * on an I2C device.
+	 *
 	 * @param loc The register offset value
 	 * @param bit The bit to set (or clear)
 	 * @param high true to set the bit and false to clear it
@@ -144,8 +138,8 @@ public:
 	 */
 	int set(int loc, int bit, bool high = true);
 
-	/*! \details Clear the bit in a register on an I2C device */
-	inline int clear(int loc, int bit){ return set(loc, bit, false); }
+	/*! \details Clears the bit in a register on an I2C device. */
+	int clear(int loc, int bit){ return set(loc, bit, false); }
 
 private:
 

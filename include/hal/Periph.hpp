@@ -53,19 +53,15 @@ public:
 #endif
 	int close();
 
-	using Dev::ioctl;
-	using Dev::read;
-	using Dev::write;
+	using File::ioctl;
+	using File::read;
+	using File::write;
 
 
 	port_t port() const{ return m_periph_port & 0xFF; }
 
 protected:
 	u16 m_periph_port;
-#ifndef __MCU_ONLY__
-#else
-	int flags;
-#endif
 
 	int open(const char * name, int flags);
 

@@ -87,16 +87,16 @@ int Kernel::get_attr(sys_attr_t & attr){
 	return ioctl(I_SYS_GETATTR, &attr);
 }
 
-int Kernel::get_taskattr(sys_taskattr_t * attr, int task){
+int Kernel::get_taskattr(sys_taskattr_t & attr, int task){
 	if( task == -1 ){
 		task = m_current_task;
 	} else {
 		m_current_task = task;
 	}
 
-	attr->tid = m_current_task;
+	attr.tid = m_current_task;
 	m_current_task++;
-	return ioctl(I_SYS_GETTASK, attr);
+	return ioctl(I_SYS_GETTASK, &attr);
 }
 
 int Kernel::get_id(sys_id_t & id){

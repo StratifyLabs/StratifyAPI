@@ -48,7 +48,7 @@ namespace hal {
  */
 class Pin : public Pio {
 public:
-	/*! \details Initialize the object with a port/pin combination. */
+	/*! \details Initializes the object with a port/pin combination. */
 	Pin(port_t port, uint32_t pin, bool ismask = false) : Pio(port){
 		if( ismask ){
 			m_pinmask = pin;
@@ -61,17 +61,45 @@ public:
 
 	using Pio::set_attr;
 
-	/*! \details Initialize the pin with the specified mode */
-	inline int init(int mode){
+	/*! \details Initializes the pin with the specified mode.
+	 *
+	 * @param mode The mode to start the pin (e.g., Pin::INPUT | Pin::PULLUP)
+	 *
+	 * Hardware intialization opens the device for reading/writing and then
+	 * sets the device attributes as specified.
+	 *
+	 * The following is an example of initializing a pin.
+	 *
+	 * \code
+	 * #include <stfy/hal.hpp>
+	 *
+	 * Pin p(0,1); //Port 0, pin 1
+	 *
+	 * p.init(Pin::INPUT | Pin::PULLUP);
+	 *
+	 * if( p.get_value() == 0 ){
+	 *	//this means something is driving the pin low
+	 * }
+	 * \endcode
+	 *
+	 * \sa open(), set_attr()
+	 *
+	 */
+	int init(int mode){
 		return Pio::init(m_pinmask, mode);
 	}
 
-	/*! \details Set the pin attributes */
+	/*! \details Sets the pin attributes.
+	 *
+	 * @param mode The pin mode (e.g., Pin::INPUT)
+	 * @return Zero on success
+	 *
+	 */
 	inline int set_attr(int mode){
 		return Pio::set_attr(m_pinmask, mode);
 	}
 
-	/*! \details Assign a boolean to the pin (true is high, false is low) */
+	/*! \details Assigns a boolean to the pin (true is high, false is low). */
 	Pin& operator = (bool on){
 		if( on ){
 			set_mask(m_pinmask);
@@ -81,20 +109,25 @@ public:
 		return *this;
 	}
 
-	void set_value(bool v){ *this = v; }
+	/*! \details Assigns a boolean to the pin.
+	 *
+	 * @param value If true, sets the pin high
+	 */
+	void set_value(bool value){ *this = value; }
 
 
-	/*! \details Get the value of the pin (true is high, false is low) */
+	/*! \details Gets the value of the pin (true is high, false is low). */
 	inline bool get_value() const { return (Pio::get_value() & m_pinmask) != 0; }
 	inline bool value(){ return (Pio::get_value() & m_pinmask) != 0; }
 
 
-	/*! \details Set the pin high (assign value 1) */
+	/*! \details Sets the pin high (assign value 1) */
 	inline int set(){ return set_mask(m_pinmask); }
 	/*! \details Clear the pin low (assign value 0) */
 	inline int clr(){ return clear_mask(m_pinmask); }
 	inline int clear(){ return clear_mask(m_pinmask); }
 
+	/*! \details Accesses the pin's associated Pio pinmask. */
 	pio_sample_t pinmask() const { return m_pinmask; }
 
 private:

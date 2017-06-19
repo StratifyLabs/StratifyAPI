@@ -14,56 +14,56 @@ namespace sys {
 /*! \brief Dir class */
 class Dir {
 public:
-	/*! \details Construct a Dir object */
+	/*! \details Constructs a Dir object */
 #if defined __link
 	Dir(link_transport_mdriver_t * driver);
 #else
 	Dir();
 #endif
-	/*! \details Open a directory */
+	/*! \details Opens a directory. */
 	int open(const char * name);
-	/*! \details Close the directory */
+	/*! \details Closes the directory. */
 	int close();
 
-	inline bool is_open() const { return dirp != 0; }
+	/*! \details Returns a true if the directory is open. */
+	bool is_open() const { return m_dirp != 0; }
 
-	/*! \details This methods reads the next entry in the directory.
-	 * @return A pointer to the name of the entry or 0 if no more entries exist
+	/*! \details Returns a pointer to the next entry or 0 if no more entries exist.
 	 */
 	const char * read();
 
 
 	/*! \details The name of the most recently read entry */
-	inline const char * name(){ return entry.d_name; }
+	inline const char * name(){ return m_entry.d_name; }
 
 	/*! \details The name of the most recently read entry */
-	inline char * data(){ return entry.d_name; }
+	inline char * data(){ return m_entry.d_name; }
 
 	/*! \details The serial number of the most recently read entry */
-	inline int ino(){ return entry.d_ino; }
+	inline int ino(){ return m_entry.d_ino; }
 
 #ifndef __link
 	/*! \details Count the total number of entries in the directory */
 	int count();
 	/*! \details Rewind the directory pointer */
-	inline void rewind(){ if( dirp ) rewinddir(dirp); }
+	inline void rewind(){ if( m_dirp ) rewinddir(m_dirp); }
 	/*! \details Seek to a location in the directory */
-	inline void seek(long loc){ if( dirp ) seekdir(dirp, loc); }
+	inline void seek(long loc){ if( m_dirp ) seekdir(m_dirp, loc); }
 	/*! \details The current pointer location in the directory */
-	inline long tell(){ if( dirp ){ return telldir(dirp); } return 0; }
+	inline long tell(){ if( m_dirp ){ return telldir(m_dirp); } return 0; }
 #else
-	void set_driver(link_transport_mdriver_t * d){ _driver = d; }
+	void set_driver(link_transport_mdriver_t * d){ m_driver = d; }
 #endif
 
 private:
 #ifdef __link
-	int dirp;
-	struct link_dirent entry;
-	link_transport_mdriver_t * _driver;
-	link_transport_mdriver_t * driver(){ return _driver; }
+	int m_dirp;
+	struct link_dirent m_entry;
+	link_transport_mdriver_t * m_driver;
+	link_transport_mdriver_t * driver(){ return m_driver; }
 #else
-	DIR * dirp;
-	struct dirent entry;
+	DIR * m_dirp;
+	struct dirent m_entry;
 #endif
 
 
