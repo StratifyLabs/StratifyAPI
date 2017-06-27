@@ -47,7 +47,12 @@ namespace calc {
 class Base64 {
 public:
 
-	/*! \details This method encodes data to the base64 format.
+	/*! \details Encodes data to the base64 format.
+	 *
+	 * @param dest Pointer to destination memory
+	 * @param src Pointer to source data (binary)
+	 * @param nbyte Number of bytes to encode
+	 * @return Number of bytes in the encoded string
 	 *
 	 * \code
 	 * #include <stfy/calc.hpp>
@@ -61,25 +66,25 @@ public:
 	 * Base64::encode(encoded_data, raw_data, 64);
 	 * \endcode
 	 *
-	 *
-	 * @param dest Pointer to destination memory
-	 * @param src Pointer to source data (binary)
-	 * @param nbyte Number of bytes to encode
-	 * @return Number of bytes in the encoded string
 	 */
 	static int encode(char * dest, const void * src, int nbyte);
-	/*! \details Calculate encoded size of \a nbyte.  This function
+	/*! \details Calculates encoded size of \a nbyte.  This function
 	 * can be used to allocate memory for a buffer that can
 	 * be used to hold encoded data.
 	 *
-	 * The number of encoded bytes is rougly \a nbyte * 4/3.
-	 *
 	 * @param nbyte Number of bytes to encode
 	 * @return The string length required to encode \a nbyte bytes
+	 *
+	 * The number of encoded bytes is rougly \a nbyte * 4/3.
+	 *
 	 */
 	static int calc_encoded_size(int nbyte);
-	/*! \details This methods decodes base64 encoded data.
+	/*! \details Decodes base64 encoded data.
 	 *
+	 * @param dest Pointer to destination memory (binary format)
+	 * @param src Pointer to source data (base64 encoded)
+	 * @param nbyte Pointer the number of bytes to decode (src size)
+	 * @return Zero
 	 *
 	 * \code
 	 * #include <stfy/calc.hpp>
@@ -93,21 +98,18 @@ public:
 	 * Base64::decode(raw_data, encoded_data, 64);
 	 * \endcode
 	 *
-	 * @param dest Pointer to destination memory (binary format)
-	 * @param src Pointer to source data (base64 encoded)
-	 * @param nbyte Pointer the number of bytes to decode (src size)
-	 * @return Zero
 	 */
 	static int decode(void * dest, const char * src, int nbyte);
-	/*! \details Calculate decoded size of \a nbyte.  This function
+	/*! \details Calculates decoded size of \a nbyte.  This function
 	 * can be used to allocate memory for a buffer that can
 	 * be used to hold decoded data.
+	 *
+	 * @param nbyte Number of bytes to decode
+	 * @return The number of bytes needed to decode \a nbyte encoded bytes
 	 *
 	 * The number of decoded bytes is rougly \a nbyte * 3/4.
 	 *
 	 *
-	 * @param nbyte Number of bytes to decode
-	 * @return The number of bytes needed to decode \a nbyte encoded bytes
 	 *
 	 */
 	static int calc_decoded_size(int nbyte);

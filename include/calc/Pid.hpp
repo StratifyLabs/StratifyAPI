@@ -64,38 +64,48 @@ namespace calc {
  */
 class Pid_f {
 public:
+
+	/*! \details Constructs a new PID (float) object.
+	 *
+	 * @param target The target value
+	 * @param kp The proportional constant
+	 * @param ki The integral constant
+	 * @param kd The differential constant
+	 * @param min The minimum value for the calculated control value
+	 * @param max The maximum value for the calculated control value
+	 */
 	Pid_f(float target = 0.0, float kp = 1.0, float ki = 0.1, float kd = 0.0, float min = 1.0, float max = 0.0);
 
-	/*! \details This method resets the state of the PID control loop. */
+	/*! \details Resets the state of the PID control loop. */
 	void reset();
 
-	/*! \details This method sets the proportional constant value. */
+	/*! \details Sets the proportional constant value. */
 	void set_kp(float v){ m_kp = v; }
-	/*! \details This method sets the integral constant value. */
+	/*! \details Sets the integral constant value. */
 	void set_ki(float v){ m_ki = v; }
-	/*! \details This method sets the differential constant value. */
+	/*! \details Sets the differential constant value. */
 	void set_kd(float v){ m_kd = v; }
-	/*! \details This method sets the maximum allowed value of the target variable. */
+	/*! \details Sets the maximum allowed value of the target variable. */
 	void set_max(float v){ m_max = v; }
-	/*! \details This method sets the minimum allowed value of the target variable. */
+	/*! \details Sets the minimum allowed value of the target variable. */
 	void set_min(float v){ m_min = v; }
-	/*! \details This method sets the value for the target variable. */
+	/*! \details Sets the value for the target variable. */
 	void set_target(float v){ m_target = v; }
 
-	/*! \details This method accesses the proportional constant. */
+	/*! \details Returns the proportional constant. */
 	float kp() const { return m_kp; }
-	/*! \details This method accesses the integral constant. */
+	/*! \details Returns the integral constant. */
 	float ki() const { return m_ki; }
-	/*! \details This method accesses the differential constant. */
+	/*! \details Returns the differential constant. */
 	float kd() const { return m_kd; }
-	/*! \details This method accesses the maximum value for the control variable. */
+	/*! \details Returns the maximum value for the control variable. */
 	float max() const { return m_max; }
-	/*! \details This method accesses the minimum value for the control variable. */
+	/*! \details Returns the minimum value for the control variable. */
 	float min() const { return m_min; }
-	/*! \details This method accesses the target variable. */
+	/*! \details Returns the target variable. */
 	float target() const { return m_target; }
 
-	/*! \details This method calculates the control variable based on
+	/*! \details Calculates the control variable based on
 	 * the current state of the system.
 	 *
 	 * @param present_value The present value of the system

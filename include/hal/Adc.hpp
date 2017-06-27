@@ -28,17 +28,23 @@ namespace hal {
  */
 class Adc : public Periph {
 public:
-	/*! \details Initialize the instance with \a port */
+	/*! \details Initializes the object with \a port. */
 	Adc(port_t port);
 
-	/*! \details Get the ADC attributes */
+	/*! \details Gets the ADC attributes */
 	int get_attr(adc_attr_t & attr);
-	/*! \details Set the ADC attributes */
+	/*! \details Sets the ADC attributes */
 	int set_attr(const adc_attr_t & attr);
-	/*! \details Set the ADC attributes */
-	int set_attr(u16 enabled_channels /*! Enabled Channels */,
-			u32 freq = ADC_MAX_FREQ /*! ADC clock frequency (use ADC_MAX_FREQ for maximum speed) */,
-			u8 pin_assign = 0 /*! Pin assignment value */){
+
+	/*! \details Sets the ADC attributes.
+	 *
+	 * @param enabled_channels Enabled channels as a bitmask
+	 * @param freq The ADC clock frequency
+	 * @param pin_assign The pin assignment value
+	 * @return Zero on success
+	 *
+	 */
+	int set_attr(u16 enabled_channels, u32 freq = ADC_MAX_FREQ, u8 pin_assign = 0){
 		adc_attr_t attr;
 		attr.enabled_channels = enabled_channels;
 		attr.freq = freq;
@@ -46,12 +52,15 @@ public:
 		return set_attr(attr);
 	}
 
-	/*! \details This method opens the ADC then sets the ADC
-	 * attributes as specified.
+	/*! \details Opens the ADC port and sets the attributes as specified.
+	 *
+	 * @param enabled_channels Enabled channels as a bitmask
+	 * @param freq The ADC clock frequency
+	 * @param pin_assign The pin assignment value
+	 * @return Zero on success
+	 *
 	 */
-	int init(u16 enabled_channels /*! Enabled Channels */,
-			u32 freq = ADC_MAX_FREQ /*! ADC clock frequency (use ADC_MAX_FREQ for maximum speed)  */,
-			u8 pin_assign = 0 /*! Pin assignment value */){
+	int init(u16 enabled_channels, u32 freq = ADC_MAX_FREQ, u8 pin_assign = 0){
 		if( open() < 0 ){
 			return -1;
 		}

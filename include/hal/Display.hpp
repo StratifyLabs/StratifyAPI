@@ -57,13 +57,13 @@ public:
 
 	Display(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h);
 
-	/*! \details Pure virtual function to initialize the LCD */
+	/*! \details Initializes the display. */
 	virtual int init(const char * name = 0) = 0;
 
-	/*! \details Turn the LCD pixels on */
+	/*! \details Turns the display on. */
 	virtual int on(){ return -1; };
 
-	/*! \details Turn the LCD pixels off */
+	/*! \details Turns the display off. */
 	virtual int off(){ return -1; };
 };
 

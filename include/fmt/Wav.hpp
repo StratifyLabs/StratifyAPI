@@ -11,16 +11,17 @@ namespace fmt {
 /*! \brief WAV File format */
 class Wav : public sys::File {
 public:
+	/*! \details Constructs a new WAV object and open the WAV as a read-only file. */
 	Wav(const char * name);
 
-	inline u32 size() const { return m_hdr.size; }
-	inline u32 wav_size() const { return m_hdr.wav_size; }
-	inline u32 wav_fmt() const { return m_hdr.wav_fmt; }
-	inline u32 channels() const { return m_hdr.channels; }
-	inline u32 sample_rate() const { return m_hdr.sample_rate; }
-	inline u32 bytes_sec() const { return m_hdr.bytes_sec; }
-	inline u32 bits_sample() const { return m_hdr.bits_sample; }
-	inline u32 data_size() const { return m_hdr.data_size; }
+	u32 size() const { return m_hdr.size; }
+	u32 wav_size() const { return m_hdr.wav_size; }
+	u32 wav_fmt() const { return m_hdr.wav_fmt; }
+	u32 channels() const { return m_hdr.channels; }
+	u32 sample_rate() const { return m_hdr.sample_rate; }
+	u32 bytes_sec() const { return m_hdr.bytes_sec; }
+	u32 bits_sample() const { return m_hdr.bits_sample; }
+	u32 data_size() const { return m_hdr.data_size; }
 
 private:
 	typedef struct {

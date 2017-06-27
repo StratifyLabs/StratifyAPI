@@ -35,7 +35,7 @@ namespace calc {
  */
 template<typename data_type>class Lookup {
 public:
-	/*! \details Construct a lookup table object.
+	/*! \details Constructs a lookup table object.
 	 *
 	 * @param table A pointer to a table with x and y values alternating, x values must
 	 * be in ascending order
@@ -46,10 +46,10 @@ public:
 		m_size = size;
 	}
 
-	/*! \details This calculates the y value using linear extrapolation.
+	/*! \details Calculates the y value using linear interpolation.
 	 *
-	 * @param x
-	 * @return y value using linear extrapolation
+	 * @param x Input value
+	 * @return y value calculated using linear interpolation
 	 */
 	data_type calc_value(data_type x){
 		unsigned int p1, p2;

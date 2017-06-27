@@ -19,7 +19,7 @@ class Rle {
 public:
 	Rle();
 
-	/*! \details This method encodes a block of data.
+	/*! \details Encodes a block of data using run length encoding.
 	 *
 	 * @param dest A pointer to the destination data
 	 * @param dest_size Pass the max size of dest, this will hold the number of encoded bytes upon return
@@ -29,7 +29,7 @@ public:
 	 */
 	static int encode(void * dest, ssize_t & dest_size, const void * src, ssize_t src_size);
 
-	/*! \details This method decodes a block of data.
+	/*! \details Decodes a block of data that has been run length encoded.
 	 *
 	 * @param dest A pointer to the destination data
 	 * @param dest_size Pass the max size of dest, this will hold the number of decoded bytes upon return
@@ -39,7 +39,7 @@ public:
 	 */
 	static int decode(void * dest, ssize_t & dest_size, const void * src, ssize_t src_size);
 
-	/*! \details This methods calculates the number of bytes that will be used by the
+	/*! \details Calculates the number of bytes that will be used by the
 	 * compressed data.
 	 *
 	 * @param src A pointer to the source memory
@@ -65,7 +65,7 @@ private:
 class RleFile : public Rle, public sys::File {
 public:
 
-	/*! \details This method encodes then writes the data to a file.
+	/*! \details Encodes using run length encoding and writes the data to a file.
 	 *
 	 * @param buf The source data
 	 * @param nbyte The number of bytes to encode and write
@@ -74,7 +74,7 @@ public:
 	int write(const void * buf, int nbyte);
 
 
-	/*! \details This method reads and decodes data from a file.
+	/*! \details Reads from a file then decodes data.
 	 *
 	 * @param buf A pointer to the destination memory
 	 * @param nbyte The maximum number of bytes to read
@@ -94,7 +94,7 @@ class RleAppfs : public Rle, public sys::Appfs {
 public:
 	RleAppfs();
 
-	/*! \details This method encodes then writes the data to a file.
+	/*! \details Encodes then writes the data to a file.
 	 *
 	 * @param buf The source data
 	 * @param nbyte The number of bytes to encode and write
@@ -103,7 +103,7 @@ public:
 	int write(const void * buf, int nbyte);
 
 
-	/*! \details This method reads and decodes data from a file.
+	/*! \details Reads and decodes data from a file.
 	 *
 	 * @param buf A pointer to the destination memory
 	 * @param nbyte The number of bytes to read

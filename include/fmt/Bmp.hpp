@@ -13,46 +13,47 @@ namespace fmt {
 class Bmp: public sys::File {
 public:
 
-	/*! \details Construct a new bitmap object and open the bitmap as a read-only file */
+	/*! \details Constructs a new bitmap object and opens the bitmap as a read-only file. */
 	Bmp(const char * name);
 
-	/*! \details Construct an empty bitmap object */
+	/*! \details Constructs an empty bitmap object. */
 	Bmp();
 
-	/*! \details Access the bitmap width (after bitmap has been opened) */
+	/*! \details Returns the bitmap width (after bitmap has been opened). */
 	s32 w() const { return m_dib.width; }
-	/*! \details Access the bitmap height (after bitmap has been opened) */
+	/*! \details Returns the bitmap height (after bitmap has been opened). */
 	s32 h() const { return m_dib.height; }
-	/*! \details Access the bitmap bits per pixel (after bitmap has been opened) */
+	/*! \details Returns the bitmap bits per pixel (after bitmap has been opened). */
 	u16 bits_per_pixel() const { return m_dib.bits_per_pixel; }
-	/*! \details Access the bitmap planes (after bitmap has been opened) */
+	/*! \details Returns the bitmap planes (after bitmap has been opened). */
 	u16 planes() const { return m_dib.planes; }
 
-	/*! \details Calculates the bytes needed to store one row of data (after bitmap has been opened) */
+	/*! \details Calculates the bytes needed to store one row of data (after bitmap has been opened). */
 	unsigned int calc_row_size() const;
 
-	/*! \details Open the specified bitmap as readonly */
+	/*! \details Opens the specified bitmap as readonly. */
 	int open_readonly(const char * name);
 
-	/*! \details Open the specified bitmap as read write */
+	/*! \details Opens the specified bitmap as read write. */
 	int open_readwrite(const char * name);
 
-	/*! \details Open the specified bitmap with the specified access (e.g., Bmp::READONLY) */
+	/*! \details Opens the specified bitmap with the specified access (e.g., Bmp::READONLY). */
 	int open(const char * name, int access);
 
-	/*! \details Create a new bitmap using the specified parameters */
+	/*! \details Creates a new bitmap using the specified parameters. */
 	int create(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel);
 
-	/*! \details Create a new bitmap and save it to the /app filesystem (flash memory) */
+	/*! \details Creates a new bitmap and save it to the /app filesystem (flash memory). */
 	static int create_appfs(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, size_t nbyte);
 
-	/*! \details Move file pointer to the start of the bitmap data */
+	/*! \details Moves file pointer to the start of the bitmap data. */
 	void rewind(){ seek(m_offset); }
 
-	/*! \details Seek the file to the data at the specified row */
+	/*! \details Seeks the file to the data at the specified row. */
 	int seek_row(s32 y);
 
-	/*! \details Read a pixel from the bitmap (optionally convert to a mono value)
+	/*! \details Reads a pixel from the bitmap (optionally convert to a mono value).
+	 *
 	 * @param pixel Data pointing to destination
 	 * @param pixel_size in bytes
 	 * @param mono true to convert to a mono pixel

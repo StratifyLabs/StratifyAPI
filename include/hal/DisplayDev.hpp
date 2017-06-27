@@ -14,31 +14,24 @@ public:
 
 	int init(const char * name);
 
-	/*! \details This method will cause the display to
-	 * copy the memory in the video buffer over to the display
+	/*! \details Refreshes the display.
+	 *
+	 * This method will cause the driver to write the
+	 * current video memory to the display.
 	 */
 	void refresh() const;
 
-	/*! \details This method will return true if the display is
+	/*! \details Returns true if the display is
 	 * actively copying the video buffer to the display
 	 *
 	 * @return True if the LCD is busy
 	 */
 	bool busy() const;
 
-	/*! \details This method will block until the LCD is not busy anymore */
+	/*! \details Blocks until the display is not busy anymore. */
 	void wait(u16 resolution) const;
 
-	/*! \details This method will turn the display on
-	 *
-	 * @return 0 on success
-	 */
 	int on();
-
-	/*! \details This method will turn the display off
-	 *
-	 * @return 0 on success
-	 */
 	int off();
 };
 

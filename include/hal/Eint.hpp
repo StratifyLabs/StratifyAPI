@@ -62,21 +62,32 @@ namespace hal {
 class Eint : public Periph {
 public:
 	Eint(port_t port);
-	/*! \details Get the attributes for the external interrupt. */
+	/*! \details Gets the attributes for the external interrupt. */
 	int get_attr(eint_attr_t & attr);
-	/*! \details Set the attributes for the external interrupt. */
+	/*! \details Sets the attributes for the external interrupt. */
 	int set_attr(const eint_attr_t & attr);
-	/*! \details Set the action associated with the external interrupt. */
+	/*! \details Sets the action associated with the external interrupt. */
 	int set_action(const eint_action_t & action);
 
-	/*! \details Read the value of the pin */
+	/*! \details Reads the value of the pin */
 	bool get_value(){
 		eint_attr_t a;
 		get_attr(a);
 		return a.value != 0;
 	}
 
-	/*! \details Set the action using the specified parameters */
+	/*! \details Sets the action using the specified parameters
+	 *
+	 * @param channel The channel of the external interrupt
+	 * @param event The event
+	 * @param callback The function to execute when the event happens
+	 * @param context The context argument passed to the function
+	 *
+	 * This method allows the user to execute code in kernel mode.
+	 * It is disabled on systems that prevent the execution of
+	 * user code in kernel mode.
+	 *
+	 */
 	int set_action(int channel, int event, mcu_callback_t callback, void * context){
 		eint_action_t action;
 		action.prio = 0;
@@ -87,7 +98,7 @@ public:
 		return set_action(action);
 	}
 
-	/*! \details Set the attributes using the specified pin assignment. */
+	/*! \details Sets the attributes using the specified pin assignment. */
 	int set_attr(uint8_t pin_assign = 0, uint16_t mode = Pin::INPUT | Pin::PULLUP){
 		eint_attr_t attr;
 		attr.pin_assign = pin_assign;
@@ -95,7 +106,7 @@ public:
 		return set_attr(attr);
 	}
 
-	/*! \details Open and set attributes using specified pin assignment. */
+	/*! \details Opens and sets attributes using specified pin assignment. */
 	int init(uint8_t pin_assign = 0, uint16_t mode = Pin::INPUT | Pin::PULLUP){
 		if( open() < 0 ){
 			return -1;

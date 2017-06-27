@@ -46,18 +46,23 @@ namespace hal {
 class Dac : public Periph {
 public:
 	Dac(port_t port);
-	/*! \details Get the DAC attributes */
+	/*! \details Gets the DAC attributes. */
 	int get_attr(dac_attr_t & attr);
-	/*! \details Set the DAC attributes */
+	/*! \details Sets the DAC attributes. */
 	int set_attr(const dac_attr_t & attr);
 
-	/*! \details Get the current value of the dac */
-	dac_sample_t value(u32 channel = 0);
+	/*! \details Gets the current value of the dac. */
+	dac_sample_t get_value(u32 channel = 0);
+	dac_sample_t value(u32 channel = 0){ return value(channel); }
 
-	/*! \details Set the DAC attributes  using specified values */
-	int set_attr(u16 enabled_channels /*! Enabled Channels */,
-			u32 freq = 1000000 /*! DAC output frequency */,
-			u8 pin_assign = 0 /*! Pin assignment value */){
+	/*! \details Sets the DAC attributes using specified values.
+	 *
+	 * @param enabled_channels Enabled channels as a bitmask
+	 * @param freq DAC output frequency
+	 * @param pin_assign The output pin assignment
+	 *
+	 */
+	int set_attr(u16 enabled_channels, u32 freq = 1000000, u8 pin_assign = 0){
 		dac_attr_t attr;
 		attr.enabled_channels = enabled_channels;
 		attr.freq = freq;
@@ -65,8 +70,12 @@ public:
 		return set_attr(attr);
 	}
 
-	/*! \details This method opens the DAC then sets the DAC
-	 * attributes as specified.
+	/*! \details Opens the DAC and sets the attributes using specified values.
+	 *
+	 * @param enabled_channels Enabled channels as a bitmask
+	 * @param freq DAC output frequency
+	 * @param pin_assign The output pin assignment
+	 *
 	 */
 	int init(u16 enabled_channels /*! Enabled Channels */,
 			u32 freq = 1000000 /*! DAC clock frequency */,
@@ -77,7 +86,7 @@ public:
 		return set_attr(enabled_channels, freq, pin_assign);
 	}
 
-	/*! \details Set the value of the DAC
+	/*! \details Sets the value of the DAC.
 	 *
 	 * @param value Value to write to the DAC
 	 * @param channel The DAC channel

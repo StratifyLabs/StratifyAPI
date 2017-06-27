@@ -17,7 +17,7 @@ int Dac::set_attr(const dac_attr_t & attr){
 	return ioctl(I_DAC_SETATTR, &attr);
 }
 
-dac_sample_t Dac::value(uint32_t channel){
+dac_sample_t Dac::get_value(uint32_t channel){
 	dac_reqattr_t attr;
 	attr.channel = channel;
 	ioctl(I_DAC_VALUE, &attr);

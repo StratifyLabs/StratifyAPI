@@ -111,10 +111,19 @@ public:
 	Dev();
 
 #ifndef __link
-	/*! \details Asyncronous read */
+	/*! \details Reads the device asynchronously.
+	 *
+	 * \sa Aio
+	 */
 	virtual int read(sys::Aio & aio) const;
-	/*! \details Asyncronous write */
-	virtual int write(sys::Aio & aio) const;
+
+	/*! \details Writes the device asynchronously.
+	 *
+	 * \sa Aio
+	 */	virtual int write(sys::Aio & aio) const;
+
+	using File::read;
+	using File::write;
 #endif
 
 protected:

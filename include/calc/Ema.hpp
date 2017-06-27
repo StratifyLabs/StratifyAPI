@@ -52,7 +52,7 @@ namespace calc {
  */
 template<typename intsmall, typename intmedium, typename intlarge>class Ema {
 public:
-	/*! \details Construct a new Ema object
+	/*! \details Constructs a new Ema object
 	 *
 	 * @param start Initial value
 	 * @param alpha Averaging value
@@ -60,7 +60,7 @@ public:
 	Ema(intmedium start, intsmall alpha){ m_average = start;  this->m_alpha = alpha; }
 	static intmedium small_max(){ return 1<<(8*sizeof(intsmall)); }
 
-	/*! \details Calculate the next average using an input value
+	/*! \details Calculates the next average using an input value
 	 *
 	 * @param in Input value
 	 * @return The updated average (same as average())
@@ -72,14 +72,14 @@ public:
 		return m_average;
 	}
 
-	/*! \details Access the current average (no calculations are made here)
+	/*! \details Accesses the current average (no calculations are made here)
 	 *
 	 * @return The current average value
 	 */
 	intmedium average() const { return m_average; }
 	intmedium avg() const { return m_average; }
 
-	/*! \details Set the average value.  This method can be
+	/*! \details Sets the average value.  This method can be
 	 * used to update the initial value
 	 *
 	 * @param v The new initial value
@@ -127,18 +127,18 @@ public:
 /*! \details See \ref Ema for details */
 class Ema_float {
 public:
-	/*! \details Construct a EMA object for floating point calculations */
+	/*! \details Constructs a EMA object for floating point calculations */
 	Ema_float(float start, float alpha){ m_alpha = alpha; m_average = start; }
 	static float small_max(){ return 1.0; }
-	/*! \details Calculate the next value based on the given input */
+	/*! \details Calculates the next value based on the given input */
 	float calc(float in){
 		float tmp;
 		m_average = in * (m_alpha) + m_average * (1.0 - m_alpha);
 		return m_average;
 	}
-	/*! \details Access the current average value */
+	/*! \details Accesses the current average value */
 	float average() const { return m_average; }
-	/*! \details Set the average value */
+	/*! \details Sets the average value */
 	void set_average(float v){ m_average = v; }
 
 	//deprecated methods

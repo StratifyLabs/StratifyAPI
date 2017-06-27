@@ -78,27 +78,29 @@ public:
 
 	Core(port_t port);
 
-	/*! \details Get attributes of the Core peripheral and stores them in \a attr.
+	/*! \details Gets attributes of the Core peripheral and stores them in \a attr.
 	 */
 	int get_attr(core_attr_t & attr);
-	/*! \details Set the attributes for the Core device */
+	/*! \details Sets the attributes for the Core device. */
 	int set_attr(const core_attr_t & attr);
-	/*! \details Execute a request to set the functionality of a pin.
+	/*! \details Executes a request to set the functionality of a pin.
 	 */
 	int set_pin_function(const core_pinfunc_t * req);
 
-	/*! \details Change pin functionality using a core_pinfunc_t structure */
+	/*! \details Changes pin functionality using a core_pinfunc_t structure. */
 	inline int set_pin_function(const core_pinfunc_t & req){ return set_pin_function(&req); }
 
-	/*! \details Change pin function.  This can be used
-	 * if the default pinassign values are not adequate for your
-	 * application.
+	/*! \details Changes pin function.
 	 *
 	 * @param port The PIO port
 	 * @param pin The PIO pin number
 	 * @param func The function (e.g. Core::UART)
 	 * @param func_port The functional port (e.g. 0 for UART0)
 	 * @return Zero on success
+	 *
+	 * This can be used if the default pinassign values are not adequate for your
+	 * application.
+	 *
 	 */
 	inline int set_pin_function(int port, int pin, int func, int func_port){
 		core_pinfunc_t f;
@@ -110,26 +112,28 @@ public:
 	}
 
 
-	/*! \details Load the MCU board configuration data
-	 * provided by the board support package
+	/*! \details Loads the MCU board configuration data
+	 * provided by the board support package.
 	 *
 	 * @param config A reference to the destination data
 	 * @return Zero on success
 	 */
 	int get_mcu_board_config(mcu_board_config_t & config);
 
-	/*! \details Cause the device to sleep at the specified sleep level.
+	/*! \details Causes the device to sleep at the specified sleep level.
 	 */
 	int sleep(core_sleep_t level);
-	/*! \details Reset the device. */
+
+	/*! \details Resets the device. */
 	void reset();
-	/*! \details Invoke the device's bootloader. If no bootloader is availble, a
+
+	/*! \details Invokes the device's bootloader. If no bootloader is availble, a
 	 * normal reset will occur.
 	 */
 	void invoke_bootloader();
 
 
-	/*! \details Configure the clock output pin. */
+	/*! \details Configures the clock output pin. */
 	int set_clkout(const core_clkout_t * clkout);
 
 #ifdef __MCU_ONLY__
