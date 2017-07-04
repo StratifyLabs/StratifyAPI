@@ -11,6 +11,23 @@
 
 namespace hal {
 
+/*! \brief Display Palette Class
+ * \details A display palette is used to map bitmap colors
+ * to an actual display. The Stratify graphics library supports
+ * the following formats.
+ *
+ *  - 1bpp (1 bit per pixel)
+ *  - 2bpp
+ *  - 4bpp
+ *  - 8bpp
+ *
+ * This class is used to manage how the graphics pixel formats maps
+ * to the display. For example, if the graphics use 4bpp and the display
+ * uses RGB565, the palette would have 16 entries that contain
+ * RGB565 values and define how a color in the 4bpp format maps to
+ * a color on the display.
+ *
+ */
 class DisplayPalette : public var::Item<display_palette_t> {
 public:
 
@@ -37,11 +54,32 @@ public:
 	 */
 	int alloc_colors(int count, int pixel_size);
 
+	/*! \details Sets the color.
+	 *
+	 * @param v The color index
+	 * @param r The red component
+	 * @param g The green component
+	 * @param b The blue component
+	 *
+	 * The color format is converted based on the value of pixel_format().
+	 * For example, if pixel_format() returns PIXEL_FORMAT_RGB565, the color
+	 * will be set in the palette to match that format.
+	 *
+	 */
 	void set_color(size_t v, u8 r, u8 g, u8 b);
 
+	/*! \details Returns the pixel format. */
 	u8 pixel_format() const { return item().pixel_format; }
+
+	/*! \details Returns the number of colors in the palette. */
 	u8 count() const { return item().count; }
+	/*! \details Returns the number of bytes per pixel stored in the palette */
 	u8 pixel_size() const { return item().pixel_size; }
+	/*! \details Returns a pointer to the color index specified.
+	 *
+	 * @param v The color index
+	 * @return A pointer to the color
+	 */
 	u8 * color(size_t v) const;
 
 private:
@@ -51,10 +89,22 @@ private:
 
 };
 
+/*! \brief Display Class
+ * \details The Display class is for drawing on a display such as an OLED or LCD.
+ *
+ */
 class Display : public sgfx::Bitmap {
 public:
+
+	/*! \details Constructs a new object with no video memory. */
 	Display(){}
 
+	/*! \details Constructs a new object with the provided memory buffer
+	 *
+	 * @param mem A pointer to the bitmap memory
+	 * @param w The width of the memory area in pixels
+	 * @param h The height of the memory area in pixels
+	 */
 	Display(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h);
 
 	/*! \details Initializes the display. */

@@ -51,6 +51,20 @@ public:
 	/*! \details Sets the color of the pen.
 	 *
 	 * @param color The color of the pen
+	 *
+	 * Valid colors value depend on the format of the underlying Stratify graphics library.
+	 * The Stratify graphics library supports the following formats.
+	 *  - 1bpp (bit per pixel)
+	 *  - 2bpp
+	 *  - 4bpp
+	 *  - 8bpp
+	 *
+	 * For example, for 4bpp, there are 16 colors so \a color can be from 0 to 15 (inclusive).
+	 * The actual color that displays on the screen depends on the DisplayPalette associated
+	 * with the Display.
+	 *
+	 * \sa DisplayPalette, Display
+	 *
 	 */
 	void set_pen_color(sg_color_t color){ m_bmap.pen.color = color; }
 
@@ -62,27 +76,41 @@ public:
 
 	virtual ~Bitmap();
 
-	/*! \details Set data pointer and size for bitmap */
+	/*! \details Sets data pointer and size for bitmap */
 	void set_data(sg_bitmap_hdr_t * hdr, bool readonly = false);
 	void set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly = false);
 	void set_data(sg_bmap_data_t * mem, const Dim & dim){ set_data(mem, dim.w(), dim.h()); }
 	void set_data(sg_bmap_data_t * mem, bool readonly = false){ set_data(mem, w(), h(), readonly); }
 
-	/*! \details Change effective size without free/alloc sequence */
+	/*! \details Changes effective size without free/alloc sequence */
 	bool set_size(sg_size_t w, sg_size_t h, sg_size_t offset = 0);
 
-	/*! \details Return the size of a bitmap of specified size */
+	/*! \details Returns the size of a bitmap of specified size */
 	static size_t calc_size(int w, int h){ return sg_api()->calc_bmap_size(sg_dim(w,h)); }
 	sg_point_t calc_center() const;
 
-	/*! \details Maximum x value */
-	inline sg_int_t x_max() const { return w()-1; }
-	/*! \details Maximum y value */
-	inline sg_int_t y_max() const { return h()-1; }
+	/*! \details Returns the maximum x value. */
+	sg_int_t x_max() const { return w()-1; }
+	/*! \details Returns the maximum y value. */
+	sg_int_t y_max() const { return h()-1; }
 
 	static Dim load_dim(const char * path);
 
+	/*! \details Loads a bitmap from a file.
+	 *
+	 * @param path The path to the bitmap file name
+	 * @return Zero on success
+	 */
 	int load(const char * path);
+
+	/*! \details Saves a bitmap to a file.
+	 *
+	 * @param path The path for the new file
+	 * @return Zero on success
+	 *
+	 * If the file already exists, it will be overwritten.
+	 *
+	 */
 	int save(const char * path) const;
 
 
@@ -105,7 +133,21 @@ public:
 	void transform_shift(sg_point_t shift, sg_point_t p, sg_dim_t d) const { sg_api()->transform_shift(bmap_const(), shift, p, d); }
 
 
+	/*! \details Gets the value of the pixel at the specified point.
+	 *
+	 * @param p The point to get the pixel color
+	 * @return The color of the pixel at \a p
+	 */
 	sg_color_t get_pixel(sg_point_t p) const { return sg_api()->get_pixel(bmap_const(), p); }
+
+	/*! \details Draws a pizel at the specified point.
+	 *
+	 * @param p The point where to draw the pixel
+	 *
+	 * The color of the pixel is determined by the pen settings.
+	 *
+	 * \sa set_pen_color()
+	 */
 	void draw_pixel(sg_point_t p) const { sg_api()->draw_pixel(bmap_const(), p); }
 	void draw_line(sg_point_t p1, sg_point_t p2) const { sg_api()->draw_line(bmap_const(), p1, p2); }
 	void draw_quadtratic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3) const { sg_api()->draw_quadtratic_bezier(bmap_const(), p1, p2, p3); }
