@@ -6,7 +6,7 @@
 using namespace sys;
 
 int Hio::attr(hio_attr_t & attr){
-	//return ioctl(I_HIO_GETATTR, &attr);
+	//return ioctl(I_HIO_GETINFO, &attr);
 	return 0;
 }
 

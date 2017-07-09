@@ -3,7 +3,7 @@
 #ifndef HAL_DISPLAY_HPP_
 #define HAL_DISPLAY_HPP_
 
-#include <iface/dev/display.h>
+#include <sos/dev/display.h>
 
 #include "../var/Item.hpp"
 #include "../var/Data.hpp"

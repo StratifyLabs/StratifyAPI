@@ -99,12 +99,12 @@ public:
 	Ema_s32(s32 start, u16 alpha) : Ema(start, alpha){}
 };
 
-/*! \brief Exponential Moving Average class (i16) */
+/*! \brief Exponential Moving Average class (s16) */
 /*! \details See \ref Ema for details */
 class Ema_s16 : public Ema<u8, s16, s32> {
 public:
 	/*! \details Construct a EMA object for a signed 16 bit calculations */
-	Ema_s16(i16 start, u8 alpha) : Ema(start, alpha){}
+	Ema_s16(s16 start, u8 alpha) : Ema(start, alpha){}
 };
 
 /*! \brief Exponential Moving Average class (u32) */

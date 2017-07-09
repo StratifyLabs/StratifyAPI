@@ -38,9 +38,9 @@ public:
 	Point & operator+(const sg_point_t & a){ sg_api()->point_shift(&d, a); return *this; }
 	Point & operator-(const sg_point_t & a){ sg_api()->point_subtract(&d, &a); return *this; }
 
-	void rotate(i16 angle){ sg_api()->point_rotate(&d, angle); }
+	void rotate(s16 angle){ sg_api()->point_rotate(&d, angle); }
 	void scale(u16 a){ sg_api()->point_scale(&d, a); }
-	void shift(i16 x, i16 y){ sg_api()->point_shift(&d, sg_point(x,y)); }
+	void shift(s16 x, s16 y){ sg_api()->point_shift(&d, sg_point(x,y)); }
 	void shift(sg_point_t p){ sg_api()->point_shift(&d, p); }
 
 private:

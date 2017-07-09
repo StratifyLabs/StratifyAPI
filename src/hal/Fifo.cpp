@@ -6,7 +6,7 @@ using namespace hal;
 
 Fifo::Fifo(){}
 
-int Fifo::get_attr(fifo_attr_t & attr){ return ioctl(I_FIFO_GETATTR, (void*)&attr); }
+int Fifo::get_info(fifo_attr_t & attr){ return ioctl(I_FIFO_GETINFO, (void*)&attr); }
 int Fifo::flush(){ return ioctl(I_FIFO_FLUSH); }
 int Fifo::init(){ return ioctl(I_FIFO_INIT); }
 int Fifo::exit(){ return ioctl(I_FIFO_EXIT); }

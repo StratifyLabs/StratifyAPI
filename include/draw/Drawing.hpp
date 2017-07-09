@@ -12,7 +12,7 @@ namespace draw {
 /*! \details Drawing size (unsigned) */
 typedef u16 drawing_size_t;
 /*! \details Drawing position (signed) */
-typedef i16 drawing_int_t;
+typedef s16 drawing_int_t;
 
 /*! \brief Holds a coordinate (point) in the drawing system */
 typedef struct MCU_PACK {

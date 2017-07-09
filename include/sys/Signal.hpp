@@ -7,7 +7,8 @@
 
 #include <pthread.h>
 #include <signal.h>
-#include <stratify/stratify.h>
+#include <sos/stratify.h>
+
 #include <mcu/mcu.h>
 
 #include "../ui/Event.hpp"
@@ -217,10 +218,10 @@ public:
 	 */
 	mcu_action_t action(int event, int channel = 0){
 		mcu_action_t a;
-		a.callback = signal_callback;
-		a.context = &m_context;
+		a.handler.callback = signal_callback;
+		a.handler.context = &m_context;
 		a.channel = channel;
-		a.event = event;
+		a.o_events = event;
 		return a;
 	}
 

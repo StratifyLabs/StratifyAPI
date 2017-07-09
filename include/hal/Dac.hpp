@@ -3,7 +3,7 @@
 #ifndef DAC_HPP_
 #define DAC_HPP_
 
-#include <iface/dev/dac.h>
+#include <sos/dev/dac.h>
 #include "Periph.hpp"
 
 namespace hal {
@@ -43,17 +43,9 @@ namespace hal {
  * \endcode
  *
  */
-class Dac : public Periph {
+class Dac : public Periph<dac_info_t, dac_attr_t, 'd'> {
 public:
 	Dac(port_t port);
-	/*! \details Gets the DAC attributes. */
-	int get_attr(dac_attr_t & attr);
-	/*! \details Sets the DAC attributes. */
-	int set_attr(const dac_attr_t & attr);
-
-	/*! \details Gets the current value of the dac. */
-	dac_sample_t get_value(u32 channel = 0);
-	dac_sample_t value(u32 channel = 0){ return value(channel); }
 
 	/*! \details Sets the DAC attributes using specified values.
 	 *
@@ -62,11 +54,13 @@ public:
 	 * @param pin_assign The output pin assignment
 	 *
 	 */
-	int set_attr(u16 enabled_channels, u32 freq = 1000000, u8 pin_assign = 0){
+	int set_attr(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1){
 		dac_attr_t attr;
-		attr.enabled_channels = enabled_channels;
+		memset(attr.pin_assignment, 0xff, DAC_PIN_ASSIGNMENT_COUNT*sizeof(mcu_pin_t));
+		attr.o_flags = o_flags;
+		attr.pin_assignment[0] = channel0;
+		attr.pin_assignment[1] = channel1;
 		attr.freq = freq;
-		attr.pin_assign = pin_assign;
 		return set_attr(attr);
 	}
 
@@ -77,13 +71,12 @@ public:
 	 * @param pin_assign The output pin assignment
 	 *
 	 */
-	int init(u16 enabled_channels /*! Enabled Channels */,
-			u32 freq = 1000000 /*! DAC clock frequency */,
-			u8 pin_assign = 0 /*! Pin assignment value */){
+	int init(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1 = {0xff,0xff}){
+
 		if( open() < 0 ){
 			return -1;
 		}
-		return set_attr(enabled_channels, freq, pin_assign);
+		return set_attr(o_flags, freq, channel0, freq, channel1);
 	}
 
 	/*! \details Sets the value of the DAC.
@@ -92,13 +85,14 @@ public:
 	 * @param channel The DAC channel
 	 * @return Zero on success
 	 */
-	int set(dac_sample_t value, u32 channel = 0);
+	int set_channel(u32 loc, u32 value){
+		return set_channel(loc, value, I_DAC_SET);
+	}
 
-#ifdef __MCU_ONLY__
-	using Pblock::write;
-	int write(void * buf, int nbyte);
-	int close();
-#endif
+	u32 get_channel(u32 loc){
+		return get_channel(loc, I_DAC_GET);
+	}
+
 
 private:
 

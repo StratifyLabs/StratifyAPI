@@ -1,10 +1,10 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#ifndef STFY_APP_UART_HPP_
-#define STFY_APP_UART_HPP_
+#ifndef SAPI_UART_HPP_
+#define SAPI_UART_HPP_
 
 
-#include <iface/dev/uart.h>
+#include <sos/dev/uart.h>
 #include "Periph.hpp"
 
 
@@ -51,16 +51,23 @@ namespace hal {
  * 	\endcode
  *
  */
-class Uart : public Periph {
+class Uart : public Periph<uart_info_t, uart_attr_t, 'u'> {
 public:
 	Uart(port_t port);
 
-	/*! \details Get UART attributes in \a attr */
-	int get_attr(uart_attr_t & attr);
-	/*! \details Set UART attributes to \a attr */
-	int set_attr(const uart_attr_t & attr);
-	/*! \details This method gets a single byte (if available from the UART).  Upon
+	enum {
+		FLAG_IS_STOP1 /*! One stop bit */ = UART_FLAG_IS_STOP1,
+		FLAG_IS_STOP2 /*! Two stop bits */ = UART_FLAG_IS_STOP2,
+		FLAG_IS_STOP0_5 /*! 0.5 stop bits */ = UART_FLAG_IS_STOP0_5,
+		FLAG_IS_STOP1_5 /*! 1.5 stop bits */ = UART_FLAG_IS_STOP1_5,
+		FLAG_IS_PARITY_NONE /*! Indicates no parity */ = UART_FLAG_IS_PARITY_NONE,
+		FLAG_IS_PARITY_ODD /*! Indicates odd parity */ = UART_FLAG_IS_PARITY_ODD,
+		FLAG_IS_PARITY_EVEN /*! Indicates even parity */ = UART_FLAG_IS_PARITY_EVEN,
+	};
+
+	/*! \details Gets a single byte (if available from the UART).  Upon
 	 * success, the byte is written to the value pointed to by \a c.
+	 *
 	 * \returns Zero on successfully reading a byte, -1 if no bytes are available.
 	 */
 	int get_byte(char & c);
@@ -69,62 +76,24 @@ public:
 	int flush();
 
 
-#ifdef __MCU_ONLY__
-	void setfifo(const device_cfg_t * cfg){ fifocfg[port_] = cfg; }
-	int read(void * buf, int nbyte);
-	int write(const void * buf, int nbyte);
-	int close();
-#endif
 
-
-	/*! \brief UART Parity values */
-	/*! \details This is a list of the UART parity values */
-	enum {
-		NONE /*! No Parity */ = UART_PARITY_NONE,
-		EVEN /*! Even Parity */ = UART_PARITY_EVEN,
-		ODD /*! Odd Parity */ = UART_PARITY_ODD
-	};
-
-	/*! \brief UART Stop bits */
-	/*! \details This is a list of the UART stop bit values */
-	enum {
-		STOP1 /*! One stop bit */ = UART_ATTR_STOP_BITS_1,
-		STOP2 /*! Two stop bits */ = UART_ATTR_STOP_BITS_2
-	};
-
-	/*! \brief Set the attributes as specified */
-	int set_attr(int baudrate /*! Baudrate */ = 19200,
-			int pin_assign /*! Pin assignment */ = 0,
-			int parity /*! Parity */ = NONE,
-			int stop /*! Number of stop bits */ = STOP1,
-			int width /*! bits per character */ = 8){
+	int set_attr(u32 o_flags, mcu_pin_t tx, mcu_pin_t rx, u32 freq, u32 width = 8) const {
 		uart_attr_t attr;
-		attr.baudrate = baudrate;
-		attr.pin_assign = pin_assign;
-		attr.parity = parity;
-		attr.stop = stop;
+		attr.o_flags = o_flags;
+		attr.pin_assignment[0] = tx;
+		attr.pin_assignment[1] = rx;
+		attr.pin_assignment[3] = {0xff, 0xff};
+		attr.pin_assignment[4] = {0xff, 0xff};
+		attr.freq = freq;
 		attr.width = width;
-		attr.start = UART_ATTR_START_BITS_1;
 		return set_attr(attr);
 	}
 
-	/*! \details Initialize the UART to
-	 * - 19200 baudrate
-	 * - default pin assignment
-	 * - No parity
-	 * - 8 bit width
-	 * - 1 stop bits
-	 * \return Zero on success.
-	 */
-	int init(int baudrate /*! Baudrate */ = 19200,
-			int pin_assign /*! Pin assignment */ = 0,
-			int parity /*! Parity */ = NONE,
-			int stop /*! Number of stop bits */ = STOP1,
-			int width /*! bits per character */ = 8){
+	int init(u32 o_flags, mcu_pin_t tx, mcu_pin_t rx, u32 freq, u32 width = 8){
 		if( open() < 0 ){
 			return -1;
 		}
-		return set_attr(baudrate, pin_assign, parity, stop, width);
+		return set_attr(o_flags, tx, rx, freq, width);
 	}
 
 private:
@@ -133,4 +102,4 @@ private:
 
 };
 
-#endif /* STFY_APP_UART_HPP_ */
+#endif /* SAPI_UART_HPP_ */

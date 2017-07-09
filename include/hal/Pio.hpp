@@ -1,9 +1,9 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#ifndef STFY_APP_PIO_HPP_
-#define STFY_APP_PIO_HPP_
+#ifndef SAPI_PIO_HPP_
+#define SAPI_PIO_HPP_
 
-#include <iface/dev/pio.h>
+#include <sos/dev/pio.h>
 #include "Periph.hpp"
 
 namespace hal {
@@ -46,46 +46,39 @@ namespace hal {
  *
  * \endcode
  */
-class Pio : public Periph {
+class Pio : public Periph<pio_info_t, pio_attr_t, 'p'> {
 public:
 	Pio(port_t port);
 
 	enum {
-		NONE /*! Specifies No PIO event */ = PIO_ACTION_EVENT_NONE,
-		RISING /*! Specifies a rising edge on the PIO */ = PIO_ACTION_EVENT_RISING,
-		FALLING /*! Specifies a falling edge on the PIO */ = PIO_ACTION_EVENT_FALLING,
-		BOTH /*! Specifies both edges on the PIO */ = PIO_ACTION_EVENT_BOTH
+		FLAG_SET_INPUT /*! Input flag*/ = PIO_FLAG_SET_INPUT,
+		FLAG_SET_OUTPUT /*! Output flag */ = PIO_FLAG_SET_OUTPUT,
+		FLAG_IS_PULLUP /*! Use the built-in pullup */ = PIO_FLAG_IS_PULLUP,
+		FLAG_IS_PULLDOWN /*! Use the built-in pull-down */ = PIO_FLAG_IS_PULLDOWN,
+		FLAG_IS_REPEATER /*! Use the built-in repeater function */ = PIO_FLAG_IS_REPEATER,
+		FLAG_IS_FLOAT /*! Leave the pin floating */ = PIO_FLAG_IS_FLOAT,
+		FLAG_IS_SPEED_LOW /*! Max speed 2Mhz (stm32f only) */ = PIO_FLAG_IS_SPEED_LOW,
+		FLAG_IS_SPEED_MEDIUM /*! Add fast mode slew rate */ = PIO_FLAG_IS_SPEED_MEDIUM,
+		FLAG_IS_SPEED_HIGH /*! Max speed 10Mhz (stm32f only) */ = PIO_FLAG_IS_SPEED_HIGH,
+		FLAG_IS_SPEED_BLAZING /*! Max speed 50Mhz (stm32f only) */ = PIO_FLAG_IS_SPEED_BLAZING,
+		FLAG_IS_OPENDRAIN /*! Configure as open drain */ = PIO_FLAG_IS_OPENDRAIN,
+		FLAG_IS_HYSTERESIS /*! Enable hysteresis on pin */ = PIO_FLAG_IS_HYSTERESIS,
+		FLAG_IS_DIRONLY /*! Only set input/output (ignore other settings) */ = PIO_FLAG_IS_DIRONLY,
+		FLAG_IS_ANALOG /*! Use an analog rather than digital input */ = PIO_FLAG_IS_ANALOG,
+		FLAG_IS_INVERT /*! Invert the logic on the pin */ = PIO_FLAG_IS_INVERT,
+		FLAG_IS_FILTER /*! Filter noise on pin */ = PIO_FLAG_IS_FILTER,
+		FLAG_SET /*! Set the bits in the mask */ = PIO_FLAG_SET,
+		FLAG_CLEAR /*! Clear the bits in the mask */ = PIO_FLAG_CLEAR,
+		FLAG_ASSIGN /*! Assign the pinmask value to the port */ = PIO_FLAG_ASSIGN
 	};
 
-	/*! \details Get the attributes for the port */
-	int get_attr(pio_attr_t & attr);
-	/*! \details Set the attributes for the port */
-	int set_attr(const pio_attr_t & attr);
-	/*! \details Set the action for the port using pio_action_t */
-	int set_action(const pio_action_t & action);
-
-	/*! \details Set the action for an event
-	 *
-	 * @param channel The channel (pin) to fire the event
-	 * @param event NONE, RISING, FALLING, or BOTH
-	 * @param callback A privileged function to execute when the event happens (can be null) (return zero to delete the callback association)
-	 * @param context The first argument passed to the callback
-	 * @return Zero on success
-	 */
-	int set_action(u32 channel, u32 event, s8 prio = 0, mcu_callback_t callback = 0, void * context = 0){
-		pio_action_t action;
-		action.prio = prio;
-		action.channel = channel;
-		action.event = event;
-		action.callback = callback;
-		action.context = context;
-		return set_action(action);
-	}
-
 	/*! \details Set the specified pin mask */
-	int set_mask(unsigned int mask);
+	int set_mask(u32 mask) const;
 	/*! \details Clear the specified mask */
-	int clear_mask(unsigned int mask);
+	int clear_mask(u32 mask) const;
+
+	int assign(u32 mask) const;
+
 	/*! \details Get the value of the port */
 	u32 get_value() const;
 	u32 value() const { return get_value(); }
@@ -93,12 +86,10 @@ public:
 	/*! \details Set the value of the port */
 	int set_value(unsigned int value);
 
-
-	/*! \details Set the attributes for the port */
-	int set_attr(pio_sample_t mask, int mode){
+	int set_attr(u32 o_flags, u32 o_pinmask){
 		pio_attr_t attr;
-		attr.mask = mask;
-		attr.mode = mode;
+		attr.o_flags;
+		attr.o_pinmask;
 		return set_attr(attr);
 	}
 
@@ -109,28 +100,13 @@ public:
 	 * p.init((1<<10)|(1<<5), PIO_MODE_OUTPUT)); //pins 0.5 and 0.10 are outputs
 	 * \endcode
 	 */
-	int init(pio_sample_t mask, int mode){
+	int init(u32 o_flags, u32 o_pinmask){
 		if( open() <  0 ){
 			return -1;
 		}
-		return set_attr(mask, mode);
+		return set_attr(o_flags, o_pinmask);
 	}
 
-	/*! \details PIO Pin mode types */
-	enum {
-		INPUT /*! Input mode */ = PIO_MODE_INPUT,
-		OUTPUT /*! Output mode */ = PIO_MODE_OUTPUT,
-		FLOAT /*! Input mode floating (| with INPUT) */ = PIO_MODE_FLOAT,
-		PULLUP /*! Input mode pullup (| with INPUT) */ = PIO_MODE_PULLUP,
-		PULLDOWN /*! Input mode pulldown (| with INPUT) */ = PIO_MODE_PULLDOWN,
-		OPENDRAIN /*! Output mode open drain (| with OUTPUT) */ = PIO_MODE_OPENDRAIN,
-		REPEATER /*! Input mode repeater (| with INPUT) */ = PIO_MODE_REPEATER,
-		HYSTERESIS /*! Use hysteresis (| with INPUT) */ = PIO_MODE_HYSTERESIS
-	};
-
-#ifdef __MCU_ONLY__
-	int close();
-#endif
 
 private:
 
@@ -138,4 +114,4 @@ private:
 
 };
 
-#endif /* STFY_APP_PIO_HPP_ */
+#endif /* SAPI_PIO_HPP_ */

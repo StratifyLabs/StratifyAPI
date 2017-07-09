@@ -4,7 +4,7 @@
 #ifndef PWM_HPP_
 #define PWM_HPP_
 
-#include <iface/dev/pwm.h>
+#include <sos/dev/pwm.h>
 #include "Periph.hpp"
 
 namespace hal {
@@ -33,55 +33,40 @@ namespace hal {
  *
  *
  */
-class Pwm : public Periph {
+class Pwm : public Periph<pwm_info_t, pwm_attr_t, 'p'> {
 public:
 	Pwm(port_t port);
-	/*! \details Get PWM attributes */
-	int get_attr(pwm_attr_t & attr);
-	/*! \details Set PWM attributes */
-	int set_attr(const pwm_attr_t & attr);
-	/*! \details Set PWM duty cycle */
-	int set_duty_cycle(const pwm_reqattr_t & req);
 
-#ifdef __MCU_ONLY__
-	using Pblock::write;
-	int write(const void * buf, int nbyte);
-#endif
-
-	/*! \details Set the PWM duty cycle (specify individual values) */
-	int set_duty_cycle(uint8_t channel, pwm_duty_t duty){
-		pwm_reqattr_t req;
-		req.channel = channel;
-		req.duty = duty;
-		return set_duty_cycle(req);
+	enum {
+		FLAG_IS_ACTIVE_HIGH = PWM_FLAG_IS_ACTIVE_HIGH,
+		FLAG_IS_ACTIVE_LOW = PWM_FLAG_IS_ACTIVE_LOW
 	}
 
-	/*! \details Set PWM attributes (specify individual values) */
-	int set_attr(uint8_t enabled_channels,
-			uint32_t freq = 1000000,
-			pwm_duty_t top = 1000,
-			uint16_t flags = 0,
-			uint8_t pin_assign = 0){
+	int set_channel(u32 loc, u32 value){
+		return set_channel(loc, value, I_PWM_SET);
+	}
+
+	int set_channel(const mcu_channel_t & channel){
+		return set_channel(channel, I_PWM_SET);
+	}
+
+
+	int set_attr(u32 o_flags, mcu_pin_t channel0, u32 freq, u32 top, mcu_pin_t channel1 = {0xff, 0xff}){
 		pwm_attr_t attr;
-		attr.enabled_channels = enabled_channels;
+		attr.o_flags = o_flags;
+		memset(attr.pin_assignment, 0xff, PWM_PIN_ASSIGNMENT_COUNT*sizeof(mcu_pin_t));
+		attr.pin_assignment[0] = channel0;
 		attr.freq = freq;
 		attr.top = top;
-		attr.pin_assign = pin_assign;
-		attr.flags = flags;
-		return set_attr(attr);
 	}
 
-	/*! \details Open PWM and set attributes as specified */
-	int init(uint8_t enabled_channels,
-			uint32_t freq = 1000000,
-			pwm_duty_t top = 1000,
-			uint16_t flags = 0,
-			uint8_t pin_assign = 0){
+	int init(u32 o_flags, mcu_pin_t channel0, u32 freq, u32 top, mcu_pin_t channel1 = {0xff, 0xff}){
+
 		if( open() < 0 ){
 			return -1;
 		}
 
-		return set_attr(enabled_channels, freq, top, flags, pin_assign);
+		return set_attr(o_flags, channel0, freq, top, channel1);
 	}
 
 #ifdef __MCU_ONLY__

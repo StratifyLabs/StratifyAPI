@@ -8,7 +8,7 @@
 #ifndef FIFO_HPP_
 #define FIFO_HPP_
 
-#include <iface/dev/fifo.h>
+#include <sos/dev/fifo.h>
 #include "Dev.hpp"
 
 namespace hal {
@@ -85,15 +85,15 @@ public:
 	Fifo();
 
 	/*! \details Read the Fifo Attributes */
-	int get_attr(fifo_attr_t & attr);
-	int get_attr(fifo_attr_t * attr){
-		return get_attr(*attr);
+	int get_info(fifo_attr_t & attr);
+	int get_info(fifo_attr_t * attr){
+		return get_info(*attr);
 	}
 
 	/*! \details Return the fifo attributes */
-	const FifoAttr get_attr(){
+	const FifoAttr get_info(){
 		FifoAttr a;
-		get_attr(&a.m_attr);
+		get_info(&a.m_attr);
 		return a;
 	};
 

@@ -3,7 +3,7 @@
 #ifndef APPFS_HPP_
 #define APPFS_HPP_
 
-#include <iface/link.h>
+#include <sos/link/link.h>
 
 namespace sys {
 

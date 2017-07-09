@@ -1,10 +1,10 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#ifndef STFY_APP_TMR_HPP_
-#define STFY_APP_TMR_HPP_
+#ifndef SAPI_TMR_HPP_
+#define SAPI_TMR_HPP_
 
 
-#include <iface/dev/tmr.h>
+#include <sos/dev/tmr.h>
 #include "Periph.hpp"
 
 
@@ -61,138 +61,59 @@ namespace hal {
  *
  *
  */
-class Tmr : public Periph {
+class Tmr : public Periph<tmr_info_t, tmr_attr_t, 't'> {
 public:
 	Tmr(port_t port);
-	/*! \details Get the TMR attributes */
-	int get_attr(tmr_attr_t & attr);
-	/*! \details Set the TMR attributes */
-	int set_attr(const tmr_attr_t & attr);
 
 	/*! \details This lists the values for the event when using set_action().  The values
 	 * can be Or'd (|) together such as Tmr::RESET|Tmr::INTERRUPT.
 	 */
 	enum {
-		NONE = /*! No Event */ TMR_ACTION_EVENT_NONE,
-		INTERRUPT /*! Trigger interrupt and execute callback */ = TMR_ACTION_EVENT_INTERRUPT,
-		RESET /*! Reset timer value to zero */ = TMR_ACTION_EVENT_RESET,
-		STOP /*! Stop the timer */ = TMR_ACTION_EVENT_STOP,
-		SETOC /*! Set the output compare pin high */ = TMR_ACTION_EVENT_SETOC,
-		CLROC /*! Clear the output compare pin */ = TMR_ACTION_EVENT_CLROC,
-		TOGGLEOC /*! Toggle the output compare pin */ = TMR_ACTION_EVENT_TOGGLEOC
+		FLAG_IS_CLKSRC_CPU /*! Use the CPU as the source for the clock (timer mode) */ = TMR_FLAG_IS_CLKSRC_CPU,
+		FLAG_IS_CLKSRC_IC0 /*! Use input capture channel 0 for the clock source (counter mode) */ = TMR_FLAG_IS_CLKSRC_IC0,
+		FLAG_IS_CLKSRC_IC1 /*! Use input capture channel 1 for the clock source (counter mode) */ = TMR_FLAG_IS_CLKSRC_IC1,
+		FLAG_IS_CLKSRC_IC2 /*! Use input capture channel 2 for the clock source (counter mode) */ = TMR_FLAG_IS_CLKSRC_IC2,
+		FLAG_IS_CLKSRC_IC3 /*! Use input capture channel 3 for the clock source (counter mode) */ = TMR_FLAG_IS_CLKSRC_IC3,
+		FLAG_IS_CLKSRC_EDGERISING /*! Count rising edges */ = TMR_FLAG_IS_CLKSRC_EDGERISING,
+		FLAG_IS_CLKSRC_EDGEFALLING /*! Count falling edges */ = TMR_FLAG_IS_CLKSRC_EDGEFALLING,
+		FLAG_IS_CLKSRC_EDGEBOTH /*! Count both edges */ = TMR_FLAG_IS_CLKSRC_EDGEBOTH,
+		FLAG_IS_CLKSRC_COUNTDOWN /*! Count down (not up) */ = TMR_FLAG_IS_CLKSRC_COUNTDOWN,
+		FLAG_AUTO_RELOAD /*! Auto reload the time */ = TMR_FLAG_AUTO_RELOAD,
+		FLAG_ENABLE_OC /*! Auto reload the time */ = TMR_FLAG_ENABLE_OC,
+		FLAG_ENABLE_IC /*! Auto reload the time */ = TMR_FLAG_ENABLE_IC,
+		FLAG_SET_TIMER /*! Turn the timer on */ = TMR_FLAG_SET_TIMER,
+		FLAG_SET_CHANNEL /*! Configure channel characteristics */ = TMR_FLAG_SET_CHANNEL,
+		FLAG_IS_CHANNEL_STOP_ON_RESET /*! Stop when the timer resets */ = TMR_FLAG_IS_CHANNEL_STOP_ON_RESET,
+		FLAG_IS_CHANNEL_RESET_ON_MATCH /*! Stop when the timer finds a match */ = TMR_FLAG_IS_CHANNEL_RESET_ON_MATCH,
+		FLAG_IS_CHANNEL_STOP_ON_MATCH /*! Stop when the timer resets */ = TMR_FLAG_IS_CHANNEL_STOP_ON_MATCH,
+		FLAG_IS_CHANNEL_SET_OUTPUT_ON_MATCH /*! Stop when the timer resets */ = TMR_FLAG_IS_CHANNEL_SET_OUTPUT_ON_MATCH,
+		FLAG_IS_CHANNEL_CLEAR_OUTPUT_ON_MATCH /*! Stop when the timer resets */ = TMR_FLAG_IS_CHANNEL_CLEAR_OUTPUT_ON_MATCH,
+		FLAG_IS_CHANNEL_TOGGLE_OUTPUT_ON_MATCH /*! Stop when the timer resets */ = TMR_FLAG_IS_CHANNEL_TOGGLE_OUTPUT_ON_MATCH,
+		FLAG_IS_CHANNEL_PWM_MODE /*! Stop when the timer resets */ = TMR_FLAG_IS_CHANNEL_PWM_MODE,
 	};
 
+	/*! \details Turns the TMR on (start counting) */
+	int enable();
+	/*! \details Turns the TMR off (stop counting) */
+	int disable();
 
-	/*! \details Set the TMR action */
-	int set_action(const tmr_action_t & action);
-	/*! \details Set the TMR action */
-	int set_action(int channel /*! The channel to use */,
-			int event /*! The event such as Tmr::INTERRUPT */,
-			mcu_callback_t callback /*! Callback executed if Tmr::INTERRUPT is used */ =0,
-			void * context /*! First argument passed to callback */ = 0){
-		tmr_action_t action;
-		action.prio = 0;
-		action.channel = channel;
-		action.event = event;
-		action.callback = callback;
-		action.context = context;
-		return set_action(action);
-	}
-	/*! \details Turn the TMR on (start counting) */
-	int on();
-	/*! \details Turn the TMR off (stop counting) */
-	int off();
 	/*! \details Set the output compare attributes */
-	int set_output_compare(const tmr_reqattr_t & req);
-	/*! \details Set the output compare unit with given parameters */
-	int set_output_compare(int channel, uint32_t value){
-		tmr_reqattr_t req;
-		req.channel = channel;
-		req.value = value;
-		return set_output_compare(req);
-	}
-	/*! \details Get the output compare attributes */
-	int get_output_compare(tmr_reqattr_t & req);
-	/*! \details Get the output compare attributes (no error checking) */
-	int get_output_compare(int channel){
-		tmr_reqattr_t req;
-		req.channel = channel;
-		get_output_compare(req);
-		return req.value;
-	}
-	/*! \details Set the input capture attributes */
-	int set_input_capture(const tmr_reqattr_t & req);
-	/*! \details Set the input capture unit with given parameters */
-	int set_input_capture(int channel, uint32_t value){
-		tmr_reqattr_t req;
-		req.channel = channel;
-		req.value = value;
-		return set_input_capture(req);
-	}
-	/*! \details Get the input capture attributes */
-	int get_input_capture(tmr_reqattr_t & req);
-	/*! \details Get the input capture value (no error checking)*/
-	int get_input_capture(int channel){
-		tmr_reqattr_t req;
-		req.channel = channel;
-		get_input_capture(req);
-		return req.value;
-	}
-	/*! \details Return the value of the TMR */
-	tmr_sample_t get_value();
-
-	/*! \details Set the value of the TMR */
-	int set_value(tmr_sample_t value);
-
-#ifdef __MCU_ONLY__
-	int read(void * buf, int nbyte);
-	int write(const void * buf, int nbyte);
-	int close();
-#endif
-
-	/*! \details See init() for details. */
-	int set_attr(uint32_t freq,
-			uint8_t clksrc = TMR_CLKSRC_CPU,
-			uint8_t pin_assign = 0,
-			uint8_t enabled_oc_chans = 0,
-			uint8_t enabled_ic_chans = 0){
-		tmr_attr_t attr;
-		attr.clksrc = clksrc;
-		attr.freq = freq;
-		attr.pin_assign = pin_assign;
-		attr.enabled_ic_chans = enabled_ic_chans;
-		attr.enabled_oc_chans = enabled_oc_chans;
-		return set_attr(attr);
+	int set_output_channel(u32 loc, u32 value){
+		return set_channel(loc, value, I_TMR_SETOC);
 	}
 
-	/*! \details This is a list of the timer clock sources.  Not all clock
-	 * sources are available on all devices.
-	 */
-	enum {
-		CPU /*! Use the internal CPU clock */ = TMR_CLKSRC_CPU,
-		INPUT0 /*! Use input 0 (device specific) */ = TMR_CLKSRC_IC0,
-		INPUT1 /*! Use input 1 (device specific) */ = TMR_CLKSRC_IC1,
-		INPUT2 /*! Use input 2 (device specific) */ = TMR_CLKSRC_IC2,
-		INPUT3 /*! Use input 3 (device specific) */ = TMR_CLKSRC_IC3,
-		RISING /*! Modifier to clock on rising edges */ = TMR_CLKSRC_EDGERISING,
-		FALLING /*! Modifier to clock on falling edges */ = TMR_CLKSRC_EDGEFALLING,
-		BOTH /*! Modifier to clock on both rising and falling edges */ = TMR_CLKSRC_EDGEBOTH,
-		COUNTDOWN /*! Modifier for a countdown timer */ = TMR_CLKSRC_COUNTDOWN
-	};
-
-	/*! \details This opens and sets the timer attributes
-	 *
-	 */
-	int init(uint32_t freq /*! timer frequency (if using TMR_CLKSRC_CPU) */ = 1000000,
-			uint8_t clksrc /*! clock source for the timer (default is Tmr::CPU) */ = TMR_CLKSRC_CPU,
-			uint8_t pin_assign /*! The pin assignment if using input capture (including clock source) or output compare pins */ = 0,
-			uint8_t enabled_oc_chans /*! Mask of the enabled output compare channels (only if external pins are used) */ = 0,
-			uint8_t enabled_ic_chans /*! Mask of the enabled input capture channels (only if external pins are used--not including clock source) */ = 0){
-		if( open() < 0 ){
-			return -1;
-		}
-		return set_attr(freq, clksrc, pin_assign, enabled_oc_chans, enabled_ic_chans);
+	u32 get_output_channel(u32 loc){
+		return get_channel(loc, I_TMR_GETOC);
 	}
+
+	int set_input_channel(u32 loc, u32 value){
+		return set_channel(loc, value, I_TMR_SETIC);
+	}
+
+	u32 get_input_channel(u32 loc){
+		return get_channel(loc, I_TMR_GETIC);
+	}
+
 
 private:
 
@@ -200,4 +121,4 @@ private:
 
 };
 
-#endif /* STFY_APP_TMR_HPP_ */
+#endif /* SAPI_TMR_HPP_ */

@@ -1,9 +1,9 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#ifndef STFY_APP_ADC_HPP_
-#define STFY_APP_ADC_HPP_
+#ifndef SAPI_ADC_HPP_
+#define SAPI_ADC_HPP_
 
-#include <iface/dev/adc.h>
+#include <sos/dev/adc.h>
 #include "Periph.hpp"
 
 namespace hal {
@@ -26,31 +26,28 @@ namespace hal {
  * \endcode
  *
  */
-class Adc : public Periph {
+class Adc : public Periph<adc_info_t, adc_attr_t, 'a'> {
 public:
 	/*! \details Initializes the object with \a port. */
 	Adc(port_t port);
 
-	/*! \details Gets the ADC attributes */
-	int get_attr(adc_attr_t & attr);
-	/*! \details Sets the ADC attributes */
-	int set_attr(const adc_attr_t & attr);
+	enum {
+		FLAG_LEFT_JUSTIFIED = ADC_FLAG_LEFT_JUSTIFIED,
+		FLAG_RIGHT_JUSTIFIED = ADC_FLAG_RIGHT_JUSTIFIED
+	};
 
-	/*! \details Sets the ADC attributes.
-	 *
-	 * @param enabled_channels Enabled channels as a bitmask
-	 * @param freq The ADC clock frequency
-	 * @param pin_assign The pin assignment value
-	 * @return Zero on success
-	 *
-	 */
-	int set_attr(u16 enabled_channels, u32 freq = ADC_MAX_FREQ, u8 pin_assign = 0){
+
+	int set_attr(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1 = {0xff, 0xff}){
 		adc_attr_t attr;
-		attr.enabled_channels = enabled_channels;
+		attr.pin_assignment[0] = channel0;
+		attr.pin_assignment[1] = channel1;
+		attr.pin_assignment[1] = {0xff, 0xff};
+		attr.pin_assignment[1] = {0xff, 0xff};
+		attr.o_flags = o_flags;
 		attr.freq = freq;
-		attr.pin_assign = pin_assign;
 		return set_attr(attr);
 	}
+
 
 	/*! \details Opens the ADC port and sets the attributes as specified.
 	 *
@@ -81,4 +78,4 @@ private:
 
 };
 
-#endif /* STFY_APP_ADC_HPP_ */
+#endif /* SAPI_ADC_HPP_ */

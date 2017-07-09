@@ -90,8 +90,8 @@
 
 
 
-#ifndef STFY_APP_PHY_HPP_
-#define STFY_APP_PHY_HPP_
+#ifndef SAPI_PHY_HPP_
+#define SAPI_PHY_HPP_
 
 #include "../sys/File.hpp"
 
@@ -135,4 +135,4 @@ protected:
 
 };
 
-#endif /* STFY_APP_PHYBASE_HPP_ */
+#endif /* SAPI_PHYBASE_HPP_ */

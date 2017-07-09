@@ -8,8 +8,8 @@ using namespace hal;
 
 Core::Core(port_t port) : Periph(CORE_PERIPH_CORE, port){}
 
-int Core::get_attr(core_attr_t & attr){
-	return ioctl(I_CORE_GETATTR, &attr);
+int Core::get_info(core_attr_t & attr){
+	return ioctl(I_CORE_GETINFO, &attr);
 }
 
 int Core::set_attr(const core_attr_t & attr){

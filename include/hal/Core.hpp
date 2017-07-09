@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
-#ifndef STFY_APP_CORE_HPP_
-#define STFY_APP_CORE_HPP_
+#ifndef SAPI_CORE_HPP_
+#define SAPI_CORE_HPP_
 
-#include <iface/dev/core.h>
+#include <sos/dev/core.h>
 #include "Periph.hpp"
 
 
@@ -35,7 +35,7 @@ namespace hal {
  * \endcode
  *
  */
-class Core : public Periph {
+class Core : public Periph<core_info_t, core_attr_t, 'c'> {
 public:
 
 	/*! \details Core functional types */
@@ -80,7 +80,7 @@ public:
 
 	/*! \details Gets attributes of the Core peripheral and stores them in \a attr.
 	 */
-	int get_attr(core_attr_t & attr);
+	int get_info(core_attr_t & attr);
 	/*! \details Sets the attributes for the Core device. */
 	int set_attr(const core_attr_t & attr);
 	/*! \details Executes a request to set the functionality of a pin.
@@ -122,7 +122,7 @@ public:
 
 	/*! \details Causes the device to sleep at the specified sleep level.
 	 */
-	int sleep(core_sleep_t level);
+	int sleep(u32 level);
 
 	/*! \details Resets the device. */
 	void reset();
@@ -132,9 +132,6 @@ public:
 	 */
 	void invoke_bootloader();
 
-
-	/*! \details Configures the clock output pin. */
-	int set_clkout(const core_clkout_t * clkout);
 
 #ifdef __MCU_ONLY__
 	int close();
@@ -146,4 +143,4 @@ private:
 
 };
 
-#endif /* STFY_APP_CORE_HPP_ */
+#endif /* SAPI_CORE_HPP_ */

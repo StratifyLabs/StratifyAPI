@@ -17,7 +17,7 @@ int DisplayDev::init(const char * name){
 			return -1;
 		}
 
-		if( ioctl(I_DISPLAY_GETATTR, &attr) < 0 ){
+		if( ioctl(I_DISPLAY_GETINFO, &attr) < 0 ){
 			return -1;
 		}
 

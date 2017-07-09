@@ -8,8 +8,8 @@ using namespace hal;
 
 Tmr::Tmr(port_t port) : Periph(CORE_PERIPH_TMR, port) {}
 
-int Tmr::get_attr(tmr_attr_t & attr){
-	return ioctl(I_TMR_GETATTR, &attr);
+int Tmr::get_info(tmr_attr_t & attr){
+	return ioctl(I_TMR_GETINFO, &attr);
 }
 
 int Tmr::set_attr(const tmr_attr_t & attr){

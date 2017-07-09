@@ -3,8 +3,8 @@
 #ifndef KERNEL_HPP_
 #define KERNEL_HPP_
 
-#include <iface/dev/sys.h>
-#include <iface/link.h>
+#include <sos/dev/sys.h>
+#include <sos/link/link.h>
 #include "../hal/Dev.hpp"
 
 
@@ -136,8 +136,8 @@ public:
 	 * \sa open()
 	 *
 	 */
-	int get_attr(sys_attr_t & attr);
-	inline int attr(sys_attr_t * v){ return get_attr(*v); }
+	int get_info(sys_attr_t & attr);
+	inline int attr(sys_attr_t * v){ return get_info(*v); }
 
 
 	/*! \details Loads the kernel's task attributes.

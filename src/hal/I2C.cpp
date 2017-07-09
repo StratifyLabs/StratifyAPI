@@ -10,28 +10,24 @@ using namespace hal;
 
 I2C::I2C(port_t port) : Periph(CORE_PERIPH_I2C, port){}
 
-int I2C::get_attr(i2c_attr_t & attr) const {
-	return ioctl(I_I2C_GETATTR, &attr);
+int I2C::prepare(u8 slave_addr, u32 o_flags) const {
+	i2c_attr_t attr;
+	attr.o_flags = o_flags;
+	attr.slave_addr[0].addr8 = slave_addr;
+	return set_attr(attr);
 }
 
-int I2C::set_attr(const i2c_attr_t & attr) const {
-	return ioctl(I_I2C_SETATTR, &attr);
-}
-
-int I2C::setup(const i2c_reqattr_t & setup) const {
-	return ioctl(I_I2C_SETUP, &setup);
-}
-
-int I2C::setup_slave(const i2c_slave_setup_t & setup) const {
-	return ioctl(I_I2C_SLAVE_SETUP, &setup);
-}
 
 int I2C::reset() const {
-	return ioctl(I_I2C_RESET);
+	i2c_attr_t attr;
+	attr.o_flags = I2C::FLAG_RESET;
+	return set_attr(attr);
 }
 
 int I2C::get_err() const {
-	return ioctl(I_I2C_GETERR);
+	i2c_info_t info;
+	get_info(info);
+	return info.err;
 }
 
 

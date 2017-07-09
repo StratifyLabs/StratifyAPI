@@ -7,8 +7,8 @@ using namespace hal;
 Spi::Spi(port_t port) : Periph(CORE_PERIPH_SPI, port){}
 
 
-int Spi::get_attr(spi_attr_t & attr){
-	return ioctl(I_SPI_GETATTR, &attr);
+int Spi::get_info(spi_attr_t & attr){
+	return ioctl(I_SPI_GETINFO, &attr);
 }
 
 int Spi::set_attr(const spi_attr_t & attr){

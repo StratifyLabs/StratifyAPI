@@ -6,8 +6,8 @@ using namespace hal;
 
 Usb::Usb(port_t port) : Periph(CORE_PERIPH_USB, port){}
 
-int Usb::get_attr(usb_attr_t & attr){
-	return ioctl(I_USB_GETATTR, &attr);
+int Usb::get_info(usb_attr_t & attr){
+	return ioctl(I_USB_GETINFO, &attr);
 }
 
 int Usb::set_attr(const usb_attr_t & attr){

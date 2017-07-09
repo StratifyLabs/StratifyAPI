@@ -3,7 +3,7 @@
 #if !defined __link
 
 #include <sys/time.h>
-#include <iface/dev/rtc.h>
+#include <sos/dev/rtc.h>
 #include "hal.hpp"
 #include "sys/Time.hpp"
 

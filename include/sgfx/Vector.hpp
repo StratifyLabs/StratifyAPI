@@ -75,8 +75,8 @@ public:
 	static sg_vector_primitive_t circle(Point p, sg_size_t r){
 		return circle(p.x(), p.y(), r);
 	}
-	static sg_vector_primitive_t arc(sg_int_t x, sg_int_t y, sg_size_t rx, sg_size_t ry, i16 start, i16 stop, i16 rotation = 0);
-	static sg_vector_primitive_t arc(Point p, sg_size_t r, i16 start, i16 stop, i16 rotation = 0){
+	static sg_vector_primitive_t arc(sg_int_t x, sg_int_t y, sg_size_t rx, sg_size_t ry, s16 start, s16 stop, s16 rotation = 0);
+	static sg_vector_primitive_t arc(Point p, sg_size_t r, s16 start, s16 stop, s16 rotation = 0){
 		return arc(p.x(), p.y(), r, start, stop, rotation);
 	}
 

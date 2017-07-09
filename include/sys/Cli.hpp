@@ -94,7 +94,7 @@ public:
 	var::String at(u16 value) const;
 
 	/*! \details Returns the argument offset by value as a pio_t value. */
-	pio_t pio_at(u16 value) const;
+	mcu_pin_t pin_at(u16 value) const;
 
 	/*! \details Return the argument offset by value as an int value */
 	int value_at(u16 value) const;
@@ -156,7 +156,7 @@ public:
 	 *
 	 *
 	 */
-	pio_t get_option_pio(const char * option) const;
+	mcu_pin_t get_option_pin(const char * option) const;
 
 	/*! \details Returns the number of arguments. */
 	int count() const { return m_argc; }

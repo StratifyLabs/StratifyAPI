@@ -1,7 +1,8 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#include <stratify/stratify.h>
-#include <iface/link.h>
+#include <sos/stratify.h>
+
+#include <sos/link/link.h>
 
 #include "hal.hpp"
 #include "sys/Kernel.hpp"
@@ -83,8 +84,8 @@ int Kernel::get_board_config(stratify_board_config_t & config){
 }
 #endif
 
-int Kernel::get_attr(sys_attr_t & attr){
-	return ioctl(I_SYS_GETATTR, &attr);
+int Kernel::get_info(sys_attr_t & attr){
+	return ioctl(I_SYS_GETINFO, &attr);
 }
 
 int Kernel::get_taskattr(sys_taskattr_t & attr, int task){

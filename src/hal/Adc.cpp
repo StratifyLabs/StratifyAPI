@@ -9,8 +9,8 @@ using namespace hal;
 
 Adc::Adc(port_t port) : Periph(CORE_PERIPH_ADC, port){}
 
-int Adc::get_attr(adc_attr_t & attr){
-	return ioctl(I_ADC_GETATTR, &attr);
+int Adc::get_info(adc_attr_t & attr){
+	return ioctl(I_ADC_GETINFO, &attr);
 }
 
 int Adc::set_attr(const adc_attr_t & attr){

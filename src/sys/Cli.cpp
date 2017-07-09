@@ -58,8 +58,8 @@ int Cli::get_option_value(const char * option) const {
 	return arg.atoi();
 }
 
-pio_t Cli::get_option_pio(const char * option) const {
-	pio_t pio;
+mcu_pin_t Cli::get_option_pio(const char * option) const {
+	mcu_pin_t pio;
 	Token arg;
 	arg.assign(get_option_argument(option).c_str());
 	arg.parse(".");
@@ -75,8 +75,8 @@ pio_t Cli::get_option_pio(const char * option) const {
 	return pio;
 }
 
-pio_t Cli::pio_at(u16 value) const {
-	pio_t pio;
+mcu_pin_t Cli::pin_at(u16 value) const {
+	mcu_pin_t pio;
 	Token arg;
 
 	arg.assign( at(value).c_str() );

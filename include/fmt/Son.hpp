@@ -9,7 +9,7 @@
 #include <stfy/son.h>
 
 #if defined __link
-#include <iface/link.h>
+#include <sos/link/link.h>
 #else
 #include "../var/String.hpp"
 #endif

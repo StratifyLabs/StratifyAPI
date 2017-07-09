@@ -1,9 +1,9 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#ifndef STFY_APP_I2C_HPP_
-#define STFY_APP_I2C_HPP_
+#ifndef SAPI_I2C_HPP_
+#define SAPI_I2C_HPP_
 
-#include <iface/dev/i2c.h>
+#include <sos/dev/i2c.h>
 #include "Periph.hpp"
 
 
@@ -40,67 +40,72 @@ namespace hal {
  * \endcode
  *
  */
-class I2C : public Periph {
+class I2C : public Periph<i2c_info_t, i2c_attr_t, 'i'> {
 public:
 	/*! \details Constructs an I2C object using the specified port. */
 	I2C(port_t port);
 
 	enum {
-		SETUP_NORMAL_TRANSFER /*! Normal I2C transfer writes 8-bit pointer then reads or writes data */ = I2C_TRANSFER_NORMAL,
-		SETUP_NORMAL_16_TRANSFER /*! Normal I2C transfer writes 16-bit pointer then reads or writes data */ = I2C_TRANSFER_NORMAL_16,
-		SETUP_DATA_ONLY_TRANSFER /*! I2C transfer that does not write a pointer (just reads or writes data) */ = I2C_TRANSFER_DATA_ONLY,
-		SETUP_WRITE_PTR_TRANSFER /*! I2C transfer that only writes the pointer (no data is transferred) */ = I2C_TRANSFER_WRITE_PTR
+		ERROR_NONE /*! No errors */ = I2C_ERROR_NONE,
+		ERROR_START /*! Error while starting */ = I2C_ERROR_START,
+		ERROR_WRITE /*! Error while writing */ = I2C_ERROR_WRITE,
+		ERROR_ACK /*! Ack Error (most common error for a mis-wired hardware) */ = I2C_ERROR_ACK,
+		ERROR_STOP /*! Error while stopping */ = I2C_ERROR_STOP,
+		ERROR_MASTER_ACK /*! The master could not create an ACK */ = I2C_ERROR_MASTER_ACK,
+		ERROR_BUS_BUSY /*! The Bus is busy (happens with multi-masters on bus) */ = I2C_ERROR_BUS_BUSY,
+		ERROR_LONG_SLEW = I2C_ERROR_LONG_SLEW,
+		ERROR_ARBITRATION_LOST /*! Arbitration lost on multi-master bus */ = I2C_ERROR_ARBITRATION_LOST
 	};
 
 	enum {
-		MASTER /*! I2C acts as master */ = I2C_ATTR_FLAG_MASTER,
-		SLAVE /*! I2C acts as slave */ = I2C_ATTR_FLAG_SLAVE,
-		SLAVE_ACK_GENERAL_CALL /*! I2C slave will ack the general call */ = I2C_ATTR_FLAG_SLAVE_ACK_GENERAL_CALL,
-		PULLUP /*! Enable internal resistor pullups where available */ = I2C_ATTR_FLAG_PULLUP
+		FLAG_NONE = I2C_FLAG_NONE,
+		FLAG_SET_MASTER /*! Operate as a master I2C bus */ = I2C_FLAG_SET_MASTER,
+		FLAG_SET_SLAVE/*! Operate as a slave (ignored if master is set) */ = I2C_FLAG_SET_SLAVE,
+		FLAG_IS_SLAVE_ACK_GENERAL_CALL /*! If slave operation, ack general call */ = I2C_FLAG_IS_SLAVE_ACK_GENERAL_CALL,
+		FLAG_IS_PULLUP /*! Enable internal pullups if available (ignore otherwise) */ = I2C_FLAG_IS_PULLUP,
+		FLAG_PREPARE_PTR_DATA /*! This prepares the driver to write the ptr then read/write data */ = I2C_FLAG_PREPARE_PTR_DATA,
+		FLAG_PREPARE_PTR_16_DATA /*! This prepares the driver to write a 16-bit ptr then read/write data */ = I2C_FLAG_PREPARE_PTR_16_DATA,
+		FLAG_PREPARE_PTR /*! This will write the ptr value only without writing or reading any data. */ = I2C_FLAG_PREPARE_PTR,
+		FLAG_PREPARE_DATA /*! This will read/write data without first writing the pointer information */ = I2C_FLAG_PREPARE_DATA,
+		FLAG_IS_SLAVE_ADDR0 /*! If hardware supports multiple slave addrs, use the first slot (default) */ = I2C_FLAG_IS_SLAVE_ADDR0,
+		FLAG_IS_SLAVE_ADDR1 /*! If hardware supports multiple slave addrs, use the second slot */ = I2C_FLAG_IS_SLAVE_ADDR1,
+		FLAG_IS_SLAVE_ADDR2 /*! If hardware supports multiple slave addrs, use the third slot */ = I2C_FLAG_IS_SLAVE_ADDR2,
+		FLAG_IS_SLAVE_ADDR3 /*! If hardware supports multiple slave addrs, use the fourth slot */ = I2C_FLAG_IS_SLAVE_ADDR3,
+		FLAG_IS_SLAVE_PTR_8 /*! Use a 8-bit address pointer when accessing data (default) */ = I2C_FLAG_IS_SLAVE_PTR_8,
+		FLAG_IS_SLAVE_PTR_16 /*! Use a 16-bit address pointer when accessing data (set automatically is size > 255) */ = I2C_FLAG_IS_SLAVE_PTR_16,
+		FLAG_RESET /*! Reset the state of the I2C */ = I2C_FLAG_RESET,
+		FLAG_STRETCH_CLOCK = I2C_FLAG_STRETCH_CLOCK,
 	};
 
-	/*! \details Get the I2C attributes */
-	int get_attr(i2c_attr_t & attr) const;
-	/*! \details Set the I2C attributes */
-	int set_attr(const i2c_attr_t & attr) const;
-	/*! \details Setup an I2C transaction */
-	int setup(const i2c_setup_t & setup) const;
+
+	/*! \details Prepares an I2C transaction.
+	 *
+	 * @param slave_addr The slave address for the transaction
+	 * @param o_flags The flags for the transaction
+	 * @return Zero on success
+	 *
+	 * The \a o_flags can be:
+	 * - FLAG_PREPARE_PTR_DATA (default)
+	 * - FLAG_PREPARE_PTR_16_DATA
+	 * - FLAG_PREPARE_PTR
+	 * - FLAG_PREPARE_DATA
+	 *
+	 */
+	int prepare(u8 slave_addr, u32 o_flags = FLAG_PREPARE_PTR_DATA) const;
 
 	/*! \details Reset the I2C bus state */
 	int reset() const;
-
-	/*! \details Setup the bus to listen for transactions as a slave */
-	int setup_slave(const i2c_slave_setup_t & setup) const;
-
-	/*! \details Setup the bus to listen for transactions as a slave */
-	int setup_slave(u8 addr, char * data, u16 size, u8 o_flags = 0){
-		i2c_slave_setup_t setup;
-		setup.addr = addr;
-		setup.data = data;
-		setup.size = size;
-		setup.o_flags = o_flags;
-		return setup_slave(setup);
-	}
 
 	/*! \details Get the last error */
 	int get_err() const;
 	int err() const { return get_err(); }
 
-
-	/*! \details Sets up an I2C transaction using the slave addr and type */
-	int setup(u16 slave_addr, u8 type = SETUP_NORMAL_TRANSFER) const {
-		i2c_reqattr_t req;
-		req.slave_addr = slave_addr;
-		req.transfer = type;
-		return setup(req);
-	}
-
-	/*! \details Sets the attributes using specified bitrate and pin assignment. */
-	int set_attr(u32 bitrate = 100000, u8 pin_assign = 0, u16 o_flags = MASTER) const {
+	int set_attr(u32 o_flags, mcu_pin_t sda, mcu_pin_t scl, u32 freq){
 		i2c_attr_t attr;
-		attr.bitrate = bitrate;
-		attr.pin_assign = pin_assign;
 		attr.o_flags = o_flags;
+		attr.freq = freq;
+		attr.pin_assignment[0] = sda;
+		attr.pin_assignment[1] = scl;
 		return set_attr(attr);
 	}
 
@@ -112,11 +117,11 @@ public:
 	 * \endcode
 	 *
 	 */
-	int init(int bitrate = 100000, int pin_assign = 0, u16 o_flags = MASTER){
+	int init(u32 o_flags, mcu_pin_t sda, mcu_pin_t scl, u32 freq){
 		if( open() < 0 ){
 			return -1;
 		}
-		return set_attr(bitrate, pin_assign);
+		return set_attr(o_flags, sda, scl, freq);
 	}
 
 
@@ -148,4 +153,4 @@ private:
 };
 
 
-#endif /* STFY_APP_I2C_HPP_ */
+#endif /* SAPI_I2C_HPP_ */

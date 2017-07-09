@@ -27,7 +27,7 @@ public:
 	IconAttr(){ set_attr((const sg_vector_icon_t*)0, sgfx::Pen()); }
 
 	/*! \details Construct by setting the graphic, thickness, and rotation */
-	IconAttr(const sg_vector_icon_t * icon, u8 thickness = 3, i16 rotation = 0){
+	IconAttr(const sg_vector_icon_t * icon, u8 thickness = 3, s16 rotation = 0){
 		set_attr(icon, thickness, rotation);
 	}
 
@@ -45,12 +45,12 @@ public:
 	};
 
 	/*! \details Set the graphic, thickness, and rotation */
-	void set_attr(const sg_vector_icon_t * icon, const sgfx::Pen & pen, i16 rotation = 0){
+	void set_attr(const sg_vector_icon_t * icon, const sgfx::Pen & pen, s16 rotation = 0){
 		m_icon = icon; m_rotation = rotation; m_pen = pen;
 	}
 
 	/*! \details Set the graphic, thickness, and rotation */
-	void set_attr(int system_icon, const sgfx::Pen & pen, i16 rotation = 0){
+	void set_attr(int system_icon, const sgfx::Pen & pen, s16 rotation = 0){
 		m_icon = get_system_icon(system_icon); m_rotation = rotation; m_pen = pen;
 	}
 
@@ -61,7 +61,7 @@ public:
 	void set_icon(const sg_vector_icon_t * icon){ m_icon = icon; }
 
 	/*! \details Set the rotation */
-	void set_rotation(i16 rotation){ m_rotation = rotation; }
+	void set_rotation(s16 rotation){ m_rotation = rotation; }
 
 	/*! \details Returns the graphic */
 	const sg_vector_icon_t & icon() const { return *m_icon; }

@@ -10,10 +10,10 @@
 
 
 #include <mcu/types.h>
-#include <iface/link.h>
+#include <sos/link/link.h>
 
 #if !defined __link
-#include <iface/stratify_link_transport_usb.h>
+#include <sos/stratify_link_transport_usb.h>
 #endif
 
 #include "../var/String.hpp"

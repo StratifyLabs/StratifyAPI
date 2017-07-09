@@ -1,9 +1,9 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#ifndef STFY_APP_USB_HPP_
-#define STFY_APP_USB_HPP_
+#ifndef SAPI_USB_HPP_
+#define SAPI_USB_HPP_
 
-#include <iface/dev/usb.h>
+#include <sos/dev/usb.h>
 #include "Periph.hpp"
 
 namespace hal {
@@ -11,12 +11,10 @@ namespace hal {
 /*! \brief USB Class
  * \details This class implements a USB transceiver.
  */
-class Usb : public Periph {
+class Usb : public Periph<usb_info_t, usb_attr_t, 'u'> {
 public:
 	Usb(port_t port);
 
-	int get_attr(usb_attr_t & attr);
-	int set_attr(const usb_attr_t & attr);
 	int reset();
 	int attach();
 	int configure();
@@ -45,4 +43,4 @@ private:
 
 };
 
-#endif /* STFY_APP_USB_HPP_ */
+#endif /* SAPI_USB_HPP_ */
