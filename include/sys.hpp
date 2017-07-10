@@ -17,9 +17,6 @@ namespace sys {};
 #include "sys/Sched.hpp"
 #include "sys/Timer.hpp"
 #include "sys/Time.hpp"
-#include "sys/Dbug.hpp"
-#include "sys/DbugStdout.hpp"
-#include "sys/DbugUart.hpp"
 #include "sys/Cli.hpp"
 #endif
 

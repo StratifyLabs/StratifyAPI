@@ -20,22 +20,19 @@ int Core::set_pin_function(const core_pinfunc_t * req){
 	return ioctl(I_CORE_SETPINFUNC, req);
 }
 
-int Core::sleep(core_sleep_t level){
-	return ioctl(I_CORE_SLEEP, level);
-}
-
 int Core::get_mcu_board_config(mcu_board_config_t & config){
 	return ioctl(I_CORE_GETMCUBOARDCONFIG, &config);
 }
 
 void Core::reset(){
-	ioctl(I_CORE_RESET);
+	core_attr_t attr;
+	attr.o_flags = CORE_FLAG_EXEC_RESET;
+	set_attr(attr);
 }
 
 void Core::invoke_bootloader(){
-	ioctl(I_CORE_INVOKEBOOTLOADER);
+	core_attr_t attr;
+	attr.o_flags = CORE_FLAG_EXEC_INVOKE_BOOTLOADER;
+	set_attr(attr);
 }
 
-int Core::set_clkout(const core_clkout_t * clkout){
-	return ioctl(I_CORE_SETCLKOUT, clkout);
-}

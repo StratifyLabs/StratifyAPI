@@ -13,7 +13,7 @@ I2C::I2C(port_t port) : Periph(CORE_PERIPH_I2C, port){}
 int I2C::prepare(u8 slave_addr, u32 o_flags) const {
 	i2c_attr_t attr;
 	attr.o_flags = o_flags;
-	attr.slave_addr[0].addr8 = slave_addr;
+	attr.slave_addr[0].addr8[0] = slave_addr;
 	return set_attr(attr);
 }
 

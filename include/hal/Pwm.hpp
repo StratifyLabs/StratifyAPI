@@ -37,30 +37,33 @@ class Pwm : public Periph<pwm_info_t, pwm_attr_t, 'p'> {
 public:
 	Pwm(port_t port);
 
+	using Periph::set_attr;
+
 	enum {
 		FLAG_IS_ACTIVE_HIGH = PWM_FLAG_IS_ACTIVE_HIGH,
 		FLAG_IS_ACTIVE_LOW = PWM_FLAG_IS_ACTIVE_LOW
+	};
+
+	int set_channel(u32 loc, u32 value) const {
+		return Periph::set_channel(loc, value, I_PWM_SET);
 	}
 
-	int set_channel(u32 loc, u32 value){
-		return set_channel(loc, value, I_PWM_SET);
-	}
-
-	int set_channel(const mcu_channel_t & channel){
-		return set_channel(channel, I_PWM_SET);
+	int set_channel(const mcu_channel_t & channel) const {
+		return Periph::set_channel(channel, I_PWM_SET);
 	}
 
 
-	int set_attr(u32 o_flags, mcu_pin_t channel0, u32 freq, u32 top, mcu_pin_t channel1 = {0xff, 0xff}){
+	int set_attr(u32 o_flags, mcu_pin_t channel0, u32 freq, u32 top, mcu_pin_t channel1) const {
 		pwm_attr_t attr;
 		attr.o_flags = o_flags;
 		memset(attr.pin_assignment, 0xff, PWM_PIN_ASSIGNMENT_COUNT*sizeof(mcu_pin_t));
 		attr.pin_assignment[0] = channel0;
 		attr.freq = freq;
 		attr.top = top;
+		return set_attr(attr);
 	}
 
-	int init(u32 o_flags, mcu_pin_t channel0, u32 freq, u32 top, mcu_pin_t channel1 = {0xff, 0xff}){
+	int init(u32 o_flags, mcu_pin_t channel0, u32 freq, u32 top, mcu_pin_t channel1){
 
 		if( open() < 0 ){
 			return -1;

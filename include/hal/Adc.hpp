@@ -37,15 +37,15 @@ public:
 	};
 
 
-	int set_attr(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1 = {0xff, 0xff}){
+	int set_attr(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1) const {
 		adc_attr_t attr;
 		attr.pin_assignment[0] = channel0;
 		attr.pin_assignment[1] = channel1;
-		attr.pin_assignment[1] = {0xff, 0xff};
-		attr.pin_assignment[1] = {0xff, 0xff};
+		attr.pin_assignment[2] = mcu_invalid_pin();
+		attr.pin_assignment[3] = mcu_invalid_pin();
 		attr.o_flags = o_flags;
 		attr.freq = freq;
-		return set_attr(attr);
+		return Periph::set_attr(attr);
 	}
 
 
@@ -57,11 +57,11 @@ public:
 	 * @return Zero on success
 	 *
 	 */
-	int init(u16 enabled_channels, u32 freq = ADC_MAX_FREQ, u8 pin_assign = 0){
+	int init(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1){
 		if( open() < 0 ){
 			return -1;
 		}
-		return set_attr(enabled_channels, freq, pin_assign);
+		return set_attr(o_flags, channel0, freq, channel1);
 	}
 
 

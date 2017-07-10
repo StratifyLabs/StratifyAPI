@@ -58,7 +58,7 @@ int Cli::get_option_value(const char * option) const {
 	return arg.atoi();
 }
 
-mcu_pin_t Cli::get_option_pio(const char * option) const {
+mcu_pin_t Cli::get_option_pin(const char * option) const {
 	mcu_pin_t pio;
 	Token arg;
 	arg.assign(get_option_argument(option).c_str());

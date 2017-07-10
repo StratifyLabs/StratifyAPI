@@ -44,7 +44,7 @@ public:
 		attr.pin_assignment[2] = sck;
 		attr.pin_assignment[3] = cs;
 		attr.width = width;
-		return set_attr(attr);
+		return Periph::set_attr(attr);
 	}
 
 	/*! \details initialize the SPI port */

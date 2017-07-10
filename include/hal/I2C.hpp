@@ -100,6 +100,8 @@ public:
 	int get_err() const;
 	int err() const { return get_err(); }
 
+	using Periph::set_attr;
+
 	int set_attr(u32 o_flags, mcu_pin_t sda, mcu_pin_t scl, u32 freq){
 		i2c_attr_t attr;
 		attr.o_flags = o_flags;

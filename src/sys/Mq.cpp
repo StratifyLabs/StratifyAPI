@@ -47,6 +47,7 @@ int Mq::notify(const struct sigevent *notification){
 int Mq::get_attr(struct mq_attr & mqstat){
 	return mq_getattr(m_handle, &mqstat);
 }
+
 MqAttr Mq::get_attr(){
 	MqAttr a;
 	mq_getattr(m_handle, &(a.m_attr));

@@ -76,14 +76,15 @@ public:
 	int flush();
 
 
+	using Periph::set_attr;
 
 	int set_attr(u32 o_flags, mcu_pin_t tx, mcu_pin_t rx, u32 freq, u32 width = 8) const {
 		uart_attr_t attr;
 		attr.o_flags = o_flags;
 		attr.pin_assignment[0] = tx;
 		attr.pin_assignment[1] = rx;
-		attr.pin_assignment[3] = {0xff, 0xff};
-		attr.pin_assignment[4] = {0xff, 0xff};
+		attr.pin_assignment[3] = mcu_invalid_pin();
+		attr.pin_assignment[4] = mcu_invalid_pin();
 		attr.freq = freq;
 		attr.width = width;
 		return set_attr(attr);

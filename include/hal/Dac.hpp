@@ -47,6 +47,8 @@ class Dac : public Periph<dac_info_t, dac_attr_t, 'd'> {
 public:
 	Dac(port_t port);
 
+	using Periph::set_attr;
+
 	/*! \details Sets the DAC attributes using specified values.
 	 *
 	 * @param enabled_channels Enabled channels as a bitmask
@@ -54,7 +56,7 @@ public:
 	 * @param pin_assign The output pin assignment
 	 *
 	 */
-	int set_attr(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1){
+	int set_attr(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1) const {
 		dac_attr_t attr;
 		memset(attr.pin_assignment, 0xff, DAC_PIN_ASSIGNMENT_COUNT*sizeof(mcu_pin_t));
 		attr.o_flags = o_flags;
@@ -64,6 +66,7 @@ public:
 		return set_attr(attr);
 	}
 
+
 	/*! \details Opens the DAC and sets the attributes using specified values.
 	 *
 	 * @param enabled_channels Enabled channels as a bitmask
@@ -71,12 +74,12 @@ public:
 	 * @param pin_assign The output pin assignment
 	 *
 	 */
-	int init(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1 = {0xff,0xff}){
+	int init(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1){
 
 		if( open() < 0 ){
 			return -1;
 		}
-		return set_attr(o_flags, freq, channel0, freq, channel1);
+		return set_attr(o_flags, channel0, freq, channel1);
 	}
 
 	/*! \details Sets the value of the DAC.
@@ -85,12 +88,12 @@ public:
 	 * @param channel The DAC channel
 	 * @return Zero on success
 	 */
-	int set_channel(u32 loc, u32 value){
-		return set_channel(loc, value, I_DAC_SET);
+	int set_channel(u32 loc, u32 value) const {
+		return Periph::set_channel(loc, value, I_DAC_SET);
 	}
 
-	u32 get_channel(u32 loc){
-		return get_channel(loc, I_DAC_GET);
+	u32 get_channel(u32 loc) const {
+		return Periph::get_channel(loc, I_DAC_GET);
 	}
 
 

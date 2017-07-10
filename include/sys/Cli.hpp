@@ -93,7 +93,7 @@ public:
 	/*! \details Returns the argument offset by value as a var::String. */
 	var::String at(u16 value) const;
 
-	/*! \details Returns the argument offset by value as a pio_t value. */
+	/*! \details Returns the argument offset by value as a mcu_pin_t value. */
 	mcu_pin_t pin_at(u16 value) const;
 
 	/*! \details Return the argument offset by value as an int value */
@@ -152,7 +152,7 @@ public:
 	 *
 	 * > program -i 2.1
 	 *
-	 * `get_option_pio("-i")` will return a pio_t structure with port = 2 and pin = 1.
+	 * `get_option_pio("-i")` will return a mcu_pin_t structure with port = 2 and pin = 1.
 	 *
 	 *
 	 */

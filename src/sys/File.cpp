@@ -1,7 +1,8 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include <stdio.h>
+#include <cstdio>
+#include <cstring>
 #include "sys/File.hpp"
 #include "sys/Timer.hpp"
 using namespace sys;
@@ -67,7 +68,7 @@ int File::create(const char * name, bool overwrite, int perms){
 	return open(name, access, perms);
 }
 
-ssize_t File::size() const {
+u32 File::size() const {
 	struct link_stat st;
 #if defined __link
 	if ( link_fstat(driver(), m_fd, &st) < 0 ){
@@ -83,7 +84,6 @@ ssize_t File::size() const {
 }
 
 
-/*! \brief Get file stat (pointer) */
 int File::stat(const char * name, struct link_stat * st, link_transport_mdriver_t * driver){
 #if defined __link
 	return link_stat(driver, name, st);
@@ -92,8 +92,7 @@ int File::stat(const char * name, struct link_stat * st, link_transport_mdriver_
 #endif
 }
 
-/*! \brief Get file stat (reference) */
-ssize_t File::size(const char * name, link_transport_mdriver_t * driver){
+u32 File::size(const char * name, link_transport_mdriver_t * driver){
 	struct link_stat st;
 	if( stat(name, &st, driver) < 0 ){
 		return (ssize_t)-1;
@@ -238,7 +237,7 @@ char * File::gets(char * s, int n, char term) const {
 const char * File::name(const char * path){
 	int len;
 	int i;
-	len = strlen(path);
+	len = strnlen(path, LINK_PATH_MAX);
 	for(i = len; i >= 0; i--){
 		if( path[i] == '/' ){
 			return &(path[i+1]);

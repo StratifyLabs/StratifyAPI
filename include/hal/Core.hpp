@@ -120,10 +120,6 @@ public:
 	 */
 	int get_mcu_board_config(mcu_board_config_t & config);
 
-	/*! \details Causes the device to sleep at the specified sleep level.
-	 */
-	int sleep(u32 level);
-
 	/*! \details Resets the device. */
 	void reset();
 
@@ -131,11 +127,6 @@ public:
 	 * normal reset will occur.
 	 */
 	void invoke_bootloader();
-
-
-#ifdef __MCU_ONLY__
-	int close();
-#endif
 
 private:
 

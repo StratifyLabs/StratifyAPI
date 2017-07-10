@@ -9,7 +9,6 @@ ProgressBar::ProgressBar(){}
 void ProgressBar::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
 	int tmp;
-	int i;
 
 	sg_point_t p = attr.p();
 	Dim d = attr.d();
@@ -29,9 +28,8 @@ void ProgressBar::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw bar
 	attr.bitmap().draw_rectangle(p, d);
 
-	//clear un-progressed section
-	for(i=2; i < d.h() - 2; i++){
-		//attr.bitmap().clr_hline(x_progress, end.x-3, p.y+i);
-	}
+	//clear un-progress section
+	attr.bitmap().clear_rectangle(sg_point(x_progress, p.y + 2), sg_dim(end.x-3 - x_progress, d.h()-4));
+
 
 }

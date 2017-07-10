@@ -50,14 +50,9 @@ static const char * const periph_name[CORE_PERIPH_TOTAL] = {
 		"trace" /* CORE_PERIPH_TRACE Trace data */
 };
 
-u16 Periph::m_fd_map[LINK_OPEN_MAX];
+u16 PeriphParent::m_fd_map[LINK_OPEN_MAX];
 
-Periph::Periph(core_periph_t periph, port_t port) {
-	m_periph_port = (periph << 8) | port;
-	m_fd = lookup_fileno();
-}
-
-int Periph::lookup_fileno() const {
+int PeriphParent::lookup_fileno() const {
 	int i;
 	for(i=0; i < LINK_OPEN_MAX; i++){
 		if( m_fd_map[i] == m_periph_port ){
@@ -67,14 +62,14 @@ int Periph::lookup_fileno() const {
 	return -1;
 }
 
-void Periph::update_fileno() const {
+void PeriphParent::update_fileno() const {
 	if( (m_fd >= 0) && (m_fd_map[m_fd] == 0) ){ //fd is no longer valid
 		m_fd = -1; //kill the fileno
 	}
 }
 
 
-int Periph::open(const char * name, int flags){
+int PeriphParent::open(const char * name, int flags){
 	//check map
 	int fileno;
 	fileno = lookup_fileno();
@@ -92,7 +87,7 @@ int Periph::open(const char * name, int flags){
 	return 0;
 }
 
-int Periph::open(int flags){
+int PeriphParent::open(int flags){
 	char buffer[LINK_NAME_MAX];
 	int len;
 	const char * name;
@@ -111,7 +106,7 @@ int Periph::open(int flags){
 	return open(buffer, flags);
 }
 
-int Periph::close(){
+int PeriphParent::close(){
 	int ret = 0;
 	update_fileno();
 	if( m_fd >= 0 ){
@@ -122,39 +117,39 @@ int Periph::close(){
 	return ret;
 }
 
-int Periph::read(void * buf, int nbyte) const {
+int PeriphParent::read(void * buf, int nbyte) const {
 	update_fileno();
 	return File::read(buf, nbyte);
 }
 
-int Periph::write(const void * buf, int nbyte) const {
+int PeriphParent::write(const void * buf, int nbyte) const {
 	update_fileno();
 	return File::write(buf, nbyte);
 }
 
 #ifndef __link
-int Periph::read(Aio & aio) const {
+int PeriphParent::read(Aio & aio) const {
 	update_fileno();
 	return Dev::read(aio);
 }
 
-int Periph::write(Aio & aio) const {
+int PeriphParent::write(Aio & aio) const {
 	update_fileno();
 	return Dev::write(aio);
 }
 #endif
 
-int Periph::ioctl(int req, void * arg) const {
+int PeriphParent::ioctl(int req, void * arg) const {
 	update_fileno();
 	return Dev::ioctl(req, arg);
 }
 
-int Periph::seek(int loc, int whence) const {
+int PeriphParent::seek(int loc, int whence) const {
 	update_fileno();
 	return Dev::seek(loc, whence);
 }
 
-int Periph::fileno() const {
+int PeriphParent::fileno() const {
 	update_fileno();
 	return Dev::fileno();
 }

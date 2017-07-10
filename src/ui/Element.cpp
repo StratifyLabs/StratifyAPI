@@ -21,7 +21,7 @@ void Element::draw_scroll(const DrawingScaledAttr & attr,
 	p.y = p.y + selected*bar_size;
 	bar.w = d.w();
 	bar.h = bar_size;
-	//attr.b().clear(p, bar);
+	attr.b().clear_rectangle(p,bar);
 }
 
 Element * Element::handle_event(const Event & event, const DrawingAttr & attr){

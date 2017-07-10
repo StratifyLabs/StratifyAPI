@@ -109,7 +109,7 @@ public:
 	 *
 	 * @param path The path to the file
 	 */
-	static ssize_t size(const char * path, link_transport_mdriver_t * driver = 0);
+	static u32 size(const char * path, link_transport_mdriver_t * driver = 0);
 
 
 	/*! \details Open the specified file or device */
@@ -164,7 +164,7 @@ public:
 	int create(const char * path, bool overwrite = true, int perms = 0666);
 
 	/*! \details Returns the file size. */
-	ssize_t size() const;
+	u32 size() const;
 
 	/*! \details Returns the location of the cursor in the device or file */
 	int loc() const;
@@ -195,9 +195,6 @@ public:
 	 * @return Number of bytes successfully written or -1 with errno set
 	 */
 	int write(int loc, const void * buf, int nbyte) const;
-
-	/*! \details writes a string to the device */
-	int write(const char * s) const { return write(s, strlen(s)); }
 
 	/*! \details Read a line from the device or file */
 	int readline(char * buf, int nbyte, int timeout, char term) const;

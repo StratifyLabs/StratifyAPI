@@ -201,7 +201,7 @@ private:
 /*! \details String for file names */
 class StringName : public String {
 public:
-	StringName() : String(NAME_MAX){}
+	StringName() : String(LINK_NAME_MAX){}
 };
 
 /*! \details String for path names */

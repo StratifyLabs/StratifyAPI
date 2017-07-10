@@ -93,9 +93,9 @@ public:
 	};
 
 	/*! \details Turns the TMR on (start counting) */
-	int enable();
+	int enable() const;
 	/*! \details Turns the TMR off (stop counting) */
-	int disable();
+	int disable() const;
 
 	/*! \details Set the output compare attributes */
 	int set_output_channel(u32 loc, u32 value){
@@ -113,6 +113,10 @@ public:
 	u32 get_input_channel(u32 loc){
 		return get_channel(loc, I_TMR_GETIC);
 	}
+
+	u32 get_value() const;
+
+	int set_value(u32 value) const;
 
 
 private:

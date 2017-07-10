@@ -10,23 +10,23 @@ DisplayDev::DisplayDev(){}
 /*! \brief Pure virtual function to initialize the LCD */
 int DisplayDev::init(const char * name){
 	//open and populate attr
-	display_attr_t attr;
+	display_info_t info;
 
 	if( name != 0 ){
 		if ( Dev::open(name, READWRITE) < 0 ){
 			return -1;
 		}
 
-		if( ioctl(I_DISPLAY_GETINFO, &attr) < 0 ){
+		if( ioctl(I_DISPLAY_GETINFO, &info) < 0 ){
 			return -1;
 		}
 
-		set_data((sg_bmap_data_t*)attr.mem, attr.w, attr.h);
+		set_data((sg_bmap_data_t*)info.mem, info.w, info.h);
 
-		set_margin_left(attr.margin_left);
-		set_margin_right(attr.margin_right);
-		set_margin_top(attr.margin_top);
-		set_margin_bottom(attr.margin_bottom);
+		set_margin_left(info.margin_left);
+		set_margin_right(info.margin_right);
+		set_margin_top(info.margin_top);
+		set_margin_bottom(info.margin_bottom);
 
 		return 0;
 	}

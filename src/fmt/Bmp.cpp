@@ -1,5 +1,7 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
+#include <cstdlib>
+#include <cstring>
 #include "fmt/Bmp.hpp"
 #include "sys/Appfs.hpp"
 using namespace fmt;
@@ -127,11 +129,11 @@ int Bmp::seek_row(s32 y){
 	return seek(m_offset + calc_row_size() * y);
 }
 
-int Bmp::read_pixel(uint8_t * pixel, ssize_t pixel_size, bool mono, uint8_t thres){
+int Bmp::read_pixel(uint8_t * pixel, u32 pixel_size, bool mono, uint8_t thres){
 	u32 avg;
-	ssize_t i;
+	u32 i;
 
-	if( read(pixel, pixel_size) != pixel_size ){
+	if( read(pixel, pixel_size) != (int)pixel_size ){
 		return -1;
 	}
 

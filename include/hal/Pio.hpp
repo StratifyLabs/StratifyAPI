@@ -72,24 +72,29 @@ public:
 		FLAG_ASSIGN /*! Assign the pinmask value to the port */ = PIO_FLAG_ASSIGN
 	};
 
-	/*! \details Set the specified pin mask */
+	/*! \details Sets the specified pin mask */
 	int set_mask(u32 mask) const;
-	/*! \details Clear the specified mask */
+	/*! \details Clears the specified mask. */
 	int clear_mask(u32 mask) const;
 
 	int assign(u32 mask) const;
 
-	/*! \details Get the value of the port */
+	/*! \details Gets the value of the port. */
 	u32 get_value() const;
-	u32 value() const { return get_value(); }
 
-	/*! \details Set the value of the port */
+	/*! \details Sets the value of the port
+	 *
+	 * @param value The value to assign to the port
+	 *
+	 */
 	int set_value(unsigned int value);
 
-	int set_attr(u32 o_flags, u32 o_pinmask){
+	using Periph::set_attr;
+
+	int set_attr(u32 o_flags, u32 o_pinmask) const {
 		pio_attr_t attr;
-		attr.o_flags;
-		attr.o_pinmask;
+		attr.o_flags = o_flags;
+		attr.o_pinmask = o_pinmask;
 		return set_attr(attr);
 	}
 

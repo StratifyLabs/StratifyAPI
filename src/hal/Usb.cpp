@@ -6,19 +6,15 @@ using namespace hal;
 
 Usb::Usb(port_t port) : Periph(CORE_PERIPH_USB, port){}
 
-int Usb::get_info(usb_attr_t & attr){
-	return ioctl(I_USB_GETINFO, &attr);
-}
 
-int Usb::set_attr(const usb_attr_t & attr){
-	return ioctl(I_USB_SETATTR, &attr);
-}
 int Usb::reset(){
 	return ioctl(I_USB_RESET);
 }
+
 int Usb::attach(){
 	return ioctl(I_USB_ATTACH);
 }
+
 int Usb::configure(){
 	return ioctl(I_USB_CONFIGURE);
 }
