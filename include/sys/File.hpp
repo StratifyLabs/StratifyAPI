@@ -3,7 +3,7 @@
 #ifndef FILE_HPP_
 #define FILE_HPP_
 
-#include <sos/link/link.h>
+#include <sos/link.h>
 #include <fcntl.h>
 
 #ifndef __link

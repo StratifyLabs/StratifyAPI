@@ -56,8 +56,9 @@ public:
 	int set_attr(u32 o_flags, mcu_pin_t channel0, u32 freq, u32 top, mcu_pin_t channel1) const {
 		pwm_attr_t attr;
 		attr.o_flags = o_flags;
-		memset(attr.pin_assignment, 0xff, PWM_PIN_ASSIGNMENT_COUNT*sizeof(mcu_pin_t));
-		attr.pin_assignment[0] = channel0;
+		memset(&attr.pin_assignment, 0xff, MCU_PIN_ASSIGNMENT_COUNT(pwm_pin_assignment_t));
+		attr.pin_assignment.channel[0] = channel0;
+		attr.pin_assignment.channel[1] = channel1;
 		attr.freq = freq;
 		attr.top = top;
 		return set_attr(attr);

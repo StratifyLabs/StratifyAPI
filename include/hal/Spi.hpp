@@ -39,10 +39,10 @@ public:
 		spi_attr_t attr;
 		attr.o_flags = o_flags;
 		attr.freq = freq;
-		attr.pin_assignment[0] = miso;
-		attr.pin_assignment[1] = mosi;
-		attr.pin_assignment[2] = sck;
-		attr.pin_assignment[3] = cs;
+		attr.pin_assignment.miso = miso;
+		attr.pin_assignment.mosi = mosi;
+		attr.pin_assignment.sck = sck;
+		attr.pin_assignment.cs = cs;
 		attr.width = width;
 		return Periph::set_attr(attr);
 	}

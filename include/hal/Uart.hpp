@@ -65,13 +65,21 @@ public:
 		FLAG_IS_PARITY_EVEN /*! Indicates even parity */ = UART_FLAG_IS_PARITY_EVEN,
 	};
 
-	/*! \details Gets a single byte (if available from the UART).  Upon
+	/*! \details Reads a single byte (if available from the UART).  Upon
 	 * success, the byte is written to the value pointed to by \a c.
 	 *
 	 * \returns Zero on successfully reading a byte, -1 if no bytes are available.
 	 */
-	int get_byte(char & c);
-	int get_byte(char * c){ return get_byte(*c); }
+	int get(char & c);
+	int get_byte(char * c){ return get(*c); }
+
+	/*! \details Writes a single byte on the UART.
+	 *
+	 * @param c The character to write
+	 * @return Zero on success
+	 */
+	int put(char c);
+
 	/*! \details Flush the TX/RX buffers */
 	int flush();
 
@@ -81,10 +89,9 @@ public:
 	int set_attr(u32 o_flags, mcu_pin_t tx, mcu_pin_t rx, u32 freq, u32 width = 8) const {
 		uart_attr_t attr;
 		attr.o_flags = o_flags;
-		attr.pin_assignment[0] = tx;
-		attr.pin_assignment[1] = rx;
-		attr.pin_assignment[3] = mcu_invalid_pin();
-		attr.pin_assignment[4] = mcu_invalid_pin();
+		memset(&attr.pin_assignment, 0xff, MCU_PIN_ASSIGNMENT_COUNT(adc_pin_assignment_t));
+		attr.pin_assignment.tx = tx;
+		attr.pin_assignment.rx = rx;
 		attr.freq = freq;
 		attr.width = width;
 		return set_attr(attr);

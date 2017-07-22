@@ -1,7 +1,7 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 #include <errno.h>
-#include <sos/link/link.h>
+#include <sos/link.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>

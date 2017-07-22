@@ -1,8 +1,10 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#include <sos/stratify.h>
+#if !defined __link
+#include <sos/sos.h>
+#endif
 
-#include <sos/link/link.h>
+#include <sos/link.h>
 
 #include "hal.hpp"
 #include "sys/Kernel.hpp"
@@ -16,8 +18,9 @@ Kernel::Kernel() {
 int Kernel::launch(const char * path, char * exec_path, const char * args, int options, int ram_size, int (*update_progress)(int, int), char *const envp[]){
 #if defined __link
 	return -1;
-#endif
+#else
 	return ::launch(path, exec_path, args, options, ram_size, update_progress, envp);
+#endif
 }
 
 int Kernel::free_ram(const char * path, link_transport_mdriver_t * driver){
@@ -79,7 +82,7 @@ void Kernel::reset(){
 	core.reset();
 }
 
-int Kernel::get_board_config(stratify_board_config_t & config){
+int Kernel::get_board_config(sos_board_config_t & config){
 	return ioctl(I_SYS_GETBOARDCONFIG, &config);
 }
 #endif

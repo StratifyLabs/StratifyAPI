@@ -5,7 +5,7 @@
 
 #ifndef __link
 
-#include <sos/link/link.h>
+#include <sos/link.h>
 #include <mqueue.h>
 #include <fcntl.h>
 #include <cstring>

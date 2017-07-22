@@ -2,6 +2,7 @@
 #ifndef SAPI_CORE_HPP_
 #define SAPI_CORE_HPP_
 
+#include <mcu/mcu.h>
 #include <sos/dev/core.h>
 #include "Periph.hpp"
 

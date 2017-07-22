@@ -106,8 +106,8 @@ public:
 		i2c_attr_t attr;
 		attr.o_flags = o_flags;
 		attr.freq = freq;
-		attr.pin_assignment[0] = sda;
-		attr.pin_assignment[1] = scl;
+		attr.pin_assignment.sda = sda;
+		attr.pin_assignment.scl = scl;
 		return set_attr(attr);
 	}
 

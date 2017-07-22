@@ -4,7 +4,7 @@
 #define DIR_HPP_
 
 #ifdef __link
-#include <sos/link/link.h>
+#include <sos/link.h>
 #else
 #include <dirent.h>
 #endif

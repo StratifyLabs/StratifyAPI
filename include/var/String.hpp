@@ -4,7 +4,7 @@
 #define STRING_HPP_
 
 
-#include <sos/link/link.h>
+#include <sos/link.h>
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>

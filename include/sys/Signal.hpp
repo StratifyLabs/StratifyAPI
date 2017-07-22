@@ -7,7 +7,7 @@
 
 #include <pthread.h>
 #include <signal.h>
-#include <sos/stratify.h>
+#include <sos/sos.h>
 
 #include <mcu/mcu.h>
 

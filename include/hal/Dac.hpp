@@ -58,10 +58,10 @@ public:
 	 */
 	int set_attr(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1) const {
 		dac_attr_t attr;
-		memset(attr.pin_assignment, 0xff, DAC_PIN_ASSIGNMENT_COUNT*sizeof(mcu_pin_t));
+		memset(&attr.pin_assignment, 0xff, MCU_PIN_ASSIGNMENT_COUNT(dac_pin_assignment_t));
 		attr.o_flags = o_flags;
-		attr.pin_assignment[0] = channel0;
-		attr.pin_assignment[1] = channel1;
+		attr.pin_assignment.channel[0] = channel0;
+		attr.pin_assignment.channel[1] = channel1;
 		attr.freq = freq;
 		return set_attr(attr);
 	}

@@ -6,8 +6,12 @@ using namespace hal;
 
 Uart::Uart(port_t port) : Periph(CORE_PERIPH_UART, port) {}
 
-int Uart::get_byte(char & c){
-	return ioctl(I_UART_GETBYTE, &c);
+int Uart::get(char & c){
+	return ioctl(I_UART_GET, &c);
+}
+
+int Uart::put(char c){
+	return ioctl(I_UART_PUT, c);
 }
 
 int Uart::flush(){

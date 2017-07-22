@@ -3,12 +3,11 @@
 #ifndef PHY_PERIPH_HPP_
 #define PHY_PERIPH_HPP_
 
-#include <sos/link/link.h>
+#include <sos/link.h>
 #include <fcntl.h>
 #include <cstdlib>
 #include <cstring>
 #include <signal.h>
-#include <sos/stratify.h>
 
 
 #include "Dev.hpp"

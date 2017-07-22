@@ -4,7 +4,7 @@
 #define KERNEL_HPP_
 
 #include <sos/dev/sys.h>
-#include <sos/link/link.h>
+#include <sos/link.h>
 #include "../hal/Dev.hpp"
 
 
@@ -112,7 +112,7 @@ public:
 	 *
 	 * \sa open()
 	 */
-	int get_board_config(stratify_board_config_t & config);
+	int get_board_config(sos_board_config_t & config);
 #endif
 
 	/*! \details Opens /dev/sys.
