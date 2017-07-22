@@ -18,12 +18,12 @@ public:
 	Kernel();
 
 	enum {
-		LAUNCH_OPTIONS_FLASH /*! \brief Install in flash memory */ = LINK_APPFS_EXEC_OPTIONS_FLASH,
-		LAUNCH_OPTIONS_STARTUP /*! \brief Run at startup (must be in flash) */ = LINK_APPFS_EXEC_OPTIONS_STARTUP,
-		LAUNCH_OPTIONS_ROOT /*! \brief Run as root (if applicable) */ = LINK_APPFS_EXEC_OPTIONS_ROOT,
-		LAUNCH_OPTIONS_REPLACE /*! \brief Delete if application exists */ = LINK_APPFS_EXEC_OPTIONS_REPLACE,
-		LAUNCH_OPTIONS_ORPHAN /*! \brief Allow app to become an orphan */ = LINK_APPFS_EXEC_OPTIONS_ORPHAN,
-		LAUNCH_OPTIONS_UNIQUE_NAMES /*! \brief Create a unique name on install */ = LINK_APPFS_EXEC_OPTIONS_UNIQUE,
+		LAUNCH_OPTIONS_FLASH /*! \brief Install in flash memory */ = APPFS_FLAG_IS_FLASH,
+		LAUNCH_OPTIONS_STARTUP /*! \brief Run at startup (must be in flash) */ = APPFS_FLAG_IS_STARTUP,
+		LAUNCH_OPTIONS_ROOT /*! \brief Run as root (if applicable) */ = APPFS_FLAG_IS_ROOT,
+		LAUNCH_OPTIONS_REPLACE /*! \brief Delete if application exists */ = APPFS_FLAG_IS_REPLACE,
+		LAUNCH_OPTIONS_ORPHAN /*! \brief Allow app to become an orphan */ = APPFS_FLAG_IS_ORPHAN,
+		LAUNCH_OPTIONS_UNIQUE_NAMES /*! \brief Create a unique name on install */ = APPFS_FLAG_IS_UNIQUE,
 		LAUNCH_RAM_SIZE_DEFAULT = 0
 	};
 

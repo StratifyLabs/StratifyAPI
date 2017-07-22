@@ -19,7 +19,7 @@ int Appfs::create(const char * name, const void * buf, int nbyte, const char * m
 	appfs_createattr_t attr;
 	int loc;
 	unsigned int bw; //bytes written
-	link_appfs_file_t f;
+	appfs_file_t f;
 	strcpy(buffer, mount);
 	strcat(buffer, "/flash/");
 	strcat(buffer, name);
