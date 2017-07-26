@@ -102,12 +102,15 @@ public:
 
 	using Periph::set_attr;
 
-	int set_attr(u32 o_flags, mcu_pin_t sda, mcu_pin_t scl, u32 freq){
+	int set_attr(u32 o_flags, u32 freq, const i2c_pin_assignment_t * pin_assignment = 0){
 		i2c_attr_t attr;
 		attr.o_flags = o_flags;
 		attr.freq = freq;
-		attr.pin_assignment.sda = sda;
-		attr.pin_assignment.scl = scl;
+		if( pin_assignment != 0 ){
+			memcpy(&attr.pin_assignment, pin_assignment, sizeof(i2c_pin_assignment_t));
+		} else {
+			memset(&attr.pin_assignment, 0xff, sizeof(i2c_pin_assignment_t));
+		}
 		return set_attr(attr);
 	}
 
@@ -119,11 +122,11 @@ public:
 	 * \endcode
 	 *
 	 */
-	int init(u32 o_flags, mcu_pin_t sda, mcu_pin_t scl, u32 freq){
+	int init(u32 o_flags, u32 freq, const i2c_pin_assignment_t * pin_assignment = 0){
 		if( open() < 0 ){
 			return -1;
 		}
-		return set_attr(o_flags, sda, scl, freq);
+		return set_attr(o_flags, freq, pin_assignment);
 	}
 
 

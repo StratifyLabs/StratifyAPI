@@ -51,17 +51,19 @@ public:
 
 	/*! \details Sets the DAC attributes using specified values.
 	 *
-	 * @param enabled_channels Enabled channels as a bitmask
+	 * @param o_flags Enabled channels as a bitmask
 	 * @param freq DAC output frequency
-	 * @param pin_assign The output pin assignment
+	 * @param pin_assignment The pins to use (if null, default pins will be used if available)
 	 *
 	 */
-	int set_attr(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1) const {
+	int set_attr(u32 o_flags, u32 freq, const dac_pin_assignment_t * pin_assignment = 0) const {
 		dac_attr_t attr;
-		memset(&attr.pin_assignment, 0xff, MCU_PIN_ASSIGNMENT_COUNT(dac_pin_assignment_t));
+		if( pin_assignment != 0 ){
+			memcpy(&attr.pin_assignment, pin_assignment, sizeof(dac_pin_assignment_t));
+		} else {
+			memset(&attr.pin_assignment, 0xff, sizeof(dac_pin_assignment_t));
+		}
 		attr.o_flags = o_flags;
-		attr.pin_assignment.channel[0] = channel0;
-		attr.pin_assignment.channel[1] = channel1;
 		attr.freq = freq;
 		return set_attr(attr);
 	}
@@ -69,17 +71,15 @@ public:
 
 	/*! \details Opens the DAC and sets the attributes using specified values.
 	 *
-	 * @param enabled_channels Enabled channels as a bitmask
-	 * @param freq DAC output frequency
-	 * @param pin_assign The output pin assignment
+	 * See set_attr() for parameter descriptions.
 	 *
 	 */
-	int init(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1){
+	int init(u32 o_flags, u32 freq, const dac_pin_assignment_t * pin_assignment = 0){
 
 		if( open() < 0 ){
 			return -1;
 		}
-		return set_attr(o_flags, channel0, freq, channel1);
+		return set_attr(o_flags, freq, pin_assignment);
 	}
 
 	/*! \details Sets the value of the DAC.

@@ -53,24 +53,26 @@ public:
 	}
 
 
-	int set_attr(u32 o_flags, mcu_pin_t channel0, u32 freq, u32 top, mcu_pin_t channel1) const {
+	int set_attr(u32 o_flags, u32 freq, u32 top, const pwm_pin_assignment_t * pin_assignment = 0) const {
 		pwm_attr_t attr;
 		attr.o_flags = o_flags;
-		memset(&attr.pin_assignment, 0xff, MCU_PIN_ASSIGNMENT_COUNT(pwm_pin_assignment_t));
-		attr.pin_assignment.channel[0] = channel0;
-		attr.pin_assignment.channel[1] = channel1;
+		if( pin_assignment != 0 ){
+			memcpy(&attr.pin_assignment, pin_assignment, sizeof(pwm_pin_assignment_t));
+		} else {
+			memset(&attr.pin_assignment, 0xff, sizeof(pwm_pin_assignment_t));
+		}
 		attr.freq = freq;
 		attr.top = top;
 		return set_attr(attr);
 	}
 
-	int init(u32 o_flags, mcu_pin_t channel0, u32 freq, u32 top, mcu_pin_t channel1){
+	int init(u32 o_flags, u32 freq, u32 top, const pwm_pin_assignment_t * pin_assignment = 0){
 
 		if( open() < 0 ){
 			return -1;
 		}
 
-		return set_attr(o_flags, channel0, freq, top, channel1);
+		return set_attr(o_flags, freq, top, pin_assignment);
 	}
 
 #ifdef __MCU_ONLY__

@@ -32,16 +32,18 @@ public:
 	Adc(port_t port);
 
 	enum {
-		FLAG_LEFT_JUSTIFIED = ADC_FLAG_LEFT_JUSTIFIED,
-		FLAG_RIGHT_JUSTIFIED = ADC_FLAG_RIGHT_JUSTIFIED
+		FLAG_LEFT_JUSTIFIED = ADC_FLAG_IS_LEFT_JUSTIFIED,
+		FLAG_RIGHT_JUSTIFIED = ADC_FLAG_IS_RIGHT_JUSTIFIED
 	};
 
 
-	int set_attr(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1) const {
+	int set_attr(u32 o_flags, u32 freq, const adc_pin_assignment_t * pin_assignment = 0) const {
 		adc_attr_t attr;
-		memset(&attr.pin_assignment, 0xff, MCU_PIN_ASSIGNMENT_COUNT(adc_pin_assignment_t));
-		attr.pin_assignment.channel[0] = channel0;
-		attr.pin_assignment.channel[1] = channel1;
+		if( pin_assignment != 0 ){
+			memcpy(&attr.pin_assignment, pin_assignment, sizeof(adc_pin_assignment_t));
+		} else {
+			memset(&attr.pin_assignment, 0xff, sizeof(adc_pin_assignment_t));
+		}
 		attr.o_flags = o_flags;
 		attr.freq = freq;
 		return Periph::set_attr(attr);
@@ -56,11 +58,11 @@ public:
 	 * @return Zero on success
 	 *
 	 */
-	int init(u32 o_flags, mcu_pin_t channel0, u32 freq, mcu_pin_t channel1){
+	int init(u32 o_flags, u32 freq, const adc_pin_assignment_t * pin_assignment = 0){
 		if( open() < 0 ){
 			return -1;
 		}
-		return set_attr(o_flags, channel0, freq, channel1);
+		return set_attr(o_flags, freq, pin_assignment);
 	}
 
 

@@ -87,8 +87,16 @@ int Kernel::get_board_config(sos_board_config_t & config){
 }
 #endif
 
-int Kernel::get_info(sys_attr_t & attr){
+int Kernel::get_info(sys_info_t & attr){
 	return ioctl(I_SYS_GETINFO, &attr);
+}
+
+int Kernel::get_23_info(sys_23_info_t & attr){
+	return ioctl(I_SYS_23_GETINFO, &attr);
+}
+
+int Kernel::get_26_info(sys_26_info_t & attr){
+	return ioctl(I_SYS_26_GETINFO, &attr);
 }
 
 int Kernel::get_taskattr(sys_taskattr_t & attr, int task){

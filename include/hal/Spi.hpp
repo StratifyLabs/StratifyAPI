@@ -35,25 +35,26 @@ public:
 	int swap(int byte);
 
 	/*! \details Set SPI attributes using values specified */
-	int set_attr(u32 o_flags, mcu_pin_t miso, mcu_pin_t mosi, mcu_pin_t sck, mcu_pin_t cs, u32 freq, u32 width = 8){
+	int set_attr(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0){
 		spi_attr_t attr;
 		attr.o_flags = o_flags;
 		attr.freq = freq;
-		attr.pin_assignment.miso = miso;
-		attr.pin_assignment.mosi = mosi;
-		attr.pin_assignment.sck = sck;
-		attr.pin_assignment.cs = cs;
+		if( pin_assignment != 0 ){
+			memcpy(&attr.pin_assignment, pin_assignment, sizeof(spi_pin_assignment_t));
+		} else {
+			memset(&attr.pin_assignment, 0xff, sizeof(spi_pin_assignment_t));
+		}
 		attr.width = width;
 		return Periph::set_attr(attr);
 	}
 
 	/*! \details initialize the SPI port */
-	int init(u32 o_flags, mcu_pin_t miso, mcu_pin_t mosi, mcu_pin_t sck, mcu_pin_t cs, u32 freq, u32 width = 8){
+	int init(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0){
 
 		if( open() < 0 ){
 			return -1;
 		}
-		return set_attr(o_flags, miso, mosi, sck, cs, freq, width);
+		return set_attr(o_flags, freq, width, pin_assignment);
 	}
 
 

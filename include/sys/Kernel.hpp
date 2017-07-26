@@ -136,8 +136,9 @@ public:
 	 * \sa open()
 	 *
 	 */
-	int get_info(sys_attr_t & attr);
-	inline int attr(sys_attr_t * v){ return get_info(*v); }
+	int get_info(sys_info_t & attr);
+	int get_23_info(sys_23_info_t & attr);
+	int get_26_info(sys_26_info_t & attr);
 
 
 	/*! \details Loads the kernel's task attributes.

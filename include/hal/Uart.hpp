@@ -86,22 +86,24 @@ public:
 
 	using Periph::set_attr;
 
-	int set_attr(u32 o_flags, mcu_pin_t tx, mcu_pin_t rx, u32 freq, u32 width = 8) const {
+	int set_attr(u32 o_flags, u32 freq, u32 width = 8, const uart_pin_assignment_t * pin_assignment = 0) const {
 		uart_attr_t attr;
 		attr.o_flags = o_flags;
-		memset(&attr.pin_assignment, 0xff, MCU_PIN_ASSIGNMENT_COUNT(adc_pin_assignment_t));
-		attr.pin_assignment.tx = tx;
-		attr.pin_assignment.rx = rx;
+		if( pin_assignment ){
+			memcpy(&attr.pin_assignment, pin_assignment, sizeof(uart_pin_assignment_t));
+		} else {
+			memset(&attr.pin_assignment, 0xff, sizeof(uart_pin_assignment_t));
+		}
 		attr.freq = freq;
 		attr.width = width;
 		return set_attr(attr);
 	}
 
-	int init(u32 o_flags, mcu_pin_t tx, mcu_pin_t rx, u32 freq, u32 width = 8){
+	int init(u32 o_flags, u32 freq, u32 width = 8, const uart_pin_assignment_t * pin_assignment = 0){
 		if( open() < 0 ){
 			return -1;
 		}
-		return set_attr(o_flags, tx, rx, freq, width);
+		return set_attr(o_flags, freq, width, pin_assignment);
 	}
 
 private:
