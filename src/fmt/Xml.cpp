@@ -67,7 +67,7 @@ int Xml::set_get_value(String & dest, const char * key, bool set) const {
 	String s2; //attr
 	int start_attr, end_attr;
 	context_t tmp_content;
-	ssize_t i;
+	s32 i;
 
 	//strip the attribute from the str -- attr is only valid for this method
 
@@ -367,7 +367,7 @@ int Xml::find_context(const char * str, const context_t & current, context_t & t
 
 	int array_value;
 
-	for(i=0; i < (ssize_t)tokens.size(); i++){
+	for(i=0; i < (s32)tokens.size(); i++){
 
 
 		//check to see if the token defines an array or an attribute ie wpt[1] or wpt(lat)
@@ -560,7 +560,7 @@ int Xml::check_string_for_open_bracket(String * src, String * cmp) const {
 int Xml::find_tag(const char * name,
 		const context_t & context,
 		const char * tag_style,
-		ssize_t & tag_size) const {
+		s32 & tag_size) const {
 	int ret;
 	int loc;
 	int start_loc;

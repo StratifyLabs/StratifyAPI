@@ -7,15 +7,15 @@
 #include <sos/link.h>
 
 #include "hal.hpp"
-#include "sys/Kernel.hpp"
+#include "../../include/sys/Sys.hpp"
 using namespace sys;
 
-Kernel::Kernel() {
+Sys::Sys() {
 	// TODO Auto-generated constructor stub
 	m_current_task = 0;
 }
 
-int Kernel::launch(const char * path, char * exec_path, const char * args, int options, int ram_size, int (*update_progress)(int, int), char *const envp[]){
+int Sys::launch(const char * path, char * exec_path, const char * args, int options, int ram_size, int (*update_progress)(int, int), char *const envp[]){
 #if defined __link
 	return -1;
 #else
@@ -23,7 +23,7 @@ int Kernel::launch(const char * path, char * exec_path, const char * args, int o
 #endif
 }
 
-int Kernel::free_ram(const char * path, link_transport_mdriver_t * driver){
+int Sys::free_ram(const char * path, link_transport_mdriver_t * driver){
 	int fd;
 	int ret;
 #if defined __link
@@ -43,7 +43,7 @@ int Kernel::free_ram(const char * path, link_transport_mdriver_t * driver){
 	return ret;
 }
 
-int Kernel::reclaim_ram(const char * path, link_transport_mdriver_t * driver){
+int Sys::reclaim_ram(const char * path, link_transport_mdriver_t * driver){
 	int fd;
 	int ret;
 #if defined __link
@@ -63,43 +63,83 @@ int Kernel::reclaim_ram(const char * path, link_transport_mdriver_t * driver){
 	return ret;
 }
 
+int Sys::get_version(var::String & version, link_transport_mdriver_t * driver){
+	sys_info_t info;
+	Dev sys;
+	int ret;
+#if defined __link
+	sys.set_driver(driver);
+#endif
+	if( sys.open("/dev/sys", Dev::RDWR) < 0 ){
+		return -1;
+	}
+
+	ret = sys.ioctl(I_SYS_GETINFO, &info);
+	sys.close();
+	if( ret >= 0 ){
+		version.assign(info.sys_version);
+	}
+	return ret;
+
+}
+
+int Sys::get_kernel_version(var::String & version, link_transport_mdriver_t * driver){
+	sys_info_t info;
+	Dev sys;
+	int ret;
+#if defined __link
+	sys.set_driver(driver);
+#endif
+	if( sys.open("/dev/sys", Dev::RDWR) < 0 ){
+		return -1;
+	}
+
+	ret = sys.ioctl(I_SYS_GETINFO, &info);
+	sys.close();
+	if( ret >= 0 ){
+		version.assign(info.kernel_version);
+	}
+	return ret;
+}
+
 #if !defined __link
-void Kernel::powerdown(int count){
+void Sys::powerdown(int count){
 	powerdown(count);
 }
 
-int Kernel::hibernate(int count){
+int Sys::hibernate(int count){
 	return hibernate(count);
 }
 
-int Kernel::request(int req, void * arg){
+int Sys::request(int req, void * arg){
 	return kernel_request(req, arg);
 }
 
-void Kernel::reset(){
+void Sys::reset(){
 	Core core(0);
 	core.open();
 	core.reset();
+	core.close(); //in case the operation fails
 }
 
-int Kernel::get_board_config(sos_board_config_t & config){
+int Sys::get_board_config(sos_board_config_t & config){
 	return ioctl(I_SYS_GETBOARDCONFIG, &config);
 }
 #endif
 
-int Kernel::get_info(sys_info_t & attr){
+int Sys::get_info(sys_info_t & attr){
 	return ioctl(I_SYS_GETINFO, &attr);
 }
 
-int Kernel::get_23_info(sys_23_info_t & attr){
+int Sys::get_23_info(sys_23_info_t & attr){
 	return ioctl(I_SYS_23_GETINFO, &attr);
 }
 
-int Kernel::get_26_info(sys_26_info_t & attr){
+int Sys::get_26_info(sys_26_info_t & attr){
 	return ioctl(I_SYS_26_GETINFO, &attr);
 }
 
-int Kernel::get_taskattr(sys_taskattr_t & attr, int task){
+int Sys::get_taskattr(sys_taskattr_t & attr, int task){
 	if( task == -1 ){
 		task = m_current_task;
 	} else {
@@ -111,7 +151,7 @@ int Kernel::get_taskattr(sys_taskattr_t & attr, int task){
 	return ioctl(I_SYS_GETTASK, &attr);
 }
 
-int Kernel::get_id(sys_id_t & id){
+int Sys::get_id(sys_id_t & id){
 	return ioctl(I_SYS_GETID, &id);
 }
 

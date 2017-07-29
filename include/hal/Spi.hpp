@@ -28,7 +28,7 @@ public:
 		FLAG_SET_MASTER /*! SPI Master */ = SPI_FLAG_SET_MASTER,
 		FLAG_SET_SLAVE /*! SPI Slave */ = SPI_FLAG_SET_SLAVE,
 		FLAG_FULL_DUPLEX /*! Full duplex mode (data is written first then read into the same buffer) */ = SPI_FLAG_FULL_DUPLEX,
-		FLAG_HALF_DUPLEX /*! Half duplex mode (default mode) */ = SPI_FLAG_HALF_DUPLEX
+		FLAG_HALF_DUPLEX /*! Half duplex mode (default mode) */ = SPI_FLAG_HALF_DUPLEX,
 	};
 
 	/*! \details swap a byte on the SPI bus */
@@ -57,7 +57,8 @@ public:
 		return set_attr(o_flags, freq, width, pin_assignment);
 	}
 
-
+	using Periph::init;
+	using Periph::set_attr;
 
 private:
 

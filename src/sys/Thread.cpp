@@ -48,8 +48,8 @@ int Thread::set_stacksize(int size){
 }
 
 int Thread::get_stacksize() const {
-	size_t stacksize;
-	pthread_attr_getstacksize(&m_pthread_attr, &stacksize);
+	u32 stacksize;
+	pthread_attr_getstacksize(&m_pthread_attr, (size_t*)&stacksize);
 	return stacksize;
 }
 
@@ -145,7 +145,7 @@ int Thread::wait(void**ret, int interval){
 }
 
 void Thread::reset(){
-	size_t stacksize;
+	u32 stacksize;
 
 	bool detached = !is_joinable();
 	stacksize = get_stacksize();

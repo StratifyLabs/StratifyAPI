@@ -3,7 +3,7 @@
 #ifndef DATA_HPP_
 #define DATA_HPP_
 
-#include <sys/types.h>
+#include <mcu/types.h>
 
 namespace var {
 
@@ -49,14 +49,14 @@ public:
 	 * methods will have no effect.
 	 *
 	 */
-	Data(void * mem, size_t size, bool readonly = false); //read/write bitmap
+	Data(void * mem, u32 size, bool readonly = false); //read/write bitmap
 
 	/*! \details Constructs data oject with dynamically allocated memory with \a size bytes (resizeable)
 	 *
 	 *  @param size The number of bytes to allocate
 	 *
 	 */
-	Data(size_t size);
+	Data(u32 size);
 
 	/*! \details Deconstructs a Data object.
 	 *
@@ -66,7 +66,7 @@ public:
 	virtual ~Data();
 
 	/*! \details Returns the minimum data storage size of any Data object. */
-	static size_t min_size();
+	static u32 min_size();
 
 	/*! \details Sets the storage object of the data. This object
 	 * will treat the data as statically allocated and will not free the memory
@@ -83,7 +83,7 @@ public:
 	 * when this method is called.
 	 *
 	 */
-	void set(void * mem, size_t size, bool readonly = false);
+	void set(void * mem, u32 size, bool readonly = false);
 
 	/*! \details Allocates (or reallocates) memory for the Data object.
 	 *
@@ -94,7 +94,7 @@ public:
 	 * If the memory was specified using the set() method or constructed as
 	 * statically allocated memory, this will return an error.
 	 */
-	int alloc(size_t size, bool resize = false);
+	int alloc(u32 size, bool resize = false);
 
 	/*! \details Resizes the data (equivalent to alloc()).
 	 *
@@ -103,19 +103,21 @@ public:
 	 * @param s The number of new bytes
 	 * @return Zero on success or -1 with errno set
 	 */
-	int resize(size_t size) { return alloc(size, true); }
+	int resize(u32 size) { return alloc(size, true); }
 
-	/*! \details Set the minimum capacity of the data storage area.
+	/*! \details Sets the capacity of the data object.
+	 *
+	 * @param s The number of minimum bytes needed
+	 * @return Zero on success
+	 *
 	 *
 	 * If the memory was specified using the set() method, this will return an error.
 	 *
 	 * If the current capacity is less than \a s, the object will
 	 * be resized.
 	 *
-	 * @param s The number of minimum bytes needed
-	 * @return Zero on success
 	 */
-	int set_min_capacity(size_t s);
+	int set_capacity(u32 s);
 
 	/*! \details Retrieve a pointer to the data.
 	 * This will return zero if the data is readonly.
@@ -145,7 +147,7 @@ public:
 	 *
 	 * @return Number of bytes in the data object
 	 */
-	size_t capacity() const { return m_capacity; }
+	u32 capacity() const { return m_capacity; }
 
 	/*! \details Free the memory associated with this object.
 	 * This will only perform any operations if the memory was
@@ -177,7 +179,7 @@ public:
 	 * @return The number of bytes availabe in a data object
 	 *
 	 */
-	virtual size_t calc_size() const { return m_capacity; }
+	virtual u32 calc_size() const { return m_capacity; }
 
 private:
 
@@ -187,7 +189,7 @@ private:
 
 	const void * m_mem;
 	void * m_mem_write;
-	size_t m_capacity;
+	u32 m_capacity;
 	bool m_needs_free;
 
 };

@@ -21,7 +21,7 @@ namespace sys {};
 #endif
 
 #include "sys/Trace.hpp"
-#include "sys/Kernel.hpp"
+#include "sys/Sys.hpp"
 #include "sys/Appfs.hpp"
 #include "sys/Dir.hpp"
 #include "sys/File.hpp"

@@ -85,6 +85,36 @@ int Appfs::create(const char * name, const void * buf, int nbyte, const char * m
 	file.close();
 	return nbyte;
 }
+
+
+int Appfs::get_info(const char * path, appfs_info_t & info){
+	File f;
+	int ret;
+	if( f.open(path, File::RDONLY) < 0 ){
+		printf("Failed to open %s - %d\n", path, errno);
+		return -1;
+	}
+
+	ret = f.ioctl(I_APPFS_GETINFO, &info);
+	f.close();
+
+	if( ret < 0 ){
+		printf("Failed to get app info %d\n", errno);
+	}
+
+	return ret;
+}
+
+u16 Appfs::get_version(const char * path){
+	appfs_info_t info;
+
+	if( get_info(path, info) < 0 ){
+		return 0x0000;
+	}
+
+	return info.version;
+}
+
 #ifndef __link
 
 int Appfs::cleanup(bool data){

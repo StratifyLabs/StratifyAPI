@@ -132,6 +132,8 @@ public:
 
 	using Periph::read;
 	using Periph::write;
+	using Periph::init;
+	using Periph::set_attr;
 
 	/*! \details Read the value of a register on an I2C device */
 	int read(int loc, u8 & reg);

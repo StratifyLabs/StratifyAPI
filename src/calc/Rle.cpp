@@ -32,7 +32,7 @@ int Rle::calc_size(const void * src, int nbyte){
 	return next_dest_size;
 }
 
-int Rle::encode(void * dest, ssize_t & dest_size, const void * src, ssize_t src_size){
+int Rle::encode(void * dest, s32 & dest_size, const void * src, s32 src_size){
 	int bp; //bytes processed
 	uint8_t value;
 	uint8_t size;
@@ -69,7 +69,7 @@ int Rle::encode(void * dest, ssize_t & dest_size, const void * src, ssize_t src_
 	return bp;
 }
 
-int Rle::decode(void * dest, ssize_t & dest_size, const void * src, ssize_t src_size){
+int Rle::decode(void * dest, s32 & dest_size, const void * src, s32 src_size){
 	int i;
 	element_t * elements = (element_t*)src;
 	uint8_t * destp = (uint8_t*)dest;
@@ -93,7 +93,7 @@ int Rle::decode(void * dest, ssize_t & dest_size, const void * src, ssize_t src_
 int RleFile::write(const void * buf, int nbyte){
 	int ret;
 	int bw;
-	int dest_size;
+	s32 dest_size;
 	const char * p = (const char *)buf;
 	bw = 0;
 	do {

@@ -63,24 +63,24 @@ int Mq::set_attr(const MqAttr & attr){
 	return mq_setattr(m_handle, &(attr.m_attr), 0);
 }
 
-ssize_t Mq::receive(char * msg_ptr,
-		size_t msg_len){
+s32 Mq::receive(char * msg_ptr,
+		u32 msg_len){
 	return mq_receive(m_handle, msg_ptr, msg_len, &m_msg_prio);
 }
-ssize_t Mq::timedreceive(char * msg_ptr,
-		size_t msg_len,
+s32 Mq::timedreceive(char * msg_ptr,
+		u32 msg_len,
 		const struct timespec * abs_timeout){
 	return mq_timedreceive(m_handle, msg_ptr, msg_len, &m_msg_prio, abs_timeout);
 }
 
 int Mq::send(const char * msg_ptr,
-		size_t msg_len,
+		u32 msg_len,
 		unsigned msg_prio){
 	return mq_send(m_handle, msg_ptr, msg_len, msg_prio);
 }
 
 int Mq::timedsend(const char * msg_ptr,
-		size_t msg_len,
+		u32 msg_len,
 		unsigned msg_prio,
 		const struct timespec * abs_timeout){
 	return mq_timedsend(m_handle, msg_ptr, msg_len, msg_prio, abs_timeout);

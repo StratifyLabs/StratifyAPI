@@ -27,11 +27,11 @@ void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 	Point arc;
 	Point arc_inner;
 	Point first_point;
-	size_t i;
+	u32 i;
 	sg_int_t x_max;
 
-	size_t progress;
-	size_t points = d.w() * d.h();
+	u32 progress;
+	u32 points = d.w() * d.h();
 
 	float two_pi = 2.0 * M_PI;
 	float half_pi = M_PI / 2.0;

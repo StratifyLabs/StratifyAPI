@@ -99,7 +99,7 @@ sg_vector_primitive_t Vector::fill(sg_int_t x1, sg_int_t y1){
 
 
 void Vector::show(const sg_vector_primitive_t & mg){
-	size_t i;
+	u32 i;
 	const unsigned char * p = (const unsigned char *)(&mg);
 	printf("{ ");
 	for(i=0; i < sizeof(sg_vector_primitive_t); i++){

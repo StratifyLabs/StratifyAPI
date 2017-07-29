@@ -15,7 +15,7 @@ namespace var {
 class Token : public String {
 public:
 	Token();
-	Token(char * mem, size_t s, const char * src, const char * delim, const char * ignore = 0, bool count_empty = false);
+	Token(char * mem, u32 s, const char * src, const char * delim, const char * ignore = 0, bool count_empty = false);
 
 	/*! \details Construct and parse a new Token.
 	 *
@@ -60,10 +60,10 @@ public:
 
 
 	/*! \details Return the total number of tokens */
-	size_t size() const { return m_num_tokens; }
+	u32 size() const { return m_num_tokens; }
 
 	/*! \details Return a pointer to the token specified by offset */
-	const char * at(size_t n) const;
+	const char * at(u32 n) const;
 
 	static bool belongs_to(const char c, const char * str, unsigned int len);
 	static bool belongs_to(const char c, const char * str){

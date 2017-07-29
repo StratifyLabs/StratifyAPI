@@ -115,10 +115,10 @@ public:
 	 * @return The number of bytes read
 	 *
 	 */
-	ssize_t receive(char * msg_ptr, size_t msg_len);
+	s32 receive(char * msg_ptr, u32 msg_len);
 
-	ssize_t timedreceive(char * msg_ptr, size_t msg_len, const struct timespec * abs_timeout);
-	ssize_t receive_timed(char * msg_ptr, size_t msg_len, const struct timespec * abs_timeout){ return timedreceive(msg_ptr, msg_len, abs_timeout); }
+	s32 timedreceive(char * msg_ptr, u32 msg_len, const struct timespec * abs_timeout);
+	s32 receive_timed(char * msg_ptr, u32 msg_len, const struct timespec * abs_timeout){ return timedreceive(msg_ptr, msg_len, abs_timeout); }
 
 	/*! \details Sends a message to the queue.
 	 *
@@ -128,11 +128,11 @@ public:
 	 * @return The number of bytes sent
 	 *
 	 */
-	int send(const char * msg_ptr, size_t msg_len, unsigned msg_prio = 0);
+	int send(const char * msg_ptr, u32 msg_len, unsigned msg_prio = 0);
 
 	/*! \details Send a message to the queue with a timeout */
-	int timedsend(const char * msg_ptr, size_t msg_len, unsigned msg_prio, const struct timespec * abs_timeout);
-	int send_timed(const char * msg_ptr, size_t msg_len, unsigned msg_prio, const struct timespec * abs_timeout){ return timedsend(msg_ptr, msg_len, msg_prio, abs_timeout); }
+	int timedsend(const char * msg_ptr, u32 msg_len, unsigned msg_prio, const struct timespec * abs_timeout);
+	int send_timed(const char * msg_ptr, u32 msg_len, unsigned msg_prio, const struct timespec * abs_timeout){ return timedsend(msg_ptr, msg_len, msg_prio, abs_timeout); }
 
 	/*! \details Deletes a named message queue. */
 	static int unlink(const char * name);

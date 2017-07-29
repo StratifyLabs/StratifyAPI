@@ -161,12 +161,12 @@ void TabBar::draw(const DrawingAttr & attr){
 
 
 void TabBar::draw_tab_bar(const DrawingAttr & attr, int selected){
-	list_attr_size_t tabs;
+	list_attr_u32 tabs;
 	Tab * t;
 	//DrawingAttr tab_attr;
-	list_attr_size_t offset;
-	list_attr_size_t offset_tab;
-	drawing_size_t tab_width = 1000 / visible_items();
+	list_attr_u32 offset;
+	list_attr_u32 offset_tab;
+	drawing_u32 tab_width = 1000 / visible_items();
 
 	//draw the screen under the tab bar
 

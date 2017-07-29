@@ -7,17 +7,11 @@ using namespace hal;
 Pio::Pio(port_t port) : Periph(CORE_PERIPH_PIO, port){}
 
 int Pio::set_mask(u32 mask) const {
-	pio_attr_t attr;
-	attr.o_pinmask = mask;
-	attr.o_flags = FLAG_SET;
-	return ioctl(I_PIO_SETATTR, &attr);
+	return ioctl(I_PIO_SETMASK, (void*)mask);
 }
 
 int Pio::clear_mask(u32 mask) const {
-	pio_attr_t attr;
-	attr.o_pinmask = mask;
-	attr.o_flags = FLAG_CLEAR;
-	return ioctl(I_PIO_SETATTR, &attr);
+	return ioctl(I_PIO_CLRMASK, (void*)mask);
 }
 
 int Pio::assign(u32 value) const {

@@ -49,8 +49,6 @@ protected:
 private:
 	static u16 m_fd_map[LINK_OPEN_MAX];
 
-
-
 };
 
 
@@ -80,6 +78,28 @@ public:
 
 	int get_info(info_t & info) const {
 		return ioctl(_IOCTLR(ident_char, I_MCU_GETINFO, info_t), &info);
+	}
+
+	/*! \details Sets the default attributes on the hardware.
+	 *
+	 * @return Zero on success
+	 *
+	 * For this method to work correctly, the board support package
+	 * must include the configuration information for the device.
+	 * If the information is not provided, this method will return an error.
+	 *
+	 */
+	int set_attr() const {
+		return ioctl(_IOCTLR(ident_char, I_MCU_SETATTR, attr_t), 0);
+	}
+
+	/*! \details Initializes the hardware using the default attributes.
+	 */
+	int init(){
+		if( open() < 0 ){
+			return -1;
+		}
+		return set_attr();
 	}
 
 	int set_attr(attr_t & attr) const {

@@ -25,7 +25,7 @@ public:
 	 * @param buf A pointer to the data
 	 * @param size The number of bytes in the new ring buffer
 	 */
-	Ring(u8 * buf, size_t size);
+	Ring(u8 * buf, u32 size);
 
 	/*! \details Write data to the ring buffer
 	 *
@@ -33,7 +33,7 @@ public:
 	 * @param nbytes The number of bytes to write
 	 * @return The number of bytes written
 	 */
-	int write(const u8 * buf, size_t nbytes);
+	int write(const u8 * buf, u32 nbytes);
 
 	/*! \details Read data from the ring buffer
 	 *
@@ -41,15 +41,15 @@ public:
 	 * @param nbytes The number of bytes to read
 	 * @return
 	 */
-	int read(u8 * buf, size_t nbytes);
+	int read(u8 * buf, u32 nbytes);
 
 	/*! \details Access the size of the buffer */
-	size_t size() const { return m_size; }
+	u32 size() const { return m_size; }
 	/*! \details Calculate the number of bytes calc_used in the buffer */
-	size_t calc_used() const;
+	u32 calc_used() const;
 
 	/*! \details Calculate the number fo free bytes in the buffer */
-	size_t calc_free() const;
+	u32 calc_free() const;
 
 	/*! \details Empty the buffer */
 	void flush(void);
@@ -74,7 +74,7 @@ public:
 
 private:
 	u8 * m_buf;
-	size_t m_size;
+	u32 m_size;
 
 	u32 m_head;
 	u32 m_tail;

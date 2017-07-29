@@ -86,7 +86,7 @@ public:
 	bool set_size(sg_size_t w, sg_size_t h, sg_size_t offset = 0);
 
 	/*! \details Returns the size of a bitmap of specified size */
-	static size_t calc_size(int w, int h){ return sg_api()->calc_bmap_size(sg_dim(w,h)); }
+	static u32 calc_size(int w, int h){ return sg_api()->calc_bmap_size(sg_dim(w,h)); }
 	sg_point_t calc_center() const;
 
 	/*! \details Returns the maximum x value. */

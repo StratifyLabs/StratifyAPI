@@ -11,7 +11,7 @@ Token::Token(){
 	m_is_count_empty_tokens = false;
 }
 
-Token::Token(char * mem, size_t s, const char * src, const char * delim, const char * ignore, bool count_empty) : String(mem, s, false){
+Token::Token(char * mem, u32 s, const char * src, const char * delim, const char * ignore, bool count_empty) : String(mem, s, false){
 	init_members();
 	m_is_count_empty_tokens = count_empty;
 	clear(); assign(src); parse(delim, ignore);
@@ -95,7 +95,7 @@ void Token::parse(const char * delim, const char * ignore){
 	}
 }
 
-const char * Token::at(size_t n) const {
+const char * Token::at(u32 n) const {
 	const char * p;
 	unsigned int i;
 	bool on_token = false;

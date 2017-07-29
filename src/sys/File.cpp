@@ -95,7 +95,7 @@ int File::stat(const char * name, struct link_stat * st, link_transport_mdriver_
 u32 File::size(const char * name, link_transport_mdriver_t * driver){
 	struct link_stat st;
 	if( stat(name, &st, driver) < 0 ){
-		return (ssize_t)-1;
+		return (s32)-1;
 	}
 	return st.st_size;
 }

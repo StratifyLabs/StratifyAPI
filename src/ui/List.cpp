@@ -16,7 +16,7 @@ List::List(ElementLinked * parent) : ElementLinked(parent) {
 	m_select_top_bottom = 0;
 }
 
-void List::draw_item_to_scale(const DrawingScaledAttr & attr, sg_size_t x_offset, list_attr_size_t item){
+void List::draw_item_to_scale(const DrawingScaledAttr & attr, sg_size_t x_offset, list_attr_u32 item){
 	sg_point_t p1 = attr.p();
 	sg_point_t p2 = attr.p();
 	sg_dim_t d = attr.d();
@@ -38,7 +38,7 @@ void List::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_size_t list_item_height;
 	sg_point_t top_left;
 	int display_items;
-	list_attr_size_t index_offset;
+	list_attr_u32 index_offset;
 	Dim item_d;
 	sg_int_t x_offset;
 
@@ -88,7 +88,7 @@ void List::draw_to_scale(const DrawingScaledAttr & attr){
 
 void List::animate_scroll(i8 dir, const DrawingAttr & attr){
 	u8 type;
-	list_attr_size_t item;
+	list_attr_u32 item;
 
 	item = calc_next_visible(dir);
 
@@ -173,7 +173,7 @@ void List::handle_select_button_actuation(const Event  & event, const DrawingAtt
 
 
 Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
-	size_t i;
+	u32 i;
 	switch(event.type()){
 	default: break;
 	case Event::SETUP:

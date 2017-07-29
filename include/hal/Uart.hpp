@@ -39,12 +39,9 @@ namespace hal {
  * 	char buffer[256];
  * 	uart.open(Uart::NONBLOCK|Uart::RDWR);
  *  //now set the attributes
- * 	uart.set_attr(115200, //115200 baud rate
- * 	0, //pin assignment 0 (P0.2 and P0.3 on LPC17xx)
- * 	Uart::NONE, // no parity
- * 	Uart::STOP1, //one stop bit
- * 	8 //8 bits per character
- * 	);
+ * 	uart.set_attr(Uart::FLAG_IS_STOP1|Uart::FLAG_IS_PARITY_NONE|Uart,
+ * 	115200, //115200 baud rate
+ *  );
  * 	uart.read(buffer, 256); //returns immediately even if no data is available (errno is set to EAGAIN if no data)
  * 	uart.close(); //free the resources
  * }
@@ -80,12 +77,20 @@ public:
 	 */
 	int put(char c);
 
-	/*! \details Flush the TX/RX buffers */
+	/*! \details Flushes the TX/RX buffers */
 	int flush();
 
 
 	using Periph::set_attr;
 
+	/*! \details Sets the attributes of the Uart.
+	 *
+	 * @param o_flags Bitmask of attribute flags
+	 * @param freq Baudrate
+	 * @param width Number of bits (usually 8)
+	 * @param pin_assignment A pointer to the pin assignment (null to use the default)
+	 * @return Zero on success
+	 */
 	int set_attr(u32 o_flags, u32 freq, u32 width = 8, const uart_pin_assignment_t * pin_assignment = 0) const {
 		uart_attr_t attr;
 		attr.o_flags = o_flags;
@@ -99,12 +104,25 @@ public:
 		return set_attr(attr);
 	}
 
+	/*! \details Initializes the uart with the specified attributes.
+	 *
+	 * @param o_flags Bitmask of attribute flags
+	 * @param freq Baudrate
+	 * @param width Number of bits (usually 8)
+	 * @param pin_assignment A pointer to the pin assignment (null to use the default)
+	 * @return Zero on success
+	 *
+	 * This method calls open() and set_attr().
+	 */
 	int init(u32 o_flags, u32 freq, u32 width = 8, const uart_pin_assignment_t * pin_assignment = 0){
 		if( open() < 0 ){
 			return -1;
 		}
 		return set_attr(o_flags, freq, width, pin_assignment);
 	}
+
+	using Periph::init;
+	using Periph::set_attr;
 
 private:
 

@@ -242,11 +242,11 @@ public:
 	 */
 
 	typedef struct {
-		ssize_t offset;
-		ssize_t size;
-		ssize_t start_tag_size;
-		ssize_t end_tag_size;
-		ssize_t cursor;
+		s32 offset;
+		s32 size;
+		s32 start_tag_size;
+		s32 end_tag_size;
+		s32 cursor;
 	} context_t;
 
 	inline const context_t & context() const { return content; }
@@ -258,7 +258,7 @@ public:
 private:
 
 	context_t content;
-	ssize_t file_size;
+	s32 file_size;
 
 	int indent;
 
@@ -271,7 +271,7 @@ private:
 	int find_tag(const char * name,
 			const context_t & context,
 			const char * tag_style,
-			ssize_t & tag_size) const;
+			s32 & tag_size) const;
 
 	int next_tag_name(
 			var::String & name,

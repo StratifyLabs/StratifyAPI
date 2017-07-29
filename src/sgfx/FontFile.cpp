@@ -25,7 +25,7 @@ FontFile::~FontFile(){
 }
 
 int FontFile::set_file(const char * name, int offset){
-	size_t pair_size;
+	u32 pair_size;
 
 	if( m_kerning_pairs ){
 		free(m_kerning_pairs);

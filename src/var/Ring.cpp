@@ -5,7 +5,7 @@
 namespace var {
 
 
-Ring::Ring(u8 * buf, size_t size){
+Ring::Ring(u8 * buf, u32 size){
 	m_buf = buf;
 	m_size = size;
 	m_head = 0;
@@ -14,9 +14,9 @@ Ring::Ring(u8 * buf, size_t size){
 }
 
 
-int Ring::write(const u8 * buf, size_t nbytes){
+int Ring::write(const u8 * buf, u32 nbytes){
 	u32 i;
-	size_t free_bytes;
+	u32 free_bytes;
 
 	if( !m_is_overflow_allowed ){
 		free_bytes = calc_free();
@@ -44,7 +44,7 @@ int Ring::write(const u8 * buf, size_t nbytes){
 	return nbytes;
 }
 
-int Ring::read(u8 * buf, size_t size){
+int Ring::read(u8 * buf, u32 size){
 	u32 i;
 
 	for(i=0; i < size; i++){
@@ -62,7 +62,7 @@ int Ring::read(u8 * buf, size_t size){
 	return i;
 }
 
-size_t Ring::calc_used() const {
+u32 Ring::calc_used() const {
 	if( m_head >= m_tail ){
 		return m_head - m_tail;
 	} else {
@@ -70,7 +70,7 @@ size_t Ring::calc_used() const {
 	}
 }
 
-size_t Ring::calc_free() const {
+u32 Ring::calc_free() const {
 	if( m_head >= m_tail ){
 		return m_size - (m_head - m_tail);
 	} else {

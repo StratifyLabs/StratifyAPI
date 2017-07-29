@@ -13,7 +13,9 @@ namespace hal {};
 #include "hal/Core.hpp"
 #include "hal/Eint.hpp"
 #include "hal/Fifo.hpp"
+#include "hal/Led.hpp"
 #include "hal/I2C.hpp"
+#include "hal/PinAssignment.hpp"
 #include "hal/Pin.hpp"
 #include "hal/Pwm.hpp"
 #include "hal/Rtc.hpp"
@@ -25,6 +27,7 @@ namespace hal {};
 #if !defined __link
 #include "hal/Display.hpp"
 #include "hal/DisplayDev.hpp"
+#include "hal/DevSignal.hpp"
 #endif
 
 using namespace hal;

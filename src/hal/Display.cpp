@@ -5,7 +5,7 @@
 
 namespace hal {
 
-void DisplayPalette::set_color(size_t v, u8 r, u8 g, u8 b){
+void DisplayPalette::set_color(u32 v, u8 r, u8 g, u8 b){
 	u8 * ptr = color(v);
 	if( ptr == 0 ){
 		return;
@@ -35,7 +35,7 @@ void DisplayPalette::set_colors(void * v, int count, int pixel_size, bool readon
 	m_colors.set(v, item().count*item().pixel_size, readonly);
 }
 
-u8 * DisplayPalette::color(size_t v) const {
+u8 * DisplayPalette::color(u32 v) const {
 	if( v < count() ){
 		return ((u8*)(item().colors)) + (v*pixel_size());
 	}

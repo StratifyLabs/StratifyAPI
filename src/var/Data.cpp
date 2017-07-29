@@ -18,7 +18,7 @@ const int Data::m_zero_value = 0;
 
 #define MIN_CHUNK_SIZE 56
 
-size_t Data::min_size(){
+u32 Data::min_size(){
 	return MIN_CHUNK_SIZE;
 }
 
@@ -26,11 +26,11 @@ Data::Data(){
 	zero();
 }
 
-Data::Data(void * mem, size_t s, bool readonly){
+Data::Data(void * mem, u32 s, bool readonly){
 	set(mem, s, readonly);
 }
 
-Data::Data(size_t s){
+Data::Data(u32 s){
 	alloc(s);
 }
 
@@ -46,7 +46,7 @@ Data::~Data(){
 	free();
 }
 
-void Data::set(void * mem, size_t s, bool readonly){
+void Data::set(void * mem, u32 s, bool readonly){
 
 	//free the data if it was previously allocated dynamically
 	free();
@@ -73,7 +73,7 @@ void Data::zero(){
 }
 
 
-int Data::alloc(size_t s, bool resize){
+int Data::alloc(u32 s, bool resize){
 
 	void * new_data;
 	if( (m_needs_free == false) && (m_mem != &m_zero_value) ){
@@ -105,7 +105,7 @@ int Data::alloc(size_t s, bool resize){
 	return 0;
 }
 
-int Data::set_min_capacity(size_t s){
+int Data::set_capacity(u32 s){
 	if( s <= capacity() ){
 		return 0;
 	}

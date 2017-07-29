@@ -5,6 +5,7 @@
 
 #ifndef __link
 
+#include <mcu/types.h>
 #include <pthread.h>
 #include "Sched.hpp"
 

@@ -6,7 +6,7 @@
 using namespace sys;
 
 
-int SignalEvent::set_handler(const SignalHandler & handler) const {
+int Signal::set_handler(const SignalHandler & handler) const {
 	if( handler.sigaction()->sa_flags & (1<<SA_SIGINFO) ){
 		return ::sigaction(m_signo, handler.sigaction(), 0);
 	} else {

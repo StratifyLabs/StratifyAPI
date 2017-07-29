@@ -106,10 +106,10 @@ public:
 };
 
 
-template<typename type, size_t n_items> class ListItemsTemplate : public ListTemplate<type, n_items> {
+template<typename type, u32 n_items> class ListItemsTemplate : public ListTemplate<type, n_items> {
 public:
 	ListItemsTemplate(const char * const label[], Element * parent = 0) : ListTemplate<type, n_items>(parent) {
-		size_t i;
+		u32 i;
 		for(i=0; i < this->size(); i++){
 			this->at_item(i)->set_label(label[i]);
 			this->at_item(i)->set_parent(this);
@@ -118,7 +118,7 @@ public:
 
 	ListItemsTemplate(const char * const label[], const sg_bitmap_hdr_t * const icon[], Element * parent = 0) :
 		ListTemplate<type, n_items>(parent) {
-		size_t i;
+		u32 i;
 		for(i=0; i < this->size(); i++){
 			this->at_item(i)->set_label(label[i]);
 			this->at_item(i)->set_app_icon(icon[i]);
@@ -134,7 +134,7 @@ template<int num_items> class ListItemSettingList : public ListItemsTemplate<Lis
 public:
 	ListItemSettingList(const char * const label[], const char * const key[], List * parent = 0) :
 		ListItemsTemplate<ListItemSetting, num_items>(label, parent) {
-		size_t i;
+		u32 i;
 		for(i=0; i < this->size(); i++){
 			this->at_item(i)->set_key(key[i]);
 		}
@@ -166,10 +166,10 @@ public:
 	 * @param i The offset within the list
 	 * @return A pointer to the object
 	 */
-	virtual ElementLinked & at(list_attr_size_t i);
+	virtual ElementLinked & at(list_attr_u32 i);
 
 	/*! \details Return the total entries in the list */
-	inline list_attr_size_t size() const { return m_size; }
+	inline list_attr_u32 size() const { return m_size; }
 
 	/*! \details This method changes the visibility of the file suffix in the list */
 	inline void set_suffix_visible(bool v = true){
@@ -196,12 +196,12 @@ protected:
 		FLAG_SUFFIX_VISIBLE = Element::FLAG_ELEMENT_TOTAL
 	};
 
-	inline void set_size(size_t total){ m_size = total; }
+	inline void set_size(u32 total){ m_size = total; }
 
 private:
 	sys::Dir m_dir;
 	/*! \todo List inherits ListAttr so the total entries should already be stored somewhere */
-	size_t m_size;
+	u32 m_size;
 	ListItem m_item;
 	void recount(void);
 	list_dir_callback_t m_callback;

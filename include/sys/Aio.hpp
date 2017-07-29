@@ -6,6 +6,7 @@
 
 #ifndef __link
 
+#include <cstring>
 #include <errno.h>
 #include <aio.h>
 
@@ -34,7 +35,7 @@ namespace sys {
  * 	Uart uart(0); //we will read/write data to UART port 0
  * 	Aio aio(buf.data(), buf.size()); //aio uses buf as it's data
  *
- * 	uart.init(2400); //init the UART with baudrate 2400
+ * 	uart.init(); //init the UART with default settings
  *
  *  //First a synchronous write
  * 	uart.write(buf.c_str(), buf.size());  //this will return when the bytes are written
@@ -57,6 +58,9 @@ namespace sys {
 class Aio {
 	friend class hal::Dev;
 public:
+
+	/*! \details Construct an empy AIO object. */
+	Aio(){ memset(&m_aio_var, 0, sizeof(struct aiocb)); }
 
 	/*! \details Constructs a new Aio object.
 	 *
@@ -104,6 +108,7 @@ public:
 
 	/*! \details Returns the buffer pointer. */
 	volatile void * buf() const { return m_aio_var.aio_buf; }
+
 	/*! \details Sets the buffer pointer.
 	 *
 	 * @param buf A pointer to the data buffer
@@ -117,22 +122,24 @@ public:
 
 	/*! \details Returns the number of bytes to transfer. */
 	int nbytes() const { return m_aio_var.aio_nbytes; }
+
 	/*! \details Returns the offset (or channel for Dac, Adc, Pwm, etc). */
 	int offset() const { return m_aio_var.aio_offset; }
+
 	/*! \details Sets the offset (or channcel for Dac, Adc, Pwm, etc). */
 	void set_offset(int offset){ m_aio_var.aio_offset = offset; }
+
 	/*! \details Returns the return value of the operation. */
 	int ret(){ return aio_return(&m_aio_var); }
+
 	/*! \details Returns the error number of the operation. */
 	int error(){ return aio_error(&m_aio_var); }
+
 	/*! \details Returns true if operation is complete. */
-	bool done() const {
-		if( aio_error(&m_aio_var) == EINPROGRESS ){
-			return false;
-		} else {
-			return true;
-		}
-	}
+	bool is_done() const { return !(aio_error(&m_aio_var) == EINPROGRESS); }
+
+	/*! \details Returns true if operation is still in progress. */
+	bool is_busy() const { return (aio_error(&m_aio_var) == EINPROGRESS); }
 
 	/*! \details Causes the calling thread to receive a signal when the operation
 	 * completes.
@@ -141,7 +148,7 @@ public:
 	 * @param value The signal value (passed as an argument to the handler if using siginfo)
 	 * @return Zero on success
 	 */
-	void signal(int number, int value){
+	void set_signal(int number, int value){
 		if( number >= 0 ){
 			m_aio_var.aio_sigevent.sigev_notify = SIGEV_SIGNAL;
 			m_aio_var.aio_sigevent.sigev_signo = number;
@@ -151,8 +158,7 @@ public:
 		}
 	}
 
-	/*! \details Returns true if operation is still in progress */
-	inline bool inprogress() const { return !done(); }
+
 
 private:
 	struct aiocb m_aio_var;

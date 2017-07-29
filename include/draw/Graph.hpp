@@ -17,10 +17,10 @@ public:
 	DataSet(){ set(0,0); }
 
 	/*! \brief Construct a data set with \a data and \a n_data points */
-	DataSet(float * data, size_t n_data){ set(data,n_data); }
+	DataSet(float * data, u32 n_data){ set(data,n_data); }
 
 	/*! \brief Returns the data at point \a i */
-	virtual float at(size_t i) const {
+	virtual float at(u32 i) const {
 		if( i < size() ){
 			return m_data[i];
 		}
@@ -28,7 +28,7 @@ public:
 	}
 
 	/*! \brief Returns the number of data points in the set */
-	virtual size_t size() const { return m_size; };
+	virtual u32 size() const { return m_size; };
 
 	/*! \brief Set the data pointer and number of points
 	 *
@@ -39,7 +39,7 @@ public:
 	 * @param data A pointer to the data
 	 * @param n The number of data points
 	 */
-	void set(const float * data, size_t n){
+	void set(const float * data, u32 n){
 		m_data = data; m_size = n;
 	}
 
@@ -50,7 +50,7 @@ public:
 
 private:
 	const float * m_data;
-	size_t m_size;
+	u32 m_size;
 };
 
 /*! \brief Graph Axis Class

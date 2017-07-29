@@ -150,7 +150,7 @@ int Bitmap::load(const char * path){
 	src = data();
 
 
-	if( f.read(src, hdr.size) != (ssize_t)hdr.size ){
+	if( f.read(src, hdr.size) != (s32)hdr.size ){
 		f.close();
 		return -1;
 	}
@@ -204,7 +204,7 @@ int Bitmap::save(const char * path) const{
 		return -1;
 	}
 
-	if( f.write(data(), hdr.size) != (ssize_t)hdr.size ){
+	if( f.write(data(), hdr.size) != (s32)hdr.size ){
 		f.close();
 		unlink(path);
 		return -1;

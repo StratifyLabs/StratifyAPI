@@ -50,22 +50,23 @@ public:
 	/*! \details Declare an empty string */
 	String();
 	/*! \details Declare an emtpy string of a specified capacity */
-	String(size_t capacity);
+	String(u32 capacity);
 	/*! \details Declare a string and initialize to \a s */
 	String(const char * s);
 	/*! \details Declare a string and initialize to \a s */
-	String(const char * s, size_t len);
+	String(const char * s, u32 len);
 
 	operator const char * () const { return c_str(); }
 
 
 	enum {
-		npos = (size_t)-1
+		npos = (u32)-1
 	};
 
-	String(char * mem, size_t cap, bool readonly = false);
+	String(char * mem, u32 cap, bool readonly = false);
 
-	inline int set_capacity(size_t s){ return Data::set_min_capacity(s+1); }
+
+	int set_capacity(u32 s){ return Data::set_capacity(s+1); }
 
 	/*! \details Assign a c-string */
 	String& operator=(const char * a){ assign(a); return *this; }
@@ -81,7 +82,10 @@ public:
 	 */
 	String& operator=(String & a){ assign(a.c_str()); return *this; }
 
+	/*! \details Appends a c style string go the string. The string will be resized to accept the character if needed. */
 	String& operator<<(const char * a){ append(a); return *this; }
+
+	/*! \details Appends a character to the string. */
 	String& operator<<(char c){ append(c); return *this; }
 
 
@@ -97,37 +101,54 @@ public:
 	float atoff() const;
 
 	/*! \details Get a sub string of the string */
-	String substr(size_t pos = 0, size_t len = npos) const;
+	String substr(u32 pos = 0, u32 len = npos) const;
 
 	/*! \details Insert \a s (zero terminated) into string at \a pos */
-	String& insert(size_t pos, const char * s);
+	String& insert(u32 pos, const char * s);
 
 	/*! \details Erase a portion of the string starting with the character at \a pos */
-	String& erase(size_t pos, size_t len = -1);
+	String& erase(u32 pos, u32 len = -1);
 
 	/*! \details Return character at \a pos */
-	char at(size_t pos) const;
+	char at(u32 pos) const;
 
-	int printf(const char * format, ...);
+	/*! \details Prints a formatted string to this String.
+	 *
+	 * @param format Formatted string
+	 * @return Total number of characters written to the string
+	 *
+	 * If the formatted string exceeds the length of the string capacity,
+	 * the formatted string will be truncated to fit.
+	 *
+	 */
+	int sprintf(const char * format, ...);
 
 
-	size_t capacity() const;
+	/*! \details Prints the string on the standard output.
+	 *
+	 * @return The total number of characters written to the stdout
+	 */
+	int printf(){ return ::printf("%s", c_str()); }
+
+
+
+	u32 capacity() const;
 
 	const char * c_str() const { return cdata_const(); }
 
 	/*! \details Return the length of the string */
-	size_t size() const { return strlen(c_str()); }
+	u32 size() const { return strlen(c_str()); }
 	/*! \details Return the length of the string */
-	inline size_t length() const { return size(); }
-	inline size_t len() const { return size(); }
+	inline u32 length() const { return size(); }
+	inline u32 len() const { return size(); }
 
 	/*! \details Test if string is empty */
 	bool empty() const { return size() == 0; }
 
 	/*! \details Assign a substring of \a a to string */
-	void assign(const char * a, size_t subpos, size_t sublen){ assign(a + subpos, sublen); }
+	void assign(const char * a, u32 subpos, u32 sublen){ assign(a + subpos, sublen); }
 	/*! \details Assign a maximum of \a n characters of \a a to string */
-	void assign(const char * a, size_t n);
+	void assign(const char * a, u32 n);
 	/*! \details Assign \a a (zero terminated) to string  */
 	void assign(const char * a);
 	/*! \details Append \a a (zero terminated) to string  */
@@ -143,8 +164,8 @@ public:
 	int calc_delimited_data_size(char sep = ',', char term = '\n');
 
 	/*! \details Copy a portion of the string to \a s */
-	size_t copy(char * s, size_t len, size_t pos = 0) const;
-	inline size_t copy(String & s, size_t n, size_t pos = 0) const {
+	u32 copy(char * s, u32 len, u32 pos = 0) const;
+	inline u32 copy(String & s, u32 n, u32 pos = 0) const {
 		return copy(s.cdata(), n, pos);
 	}
 
@@ -160,26 +181,26 @@ public:
 	 * @param pos The position to start searching
 	 * @return The position of the string or var::String::npos if the String was not found
 	 */
-	size_t find(const String & str, size_t pos = 0) const;
+	u32 find(const String & str, u32 pos = 0) const;
 
 	/*! \details Find a c string within the object */
-	size_t find(const char * str, size_t pos = 0) const;
+	u32 find(const char * str, u32 pos = 0) const;
 	/*! \details Find a character within the object */
-	size_t find(const char c, size_t pos = 0) const;
-	size_t find(const char * s, size_t pos, size_t n) const;
+	u32 find(const char c, u32 pos = 0) const;
+	u32 find(const char * s, u32 pos, u32 n) const;
 
-	size_t rfind(const String & str, size_t pos = 0) const;
-	size_t rfind(const char * str, size_t pos = 0) const;
-	size_t rfind(const char c, size_t pos = 0) const;
-	size_t rfind(const char * s, size_t pos, size_t n) const;
+	u32 rfind(const String & str, u32 pos = 0) const;
+	u32 rfind(const char * str, u32 pos = 0) const;
+	u32 rfind(const char c, u32 pos = 0) const;
+	u32 rfind(const char * s, u32 pos, u32 n) const;
 
 
 	int compare(const String & str) const;
-	int compare(size_t pos, size_t len, const String & str) const;
-	int compare(size_t pos, size_t len, const String & str, size_t subpos, size_t sublen) const;
+	int compare(u32 pos, u32 len, const String & str) const;
+	int compare(u32 pos, u32 len, const String & str, u32 subpos, u32 sublen) const;
 	int compare(const char * s) const;
-	int compare(size_t pos, size_t len, const char * s);
-	int compare(size_t pos, size_t len, const char * s, size_t n) const;
+	int compare(u32 pos, u32 len, const char * s);
+	int compare(u32 pos, u32 len, const char * s, u32 n) const;
 
 private:
 };

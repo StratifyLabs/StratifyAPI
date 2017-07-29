@@ -89,7 +89,7 @@ int Bmp::create(const char * name, s32 width, s32 height, u16 planes, u16 bits_p
 	return 0;
 }
 
-int Bmp::create_appfs(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, size_t nbyte){
+int Bmp::create_appfs(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, u32 nbyte){
 	bmp_header_t hdr;
 	bmp_dib_t dib;
 

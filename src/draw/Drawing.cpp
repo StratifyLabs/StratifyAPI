@@ -5,9 +5,9 @@
 #include "draw/Drawing.hpp"
 using namespace draw;
 
-drawing_size_t Drawing::m_scale = 100;
+drawing_u32 Drawing::m_scale = 100;
 
-static sg_int_t scale_to_bitmap(drawing_size_t d, sg_size_t s, drawing_size_t max){
+static sg_int_t scale_to_bitmap(drawing_u32 d, sg_size_t s, drawing_u32 max){
 	int tmp;
 	tmp = (d * s + max/2) / max;
 	return tmp;
@@ -20,7 +20,7 @@ drawing_point_t draw::drawing_point(drawing_int_t x, drawing_int_t y){
 	return p;
 }
 
-drawing_dim_t draw::drawing_dim(drawing_size_t w, drawing_size_t h){
+drawing_dim_t draw::drawing_dim(drawing_u32 w, drawing_u32 h){
 	drawing_dim_t d;
 	d.w = w;
 	d.h = h;
@@ -43,11 +43,11 @@ void DrawingAttr::set(Bitmap & b, drawing_point_t p, drawing_dim_t d, Bitmap * s
 	set_scratch(scratch);
 }
 
-drawing_size_t DrawingAttr::calc_w(drawing_size_t v) const {
+drawing_u32 DrawingAttr::calc_w(drawing_u32 v) const {
 	return m_attr.d.w * v / Drawing::scale();
 }
 
-drawing_size_t DrawingAttr::calc_h(drawing_size_t v) const {
+drawing_u32 DrawingAttr::calc_h(drawing_u32 v) const {
 	return m_attr.d.h * v / Drawing::scale();
 }
 
@@ -67,7 +67,7 @@ DrawingAttr DrawingAttr::operator+ (drawing_dim_t d) const {
 	return attr;
 }
 
-drawing_dim_t DrawingAttr::calc_square(drawing_size_t v) const {
+drawing_dim_t DrawingAttr::calc_square(drawing_u32 v) const {
 	drawing_dim_t dim;
 	if( w() > h() ){
 		dim = calc_square_h(v);
@@ -77,7 +77,7 @@ drawing_dim_t DrawingAttr::calc_square(drawing_size_t v) const {
 	return dim;
 }
 
-drawing_dim_t DrawingAttr::calc_square_w(drawing_size_t v) const {
+drawing_dim_t DrawingAttr::calc_square_w(drawing_u32 v) const {
 	u32 pixel_width;
 	u32 drawing_height;
 	drawing_dim_t dim;
@@ -89,7 +89,7 @@ drawing_dim_t DrawingAttr::calc_square_w(drawing_size_t v) const {
 	return dim;
 }
 
-drawing_dim_t DrawingAttr::calc_square_h(drawing_size_t v) const {
+drawing_dim_t DrawingAttr::calc_square_h(drawing_u32 v) const {
 	u32 pixel_height;
 	u32 drawing_width;
 	drawing_dim_t dim;
@@ -123,11 +123,11 @@ DrawingScaledAttr DrawingScaledAttr::operator+ (sg_dim_t d) const {
 	return attr;
 }
 
-sg_size_t DrawingScaledAttr::calc_w(drawing_size_t v) const {
+sg_size_t DrawingScaledAttr::calc_w(drawing_u32 v) const {
 	return m_attr.d.w * v / Drawing::scale();
 }
 
-sg_size_t DrawingScaledAttr::calc_h(drawing_size_t v) const {
+sg_size_t DrawingScaledAttr::calc_h(drawing_u32 v) const {
 	return m_attr.d.h * v / Drawing::scale();
 }
 

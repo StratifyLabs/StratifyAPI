@@ -32,7 +32,7 @@ namespace sys {
  *
  * int main(int argc, char * argv[]){
  * 	SignalHandler handler(my_handler);
- * 	SignalEvent event(SIGINT);
+ * 	Signal event(SIGINT);
  *
  * 	wait_for_signal = true;
  *
@@ -83,8 +83,42 @@ private:
 };
 
 /*! \brief Class for sending Signal events (see SignalHandler for an example) */
-class SignalEvent {
+class Signal {
 public:
+
+	enum {
+		ABRT /*! Abort signal, default action is to abort */ = SIGABRT,
+		ALRM /*! Alarm signal, default action is to terminate */ = SIGALRM,
+		BUS /*! Bus signal, default action is to abort */ = SIGBUS,
+		CHLD /*! Child signal, default action is to ignore */ = SIGCHLD,
+		CONT /*! Continue signal, default action is to continue */ = SIGCONT,
+		FPE /*! FPE signal, default action is to abort */ = SIGFPE,
+		HUP /*! Hangup signal, default action is to terminate */ = SIGHUP,
+		ILL /*! Illegal signal, default action is to abort */ = SIGILL,
+		INT /*! Interrupt signal, default action is to terminate */ = SIGINT,
+		KILL /*! Kill signal, default action is to terminate (cannot be caught or ignored) */ = SIGKILL,
+		PIPE /*! Pipe signal, default action is to terminate */ = SIGPIPE,
+		QUIT /*! Quit signal, default action is to abort */ = SIGQUIT,
+		SEGV /*! Segmentation signal, default action is to abort */ = SIGSEGV,
+		STOP /*! Stop signal, default action is to stop (cannot be caught or ignored) */ = SIGSTOP,
+		TERM /*! Terminal signal, default action is to terminate */ = SIGTERM,
+		TSTP /*! TSTP signal, default action is to stop */ = SIGTSTP,
+		TTIN /*! TTIN signal, default action is to stop */ = SIGTTIN,
+		TTOU /*! TTOU signal, default action is to stop */ = SIGTTOU,
+		USR1 /*! User signal, default action is to terminate */ = SIGUSR1,
+		USR2 /*! User signal, default action is to terminate */ = SIGUSR2,
+		POLL /*! Poll signal, default action is to terminate */ = SIGPOLL,
+		PROF /*! PROF signal, default action is to terminate */ = SIGPROF,
+		SYS /*! System signal, default action is to abort */ = SIGSYS,
+		TRAP /*! Trap signal, default action is to abort */ = SIGTRAP,
+		URG /*! URG signal, default action is to ignore */ = SIGURG,
+		TALRM /*! TALRM signal, default action is to terminate */ = SIGVTALRM,
+		XCPU /*! XCPU signal, default action is to abort */ = SIGXCPU,
+		XFSZ /*! XFSZ signal, default action is to abort */ = SIGXFSZ,
+		RTMIN /*! Real time signal, default action is to ignore */ = SIGRTMIN,
+		RT /*! Real time signal, default action is to ignore */ = SIGRTMIN + 1,
+		RTMAX /*! Real time signal, default action is to ignore */ = SIGRTMAX,
+	};
 
 	/*! \details Constructs an event based on a signal number.
 	 *
@@ -92,7 +126,7 @@ public:
 	 * @param sigvalue The signal value
 	 *
 	 */
-	SignalEvent(int signo, int sigvalue = 0){ m_signo = signo; m_sigvalue.sival_int = sigvalue; }
+	Signal(int signo, int sigvalue = 0){ m_signo = signo; m_sigvalue.sival_int = sigvalue; }
 
 	/*! \details Returns a UI Event based on this signal event. */
 	ui::Event event(){ return ui::Event(ui::Event::SIGNAL, this); }
@@ -131,102 +165,17 @@ public:
 	 */
 	int set_handler(const SignalHandler & handler) const;
 
+	/*! \details Returns the signal number */
 	int signo() const { return m_signo; }
+	/*! \details Returns the signal value */
 	int sigvalue() const { return m_sigvalue.sival_int; }
+	/*! \details Returns the signal pointer */
 	void * sigptr() const { return m_sigvalue.sival_ptr; }
 
 private:
 	int m_signo;
 	union sigval m_sigvalue;
 
-};
-
-/*! \brief Class for bridging physical events with Signal events */
-/*! \details This class allows you to configure physical events
- * to trigger signals.  For example, a rising edge on a pin
- * can cause the system to send a signal to a thread.  Here is an example:
- * \code
- *
- * #include <stfy/sys.hpp>
- * #include <stfy/hal.hpp>
- *
- * volatile bool my_var;
- * void my_handler(int a){
- * 	//this executes on the rising edge of EINT0
- * 	my_var = true;
- * 	//you shouldn't use any non re-entrant functions here (such as printf() and malloc())
- *
- * }
- *
- * int main(int argc, char * argv[]){
- * 	Eint eint(0);
- *
- * 	SignalEventPhy phy_event(true, SIGUSR1);  //send SIGUSR1 to this thread on every rising edge
- * 	SignalHandler handler(my_handler);
- *
- * 	eint.init(0);
- * 	phy_event.set_handler(handler);
- *
- * 	//this configures the hardware to send the signal to this thread (my_handler() will execute)
- * 	//phy_event MUST exist as long as this action is set
- * 	eint.set_action( phy_event.action(EINT_ACTION_EVENT_RISING) );
- *
- * 	while(my_var == false){
- * 		Timer::wait_sec(1);
- * 	}
- *
- * 	return 0;
- * }
- *
- *
- * \endcode
- */
-class SignalEventDev: public SignalEvent {
-public:
-
-	/*! \details Constructs a signal event based on a hardware device action.
-	 *
-	 * @param persistent If false, the signal will be sent only on the first hardware event
-	 * @param signo The signal number
-	 * @param sigcode The signal code
-	 * @param sigvalue The signal value
-	 */
-	SignalEventDev(bool persistent, int signo, int sigcode = 0, int sigvalue = 0) : SignalEvent(signo){
-		m_context.tid = pthread_self();
-		m_context.si_sigcode = sigcode;
-		m_context.si_signo = signo;
-		m_context.keep = persistent;
-		m_context.sig_value = sigvalue;
-	}
-
-
-	/*! \details Constructs a signal event based on a hardware device action using a signal_callback_t data structure.
-	 *
-	 * @param context A copy of the signal_callback_t data to use to handle the event.
-	 */
-	SignalEventDev(signal_callback_t context) : SignalEvent(context.si_signo){
-		this->m_context = context;
-	}
-
-	/*! \details This returns a mcu_action_t data structure that can
-	 * be used to set the action associated with a hardware event.
-	 *
-	 * @param event The hardware event
-	 * @param channel The hardware channel
-	 * @return a copy of a mcu_action_t data structure
-	 *
-	 */
-	mcu_action_t action(int event, int channel = 0){
-		mcu_action_t a;
-		a.handler.callback = signal_callback;
-		a.handler.context = &m_context;
-		a.channel = channel;
-		a.o_events = event;
-		return a;
-	}
-
-private:
-	signal_callback_t m_context;
 };
 
 };

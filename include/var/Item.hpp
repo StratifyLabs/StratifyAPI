@@ -11,14 +11,29 @@ namespace var {
 /*! \brief Abstract Item for storing binary data */
 class ItemObject {
 public:
+	/*! \details Saves the item to a file.
+	 *
+	 * @param path The path to the file
+	 * @return Zero on success
+	 */
 	virtual int save(const char * path) const;
+
+	/*! \details Loads the item from a file.
+	 *
+	 * @param path The path to the file
+	 * @return Zero on success
+	 */
 	virtual int load(const char * path);
-	void clear();
+
+	/*! \details Clears the data in the item. */
+	virtual void clear();
+
+	/*! \details Returns the size of the item */
+	virtual u32 size() const = 0;
 
 protected:
 	virtual void * data_void() = 0;
 	virtual const void * data_void_const() const = 0;
-	virtual size_t size() const = 0;
 
 };
 
@@ -33,19 +48,21 @@ public:
 	/*! \details Create an Item by making a copy of \a item */
 	inline Item(const data_type * item){ set(item); }
 
-	/*! \details This operator will return a copy of underlying binary data type. */
-	operator data_type() const { return m_item; }
+	/*! \details This operator will return a reference of underlying binary data type. */
+	operator const data_type & () const { return m_item; }
+
+	operator const data_type * () const { return &m_item; }
 
 	inline const data_type & item() const { return m_item; }
 	/*! \details This gives read-only access to the item and items members */
 	inline const data_type & value() const { return m_item; }
 	/*! \details This method returns the size of the item */
-	inline size_t size() const { return sizeof(data_type); }
+	inline u32 size() const { return sizeof(data_type); }
 	/*! \details This returns a read-only pointer to the item */
 	inline const data_type * data_const() const { return &m_item; }
 
 protected:
-	inline void set(const data_type * item){ memcpy(&m_item, item, sizeof(m_item)); }
+	inline void set(const data_type * item){ memcpy(&m_item, item, size()); }
 	inline void set(const data_type & item){ set(&item); }
 	inline data_type * data() { return &m_item; }
 

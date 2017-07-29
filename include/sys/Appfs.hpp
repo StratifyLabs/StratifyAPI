@@ -67,6 +67,24 @@ public:
 	/*! \details Returns the page size for writing data. */
 	static int page_size(){ return APPFS_PAGE_SIZE; }
 
+	/*! \details Gets the info associated with the file.
+	 *
+	 * @param path The path to the file (must be in the /app folder)
+	 * @param info A reference to the destination info
+	 * @return Zero on success
+	 */
+	static int get_info(const char * path, appfs_info_t & info);
+
+	/*! \details Gets the application version.
+	 *
+	 * @param path The path to the file (must be in the /app folder)
+	 * @return The BCD version of the file
+	 *
+	 * For example, the BCD representation of version "1.1" is 0x0101.
+	 *
+	 */
+	static u16 get_version(const char * path);
+
 #if !defined __link
 	static int cleanup(bool data = false);
 #endif

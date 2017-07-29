@@ -33,18 +33,17 @@ public:
 
 	enum {
 		FLAG_LEFT_JUSTIFIED = ADC_FLAG_IS_LEFT_JUSTIFIED,
-		FLAG_RIGHT_JUSTIFIED = ADC_FLAG_IS_RIGHT_JUSTIFIED
+		FLAG_RIGHT_JUSTIFIED = ADC_FLAG_IS_RIGHT_JUSTIFIED,
 	};
-
 
 	int set_attr(u32 o_flags, u32 freq, const adc_pin_assignment_t * pin_assignment = 0) const {
 		adc_attr_t attr;
+		attr.o_flags = o_flags;
 		if( pin_assignment != 0 ){
 			memcpy(&attr.pin_assignment, pin_assignment, sizeof(adc_pin_assignment_t));
 		} else {
 			memset(&attr.pin_assignment, 0xff, sizeof(adc_pin_assignment_t));
 		}
-		attr.o_flags = o_flags;
 		attr.freq = freq;
 		return Periph::set_attr(attr);
 	}
@@ -64,6 +63,9 @@ public:
 		}
 		return set_attr(o_flags, freq, pin_assignment);
 	}
+
+	using Periph::init;
+	using Periph::set_attr;
 
 
 #ifdef __MCU_ONLY__

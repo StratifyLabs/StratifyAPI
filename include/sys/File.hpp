@@ -245,7 +245,7 @@ public:
 	/*! \details ioctl() with just a request */
 	int ioctl(int req) const { return ioctl(req, (void*)NULL); }
 	/*! \details ioctl() with request and integer arg */
-	int ioctl(int req, int arg) const { return ioctl(req, (void*)(size_t)arg); }
+	int ioctl(int req, int arg) const { return ioctl(req, (void*)(u32)arg); }
 
 
 protected:

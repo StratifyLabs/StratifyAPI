@@ -13,9 +13,9 @@ namespace sys {
 /*! \brief Kernel Class
  * \details This class allows access to kernel attributes and functions.
  */
-class Kernel : public hal::Dev {
+class Sys : public hal::Dev {
 public:
-	Kernel();
+	Sys();
 
 	enum {
 		LAUNCH_OPTIONS_FLASH /*! \brief Install in flash memory */ = APPFS_FLAG_IS_FLASH,
@@ -71,6 +71,20 @@ public:
 	 * \sa free_ram()
 	 */
 	static int reclaim_ram(const char * path, link_transport_mdriver_t * driver = 0);
+
+	/*! \details Gets the version (system/board version).
+	 *
+	 * @param version The destination string for the version
+	 * @return Zero on success
+	 */
+	static int get_version(var::String & version, link_transport_mdriver_t * driver = 0);
+
+	/*! \details Gets the version (kernel version).
+	 *
+	 * @param version The destination string for the version
+	 * @return Zero on success
+	 */
+	static int get_kernel_version(var::String & version, link_transport_mdriver_t * driver = 0);
 
 #if !defined __link
 	/*! \details Puts the kernel in powerdown mode.

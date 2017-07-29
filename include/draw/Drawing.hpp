@@ -10,7 +10,7 @@
 namespace draw {
 
 /*! \details Drawing size (unsigned) */
-typedef u16 drawing_size_t;
+typedef u16 drawing_u32;
 /*! \details Drawing position (signed) */
 typedef s16 drawing_int_t;
 
@@ -22,8 +22,8 @@ typedef struct MCU_PACK {
 
 /*! \brief Holds a dimension in the drawing system */
 typedef struct MCU_PACK {
-	drawing_size_t w /*! Width of the object */;
-	drawing_size_t h /*! Height of the object */;
+	drawing_u32 w /*! Width of the object */;
+	drawing_u32 h /*! Height of the object */;
 } drawing_dim_t;
 
 
@@ -62,7 +62,7 @@ drawing_point_t drawing_point(drawing_int_t x, drawing_int_t y);
  * @param h Height of the retured data
  * @return A drawing_dim_t with w and h populated as specified
  */
-drawing_dim_t drawing_dim(drawing_size_t w, drawing_size_t h);
+drawing_dim_t drawing_dim(drawing_u32 w, drawing_u32 h);
 
 /*! \brief Drawing Attribute Class
  * \details This class contains the information needed to draw various
@@ -97,7 +97,7 @@ public:
 	void set_dim(drawing_dim_t d){ m_attr.d = d; }
 
 	/*! \details Set the dimensions.  Both width and height are from 0 to 1000. */
-	void set_dim(drawing_size_t w, drawing_size_t h){ m_attr.d.w = w; m_attr.d.h = h; }
+	void set_dim(drawing_u32 w, drawing_u32 h){ m_attr.d.w = w; m_attr.d.h = h; }
 
 	/*! \details Set the location.  Both x and y are from 0 to 1000. */
 	void set_point(drawing_point_t p){ m_attr.p = p; }
@@ -106,9 +106,9 @@ public:
 	void set_point(drawing_int_t x, drawing_int_t y){ m_attr.p.x = x; m_attr.p.y = y; }
 
 	/*! \details Return the width */
-	drawing_size_t w() const { return m_attr.d.w; }
+	drawing_u32 w() const { return m_attr.d.w; }
 	/*! \details Return the height */
-	drawing_size_t h() const { return m_attr.d.h; }
+	drawing_u32 h() const { return m_attr.d.h; }
 	/*! \details Return the x value */
 	drawing_int_t x() const { return m_attr.p.x; }
 	/*! \details Return the y value */
@@ -132,10 +132,10 @@ public:
 	drawing_attr_t & attr(){ return m_attr; }
 
 	/*! \details Calculate the scaled width (width of object on the bitmap) */
-	drawing_size_t calc_w(drawing_size_t v) const;
+	drawing_u32 calc_w(drawing_u32 v) const;
 
 	/*! \details Calculate the scaled height (height of object on the bitmap) */
-	drawing_size_t calc_h(drawing_size_t v) const;
+	drawing_u32 calc_h(drawing_u32 v) const;
 
 	/*! \details Add a drawing_point_t offset */
 	DrawingAttr operator+ (drawing_point_t d) const;
@@ -147,7 +147,7 @@ public:
 	 * @param v The maximum width or height
 	 * @return Square dimensions
 	 */
-	drawing_dim_t calc_square(drawing_size_t v) const;
+	drawing_dim_t calc_square(drawing_u32 v) const;
 
 	/*! \details Calculate dimensions that will map to the bitmap as a square
 	 * with the given width.
@@ -155,7 +155,7 @@ public:
 	 * @param v The width (height will be calculated)
 	 * @return Square dimensions
 	 */
-	drawing_dim_t calc_square_w(drawing_size_t v) const;
+	drawing_dim_t calc_square_w(drawing_u32 v) const;
 
 	/*! \details Calculate dimensions that will map to the bitmap as a square
 	 * with the given height.
@@ -163,7 +163,7 @@ public:
 	 * @param v The height (width will be calculated)
 	 * @return Square dimensions
 	 */
-	drawing_dim_t calc_square_h(drawing_size_t v) const;
+	drawing_dim_t calc_square_h(drawing_u32 v) const;
 
 
 private:
@@ -227,8 +227,8 @@ public:
 	 * @param v Unscaled drawing dimensions
 	 * @return
 	 */
-	sg_size_t calc_w(drawing_size_t v) const;
-	sg_size_t calc_h(drawing_size_t v) const;
+	sg_size_t calc_w(drawing_u32 v) const;
+	sg_size_t calc_h(drawing_u32 v) const;
 
 
 private:
@@ -275,7 +275,7 @@ public:
 	 */
 	virtual void draw(const DrawingAttr & attr);
 	virtual void draw_scratch(const DrawingAttr & attr);
-	void draw(sgfx::Bitmap & b, drawing_int_t x, drawing_int_t y, drawing_size_t w, drawing_size_t h);
+	void draw(sgfx::Bitmap & b, drawing_int_t x, drawing_int_t y, drawing_u32 w, drawing_u32 h);
 
 	/*! \details This method will set the pixels in the area of the bitmap
 	 * specified.
@@ -305,10 +305,10 @@ public:
 	 * The default value is 1000. This means a value of 500 is half the target bitmap.
 	 *
 	 */
-	static inline drawing_size_t scale(){ return 1000; }
+	static inline drawing_u32 scale(){ return 1000; }
 
 	/*! \brief Sets the scale value (see Element::scale() for details) */
-	static inline void set_scale(drawing_size_t s){ m_scale = s; }
+	static inline void set_scale(drawing_u32 s){ m_scale = s; }
 
 	/*! \details This methods draws the drawing on the specified attributes.
 	 *
@@ -360,7 +360,7 @@ public:
 
 protected:
 
-	sg_point_t point_on_bitmap(sgfx::Bitmap & b, drawing_size_t x, drawing_size_t y, sg_dim_t d);
+	sg_point_t point_on_bitmap(sgfx::Bitmap & b, drawing_u32 x, drawing_u32 y, sg_dim_t d);
 	sg_dim_t dim_on_bitmap(sgfx::Bitmap & b) const;
 
 	enum {
@@ -386,7 +386,7 @@ protected:
 
 private:
 	u32 m_flags;
-	static drawing_size_t m_scale;
+	static drawing_u32 m_scale;
 
 
 };

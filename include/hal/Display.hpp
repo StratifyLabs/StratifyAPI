@@ -66,7 +66,7 @@ public:
 	 * will be set in the palette to match that format.
 	 *
 	 */
-	void set_color(size_t v, u8 r, u8 g, u8 b);
+	void set_color(u32 v, u8 r, u8 g, u8 b);
 
 	/*! \details Returns the pixel format. */
 	u8 pixel_format() const { return item().pixel_format; }
@@ -80,7 +80,7 @@ public:
 	 * @param v The color index
 	 * @return A pointer to the color
 	 */
-	u8 * color(size_t v) const;
+	u8 * color(u32 v) const;
 
 private:
 

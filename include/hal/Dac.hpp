@@ -47,6 +47,11 @@ class Dac : public Periph<dac_info_t, dac_attr_t, 'd'> {
 public:
 	Dac(port_t port);
 
+	enum {
+		FLAG_LEFT_JUSTIFIED = DAC_FLAG_IS_LEFT_JUSTIFIED,
+		FLAG_RIGHT_JUSTIFIED = DAC_FLAG_IS_RIGHT_JUSTIFIED,
+	};
+
 	using Periph::set_attr;
 
 	/*! \details Sets the DAC attributes using specified values.
@@ -58,12 +63,12 @@ public:
 	 */
 	int set_attr(u32 o_flags, u32 freq, const dac_pin_assignment_t * pin_assignment = 0) const {
 		dac_attr_t attr;
+		attr.o_flags = o_flags;
 		if( pin_assignment != 0 ){
 			memcpy(&attr.pin_assignment, pin_assignment, sizeof(dac_pin_assignment_t));
 		} else {
 			memset(&attr.pin_assignment, 0xff, sizeof(dac_pin_assignment_t));
 		}
-		attr.o_flags = o_flags;
 		attr.freq = freq;
 		return set_attr(attr);
 	}
@@ -96,6 +101,8 @@ public:
 		return Periph::get_channel(loc, I_DAC_GET);
 	}
 
+	using Periph::init;
+	using Periph::set_attr;
 
 private:
 

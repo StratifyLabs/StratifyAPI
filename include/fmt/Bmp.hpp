@@ -44,7 +44,7 @@ public:
 	int create(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel);
 
 	/*! \details Creates a new bitmap and save it to the /app filesystem (flash memory). */
-	static int create_appfs(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, size_t nbyte);
+	static int create_appfs(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, u32 nbyte);
 
 	/*! \details Moves file pointer to the start of the bitmap data. */
 	void rewind(){ seek(m_offset); }

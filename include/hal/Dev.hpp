@@ -120,7 +120,8 @@ public:
 	/*! \details Writes the device asynchronously.
 	 *
 	 * \sa Aio
-	 */	virtual int write(sys::Aio & aio) const;
+	 */
+	virtual int write(sys::Aio & aio) const;
 
 	using File::read;
 	using File::write;
