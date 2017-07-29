@@ -61,7 +61,7 @@ private:
  *
  * \code
  * #include <cstdio>
- * #include <stfy/hal.hpp>
+ * #include <sapi/hal.hpp>
  *
  * Fifo fifo;
  * FifoInfo attr;

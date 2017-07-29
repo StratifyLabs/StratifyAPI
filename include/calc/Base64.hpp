@@ -14,7 +14,7 @@ namespace calc {
  *
  * To encode data in Base 64 format use this code:
  * \code
- * #include <stfy/calc.hpp>
+ * #include <sapi/calc.hpp>
  *
  * u8 raw_data[64]; //raw binary data that needs to be encoded
  * char * encoded_data;
@@ -28,7 +28,7 @@ namespace calc {
  * You can then decode the data using this code snippet:
  *
  * \code
- * #include <stfy/calc.hpp>
+ * #include <sapi/calc.hpp>
  *
  * char encoded_data[64]; //Base64 encoded data that needs to be decoded
  * u8 * raw_data;
@@ -55,7 +55,7 @@ public:
 	 * @return Number of bytes in the encoded string
 	 *
 	 * \code
-	 * #include <stfy/calc.hpp>
+	 * #include <sapi/calc.hpp>
 	 *
 	 * u8 raw_data[64]; //raw binary data that needs to be encoded
 	 * char * encoded_data;
@@ -68,6 +68,7 @@ public:
 	 *
 	 */
 	static int encode(char * dest, const void * src, int nbyte);
+
 	/*! \details Calculates encoded size of \a nbyte.  This function
 	 * can be used to allocate memory for a buffer that can
 	 * be used to hold encoded data.
@@ -79,6 +80,7 @@ public:
 	 *
 	 */
 	static int calc_encoded_size(int nbyte);
+
 	/*! \details Decodes base64 encoded data.
 	 *
 	 * @param dest Pointer to destination memory (binary format)
@@ -87,7 +89,7 @@ public:
 	 * @return Zero
 	 *
 	 * \code
-	 * #include <stfy/calc.hpp>
+	 * #include <sapi/calc.hpp>
 	 *
 	 * char encoded_data[64]; //Base64 encoded data that needs to be decoded
 	 * u8 * raw_data;
@@ -100,6 +102,7 @@ public:
 	 *
 	 */
 	static int decode(void * dest, const char * src, int nbyte);
+
 	/*! \details Calculates decoded size of \a nbyte.  This function
 	 * can be used to allocate memory for a buffer that can
 	 * be used to hold decoded data.

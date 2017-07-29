@@ -8,12 +8,17 @@
 
 namespace hal {
 
+/*! \brief ADC Pin Assignment
+ * \details This class allows simple manipulation of the adc_pin_assignment_t.
+ */
+class AdcPinAssignment : public PinAssignment<adc_pin_assignment_t>{};
+
 
 /*! \brief ADC Peripheral Class
  * \details This class implements ADC device peripherals.
  *
  * \code
- * #include <stfy/hal.hpp>
+ * #include <sapi/hal.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	Adc adc(0);  //create an instance of ADC to access port 0

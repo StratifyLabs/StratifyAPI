@@ -10,6 +10,9 @@
 
 namespace hal {
 
+/*! \brief PWM Pin Assignment
+ * \details This class allows simple manipulation of the pwm_pin_assignment_t.
+ */
 class PwmPinAssignment : public PinAssignment<pwm_pin_assignment_t>{};
 
 /*! \brief PWM Class
@@ -18,7 +21,7 @@ class PwmPinAssignment : public PinAssignment<pwm_pin_assignment_t>{};
  * Here is an example of how to use the Pwm class
  *
  * \code
- * #include <stfy/hal.hpp>
+ * #include <sapi/hal.hpp>
  *
  *
  * Pwm pwm(1); //use PWM port 1

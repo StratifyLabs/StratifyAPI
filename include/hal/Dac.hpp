@@ -8,26 +8,31 @@
 
 namespace hal {
 
+/*! \brief DAC Pin Assignment
+ * \details This class allows simple manipulation of the dac_pin_assignment_t.
+ */
+class DacPinAssignment : public PinAssignment<dac_pin_assignment_t>{};
+
 /*! \brief DAC Class
  * \details DAC (Digital to Analog Converter) Class
  *
  * The DAC class is used to write data to the digital to analog converter.  Here is an example:
  *
  * \code
- * #include <stfy/hal.hpp>
- * #include <stfy/Sys.hpp>
+ * #include <sapi/hal.hpp>
+ * #include <sapi/sys.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	Dac dac(0);
  * 	dac_sample_t samples[50];
- * 	dac.init(1<<0, 50000); //enable channel 0 at 50KHz
+ * 	dac.init(); //init with default settings
  *
  *  //here, write meaningful values to samples
  *
- * 	dac.write(0, samples, 50*sizeof(dac_sample_t)); //This returns when all 50 samples are written
+ * 	dac.write(0, samples, 50*sizeof(u32)); //This returns when all 50 samples are written
  *
  *  //if you want to do other things while the sample is written use AIO
- * 	Aio aio(samples, 50*sizeof(dac_sample_t));
+ * 	Aio aio(samples, 50*sizeof(u32));
  *
  * 	dac.write(aio);
  *  //Here you can do other things while the data is written

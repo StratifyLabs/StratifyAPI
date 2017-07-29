@@ -35,8 +35,8 @@ namespace calc {
  * - error variable: the different between the desired temperature output and the present temperature output
  *
  * \code
- * #include <stfy/calc.hpp>
- * #include <stfy/hal.hpp>
+ * #include <sapi/calc.hpp>
+ * #include <sapi/hal.hpp>
  *
  * Pid_f pid_loop;
  * Pwm control(0);

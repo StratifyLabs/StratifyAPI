@@ -10,13 +10,18 @@
 
 namespace hal {
 
+/*! \brief UART Pin Assignment
+ * \details This class allows simple manipulation of the uart_pin_assignment_t.
+ */
+class UartPinAssignment : public PinAssignment<uart_pin_assignment_t>{};
+
 /*! \brief UART Class
  * \details This class implements a serial UART port.
  *
  * Here is an example of how to use the UART.
  *
  * \code
- * #include <stfy/hal.hpp>
+ * #include <sapi/hal.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	Uart uart(0); //use UART0
@@ -32,7 +37,7 @@ namespace hal {
  * to read the UART without blocking until a byte arrives, you can use non-blocking mode.
  *
  * \code
- * #include <stfy/hal.hpp>
+ * #include <sapi/hal.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	Uart uart(0);

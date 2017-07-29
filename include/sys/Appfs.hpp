@@ -14,7 +14,7 @@ namespace sys {
  * The following is a basic example of creating a data file in flash and then reading from it.
  *
  * \code
- * #include <stfy/sys.hpp>
+ * #include <sapi/sys.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	char my_user_data[16];
@@ -29,7 +29,7 @@ namespace sys {
  * to filesystems built on external chips.
  *
  * \code
- * #include <stfy/sys.hpp>
+ * #include <sapi/sys.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	char my_user_data[16];

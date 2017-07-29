@@ -13,7 +13,7 @@ namespace var {
  * either read/write or read-only.
  *
  * \code
- * #include <stfy/var.hpp>
+ * #include <sapi/var.hpp>
  *
  *
  * const char buffer_const[16];

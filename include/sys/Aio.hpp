@@ -26,9 +26,9 @@ namespace sys {
  * This can be avoided by using the Aio class.  Consider the following example:
  *
  * \code
- * #include <stfy/hal.hpp>
- * #include <stfy/sys.hpp>
- * #include <stfy/var.hpp>
+ * #include <sapi/hal.hpp>
+ * #include <sapi/sys.hpp>
+ * #include <sapi/var.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	String buf = "Hello World!\n";

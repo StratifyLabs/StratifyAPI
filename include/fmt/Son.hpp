@@ -6,7 +6,7 @@
 #include <mcu/types.h>
 #include <cstring>
 #include <unistd.h>
-#include <stfy/son.h>
+#include <sapi/son.h>
 
 #if defined __link
 #include <sos/link.h>
@@ -33,7 +33,7 @@ namespace fmt {
  *
  * \code
  *
- * #include <stfy/fmt.hpp>
+ * #include <sapi/fmt.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	Son son<4>; //depth is limited to 4
@@ -254,7 +254,7 @@ public:
 	 * when writing begins.
 	 *
 	 * \code
-	 * #include <stfy/Var.hpp>
+	 * #include <sapi/Var.hpp>
 	 * Son son<4>;
 	 *
 	 * son.create("/home/data.son");

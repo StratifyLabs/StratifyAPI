@@ -22,7 +22,7 @@ namespace sys {
  *
  * Here is an example of using the timer to time events.
  * \code
- * #include <stfy/Sys.hpp>
+ * #include <sapi/Sys.hpp>
  *
  *
  * int main(int argc, char * argv[]){

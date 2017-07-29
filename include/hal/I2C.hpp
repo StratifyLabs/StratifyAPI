@@ -10,19 +10,24 @@
 
 namespace hal {
 
+/*! \brief I2C Pin Assignment
+ * \details This class allows simple manipulation of the i2c_pin_assignment_t.
+ */
+class I2CPinAssignment : public PinAssignment<i2c_pin_assignment_t>{};
+
 /*! \brief I2C Peripheral Class
  * \details This class implements I2C device peripherals.
  *
- * A normal I2C transfer (I2C::SETUP_NORMAL_TRANSFER) updates the register
+ * An I2C ptr/data transfer (I2C::FLAG_PREPARE_PTR_DATA) updates the register
  * pointer and then either reads or writes data.  For example:
  * \code
- * #include <stfy/hal.hpp>
+ * #include <sapi/hal.hpp>
  *
  * u16 data;
  * I2C i2c(0); //use I2C port 0
- * i2c.init(100000); //100KHz
+ * i2c.init(I2C::FLAG_SET_MASTER|); //100KHz
  *
- * i2c.setup(0x4C, I2C::SETUP_NORMAL_TRANSFER); //slave addr is 0x4C
+ * i2c.prepare(0x4C); //slave addr is 0x4C
  *
  * i2c.read(5, &data, sizeof(data)); //read 2 bytes from register 5
  * \endcode
@@ -102,6 +107,13 @@ public:
 
 	using Periph::set_attr;
 
+	/*! \details Sets the attributes of the I2C bus.
+	 *
+	 * @param o_flags Flag bitmask
+	 * @param freq Bitrate
+	 * @param pin_assignment Pin assignment or null to use default pin assignment
+	 * @return Zero on success
+	 */
 	int set_attr(u32 o_flags, u32 freq, const i2c_pin_assignment_t * pin_assignment = 0){
 		i2c_attr_t attr;
 		attr.o_flags = o_flags;
@@ -114,12 +126,14 @@ public:
 		return set_attr(attr);
 	}
 
-	/*! \details This method initializes the I2C port.  It opens the port
-	 * and sets the attributes as specified.
-	 * \code
-	 * I2C i2c(0);  //Use port 0
-	 * i2c.init(400000); //400KHz bitrate
-	 * \endcode
+	/*! \details This method initializes the I2C port.
+	 *
+	 * @param o_flags Flag bitmask
+	 * @param freq Bitrate
+	 * @param pin_assignment Pin assignment or null to use default pin assignment
+	 * @return Zero on success
+	 *
+	 * This method calls open() then set_attr().
 	 *
 	 */
 	int init(u32 o_flags, u32 freq, const i2c_pin_assignment_t * pin_assignment = 0){

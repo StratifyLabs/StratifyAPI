@@ -17,7 +17,7 @@ namespace hal {
  * Here is an example of how to read the MCU serial number:
  *
  * \code
- * #include <stfy/hal.hpp>
+ * #include <sapi/hal.hpp>
  * #include <cstdio>
  *
  * int main(int argc, char * argv[]){

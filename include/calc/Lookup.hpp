@@ -11,7 +11,7 @@ namespace calc {
  *
  * \code
  *
- * #include <stfy/calc.hpp>
+ * #include <sapi/calc.hpp>
  *
  * #define ENTRIES 4
  *
@@ -49,7 +49,7 @@ public:
 	/*! \details Calculates the y value using linear interpolation.
 	 *
 	 * @param x Input value
-	 * @return y value calculated using linear interpolation
+	 * @return y Value calculated using linear interpolation
 	 */
 	data_type calc_value(data_type x){
 		unsigned int p1, p2;

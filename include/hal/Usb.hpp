@@ -8,6 +8,11 @@
 
 namespace hal {
 
+/*! \brief USB Pin Assignment
+ * \details This class allows simple manipulation of the usb_pin_assignment_t.
+ */
+class UsbPinAssignment : public PinAssignment<usb_pin_assignment_t>{};
+
 /*! \brief USB Class
  * \details This class implements a USB transceiver.
  */

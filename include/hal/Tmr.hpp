@@ -10,6 +10,11 @@
 
 namespace hal {
 
+/*! \brief Tmr Pin Assignment
+ * \details This class allows simple manipulation of the tmr_pin_assignment_t.
+ */
+class TmrPinAssignment : public PinAssignment<tmr_pin_assignment_t>{};
+
 
 /*! \brief Tmr (hardware timer) Class
  * \details This class implements a hardware timer.  The Timer class implements

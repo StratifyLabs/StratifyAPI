@@ -11,6 +11,11 @@
 
 namespace hal {
 
+/*! \brief EINT Pin Assignment
+ * \details This class allows simple manipulation of the eint_pin_assignment_t.
+ */
+class EintPinAssignment : public PinAssignment<eint_pin_assignment_t>{};
+
 /*! \brief External Interrupt Class
  * \details This class gives access to external interrupt circuitry.  You can use this class
  * to have the interrupt trigger a function or block a thread until the interrupt arrives.
@@ -19,8 +24,8 @@ namespace hal {
  *
  * \code
  *
- * #include <stfy/hal.hpp>
- * #include <stfy/sys.hpp>
+ * #include <sapi/hal.hpp>
+ * #include <sapi/sys.hpp>
  *
  *  //This will be executed when the event is triggered
  * int event_callback(void * args, const void * data){

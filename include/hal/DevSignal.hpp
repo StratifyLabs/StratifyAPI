@@ -15,8 +15,8 @@ namespace hal {
  * can cause the system to send a signal to a thread.  Here is an example:
  * \code
  *
- * #include <stfy/sys.hpp>
- * #include <stfy/hal.hpp>
+ * #include <sapi/sys.hpp>
+ * #include <sapi/hal.hpp>
  *
  * volatile bool my_var;
  * void my_handler(int a){

@@ -26,8 +26,8 @@ namespace calc {
  *
  * The following is an example of using the Ema class using 32-bit integers.
  * \code
- * #include <stfy/hal.hpp>
- * #include <stfy/calc.hpp>
+ * #include <sapi/hal.hpp>
+ * #include <sapi/calc.hpp>
  * #include <cstdio>
  *
  *  //first initialize a filter with a value of 0 and with an averaging constant of 0.1
@@ -52,7 +52,7 @@ namespace calc {
  */
 template<typename intsmall, typename intmedium, typename intlarge>class Ema {
 public:
-	/*! \details Constructs a new Ema object
+	/*! \details Constructs a new Ema object.
 	 *
 	 * @param start Initial value
 	 * @param alpha Averaging value
@@ -60,7 +60,7 @@ public:
 	Ema(intmedium start, intsmall alpha){ m_average = start;  this->m_alpha = alpha; }
 	static intmedium small_max(){ return 1<<(8*sizeof(intsmall)); }
 
-	/*! \details Calculates the next average using an input value
+	/*! \details Calculates the next average using an input value.
 	 *
 	 * @param in Input value
 	 * @return The updated average (same as average())
@@ -72,20 +72,20 @@ public:
 		return m_average;
 	}
 
-	/*! \details Accesses the current average (no calculations are made here)
+	/*! \details Accesses the current average (no calculations are made here).
 	 *
 	 * @return The current average value
 	 */
 	intmedium average() const { return m_average; }
-	intmedium avg() const { return m_average; }
 
-	/*! \details Sets the average value.  This method can be
-	 * used to update the initial value
+	/*! \details Sets the average value.
 	 *
 	 * @param v The new initial value
+	 *
+	 * This method can also be used to set the initial value.
 	 */
 	void set_average(intmedium v){ m_average = v; }
-	void set(intmedium v){ m_average = v; }
+
 private:
 	intmedium m_average;
 	intsmall m_alpha;

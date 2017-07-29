@@ -22,7 +22,7 @@ namespace var {
  *
  *
  * \code
- * #include <stfy/Var.hpp>
+ * #include <sapi/Var.hpp>
  *
  * String s1;
  * String s2;

@@ -22,7 +22,7 @@ namespace sys {
  *
  * \code
  *
- * #include <stfy/sys.hpp>
+ * #include <sapi/sys.hpp>
  *
  * volatile bool wait_for_signal;
  * void my_handler(int a){

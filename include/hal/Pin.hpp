@@ -15,7 +15,7 @@ namespace hal {
  * Here is an example of using the Pin class:
  *
  * \code
- * #include <stfy/hal.hpp>
+ * #include <sapi/hal.hpp>
  *
  * Pin pin(1,0); //control pin P1.0
  *  //Or if working with the pinmask Pin  pin(1, 1<<0, true);
@@ -71,7 +71,7 @@ public:
 	 * The following is an example of initializing a pin.
 	 *
 	 * \code
-	 * #include <stfy/hal.hpp>
+	 * #include <sapi/hal.hpp>
 	 *
 	 * Pin p(0,1); //Port 0, pin 1
 	 *
