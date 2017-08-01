@@ -11,7 +11,7 @@ ListAttr::ListAttr() {
 	m_visible_items = 3;
 }
 
-void ListAttr::set_visible_items(list_attr_u32 v){
+void ListAttr::set_visible_items(list_attr_size_t v){
 	if( v == 0 ){
 		v = 1;
 	}
@@ -37,9 +37,9 @@ void ListAttr::dec_selected(void){
 	}
 }
 
-list_attr_u32 ListAttr::calc_visible_offset(void) const{
-	list_attr_u32 offset;
-	list_attr_u32 half;
+list_attr_size_t ListAttr::calc_visible_offset(void) const{
+	list_attr_size_t offset;
+	list_attr_size_t half;
 	if( size() > visible_items() ){
 		half = visible_items()/2;
 		if( selected() < half ){
@@ -58,14 +58,14 @@ list_attr_u32 ListAttr::calc_visible_offset(void) const{
 	return offset;
 }
 
-list_attr_u32 ListAttr::calc_display_items() const {
+list_attr_size_t ListAttr::calc_display_items() const {
 	return visible_items() > size() ? size() : visible_items();
 }
 
-list_attr_u32 ListAttr::calc_next_visible(s8 dir) const {
-	list_attr_u32 next_visible;
-	list_attr_u32 visible_offset;
-	list_attr_u32 display_items;
+list_attr_size_t ListAttr::calc_next_visible(s8 dir) const {
+	list_attr_size_t next_visible;
+	list_attr_size_t visible_offset;
+	list_attr_size_t display_items;
 
 	if( (selected() == 0) && visible_items() > 1 ){
 		return size();

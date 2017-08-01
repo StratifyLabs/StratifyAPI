@@ -166,10 +166,10 @@ public:
 	 * @param i The offset within the list
 	 * @return A pointer to the object
 	 */
-	virtual ElementLinked & at(list_attr_u32 i);
+	virtual ElementLinked & at(list_attr_size_t i);
 
 	/*! \details Return the total entries in the list */
-	inline list_attr_u32 size() const { return m_size; }
+	inline list_attr_size_t size() const { return m_size; }
 
 	/*! \details This method changes the visibility of the file suffix in the list */
 	inline void set_suffix_visible(bool v = true){

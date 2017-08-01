@@ -172,7 +172,7 @@ ListDir::~ListDir(){
 	m_dir.close();
 }
 
-ElementLinked & ListDir::at(list_attr_u32 i){
+ElementLinked & ListDir::at(list_attr_size_t i){
 	m_dir.rewind();
 	u32 j;
 	j=0;

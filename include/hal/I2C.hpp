@@ -4,6 +4,7 @@
 #define SAPI_I2C_HPP_
 
 #include <sos/dev/i2c.h>
+#include "PinAssignment.hpp"
 #include "Periph.hpp"
 
 

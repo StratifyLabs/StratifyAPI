@@ -1,11 +1,7 @@
-/*
- * Cursor.cpp
- *
- *  Created on: Jun 8, 2017
- *      Author: tgil
- */
+/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#include <sgfx/Cursor.hpp>
+
+#include "sgfx/Cursor.hpp"
 
 namespace sgfx {
 

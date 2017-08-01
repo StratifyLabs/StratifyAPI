@@ -5,6 +5,7 @@
 
 
 #include <sos/dev/tmr.h>
+#include "PinAssignment.hpp"
 #include "Periph.hpp"
 
 

@@ -3,7 +3,7 @@
 #ifndef SGFX_DIM_HPP_
 #define SGFX_DIM_HPP_
 
-#include <sgfx/sg_types.h>
+#include <sapi/sg_types.h>
 
 namespace sgfx {
 

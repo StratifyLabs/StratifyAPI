@@ -3,7 +3,7 @@
 #ifndef SGFX_BITMAP_HPP_
 #define SGFX_BITMAP_HPP_
 
-#include <sgfx/sg.h>
+#include <sapi/sg.h>
 
 #include "../var/Data.hpp"
 #include "Region.hpp"
@@ -140,7 +140,7 @@ public:
 	 */
 	sg_color_t get_pixel(sg_point_t p) const { return sg_api()->get_pixel(bmap_const(), p); }
 
-	/*! \details Draws a pizel at the specified point.
+	/*! \details Draws a pixel at the specified point.
 	 *
 	 * @param p The point where to draw the pixel
 	 *
@@ -149,6 +149,7 @@ public:
 	 * \sa set_pen_color()
 	 */
 	void draw_pixel(sg_point_t p) const { sg_api()->draw_pixel(bmap_const(), p); }
+
 	void draw_line(sg_point_t p1, sg_point_t p2) const { sg_api()->draw_line(bmap_const(), p1, p2); }
 	void draw_quadtratic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3) const { sg_api()->draw_quadtratic_bezier(bmap_const(), p1, p2, p3); }
 	void draw_cubic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3, sg_point_t p4) const { sg_api()->draw_cubic_bezier(bmap_const(), p1, p2, p3, p4); }
@@ -166,6 +167,19 @@ public:
 	 */
 	void draw_bitmap(sg_point_t p_dest, const Bitmap & src) const {
 		sg_api()->draw_bitmap(bmap_const(), p_dest, src.bmap_const());
+	}
+
+
+	/*! \details This function draws a pattern on the bitmap.
+	 *
+	 * @param p The top-left point to start the pattern
+	 * @param d The dimensions to draw the pattern on
+	 * @param odd_pattern The odd pattern as a 1bpp bitmask (e.g. 0xAA)
+	 * @param even_pattern The even pattern as a 1bpp bitmask (e.g. 0x55)
+	 * @param pattern_height The pixel height of alternating pixels
+	 */
+	void draw_pattern(sg_point_t p, sg_dim_t d, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height) const {
+		sg_api()->draw_pattern(bmap_const(), p, d, odd_pattern, even_pattern, pattern_height);
 	}
 
 	/*! \details This function draws a subset of

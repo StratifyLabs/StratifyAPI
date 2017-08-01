@@ -9,40 +9,44 @@
 #define SGFX_PEN_HPP_
 
 
-#include <sgfx/sg_types.h>
+#include <sapi/sg_types.h>
 #include "../var/Item.hpp"
 
 namespace sgfx {
 
+/*! \brief Pen Class
+ * \details The pen defines the color, thickness
+ * and mode when drawing on bitmaps.
+ */
 class Pen : public var::Item<sg_pen_t> {
 public:
-
-	enum mode {
-		NONE = 0,
-		INVERT /*! Invert pixels */ = SG_PEN_FLAG_INVERT,
-		BLEND /*! Blend pixels */ = SG_PEN_FLAG_BLEND,
-	};
 
 	Pen();
 	Pen(sg_color_t color, u8 thickness = 1, bool fill = false);
 
 
+	/*! \details Accesses the pen thickness. */
 	u8 thickness() const { return item().thickness; }
+
 	bool is_invert() const { return (item().o_flags & SG_PEN_FLAG_INVERT) != 0; }
 	bool is_blend() const { return (item().o_flags & SG_PEN_FLAG_BLEND) != 0; }
 	bool is_fill() const { return (item().o_flags & SG_PEN_FLAG_FILL) != 0; }
+
+	/*! \details Access the pen color. */
 	sg_color_t color() const { return item().color; }
 
 
 
+	/*! \details Sets the pen color.
+	 *
+	 * @param color The color
+	 */
+	void set_color(sg_color_t color){ data()->color = color; }
 
-	void set_color(u32 v){ data()->color = v; }
-
+	/*! \details Sets the pen thickness. */
 	void set_thickness(u8 v){ data()->thickness = v; }
-	void set_mode(enum mode v){
-		u16 flags = data()->o_flags;
-		data()->o_flags = (flags & SG_PEN_FLAG_FILL) | v;
-	}
+
+
 	void set_fill(bool v = true){
 		if( v ){
 			data()->o_flags |= SG_PEN_FLAG_FILL;

@@ -52,7 +52,7 @@ public:
 	 * @param i The offset of the tab to access
 	 * @return A reference to the tab at the specified offset.
 	 */
-	virtual Tab & at(list_attr_u32 i) = 0;
+	virtual Tab & at(list_attr_size_t i) = 0;
 
 	/*! \details Access a reference to the current tab (same as as(selected())) */
 	Tab & current(){ return at(selected()); }

@@ -32,7 +32,7 @@ namespace calc {
  *
  *  //first initialize a filter with a value of 0 and with an averaging constant of 0.1
  * Ema_s32 filter(0, DSP_EMA_I32_ALPHA(0.1));
- *  //Or do:  Ema<u16, s32, i64> filter(0, DSP_EMA_I32_ALPHA(0.1));
+ *  //Or do:  Ema<u16, s32, s64> filter(0, DSP_EMA_I32_ALPHA(0.1));
  *
  *  //now use the ADC to get some data
  * Adc adc(0);
@@ -93,7 +93,7 @@ private:
 
 /*! \brief Exponential Moving Average class (s32) */
 /*! \details See \ref Ema for details */
-class Ema_s32 : public Ema<u16, s32, i64> {
+class Ema_s32 : public Ema<u16, s32, s64> {
 public:
 	/*! \details Construct a EMA object for a signed 32 bit calculations */
 	Ema_s32(s32 start, u16 alpha) : Ema(start, alpha){}

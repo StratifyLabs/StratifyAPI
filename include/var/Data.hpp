@@ -114,7 +114,7 @@ public:
 	 * If the memory was specified using the set() method, this will return an error.
 	 *
 	 * If the current capacity is less than \a s, the object will
-	 * be resized.
+	 * be resized. Otherwise, the data will
 	 *
 	 */
 	int set_capacity(u32 s);

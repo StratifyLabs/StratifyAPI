@@ -3,7 +3,7 @@
 #ifndef SGFX_POINT_HPP_
 #define SGFX_POINT_HPP_
 
-#include <sgfx/sg.h>
+#include <sapi/sg.h>
 
 namespace sgfx {
 

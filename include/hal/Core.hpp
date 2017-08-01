@@ -79,11 +79,7 @@ public:
 
 	Core(port_t port);
 
-	/*! \details Gets attributes of the Core peripheral and stores them in \a attr.
-	 */
-	int get_info(core_attr_t & attr);
-	/*! \details Sets the attributes for the Core device. */
-	int set_attr(const core_attr_t & attr);
+
 	/*! \details Executes a request to set the functionality of a pin.
 	 */
 	int set_pin_function(const core_pinfunc_t * req);

@@ -155,7 +155,7 @@ public:
 	 * @param data_size A pointer to write the data size to (null if not needed)
 	 * @return Zero on success
 	 */
-	int seek(const char * access, son_u32 * data_size){ return son_api()->seek(&m_son, access, data_size); }
+	int seek(const char * access, son_size_t * data_size){ return son_api()->seek(&m_son, access, data_size); }
 	/*! \details Converts the data file to JSON */
 	int to_json(const char * path){ return son_api()->to_json(&m_son, path); }
 
@@ -247,7 +247,7 @@ public:
 	 * @param size The number of bytes to write
 	 * @return Number of bytes stored (4) if successful
 	 */
-	int write(const char * key, const void * v, son_u32 size){ return son_api()->write_data(&m_son, key, v, size); }
+	int write(const char * key, const void * v, son_size_t size){ return son_api()->write_data(&m_son, key, v, size); }
 
 	/*! \details Adds data to an open key.  This is used with open_data() and close_data().   These
 	 * methods are useful for writing data to the file when the amount of data to be written is unknown
@@ -268,7 +268,7 @@ public:
 	 * @param size The number of bytes to write
 	 * @return Number of bytes stored (4) if successful
 	 */
-	int write_open_data(const void * v, son_u32 size){ return son_api()->write_open_data(&m_son, v, size); }
+	int write_open_data(const void * v, son_size_t size){ return son_api()->write_open_data(&m_son, v, size); }
 
 	/*! \details Reads the specified key as a string.  If the original
 	 * key was not written as a string, it will be converted to a string.  For example,
@@ -279,7 +279,7 @@ public:
 	 * @param capacity Size of \a str buffer
 	 * @return The number of bytes actually read
 	 */
-	int read_str(const char * access, char * str, son_u32 capacity){ return son_api()->read_str(&m_son, access, str, capacity); }
+	int read_str(const char * access, char * str, son_size_t capacity){ return son_api()->read_str(&m_son, access, str, capacity); }
 
 #if !defined __link
 	/*! \details Reads the specified key as a string.  If the original
@@ -330,7 +330,7 @@ public:
 	 * @param size The number of bytes to read
 	 * @return The number of bytes read
 	 */
-	int read_data(const char * access, void * data, son_u32 size){ return son_api()->read_data(&m_son, access, data, size); }
+	int read_data(const char * access, void * data, son_size_t size){ return son_api()->read_data(&m_son, access, data, size); }
 
 	/*! \details Reads the specified key as a bool
 	 *
@@ -358,7 +358,7 @@ public:
 	 * will be truncated to that size.
 	 *
 	 */
-	int edit(const char * access,  const void * data, son_u32 size){ return son_api()->edit_data(&m_son, access, data, size); }
+	int edit(const char * access,  const void * data, son_size_t size){ return son_api()->edit_data(&m_son, access, data, size); }
 
 	/*! \details Edits a string value.
 	 *

@@ -4,7 +4,7 @@
 #ifndef SGFX_FONT_HPP_
 #define SGFX_FONT_HPP_
 
-#include <sgfx/sg_font_types.h>
+#include <sapi/sg_font_types.h>
 #include "Bitmap.hpp"
 
 

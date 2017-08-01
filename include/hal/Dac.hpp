@@ -4,6 +4,7 @@
 #define DAC_HPP_
 
 #include <sos/dev/dac.h>
+#include "PinAssignment.hpp"
 #include "Periph.hpp"
 
 namespace hal {

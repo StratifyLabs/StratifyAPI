@@ -24,8 +24,8 @@ public:
 
 	/*! \details Access the reference to the back entry */
 	ui::ListItemBack & back(){ return m_back; }
-	virtual ui::ElementLinked & at(ui::list_attr_u32 i);
-	virtual ui::list_attr_u32 size() const;
+	virtual ui::ElementLinked & at(ui::list_attr_size_t i);
+	virtual ui::list_attr_size_t size() const;
 
 private:
 	ui::ListItemBack m_back;

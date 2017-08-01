@@ -5,6 +5,7 @@
 
 
 #include <sos/dev/eint.h>
+#include "PinAssignment.hpp"
 #include "Periph.hpp"
 #include "Pin.hpp"
 

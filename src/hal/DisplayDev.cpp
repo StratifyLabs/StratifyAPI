@@ -39,12 +39,12 @@ void DisplayDev::refresh() const {
 }
 
 int DisplayDev::on(){
-	return ioctl(I_DISPLAY_ON);
+	return ioctl(I_DISPLAY_ENABLE);
 }
 
 /*! \brief Turn the LCD pixels off */
 int DisplayDev::off(){
-	return ioctl(I_DISPLAY_OFF);
+	return ioctl(I_DISPLAY_DISABLE);
 }
 
 void DisplayDev::wait(u16 resolution) const{

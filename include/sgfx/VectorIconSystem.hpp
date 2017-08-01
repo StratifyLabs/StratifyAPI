@@ -8,7 +8,7 @@
 #ifndef SGFX_VECTORICONSYSTEM_HPP_
 #define SGFX_VECTORICONSYSTEM_HPP_
 
-#include <sgfx/sg_types.h>
+#include <sapi/sg_types.h>
 
 namespace sgfx {
 

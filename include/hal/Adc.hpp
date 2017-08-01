@@ -4,6 +4,7 @@
 #define SAPI_ADC_HPP_
 
 #include <sos/dev/adc.h>
+#include "PinAssignment.hpp"
 #include "Periph.hpp"
 
 namespace hal {

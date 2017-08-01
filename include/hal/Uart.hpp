@@ -5,6 +5,7 @@
 
 
 #include <sos/dev/uart.h>
+#include "PinAssignment.hpp"
 #include "Periph.hpp"
 
 
@@ -53,7 +54,7 @@ class UartPinAssignment : public PinAssignment<uart_pin_assignment_t>{};
  * 	\endcode
  *
  */
-class Uart : public Periph<uart_info_t, uart_attr_t, 'u'> {
+class Uart : public Periph<uart_info_t, uart_attr_t, UART_IOC_IDENT_CHAR> {
 public:
 	Uart(port_t port);
 

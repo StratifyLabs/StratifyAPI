@@ -4,6 +4,7 @@
 #define SAPI_USB_HPP_
 
 #include <sos/dev/usb.h>
+#include "PinAssignment.hpp"
 #include "Periph.hpp"
 
 namespace hal {

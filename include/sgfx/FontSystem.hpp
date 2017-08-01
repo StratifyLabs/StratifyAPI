@@ -3,7 +3,7 @@
 #ifndef SGFX_FONTSYSTEM_HPP_
 #define SGFX_FONTSYSTEM_HPP_
 
-#include <sgfx/sg_font_types.h>
+#include <sapi/sg_font_types.h>
 
 #include "FontFile.hpp"
 #include "FontMemory.hpp"

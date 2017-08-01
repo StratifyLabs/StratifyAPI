@@ -103,18 +103,28 @@ public:
 	}
 
 	int set_attr(attr_t & attr) const {
-		return ioctl(_IOCTLR(ident_char, I_MCU_SETATTR, attr_t), &attr);
+		return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), &attr);
 	}
 
 	int set_action(mcu_action_t & action) const {
-		return ioctl(_IOCTLR(ident_char, I_MCU_SETACTION, mcu_action_t), &action);
+		return ioctl(_IOCTLW(ident_char, I_MCU_SETACTION, mcu_action_t), &action);
 	}
 
-	int set_action(u32 channel, u32 event, s8 prio = 0, mcu_callback_t callback = 0, void * context = 0) const {
+	/*! \details Sets the action callback for the event.
+	 *
+	 * @param channel
+	 * @param o_events
+	 * @param prio
+	 * @param callback
+	 * @param context
+	 * @return
+	 */
+
+	int set_action(u32 channel, u32 o_events, s8 prio = 0, mcu_callback_t callback = 0, void * context = 0) const {
 		mcu_action_t action;
 		action.prio = prio;
 		action.channel = channel;
-		action.o_events = event;
+		action.o_events = o_events;
 		action.handler.callback = callback;
 		action.handler.context = context;
 		return set_action(action);

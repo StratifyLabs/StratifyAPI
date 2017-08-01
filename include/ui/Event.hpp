@@ -5,7 +5,7 @@
 #define UI_EVENT_HPP_
 
 namespace sys {
-class SignalEvent;
+class Signal;
 };
 
 namespace ui {
@@ -121,7 +121,7 @@ public:
 		return 0;
 	}
 
-	sys::SignalEvent * signal() const {
+	sys::Signal * signal() const {
 		if( m_type == SIGNAL ){
 			return m_objects.signal;
 		}
@@ -158,7 +158,7 @@ private:
 		void * object;
 		Button * button;
 		ListItem * list_item;
-		sys::SignalEvent * signal;
+		sys::Signal * signal;
 	} m_objects;
 
 

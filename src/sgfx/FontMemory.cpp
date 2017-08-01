@@ -1,10 +1,9 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#include <sgfx/FontMemory.hpp>
 #include <cstring>
+#include "sgfx/FontMemory.hpp"
 
 using namespace sgfx;
-
 
 
 FontMemory::FontMemory() {
