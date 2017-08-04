@@ -37,14 +37,12 @@ public:
 	 */
 	Cli(int argc, char * argv[]);
 
-	/*! \details Sets the version of the program.
-	 *
-	 * @param version A pointer to the version
+	/*! \details Handles the --version and -v options to show the version.
 	 *
 	 * \sa print_version()
 	 *
 	 */
-	void set_version(const char * version){ m_version = version; }
+	void handle_version() const;
 
 	/*! \details Sets the publisher of the program.
 	 *
@@ -53,8 +51,6 @@ public:
 	 */
 	void set_publisher(const char * publisher){ m_publisher = publisher; }
 
-	/*! \details Prints the version, name and publisher on the stdout */
-	void print_version() const;
 
 	enum {
 		PRINT_DEBUG,

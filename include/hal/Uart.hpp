@@ -59,6 +59,7 @@ public:
 	Uart(port_t port);
 
 	enum {
+		FLAG_SET_CONTROL_LINE_STATE /*! Set the control line state */ = UART_FLAG_SET_CONTROL_LINE_STATE,
 		FLAG_IS_STOP1 /*! One stop bit */ = UART_FLAG_IS_STOP1,
 		FLAG_IS_STOP2 /*! Two stop bits */ = UART_FLAG_IS_STOP2,
 		FLAG_IS_STOP0_5 /*! 0.5 stop bits */ = UART_FLAG_IS_STOP0_5,
@@ -86,8 +87,6 @@ public:
 	/*! \details Flushes the TX/RX buffers */
 	int flush();
 
-
-	using Periph::set_attr;
 
 	/*! \details Sets the attributes of the Uart.
 	 *

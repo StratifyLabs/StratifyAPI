@@ -13,7 +13,7 @@ namespace sys {
 /*! \brief Kernel Class
  * \details This class allows access to kernel attributes and functions.
  */
-class Sys : public hal::Dev {
+class Sys : public File {
 public:
 	Sys();
 
@@ -72,21 +72,23 @@ public:
 	 */
 	static int reclaim_ram(const char * path, link_transport_mdriver_t * driver = 0);
 
+
+#if !defined __link
+
 	/*! \details Gets the version (system/board version).
 	 *
 	 * @param version The destination string for the version
 	 * @return Zero on success
 	 */
-	static int get_version(var::String & version, link_transport_mdriver_t * driver = 0);
+	static int get_version(var::String & version);
 
 	/*! \details Gets the version (kernel version).
 	 *
 	 * @param version The destination string for the version
 	 * @return Zero on success
 	 */
-	static int get_kernel_version(var::String & version, link_transport_mdriver_t * driver = 0);
+	static int get_kernel_version(var::String & version);
 
-#if !defined __link
 	/*! \details Puts the kernel in powerdown mode.
 	 *
 	 * @param timeout_ms The number of milliseconds before the
@@ -135,10 +137,10 @@ public:
 	 *
 	 */
 	inline int open(){
-		return Dev::open("/dev/sys", RDWR);
+		return File::open("/dev/sys", RDWR);
 	}
 
-	using Dev::open;
+	using File::open;
 
 	/*! \details Loads the current kernel attributes.
 	 *

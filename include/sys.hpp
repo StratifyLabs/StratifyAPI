@@ -3,7 +3,7 @@
 #ifndef SYS_HPP_
 #define SYS_HPP_
 
-/*! \brief System and Kernel Access (including POSIX abstraction)
+/*! \brief System Access (including POSIX abstraction)
  */
 namespace sys {};
 

@@ -66,6 +66,12 @@ public:
 	/*! \detais Returns the number of pins in the pin assignment data structure. */
 	u32 count() const { return size() / sizeof(mcu_pin_t); }
 
+	/*! \details Copies the pin assignment information to the object specified.
+	 *
+	 * @param pin_assignment A reference to the destination pin assignment data
+	 */
+	void copy(pin_assignment_type & pin_assignment){ memcpy(&pin_assignment, &m_pin_assignment, size()); }
+
 
 private:
 	pin_assignment_type m_pin_assignment;

@@ -63,13 +63,13 @@ int Sys::reclaim_ram(const char * path, link_transport_mdriver_t * driver){
 	return ret;
 }
 
-int Sys::get_version(var::String & version, link_transport_mdriver_t * driver){
+
+
+#if !defined __link
+int Sys::get_version(var::String & version){
 	sys_info_t info;
 	Dev sys;
 	int ret;
-#if defined __link
-	sys.set_driver(driver);
-#endif
 	if( sys.open("/dev/sys", Dev::RDWR) < 0 ){
 		return -1;
 	}
@@ -83,13 +83,10 @@ int Sys::get_version(var::String & version, link_transport_mdriver_t * driver){
 
 }
 
-int Sys::get_kernel_version(var::String & version, link_transport_mdriver_t * driver){
+int Sys::get_kernel_version(var::String & version){
 	sys_info_t info;
 	Dev sys;
 	int ret;
-#if defined __link
-	sys.set_driver(driver);
-#endif
 	if( sys.open("/dev/sys", Dev::RDWR) < 0 ){
 		return -1;
 	}
@@ -102,7 +99,6 @@ int Sys::get_kernel_version(var::String & version, link_transport_mdriver_t * dr
 	return ret;
 }
 
-#if !defined __link
 void Sys::powerdown(int count){
 	powerdown(count);
 }

@@ -1,5 +1,6 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
+#include "sys/Appfs.hpp"
 #include "sys/Cli.hpp"
 
 using namespace var;
@@ -18,9 +19,17 @@ Cli::Cli(int argc, char * argv[]){
 	}
 }
 
-void Cli::print_version() const {
-	printf("%s version: %s by %s\n", m_name.c_str(), m_version.c_str(), m_publisher.c_str());
+void Cli::handle_version() const {
+	if( is_option("--version") || is_option("-v") ){
+		u16 version;
+		String tmp;
+		version = Appfs::get_version(m_name);
+		tmp.sprintf("%d.%d", version >> 8, version & 0xff);
+		printf("%s version: %s by %s\n", m_name.c_str(), tmp.c_str(), m_publisher.c_str());
+		exit(0);
+	}
 }
+
 
 String Cli::at(u16 value) const {
 	String arg;

@@ -245,7 +245,7 @@ public:
 	/*! \details ioctl() with just a request */
 	int ioctl(int req) const { return ioctl(req, (void*)NULL); }
 	/*! \details ioctl() with request and integer arg */
-	int ioctl(int req, int arg) const { return ioctl(req, (void*)(u32)arg); }
+	int ioctl(int req, int arg) const { return ioctl(req, MCU_INT_CAST(arg)); }
 
 
 protected:

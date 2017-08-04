@@ -39,8 +39,6 @@ class Pwm : public Periph<pwm_info_t, pwm_attr_t, 'p'> {
 public:
 	Pwm(port_t port);
 
-	using Periph::set_attr;
-
 	enum {
 		FLAG_SET_TIMER = PWM_FLAG_SET_TIMER,
 		FLAG_IS_ACTIVE_HIGH = PWM_FLAG_IS_ACTIVE_HIGH,

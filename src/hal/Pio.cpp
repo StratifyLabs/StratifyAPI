@@ -6,12 +6,14 @@ using namespace hal;
 
 Pio::Pio(port_t port) : Periph(CORE_PERIPH_PIO, port){}
 
+
+
 int Pio::set_mask(u32 mask) const {
-	return ioctl(I_PIO_SETMASK, (void*)mask);
+	return ioctl(I_PIO_SETMASK, MCU_INT_CAST(mask));
 }
 
 int Pio::clear_mask(u32 mask) const {
-	return ioctl(I_PIO_CLRMASK, (void*)mask);
+	return ioctl(I_PIO_CLRMASK, MCU_INT_CAST(mask));
 }
 
 int Pio::assign(u32 value) const {

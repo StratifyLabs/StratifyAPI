@@ -58,8 +58,6 @@ public:
 		FLAG_RIGHT_JUSTIFIED = DAC_FLAG_IS_RIGHT_JUSTIFIED,
 	};
 
-	using Periph::set_attr;
-
 	/*! \details Sets the DAC attributes using specified values.
 	 *
 	 * @param o_flags Enabled channels as a bitmask

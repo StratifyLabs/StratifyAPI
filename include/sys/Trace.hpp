@@ -27,20 +27,20 @@ public:
 #if !defined __link
 	Trace& operator=(const char * a){ var::String::operator=(a); return *this; }
 	Trace& operator=(const var::String & a){ var::String::operator=(a); return *this; }
-	inline void message() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_MESSAGE, c_str(), size()); }
-	inline void warning() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_WARNING, c_str(), size()); }
-	inline void error() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_ERROR, c_str(), size()); }
-	inline void critical() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_CRITICAL, c_str(), size()); }
-	inline void fatal() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_FATAL, c_str(), size()); }
+	inline void trace_message() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_MESSAGE, c_str(), size()); }
+	inline void trace_warning() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_WARNING, c_str(), size()); }
+	inline void trace_error() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_ERROR, c_str(), size()); }
+	inline void trace_critical() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_CRITICAL, c_str(), size()); }
+	inline void trace_fatal() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_FATAL, c_str(), size()); }
 #else
 	Trace& operator=(const char * a){ a = 0; return *this; }
 	char * cdata(){ return m_cdata; }
 	void assign(const char * str){ str = 0; } //suppress warnings
-	inline void message(){}
-	inline void warning(){}
-	inline void error(){}
-	inline void critical(){}
-	inline void fatal(){}
+	inline void trace_message(){}
+	inline void trace_warning(){}
+	inline void trace_error(){}
+	inline void trace_critical(){}
+	inline void trace_fatal(){}
 private:
 	char m_cdata[256];
 #endif

@@ -106,8 +106,6 @@ public:
 	int get_err() const;
 	int err() const { return get_err(); }
 
-	using Periph::set_attr;
-
 	/*! \details Sets the attributes of the I2C bus.
 	 *
 	 * @param o_flags Flag bitmask
