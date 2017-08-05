@@ -38,6 +38,7 @@ template<typename pin_assignment_type> class PinAssignment {
 public:
 	PinAssignment(){ clear(); }
 
+
 	/*! \details Returns a const pointer to the pin assignment data structure.
 	 *
 	 * This operator makes it easy to pass pin assignment data to set_attr()
@@ -54,11 +55,7 @@ public:
 	/*! \details Clears the pin assignment data structure (assigns 0xff
 	 * to all ports/pins.
 	 */
-	void clear(){
-		memset(&m_pin_assignment,
-				0xff,
-				sizeof(m_pin_assignment));
-	}
+	void clear(){ memset(&m_pin_assignment, 0xff, sizeof(m_pin_assignment)); }
 
 	/*! \details Returns the number of bytes in the data structure. */
 	u32 size() const { return sizeof(pin_assignment_type); }
@@ -71,6 +68,13 @@ public:
 	 * @param pin_assignment A reference to the destination pin assignment data
 	 */
 	void copy(pin_assignment_type & pin_assignment){ memcpy(&pin_assignment, &m_pin_assignment, size()); }
+
+	/*! \details Assigns the value of the pin assignment as specified.
+	 *
+	 * @param pin_assignment A reference to the pin assignment which will be assigned to this object
+	 */
+	void assign(const pin_assignment_type & pin_assignment){ memcpy(&m_pin_assignment, &pin_assignment, size()); }
+
 
 
 private:

@@ -70,7 +70,7 @@ public:
 		FLAG_IS_SLAVE_ACK_GENERAL_CALL /*! If slave operation, ack general call */ = I2C_FLAG_IS_SLAVE_ACK_GENERAL_CALL,
 		FLAG_IS_PULLUP /*! Enable internal pullups if available (ignore otherwise) */ = I2C_FLAG_IS_PULLUP,
 		FLAG_PREPARE_PTR_DATA /*! This prepares the driver to write the ptr then read/write data */ = I2C_FLAG_PREPARE_PTR_DATA,
-		FLAG_PREPARE_PTR_16_DATA /*! This prepares the driver to write a 16-bit ptr then read/write data */ = I2C_FLAG_PREPARE_PTR_16_DATA,
+		FLAG_IS_PTR_16 /*! This prepares the driver to write a 16-bit ptr then read/write data */ = I2C_FLAG_IS_PTR_16,
 		FLAG_PREPARE_PTR /*! This will write the ptr value only without writing or reading any data. */ = I2C_FLAG_PREPARE_PTR,
 		FLAG_PREPARE_DATA /*! This will read/write data without first writing the pointer information */ = I2C_FLAG_PREPARE_DATA,
 		FLAG_IS_SLAVE_ADDR0 /*! If hardware supports multiple slave addrs, use the first slot (default) */ = I2C_FLAG_IS_SLAVE_ADDR0,
@@ -81,6 +81,7 @@ public:
 		FLAG_IS_SLAVE_PTR_16 /*! Use a 16-bit address pointer when accessing data (set automatically is size > 255) */ = I2C_FLAG_IS_SLAVE_PTR_16,
 		FLAG_RESET /*! Reset the state of the I2C */ = I2C_FLAG_RESET,
 		FLAG_STRETCH_CLOCK = I2C_FLAG_STRETCH_CLOCK,
+		FLAG_IS_NO_STOP /*! Don't issue a stop condition when complete (use with I2C_FLAG_PREPARE_DATA) */ = I2C_FLAG_IS_NO_STOP
 	};
 
 
