@@ -36,6 +36,14 @@ namespace hal {
  */
 template<typename pin_assignment_type> class PinAssignment {
 public:
+
+	/*! \details Contructs a new pin assignment object.
+	 *
+	 * All pin assignments are "cleared" when created meaning all
+	 * ports and pins are set to 0xff so that any access to the pin
+	 * assignment info will be ignored.
+	 *
+	 */
 	PinAssignment(){ clear(); }
 
 

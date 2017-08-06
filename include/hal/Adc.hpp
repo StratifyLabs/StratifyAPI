@@ -23,10 +23,10 @@ class AdcPinAssignment : public PinAssignment<adc_pin_assignment_t>{};
  *
  * int main(int argc, char * argv[]){
  * 	Adc adc(0);  //create an instance of ADC to access port 0
- * 	adc_sample_t samples[16];
- * 	adc.init((1<<0)|(1<<1)); //open() and set_attr() enabling channels 0 and 1
- * 	adc.read(0, samples, 16*sizeof(adc_sample_t)); //read 16 samples from channel 0
- * 	adc.read(1, samples, 16*sizeof(adc_sample_t)); //read 16 samples from channel 1
+ * 	u32 samples[16];
+ * 	adc.init(); //intialize the ADC using the default configuration
+ * 	adc.read(0, samples, 16*sizeof(u32)); //read 16 samples from channel 0
+ * 	adc.read(1, samples, 16*sizeof(u32)); //read 16 samples from channel 1
  * 	adc.close(); //close the ADC
  * }
  * \endcode
@@ -38,10 +38,18 @@ public:
 	Adc(port_t port);
 
 	enum {
-		FLAG_LEFT_JUSTIFIED = ADC_FLAG_IS_LEFT_JUSTIFIED,
-		FLAG_RIGHT_JUSTIFIED = ADC_FLAG_IS_RIGHT_JUSTIFIED,
+		FLAG_SET_CONVERTER /*! Set to configure the ADC */ = ADC_FLAG_SET_CONVERTER,
+		FLAG_LEFT_JUSTIFIED /*! Set to specify left justified data */ = ADC_FLAG_IS_LEFT_JUSTIFIED,
+		FLAG_RIGHT_JUSTIFIED /*! Set to specify right justified data */ = ADC_FLAG_IS_RIGHT_JUSTIFIED,
 	};
 
+	/*! \details Sets the attributes of the ADC.
+	 *
+	 * @param o_flags The ADC flags (e.g. FLAG_SET_CONVERTER)
+	 * @param freq The ADC frequency (set to 0 to use the maximum available)
+	 * @param pin_assignment A pointer to the pin assignment data structure (0 to use default pin assignment)
+	 * @return Zero on success or less than zero for an error
+	 */
 	int set_attr(u32 o_flags, u32 freq, const adc_pin_assignment_t * pin_assignment = 0) const {
 		adc_attr_t attr;
 		attr.o_flags = o_flags;
@@ -57,10 +65,10 @@ public:
 
 	/*! \details Opens the ADC port and sets the attributes as specified.
 	 *
-	 * @param enabled_channels Enabled channels as a bitmask
-	 * @param freq The ADC clock frequency
-	 * @param pin_assign The pin assignment value
-	 * @return Zero on success
+	 * @param o_flags The ADC flags (e.g. FLAG_SET_CONVERTER)
+	 * @param freq The ADC frequency (set to 0 to use the maximum available)
+	 * @param pin_assignment A pointer to the pin assignment data structure (0 to use default pin assignment)
+	 * @return Zero on success or less than zero for an error
 	 *
 	 */
 	int init(u32 o_flags, u32 freq, const adc_pin_assignment_t * pin_assignment = 0){

@@ -25,17 +25,17 @@ namespace hal {
  * 	Pio pio(2); //use pio port 2
  *
  * 	//This opens the port and sets the attributes -- same as pio.open(); pio.set_attr(1<<10, PIO_MODE_OUTPUT);
- * 	pio.init(1<<10, PIO_MODE_OUTPUT);
+ * 	pio.init(Pio::FLAG_SET_OUTPUT, 1<<10);
  *
  * 	//Bits can be manipulated using clrmask() and setmask()
- * 	pio.clrmask(1<<10); //clear bit 10 of port 2
- * 	pio.setmask(1<<10); //set bit 10
+ * 	pio.clear_mask(1<<10); //clear bit 10 of port 2
+ * 	pio.set_mask(1<<10); //set bit 10
  *
  *	//the pin can be reconfigured as an input
- * 	pio.set_attr(1<<10, PIO_MODE_INPUT | PIO_MODE_PULLDOWN); //set as an input with internal pulldown
+ * 	pio.set_attr(Pio::FLAG_SET_INPUT | Pio::FLAG_IS_PULLDOWN, (1<<10)); //set as an input with internal pulldown
  *
  * 	//get() is used to read the port
- * 	if( pio.get() & (1<<10) ){
+ * 	if( pio.get_value() & (1<<10) ){
  *		//bit 10 is set
  * 	}
  *
@@ -51,25 +51,25 @@ public:
 	Pio(port_t port);
 
 	enum {
-		FLAG_SET_INPUT /*! Input flag*/ = PIO_FLAG_SET_INPUT,
-		FLAG_SET_OUTPUT /*! Output flag */ = PIO_FLAG_SET_OUTPUT,
-		FLAG_IS_PULLUP /*! Use the built-in pullup */ = PIO_FLAG_IS_PULLUP,
-		FLAG_IS_PULLDOWN /*! Use the built-in pull-down */ = PIO_FLAG_IS_PULLDOWN,
-		FLAG_IS_REPEATER /*! Use the built-in repeater function */ = PIO_FLAG_IS_REPEATER,
-		FLAG_IS_FLOAT /*! Leave the pin floating */ = PIO_FLAG_IS_FLOAT,
-		FLAG_IS_SPEED_LOW /*! Max speed 2Mhz (stm32f only) */ = PIO_FLAG_IS_SPEED_LOW,
-		FLAG_IS_SPEED_MEDIUM /*! Add fast mode slew rate */ = PIO_FLAG_IS_SPEED_MEDIUM,
-		FLAG_IS_SPEED_HIGH /*! Max speed 10Mhz (stm32f only) */ = PIO_FLAG_IS_SPEED_HIGH,
-		FLAG_IS_SPEED_BLAZING /*! Max speed 50Mhz (stm32f only) */ = PIO_FLAG_IS_SPEED_BLAZING,
-		FLAG_IS_OPENDRAIN /*! Configure as open drain */ = PIO_FLAG_IS_OPENDRAIN,
-		FLAG_IS_HYSTERESIS /*! Enable hysteresis on pin */ = PIO_FLAG_IS_HYSTERESIS,
-		FLAG_IS_DIRONLY /*! Only set input/output (ignore other settings) */ = PIO_FLAG_IS_DIRONLY,
-		FLAG_IS_ANALOG /*! Use an analog rather than digital input */ = PIO_FLAG_IS_ANALOG,
-		FLAG_IS_INVERT /*! Invert the logic on the pin */ = PIO_FLAG_IS_INVERT,
-		FLAG_IS_FILTER /*! Filter noise on pin */ = PIO_FLAG_IS_FILTER,
-		FLAG_SET /*! Set the bits in the mask */ = PIO_FLAG_SET,
-		FLAG_CLEAR /*! Clear the bits in the mask */ = PIO_FLAG_CLEAR,
-		FLAG_ASSIGN /*! Assign the pinmask value to the port */ = PIO_FLAG_ASSIGN
+		FLAG_SET_INPUT /*! See \ref PIO_FLAG_SET_INPUT */ = PIO_FLAG_SET_INPUT,
+		FLAG_SET_OUTPUT /*! See \ref PIO_FLAG_SET_OUTPUT */ = PIO_FLAG_SET_OUTPUT,
+		FLAG_IS_PULLUP /*! See \ref PIO_FLAG_IS_PULLUP */ = PIO_FLAG_IS_PULLUP,
+		FLAG_IS_PULLDOWN /*! See \ref PIO_FLAG_IS_PULLDOWN */ = PIO_FLAG_IS_PULLDOWN,
+		FLAG_IS_REPEATER /*! See \ref PIO_FLAG_IS_REPEATER */ = PIO_FLAG_IS_REPEATER,
+		FLAG_IS_FLOAT /*! See \ref PIO_FLAG_IS_FLOAT */ = PIO_FLAG_IS_FLOAT,
+		FLAG_IS_SPEED_LOW /*! See \ref PIO_FLAG_IS_SPEED_LOW */ = PIO_FLAG_IS_SPEED_LOW,
+		FLAG_IS_SPEED_MEDIUM /*! See \ref PIO_FLAG_IS_SPEED_MEDIUM */ = PIO_FLAG_IS_SPEED_MEDIUM,
+		FLAG_IS_SPEED_HIGH /*! See \ref PIO_FLAG_IS_SPEED_HIGH */ = PIO_FLAG_IS_SPEED_HIGH,
+		FLAG_IS_SPEED_BLAZING /*! See \ref PIO_FLAG_IS_SPEED_BLAZING */ = PIO_FLAG_IS_SPEED_BLAZING,
+		FLAG_IS_OPENDRAIN /*! See \ref PIO_FLAG_IS_OPENDRAIN */ = PIO_FLAG_IS_OPENDRAIN,
+		FLAG_IS_HYSTERESIS /*! See \ref PIO_FLAG_IS_HYSTERESIS */ = PIO_FLAG_IS_HYSTERESIS,
+		FLAG_IS_DIRONLY /*! See \ref PIO_FLAG_IS_DIRONLY */ = PIO_FLAG_IS_DIRONLY,
+		FLAG_IS_ANALOG /*! See \ref PIO_FLAG_IS_ANALOG */ = PIO_FLAG_IS_ANALOG,
+		FLAG_IS_INVERT /*! See \ref PIO_FLAG_IS_INVERT */ = PIO_FLAG_IS_INVERT,
+		FLAG_IS_FILTER /*! See \ref PIO_FLAG_IS_FILTER */ = PIO_FLAG_IS_FILTER,
+		FLAG_SET /*! See \ref PIO_FLAG_SET */ = PIO_FLAG_SET,
+		FLAG_CLEAR /*! See \ref PIO_FLAG_CLEAR */ = PIO_FLAG_CLEAR,
+		FLAG_ASSIGN /*! See \ref PIO_FLAG_ASSIGN */ = PIO_FLAG_ASSIGN
 	};
 
 	/*! \details Sets the specified pin mask */
@@ -77,6 +77,11 @@ public:
 	/*! \details Clears the specified mask. */
 	int clear_mask(u32 mask) const;
 
+	/*! \details Assigns the mask value to the port
+	 *
+	 * @param mask Bits that are set will be output as 1 and bits that are clear will be output as zero
+	 * @return Zero on success
+	 */
 	int assign(u32 mask) const;
 
 	/*! \details Gets the value of the port. */
@@ -91,6 +96,12 @@ public:
 
 	using Periph::set_attr;
 
+	/*! \details Sets the attributes of the IO port as specified.
+	 *
+	 * @param o_flags A bitmask of the effective flags
+	 * @param o_pinmask A bitmask of the pins to operate on
+	 * @return Zero on success
+	 */
 	int set_attr(u32 o_flags, u32 o_pinmask) const {
 		pio_attr_t attr;
 		attr.o_flags = o_flags;
@@ -98,12 +109,13 @@ public:
 		return set_attr(attr);
 	}
 
-	/*! \details This method opens the port
+	/*! \details Opens the port
 	 * then sets the attributes using the specified mask and mode.
-	 * \code
-	 * Pio p(0);
-	 * p.init((1<<10)|(1<<5), PIO_MODE_OUTPUT)); //pins 0.5 and 0.10 are outputs
-	 * \endcode
+	 *
+	 * @param o_flags A bitmask of the effective flags
+	 * @param o_pinmask A bitmask of the pins to operate on
+	 * @return Zero on success
+	 *
 	 */
 	int init(u32 o_flags, u32 o_pinmask){
 		if( open() <  0 ){

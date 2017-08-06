@@ -26,24 +26,17 @@ class I2CPinAssignment : public PinAssignment<i2c_pin_assignment_t>{};
  *
  * u16 data;
  * I2C i2c(0); //use I2C port 0
- * i2c.init(I2C::FLAG_SET_MASTER|); //100KHz
+ * i2c.init(I2C::FLAG_SET_MASTER); //Init as a master using default pin assignment
  *
- * i2c.prepare(0x4C); //slave addr is 0x4C
- *
+ * i2c.prepare(0x4C); //slave addr is 0x4C - operation is 8-bit ptr plus data
  * i2c.read(5, &data, sizeof(data)); //read 2 bytes from register 5
+ * i2c.close();
  * \endcode
  *
  * The code above will execute 2 I2C transactions. It will write 5 to the
  * I2C slave device register pointer. It will then read 2 bytes from the
  * slave device.
  *
- * If the slave device is not configured with a register pointer, you can
- * use the I2C::setup() method to perform other types of transactions.
- *
- * \code
- * i2c.setup(0x4C, SETUP_DATA_ONLY_TRANSFER);
- * i2c.write(&data, sizeof(data)); //this will write 2 bytes contained in data (location is ignored)
- * \endcode
  *
  */
 class I2C : public Periph<i2c_info_t, i2c_attr_t, 'i'> {

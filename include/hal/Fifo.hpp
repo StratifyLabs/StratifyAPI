@@ -43,14 +43,14 @@ private:
 };
 
 /*! \brief FIFO Class */
-/*! \details The Fifo class connects to Fifo devices which can be used to:
+/*! \details The Fifo class connects to Fifo devices which can be used for:
  *
  * - Inter-process communication
  * - Buffering serial I/O from SPI, I2S, USB, etc
  *
  * For example, the default STDIO is implemented as two fifo buffers: one for input
  * and one for output. A typical application will write the STDOUT fifo while
- * the USB protocol will read it fifo and display it on the screen. Alternatively,
+ * the USB protocol will read the fifo and display it on the screen. Alternatively,
  * a separate application or the kernel could read the STDOUT and print it on a display
  * or send it out the UART.
  *
@@ -95,8 +95,9 @@ public:
 		return a;
 	};
 
-	/*! \details Flush the FIFO */
+	/*! \details Flushes the FIFO. */
 	int flush() const;
+
 	/*! \details Initialize the FIFO. This function should only be called once
 	 * even if several contexts access the FIFO.
 	 *
@@ -104,9 +105,16 @@ public:
 	 *
 	 */
 	int init() const;
+
 	/*! \details Exit the FIFO */
 	int exit() const;
-	/*! \details Set the FIFO write block */
+
+	/*! \details Sets the FIFO in write block mode.
+	 *
+	 * If a write is attempted (and the file descriptor is not in non-blocking mode), the
+	 * write will block until data is read from the FIFO.
+	 *
+	 */
 	int set_writeblock() const;
 
 };

@@ -25,7 +25,7 @@ class DacPinAssignment : public PinAssignment<dac_pin_assignment_t>{};
  *
  * int main(int argc, char * argv[]){
  * 	Dac dac(0);
- * 	dac_sample_t samples[50];
+ * 	u32 samples[50];
  * 	dac.init(); //init with default settings
  *
  *  //here, write meaningful values to samples
@@ -37,7 +37,7 @@ class DacPinAssignment : public PinAssignment<dac_pin_assignment_t>{};
  *
  * 	dac.write(aio);
  *  //Here you can do other things while the data is written
- * 	while( aio.inprogress() == true ){
+ * 	while( aio.is_busy() == true ){
  * 		Timer::wait_usec(500); //wait until the write is complete
  * 	}
  *
@@ -54,8 +54,9 @@ public:
 	Dac(port_t port);
 
 	enum {
-		FLAG_LEFT_JUSTIFIED = DAC_FLAG_IS_LEFT_JUSTIFIED,
-		FLAG_RIGHT_JUSTIFIED = DAC_FLAG_IS_RIGHT_JUSTIFIED,
+		FLAG_SET_CONVERTER /*! Set to configure the converter */ = DAC_FLAG_SET_CONVERTER,
+		FLAG_LEFT_JUSTIFIED /*! Set to left justify the data */ = DAC_FLAG_IS_LEFT_JUSTIFIED,
+		FLAG_RIGHT_JUSTIFIED /*! Set to right justify the data */ = DAC_FLAG_IS_RIGHT_JUSTIFIED,
 	};
 
 	/*! \details Sets the DAC attributes using specified values.
@@ -91,7 +92,7 @@ public:
 		return set_attr(o_flags, freq, pin_assignment);
 	}
 
-	/*! \details Sets the value of the DAC.
+	/*! \details Sets the value of the DAC channel.
 	 *
 	 * @param value Value to write to the DAC
 	 * @param channel The DAC channel
@@ -101,6 +102,11 @@ public:
 		return Periph::set_channel(loc, value, I_DAC_SET);
 	}
 
+	/*! \details Gets the current value of the DAC channel.
+	 *
+	 * @param loc The DAC channel to get
+	 * @return The current value of the channel or (u32)-1 if ther is an error
+	 */
 	u32 get_channel(u32 loc) const {
 		return Periph::get_channel(loc, I_DAC_GET);
 	}

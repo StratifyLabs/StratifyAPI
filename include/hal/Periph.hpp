@@ -76,6 +76,35 @@ public:
 	}
 
 
+	/*! \details Gets the version of the peripheral driver.
+	 *
+	 * @return The BCD version of the driver
+	 *
+	 * The version is a 24-bit BCD value. For example, 0x010203 is
+	 * version 1.2.3 where:
+	 *
+	 * - 1 is the major version
+	 * - 2 is the minor version
+	 * - 3 is the patch version
+	 *
+	 * If the major version of the driver is not the same as the major version of
+	 * the driver interface header in the SDK, there will be problems using the hardware.
+	 *
+	 * Here is a code sample using a Pwm object (which inherits this object)
+	 *
+	 * \code
+	 * #include <sapi.hal.hpp>
+	 *
+	 * Pwm pwm(1); //pwm inherits this object
+	 * pwm.open();
+	 * if( (pwm.get_version()) >> 16 != (PWM_VERSION >>16) ){
+	 *  printf("Major versions are not the same\n");
+	 * } else {
+	 *  printf("Major versions match\n");
+	 * }
+	 * \endcode
+	 *
+	 */
 	int get_version() const {
 		return ioctl(_IOCTL(ident_char, I_MCU_GETVERSION));
 	}

@@ -9,6 +9,10 @@
 
 namespace hal {
 
+/*! \class LED Class
+ * \details The LED Class is used to control LEDs based on
+ * the standard LED driver.
+ */
 class Led : public Dev {
 public:
 	Led();
@@ -50,9 +54,7 @@ public:
 	 *
 	 * @return Zero on success
 	 */
-	int enable() const {
-		return enable(0,0);
-	}
+	int enable() const { return enable(0,0); }
 
 	/*! \details Flashes the LED.
 	 *
