@@ -8,27 +8,41 @@ Usb::Usb(port_t port) : Periph(CORE_PERIPH_USB, port){}
 
 
 int Usb::reset(){
-	return ioctl(I_USB_RESET);
+	usb_attr_t attr;
+	attr.o_flags = Usb::FLAG_RESET;
+	return ioctl(I_USB_SETATTR, &attr);
 }
 
 int Usb::attach(){
-	return ioctl(I_USB_ATTACH);
+	usb_attr_t attr;
+	attr.o_flags = Usb::FLAG_ATTACH;
+	return ioctl(I_USB_SETATTR, &attr);
 }
 
 int Usb::configure(){
-	return ioctl(I_USB_CONFIGURE);
+	usb_attr_t attr;
+	attr.o_flags = Usb::FLAG_CONFIGURE;
+	return ioctl(I_USB_SETATTR, &attr);
 }
 
 int Usb::detach(){
-	return ioctl(I_USB_DETACH);
+	usb_attr_t attr;
+	attr.o_flags = Usb::FLAG_DETACH;
+	return ioctl(I_USB_SETATTR, &attr);
 }
 
 int Usb::disable_endpoint(int ep){
-	return ioctl(I_USB_DISABLEEP, ep);
+	usb_attr_t attr;
+	attr.o_flags = Usb::FLAG_DISABLE_ENDPOINT;
+	attr.address = ep;
+	return ioctl(I_USB_SETATTR, &attr);
 }
 
 int Usb::enable_endpoint(int ep){
-	return ioctl(I_USB_ENABLEEP, ep);
+	usb_attr_t attr;
+	attr.o_flags = Usb::FLAG_ENABLE_ENDPOINT;
+	attr.address = ep;
+	return ioctl(I_USB_SETATTR, &attr);
 }
 
 bool Usb::is_connected(){
@@ -36,17 +50,29 @@ bool Usb::is_connected(){
 }
 
 int Usb::reset_endpoint(int ep){
-	return ioctl(I_USB_RESETEP, ep);
+	usb_attr_t attr;
+	attr.o_flags = Usb::FLAG_RESET_ENDPOINT;
+	attr.address = ep;
+	return ioctl(I_USB_SETATTR, &attr);
 }
 
 int Usb::set_addr(int addr){
-	return ioctl(I_USB_SETATTR, addr);
+	usb_attr_t attr;
+	attr.o_flags = Usb::FLAG_SET_ADDRESS;
+	attr.address = addr;
+	return ioctl(I_USB_SETATTR, &attr);
 }
 
 int Usb::stall_endpoint(int ep){
-	return ioctl(I_USB_STALLEP, ep);
+	usb_attr_t attr;
+	attr.o_flags = Usb::FLAG_STALL_ENDPOINT;
+	attr.address = ep;
+	return ioctl(I_USB_SETATTR, &attr);
 }
 
 int Usb::unstall_endpoint(int ep){
-	return ioctl(I_USB_UNSTALLEP, ep);
+	usb_attr_t attr;
+	attr.o_flags = Usb::FLAG_UNSTALL_ENDPOINT;
+	attr.address = ep;
+	return ioctl(I_USB_SETATTR, &attr);
 }

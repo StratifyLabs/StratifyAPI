@@ -75,19 +75,17 @@ public:
 	 * can be Or'd (|) together such as Tmr::RESET|Tmr::INTERRUPT.
 	 */
 	enum {
-		FLAG_IS_CLKSRC_CPU /*! Use the CPU as the source for the clock (timer mode) */ = TMR_FLAG_IS_CLKSRC_CPU,
-		FLAG_IS_CLKSRC_IC0 /*! Use input capture channel 0 for the clock source (counter mode) */ = TMR_FLAG_IS_CLKSRC_IC0,
-		FLAG_IS_CLKSRC_IC1 /*! Use input capture channel 1 for the clock source (counter mode) */ = TMR_FLAG_IS_CLKSRC_IC1,
-		FLAG_IS_CLKSRC_IC2 /*! Use input capture channel 2 for the clock source (counter mode) */ = TMR_FLAG_IS_CLKSRC_IC2,
-		FLAG_IS_CLKSRC_IC3 /*! Use input capture channel 3 for the clock source (counter mode) */ = TMR_FLAG_IS_CLKSRC_IC3,
-		FLAG_IS_CLKSRC_EDGERISING /*! Count rising edges */ = TMR_FLAG_IS_CLKSRC_EDGERISING,
-		FLAG_IS_CLKSRC_EDGEFALLING /*! Count falling edges */ = TMR_FLAG_IS_CLKSRC_EDGEFALLING,
-		FLAG_IS_CLKSRC_EDGEBOTH /*! Count both edges */ = TMR_FLAG_IS_CLKSRC_EDGEBOTH,
-		FLAG_IS_CLKSRC_COUNTDOWN /*! Count down (not up) */ = TMR_FLAG_IS_CLKSRC_COUNTDOWN,
-		FLAG_AUTO_RELOAD /*! Auto reload the time */ = TMR_FLAG_AUTO_RELOAD,
-		FLAG_ENABLE_OC /*! Auto reload the time */ = TMR_FLAG_ENABLE_OC,
-		FLAG_ENABLE_IC /*! Auto reload the time */ = TMR_FLAG_ENABLE_IC,
 		FLAG_SET_TIMER /*! Turn the timer on */ = TMR_FLAG_SET_TIMER,
+		FLAG_IS_SOURCE_CPU /*! Use the CPU as the source for the clock (timer mode) */ = TMR_FLAG_IS_SOURCE_CPU,
+		FLAG_IS_SOURCE_IC0 /*! Use input capture channel 0 for the clock source (counter mode) */ = TMR_FLAG_IS_SOURCE_IC0,
+		FLAG_IS_SOURCE_IC1 /*! Use input capture channel 1 for the clock source (counter mode) */ = TMR_FLAG_IS_SOURCE_IC1,
+		FLAG_IS_SOURCE_IC2 /*! Use input capture channel 2 for the clock source (counter mode) */ = TMR_FLAG_IS_SOURCE_IC2,
+		FLAG_IS_SOURCE_IC3 /*! Use input capture channel 3 for the clock source (counter mode) */ = TMR_FLAG_IS_SOURCE_IC3,
+		FLAG_IS_SOURCE_EDGERISING /*! Count rising edges */ = TMR_FLAG_IS_SOURCE_EDGERISING,
+		FLAG_IS_SOURCE_EDGEFALLING /*! Count falling edges */ = TMR_FLAG_IS_SOURCE_EDGEFALLING,
+		FLAG_IS_SOURCE_EDGEBOTH /*! Count both edges */ = TMR_FLAG_IS_SOURCE_EDGEBOTH,
+		FLAG_IS_SOURCE_COUNTDOWN /*! Count down (not up) */ = TMR_FLAG_IS_SOURCE_COUNTDOWN,
+		FLAG_IS_AUTO_RELOAD /*! Auto reload the time */ = TMR_FLAG_IS_AUTO_RELOAD,
 		FLAG_SET_CHANNEL /*! Configure channel characteristics */ = TMR_FLAG_SET_CHANNEL,
 		FLAG_IS_CHANNEL_STOP_ON_RESET /*! Stop when the timer resets */ = TMR_FLAG_IS_CHANNEL_STOP_ON_RESET,
 		FLAG_IS_CHANNEL_RESET_ON_MATCH /*! Stop when the timer finds a match */ = TMR_FLAG_IS_CHANNEL_RESET_ON_MATCH,
@@ -103,25 +101,36 @@ public:
 	/*! \details Turns the TMR off (stop counting) */
 	int disable() const;
 
-	/*! \details Set the output compare attributes */
-	int set_output_channel(u32 loc, u32 value){
-		return set_channel(loc, value, I_TMR_SETOC);
+	/*! \details Sets the value of the specified channel.
+	 *
+	 * @param loc The channel location
+	 * @return The value of the channel or (u32)-1 if the IOCTL request fails
+	 *
+	 * The \a loc parameter is the input or output channel. Input channels
+	 * should be or'd with the MCU_CHANNEL_FLAG_IS_INPUT value.
+	 *
+	 */	int set_channel(u32 loc, u32 value){
+		return Periph::set_channel(loc, value, I_TMR_SETCHANNEL);
 	}
 
+	/*! \details Gets the value of the specified channel.
+	 *
+	 * @param loc The channel location
+	 * @return The value of the channel or (u32)-1 if the IOCTL request fails
+	 *
+	 * The \a loc parameter is the input or output channel. Input channels
+	 * should be or'd with the MCU_CHANNEL_FLAG_IS_INPUT value.
+	 *
+	 */
 	u32 get_output_channel(u32 loc){
-		return get_channel(loc, I_TMR_GETOC);
+		return Periph::get_channel(loc, I_TMR_GETCHANNEL);
 	}
 
-	int set_input_channel(u32 loc, u32 value){
-		return set_channel(loc, value, I_TMR_SETIC);
-	}
 
-	u32 get_input_channel(u32 loc){
-		return get_channel(loc, I_TMR_GETIC);
-	}
-
+	/*! \details Gets the value of the timer. */
 	u32 get_value() const;
 
+	/*! \details Sets the value of the timer. */
 	int set_value(u32 value) const;
 
 

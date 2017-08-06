@@ -76,6 +76,10 @@ public:
 	}
 
 
+	int get_version() const {
+		return ioctl(_IOCTL(ident_char, I_MCU_GETVERSION));
+	}
+
 	int get_info(info_t & info) const {
 		return ioctl(_IOCTLR(ident_char, I_MCU_GETINFO, info_t), &info);
 	}
