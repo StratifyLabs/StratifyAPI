@@ -156,7 +156,14 @@ void Thread::reset(){
 }
 
 int Thread::join(int ident, void ** value_ptr){
-	return pthread_join(ident, value_ptr);
+	void * tmp_ptr;
+	void ** ptr;
+	if( value_ptr == 0 ){
+		ptr = &tmp_ptr;
+	} else {
+		ptr = value_ptr;
+	}
+	return pthread_join(ident, ptr);
 }
 
 bool Thread::is_joinable() const{
@@ -165,7 +172,14 @@ bool Thread::is_joinable() const{
 }
 
 int Thread::join(void ** value_ptr) const {
-	return pthread_join(id(), value_ptr);
+	void * tmp_ptr;
+	void ** ptr;
+	if( value_ptr == 0 ){
+		ptr = &tmp_ptr;
+	} else {
+		ptr = value_ptr;
+	}
+	return pthread_join(id(), ptr);
 }
 
 #endif

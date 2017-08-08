@@ -9,8 +9,8 @@ using namespace hal;
 Core::Core(port_t port) : Periph(CORE_PERIPH_CORE, port){}
 
 
-int Core::set_pin_function(const core_pinfunc_t * req){
-	return ioctl(I_CORE_SETPINFUNC, req);
+int Core::set_pin_function(const core_pinfunc_t & req){
+	return ioctl(I_CORE_SETPINFUNC, &req);
 }
 
 int Core::get_mcu_board_config(mcu_board_config_t & config){

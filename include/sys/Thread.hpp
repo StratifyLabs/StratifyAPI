@@ -74,7 +74,16 @@ public:
 	 * @param value_ptr A pointer to the return value of the target thread
 	 * @return Zero on success
 	 */
-	static int join(int ident, void ** value_ptr);
+	static int join(int ident, void ** value_ptr = 0);
+
+
+	/*! \details Sends a signal to the thread.
+	 *
+	 * @param sig The signal to send
+	 * @return Zero on success
+	 */
+	int kill(int sig){ return pthread_kill(m_id, sig); }
+
 
 	/*! \details This method returns true if the thread is joinable */
 	bool is_joinable() const;
@@ -83,7 +92,7 @@ public:
 	 *
 	 * @return 0 if joined, -1 if couldn't join (doesn't exist or is detached)
 	 */
-	int join(void ** value_ptr) const;
+	int join(void ** value_ptr = 0) const;
 
 	/*! \details Reset the object (thread must not be running) */
 	void reset();

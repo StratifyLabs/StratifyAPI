@@ -100,11 +100,11 @@ int Sys::get_kernel_version(var::String & version){
 }
 
 void Sys::powerdown(int count){
-	powerdown(count);
+	::powerdown(count);
 }
 
 int Sys::hibernate(int count){
-	return hibernate(count);
+	return ::hibernate(count);
 }
 
 int Sys::request(int req, void * arg){

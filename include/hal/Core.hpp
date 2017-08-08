@@ -85,7 +85,7 @@ public:
 
 
 	/*! \details Changes pin functionality using a core_pinfunc_t structure. */
-	inline int set_pin_function(const core_pinfunc_t & req){ return set_pin_function(&req); }
+	int set_pin_function(const core_pinfunc_t & req);
 
 	/*! \details Changes pin function.
 	 *
@@ -105,7 +105,7 @@ public:
 		f.io.pin = pin;
 		f.periph_func = func;
 		f.periph_port = func_port;
-		return set_pin_function(&f);
+		return set_pin_function(f);
 	}
 
 

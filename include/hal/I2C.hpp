@@ -98,7 +98,6 @@ public:
 
 	/*! \details Get the last error */
 	int get_err() const;
-	int err() const { return get_err(); }
 
 	/*! \details Sets the attributes of the I2C bus.
 	 *
