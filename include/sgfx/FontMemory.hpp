@@ -22,7 +22,7 @@ public:
 
 	/*! \details Set the location of the font in memory
 	 *
-	 * @param ptr A pointer to the font (sg_font_hdr_t*)
+	 * @param ptr A pointer to the font (sg_font_header_t*)
 	 */
 	void set_font_memory(const void * ptr);
 
@@ -34,7 +34,7 @@ public:
 
 	u16 get_h() const;
 
-	const Bitmap & bitmap(char c, bool ascii = true) const;
+	const Bitmap & bitmap() const;
 
 protected:
 	int load_char(sg_font_char_t & ch, char c, bool ascii) const;

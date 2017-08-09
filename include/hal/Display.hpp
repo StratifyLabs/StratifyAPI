@@ -105,7 +105,15 @@ public:
 	 * @param w The width of the memory area in pixels
 	 * @param h The height of the memory area in pixels
 	 */
-	Display(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h);
+	Display(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h) : sgfx::Bitmap(mem,w,h){};
+
+	/*! \details Constructs a new object and dynamically allocates memory for
+	 * the buffer.
+	 *
+	 * @param w The width of the display
+	 * @param h The height of the display
+	 */
+	Display(sg_size_t w, sg_size_t h) : sgfx::Bitmap(w,h){};
 
 	/*! \details Initializes the display. */
 	virtual int init(const char * name = 0) = 0;

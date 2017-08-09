@@ -6,13 +6,11 @@ using namespace sgfx;
 using namespace sys;
 
 FontFile::FontFile() {
-	// TODO Auto-generated constructor stub
 	m_bitmap = 0;
 	m_kerning_pairs = 0;
 }
 
 FontFile::FontFile(const char * name, int offset) {
-	// TODO Auto-generated constructor stub
 	m_kerning_pairs = 0;
 	set_file(name, offset);
 }
@@ -52,7 +50,7 @@ int FontFile::set_file(const char * name, int offset){
 	m_kerning_pairs = (sg_font_kerning_pair_t*)malloc(pair_size);
 
 	if( m_kerning_pairs ){
-		m_file.read(m_offset + sizeof(sg_font_hdr_t), m_kerning_pairs, pair_size);
+		m_file.read(m_offset + sizeof(sg_font_header_t), m_kerning_pairs, pair_size);
 	}
 
 	set_space_size(m_hdr.max_byte_width/4);
@@ -64,7 +62,7 @@ int FontFile::set_file(const char * name, int offset){
 
 u16 FontFile::get_h() const { return m_hdr.max_height; }
 
-const Bitmap & FontFile::bitmap(char c, bool ascii) const {
+const Bitmap & FontFile::bitmap() const {
 	//load bitmap
 	load_bitmap(m_char);
 	return m_bitmap;
@@ -79,7 +77,7 @@ int FontFile::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 	} else {
 		ind = c;
 	}
-	offset = m_offset + sizeof(sg_font_hdr_t) + sizeof(sg_font_kerning_pair_t)*m_hdr.kerning_pairs + ind*sizeof(sg_font_char_t);
+	offset = m_offset + sizeof(sg_font_header_t) + sizeof(sg_font_kerning_pair_t)*m_hdr.kerning_pairs + ind*sizeof(sg_font_char_t);
 	if( (ret = m_file.read(offset, &ch, sizeof(ch))) != sizeof(ch) ){
 		return -1;
 	}

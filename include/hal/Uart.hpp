@@ -27,7 +27,7 @@ class UartPinAssignment : public PinAssignment<uart_pin_assignment_t>{};
  * int main(int argc, char * argv[]){
  * 	Uart uart(0); //use UART0
  * 	char buffer[256];
- * 	uart.init(115200); //initializes using 115200 and default parameters (see init())
+ * 	uart.init(); //initializes using default parameters
  * 	uart.read(buffer, 256); //this will block until at least one byte arrives
  * 	uart.close(); //free the file descriptors and power down the device
  * 	return 0;
@@ -45,9 +45,9 @@ class UartPinAssignment : public PinAssignment<uart_pin_assignment_t>{};
  * 	char buffer[256];
  * 	uart.open(Uart::NONBLOCK|Uart::RDWR);
  *  //now set the attributes
- * 	uart.set_attr(Uart::FLAG_IS_STOP1|Uart::FLAG_IS_PARITY_NONE|Uart,
+ * 	uart.set_attr(Uart::FLAG_IS_STOP1|Uart::FLAG_IS_PARITY_NONE,
  * 	115200, //115200 baud rate
- *  );
+ *  8);
  * 	uart.read(buffer, 256); //returns immediately even if no data is available (errno is set to EAGAIN if no data)
  * 	uart.close(); //free the resources
  * }
@@ -59,14 +59,14 @@ public:
 	Uart(port_t port);
 
 	enum {
-		FLAG_SET_CONTROL_LINE_STATE /*! Set the control line state */ = UART_FLAG_SET_CONTROL_LINE_STATE,
-		FLAG_IS_STOP1 /*! One stop bit */ = UART_FLAG_IS_STOP1,
-		FLAG_IS_STOP2 /*! Two stop bits */ = UART_FLAG_IS_STOP2,
-		FLAG_IS_STOP0_5 /*! 0.5 stop bits */ = UART_FLAG_IS_STOP0_5,
-		FLAG_IS_STOP1_5 /*! 1.5 stop bits */ = UART_FLAG_IS_STOP1_5,
-		FLAG_IS_PARITY_NONE /*! Indicates no parity */ = UART_FLAG_IS_PARITY_NONE,
-		FLAG_IS_PARITY_ODD /*! Indicates odd parity */ = UART_FLAG_IS_PARITY_ODD,
-		FLAG_IS_PARITY_EVEN /*! Indicates even parity */ = UART_FLAG_IS_PARITY_EVEN,
+		FLAG_SET_CONTROL_LINE_STATE /*! See \ref UART_FLAG_SET_CONTROL_LINE_STATE */ = UART_FLAG_SET_CONTROL_LINE_STATE,
+		FLAG_IS_STOP1 /*! See \ref UART_FLAG_IS_STOP1 */ = UART_FLAG_IS_STOP1,
+		FLAG_IS_STOP2 /*! See \ref UART_FLAG_IS_STOP2 */ = UART_FLAG_IS_STOP2,
+		FLAG_IS_STOP0_5 /*! See \ref UART_FLAG_IS_STOP0_5 */ = UART_FLAG_IS_STOP0_5,
+		FLAG_IS_STOP1_5 /*! See \ref UART_FLAG_IS_STOP1_5 */ = UART_FLAG_IS_STOP1_5,
+		FLAG_IS_PARITY_NONE /*! See \ref UART_FLAG_IS_PARITY_NONE */ = UART_FLAG_IS_PARITY_NONE,
+		FLAG_IS_PARITY_ODD /*! See \ref UART_FLAG_IS_PARITY_ODD */ = UART_FLAG_IS_PARITY_ODD,
+		FLAG_IS_PARITY_EVEN /*! See \ref UART_FLAG_IS_PARITY_EVEN */ = UART_FLAG_IS_PARITY_EVEN,
 	};
 
 	/*! \details Reads a single byte (if available from the UART).  Upon
@@ -75,7 +75,6 @@ public:
 	 * \returns Zero on successfully reading a byte, -1 if no bytes are available.
 	 */
 	int get(char & c);
-	int get_byte(char * c){ return get(*c); }
 
 	/*! \details Writes a single byte on the UART.
 	 *
@@ -84,7 +83,7 @@ public:
 	 */
 	int put(char c);
 
-	/*! \details Flushes the TX/RX buffers */
+	/*! \details Flushes the TX/RX buffers. */
 	int flush();
 
 

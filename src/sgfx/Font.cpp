@@ -50,14 +50,14 @@ int Font::calc_len(const char * str) const {
 	return l;
 }
 
-int Font::draw_char(char c, Bitmap & bitmap, sg_point_t point) const {
+int Font::draw_char(char c, Bitmap & dest, sg_point_t point) const {
 
 	load_char(m_char, c, true);
 
 	point.x += m_char.xoffset;
 	point.y += m_char.yoffset;
 
-	bitmap.draw_bitmap(point, this->bitmap(c, true));
+	dest.draw_bitmap(point, bitmap());
 
 	//this needs to be char width not bitmap width
 	return m_char.xadvance;

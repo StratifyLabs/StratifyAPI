@@ -108,6 +108,4 @@ int DisplayPalette::load(const char * path){
 
 }
 
-Display::Display(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h) : sgfx::Bitmap(mem,w,h){}
-
 } /* namespace hal */

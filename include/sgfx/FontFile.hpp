@@ -17,14 +17,12 @@ public:
 	int set_file(const char * name, int offset = 0);
 
 	u16 get_h() const;
-	const Bitmap & bitmap(char c, bool ascii = true) const;
+	const Bitmap & bitmap() const;
 
 protected:
 	int load_char(sg_font_char_t & ch, char c, bool ascii) const;
 	int load_bitmap(const sg_font_char_t & ch) const;
 	int load_kerning(u16 first, u16 second) const;
-
-
 
 private:
 	mutable sys::File m_file;

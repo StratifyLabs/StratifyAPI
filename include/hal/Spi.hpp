@@ -24,17 +24,17 @@ public:
 	Spi(port_t port);
 
 	enum {
-		FLAG_IS_FORMAT_SPI/*! SPI Format */ = SPI_FLAG_IS_FORMAT_SPI,
-		FLAG_IS_FORMAT_TI /*! TI Format */ = SPI_FLAG_IS_FORMAT_TI,
-		FLAG_IS_FORMAT_MICROWIRE /*! Microwire format */ = SPI_FLAG_IS_FORMAT_MICROWIRE,
-		FLAG_IS_MODE0 /*! SPI Mode 0 */ = SPI_FLAG_IS_MODE0,
-		FLAG_IS_MODE1 /*! SPI Mode 1 */ = SPI_FLAG_IS_MODE1,
-		FLAG_IS_MODE2 /*! SPI Mode 2 */ = SPI_FLAG_IS_MODE2,
-		FLAG_IS_MODE3 /*! SPI Mode 3 */ = SPI_FLAG_IS_MODE3,
-		FLAG_SET_MASTER /*! SPI Master */ = SPI_FLAG_SET_MASTER,
-		FLAG_SET_SLAVE /*! SPI Slave */ = SPI_FLAG_SET_SLAVE,
-		FLAG_IS_FULL_DUPLEX /*! Full duplex mode (data is written first then read into the same buffer) */ = SPI_FLAG_IS_FULL_DUPLEX,
-		FLAG_IS_HALF_DUPLEX /*! Half duplex mode (default mode) */ = SPI_FLAG_IS_HALF_DUPLEX,
+		FLAG_IS_FORMAT_SPI/*! See \ref SPI_FLAG_IS_FORMAT_SPI */ = SPI_FLAG_IS_FORMAT_SPI,
+		FLAG_IS_FORMAT_TI /*! See \ref SPI_FLAG_IS_FORMAT_TI */ = SPI_FLAG_IS_FORMAT_TI,
+		FLAG_IS_FORMAT_MICROWIRE /*! See \ref SPI_FLAG_IS_FORMAT_MICROWIRE */ = SPI_FLAG_IS_FORMAT_MICROWIRE,
+		FLAG_IS_MODE0 /*! See \ref SPI_FLAG_IS_MODE0 */ = SPI_FLAG_IS_MODE0,
+		FLAG_IS_MODE1 /*! See \ref SPI_FLAG_IS_MODE1 */ = SPI_FLAG_IS_MODE1,
+		FLAG_IS_MODE2 /*! See \ref SPI_FLAG_IS_MODE2 */ = SPI_FLAG_IS_MODE2,
+		FLAG_IS_MODE3 /*! See \ref SPI_FLAG_IS_MODE3 */ = SPI_FLAG_IS_MODE3,
+		FLAG_SET_MASTER /*! See \ref SPI_FLAG_SET_MASTER */ = SPI_FLAG_SET_MASTER,
+		FLAG_SET_SLAVE /*! See \ref SPI_FLAG_SET_SLAVE */ = SPI_FLAG_SET_SLAVE,
+		FLAG_IS_FULL_DUPLEX /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */ = SPI_FLAG_IS_FULL_DUPLEX,
+		FLAG_IS_HALF_DUPLEX /*! See \ref SPI_FLAG_IS_HALF_DUPLEX */ = SPI_FLAG_IS_HALF_DUPLEX,
 	};
 
 	/*! \details swap a byte on the SPI bus */
@@ -54,7 +54,11 @@ public:
 		return Periph::set_attr(attr);
 	}
 
-	/*! \details initialize the SPI port */
+	/*! \details Initializes the SPI port as specified.
+	 *
+	 * @param o_flags
+	 *
+	 */
 	int init(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0){
 
 		if( open() < 0 ){

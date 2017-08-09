@@ -32,15 +32,16 @@ public:
 	 *
 	 * \return A pointer to a bitmap or zero if the character could not be loaded
 	 */
-	virtual const Bitmap & bitmap(char c, bool ascii = true) const = 0;
+	virtual const Bitmap & bitmap() const = 0;
+
+
+	/*! \details The maximum height of the font. */
+	virtual sg_size_t get_h() const = 0;
 
 	//Attribute access methods
 	int offset() const { return m_char.offset; }
 	int yoffset() const { return m_char.yoffset; }
 
-
-	/*! \details The maximum height of the font. */
-	virtual sg_size_t get_h() const = 0;
 
 	/*! \details Calulate the length (pixels on x-axis) of the specified string */
 	int calc_len(const char * str) const;
@@ -49,15 +50,16 @@ public:
 	int size() const { return m_hdr.num_chars; }
 
 	/*! \details Set the spacing between letters within a word */
-	inline void set_letter_spacing(sg_size_t spacing){ m_letter_spacing = spacing; }
+	void set_letter_spacing(sg_size_t spacing){ m_letter_spacing = spacing; }
+
 	/*! \detials Returns the spacing of the letters within a word */
-	inline sg_size_t letter_spacing() const { return m_letter_spacing; }
+	sg_size_t letter_spacing() const { return m_letter_spacing; }
 
 	/*! \details Set the number of pixels in a space between words */
-	inline void set_space_size(int s){ m_space_size = s; }
+	void set_space_size(int s){ m_space_size = s; }
 
 	/*! \details Returns the number of pixels between words */
-	inline int space_size() const { return m_space_size; }
+	int space_size() const { return m_space_size; }
 
 	/*! \details Set the string pixels in the bitmap
 	 *
@@ -66,7 +68,7 @@ public:
 	 * @param point The top left corner to start drawing the string
 	 * @return Zero on success
 	 */
-	int draw_str(const char * str, Bitmap & bitmap, sg_point_t point) const;
+	int draw_str(const char * str, Bitmap & dest, sg_point_t point) const;
 
 
 	int draw_char(char c, Bitmap & bitmap, sg_point_t point) const;
@@ -76,7 +78,6 @@ protected:
 	static int to_charset(char ascii);
 
 	virtual int load_char(sg_font_char_t & ch, char c, bool ascii) const = 0;
-	virtual int load_bitmap(const sg_font_char_t & ch) const = 0;
 	virtual int load_kerning(u16 first, u16 second) const { return 0; }
 
 	mutable int m_offset;
@@ -84,7 +85,7 @@ protected:
 
 	sg_size_t m_letter_spacing;
 	int m_space_size;
-	sg_font_hdr_t m_hdr;
+	sg_font_header_t m_hdr;
 
 private:
 

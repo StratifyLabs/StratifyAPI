@@ -159,7 +159,6 @@ public:
 	/*! \details Shortcut for calc_usec(); */
 	u32 usec() const { return calc_usec(); }
 
-	u32 value() const { return calc_usec(); }
 
 	/*! \details Timer value in seconds.  This is similar to calc_msec() but returns
 	 * the value in seconds rather than milliseconds.

@@ -29,7 +29,7 @@ class TmrPinAssignment : public PinAssignment<tmr_pin_assignment_t>{};
  *
  * \code
  * Tmr tmr(0); //use /dev/tmr0
- * tmr.init(); //the default is 1MHz clock using the CPU see init() below
+ * tmr.init(); //initialize the timer
  * tmr.set(0); //set the value to zero
  * tmr.on(); //turn the timer on
  * Timer::wait_msec(100);
@@ -39,30 +39,11 @@ class TmrPinAssignment : public PinAssignment<tmr_pin_assignment_t>{};
  * Here is an example using the Tmr to count external edges on input capture 0
  *
  * \code
- * Tmr tmr(0);
- * tmr.init(0, //frequency is ignored in this case
- * 	Tmr::INPUT0|Tmr::RISING, //use input capture channel 0 rising edges as the clock source
- * 	__TMR0_PINASSIGN_PORT1_26_27_28_29, //This is for the LPC17xx to use P1.26 for CAP0.0 (timer0/input0)
- * 	0, //not using output compare channels
- * 	0); //not using input capture (other than clock source)
- * tmr.on();
- *  //Tmr0 is now counting edges arriving on P1.26 (CAP0.0) for LPC17xx devices
- * printf("Received %d edges\n", tmr.value()); //show the number of edges that have arrived
  * \endcode
  *
  * You can also use the output compare channels to set the top value of the timer.
  *
  * \code
- * Tmr tmr(0);
- * tmr.init(); //use default settings (1MHz CPU timer)
- *
- * tmr.set_action(0,
- * 	Tmr::RESET); //reset the timer to zero when the event happens
- * 	//Now assign a value to output compare channel 0
- * tmr.setoc(0, //we are using output compare channel 0
- * 	1000000 //When the count gets to 1 million (1 second at 1MHz), reset the timer
- * 	);
- * tmr.on();
  * \endcode
  *
  *
@@ -75,35 +56,36 @@ public:
 	 * can be Or'd (|) together such as Tmr::RESET|Tmr::INTERRUPT.
 	 */
 	enum {
-		FLAG_SET_TIMER /*! Turn the timer on */ = TMR_FLAG_SET_TIMER,
-		FLAG_IS_SOURCE_CPU /*! Use the CPU as the source for the clock (timer mode) */ = TMR_FLAG_IS_SOURCE_CPU,
-		FLAG_IS_SOURCE_IC0 /*! Use input capture channel 0 for the clock source (counter mode) */ = TMR_FLAG_IS_SOURCE_IC0,
-		FLAG_IS_SOURCE_IC1 /*! Use input capture channel 1 for the clock source (counter mode) */ = TMR_FLAG_IS_SOURCE_IC1,
-		FLAG_IS_SOURCE_IC2 /*! Use input capture channel 2 for the clock source (counter mode) */ = TMR_FLAG_IS_SOURCE_IC2,
-		FLAG_IS_SOURCE_IC3 /*! Use input capture channel 3 for the clock source (counter mode) */ = TMR_FLAG_IS_SOURCE_IC3,
-		FLAG_IS_SOURCE_EDGERISING /*! Count rising edges */ = TMR_FLAG_IS_SOURCE_EDGERISING,
-		FLAG_IS_SOURCE_EDGEFALLING /*! Count falling edges */ = TMR_FLAG_IS_SOURCE_EDGEFALLING,
-		FLAG_IS_SOURCE_EDGEBOTH /*! Count both edges */ = TMR_FLAG_IS_SOURCE_EDGEBOTH,
-		FLAG_IS_SOURCE_COUNTDOWN /*! Count down (not up) */ = TMR_FLAG_IS_SOURCE_COUNTDOWN,
-		FLAG_IS_AUTO_RELOAD /*! Auto reload the time */ = TMR_FLAG_IS_AUTO_RELOAD,
-		FLAG_SET_CHANNEL /*! Configure channel characteristics */ = TMR_FLAG_SET_CHANNEL,
-		FLAG_IS_CHANNEL_STOP_ON_RESET /*! Stop when the timer resets */ = TMR_FLAG_IS_CHANNEL_STOP_ON_RESET,
-		FLAG_IS_CHANNEL_RESET_ON_MATCH /*! Stop when the timer finds a match */ = TMR_FLAG_IS_CHANNEL_RESET_ON_MATCH,
-		FLAG_IS_CHANNEL_STOP_ON_MATCH /*! Stop when the timer resets */ = TMR_FLAG_IS_CHANNEL_STOP_ON_MATCH,
-		FLAG_IS_CHANNEL_SET_OUTPUT_ON_MATCH /*! Stop when the timer resets */ = TMR_FLAG_IS_CHANNEL_SET_OUTPUT_ON_MATCH,
-		FLAG_IS_CHANNEL_CLEAR_OUTPUT_ON_MATCH /*! Stop when the timer resets */ = TMR_FLAG_IS_CHANNEL_CLEAR_OUTPUT_ON_MATCH,
-		FLAG_IS_CHANNEL_TOGGLE_OUTPUT_ON_MATCH /*! Stop when the timer resets */ = TMR_FLAG_IS_CHANNEL_TOGGLE_OUTPUT_ON_MATCH,
-		FLAG_IS_CHANNEL_PWM_MODE /*! Stop when the timer resets */ = TMR_FLAG_IS_CHANNEL_PWM_MODE,
+		FLAG_SET_TIMER /*! See \ref TMR_FLAG_SET_TIMER */ = TMR_FLAG_SET_TIMER,
+		FLAG_IS_SOURCE_CPU /*! See \ref TMR_FLAG_IS_SOURCE_CPU */ = TMR_FLAG_IS_SOURCE_CPU,
+		FLAG_IS_SOURCE_IC0 /*! See \ref TMR_FLAG_IS_SOURCE_IC0 */ = TMR_FLAG_IS_SOURCE_IC0,
+		FLAG_IS_SOURCE_IC1 /*! See \ref TMR_FLAG_IS_SOURCE_IC1 */ = TMR_FLAG_IS_SOURCE_IC1,
+		FLAG_IS_SOURCE_IC2 /*! See \ref TMR_FLAG_IS_SOURCE_IC2 */ = TMR_FLAG_IS_SOURCE_IC2,
+		FLAG_IS_SOURCE_IC3 /*! See \ref TMR_FLAG_IS_SOURCE_IC3 */ = TMR_FLAG_IS_SOURCE_IC3,
+		FLAG_IS_SOURCE_EDGERISING /*! See \ref TMR_FLAG_IS_SOURCE_EDGERISING */ = TMR_FLAG_IS_SOURCE_EDGERISING,
+		FLAG_IS_SOURCE_EDGEFALLING /*! See \ref TMR_FLAG_IS_SOURCE_EDGEFALLING */ = TMR_FLAG_IS_SOURCE_EDGEFALLING,
+		FLAG_IS_SOURCE_EDGEBOTH /*! See \ref TMR_FLAG_IS_SOURCE_EDGEBOTH */ = TMR_FLAG_IS_SOURCE_EDGEBOTH,
+		FLAG_IS_SOURCE_COUNTDOWN /*! See \ref TMR_FLAG_IS_SOURCE_COUNTDOWN */ = TMR_FLAG_IS_SOURCE_COUNTDOWN,
+		FLAG_IS_AUTO_RELOAD /*! See \ref TMR_FLAG_IS_AUTO_RELOAD */ = TMR_FLAG_IS_AUTO_RELOAD,
+		FLAG_SET_CHANNEL /*! See \ref TMR_FLAG_SET_CHANNEL */ = TMR_FLAG_SET_CHANNEL,
+		FLAG_IS_CHANNEL_STOP_ON_RESET /*! See \ref TMR_FLAG_IS_CHANNEL_STOP_ON_RESET */ = TMR_FLAG_IS_CHANNEL_STOP_ON_RESET,
+		FLAG_IS_CHANNEL_RESET_ON_MATCH /*! See \ref TMR_FLAG_IS_CHANNEL_RESET_ON_MATCH */ = TMR_FLAG_IS_CHANNEL_RESET_ON_MATCH,
+		FLAG_IS_CHANNEL_STOP_ON_MATCH /*! See \ref TMR_FLAG_IS_CHANNEL_STOP_ON_MATCH */ = TMR_FLAG_IS_CHANNEL_STOP_ON_MATCH,
+		FLAG_IS_CHANNEL_SET_OUTPUT_ON_MATCH /*! See \ref TMR_FLAG_IS_CHANNEL_SET_OUTPUT_ON_MATCH */ = TMR_FLAG_IS_CHANNEL_SET_OUTPUT_ON_MATCH,
+		FLAG_IS_CHANNEL_CLEAR_OUTPUT_ON_MATCH /*! See \ref TMR_FLAG_IS_CHANNEL_CLEAR_OUTPUT_ON_MATCH */ = TMR_FLAG_IS_CHANNEL_CLEAR_OUTPUT_ON_MATCH,
+		FLAG_IS_CHANNEL_TOGGLE_OUTPUT_ON_MATCH /*! See \ref TMR_FLAG_IS_CHANNEL_TOGGLE_OUTPUT_ON_MATCH */ = TMR_FLAG_IS_CHANNEL_TOGGLE_OUTPUT_ON_MATCH,
+		FLAG_IS_CHANNEL_PWM_MODE /*! See \ref TMR_FLAG_IS_CHANNEL_PWM_MODE */ = TMR_FLAG_IS_CHANNEL_PWM_MODE,
 	};
 
 	/*! \details Turns the TMR on (start counting) */
 	int enable() const;
+
 	/*! \details Turns the TMR off (stop counting) */
 	int disable() const;
 
 	/*! \details Sets the value of the specified channel.
 	 *
-	 * @param loc The channel location
+	 * @param loc The channel number
 	 * @return The value of the channel or (u32)-1 if the IOCTL request fails
 	 *
 	 * The \a loc parameter is the input or output channel. Input channels
@@ -115,17 +97,16 @@ public:
 
 	/*! \details Gets the value of the specified channel.
 	 *
-	 * @param loc The channel location
+	 * @param loc The channel number
 	 * @return The value of the channel or (u32)-1 if the IOCTL request fails
 	 *
 	 * The \a loc parameter is the input or output channel. Input channels
 	 * should be or'd with the MCU_CHANNEL_FLAG_IS_INPUT value.
 	 *
 	 */
-	u32 get_output_channel(u32 loc){
+	u32 get_channel(u32 loc){
 		return Periph::get_channel(loc, I_TMR_GETCHANNEL);
 	}
-
 
 	/*! \details Gets the value of the timer. */
 	u32 get_value() const;

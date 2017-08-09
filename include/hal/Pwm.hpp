@@ -40,12 +40,12 @@ public:
 	Pwm(port_t port);
 
 	enum {
-		FLAG_SET_TIMER = PWM_FLAG_SET_TIMER,
-		FLAG_IS_ACTIVE_HIGH = PWM_FLAG_IS_ACTIVE_HIGH,
-		FLAG_IS_ACTIVE_LOW = PWM_FLAG_IS_ACTIVE_LOW,
-		FLAG_SET_CHANNELS = PWM_FLAG_SET_CHANNELS,
-		FLAG_CLEAR_CHANNELS = PWM_FLAG_CLEAR_CHANNELS,
-		FLAG_IS_ENABLED = PWM_FLAG_IS_ENABLED
+		FLAG_SET_TIMER /*! See \ref PWM_FLAG_SET_TIMER */ = PWM_FLAG_SET_TIMER,
+		FLAG_IS_ACTIVE_HIGH /*! See \ref PWM_FLAG_IS_ACTIVE_HIGH */ = PWM_FLAG_IS_ACTIVE_HIGH,
+		FLAG_IS_ACTIVE_LOW /*! See \ref PWM_FLAG_IS_ACTIVE_LOW */ = PWM_FLAG_IS_ACTIVE_LOW,
+		FLAG_SET_CHANNELS /*! See \ref PWM_FLAG_SET_CHANNELS */ = PWM_FLAG_SET_CHANNELS,
+		FLAG_CLEAR_CHANNELS /*! See \ref PWM_FLAG_CLEAR_CHANNELS */ = PWM_FLAG_CLEAR_CHANNELS,
+		FLAG_IS_ENABLED /*! See \ref PWM_FLAG_IS_ENABLED */ = PWM_FLAG_IS_ENABLED
 	};
 
 	int set_channel(u32 loc, u32 value) const {
@@ -75,6 +75,10 @@ public:
 		attr.freq = freq;
 		attr.period = period;
 		return set_attr(attr);
+	}
+
+	int set_channels(const pwm_pin_assignment_t * pin_assignment){
+		return set_attr(FLAG_SET_CHANNELS, 0, 0, pin_assignment);
 	}
 
 	int init(u32 o_flags, u32 freq, u32 period, const pwm_pin_assignment_t * pin_assignment = 0){
