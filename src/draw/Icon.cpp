@@ -31,13 +31,13 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	if( align_top() ){
 		p.y -= m_bounds.top_left.y;
 	} else if( align_bottom() ){
-		p.y += bitmap.h() - m_bounds.bottom_right.y;
+		p.y += bitmap.height() - m_bounds.bottom_right.y;
 	}
 
 	if( align_left() ){
 		p.x -= m_bounds.top_left.x;
 	} else if( align_right() ){
-		p.y += bitmap.w() - m_bounds.bottom_right.x;
+		p.y += bitmap.width() - m_bounds.bottom_right.x;
 	}
 
 	attr.bitmap().draw_bitmap(p, bitmap);

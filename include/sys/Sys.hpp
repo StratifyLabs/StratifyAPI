@@ -52,7 +52,7 @@ public:
 	/*! \details Frees the RAM associated with the app without deleting the code from flash.
 	 * This should not be called when the app is currently running.
 	 *
-	 * @param path The path to the app (use \a exec_dest from launch())
+	 * @param path The path to the app (use \a exec_dest from launcheight())
 	 * @return Zero on success
 	 *
 	 * This method can causes problems if not used correctly. The RAM associated with

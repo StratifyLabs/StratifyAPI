@@ -60,7 +60,7 @@ int FontFile::set_file(const char * name, int offset){
 
 }
 
-u16 FontFile::get_h() const { return m_hdr.max_height; }
+u16 FontFile::get_height() const { return m_hdr.max_height; }
 
 const Bitmap & FontFile::bitmap() const {
 	//load bitmap

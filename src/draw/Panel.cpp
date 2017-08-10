@@ -21,20 +21,20 @@ void Panel::draw_to_scale(const DrawingScaledAttr & attr){
 
 	u32 radius;
 
-	map.set_dim(attr.w() * 2, attr.h() *2);
-	map.set_shift(attr.x() + attr.w()/2, attr.y() + attr.h()/2);
+	map.set_dim(attr.width() * 2, attr.height() *2);
+	map.set_shift(attr.x() + attr.width()/2, attr.y() + attr.height()/2);
 	//map.set_pen(m_pen);
 
 	radius = m_radius * SG_MAX/4 / scale();
 
-	if( attr.h() == attr.w() ){
+	if( attr.height() == attr.width() ){
 		x_radius = radius;
 		y_radius = radius;
-	} else if( attr.h() > attr.w() ){
-		x_radius = radius * attr.h() / attr.w();
+	} else if( attr.height() > attr.width() ){
+		x_radius = radius * attr.height() / attr.width();
 		y_radius = radius;
 	} else {
-		y_radius = radius * attr.w() / attr.h();
+		y_radius = radius * attr.width() / attr.height();
 		x_radius = radius;
 	}
 

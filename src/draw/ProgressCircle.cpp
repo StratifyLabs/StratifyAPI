@@ -19,8 +19,8 @@ void ProgressCircle::draw_to_scale(const DrawingScaledAttr & attr){
 
 	int16_t end_angle;
 
-	map.set_shift(p.x + d.w()/2, p.y + d.h()/2);
-	map.set_dim(d.w()*2, d.h()*2);
+	map.set_shift(p.x + d.width()/2, p.y + d.height()/2);
+	map.set_dim(d.width()*2, d.height()*2);
 
 	Point end;
 

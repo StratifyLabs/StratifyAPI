@@ -64,7 +64,7 @@ Bitmap::Bitmap(sg_size_t w, sg_size_t h){
 
 Bitmap::Bitmap(sg_dim_t d){
 	init_members();
-	alloc(d.w,d.h);
+	alloc(d.width,d.height);
 }
 
 
@@ -84,8 +84,8 @@ Bitmap::~Bitmap(){
 
 sg_point_t Bitmap::calc_center() const{
 	sg_point_t p;
-	p.x = w()/2;
-	p.y = h()/2;
+	p.x = width()/2;
+	p.y = height()/2;
 	return p;
 }
 
@@ -187,9 +187,9 @@ Dim Bitmap::load_dim(const char * path){
 int Bitmap::save(const char * path) const{
 	sg_bitmap_hdr_t hdr;
 
-	hdr.w = w();
-	hdr.h = h();
-	hdr.size = calc_size(w(), h());
+	hdr.w = width();
+	hdr.h = height();
+	hdr.size = calc_size(width(), height());
 	hdr.bits_per_pixel = sg_api()->bits_per_pixel;
 	hdr.version = sg_api()->version;
 
@@ -217,7 +217,7 @@ int Bitmap::save(const char * path) const{
 	return 0;
 }
 
-void Bitmap::show() const{
+void Bitmap::showidth() const{
 	//sg_api()->show(bmap_const());
 	sg_size_t i,j;
 
@@ -227,9 +227,9 @@ void Bitmap::show() const{
 
 	sg_api()->cursor_set(&y_cursor, bmap_const(), sg_point(0,0));
 
-	for(i=0; i < bmap_const()->dim.h; i++){
+	for(i=0; i < bmap_const()->dim.height; i++){
 		sg_cursor_copy(&x_cursor, &y_cursor);
-		for(j=0; j < bmap_const()->dim.w; j++){
+		for(j=0; j < bmap_const()->dim.width; j++){
 			color = sg_api()->cursor_get_pixel(&x_cursor);
 			if( sg_api()->bits_per_pixel > 8 ){
 				printf("%04X", color);
@@ -238,7 +238,7 @@ void Bitmap::show() const{
 			} else {
 				printf("%X", color);
 			}
-			if( (j < bmap_const()->dim.w - 1) && (sg_api()->bits_per_pixel > 4)){
+			if( (j < bmap_const()->dim.width - 1) && (sg_api()->bits_per_pixel > 4)){
 				printf(" ");
 			}
 		}

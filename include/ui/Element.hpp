@@ -44,7 +44,7 @@ public:
 	inline void set_scroll_visible(bool v = true){ set_flag(FLAG_SCROLL_VISIBLE, v); }
 
 	/*! \details This methods returns true if the handle_event()
-	 * called the draw() method and the underlying device needs to be
+	 * called the drawidth() method and the underlying device needs to be
 	 * redrawn
 	 *
 	 * @return True if it is time to redraw the element on the LCD or bitmap
@@ -58,7 +58,7 @@ public:
 	 *  LCD lcd; //lcd that inherits Bitmap
 	 *  DrawingAttr drawing_attr; //holds the info about the bitmap and
 	 *  drawing_attr.set(lcd, drawing_point(0,0), drawing_dim(1000, 1000)); //full screen element
-	 *  My element; //my special element that inherits Element and re-implements the handle_event() and draw() methods
+	 *  My element; //my special element that inherits Element and re-implements the handle_event() and drawidth() methods
 	 * 	while(1){
 	 * 		element.handle_event(Element::UPDATE, drawing_attr);
 	 * 		if( element.is_redraw_pending() ){
@@ -81,7 +81,7 @@ public:
 	virtual void set_animation_path(u8 v);
 	void set_animation(u8 type, u8 path);
 	virtual u8 animation_type() const;
-	virtual u8 animation_path() const;
+	virtual u8 animation_patheight() const;
 
 
 	/*! \details This method is called on the current Element when an event (e.g., Element::ENTER,

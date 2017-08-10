@@ -36,8 +36,8 @@ public:
 	/*! \details This method accesses whether or not the FIFO has overflowed
 	 * since the last time the FIFO attributes have been read.
 	 */
-	bool is_overflow() const { return m_info.overflow != 0; }
-	bool overflow() const { return m_info.overflow != 0; }
+	bool is_overflowidth() const { return m_info.overflow != 0; }
+	bool overflowidth() const { return m_info.overflow != 0; }
 private:
 	fifo_info_t m_info;
 };
@@ -56,7 +56,7 @@ private:
  *
  * Fifo's can be opened in blocking and non-blocking modes when both reading and writing.
  * If Fifo::set_writeblock() is called, a write will block when the Fifo is full. Otherwise,
- * the Fifo will overflow and FifoInfo::is_overflow() will return true.
+ * the Fifo will overflow and FifoInfo::is_overflowidth() will return true.
  *
  *
  * \code
@@ -96,7 +96,7 @@ public:
 	};
 
 	/*! \details Flushes the FIFO. */
-	int flush() const;
+	int flusheight() const;
 
 	/*! \details Initialize the FIFO. This function should only be called once
 	 * even if several contexts access the FIFO.

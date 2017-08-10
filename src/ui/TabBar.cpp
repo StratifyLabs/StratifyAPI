@@ -18,13 +18,13 @@ TabBar::TabBar() {
 void TabBar::set_animation_type(u8 v){ m_animation.set_type(v); }
 u8 TabBar::animation_type() const { return m_animation.type(); }
 void TabBar::set_animation_path(u8 v){ m_animation.set_path(v); }
-u8 TabBar::animation_path() const { return m_animation.path(); }
+u8 TabBar::animation_patheight() const { return m_animation.patheight(); }
 
 Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 	int i;
 
-	DrawingAttr view_attr = attr + drawing_point(0,h()) + drawing_dim(1000, 1000-h());
-	DrawingAttr tab_attr = attr + drawing_point(0,0) + drawing_dim(1000, h());
+	DrawingAttr view_attr = attr + drawing_point(0,height()) + drawing_dim(1000, 1000-height());
+	DrawingAttr tab_attr = attr + drawing_point(0,0) + drawing_dim(1000, height());
 
 	switch(event.type()){
 	default: break;
@@ -149,8 +149,8 @@ void TabBar::draw(const DrawingAttr & attr){
 	t = &at(selected());
 
 	if( visible() ){
-		t->element()->draw(attr + drawing_point(0, h()) + drawing_dim(1000, 1000-h()));
-		draw_tab_bar(attr + drawing_dim(1000, h()), selected());
+		t->element()->draw(attr + drawing_point(0, height()) + drawing_dim(1000, 1000-height()));
+		draw_tab_bar(attr + drawing_dim(1000, height()), selected());
 	} else {
 		t->element()->draw(attr);
 		set_redraw_pending();

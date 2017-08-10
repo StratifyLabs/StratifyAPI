@@ -27,7 +27,7 @@ u32 Pio::get_value() const {
 	return ioctl(I_PIO_GET);
 }
 
-int Pio::set_value(unsigned int value){
+int Pio::set_value(unsigned int value) const {
 	return ioctl(I_PIO_SET, value);
 }
 

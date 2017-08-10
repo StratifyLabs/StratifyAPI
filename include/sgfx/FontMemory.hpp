@@ -32,7 +32,7 @@ public:
 	const void * font_memory() const { return m_font; }
 
 
-	u16 get_h() const;
+	u16 get_height() const;
 
 	const Bitmap & bitmap() const;
 

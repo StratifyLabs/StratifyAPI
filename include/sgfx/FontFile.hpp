@@ -16,7 +16,7 @@ public:
 
 	int set_file(const char * name, int offset = 0);
 
-	u16 get_h() const;
+	u16 get_height() const;
 	const Bitmap & bitmap() const;
 
 protected:

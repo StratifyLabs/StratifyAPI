@@ -79,8 +79,8 @@ public:
 	/*! \details Sets data pointer and size for bitmap */
 	void set_data(sg_bitmap_hdr_t * hdr, bool readonly = false);
 	void set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly = false);
-	void set_data(sg_bmap_data_t * mem, const Dim & dim){ set_data(mem, dim.w(), dim.h()); }
-	void set_data(sg_bmap_data_t * mem, bool readonly = false){ set_data(mem, w(), h(), readonly); }
+	void set_data(sg_bmap_data_t * mem, const Dim & dim){ set_data(mem, dim.width(), dim.height()); }
+	void set_data(sg_bmap_data_t * mem, bool readonly = false){ set_data(mem, width(), height(), readonly); }
 
 	/*! \details Changes effective size without free/alloc sequence */
 	bool set_size(sg_size_t w, sg_size_t h, sg_size_t offset = 0);
@@ -90,9 +90,9 @@ public:
 	sg_point_t calc_center() const;
 
 	/*! \details Returns the maximum x value. */
-	sg_int_t x_max() const { return w()-1; }
+	sg_int_t x_max() const { return width()-1; }
 	/*! \details Returns the maximum y value. */
-	sg_int_t y_max() const { return h()-1; }
+	sg_int_t y_max() const { return height()-1; }
 
 	static Dim load_dim(const char * path);
 
@@ -119,7 +119,7 @@ public:
 	 * with it, it will be freed before the new memory is assigned.
 	 */
 	int alloc(sg_size_t w, sg_size_t h);
-	int alloc(const Dim & d){ return alloc(d.w(), d.h()); }
+	int alloc(const Dim & d){ return alloc(d.width(), d.height()); }
 	/*! \details Free memory associated with bitmap (auto freed on ~Bitmap) */
 	void free();
 
@@ -228,8 +228,8 @@ public:
 	virtual void wait(u16 resolution) const {}
 
 
-	sg_size_t h() const { return m_bmap.dim.h; }
-	sg_size_t w() const { return m_bmap.dim.w; }
+	sg_size_t height() const { return m_bmap.dim.height; }
+	sg_size_t width() const { return m_bmap.dim.width; }
 	const Dim dim() const {
 		Dim d(m_bmap.dim);
 		return d;
@@ -237,18 +237,18 @@ public:
 
 	inline sg_size_t columns() const { return m_bmap.columns; }
 
-	inline sg_size_t margin_left() const { return m_bmap.margin_top_left.w; }
-	inline sg_size_t margin_right() const { return m_bmap.margin_bottom_right.w; }
-	inline sg_size_t margin_top() const { return m_bmap.margin_top_left.h; }
-	inline sg_size_t margin_bottom() const { return m_bmap.margin_bottom_right.h; }
+	inline sg_size_t margin_left() const { return m_bmap.margin_top_left.width; }
+	inline sg_size_t margin_right() const { return m_bmap.margin_bottom_right.width; }
+	inline sg_size_t margin_top() const { return m_bmap.margin_top_left.height; }
+	inline sg_size_t margin_bottom() const { return m_bmap.margin_bottom_right.height; }
 
-	inline void set_margin_left(sg_size_t v) { m_bmap.margin_top_left.w = v; }
-	inline void set_margin_right(sg_size_t v) { m_bmap.margin_bottom_right.w = v; }
-	inline void set_margin_top(sg_size_t v) { m_bmap.margin_top_left.h = v; }
-	inline void set_margin_bottom(sg_size_t v) { m_bmap.margin_bottom_right.h = v; }
+	inline void set_margin_left(sg_size_t v) { m_bmap.margin_top_left.width = v; }
+	inline void set_margin_right(sg_size_t v) { m_bmap.margin_bottom_right.width = v; }
+	inline void set_margin_top(sg_size_t v) { m_bmap.margin_top_left.height = v; }
+	inline void set_margin_bottom(sg_size_t v) { m_bmap.margin_bottom_right.height = v; }
 
 
-	void show() const;
+	void showidth() const;
 
 	sg_bmap_data_t * data() const{ return (sg_bmap_data_t *)Data::data(); }
 	const sg_bmap_data_t * data_const() const { return (const sg_bmap_data_t *)Data::data_const(); }

@@ -57,7 +57,7 @@ void Animation::update_motion_total(){
 	case AnimationAttr::BOUNCE_UP:
 	case AnimationAttr::BOUNCE_DOWN:
 		//convert motion total as a height
-		set_motion_total( drawing_motion_total() * d.h / 1000 );
+		set_motion_total( drawing_motion_total() * d.height / 1000 );
 		break;
 	case AnimationAttr::PUSH_LEFT:
 	case AnimationAttr::PUSH_RIGHT:
@@ -67,13 +67,13 @@ void Animation::update_motion_total(){
 	case AnimationAttr::UNDO_SLIDE_RIGHT:
 	case AnimationAttr::BOUNCE_LEFT:
 	case AnimationAttr::BOUNCE_RIGHT:
-		set_motion_total( drawing_motion_total() * d.w / 1000 );
+		set_motion_total( drawing_motion_total() * d.width / 1000 );
 		break;
 	};
 
 	sg_api()->animate_init(pattr(),
 			type(),
-			path(),
+			patheight(),
 			step_total(),
 			motion_total(),
 			p,
@@ -100,7 +100,7 @@ int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
 	}
 
 	ret = sg_api()->animate(m_drawing_attr->bitmap().bmap(),
-			m_drawing_attr->scratch()->bmap(),
+			m_drawing_attr->scratcheight()->bmap(),
 			data());
 
 	m_drawing_attr->bitmap().refresh();

@@ -7,7 +7,7 @@ using namespace hal;
 Fifo::Fifo(){}
 
 int Fifo::get_info(fifo_info_t & info) const { return ioctl(I_FIFO_GETINFO, (void*)&info); }
-int Fifo::flush() const { return ioctl(I_FIFO_FLUSH); }
+int Fifo::flusheight() const { return ioctl(I_FIFO_FLUSH); }
 int Fifo::init() const { return ioctl(I_FIFO_INIT); }
 int Fifo::exit() const { return ioctl(I_FIFO_EXIT); }
 int Fifo::set_writeblock() const {

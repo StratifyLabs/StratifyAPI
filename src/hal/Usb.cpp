@@ -13,7 +13,7 @@ int Usb::reset(){
 	return ioctl(I_USB_SETATTR, &attr);
 }
 
-int Usb::attach(){
+int Usb::attacheight(){
 	usb_attr_t attr;
 	attr.o_flags = Usb::FLAG_ATTACH;
 	return ioctl(I_USB_SETATTR, &attr);
@@ -25,7 +25,7 @@ int Usb::configure(){
 	return ioctl(I_USB_SETATTR, &attr);
 }
 
-int Usb::detach(){
+int Usb::detacheight(){
 	usb_attr_t attr;
 	attr.o_flags = Usb::FLAG_DETACH;
 	return ioctl(I_USB_SETATTR, &attr);

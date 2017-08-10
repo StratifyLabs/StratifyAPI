@@ -45,12 +45,12 @@ public:
 	//void set_drawing_start(drawing_point_t v){ m_drawing_attr.start = v; }
 	//void set_drawing_start(drawing_int_t x, drawing_int_t y){ m_drawing_attr.start.x = x; m_drawing_attr.start.y = y; }
 	//void set_drawing_dim(drawing_dim_t v){ m_drawing_attr.dim = v; }
-	//void set_drawing_dim(drawing_u32 w, drawing_u32 h){ m_drawing_attr.dim.w = w; m_drawing_attr.dim.h = h; }
+	//void set_drawing_dim(drawing_u32 w, drawing_u32 h){ m_drawing_attr.dim.width = w; m_drawing_attr.dim.height = h; }
 	void set_drawing_motion_total(drawing_u32 v){ m_drawing_motion_total = v; }
 
 
 	u8 type() const { return m_attr.type; }
-	u8 path() const { return m_attr.path.type; }
+	u8 patheight() const { return m_attr.path.type; }
 	u16 step_total() const { return m_attr.path.step_total; }
 	sg_point_t start() const { return m_attr.start; }
 	sg_dim_t dim() const { return m_attr.dim; }

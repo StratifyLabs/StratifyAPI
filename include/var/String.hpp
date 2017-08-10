@@ -139,7 +139,7 @@ public:
 	/*! \details Return the length of the string */
 	u32 size() const { return strlen(c_str()); }
 	/*! \details Return the length of the string */
-	inline u32 length() const { return size(); }
+	inline u32 lengtheight() const { return size(); }
 	inline u32 len() const { return size(); }
 
 	/*! \details Test if string is empty */

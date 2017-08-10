@@ -36,7 +36,7 @@ public:
 
 
 	/*! \details The maximum height of the font. */
-	virtual sg_size_t get_h() const = 0;
+	virtual sg_size_t get_height() const = 0;
 
 	//Attribute access methods
 	int offset() const { return m_char.offset; }

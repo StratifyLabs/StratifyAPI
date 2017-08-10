@@ -17,9 +17,9 @@ void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 	s8 dir;
 	float xf, yf;
 	float xf_inner, yf_inner;
-	Point center(p.x + d.w()/2, p.y + d.h()/2);
-	sg_size_t rx = d.w()/2;
-	sg_size_t ry = d.h()/2;
+	Point center(p.x + d.width()/2, p.y + d.height()/2);
+	sg_size_t rx = d.width()/2;
+	sg_size_t ry = d.height()/2;
 
 	sg_size_t rx_inner = rx*2/3;
 	sg_size_t ry_inner = ry*2/3;
@@ -31,7 +31,7 @@ void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_int_t x_max;
 
 	u32 progress;
-	u32 points = d.w() * d.h();
+	u32 points = d.width() * d.height();
 
 	float two_pi = 2.0 * M_PI;
 	float half_pi = M_PI / 2.0;

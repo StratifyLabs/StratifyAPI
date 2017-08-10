@@ -41,9 +41,9 @@ public:
 	};
 
 	int reset();
-	int attach();
+	int attacheight();
 	int configure();
-	int detach();
+	int detacheight();
 	int disable_endpoint(int ep);
 	int enable_endpoint(int ep);
 	bool is_connected();

@@ -78,7 +78,7 @@ public:
 	/*! \details Day of the year (1 to 366) */
 	u32 get_yearday() const;
 	/*! \details Month (from 1 to 12) */
-	u32 get_month() const;
+	u32 get_montheight() const;
 	/*! \details Year (e.g. 2014) */
 	u32 get_year() const;
 

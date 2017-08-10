@@ -92,7 +92,7 @@ public:
 	 * @param value The value to assign to the port
 	 *
 	 */
-	int set_value(unsigned int value);
+	int set_value(unsigned int value) const;
 
 	using Periph::set_attr;
 

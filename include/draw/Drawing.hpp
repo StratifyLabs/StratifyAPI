@@ -22,8 +22,8 @@ typedef struct MCU_PACK {
 
 /*! \brief Holds a dimension in the drawing system */
 typedef struct MCU_PACK {
-	drawing_u32 w /*! Width of the object */;
-	drawing_u32 h /*! Height of the object */;
+	drawing_u32 width /*! Width of the object */;
+	drawing_u32 height /*! Height of the object */;
 } drawing_dim_t;
 
 
@@ -68,7 +68,7 @@ drawing_dim_t drawing_dim(drawing_u32 w, drawing_u32 h);
  * \details This class contains the information needed to draw various
  * Drawing objects on a bitmap.
  *
- * This class is passed to Drawing::draw() to render graphics on a bitmap.
+ * This class is passed to Drawing::drawidth() to render graphics on a bitmap.
  *
  *
  */
@@ -97,7 +97,7 @@ public:
 	void set_dim(drawing_dim_t d){ m_attr.d = d; }
 
 	/*! \details Set the dimensions.  Both width and height are from 0 to 1000. */
-	void set_dim(drawing_u32 w, drawing_u32 h){ m_attr.d.w = w; m_attr.d.h = h; }
+	void set_dim(drawing_u32 w, drawing_u32 h){ m_attr.d.width = w; m_attr.d.height = h; }
 
 	/*! \details Set the location.  Both x and y are from 0 to 1000. */
 	void set_point(drawing_point_t p){ m_attr.p = p; }
@@ -106,9 +106,9 @@ public:
 	void set_point(drawing_int_t x, drawing_int_t y){ m_attr.p.x = x; m_attr.p.y = y; }
 
 	/*! \details Return the width */
-	drawing_u32 w() const { return m_attr.d.w; }
+	drawing_u32 width() const { return m_attr.d.width; }
 	/*! \details Return the height */
-	drawing_u32 h() const { return m_attr.d.h; }
+	drawing_u32 height() const { return m_attr.d.height; }
 	/*! \details Return the x value */
 	drawing_int_t x() const { return m_attr.p.x; }
 	/*! \details Return the y value */
@@ -118,7 +118,7 @@ public:
 	sgfx::Bitmap & bitmap() const { return *(m_attr.b); }
 
 	/*! \details Access the scratch bitmap */
-	sgfx::Bitmap * scratch() const { return (m_attr.scratch); }
+	sgfx::Bitmap * scratcheight() const { return (m_attr.scratch); }
 
 	sgfx::Bitmap & b() const { return *(m_attr.b); }
 	/*! \details Access the position (point) */
@@ -185,17 +185,17 @@ public:
 	/*! \details Assign dimensions */
 	void set_dim(sg_dim_t d){ m_attr.d = d; }
 	/*! \details Set the height of the object */
-	void set_height(sg_size_t h){ m_attr.d.h = h; }
-	void set_h(sg_size_t h){ m_attr.d.h = h; }
+	void set_height(sg_size_t h){ m_attr.d.height = h; }
+	void set_h(sg_size_t h){ m_attr.d.height = h; }
 	/*! \details Set the width of the object */
-	void set_width(sg_size_t w){ m_attr.d.h = w; }
-	void set_w(sg_size_t w){ m_attr.d.h = w; }
+	void set_width(sg_size_t w){ m_attr.d.height = w; }
+	void set_w(sg_size_t w){ m_attr.d.height = w; }
 	/*! \details Set the x value of the object */
 	void set_x(sg_int_t x){ m_attr.p.x = x; }
 	/*! \details Set the y value of the object */
 	void set_y(sg_int_t y){ m_attr.p.x = y; }
 	/*! \details Assign dimensions using width and height parameters */
-	void set_dim(sg_size_t w, sg_size_t h){ m_attr.d.w = w; m_attr.d.h = h; }
+	void set_dim(sg_size_t w, sg_size_t h){ m_attr.d.width = w; m_attr.d.height = h; }
 
 	/*! \details Assign the position */
 	void set_point(sg_point_t p){ m_attr.p = p; }
@@ -209,9 +209,9 @@ public:
 	drawing_scaled_attr_t & attr(){ return m_attr; }
 
 	/*! \details Return the width */
-	sg_size_t w() const { return m_attr.d.w; }
+	sg_size_t width() const { return m_attr.d.width; }
 	/*! \details Return the height */
-	sg_size_t h() const { return m_attr.d.h; }
+	sg_size_t height() const { return m_attr.d.height; }
 	/*! \details Return the x value */
 	sg_int_t x() const { return m_attr.p.x; }
 	/*! \details Return the y value */
@@ -227,8 +227,8 @@ public:
 	 * @param v Unscaled drawing dimensions
 	 * @return
 	 */
-	sg_size_t calc_w(drawing_u32 v) const;
-	sg_size_t calc_h(drawing_u32 v) const;
+	sg_size_t calc_width(drawing_u32 v) const;
+	sg_size_t calc_height(drawing_u32 v) const;
 
 
 private:
@@ -249,7 +249,7 @@ private:
  *
  *		//this will draw my icon centered in the bitmap specified by attr
  *		//adding drawing_point(250, 250) offset the icon by 25% of the bitmap in both x and y
- *		//adding a drawing_dim_t will then scale icon to fit in a square that is half the width of the bitmap (see square_w())
+ *		//adding a drawing_dim_t will then scale icon to fit in a square that is half the width of the bitmap (see square_width())
  *		//draw will call the underlying draw_to_scale() method unless Icon re-implements draw
  *		my_icon.draw(attr + drawing_point(250, 250) + square);
  *

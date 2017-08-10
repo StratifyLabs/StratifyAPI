@@ -29,7 +29,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 
 	//draw the label and the icon
 	Dim padded;
-	icon_height = d.h()/2;
+	icon_height = d.height()/2;
 	Bitmap icon_bitmap(icon_height, icon_height);
 
 	if( &(icon_attr().icon()) != 0 ){
@@ -44,33 +44,33 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 		icon_dim.dim = 0;
 	}
 
-	padded.set_value(d.w() - icon_dim.w, d.h()*80/100 );
+	padded.set_value(d.width() - icon_dim.width, d.height()*80/100 );
 
 	if( m_text_attr.font_size() == 0 ){
-		height = padded.h();
+		height = padded.height();
 	} else {
 		height = m_text_attr.font_size();
 	}
 
 	font = FontSystem::get_font(height, text_attr().font_bold());
-	height = font->get_h();
+	height = font->get_height();
 
-	icon_point.x = p.x + d.w() - bounds.bottom_right.x;
+	icon_point.x = p.x + d.width() - bounds.bottom_right.x;
 
 
 	if( align_top() ){
 		icon_point.y = p.y;
 	} else if( align_bottom() ){
-		p.y = d.h() - height;
-		icon_point.y = d.h() - icon_dim.h;
+		p.y = d.height() - height;
+		icon_point.y = d.height() - icon_dim.height;
 	} else {
-		icon_point.y = p.y + d.h()/2 - icon_dim.h/2;
-		p.y = p.y + d.h()/2 - height/2;
+		icon_point.y = p.y + d.height()/2 - icon_dim.height/2;
+		p.y = p.y + d.height()/2 - height/2;
 	}
 
 	strcpy(buffer, text_attr().text());
 
-	if( icon_dim.w > 0 ){
+	if( icon_dim.width > 0 ){
 		if( m_text_attr.font_size() != 0 ){
 			int len;
 			len = font->calc_len(text_attr().text());
@@ -85,7 +85,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 	font->draw_str(buffer, attr.bitmap(), p);
 
 	//draw the icon -- on the right side
-	if( icon_dim.w > 0 ){
+	if( icon_dim.width > 0 ){
 		attr.bitmap().draw_bitmap(icon_point, icon_bitmap);
 	}
 }

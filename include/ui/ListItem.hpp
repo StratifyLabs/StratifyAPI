@@ -159,7 +159,7 @@ public:
 	/*! \details Set the path for the directory */
 	void set_path(const char * path);
 	/*! \details Access the path */
-	const var::String & path() const { return m_path; }
+	const var::String & patheight() const { return m_path; }
 
 	/*! \details Return a pointer to the element in the specfied location in the
 	 * list

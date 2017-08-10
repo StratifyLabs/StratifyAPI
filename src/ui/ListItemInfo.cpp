@@ -34,30 +34,30 @@ void ListItemInfo::draw_to_scale(const DrawingScaledAttr & attr){
 
 	//draw the label and the icon
 	Dim padded;
-	padded.set_value(d.w, d.h);
+	padded.set_value(d.width, d.height);
 
 	if( label().font_size() == 0 ){
-		height = padded.h();
+		height = padded.height();
 	} else {
 		height = label().font_size();
 	}
 
 	font = FontSystem::get_font(height, label().font_bold());
-	height = font->get_h();
+	height = font->get_height();
 
 	if( align_top() ){
 		;
 	} else if( align_bottom() ){
-		p.y = d.h - height;
+		p.y = d.height - height;
 	} else {
-		p.y = p.y + d.h/2 - height/2;
+		p.y = p.y + d.height/2 - height/2;
 	}
 
 	font->draw_str(label().text(), attr.bitmap(), p);
 
 	//draw the value on the right side
 	len = font->calc_len(value().text());
-	p.x = p.x + d.w - len - d.w/40;
+	p.x = p.x + d.width - len - d.width/40;
 	font->draw_str(value().text(), attr.bitmap(), p);
 
 

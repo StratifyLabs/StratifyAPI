@@ -8,11 +8,11 @@ Tab::Tab(){ set_element(0); }
 
 
 void Tab::calc_square(drawing_point_t & p, drawing_dim_t & dim){
-	if( dim.w > dim.h ){
-		p.x = p.x + (dim.w - dim.h) / 2;
-		dim.w = dim.h;
+	if( dim.width > dim.height ){
+		p.x = p.x + (dim.width - dim.height) / 2;
+		dim.width = dim.height;
 	} else {
-		p.y = p.y + (dim.h - dim.w) / 2;
-		dim.h = dim.w;
+		p.y = p.y + (dim.height - dim.width) / 2;
+		dim.height = dim.width;
 	}
 }

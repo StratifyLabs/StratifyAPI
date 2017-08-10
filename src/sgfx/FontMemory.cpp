@@ -27,7 +27,7 @@ void FontMemory::set_font_memory(const void * ptr){
 	}
 }
 
-u16 FontMemory::get_h() const {
+u16 FontMemory::get_height() const {
 	const sg_font_header_t * hdr_ptr;
 	if( m_font != 0 ){
 		hdr_ptr = (const sg_font_header_t*)m_font;

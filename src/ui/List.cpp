@@ -22,9 +22,9 @@ void List::draw_item_to_scale(const DrawingScaledAttr & attr, sg_size_t x_offset
 	sg_dim_t d = attr.d();
 	at(item).draw_to_scale(attr);
 	p1.x =- x_offset;
-	p2.x += d.w + x_offset;
+	p2.x += d.width + x_offset;
 	attr.bitmap().draw_line(p1, p2);
-	p2.y += d.h - 1;
+	p2.y += d.height - 1;
 	attr.bitmap().draw_line(p1, p2);
 }
 
@@ -43,13 +43,13 @@ void List::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_int_t x_offset;
 
 	//list item height
-	list_item_height = (d.h() / visible_items());
-	remainder = (d.h() % visible_items());
-	x_offset = attr.calc_w(25) + p.x;
+	list_item_height = (d.height() / visible_items());
+	remainder = (d.height() % visible_items());
+	x_offset = attr.calc_width(25) + p.x;
 
 	index_offset = calc_visible_offset();
 	display_items = calc_display_items();
-	item_attr.set_dim(d.w() - x_offset, list_item_height );
+	item_attr.set_dim(d.width() - x_offset, list_item_height );
 	item_attr.set_bitmap(attr.bitmap());
 
 	attr.bitmap().clear_rectangle(p,d);
@@ -59,7 +59,7 @@ void List::draw_to_scale(const DrawingScaledAttr & attr){
 		//draw each visible item
 		item_attr.set_height(list_item_height + remainder);
 		top_left.x = x_offset;
-		top_left.y = p.y + (item_attr.h())*(i);
+		top_left.y = p.y + (item_attr.height())*(i);
 		item_attr.set_point(top_left);
 
 		if( m_draw_animation_item < size() ){
@@ -71,7 +71,7 @@ void List::draw_to_scale(const DrawingScaledAttr & attr){
 			draw_item_to_scale(item_attr, x_offset, i+index_offset);
 			//highlight the selected item
 			if( (i+index_offset) == selected() + m_select_top_bottom ){
-				attr.bitmap().invert_rectangle( sg_point(p.x, top_left.y+1), sg_dim(d.w(), (list_item_height+remainder)-2));
+				attr.bitmap().invert_rectangle( sg_point(p.x, top_left.y+1), sg_dim(d.width(), (list_item_height+remainder)-2));
 			}
 		}
 

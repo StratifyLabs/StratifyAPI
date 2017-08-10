@@ -6,8 +6,8 @@ using namespace sgfx;
 
 
 Point::Point(const sg_vector_primitive_t & a){
-	d.x = 0;
-	d.y = 0;
+	m_value.x = 0;
+	m_value.y = 0;
 	rotate(a.rotation);
 	shift(a.shift);
 }

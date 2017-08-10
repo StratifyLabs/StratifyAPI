@@ -96,7 +96,7 @@ public:
 	 * @return Zero on success
 	 *
 	 */
-	int set_attr(u32 o_flags){
+	int set_attr(u32 o_flags) const {
 		return Pio::set_attr(o_flags, m_pinmask);
 	}
 
@@ -114,17 +114,24 @@ public:
 	 *
 	 * @param value If true, sets the pin high
 	 */
-	void set_value(bool value){ *this = value; }
+	void set_value(bool value) const {
+		if( value ){
+			set_mask(m_pinmask);
+		} else {
+			clear_mask(m_pinmask);
+		}
+	}
 
 
 	/*! \details Gets the value of the pin (true is high, false is low). */
-	inline bool get_value() const { return (Pio::get_value() & m_pinmask) != 0; }
+	bool get_value() const { return (Pio::get_value() & m_pinmask) != 0; }
 
 
 	/*! \details Sets the pin high (assign value 1) */
-	inline int set(){ return set_mask(m_pinmask); }
+	int set() const { return set_mask(m_pinmask); }
+
 	/*! \details Clear the pin low (assign value 0) */
-	inline int clear(){ return clear_mask(m_pinmask); }
+	int clear() const { return clear_mask(m_pinmask); }
 
 	/*! \details Accesses the pin's associated Pio pinmask. */
 	u32 pinmask() const { return m_pinmask; }

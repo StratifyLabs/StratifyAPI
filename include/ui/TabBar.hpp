@@ -25,7 +25,7 @@ public:
 	TabBar();
 
 	/*! \details Access the height of the tab bar as a ratio to draw::Drawing::scale() */
-	sg_size_t h() const { return m_height; }
+	sg_size_t height() const { return m_height; }
 
 	/*! \details Set the height of the tab bar where draw::Drawing::scale() height will set the height
 	 * to fill the entire screen.
@@ -60,7 +60,7 @@ public:
 	void set_animation_type(u8 v);
 	u8 animation_type() const;
 	void set_animation_path(u8 v);
-	u8 animation_path() const;
+	u8 animation_patheight() const;
 
 	draw::Animation & animation(){ return m_animation; }
 

@@ -13,23 +13,23 @@ namespace sgfx {
  */
 class Dim {
 public:
-	Dim(){ m_value.h = 0; m_value.w = 0; }
-	Dim(sg_size_t w, sg_size_t h){ m_value.w = w; m_value.h = h; }
+	Dim(){ m_value.height = 0; m_value.width = 0; }
+	Dim(sg_size_t w, sg_size_t h){ m_value.width = w; m_value.height = h; }
 	Dim(sg_dim_t d){ m_value = d; }
 
 	operator sg_dim_t() const { return m_value; }
 	sg_dim_t dim() const { return m_value; }
 	sg_dim_t value() const { return m_value; }
 
-	inline void set_value(sg_dim_t v){ m_value = v; }
-	inline void set_value(sg_size_t w, sg_size_t h){ m_value.w = w; m_value.h = h; }
-	inline void set_w(sg_size_t w){ m_value.w = w; }
-	inline void set_h(sg_size_t h){ m_value.h = h; }
+	void set_value(sg_dim_t v){ m_value = v; }
+	void set_value(sg_size_t w, sg_size_t h){ m_value.width = w; m_value.height = h; }
+	void set_width(sg_size_t w){ m_value.width = w; }
+	void set_height(sg_size_t h){ m_value.height = h; }
 
-	inline u32 size() const { return m_value.w * m_value.h; }
+	u32 size() const { return m_value.width * m_value.height; }
 
-	inline sg_size_t w() const { return m_value.w; }
-	inline sg_size_t h() const { return m_value.h; }
+	sg_size_t width() const { return m_value.width; }
+	sg_size_t height() const { return m_value.height; }
 
 private:
 	sg_dim_t m_value;

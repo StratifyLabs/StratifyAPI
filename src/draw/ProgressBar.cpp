@@ -18,10 +18,10 @@ void ProgressBar::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_point_t end;
 
 
-	end.x = p.x + d.w();
-	end.y = p.y + d.h();
+	end.x = p.x + d.width();
+	end.y = p.y + d.height();
 
-	tmp = (value() * (d.w()-4) + max()/2) / max();
+	tmp = (value() * (d.width()-4) + max()/2) / max();
 
 	x_progress = p.x + 2 + tmp;
 
@@ -29,7 +29,7 @@ void ProgressBar::draw_to_scale(const DrawingScaledAttr & attr){
 	attr.bitmap().draw_rectangle(p, d);
 
 	//clear un-progress section
-	attr.bitmap().clear_rectangle(sg_point(x_progress, p.y + 2), sg_dim(end.x-3 - x_progress, d.h()-4));
+	attr.bitmap().clear_rectangle(sg_point(x_progress, p.y + 2), sg_dim(end.x-3 - x_progress, d.height()-4));
 
 
 }

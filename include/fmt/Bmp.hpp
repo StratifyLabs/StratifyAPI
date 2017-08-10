@@ -20,9 +20,9 @@ public:
 	Bmp();
 
 	/*! \details Returns the bitmap width (after bitmap has been opened). */
-	s32 w() const { return m_dib.width; }
+	s32 width() const { return m_dib.width; }
 	/*! \details Returns the bitmap height (after bitmap has been opened). */
-	s32 h() const { return m_dib.height; }
+	s32 height() const { return m_dib.height; }
 	/*! \details Returns the bitmap bits per pixel (after bitmap has been opened). */
 	u16 bits_per_pixel() const { return m_dib.bits_per_pixel; }
 	/*! \details Returns the bitmap planes (after bitmap has been opened). */

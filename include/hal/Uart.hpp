@@ -84,7 +84,7 @@ public:
 	int put(char c);
 
 	/*! \details Flushes the TX/RX buffers. */
-	int flush();
+	int flusheight();
 
 
 	/*! \details Sets the attributes of the Uart.

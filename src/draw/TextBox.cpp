@@ -57,11 +57,11 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 	font = resolve_font(20);
 	if( font == 0 ){ return; }
 
-	font_height = font->get_h();
+	font_height = font->get_height();
 	line_spacing = font_height/10;
 
 	//draw each line of text; make sure it doesn't overlap
-	w = d.w;
+	w = d.width;
 	line_y = 0;
 
 	num_lines = count_lines(w);
@@ -69,7 +69,7 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 		return;
 	}
 
-	visible_lines = (d.h) / (font_height + line_spacing);
+	visible_lines = (d.height) / (font_height + line_spacing);
 
 	if( visible_lines >= num_lines ){
 		m_scroll = 0;

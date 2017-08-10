@@ -16,11 +16,11 @@ void Element::draw_scroll(const DrawingScaledAttr & attr,
 	Dim d = attr.d();
 	int bar_size;
 	sg_dim_t bar;
-	bar_size = d.h() / total;
+	bar_size = d.height() / total;
 	attr.b().draw_rectangle(p, d);
 	p.y = p.y + selected*bar_size;
-	bar.w = d.w();
-	bar.h = bar_size;
+	bar.width = d.width();
+	bar.height = bar_size;
 	attr.b().clear_rectangle(p,bar);
 }
 
@@ -32,4 +32,4 @@ void Element::set_animation_type(u8 v){}
 u8 Element::animation_type() const{ return AnimationAttr::PUSH_LEFT; }
 void Element::set_animation_path(u8 path){}
 void Element::set_animation(u8 type, u8 path){ set_animation_type(type); set_animation_path(path); }
-u8 Element::animation_path() const { return AnimationAttr::SQUARED; }
+u8 Element::animation_patheight() const { return AnimationAttr::SQUARED; }

@@ -38,10 +38,10 @@ public:
 	};
 
 	/*! \details swap a byte on the SPI bus */
-	int swap(int byte);
+	int swap(int byte) const;
 
 	/*! \details Set SPI attributes using values specified */
-	int set_attr(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0){
+	int set_attr(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0) const {
 		spi_attr_t attr;
 		attr.o_flags = o_flags;
 		attr.freq = freq;

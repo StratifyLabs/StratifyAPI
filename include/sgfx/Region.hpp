@@ -16,8 +16,8 @@ public:
 	Region(sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h){
 		m_region.point.x = x;
 		m_region.point.y = y;
-		m_region.dim.w = w;
-		m_region.dim.h = h;
+		m_region.dim.width = w;
+		m_region.dim.height = h;
 	}
 
 	Region(const Point & point, const Dim & dim){
@@ -31,8 +31,8 @@ public:
 
 	inline sg_int_t x() const { return m_region.point.x; }
 	inline sg_int_t y() const { return m_region.point.y; }
-	inline sg_int_t w() const { return m_region.dim.w; }
-	inline sg_int_t h() const { return m_region.dim.h; }
+	inline sg_int_t width() const { return m_region.dim.width; }
+	inline sg_int_t height() const { return m_region.dim.height; }
 
 
 private:

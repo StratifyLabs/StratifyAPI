@@ -19,21 +19,21 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 
 	if( text() ){
 
-		font = resolve_font(d.h());
+		font = resolve_font(d.height());
 
 		if( font == 0 ){
 			return;
 		}
-		h = font->get_h();
+		h = font->get_height();
 		len = font->calc_len(text());
 		top_left.y = p.y;
 		if( align_left() ){
 			top_left.x = p.x;
 		} else if( align_right() ){
-			top_left.x = p.x + d.w() - len;
+			top_left.x = p.x + d.width() - len;
 		} else {
 			//center by default
-			top_left.x = p.x + d.w()/2 - len/2;
+			top_left.x = p.x + d.width()/2 - len/2;
 		}
 
 		if( align_top() ){
@@ -41,10 +41,10 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 			top_left.y = p.y;
 		} else if( align_bottom() ){
 			//bottom
-			top_left.y = p.y + d.h() - h;
+			top_left.y = p.y + d.height() - h;
 		} else {
 			//center
-			top_left.y = p.y + d.h()/2 - h/2;
+			top_left.y = p.y + d.height()/2 - h/2;
 		}
 
 
