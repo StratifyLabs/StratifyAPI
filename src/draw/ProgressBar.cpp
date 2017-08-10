@@ -10,8 +10,8 @@ void ProgressBar::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
 	int tmp;
 
-	sg_point_t p = attr.p();
-	Dim d = attr.d();
+	sg_point_t p = attr.point();
+	Dim d = attr.dim();
 
 	Point middle;
 	sg_int_t x_progress;

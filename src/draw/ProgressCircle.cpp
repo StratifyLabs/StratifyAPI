@@ -11,8 +11,8 @@ void ProgressCircle::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
 	sgfx::VectorMap map;
 
-	sg_point_t p = attr.p();
-	Dim d = attr.d();
+	sg_point_t p = attr.point();
+	Dim d = attr.dim();
 	sg_vector_icon_t icon;
 
 	sg_vector_primitive_t primitives[3];

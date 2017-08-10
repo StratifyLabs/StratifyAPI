@@ -26,8 +26,8 @@ void ListItemInfo::draw_to_scale(const DrawingScaledAttr & attr){
 
 	int height;
 	sg_size_t len;
-	sg_dim_t d = attr.d();
-	sg_point_t p = attr.p();
+	sg_dim_t d = attr.dim();
+	sg_point_t p = attr.point();
 	Font * font;
 
 

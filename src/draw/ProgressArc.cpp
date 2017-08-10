@@ -12,8 +12,8 @@ ProgressArc::ProgressArc() {
 
 void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
-	sg_point_t p = attr.p();
-	Dim d = attr.d();
+	sg_point_t p = attr.point();
+	Dim d = attr.dim();
 	s8 dir;
 	float xf, yf;
 	float xf_inner, yf_inner;

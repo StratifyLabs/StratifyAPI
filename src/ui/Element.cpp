@@ -12,16 +12,16 @@ void Element::draw_scroll(const DrawingScaledAttr & attr,
 		int selected,
 		int total,
 		int visible){
-	sg_point_t p = attr.p();
-	Dim d = attr.d();
+	sg_point_t p = attr.point();
+	Dim d = attr.dim();
 	int bar_size;
 	sg_dim_t bar;
 	bar_size = d.height() / total;
-	attr.b().draw_rectangle(p, d);
+	attr.bitmap().draw_rectangle(p, d);
 	p.y = p.y + selected*bar_size;
 	bar.width = d.width();
 	bar.height = bar_size;
-	attr.b().clear_rectangle(p,bar);
+	attr.bitmap().clear_rectangle(p,bar);
 }
 
 Element * Element::handle_event(const Event & event, const DrawingAttr & attr){

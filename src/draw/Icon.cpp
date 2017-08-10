@@ -13,8 +13,8 @@ const sg_vector_icon_t * IconAttr::get_system_icon(int icon){
 
 
 void Icon::draw_to_scale(const DrawingScaledAttr & attr){
-	sg_point_t p = attr.p();
-	sg_dim_t d = attr.d();
+	sg_point_t p = attr.point();
+	sg_dim_t d = attr.dim();
 	Pen tmp_pen = this->pen();
 
 	if( &(this->icon()) == 0 ){

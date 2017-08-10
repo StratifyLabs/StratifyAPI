@@ -12,8 +12,8 @@ void TabIcon::draw(const draw::DrawingAttr & attr){
 	drawing_dim_t d;
 	DrawingAttr icon_draw_attr;
 
-	d = attr.d();
-	p = attr.p();
+	d = attr.dim();
+	p = attr.point();
 	Tab::calc_square(p, d);
 
 	icon_draw_attr = attr;

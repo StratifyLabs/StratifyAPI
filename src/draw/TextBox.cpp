@@ -40,8 +40,8 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 	String line;
 	u32 i;
 	sg_size_t w;
-	sg_point_t p = attr.p();
-	sg_dim_t d = attr.d();
+	sg_point_t p = attr.point();
+	sg_dim_t d = attr.dim();
 	sg_point_t start;
 
 	sg_int_t line_y;

@@ -45,8 +45,8 @@ public:
 	//void set_drawing_start(drawing_point_t v){ m_drawing_attr.start = v; }
 	//void set_drawing_start(drawing_int_t x, drawing_int_t y){ m_drawing_attr.start.x = x; m_drawing_attr.start.y = y; }
 	//void set_drawing_dim(drawing_dim_t v){ m_drawing_attr.dim = v; }
-	//void set_drawing_dim(drawing_u32 w, drawing_u32 h){ m_drawing_attr.dim.width = w; m_drawing_attr.dim.height = h; }
-	void set_drawing_motion_total(drawing_u32 v){ m_drawing_motion_total = v; }
+	//void set_drawing_dim(drawing_size_t w, drawing_size_t h){ m_drawing_attr.dim.width = w; m_drawing_attr.dim.height = h; }
+	void set_drawing_motion_total(drawing_size_t v){ m_drawing_motion_total = v; }
 
 
 	u8 type() const { return m_attr.type; }
@@ -56,13 +56,13 @@ public:
 	sg_dim_t dim() const { return m_attr.dim; }
 	sg_size_t motion_total() const { return m_attr.path.motion_total; }
 
-	drawing_u32 drawing_motion_total() const { return m_drawing_motion_total; }
+	drawing_size_t drawing_motion_total() const { return m_drawing_motion_total; }
 
 	sg_animation_t * data(){ return &m_attr; }
 
 private:
 	sg_animation_t m_attr;
-	drawing_u32 m_drawing_motion_total;
+	drawing_size_t m_drawing_motion_total;
 };
 
 class Animation : public AnimationAttr {

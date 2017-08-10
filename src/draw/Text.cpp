@@ -13,8 +13,8 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_point_t top_left;
 	int len;
 	int h;
-	Dim d = attr.d();
-	sg_point_t p = attr.p();
+	Dim d = attr.dim();
+	sg_point_t p = attr.point();
 	const Font * font;
 
 	if( text() ){

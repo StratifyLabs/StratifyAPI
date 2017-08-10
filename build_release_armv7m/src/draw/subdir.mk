@@ -7,6 +7,7 @@ CPP_SRCS += \
 ../src/draw/Animation.cpp \
 ../src/draw/Drawing.cpp \
 ../src/draw/Icon.cpp \
+../src/draw/Image.cpp \
 ../src/draw/Panel.cpp \
 ../src/draw/ProgressArc.cpp \
 ../src/draw/ProgressBar.cpp \
@@ -20,6 +21,7 @@ OBJS += \
 ./src/draw/Animation.o \
 ./src/draw/Drawing.o \
 ./src/draw/Icon.o \
+./src/draw/Image.o \
 ./src/draw/Panel.o \
 ./src/draw/ProgressArc.o \
 ./src/draw/ProgressBar.o \
@@ -33,6 +35,7 @@ CPP_DEPS += \
 ./src/draw/Animation.d \
 ./src/draw/Drawing.d \
 ./src/draw/Icon.d \
+./src/draw/Image.d \
 ./src/draw/Panel.d \
 ./src/draw/ProgressArc.d \
 ./src/draw/ProgressBar.d \

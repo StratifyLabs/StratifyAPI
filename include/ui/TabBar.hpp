@@ -85,8 +85,8 @@ private:
 		FLAG_TAB_BAR_TOTAL
 	};
 
-	draw::drawing_u32 m_height;
-	draw::drawing_u32 m_highlight;
+	draw::drawing_size_t m_height;
+	draw::drawing_size_t m_highlight;
 
 	mutable draw::Animation m_animation;
 

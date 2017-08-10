@@ -10,7 +10,7 @@
 namespace draw {
 
 /*! \details Drawing size (unsigned) */
-typedef u16 drawing_u32;
+typedef u16 drawing_size_t;
 /*! \details Drawing position (signed) */
 typedef s16 drawing_int_t;
 
@@ -22,8 +22,8 @@ typedef struct MCU_PACK {
 
 /*! \brief Holds a dimension in the drawing system */
 typedef struct MCU_PACK {
-	drawing_u32 width /*! Width of the object */;
-	drawing_u32 height /*! Height of the object */;
+	drawing_size_t width /*! Width of the object */;
+	drawing_size_t height /*! Height of the object */;
 } drawing_dim_t;
 
 
@@ -38,18 +38,18 @@ typedef struct MCU_PACK {
  * size).
  */
 typedef struct MCU_PACK {
-	sgfx::Bitmap * b /*! A pointer to the target bitmap */;
-	drawing_point_t p /*! The point on the bitmap where the draw::Drawing will be drawn */;
-	drawing_dim_t d /*! The size of the draw::Drawing on the target bitmap */;
+	sgfx::Bitmap * bitmap /*! A pointer to the target bitmap */;
+	drawing_point_t point /*! The point on the bitmap where the draw::Drawing will be drawn */;
+	drawing_dim_t dim /*! The size of the draw::Drawing on the target bitmap */;
 	sgfx::Bitmap * scratch /*! A pointer to the scratch bitmap used for animations (0 if not available) */;
 } drawing_attr_t;
 
 
 /*! \brief Attributes for drawing directly on a bitmap using bitmap coordinates */
 typedef struct MCU_PACK {
-	sgfx::Bitmap * b /*! The target bitmap */;
-	sg_point_t p /*! The point on the bitmap */;
-	sg_dim_t d /*! The dimesions of where to fit the item within the bitmap */;
+	sgfx::Bitmap * bitmap /*! The target bitmap */;
+	sg_point_t point /*! The point on the bitmap */;
+	sg_dim_t dim /*! The dimesions of where to fit the item within the bitmap */;
 } drawing_scaled_attr_t;
 
 
@@ -62,7 +62,7 @@ drawing_point_t drawing_point(drawing_int_t x, drawing_int_t y);
  * @param h Height of the retured data
  * @return A drawing_dim_t with w and h populated as specified
  */
-drawing_dim_t drawing_dim(drawing_u32 w, drawing_u32 h);
+drawing_dim_t drawing_dim(drawing_size_t w, drawing_size_t h);
 
 /*! \brief Drawing Attribute Class
  * \details This class contains the information needed to draw various
@@ -88,54 +88,51 @@ public:
 	void set(sgfx::Bitmap & b, drawing_point_t p, drawing_dim_t d, sgfx::Bitmap * scratch = 0);
 
 	/*! \details Set the bitmap */
-	void set_bitmap(sgfx::Bitmap & b){ m_attr.b = &b; }
+	void set_bitmap(sgfx::Bitmap & b){ m_attr.bitmap = &b; }
 
 	/*! \details Set the scratch bitmap */
 	void set_scratch(sgfx::Bitmap * b){ m_attr.scratch = b; }
 
 	/*! \details Set the dimensions.  Both width and height are from 0 to 1000. */
-	void set_dim(drawing_dim_t d){ m_attr.d = d; }
+	void set_dim(drawing_dim_t d){ m_attr.dim = d; }
 
 	/*! \details Set the dimensions.  Both width and height are from 0 to 1000. */
-	void set_dim(drawing_u32 w, drawing_u32 h){ m_attr.d.width = w; m_attr.d.height = h; }
+	void set_dim(drawing_size_t w, drawing_size_t h){ m_attr.dim.width = w; m_attr.dim.height = h; }
 
 	/*! \details Set the location.  Both x and y are from 0 to 1000. */
-	void set_point(drawing_point_t p){ m_attr.p = p; }
+	void set_point(drawing_point_t p){ m_attr.point = p; }
 
 	/*! \details Set the location.  Both x and y are from 0 to 1000. */
-	void set_point(drawing_int_t x, drawing_int_t y){ m_attr.p.x = x; m_attr.p.y = y; }
+	void set_point(drawing_int_t x, drawing_int_t y){ m_attr.point.x = x; m_attr.point.y = y; }
 
 	/*! \details Return the width */
-	drawing_u32 width() const { return m_attr.d.width; }
+	drawing_size_t width() const { return m_attr.dim.width; }
 	/*! \details Return the height */
-	drawing_u32 height() const { return m_attr.d.height; }
+	drawing_size_t height() const { return m_attr.dim.height; }
 	/*! \details Return the x value */
-	drawing_int_t x() const { return m_attr.p.x; }
+	drawing_int_t x() const { return m_attr.point.x; }
 	/*! \details Return the y value */
-	drawing_int_t y() const { return m_attr.p.y; }
+	drawing_int_t y() const { return m_attr.point.y; }
 
 	/*! \details Access the bitmap */
-	sgfx::Bitmap & bitmap() const { return *(m_attr.b); }
+	sgfx::Bitmap & bitmap() const { return *(m_attr.bitmap); }
 
 	/*! \details Access the scratch bitmap */
 	sgfx::Bitmap * scratcheight() const { return (m_attr.scratch); }
 
-	sgfx::Bitmap & b() const { return *(m_attr.b); }
 	/*! \details Access the position (point) */
-	drawing_point_t point() const { return m_attr.p; }
-	drawing_point_t p() const { return m_attr.p; }
+	drawing_point_t point() const { return m_attr.point; }
 	/*! \details Access the dimensions (dim) */
-	drawing_dim_t dim() const { return m_attr.d; }
-	drawing_dim_t d() const { return m_attr.d; }
+	drawing_dim_t dim() const { return m_attr.dim; }
 
 	/*! \details Access the underlying attr object */
 	drawing_attr_t & attr(){ return m_attr; }
 
 	/*! \details Calculate the scaled width (width of object on the bitmap) */
-	drawing_u32 calc_w(drawing_u32 v) const;
+	drawing_size_t calc_width(drawing_size_t v) const;
 
 	/*! \details Calculate the scaled height (height of object on the bitmap) */
-	drawing_u32 calc_h(drawing_u32 v) const;
+	drawing_size_t calc_height(drawing_size_t v) const;
 
 	/*! \details Add a drawing_point_t offset */
 	DrawingAttr operator+ (drawing_point_t d) const;
@@ -147,7 +144,7 @@ public:
 	 * @param v The maximum width or height
 	 * @return Square dimensions
 	 */
-	drawing_dim_t calc_square(drawing_u32 v) const;
+	drawing_dim_t calc_square(drawing_size_t v) const;
 
 	/*! \details Calculate dimensions that will map to the bitmap as a square
 	 * with the given width.
@@ -155,7 +152,7 @@ public:
 	 * @param v The width (height will be calculated)
 	 * @return Square dimensions
 	 */
-	drawing_dim_t calc_square_w(drawing_u32 v) const;
+	drawing_dim_t calc_square_w(drawing_size_t v) const;
 
 	/*! \details Calculate dimensions that will map to the bitmap as a square
 	 * with the given height.
@@ -163,7 +160,7 @@ public:
 	 * @param v The height (width will be calculated)
 	 * @return Square dimensions
 	 */
-	drawing_dim_t calc_square_h(drawing_u32 v) const;
+	drawing_dim_t calc_square_h(drawing_size_t v) const;
 
 
 private:
@@ -181,41 +178,36 @@ public:
 	void set(sgfx::Bitmap & b, sg_point_t p, sg_dim_t d);
 
 	/*! \details Assign a value to the bitmap pointer using a reference */
-	void set_bitmap(sgfx::Bitmap & b){ m_attr.b = &b; }
+	void set_bitmap(sgfx::Bitmap & b){ m_attr.bitmap = &b; }
 	/*! \details Assign dimensions */
-	void set_dim(sg_dim_t d){ m_attr.d = d; }
+	void set_dim(sg_dim_t d){ m_attr.dim = d; }
 	/*! \details Set the height of the object */
-	void set_height(sg_size_t h){ m_attr.d.height = h; }
-	void set_h(sg_size_t h){ m_attr.d.height = h; }
+	void set_height(sg_size_t h){ m_attr.dim.height = h; }
 	/*! \details Set the width of the object */
-	void set_width(sg_size_t w){ m_attr.d.height = w; }
-	void set_w(sg_size_t w){ m_attr.d.height = w; }
+	void set_width(sg_size_t w){ m_attr.dim.height = w; }
 	/*! \details Set the x value of the object */
-	void set_x(sg_int_t x){ m_attr.p.x = x; }
+	void set_x(sg_int_t x){ m_attr.point.x = x; }
 	/*! \details Set the y value of the object */
-	void set_y(sg_int_t y){ m_attr.p.x = y; }
+	void set_y(sg_int_t y){ m_attr.point.x = y; }
 	/*! \details Assign dimensions using width and height parameters */
-	void set_dim(sg_size_t w, sg_size_t h){ m_attr.d.width = w; m_attr.d.height = h; }
+	void set_dim(sg_size_t w, sg_size_t h){ m_attr.dim.width = w; m_attr.dim.height = h; }
 
 	/*! \details Assign the position */
-	void set_point(sg_point_t p){ m_attr.p = p; }
+	void set_point(sg_point_t p){ m_attr.point = p; }
 
-	sgfx::Bitmap & b() const { return *m_attr.b; }
-	sgfx::Bitmap & bitmap() const { return *m_attr.b; }
-	sg_point_t point() const { return m_attr.p; }
-	sg_point_t p() const { return m_attr.p; }
-	sg_dim_t dim() const { return m_attr.d; }
-	sg_dim_t d() const { return m_attr.d; }
+	sgfx::Bitmap & bitmap() const { return *m_attr.bitmap; }
+	sg_point_t point() const { return m_attr.point; }
+	sg_dim_t dim() const { return m_attr.dim; }
 	drawing_scaled_attr_t & attr(){ return m_attr; }
 
 	/*! \details Return the width */
-	sg_size_t width() const { return m_attr.d.width; }
+	sg_size_t width() const { return m_attr.dim.width; }
 	/*! \details Return the height */
-	sg_size_t height() const { return m_attr.d.height; }
+	sg_size_t height() const { return m_attr.dim.height; }
 	/*! \details Return the x value */
-	sg_int_t x() const { return m_attr.p.x; }
+	sg_int_t x() const { return m_attr.point.x; }
 	/*! \details Return the y value */
-	sg_int_t y() const { return m_attr.p.y; }
+	sg_int_t y() const { return m_attr.point.y; }
 
 	/*! \details Add an sg_point_t */
 	DrawingScaledAttr operator+ (sg_point_t d) const;
@@ -227,8 +219,8 @@ public:
 	 * @param v Unscaled drawing dimensions
 	 * @return
 	 */
-	sg_size_t calc_width(drawing_u32 v) const;
-	sg_size_t calc_height(drawing_u32 v) const;
+	sg_size_t calc_width(drawing_size_t v) const;
+	sg_size_t calc_height(drawing_size_t v) const;
 
 
 private:
@@ -275,7 +267,7 @@ public:
 	 */
 	virtual void draw(const DrawingAttr & attr);
 	virtual void draw_scratch(const DrawingAttr & attr);
-	void draw(sgfx::Bitmap & b, drawing_int_t x, drawing_int_t y, drawing_u32 w, drawing_u32 h);
+	void draw(sgfx::Bitmap & b, drawing_int_t x, drawing_int_t y, drawing_size_t w, drawing_size_t h);
 
 	/*! \details This method will set the pixels in the area of the bitmap
 	 * specified.
@@ -305,10 +297,10 @@ public:
 	 * The default value is 1000. This means a value of 500 is half the target bitmap.
 	 *
 	 */
-	static inline drawing_u32 scale(){ return 1000; }
+	static inline drawing_size_t scale(){ return 1000; }
 
 	/*! \brief Sets the scale value (see Element::scale() for details) */
-	static inline void set_scale(drawing_u32 s){ m_scale = s; }
+	static inline void set_scale(drawing_size_t s){ m_scale = s; }
 
 	/*! \details This methods draws the drawing on the specified attributes.
 	 *
@@ -360,7 +352,7 @@ public:
 
 protected:
 
-	sg_point_t point_on_bitmap(sgfx::Bitmap & b, drawing_u32 x, drawing_u32 y, sg_dim_t d);
+	sg_point_t point_on_bitmap(sgfx::Bitmap & b, drawing_size_t x, drawing_size_t y, sg_dim_t d);
 	sg_dim_t dim_on_bitmap(sgfx::Bitmap & b) const;
 
 	enum {
@@ -386,7 +378,7 @@ protected:
 
 private:
 	u32 m_flags;
-	static drawing_u32 m_scale;
+	static drawing_size_t m_scale;
 
 
 };

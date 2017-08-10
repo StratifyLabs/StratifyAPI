@@ -16,6 +16,7 @@ namespace draw {
 #include "draw/GraphLine.hpp"
 #include "draw/GraphBar.hpp"
 #include "draw/Icon.hpp"
+#include "draw/Image.hpp"
 #include "draw/Panel.hpp"
 #include "draw/ProgressBar.hpp"
 #include "draw/ProgressArc.hpp"

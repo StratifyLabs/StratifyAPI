@@ -18,8 +18,8 @@ ListItem::ListItem(const char * label, const sg_vector_icon_t * icon, ElementLin
 void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_bounds_t bounds;
 	sg_dim_t icon_dim;
-	Dim d = attr.d();
-	sg_point_t p = attr.p();
+	Dim d = attr.dim();
+	sg_point_t p = attr.point();
 	char buffer[32];
 
 	int height;
