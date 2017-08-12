@@ -27,19 +27,19 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 		h = font->get_height();
 		len = font->calc_len(text());
 		top_left.y = p.y;
-		if( align_left() ){
+		if( is_align_left() ){
 			top_left.x = p.x;
-		} else if( align_right() ){
+		} else if( is_align_right() ){
 			top_left.x = p.x + d.width() - len;
 		} else {
 			//center by default
 			top_left.x = p.x + d.width()/2 - len/2;
 		}
 
-		if( align_top() ){
+		if( is_align_top() ){
 			//top
 			top_left.y = p.y;
-		} else if( align_bottom() ){
+		} else if( is_align_bottom() ){
 			//bottom
 			top_left.y = p.y + d.height() - h;
 		} else {

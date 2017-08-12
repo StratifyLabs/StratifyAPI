@@ -58,9 +58,9 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 	icon_point.x = p.x + d.width() - bounds.bottom_right.x;
 
 
-	if( align_top() ){
+	if( is_align_top() ){
 		icon_point.y = p.y;
-	} else if( align_bottom() ){
+	} else if( is_align_bottom() ){
 		p.y = d.height() - height;
 		icon_point.y = d.height() - icon_dim.height;
 	} else {

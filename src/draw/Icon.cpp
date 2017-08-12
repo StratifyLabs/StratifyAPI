@@ -28,15 +28,15 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	Vector::draw(bitmap, (this->icon()), map.item(), &m_bounds);
 
 	//check for alignment values left/right/top/bottom
-	if( align_top() ){
+	if( is_align_top() ){
 		p.y -= m_bounds.top_left.y;
-	} else if( align_bottom() ){
+	} else if( is_align_bottom() ){
 		p.y += bitmap.height() - m_bounds.bottom_right.y;
 	}
 
-	if( align_left() ){
+	if( is_align_left() ){
 		p.x -= m_bounds.top_left.x;
-	} else if( align_right() ){
+	} else if( is_align_right() ){
 		p.y += bitmap.width() - m_bounds.bottom_right.x;
 	}
 

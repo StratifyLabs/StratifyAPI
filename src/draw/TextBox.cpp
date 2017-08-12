@@ -92,9 +92,9 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 		if( (draw_line >= m_scroll) && (draw_line - m_scroll < visible_lines) ){
 
 			start.y = p.y + line_y;
-			if( align_left() ){
+			if( is_align_left() ){
 				start.x  = p.x;
-			} else if( align_right() ){
+			} else if( is_align_right() ){
 				start.x  = p.x + w - len;
 			} else {
 				start.x = p.x + (w - len)/2;

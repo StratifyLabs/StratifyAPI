@@ -74,6 +74,10 @@ int FontMemory::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 		ind = c;
 	}
 
+	if( ind < 0 ){
+		return -1;
+	}
+
 
 
 	//header has sg_font_header_t then kerning pairs then char indices

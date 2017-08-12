@@ -77,6 +77,11 @@ int FontFile::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 	} else {
 		ind = c;
 	}
+
+	if( ind < 0 ){
+		return -1;
+	}
+
 	offset = m_offset + sizeof(sg_font_header_t) + sizeof(sg_font_kerning_pair_t)*m_hdr.kerning_pairs + ind*sizeof(sg_font_char_t);
 	if( (ret = m_file.read(offset, &ch, sizeof(ch))) != sizeof(ch) ){
 		return -1;

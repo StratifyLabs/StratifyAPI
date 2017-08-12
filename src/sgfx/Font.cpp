@@ -16,8 +16,7 @@ const char * Font::charset(){
 
 
 int Font::to_charset(char ascii){
-	if( (ascii < ' ') ||
-			(ascii > '~') ){
+	if( (ascii < ' ') || (ascii > '~') ){
 		return -1;
 	}
 	return (int)(ascii - ' ');
@@ -40,10 +39,9 @@ int Font::calc_len(const char * str) const {
 		if( *str == ' ' ){
 			l += space_size();
 		} else {
-			if( load_char(m_char, *str, true) < 0){
-				return -1;
+			if( load_char(m_char, *str, true) == 0){
+				l += m_char.xadvance;
 			}
-			l += m_char.xadvance;
 		}
 		str++;
 	}
@@ -52,7 +50,9 @@ int Font::calc_len(const char * str) const {
 
 int Font::draw_char(char c, Bitmap & dest, sg_point_t point) const {
 
-	load_char(m_char, c, true);
+	if( load_char(m_char, c, true) < 0 ){
+		return -1;
+	}
 
 	point.x += m_char.xoffset;
 	point.y += m_char.yoffset;

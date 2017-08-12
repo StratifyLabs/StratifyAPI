@@ -148,7 +148,7 @@ void TabBar::draw(const DrawingAttr & attr){
 
 	t = &at(selected());
 
-	if( visible() ){
+	if( is_visible() ){
 		t->element()->draw(attr + drawing_point(0, height()) + drawing_dim(1000, 1000-height()));
 		draw_tab_bar(attr + drawing_dim(1000, height()), selected());
 	} else {

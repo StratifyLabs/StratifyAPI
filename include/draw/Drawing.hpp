@@ -297,10 +297,10 @@ public:
 	 * The default value is 1000. This means a value of 500 is half the target bitmap.
 	 *
 	 */
-	static inline drawing_size_t scale(){ return 1000; }
+	static drawing_size_t scale(){ return 1000; }
 
 	/*! \brief Sets the scale value (see Element::scale() for details) */
-	static inline void set_scale(drawing_size_t s){ m_scale = s; }
+	static void set_scale(drawing_size_t s){ m_scale = s; }
 
 	/*! \details This methods draws the drawing on the specified attributes.
 	 *
@@ -317,36 +317,40 @@ public:
 	static sg_point_t point_on_bitmap(const DrawingAttr & attr);
 
 	/*! \brief Returns true if element is visible */
-	inline bool visible() const { return flag(FLAG_VISIBLE); }
-	inline void set_visible(bool v = true){ set_flag(FLAG_VISIBLE, v); }
+	bool is_visible() const { return flag(FLAG_VISIBLE); }
+	void set_visible(bool v = true){ set_flag(FLAG_VISIBLE, v); }
 
-	inline bool align_left() const { return flag(FLAG_ALIGN_LEFT); }
-	inline void set_align_left(bool v = true){ set_flag(FLAG_ALIGN_LEFT, v); }
-	inline bool align_right() const { return flag(FLAG_ALIGN_RIGHT); }
-	inline void set_align_right(bool v = true){ set_flag(FLAG_ALIGN_RIGHT, v); }
-	inline void set_align_center(bool v = true){
+	bool is_align_left() const { return flag(FLAG_ALIGN_LEFT); }
+	void set_align_left(bool v = true){ set_flag(FLAG_ALIGN_LEFT, v); }
+	bool is_align_right() const { return flag(FLAG_ALIGN_RIGHT); }
+	void set_align_right(bool v = true){ set_flag(FLAG_ALIGN_RIGHT, v); }
+	void set_align_center(bool v = true){
 		if( v ){
 			set_align_right(false);
 			set_align_left(false);
 		}
 	}
 
-	inline bool align_top() const { return flag(FLAG_ALIGN_TOP); }
-	inline void set_align_top(bool v = true){ set_flag(FLAG_ALIGN_TOP, v); }
-	inline bool align_bottom() const { return flag(FLAG_ALIGN_BOTTOM); }
-	inline void set_align_bottom(bool v = true){ set_flag(FLAG_ALIGN_BOTTOM, v); }
-	inline void set_align_middle(bool v = true){
+	bool is_align_center() const { return flag(FLAG_ALIGN_LEFT|FLAG_ALIGN_RIGHT) == 0; }
+
+	bool is_align_top() const { return flag(FLAG_ALIGN_TOP); }
+	void set_align_top(bool v = true){ set_flag(FLAG_ALIGN_TOP, v); }
+	bool is_align_bottom() const { return flag(FLAG_ALIGN_BOTTOM); }
+	void set_align_bottom(bool v = true){ set_flag(FLAG_ALIGN_BOTTOM, v); }
+	void set_align_middle(bool v = true){
 		if( v ){
 			set_align_top(false);
 			set_align_bottom(false);
 		}
 	}
+	bool is_align_middle() const { return flag(FLAG_ALIGN_TOP|FLAG_ALIGN_BOTTOM) == 0; }
 
-	inline bool dark() const { return flag(FLAG_DARK); }
-	inline void set_dark(bool v = true){ set_flag(FLAG_DARK, v); }
 
-	inline bool invert() const { return flag(FLAG_INVERT); }
-	inline void set_invert(bool v = true){ set_flag(FLAG_INVERT, v); }
+	bool dark() const { return flag(FLAG_DARK); }
+	void set_dark(bool v = true){ set_flag(FLAG_DARK, v); }
+
+	bool invert() const { return flag(FLAG_INVERT); }
+	void set_invert(bool v = true){ set_flag(FLAG_INVERT, v); }
 
 
 
@@ -373,8 +377,8 @@ protected:
 	};
 
 
-	bool flag(int flag) const;
-	void set_flag(int flag, bool v = true);
+	bool flag(u32 flag) const;
+	void set_flag(u32 flag, bool v = true);
 
 private:
 	u32 m_flags;

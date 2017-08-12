@@ -135,11 +135,11 @@ Drawing::Drawing(){
 	m_flags = 0;
 }
 
-bool Drawing::flag(int flag) const{
+bool Drawing::flag(u32 flag) const{
 	return (m_flags & (1<<flag) ) != 0;
 }
 
-void Drawing::set_flag(int flag, bool v){
+void Drawing::set_flag(u32 flag, bool v){
 	if( v ){
 		m_flags |= (1<<flag);
 	} else {

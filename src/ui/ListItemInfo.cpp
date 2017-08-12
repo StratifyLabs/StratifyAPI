@@ -45,9 +45,9 @@ void ListItemInfo::draw_to_scale(const DrawingScaledAttr & attr){
 	font = FontSystem::get_font(height, label().font_bold());
 	height = font->get_height();
 
-	if( align_top() ){
+	if( is_align_top() ){
 		;
-	} else if( align_bottom() ){
+	} else if( is_align_bottom() ){
 		p.y = d.height - height;
 	} else {
 		p.y = p.y + d.height/2 - height/2;
