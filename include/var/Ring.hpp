@@ -20,14 +20,14 @@ namespace var {
  */
 class Ring {
 public:
-	/*! \details Construct a new ring buffer
+	/*! \details Constructs a new ring buffer.
 	 *
 	 * @param buf A pointer to the data
 	 * @param size The number of bytes in the new ring buffer
 	 */
 	Ring(u8 * buf, u32 size);
 
-	/*! \details Write data to the ring buffer
+	/*! \details Writes data to the ring buffer.
 	 *
 	 * @param buf Pointer to the data to write
 	 * @param nbytes The number of bytes to write
@@ -35,7 +35,7 @@ public:
 	 */
 	int write(const u8 * buf, u32 nbytes);
 
-	/*! \details Read data from the ring buffer
+	/*! \details Reads data from the ring buffer.
 	 *
 	 * @param buf A pointer to the destination data buffer
 	 * @param nbytes The number of bytes to read
@@ -43,24 +43,25 @@ public:
 	 */
 	int read(u8 * buf, u32 nbytes);
 
-	/*! \details Access the size of the buffer */
+	/*! \details Accesses the size of the buffer. */
 	u32 size() const { return m_size; }
-	/*! \details Calculate the number of bytes calc_used in the buffer */
+
+	/*! \details Calculates the number of bytes calc_used in the buffer. */
 	u32 calc_used() const;
 
-	/*! \details Calculate the number fo free bytes in the buffer */
+	/*! \details Calculates the number of free bytes in the buffer. */
 	u32 calc_free() const;
 
-	/*! \details Empty the buffer */
+	/*! \details Flushes the buffer. */
 	void flush(void);
 
-	/*! \details Access whether or not buffer allows overwriting
+	/*! \details Accesses whether or not buffer allows overwriting
 	 * The default value for overflow allowed is true. Use
 	 * set_overflow_allowed(false) to disable overflow.
 	 */
 	bool is_overflow_allowed() const { return m_is_overflow_allowed; }
 
-	/*! \details Set whether or not overflow is allowed in the buffer
+	/*! \details Sets whether or not overflow is allowed in the buffer.
 	 *
 	 * If overflow is allowed, write() will always write and return \a nbytes
 	 * as specified. If overflow is not allowed, write() will only write until

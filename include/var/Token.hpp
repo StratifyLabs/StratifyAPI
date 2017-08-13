@@ -37,7 +37,10 @@ public:
 	};
 
 
-	/*! \details This method updates the token by parsing a new string.
+	/*! \details Updates the token by parsing a new string.
+	 *
+	 * @param delim Delimiter string
+	 * @param ignore Ignore string
 	 *
 	 * This method will re-parse the current string.  The \a delim value
 	 * contains all separators.  For example, " \t" will create a new token
@@ -47,22 +50,19 @@ public:
 	 * quotes.  This is useful when dealing with standard formats that use quotes to indicate raw data
 	 * rather than a tokenized format.
 	 *
-	 * @param delim Delimiter string
-	 * @param ignore Ignore string
 	 *
-	 * \sa parse()
 	 */
 	void parse(const char * delim, const char * ignore = 0);
 
 
-	/*! \details This method sorts the tokens as specified */
+	/*! \details Sorts the tokens as specified. */
 	void sort(enum sort_options sort_option = SORT_NONE);
 
 
-	/*! \details Return the total number of tokens */
+	/*! \details Returns the total number of tokens. */
 	u32 size() const { return m_num_tokens; }
 
-	/*! \details Return a pointer to the token specified by offset */
+	/*! \details Returns a pointer to the token specified by offset. */
 	const char * at(u32 n) const;
 
 	static bool belongs_to(const char c, const char * str, unsigned int len);
@@ -72,10 +72,10 @@ public:
 
 	bool count_empty_tokens() const { return m_is_count_empty_tokens; }
 
-	/*! \details Access whether or not parse() will count empty tokens */
+	/*! \details Accesses whether or not parse() will count empty tokens. */
 	bool is_count_empty_tokens() const { return m_is_count_empty_tokens; }
 
-	/*! \details Set whether or not parse() should include empty tokens */
+	/*! \details Sets whether or not parse() should include empty tokens. */
 	void set_count_empty_tokens(bool v = true){ m_is_count_empty_tokens = v; }
 
 

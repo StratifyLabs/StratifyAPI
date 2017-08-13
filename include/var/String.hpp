@@ -47,13 +47,16 @@ namespace var {
  */
 class String : public Data {
 public:
-	/*! \details Declare an empty string */
+	/*! \details Declares an empty string. */
 	String();
-	/*! \details Declare an emtpy string of a specified capacity */
+
+	/*! \details Declares an empty string of a specified capacity. */
 	String(u32 capacity);
-	/*! \details Declare a string and initialize to \a s */
+
+	/*! \details Declares a string and initialize to \a s. */
 	String(const char * s);
-	/*! \details Declare a string and initialize to \a s */
+
+	/*! \details Declares a string and initialize to \a s. */
 	String(const char * s, u32 len);
 
 	operator const char * () const { return c_str(); }
@@ -89,27 +92,28 @@ public:
 	String& operator<<(char c){ append(c); return *this; }
 
 
-	/*! \details Compare to a c-string */
+	/*! \details Compares to a c-string. */
 	bool operator==(const char * cmp) const { return (strncmp(this->c_str(), cmp, this->capacity()) == 0); }
-	/*! \details Compare to a c-string */
+
+	/*! \details Compares to a c-string. */
 	bool operator!=(const char * cmp) const { return (strncmp(this->c_str(), cmp, this->capacity()) != 0); }
 
-	/*! \details Convert to an integer */
+	/*! \details Converts to an integer. */
 	int atoi() const { return ::atoi(c_str()); }
 
-	/*! \details Convert to a float */
+	/*! \details Converts to a float. */
 	float atoff() const;
 
-	/*! \details Get a sub string of the string */
+	/*! \details Gets a sub string of the string. */
 	String substr(u32 pos = 0, u32 len = npos) const;
 
-	/*! \details Insert \a s (zero terminated) into string at \a pos */
+	/*! \details Inserts \a s (zero terminated) into string at \a pos. */
 	String& insert(u32 pos, const char * s);
 
-	/*! \details Erase a portion of the string starting with the character at \a pos */
+	/*! \details Erases a portion of the string starting with the character at \a pos. */
 	String& erase(u32 pos, u32 len = -1);
 
-	/*! \details Return character at \a pos */
+	/*! \details Returns character at \a pos. */
 	char at(u32 pos) const;
 
 	/*! \details Prints a formatted string to this String.
@@ -131,51 +135,54 @@ public:
 	int printf(){ return ::printf("%s", c_str()); }
 
 
-
+	/*! \details Returns the capacity of the string. */
 	u32 capacity() const;
 
 	const char * c_str() const { return cdata_const(); }
 
-	/*! \details Return the length of the string */
+	/*! \details Returns the length of the string. */
 	u32 size() const { return strlen(c_str()); }
-	/*! \details Return the length of the string */
-	inline u32 lengtheight() const { return size(); }
-	inline u32 len() const { return size(); }
 
-	/*! \details Test if string is empty */
+	u32 length() const { return size(); }
+	u32 len() const { return size(); }
+
+	/*! \details Tests if string is empty. */
+	bool is_empty() const { return size() == 0; }
 	bool empty() const { return size() == 0; }
 
-	/*! \details Assign a substring of \a a to string */
+	/*! \details Assigns a substring of \a a to string. */
 	void assign(const char * a, u32 subpos, u32 sublen){ assign(a + subpos, sublen); }
-	/*! \details Assign a maximum of \a n characters of \a a to string */
+	/*! \details Assigns a maximum of \a n characters of \a a to string. */
 	void assign(const char * a, u32 n);
-	/*! \details Assign \a a (zero terminated) to string  */
+	/*! \details Assigns \a a (zero terminated) to string.  */
 	void assign(const char * a);
-	/*! \details Append \a a (zero terminated) to string  */
+	/*! \details Appends \a a (zero terminated) to string.  */
 	void append(const char * a);
-	/*! \details Append \a c to string  */
+	/*! \details Appends \a c to string.  */
 	void append(char c);
-	/*! \details Append \a c to string  */
+	/*! \details Appends \a c to string.  */
 	inline void push_back(char c) { append(c); }
 
-	/*! \details Copy the \a nth element (separated by \a sep) of the string to to \a dest */
+	/*! \details Copies the \a nth element (separated by \a sep) of the string to to \a dest. */
 	bool get_delimited_data(String & dest, int n, char sep = ',', char term = '\n');
-	/*! \details Return the number of elements in the String */
+	/*! \details Returns the number of elements in the String. */
 	int calc_delimited_data_size(char sep = ',', char term = '\n');
 
-	/*! \details Copy a portion of the string to \a s */
+	/*! \details Copies a portion of the string to \a s. */
 	u32 copy(char * s, u32 len, u32 pos = 0) const;
-	inline u32 copy(String & s, u32 n, u32 pos = 0) const {
+
+	/*! \details Copies a portion of a string to \a s. */
+	u32 copy(String & s, u32 n, u32 pos = 0) const {
 		return copy(s.cdata(), n, pos);
 	}
 
-	/*! \details Convert to upper case */
+	/*! \details Converts to upper case. */
 	void toupper();
 
-	/*! \details Convert to lower case */
+	/*! \details Converts to lower case. */
 	void tolower();
 
-	/*! \details Find a var::String within the object
+	/*! \details Finds a var::String within the object.
 	 *
 	 * @param str The String to find
 	 * @param pos The position to start searching
@@ -183,23 +190,33 @@ public:
 	 */
 	u32 find(const String & str, u32 pos = 0) const;
 
-	/*! \details Find a c string within the object */
+	/*! \details Finds a c string within the object. */
 	u32 find(const char * str, u32 pos = 0) const;
-	/*! \details Find a character within the object */
+	/*! \details Finds a character within the object. */
 	u32 find(const char c, u32 pos = 0) const;
+	/*! \details Finds a string within the object. */
 	u32 find(const char * s, u32 pos, u32 n) const;
 
+	/*! \details Finds a string within the string searching from right to left. */
 	u32 rfind(const String & str, u32 pos = 0) const;
+	/*! \details Finds a string within the string searching from right to left. */
 	u32 rfind(const char * str, u32 pos = 0) const;
+	/*! \details Finds a character within the string searching from right to left. */
 	u32 rfind(const char c, u32 pos = 0) const;
+	/*! \details Finds a string within the string searching from right to left. */
 	u32 rfind(const char * s, u32 pos, u32 n) const;
 
-
+	/*! \details Compares a the object to \a str. */
 	int compare(const String & str) const;
+	/*! \details Compares a the object to \a str. */
 	int compare(u32 pos, u32 len, const String & str) const;
+	/*! \details Compares a the object to \a str. */
 	int compare(u32 pos, u32 len, const String & str, u32 subpos, u32 sublen) const;
+	/*! \details Compares a the object to \a s. */
 	int compare(const char * s) const;
+	/*! \details Compares a the object to \a s. */
 	int compare(u32 pos, u32 len, const char * s);
+	/*! \details Compares a the object to \a s. */
 	int compare(u32 pos, u32 len, const char * s, u32 n) const;
 
 private:

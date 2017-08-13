@@ -10,7 +10,7 @@
 using namespace var;
 
 String::String(){
-	set_capacity(min_size()-1);
+	set_capacity(minimum_size()-1);
 	clear();
 }
 

@@ -18,7 +18,7 @@ const int Data::m_zero_value = 0;
 
 #define MIN_CHUNK_SIZE 56
 
-u32 Data::min_size(){
+u32 Data::minimum_size(){
 	return MIN_CHUNK_SIZE;
 }
 

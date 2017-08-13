@@ -66,7 +66,7 @@ public:
 	virtual ~Data();
 
 	/*! \details Returns the minimum data storage size of any Data object. */
-	static u32 min_size();
+	static u32 minimum_size();
 
 	/*! \details Sets the storage object of the data. This object
 	 * will treat the data as statically allocated and will not free the memory
