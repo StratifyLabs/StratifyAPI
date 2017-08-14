@@ -12,7 +12,7 @@
 namespace sys {
 
 /*! \brief Semaphore Class
- * \details This utilizes POSIX semaphores
+ * \details This class is a wrapper for POSIX style semphores.
  */
 class Sem {
 public:
@@ -77,12 +77,20 @@ public:
 	 */
 	int post();
 
+	/*! \details Is equivalent to wait_timed().
+	 */
 	int timedwait(const struct timespec * timeout);
 
-	/*! \details Waits for semaphore to become available with a timeout. */
+	/*! \details Executes a timed wait for the semaphore.
+	 *
+	 * @param timeout The amount of time to wait before timing out
+	 * @return Zero on success, less than zero for an error or timeout
+	 */
 	int wait_timed(const struct timespec * timeout){ return timedwait(timeout); }
 
+	/*! \details Is equivalend to try_wait(). */
 	int trywait();
+
 	/*! \details Checks to see if semaphore is available. */
 	int try_wait(){ return trywait(); }
 

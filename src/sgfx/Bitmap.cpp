@@ -30,12 +30,12 @@ void Bitmap::set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool reado
 	calc_members(w,h);
 }
 
-void Bitmap::set_data(sg_bitmap_hdr_t * hdr, bool readonly){
+void Bitmap::set_data(sg_bmap_header_t * hdr, bool readonly){
 	char * ptr;
 	ptr = (char*)hdr;
-	ptr += sizeof(sg_bitmap_hdr_t);
-	Data::set(ptr, calc_size(hdr->w, hdr->h), readonly);
-	calc_members(hdr->w, hdr->h);
+	ptr += sizeof(sg_bmap_header_t);
+	Data::set(ptr, calc_size(hdr->width, hdr->height), readonly);
+	calc_members(hdr->width, hdr->height);
 }
 
 int Bitmap::alloc(sg_size_t w, sg_size_t h){
@@ -73,7 +73,7 @@ Bitmap::Bitmap(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly){
 	set_data(mem, w, h, readonly);
 }
 
-Bitmap::Bitmap(sg_bitmap_hdr_t * hdr, bool readonly){
+Bitmap::Bitmap(sg_bmap_header_t * hdr, bool readonly){
 	init_members();
 	set_data(hdr, readonly);
 }
@@ -121,7 +121,7 @@ const sg_bmap_data_t * Bitmap::data_const(sg_point_t p) const {
 
 
 int Bitmap::load(const char * path){
-	sg_bitmap_hdr_t hdr;
+	sg_bmap_header_t hdr;
 	File f;
 	void * src;
 
@@ -139,9 +139,9 @@ int Bitmap::load(const char * path){
 		return -1;
 	}
 
-	if( set_size(hdr.w, hdr.h) == false ){
+	if( set_size(hdr.width, hdr.height) == false ){
 		//couln't resize using existing memory -- try resizing
-		if( alloc(hdr.w, hdr.h) < 0 ){
+		if( alloc(hdr.width, hdr.height) < 0 ){
 			f.close();
 			return -1;
 		}
@@ -164,7 +164,7 @@ int Bitmap::load(const char * path){
 
 
 Dim Bitmap::load_dim(const char * path){
-	sg_bitmap_hdr_t hdr;
+	sg_bmap_header_t hdr;
 	File f;
 	if( f.open(path, File::READONLY) < 0 ){
 		return Dim();
@@ -181,14 +181,14 @@ Dim Bitmap::load_dim(const char * path){
 		return Dim(0,0);
 	}
 
-	return Dim(hdr.w, hdr.h);
+	return Dim(hdr.width, hdr.height);
 }
 
 int Bitmap::save(const char * path) const{
-	sg_bitmap_hdr_t hdr;
+	sg_bmap_header_t hdr;
 
-	hdr.w = width();
-	hdr.h = height();
+	hdr.width = width();
+	hdr.height = height();
 	hdr.size = calc_size(width(), height());
 	hdr.bits_per_pixel = sg_api()->bits_per_pixel;
 	hdr.version = sg_api()->version;

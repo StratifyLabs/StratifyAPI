@@ -65,7 +65,7 @@ public:
 	};
 
 
-	/*! \detailsls Opens a message queue.
+	/*! \details Opens a message queue.
 	 *
 	 * @param name The name of the message queue
 	 * @param oflag Open flags

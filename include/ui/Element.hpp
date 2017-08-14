@@ -81,7 +81,7 @@ public:
 	virtual void set_animation_path(u8 v);
 	void set_animation(u8 type, u8 path);
 	virtual u8 animation_type() const;
-	virtual u8 animation_patheight() const;
+	virtual u8 animation_path() const;
 
 
 	/*! \details This method is called on the current Element when an event (e.g., Element::ENTER,

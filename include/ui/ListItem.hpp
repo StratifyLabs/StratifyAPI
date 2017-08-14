@@ -116,7 +116,7 @@ public:
 		}
 	}
 
-	ListItemsTemplate(const char * const label[], const sg_bitmap_hdr_t * const icon[], Element * parent = 0) :
+	ListItemsTemplate(const char * const label[], const sg_bmap_header_t * const icon[], Element * parent = 0) :
 		ListTemplate<type, n_items>(parent) {
 		u32 i;
 		for(i=0; i < this->size(); i++){
@@ -159,7 +159,7 @@ public:
 	/*! \details Set the path for the directory */
 	void set_path(const char * path);
 	/*! \details Access the path */
-	const var::String & patheight() const { return m_path; }
+	const var::String & path() const { return m_path; }
 
 	/*! \details Return a pointer to the element in the specfied location in the
 	 * list

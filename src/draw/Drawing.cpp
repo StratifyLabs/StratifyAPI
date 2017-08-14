@@ -216,9 +216,9 @@ void Drawing::draw(const DrawingAttr & attr){
 }
 
 void Drawing::draw_scratch(const DrawingAttr & attr){
-	if( attr.scratcheight() ){
+	if( attr.scratch() ){
 		DrawingAttr scratch_attr = attr;
-		scratch_attr.set_bitmap(*attr.scratcheight());
+		scratch_attr.set_bitmap(*attr.scratch());
 		draw(scratch_attr);
 	}
 }

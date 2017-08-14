@@ -43,7 +43,7 @@ public:
 	 * compressed data.
 	 *
 	 * @param src A pointer to the source memory
-	 * @param size The number of bytes to process
+	 * @param nbyte The number of bytes to process
 	 * @return The number of bytes the data would occupy after compression
 	 */
 	static int calc_size(const void * src, int nbyte);

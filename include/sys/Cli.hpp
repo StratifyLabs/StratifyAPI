@@ -31,8 +31,8 @@ public:
 	 * \code
 	 * int main(int argc, char * argv[]){
 	 * 	Cli cli(argc, argv);
-	 *
 	 * }
+	 * \endcode
 	 *
 	 */
 	Cli(int argc, char * argv[]);

@@ -96,7 +96,7 @@ public:
 	};
 
 	/*! \details Flushes the FIFO. */
-	int flusheight() const;
+	int flush() const;
 
 	/*! \details Initialize the FIFO. This function should only be called once
 	 * even if several contexts access the FIFO.

@@ -64,7 +64,7 @@ public:
 
 	/*! \details Initializes the pin with the specified mode.
 	 *
-	 * @param mode The mode to start the pin (e.g., Pin::INPUT | Pin::PULLUP)
+	 * @param o_flags The mode to start the pin (e.g., Pin::INPUT | Pin::PULLUP)
 	 *
 	 * Hardware intialization opens the device for reading/writing and then
 	 * sets the device attributes as specified.
@@ -92,7 +92,7 @@ public:
 
 	/*! \details Sets the pin attributes.
 	 *
-	 * @param mode The pin mode (e.g., Pin::INPUT)
+	 * @param o_flags The pin mode (e.g., Pin::INPUT)
 	 * @return Zero on success
 	 *
 	 */

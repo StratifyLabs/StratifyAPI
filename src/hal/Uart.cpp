@@ -14,7 +14,7 @@ int Uart::put(char c){
 	return ioctl(I_UART_PUT, c);
 }
 
-int Uart::flusheight(){
+int Uart::flush(){
 	return ioctl(I_UART_FLUSH);
 }
 

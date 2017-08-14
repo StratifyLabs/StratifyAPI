@@ -19,7 +19,7 @@
 namespace sys {
 
 /*! \brief File Class
- * \details This class is used to file access.  It uses the POSIX functions open(), read(), write(), close(), etc.  You
+ * \details This class is used to access files (and devices).  It uses the POSIX functions open(), read(), write(), close(), etc.  You
  * can always call these functions directly or use the standard C library to access files (fopen(), fread(), fwrite()--
  * these use more memory than this class or the POSIX functions).
  *
@@ -87,17 +87,29 @@ public:
 		END /*! Set the location relative to the end of the file or device */ = SEEK_END
 	};
 
-	/*! \details Get the name of the file from a given path */
+	/*! \details Gets the name of the file from a given path.
+	 *
+	 * \code
+	 * const char * path = /app/flash/HelloWord
+	 * printf("Name is %s\n", File::name(path));
+	 * \endcode
+	 *
+	 * The above code will output:
+	 * \code
+	 * Name is HelloWorld
+	 * \endcode
+	 *
+	 */
 	static const char * name(const char * path);
 
-	/*! \details Deletes a file
+	/*! \details Deletes a file.
 	 *
 	 * @param path The path to the file
 	 *
 	 */
 	static int remove(const char * path, link_transport_mdriver_t * driver = 0);
 
-	/*! \details Gets file stat data
+	/*! \details Gets file stat data.
 	 *
 	 * @param path The path to the file
 	 * @param st A pointer to the stat structure
@@ -166,47 +178,65 @@ public:
 	/*! \details Returns the file size. */
 	u32 size() const;
 
-	/*! \details Returns the location of the cursor in the device or file */
+	/*! \details Returns the location of the cursor in the device or file. */
 	int loc() const;
 
-	/*! \details Return the current flags for the file */
+	/*! \details Return the current flags for the file. */
 	int flags() const;
 
-	/*! \details Return the file number for accessing the file or device */
+	/*! \details Return the file number for accessing the file or device. */
 	int fileno() const;
 
-	/*! \details Close the file or device */
+	/*! \details Closes the file or device. */
 	virtual int close();
 
-	/*! \details reads the device. */
+	/*! \details Reads the file.
+	 *
+	 * @param buf A pointer to the destination buffer
+	 * @param nbyte The number of bytes to read
+	 * @return The number of bytes read or less than zero on an error
+	 */
 	virtual int read(void * buf, int nbyte) const;
 
-	/*! \details writes data to the device */
+	/*! \details Write the file.
+	 *
+	 * @param buf A pointer to the source buffer
+	 * @param nbyte The number of bytes to read
+	 * @return The number of bytes read or less than zero on an error
+	 */
 	virtual int write(const void * buf, int nbyte) const;
 
-	/*! \details reads the device at the location */
+	/*! \details Reads the file.
+	 *
+	 * @param loc The location of the file to read
+	 * @param buf A pointer to the destination buffer
+	 * @param nbyte The number of bytes to read
+	 * @return The number of bytes read or less than zero on an error
+	 */
 	int read(int loc, void * buf, int nbyte) const;
 
 	/*! \details writes the device at the location
 	 *
-	 * @param loc Location to read (not application to character devices)
+	 * @param loc Location to write (not application to character devices)
 	 * @param buf Pointer to the source data
 	 * @param nbyte Number of bytes to write
 	 * @return Number of bytes successfully written or -1 with errno set
 	 */
 	int write(int loc, const void * buf, int nbyte) const;
 
-	/*! \details Read a line from the device or file */
+	/*! \details Reads a line from the file. */
 	int readline(char * buf, int nbyte, int timeout, char term) const;
 
 
 #ifndef __link
-	/*! \details Write a Var::String to the file
+	/*! \details Writes a var::String to the file.
 	 *
 	 * @param str The string to write
 	 * @return The number of bytes written
 	 */
-	int write(const var::String & str) const { return write(str.c_str(), str.size()); }
+	int write(const var::String & str) const {
+		return write(str.c_str(), str.size());
+	}
 #endif
 
 	enum {
@@ -214,15 +244,15 @@ public:
 	};
 
 
-	/*! \details Seek to a location in the file or on the device */
+	/*! \details Seeks to a location in the file or on the device. */
 	virtual int seek(int loc, int whence = LINK_SEEK_SET) const;
 
 
-	/*! \details Read up to n-1 bytes to \a s until end-of-file or \a term is reached.  */
+	/*! \details Reads up to n-1 bytes to \a s until end-of-file or \a term is reached.  */
 	char * gets(char * s, int n, char term = '\n') const;
 
 #ifndef __link
-	/*! \details Read a line in to the string */
+	/*! \details Reads a line in to the var::String until end-of-file or \a term is reached. */
 	char * gets(var::String & s, char term = '\n') const { return gets(s.cdata(), s.capacity(), term); }
 #endif
 
@@ -232,19 +262,22 @@ public:
 	link_transport_mdriver_t * driver() const { return m_driver; }
 #endif
 
-	/*! \details Executes an IO control request
+	/*! \details Executes an IO control request.
 	 *
 	 * @param req The request value
 	 * @param arg A pointer to the arguments
 	 *
+	 * This method is typically only implemented for devices
+	 * and other special file systems.
+	 *
 	 */
 	virtual int ioctl(int req, void * arg) const;
 
-	/*! \details ioctl() with request and const arg pointer */
+	/*! \details Executes an ioctl() with request and const arg pointer. */
 	int ioctl(int req, const void * arg) const { return ioctl(req, (void*)arg); }
-	/*! \details ioctl() with just a request */
+	/*! \details Executes an ioctl() with just a request. */
 	int ioctl(int req) const { return ioctl(req, (void*)NULL); }
-	/*! \details ioctl() with request and integer arg */
+	/*! \details Executes an ioctl() with request and integer arg. */
 	int ioctl(int req, int arg) const { return ioctl(req, MCU_INT_CAST(arg)); }
 
 

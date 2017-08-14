@@ -118,7 +118,7 @@ public:
 	sgfx::Bitmap & bitmap() const { return *(m_attr.bitmap); }
 
 	/*! \details Access the scratch bitmap */
-	sgfx::Bitmap * scratcheight() const { return (m_attr.scratch); }
+	sgfx::Bitmap * scratch() const { return (m_attr.scratch); }
 
 	/*! \details Access the position (point) */
 	drawing_point_t point() const { return m_attr.point; }

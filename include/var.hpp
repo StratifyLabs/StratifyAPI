@@ -16,7 +16,6 @@ namespace var {};
 #include "var/Packet.hpp"
 #include "var/Ring.hpp"
 #include "var/String.hpp"
-#include "var/StringTypes.hpp"
 #include "var/StringUtil.hpp"
 #include "var/Token.hpp"
 

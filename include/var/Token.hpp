@@ -17,7 +17,7 @@ public:
 	Token();
 	Token(char * mem, u32 s, const char * src, const char * delim, const char * ignore = 0, bool count_empty = false);
 
-	/*! \details Construct and parse a new Token.
+	/*! \details Constructs and parses a new Token.
 	 *
 	 * @param src The Source string
 	 * @param delim Delimiter string
@@ -29,7 +29,7 @@ public:
 	Token(const char * src, const char * delim, const char * ignore = 0, bool count_empty = false);
 
 
-	/*! \details Sorting Options */
+	/*! \details Sorting Options used with sort() */
 	enum sort_options {
 		SORT_NONE /*! Don't sort */,
 		SORT_AZ /*! Sort from A to Z */,
@@ -70,7 +70,6 @@ public:
 		return belongs_to(c, str, strlen(str));
 	}
 
-	bool count_empty_tokens() const { return m_is_count_empty_tokens; }
 
 	/*! \details Accesses whether or not parse() will count empty tokens. */
 	bool is_count_empty_tokens() const { return m_is_count_empty_tokens; }

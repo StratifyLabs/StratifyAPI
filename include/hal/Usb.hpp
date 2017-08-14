@@ -41,7 +41,7 @@ public:
 	};
 
 	int reset();
-	int attacheight();
+	int attach();
 	int configure();
 	int detacheight();
 	int disable_endpoint(int ep);

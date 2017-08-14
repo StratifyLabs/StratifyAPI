@@ -165,11 +165,13 @@ public:
 	 */
 	int set_handler(const SignalHandler & handler) const;
 
-	/*! \details Returns the signal number */
+	/*! \details Returns the signal number. */
 	int signo() const { return m_signo; }
-	/*! \details Returns the signal value */
+
+	/*! \details Returns the signal value. */
 	int sigvalue() const { return m_sigvalue.sival_int; }
-	/*! \details Returns the signal pointer */
+
+	/*! \details Returns the signal pointer. */
 	void * sigptr() const { return m_sigvalue.sival_ptr; }
 
 private:

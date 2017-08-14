@@ -50,7 +50,7 @@ public:
 
 
 	u8 type() const { return m_attr.type; }
-	u8 patheight() const { return m_attr.path.type; }
+	u8 path() const { return m_attr.path.type; }
 	u16 step_total() const { return m_attr.path.step_total; }
 	sg_point_t start() const { return m_attr.start; }
 	sg_dim_t dim() const { return m_attr.dim; }

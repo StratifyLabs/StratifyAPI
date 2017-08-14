@@ -59,7 +59,7 @@ class Aio {
 	friend class hal::Dev;
 public:
 
-	/*! \details Construct an empy AIO object. */
+	/*! \details Constructs an empy AIO object. */
 	Aio(){ memset(&m_aio_var, 0, sizeof(struct aiocb)); }
 
 	/*! \details Constructs a new Aio object.

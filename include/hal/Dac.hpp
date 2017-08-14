@@ -95,7 +95,7 @@ public:
 	/*! \details Sets the value of the DAC channel.
 	 *
 	 * @param value Value to write to the DAC
-	 * @param channel The DAC channel
+	 * @param loc The DAC channel
 	 * @return Zero on success
 	 */
 	int set_channel(u32 loc, u32 value) const {

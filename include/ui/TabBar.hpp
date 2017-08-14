@@ -60,7 +60,7 @@ public:
 	void set_animation_type(u8 v);
 	u8 animation_type() const;
 	void set_animation_path(u8 v);
-	u8 animation_patheight() const;
+	u8 animation_path() const;
 
 	draw::Animation & animation(){ return m_animation; }
 

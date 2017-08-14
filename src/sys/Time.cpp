@@ -93,7 +93,7 @@ u32 Time::get_weekday() const{
 u32 Time::get_yearday() const{
 	return get_tm().tm_yday;
 }
-u32 Time::get_montheight() const{
+u32 Time::get_month() const{
 	return get_tm().tm_mon;
 }
 u32 Time::get_year() const{
@@ -101,7 +101,7 @@ u32 Time::get_year() const{
 }
 
 const char * Time::get_month_name() const {
-	u32 mon = get_montheight();
+	u32 mon = get_month();
 	if( mon < 12 ){
 		return month_names[mon];
 	}

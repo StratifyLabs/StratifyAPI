@@ -17,17 +17,17 @@ namespace sgfx {
  */
 class Bitmap : public var::Data {
 public:
-	/*! \details Construct an empty bitmap */
+	/*! \details Constructs an empty bitmap. */
 	Bitmap();
 
-	/*! \details Construct a bitmap using an existing sg_bitmap_hdr_t
+	/*! \details Constructs a bitmap using an existing sg_bmap_header_t.
 	 *
 	 * @param hdr A pointer to the existing bitmap structure
 	 * @param readonly True if the data is stored in read-only memory
 	 */
-	Bitmap(sg_bitmap_hdr_t * hdr, bool readonly = false); //read/write bitmap
+	Bitmap(sg_bmap_header_t * hdr, bool readonly = false); //read/write bitmap
 
-	/*! \details Construct a bitmap using an existing memory buffer
+	/*! \details Constructs a bitmap using an existing memory buffer.
 	 *
 	 * @param mem A pointer to the memory buffer
 	 * @param w The width of the bitmap that fits in the buffer
@@ -36,13 +36,14 @@ public:
 	 */
 	Bitmap(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly = false); //read/write bitmap
 
-	/*! \details Construct a new bitmap (dynamic memory allocation)
+	/*! \details Constructs a new bitmap (dynamic memory allocation).
 	 *
 	 * @param w Width of the new bitmap
 	 * @param h Height of the new bitmap
 	 */
 	Bitmap(sg_size_t w, sg_size_t h);
-	/*! \details Construct a new bitmap (dynamic memory allocation)
+
+	/*! \details Constructs a new bitmap (dynamic memory allocation).
 	 *
 	 * @param d Dimensions of the bitmap
 	 */
@@ -77,7 +78,7 @@ public:
 	virtual ~Bitmap();
 
 	/*! \details Sets data pointer and size for bitmap */
-	void set_data(sg_bitmap_hdr_t * hdr, bool readonly = false);
+	void set_data(sg_bmap_header_t * hdr, bool readonly = false);
 	void set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly = false);
 	void set_data(sg_bmap_data_t * mem, const Dim & dim){ set_data(mem, dim.width(), dim.height()); }
 	void set_data(sg_bmap_data_t * mem, bool readonly = false){ set_data(mem, width(), height(), readonly); }

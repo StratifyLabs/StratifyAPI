@@ -19,13 +19,13 @@ class Thread {
 public:
 
 	enum {
-		ID_ERROR = -2,
-		ID_UNINITIALIZED = -1,
-		JOINABLE = PTHREAD_CREATE_JOINABLE,
-		DETACHED = PTHREAD_CREATE_DETACHED
+		ID_ERROR /*! ID is an error */ = -2,
+		ID_UNINITIALIZED /*! ID is uninitialized */ = -1,
+		JOINABLE /*! Joinable thread */ = PTHREAD_CREATE_JOINABLE,
+		DETACHED /*! Detacthed thread */ = PTHREAD_CREATE_DETACHED
 	};
 
-	/*! \details This constructs a new thread object
+	/*! \details Constructs a new thread object.
 	 *
 	 * @param stack_size  The stack size of the new thread (default is 4096)
 	 * @param detached Whether to create as a detached thread.  If this value is false,
@@ -35,40 +35,58 @@ public:
 
 	~Thread();
 
-	/*! \details Sets the stacksize (no effect after create) */
+	/*! \details Sets the stacksize (no effect after create() method). */
 	int set_stacksize(int size);
 
-	/*! \details Gets the stacksize */
+	/*! \details Gets the stacksize. */
 	int get_stacksize() const;
 
-	/*! \details Get the detach state (Thread::JOINABLE or Thread::DETACHED) */
+	/*! \details Gets the detach state (Thread::JOINABLE or Thread::DETACHED). */
 	int get_detachstate() const;
 
-	/*! \details Sets the thread priority */
+	/*! \details Sets the thread priority. */
 	int set_priority(int prio, enum Sched::policy policy = Sched::RR);
 
-	/*! \details Gets the thread priority */
+	/*! \details Gets the thread priority. */
 	int get_priority() const;
 
-	/*! \details Get the thread policy */
+	/*! \details Get the thread policy. */
 	int get_policy() const;
 
-	/*! \details Gets the ID of the thread */
+	/*! \details Gets the ID of the thread. */
 	int id() const { return m_id; }
 
-	/*! \details Start the thread */
+	/*! \details Starts the thread.
+	 *
+	 * @param func The function to execute as a new thread
+	 * @param args The arguments to pass to the new thread
+	 * @param prio The priority to set for the new thread
+	 * @param policy The new thread's scheduling policy
+	 * @return Zero on success
+	 *
+	 * This method creates a new thread. The Thread object only manages one thread
+	 * at a time. To create multiple threads, you will need multiple instances of the
+	 * Thread object.
+	 *
+	 */
 	int create(void * (*func)(void*), void * args = NULL, int prio = 0, enum Sched::policy policy = Sched::OTHER);
 
-	/*! \details Check if the thread is running */
+	/*! \details Checks if the thread is running. */
 	bool is_running() const;
 
-	/*! \details Wait for the thread to complete (joins thread if it is not detached) */
+	/*! \details Waits for the thread to complete (joins thread if it is not detached).
+	 *
+	 * If the thread is joinable, this method will join the thread which blocks until
+	 * the thread returns. If the thread is not-joinable, this method will poll
+	 * is_running() until the thread completes.
+	 *
+	 */
 	int wait(void**ret = 0, int interval = 1000);
 
-	/*! \details Yield the processor to another thread */
+	/*! \details Yields the processor to another thread */
 	static void yield();
 
-	/*! \details Join the current thread to the specified thread
+	/*! \details Joins the current thread to the specified thread.
 	 *
 	 * @param ident the ID of the target thread
 	 * @param value_ptr A pointer to the return value of the target thread
@@ -88,16 +106,22 @@ public:
 	/*! \details This method returns true if the thread is joinable */
 	bool is_joinable() const;
 
-	/*! \details The calling thread will joing the thread with id Thread::id()
+	/*! \details Joins the calling thread with id Thread::id()
 	 *
 	 * @return 0 if joined, -1 if couldn't join (doesn't exist or is detached)
 	 */
 	int join(void ** value_ptr = 0) const;
 
-	/*! \details Reset the object (thread must not be running) */
+	/*! \details Resets the object (thread must not be running).
+	 *
+	 * After a thread has been created (using create()) and terminated,
+	 * this method can be used to reset the object so that create() can
+	 * be called again.
+	 *
+	 */
 	void reset();
 
-	/*! \details Set the scheduler
+	/*! \details Sets the scheduler.
 	 *
 	 * @param pid The process ID
 	 * @param value The policy (such as Sched::FIFO)
@@ -106,7 +130,7 @@ public:
 	 */
 	static int set_scheduler(int id, enum Sched::policy value, int priority);
 
-	/*! \details Allows read only access to the thread attributes */
+	/*! \details Allows read only access to the thread attributes. */
 	const pthread_attr_t & attr() const { return m_pthread_attr; }
 
 private:

@@ -21,7 +21,7 @@ int DisplayDev::init(const char * name){
 			return -1;
 		}
 
-		set_data((sg_bmap_data_t*)info.mem, info.w, info.h);
+		set_data((sg_bmap_data_t*)info.mem, info.width, info.height);
 
 		set_margin_left(info.margin_left);
 		set_margin_right(info.margin_right);

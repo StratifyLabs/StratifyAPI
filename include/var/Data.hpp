@@ -98,10 +98,11 @@ public:
 
 	/*! \details Resizes the data (equivalent to alloc()).
 	 *
+	 * @param size The number of new bytes
+	 * @return Zero on success or -1 with errno set
+	 *
 	 * This is the same as alloc() with \a resize set to true
 	 *
-	 * @param s The number of new bytes
-	 * @return Zero on success or -1 with errno set
 	 */
 	int resize(u32 size) { return alloc(size, true); }
 

@@ -9,7 +9,7 @@
 
 namespace hal {
 
-/*! \class LED Class
+/*! \brief LED Class
  * \details The LED Class is used to control LEDs based on
  * the standard LED driver.
  */
@@ -18,10 +18,10 @@ public:
 	Led();
 
 	enum {
-		FLAG_IS_HIGH_IMPEDANCE = LED_FLAG_IS_HIGH_IMPEDANCE,
-		FLAG_IS_DUTY_CYCLE = LED_FLAG_IS_DUTY_CYCLE,
-		FLAG_ENABLE = LED_FLAG_ENABLE,
-		FLAG_DISABLE = LED_FLAG_DISABLE,
+		FLAG_IS_HIGH_IMPEDANCE /*! See \ref LED_FLAG_IS_HIGH_IMPEDANCE */ = LED_FLAG_IS_HIGH_IMPEDANCE,
+		FLAG_IS_DUTY_CYCLE /*! See \ref LED_FLAG_IS_DUTY_CYCLE */ = LED_FLAG_IS_DUTY_CYCLE,
+		FLAG_ENABLE /*! See \ref LED_FLAG_ENABLE */ = LED_FLAG_ENABLE,
+		FLAG_DISABLE /*! See \ref LED_FLAG_DISABLE */ = LED_FLAG_DISABLE,
 	};
 
 	/*! \details Gets the info for the LED.

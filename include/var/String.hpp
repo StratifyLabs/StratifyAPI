@@ -16,13 +16,13 @@ namespace var {
 
 /*! \brief String class
  * \details This is an embedded friendly string class.  It is similar
- * to the C++ string type but is built on Var::Data and
- * cstring functions.  The naming convetion follows that of std::string
- * rather than the typical Stratify Library naming convention.
+ * to the C++ string type but is built on var::Data and
+ * cstring functions.  The naming convention follows includes
+ * many std::string methods.
  *
  *
  * \code
- * #include <sapi/Var.hpp>
+ * #include <sapi/var.hpp>
  *
  * String s1;
  * String s2;
@@ -59,19 +59,52 @@ public:
 	/*! \details Declares a string and initialize to \a s. */
 	String(const char * s, u32 len);
 
+	/*! \details Returns a c-string.
+	 *
+	 * This operator causes a String object
+	 * to be converted to a c-style string if
+	 * the compiler expects a c-style string.
+	 *
+	 * Here is an example:
+	 *
+	 * \code
+	 * String str;
+	 * char buffer[16];
+	 * str.assign("Hello");
+	 * strcpy(buffer, str); //strcpy() expects a const char *, str is converted to one
+	 * \endcode
+	 *
+	 */
 	operator const char * () const { return c_str(); }
 
 
 	enum {
-		npos = (u32)-1
+		npos /*! Defines an invalid string length and position */ = (u32)-1
 	};
 
-	String(char * mem, u32 cap, bool readonly = false);
+	/*! \details Constructs a string using statically allocated memory.
+	 *
+	 * @param mem A pointer to memory to use
+	 * @param capacity The number of bytes available
+	 * @param readonly True if the mem is in readonly memory
+	 */
+	String(char * mem, u32 capacity, bool readonly = false);
 
 
+	/*! \details Sets the capacity of the string.
+	 *
+	 * @param s The number of bytes to reserve to string capacity.
+	 * @return Less than zero on an error
+	 *
+	 * If a String uses dynamic memory allocation, this method
+	 * will increase the capacity of the String. If \a s
+	 * is smaller than capacity(), this function return
+	 * without changing the capacity.
+	 *
+	 */
 	int set_capacity(u32 s){ return Data::set_capacity(s+1); }
 
-	/*! \details Assign a c-string */
+	/*! \details Assigns a c-string to a String. */
 	String& operator=(const char * a){ assign(a); return *this; }
 
 	/*! \details Assigns the value of a String to another String.
@@ -82,10 +115,21 @@ public:
 	 * This method will make a copy of the string in a new memory
 	 * location rather than just using the data location
 	 * of the source string.
+	 *
+	 * \code
+	 * String str1 = "hello";
+	 * String str2 = "goodbye";
+	 * str2 = str1; //both strings are now "hello"
+	 * \endcode
+	 *
 	 */
 	String& operator=(String & a){ assign(a.c_str()); return *this; }
 
-	/*! \details Appends a c style string go the string. The string will be resized to accept the character if needed. */
+	/*! \details Appends a c style string go the string.
+	 *
+	 * The string will be resized to accept the string if needed.
+	 *
+	 */
 	String& operator<<(const char * a){ append(a); return *this; }
 
 	/*! \details Appends a character to the string. */
@@ -95,16 +139,28 @@ public:
 	/*! \details Compares to a c-string. */
 	bool operator==(const char * cmp) const { return (strncmp(this->c_str(), cmp, this->capacity()) == 0); }
 
-	/*! \details Compares to a c-string. */
+	/*! \details Compares to a c-string (inequality). */
 	bool operator!=(const char * cmp) const { return (strncmp(this->c_str(), cmp, this->capacity()) != 0); }
 
-	/*! \details Converts to an integer. */
+	/*! \details Converts to an integer.
+	 *
+	 * \code
+	 * String x = "10";
+	 * printf("X is %d\n", x.atoi());
+	 * \endcode
+	 *
+	 */
 	int atoi() const { return ::atoi(c_str()); }
 
 	/*! \details Converts to a float. */
 	float atoff() const;
 
-	/*! \details Gets a sub string of the string. */
+	/*! \details Gets a sub string of the string.
+	 *
+	 * @param pos Starting position to look for the sub-string
+	 * @param len The number of bytes in the String to search
+	 *
+	 */
 	String substr(u32 pos = 0, u32 len = npos) const;
 
 	/*! \details Inserts \a s (zero terminated) into string at \a pos. */
@@ -135,14 +191,24 @@ public:
 	int printf(){ return ::printf("%s", c_str()); }
 
 
-	/*! \details Returns the capacity of the string. */
+	/*! \details Returns the capacity of the string.
+	 *
+	 * The capacity is the current number of bytes allocated
+	 * in memory for the string. set_capacity() will
+	 * increase the capacity of the string. The append()
+	 * method will also increase the capacity of the
+	 * String if the appended string needs the extra space.
+	 *
+	 */
 	u32 capacity() const;
 
+	/*! \details Returns a c-style string pointer. */
 	const char * c_str() const { return cdata_const(); }
 
 	/*! \details Returns the length of the string. */
 	u32 size() const { return strlen(c_str()); }
 
+	/*! \details Returns the length of the string. */
 	u32 length() const { return size(); }
 	u32 len() const { return size(); }
 

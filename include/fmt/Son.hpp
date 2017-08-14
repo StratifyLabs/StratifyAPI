@@ -156,26 +156,58 @@ public:
 	 * @return Zero on success
 	 */
 	int seek(const char * access, son_size_t * data_size){ return son_api()->seek(&m_son, access, data_size); }
-	/*! \details Converts the data file to JSON */
+	/*! \details Converts the data file to JSON
+	 *
+	 * @param path The path to a file to create with the JSON data
+	 * @return Zero on success
+	 */
 	int to_json(const char * path){ return son_api()->to_json(&m_son, path); }
 
-	/*! \details Opens a new object while writing or appending. */
+	/*! \details Opens a new object while writing or appending.
+	 *
+	 * @param key The key to use for the new object
+	 * @return Zero on success
+	 */
 	int open_obj(const char * key){ return son_api()->open_obj(&m_son, key); }
-	/*! \details Closes an object while writing or appending a file. */
+	/*! \details Closes an object while writing or appending a file.
+	 *
+	 */
 	int close_obj(){ return son_api()->close_obj(&m_son); }
 
-	/*! \details Opens a new array while writing or appending. */
+	/*! \details Opens a new array while writing or appending.
+	 *
+	 * @param key The key to use for the new array
+	 * @return Zero on success
+	 */
 	int open_array(const char * key){ return son_api()->open_array(&m_son, key); }
 
-	/*! \details Closes an array while writing or appending. */
+	/*! \details Closes an array while writing or appending.
+	 *
+	 * @return Zero on success
+	 *
+	 * To proper operation, this a call to this method must correspond to a
+	 * call to open_data().
+	 */
 	int close_array(){ return son_api()->close_array(&m_son); }
 
-	/*! \details Opens a data object while writing or appending. */
+	/*! \details Opens a data object while writing or appending.
+	 *
+	 * @param key The key to use for the new data
+	 * @return Zero on success
+	 */
 	int open_data(const char * key){ return son_api()->open_data(&m_son, key); }
-	/*! \details Closes a data object. */
+
+	/*! \details Closes a data object.
+	 *
+	 * @return Zero on success
+	 *
+	 * To proper operation, this a call to this method must correspond to a
+	 * call to open_data().
+	 *
+	 */
 	int close_data(){ return son_api()->close_data(&m_son); }
 
-	/*! \details Writes a key/string pair to the file
+	/*! \details Writes a key/string pair to the file.
 	 *
 	 * @param key The value key
 	 * @param v A pointer to the string
@@ -190,7 +222,7 @@ public:
 	}
 
 #if !defined __link
-	/*! \details Writes a key/string pair to the file
+	/*! \details Writes a key/string pair to the file.
 	 *
 	 * @param key The value key
 	 * @param v A var::String reference
@@ -201,7 +233,7 @@ public:
 	}
 #endif
 
-	/*! \details Writes a key/number pair to the file (s32)
+	/*! \details Writes a key/number pair to the file (s32).
 	 *
 	 * @param key The value key
 	 * @param v The number to write
@@ -209,7 +241,7 @@ public:
 	 */
 	int write(const char * key, s32 v){ return son_api()->write_num(&m_son, key, v); }
 
-	/*! \details Writes a key/number pair to the file (u32)
+	/*! \details Writes a key/number pair to the file (u32).
 	 *
 	 * @param key The value key
 	 * @param v The number to write
@@ -217,7 +249,7 @@ public:
 	 */
 	int write(const char * key, u32 v){ return son_api()->write_unum(&m_son, key, v); }
 
-	/*! \details Writes a key/number pair to the file (float)
+	/*! \details Writes a key/number pair to the file (float).
 	 *
 	 * @param key The value key
 	 * @param v The number to write
@@ -225,7 +257,7 @@ public:
 	 */
 	int write(const char * key, float v){ return son_api()->write_float(&m_son, key, v); }
 
-	/*! \details Writes a key/bool pair to the file
+	/*! \details Writes a key/bool pair to the file.
 	 *
 	 * @param key The value key
 	 * @param v true or false
@@ -240,7 +272,7 @@ public:
 	}
 
 	/*! \details Writes a key/data pair to the file.  The data
-	 * is stored in the file in binary format
+	 * is stored in the file in binary format.
 	 *
 	 * @param key The value key
 	 * @param v A pointer to the data to be written
@@ -249,7 +281,13 @@ public:
 	 */
 	int write(const char * key, const void * v, son_size_t size){ return son_api()->write_data(&m_son, key, v, size); }
 
-	/*! \details Adds data to an open key.  This is used with open_data() and close_data().   These
+	/*! \details Adds data to an open key.
+	 *
+	 * @param v A pointer to the data to be written
+	 * @param size The number of bytes to write
+	 * @return Number of bytes stored (4) if successful
+	 *
+	 * This is used with open_data() and close_data().   These
 	 * methods are useful for writing data to the file when the amount of data to be written is unknown
 	 * when writing begins.
 	 *
@@ -262,11 +300,6 @@ public:
 	 * son.write_open_data(buffer, 32);
 	 * son.close_data();
 	 * \endcode
-	 *
-	 * @param key The value key
-	 * @param v A pointer to the data to be written
-	 * @param size The number of bytes to write
-	 * @return Number of bytes stored (4) if successful
 	 */
 	int write_open_data(const void * v, son_size_t size){ return son_api()->write_open_data(&m_son, v, size); }
 
@@ -313,12 +346,16 @@ public:
 	 */
 	u32 read_unum(const char * access){ return son_api()->read_unum(&m_son, access); }
 
-	/*! \details Reads the specified key as a number (float).  If the original
-	 * key was not written as a s32, it will be converted to one.  A string
-	 * of "100" will be converted to (float)100.  Objects that cannot be converted will return 0.
+	/*! \details Reads the specified key as a number (float).
 	 *
 	 * @param access Key parameters
 	 * @return The number
+	 *
+	 *
+	 * If the original key was not written as a float, it will be converted to one.  A string
+	 * of "100" will be converted to (float)100.  Objects that cannot be converted will return 0.
+	 *
+	 *
 	 */
 	float read_float(const char * access){ return son_api()->read_float(&m_son, access); }
 
@@ -332,7 +369,7 @@ public:
 	 */
 	int read_data(const char * access, void * data, son_size_t size){ return son_api()->read_data(&m_son, access, data, size); }
 
-	/*! \details Reads the specified key as a bool
+	/*! \details Reads the specified key as a bool.
 	 *
 	 * @param access Key parameters
 	 * @return True if the key is found and is true; false otherwise.
@@ -375,7 +412,7 @@ public:
 	/*! \details Edits a string value.
 	 *
 	 * @param access The acces for for the value
-	 * @param str The new string
+	 * @param v The new string
 	 * @return Zero on success
 	 *
 	 * If the length of the new string exceeds the length of the original
@@ -408,15 +445,39 @@ public:
 	 */
 	int edit(const char * access, bool v){ return son_api()->edit_bool(&m_son, access, v); }
 
+	typedef enum {
+		ERR_NONE /*! This value indicates no error has occurred. */ = SON_ERR_NONE,
+		ERR_NO_ROOT /*! This error happens when a top level object or array is not created. */ = SON_ERR_NO_ROOT,
+		ERR_OPEN_IO /*! This error happens if there is an IO failure to create or open a file (run perror() for more info). */ = SON_ERR_OPEN_IO,
+		ERR_READ_IO /*! This error happens when an IO read operation fails (run perror() for more info). */ = SON_ERR_READ_IO,
+		ERR_WRITE_IO /*! This error happens when an IO write operation fails (run perror() for more info). */ = SON_ERR_WRITE_IO,
+		ERR_CLOSE_IO /*! This error happens when an IO close operation fails (run perror() for more info). */ = SON_ERR_CLOSE_IO,
+		ERR_SEEK_IO /*! This error happens when an IO seek operation fails (run perror() for more info). */ = SON_ERR_SEEK_IO,
+		ERR_READ_CHECKSUM /*! This error happens when the data in the file has a invalid checksum which indicates a corrupted file or bad file format. */ = SON_ERR_READ_CHECKSUM,
+		ERR_CANNOT_APPEND /*! This error happens when an append is attempted on a file that has not been saved for appending */ = SON_ERR_CANNOT_APPEND,
+		ERR_CANNOT_WRITE /*! This error happens if a write is attempted on a file that has been opened for reading */ = SON_ERR_CANNOT_WRITE,
+		ERR_CANNOT_READ /*! This error happens if a read is attempted on a file that has been opened for writing or appending */ = SON_ERR_CANNOT_READ,
+		ERR_INVALID_ROOT /*! This error happens when the root object is not valid (usually a bad file format or corrupted file). */ = SON_ERR_INVALID_ROOT,
+		ERR_ARRAY_INDEX_NOT_FOUND /*! This error happens when an array index could not be found */ = SON_ERR_ARRAY_INDEX_NOT_FOUND,
+		ERR_ACCESS_TOO_LONG /*! This error happens if the \a access parameter len exceeds \a SON_ACCESS_MAX_USER_SIZE.  */ = SON_ERR_ACCESS_TOO_LONG,
+		ERR_KEY_NOT_FOUND /*! This error happens when the key specified by the \a access parameter could not be found. */ = SON_ERR_KEY_NOT_FOUND,
+		ERR_STACK_OVERFLOW /*! This error happens if the depth (son_open_array() or son_open_obj()) exceeds, the handle's stack size. */ = SON_ERR_STACK_OVERFLOW,
+		ERR_INVALID_KEY /*! This happens if an empty key is passed to anything but the root object. */ = SON_ERR_INVALID_KEY,
+		ERR_CANNOT_CONVERT /*! This happens if a read is tried by the base data can't be converted */ = SON_ERR_CANNOT_CONVERT,
+		ERR_EDIT_TYPE_MISMATCH /*! This happens if a value is edited with a function that doesn't match the base type */ = SON_ERR_EDIT_TYPE_MISMATCH
+	} son_err_t;
+
 	/*! \details Returns the current error value. */
 	int err() const { return m_son.err; }
 
-	/*! \details Gets the current error value. The current
-	 * error value is returned. This method will clear the
+	/*! \details Gets the current error value.
+	 *
+	 * @return The SON error value
+	 *
+	 * The current error value is returned. This method will clear the
 	 * error value such that if it is called twice it will
 	 * return the error then it will return SON_ERR_NONE.
 	 *
-	 * @return The error value
 	 */
 	int get_error(){ return son_api()->get_error(&m_son); }
 

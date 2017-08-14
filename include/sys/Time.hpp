@@ -9,80 +9,94 @@
 namespace sys {
 
 /*! \brief Time Class
- * \details This class is for accessing the current time.
+ * \details This class is for accessing the current time as well
+ * as adding and subtracting times and dates.
+ *
+ * \code
+ * Time now; //current time
+ * Time ten_minutes(0, 10, 0); //duration of 10 minutes
+ *
+ * now += ten_minutes; //adds ten minutes to now
+ * \endcode
  *
  */
 class Time {
 public:
-	/*! \details Construct using current time */
+	/*! \details Constructs using current time. */
 	Time();
-	/*! \details Construct using an amount of time */
+	/*! \details Constructs using an amount of time. */
 	Time(u32 sec, u32 min = 0, u32 hour = 0);
 
-	inline operator u32(){ return m_time; }
+	/*! \details Returns the time (time_t). */
+	operator u32(){ return m_time; }
 
 
-	/*! \details Add to the current value */
+	/*! \details Adds to the current value. */
 	Time& operator+=(const Time & a);
-	/*! \details Subtract another time value */
+	/*! \details Assigns another Time. */
 	Time& operator=(const Time & a);
-	/*! \details Assign another time value */
+	/*! \details Assigns another time value (time_t). */
 	Time& operator=(u32 a);
-	/*! \details Subtract from the current value */
+	/*! \details Subtracts from the current value. */
 	Time& operator-=(const Time & a);
 
-	/*! \details Set the system time */
+	/*! \details Sets the system time
+	 *
+	 * @param t Time to use to set the system time
+	 */
 	static int set_time_of_day(const Time & t);
 
-	/*! \details Set the system time to the time stored in this object */
+	/*! \details Sets the system time to the time stored in this object. */
 	int set_time_of_day();
 
-	/*! \details Assign the system time of day to the time stored in this object
-	 * and return the current system time.
+	/*! \details Assigns the system time of day to the time stored in this object
+	 * and returns the current system time.
 	 */
 	time_t get_time_of_day();
 
-	/*! \brief Set the time
-	 * \details This method is for setting a finite time rather than
-	 * an absolute time.
+	/*! \details Sets the value in Time to a number of seconds.
 	 *
 	 * @param hour Number of hours
 	 * @param min Number of minutes
 	 * @param sec Number of seconds
+	 *
+	 * This Time object will hold a duration of time rather than a
+	 * calendar time.
+	 *
 	 */
 	void set_value(u32 hour, u32 min, u32 sec);
 
-	/*! \details Set the current value
+	/*! \details Sets the current value.
 	 *
 	 * @param tm Number of seconds since epoch
 	 */
 	inline void set_value(time_t tm){ m_time = tm; }
 
-	/*! \details Get the name of the month */
+	/*! \details Gets the name of the month. */
 	const char * get_month_name() const;
 
-	/*! \details The time value (number of seconds since epoch) */
+	/*! \details Returns the time value (number of seconds since epoch). */
 	inline time_t value() const { return m_time; }
 
-	/*! \details Seconds (from 0 to 59) */
+	/*! \details Returns seconds (from 0 to 59). */
 	u32 second() const;
-	/*! \details Minutes (from 0 to 59) */
+	/*! \details Returns minutes (from 0 to 59). */
 	u32 minute() const;
-	/*! \details Hours (from 0 to 23) */
+	/*! \details Returns hours (from 0 to 23). */
 	u32 hour() const;
 
-	/*! \details Day of Month (from 1 to 31) */
+	/*! \details Returns the day of month (from 1 to 31). */
 	u32 get_day() const;
-	/*! \details Day of Week (from 1 to 7) */
+	/*! \details Returns the day of week (from 1 to 7). */
 	u32 get_weekday() const;
-	/*! \details Day of the year (1 to 366) */
+	/*! \details Returns the day of the year (1 to 366). */
 	u32 get_yearday() const;
-	/*! \details Month (from 1 to 12) */
-	u32 get_montheight() const;
-	/*! \details Year (e.g. 2014) */
+	/*! \details Returns the month (from 1 to 12). */
+	u32 get_month() const;
+	/*! \details Returns the year (e.g. 2014) */
 	u32 get_year() const;
 
-	/*! \details Convert the time to a struct tm */
+	/*! \details Converts the time to a struct tm. */
 	struct tm get_tm() const;
 
 

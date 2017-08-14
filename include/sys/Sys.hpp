@@ -10,24 +10,24 @@
 
 namespace sys {
 
-/*! \brief Kernel Class
- * \details This class allows access to kernel attributes and functions.
+/*! \brief Sys Class
+ * \details This class allows access to system attributes and functions.
  */
 class Sys : public File {
 public:
 	Sys();
 
 	enum {
-		LAUNCH_OPTIONS_FLASH /*! \brief Install in flash memory */ = APPFS_FLAG_IS_FLASH,
-		LAUNCH_OPTIONS_STARTUP /*! \brief Run at startup (must be in flash) */ = APPFS_FLAG_IS_STARTUP,
-		LAUNCH_OPTIONS_ROOT /*! \brief Run as root (if applicable) */ = APPFS_FLAG_IS_ROOT,
-		LAUNCH_OPTIONS_REPLACE /*! \brief Delete if application exists */ = APPFS_FLAG_IS_REPLACE,
-		LAUNCH_OPTIONS_ORPHAN /*! \brief Allow app to become an orphan */ = APPFS_FLAG_IS_ORPHAN,
-		LAUNCH_OPTIONS_UNIQUE_NAMES /*! \brief Create a unique name on install */ = APPFS_FLAG_IS_UNIQUE,
+		LAUNCH_OPTIONS_FLASH /*! Install in flash memory */ = APPFS_FLAG_IS_FLASH,
+		LAUNCH_OPTIONS_STARTUP /*! Run at startup (must be in flash) */ = APPFS_FLAG_IS_STARTUP,
+		LAUNCH_OPTIONS_ROOT /*! Run as root (if applicable) */ = APPFS_FLAG_IS_ROOT,
+		LAUNCH_OPTIONS_REPLACE /*! Delete if application exists */ = APPFS_FLAG_IS_REPLACE,
+		LAUNCH_OPTIONS_ORPHAN /*! Allow app to become an orphan */ = APPFS_FLAG_IS_ORPHAN,
+		LAUNCH_OPTIONS_UNIQUE_NAMES /*! Create a unique name on install */ = APPFS_FLAG_IS_UNIQUE,
 		LAUNCH_RAM_SIZE_DEFAULT = 0
 	};
 
-	/*! \details Launches a new application
+	/*! \details Launches a new application.
 	 *
 	 * @param path The path to the application
 	 * @param exec_dest A pointer to a buffer where the execution path will be written (null if not needed)
@@ -49,10 +49,10 @@ public:
 			char *const envp[] = 0
 	);
 
-	/*! \details Frees the RAM associated with the app without deleting the code from flash.
-	 * This should not be called when the app is currently running.
+	/*! \details Frees the RAM associated with the app without deleting the code from flash
+	 * (should not be called when the app is currently running).
 	 *
-	 * @param path The path to the app (use \a exec_dest from launcheight())
+	 * @param path The path to the app (use \a exec_dest from launch())
 	 * @return Zero on success
 	 *
 	 * This method can causes problems if not used correctly. The RAM associated with
@@ -63,7 +63,7 @@ public:
 	 */
 	static int free_ram(const char * path, link_transport_mdriver_t * driver = 0);
 
-	/*! \details Reclaims RAM that was freed using free_ram()
+	/*! \details Reclaims RAM that was freed using free_ram().
 	 *
 	 * @param path The path to the app
 	 * @return Zero on success
@@ -105,12 +105,14 @@ public:
 	 */
 	static int hibernate(int timeout_ms = 0);
 
-	/*! \details Executes a kernel request. The kernel request must
-	 * be defined and implemented by the board support package.
+	/*! \details Executes a kernel request.
 	 *
 	 * @param req The request number
 	 * @param arg Argument pointer
 	 * @return The result of the execution of the request. (-1 if request is not available)
+	 *
+	 * The kernel request must
+	 * be defined and implemented by the board support package.
 	 */
 	static int request(int req, void * arg = 0);
 
@@ -136,15 +138,15 @@ public:
 	 * @return Zero on success
 	 *
 	 */
-	inline int open(){
+	int open(){
 		return File::open("/dev/sys", RDWR);
 	}
 
 	using File::open;
 
-	/*! \details Loads the current kernel attributes.
+	/*! \details Loads the current system info.
 	 *
-	 * @param attr  A reference to where the data should be stored
+	 * @param attr A reference to where the data should be stored
 	 * @return Zero on success
 	 *
 	 * The object must be opened before calling this method.

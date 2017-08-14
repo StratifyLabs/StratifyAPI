@@ -14,7 +14,7 @@ namespace sys {
 /*! \brief Dir class */
 class Dir {
 public:
-	/*! \details Constructs a Dir object */
+	/*! \details Constructs a Dir object. */
 #if defined __link
 	Dir(link_transport_mdriver_t * driver);
 #else
@@ -33,23 +33,23 @@ public:
 	const char * read();
 
 
-	/*! \details The name of the most recently read entry */
-	inline const char * name(){ return m_entry.d_name; }
+	/*! \details Returns a pointer (const) to the name of the most recently read entry. */
+	const char * name(){ return m_entry.d_name; }
 
-	/*! \details The name of the most recently read entry */
-	inline char * data(){ return m_entry.d_name; }
+	/*! \details Returns a pointer (editable) to the name of the most recently read entry. */
+	char * data(){ return m_entry.d_name; }
 
-	/*! \details The serial number of the most recently read entry */
-	inline int ino(){ return m_entry.d_ino; }
+	/*! \details Returns the serial number of the most recently read entry. */
+	int ino(){ return m_entry.d_ino; }
 
 #ifndef __link
-	/*! \details Count the total number of entries in the directory */
+	/*! \details Counts the total number of entries in the directory. */
 	int count();
-	/*! \details Rewind the directory pointer */
+	/*! \details Rewinds the directory pointer. */
 	inline void rewind(){ if( m_dirp ) rewinddir(m_dirp); }
-	/*! \details Seek to a location in the directory */
+	/*! \details Seeks to a location in the directory. */
 	inline void seek(long loc){ if( m_dirp ) seekdir(m_dirp, loc); }
-	/*! \details The current pointer location in the directory */
+	/*! \details Returns the current pointer location in the directory. */
 	inline long tell(){ if( m_dirp ){ return telldir(m_dirp); } return 0; }
 #else
 	void set_driver(link_transport_mdriver_t * d){ m_driver = d; }

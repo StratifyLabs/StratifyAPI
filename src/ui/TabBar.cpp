@@ -18,7 +18,7 @@ TabBar::TabBar() {
 void TabBar::set_animation_type(u8 v){ m_animation.set_type(v); }
 u8 TabBar::animation_type() const { return m_animation.type(); }
 void TabBar::set_animation_path(u8 v){ m_animation.set_path(v); }
-u8 TabBar::animation_patheight() const { return m_animation.patheight(); }
+u8 TabBar::animation_path() const { return m_animation.path(); }
 
 Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 	int i;

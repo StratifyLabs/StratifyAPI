@@ -86,7 +86,8 @@ public:
 	/*! \details Sets the value of the specified channel.
 	 *
 	 * @param loc The channel number
-	 * @return The value of the channel or (u32)-1 if the IOCTL request fails
+	 * @param value The value to assign to the channel
+	 * @return Zero on success
 	 *
 	 * The \a loc parameter is the input or output channel. Input channels
 	 * should be or'd with the MCU_CHANNEL_FLAG_IS_INPUT value.

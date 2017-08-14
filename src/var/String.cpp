@@ -28,7 +28,7 @@ String::String(const char * s, u32 len){
 }
 
 
-String::String(char * mem, u32 cap, bool readonly) : Data((void*)mem, cap, readonly){
+String::String(char * mem, u32 capacity, bool readonly) : Data((void*)mem, capacity, readonly){
 
 }
 

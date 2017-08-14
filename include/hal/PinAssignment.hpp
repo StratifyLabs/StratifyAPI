@@ -68,7 +68,7 @@ public:
 	/*! \details Returns the number of bytes in the data structure. */
 	u32 size() const { return sizeof(pin_assignment_type); }
 
-	/*! \detais Returns the number of pins in the pin assignment data structure. */
+	/*! \details Returns the number of pins in the pin assignment data structure. */
 	u32 count() const { return size() / sizeof(mcu_pin_t); }
 
 	/*! \details Copies the pin assignment information to the object specified.
