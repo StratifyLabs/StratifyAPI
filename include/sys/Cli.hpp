@@ -61,22 +61,6 @@ public:
 		PRINT_TOTAL
 	};
 
-	/*! \details Prints a message to the user.
-	 *
-	 * @param value A pointer to the message
-	 *
-	 * The message will be formatted based on the Cli format's settings.
-	 *
-	 */
-	//void print(char char * type, const char * value);
-
-	/*! \details Prints the progress of an operation.
-	 *
-	 * @param value The current value of the progress
-	 * @param max The maximum value of the progress
-	 */
-	//void print_progress(int value, int max);
-
 	/*! \details Accesses the program version. */
 	const char * version() const { return m_version; }
 
@@ -85,6 +69,9 @@ public:
 
 	/*! \details Accesses the program name. */
 	const char * name() const { return m_name; }
+
+	/*! \details Accesses the path to the program (including the name). */
+	const char * path() const { return m_path; }
 
 	/*! \details Returns the argument offset by value as a var::String. */
 	var::String at(u16 value) const;
@@ -164,6 +151,7 @@ private:
 	var::String m_version;
 	var::String m_publisher;
 	var::String m_name;
+	var::String m_path;
 
 
 };

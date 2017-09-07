@@ -9,6 +9,10 @@
 
 namespace draw {
 
+/*! \brief Image Class
+ * \details The Image class draws a bitmap image
+ * on the drawing bitmap.
+ */
 class Image : public Drawing {
 public:
 	Image();
@@ -17,6 +21,10 @@ public:
 
 	drawing_dim_t calc_dim();
 
+	/*! \details Sets the bitmap that is to be drawn as the image.
+	 *
+	 * @param bitmap A pointer to the bitmap to draw
+	 */
 	void set_bitmap(const sgfx::Bitmap * bitmap){
 		m_bitmap = bitmap;
 	}

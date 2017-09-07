@@ -15,7 +15,6 @@ namespace draw {
 class Rect : public Drawing {
 public:
 	Rect();
-	/*! \details Draw the rectangle to scale */
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);
 
 };

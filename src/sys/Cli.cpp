@@ -16,19 +16,18 @@ Cli::Cli(int argc, char * argv[]){
 	m_argv = argv;
 
 	if( argc > 0 ){
-		m_name = argv[0];
+		m_path = argv[0];
+		m_name = File::name(argv[0]);
 	}
 }
 
 void Cli::handle_version() const {
-	const char * name;
 	if( is_option("--version") || is_option("-v") ){
 		u16 version;
 		String tmp;
-		version = Appfs::get_version(m_name);
+		version = Appfs::get_version(m_path);
 		tmp.sprintf("%d.%d", version >> 8, version & 0xff);
-		name = File::name(m_name.c_str());
-		printf("%s version: %s by %s\n", name, tmp.c_str(), m_publisher.c_str());
+		printf("%s version: %s by %s\n", m_name.c_str(), tmp.c_str(), m_publisher.c_str());
 		exit(0);
 	}
 }
