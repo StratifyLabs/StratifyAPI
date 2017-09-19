@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
 #ifndef PHY_PERIPH_HPP_
 #define PHY_PERIPH_HPP_
@@ -176,13 +176,13 @@ protected:
 		mcu_channel_t channel;
 		channel.loc = loc;
 		channel.value = value;
-		return ioctl(_IOCTLR(ident_char, request, mcu_channel_t), &channel);
+		return ioctl(request, &channel);
 	}
 
 	u32 get_channel(u32 loc, int request) const {
 		mcu_channel_t channel;
 		channel.loc = loc;
-		if( ioctl(_IOCTLR(ident_char, request, mcu_channel_t), &channel) < 0 ){
+		if( ioctl(request, &channel) < 0 ){
 			return (u32)-1;
 		}
 		return channel.value;
