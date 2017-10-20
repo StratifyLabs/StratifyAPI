@@ -15,7 +15,6 @@ const sg_vector_icon_t * IconAttr::get_system_icon(int icon){
 void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_point_t p = attr.point();
 	sg_dim_t d = attr.dim();
-	Pen tmp_pen = this->pen();
 
 	if( &(this->icon()) == 0 ){
 		return;
@@ -24,7 +23,9 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	Bitmap bitmap(d);
 	bitmap.clear();
 
-	VectorMap map(bitmap, tmp_pen, this->rotation());
+	bitmap.set_pen( pen() );
+
+	VectorMap map(bitmap, this->rotation());
 	Vector::draw(bitmap, (this->icon()), map.item(), &m_bounds);
 
 	//check for alignment values left/right/top/bottom

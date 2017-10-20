@@ -78,6 +78,18 @@ int DisplayPalette::save(const char * path) const{
 	return 0;
 }
 
+int DisplayPalette::set_monochrome(){
+	if( alloc_colors(2, 1) < 0 ){
+		return -1;
+	}
+
+	u8 * colors = (u8*)data()->colors;
+	colors[0] = 0;
+	colors[1] = 255;
+
+	return 0;
+}
+
 int DisplayPalette::load(const char * path){
 	File f;
 	int ret;

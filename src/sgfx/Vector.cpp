@@ -28,12 +28,12 @@ void VectorMap::set_shift(sg_int_t x, sg_int_t y){
 }
 
 
-VectorMap::VectorMap(const Bitmap & bitmap, const Pen & pen, s16 rotation){
-	set_bitmap_center(bitmap, pen, rotation);
+VectorMap::VectorMap(const Bitmap & bitmap, s16 rotation){
+	set_bitmap_center(bitmap, rotation);
 }
 
-void VectorMap::set_bitmap_center(const Bitmap & bitmap, const Pen & pen, s16 rotation){
-	u8 thickness = pen.thickness();
+void VectorMap::set_bitmap_center(const Bitmap & bitmap, s16 rotation){
+	u8 thickness = bitmap.pen_thickness();
 	data()->size.width = (bitmap.width() - 2*thickness)*2;
 	data()->size.height = (bitmap.height() - 2*thickness)*2;
 	data()->shift.x = (data()->size.width + 2*thickness)/4;

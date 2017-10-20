@@ -69,6 +69,14 @@ public:
 	 */
 	void set_pen_color(sg_color_t color){ m_bmap.pen.color = color; }
 
+	void set_pen(const Pen & pen){
+		m_bmap.pen = pen;
+	}
+
+	sg_color_t pen_color() const { return m_bmap.pen.color; }
+	sg_color_t pen_thickness() const { return m_bmap.pen.thickness; }
+	u16 pen_flags() const { return m_bmap.pen.o_flags; }
+
 	/*! \details Sets the thickness of the pen.
 	 *
 	 * @param thickness The thickness in pixels
@@ -86,8 +94,19 @@ public:
 	/*! \details Changes effective size without free/alloc sequence */
 	bool set_size(sg_size_t w, sg_size_t h, sg_size_t offset = 0);
 
-	/*! \details Returns the size of a bitmap of specified size */
+	/*! \details Returns the number of bytes used to store a Bitmap of specified size
+	 *
+	 * @param w Width used for calculation
+	 * @param h Height used for calculation
+	 */
 	static u32 calc_size(int w, int h){ return sg_api()->calc_bmap_size(sg_dim(w,h)); }
+
+	static u16 calc_word_width(sg_size_t w){
+		return sg_calc_word_width(w);
+	}
+
+	/*! \details Returns the number of bytes used to store the Bitmap. */
+	u32 calc_size(){ return calc_size(width(), height()); }
 	sg_point_t calc_center() const;
 
 	/*! \details Returns the maximum x value. */
@@ -249,7 +268,7 @@ public:
 	inline void set_margin_bottom(sg_size_t v) { m_bmap.margin_bottom_right.height = v; }
 
 
-	void showidth() const;
+	void show() const;
 
 	sg_bmap_data_t * data() const{ return (sg_bmap_data_t *)Data::data(); }
 	const sg_bmap_data_t * data_const() const { return (const sg_bmap_data_t *)Data::data_const(); }

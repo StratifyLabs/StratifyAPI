@@ -3,6 +3,7 @@
 #ifndef SYS_CLI_HPP_
 #define SYS_CLI_HPP_
 
+#include "../hal/Uart.hpp"
 #include "../var/String.hpp"
 #include "../var/Token.hpp"
 
@@ -144,6 +145,26 @@ public:
 	/*! \details Returns the number of arguments. */
 	int count() const { return m_argc; }
 	int size() const { return m_argc; }
+
+	//handling hardware inputs
+	/*! \details Handles arguments for setting UART attributes.
+	 *
+	 * @param attr A reference to the destination attributes
+	 * @return true if UART attributes were parsed
+	 *
+	 * The arguments are
+	 * - "-uart [port]" (required)
+	 * - "-freq [bitrate]" (optional, default is 115200)
+	 * - "-width [byte width]" (optional, default is 8)
+	 * - "-stop1" (optional, default is 1 stop bit)
+	 * - "-stop2" (optional)
+	 * - "-tx [X.Y]" (optional port.pin, uses system default otherwise)
+	 * - "-rx [X.Y]" (optional port.pin, uses system default otherwise)
+	 * - "-rts [X.Y]" (optional port.pin, uses system default otherwise)
+	 * - "-cts [X.Y]" (optional port.pin, uses system default otherwise)
+	 *
+	 */
+	bool handle_uart(hal::UartAttr & attr);
 
 private:
 	u16 m_argc;

@@ -41,6 +41,8 @@ public:
 	int save(const char * path) const;
 	int load(const char * path);
 
+	int set_monochrome();
+
 	void set_pixel_format(int v){ data()->pixel_format = v; }
 	void set_colors(void * v, int count, int pixel_size, bool readonly = false);
 
@@ -83,10 +85,7 @@ public:
 	u8 * color(u32 v) const;
 
 private:
-
 	var::Data m_colors;
-
-
 };
 
 /*! \brief Display Class

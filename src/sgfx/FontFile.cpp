@@ -42,7 +42,7 @@ int FontFile::set_file(const char * name, int offset){
 	}
 
 	m_bitmap.free();
-	m_bitmap.alloc(m_hdr.max_byte_width*8, m_hdr.max_height);
+	m_bitmap.alloc(m_hdr.max_word_width*4*8, m_hdr.max_height);
 	m_offset = offset;
 
 	pair_size = sizeof(sg_font_kerning_pair_t)*m_hdr.kerning_pairs;
@@ -53,7 +53,7 @@ int FontFile::set_file(const char * name, int offset){
 		m_file.read(m_offset + sizeof(sg_font_header_t), m_kerning_pairs, pair_size);
 	}
 
-	set_space_size(m_hdr.max_byte_width/4);
+	set_space_size(m_hdr.max_word_width);
 	set_letter_spacing(m_hdr.max_height/8);
 
 	return 0;

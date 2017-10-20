@@ -56,7 +56,7 @@ Font * FontSystem::get_font(sg_size_t h, bool bold){
 	if( m_system_fonts ){
 		best_match = 0;
 		for(i=0; i < m_font_count; i++){
-			h_tmp = h - m_system_fonts[i].h;
+			h_tmp = h - m_system_fonts[i].height;
 			if( (h_tmp > 0) && (h_tmp < h_diff) && (bold == ((m_system_fonts[i].flags & SG_FONT_FLAG_BOLD) == SG_FONT_FLAG_BOLD)) ){
 				best_match = i;
 			}

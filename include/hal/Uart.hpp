@@ -16,6 +16,32 @@ namespace hal {
  */
 class UartPinAssignment : public PinAssignment<uart_pin_assignment_t>{};
 
+class UartAttr {
+public:
+
+	u8 port() const { return m_port; }
+	const uart_attr_t & attr() const { return m_attr; }
+	mcu_pin_t tx() const { return m_attr.pin_assignment.tx; }
+	mcu_pin_t rx() const { return m_attr.pin_assignment.rx; }
+	mcu_pin_t cts() const { return m_attr.pin_assignment.cts; }
+	mcu_pin_t rts() const { return m_attr.pin_assignment.rts; }
+
+
+	void set_tx(const mcu_pin_t & pin){ m_attr.pin_assignment.tx = pin;}
+	void set_rx(const mcu_pin_t & pin){ m_attr.pin_assignment.rx = pin;}
+	void set_cts(const mcu_pin_t & pin){ m_attr.pin_assignment.cts = pin;}
+	void set_rts(const mcu_pin_t & pin){ m_attr.pin_assignment.rts = pin;}
+	void set_port(u8 p){ m_port = p; }
+	void set_flags(u32 flags){ m_attr.o_flags = flags; }
+	void set_freq(u32 f){ m_attr.freq = f; }
+	void set_width(u32 w){ m_attr.width = w; }
+
+
+private:
+	u8 m_port;
+	uart_attr_t m_attr;
+};
+
 /*! \brief UART Class
  * \details This class implements a serial UART port.
  *

@@ -140,7 +140,7 @@ int Bitmap::load(const char * path){
 	}
 
 	if( set_size(hdr.width, hdr.height) == false ){
-		//couln't resize using existing memory -- try resizing
+		//couln't resize using existing memory -- try re-allocating
 		if( alloc(hdr.width, hdr.height) < 0 ){
 			f.close();
 			return -1;
@@ -217,7 +217,7 @@ int Bitmap::save(const char * path) const{
 	return 0;
 }
 
-void Bitmap::showidth() const{
+void Bitmap::show() const{
 	//sg_api()->show(bmap_const());
 	sg_size_t i,j;
 

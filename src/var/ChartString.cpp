@@ -5,7 +5,9 @@
 
 namespace var {
 
-ChartString::ChartString(){}
+ChartString::ChartString(){
+	append_string("type", "chart");
+}
 
 void ChartString::set_point(int x, int y){
 	append_object(point_key());

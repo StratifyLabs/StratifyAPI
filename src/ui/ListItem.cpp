@@ -34,7 +34,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 
 	if( &(icon_attr().icon()) != 0 ){
 		icon_bitmap.clear();
-		VectorMap map(icon_bitmap, icon_attr().pen(), icon_attr().rotation());
+		VectorMap map(icon_bitmap, icon_attr().rotation());
 		Vector::draw(icon_bitmap,
 				icon_attr_const().icon(),
 				map,

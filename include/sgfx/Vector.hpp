@@ -23,9 +23,9 @@ public:
 	};
 
 	VectorMap(){}
-	VectorMap(const Bitmap & bitmap, const Pen & pen, s16 rotation = 0);
+	VectorMap(const Bitmap & bitmap, s16 rotation = 0);
 
-	void set_bitmap_center(const Bitmap & bitmap, const Pen & pen, s16 rotation = 0);
+	void set_bitmap_center(const Bitmap & bitmap, s16 rotation = 0);
 
 	void set_dim(sg_size_t w, sg_size_t h);
 	void set_shift(sg_int_t x, sg_int_t y);

@@ -42,11 +42,11 @@ template<typename data_type> class Item: public ItemObject {
 public:
 
 	/*! \details Create an empty item (all zeros) */
-	inline Item(){ clear(); }
+	Item(){ clear(); }
 	/*! \details Create an Item by making a copy of \a item */
-	inline Item(const data_type & item){ set(item); }
+	Item(const data_type & item){ set(item); }
 	/*! \details Create an Item by making a copy of \a item */
-	inline Item(const data_type * item){ set(item); }
+	Item(const data_type * item){ set(item); }
 
 	/*! \details This operator will return a reference of underlying binary data type. */
 	operator const data_type & () const { return m_item; }

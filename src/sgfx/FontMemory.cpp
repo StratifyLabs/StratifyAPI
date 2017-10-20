@@ -22,7 +22,7 @@ void FontMemory::set_font_memory(const void * ptr){
 	if( m_font != 0 ){
 		hdr_ptr = (const sg_font_header_t*)m_font;
 		memcpy(&m_hdr, hdr_ptr, sizeof(sg_font_header_t));
-		set_space_size(m_hdr.max_byte_width/4);
+		set_space_size(m_hdr.max_word_width);
 		set_letter_spacing(m_hdr.max_height/8);
 	}
 }
