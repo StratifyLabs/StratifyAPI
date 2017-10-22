@@ -17,15 +17,12 @@ namespace sgfx {
 class VectorMap : public var::Item<sg_vector_map_t> {
 public:
 
-	enum {
-		THICKNESS_MASK = ~SG_MAP_FILL_FLAG,
-		FILL = SG_MAP_FILL_FLAG
-	};
-
 	VectorMap(){}
 	VectorMap(const Bitmap & bitmap, s16 rotation = 0);
 
 	void set_bitmap_center(const Bitmap & bitmap, s16 rotation = 0);
+
+	void set_area(sg_point_t p, sg_dim_t d, s16 rotation = 0);
 
 	void set_dim(sg_size_t w, sg_size_t h);
 	void set_shift(sg_int_t x, sg_int_t y);

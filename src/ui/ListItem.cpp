@@ -2,6 +2,7 @@
 
 #include "sgfx.hpp"
 #include "draw.hpp"
+#include "sys/Assets.hpp"
 #include "ui/ListItem.hpp"
 #include "ui/Button.hpp"
 #include "ui/Event.hpp"
@@ -52,7 +53,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 		height = m_text_attr.font_size();
 	}
 
-	font = FontSystem::get_font(height, text_attr().font_bold());
+	font = sys::Assets::get_font(height, text_attr().font_bold());
 	height = font->get_height();
 
 	icon_point.x = p.x + d.width() - bounds.bottom_right.x;

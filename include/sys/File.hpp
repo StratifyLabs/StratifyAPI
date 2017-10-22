@@ -102,6 +102,8 @@ public:
 	 */
 	static const char * name(const char * path);
 
+	static const char * suffix(const char * path);
+
 	/*! \details Deletes a file.
 	 *
 	 * @param path The path to the file

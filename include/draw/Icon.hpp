@@ -80,6 +80,10 @@ private:
 
 /*! \brief Icon Class
  * \details This class draws icons that can be scaled and rotated on a bitmap.
+ *
+ * When an icon is drawn, the icon's pen attributes are used to draw on
+ * the bitmap.
+ *
  */
 
 class Icon : public Drawing, public IconAttr {

@@ -14,7 +14,7 @@ namespace draw {
  * chooses the correct font height to fit within the area
  * specified.
  *
- * In order for this class to work correctly, sgfx::FontSystem::load_fonts() must
+ * In order for this class to work correctly, sys::Assets::init() must
  * be invoked so that the application is aware of the system fonts.
  *
  */

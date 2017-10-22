@@ -41,6 +41,12 @@ void VectorMap::set_bitmap_center(const Bitmap & bitmap, s16 rotation){
 	data()->rotation = rotation;
 }
 
+void VectorMap::set_area(sg_point_t p, sg_dim_t d, s16 rotation){
+	data()->size = d;
+	data()->shift = p;
+	data()->rotation = rotation;
+}
+
 
 void Vector::draw(Bitmap & bitmap, const sg_vector_icon_t & icon, const sg_vector_map_t & map, sg_bounds_t * bounds){
 	sg_api()->vector_draw_icon(bitmap.bmap(), &icon, &map, bounds);

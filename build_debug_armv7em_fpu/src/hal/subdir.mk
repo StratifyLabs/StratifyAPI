@@ -17,6 +17,7 @@ CPP_SRCS += \
 ../src/hal/Fifo.cpp \
 ../src/hal/I2C.cpp \
 ../src/hal/Led.cpp \
+../src/hal/Mcfifo.cpp \
 ../src/hal/Periph.cpp \
 ../src/hal/Pio.cpp \
 ../src/hal/Pwm.cpp \
@@ -36,6 +37,7 @@ OBJS += \
 ./src/hal/Fifo.o \
 ./src/hal/I2C.o \
 ./src/hal/Led.o \
+./src/hal/Mcfifo.o \
 ./src/hal/Periph.o \
 ./src/hal/Pio.o \
 ./src/hal/Pwm.o \
@@ -59,6 +61,7 @@ CPP_DEPS += \
 ./src/hal/Fifo.d \
 ./src/hal/I2C.d \
 ./src/hal/Led.d \
+./src/hal/Mcfifo.d \
 ./src/hal/Periph.d \
 ./src/hal/Pio.d \
 ./src/hal/Pwm.d \

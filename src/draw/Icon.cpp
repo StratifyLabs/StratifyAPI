@@ -1,6 +1,7 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 #include "sgfx.hpp"
+#include "sys/Assets.hpp"
 #include "draw/Icon.hpp"
 using namespace draw;
 
@@ -8,7 +9,7 @@ Icon::Icon(){}
 
 
 const sg_vector_icon_t * IconAttr::get_system_icon(int icon){
-	return VectorIconSystem::get_icon(icon);
+	return sys::Assets::get_vector_icon(icon);
 }
 
 
@@ -23,10 +24,14 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	Bitmap bitmap(d);
 	bitmap.clear();
 
-	bitmap.set_pen( pen() );
+	Pen tmp_pen = pen();
 
-	VectorMap map(bitmap, this->rotation());
-	Vector::draw(bitmap, (this->icon()), map.item(), &m_bounds);
+	tmp_pen.set_solid();
+
+	bitmap.set_pen(tmp_pen);
+
+	VectorMap map(bitmap, rotation());
+	Vector::draw(bitmap, icon(), map.item(), &m_bounds);
 
 	//check for alignment values left/right/top/bottom
 	if( is_align_top() ){
@@ -41,6 +46,8 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 		p.y += bitmap.width() - m_bounds.bottom_right.x;
 	}
 
-	attr.bitmap().draw_bitmap(p, bitmap);
+
+	map.set_area(p, d, rotation());
+	//Vector::draw(attr.bitmap(), icon(), map.item());
 
 }

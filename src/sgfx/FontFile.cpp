@@ -6,7 +6,6 @@ using namespace sgfx;
 using namespace sys;
 
 FontFile::FontFile() {
-	m_bitmap = 0;
 	m_kerning_pairs = 0;
 }
 
@@ -60,7 +59,8 @@ int FontFile::set_file(const char * name, int offset){
 
 }
 
-u16 FontFile::get_height() const { return m_hdr.max_height; }
+sg_size_t FontFile::get_height() const { return m_hdr.max_height; }
+sg_size_t FontFile::get_width() const { return m_hdr.max_word_width*32; }
 
 const Bitmap & FontFile::bitmap() const {
 	//load bitmap
@@ -111,9 +111,9 @@ int FontFile::load_bitmap(const sg_font_char_t & ch) const {
 	int s;
 	//calculate number of bytes to read
 	s = Bitmap::calc_size(ch.width, ch.height);
+	m_bitmap.set_size(ch.width, ch.height);
 	if( m_file.read(ch.offset + m_offset, m_bitmap.data(), s) != s ){
 		return -1;
 	}
-	m_bitmap.set_size(ch.width, ch.height);
 	return 0;
 }

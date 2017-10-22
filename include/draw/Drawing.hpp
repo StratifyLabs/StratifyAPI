@@ -255,9 +255,13 @@ class Drawing {
 public:
 	Drawing();
 
-	sg_size_t w(sg_size_t scale, sg_dim_t d);
-	sg_size_t h(sg_size_t scale, sg_dim_t d);
 
+
+	static sg_size_t width(sg_size_t scale, sg_dim_t d);
+	static sg_size_t height(sg_size_t scale, sg_dim_t d);
+
+	static sg_size_t w(sg_size_t scale, sg_dim_t d){ return width(scale, d); }
+	static sg_size_t h(sg_size_t scale, sg_dim_t d){ return height(scale, d); }
 
 	/*! \details This method draws the object using the specified drawing attributes.
 	 *
@@ -275,7 +279,7 @@ public:
 	 * @param attr Specifies the bitmap and area
 	 * @param v Specifies the fill pattern
 	 */
-	static void set(const DrawingAttr & attr, sg_bmap_data_t v = 0xFF);
+	static void set(const DrawingAttr & attr, sg_color_t color = 0xffff);
 
 	/*! \details This method will clear the pixels in the area of the bitmap
 	 * specified.
@@ -381,6 +385,9 @@ protected:
 	void set_flag(u32 flag, bool v = true);
 
 private:
+
+	static void draw_rectangle(const DrawingAttr & attr, const sgfx::Pen & pen);
+
 	u32 m_flags;
 	static drawing_size_t m_scale;
 

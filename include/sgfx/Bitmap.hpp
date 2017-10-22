@@ -69,11 +69,15 @@ public:
 	 */
 	void set_pen_color(sg_color_t color){ m_bmap.pen.color = color; }
 
-	void set_pen(const Pen & pen){
-		m_bmap.pen = pen;
-	}
+	/*! \details Sets the pen to \a pen. */
+	void set_pen(const Pen & pen){ m_bmap.pen = pen; }
 
+	/*! \details Returns a copy of the bitmap's pen. */
+	Pen pen() const { return m_bmap.pen; }
+
+	/*! \details Returns the pen color. */
 	sg_color_t pen_color() const { return m_bmap.pen.color; }
+	/*! \details Retursn the pen thickness. */
 	sg_color_t pen_thickness() const { return m_bmap.pen.thickness; }
 	u16 pen_flags() const { return m_bmap.pen.o_flags; }
 
@@ -170,12 +174,31 @@ public:
 	 */
 	void draw_pixel(sg_point_t p) const { sg_api()->draw_pixel(bmap_const(), p); }
 
+	/*! \details Draws a line on the bitmap.
+	 *
+	 * @param p1 Starting point
+	 * @param p2 Ending point
+	 *
+	 * The bitmap's pen will determine the color, thickness, and drawing mode.
+	 *
+	 */
 	void draw_line(sg_point_t p1, sg_point_t p2) const { sg_api()->draw_line(bmap_const(), p1, p2); }
 	void draw_quadtratic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3) const { sg_api()->draw_quadtratic_bezier(bmap_const(), p1, p2, p3); }
 	void draw_cubic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3, sg_point_t p4) const { sg_api()->draw_cubic_bezier(bmap_const(), p1, p2, p3, p4); }
+
+	/*! \details Draws a rectangle on the bitmap.
+	 *
+	 * @param p The top left corner of the rectangle
+	 * @param d The dimensions of the rectangle
+	 *
+	 * The bitmap's pen color and drawing mode will affect how the rectangle is drawn.
+	 */
 	void draw_rectangle(sg_point_t p, sg_dim_t d) const { sg_api()->draw_rectangle(bmap_const(), p, d); }
+
+	//invert and clear rectangle should not be needed (can use INVERT and ERASE pen modes)
 	void invert_rectangle(sg_point_t p, sg_dim_t d) const { sg_api()->invert_rectangle(bmap_const(), p, d); }
 	void clear_rectangle(sg_point_t p, sg_dim_t d) const { sg_api()->clear_rectangle(bmap_const(), p, d); }
+
 	void draw_pour(sg_point_t p) const { sg_api()->draw_pour(bmap_const(), p); }
 
 	/*! \details This function sets the pixels in a bitmap

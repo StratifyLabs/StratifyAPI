@@ -2,6 +2,7 @@
 
 #include "sgfx.hpp"
 #include "draw.hpp"
+#include "sys/Assets.hpp"
 #include "ui/ListItemInfo.hpp"
 
 using namespace ui;
@@ -23,14 +24,11 @@ void ListItemInfo::set(const char * l, const char * v){
 
 
 void ListItemInfo::draw_to_scale(const DrawingScaledAttr & attr){
-
 	int height;
 	sg_size_t len;
 	sg_dim_t d = attr.dim();
 	sg_point_t p = attr.point();
 	Font * font;
-
-
 
 	//draw the label and the icon
 	Dim padded;
@@ -42,25 +40,25 @@ void ListItemInfo::draw_to_scale(const DrawingScaledAttr & attr){
 		height = label().font_size();
 	}
 
-	font = FontSystem::get_font(height, label().font_bold());
-	height = font->get_height();
+	font = sys::Assets::get_font(height, label().font_bold());
+	if( font ){
+		height = font->get_height();
 
-	if( is_align_top() ){
-		;
-	} else if( is_align_bottom() ){
-		p.y = d.height - height;
-	} else {
-		p.y = p.y + d.height/2 - height/2;
+		if( is_align_top() ){
+			;
+		} else if( is_align_bottom() ){
+			p.y = d.height - height;
+		} else {
+			p.y = p.y + d.height/2 - height/2;
+		}
+
+		font->draw_str(label().text(), attr.bitmap(), p);
+
+		//draw the value on the right side
+		len = font->calc_len(value().text());
+		p.x = p.x + d.width - len - d.width/40;
+		font->draw_str(value().text(), attr.bitmap(), p);
 	}
-
-	font->draw_str(label().text(), attr.bitmap(), p);
-
-	//draw the value on the right side
-	len = font->calc_len(value().text());
-	p.x = p.x + d.width - len - d.width/40;
-	font->draw_str(value().text(), attr.bitmap(), p);
-
-
 }
 
 Element * ListItemInfo::handle_event(const Event  & event, const DrawingAttr & attr){
@@ -74,7 +72,7 @@ Element * ListItemInfo::handle_event(const Event  & event, const DrawingAttr & a
 		App::bar().set_center_visible(false);
 		break;
 	}
-	*/
+	 */
 	return Element::handle_event(event, attr);
 }
 

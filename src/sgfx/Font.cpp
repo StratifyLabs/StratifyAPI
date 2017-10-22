@@ -1,6 +1,6 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-
+#include <cstdio>
 #include <errno.h>
 #include "sgfx/Font.hpp"
 
@@ -12,8 +12,6 @@ static const char ascii_charset_[Font::CHARSET_SIZE+1] = " !\"#$%&'()*+,-./01234
 const char * Font::charset(){
 	return ascii_charset_;
 }
-
-
 
 int Font::to_charset(char ascii){
 	if( (ascii < ' ') || (ascii > '~') ){
@@ -84,6 +82,7 @@ int Font::draw_str(const char * str, Bitmap & bitmap, sg_point_t point) const {
 		}
 
 		point.x += w;
+		printf("draw char %c at %d (%d)\n", c, point.x, m_char.xadvance);
 
 	}
 	return 0;

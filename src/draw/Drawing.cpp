@@ -181,24 +181,34 @@ sg_point_t Drawing::point_on_bitmap(const DrawingAttr & attr){
 	return p1;
 }
 
-void Drawing::set(const DrawingAttr & attr, sg_bmap_data_t v){
-	//attr.b().set( point_on_bitmap(attr), dim_on_bitmap(attr), v);
+void Drawing::draw_rectangle(const DrawingAttr & attr, const Pen & pen){
+	Pen p = attr.bitmap().pen();
+	attr.bitmap().set_pen(pen);
+	attr.bitmap().draw_rectangle( point_on_bitmap(attr), dim_on_bitmap(attr));
+	attr.bitmap().set_pen(p);
+}
 
+
+void Drawing::set(const DrawingAttr & attr, sg_color_t color){
+	Pen pen(color);
+	draw_rectangle(attr, pen);
 }
 
 void Drawing::clear(const DrawingAttr & attr, sg_bmap_data_t v){
-	//attr.b().clear( point_on_bitmap(attr), dim_on_bitmap(attr), v);
+	Pen pen(0);
+	draw_rectangle(attr, pen);
 }
 void Drawing::invert(const DrawingAttr & attr, sg_bmap_data_t v){
-	//attr.b().invert( point_on_bitmap(attr), dim_on_bitmap(attr), v);
+	Pen pen(0xffff);
+	pen.set_invert();
+	draw_rectangle(attr, pen);
 }
 
-
-sg_size_t Drawing::w(sg_size_t scaled, sg_dim_t d){
+sg_size_t Drawing::width(sg_size_t scaled, sg_dim_t d){
 	return scaled * d.width / scale();
 }
 
-sg_size_t Drawing::h(sg_size_t scaled, sg_dim_t d){
+sg_size_t Drawing::height(sg_size_t scaled, sg_dim_t d){
 	return scaled * d.height / scale();
 }
 

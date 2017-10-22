@@ -1,5 +1,6 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
+#include <cstdio>
 #include <cstring>
 #include "sgfx/FontMemory.hpp"
 
@@ -22,12 +23,12 @@ void FontMemory::set_font_memory(const void * ptr){
 	if( m_font != 0 ){
 		hdr_ptr = (const sg_font_header_t*)m_font;
 		memcpy(&m_hdr, hdr_ptr, sizeof(sg_font_header_t));
-		set_space_size(m_hdr.max_word_width);
+		set_space_size(m_hdr.max_height/6);
 		set_letter_spacing(m_hdr.max_height/8);
 	}
 }
 
-u16 FontMemory::get_height() const {
+sg_size_t FontMemory::get_height() const {
 	const sg_font_header_t * hdr_ptr;
 	if( m_font != 0 ){
 		hdr_ptr = (const sg_font_header_t*)m_font;
@@ -36,11 +37,16 @@ u16 FontMemory::get_height() const {
 	return 0;
 }
 
-
-
+sg_size_t FontMemory::get_width() const {
+	const sg_font_header_t * hdr_ptr;
+	if( m_font != 0 ){
+		hdr_ptr = (const sg_font_header_t*)m_font;
+		return hdr_ptr->max_word_width*32;
+	}
+	return 0;
+}
 
 const Bitmap & FontMemory::bitmap() const {
-
 	//load character header info
 	//load_char(m_char, c, ascii);
 	//load bitmap
@@ -78,19 +84,17 @@ int FontMemory::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 		return -1;
 	}
 
-
-
 	//header has sg_font_header_t then kerning pairs then char indices
 	offset = sizeof(sg_font_header_t) + sizeof(sg_font_kerning_pair_t)*hdr->kerning_pairs + ind*sizeof(sg_font_char_t);
 	chp = (sg_font_char_t *)((char*)m_font + offset);
 
 	memcpy(&ch, chp, sizeof(sg_font_char_t));
-
 	return 0;
 }
 
+
 int FontMemory::load_bitmap(const sg_font_char_t & ch) const {
-	m_bitmap.set_data((sg_bmap_data_t*)m_font + ch.offset, ch.width, ch.height, true);
+	m_bitmap.set_data((sg_bmap_data_t*)((u8*)m_font + ch.offset), ch.width, ch.height, true);
 	return 0;
 }
 

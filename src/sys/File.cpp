@@ -246,6 +246,19 @@ const char * File::name(const char * path){
 	return 0;
 }
 
+const char * File::suffix(const char * path){
+	int len;
+	int i;
+	len = strnlen(path, LINK_PATH_MAX);
+	for(i = len; i >= 0; i--){
+		if( path[i] == '.' ){
+			return &(path[i+1]);
+		}
+	}
+	return 0;
+}
+
+
 int File::ioctl(int req, void * arg) const {
 #if defined __link
 	return link_ioctl(driver(), m_fd, req, arg);

@@ -8,6 +8,7 @@
 namespace sys {};
 
 #if !defined __link
+#include "sys/Assets.hpp"
 #include "sys/Aio.hpp"
 #include "sys/Mq.hpp"
 #include "sys/Mutex.hpp"

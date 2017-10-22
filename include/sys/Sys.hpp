@@ -3,6 +3,7 @@
 #ifndef KERNEL_HPP_
 #define KERNEL_HPP_
 
+#include <sos/sos.h>
 #include <sos/dev/sys.h>
 #include <sos/link.h>
 #include "../hal/Dev.hpp"

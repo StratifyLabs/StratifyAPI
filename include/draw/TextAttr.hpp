@@ -30,7 +30,7 @@ public:
 
 	/*! \details Specify a font
 	 *
-	 * If no font is specified, the text will use FontSystem::get_font() to
+	 * If no font is specified, the text will use sys::Assets::get_font() to
 	 * load a font that most closely matches font_size().  If font_size() is
 	 * zero, the text will get a font that most close matches the height
 	 * of the container without exceeding the container height.

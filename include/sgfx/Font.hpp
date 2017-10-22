@@ -35,8 +35,11 @@ public:
 	virtual const Bitmap & bitmap() const = 0;
 
 
-	/*! \details The maximum height of the font. */
+	/*! \details Returns the maximum height of any character in the font. */
 	virtual sg_size_t get_height() const = 0;
+
+	/*! \details Returns the maximum width of any character in the font. */
+	virtual sg_size_t get_width() const = 0;
 
 	//Attribute access methods
 	int offset() const { return m_char.offset; }
@@ -72,6 +75,12 @@ public:
 
 
 	int draw_char(char c, Bitmap & bitmap, sg_point_t point) const;
+
+	const sg_font_char_t & character() const { return m_char; }
+
+	u16 num_chars() const { return m_hdr.num_chars; }
+	u16 bits_per_pixel() const { return m_hdr.bits_per_pixel; }
+	u16 kerning_pairs() const { return m_hdr.kerning_pairs; }
 
 protected:
 
