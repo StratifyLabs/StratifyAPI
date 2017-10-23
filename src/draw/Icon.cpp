@@ -23,12 +23,7 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 
 	Bitmap bitmap(d);
 	bitmap.clear();
-
-	Pen tmp_pen = pen();
-
-	tmp_pen.set_solid();
-
-	bitmap.set_pen(tmp_pen);
+	bitmap.set_pen( pen() );
 
 	VectorMap map(bitmap, rotation());
 	Vector::draw(bitmap, icon(), map.item(), &m_bounds);
@@ -46,8 +41,5 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 		p.y += bitmap.width() - m_bounds.bottom_right.x;
 	}
 
-
-	map.set_area(p, d, rotation());
-	//Vector::draw(attr.bitmap(), icon(), map.item());
-
+	attr.bitmap().draw_bitmap(p, bitmap);
 }

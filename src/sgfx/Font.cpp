@@ -82,7 +82,6 @@ int Font::draw_str(const char * str, Bitmap & bitmap, sg_point_t point) const {
 		}
 
 		point.x += w;
-		printf("draw char %c at %d (%d)\n", c, point.x, m_char.xadvance);
 
 	}
 	return 0;
