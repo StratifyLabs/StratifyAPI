@@ -32,6 +32,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 	Dim padded;
 	icon_height = d.height()/2;
 	Bitmap icon_bitmap(icon_height, icon_height);
+	icon_bitmap.set_pen(icon().pen());
 
 	if( &(icon_attr().icon()) != 0 ){
 		icon_bitmap.clear();

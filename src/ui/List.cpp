@@ -24,6 +24,7 @@ void List::draw_item_to_scale(const DrawingScaledAttr & attr, sg_size_t x_offset
 	p1.x =- x_offset;
 	p2.x += d.width + x_offset;
 	attr.bitmap().draw_line(p1, p2);
+	p1.y += d.height -1;
 	p2.y += d.height - 1;
 	attr.bitmap().draw_line(p1, p2);
 }

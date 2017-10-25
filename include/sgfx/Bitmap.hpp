@@ -69,23 +69,54 @@ public:
 	 */
 	void set_pen_color(sg_color_t color){ m_bmap.pen.color = color; }
 
-	/*! \details Sets the pen to \a pen. */
+	/*! \details Sets the bitmap's pen by making a copy of the \a pen parameter. */
 	void set_pen(const Pen & pen){ m_bmap.pen = pen; }
-
-	/*! \details Returns a copy of the bitmap's pen. */
-	Pen pen() const { return m_bmap.pen; }
-
-	/*! \details Returns the pen color. */
-	sg_color_t pen_color() const { return m_bmap.pen.color; }
-	/*! \details Retursn the pen thickness. */
-	sg_color_t pen_thickness() const { return m_bmap.pen.thickness; }
-	u16 pen_flags() const { return m_bmap.pen.o_flags; }
 
 	/*! \details Sets the thickness of the pen.
 	 *
 	 * @param thickness The thickness in pixels
 	 */
 	void set_pen_thickness(sg_size_t thickness){ m_bmap.pen.thickness = thickness; }
+
+	/*! \details Returns a copy of the bitmap's pen. */
+	Pen pen() const { return m_bmap.pen; }
+
+	/*! \details Returns the pen color. */
+	sg_color_t pen_color() const { return m_bmap.pen.color; }
+
+	/*! \details Returns the pen thickness. */
+	sg_color_t pen_thickness() const { return m_bmap.pen.thickness; }
+
+	/*! \details Set the pen flags. */
+	void set_pen_flags(u16 o_flags){ m_bmap.pen.o_flags = o_flags; }
+
+	/*! \details Returns the pen flags. */
+	u16 pen_flags() const { return m_bmap.pen.o_flags; }
+
+	/*! \details Stores the current pen.
+	 *
+	 * Only one pen can be stored with the object. This can be used
+	 * to temporarily draw with another pen type then restore
+	 * the original pen (see restore_pen()).
+	 *
+	 * \code
+	 * Bitmap bmap(16,16);
+	 *
+	 * bmap.store_pen(); //saves the pen
+	 * bmap.set_pen_color(4);
+	 * bmap.draw_line(sg_point(0,0), sg_point(10,10)); //draw with color 4
+	 * bmap.restore_pen(); //restores the pen
+	 * bmap.draw_line(sg_point(10,0), sg_point(0,10)); //draw with original color
+	 *
+	 * \endcode
+	 */
+	void store_pen(){ m_saved_pen = m_bmap.pen; }
+
+	/*! \details Restores the stored pen.
+	 *
+	 */
+	void restore_pen(){ m_bmap.pen = m_saved_pen; }
+
 
 	virtual ~Bitmap();
 
@@ -291,6 +322,7 @@ public:
 	inline void set_margin_bottom(sg_size_t v) { m_bmap.margin_bottom_right.height = v; }
 
 
+	/*! \details Shows the bitmap on the standard output. */
 	void show() const;
 
 	sg_bmap_data_t * data() const{ return (sg_bmap_data_t *)Data::data(); }
@@ -301,34 +333,16 @@ public:
 	const sg_bmap_data_t * data_const(sg_point_t p) const;
 
 
-	sg_bmap_t * bmap() MCU_ALWAYS_INLINE { return &m_bmap; }
-	const sg_bmap_t * bmap_const() const  MCU_ALWAYS_INLINE { return &m_bmap; }
+	sg_bmap_t * bmap() { return &m_bmap; }
+	const sg_bmap_t * bmap_const() const { return &m_bmap; }
 
 
 protected:
 
-	/*! \brief Return a pointer to the bitmap memory */
-
-
-
-	/* Transform and bound the x and y values */
-	virtual void transform(sg_int_t & x, sg_int_t & y) const {}
-
-
-	//routines for calculating pixel memory locations and masks
-	inline const sg_bmap_data_t * target_const(sg_int_t x, sg_int_t y) const {
-		return data_const() + (x/8) + y*(m_bmap.columns);
-	}
-	inline sg_bmap_data_t * target(sg_int_t x, sg_int_t y) const {
-		return data() + (x/8) + y*(m_bmap.columns);
-	}
-	inline static sg_bmap_data_t mask(sg_int_t x){
-		return ( 0x80 >> (x&0x07) );
-	}
-
 
 private:
 
+	sg_pen_t m_saved_pen;
 	sg_bmap_t m_bmap;
 	void init_members();
 	void calc_members(sg_size_t w, sg_size_t h);

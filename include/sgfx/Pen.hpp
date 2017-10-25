@@ -52,6 +52,7 @@ public:
 		FLAG_IS_INVERT /*! Draw Invert (XOR) */ = SG_PEN_FLAG_IS_INVERT,
 		FLAG_IS_BLEND /*! Draw Blend (OR) */ = SG_PEN_FLAG_IS_BLEND,
 		FLAG_IS_ERASE /*! Draw Erase (NOT AND) */ = SG_PEN_FLAG_IS_ERASE,
+		FLAG_IS_FILL /*! Draw Icon with fill points */ = SG_PEN_FLAG_IS_FILL
 	};
 
 
@@ -73,7 +74,7 @@ public:
 	sg_color_t color() const { return item().color; }
 
 	/*! \details Sets the pen to a solid color mode (assign value). */
-	void set_solid(){ data()->o_flags &= ~SG_PEN_FLAG_IS_INVERT; }
+	void set_solid(){ data()->o_flags &= ~SG_PEN_FLAG_NOT_SOLID_MASK; }
 
 	/*! \details Sets the pen to inverting color mode (XOR). */
 	void set_invert(){ set_solid(); data()->o_flags |= SG_PEN_FLAG_IS_INVERT; }

@@ -30,12 +30,8 @@ int Assets::init(){
 		load_fonts((const sg_font_ref_t*)request.list, request.count);
 	}
 
-
 	if( Sys::request(ASSETS_KERNEL_REQUEST_VECTOR_ICONS, &request) == 0 ){
 		load_vector_icons((const sg_vector_icon_t*)request.list, request.count);
-		printf("Loaded %d vector iconts\n", request.count);
-	} else {
-
 	}
 
 	if( Sys::request(ASSETS_KERNEL_REQUEST_VECTOR_ICONS, &request) == 0 ){

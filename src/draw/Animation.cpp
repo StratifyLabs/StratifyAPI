@@ -43,8 +43,8 @@ void Animation::update_motion_total(){
 	sg_dim_t d;
 	sg_point_t p;
 
-	d = Drawing::dim_on_bitmap( *m_drawing_attr );
 	p = Drawing::point_on_bitmap( *m_drawing_attr );
+	d = Drawing::dim_on_bitmap( *m_drawing_attr );
 
 	//convert motion total
 	switch(type()){
@@ -91,17 +91,18 @@ bool Animation::exec(void (*draw)(void *, int, int), void * obj){
 }
 
 int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
-	const u16 delay = 18;
+	const u16 delay = 25;
 	int ret = 0;
-
 
 	if( draw ){
 		draw(obj, data()->path.step, data()->path.step_total);
 	}
 
+
 	ret = sg_api()->animate(m_drawing_attr->bitmap().bmap(),
 			m_drawing_attr->scratch()->bmap(),
 			data());
+
 
 	m_drawing_attr->bitmap().refresh();
 
