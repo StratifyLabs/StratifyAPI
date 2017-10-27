@@ -91,18 +91,23 @@ bool Animation::exec(void (*draw)(void *, int, int), void * obj){
 }
 
 int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
-	const u16 delay = 25;
+	const u16 delay = 20;
 	int ret = 0;
+	u16 o_flags;
 
 	if( draw ){
 		draw(obj, data()->path.step, data()->path.step_total);
 	}
 
+	o_flags = m_drawing_attr->bitmap().pen_flags();
+
+	m_drawing_attr->bitmap().set_pen_flags(sgfx::Pen::FLAG_IS_SOLID);
 
 	ret = sg_api()->animate(m_drawing_attr->bitmap().bmap(),
 			m_drawing_attr->scratch()->bmap(),
 			data());
 
+	m_drawing_attr->bitmap().set_pen_flags(o_flags);
 
 	m_drawing_attr->bitmap().refresh();
 

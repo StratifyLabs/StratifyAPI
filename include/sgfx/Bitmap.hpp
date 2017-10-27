@@ -178,13 +178,26 @@ public:
 	/*! \details Free memory associated with bitmap (auto freed on ~Bitmap) */
 	void free();
 
-	void clear(){ clear_rectangle(sg_point(0,0), dim()); }
-	void invert(){ invert_rectangle(sg_point(0,0), dim()); }
-
-
 	void transform_flip_x() const { sg_api()->transform_flip_x(bmap_const()); }
 	void transform_flip_y() const { sg_api()->transform_flip_y(bmap_const()); }
 	void transform_flip_xy() const { sg_api()->transform_flip_xy(bmap_const()); }
+
+	/*! \details Performs a shift operation on an area of the bitmap.
+	 *
+	 * @param shift The amount to shift in each direction
+	 * @param p The point on the top left of the area to shift
+	 * @param d The dimensions to shift
+	 *
+	 * The shifting must respect the dimensions of the bitmap. If you want to shift
+	 * the entire bitmap to the left 8 pixels, do this:
+	 *
+	 * \code
+	 * 	Bitmap bmap(64,64);
+	 * 	bmap.transform_shift(sg_point(-8,0), sg_point(8,0), sg_dim(bmap.width() - 8, bmap.height));
+	 * \endcode
+	 *
+	 *
+	 */
 	void transform_shift(sg_point_t shift, sg_point_t p, sg_dim_t d) const { sg_api()->transform_shift(bmap_const(), shift, p, d); }
 
 
@@ -216,6 +229,7 @@ public:
 	void draw_line(sg_point_t p1, sg_point_t p2) const { sg_api()->draw_line(bmap_const(), p1, p2); }
 	void draw_quadtratic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3) const { sg_api()->draw_quadtratic_bezier(bmap_const(), p1, p2, p3); }
 	void draw_cubic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3, sg_point_t p4) const { sg_api()->draw_cubic_bezier(bmap_const(), p1, p2, p3, p4); }
+	void draw_arc(sg_point_t p, sg_dim_t d, s16 start, s16 end) const { sg_api()->draw_arc(bmap_const(), p, d, start, end); }
 
 	/*! \details Draws a rectangle on the bitmap.
 	 *
@@ -226,11 +240,15 @@ public:
 	 */
 	void draw_rectangle(sg_point_t p, sg_dim_t d) const { sg_api()->draw_rectangle(bmap_const(), p, d); }
 
-	//invert and clear rectangle should not be needed (can use INVERT and ERASE pen modes)
-	void invert_rectangle(sg_point_t p, sg_dim_t d) const { sg_api()->invert_rectangle(bmap_const(), p, d); }
-	void clear_rectangle(sg_point_t p, sg_dim_t d) const { sg_api()->clear_rectangle(bmap_const(), p, d); }
-
-	void draw_pour(sg_point_t p) const { sg_api()->draw_pour(bmap_const(), p); }
+	/*! \details Pours an area on the bitmap.
+	 *
+	 * @param point Center of the pour
+	 * @param bounds Bounds for the pour
+	 *
+	 * The pour will seek boundaries going outward until it hits
+	 * a non-zero color or hits the bounding box.
+	 */
+	void draw_pour(const sg_point_t & point, const sg_bounds_t & bounds) const { sg_api()->draw_pour(bmap_const(), point, bounds); }
 
 	/*! \details This function sets the pixels in a bitmap
 	 * based on the pixels of the source bitmap
@@ -267,6 +285,25 @@ public:
 	 */
 	void draw_sub_bitmap(sg_point_t p_dest, const Bitmap & src, sg_point_t p_src, sg_dim_t d_src) const {
 		sg_api()->draw_sub_bitmap(bmap_const(), p_dest, src.bmap_const(), p_src, d_src);
+	}
+
+	//these are deprecated and shouldn't be documented?
+	void invert(){ invert_rectangle(sg_point(0,0), dim()); }
+	void invert_rectangle(sg_point_t p, sg_dim_t d){
+		u16 o_flags;
+		o_flags = m_bmap.pen.o_flags;
+		m_bmap.pen.o_flags = SG_PEN_FLAG_IS_INVERT;
+		sg_api()->draw_rectangle(bmap_const(), p, d);
+		m_bmap.pen.o_flags = o_flags;
+	}
+
+	void clear_rectangle(sg_point_t p, sg_dim_t d){
+		u16 o_flags;
+		o_flags = m_bmap.pen.o_flags;
+		m_bmap.pen.o_flags = SG_PEN_FLAG_IS_ERASE;
+		sg_api()->draw_rectangle(bmap_const(), p, d);
+		m_bmap.pen.o_flags = o_flags;
+
 	}
 
 
