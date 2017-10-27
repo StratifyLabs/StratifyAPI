@@ -7,7 +7,7 @@
 #include <mcu/types.h>
 
 typedef struct {
-	void * list;
+	const void * list;
 	u16 count;
 } asset_request_t;
 

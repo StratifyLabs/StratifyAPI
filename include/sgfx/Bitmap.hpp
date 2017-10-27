@@ -25,7 +25,7 @@ public:
 	 * @param hdr A pointer to the existing bitmap structure
 	 * @param readonly True if the data is stored in read-only memory
 	 */
-	Bitmap(sg_bmap_header_t * hdr, bool readonly = false); //read/write bitmap
+	Bitmap(const sg_bmap_header_t * hdr, bool readonly = false); //read/write bitmap
 
 	/*! \details Constructs a bitmap using an existing memory buffer.
 	 *
@@ -121,7 +121,7 @@ public:
 	virtual ~Bitmap();
 
 	/*! \details Sets data pointer and size for bitmap */
-	void set_data(sg_bmap_header_t * hdr, bool readonly = false);
+	void set_data(const sg_bmap_header_t * hdr, bool readonly = false);
 	void set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly = false);
 	void set_data(sg_bmap_data_t * mem, const Dim & dim){ set_data(mem, dim.width(), dim.height()); }
 	void set_data(sg_bmap_data_t * mem, bool readonly = false){ set_data(mem, width(), height(), readonly); }
@@ -261,7 +261,6 @@ public:
 		sg_api()->draw_bitmap(bmap_const(), p_dest, src.bmap_const());
 	}
 
-
 	/*! \details This function draws a pattern on the bitmap.
 	 *
 	 * @param p The top-left point to start the pattern
@@ -303,7 +302,6 @@ public:
 		m_bmap.pen.o_flags = SG_PEN_FLAG_IS_ERASE;
 		sg_api()->draw_rectangle(bmap_const(), p, d);
 		m_bmap.pen.o_flags = o_flags;
-
 	}
 
 

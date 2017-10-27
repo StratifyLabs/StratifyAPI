@@ -30,7 +30,7 @@ void Bitmap::set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool reado
 	calc_members(w,h);
 }
 
-void Bitmap::set_data(sg_bmap_header_t * hdr, bool readonly){
+void Bitmap::set_data(const sg_bmap_header_t * hdr, bool readonly){
 	char * ptr;
 	ptr = (char*)hdr;
 	ptr += sizeof(sg_bmap_header_t);
@@ -73,7 +73,7 @@ Bitmap::Bitmap(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly){
 	set_data(mem, w, h, readonly);
 }
 
-Bitmap::Bitmap(sg_bmap_header_t * hdr, bool readonly){
+Bitmap::Bitmap(const sg_bmap_header_t * hdr, bool readonly){
 	init_members();
 	set_data(hdr, readonly);
 }

@@ -19,7 +19,7 @@ int Assets::m_font_count;
 const sg_vector_icon_t * Assets::m_vector_icons = 0;
 u16 Assets::m_vector_icon_count = 0;
 
-const sg_bmap_header_t * Assets::m_bmap_icons = 0;
+const sg_bmap_header_t ** Assets::m_bmap_icons = 0;
 u16 Assets::m_bmap_icon_count = 0;
 
 int Assets::init(){
@@ -34,8 +34,8 @@ int Assets::init(){
 		load_vector_icons((const sg_vector_icon_t*)request.list, request.count);
 	}
 
-	if( Sys::request(ASSETS_KERNEL_REQUEST_VECTOR_ICONS, &request) == 0 ){
-		load_bmap_icons((const sg_bmap_header_t*)request.list, request.count);
+	if( Sys::request(ASSETS_KERNEL_REQUEST_BITMAP_ICONS, &request) == 0 ){
+		load_bmap_icons((const sg_bmap_header_t**)request.list, request.count);
 	}
 
 	return 0;
@@ -48,7 +48,7 @@ bool Assets::load_vector_icons(const sg_vector_icon_t * icons, u16 count){
 	return true;
 }
 
-bool Assets::load_bmap_icons(const sg_bmap_header_t * icons, u16 count){
+bool Assets::load_bmap_icons(const sg_bmap_header_t ** icons, u16 count){
 	m_bmap_icons = icons;
 	m_bmap_icon_count = count;
 	return true;
@@ -59,13 +59,12 @@ const sg_vector_icon_t * Assets::get_vector_icon(u16 icon){
 	if( icon < m_vector_icon_count ){
 		return m_vector_icons + icon;
 	}
-	printf("Icon %d doesn't exist\n", icon);
 	return 0;
 }
 
 const sg_bmap_header_t * Assets::get_bmap_icon(u16 icon){
 	if( icon < m_bmap_icon_count ){
-		return m_bmap_icons + icon;
+		return m_bmap_icons[icon];
 	}
 	return 0;
 }
