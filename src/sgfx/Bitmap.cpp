@@ -40,6 +40,7 @@ void Bitmap::set_data(const sg_bmap_header_t * hdr, bool readonly){
 
 int Bitmap::alloc(sg_size_t w, sg_size_t h){
 	if( Data::alloc(calc_size(w,h)) < 0 ){
+		calc_members(0,0);
 		return -1;
 	}
 	calc_members(w,h);

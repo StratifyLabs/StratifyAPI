@@ -29,8 +29,18 @@ public:
 	inline sg_int_t x() const { return m_value.x; }
 	inline sg_int_t y() const { return m_value.y; }
 
+	void set_center(const sg_bmap_t * bmap){
+		m_value.x = bmap->dim.width/2;
+		m_value.y = bmap->dim.height/2;
+	}
 
-	void map(const sg_vector_map_t & m){ sg_point_map(&m_value, &m); }
+	void set_center(const sg_bmap_t & bmap){
+		m_value.x = bmap.dim.width/2;
+		m_value.y = bmap.dim.height/2;
+	}
+
+
+	void map(const sg_vector_map_t & m){ sg_api()->point_map(&m_value, &m); }
 
 	static sg_size_t map_pixel_size(const sg_vector_map_t & m){ return sg_point_map_pixel_size(&m); }
 

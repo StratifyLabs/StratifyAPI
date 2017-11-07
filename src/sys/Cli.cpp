@@ -108,13 +108,13 @@ int Cli::value_at(u16 value) const {
 	return at(value).atoi();
 }
 
-bool Cli::handle_uart(hal::UartAttr & attr){
+bool Cli::handle_uart(hal::UartAttr & attr) const {
 	if( is_option("-uart") ){
 		u32 o_flags = hal::Uart::FLAG_SET_LINE_CODING;
 		attr.set_port(get_option_value("-uart"));
 
 		if( is_option("-freq") ){
-			attr.set_freq(get_option_value("-f"));
+			attr.set_freq(get_option_value("-freq"));
 		} else {
 			attr.set_freq(115200);
 		}
@@ -150,6 +150,32 @@ bool Cli::handle_uart(hal::UartAttr & attr){
 	}
 	return false;
 }
+
+bool Cli::handle_i2c(hal::I2CAttr & attr) const {
+	if( is_option("-i2c") ){
+		u32 o_flags = hal::I2C::FLAG_SET_MASTER;
+		attr.set_port(get_option_value("-i2c"));
+
+		if( is_option("-freq") ){
+			attr.set_freq(get_option_value("-freq"));
+		} else {
+			attr.set_freq(100000);
+		}
+
+		if( is_option("-slave") ){ attr.set_slave_addr(get_option_value("-slave")); }
+		if( is_option("-pu") ){ o_flags |= hal::I2C::FLAG_IS_PULLUP; }
+
+
+		if( is_option("-sda") ){ attr.set_sda(get_option_pin("-sda")); }
+		if( is_option("-scl") ){ attr.set_scl(get_option_pin("-scl")); }
+
+		attr.set_flags(o_flags);
+
+		return true;
+	}
+	return false;
+}
+
 
 
 

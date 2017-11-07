@@ -281,6 +281,9 @@ public:
 	 */
 	static void set(const DrawingAttr & attr, sg_color_t color = 0xffff);
 
+	static void draw_pattern(const DrawingAttr & attr, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height);
+	static void draw_checkerboard(const DrawingAttr & attr, sg_size_t pattern_height = 1);
+
 	/*! \details This method will clear the pixels in the area of the bitmap
 	 * specified.
 	 *
@@ -298,12 +301,13 @@ public:
 	static void invert(const DrawingAttr & attr, sg_bmap_data_t v = 0xFF);
 
 	/*! \details This value determines how all objects are scaled.
+	 *
 	 * The default value is 1000. This means a value of 500 is half the target bitmap.
 	 *
 	 */
 	static drawing_size_t scale(){ return 1000; }
 
-	/*! \brief Sets the scale value (see Element::scale() for details) */
+	/*! \brief Sets the scale value (see Element::scale() for details). */
 	static void set_scale(drawing_size_t s){ m_scale = s; }
 
 	/*! \details This methods draws the drawing on the specified attributes.

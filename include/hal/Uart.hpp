@@ -19,13 +19,21 @@ class UartPinAssignment : public PinAssignment<uart_pin_assignment_t>{};
 class UartAttr {
 public:
 
+	UartAttr(){
+		m_port = 0;
+		memset(&m_attr, 0, sizeof(m_attr));
+		memset(&m_attr.pin_assignment, 0xff, sizeof(uart_pin_assignment_t));
+	}
+
 	u8 port() const { return m_port; }
+	operator uart_attr_t() const { return m_attr; }
 	const uart_attr_t & attr() const { return m_attr; }
 	mcu_pin_t tx() const { return m_attr.pin_assignment.tx; }
 	mcu_pin_t rx() const { return m_attr.pin_assignment.rx; }
 	mcu_pin_t cts() const { return m_attr.pin_assignment.cts; }
 	mcu_pin_t rts() const { return m_attr.pin_assignment.rts; }
-
+	u32 freq() const { return m_attr.freq; }
+	u8 width() const { return m_attr.width; }
 
 	void set_tx(const mcu_pin_t & pin){ m_attr.pin_assignment.tx = pin;}
 	void set_rx(const mcu_pin_t & pin){ m_attr.pin_assignment.rx = pin;}
@@ -34,7 +42,7 @@ public:
 	void set_port(u8 p){ m_port = p; }
 	void set_flags(u32 flags){ m_attr.o_flags = flags; }
 	void set_freq(u32 f){ m_attr.freq = f; }
-	void set_width(u32 w){ m_attr.width = w; }
+	void set_width(u8 w){ m_attr.width = w; }
 
 
 private:

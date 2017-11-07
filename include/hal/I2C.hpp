@@ -11,10 +11,45 @@
 
 namespace hal {
 
+
+
 /*! \brief I2C Pin Assignment
  * \details This class allows simple manipulation of the i2c_pin_assignment_t.
  */
 class I2CPinAssignment : public PinAssignment<i2c_pin_assignment_t>{};
+
+class I2CAttr {
+public:
+	I2CAttr(){
+		m_port = 0;
+		m_slave_addr =0 ;
+		memset(&m_attr, 0, sizeof(m_attr));
+		memset(&m_attr.pin_assignment, 0xff, sizeof(i2c_pin_assignment_t));
+	}
+
+	operator i2c_attr_t() const { return m_attr; }
+
+
+	u8 port() const { return m_port; }
+	const i2c_attr_t & attr() const { return m_attr; }
+	mcu_pin_t sda() const { return m_attr.pin_assignment.sda; }
+	mcu_pin_t scl() const { return m_attr.pin_assignment.scl; }
+
+	u8 slave_addr() const { return m_slave_addr; }
+
+	void set_slave_addr(u8 addr){ m_slave_addr = addr; }
+	void set_sda(const mcu_pin_t & pin){ m_attr.pin_assignment.sda = pin;}
+	void set_scl(const mcu_pin_t & pin){ m_attr.pin_assignment.scl = pin;}
+	void set_port(u8 p){ m_port = p; }
+	void set_flags(u32 flags){ m_attr.o_flags = flags; }
+	void set_freq(u32 f){ m_attr.freq = f; }
+
+
+private:
+	u8 m_port;
+	u8 m_slave_addr;
+	i2c_attr_t m_attr;
+};
 
 /*! \brief I2C Peripheral Class
  * \details This class implements I2C device peripherals.

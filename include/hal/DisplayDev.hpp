@@ -8,6 +8,13 @@
 
 namespace hal {
 
+
+/*! \brief Display Device
+ * \details This class is a display device. It inherits
+ * both Display and Dev so that a display
+ * found at, for example, "/dev/display0" can
+ * be drawn on.
+ */
 class DisplayDev : public Display, public Dev {
 public:
 	DisplayDev();

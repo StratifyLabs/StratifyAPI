@@ -25,14 +25,15 @@ public:
 		m_region.dim = dim.value();
 	}
 
+
 	sg_region_t object() const { return m_region; }
 
 	operator sg_region_t(){ return m_region; }
 
-	inline sg_int_t x() const { return m_region.point.x; }
-	inline sg_int_t y() const { return m_region.point.y; }
-	inline sg_int_t width() const { return m_region.dim.width; }
-	inline sg_int_t height() const { return m_region.dim.height; }
+	sg_int_t x() const { return m_region.point.x; }
+	sg_int_t y() const { return m_region.point.y; }
+	sg_int_t width() const { return m_region.dim.width; }
+	sg_int_t height() const { return m_region.dim.height; }
 
 
 private:

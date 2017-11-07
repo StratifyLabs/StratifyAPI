@@ -20,6 +20,8 @@ public:
 	/*! \details Constructs an empty bitmap. */
 	Bitmap();
 
+	operator const sg_bmap_t*() const { return &m_bmap; }
+
 	/*! \details Constructs a bitmap using an existing sg_bmap_header_t.
 	 *
 	 * @param hdr A pointer to the existing bitmap structure

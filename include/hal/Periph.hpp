@@ -135,8 +135,8 @@ public:
 		return set_attr();
 	}
 
-	int set_attr(attr_t & attr) const {
-		return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), &attr);
+	int set_attr(const attr_t & attr) const {
+		return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), (const attr_t*)&attr);
 	}
 
 	int set_action(mcu_action_t & action) const {

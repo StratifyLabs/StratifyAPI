@@ -96,7 +96,6 @@ int Data::alloc(u32 s, bool resize){
 
 	free();
 
-
 	m_mem_write = new_data;
 	m_needs_free = true;
 	m_mem = m_mem_write;

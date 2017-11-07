@@ -4,6 +4,7 @@
 #define SYS_CLI_HPP_
 
 #include "../hal/Uart.hpp"
+#include "../hal/I2C.hpp"
 #include "../var/String.hpp"
 #include "../var/Token.hpp"
 
@@ -164,7 +165,23 @@ public:
 	 * - "-cts [X.Y]" (optional port.pin, uses system default otherwise)
 	 *
 	 */
-	bool handle_uart(hal::UartAttr & attr);
+	bool handle_uart(hal::UartAttr & attr) const;
+
+	/*! \details Handles arguments for setting I2C attributes.
+	 *
+	 * @param attr A reference to the destination attributes
+	 * @return true if I2C attributes were parsed
+	 *
+	 * The arguments are
+	 * - "-i2c [port]" (required)
+	 * - "-freq [bitrate]" (optional, default is 100000)
+	 * - "-slave_addr" (optional, default is 0)
+	 * - "-scl [X.Y]" (optional port.pin, uses system default otherwise)
+	 * - "-sda [X.Y]" (optional port.pin, uses system default otherwise)
+	 * - "-pu" (optional flag, use internal pullup resistors)
+	 *
+	 */
+	bool handle_i2c(hal::I2CAttr & attr) const;
 
 private:
 	u16 m_argc;

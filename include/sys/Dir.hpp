@@ -42,6 +42,8 @@ public:
 	/*! \details Returns the serial number of the most recently read entry. */
 	int ino(){ return m_entry.d_ino; }
 
+	DIR * dirp(){ return m_dirp; }
+
 #ifndef __link
 	/*! \details Counts the total number of entries in the directory. */
 	int count();

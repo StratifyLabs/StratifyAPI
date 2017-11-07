@@ -8,23 +8,23 @@ using namespace sgfx;
 
 
 void VectorMap::set_dim(const Dim & dim){
-	data()->size.height = dim.height();
-	data()->size.width = dim.width();
+	data()->dim.height = dim.height();
+	data()->dim.width = dim.width();
 }
 
 void VectorMap::set_shift(const Point & p){
-	data()->shift.x = p.x();
-	data()->shift.y = p.y();
+	data()->point.x = p.x();
+	data()->point.y = p.y();
 }
 
 void VectorMap::set_dim(sg_size_t w, sg_size_t h){
-	data()->size.width = w;
-	data()->size.height = h;
+	data()->dim.width = w;
+	data()->dim.height = h;
 }
 
 void VectorMap::set_shift(sg_int_t x, sg_int_t y){
-	data()->shift.x = x;
-	data()->shift.y = y;
+	data()->point.x = x;
+	data()->point.y = y;
 }
 
 
@@ -34,16 +34,16 @@ VectorMap::VectorMap(const Bitmap & bitmap, s16 rotation){
 
 void VectorMap::set_bitmap_center(const Bitmap & bitmap, s16 rotation){
 	u8 thickness = bitmap.pen_thickness();
-	data()->size.width = (bitmap.width() - 2*thickness)*2;
-	data()->size.height = (bitmap.height() - 2*thickness)*2;
-	data()->shift.x = (data()->size.width + 2*thickness)/4;
-	data()->shift.y = (data()->size.height + 2*thickness)/4;
+	data()->dim.width = (bitmap.width() - 2*thickness)*2;
+	data()->dim.height = (bitmap.height() - 2*thickness)*2;
+	data()->point.x = (data()->dim.width + 2*thickness)/4;
+	data()->point.y = (data()->dim.height + 2*thickness)/4;
 	data()->rotation = rotation;
 }
 
 void VectorMap::set_area(sg_point_t p, sg_dim_t d, s16 rotation){
-	data()->size = d;
-	data()->shift = p;
+	data()->dim = d;
+	data()->point = p;
 	data()->rotation = rotation;
 }
 

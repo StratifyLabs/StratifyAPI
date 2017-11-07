@@ -188,6 +188,30 @@ void Drawing::draw_rectangle(const DrawingAttr & attr, const Pen & pen){
 	attr.bitmap().set_pen(p);
 }
 
+void Drawing::draw_checkerboard(const DrawingAttr & attr, sg_size_t pattern_height){
+	sg_bmap_data_t odd = 0xAAAAAAAA;
+	sg_bmap_data_t even = 0x55555555;
+	switch(pattern_height){
+	case 2:
+		odd = 0xCCCCCCCC;
+		even = 0x33333333;
+		break;
+	case 4:
+		odd = 0xF0F0F0F0;
+		even = 0x0F0F0F0F;
+		break;
+	case 8:
+		odd = 0xFF00FF00;
+		even = 0x00FF00FF;
+		break;
+	}
+	draw_pattern(attr, odd, even, pattern_height);
+}
+
+void Drawing::draw_pattern(const DrawingAttr & attr, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height){
+	attr.bitmap().draw_pattern( point_on_bitmap(attr), dim_on_bitmap(attr), odd_pattern, even_pattern, pattern_height);
+}
+
 
 void Drawing::set(const DrawingAttr & attr, sg_color_t color){
 	Pen pen(color);
