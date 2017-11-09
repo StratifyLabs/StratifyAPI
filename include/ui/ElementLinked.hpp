@@ -41,9 +41,12 @@ public:
 	u8 animation_type() const { return m_animation_type; }
 	void set_animation_type(u8 v){ m_animation_type = v; }
 
+	u16 animation_frame_delay() const { return m_animation_frame_delay; }
+	void set_animation_frame_delay(u16 v){ m_animation_frame_delay = v; }
 
 private:
 	u8 m_animation_type;
+	u16 m_animation_frame_delay;
 	ElementLinked * m_parent;
 	ElementLinked * m_child;
 

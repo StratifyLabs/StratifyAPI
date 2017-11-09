@@ -74,11 +74,15 @@ public:
 	bool exec(void (*draw)(void*,int,int) = 0, void * obj = 0);
 	void update_motion_total();
 
+	u16 frame_delay() const { return m_frame_delay; }
+	void set_frame_delay(u16 value){ m_frame_delay = value; }
+
 
 private:
 	int animate_frame(void (*draw)(void*,int,int), void * obj);
 	sg_animation_t * pattr(){ return data(); }
 	const DrawingAttr * m_drawing_attr;
+	u16 m_frame_delay;
 
 };
 

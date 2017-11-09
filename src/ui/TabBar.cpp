@@ -19,6 +19,8 @@ void TabBar::set_animation_type(u8 v){ m_animation.set_type(v); }
 u8 TabBar::animation_type() const { return m_animation.type(); }
 void TabBar::set_animation_path(u8 v){ m_animation.set_path(v); }
 u8 TabBar::animation_path() const { return m_animation.path(); }
+void TabBar::set_animation_frame_delay(u16 delay){ m_animation.set_frame_delay(delay); }
+u16 TabBar::animation_frame_delay() const { return m_animation.frame_delay(); }
 
 Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 	int i;

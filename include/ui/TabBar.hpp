@@ -61,6 +61,8 @@ public:
 	u8 animation_type() const;
 	void set_animation_path(u8 v);
 	u8 animation_path() const;
+	void set_animation_frame_delay(u16 delay);
+	u16 animation_frame_delay() const;
 
 	draw::Animation & animation(){ return m_animation; }
 

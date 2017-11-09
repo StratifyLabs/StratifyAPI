@@ -79,9 +79,12 @@ public:
 
 	virtual void set_animation_type(u8 v);
 	virtual void set_animation_path(u8 v);
-	void set_animation(u8 type, u8 path);
+	virtual void set_animation_frame_delay(u16 delay);
+	void set_animation(u8 type, u8 path, u16 delay = (u16)-1);
 	virtual u8 animation_type() const;
 	virtual u8 animation_path() const;
+	virtual u16 animation_frame_delay() const;
+
 
 
 	/*! \details This method is called on the current Element when an event (e.g., Element::ENTER,

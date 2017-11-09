@@ -11,14 +11,17 @@ using namespace ui;
 Menu::Menu() {
 	// TODO Auto-generated constructor stub
 	m_current = 0;
-	animation.set_type(AnimationAttr::PUSH_LEFT);
-	animation.set_path(AnimationAttr::SQUARED);
-	animation.set_drawing_motion_total(1000);
+	m_animation.set_type(AnimationAttr::PUSH_LEFT);
+	m_animation.set_path(AnimationAttr::SQUARED);
+	m_animation.set_drawing_motion_total(1000);
 }
 
 void Menu::set_animation_type(u8 v){ m_current->set_animation_type(v); }
 u8 Menu::animation_type() const{ return m_current->animation_type(); }
-
+void Menu::set_animation_path(u8 v){ m_current->set_animation_path(v); }
+u8 Menu::animation_path() const { return m_current->animation_path(); }
+void Menu::set_animation_frame_delay(u16 delay){ m_current->set_animation_frame_delay(delay); }
+u16 Menu::animation_frame_delay() const { return m_current->animation_frame_delay(); }
 
 Element * Menu::handle_event(const Event & event, const DrawingAttr & attr){
 	Element * next = 0;
@@ -35,9 +38,9 @@ Element * Menu::handle_event(const Event & event, const DrawingAttr & attr){
 		next = current().parent();
 		if( next ){
 			//start the animation to the left
-			animation.set_type(AnimationAttr::PUSH_RIGHT);
-			animation.init(0, next, attr);
-			animation.exec();
+			m_animation.set_type(AnimationAttr::PUSH_RIGHT);
+			m_animation.init(0, next, attr);
+			m_animation.exec();
 			set_current(*next);
 			current().handle_event(Event(Event::ENTER), attr);
 			return this;
@@ -51,19 +54,20 @@ Element * Menu::handle_event(const Event & event, const DrawingAttr & attr){
 		next = current().handle_event(event, attr);
 		if( next && (next != m_current) ){
 			type = ((ElementLinked*)next)->animation_type();
-			animation.set_type( type );
-			animation.init(0, next, attr);
-			animation.exec();
+			m_animation.set_type( type );
+			m_animation.init(0, next, attr);
+			m_animation.exec();
 			set_current(*next);
 			current().handle_event(Event(Event::ENTER), attr);
 		}
 		return this;
 
 	case Event::ENTER:
-		type = current().animation_type();
-		animation.set_type( type );
-		animation.init(0, m_current, attr);
-		animation.exec();
+		m_animation.set_type( current().animation_type() );
+		m_animation.set_frame_delay( current().animation_frame_delay() );
+		m_animation.set_path( current().animation_path() );
+		m_animation.init(0, m_current, attr);
+		m_animation.exec();
 		break;
 	}
 

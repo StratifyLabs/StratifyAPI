@@ -15,6 +15,7 @@ AnimationAttr::AnimationAttr(){
 Animation::Animation() {
 	// TODO Auto-generated constructor stub
 	m_drawing_attr = 0;
+	m_frame_delay = 18;
 }
 
 void Animation::init(Drawing * current,
@@ -91,7 +92,6 @@ bool Animation::exec(void (*draw)(void *, int, int), void * obj){
 }
 
 int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
-	const u16 delay = 20;
 	int ret = 0;
 	u16 o_flags;
 
@@ -111,11 +111,9 @@ int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
 
 	m_drawing_attr->bitmap().refresh();
 
-	Timer::wait_msec(delay);
+	Timer::wait_msec(m_frame_delay);
 
-	if( ret == 0 ){ //check for last frame
-		m_drawing_attr->bitmap().wait(1000);
-	}
+	m_drawing_attr->bitmap().wait(1000);
 
 	return ret;
 }
