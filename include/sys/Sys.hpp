@@ -54,6 +54,7 @@ public:
 	 * (should not be called when the app is currently running).
 	 *
 	 * @param path The path to the app (use \a exec_dest from launch())
+	 * @param driver Used with link protocol only
 	 * @return Zero on success
 	 *
 	 * This method can causes problems if not used correctly. The RAM associated with
@@ -67,6 +68,7 @@ public:
 	/*! \details Reclaims RAM that was freed using free_ram().
 	 *
 	 * @param path The path to the app
+	 * @param driver Used with link protocol only
 	 * @return Zero on success
 	 *
 	 * \sa free_ram()
@@ -184,7 +186,7 @@ public:
 
 	/*! \details Loads the cloud kernel ID.
 	 *
-	 * @param A reference to the destination data
+	 * @param id A reference to the destination data
 	 * @return Less than zero if the operation failed
 	 *
 	 * The object must be opened before calling this method.

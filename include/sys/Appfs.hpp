@@ -7,8 +7,8 @@
 
 namespace sys {
 
-/*! \brief Class for accessing Application file system (Flash) */
-/*! \details This class provides an interface for creating data files in flash
+/*! \brief Application File System Class
+ * \details This class provides an interface for creating data files in flash
  * memory.
  *
  * The following is a basic example of creating a data file in flash and then reading from it.

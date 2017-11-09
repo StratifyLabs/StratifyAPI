@@ -277,7 +277,7 @@ public:
 	 * specified.
 	 *
 	 * @param attr Specifies the bitmap and area
-	 * @param v Specifies the fill pattern
+	 * @param color Specifies the fill pattern
 	 */
 	static void set(const DrawingAttr & attr, sg_color_t color = 0xffff);
 

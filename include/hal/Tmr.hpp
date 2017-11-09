@@ -50,11 +50,11 @@ class TmrPinAssignment : public PinAssignment<tmr_pin_assignment_t>{};
  */
 class Tmr : public Periph<tmr_info_t, tmr_attr_t, 't'> {
 public:
+
+	/*! \details Constructs a new timer object using \a port. */
 	Tmr(port_t port);
 
-	/*! \details This lists the values for the event when using set_action().  The values
-	 * can be Or'd (|) together such as Tmr::RESET|Tmr::INTERRUPT.
-	 */
+
 	enum {
 		FLAG_SET_TIMER /*! See \ref TMR_FLAG_SET_TIMER */ = TMR_FLAG_SET_TIMER,
 		FLAG_IS_SOURCE_CPU /*! See \ref TMR_FLAG_IS_SOURCE_CPU */ = TMR_FLAG_IS_SOURCE_CPU,

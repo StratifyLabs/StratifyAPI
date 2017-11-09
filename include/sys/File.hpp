@@ -107,6 +107,8 @@ public:
 	/*! \details Deletes a file.
 	 *
 	 * @param path The path to the file
+	 * @param driver Used only with link protocol
+	 * @return Zero on success
 	 *
 	 */
 	static int remove(const char * path, link_transport_mdriver_t * driver = 0);
@@ -115,6 +117,8 @@ public:
 	 *
 	 * @param path The path to the file
 	 * @param st A pointer to the stat structure
+	 * @param driver Used only with link protocol
+	 * @return Zero on success
 	 *
 	 */
 	static int stat(const char * path, struct link_stat * st, link_transport_mdriver_t * driver = 0);
@@ -122,11 +126,19 @@ public:
 	/*! \details Gets the size of the file.
 	 *
 	 * @param path The path to the file
+	 * @param driver Used only with link protocol
+	 * @return The number of bytes in the file or less than zero for an error
+	 *
 	 */
 	static u32 size(const char * path, link_transport_mdriver_t * driver = 0);
 
 
-	/*! \details Open the specified file or device */
+	/*! \details Opens a file.
+	 *
+	 * @param name The path to the file
+	 * @param flags The flags used to open the flag (e.g. File::READONLY)
+	 * @return Zero on success
+	 */
 	virtual int open(const char * name, int flags);
 
 	/*! \details Opens a file.
@@ -226,8 +238,15 @@ public:
 	 */
 	int write(int loc, const void * buf, int nbyte) const;
 
-	/*! \details Reads a line from the file. */
-	int readline(char * buf, int nbyte, int timeout, char term) const;
+	/*! \details Reads a line from a file.
+	 *
+	 * @param buf Destination buffer
+	 * @param nbyte Number of bytes available in buffer
+	 * @param timeout Timeout in ms if line does not arrive
+	 * @param term Terminating character of the line (default is newline)
+	 * @return Number of bytes received
+	 */
+	int readline(char * buf, int nbyte, int timeout, char term = '\n') const;
 
 
 #ifndef __link
@@ -275,11 +294,29 @@ public:
 	 */
 	virtual int ioctl(int req, void * arg) const;
 
-	/*! \details Executes an ioctl() with request and const arg pointer. */
+	/*! \details Executes an ioctl() with request and const arg pointer.
+	 *
+	 * @param req The request value
+	 * @param arg A pointer to the arguments
+	 * @return Depends on request
+	 *
+	 */
 	int ioctl(int req, const void * arg) const { return ioctl(req, (void*)arg); }
-	/*! \details Executes an ioctl() with just a request. */
+	/*! \details Executes an ioctl() with just a request.
+	 *
+	 * @param req The request value
+	 * @return Depends on request
+	 *
+	 * The arg value for the ioctl is set to NULL.
+	 *
+	 */
 	int ioctl(int req) const { return ioctl(req, (void*)NULL); }
-	/*! \details Executes an ioctl() with request and integer arg. */
+	/*! \details Executes an ioctl() with request and integer arg.
+	 *
+	 * @param req The request value
+	 * @param arg An integer value (used with some requests)
+	 * @return Depends on request
+	 */
 	int ioctl(int req, int arg) const { return ioctl(req, MCU_INT_CAST(arg)); }
 
 
