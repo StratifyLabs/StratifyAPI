@@ -24,13 +24,13 @@ public:
 	/*! \details Tab Bar construction */
 	TabBar();
 
-	/*! \details Access the height of the tab bar as a ratio to draw::Drawing::scale() */
+	/*! \details Access the height of the tab bar as a ratio to draw::DrawingAttr::scale() */
 	sg_size_t height() const { return m_height; }
 
-	/*! \details Set the height of the tab bar where draw::Drawing::scale() height will set the height
+	/*! \details Set the height of the tab bar where draw::DrawingAttr::scale() height will set the height
 	 * to fill the entire screen.
 	 *
-	 * @param h Height of the tab bar as a ratio to draw::Drawing::scale()
+	 * @param h Height of the tab bar as a ratio to draw::DrawingAttr::scale()
 	 *
 	 */
 	void set_height(sg_size_t h){ m_height = h; }

@@ -35,6 +35,37 @@ DrawingAttr::DrawingAttr(const drawing_attr_t & attr){
 	m_attr = attr;
 }
 
+sg_dim_t DrawingAttr::calc_dim_on_bitmap(const DrawingAttr & attr){
+	sg_dim_t d;
+	d = sg_dim(calc_width_on_bitmap(attr), calc_height_on_bitmap(attr));
+	return d;
+}
+
+sg_size_t DrawingAttr::calc_height_on_bitmap(const DrawingAttr & attr){
+	sg_size_t h;
+	Bitmap * b = &attr.bitmap();
+	drawing_dim_t element_dim = attr.dim();
+	h = scale_to_bitmap(element_dim.height, b->height() - (b->margin_top() + b->margin_bottom()), scale() );
+	return h;
+}
+
+sg_size_t DrawingAttr::calc_width_on_bitmap(const DrawingAttr & attr){
+	sg_size_t w;
+	w = scale_to_bitmap(attr.dim().width, attr.bitmap().width() - (attr.bitmap().margin_left() + attr.bitmap().margin_right()), scale() );
+	return w;
+}
+
+sg_point_t DrawingAttr::calc_point_on_bitmap(const DrawingAttr & attr){
+	sg_point_t p1;
+	Bitmap * b = &attr.bitmap();
+	drawing_point_t p = attr.point();
+
+	p1.x = scale_to_bitmap(p.x, b->width() - (b->margin_left() + b->margin_right()), scale()) + b->margin_left();
+	p1.y = scale_to_bitmap(p.y, b->height() - (b->margin_bottom() + b->margin_top()), scale()) + b->margin_top();
+
+	return p1;
+}
+
 
 void DrawingAttr::set(Bitmap & b, drawing_point_t p, drawing_dim_t d, Bitmap * scratch){
 	set_bitmap(b);
@@ -44,11 +75,11 @@ void DrawingAttr::set(Bitmap & b, drawing_point_t p, drawing_dim_t d, Bitmap * s
 }
 
 drawing_size_t DrawingAttr::calc_width(drawing_size_t v) const {
-	return m_attr.dim.width * v / Drawing::scale();
+	return m_attr.dim.width * v / DrawingAttr::scale();
 }
 
 drawing_size_t DrawingAttr::calc_height(drawing_size_t v) const {
-	return m_attr.dim.height * v / Drawing::scale();
+	return m_attr.dim.height * v / DrawingAttr::scale();
 }
 
 DrawingAttr DrawingAttr::operator+ (drawing_point_t p) const {
@@ -81,10 +112,10 @@ drawing_dim_t DrawingAttr::calc_square_w(drawing_size_t v) const {
 	u32 pixel_width;
 	u32 drawing_height;
 	drawing_dim_t dim;
-	sg_dim_t bitmap_dim = Drawing::dim_on_bitmap(*this);
+	sg_dim_t bitmap_dim = calc_dim_on_bitmap();
 	dim.width = v;
-	pixel_width = bitmap_dim.width * v / Drawing::scale();
-	drawing_height = pixel_width * Drawing::scale() * Drawing::scale() / (height() * bitmap().height());
+	pixel_width = bitmap_dim.width * v / DrawingAttr::scale();
+	drawing_height = pixel_width * DrawingAttr::scale() * DrawingAttr::scale() / (height() * bitmap().height());
 	dim.height = drawing_height;
 	return dim;
 }
@@ -93,10 +124,10 @@ drawing_dim_t DrawingAttr::calc_square_h(drawing_size_t v) const {
 	u32 pixel_height;
 	u32 drawing_width;
 	drawing_dim_t dim;
-	sg_dim_t bitmap_dim = Drawing::dim_on_bitmap(*this);
+	sg_dim_t bitmap_dim = calc_dim_on_bitmap();
 	dim.height = v;
-	pixel_height = bitmap_dim.height * v / Drawing::scale();
-	drawing_width = pixel_height * Drawing::scale() * Drawing::scale() / (width() * bitmap().width());
+	pixel_height = bitmap_dim.height * v / DrawingAttr::scale();
+	drawing_width = pixel_height * DrawingAttr::scale() * DrawingAttr::scale() / (width() * bitmap().width());
 	dim.width = drawing_width;
 	return dim;
 }
@@ -124,11 +155,11 @@ DrawingScaledAttr DrawingScaledAttr::operator+ (sg_dim_t d) const {
 }
 
 sg_size_t DrawingScaledAttr::calc_width(drawing_size_t v) const {
-	return m_attr.dim.width * v / Drawing::scale();
+	return m_attr.dim.width * v / DrawingAttr::scale();
 }
 
 sg_size_t DrawingScaledAttr::calc_height(drawing_size_t v) const {
-	return m_attr.dim.height * v / Drawing::scale();
+	return m_attr.dim.height * v / DrawingAttr::scale();
 }
 
 Drawing::Drawing(){
@@ -147,44 +178,10 @@ void Drawing::set_flag(u32 flag, bool v){
 	}
 }
 
-
-sg_dim_t Drawing::dim_on_bitmap(const DrawingAttr & attr){
-	sg_dim_t d;
-	d = sg_dim(width_on_bitmap(attr), height_on_bitmap(attr));
-	return d;
-}
-
-sg_size_t Drawing::height_on_bitmap(const DrawingAttr & attr){
-	sg_size_t h;
-	Bitmap * b = &attr.bitmap();
-	drawing_dim_t element_dim = attr.dim();
-	h = scale_to_bitmap(element_dim.height, b->height() - (b->margin_top() + b->margin_bottom()), scale() );
-	return h;
-}
-
-sg_size_t Drawing::width_on_bitmap(const DrawingAttr & attr){
-	sg_size_t w;
-	Bitmap * b = &attr.bitmap();
-	drawing_dim_t element_dim = attr.dim();
-	w = scale_to_bitmap(element_dim.width, b->width() - (b->margin_left() + b->margin_right()), scale() );
-	return w;
-}
-
-sg_point_t Drawing::point_on_bitmap(const DrawingAttr & attr){
-	sg_point_t p1;
-	Bitmap * b = &attr.bitmap();
-	drawing_point_t p = attr.point();
-
-	p1.x = scale_to_bitmap(p.x, b->width() - (b->margin_left() + b->margin_right()), scale()) + b->margin_left();
-	p1.y = scale_to_bitmap(p.y, b->height() - (b->margin_bottom() + b->margin_top()), scale()) + b->margin_top();
-
-	return p1;
-}
-
 void Drawing::draw_rectangle(const DrawingAttr & attr, const Pen & pen){
 	Pen p = attr.bitmap().pen();
 	attr.bitmap().set_pen(pen);
-	attr.bitmap().draw_rectangle( point_on_bitmap(attr), dim_on_bitmap(attr));
+	attr.bitmap().draw_rectangle( attr.calc_point_on_bitmap(), attr.calc_dim_on_bitmap());
 	attr.bitmap().set_pen(p);
 }
 
@@ -209,7 +206,7 @@ void Drawing::draw_checkerboard(const DrawingAttr & attr, sg_size_t pattern_heig
 }
 
 void Drawing::draw_pattern(const DrawingAttr & attr, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height){
-	attr.bitmap().draw_pattern( point_on_bitmap(attr), dim_on_bitmap(attr), odd_pattern, even_pattern, pattern_height);
+	attr.bitmap().draw_pattern( attr.calc_point_on_bitmap(), attr.calc_dim_on_bitmap(), odd_pattern, even_pattern, pattern_height);
 }
 
 
@@ -229,11 +226,11 @@ void Drawing::invert(const DrawingAttr & attr, sg_bmap_data_t v){
 }
 
 sg_size_t Drawing::width(sg_size_t scaled, sg_dim_t d){
-	return scaled * d.width / scale();
+	return scaled * d.width / DrawingAttr::scale();
 }
 
 sg_size_t Drawing::height(sg_size_t scaled, sg_dim_t d){
-	return scaled * d.height / scale();
+	return scaled * d.height / DrawingAttr::scale();
 }
 
 void Drawing::draw(Bitmap & b, sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h){
@@ -244,8 +241,7 @@ void Drawing::draw(Bitmap & b, sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h)
 
 
 void Drawing::draw(const DrawingAttr & attr){
-	DrawingScaledAttr attr_scaled;
-	attr_scaled.set(attr.bitmap(), point_on_bitmap(attr), dim_on_bitmap(attr));
+	DrawingScaledAttr attr_scaled(attr);
 	draw_to_scale(attr_scaled);
 }
 

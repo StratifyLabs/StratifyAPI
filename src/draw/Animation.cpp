@@ -43,9 +43,10 @@ void Animation::update_motion_total(){
 
 	sg_dim_t d;
 	sg_point_t p;
+	drawing_size_t motion;
 
-	p = Drawing::point_on_bitmap( *m_drawing_attr );
-	d = Drawing::dim_on_bitmap( *m_drawing_attr );
+	p = m_drawing_attr->calc_point_on_bitmap();
+	d = m_drawing_attr->calc_dim_on_bitmap();
 
 	//convert motion total
 	switch(type()){
@@ -58,7 +59,12 @@ void Animation::update_motion_total(){
 	case AnimationAttr::BOUNCE_UP:
 	case AnimationAttr::BOUNCE_DOWN:
 		//convert motion total as a height
-		set_motion_total( drawing_motion_total() * d.height / 1000 );
+		if( drawing_motion_total() > m_drawing_attr->height() ){
+			motion = m_drawing_attr->height();
+		} else {
+			motion = drawing_motion_total();
+		}
+		set_motion_total( motion * d.height / m_drawing_attr->height() );
 		break;
 	case AnimationAttr::PUSH_LEFT:
 	case AnimationAttr::PUSH_RIGHT:
@@ -68,7 +74,12 @@ void Animation::update_motion_total(){
 	case AnimationAttr::UNDO_SLIDE_RIGHT:
 	case AnimationAttr::BOUNCE_LEFT:
 	case AnimationAttr::BOUNCE_RIGHT:
-		set_motion_total( drawing_motion_total() * d.width / 1000 );
+		if( drawing_motion_total() > m_drawing_attr->width() ){
+			motion = m_drawing_attr->width();
+		} else {
+			motion = drawing_motion_total();
+		}
+		set_motion_total( motion * d.width / m_drawing_attr->width() );
 		break;
 	};
 

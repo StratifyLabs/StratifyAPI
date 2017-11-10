@@ -40,7 +40,7 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 		//m_animation.set_drawing_start(0,0);
 		//m_animation.set_drawing_dim(1000,1000);
 		m_animation.set_step_total(8);
-		m_animation.set_drawing_motion_total(1000);
+		m_animation.set_drawing_motion_total(attr.width());
 
 		//animate the tab bar
 		m_animation.init(0, this, attr);

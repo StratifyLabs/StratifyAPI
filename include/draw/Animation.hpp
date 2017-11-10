@@ -120,7 +120,6 @@ public:
 	 *
 	 */
 	bool exec(void (*draw)(void*,int,int) = 0, void * obj = 0);
-	void update_motion_total();
 
 	/*! \details Accesses the frame delay of the animation. */
 	u16 frame_delay() const { return m_frame_delay; }
@@ -136,6 +135,7 @@ public:
 
 
 private:
+	void update_motion_total();
 	int animate_frame(void (*draw)(void*,int,int), void * obj);
 	sg_animation_t * pattr(){ return data(); }
 	const DrawingAttr * m_drawing_attr;

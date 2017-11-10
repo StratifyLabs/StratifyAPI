@@ -31,8 +31,8 @@ typedef struct MCU_PACK {
  * \details This data structure holds a real bitmap but the point
  * and dimensions haven't been mapped to the bitmap.
  * The point \a p and dimension \a d are both in a universal coordinate
- * system from 0 to draw::Drawing::scale().  For example
- * if draw::Drawing::scale() is 1000 and p.x and p.y both are equal to 500,
+ * system from 0 to draw::DrawingAttr::scale().  For example
+ * if draw::DrawingAttr::scale() is 1000 and p.x and p.y both are equal to 500,
  * the top left corner of any item drawn using these attibutes will be
  * in the center of the target bitmap (regardless of the target bitmap's
  * size).
@@ -162,6 +162,24 @@ public:
 	 */
 	drawing_dim_t calc_square_h(drawing_size_t v) const;
 
+	/*! \details Return the dimensions (in pixels) if any Element is drawn on the specified bitmap */
+	static sg_dim_t calc_dim_on_bitmap(const DrawingAttr & attr);
+	static sg_size_t calc_height_on_bitmap(const DrawingAttr & attr);
+	static sg_size_t calc_width_on_bitmap(const DrawingAttr & attr);
+	static sg_point_t calc_point_on_bitmap(const DrawingAttr & attr);
+
+	sg_dim_t calc_dim_on_bitmap() const { return calc_dim_on_bitmap(*this); }
+	sg_size_t calc_height_on_bitmap() const { return calc_height_on_bitmap(*this); }
+	sg_size_t calc_width_on_bitmap() const { return calc_width_on_bitmap(*this); }
+	sg_point_t calc_point_on_bitmap() const { return calc_point_on_bitmap(*this); }
+
+	/*! \details This value determines how all objects are scaled.
+	 *
+	 * The default value is 1000. This means a value of 500 is half the target bitmap.
+	 *
+	 */
+	static drawing_size_t scale(){ return 1000; }
+
 
 private:
 	drawing_attr_t m_attr;
@@ -173,6 +191,12 @@ private:
  */
 class DrawingScaledAttr {
 public:
+
+	DrawingScaledAttr(){}
+	DrawingScaledAttr(const DrawingAttr & attr){
+		set(attr.bitmap(), attr.calc_point_on_bitmap(), attr.calc_dim_on_bitmap());
+	}
+
 	operator drawing_scaled_attr_t (){ return m_attr; }
 
 	void set(sgfx::Bitmap & b, sg_point_t p, sg_dim_t d);
@@ -300,13 +324,6 @@ public:
 	 */
 	static void invert(const DrawingAttr & attr, sg_bmap_data_t v = 0xFF);
 
-	/*! \details This value determines how all objects are scaled.
-	 *
-	 * The default value is 1000. This means a value of 500 is half the target bitmap.
-	 *
-	 */
-	static drawing_size_t scale(){ return 1000; }
-
 	/*! \brief Sets the scale value (see Element::scale() for details). */
 	static void set_scale(drawing_size_t s){ m_scale = s; }
 
@@ -317,12 +334,6 @@ public:
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);
 	void draw_to_scale(sgfx::Bitmap & b, sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h);
 
-
-	/*! \details Return the dimensions (in pixels) if any Element is drawn on the specified bitmap */
-	static sg_dim_t dim_on_bitmap(const DrawingAttr & attr);
-	static sg_size_t height_on_bitmap(const DrawingAttr & attr);
-	static sg_size_t width_on_bitmap(const DrawingAttr & attr);
-	static sg_point_t point_on_bitmap(const DrawingAttr & attr);
 
 	/*! \brief Returns true if element is visible */
 	bool is_visible() const { return flag(FLAG_VISIBLE); }
