@@ -7,12 +7,16 @@ using namespace ui;
 ElementLinked::ElementLinked(){
 	set_parent(0);
 	set_child(0);
+	m_animation_frame_delay = 18;
+	m_animation_type = Animation::PUSH_LEFT;
 }
 
 ElementLinked::ElementLinked(ElementLinked * parent, ElementLinked * child) {
 	// TODO Auto-generated constructor stub
 	set_parent(parent);
 	set_child(child);
+	m_animation_frame_delay = 18;
+	m_animation_type = Animation::PUSH_LEFT;
 }
 
 Element * ElementLinked::handle_event(const Event  & event, const DrawingAttr & attr){

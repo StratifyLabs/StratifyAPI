@@ -109,6 +109,9 @@ public:
 			Drawing * target,
 			const DrawingAttr & attr);
 
+	void reinit();
+
+
 	/*! \details Executes the animation.
 	 *
 	 * @param draw A callback that is execute between each frame
@@ -131,11 +134,12 @@ public:
 	 * to refresh the display. This delay will only have an effect
 	 * if it is longer than the time required to update the display.
 	 */
-	void set_frame_delay(u16 value){ m_frame_delay = value; }
+	void set_frame_delay(u16 value){
+		m_frame_delay = value;
+	}
 
 
 private:
-	void update_motion_total();
 	int animate_frame(void (*draw)(void*,int,int), void * obj);
 	sg_animation_t * pattr(){ return data(); }
 	const DrawingAttr * m_drawing_attr;

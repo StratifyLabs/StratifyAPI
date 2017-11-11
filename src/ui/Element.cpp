@@ -42,4 +42,4 @@ void Element::set_animation(u8 type, u8 path, u16 delay){
 }
 
 u8 Element::animation_path() const { return AnimationAttr::SQUARED; }
-u16 Element::animation_frame_delay() const { return 0; }
+u16 Element::animation_frame_delay() const { return 16; }
