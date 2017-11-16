@@ -27,6 +27,7 @@ Data::Data(){
 }
 
 Data::Data(void * mem, u32 s, bool readonly){
+	zero();
 	set(mem, s, readonly);
 }
 
