@@ -130,7 +130,7 @@ public:
 	 *
 	 * @return Zero on success
 	 */
-	int create_image(void * image, int nbyte){ son_api()->create_image(&m_son, image, nbyte, m_stack, stacksize); }
+	int create_image(void * image, int nbyte){ return son_api()->create_image(&m_son, image, nbyte, m_stack, stacksize); }
 
 	/*! \details Creates a memory image SON object using dynamic memory allocation.
 	 *
@@ -138,7 +138,7 @@ public:
 	 *
 	 * @return Zero on success
 	 */
-	int create_image(int nbyte){ son_api()->create(&m_son, 0, nbyte); }
+	int create_image(int nbyte){ return son_api()->create(&m_son, 0, nbyte); }
 
 
 	/*! \details Opens a file for appending data.
