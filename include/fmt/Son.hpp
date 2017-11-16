@@ -123,6 +123,24 @@ public:
 	 */
 	int create(const char * name){ return son_api()->create(&m_son, name, m_stack, stacksize); }
 
+	/*! \details Creates a memory image SON object.
+	 *
+	 * @param image The memory image
+	 * @param nbyte The number of bytes in the image
+	 *
+	 * @return Zero on success
+	 */
+	int create_image(void * image, int nbyte){ son_api()->create_image(&m_son, image, nbyte, m_stack, stacksize); }
+
+	/*! \details Creates a memory image SON object using dynamic memory allocation.
+	 *
+	 * @param nbyte The number of bytes in the image
+	 *
+	 * @return Zero on success
+	 */
+	int create_image(int nbyte){ son_api()->create(&m_son, 0, nbyte); }
+
+
 	/*! \details Opens a file for appending data.
 	 *
 	 * @param name The path/name of the file to open
@@ -137,6 +155,14 @@ public:
 	 */
 	int open_read(const char * name){ return son_api()->open(&m_son, name); }
 
+	/*! \details Opens a SON image for reading.
+	 *
+	 * @param image The memory image
+	 * @param nbyte The number of bytes in the image
+	 * @return Zero on success
+	 */
+	int open_read_image(void * image, int nbyte){ return son_api()->open_image(&m_son, image, nbyte); }
+
 	/*! \details Opens a SON file for editing.
 	 *
 	 * @param name Name of the file
@@ -144,10 +170,16 @@ public:
 	 */
 	int open_edit(const char * name){ return son_api()->edit(&m_son, name); }
 
+	/*! \details Opens a SON image for editing.
+	 *
+	 * @param image The memory image
+	 * @param nbyte The number of bytes in the image
+	 * @return Zero on success
+	 */
+	int open_edit_image(void * image, int nbyte){ return son_api()->edit_image(&m_son, image, nbyte); }
 
 	/*! \details Closes a SON file. */
 	int close(){ return son_api()->close(&m_son); }
-
 
 	/*! \details Seeks to the location of the access code and gets the size of the data in bytes.
 	 *

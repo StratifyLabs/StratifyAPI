@@ -91,16 +91,11 @@ int Appfs::get_info(const char * path, appfs_info_t & info){
 	File f;
 	int ret;
 	if( f.open(path, File::RDONLY) < 0 ){
-		printf("Failed to open %s - %d\n", path, errno);
 		return -1;
 	}
 
 	ret = f.ioctl(I_APPFS_GETINFO, &info);
 	f.close();
-
-	if( ret < 0 ){
-		printf("Failed to get app info %d\n", errno);
-	}
 
 	return ret;
 }

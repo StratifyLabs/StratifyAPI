@@ -31,6 +31,7 @@ Data::Data(void * mem, u32 s, bool readonly){
 }
 
 Data::Data(u32 s){
+	zero();
 	alloc(s);
 }
 
