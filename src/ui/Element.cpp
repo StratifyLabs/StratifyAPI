@@ -28,11 +28,6 @@ Element * Element::handle_event(const Event & event, const DrawingAttr & attr){
 	return this;
 }
 
-void Element::set_animation_type(u8 v){}
-void Element::set_animation_frame_delay(u16 delay){}
-u8 Element::animation_type() const{ return AnimationAttr::PUSH_LEFT; }
-void Element::set_animation_path(u8 path){}
-
 void Element::set_animation(u8 type, u8 path, u16 delay){
 	set_animation_type(type);
 	set_animation_path(path);
@@ -41,5 +36,3 @@ void Element::set_animation(u8 type, u8 path, u16 delay){
 	}
 }
 
-u8 Element::animation_path() const { return AnimationAttr::SQUARED; }
-u16 Element::animation_frame_delay() const { return 16; }

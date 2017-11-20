@@ -5,6 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../src/sys/Appfs.cpp \
+../src/sys/Assets.cpp \
 ../src/sys/Cli.cpp \
 ../src/sys/Dir.cpp \
 ../src/sys/File.cpp \
@@ -20,6 +21,7 @@ CPP_SRCS += \
 
 OBJS += \
 ./src/sys/Appfs.o \
+./src/sys/Assets.o \
 ./src/sys/Cli.o \
 ./src/sys/Dir.o \
 ./src/sys/File.o \
@@ -35,6 +37,7 @@ OBJS += \
 
 CPP_DEPS += \
 ./src/sys/Appfs.d \
+./src/sys/Assets.d \
 ./src/sys/Cli.d \
 ./src/sys/Dir.d \
 ./src/sys/File.d \

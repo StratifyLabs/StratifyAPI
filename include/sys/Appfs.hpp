@@ -4,6 +4,7 @@
 #define APPFS_HPP_
 
 #include <sos/link.h>
+#include "../var/String.hpp"
 
 namespace sys {
 
@@ -84,6 +85,18 @@ public:
 	 *
 	 */
 	static u16 get_version(const char * path);
+
+	/*! \details Gets the application ID value.
+	 *
+	 * @param path The path to the file (must be in the /app folder)
+	 * @return Zero on success
+	 *
+	 *
+	 */
+	static int get_id(const char * path, char * id, u32 capacity);
+	static int get_id(const char * path, var::String & id){
+		return get_id(path, id.cdata(), id.capacity());
+	}
 
 #if !defined __link
 	static int cleanup(bool data = false);

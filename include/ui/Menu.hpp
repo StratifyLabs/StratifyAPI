@@ -29,13 +29,6 @@ public:
 	virtual Element * handle_event(const Event & event, const draw::DrawingAttr & attr);
 	virtual void draw(const draw::DrawingAttr & attr);
 
-	virtual void set_animation_type(u8 v);
-	virtual u8 animation_type() const;
-	virtual void set_animation_path(u8 v);
-	virtual u8 animation_path() const;
-	virtual void set_animation_frame_delay(u16 delay);
-	virtual u16 animation_frame_delay() const;
-
 	/*! \details Access a reference to the current element */
 	ElementLinked & current(){ return *m_current; }
 

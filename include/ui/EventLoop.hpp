@@ -90,6 +90,9 @@ public:
 	 */
 	virtual void start();
 
+	static void start(ui::Element * element, const draw::DrawingAttr & drawing_attr);
+
+
 	/*! \details This method will loop while the current element is valid.
 	 * It handles sending events to the active element.  Event::UPDATE
 	 * is sent based on upate_period().  Whenever the active element
@@ -132,6 +135,7 @@ public:
 
 	static Element * handle_event(Element * current_element, const Event & event, const draw::DrawingAttr & drawing_attr);
 
+	static void handle_transition(Element * current_element, Element * next_element, const draw::DrawingAttr & drawing_attr);
 
 protected:
 	bool handle_event(const ui::Event & event);

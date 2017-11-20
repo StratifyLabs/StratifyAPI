@@ -57,35 +57,13 @@ public:
 	/*! \details Access a reference to the current tab (same as as(selected())) */
 	Tab & current(){ return at(selected()); }
 
-	void set_animation_type(u8 v);
-	u8 animation_type() const;
-	void set_animation_path(u8 v);
-	u8 animation_path() const;
-	void set_animation_frame_delay(u16 delay);
-	u16 animation_frame_delay() const;
-
 	draw::Animation & animation(){ return m_animation; }
-
-	/*! \details Access whether bouncing left is enabled */
-	bool is_bounce_left_enabled() const { return flag(FLAG_BOUNCE_LEFT_ENABLE); }
-	/*! \details Set whether the tab should bounce on trying to go left on the left-most tab */
-	void set_bounce_left_enabled(bool v = true){ set_flag(FLAG_BOUNCE_LEFT_ENABLE, v); }
-
-	/*! \details Access whether bouncing right is enabled */
-	bool is_bounce_right_enabled() const { return flag(FLAG_BOUNCE_RIGHT_ENABLE); }
-	/*! \details Set whether the tab should bounce on trying to go right on the right-most tab */
-	void set_bounce_right_enabled(bool v = true){ set_flag(FLAG_BOUNCE_RIGHT_ENABLE, v); }
 
 protected:
 	void draw_tab_bar(const draw::DrawingAttr & attr, int selected);
 
 private:
 
-	enum {
-		FLAG_BOUNCE_LEFT_ENABLE = FLAG_ELEMENT_TOTAL,
-		FLAG_BOUNCE_RIGHT_ENABLE,
-		FLAG_TAB_BAR_TOTAL
-	};
 
 	draw::drawing_size_t m_height;
 	draw::drawing_size_t m_highlight;

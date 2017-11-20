@@ -98,7 +98,6 @@ Element * ListItem::handle_event(const Event  & event, const DrawingAttr & attr)
 	if( event.type() == Event::SETUP ){
 		if( child() ){
 			child()->set_parent(parent());
-			child()->handle_event(event, attr);
 		}
 	} else if( event.type() == Event::LIST_ITEM_ACTUATED ){
 		if ( child() ){

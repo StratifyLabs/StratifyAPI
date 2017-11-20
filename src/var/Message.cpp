@@ -79,6 +79,7 @@ int Message::send(){
 		msg.checksum = 0;
 
 		bytes = 0;
+		count = 0;
 		do {
 			ret = ::write(m_fd, cdata_const() + bytes, s - bytes);
 			if( ret < 0 ){

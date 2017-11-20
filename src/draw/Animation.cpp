@@ -10,12 +10,17 @@ AnimationAttr::AnimationAttr(){
 	attr().path.step_total = 10;
 	attr().path.motion_total = 100;
 	m_drawing_motion_total = 1000;
+	m_frame_delay = 18;
 }
 
 Animation::Animation() {
 	// TODO Auto-generated constructor stub
 	m_drawing_attr = 0;
-	m_frame_delay = 18;
+}
+
+Animation::Animation(const AnimationAttr & attr){
+	m_drawing_attr = 0;
+	assign(attr);
 }
 
 void Animation::init(Drawing * current,
@@ -124,7 +129,7 @@ int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
 
 	m_drawing_attr->bitmap().set_pen_flags(o_flags);
 	m_drawing_attr->bitmap().refresh();
-	Timer::wait_msec(m_frame_delay);
+	Timer::wait_msec(frame_delay());
 
 	m_drawing_attr->bitmap().wait(1000);
 

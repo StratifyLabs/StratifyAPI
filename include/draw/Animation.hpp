@@ -38,8 +38,15 @@ public:
 	enum {
 		LINEAR /*! Linear Animation */ = SG_ANIMATION_PATH_LINEAR,
 		SQUARED /*! Accelerating animation */ = SG_ANIMATION_PATH_SQUARED,
-		SQUARED_UNDO /*! Deaccelerating animation */ = SG_ANIMATION_PATH_SQUARED_UNDO
+		SQUARED_UNDO /*! De-accelerating animation */ = SG_ANIMATION_PATH_SQUARED_UNDO
 	};
+
+
+	void assign(const AnimationAttr & attr){
+		m_attr = attr.m_attr;
+		m_drawing_motion_total = attr.m_drawing_motion_total;
+		m_frame_delay = attr.m_frame_delay;
+	}
 
 	/*! \details Returns a reference to the attibutes. */
 	sg_animation_t & attr(){ return m_attr; }
@@ -76,9 +83,25 @@ public:
 
 	sg_animation_t * data(){ return &m_attr; }
 
+	/*! \details Accesses the frame delay of the animation. */
+	u16 frame_delay() const { return m_frame_delay; }
+
+	/*! \details Sets the frame delay (in ms) of the animation.
+	 *
+	 * @param value The number of milliseconds to wait between frames.
+	 *
+	 * The animation will at least wait the amount of time required
+	 * to refresh the display. This delay will only have an effect
+	 * if it is longer than the time required to update the display.
+	 */
+	void set_frame_delay(u16 value){
+		m_frame_delay = value;
+	}
+
 private:
 	sg_animation_t m_attr;
 	drawing_size_t m_drawing_motion_total;
+	u16 m_frame_delay;
 };
 
 /*! \brief Animation Class
@@ -88,6 +111,7 @@ public:
 
 	/*! \details Constructs a new animation object. */
 	Animation();
+	Animation(const AnimationAttr & attr);
 
 	/*! \details Initializes the animation.
 	 *
@@ -124,26 +148,10 @@ public:
 	 */
 	bool exec(void (*draw)(void*,int,int) = 0, void * obj = 0);
 
-	/*! \details Accesses the frame delay of the animation. */
-	u16 frame_delay() const { return m_frame_delay; }
-	/*! \details Sets the frame delay (in ms) of the animation.
-	 *
-	 * @param value The number of milliseconds to wait between frames.
-	 *
-	 * The animation will at least wait the amount of time required
-	 * to refresh the display. This delay will only have an effect
-	 * if it is longer than the time required to update the display.
-	 */
-	void set_frame_delay(u16 value){
-		m_frame_delay = value;
-	}
-
-
 private:
 	int animate_frame(void (*draw)(void*,int,int), void * obj);
 	sg_animation_t * pattr(){ return data(); }
 	const DrawingAttr * m_drawing_attr;
-	u16 m_frame_delay;
 
 };
 

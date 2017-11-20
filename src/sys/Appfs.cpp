@@ -89,16 +89,30 @@ int Appfs::create(const char * name, const void * buf, int nbyte, const char * m
 
 int Appfs::get_info(const char * path, appfs_info_t & info){
 	File f;
+	appfs_file_t appfs_file_header;
+
 	int ret;
 	if( f.open(path, File::RDONLY) < 0 ){
 		return -1;
 	}
 
-	ret = f.ioctl(I_APPFS_GETINFO, &info);
+	ret = f.read(&appfs_file_header, sizeof(appfs_file_header));
 	f.close();
+	if( ret == sizeof(appfs_file_header) ){
+		info.mode = appfs_file_header.hdr.mode;
+		info.version = appfs_file_header.hdr.version;
+		memcpy(info.name, appfs_file_header.hdr.name, LINK_NAME_MAX);
+		memcpy(info.id, appfs_file_header.hdr.id, LINK_NAME_MAX);
+		info.ram_size = appfs_file_header.exec.ram_size;
+		info.o_flags = appfs_file_header.exec.o_flags;
+		info.signature = appfs_file_header.exec.signature;
+	} else {
+		ret = -1;
+	}
 
 	return ret;
 }
+
 
 u16 Appfs::get_version(const char * path){
 	appfs_info_t info;
@@ -109,6 +123,19 @@ u16 Appfs::get_version(const char * path){
 
 	return info.version;
 }
+
+int Appfs::get_id(const char * path, char * id, u32 capacity){
+	appfs_info_t info;
+	int bytes;
+	if( get_info(path, info) < 0 ){
+		return -1;
+	}
+	bytes = capacity > (LINK_NAME_MAX-2) ? (LINK_NAME_MAX-2) : capacity;
+	strncpy(id, (char*)info.id, bytes);
+	return 0;
+
+}
+
 
 #ifndef __link
 

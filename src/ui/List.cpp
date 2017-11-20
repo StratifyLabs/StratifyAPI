@@ -178,9 +178,7 @@ Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 	default: break;
 	case Event::SETUP:
 		m_draw_animation_item = size();
-		if( child() && (child() != this) ){
-			child()->handle_event(event, attr);
-		}
+		ElementLinked::handle_event(event, attr);
 		/* no break */
 	case Event::ENTER:
 		for(i=0; i < size(); i++){
