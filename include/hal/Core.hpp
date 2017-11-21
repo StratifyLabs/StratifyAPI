@@ -1,4 +1,5 @@
-/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
+
 #ifndef SAPI_CORE_HPP_
 #define SAPI_CORE_HPP_
 

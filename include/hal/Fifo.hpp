@@ -1,9 +1,4 @@
-/*
- * Fifo.hpp
- *
- *  Created on: May 2, 2014
- *      Author: tgil
- */
+/*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
 #ifndef FIFO_HPP_
 #define FIFO_HPP_
@@ -36,8 +31,8 @@ public:
 	/*! \details This method accesses whether or not the FIFO has overflowed
 	 * since the last time the FIFO attributes have been read.
 	 */
-	bool is_overflowidth() const { return m_info.overflow != 0; }
-	bool overflowidth() const { return m_info.overflow != 0; }
+	bool is_overflow() const { return m_info.overflow != 0; }
+	bool overflow() const { return m_info.overflow != 0; }
 private:
 	fifo_info_t m_info;
 };
@@ -56,7 +51,7 @@ private:
  *
  * Fifo's can be opened in blocking and non-blocking modes when both reading and writing.
  * If Fifo::set_writeblock() is called, a write will block when the Fifo is full. Otherwise,
- * the Fifo will overflow and FifoInfo::is_overflowidth() will return true.
+ * the Fifo will overflow and FifoInfo::is_overflow() will return true.
  *
  *
  * \code
@@ -85,10 +80,20 @@ class Fifo : public hal::Dev {
 public:
 	Fifo();
 
-	/*! \details Read the Fifo Attributes */
+	enum {
+		FLAG_SET_WRITEBLOCK = FIFO_FLAG_SET_WRITEBLOCK,
+		FLAG_IS_OVERFLOW = FIFO_FLAG_IS_OVERFLOW,
+		FLAG_NOTIFY_WRITE = FIFO_FLAG_NOTIFY_WRITE,
+		FLAG_NOTIFY_READ = FIFO_FLAG_NOTIFY_READ,
+		FLAG_INIT = FIFO_FLAG_INIT,
+		FLAG_EXIT = FIFO_FLAG_EXIT,
+		FLAG_FLUSH = FIFO_FLAG_FLUSH
+	};
+
+	/*! \details Reads the Fifo Attributes. */
 	int get_info(fifo_info_t & info) const;
 
-	/*! \details Return the fifo attributes */
+	/*! \details Returns the fifo info. */
 	const FifoInfo get_info() const {
 		FifoInfo a;
 		get_info(a.m_info);
@@ -106,16 +111,15 @@ public:
 	 */
 	int init() const;
 
-	/*! \details Exit the FIFO */
 	int exit() const;
 
 	/*! \details Sets the FIFO in write block mode.
 	 *
-	 * If a write is attempted (and the file descriptor is not in non-blocking mode), the
-	 * write will block until data is read from the FIFO.
+	 * If a write is attempted that won't fit in the unused space in
+	 * the FIFO, the FIFO will block until there is space available.
 	 *
 	 */
-	int set_writeblock() const;
+	int set_writeblock(bool value = true) const;
 
 };
 

@@ -22,10 +22,11 @@ namespace fmt {
  * closely related to JSON (and very closely related to BSON).  It allows you to store, access, and modify
  * data in the same way but is designed for use on resource constrained systems.
  *
+ * SON data can be easily converted to JSON data using the to_json() method.
+ *
  * Important things to note:
- * - Key names are limited to 7 characters (longer names are truncated)
+ * - Key names are limited to 15 (SON_KEY_NAME_SIZE) characters (longer names are truncated)
  * - The stacksize template value is the depth limit when creating files
- * - You can only append to files that are left with an open ended array
  * - You can't modify the length of strings or data objects within a file
  * - You must create root ("") as the first object or array
  *
@@ -38,7 +39,7 @@ namespace fmt {
  * int main(int argc, char * argv[]){
  * 	Son son<4>; //depth is limited to 4
  *
- *	//tabs are added to help visualize the parallel to JSON
+ *	//tabs are added to help visualize the data in JSON format
  * 	son.create("/home/settings.son");
  * 		son.open_obj("");
  * 			son.write("name", "Stratify"); //create a string
@@ -54,7 +55,7 @@ namespace fmt {
  *
  * 	char buffer[32];
  * 	u32 value;
- * 	son.open("/home/settings.son"); //opens read-only
+ * 	son.open_read("/home/settings.son"); //opens read-only
  *
  * 	son.read_str("name", buffer, 32);
  * 	//buffer holds "Stratify"
@@ -69,18 +70,23 @@ namespace fmt {
  * 	}
  *  \endcode
  *
- *  The settings.json files looks like:
+ *  The home/settings.json files looks like:
  *
  *      {
  *          "name": "Stratify",
  *          "date": "today",
- *          "value": "100",
- *          "stuff": {
- *              "hour": "12",
- *              "min": "0",
- *              "sec": "59"
+ *          "value": 100,
+ *          "time": {
+ *              "hour": 12,
+ *              "min": 0,
+ *              "sec": 59
  *           }
  *      }
+ *
+ *  Note that JSON numbers are always in floating point format. So unum and num values
+ *  get converted to float value. If the JSON data is converted to SON, all numbers will
+ *  be in float format.
+ *
  */
 template<int stacksize> class Son {
 public:

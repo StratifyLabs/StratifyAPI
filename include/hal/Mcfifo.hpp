@@ -18,12 +18,35 @@ public:
 	Mcfifo();
 
 
+	/*! \details Gets the number of channels in the multi-channel fifo. */
 	int get_count() const;
 
+	/*! \details Gets the info for the multi-channel fifo. */
 	int get_info(mcfifo_info_t & info) const;
 
+	/*! \details Gets the owner of the specified channel.
+	 *
+	 * @param channel The channel that is queried
+	 * @return The owner value (typically a process ID)
+	 *
+	 * This method along with set_owner() provides a mechanism to reserve
+	 * the channel for a particular application. If the owner has been
+	 * set to a non-zero value, it is already being used by another
+	 * process and should not be used.
+	 *
+	 */
 	int get_owner(int channel) const;
 
+	/*! \details Sets the owner of a channel.
+	 *
+	 * @param channel The channel
+	 * @param owner The owner (usually the process ID)
+	 * @return Zero on success
+	 *
+	 * This method is used with get_owner() to allow processes
+	 * to reserve channels for passing information.
+	 *
+	 */
 	int set_owner(int channel, int owner) const;
 
 

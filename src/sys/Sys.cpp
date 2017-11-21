@@ -43,6 +43,26 @@ int Sys::free_ram(const char * path, link_transport_mdriver_t * driver){
 	return ret;
 }
 
+void Sys::assign_zero_sum32(void * data, int count){
+	u32 sum = 0;
+	u32 * ptr = (u32*)data;
+	int i;
+	for(i=0; i < count-1; i++){
+		sum += ptr[i];
+	}
+	ptr[i] = (u32)(0 - sum);
+}
+
+int Sys::verify_zero_sum32(void * data, int count){
+	u32 sum = 0;
+	u32 * ptr = (u32*)data;
+	int i;
+	for(i=0; i < count; i++){
+		sum += ptr[i];
+	}
+	return sum == 0;
+}
+
 int Sys::reclaim_ram(const char * path, link_transport_mdriver_t * driver){
 	int fd;
 	int ret;

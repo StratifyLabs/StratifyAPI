@@ -5,14 +5,68 @@
 #define VAR_MESSAGE_HPP_
 
 #include "../fmt/Son.hpp"
-#include "../sys/File.hpp"
+#include "../hal/Dev.hpp"
 
 namespace var {
 
+/*! \brief Message Class
+ * \details The Message Class is used to send and receive
+ * data in object notation.
+ *
+ * The Message Class formats messages using fmt::Son<4> objects.
+ * The messages are sent and received using a device (usually a
+ * FIFO but could be sent over a UART or SPI etc).
+ *
+ * Here is an example of sending a message.
+ *
+ * \code
+ * Message message("/dev/multistream", 256, 2, 3); //read on multistream channel 2 and write on 3
+ *
+ * message.create(); //create a blank message
+ * message.write("name", "HelloWorld"); //write a key value pair
+ * message.write("version", "1.0"); //write another pair
+ * message.write("size", 1024);
+ *
+ * message.set_timeout(500); //allow the receiver 500ms to receive the message
+ *
+ * if( message.send() < 0 ){
+ *  printf("Failed to send message\n"); //this happens if no process is ready to read the message
+ * }
+ *
+ * \endcode
+ *
+ * To receive a message:
+ *
+ * \code
+ *
+ * Message message("/dev/multistream", 256, 3, 2);
+ *
+ * if( message.recv() > 0 ){
+ *  //got a message
+ *  var::String value;
+ *  message.read_str("name", value);
+ *  printf("Name: %s\n", value.c_str()); //name is "HelloWorld"
+ * }
+ *
+ * \endcode
+ *
+ *
+ */
 class Message : public Data, public fmt::Son<4> {
 public:
-	Message(const char * device, int read_channel, int write_channel, int max_capacity);
+
+	/*! \details Constructs a new message object.
+	 *
+	 * @param device The device used to send/receive messages
+	 * @param max_capacity The maximum size of the message
+	 * @param read_channel Device channel for reading
+	 * @param write_channel Device channel for writing
+	 */
+	Message(const hal::Dev & device, int max_capacity);
 	~Message();
+
+	/*! \details Returns true if device is open.	 */
+	bool is_open() const { return m_dev.fileno() >= 0; }
 
 	/*! \details Creates a new empty message.
 	 *
@@ -21,7 +75,7 @@ public:
 	 * If a message previously existed, it will be discarded.
 	 *
 	 */
-	int create();
+	virtual int create();
 
 	/*! \details Configures the message for editing.
 	 *
@@ -29,9 +83,32 @@ public:
 	 */
 	int edit();
 
-	int size();
+	/*! \details Configures the message for reading.
+	 *
+	 * @return Zero on success
+	 */
+	int read();
 
-	/*! \details Saves the message to a file.
+	int close(){
+		if( (m_state == CREATE_STATE) || (m_state == EDIT_STATE) || (m_state == READ_STATE) ){
+			m_state = CLOSE_STATE;
+			return Son<4>::close();
+		}
+		return 0;
+	}
+
+	/*! \details Calculates the current size of the
+	 * message.
+	 *
+	 * @return Number of bytes currently occupied by the message.
+	 *
+	 * The message must be in read mode in order to calculate the size.
+	 *
+	 * See read().
+	 */
+	u32 calc_size();
+
+	/*! \details Saves the message to a file in SON format.
 	 *
 	 * @param path The path to the file to create
 	 * @return Zero on success
@@ -59,7 +136,7 @@ public:
 	 * }
 	 * \endcode
 	 */
-	int send();
+	int send(int channel = -1);
 
 	/*! \details Receives a message on the connection.
 	 *
@@ -73,7 +150,7 @@ public:
 	 * }
 	 * \endcode
 	 */
-	int recv();
+	int recv(int channel = -1);
 
 
 	/*! \details Returns the timeout in milliseconds.
@@ -89,15 +166,26 @@ public:
 	/*! \details Sets the timeout in milliseconds. */
 	void set_timeout(int value) { m_timeout = value; }
 
+protected:
+
+	enum {
+		INIT_STATE,
+		CREATE_STATE,
+		EDIT_STATE,
+		READ_STATE,
+		CLOSE_STATE
+	};
+
+	u8 state() const { return m_state; }
+
 
 private:
 
-	int m_fd;
+	const hal::Dev & m_dev;
 
 	typedef struct MCU_PACK {
 		u32 start;
 		u32 size;
-		u32 data_checksum;
 		u32 checksum;
 	} message_t;
 
@@ -106,9 +194,12 @@ private:
 	};
 
 	u16 m_timeout;
+	u8 m_state;
 
-	u16 m_read_channel;
-	u16 m_write_channel;
+
+
+	int send_data(int channel, const u8 *  data, int nbytes);
+	int recv_data(int channel, u8 * data, int nbytes);
 
 
 };

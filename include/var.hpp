@@ -12,9 +12,9 @@ namespace var {};
 
 #include "var/Data.hpp"
 #include "var/Flags.hpp"
-#include "var/ChartString.hpp"
 #include "var/JsonString.hpp"
 #include "var/Item.hpp"
+#include "var/Message.hpp"
 #include "var/Ring.hpp"
 #include "var/String.hpp"
 #include "var/StringUtil.hpp"

@@ -5,6 +5,13 @@
 #define UI_HPP_
 
 /*! \brief User Interface Namespace
+ * \details The ui namespace is a collection of classes
+ * used to build a graphical User Interface on embedded devices.
+ *
+ * The ui is event driven. Each ui Element needs to
+ * provide a method for handling events and drawing
+ * the display.
+ *
  *
  */
 namespace ui {}
