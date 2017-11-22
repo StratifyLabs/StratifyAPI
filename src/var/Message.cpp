@@ -94,13 +94,10 @@ int Message::load(const char * path){
 	return -1;
 }
 
-int Message::recv_data(int channel, u8 * data, int nbytes){
+int Message::recv_data(u8 * data, int nbytes) const {
 	int ret;
 	int bytes = 0;
 	int count = 0;
-	if( channel >= 0 ){
-		m_dev.seek(channel, SEEK_SET);
-	}
 	do {
 		ret = m_dev.read(data + bytes, nbytes - bytes);
 		if( ret < 0 ){
@@ -116,18 +113,40 @@ int Message::recv_data(int channel, u8 * data, int nbytes){
 	return nbytes;
 }
 
+bool Message::recv_start(){
+	int i;
+	u8 c;
+	u8 start;
+	i = 0;
+	do {
+		if( recv_data(&c, 1) < 0 ){
+			return false;
+		}
+		start = ((MESSAGE_START >> (i*8)) & 0xff);
+		if( c == start ){
+			i++;
+		} else {
+			i = 0;
+		}
+	} while( i < 4 );
+	return true;
+}
 
-int Message::recv(int channel){
+
+int Message::recv(){
 	message_t msg;
 	int ret = -1;
 
+
 	if( is_open() ){
-		if( recv_data(channel, (u8*)&msg, sizeof(msg)) >= 0 ){
-			if( msg.start == MESSAGE_START ){
+
+		if( recv_start() ){
+
+			if( recv_data((u8*)&msg.size, sizeof(msg)-sizeof(u32)) >= 0 ){
 				if( 1 ){ //see if msg.checksum is valid
 					clear();
 					//now receive the actual data
-					if( recv_data(channel, (u8*)cdata(), msg.size) < 0 ){
+					if( recv_data((u8*)cdata(), msg.size) < 0 ){
 						ret = -1;
 					} else {
 						//configure the message for reading
@@ -144,13 +163,10 @@ int Message::recv(int channel){
 	return ret;
 }
 
-int Message::send_data(int channel, const u8 *  data, int nbytes){
+int Message::send_data(const u8 *  data, int nbytes) const {
 	int ret;
 	int bytes = 0;
 	int count = 0;
-	if( channel >= 0 ){
-		m_dev.seek(channel, SEEK_SET);
-	}
 	do {
 		ret = m_dev.write(data + bytes, nbytes - bytes);
 		if( ret < 0 ){
@@ -160,30 +176,34 @@ int Message::send_data(int channel, const u8 *  data, int nbytes){
 				return -1;
 			}
 		} else {
+			count = 0;
 			bytes += ret;
 		}
 	} while( bytes < nbytes );
 	return nbytes;
 }
 
-int Message::send(int channel){
+int Message::send(){
 	message_t msg;
 	int s = -1;
 
-	close();
-
 	if( is_open() ){
+		if( state() != READ_STATE ){
+			if( close() < 0 ){ return -1; }
+			if( read() < 0 ){ return -1; }
+		}
+
 		s = calc_size();
-		if( s ) {
+		if( s > 0 ) {
 			msg.start = MESSAGE_START;
 			msg.size = s;
 			//Sys::assign_zero_sum32(&msg, sizeof(msg));
 
-			if( send_data(channel, (const u8*)&msg, sizeof(msg)) < 0 ){
+			if( send_data((const u8*)&msg, sizeof(msg)) < 0 ){
 				return -1;
 			}
 
-			if( send_data(channel, (const u8*)cdata_const(), s) < 0 ){
+			if( send_data((const u8*)cdata_const(), s) < 0 ){
 				return -1;
 			}
 		}

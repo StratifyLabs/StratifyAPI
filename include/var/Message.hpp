@@ -136,7 +136,7 @@ public:
 	 * }
 	 * \endcode
 	 */
-	int send(int channel = -1);
+	int send();
 
 	/*! \details Receives a message on the connection.
 	 *
@@ -150,7 +150,7 @@ public:
 	 * }
 	 * \endcode
 	 */
-	int recv(int channel = -1);
+	int recv();
 
 
 	/*! \details Returns the timeout in milliseconds.
@@ -197,9 +197,11 @@ private:
 	u8 m_state;
 
 
+	bool recv_start();
 
-	int send_data(int channel, const u8 *  data, int nbytes);
-	int recv_data(int channel, u8 * data, int nbytes);
+
+	int send_data(const u8 *  data, int nbytes) const;
+	int recv_data(u8 * data, int nbytes) const;
 
 
 };
