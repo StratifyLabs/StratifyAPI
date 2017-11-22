@@ -136,17 +136,18 @@ bool Message::recv_start(){
 int Message::recv(){
 	message_t msg;
 	int ret = -1;
-
+	int s;
 
 	if( is_open() ){
-
 		if( recv_start() ){
-
+			msg.start = MESSAGE_START;
 			if( recv_data((u8*)&msg.size, sizeof(msg)-sizeof(u32)) >= 0 ){
-				if( 1 ){ //see if msg.checksum is valid
+				if( Sys::verify_zero_sum32(&msg, sizeof(msg)) ){ //see if msg.checksum is valid
 					clear();
 					//now receive the actual data
-					if( recv_data((u8*)cdata(), msg.size) < 0 ){
+					s = msg.size < capacity() ? msg.size : capacity();
+
+					if( recv_data((u8*)cdata(), s) < 0 ){
 						ret = -1;
 					} else {
 						//configure the message for reading
@@ -197,7 +198,7 @@ int Message::send(){
 		if( s > 0 ) {
 			msg.start = MESSAGE_START;
 			msg.size = s;
-			//Sys::assign_zero_sum32(&msg, sizeof(msg));
+			Sys::assign_zero_sum32(&msg, sizeof(msg));
 
 			if( send_data((const u8*)&msg, sizeof(msg)) < 0 ){
 				return -1;
@@ -210,7 +211,5 @@ int Message::send(){
 	}
 	return s;
 }
-
-
 
 } /* namespace var */

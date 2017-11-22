@@ -76,8 +76,8 @@ public:
 	static int reclaim_ram(const char * path, link_transport_mdriver_t * driver = 0);
 
 
-	static void assign_zero_sum32(void * data, int count);
-	static int verify_zero_sum32(void * data, int count);
+	static void assign_zero_sum32(void * data, int size);
+	static int verify_zero_sum32(void * data, int size);
 
 
 #if !defined __link

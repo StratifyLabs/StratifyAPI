@@ -43,20 +43,26 @@ int Sys::free_ram(const char * path, link_transport_mdriver_t * driver){
 	return ret;
 }
 
-void Sys::assign_zero_sum32(void * data, int count){
+void Sys::assign_zero_sum32(void * data, int size){
 	u32 sum = 0;
 	u32 * ptr = (u32*)data;
 	int i;
+	int count;
+	if( size & 0x03 ){ return; }
+	count = size / sizeof(u32);
 	for(i=0; i < count-1; i++){
 		sum += ptr[i];
 	}
 	ptr[i] = (u32)(0 - sum);
 }
 
-int Sys::verify_zero_sum32(void * data, int count){
+int Sys::verify_zero_sum32(void * data, int size){
 	u32 sum = 0;
 	u32 * ptr = (u32*)data;
 	int i;
+	int count;
+	if( size & 0x03 ){ return 1; }
+	count = size / sizeof(u32);
 	for(i=0; i < count; i++){
 		sum += ptr[i];
 	}
