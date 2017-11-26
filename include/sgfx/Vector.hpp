@@ -17,8 +17,18 @@ namespace sgfx {
 class VectorMap : public var::Item<sg_vector_map_t> {
 public:
 
+	/*! \details Constructs an empty vector map. */
 	VectorMap(){}
+
+	/*! \details Constructs a vector map that is centered in \a bitmap.
+	 *
+	 * @param bitmap Bitmap used to center map
+	 * @param rotation Rotation mapping
+	 *
+	 * This uses method set_bitmap_center().
+	 */
 	VectorMap(const Bitmap & bitmap, s16 rotation = 0);
+
 
 	void set_bitmap_center(const Bitmap & bitmap, s16 rotation = 0);
 
@@ -60,22 +70,28 @@ public:
 	 * @param y1 The y point to start the fill algorithm
 	 * @return
 	 */
-	static sg_vector_primitive_t fill(sg_int_t x1, sg_int_t y1);
-
-	static sg_vector_primitive_t line(sg_int_t x1, sg_int_t y1, sg_int_t x2, sg_int_t y2);
-
-	static sg_vector_primitive_t line(Point p1, Point p2){
-		return line(p1.x(), p1.y(), p2.x(), p2.y());
+	static sg_vector_primitive_t fill(const Point & p);
+	static sg_vector_primitive_t fill(sg_int_t x, sg_int_t y){
+		return fill(Point(x,y));
 	}
 
-	static sg_vector_primitive_t circle(sg_int_t x, sg_int_t y, sg_size_t r);
-	static sg_vector_primitive_t circle(Point p, sg_size_t r){
-		return circle(p.x(), p.y(), r);
+	static sg_vector_primitive_t line(const Point & p1, const Point & p2);
+	static sg_vector_primitive_t line(sg_int_t x1, sg_int_t y1, sg_int_t x2, sg_int_t y2){
+		return line(sg_point(x1, y1), sg_point(x2, y2));
 	}
-	static sg_vector_primitive_t arc(sg_int_t x, sg_int_t y, sg_size_t rx, sg_size_t ry, s16 start, s16 stop, s16 rotation = 0);
-	static sg_vector_primitive_t arc(Point p, sg_size_t r, s16 start, s16 stop, s16 rotation = 0){
-		return arc(p.x(), p.y(), r, start, stop, rotation);
+
+	static sg_vector_primitive_t circle(const Point & p, sg_size_t r);
+	static sg_vector_primitive_t circle(sg_int_t x, sg_int_t y, sg_size_t r){
+		return circle(Point(x,y), r);
 	}
+
+	static sg_vector_primitive_t arc(const Point & p, sg_size_t rx, sg_size_t ry, s16 start, s16 stop, s16 rotation = 0);
+	static sg_vector_primitive_t arc(sg_int_t x, sg_int_t y, sg_size_t rx, sg_size_t ry, s16 start, s16 stop, s16 rotation = 0){
+		return arc(sg_point(x,y), rx, ry, start, stop, rotation);
+	}
+
+	static sg_vector_primitive_t quadratic_bezier(const Point & p1, const Point & p2, const Point & p3);
+	static sg_vector_primitive_t cubic_bezier(const Point & p1, const Point & p2, const Point & p3, const Point & p4);
 
 	static void show(const sg_vector_primitive_t & mg);
 	static void show(const sg_vector_icon_t & icon);

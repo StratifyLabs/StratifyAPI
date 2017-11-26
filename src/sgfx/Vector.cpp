@@ -52,25 +52,42 @@ void Vector::draw(Bitmap & bitmap, const sg_vector_icon_t & icon, const sg_vecto
 	sg_api()->vector_draw_icon(bitmap.bmap(), &icon, &map, bounds);
 }
 
-sg_vector_primitive_t Vector::line(sg_int_t x1, sg_int_t y1, sg_int_t x2, sg_int_t y2){
+sg_vector_primitive_t Vector::line(const Point & p1, const Point & p2){
 	sg_vector_primitive_t ret;
 	memset(&ret, 0, sizeof(ret));
 	ret.type = SG_LINE | SG_ENABLE_FLAG;
-	ret.shift.x = x1;
-	ret.shift.y = y1;
-	ret.line.p.x = x2;
-	ret.line.p.y = y2;
-	ret.rotation = 0;
+	ret.line.p1 = p1;
+	ret.line.p2 = p2;
+	return ret;
+}
+
+sg_vector_primitive_t Vector::cubic_bezier(const Point & p1, const Point & p2, const Point & p3, const Point & p4){
+	sg_vector_primitive_t ret;
+	memset(&ret, 0, sizeof(ret));
+	ret.type = SG_CUBIC_BEZIER | SG_ENABLE_FLAG;
+	ret.cubic_bezier.p1 = p1;
+	ret.cubic_bezier.p2 = p2;
+	ret.cubic_bezier.p3 = p3;
+	ret.cubic_bezier.p4 = p4;
+	return ret;
+}
+
+sg_vector_primitive_t Vector::quadratic_bezier(const Point & p1, const Point & p2, const Point & p3){
+	sg_vector_primitive_t ret;
+	memset(&ret, 0, sizeof(ret));
+	ret.type = SG_QUADRATIC_BEZIER | SG_ENABLE_FLAG;
+	ret.quadratic_bezier.p1 = p1;
+	ret.quadratic_bezier.p2 = p2;
+	ret.quadratic_bezier.p3 = p3;
 	return ret;
 }
 
 
-sg_vector_primitive_t Vector::circle(sg_int_t x, sg_int_t y, sg_size_t r){
+sg_vector_primitive_t Vector::circle(const Point & p, sg_size_t r){
 	sg_vector_primitive_t ret;
 	memset(&ret, 0, sizeof(ret));
 	ret.type = SG_ARC | SG_ENABLE_FLAG;
-	ret.shift.x = x;
-	ret.shift.y = y;
+	ret.arc.center = p;
 	ret.arc.rx = r;
 	ret.arc.ry = r;
 	ret.arc.start = 0;
@@ -78,28 +95,24 @@ sg_vector_primitive_t Vector::circle(sg_int_t x, sg_int_t y, sg_size_t r){
 	return ret;
 }
 
-sg_vector_primitive_t Vector::arc(sg_int_t x, sg_int_t y, sg_size_t rx, sg_size_t ry, sg_int_t start, sg_int_t stop, sg_int_t rotation){
+sg_vector_primitive_t Vector::arc(const Point & p, sg_size_t rx, sg_size_t ry, sg_int_t start, sg_int_t stop, sg_int_t rotation){
 	sg_vector_primitive_t ret;
 	memset(&ret, 0, sizeof(ret));
 	ret.type = SG_ARC | SG_ENABLE_FLAG;
-	ret.shift.x = x;
-	ret.shift.y = y;
+	ret.arc.center = p;
 	ret.arc.rx = rx;
 	ret.arc.ry = ry;
 	ret.arc.start = start;
 	ret.arc.stop = stop;
-	ret.rotation = rotation;
+	ret.arc.rotation = rotation;
 	return ret;
 }
 
-sg_vector_primitive_t Vector::fill(sg_int_t x1, sg_int_t y1){
+sg_vector_primitive_t Vector::fill(const Point & p){
 	sg_vector_primitive_t ret;
 	memset(&ret, 0, sizeof(ret));
 	ret.type = SG_FILL | SG_ENABLE_FLAG;
-	ret.shift.x = x1;
-	ret.shift.y = y1;
-	ret.rotation = 0;
-
+	ret.fill.center = p;
 	return ret;
 }
 

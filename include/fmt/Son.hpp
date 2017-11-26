@@ -129,22 +129,47 @@ public:
 	 */
 	int create(const char * name){ return son_api()->create(&m_son, name, m_stack, stacksize); }
 
-	/*! \details Creates a memory image SON object.
+	/*! \details Creates a memory message SON object.
 	 *
-	 * @param image The memory image
-	 * @param nbyte The number of bytes in the image
+	 * @param message The memory message
+	 * @param nbyte The number of bytes in the message
 	 *
 	 * @return Zero on success
 	 */
-	int create_image(void * image, int nbyte){ return son_api()->create_image(&m_son, image, nbyte, m_stack, stacksize); }
+	int create_message(void * message, int nbyte){ return son_api()->create_message(&m_son, message, nbyte, m_stack, stacksize); }
 
-	/*! \details Creates a memory image SON object using dynamic memory allocation.
+	/*! \details Creates a memory message SON object using dynamic memory allocation.
 	 *
-	 * @param nbyte The number of bytes in the image
+	 * @param nbyte The number of bytes in the message
 	 *
 	 * @return Zero on success
 	 */
-	int create_image(int nbyte){ return son_api()->create(&m_son, 0, nbyte); }
+	int create_message(int nbyte){ return son_api()->create(&m_son, 0, nbyte); }
+
+
+	/*! \details Sends a message on the specified file descriptor.
+	 *
+	 * @param fd The file descriptor to write the message to.
+	 * @param timeout The max number of milliseconds to wait between bytes before aborting.
+	 * @return The number of bytes sent or less then zero for an error
+	 */
+	int send_message(int fd, int timeout){ return son_api()->send_message(&m_son, fd, timeout); }
+
+
+	/*! \details Receives a message on the specified file descriptor.
+	 *
+	 * @param fd The file descriptor to listen for the message on.
+	 * @param timeout The max number of milliseconds to wait between bytes before aborting.
+	 * @return The number of bytes received or less than zero for an error
+	 */
+	int recv_message(int fd, int timeout){ return son_api()->recv_message(&m_son, fd, timeout); }
+
+
+	/*! \details Gets the size of the message in bytes.
+	 *
+	 * @return The number of bytes that will be sent is send_message() is called or less than zero for an error.
+	 */
+	int get_message_size(){ return son_api()->get_message_size(&m_son); }
 
 
 	/*! \details Opens a file for appending data.
@@ -161,13 +186,13 @@ public:
 	 */
 	int open_read(const char * name){ return son_api()->open(&m_son, name); }
 
-	/*! \details Opens a SON image for reading.
+	/*! \details Opens a SON message for reading.
 	 *
-	 * @param image The memory image
-	 * @param nbyte The number of bytes in the image
+	 * @param message The memory message
+	 * @param nbyte The number of bytes in the message
 	 * @return Zero on success
 	 */
-	int open_read_image(void * image, int nbyte){ return son_api()->open_image(&m_son, image, nbyte); }
+	int open_read_message(void * message, int nbyte){ return son_api()->open_message(&m_son, message, nbyte); }
 
 	/*! \details Opens a SON file for editing.
 	 *
@@ -176,13 +201,13 @@ public:
 	 */
 	int open_edit(const char * name){ return son_api()->edit(&m_son, name); }
 
-	/*! \details Opens a SON image for editing.
+	/*! \details Opens a SON message for editing.
 	 *
-	 * @param image The memory image
-	 * @param nbyte The number of bytes in the image
+	 * @param message The memory message
+	 * @param nbyte The number of bytes in the message
 	 * @return Zero on success
 	 */
-	int open_edit_image(void * image, int nbyte){ return son_api()->edit_image(&m_son, image, nbyte); }
+	int open_edit_message(void * message, int nbyte){ return son_api()->edit_message(&m_son, message, nbyte); }
 
 	/*! \details Closes a SON file. */
 	int close(){ return son_api()->close(&m_son); }

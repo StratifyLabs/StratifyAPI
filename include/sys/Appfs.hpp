@@ -89,11 +89,20 @@ public:
 	/*! \details Gets the application ID value.
 	 *
 	 * @param path The path to the file (must be in the /app folder)
+	 * @param id A pointer to the destination data for the ID
+	 * @param capacity The number of bytes available in \a id
 	 * @return Zero on success
 	 *
 	 *
 	 */
 	static int get_id(const char * path, char * id, u32 capacity);
+
+	/*! \details Gets the application ID value.
+	 *
+	 * @param path The path to the application
+	 * @param id A var::String reference that will store the ID
+	 * @return Zero on success
+	 */
 	static int get_id(const char * path, var::String & id){
 		return get_id(path, id.cdata(), id.capacity());
 	}

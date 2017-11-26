@@ -16,13 +16,10 @@ class Point {
 public:
 	Point(){ m_value.x = 0; m_value.y = 0; }
 	Point(sg_point_t p){ m_value = p; }
-	Point(const sg_vector_primitive_t & a);
 	Point(sg_int_t x, sg_int_t y){ m_value.x = x; m_value.y = y; }
 
 	sg_point_t point() const { return m_value; }
-
-	operator sg_point_t(){ return m_value; }
-
+	operator sg_point_t() const { return m_value; }
 
 	inline void set(sg_int_t x, sg_int_t y){ m_value.x = x; m_value.y = y; }
 
@@ -45,8 +42,17 @@ public:
 	static sg_size_t map_pixel_size(const sg_vector_map_t & m){ return sg_point_map_pixel_size(&m); }
 
 	Point & operator=(const sg_point_t & a){ m_value = a; return *this; }
-	Point & operator+(const sg_point_t & a){ sg_api()->point_shift(&m_value, a); return *this; }
-	Point & operator-(const sg_point_t & a){ sg_api()->point_subtract(&m_value, &a); return *this; }
+	Point & operator+=(const sg_point_t & a){ sg_api()->point_shift(&m_value, a); return *this; }
+	Point operator+(const sg_point_t & a){
+		Point p(*this);
+		sg_api()->point_shift(&p.m_value, a);
+		return p;
+	}
+	Point operator-(const sg_point_t & a){
+		Point p(*this);
+		sg_api()->point_subtract(&p.m_value, &a);
+		return p;
+	}
 
 	void rotate(s16 angle){ sg_api()->point_rotate(&m_value, angle); }
 	void scale(u16 a){ sg_api()->point_scale(&m_value, a); }

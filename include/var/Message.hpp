@@ -52,15 +52,13 @@ namespace var {
  *
  *
  */
-class Message : public Data, public fmt::Son<4> {
+class Message : public Data, public fmt::Son<8> {
 public:
 
 	/*! \details Constructs a new message object.
 	 *
 	 * @param device The device used to send/receive messages
 	 * @param max_capacity The maximum size of the message
-	 * @param read_channel Device channel for reading
-	 * @param write_channel Device channel for writing
 	 */
 	Message(const hal::Dev & device, int max_capacity);
 	~Message();
@@ -92,7 +90,7 @@ public:
 	int close(){
 		if( (m_state == CREATE_STATE) || (m_state == EDIT_STATE) || (m_state == READ_STATE) ){
 			m_state = CLOSE_STATE;
-			return Son<4>::close();
+			return Son<8>::close();
 		}
 		return 0;
 	}
@@ -106,7 +104,7 @@ public:
 	 *
 	 * See read().
 	 */
-	u32 calc_size();
+	int get_size();
 
 	/*! \details Saves the message to a file in SON format.
 	 *
@@ -183,26 +181,8 @@ private:
 
 	const hal::Dev & m_dev;
 
-	typedef struct MCU_PACK {
-		u32 start;
-		u32 size;
-		u32 checksum;
-	} message_t;
-
-	enum {
-		MESSAGE_START = 0x01234567
-	};
-
-	u16 m_timeout;
 	u8 m_state;
-
-
-	bool recv_start();
-
-
-	int send_data(const u8 *  data, int nbytes) const;
-	int recv_data(u8 * data, int nbytes) const;
-
+	int m_timeout;
 
 };
 
