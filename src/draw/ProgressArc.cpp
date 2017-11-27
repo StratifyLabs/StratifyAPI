@@ -14,7 +14,7 @@ void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
 	sg_point_t p = attr.point();
 	Dim d = attr.dim();
-	sg_bounds_t bounds;
+	sg_region_t bounds;
 	s8 dir;
 	float xf, yf;
 	float xf_inner, yf_inner;
@@ -97,9 +97,8 @@ void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 		yf = ((ry + ry_inner)/2)* sinf(theta);
 		arc.set(xf, yf);
 		arc = arc + center;
-		bounds.top_left = p;
-		bounds.bottom_right.x = p.x + d.width() - 1;
-		bounds.bottom_right.y = p.y + d.height() - 1;
+		bounds.point = p;
+		bounds.dim = d;
 		attr.bitmap().draw_pour(arc, bounds);
 	}
 

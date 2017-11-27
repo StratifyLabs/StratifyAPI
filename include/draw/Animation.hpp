@@ -73,9 +73,9 @@ public:
 	/*! \details Accesses the animation step total. */
 	u16 step_total() const { return m_attr.path.step_total; }
 	/*! \details Accesses the animation start point (top-left corner). */
-	sg_point_t start() const { return m_attr.start; }
+	sg_point_t start() const { return m_attr.region.point; }
 	/*! \details Accesses the animation's dimension (width and height from top-left corner). */
-	sg_dim_t dim() const { return m_attr.dim; }
+	sg_dim_t dim() const { return m_attr.region.dim; }
 	/*! \details Accesses the total motion (in pixels). */
 	sg_size_t motion_total() const { return m_attr.path.motion_total; }
 	/*! \details Accesses the motion total in a drawing scale. */

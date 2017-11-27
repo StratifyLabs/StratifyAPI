@@ -99,10 +99,10 @@ public:
 	 *
 	 * @return The bounds of the last time this icon was drawn on a bitmap using draw_to_scale()
 	 */
-	sg_bounds_t & bounds(){ return m_bounds; }
+	sg_region_t & bounds(){ return m_bounds; }
 
 private:
-	sg_bounds_t m_bounds;
+	sg_region_t m_bounds;
 
 };
 

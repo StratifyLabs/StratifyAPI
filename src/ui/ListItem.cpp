@@ -17,7 +17,7 @@ ListItem::ListItem(const char * label, const sg_vector_icon_t * icon, ElementLin
 
 
 void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
-	sg_bounds_t bounds;
+	sg_region_t bounds;
 	sg_dim_t icon_dim;
 	Dim d = attr.dim();
 	sg_point_t p = attr.point();
@@ -41,7 +41,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 				icon_attr_const().icon(),
 				map,
 				&bounds);
-		icon_dim = sg_point_bounds_dim(&bounds);
+		icon_dim = bounds.dim;
 	} else {
 		icon_dim.dim = 0;
 	}
@@ -57,7 +57,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 	font = sys::Assets::get_font(height, text_attr().font_bold());
 	height = font->get_height();
 
-	icon_point.x = p.x + d.width() - bounds.bottom_right.x;
+	icon_point.x = p.x + d.width() - (bounds.point.x + bounds.dim.width);
 
 
 	if( is_align_top() ){

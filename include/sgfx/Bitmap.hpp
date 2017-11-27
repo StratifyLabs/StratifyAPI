@@ -187,8 +187,7 @@ public:
 	/*! \details Performs a shift operation on an area of the bitmap.
 	 *
 	 * @param shift The amount to shift in each direction
-	 * @param p The point on the top left of the area to shift
-	 * @param d The dimensions to shift
+	 * @param region The region to shift
 	 *
 	 * The shifting must respect the dimensions of the bitmap. If you want to shift
 	 * the entire bitmap to the left 8 pixels, do this:
@@ -200,7 +199,8 @@ public:
 	 *
 	 *
 	 */
-	void transform_shift(sg_point_t shift, sg_point_t p, sg_dim_t d) const { sg_api()->transform_shift(bmap_const(), shift, p, d); }
+	void transform_shift(sg_point_t shift, const sg_region_t & region) const { sg_api()->transform_shift(bmap_const(), shift, &region); }
+	void transform_shift(sg_point_t shift, sg_point_t p, sg_dim_t d) const { transform_shift(shift, Region(p,d)); }
 
 
 	/*! \details Gets the value of the pixel at the specified point.
@@ -231,7 +231,8 @@ public:
 	void draw_line(sg_point_t p1, sg_point_t p2) const { sg_api()->draw_line(bmap_const(), p1, p2); }
 	void draw_quadtratic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3) const { sg_api()->draw_quadtratic_bezier(bmap_const(), p1, p2, p3); }
 	void draw_cubic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3, sg_point_t p4) const { sg_api()->draw_cubic_bezier(bmap_const(), p1, p2, p3, p4); }
-	void draw_arc(sg_point_t p, sg_dim_t d, s16 start, s16 end, s16 rotation = 0) const { sg_api()->draw_arc(bmap_const(), p, d, start, end, rotation); }
+	void draw_arc(const sg_region_t & region, s16 start, s16 end, s16 rotation = 0) const { sg_api()->draw_arc(bmap_const(), &region, start, end, rotation); }
+	void draw_arc(sg_point_t p, sg_dim_t d, s16 start, s16 end, s16 rotation = 0) const { draw_arc(Region(p,d), start, end, rotation); }
 
 	/*! \details Draws a rectangle on the bitmap.
 	 *
@@ -240,7 +241,8 @@ public:
 	 *
 	 * The bitmap's pen color and drawing mode will affect how the rectangle is drawn.
 	 */
-	void draw_rectangle(sg_point_t p, sg_dim_t d) const { sg_api()->draw_rectangle(bmap_const(), p, d); }
+	void draw_rectangle(const sg_region_t & region) const { sg_api()->draw_rectangle(bmap_const(), &region); }
+	void draw_rectangle(sg_point_t p, sg_dim_t d) const { draw_rectangle(Region(p,d)); }
 
 	/*! \details Pours an area on the bitmap.
 	 *
@@ -250,7 +252,7 @@ public:
 	 * The pour will seek boundaries going outward until it hits
 	 * a non-zero color or hits the bounding box.
 	 */
-	void draw_pour(const sg_point_t & point, const sg_bounds_t & bounds) const { sg_api()->draw_pour(bmap_const(), point, bounds); }
+	void draw_pour(const sg_point_t & point, const sg_region_t & bounds) const { sg_api()->draw_pour(bmap_const(), point, &bounds); }
 
 	/*! \details This function sets the pixels in a bitmap
 	 * based on the pixels of the source bitmap
@@ -271,8 +273,11 @@ public:
 	 * @param even_pattern The even pattern as a 1bpp bitmask (e.g. 0x55)
 	 * @param pattern_height The pixel height of alternating pixels
 	 */
+	void draw_pattern(const sg_region_t & region, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height) const {
+		sg_api()->draw_pattern(bmap_const(), &region, odd_pattern, even_pattern, pattern_height);
+	}
 	void draw_pattern(sg_point_t p, sg_dim_t d, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height) const {
-		sg_api()->draw_pattern(bmap_const(), p, d, odd_pattern, even_pattern, pattern_height);
+		draw_pattern(Region(p,d), odd_pattern, even_pattern, pattern_height);
 	}
 
 	/*! \details This function draws a subset of
@@ -280,29 +285,34 @@ public:
 	 *
 	 * @param p_dest The point in the destination bitmap to start setting pixels
 	 * @param src The source bitmap
-	 * @param p_src The top left corner of the source bitmap to copy
-	 * @param d_src The dimensions of the area to copy
+	 * @param region_src The regions of the source bitmap to draw
 	 * @return Zero on success
 	 */
+	void draw_sub_bitmap(sg_point_t p_dest, const Bitmap & src, const sg_region_t & region_src) const {
+		sg_api()->draw_sub_bitmap(bmap_const(), p_dest, src.bmap_const(), &region_src);
+	}
+
 	void draw_sub_bitmap(sg_point_t p_dest, const Bitmap & src, sg_point_t p_src, sg_dim_t d_src) const {
-		sg_api()->draw_sub_bitmap(bmap_const(), p_dest, src.bmap_const(), p_src, d_src);
+		draw_sub_bitmap(p_dest, src, Region(p_src, d_src));
 	}
 
 	//these are deprecated and shouldn't be documented?
 	void invert(){ invert_rectangle(sg_point(0,0), dim()); }
 	void invert_rectangle(sg_point_t p, sg_dim_t d){
 		u16 o_flags;
+		sg_region_t region = sg_region(p,d);
 		o_flags = m_bmap.pen.o_flags;
 		m_bmap.pen.o_flags = SG_PEN_FLAG_IS_INVERT;
-		sg_api()->draw_rectangle(bmap_const(), p, d);
+		sg_api()->draw_rectangle(bmap_const(), &region);
 		m_bmap.pen.o_flags = o_flags;
 	}
 
 	void clear_rectangle(sg_point_t p, sg_dim_t d){
 		u16 o_flags;
+		sg_region_t region = sg_region(p,d);
 		o_flags = m_bmap.pen.o_flags;
 		m_bmap.pen.o_flags = SG_PEN_FLAG_IS_ERASE;
-		sg_api()->draw_rectangle(bmap_const(), p, d);
+		sg_api()->draw_rectangle(bmap_const(), &region);
 		m_bmap.pen.o_flags = o_flags;
 	}
 

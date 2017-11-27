@@ -43,16 +43,9 @@ public:
 
 	Point & operator=(const sg_point_t & a){ m_value = a; return *this; }
 	Point & operator+=(const sg_point_t & a){ sg_api()->point_shift(&m_value, a); return *this; }
-	Point operator+(const sg_point_t & a){
-		Point p(*this);
-		sg_api()->point_shift(&p.m_value, a);
-		return p;
-	}
-	Point operator-(const sg_point_t & a){
-		Point p(*this);
-		sg_api()->point_subtract(&p.m_value, &a);
-		return p;
-	}
+	Point operator*(float f) const;
+	Point operator+(const sg_point_t & a) const;
+	Point operator-(const sg_point_t & a) const;
 
 	void rotate(s16 angle){ sg_api()->point_rotate(&m_value, angle); }
 	void scale(u16 a){ sg_api()->point_scale(&m_value, a); }

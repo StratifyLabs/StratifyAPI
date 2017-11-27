@@ -20,15 +20,24 @@ public:
 		m_region.dim.height = h;
 	}
 
-	Region(const Point & point, const Dim & dim){
-		m_region.point = point.point();
-		m_region.dim = dim.value();
+	Region(const sg_region_t & region){
+		m_region = region;
 	}
 
+	Region(const Point & point, const Dim & dim){
+		m_region.point = point;
+		m_region.dim = dim;
+	}
 
-	sg_region_t object() const { return m_region; }
+	void set_point(const Point & value){ m_region.point = value; }
+	void set_dim(const Dim & value){ m_region.dim = value; }
 
-	operator sg_region_t(){ return m_region; }
+	Point point() const { return m_region.point; }
+	Dim dim() const { return m_region.dim; }
+
+
+	sg_region_t region() const { return m_region; }
+	operator sg_region_t() const { return m_region; }
 
 	sg_int_t x() const { return m_region.point.x; }
 	sg_int_t y() const { return m_region.point.y; }

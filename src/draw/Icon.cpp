@@ -30,15 +30,15 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 
 	//check for alignment values left/right/top/bottom
 	if( is_align_top() ){
-		p.y -= m_bounds.top_left.y;
+		p.y -= m_bounds.point.y;
 	} else if( is_align_bottom() ){
-		p.y += bitmap.height() - m_bounds.bottom_right.y;
+		p.y += bitmap.height() - (m_bounds.point.y + m_bounds.dim.height);
 	}
 
 	if( is_align_left() ){
-		p.x -= m_bounds.top_left.x;
+		p.x -= m_bounds.point.x;
 	} else if( is_align_right() ){
-		p.y += bitmap.width() - m_bounds.bottom_right.x;
+		p.y += bitmap.width() - (m_bounds.point.x + m_bounds.dim.width);
 	}
 
 	attr.bitmap().draw_bitmap(p, bitmap);
