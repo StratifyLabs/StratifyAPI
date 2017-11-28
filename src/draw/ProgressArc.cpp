@@ -97,8 +97,8 @@ void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 		yf = ((ry + ry_inner)/2)* sinf(theta);
 		arc.set(xf, yf);
 		arc = arc + center;
-		bounds.point = p;
-		bounds.dim = d;
+		bounds = attr.region();
+		//attr.bitmap().draw_pixel(arc);
 		attr.bitmap().draw_pour(arc, bounds);
 	}
 

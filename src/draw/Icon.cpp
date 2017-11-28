@@ -15,18 +15,17 @@ const sg_vector_icon_t * IconAttr::get_system_icon(int icon){
 
 void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_point_t p = attr.point();
-	sg_dim_t d = attr.dim();
 
 	if( &(this->icon()) == 0 ){
 		return;
 	}
 
-	Bitmap bitmap(d);
+	Bitmap bitmap(attr.dim());
 	bitmap.clear();
 	bitmap.set_pen( pen() );
 
 	VectorMap map(bitmap, rotation());
-	Vector::draw(bitmap, icon(), map.item(), &m_bounds);
+	Vector::draw(bitmap, icon(), map, &m_bounds);
 
 	//check for alignment values left/right/top/bottom
 	if( is_align_top() ){

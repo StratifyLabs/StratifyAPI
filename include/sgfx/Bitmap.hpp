@@ -229,9 +229,9 @@ public:
 	 *
 	 */
 	void draw_line(sg_point_t p1, sg_point_t p2) const { sg_api()->draw_line(bmap_const(), p1, p2); }
-	void draw_quadtratic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3) const { sg_api()->draw_quadtratic_bezier(bmap_const(), p1, p2, p3); }
-	void draw_cubic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3, sg_point_t p4) const { sg_api()->draw_cubic_bezier(bmap_const(), p1, p2, p3, p4); }
-	void draw_arc(const sg_region_t & region, s16 start, s16 end, s16 rotation = 0) const { sg_api()->draw_arc(bmap_const(), &region, start, end, rotation); }
+	void draw_quadtratic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3, sg_point_t * corners = 0) const { sg_api()->draw_quadtratic_bezier(bmap_const(), p1, p2, p3, corners); }
+	void draw_cubic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3, sg_point_t p4, sg_point_t * corners = 0) const { sg_api()->draw_cubic_bezier(bmap_const(), p1, p2, p3, p4, corners); }
+	void draw_arc(const sg_region_t & region, s16 start, s16 end, s16 rotation = 0, sg_point_t * corners = 0) const { sg_api()->draw_arc(bmap_const(), &region, start, end, rotation, corners); }
 	void draw_arc(sg_point_t p, sg_dim_t d, s16 start, s16 end, s16 rotation = 0) const { draw_arc(Region(p,d), start, end, rotation); }
 
 	/*! \details Draws a rectangle on the bitmap.

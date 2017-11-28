@@ -9,27 +9,31 @@ ProgressBar::ProgressBar(){}
 void ProgressBar::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
 	int tmp;
-
-	sg_point_t p = attr.point();
-	Dim d = attr.dim();
-
-	Point middle;
+	Pen pen;
 	sg_int_t x_progress;
-	sg_point_t end;
+	sg_size_t thickness;
+	sg_size_t thickness2;
 
+	pen = attr.bitmap().pen();
 
-	end.x = p.x + d.width();
-	end.y = p.y + d.height();
+	thickness = scaled_border_thickness();
+	if( thickness*3 > attr.height() ){
+		thickness = attr.height()/3;
+	}
 
-	tmp = (value() * (d.width()-4) + max()/2) / max();
+	thickness2 = thickness*2;
 
-	x_progress = p.x + 2 + tmp;
+	tmp = (value() * (attr.width()-thickness2) + max()/2) / max();
+
+	x_progress = tmp;
 
 	//draw bar
-	attr.bitmap().draw_rectangle(p, d);
+	attr.bitmap().set_pen(Pen(1,1));
+	attr.bitmap().draw_rectangle(attr.region());
 
 	//clear un-progress section
-	attr.bitmap().clear_rectangle(sg_point(x_progress, p.y + 2), sg_dim(end.x-3 - x_progress, d.height()-4));
-
+	attr.bitmap().set_pen_flags(Pen::FLAG_IS_ERASE);
+	attr.bitmap().draw_rectangle(Region(attr.x() + thickness + x_progress, attr.y() + thickness, attr.width() - thickness2 - x_progress, attr.height()-thickness2));
+	attr.bitmap().set_pen(pen);
 
 }

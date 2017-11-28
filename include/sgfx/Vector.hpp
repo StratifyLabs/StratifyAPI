@@ -31,16 +31,26 @@ public:
 	VectorMap(const Bitmap & bitmap, s16 rotation = 0);
 
 
+	/*! \details Sets the map to be centered and fully occupy \a bitmap.
+	 *
+	 * @param bitmap The bitmap to occupy
+	 * @param rotation The rotation to be applied
+	 *
+	 * This will size the map so that a full scale vector will completely
+	 * fill the specified bitmap. This means that if the vector is
+	 * rotated, parts of the vector may not fit in the bitmap.
+	 *
+	 */
 	void set_bitmap_center(const Bitmap & bitmap, s16 rotation = 0);
 
-	void set_area(sg_point_t p, sg_dim_t d, s16 rotation = 0);
+	void set_region(const sg_region_t & region, s16 rotation = 0);
+
+	void fill_region(const sg_region_t & region, s16 rotation = 0);
 
 	void set_dim(sg_size_t w, sg_size_t h);
 	void set_point(sg_int_t x, sg_int_t y);
-	void set_point(const Point & p);
-	void set_shift(sg_int_t x, sg_int_t y);
-	void set_dim(const Dim & dim);
-	void set_shift(const Point & p);
+	void set_point(const sg_point_t & p);
+	void set_dim(const sg_dim_t & d);
 	void set_rotation(s16 rot){ data()->rotation = rot; }
 
 	sg_size_t width() const { return data_const()->region.dim.width; }

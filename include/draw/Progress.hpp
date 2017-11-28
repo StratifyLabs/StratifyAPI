@@ -25,7 +25,7 @@ public:
 
 	/*! \details The progress value */
 	u16 value() const { return m_progress.value; }
-	/*! \details The maxium value for progress */
+	/*! \details The maximum value for progress */
 	u16 max() const { return m_progress.max; }
 
 	/*! \details Set the progress value */
@@ -37,7 +37,7 @@ public:
 	/*! \details Set both the value and the max */
 	void set_attr(u16 value, u16 max){ set_value(value); set_max(max); }
 
-	operator progress_t(){ return m_progress; }
+	operator progress_t() const { return m_progress; }
 
 	void set_attr(const progress_t * progress){ m_progress = *progress; }
 	void set_attr(const progress_t & progress){ m_progress = progress; }
@@ -56,9 +56,24 @@ private:
  */
 class Progress : public Drawing, public ProgressAttr {
 public:
-	Progress(){}
+	Progress(){
+		m_border_thickness = 333;
+	}
+
+
+
+	void set_border_thickness(drawing_size_t border_thickness){
+		m_border_thickness = border_thickness;
+	}
+
+	drawing_size_t border_thickness() const { return m_border_thickness; }
 
 protected:
+	sg_size_t scaled_border_thickness() const { return m_scaled_border_thickness; }
+	sg_size_t m_scaled_border_thickness;
+
+private:
+	drawing_size_t m_border_thickness;
 
 };
 

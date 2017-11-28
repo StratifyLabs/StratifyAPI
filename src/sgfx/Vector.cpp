@@ -6,31 +6,29 @@
 using namespace sgfx;
 
 
-
-void VectorMap::set_dim(const Dim & dim){
-	data()->region.dim.height = dim.height();
-	data()->region.dim.width = dim.width();
+void VectorMap::set_region(const sg_region_t & region, s16 rotation){
+	data()->region = region;
+	data()->rotation = rotation;
 }
 
-void VectorMap::set_shift(const Point & p){
-	data()->region.point.x = p.x();
-	data()->region.point.y = p.y();
+void VectorMap::set_dim(const sg_dim_t & dim){
+	data()->region.dim = dim;
 }
 
-void VectorMap::set_point(const Point & p){
+void VectorMap::set_point(const sg_point_t & p){
 	data()->region.point = p;
 }
+
+void VectorMap::set_point(sg_int_t x, sg_int_t y){
+	data()->region.point.x = x;
+	data()->region.point.y = y;
+}
+
 
 void VectorMap::set_dim(sg_size_t w, sg_size_t h){
 	data()->region.dim.width = w;
 	data()->region.dim.height = h;
 }
-
-void VectorMap::set_shift(sg_int_t x, sg_int_t y){
-	data()->region.point.x = x;
-	data()->region.point.y = y;
-}
-
 
 VectorMap::VectorMap(const Bitmap & bitmap, s16 rotation){
 	set_bitmap_center(bitmap, rotation);
@@ -40,18 +38,30 @@ void VectorMap::set_bitmap_center(const Bitmap & bitmap, s16 rotation){
 	u8 thickness = bitmap.pen_thickness();
 	u32 max_width;
 	u32 max_height;
+	s32 tmp;
 	max_width = (bitmap.width() - bitmap.margin_left() - bitmap.margin_right()) * 1414UL / 1000UL ;
 	max_height = (bitmap.height() - bitmap.margin_top() - bitmap.margin_bottom()) * 1414UL / 1000UL;
 	data()->region.dim.width = max_width - 2*thickness;
 	data()->region.dim.height = max_height - 2*thickness;
-	data()->region.point.x = bitmap.width() / 2;
-	data()->region.point.y = bitmap.height() / 2;
+	tmp = bitmap.width() - max_width + 1;
+	data()->region.point.x = tmp/2;
+	tmp = bitmap.height() - max_height + 1;
+	data()->region.point.y = tmp/2;
 	data()->rotation = rotation;
 }
 
-void VectorMap::set_area(sg_point_t p, sg_dim_t d, s16 rotation){
-	data()->region.dim = d;
-	data()->region.point = p;
+void VectorMap::fill_region(const sg_region_t & region, s16 rotation){
+	u32 max_width;
+	u32 max_height;
+	s32 tmp;
+	max_width = (region.dim.width) * 1414UL / 1000UL ;
+	max_height = (region.dim.height) * 1414UL / 1000UL;
+	data()->region.dim.width = max_width;
+	data()->region.dim.height = max_height;
+	tmp = region.dim.width - max_width + 1;
+	data()->region.point.x = region.point.x + tmp/2;
+	tmp = region.dim.height - max_height + 1;
+	data()->region.point.y = region.point.y + tmp/2;
 	data()->rotation = rotation;
 }
 

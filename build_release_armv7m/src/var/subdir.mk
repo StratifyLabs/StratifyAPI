@@ -4,7 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/var/ChartString.cpp \
+../src/var/ChartMessage.cpp \
 ../src/var/Data.cpp \
 ../src/var/Flags.cpp \
 ../src/var/Item.cpp \
@@ -16,7 +16,7 @@ CPP_SRCS += \
 ../src/var/Token.cpp 
 
 OBJS += \
-./src/var/ChartString.o \
+./src/var/ChartMessage.o \
 ./src/var/Data.o \
 ./src/var/Flags.o \
 ./src/var/Item.o \
@@ -28,7 +28,7 @@ OBJS += \
 ./src/var/Token.o 
 
 CPP_DEPS += \
-./src/var/ChartString.d \
+./src/var/ChartMessage.d \
 ./src/var/Data.d \
 ./src/var/Flags.d \
 ./src/var/Item.d \
