@@ -7,7 +7,7 @@
 #include <sos/link.h>
 
 #include "hal.hpp"
-#include "../../include/sys/Sys.hpp"
+#include "sys/Sys.hpp"
 using namespace sys;
 
 Sys::Sys() {

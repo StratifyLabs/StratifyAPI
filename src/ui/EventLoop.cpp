@@ -51,6 +51,7 @@ void EventLoop::handle_transition(Element * current_element, Element * next_elem
 
 	if( next_element ){
 		Animation animation(next_element->animation_attr());
+
 		if( (animation.type() != Animation::NONE) && drawing_attr.scratch() ){
 			animation.init(0, next_element, drawing_attr);
 			animation.exec();
