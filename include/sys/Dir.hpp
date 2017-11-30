@@ -9,6 +9,8 @@
 #include <dirent.h>
 #endif
 
+#include "../var/String.hpp"
+
 namespace sys {
 
 /*! \brief Dir class */
@@ -20,6 +22,8 @@ public:
 #else
 	Dir();
 #endif
+	~Dir();
+
 	/*! \details Opens a directory. */
 	int open(const char * name);
 	/*! \details Closes the directory. */
@@ -32,6 +36,26 @@ public:
 	 */
 	const char * read();
 
+	/*! \details Removes a directory.
+	 *
+	 * @param path The path to remove
+	 * @param recursive If true will remove all subdirectories and files
+	 * @return Zero on success or -1 for an error
+	 *
+	 *
+	 */
+#if !defined __link
+	static int remove(const char * path, bool recursive = false);
+#else
+	static int remove(const char * path, bool recursive, link_transport_mdriver_t * d);
+#endif
+
+	/*! \details Gets the next entry and writes the full path of the entry to the given string.
+	 *
+	 * @param path_dest The var::String that will hold the full path of the next entry.
+	 * @return True if an entry was read or false for an error or no more entries
+	 */
+	bool get_entry(var::String & path_dest);
 
 	/*! \details Returns a pointer (const) to the name of the most recently read entry. */
 	const char * name(){ return m_entry.d_name; }
@@ -67,6 +91,8 @@ private:
 	DIR * m_dirp;
 	struct dirent m_entry;
 #endif
+
+	var::String m_path;
 
 
 };

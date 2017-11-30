@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
 #ifndef FILE_HPP_
 #define FILE_HPP_
@@ -37,7 +37,7 @@ namespace sys {
  *  //create a new file and write a string to it
  * 	f.create("/home/myfile.txt");
  * 	str = "Hello New File!\n";
- * 	f.write(str.c_str(), str.size());
+ * 	f.write(str);
  * 	f.close();
  *
  *  //Now open the file we just closed
@@ -58,7 +58,12 @@ namespace sys {
  */
 class File {
 public:
+
+#if defined link
+	File(link_transport_mdriver_t * d);
+#else
 	File();
+#endif
 
 	/*! \details These values are used as flags when opening devices or files */
 	enum {
@@ -90,8 +95,8 @@ public:
 	/*! \details Gets the name of the file from a given path.
 	 *
 	 * \code
-	 * const char * path = /app/flash/HelloWord
-	 * printf("Name is %s\n", File::name(path));
+	 * const char * path = "/app/flash/HelloWorld";
+	 * printf("Name is %s", File::name(path));
 	 * \endcode
 	 *
 	 * The above code will output:
@@ -102,6 +107,24 @@ public:
 	 */
 	static const char * name(const char * path);
 
+	/*! \details Returns a pointer to the file suffix.
+	 *
+	 * @param path The path to search
+	 * @return A pointer to the suffix
+	 *
+	 * For example:
+	 *
+	 * \code
+	 * const char * path = "/home/data.txt";
+	 * printf("Suffix is %s", File::suffix(path));
+	 * \endcode
+	 *
+	 * The above code will output:
+	 * \code
+	 * Suffix is txt
+	 * \endcode
+	 *
+	 */
 	static const char * suffix(const char * path);
 
 	/*! \details Deletes a file.
@@ -121,7 +144,11 @@ public:
 	 * @return Zero on success
 	 *
 	 */
+#if !defined __link
+	static int stat(const char * path, struct stat * st);
+#else
 	static int stat(const char * path, struct link_stat * st, link_transport_mdriver_t * driver = 0);
+#endif
 
 	/*! \details Gets the size of the file.
 	 *
@@ -130,7 +157,11 @@ public:
 	 * @return The number of bytes in the file or less than zero for an error
 	 *
 	 */
+#if !defined __link
+	static u32 size(const char * path);
+#else
 	static u32 size(const char * path, link_transport_mdriver_t * driver = 0);
+#endif
 
 
 	/*! \details Opens a file.

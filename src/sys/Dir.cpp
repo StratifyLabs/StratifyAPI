@@ -1,5 +1,8 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
+#include "var/String.hpp"
+#include "sys/File.hpp"
+#include "sys/FileInfo.hpp"
 #include "sys/Dir.hpp"
 using namespace sys;
 
@@ -16,6 +19,43 @@ Dir::Dir(){
 
 #endif
 
+Dir::~Dir(){
+	close();
+}
+
+#if !defined __link
+int Dir::remove(const char * path, bool recursive){
+	int ret = 0;
+	if( recursive ){
+		Dir d;
+		if( d.open(path) == 0 ){
+			var::String entry;
+			while( d.get_entry(entry) && (ret >= 0) ){
+				FileInfo info;
+				info.get_info(entry);
+				if( info.is_dir() ){
+					ret = Dir::remove(entry, true);
+				} else {
+					ret = File::remove(entry);
+				}
+			}
+		}
+		d.close();
+	}
+
+	if( ret >= 0 ){
+		//this will remove an empty directory or a file
+		ret = File::remove(path);
+	}
+
+	return ret;
+}
+#else
+int Dir::remove(const char * path, bool recursive, link_transport_mdriver_t * d){
+	return -1;
+}
+#endif
+
 int Dir::open(const char * name){
 #if defined __link
 	m_dirp = link_opendir(driver(), name);
@@ -25,6 +65,8 @@ int Dir::open(const char * name){
 	if( m_dirp == 0 ){
 		return -1;
 	}
+
+	m_path.assign(name);
 
 	return 0;
 }
@@ -81,7 +123,21 @@ const char * Dir::read(){
 	return m_entry.d_name;
 }
 
+bool Dir::get_entry(var::String & path_dest){
+	const char * entry = read();
+
+	if( entry == 0 ){
+		return false;
+	}
+
+	path_dest.assign(m_path);
+	path_dest.append("/");
+	path_dest.append(entry);
+	return true;
+}
+
 int Dir::close(){
+	m_path.clear();
 	if( m_dirp ){
 #if defined __link
 		link_closedir(driver(), m_dirp);

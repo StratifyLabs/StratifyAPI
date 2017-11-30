@@ -26,6 +26,7 @@ namespace sys {};
 #include "sys/Appfs.hpp"
 #include "sys/Dir.hpp"
 #include "sys/File.hpp"
+#include "sys/FileInfo.hpp"
 
 using namespace sys;
 

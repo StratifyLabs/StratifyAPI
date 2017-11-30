@@ -7,16 +7,20 @@
 #include "sys/Timer.hpp"
 using namespace sys;
 
+#if defined __link
+File::File(link_transport_mdriver_t * d){
+	// TODO Auto-generated constructor stub
+	m_fd = -1; //The file is not open
+	m_driver = d;
+}
+#else
 File::File() {
 	// TODO Auto-generated constructor stub
 	m_fd = -1; //The file is not open
-#if defined __link
-	m_driver = 0;
-#endif
 }
+#endif
 
 int File::open(const char * name, int flags){
-
 	if( m_fd != -1 ){
 		close(); //close and re-open
 	}
@@ -83,15 +87,26 @@ u32 File::size() const {
 	return st.st_size;
 }
 
-
-int File::stat(const char * name, struct link_stat * st, link_transport_mdriver_t * driver){
 #if defined __link
+int File::stat(const char * name, struct link_stat * st, link_transport_mdriver_t * driver){
 	return link_stat(driver, name, st);
+}
 #else
-	return ::stat(name, (struct stat*)st);
-#endif
+int File::stat(const char * name, struct stat * st){
+	return ::stat(name, st);
 }
 
+#endif
+
+#if !defined __link
+u32 File::size(const char * name){
+	struct stat st;
+	if( stat(name, &st) < 0 ){
+		return (s32)-1;
+	}
+	return st.st_size;
+}
+#else
 u32 File::size(const char * name, link_transport_mdriver_t * driver){
 	struct link_stat st;
 	if( stat(name, &st, driver) < 0 ){
@@ -99,6 +114,8 @@ u32 File::size(const char * name, link_transport_mdriver_t * driver){
 	}
 	return st.st_size;
 }
+
+#endif
 
 int File::read(int loc, void * buf, int nbyte) const {
 	if( seek(loc) < 0 ){
