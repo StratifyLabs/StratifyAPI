@@ -4,7 +4,7 @@ Read here for the full documentation: https://stratifylabs.co/StratifyAPI/html/.
 
 ## Naming Conventions
 
-Stratify Lib uses the following naming conventions
+Stratify API uses the following naming conventions
 
 ### Classes and Namespaces
 
