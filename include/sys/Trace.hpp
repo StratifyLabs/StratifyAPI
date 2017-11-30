@@ -50,8 +50,8 @@ public:
 	inline void trace_critical() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_CRITICAL, c_str(), size()); }
 	/*! \details Sends trace as a fatal message.
 	 *
-	 * Trace fatal will not cause the program to exit but for good practice, ::exit() should
-	 * be called after a trace_fatal() is executed.
+	 * Trace fatal will not cause the program to exit but for good practice, you must
+	 * invoke exit() immediately after a trace_fatal() call.
 	 *
 	 */
 	inline void trace_fatal() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_FATAL, c_str(), size()); }

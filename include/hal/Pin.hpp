@@ -18,31 +18,30 @@ namespace hal {
  * #include <sapi/hal.hpp>
  *
  * Pin pin(1,0); //control pin P1.0
- *  //Or if working with the pinmask Pin  pin(1, 1<<0, true);
+ * //Or if working with the pinmask Pin  pin(1, 1<<0, true);
  *
  * pin.init(Pin::OUTPUT); //initialize as an output
  *
- *  //These three all set the pin high
+ * //These three all set the pin high
  * pin = true;
  * pin.set();
  *
- *  //These turn the pin off
+ * //These turn the pin off
  * pin = false;
- * pin.clr();
+ * pin.clear();
  *
- *  //now convert to an input
+ * //now convert to an input
  * pin.set_attr(Pin::INPUT | Pin::PULLUP); //or use Pin::FLOAT, Pin::PULLDOWN, etc
- *  //or to init as an input use pin.init(Pin::INPUT);
+ * //or to init as an input use pin.init(Pin::INPUT);
  *
  *  //now check to see if the value is high or low
- *  if( pin.value() == true ){
- *  	//pin is high
- *  } else {
- *  	//pin is low
- *  }
+ * if( pin.get_value() == true ){
+ *  //pin is high
+ * } else {
+ * 	//pin is low
+ * }
  *
- *  pin.close(); //close the associated file descriptor (pin keeps its IO properties and state)
- *
+ * pin.close(); //close the associated file descriptor (pin keeps its IO properties and state)
  * \endcode
  *
  */
@@ -88,6 +87,25 @@ public:
 	 */
 	int init(u32 o_flags){
 		return Pio::init(o_flags, m_pinmask);
+	}
+
+
+	/*! \details Initializes the pin as an input.
+	 *
+	 * @param o_flags Optionally set FLAG_IS_PULLUP, etc
+	 * @return Zero on success
+	 */
+	int set_input(u32 o_flags = 0){
+		return init(FLAG_SET_INPUT | o_flags);
+	}
+
+	/*! \details Initializes the pin as an input.
+	 *
+	 * @param o_flags Optionally set FLAG_IS_OPENDRAIN, etc
+	 * @return Zero on success
+	 */
+	int set_output(u32 o_flags = 0){
+		return init(FLAG_SET_OUTPUT | o_flags);
 	}
 
 	/*! \details Sets the pin attributes.

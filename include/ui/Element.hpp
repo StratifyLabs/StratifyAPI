@@ -105,6 +105,7 @@ public:
 	 * Element::UPDATE, Element::TOP_PRESS) happens.
 	 *
 	 * @param event The event to execute
+	 * @param attr The drawing attributes to use for the event
 	 * @return For transitions, the new element is returned; otherwise this
 	 */
 	virtual Element * handle_event(const Event & event, const draw::DrawingAttr & attr);

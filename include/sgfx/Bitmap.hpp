@@ -236,10 +236,10 @@ public:
 
 	/*! \details Draws a rectangle on the bitmap.
 	 *
-	 * @param p The top left corner of the rectangle
-	 * @param d The dimensions of the rectangle
+	 * @param region The region to draw in
 	 *
-	 * The bitmap's pen color and drawing mode will affect how the rectangle is drawn.
+	 * The bitmap's pen color and drawing mode will affect how the rectangle is drawn. This method
+	 * affects every pixel in the rectangle not just the border.
 	 */
 	void draw_rectangle(const sg_region_t & region) const { sg_api()->draw_rectangle(bmap_const(), &region); }
 	void draw_rectangle(sg_point_t p, sg_dim_t d) const { draw_rectangle(Region(p,d)); }
@@ -267,8 +267,7 @@ public:
 
 	/*! \details This function draws a pattern on the bitmap.
 	 *
-	 * @param p The top-left point to start the pattern
-	 * @param d The dimensions to draw the pattern on
+	 * @param region The region to draw the pattern in
 	 * @param odd_pattern The odd pattern as a 1bpp bitmask (e.g. 0xAA)
 	 * @param even_pattern The even pattern as a 1bpp bitmask (e.g. 0x55)
 	 * @param pattern_height The pixel height of alternating pixels

@@ -83,12 +83,6 @@ public:
 	 */
 	static void draw(Bitmap & bitmap, const sg_vector_icon_t & icon, const sg_vector_map_t & map, sg_region_t * bounds = 0);
 
-	/*! \details Fill primitive
-	 *
-	 * @param x1 The x point to start the fill algorithm
-	 * @param y1 The y point to start the fill algorithm
-	 * @return
-	 */
 	static sg_vector_primitive_t fill(const Point & p);
 	static sg_vector_primitive_t fill(sg_int_t x, sg_int_t y){
 		return fill(Point(x,y));

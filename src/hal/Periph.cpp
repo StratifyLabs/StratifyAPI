@@ -94,9 +94,9 @@ int PeriphParent::open(int flags){
 
 	name = periph_name[m_periph_port>>8];
 
-	strcpy(buffer, "/dev/");
-	strcat(buffer, name);
-	len = strlen(buffer);
+	strncpy(buffer, "/dev/", LINK_NAME_MAX-1);
+	strncat(buffer, name, LINK_NAME_MAX-1);
+	len = strnlen(buffer, LINK_NAME_MAX-1);
 	if( m_periph_port != 0 ){
 		buffer[len] = '0' + (m_periph_port & 0xFF);
 		buffer[len+1] = '\0';
