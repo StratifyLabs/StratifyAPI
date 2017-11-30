@@ -1,4 +1,4 @@
-# StratifyLibapp
+# Stratify API
 Stratify Application Library for Data Management and Hardware Abstraction.  Read here for the full documentation and APIs: http://stratifylabs.co/StratifyLib/html/.
 
 ## Naming Conventions
