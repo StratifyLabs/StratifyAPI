@@ -13,12 +13,18 @@ namespace sys {
 
 /*! \brief Semaphore Class
  * \details This class is a wrapper for POSIX style semphores.
+ *
+ * \code
+ * Sem sem;
+ *
+ * sem.create("my_semaphore", 10);
+ *
  */
 class Sem {
 public:
 	Sem();
 
-	enum flags {
+	enum {
 		CREATE /*! Create Semaphore flag */ = O_CREAT,
 		EXCL /*! Create exclusive */ = O_EXCL,
 		EXCLUSIVE /*! Create exclusive */ = O_EXCL
@@ -26,12 +32,9 @@ public:
 
 	/*! \details Gets the semaphore value.
 	 *
-	 * @param sval A pointer to the destination to write the value
-	 * @return Zero on success
+	 * @return The value of the semaphore (>= 0) or -1 on an error
 	 */
-	int get_value(int *sval);
-
-	int value(int *sval){ return get_value(sval); }
+	int get_value() const;
 
 	/*! \details Initializes an unnamed semaphore.
 	 *
@@ -52,17 +55,26 @@ public:
 	 */
 	int destroy();
 
-	/*! \details This methods opens or creates a named semaphore
+	/*! \details Opens a named semaphore
 	 *
 	 * @param name The name of the semaphore
-	 * @param oflag Create/exclusivity
-	 * @param mode Permissions
-	 * @param value Initial value
 	 * @return Zero on success
 	 *
 	 * \sa close()
 	 */
-	int open(const char * name, int oflag, int mode, int value);
+	int open(const char * name, int o_flags = 0, int mode = 0, int value = 0);
+
+	/*! \details Creates a new named semaphore.
+	 *
+	 * @param name The name of the semaphore
+	 * @param value The value assigned to the semaphore
+	 * @param exclusive If true, the method will fail if the semaphore already exists. If false, it will open the existing semaphore.
+	 * @return Zero on success or less than zero with errno set
+	 *
+	 *
+	 *
+	 */
+	int create(const char * name, int value, bool exclusive = false);
 
 	/*! \details Closes a named semaphore.
 	 *
@@ -88,14 +100,16 @@ public:
 	 */
 	int wait_timed(const struct timespec * timeout){ return timedwait(timeout); }
 
-	/*! \details Is equivalend to try_wait(). */
-	int trywait();
-
 	/*! \details Checks to see if semaphore is available. */
-	int try_wait(){ return trywait(); }
+	int try_wait();
 
-	/*! \details Waits for the semaphore to become available. */
+	/*! \details Waits for the semaphore to become available.
+	 *
+	 * Once the semaphore becomes availabe, the value is decremented. The post()
+	 * method will release (increment the value of) the semaphore.
+	 */
 	int wait();
+
 	/*! \details Deletes a named semaphore.
 	 *
 	 * @param name The name of the semaphore

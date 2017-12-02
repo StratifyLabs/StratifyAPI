@@ -12,13 +12,17 @@ namespace sys {
 class Assets {
 public:
 
+	/*! \details Initializes system assets.
+	 *
+	 * @return Zero
+	 */
 	static int init();
 
 
 	/*! \details Load the system font that most closely matches the
 	 * specified characteristics
 	 *
-	 * @param h The target font height.  This is a maximum height unless \a h is small than all system fonts
+	 * @param h The target font height.  This is a maximum height unless \a h is smaller than all system fonts
 	 * @param bold Whether or not to use a bold font
 	 * @return
 	 */
@@ -54,15 +58,21 @@ public:
 	/*! \details Load the system icon specified by the location in the icon table.
 	 *
 	 * @param icon The icon to load
-	 * @param bold Whether or not to use a bold font
 	 * @return
 	 */
 	static const sg_vector_icon_t * get_vector_icon(u16 icon);
 
+	/*! \details Accesses the number of vector icons available from the system. */
 	static int vector_icon_count(){ return m_vector_icon_count; }
 
+	/*! \details Accesses the specified system bitmap icon.
+	 *
+	 * @param icon The icon number (offset) to access
+	 * @return A pointer to the bitmap header or null \a icon is not valid
+	 */
 	static const sg_bmap_header_t * get_bmap_icon(u16 icon);
 
+	/*! \details Accesses the number of bitmap icons available from the system.*/
 	static int bmap_icon_count(){ return m_bmap_icon_count; }
 
 private:

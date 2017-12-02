@@ -2,9 +2,10 @@
 
 #include <limits.h>
 
-#include "sys/assets.h"
 #include "sys/Sys.hpp"
 #include "sys/Assets.hpp"
+
+#include "../../include/sys/requests.h"
 #include "sgfx/FontFile.hpp"
 #include "sgfx/FontMemory.hpp"
 
@@ -24,18 +25,18 @@ u16 Assets::m_bmap_icon_count = 0;
 
 int Assets::init(){
 
-	asset_request_t request;
+	sapi_request_asset_t asset_request;
 
-	if( Sys::request(ASSETS_KERNEL_REQUEST_FONTS, &request) == 0 ){
-		load_fonts((const sg_font_ref_t*)request.list, request.count);
+	if( Sys::request(SAPI_REQUEST_ASSET_FONTS, &asset_request) == 0 ){
+		load_fonts((const sg_font_ref_t*)asset_request.list, asset_request.count);
 	}
 
-	if( Sys::request(ASSETS_KERNEL_REQUEST_VECTOR_ICONS, &request) == 0 ){
-		load_vector_icons((const sg_vector_icon_t*)request.list, request.count);
+	if( Sys::request(SAPI_REQUEST_ASSET_VECTOR_ICONS, &asset_request) == 0 ){
+		load_vector_icons((const sg_vector_icon_t*)asset_request.list, asset_request.count);
 	}
 
-	if( Sys::request(ASSETS_KERNEL_REQUEST_BITMAP_ICONS, &request) == 0 ){
-		load_bmap_icons((const sg_bmap_header_t**)request.list, request.count);
+	if( Sys::request(SAPI_REQUEST_ASSET_BITMAP_ICONS, &asset_request) == 0 ){
+		load_bmap_icons((const sg_bmap_header_t**)asset_request.list, asset_request.count);
 	}
 
 	return 0;
