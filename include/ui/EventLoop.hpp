@@ -50,6 +50,9 @@ public:
 	 * }
 	 * \endcode
 	 *
+	 * This logic allows the BSP (which implements the kernel_request() function called by Sys::request()) to override
+	 * or delay the hibernation until other applications or tasks are ready.
+	 *
 	 * By default, the hibernation threshold is set to the max value (65536) effectively
 	 * disabling hibernation.
 	 *
@@ -61,13 +64,13 @@ public:
 	 */
 	void set_hibernation_threshold(u16 v) { m_attr.hibernation_threshold = v; }
 
-	/*! \details This method returns the period for firing the Event::UPDATE */
+	/*! \details Accesses the period for firing the Event::UPDATE in milliseconds. */
 	u16 update_period() const { return m_attr.update_period; }
 
-	/*! \details Accesses the minimum period of the event loop. */
+	/*! \details Accesses the minimum period of the event loop in milliseconds. */
 	u16 period() const { return m_attr.period; }
 
-	/*! \details Sets the period of the event loop.
+	/*! \details Sets the period of the event loop in milliseconds.
 	 *
 	 * @param v The loop period in milliseconds.
 	 *

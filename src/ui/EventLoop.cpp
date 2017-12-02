@@ -103,7 +103,7 @@ void EventLoop::loop(){
 			handle_event(Event(Event::UPDATE));
 		}
 
-		is_hibernate = update_period() > hibernation_threshold();
+		is_hibernate = update_period() >= hibernation_threshold();
 
 		if( m_current_element ){
 			//update the screen
@@ -115,7 +115,8 @@ void EventLoop::loop(){
 
 		if( is_hibernate ){
 			sapi_request_hibernate_t request;
-			request.seconds = (update_period() + 999) / 1000;
+			request.update_period = update_period();
+			request.loop_period = period();
 			if( Sys::request(SAPI_REQUEST_HIBERNATE, &request) < 0 ){
 				Sys::hibernate( (update_period() + 500)/ 1000 );
 			}

@@ -12,7 +12,8 @@ typedef struct {
 } sapi_request_asset_t;
 
 typedef struct {
-	int seconds;
+	u32 update_period;
+	u32 loop_period;
 } sapi_request_hibernate_t;
 
 enum {
