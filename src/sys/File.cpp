@@ -13,12 +13,14 @@ File::File(link_transport_mdriver_t * d){
 	m_fd = -1; //The file is not open
 	m_driver = d;
 }
-#else
-File::File() {
-	// TODO Auto-generated constructor stub
-	m_fd = -1; //The file is not open
-}
 #endif
+
+File::File() {
+	m_fd = -1; //The file is not open
+#if defined __link
+	m_driver = 0;
+#endif
+}
 
 int File::open(const char * name, int flags){
 	if( m_fd != -1 ){

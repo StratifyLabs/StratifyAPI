@@ -10,10 +10,14 @@
 #include <unistd.h>
 #include "../sys/File.hpp"
 #include "../sys/Aio.hpp"
-#include "../var/String.hpp"
+#define MCU_INT_CAST(var) ((void*)(u32)var)
 #else
 #undef fileno
+#define MCU_INT_CAST(var) ((void*)(u64)var)
 #endif
+
+#include "../var/String.hpp"
+
 
 
 namespace sys {
@@ -59,8 +63,9 @@ namespace sys {
 class File {
 public:
 
-#if defined link
+#if defined __link
 	File(link_transport_mdriver_t * d);
+	File();
 #else
 	File();
 #endif
@@ -280,7 +285,6 @@ public:
 	int readline(char * buf, int nbyte, int timeout, char term = '\n') const;
 
 
-#ifndef __link
 	/*! \details Writes a var::String to the file.
 	 *
 	 * @param str The string to write
@@ -289,7 +293,9 @@ public:
 	int write(const var::String & str) const {
 		return write(str.c_str(), str.size());
 	}
-#endif
+
+	File& operator<<(const char * a){ write(a, strlen(a)); return *this; }
+
 
 	enum {
 		GETS_BUFFER_SIZE = 128
@@ -349,6 +355,8 @@ public:
 	 * @return Depends on request
 	 */
 	int ioctl(int req, int arg) const { return ioctl(req, MCU_INT_CAST(arg)); }
+
+	void set_fileno(int fd){ m_fd = fd; }
 
 
 protected:

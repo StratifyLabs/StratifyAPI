@@ -43,7 +43,7 @@ public:
 	int reset();
 	int attach();
 	int configure();
-	int detacheight();
+	int detach();
 	int disable_endpoint(int ep);
 	int enable_endpoint(int ep);
 	bool is_connected();

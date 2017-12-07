@@ -59,6 +59,14 @@ public:
 	 * @return Zero on success or -1 with errno set accordingly
 	 *
 	 */
+#if !defined __link
+	static int create(const char * name,
+			const void * buf,
+			int nbyte,
+			const char * mount = "/app",
+			bool (*update)(void *, int, int) = 0,
+			void * context = 0);
+#else
 	static int create(const char * name,
 			const void * buf,
 			int nbyte,
@@ -66,6 +74,7 @@ public:
 			bool (*update)(void *, int, int) = 0,
 			void * context = 0,
 			link_transport_mdriver_t * driver = 0);
+#endif
 
 
 	/*! \details Returns the page size for writing data. */
@@ -77,7 +86,11 @@ public:
 	 * @param info A reference to the destination info
 	 * @return Zero on success
 	 */
+#if !defined __link
 	static int get_info(const char * path, appfs_info_t & info);
+#else
+	static int get_info(const char * path, appfs_info_t & info, link_transport_mdriver_t * driver);
+#endif
 
 	/*! \details Gets the application version.
 	 *
@@ -87,7 +100,11 @@ public:
 	 * For example, the BCD representation of version "1.1" is 0x0101.
 	 *
 	 */
+#if !defined __link
 	static u16 get_version(const char * path);
+#else
+	static u16 get_version(const char * path, link_transport_mdriver_t * driver);
+#endif
 
 	/*! \details Gets the application ID value.
 	 *
@@ -98,7 +115,11 @@ public:
 	 *
 	 *
 	 */
+#if !defined __link
 	static int get_id(const char * path, char * id, u32 capacity);
+#else
+	static int get_id(const char * path, char * id, u32 capacity, link_transport_mdriver_t * driver);
+#endif
 
 	/*! \details Gets the application ID value.
 	 *
@@ -106,9 +127,11 @@ public:
 	 * @param id A var::String reference that will store the ID
 	 * @return Zero on success
 	 */
+#if !defined __link
 	static int get_id(const char * path, var::String & id){
 		return get_id(path, id.cdata(), id.capacity());
 	}
+#endif
 
 #if !defined __link
 	static int cleanup(bool data = false);

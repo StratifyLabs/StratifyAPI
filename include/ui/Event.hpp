@@ -17,9 +17,14 @@ class ListItem;
 class Element;
 
 /*! \brief Event Class
- * \details This class defines actionable events (such as
- * button presses) that occur within and EventLoop and are handled
- * by Element::handle_event().
+ * \details This class defines action-able events (such as
+ * button presses) that occur within ui::EventLoop and are handled
+ * by ui::Element::handle_event().
+ *
+ * The event includes the type and a pointer to an object associated with the event. For
+ * example, events of type Event::SIGNAL will include a pointer to a sys:Signal
+ * object.
+ *
  *
  */
 class Event {
@@ -46,8 +51,8 @@ public:
 		BUTTON_PRESSED /*! This event is called when a button is pressed. Use button() to access button details. */ = FLAG_IS_BUTTON | 6,
 		BUTTON_RELEASED /*! This event is called when a button is released. Use button() to access button details. */ = FLAG_IS_BUTTON | 7,
 		NETWORK_DATA /*! This event is called when data arrives on the network */ = 8,
-		SIGNAL /*! This event is called when data arrives on the network */ = 9,
-		APPLICATION /*! This event is an application specific where the data is specified by the application */ = 10,
+		SIGNAL /*! This event is called when the process receives a signal */ = 9,
+		APPLICATION /*! This event is application specific where the data is specified by the application */ = 10,
 		LIST_ITEM_SELECTED /*! Select an item in a list */ = FLAG_IS_LIST_ITEM | 11,
 		LIST_ITEM_ACTUATED /*! Actuate an item in a list */ = FLAG_IS_LIST_ITEM | 12,
 		LIST_ACTUATED /*! Select an item in a list or menu */ = 13,
@@ -107,6 +112,11 @@ public:
 		m_objects.object = object;
 	}
 
+	/*! \details Constructs a new event referencing a button.
+	 *
+	 * @param type The type of event (should be one of BUTTON_* events)
+	 * @param button A pointer to the button which caused the event.
+	 */
 	Event(enum event_type type, ui::Button * button){
 		m_type = type;
 		m_objects.button = button;
@@ -131,6 +141,11 @@ public:
 		return 0;
 	}
 
+	/*! \details Accesses the button associated with the event.
+	 *
+	 * @return A pointer to the button or zero if the event is not a button event.
+	 *
+	 */
 	ui::Button * button() const {
 		if( m_type & FLAG_IS_BUTTON ){
 			return m_objects.button;
@@ -138,6 +153,10 @@ public:
 		return 0;
 	}
 
+	/*! \details Accesses the signal associated with the event.
+	 *
+	 * @return A pointer to the signal if type is Event::SIGNAL or zero if not.
+	 */
 	sys::Signal * signal() const {
 		if( m_type == SIGNAL ){
 			return m_objects.signal;

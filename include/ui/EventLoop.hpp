@@ -89,13 +89,27 @@ public:
 	 *
 	 * @param v The period in milliseconds
 	 *
-	 * The update period is less than the loop period (see set_period()), Event::UPDATE
-	 * will be called on every loop.
+	 * If the update period is less than the loop period (see set_period()), Event::UPDATE
+	 * will be called on every loop at the loop period interval.
 	 *
 	 */
 	void set_update_period(u16 v){ m_attr.update_period = v; }
 
+	/*! \details Accesses the display refresh wait resolution time in microseconds.
+	 *
+	 * The loop will always wait for the display driver to complete its refresh before
+	 * handling events that modify the display memory. This value determines how long to sleep
+	 * between polling events to the display driver.
+	 *
+	 */
 	u16 refresh_wait_resolution() const { return m_attr.refresh_wait_resolution; }
+
+	/*! \details Sets the value of the display refresh wait resolution in microseconds.
+	 *
+	 * @param v The number of microseconds to between display driver polling events
+	 *
+	 * See refresh_wait_resolution() for more details.
+	 */
 	void set_refresh_wait_resolution(u16 v){ m_attr.refresh_wait_resolution = v; }
 
 protected:

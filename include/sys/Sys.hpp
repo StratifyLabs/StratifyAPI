@@ -201,6 +201,54 @@ public:
 	 */
 	int get_id(sys_id_t & id);
 
+#if !defined __link
+	/*! \details Redirects the standard output to the file specified.
+	 *
+	 * @param fd The file descriptor where the standard output should be directed.
+	 *
+	 * The file desriptor should be open and ready for writing. For example,
+	 * to redirect the standard output to the UART:
+	 *
+	 * \code
+	 * #include <sapi/sys.hpp>
+	 * #include <sapi/hal.hpp>
+	 *
+	 * Uart uart(0);
+	 * uart.init(); //initializes uart using default settings (if available)
+	 * Sys::redirect_stdout( uart.fileno() );
+	 * printf("This will be written to UART0\n");
+	 * \endcode
+	 *
+	 *
+	 */
+	static void redirect_stdout(int fd){
+		_impure_ptr->_stdout->_file = fd;
+	}
+
+	/*! \details Redirects the standard input from the specified file descriptor.
+	 *
+	 * @param fd The open and readable file descriptor to use for standard input
+	 *
+	 * See Sys::redirect_stdout() for an example.
+	 *
+	 */
+	static void redirect_stdin(int fd){
+		_impure_ptr->_stdin->_file = fd;
+	}
+
+	/*! \details Redirects the standard error from the specified file descriptor.
+	 *
+	 * @param fd The open and writable file descriptor to use for standard input
+	 *
+	 * See Sys::redirect_stdout() for an example.
+	 *
+	 */
+	static void redirect_stderr(int fd){
+		_impure_ptr->_stderr->_file = fd;
+	}
+#endif
+
+
 private:
 	int m_current_task;
 

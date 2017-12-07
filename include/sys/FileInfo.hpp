@@ -8,7 +8,7 @@ namespace sys {
 
 class FileInfo {
 public:
-#if defined link
+#if defined __link
 	FileInfo(link_transport_mdriver_t * d);
 #else
 	FileInfo();

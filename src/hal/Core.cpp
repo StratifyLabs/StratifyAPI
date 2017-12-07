@@ -17,6 +17,10 @@ int Core::get_mcu_board_config(mcu_board_config_t & config){
 	return ioctl(I_CORE_GETMCUBOARDCONFIG, &config);
 }
 
+int Core::set_clock_divide(u32 value){
+	return ioctl(I_CORE_SETCLKDIVIDE, value);
+}
+
 void Core::reset(){
 	core_attr_t attr;
 	attr.o_flags = CORE_FLAG_EXEC_RESET;

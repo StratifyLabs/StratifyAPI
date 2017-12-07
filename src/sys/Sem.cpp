@@ -40,7 +40,7 @@ int Sem::create(const char * name, int value, bool exclusive){
 	return open(name, o_flags, 0666, value);
 }
 int Sem::post(){ return sem_post(m_handle); }
-int Sem::timedwait(const struct timespec * timeout){ return sem_timedwait(m_handle, timeout); }
+int Sem::wait_timed(const struct timespec & timeout){ return sem_timedwait(m_handle, &timeout); }
 int Sem::try_wait(){ return sem_trywait(m_handle); }
 int Sem::unlink(const char *name){ return sem_unlink(name); }
 int Sem::wait(){ return sem_wait(m_handle); }

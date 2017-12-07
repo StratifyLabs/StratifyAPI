@@ -14,10 +14,19 @@ namespace sys {
 /*! \brief Semaphore Class
  * \details This class is a wrapper for POSIX style semphores.
  *
- * \code
- * Sem sem;
+ * Here is an example using named semaphores.
  *
+ * \code
+ *
+ * #include <sapi/sys.hpp>
+ *
+ * Sem sem;
  * sem.create("my_semaphore", 10);
+ * sem.wait(); //decrement the semaphore value, block if semaphore can't be decremented
+ * sem.post(); //increment semaphore value
+ * sem.close(); //close reference to semaphore
+ * sem.unlink(); //delete semaphore if all references are closed
+ * \endcode
  *
  */
 class Sem {
@@ -89,24 +98,26 @@ public:
 	 */
 	int post();
 
-	/*! \details Is equivalent to wait_timed().
-	 */
-	int timedwait(const struct timespec * timeout);
 
 	/*! \details Executes a timed wait for the semaphore.
 	 *
 	 * @param timeout The amount of time to wait before timing out
 	 * @return Zero on success, less than zero for an error or timeout
+	 *
+	 * This method will block until either the semaphore becomes available
+	 * and is decremented or until the timeout is exceeded.
+	 *
 	 */
-	int wait_timed(const struct timespec * timeout){ return timedwait(timeout); }
+	int wait_timed(const struct timespec & timeout);
+	int timedwait(const struct timespec & timeout){ return wait_timed(timeout); }
 
 	/*! \details Checks to see if semaphore is available. */
 	int try_wait();
 
 	/*! \details Waits for the semaphore to become available.
 	 *
-	 * Once the semaphore becomes availabe, the value is decremented. The post()
-	 * method will release (increment the value of) the semaphore.
+	 * This method will block until the semaphore becomes available and decrement
+	 * the semaphore value. The post() method will release (increment the value of) the semaphore.
 	 */
 	int wait();
 
