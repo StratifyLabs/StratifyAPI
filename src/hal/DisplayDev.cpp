@@ -38,25 +38,25 @@ void DisplayDev::refresh() const {
 	ioctl(I_DISPLAY_REFRESH);
 }
 
-int DisplayDev::on(){
+int DisplayDev::enable() const {
 	return ioctl(I_DISPLAY_ENABLE);
 }
 
 /*! \brief Turn the LCD pixels off */
-int DisplayDev::off(){
+int DisplayDev::disable() const {
 	return ioctl(I_DISPLAY_DISABLE);
 }
 
 void DisplayDev::wait(u16 resolution) const{
 	bool ret;
 	do {
-		if( (ret = busy()) ){
+		if( (ret = is_busy()) ){
 			Timer::wait_usec(resolution);
 		}
 	} while( ret );
 }
 
-bool DisplayDev::busy() const {
+bool DisplayDev::is_busy() const {
 	return ioctl(I_DISPLAY_ISBUSY) == 1;
 }
 

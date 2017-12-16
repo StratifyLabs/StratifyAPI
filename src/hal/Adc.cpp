@@ -9,3 +9,4 @@ using namespace hal;
 
 Adc::Adc(port_t port) : Periph(CORE_PERIPH_ADC, port){}
 
+

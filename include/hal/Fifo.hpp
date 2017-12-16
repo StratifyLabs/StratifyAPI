@@ -115,8 +115,14 @@ public:
 
 	/*! \details Sets the FIFO in write block mode.
 	 *
-	 * If a write is attempted that won't fit in the unused space in
-	 * the FIFO, the FIFO will block until there is space available.
+	 * @param value True to enable write block or false to disable it
+	 *
+	 * If write blocking is enabled, the FIFO will block (or return EAGAIN is O_NONBLOCK is on)
+	 * if no bytes can be written to the FIFO. If a single byte can be written, write()
+	 * will return 1.
+	 *
+	 * With write blocking disable, write() will never block. It will simply overwrite the data
+	 * that is already in the FIFO.
 	 *
 	 */
 	int set_writeblock(bool value = true) const;

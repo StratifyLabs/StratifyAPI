@@ -101,19 +101,19 @@ public:
 
 	/*! \details Puts the kernel in powerdown mode.
 	 *
-	 * @param timeout_ms The number of milliseconds before the
+	 * @param timeout_msec The number of milliseconds before the
 	 * device will power on (reset).  If this isn't supported,
 	 * the device will power off until reset by an external signal
 	 */
-	static void powerdown(int timeout_ms = 0);
+	static void powerdown(int timeout_msec = 0);
 
 	/*! \details Puts the kernel in hibernate mode.
 	 *
-	 * @param timeout_ms The number of milliseconds before the
+	 * @param timeout_msec The number of milliseconds before the
 	 * device will wake up from hibernation.  If this isn't supported,
 	 * the device will stay in hibernation until woken up externally
 	 */
-	static int hibernate(int timeout_ms = 0);
+	static int hibernate(int timeout_msec = 0);
 
 	/*! \details Executes a kernel request.
 	 *

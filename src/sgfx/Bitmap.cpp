@@ -23,9 +23,7 @@ void Bitmap::init_members(){
 	m_bmap.pen.color = 65535;
 }
 
-
 void Bitmap::set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly){
-
 	Data::set(mem, calc_size(w,h), readonly);
 	calc_members(w,h);
 }

@@ -33,13 +33,13 @@ public:
 	 *
 	 * @return True if the LCD is busy
 	 */
-	bool busy() const;
+	bool is_busy() const;
 
 	/*! \details Blocks until the display is not busy anymore. */
 	void wait(u16 resolution) const;
 
-	int on();
-	int off();
+	int enable() const;
+	int disable() const;
 };
 
 } /* namespace hal */

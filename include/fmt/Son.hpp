@@ -150,19 +150,19 @@ public:
 	/*! \details Sends a message on the specified file descriptor.
 	 *
 	 * @param fd The file descriptor to write the message to.
-	 * @param timeout The max number of milliseconds to wait between bytes before aborting.
+	 * @param timeout_msec The max number of milliseconds to wait between bytes before aborting.
 	 * @return The number of bytes sent or less then zero for an error
 	 */
-	int send_message(int fd, int timeout){ return son_api()->send_message(&m_son, fd, timeout); }
+	int send_message(int fd, int timeout_msec){ return son_api()->send_message(&m_son, fd, timeout_msec); }
 
 
 	/*! \details Receives a message on the specified file descriptor.
 	 *
 	 * @param fd The file descriptor to listen for the message on.
-	 * @param timeout The max number of milliseconds to wait between bytes before aborting.
+	 * @param timeout_msec The max number of milliseconds to wait between bytes before aborting.
 	 * @return The number of bytes received or less than zero for an error
 	 */
-	int recv_message(int fd, int timeout){ return son_api()->recv_message(&m_son, fd, timeout); }
+	int recv_message(int fd, int timeout_msec){ return son_api()->recv_message(&m_son, fd, timeout_msec); }
 
 
 	/*! \details Gets the size of the message in bytes.
@@ -218,13 +218,37 @@ public:
 	 * @param data_size A pointer to write the data size to (null if not needed)
 	 * @return Zero on success
 	 */
-	int seek(const char * access, son_size_t * data_size){ return son_api()->seek(&m_son, access, data_size); }
-	/*! \details Converts the data file to JSON
+	int seek(const char * access, son_size_t & data_size){ return son_api()->seek(&m_son, access, &data_size); }
+
+	/*! \details Seeks the next value in the file.
+	 *
+	 * @param name A reference to a string where the name will be stored
+	 * @return Less than zero for an error or the son_value_t of the current item.
+	 *
+	 *
+	 */
+	int seek_next(var::String & name, son_value_t * type = 0){
+		return son_api()->seek_next(&m_son, name.cdata(), type);
+	}
+
+	/*! \details Converts the data file to JSON.
 	 *
 	 * @param path The path to a file to create with the JSON data
 	 * @return Zero on success
 	 */
-	int to_json(const char * path){ return son_api()->to_json(&m_son, path); }
+	int to_json(const char * path){
+		return son_api()->to_json(&m_son, path, 0, 0);
+	}
+
+	/*! \details Converts the data file to JSON.
+	 *
+	 * @param callback A callback that is used to process the JSON data (c string)
+	 * @param context The parameter that is passed to callback
+	 * @return Zero on success
+	 */
+	int to_json(son_to_json_callback_t callback, void * context = 0){
+		return son_api()->to_json(&m_son, 0, callback, context);
+	}
 
 	/*! \details Opens a new object while writing or appending.
 	 *
@@ -546,6 +570,23 @@ public:
 
 	/*! \details Access the son_t data object. */
 	son_t & son(){ return m_son; }
+
+	operator son_t & () { return m_son; }
+
+	static const char * get_type_description(u8 type){
+		switch(type){
+		case SON_STRING: return "str";
+		case SON_FLOAT: return "float";
+		case SON_NUMBER_U32: return "u32";
+		case SON_NUMBER_S32: return "s32";
+		case SON_FALSE: return "false";
+		case SON_NULL: return "null";
+		case SON_TRUE: return "true";
+		case SON_OBJECT: return "object";
+		case SON_ARRAY: return "array";
+		default: return "unknown";
+		}
+	}
 
 private:
 	son_t m_son;

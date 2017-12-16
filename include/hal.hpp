@@ -13,7 +13,7 @@ namespace hal {};
 #include "hal/Core.hpp"
 #include "hal/Eint.hpp"
 #include "hal/Fifo.hpp"
-#include "hal/Mcfifo.hpp"
+#include "hal/CFifo.hpp"
 #include "hal/Led.hpp"
 #include "hal/I2C.hpp"
 #include "hal/PinAssignment.hpp"

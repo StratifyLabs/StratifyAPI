@@ -118,10 +118,10 @@ public:
 	virtual int init(const char * name = 0) = 0;
 
 	/*! \details Turns the display on. */
-	virtual int on(){ return -1; };
+	virtual int enable() const = 0;
 
 	/*! \details Turns the display off. */
-	virtual int off(){ return -1; };
+	virtual int disable() const = 0;
 };
 
 } /* namespace hal */

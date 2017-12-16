@@ -16,6 +16,42 @@ namespace hal {
  */
 class TmrPinAssignment : public PinAssignment<tmr_pin_assignment_t>{};
 
+class TmrAttr {
+public:
+
+	TmrAttr(){
+		m_port = 0;
+		memset(&m_attr, 0, sizeof(m_attr));
+		memset(&m_attr.pin_assignment, 0xff, sizeof(tmr_pin_assignment_t));
+	}
+
+	u8 port() const { return m_port; }
+	operator tmr_attr_t() const { return m_attr; }
+	const tmr_attr_t & attr() const { return m_attr; }
+	mcu_pin_t channel(u8 channel) const {
+		if( channel < 4 ){ return m_attr.pin_assignment.channel[channel]; }
+		return mcu_pin(0xff, 0xff);
+	}
+	u32 freq() const { return m_attr.freq; }
+	u32 period() const { return m_attr.period; }
+
+	void set_channel_pin(u8 channel, const mcu_pin_t & pin){
+		if( channel < 4 ){
+			m_attr.pin_assignment.channel[channel] = pin;
+		}
+	}
+	void set_port(u8 p){ m_port = p; }
+	void set_flags(u32 flags){ m_attr.o_flags = flags; }
+	void set_freq(u32 frequency){ m_attr.freq = frequency; }
+	void set_period(u32 period){ m_attr.period = period; }
+	void set_channel(const mcu_channel_t & channel){
+		m_attr.channel = channel;
+	}
+
+private:
+	u8 m_port;
+	tmr_attr_t m_attr;
+};
 
 /*! \brief Tmr (hardware timer) Class
  * \details This class implements a hardware timer.  The Timer class implements
@@ -92,7 +128,8 @@ public:
 	 * The \a loc parameter is the input or output channel. Input channels
 	 * should be or'd with the MCU_CHANNEL_FLAG_IS_INPUT value.
 	 *
-	 */	int set_channel(u32 loc, u32 value){
+	 */
+	int set_channel(u32 loc, u32 value){
 		return Periph::set_channel(loc, value, I_TMR_SETCHANNEL);
 	}
 
@@ -115,6 +152,48 @@ public:
 	/*! \details Sets the value of the timer. */
 	int set_value(u32 value) const;
 
+
+	/*! \details Sets the hardware timer attributes as specified.
+	 *
+	 * @param o_flags The Tmr flags
+	 * @param freq The timer frequency (if applicable)
+	 * @param period The timer period (if applicable and supported)
+	 * @param pin_assignment A pointer to the pin assignment
+	 * @return Zero on success
+	 */
+	int set_attr(u32 o_flags, u32 freq, u32 period, const tmr_pin_assignment_t * pin_assignment = 0){
+		tmr_attr_t attr;
+		attr.o_flags = o_flags;
+		attr.freq = freq;
+		attr.period = period;
+		if( pin_assignment ){
+			memcpy(&attr.pin_assignment, pin_assignment, sizeof(uart_pin_assignment_t));
+		} else {
+			memset(&attr.pin_assignment, 0xff, sizeof(uart_pin_assignment_t));
+		}
+		return set_attr(attr);
+	}
+
+	/*! \details Initializes the hardware timer as specified.
+	 *
+	 * @param o_flags The Tmr flags
+	 * @param freq The timer frequency (if applicable)
+	 * @param period The timer period (if applicable and supported)
+	 * @param pin_assignment A pointer to the pin assignment
+	 * @return Zero on success
+	 *
+	 * This method will first open the port and then set the timer attributes.
+	 */
+	int init(u32 o_flags, u32 freq, u32 period, const tmr_pin_assignment_t * pin_assignment = 0){
+		if( open() < 0 ){
+			return -1;
+		}
+		return set_attr(o_flags, freq, period, pin_assignment);
+	}
+
+
+	using Periph::init;
+	using Periph::set_attr;
 
 private:
 

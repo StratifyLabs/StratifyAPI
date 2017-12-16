@@ -278,11 +278,11 @@ public:
 	 *
 	 * @param buf Destination buffer
 	 * @param nbyte Number of bytes available in buffer
-	 * @param timeout Timeout in ms if line does not arrive
-	 * @param term Terminating character of the line (default is newline)
+	 * @param timeout_msec Timeout in ms if line does not arrive
+	 * @param terminator Terminating character of the line (default is newline)
 	 * @return Number of bytes received
 	 */
-	int readline(char * buf, int nbyte, int timeout, char term = '\n') const;
+	int readline(char * buf, int nbyte, int timeout_msec, char terminator = '\n') const;
 
 
 	/*! \details Writes a var::String to the file.

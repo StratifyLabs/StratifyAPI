@@ -118,12 +118,18 @@ public:
 	 *
 	 */
 	void restore_pen(){ m_bmap.pen = m_saved_pen; }
-
-
 	virtual ~Bitmap();
 
 	/*! \details Sets data pointer and size for bitmap */
 	void set_data(const sg_bmap_header_t * hdr, bool readonly = false);
+
+	/*! \details Sets the data pointer based on the width and height of the bitmap.
+	 *
+	 * @param mem A pointer to the memory for the bitmap
+	 * @param w The width of the bitmap in pixels
+	 * @param h The height of the bitmap in pixels
+	 * @param readonly True if \a mem is read-only
+	 */
 	void set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly = false);
 	void set_data(sg_bmap_data_t * mem, const Dim & dim){ set_data(mem, dim.width(), dim.height()); }
 	void set_data(sg_bmap_data_t * mem, bool readonly = false){ set_data(mem, width(), height(), readonly); }
@@ -342,7 +348,7 @@ public:
 	 *
 	 * @return True if the refresh() is still in progress, false if the bitmap can be modified again
 	 */
-	virtual bool busy() const { return false; }
+	virtual bool is_busy() const { return false; }
 
 	/*! \details This method will block until the refresh operation is complete */
 	virtual void wait(u16 resolution) const {}
