@@ -83,6 +83,10 @@ public:
 	 */
 	static void draw(Bitmap & bitmap, const sg_vector_icon_t & icon, const sg_vector_map_t & map, sg_region_t * bounds = 0);
 
+
+	static void draw_path(Bitmap & bitmap, sg_vector_path_t & path, const sg_vector_map_t & map);
+
+
 	static sg_vector_primitive_t fill(const Point & p);
 	static sg_vector_primitive_t fill(sg_int_t x, sg_int_t y){
 		return fill(Point(x,y));
@@ -105,6 +109,13 @@ public:
 
 	static sg_vector_primitive_t quadratic_bezier(const Point & p1, const Point & p2, const Point & p3);
 	static sg_vector_primitive_t cubic_bezier(const Point & p1, const Point & p2, const Point & p3, const Point & p4);
+
+	static sg_vector_path_description_t get_path_move(const Point & p);
+	static sg_vector_path_description_t get_path_line(const Point & p);
+	static sg_vector_path_description_t get_path_pour(const Point & p);
+	static sg_vector_path_description_t get_path_quadratic_bezier(const Point & control, const Point & point);
+	static sg_vector_path_description_t get_path_cubic_bezier(const Point & control0, const Point & control1, const Point & point);
+	static sg_vector_path_description_t get_path_close();
 
 	static Region find_active_region(const Bitmap & bitmap);
 

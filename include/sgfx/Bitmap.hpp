@@ -95,6 +95,8 @@ public:
 	/*! \details Returns the pen flags. */
 	u16 pen_flags() const { return m_bmap.pen.o_flags; }
 
+	Region get_viewable_region() const;
+
 	/*! \details Stores the current pen.
 	 *
 	 * Only one pen can be stored with the object. This can be used

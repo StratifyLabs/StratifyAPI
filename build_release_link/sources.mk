@@ -26,4 +26,5 @@ SUBDIRS := \
 src/fmt \
 src/hal \
 src/sys \
+src/var \
 

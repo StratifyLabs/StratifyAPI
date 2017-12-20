@@ -70,6 +70,10 @@ void Vector::draw(Bitmap & bitmap, const sg_vector_icon_t & icon, const sg_vecto
 	sg_api()->vector_draw_icon(bitmap.bmap(), &icon, &map, bounds);
 }
 
+void Vector::draw_path(Bitmap & bitmap, sg_vector_path_t & path, const sg_vector_map_t & map){
+	sg_api()->vector_draw_path(bitmap.bmap(), &path, &map);
+}
+
 sg_vector_primitive_t Vector::line(const Point & p1, const Point & p2){
 	sg_vector_primitive_t ret;
 	memset(&ret, 0, sizeof(ret));
@@ -131,6 +135,50 @@ sg_vector_primitive_t Vector::fill(const Point & p){
 	memset(&ret, 0, sizeof(ret));
 	ret.type = SG_POUR | SG_ENABLE_FLAG;
 	ret.pour.center = p;
+	return ret;
+}
+
+sg_vector_path_description_t Vector::get_path_move(const Point & p){
+	sg_vector_path_description_t ret;
+	ret.type = SG_VECTOR_PATH_MOVE;
+	ret.move.point = p;
+	return ret;
+}
+
+sg_vector_path_description_t Vector::get_path_line(const Point & p){
+	sg_vector_path_description_t ret;
+	ret.type = SG_VECTOR_PATH_LINE;
+	ret.line.point = p;
+	return ret;
+}
+
+sg_vector_path_description_t Vector::get_path_pour(const Point & p){
+	sg_vector_path_description_t ret;
+	ret.type = SG_VECTOR_PATH_POUR;
+	ret.pour.point = p;
+	return ret;
+}
+
+sg_vector_path_description_t Vector::get_path_quadratic_bezier(const Point & control, const Point & point){
+	sg_vector_path_description_t ret;
+	ret.type = SG_VECTOR_PATH_QUADRATIC_BEZIER;
+	ret.quadratic_bezier.control = control;
+	ret.quadratic_bezier.point = point;
+	return ret;
+}
+
+sg_vector_path_description_t Vector::get_path_cubic_bezier(const Point & control0, const Point & control1, const Point & point){
+	sg_vector_path_description_t ret;
+	ret.type = SG_VECTOR_PATH_CUBIC_BEZIER;
+	ret.cubic_bezier.control[0] = control0;
+	ret.cubic_bezier.control[1] = control1;
+	ret.cubic_bezier.point = point;
+	return ret;
+}
+
+sg_vector_path_description_t Vector::get_path_close(){
+	sg_vector_path_description_t ret;
+	ret.type = SG_VECTOR_PATH_CLOSE;
 	return ret;
 }
 

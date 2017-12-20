@@ -11,6 +11,13 @@ using namespace sgfx;
 using namespace sys;
 using namespace calc;
 
+Region Bitmap::get_viewable_region() const {
+	Point point(margin_left(), margin_top());
+	Dim dim(width() - margin_left() - margin_right(), height() - margin_top() - margin_bottom());
+	Region region(point, dim);
+	return region;
+}
+
 void Bitmap::calc_members(sg_size_t w, sg_size_t h){
 	sg_api()->bmap_set_data(&m_bmap, (sg_bmap_data_t*)data_const(), sg_dim(w,h));
 }

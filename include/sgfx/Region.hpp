@@ -20,6 +20,7 @@ public:
 		m_region.dim.height = h;
 	}
 
+
 	Region(const sg_region_t & region){
 		m_region = region;
 	}

@@ -10,10 +10,17 @@
 #include "sys/Sys.hpp"
 using namespace sys;
 
+#if defined __link
+Sys::Sys(link_transport_mdriver_t * driver) : File(driver){
+	m_current_task = 0;
+}
+
+#else
 Sys::Sys() {
 	// TODO Auto-generated constructor stub
 	m_current_task = 0;
 }
+#endif
 
 int Sys::launch(const char * path, char * exec_path, const char * args, int options, int ram_size, int (*update_progress)(int, int), char *const envp[]){
 #if defined __link

@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "var/String.hpp"
 #include "sys/Appfs.hpp"
 #include "sys/Dir.hpp"
 #include "sys/File.hpp"
@@ -100,6 +101,8 @@ int Appfs::get_info(const char * path, appfs_info_t & info, link_transport_mdriv
 int Appfs::get_info(const char * path, appfs_info_t & info){
 	File f;
 #endif
+	var::String app_name;
+	var::String path_name;
 	appfs_file_t appfs_file_header;
 
 	int ret;
@@ -110,13 +113,20 @@ int Appfs::get_info(const char * path, appfs_info_t & info){
 	ret = f.read(&appfs_file_header, sizeof(appfs_file_header));
 	f.close();
 	if( ret == sizeof(appfs_file_header) ){
-		info.mode = appfs_file_header.hdr.mode;
-		info.version = appfs_file_header.hdr.version;
-		memcpy(info.name, appfs_file_header.hdr.name, LINK_NAME_MAX);
-		memcpy(info.id, appfs_file_header.hdr.id, LINK_NAME_MAX);
-		info.ram_size = appfs_file_header.exec.ram_size;
-		info.o_flags = appfs_file_header.exec.o_flags;
-		info.signature = appfs_file_header.exec.signature;
+		//first check to see if the name matches -- otherwise it isn't an app file
+		path_name = File::name(path);
+		app_name = appfs_file_header.hdr.name;
+		if( path_name == app_name ){
+			info.mode = appfs_file_header.hdr.mode;
+			info.version = appfs_file_header.hdr.version;
+			memcpy(info.name, appfs_file_header.hdr.name, LINK_NAME_MAX);
+			memcpy(info.id, appfs_file_header.hdr.id, LINK_NAME_MAX);
+			info.ram_size = appfs_file_header.exec.ram_size;
+			info.o_flags = appfs_file_header.exec.o_flags;
+			info.signature = appfs_file_header.exec.signature;
+		} else {
+			ret = -1;
+		}
 	} else {
 		ret = -1;
 	}

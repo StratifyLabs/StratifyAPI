@@ -144,7 +144,7 @@ void Token::sort(enum sort_options sort_option){
 	int current;
 	const char * string_to_copy;
 	char * next;
-	char sort_init;
+	u8 sort_init;
 	char a;
 	char b;
 
@@ -172,7 +172,7 @@ void Token::sort(enum sort_options sort_option){
 		current = 0;
 		for(i=0; i < tmp.size(); i++){
 			b = tmp.at(i)[0];
-			if( (used[i] == 0) ){
+			if( used[i] == 0 ){
 				switch(sort_option){
 				default: break;
 				case SORT_AZ:

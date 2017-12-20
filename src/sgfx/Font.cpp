@@ -6,11 +6,11 @@
 
 using namespace sgfx;
 
-static const char ascii_charset_[Font::CHARSET_SIZE+1] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+static const char m_ascii_charset[Font::CHARSET_SIZE+1] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
 
 const char * Font::charset(){
-	return ascii_charset_;
+	return m_ascii_charset;
 }
 
 int Font::to_charset(char ascii){

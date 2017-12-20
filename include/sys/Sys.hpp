@@ -19,7 +19,12 @@ namespace sys {
  */
 class Sys : public File {
 public:
+
+#if defined __link
+	Sys(link_transport_mdriver_t * driver);
+#else
 	Sys();
+#endif
 
 	enum {
 		LAUNCH_OPTIONS_FLASH /*! Install in flash memory */ = APPFS_FLAG_IS_FLASH,
