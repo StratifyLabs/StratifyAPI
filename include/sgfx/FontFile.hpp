@@ -18,16 +18,18 @@ public:
 
 	sg_size_t get_height() const;
 	sg_size_t get_width() const;
-	const Bitmap & bitmap() const;
 
 protected:
+	void draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_point_t point) const;
 	int load_char(sg_font_char_t & ch, char c, bool ascii) const;
-	int load_bitmap(const sg_font_char_t & ch) const;
 	int load_kerning(u16 first, u16 second) const;
 
 private:
 	mutable sys::File m_file;
-	mutable Bitmap m_bitmap;
+	mutable Bitmap m_canvas;
+	mutable u8 m_current_canvas;
+	u32 m_canvas_start;
+	u32 m_canvas_size;
 	sg_font_kerning_pair_t * m_kerning_pairs;
 
 };

@@ -1,11 +1,9 @@
-/*
- * FontSvg.cpp
- *
- *  Created on: Dec 20, 2017
- *      Author: tgil
- */
+/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#include "FontSvg.hpp"
+
+#include "sgfx/FontSvg.hpp"
+
+using namespace sgfx;
 
 FontSvg::FontSvg() {
 
@@ -15,22 +13,3 @@ FontSvg::~FontSvg() {
 
 }
 
-const Bitmap & FontSvg::bitmap() const {
-
-}
-
-sg_size_t FontSvg::get_height() const {
-
-}
-
-sg_size_t FontSvg::get_width() const {
-
-}
-
-int FontSvg::load_char(sg_font_char_t & ch, char c, bool ascii) const {
-
-}
-
-int FontSvg::load_kerning(u16 first, u16 second) const {
-
-}

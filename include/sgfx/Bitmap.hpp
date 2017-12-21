@@ -20,6 +20,10 @@ public:
 	/*! \details Constructs an empty bitmap. */
 	Bitmap();
 
+	static u8 bits_per_pixel(){
+		return sg_api()->bits_per_pixel;
+	}
+
 	operator const sg_bmap_t*() const { return &m_bmap; }
 
 	/*! \details Constructs a bitmap using an existing sg_bmap_header_t.

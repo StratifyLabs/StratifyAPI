@@ -25,9 +25,6 @@ public:
 		CHARSET_SIZE = 95
 	};
 
-	/*! \details Accesses the bitmap used to draw characters. */
-	virtual const Bitmap & bitmap() const = 0;
-
 
 	/*! \details Returns the maximum height of any character in the font. */
 	virtual sg_size_t get_height() const = 0;
@@ -36,7 +33,7 @@ public:
 	virtual sg_size_t get_width() const = 0;
 
 	//Attribute access methods
-	int offset() const { return m_char.offset; }
+	int xoffset() const { return m_char.xoffset; }
 	int yoffset() const { return m_char.yoffset; }
 
 
@@ -89,6 +86,7 @@ protected:
 
 	static int to_charset(char ascii);
 
+	virtual void draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_point_t point) const = 0;
 	virtual int load_char(sg_font_char_t & ch, char c, bool ascii) const = 0;
 	virtual int load_kerning(u16 first, u16 second) const { return 0; }
 

@@ -8,21 +8,19 @@
 
 namespace sgfx {
 
-/*! \brief Font SVG class
- *
- */
-class FontSvg {
+class FontSvg : public Font {
 public:
 	FontSvg();
 	virtual ~FontSvg();
 
-	virtual const Bitmap & bitmap() const;
-	virtual sg_size_t get_height() const;
-	virtual sg_size_t get_width() const;
+	virtual sg_size_t get_height() const { return m_height; }
+	virtual sg_size_t get_width() const { return m_width; }
 
-protected:
-	int load_char(sg_font_char_t & ch, char c, bool ascii) const;
-	int load_kerning(u16 first, u16 second) const;
+	void set_height(sg_size_t height);
+
+private:
+	sg_size_t m_height;
+	sg_size_t m_width;
 };
 
 };
