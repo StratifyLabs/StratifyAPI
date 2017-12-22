@@ -6,8 +6,11 @@
 
 namespace hal {
 
-CFifo::CFifo(){}
+#if defined __link
+CFifo::CFifo(link_transport_mdriver_t * d) : Dev(d){}
+#endif
 
+CFifo::CFifo(){}
 
 int CFifo::get_count() const {
 	cfifo_info_t info;

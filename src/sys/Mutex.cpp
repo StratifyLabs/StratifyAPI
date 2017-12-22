@@ -70,8 +70,14 @@ Mutex::Mutex(){
 }
 
 Mutex::Mutex(const MutexAttr & attr){
-	pthread_mutex_init(&m_item, &(attr.value()));
+	set_attr(attr);
 }
+
+
+int Mutex::set_attr(const MutexAttr & attr){
+	return pthread_mutex_init(&m_item, &(attr.value()));
+}
+
 
 
 

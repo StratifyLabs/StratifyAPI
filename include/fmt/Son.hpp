@@ -10,9 +10,10 @@
 
 #if defined __link
 #include <sos/link.h>
-#else
-#include "../var/String.hpp"
 #endif
+
+#include "../var/String.hpp"
+
 
 namespace fmt {
 
@@ -41,11 +42,11 @@ namespace fmt {
  *
  *	//tabs are added to help visualize the data in JSON format
  * 	son.create("/home/settings.son");
- * 		son.open_obj("");
+ * 		son.open_object("");
  * 			son.write("name", "Stratify"); //create a string
  * 			son.write("date", "today"); //create another string
  * 			son.write("value", (u32)100); //write a number);
- * 			son.open_obj("time"); //create a new object
+ * 			son.open_object("time"); //create a new object
  * 				son.write("hour", 12); //add some values
  * 				son.write("min", 00);
  * 				son.write("sec", 59);
@@ -88,24 +89,22 @@ namespace fmt {
  *  be in float format.
  *
  */
-template<int stacksize> class Son {
+class Son {
 public:
 
 	/*! \details Constructs a new SON object. */
-	Son(){
-		memset(&m_son, 0, sizeof(m_son));
 #if defined __link
-		set_driver(0);
+	Son(void * driver, u16 max_depth = 8, son_stack_t * stack = 0);
+#else
+	Son(u16 max_depth = 8, son_stack_t * stack = 0);
 #endif
-	}
+
+	~Son();
 
 #if defined __link
 	void set_driver(void * driver){ son_set_driver(&m_son, driver); }
 	//deprecated
 	void set_handle(void * handle){ set_driver(handle); }
-#else
-	static void reset(son_t * son){ lseek(son->phy.fd, 0, SEEK_SET); }
-	void reset(){ reset(&m_son); }
 #endif
 
 	/*! \details Returns file descriptor of the SON file.
@@ -127,7 +126,7 @@ public:
 	 * @param name The name of the file
 	 * @return Zero on success
 	 */
-	int create(const char * name){ return son_api()->create(&m_son, name, m_stack, stacksize); }
+	int create(const char * name){ return son_api()->create(&m_son, name, m_stack, m_stack_size); }
 
 	/*! \details Creates a memory message SON object.
 	 *
@@ -136,7 +135,16 @@ public:
 	 *
 	 * @return Zero on success
 	 */
-	int create_message(void * message, int nbyte){ return son_api()->create_message(&m_son, message, nbyte, m_stack, stacksize); }
+	int create_message(void * message, int nbyte){ return son_api()->create_message(&m_son, message, nbyte, m_stack, m_stack_size); }
+
+	/*! \details Creates a memory message SON object.
+	 *
+	 * @param data A reference to the data object used to store the message
+	 *
+	 * @return Zero on success
+	 */
+	int create_message(var::Data & data){ return son_api()->create_message(&m_son, data.data(), data.capacity(), m_stack, m_stack_size); }
+
 
 	/*! \details Creates a memory message SON object using dynamic memory allocation.
 	 *
@@ -144,7 +152,7 @@ public:
 	 *
 	 * @return Zero on success
 	 */
-	int create_message(int nbyte){ return son_api()->create(&m_son, 0, nbyte); }
+	int create_message(int nbyte){ return son_api()->create_message(&m_son, 0, nbyte, m_stack, m_stack_size); }
 
 
 	/*! \details Sends a message on the specified file descriptor.
@@ -177,7 +185,7 @@ public:
 	 * @param name The path/name of the file to open
 	 * @return Less than zero for an error
 	 */
-	int open_append(const char * name){ return son_api()->append(&m_son, name, m_stack, stacksize); }
+	int open_append(const char * name){ return son_api()->append(&m_son, name, m_stack, m_stack_size); }
 
 	/*! \details Opens a SON file for reading.
 	 *
@@ -192,7 +200,11 @@ public:
 	 * @param nbyte The number of bytes in the message
 	 * @return Zero on success
 	 */
-	int open_read_message(void * message, int nbyte){ return son_api()->open_message(&m_son, message, nbyte); }
+	int open_message(void * message, int nbyte){ return son_api()->open_message(&m_son, message, nbyte); }
+	int open_message(var::Data & data){ return son_api()->open_message(&m_son, data.data(), data.capacity()); }
+
+	int open_read_message(void * message, int nbyte){ return open_message(message, nbyte); }
+	int open_read_message(var::Data & data){ return open_message(data); }
 
 	/*! \details Opens a SON file for editing.
 	 *
@@ -255,11 +267,11 @@ public:
 	 * @param key The key to use for the new object
 	 * @return Zero on success
 	 */
-	int open_obj(const char * key){ return son_api()->open_obj(&m_son, key); }
+	int open_object(const char * key){ return son_api()->open_object(&m_son, key); }
 	/*! \details Closes an object while writing or appending a file.
 	 *
 	 */
-	int close_obj(){ return son_api()->close_obj(&m_son); }
+	int close_object(){ return son_api()->close_object(&m_son); }
 
 	/*! \details Opens a new array while writing or appending.
 	 *
@@ -401,7 +413,6 @@ public:
 	 */
 	int read_str(const char * access, char * str, son_size_t capacity){ return son_api()->read_str(&m_son, access, str, capacity); }
 
-#if !defined __link
 	/*! \details Reads the specified key as a string.  If the original
 	 * key was not written as a string, it will be converted to a string.  For example,
 	 * a (u32)100 will be converted to "100".  A data object will be converted to base64 encoding.
@@ -413,7 +424,6 @@ public:
 	int read_str(const char * access, var::String & str){
 		return son_api()->read_str(&m_son, access, str.cdata(), str.capacity());
 	}
-#endif
 
 	/*! \details Reads the specified key as a number (s32).  If the original
 	 * key was not written as a s32, it will be converted to one.  A string
@@ -548,7 +558,7 @@ public:
 		ERR_ARRAY_INDEX_NOT_FOUND /*! This error happens when an array index could not be found */ = SON_ERR_ARRAY_INDEX_NOT_FOUND,
 		ERR_ACCESS_TOO_LONG /*! This error happens if the \a access parameter len exceeds \a SON_ACCESS_MAX_USER_SIZE.  */ = SON_ERR_ACCESS_TOO_LONG,
 		ERR_KEY_NOT_FOUND /*! This error happens when the key specified by the \a access parameter could not be found. */ = SON_ERR_KEY_NOT_FOUND,
-		ERR_STACK_OVERFLOW /*! This error happens if the depth (son_open_array() or son_open_obj()) exceeds, the handle's stack size. */ = SON_ERR_STACK_OVERFLOW,
+		ERR_STACK_OVERFLOW /*! This error happens if the depth (son_open_array() or son_open_object()) exceeds, the handle's stack size. */ = SON_ERR_STACK_OVERFLOW,
 		ERR_INVALID_KEY /*! This happens if an empty key is passed to anything but the root object. */ = SON_ERR_INVALID_KEY,
 		ERR_CANNOT_CONVERT /*! This happens if a read is tried by the base data can't be converted */ = SON_ERR_CANNOT_CONVERT,
 		ERR_EDIT_TYPE_MISMATCH /*! This happens if a value is edited with a function that doesn't match the base type */ = SON_ERR_EDIT_TYPE_MISMATCH
@@ -588,9 +598,14 @@ public:
 		}
 	}
 
+	u16 max_depth() const { return m_stack_size; }
+	u16 stack_size() const { return m_stack_size; }
+
 private:
 	son_t m_son;
-	son_stack_t m_stack[stacksize];
+	son_stack_t * m_stack;
+	u16 m_stack_size;
+	bool m_is_stack_needs_free;
 };
 
 };

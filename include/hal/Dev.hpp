@@ -106,7 +106,12 @@ namespace hal {
  */
 class Dev : public sys::File {
 public:
+#if defined __link
+	Dev(link_transport_mdriver_t * d);
 	Dev();
+#else
+	Dev();
+#endif
 
 #ifndef __link
 	/*! \details Reads the device asynchronously.

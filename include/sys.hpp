@@ -19,6 +19,7 @@ namespace sys {};
 #include "sys/Timer.hpp"
 #include "sys/Time.hpp"
 #include "sys/Cli.hpp"
+#include "sys/Messenger.hpp"
 #endif
 
 #include "sys/Trace.hpp"

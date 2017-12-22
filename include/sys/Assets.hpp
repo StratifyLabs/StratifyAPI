@@ -77,13 +77,15 @@ public:
 
 private:
 
+	static void check_initialized();
+
 	static bool load_bmap_icons(const sg_bmap_header_t ** icons, u16 count);
 	static bool load_vector_icons(const sg_vector_icon_t * icons, u16 count);
 	static bool load_fonts(const sg_font_ref_t * fonts, int count);
 
 	static const sg_font_ref_t * m_system_fonts;
 	static sgfx::Font ** m_font_array;
-	static int m_font_count;
+	static u16 m_font_count;
 
 	static const sg_vector_icon_t * m_vector_icons;
 	static u16 m_vector_icon_count;

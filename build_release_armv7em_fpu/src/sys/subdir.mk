@@ -10,6 +10,7 @@ CPP_SRCS += \
 ../src/sys/Dir.cpp \
 ../src/sys/File.cpp \
 ../src/sys/FileInfo.cpp \
+../src/sys/Messenger.cpp \
 ../src/sys/Mq.cpp \
 ../src/sys/Mutex.cpp \
 ../src/sys/Sched.cpp \
@@ -27,6 +28,7 @@ OBJS += \
 ./src/sys/Dir.o \
 ./src/sys/File.o \
 ./src/sys/FileInfo.o \
+./src/sys/Messenger.o \
 ./src/sys/Mq.o \
 ./src/sys/Mutex.o \
 ./src/sys/Sched.o \
@@ -44,6 +46,7 @@ CPP_DEPS += \
 ./src/sys/Dir.d \
 ./src/sys/File.d \
 ./src/sys/FileInfo.d \
+./src/sys/Messenger.d \
 ./src/sys/Mq.d \
 ./src/sys/Mutex.d \
 ./src/sys/Sched.d \

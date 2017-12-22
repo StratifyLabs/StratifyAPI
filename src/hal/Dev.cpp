@@ -6,10 +6,12 @@
 using namespace sys;
 using namespace hal;
 
-Dev::Dev() {
-	// TODO Auto-generated constructor stub
-	m_fd = -1;
-}
+#if defined __link
+Dev::Dev(link_transport_mdriver_t * d) : File(d){}
+#endif
+
+Dev::Dev(){}
+
 
 
 

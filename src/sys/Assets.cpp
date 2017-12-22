@@ -12,16 +12,15 @@
 using namespace sys;
 using namespace sgfx;
 
-
 const sg_font_ref_t * Assets::m_system_fonts = 0;
 Font ** Assets::m_font_array = 0;
-int Assets::m_font_count;
+u16 Assets::m_font_count = (u16)-1;
 
 const sg_vector_icon_t * Assets::m_vector_icons = 0;
-u16 Assets::m_vector_icon_count = 0;
+u16 Assets::m_vector_icon_count = (u16)-1;
 
 const sg_bmap_header_t ** Assets::m_bmap_icons = 0;
-u16 Assets::m_bmap_icon_count = 0;
+u16 Assets::m_bmap_icon_count = (u16)-1;
 
 int Assets::init(){
 
@@ -29,19 +28,47 @@ int Assets::init(){
 
 	if( Sys::request(SAPI_REQUEST_ASSET_FONTS, &asset_request) == 0 ){
 		load_fonts((const sg_font_ref_t*)asset_request.list, asset_request.count);
+	} else {
+		m_font_count = 0;
 	}
 
 	if( Sys::request(SAPI_REQUEST_ASSET_VECTOR_ICONS, &asset_request) == 0 ){
 		load_vector_icons((const sg_vector_icon_t*)asset_request.list, asset_request.count);
+	} else {
+		m_vector_icon_count = 0;
 	}
 
 	if( Sys::request(SAPI_REQUEST_ASSET_BITMAP_ICONS, &asset_request) == 0 ){
 		load_bmap_icons((const sg_bmap_header_t**)asset_request.list, asset_request.count);
+	} else {
+		m_bmap_icon_count = 0;
 	}
 
 	return 0;
 }
 
+void Assets::check_initialized(){
+	if( m_font_count == (u16)-1 ){
+		init();
+	}
+}
+
+
+const sg_vector_icon_t * Assets::get_vector_icon(u16 icon){
+	check_initialized();
+	if( icon < m_vector_icon_count ){
+		return m_vector_icons + icon;
+	}
+	return 0;
+}
+
+const sg_bmap_header_t * Assets::get_bmap_icon(u16 icon){
+	check_initialized();
+	if( icon < m_bmap_icon_count ){
+		return m_bmap_icons[icon];
+	}
+	return 0;
+}
 
 bool Assets::load_vector_icons(const sg_vector_icon_t * icons, u16 count){
 	m_vector_icons = icons;
@@ -53,21 +80,6 @@ bool Assets::load_bmap_icons(const sg_bmap_header_t ** icons, u16 count){
 	m_bmap_icons = icons;
 	m_bmap_icon_count = count;
 	return true;
-}
-
-
-const sg_vector_icon_t * Assets::get_vector_icon(u16 icon){
-	if( icon < m_vector_icon_count ){
-		return m_vector_icons + icon;
-	}
-	return 0;
-}
-
-const sg_bmap_header_t * Assets::get_bmap_icon(u16 icon){
-	if( icon < m_bmap_icon_count ){
-		return m_bmap_icons[icon];
-	}
-	return 0;
 }
 
 bool Assets::load_fonts(const sg_font_ref_t * fonts, int count){
@@ -118,12 +130,15 @@ Font * Assets::get_font(sg_size_t h, bool bold){
 	int h_tmp;
 	int i;
 
+	check_initialized();
+
 	if( m_system_fonts ){
 		best_match = 0;
 		for(i=0; i < m_font_count; i++){
 			h_tmp = h - m_system_fonts[i].height;
-			if( (h_tmp > 0) && (h_tmp < h_diff) && (bold == ((m_system_fonts[i].flags & SG_FONT_FLAG_BOLD) == SG_FONT_FLAG_BOLD)) ){
+			if( (h_tmp >= 0) && (h_tmp < h_diff) && (bold == ((m_system_fonts[i].flags & SG_FONT_FLAG_BOLD) == SG_FONT_FLAG_BOLD)) ){
 				best_match = i;
+				h_diff = h_tmp;
 			}
 		}
 		return m_font_array[best_match];
