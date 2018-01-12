@@ -1,9 +1,9 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#ifndef HAL_DISPLAYDEV_HPP_
-#define HAL_DISPLAYDEV_HPP_
+#ifndef HAL_DISPLAYDEVICE_HPP_
+#define HAL_DISPLAYDEVICE_HPP_
 
-#include "Dev.hpp"
+#include "Device.hpp"
 #include "Display.hpp"
 
 namespace hal {
@@ -15,9 +15,9 @@ namespace hal {
  * found at, for example, "/dev/display0" can
  * be drawn on.
  */
-class DisplayDev : public Display, public Dev {
+class DisplayDevice : public Display, public Device {
 public:
-	DisplayDev();
+	DisplayDevice();
 
 	int init(const char * name);
 
@@ -44,4 +44,4 @@ public:
 
 } /* namespace hal */
 
-#endif /* HAL_DISPLAYDEV_HPP_ */
+#endif /* HAL_DISPLAYDEVICE_HPP_ */

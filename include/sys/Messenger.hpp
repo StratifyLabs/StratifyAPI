@@ -17,6 +17,11 @@ namespace sys {
  */
 class Messenger {
 public:
+
+	enum {
+		CHANNEL_DISABLED = 255
+	};
+
 	/*! \details Constructs a new messenger with the specified \a stack size for the thread.
 	 *
 	 * @param stack_size The number of bytes to use for the Messenger thread stack size
@@ -57,18 +62,29 @@ public:
 	 *
 	 * @param message A reference to the incoming message
 	 *
-	 * This method is called within the context of the messenger thread.
-	 * It is a pure vitual method that must be implemented by the class
-	 * that inherits Messenger.
+	 * The default action for this method simply ignores
+	 * all incoming messages. You can re-implement this method
+	 * using an inherited class to handle messages.
 	 *
 	 */
-	virtual void handle_message(fmt::Son & message) = 0;
+	virtual void handle_message(fmt::Son & message){}
 
 	u16 max_message_size() const { return m_max_message_size; }
 
-	void set_max_message_size(u16 size){
-		m_max_message_size = size;
+	void set_max_message_size(u16 size){ m_max_message_size = size; }
+
+	u16 timeout() const { return m_timeout_ms; }
+
+	void set_timeout(u16 timeout_ms){
+		m_timeout_ms = timeout_ms;
 	}
+
+	var::Data & data(){ return m_message_data; }
+
+	int fileno() const { return m_device.fileno(); }
+
+	u8 read_channel() const { return m_read_channel; }
+	u8 write_channel() const { return m_write_channel; }
 
 private:
 	static void * listener_work(void * args);
@@ -83,6 +99,7 @@ private:
 	u16 m_timeout_ms;
 	File m_device;
 	sys::Mutex m_mutex;
+	var::Data m_message_data;
 };
 
 };

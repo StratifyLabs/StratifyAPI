@@ -15,12 +15,12 @@ namespace hal {
  *
  * \details The Channeled FIFO allows access to channeled fifo devices.
  * A channeled FIFO device is a FIFO with multiple independent channels.
- * The file descriptor location/offset (updated with lseek()) is used
+ * The file descriptor's location/offset (updated with lseek()) is used
  * to set the channel.
  *
  *
  */
-class CFifo : public Dev {
+class CFifo : public Device {
 public:
 #if defined __link
 	CFifo(link_transport_mdriver_t * d);
@@ -128,16 +128,6 @@ public:
 	 */
 	int set_writeblock(int channel, bool value = true) const;
 
-
-
-	/*! \details Performs an IOCTL request on the FIFO specified by \a channel.
-	 *
-	 * @param channel The target channel for the request
-	 * @param request The request value (e.g. I_FIFO_INIT)
-	 * @param ctl A pointer to the control argument
-	 * @return Varies by request
-	 */
-	int ioctl_fifo(int channel, int request, void * ctl = 0) const;
 
 };
 

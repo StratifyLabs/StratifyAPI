@@ -101,9 +101,9 @@ int Sys::reclaim_ram(const char * path, link_transport_mdriver_t * driver){
 #if !defined __link
 int Sys::get_version(var::String & version){
 	sys_info_t info;
-	Dev sys;
+	Device sys;
 	int ret;
-	if( sys.open("/dev/sys", Dev::RDWR) < 0 ){
+	if( sys.open("/dev/sys", Device::RDWR) < 0 ){
 		return -1;
 	}
 
@@ -118,9 +118,9 @@ int Sys::get_version(var::String & version){
 
 int Sys::get_kernel_version(var::String & version){
 	sys_info_t info;
-	Dev sys;
+	Device sys;
 	int ret;
-	if( sys.open("/dev/sys", Dev::RDWR) < 0 ){
+	if( sys.open("/dev/sys", Device::RDWR) < 0 ){
 		return -1;
 	}
 

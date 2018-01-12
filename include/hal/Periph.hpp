@@ -10,12 +10,12 @@
 #include <signal.h>
 
 
-#include "Dev.hpp"
+#include "Device.hpp"
 
 
 namespace hal {
 
-class PeriphParent : public Dev {
+class PeriphParent : public Device {
 public:
 	/*!  \details This method opens the peripheral.  For each instance, the peripheral
 	 * only needs to be opened one time.  The port is typically opened with open() and

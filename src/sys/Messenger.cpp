@@ -7,8 +7,8 @@
 using namespace sys;
 
 Messenger::Messenger(int stack_size) : m_listener(stack_size){
-	m_read_channel = 0;
-	m_read_channel = 1;
+	m_read_channel = CHANNEL_DISABLED;
+	m_write_channel = CHANNEL_DISABLED;
 	m_stop = true;
 	m_is_stopped = true;
 	m_max_message_size = 512;
@@ -17,18 +17,34 @@ Messenger::Messenger(int stack_size) : m_listener(stack_size){
 
 int Messenger::start(const char * device, int read_channel, int write_channel){
 	MutexAttr attr;
-	m_read_channel = read_channel;
-	m_write_channel = write_channel;
+	int ret;
+
+	if( m_message_data.alloc(m_max_message_size)  < 0 ){
+		m_read_channel = CHANNEL_DISABLED;
+		m_write_channel = CHANNEL_DISABLED;
+		return -2;
+	}
+
 	if( m_device.open(device, File::RDWR | File::NONBLOCK) < 0 ){
-		return -1;
+		m_read_channel = CHANNEL_DISABLED;
+		m_write_channel = CHANNEL_DISABLED;
+		return -3;
 	}
 	m_stop = false;
 
 	//initialize the mutex
 	m_mutex.set_attr(MutexAttr()); //use defaults
 
+	m_read_channel = read_channel;
+	m_write_channel = write_channel;
 
-	return m_listener.create(listener_work, this);
+	if( m_read_channel != CHANNEL_DISABLED ){
+		ret = m_listener.create(listener_work, this);
+	} else {
+		ret = 0;
+	}
+
+	return ret;
 }
 
 void Messenger::stop(){
@@ -44,40 +60,41 @@ void *  Messenger::listener_work(void * args){
 void Messenger::listener(){
 	int ret;
 	fmt::Son son;
-	var::Data message_data(m_max_message_size);
 
 	m_is_stopped = false;
 
 	while( m_stop == false ){
 
-		m_device.seek(m_read_channel);
-
 		m_mutex.lock();
-		if( son.open_read_message(message_data) < 0 ){
+		if( son.open_read_message(m_message_data) < 0 ){
 			ret = -1;
 		} else {
+			m_device.seek(m_read_channel);
 			ret = son.recv_message(m_device.fileno(), m_timeout_ms);
 		}
 		m_mutex.unlock();
 
 		if( ret >= 0 ){
 			handle_message(son);
+		} else {
+			Timer::wait_msec(m_timeout_ms);
 		}
-
-		Timer::wait_msec(10);
 	}
 
 	m_device.close();
 	m_is_stopped = true;
+	m_message_data.free();
 }
 
 
 int Messenger::send_message(fmt::Son & message){
-	int ret;
-	m_mutex.lock();
-	m_device.seek(m_write_channel);
-	ret = message.send_message(m_device.fileno(), m_timeout_ms);
-	m_mutex.unlock();
+	int ret = -1;
+	if( m_write_channel != CHANNEL_DISABLED ){
+		m_mutex.lock();
+		m_device.seek(m_write_channel);
+		ret = message.send_message(m_device.fileno(), m_timeout_ms);
+		m_mutex.unlock();
+	}
 	return ret;
 }
 

@@ -13,7 +13,7 @@ namespace hal {
  * \details The LED Class is used to control LEDs based on
  * the standard LED driver.
  */
-class Led : public Dev {
+class Led : public Device {
 public:
 	Led();
 

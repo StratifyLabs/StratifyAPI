@@ -8,6 +8,7 @@
 namespace hal {};
 
 #include "hal/Dev.hpp"
+#include "hal/Device.hpp"
 #include "hal/Adc.hpp"
 #include "hal/Dac.hpp"
 #include "hal/Core.hpp"
@@ -27,8 +28,8 @@ namespace hal {};
 
 #if !defined __link
 #include "hal/Display.hpp"
-#include "hal/DisplayDev.hpp"
-#include "hal/DevSignal.hpp"
+#include "hal/DisplayDevice.hpp"
+#include "hal/DeviceSignal.hpp"
 #endif
 
 using namespace hal;

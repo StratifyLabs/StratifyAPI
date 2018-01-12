@@ -74,7 +74,7 @@ int PeriphParent::open(const char * name, int flags){
 	int fileno;
 	fileno = lookup_fileno();
 	if( fileno < 0 ){
-		Dev::open(name, flags);
+		Device::open(name, flags);
 		if( m_fd > 0 ){
 			m_fd_map[m_fd] = m_periph_port;
 		} else {
@@ -111,7 +111,7 @@ int PeriphParent::close(){
 	update_fileno();
 	if( m_fd >= 0 ){
 		m_fd_map[m_fd] = 0;
-		Dev::close();
+		Device::close();
 		m_fd = -1;
 	}
 	return ret;
@@ -130,28 +130,28 @@ int PeriphParent::write(const void * buf, int nbyte) const {
 #ifndef __link
 int PeriphParent::read(Aio & aio) const {
 	update_fileno();
-	return Dev::read(aio);
+	return Device::read(aio);
 }
 
 int PeriphParent::write(Aio & aio) const {
 	update_fileno();
-	return Dev::write(aio);
+	return Device::write(aio);
 }
 #endif
 
 int PeriphParent::ioctl(int req, void * arg) const {
 	update_fileno();
-	return Dev::ioctl(req, arg);
+	return Device::ioctl(req, arg);
 }
 
 int PeriphParent::seek(int loc, int whence) const {
 	update_fileno();
-	return Dev::seek(loc, whence);
+	return Device::seek(loc, whence);
 }
 
 int PeriphParent::fileno() const {
 	update_fileno();
-	return Dev::fileno();
+	return Device::fileno();
 }
 
 

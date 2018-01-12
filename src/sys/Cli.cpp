@@ -69,6 +69,18 @@ int Cli::get_option_value(const char * option) const {
 	return arg.atoi();
 }
 
+int Cli::get_option_hex_value(const char * option) const {
+	int value;
+	String arg = get_option_argument(option);
+	if( arg.empty() ){
+		return 0;
+	}
+	value = 0;
+	sscanf(arg.c_str(), "0x%X", &value);
+	return value;
+}
+
+
 mcu_pin_t Cli::get_option_pin(const char * option) const {
 	mcu_pin_t pio;
 	Token arg;
@@ -162,7 +174,7 @@ bool Cli::handle_i2c(hal::I2CAttr & attr) const {
 			attr.set_freq(100000);
 		}
 
-		if( is_option("-slave") ){ attr.set_slave_addr(get_option_value("-slave")); }
+		if( is_option("-slave") ){ attr.set_slave_addr(get_option_hex_value("-slave")); }
 		if( is_option("-pu") ){ o_flags |= hal::I2C::FLAG_IS_PULLUP; }
 
 

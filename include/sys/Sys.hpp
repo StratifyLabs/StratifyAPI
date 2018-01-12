@@ -9,8 +9,7 @@
 
 #include <sos/dev/sys.h>
 #include <sos/link.h>
-#include "../hal/Dev.hpp"
-
+#include "File.hpp"
 
 namespace sys {
 

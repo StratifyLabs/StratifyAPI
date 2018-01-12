@@ -5,16 +5,19 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../src/fmt/Bmp.cpp \
+../src/fmt/Son.cpp \
 ../src/fmt/Wav.cpp \
 ../src/fmt/Xml.cpp 
 
 OBJS += \
 ./src/fmt/Bmp.o \
+./src/fmt/Son.o \
 ./src/fmt/Wav.o \
 ./src/fmt/Xml.o 
 
 CPP_DEPS += \
 ./src/fmt/Bmp.d \
+./src/fmt/Son.d \
 ./src/fmt/Wav.d \
 ./src/fmt/Xml.d 
 

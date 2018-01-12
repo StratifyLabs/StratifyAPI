@@ -76,7 +76,7 @@ private:
  * \endcode
  *
  */
-class Fifo : public hal::Dev {
+class Fifo : public hal::Device {
 public:
 	Fifo();
 

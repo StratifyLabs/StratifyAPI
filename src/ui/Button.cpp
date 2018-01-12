@@ -26,11 +26,11 @@ Event Button::event(){
 	}
 
 	if( get_held(m_held_duration) ){
-		return Event(Event::BUTTON_HOLD, this);
+		return Event(Event::BUTTON_HELD, this);
 	}
 
 	if( get_actuated() ){
-		return Event(Event::BUTTON_ACTUATION, this);
+		return Event(Event::BUTTON_ACTUATED, this);
 	}
 
 	if( get_released() ){

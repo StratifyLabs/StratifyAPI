@@ -135,6 +135,22 @@ public:
 	 *
 	 * For example, take the given command line
 	 *
+	 * > program -i 0x40
+	 *
+	 * `get_option_hex_value("-i")` will return 0x40 (64 decimal).
+	 *
+	 *
+	 */
+	int get_option_hex_value(const char * option) const;
+
+
+	/*! \details Gets the argument of an option as a var::String.
+	 *
+	 * @param option The option to match
+	 * @return The value of the argument or 0 if the option wasn't found
+	 *
+	 * For example, take the given command line
+	 *
 	 * > program -i 2.1
 	 *
 	 * `get_option_pio("-i")` will return a mcu_pin_t structure with port = 2 and pin = 1.
@@ -175,7 +191,7 @@ public:
 	 * The arguments are
 	 * - "-i2c [port]" (required)
 	 * - "-freq [bitrate]" (optional, default is 100000)
-	 * - "-slave_addr" (optional, default is 0)
+	 * - "-slave" (optional, default is 0)
 	 * - "-scl [X.Y]" (optional port.pin, uses system default otherwise)
 	 * - "-sda [X.Y]" (optional port.pin, uses system default otherwise)
 	 * - "-pu" (optional flag, use internal pullup resistors)

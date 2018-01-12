@@ -9,6 +9,11 @@
 
 namespace sys {
 
+/*! \brief Assets Class
+ * \details The Assets class is a static class
+ * that allows the application to access kernel assets
+ * such as fonts, bitmaps, and vector graphics.
+ */
 class Assets {
 public:
 
