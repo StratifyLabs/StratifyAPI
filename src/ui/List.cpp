@@ -110,21 +110,21 @@ void List::animate_scroll(i8 dir, const DrawingAttr & attr){
 		}
 
 		if( m_scroll_timer.msec() < 250 ){
-			m_scroll_animation.set_step_total(4);
+			m_scroll_animation.set_step_total(scroll_animation_frames() * 2 / 3);
 			m_scroll_animation.set_path(AnimationAttr::LINEAR);
 		} else {
-			m_scroll_animation.set_step_total(6);
+			m_scroll_animation.set_step_total(scroll_animation_frames());
 			m_scroll_animation.set_path(AnimationAttr::SQUARED_UNDO);
 		}
 	} else if( (selected() == 0) && (dir < 0) ){
 		m_scroll_animation.set_path(AnimationAttr::SQUARED);
-		m_scroll_animation.set_step_total(6);
+		m_scroll_animation.set_step_total(scroll_animation_frames());
 		m_scroll_animation.set_drawing_motion_total(attr.height()/(3*visible_items()));
 		type = AnimationAttr::BOUNCE_UP;
 		dir = 0;
 	} else if( (selected() == (size()-1)) && (dir > 0)){
 		m_scroll_animation.set_path(AnimationAttr::SQUARED);
-		m_scroll_animation.set_step_total(6);
+		m_scroll_animation.set_step_total(scroll_animation_frames());
 		m_scroll_animation.set_drawing_motion_total(attr.height()/(3*visible_items()));
 		type = AnimationAttr::BOUNCE_DOWN;
 		dir = 0;

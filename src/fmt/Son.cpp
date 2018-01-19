@@ -20,7 +20,8 @@ Son::Son(void * driver, u16 max_depth, son_stack_t * stack){
 	}
 	set_driver(driver);
 }
-#else
+#endif
+
 Son::Son(u16 max_depth, son_stack_t * stack){
 	memset(&m_son, 0, sizeof(m_son));
 	m_stack_size = max_depth;
@@ -31,8 +32,12 @@ Son::Son(u16 max_depth, son_stack_t * stack){
 		m_is_stack_needs_free = false;
 		m_stack = stack;
 	}
-}
+
+#if defined __link
+	set_driver(0);
 #endif
+}
+
 
 Son::~Son(){
 	if( m_is_stack_needs_free ){

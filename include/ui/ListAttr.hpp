@@ -52,9 +52,16 @@ public:
 	/*! \details Calculate the index of the next visible item in the specified direction */
 	virtual list_attr_size_t size() const = 0;
 
+	/*! \details Access the number of animation frames used when scrolling */
+	u8 scroll_animation_frames() const { return m_scroll_animation_frames; }
+
+	/*! \details Sets the number of animation frames used when scrolling */
+	void set_scroll_animation_frames(u8 frames){ m_scroll_animation_frames = frames; }
+
 private:
 	list_attr_size_t m_selected;
 	list_attr_size_t m_visible_items;
+	u8 m_scroll_animation_frames;
 };
 
 };

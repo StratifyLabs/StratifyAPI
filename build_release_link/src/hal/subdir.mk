@@ -9,6 +9,7 @@ CPP_SRCS += \
 ../src/hal/Core.cpp \
 ../src/hal/Dac.cpp \
 ../src/hal/Dev.cpp \
+../src/hal/Device.cpp \
 ../src/hal/Eint.cpp \
 ../src/hal/Fifo.cpp \
 ../src/hal/I2C.cpp \
@@ -27,6 +28,7 @@ OBJS += \
 ./src/hal/Core.o \
 ./src/hal/Dac.o \
 ./src/hal/Dev.o \
+./src/hal/Device.o \
 ./src/hal/Eint.o \
 ./src/hal/Fifo.o \
 ./src/hal/I2C.o \
@@ -45,6 +47,7 @@ CPP_DEPS += \
 ./src/hal/Core.d \
 ./src/hal/Dac.d \
 ./src/hal/Dev.d \
+./src/hal/Device.d \
 ./src/hal/Eint.d \
 ./src/hal/Fifo.d \
 ./src/hal/I2C.d \

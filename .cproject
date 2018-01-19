@@ -120,7 +120,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="calc/|draw/|sgfx/|ui/|calc.hpp|draw.hpp|sgfx.hpp|ui.hpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
-						<entry excluding="sgfx/|draw/|ui/|calc/|sys/Sched.cpp|hal/util_c.c|hal/util.h|hal/Display.cpp|hal/DisplayDev.cpp|sys/Assets.cpp|sys/Cli.cpp|sys/Messenger.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+						<entry excluding="sgfx/|draw/|ui/|calc/|sys/Sched.cpp|hal/util_c.c|hal/util.h|hal/Display.cpp|sys/Assets.cpp|sys/Cli.cpp|sys/Messenger.cpp|hal/DisplayDevice.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

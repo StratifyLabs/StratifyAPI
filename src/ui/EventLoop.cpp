@@ -103,7 +103,7 @@ void EventLoop::loop(){
 			handle_event(Event(Event::UPDATE));
 		}
 
-		is_hibernate = update_period() >= hibernation_threshold();
+		is_hibernate = (update_period() >= hibernation_threshold());
 
 		if( m_current_element ){
 			//update the screen

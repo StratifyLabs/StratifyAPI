@@ -95,9 +95,8 @@ public:
 	/*! \details Constructs a new SON object. */
 #if defined __link
 	Son(void * driver, u16 max_depth = 8, son_stack_t * stack = 0);
-#else
-	Son(u16 max_depth = 8, son_stack_t * stack = 0);
 #endif
+	Son(u16 max_depth = 8, son_stack_t * stack = 0);
 
 	~Son();
 
