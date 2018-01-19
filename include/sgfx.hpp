@@ -13,9 +13,7 @@ namespace sgfx {}
 #include "sgfx/Font.hpp"
 #include "sgfx/FontFile.hpp"
 #include "sgfx/FontMemory.hpp"
-#include "sgfx/FontSystem.hpp"
 #include "sgfx/Vector.hpp"
-#include "sgfx/VectorIconSystem.hpp"
 #include "sgfx/Point.hpp"
 #include "sgfx/Region.hpp"
 

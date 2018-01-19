@@ -8,6 +8,7 @@
 namespace sys {};
 
 #if !defined __link
+#include "sys/Assets.hpp"
 #include "sys/Aio.hpp"
 #include "sys/Mq.hpp"
 #include "sys/Mutex.hpp"
@@ -18,6 +19,7 @@ namespace sys {};
 #include "sys/Timer.hpp"
 #include "sys/Time.hpp"
 #include "sys/Cli.hpp"
+#include "sys/Messenger.hpp"
 #endif
 
 #include "sys/Trace.hpp"
@@ -25,6 +27,7 @@ namespace sys {};
 #include "sys/Appfs.hpp"
 #include "sys/Dir.hpp"
 #include "sys/File.hpp"
+#include "sys/FileInfo.hpp"
 
 using namespace sys;
 

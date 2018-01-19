@@ -13,7 +13,7 @@ namespace hal {
  * \details The LED Class is used to control LEDs based on
  * the standard LED driver.
  */
-class Led : public Dev {
+class Led : public Device {
 public:
 	Led();
 
@@ -71,7 +71,6 @@ public:
 	/*! \details Enables the LED with the specified brightness.
 	 *
 	 * @param brightness Brightness from 0.0 to 1.0
-	 * @param period Duty cycle period in microseconds (default is 5000)
 	 * @return Zero on success
 	 */
 	int enable(float brightness) const {

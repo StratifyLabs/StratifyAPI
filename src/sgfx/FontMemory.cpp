@@ -1,5 +1,6 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
+#include <cstdio>
 #include <cstring>
 #include "sgfx/FontMemory.hpp"
 
@@ -22,12 +23,15 @@ void FontMemory::set_font_memory(const void * ptr){
 	if( m_font != 0 ){
 		hdr_ptr = (const sg_font_header_t*)m_font;
 		memcpy(&m_hdr, hdr_ptr, sizeof(sg_font_header_t));
-		set_space_size(m_hdr.max_byte_width/4);
+		set_space_size(m_hdr.max_height/6);
 		set_letter_spacing(m_hdr.max_height/8);
+
+		m_canvas_start = m_hdr.size;
+		m_canvas_size = Bitmap::calc_size(m_hdr.canvas_width, m_hdr.canvas_height);
 	}
 }
 
-u16 FontMemory::get_height() const {
+sg_size_t FontMemory::get_height() const {
 	const sg_font_header_t * hdr_ptr;
 	if( m_font != 0 ){
 		hdr_ptr = (const sg_font_header_t*)m_font;
@@ -36,16 +40,13 @@ u16 FontMemory::get_height() const {
 	return 0;
 }
 
-
-
-
-const Bitmap & FontMemory::bitmap() const {
-
-	//load character header info
-	//load_char(m_char, c, ascii);
-	//load bitmap
-	load_bitmap(m_char);
-	return m_bitmap;
+sg_size_t FontMemory::get_width() const {
+	const sg_font_header_t * hdr_ptr;
+	if( m_font != 0 ){
+		hdr_ptr = (const sg_font_header_t*)m_font;
+		return hdr_ptr->max_word_width*32;
+	}
+	return 0;
 }
 
 int FontMemory::load_kerning(u16 first, u16 second) const {
@@ -78,20 +79,20 @@ int FontMemory::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 		return -1;
 	}
 
-
-
 	//header has sg_font_header_t then kerning pairs then char indices
 	offset = sizeof(sg_font_header_t) + sizeof(sg_font_kerning_pair_t)*hdr->kerning_pairs + ind*sizeof(sg_font_char_t);
 	chp = (sg_font_char_t *)((char*)m_font + offset);
 
 	memcpy(&ch, chp, sizeof(sg_font_char_t));
-
 	return 0;
 }
 
-int FontMemory::load_bitmap(const sg_font_char_t & ch) const {
-	m_bitmap.set_data((sg_bmap_data_t*)m_font + ch.offset, ch.width, ch.height, true);
-	return 0;
+
+void FontMemory::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_point_t point) const {
+	u32 canvas_offset = m_canvas_start + m_canvas_size * ch.canvas_idx;
+	m_canvas.set_data((sg_bmap_data_t*)((u8*)m_font + canvas_offset), m_hdr.canvas_width, m_hdr.canvas_height, true);
+	Region region(ch.canvas_x, ch.canvas_y, ch.width, ch.height);
+	dest.draw_sub_bitmap(point, m_canvas, region);
 }
 
 

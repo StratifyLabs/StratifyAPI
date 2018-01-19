@@ -123,7 +123,7 @@ public:
 
 	/*! \details Sets the scheduler.
 	 *
-	 * @param pid The process ID
+	 * @param id The process ID
 	 * @param value The policy (such as Sched::FIFO)
 	 * @param priority The priority (higher is higher priority)
 	 * @return Zero on success of -1 with errno set

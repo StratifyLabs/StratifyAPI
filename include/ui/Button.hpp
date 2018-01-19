@@ -35,7 +35,7 @@ public:
 
 	/*! \details This method sets the duration of the hold event.
 	 */
-	static void set_held_duration(u32 v){ m_held_duration = v; }
+	static void set_held_duration(u32 duration_ms){ m_held_duration = duration_ms; }
 
 	/*! \details This method returns the max held duration which will effectively disable the
 	 * reporting of button holds

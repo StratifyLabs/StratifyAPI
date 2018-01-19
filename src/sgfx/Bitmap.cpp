@@ -11,6 +11,13 @@ using namespace sgfx;
 using namespace sys;
 using namespace calc;
 
+Region Bitmap::get_viewable_region() const {
+	Point point(margin_left(), margin_top());
+	Dim dim(width() - margin_left() - margin_right(), height() - margin_top() - margin_bottom());
+	Region region(point, dim);
+	return region;
+}
+
 void Bitmap::calc_members(sg_size_t w, sg_size_t h){
 	sg_api()->bmap_set_data(&m_bmap, (sg_bmap_data_t*)data_const(), sg_dim(w,h));
 }
@@ -23,14 +30,12 @@ void Bitmap::init_members(){
 	m_bmap.pen.color = 65535;
 }
 
-
 void Bitmap::set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly){
-
 	Data::set(mem, calc_size(w,h), readonly);
 	calc_members(w,h);
 }
 
-void Bitmap::set_data(sg_bmap_header_t * hdr, bool readonly){
+void Bitmap::set_data(const sg_bmap_header_t * hdr, bool readonly){
 	char * ptr;
 	ptr = (char*)hdr;
 	ptr += sizeof(sg_bmap_header_t);
@@ -40,6 +45,7 @@ void Bitmap::set_data(sg_bmap_header_t * hdr, bool readonly){
 
 int Bitmap::alloc(sg_size_t w, sg_size_t h){
 	if( Data::alloc(calc_size(w,h)) < 0 ){
+		calc_members(0,0);
 		return -1;
 	}
 	calc_members(w,h);
@@ -73,7 +79,7 @@ Bitmap::Bitmap(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly){
 	set_data(mem, w, h, readonly);
 }
 
-Bitmap::Bitmap(sg_bmap_header_t * hdr, bool readonly){
+Bitmap::Bitmap(const sg_bmap_header_t * hdr, bool readonly){
 	init_members();
 	set_data(hdr, readonly);
 }
@@ -140,7 +146,7 @@ int Bitmap::load(const char * path){
 	}
 
 	if( set_size(hdr.width, hdr.height) == false ){
-		//couln't resize using existing memory -- try resizing
+		//couln't resize using existing memory -- try re-allocating
 		if( alloc(hdr.width, hdr.height) < 0 ){
 			f.close();
 			return -1;
@@ -217,7 +223,7 @@ int Bitmap::save(const char * path) const{
 	return 0;
 }
 
-void Bitmap::showidth() const{
+void Bitmap::show() const{
 	//sg_api()->show(bmap_const());
 	sg_size_t i,j;
 

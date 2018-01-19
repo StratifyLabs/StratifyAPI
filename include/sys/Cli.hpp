@@ -3,6 +3,8 @@
 #ifndef SYS_CLI_HPP_
 #define SYS_CLI_HPP_
 
+#include "../hal/Uart.hpp"
+#include "../hal/I2C.hpp"
 #include "../var/String.hpp"
 #include "../var/Token.hpp"
 
@@ -133,6 +135,22 @@ public:
 	 *
 	 * For example, take the given command line
 	 *
+	 * > program -i 0x40
+	 *
+	 * `get_option_hex_value("-i")` will return 0x40 (64 decimal).
+	 *
+	 *
+	 */
+	int get_option_hex_value(const char * option) const;
+
+
+	/*! \details Gets the argument of an option as a var::String.
+	 *
+	 * @param option The option to match
+	 * @return The value of the argument or 0 if the option wasn't found
+	 *
+	 * For example, take the given command line
+	 *
 	 * > program -i 2.1
 	 *
 	 * `get_option_pio("-i")` will return a mcu_pin_t structure with port = 2 and pin = 1.
@@ -144,6 +162,42 @@ public:
 	/*! \details Returns the number of arguments. */
 	int count() const { return m_argc; }
 	int size() const { return m_argc; }
+
+	//handling hardware inputs
+	/*! \details Handles arguments for setting UART attributes.
+	 *
+	 * @param attr A reference to the destination attributes
+	 * @return true if UART attributes were parsed
+	 *
+	 * The arguments are
+	 * - "-uart [port]" (required)
+	 * - "-freq [bitrate]" (optional, default is 115200)
+	 * - "-width [byte width]" (optional, default is 8)
+	 * - "-stop1" (optional, default is 1 stop bit)
+	 * - "-stop2" (optional)
+	 * - "-tx [X.Y]" (optional port.pin, uses system default otherwise)
+	 * - "-rx [X.Y]" (optional port.pin, uses system default otherwise)
+	 * - "-rts [X.Y]" (optional port.pin, uses system default otherwise)
+	 * - "-cts [X.Y]" (optional port.pin, uses system default otherwise)
+	 *
+	 */
+	bool handle_uart(hal::UartAttr & attr) const;
+
+	/*! \details Handles arguments for setting I2C attributes.
+	 *
+	 * @param attr A reference to the destination attributes
+	 * @return true if I2C attributes were parsed
+	 *
+	 * The arguments are
+	 * - "-i2c [port]" (required)
+	 * - "-freq [bitrate]" (optional, default is 100000)
+	 * - "-slave" (optional, default is 0)
+	 * - "-scl [X.Y]" (optional port.pin, uses system default otherwise)
+	 * - "-sda [X.Y]" (optional port.pin, uses system default otherwise)
+	 * - "-pu" (optional flag, use internal pullup resistors)
+	 *
+	 */
+	bool handle_i2c(hal::I2CAttr & attr) const;
 
 private:
 	u16 m_argc;

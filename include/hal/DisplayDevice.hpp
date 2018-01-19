@@ -1,16 +1,23 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#ifndef HAL_DISPLAYDEV_HPP_
-#define HAL_DISPLAYDEV_HPP_
+#ifndef HAL_DISPLAYDEVICE_HPP_
+#define HAL_DISPLAYDEVICE_HPP_
 
-#include "Dev.hpp"
+#include "Device.hpp"
 #include "Display.hpp"
 
 namespace hal {
 
-class DisplayDev : public Display, public Dev {
+
+/*! \brief Display Device
+ * \details This class is a display device. It inherits
+ * both Display and Dev so that a display
+ * found at, for example, "/dev/display0" can
+ * be drawn on.
+ */
+class DisplayDevice : public Display, public Device {
 public:
-	DisplayDev();
+	DisplayDevice();
 
 	int init(const char * name);
 
@@ -26,15 +33,15 @@ public:
 	 *
 	 * @return True if the LCD is busy
 	 */
-	bool busy() const;
+	bool is_busy() const;
 
 	/*! \details Blocks until the display is not busy anymore. */
 	void wait(u16 resolution) const;
 
-	int on();
-	int off();
+	int enable() const;
+	int disable() const;
 };
 
 } /* namespace hal */
 
-#endif /* HAL_DISPLAYDEV_HPP_ */
+#endif /* HAL_DISPLAYDEVICE_HPP_ */

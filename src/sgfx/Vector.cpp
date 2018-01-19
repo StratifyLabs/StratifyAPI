@@ -6,65 +6,110 @@
 using namespace sgfx;
 
 
-
-void VectorMap::set_dim(const Dim & dim){
-	data()->size.height = dim.height();
-	data()->size.width = dim.width();
+void VectorMap::set_region(const sg_region_t & region, s16 rotation){
+	data()->region = region;
+	data()->rotation = rotation;
 }
 
-void VectorMap::set_shift(const Point & p){
-	data()->shift.x = p.x();
-	data()->shift.y = p.y();
+void VectorMap::set_dim(const sg_dim_t & dim){
+	data()->region.dim = dim;
 }
+
+void VectorMap::set_point(const sg_point_t & p){
+	data()->region.point = p;
+}
+
+void VectorMap::set_point(sg_int_t x, sg_int_t y){
+	data()->region.point.x = x;
+	data()->region.point.y = y;
+}
+
 
 void VectorMap::set_dim(sg_size_t w, sg_size_t h){
-	data()->size.width = w;
-	data()->size.height = h;
+	data()->region.dim.width = w;
+	data()->region.dim.height = h;
 }
 
-void VectorMap::set_shift(sg_int_t x, sg_int_t y){
-	data()->shift.x = x;
-	data()->shift.y = y;
+VectorMap::VectorMap(const Bitmap & bitmap, s16 rotation){
+	set_bitmap_center(bitmap, rotation);
 }
 
-
-VectorMap::VectorMap(const Bitmap & bitmap, const Pen & pen, s16 rotation){
-	set_bitmap_center(bitmap, pen, rotation);
+void VectorMap::set_bitmap_center(const Bitmap & bitmap, s16 rotation){
+	u8 thickness = bitmap.pen_thickness();
+	u32 max_width;
+	u32 max_height;
+	s32 tmp;
+	max_width = (bitmap.width() - bitmap.margin_left() - bitmap.margin_right()) * 1414UL / 1000UL ;
+	max_height = (bitmap.height() - bitmap.margin_top() - bitmap.margin_bottom()) * 1414UL / 1000UL;
+	data()->region.dim.width = max_width - 2*thickness;
+	data()->region.dim.height = max_height - 2*thickness;
+	tmp = bitmap.width() - max_width + 1;
+	data()->region.point.x = tmp/2;
+	tmp = bitmap.height() - max_height + 1;
+	data()->region.point.y = tmp/2;
+	data()->rotation = rotation;
 }
 
-void VectorMap::set_bitmap_center(const Bitmap & bitmap, const Pen & pen, s16 rotation){
-	u8 thickness = pen.thickness();
-	data()->size.width = (bitmap.width() - 2*thickness)*2;
-	data()->size.height = (bitmap.height() - 2*thickness)*2;
-	data()->shift.x = (data()->size.width + 2*thickness)/4;
-	data()->shift.y = (data()->size.height + 2*thickness)/4;
+void VectorMap::fill_region(const sg_region_t & region, s16 rotation){
+	u32 max_width;
+	u32 max_height;
+	s32 tmp;
+	max_width = (region.dim.width) * 1414UL / 1000UL ;
+	max_height = (region.dim.height) * 1414UL / 1000UL;
+	data()->region.dim.width = max_width;
+	data()->region.dim.height = max_height;
+	tmp = region.dim.width - max_width + 1;
+	data()->region.point.x = region.point.x + tmp/2;
+	tmp = region.dim.height - max_height + 1;
+	data()->region.point.y = region.point.y + tmp/2;
 	data()->rotation = rotation;
 }
 
 
-void Vector::draw(Bitmap & bitmap, const sg_vector_icon_t & icon, const sg_vector_map_t & map, sg_bounds_t * bounds){
+void Vector::draw(Bitmap & bitmap, const sg_vector_icon_t & icon, const sg_vector_map_t & map, sg_region_t * bounds){
 	sg_api()->vector_draw_icon(bitmap.bmap(), &icon, &map, bounds);
 }
 
-sg_vector_primitive_t Vector::line(sg_int_t x1, sg_int_t y1, sg_int_t x2, sg_int_t y2){
+void Vector::draw_path(Bitmap & bitmap, sg_vector_path_t & path, const sg_vector_map_t & map){
+	sg_api()->vector_draw_path(bitmap.bmap(), &path, &map);
+}
+
+sg_vector_primitive_t Vector::line(const Point & p1, const Point & p2){
 	sg_vector_primitive_t ret;
 	memset(&ret, 0, sizeof(ret));
 	ret.type = SG_LINE | SG_ENABLE_FLAG;
-	ret.shift.x = x1;
-	ret.shift.y = y1;
-	ret.line.p.x = x2;
-	ret.line.p.y = y2;
-	ret.rotation = 0;
+	ret.line.p1 = p1;
+	ret.line.p2 = p2;
+	return ret;
+}
+
+sg_vector_primitive_t Vector::cubic_bezier(const Point & p1, const Point & p2, const Point & p3, const Point & p4){
+	sg_vector_primitive_t ret;
+	memset(&ret, 0, sizeof(ret));
+	ret.type = SG_CUBIC_BEZIER | SG_ENABLE_FLAG;
+	ret.cubic_bezier.p1 = p1;
+	ret.cubic_bezier.p2 = p2;
+	ret.cubic_bezier.p3 = p3;
+	ret.cubic_bezier.p4 = p4;
+	return ret;
+}
+
+sg_vector_primitive_t Vector::quadratic_bezier(const Point & p1, const Point & p2, const Point & p3){
+	sg_vector_primitive_t ret;
+	memset(&ret, 0, sizeof(ret));
+	ret.type = SG_QUADRATIC_BEZIER | SG_ENABLE_FLAG;
+	ret.quadratic_bezier.p1 = p1;
+	ret.quadratic_bezier.p2 = p2;
+	ret.quadratic_bezier.p3 = p3;
 	return ret;
 }
 
 
-sg_vector_primitive_t Vector::circle(sg_int_t x, sg_int_t y, sg_size_t r){
+sg_vector_primitive_t Vector::circle(const Point & p, sg_size_t r){
 	sg_vector_primitive_t ret;
 	memset(&ret, 0, sizeof(ret));
 	ret.type = SG_ARC | SG_ENABLE_FLAG;
-	ret.shift.x = x;
-	ret.shift.y = y;
+	ret.arc.center = p;
 	ret.arc.rx = r;
 	ret.arc.ry = r;
 	ret.arc.start = 0;
@@ -72,28 +117,68 @@ sg_vector_primitive_t Vector::circle(sg_int_t x, sg_int_t y, sg_size_t r){
 	return ret;
 }
 
-sg_vector_primitive_t Vector::arc(sg_int_t x, sg_int_t y, sg_size_t rx, sg_size_t ry, sg_int_t start, sg_int_t stop, sg_int_t rotation){
+sg_vector_primitive_t Vector::arc(const Point & p, sg_size_t rx, sg_size_t ry, sg_int_t start, sg_int_t stop, sg_int_t rotation){
 	sg_vector_primitive_t ret;
 	memset(&ret, 0, sizeof(ret));
 	ret.type = SG_ARC | SG_ENABLE_FLAG;
-	ret.shift.x = x;
-	ret.shift.y = y;
+	ret.arc.center = p;
 	ret.arc.rx = rx;
 	ret.arc.ry = ry;
 	ret.arc.start = start;
 	ret.arc.stop = stop;
-	ret.rotation = rotation;
+	ret.arc.rotation = rotation;
 	return ret;
 }
 
-sg_vector_primitive_t Vector::fill(sg_int_t x1, sg_int_t y1){
+sg_vector_primitive_t Vector::fill(const Point & p){
 	sg_vector_primitive_t ret;
 	memset(&ret, 0, sizeof(ret));
-	ret.type = SG_FILL | SG_ENABLE_FLAG;
-	ret.shift.x = x1;
-	ret.shift.y = y1;
-	ret.rotation = 0;
+	ret.type = SG_POUR | SG_ENABLE_FLAG;
+	ret.pour.center = p;
+	return ret;
+}
 
+sg_vector_path_description_t Vector::get_path_move(const Point & p){
+	sg_vector_path_description_t ret;
+	ret.type = SG_VECTOR_PATH_MOVE;
+	ret.move.point = p;
+	return ret;
+}
+
+sg_vector_path_description_t Vector::get_path_line(const Point & p){
+	sg_vector_path_description_t ret;
+	ret.type = SG_VECTOR_PATH_LINE;
+	ret.line.point = p;
+	return ret;
+}
+
+sg_vector_path_description_t Vector::get_path_pour(const Point & p){
+	sg_vector_path_description_t ret;
+	ret.type = SG_VECTOR_PATH_POUR;
+	ret.pour.point = p;
+	return ret;
+}
+
+sg_vector_path_description_t Vector::get_path_quadratic_bezier(const Point & control, const Point & point){
+	sg_vector_path_description_t ret;
+	ret.type = SG_VECTOR_PATH_QUADRATIC_BEZIER;
+	ret.quadratic_bezier.control = control;
+	ret.quadratic_bezier.point = point;
+	return ret;
+}
+
+sg_vector_path_description_t Vector::get_path_cubic_bezier(const Point & control0, const Point & control1, const Point & point){
+	sg_vector_path_description_t ret;
+	ret.type = SG_VECTOR_PATH_CUBIC_BEZIER;
+	ret.cubic_bezier.control[0] = control0;
+	ret.cubic_bezier.control[1] = control1;
+	ret.cubic_bezier.point = point;
+	return ret;
+}
+
+sg_vector_path_description_t Vector::get_path_close(){
+	sg_vector_path_description_t ret;
+	ret.type = SG_VECTOR_PATH_CLOSE;
 	return ret;
 }
 
@@ -124,10 +209,90 @@ void Vector::show(const sg_vector_icon_t & icon){
 }
 
 
+Region Vector::find_active_region(const Bitmap & bitmap){
+	sg_region_t region;
+	sg_int_t right, bottom;
+
+	region.point.x = find_left(bitmap);
+	region.point.y = find_top(bitmap);
+
+	right = find_right(bitmap);
+	bottom = find_bottom(bitmap);
+
+	region.dim.width = right - region.point.x;
+	region.dim.height = bottom - region.point.y;
+
+	return region;
+}
+
+sg_int_t Vector::find_top(const Bitmap & bitmap){
+	sg_int_t x, y;
+	sg_int_t y_min = bitmap.height();
+
+	for(x = bitmap.margin_left(); x < bitmap.width() - bitmap.margin_left() - bitmap.margin_right(); x++){
+		y = bitmap.margin_top();
+		while( (bitmap.get_pixel(sg_point(x,y)) == 0) && (y < bitmap.height() - bitmap.margin_top() - bitmap.margin_bottom()) ){
+			y++;
+		}
+		if( y < y_min ){
+			y_min = y;
+		}
+	}
+	return y_min;
+}
+
+sg_int_t Vector::find_bottom(const Bitmap & bitmap){
+	sg_int_t x, y;
+	sg_int_t y_max = 0;
+
+	for(x = bitmap.margin_left(); x < bitmap.width() - bitmap.margin_left() - bitmap.margin_right(); x++){
+		y = bitmap.height() - bitmap.margin_bottom() - bitmap.margin_top();
+		do{
+			y--;
+		} while( (bitmap.get_pixel(sg_point(x,y)) == 0) && (y > bitmap.margin_top()) );
+
+		if( y > y_max ){
+			y_max = y;
+		}
+	}
+	return y_max;
+}
+
+sg_int_t Vector::find_left(const Bitmap & bitmap){
+	sg_int_t x, y;
+	sg_int_t x_min = bitmap.width();
+
+	for(y = 0; y < bitmap.height(); y++){
+		x = bitmap.margin_left();
+		while( (bitmap.get_pixel(sg_point(x,y)) == 0) && (x < bitmap.width() - bitmap.margin_left() - bitmap.margin_right()) ){
+			x++;
+		}
+		if( x < x_min ){
+			x_min = x;
+		}
+	}
+	return x_min;
+}
+
+sg_int_t Vector::find_right(const Bitmap & bitmap){
+	sg_int_t x, y;
+	sg_int_t x_max = 0;
+
+	for(y = 0; y < bitmap.height(); y++){
+		x = bitmap.width() - bitmap.margin_left() - bitmap.margin_right();
+		do{
+			x--;
+		} while( (bitmap.get_pixel(sg_point(x,y)) == 0) && (x > bitmap.margin_left()) );
+
+		if( x > x_max ){
+			x_max = x;
+		}
+	}
+	return x_max;
+}
 
 
-
-void Vector::draw_remove(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_remove(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 
 	int total = 2;
 	sg_vector_primitive_t objs[total];
@@ -144,7 +309,7 @@ void Vector::draw_remove(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * b
 	}
 }
 
-void Vector::draw_ok(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_ok(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 2;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -160,7 +325,7 @@ void Vector::draw_ok(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bound
 	}
 }
 
-void Vector::draw_bars(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_bars(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 3;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -177,7 +342,7 @@ void Vector::draw_bars(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bou
 	}
 }
 
-void Vector::draw_circle(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_circle(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 1;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -191,7 +356,7 @@ void Vector::draw_circle(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * b
 	}
 }
 
-void Vector::draw_circle_fill(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_circle_fill(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 2;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -206,7 +371,7 @@ void Vector::draw_circle_fill(Bitmap & bitmap, const VectorMap & map, sg_bounds_
 	}
 }
 
-void Vector::draw_toggle_off(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_toggle_off(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 5;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -225,7 +390,7 @@ void Vector::draw_toggle_off(Bitmap & bitmap, const VectorMap & map, sg_bounds_t
 	}
 }
 
-void Vector::draw_toggle_on(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_toggle_on(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 6;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -245,7 +410,7 @@ void Vector::draw_toggle_on(Bitmap & bitmap, const VectorMap & map, sg_bounds_t 
 	}
 }
 
-void Vector::draw_power(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_power(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 2;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -261,7 +426,7 @@ void Vector::draw_power(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bo
 	}
 }
 
-void Vector::draw_chevron(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_chevron(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 2;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -277,7 +442,7 @@ void Vector::draw_chevron(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * 
 	}
 }
 
-void Vector::draw_arrow(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_arrow(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 3;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -294,7 +459,7 @@ void Vector::draw_arrow(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bo
 	}
 }
 
-void Vector::draw_zoom(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_zoom(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 2;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -310,7 +475,7 @@ void Vector::draw_zoom(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bou
 	}
 }
 
-void Vector::draw_reset(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_reset(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 3;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -327,7 +492,7 @@ void Vector::draw_reset(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bo
 	}
 }
 
-void Vector::draw_lightning(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_lightning(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 3;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -344,7 +509,7 @@ void Vector::draw_lightning(Bitmap & bitmap, const VectorMap & map, sg_bounds_t 
 	}
 }
 
-void Vector::draw_play(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_play(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 4;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -363,7 +528,7 @@ void Vector::draw_play(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bou
 }
 
 
-void Vector::draw_pause(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_pause(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 2;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -379,7 +544,7 @@ void Vector::draw_pause(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bo
 	}
 }
 
-void Vector::draw_button_bar(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_button_bar(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 7;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -400,7 +565,7 @@ void Vector::draw_button_bar(Bitmap & bitmap, const VectorMap & map, sg_bounds_t
 	}
 }
 
-void Vector::draw_mic(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_mic(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 8;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -424,7 +589,7 @@ void Vector::draw_mic(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * boun
 	}
 }
 
-void Vector::draw_clock(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_clock(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 3;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -443,7 +608,7 @@ void Vector::draw_clock(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bo
 	}
 }
 
-void Vector::draw_heart(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_heart(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 5;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -464,7 +629,7 @@ void Vector::draw_heart(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bo
 	}
 }
 
-void Vector::draw_plot(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_plot(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 6;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -486,7 +651,7 @@ void Vector::draw_plot(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bou
 	}
 }
 
-void Vector::draw_bike(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_bike(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 11;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -512,7 +677,7 @@ void Vector::draw_bike(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bou
 	}
 }
 
-void Vector::draw_mountain(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_mountain(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 6;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -533,7 +698,7 @@ void Vector::draw_mountain(Bitmap & bitmap, const VectorMap & map, sg_bounds_t *
 	}
 }
 
-void Vector::draw_compass(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_compass(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 6;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -555,7 +720,7 @@ void Vector::draw_compass(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * 
 	}
 }
 
-void Vector::draw_compass_outer(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_compass_outer(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 9;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -580,7 +745,7 @@ void Vector::draw_compass_outer(Bitmap & bitmap, const VectorMap & map, sg_bound
 	}
 }
 
-void Vector::draw_panel(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_panel(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 8;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -603,7 +768,7 @@ void Vector::draw_panel(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bo
 	}
 }
 
-void Vector::draw_panel_fill(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_panel_fill(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 9;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -628,7 +793,7 @@ void Vector::draw_panel_fill(Bitmap & bitmap, const VectorMap & map, sg_bounds_t
 	}
 }
 
-void Vector::draw_sun(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_sun(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 9;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -653,7 +818,7 @@ void Vector::draw_sun(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * boun
 	}
 }
 
-void Vector::draw_battery(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_battery(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 7;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -676,7 +841,7 @@ void Vector::draw_battery(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * 
 	}
 }
 
-void Vector::draw_arrowhead(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_arrowhead(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 4;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -696,7 +861,7 @@ void Vector::draw_arrowhead(Bitmap & bitmap, const VectorMap & map, sg_bounds_t 
 	}
 }
 
-void Vector::draw_dot(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_dot(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 1;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -712,7 +877,7 @@ void Vector::draw_dot(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * boun
 	}
 }
 
-void Vector::draw_dash(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_dash(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 1;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -729,7 +894,7 @@ void Vector::draw_dash(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bou
 
 }
 
-void Vector::draw_message(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_message(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 	int total = 6;
 	sg_vector_primitive_t objs[total];
 	sg_vector_icon_t icon;
@@ -751,7 +916,7 @@ void Vector::draw_message(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * 
 
 }
 
-void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_bounds_t * bounds, bool show){
+void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds, bool show){
 
 	sg_vector_primitive_t objs[6];
 	sg_vector_icon_t icon;

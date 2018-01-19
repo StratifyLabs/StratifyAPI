@@ -7,7 +7,7 @@ CPP_SRCS += \
 ../src/var/Data.cpp \
 ../src/var/Flags.cpp \
 ../src/var/Item.cpp \
-../src/var/Packet.cpp \
+../src/var/JsonString.cpp \
 ../src/var/Ring.cpp \
 ../src/var/String.cpp \
 ../src/var/StringUtil.cpp \
@@ -17,7 +17,7 @@ OBJS += \
 ./src/var/Data.o \
 ./src/var/Flags.o \
 ./src/var/Item.o \
-./src/var/Packet.o \
+./src/var/JsonString.o \
 ./src/var/Ring.o \
 ./src/var/String.o \
 ./src/var/StringUtil.o \
@@ -27,7 +27,7 @@ CPP_DEPS += \
 ./src/var/Data.d \
 ./src/var/Flags.d \
 ./src/var/Item.d \
-./src/var/Packet.d \
+./src/var/JsonString.d \
 ./src/var/Ring.d \
 ./src/var/String.d \
 ./src/var/StringUtil.d \

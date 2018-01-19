@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef HAL_DEVSIGNAL_HPP_
-#define HAL_DEVSIGNAL_HPP_
+#ifndef HAL_DEVICESIGNAL_HPP_
+#define HAL_DEVICESIGNAL_HPP_
 
 #include <sos/fs/devfs.h>
 #include "../sys/Signal.hpp"
@@ -49,7 +49,7 @@ namespace hal {
  *
  * \endcode
  */
-class DevSignal: public sys::Signal {
+class DeviceSignal: public sys::Signal {
 public:
 
 	/*! \details Constructs a signal event based on a hardware device action.
@@ -59,7 +59,7 @@ public:
 	 * @param sigcode The signal code
 	 * @param sigvalue The signal value
 	 */
-	DevSignal(bool persistent, int signo, int sigcode = 0, int sigvalue = 0) : sys::Signal(signo){
+	DeviceSignal(bool persistent, int signo, int sigcode = 0, int sigvalue = 0) : sys::Signal(signo){
 		m_context.tid = pthread_self();
 		m_context.si_sigcode = sigcode;
 		m_context.si_signo = signo;
@@ -72,7 +72,7 @@ public:
 	 *
 	 * @param context A copy of the signal_callback_t data to use to handle the event.
 	 */
-	DevSignal(devfs_signal_callback_t context) : sys::Signal(context.si_signo){
+	DeviceSignal(devfs_signal_callback_t context) : sys::Signal(context.si_signo){
 		this->m_context = context;
 	}
 
@@ -99,4 +99,4 @@ private:
 
 } /* namespace hal */
 
-#endif /* HAL_DEVSIGNAL_HPP_ */
+#endif /* HAL_DEVICESIGNAL_HPP_ */

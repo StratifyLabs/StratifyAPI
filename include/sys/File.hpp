@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
 #ifndef FILE_HPP_
 #define FILE_HPP_
@@ -10,10 +10,14 @@
 #include <unistd.h>
 #include "../sys/File.hpp"
 #include "../sys/Aio.hpp"
-#include "../var/String.hpp"
+#define MCU_INT_CAST(var) ((void*)(u32)var)
 #else
 #undef fileno
+#define MCU_INT_CAST(var) ((void*)(u64)var)
 #endif
+
+#include "../var/String.hpp"
+
 
 
 namespace sys {
@@ -37,7 +41,7 @@ namespace sys {
  *  //create a new file and write a string to it
  * 	f.create("/home/myfile.txt");
  * 	str = "Hello New File!\n";
- * 	f.write(str.c_str(), str.size());
+ * 	f.write(str);
  * 	f.close();
  *
  *  //Now open the file we just closed
@@ -58,7 +62,13 @@ namespace sys {
  */
 class File {
 public:
+
+#if defined __link
+	File(link_transport_mdriver_t * d);
 	File();
+#else
+	File();
+#endif
 
 	/*! \details These values are used as flags when opening devices or files */
 	enum {
@@ -90,8 +100,8 @@ public:
 	/*! \details Gets the name of the file from a given path.
 	 *
 	 * \code
-	 * const char * path = /app/flash/HelloWord
-	 * printf("Name is %s\n", File::name(path));
+	 * const char * path = "/app/flash/HelloWorld";
+	 * printf("Name is %s", File::name(path));
 	 * \endcode
 	 *
 	 * The above code will output:
@@ -102,9 +112,31 @@ public:
 	 */
 	static const char * name(const char * path);
 
+	/*! \details Returns a pointer to the file suffix.
+	 *
+	 * @param path The path to search
+	 * @return A pointer to the suffix
+	 *
+	 * For example:
+	 *
+	 * \code
+	 * const char * path = "/home/data.txt";
+	 * printf("Suffix is %s", File::suffix(path));
+	 * \endcode
+	 *
+	 * The above code will output:
+	 * \code
+	 * Suffix is txt
+	 * \endcode
+	 *
+	 */
+	static const char * suffix(const char * path);
+
 	/*! \details Deletes a file.
 	 *
 	 * @param path The path to the file
+	 * @param driver Used only with link protocol
+	 * @return Zero on success
 	 *
 	 */
 	static int remove(const char * path, link_transport_mdriver_t * driver = 0);
@@ -113,18 +145,36 @@ public:
 	 *
 	 * @param path The path to the file
 	 * @param st A pointer to the stat structure
+	 * @param driver Used only with link protocol
+	 * @return Zero on success
 	 *
 	 */
+#if !defined __link
+	static int stat(const char * path, struct stat * st);
+#else
 	static int stat(const char * path, struct link_stat * st, link_transport_mdriver_t * driver = 0);
+#endif
 
 	/*! \details Gets the size of the file.
 	 *
 	 * @param path The path to the file
+	 * @param driver Used only with link protocol
+	 * @return The number of bytes in the file or less than zero for an error
+	 *
 	 */
+#if !defined __link
+	static u32 size(const char * path);
+#else
 	static u32 size(const char * path, link_transport_mdriver_t * driver = 0);
+#endif
 
 
-	/*! \details Open the specified file or device */
+	/*! \details Opens a file.
+	 *
+	 * @param name The path to the file
+	 * @param flags The flags used to open the flag (e.g. File::READONLY)
+	 * @return Zero on success
+	 */
 	virtual int open(const char * name, int flags);
 
 	/*! \details Opens a file.
@@ -224,11 +274,17 @@ public:
 	 */
 	int write(int loc, const void * buf, int nbyte) const;
 
-	/*! \details Reads a line from the file. */
-	int readline(char * buf, int nbyte, int timeout, char term) const;
+	/*! \details Reads a line from a file.
+	 *
+	 * @param buf Destination buffer
+	 * @param nbyte Number of bytes available in buffer
+	 * @param timeout_msec Timeout in ms if line does not arrive
+	 * @param terminator Terminating character of the line (default is newline)
+	 * @return Number of bytes received
+	 */
+	int readline(char * buf, int nbyte, int timeout_msec, char terminator = '\n') const;
 
 
-#ifndef __link
 	/*! \details Writes a var::String to the file.
 	 *
 	 * @param str The string to write
@@ -237,7 +293,9 @@ public:
 	int write(const var::String & str) const {
 		return write(str.c_str(), str.size());
 	}
-#endif
+
+	File& operator<<(const char * a){ write(a, strlen(a)); return *this; }
+
 
 	enum {
 		GETS_BUFFER_SIZE = 128
@@ -273,12 +331,32 @@ public:
 	 */
 	virtual int ioctl(int req, void * arg) const;
 
-	/*! \details Executes an ioctl() with request and const arg pointer. */
+	/*! \details Executes an ioctl() with request and const arg pointer.
+	 *
+	 * @param req The request value
+	 * @param arg A pointer to the arguments
+	 * @return Depends on request
+	 *
+	 */
 	int ioctl(int req, const void * arg) const { return ioctl(req, (void*)arg); }
-	/*! \details Executes an ioctl() with just a request. */
+	/*! \details Executes an ioctl() with just a request.
+	 *
+	 * @param req The request value
+	 * @return Depends on request
+	 *
+	 * The arg value for the ioctl is set to NULL.
+	 *
+	 */
 	int ioctl(int req) const { return ioctl(req, (void*)NULL); }
-	/*! \details Executes an ioctl() with request and integer arg. */
+	/*! \details Executes an ioctl() with request and integer arg.
+	 *
+	 * @param req The request value
+	 * @param arg An integer value (used with some requests)
+	 * @return Depends on request
+	 */
 	int ioctl(int req, int arg) const { return ioctl(req, MCU_INT_CAST(arg)); }
+
+	void set_fileno(int fd){ m_fd = fd; }
 
 
 protected:

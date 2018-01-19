@@ -5,15 +5,21 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "var/String.hpp"
 #include "sys/Appfs.hpp"
 #include "sys/Dir.hpp"
 #include "sys/File.hpp"
 
 using namespace sys;
 
+#if defined __link
 int Appfs::create(const char * name, const void * buf, int nbyte, const char * mount, bool (*update)(void *, int, int), void * context, link_transport_mdriver_t * driver){
-	char buffer[LINK_PATH_MAX];
+	File file(driver);
+#else
+int Appfs::create(const char * name, const void * buf, int nbyte, const char * mount, bool (*update)(void *, int, int), void * context){
 	File file;
+#endif
+	char buffer[LINK_PATH_MAX];
 	int tmp;
 	const char * p = (const char*)buf;
 	appfs_createattr_t attr;
@@ -23,9 +29,7 @@ int Appfs::create(const char * name, const void * buf, int nbyte, const char * m
 	strcpy(buffer, mount);
 	strcat(buffer, "/flash/");
 	strcat(buffer, name);
-#ifdef __link
-	file.set_driver(driver);
-#endif
+
 
 	//delete the settings if they exist
 	strncpy(f.hdr.name, name, LINK_NAME_MAX);
@@ -33,7 +37,11 @@ int Appfs::create(const char * name, const void * buf, int nbyte, const char * m
 	f.exec.code_size = nbyte + sizeof(f); //total number of bytes in file
 	f.exec.signature = APPFS_CREATE_SIGNATURE;
 
+#if defined __link
 	File::remove(buffer, driver);
+#else
+	File::remove(buffer);
+#endif
 
 
 	if( file.open("/app/.install", File::WRONLY) < 0 ){
@@ -86,34 +94,89 @@ int Appfs::create(const char * name, const void * buf, int nbyte, const char * m
 	return nbyte;
 }
 
-
+#if defined __link
+int Appfs::get_info(const char * path, appfs_info_t & info, link_transport_mdriver_t * driver){
+	File f(driver);
+#else
 int Appfs::get_info(const char * path, appfs_info_t & info){
 	File f;
+#endif
+	var::String app_name;
+	var::String path_name;
+	appfs_file_t appfs_file_header;
+
 	int ret;
 	if( f.open(path, File::RDONLY) < 0 ){
-		printf("Failed to open %s - %d\n", path, errno);
 		return -1;
 	}
 
-	ret = f.ioctl(I_APPFS_GETINFO, &info);
+	ret = f.read(&appfs_file_header, sizeof(appfs_file_header));
 	f.close();
-
-	if( ret < 0 ){
-		printf("Failed to get app info %d\n", errno);
+	if( ret == sizeof(appfs_file_header) ){
+		//first check to see if the name matches -- otherwise it isn't an app file
+		path_name = File::name(path);
+		app_name = appfs_file_header.hdr.name;
+		if( path_name == app_name ){
+			info.mode = appfs_file_header.hdr.mode;
+			info.version = appfs_file_header.hdr.version;
+			memcpy(info.name, appfs_file_header.hdr.name, LINK_NAME_MAX);
+			memcpy(info.id, appfs_file_header.hdr.id, LINK_NAME_MAX);
+			info.ram_size = appfs_file_header.exec.ram_size;
+			info.o_flags = appfs_file_header.exec.o_flags;
+			info.signature = appfs_file_header.exec.signature;
+		} else {
+			ret = -1;
+		}
+	} else {
+		ret = -1;
 	}
+
 
 	return ret;
 }
 
+#if defined __link
+u16 Appfs::get_version(const char * path, link_transport_mdriver_t * driver){
+	appfs_info_t info;
+	if( get_info(path, info, driver) < 0 ){
+		return 0x0000;
+	}
+	return info.version;
+}
+
+#else
 u16 Appfs::get_version(const char * path){
 	appfs_info_t info;
-
 	if( get_info(path, info) < 0 ){
 		return 0x0000;
 	}
-
 	return info.version;
 }
+#endif
+
+#if defined __link
+
+int Appfs::get_id(const char * path, char * id, u32 capacity, link_transport_mdriver_t * driver){
+	appfs_info_t info;
+	if( get_info(path, info, driver) < 0 ){
+		return -1;
+	}
+
+#else
+
+int Appfs::get_id(const char * path, char * id, u32 capacity){
+	appfs_info_t info;
+	if( get_info(path, info) < 0 ){
+		return -1;
+	}
+#endif
+
+	int bytes;
+	bytes = capacity > (LINK_NAME_MAX-2) ? (LINK_NAME_MAX-2) : capacity;
+	strncpy(id, (char*)info.id, bytes);
+	return 0;
+}
+
 
 #ifndef __link
 

@@ -73,10 +73,13 @@ public:
 	 * \details The gets the value of an XML element
 	 * based on the string that describes it.
 	 *
+	 *	@param dest The destination string to write the value of the specified attribute
+	 *  @param key The string describing the element; 0 to get the value of the current element.
+	 *
 	 * The following XML (GPX file) is used as an example.
 	 *
  	 *
- 	 * The following \a str values will grab the associated strings from the XML file:
+ 	 * The following \a key values will grab the associated strings from the XML file:
  	 *
  	 * - "gpx(version)" = 1.0
  	 * - "gpx.wpt.ele" = 44.586548
@@ -85,11 +88,9 @@ public:
  	 * - "gpx.wpt[1](lat)" = 42.439227
  	 * - "gpx.time" = 2002-02-27T17:18:33Z
 	 *
-	 *	@param dest The destination string to write the value of the specified attribute
-	 *  @param str The string describing the element; 0 to get the value of the current element.
 	 *  This values is relative to the current position.
 	 *
-	 *  \return Zero if str is successfully fetched
+	 *  \return Zero if \a key is successfully fetched
 	 */
 	int get_value(var::String & dest, const char * key = 0) const;
 	inline int get_value(var::String * dest, const char * key = 0) const {
@@ -132,7 +133,7 @@ public:
 	/*! \brief Get the next sibling
 	 * \details This method gets the name of the next sibling
 	 *
-	 * @param name string reference for name
+	 * @param dest string reference for name
 	 * @param value string pointer for the value
 	 *
 	 * Example:

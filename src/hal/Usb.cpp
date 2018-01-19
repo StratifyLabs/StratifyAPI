@@ -25,7 +25,7 @@ int Usb::configure(){
 	return ioctl(I_USB_SETATTR, &attr);
 }
 
-int Usb::detacheight(){
+int Usb::detach(){
 	usb_attr_t attr;
 	attr.o_flags = Usb::FLAG_DETACH;
 	return ioctl(I_USB_SETATTR, &attr);

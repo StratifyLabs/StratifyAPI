@@ -90,6 +90,9 @@ public:
 	/*! \details Constructs a Mutex using the specified attributes. */
 	Mutex(const MutexAttr & attr);
 
+	/*! \details Sets the mutex attributes. */
+	int set_attr(const MutexAttr & attr);
+
 	/*! \details Attempts to lock the mutex.
 	 *
 	 * If the mutex is locked by

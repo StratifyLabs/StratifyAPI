@@ -89,7 +89,6 @@
 									<listOptionValue builtIn="false" value="&quot;${TOOLSPATH}/include&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.381601933" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="__StratifyOS__"/>
 									<listOptionValue builtIn="false" value="__${BUILD_DEVICE}"/>
 									<listOptionValue builtIn="false" value="__${BUILD_TYPE}"/>
 								</option>
@@ -105,7 +104,6 @@
 									<listOptionValue builtIn="false" value="&quot;${TOOLSPATH}/include&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.392747425" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="__StratifyOS__"/>
 									<listOptionValue builtIn="false" value="__${BUILD_DEVICE}"/>
 									<listOptionValue builtIn="false" value="__${BUILD_TYPE}"/>
 								</option>
@@ -121,8 +119,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="calc/|draw/|sgfx/|ui/|var/|calc.hpp|draw.hpp|sgfx.hpp|ui.hpp|var.hpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
-						<entry excluding="sgfx/|draw/|ui/|var|calc/|sys/Sched.cpp|hal/util_c.c|hal/util.h|hal/Display.cpp|hal/DisplayDev.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+						<entry excluding="calc/|draw/|sgfx/|ui/|calc.hpp|draw.hpp|sgfx.hpp|ui.hpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry excluding="sgfx/|draw/|ui/|calc/|sys/Sched.cpp|hal/util_c.c|hal/util.h|hal/Display.cpp|sys/Assets.cpp|sys/Cli.cpp|sys/Messenger.cpp|hal/DisplayDevice.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

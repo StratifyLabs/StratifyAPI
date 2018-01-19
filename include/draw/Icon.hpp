@@ -80,6 +80,10 @@ private:
 
 /*! \brief Icon Class
  * \details This class draws icons that can be scaled and rotated on a bitmap.
+ *
+ * When an icon is drawn, the icon's pen attributes are used to draw on
+ * the bitmap.
+ *
  */
 
 class Icon : public Drawing, public IconAttr {
@@ -95,10 +99,10 @@ public:
 	 *
 	 * @return The bounds of the last time this icon was drawn on a bitmap using draw_to_scale()
 	 */
-	sg_bounds_t & bounds(){ return m_bounds; }
+	sg_region_t & bounds(){ return m_bounds; }
 
 private:
-	sg_bounds_t m_bounds;
+	sg_region_t m_bounds;
 
 };
 

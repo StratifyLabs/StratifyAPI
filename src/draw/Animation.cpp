@@ -10,11 +10,17 @@ AnimationAttr::AnimationAttr(){
 	attr().path.step_total = 10;
 	attr().path.motion_total = 100;
 	m_drawing_motion_total = 1000;
+	m_frame_delay = 18;
 }
 
 Animation::Animation() {
 	// TODO Auto-generated constructor stub
 	m_drawing_attr = 0;
+}
+
+Animation::Animation(const AnimationAttr & attr){
+	m_drawing_attr = 0;
+	assign(attr);
 }
 
 void Animation::init(Drawing * current,
@@ -35,49 +41,64 @@ void Animation::init(Drawing * current,
 		target->draw_scratch(drawing_attr);
 	}
 
-	update_motion_total();
+	reinit();
 }
 
-void Animation::update_motion_total(){
+void Animation::reinit(){
 
 	sg_dim_t d;
 	sg_point_t p;
+	drawing_size_t motion;
 
-	d = Drawing::dim_on_bitmap( *m_drawing_attr );
-	p = Drawing::point_on_bitmap( *m_drawing_attr );
+	if( m_drawing_attr ){
 
-	//convert motion total
-	switch(type()){
-	case AnimationAttr::PUSH_DOWN:
-	case AnimationAttr::PUSH_UP:
-	case AnimationAttr::SLIDE_DOWN:
-	case AnimationAttr::UNDO_SLIDE_DOWN:
-	case AnimationAttr::SLIDE_UP:
-	case AnimationAttr::UNDO_SLIDE_UP:
-	case AnimationAttr::BOUNCE_UP:
-	case AnimationAttr::BOUNCE_DOWN:
-		//convert motion total as a height
-		set_motion_total( drawing_motion_total() * d.height / 1000 );
-		break;
-	case AnimationAttr::PUSH_LEFT:
-	case AnimationAttr::PUSH_RIGHT:
-	case AnimationAttr::SLIDE_LEFT:
-	case AnimationAttr::UNDO_SLIDE_LEFT:
-	case AnimationAttr::SLIDE_RIGHT:
-	case AnimationAttr::UNDO_SLIDE_RIGHT:
-	case AnimationAttr::BOUNCE_LEFT:
-	case AnimationAttr::BOUNCE_RIGHT:
-		set_motion_total( drawing_motion_total() * d.width / 1000 );
-		break;
-	};
+		p = m_drawing_attr->calc_point_on_bitmap();
+		d = m_drawing_attr->calc_dim_on_bitmap();
 
-	sg_api()->animate_init(pattr(),
-			type(),
-			path(),
-			step_total(),
-			motion_total(),
-			p,
-			d);
+		//convert motion total
+		switch(type()){
+		case AnimationAttr::PUSH_DOWN:
+		case AnimationAttr::PUSH_UP:
+		case AnimationAttr::SLIDE_DOWN:
+		case AnimationAttr::UNDO_SLIDE_DOWN:
+		case AnimationAttr::SLIDE_UP:
+		case AnimationAttr::UNDO_SLIDE_UP:
+		case AnimationAttr::BOUNCE_UP:
+		case AnimationAttr::BOUNCE_DOWN:
+			//convert motion total as a height
+			if( drawing_motion_total() > m_drawing_attr->height() ){
+				motion = m_drawing_attr->height();
+			} else {
+				motion = drawing_motion_total();
+			}
+			set_motion_total( motion * d.height / m_drawing_attr->height() );
+			break;
+		case AnimationAttr::PUSH_LEFT:
+		case AnimationAttr::PUSH_RIGHT:
+		case AnimationAttr::SLIDE_LEFT:
+		case AnimationAttr::UNDO_SLIDE_LEFT:
+		case AnimationAttr::SLIDE_RIGHT:
+		case AnimationAttr::UNDO_SLIDE_RIGHT:
+		case AnimationAttr::BOUNCE_LEFT:
+		case AnimationAttr::BOUNCE_RIGHT:
+			if( drawing_motion_total() > m_drawing_attr->width() ){
+				motion = m_drawing_attr->width();
+			} else {
+				motion = drawing_motion_total();
+			}
+			set_motion_total( motion * d.width / m_drawing_attr->width() );
+			break;
+		};
+
+		sg_api()->animate_init(pattr(),
+				type(),
+				path(),
+				step_total(),
+				motion_total(),
+				p,
+				d);
+
+	}
 
 }
 
@@ -91,25 +112,26 @@ bool Animation::exec(void (*draw)(void *, int, int), void * obj){
 }
 
 int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
-	const u16 delay = 18;
 	int ret = 0;
-
+	u16 o_flags;
 
 	if( draw ){
 		draw(obj, data()->path.step, data()->path.step_total);
 	}
 
+	o_flags = m_drawing_attr->bitmap().pen_flags();
+
+	m_drawing_attr->bitmap().set_pen_flags(sgfx::Pen::FLAG_IS_SOLID);
+
 	ret = sg_api()->animate(m_drawing_attr->bitmap().bmap(),
 			m_drawing_attr->scratch()->bmap(),
 			data());
 
+	m_drawing_attr->bitmap().set_pen_flags(o_flags);
 	m_drawing_attr->bitmap().refresh();
+	Timer::wait_msec(frame_delay());
 
-	Timer::wait_msec(delay);
-
-	if( ret == 0 ){ //check for last frame
-		m_drawing_attr->bitmap().wait(1000);
-	}
+	m_drawing_attr->bitmap().wait(1000);
 
 	return ret;
 }

@@ -12,8 +12,8 @@ namespace var {};
 
 #include "var/Data.hpp"
 #include "var/Flags.hpp"
+#include "var/JsonString.hpp"
 #include "var/Item.hpp"
-#include "var/Packet.hpp"
 #include "var/Ring.hpp"
 #include "var/String.hpp"
 #include "var/StringUtil.hpp"

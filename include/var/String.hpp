@@ -237,7 +237,7 @@ public:
 	/*! \details Copies a portion of the string to \a s. */
 	u32 copy(char * s, u32 len, u32 pos = 0) const;
 
-	/*! \details Copies a portion of a string to \a s. */
+	/*! \details Copies a portion of this string to \a s. */
 	u32 copy(String & s, u32 n, u32 pos = 0) const {
 		return copy(s.cdata(), n, pos);
 	}

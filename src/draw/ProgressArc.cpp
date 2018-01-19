@@ -14,6 +14,7 @@ void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
 	sg_point_t p = attr.point();
 	Dim d = attr.dim();
+	sg_region_t bounds;
 	s8 dir;
 	float xf, yf;
 	float xf_inner, yf_inner;
@@ -31,7 +32,7 @@ void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_int_t x_max;
 
 	u32 progress;
-	u32 points = d.width() * d.height();
+	u32 points = 4 * (d.width() + d.height())/2;
 
 	float two_pi = 2.0 * M_PI;
 	float half_pi = M_PI / 2.0;
@@ -39,6 +40,9 @@ void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 	float offset = m_offset * two_pi / 360;
 
 	progress = (points * value()) / max();
+	if( progress > points ){
+		progress = points;
+	}
 
 	if( m_direction > 0 ){
 		dir = 1;
@@ -87,13 +91,15 @@ void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
 
 	attr.bitmap().draw_line(arc_inner, arc);
 
-	if( progress > 0 ){
-		theta = (two_pi * 1 / points - half_pi) + offset;
-		xf = rx * cosf(theta);
+	if( progress > 0 && (attr.bitmap().pen_flags() & Pen::FLAG_IS_FILL) ){
+		theta = (two_pi * progress / (2*points) - half_pi) + offset;
+		xf = ((rx + rx_inner)/2) * cosf(theta);
 		yf = ((ry + ry_inner)/2)* sinf(theta);
 		arc.set(xf, yf);
 		arc = arc + center;
-		attr.bitmap().draw_pour(arc);
+		bounds = attr.region();
+		//attr.bitmap().draw_pixel(arc);
+		attr.bitmap().draw_pour(arc, bounds);
 	}
 
 }

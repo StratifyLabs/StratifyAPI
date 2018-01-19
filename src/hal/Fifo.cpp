@@ -10,8 +10,11 @@ int Fifo::get_info(fifo_info_t & info) const { return ioctl(I_FIFO_GETINFO, (voi
 int Fifo::flush() const { return ioctl(I_FIFO_FLUSH); }
 int Fifo::init() const { return ioctl(I_FIFO_INIT); }
 int Fifo::exit() const { return ioctl(I_FIFO_EXIT); }
-int Fifo::set_writeblock() const {
+int Fifo::set_writeblock(bool value) const {
 	fifo_attr_t attr;
-	attr.o_flags = FIFO_FLAG_SET_WRITEBLOCK;
+	attr.o_flags = FLAG_SET_WRITEBLOCK;
+	if( value == false ){
+		attr.o_flags |= FLAG_IS_OVERFLOW;
+	}
 	return ioctl(I_FIFO_SETATTR, &attr);
 }

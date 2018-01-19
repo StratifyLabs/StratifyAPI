@@ -20,12 +20,18 @@ public:
 	/*! \details Constructs an empty bitmap. */
 	Bitmap();
 
+	static u8 bits_per_pixel(){
+		return sg_api()->bits_per_pixel;
+	}
+
+	operator const sg_bmap_t*() const { return &m_bmap; }
+
 	/*! \details Constructs a bitmap using an existing sg_bmap_header_t.
 	 *
 	 * @param hdr A pointer to the existing bitmap structure
 	 * @param readonly True if the data is stored in read-only memory
 	 */
-	Bitmap(sg_bmap_header_t * hdr, bool readonly = false); //read/write bitmap
+	Bitmap(const sg_bmap_header_t * hdr, bool readonly = false); //read/write bitmap
 
 	/*! \details Constructs a bitmap using an existing memory buffer.
 	 *
@@ -69,16 +75,67 @@ public:
 	 */
 	void set_pen_color(sg_color_t color){ m_bmap.pen.color = color; }
 
+	/*! \details Sets the bitmap's pen by making a copy of the \a pen parameter. */
+	void set_pen(const Pen & pen){ m_bmap.pen = pen; }
+
 	/*! \details Sets the thickness of the pen.
 	 *
 	 * @param thickness The thickness in pixels
 	 */
 	void set_pen_thickness(sg_size_t thickness){ m_bmap.pen.thickness = thickness; }
 
+	/*! \details Returns a copy of the bitmap's pen. */
+	Pen pen() const { return m_bmap.pen; }
+
+	/*! \details Returns the pen color. */
+	sg_color_t pen_color() const { return m_bmap.pen.color; }
+
+	/*! \details Returns the pen thickness. */
+	sg_color_t pen_thickness() const { return m_bmap.pen.thickness; }
+
+	/*! \details Set the pen flags. */
+	void set_pen_flags(u16 o_flags){ m_bmap.pen.o_flags = o_flags; }
+
+	/*! \details Returns the pen flags. */
+	u16 pen_flags() const { return m_bmap.pen.o_flags; }
+
+	Region get_viewable_region() const;
+
+	/*! \details Stores the current pen.
+	 *
+	 * Only one pen can be stored with the object. This can be used
+	 * to temporarily draw with another pen type then restore
+	 * the original pen (see restore_pen()).
+	 *
+	 * \code
+	 * Bitmap bmap(16,16);
+	 *
+	 * bmap.store_pen(); //saves the pen
+	 * bmap.set_pen_color(4);
+	 * bmap.draw_line(sg_point(0,0), sg_point(10,10)); //draw with color 4
+	 * bmap.restore_pen(); //restores the pen
+	 * bmap.draw_line(sg_point(10,0), sg_point(0,10)); //draw with original color
+	 *
+	 * \endcode
+	 */
+	void store_pen(){ m_saved_pen = m_bmap.pen; }
+
+	/*! \details Restores the stored pen.
+	 *
+	 */
+	void restore_pen(){ m_bmap.pen = m_saved_pen; }
 	virtual ~Bitmap();
 
 	/*! \details Sets data pointer and size for bitmap */
-	void set_data(sg_bmap_header_t * hdr, bool readonly = false);
+	void set_data(const sg_bmap_header_t * hdr, bool readonly = false);
+
+	/*! \details Sets the data pointer based on the width and height of the bitmap.
+	 *
+	 * @param mem A pointer to the memory for the bitmap
+	 * @param w The width of the bitmap in pixels
+	 * @param h The height of the bitmap in pixels
+	 * @param readonly True if \a mem is read-only
+	 */
 	void set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly = false);
 	void set_data(sg_bmap_data_t * mem, const Dim & dim){ set_data(mem, dim.width(), dim.height()); }
 	void set_data(sg_bmap_data_t * mem, bool readonly = false){ set_data(mem, width(), height(), readonly); }
@@ -86,8 +143,19 @@ public:
 	/*! \details Changes effective size without free/alloc sequence */
 	bool set_size(sg_size_t w, sg_size_t h, sg_size_t offset = 0);
 
-	/*! \details Returns the size of a bitmap of specified size */
+	/*! \details Returns the number of bytes used to store a Bitmap of specified size
+	 *
+	 * @param w Width used for calculation
+	 * @param h Height used for calculation
+	 */
 	static u32 calc_size(int w, int h){ return sg_api()->calc_bmap_size(sg_dim(w,h)); }
+
+	static u16 calc_word_width(sg_size_t w){
+		return sg_calc_word_width(w);
+	}
+
+	/*! \details Returns the number of bytes used to store the Bitmap. */
+	u32 calc_size(){ return calc_size(width(), height()); }
 	sg_point_t calc_center() const;
 
 	/*! \details Returns the maximum x value. */
@@ -124,14 +192,27 @@ public:
 	/*! \details Free memory associated with bitmap (auto freed on ~Bitmap) */
 	void free();
 
-	void clear(){ clear_rectangle(sg_point(0,0), dim()); }
-	void invert(){ invert_rectangle(sg_point(0,0), dim()); }
-
-
 	void transform_flip_x() const { sg_api()->transform_flip_x(bmap_const()); }
 	void transform_flip_y() const { sg_api()->transform_flip_y(bmap_const()); }
 	void transform_flip_xy() const { sg_api()->transform_flip_xy(bmap_const()); }
-	void transform_shift(sg_point_t shift, sg_point_t p, sg_dim_t d) const { sg_api()->transform_shift(bmap_const(), shift, p, d); }
+
+	/*! \details Performs a shift operation on an area of the bitmap.
+	 *
+	 * @param shift The amount to shift in each direction
+	 * @param region The region to shift
+	 *
+	 * The shifting must respect the dimensions of the bitmap. If you want to shift
+	 * the entire bitmap to the left 8 pixels, do this:
+	 *
+	 * \code
+	 * 	Bitmap bmap(64,64);
+	 * 	bmap.transform_shift(sg_point(-8,0), sg_point(8,0), sg_dim(bmap.width() - 8, bmap.height));
+	 * \endcode
+	 *
+	 *
+	 */
+	void transform_shift(sg_point_t shift, const sg_region_t & region) const { sg_api()->transform_shift(bmap_const(), shift, &region); }
+	void transform_shift(sg_point_t shift, sg_point_t p, sg_dim_t d) const { transform_shift(shift, Region(p,d)); }
 
 
 	/*! \details Gets the value of the pixel at the specified point.
@@ -151,13 +232,39 @@ public:
 	 */
 	void draw_pixel(sg_point_t p) const { sg_api()->draw_pixel(bmap_const(), p); }
 
+	/*! \details Draws a line on the bitmap.
+	 *
+	 * @param p1 Starting point
+	 * @param p2 Ending point
+	 *
+	 * The bitmap's pen will determine the color, thickness, and drawing mode.
+	 *
+	 */
 	void draw_line(sg_point_t p1, sg_point_t p2) const { sg_api()->draw_line(bmap_const(), p1, p2); }
-	void draw_quadtratic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3) const { sg_api()->draw_quadtratic_bezier(bmap_const(), p1, p2, p3); }
-	void draw_cubic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3, sg_point_t p4) const { sg_api()->draw_cubic_bezier(bmap_const(), p1, p2, p3, p4); }
-	void draw_rectangle(sg_point_t p, sg_dim_t d) const { sg_api()->draw_rectangle(bmap_const(), p, d); }
-	void invert_rectangle(sg_point_t p, sg_dim_t d) const { sg_api()->invert_rectangle(bmap_const(), p, d); }
-	void clear_rectangle(sg_point_t p, sg_dim_t d) const { sg_api()->clear_rectangle(bmap_const(), p, d); }
-	void draw_pour(sg_point_t p) const { sg_api()->draw_pour(bmap_const(), p); }
+	void draw_quadtratic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3, sg_point_t * corners = 0) const { sg_api()->draw_quadtratic_bezier(bmap_const(), p1, p2, p3, corners); }
+	void draw_cubic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3, sg_point_t p4, sg_point_t * corners = 0) const { sg_api()->draw_cubic_bezier(bmap_const(), p1, p2, p3, p4, corners); }
+	void draw_arc(const sg_region_t & region, s16 start, s16 end, s16 rotation = 0, sg_point_t * corners = 0) const { sg_api()->draw_arc(bmap_const(), &region, start, end, rotation, corners); }
+	void draw_arc(sg_point_t p, sg_dim_t d, s16 start, s16 end, s16 rotation = 0) const { draw_arc(Region(p,d), start, end, rotation); }
+
+	/*! \details Draws a rectangle on the bitmap.
+	 *
+	 * @param region The region to draw in
+	 *
+	 * The bitmap's pen color and drawing mode will affect how the rectangle is drawn. This method
+	 * affects every pixel in the rectangle not just the border.
+	 */
+	void draw_rectangle(const sg_region_t & region) const { sg_api()->draw_rectangle(bmap_const(), &region); }
+	void draw_rectangle(sg_point_t p, sg_dim_t d) const { draw_rectangle(Region(p,d)); }
+
+	/*! \details Pours an area on the bitmap.
+	 *
+	 * @param point Center of the pour
+	 * @param bounds Bounds for the pour
+	 *
+	 * The pour will seek boundaries going outward until it hits
+	 * a non-zero color or hits the bounding box.
+	 */
+	void draw_pour(const sg_point_t & point, const sg_region_t & bounds) const { sg_api()->draw_pour(bmap_const(), point, &bounds); }
 
 	/*! \details This function sets the pixels in a bitmap
 	 * based on the pixels of the source bitmap
@@ -170,17 +277,18 @@ public:
 		sg_api()->draw_bitmap(bmap_const(), p_dest, src.bmap_const());
 	}
 
-
 	/*! \details This function draws a pattern on the bitmap.
 	 *
-	 * @param p The top-left point to start the pattern
-	 * @param d The dimensions to draw the pattern on
+	 * @param region The region to draw the pattern in
 	 * @param odd_pattern The odd pattern as a 1bpp bitmask (e.g. 0xAA)
 	 * @param even_pattern The even pattern as a 1bpp bitmask (e.g. 0x55)
 	 * @param pattern_height The pixel height of alternating pixels
 	 */
+	void draw_pattern(const sg_region_t & region, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height) const {
+		sg_api()->draw_pattern(bmap_const(), &region, odd_pattern, even_pattern, pattern_height);
+	}
 	void draw_pattern(sg_point_t p, sg_dim_t d, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height) const {
-		sg_api()->draw_pattern(bmap_const(), p, d, odd_pattern, even_pattern, pattern_height);
+		draw_pattern(Region(p,d), odd_pattern, even_pattern, pattern_height);
 	}
 
 	/*! \details This function draws a subset of
@@ -188,12 +296,35 @@ public:
 	 *
 	 * @param p_dest The point in the destination bitmap to start setting pixels
 	 * @param src The source bitmap
-	 * @param p_src The top left corner of the source bitmap to copy
-	 * @param d_src The dimensions of the area to copy
+	 * @param region_src The regions of the source bitmap to draw
 	 * @return Zero on success
 	 */
+	void draw_sub_bitmap(sg_point_t p_dest, const Bitmap & src, const sg_region_t & region_src) const {
+		sg_api()->draw_sub_bitmap(bmap_const(), p_dest, src.bmap_const(), &region_src);
+	}
+
 	void draw_sub_bitmap(sg_point_t p_dest, const Bitmap & src, sg_point_t p_src, sg_dim_t d_src) const {
-		sg_api()->draw_sub_bitmap(bmap_const(), p_dest, src.bmap_const(), p_src, d_src);
+		draw_sub_bitmap(p_dest, src, Region(p_src, d_src));
+	}
+
+	//these are deprecated and shouldn't be documented?
+	void invert(){ invert_rectangle(sg_point(0,0), dim()); }
+	void invert_rectangle(sg_point_t p, sg_dim_t d){
+		u16 o_flags;
+		sg_region_t region = sg_region(p,d);
+		o_flags = m_bmap.pen.o_flags;
+		m_bmap.pen.o_flags = SG_PEN_FLAG_IS_INVERT;
+		sg_api()->draw_rectangle(bmap_const(), &region);
+		m_bmap.pen.o_flags = o_flags;
+	}
+
+	void clear_rectangle(sg_point_t p, sg_dim_t d){
+		u16 o_flags;
+		sg_region_t region = sg_region(p,d);
+		o_flags = m_bmap.pen.o_flags;
+		m_bmap.pen.o_flags = SG_PEN_FLAG_IS_ERASE;
+		sg_api()->draw_rectangle(bmap_const(), &region);
+		m_bmap.pen.o_flags = o_flags;
 	}
 
 
@@ -223,7 +354,7 @@ public:
 	 *
 	 * @return True if the refresh() is still in progress, false if the bitmap can be modified again
 	 */
-	virtual bool busy() const { return false; }
+	virtual bool is_busy() const { return false; }
 
 	/*! \details This method will block until the refresh operation is complete */
 	virtual void wait(u16 resolution) const {}
@@ -249,7 +380,8 @@ public:
 	inline void set_margin_bottom(sg_size_t v) { m_bmap.margin_bottom_right.height = v; }
 
 
-	void showidth() const;
+	/*! \details Shows the bitmap on the standard output. */
+	void show() const;
 
 	sg_bmap_data_t * data() const{ return (sg_bmap_data_t *)Data::data(); }
 	const sg_bmap_data_t * data_const() const { return (const sg_bmap_data_t *)Data::data_const(); }
@@ -259,34 +391,16 @@ public:
 	const sg_bmap_data_t * data_const(sg_point_t p) const;
 
 
-	sg_bmap_t * bmap() MCU_ALWAYS_INLINE { return &m_bmap; }
-	const sg_bmap_t * bmap_const() const  MCU_ALWAYS_INLINE { return &m_bmap; }
+	sg_bmap_t * bmap() { return &m_bmap; }
+	const sg_bmap_t * bmap_const() const { return &m_bmap; }
 
 
 protected:
 
-	/*! \brief Return a pointer to the bitmap memory */
-
-
-
-	/* Transform and bound the x and y values */
-	virtual void transform(sg_int_t & x, sg_int_t & y) const {}
-
-
-	//routines for calculating pixel memory locations and masks
-	inline const sg_bmap_data_t * target_const(sg_int_t x, sg_int_t y) const {
-		return data_const() + (x/8) + y*(m_bmap.columns);
-	}
-	inline sg_bmap_data_t * target(sg_int_t x, sg_int_t y) const {
-		return data() + (x/8) + y*(m_bmap.columns);
-	}
-	inline static sg_bmap_data_t mask(sg_int_t x){
-		return ( 0x80 >> (x&0x07) );
-	}
-
 
 private:
 
+	sg_pen_t m_saved_pen;
 	sg_bmap_t m_bmap;
 	void init_members();
 	void calc_members(sg_size_t w, sg_size_t h);

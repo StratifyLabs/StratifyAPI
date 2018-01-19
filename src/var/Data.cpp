@@ -27,10 +27,12 @@ Data::Data(){
 }
 
 Data::Data(void * mem, u32 s, bool readonly){
+	zero();
 	set(mem, s, readonly);
 }
 
 Data::Data(u32 s){
+	zero();
 	alloc(s);
 }
 
@@ -95,7 +97,6 @@ int Data::alloc(u32 s, bool resize){
 	}
 
 	free();
-
 
 	m_mem_write = new_data;
 	m_needs_free = true;

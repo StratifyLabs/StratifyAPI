@@ -15,11 +15,6 @@ TabBar::TabBar() {
 	set_bounce_right_enabled();
 }
 
-void TabBar::set_animation_type(u8 v){ m_animation.set_type(v); }
-u8 TabBar::animation_type() const { return m_animation.type(); }
-void TabBar::set_animation_path(u8 v){ m_animation.set_path(v); }
-u8 TabBar::animation_path() const { return m_animation.path(); }
-
 Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 	int i;
 
@@ -34,16 +29,6 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 		}
 		return this;
 	case Event::ENTER:
-
-		//m_animation.set_drawing_start(0,0);
-		//m_animation.set_drawing_dim(1000,1000);
-		m_animation.set_step_total(8);
-		m_animation.set_drawing_motion_total(1000);
-
-		//animate the tab bar
-		m_animation.init(0, this, attr);
-		m_animation.exec();
-
 		at(selected()).element()->handle_event(event, view_attr);
 		return this;
 

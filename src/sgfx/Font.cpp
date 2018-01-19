@@ -1,19 +1,16 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-
+#include <cstdio>
 #include <errno.h>
 #include "sgfx/Font.hpp"
 
 using namespace sgfx;
 
-static const char ascii_charset_[Font::CHARSET_SIZE+1] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-
+static const char m_ascii_charset[Font::CHARSET_SIZE+1] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
 const char * Font::charset(){
-	return ascii_charset_;
+	return m_ascii_charset;
 }
-
-
 
 int Font::to_charset(char ascii){
 	if( (ascii < ' ') || (ascii > '~') ){
@@ -57,7 +54,7 @@ int Font::draw_char(char c, Bitmap & dest, sg_point_t point) const {
 	point.x += m_char.xoffset;
 	point.y += m_char.yoffset;
 
-	dest.draw_bitmap(point, bitmap());
+	draw_char_on_bitmap(m_char, dest, point);
 
 	//this needs to be char width not bitmap width
 	return m_char.xadvance;

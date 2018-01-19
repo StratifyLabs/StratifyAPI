@@ -5,9 +5,9 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../src/sys/Appfs.cpp \
-../src/sys/Cli.cpp \
 ../src/sys/Dir.cpp \
 ../src/sys/File.cpp \
+../src/sys/FileInfo.cpp \
 ../src/sys/Mq.cpp \
 ../src/sys/Mutex.cpp \
 ../src/sys/Sem.cpp \
@@ -19,9 +19,9 @@ CPP_SRCS += \
 
 OBJS += \
 ./src/sys/Appfs.o \
-./src/sys/Cli.o \
 ./src/sys/Dir.o \
 ./src/sys/File.o \
+./src/sys/FileInfo.o \
 ./src/sys/Mq.o \
 ./src/sys/Mutex.o \
 ./src/sys/Sem.o \
@@ -33,9 +33,9 @@ OBJS += \
 
 CPP_DEPS += \
 ./src/sys/Appfs.d \
-./src/sys/Cli.d \
 ./src/sys/Dir.d \
 ./src/sys/File.d \
+./src/sys/FileInfo.d \
 ./src/sys/Mq.d \
 ./src/sys/Mutex.d \
 ./src/sys/Sem.d \
@@ -50,7 +50,7 @@ CPP_DEPS += \
 src/sys/%.o: ../src/sys/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross G++ Compiler'
-	clang++ -m64 -arch x86_64 -mmacosx-version-min=10.8 -D__StratifyOS__ -D__link -D__ -I"/Users/tgil/git/StratifyAPI/include" -I"/Applications/StratifyLabs-SDK/Tools/gcc/include" -I"/Applications/StratifyLabs-SDK/Tools/gcc/include" -Os -Wall -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	clang++ -m64 -arch x86_64 -mmacosx-version-min=10.8 -D__link -D__ -I"/Users/tgil/git/StratifyAPI/include" -I"/Applications/StratifyLabs-SDK/Tools/gcc/include" -I"/Applications/StratifyLabs-SDK/Tools/gcc/include" -Os -Wall -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

@@ -11,7 +11,7 @@
 #include <aio.h>
 
 namespace hal {
-class Dev;
+class Device;
 }
 
 namespace sys {
@@ -56,7 +56,7 @@ namespace sys {
  *
  */
 class Aio {
-	friend class hal::Dev;
+	friend class hal::Device;
 public:
 
 	/*! \details Constructs an empy AIO object. */

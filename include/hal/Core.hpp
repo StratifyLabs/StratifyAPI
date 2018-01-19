@@ -1,4 +1,5 @@
-/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
+
 #ifndef SAPI_CORE_HPP_
 #define SAPI_CORE_HPP_
 
@@ -117,10 +118,30 @@ public:
 	 */
 	int get_mcu_board_config(mcu_board_config_t & config);
 
+	/*! \details Sets the core CPU clock divider.
+	 *
+	 * @param value The amount to divide the clock by
+	 * @return Zero on success
+	 *
+	 * This method will change the CPU clock speed (if supported). If
+	 * the native clock speed is 120MHz the following code will make
+	 * it 60MHz
+	 *
+	 * \code
+	 * Core core(0);
+	 * core.open();
+	 * core.set_clock_divide(2); //set to 60MHz
+	 * core.set_clock_divide(1); //restore to 120MHz
+	 * core.close();
+	 * \endcode
+	 *
+	 */
+	int set_clock_divide(u32 value);
+
 	/*! \details Resets the device. */
 	void reset();
 
-	/*! \details Invokes the device's bootloader. If no bootloader is availble, a
+	/*! \details Invokes the device's bootloader. If no bootloader is available, a
 	 * normal reset will occur.
 	 */
 	void invoke_bootloader();

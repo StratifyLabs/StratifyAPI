@@ -29,10 +29,6 @@ public:
 	virtual Element * handle_event(const Event & event, const draw::DrawingAttr & attr);
 	virtual void draw(const draw::DrawingAttr & attr);
 
-	virtual void set_animation_type(u8 v);
-	virtual u8 animation_type() const;
-
-
 	/*! \details Access a reference to the current element */
 	ElementLinked & current(){ return *m_current; }
 
@@ -41,7 +37,7 @@ public:
 
 private:
 
-	draw::Animation animation;
+	draw::Animation m_animation;
 	ElementLinked * m_current;
 
 };

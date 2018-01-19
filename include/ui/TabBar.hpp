@@ -24,13 +24,13 @@ public:
 	/*! \details Tab Bar construction */
 	TabBar();
 
-	/*! \details Access the height of the tab bar as a ratio to draw::Drawing::scale() */
+	/*! \details Access the height of the tab bar as a ratio to draw::DrawingAttr::scale() */
 	sg_size_t height() const { return m_height; }
 
-	/*! \details Set the height of the tab bar where draw::Drawing::scale() height will set the height
+	/*! \details Set the height of the tab bar where draw::DrawingAttr::scale() height will set the height
 	 * to fill the entire screen.
 	 *
-	 * @param h Height of the tab bar as a ratio to draw::Drawing::scale()
+	 * @param h Height of the tab bar as a ratio to draw::DrawingAttr::scale()
 	 *
 	 */
 	void set_height(sg_size_t h){ m_height = h; }
@@ -57,33 +57,13 @@ public:
 	/*! \details Access a reference to the current tab (same as as(selected())) */
 	Tab & current(){ return at(selected()); }
 
-	void set_animation_type(u8 v);
-	u8 animation_type() const;
-	void set_animation_path(u8 v);
-	u8 animation_path() const;
-
 	draw::Animation & animation(){ return m_animation; }
-
-	/*! \details Access whether bouncing left is enabled */
-	bool is_bounce_left_enabled() const { return flag(FLAG_BOUNCE_LEFT_ENABLE); }
-	/*! \details Set whether the tab should bounce on trying to go left on the left-most tab */
-	void set_bounce_left_enabled(bool v = true){ set_flag(FLAG_BOUNCE_LEFT_ENABLE, v); }
-
-	/*! \details Access whether bouncing right is enabled */
-	bool is_bounce_right_enabled() const { return flag(FLAG_BOUNCE_RIGHT_ENABLE); }
-	/*! \details Set whether the tab should bounce on trying to go right on the right-most tab */
-	void set_bounce_right_enabled(bool v = true){ set_flag(FLAG_BOUNCE_RIGHT_ENABLE, v); }
 
 protected:
 	void draw_tab_bar(const draw::DrawingAttr & attr, int selected);
 
 private:
 
-	enum {
-		FLAG_BOUNCE_LEFT_ENABLE = FLAG_ELEMENT_TOTAL,
-		FLAG_BOUNCE_RIGHT_ENABLE,
-		FLAG_TAB_BAR_TOTAL
-	};
 
 	draw::drawing_size_t m_height;
 	draw::drawing_size_t m_highlight;

@@ -11,10 +11,60 @@
 
 namespace hal {
 
+
+
 /*! \brief I2C Pin Assignment
  * \details This class allows simple manipulation of the i2c_pin_assignment_t.
+ *
+ * \sa hal::I2C
+ * \sa hal::I2CAttr
+ *
  */
 class I2CPinAssignment : public PinAssignment<i2c_pin_assignment_t>{};
+
+
+/*! \brief I2C Attr Class
+ * \details The I2C attribute class is used for configuring and storing
+ * I2C port settings.
+ *
+ * \sa hal::I2CPinAssignment
+ * \sa hal::I2C
+ *
+ */
+class I2CAttr {
+public:
+
+	/*! \details Constructs a new I2C attribute object. */
+	I2CAttr(){
+		m_port = 0;
+		m_slave_addr =0 ;
+		memset(&m_attr, 0, sizeof(m_attr));
+		memset(&m_attr.pin_assignment, 0xff, sizeof(i2c_pin_assignment_t));
+	}
+
+	operator i2c_attr_t() const { return m_attr; }
+
+
+	u8 port() const { return m_port; }
+	const i2c_attr_t & attr() const { return m_attr; }
+	mcu_pin_t sda() const { return m_attr.pin_assignment.sda; }
+	mcu_pin_t scl() const { return m_attr.pin_assignment.scl; }
+
+	u8 slave_addr() const { return m_slave_addr; }
+
+	void set_slave_addr(u8 addr){ m_slave_addr = addr; }
+	void set_sda(const mcu_pin_t & pin){ m_attr.pin_assignment.sda = pin;}
+	void set_scl(const mcu_pin_t & pin){ m_attr.pin_assignment.scl = pin;}
+	void set_port(u8 p){ m_port = p; }
+	void set_flags(u32 flags){ m_attr.o_flags = flags; }
+	void set_freq(u32 f){ m_attr.freq = f; }
+
+
+private:
+	u8 m_port;
+	u8 m_slave_addr;
+	i2c_attr_t m_attr;
+};
 
 /*! \brief I2C Peripheral Class
  * \details This class implements I2C device peripherals.
@@ -24,19 +74,77 @@ class I2CPinAssignment : public PinAssignment<i2c_pin_assignment_t>{};
  * \code
  * #include <sapi/hal.hpp>
  *
- * u16 data;
- * I2C i2c(0); //use I2C port 0
- * i2c.init(I2C::FLAG_SET_MASTER); //Init as a master using default pin assignment
- *
- * i2c.prepare(0x4C); //slave addr is 0x4C - operation is 8-bit ptr plus data
- * i2c.read(5, &data, sizeof(data)); //read 2 bytes from register 5
- * i2c.close();
+ * int main(int argc, char * argv[]){
+ * 	u16 data;
+ * 	I2C i2c(0); //use I2C port 0
+ * 	i2c.init(); //Initialize the I2C using the BSP defaults
+ * 	i2c.prepare(0x4C); //slave addr is 0x4C - operation is 8-bit ptr plus data
+ * 	i2c.read(5, &data, sizeof(data)); //read 2 bytes from register 5
+ * 	i2c.close();
+ * }
  * \endcode
  *
  * The code above will execute 2 I2C transactions. It will write 5 to the
  * I2C slave device register pointer. It will then read 2 bytes from the
  * slave device.
  *
+ * The following example doesn't write the register pointer. It also shows
+ * how to customize the initialization.
+ *
+ * \code
+ * int main(int argc, char * argv[]){
+ *	u16 data;
+ * 	I2C i2c(1);
+ * 	I2CPinAssignment pin_assignment;
+ * 	pin_assignment->sda = mcu_pin(0,10);
+ * 	pin_assignment->scl = mcu_pin(0,11);
+ *
+ * 	i2c.init(I2C::FLAG_SET_MASTER, 400000, pin_assignment);
+ * 	i2c.prepare(0x4C, FLAG_PREPARE_DATA); //prepare for data only transactions
+ * 	i2c.write(&data, sizeof(u16)); //write two bytes
+ * 	i2c.read(&data, sizeof(u16)); //read two bytes
+ *	i2c.close();
+ * }
+ * \endcode
+ *
+ * The I2C can also be configured using POSIX calls.
+ *
+ * \code
+ * int main(int argc, char * argv[]){
+ * 	int fd;
+ * 	fd = open("/dev/i2c0", O_RDWR);
+ * 	if( fd < 0 ){
+ * 		perror("Failed to open I2C");
+ * 	} else {
+ * 		i2c_attr_t attr;
+ * 		attr.o_flags = I2C_FLAG_SET_MASTER;
+ * 		attr.freq = 100000;
+ * 		attr.pin_assignment.sda = mcu_pin(0,10);
+ * 		attr.pin_assignment.scl = mcu_pin(0,11);
+ * 		if( ioctl(fd, I_I2C_SETATTR, &attr) < 0 ){
+ * 			perror("Failed to set I2C attr");
+ *
+ * 			//Or the BSP defaults can be used
+ * 			if( ioctl(fd, I_I2C_SETATTR, 0) < 0 ){
+ * 				perror("No BSP defaults");
+ * 			}
+ * 		} else {
+ *
+ * 			attr.o_flags = I2C_FLAG_PREPARE_PTR_DATA;
+ * 			attr.slave_addr[0].addr8[0] = 0x4C;
+ * 			ioctl(fd, I_I2C_SETATTR, &attr);
+ * 			lseek(fd, 10, SEEK_SET);
+ * 			write(fd, &value, sizeof(u16)); //first writes 10 (from lseek) then writes 2 bytes (value)
+ * 		}
+ * 		close(fd);
+ * 	}
+ *
+ *	return 0;
+ * }
+ * \endcode
+ *
+ * \sa hal::I2CPinAssignment
+ * \sa hal::I2CAttr
  *
  */
 class I2C : public Periph<i2c_info_t, i2c_attr_t, 'i'> {

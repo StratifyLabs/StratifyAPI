@@ -18,14 +18,13 @@ void Panel::draw_to_scale(const DrawingScaledAttr & attr){
 	VectorMap map;
 	sg_size_t x_radius;
 	sg_size_t y_radius;
+	Pen p = attr.bitmap().pen();
 
 	u32 radius;
 
-	map.set_dim(attr.width() * 2, attr.height() *2);
-	map.set_shift(attr.x() + attr.width()/2, attr.y() + attr.height()/2);
-	//map.set_pen(m_pen);
+	map.fill_region(attr.region());
 
-	radius = m_radius * SG_MAX/4 / scale();
+	radius = m_radius * SG_MAX/4 / DrawingAttr::scale();
 
 	if( attr.height() == attr.width() ){
 		x_radius = radius;
@@ -42,6 +41,8 @@ void Panel::draw_to_scale(const DrawingScaledAttr & attr){
 	icon.fill_total = 1;
 	icon.primitives = objs;
 
+	attr.bitmap().set_pen_flags(Pen::FLAG_IS_FILL);
+
 	objs[0] = Vector::line(SG_LEFT+x_radius, SG_TOP, SG_RIGHT-x_radius, SG_TOP);
 	objs[1] = Vector::line(SG_LEFT+x_radius, SG_BOT, SG_RIGHT-x_radius, SG_BOT);
 	objs[2] = Vector::line(SG_LEFT, SG_TOP+y_radius, SG_LEFT, SG_BOT-y_radius);
@@ -54,5 +55,7 @@ void Panel::draw_to_scale(const DrawingScaledAttr & attr){
 	objs[8] = Vector::fill(0, 0);
 
 	Vector::draw(attr.bitmap(), icon, map);
+
+	attr.bitmap().set_pen(p);
 
 }

@@ -3,10 +3,13 @@
 #ifndef KERNEL_HPP_
 #define KERNEL_HPP_
 
+#if !defined __link
+#include <sos/sos.h>
+#endif
+
 #include <sos/dev/sys.h>
 #include <sos/link.h>
-#include "../hal/Dev.hpp"
-
+#include "File.hpp"
 
 namespace sys {
 
@@ -15,7 +18,12 @@ namespace sys {
  */
 class Sys : public File {
 public:
+
+#if defined __link
+	Sys(link_transport_mdriver_t * driver);
+#else
 	Sys();
+#endif
 
 	enum {
 		LAUNCH_OPTIONS_FLASH /*! Install in flash memory */ = APPFS_FLAG_IS_FLASH,
@@ -53,6 +61,7 @@ public:
 	 * (should not be called when the app is currently running).
 	 *
 	 * @param path The path to the app (use \a exec_dest from launch())
+	 * @param driver Used with link protocol only
 	 * @return Zero on success
 	 *
 	 * This method can causes problems if not used correctly. The RAM associated with
@@ -66,11 +75,16 @@ public:
 	/*! \details Reclaims RAM that was freed using free_ram().
 	 *
 	 * @param path The path to the app
+	 * @param driver Used with link protocol only
 	 * @return Zero on success
 	 *
 	 * \sa free_ram()
 	 */
 	static int reclaim_ram(const char * path, link_transport_mdriver_t * driver = 0);
+
+
+	static void assign_zero_sum32(void * data, int size);
+	static int verify_zero_sum32(void * data, int size);
 
 
 #if !defined __link
@@ -91,19 +105,19 @@ public:
 
 	/*! \details Puts the kernel in powerdown mode.
 	 *
-	 * @param timeout_ms The number of milliseconds before the
+	 * @param timeout_msec The number of milliseconds before the
 	 * device will power on (reset).  If this isn't supported,
 	 * the device will power off until reset by an external signal
 	 */
-	static void powerdown(int timeout_ms = 0);
+	static void powerdown(int timeout_msec = 0);
 
 	/*! \details Puts the kernel in hibernate mode.
 	 *
-	 * @param timeout_ms The number of milliseconds before the
+	 * @param timeout_msec The number of milliseconds before the
 	 * device will wake up from hibernation.  If this isn't supported,
 	 * the device will stay in hibernation until woken up externally
 	 */
-	static int hibernate(int timeout_ms = 0);
+	static int hibernate(int timeout_msec = 0);
 
 	/*! \details Executes a kernel request.
 	 *
@@ -183,13 +197,61 @@ public:
 
 	/*! \details Loads the cloud kernel ID.
 	 *
-	 * @param A reference to the destination data
+	 * @param id A reference to the destination data
 	 * @return Less than zero if the operation failed
 	 *
 	 * The object must be opened before calling this method.
 	 *
 	 */
 	int get_id(sys_id_t & id);
+
+#if !defined __link
+	/*! \details Redirects the standard output to the file specified.
+	 *
+	 * @param fd The file descriptor where the standard output should be directed.
+	 *
+	 * The file desriptor should be open and ready for writing. For example,
+	 * to redirect the standard output to the UART:
+	 *
+	 * \code
+	 * #include <sapi/sys.hpp>
+	 * #include <sapi/hal.hpp>
+	 *
+	 * Uart uart(0);
+	 * uart.init(); //initializes uart using default settings (if available)
+	 * Sys::redirect_stdout( uart.fileno() );
+	 * printf("This will be written to UART0\n");
+	 * \endcode
+	 *
+	 *
+	 */
+	static void redirect_stdout(int fd){
+		_impure_ptr->_stdout->_file = fd;
+	}
+
+	/*! \details Redirects the standard input from the specified file descriptor.
+	 *
+	 * @param fd The open and readable file descriptor to use for standard input
+	 *
+	 * See Sys::redirect_stdout() for an example.
+	 *
+	 */
+	static void redirect_stdin(int fd){
+		_impure_ptr->_stdin->_file = fd;
+	}
+
+	/*! \details Redirects the standard error from the specified file descriptor.
+	 *
+	 * @param fd The open and writable file descriptor to use for standard input
+	 *
+	 * See Sys::redirect_stdout() for an example.
+	 *
+	 */
+	static void redirect_stderr(int fd){
+		_impure_ptr->_stderr->_file = fd;
+	}
+#endif
+
 
 private:
 	int m_current_task;

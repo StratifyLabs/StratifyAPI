@@ -24,7 +24,7 @@ class AdcPinAssignment : public PinAssignment<adc_pin_assignment_t>{};
  * int main(int argc, char * argv[]){
  * 	Adc adc(0);  //create an instance of ADC to access port 0
  * 	u32 samples[16];
- * 	adc.init(); //intialize the ADC using the default configuration
+ * 	adc.init(); //initialize the ADC using the default configuration
  * 	adc.read(0, samples, 16*sizeof(u32)); //read 16 samples from channel 0
  * 	adc.read(1, samples, 16*sizeof(u32)); //read 16 samples from channel 1
  * 	adc.close(); //close the ADC
@@ -39,8 +39,8 @@ public:
 
 	enum {
 		FLAG_SET_CONVERTER /*! Set to configure the ADC */ = ADC_FLAG_SET_CONVERTER,
-		FLAG_LEFT_JUSTIFIED /*! Set to specify left justified data */ = ADC_FLAG_IS_LEFT_JUSTIFIED,
-		FLAG_RIGHT_JUSTIFIED /*! Set to specify right justified data */ = ADC_FLAG_IS_RIGHT_JUSTIFIED,
+		FLAG_IS_LEFT_JUSTIFIED /*! Set to specify left justified data */ = ADC_FLAG_IS_LEFT_JUSTIFIED,
+		FLAG_IS_RIGHT_JUSTIFIED /*! Set to specify right justified data */ = ADC_FLAG_IS_RIGHT_JUSTIFIED,
 	};
 
 	/*! \details Sets the attributes of the ADC.

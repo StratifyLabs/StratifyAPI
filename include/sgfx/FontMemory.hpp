@@ -32,13 +32,13 @@ public:
 	const void * font_memory() const { return m_font; }
 
 
-	u16 get_height() const;
-
-	const Bitmap & bitmap() const;
+	sg_size_t get_height() const;
+	sg_size_t get_width() const;
 
 protected:
+
+	void draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_point_t point) const;
 	int load_char(sg_font_char_t & ch, char c, bool ascii) const;
-	int load_bitmap(const sg_font_char_t & ch) const;
 	int load_kerning(u16 first, u16 second) const;
 
 private:
@@ -47,7 +47,10 @@ private:
 	int load_bitmap_ptr(const sg_font_char_t & ch) const;
 
 	const void * m_font;
-	mutable Bitmap m_bitmap;
+	mutable Bitmap m_canvas;
+
+	u32 m_canvas_start;
+	u32 m_canvas_size;
 
 };
 

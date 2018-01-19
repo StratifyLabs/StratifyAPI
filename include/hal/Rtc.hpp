@@ -44,9 +44,10 @@ public:
 		FLAG_DISABLE_COUNT_EVENT /*! Enable a count event */ = RTC_FLAG_DISABLE_COUNT_EVENT,
 	};
 
-	/*! \details Set RTC time */
+	/*! \details Set RTC time. */
 	int set_time(const rtc_time_t & time);
-	/*! \details Get RTC time */
+
+	/*! \details Gets RTC time. */
 	int get_time(rtc_time_t & time);
 
 #ifdef __MCU_ONLY__

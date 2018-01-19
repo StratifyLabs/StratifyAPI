@@ -2,6 +2,7 @@
 
 #include "sgfx.hpp"
 #include "draw.hpp"
+#include "sys/Assets.hpp"
 #include "ui/ListItem.hpp"
 #include "ui/Button.hpp"
 #include "ui/Event.hpp"
@@ -16,7 +17,7 @@ ListItem::ListItem(const char * label, const sg_vector_icon_t * icon, ElementLin
 
 
 void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
-	sg_bounds_t bounds;
+	sg_region_t bounds;
 	sg_dim_t icon_dim;
 	Dim d = attr.dim();
 	sg_point_t p = attr.point();
@@ -31,15 +32,16 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 	Dim padded;
 	icon_height = d.height()/2;
 	Bitmap icon_bitmap(icon_height, icon_height);
+	icon_bitmap.set_pen(icon().pen());
 
 	if( &(icon_attr().icon()) != 0 ){
 		icon_bitmap.clear();
-		VectorMap map(icon_bitmap, icon_attr().pen(), icon_attr().rotation());
+		VectorMap map(icon_bitmap, icon_attr().rotation());
 		Vector::draw(icon_bitmap,
 				icon_attr_const().icon(),
 				map,
 				&bounds);
-		icon_dim = sg_point_bounds_dim(&bounds);
+		icon_dim = bounds.dim;
 	} else {
 		icon_dim.dim = 0;
 	}
@@ -52,10 +54,10 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 		height = m_text_attr.font_size();
 	}
 
-	font = FontSystem::get_font(height, text_attr().font_bold());
+	font = sys::Assets::get_font(height, text_attr().font_bold());
 	height = font->get_height();
 
-	icon_point.x = p.x + d.width() - bounds.bottom_right.x;
+	icon_point.x = p.x + d.width() - (bounds.point.x + bounds.dim.width);
 
 
 	if( is_align_top() ){
@@ -96,7 +98,6 @@ Element * ListItem::handle_event(const Event  & event, const DrawingAttr & attr)
 	if( event.type() == Event::SETUP ){
 		if( child() ){
 			child()->set_parent(parent());
-			child()->handle_event(event, attr);
 		}
 	} else if( event.type() == Event::LIST_ITEM_ACTUATED ){
 		if ( child() ){

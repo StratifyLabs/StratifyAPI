@@ -8,11 +8,13 @@ C_SRCS += \
 
 CPP_SRCS += \
 ../src/hal/Adc.cpp \
+../src/hal/CFifo.cpp \
 ../src/hal/Core.cpp \
 ../src/hal/Dac.cpp \
 ../src/hal/Dev.cpp \
+../src/hal/Device.cpp \
 ../src/hal/Display.cpp \
-../src/hal/DisplayDev.cpp \
+../src/hal/DisplayDevice.cpp \
 ../src/hal/Eint.cpp \
 ../src/hal/Fifo.cpp \
 ../src/hal/I2C.cpp \
@@ -27,11 +29,13 @@ CPP_SRCS += \
 
 OBJS += \
 ./src/hal/Adc.o \
+./src/hal/CFifo.o \
 ./src/hal/Core.o \
 ./src/hal/Dac.o \
 ./src/hal/Dev.o \
+./src/hal/Device.o \
 ./src/hal/Display.o \
-./src/hal/DisplayDev.o \
+./src/hal/DisplayDevice.o \
 ./src/hal/Eint.o \
 ./src/hal/Fifo.o \
 ./src/hal/I2C.o \
@@ -50,11 +54,13 @@ C_DEPS += \
 
 CPP_DEPS += \
 ./src/hal/Adc.d \
+./src/hal/CFifo.d \
 ./src/hal/Core.d \
 ./src/hal/Dac.d \
 ./src/hal/Dev.d \
+./src/hal/Device.d \
 ./src/hal/Display.d \
-./src/hal/DisplayDev.d \
+./src/hal/DisplayDevice.d \
 ./src/hal/Eint.d \
 ./src/hal/Fifo.d \
 ./src/hal/I2C.d \

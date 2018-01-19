@@ -6,7 +6,6 @@ using namespace sgfx;
 using namespace sys;
 
 FontFile::FontFile() {
-	m_bitmap = 0;
 	m_kerning_pairs = 0;
 }
 
@@ -41,9 +40,14 @@ int FontFile::set_file(const char * name, int offset){
 		return -1;
 	}
 
-	m_bitmap.free();
-	m_bitmap.alloc(m_hdr.max_byte_width*8, m_hdr.max_height);
+	m_canvas.free();
+	if( m_canvas.alloc(m_hdr.canvas_width, m_hdr.canvas_height) < 0 ){
+		return -1;
+	}
 	m_offset = offset;
+	m_current_canvas = 255;
+	m_canvas_start = m_hdr.size;
+	m_canvas_size = m_canvas.calc_size();
 
 	pair_size = sizeof(sg_font_kerning_pair_t)*m_hdr.kerning_pairs;
 
@@ -53,20 +57,16 @@ int FontFile::set_file(const char * name, int offset){
 		m_file.read(m_offset + sizeof(sg_font_header_t), m_kerning_pairs, pair_size);
 	}
 
-	set_space_size(m_hdr.max_byte_width/4);
+	set_space_size(m_hdr.max_word_width);
 	set_letter_spacing(m_hdr.max_height/8);
 
 	return 0;
 
 }
 
-u16 FontFile::get_height() const { return m_hdr.max_height; }
+sg_size_t FontFile::get_height() const { return m_hdr.max_height; }
+sg_size_t FontFile::get_width() const { return m_hdr.max_word_width*32; }
 
-const Bitmap & FontFile::bitmap() const {
-	//load bitmap
-	load_bitmap(m_char);
-	return m_bitmap;
-}
 
 int FontFile::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 	int offset;
@@ -98,7 +98,6 @@ int FontFile::load_kerning(u16 first, u16 second) const {
 	}
 
 	for(i=0; i < kerning_count; i++){
-
 		if( (m_kerning_pairs[i].first == first) && (m_kerning_pairs[i].second == second) ){
 			return m_kerning_pairs[i].kerning;
 		}
@@ -107,13 +106,22 @@ int FontFile::load_kerning(u16 first, u16 second) const {
 	return 0;
 }
 
-int FontFile::load_bitmap(const sg_font_char_t & ch) const {
-	int s;
-	//calculate number of bytes to read
-	s = Bitmap::calc_size(ch.width, ch.height);
-	if( m_file.read(ch.offset + m_offset, m_bitmap.data(), s) != s ){
-		return -1;
+void FontFile::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_point_t point) const {
+	u32 canvas_offset;
+	if( ch.canvas_idx != m_current_canvas ){
+		canvas_offset = m_canvas_start + ch.canvas_idx*m_canvas_size;
+		if( m_file.read(m_offset + canvas_offset, m_canvas.data(), m_canvas_size) != (int)m_canvas_size ){
+			printf("failed to load canvas %ld\n", canvas_offset);
+			return;
+		}
+		m_current_canvas = ch.canvas_idx;
 	}
-	m_bitmap.set_size(ch.width, ch.height);
-	return 0;
+
+	printf("Loaded canvas %d %ld (%d,%d %dx%d)\n",
+			m_current_canvas,
+			m_canvas_start + ch.canvas_idx*m_canvas_size,
+			ch.canvas_x, ch.canvas_y, ch.width, ch.height);
+
+	Region region(ch.canvas_x, ch.canvas_y, ch.width, ch.height);
+	dest.draw_sub_bitmap(point, m_canvas, region);
 }

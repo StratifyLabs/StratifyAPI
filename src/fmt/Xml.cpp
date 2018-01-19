@@ -25,8 +25,6 @@ Xml::Xml(){
 
 
 int Xml::init(const char * path, int mode, int perms){
-	struct link_stat st;
-
 	indent = 0;
 
 	//close if already open
@@ -43,11 +41,6 @@ int Xml::init(const char * path, int mode, int perms){
 			return -1;
 		}
 		file_size = File::size();
-		if( file_size < 0 ){
-			stat(path, &st);
-			file_size = st.st_size;
-		}
-
 		reset_context();
 	}
 

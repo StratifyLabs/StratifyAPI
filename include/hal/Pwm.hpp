@@ -23,13 +23,11 @@ class PwmPinAssignment : public PinAssignment<pwm_pin_assignment_t>{};
  * \code
  * #include <sapi/hal.hpp>
  *
- *
  * Pwm pwm(1); //use PWM port 1
- *
- * pwm.init(0, 1000000, 1000); //PWM pin assignment (determines how channels map to pins)
- *
- * 	pwm.set_channel(0, 500); //set channel 0 to 50% duty cycle (500/1000)
- * 	pwm.set_channel(1, 250); //set channel 1 to 25% duty cycle
+ * PwmPinAssignment pin_assignment;
+ * pin_assignment->channel[0] = mcu_pin(1,20); //Use Pin 1.20
+ * pwm.init(Pwm::FLAG_SET_TIMER | Pwm::FLAG_IS_ENABLED, 24000000, 1000, pin_assignment);
+ * pwm.set_channel(2, 500);
  *
  * \endcode
  *

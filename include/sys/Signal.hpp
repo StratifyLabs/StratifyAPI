@@ -138,10 +138,9 @@ public:
 	 */
 	int trigger(pid_t pid) const { return ::kill(pid, m_signo); }
 
-	/*! \details Sends a signal and associated value to a process.
+	/*! \details Sends a signal and associated sigvalue to a process.
 	 *
 	 * @param pid  The process ID of the receiving signal
-	 * @param value The value associated with the signal (user defined)
 	 * @return Zero on success
 	 */
 	int trigger_value(pid_t pid) const {

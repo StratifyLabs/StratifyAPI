@@ -9,6 +9,7 @@ ListAttr::ListAttr() {
 	// TODO Auto-generated constructor stub
 	m_selected = 0;
 	m_visible_items = 3;
+	m_scroll_animation_frames = 6;
 }
 
 void ListAttr::set_visible_items(list_attr_size_t v){

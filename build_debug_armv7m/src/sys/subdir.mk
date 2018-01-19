@@ -5,9 +5,12 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../src/sys/Appfs.cpp \
+../src/sys/Assets.cpp \
 ../src/sys/Cli.cpp \
 ../src/sys/Dir.cpp \
 ../src/sys/File.cpp \
+../src/sys/FileInfo.cpp \
+../src/sys/Messenger.cpp \
 ../src/sys/Mq.cpp \
 ../src/sys/Mutex.cpp \
 ../src/sys/Sched.cpp \
@@ -20,9 +23,12 @@ CPP_SRCS += \
 
 OBJS += \
 ./src/sys/Appfs.o \
+./src/sys/Assets.o \
 ./src/sys/Cli.o \
 ./src/sys/Dir.o \
 ./src/sys/File.o \
+./src/sys/FileInfo.o \
+./src/sys/Messenger.o \
 ./src/sys/Mq.o \
 ./src/sys/Mutex.o \
 ./src/sys/Sched.o \
@@ -35,9 +41,12 @@ OBJS += \
 
 CPP_DEPS += \
 ./src/sys/Appfs.d \
+./src/sys/Assets.d \
 ./src/sys/Cli.d \
 ./src/sys/Dir.d \
 ./src/sys/File.d \
+./src/sys/FileInfo.d \
+./src/sys/Messenger.d \
 ./src/sys/Mq.d \
 ./src/sys/Mutex.d \
 ./src/sys/Sched.d \

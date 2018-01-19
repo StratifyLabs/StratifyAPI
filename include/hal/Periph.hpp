@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
 #ifndef PHY_PERIPH_HPP_
 #define PHY_PERIPH_HPP_
@@ -10,12 +10,12 @@
 #include <signal.h>
 
 
-#include "Dev.hpp"
+#include "Device.hpp"
 
 
 namespace hal {
 
-class PeriphParent : public Dev {
+class PeriphParent : public Device {
 public:
 	/*!  \details This method opens the peripheral.  For each instance, the peripheral
 	 * only needs to be opened one time.  The port is typically opened with open() and
@@ -135,8 +135,8 @@ public:
 		return set_attr();
 	}
 
-	int set_attr(attr_t & attr) const {
-		return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), &attr);
+	int set_attr(const attr_t & attr) const {
+		return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), (const attr_t*)&attr);
 	}
 
 	int set_action(mcu_action_t & action) const {
@@ -176,13 +176,13 @@ protected:
 		mcu_channel_t channel;
 		channel.loc = loc;
 		channel.value = value;
-		return ioctl(_IOCTLR(ident_char, request, mcu_channel_t), &channel);
+		return ioctl(request, &channel);
 	}
 
 	u32 get_channel(u32 loc, int request) const {
 		mcu_channel_t channel;
 		channel.loc = loc;
-		if( ioctl(_IOCTLR(ident_char, request, mcu_channel_t), &channel) < 0 ){
+		if( ioctl(request, &channel) < 0 ){
 			return (u32)-1;
 		}
 		return channel.value;

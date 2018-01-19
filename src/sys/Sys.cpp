@@ -7,13 +7,20 @@
 #include <sos/link.h>
 
 #include "hal.hpp"
-#include "../../include/sys/Sys.hpp"
+#include "sys/Sys.hpp"
 using namespace sys;
 
+#if defined __link
+Sys::Sys(link_transport_mdriver_t * driver) : File(driver){
+	m_current_task = 0;
+}
+
+#else
 Sys::Sys() {
 	// TODO Auto-generated constructor stub
 	m_current_task = 0;
 }
+#endif
 
 int Sys::launch(const char * path, char * exec_path, const char * args, int options, int ram_size, int (*update_progress)(int, int), char *const envp[]){
 #if defined __link
@@ -43,6 +50,32 @@ int Sys::free_ram(const char * path, link_transport_mdriver_t * driver){
 	return ret;
 }
 
+void Sys::assign_zero_sum32(void * data, int size){
+	u32 sum = 0;
+	u32 * ptr = (u32*)data;
+	int i;
+	int count;
+	if( size & 0x03 ){ return; }
+	count = size / sizeof(u32);
+	for(i=0; i < count-1; i++){
+		sum += ptr[i];
+	}
+	ptr[i] = (u32)(0 - sum);
+}
+
+int Sys::verify_zero_sum32(void * data, int size){
+	u32 sum = 0;
+	u32 * ptr = (u32*)data;
+	int i;
+	int count;
+	if( size & 0x03 ){ return 1; }
+	count = size / sizeof(u32);
+	for(i=0; i < count; i++){
+		sum += ptr[i];
+	}
+	return sum == 0;
+}
+
 int Sys::reclaim_ram(const char * path, link_transport_mdriver_t * driver){
 	int fd;
 	int ret;
@@ -68,9 +101,9 @@ int Sys::reclaim_ram(const char * path, link_transport_mdriver_t * driver){
 #if !defined __link
 int Sys::get_version(var::String & version){
 	sys_info_t info;
-	Dev sys;
+	Device sys;
 	int ret;
-	if( sys.open("/dev/sys", Dev::RDWR) < 0 ){
+	if( sys.open("/dev/sys", Device::RDWR) < 0 ){
 		return -1;
 	}
 
@@ -85,9 +118,9 @@ int Sys::get_version(var::String & version){
 
 int Sys::get_kernel_version(var::String & version){
 	sys_info_t info;
-	Dev sys;
+	Device sys;
 	int ret;
-	if( sys.open("/dev/sys", Dev::RDWR) < 0 ){
+	if( sys.open("/dev/sys", Device::RDWR) < 0 ){
 		return -1;
 	}
 

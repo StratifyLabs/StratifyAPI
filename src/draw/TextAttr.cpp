@@ -1,5 +1,5 @@
 
-#include "sgfx/FontSystem.hpp"
+#include "sys/Assets.hpp"
 #include "draw/TextAttr.hpp"
 using namespace sgfx;
 using namespace draw;
@@ -14,7 +14,7 @@ const Font * TextAttr::resolve_font(sg_size_t h) const{
 		} else {
 			font_height = font_size();
 		}
-		ret = FontSystem::get_font(font_height, font_bold());
+		ret = sys::Assets::get_font(font_height, font_bold());
 	} else {
 		ret = font();
 	}

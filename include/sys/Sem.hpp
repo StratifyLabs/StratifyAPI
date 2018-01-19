@@ -13,12 +13,27 @@ namespace sys {
 
 /*! \brief Semaphore Class
  * \details This class is a wrapper for POSIX style semphores.
+ *
+ * Here is an example using named semaphores.
+ *
+ * \code
+ *
+ * #include <sapi/sys.hpp>
+ *
+ * Sem sem;
+ * sem.create("my_semaphore", 10);
+ * sem.wait(); //decrement the semaphore value, block if semaphore can't be decremented
+ * sem.post(); //increment semaphore value
+ * sem.close(); //close reference to semaphore
+ * sem.unlink(); //delete semaphore if all references are closed
+ * \endcode
+ *
  */
 class Sem {
 public:
 	Sem();
 
-	enum flags {
+	enum {
 		CREATE /*! Create Semaphore flag */ = O_CREAT,
 		EXCL /*! Create exclusive */ = O_EXCL,
 		EXCLUSIVE /*! Create exclusive */ = O_EXCL
@@ -26,12 +41,9 @@ public:
 
 	/*! \details Gets the semaphore value.
 	 *
-	 * @param sval A pointer to the destination to write the value
-	 * @return Zero on success
+	 * @return The value of the semaphore (>= 0) or -1 on an error
 	 */
-	int get_value(int *sval);
-
-	int value(int *sval){ return get_value(sval); }
+	int get_value() const;
 
 	/*! \details Initializes an unnamed semaphore.
 	 *
@@ -52,17 +64,26 @@ public:
 	 */
 	int destroy();
 
-	/*! \details This methods opens or creates a named semaphore
+	/*! \details Opens a named semaphore
 	 *
 	 * @param name The name of the semaphore
-	 * @param oflag Create/exclusivity
-	 * @param mode Permissions
-	 * @param value Initial value
 	 * @return Zero on success
 	 *
 	 * \sa close()
 	 */
-	int open(const char * name, int oflag, int mode, int value);
+	int open(const char * name, int o_flags = 0, int mode = 0, int value = 0);
+
+	/*! \details Creates a new named semaphore.
+	 *
+	 * @param name The name of the semaphore
+	 * @param value The value assigned to the semaphore
+	 * @param exclusive If true, the method will fail if the semaphore already exists. If false, it will open the existing semaphore.
+	 * @return Zero on success or less than zero with errno set
+	 *
+	 *
+	 *
+	 */
+	int create(const char * name, int value, bool exclusive = false);
 
 	/*! \details Closes a named semaphore.
 	 *
@@ -77,25 +98,29 @@ public:
 	 */
 	int post();
 
-	/*! \details Is equivalent to wait_timed().
-	 */
-	int timedwait(const struct timespec * timeout);
 
 	/*! \details Executes a timed wait for the semaphore.
 	 *
 	 * @param timeout The amount of time to wait before timing out
 	 * @return Zero on success, less than zero for an error or timeout
+	 *
+	 * This method will block until either the semaphore becomes available
+	 * and is decremented or until the timeout is exceeded.
+	 *
 	 */
-	int wait_timed(const struct timespec * timeout){ return timedwait(timeout); }
-
-	/*! \details Is equivalend to try_wait(). */
-	int trywait();
+	int wait_timed(const struct timespec & timeout);
+	int timedwait(const struct timespec & timeout){ return wait_timed(timeout); }
 
 	/*! \details Checks to see if semaphore is available. */
-	int try_wait(){ return trywait(); }
+	int try_wait();
 
-	/*! \details Waits for the semaphore to become available. */
+	/*! \details Waits for the semaphore to become available.
+	 *
+	 * This method will block until the semaphore becomes available and decrement
+	 * the semaphore value. The post() method will release (increment the value of) the semaphore.
+	 */
 	int wait();
+
 	/*! \details Deletes a named semaphore.
 	 *
 	 * @param name The name of the semaphore

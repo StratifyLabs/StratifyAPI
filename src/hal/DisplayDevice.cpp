@@ -1,19 +1,20 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
+#include "../../include/hal/DisplayDevice.hpp"
+
 #include "sys.hpp"
-#include "hal/DisplayDev.hpp"
 
 namespace hal {
 
-DisplayDev::DisplayDev(){}
+DisplayDevice::DisplayDevice(){}
 
 /*! \brief Pure virtual function to initialize the LCD */
-int DisplayDev::init(const char * name){
+int DisplayDevice::init(const char * name){
 	//open and populate attr
 	display_info_t info;
 
 	if( name != 0 ){
-		if ( Dev::open(name, READWRITE) < 0 ){
+		if ( Device::open(name, READWRITE) < 0 ){
 			return -1;
 		}
 
@@ -34,29 +35,29 @@ int DisplayDev::init(const char * name){
 }
 
 /*! \brief Pure virtual function that copies local LCD memory to the LCD screen */
-void DisplayDev::refresh() const {
+void DisplayDevice::refresh() const {
 	ioctl(I_DISPLAY_REFRESH);
 }
 
-int DisplayDev::on(){
+int DisplayDevice::enable() const {
 	return ioctl(I_DISPLAY_ENABLE);
 }
 
 /*! \brief Turn the LCD pixels off */
-int DisplayDev::off(){
+int DisplayDevice::disable() const {
 	return ioctl(I_DISPLAY_DISABLE);
 }
 
-void DisplayDev::wait(u16 resolution) const{
+void DisplayDevice::wait(u16 resolution) const{
 	bool ret;
 	do {
-		if( (ret = busy()) ){
+		if( (ret = is_busy()) ){
 			Timer::wait_usec(resolution);
 		}
 	} while( ret );
 }
 
-bool DisplayDev::busy() const {
+bool DisplayDevice::is_busy() const {
 	return ioctl(I_DISPLAY_ISBUSY) == 1;
 }
 

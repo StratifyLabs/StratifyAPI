@@ -13,13 +13,141 @@ namespace hal {
 
 /*! \brief UART Pin Assignment
  * \details This class allows simple manipulation of the uart_pin_assignment_t.
+ *
+ * \code
+ * UartPinAssignment pin_assignment;
+ * pin_assignment->tx = mcu_pin(0,1);
+ * pin_assignment->rx = mcu_pin(0,1);
+ *
+ * Uart uart(0);
+ * uart.set_attr(Uart::FLAG_SET_LINE_CODING, 115200, 8, pin_assignment);
+ * \endcode
+ *
+ * \sa hal::Uart
  */
 class UartPinAssignment : public PinAssignment<uart_pin_assignment_t>{};
+
+
+/*! \brief Uart Attributes Class
+ * \details The Uart Attributes Class can be used to configure
+ * the UART. The sys::Cli classes can populate a UartAttr object
+ * using arguments passed on the command line.
+ *
+ * For example, the following sample code will initialize
+ * a UART port based on parameters passed on the command line.
+ *
+ * \code
+ * int main(int argc, char * argv[]){
+ * 	UartAttr uart_attr;
+ * 	Cli cli(argc, argv);
+ *
+ * 	cli.handle_uart(uart_attr);
+ *
+ * 	Uart uart(uart_attr.port());
+ * 	uart.init(uart_attr);
+ * }
+ * \endcode
+ *
+ * \sa hal::Uart
+ *
+ */
+class UartAttr {
+public:
+
+	/*! \details Constructs a new UART attributes object. */
+	UartAttr(){
+		m_port = 0;
+		memset(&m_attr, 0, sizeof(m_attr));
+		memset(&m_attr.pin_assignment, 0xff, sizeof(uart_pin_assignment_t));
+	}
+
+	/*! \details Accesses the port */
+	u8 port() const { return m_port; }
+
+	/*! \details Returns a copy of the uart_attr_t object. */
+	operator uart_attr_t() const { return m_attr; }
+	/*! \details Returns a reference to the uart_attr_t object. */
+	const uart_attr_t & attr() const { return m_attr; }
+	/*! \details Accesses the tx pin assignment value. */
+	mcu_pin_t tx() const { return m_attr.pin_assignment.tx; }
+	/*! \details Accesses the rx pin assignment value. */
+	mcu_pin_t rx() const { return m_attr.pin_assignment.rx; }
+	/*! \details Accesses the cts pin assignment value. */
+	mcu_pin_t cts() const { return m_attr.pin_assignment.cts; }
+	/*! \details Accesses the rts pin assignment value. */
+	mcu_pin_t rts() const { return m_attr.pin_assignment.rts; }
+	/*! \details Access the frequency (bitrate). */
+	u32 freq() const { return m_attr.freq; }
+	/*! \details Accesses the width in bits (usually 8). */
+	u8 width() const { return m_attr.width; }
+
+	/*! \details Sets the tx pin assignment value.
+	 *
+	 * @param pin The tx pin
+	 *
+	 */
+	void set_tx(const mcu_pin_t & pin){ m_attr.pin_assignment.tx = pin;}
+
+	/*! \details Sets the rx pin assignment value.
+	 *
+	 * @param pin The rx pin
+	 *
+	 */
+	void set_rx(const mcu_pin_t & pin){ m_attr.pin_assignment.rx = pin;}
+
+	/*! \details Sets the cts pin assignment value.
+	 *
+	 * @param pin The cts pin
+	 *
+	 */
+	void set_cts(const mcu_pin_t & pin){ m_attr.pin_assignment.cts = pin;}
+
+	/*! \details Sets the rts pin assignment value.
+	 *
+	 * @param pin The rts pin
+	 *
+	 */
+	void set_rts(const mcu_pin_t & pin){ m_attr.pin_assignment.rts = pin;}
+
+	/*! \details Sets the UART port.
+	 *
+	 * @param p The UART port
+	 *
+	 */
+	void set_port(u8 p){ m_port = p; }
+
+	/*! \details Sets the flags.
+	 *
+	 * @param flags Flag bit-mask
+	 *
+	 */
+	void set_flags(u32 flags){ m_attr.o_flags = flags; }
+
+	/*! \details Sets the bitrate.
+	 *
+	 * @param bitrate The bitrate
+	 *
+	 */
+	void set_freq(u32 bitrate){ m_attr.freq = bitrate; }
+
+	/*! \details Sets the width in bits.
+	 *
+	 * @param bits The number of bits to use
+	 *
+	 */
+	void set_width(u8 bits){ m_attr.width = bits; }
+
+
+private:
+	u8 m_port;
+	uart_attr_t m_attr;
+};
 
 /*! \brief UART Class
  * \details This class implements a serial UART port.
  *
- * Here is an example of how to use the UART.
+ * Here is an example of how to use the UART using
+ * default parameters provide by the board support package.
  *
  * \code
  * #include <sapi/hal.hpp>
@@ -43,19 +171,65 @@ class UartPinAssignment : public PinAssignment<uart_pin_assignment_t>{};
  * int main(int argc, char * argv[]){
  * 	Uart uart(0);
  * 	char buffer[256];
+ * 	UartPinAssignment pin_assignment;
  * 	uart.open(Uart::NONBLOCK|Uart::RDWR);
- *  //now set the attributes
+ *  	//now set the attributes
+ * 	pin_assignment->tx = mcu_pin(0,0);
+ *  	pin_assignment->rx = mcu_pin(0,1);
  * 	uart.set_attr(Uart::FLAG_IS_STOP1|Uart::FLAG_IS_PARITY_NONE,
  * 	115200, //115200 baud rate
- *  8);
+ *  	8,
+ *  	pin_assignment); //this value can be null to use the BSP's default pin assignment values
  * 	uart.read(buffer, 256); //returns immediately even if no data is available (errno is set to EAGAIN if no data)
  * 	uart.close(); //free the resources
  * }
  * 	\endcode
  *
+ * 	The UART can also be configured directly using the POSIX API.
+ *
+ * 	\code
+ * 	#include <sos/dev/uart.h>
+ * 	#include <unistd.h>
+ * 	#include <fcntl.h>
+ *
+ * 	int main(int argc, char * argv[]){
+ * 		int fd;
+ * 		uart_attr_t attr;
+ * 		char str[] = "Hello!\n";
+ * 		fd = open("/dev/uart0", O_RDWR);
+ * 		if( fd < 0 ){
+ * 			perror("Failed to open uart");
+ * 		} else {
+ *				attr.o_flags = UART_FLAG_SET_LINE_CODING | UART_FLAG_IS_PARITY_NONE;
+ *				attr.width = 8;
+ *				attr.freq = 115200;
+ *				attr.pin_assignment.tx = mcu_pin(0,0);
+ *				attr.pin_assignment.rx = mcu_pin(0,1);
+ *				attr.pin_assignment.cts = mcu_pin(0xff,0xff); //don't use CTS
+ *				attr.pin_assignment.rts = mcu_pin(0xff,0xff); //don't use RTS
+ *				if( ioctl(fd, I_UART_SETATTR, &attr) < 0 ){
+ *					perror("Failed to set uart attr");
+ *				} else {
+ *					write(fd, str, strlen(str));
+ *				}
+ *
+ *				close(fd);
+ * 		}
+ *
+ * 		return 0;
+ * 	}
+ * 	\endcode
+ *
+ * \sa hal::UartPinAssignment
+ * \sa hal::UartAttr
  */
 class Uart : public Periph<uart_info_t, uart_attr_t, UART_IOC_IDENT_CHAR> {
 public:
+
+	/*! \details Constructs a new Uart object.
+	 *
+	 * @param port The port to use (Zero is always the first port)
+	 */
 	Uart(port_t port);
 
 	enum {

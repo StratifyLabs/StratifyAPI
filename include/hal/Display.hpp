@@ -41,6 +41,8 @@ public:
 	int save(const char * path) const;
 	int load(const char * path);
 
+	int set_monochrome();
+
 	void set_pixel_format(int v){ data()->pixel_format = v; }
 	void set_colors(void * v, int count, int pixel_size, bool readonly = false);
 
@@ -83,10 +85,7 @@ public:
 	u8 * color(u32 v) const;
 
 private:
-
 	var::Data m_colors;
-
-
 };
 
 /*! \brief Display Class
@@ -119,10 +118,10 @@ public:
 	virtual int init(const char * name = 0) = 0;
 
 	/*! \details Turns the display on. */
-	virtual int on(){ return -1; };
+	virtual int enable() const = 0;
 
 	/*! \details Turns the display off. */
-	virtual int off(){ return -1; };
+	virtual int disable() const = 0;
 };
 
 } /* namespace hal */

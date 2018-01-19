@@ -16,7 +16,12 @@ class ProgressBar : public Progress {
 public:
 	ProgressBar();
 
-	/*! \details Draws a scaled version of the progress bar within \a attr */
+	virtual void draw(const DrawingAttr & attr){
+		drawing_size_t thickness = attr.calc_height(border_thickness());
+		m_scaled_border_thickness = attr.calc_height_on_bitmap(thickness);
+		Drawing::draw(attr);
+	}
+
 	void draw_to_scale(const DrawingScaledAttr & attr);
 
 };
