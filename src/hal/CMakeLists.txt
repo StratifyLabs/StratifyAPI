@@ -1,5 +1,5 @@
 
-set(SOURCES
+set(SOURCELIST
   ${SOURCES_PREFIX}/Adc.cpp
   ${SOURCES_PREFIX}/CFifo.cpp
   ${SOURCES_PREFIX}/Core.cpp
@@ -20,9 +20,11 @@ set(SOURCES
   PARENT_SCOPE)
 
 if( ${SOS_BUILD_CONFIG} STREQUAL arm )
-  set(SOURCES ${SOURCES}
+  set(SOURCELIST ${SOURCELIST}
     ${SOURCES_PREFIX}/Display.cpp
     ${SOURCES_PREFIX}/DisplayDevice.cpp
     ${SOURCES_PREFIX}/util_c.c
     PARENT_SCOPE)
 endif()
+
+set(SOURCES ${SOURCELIST} PARENT_SCOPE)
