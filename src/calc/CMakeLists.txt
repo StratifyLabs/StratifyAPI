@@ -1,0 +1,6 @@
+
+set(SOURCES
+  ${SOURCES_PREFIX}/Base64.cpp
+  ${SOURCES_PREFIX}/Pid.cpp
+  ${SOURCES_PREFIX}/Rle.cpp
+  PARENT_SCOPE)
