@@ -92,9 +92,9 @@ public:
 
 	/*! \details List of options for \a whence argument of seek() */
 	enum {
-		SET /*! Set the location of the file descriptor */ = SEEK_SET,
-		CURRENT /*! Set the location relative to the current location */ = SEEK_CUR,
-		END /*! Set the location relative to the end of the file or device */ = SEEK_END
+		SET /*! Set the location of the file descriptor */ = LINK_SEEK_SET,
+		CURRENT /*! Set the location relative to the current location */ = LINK_SEEK_CUR,
+		END /*! Set the location relative to the end of the file or device */ = LINK_SEEK_END
 	};
 
 	/*! \details Gets the name of the file from a given path.
