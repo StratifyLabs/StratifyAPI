@@ -2,3 +2,4 @@
 *.a
 *.d
 
+/build_release_link/
