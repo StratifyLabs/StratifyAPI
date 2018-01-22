@@ -1,0 +1,7 @@
+
+set(SOURCES
+  ${SOURCES_PREFIX}/Bmp.cpp
+  ${SOURCES_PREFIX}/Son.cpp
+  ${SOURCES_PREFIX}/Wav.cpp
+  ${SOURCES_PREFIX}/Xml.cpp
+  PARENT_SCOPE)

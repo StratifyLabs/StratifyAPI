@@ -1,0 +1,21 @@
+
+set(SOURCES
+  ${SOURCES_PREFIX}/Button.cpp
+  ${SOURCES_PREFIX}/ButtonPin.cpp
+  ${SOURCES_PREFIX}/Element.cpp
+  ${SOURCES_PREFIX}/ElementLinked.cpp
+  ${SOURCES_PREFIX}/Event.cpp
+  ${SOURCES_PREFIX}/EventLoop.cpp
+  ${SOURCES_PREFIX}/List.cpp
+  ${SOURCES_PREFIX}/ListAttr.cpp
+  ${SOURCES_PREFIX}/ListItem.cpp
+  ${SOURCES_PREFIX}/ListItemInfo.cpp
+  ${SOURCES_PREFIX}/Menu.cpp
+  ${SOURCES_PREFIX}/MenuList.cpp
+  ${SOURCES_PREFIX}/Tab.cpp
+  ${SOURCES_PREFIX}/TabBar.cpp
+  ${SOURCES_PREFIX}/TabIcon.cpp
+  ${SOURCES_PREFIX}/TabProgress.cpp
+  ${SOURCES_PREFIX}/TabText.cpp
+  ${SOURCES_PREFIX}/TabTime.cpp
+  PARENT_SCOPE)
