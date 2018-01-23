@@ -1,6 +1,5 @@
 cmake_minimum_required (VERSION 3.6)
 
-
 if( ${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Darwin" )
   message(STATUS "Load Darwin Toolchain for arm")
   set(SOS_TOOLCHAIN_CMAKE_PATH /Applications/StratifyLabs-SDK/Tools/gcc/arm-none-eabi/cmake)
@@ -24,6 +23,5 @@ project(${SOS_LIB_NAME} CXX C)
 
 install(DIRECTORY include/ DESTINATION include/sapi)
 set(SOS_LIB_INCLUDE_DIRECTORIES include)
-
 
 include( ${CMAKE_SOURCE_DIR}/${SOS_BUILD_CONFIG}.cmake )
