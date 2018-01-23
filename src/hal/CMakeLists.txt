@@ -16,15 +16,13 @@ set(SOURCELIST
   ${SOURCES_PREFIX}/Spi.cpp
   ${SOURCES_PREFIX}/Tmr.cpp
   ${SOURCES_PREFIX}/Uart.cpp
-  ${SOURCES_PREFIX}/Usb.cpp
-  PARENT_SCOPE)
+  ${SOURCES_PREFIX}/Usb.cpp)
 
 if( ${SOS_BUILD_CONFIG} STREQUAL arm )
   set(SOURCELIST ${SOURCELIST}
     ${SOURCES_PREFIX}/Display.cpp
     ${SOURCES_PREFIX}/DisplayDevice.cpp
-    ${SOURCES_PREFIX}/util_c.c
-    PARENT_SCOPE)
+    ${SOURCES_PREFIX}/util_c.c)
 endif()
 
 set(SOURCES ${SOURCELIST} PARENT_SCOPE)

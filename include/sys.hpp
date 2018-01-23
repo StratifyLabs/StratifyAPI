@@ -20,9 +20,9 @@ namespace sys {};
 #include "sys/Time.hpp"
 #include "sys/Cli.hpp"
 #include "sys/Messenger.hpp"
+#include "sys/Trace.hpp"
 #endif
 
-#include "sys/Trace.hpp"
 #include "sys/Sys.hpp"
 #include "sys/Appfs.hpp"
 #include "sys/Dir.hpp"
