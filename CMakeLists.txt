@@ -6,7 +6,7 @@ if( ${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Darwin" )
 endif()
 if( ${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows" )
   message(STATUS "Load Windows Toolchain for arm")
-  set(SOS_TOOLCHAIN_CMAKE_PATH C:/StratifyLabs-SDK/Tools/gcc/arm-none-eabi/lib/ldscripts)
+  set(SOS_TOOLCHAIN_CMAKE_PATH C:/StratifyLabs-SDK/Tools/gcc/arm-none-eabi/cmake)
 endif()
 
 include(${SOS_TOOLCHAIN_CMAKE_PATH}/sos-resolve-build-config.cmake)

@@ -12,8 +12,11 @@ namespace fmt {
 
 #include "fmt/Bmp.hpp"
 #include "fmt/Wav.hpp"
-#include "fmt/Xml.hpp"
 #include "fmt/Son.hpp"
+
+#if !defined __link
+#include "fmt/Xml.hpp"
+#endif
 
 using namespace fmt;
 

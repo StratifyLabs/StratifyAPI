@@ -2,5 +2,9 @@
 *.a
 *.d
 
+<<<<<<< HEAD
+/build_release_link/
+=======
 cmake_*
 
+>>>>>>> c80de7975eead5cfd5b98703974339fff9f42aab

@@ -33,7 +33,7 @@ bool FileInfo::is_dir() const {
 }
 
 bool FileInfo::is_file() const {
-	return (m_stat.st_mode & LINK_S_IFMT) == S_IFREG;
+	return (m_stat.st_mode & LINK_S_IFMT) == LINK_S_IFREG;
 }
 
 bool FileInfo::is_device() const {
