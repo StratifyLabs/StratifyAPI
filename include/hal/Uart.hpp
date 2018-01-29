@@ -80,6 +80,8 @@ public:
 	u32 freq() const { return m_attr.freq; }
 	/*! \details Accesses the width in bits (usually 8). */
 	u8 width() const { return m_attr.width; }
+	/*! \details Gets a copy of the pin assignment. */
+	const uart_pin_assignment_t * pin_assignment() const { return &m_attr.pin_assignment; }
 
 	/*! \details Sets the tx pin assignment value.
 	 *

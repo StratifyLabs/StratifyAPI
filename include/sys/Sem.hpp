@@ -67,6 +67,9 @@ public:
 	/*! \details Opens a named semaphore
 	 *
 	 * @param name The name of the semaphore
+	 * @param o_flags Flags used to open semaphore
+	 * @param mode The access mode permissions for the semaphore
+	 * @param value The value of the semaphore (used when creating)
 	 * @return Zero on success
 	 *
 	 * \sa close()

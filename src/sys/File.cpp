@@ -39,14 +39,15 @@ int File::open(const char * name, int flags){
 	return 0;
 }
 
-int File::remove(const char * name, link_transport_mdriver_t * driver){
-#if defined __link
-	return link_unlink(driver, name);
-#else
-	driver = 0;
+#if !defined __link
+int File::remove(const char * path){
 	return ::remove(name);
-#endif
 }
+#else
+int File::remove(const char * name, link_transport_mdriver_t * driver){
+	return link_unlink(driver, name);	
+}
+#endif
 
 
 int File::open(const char * name, int access, int perms){

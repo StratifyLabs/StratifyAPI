@@ -35,7 +35,7 @@ public:
 
 	/*! \details Sets the hibernate threshold in milliseconds.
 	 *
-	 * @param ms The hibernate threshold in milliseconds
+	 * @param msec The hibernate threshold in milliseconds
 	 *
 	 * If the update period (set_update_period()) is greater than
 	 * the hibernation threshold, the event loop will execute the kernel
@@ -62,7 +62,7 @@ public:
 	 *
 	 *
 	 */
-	void set_hibernation_threshold(u16 ms) { m_attr.hibernation_threshold = ms; }
+	void set_hibernation_threshold(u16 msec) { m_attr.hibernation_threshold = msec; }
 
 	/*! \details Accesses the period for firing the Event::UPDATE in milliseconds. */
 	u16 update_period() const { return m_attr.update_period; }
@@ -72,7 +72,7 @@ public:
 
 	/*! \details Sets the period of the event loop in milliseconds.
 	 *
-	 * @param ms The loop period in milliseconds.
+	 * @param msec The loop period in milliseconds.
 	 *
 	 * The loop will delay this amount on every iteration. This determines
 	 * how often events are processed (such as buttons). It is typically a much smaller value
@@ -80,20 +80,20 @@ public:
 	 * is handled.
 	 *
 	 */
-	void set_period(u16 ms){ m_attr.period = ms; }
+	void set_period(u16 msec){ m_attr.period = msec; }
 
 
 	/*! \details Sets the Event::UPDATE period which defines
 	 * how often the event loop will trigger the Event::UPDATE command for the
 	 * current element.
 	 *
-	 * @param ms The period in milliseconds
+	 * @param msec The period in milliseconds
 	 *
 	 * If the update period is less than the loop period (see set_period()), Event::UPDATE
 	 * will be called on every loop at the loop period interval.
 	 *
 	 */
-	void set_update_period(u16 ms){ m_attr.update_period = ms; }
+	void set_update_period(u16 msec){ m_attr.update_period = msec; }
 
 	/*! \details Accesses the display refresh wait resolution time in microseconds.
 	 *
@@ -106,11 +106,11 @@ public:
 
 	/*! \details Sets the value of the display refresh wait resolution in microseconds.
 	 *
-	 * @param v The number of microseconds to between display driver polling events
+	 * @param usec The number of microseconds to between display driver polling events
 	 *
 	 * See refresh_wait_resolution() for more details.
 	 */
-	void set_refresh_wait_resolution(u16 us){ m_attr.refresh_wait_resolution = us; }
+	void set_refresh_wait_resolution(u16 usec){ m_attr.refresh_wait_resolution = usec; }
 
 protected:
 	event_loop_attr_t m_attr;
@@ -238,15 +238,11 @@ protected:
 	bool handle_event(const ui::Event & event);
 
 private:
-
 	draw::DrawingAttr m_drawing_attr;
 	Element * m_current_element;
 	sys::Timer m_update_timer;
 	sys::Timer m_loop_timer;
-
 	u16 m_loop_delay;
-
-
 
 };
 

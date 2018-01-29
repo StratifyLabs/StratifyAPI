@@ -233,12 +233,17 @@ public:
 	/*! \details Seeks the next value in the file.
 	 *
 	 * @param name A reference to a string where the name will be stored
+	 * @param type If non-null, the type of the object will be written to this value.
 	 * @return Less than zero for an error or the son_value_t of the current item.
 	 *
 	 *
 	 */
 	int seek_next(var::String & name, son_value_t * type = 0){
 		return son_api()->seek_next(&m_son, name.cdata(), type);
+	}
+
+	int seek_next(var::String & name, son_value_t & type){
+		return son_api()->seek_next(&m_son, name.cdata(), &type);
 	}
 
 	/*! \details Converts the data file to JSON.

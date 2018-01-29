@@ -55,7 +55,6 @@ public:
 	 * @param mount The mount path (default is /app)
 	 * @param update A callback that is executed after each page write
 	 * @param context The first argument passed to the \a update callback
-	 * @param driver Only used with the link API (always zero when called on local device)
 	 * @return Zero on success or -1 with errno set accordingly
 	 *
 	 */

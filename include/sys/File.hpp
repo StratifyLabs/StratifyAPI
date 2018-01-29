@@ -135,17 +135,19 @@ public:
 	/*! \details Deletes a file.
 	 *
 	 * @param path The path to the file
-	 * @param driver Used only with link protocol
 	 * @return Zero on success
 	 *
 	 */
+#if !defined __link
+	static int remove(const char * path);
+#else
 	static int remove(const char * path, link_transport_mdriver_t * driver = 0);
+#endif
 
 	/*! \details Gets file stat data.
 	 *
 	 * @param path The path to the file
 	 * @param st A pointer to the stat structure
-	 * @param driver Used only with link protocol
 	 * @return Zero on success
 	 *
 	 */
@@ -158,7 +160,6 @@ public:
 	/*! \details Gets the size of the file.
 	 *
 	 * @param path The path to the file
-	 * @param driver Used only with link protocol
 	 * @return The number of bytes in the file or less than zero for an error
 	 *
 	 */
