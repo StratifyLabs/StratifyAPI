@@ -24,7 +24,7 @@ int I2C::reset() const {
 	return set_attr(attr);
 }
 
-int I2C::get_err() const {
+int I2C::get_error() const {
 	i2c_info_t info;
 	get_info(info);
 	return info.err;

@@ -41,7 +41,7 @@ int File::open(const char * name, int flags){
 
 #if !defined __link
 int File::remove(const char * path){
-	return ::remove(name);
+    return ::remove(path);
 }
 #else
 int File::remove(const char * name, link_transport_mdriver_t * driver){

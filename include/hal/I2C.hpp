@@ -201,11 +201,14 @@ public:
 	 */
 	int prepare(u8 slave_addr, u32 o_flags = FLAG_PREPARE_PTR_DATA) const;
 
-	/*! \details Reset the I2C bus state */
+    /*! \details Resets the I2C bus state. */
 	int reset() const;
 
-	/*! \details Get the last error */
-	int get_err() const;
+    /*! \details Gets the last error. */
+    int get_error() const;
+
+    //deprecated
+    int get_err() const { return get_error(); }
 
 	/*! \details Sets the attributes of the I2C bus.
 	 *
