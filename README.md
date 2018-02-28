@@ -87,18 +87,7 @@ Both enums and constants are written in all caps with words separated by undersc
 		  ACCMODE /*! Access mode mask */ = LINK_O_ACCMODE
 	};
 
-### Standard Abbreviations and a few Quirks
 
-When dealing with pixels or single bits (like a high/low signal on a single pin), these abbreviations are used:
-
-- tst_: test the value
-- inv_: invert the value
-- set_: set the value to 1
-- clr_: clear the value to 0
-
-When not dealing with a single bit, clear_ or invert_ is used (i.e. clr_pixel() and bitmap.clear()).
-
-For fonts and bitmaps, the methods width() and height() are used to access width and height respectively.
 
 
 
