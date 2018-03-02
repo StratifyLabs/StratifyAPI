@@ -56,9 +56,6 @@ private:
 	sg_point_t m_value;
 };
 
-};
-
-
-
+}
 
 #endif /* SGFX_POINT_HPP_ */

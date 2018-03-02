@@ -208,10 +208,6 @@ private:
 	var::String m_path;
 };
 
-};
-
-
-
-
+}
 
 #endif /* UI_LISTITEM_HPP_ */

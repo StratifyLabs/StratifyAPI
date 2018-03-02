@@ -66,6 +66,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* SAPI_USB_HPP_ */

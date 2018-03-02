@@ -82,6 +82,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* SAPI_EINT_HPP_ */

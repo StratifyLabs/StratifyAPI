@@ -19,11 +19,9 @@ bool Checksum::verify_zero_sum(const u8 * data, int size){
     u8 sum = 0;
     int count = size/sizeof(u8);
     for(i=0; i < count; i++){
-        printf("0x%X ", data[i]);
         sum += data[i];
     }
 
-    printf("\n");
     return (sum == 0);
 }
 

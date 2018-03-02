@@ -9,6 +9,12 @@
 
 namespace hal {
 
+/*! \brief DAC Attributes Class
+ * \details This class is for containing DAC attributes.
+ */
+class DacAttr : public PinAssignmentPeriphAttr<dac_attr_t, dac_pin_assignment_t> {};
+
+
 /*! \brief DAC Pin Assignment
  * \details This class allows simple manipulation of the dac_pin_assignment_t.
  */
@@ -120,6 +126,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* DAC_HPP_ */

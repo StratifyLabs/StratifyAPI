@@ -407,6 +407,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* SGFX_BITMAP_HPP_ */

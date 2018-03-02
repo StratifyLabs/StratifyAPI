@@ -22,6 +22,6 @@ protected:
 	int load_kerning(u16 first, u16 second) const;
 };
 
-};
+}
 
 #endif /* SGFX_FONTSVGMEMORY_HPP_ */

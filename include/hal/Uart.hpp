@@ -51,23 +51,9 @@ class UartPinAssignment : public PinAssignment<uart_pin_assignment_t>{};
  * \sa hal::Uart
  *
  */
-class UartAttr {
+class UartAttr : public PinAssignmentPeriphAttr<uart_attr_t, uart_pin_assignment_t> {
 public:
 
-	/*! \details Constructs a new UART attributes object. */
-	UartAttr(){
-		m_port = 0;
-		memset(&m_attr, 0, sizeof(m_attr));
-		memset(&m_attr.pin_assignment, 0xff, sizeof(uart_pin_assignment_t));
-	}
-
-	/*! \details Accesses the port */
-	u8 port() const { return m_port; }
-
-	/*! \details Returns a copy of the uart_attr_t object. */
-	operator uart_attr_t() const { return m_attr; }
-	/*! \details Returns a reference to the uart_attr_t object. */
-	const uart_attr_t & attr() const { return m_attr; }
 	/*! \details Accesses the tx pin assignment value. */
 	mcu_pin_t tx() const { return m_attr.pin_assignment.tx; }
 	/*! \details Accesses the rx pin assignment value. */
@@ -76,12 +62,8 @@ public:
 	mcu_pin_t cts() const { return m_attr.pin_assignment.cts; }
 	/*! \details Accesses the rts pin assignment value. */
 	mcu_pin_t rts() const { return m_attr.pin_assignment.rts; }
-	/*! \details Access the frequency (bitrate). */
-	u32 freq() const { return m_attr.freq; }
 	/*! \details Accesses the width in bits (usually 8). */
 	u8 width() const { return m_attr.width; }
-	/*! \details Gets a copy of the pin assignment. */
-	const uart_pin_assignment_t * pin_assignment() const { return &m_attr.pin_assignment; }
 
 	/*! \details Sets the tx pin assignment value.
 	 *
@@ -110,27 +92,6 @@ public:
 	 *
 	 */
 	void set_rts(const mcu_pin_t & pin){ m_attr.pin_assignment.rts = pin;}
-
-	/*! \details Sets the UART port.
-	 *
-	 * @param p The UART port
-	 *
-	 */
-	void set_port(u8 p){ m_port = p; }
-
-	/*! \details Sets the flags.
-	 *
-	 * @param flags Flag bit-mask
-	 *
-	 */
-	void set_flags(u32 flags){ m_attr.o_flags = flags; }
-
-	/*! \details Sets the bitrate.
-	 *
-	 * @param bitrate The bitrate
-	 *
-	 */
-	void set_freq(u32 bitrate){ m_attr.freq = bitrate; }
 
 	/*! \details Sets the width in bits.
 	 *
@@ -308,6 +269,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* SAPI_UART_HPP_ */

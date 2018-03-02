@@ -101,8 +101,6 @@ private:
 
 };
 
-};
-
-
+}
 
 #endif /* SGFX_FONT_HPP_ */

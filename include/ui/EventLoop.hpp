@@ -153,6 +153,17 @@ public:
 	EventLoop(ui::Element & start_element, sgfx::Bitmap & bitmap, sgfx::Bitmap * scratch = 0);
 
 
+    /*! \details Constructs a new headless (no display) event loop.
+     *
+     * @param start_element The initial element to process
+     *
+     * The EventLoop will typically update the display when the current_element()
+     * indicates that it should. By initializing an EventLoop using this constructor
+     * the display is ignored.
+     *
+     */
+    EventLoop(ui::Element & start_element);
+
 	/*! \details Executes the event loop.
 	 *
 	 * First the event loop will have the current element handle Event::SETUP.
@@ -230,11 +241,39 @@ public:
 	 */
 	virtual void process_events() = 0;
 
-	static Element * handle_event(Element * current_element, const Event & event, const draw::DrawingAttr & drawing_attr);
+    static Element * handle_event(Element * current_element, const Event & event, const draw::DrawingAttr & drawing_attr, EventLoop * event_loop = 0);
 
-	static void handle_transition(Element * current_element, Element * next_element, const draw::DrawingAttr & drawing_attr);
+    static void handle_transition(Element * current_element, Element * next_element, const draw::DrawingAttr & drawing_attr);
 
 protected:
+
+    /*! \details Handles the specified event.
+     *
+     * @param event Event to handle within the loop
+     *
+     * This method should be called by process_events() whenever
+     * the system triggers an event.  For example, if
+     * the system needs to just handle an up button
+     * or down button press:
+     *
+     * \code
+     *
+     * #include <sapi/hal.hpp>
+     *
+     * ButtonPin up_button(0,0);
+     * ButtonPin down_button(0,1)
+     *
+     * void MyEventLoop::process_events(){
+     *  up_button.update(); //refresh button status
+     *  down_button.update();
+     *
+     *  handle_event(up_button.event());
+     *  handle_event(down_button.event());
+     *
+     * }
+     * \endcode
+     *
+     */
 	bool handle_event(const ui::Event & event);
 
 private:

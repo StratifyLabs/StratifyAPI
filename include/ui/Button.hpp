@@ -130,6 +130,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* UI_BUTTON_HPP_ */

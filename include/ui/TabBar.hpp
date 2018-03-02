@@ -79,6 +79,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* UI_TABBAR_HPP_ */

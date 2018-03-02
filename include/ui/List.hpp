@@ -63,7 +63,7 @@ private:
 	type m_items[n_items];
 };
 
-};
+}
 
 
 

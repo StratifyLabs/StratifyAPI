@@ -102,6 +102,6 @@ private:
 	var::Data m_message_data;
 };
 
-};
+}
 
 #endif /* MESSENGER_HPP_ */

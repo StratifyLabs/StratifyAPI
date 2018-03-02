@@ -59,6 +59,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* SAPI_RTC_HPP_ */

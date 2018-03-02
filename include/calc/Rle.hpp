@@ -64,7 +64,6 @@ private:
 /*! \brief Class for reading/writing compressed file data */
 class RleFile : public Rle, public sys::File {
 public:
-
 	/*! \details Encodes using run length encoding and writes the data to a file.
 	 *
 	 * @param buf The source data
@@ -72,7 +71,6 @@ public:
 	 * @return The number of un-encoded bytes that were written
 	 */
 	int write(const void * buf, int nbyte);
-
 
 	/*! \details Reads from a file then decodes data.
 	 *

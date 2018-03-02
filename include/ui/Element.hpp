@@ -15,6 +15,8 @@
 
 namespace ui {
 
+class EventLoop;
+
 /*! \brief Element Class
  * \details An Element is a basic building block of the UI.  Elements are
  * designed to be scalable so they can be adjusted to different screen sizes
@@ -110,6 +112,15 @@ public:
 	 */
 	virtual Element * handle_event(const Event & event, const draw::DrawingAttr & attr);
 
+
+    /*! \details Returns a pointer to the element's event loop.
+     *
+     * If the element isn't running in an event loop, this
+     * method will return 0.
+     *
+     */
+    EventLoop * event_loop() const { return m_event_loop; }
+
 protected:
 
 	enum {
@@ -131,10 +142,15 @@ protected:
 	virtual void draw_scroll(const draw::DrawingScaledAttr & attr, int selected, int total, int visible);
 	void adjust_x_center(sg_size_t w, sg_int_t & x);
 
+    friend class EventLoop;
+    void set_event_loop(EventLoop * event_loop){ m_event_loop = event_loop; }
+
 private:
 
-};
+    EventLoop * m_event_loop;
 
 };
+
+}
 
 #endif /* UI_ELEMENT_HPP_ */

@@ -368,6 +368,6 @@ protected:
 
 };
 
-};
+}
 
 #endif /* FILE_HPP_ */

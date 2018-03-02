@@ -179,7 +179,7 @@ private:
 
 };
 
-};
+}
 
 #endif
 

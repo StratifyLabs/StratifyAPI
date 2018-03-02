@@ -199,6 +199,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* SAPI_TMR_HPP_ */

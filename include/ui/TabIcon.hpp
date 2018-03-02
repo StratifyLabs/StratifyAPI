@@ -26,6 +26,6 @@ private:
 	draw::Icon m_icon;
 };
 
-};
+}
 
 #endif /* UI_TAB_TABGFX_HPP_ */

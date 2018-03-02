@@ -158,6 +158,6 @@ private:
 	u32 m_pinmask;
 };
 
-};
+}
 
 #endif /* PIN_HPP_ */

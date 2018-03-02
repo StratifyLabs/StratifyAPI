@@ -143,7 +143,7 @@ private:
 	void set_id_error(){ m_id = ID_ERROR; }
 };
 
-};
+}
 
 #endif
 

@@ -129,6 +129,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* SAPI_PIO_HPP_ */

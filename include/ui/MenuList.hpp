@@ -32,6 +32,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* UI_MENULIST_HPP_ */

@@ -36,6 +36,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* UI_BUTTONPIN_HPP_ */

@@ -18,7 +18,7 @@ class Mq;
 class MqAttr {
 	friend class Mq;
 public:
-	MqAttr(){ memset(&m_attr, 0, sizeof(m_attr)); };
+    MqAttr(){ memset(&m_attr, 0, sizeof(m_attr)); }
 	MqAttr(long f, long m, long s){
 		m_attr.mq_flags = f;
 		m_attr.mq_curmsgs = 0;
@@ -145,7 +145,7 @@ private:
 	unsigned m_msg_prio;
 };
 
-};
+}
 
 #endif
 

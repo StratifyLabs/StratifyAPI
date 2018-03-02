@@ -11,8 +11,6 @@
 
 namespace hal {
 
-
-
 /*! \brief I2C Pin Assignment
  * \details This class allows simple manipulation of the i2c_pin_assignment_t.
  *
@@ -31,39 +29,32 @@ class I2CPinAssignment : public PinAssignment<i2c_pin_assignment_t>{};
  * \sa hal::I2C
  *
  */
-class I2CAttr {
+class I2CAttr : public PinAssignmentPeriphAttr<i2c_attr_t, i2c_pin_assignment_t> {
 public:
 
-	/*! \details Constructs a new I2C attribute object. */
-	I2CAttr(){
-		m_port = 0;
-		m_slave_addr =0 ;
-		memset(&m_attr, 0, sizeof(m_attr));
-		memset(&m_attr.pin_assignment, 0xff, sizeof(i2c_pin_assignment_t));
-	}
-
-	operator i2c_attr_t() const { return m_attr; }
-
-
-	u8 port() const { return m_port; }
-	const i2c_attr_t & attr() const { return m_attr; }
+    /*! \details Accesses the SDA pin assignment value. */
 	mcu_pin_t sda() const { return m_attr.pin_assignment.sda; }
+    /*! \details Access the SCL pin assignment value. */
 	mcu_pin_t scl() const { return m_attr.pin_assignment.scl; }
 
-	u8 slave_addr() const { return m_slave_addr; }
+    /*! \details Access the slave address value. */
+    u8 slave_addr() const { return m_attr.slave_addr[0].addr8[0]; }
 
-	void set_slave_addr(u8 addr){ m_slave_addr = addr; }
+    /*! \details Accesses the 16-bit slave address value. */
+    u8 slave_addr16() const { return m_attr.slave_addr[0].addr16; }
+
+    /*! \details Sets the 7-bit slave address value. */
+    void set_slave_addr(u8 addr){ m_attr.slave_addr[0].addr8[0] = addr; }
+
+    /*! \details Sets the 16-bit slave address value. */
+    void set_slave_addr16(u16 addr){ m_attr.slave_addr[0].addr16 = addr; }
+
+    /*! \details Sets the SDA pin assignment value. */
 	void set_sda(const mcu_pin_t & pin){ m_attr.pin_assignment.sda = pin;}
+
+    /*! \details Sets the SCL pin assignment value. */
 	void set_scl(const mcu_pin_t & pin){ m_attr.pin_assignment.scl = pin;}
-	void set_port(u8 p){ m_port = p; }
-	void set_flags(u32 flags){ m_attr.o_flags = flags; }
-	void set_freq(u32 f){ m_attr.freq = f; }
 
-
-private:
-	u8 m_port;
-	u8 m_slave_addr;
-	i2c_attr_t m_attr;
 };
 
 /*! \brief I2C Peripheral Class
@@ -274,7 +265,7 @@ private:
 
 };
 
-};
+}
 
 
 #endif /* SAPI_I2C_HPP_ */

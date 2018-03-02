@@ -44,6 +44,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* STRINGUTIL_HPP_ */

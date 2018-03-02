@@ -8,7 +8,7 @@
 
 namespace sys {
 class Signal;
-};
+}
 
 namespace ui {
 
@@ -22,7 +22,7 @@ class Element;
  * by ui::Element::handle_event().
  *
  * The event includes the type and a pointer to an object associated with the event. For
- * example, events of type Event::SIGNAL will include a pointer to a sys:Signal
+ * example, events of type Event::SIGNAL will include a pointer to a sys::Signal
  * object.
  *
  *
@@ -41,7 +41,7 @@ public:
 	/*! \details The event type */
 	enum event_type {
 		NONE = 0,
-		SETUP /*! This event is called at startup after all object have been constructed */ = 1,
+        SETUP /*! This event is called at startup after all objects have been constructed */ = 1,
 		ENTER /*! This event is called when the element becomes active */ = 2,
 		UPDATE /*! This event is called in a loop while the element is active */ = 3,
 		BUTTON_ACTUATED /*! This event is called when a button is actuated (pressed and released). Use button() to access button details. */ = FLAG_IS_BUTTON | 4,
@@ -51,20 +51,21 @@ public:
 		BUTTON_PRESSED /*! This event is called when a button is pressed. Use button() to access button details. */ = FLAG_IS_BUTTON | 6,
 		BUTTON_RELEASED /*! This event is called when a button is released. Use button() to access button details. */ = FLAG_IS_BUTTON | 7,
 		NETWORK_DATA /*! This event is called when data arrives on the network */ = 8,
-		SIGNAL /*! This event is called when the process receives a signal */ = 9,
-		APPLICATION /*! This event is application specific where the data is specified by the application */ = 10,
+        SIGNAL_RECEIVED /*! This event is called when the process receives a signal */ = 9,
+        SIGNAL = SIGNAL_RECEIVED,
+        APPLICATION /*! This event is application specific where the data is specified by the application */ = 10,
 		LIST_ITEM_SELECTED /*! Select an item in a list */ = FLAG_IS_LIST_ITEM | 11,
 		LIST_ITEM_ACTUATED /*! Actuate an item in a list */ = FLAG_IS_LIST_ITEM | 12,
 		LIST_ACTUATED /*! Select an item in a list or menu */ = 13,
 		LIST_ACTUATE = 13,
-		LIST_UP /*! Scroll up in a list or menu */ = 14,
-		LIST_DOWN /*! Scroll down in a list or menu */ = 15,
-		SCROLL_UP /*! Scroll up (same as LIST_UP) */ = LIST_UP,
-		SCROLL_DOWN /*! Scroll down (same as LIST_DOWN) */ = LIST_DOWN,
-		MENU_BACK /*! Go back in the menu */ = FLAG_IS_ELEMENT | 16,
-		TAB_LEFT /*! Slide to the tab on the left */ = FLAG_IS_ELEMENT | 17,
-		TAB_RIGHT /*! Slide to the tab on the left */ = FLAG_IS_ELEMENT | 18,
-		MENU_ACTUATED /*! Select the item in the menu */ = FLAG_IS_ELEMENT | 19,
+        LIST_UP /*! Scroll up in a list or menu */ = 14,
+        LIST_DOWN /*! Scroll down in a list or menu */ = 15,
+        SCROLL_UP /*! Scroll up (same as LIST_UP) */ = LIST_UP,
+        SCROLL_DOWN /*! Scroll down (same as LIST_DOWN) */ = LIST_DOWN,
+        MENU_BACK /*! Go back in the menu */ = FLAG_IS_ELEMENT | 16,
+        TAB_LEFT /*! Slide to the tab on the left */ = FLAG_IS_ELEMENT | 17,
+        TAB_RIGHT /*! Slide to the tab on the left */ = FLAG_IS_ELEMENT | 18,
+        MENU_ACTUATED /*! Select the item in the menu */ = FLAG_IS_ELEMENT | 19,
 		MENU_ACTUATE = 19,
 		EXIT /*! The application transitioned to a new element (last event on current element) */ = FLAG_IS_ELEMENT | 20
 
@@ -201,6 +202,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* UI_EVENT_HPP_ */

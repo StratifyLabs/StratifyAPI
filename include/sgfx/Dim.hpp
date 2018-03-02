@@ -35,9 +35,6 @@ private:
 	sg_dim_t m_value;
 };
 
-};
-
-
-
+}
 
 #endif /* SGFX_DIM_HPP_ */

@@ -319,6 +319,6 @@ public:
 };
 
 
-};
+}
 
 #endif /* STRING_HPP_ */

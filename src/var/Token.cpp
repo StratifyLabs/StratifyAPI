@@ -8,19 +8,19 @@ using namespace var;
 
 Token::Token(){
 	init_members();
-	m_is_count_empty_tokens = false;
+    m_is_count_empty_tokens = false;
 }
 
 Token::Token(char * mem, u32 s, const char * src, const char * delim, const char * ignore, bool count_empty) : String(mem, s, false){
 	init_members();
 	m_is_count_empty_tokens = count_empty;
-	clear(); assign(src); parse(delim, ignore);
+    clear(); assign(src); parse(delim, ignore);
 }
 
 Token::Token(const char * src, const char * delim, const char * ignore, bool count_empty) : String(src){
 	init_members();
 	m_is_count_empty_tokens = count_empty;
-	parse(delim, ignore);
+    parse(delim, ignore);
 }
 
 bool Token::belongs_to(const char c, const char * str, unsigned int len){
@@ -92,12 +92,12 @@ void Token::parse(const char * delim, const char * ignore){
 			}
 		}
 		p++;
-	}
+    }
 }
 
 const char * Token::at(u32 n) const {
-	const char * p;
-	unsigned int i;
+    const char * p;
+    unsigned int i;
 	bool on_token = false;
 	unsigned int token = 0;
 	p = c_str();
@@ -133,7 +133,7 @@ const char * Token::at(u32 n) const {
 		}
 	}
 
-	return p;
+    return p;
 }
 
 void Token::sort(enum sort_options sort_option){
@@ -194,7 +194,7 @@ void Token::sort(enum sort_options sort_option){
 		strcpy(next, string_to_copy);
 		next += strlen(string_to_copy) + 1;
 		used[current] = 1;
-	}
+    }
 }
 
 Token & Token::operator=(const Token & token){
@@ -202,7 +202,7 @@ Token & Token::operator=(const Token & token){
 	memcpy(data(), token.data_const(), token.capacity());
 	m_num_tokens = token.m_num_tokens;
 	m_string_size = token.m_string_size;
-	m_is_count_empty_tokens = token.m_is_count_empty_tokens;
+    m_is_count_empty_tokens = token.m_is_count_empty_tokens;
 	return *this;
 }
 

@@ -257,6 +257,7 @@ private:
 	int m_current_task;
 
 };
-};
+
+}
 
 #endif /* KERNEL_HPP_ */

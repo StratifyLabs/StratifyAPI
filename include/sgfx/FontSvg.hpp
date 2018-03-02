@@ -23,6 +23,6 @@ private:
 	sg_size_t m_width;
 };
 
-};
+}
 
 #endif /* SGFX_FONTSVG_HPP_ */

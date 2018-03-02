@@ -50,7 +50,7 @@ public:
 	list_attr_size_t calc_next_visible(s8 dir) const;
 
 	/*! \details Calculate the index of the next visible item in the specified direction */
-	virtual list_attr_size_t size() const = 0;
+    virtual list_attr_size_t size() const = 0;
 
 	/*! \details Access the number of animation frames used when scrolling */
 	u8 scroll_animation_frames() const { return m_scroll_animation_frames; }
@@ -64,6 +64,6 @@ private:
 	u8 m_scroll_animation_frames;
 };
 
-};
+}
 
 #endif /* UI_LISTATTR_HPP_ */

@@ -12,7 +12,7 @@ namespace var {
  * class is similar to STDC strtok().
  *
  */
-class Token : public String {
+class Token : public var::String {
 public:
 	Token();
 	Token(char * mem, u32 s, const char * src, const char * delim, const char * ignore = 0, bool count_empty = false);
@@ -59,8 +59,10 @@ public:
 	void sort(enum sort_options sort_option = SORT_NONE);
 
 
-	/*! \details Returns the total number of tokens. */
-	u32 size() const { return m_num_tokens; }
+    u32 size() const { return m_num_tokens; }
+
+    /*! \details Returns the total number of tokens. */
+    u32 count() const { return m_num_tokens; }
 
 	/*! \details Returns a pointer to the token specified by offset. */
 	const char * at(u32 n) const;
@@ -78,7 +80,7 @@ public:
 	void set_count_empty_tokens(bool v = true){ m_is_count_empty_tokens = v; }
 
 
-	Token& operator=(const Token & token);
+    Token & operator=(const Token & token);
 
 protected:
 
@@ -91,7 +93,7 @@ private:
 
 };
 
-};
+}
 
 
 #endif /* TOKEN_HPP_ */

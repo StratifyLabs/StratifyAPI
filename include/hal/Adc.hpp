@@ -9,6 +9,11 @@
 
 namespace hal {
 
+/*! \brief ADC Attributes Class
+ * \details This class is for containing ADC attributes.
+ */
+class AdcAttr : public PinAssignmentPeriphAttr<adc_attr_t, adc_pin_assignment_t> {};
+
 /*! \brief ADC Pin Assignment
  * \details This class allows simple manipulation of the adc_pin_assignment_t.
  */
@@ -93,6 +98,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* SAPI_ADC_HPP_ */

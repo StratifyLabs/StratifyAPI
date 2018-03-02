@@ -5,9 +5,11 @@
 
 #include "Drawing.hpp"
 #include "TextAttr.hpp"
-#include "../var/Token.hpp"
 #include "../sgfx/Font.hpp"
 
+namespace var {
+class Token;
+}
 
 namespace draw {
 

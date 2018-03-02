@@ -50,9 +50,6 @@ private:
 	sg_region_t m_region;
 };
 
-};
-
-
-
+}
 
 #endif /* SGFX_REGION_HPP_ */

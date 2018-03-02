@@ -209,6 +209,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* TIMER_HPP_ */

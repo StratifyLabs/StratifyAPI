@@ -174,6 +174,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* SGFX_VECTOR_HPP_ */

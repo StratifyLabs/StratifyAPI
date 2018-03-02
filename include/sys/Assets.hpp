@@ -99,6 +99,6 @@ private:
 	static u16 m_bmap_icon_count;
 };
 
-};
+}
 
 #endif /* SYS_ASSETS_HPP_ */

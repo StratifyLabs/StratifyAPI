@@ -54,6 +54,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* SGFX_FONTMEMORY_HPP_ */

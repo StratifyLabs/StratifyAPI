@@ -49,6 +49,6 @@ private:
 	draw::Animation m_scroll_animation;
 };
 
-};
+}
 
 #endif /* UI_ELEMENTLINKED_HPP_ */

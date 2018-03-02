@@ -129,6 +129,6 @@ public:
 
 };
 
-};
+}
 
 #endif /* FIFO_HPP_ */

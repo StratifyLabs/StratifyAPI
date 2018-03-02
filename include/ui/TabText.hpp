@@ -27,6 +27,6 @@ private:
 	draw::Text m_text;
 };
 
-};
+}
 
 #endif /* UI_TAB_TABLABEL_HPP_ */

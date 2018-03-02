@@ -35,6 +35,6 @@ private:
 	Element * m_element;
 };
 
-};
+}
 
 #endif /* UI_TAB_HPP_ */

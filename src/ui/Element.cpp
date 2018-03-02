@@ -6,7 +6,9 @@
 
 using namespace ui;
 
-Element::Element(){}
+Element::Element(){
+    m_event_loop = 0;
+}
 
 void Element::draw_scroll(const DrawingScaledAttr & attr,
 		int selected,

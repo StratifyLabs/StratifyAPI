@@ -70,6 +70,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* TRACE_HPP_ */

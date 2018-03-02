@@ -5,6 +5,9 @@
 
 #include "../hal/Uart.hpp"
 #include "../hal/I2C.hpp"
+#include "../hal/Pwm.hpp"
+#include "../hal/Adc.hpp"
+#include "../hal/Dac.hpp"
 #include "../var/String.hpp"
 #include "../var/Token.hpp"
 

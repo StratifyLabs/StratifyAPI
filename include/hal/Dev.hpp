@@ -18,6 +18,6 @@ public:
 
 };
 
-};
+}
 
 #endif /* SAPI_DEV_HPP_ */

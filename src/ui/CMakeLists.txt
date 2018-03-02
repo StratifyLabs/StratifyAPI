@@ -17,5 +17,5 @@ set(SOURCES
   ${SOURCES_PREFIX}/TabIcon.cpp
   ${SOURCES_PREFIX}/TabProgress.cpp
   ${SOURCES_PREFIX}/TabText.cpp
-  ${SOURCES_PREFIX}/TabTime.cpp
-  PARENT_SCOPE)
+	${SOURCES_PREFIX}/TabTime.cpp
+	PARENT_SCOPE)

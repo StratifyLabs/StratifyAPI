@@ -51,6 +51,83 @@ private:
 
 };
 
+template<typename attr_t> class PeriphAttr {
+public:
+
+    PeriphAttr(){
+        m_port = 0;
+        memset(&m_attr, 0, sizeof(m_attr));
+    }
+
+    /*! \details Accesses the value of the port. */
+    u8 port() const { return m_port; }
+
+    /*! \details Sets the value of the port. */
+    void set_port(u8 port){ m_port = port; }
+
+    /*! \details Returns a copy of the attributes. */
+    operator attr_t() const { return m_attr; }
+
+    /*! \details Returns a reference to the attributes object. */
+    const attr_t & attr() const { return m_attr; }
+
+    attr_t & attr(){ return m_attr; }
+
+protected:
+    attr_t m_attr;
+
+private:
+    u8 m_port;
+};
+
+template<typename attr_t, typename pin_assignment_t>
+class PinAssignmentPeriphAttr {
+public:
+
+    PinAssignmentPeriphAttr(){
+        m_port = 0;
+        memset(&m_attr, 0, sizeof(m_attr));
+        memset(&m_attr.pin_assignment, 0xff, sizeof(pin_assignment_t));
+    }
+
+    /*! \details Accesses the value of the port. */
+    u8 port() const { return m_port; }
+
+    /*! \details Sets teh value of the port. */
+    void set_port(u8 port){ m_port = port; }
+
+    /*! \details Returns a copy of the attributes. */
+    operator attr_t() const { return m_attr; }
+
+    /*! \details Returns a reference to the attributes object. */
+    const attr_t & attr() const { return m_attr; }
+
+    /*! \details Accesses the value of the flags. */
+    u8 o_flags() const { return m_attr.o_flags; }
+
+    /*! \details Sets the value of the flags. */
+    void set_flags(u32 o_flags){ m_attr.o_flags = o_flags; }
+
+    /*! \details Access the frequency. */
+    u32 freq() const { return m_attr.freq; }
+
+    /*! \details Set the frequency.
+     *
+     * @param freq_hz The frequency in Hertz
+     */
+    void set_freq(u32 freq_hz){ m_attr.freq = freq_hz; }
+
+    /*! \details Gets a copy of the pin assignment. */
+    const pin_assignment_t * pin_assignment() const { return &m_attr.pin_assignment; }
+
+protected:
+    attr_t m_attr;
+
+private:
+    u8 m_port;
+
+};
+
 
 /*! \brief Peripheral Class
  * \details This is an abstract class for a microcontroller peripheral.
@@ -190,6 +267,6 @@ protected:
 
 };
 
-};
+}
 
 #endif /* PHY_PERIPH_HPP_ */

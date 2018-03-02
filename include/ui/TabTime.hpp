@@ -21,6 +21,6 @@ public:
 
 };
 
-};
+}
 
 #endif /* UI_TAB_TABTIME_HPP_ */

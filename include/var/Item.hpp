@@ -73,6 +73,6 @@ private:
 	data_type m_item;
 };
 
-};
+}
 
 #endif /* ITEM_HPP_ */

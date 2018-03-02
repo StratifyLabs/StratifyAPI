@@ -42,6 +42,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* UI_MENU_HPP_ */

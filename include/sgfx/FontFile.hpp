@@ -34,6 +34,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* SGFX_FONTFILE_HPP_ */

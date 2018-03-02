@@ -125,10 +125,10 @@ public:
 
 /*! \brief Exponential Moving Average class (float) */
 /*! \details See \ref Ema for details */
-class Ema_float {
+class Ema_f {
 public:
 	/*! \details Constructs a EMA object for floating point calculations */
-	Ema_float(float start, float alpha){ m_alpha = alpha; m_average = start; }
+    Ema_f(float start, float alpha){ m_alpha = alpha; m_average = start; }
 	static float small_max(){ return 1.0; }
 	/*! \details Calculates the next value based on the given input */
 	float calc(float in){
@@ -149,6 +149,10 @@ private:
 	float m_average;
 	float m_alpha;
 };
+
+class Ema_float : public Ema_f {
+    Ema_float(float start, float alpha) : Ema_f(alpha, start){}
+}
 
 
 }

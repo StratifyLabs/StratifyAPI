@@ -37,6 +37,6 @@ private:
 	u32 m_flags;
 };
 
-};
+}
 
 #endif /* FLAGS_HPP_ */

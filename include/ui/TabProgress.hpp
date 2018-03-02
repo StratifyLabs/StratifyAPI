@@ -53,7 +53,7 @@ private:
 	draw::ProgressCircle m_progress;
 };
 
-};
+}
 
 
 #endif /* UI_TAB_TABPROGRESS_HPP_ */

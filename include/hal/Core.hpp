@@ -150,6 +150,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* SAPI_CORE_HPP_ */

@@ -18,6 +18,7 @@ namespace ui {}
 
 #include "draw.hpp"
 #include "ui/Event.hpp"
+#include "ui/EventLoop.hpp"
 #include "ui/Element.hpp"
 #include "ui/ElementLinked.hpp"
 #include "ui/List.hpp"

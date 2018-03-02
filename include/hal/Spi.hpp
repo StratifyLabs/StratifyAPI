@@ -86,6 +86,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* SAPI_SPI_HPP_ */
