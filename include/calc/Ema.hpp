@@ -152,7 +152,7 @@ private:
 
 class Ema_float : public Ema_f {
     Ema_float(float start, float alpha) : Ema_f(alpha, start){}
-}
+};
 
 
 }

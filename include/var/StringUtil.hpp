@@ -7,10 +7,6 @@
 
 namespace var {
 
-#if defined __armv7m || defined __armv7em
-#define USE_SPRINTF
-#endif
-
 class StringUtil {
 public:
 
