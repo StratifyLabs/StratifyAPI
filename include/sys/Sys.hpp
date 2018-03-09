@@ -25,6 +25,14 @@ public:
 	Sys();
 #endif
 
+    /*! \details Returns a c style string pointer
+     * to the API version.
+     *
+     * This version is 2.4.0
+     *
+     */
+    static const char * version(){ return "2.4.0"; }
+
 	enum {
 		LAUNCH_OPTIONS_FLASH /*! Install in flash memory */ = APPFS_FLAG_IS_FLASH,
 		LAUNCH_OPTIONS_STARTUP /*! Run at startup (must be in flash) */ = APPFS_FLAG_IS_STARTUP,
