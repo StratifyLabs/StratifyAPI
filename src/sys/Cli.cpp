@@ -22,6 +22,7 @@ Cli::Cli(int argc, char * argv[]){
 }
 
 void Cli::handle_version() const {
+#if !defined __link
 	if( is_option("--version") || is_option("-v") ){
 		u16 version;
 		String tmp;
@@ -30,6 +31,7 @@ void Cli::handle_version() const {
 		printf("%s version: %s by %s\n", m_name.c_str(), tmp.c_str(), m_publisher.c_str());
 		exit(0);
 	}
+#endif
 }
 
 

@@ -1,0 +1,5 @@
+
+set(SOURCES
+  ${SOURCES_PREFIX}/Case.cpp
+	${SOURCES_PREFIX}/Engine.cpp
+	PARENT_SCOPE)

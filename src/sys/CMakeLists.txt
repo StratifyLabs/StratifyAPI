@@ -1,8 +1,9 @@
 
 set(SOURCELIST
   ${SOURCES_PREFIX}/Appfs.cpp
-  ${SOURCES_PREFIX}/Dir.cpp
-  ${SOURCES_PREFIX}/File.cpp
+	${SOURCES_PREFIX}/Cli.cpp
+	${SOURCES_PREFIX}/Dir.cpp
+	${SOURCES_PREFIX}/File.cpp
   ${SOURCES_PREFIX}/FileInfo.cpp
   ${SOURCES_PREFIX}/Signal.cpp
   ${SOURCES_PREFIX}/Sys.cpp
@@ -13,7 +14,6 @@ set(SOURCELIST
 if( ${SOS_BUILD_CONFIG} STREQUAL arm )
     set(SOURCELIST ${SOURCELIST}
       ${SOURCES_PREFIX}/Assets.cpp
-      ${SOURCES_PREFIX}/Cli.cpp
       ${SOURCES_PREFIX}/Sem.cpp
       ${SOURCES_PREFIX}/Thread.cpp
       ${SOURCES_PREFIX}/Sched.cpp

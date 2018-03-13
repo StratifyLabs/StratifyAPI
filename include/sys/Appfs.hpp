@@ -81,9 +81,13 @@ public:
 
 	/*! \details Gets the info associated with the file.
 	 *
-	 * @param path The path to the file (must be in the /app folder)
+     * @param path The path to the file
 	 * @param info A reference to the destination info
 	 * @return Zero on success
+     *
+     * This method will work if the file is installed in the
+     * application filesystem or on a normal data filesystem.
+     *
 	 */
 #if !defined __link
 	static int get_info(const char * path, appfs_info_t & info);

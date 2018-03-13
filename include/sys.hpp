@@ -18,11 +18,11 @@ namespace sys {};
 #include "sys/Sched.hpp"
 #include "sys/Timer.hpp"
 #include "sys/Time.hpp"
-#include "sys/Cli.hpp"
 #include "sys/Messenger.hpp"
 #include "sys/Trace.hpp"
 #endif
 
+#include "sys/Cli.hpp"
 #include "sys/Sys.hpp"
 #include "sys/Appfs.hpp"
 #include "sys/Dir.hpp"
