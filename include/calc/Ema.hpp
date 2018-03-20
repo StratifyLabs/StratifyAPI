@@ -150,9 +150,9 @@ private:
 	float m_alpha;
 };
 
-class Ema_float : public Ema_f {
-    Ema_float(float start, float alpha) : Ema_f(alpha, start){}
-};
+
+//deprecated
+typedef Ema_f Ema_float;
 
 
 }

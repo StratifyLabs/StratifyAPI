@@ -4,7 +4,6 @@ set(SOURCES
   ${SOURCES_PREFIX}/ButtonPin.cpp
   ${SOURCES_PREFIX}/Element.cpp
   ${SOURCES_PREFIX}/ElementLinked.cpp
-  ${SOURCES_PREFIX}/Event.cpp
   ${SOURCES_PREFIX}/EventLoop.cpp
   ${SOURCES_PREFIX}/List.cpp
   ${SOURCES_PREFIX}/ListAttr.cpp

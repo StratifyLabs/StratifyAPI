@@ -186,6 +186,13 @@ public:
 		return ioctl(_IOCTL(ident_char, I_MCU_GETVERSION));
 	}
 
+
+    /*! \details Gets the peripheral info.
+     *
+     * @param info A reference to the info object that will be written.
+     * @return Zero on success, less than one for an error
+     *
+     */
 	int get_info(info_t & info) const {
 		return ioctl(_IOCTLR(ident_char, I_MCU_GETINFO, info_t), &info);
 	}
@@ -200,7 +207,7 @@ public:
 	 *
 	 */
 	int set_attr() const {
-		return ioctl(_IOCTLR(ident_char, I_MCU_SETATTR, attr_t), 0);
+        return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), 0);
 	}
 
 	/*! \details Initializes the hardware using the default attributes.

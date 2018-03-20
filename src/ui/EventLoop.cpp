@@ -10,26 +10,12 @@
 
 namespace ui {
 
-EventLoopAttr::EventLoopAttr(){
-    m_attr.update_period = 0;
-    m_attr.hibernation_threshold = 0xffff;
-    m_attr.period = 10;
-    m_attr.refresh_wait_resolution = 5000;
-}
-
-EventLoop::EventLoop(ui::Element & start_element, sgfx::Bitmap & bitmap, sgfx::Bitmap * scratch) {
-    // TODO Auto-generated constructor stub
-    m_current_element = &start_element;
-
+EventLoop::EventLoop(ui::Element & start_element, sgfx::Bitmap & bitmap, sgfx::Bitmap * scratch) : sm::EventLoop(start_element) {
     //use the full screen by default
     m_drawing_attr.set_bitmap(bitmap);
     m_drawing_attr.set_scratch(scratch);
     m_drawing_attr.set_point(0,0);
     m_drawing_attr.set_dim(1000, 1000);
-}
-
-EventLoop::EventLoop(ui::Element & start_element){
-    m_current_element = &start_element;
 }
 
 
@@ -71,10 +57,10 @@ void EventLoop::handle_transition(Element * current_element, Element * next_elem
 }
 
 bool EventLoop::handle_event(const Event & event){
-    Element * tmp = m_current_element;
-    tmp = handle_event(m_current_element, event, drawing_attr(), this);
-    if( tmp != m_current_element ){
-        m_current_element = tmp;
+    Element * tmp = current_element();
+    tmp = handle_event(current_element(), event, drawing_attr(), this);
+    if( tmp != current_element() ){
+        set_current_element(tmp);
         return true;
     }
     return false;
@@ -93,63 +79,38 @@ void EventLoop::start(Element * element, const draw::DrawingAttr & drawing_attr)
 }
 
 void EventLoop::start(){
-    if( m_current_element ){
-        m_current_element->set_event_loop(this);
+    if( current_element() ){
+        current_element()->set_event_loop(this);
     }
-    start(m_current_element, drawing_attr());
-    m_update_timer.start();
+    start(current_element(), drawing_attr());
+    update_timer().start();
 }
 
 void EventLoop::loop(){
-    s32 ms_remaining;
-    bool is_hibernate = false;
-    while( m_current_element != 0 ){
+    while( current_element() != 0 ){
 
-        m_loop_timer.restart();
+        loop_timer().restart();
 
         if( m_drawing_attr.is_bitmap_available() ){
             m_drawing_attr.bitmap().wait(refresh_wait_resolution()); //wait until video memory is free to write
         }
+
         process_events(); //process all events (this will modify the video memory)
+        check_loop_for_update(); //check for Event::UPDATE based on update_timer()
 
-        if( update_period() && ((m_update_timer.msec() >= update_period()) || is_hibernate) ){
-            m_update_timer.restart();
-            handle_event(Event(Event::UPDATE));
-        }
-
-        if( m_current_element ){
-            //update the screen
-            if( m_current_element->is_redraw_pending() ){
+        if( current_element() ){ //update the display if the current element is still valid
+            if( current_element()->is_redraw_pending() ){
                 if( m_drawing_attr.is_bitmap_available() ){
                     m_drawing_attr.bitmap().refresh();
                 }
-                m_current_element->set_redraw_pending(false);
+                current_element()->set_redraw_pending(false);
             }
         }
 
-        is_hibernate = (update_period() >= hibernation_threshold());
-
-        if( is_hibernate ){
-            sapi_request_hibernate_t request;
-            request.update_period = update_period();
-            request.loop_period = period();
-            if( Sys::request(SAPI_REQUEST_HIBERNATE, &request) < 0 ){
-                Sys::hibernate( (update_period() + 500)/ 1000 );
-            }
-        } else {
-            ms_remaining = period() - m_loop_timer.msec();
-            if( ms_remaining > 0 ){
-                Timer::wait_msec(ms_remaining);
-            }
-        }
+        check_loop_for_hibernate();
     }
-
 }
 
 
-void EventLoop::execute(){
-    start();
-    loop();
-}
 
 } /* namespace ui */

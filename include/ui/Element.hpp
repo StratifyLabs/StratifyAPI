@@ -5,25 +5,23 @@
 #ifndef UI_ELEMENT_HPP_
 #define UI_ELEMENT_HPP_
 
-
 #include <cstring>
 
 #include "../draw/Drawing.hpp"
 #include "../draw/Animation.hpp"
 #include "../sgfx/Bitmap.hpp"
+#include "../sm/EventHandler.hpp"
 #include "Event.hpp"
 
 namespace ui {
 
-class EventLoop;
-
 /*! \brief Element Class
- * \details An Element is a basic building block of the UI.  Elements are
- * designed to be scalable so they can be adjusted to different screen sizes
- * so that Apps based on elements are future proof.
+ * \details An Element is a basic building block of the UI.  An Element
+ * inherits both a draw::Drawing and an sm::EventHandler. It is designed
+ * to be used within a ui::EventLoop rather than an sm::EventLoop.
  *
  */
-class Element : public draw::Drawing {
+class Element : public draw::Drawing, public sm::EventHandler {
 public:
 
 	/*! \details Construct an element */
@@ -102,24 +100,13 @@ public:
 	void set_animation_frame_delay(u16 delay){ m_animation_attr.set_frame_delay(delay); }
 	u16 animation_frame_delay() const { return m_animation_attr.frame_delay(); }
 
-
-	/*! \details This method is called on the current Element when an event (e.g., Element::ENTER,
-	 * Element::UPDATE, Element::TOP_PRESS) happens.
-	 *
-	 * @param event The event to execute
-	 * @param attr The drawing attributes to use for the event
-	 * @return For transitions, the new element is returned; otherwise this
-	 */
-	virtual Element * handle_event(const Event & event, const draw::DrawingAttr & attr);
-
-
-    /*! \details Returns a pointer to the element's event loop.
+    /*! \details Handles an event sent by the event loop.
      *
-     * If the element isn't running in an event loop, this
-     * method will return 0.
+     * @param event The event that should be handled
+     * @param attr The draw::DrawingAttr to use to update the display based on the event.
      *
      */
-    EventLoop * event_loop() const { return m_event_loop; }
+    virtual Element * handle_event(const Event & event, const draw::DrawingAttr & attr);
 
 protected:
 
@@ -142,12 +129,8 @@ protected:
 	virtual void draw_scroll(const draw::DrawingScaledAttr & attr, int selected, int total, int visible);
 	void adjust_x_center(sg_size_t w, sg_int_t & x);
 
-    friend class EventLoop;
-    void set_event_loop(EventLoop * event_loop){ m_event_loop = event_loop; }
-
 private:
 
-    EventLoop * m_event_loop;
 
 };
 

@@ -8,8 +8,6 @@
 
 #include "../sys/Timer.hpp"
 
-#include "Case.hpp"
-
 namespace test {
 
 template<typename return_type, typename...args> class Function {
@@ -23,6 +21,19 @@ public:
 
     ~Function(){
         printf("\n}\n");
+    }
+
+
+
+    void set(const char * function_name, return_type (*function)(args...)){
+        if( m_function != function ){
+            //close the previous one
+            printf("\n}\n");
+            //start the new one
+            m_function = function;
+            printf("\"%s\": {\n", function_name);
+            m_is_first = true;
+        }
     }
 
     return_type execute(const char * case_name, return_type expected_value, int expected_errno, args... arguments){
