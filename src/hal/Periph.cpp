@@ -50,9 +50,9 @@ static const char * const periph_name[CORE_PERIPH_TOTAL] = {
 		"trace" /* CORE_PERIPH_TRACE Trace data */
 };
 
-u16 PeriphParent::m_fd_map[LINK_OPEN_MAX];
+u16 PeriphObject::m_fd_map[LINK_OPEN_MAX];
 
-int PeriphParent::lookup_fileno() const {
+int PeriphObject::lookup_fileno() const {
 	int i;
 	for(i=0; i < LINK_OPEN_MAX; i++){
 		if( m_fd_map[i] == m_periph_port ){
@@ -62,14 +62,14 @@ int PeriphParent::lookup_fileno() const {
 	return -1;
 }
 
-void PeriphParent::update_fileno() const {
+void PeriphObject::update_fileno() const {
 	if( (m_fd >= 0) && (m_fd_map[m_fd] == 0) ){ //fd is no longer valid
 		m_fd = -1; //kill the fileno
 	}
 }
 
 
-int PeriphParent::open(const char * name, int flags){
+int PeriphObject::open(const char * name, int flags){
 	//check map
 	int fileno;
 	fileno = lookup_fileno();
@@ -87,7 +87,7 @@ int PeriphParent::open(const char * name, int flags){
 	return 0;
 }
 
-int PeriphParent::open(int flags){
+int PeriphObject::open(int flags){
 	char buffer[LINK_NAME_MAX];
 	int len;
 	const char * name;
@@ -106,7 +106,7 @@ int PeriphParent::open(int flags){
 	return open(buffer, flags);
 }
 
-int PeriphParent::close(){
+int PeriphObject::close(){
 	int ret = 0;
 	update_fileno();
 	if( m_fd >= 0 ){
@@ -117,39 +117,39 @@ int PeriphParent::close(){
 	return ret;
 }
 
-int PeriphParent::read(void * buf, int nbyte) const {
+int PeriphObject::read(void * buf, int nbyte) const {
 	update_fileno();
 	return File::read(buf, nbyte);
 }
 
-int PeriphParent::write(const void * buf, int nbyte) const {
+int PeriphObject::write(const void * buf, int nbyte) const {
 	update_fileno();
 	return File::write(buf, nbyte);
 }
 
 #ifndef __link
-int PeriphParent::read(Aio & aio) const {
+int PeriphObject::read(Aio & aio) const {
 	update_fileno();
 	return Device::read(aio);
 }
 
-int PeriphParent::write(Aio & aio) const {
+int PeriphObject::write(Aio & aio) const {
 	update_fileno();
 	return Device::write(aio);
 }
 #endif
 
-int PeriphParent::ioctl(int req, void * arg) const {
+int PeriphObject::ioctl(int req, void * arg) const {
 	update_fileno();
 	return Device::ioctl(req, arg);
 }
 
-int PeriphParent::seek(int loc, int whence) const {
+int PeriphObject::seek(int loc, int whence) const {
 	update_fileno();
 	return Device::seek(loc, whence);
 }
 
-int PeriphParent::fileno() const {
+int PeriphObject::fileno() const {
 	update_fileno();
 	return Device::fileno();
 }

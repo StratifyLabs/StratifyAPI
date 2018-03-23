@@ -14,14 +14,15 @@ namespace sm {
  *
  *
  */
-template<class container_class, typename...args> class StateMachine {
+template<class container_class, typename return_type, typename...args> class StateMachine {
 public:
 
     /*! \details Defines the method type to execute with each state. */
-    typedef void (container_class::*state_method_t)(args...);
+    typedef return_type (container_class::*state_method_t)(args...);
 
     StateMachine(u32 count = 0){
         m_table_count = 0;
+        m_state = 0;
         if( count ){
             if( m_state_table.alloc(count * sizeof(state_method_t)) < 0 ){
                 //failed to alloc table
@@ -46,6 +47,10 @@ public:
         }
     }
 
+
+    /*! \details Returns true if the current state is valid. */
+    bool is_state_valid() const { return m_state < count(); }
+
     /*! \details Sets the method associated with the state. */
     void set_state_method(u32 state, state_method_t method){
         if( state < count() ){
@@ -59,10 +64,10 @@ public:
      * loop. This method should be called periodically.
      *
      */
-    void update(args... arguments){
+    return_type update(args... arguments){
         state_method_t method = get_state_update_method(state());
         if( method != 0 ){
-            (this->*method)(arguments...);
+            return (((container_class*)this)->*method)(arguments...);
         }
     }
 

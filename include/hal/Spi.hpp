@@ -12,12 +12,26 @@ namespace hal {
 
 /*! \brief SPI Pin Assignment
  * \details This class allows simple manipulation of the spi_pin_assignment_t.
+ *
  */
 class SpiPinAssignment : public PinAssignment<spi_pin_assignment_t>{};
 
 
 /*! \brief SPI Class
  * \details This class gives access to a SPI port.
+ *
+ * \code
+ * #include <sapi/hal.hpp>
+ *
+ * int main(int argc, char * argv[]){
+ *   char buffer[16];
+ *   Spi spi(0);           //access to SPI port 0
+ *   spi.init();           //init SPI with default settings from BSP
+ *   spi.read(buffer, 16); //read 16 bytes from the SPI
+ *   spi.close();          //close the SPI (power it off)
+ *   return 0;
+ * }
+ * \endcode
  */
 class Spi : public Periph<spi_info_t, spi_attr_t, 's'>{
 public:

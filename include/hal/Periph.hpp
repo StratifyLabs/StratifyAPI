@@ -15,8 +15,18 @@
 
 namespace hal {
 
-class PeriphParent : public Device {
+/*! \brief Periph Object Class
+ * \details This class handles general peripheral IO. It re-implments
+ * open(), close(), read(), write(), ioctl() in order to manage
+ * the file descriptors for MCU peripherals.
+ *
+ */
+class PeriphObject : public Device {
 public:
+
+    /*! \details Defines the type to use when specifying a peripheral port. */
+    typedef unsigned int port_t;
+
 	/*!  \details This method opens the peripheral.  For each instance, the peripheral
 	 * only needs to be opened one time.  The port is typically opened with open() and
 	 * configured with set_attr().  After that, other instances of the peripheral can read
@@ -144,9 +154,9 @@ private:
  * the method Uart::set_attr() implements the ioctl request.
  *
  */
-template<typename info_t, typename attr_t, char ident_char> class Periph : public PeriphParent {
+template<typename info_t, typename attr_t, char ident_char> class Periph : public PeriphObject {
 public:
-	typedef unsigned int port_t;
+
 	Periph(core_periph_t periph, port_t port){
 		m_periph_port = (periph << 8) | port;
 		m_fd = lookup_fileno();
