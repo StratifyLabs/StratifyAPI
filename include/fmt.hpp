@@ -6,9 +6,7 @@
 /*! \brief Standard Data Formats
  *
  */
-namespace fmt {
-
-};
+namespace fmt {}
 
 #include "fmt/Bmp.hpp"
 #include "fmt/Wav.hpp"

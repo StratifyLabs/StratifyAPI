@@ -8,7 +8,7 @@
  * \details The var namespace is a collection of volatile data storage mechanisms and routines
  * such as buffers and strings.
  */
-namespace var {};
+namespace var {}
 
 #include "var/Data.hpp"
 #include "var/Flags.hpp"

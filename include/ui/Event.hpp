@@ -4,11 +4,11 @@
 #ifndef UI_EVENT_HPP_
 #define UI_EVENT_HPP_
 
-#include "../sm/Event.hpp"
+#include "../ev/Event.hpp"
 
 namespace ui {
 
-typedef sm::Event Event;
+typedef ev::Event Event;
 
 }
 

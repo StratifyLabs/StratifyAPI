@@ -1,6 +1,6 @@
-#include "sm/EventHandler.hpp"
+#include "ev/EventHandler.hpp"
 
-using namespace sm;
+using namespace ev;
 
 EventHandler::EventHandler(){
     m_event_loop = 0;

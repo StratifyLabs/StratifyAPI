@@ -3,9 +3,11 @@
 
 namespace test{}
 
-using namespace test;
-
 #include "test/Function.hpp"
 #include "test/Case.hpp"
+
+using namespace test;
+
+
 
 #endif // TEST_HPP

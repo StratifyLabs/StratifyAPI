@@ -4,10 +4,10 @@
 
 #include <cstdio>
 #include "sys/requests.h"
-#include "sm/EventLoop.hpp"
+#include "ev/EventLoop.hpp"
 #include "sys.hpp"
 
-namespace sm {
+namespace ev {
 
 EventLoopAttr::EventLoopAttr(){
     m_attr.update_period_msec = 0;

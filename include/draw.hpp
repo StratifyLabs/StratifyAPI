@@ -22,9 +22,7 @@
  * to draw directly on a hal::Display.
  *
  */
-namespace draw {
-
-}
+namespace draw {}
 
 #include "sgfx.hpp"
 #include "draw/Animation.hpp"

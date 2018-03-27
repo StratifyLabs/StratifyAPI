@@ -5,11 +5,8 @@
 
 /*! \brief State Machine (Event Handler)
  */
-namespace sm {};
+namespace sm {}
 
-#include "sm/Event.hpp"
-#include "sm/EventHandler.hpp"
-#include "sm/EventLoop.hpp"
 #include "sm/StateMachine.hpp"
 
 using namespace sm;

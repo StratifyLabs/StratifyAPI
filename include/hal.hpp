@@ -5,7 +5,7 @@
 
 /*! \brief Hardware Abstraction Layer
  */
-namespace hal {};
+namespace hal {}
 
 #include "hal/Dev.hpp"
 #include "hal/Device.hpp"

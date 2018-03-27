@@ -10,7 +10,7 @@
 
 namespace ui {
 
-EventLoop::EventLoop(ui::Element & start_element, sgfx::Bitmap & bitmap, sgfx::Bitmap * scratch) : sm::EventLoop(start_element) {
+EventLoop::EventLoop(ui::Element & start_element, sgfx::Bitmap & bitmap, sgfx::Bitmap * scratch) : ev::EventLoop(start_element) {
     //use the full screen by default
     m_drawing_attr.set_bitmap(bitmap);
     m_drawing_attr.set_scratch(scratch);

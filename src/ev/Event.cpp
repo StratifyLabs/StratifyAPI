@@ -1,7 +1,7 @@
 /* Copyright 2016 tgil All Rights Reserved */
 
-#include "sm/Event.hpp"
-using namespace sm;
+#include "ev/Event.hpp"
+using namespace ev;
 
 Event::Event() {
 	m_type = NONE;

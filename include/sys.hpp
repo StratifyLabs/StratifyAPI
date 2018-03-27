@@ -5,7 +5,7 @@
 
 /*! \brief System Access (including POSIX abstraction)
  */
-namespace sys {};
+namespace sys {}
 
 #include "sys/MicroTime.hpp"
 

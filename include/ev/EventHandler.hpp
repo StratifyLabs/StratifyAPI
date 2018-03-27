@@ -11,7 +11,7 @@ namespace ui {
 class EventLoop;
 }
 
-namespace  sm {
+namespace ev {
 
 class EventLoop;
 

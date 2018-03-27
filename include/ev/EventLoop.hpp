@@ -9,7 +9,7 @@
 #include "EventHandler.hpp"
 #include "Event.hpp"
 
-namespace sm {
+namespace ev {
 
 typedef struct MCU_PACK {
     u16 hibernation_threshold_msec;

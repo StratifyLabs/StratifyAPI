@@ -10,7 +10,7 @@
 #include "../draw/Drawing.hpp"
 #include "../draw/Animation.hpp"
 #include "../sgfx/Bitmap.hpp"
-#include "../sm/EventHandler.hpp"
+#include "../ev/EventHandler.hpp"
 #include "Event.hpp"
 
 namespace ui {
@@ -21,7 +21,7 @@ namespace ui {
  * to be used within a ui::EventLoop rather than an sm::EventLoop.
  *
  */
-class Element : public draw::Drawing, public sm::EventHandler {
+class Element : public draw::Drawing, public ev::EventHandler {
 public:
 
 	/*! \details Construct an element */

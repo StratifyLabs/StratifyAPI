@@ -8,12 +8,12 @@
 #include "../sys/Timer.hpp"
 #include "../draw/Drawing.hpp"
 #include "Element.hpp"
-#include "../sm/EventLoop.hpp"
+#include "../ev/EventLoop.hpp"
 
 namespace ui {
 
-typedef sm::event_loop_attr_t event_loop_attr_t;
-typedef sm::EventLoopAttr EventLoopAttr;
+typedef ev::event_loop_attr_t event_loop_attr_t;
+typedef ev::EventLoopAttr EventLoopAttr;
 
 
 /*! \brief Event Loop Class (Graphical UI)
@@ -41,7 +41,7 @@ typedef sm::EventLoopAttr EventLoopAttr;
  *
  *
  */
-class EventLoop: public sm::EventLoop {
+class EventLoop: public ev::EventLoop {
 public:
 
 	/*! \details Constructs a new event loop.
@@ -61,10 +61,10 @@ public:
 	virtual void loop();
 
     /*! \details Accesses the current element. */
-    Element * current_element() const { return (Element*)sm::EventLoop::current_event_handler(); }
+    Element * current_element() const { return (Element*)ev::EventLoop::current_event_handler(); }
 
     /*! \details Sets the current element. */
-    void set_current_element(Element * v){ sm::EventLoop::set_current_event_handler(v); }
+    void set_current_element(Element * v){ ev::EventLoop::set_current_event_handler(v); }
 
     /*! \details Accesses the drawing attributes. */
 	draw::DrawingAttr & drawing_attr(){ return m_drawing_attr; }
