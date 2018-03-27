@@ -4,9 +4,74 @@
 #include <mcu/types.h>
 
 #include "../var/Data.hpp"
+#include "../sys/Timer.hpp"
 
 namespace sm {
 
+class State;
+
+class Condition {
+public:
+
+    virtual const char * name() = 0;
+    virtual bool is_true() const = 0;
+
+    State * target_state(){
+        return m_target_state;
+    }
+
+protected:
+    void set_state(State * target_state){
+        m_target_state = target_state;
+    }
+
+private:
+    State * m_target_state;
+
+};
+
+class TimerCondition : public Condition {
+public:
+
+    TimerCondition(sys::Timer & timer) : m_timer(timer){}
+
+    bool is_true() const {
+        return m_timer.calc_value() >= timeout();
+    }
+
+    void set_timeout(const sys::MicroTime & value){
+        m_timeout = value;
+    }
+
+    const sys::MicroTime & timeout() const {
+        return m_timeout;
+    }
+
+private:
+    sys::Timer & m_timer;
+    sys::MicroTime m_timeout;
+};
+
+class Action {
+public:
+    virtual const char * name() const = 0;
+
+private:
+
+};
+
+
+class State {
+public:
+    virtual const char * name() const = 0;
+
+
+private:
+
+    //pointer list to entry actions
+    //pointer list to conditions
+
+};
 
 /*! \brief State Machine Class
  * \details This class implements a simple state machine. The state

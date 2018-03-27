@@ -65,6 +65,7 @@ public:
 	/*! \details Accesses the width in bits (usually 8). */
 	u8 width() const { return m_attr.width; }
 
+
 	/*! \details Sets the tx pin assignment value.
 	 *
 	 * @param pin The tx pin
@@ -102,7 +103,6 @@ public:
 
 
 private:
-	u8 m_port;
 	uart_attr_t m_attr;
 };
 

@@ -6,15 +6,14 @@
 #include "sys/requests.h"
 #include "sm/EventLoop.hpp"
 #include "sys.hpp"
-#include "draw.hpp"
 
 namespace sm {
 
 EventLoopAttr::EventLoopAttr(){
-    m_attr.update_period = 0;
-    m_attr.hibernation_threshold = 0xffff;
-    m_attr.period = 10;
-    m_attr.refresh_wait_resolution = 5000;
+    m_attr.update_period_msec = 0;
+    m_attr.hibernation_threshold_msec = 0xffff;
+    m_attr.period_msec = 10;
+    m_attr.refresh_wait_resolution_usec = 5000;
 }
 
 
@@ -31,7 +30,7 @@ EventHandler * EventLoop::handle_event(EventHandler * current_event_handler, con
             next_event_handler = current_event_handler->handle_event(event);
         }
 
-        if( next_event_handler != current_event_handler ){
+        if( next_event_handler && (next_event_handler != current_event_handler) ){
             next_event_handler->set_event_loop(event_loop);
             handle_transition(current_event_handler, next_event_handler);
         }
@@ -55,6 +54,13 @@ bool EventLoop::handle_event(const Event & event){
     EventHandler * tmp = m_current_event_handler;
     tmp = handle_event(m_current_event_handler, event, this);
     if( tmp != m_current_event_handler ){
+        if( tmp == 0 ){
+            tmp = catch_null_handler(m_current_event_handler);
+            if( tmp != 0 ){
+                tmp->set_event_loop(this);
+                handle_transition(m_current_event_handler, tmp);
+            }
+        }
         m_current_event_handler = tmp;
         return true;
     }

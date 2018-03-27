@@ -6,17 +6,16 @@
 #define SM_EVENTLOOP_HPP_
 
 #include "../sys/Timer.hpp"
-#include "../draw/Drawing.hpp"
 #include "EventHandler.hpp"
 #include "Event.hpp"
 
 namespace sm {
 
 typedef struct MCU_PACK {
-	u16 hibernation_threshold;
-	u16 update_period;
-	u16 refresh_wait_resolution;
-	u16 period;
+    u16 hibernation_threshold_msec;
+    u16 update_period_msec;
+    u16 refresh_wait_resolution_usec;
+    u16 period_msec;
 } event_loop_attr_t;
 
 
@@ -32,7 +31,7 @@ public:
 	operator event_loop_attr_t() const { return m_attr; }
 
 	/*! \details Accesses the hibernate timeout in milliseconds. */
-	u16 hibernation_threshold() const { return m_attr.hibernation_threshold; }
+    u16 hibernation_threshold() const { return m_attr.hibernation_threshold_msec; }
 
 	/*! \details Sets the hibernate threshold in milliseconds.
 	 *
@@ -63,13 +62,14 @@ public:
 	 *
 	 *
 	 */
-	void set_hibernation_threshold(u16 msec) { m_attr.hibernation_threshold = msec; }
+    void set_hibernation_threshold(const sys::MicroTime & value){ m_attr.hibernation_threshold_msec = value.msec(); };
+    void set_hibernation_threshold(u16 msec) { m_attr.hibernation_threshold_msec = msec; }
 
 	/*! \details Accesses the period for firing the Event::UPDATE in milliseconds. */
-	u16 update_period() const { return m_attr.update_period; }
+    u16 update_period() const { return m_attr.update_period_msec; }
 
 	/*! \details Accesses the minimum period of the event loop in milliseconds. */
-	u16 period() const { return m_attr.period; }
+    u16 period() const { return m_attr.period_msec; }
 
 	/*! \details Sets the period of the event loop in milliseconds.
 	 *
@@ -81,7 +81,7 @@ public:
 	 * is handled.
 	 *
 	 */
-	void set_period(u16 msec){ m_attr.period = msec; }
+    void set_period(u16 msec){ m_attr.period_msec = msec; }
 
 
 	/*! \details Sets the Event::UPDATE period which defines
@@ -94,7 +94,7 @@ public:
 	 * will be called on every loop at the loop period interval.
 	 *
 	 */
-	void set_update_period(u16 msec){ m_attr.update_period = msec; }
+    void set_update_period(u16 msec){ m_attr.update_period_msec = msec; }
 
 	/*! \details Accesses the display refresh wait resolution time in microseconds.
 	 *
@@ -103,7 +103,7 @@ public:
 	 * between polling events to the display driver.
 	 *
 	 */
-	u16 refresh_wait_resolution() const { return m_attr.refresh_wait_resolution; }
+    u16 refresh_wait_resolution() const { return m_attr.refresh_wait_resolution_usec; }
 
 	/*! \details Sets the value of the display refresh wait resolution in microseconds.
 	 *
@@ -111,7 +111,7 @@ public:
 	 *
 	 * See refresh_wait_resolution() for more details.
 	 */
-	void set_refresh_wait_resolution(u16 usec){ m_attr.refresh_wait_resolution = usec; }
+    void set_refresh_wait_resolution(u16 usec){ m_attr.refresh_wait_resolution_usec = usec; }
 
 protected:
 	event_loop_attr_t m_attr;
@@ -226,6 +226,18 @@ public:
 	 *
 	 */
 	virtual void process_events() = 0;
+
+    /*! \details Is executed when the event handler returns a null event and
+     * the current event is set to null.
+     *
+     * @param last_event_handler The event handler that returned a null handler.
+     *
+     * The default behavior is to exit from the EventLoop (execute() method). This
+     * method can be reimplemented by the application to update the event handler
+     * based on the value and state of last_event_handler.
+     *
+     */
+    virtual EventHandler * catch_null_handler(EventHandler * last_event_handler){ return 0; }
 
     //maybe these should be private and accessed through Friends?
     static EventHandler * handle_event(EventHandler * current_event_handler, const Event & event, EventLoop * event_loop = 0);

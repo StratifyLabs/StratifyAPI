@@ -12,6 +12,7 @@
 #endif
 
 #include "../var/String.hpp"
+#include "../sys/Timer.hpp" //for sys::MicroTime
 
 
 namespace fmt {

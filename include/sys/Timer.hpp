@@ -6,6 +6,8 @@
 #include <mcu/types.h>
 #include <time.h>
 
+#include "MicroTime.hpp"
+
 #ifdef __MCU_ONLY__
 #include "hal/Tmr.hpp"
 #endif
@@ -23,7 +25,6 @@ namespace sys {
  * Here is an example of using the timer to time events.
  * \code
  * #include <sapi/sys.hpp>
- *
  *
  * int main(int argc, char * argv[]){
  * 	Timer t;
@@ -58,13 +59,29 @@ public:
 	 *
 	 * @param timeout Time to wait in milliseconds
 	 */
-	static void wait_msec(u32 timeout);
+    static void wait_msec(u32 timeout){ wait(MicroTime::from_msec(timeout)); }
 
 	/*! \details This method will delay the specified number of microseconds.
 	 *
 	 * @param timeout Time to wait in microseconds
 	 */
-	static void wait_usec(u32 timeout);
+    static void wait_usec(u32 timeout){ wait(timeout); }
+
+    /*! \details This method will delay based on the specified MicroTime object.
+     *
+     * @param timeout The A reference to the MicroTime object.
+     *
+     * Here are some examples:
+     *
+     * \code
+     * Timer::wait(MicroTime::from_msec(100)); //delay 100 milliseconds
+     * Timer::wait(1000); //delay 1000 microseconds -- MicroTime() is auto constructed using microseconds
+     * Timer::wait(MicroTimer::from_sec(5)); //delay for 5 seconds
+     * \endcode
+     *
+     *
+     */
+    static void wait(const MicroTime & micro_time);
 
 
 #if !defined __link
@@ -137,6 +154,13 @@ public:
 	 */
 	bool is_reset() const { return m_stop.tv_sec == 0; }
 
+    /*! \details Returns the value of the Timer as
+     * a MicroTime object.
+     */
+    MicroTime calc_value() const;
+
+    /*! \details Equivalent to calc_value(). */
+    MicroTime value() const { return calc_value(); }
 
 
 	/*! \details Resets the value of the timer.
@@ -153,7 +177,7 @@ public:
 	 * can be read when the timer is running to get a live value or after it has
 	 * been stopped to get the time elapsed between start() and stop()
 	 */
-	u32 calc_msec() const;
+    u32 calc_msec() const { return calc_value().msec(); }
 
 	/*! \details Is equivalent to calc_msec(). */
 	u32 msec() const { return calc_msec(); }
