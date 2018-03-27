@@ -9,83 +9,168 @@
 namespace sm {
 
 class State;
+class StateMachine;
+class Condition;
+class Action;
 
-class Condition {
+class Object {
 public:
+    //when an object is contructed -- add the item to a list
+    Object(StateMachine & state_machine);
 
     virtual const char * name() = 0;
-    virtual bool is_true() const = 0;
+    typedef enum {
+        TYPE_OBJECT,
+        TYPE_CONDITION,
+        TYPE_STATE,
+        TYPE_ACTION,
+        TYPE_MACHINE
+    } type_t;
 
-    State * target_state(){
-        return m_target_state;
-    }
+    virtual const type_t type() const { return TYPE_OBJECT; };
+    StateMachine & state_machine(){ return m_state_machine; }
+
+private:
+    StateMachine & m_state_machine; // a pointer to the owning machine
+};
+
+
+class Condition : public Object {
+public:
+
+    Condition(StateMachine & state_machine) : Object(state_machine){}
+    virtual bool is_true() const = 0;
+    const type_t type() const { return TYPE_CONDITION; }
 
 protected:
-    void set_state(State * target_state){
-        m_target_state = target_state;
-    }
 
 private:
-    State * m_target_state;
 
 };
 
-class TimerCondition : public Condition {
+class Action : public Object {
+public:
+    Action(StateMachine & state_machine) : Object(state_machine){}
+    const type_t type() const { return TYPE_ACTION; }
+    virtual void execute() = 0;
+
+private:
+
+};
+
+
+class State : public Object {
 public:
 
-    TimerCondition(sys::Timer & timer) : m_timer(timer){}
+    State(StateMachine & state_machine) : Object(state_machine){}
 
-    bool is_true() const {
-        return m_timer.calc_value() >= timeout();
-    }
+    const type_t type() const { return TYPE_STATE; }
 
-    void set_timeout(const sys::MicroTime & value){
-        m_timeout = value;
-    }
+    /*! \details Adds an exit condition that determines
+     * when to transition to another state.
+     *
+     *
+     */
+    void add_exit_condition(const Condition & condition, const State & state, const Action & action);
 
-    const sys::MicroTime & timeout() const {
-        return m_timeout;
-    }
+    /*! \details Adds a action that is executed every time
+     * the state is entered.
+     *
+     * @param action A reference to the action to add.
+     *
+     */
+    void add_entry_action(const Action & action);
+
+    /*! \details Adds a action that is executed every time
+     * the state is exited.
+     *
+     * @param action A reference to the action to add.
+     *
+     */
+    void add_exit_action(const Action & action);
+
+    /*! \details Adds an action that is executed
+     * periodically while the state is active.
+     *
+     * @param action A reference to the action to add.
+     *
+     */
+    void add_action(const Action & action);
 
 private:
-    sys::Timer & m_timer;
-    sys::MicroTime m_timeout;
+
+    friend class StateMachine;
+    void execute_action();
+    void execute_entry_action();
+    State * check_exit_condition();
+
+    //list of entry actions
+    //list of actions
+    //list of exit conditions, exit actions, and exit states
+
 };
 
-class Action {
+class NoAction: public Action {
 public:
-    virtual const char * name() const = 0;
+    NoAction(StateMachine & state_machine) : Action(state_machine){}
 
-private:
-
+    void execute(){
+        //does nothing
+    }
 };
 
-
-class State {
+class StateMachine : public Object {
 public:
-    virtual const char * name() const = 0;
 
+    StateMachine();
+
+    virtual void execute_action();
+
+    void execute();
+
+    //set the active state by name
+    void set_state(const char * name);
+
+    //set the active state by reference value
+    void set_state(const State * state);
+
+    void generate_dot_code();
+
+    //search for a state by name
+    State * get_state(const char * name);
+
+    void append_state(Object & state);
+    void append_condition(Object & condition);
+    void append_action(Object & action);
 
 private:
 
-    //pointer list to entry actions
-    //pointer list to conditions
+
+
+    State * active_state();
+
+    State * m_active_state;
+
+    //list of conditions -- need to create var::List
+    //list of actions
+    //list of states
 
 };
 
-/*! \brief State Machine Class
+
+/*! \brief Simple State Machine Class
  * \details This class implements a simple state machine. The state
  * machine will execute a method based on the state.
  *
  *
  */
-template<class container_class, typename return_type, typename...args> class StateMachine {
+template<class container_class, typename return_type, typename...args> class SimpleStateMachine {
 public:
 
     /*! \details Defines the method type to execute with each state. */
     typedef return_type (container_class::*state_method_t)(args...);
 
-    StateMachine(u32 count = 0){
+    SimpleStateMachine(u32 count = 0){
         m_table_count = 0;
         m_state = 0;
         if( count ){
@@ -111,7 +196,6 @@ public:
             }
         }
     }
-
 
     /*! \details Returns true if the current state is valid. */
     bool is_state_valid() const { return m_state < count(); }
