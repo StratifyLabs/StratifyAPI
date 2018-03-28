@@ -1,7 +1,8 @@
 
 set(SOURCES
-  ${SOURCES_PREFIX}/Data.cpp
-  ${SOURCES_PREFIX}/Flags.cpp
+	${SOURCES_PREFIX}/Data.cpp
+	${SOURCES_PREFIX}/Vector.cpp
+	${SOURCES_PREFIX}/Flags.cpp
   ${SOURCES_PREFIX}/Item.cpp
   ${SOURCES_PREFIX}/JsonString.cpp
   ${SOURCES_PREFIX}/Ring.cpp

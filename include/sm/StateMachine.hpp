@@ -27,7 +27,7 @@ public:
         TYPE_MACHINE
     } type_t;
 
-    virtual const type_t type() const { return TYPE_OBJECT; };
+    virtual const type_t type() const { return TYPE_OBJECT; }
     StateMachine & state_machine(){ return m_state_machine; }
 
 private:
