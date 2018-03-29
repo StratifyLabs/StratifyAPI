@@ -42,7 +42,7 @@
  *  button.init(Pin::FLAG_SET_INPUT | Pin::FLAG_IS_PULLUP); //pin 9 is an input (pulled high)
  *
  *  //toggle p until the button is pressed
- *  while( button.value() != 0 ){
+ *  while( button.get_value() != 0 ){
  *   p = false;
  *  	 Timer::wait_msec(100);
  *  	 p = true;

@@ -15,6 +15,8 @@ namespace var {}
 #include "var/JsonString.hpp"
 #include "var/Item.hpp"
 #include "var/Ring.hpp"
+#include "var/LinkedList.hpp"
+#include "var/Queue.hpp"
 #include "var/String.hpp"
 #include "var/StringUtil.hpp"
 #include "var/Token.hpp"

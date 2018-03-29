@@ -128,6 +128,22 @@ public:
 		return *this;
 	}
 
+    /*! \details Returns true if the pin is high and false if it is low.
+     *
+     * This allows the following code to work:
+     * \code
+     * Pin button;
+     *
+     * if( button ){
+     *   printf("Button is logic high\n");
+     * } else {
+     *   printf("Button is logic low\n");
+     * }
+     * \endcode
+     *
+     */
+    operator bool(){ return get_value(); }
+
 	/*! \details Assigns a boolean to the pin.
 	 *
 	 * @param value If true, sets the pin high
