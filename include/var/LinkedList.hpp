@@ -52,6 +52,12 @@ public:
      */
     void pop_front();
 
+    /*! \details Clears the list.
+     *
+     * A call to is_empty() will return true after
+     * calling clear().
+     *
+     */
     void clear();
 
     /*! \details Counts the number if items in
@@ -59,9 +65,9 @@ public:
      */
     u32 count() const;
 
-    bool is_empty() const { return m_front == 0; }
+    /*! \details Returns true if the list is empty. */
+    bool is_empty() const { return (m_front == 0); }
 
-    bool empty() const{ return is_empty(); }
 
 private:
     u16 m_size;
@@ -77,32 +83,22 @@ private:
     item_t * m_back;
 
     static void * data(const item_t * item){
-        if( item ){
-            return (void*)(item + 1);
-        }
+        if( item ){ return (void*)(item + 1); }
         return 0;
     }
 
     static item_t * next(const item_t * item){
-        if( item ){
-            return (item_t*)item->next;
-        }
+        if( item ){ return (item_t*)item->next; }
         return 0;
     }
 
     static item_t * previous(const item_t * item){
-        if( item ){
-            return (item_t*)item->previous;
-        }
+        if( item ){ return (item_t*)item->previous; }
         return 0;
     }
 
-    item_t * new_item(){
-        return (item_t*)malloc(calc_item_size());
-    }
-
+    item_t * new_item(){ return (item_t*)malloc(calc_item_size()); }
     u16 calc_item_size() const { return sizeof(item_t) + m_size; }
-
 
 };
 
