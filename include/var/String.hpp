@@ -188,7 +188,7 @@ public:
 	 *
 	 * @return The total number of characters written to the stdout
 	 */
-	int printf(){ return ::printf("%s", c_str()); }
+    int printf(){ return ::printf("%s", str()); }
 
 
 	/*! \details Returns the capacity of the string.
@@ -203,18 +203,22 @@ public:
 	u32 capacity() const;
 
 	/*! \details Returns a c-style string pointer. */
-	const char * c_str() const { return cdata_const(); }
+    const char * str() const { return cdata_const(); }
+    //compatible with std::string (but not Stratify API convertion)
+    const char * c_str() const { return cdata_const(); }
 
 	/*! \details Returns the length of the string. */
 	u32 size() const { return strlen(c_str()); }
 
 	/*! \details Returns the length of the string. */
 	u32 length() const { return size(); }
+    //compatible with std::string
 	u32 len() const { return size(); }
 
 	/*! \details Tests if string is empty. */
 	bool is_empty() const { return size() == 0; }
-	bool empty() const { return size() == 0; }
+    //compatible with std::string
+    bool empty() const { return size() == 0; }
 
 	/*! \details Assigns a substring of \a a to string. */
 	void assign(const char * a, u32 subpos, u32 sublen){ assign(a + subpos, sublen); }
@@ -292,31 +296,49 @@ private:
  * \details This template is used for declaring fixed length strings.
  */
 template <unsigned int arraysize>
-class StringStatic : public String {
+class StaticString : public String {
 public:
-	StringStatic() : String(s, arraysize+1, false){ clear(); }
-	StringStatic(const char * str) : String(s, arraysize+1, false){ assign(str); }
-	StringStatic(const String & str) : String(s, arraysize+1, false){ assign(str); }
+    StaticString() : String(s, arraysize+1, false){ clear(); }
+    StaticString(const char * str) : String(s, arraysize+1, false){ assign(str); }
+    StaticString(const String & str) : String(s, arraysize+1, false){ assign(str); }
 
 private:
 	char s[arraysize+1];
 };
 
-/*! \details String for file names */
-class StringName : public String {
+//deprecated
+template <unsigned int arraysize>
+class StringStatic : public String {
 public:
-	StringName() : String(LINK_NAME_MAX){}
+    StringStatic() : String(s, arraysize+1, false){ clear(); }
+    StringStatic(const char * str) : String(s, arraysize+1, false){ assign(str); }
+    StringStatic(const String & str) : String(s, arraysize+1, false){ assign(str); }
+
+private:
+    char s[arraysize+1];
 };
 
-/*! \details String for path names */
-class StringPath : public String {
+/*! \details String for file names */
+class NameString : public String {
 public:
-	StringPath() : String(LINK_PATH_MAX){}
+    NameString() : String(LINK_NAME_MAX){}
+};
+
+//deprecated
+typedef NameString StringName;
+
+/*! \details String for path names */
+class PathString : public String {
+public:
+    PathString() : String(LINK_PATH_MAX){}
 
 	void strip_suffix();
 	const char * file_name() const;
 	const char * filename() const { return file_name(); }
 };
+
+//deprecated
+typedef PathString StringPath;
 
 
 }

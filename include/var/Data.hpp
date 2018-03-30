@@ -15,7 +15,6 @@ namespace var {
  * \code
  * #include <sapi/var.hpp>
  *
- *
  * const char buffer_const[16];
  * char buffer[16];
  *
@@ -49,9 +48,9 @@ public:
 	 * methods will have no effect.
 	 *
 	 */
-	Data(void * mem, u32 size, bool readonly = false); //read/write bitmap
+    Data(void * mem, u32 size, bool readonly = false);
 
-	/*! \details Constructs data oject with dynamically allocated memory with \a size bytes (resizeable)
+    /*! \details Constructs data with dynamically allocated memory with \a size bytes (resizeable)
 	 *
 	 *  @param size The number of bytes to allocate
 	 *
@@ -60,7 +59,8 @@ public:
 
 	/*! \details Deconstructs a Data object.
 	 *
-	 * This method will free any data that was allocated dynamically.
+     * This method will free any data that was allocated dynamically by this object.
+     *
 	 *
 	 */
 	virtual ~Data();
@@ -106,45 +106,45 @@ public:
 	 */
 	int resize(u32 size) { return alloc(size, true); }
 
-	/*! \details Sets the capacity of the data object.
+    /*! \details Dynamically allocates memory for the data object.
 	 *
-	 * @param s The number of minimum bytes needed
+     * @param s The number of minimum bytes to allocate
 	 * @return Zero on success
 	 *
-	 *
-	 * If the memory was specified using the set() method, this will return an error.
+     * If the memory was specified using the set() method,
+     * this will return an error.
 	 *
 	 * If the current capacity is less than \a s, the object will
 	 * be resized. Otherwise, the data will
 	 *
 	 */
-	int set_capacity(u32 s);
+    int set_capacity(u32 s);
 
-	/*! \details Retrieve a pointer to the data.
+    /*! \details Returns a pointer to the data.
 	 * This will return zero if the data is readonly.
 	 *
 	 * \sa set()
 	 */
 	void * data() const { return m_mem_write; }
 
-	/*! \details Retrieve a char pointer to the data.
+    /*! \details Returns a char pointer to the data.
 	 * This will return zero if the data is readonly.
 	 *
 	 * \sa set()
 	 */
 	char * cdata() const { return (char *)m_mem_write; }
 
-	/*! \details Retrieve a pointer to const char data.
+    /*! \details Returns a pointer to const char data.
 	 */
 	const char * cdata_const() const { return (const char *)m_mem; }
 
-	/*! \details Retrieve a pointer to const data. This will return the
+    /*! \details Returns a pointer to const data. This will return the
 	 * memory pointer whether the memory is read-only or read-write.
 	 *
 	 */
 	const void * data_const() const { return m_mem; }
 
-	/*! \details This method will return the current capcity of the data storage object.
+    /*! \details Returns the current capcity of the data storage object.
 	 *
 	 * @return Number of bytes in the data object
 	 */
@@ -174,8 +174,8 @@ public:
 	/*! \details For top level data objects this is the
 	 * same as capacity().  Other objects may re-implement
 	 * to change how much user data is available.  For example,
-	 * Var::String will return the size of the string rather
-	 * than the capacity of the data object
+     * var::String will return the size of the string rather
+     * than the capacity of the data object.
 	 *
 	 * @return The number of bytes availabe in a data object
 	 *

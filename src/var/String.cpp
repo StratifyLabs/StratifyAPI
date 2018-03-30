@@ -330,22 +330,22 @@ int String::compare(u32 pos, u32 len, const char * s){
 
 int String::compare(u32 pos, u32 len, const char * s, u32 n) const {
 	int l;
-	const char * str;
+    const char * str_at_position;
 	if( s == 0 ){
 		return npos;
 	}
 
-	str = &(c_str()[pos]);
+    str_at_position = &(c_str()[pos]);
 
-	l = strlen(str);
+    l = strlen(str_at_position);
 	if( l != (int)n ){
 		return l - n;
 	}
 
-	return strncmp(str, s, n);
+    return strncmp(str_at_position, s, n);
 }
 
-void StringPath::strip_suffix(){
+void PathString::strip_suffix(){
 	u32 dot;
 	dot = rfind('.');
 	if( dot != npos ){
@@ -353,7 +353,7 @@ void StringPath::strip_suffix(){
 	}
 }
 
-const char * StringPath::file_name() const{
+const char * PathString::file_name() const{
 	u32 slash;
 	slash = rfind('/');
 	if( slash != npos ){

@@ -14,8 +14,11 @@
 #include "var/Data.hpp"
 using namespace var;
 
+//This is here so that by default that data can point to a null value rather than be a null value
 const int Data::m_zero_value = 0;
 
+//this value corresponds to the malloc chunk size used in Stratify OS
+//this may be something that could be determined through a system call
 #define MIN_CHUNK_SIZE 56
 
 u32 Data::minimum_size(){
