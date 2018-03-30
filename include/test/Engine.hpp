@@ -1,5 +1,5 @@
-#ifndef ENGINE_HPP
-#define ENGINE_HPP
+#ifndef TEST_ENGINE_HPP
+#define TEST_ENGINE_HPP
 
 #include "Test.hpp"
 

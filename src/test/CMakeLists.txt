@@ -2,4 +2,5 @@
 set(SOURCES
   ${SOURCES_PREFIX}/Case.cpp
 	${SOURCES_PREFIX}/Engine.cpp
+	${SOURCES_PREFIX}/Test.cpp
 	PARENT_SCOPE)

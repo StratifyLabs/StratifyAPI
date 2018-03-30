@@ -6,83 +6,48 @@
 #include <cstring>
 #include <limits.h>
 
-#include "../sys/Timer.hpp"
+#include "Test.hpp"
 
 namespace test {
 
-template<typename return_type, typename...args> class Function {
+template<typename return_type, typename...args> class Function : public Test {
 public:
 
-    Function(const char * function_name, return_type (*function)(args...)){
+    Function(const char * function_name, return_type (*function)(args...)) : Test(function_name){
         m_function = function;
-        printf("\"%s\": {\n", function_name);
-        m_is_first = true;
     }
 
-    ~Function(){
-        printf("\n}\n");
-    }
-
-
-
-    void set(const char * function_name, return_type (*function)(args...)){
-        if( m_function != function ){
-            //close the previous one
-            printf("\n}\n");
-            //start the new one
-            m_function = function;
-            printf("\"%s\": {\n", function_name);
-            m_is_first = true;
-        }
-    }
+    ~Function(){}
 
     return_type execute(const char * case_name, return_type expected_value, int expected_errno, args... arguments){
-        sys::Timer t;
         return_type return_value;
+        bool result;
         errno = 0;
-        t.start();
-        return_value = m_function(arguments...);
-        t.stop();
 
-        if( m_is_first == false ){
-            printf(",\n");
-        } else {
-            m_is_first = false;
-        }
-        printf("\"%s\": {", case_name);
+        open_case(case_name);
+
+        case_timer().start();
+        return_value = m_function(arguments...);
+        case_timer().stop();
 
 
         if( (return_value != expected_value) || (expected_errno != errno) ){
-            m_result = false;
-            printf("\"result\": \"failed\",\n", case_name);
-            printf("\"expected return\": \"%d\",\n", expected_value);
-            printf("\"actual return\": \"%d\",\n", return_value);
-            printf("\"expected errno\": \"%d\",\n", expected_errno);
-            printf("\"actual errno\": \"%d\",\n", errno);
+            result = false;
+            set_case_value("expected return", expected_value);
+            set_case_value("actual return", return_value);
+            set_case_value("expected errno", expected_errno);
+            set_case_value("actual errno", errno);
         } else {
-            m_result = true;
-            printf("\"result\": \"success\",\n");
+            result = true;
         }
 
-        m_execution_time = t.calc_usec();
-        printf("\"execution time\": \"%ld\"\n", m_execution_time);
-        printf("}");
+        set_case_result(result);
+        close_case();
         return return_value;
-    }
-
-    u32 execution_time() const {
-        return m_execution_time;
-    }
-
-    bool result() const {
-        return m_result;
     }
 
 
 private:
-    u32 m_execution_time;
-    bool m_result;
-    bool m_is_first;
     return_type (*m_function)(args...);
 };
 

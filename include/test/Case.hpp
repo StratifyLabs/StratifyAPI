@@ -1,5 +1,5 @@
-#ifndef TESTCASE_HPP
-#define TESTCASE_HPP
+#ifndef TEST_CASE_HPP
+#define TEST_CASE_HPP
 
 namespace test {
 
@@ -13,4 +13,4 @@ public:
 
 }
 
-#endif // TESTCASE_HPP
+#endif // TEST_CASE_HPP
