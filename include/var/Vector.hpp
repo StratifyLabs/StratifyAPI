@@ -9,7 +9,6 @@ namespace var {
  * \details The Vector class
  * is similar to std::vector but is embedded friendly.
  *
- * THe
  *
  */
 template<typename T> class Vector : public Data {
