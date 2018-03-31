@@ -1,11 +1,10 @@
-//Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+//Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 
-#include <stdint.h>
+#include <errno.h>
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
-#include <mcu/types.h>
 
 #if !defined __link
 #include <reent.h>
@@ -92,6 +91,7 @@ int Data::alloc(u32 s, bool resize){
 
 	new_data = malloc(s);
 	if( new_data == 0 ){
+        set_error_number(errno);
 		return -1;
 	}
 

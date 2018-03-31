@@ -19,12 +19,17 @@ FileInfo::FileInfo() {
 #endif
 
 int FileInfo::get_info(const char * path){
-
+    int ret;
 #if defined __link
-	return File::stat(path, &m_stat, m_driver);
+    ret = File::stat(path, &m_stat, m_driver);
 #else
-	return File::stat(path, &m_stat);
+    ret = File::stat(path, &m_stat);
 #endif
+    if( ret < 0 ){
+        set_error_number(errno);
+    }
+
+    return ret;
 }
 
 

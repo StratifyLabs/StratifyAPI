@@ -8,10 +8,11 @@
 #include <pthread.h>
 #include <signal.h>
 #include <sos/sos.h>
+#include "../api/SObject.hpp"
 
 #include <mcu/mcu.h>
 
-#include "../ui/Event.hpp"
+#include "../ev/Event.hpp"
 
 namespace sys {
 
@@ -83,7 +84,7 @@ private:
 };
 
 /*! \brief Class for sending Signal events (see SignalHandler for an example) */
-class Signal {
+class Signal : public api::SObject {
 public:
 
 	enum {
@@ -129,7 +130,7 @@ public:
 	Signal(int signo, int sigvalue = 0){ m_signo = signo; m_sigvalue.sival_int = sigvalue; }
 
 	/*! \details Returns a UI Event based on this signal event. */
-	ui::Event event(){ return ui::Event(ui::Event::SIGNAL, this); }
+    ev::Event event(){ return ev::Event(ev::Event::SIGNAL, this); }
 
 	/*! \details Sends a signal to a process.
 	 *

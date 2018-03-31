@@ -1,7 +1,9 @@
 #ifndef CHECKSUM_HPP
 #define CHECKSUM_HPP
 
-#include <mcu/types.h>
+
+#include "../api/SObject.hpp"
+
 
 namespace  calc {
 
@@ -10,7 +12,7 @@ namespace  calc {
  * \details The Checksum class is purely static and provides methods
  * for calculating and verifying checksums on data structures.
  */
-class Checksum {
+class Checksum : public api::SObject {
 public:
 
 

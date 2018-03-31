@@ -2,6 +2,7 @@
 #define TEST_FUNCTION_HPP
 
 #include <mcu/types.h>
+#include <errno.h>
 #include <cstdio>
 #include <cstring>
 #include <limits.h>
@@ -41,8 +42,7 @@ public:
             result = true;
         }
 
-        set_case_result(result);
-        close_case();
+        close_case(result);
         return return_value;
     }
 

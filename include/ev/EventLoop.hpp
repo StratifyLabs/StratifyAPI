@@ -5,6 +5,7 @@
 #ifndef SM_EVENTLOOP_HPP_
 #define SM_EVENTLOOP_HPP_
 
+#include "../api/SObject.hpp"
 #include "../sys/Timer.hpp"
 #include "EventHandler.hpp"
 #include "Event.hpp"
@@ -142,7 +143,7 @@ protected:
  *
  *
  */
-class EventLoop: public EventLoopAttr {
+class EventLoop: public EventLoopAttr, public api::SObject {
 public:
 
     /*! \details Constructs a new headless (no display) event loop.

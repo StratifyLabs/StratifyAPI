@@ -2,13 +2,16 @@
 #define TEST_ENGINE_HPP
 
 #include "Test.hpp"
+#include "../var/Queue.hpp"
 
 namespace test {
 
-class Engine
-{
+class Engine : public var::Queue<Test*>{
 public:
     Engine();
+
+
+
 };
 
 }

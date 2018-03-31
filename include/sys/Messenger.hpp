@@ -4,6 +4,7 @@
 #define MESSENGER_HPP_
 
 #include <pthread.h>
+#include "../api/SObject.hpp"
 #include "Thread.hpp"
 #include "../fmt/Son.hpp"
 #include "File.hpp"
@@ -15,7 +16,7 @@ namespace sys {
  * \details This class creates a new thread dedicated to handling message passing.
  *
  */
-class Messenger {
+class Messenger : public api::SObject {
 public:
 
 	enum {

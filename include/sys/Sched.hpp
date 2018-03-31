@@ -14,12 +14,13 @@
 namespace sys {
 
 /*! \brief Sched Class
- * \details This Class gives control over the
- * priority of a process.
+ * \details The Sched class is used
+ * to change the scheduing policy of the current
+ * thread or process.
+ *
  */
 class Sched {
 public:
-
 
 	enum policy {
 		RR /*! Round Robin style (task yields periodically) */ = SCHED_RR,

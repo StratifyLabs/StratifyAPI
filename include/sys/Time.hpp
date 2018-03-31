@@ -3,8 +3,9 @@
 #ifndef TIME_HPP_
 #define TIME_HPP_
 
+
 #include <ctime>
-#include <mcu/types.h>
+#include "../api/SObject.hpp"
 
 namespace sys {
 

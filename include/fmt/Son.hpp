@@ -3,7 +3,6 @@
 #ifndef SON_HPP_
 #define SON_HPP_
 
-#include <mcu/types.h>
 #include <cstring>
 #include <sapi/son.h>
 
@@ -11,6 +10,7 @@
 #include <sos/link.h>
 #endif
 
+#include "../api/SObject.hpp"
 #include "../var/String.hpp"
 #include "../sys/Timer.hpp" //for sys::MicroTime
 
@@ -89,7 +89,7 @@ namespace fmt {
  *  be in float format.
  *
  */
-class Son {
+class Son : public api::SObject {
 public:
 
 	/*! \details Constructs a new SON object. */

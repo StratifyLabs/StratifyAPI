@@ -1,14 +1,15 @@
 /*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
-#ifndef FILE_HPP_
-#define FILE_HPP_
+#ifndef SYS_FILE_HPP_
+#define SYS_FILE_HPP_
 
 #include <sos/link.h>
 #include <fcntl.h>
 
+#include "../api/SObject.hpp"
+
 #ifndef __link
 #include <unistd.h>
-#include "../sys/File.hpp"
 #include "../sys/Aio.hpp"
 #define MCU_INT_CAST(var) ((void*)(u32)var)
 #else
@@ -60,15 +61,13 @@ namespace sys {
  * \endcode
  *
  */
-class File {
+class File : public api::SObject {
 public:
 
 #if defined __link
 	File(link_transport_mdriver_t * d);
-	File();
-#else
-	File();
 #endif
+    File();
 
 	/*! \details These values are used as flags when opening devices or files */
 	enum {
@@ -370,4 +369,4 @@ protected:
 
 }
 
-#endif /* FILE_HPP_ */
+#endif /* SYS_FILE_HPP_ */

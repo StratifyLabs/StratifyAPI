@@ -3,6 +3,7 @@
 #ifndef SYS_CLI_HPP_
 #define SYS_CLI_HPP_
 
+#include "../api/SObject.hpp"
 #include "../hal/Uart.hpp"
 #include "../hal/I2C.hpp"
 #include "../hal/Pwm.hpp"
@@ -18,12 +19,12 @@ namespace sys {
  * \details This class contains methods to help analyze input from the
  * command line.
  */
-class Cli {
+class Cli : public api::SObject {
 public:
 
 	enum {
-		FORMAT_TEXT /*! Displays messages as plain text */,
-		FORMAT_JSON /*! Display messages as JSON formatted strings */,
+        FORMAT_TEXT,
+        FORMAT_JSON,
 		FORMAT_TOTAL
 	};
 

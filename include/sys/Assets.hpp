@@ -4,6 +4,7 @@
 #ifndef SYS_ASSETS_HPP_
 #define SYS_ASSETS_HPP_
 
+#include "../api/SObject.hpp"
 #include "../sgfx/Font.hpp"
 #include "../sgfx/Vector.hpp"
 

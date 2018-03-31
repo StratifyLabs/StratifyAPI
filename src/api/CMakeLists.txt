@@ -1,0 +1,4 @@
+
+set(SOURCES
+  ${SOURCES_PREFIX}/SObject.cpp
+  PARENT_SCOPE)

@@ -9,6 +9,7 @@ using namespace var;
 namespace sys {
 
 Cli::Cli(int argc, char * argv[]){
+    u16 version;
 	if( argc < 0 ){
 		argc = 0;
 	}
@@ -18,17 +19,16 @@ Cli::Cli(int argc, char * argv[]){
 	if( argc > 0 ){
 		m_path = argv[0];
 		m_name = File::name(argv[0]);
+        version = Appfs::get_version(m_path);
+
+        m_version.sprintf("%d.%d", version >> 8, version & 0xff);
 	}
 }
 
 void Cli::handle_version() const {
 #if !defined __link
-	if( is_option("--version") || is_option("-v") ){
-		u16 version;
-		String tmp;
-		version = Appfs::get_version(m_path);
-		tmp.sprintf("%d.%d", version >> 8, version & 0xff);
-		printf("%s version: %s by %s\n", m_name.c_str(), tmp.c_str(), m_publisher.c_str());
+    if( is_option("--version") || is_option("-v") ){
+        printf("%s version: %s by %s\n", m_name.str(), m_version.str(), m_publisher.str());
 		exit(0);
 	}
 #endif

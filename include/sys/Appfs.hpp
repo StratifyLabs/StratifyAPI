@@ -4,6 +4,7 @@
 #define APPFS_HPP_
 
 #include <sos/link.h>
+#include "../api/SObject.hpp"
 #include "../var/String.hpp"
 
 namespace sys {

@@ -3,6 +3,8 @@
 #ifndef PID_HPP_
 #define PID_HPP_
 
+#include "../api/SObject.hpp"
+
 namespace calc {
 
 /*! \brief PID Control Loop Class (float)

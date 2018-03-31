@@ -4,9 +4,11 @@
 #ifndef SYS_FILEINFO_HPP_
 #define SYS_FILEINFO_HPP_
 
+#include "../api/SObject.hpp"
+
 namespace sys {
 
-class FileInfo {
+class FileInfo : public api::SObject{
 public:
 #if defined __link
 	FileInfo(link_transport_mdriver_t * d);

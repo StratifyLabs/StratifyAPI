@@ -21,6 +21,10 @@ if( ${SOS_BUILD_CONFIG} STREQUAL arm )
 
 endif()
 
+set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/api)
+add_subdirectory(api)
+list(APPEND SOURCELIST ${SOURCES})
+
 set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/ev)
 add_subdirectory(ev)
 list(APPEND SOURCELIST ${SOURCES})

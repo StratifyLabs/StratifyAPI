@@ -9,7 +9,7 @@
 #define VAR_RING_HPP_
 
 #include <sys/types.h>
-#include <mcu/types.h>
+#include "../api/SObject.hpp"
 
 namespace var {
 
@@ -18,7 +18,7 @@ namespace var {
  * \details Ring is a ring buffer (or circular buffer)
  * that uses a local memory buffer for the data.
  */
-class Ring {
+class Ring : public api::SObject {
 public:
 	/*! \details Constructs a new ring buffer.
 	 *

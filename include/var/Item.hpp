@@ -3,8 +3,8 @@
 #ifndef ITEM_HPP_
 #define ITEM_HPP_
 
-#include <mcu/types.h>
 #include <cstring>
+#include "../api/SObject.hpp"
 
 namespace var {
 

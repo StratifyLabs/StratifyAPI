@@ -3,11 +3,11 @@
 #ifndef FLAGS_HPP_
 #define FLAGS_HPP_
 
-#include <mcu/types.h>
+#include "../api/SObject.hpp"
 
 namespace var {
 
-class Flags {
+class Flags : public api::SObject {
 public:
 	Flags();
 

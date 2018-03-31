@@ -3,7 +3,7 @@
 #ifndef DATA_HPP_
 #define DATA_HPP_
 
-#include <mcu/types.h>
+#include "../api/SObject.hpp"
 
 namespace var {
 
@@ -33,7 +33,7 @@ namespace var {
  *
  *
  */
-class Data {
+class Data : public api::SObject {
 public:
 	/*! \details Constructs a data object with no data */
 	Data();

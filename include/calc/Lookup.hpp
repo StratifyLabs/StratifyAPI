@@ -3,6 +3,8 @@
 #ifndef LOOKUP_HPP_
 #define LOOKUP_HPP_
 
+#include "../api/SObject.hpp"
+
 namespace calc {
 
 /*! \brief Lookup Table Template Class

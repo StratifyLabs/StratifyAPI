@@ -5,7 +5,7 @@
 
 #ifndef __link
 
-
+#include "../api/SObject.hpp"
 #include <semaphore.h>
 #include <fcntl.h>
 
@@ -29,7 +29,7 @@ namespace sys {
  * \endcode
  *
  */
-class Sem {
+class Sem : public api::SObject {
 public:
 	Sem();
 

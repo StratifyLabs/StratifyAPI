@@ -5,6 +5,7 @@
 
 #ifndef __link
 
+#include "../api/SObject.hpp"
 #include <sos/link.h>
 #include <mqueue.h>
 #include <fcntl.h>
@@ -53,7 +54,7 @@ private:
 /*! \details This class is a wrapper for POSIX message queues.
  *
  */
-class Mq {
+class Mq : public api::SObject {
 public:
 	Mq();
 

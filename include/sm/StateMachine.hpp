@@ -1,8 +1,7 @@
 #ifndef STATEMACHINE_HPP
 #define STATEMACHINE_HPP
 
-#include <mcu/types.h>
-
+#include "../api/SObject.hpp"
 #include "../var/Data.hpp"
 #include "../sys/Timer.hpp"
 
@@ -13,7 +12,7 @@ class StateMachine;
 class Condition;
 class Action;
 
-class Object {
+class Object : api::SObject {
 public:
     //when an object is contructed -- add the item to a list
     Object(StateMachine & state_machine);
@@ -144,11 +143,7 @@ public:
     void append_action(Object & action);
 
 private:
-
-
-
     State * active_state();
-
     State * m_active_state;
 
     //list of conditions -- need to create var::List
@@ -164,7 +159,7 @@ private:
  *
  *
  */
-template<class container_class, typename return_type, typename...args> class SimpleStateMachine {
+template<class container_class, typename return_type, typename...args> class SimpleStateMachine : public api::SObject {
 public:
 
     /*! \details Defines the method type to execute with each state. */

@@ -3,8 +3,8 @@
 #ifndef TIMER_HPP_
 #define TIMER_HPP_
 
-#include <mcu/types.h>
 #include <time.h>
+#include "../api/SObject.hpp"
 
 #include "MicroTime.hpp"
 

@@ -3,6 +3,8 @@
 #ifndef BASE64_HPP_
 #define BASE64_HPP_
 
+#include "../api/SObject.hpp"
+
 namespace calc {
 
 /*! \brief Base64 Encode/Decode Class
@@ -44,7 +46,7 @@ namespace calc {
  *
  *
  */
-class Base64 {
+class Base64 : public api::SObject {
 public:
 
 	/*! \details Encodes data to the base64 format.

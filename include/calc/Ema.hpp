@@ -3,8 +3,8 @@
 #ifndef EMA_HPP_
 #define EMA_HPP_
 
-#include <mcu/types.h>
 #include <cstdio>
+#include "../api/SObject.hpp"
 
 namespace calc {
 
@@ -50,7 +50,7 @@ namespace calc {
  * EMA filtering see <a href="http://stratifylabs.co/embedded%20design%20tips/2013/10/04/Tips-An-Easy-to-Use-Digital-Filter">this wiki article</a>.
  *
  */
-template<typename intsmall, typename intmedium, typename intlarge>class Ema {
+template<typename intsmall, typename intmedium, typename intlarge>class Ema : public api::SObject {
 public:
 	/*! \details Constructs a new Ema object.
 	 *
@@ -125,7 +125,7 @@ public:
 
 /*! \brief Exponential Moving Average class (float) */
 /*! \details See \ref Ema for details */
-class Ema_f {
+class Ema_f : public api::SObject {
 public:
 	/*! \details Constructs a EMA object for floating point calculations */
     Ema_f(float start, float alpha){ m_alpha = alpha; m_average = start; }

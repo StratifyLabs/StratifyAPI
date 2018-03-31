@@ -5,6 +5,7 @@
 #define SGFX_FONT_HPP_
 
 #include <sapi/sg_font_types.h>
+#include "../api/SObject.hpp"
 #include "Bitmap.hpp"
 
 
@@ -13,7 +14,7 @@ namespace sgfx {
 /*! \brief Font class
  *
  */
-class Font {
+class Font : public api::SObject {
 public:
 
 	Font();

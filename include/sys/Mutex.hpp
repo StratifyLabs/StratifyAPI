@@ -5,6 +5,7 @@
 
 #ifndef __link
 
+#include "../api/SObject.hpp"
 #include <pthread.h>
 #include <mcu/types.h>
 
@@ -82,7 +83,7 @@ private:
  * multi-threaded applications.
  *
  */
-class Mutex {
+class Mutex : public api::SObject {
 public:
 	/*! \details Constructs a Mutex with the default settings. */
 	Mutex();

@@ -3,8 +3,6 @@
 #ifndef RLE_HPP_
 #define RLE_HPP_
 
-#include <mcu/types.h>
-
 #include "../sys/Appfs.hpp"
 #include "../sys/File.hpp"
 

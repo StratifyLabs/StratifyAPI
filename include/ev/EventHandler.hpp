@@ -2,9 +2,10 @@
  *
  */
 
-#ifndef SM_EVENTHANDLER_HPP
-#define SM_EVENTHANDLER_HPP
+#ifndef EV_EVENTHANDLER_HPP
+#define EV_EVENTHANDLER_HPP
 
+#include "../api/SObject.hpp"
 #include "Event.hpp"
 
 namespace ui {
@@ -15,8 +16,7 @@ namespace ev {
 
 class EventLoop;
 
-class EventHandler
-{
+class EventHandler : public api::SObject {
 public:
     EventHandler();
 
@@ -51,4 +51,4 @@ private:
 
 }
 
-#endif // SM_EVENTHANDLER_HPP
+#endif // EV_EVENTHANDLER_HPP

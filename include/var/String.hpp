@@ -208,7 +208,7 @@ public:
     const char * c_str() const { return cdata_const(); }
 
 	/*! \details Returns the length of the string. */
-	u32 size() const { return strlen(c_str()); }
+    u32 size() const { return strnlen(c_str(), capacity()); }
 
 	/*! \details Returns the length of the string. */
 	u32 length() const { return size(); }

@@ -57,7 +57,7 @@ int Time::set_time_of_day(const Time & t){
 }
 
 int Time::set_time_of_day(){
-	return set_time_of_day(*this);
+    return set_time_of_day(*this);
 }
 
 time_t Time::get_time_of_day(){

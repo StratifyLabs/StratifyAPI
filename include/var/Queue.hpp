@@ -13,7 +13,7 @@ namespace var {
  * std::queue container class.
  *
  */
-template<typename T> class Queue {
+template<typename T> class Queue : public api::SObject {
 public:
 
     /*! \details Constructs a new Queue. */
