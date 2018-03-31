@@ -58,11 +58,11 @@ void Test::open_case(const char * case_name){
     }
     printf("    \"%s\": {\n", case_name);
     m_test_timer.resume();
-    case_timer().restart();
+    m_case_timer.restart();
 }
 
 void Test::close_case(bool result){
-    case_timer().stop();
+    m_case_timer.stop();
     m_test_timer.stop();
     if( result == false ){
         m_test_result = false;
@@ -71,48 +71,48 @@ void Test::close_case(bool result){
         printf("      \"result\": true,\n");
     }
 
-    printf("      \"microseconds\": %ld.0\n", case_timer().value().microseconds());
+    printf("      \"microseconds\": %ld.0\n", m_case_timer.value().microseconds());
     printf("    }");
 
 }
 
 void Test::set_case_message(const char * key, const char * message){
-    case_timer().stop();
+    m_case_timer.stop();
     m_test_timer.stop();
     printf("      \"%s\": \"%s\",\n", key, message);
-    case_timer().resume();
+    m_case_timer.resume();
     m_test_timer.resume();
 }
 
 void Test::set_case_value(const char * key, u32 value){
-    case_timer().stop();
+    m_case_timer.stop();
     m_test_timer.stop();
     printf("      \"%s\": %ld,\n", key, value);
-    case_timer().resume();
+    m_case_timer.resume();
     m_test_timer.resume();
 }
 
 void Test::set_case_value(const char * key, float value){
-    case_timer().stop();
+    m_case_timer.stop();
     m_test_timer.stop();
     printf("      \"%s\": %f,\n", key, value);
-    case_timer().resume();
+    m_case_timer.resume();
     m_test_timer.resume();
 }
 
 void Test::set_case_value(const char * key, s32 value){
-    case_timer().stop();
+    m_case_timer.stop();
     m_test_timer.stop();
     printf("      \"%s\": %ld,\n", key, value);
-    case_timer().resume();
+    m_case_timer.resume();
     m_test_timer.resume();
 }
 
 void Test::set_case_value(const char * key, int value){
-    case_timer().stop();
+    m_case_timer.stop();
     m_test_timer.stop();
     printf("      \"%s\": %d,\n", key, value);
-    case_timer().resume();
+    m_case_timer.resume();
     m_test_timer.resume();
 }
 
