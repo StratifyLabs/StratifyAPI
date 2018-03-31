@@ -57,6 +57,7 @@ void Test::open_case(const char * case_name){
         m_is_first_case = false;
     }
     printf("    \"%s\": {\n", case_name);
+    m_case_message_number = 0;
     m_test_timer.resume();
     m_case_timer.restart();
 }
@@ -76,44 +77,32 @@ void Test::close_case(bool result){
 
 }
 
-void Test::set_case_message(const char * key, const char * message){
+void Test::print_case_message(const char * fmt, ...){
     m_case_timer.stop();
-    m_test_timer.stop();
-    printf("      \"%s\": \"%s\",\n", key, message);
+    char key[16];
+    key[15] = 0; //enforce null termination
+    snprintf(key, 15, "msg-%ld", m_case_message_number);
+    m_case_message_number++;
+    va_list args;
+    va_start (args, fmt);
+    vprint_case_message(key, fmt, args);
+    va_end(args);
     m_case_timer.resume();
-    m_test_timer.resume();
 }
 
-void Test::set_case_value(const char * key, u32 value){
+void Test::print_case_message(const char * key, const char * fmt, ...){
     m_case_timer.stop();
-    m_test_timer.stop();
-    printf("      \"%s\": %ld,\n", key, value);
+    va_list args;
+    va_start (args, fmt);
+    vprint_case_message(key, fmt, args);
+    va_end(args);
     m_case_timer.resume();
-    m_test_timer.resume();
 }
 
-void Test::set_case_value(const char * key, float value){
-    m_case_timer.stop();
-    m_test_timer.stop();
-    printf("      \"%s\": %f,\n", key, value);
-    m_case_timer.resume();
-    m_test_timer.resume();
-}
-
-void Test::set_case_value(const char * key, s32 value){
-    m_case_timer.stop();
-    m_test_timer.stop();
-    printf("      \"%s\": %ld,\n", key, value);
-    m_case_timer.resume();
-    m_test_timer.resume();
-}
-
-void Test::set_case_value(const char * key, int value){
-    m_case_timer.stop();
-    m_test_timer.stop();
-    printf("      \"%s\": %d,\n", key, value);
-    m_case_timer.resume();
-    m_test_timer.resume();
+void Test::vprint_case_message(const char * key, const char * fmt, va_list args){
+    printf("      \"%s\": \"", key);
+    vprintf(fmt, args);
+    printf("\",\n");
 }
 
 void Test::initialize(const char * name, const char * version){
@@ -168,22 +157,22 @@ void Test::execute_stress_case(){
 
 void Test::execute_additional_cases(){
     open_case("additional");
-    set_case_message("message", "no additional cases");
+    print_case_message("no additional cases");
     close_case(true);
 }
 
 bool Test::execute_class_api_case(){
-    set_case_message("message", "no api case");
+    print_case_message("no api case");
     return true;
 }
 
 bool Test::execute_class_performance_case(){
-    set_case_message("message", "no performance case");
+    print_case_message("no performance case");
     return true;
 }
 
 bool Test::execute_class_stress_case(){
-    set_case_message("message", "no stress case");
+    print_case_message("no stress case");
     return true;
 }
 

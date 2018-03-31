@@ -1,6 +1,8 @@
 #ifndef TEST_TEST_HPP
 #define TEST_TEST_HPP
 
+#include <cstdarg>
+
 #include "../api/SObject.hpp"
 #include "../sys/MicroTime.hpp"
 #include "../sys/Timer.hpp"
@@ -207,68 +209,39 @@ protected:
     void close_case(bool result);
 
 
-    /*! \details Sets a message to be stored with the case.
+    /*! \details Prints a message to the test report.
      *
-     * @param key The message key identifier (any string)
-     * @param message The message to store
+     * @param fmt Formatted string with variable arguments.
      *
-     * This method can be used for both successful and
-     * unsuccessful cases. For unsuccessful cases,
-     * if can save in the test report why the test failed.
-     *
-     * This method can be used with set_case_value() to
-     * save information about test execution.
+     * The key to the message is assigned automatically as
+     * - msg-0
+     * - msg-1
+     * - msg-2
+     * - msg-...
      *
      */
-    void set_case_message(const char * key, const char * message);
+    void print_case_message(const char * fmt, ...);
 
-    /*! \details Sets a case value (u32).
+    /*! \details Prints a message to the test report.
      *
-     * @param key The key to identify the value
-     * @param value The value to save
+     * @param key The key value for the saved message
+     * @param fmt Formatted string with variable arguments.
      *
-     * \sa set_case_message()
      *
      */
-    void set_case_value(const char * key, u32 value);
+    void print_case_message(const char * key, const char * fmt, ...);
 
-    /*! \details Sets a case value (float).
-     *
-     * @param key The key to identify the value
-     * @param value The value to save
-     *
-     * \sa set_case_message()
-     *
-     */
-    void set_case_value(const char * key, float value);
-
-    /*! \details Sets a case value (s32).
-     *
-     * @param key The key to identify the value
-     * @param value The value to save
-     *
-     * \sa set_case_message()
-     *
-     */
-    void set_case_value(const char * key, s32 value);
-
-    /*! \details Sets a case value (int).
-     *
-     * @param key The key to identify the value
-     * @param value The value to save
-     *
-     * \sa set_case_message()
-     *
-     */
-    void set_case_value(const char * key, int value);
 
 private:
+
+    void vprint_case_message(const char * key, const char * fmt, va_list args);
 
     //sys::MicroTime m_execution_time;
     bool m_test_result;
     sys::Timer m_case_timer;
     sys::Timer m_test_timer;
     bool m_is_first_case;
+    u32 m_case_message_number;
     static bool m_is_initialized;
     static bool m_is_first_test;
 

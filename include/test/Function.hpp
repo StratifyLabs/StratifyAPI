@@ -89,10 +89,10 @@ public:
 
         if( (return_value != expected_value) || (expected_errno != errno) ){
             result = false;
-            set_case_value("expected return", expected_value);
-            set_case_value("actual return", return_value);
-            set_case_value("expected errno", expected_errno);
-            set_case_value("actual errno", errno);
+            print_case_message("expected return: %d", expected_value);
+            print_case_message("actual return: %d", return_value);
+            print_case_message("expected errno: %d", expected_errno);
+            print_case_message("actual errno: %d", errno);
         } else {
             result = true;
         }
