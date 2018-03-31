@@ -21,6 +21,7 @@ namespace var {}
 #include "var/StringUtil.hpp"
 #include "var/Token.hpp"
 #include "var/Vector.hpp"
+#include "var/Array.hpp"
 
 using namespace var;
 

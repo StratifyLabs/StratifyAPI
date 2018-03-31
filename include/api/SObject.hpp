@@ -18,6 +18,11 @@ class SObject {
 public:
     SObject();
 
+    /*! \details Returns a pointer to a string
+     * that shows the API version.
+     */
+    const char * api_version() const { return "2.5.0b"; }
+
     enum {
       ERROR_NONE /*! No Errors */
     };
