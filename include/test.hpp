@@ -2,7 +2,7 @@
 #define TEST_HPP
 
 /*! \brief test Namespace
- * The test namespace includes a collection of
+ * \details The test namespace includes a collection of
  * classes that are used for executing tests.
  *
  * The tests are timed automatically and output

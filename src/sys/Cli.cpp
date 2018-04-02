@@ -19,7 +19,11 @@ Cli::Cli(int argc, char * argv[]){
 	if( argc > 0 ){
 		m_path = argv[0];
 		m_name = File::name(argv[0]);
+#if defined __link
+        version = Appfs::get_version(m_path, 0);
+#else
         version = Appfs::get_version(m_path);
+#endif
 
         m_version.sprintf("%d.%d", version >> 8, version & 0xff);
 	}

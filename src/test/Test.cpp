@@ -121,7 +121,7 @@ void Test::initialize(const char * name, const char * version){
         printf("    \"arch\": \"%s\",\n", info.arch);
         printf("    \"sys version\": \"%s\",\n", info.sys_version);
         printf("    \"kernel version\": \"%s\",\n", info.kernel_version);
-        printf("    \"memory size\": \"%ld\",\n", info.sys_mem_size);
+        printf("    \"shared memory size\": \"%ld\",\n", info.sys_mem_size);
         printf("    \"id\": \"%s\",\n", info.id);
         printf("    \"serial\": \"%lX%lX%lX%lX\"\n", info.serial.sn[3], info.serial.sn[2], info.serial.sn[1], info.serial.sn[0]);
     }
@@ -129,6 +129,7 @@ void Test::initialize(const char * name, const char * version){
     printf("  },\n");
     printf("  \"test\": {\n");
     printf("    \"name\": \"%s\",\n", name);
+    //need to add the amount of RAM the program has to output
     printf("    \"version\": \"%s\"\n", version);
     printf("  }");
 }

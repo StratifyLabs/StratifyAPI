@@ -19,7 +19,6 @@ namespace test {
  * - Stress Tests: Should be designed to stress the system and check for unexpected behavior
  * - Additional Tests: Used as needed by inheriting classes to run additional tests
  *
- *
  * \code
  *
  * #include <sapi/test.hpp>
@@ -32,6 +31,40 @@ namespace test {
  *   //At this point test will be deconstructed -- must happen before Test::finalize()
  * }
  * Test::finalize();
+ * \endcode
+ *
+ * See the [sostest](https://github.com/StratifyLabs/sostest) suite of applications for examples (like
+ * [DataTest](https://github.com/StratifyLabs/sostest/blob/master/api-var-test/src/DataTest.cpp)).
+ *
+ * Here is an example report in JSON format:
+ *
+ * \code
+ * {
+ *   "system": {
+ *     "name": "Stratify Alpha",
+ *     "arch": "v7em_f4sh",
+ *     "sys version": "1.5",
+ *     "kernel version": "3.5.0",
+ *     "memory size": "16384",
+ *     "id": "-KZKdVwMXIj6vTVsbX56",
+ *     "serial": "F5001942555D5A3EAEAE24601801F01A"
+ *   },
+ *   "test": {
+ *    "name": "api-var-test",
+ *    "version": "0.1"
+ *   },
+ *   "var::Data": {
+ *     "api": {
+ *       "msg-0": "fill test complete",
+ *       "msg-1": "alloc test complete",
+ *       "result": true,
+ *       "microseconds": 10900.0
+ *     },
+ *     "result": true,
+ *     "microseconds": 11172.0
+ *   }
+ * }
+ *
  * \endcode
  *
  *
@@ -96,9 +129,8 @@ public:
 
     /*! \details Deconstructs the test object.
      *
-     * The object must be deconstructed before Test::finalize()
-     *
-     *
+     * The object must be deconstructed before Test::finalize() is
+     * executed.
      */
     ~Test();
 
@@ -113,7 +145,7 @@ public:
 
     /*! \details Executes the tests specified by \a o_flags.
      *
-     * @param o_flags Bitmaks of the tests to execute (e.g., EXECUTE_API)
+     * @param o_flags Bitmask of the tests to execute (e.g., Test::EXECUTE_API)
      *
      */
     virtual void execute(int o_flags = EXECUTE_ALL){
@@ -198,9 +230,9 @@ protected:
      */
     void open_case(const char * case_name);
 
-    /*! \details Closes a new test case.
+    /*! \details Closes a test case.
      *
-     * @param result true if the case passed and false if it failed
+     * @param result true if the test case passed and false if it failed
      *
      * This method is only used when re-implementing
      * execute_additional_cases().

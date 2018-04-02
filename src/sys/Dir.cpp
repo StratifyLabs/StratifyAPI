@@ -6,7 +6,10 @@
 #include "sys/Dir.hpp"
 using namespace sys;
 
+
+
 #if defined __link
+#define errno link_errno
 Dir::Dir(link_transport_mdriver_t * driver){
 	m_dirp = 0;
 	m_driver = driver;

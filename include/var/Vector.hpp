@@ -38,9 +38,9 @@ public:
     }
 
     /*! \details Provides un-bounded access to the specified element. */
-    T & operator[](size_t idx) { return vector_data()[idx]; }
+    T & operator[](u32 idx) { return vector_data()[idx]; }
     /*! \details Provides un-bounded access to the specified element. */
-    const T & operator[](size_t idx) const { return vector_data()[idx]; }
+    const T & operator[](u32 idx) const { return vector_data()[idx]; }
 
     /*! \details Returns the number of elements that are
      * able to fit in the memory that is already allocated.
@@ -90,7 +90,7 @@ public:
             push_back(value);
         } else if( add_space() ){
             //move elements from pos to end back one
-            for(u32 i=count(); i--; i > pos ){
+            for(u32 i=count(); i > pos; i-- ){
                 vector_data()[i] = vector_data()[i-1];
             }
             vector_data()[pos] = value;

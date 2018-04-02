@@ -7,6 +7,7 @@
 namespace sys {
 
 #if defined __link
+#define errno link_errno
 FileInfo::FileInfo(link_transport_mdriver_t * d){
 	m_driver = d;
 	memset(&m_stat, 0, sizeof(m_stat));
