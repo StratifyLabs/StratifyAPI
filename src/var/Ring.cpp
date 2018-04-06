@@ -5,8 +5,7 @@
 namespace var {
 
 
-Ring::Ring(u8 * buf, u32 size){
-	m_buf = buf;
+Ring::Ring(u8 * buf, u32 size) : Data(buf, size){
 	m_size = size;
 	m_head = 0;
 	m_tail = 0;
@@ -26,7 +25,7 @@ int Ring::write(const u8 * buf, u32 nbytes){
 	}
 
 	for(i=0; i < nbytes; i++){
-		m_buf[m_head] = buf[i];
+        cdata()[m_head] = buf[i];
 		m_head++;
 		if( m_head == m_tail ){
 			m_tail++;
@@ -49,7 +48,7 @@ int Ring::read(u8 * buf, u32 size){
 
 	for(i=0; i < size; i++){
 		if( m_tail != m_head ){
-			buf[i] = m_buf[m_tail];
+            buf[i] = cdata()[m_tail];
 			m_tail++;
 			if( m_tail == m_size ){
 				m_tail = 0;
