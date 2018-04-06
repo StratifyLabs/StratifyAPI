@@ -31,6 +31,6 @@ public:
 
 };
 
-};
+}
 
 #endif /* DRAW_PANEL_HPP_ */

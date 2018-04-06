@@ -106,7 +106,7 @@ private:
 
 };
 
-};
+}
 
 
 #endif /* DRAW_ICON_HPP_ */

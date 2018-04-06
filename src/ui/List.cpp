@@ -7,7 +7,7 @@
 
 using namespace ui;
 
-List::List(ElementLinked * parent) : ElementLinked(parent) {
+List::List(LinkedElement * parent) : LinkedElement(parent) {
 	set_scroll_visible();
 	set_animation_type(AnimationAttr::PUSH_LEFT);
 	m_draw_animation_item = 0;
@@ -178,7 +178,7 @@ Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 	default: break;
 	case Event::SETUP:
 		m_draw_animation_item = size();
-		ElementLinked::handle_event(event, attr);
+		LinkedElement::handle_event(event, attr);
 		/* no break */
 	case Event::ENTER:
 		for(i=0; i < size(); i++){
@@ -199,5 +199,5 @@ Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 
 
 	}
-	return ElementLinked::handle_event(event, attr);
+	return LinkedElement::handle_event(event, attr);
 }

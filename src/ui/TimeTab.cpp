@@ -2,12 +2,12 @@
 
 #include "sys.hpp"
 #include "draw.hpp"
-#include "ui/TabTime.hpp"
+#include "ui/TimeTab.hpp"
 using namespace ui;
 
-TabTime::TabTime(){}
+TimeTab::TimeTab(){}
 
-void TabTime::draw(const DrawingAttr & attr){
+void TimeTab::draw(const DrawingAttr & attr){
 	Time t;
 	u32 hour;
 	t.get_time_of_day();

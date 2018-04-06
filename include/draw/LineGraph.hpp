@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_GRAPHLINE_HPP_
-#define DRAW_GRAPHLINE_HPP_
+#ifndef DRAW_LINEGRAPH_HPP_
+#define DRAW_LINEGRAPH_HPP_
 
 #include "Graph.hpp"
 
@@ -18,6 +18,6 @@ private:
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);
 };
 
-};
+}
 
-#endif /* DRAW_GRAPHLINE_HPP_ */
+#endif /* DRAW_LINEGRAPH_HPP_ */

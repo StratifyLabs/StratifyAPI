@@ -68,6 +68,6 @@ private:
 	var::Flags m_flags;
 };
 
-};
+}
 
 #endif /* DRAW_TEXTATTR_HPP_ */

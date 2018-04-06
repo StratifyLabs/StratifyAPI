@@ -19,6 +19,6 @@ public:
 
 };
 
-};
+}
 
 #endif /* DRAW_RECT_HPP_ */

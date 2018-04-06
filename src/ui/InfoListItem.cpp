@@ -3,27 +3,27 @@
 #include "sgfx.hpp"
 #include "draw.hpp"
 #include "sys/Assets.hpp"
-#include "ui/ListItemInfo.hpp"
+#include "ui/InfoListItem.hpp"
 
 using namespace ui;
 
-ListItemInfo::ListItemInfo(ElementLinked * parent) : ListItem("Label", 0, parent, 0) {
+InfoListItem::InfoListItem(LinkedElement * parent) : ListItem("Label", 0, parent, 0) {
 	// TODO Auto-generated constructor stub
 	set(0,0);
 }
 
-ListItemInfo::ListItemInfo(const char * l, const char * v, ElementLinked * parent) : ListItem(l, 0, parent, 0) {
+InfoListItem::InfoListItem(const char * l, const char * v, LinkedElement * parent) : ListItem(l, 0, parent, 0) {
 	// TODO Auto-generated constructor stub
 	set(l,v);
 }
 
-void ListItemInfo::set(const char * l, const char * v){
+void InfoListItem::set(const char * l, const char * v){
 	label().assign(l);
 	value().assign(v);
 }
 
 
-void ListItemInfo::draw_to_scale(const DrawingScaledAttr & attr){
+void InfoListItem::draw_to_scale(const DrawingScaledAttr & attr){
 	int height;
 	sg_size_t len;
 	sg_dim_t d = attr.dim();
@@ -61,7 +61,7 @@ void ListItemInfo::draw_to_scale(const DrawingScaledAttr & attr){
 	}
 }
 
-Element * ListItemInfo::handle_event(const Event  & event, const DrawingAttr & attr){
+Element * InfoListItem::handle_event(const Event  & event, const DrawingAttr & attr){
 	/*
 	switch(event){
 	case RIGHT_HOLD:

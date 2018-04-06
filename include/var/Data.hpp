@@ -182,6 +182,27 @@ public:
 	 */
 	virtual u32 calc_size() const { return m_capacity; }
 
+    enum {
+        PRINT_HEX /*! Print hex data */ = (1<<0),
+        PRINT_UNSIGNED /*! Print unsigned integers */ = (1<<1),
+        PRINT_SIGNED /*! Printd signed integers */ = (1<<2),
+        PRINT_CHAR /*! Print Characters */ = (1<<3)
+    };
+
+    /*! \details Prints the data to the standard output. */
+    virtual int print(u32 o_flags = PRINT_HEX) const;
+
+
+    /*! \details Swaps the byte order of the data.
+     *
+     * @param size 4 to swap as 32-bit words, otherwise swap 16-bit words
+     *
+     * If the data is read-only, no change is made
+     * and error_number() is set to EINVAL.
+     *
+     */
+    void swap_byte_order(int size = 4);
+
 private:
 
 	void zero();

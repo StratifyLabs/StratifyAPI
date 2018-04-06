@@ -2,22 +2,22 @@
 
 #include <cstdio>
 #include <cstring>
-#include "sgfx/FontMemory.hpp"
+#include "sgfx/MemoryFont.hpp"
 
 using namespace sgfx;
 
 
-FontMemory::FontMemory() {
+MemoryFont::MemoryFont() {
 	// TODO Auto-generated constructor stub
 	set_font_memory(0);
 }
 
-FontMemory::FontMemory(const void * ptr) {
+MemoryFont::MemoryFont(const void * ptr) {
 	// TODO Auto-generated constructor stub
 	set_font_memory(ptr);
 }
 
-void FontMemory::set_font_memory(const void * ptr){
+void MemoryFont::set_font_memory(const void * ptr){
 	const sg_font_header_t * hdr_ptr;
 	m_font = ptr;
 	if( m_font != 0 ){
@@ -31,7 +31,7 @@ void FontMemory::set_font_memory(const void * ptr){
 	}
 }
 
-sg_size_t FontMemory::get_height() const {
+sg_size_t MemoryFont::get_height() const {
 	const sg_font_header_t * hdr_ptr;
 	if( m_font != 0 ){
 		hdr_ptr = (const sg_font_header_t*)m_font;
@@ -40,7 +40,7 @@ sg_size_t FontMemory::get_height() const {
 	return 0;
 }
 
-sg_size_t FontMemory::get_width() const {
+sg_size_t MemoryFont::get_width() const {
 	const sg_font_header_t * hdr_ptr;
 	if( m_font != 0 ){
 		hdr_ptr = (const sg_font_header_t*)m_font;
@@ -49,7 +49,7 @@ sg_size_t FontMemory::get_width() const {
 	return 0;
 }
 
-int FontMemory::load_kerning(u16 first, u16 second) const {
+int MemoryFont::load_kerning(u16 first, u16 second) const {
 	int kerning_count = m_hdr.kerning_pairs;
 	const sg_font_kerning_pair_t * pairs = (const sg_font_kerning_pair_t *)((const char *)m_font + sizeof(sg_font_header_t));
 	int i;
@@ -63,7 +63,7 @@ int FontMemory::load_kerning(u16 first, u16 second) const {
 	return 0;
 }
 
-int FontMemory::load_char(sg_font_char_t & ch, char c, bool ascii) const {
+int MemoryFont::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 	int offset;
 	int ind;
 	sg_font_char_t * chp;
@@ -88,7 +88,7 @@ int FontMemory::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 }
 
 
-void FontMemory::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_point_t point) const {
+void MemoryFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_point_t point) const {
 	u32 canvas_offset = m_canvas_start + m_canvas_size * ch.canvas_idx;
 	m_canvas.set_data((sg_bmap_data_t*)((u8*)m_font + canvas_offset), m_hdr.canvas_width, m_hdr.canvas_height, true);
 	Region region(ch.canvas_x, ch.canvas_y, ch.width, ch.height);

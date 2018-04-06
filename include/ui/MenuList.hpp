@@ -20,11 +20,11 @@ class MenuList : public ui::List {
 public:
 
 	/*! \details Construct a menu list item */
-	MenuList(ui::ElementLinked * parent = 0);
+	MenuList(ui::LinkedElement * parent = 0);
 
 	/*! \details Access the reference to the back entry */
 	ui::ListItemBack & back(){ return m_back; }
-	virtual ui::ElementLinked & at(ui::list_attr_size_t i);
+	virtual ui::LinkedElement & at(ui::list_attr_size_t i);
 	virtual ui::list_attr_size_t size() const;
 
 private:

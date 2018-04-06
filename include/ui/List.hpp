@@ -8,7 +8,7 @@
 
 #include "../draw/Animation.hpp"
 #include "../sys/Timer.hpp"
-#include "ElementLinked.hpp"
+#include "LinkedElement.hpp"
 #include "ListAttr.hpp"
 
 namespace ui {
@@ -19,15 +19,15 @@ namespace ui {
  * elements that are drawn in a vertical list.  This
  * is the primary Element used in menus.
  */
-class List : public ElementLinked, public ListAttr {
+class List : public LinkedElement, public ListAttr {
 public:
-	List(ElementLinked * parent = 0);
+	List(LinkedElement * parent = 0);
 
 	/*! \details Return a points to item \a i in the list */
-	virtual ElementLinked & at(list_attr_size_t i) = 0;
+	virtual LinkedElement & at(list_attr_size_t i) = 0;
 
 	/*! \details Return a pointer to the currently selected item */
-	inline ElementLinked & current(){ return at(selected()); }
+	inline LinkedElement & current(){ return at(selected()); }
 
 	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
@@ -55,7 +55,7 @@ private:
 //list of items of the same type
 template<typename type, int n_items> class ListTemplate : public List {
 public:
-	ListTemplate(ElementLinked * parent = 0) : List(parent){}
+	ListTemplate(LinkedElement * parent = 0) : List(parent){}
 	Element * at(list_attr_size_t i){ return m_items + i; }
 	list_attr_size_t size() const { return n_items; }
 	type * at_item(u32 i){ return m_items + i; }

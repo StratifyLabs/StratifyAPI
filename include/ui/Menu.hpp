@@ -5,7 +5,7 @@
 #ifndef UI_MENU_HPP_
 #define UI_MENU_HPP_
 
-#include "ElementLinked.hpp"
+#include "LinkedElement.hpp"
 
 namespace ui {
 
@@ -20,7 +20,7 @@ namespace ui {
  *
  *
  */
-class Menu : public ElementLinked {
+class Menu : public LinkedElement {
 public:
 
 	/*! \details Construct a new Menu object */
@@ -30,15 +30,15 @@ public:
 	virtual void draw(const draw::DrawingAttr & attr);
 
 	/*! \details Access a reference to the current element */
-	ElementLinked & current(){ return *m_current; }
+	LinkedElement & current(){ return *m_current; }
 
 	/*! \details Set the reference of the current element */
-	void set_current(Element & v){ m_current = (ElementLinked*)&v; }
+	void set_current(Element & v){ m_current = (LinkedElement*)&v; }
 
 private:
 
 	draw::Animation m_animation;
-	ElementLinked * m_current;
+	LinkedElement * m_current;
 
 };
 

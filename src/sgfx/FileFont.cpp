@@ -1,27 +1,27 @@
 //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#include "sgfx/FontFile.hpp"
+#include "sgfx/FileFont.hpp"
 using namespace sgfx;
 using namespace sys;
 
-FontFile::FontFile() {
+FileFont::FileFont() {
 	m_kerning_pairs = 0;
 }
 
-FontFile::FontFile(const char * name, int offset) {
+FileFont::FileFont(const char * name, int offset) {
 	m_kerning_pairs = 0;
 	set_file(name, offset);
 }
 
-FontFile::~FontFile(){
+FileFont::~FileFont(){
 	if( m_kerning_pairs != 0 ){
 		free(m_kerning_pairs);
 	}
 	m_file.close();
 }
 
-int FontFile::set_file(const char * name, int offset){
+int FileFont::set_file(const char * name, int offset){
 	u32 pair_size;
 
 	if( m_kerning_pairs ){
@@ -64,11 +64,11 @@ int FontFile::set_file(const char * name, int offset){
 
 }
 
-sg_size_t FontFile::get_height() const { return m_hdr.max_height; }
-sg_size_t FontFile::get_width() const { return m_hdr.max_word_width*32; }
+sg_size_t FileFont::get_height() const { return m_hdr.max_height; }
+sg_size_t FileFont::get_width() const { return m_hdr.max_word_width*32; }
 
 
-int FontFile::load_char(sg_font_char_t & ch, char c, bool ascii) const {
+int FileFont::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 	int offset;
 	int ind;
 	int ret;
@@ -89,7 +89,7 @@ int FontFile::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 	return 0;
 }
 
-int FontFile::load_kerning(u16 first, u16 second) const {
+int FileFont::load_kerning(u16 first, u16 second) const {
 	int kerning_count = m_hdr.kerning_pairs;
 	int i;
 
@@ -106,7 +106,7 @@ int FontFile::load_kerning(u16 first, u16 second) const {
 	return 0;
 }
 
-void FontFile::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_point_t point) const {
+void FileFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_point_t point) const {
 	u32 canvas_offset;
 	if( ch.canvas_idx != m_current_canvas ){
 		canvas_offset = m_canvas_start + ch.canvas_idx*m_canvas_size;

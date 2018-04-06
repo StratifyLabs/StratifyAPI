@@ -59,7 +59,7 @@ Element * Menu::handle_event(const Event & event, const DrawingAttr & attr){
 		}
 
 		//execute the animation
-		type = ((ElementLinked*)next)->animation_type();
+		type = ((LinkedElement*)next)->animation_type();
 		if( type != Animation::NONE ){
 			m_animation.set_type( type );
 			m_animation.init(0, m_current, attr);

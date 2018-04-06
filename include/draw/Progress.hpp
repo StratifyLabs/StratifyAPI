@@ -77,6 +77,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* DRAW_PROGRESS_HPP_ */

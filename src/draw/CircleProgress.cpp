@@ -2,12 +2,12 @@
 
 #include <cmath>
 #include "sgfx.hpp"
-#include "draw/ProgressCircle.hpp"
+#include "draw/CircleProgress.hpp"
 using namespace draw;
 
-ProgressCircle::ProgressCircle(){}
+CircleProgress::CircleProgress(){}
 
-void ProgressCircle::draw_to_scale(const DrawingScaledAttr & attr){
+void CircleProgress::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
 	sgfx::VectorMap map;
 

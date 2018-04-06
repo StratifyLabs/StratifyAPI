@@ -30,6 +30,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* DRAW_TEXT_HPP_ */

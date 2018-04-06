@@ -186,9 +186,16 @@ public:
 
 	/*! \details Prints the string on the standard output.
 	 *
+     * @param o_flags This is ignored but is used to override Data::print
 	 * @return The total number of characters written to the stdout
+     *
 	 */
-    int printf(){ return ::printf("%s", str()); }
+    int print(u32 o_flags = PRINT_HEX) const { return ::printf("%s", str()); }
+    //deprecated
+#if !defined __link
+    [[deprecated("Replaced by String::print()")]]
+#endif
+    int printf() const { return ::printf("%s", str()); }
 
 
 	/*! \details Returns the capacity of the string.

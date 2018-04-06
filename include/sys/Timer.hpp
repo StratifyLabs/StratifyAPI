@@ -189,10 +189,10 @@ public:
 	 *
 	 * @return The number of microseconds that have elapsed since start.
 	 */
-	u32 calc_usec() const;
+    u32 calc_usec() const { return calc_value(); }
 
 	/*! \details Is equivalent to calc_usec(). */
-	u32 usec() const { return calc_usec(); }
+    u32 usec() const { return calc_value(); }
 
 
 	/*! \details Calculates the timer value in seconds.

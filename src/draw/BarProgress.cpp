@@ -1,12 +1,12 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 #include "sgfx.hpp"
-#include "draw/ProgressBar.hpp"
+#include "draw/BarProgress.hpp"
 using namespace draw;
 
-ProgressBar::ProgressBar(){}
+BarProgress::BarProgress(){}
 
-void ProgressBar::draw_to_scale(const DrawingScaledAttr & attr){
+void BarProgress::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
 	int tmp;
 	Pen pen;

@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_GRAPHBAR_HPP_
-#define DRAW_GRAPHBAR_HPP_
+#ifndef DRAW_BARGRAPH_HPP_
+#define DRAW_BARGRAPH_HPP_
 
 #include "Graph.hpp"
 
@@ -11,15 +11,15 @@ namespace draw {
  * \ingroup graph
  * \details This class can be used to draw a scalable bar graph.
  */
-class GraphBar : public Graph {
+class BarGraph : public Graph {
 public:
-	GraphBar();
+    BarGraph();
 
 private:
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);
 
 };
 
-};
+}
 
 #endif /* DRAW_GRAPHBAR_HPP_ */

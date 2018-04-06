@@ -8,7 +8,7 @@
 #include "../draw/TextAttr.hpp"
 #include "../draw/Icon.hpp"
 #include "../sys/Dir.hpp"
-#include "ElementLinked.hpp"
+#include "LinkedElement.hpp"
 #include "List.hpp"
 
 
@@ -18,10 +18,10 @@ namespace ui {
  * \details A ListItem represents an item in a List.
  *
  */
-class ListItem : public ElementLinked {
+class ListItem : public LinkedElement {
 public:
 	/*! \details Construct a new list item */
-	ListItem(const char * label, const sg_vector_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
+	ListItem(const char * label, const sg_vector_icon_t * icon = 0, LinkedElement * parent = 0, LinkedElement * child = 0);
 
 	void draw_to_scale(const draw::DrawingScaledAttr & attr);
 
@@ -57,7 +57,7 @@ private:
  */
 class ListItemToggle : public ListItem {
 public:
-	ListItemToggle(const char * label, ElementLinked * parent = 0);
+	ListItemToggle(const char * label, LinkedElement * parent = 0);
 
 	/*! \details This method will toggle the value of the item and return the parent list */
 	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
@@ -97,12 +97,12 @@ public:
  */
 class ListItemBack : public ListItem {
 public:
-	ListItemBack(const sg_vector_icon_t * icon = 0, ElementLinked * parent = 0);
+	ListItemBack(const sg_vector_icon_t * icon = 0, LinkedElement * parent = 0);
 };
 
 class ListItemExit : public ListItemBack {
 public:
-	ListItemExit(const sg_vector_icon_t * icon = 0, ElementLinked * parent = 0);
+	ListItemExit(const sg_vector_icon_t * icon = 0, LinkedElement * parent = 0);
 };
 
 
@@ -153,7 +153,7 @@ public:
 	typedef void (*list_dir_callback_t)(ListDir * list);
 
 	/*! \details Contruct a new list */
-	ListDir(const char * path, const sg_vector_icon_t * icon = 0, ElementLinked * parent = 0, ElementLinked * child = 0);
+	ListDir(const char * path, const sg_vector_icon_t * icon = 0, LinkedElement * parent = 0, LinkedElement * child = 0);
 	~ListDir();
 
 	/*! \details Set the path for the directory */
@@ -166,7 +166,7 @@ public:
 	 * @param i The offset within the list
 	 * @return A pointer to the object
 	 */
-	virtual ElementLinked & at(list_attr_size_t i);
+	virtual LinkedElement & at(list_attr_size_t i);
 
 	/*! \details Return the total entries in the list */
 	inline list_attr_size_t size() const { return m_size; }

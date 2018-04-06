@@ -6,7 +6,7 @@
 #include "sys/Assets.hpp"
 
 #include "../../include/sys/requests.h"
-#include "sgfx/FontFile.hpp"
+#include "sgfx/FileFont.hpp"
 #include "sgfx/FontMemory.hpp"
 
 using namespace sys;
@@ -100,9 +100,9 @@ bool Assets::load_fonts(const sg_font_ref_t * fonts, int count){
 		//create a table of Font pointers based on fonts
 		for(i=0; i < count; i++){
 			if( fonts[i].type == SG_FONT_MEMORY ){
-				m_font_array[i] = new FontMemory(fonts[i].font_ptr);
+				m_font_array[i] = new MemoryFont(fonts[i].font_ptr);
 			} else if( fonts[i].type == SG_FONT_FILE ){
-				m_font_array[i] = new FontFile(fonts[i].font_path, fonts[i].font_file_offset);
+				m_font_array[i] = new FileFont(fonts[i].font_path, fonts[i].font_file_offset);
 			} else {
 				m_font_array[i] = 0;  //an invalid entry will terminate the list
 			}

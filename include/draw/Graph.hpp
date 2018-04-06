@@ -112,6 +112,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* DRAW_GRAPH_HPP_ */

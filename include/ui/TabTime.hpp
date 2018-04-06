@@ -2,25 +2,18 @@
  *
  */
 
-#ifndef UI_TAB_TABTIME_HPP_
-#define UI_TAB_TABTIME_HPP_
+#ifndef UI_TABTIME_HPP_
+#define UI_TABTIME_HPP_
 
-#include "../draw/Drawing.hpp"
-#include "Tab.hpp"
+#include "TimeTab.hpp"
 
 namespace ui {
 
-/*! \brief Tab Time Class
- * \details This class shows a Tab with the time on it.
- */
-class TabTime : public Tab {
-public:
-	/*! \details Construct a TabTime object */
-	TabTime();
-	void draw(const draw::DrawingAttr & attr);
-
-};
+#if !defined __link
+[[deprecated("Use TimeTab")]]
+#endif
+typedef TimeTab TabTime;
 
 }
 
-#endif /* UI_TAB_TABTIME_HPP_ */
+#endif /* UI_TABTIME_HPP_ */

@@ -2,15 +2,15 @@
 
 #include "draw.hpp"
 #include "ui/Tab.hpp"
-#include "ui/TabProgress.hpp"
+#include "ui/ProgressTab.hpp"
 using namespace ui;
 
-TabProgress::TabProgress() {
+ProgressTab::ProgressTab() {
 	// TODO Auto-generated constructor stub
 
 }
 
-void TabProgress::draw(const DrawingAttr & attr){
+void ProgressTab::draw(const DrawingAttr & attr){
 	DrawingAttr da;
 	drawing_point_t p = attr.point();
 	drawing_dim_t d = attr.dim();

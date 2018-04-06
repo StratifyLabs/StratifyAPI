@@ -238,17 +238,17 @@ void Bitmap::show() const{
 		for(j=0; j < bmap_const()->dim.width; j++){
 			color = sg_api()->cursor_get_pixel(&x_cursor);
 			if( sg_api()->bits_per_pixel > 8 ){
-				printf("%04X", color);
+                ::printf("%04X", color);
 			} else if(sg_api()->bits_per_pixel > 4){
-				printf("%02X", color);
+                ::printf("%02X", color);
 			} else {
-				printf("%X", color);
+                ::printf("%X", color);
 			}
 			if( (j < bmap_const()->dim.width - 1) && (sg_api()->bits_per_pixel > 4)){
-				printf(" ");
+                ::printf(" ");
 			}
 		}
-		printf("\n");
+        ::printf("\n");
 		sg_api()->cursor_inc_y(&y_cursor);
 	}
 }

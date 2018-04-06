@@ -2,15 +2,15 @@
 
 #include <cmath>
 #include "sgfx.hpp"
-#include "draw/ProgressArc.hpp"
+#include "draw/ArcProgress.hpp"
 using namespace draw;
 
-ProgressArc::ProgressArc() {
+ArcProgress::ArcProgress() {
 	m_offset = 0;
 	m_direction = 1;
 }
 
-void ProgressArc::draw_to_scale(const DrawingScaledAttr & attr){
+void ArcProgress::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
 	sg_point_t p = attr.point();
 	Dim d = attr.dim();

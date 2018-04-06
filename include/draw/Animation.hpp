@@ -155,6 +155,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* DRAW_ANIMATION_HPP_ */

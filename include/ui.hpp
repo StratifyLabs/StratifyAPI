@@ -20,7 +20,7 @@ namespace ui {}
 #include "ui/Event.hpp"
 #include "ui/EventLoop.hpp"
 #include "ui/Element.hpp"
-#include "ui/ElementLinked.hpp"
+#include "ui/LinkedElement.hpp"
 #include "ui/List.hpp"
 #include "ui/ListAttr.hpp"
 #include "ui/ListItem.hpp"
@@ -28,13 +28,21 @@ namespace ui {}
 #include "ui/Menu.hpp"
 #include "ui/MenuList.hpp"
 #include "ui/Button.hpp"
+#include "ui/PinButton.hpp"
+#include "ui/IconTab.hpp"
+#include "ui/TimeTab.hpp"
+#include "ui/TextTab.hpp"
+#include "ui/ProgressTab.hpp"
+#include "ui/TabBar.hpp"
+#include "ui/Tab.hpp"
+
+//deprecated
+#include "ui/ElementLinked.hpp"
 #include "ui/ButtonPin.hpp"
+#include "ui/TabProgress.hpp"
 #include "ui/TabIcon.hpp"
 #include "ui/TabTime.hpp"
 #include "ui/TabText.hpp"
-#include "ui/TabProgress.hpp"
-#include "ui/TabBar.hpp"
-#include "ui/Tab.hpp"
 
 using namespace ui;
 

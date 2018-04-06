@@ -471,6 +471,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* DRAW_DRAWING_HPP_ */

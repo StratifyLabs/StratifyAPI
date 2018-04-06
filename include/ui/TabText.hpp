@@ -2,31 +2,17 @@
  *
  */
 
-#ifndef UI_TAB_TABLABEL_HPP_
-#define UI_TAB_TABLABEL_HPP_
+#ifndef UI_TABTEXT_HPP_
+#define UI_TABTEXT_HPP_
 
-#include "../draw/Text.hpp"
-#include "Tab.hpp"
+#include "TextTab.hpp"
 
 namespace ui {
 
-/*! \brief Tab Text Class
- * \details This class shows a Tab with text on it.
- */
-class TabText : public Tab {
-public:
-
-	/*! \details Construct a TabText object */
-	TabText();
-	void draw(const draw::DrawingAttr & attr);
-
-	/*! \details Access the draw::Text object associated with the Tab */
-	draw::Text & text(){ return m_text; }
-
-private:
-	draw::Text m_text;
-};
-
+#if !defined __link
+[[deprecated("Use TextTab")]]
+#endif
+typedef TextTab TabText;
 }
 
-#endif /* UI_TAB_TABLABEL_HPP_ */
+#endif /* UI_TABTEXT_HPP_ */

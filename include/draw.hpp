@@ -27,17 +27,22 @@ namespace draw {}
 #include "sgfx.hpp"
 #include "draw/Animation.hpp"
 #include "draw/Drawing.hpp"
-#include "draw/GraphLine.hpp"
-#include "draw/GraphBar.hpp"
+#include "draw/LineGraph.hpp"
+#include "draw/BarGraph.hpp"
 #include "draw/Icon.hpp"
 #include "draw/Image.hpp"
 #include "draw/Panel.hpp"
-#include "draw/ProgressBar.hpp"
-#include "draw/ProgressArc.hpp"
-#include "draw/ProgressCircle.hpp"
+#include "draw/BarProgress.hpp"
+#include "draw/ArcProgress.hpp"
+#include "draw/CircleProgress.hpp"
 #include "draw/Rect.hpp"
 #include "draw/Text.hpp"
 #include "draw/TextBox.hpp"
+
+//deprecated
+#include "draw/ProgressBar.hpp"
+#include "draw/ProgressArc.hpp"
+#include "draw/ProgressCircle.hpp"
 
 using namespace draw;
 

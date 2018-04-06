@@ -45,7 +45,7 @@ public:
 
     /*! \details Create a MicroTime object from a second value. */
     static MicroTime from_seconds(u32 sec){ return MicroTime(sec*1000000UL); }
-    static MicroTime from_sec(u32 sec){ return from_seconds(1000000UL); }
+    static MicroTime from_sec(u32 sec){ return from_seconds(1000000UL*sec); }
 
 
     /*! \details Create a MicroTime object from a millisecond value. */

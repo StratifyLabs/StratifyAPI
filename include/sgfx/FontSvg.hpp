@@ -4,24 +4,14 @@
 #ifndef SGFX_FONTSVG_HPP_
 #define SGFX_FONTSVG_HPP_
 
-#include "Font.hpp"
+#include "SvgFont.hpp"
 
 namespace sgfx {
 
-class FontSvg : public Font {
-public:
-	FontSvg();
-	virtual ~FontSvg();
-
-	virtual sg_size_t get_height() const { return m_height; }
-	virtual sg_size_t get_width() const { return m_width; }
-
-	void set_height(sg_size_t height);
-
-private:
-	sg_size_t m_height;
-	sg_size_t m_width;
-};
+#if !defined __link
+[[deprecated("Use SvgFont")]]
+#endif
+typedef SvgFont FontSvg;
 
 }
 

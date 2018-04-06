@@ -9,7 +9,7 @@
 
 using namespace ui;
 
-ListItem::ListItem(const char * label, const sg_vector_icon_t * icon, ElementLinked * parent, ElementLinked * child) : ElementLinked(parent, child){
+ListItem::ListItem(const char * label, const sg_vector_icon_t * icon, LinkedElement * parent, LinkedElement * child) : LinkedElement(parent, child){
 	m_text_attr.assign(label);
 	icon_attr().set_attr(icon, Pen(), 0);
 	set_animation_type(AnimationAttr::PUSH_LEFT);
@@ -109,11 +109,11 @@ Element * ListItem::handle_event(const Event  & event, const DrawingAttr & attr)
 		return parent()->handle_event(event, attr);
 	}
 
-	return ElementLinked::handle_event(event, attr);
+	return LinkedElement::handle_event(event, attr);
 }
 
 
-ListItemToggle::ListItemToggle(const char * label, ElementLinked * parent) :
+ListItemToggle::ListItemToggle(const char * label, LinkedElement * parent) :
 															ListItem(label, 0, parent){
 	m_toggle_enabled_icon = 0;
 	m_toggle_disabled_icon = 0;
@@ -139,7 +139,7 @@ Element * ListItemToggle::handle_event(const Event  & event, const DrawingAttr &
 
 
 
-ListItemBack::ListItemBack(const sg_vector_icon_t * icon, ElementLinked * parent) : ListItem("Back", icon, parent){
+ListItemBack::ListItemBack(const sg_vector_icon_t * icon, LinkedElement * parent) : ListItem("Back", icon, parent){
 	icon_attr().set_rotation(IconAttr::LEFT);
 	if( parent ){
 		set_child(parent->parent());
@@ -148,7 +148,7 @@ ListItemBack::ListItemBack(const sg_vector_icon_t * icon, ElementLinked * parent
 
 
 
-ListItemExit::ListItemExit(const sg_vector_icon_t * icon, ElementLinked * parent) : ListItemBack(icon, parent){
+ListItemExit::ListItemExit(const sg_vector_icon_t * icon, LinkedElement * parent) : ListItemBack(icon, parent){
 	text_attr().assign("Exit");
 	icon_attr().set_rotation(IconAttr::DOWN);
 }
@@ -162,8 +162,8 @@ ListItemCheck::ListItemCheck(const char * label, List * parent) :
 
 ListDir::ListDir(const char * path,
 		const sg_vector_icon_t * icon,
-		ElementLinked * parent,
-		ElementLinked * child) :
+		LinkedElement * parent,
+		LinkedElement * child) :
 								List(parent),
 								m_item("TBD", icon, this, child) {
 	set_path(path);
@@ -173,7 +173,7 @@ ListDir::~ListDir(){
 	m_dir.close();
 }
 
-ElementLinked & ListDir::at(list_attr_size_t i){
+LinkedElement & ListDir::at(list_attr_size_t i){
 	m_dir.rewind();
 	u32 j;
 	j=0;

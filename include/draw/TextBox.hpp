@@ -47,6 +47,6 @@ private:
 	sg_size_t m_scroll_max;
 };
 
-};
+}
 
 #endif /* DRAW_TEXTBOX_HPP_ */
