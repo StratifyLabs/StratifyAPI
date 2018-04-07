@@ -19,12 +19,6 @@ namespace sgfx {}
 #include "sgfx/Point.hpp"
 #include "sgfx/Region.hpp"
 
-//deprectaed
-#include "sgfx/FontFile.hpp"
-#include "sgfx/FontMemory.hpp"
-#include "sgfx/FontSvg.hpp"
-#include "sgfx/FontSvgMemory.hpp"
-
 
 using namespace sgfx;
 

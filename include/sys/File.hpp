@@ -175,7 +175,7 @@ public:
 	 * @param flags The flags used to open the flag (e.g. File::READONLY)
 	 * @return Zero on success
 	 */
-	virtual int open(const char * name, int flags);
+    virtual int open(const char * name, int flags = RDWR);
 
 	/*! \details Opens a file.
 	 *

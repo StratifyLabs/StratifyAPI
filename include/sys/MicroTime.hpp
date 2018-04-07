@@ -76,6 +76,16 @@ public:
      */
     operator micro_time_t () const { return microseconds(); }
 
+    /*! \details Returns true if the time is set to a valid value.
+     *
+     */
+    bool is_valid() const {
+        return m_value_microseconds != (u32)-1;
+    }
+
+    /*! \details Returns a MicroTime object set to the invalid time. */
+    static MicroTime invalid(){ return MicroTime((u32)-1); }
+
 
     MicroTime & operator += (const MicroTime & micro_time){
         m_value_microseconds += micro_time.usec();

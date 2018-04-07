@@ -43,6 +43,7 @@ public:
 	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
 private:
+    friend class ElementLinked;
     LinkedElement * m_parent;
     LinkedElement * m_child;
 

@@ -1,8 +1,10 @@
 /* Copyright 2014-2018 Tyler Gilbert, Inc; All Rights Reserved
  *
  */
-#ifndef SM_EVENT_HPP_
-#define SM_EVENT_HPP_
+#ifndef EV_EVENT_HPP_
+#define EV_EVENT_HPP_
+
+#include <sos/dev/button.h>
 
 namespace ui {
 class Button;
@@ -81,30 +83,30 @@ public:
 
 	/*! \details Button definitions */
 	enum button_id {
-		NO_BUTTON /*! No Button */,
-		UP_BUTTON /*! Up Button */,
-		DOWN_BUTTON /*! Down Button */,
-		LEFT_BUTTON /*! LeftButton */,
-		RIGHT_BUTTON /*! Right Button */,
-		SELECT_BUTTON /*! Select Button */,
-		BACK_BUTTON /*! Back Button */,
-		EXIT_BUTTON /*! Exit Button */,
-		USER_BUTTON0 /*! User button 0 */,
-		USER_BUTTON1 /*! User button 1 */,
-		USER_BUTTON2 /*! User button 2 */,
-		USER_BUTTON3 /*! User button 3 */,
-		USER_BUTTON4 /*! User button 4 */,
-		USER_BUTTON5 /*! User button 5 */,
-		USER_BUTTON6 /*! User button 6 */,
-		USER_BUTTON7 /*! User button 7 */,
-		USER_BUTTON8 /*! User button 8 */,
-		USER_BUTTON9 /*! User button 9 */,
-		USER_BUTTON10 /*! User button 10 */,
-		USER_BUTTON11 /*! User button 11 */,
-		USER_BUTTON12 /*! User button 12 */,
-		USER_BUTTON13 /*! User button 13 */,
-		USER_BUTTON14 /*! User button 14 */,
-		USER_BUTTON15 /*! User button 15 */,
+        NO_BUTTON /*! No Button */ = BUTTON_NONE,
+        UP_BUTTON /*! Up Button */ = BUTTON_UP,
+        DOWN_BUTTON /*! Down Button */ = BUTTON_DOWN,
+        LEFT_BUTTON /*! LeftButton */ = BUTTON_LEFT,
+        RIGHT_BUTTON /*! Right Button */ = BUTTON_RIGHT,
+        SELECT_BUTTON /*! Select Button */ = BUTTON_SELECT,
+        BACK_BUTTON /*! Back Button */ = BUTTON_BACK,
+        EXIT_BUTTON /*! Exit Button */ = BUTTON_EXIT,
+        USER_BUTTON0 /*! User button 0 */ = BUTTON_USER0,
+        USER_BUTTON1 /*! User button 1 */ = BUTTON_USER1,
+        USER_BUTTON2 /*! User button 2 */ = BUTTON_USER2,
+        USER_BUTTON3 /*! User button 3 */ = BUTTON_USER3,
+        USER_BUTTON4 /*! User button 4 */ = BUTTON_USER4,
+        USER_BUTTON5 /*! User button 5 */ = BUTTON_USER5,
+        USER_BUTTON6 /*! User button 6 */ = BUTTON_USER6,
+        USER_BUTTON7 /*! User button 7 */ = BUTTON_USER7,
+        USER_BUTTON8 /*! User button 8 */ = BUTTON_USER8,
+        USER_BUTTON9 /*! User button 9 */ = BUTTON_USER9,
+        USER_BUTTON10 /*! User button 10 */ = BUTTON_USER10,
+        USER_BUTTON11 /*! User button 11 */ = BUTTON_USER11,
+        USER_BUTTON12 /*! User button 12 */ = BUTTON_USER12,
+        USER_BUTTON13 /*! User button 13 */ = BUTTON_USER13,
+        USER_BUTTON14 /*! User button 14 */ = BUTTON_USER14,
+        USER_BUTTON15 /*! User button 15 */ = BUTTON_USER15,
 
 		//EVENT_BUTTON_TOTAL //omit TOTAL so that the compiler doesn't complain about not handling the case
 	};
@@ -217,4 +219,4 @@ private:
 
 }
 
-#endif /* SM_EVENT_HPP_ */
+#endif /* EV_EVENT_HPP_ */

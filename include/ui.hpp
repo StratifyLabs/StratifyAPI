@@ -29,6 +29,7 @@ namespace ui {}
 #include "ui/MenuList.hpp"
 #include "ui/Button.hpp"
 #include "ui/PinButton.hpp"
+#include "ui/DeviceButton.hpp"
 #include "ui/IconTab.hpp"
 #include "ui/TimeTab.hpp"
 #include "ui/TextTab.hpp"
@@ -36,13 +37,6 @@ namespace ui {}
 #include "ui/TabBar.hpp"
 #include "ui/Tab.hpp"
 
-//deprecated
-#include "ui/ElementLinked.hpp"
-#include "ui/ButtonPin.hpp"
-#include "ui/TabProgress.hpp"
-#include "ui/TabIcon.hpp"
-#include "ui/TabTime.hpp"
-#include "ui/TabText.hpp"
 
 using namespace ui;
 
