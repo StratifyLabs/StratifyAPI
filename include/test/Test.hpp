@@ -261,7 +261,7 @@ protected:
      *
      *
      */
-    void print_case_message(const char * key, const char * fmt, ...);
+    void print_case_message_with_key(const char * key, const char * fmt, ...);
 
 
 private:

@@ -90,7 +90,7 @@ void Test::print_case_message(const char * fmt, ...){
     m_case_timer.resume();
 }
 
-void Test::print_case_message(const char * key, const char * fmt, ...){
+void Test::print_case_message_with_key(const char * key, const char * fmt, ...){
     m_case_timer.stop();
     va_list args;
     va_start (args, fmt);
