@@ -166,7 +166,13 @@ public:
 	/*! \details Inserts \a s (zero terminated) into string at \a pos. */
 	String& insert(u32 pos, const char * s);
 
-	/*! \details Erases a portion of the string starting with the character at \a pos. */
+    /*! \details Erases a portion of the string starting with the character at \a pos.
+     *
+     * @param pos The position to start erasing
+     * @param len The number of characters to erase
+     * @return A reference to this string.
+     *
+     */
 	String& erase(u32 pos, u32 len = -1);
 
 	/*! \details Returns character at \a pos. */
@@ -283,17 +289,64 @@ public:
 	/*! \details Finds a string within the string searching from right to left. */
 	u32 rfind(const char * s, u32 pos, u32 n) const;
 
-	/*! \details Compares a the object to \a str. */
+    /*! \details Compares the object to \a str.
+     *
+     * @param str A reference comparing string
+     * @returns Zero if the strings are the same
+     *
+     */
 	int compare(const String & str) const;
-	/*! \details Compares a the object to \a str. */
+
+    /*! \details Compares the object to \a str.
+     *
+     * @param pos The position in this object to start the comparison
+     * @param len The number of characters to compare
+     * @param str A reference to the comparing string
+     * @return Zero if the strings match
+     *
+     */
 	int compare(u32 pos, u32 len, const String & str) const;
-	/*! \details Compares a the object to \a str. */
-	int compare(u32 pos, u32 len, const String & str, u32 subpos, u32 sublen) const;
-	/*! \details Compares a the object to \a s. */
-	int compare(const char * s) const;
-	/*! \details Compares a the object to \a s. */
+
+
+    /*! \details Compares the object to \a str.
+     *
+     * @param pos The position in this object to start the comparison
+     * @param len The length of the compared string (this object)
+     * @param str A reference to the comparing string
+     * @param subpos The position in the comparing string to start comparing
+     * @param n The number os characters to compare
+     * @return Zero if the strings match
+     *
+     */
+    int compare(u32 pos, u32 len, const String & str, u32 subpos, u32 n) const;
+
+    /*! \details Compares the object to \a str.
+     *
+     * @param str A reference comparing string
+     * @returns Zero if the strings are the same
+     *
+     */
+    int compare(const char * s) const;
+
+    /*! \details Compares the object to \a str.
+     *
+     * @param pos The position in this object to start the comparison
+     * @param len The length of the compared string (this object)
+     * @param s The characters to compare
+     * @return Zero if the strings match
+     *
+     */
 	int compare(u32 pos, u32 len, const char * s);
-	/*! \details Compares a the object to \a s. */
+
+    /*! \details Compares the object to \a str.
+     *
+     * @param pos The position in this object to start the comparison
+     * @param len The length of the compared string (this object)
+     * @param s The characters to compare
+     * @param n The number os characters to compare
+     * @return Zero if the strings match
+     *
+     */
 	int compare(u32 pos, u32 len, const char * s, u32 n) const;
 
 private:

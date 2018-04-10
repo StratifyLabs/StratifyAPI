@@ -170,11 +170,18 @@ String& String::insert(u32 pos, const char * str){
 
 String& String::erase(u32 pos, u32 len){
 	char * p = cdata();
+    u32 s = size();
 	if( p == 0 ){ return *this; }
-	if( ((int)len != -1) && (pos + len < size()) ){
-		strcpy(p + pos, p + pos + len);
-		p[pos+len] = 0;
-	} else if (pos < size() ){
+    if( (len != npos) && (pos + len < s) ){
+        int remaining;
+        remaining = s - pos - len;
+        if( remaining > 0 ){
+            memcpy(p + pos, p + pos + len, remaining);
+            p[pos+remaining] = 0;
+        } else {
+            p[pos] = 0;
+        }
+    } else if (pos < s ){
 		p[pos] = 0;
 	}
 	return *this;
@@ -329,7 +336,7 @@ int String::compare(u32 pos, u32 len, const char * s){
 }
 
 int String::compare(u32 pos, u32 len, const char * s, u32 n) const {
-	int l;
+    u32 l;
     const char * str_at_position;
 	if( s == 0 ){
 		return npos;
@@ -337,8 +344,8 @@ int String::compare(u32 pos, u32 len, const char * s, u32 n) const {
 
     str_at_position = &(c_str()[pos]);
 
-    l = strlen(str_at_position);
-	if( l != (int)n ){
+    l = strnlen(str_at_position, n);
+    if( l != n ){
 		return l - n;
 	}
 

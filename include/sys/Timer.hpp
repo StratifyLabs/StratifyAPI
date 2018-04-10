@@ -171,7 +171,7 @@ public:
 	 */
 	void reset();
 
-	/*! \details Calculates the timer value in milliseconds.
+    /*! \details Calculates the timer value in milliseconds.
 	 *
 	 * @return The number of milliseconds that have elapsed since start.  This value
 	 * can be read when the timer is running to get a live value or after it has
@@ -179,8 +179,11 @@ public:
 	 */
     u32 calc_msec() const { return calc_value().msec(); }
 
-	/*! \details Is equivalent to calc_msec(). */
+    /*! \details Is equivalent to calc_msec(). */
 	u32 msec() const { return calc_msec(); }
+
+    /*! \details Is equivalent to calc_msec(). */
+    u32 milliseconds() const { return calc_value().milliseconds(); }
 
 	/*! \details Calculates the timer value in microseconds.
 	 *
@@ -194,6 +197,9 @@ public:
 	/*! \details Is equivalent to calc_usec(). */
     u32 usec() const { return calc_value(); }
 
+    /*! \details Is equivalent to calc_usec(). */
+    u32 microseconds() const { return calc_value(); }
+
 
 	/*! \details Calculates the timer value in seconds.
 	 *
@@ -206,6 +212,10 @@ public:
 
 	/*! \details Is equivalent to calc_sec(). */
 	u32 sec() const { return calc_sec(); }
+
+    /*! \details Is equivalent to calc_sec(). */
+    u32 seconds() const { return calc_value().seconds(); }
+
 
 	/*! \details Stops the timer from counting.
 	 *
