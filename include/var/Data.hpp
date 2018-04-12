@@ -3,6 +3,8 @@
 #ifndef DATA_HPP_
 #define DATA_HPP_
 
+#include <cstring>
+#include <cstdio>
 #include "../api/SObject.hpp"
 
 namespace var {
@@ -37,6 +39,51 @@ class Data : public api::SObject {
 public:
 	/*! \details Constructs a data object with no data */
 	Data();
+
+    /*! \details Copy constructor.
+     *
+     * @param a The data that will be copied into a new object
+     *
+     * If \a is dynamically allocated, the new object will
+     * be a dynamically allocated and a copy of the contents.
+     *
+     * If \a a is read-only or externally maanaged, the new object
+     * will be externally managed and point to the same memory.
+     *
+     * \code
+     * Data a;
+     * char static_buffer[32];
+     *
+     * a.set(static_buffer, 32);
+     *
+     * //b will be of size 32 and point to static_buffer
+     * Data b = a;
+     *
+     * a.alloc(64);
+     * a.fill(0x55);
+     *
+     * //c will have it's own 64 byte buffer that is filled with 0x55
+     * Data c = a;
+     *
+     * \endcode
+     *
+     */
+    Data(const Data & a);
+
+    /*! \details Constant assignment operator.
+     *
+     * @param a The data to assign to the object.
+     *
+     * This works the same as the copy constructor.
+     * Data that is internally managed will be newly allocated
+     * in this object and copied. If \a a is externally managed,
+     * this object will point to the same data.
+     *
+     * \sa is_internally_managed()
+     *
+     */
+    Data& operator=(const Data & a);
+
 
 	/*! \details Constructs a data object with non-mutable data pointers (not memory managed)
 	 *
@@ -203,7 +250,19 @@ public:
      */
     void swap_byte_order(int size = 4);
 
+    /*! \details Returns true if the data is internally managed. */
+    bool is_internally_managed() const {
+        return m_needs_free;
+    }
+
+    /*! \details Returns true if the data object is read only. */
+    bool is_read_only() const {
+        return m_mem_write == 0;
+    }
+
 private:
+
+    void copy(const Data & a);
 
 	void zero();
 

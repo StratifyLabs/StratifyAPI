@@ -27,6 +27,14 @@ public:
 	 */
 	Ring(u8 * buf, u32 size);
 
+
+    /*! \details Constructs a new ring buffer.
+     *
+     * @param size The number of bytes to allocate for the new buffer.
+     *
+     */
+    Ring(u32 size);
+
 	/*! \details Writes data to the ring buffer.
 	 *
 	 * @param buf Pointer to the data to write

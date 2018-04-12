@@ -39,6 +39,18 @@ Data::Data(u32 s){
     alloc(s);
 }
 
+
+Data::Data(const Data & a){
+    zero();
+    copy(a);
+}
+
+Data& Data::operator=(const Data & a){
+    copy(a);
+    return *this;
+}
+
+
 int Data::free(){
     if( m_needs_free ){
         ::free(m_mem_write);
@@ -49,6 +61,17 @@ int Data::free(){
 
 Data::~Data(){
     free();
+}
+
+void Data::copy(const Data & a){
+    if( a.is_internally_managed() ){
+        set_capacity(a.capacity());
+        if( data() && (capacity() >= a.capacity()) ){
+            memcpy(data(), a.data(), a.capacity());
+        }
+    } else {
+        set(a.data(), a.capacity(), a.is_read_only());
+    }
 }
 
 void Data::set(void * mem, u32 s, bool readonly){

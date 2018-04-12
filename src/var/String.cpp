@@ -10,8 +10,8 @@
 using namespace var;
 
 String::String(){
-	set_capacity(minimum_size()-1);
-	clear();
+    //set_capacity(minimum_size()-1);
+    //clear();
 }
 
 String::String(u32 capacity){
@@ -29,7 +29,9 @@ String::String(const char * s, u32 len){
 
 
 String::String(char * mem, u32 capacity, bool readonly) : Data((void*)mem, capacity, readonly){
-
+    if( !readonly ){
+        clear();
+    }
 }
 
 u32 String::capacity() const {
@@ -54,6 +56,11 @@ int String::sprintf(const char * format, ...){
 	va_list args;
 	va_start (args, format);
 	ret = vsnprintf(cdata(), capacity(), format, args);
+    if( ret > (int)capacity() ){ //if the data did not fit, make the buffer bigger
+        if( set_capacity(ret+1) >= 0 ){
+            vsnprintf(cdata(), capacity(), format, args);
+        }
+    }
 	va_end (args);
 	return ret;
 }

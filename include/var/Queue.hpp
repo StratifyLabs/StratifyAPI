@@ -55,6 +55,9 @@ public:
     const T & front() const {
         const T * front_item = (const T*)m_linked_list.front();
         //fatal error if front_item is null
+        if( front_item == 0 ){
+            exit_fatal("Queue::front()");
+        }
         return front_item[m_front_idx];
     }
 

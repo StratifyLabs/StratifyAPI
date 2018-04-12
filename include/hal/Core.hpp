@@ -6,9 +6,29 @@
 #include <mcu/mcu.h>
 #include <sos/dev/core.h>
 #include "Periph.hpp"
-
+#include "../var/String.hpp"
 
 namespace hal {
+
+
+class SerialNumber {
+public:
+    SerialNumber();
+    int get();
+
+    static SerialNumber from_string(const char * str);
+
+
+    SerialNumber& operator = (const char * str);
+
+    bool operator == (const SerialNumber & serial_number);
+
+    void print() const;
+    var::String to_string() const;
+
+private:
+    mcu_sn_t m_serial_number;
+};
 
 /*! \brief Core Class
  * \details This is the Core class.  It is used to

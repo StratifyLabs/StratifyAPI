@@ -12,6 +12,13 @@ Ring::Ring(u8 * buf, u32 size) : Data(buf, size){
 	m_is_overflow_allowed = true;
 }
 
+Ring::Ring(u32 size) : Data(size){
+    m_size = size;
+    m_head = 0;
+    m_tail = 0;
+    m_is_overflow_allowed = true;
+}
+
 
 int Ring::write(const u8 * buf, u32 nbytes){
 	u32 i;

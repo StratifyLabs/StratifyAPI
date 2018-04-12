@@ -53,6 +53,9 @@ public:
 	/*! \details Declares an empty string of a specified capacity. */
 	String(u32 capacity);
 
+    String(const String & s) : Data(s){}
+    ~String(){}
+
 	/*! \details Declares a string and initialize to \a s. */
 	String(const char * s);
 
@@ -105,7 +108,9 @@ public:
 	int set_capacity(u32 s){ return Data::set_capacity(s+1); }
 
 	/*! \details Assigns a c-string to a String. */
-	String& operator=(const char * a){ assign(a); return *this; }
+    String& operator=(const char * a){
+        assign(a); return *this;
+    }
 
 	/*! \details Assigns the value of a String to another String.
 	 *
@@ -123,7 +128,10 @@ public:
 	 * \endcode
 	 *
 	 */
-	String& operator=(String & a){ assign(a.c_str()); return *this; }
+    String& operator=(const String & a){
+        assign(a.c_str());
+        return *this;
+    }
 
 	/*! \details Appends a c style string go the string.
 	 *
