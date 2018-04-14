@@ -204,7 +204,10 @@ public:
 	 * @return The total number of characters written to the stdout
      *
 	 */
-    int print(u32 o_flags = PRINT_HEX) const { return ::printf("%s", str()); }
+    int print(u32 o_flags = PRINT_HEX) const {
+        (void)o_flags; //unused
+        return ::printf("%s", str());
+    }
     //deprecated
 #if !defined __link
     [[deprecated("Replaced by String::print()")]]

@@ -14,7 +14,11 @@ SerialNumber SerialNumber::from_string(const char * str){
     SerialNumber ret;
     u32 len = strnlen(str, 8*4);
     if( len == 8*4 ){
+#if defined __link
+        sscanf(str, "%08X%08X%08X%08X",
+#else
         sscanf(str, "%08lX%08lX%08lX%08lX",
+#endif
                &ret.m_serial_number.sn[3],
                 &ret.m_serial_number.sn[2],
                 &ret.m_serial_number.sn[1],
@@ -48,7 +52,11 @@ int SerialNumber::get(){
 }
 
 void SerialNumber::print() const {
+#if defined __link
+    ::printf("SN:%X%X%X%X\n",
+#else
     ::printf("SN:%lX%lX%lX%lX\n",
+#endif
             m_serial_number.sn[3],
             m_serial_number.sn[2],
             m_serial_number.sn[1],
@@ -57,12 +65,15 @@ void SerialNumber::print() const {
 
 var::String SerialNumber::to_string() const {
     var::String ret;
-    ret.sprintf("%lX%lX%lX%lX",
-                m_serial_number.sn[3],
-                m_serial_number.sn[2],
-                m_serial_number.sn[1],
-                m_serial_number.sn[0]);
-    printf("Ret string 0x%lX\n", (u32)ret.data());
+#if defined __link
+    ret.sprintf("SN:%X%X%X%X\n",
+#else
+    ::printf("SN:%lX%lX%lX%lX\n",
+#endif
+            m_serial_number.sn[3],
+            m_serial_number.sn[2],
+            m_serial_number.sn[1],
+            m_serial_number.sn[0]);
     return ret;
 }
 
