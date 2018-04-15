@@ -151,9 +151,9 @@ void Data::fill(unsigned char d){
 
 int Data::print(u32 o_flags) const {
     const u8 * ptr = (const u8*)data_const();
-    u32 i;
-    for(i=0; i < capacity(); i++){
-        ::printf("[%ld] =", i);
+    int i;
+    for(i=0; i < (int)capacity(); i++){
+        ::printf("[%d] =", i);
         if( o_flags & PRINT_HEX ){
             printf(" 0x%X", ptr[i]);
         }
