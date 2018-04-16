@@ -3,6 +3,7 @@
 
 #include "Queue.hpp"
 
+#if 0
 namespace var {
 
 //this shouldn't be documented until it is implemented and tested
@@ -40,5 +41,6 @@ public:
 };
 
 }
+#endif
 
 #endif // LIST_HPP

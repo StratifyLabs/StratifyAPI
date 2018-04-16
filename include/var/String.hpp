@@ -171,7 +171,14 @@ public:
 	 */
 	String substr(u32 pos = 0, u32 len = npos) const;
 
-	/*! \details Inserts \a s (zero terminated) into string at \a pos. */
+    /*! \details Inserts \a s (zero terminated) into string at \a pos.
+     *
+     * @param pos Where to insert the string in this object (zero to insert at beginning)
+     * @param s Zero terminated string to insert
+     *
+     * If \a pos is greater than length(), error_number() is set to EINVAL.
+     *
+     */
 	String& insert(u32 pos, const char * s);
 
     /*! \details Erases a portion of the string starting with the character at \a pos.

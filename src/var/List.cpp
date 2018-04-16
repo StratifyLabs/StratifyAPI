@@ -1,6 +1,4 @@
-#include "List.hpp"
+#include "var/List.hpp"
 
-List::List()
-{
+using namespace var;
 
-}
