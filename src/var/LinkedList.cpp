@@ -1,5 +1,6 @@
 #include "var/LinkedList.hpp"
 
+#include <cstring>
 #include <cstdlib>
 
 using namespace var;
@@ -13,6 +14,38 @@ LinkedList::LinkedList(u32 size){
 LinkedList::~LinkedList(){
     clear();
 }
+
+LinkedList::LinkedList(const LinkedList & list){
+    m_size = list.m_size;
+    m_front = 0;
+    m_back = 0;
+
+    assign(list);
+}
+
+LinkedList & LinkedList::operator=(const LinkedList & list){
+    assign(list);
+    return *this;
+
+}
+
+void LinkedList::assign(const LinkedList & list){
+    clear();
+    m_size = list.m_size;
+    item_t * next_item;
+    if( list.m_front ){
+        next_item = list.m_front;
+        do {
+            if( push_back() ){
+                memcpy(back(), data(next_item), m_size);
+                next_item = next(next_item);
+            } else {
+                next_item = 0;
+            }
+        } while( next_item != 0 );
+    }
+}
+
 
 u32 LinkedList::count() const {
     u32 count_value = 0;
@@ -42,7 +75,7 @@ void LinkedList::clear(){
 }
 
 
-bool LinkedList::push_back(){
+int LinkedList::push_back(){
     //the back is the last item
     if( m_back ){
         m_back->next = new_item();
@@ -51,7 +84,7 @@ bool LinkedList::push_back(){
             m_back = next(m_back);
             m_back->previous = old_back;
             m_back->next = 0;
-            return true;
+            return 0;
         }
     } else {
         m_back = new_item();
@@ -59,10 +92,10 @@ bool LinkedList::push_back(){
             m_back->previous = 0;
             m_back->next = 0;
             m_front = m_back;
-            return true;
+            return 0;
         }
     }
-    return false;
+    return -1;
 }
 
 void LinkedList::pop_back(){

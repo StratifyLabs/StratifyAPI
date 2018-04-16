@@ -6,6 +6,7 @@ set(SOURCES
 	${SOURCES_PREFIX}/Flags.cpp
   ${SOURCES_PREFIX}/Item.cpp
 	${SOURCES_PREFIX}/LinkedList.cpp
+	${SOURCES_PREFIX}/List.cpp
 	${SOURCES_PREFIX}/JsonString.cpp
 	${SOURCES_PREFIX}/Queue.cpp
 	${SOURCES_PREFIX}/Ring.cpp

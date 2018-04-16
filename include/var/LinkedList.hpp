@@ -18,6 +18,9 @@ public:
     LinkedList(u32 size);
     ~LinkedList();
 
+    LinkedList(const LinkedList & list);
+    LinkedList & operator=(const LinkedList & list);
+
     /*! \details Returns a pointer to the data
      * stored in the back list element.
      */
@@ -31,10 +34,10 @@ public:
     /*! \details Allocates a new item at the back
      * of the list.
      *
-     * @return True if successful
+     * @return Less than zero if push fails
      *
      */
-    bool push_back();
+    int push_back();
 
     /*! \details Deletes an item at the back of
      * the list.
@@ -70,6 +73,8 @@ public:
 
 private:
     u16 m_size;
+
+    void assign(const LinkedList & list);
 
     friend class LinkedListIndex;
 

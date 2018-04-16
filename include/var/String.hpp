@@ -255,7 +255,7 @@ public:
 	/*! \details Appends \a c to string.  */
 	void append(char c);
 	/*! \details Appends \a c to string.  */
-	inline void push_back(char c) { append(c); }
+    void push_back(char c) { append(c); }
 
 	/*! \details Copies the \a nth element (separated by \a sep) of the string to to \a dest. */
 	bool get_delimited_data(String & dest, int n, char sep = ',', char term = '\n');

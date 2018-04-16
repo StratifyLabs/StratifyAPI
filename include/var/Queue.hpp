@@ -78,15 +78,16 @@ public:
      * @param value The item to push
      *
      */
-    void push(const T & value){
+    int push(const T & value){
         m_back_idx++;
         if( m_back_idx == jump_size() ){
-            if( m_linked_list.push_back() == false ){
-                return;
+          if( m_linked_list.push_back() < 0 ){
+                return -1;
             }
             m_back_idx = 0;
         }
         back() = value;
+        return 0;
     }
 
     /*! \details Pops an item from the front fo the queue. */
@@ -133,7 +134,12 @@ public:
         return 0;
     }
 
-    /*! \details Clears the contents of the queue. */
+    /*! \details Clears the contents of the queue.
+     *
+     * This will empty the queue and free all the
+     * resources associated with it.
+     *
+     */
     void clear(){
         m_linked_list.clear();
         set_initial_values();
@@ -152,8 +158,6 @@ private:
     static int jump_size(){ return 16; }
 
     LinkedList m_linked_list;
-
-
 
 };
 

@@ -19,8 +19,8 @@ public:
     Array(){}
 
     /*! \details Returns the number of objects in the array. */
-    int count() const { return size_value; }
-    int size() const { return size_value; }
+    u32 count() const { return size_value; }
+    u32 size() const { return size_value; }
 
     /*! \details Returns the first object in the array. */
     T front(){ return m_array[0]; }
@@ -76,11 +76,10 @@ public:
      *
      */
     T & at(u32 idx){
-        if( idx < size_value ){
-            return m_array[idx];
+        if( idx >= size_value ){
+            exit_fatal("Array out of bounds");
         }
-        //fatal error
-        return 0;
+        return m_array[idx];
     }
 
     /*! \details Returns a pointer to the data. */

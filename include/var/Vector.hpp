@@ -57,10 +57,12 @@ public:
      * cannot be added, nothing will happen.
      *
      */
-    void push_back(const T & value){
-        if( add_space() ){
+    int push_back(const T & value){
+        if( add_space() == 0 ){
             vector_data()[m_count++] = value;
+            return 0;
         }
+        return -1;
     }
 
     /*! \details Removes the last element of the vector. */
@@ -85,16 +87,18 @@ public:
      * will be push_back() is used to add the element.
      *
      */
-    void insert(u32 pos, const T & value){
+    int insert(u32 pos, const T & value){
         if( pos >= count() ){
-            push_back(value);
-        } else if( add_space() ){
+            return push_back(value);
+        } else if( add_space() == 0 ){
             //move elements from pos to end back one
             for(u32 i=count(); i > pos; i-- ){
                 vector_data()[i] = vector_data()[i-1];
             }
             vector_data()[pos] = value;
+            return 0;
         }
+        return -1;
     }
 
     /*! \details Returns the number of elemens in the Vector. */
@@ -122,13 +126,13 @@ public:
 
 private:
 
-    bool add_space(){
+    int add_space(){
         if( count() >= capacity() ){
             if( resize((m_count + jump_size()) * sizeof(T)) < 0 ){
-                return false;
+                return -1;
             }
         }
-        return true;
+        return 0;
     }
 
     T * vector_data(){
