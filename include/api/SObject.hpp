@@ -54,6 +54,8 @@ public:
 
 protected:
 
+    int set_error_number_if_error(int ret) const;
+
     /*! \details Sets the error number.
      *
      * @param value The value to assign to the error number.

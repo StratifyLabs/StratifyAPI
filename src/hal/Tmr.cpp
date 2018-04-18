@@ -18,7 +18,9 @@ int Tmr::disable() const {
 }
 
 u32 Tmr::get_value() const {
-	return ioctl(I_TMR_GET);
+    u32 value = 0;
+    ioctl(I_TMR_GET, &value);
+    return value;
 }
 
 int Tmr::set_value(u32 value) const {

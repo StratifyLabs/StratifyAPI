@@ -47,13 +47,57 @@ namespace var {
  */
 class String : public Data {
 public:
-	/*! \details Declares an empty string. */
+    /*! \details Constructs an empty string and allocates the minimum capacity.
+     *
+     * To construct a String without using any memory allocation us String(0).
+     *
+     */
 	String();
 
-	/*! \details Declares an empty string of a specified capacity. */
+    /*! \details Declares an empty string of a specified capacity.
+     *
+     * @param capacity The minimum capacity of the string.
+     *
+     * If \a capacity is zero, no memory will be allocated to the string.
+     *
+     */
 	String(u32 capacity);
 
+    /*! \details Contructs a string as a copy of the string
+     * specified.
+     *
+     * @param s The string to copy.
+     *
+     * if \a s is_internally_managed(), this object will
+     * allocate memory internally and copy the contents of \a s.
+     *
+     * If \s !is_internally_managed(), this object will refer
+     * to the same memory as \a s.
+     *
+     */
     String(const String & s) : Data(s){}
+
+    /*! \details Assigns the value of a String to another String.
+     *
+     * @param a The new String to assign
+     * @return A reference to the destination String
+     *
+     * This method will make a copy of the string in a new memory
+     * location rather than just using the data location
+     * of the source string.
+     *
+     * \code
+     * String str1 = "hello";
+     * String str2 = "goodbye";
+     * str2 = str1; //both strings are now "hello"
+     * \endcode
+     *
+     */
+    String& operator=(const String & a){
+        assign(a.c_str());
+        return *this;
+    }
+
     ~String(){}
 
 	/*! \details Declares a string and initialize to \a s. */
@@ -82,8 +126,8 @@ public:
 
 
 	enum {
-		npos /*! Defines an invalid string length and position */ = (u32)-1
-	};
+        npos /*! Defines an invalid string length and position */ = (u32)-1
+    };
 
 	/*! \details Constructs a string using statically allocated memory.
 	 *
@@ -105,32 +149,11 @@ public:
 	 * without changing the capacity.
 	 *
 	 */
-	int set_capacity(u32 s){ return Data::set_capacity(s+1); }
+    int set_capacity(u32 s){ return Data::set_capacity(s+1); }
 
-	/*! \details Assigns a c-string to a String. */
+    /*! \details Assigns a c-string to a String. */
     String& operator=(const char * a){
         assign(a); return *this;
-    }
-
-	/*! \details Assigns the value of a String to another String.
-	 *
-	 * @param a The new String to assign
-	 * @return A reference to the destination String
-	 *
-	 * This method will make a copy of the string in a new memory
-	 * location rather than just using the data location
-	 * of the source string.
-	 *
-	 * \code
-	 * String str1 = "hello";
-	 * String str2 = "goodbye";
-	 * str2 = str1; //both strings are now "hello"
-	 * \endcode
-	 *
-	 */
-    String& operator=(const String & a){
-        assign(a.c_str());
-        return *this;
     }
 
 	/*! \details Appends a c style string go the string.

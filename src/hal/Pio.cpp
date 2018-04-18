@@ -13,21 +13,23 @@ int Pio::set_mask(u32 mask) const {
 }
 
 int Pio::clear_mask(u32 mask) const {
-	return ioctl(I_PIO_CLRMASK, MCU_INT_CAST(mask));
+    return ioctl(I_PIO_CLRMASK, MCU_INT_CAST(mask));
 }
 
 int Pio::assign(u32 value) const {
 	pio_attr_t attr;
 	attr.o_pinmask = value;
-	attr.o_flags = FLAG_CLEAR;
-	return ioctl(I_PIO_SETATTR, &attr);
+    attr.o_flags = FLAG_ASSIGN;
+    return ioctl(I_PIO_SETATTR, &attr);
 }
 
 u32 Pio::get_value() const {
-	return ioctl(I_PIO_GET);
+    u32 value = 0;
+    ioctl(I_PIO_GET, &value);
+    return value;
 }
 
 int Pio::set_value(unsigned int value) const {
-	return ioctl(I_PIO_SET, value);
+    return ioctl(I_PIO_SET, value);
 }
 

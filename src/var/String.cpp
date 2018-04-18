@@ -11,13 +11,16 @@
 using namespace var;
 
 String::String(){
-    //set_capacity(minimum_size()-1);
-    //clear();
+    //set up the minimum size
+    set_capacity(minimum_size()-1);
+    clear();
 }
 
 String::String(u32 capacity){
-    set_capacity(capacity);
-    clear();
+    if( (capacity > 0) && (capacity != npos) ){
+        set_capacity(capacity);
+        clear();
+    }
 }
 
 String::String(const char * s){

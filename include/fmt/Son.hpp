@@ -240,11 +240,13 @@ public:
 	 *
 	 */
 	int seek_next(var::String & name, son_value_t * type = 0){
+        name.set_capacity(SON_KEY_NAME_CAPACITY);
 		return son_api()->seek_next(&m_son, name.cdata(), type);
 	}
 
 	int seek_next(var::String & name, son_value_t & type){
-		return son_api()->seek_next(&m_son, name.cdata(), &type);
+        name.set_capacity(SON_KEY_NAME_CAPACITY);
+        return son_api()->seek_next(&m_son, name.cdata(), &type);
 	}
 
 	/*! \details Converts the data file to JSON.
@@ -332,7 +334,11 @@ public:
 	 * @return Number of bytes in the value portion to be successfully stored
 	 */
 	int write(const char * key, const var::String & v){
-		return son_api()->write_str(&m_son, key, v.c_str());
+        if( v.c_str() ){
+            return son_api()->write_str(&m_son, key, v.c_str());
+        } else {
+            return -1;
+        }
 	}
 #endif
 
@@ -426,7 +432,13 @@ public:
 	 * @return The number of bytes actually read
 	 */
 	int read_str(const char * access, var::String & str){
-		return son_api()->read_str(&m_son, access, str.cdata(), str.capacity());
+        //first seek and get the size
+        son_size_t size;
+        if( seek(access, size) >= 0 ){
+            str.set_capacity(size+1);
+            return son_api()->read_str(&m_son, access, str.cdata(), str.capacity());
+        }
+        return -1;
 	}
 
 	/*! \details Reads the specified key as a number (s32).  If the original

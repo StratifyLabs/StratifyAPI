@@ -47,7 +47,7 @@ public:
      * If \a is dynamically allocated, the new object will
      * be a dynamically allocated and a copy of the contents.
      *
-     * If \a a is read-only or externally maanaged, the new object
+     * If \a a is read-only or externally managed, the new object
      * will be externally managed and point to the same memory.
      *
      * \code

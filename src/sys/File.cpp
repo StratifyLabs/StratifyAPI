@@ -62,11 +62,8 @@ int File::open(const char * name, int access, int perms){
     m_fd = ::open(name, access, perms);
 #endif
 
-    if( m_fd < 0 ){
-        set_error_number(errno);
-        return -1;
-    }
-    return 0;
+    return set_error_number_if_error(m_fd);
+
 }
 
 int File::create(const char * name, bool overwrite, int perms){
@@ -80,10 +77,7 @@ int File::create(const char * name, bool overwrite, int perms){
 u32 File::size() const {
     struct link_stat st;
 #if defined __link
-    if ( link_fstat(driver(), m_fd, &st) < 0 ){
-        set_error_number(link_errno);
-        return -1;
-    }
+    return set_error_number_if_error( link_fstat(driver(), m_fd, &st) );
 #else
     u32 loc;
     loc = lseek(m_fd, 0, SEEK_CUR);
@@ -101,7 +95,6 @@ int File::stat(const char * name, struct link_stat * st, link_transport_mdriver_
 int File::stat(const char * name, struct stat * st){
     return ::stat(name, st);
 }
-
 #endif
 
 #if !defined __link
@@ -124,29 +117,18 @@ u32 File::size(const char * name, link_transport_mdriver_t * driver){
 #endif
 
 int File::read(int loc, void * buf, int nbyte) const {
-    int ret;
     if( seek(loc) < 0 ){
-        set_error_number(errno);
         return -1;
     }
 
-    ret = read(buf, nbyte);
-    if( ret < 0 ){
-        set_error_number(errno);
-    }
-    return ret;
+    return read(buf, nbyte);
 }
 
 int File::write(int loc, const void * buf, int nbyte) const {
     if( seek(loc) < 0 ){
-        set_error_number(errno);
         return -1;
     }
-    int ret = write(buf, nbyte);
-    if( ret < 0 ){
-        set_error_number(errno);
-    }
-    return ret;
+    return write(buf, nbyte);
 }
 
 
@@ -190,41 +172,27 @@ int File::close(){
 }
 
 int File::read(void * buf, int nbyte) const {
-    int ret;
 #if defined __link
-    ret = link_read(driver(), m_fd, buf, nbyte);
-    if( ret < 0 ){
-        set_error_number(link_errno);
-    }
+    return set_error_number_if_error( link_read(driver(), m_fd, buf, nbyte) );s
 #else
-    ret = ::read(m_fd, buf, nbyte);
-    if( ret < 0 ){ set_error_number(errno); }
+    return set_error_number_if_error( ::read(m_fd, buf, nbyte) );
 #endif
-    return ret;
 }
 
 int File::write(const void * buf, int nbyte) const {
-    int ret;
 #if defined __link
-    ret = link_write(driver(), m_fd, buf, nbyte);
-    if( ret < 0 ){ set_error_number(link_errno); }
+    return set_error_number_if_error( link_write(driver(), m_fd, buf, nbyte) );
 #else
-    ret = ::write(m_fd, buf, nbyte);
-    if( ret < 0 ){ set_error_number(errno); }
+    return set_error_number_if_error( ::write(m_fd, buf, nbyte) );
 #endif
-    return ret;
 }
 
 int File::seek(int loc, int whence) const {
-    int ret;
 #if defined __link
-    ret = link_lseek(driver(), m_fd, loc, whence);
-    if( ret < 0 ){ set_error_number(link_errno); }
+    return set_error_number_if_error( link_lseek(driver(), m_fd, loc, whence) );
 #else
-    ret = ::lseek(m_fd, loc, whence);
-    if( ret < 0 ){ set_error_number(errno); }
+    return set_error_number_if_error( ::lseek(m_fd, loc, whence) );
 #endif
-    return ret;
 }
 
 int File::fileno() const {
@@ -236,12 +204,12 @@ int File::loc() const {
 }
 
 int File::flags() const{
-    if( m_fd < 0 ){
-        return -1;
-    }
 #if defined __link
     return -1;
 #else
+    if( fileno() < 0 ){
+        return -1;
+    }
     return _global_impure_ptr->procmem_base->open_file[m_fd].flags;
 #endif
 }
@@ -311,14 +279,10 @@ const char * File::suffix(const char * path){
 
 
 int File::ioctl(int req, void * arg) const {
-    int ret;
 #if defined __link
-    ret =  link_ioctl(driver(), m_fd, req, arg);
-    if( ret < 0 ){ set_error_number(link_errno); }
+    return set_error_number_if_error( link_ioctl(driver(), m_fd, req, arg) );
 #else
-    ret =  ::ioctl(m_fd, req, arg);
-    if( ret < 0 ){ set_error_number(errno); }
+    return set_error_number_if_error( ::ioctl(m_fd, req, arg) );
 #endif
-    return ret;
 }
 
