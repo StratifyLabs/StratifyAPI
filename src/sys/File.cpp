@@ -173,7 +173,7 @@ int File::close(){
 
 int File::read(void * buf, int nbyte) const {
 #if defined __link
-    return set_error_number_if_error( link_read(driver(), m_fd, buf, nbyte) );s
+    return set_error_number_if_error( link_read(driver(), m_fd, buf, nbyte) );
 #else
     return set_error_number_if_error( ::read(m_fd, buf, nbyte) );
 #endif
@@ -252,6 +252,19 @@ char * File::gets(char * s, int n, char term) const {
     return s;
 
 }
+
+char * File::gets(var::String & s, char term) const {
+    int ret;
+    char c;
+    do {
+        ret = read(&c, 1);
+        if( ret > 0 ){
+            s.append(c);
+        }
+    } while( (c != term) && (ret > 0) );
+    return s.cdata();
+}
+
 
 const char * File::name(const char * path){
     int len;

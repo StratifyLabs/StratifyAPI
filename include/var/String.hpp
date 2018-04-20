@@ -275,17 +275,17 @@ public:
     bool empty() const { return size() == 0; }
 
 	/*! \details Assigns a substring of \a a to string. */
-	void assign(const char * a, u32 subpos, u32 sublen){ assign(a + subpos, sublen); }
+    int assign(const char * a, u32 subpos, u32 sublen){ return assign(a + subpos, sublen); }
 	/*! \details Assigns a maximum of \a n characters of \a a to string. */
-	void assign(const char * a, u32 n);
+    int assign(const char * a, u32 n);
 	/*! \details Assigns \a a (zero terminated) to string.  */
-	void assign(const char * a);
+    int assign(const char * a);
 	/*! \details Appends \a a (zero terminated) to string.  */
-	void append(const char * a);
+    int append(const char * a);
 	/*! \details Appends \a c to string.  */
-	void append(char c);
+    int append(char c);
 	/*! \details Appends \a c to string.  */
-    void push_back(char c) { append(c); }
+    void push_back(char c){ append(c); }
 
 	/*! \details Copies the \a nth element (separated by \a sep) of the string to to \a dest. */
 	bool get_delimited_data(String & dest, int n, char sep = ',', char term = '\n');

@@ -60,6 +60,13 @@ bool EventLoop::handle_event(const Event & event){
     Element * tmp = current_element();
     tmp = handle_event(current_element(), event, drawing_attr(), this);
     if( tmp != current_element() ){
+        if( tmp == 0 ){
+            tmp = catch_null_handler(current_element());
+            if( tmp != 0 ){
+                tmp->set_event_loop(this);
+                handle_transition(current_element(), tmp, drawing_attr());
+            }
+        }
         set_current_element(tmp);
         return true;
     }

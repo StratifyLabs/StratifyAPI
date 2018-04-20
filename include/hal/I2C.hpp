@@ -199,6 +199,9 @@ public:
     int get_error() const;
 
     //deprecated
+#if !defined __link
+    [[deprecated("use get_error()")]]
+#endif
     int get_err() const { return get_error(); }
 
 	/*! \details Sets the attributes of the I2C bus.

@@ -305,15 +305,13 @@ public:
 	/*! \details Seeks to a location in the file or on the device. */
 	virtual int seek(int loc, int whence = LINK_SEEK_SET) const;
 
-
-	/*! \details Reads up to n-1 bytes to \a s until end-of-file or \a term is reached.  */
-	char * gets(char * s, int n, char term = '\n') const;
+    /*! \details Reads a line in to the var::String until end-of-file or \a term is reached. */
+    char * gets(var::String & s, char term = '\n') const;
 
 #ifndef __link
-	/*! \details Reads a line in to the var::String until end-of-file or \a term is reached. */
-	char * gets(var::String & s, char term = '\n') const { return gets(s.cdata(), s.capacity(), term); }
+    [[deprecated("Use gets(var::String & s) instead")]]
 #endif
-
+    char * gets(char * s, int n, char term = '\n') const;
 
 #ifdef __link
 	void set_driver(link_transport_mdriver_t * d){ m_driver = d; }

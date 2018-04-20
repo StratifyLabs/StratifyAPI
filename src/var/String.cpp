@@ -77,47 +77,51 @@ char String::at(u32 pos) const {
     return 0;
 }
 
-void String::assign(const char * a){
+int String::assign(const char * a){
     if( a == 0 ){
         clear();
-        return;
+        return 0;
     }
     u32 len = strlen(a);
-    assign(a, len);
+    return assign(a, len);
 }
 
-void String::assign(const char * a, u32 n){
+int String::assign(const char * a, u32 n){
     if( a != 0 ){
-
         if( n == (u32)npos ){
             n = strlen(a);
         }
-        set_capacity(n+1); //attempt to resize the object to at least n
+        if( set_capacity(n+1) < 0 ){
+            return -1;
+        }
         clear();
         strncpy(cdata(), a, n);
     } else {
         clear();
     }
+    return 0;
 }
 
-void String::append(const char * a){
-    if( a == 0 ){ return; }
+int String::append(const char * a){
+    if( a == 0 ){ return 0; }
     u32 len = size();
     u32 alen = strlen(a);
     set_capacity(len + alen); //try to make min capacity
     if( len == 0 ){
         clear(); //previous length was zero -- ensure string is valid
     }
-    if( cdata() == 0 ){ return; }
+    if( cdata() == 0 ){ return -1; }
     strncat(cdata(), a, capacity() - len);
+    return 0;
 }
 
-void String::append(char c){
+int String::append(char c){
     u32 len = size();
     u32 alen = 1;
     set_capacity(len + alen + 1); //try to make min capacity
-    if( cdata() == 0 ){ return; }
+    if( cdata() == 0 ){ return -1; }
     strncat(cdata(),&c,1);
+    return 0;
 }
 
 bool String::get_delimited_data(String & dest, int n, char sep, char term){

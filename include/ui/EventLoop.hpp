@@ -72,6 +72,9 @@ public:
     /*! \details Updates the drawing attributes. */
 	void set_drawing_attr(const draw::DrawingAttr & attr){ m_drawing_attr = attr; }
 
+    virtual Element * catch_null_handler(Element * last_element){ return 0; }
+
+
     static Element * handle_event(Element * current_element, const Event & event, const draw::DrawingAttr & drawing_attr, EventLoop * event_loop = 0);
     static void handle_transition(Element * current_element, Element * next_element, const draw::DrawingAttr & drawing_attr);
 
