@@ -8,7 +8,6 @@
 using namespace sys;
 
 #if defined __link
-#define errno link_errno
 File::File(link_transport_mdriver_t * d){
     // TODO Auto-generated constructor stub
     m_fd = -1; //The file is not open
@@ -165,7 +164,7 @@ int File::close(){
 #endif
         m_fd = -1;
         if( ret < 0 ){
-            set_error_number(errno);
+            set_error_number_to_errno();
         }
     }
     return ret;

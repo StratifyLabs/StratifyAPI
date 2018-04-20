@@ -50,16 +50,13 @@ public:
 
     /*! \details Clears the current error.
      */
-    void clear_error() const { m_error_number = ERROR_NONE; }
+    void clear_error_number() const { m_error_number = ERROR_NONE; }
 
 protected:
 
+    //These methods are used internally to assign the error_number() value
     int set_error_number_if_error(int ret) const;
-
-    /*! \details Sets the error number.
-     *
-     * @param value The value to assign to the error number.
-     */
+    void set_error_number_to_errno() const;
     void set_error_number(int value) const { m_error_number = value; }
 
 private:

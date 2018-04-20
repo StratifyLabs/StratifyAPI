@@ -7,7 +7,6 @@
 namespace sys {
 
 #if defined __link
-#define errno link_errno
 FileInfo::FileInfo(link_transport_mdriver_t * d){
 	m_driver = d;
 	memset(&m_stat, 0, sizeof(m_stat));
@@ -26,11 +25,8 @@ int FileInfo::get_info(const char * path){
 #else
     ret = File::stat(path, &m_stat);
 #endif
-    if( ret < 0 ){
-        set_error_number(errno);
-    }
 
-    return ret;
+    return set_error_number_if_error(ret);
 }
 
 

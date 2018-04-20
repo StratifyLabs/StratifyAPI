@@ -30,3 +30,12 @@ int SObject::set_error_number_if_error(int ret) const {
     }
     return ret;
 }
+
+void SObject::set_error_number_to_errno() const {
+#if defined __link
+        set_error_number(link_errno);
+#else
+        set_error_number(errno);
+#endif
+}
+

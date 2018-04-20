@@ -9,7 +9,6 @@ using namespace sys;
 
 
 #if defined __link
-#define errno link_errno
 Dir::Dir(link_transport_mdriver_t * driver){
 	m_dirp = 0;
 	m_driver = driver;
@@ -66,7 +65,7 @@ int Dir::open(const char * name){
 	m_dirp = opendir(name);
 #endif
 	if( m_dirp == 0 ){
-        set_error_number(errno);
+        set_error_number_to_errno();
 		return -1;
 	}
 
@@ -121,8 +120,8 @@ const char * Dir::read(){
 #else
 	struct dirent * result;
 	if( readdir_r(m_dirp, &m_entry, &result) < 0 ){
-        set_error_number(errno);
-		return 0;
+        set_error_number_to_errno();
+        return 0;
 	}
 #endif
 	return m_entry.d_name;
@@ -148,7 +147,7 @@ int Dir::close(){
 		link_closedir(driver(), m_dirp);
 #else
         if( closedir(m_dirp) < 0 ){
-            set_error_number(errno);
+            set_error_number_to_errno();
         }
 #endif
 		m_dirp = 0;
