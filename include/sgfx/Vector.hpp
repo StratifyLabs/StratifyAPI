@@ -5,6 +5,7 @@
 
 #include <sapi/sg_types.h>
 
+#include "../api/SObject.hpp"
 #include "Region.hpp"
 #include "Bitmap.hpp"
 #include "Pen.hpp"
@@ -12,7 +13,7 @@
 
 namespace sgfx {
 
-/*! \brief Gfx Map Class
+/*! \brief Vecotor Map Class
  * \details This class is a wrapper for a sg_vector_map_t data structure.
  */
 class VectorMap : public var::Item<sg_vector_map_t> {
@@ -66,7 +67,7 @@ public:
  * \details The Vector class can be used to draw scalable graphics on bitmaps.
  *
  */
-class Vector {
+class Vector : public api::SObject {
 public:
 
 	/*! \details Maximum x,y value in abstract graphic space */

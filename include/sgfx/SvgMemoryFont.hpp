@@ -8,7 +8,10 @@
 
 namespace sgfx {
 
-/*! \brief Font SVG class
+/*! \brief Stratify Vector Graphics Memory Font
+ * \details SvgMemoryFont is an implementation of SvgFont
+ * where the SVG data is stored in memory (flash or RAM).
+ *
  *
  */
 class SvgMemoryFont : public SvgFont {

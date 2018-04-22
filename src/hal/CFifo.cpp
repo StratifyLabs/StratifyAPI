@@ -50,6 +50,13 @@ int CFifo::get_info(int channel, fifo_info_t & info) const {
 	return 0;
 }
 
+FifoInfo CFifo::get_info(int channel){
+    FifoInfo info;
+    get_info(channel, info.m_info);
+    return info;
+}
+
+
 int CFifo::set_attr(int channel, const fifo_attr_t & attr) const {
 	cfifo_fifoattr_t fifo_attr;
 	fifo_attr.channel = channel;

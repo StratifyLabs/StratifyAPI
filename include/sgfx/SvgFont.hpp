@@ -8,6 +8,12 @@
 
 namespace sgfx {
 
+/*! \brief Stratify Vector Graphics Font
+ * \details The SvgFont class is used to draw
+ * fonts using vector graphic data rather then
+ * bitmap data.
+ *
+ */
 class SvgFont : public Font {
 public:
     SvgFont();

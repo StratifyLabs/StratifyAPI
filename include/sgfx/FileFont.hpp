@@ -8,6 +8,11 @@
 
 namespace sgfx {
 
+/*! \brief File Font Class
+ * \details The File Font class is used to access
+ * fonts that are stored as files.
+ *
+ */
 class FileFont : public Font {
 public:
     FileFont();

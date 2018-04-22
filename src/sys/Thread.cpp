@@ -94,7 +94,7 @@ int Thread::get_policy() const {
 
 int Thread::create(void * (*func)(void*), void * args, int prio, enum Sched::policy policy){
 	if( (int)m_id != -1 ){
-		errno = EBUSY;
+        set_error_number(EBUSY);
 		return -1;
 	}
 

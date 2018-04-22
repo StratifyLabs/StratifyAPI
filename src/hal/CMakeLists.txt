@@ -14,8 +14,9 @@ set(SOURCELIST
   ${SOURCES_PREFIX}/Pio.cpp
   ${SOURCES_PREFIX}/Pwm.cpp
   ${SOURCES_PREFIX}/Spi.cpp
-  ${SOURCES_PREFIX}/Tmr.cpp
-  ${SOURCES_PREFIX}/Uart.cpp
+	${SOURCES_PREFIX}/Switchboard.cpp
+	${SOURCES_PREFIX}/Tmr.cpp
+	${SOURCES_PREFIX}/Uart.cpp
   ${SOURCES_PREFIX}/Usb.cpp)
 
 if( ${SOS_BUILD_CONFIG} STREQUAL arm )

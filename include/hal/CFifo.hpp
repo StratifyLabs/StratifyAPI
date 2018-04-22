@@ -7,9 +7,26 @@
 #include <sos/dev/cfifo.h>
 
 #include "Periph.hpp"
+#include "Fifo.hpp"
 
 
 namespace hal {
+
+class CFifoInfo {
+public:
+    CFifoInfo(){ memset(&m_info, 0, sizeof(cfifo_info_t)); }
+    CFifoInfo(const cfifo_info_t & info){ m_info = info; }
+
+    u32 o_flags() const { return m_info.o_flags; }
+    u16 count() const { return m_info.count; }
+    u16 size() const { return m_info.size; }
+    u32 o_ready() const { return m_info.o_ready; }
+
+    operator const cfifo_info_t & () const { return m_info; }
+private:
+    friend class CFifo;
+    cfifo_info_t m_info;
+};
 
 /*! \brief Channeled FIFO Class
  *
@@ -104,6 +121,9 @@ public:
 	 * @return Zero on success
 	 */
 	int get_info(int channel, fifo_info_t & info) const;
+
+    /*! \details Returns the Fifo info for the specified channel. */
+    FifoInfo get_info(int channel);
 
 	/*! \details Sets the FIFO attributes specified by \a channel.
 	 *

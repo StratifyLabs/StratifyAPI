@@ -22,6 +22,7 @@ namespace hal {}
 #include "hal/Pwm.hpp"
 #include "hal/Rtc.hpp"
 #include "hal/Tmr.hpp"
+#include "hal/Switchboard.hpp"
 #include "hal/Spi.hpp"
 #include "hal/Uart.hpp"
 #include "hal/Usb.hpp"

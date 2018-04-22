@@ -9,6 +9,8 @@
 
 namespace hal {
 
+
+class CFifo;
 class Fifo;
 
 /*! \brief Fifo Attributes Class
@@ -17,7 +19,9 @@ class Fifo;
 class FifoInfo {
 	friend class Fifo;
 public:
-	FifoInfo(){ memset(&m_info, 0, sizeof(m_info)); }
+    FifoInfo(){ memset(&m_info, 0, sizeof(m_info)); }
+    FifoInfo(const fifo_info_t & info){ m_info = info; }
+
 	/*! \details The number of bytes in the FIFO that are currently used (ie available
 	 * for reading.
 	 *
@@ -34,6 +38,8 @@ public:
 	bool is_overflow() const { return m_info.overflow != 0; }
 	bool overflow() const { return m_info.overflow != 0; }
 private:
+    friend class CFifo;
+    friend class Fifo;
 	fifo_info_t m_info;
 };
 
@@ -98,7 +104,7 @@ public:
 		FifoInfo a;
 		get_info(a.m_info);
 		return a;
-	};
+    }
 
 	/*! \details Flushes the FIFO. */
 	int flush() const;

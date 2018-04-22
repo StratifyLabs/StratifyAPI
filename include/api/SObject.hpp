@@ -3,6 +3,9 @@
 
 #include <mcu/types.h>
 
+
+/*! \brief Application Programming Interface (framework-wide namespace)
+ */
 namespace api {
 
 /*! \brief SObject Class
