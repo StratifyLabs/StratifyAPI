@@ -67,7 +67,9 @@ public:
 
     /*! \details Removes the last element of the vector. */
     void pop_back(){
-        m_count--;
+        if( m_count ){
+            m_count--;
+        }
     }
 
     /*! \details Frees unused memory that is reserved for this Vector. */

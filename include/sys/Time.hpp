@@ -5,7 +5,7 @@
 
 
 #include <ctime>
-#include "../api/SObject.hpp"
+#include "../api/WorkObject.hpp"
 
 namespace sys {
 

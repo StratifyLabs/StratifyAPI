@@ -9,13 +9,18 @@
 #include <dirent.h>
 #endif
 
-#include "../api/SObject.hpp"
+#include "../api/SysObject.hpp"
 #include "../var/String.hpp"
 
 namespace sys {
 
-/*! \brief Dir class */
-class Dir : public api::SObject {
+/*! \brief Dir class
+ *
+ * \todo Add some examples
+ *
+ *
+ */
+class Dir : public api::SysWorkObject {
 public:
 	/*! \details Constructs a Dir object. */
 #if defined __link

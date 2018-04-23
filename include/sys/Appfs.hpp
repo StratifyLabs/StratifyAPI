@@ -4,8 +4,9 @@
 #define APPFS_HPP_
 
 #include <sos/link.h>
-#include "../api/SObject.hpp"
+#include "../api/WorkObject.hpp"
 #include "../var/String.hpp"
+#include "../api/SysObject.hpp"
 
 namespace sys {
 
@@ -44,7 +45,7 @@ namespace sys {
  * \endcode
  *
  */
-class Appfs {
+class Appfs : public api::SysInfoObject {
 public:
 
 	/*! \details Creates a file in flash memory consisting

@@ -66,16 +66,16 @@ public:
     /*! \details Contructs a string as a copy of the string
      * specified.
      *
-     * @param s The string to copy.
+     * @param str A reference to the string to copy.
      *
      * if \a s is_internally_managed(), this object will
-     * allocate memory internally and copy the contents of \a s.
+     * allocate memory internally and copy the contents of str.
      *
-     * If \s !is_internally_managed(), this object will refer
-     * to the same memory as \a s.
+     * If str !is_internally_managed(), this object will refer
+     * to the same memory as str.
      *
      */
-    String(const String & s) : Data(s){}
+    String(const String & str) : Data(str){}
 
     /*! \details Assigns the value of a String to another String.
      *
@@ -367,7 +367,7 @@ public:
      * @returns Zero if the strings are the same
      *
      */
-    int compare(const char * s) const;
+    int compare(const char * str) const;
 
     /*! \details Compares the object to \a str.
      *

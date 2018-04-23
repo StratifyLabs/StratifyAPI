@@ -5,7 +5,7 @@
 #ifndef EV_EVENTHANDLER_HPP
 #define EV_EVENTHANDLER_HPP
 
-#include "../api/SObject.hpp"
+#include "../api/EvObject.hpp"
 #include "Event.hpp"
 
 namespace ui {
@@ -16,7 +16,10 @@ namespace ev {
 
 class EventLoop;
 
-class EventHandler : public api::SObject {
+/*! \brief Event Handler Class
+ *
+ */
+class EventHandler : public api::EvWorkObject {
 public:
     EventHandler();
 
@@ -24,7 +27,6 @@ public:
      * Element::UPDATE, Element::TOP_PRESS) happens.
      *
      * @param event The event to execute
-     * @param attr The drawing attributes to use for the event
      * @return For transitions, the new element is returned; otherwise this
      */
     virtual EventHandler * handle_event(const Event & event);

@@ -6,11 +6,12 @@
 
 #include <mcu/types.h>
 #include "../sys/File.hpp"
+#include "../api/FmtObject.hpp"
 
 namespace fmt {
 
 /*! \brief BMP File format */
-class Bmp: public sys::File {
+class Bmp: public api::FmtFileObject {
 public:
 
 	/*! \details Constructs a new bitmap object and opens the bitmap as a read-only file. */

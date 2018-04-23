@@ -10,7 +10,7 @@
 #include <sos/link.h>
 #endif
 
-#include "../api/SObject.hpp"
+#include "../api/FmtObject.hpp"
 #include "../var/String.hpp"
 #include "../sys/Timer.hpp" //for sys::MicroTime
 
@@ -89,7 +89,7 @@ namespace fmt {
  *  be in float format.
  *
  */
-class Son : public api::SObject {
+class Son : public api::FmtWorkObject {
 public:
 
 	/*! \details Constructs a new SON object. */

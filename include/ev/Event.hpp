@@ -5,6 +5,7 @@
 #define EV_EVENT_HPP_
 
 #include <sos/dev/button.h>
+#include "../api/EvObject.hpp"
 
 namespace ui {
 class Button;
@@ -32,7 +33,7 @@ class EventHandler;
  *
  *
  */
-class Event {
+class Event : public api::EvInfoObject {
 public:
 
 	enum {

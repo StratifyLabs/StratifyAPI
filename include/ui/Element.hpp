@@ -11,6 +11,7 @@
 #include "../draw/Animation.hpp"
 #include "../sgfx/Bitmap.hpp"
 #include "../ev/EventHandler.hpp"
+#include "../api/UiObject.hpp"
 #include "Event.hpp"
 
 namespace ui {

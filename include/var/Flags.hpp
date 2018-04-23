@@ -3,11 +3,11 @@
 #ifndef FLAGS_HPP_
 #define FLAGS_HPP_
 
-#include "../api/SObject.hpp"
+#include "../api/VarObject.hpp"
 
 namespace var {
 
-class Flags : public api::SObject {
+class Flags : public api::VarInfoObject {
 public:
 	Flags();
 

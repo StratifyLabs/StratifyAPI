@@ -8,11 +8,11 @@
 #include <pthread.h>
 #include <signal.h>
 #include <sos/sos.h>
-#include "../api/SObject.hpp"
 
 #include <mcu/mcu.h>
 
 #include "../ev/Event.hpp"
+#include "../api/SysObject.hpp"
 
 namespace sys {
 
@@ -51,7 +51,7 @@ namespace sys {
  *
  * \endcode
  */
-class SignalHandler {
+class SignalHandler : public api::SysInfoObject {
 public:
 	/*! \details Constructs a signal handler.
 	 *
@@ -84,7 +84,7 @@ private:
 };
 
 /*! \brief Class for sending Signal events (see SignalHandler for an example) */
-class Signal : public api::SObject {
+class Signal : public api::SysWorkObject {
 public:
 
 	enum {

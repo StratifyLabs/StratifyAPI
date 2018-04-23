@@ -7,10 +7,16 @@
 
 #include "Point.hpp"
 #include "Dim.hpp"
+#include "../api/SgfxObject.hpp"
 
 namespace sgfx {
 
-class Region {
+/*! \brief Region Class
+ * \details The Region class creates a region
+ * in the graphics space defined by a point (top-left corner)
+ * and a dimension.
+ */
+class Region : public api::SgfxInfoObject {
 public:
 	Region(){}
 	Region(sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h){

@@ -4,7 +4,7 @@
 #define TIMER_HPP_
 
 #include <time.h>
-#include "../api/SObject.hpp"
+#include "../api/WorkObject.hpp"
 
 #include "MicroTime.hpp"
 
@@ -69,14 +69,14 @@ public:
 
     /*! \details This method will delay based on the specified MicroTime object.
      *
-     * @param timeout The A reference to the MicroTime object.
+     * @param micro_time A reference to the MicroTime object
      *
      * Here are some examples:
      *
      * \code
      * Timer::wait(MicroTime::from_msec(100)); //delay 100 milliseconds
      * Timer::wait(1000); //delay 1000 microseconds -- MicroTime() is auto constructed using microseconds
-     * Timer::wait(MicroTimer::from_sec(5)); //delay for 5 seconds
+     * Timer::wait(MicroTime::from_sec(5)); //delay for 5 seconds
      * \endcode
      *
      *

@@ -6,7 +6,7 @@
 
 namespace test {
 
-class Engine : public var::Queue<Test*>{
+class Engine : public var::Queue<Test*> {
 public:
     Engine();
 

@@ -14,7 +14,7 @@ namespace draw {
  * \details This class defines the attributes of a Gfx object.
  */
 
-class IconAttr {
+class IconAttr : public api::DrawInfoObject {
 public:
 
 	enum sys_gfx {

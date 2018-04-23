@@ -4,6 +4,7 @@
 #define SGFX_PEN_HPP_
 
 #include <sapi/sg_types.h>
+#include "../api/SgfxObject.hpp"
 #include "../var/Item.hpp"
 
 namespace sgfx {
@@ -40,7 +41,7 @@ namespace sgfx {
  *
  *
  */
-class Pen : public var::Item<sg_pen_t> {
+class Pen : public var::Item<sg_pen_t>, public api::SgfxInfoObject {
 public:
 
 	Pen();

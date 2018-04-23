@@ -7,12 +7,12 @@
 
 namespace draw {
 
-/*! \brief Line Graph Element
+/*! \brief Line Graph Drawing
  * \ingroup graph
  */
-class GraphLine : public Graph {
+class LineGraph : public Graph {
 public:
-	GraphLine();
+    LineGraph();
 
 private:
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);

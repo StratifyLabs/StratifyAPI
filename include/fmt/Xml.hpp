@@ -6,7 +6,7 @@
 
 #include <unistd.h>
 #include "../var/String.hpp"
-#include "../sys/File.hpp"
+#include "../api/FmtObject.hpp"
 
 namespace fmt {
 
@@ -46,7 +46,7 @@ namespace fmt {
  *
  * \endcode
  */
-class Xml : public sys::File {
+class Xml : public api::FmtFileObject {
 public:
 
 	/*! \brief Open an XML document

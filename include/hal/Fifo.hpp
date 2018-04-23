@@ -5,7 +5,7 @@
 
 #include <cstring>
 #include <sos/dev/fifo.h>
-#include "Dev.hpp"
+#include "Device.hpp"
 
 namespace hal {
 
@@ -16,10 +16,13 @@ class Fifo;
 /*! \brief Fifo Attributes Class
  *
  */
-class FifoInfo {
-	friend class Fifo;
+class FifoInfo : public api::HalInfoObject {
 public:
+
+    /*! \details Constructs an object with all zeros. */
     FifoInfo(){ memset(&m_info, 0, sizeof(m_info)); }
+
+    /*! \details Constructs an object from a fifo_info_t reference. */
     FifoInfo(const fifo_info_t & info){ m_info = info; }
 
 	/*! \details The number of bytes in the FIFO that are currently used (ie available

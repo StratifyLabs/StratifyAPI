@@ -10,6 +10,7 @@
 #include <errno.h>
 #include <aio.h>
 #include "../var/Data.hpp"
+#include "../api/SysObject.hpp"
 
 namespace hal {
 class Device;
@@ -56,7 +57,7 @@ namespace sys {
  *
  *
  */
-class Aio {
+class Aio : public api::SysWorkObject {
 	friend class hal::Device;
 public:
 

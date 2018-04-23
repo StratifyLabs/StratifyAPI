@@ -18,7 +18,7 @@ typedef struct MCU_PACK {
  * way to store progress without having to inherit Drawing by using
  * Progress object.
  */
-class ProgressAttr {
+class ProgressAttr : public api::DrawInfoObject {
 public:
 	ProgressAttr() : m_pen(1,3,false) { memset(&m_progress, 0, sizeof(progress_t)); }
 	ProgressAttr(u16 value, u16 max){ set_attr(value, max); }

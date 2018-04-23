@@ -6,6 +6,7 @@
 #include <mcu/types.h>
 #include "../sgfx/Bitmap.hpp"
 #include "../sgfx/Pen.hpp"
+#include "../api/DrawObject.hpp"
 
 namespace draw {
 
@@ -76,7 +77,7 @@ drawing_dim_t drawing_dim(drawing_size_t w, drawing_size_t h);
  *
  *
  */
-class DrawingAttr{
+class DrawingAttr : public api::DrawInfoObject {
 public:
 
 	/*! \details Construct an object */
@@ -249,7 +250,7 @@ private:
  * \details This is similar to draw::DrawingAttr but the point
  * and dimensions have been scaled to fit in the target bitmap.
  */
-class DrawingScaledAttr {
+class DrawingScaledAttr : public api::DrawInfoObject {
 public:
 
 	DrawingScaledAttr(){}
@@ -337,7 +338,7 @@ private:
  * \endcode
  *
  */
-class Drawing {
+class Drawing : public api::DrawWorkObject {
 public:
 	Drawing();
 

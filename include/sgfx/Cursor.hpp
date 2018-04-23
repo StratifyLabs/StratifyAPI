@@ -10,10 +10,11 @@
 
 #include "../var/Item.hpp"
 #include "Bitmap.hpp"
+#include "../api/SgfxObject.hpp"
 
 namespace sgfx {
 
-class Cursor : public var::Item<sg_cursor_t> {
+class Cursor : public var::Item<sg_cursor_t>, public api::SgfxWorkObject {
 public:
 	Cursor();
 	virtual ~Cursor();

@@ -14,7 +14,7 @@ namespace ui {
 /*! \brief Tab Class
  * \details This method draws a Tab that is a part of ui::TabBar.
  */
-class Tab : public draw::Drawing{
+class Tab : public draw::Drawing {
 public:
 
 	/*! \details Contruct an emtpy tab */

@@ -1,7 +1,7 @@
 #ifndef ARRAY_HPP
 #define ARRAY_HPP
 
-#include "../api/SObject.hpp"
+#include "../api/VarObject.hpp"
 
 namespace var {
 
@@ -13,7 +13,7 @@ namespace var {
  * safely.
  *
  */
-template <typename T, u32 size_value> class Array : public api::SObject {
+template <typename T, u32 size_value> class Array : public api::VarWorkObject {
 public:
 
     Array(){}

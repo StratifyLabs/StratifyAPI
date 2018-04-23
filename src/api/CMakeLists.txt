@@ -1,4 +1,4 @@
 
 set(SOURCES
-  ${SOURCES_PREFIX}/SObject.cpp
+  ${SOURCES_PREFIX}/WorkObject.cpp
   PARENT_SCOPE)

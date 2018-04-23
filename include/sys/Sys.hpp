@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
-#ifndef KERNEL_HPP_
-#define KERNEL_HPP_
+#ifndef SYS_SYS_HPP_
+#define SYS_SYS_HPP_
 
 #if !defined __link
 #include <sos/sos.h>
@@ -268,4 +268,4 @@ private:
 
 }
 
-#endif /* KERNEL_HPP_ */
+#endif /* SYS_SYS_HPP_ */

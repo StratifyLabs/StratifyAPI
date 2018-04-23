@@ -4,6 +4,7 @@
 #ifndef HAL_PINASSIGNMENT_HPP_
 #define HAL_PINASSIGNMENT_HPP_
 
+#include "../api/HalObject.hpp"
 #include "../var/Item.hpp"
 
 namespace hal {
@@ -34,7 +35,7 @@ namespace hal {
  *
  *
  */
-template<typename pin_assignment_type> class PinAssignment {
+template<typename pin_assignment_type> class PinAssignment : public api::HalInfoObject {
 public:
 
 	/*! \details Contructs a new pin assignment object.

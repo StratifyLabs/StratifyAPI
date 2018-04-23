@@ -5,10 +5,11 @@
 
 #ifndef __link
 
-#include "../api/SObject.hpp"
+#include "../api/WorkObject.hpp"
 #include <mcu/types.h>
 #include <pthread.h>
 #include "Sched.hpp"
+#include "../api/SysObject.hpp"
 
 namespace sys {
 
@@ -16,7 +17,7 @@ namespace sys {
  * \details This class creates and manages new threads using POSIX calls.
  *
  */
-class Thread : public api::SObject {
+class Thread : public api::SysWorkObject {
 public:
 
 	enum {

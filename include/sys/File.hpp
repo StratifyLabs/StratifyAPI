@@ -6,7 +6,7 @@
 #include <sos/link.h>
 #include <fcntl.h>
 
-#include "../api/SObject.hpp"
+#include "../api/SysObject.hpp"
 
 #ifndef __link
 #include <unistd.h>
@@ -61,7 +61,7 @@ namespace sys {
  * \endcode
  *
  */
-class File : public api::SObject {
+class File : public api::SysWorkObject {
 public:
 
 #if defined __link

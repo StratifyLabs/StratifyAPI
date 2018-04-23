@@ -3,7 +3,7 @@
 #ifndef SYS_CLI_HPP_
 #define SYS_CLI_HPP_
 
-#include "../api/SObject.hpp"
+#include "../api/SysObject.hpp"
 #include "../hal/Uart.hpp"
 #include "../hal/I2C.hpp"
 #include "../hal/Pwm.hpp"
@@ -19,7 +19,7 @@ namespace sys {
  * \details This class contains methods to help analyze input from the
  * command line.
  */
-class Cli : public api::SObject {
+class Cli : public api::SysWorkObject {
 public:
 
 	enum {

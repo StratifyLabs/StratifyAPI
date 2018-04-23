@@ -5,7 +5,7 @@
 
 #include <cstring>
 #include <cstdio>
-#include "../api/SObject.hpp"
+#include "../api/VarObject.hpp"
 
 namespace var {
 
@@ -35,7 +35,7 @@ namespace var {
  *
  *
  */
-class Data : public api::SObject {
+class Data : public api::VarWorkObject {
 public:
 	/*! \details Constructs a data object with no data */
 	Data();

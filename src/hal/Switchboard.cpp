@@ -65,8 +65,8 @@ int Switchboard::create_persistent_connection(
     switchboard_attr_t attr;
     attr.idx = idx;
     attr.o_flags = CONNECT | IS_PERSISTENT;
-    attr.input = input;
-    attr.output = output;
+    attr.input = input.m_terminal;
+    attr.output = output.m_terminal;
     attr.nbyte = 65535; //max packet size
     return set_attr(attr);
 }
@@ -86,8 +86,8 @@ int Switchboard::create_fixed_size_connection(
     switchboard_attr_t attr;
     attr.idx = idx;
     attr.o_flags = CONNECT | IS_FIXED_SIZE;
-    attr.input = input;
-    attr.output = output;
+    attr.input = input.m_terminal;
+    attr.output = output.m_terminal;
     attr.nbyte  = nbyte; //max packet size
     return set_attr(attr);
 }

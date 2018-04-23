@@ -160,7 +160,7 @@ ListItemCheck::ListItemCheck(const char * label, List * parent) :
 }
 
 
-ListDir::ListDir(const char * path,
+DirList::DirList(const char * path,
 		const sg_vector_icon_t * icon,
 		LinkedElement * parent,
 		LinkedElement * child) :
@@ -169,11 +169,11 @@ ListDir::ListDir(const char * path,
 	set_path(path);
 }
 
-ListDir::~ListDir(){
+DirList::~DirList(){
 	m_dir.close();
 }
 
-LinkedElement & ListDir::at(list_attr_size_t i){
+LinkedElement & DirList::at(list_attr_size_t i){
 	m_dir.rewind();
 	u32 j;
 	j=0;
@@ -202,7 +202,7 @@ LinkedElement & ListDir::at(list_attr_size_t i){
 }
 
 
-void ListDir::set_path(const char * path){
+void DirList::set_path(const char * path){
 	m_path = path;
 	m_dir.close();
 	if( m_dir.open(path) < 0 ){
@@ -212,7 +212,7 @@ void ListDir::set_path(const char * path){
 
 }
 
-void ListDir::recount(void){
+void DirList::recount(void){
 	int ret;
 	ret = m_dir.count();
 	if( ret > 0 ){
@@ -223,7 +223,7 @@ void ListDir::recount(void){
 	}
 }
 
-Element * ListDir::handle_event(const Event  & event, const DrawingAttr & attr){
+Element * DirList::handle_event(const Event  & event, const DrawingAttr & attr){
 	switch(event.type()){
 
 	case Event::BUTTON_ACTUATION:

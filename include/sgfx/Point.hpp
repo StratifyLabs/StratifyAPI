@@ -4,6 +4,7 @@
 #define SGFX_POINT_HPP_
 
 #include <sapi/sg.h>
+#include "../api/SgfxObject.hpp"
 
 namespace sgfx {
 
@@ -12,7 +13,7 @@ namespace sgfx {
  * class is based on teh sgfx library.
  *
  */
-class Point {
+class Point : public api::SgfxInfoObject {
 public:
 	Point(){ m_value.x = 0; m_value.y = 0; }
 	Point(sg_point_t p){ m_value = p; }

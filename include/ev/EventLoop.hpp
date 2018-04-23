@@ -5,7 +5,7 @@
 #ifndef SM_EVENTLOOP_HPP_
 #define SM_EVENTLOOP_HPP_
 
-#include "../api/SObject.hpp"
+#include "../api/WorkObject.hpp"
 #include "../sys/Timer.hpp"
 #include "EventHandler.hpp"
 #include "Event.hpp"
@@ -23,7 +23,7 @@ typedef struct MCU_PACK {
 /*! \brief Event Loop Attributes
  * \details This class defines attributes that apply to an ui::EventLoop.
  */
-class EventLoopAttr {
+class EventLoopAttr : public api::EvInfoObject {
 public:
 
 	/*! \details Construct new Event Loop attributes */
@@ -34,9 +34,9 @@ public:
 	/*! \details Accesses the hibernate timeout in milliseconds. */
     u16 hibernation_threshold() const { return m_attr.hibernation_threshold_msec; }
 
-	/*! \details Sets the hibernate threshold in milliseconds.
+    /*! \details Sets the hibernate threshold in MicroTime.
 	 *
-	 * @param msec The hibernate threshold in milliseconds
+     * @param value The hibernate threshold as a MicroTime value
 	 *
 	 * If the update period (set_update_period()) is greater than
 	 * the hibernation threshold, the event loop will execute the kernel
@@ -143,12 +143,12 @@ protected:
  *
  *
  */
-class EventLoop: public EventLoopAttr, public api::SObject {
+class EventLoop: public EventLoopAttr, public api::EvWorkObject {
 public:
 
     /*! \details Constructs a new headless (no display) event loop.
      *
-     * @param start_element The initial element to process
+     * @param start_event_handler The initial element to process
      *
      * The EventLoop will typically update the display when the current_element()
      * indicates that it should. By initializing an EventLoop using this constructor

@@ -71,7 +71,7 @@ public:
      * @param case_name The name of the case
      * @param expected_value The expected return value
      * @param expected_errno The expected error number
-     * @param args The arguments to pass to the test function
+     * @param arguments The arguments to pass to the test function
      * @return The value that the tested function returns
      *
      */

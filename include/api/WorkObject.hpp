@@ -1,30 +1,26 @@
-#ifndef SOBJECT_HPP
-#define SOBJECT_HPP
+#ifndef API_WORK_OBJECT_HPP
+#define API_WORK_OBJECT_HPP
 
-#include <mcu/types.h>
+#include "ApiObject.hpp"
 
 
 /*! \brief Application Programming Interface (framework-wide namespace)
  */
 namespace api {
-
-/*! \brief SObject Class
- * \details The SObject is the base
- * object for most classes in the Stratify API.
+/*! \brief WorkObject Class
+ * \details The WorkObject is the base
+ * object for all classes in the Stratify API.
  *
  * It is a simple object that allows the
  * inheriting class to set an error or halt
  * the program if it encouters a fatal problem.
  *
  */
-class SObject {
-public:
-    SObject();
+class WorkObject : public virtual ApiObject {
 
-    /*! \details Returns a pointer to a string
-     * that shows the API version.
-     */
-    const char * api_version() const { return "2.5.0b"; }
+public:
+    WorkObject();
+
 
     enum {
       ERROR_NONE /*! No Errors */
@@ -67,5 +63,6 @@ private:
 
 };
 
+
 }
-#endif // SOBJECT_HPP
+#endif // API_WORK_OBJECT_HPP

@@ -4,12 +4,12 @@
 #define WAV_HPP_
 
 #include <mcu/types.h>
-#include "../sys/File.hpp"
+#include "../api/FmtObject.hpp"
 
 namespace fmt {
 
 /*! \brief WAV File format */
-class Wav : public sys::File {
+class Wav : public api::FmtFileObject {
 public:
 	/*! \details Constructs a new WAV object and open the WAV as a read-only file. */
 	Wav(const char * name);

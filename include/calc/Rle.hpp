@@ -5,6 +5,8 @@
 
 #include "../sys/Appfs.hpp"
 #include "../sys/File.hpp"
+#include "../api/CalcObject.hpp"
+
 
 namespace calc {
 
@@ -13,7 +15,7 @@ namespace calc {
  * decoding algorithms.
  *
  */
-class Rle {
+class Rle : public api::CalcInfoObject{
 public:
 	Rle();
 
@@ -59,7 +61,6 @@ private:
 
 };
 
-/*! \brief Class for reading/writing compressed file data */
 class RleFile : public Rle, public sys::File {
 public:
 	/*! \details Encodes using run length encoding and writes the data to a file.
@@ -85,7 +86,6 @@ private:
 	char buf[BUF_SIZE];
 };
 
-/*! \brief Class for reading/writing compressed file data using Appfs */
 class RleAppfs : public Rle, public sys::Appfs {
 public:
 	RleAppfs();

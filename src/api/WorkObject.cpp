@@ -6,21 +6,21 @@
 #include <cstdlib>
 #include <sos/link.h>
 
-#include "api/SObject.hpp"
+#include "api/WorkObject.hpp"
 
 using namespace api;
 
-SObject::SObject(){
+WorkObject::WorkObject(){
     set_error_number(ERROR_NONE);
 }
 
 
-void SObject::exit_fatal(const char * message){
+void WorkObject::exit_fatal(const char * message){
     printf("FATAL:%s\n", message);
     exit(1);
 }
 
-int SObject::set_error_number_if_error(int ret) const {
+int WorkObject::set_error_number_if_error(int ret) const {
     if( ret < 0 ){
 #if defined __link
         set_error_number(link_errno);
@@ -31,7 +31,7 @@ int SObject::set_error_number_if_error(int ret) const {
     return ret;
 }
 
-void SObject::set_error_number_to_errno() const {
+void WorkObject::set_error_number_to_errno() const {
 #if defined __link
         set_error_number(link_errno);
 #else

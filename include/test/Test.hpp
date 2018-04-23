@@ -3,7 +3,7 @@
 
 #include <cstdarg>
 
-#include "../api/SObject.hpp"
+#include "../api/TestObject.hpp"
 #include "../sys/MicroTime.hpp"
 #include "../sys/Timer.hpp"
 
@@ -69,7 +69,7 @@ namespace test {
  *
  *
  */
-class Test : public api::SObject {
+class Test : public api::TestWorkObject {
 public:
 
 

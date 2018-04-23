@@ -8,7 +8,10 @@
 namespace draw {
 
 
-class PanelAttr {
+/*! \brief Panel Attributes Class
+ *
+ */
+class PanelAttr : public api::DrawInfoObject {
 public:
 	Pen & pen(){ return m_pen; }
 	void set_radius(sg_size_t radius){ m_radius = radius; }

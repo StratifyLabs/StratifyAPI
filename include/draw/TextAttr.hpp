@@ -15,7 +15,7 @@ namespace draw {
  * information needed to draw text.  It allows
  * the text to be stored separate from the drawing object.
  */
-class TextAttr {
+class TextAttr : public api::DrawInfoObject {
 public:
 	TextAttr() { set_font_size(0); m_font = 0; }
 

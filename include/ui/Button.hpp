@@ -7,6 +7,7 @@
 #include <mcu/types.h>
 
 #include "../ev/Event.hpp"
+#include "../api/UiObject.hpp"
 
 namespace ui {
 
@@ -17,7 +18,7 @@ namespace ui {
  * is an abstract class where the inheriting classes must implement
  * the ui::Button::get_value() method which returns the value of input.
  */
-class Button {
+class Button : public api::UiWorkObject {
 public:
 
 
@@ -69,9 +70,7 @@ public:
 	/*! \details Returns true if the button has been held for the specified duration
 	 * This will only return true once per button press.
 	 *
-	 *
-	 * @param msec The number of milliseconds the button has been held for
-	 */
+     */
     virtual bool get_held() = 0;
 
 	/*! \details Returns true if the button is currently in the active state.

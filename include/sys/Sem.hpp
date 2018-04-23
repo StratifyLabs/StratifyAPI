@@ -5,9 +5,9 @@
 
 #ifndef __link
 
-#include "../api/SObject.hpp"
 #include <semaphore.h>
 #include <fcntl.h>
+#include "../api/SysObject.hpp"
 
 namespace sys {
 
@@ -29,7 +29,7 @@ namespace sys {
  * \endcode
  *
  */
-class Sem : public api::SObject {
+class Sem : public api::SysWorkObject {
 public:
 	Sem();
 

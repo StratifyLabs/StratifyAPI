@@ -3,7 +3,7 @@
 #ifndef PID_HPP_
 #define PID_HPP_
 
-#include "../api/SObject.hpp"
+#include "../api/CalcObject.hpp"
 
 namespace calc {
 
@@ -64,7 +64,7 @@ namespace calc {
  *
  *
  */
-class Pid_f {
+class Pid_f : public api::CalcWorkObject {
 public:
 
 	/*! \details Constructs a new PID (float) object.

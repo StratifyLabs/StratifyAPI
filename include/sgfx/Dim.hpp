@@ -4,6 +4,7 @@
 #define SGFX_DIM_HPP_
 
 #include <sapi/sg_types.h>
+#include "../api/SgfxObject.hpp"
 
 namespace sgfx {
 
@@ -11,7 +12,7 @@ namespace sgfx {
  * \details This class holds a dimension for bitmaps.
  * It is based on the sgfx library.
  */
-class Dim {
+class Dim : public api::SgfxInfoObject {
 public:
 	Dim(){ m_value.height = 0; m_value.width = 0; }
 	Dim(sg_size_t w, sg_size_t h){ m_value.width = w; m_value.height = h; }

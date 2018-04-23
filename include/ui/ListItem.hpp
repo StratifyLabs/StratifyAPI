@@ -147,14 +147,14 @@ public:
  * \details This class will create a list from directory
  * entries in the filesystem
  */
-class ListDir : public List {
+class DirList : public List {
 public:
 	/*! \details Callback for actions on a list directory */
-	typedef void (*list_dir_callback_t)(ListDir * list);
+    typedef void (*list_dir_callback_t)(DirList * list);
 
 	/*! \details Contruct a new list */
-	ListDir(const char * path, const sg_vector_icon_t * icon = 0, LinkedElement * parent = 0, LinkedElement * child = 0);
-	~ListDir();
+    DirList(const char * path, const sg_vector_icon_t * icon = 0, LinkedElement * parent = 0, LinkedElement * child = 0);
+    ~DirList();
 
 	/*! \details Set the path for the directory */
 	void set_path(const char * path);
@@ -207,6 +207,11 @@ private:
 	list_dir_callback_t m_callback;
 	var::String m_path;
 };
+
+#if !defined __link
+[[deprecated("Use DirList")]]
+#endif
+typedef class DirList ListDir;
 
 }
 

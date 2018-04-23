@@ -5,13 +5,13 @@
 
 #ifndef __link
 
-#include "../api/SObject.hpp"
+#include "../api/SysObject.hpp"
 #include <pthread.h>
 #include <mcu/types.h>
 
 namespace sys {
 
-class MutexAttr {
+class MutexAttr : public api::SysInfoObject {
 public:
 
 	/*! \details Mutex Types */
@@ -83,7 +83,7 @@ private:
  * multi-threaded applications.
  *
  */
-class Mutex : public api::SObject {
+class Mutex : public api::SysWorkObject {
 public:
 	/*! \details Constructs a Mutex with the default settings. */
 	Mutex();

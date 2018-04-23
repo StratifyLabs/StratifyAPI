@@ -2,7 +2,7 @@
 #define CHECKSUM_HPP
 
 
-#include "../api/SObject.hpp"
+#include "../api/CalcObject.hpp"
 
 
 namespace  calc {
@@ -12,7 +12,7 @@ namespace  calc {
  * \details The Checksum class is purely static and provides methods
  * for calculating and verifying checksums on data structures.
  */
-class Checksum : public api::SObject {
+class Checksum : public api::CalcInfoObject {
 public:
 
 

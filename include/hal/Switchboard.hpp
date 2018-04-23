@@ -6,7 +6,10 @@
 
 namespace hal {
 
-class SwitchboardTerminal {
+/*! \brief Switchboard Terminal Class
+ *
+ */
+class SwitchboardTerminal : public api::HalInfoObject {
 public:
 
     /*!
@@ -47,43 +50,52 @@ public:
 
     const char * name() const { return m_terminal.name; }
     s8 priority() const { return m_terminal.priority; }
-    int loc() const { return m_terminal.loc; }
+    u32 loc() const { return m_terminal.loc; }
 
-    operator const switchboard_terminal_t & () const { return m_terminal; }
 
 private:
+    friend class SwitchboardConnection;
+    friend class Switchboard;
     switchboard_terminal_t m_terminal;
 };
 
-class SwitchboardConnection {
+/*! \brief Switchboard Connection Class
+ *
+ */
+class SwitchboardConnection : public api::HalInfoObject {
 public:
 
-    SwitchboardConnection(){}
+    SwitchboardConnection(){
+        memset(&m_connection, 0, sizeof(switchboard_connection_t));
+    }
     SwitchboardConnection(const SwitchboardTerminal & input, const SwitchboardTerminal & output, s32 nbyte){
         set_input(input);
         set_output(output);
     }
 
     void set_input(const SwitchboardTerminal & value){
-        m_connection.input = value;
+        m_connection.input = value.m_terminal;
     }
 
     void set_output(const SwitchboardTerminal & value){
-        m_connection.output = value;
+        m_connection.output = value.m_terminal;
     }
 
     u16 idx() const { return m_connection.idx; }
     s32 nbyte() const { return m_connection.nbyte; }
     u32 o_flags() const { return m_connection.o_flags; }
-    const switchboard_terminal_t & input() const { return m_connection.input; }
-    const switchboard_terminal_t & output() const { return m_connection.output; }
+    SwitchboardTerminal input() const { return m_connection.input; }
+    SwitchboardTerminal output() const { return m_connection.output; }
 
 private:
     friend class Switchboard;
     switchboard_connection_t m_connection;
 };
 
-class SwitchboardInfo {
+/*! \brief Switchboard Connection Class
+ *
+ */
+class SwitchboardInfo : public api::HalInfoObject {
 public:
     SwitchboardInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 
@@ -98,7 +110,7 @@ private:
 };
 
 /*! \brief Switch board class
- * \detials The Switchboard class is used to interface
+ * \details The Switchboard class is used to interface
  * with /dev/switchboard and similar devices.
  *
  *

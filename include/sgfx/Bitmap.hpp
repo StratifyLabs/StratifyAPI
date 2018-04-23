@@ -8,6 +8,8 @@
 #include "../var/Data.hpp"
 #include "Region.hpp"
 #include "Pen.hpp"
+#include "../api/SgfxObject.hpp"
+
 
 namespace sgfx {
 
@@ -15,7 +17,7 @@ namespace sgfx {
  * \details This class implements a bitmap and is
  * powered by the sgfx library.
  */
-class Bitmap : public var::Data {
+class Bitmap : public api::SgfxDataObject {
 public:
 	/*! \details Constructs an empty bitmap. */
 	Bitmap();

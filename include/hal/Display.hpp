@@ -8,6 +8,7 @@
 #include "../var/Item.hpp"
 #include "../var/Data.hpp"
 #include "../sgfx/Bitmap.hpp"
+#include "../api/HalObject.hpp"
 
 namespace hal {
 
@@ -28,7 +29,7 @@ namespace hal {
  * a color on the display.
  *
  */
-class DisplayPalette : public var::Item<display_palette_t> {
+class DisplayPalette : public var::Item<display_palette_t>, public api::HalInfoObject {
 public:
 
 	enum {

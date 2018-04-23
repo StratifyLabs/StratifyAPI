@@ -4,9 +4,10 @@
 #ifndef SYS_ASSETS_HPP_
 #define SYS_ASSETS_HPP_
 
-#include "../api/SObject.hpp"
+#include "../api/WorkObject.hpp"
 #include "../sgfx/Font.hpp"
 #include "../sgfx/Vector.hpp"
+#include "../api/SysObject.hpp"
 
 namespace sys {
 
@@ -15,7 +16,7 @@ namespace sys {
  * that allows the application to access kernel assets
  * such as fonts, bitmaps, and vector graphics.
  */
-class Assets {
+class Assets : public api::SysInfoObject {
 public:
 
 	/*! \details Initializes system assets.

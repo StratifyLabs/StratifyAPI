@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include "LinkedList.hpp"
+#include "../api/VarObject.hpp"
 
 namespace var {
 
@@ -13,7 +14,7 @@ namespace var {
  * std::queue container class.
  *
  */
-template<typename T> class Queue : public api::SObject {
+template<typename T> class Queue : public api::VarWorkObject {
 public:
 
     /*! \details Constructs a new Queue. */

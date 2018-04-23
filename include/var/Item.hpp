@@ -4,7 +4,7 @@
 #define ITEM_HPP_
 
 #include <cstring>
-#include "../api/SObject.hpp"
+#include "../api/WorkObject.hpp"
 
 namespace var {
 

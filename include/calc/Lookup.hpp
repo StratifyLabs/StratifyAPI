@@ -3,7 +3,7 @@
 #ifndef LOOKUP_HPP_
 #define LOOKUP_HPP_
 
-#include "../api/SObject.hpp"
+#include "../api/CalcObject.hpp"
 
 namespace calc {
 
@@ -35,7 +35,7 @@ namespace calc {
  *
  *
  */
-template<typename data_type>class Lookup {
+template<typename data_type>class Lookup : public api::CalcWorkObject {
 public:
 	/*! \details Constructs a lookup table object.
 	 *

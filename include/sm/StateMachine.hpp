@@ -1,7 +1,7 @@
 #ifndef STATEMACHINE_HPP
 #define STATEMACHINE_HPP
 
-#include "../api/SObject.hpp"
+#include "../api/SmObject.hpp"
 #include "../var/Data.hpp"
 #include "../sys/Timer.hpp"
 
@@ -12,7 +12,10 @@ class StateMachine;
 class Condition;
 class Action;
 
-class Object : api::SObject {
+/*! \brief State Machine Object
+ *
+ */
+class Object : public api::SmWorkObject {
 public:
     //when an object is contructed -- add the item to a list
     Object(StateMachine & state_machine);
@@ -33,7 +36,9 @@ private:
     StateMachine & m_state_machine; // a pointer to the owning machine
 };
 
-
+/*! \brief State Machine Condition
+ *
+ */
 class Condition : public Object {
 public:
 
@@ -47,6 +52,9 @@ private:
 
 };
 
+/*! \brief State Machine Action
+ *
+ */
 class Action : public Object {
 public:
     Action(StateMachine & state_machine) : Object(state_machine){}
@@ -58,6 +66,9 @@ private:
 };
 
 
+/*! \brief State Machine State
+ *
+ */
 class State : public Object {
 public:
 
@@ -118,6 +129,10 @@ public:
     }
 };
 
+
+/*! \brief State Machine
+ *
+ */
 class StateMachine : public Object {
 public:
 
@@ -159,7 +174,7 @@ private:
  *
  *
  */
-template<class container_class, typename return_type, typename...args> class SimpleStateMachine : public api::SObject {
+template<class container_class, typename return_type, typename...args> class SimpleStateMachine : public api::SmWorkObject {
 public:
 
     /*! \details Defines the method type to execute with each state. */

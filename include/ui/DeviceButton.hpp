@@ -36,7 +36,7 @@ public:
 
     /*! \details Sets the button to the index specified.
      *
-     * @param idx The button index
+     * @param location The button channel/location value
      *
      * If the device supports multiple buttons, this method
      * will select which button is effective.
@@ -71,7 +71,7 @@ public:
 
     /*! \details Sets the attributes for the specified button.
      *
-     * @param loc The button index
+     * @param location The button index
      * @param id The Event ID to assign to the button
      * @param held_threshold The threshold to wait before button held event is triggered
      * @param actuated_threshold The minimum button press time for an actuation event

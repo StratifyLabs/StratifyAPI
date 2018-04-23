@@ -2,7 +2,7 @@
 #define LINKEDLIST_HPP
 
 #include <cstdlib>
-#include "../api/SObject.hpp"
+#include "../api/VarObject.hpp"
 
 namespace var {
 
@@ -13,7 +13,7 @@ class LinkedListIndex;
  * a class that manages dynamically allocated
  * linked lists of data.
  */
-class LinkedList : public api::SObject {
+class LinkedList : public api::VarWorkObject {
 public:
     LinkedList(u32 size);
     ~LinkedList();

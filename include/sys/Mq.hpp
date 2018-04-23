@@ -5,18 +5,19 @@
 
 #ifndef __link
 
-#include "../api/SObject.hpp"
 #include <sos/link.h>
 #include <mqueue.h>
 #include <fcntl.h>
 #include <cstring>
+#include "../api/SysObject.hpp"
+
 
 namespace sys {
 
 class Mq;
 
 /*! \brief Message Queue Attribute Class */
-class MqAttr {
+class MqAttr : public api::SysInfoObject {
 	friend class Mq;
 public:
     MqAttr(){ memset(&m_attr, 0, sizeof(m_attr)); }
@@ -54,7 +55,7 @@ private:
 /*! \details This class is a wrapper for POSIX message queues.
  *
  */
-class Mq : public api::SObject {
+class Mq : public api::SysWorkObject {
 public:
 	Mq();
 

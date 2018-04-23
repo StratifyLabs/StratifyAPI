@@ -3,7 +3,7 @@
 #ifndef BASE64_HPP_
 #define BASE64_HPP_
 
-#include "../api/SObject.hpp"
+#include "../api/CalcObject.hpp"
 
 namespace calc {
 
@@ -46,7 +46,7 @@ namespace calc {
  *
  *
  */
-class Base64 : public api::SObject {
+class Base64 : public api::CalcInfoObject {
 public:
 
 	/*! \details Encodes data to the base64 format.

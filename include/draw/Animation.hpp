@@ -9,7 +9,7 @@ namespace draw {
 
 /*! \brief Animation Attributes Class
  */
-class AnimationAttr {
+class AnimationAttr : public api::DrawInfoObject {
 public:
 
 	/*! \details Constructs a new animation attribute object. */
@@ -106,7 +106,7 @@ private:
 
 /*! \brief Animation Class
  */
-class Animation : public AnimationAttr {
+class Animation : public AnimationAttr, public api::DrawWorkObject {
 public:
 
 	/*! \details Constructs a new animation object. */

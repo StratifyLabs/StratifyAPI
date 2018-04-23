@@ -10,6 +10,7 @@
 
 #include <unistd.h>
 #include <sched.h>
+#include "../api/SysObject.hpp"
 
 namespace sys {
 
@@ -19,7 +20,7 @@ namespace sys {
  * thread or process.
  *
  */
-class Sched {
+class Sched : public api::SysWorkObject {
 public:
 
 	enum policy {
