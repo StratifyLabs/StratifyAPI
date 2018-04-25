@@ -1,0 +1,4 @@
+
+set(SOURCES
+	${SOURCES_PREFIX}/MicroTimer.cpp
+	PARENT_SCOPE)

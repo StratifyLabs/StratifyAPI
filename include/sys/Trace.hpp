@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef TRACE_HPP_
-#define TRACE_HPP_
+#ifndef SYS_TRACE_HPP_
+#define SYS_TRACE_HPP_
 
 
 #include <mcu/types.h>
@@ -72,4 +72,4 @@ private:
 
 }
 
-#endif /* TRACE_HPP_ */
+#endif /* SYS_TRACE_HPP_ */

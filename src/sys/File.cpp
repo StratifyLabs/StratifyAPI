@@ -33,10 +33,7 @@ int File::open(const char * name, int flags){
     m_fd = ::open(name, flags);
 #endif
 
-    if( m_fd < 0 ){
-        return -1;
-    }
-    return 0;
+    return set_error_number_if_error(m_fd);
 }
 
 #if !defined __link

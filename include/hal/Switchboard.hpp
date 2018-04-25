@@ -138,10 +138,17 @@ public:
 
     /*!
      * \details Opens a switch board
-     * \param name The path to the switchboard (default is /dev/swithboard)
+     * \param name The path to the switchboard (default is /dev/swithboard0)
      * \return Zero on success
+     *
+     * To open a different switchboard, use
+     * \code
+     * Switchboard sb1;
+     * sb1.open("/dev/switchboard1");
+     * \endcode
+     *
      */
-    int open(const char * name = "/dev/switchboard");
+    int open(const char * name = "/dev/switchboard0");
 
     SwitchboardConnection get_connection(u16 idx) const;
 

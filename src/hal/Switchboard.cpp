@@ -5,7 +5,15 @@ using namespace hal;
 Switchboard::Switchboard(){}
 
 
-int Switchboard::open(const char * name){ return File::open(name, RDWR); }
+int Switchboard::open(const char * name){
+    int ret;
+    ret = File::open(name, RDWR);
+    if (ret < 0 ){ return ret; }
+
+    switchboard_info_t info;
+    //see if the device responds to
+    return ioctl(I_SWITCHBOARD_GETINFO, &info);
+}
 
 
 SwitchboardConnection Switchboard::get_connection(u16 idx) const {

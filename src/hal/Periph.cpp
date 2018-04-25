@@ -72,13 +72,14 @@ void PeriphObject::update_fileno() const {
 int PeriphObject::open(const char * name, int flags){
 	//check map
 	int fileno;
+    int ret;
 	fileno = lookup_fileno();
 	if( fileno < 0 ){
-		Device::open(name, flags);
-		if( m_fd > 0 ){
+        ret = Device::open(name, flags);
+        if( m_fd >= 0 ){
 			m_fd_map[m_fd] = m_periph_port;
 		} else {
-			return -1;
+            return ret;
 		}
 	} else {
 		m_fd = fileno;

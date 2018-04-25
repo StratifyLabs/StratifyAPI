@@ -6,7 +6,7 @@
 #define SM_EVENTLOOP_HPP_
 
 #include "../api/WorkObject.hpp"
-#include "../sys/Timer.hpp"
+#include "../chrono/MicroTimer.hpp"
 #include "EventHandler.hpp"
 #include "Event.hpp"
 
@@ -63,7 +63,7 @@ public:
 	 *
 	 *
 	 */
-    void set_hibernation_threshold(const sys::MicroTime & value){ m_attr.hibernation_threshold_msec = value.msec(); };
+    void set_hibernation_threshold(const chrono::MicroTime & value){ m_attr.hibernation_threshold_msec = value.msec(); };
     void set_hibernation_threshold(u16 msec) { m_attr.hibernation_threshold_msec = msec; }
 
 	/*! \details Accesses the period for firing the Event::UPDATE in milliseconds. */
@@ -278,13 +278,13 @@ protected:
     void check_loop_for_hibernate();
     void check_loop_for_update();
 
-    sys::Timer & update_timer(){ return m_update_timer; }
-    sys::Timer & loop_timer(){ return m_loop_timer; }
+    chrono::MicroTimer & update_timer(){ return m_update_timer; }
+    chrono::MicroTimer & loop_timer(){ return m_loop_timer; }
 
 private:
     EventHandler * m_current_event_handler;
-	sys::Timer m_update_timer;
-	sys::Timer m_loop_timer;
+    chrono::MicroTimer m_update_timer;
+    chrono::MicroTimer m_loop_timer;
 
 };
 

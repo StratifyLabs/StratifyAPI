@@ -223,8 +223,9 @@ public:
 	/*! \details Initializes the hardware using the default attributes.
 	 */
 	int init(){
-		if( open() < 0 ){
-			return -1;
+        int ret = open();
+        if( ret < 0 ){
+            return ret;
 		}
 		return set_attr();
 	}
