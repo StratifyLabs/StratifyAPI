@@ -12,7 +12,7 @@
 
 #include "../api/FmtObject.hpp"
 #include "../var/String.hpp"
-#include "../sys/Timer.hpp" //for sys::MicroTime
+#include "../sys/Timer.hpp" //for chrono::MicroTime
 
 
 namespace fmt {

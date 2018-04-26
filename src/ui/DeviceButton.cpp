@@ -19,8 +19,8 @@ int DeviceButton::init(){
 
 
 int DeviceButton::set_attributes(int location, int id,
-                                 const sys::MicroTime held_threshold,
-                                 const sys::MicroTime actuated_threshold){
+                                 const chrono::MicroTime held_threshold,
+                                 const chrono::MicroTime actuated_threshold){
     button_attr_t attr;
     int ret;
     memset(&attr, 0, sizeof(attr));

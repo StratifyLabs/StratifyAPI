@@ -6,6 +6,8 @@
 
 namespace hal {
 
+class Switchboard;
+
 /*! \brief Switchboard Terminal Class
  *
  */
@@ -48,10 +50,14 @@ public:
     /*! \details Sets the priority of the terminal. */
     void set_priority(s8 priority){ m_terminal.priority = priority; }
 
+    /*! \details Returns the terminal's name. */
     const char * name() const { return m_terminal.name; }
+    /*! \details Returns the terminal interrupt priority. */
     s8 priority() const { return m_terminal.priority; }
+    /*! \details Returns the location/channel value for the terminal. */
     u32 loc() const { return m_terminal.loc; }
-
+    /*! \details Returns the number of bytes transferred on the terminal. */
+    u32 bytes_transferred() const { return m_terminal.bytes_transferred; }
 
 private:
     friend class SwitchboardConnection;
@@ -65,18 +71,29 @@ private:
 class SwitchboardConnection : public api::HalInfoObject {
 public:
 
+    /*! \details Constructs a new empty connection. */
     SwitchboardConnection(){
         memset(&m_connection, 0, sizeof(switchboard_connection_t));
+        m_connection.idx = invalid_idx();
     }
+
+    /*! \details Returns the value assigned to invalid index values. */
+    static u16 invalid_idx() { return (u16)-1; }
+
+    /*! \details Constructs a connection with the specified terminals.
+     *
+     */
     SwitchboardConnection(const SwitchboardTerminal & input, const SwitchboardTerminal & output, s32 nbyte){
         set_input(input);
         set_output(output);
     }
 
+    /*! \details Sets the connection's input terminal. */
     void set_input(const SwitchboardTerminal & value){
         m_connection.input = value.m_terminal;
     }
 
+    /*! \details Sets the connections's output terminal. */
     void set_output(const SwitchboardTerminal & value){
         m_connection.output = value.m_terminal;
     }
@@ -99,8 +116,13 @@ class SwitchboardInfo : public api::HalInfoObject {
 public:
     SwitchboardInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 
+    /*! \details Returns the number of connections available. */
     u16 connection_count() const { return m_info.connection_count; }
+
+    /*! \details Returns the switchboard's internal connection buffer size. */
     u16 connection_buffer_size() const { return m_info.connection_buffer_size; }
+
+    /*! \details Returns the transaction limit of the switchboard. */
     u16 transaction_limit() const { return m_info.transaction_limit; }
 
     operator const switchboard_info_t & () const { return m_info; }
@@ -111,28 +133,27 @@ private:
 
 /*! \brief Switch board class
  * \details The Switchboard class is used to interface
- * with /dev/switchboard and similar devices.
+ * with /dev/switchboard0 and similar devices.
  *
  *
  * \code
  *
  * \endcode
  *
- *
- *
  */
 class Switchboard : public Device {
 public:
+
+    /*! \details Constructs a new object. */
     Switchboard();
 
-
     enum {
-        CONNECT = SWITCHBOARD_FLAG_CONNECT,
-        DISCONNECT = SWITCHBOARD_FLAG_DISCONNECT,
-        IS_PERSISTENT = SWITCHBOARD_FLAG_IS_PERSISTENT,
-        IS_FIXED_SIZE = 0,
-        IS_CONNECTED = SWITCHBOARD_FLAG_IS_CONNECTED,
-        IS_STOPPED_ON_ERROR = SWITCHBOARD_FLAG_IS_STOPPED_ON_ERROR
+        CONNECT /*! Connect Flag */ = SWITCHBOARD_FLAG_CONNECT,
+        DISCONNECT /*! Disconnect Flag */ = SWITCHBOARD_FLAG_DISCONNECT,
+        IS_PERSISTENT /*! Is Persistent Flag */ = SWITCHBOARD_FLAG_IS_PERSISTENT,
+        IS_FIXED_SIZE /*! Is Fixed Size Flag */ = 0,
+        IS_CONNECTED /*! Is Connected Flag */ = SWITCHBOARD_FLAG_IS_CONNECTED,
+        IS_STOPPED_ON_ERROR /*! Is Stopped on Error */ = SWITCHBOARD_FLAG_IS_STOPPED_ON_ERROR
     };
 
 
@@ -150,6 +171,7 @@ public:
      */
     int open(const char * name = "/dev/switchboard0");
 
+    /*! \details Gets the connection specified by idx. */
     SwitchboardConnection get_connection(u16 idx) const;
 
     /*! \details Gets a free connection that can be used
@@ -173,7 +195,8 @@ public:
      */
     int create_persistent_connection(
             const SwitchboardTerminal & input,
-            const SwitchboardTerminal & output) const;
+            const SwitchboardTerminal & output,
+            s32 nbyte = 65535) const;
 
     /*!
      * \details create_fixed_size_connection
@@ -196,11 +219,18 @@ public:
      */
     int destroy_connection(u16 idx) const;
 
+    /*! \details Disconnects the specified connection.
+     *
+     * \param connection A reference to the connection
+     *
+     */
+    int destroy_connection(SwitchboardConnection & connection);
+
     /*! \details Gets information from the switchboard. */
     int get_info(switchboard_info_t & info) const;
 
     /*! \details Gets information from the switchboard. */
-    SwitchboardInfo get_info();
+    SwitchboardInfo get_info() const;
 
     /*! \details Sets the attributes of the switchboard.
      *

@@ -79,8 +79,8 @@ public:
      *
      */
     int set_attributes(int location, int id,
-                       const sys::MicroTime held_threshold = sys::MicroTime::invalid(),
-                       const sys::MicroTime actuated_threshold = sys::MicroTime::invalid());
+                       const chrono::MicroTime held_threshold = chrono::MicroTime::invalid(),
+                       const chrono::MicroTime actuated_threshold = chrono::MicroTime::invalid());
 
     u32 get_duration();
     bool get_pressed();

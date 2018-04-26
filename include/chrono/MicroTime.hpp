@@ -8,13 +8,9 @@
 
 #include "../api/ChronoObject.hpp"
 
-#ifdef __MCU_ONLY__
-#include "hal/Tmr.hpp"
-#endif
-
 namespace chrono {
 
-/*! \details Defines the type for a sys::MicroTime value. */
+/*! \details Defines the type for a chrono::MicroTime value. */
 typedef u32 micro_time_t;
 
 /*! \brief MicroTime Class
@@ -25,13 +21,13 @@ typedef u32 micro_time_t;
  *
  * It is very handy for converting between microseconds (usec),
  * milliseconds (msec), and seconds (sec). It also serves
- * to remove ambiguity when specified short time intervals.
+ * to remove ambiguity when specifying short time intervals.
  *
  * For example:
  * \code
  * void set_period(const MicroTime & micro_time); //un-ambiguous and nice code completion
  * void set_period(u32 value); //the units here are not clear
- * void set_period_msec(u32 value); //this is better but adds complexity
+ * void set_period_milliseconds(u32 value); //this is better but adds complexity
  * \endcode
  *
  */

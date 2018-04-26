@@ -86,14 +86,6 @@ public:
 	using Periph::init;
 	using Periph::set_attr;
 
-
-#ifdef __MCU_ONLY__
-	using Pblock::read;
-	int read(void * buf, int nbyte);
-	int close();
-#endif
-
-
 private:
 
 };

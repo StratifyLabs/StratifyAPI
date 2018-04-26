@@ -268,7 +268,7 @@ private:
 
     void vprint_case_message(const char * key, const char * fmt, va_list args);
 
-    //sys::MicroTime m_execution_time;
+    //chrono::MicroTime m_execution_time;
     bool m_test_result;
     sys::Timer m_case_timer;
     sys::Timer m_test_timer;

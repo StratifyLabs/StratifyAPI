@@ -1,5 +1,5 @@
-#ifndef CHRONO_MICROTIMER_HPP
-#define CHRONO_MICROTIMER_HPP
+#ifndef CHRONO_MICRO_TIMER_HPP
+#define CHRONO_MICRO_TIMER_HPP
 
 #include "MicroTime.hpp"
 
@@ -218,15 +218,8 @@ public:
 
 #endif
 
-
-
 private:
-#ifdef __MCU_ONLY__
-    static Tmr::port_t port;
-    u32 m_start;
-    u32 m_stop;
-    u32 timeout_stop_;
-#elif !defined __link
+#if !defined __link
     struct timespec m_start;
     struct timespec m_stop;
 #endif
@@ -234,4 +227,4 @@ private:
 
 }
 
-#endif // MICROTIMER_HPP
+#endif // CHRONO_MICRO_TIMER_HPP
