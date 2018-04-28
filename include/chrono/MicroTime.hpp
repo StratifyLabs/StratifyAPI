@@ -7,6 +7,7 @@
 #include <time.h>
 
 #include "../api/ChronoObject.hpp"
+#include "ClockTime.hpp"
 
 namespace chrono {
 
@@ -40,6 +41,10 @@ public:
      *
      */
     MicroTime(u32 microseconds = 0){ m_value_microseconds = microseconds; }
+
+    MicroTime(const ClockTime & clock_time){
+        m_value_microseconds = clock_time.seconds() * 1000000 + (clock_time.nanoseconds() + 500) / 1000;
+    }
 
     /*! \details Create a MicroTime object from a second value. */
     static MicroTime from_seconds(u32 sec){ return MicroTime(sec*1000000UL); }

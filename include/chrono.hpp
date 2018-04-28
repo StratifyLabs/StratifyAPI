@@ -7,6 +7,7 @@
  */
 namespace chrono {}
 
+#include "chrono/ClockTime.hpp"
 #include "chrono/MicroTime.hpp"
 #include "chrono/MicroTimer.hpp"
 #include "chrono/Time.hpp"

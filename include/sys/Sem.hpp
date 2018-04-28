@@ -8,6 +8,7 @@
 #include <semaphore.h>
 #include <fcntl.h>
 #include "../api/SysObject.hpp"
+#include "../chrono/ClockTime.hpp"
 
 namespace sys {
 
@@ -104,15 +105,17 @@ public:
 
 	/*! \details Executes a timed wait for the semaphore.
 	 *
-	 * @param timeout The amount of time to wait before timing out
+     * @param clock_time The amount of time to wait before timing out
 	 * @return Zero on success, less than zero for an error or timeout
 	 *
 	 * This method will block until either the semaphore becomes available
 	 * and is decremented or until the timeout is exceeded.
 	 *
 	 */
-	int wait_timed(const struct timespec & timeout);
-	int timedwait(const struct timespec & timeout){ return wait_timed(timeout); }
+    int wait_timed(const chrono::ClockTime & clock_time);
+
+    /*! \details Equivalent to wait_timed() but follow the posix naming. */
+    int timedwait(const chrono::ClockTime & clock_time){ return wait_timed(clock_time); }
 
 	/*! \details Checks to see if semaphore is available. */
 	int try_wait();

@@ -20,7 +20,7 @@ namespace sys {
  * thread or process.
  *
  */
-class Sched : public api::SysWorkObject {
+class Sched : public api::SysInfoObject {
 public:
 
 	enum policy {

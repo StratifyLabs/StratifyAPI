@@ -14,6 +14,11 @@ namespace hal {
 class SerialNumber {
 public:
     SerialNumber();
+
+    SerialNumber(const u32 serial_number[4]){
+        memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4);
+    }
+
     int get();
 
     static SerialNumber from_string(const char * str);
@@ -28,6 +33,31 @@ public:
 
 private:
     mcu_sn_t m_serial_number;
+};
+
+/*!
+ * \brief The Core Info class
+ */
+class CoreInfo : public api::HalInfoObject {
+public:
+    /*! \details Constructs an empty Core Info object. */
+    CoreInfo(){ memset(&m_info, 0, sizeof(m_info)); }
+
+    /*! \details Constructs a Core Info object from a core_info_t data structure. */
+    CoreInfo(const core_info_t & info){
+        m_info = info;
+    }
+
+    /*! \details Returns the events that are supported by the core. */
+    u32 o_events() const { return m_info.o_events; }
+    /*! \details Returns the flags that are supported by the core. */
+    u32 o_flags() const { return m_info.o_flags; }
+
+    /*! \details Returns the serial number of the MCU. */
+    SerialNumber serial_number() const{ return SerialNumber(m_info.serial_number); }
+
+private:
+    core_info_t m_info;
 };
 
 /*! \brief Core Class

@@ -1,6 +1,7 @@
 #ifndef CHRONO_MICRO_TIMER_HPP
 #define CHRONO_MICRO_TIMER_HPP
 
+#include "ClockTime.hpp"
 #include "MicroTime.hpp"
 
 namespace chrono {
@@ -84,18 +85,6 @@ public:
     MicroTimer();
 
 
-    /*! \details Returns the microseconds on the real-time clock (starts counting on device reset) */
-    static int get_clock_microseconds();
-    static int get_clock_usec() { return get_clock_microseconds(); }
-
-    /*! \details Returns the milliseconds on the real-time clock (starts counting on device reset) */
-    static int get_clock_milliseconds();
-    static int get_clock_msec(){ return get_clock_milliseconds(); }
-
-    /*! \details Returns the seconds on the real-time clock (starts counting on device reset) */
-    static int get_clock_seconds();
-    static int get_clock_sec(){ return get_clock_seconds(); }
-
     /*! \details Starts the timer.
      *
      * If the timer is currently running, this method has no effect.  If the timer has been
@@ -135,7 +124,7 @@ public:
      * If the timer has been reset() or never started, this method will return false.
      *
      */
-    bool is_started() const { return (m_start.tv_nsec + m_start.tv_sec) != 0; }
+    bool is_started() const { return (m_start.nanoseconds() + m_start.seconds()) != 0; }
 
     /*! \details Returns true if the timer is stopped.
      *
@@ -144,13 +133,13 @@ public:
      *
      *
      */
-    bool is_stopped() const { return (m_stop.tv_sec != (time_t)-1) || (m_stop.tv_sec == 0); }
+    bool is_stopped() const { return (m_stop.seconds() != -1) || (m_stop.seconds() == 0); }
 
 
     /*! \details Returns true if the timer is in a reset state.
      *
      */
-    bool is_reset() const { return m_stop.tv_sec == 0; }
+    bool is_reset() const { return m_stop.seconds() == 0; }
 
     /*! \details Returns the value of the Timer as
      * a MicroTime object.
@@ -220,8 +209,8 @@ public:
 
 private:
 #if !defined __link
-    struct timespec m_start;
-    struct timespec m_stop;
+    ClockTime m_start;
+    ClockTime m_stop;
 #endif
 };
 

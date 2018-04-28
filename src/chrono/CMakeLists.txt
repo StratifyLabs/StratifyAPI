@@ -1,4 +1,5 @@
 
 set(SOURCES
 	${SOURCES_PREFIX}/MicroTimer.cpp
+	${SOURCES_PREFIX}/ClockTime.cpp
 	PARENT_SCOPE)

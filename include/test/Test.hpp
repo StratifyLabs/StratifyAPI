@@ -4,8 +4,9 @@
 #include <cstdarg>
 
 #include "../api/TestObject.hpp"
-#include "../sys/MicroTime.hpp"
-#include "../sys/Timer.hpp"
+#include "../chrono/MicroTime.hpp"
+#include "../chrono/MicroTimer.hpp"
+#include "../sys/Cli.hpp"
 
 namespace test {
 
@@ -89,6 +90,44 @@ public:
      */
     static void finalize();
 
+
+    /*! \details Parse command line options for running test types.
+     *
+     * This method searches for the following options and returns
+     * a value that has which tests to execute.
+     *
+     * - -execute_all
+     * - -api
+     * - -performance
+     * - -stress
+     * - -additional
+     *
+     * \code
+     * #include <sapi/test.hpp>
+     * #include <sapi/sys.hpp>
+     *
+     * int main(int argc, char * argv[]){
+     *   Cli cli(argc, argv);
+     *   u32 o_execute_flags = Test::parse_options(cli);
+     *
+     *   Test::initialize(cli.name(), cli.version());
+     *
+     *   if( o_execute_flags ){
+     *     Test test("do nothing");
+     *     test.execute(o_execute_flags);
+     *   }
+     *
+     *   Test::finalize();
+     *
+     *   return 0;
+     * }
+     *
+     * \endcode
+     *
+     */
+    static u32 parse_options(const sys::Cli & cli);
+
+
     /*! \details Constructs a new test object.
      *
      * @param name The name of the test
@@ -125,7 +164,7 @@ public:
      * \endcode
      *
      */
-    Test(const char * name);
+    Test(const char * name, Test * parent = 0);
 
     /*! \details Deconstructs the test object.
      *
@@ -207,6 +246,16 @@ public:
      */
     virtual bool execute_class_stress_case();
 
+
+    /*! \details Returns the results of the test.
+     *
+     * If any single test case has a false result,
+     * the result of the test is false.  Otherwise,
+     * the result is true.
+     *
+     */
+    bool result() const { return m_test_result; }
+
 protected:
 
     /*! \details Returns a reference to the case timer.
@@ -218,7 +267,8 @@ protected:
      * while the test is running.
      *
      */
-    const sys::Timer & case_timer() const { return m_case_timer; }
+    const chrono::MicroTimer & case_timer() const { return m_case_timer; }
+    chrono::MicroTimer & case_timer(){ return m_case_timer; }
 
     /*! \details Opens a new test case.
      *
@@ -263,20 +313,40 @@ protected:
      */
     void print_case_message_with_key(const char * key, const char * fmt, ...);
 
+    int indent() const { return m_indent_count; }
 
 private:
 
+
     void vprint_case_message(const char * key, const char * fmt, va_list args);
 
-    //chrono::MicroTime m_execution_time;
-    bool m_test_result;
-    sys::Timer m_case_timer;
-    sys::Timer m_test_timer;
-    bool m_is_first_case;
-    u32 m_case_message_number;
-    static bool m_is_initialized;
-    static bool m_is_first_test;
+    void print(const char * fmt, ...);
+    static void print_indent(int indent, const char * fmt, ...);
+    static void vprint_indent(int indent, const char * fmt, va_list args);
 
+    void reset_indent(){
+        m_indent_count = 0;
+    }
+
+    void increment_indent(){
+        m_indent_count++;
+    }
+
+    void decrement_indent(){
+        if( m_indent_count ){
+            m_indent_count--;
+        }
+    }
+
+    bool m_test_result;
+    chrono::MicroTimer m_case_timer;
+    u32 m_test_duration_microseconds;
+    u32 m_case_message_number;
+    u32 m_indent_count;
+    Test * m_parent;
+    static bool m_is_initialized;
+    static bool m_all_test_result;
+    static u32 m_all_test_duration_microseconds;
 };
 
 }

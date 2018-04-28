@@ -5,9 +5,9 @@
 
 #include <time.h>
 #include "sys/Mutex.hpp"
+#include "chrono.hpp"
 
 using namespace sys;
-
 
 MutexAttr::MutexAttr(){
 	pthread_mutexattr_init(&m_item);
@@ -73,43 +73,27 @@ Mutex::Mutex(const MutexAttr & attr){
 	set_attr(attr);
 }
 
-
 int Mutex::set_attr(const MutexAttr & attr){
-	return pthread_mutex_init(&m_item, &(attr.value()));
+    return set_error_number_if_error(pthread_mutex_init(&m_item, &(attr.value())));
 }
-
-
-
 
 int Mutex::lock(){
-	return pthread_mutex_lock(&m_item);
+    return set_error_number_if_error(pthread_mutex_lock(&m_item));
 }
 
-int Mutex::lock_timed(u32 sec, u32 usec){
-	struct timespec abs_timeout;
-
-	if( clock_gettime(CLOCK_REALTIME, &abs_timeout) < 0 ){
-		return -1;
-	}
-
-	abs_timeout.tv_nsec += usec*1000;
-	if( abs_timeout.tv_nsec > 1000000000 ){
-		abs_timeout.tv_sec++;
-		abs_timeout.tv_nsec -= 1000000000;
-	}
-
-	abs_timeout.tv_sec += sec;
-
-	return pthread_mutex_timedlock(&m_item, &abs_timeout);
-
+int Mutex::lock_timed(const chrono::ClockTime & clock_time){
+    ClockTime calc_time;
+    calc_time.get_time();
+    calc_time += clock_time;
+    return set_error_number_if_error(pthread_mutex_timedlock(&m_item, calc_time));
 }
 
 int Mutex::try_lock(){
-	return pthread_mutex_trylock(&m_item);
+    return set_error_number_if_error(pthread_mutex_trylock(&m_item));
 }
 
 int Mutex::unlock(){
-	return pthread_mutex_unlock(&m_item);
+    return set_error_number_if_error(pthread_mutex_unlock(&m_item));
 }
 
 

@@ -6,6 +6,7 @@
 #ifndef __link
 
 #include "../api/SysObject.hpp"
+#include "../chrono/MicroTime.hpp"
 #include <pthread.h>
 #include <mcu/types.h>
 
@@ -112,7 +113,7 @@ public:
 	 * @param usec The number of microseconds to wait for a lock before a timeout
 	 *
 	 */
-	int lock_timed(u32 sec, u32 usec = 0);
+    int lock_timed(const chrono::ClockTime & clock_time);
 
 	/*! \details Attempts to lock the mutex.
 	 *
