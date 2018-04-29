@@ -5,7 +5,7 @@ using namespace sys;
 
 
 Task::Task(){
-    m_idx = 0;
+    m_id = 0;
 }
 
 Task::~Task(){
@@ -19,22 +19,22 @@ void Task::initialize(){
 }
 
 int Task::count_total(){
-    int idx = m_idx;
+    int idx = m_id;
     int count = 0;
-    set_idx(0);
+    set_id(0);
     TaskAttr attr;
     while( get_next(attr) >= 0 ){
         count++;
     }
-    set_idx(idx);
+    set_id(idx);
     return count;
 }
 
 
 int Task::count_free(){
-    int idx = m_idx;
+    int idx = m_id;
     int count = 0;
-    set_idx(0);
+    set_id(0);
     TaskAttr attr;
     while( get_next(attr) >= 0) {
         printf("Task name is %s\n", attr.name());
@@ -42,7 +42,7 @@ int Task::count_free(){
             count++;
         }
     }
-    set_idx(idx);
+    set_id(idx);
     return count;
 }
 
@@ -51,8 +51,8 @@ int Task::get_next(TaskAttr & attr){
     sys_taskattr_t task_attr;
     int ret;
 
-    task_attr.tid = m_idx;
-    m_idx++;
+    task_attr.tid = m_id;
+    m_id++;
 
     initialize();
 

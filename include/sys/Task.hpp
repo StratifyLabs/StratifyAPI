@@ -1,5 +1,5 @@
-#ifndef TASK_HPP
-#define TASK_HPP
+#ifndef SYS_TASK_HPP
+#define SYS_TASK_HPP
 
 #include "../api/SysObject.hpp"
 #include "../hal/Device.hpp"
@@ -125,14 +125,16 @@ public:
      */
     int count_free();
 
-    /*! \details Sets the task idx value for the get_next() method.
+    /*! \details Sets the task ID value for the get_next() method.
+     *
+     * Valid values from from 0 to count_total() - 1.
      *
      *
      */
-    void set_idx(int value){ m_idx = value; }
+    void set_id(int value){ m_id = value; }
 
     /*! \details Returns the index of the current task. */
-    int idx() const { return m_idx; }
+    int id() const { return m_id; }
 
     /*! \details Gets the attributes for the next task.
      *
@@ -141,19 +143,20 @@ public:
      */
     int get_next(TaskAttr & attr);
 
-    TaskAttr get_attr(int idx);
+    /*! \details Gets the task attributes for the specifed id.
+     *
+     */
+    TaskAttr get_attr(int id);
 
 
 private:
-
     void initialize();
-
     hal::Device m_sys_device;
-    int m_idx;
+    int m_id;
 
 };
 
 
 }
 
-#endif // TASK_HPP
+#endif // SYS_TASK_HPP
