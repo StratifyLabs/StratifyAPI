@@ -37,29 +37,11 @@ namespace chrono {
  */
 class MicroTimer : public api::ChronoWorkObject {
 public:
-#ifdef __MCU_ONLY__
-    static int init(Tmr::port_t port, u32 heartbeat = 10000);
-#endif
 
-    /*! \details This method will delay the specified number of seconds.
-     *
-     * @param timeout Time to wait in seconds
-     */
-    static void wait_seconds(u32 timeout);
+
+    //deprecated methods
     static void wait_sec(u32 timeout){ wait_seconds(timeout); }
-
-    /*! \details This method will delay the specified number of milliseconds.
-     *
-     * @param timeout Time to wait in milliseconds
-     */
-    static void wait_milliseconds(u32 timeout){ wait(MicroTime::from_milliseconds(timeout)); }
-    static void wait_msec(u32 timeout){ wait(MicroTime::from_msec(timeout)); }
-
-    /*! \details This method will delay the specified number of microseconds.
-     *
-     * @param timeout Time to wait in microseconds
-     */
-    static void wait_microseconds(u32 timeout){ wait(timeout); }
+    static void wait_msec(u32 timeout){ wait(MicroTime::from_milliseconds(timeout)); }
     static void wait_usec(u32 timeout){ wait(timeout); }
 
     /*! \details This method will delay based on the specified MicroTime object.

@@ -36,7 +36,7 @@ public:
     u32 pid() const { return m_value.pid; }
 
     /*! \details Returns the thread id. */
-    u32 thread_id() const { return m_value.tid; }
+    u32 id() const { return m_value.tid; }
 
     /*! \details Returns the task id (same value as thread_id()). */
     u32 thread_id() const { return m_value.tid; }

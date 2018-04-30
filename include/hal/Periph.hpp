@@ -127,7 +127,7 @@ public:
      */
     void set_freq(u32 freq_hz){ m_attr.freq = freq_hz; }
 
-    /*! \details Gets a copy of the pin assignment. */
+    /*! \details Gets a pointer of the pin assignment. */
     const pin_assignment_t * pin_assignment() const { return &m_attr.pin_assignment; }
 
 protected:

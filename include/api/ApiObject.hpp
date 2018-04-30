@@ -35,6 +35,7 @@
  * \code
  * #include <sapi/hal.hpp> //this will include all namespace classes and add the namespace i.e. "using namespace hal;"
  * #include <sapi/sys.hpp> //includes all sys classes plus "using namespace sys;"
+ * #include <sapi/chrono.hpp> //includes all sys classes plus "using namespace sys;"
  *
  * int main(int argc, char * argv[]){
  *  Pin p(2, 10);
@@ -45,9 +46,9 @@
  *  //toggle p until the button is pressed
  *  while( button.get_value() != 0 ){
  *   p = false;
- *  	 Timer::wait_msec(100);
- *  	 p = true;
- *  	 Timer::wait_msec(100);
+ *   ClockTime::wait_milliseconds(100);
+ *   p = true;
+ *   ClockTime::wait_milliseconds(100);
  *  }
  *
  * 	return 0;

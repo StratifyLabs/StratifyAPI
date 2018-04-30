@@ -100,10 +100,6 @@ public:
 	 *
 	 */
 	void set_width(u8 bits){ m_attr.width = bits; }
-
-
-private:
-	uart_attr_t m_attr;
 };
 
 /*! \brief UART Class

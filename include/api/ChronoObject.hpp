@@ -25,7 +25,9 @@ public:
      *
      * @param timeout Time to wait in milliseconds
      */
-    static void wait_milliseconds(u32 timeout);
+    static void wait_milliseconds(u32 timeout){
+        return wait_microseconds(timeout*1000UL);
+    }
 
     /*! \details This method will delay the specified number of microseconds.
      *

@@ -152,9 +152,9 @@ bool Cli::handle_uart(hal::UartAttr & attr) const {
 		}
 
 		if( is_option("-tx") ){ attr.set_tx(get_option_pin("-tx")); }
-		if( is_option("-rx") ){ attr.set_tx(get_option_pin("-rx")); }
-		if( is_option("-rts") ){ attr.set_tx(get_option_pin("-rts")); }
-		if( is_option("-cts") ){ attr.set_tx(get_option_pin("-cts")); }
+        if( is_option("-rx") ){ attr.set_rx(get_option_pin("-rx")); }
+        if( is_option("-rts") ){ attr.set_rts(get_option_pin("-rts")); }
+        if( is_option("-cts") ){ attr.set_cts(get_option_pin("-cts")); }
 
 		if( is_option("-width") ){
 			attr.set_width(get_option_value("-w"));
