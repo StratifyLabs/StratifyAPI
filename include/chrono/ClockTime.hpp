@@ -43,7 +43,7 @@ public:
     ClockTime(){ reset(); }
 
     enum {
-        REALTIME = CLOCK_REALTIME
+        REALTIME /*! Realtime clock ID used with get_time() and get_resolution() */ = CLOCK_REALTIME
     };
 
     /*! \details Assigns the value of CLOCK_REALTIME to this object */
@@ -92,36 +92,50 @@ public:
     /*! \details Returns a MicroTime object set to the invalid time. */
     static ClockTime invalid(){ return ClockTime((u32)-1, (u32)-1); }
 
-    bool operator > (const ClockTime & a);
-    bool operator < (const ClockTime & a);
-    bool operator >= (const ClockTime & a);
-    bool operator <= (const ClockTime & a);
-    bool operator == (const ClockTime & a);
-    bool operator != (const ClockTime & a);
-    ClockTime operator + (const ClockTime & a){ return add(*this, a); }
-    ClockTime operator - (const ClockTime & a){ return subtract(*this, a); }
+    /*! \details Returns true if this is greater than \a a. */
+    bool operator > (const ClockTime & a) const;
+    /*! \details Returns true if this is less than \a a. */
+    bool operator < (const ClockTime & a) const;
+    /*! \details Returns true if this is greater than or equal to \a a. */
+    bool operator >= (const ClockTime & a) const;
+    /*! \details Returns true if this is less than or equal to \a a. */
+    bool operator <= (const ClockTime & a) const;
+    /*! \details Returns true if this is equal to \a a. */
+    bool operator == (const ClockTime & a) const;
+    /*! \details Returns true if this is not equal to \a a. */
+    bool operator != (const ClockTime & a) const;
 
+    /*! \details Returns the sum of this object and \a a. */
+    ClockTime operator + (const ClockTime & a) const { return add(*this, a); }
+    /*! \details Returns the difference of this object and \a a. */
+    ClockTime operator - (const ClockTime & a) const { return subtract(*this, a); }
+
+
+    /*! \details Adds \a to this and assigned to this. */
     ClockTime & operator += (const ClockTime & a){
         *this = add(*this, a);
         return *this;
     }
 
+    /*! \details Subracts \a from this and assigned to this. */
     ClockTime & operator -= (const ClockTime & a){
         //subtract nano time
         *this = subtract(*this, a);
         return *this;
     }
 
-
+    /*! \details Returns the seconds component. */
     s32 seconds() const { return m_value.tv_sec; }
+    /*! \details Returns the nanoseconds component. */
     s32 nanoseconds() const { return m_value.tv_nsec; }
 
+    /*! \details Returns a pointer to a strut timespec. */
     struct timespec * timespec(){ return &m_value; }
+    /*! \details Returns a pointer to a strut timespec (read-only). */
     const struct timespec * timespec() const { return &m_value; }
 
 
 private:
-
     void assign(s32 seconds, s32 nanoseconds);
     static ClockTime add(const ClockTime & a, const ClockTime & b);
     static ClockTime subtract(const ClockTime & a, const ClockTime & b);

@@ -5,7 +5,7 @@
 
 #include "../api/TestObject.hpp"
 #include "../chrono/MicroTime.hpp"
-#include "../chrono/MicroTimer.hpp"
+#include "../chrono/Timer.hpp"
 #include "../sys/Cli.hpp"
 
 namespace test {
@@ -267,8 +267,8 @@ protected:
      * while the test is running.
      *
      */
-    const chrono::MicroTimer & case_timer() const { return m_case_timer; }
-    chrono::MicroTimer & case_timer(){ return m_case_timer; }
+    const chrono::Timer & case_timer() const { return m_case_timer; }
+    chrono::Timer & case_timer(){ return m_case_timer; }
 
     /*! \details Opens a new test case.
      *
@@ -339,7 +339,7 @@ private:
     }
 
     bool m_test_result;
-    chrono::MicroTimer m_case_timer;
+    chrono::Timer m_case_timer;
     u32 m_test_duration_microseconds;
     u32 m_case_message_number;
     u32 m_indent_count;

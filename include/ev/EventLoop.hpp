@@ -6,7 +6,7 @@
 #define SM_EVENTLOOP_HPP_
 
 #include "../api/WorkObject.hpp"
-#include "../chrono/MicroTimer.hpp"
+#include "../chrono/Timer.hpp"
 #include "EventHandler.hpp"
 #include "Event.hpp"
 
@@ -278,13 +278,13 @@ protected:
     void check_loop_for_hibernate();
     void check_loop_for_update();
 
-    chrono::MicroTimer & update_timer(){ return m_update_timer; }
-    chrono::MicroTimer & loop_timer(){ return m_loop_timer; }
+    chrono::Timer & update_timer(){ return m_update_timer; }
+    chrono::Timer & loop_timer(){ return m_loop_timer; }
 
 private:
     EventHandler * m_current_event_handler;
-    chrono::MicroTimer m_update_timer;
-    chrono::MicroTimer m_loop_timer;
+    chrono::Timer m_update_timer;
+    chrono::Timer m_loop_timer;
 
 };
 

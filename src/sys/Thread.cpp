@@ -135,7 +135,7 @@ int Thread::wait(void**ret, int interval){
 	} else {
 		//just keep sampling until the thread completes
 		while( is_running() ){
-            MicroTimer::wait_milliseconds(interval);
+            Timer::wait_milliseconds(interval);
 		}
 	}
 

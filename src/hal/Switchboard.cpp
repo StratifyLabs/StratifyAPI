@@ -44,6 +44,43 @@ int Switchboard::get_available_connection() const {
     return idx;
 }
 
+int Switchboard::get_active_connection_count() const {
+    int ret = seek(0);
+    if( ret < 0 ){
+        return ret;
+    }
+    int count = 0;
+    switchboard_status_t status;
+    do {
+        ret = read(&status, sizeof(status));
+        if( ret == sizeof(status) ){
+            if( status.o_flags != 0 ){
+                count++; //this one is active
+            }
+        }
+    } while( ret == sizeof(status) );
+
+    return count;
+}
+
+void Switchboard::print_connections() const {
+    int ret = seek(0);
+    if( ret < 0 ){
+        return;
+    }
+    int id = 0;
+    switchboard_status_t status;
+    do {
+        ret = read(&status, sizeof(status));
+        if( ret == sizeof(status) ){
+            if( status.o_flags != 0 ){
+              printf("%d:%s -> %s\n", id, status.input.name, status.output.name);
+            }
+            id++;
+        }
+    } while( ret == sizeof(status) );
+}
+
 
 SwitchboardInfo Switchboard::get_info() const {
     SwitchboardInfo info;
@@ -62,7 +99,7 @@ int Switchboard::set_attr(switchboard_attr_t & attr) const {
 int Switchboard::create_persistent_connection(
         const SwitchboardTerminal & input,
         const SwitchboardTerminal & output,
-        s32 nbyte) const {
+        s32 nbyte, u32 o_flags) const {
     int idx = get_available_connection();
 
     if( idx < 0 ){
@@ -72,7 +109,7 @@ int Switchboard::create_persistent_connection(
 
     switchboard_attr_t attr;
     attr.idx = idx;
-    attr.o_flags = CONNECT | IS_PERSISTENT;
+    attr.o_flags = CONNECT | IS_PERSISTENT | o_flags;
     attr.input = input.m_terminal;
     attr.output = output.m_terminal;
     attr.nbyte = nbyte; //max packet size

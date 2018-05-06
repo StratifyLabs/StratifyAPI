@@ -36,7 +36,7 @@ public:
     Time(u32 sec, u32 min = 0, u32 hour = 0);
 
     /*! \details Returns the time (time_t). */
-    operator u32(){ return m_time; }
+    operator u32() const { return m_time; }
 
 
     /*! \details Adds to the current value. */

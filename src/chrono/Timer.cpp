@@ -4,49 +4,33 @@
 #include <cstdio>
 #include <unistd.h>
 #include <time.h>
-#include "chrono/MicroTimer.hpp"
+#include "chrono/Timer.hpp"
 using namespace chrono;
-
-
-void api::ChronoWorkObject::wait_seconds(u32 timeout){
-    sleep(timeout);
-}
-
-void api::ChronoWorkObject::wait_microseconds(u32 duration){
-    u32 seconds = duration / 1000000UL;
-    if( seconds > 0 ){ sleep(seconds); }
-    duration = duration - seconds * 1000000UL;
-    usleep(duration);
-}
-
-void MicroTimer::wait(const MicroTime & micro_time){
-    wait_microseconds(micro_time.microseconds());
-}
 
 #if !defined __link
 
-MicroTimer::MicroTimer() { reset(); }
+Timer::Timer() { reset(); }
 
-void MicroTimer::reset(){
+void Timer::reset(){
     m_start.reset();
     m_stop.reset();
     //when stop.seconds() value is 0, the timer is in reset mode
     //when stop.seconds() value is -1, the timer is currently running
 }
 
-void MicroTimer::restart(){
+void Timer::restart(){
     m_start.get_time();
     m_stop.set(-1, 0);
 }
 
 
-void MicroTimer::start(){
+void Timer::start(){
     if( is_running() == false ){
         restart();
     }
 }
 
-void MicroTimer::resume(){
+void Timer::resume(){
     ClockTime new_start;
     ClockTime now;
 
@@ -66,19 +50,7 @@ void MicroTimer::resume(){
     }
 }
 
-u32 MicroTimer::calc_sec() const {
-    ClockTime now;
-
-    if( m_stop.seconds() < 0 ){
-        now.get_time();
-    } else {
-        now = m_stop;
-    }
-    //difference between now and start time
-    return now.seconds() - m_start.seconds();
-}
-
-MicroTime MicroTimer::calc_value() const {
+ClockTime Timer::clock_time() const {
     ClockTime now;
     if( m_stop.seconds() < 0 ){
         now.get_time();
@@ -87,10 +59,14 @@ MicroTime MicroTimer::calc_value() const {
     }
     //difference between now and start_
     now -= m_start;
-    return MicroTime(now);
+    return now;
 }
 
-void MicroTimer::stop(){
+MicroTime Timer::calc_value() const {
+    return MicroTime(clock_time());
+}
+
+void Timer::stop(){
     if( is_running() ){
         m_stop.get_time();
     }

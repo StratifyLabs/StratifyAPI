@@ -150,31 +150,67 @@ void Data::fill(unsigned char d){
 }
 
 int Data::print(u32 o_flags) const {
-    const u8 * ptr = (const u8*)data_const();
+    const s8 * ptrs8 = (const s8*)data_const();
+    const s16 * ptrs16 = (const s16*)data_const();
+    const s32 * ptrs32 = (const s32*)data_const();
+    const u8 * ptru8 = (const u8*)data_const();
+    const u16 * ptru16 = (const u16*)data_const();
+    const u32 * ptru32 = (const u32*)data_const();
+
+    int size;
+    if( o_flags & PRINT_32 ){
+        size = capacity() / 4;
+    } else if( o_flags & PRINT_16 ){
+        size = capacity() / 2;
+    } else {
+        size = capacity();
+    }
+
     int i;
-    for(i=0; i < (int)capacity(); i++){
-        ::printf("[%d] =", i);
+    for(i=0; i < size; i++){
+        printf("[%d]=", i);
         if( o_flags & PRINT_HEX ){
-            printf(" 0x%X", ptr[i]);
+            if( o_flags & PRINT_32 ){
+                printf("%lX", ptru32[i]);
+            } else if( o_flags & PRINT_16 ){
+                printf("%X", ptru16[i]);
+            } else {
+                printf("%X", ptru8[i]);
+            }
+            printf(" ");
         }
         if( o_flags & PRINT_UNSIGNED ){
-            printf(" %u", ptr[i]);
+            if( o_flags & PRINT_32 ){
+                printf("%lu", ptru32[i]);
+            } else if( o_flags & PRINT_16 ){
+                printf("%u", ptru16[i]);
+            } else {
+                printf("%u", ptru8[i]);
+            }
+            printf(" ");
         }
         if( o_flags & PRINT_SIGNED ){
-            printf(" %d", ptr[i]);
+            if( o_flags & PRINT_32 ){
+                printf("%ld", ptrs32[i]);
+            } else if( o_flags & PRINT_16 ){
+                printf("%d", ptrs16[i]);
+            } else {
+                printf("%d", ptrs8[i]);
+            }
+            printf(" ");
         }
         if( o_flags & PRINT_CHAR ){
-            if( ptr[i] == '\n' ){
+            if( ptru8[i] == '\n' ){
                 printf(" \\n");
-            } else if( ptr[i] == '\r' ){
+            } else if( ptru8[i] == '\r' ){
                 printf(" \\r");
-            } else if( ptr[i] == 0 ){
+            } else if( ptru8[i] == 0 ){
                 printf(" null");
-            } else if( ptr[i] < 128){
-                printf(" %c", ptr[i]);
+            } else if( ptru8[i] < 128){
+                printf(" %c", ptru8[i]);
             }
         }
-        printf(" \n");
+        printf("\n");
     }
     return capacity();
 }

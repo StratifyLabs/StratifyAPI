@@ -233,7 +233,10 @@ public:
         PRINT_HEX /*! Print hex data */ = (1<<0),
         PRINT_UNSIGNED /*! Print unsigned integers */ = (1<<1),
         PRINT_SIGNED /*! Printd signed integers */ = (1<<2),
-        PRINT_CHAR /*! Print Characters */ = (1<<3)
+        PRINT_CHAR /*! Print Characters */ = (1<<3),
+        PRINT_8 /*! Print as 8 bit values (default) */ = 0,
+        PRINT_16 /*! Print as 16 bit values */ = (1<<4),
+        PRINT_32 /*! Print as 32 bit values */ = (1<<5),
     };
 
     /*! \details Prints the data to the standard output. */

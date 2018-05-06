@@ -23,7 +23,7 @@ ClockTime ClockTime::get_resolution(int clock_id){
 
 
 
-bool ClockTime::operator > (const ClockTime & a){
+bool ClockTime::operator > (const ClockTime & a) const {
     if( m_value.tv_sec > a.m_value.tv_sec ){
         return true;
     } else if( m_value.tv_sec == a.m_value.tv_sec ){
@@ -32,7 +32,7 @@ bool ClockTime::operator > (const ClockTime & a){
     return false;
 }
 
-bool ClockTime::operator < (const ClockTime & a){
+bool ClockTime::operator < (const ClockTime & a) const {
     if( m_value.tv_sec < a.m_value.tv_sec ){
         return true;
     } else if( m_value.tv_sec == a.m_value.tv_sec ){
@@ -41,7 +41,7 @@ bool ClockTime::operator < (const ClockTime & a){
     return false;
 }
 
-bool ClockTime::operator >= (const ClockTime & a){
+bool ClockTime::operator >= (const ClockTime & a) const {
     if( m_value.tv_sec >= a.m_value.tv_sec ){
         return true;
     } else if( m_value.tv_sec == a.m_value.tv_sec ){
@@ -50,7 +50,7 @@ bool ClockTime::operator >= (const ClockTime & a){
     return false;
 }
 
-bool ClockTime::operator <= (const ClockTime & a){
+bool ClockTime::operator <= (const ClockTime & a) const {
     if( m_value.tv_sec <= a.m_value.tv_sec ){
         return true;
     } else if( m_value.tv_sec == a.m_value.tv_sec ){
@@ -59,14 +59,14 @@ bool ClockTime::operator <= (const ClockTime & a){
     return false;
 }
 
-bool ClockTime::operator == (const ClockTime & a){
+bool ClockTime::operator == (const ClockTime & a) const {
     if( (m_value.tv_sec == a.m_value.tv_sec) && (m_value.tv_nsec == a.m_value.tv_nsec) ){
         return true;
     }
     return false;
 }
 
-bool ClockTime::operator != (const ClockTime & a){
+bool ClockTime::operator != (const ClockTime & a) const {
     if( (m_value.tv_sec != a.m_value.tv_sec) || (m_value.tv_nsec != a.m_value.tv_nsec) ){
         return true;
     }

@@ -100,7 +100,7 @@ bool PinButton::get_held(){
 
     if( m_flags.held_reported == 0 ){
         //true if timer is greater than a maximum and held has not been reported
-        if ( (m_timer.value().milliseconds() >= m_held_duration) && (m_timer.is_running()) ){
+        if ( (m_timer.milliseconds() >= m_held_duration) && (m_timer.is_running()) ){
             ret = true;
             m_flags.held_reported = 1;
         }

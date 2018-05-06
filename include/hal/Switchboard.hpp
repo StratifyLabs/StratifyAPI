@@ -153,7 +153,10 @@ public:
         IS_PERSISTENT /*! Is Persistent Flag */ = SWITCHBOARD_FLAG_IS_PERSISTENT,
         IS_FIXED_SIZE /*! Is Fixed Size Flag */ = 0,
         IS_CONNECTED /*! Is Connected Flag */ = SWITCHBOARD_FLAG_IS_CONNECTED,
-        IS_STOPPED_ON_ERROR /*! Is Stopped on Error */ = SWITCHBOARD_FLAG_IS_STOPPED_ON_ERROR
+        IS_STOPPED_ON_ERROR /*! Is Stopped on Error */ = SWITCHBOARD_FLAG_IS_STOPPED_ON_ERROR,
+        IS_FILL_ZERO /*! Fill output with zeros if no input data is available */ = SWITCHBOARD_FLAG_IS_FILL_ZERO,
+        IS_INPUT_NON_BLOCKING /*! Execute input transactions as non-blocking /*/ = SWITCHBOARD_FLAG_IS_INPUT_NON_BLOCKING,
+        IS_OUTPUT_NON_BLOCKING /*! Execute input transactions as non-blocking /*/ = SWITCHBOARD_FLAG_IS_OUTPUT_NON_BLOCKING
     };
 
 
@@ -182,6 +185,10 @@ public:
      */
     int get_available_connection() const;
 
+    int get_active_connection_count() const;
+
+
+
     /*!
      * \details Creates a new perisisten connection on the switchboard.
      *
@@ -196,7 +203,8 @@ public:
     int create_persistent_connection(
             const SwitchboardTerminal & input,
             const SwitchboardTerminal & output,
-            s32 nbyte = 65535) const;
+            s32 nbyte = 65535,
+            u32 o_flags = 0) const;
 
     /*!
      * \details create_fixed_size_connection
@@ -231,6 +239,8 @@ public:
 
     /*! \details Gets information from the switchboard. */
     SwitchboardInfo get_info() const;
+
+    void print_connections() const;
 
     /*! \details Sets the attributes of the switchboard.
      *

@@ -3,11 +3,11 @@
 #ifndef SYS_TIMER_HPP_
 #define SYS_TIMER_HPP_
 
-#include "../chrono/MicroTimer.hpp"
+#include "../chrono/Timer.hpp"
 
 
 namespace sys {
-typedef chrono::MicroTimer Timer;
+typedef chrono::Timer Timer;
 }
 
 #endif /* SYS_TIMER_HPP_ */

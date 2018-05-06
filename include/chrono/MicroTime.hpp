@@ -20,8 +20,8 @@ typedef u32 micro_time_t;
  * a 32-bit value so it is good for 4B microseconds
  * (or about 66 minutes).
  *
- * It is very handy for converting between microseconds (usec),
- * milliseconds (msec), and seconds (sec). It also serves
+ * It is very handy for converting between microseconds,
+ * milliseconds, and seconds. It also serves
  * to remove ambiguity when specifying short time intervals.
  *
  * For example:
@@ -43,7 +43,7 @@ public:
     MicroTime(u32 microseconds = 0){ m_value_microseconds = microseconds; }
 
     MicroTime(const ClockTime & clock_time){
-        m_value_microseconds = clock_time.seconds() * 1000000 + (clock_time.nanoseconds() + 500) / 1000;
+        m_value_microseconds = clock_time.seconds() * 1000000UL + (clock_time.nanoseconds() + 500) / 1000;
     }
 
     /*! \details Create a MicroTime object from a second value. */
