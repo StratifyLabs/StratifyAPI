@@ -19,6 +19,7 @@ namespace chrono {}
 #include "chrono/MicroTime.hpp"
 #include "chrono/Timer.hpp"
 #include "chrono/Time.hpp"
+#include "chrono/Clock.hpp"
 
 #include "chrono/MicroTimer.hpp"
 

@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <time.h>
 #include "chrono/Timer.hpp"
+#include "chrono/Clock.hpp"
 using namespace chrono;
 
 #if !defined __link
@@ -19,7 +20,7 @@ void Timer::reset(){
 }
 
 void Timer::restart(){
-    m_start.get_time();
+    m_start = Clock::get_time();
     m_stop.set(-1, 0);
 }
 
@@ -41,7 +42,7 @@ void Timer::resume(){
     //if timer has been stopped, then resume counting
     if( m_start.seconds() + m_start.nanoseconds() ){ //start is non-zero
         new_start = m_stop - m_start;
-        now.get_time();
+        now = Clock::get_time();
         m_start = now - new_start;
         m_stop.set(-1, 0);
     } else {
@@ -53,7 +54,7 @@ void Timer::resume(){
 ClockTime Timer::clock_time() const {
     ClockTime now;
     if( m_stop.seconds() < 0 ){
-        now.get_time();
+        now = Clock::get_time();
     } else {
         now = m_stop;
     }
@@ -68,7 +69,7 @@ MicroTime Timer::calc_value() const {
 
 void Timer::stop(){
     if( is_running() ){
-        m_stop.get_time();
+        m_stop = Clock::get_time();
     }
 }
 

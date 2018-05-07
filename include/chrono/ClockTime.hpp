@@ -19,7 +19,7 @@ class MicroTime;
  *
  *
  */
-class ClockTime : public api::ChronoWorkObject {
+class ClockTime : public api::ChronoInfoObject {
 public:
 
     /*! \details Constructs a MicroTime object using a u32 value.
@@ -41,15 +41,6 @@ public:
 
     /*! \details Constructs a zero value ClockTime object. */
     ClockTime(){ reset(); }
-
-    enum {
-        REALTIME /*! Realtime clock ID used with get_time() and get_resolution() */ = CLOCK_REALTIME
-    };
-
-    /*! \details Assigns the value of CLOCK_REALTIME to this object */
-    int get_time(int clock_id = REALTIME);
-
-    static ClockTime get_resolution(int clock_id = REALTIME);
 
     /*! \details Resets the value of the clock to zero. */
     void reset(){

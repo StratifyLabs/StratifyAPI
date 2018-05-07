@@ -10,20 +10,20 @@ namespace sys {
 /*!
  * \brief The Task Attributes Class
  */
-class TaskAttr : public api::SysInfoObject {
+class TaskInfo : public api::SysInfoObject {
 public:
 
     /*! \details Constructs a new object with the give task ID. */
-    TaskAttr(int tid = 0){
+    TaskInfo(int tid = 0){
         memset(&m_value, 0, sizeof(sys_taskattr_t));
         m_value.tid = tid;
     }
 
-    TaskAttr(const sys_taskattr_t & attr){
+    TaskInfo(const sys_taskattr_t & attr){
         memcpy(&m_value, &attr, sizeof(m_value));
     }
 
-    static TaskAttr invalid(){ return TaskAttr(-1); }
+    static TaskInfo invalid(){ return TaskInfo(-1); }
 
     bool is_valid() const {
         return m_value.tid != (u32)-1;
@@ -75,14 +75,16 @@ public:
     /*! \details Returns the heap size available to the task. */
     u32 heap_size() const { return m_value.malloc_loc - m_value.mem_loc; }
 
+    /*! \details Returns the stack sizve of the current task. */
     u32 stack_size() const { return m_value.mem_loc + m_value.mem_size - m_value.stack_ptr; }
-
 
 
 private:
     sys_taskattr_t m_value;
 };
 
+//this more closely matches the driver variable name
+typedef TaskInfo TaskAttr;
 
 /*! \brief Task Class
  * \details The Task Class is used to query
@@ -141,12 +143,12 @@ public:
      * @param attr A reference for the destination information.
      *
      */
-    int get_next(TaskAttr & attr);
+    int get_next(TaskInfo & attr);
 
     /*! \details Gets the task attributes for the specifed id.
      *
      */
-    TaskAttr get_attr(int id);
+    TaskInfo get_attr(int id);
 
 
 private:

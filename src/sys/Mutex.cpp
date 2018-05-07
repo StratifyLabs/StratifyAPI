@@ -83,7 +83,7 @@ int Mutex::lock(){
 
 int Mutex::lock_timed(const chrono::ClockTime & clock_time){
     ClockTime calc_time;
-    calc_time.get_time();
+    calc_time = Clock::get_time();
     calc_time += clock_time;
     return set_error_number_if_error(pthread_mutex_timedlock(&m_item, calc_time));
 }

@@ -10,19 +10,6 @@ ClockTime::ClockTime(const MicroTime & micro_time){
     m_value.tv_nsec = microseconds;
 }
 
-int ClockTime::get_time(int clock_id){
-    return set_error_number_if_error(clock_gettime(clock_id, &m_value));
-}
-
-
-ClockTime ClockTime::get_resolution(int clock_id){
-    ClockTime resolution;
-    clock_getres(CLOCK_REALTIME, &resolution.m_value);
-    return resolution;
-}
-
-
-
 bool ClockTime::operator > (const ClockTime & a) const {
     if( m_value.tv_sec > a.m_value.tv_sec ){
         return true;

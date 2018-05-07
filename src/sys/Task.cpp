@@ -22,7 +22,7 @@ int Task::count_total(){
     int idx = m_id;
     int count = 0;
     set_id(0);
-    TaskAttr attr;
+    TaskInfo attr;
     while( get_next(attr) >= 0 ){
         count++;
     }
@@ -35,9 +35,8 @@ int Task::count_free(){
     int idx = m_id;
     int count = 0;
     set_id(0);
-    TaskAttr attr;
+    TaskInfo attr;
     while( get_next(attr) >= 0) {
-        printf("Task name is %s\n", attr.name());
         if( !attr.is_enabled() ){
             count++;
         }
@@ -47,7 +46,7 @@ int Task::count_free(){
 }
 
 
-int Task::get_next(TaskAttr & attr){
+int Task::get_next(TaskInfo & attr){
     sys_taskattr_t task_attr;
     int ret;
 
@@ -58,7 +57,7 @@ int Task::get_next(TaskAttr & attr){
 
     ret = set_error_number_if_error( m_sys_device.ioctl(I_SYS_GETTASK, &task_attr) );
     if( ret < 0 ){
-        attr = TaskAttr::invalid();
+        attr = TaskInfo::invalid();
         return ret;
     }
 
@@ -66,13 +65,13 @@ int Task::get_next(TaskAttr & attr){
     return ret;
 }
 
-TaskAttr Task::get_attr(int idx){
+TaskInfo Task::get_attr(int idx){
     sys_taskattr_t attr;
     attr.tid = idx;
     initialize();
     if( set_error_number_if_error( m_sys_device.ioctl(I_SYS_GETTASK, &attr) ) < 0 ){
-        return TaskAttr::invalid();
+        return TaskInfo::invalid();
     }
 
-    return TaskAttr(attr);
+    return TaskInfo(attr);
 }
