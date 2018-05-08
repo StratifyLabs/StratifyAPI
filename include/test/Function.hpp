@@ -58,6 +58,7 @@ public:
      *
      * @param test_name The name of the test
      * @param function A function pointer to the function that will be tested
+     * @param parent The parent test or zero if there is no parent
      *
      */
     Function(const char * test_name, return_type (*function)(args...), Test * parent = 0) : Test(test_name, parent){

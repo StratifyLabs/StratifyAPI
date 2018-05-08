@@ -109,8 +109,7 @@ public:
 
 	/*! \details Attempts to lock the mutex but times out after the specified duration.
 	 *
-	 * @param sec The number of seconds to wait before a timeout
-	 * @param usec The number of microseconds to wait for a lock before a timeout
+     * @param clock_time A clock time object that defines the maximum amount of time to wait for a lock
 	 *
 	 */
     int lock_timed(const chrono::ClockTime & clock_time);

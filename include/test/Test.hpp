@@ -131,6 +131,7 @@ public:
     /*! \details Constructs a new test object.
      *
      * @param name The name of the test
+     * @param parent The parent test or zero
      *
      * <b>The test must be constructed after Test::initialize().</b>
      *
@@ -159,9 +160,10 @@ public:
      *   return 0;
      * }
      *
-     *
-     *
      * \endcode
+     *
+     * If a Test is constructed inside the case of another test, "this" should
+     * be used as the value of the parent.
      *
      */
     Test(const char * name, Test * parent = 0);

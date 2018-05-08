@@ -56,23 +56,6 @@ public:
     static void wait_sec(u32 timeout){ wait_seconds(timeout); }
     static void wait_msec(u32 timeout){ wait_milliseconds(timeout); }
     static void wait_usec(u32 timeout){ wait_microseconds(timeout); }
-
-    /*! \details This method will delay based on the specified MicroTime object.
-     *
-     * @param micro_time A reference to the MicroTime object
-     *
-     * Here are some examples:
-     *
-     * \code
-     * Timer::wait(MicroTime::from_msec(100)); //delay 100 milliseconds
-     * Timer::wait(1000); //delay 1000 microseconds -- MicroTime() is auto constructed using microseconds
-     * Timer::wait(MicroTime::from_sec(5)); //delay for 5 seconds
-     * \endcode
-     *
-     *
-     */
-
-
 #if !defined __link
 
     /*! \details Constructs an empty Timer. */

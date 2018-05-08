@@ -10,6 +10,14 @@ class Switchboard;
 
 /*! \brief Switchboard Terminal Class
  *
+ * \details A Switchboard terminal defines
+ * the data structure for either an input or an output.
+ *
+ * Inputs and outputs are defined identically. When
+ * a terminal is passed to the Switchboard as an input
+ * it will be read. And when passed as an output, it will
+ * be written.
+ *
  */
 class SwitchboardTerminal : public api::HalInfoObject {
 public:
@@ -174,10 +182,10 @@ private:
  * \details The Switchboard class is used to interface
  * with /dev/switchboard0 and similar devices.
  *
+ * The switchboard can connect two devices together
+ * such that when data is received on one device,
+ * it will be written to another device.
  *
- * \code
- *
- * \endcode
  *
  */
 class Switchboard : public Device {
@@ -194,8 +202,8 @@ public:
         IS_CONNECTED /*! Is Connected Flag */ = SWITCHBOARD_FLAG_IS_CONNECTED,
         IS_STOPPED_ON_ERROR /*! Is Stopped on Error */ = SWITCHBOARD_FLAG_IS_STOPPED_ON_ERROR,
         IS_FILL_ZERO /*! Fill output with zeros if no input data is available */ = SWITCHBOARD_FLAG_IS_FILL_ZERO,
-        IS_INPUT_NON_BLOCKING /*! Execute input transactions as non-blocking /*/ = SWITCHBOARD_FLAG_IS_INPUT_NON_BLOCKING,
-        IS_OUTPUT_NON_BLOCKING /*! Execute input transactions as non-blocking /*/ = SWITCHBOARD_FLAG_IS_OUTPUT_NON_BLOCKING
+        IS_INPUT_NON_BLOCKING /*! Execute input transactions as non-blocking */ = SWITCHBOARD_FLAG_IS_INPUT_NON_BLOCKING,
+        IS_OUTPUT_NON_BLOCKING /*! Execute input transactions as non-blocking */ = SWITCHBOARD_FLAG_IS_OUTPUT_NON_BLOCKING
     };
 
 
@@ -244,6 +252,7 @@ public:
      */
     int get_available_connection() const;
 
+    /*! \details Returns the number of active connections. */
     int get_active_connection_count() const;
 
 
