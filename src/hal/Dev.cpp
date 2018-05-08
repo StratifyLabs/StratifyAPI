@@ -6,9 +6,4 @@
 using namespace sys;
 using namespace hal;
 
-#if defined __link
-Dev::Dev(link_transport_mdriver_t * d) : Device(d){}
-#endif
-
-Dev::Dev(){}
 

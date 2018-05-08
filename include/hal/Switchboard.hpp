@@ -74,11 +74,11 @@ public:
     /*! \details Constructs a new empty connection. */
     SwitchboardConnection(){
         memset(&m_connection, 0, sizeof(switchboard_connection_t));
-        m_connection.idx = invalid_idx();
+        m_connection.id = invalid_id();
     }
 
     /*! \details Returns the value assigned to invalid index values. */
-    static u16 invalid_idx() { return (u16)-1; }
+    static u16 invalid_id() { return (u16)-1; }
 
     /*! \details Constructs a connection with the specified terminals.
      *
@@ -98,11 +98,50 @@ public:
         m_connection.output = value.m_terminal;
     }
 
-    u16 idx() const { return m_connection.idx; }
-    s32 nbyte() const { return m_connection.nbyte; }
+    /*! \details Returns the connection ID value.
+     *
+     * If this value is equal to invalid_id(), the connection
+     * is not valid.
+     *
+     */
+    u16 id() const { return m_connection.id; }
+
+    /*! \details Returns the number of bytes transferred on the last transaction.
+     *
+     * If this value is negative, then an error has occurred.
+     *
+     */
+    s32 nbyte() const {
+        if( m_connection.nbyte < 0 ){
+            return SYSFS_GET_RETURN(m_connection.nbyte);
+        }
+        return m_connection.nbyte;
+    }
+
+    /*! \details Returns the status flags of the connection. */
     u32 o_flags() const { return m_connection.o_flags; }
+
+    /*! \details Returns a copy of the input terminal. */
     SwitchboardTerminal input() const { return m_connection.input; }
+
+    /*! \details Returns a copy of the output terminal. */
     SwitchboardTerminal output() const { return m_connection.output; }
+
+    /*! \details Returns true if the connection has stopped on an error. */
+    bool is_stopped_on_error() const {
+        return (o_flags() & SWITCHBOARD_FLAG_IS_STOPPED_ON_ERROR) != 0;
+    }
+
+    /*! \details Returns the error number associated with the is_stopped_on_error() condition. */
+    int error_number() const {
+        if( m_connection.nbyte < 0 ){
+            return SYSFS_GET_RETURN_ERRNO(m_connection.nbyte);
+        }
+        return 0;
+    }
+
+    /*! \details Prints details about the connection on the standard output. */
+    void print() const;
 
 private:
     friend class Switchboard;
@@ -174,8 +213,28 @@ public:
      */
     int open(const char * name = "/dev/switchboard0");
 
-    /*! \details Gets the connection specified by idx. */
-    SwitchboardConnection get_connection(u16 idx) const;
+    /*! \details Gets the connection specified by id. */
+    SwitchboardConnection get_connection(u16 id) const;
+
+    /*! \details Reloads the latest status on the connection.
+     *
+     * @param connection A reference to the connection to reload
+     * @return Zero on success
+     *
+     * The \a connection parameter must have a valid id() value.
+     *
+     * \code
+     * Switchboard sb;
+     * sb.open();
+     * SwitchboardConnection connection = sb.get_connection(0); //assumes 0 is a valid connection
+     * printf("connection input bytes transferred %d\n", connection.input().bytes_transferred());
+     * sleep(1);
+     * sb.get_connection(connection); //grab the latest status
+     * printf("connection input bytes transferred %d\n", connection.input().bytes_transferred());
+     * \endcode
+     *
+     */
+    int get_connection(SwitchboardConnection & connection) const;
 
     /*! \details Gets a free connection that can be used
      * for a new connection.
@@ -194,7 +253,7 @@ public:
      *
      * \param input The input terminal
      * \param output The output terminal
-     * \return The idx number of the new connection or less than zero for an error
+     * \return The id number of the new connection or less than zero for an error
      *
      * The connection will persist until it is disconnected using destroy_connection()
      * or it encounters a read or write error.
@@ -219,13 +278,16 @@ public:
             s32 nbyte) const;
 
     /*!
-     * \details Disconnects the specified connection.
+     * \details Destroys the specified connection.
      *
-     * \param idx The connection to disconnect
+     * \param id The connection to disconnect
      * \return Zero on success
      *
+     * After a connection is destroyed, it can be used again.
+     * The connection may take some time to stop.
+     *
      */
-    int destroy_connection(u16 idx) const;
+    int destroy_connection(u16 id) const;
 
     /*! \details Disconnects the specified connection.
      *

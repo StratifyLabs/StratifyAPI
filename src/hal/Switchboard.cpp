@@ -15,24 +15,37 @@ int Switchboard::open(const char * name){
     return ioctl(I_SWITCHBOARD_GETINFO, &info);
 }
 
-SwitchboardConnection Switchboard::get_connection(u16 idx) const {
+SwitchboardConnection Switchboard::get_connection(u16 id) const {
     SwitchboardConnection connection;
-    set_error_number_if_error( read(idx*sizeof(switchboard_connection_t), &connection.m_connection, sizeof(switchboard_connection_t)) );
+    if( set_error_number_if_error( read(id*sizeof(switchboard_connection_t), &connection.m_connection, sizeof(switchboard_connection_t)) ) < 0 ){
+        connection = SwitchboardConnection();
+    }
     return connection;
+}
+
+int Switchboard::get_connection(SwitchboardConnection & connection) const {
+    if( connection.id() != SwitchboardConnection::invalid_id() ){
+        if( set_error_number_if_error( read(connection.id()*sizeof(switchboard_connection_t), &connection.m_connection, sizeof(switchboard_connection_t)) ) < 0 ){
+            connection = SwitchboardConnection();
+        }
+    }
+    return -1;
 }
 
 int Switchboard::get_available_connection() const {
     int ret = seek(0);
-    int idx = 0;
     if( ret < 0 ){
         return ret;
     }
 
+    int id = 0;
     switchboard_status_t status;
     do {
         ret = read(&status, sizeof(status));
-        if( status.o_flags != 0 ){
-            idx++; //this one is busy
+        if( ret == sizeof(status) ){
+            if( status.o_flags != 0 ){
+                id++; //this one is busy
+            }
         }
     } while( (ret == sizeof(status)) && (status.o_flags != 0) );
 
@@ -41,7 +54,7 @@ int Switchboard::get_available_connection() const {
         return -1;
     }
 
-    return idx;
+    return id;
 }
 
 int Switchboard::get_active_connection_count() const {
@@ -74,7 +87,7 @@ void Switchboard::print_connections() const {
         ret = read(&status, sizeof(status));
         if( ret == sizeof(status) ){
             if( status.o_flags != 0 ){
-              printf("%d:%s -> %s\n", id, status.input.name, status.output.name);
+                printf("%d:%s -> %s\n", id, status.input.name, status.output.name);
             }
             id++;
         }
@@ -100,20 +113,24 @@ int Switchboard::create_persistent_connection(
         const SwitchboardTerminal & input,
         const SwitchboardTerminal & output,
         s32 nbyte, u32 o_flags) const {
-    int idx = get_available_connection();
+    int id = get_available_connection();
 
-    if( idx < 0 ){
+    if( id < 0 ){
         set_error_number(ENOSPC);
         return -1;
     }
 
     switchboard_attr_t attr;
-    attr.idx = idx;
+    attr.id = id;
     attr.o_flags = CONNECT | IS_PERSISTENT | o_flags;
     attr.input = input.m_terminal;
     attr.output = output.m_terminal;
     attr.nbyte = nbyte; //max packet size
-    return set_attr(attr);
+    if( set_attr(attr) < 0 ){
+        return -1;
+    }
+
+    return id;
 }
 
 int Switchboard::create_fixed_size_connection(
@@ -121,33 +138,46 @@ int Switchboard::create_fixed_size_connection(
         const SwitchboardTerminal & output,
         s32 nbyte
         ) const {
-    int idx = get_available_connection();
+    int id = get_available_connection();
 
-    if( idx < 0 ){
+    if( id < 0 ){
         set_error_number(ENOSPC);
         return -1;
     }
 
     switchboard_attr_t attr;
-    attr.idx = idx;
+    attr.id = id;
     attr.o_flags = CONNECT | IS_FIXED_SIZE;
     attr.input = input.m_terminal;
     attr.output = output.m_terminal;
     attr.nbyte  = nbyte; //max packet size
-    return set_attr(attr);
+    if( set_attr(attr) < 0 ){
+        return -1;
+    }
+    return id;
 }
 
 
-int Switchboard::destroy_connection(u16 idx) const {
+int Switchboard::destroy_connection(u16 id) const {
     switchboard_attr_t attr;
-    attr.idx = idx;
+    attr.id = id;
     attr.o_flags = DISCONNECT;
     return set_attr(attr);
 }
 
 int Switchboard::destroy_connection(SwitchboardConnection & connection){
-    u16 idx = connection.idx();
-    memset(&connection.m_connection, 0, sizeof(switchboard_connection_t));
-    return destroy_connection(idx);
+    u16 id = connection.id();
+    connection = SwitchboardConnection();
+    return destroy_connection(id);
 }
+
+void SwitchboardConnection::print() const {
+    if( id() != invalid_id() ){
+        printf("%s -> %s total:%ld size:%ld\n", input().name(), output().name(), input().bytes_transferred(), nbyte());
+    } else {
+        printf("Invalid Connection ID\n");
+    }
+}
+
+
 

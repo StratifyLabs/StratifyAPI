@@ -4,12 +4,13 @@ set(SOURCELIST
   ${SOURCES_PREFIX}/CFifo.cpp
   ${SOURCES_PREFIX}/Core.cpp
   ${SOURCES_PREFIX}/Dac.cpp
-  ${SOURCES_PREFIX}/Dev.cpp
   ${SOURCES_PREFIX}/Device.cpp
   ${SOURCES_PREFIX}/Eint.cpp
-  ${SOURCES_PREFIX}/Fifo.cpp
-  ${SOURCES_PREFIX}/I2C.cpp
-  ${SOURCES_PREFIX}/Led.cpp
+	${SOURCES_PREFIX}/FFifo.cpp
+	${SOURCES_PREFIX}/Fifo.cpp
+	${SOURCES_PREFIX}/I2C.cpp
+	${SOURCES_PREFIX}/I2S.cpp
+	${SOURCES_PREFIX}/Led.cpp
   ${SOURCES_PREFIX}/Periph.cpp
   ${SOURCES_PREFIX}/Pio.cpp
   ${SOURCES_PREFIX}/Pwm.cpp

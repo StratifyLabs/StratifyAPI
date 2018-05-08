@@ -7,16 +7,8 @@
 
 namespace hal {
 
-class Dev : public Device {
-public:
-#if defined __link
-	Dev(link_transport_mdriver_t * d);
-	Dev();
-#else
-	Dev();
-#endif
-
-};
+//deprecated
+typedef Device Dev;
 
 }
 
