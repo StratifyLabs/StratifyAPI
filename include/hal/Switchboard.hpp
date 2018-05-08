@@ -88,6 +88,9 @@ public:
     /*! \details Returns the value assigned to invalid index values. */
     static u16 invalid_id() { return (u16)-1; }
 
+    /*! \details Returns true if the object holds valid information. */
+    bool is_valid() const { return id() != invalid_id(); }
+
     /*! \details Constructs a connection with the specified terminals.
      *
      */

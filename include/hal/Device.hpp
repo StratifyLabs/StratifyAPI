@@ -6,6 +6,7 @@
 
 #include "../sys/File.hpp"
 #include "../api/HalObject.hpp"
+#include "DeviceSignal.hpp"
 
 namespace hal {
 
@@ -39,6 +40,19 @@ public:
 
     /*! \details Constructs a Device. */
     Device();
+
+
+    /*! \details Configures the device to send a signal when an event happens.
+     *
+     * @param signal The signal to send
+     * @param o_events A bitmask of events which will cause the signal to be sent
+     * @param channel The hardware channel to listen for events on
+     *
+     */
+    int set_signal_action(const DeviceSignal & signal, u32 o_events, u32 channel){
+        mcu_action_t action = signal.create_action(o_events, channel);
+        return ioctl(I_MCU_SETACTION, &action);
+    }
 
 #if !defined __link
 	/*! \details Reads the device asynchronously.

@@ -58,6 +58,10 @@ int Thread::get_detachstate() const {
 	return value;
 }
 
+int Thread::set_detachstate(int value){
+    return set_error_number_if_error(pthread_attr_setdetachstate(&m_pthread_attr, value));
+}
+
 int Thread::set_priority(int prio, enum Sched::policy policy){
 	struct sched_param param;
 	if( (int)m_id == -1 ){

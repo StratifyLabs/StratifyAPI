@@ -65,13 +65,51 @@ int Task::get_next(TaskInfo & attr){
     return ret;
 }
 
-TaskInfo Task::get_attr(int idx){
+TaskInfo Task::get_info(int id){
     sys_taskattr_t attr;
-    attr.tid = idx;
+    attr.tid = id;
     initialize();
     if( set_error_number_if_error( m_sys_device.ioctl(I_SYS_GETTASK, &attr) ) < 0 ){
         return TaskInfo::invalid();
     }
 
     return TaskInfo(attr);
+}
+
+void Task::print(int pid){
+    int count = count_total();
+    TaskInfo info;
+    TaskInfo::print_header();
+    for(int i = 0; i < count; i++){
+        info = get_info(i);
+        if( pid < 0 || (pid == (int)info.pid()) ){
+            info.print();
+        }
+    }
+}
+
+void TaskInfo::print_header(){
+    printf("name(pid,id): prio:value/ceiling mem:total (heap,stack)\n");
+}
+
+
+void TaskInfo::print() const {
+    if( is_valid() ){
+        if( is_thread() ){
+            printf("%s(%ld,%ld): prio:%d/%d memory:%ld (NA,%ld)\n",
+                   name(),
+                   pid(),
+                   id(),
+                   priority(), priority_ceiling(),
+                   memory_size(), stack_size());
+        } else {
+            printf("%s(%ld,%ld): prio:%d/%d memory:%ld (%ld,%ld)\n",
+                   name(),
+                   pid(),
+                   id(),
+                   priority(), priority_ceiling(),
+                   memory_size(),
+                   heap_size(), stack_size());
+        }
+    }
 }

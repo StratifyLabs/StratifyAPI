@@ -43,6 +43,12 @@ public:
 	/*! \details Gets the stacksize. */
 	int get_stacksize() const;
 
+    /*! \details Sets the detach state.
+     *
+     * @param value Detach state: use JOINABLE or DETACHED
+     */
+    int set_detachstate(int value);
+
 	/*! \details Gets the detach state (Thread::JOINABLE or Thread::DETACHED). */
 	int get_detachstate() const;
 
@@ -95,6 +101,12 @@ public:
 	 * @return Zero on success
 	 */
 	static int join(int ident, void ** value_ptr = 0);
+
+    /*! \details Returns the thread ID of the calling thread. */
+    static pthread_t self(){ return pthread_self(); }
+
+    /*! \details Returns the process ID of the calling thread. */
+    static pid_t get_pid(){ return getpid(); }
 
 
 	/*! \details Sends a signal to the thread.

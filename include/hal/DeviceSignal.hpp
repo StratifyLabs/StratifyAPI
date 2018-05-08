@@ -5,6 +5,7 @@
 #define HAL_DEVICESIGNAL_HPP_
 
 #include <sos/fs/devfs.h>
+#include "../sys/Thread.hpp"
 #include "../sys/Signal.hpp"
 
 namespace hal {
@@ -59,20 +60,35 @@ public:
 	 * @param sigcode The signal code
 	 * @param sigvalue The signal value
 	 */
-	DeviceSignal(bool persistent, int signo, int sigcode = 0, int sigvalue = 0) : sys::Signal(signo){
-		m_context.tid = pthread_self();
-		m_context.si_sigcode = sigcode;
+    DeviceSignal(bool persistent, int signo, int sigcode = 0, int sigvalue = 0) : Signal(signo, sigvalue){
+        m_context.tid = sys::Thread::self();
 		m_context.si_signo = signo;
-		m_context.keep = persistent;
-		m_context.sig_value = sigvalue;
+        m_context.si_sigcode = sigcode;
+        m_context.sig_value = sigvalue;
+        m_context.keep = persistent;
 	}
+
+    /*! \details Constructs a signal event based on a hardware device action.
+     *
+     * @param persistent If false, the signal will be sent only on the first hardware event
+     * @param signo The signal number
+     * @param sigcode The signal code
+     * @param sigvalue The signal value
+     */
+    DeviceSignal(bool persistent, int signo, int sigcode = 0, void * sigptr = 0) : Signal(signo, sigptr){
+        m_context.tid = pthread_self();
+        m_context.si_signo = signo;
+        m_context.si_sigcode = sigcode;
+        m_context.sig_ptr = sigptr;
+        m_context.keep = persistent;
+    }
 
 
 	/*! \details Constructs a signal event based on a hardware device action using a signal_callback_t data structure.
 	 *
 	 * @param context A copy of the signal_callback_t data to use to handle the event.
 	 */
-	DeviceSignal(devfs_signal_callback_t context) : sys::Signal(context.si_signo){
+    DeviceSignal(const devfs_signal_callback_t & context) : Signal(context.si_signo, context.sig_value){
 		this->m_context = context;
 	}
 
@@ -84,10 +100,10 @@ public:
 	 * @return a copy of a mcu_action_t data structure
 	 *
 	 */
-	mcu_action_t create_action(int event, int channel = 0){
+    mcu_action_t create_action(int event, int channel = 0) const {
 		mcu_action_t a;
 		a.handler.callback = devfs_signal_callback;
-		a.handler.context = &m_context;
+        a.handler.context = (void*)&m_context;
 		a.channel = channel;
 		a.o_events = event;
 		return a;

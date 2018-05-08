@@ -9,6 +9,7 @@ namespace hal {}
 
 #include "hal/Dev.hpp"
 #include "hal/Device.hpp"
+#include "hal/DeviceSignal.hpp"
 #include "hal/Adc.hpp"
 #include "hal/Dac.hpp"
 #include "hal/Core.hpp"

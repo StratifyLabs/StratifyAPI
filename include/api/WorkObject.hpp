@@ -55,6 +55,7 @@ protected:
 
     //These methods are used internally to assign the error_number() value
     int set_error_number_if_error(int ret) const;
+    void * set_error_number_if_null(void * ret) const;
     void set_error_number_to_errno() const;
     void set_error_number(int value) const { m_error_number = value; }
 

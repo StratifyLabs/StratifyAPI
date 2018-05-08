@@ -127,7 +127,15 @@ public:
 	 * @param sigvalue The signal value
 	 *
 	 */
-	Signal(int signo, int sigvalue = 0){ m_signo = signo; m_sigvalue.sival_int = sigvalue; }
+    Signal(int signo, int sigvalue = 0){ m_signo = signo; m_sigvalue.sival_int = sigvalue; }
+
+    /*! \details Constructs an event based on a signal number.
+     *
+     * @param signo The signal number
+     * @param sigptr The signal value as a pointer
+     *
+     */
+    Signal(int signo, void * sigptr = 0){ m_signo = signo; m_sigvalue.sival_ptr = sigptr; }
 
 	/*! \details Returns a UI Event based on this signal event. */
     ev::Event event(){ return ev::Event(ev::Event::SIGNAL, this); }

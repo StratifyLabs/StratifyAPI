@@ -45,7 +45,11 @@ public:
 
     /*! \details Returns true if the task is active (not sleeping or blocked). */
     bool is_active() const { return m_value.is_active > 0; }
+
+    /*! \details Returns the task priority. */
     u8 priority() const { return m_value.prio; }
+
+    /*! \details Returns the task priority ceiling (if it has a mutex locked). */
     u8 priority_ceiling() const { return m_value.prio_ceiling; }
 
     /*! \details Returns true if the task is a thread.
@@ -77,6 +81,13 @@ public:
 
     /*! \details Returns the stack sizve of the current task. */
     u32 stack_size() const { return m_value.mem_loc + m_value.mem_size - m_value.stack_ptr; }
+
+
+    /*! \details Prints the header info for the print() method. */
+    static void print_header();
+
+    /*! \details Prints information about the task to the standard output. */
+    void print() const;
 
 
 private:
@@ -148,7 +159,11 @@ public:
     /*! \details Gets the task attributes for the specifed id.
      *
      */
-    TaskInfo get_attr(int id);
+    TaskInfo get_info(int id);
+    TaskAttr get_attr(int id){ return get_info(id); }
+
+    /*! \details Prints info for all enabled tasks. */
+    void print(int pid = -1);
 
 
 private:
