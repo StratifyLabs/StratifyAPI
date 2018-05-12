@@ -114,6 +114,7 @@ int Switchboard::create_persistent_connection(
         const SwitchboardTerminal & output,
         s32 nbyte, u32 o_flags) const {
     int id = get_available_connection();
+    int ret;
 
     if( id < 0 ){
         set_error_number(ENOSPC);
@@ -126,9 +127,8 @@ int Switchboard::create_persistent_connection(
     attr.input = input.m_terminal;
     attr.output = output.m_terminal;
     attr.nbyte = nbyte; //max packet size
-    if( set_attr(attr) < 0 ){
-        return -1;
-    }
+    ret = set_attr(attr);
+    if( ret < 0 ){ return ret; }
 
     return id;
 }

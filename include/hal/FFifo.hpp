@@ -66,6 +66,12 @@ public:
     /*! \details Returns the number of frames in the framed FIFO. */
     u16 frame_size() const { return m_ffifo_info.frame_size; }
 
+    /*! \details Returns the number of frames currently in use.
+     *
+     * This is the number of frames that is ready to be read.
+     */
+    u16 frames_used() const { return m_ffifo_info.used; }
+
     /*! \details Returns the total number of bytes used by the FFIFO buffer (frame size * frame count). */
     u32 size() const { return frame_size() * frame_count(); }
 

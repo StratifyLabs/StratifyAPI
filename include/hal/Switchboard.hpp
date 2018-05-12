@@ -206,7 +206,11 @@ public:
         IS_STOPPED_ON_ERROR /*! Is Stopped on Error */ = SWITCHBOARD_FLAG_IS_STOPPED_ON_ERROR,
         IS_FILL_ZERO /*! Fill output with zeros if no input data is available */ = SWITCHBOARD_FLAG_IS_FILL_ZERO,
         IS_INPUT_NON_BLOCKING /*! Execute input transactions as non-blocking */ = SWITCHBOARD_FLAG_IS_INPUT_NON_BLOCKING,
-        IS_OUTPUT_NON_BLOCKING /*! Execute input transactions as non-blocking */ = SWITCHBOARD_FLAG_IS_OUTPUT_NON_BLOCKING
+        IS_OUTPUT_NON_BLOCKING /*! Execute input transactions as non-blocking */ = SWITCHBOARD_FLAG_IS_OUTPUT_NON_BLOCKING,
+        IS_FILL_LAST_8 /*! Fill output with last byte of most recent packet */ = SWITCHBOARD_FLAG_IS_FILL_LAST_8,
+        IS_FILL_LAST_16 /*! Fill output with last 16-bit word of most recent packet */ = SWITCHBOARD_FLAG_IS_FILL_LAST_16,
+        IS_FILL_LAST_32 /*! Fill output with last 32-bit word of most recent packet */ = SWITCHBOARD_FLAG_IS_FILL_LAST_32,
+        IS_FILL_LAST_64 /*! Fill output with last 64-bit word of most recent packet */ = SWITCHBOARD_FLAG_IS_FILL_LAST_64
     };
 
 

@@ -25,6 +25,9 @@ public:
     /*! \details Constructs an object from a fifo_info_t reference. */
     FifoInfo(const fifo_info_t & info){ m_info = info; }
 
+    /*! \details Returns true if the FIFO info object is valid. */
+    bool is_valid() const { return m_info.size > 0; }
+
 	/*! \details The number of bytes in the FIFO that are currently used (ie available
 	 * for reading.
 	 *
@@ -35,6 +38,7 @@ public:
 	 *
 	 */
 	u32 size() const { return m_info.size; }
+
 	/*! \details This method accesses whether or not the FIFO has overflowed
 	 * since the last time the FIFO attributes have been read.
 	 */
@@ -100,14 +104,10 @@ public:
 	};
 
 	/*! \details Reads the Fifo Attributes. */
-	int get_info(fifo_info_t & info) const;
+    int get_info(FifoInfo & info) const;
 
 	/*! \details Returns the fifo info. */
-	const FifoInfo get_info() const {
-		FifoInfo a;
-		get_info(a.m_info);
-		return a;
-    }
+    const FifoInfo get_info() const;
 
 	/*! \details Flushes the FIFO. */
 	int flush() const;

@@ -8,6 +8,7 @@
 #ifndef VAR_RING_HPP_
 #define VAR_RING_HPP_
 
+#include <sos/dev/fifo.h>
 #include <sys/types.h>
 #include "Data.hpp"
 
@@ -78,7 +79,7 @@ public:
 	 * @param value True to allow overflow or false to disallow it.
 	 */
 	void set_overflow_allowed(bool value = true){
-		m_is_overflow_allowed = value;
+        m_is_overflow_allowed = value;
 	}
 
 private:
@@ -87,7 +88,7 @@ private:
 	u32 m_head;
 	u32 m_tail;
 
-	bool m_is_overflow_allowed;
+    bool m_is_overflow_allowed;
 };
 
 } /* namespace var */

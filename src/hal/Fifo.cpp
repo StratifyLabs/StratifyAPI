@@ -6,7 +6,12 @@ using namespace hal;
 
 Fifo::Fifo(){}
 
-int Fifo::get_info(fifo_info_t & info) const { return ioctl(I_FIFO_GETINFO, (void*)&info); }
+int Fifo::get_info(FifoInfo & info) const { return ioctl(I_FIFO_GETINFO, (void*)&info.m_info); }
+const FifoInfo Fifo::get_info() const {
+    FifoInfo a;
+    set_error_number_if_error(get_info(a));
+    return a;
+}
 int Fifo::flush() const { return ioctl(I_FIFO_FLUSH); }
 int Fifo::init() const { return ioctl(I_FIFO_INIT); }
 int Fifo::exit() const { return ioctl(I_FIFO_EXIT); }
