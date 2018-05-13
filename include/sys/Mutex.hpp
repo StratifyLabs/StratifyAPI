@@ -12,6 +12,12 @@
 
 namespace sys {
 
+/*! \brief Mutex Attibutes
+ * \details The MutexAttr class manages
+ * a pthread_mutexattr_t object.
+ *
+ *
+ */
 class MutexAttr : public api::SysInfoObject {
 public:
 
@@ -31,6 +37,12 @@ public:
 
 	/*! \details Constructs a Mutex attributes object with default values. */
 	MutexAttr();
+
+    /*! \details Constructs a Mutex attributes object using the specified attributes. */
+    MutexAttr(const pthread_mutexattr_t & mutexattr){
+        m_item = mutexattr;
+    }
+
 	~MutexAttr();
 	/*! \details Constructs a mutex attributs object with the specified values.
 	 *
@@ -53,7 +65,7 @@ public:
 	/*! \details Sets the protocol. */
 	int set_protocol(enum protocol value);
 
-	/*! \details Set whether this is shared between processes */
+    /*! \details Sets whether this is shared between processes. */
 	int set_pshared(bool value = true);
 
 	/*! \details Set the mutex type (NORMAL_TYPE or RECURSIVE_TYPE) */
@@ -62,19 +74,17 @@ public:
 	/*! \details Returns the priority ceiling. */
 	int get_prio_ceiling() const;
 
-	/*! \details Returns the protocol */
+    /*! \details Returns the protocol. */
 	int get_protocol() const;
 
-	/*! \details Returns the type */
+    /*! \details Returns the type. */
 	int get_type() const;
 
 	/*! \details Returns true if the mutex attributes are for process sharing. */
 	bool get_pshared() const;
 
-	/*! \detatils Returns a readonly refrent to the mutex attributes item. */
-	const pthread_mutexattr_t & value() const { return m_item; }
-
 private:
+    friend class Mutex;
 	pthread_mutexattr_t m_item;
 };
 

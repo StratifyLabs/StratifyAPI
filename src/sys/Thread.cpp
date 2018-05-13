@@ -72,10 +72,6 @@ int Thread::set_priority(int prio, enum Sched::policy policy){
     return set_error_number_if_error(pthread_setschedparam(m_id, policy, &param));
 }
 
-void Thread::yield(){
-	sched_yield();
-}
-
 int Thread::get_priority() const {
 	struct sched_param param;
 	int policy;

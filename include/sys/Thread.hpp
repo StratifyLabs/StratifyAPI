@@ -3,6 +3,8 @@
 #ifndef THREAD_HPP_
 #define THREAD_HPP_
 
+
+
 #ifndef __link
 
 #include "../api/WorkObject.hpp"
@@ -64,6 +66,16 @@ public:
 	/*! \details Gets the ID of the thread. */
 	int id() const { return m_id; }
 
+    /*! \details Returns true if the thread has a valid id.
+     *
+     * If create() has not been called, this will return false.
+     * If there was an error creating the thread, this will
+     * also return false;
+     *
+     */
+    bool is_valid() const { return m_id > 0; }
+
+
 	/*! \details Starts the thread.
 	 *
 	 * @param func The function to execute as a new thread
@@ -89,24 +101,43 @@ public:
 	 * is_running() until the thread completes.
 	 *
 	 */
-	int wait(void**ret = 0, int interval = 1000);
+    int wait(void ** ret = 0, int interval = 1000);
 
 	/*! \details Yields the processor to another thread */
-	static void yield();
+    static void yield(){ return Sched::yield(); }
 
-	/*! \details Joins the current thread to the specified thread.
+    /*! \details Joins the calling thread to the specified thread.
 	 *
 	 * @param ident the ID of the target thread
 	 * @param value_ptr A pointer to the return value of the target thread
 	 * @return Zero on success
+     *
+     * This method will block the calling thread until the joined
+     * thread returns.
+     *
+     *
 	 */
 	static int join(int ident, void ** value_ptr = 0);
+
+    /*! \details Joins the calling thread to the specified thread.
+     *
+     * @param thread A reference to the thread to joing
+     * @param value_ptr a pointer to where the return value of \a thread will be stored
+     * @return Zero on success
+     *
+     * This method will block the calling thread until the joined
+     * thread returns.
+     *
+     */
+    static int join(const Thread & thread, void ** value_ptr = 0){
+        return join(thread.id(), value_ptr);
+    }
 
     /*! \details Returns the thread ID of the calling thread. */
     static pthread_t self(){ return pthread_self(); }
 
     /*! \details Returns the process ID of the calling thread. */
-    static pid_t get_pid(){ return getpid(); }
+    static pid_t get_pid(){ return Sched::get_pid(); }
 
 
 	/*! \details Sends a signal to the thread.
@@ -120,9 +151,13 @@ public:
 	/*! \details This method returns true if the thread is joinable */
 	bool is_joinable() const;
 
-	/*! \details Joins the calling thread with id Thread::id()
+    /*! \details Joins the calling thread this object's thread.
 	 *
+     * @param value_ptr A pointer to where the return value of the thread function will be stored (ignored if null)
 	 * @return 0 if joined, -1 if couldn't join (doesn't exist or is detached)
+     *
+     * This method will block the calling thread until the thread function
+     * returns.
 	 */
 	int join(void ** value_ptr = 0) const;
 
@@ -134,15 +169,6 @@ public:
 	 *
 	 */
 	void reset();
-
-	/*! \details Sets the scheduler.
-	 *
-	 * @param id The process ID
-	 * @param value The policy (such as Sched::FIFO)
-	 * @param priority The priority (higher is higher priority)
-	 * @return Zero on success of -1 with errno set
-	 */
-	static int set_scheduler(int id, enum Sched::policy value, int priority);
 
 	/*! \details Allows read only access to the thread attributes. */
 	const pthread_attr_t & attr() const { return m_pthread_attr; }

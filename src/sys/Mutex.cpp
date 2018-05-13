@@ -66,7 +66,7 @@ bool MutexAttr::get_pshared() const {
 
 Mutex::Mutex(){
 	MutexAttr attr;
-	pthread_mutex_init(&m_item, &(attr.value()));
+    set_error_number_if_error( pthread_mutex_init(&m_item, &(attr.m_item)) );
 }
 
 Mutex::Mutex(const MutexAttr & attr){
@@ -74,7 +74,7 @@ Mutex::Mutex(const MutexAttr & attr){
 }
 
 int Mutex::set_attr(const MutexAttr & attr){
-    return set_error_number_if_error(pthread_mutex_init(&m_item, &(attr.value())));
+    return set_error_number_if_error(pthread_mutex_init(&m_item, &(attr.m_item)));
 }
 
 int Mutex::lock(){
