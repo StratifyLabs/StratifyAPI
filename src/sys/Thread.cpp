@@ -38,7 +38,7 @@ int Thread::init(int stack_size, bool detached){
 		}
 	}
 
-	set_id_default();
+    set_id_pending();
 	return 0;
 }
 
@@ -91,10 +91,17 @@ int Thread::get_policy() const {
 }
 
 int Thread::create(void * (*func)(void*), void * args, int prio, enum Sched::policy policy){
+    if( reset() < 0 ){
+        set_error_number(EBUSY);
+        return -1;
+    }
+
 	if( (int)m_id != -1 ){
         set_error_number(EBUSY);
 		return -1;
 	}
+
+
 
 	//First create the thread
     if( set_error_number_if_error(pthread_create(&m_id, &m_pthread_attr, func, args)) < 0 ){
@@ -143,15 +150,28 @@ int Thread::wait(void**ret, int interval){
 	return 0;
 }
 
-void Thread::reset(){
+int Thread::reset(){
 	u32 stacksize;
 
-	bool detached = !is_joinable();
-	stacksize = get_stacksize();
+    if( id() == ID_PENDING ){
+        return 0;
+    }
 
-    set_error_number_if_error(pthread_attr_destroy(&m_pthread_attr));
+    if( is_valid() ){
 
-	init(stacksize, detached);
+        if( is_running() ){
+            return -1;
+        }
+
+        bool detached = !is_joinable();
+        stacksize = get_stacksize();
+
+        set_error_number_if_error(pthread_attr_destroy(&m_pthread_attr));
+
+        return init(stacksize, detached);
+    }
+
+    return -1;
 }
 
 int Thread::join(int ident, void ** value_ptr){

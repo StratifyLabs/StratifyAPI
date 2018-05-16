@@ -24,7 +24,7 @@ public:
 
 	enum {
 		ID_ERROR /*! ID is an error */ = -2,
-		ID_UNINITIALIZED /*! ID is uninitialized */ = -1,
+        ID_PENDING /*! ID is ready to be created (not valid yet) */ = -1,
 		JOINABLE /*! Joinable thread */ = PTHREAD_CREATE_JOINABLE,
 		DETACHED /*! Detacthed thread */ = PTHREAD_CREATE_DETACHED
 	};
@@ -161,15 +161,6 @@ public:
 	 */
 	int join(void ** value_ptr = 0) const;
 
-	/*! \details Resets the object (thread must not be running).
-	 *
-	 * After a thread has been created (using create()) and terminated,
-	 * this method can be used to reset the object so that create() can
-	 * be called again.
-	 *
-	 */
-	void reset();
-
 	/*! \details Allows read only access to the thread attributes. */
 	const pthread_attr_t & attr() const { return m_pthread_attr; }
 
@@ -178,8 +169,9 @@ private:
 	pthread_t m_id;
 
 	int init(int stack_size, bool detached);
+    int reset();
 
-	void set_id_default(){ m_id = ID_UNINITIALIZED; }
+    void set_id_pending(){ m_id = ID_PENDING; }
 	void set_id_error(){ m_id = ID_ERROR; }
 };
 
