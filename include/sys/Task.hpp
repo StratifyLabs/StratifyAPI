@@ -82,7 +82,6 @@ public:
     /*! \details Returns the stack sizve of the current task. */
     u32 stack_size() const { return m_value.mem_loc + m_value.mem_size - m_value.stack_ptr; }
 
-
     /*! \details Prints the header info for the print() method. */
     static void print_header();
 

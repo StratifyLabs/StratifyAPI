@@ -22,7 +22,7 @@ Cli::Cli(int argc, char * argv[]){
 #if defined __link
         version = Appfs::get_version(m_path, 0);
 #else
-        version = Appfs::get_version(m_path);
+        version = Appfs::get_version(m_path.str());
 #endif
 
         m_version.sprintf("%d.%d", version >> 8, version & 0xff);

@@ -106,24 +106,6 @@ public:
 	/*! \details Declares a string and initialize to \a s. */
 	String(const char * s, u32 len);
 
-	/*! \details Returns a c-string.
-	 *
-	 * This operator causes a String object
-	 * to be converted to a c-style string if
-	 * the compiler expects a c-style string.
-	 *
-	 * Here is an example:
-	 *
-	 * \code
-	 * String str;
-	 * char buffer[16];
-	 * str.assign("Hello");
-	 * strcpy(buffer, str); //strcpy() expects a const char *, str is converted to one
-	 * \endcode
-	 *
-	 */
-	operator const char * () const { return c_str(); }
-
 
 	enum {
         npos /*! Defines an invalid string length and position */ = (u32)-1
@@ -163,6 +145,13 @@ public:
 	 */
 	String& operator<<(const char * a){ append(a); return *this; }
 
+    /*! \details Appends a var::String to this String.
+     *
+     * The string will be resized to accept the string if needed.
+     *
+     */
+    String& operator<<(const String & a){ append(a.str()); return *this; }
+
 	/*! \details Appends a character to the string. */
 	String& operator<<(char c){ append(c); return *this; }
 
@@ -172,6 +161,12 @@ public:
 
 	/*! \details Compares to a c-string (inequality). */
 	bool operator!=(const char * cmp) const { return (strncmp(this->c_str(), cmp, this->capacity()) != 0); }
+
+    /*! \details Compares to a var::String. */
+    bool operator==(const String & cmp) const { return *this == cmp.c_str(); }
+
+    /*! \details Compares to a var::String. */
+    bool operator!=(const String & cmp) const { return *this != cmp.c_str(); }
 
 	/*! \details Converts to an integer.
 	 *

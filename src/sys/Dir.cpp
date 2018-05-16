@@ -34,11 +34,11 @@ int Dir::remove(const char * path, bool recursive){
 			var::String entry;
 			while( d.get_entry(entry) && (ret >= 0) ){
 				FileInfo info;
-				info.get_info(entry);
+                info.get_info(entry.str());
 				if( info.is_dir() ){
-					ret = Dir::remove(entry, true);
+                    ret = Dir::remove(entry.str(), true);
 				} else {
-					ret = File::remove(entry);
+                    ret = File::remove(entry.str());
 				}
 			}
 		}
@@ -134,7 +134,7 @@ bool Dir::get_entry(var::String & path_dest){
 		return false;
 	}
 
-	path_dest.assign(m_path);
+    path_dest.assign(m_path.str());
 	path_dest.append("/");
 	path_dest.append(entry);
 	return true;

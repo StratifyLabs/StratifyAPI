@@ -244,7 +244,7 @@ int Xml::child(String & name, String * value){
 	}
 
 	if( value != 0 ){
-		this->get_value(*value, name);
+        this->get_value(*value, name.str());
 	}
 
 	content.cursor += target.size;
@@ -456,7 +456,7 @@ int Xml::find_target_tag(String & name, context_t & context, context_t & target)
 	int end_offset;
 	String str;
 
-	start_offset = find_tag(name, context, "<", target.start_tag_size); //find a normal start tag
+    start_offset = find_tag(name.str(), context, "<", target.start_tag_size); //find a normal start tag
 	if( start_offset > -1 ){
 		target.offset = start_offset;
 		//check to see if the start-tag is an empty element tag
@@ -468,7 +468,7 @@ int Xml::find_target_tag(String & name, context_t & context, context_t & target)
 
 		if( name == "" ){
 			load_start_tag(str, target);
-			Token t0(str, "\t\r\n <>/", "\"'");
+            Token t0(str.str(), "\t\r\n <>/", "\"'");
 			if( t0.size() ){
 				name = t0.at(0);
 			} else {
@@ -478,7 +478,7 @@ int Xml::find_target_tag(String & name, context_t & context, context_t & target)
 		}
 
 		//now find the end tag
-		end_offset = find_tag(name, context, "</", target.end_tag_size);
+        end_offset = find_tag(name.str(), context, "</", target.end_tag_size);
 		if( end_offset > -1 ){
 			target.cursor = 0;
 			target.offset = start_offset;
@@ -517,7 +517,7 @@ int Xml::next_tag_name(
 		return -1;
 	}
 
-	Token t0(s0, "\t\r\n <>/", "\"'");
+    Token t0(s0.str(), "\t\r\n <>/", "\"'");
 
 	//the name is t0.at(0)
 	if( t0.size() ){
@@ -716,7 +716,7 @@ int Xml::find_attribute(String & key, String & value, context_t & target) const{
 	}
 
 
-	Token t0(s0, "\t\r\n <>/", "\"'");
+    Token t0(s0.str(), "\t\r\n <>/", "\"'");
 	for(i=0; i < t0.size(); i++){
 		Token t1(t0.at(i), "=");
 		if( key == t1.at(0) ){

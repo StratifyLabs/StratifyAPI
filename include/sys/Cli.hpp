@@ -68,16 +68,16 @@ public:
 	};
 
 	/*! \details Accesses the program version. */
-	const char * version() const { return m_version; }
+    const char * version() const { return m_version.str(); }
 
 	/*! \details Accesses the program publisher. */
-	const char * publisher() const { return m_publisher; }
+    const char * publisher() const { return m_publisher.str(); }
 
 	/*! \details Accesses the program name. */
-	const char * name() const { return m_name; }
+    const char * name() const { return m_name.str(); }
 
 	/*! \details Accesses the path to the program (including the name). */
-	const char * path() const { return m_path; }
+    const char * path() const { return m_path.str(); }
 
 	/*! \details Returns the argument offset by value as a var::String. */
 	var::String at(u16 value) const;

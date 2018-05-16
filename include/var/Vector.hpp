@@ -90,8 +90,14 @@ public:
      *
      */
     int insert(u32 pos, const T & value){
+        //add space
+        if( push_back(value) < 0 ){
+            return -1;
+        }
+
         if( pos >= count() ){
-            return push_back(value);
+            //already inserted on the end
+            return 0;
         } else if( add_space() == 0 ){
             //move elements from pos to end back one
             for(u32 i=count(); i > pos; i-- ){

@@ -39,7 +39,7 @@ void JsonString::append_object(const char * key){
 	String str;
 	str.sprintf("\"%s\": {", key);
 	append_separator();
-	append(str);
+    append(str.str());
 	m_is_first = true;
 }
 
@@ -47,7 +47,7 @@ void JsonString::append_array(const char * key){
 	String str;
 	str.sprintf("\"%s\": [", key);
 	append_separator();
-	append(str);
+    append(str.str());
 	m_is_first = true;
 }
 
@@ -65,21 +65,21 @@ void JsonString::append_string(const char * key, const char * value){
 	str.append(value);
 	str.append("\"");
 	append_separator();
-	append(str);
+    append(str.str());
 }
 
 void JsonString::append_number(const char * key, int number){
 	String str;
 	str.sprintf("\"%s\": \"%d\"", key, number);
 	append_separator();
-	append(str);
+    append(str.str());
 }
 
 void JsonString::append_float(const char * key, float number){
 	String str;
 	str.sprintf("\"%s\": \"%f\"", key, number);
 	append_separator();
-	append(str);
+    append(str.str());
 }
 
 
@@ -87,21 +87,21 @@ void JsonString::append_true(const char * key){
 	String str;
 	str.sprintf("\"%s\":true", key);
 	append_separator();
-	append(str);
+    append(str.str());
 }
 
 void JsonString::append_false(const char * key){
 	String str;
 	str.sprintf("\"%s\":false", key);
 	append_separator();
-	append(str);
+    append(str.str());
 }
 
 void JsonString::append_null(const char * key){
 	String str;
 	str.sprintf("\"%s\": null", key);
 	append_separator();
-	append(str);
+    append(str.str());
 }
 
 void JsonString::append_object(){
@@ -127,14 +127,14 @@ void JsonString::append_number(int number){
 	String str;
 	str.sprintf("\"%d\"", number);
 	append_separator();
-	append(str);
+    append(str.str());
 }
 
 void JsonString::append_float(float number){
 	String str;
 	str.sprintf("\"%f\"", number);
 	append_separator();
-	append(str);
+    append(str.str());
 }
 
 
