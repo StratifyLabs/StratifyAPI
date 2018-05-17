@@ -1,7 +1,7 @@
-#include "var/LinkedList.hpp"
-
 #include <cstring>
 #include <cstdlib>
+
+#include "var/LinkedList.hpp"
 
 using namespace var;
 
@@ -65,10 +65,11 @@ u32 LinkedList::count() const {
 void LinkedList::clear(){
     item_t * next_item;
     if( m_front ){
-        while( (next_item = next(m_front)) != 0 ){
+        do {
+            next_item = next(m_front);
             ::free(m_front);
             m_front = next_item;
-        }
+        } while( m_front );
         m_front = 0;
         m_back = 0;
     }
