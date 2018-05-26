@@ -60,9 +60,13 @@ public:
 	Dac(port_t port);
 
 	enum {
-		FLAG_SET_CONVERTER /*! Set to configure the converter */ = DAC_FLAG_SET_CONVERTER,
-		FLAG_LEFT_JUSTIFIED /*! Set to left justify the data */ = DAC_FLAG_IS_LEFT_JUSTIFIED,
-		FLAG_RIGHT_JUSTIFIED /*! Set to right justify the data */ = DAC_FLAG_IS_RIGHT_JUSTIFIED,
+        FLAG_SET_CONVERTER = DAC_FLAG_SET_CONVERTER,
+        FLAG_LEFT_JUSTIFIED = DAC_FLAG_IS_LEFT_JUSTIFIED,
+        FLAG_RIGHT_JUSTIFIED = DAC_FLAG_IS_RIGHT_JUSTIFIED,
+
+        SET_CONVERTER /*! Set to configure the converter */ = DAC_FLAG_SET_CONVERTER,
+        LEFT_JUSTIFIED /*! Set to left justify the data */ = DAC_FLAG_IS_LEFT_JUSTIFIED,
+        RIGHT_JUSTIFIED /*! Set to right justify the data */ = DAC_FLAG_IS_RIGHT_JUSTIFIED
 	};
 
 	/*! \details Sets the DAC attributes using specified values.

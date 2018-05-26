@@ -37,7 +37,24 @@ public:
 		FLAG_DISABLE_ENDPOINT = USB_FLAG_DISABLE_ENDPOINT,
 		FLAG_STALL_ENDPOINT = USB_FLAG_STALL_ENDPOINT,
 		FLAG_UNSTALL_ENDPOINT = USB_FLAG_UNSTALL_ENDPOINT,
-		FLAG_CONFIGURE_ENDPOINT = USB_FLAG_CONFIGURE_ENDPOINT
+        FLAG_CONFIGURE_ENDPOINT = USB_FLAG_CONFIGURE_ENDPOINT,
+
+        SET_UNCONFIGURED= USB_FLAG_SET_UNCONFIGURED,
+        SET_DEVICE = USB_FLAG_SET_DEVICE,
+        SET_HOST = USB_FLAG_SET_HOST,
+        SET_OTG = USB_FLAG_SET_OTG,
+        RESET = USB_FLAG_RESET,
+        ATTACH = USB_FLAG_ATTACH,
+        DETACH = USB_FLAG_DETACH,
+        CONFIGURE = USB_FLAG_CONFIGURE,
+        UNCONFIGURE = USB_FLAG_UNCONFIGURE,
+        SET_ADDRESS = USB_FLAG_SET_ADDRESS,
+        RESET_ENDPOINT = USB_FLAG_RESET_ENDPOINT,
+        ENABLE_ENDPOINT = USB_FLAG_ENABLE_ENDPOINT,
+        DISABLE_ENDPOINT = USB_FLAG_DISABLE_ENDPOINT,
+        STALL_ENDPOINT = USB_FLAG_STALL_ENDPOINT,
+        UNSTALL_ENDPOINT = USB_FLAG_UNSTALL_ENDPOINT,
+        CONFIGURE_ENDPOINT = USB_FLAG_CONFIGURE_ENDPOINT
 	};
 
 	int reset();
@@ -51,16 +68,6 @@ public:
 	int set_addr(int addr);
 	int stall_endpoint(int ep);
 	int unstall_endpoint(int ep);
-
-#ifdef __MCU_ONLY__
-	using Pblock::read;
-	using Pblock::write;
-	int read(void * buf, int nbyte);
-	int write(const void * buf, int nbyte);
-	int read(Aio & aio);
-	int write(Aio & aio);
-	int close();
-#endif
 
 private:
 

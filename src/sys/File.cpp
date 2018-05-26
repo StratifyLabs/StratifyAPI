@@ -252,12 +252,15 @@ char * File::gets(char * s, int n, char term) const {
 char * File::gets(var::String & s, char term) const {
     int ret;
     char c;
+    s.clear();
     do {
         ret = read(&c, 1);
         if( ret > 0 ){
             s.append(c);
+        } else {
+            return 0;
         }
-    } while( (c != term) && (ret > 0) );
+    } while(c != term);
     return s.cdata();
 }
 

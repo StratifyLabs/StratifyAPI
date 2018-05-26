@@ -7,6 +7,10 @@ if( ${SOS_BUILD_CONFIG} STREQUAL arm )
   add_subdirectory(draw)
   list(APPEND SOURCELIST ${SOURCES})
 
+	set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/dsp)
+	add_subdirectory(dsp)
+	list(APPEND SOURCELIST ${SOURCES})
+
   set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/sgfx)
   add_subdirectory(sgfx)
   list(APPEND SOURCELIST ${SOURCES})

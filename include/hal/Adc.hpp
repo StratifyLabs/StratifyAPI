@@ -43,9 +43,13 @@ public:
 	Adc(port_t port);
 
 	enum {
-		FLAG_SET_CONVERTER /*! Set to configure the ADC */ = ADC_FLAG_SET_CONVERTER,
-		FLAG_IS_LEFT_JUSTIFIED /*! Set to specify left justified data */ = ADC_FLAG_IS_LEFT_JUSTIFIED,
-		FLAG_IS_RIGHT_JUSTIFIED /*! Set to specify right justified data */ = ADC_FLAG_IS_RIGHT_JUSTIFIED,
+        FLAG_SET_CONVERTER = ADC_FLAG_SET_CONVERTER,
+        FLAG_IS_LEFT_JUSTIFIED = ADC_FLAG_IS_LEFT_JUSTIFIED,
+        FLAG_IS_RIGHT_JUSTIFIED = ADC_FLAG_IS_RIGHT_JUSTIFIED,
+
+        SET_CONVERTER /*! Set to configure the ADC */ = ADC_FLAG_SET_CONVERTER,
+        IS_LEFT_JUSTIFIED /*! Set to specify left justified data */ = ADC_FLAG_IS_LEFT_JUSTIFIED,
+        IS_RIGHT_JUSTIFIED /*! Set to specify right justified data */ = ADC_FLAG_IS_RIGHT_JUSTIFIED,
 	};
 
 	/*! \details Sets the attributes of the ADC.
