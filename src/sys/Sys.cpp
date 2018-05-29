@@ -116,6 +116,14 @@ int Sys::get_version(var::String & version){
 
 }
 
+var::String Sys::get_version(){
+    var::String version;
+    version.set_transfer_ownership();
+    get_version(version);
+    return version;
+}
+
+
 int Sys::get_kernel_version(var::String & version){
 	sys_info_t info;
 	Device sys;

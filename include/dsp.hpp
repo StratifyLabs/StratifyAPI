@@ -7,6 +7,8 @@
 namespace dsp {}
 
 #include "dsp/SignalData.hpp"
-#include "dsp/Fft.hpp"
+#include "dsp/Transform.hpp"
+
+using namespace dsp;
 
 #endif // DSP_HPP

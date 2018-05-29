@@ -308,6 +308,8 @@ public:
     /*! \details Reads a line in to the var::String until end-of-file or \a term is reached. */
     char * gets(var::String & s, char term = '\n') const;
 
+    var::String gets(char term = '\n') const;
+
 #ifndef __link
     [[deprecated("Use gets(var::String & s) instead")]]
 #endif

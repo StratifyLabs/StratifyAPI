@@ -255,7 +255,7 @@ public:
 
     /*! \details Returns true if the data is internally managed. */
     bool is_internally_managed() const {
-        return m_needs_free;
+        return needs_free();
     }
 
     /*! \details Returns true if the data object is read only. */
@@ -263,10 +263,49 @@ public:
         return m_mem_write == 0;
     }
 
+    /*! \details Sets the object to transfer
+     * the ownership when copied.
+     *
+     * If this method is called, the object will
+     * not free dynamically allocated memory when destroyed.
+     *
+     * Also, if the object is copied, the copying object will take
+     * ownership of dyncamilly allocated memory.
+     *
+     * This method is desiged to be used on objects that are used
+     * to return a var::Data object.
+     *
+     * The following example, shows how this can be used with var::String,
+     * which inherits var::Data.
+     *
+     * \code
+     * String get_string(){
+     *   String ret;
+     *   ret.set_transfer_ownership();
+     *   ret.assign("This is a String");
+     *   return ret;
+     * }
+     *
+     * String a = get_string(); //a takes ownership of pointer that ret creates
+     * \endcode
+     */
+    void set_transfer_ownership(){
+        m_o_flags |= FLAG_IS_TRANSFER_OWNERSHIP;
+    }
+
+    Data & transfer_ownership(){
+        set_transfer_ownership();
+        return *this;
+    }
+
 private:
 
-    void copy(const Data & a);
+    void set_needs_free() const { m_o_flags |= FLAG_NEEDS_FREE; }
+    void clear_needs_free() const { m_o_flags &= ~FLAG_NEEDS_FREE; }
 
+    bool needs_free() const { return m_o_flags & FLAG_NEEDS_FREE; }
+    bool is_transfer_ownership() const { return m_o_flags & FLAG_IS_TRANSFER_OWNERSHIP; }
+    void copy(const Data & a);
 	void zero();
 
 	static const int m_zero_value;
@@ -274,7 +313,12 @@ private:
 	const void * m_mem;
 	void * m_mem_write;
 	u32 m_capacity;
-	bool m_needs_free;
+
+    enum {
+        FLAG_NEEDS_FREE = (1<<0),
+        FLAG_IS_TRANSFER_OWNERSHIP = (1<<1)
+    };
+    mutable u32 m_o_flags;
 
 };
 

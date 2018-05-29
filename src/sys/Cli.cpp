@@ -41,6 +41,7 @@ void Cli::handle_version() const {
 
 String Cli::at(u16 value) const {
 	String arg;
+    arg.set_transfer_ownership();
 	if( value < m_argc ){
 		arg.assign(m_argv[value]);
 	}
@@ -48,7 +49,7 @@ String Cli::at(u16 value) const {
 }
 
 String Cli::get_option_argument(const char * option) const {
-	u16 args;
+    u16 args;
 	for(args = 0; args < m_argc; args++){
 		if( at(args) == option ){
 			return at(args+1);

@@ -249,6 +249,13 @@ char * File::gets(char * s, int n, char term) const {
 
 }
 
+var::String File::gets(char term) const {
+    var::String ret;
+    ret.set_transfer_ownership();
+    gets(ret, term);
+    return ret;
+}
+
 char * File::gets(var::String & s, char term) const {
     int ret;
     char c;

@@ -103,6 +103,7 @@ public:
 	 * @return Zero on success
 	 */
 	static int get_version(var::String & version);
+    static var::String get_version();
 
 	/*! \details Gets the version (kernel version).
 	 *

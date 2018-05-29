@@ -140,6 +140,13 @@ bool Dir::get_entry(var::String & path_dest){
 	return true;
 }
 
+var::String Dir::get_entry(){
+    var::String entry;
+    entry.set_transfer_ownership();
+    get_entry(entry);
+    return entry;
+}
+
 int Dir::close(){
 	m_path.clear();
 	if( m_dirp ){

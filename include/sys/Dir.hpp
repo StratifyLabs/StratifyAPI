@@ -63,6 +63,8 @@ public:
 	 */
 	bool get_entry(var::String & path_dest);
 
+    var::String get_entry();
+
 	/*! \details Returns a pointer (const) to the name of the most recently read entry. */
 	const char * name(){ return m_entry.d_name; }
 

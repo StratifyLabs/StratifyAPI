@@ -52,7 +52,7 @@ Data& Data::operator=(const Data & a){
 
 
 int Data::free(){
-    if( m_needs_free ){
+    if( needs_free() ){
         ::free(m_mem_write);
     }
     zero();
@@ -65,9 +65,21 @@ Data::~Data(){
 
 void Data::copy(const Data & a){
     if( a.is_internally_managed() ){
-        set_capacity(a.capacity());
-        if( data() && (capacity() >= a.capacity()) ){
-            memcpy(data(), a.data(), a.capacity());
+        //is the new object taking ownership or making a copy
+        if( a.is_transfer_ownership() ){
+            //set this memory to the memory of a
+            set(a.data(), a.capacity(), false);
+
+            //setting needs free on this and clearing it on a will complete the transfer
+            set_needs_free();
+            a.clear_needs_free();
+        } else {
+
+            //allocate memory for a copy of a
+            set_capacity(a.capacity());
+            if( data() && (capacity() >= a.capacity()) ){
+                memcpy(data(), a.data(), a.capacity());
+            }
         }
     } else {
         set(a.data(), a.capacity(), a.is_read_only());
@@ -80,7 +92,7 @@ void Data::set(void * mem, u32 s, bool readonly){
     free();
 
     m_mem_write = mem;
-    m_needs_free = false;
+    clear_needs_free();
     m_capacity = s;
     if( m_mem_write ){
         this->m_mem = m_mem_write;
@@ -96,7 +108,7 @@ void Data::set(void * mem, u32 s, bool readonly){
 void Data::zero(){
     m_mem = &m_zero_value;
     m_mem_write = 0;
-    m_needs_free = false;
+    clear_needs_free();
     m_capacity = 0;
 }
 
@@ -104,18 +116,21 @@ void Data::zero(){
 int Data::alloc(u32 s, bool resize){
 
     void * new_data;
-    if( (m_needs_free == false) && (m_mem != &m_zero_value) ){
+
+    if( ( !needs_free() ) && (m_mem != &m_zero_value) ){
         //this data object can't be resized -- it was created using a pointer (not dyn memory)
         return -1;
     }
 
-    if( s < m_capacity + MIN_CHUNK_SIZE ){
-        s = m_capacity + MIN_CHUNK_SIZE;
+    if( s == 0 ){
+        zero();
+        return 0;
     }
 
+    s = ((s + MIN_CHUNK_SIZE-1) / MIN_CHUNK_SIZE) * MIN_CHUNK_SIZE;
+
     new_data = malloc(s);
-    if( new_data == 0 ){
-        set_error_number(errno);
+    if( set_error_number_if_null(new_data) == 0 ){
         return -1;
     }
 
@@ -126,7 +141,7 @@ int Data::alloc(u32 s, bool resize){
     free();
 
     m_mem_write = new_data;
-    m_needs_free = true;
+    set_needs_free();
     m_mem = m_mem_write;
     m_capacity = s;
 
