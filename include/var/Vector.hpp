@@ -53,6 +53,13 @@ public:
         return at(pos);
     }
 
+    /*! \details Provides un-bounded access to the specified element (read-only).
+     *
+     * If the Vector has no data, this method may dereference a null pointer
+     * and cause the program to crash.
+     */
+    const T & operator[](u32 idx) const { return vector_data_const()[idx]; }
+
     /*! \details Provides un-bounded access to the specified element.
      *
      * If the Vector has no data, this method may dereference a null pointer
@@ -61,12 +68,7 @@ public:
      */
     T & operator[](u32 idx) { return vector_data()[idx]; }
 
-    /*! \details Provides un-bounded access to the specified element (read-only).
-     *
-     * If the Vector has no data, this method may dereference a null pointer
-     * and cause the program to crash.
-     */
-    const T & operator[](u32 idx) const { return vector_data()[idx]; }
+
 
     /*! \details Returns the number of elements that are
      * able to fit in the memory that is already allocated.
@@ -201,6 +203,21 @@ public:
     u32 size() const { return count()*sizeof(T); }
 
 protected:
+
+
+    static bool compare(const Vector<T> & a, const Vector<T> & b){
+        u32 i;
+        if( a.count() != b.count() ){
+            return false;
+        }
+        for(i=0; i < a.count(); i++){
+            if( a[i] != b[i] ){
+                return false;
+            }
+        }
+        return true;
+    }
+
     T * vector_data(){ return (T*)data(); }
     const T * vector_data_const() const { return (const T*)data(); }
 

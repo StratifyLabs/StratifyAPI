@@ -9,22 +9,27 @@ class SignalQ15;
 class SignalQ31;
 class SignalF32;
 
-class CfftQ15 : public api::DspWorkObject {
+template<typename T> class Fft : public api::DspWorkObject {
 public:
-    CfftQ15();
+    const T * instance() const { return &m_instance; }
+    T * instance(){ return &m_instance; }
 
-    int init(const SignalQ15 & data);
+private:
+    T m_instance;
+};
+
+class ComplexFftQ15 : public api::DspWorkObject {
+public:
+    ComplexFftQ15(u32 n_samples);
     const arm_cfft_instance_q15 * instance() const { return m_instance; }
 
 private:
     const arm_cfft_instance_q15 * m_instance;
 };
 
-class CfftQ31 : public api::DspWorkObject {
+class ComplexFftQ31 : public api::DspWorkObject {
 public:
-    CfftQ31();
-
-    int init(const SignalQ31 & data);
+    ComplexFftQ31(u32 n_samples);
 
     const arm_cfft_instance_q31 * instance() const { return m_instance; }
 
@@ -32,11 +37,9 @@ private:
     const arm_cfft_instance_q31 * m_instance;
 };
 
-class CfftF32 : public api::DspWorkObject {
+class ComplexFftF32 : public api::DspWorkObject {
 public:
-    CfftF32();
-
-    int init(const SignalF32 & data);
+    ComplexFftF32(u32 n_samples);
 
     arm_cfft_instance_f32 * instance(){ return &m_instance; }
     const arm_cfft_instance_f32 * instance() const { return &m_instance; }
@@ -45,42 +48,27 @@ private:
     arm_cfft_instance_f32 m_instance;
 };
 
-class RfftQ15 : public api::DspWorkObject {
+class RealFftQ15 : public Fft<arm_rfft_instance_q15> {
 public:
-    RfftQ15();
-
-    int init(const SignalQ15 & data);
-
-    arm_rfft_instance_q15 * instance(){ return &m_instance; }
-    const arm_rfft_instance_q15 * instance() const { return &m_instance; }
+    RealFftQ15(u32 n_samples);
 
 private:
-    arm_rfft_instance_q15 m_instance;
 };
 
-class RfftQ31 : api::DspWorkObject {
+class RealFftQ31 : public Fft<arm_rfft_instance_q31> {
 public:
-    RfftQ31(){}
-
-    int init(const SignalQ31 & data);
-
-    arm_rfft_instance_q31 * instance(){ return &m_instance; }
-    const arm_rfft_instance_q31 * instance() const { return &m_instance; }
+    RealFftQ31(u32 n_samples);
 
 private:
-    arm_rfft_instance_q31 m_instance;
+
 };
 
-class RfftF32 : public api::DspWorkObject {
+class RealFftF32 : public Fft<arm_rfft_fast_instance_f32> {
 public:
-    RfftF32();
-
-    int init(const SignalF32 & data);
-    arm_rfft_fast_instance_f32 * instance(){ return &m_instance; }
-    const arm_rfft_fast_instance_f32 * instance() const { return &m_instance; }
+    RealFftF32(u32 n_samples);
 
 private:
-    arm_rfft_fast_instance_f32 m_instance;
+
 };
 
 //Add DCT classes
