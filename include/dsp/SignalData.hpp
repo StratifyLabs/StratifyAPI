@@ -14,6 +14,7 @@ class ComplexFftF32;
 class RealFftF32;
 class FirFilterQ31;
 class BiquadCascadeDf1FilterQ31;
+class FirDecimateFilterQ31;
 
 class ComplexQ31 {
 public:
@@ -242,33 +243,43 @@ public:
         return !compare(*this, a);
     }
 
-    //Transforms
+    //Filters
+    SignalQ31 filter(const FirFilterQ31 & filter) const;
+    void filter(SignalQ31 & output, const FirFilterQ31 & filter) const;
 
+    SignalQ31 filter(const BiquadCascadeDf1FilterQ31 & filter) const;
+    void filter(SignalQ31 & output, const BiquadCascadeDf1FilterQ31 & filter) const;
 
-    SignalQ31 filter(const FirFilterQ31 & filter);
-    SignalQ31 filter(const BiquadCascadeDf1FilterQ31 & filter);
-    //void filter(const FirDecimateFilter & filter);
-    //void filter(const FirInterpolateFilter & filter);
-    //void filter(const FirLatticeFilter & filter);
-    //void filter(const IirLatticeFilter & filter);
-    //void filter(const BiquadCascaseFilter & filter);
-    //void filter(const LmsFilter & filter);
-    //void filter(const LmsNormalFilter & filter);
+    SignalQ31 filter(const FirDecimateFilterQ31 & filter);
+    void filter(SignalQ31 & output, const FirDecimateFilterQ31 & filter);
+    //void filter(const FirInterpolateFilterQ31 & filter);
+    //void filter(const FirLatticeFilterQ31 & filter);
+    //void filter(const IirLatticeFilterQ31 & filter);
+    //void filter(const BiquadCascadeFilterQ31 & filter);
+    //void filter(const LmsFilterQ31 & filter);
+    //void filter(const LmsNormalFilterQ31 & filter);
 
 private:
     friend class FirFilterQ31;
     friend class BiquadCascadeDf1FilterQ31;
+    friend class FirDecimateFilterQ31;
 
 
 };
 
 class SignalComplexQ31 : public SignalData<ComplexQ31> {
 public:
+
     SignalComplexQ31(){}
     SignalComplexQ31(u32 count) : SignalData<ComplexQ31>(count){}
-    SignalComplexQ31 transform(const ComplexFftQ31 & fft, bool is_inverse = false, bool is_bit_reversal = false);
-    SignalComplexQ31 transform(const RealFftQ31 & fft, bool is_inverse = false);
 
+    static SignalComplexQ31 create_transform_source(const ComplexFftQ31 & fft);
+    static SignalComplexQ31 create_transform_dest(const ComplexFftQ31 & fft);
+
+    SignalComplexQ31 transform(const RealFftQ31 & fft, bool is_inverse = false);
+    void transform(SignalComplexQ31 & output, const RealFftQ31 & fft, bool is_inverse = false);
+
+    void transform(const ComplexFftQ31 & fft, bool is_inverse = false, bool is_bit_reversal = false);
 
 
 protected:
