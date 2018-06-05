@@ -265,10 +265,12 @@ public:
 
 
     /*!
-     * \details Creates a new perisisten connection on the switchboard.
+     * \details Creates a new persistent connection on the switchboard.
      *
      * \param input The input terminal
      * \param output The output terminal
+     * \param nbyte The number of bytes to transfer per transaction (default is maximum)
+     * \param o_flags Additional flags to apply while creating the connection
      * \return The id number of the new connection or less than zero for an error
      *
      * The connection will persist until it is disconnected using destroy_connection()

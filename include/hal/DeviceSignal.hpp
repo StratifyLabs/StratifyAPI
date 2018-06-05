@@ -73,7 +73,7 @@ public:
      * @param persistent If false, the signal will be sent only on the first hardware event
      * @param signo The signal number
      * @param sigcode The signal code
-     * @param sigvalue The signal value
+     * @param sigptr The signal value as a pointer
      */
     DeviceSignal(bool persistent, int signo, int sigcode = 0, void * sigptr = 0) : Signal(signo, sigptr){
         m_context.tid = pthread_self();

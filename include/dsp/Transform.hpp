@@ -26,12 +26,33 @@ private:
     const arm_cfft_instance_q15 * m_instance;
 };
 
+/*! \brief Complex FFT for Fixed Point q1.31 format
+ *
+ * The source data for an FFT transform should match
+ * the number of samples the FFT computes. The destination
+ * should be the number of samples times two.
+ *
+ * When performing an inverse, FFT the source data is the
+ * number of samples times two and the destination matches
+ * the number of samples.
+ *
+ *
+ */
 class ComplexFftQ31 : public api::DspWorkObject {
 public:
+
+    /*! \details Contructs a new object.
+     *
+     * @param n_samples The number of samples to compute on each transform
+     *
+     * The object is passed to the signal transform() methods.
+     *
+     *
+     */
     ComplexFftQ31(u32 n_samples);
-    u32 samples() const {
-        return instance()->fftLen;
-    }
+
+    /*! \details Returns the number of samples used on each computation. */
+    u32 samples() const { return instance()->fftLen; }
 
     const arm_cfft_instance_q31 * instance() const { return m_instance; }
 
@@ -66,19 +87,54 @@ public:
 private:
 };
 
+/*!
+ * \brief Real FFT on q1.31 Complex data
+ * \details The Real FFT object for q1.31.
+ *
+ *
+ * \code
+ * RealFftQ31 fft(32);
+ * SignalComplexQ31 source(32);
+ * SignalComplexQ31 destination;
+ * destination = source.transform(fft);
+ *
+ * //subsequent calls can avoid dyncamic memory allocation
+ * source.transform(destination, fft);
+ *
+ * //Now the inverse
+ * destination.transform(source, fft, true);
+ *
+ * \endcode
+ */
 class RealFftQ31 : public Fft<arm_rfft_instance_q31> {
 public:
-    RealFftQ31(u32 n_samples);
-    u32 samples() const {
-        return instance()->fftLenReal;
-    }
 
+    /*! \details Contructs an object.
+     *
+     * @param n_samples The number of samples to compute on each transform
+     *
+     * The n_samples value must be a power of 2 between 32 and 2048.
+     *
+     */
+    RealFftQ31(u32 n_samples);
+
+
+    /*! \details Returns the number of samples computed on each transform. */
+    u32 samples() const { return instance()->fftLenReal; }
+
+
+    /*! \details Returns a signal capable of holding FFT source data and IFFT
+     * destination data.
+     */
     SignalComplexQ31 create_source_signal() const {
         SignalComplexQ31 output( samples() );
         output.set_transfer_ownership();
         return output;
     }
 
+    /*! \details Returns a signal capable of holding FFT destination data and IFFT
+     * source data.
+     */
     SignalComplexQ31 create_destination_signal() const {
         SignalComplexQ31 output( samples()*2 );
         output.set_transfer_ownership();

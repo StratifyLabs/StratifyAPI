@@ -1,3 +1,4 @@
+#include <errno.h>
 #include "dsp/Filter.hpp"
 #include "dsp/SignalData.hpp"
 
@@ -12,13 +13,42 @@ FirFilterQ31::FirFilterQ31(const SignalQ31 & coefficients, u32 n_samples){
                                 n_samples);
 }
 
-BiquadCascadeDf1FilterQ31::BiquadCascadeDf1FilterQ31(const SignalQ31 & coefficients, s8 post_shift){
-    m_state.resize( coefficients.count()*4 );
-    arm_dsp_api_q31()->biquad_cascade_df1_init(instance(),
-                                               coefficients.count(),
-                                               (q31_t*)coefficients.vector_data_const(),
-                                               m_state.vector_data(),
-                                               post_shift);
+BiquadDirectFormOneFilterQ15::BiquadDirectFormOneFilterQ15(const BiquadCoefficientsQ15 & coefficients, s8 post_shift){
+    m_state.resize( coefficients.stages()*4 );
+    if( arm_dsp_api_q15() && arm_dsp_api_q15()->biquad_cascade_df1_init ){
+        arm_dsp_api_q15()->biquad_cascade_df1_init(instance(),
+                                                   coefficients.count(),
+                                                   (q15_t*)coefficients.vector_data_const(),
+                                                   m_state.vector_data(),
+                                                   post_shift);
+    } else {
+        set_error_number(ENOENT);
+    }
+}
+
+BiquadDirectFormOneFilterQ31::BiquadDirectFormOneFilterQ31(const BiquadCoefficientsQ31 & coefficients, s8 post_shift){
+    m_state.resize( coefficients.stages()*4 );
+    if( arm_dsp_api_q31() && arm_dsp_api_q31()->biquad_cascade_df1_init ){
+        arm_dsp_api_q31()->biquad_cascade_df1_init(instance(),
+                                                   coefficients.count(),
+                                                   (q31_t*)coefficients.vector_data_const(),
+                                                   m_state.vector_data(),
+                                                   post_shift);
+    } else {
+        set_error_number(ENOENT);
+    }
+}
+
+BiquadDirectFormOneFilterF32::BiquadDirectFormOneFilterF32(const BiquadCoefficientsF32 & coefficients){
+    m_state.resize( coefficients.stages()*4 );
+    if( arm_dsp_api_f32() && arm_dsp_api_f32()->biquad_cascade_df1_init ){
+        arm_dsp_api_f32()->biquad_cascade_df1_init(instance(),
+                                                   coefficients.count(),
+                                                   (float32_t*)coefficients.vector_data_const(),
+                                                   m_state.vector_data());
+    } else {
+        set_error_number(ENOENT);
+    }
 }
 
 FirDecimateFilterQ31::FirDecimateFilterQ31(const SignalQ31 & coefficients, u8 M, u32 n_samples){

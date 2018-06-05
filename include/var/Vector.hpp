@@ -133,7 +133,18 @@ public:
         return 0;
     }
 
-    /*! \details Reserves enoough data for the specified number of
+    /*!
+     * \details Fills the vector will the specified value.
+     * \param value The value to assign to each element of the vector
+     */
+    virtual void fill(const T & value){
+        u32 i;
+        for(i=0; i < count(); i++){
+            this->at(i) = value;
+        }
+    }
+
+    /*! \details Reserves enough data for the specified number of
      * elements.
      *
      * @param new_capacity The number of elements to make room for.

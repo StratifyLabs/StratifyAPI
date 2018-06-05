@@ -216,7 +216,7 @@ public:
 	 * @param d The value to write to the data
 	 *
 	 */
-	void fill(unsigned char d);
+    virtual void fill(unsigned char d);
 
 	/*! \details For top level data objects this is the
 	 * same as capacity().  Other objects may re-implement

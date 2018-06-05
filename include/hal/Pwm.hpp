@@ -59,7 +59,7 @@ class PwmPinAssignment : public PinAssignment<pwm_pin_assignment_t>{};
  * Pwm pwm(1); //use PWM port 1
  * PwmPinAssignment pin_assignment;
  * pin_assignment->channel[0] = mcu_pin(1,20); //Use Pin 1.20
- * pwm.init(Pwm::FLAG_SET_TIMER | Pwm::FLAG_IS_ENABLED, 24000000, 1000, pin_assignment);
+ * pwm.init(Pwm::SET_TIMER | Pwm::IS_ENABLED, 24000000, 1000, pin_assignment);
  * pwm.set_channel(2, 500);
  *
  * \endcode
@@ -141,7 +141,7 @@ public:
 
     /*! \details Sets the PWM attributes.
      *
-     * @param o_flags PWM flags to apply (for example, \ref FLAG_SET_TIMER)
+     * @param o_flags PWM flags to apply (for example, \ref SET_TIMER)
      * @param freq The PWM timer frequency
      * @param period The PWM timer period
      * @param pin_assignment A pointer to the pin assignment (leave blank to use BSP pin assignment)
