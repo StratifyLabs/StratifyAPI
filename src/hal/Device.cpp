@@ -7,7 +7,7 @@ using namespace sys;
 using namespace hal;
 
 #if defined __link
-Device::Device(link_transport_mdriver_t * d) : File(d){}
+Device::Device(link_transport_mdriver_t * d) : HalWorkObject(d){}
 #endif
 
 Device::Device(){}

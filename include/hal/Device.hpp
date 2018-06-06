@@ -41,7 +41,7 @@ public:
     /*! \details Constructs a Device. */
     Device();
 
-
+#if !defined __link
     /*! \details Configures the device to send a signal when an event happens.
      *
      * @param signal The signal to send
@@ -54,7 +54,6 @@ public:
         return ioctl(I_MCU_SETACTION, &action);
     }
 
-#if !defined __link
 	/*! \details Reads the device asynchronously.
      *
      * @param aio A reference to the sys::Aio object to use for reading

@@ -4,33 +4,62 @@
 
 using namespace dsp;
 
-SignalComplexQ31 SignalComplexQ31::create_transform_source(const ComplexFftQ31 & fft){
-    SignalComplexQ31 ret( fft.samples() );
+void SignalComplexQ15::transform(const FftComplexQ15 & fft, bool is_inverse, bool is_bit_reversal){
+    arm_dsp_api_q15()->cfft(fft.instance(), vector_data(), is_inverse, is_bit_reversal);
+}
+
+void SignalComplexQ15::transform(SignalComplexQ15 & output, const FftRealQ15 & fft, bool is_inverse){
+    FftRealQ15 rfft = fft;
+    rfft.instance()->ifftFlagR = is_inverse;
+    arm_dsp_api_q15()->rfft(rfft.instance(), vector_data(), output.vector_data());
+}
+
+SignalComplexQ15 SignalComplexQ15::transform(const FftRealQ15 & fft, bool is_inverse){
+    FftRealQ15 rfft = fft;
+    int samples = count();
+    if( !is_inverse ){ samples *= 2; }
+    SignalComplexQ15 ret(samples);
+    rfft.instance()->ifftFlagR = is_inverse;
+    arm_dsp_api_q15()->rfft(rfft.instance(), vector_data(), ret.vector_data());
     ret.set_transfer_ownership();
     return ret;
 }
 
-SignalComplexQ31 SignalComplexQ31::create_transform_dest(const ComplexFftQ31 & fft){
-    SignalComplexQ31 ret( fft.samples()*2 );
-    ret.set_transfer_ownership();
-    return ret;
-}
-
-void SignalComplexQ31::transform(const ComplexFftQ31 & fft, bool is_inverse, bool is_bit_reversal){
+void SignalComplexQ31::transform(const FftComplexQ31 & fft, bool is_inverse, bool is_bit_reversal){
     arm_dsp_api_q31()->cfft(fft.instance(), vector_data(), is_inverse, is_bit_reversal);
 }
 
-void SignalComplexQ31::transform(SignalComplexQ31 & output, const RealFftQ31 & fft, bool is_inverse){
-    RealFftQ31 rfft = fft;
+void SignalComplexQ31::transform(SignalComplexQ31 & output, const FftRealQ31 & fft, bool is_inverse){
+    FftRealQ31 rfft = fft;
     rfft.instance()->ifftFlagR = is_inverse;
     arm_dsp_api_q31()->rfft(rfft.instance(), vector_data(), output.vector_data());
 }
 
-SignalComplexQ31 SignalComplexQ31::transform(const RealFftQ31 & fft, bool is_inverse){
-    RealFftQ31 rfft = fft;
-    SignalComplexQ31 ret(count()*2);
+SignalComplexQ31 SignalComplexQ31::transform(const FftRealQ31 & fft, bool is_inverse){
+    FftRealQ31 rfft = fft;
+    int samples = count();
+    if( !is_inverse ){ samples *= 2; }
+    SignalComplexQ31 ret(samples);
     rfft.instance()->ifftFlagR = is_inverse;
     arm_dsp_api_q31()->rfft(rfft.instance(), vector_data(), ret.vector_data());
+    ret.set_transfer_ownership();
+    return ret;
+}
+
+void SignalComplexF32::transform(const FftComplexF32 & fft, bool is_inverse, bool is_bit_reversal){
+    arm_dsp_api_f32()->cfft(fft.instance(), vector_data(), is_inverse, is_bit_reversal);
+}
+
+void SignalComplexF32::transform(SignalComplexF32 & output, const FftRealF32 & fft, bool is_inverse){
+    arm_dsp_api_f32()->rfft_fast((arm_rfft_fast_instance_f32*)fft.instance(), vector_data(), output.vector_data(), is_inverse);
+}
+
+SignalComplexF32 SignalComplexF32::transform(const FftRealF32 & fft, bool is_inverse){
+    FftRealF32 rfft = fft;
+    int samples = count();
+    if( !is_inverse ){ samples *= 2; }
+    SignalComplexF32 ret(samples);
+    arm_dsp_api_f32()->rfft_fast(rfft.instance(), vector_data(), ret.vector_data(), is_inverse);
     ret.set_transfer_ownership();
     return ret;
 }
@@ -46,27 +75,39 @@ void SignalQ31::filter(SignalQ31 & output, const FirFilterQ31 & filter) const {
     arm_dsp_api_q31()->fir_fast(filter.instance(), (q31_t*)vector_data_const(), output.vector_data(), count());
 }
 
-SignalQ15 SignalQ15::filter(const BiquadDirectFormOneFilterQ15 & filter) const {
+SignalQ15 SignalQ15::filter(const BiquadFilterQ15 & filter) const {
     SignalQ15 ret(count());
     arm_dsp_api_q15()->biquad_cascade_df1_fast(filter.instance(), (q15_t*)vector_data_const(), ret.vector_data(), count());
     ret.set_transfer_ownership();
     return ret;
 }
 
-void SignalQ15::filter(SignalQ15 & output, const BiquadDirectFormOneFilterQ15 & filter) const {
+void SignalQ15::filter(SignalQ15 & output, const BiquadFilterQ15 & filter) const {
     arm_dsp_api_q15()->biquad_cascade_df1_fast(filter.instance(), (q15_t*)vector_data_const(), output.vector_data(), count());
 }
 
-SignalQ31 SignalQ31::filter(const BiquadDirectFormOneFilterQ31 & filter) const {
+SignalQ31 SignalQ31::filter(const BiquadFilterQ31 & filter) const {
     SignalQ31 ret(count());
     arm_dsp_api_q31()->biquad_cascade_df1_fast(filter.instance(), (q31_t*)vector_data_const(), ret.vector_data(), count());
     ret.set_transfer_ownership();
     return ret;
 }
 
-void SignalQ31::filter(SignalQ31 & output, const BiquadDirectFormOneFilterQ31 & filter) const {
+void SignalQ31::filter(SignalQ31 & output, const BiquadFilterQ31 & filter) const {
     arm_dsp_api_q31()->biquad_cascade_df1_fast(filter.instance(), (q31_t*)vector_data_const(), output.vector_data(), count());
 }
+
+SignalF32 SignalF32::filter(const BiquadFilterF32 & filter) const {
+    SignalF32 ret(count());
+    arm_dsp_api_f32()->biquad_cascade_df1(filter.instance(), (float32_t*)vector_data_const(), ret.vector_data(), count());
+    ret.set_transfer_ownership();
+    return ret;
+}
+
+void SignalF32::filter(SignalF32 & output, const BiquadFilterF32 & filter) const {
+    arm_dsp_api_f32()->biquad_cascade_df1(filter.instance(), (float32_t*)vector_data_const(), output.vector_data(), count());
+}
+
 
 SignalQ31 SignalQ31::filter(const FirDecimateFilterQ31 & filter){
     SignalQ31 ret(count());

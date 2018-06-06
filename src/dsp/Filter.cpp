@@ -13,7 +13,7 @@ FirFilterQ31::FirFilterQ31(const SignalQ31 & coefficients, u32 n_samples){
                                 n_samples);
 }
 
-BiquadDirectFormOneFilterQ15::BiquadDirectFormOneFilterQ15(const BiquadCoefficientsQ15 & coefficients, s8 post_shift){
+BiquadFilterQ15::BiquadFilterQ15(const BiquadCoefficientsQ15 & coefficients, s8 post_shift){
     m_state.resize( coefficients.stages()*4 );
     if( arm_dsp_api_q15() && arm_dsp_api_q15()->biquad_cascade_df1_init ){
         arm_dsp_api_q15()->biquad_cascade_df1_init(instance(),
@@ -26,7 +26,7 @@ BiquadDirectFormOneFilterQ15::BiquadDirectFormOneFilterQ15(const BiquadCoefficie
     }
 }
 
-BiquadDirectFormOneFilterQ31::BiquadDirectFormOneFilterQ31(const BiquadCoefficientsQ31 & coefficients, s8 post_shift){
+BiquadFilterQ31::BiquadFilterQ31(const BiquadCoefficientsQ31 & coefficients, s8 post_shift){
     m_state.resize( coefficients.stages()*4 );
     if( arm_dsp_api_q31() && arm_dsp_api_q31()->biquad_cascade_df1_init ){
         arm_dsp_api_q31()->biquad_cascade_df1_init(instance(),
@@ -39,7 +39,7 @@ BiquadDirectFormOneFilterQ31::BiquadDirectFormOneFilterQ31(const BiquadCoefficie
     }
 }
 
-BiquadDirectFormOneFilterF32::BiquadDirectFormOneFilterF32(const BiquadCoefficientsF32 & coefficients){
+BiquadFilterF32::BiquadFilterF32(const BiquadCoefficientsF32 & coefficients){
     m_state.resize( coefficients.stages()*4 );
     if( arm_dsp_api_f32() && arm_dsp_api_f32()->biquad_cascade_df1_init ){
         arm_dsp_api_f32()->biquad_cascade_df1_init(instance(),

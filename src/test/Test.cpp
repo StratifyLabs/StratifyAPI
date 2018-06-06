@@ -128,6 +128,8 @@ void Test::initialize(const char * name, const char * version){
         print_indent(2, "\"shared memory size\": \"%ld\",\n", info.sys_mem_size);
         print_indent(2, "\"id\": \"%s\",\n", info.id);
         print_indent(2, "\"serial\": \"%lX%lX%lX%lX\"\n", info.serial.sn[3], info.serial.sn[2], info.serial.sn[1], info.serial.sn[0]);
+        print_indent(2, "\"frequency\": \"%ld\"\n", info.cpu_freq);
+
     }
     sys.close();
     print_indent(1, "},\n");

@@ -4,6 +4,8 @@
 #ifndef HAL_DEVICESIGNAL_HPP_
 #define HAL_DEVICESIGNAL_HPP_
 
+#if !defined __link
+
 #include <sos/fs/devfs.h>
 #include "../sys/Thread.hpp"
 #include "../sys/Signal.hpp"
@@ -114,5 +116,7 @@ private:
 };
 
 } /* namespace hal */
+
+#endif
 
 #endif /* HAL_DEVICESIGNAL_HPP_ */

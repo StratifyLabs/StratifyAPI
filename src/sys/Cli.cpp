@@ -20,7 +20,7 @@ Cli::Cli(int argc, char * argv[]){
 		m_path = argv[0];
 		m_name = File::name(argv[0]);
 #if defined __link
-        version = Appfs::get_version(m_path, 0);
+        version = Appfs::get_version(m_path.str(), 0);
 #else
         version = Appfs::get_version(m_path.str());
 #endif

@@ -98,6 +98,21 @@ public:
         return *this;
     }
 
+    String& operator+=(const String & a){
+        append(a);
+        return *this;
+    }
+
+    String& operator+=(const char * a){
+        append(a);
+        return *this;
+    }
+
+    String& operator+=(char a){
+        append(a);
+        return *this;
+    }
+
     ~String(){}
 
 	/*! \details Declares a string and initialize to \a s. */
@@ -277,6 +292,8 @@ public:
     int assign(const char * a);
 	/*! \details Appends \a a (zero terminated) to string.  */
     int append(const char * a);
+    /*! \details Appends a String to this string. */
+    int append(const String & a){ return append(a.c_str()); }
 	/*! \details Appends \a c to string.  */
     int append(char c);
 	/*! \details Appends \a c to string.  */

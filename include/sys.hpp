@@ -23,6 +23,8 @@ namespace sys {}
 #include "sys/Task.hpp"
 #include "sys/Messenger.hpp"
 #include "sys/Trace.hpp"
+#else
+#include "sys/Link.hpp"
 #endif
 
 #include "sys/Cli.hpp"

@@ -6,8 +6,7 @@ set(SOURCELIST
 	${SOURCES_PREFIX}/File.cpp
   ${SOURCES_PREFIX}/FileInfo.cpp
 	${SOURCES_PREFIX}/Sys.cpp
-	${SOURCES_PREFIX}/Task.cpp
-	${SOURCES_PREFIX}/Timer.cpp)
+	${SOURCES_PREFIX}/Task.cpp)
 
 
 if( ${SOS_BUILD_CONFIG} STREQUAL arm )
@@ -21,6 +20,11 @@ if( ${SOS_BUILD_CONFIG} STREQUAL arm )
 			${SOURCES_PREFIX}/Messenger.cpp
 			${SOURCES_PREFIX}/Signal.cpp
 			${SOURCES_PREFIX}/Time.cpp)
+endif()
+
+if( ${SOS_BUILD_CONFIG} STREQUAL link )
+		set(SOURCELIST ${SOURCELIST}
+			${SOURCES_PREFIX}/Link.cpp)
 endif()
 
 

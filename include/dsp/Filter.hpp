@@ -45,9 +45,9 @@ private:
 
 };
 
-class BiquadDirectFormOneFilterQ15 : public Filter<arm_biquad_casd_df1_inst_q15> {
+class BiquadFilterQ15 : public Filter<arm_biquad_casd_df1_inst_q15> {
 public:
-    BiquadDirectFormOneFilterQ15(const BiquadCoefficientsQ15 & coefficients, s8 post_shift = 0);
+    BiquadFilterQ15(const BiquadCoefficientsQ15 & coefficients, s8 post_shift = 0);
     u32 samples() const { return m_state.count(); }
 
 private:
@@ -73,9 +73,9 @@ private:
 };
 
 
-class BiquadDirectFormOneFilterQ31 : public Filter<arm_biquad_casd_df1_inst_q31> {
+class BiquadFilterQ31 : public Filter<arm_biquad_casd_df1_inst_q31> {
 public:
-    BiquadDirectFormOneFilterQ31(const BiquadCoefficientsQ31 & coefficients, s8 post_shift = 0);
+    BiquadFilterQ31(const BiquadCoefficientsQ31 & coefficients, s8 post_shift = 0);
     u32 samples() const { return m_state.count(); }
 
 private:
@@ -100,9 +100,9 @@ private:
 
 };
 
-class BiquadDirectFormOneFilterF32 : public Filter<arm_biquad_casd_df1_inst_f32> {
+class BiquadFilterF32 : public Filter<arm_biquad_casd_df1_inst_f32> {
 public:
-    BiquadDirectFormOneFilterF32(const BiquadCoefficientsF32 & coefficients);
+    BiquadFilterF32(const BiquadCoefficientsF32 & coefficients);
     u32 samples() const { return m_state.count(); }
 
 private:

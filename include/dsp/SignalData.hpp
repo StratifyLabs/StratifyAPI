@@ -6,16 +6,16 @@
 
 namespace dsp {
 
-class ComplexFftQ15;
-class RealFftQ15;
-class ComplexFftQ31;
-class RealFftQ31;
-class ComplexFftF32;
-class RealFftF32;
+class FftComplexQ15;
+class FftComplexQ31;
+class FftComplexF32;
+class FftRealQ15;
+class FftRealQ31;
+class FftRealF32;
 class FirFilterQ31;
-class BiquadDirectFormOneFilterQ15;
-class BiquadDirectFormOneFilterQ31;
-class BiquadDirectFormOneFilterF32;
+class BiquadFilterQ15;
+class BiquadFilterQ31;
+class BiquadFilterF32;
 class FirDecimateFilterQ31;
 
 template <typename T> class Complex : public api::DspInfoObject {
@@ -44,6 +44,53 @@ public:
 
 private:
     T m_value[2];
+};
+
+/*! \brief Complex Q15 Value
+ * \details The ComplexQ15 represents a single
+ * complex value in the 1.31 fixed point format.
+ *
+ */
+class ComplexQ15 : public Complex<q15_t> {
+public:
+
+    ComplexQ15(q15_t r = 0, q15_t imag = 0){
+        real() = r; imaginary() = imag;
+    }
+
+    ComplexQ15 operator + (const ComplexQ15 & a) const {
+        ComplexQ15 value;
+        value.real() = real() + a.real();
+        value.imaginary() = imaginary() + a.imaginary();
+        return value;
+    }
+
+    ComplexQ15 & operator += (const ComplexQ15 & a){
+        real() += a.real();
+        imaginary() += a.imaginary();
+        return *this;
+    }
+
+    ComplexQ15 operator - (const ComplexQ15 & a) const {
+        ComplexQ15 value;
+        value.real() = real() - a.real();
+        value.imaginary() = imaginary() - a.imaginary();
+        return value;
+    }
+
+    ComplexQ15 & operator -= (const ComplexQ15 & a){
+        real() -= a.real();
+        imaginary() -= a.imaginary();
+        return *this;
+    }
+
+    bool operator == (const ComplexQ15 & a) const {
+        return (real() == a.real()) && (imaginary() == a.imaginary());
+    }
+
+    bool operator != (const ComplexQ15 & a) const {
+        return (real() != a.real()) && (imaginary() != a.imaginary());
+    }
 };
 
 /*! \brief Complex Q31 Value
@@ -89,6 +136,53 @@ public:
     }
 
     bool operator != (const ComplexQ31 & a) const {
+        return (real() != a.real()) && (imaginary() != a.imaginary());
+    }
+};
+
+/*! \brief Complex F32 Value
+ * \details The ComplexF32 represents a single
+ * complex value in the 1.31 fixed point format.
+ *
+ */
+class ComplexF32 : public Complex<float32_t> {
+public:
+
+    ComplexF32(float32_t r = 0, float32_t imag = 0){
+        real() = r; imaginary() = imag;
+    }
+
+    ComplexF32 operator + (const ComplexF32 & a) const {
+        ComplexF32 value;
+        value.real() = real() + a.real();
+        value.imaginary() = imaginary() + a.imaginary();
+        return value;
+    }
+
+    ComplexF32 & operator += (const ComplexF32 & a){
+        real() += a.real();
+        imaginary() += a.imaginary();
+        return *this;
+    }
+
+    ComplexF32 operator - (const ComplexF32 & a) const {
+        ComplexF32 value;
+        value.real() = real() - a.real();
+        value.imaginary() = imaginary() - a.imaginary();
+        return value;
+    }
+
+    ComplexF32 & operator -= (const ComplexF32 & a){
+        real() -= a.real();
+        imaginary() -= a.imaginary();
+        return *this;
+    }
+
+    bool operator == (const ComplexF32 & a) const {
+        return (real() == a.real()) && (imaginary() == a.imaginary());
+    }
+
+    bool operator != (const ComplexF32 & a) const {
         return (real() != a.real()) && (imaginary() != a.imaginary());
     }
 };
@@ -396,15 +490,36 @@ public:
      */
     //void filter(SignalQ15 & output, const FirFilterQ15 & filter) const;
 
-    SignalQ15 filter(const BiquadDirectFormOneFilterQ15 & filter) const;
-    void filter(SignalQ15 & output, const BiquadDirectFormOneFilterQ15 & filter) const;
+    SignalQ15 filter(const BiquadFilterQ15 & filter) const;
+    void filter(SignalQ15 & output, const BiquadFilterQ15 & filter) const;
 
     //SignalQ15 filter(const FirDecimateFilterQ15 & filter);
     //void filter(SignalQ15 & output, const FirDecimateFilterQ15 & filter);
 
 private:
-    friend class BiquadDirectFormOneFilterQ15;
+    friend class BiquadFilterQ15;
 
+};
+
+class SignalComplexQ15 : public SignalData<ComplexQ15> {
+public:
+
+    SignalComplexQ15(){}
+    SignalComplexQ15(u32 count) : SignalData<ComplexQ15>(count){}
+
+    SignalComplexQ15 transform(const FftRealQ15 & fft, bool is_inverse = false);
+    void transform(SignalComplexQ15 & output, const FftRealQ15 & fft, bool is_inverse = false);
+    void transform(const FftComplexQ15 & fft, bool is_inverse = false, bool is_bit_reversal = false);
+
+
+protected:
+    const q15_t * vector_data_const() const { return (const q15_t*)SignalData<ComplexQ15>::vector_data_const(); }
+    q15_t * vector_data(){ return (q15_t*)SignalData<ComplexQ15>::vector_data(); }
+
+
+private:
+    friend class FftRealQ15;
+    friend class FftComplexQ15;
 };
 
 /*! \brief Fixed point q1.31 data signal
@@ -699,8 +814,8 @@ public:
      */
     void filter(SignalQ31 & output, const FirFilterQ31 & filter) const;
 
-    SignalQ31 filter(const BiquadDirectFormOneFilterQ31 & filter) const;
-    void filter(SignalQ31 & output, const BiquadDirectFormOneFilterQ31 & filter) const;
+    SignalQ31 filter(const BiquadFilterQ31 & filter) const;
+    void filter(SignalQ31 & output, const BiquadFilterQ31 & filter) const;
 
     SignalQ31 filter(const FirDecimateFilterQ31 & filter);
     void filter(SignalQ31 & output, const FirDecimateFilterQ31 & filter);
@@ -715,7 +830,7 @@ public:
 
 private:
     friend class FirFilterQ31;
-    friend class BiquadDirectFormOneFilterQ31;
+    friend class BiquadFilterQ31;
     friend class FirDecimateFilterQ31;
 
 
@@ -727,13 +842,10 @@ public:
     SignalComplexQ31(){}
     SignalComplexQ31(u32 count) : SignalData<ComplexQ31>(count){}
 
-    static SignalComplexQ31 create_transform_source(const ComplexFftQ31 & fft);
-    static SignalComplexQ31 create_transform_dest(const ComplexFftQ31 & fft);
+    SignalComplexQ31 transform(const FftRealQ31 & fft, bool is_inverse = false);
+    void transform(SignalComplexQ31 & output, const FftRealQ31 & fft, bool is_inverse = false);
 
-    SignalComplexQ31 transform(const RealFftQ31 & fft, bool is_inverse = false);
-    void transform(SignalComplexQ31 & output, const RealFftQ31 & fft, bool is_inverse = false);
-
-    void transform(const ComplexFftQ31 & fft, bool is_inverse = false, bool is_bit_reversal = false);
+    void transform(const FftComplexQ31 & fft, bool is_inverse = false, bool is_bit_reversal = false);
 
 
 protected:
@@ -742,8 +854,8 @@ protected:
 
 
 private:
-    friend class RealFftQ31;
-    friend class ComplexFftQ31;
+    friend class FftRealQ31;
+    friend class FftComplexQ31;
 };
 
 class SignalF32 : public SignalData<float32_t> {
@@ -1022,17 +1134,39 @@ public:
      */
     //void filter(SignalF32 & output, const FirFilterF32 & filter) const;
 
-    SignalF32 filter(const BiquadDirectFormOneFilterF32 & filter) const;
-    void filter(SignalF32 & output, const BiquadDirectFormOneFilterF32 & filter) const;
+    SignalF32 filter(const BiquadFilterF32 & filter) const;
+    void filter(SignalF32 & output, const BiquadFilterF32 & filter) const;
 
 
 private:
-    friend class BiquadDirectFormOneFilterF32;
+    friend class BiquadFilterF32;
 
 
 };
 
 typedef SignalF32 SignalFloat32;
+
+class SignalComplexF32 : public SignalData<ComplexF32> {
+public:
+
+    SignalComplexF32(){}
+    SignalComplexF32(u32 count) : SignalData<ComplexF32>(count){}
+
+    SignalComplexF32 transform(const FftRealF32 & fft, bool is_inverse = false);
+    void transform(SignalComplexF32 & output, const FftRealF32 & fft, bool is_inverse = false);
+
+    void transform(const FftComplexF32 & fft, bool is_inverse = false, bool is_bit_reversal = false);
+
+
+protected:
+    const float32_t * vector_data_const() const { return (const float32_t*)SignalData<ComplexF32>::vector_data_const(); }
+    float32_t * vector_data(){ return (float32_t*)SignalData<ComplexF32>::vector_data(); }
+
+
+private:
+    friend class FftRealF32;
+    friend class FftComplexF32;
+};
 
 }
 

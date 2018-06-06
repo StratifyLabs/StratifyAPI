@@ -2,6 +2,7 @@
 #define SWITCHBOARD_HPP
 
 #include <sos/dev/switchboard.h>
+#include <sos/fs/sysfs.h>
 #include "Device.hpp"
 
 namespace hal {

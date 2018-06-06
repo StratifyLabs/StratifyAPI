@@ -4,6 +4,8 @@
 #ifndef SYS_REQUESTS_H_
 #define SYS_REQUESTS_H_
 
+#if !defined __link
+
 #include <mcu/types.h>
 #include <arm_dsp_api.h>
 
@@ -33,6 +35,8 @@ enum {
     SAPI_REQUEST_HIBERNATE /*! Request the kernel to enter hibernate */ = (SAPI_REQUEST_FLAG) | 4,
     SAPI_REQUEST_ARM_DSP_API /*! Request the ARM DSP API from the kernel */ = (SAPI_REQUEST_FLAG) | 5
 };
+
+#endif
 
 
 #endif /* SYS_REQUESTS_H_ */

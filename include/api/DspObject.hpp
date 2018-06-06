@@ -1,6 +1,8 @@
 #ifndef API_DSP_OBJECT_HPP
 #define API_DSP_OBJECT_HPP
 
+#if !defined __link
+
 #include <arm_dsp_api.h>
 #include "WorkObject.hpp"
 #include "InfoObject.hpp"
@@ -44,5 +46,7 @@ protected:
 
 
 }
+
+#endif
 
 #endif // API_DSP_OBJECT_HPP
