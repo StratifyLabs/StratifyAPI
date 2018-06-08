@@ -298,6 +298,9 @@ public:
         return *this;
     }
 
+protected:
+    void copy(const Data & a);
+
 private:
 
     void set_needs_free() const { m_o_flags |= FLAG_NEEDS_FREE; }
@@ -305,7 +308,6 @@ private:
 
     bool needs_free() const { return m_o_flags & FLAG_NEEDS_FREE; }
     bool is_transfer_ownership() const { return m_o_flags & FLAG_IS_TRANSFER_OWNERSHIP; }
-    void copy(const Data & a);
 	void zero();
 
 	static const int m_zero_value;

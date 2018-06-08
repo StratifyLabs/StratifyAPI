@@ -18,6 +18,11 @@ class BiquadFilterQ31;
 class BiquadFilterF32;
 class FirDecimateFilterQ31;
 
+/*! \brief Complex Class
+ * \details The Complex class is a template for holding
+ * raw data types that comprise complex data.
+ *
+ */
 template <typename T> class Complex : public api::DspInfoObject {
 public:
 
@@ -42,148 +47,89 @@ public:
      */
     const T & imaginary() const { return m_value[1]; }
 
+    /*! \details Adds this to a and returns a new object. */
+    T operator + (const T & a) const {
+        T value;
+        value.real() = real() + a.real();
+        value.imaginary() = imaginary() + a.imaginary();
+        return value;
+    }
+
+    /*! \details Adds \a a to this object. */
+    T & operator += (const T & a){
+        real() += a.real();
+        imaginary() += a.imaginary();
+        return *this;
+    }
+
+    /*! \details Subtracts this to a and returns a new object. */
+    T operator - (const T & a) const {
+        T value;
+        value.real() = real() - a.real();
+        value.imaginary() = imaginary() - a.imaginary();
+        return value;
+    }
+
+    /*! \details Subtracts \a a from this object. */
+    T & operator -= (const T & a){
+        real() -= a.real();
+        imaginary() -= a.imaginary();
+        return *this;
+    }
+
+    bool operator == (const T & a) const {
+        return (real() == a.real()) && (imaginary() == a.imaginary());
+    }
+
+    bool operator != (const T & a) const {
+        return (real() != a.real()) && (imaginary() != a.imaginary());
+    }
+
 private:
     T m_value[2];
 };
 
 /*! \brief Complex Q15 Value
  * \details The ComplexQ15 represents a single
- * complex value in the 1.31 fixed point format.
+ * complex value in the q1.15 fixed point format.
  *
  */
 class ComplexQ15 : public Complex<q15_t> {
 public:
 
+    /*! \details Constructs a new value.
+     *
+     * @param r real value
+     * @param imag imaginary value
+     */
     ComplexQ15(q15_t r = 0, q15_t imag = 0){
         real() = r; imaginary() = imag;
     }
 
-    ComplexQ15 operator + (const ComplexQ15 & a) const {
-        ComplexQ15 value;
-        value.real() = real() + a.real();
-        value.imaginary() = imaginary() + a.imaginary();
-        return value;
-    }
 
-    ComplexQ15 & operator += (const ComplexQ15 & a){
-        real() += a.real();
-        imaginary() += a.imaginary();
-        return *this;
-    }
-
-    ComplexQ15 operator - (const ComplexQ15 & a) const {
-        ComplexQ15 value;
-        value.real() = real() - a.real();
-        value.imaginary() = imaginary() - a.imaginary();
-        return value;
-    }
-
-    ComplexQ15 & operator -= (const ComplexQ15 & a){
-        real() -= a.real();
-        imaginary() -= a.imaginary();
-        return *this;
-    }
-
-    bool operator == (const ComplexQ15 & a) const {
-        return (real() == a.real()) && (imaginary() == a.imaginary());
-    }
-
-    bool operator != (const ComplexQ15 & a) const {
-        return (real() != a.real()) && (imaginary() != a.imaginary());
-    }
 };
 
 /*! \brief Complex Q31 Value
  * \details The ComplexQ31 represents a single
- * complex value in the 1.31 fixed point format.
+ * complex value in the q1.31 fixed point format.
  *
  */
 class ComplexQ31 : public Complex<q31_t> {
 public:
-
     ComplexQ31(q31_t r = 0, q31_t imag = 0){
         real() = r; imaginary() = imag;
-    }
-
-    ComplexQ31 operator + (const ComplexQ31 & a) const {
-        ComplexQ31 value;
-        value.real() = real() + a.real();
-        value.imaginary() = imaginary() + a.imaginary();
-        return value;
-    }
-
-    ComplexQ31 & operator += (const ComplexQ31 & a){
-        real() += a.real();
-        imaginary() += a.imaginary();
-        return *this;
-    }
-
-    ComplexQ31 operator - (const ComplexQ31 & a) const {
-        ComplexQ31 value;
-        value.real() = real() - a.real();
-        value.imaginary() = imaginary() - a.imaginary();
-        return value;
-    }
-
-    ComplexQ31 & operator -= (const ComplexQ31 & a){
-        real() -= a.real();
-        imaginary() -= a.imaginary();
-        return *this;
-    }
-
-    bool operator == (const ComplexQ31 & a) const {
-        return (real() == a.real()) && (imaginary() == a.imaginary());
-    }
-
-    bool operator != (const ComplexQ31 & a) const {
-        return (real() != a.real()) && (imaginary() != a.imaginary());
     }
 };
 
 /*! \brief Complex F32 Value
  * \details The ComplexF32 represents a single
- * complex value in the 1.31 fixed point format.
+ * complex value in the 32-bit floating point format.
  *
  */
 class ComplexF32 : public Complex<float32_t> {
 public:
-
     ComplexF32(float32_t r = 0, float32_t imag = 0){
         real() = r; imaginary() = imag;
-    }
-
-    ComplexF32 operator + (const ComplexF32 & a) const {
-        ComplexF32 value;
-        value.real() = real() + a.real();
-        value.imaginary() = imaginary() + a.imaginary();
-        return value;
-    }
-
-    ComplexF32 & operator += (const ComplexF32 & a){
-        real() += a.real();
-        imaginary() += a.imaginary();
-        return *this;
-    }
-
-    ComplexF32 operator - (const ComplexF32 & a) const {
-        ComplexF32 value;
-        value.real() = real() - a.real();
-        value.imaginary() = imaginary() - a.imaginary();
-        return value;
-    }
-
-    ComplexF32 & operator -= (const ComplexF32 & a){
-        real() -= a.real();
-        imaginary() -= a.imaginary();
-        return *this;
-    }
-
-    bool operator == (const ComplexF32 & a) const {
-        return (real() == a.real()) && (imaginary() == a.imaginary());
-    }
-
-    bool operator != (const ComplexF32 & a) const {
-        return (real() != a.real()) && (imaginary() != a.imaginary());
     }
 };
 
@@ -196,50 +142,111 @@ public:
  * class.
  *
  */
-template<typename T> class SignalData : public var::Vector<T>, public api::DspWorkObject {
+template<typename T, typename BigType> class SignalData : public var::Vector<T>, public api::DspWorkObject {
 public:
-    SignalData(int count){
-        var::Vector<T>::resize(count);
+    SignalData(){}
+    SignalData(int count) : var::Vector<T>(count){}
+
+    /*! \details Performs element-wise addition.
+     *
+     * \note This operator uses dynamic memory allocation
+     *
+     */
+    SignalData operator + (const SignalData & a ) const { return add(a); }
+
+    /*! \details Performs element-wise addition.
+     *
+     */
+    SignalData & operator += (const SignalData & a ){ return add_assign(a); }
+
+    /*! \details Adds a constant value to all elements.
+     * \note This operator uses dynamic memory allocation
+     */
+    SignalData operator + (const T & a ) const { return add(a); }
+    /*! \details Adds a constant value to all elements in this signal. */
+    SignalData & operator += (const T & a ){ return add_assign(a); }
+    SignalData operator - (const SignalData & a ) const { return subtract(a); }
+    SignalData & operator -= (const SignalData & a ){ return subtract_assign(a); }
+
+    SignalData operator - (const T & a ) const { return add(-a); }
+    SignalData & operator -= (const T & a ){ return add_assign(-a); }
+
+    /*!
+     * \details Calculates element-by-element multiplication.
+     *
+     * \param a The second operand of the multiply operation
+     * \return A new signal containing the product of \a a and this signal.
+     *
+     * This operator requires the use of dynamic memory allocation. operator *=() does not.
+     *
+     */
+    SignalData operator * (const SignalData & a ) const { return multiply(a); }
+
+    /*! \details Multiples this with \a and stores the result in this signal.
+     *
+     * @param a The signal to multiply with.
+     *
+     * This is faster than operator *() because no dynamic memory allocation is used.
+     *
+     */
+    SignalData & operator *= (const SignalData & a ){ return multiply_assign(a); }
+
+    /*! \details Multiplies each element by a scaling value. */
+    SignalData operator * (const T & value) const { return multiply(value); }
+
+    /*! \details Multiplies each element of this signal by a scalar value. */
+    SignalData & operator *= (const T & value){ return multiply_assign(value); }
+
+    /*! \details Shifts this signal.
+     *
+     * @param value Number of bits to left shift
+     * @return A new signal with each element equal to this << value
+     *
+     * \note This operator uses dynamic memory allocation.
+     *
+     */
+    SignalData operator << (s8 value) const { return shift(value); }
+
+    /*! \details Shifts this signal.
+     *
+     * @param value Number of bits to left shift
+     * @return A new signal with each element equal to this >> value
+     *
+     * \note This operator uses dynamic memory allocation.
+     *
+     */
+    SignalData operator >> (s8 value) const { return shift(-1*value); }
+
+    /*! \details Shifts this signal \a value bits to the left. */
+    SignalData & operator <<= (s8 value){ return shift_assign(value); }
+    /*! \details Shifts this signal \a value bits to the right. */
+    SignalData & operator >>= (s8 value){ return shift_assign(-1*value); }
+
+    /*! \details Returns true if this signal is equivalent as \a a. */
+    bool operator == (const SignalData & a) const {
+        return this->compare(*this, a);
     }
 
-    SignalData(){}
+    /*! \details Returns true if this signal is not equivalent as \a a. */
+    bool operator != (const SignalData & a) const {
+        return !this->compare(*this, a);
+    }
 
-private:
 
-};
-
-class SignalQ7 : public SignalData<q7_t> {
-public:
-    SignalQ7(int count) : SignalData<q7_t>(count){}
-
-};
-
-class SignalQ15 : public SignalData<q15_t> {
-public:
-    SignalQ15(int count) : SignalData<q15_t>(count){}
-    SignalQ15(){}
-
-    /*! \details Calculates and returns the mean value of the signal.
-     *
-     * This method utilizes the arm_mean_q15() function.
+#if defined __DOXYGEN__
+    /*! \details Returns the mean value of the signal.
      *
      * \code
-     * SignalQ15 data(16);
-     * data.fill(100);
+     * SignalQ31 data(16);
+     *
+     * data.fill(10);
      * printf("Mean is %ld\n", data.mean());
      * \endcode
+     *
      */
-    q15_t mean() const {
-        q15_t result;
-        arm_dsp_api_q15()->mean((q15_t*)data_const(), count(), &result);
-        return result;
-    }
+    virtual T mean() const;
 
-    q63_t power() const {
-        q63_t result;
-        arm_dsp_api_q15()->power((q15_t*)data_const(), count(), &result);
-        return result;
-    }
+    virtual BigType power() const;
 
     /*! \details Calculates and returns the variance value of the signal.
      *
@@ -247,38 +254,22 @@ public:
      *
      *
      */
-    q15_t variance() const {
-        q15_t result;
-        arm_dsp_api_q15()->var((q15_t*)data_const(), count(), &result);
-        return result;
-    }
+    virtual T variance() const;
 
-    q15_t rms() const {
-        q15_t result;
-        arm_dsp_api_q15()->rms((q15_t*)data_const(), count(), &result);
-        return result;
-    }
+    /*! \details Calculates the RMS value of the signal. */
+    virtual T rms() const;
 
     /*! \details Calculates and returns the standard deviation value of the signal.
      *
      * This method utilizes the arm_std_q15() function.
      */
-    q15_t std() const {
-        q15_t result;
-        arm_dsp_api_q15()->std((q15_t*)data_const(), count(), &result);
-        return result;
-    }
+    virtual T std() const;
 
     /*! \details Calculates and returns the minimum value of the signal.
      *
      * This method utilizes the arm_min_q15() function.
      */
-    q15_t min() const {
-        q15_t result;
-        u32 idx;
-        arm_dsp_api_q15()->min((q15_t*)data_const(), count(), &result, &idx);
-        return result;
-    }
+    virtual T min() const;
 
     /*! \details Calculates and returns the minimum value of the signal.
      *
@@ -287,22 +278,13 @@ public:
      *
      * This method utilizes the arm_min_q15() function.
      */
-    q15_t min(u32 & idx) const {
-        q15_t result;
-        arm_dsp_api_q15()->min((q15_t*)data_const(), count(), &result, &idx);
-        return result;
-    }
+    virtual T min(u32 & idx) const;
 
     /*! \details Calculates and returns the maximum value of the signal.
      *
      * This method utilizes the arm_max_q15() function.
      */
-    q15_t max() const {
-        q15_t result;
-        u32 idx;
-        arm_dsp_api_q15()->max((q15_t*)data_const(), count(), &result, &idx);
-        return result;
-    }
+    virtual T max() const;
 
     /*! \details Calculates and returns the maximum value of the signal.
      *
@@ -311,14 +293,8 @@ public:
      *
      * This method utilizes the arm_max_q15() function.
      */
-    q15_t max(u32 & idx) const {
-        q15_t result;
-        arm_dsp_api_q15()->max((q15_t*)data_const(), count(), &result, &idx);
-        return result;
-    }
+    virtual T max(u32 & idx) const;
 
-
-    //abs
     /*!
      * \details Calculates the absolute value of each value in the signal.
      * \return A new signal containing the absolute value of this signal.
@@ -326,168 +302,154 @@ public:
      * This method will allocate a new signal and return it.
      *
      */
-    SignalQ15 abs() const {
-        SignalQ15 ret(count());
-        arm_dsp_api_q15()->abs(
-                    (q15_t *)data_const(),
-                    ret.vector_data(),
-                    count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
+    virtual SignalData<T, BigType> abs() const;
+
     /*!
      * \details Calculates the absolute value of each value in the signal.
      * \param output A reference to the destination signal
      * \return A new signal containing the absolute value of this signal.
      *
      */
-    void abs(SignalQ15 & output) const {
-        arm_dsp_api_q15()->abs(
-                    (q15_t *)data_const(),
-                    output.vector_data(),
-                    count());
-    }
+    virtual void abs(SignalData & output) const;
 
-    //add
-    SignalQ15 operator + (const SignalQ15 & a) const{
-        SignalQ15 ret(count());
-        arm_dsp_api_q15()->add((q15_t*)vector_data_const(), (q15_t*)a.vector_data_const(), ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    SignalQ15 & operator += (const SignalQ15 & a){
-        arm_dsp_api_q15()->add((q15_t*)vector_data_const(), (q15_t*)a.vector_data_const(), vector_data(), count());
-        return *this;
-    }
-
-    //dot prod
     /*!
      * \brief Calculates and returns the dot product of this signal and the the parameter passed.
      *
      * \param a Used as the second signal used to calculate the dot product.
      * \return Returns the dot product of \a a and this signal.
      */
-    q63_t dot_product(const SignalQ15 & a) const {
-        q63_t result;
-        arm_dsp_api_q15()->dot_prod((q15_t*)vector_data_const(), (q15_t*)a.vector_data_const(), count(), &result);
-        return result;
-    }
-
-    //mult
-    /*!
-     * \details Calculates element-by-element multiplication.
-     *
-     * \param a The second operand of the multiply operation
-     * \return A new signal containing the product of \a a and this signal.
-     *
-     */
-    SignalQ15 operator * (const SignalQ15 & a) const {
-        SignalQ15 ret(count());
-        arm_dsp_api_q15()->mult((q15_t*)vector_data_const(), (q15_t*)a.vector_data_const(), ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
+    virtual BigType dot_product(const SignalData & a) const;
 
     /*! \details Adds an offset to each element in the signal. */
-    SignalQ15 offset(q15_t offset_value) const {
-        SignalQ15 ret(count());
-        arm_dsp_api_q15()->offset((q15_t*)vector_data_const(), offset_value, ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
+    virtual SignalData offset(T offset_value) const;
 
     /*! \details Returns a new signal that a negated copy of this signal.
      *
      * This method uses dynamic memory allocation.
      *
      */
-    SignalQ15 negate() const {
-        SignalQ15 ret(count());
-        arm_dsp_api_q15()->negate((q15_t*)vector_data_const(), ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
+    virtual SignalData negate() const;
 
     /*! \details Assigns the negated value of this signal to \a output. */
-    void negate(SignalQ15 & output) const {
-        arm_dsp_api_q15()->negate((q15_t*)vector_data_const(), output.vector_data(), count());
+    virtual void negate(SignalData & output) const;
+
+    virtual SignalData convolve(const SignalData & a) const;
+
+    virtual void convolve(SignalData & output, const SignalData & a) const;
+
+    virtual SignalData scale(T scale_fraction, s8 shift = 0);
+    virtual void scale(SignalData & output, T scale_fraction, s8 shift = 0);
+
+
+    /*! \details Filters the signal.
+     *
+     * @param filter Biquad Filter to use
+     *
+     * \note This method using dynamic memory allocation.
+     *
+     */
+    virtual SignalData filter(const BiquadFilterType & filter) const;
+
+    /*! \details Filters the signal.
+     *
+     * @param output A reference to the output signal
+     * @param filter Biquad Filter to use
+     *
+     *
+     */
+    virtual void filter(SignalData & output, const BiquadFilterType & filter) const;
+#endif
+
+    //these are used by operators and are not documented
+    virtual SignalData shift(s8 value) const { return SignalData(); }
+    virtual SignalData & shift_assign(s8 value){ return *this; }
+    virtual SignalData add(const SignalData & a) const { return SignalData(); }
+    virtual SignalData & add_assign(const SignalData & a){ return *this; }
+    virtual SignalData add(const T & a) const { return SignalData(); }
+    virtual SignalData & add_assign(const T & a){ return *this; }
+    virtual SignalData subtract(const SignalData & a) const { return SignalData(); }
+    virtual SignalData & subtract_assign(const SignalData & a){ return *this; }
+    virtual SignalData multiply(const SignalData & a) const { return SignalData(); }
+    virtual SignalData & multiply_assign(const SignalData & a){ return *this; }
+    virtual SignalData multiply(const T & scale_fraction) const { return SignalData(); }
+    virtual SignalData & multiply_assign(const T & scale_fraction){ return *this; }
+
+protected:
+
+private:
+
+};
+
+#if 0
+
+typedef SignalData<q7_t, q63_t> SignalDataQ7;
+
+class SignalQ7 : public SignalDataQ7 {
+public:
+    SignalQ7(int count) : SignalData<q7_t>(count){}
+
+};
+#endif
+
+typedef SignalData<q15_t, q63_t> SignalDataQ15;
+
+/*! \brief Signal q1.15
+ * \details This class holds signal data in the q1.15
+ * fixed-point format.
+ *
+ */
+class SignalQ15 : public SignalDataQ15 {
+public:
+    SignalQ15(int count) : SignalData(count){}
+    SignalQ15(){}
+
+    SignalQ15(const SignalData & a){
+        (SignalData &)*this = a;
     }
 
-
-    SignalQ15 convolve(const SignalQ15 & a) const {
-        SignalQ15 ret(count() + a.count() - 1);
-        arm_dsp_api_q15()->conv_fast((q15_t*)vector_data_const(), count(), (q15_t*)a.vector_data_const(), a.count(), ret.vector_data());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    void convolve(SignalQ15 & output, const SignalQ15 & a) const {
-        //check output length?
-        arm_dsp_api_q15()->conv_fast((q15_t*)vector_data_const(), count(), (q15_t*)a.vector_data_const(), a.count(), output.vector_data());
-    }
-
-
-    SignalQ15 scale(q15_t scale_fraction, int8_t shift = 0){
-        SignalQ15 ret(count());
-        arm_dsp_api_q15()->scale((q15_t*)vector_data_const(), scale_fraction, shift, ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    void scale(SignalQ15 & output, q15_t scale_fraction, int8_t shift = 0){
-        arm_dsp_api_q15()->scale((q15_t*)vector_data_const(), scale_fraction, shift, output.vector_data(), count());
-    }
-
-    //shift
-    SignalQ15 shift(int8_t value){
-        SignalQ15 ret(count());
-        arm_dsp_api_q15()->shift((q15_t*)vector_data_const(), value, ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    void shift(SignalQ15 & output, int8_t value){
-        arm_dsp_api_q15()->shift((q15_t*)vector_data_const(), value, output.vector_data(), count());
-    }
-
-    SignalQ15 operator * (q15_t value){
-        return scale(value);
-    }
-
-    //subtract
-    SignalQ15 operator - (const SignalQ15 & a) const{
-        SignalQ15 ret(count());
-        arm_dsp_api_q15()->sub((q15_t*)vector_data_const(), (q15_t*)a.vector_data_const(), ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    SignalQ15 & operator -= (const SignalQ15 & a){
-        arm_dsp_api_q15()->sub((q15_t*)vector_data_const(), (q15_t*)a.vector_data_const(), vector_data(), count());
+    SignalQ15 & operator = (const SignalData & a){
+        (SignalData &)*this = a;
         return *this;
     }
 
-    bool operator == (const SignalQ15 & a) const {
-        return compare(*this, a);
-    }
+    q15_t mean() const;
+    q63_t power() const;
+    q15_t variance() const;
+    q15_t rms() const;
+    q15_t std() const;
+    q15_t min() const;
+    q15_t min(u32 & idx) const;
+    q15_t max() const;
+    q15_t max(u32 & idx) const;
+    SignalQ15 abs() const;
+    void abs(SignalQ15 & output) const;
+    q63_t dot_product(const SignalQ15 & a) const;
+    SignalQ15 negate() const;
+    void negate(SignalQ15 & output) const;
+    SignalQ15 convolve(const SignalQ15 & a) const ;
+    void convolve(SignalQ15 & output, const SignalQ15 & a) const ;
+    void shift(SignalQ15 & output, s8 value) const;
+    SignalQ15 scale(q15_t scale_fraction, s8 shift = 0) const;
+    void scale(SignalQ15 & output, q15_t scale_fraction, s8 shift = 0) const;
 
-    bool operator != (const SignalQ15 & a) const {
-        return !compare(*this, a);
-    }
+
+    SignalDataQ15 add(q15_t offset_value) const;
+    SignalDataQ15 & add_assign(q15_t offset_value);
+    SignalDataQ15 add(const SignalQ15 & a) const;
+    SignalDataQ15 & add_assign(const SignalQ15 & a);
+    SignalDataQ15 shift(s8 value) const;
+    SignalDataQ15 & shift_assign(s8 value);
+    SignalDataQ15 multiply(q15_t value) const;
+    SignalDataQ15 & multiply_assign(q15_t value);
+    SignalDataQ15 multiply(const SignalQ15 & a) const;
+    SignalDataQ15 & multiply_assign(const SignalQ15 & a);
+    SignalDataQ15 subtract(const SignalQ15 & a) const;
+    SignalDataQ15 & subtract_assign(const SignalQ15 & a);
+
 
     //Filters
-    /*! \details Filters the signal using the specified FIR filter. */
     //SignalQ15 filter(const FirFilterQ15 & filter) const;
 
-
-    /*! \details Filters the signal using the specified FIR filter.
-     *
-     * @param output A reference to the destination value of the filtered signal.
-     * @param filter The filter to use
-     *
-     */
     //void filter(SignalQ15 & output, const FirFilterQ15 & filter) const;
 
     SignalQ15 filter(const BiquadFilterQ15 & filter) const;
@@ -497,30 +459,49 @@ public:
     //void filter(SignalQ15 & output, const FirDecimateFilterQ15 & filter);
 
 private:
-    friend class BiquadFilterQ15;
+
 
 };
 
-class SignalComplexQ15 : public SignalData<ComplexQ15> {
+typedef SignalData<ComplexQ15, q63_t> SignalDataComplexQ15;
+
+/*!
+ *
+ * \details This class is used for storing complex signal data in q1.15
+ * format.
+ *
+ * Complex data is required when performing transform operations (FFT and DCT).
+ *
+ *
+ */
+class SignalComplexQ15 : public SignalDataComplexQ15 {
 public:
 
     SignalComplexQ15(){}
-    SignalComplexQ15(u32 count) : SignalData<ComplexQ15>(count){}
+    SignalComplexQ15(u32 count) : SignalData(count){}
 
-    SignalComplexQ15 transform(const FftRealQ15 & fft, bool is_inverse = false);
-    void transform(SignalComplexQ15 & output, const FftRealQ15 & fft, bool is_inverse = false);
-    void transform(const FftComplexQ15 & fft, bool is_inverse = false, bool is_bit_reversal = false);
+    SignalComplexQ15(const SignalData & a){
+        (SignalData&)*this = a;
+    }
+
+    SignalComplexQ15 & operator = (const SignalData & a){
+        (SignalData&)*this = a;
+        return *this;
+    }
+
+    SignalComplexQ15 transform(FftRealQ15 & fft, bool is_inverse = false);
+    void transform(SignalComplexQ15 & output, FftRealQ15 & fft, bool is_inverse = false);
+    void transform(FftComplexQ15 & fft, bool is_inverse = false, bool is_bit_reversal = false);
 
 
 protected:
-    const q15_t * vector_data_const() const { return (const q15_t*)SignalData<ComplexQ15>::vector_data_const(); }
-    q15_t * vector_data(){ return (q15_t*)SignalData<ComplexQ15>::vector_data(); }
-
 
 private:
-    friend class FftRealQ15;
-    friend class FftComplexQ15;
+
 };
+
+
+typedef SignalData<q31_t, q63_t> SignalDataQ31;
 
 /*! \brief Fixed point q1.31 data signal
  * \details The SignalQ31 class stores
@@ -528,7 +509,7 @@ private:
  *
  *
  */
-class SignalQ31 : public SignalData<q31_t> {
+class SignalQ31 : public SignalDataQ31 {
 public:
 
     /*! \details Constructs a signal with uninitialized
@@ -537,283 +518,55 @@ public:
      * @param count The number of data points
      *
      */
-    SignalQ31(int count) : SignalData<q31_t>(count){}
+    SignalQ31(int count) : SignalData(count){}
 
     /*! \details Contructs an empty signal. */
     SignalQ31(){}
 
-    //mean
-    /*! \details Calculates and returns the mean value of the signal.
-     *
-     * This method utilizes the arm_mean_q31() function.
-     *
-     * \code
-     * SignalQ31 data(16);
-     * data.fill(100);
-     * printf("Mean is %ld\n", data.mean());
-     * \endcode
-     */
-    q31_t mean() const {
-        q31_t result;
-        arm_dsp_api_q31()->mean((q31_t*)data_const(), count(), &result);
-        return result;
+    SignalQ31(const SignalData & a){
+        (SignalData&)*this = a;
     }
 
-    q63_t power() const {
-        q63_t result;
-        arm_dsp_api_q31()->power((q31_t*)data_const(), count(), &result);
-        return result;
-    }
-
-    /*! \details Calculates and returns the variance value of the signal.
-     *
-     * This method utilizes the arm_var_q31() function.
-     *
-     *
-     */
-    q31_t variance() const {
-        q31_t result;
-        arm_dsp_api_q31()->var((q31_t*)data_const(), count(), &result);
-        return result;
-    }
-
-    q31_t rms() const {
-        q31_t result;
-        arm_dsp_api_q31()->rms((q31_t*)data_const(), count(), &result);
-        return result;
-    }
-
-    /*! \details Calculates and returns the standard deviation value of the signal.
-     *
-     * This method utilizes the arm_std_q31() function.
-     */
-    q31_t std() const {
-        q31_t result;
-        arm_dsp_api_q31()->std((q31_t*)data_const(), count(), &result);
-        return result;
-    }
-
-    /*! \details Calculates and returns the minimum value of the signal.
-     *
-     * This method utilizes the arm_min_q31() function.
-     */
-    q31_t min() const {
-        q31_t result;
-        u32 idx;
-        arm_dsp_api_q31()->min((q31_t*)data_const(), count(), &result, &idx);
-        return result;
-    }
-
-    /*! \details Calculates and returns the minimum value of the signal.
-     *
-     * @param idx A reference to the index value of the minimum. This parameter
-     * will be written with the location of the minimum value.
-     *
-     * This method utilizes the arm_min_q31() function.
-     */
-    q31_t min(u32 & idx) const {
-        q31_t result;
-        arm_dsp_api_q31()->min((q31_t*)data_const(), count(), &result, &idx);
-        return result;
-    }
-
-    /*! \details Calculates and returns the maximum value of the signal.
-     *
-     * This method utilizes the arm_max_q31() function.
-     */
-    q31_t max() const {
-        q31_t result;
-        u32 idx;
-        arm_dsp_api_q31()->max((q31_t*)data_const(), count(), &result, &idx);
-        return result;
-    }
-
-    /*! \details Calculates and returns the maximum value of the signal.
-     *
-     * @param idx A reference to the index value of the maximum. This parameter
-     * will be written with the location of the maximum value.
-     *
-     * This method utilizes the arm_max_q31() function.
-     */
-    q31_t max(u32 & idx) const {
-        q31_t result;
-        arm_dsp_api_q31()->max((q31_t*)data_const(), count(), &result, &idx);
-        return result;
-    }
-
-
-    //abs
-    /*!
-     * \details Calculates the absolute value of each value in the signal.
-     * \return A new signal containing the absolute value of this signal.
-     *
-     * This method will allocate a new signal and return it.
-     *
-     */
-    SignalQ31 abs() const {
-        SignalQ31 ret(count());
-        arm_dsp_api_q31()->abs(
-                    (q31_t *)data_const(),
-                    ret.vector_data(),
-                    count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-    /*!
-     * \details Calculates the absolute value of each value in the signal.
-     * \param output A reference to the destination signal
-     * \return A new signal containing the absolute value of this signal.
-     *
-     */
-    void abs(SignalQ31 & output) const {
-        arm_dsp_api_q31()->abs(
-                    (q31_t *)data_const(),
-                    output.vector_data(),
-                    count());
-    }
-
-    //add
-    SignalQ31 operator + (const SignalQ31 & a) const{
-        SignalQ31 ret(count());
-        arm_dsp_api_q31()->add((q31_t*)vector_data_const(), (q31_t*)a.vector_data_const(), ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    SignalQ31 & operator += (const SignalQ31 & a){
-        arm_dsp_api_q31()->add((q31_t*)vector_data_const(), (q31_t*)a.vector_data_const(), vector_data(), count());
+    SignalQ31 & operator = (const SignalData & a){
+        (SignalData&)*this = a;
         return *this;
     }
 
-    //dot prod
-    /*!
-     * \brief Calculates and returns the dot product of this signal and the the parameter passed.
-     *
-     * \param a Used as the second signal used to calculate the dot product.
-     * \return Returns the dot product of \a a and this signal.
-     */
-    q63_t dot_product(const SignalQ31 & a) const {
-        q63_t result;
-        arm_dsp_api_q31()->dot_prod((q31_t*)vector_data_const(), (q31_t*)a.vector_data_const(), count(), &result);
-        return result;
-    }
+    q31_t mean() const;
+    q63_t power() const;
+    q31_t variance() const;
+    q31_t rms() const;
+    q31_t std() const;
+    q31_t min() const;
+    q31_t min(u32 & idx) const;
+    q31_t max() const;
+    q31_t max(u32 & idx) const;
+    SignalQ31 abs() const;
+    void abs(SignalQ31 & output) const;
+    q63_t dot_product(const SignalQ31 & a) const;
+    SignalQ31 negate() const ;
+    void negate(SignalQ31 & output) const ;
+    SignalQ31 convolve(const SignalQ31 & a) const ;
+    void convolve(SignalQ31 & output, const SignalQ31 & a) const ;
+    void shift(SignalQ31 & output, s8 value) const;
+    SignalQ31 scale(q31_t scale_fraction, s8 shift = 0) const;
+    void scale(SignalQ31 & output, q31_t scale_fraction, s8 shift = 0) const;
 
-    //mult
-    /*!
-     * \details Calculates element-by-element multiplication.
-     *
-     * \param a The second operand of the multiply operation
-     * \return A new signal containing the product of \a a and this signal.
-     *
-     */
-    SignalQ31 operator * (const SignalQ31 & a) const {
-        SignalQ31 ret(count());
-        arm_dsp_api_q31()->mult((q31_t*)vector_data_const(), (q31_t*)a.vector_data_const(), ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
+    SignalDataQ31 add(q31_t offset_value) const;
+    SignalDataQ31 & add_assign(q31_t offset_value);
+    SignalDataQ31 add(const SignalQ31 & a) const;
+    SignalDataQ31 & add_assign(const SignalQ31 & a);
+    SignalDataQ31 shift(s8 value) const ;
+    SignalDataQ31 & shift_assign(s8 value);
+    SignalDataQ31 multiply(q31_t value) const;
+    SignalDataQ31 & multiply_assign(q31_t value);
+    SignalDataQ31 multiply(const SignalQ31 & a) const;
+    SignalDataQ31 & multiply_assign(const SignalQ31 & a);
+    SignalDataQ31 subtract(const SignalQ31 & a) const;
+    SignalDataQ31 & subtract_assign(const SignalQ31 & a);
 
-
-    /*! \details Adds an offset to each element in the signal. */
-    SignalQ31 offset(q31_t offset_value) const {
-        SignalQ31 ret(count());
-        arm_dsp_api_q31()->offset((q31_t*)vector_data_const(), offset_value, ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    /*! \details Returns a new signal that a negated copy of this signal.
-     *
-     * This method uses dynamic memory allocation.
-     *
-     */
-    SignalQ31 negate() const {
-        SignalQ31 ret(count());
-        arm_dsp_api_q31()->negate((q31_t*)vector_data_const(), ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    /*! \details Assigns the negated value of this signal to \a output. */
-    void negate(SignalQ31 & output) const {
-        arm_dsp_api_q31()->negate((q31_t*)vector_data_const(), output.vector_data(), count());
-    }
-
-
-    SignalQ31 convolve(const SignalQ31 & a) const {
-        SignalQ31 ret(count() + a.count() - 1);
-        arm_dsp_api_q31()->conv_fast((q31_t*)vector_data_const(), count(), (q31_t*)a.vector_data_const(), a.count(), ret.vector_data());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    void convolve(SignalQ31 & output, const SignalQ31 & a) const {
-        //check output length?
-        arm_dsp_api_q31()->conv_fast((q31_t*)vector_data_const(), count(), (q31_t*)a.vector_data_const(), a.count(), output.vector_data());
-    }
-
-
-    SignalQ31 scale(q31_t scale_fraction, int8_t shift = 0){
-        SignalQ31 ret(count());
-        arm_dsp_api_q31()->scale((q31_t*)vector_data_const(), scale_fraction, shift, ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    void scale(SignalQ31 & output, q31_t scale_fraction, int8_t shift = 0){
-        arm_dsp_api_q31()->scale((q31_t*)vector_data_const(), scale_fraction, shift, output.vector_data(), count());
-    }
-
-    //shift
-    SignalQ31 shift(int8_t value){
-        SignalQ31 ret(count());
-        arm_dsp_api_q31()->shift((q31_t*)vector_data_const(), value, ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    void shift(SignalQ31 & output, int8_t value){
-        arm_dsp_api_q31()->shift((q31_t*)vector_data_const(), value, output.vector_data(), count());
-    }
-
-    SignalQ31 operator * (q31_t value){
-        return scale(value);
-    }
-
-    //subtract
-    SignalQ31 operator - (const SignalQ31 & a) const{
-        SignalQ31 ret(count());
-        arm_dsp_api_q31()->sub((q31_t*)vector_data_const(), (q31_t*)a.vector_data_const(), ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    SignalQ31 & operator -= (const SignalQ31 & a){
-        arm_dsp_api_q31()->sub((q31_t*)vector_data_const(), (q31_t*)a.vector_data_const(), vector_data(), count());
-        return *this;
-    }
-
-    bool operator == (const SignalQ31 & a) const {
-        return compare(*this, a);
-    }
-
-    bool operator != (const SignalQ31 & a) const {
-        return !compare(*this, a);
-    }
-
-    //Filters
-    /*! \details Filters the signal using the specified FIR filter. */
     SignalQ31 filter(const FirFilterQ31 & filter) const;
-
-
-    /*! \details Filters the signal using the specified FIR filter.
-     *
-     * @param output A reference to the destination value of the filtered signal.
-     * @param filter The filter to use
-     *
-     */
     void filter(SignalQ31 & output, const FirFilterQ31 & filter) const;
-
     SignalQ31 filter(const BiquadFilterQ31 & filter) const;
     void filter(SignalQ31 & output, const BiquadFilterQ31 & filter) const;
 
@@ -829,28 +582,37 @@ public:
     static SignalQ31 create_sin_wave(u32 wave_freauency, u32 sampling_frequency, u32 samples, q31_t phase = 0);
 
 private:
-    friend class FirFilterQ31;
-    friend class BiquadFilterQ31;
-    friend class FirDecimateFilterQ31;
-
 
 };
 
-class SignalComplexQ31 : public SignalData<ComplexQ31> {
+typedef SignalData<ComplexQ31, q63_t> SignalDataComplexQ31;
+
+/*!
+ *
+ * \details This class is used for storing complex signal data in q1.31
+ * format.
+ *
+ * Complex data is required when performing transform operations (FFT and DCT).
+ *
+ *
+ */
+class SignalComplexQ31 : public SignalDataComplexQ31 {
 public:
 
     SignalComplexQ31(){}
-    SignalComplexQ31(u32 count) : SignalData<ComplexQ31>(count){}
+    SignalComplexQ31(u32 count) : SignalData(count){}
 
-    SignalComplexQ31 transform(const FftRealQ31 & fft, bool is_inverse = false);
-    void transform(SignalComplexQ31 & output, const FftRealQ31 & fft, bool is_inverse = false);
+    /*! \details Transforms this object and returns a new signal with the transformed data.
+     */
+    SignalComplexQ31 transform(FftRealQ31 & fft, bool is_inverse = false);
+    void transform(SignalComplexQ31 & output, FftRealQ31 & fft, bool is_inverse = false);
 
-    void transform(const FftComplexQ31 & fft, bool is_inverse = false, bool is_bit_reversal = false);
+    void transform(FftComplexQ31 & fft, bool is_inverse = false, bool is_bit_reversal = false);
 
 
 protected:
-    const q31_t * vector_data_const() const { return (const q31_t*)SignalData<ComplexQ31>::vector_data_const(); }
-    q31_t * vector_data(){ return (q31_t*)SignalData<ComplexQ31>::vector_data(); }
+    //const q31_t * vector_data_const() const { return (const q31_t*)SignalData<ComplexQ31>::vector_data_const(); }
+    //q31_t * vector_data(){ return (q31_t*)SignalData<ComplexQ31>::vector_data(); }
 
 
 private:
@@ -858,314 +620,102 @@ private:
     friend class FftComplexQ31;
 };
 
-class SignalF32 : public SignalData<float32_t> {
+typedef SignalData<float32_t, float32_t> SignalDataF32;
+
+/*! \brief Signal with 32-bit Floating Point values
+ * \details This class holds a 32-bit floating point
+ * signal with real values.
+ *
+ * \code
+ * #include <sapi/dsp.hpp>
+ *
+ * SignalF32 a(32);
+ * SignalF32 b(32);
+ * a.fill(0);
+ * b.fill(5);
+ * a += b; //add elements from b to a
+ * a += 10.0f; //offset a by 10.0f
+ * printf("A mean is %0.2f\n", a.mean());
+ * \endcode
+ *
+ *
+ */
+class SignalF32 : public SignalDataF32 {
 public:
-    SignalF32(int count) : SignalData<float32_t>(count){}
+    SignalF32(int count) : SignalData(count){}
     SignalF32(){}
 
-    /*! \details Calculates and returns the mean value of the signal.
-     *
-     * This method utilizes the arm_mean_f32() function.
-     *
-     * \code
-     * SignalF32 data(16);
-     * data.fill(100);
-     * printf("Mean is %ld\n", data.mean());
-     * \endcode
-     */
-    float32_t mean() const {
-        float32_t result;
-        arm_dsp_api_f32()->mean((float32_t*)data_const(), count(), &result);
-        return result;
+    SignalF32(const SignalData & a){
+        (SignalData&)*this = a;
     }
 
-    float32_t power() const {
-        float32_t result;
-        arm_dsp_api_f32()->power((float32_t*)data_const(), count(), &result);
-        return result;
-    }
-
-    /*! \details Calculates and returns the variance value of the signal.
-     *
-     * This method utilizes the arm_var_f32() function.
-     *
-     *
-     */
-    float32_t variance() const {
-        float32_t result;
-        arm_dsp_api_f32()->var((float32_t*)data_const(), count(), &result);
-        return result;
-    }
-
-    float32_t rms() const {
-        float32_t result;
-        arm_dsp_api_f32()->rms((float32_t*)data_const(), count(), &result);
-        return result;
-    }
-
-    /*! \details Calculates and returns the standard deviation value of the signal.
-     *
-     * This method utilizes the arm_std_f32() function.
-     */
-    float32_t std() const {
-        float32_t result;
-        arm_dsp_api_f32()->std((float32_t*)data_const(), count(), &result);
-        return result;
-    }
-
-    /*! \details Calculates and returns the minimum value of the signal.
-     *
-     * This method utilizes the arm_min_f32() function.
-     */
-    float32_t min() const {
-        float32_t result;
-        u32 idx;
-        arm_dsp_api_f32()->min((float32_t*)data_const(), count(), &result, &idx);
-        return result;
-    }
-
-    /*! \details Calculates and returns the minimum value of the signal.
-     *
-     * @param idx A reference to the index value of the minimum. This parameter
-     * will be written with the location of the minimum value.
-     *
-     * This method utilizes the arm_min_f32() function.
-     */
-    float32_t min(u32 & idx) const {
-        float32_t result;
-        arm_dsp_api_f32()->min((float32_t*)data_const(), count(), &result, &idx);
-        return result;
-    }
-
-    /*! \details Calculates and returns the maximum value of the signal.
-     *
-     * This method utilizes the arm_max_f32() function.
-     */
-    float32_t max() const {
-        float32_t result;
-        u32 idx;
-        arm_dsp_api_f32()->max((float32_t*)data_const(), count(), &result, &idx);
-        return result;
-    }
-
-    /*! \details Calculates and returns the maximum value of the signal.
-     *
-     * @param idx A reference to the index value of the maximum. This parameter
-     * will be written with the location of the maximum value.
-     *
-     * This method utilizes the arm_max_f32() function.
-     */
-    float32_t max(u32 & idx) const {
-        float32_t result;
-        arm_dsp_api_f32()->max((float32_t*)data_const(), count(), &result, &idx);
-        return result;
-    }
-
-
-    //abs
-    /*!
-     * \details Calculates the absolute value of each value in the signal.
-     * \return A new signal containing the absolute value of this signal.
-     *
-     * This method will allocate a new signal and return it.
-     *
-     */
-    SignalF32 abs() const {
-        SignalF32 ret(count());
-        arm_dsp_api_f32()->abs(
-                    (float32_t *)data_const(),
-                    ret.vector_data(),
-                    count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-    /*!
-     * \details Calculates the absolute value of each value in the signal.
-     * \param output A reference to the destination signal
-     * \return A new signal containing the absolute value of this signal.
-     *
-     */
-    void abs(SignalF32 & output) const {
-        arm_dsp_api_f32()->abs(
-                    (float32_t *)data_const(),
-                    output.vector_data(),
-                    count());
-    }
-
-    //add
-    SignalF32 operator + (const SignalF32 & a) const{
-        SignalF32 ret(count());
-        arm_dsp_api_f32()->add((float32_t*)vector_data_const(), (float32_t*)a.vector_data_const(), ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    SignalF32 & operator += (const SignalF32 & a){
-        arm_dsp_api_f32()->add((float32_t*)vector_data_const(), (float32_t*)a.vector_data_const(), vector_data(), count());
+    SignalF32 & operator = (const SignalData & a){
+        (SignalData&)*this = a;
         return *this;
     }
 
-    //dot prod
-    /*!
-     * \brief Calculates and returns the dot product of this signal and the the parameter passed.
-     *
-     * \param a Used as the second signal used to calculate the dot product.
-     * \return Returns the dot product of \a a and this signal.
-     */
-    float32_t dot_product(const SignalF32 & a) const {
-        float32_t result;
-        arm_dsp_api_f32()->dot_prod((float32_t*)vector_data_const(), (float32_t*)a.vector_data_const(), count(), &result);
-        return result;
-    }
+    float32_t mean() const;
+    float32_t power() const;
+    float32_t variance() const;
+    float32_t rms() const;
+    float32_t std() const;
+    float32_t min() const;
+    float32_t min(u32 & idx) const;
+    float32_t max() const;
+    float32_t max(u32 & idx) const;
+    SignalF32 abs() const;
+    void abs(SignalF32 & output) const;
+    float32_t dot_product(const SignalF32 & a) const;
+    SignalF32 negate() const ;
+    void negate(SignalF32 & output) const ;
+    SignalF32 convolve(const SignalF32 & a) const ;
+    void convolve(SignalF32 & output, const SignalF32 & a) const ;
+    void shift(SignalF32 & output, s8 value) const;
+    SignalF32 scale(float32_t scale_fraction, s8 shift = 0) const;
+    void scale(SignalF32 & output, float32_t scale_fraction, s8 shift = 0) const;
 
-    //mult
-    /*!
-     * \details Calculates element-by-element multiplication.
-     *
-     * \param a The second operand of the multiply operation
-     * \return A new signal containing the product of \a a and this signal.
-     *
-     */
-    SignalF32 operator * (const SignalF32 & a) const {
-        SignalF32 ret(count());
-        arm_dsp_api_f32()->mult((float32_t*)vector_data_const(), (float32_t*)a.vector_data_const(), ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-
-    /*! \details Adds an offset to each element in the signal. */
-    SignalF32 offset(float32_t offset_value) const {
-        SignalF32 ret(count());
-        arm_dsp_api_f32()->offset((float32_t*)vector_data_const(), offset_value, ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    /*! \details Returns a new signal that a negated copy of this signal.
-     *
-     * This method uses dynamic memory allocation.
-     *
-     */
-    SignalF32 negate() const {
-        SignalF32 ret(count());
-        arm_dsp_api_f32()->negate((float32_t*)vector_data_const(), ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    /*! \details Assigns the negated value of this signal to \a output. */
-    void negate(SignalF32 & output) const {
-        arm_dsp_api_f32()->negate((float32_t*)vector_data_const(), output.vector_data(), count());
-    }
-
-
-    SignalF32 convolve(const SignalF32 & a) const {
-        SignalF32 ret(count() + a.count() - 1);
-        arm_dsp_api_f32()->conv((float32_t*)vector_data_const(), count(), (float32_t*)a.vector_data_const(), a.count(), ret.vector_data());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    void convolve(SignalF32 & output, const SignalF32 & a) const {
-        //check output length?
-        arm_dsp_api_f32()->conv((float32_t*)vector_data_const(), count(), (float32_t*)a.vector_data_const(), a.count(), output.vector_data());
-    }
-
-
-    SignalF32 scale(float32_t scale_fraction, int8_t shift = 0){
-        SignalF32 ret(count());
-        arm_dsp_api_f32()->scale((float32_t*)vector_data_const(), scale_fraction, ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    void scale(SignalF32 & output, float32_t scale_fraction, int8_t shift = 0){
-        arm_dsp_api_f32()->scale((float32_t*)vector_data_const(), scale_fraction, output.vector_data(), count());
-    }
-
-    //shift
-    SignalF32 shift(int8_t value){
-        SignalF32 ret(count());
-        //arm_dsp_api_f32()->shift((float32_t*)vector_data_const(), value, ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    void shift(SignalF32 & output, int8_t value){
-        //arm_dsp_api_f32()->shift((float32_t*)vector_data_const(), value, output.vector_data(), count());
-    }
-
-    SignalF32 operator * (float32_t value){
-        return scale(value);
-    }
-
-    //subtract
-    SignalF32 operator - (const SignalF32 & a) const{
-        SignalF32 ret(count());
-        arm_dsp_api_f32()->sub((float32_t*)vector_data_const(), (float32_t*)a.vector_data_const(), ret.vector_data(), count());
-        ret.set_transfer_ownership();
-        return ret;
-    }
-
-    SignalF32 & operator -= (const SignalF32 & a){
-        arm_dsp_api_f32()->sub((float32_t*)vector_data_const(), (float32_t*)a.vector_data_const(), vector_data(), count());
-        return *this;
-    }
-
-    bool operator == (const SignalF32 & a) const {
-        return compare(*this, a);
-    }
-
-    bool operator != (const SignalF32 & a) const {
-        return !compare(*this, a);
-    }
+    SignalDataF32 add(float32_t offset_value) const;
+    SignalDataF32 & add_assign(float32_t offset_value);
+    SignalDataF32 add(const SignalF32 & a) const;
+    SignalDataF32 & add_assign(const SignalF32 & a);
+    //SignalDataF32 shift(s8 value) const;
+    //SignalDataF32 & shift_assign(s8 value);
+    SignalDataF32 multiply(float32_t value) const;
+    SignalDataF32 & multiply_assign(float32_t value);
+    SignalDataF32 multiply(const SignalF32 & a) const;
+    SignalDataF32 & multiply_assign(const SignalF32 & a);
+    SignalDataF32 subtract(const SignalF32 & a) const;
+    SignalDataF32 & subtract_assign(const SignalF32 & a);
 
     //Filters
-    /*! \details Filters the signal using the specified FIR filter. */
     //SignalF32 filter(const FirFilterF32 & filter) const;
-
-
-    /*! \details Filters the signal using the specified FIR filter.
-     *
-     * @param output A reference to the destination value of the filtered signal.
-     * @param filter The filter to use
-     *
-     */
     //void filter(SignalF32 & output, const FirFilterF32 & filter) const;
 
     SignalF32 filter(const BiquadFilterF32 & filter) const;
     void filter(SignalF32 & output, const BiquadFilterF32 & filter) const;
 
-
 private:
-    friend class BiquadFilterF32;
 
 
 };
 
 typedef SignalF32 SignalFloat32;
 
-class SignalComplexF32 : public SignalData<ComplexF32> {
+class SignalComplexF32 : public SignalData<ComplexF32, float32_t> {
 public:
 
     SignalComplexF32(){}
-    SignalComplexF32(u32 count) : SignalData<ComplexF32>(count){}
+    SignalComplexF32(u32 count) : SignalData(count){}
 
-    SignalComplexF32 transform(const FftRealF32 & fft, bool is_inverse = false);
-    void transform(SignalComplexF32 & output, const FftRealF32 & fft, bool is_inverse = false);
+    SignalComplexF32 transform(FftRealF32 & fft, bool is_inverse = false);
+    void transform(SignalComplexF32 & output, FftRealF32 & fft, bool is_inverse = false);
 
-    void transform(const FftComplexF32 & fft, bool is_inverse = false, bool is_bit_reversal = false);
+    void transform(FftComplexF32 & fft, bool is_inverse = false, bool is_bit_reversal = false);
 
 
 protected:
-    const float32_t * vector_data_const() const { return (const float32_t*)SignalData<ComplexF32>::vector_data_const(); }
-    float32_t * vector_data(){ return (float32_t*)SignalData<ComplexF32>::vector_data(); }
-
-
 private:
-    friend class FftRealF32;
-    friend class FftComplexF32;
+
 };
 
 }

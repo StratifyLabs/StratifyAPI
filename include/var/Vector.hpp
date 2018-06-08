@@ -19,6 +19,11 @@ public:
      */
     Vector(){ m_count = 0; }
 
+    /*! \details Constructs a vector with \a count uninitialized items. */
+    Vector(int count){
+        resize(count);
+    }
+
     /*! \details Returns a referece to the element
      * at the specified position.
      *
@@ -213,6 +218,9 @@ public:
      */
     u32 size() const { return count()*sizeof(T); }
 
+    T * vector_data(){ return (T*)data(); }
+    const T * vector_data_const() const { return (const T*)data(); }
+
 protected:
 
 
@@ -228,9 +236,6 @@ protected:
         }
         return true;
     }
-
-    T * vector_data(){ return (T*)data(); }
-    const T * vector_data_const() const { return (const T*)data(); }
 
 private:
 

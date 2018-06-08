@@ -1,20 +1,12 @@
 /* Copyright 2016-2018 Tyler Gilbert ALl Rights Reserved */
 
-/*!
- * \addtogroup LINKCPP CPP Wrappers
- * @{
- *
- * \ingroup USBLINK
- *
- */
 
 /*! \file
- * \brief USB Link Protocol Header File
  *
  */
 
-#ifndef LINK_H
-#define LINK_H
+#ifndef LINK_HPP
+#define LINK_HPP
 
 #include <mcu/types.h>
 #include <sos/link.h>
@@ -27,6 +19,10 @@ namespace sys {
  * \details This class is used to access devices
  * running Stratify OS from a desktop C++ application.
  *
+ * This class is not available on native Stratify OS applications.
+ *
+ *
+ *
  */
 class Link {
 public:
@@ -35,17 +31,16 @@ public:
 
     typedef bool (*update_callback_t)(void*, int, int);
 
-    /*! \details This gets the error message if an
-     * operation fails.
+    /*! \details Gets the error message if an operation fails.
      */
     const var::String & error_message() const { return m_error_message; }
 
-    /*! \details This gets the current progress of an operation.  This allows
+    /*! \details Gets the current progress of an operation.  This allows
      * multi-threaded applications to update a progress bar while copying files.
      */
     int progress() const { return m_progress; }
 
-    /*! \details This gets the maximum progress value of the current operation.
+    /*! \details Gets the maximum progress value of the current operation.
      *
      */
     int progress_max() const { return m_progress_max; }
@@ -387,5 +382,3 @@ private:
 }
 
 #endif // LINK_H
-
-/*! @} */
