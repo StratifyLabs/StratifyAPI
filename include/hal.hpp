@@ -4,6 +4,22 @@
 #define HAL_HPP_
 
 /*! \brief Hardware Abstraction Layer
+ * \details The hal namespace includes classes for accessing
+ * mcu peripheral hardware and other devices.
+ *
+ * All objects in the hal namespace inherit either:
+ *
+ * - api::HalWorkObject
+ * - api::HalInfoObject
+ *
+ * Work objects inherit sys::File and allow access to the hardware
+ * using a POSIX style API (open(), close(), read(), write() and ioctl()).
+ *
+ * Info objects contain attributes that facilitate configuring and
+ * querying hardware.
+ *
+ *
+ *
  */
 namespace hal {}
 

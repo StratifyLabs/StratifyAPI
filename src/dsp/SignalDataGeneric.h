@@ -111,7 +111,6 @@ void SignalType::convolve(SignalType & output, const SignalType & a) const {
 }
 
 #if IS_FLOAT == 0
-
 void SignalType::shift(SignalType & output, s8 value) const {
     arm_dsp_api_function()->shift((native_type*)vector_data_const(), value, output.vector_data(), count());
 }
@@ -127,7 +126,6 @@ SignalDataType & SignalType::shift_assign(s8 value){
     arm_dsp_api_function()->shift((native_type*)vector_data_const(), value, vector_data(), count());
     return *this;
 }
-
 #endif
 
 SignalType SignalType::scale(native_type scale_fraction, s8 shift) const {
@@ -228,6 +226,25 @@ void SignalType::filter(SignalType & output, const BiquadFilterType & filter) co
 #endif
 }
 
+SignalType SignalType::filter(const FirFilterType & filter) const {
+    SignalType ret(count());
+#if IS_FLOAT == 0
+    arm_dsp_api_function()->fir_fast(filter.instance(), (native_type*)vector_data_const(), ret.vector_data(), count());
+#else
+    arm_dsp_api_function()->fir(filter.instance(), (native_type*)vector_data_const(), ret.vector_data(), count());
+#endif
+    ret.set_transfer_ownership();
+    return ret;
+}
+
+void SignalType::filter(SignalType & output, const FirFilterType & filter) const {
+#if IS_FLOAT == 0
+    arm_dsp_api_function()->fir_fast(filter.instance(), (native_type*)vector_data_const(), output.vector_data(), count());
+#else
+    arm_dsp_api_function()->fir(filter.instance(), (native_type*)vector_data_const(), output.vector_data(), count());
+#endif
+}
+
 
 void SignalComplexType::transform(FftComplexType & fft, bool is_inverse, bool is_bit_reversal){
     arm_dsp_api_function()->cfft(fft.instance(), (native_type*)vector_data(), is_inverse, is_bit_reversal);
@@ -235,7 +252,6 @@ void SignalComplexType::transform(FftComplexType & fft, bool is_inverse, bool is
 
 void SignalComplexType::transform(SignalComplexType & output, FftRealType & fft, bool is_inverse){
 #if IS_FLOAT == 0
-    //FftRealType rfft = fft;
     fft.instance()->ifftFlagR = is_inverse;
     arm_dsp_api_function()->rfft(fft.instance(), (native_type*)vector_data(), (native_type*)output.vector_data());
 #else
@@ -248,9 +264,8 @@ SignalComplexType SignalComplexType::transform(FftRealType & fft, bool is_invers
     if( !is_inverse ){ samples *= 2; }
     SignalComplexType ret(samples);
 #if IS_FLOAT == 0
-    FftRealType rfft = fft;
-    rfft.instance()->ifftFlagR = is_inverse;
-    arm_dsp_api_function()->rfft(rfft.instance(), (native_type*)vector_data(), (native_type*)ret.vector_data());
+    fft.instance()->ifftFlagR = is_inverse;
+    arm_dsp_api_function()->rfft(fft.instance(), (native_type*)vector_data(), (native_type*)ret.vector_data());
 #else
     arm_dsp_api_function()->rfft_fast(fft.instance(), (native_type*)vector_data(), (native_type*)ret.vector_data(), is_inverse);
 #endif

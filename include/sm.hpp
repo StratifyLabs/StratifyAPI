@@ -3,7 +3,7 @@
 #ifndef SM_HPP_
 #define SM_HPP_
 
-/*! \brief State Machine (Event Handler)
+/*! \brief State Machine
  */
 namespace sm {}
 

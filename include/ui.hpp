@@ -4,7 +4,7 @@
 #ifndef UI_HPP_
 #define UI_HPP_
 
-/*! \brief User Interface Namespace
+/*! \brief User Interface
  * \details The ui namespace is a collection of classes
  * used to build a graphical User Interface on embedded devices.
  *

@@ -9,14 +9,21 @@
 
 namespace api {
 
-/*! \brief Event Informatin Object
+/*! \brief DSP Information Object
+ *
+ * \details
+ * \sa dsp namespace
  *
  */
 class DspInfoObject : public virtual InfoObject {
 
 };
 
-/*! \brief Event Object Class
+/*! \brief DSP Work Object
+ *
+ * \details
+ * \sa dsp namespace
+ *
  */
 class DspWorkObject : public virtual WorkObject {
 public:

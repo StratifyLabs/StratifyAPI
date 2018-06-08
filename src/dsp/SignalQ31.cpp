@@ -13,20 +13,11 @@ using namespace dsp;
 #define FftRealType FftRealQ31
 #define FftComplexType FftComplexQ31
 #define BiquadFilterType BiquadFilterQ31
+#define FirFilterType FirFilterQ31
 #define big_type q63_t
 
 #include "SignalDataGeneric.h"
 
-SignalQ31 SignalQ31::filter(const FirFilterQ31 & filter) const {
-    SignalQ31 ret(count());
-    arm_dsp_api_q31()->fir_fast(filter.instance(), (q31_t*)vector_data_const(), ret.vector_data(), count());
-    ret.set_transfer_ownership();
-    return ret;
-}
-
-void SignalQ31::filter(SignalQ31 & output, const FirFilterQ31 & filter) const {
-    arm_dsp_api_q31()->fir_fast(filter.instance(), (q31_t*)vector_data_const(), output.vector_data(), count());
-}
 
 SignalQ31 SignalQ31::filter(const FirDecimateFilterQ31 & filter){
     SignalQ31 ret(count());

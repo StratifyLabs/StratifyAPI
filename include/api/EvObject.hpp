@@ -6,7 +6,10 @@
 
 namespace api {
 
-/*! \brief Event Informatin Object
+/*! \brief Event Information Object
+ *
+ * \details
+ * \sa ev namespace
  *
  */
 class EvInfoObject : public virtual InfoObject {
@@ -14,6 +17,9 @@ class EvInfoObject : public virtual InfoObject {
 };
 
 /*! \brief Event Object Class
+ *
+ * \details
+ * \sa ev namespace
  */
 class EvWorkObject : public virtual WorkObject {
 

@@ -17,6 +17,15 @@ private:
     T m_instance;
 };
 
+class FirFilterQ15 : public Filter<arm_fir_instance_q15> {
+public:
+    FirFilterQ15(const SignalQ15 & coefficients, u32 n_samples);
+    u32 samples() const { return m_state.count(); }
+
+private:
+    SignalQ15 m_state;
+
+};
 
 class FirFilterQ31 : public Filter<arm_fir_instance_q31> {
 public:
@@ -25,6 +34,17 @@ public:
 
 private:
     SignalQ31 m_state;
+
+};
+
+
+class FirFilterF32 : public Filter<arm_fir_instance_f32> {
+public:
+    FirFilterF32(const SignalF32 & coefficients, u32 n_samples);
+    u32 samples() const { return m_state.count(); }
+
+private:
+    SignalF32 m_state;
 
 };
 

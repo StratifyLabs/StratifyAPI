@@ -3,7 +3,7 @@
 #ifndef FMT_HPP_
 #define FMT_HPP_
 
-/*! \brief Standard Data Formats
+/*! \brief File Formats
  *
  */
 namespace fmt {}

@@ -6,15 +6,19 @@
 
 namespace api {
 
-/*! \brief Format Infomation Object.
+/*! \brief Calc Infomation Object
+ * \details
  *
+ * \sa calc namespace
  */
 class CalcInfoObject : public virtual InfoObject {
 
 };
 
-/*! \brief Format Work Object Class
+/*! \brief Calc Work Object
+ * \details
  *
+ * \sa calc namespace
  */
 class CalcWorkObject : public virtual WorkObject {
 

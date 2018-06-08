@@ -98,19 +98,31 @@ public:
         return *this;
     }
 
+    /*! \details Appends a string to this string. */
     String& operator+=(const String & a){
         append(a);
         return *this;
     }
 
+    /*! \details Appends a string to this string. */
     String& operator+=(const char * a){
         append(a);
         return *this;
     }
 
+    /*! \details Appends a character to this string. */
     String& operator+=(char a){
         append(a);
         return *this;
+    }
+
+
+    /*! \details Appends a string to this string and returns a new string. */
+    String operator + (const String & a){
+        String ret = *this;
+        ret.append(a);
+        ret.set_transfer_ownership();
+        return ret;
     }
 
     ~String(){}
@@ -232,7 +244,7 @@ public:
 	 * @return Total number of characters written to the string
 	 *
 	 * If the formatted string exceeds the length of the string capacity,
-	 * the formatted string will be truncated to fit.
+     * the string will be resized to accomate the full formatted string.
 	 *
 	 */
 	int sprintf(const char * format, ...);
@@ -268,7 +280,7 @@ public:
 
 	/*! \details Returns a c-style string pointer. */
     const char * str() const { return cdata_const(); }
-    //compatible with std::string (but not Stratify API convertion)
+    //compatible with std::string (but not Stratify API convention)
     const char * c_str() const { return cdata_const(); }
 
 	/*! \details Returns the length of the string. */
@@ -328,17 +340,22 @@ public:
 
 	/*! \details Finds a c string within the object. */
 	u32 find(const char * str, u32 pos = 0) const;
+
 	/*! \details Finds a character within the object. */
 	u32 find(const char c, u32 pos = 0) const;
+
 	/*! \details Finds a string within the object. */
 	u32 find(const char * s, u32 pos, u32 n) const;
 
 	/*! \details Finds a string within the string searching from right to left. */
 	u32 rfind(const String & str, u32 pos = 0) const;
+
 	/*! \details Finds a string within the string searching from right to left. */
 	u32 rfind(const char * str, u32 pos = 0) const;
+
 	/*! \details Finds a character within the string searching from right to left. */
 	u32 rfind(const char c, u32 pos = 0) const;
+
 	/*! \details Finds a string within the string searching from right to left. */
 	u32 rfind(const char * s, u32 pos, u32 n) const;
 
@@ -396,7 +413,7 @@ public:
      * @param pos The position in this object to start the comparison
      * @param len The length of the compared string (this object)
      * @param s The characters to compare
-     * @param n The number os characters to compare
+     * @param n The number of characters to compare
      * @return Zero if the strings match
      *
      */
@@ -405,33 +422,28 @@ public:
 private:
 };
 
-/*! \details Static String Template Class
- * \details This template is used for declaring fixed length strings.
+/*! \brief String using static memory allocation
+ * \details Static String Template Class
+ *
+ * This template is used for declaring fixed memory size strings.
+ *
  */
 template <unsigned int arraysize>
 class StaticString : public String {
 public:
-    StaticString() : String(s, arraysize+1, false){ clear(); }
-    StaticString(const char * str) : String(s, arraysize+1, false){ assign(str); }
-    StaticString(const String & str) : String(s, arraysize+1, false){ assign(str); }
+    StaticString() : String(m_str, arraysize+1, false){ clear(); }
+    StaticString(const char * str) : String(m_str, arraysize+1, false){ assign(str); }
+    StaticString(const String & str) : String(m_str, arraysize+1, false){ assign(str); }
 
 private:
-	char s[arraysize+1];
+    char m_str[arraysize+1];
 };
 
-//deprecated
-template <unsigned int arraysize>
-class StringStatic : public String {
-public:
-    StringStatic() : String(s, arraysize+1, false){ clear(); }
-    StringStatic(const char * str) : String(s, arraysize+1, false){ assign(str); }
-    StringStatic(const String & str) : String(s, arraysize+1, false){ assign(str); }
 
-private:
-    char s[arraysize+1];
-};
-
-/*! \details String for file names */
+/*!
+ * \brief String for file files
+ * \details String for file names
+ */
 class NameString : public String {
 public:
     NameString() : String(LINK_NAME_MAX){}
@@ -440,7 +452,11 @@ public:
 //deprecated
 typedef NameString StringName;
 
-/*! \details String for path names */
+/*! \brief String for file paths
+ * \details String for path names
+ *
+ *
+ */
 class PathString : public String {
 public:
     PathString() : String(LINK_PATH_MAX){}

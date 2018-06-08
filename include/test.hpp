@@ -1,7 +1,7 @@
 #ifndef TEST_HPP
 #define TEST_HPP
 
-/*! \brief test Namespace
+/*! \brief Test framework
  * \details The test namespace includes a collection of
  * classes that are used for executing tests.
  *

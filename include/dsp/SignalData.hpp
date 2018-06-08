@@ -12,7 +12,9 @@ class FftComplexF32;
 class FftRealQ15;
 class FftRealQ31;
 class FftRealF32;
+class FirFilterQ15;
 class FirFilterQ31;
+class FirFilterF32;
 class BiquadFilterQ15;
 class BiquadFilterQ31;
 class BiquadFilterF32;
@@ -149,6 +151,8 @@ public:
 
     /*! \details Performs element-wise addition.
      *
+     * Operators are not implemented on complex signals.
+     *
      * \note This operator uses dynamic memory allocation
      *
      */
@@ -156,20 +160,54 @@ public:
 
     /*! \details Performs element-wise addition.
      *
+     * Operators are not implemented on complex signals.
      */
     SignalData & operator += (const SignalData & a ){ return add_assign(a); }
 
     /*! \details Adds a constant value to all elements.
+     *
+     * Operators are not implemented on complex signals.
+     *
      * \note This operator uses dynamic memory allocation
      */
     SignalData operator + (const T & a ) const { return add(a); }
+
     /*! \details Adds a constant value to all elements in this signal. */
     SignalData & operator += (const T & a ){ return add_assign(a); }
-    SignalData operator - (const SignalData & a ) const { return subtract(a); }
-    SignalData & operator -= (const SignalData & a ){ return subtract_assign(a); }
 
-    SignalData operator - (const T & a ) const { return add(-a); }
-    SignalData & operator -= (const T & a ){ return add_assign(-a); }
+    /*! \details Performs element-wise subtraction.
+     *
+     * Operators are not implemented on complex signals.
+     *
+     * \note This operator uses dynamic memory allocation
+     */
+    SignalData operator - (const SignalData & a) const { return subtract(a); }
+
+    /*! \details Performs element-wise subtraction and saves the result in this signal.
+     *
+     *
+     * Operators are not implemented on complex signals.
+     *
+     *
+     */
+    SignalData & operator -= (const SignalData & a){ return subtract_assign(a); }
+
+    /*! \details Subtracts a scalar value from each element.
+     *
+     *
+     * Operators are not implemented on complex signals.
+     *
+     *
+     * \note This operator uses dynamic memory allocation
+     */
+    SignalData operator - (const T & a) const { return add(-a); }
+
+    /*! \details Subtracts a scalar value from each element in this signal.
+     *
+     * Operators are not implemented on complex signals.
+     *
+     */
+    SignalData & operator -= (const T & a){ return add_assign(-a); }
 
     /*!
      * \details Calculates element-by-element multiplication.
@@ -191,10 +229,20 @@ public:
      */
     SignalData & operator *= (const SignalData & a ){ return multiply_assign(a); }
 
-    /*! \details Multiplies each element by a scaling value. */
+    /*! \details Multiplies each element by a scaling value.
+     *
+     *
+     * Operators are not implemented on complex signals.
+     *
+     */
     SignalData operator * (const T & value) const { return multiply(value); }
 
-    /*! \details Multiplies each element of this signal by a scalar value. */
+    /*! \details Multiplies each element of this signal by a scalar value.
+     *
+     *
+     * Operators are not implemented on complex signals.
+     *
+     */
     SignalData & operator *= (const T & value){ return multiply_assign(value); }
 
     /*! \details Shifts this signal.
@@ -204,6 +252,8 @@ public:
      *
      * \note This operator uses dynamic memory allocation.
      *
+     * Operators are not implemented on complex signals. Shift is not available for any floating-point types.
+     *
      */
     SignalData operator << (s8 value) const { return shift(value); }
 
@@ -212,14 +262,26 @@ public:
      * @param value Number of bits to left shift
      * @return A new signal with each element equal to this >> value
      *
+     * Operators are not implemented on complex signals. Shift is not available for any floating-point types.
+     *
      * \note This operator uses dynamic memory allocation.
+     *
      *
      */
     SignalData operator >> (s8 value) const { return shift(-1*value); }
 
-    /*! \details Shifts this signal \a value bits to the left. */
+    /*! \details Shifts this signal \a value bits to the left.
+     *
+     * Operators are not implemented on complex signals. Shift is not available for any floating-point types.
+     *
+     */
     SignalData & operator <<= (s8 value){ return shift_assign(value); }
-    /*! \details Shifts this signal \a value bits to the right. */
+
+    /*! \details Shifts this signal \a value bits to the right.
+     *
+     * Operators are not implemented on complex signals. Shift is not available for any floating-point types.
+     *
+     */
     SignalData & operator >>= (s8 value){ return shift_assign(-1*value); }
 
     /*! \details Returns true if this signal is equivalent as \a a. */
@@ -345,7 +407,7 @@ public:
      *
      * @param filter Biquad Filter to use
      *
-     * \note This method using dynamic memory allocation.
+     * \note This method uses dynamic memory allocation.
      *
      */
     virtual SignalData filter(const BiquadFilterType & filter) const;
@@ -358,6 +420,24 @@ public:
      *
      */
     virtual void filter(SignalData & output, const BiquadFilterType & filter) const;
+
+    /*! \details Filters the signal.
+     *
+     * @param filter An FIR filter to apply to the signal
+     *
+     * \note This method uses dynamic memory allocation.
+     *
+     */
+    virtual SignalData filter(const FirFilterType & filter) const;
+
+    /*! \details Filters the signal.
+     *
+     * @param output A reference to the output signal
+     * @param filter An FIR filter to apply to the signal
+     *
+     *
+     */
+    void filter(SignalData & output, const FirFilterType & filter) const;
 #endif
 
     //these are used by operators and are not documented
@@ -448,9 +528,8 @@ public:
 
 
     //Filters
-    //SignalQ15 filter(const FirFilterQ15 & filter) const;
-
-    //void filter(SignalQ15 & output, const FirFilterQ15 & filter) const;
+    SignalQ15 filter(const FirFilterQ15 & filter) const;
+    void filter(SignalQ15 & output, const FirFilterQ15 & filter) const;
 
     SignalQ15 filter(const BiquadFilterQ15 & filter) const;
     void filter(SignalQ15 & output, const BiquadFilterQ15 & filter) const;
@@ -466,7 +545,7 @@ private:
 typedef SignalData<ComplexQ15, q63_t> SignalDataComplexQ15;
 
 /*!
- *
+ * \brief Signal with Complex q1.15 data
  * \details This class is used for storing complex signal data in q1.15
  * format.
  *
@@ -588,7 +667,7 @@ private:
 typedef SignalData<ComplexQ31, q63_t> SignalDataComplexQ31;
 
 /*!
- *
+ * \brief Signal with Complex q1.31 Data
  * \details This class is used for storing complex signal data in q1.31
  * format.
  *
@@ -688,8 +767,8 @@ public:
     SignalDataF32 & subtract_assign(const SignalF32 & a);
 
     //Filters
-    //SignalF32 filter(const FirFilterF32 & filter) const;
-    //void filter(SignalF32 & output, const FirFilterF32 & filter) const;
+    SignalF32 filter(const FirFilterF32 & filter) const;
+    void filter(SignalF32 & output, const FirFilterF32 & filter) const;
 
     SignalF32 filter(const BiquadFilterF32 & filter) const;
     void filter(SignalF32 & output, const BiquadFilterF32 & filter) const;

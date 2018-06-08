@@ -6,14 +6,20 @@
 
 namespace api {
 
-/*! \brief Test Informatin Object
+/*! \brief Test Information Object
+ *
+ * \details
+ * \sa test namespace
  *
  */
 class TestInfoObject : public virtual InfoObject {
 
 };
 
-/*! \brief Test Object Class
+/*! \brief Test Work Object
+ *
+ * \details
+ * \sa test namespace
  */
 class TestWorkObject : public virtual WorkObject {
 

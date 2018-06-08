@@ -7,24 +7,32 @@
 
 namespace api {
 
-/*! \brief Sgfx Informatin Object
+/*! \brief Sgfx Information Object
+ *
+ * \details
+ * \sa sgfx namespace
  *
  */
 class SgfxInfoObject : public virtual InfoObject {
 
 };
 
-/*! \brief Sgfx Object Class
+/*! \brief Sgfx Work Object
  * \details The Sgfx Object Class is the parent class
- * of all objects in the sgfx namespace.
+ * of all work objects in the sgfx namespace.
+ *
+ * \sa sgfx namespace
  */
 class SgfxWorkObject : public virtual WorkObject {
 
 };
 
-/*! \brief Sgfx Object Class
- * \details The Sgfx Object Class is the parent class
- * of all objects in the sgfx namespace.
+/*! \brief Sgfx Data Object
+ * \details The Sgfx Data Object Class is the parent class
+ * of all data objects in the sgfx namespace.
+ *
+ * \sa sgfx namespace
+ *
  */
 class SgfxDataObject : public var::Data {
 

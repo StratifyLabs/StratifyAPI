@@ -3,7 +3,10 @@
 #ifndef SYS_HPP_
 #define SYS_HPP_
 
-/*! \brief System Access (including POSIX abstraction)
+/*! \brief System Access (POSIX wrappers)
+ * \details The sys namespace includes classes for
+ * accessing the system.
+ *
  */
 namespace sys {}
 

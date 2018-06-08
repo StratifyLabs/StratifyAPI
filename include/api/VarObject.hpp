@@ -6,14 +6,20 @@
 
 namespace api {
 
-/*! \brief Format Infomation Object.
+/*! \brief Var Infomation Object
+ *
+ * \details
+ * \sa var namespace
  *
  */
 class VarInfoObject : public virtual InfoObject {
 
 };
 
-/*! \brief Format Work Object Class
+/*! \brief Var Work Object
+ *
+ * \details
+ * \sa var namespace
  *
  */
 class VarWorkObject : public virtual WorkObject {

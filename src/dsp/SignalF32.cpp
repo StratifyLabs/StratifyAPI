@@ -13,6 +13,7 @@ using namespace dsp;
 #define FftRealType FftRealF32
 #define FftComplexType FftComplexF32
 #define BiquadFilterType BiquadFilterF32
+#define FirFilterType FirFilterF32
 #define big_type float32_t
 
 #include "SignalDataGeneric.h"

@@ -90,15 +90,39 @@
 
 #include <mcu/types.h>
 
+
+/*!
+ * \brief Application Programming Interface
+ *
+ * \details
+ *
+ * The api namespace contains all top level objects.  All objects inherit from api::ApiObject. Below
+ * api::ApiObject this is api::ApiWorkObject and api::ApiInfoObject.
+ *
+ * Work objects include an error number and are the base for objects that do work and make system calls.
+ *
+ * Info objects are used for storing and managing static data structures. They don't make
+ * system calls and can't store errors. Info objects also include classes with only static methods.
+ *
+ * ### Diagrams
+ *
+ * To see a top level inheritance diagram of the entire API see api::ApiObject.
+ *
+ * For work objects only, see api::WorkObject.
+ *
+ * For info object only, see api::InfoObject.
+ *
+ *
+ */
 namespace api {
 
-/*! \brief API Object Class
+/*! \brief Application Programming Interface Object
  * \details The API Object class is the parent of all
  * other classes. The API namespace contains
  * two other classes that inherit this object
  *
- * - InfoObject
- * - WorkObject
+ * - api::InfoObject
+ * - api::WorkObject
  *
  * InfoObject is for classes that are used to access static
  * data and don't do any work or have the potential to have errors.

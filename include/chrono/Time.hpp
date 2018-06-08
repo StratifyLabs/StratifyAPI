@@ -32,6 +32,7 @@ class Time : public api::ChronoInfoObject {
 public:
     /*! \details Constructs using current time. */
     Time();
+
     /*! \details Constructs using an amount of time. */
     Time(u32 sec, u32 min = 0, u32 hour = 0);
 

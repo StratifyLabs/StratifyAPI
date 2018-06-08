@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include "chrono/ClockTime.hpp"
 #include "chrono/MicroTime.hpp"
+#include "chrono/Time.hpp"
 #include "api/ChronoObject.hpp"
 
 using namespace api;
@@ -23,3 +24,8 @@ void ChronoInfoObject::wait(const chrono::ClockTime & clock_time){
 void ChronoInfoObject::wait(const chrono::MicroTime & micro_time){
     wait_microseconds(micro_time.microseconds());
 }
+
+void ChronoInfoObject::wait(const chrono::Time & time){
+    wait_seconds(time.hour() * 3600UL + time.minute()*60UL + time.second());
+}
+

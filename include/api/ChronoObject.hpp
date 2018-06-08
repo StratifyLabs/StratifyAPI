@@ -13,7 +13,9 @@ class Time;
 namespace api {
 
 /*! \brief Chrono Information Object
+ * \details
  *
+ * \sa chrono namespace
  */
 class ChronoInfoObject : public virtual InfoObject {
 public:
@@ -42,7 +44,11 @@ public:
     static void wait(const chrono::Time & time);
 };
 
-/*! \brief Chrono Work Object Class
+/*! \brief Chrono Work Object
+ *
+ * \details
+ *
+ * \sa chrono namespace
  */
 class ChronoWorkObject : public virtual WorkObject {
 public:
@@ -58,6 +64,13 @@ public:
     /*! \details See chrono::ChronoInfoObject::wait_microseconds();
      */
     static void wait_microseconds(u32 timeout){ ChronoInfoObject::wait_microseconds(timeout); }
+
+    /*! \details This method delays based on a chrono::ClockTime value. */
+    static void wait(const chrono::ClockTime & clock_time){ ChronoInfoObject::wait(clock_time); }
+    /*! \details This method delays based on a chrono::MicroTime value. */
+    static void wait(const chrono::MicroTime & micro_time){ ChronoInfoObject::wait(micro_time); }
+    /*! \details This method delays based on a chrono::Time value. */
+    static void wait(const chrono::Time & time){ ChronoInfoObject::wait(time); }
 
 };
 

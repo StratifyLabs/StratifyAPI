@@ -4,7 +4,7 @@
 #define VAR_HPP_
 
 
-/*! \brief Data Management Namespace
+/*! \brief Data Management
  * \details The var namespace is a collection of volatile data storage mechanisms and routines
  * such as buffers and strings.
  */

@@ -12,14 +12,18 @@ namespace api {
  * device attributes, device information and pin assignment
  * structures.
  *
+ * \sa hal namespace
+ *
  */
 class HalInfoObject : public virtual InfoObject {
 
 };
 
-/*! \brief Hal Object Class
- * \details The Hal Object class
+/*! \brief Hal Work Object
+ * \details The Hal Work Object class
  * is the parent of all Hal objects.
+ *
+ * \sa hal namespace
  *
  */
 class HalWorkObject : public sys::File {

@@ -8,12 +8,17 @@ namespace api {
 
 /*! \brief Draw Information Object
  *
+ * \details
+ * \sa draw namespace
+ *
  */
 class DrawInfoObject : public virtual InfoObject {
 
 };
 
-/*! \brief State Machine Work Object Class
+/*! \brief Draw Work Object
+ * \details
+ * \sa draw namespace
  */
 class DrawWorkObject : public virtual WorkObject {
 

@@ -8,12 +8,17 @@ namespace api {
 
 /*! \brief State Machine Information Object
  *
+ * \details
+ * \sa sm namespace
  */
 class SmInfoObject : public virtual InfoObject {
 
 };
 
-/*! \brief State Machine Work Object Class
+/*! \brief State Machine Work Object
+ *
+ * \details
+ * \sa sm namespace
  */
 class SmWorkObject : public virtual WorkObject {
 

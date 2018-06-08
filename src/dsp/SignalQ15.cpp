@@ -16,6 +16,7 @@ using namespace dsp;
 #define FftRealType FftRealQ15
 #define FftComplexType FftComplexQ15
 #define BiquadFilterType BiquadFilterQ15
+#define FirFilterType FirFilterQ15
 #define big_type q63_t
 
 #include "SignalDataGeneric.h"

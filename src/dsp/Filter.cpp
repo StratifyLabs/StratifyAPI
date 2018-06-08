@@ -4,11 +4,28 @@
 
 using namespace dsp;
 
+FirFilterQ15::FirFilterQ15(const SignalQ15 & coefficients, u32 n_samples){
+    m_state.resize( coefficients.count() + n_samples - 1);
+    arm_dsp_api_q15()->fir_init(instance(),
+                                coefficients.count(),
+                                (q15_t*)coefficients.vector_data_const(),
+                                m_state.vector_data(),
+                                n_samples);
+}
 FirFilterQ31::FirFilterQ31(const SignalQ31 & coefficients, u32 n_samples){
     m_state.resize( coefficients.count() + n_samples - 1);
     arm_dsp_api_q31()->fir_init(instance(),
                                 coefficients.count(),
                                 (q31_t*)coefficients.vector_data_const(),
+                                m_state.vector_data(),
+                                n_samples);
+}
+
+FirFilterF32::FirFilterF32(const SignalF32 & coefficients, u32 n_samples){
+    m_state.resize( coefficients.count() + n_samples - 1);
+    arm_dsp_api_f32()->fir_init(instance(),
+                                coefficients.count(),
+                                (float32_t*)coefficients.vector_data_const(),
                                 m_state.vector_data(),
                                 n_samples);
 }

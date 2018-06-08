@@ -6,11 +6,14 @@
 
 namespace api {
 
-/*! \brief API Information Object
+/*! \brief Information Object
  * \details Classes that inherit from
  * information objects are used for static
  * data storage and access. They don't do any
  * work that could cause errors.
+ *
+ *
+ * \sa api::WorkObject
  *
  *
  */

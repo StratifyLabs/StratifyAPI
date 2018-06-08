@@ -3,7 +3,7 @@
 #ifndef SGFX_HPP_
 #define SGFX_HPP_
 
-/*! \brief Classes for sgfx library
+/*! \brief Classes for Stratify Graphics library
  *
  */
 namespace sgfx {}
