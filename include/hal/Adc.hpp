@@ -39,6 +39,7 @@ class AdcPinAssignment : public PinAssignment<adc_pin_assignment_t>{};
  */
 class Adc : public Periph<adc_info_t, adc_attr_t, 'a'> {
 public:
+
 	/*! \details Initializes the object with \a port. */
 	Adc(port_t port);
 

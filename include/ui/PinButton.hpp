@@ -4,7 +4,7 @@
 #define UI_PINBUTTON_HPP_
 
 #include "../hal/Pin.hpp"
-#include "../sys/Timer.hpp"
+#include "../chrono/Timer.hpp"
 #include "Button.hpp"
 
 namespace ui {
@@ -77,7 +77,7 @@ private:
 
 	bool m_active_value;
 
-    sys::Timer m_timer;
+    chrono::Timer m_timer;
 
     struct button_flags {
         unsigned press_reported:1;

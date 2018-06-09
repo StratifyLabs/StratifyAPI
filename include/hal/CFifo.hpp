@@ -42,13 +42,6 @@ private:
  */
 class CFifo : public Device {
 public:
-#if defined __link
-	CFifo(link_transport_mdriver_t * d);
-	CFifo();
-#else
-	CFifo();
-#endif
-
 
 	/*! \details Gets the number of channels in the channeled fifo. */
 	int get_count() const;

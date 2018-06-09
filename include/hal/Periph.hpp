@@ -157,11 +157,15 @@ private:
 template<typename info_t, typename attr_t, char ident_char> class Periph : public PeriphObject {
 public:
 
+    /*!
+     * \details Constructs an MCU peripheral object
+     * \param periph Core peripheral value
+     * \param port Port number
+     */
     Periph(core_periph_t periph, port_t port){
         m_periph_port = (periph << 8) | port;
         m_fd = lookup_fileno();
     }
-
 
     /*! \details Gets the version of the peripheral driver.
      *

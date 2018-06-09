@@ -10,6 +10,7 @@
 
 #define MAX_TRIES 3
 
+#include "sys/File.hpp"
 #include "sys/Link.hpp"
 
 using namespace sys;
@@ -41,7 +42,7 @@ Link::Link(){
     m_is_bootloader = false;
     m_status_message = "";
     m_error_message = "";
-    m_serialno = "";
+    m_serial_number = "";
     m_driver = &m_default_driver;
     link_load_default_driver(m_driver);
     memset(&m_sys_info, 0, sizeof(m_sys_info));
@@ -62,7 +63,7 @@ int Link::check_error(int err){
     switch(err){
     case LINK_PHY_ERROR:
         m_error_message = "Physical Connection Error";
-        this->exit();
+        this->disconnect();
         return LINK_PHY_ERROR;
     case LINK_PROT_ERROR:
         m_error_message = "Protocol Error";
@@ -78,7 +79,7 @@ void Link::reset_progress(){
 }
 
 
-int Link::init(const var::String & path, const var::String & sn, bool is_legacy){
+int Link::connect(const var::String & path, const var::String & sn, bool is_legacy){
     int err;
 
     reset_progress();
@@ -90,7 +91,7 @@ int Link::init(const var::String & path, const var::String & sn, bool is_legacy)
             m_error_message = "Failed to Connect to Device";
             return -1;
         }
-        m_serialno = sn;
+        m_serial_number = sn;
         m_path = path;
 
     } else {
@@ -125,6 +126,10 @@ int Link::init(const var::String & path, const var::String & sn, bool is_legacy)
         strcpy(m_sys_info.name, "bootloader");
         m_sys_info.hardware_id = boot_attr.hardware_id;
         memcpy(&m_sys_info.serial, boot_attr.serialno, sizeof(mcu_sn_t));
+    }
+
+    if( File::default_driver() == 0 ){
+        File::set_default_driver( driver() );
     }
 
     return 0;
@@ -316,7 +321,7 @@ int Link::ioctl(int fd, int request, void * ctl){
 
 }
 
-int Link::exit(){
+int Link::disconnect(){
     lock_device();
     if ( m_driver->dev.handle != LINK_PHY_OPEN_ERROR ){
         link_disconnect(m_driver);
@@ -326,16 +331,17 @@ int Link::exit(){
         }
     }
 
+    if( File::default_driver() == driver() ){
+        File::set_default_driver(0);
+    }
+
     m_is_bootloader = false;
     m_status_message = "";
     m_error_message = "";
-    m_serialno = "";
+    m_serial_number = "";
     m_stdout_fd = -1;
     m_stdin_fd = -1;
     memset(&m_sys_info, 0, sizeof(m_sys_info));
-
-
-
     return 0;
 
 }
@@ -725,7 +731,7 @@ int Link::copy(const var::String & src, const var::String & dest, link_mode_t mo
 
             if ( deviceFile == LINK_TRANSFER_ERR ){
                 m_error_message = "Connection Failed";
-                this->exit();
+                this->disconnect();
                 return -2;
             }
 
@@ -738,7 +744,7 @@ int Link::copy(const var::String & src, const var::String & dest, link_mode_t mo
         if ( err == LINK_TRANSFER_ERR ){
             unlock_device();
             m_error_message = "Connection Failed";
-            this->exit();
+            this->disconnect();
             return -2;
         }
 
@@ -795,7 +801,7 @@ int Link::copy(const var::String & src, const var::String & dest, link_mode_t mo
             if ( deviceFile == LINK_TRANSFER_ERR ){
                 m_error_message = "Connection Failed";
                 unlock_device();
-                this->exit();
+                this->disconnect();
                 return -2;
             } else {
                 m_error_message.sprintf("Failed to open file %s on Link device (%d)", src.str(), link_errno);
@@ -811,7 +817,7 @@ int Link::copy(const var::String & src, const var::String & dest, link_mode_t mo
             if ( err == LINK_TRANSFER_ERR ){
                 m_error_message = "Connection Failed";
                 unlock_device();
-                this->exit();
+                this->disconnect();
                 return -2;
             } else {
                 m_error_message.sprintf("Failed to close Link file", link_errno);
@@ -844,7 +850,7 @@ int Link::run_app(const var::String & path){
     if ( err < 0 ){
         if ( err == LINK_TRANSFER_ERR ){
             m_error_message = "Connection Failed";
-            this->exit();
+            this->disconnect();
             return -2;
         } else {
             m_error_message.sprintf("Failed to run program: %s (%d)", path.str(), link_errno);
@@ -904,13 +910,6 @@ int Link::reset_bootloader(){
     unlock_device();
     m_driver->dev.handle = LINK_PHY_OPEN_ERROR;
     return 0;
-}
-
-int Link::get_security_addr(uint32_t * addr){
-    if( addr ){
-        addr = 0; //error warning suppression
-    }
-    return -1;
 }
 
 int Link::rename(const var::String & old_path, const var::String & new_path){

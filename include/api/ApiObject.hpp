@@ -30,7 +30,7 @@
  * - hal::Uart - access to UART hardware
  * - hal::Pin - read and write pin values
  * - var::String - string manipulation
- * - sys::Timer - Timing and delays
+ * - chrono::Timer - Timing and delays
  *
  * \code
  * #include <sapi/hal.hpp> //this will include all namespace classes and add the namespace i.e. "using namespace hal;"
@@ -46,9 +46,9 @@
  *  //toggle p until the button is pressed
  *  while( button.get_value() != 0 ){
  *   p = false;
- *   ClockTime::wait_milliseconds(100);
+ *   Timer::wait_milliseconds(100);
  *   p = true;
- *   ClockTime::wait_milliseconds(100);
+ *   Timer::wait_milliseconds(100);
  *  }
  *
  * 	return 0;
@@ -56,7 +56,7 @@
  * \endcode
  *
  *
- * Here is an example of a UART loop back routine.
+ * Here is an example of a UART echo routine.
  *
  * \code
  * #include <sapi/hal.hpp>
@@ -65,15 +65,15 @@
  * int main(int argc, char * argv[]){
  *  Uart uart(0);
  *	int ret;
- *	String exitCommand = "exit\n";
+ *	String exit_command = "exit\n";
  *	bool done = false;
  *  char buffer[64];
  *  uart.init(); //initializes the UART with default settings
  *
- *  //loopback UART until exit is entered
+ *  //echo UART until exit is entered
  *  while( done == false ){
  *  	if( (ret = uart.read(buffer,64)) > 0 ){
- *  		if( exitCommand == buffer ){
+ *  		if( exit_command == buffer ){
  *  			done = true;
  *  		}
  *			uart.write(buffer, ret);

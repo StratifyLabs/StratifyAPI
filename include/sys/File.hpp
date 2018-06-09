@@ -65,9 +65,10 @@ class File : public api::SysWorkObject {
 public:
 
 #if defined __link
-	File(link_transport_mdriver_t * d);
-#endif
+    File(link_transport_mdriver_t * driver = 0);
+#else
     File();
+#endif
 
 	/*! \details These values are used as flags when opening devices or files */
 	enum {
@@ -140,7 +141,7 @@ public:
 #if !defined __link
 	static int remove(const char * path);
 #else
-	static int remove(const char * path, link_transport_mdriver_t * driver = 0);
+    static int remove(const char * path, link_transport_mdriver_t * driver = 0);
 #endif
 
 	/*! \details Gets file stat data.
@@ -153,7 +154,7 @@ public:
 #if !defined __link
 	static int stat(const char * path, struct stat * st);
 #else
-	static int stat(const char * path, struct link_stat * st, link_transport_mdriver_t * driver = 0);
+    static int stat(const char * path, struct link_stat * st, link_transport_mdriver_t * driver = 0);
 #endif
 
 	/*! \details Gets the size of the file.
@@ -165,7 +166,7 @@ public:
 #if !defined __link
 	static u32 size(const char * path);
 #else
-	static u32 size(const char * path, link_transport_mdriver_t * driver = 0);
+    static u32 size(const char * path, link_transport_mdriver_t * driver);
 #endif
 
 
@@ -296,12 +297,6 @@ public:
 
 	File& operator<<(const char * a){ write(a, strlen(a)); return *this; }
 
-
-	enum {
-		GETS_BUFFER_SIZE = 128
-	};
-
-
 	/*! \details Seeks to a location in the file or on the device. */
 	virtual int seek(int loc, int whence = LINK_SEEK_SET) const;
 
@@ -316,8 +311,13 @@ public:
     char * gets(char * s, int n, char term = '\n') const;
 
 #ifdef __link
-	void set_driver(link_transport_mdriver_t * d){ m_driver = d; }
+    static void set_default_driver(link_transport_mdriver_t * driver){
+        m_default_driver = driver;
+    }
+    void set_driver(link_transport_mdriver_t * driver){ m_driver = driver; }
 	link_transport_mdriver_t * driver() const { return m_driver; }
+    static link_transport_mdriver_t * default_driver(){ return m_default_driver; }
+
 #endif
 
 	/*! \details Executes an IO control request.
@@ -356,13 +356,52 @@ public:
 	 */
 	int ioctl(int req, int arg) const { return ioctl(req, MCU_INT_CAST(arg)); }
 
+    /*! \details Sets the file descriptor for this object. */
 	void set_fileno(int fd){ m_fd = fd; }
+
+    /*! \details Copies a file from the source to the destination.
+     *
+     * \param source_path Path to the source file
+     * \param dest_path Path to the destination file (new location)
+     * \return Zero on success
+     *
+     *
+     */
+#if !defined __link
+    static int copy(var::String & source_path, var::String & dest_path);
+#else
+    static int copy(var::String & source_path, var::String & dest_path, link_transport_mdriver_t * driver = 0);
+#endif
 
 
 protected:
+
+    enum {
+        GETS_BUFFER_SIZE = 128
+    };
+
 	mutable int m_fd;
 #ifdef __link
-	link_transport_mdriver_t * m_driver;
+    mutable link_transport_mdriver_t * m_driver;
+    static link_transport_mdriver_t * m_default_driver;
+    int check_driver() const {
+        if( m_driver == 0 ){
+            m_driver = m_default_driver;
+            if( m_driver == 0 ){
+                set_error_number(2);
+                return -1;
+            }
+        }
+        return 0;
+    }
+
+    static link_transport_mdriver_t * check_driver(link_transport_mdriver_t * driver){
+        if( driver == 0 ){
+            return m_default_driver;
+        }
+        return driver;
+    }
+
 #endif
 
 };

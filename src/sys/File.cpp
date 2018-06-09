@@ -8,32 +8,27 @@
 using namespace sys;
 
 #if defined __link
-File::File(link_transport_mdriver_t * d){
+
+link_transport_mdriver_t * File::m_default_driver = 0;
+
+File::File(link_transport_mdriver_t * driver){
     // TODO Auto-generated constructor stub
     m_fd = -1; //The file is not open
-    m_driver = d;
+    if( driver == 0 ){
+        m_driver = m_default_driver;
+    } else {
+        m_driver = driver;
+    }
 }
-#endif
 
+#else
 File::File() {
     m_fd = -1; //The file is not open
-#if defined __link
-    m_driver = 0;
-#endif
 }
+#endif
 
 int File::open(const char * name, int flags){
-    if( m_fd != -1 ){
-        close(); //close and re-open
-    }
-
-#if defined __link
-    m_fd = link_open(driver(), name, flags);
-#else
-    m_fd = ::open(name, flags);
-#endif
-
-    return set_error_number_if_error(m_fd);
+    return open(name, flags, 0);
 }
 
 #if !defined __link
@@ -42,6 +37,7 @@ int File::remove(const char * path){
 }
 #else
 int File::remove(const char * name, link_transport_mdriver_t * driver){
+    if( (driver = check_driver(driver)) == 0 ){ return -1; }
     return link_unlink(driver, name);
 }
 #endif
@@ -53,6 +49,7 @@ int File::open(const char * name, int access, int perms){
     }
 
 #if defined __link
+    if( check_driver() < 0 ){ return -1; }
     m_fd = link_open(driver(), name, access, perms);
 #else
     m_fd = ::open(name, access, perms);
@@ -73,6 +70,7 @@ int File::create(const char * name, bool overwrite, int perms){
 u32 File::size() const {
     struct link_stat st;
 #if defined __link
+    if( check_driver() < 0 ){ return -1; }
     return set_error_number_if_error( link_fstat(driver(), m_fd, &st) );
 #else
     u32 loc;
@@ -85,6 +83,7 @@ u32 File::size() const {
 
 #if defined __link
 int File::stat(const char * name, struct link_stat * st, link_transport_mdriver_t * driver){
+    if( (driver = check_driver(driver)) == 0 ){ return -1; }
     return link_stat(driver, name, st);
 }
 #else
@@ -104,6 +103,7 @@ u32 File::size(const char * name){
 #else
 u32 File::size(const char * name, link_transport_mdriver_t * driver){
     struct link_stat st;
+    if( (driver = check_driver(driver)) == 0 ){ return -1; }
     if( stat(name, &st, driver) < 0 ){
         return (s32)-1;
     }
@@ -155,6 +155,7 @@ int File::close(){
     int ret = 0;
     if( m_fd >= 0 ){
 #if defined __link
+        if( check_driver() < 0 ){ return -1; }
         ret = link_close(driver(), m_fd);
 #else
         ret = ::close(m_fd);
@@ -169,6 +170,7 @@ int File::close(){
 
 int File::read(void * buf, int nbyte) const {
 #if defined __link
+    if( check_driver() < 0 ){ return -1; }
     return set_error_number_if_error( link_read(driver(), m_fd, buf, nbyte) );
 #else
     return set_error_number_if_error( ::read(m_fd, buf, nbyte) );
@@ -177,6 +179,7 @@ int File::read(void * buf, int nbyte) const {
 
 int File::write(const void * buf, int nbyte) const {
 #if defined __link
+    if( check_driver() < 0 ){ return -1; }
     return set_error_number_if_error( link_write(driver(), m_fd, buf, nbyte) );
 #else
     return set_error_number_if_error( ::write(m_fd, buf, nbyte) );
@@ -185,6 +188,7 @@ int File::write(const void * buf, int nbyte) const {
 
 int File::seek(int loc, int whence) const {
 #if defined __link
+    if( check_driver() < 0 ){ return -1; }
     return set_error_number_if_error( link_lseek(driver(), m_fd, loc, whence) );
 #else
     return set_error_number_if_error( ::lseek(m_fd, loc, whence) );
@@ -251,8 +255,8 @@ char * File::gets(char * s, int n, char term) const {
 
 var::String File::gets(char term) const {
     var::String ret;
-    ret.set_transfer_ownership();
     gets(ret, term);
+    ret.set_transfer_ownership();
     return ret;
 }
 
@@ -299,6 +303,7 @@ const char * File::suffix(const char * path){
 
 int File::ioctl(int req, void * arg) const {
 #if defined __link
+    if( check_driver() < 0 ){ return -1; }
     return set_error_number_if_error( link_ioctl(driver(), m_fd, req, arg) );
 #else
     return set_error_number_if_error( ::ioctl(m_fd, req, arg) );

@@ -58,7 +58,6 @@ public:
     void clear_error_number() const { m_error_number = ERROR_NONE; }
 
 protected:
-
     //These methods are used internally to assign the error_number() value
     int set_error_number_if_error(int ret) const;
     void * set_error_number_if_null(void * ret) const;
@@ -67,7 +66,6 @@ protected:
 
 private:
     mutable int m_error_number;
-
 };
 
 

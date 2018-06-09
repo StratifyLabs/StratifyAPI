@@ -5,11 +5,11 @@
     <tab type="pages" visible="no" title="" intro=""/>
     <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">
-    <tab type="namespaces" visible="yes" title="" intro=""/>
+		<tab type="namespaces" visible="yes" title="" intro="Namespaces with brief descriptions:"/>
     <tab type="namespacemembers" visible="yes" title="" intro=""/>
     </tab>
 		<tab type="classes" visible="yes" title="Classes">
-			<tab type="classlist" visible="yes" title="Class List" intro=""/>
+			<tab type="classlist" visible="yes" title="Class List" intro="Classes with brief descriptions:"/>
 			<tab type="classindex" visible="$ALPHABETICAL_INDEX" title="Class Index"/>
     </tab>
     <tab type="files" visible="no" title="">

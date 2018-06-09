@@ -28,9 +28,6 @@ class HalInfoObject : public virtual InfoObject {
  */
 class HalWorkObject : public sys::File {
 public:
-#if defined __link
-    HalWorkObject(link_transport_mdriver_t * d=0) : File(d){}
-#endif
 
 };
 

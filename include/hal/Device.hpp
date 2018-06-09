@@ -34,10 +34,6 @@ namespace hal {
  */
 class Device : public api::HalWorkObject {
 public:
-#if defined __link
-	Device(link_transport_mdriver_t * d);
-#endif
-
     /*! \details Constructs a Device. */
     Device();
 

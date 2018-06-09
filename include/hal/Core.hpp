@@ -132,8 +132,7 @@ public:
 	 *
 	 * @param port The core port (zero for all single core devices)
 	 */
-	Core(port_t port);
-
+    Core(port_t port);
 
 	/*! \details Changes pin functionality using a core_pinfunc_t structure. */
 	int set_pin_function(const core_pinfunc_t & req);

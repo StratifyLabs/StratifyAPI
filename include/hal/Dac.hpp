@@ -57,7 +57,8 @@ class DacPinAssignment : public PinAssignment<dac_pin_assignment_t>{};
  */
 class Dac : public Periph<dac_info_t, dac_attr_t, 'd'> {
 public:
-	Dac(port_t port);
+
+    Dac(port_t port);
 
 	enum {
         FLAG_SET_CONVERTER = DAC_FLAG_SET_CONVERTER,
