@@ -1,4 +1,4 @@
-//Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+//Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #include "var/String.hpp"
 #include "sys/File.hpp"
@@ -35,7 +35,7 @@ int Dir::remove(const char * path, bool recursive){
 			while( d.get_entry(entry) && (ret >= 0) ){
 				FileInfo info;
                 info.get_info(entry.str());
-				if( info.is_dir() ){
+                if( info.is_directory() ){
                     ret = Dir::remove(entry.str(), true);
 				} else {
                     ret = File::remove(entry.str());

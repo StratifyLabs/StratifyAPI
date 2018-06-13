@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #ifndef FLAGS_HPP_
 #define FLAGS_HPP_

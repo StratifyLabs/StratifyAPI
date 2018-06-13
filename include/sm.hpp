@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #ifndef SM_HPP_
 #define SM_HPP_

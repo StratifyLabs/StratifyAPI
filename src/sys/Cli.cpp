@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #include "sys/File.hpp"
 #include "sys/Appfs.hpp"
@@ -15,6 +15,7 @@ Cli::Cli(int argc, char * argv[]){
 	}
 	m_argc = argc;
 	m_argv = argv;
+    m_is_case_sensitive = true;
 
 	if( argc > 0 ){
 		m_path = argv[0];
@@ -45,15 +46,30 @@ String Cli::at(u16 value) const {
 	if( value < m_argc ){
 		arg.assign(m_argv[value]);
 	}
+    arg.set_transfer_ownership();
 	return arg;
+}
+
+bool Cli::is_option_equivalent_to_argument(
+        const char * option,
+        const char * argument) const {
+    String option_string = option;
+    String argument_string = argument;
+
+    if( is_case_senstive() == false ){
+        option_string.to_upper();
+        argument_string.to_upper();
+    }
+
+    return option_string == argument_string;
 }
 
 String Cli::get_option_argument(const char * option) const {
     u16 args;
 	for(args = 0; args < m_argc; args++){
-		if( at(args) == option ){
-			return at(args+1);
-		}
+        if( is_option_equivalent_to_argument(option, at(args).str()) ){
+            return at(args+1);
+        }
 	}
 	return String();
 }
@@ -61,8 +77,8 @@ String Cli::get_option_argument(const char * option) const {
 bool Cli::is_option(const char * value) const {
 	u16 i;
 	for(i=0; i < m_argc; i++){
-		if( at(i) == value ){
-			return true;
+        if( is_option_equivalent_to_argument(value, at(i).str()) ){
+            return true;
 		}
 	}
 	return false;
@@ -91,7 +107,7 @@ int Cli::get_option_hex_value(const char * option) const {
 mcu_pin_t Cli::get_option_pin(const char * option) const {
 	mcu_pin_t pio;
 	Token arg;
-	arg.assign(get_option_argument(option).c_str());
+    arg.assign(get_option_argument(option));
 	arg.parse(".");
 
 	if( arg.size() == 2 ){

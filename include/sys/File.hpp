@@ -87,7 +87,20 @@ public:
 		RDWR /*! Open as read-write */ = LINK_O_RDWR,
 		NONBLOCK /*! Open as non-blocking */ = LINK_O_NONBLOCK,
 		NDELAY /*! Open as non-blocking */ = LINK_O_NONBLOCK,
-		ACCMODE /*! Access mode mask */ = LINK_O_ACCMODE
+        ACCMODE /*! Access mode mask */ = LINK_O_ACCMODE,
+        FORMAT /*! Mode format mask */ = LINK_S_IFMT,
+        SOCKET /*! Mode Socket mask */ = LINK_S_IFSOCK,
+        REGULAR /*! Mode regular file value */ = LINK_S_IFREG,
+        BLOCK /*! Mode block device value */ = LINK_S_IFBLK,
+        CHARACTER /*! Mode character device value */ = LINK_S_IFCHR,
+        DIRECTORY /*! Mode directory value */ = LINK_S_IFDIR,
+        FIFO /*! Mode FIFO value */ = LINK_S_IFDIR,
+        SYMBOLIC_LINK /*! Mode symbolic link value */ = LINK_S_IFLNK,
+        READ_OK /*! Check if read access is allowed */ = LINK_R_OK,
+        WRITE_OK /*! Check if write access is allowed */ = LINK_W_OK,
+        EXECUTE_OK /*! Check if execute access is allowed */ = LINK_X_OK,
+        FILE_OK /*! Check if file exists */ = LINK_F_OK,
+
 	};
 
 	/*! \details List of options for \a whence argument of seek() */
@@ -111,6 +124,22 @@ public:
 	 *
 	 */
 	static const char * name(const char * path);
+
+
+#if !defined __link
+    /*! \details Returns an error if the access is not allowed.
+     *
+     * @param path path to the file
+     * @param o_access Bit-wise OR of access flags READ_OK | WRITE_OK | EXECUTE_OK | FILE_OK
+     *
+     */
+    static int access(const char * path, int o_access);
+
+    /*! \details Returns true if the file exists.
+     *
+     */
+    static bool exists(const char * path){ return access(path, FILE_OK) >= 0; }
+#endif
 
 	/*! \details Returns a pointer to the file suffix.
 	 *
@@ -370,11 +399,26 @@ public:
 #if !defined __link
     static int copy(var::String & source_path, var::String & dest_path);
 #else
-    static int copy(var::String & source_path, var::String & dest_path, link_transport_mdriver_t * driver = 0);
+    static int copy(const var::String & source_path, const var::String & dest_path, link_transport_mdriver_t * driver = 0);
+#endif
+
+    /*! \details Renames a file.
+     *
+     * \param old_path Current path to the file (will be old path after rename)
+     * \param new_path New path to the file
+     * \return Zero on success
+     *
+     */
+#if !defined __link
+    static int rename(var::String & old_path, var::String & new_path);
+#else
+    static int rename(const var::String & old_path, const var::String & new_path, link_transport_mdriver_t * driver = 0);
 #endif
 
 
 protected:
+
+    static int copy(File & source, File & dest, const var::String & source_path, const var::String & dest_path);
 
     enum {
         GETS_BUFFER_SIZE = 128

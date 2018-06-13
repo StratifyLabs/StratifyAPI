@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #ifndef THREAD_HPP_
 #define THREAD_HPP_
@@ -21,6 +21,8 @@ namespace sys {
  */
 class Thread : public api::SysWorkObject {
 public:
+
+    typedef void * (*handler_function_t)(void *);
 
 	enum {
 		ID_ERROR /*! ID is an error */ = -2,
@@ -89,7 +91,7 @@ public:
 	 * Thread object.
 	 *
 	 */
-	int create(void * (*func)(void*), void * args = NULL, int prio = 0, enum Sched::policy policy = Sched::OTHER);
+    int create(handler_function_t func, void * args = NULL, int prio = 0, enum Sched::policy policy = Sched::OTHER);
 
 	/*! \details Checks if the thread is running. */
 	bool is_running() const;

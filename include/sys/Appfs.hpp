@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #ifndef APPFS_HPP_
 #define APPFS_HPP_
@@ -75,6 +75,14 @@ public:
 			bool (*update)(void *, int, int) = 0,
 			void * context = 0,
 			link_transport_mdriver_t * driver = 0);
+#endif
+
+#if 0
+    static int create(const char * name,
+                      const File & source,
+                      const char * mount = "/app",
+                      bool (*update)(void *, int, int) = 0,
+                      void * context = 0);
 #endif
 
 

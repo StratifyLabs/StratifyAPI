@@ -1,4 +1,4 @@
-//Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+//Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #if !defined __link
 
@@ -90,7 +90,7 @@ int Thread::get_policy() const {
 	return policy;
 }
 
-int Thread::create(void * (*func)(void*), void * args, int prio, enum Sched::policy policy){
+int Thread::create(handler_function_t func, void * args, int prio, enum Sched::policy policy){
     if( reset() < 0 ){
         set_error_number(EBUSY);
         return -1;

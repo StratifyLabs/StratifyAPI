@@ -1,10 +1,10 @@
-//Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+//Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 
 #include <cstdio>
 #include <cstring>
 #include "sys/File.hpp"
-#include "sys/Timer.hpp"
+#include "chrono/Timer.hpp"
 using namespace sys;
 
 #if defined __link
@@ -41,6 +41,57 @@ int File::remove(const char * name, link_transport_mdriver_t * driver){
     return link_unlink(driver, name);
 }
 #endif
+
+
+#if !defined __link
+int File::copy(var::String & source_path, var::String & dest_path){
+    File source;
+    File dest;
+    return copy(source, dest, source_path, dest_path);
+}
+#else
+int File::copy(const var::String & source_path, const var::String & dest_path, link_transport_mdriver_t * driver){
+    File source;
+    File dest;
+    if( (driver = check_driver(driver)) == 0 ){ return -1; }
+    source.set_driver(driver);
+    dest.set_driver(driver);
+    return copy(source, dest, source_path, dest_path);
+}
+#endif
+
+#if !defined __link
+int File::rename(var::String & old_path, var::String & new_path){
+    return ::rename(old_path.str(), new_path.str());
+}
+#else
+int File::rename(const var::String & old_path, const var::String & new_path, link_transport_mdriver_t * driver){
+    if( (driver = check_driver(driver)) == 0 ){ return -1; }
+    return link_rename(driver, old_path.str(), new_path.str());
+}
+#endif
+
+
+int File::copy(File & source, File & dest, const var::String & source_path, const var::String & dest_path){
+    if( source.open(source_path.str(), File::RDONLY) < 0 ){
+        return -1;
+    }
+
+    if( dest.create(dest_path.str()) < 0 ){
+        source.close();
+        return -1;
+    }
+
+    char buffer[128];
+    int bytes;
+    while( (bytes = source.read(buffer, 128)) > 0 ){
+        dest.write(buffer, bytes);
+    }
+
+    source.close();
+    dest.close();
+    return -1;
+}
 
 
 int File::open(const char * name, int access, int perms){
@@ -144,7 +195,9 @@ int File::readline(char * buf, int nbyte, int timeout, char term) const {
             }
         } else {
             t++;
-            Timer::wait_msec(1);
+#if !defined __link
+            chrono::Timer::wait_milliseconds(1);
+#endif
         }
     } while( (bytes_recv < nbyte) && (t < timeout) );
 
@@ -287,6 +340,13 @@ const char * File::name(const char * path){
     }
     return 0;
 }
+
+#if !defined __link
+int File::access(const char * path, int o_access){
+    return ::access(path, o_access);
+}
+#endif
+
 
 const char * File::suffix(const char * path){
     int len;

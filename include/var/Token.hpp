@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #ifndef TOKEN_HPP_
 #define TOKEN_HPP_
@@ -7,8 +7,8 @@
 
 namespace var {
 
-/*! \brief Abstract Token Class
- * \details The Token Class can convert any String into a list of Token.  The
+/*! \brief Tokenize a String
+ * \details The Token Class can convert any String into a list of tokens.  The
  * class is similar to STDC strtok().
  *
  */

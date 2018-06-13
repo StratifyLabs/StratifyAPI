@@ -6,17 +6,12 @@
 
 namespace sys {
 
-#if defined __link
-FileInfo::FileInfo(link_transport_mdriver_t * d){
-	m_driver = d;
-	memset(&m_stat, 0, sizeof(m_stat));
-}
-
-#else
 FileInfo::FileInfo() {
 	memset(&m_stat, 0, sizeof(m_stat));
-}
+#if defined __link
+    m_driver = File::default_driver();
 #endif
+}
 
 int FileInfo::get_info(const char * path){
     int ret;
@@ -30,26 +25,31 @@ int FileInfo::get_info(const char * path){
 }
 
 
-bool FileInfo::is_dir() const {
-	return (m_stat.st_mode & LINK_S_IFMT) == LINK_S_IFDIR;
+bool FileInfo::is_directory() const {
+    return (m_stat.st_mode & File::FORMAT) == File::DIRECTORY;
 }
 
 bool FileInfo::is_file() const {
-	return (m_stat.st_mode & LINK_S_IFMT) == LINK_S_IFREG;
+    return (m_stat.st_mode & File::FORMAT) == File::REGULAR;
 }
 
 bool FileInfo::is_device() const {
-	return is_block_device() || is_char_device();
+	return is_block_device() || is_character_device();
 
 }
 
 bool FileInfo::is_block_device() const {
-	return (m_stat.st_mode & (LINK_S_IFMT)) == LINK_S_IFBLK;
+    return (m_stat.st_mode & (File::FORMAT)) == File::BLOCK;
 }
 
-bool FileInfo::is_char_device() const {
-	return (m_stat.st_mode & (LINK_S_IFMT)) == LINK_S_IFCHR;
+bool FileInfo::is_character_device() const {
+    return (m_stat.st_mode & (File::FORMAT)) == File::CHARACTER;
 }
+
+bool FileInfo::is_socket() const {
+    return (m_stat.st_mode & File::FORMAT) == File::SOCKET;
+}
+
 
 u32 FileInfo::size() const {
 	return m_stat.st_size;

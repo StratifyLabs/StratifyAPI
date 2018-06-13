@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #ifndef STRING_HPP_
 #define STRING_HPP_
@@ -94,7 +94,7 @@ public:
      *
      */
     String& operator=(const String & a){
-        assign(a.c_str());
+        assign(a);
         return *this;
     }
 
@@ -302,6 +302,8 @@ public:
     int assign(const char * a, u32 n);
 	/*! \details Assigns \a a (zero terminated) to string.  */
     int assign(const char * a);
+    /*! \details Assigns \a a to this String.  */
+    int assign(const String & a){ return assign(a.str()); }
 	/*! \details Appends \a a (zero terminated) to string.  */
     int append(const char * a);
     /*! \details Appends a String to this string. */
@@ -325,10 +327,15 @@ public:
 	}
 
 	/*! \details Converts to upper case. */
-	void toupper();
+    void to_upper();
+    //compatible with C++ string
+    void toupper(){ to_upper(); }
 
 	/*! \details Converts to lower case. */
-	void tolower();
+    void to_lower();
+
+    //compatible with C++ string
+    void tolower(){ to_lower(); }
 
 	/*! \details Finds a var::String within the object.
 	 *

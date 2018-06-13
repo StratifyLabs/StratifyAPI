@@ -1,4 +1,4 @@
-//Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+//Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #ifndef DRAW_DRAWING_HPP_
 #define DRAW_DRAWING_HPP_

@@ -1,4 +1,4 @@
-//Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+//Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #ifndef SGFX_PEN_HPP_
 #define SGFX_PEN_HPP_

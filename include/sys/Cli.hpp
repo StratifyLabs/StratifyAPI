@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #ifndef SYS_CLI_HPP_
 #define SYS_CLI_HPP_
@@ -57,6 +57,20 @@ public:
 	 */
 	void set_publisher(const char * publisher){ m_publisher = publisher; }
 
+
+    /*! \details Sets whether the arguments are case sensitive. */
+    void set_case_sensitive(bool value = true){
+        m_is_case_sensitive = value;
+    }
+
+    /*!
+     * \details Returns true if parsing is case sensitive.
+     *
+     * By default, parsing is case senstive unless set_case_sensitive(false)
+     * is called.
+     *
+     */
+    bool is_case_senstive() const { return m_is_case_sensitive; }
 
 	enum {
 		PRINT_DEBUG,
@@ -203,13 +217,18 @@ public:
 	 */
 	bool handle_i2c(hal::I2CAttr & attr) const;
 
+
 private:
+
+    bool is_option_equivalent_to_argument(const char * option, const char * argument) const;
+
 	u16 m_argc;
 	char ** m_argv;
 	var::String m_version;
 	var::String m_publisher;
 	var::String m_name;
 	var::String m_path;
+    bool m_is_case_sensitive;
 
 
 };

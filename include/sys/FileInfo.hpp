@@ -4,18 +4,18 @@
 #ifndef SYS_FILEINFO_HPP_
 #define SYS_FILEINFO_HPP_
 
+
+#include "File.hpp"
 #include "../api/SysObject.hpp"
 
 namespace sys {
 
 class FileInfo : public api::SysWorkObject {
 public:
-#if defined __link
-	FileInfo(link_transport_mdriver_t * d);
-#else
+
 	FileInfo();
-#endif
-	/*! Gets the file info for the specified path.
+
+    /*! Gets the file info for the specified path.
 	 *
 	 * @param path The file path (can be a file, directory or device)
 	 * @return Zero on success or less than zero with errno set
@@ -24,7 +24,7 @@ public:
 
 
 	/*! \details Returns true if the file is a directory. */
-	bool is_dir() const;
+    bool is_directory() const;
 
 	/*! \details Returns true if the file is a regular file. */
 	bool is_file() const;
@@ -36,7 +36,13 @@ public:
 	bool is_block_device() const;
 
 	/*! \details Returns true if the file is a character device. */
-	bool is_char_device() const;
+    bool is_character_device() const;
+
+    /*! \details Returns true if the file is a socket. */
+    bool is_socket() const;
+
+    /*! \details Returns true if the file is a FIFO. */
+    bool is_fifo() const;
 
 	/*! \details Returns the size of the file in bytes.
 	 *
@@ -47,14 +53,20 @@ public:
 	/*! \details Returns true if the file is executable. */
 	bool is_executable() const;
 
-
+    /*! \details Returns the file mode value. */
 	u32 mode() const { return m_stat.st_mode; }
+
+#ifdef __link
+    void set_driver(link_transport_mdriver_t * driver){
+        m_driver = driver;
+    }
+#endif
 
 private:
 
 #ifdef __link
 	struct link_stat m_stat;
-	link_transport_mdriver_t * m_driver;
+    link_transport_mdriver_t * m_driver;
 #else
 	struct stat m_stat;
 #endif

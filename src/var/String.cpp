@@ -1,4 +1,4 @@
-//Copyright 2011-2016 Tyler Gilbert; All Rights Reserved
+//Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 
 #include <errno.h>
@@ -240,11 +240,14 @@ String String::substr(u32 pos, u32 len) const {
         return String();
     }
 
-    return String(c_str() + pos, len);
+    String ret;
+    ret.assign(c_str() + pos, len);
+    ret.set_transfer_ownership();
+    return ret;
 }
 
 
-void String::toupper(){
+void String::to_upper(){
     u32 s = size();
     char * p = cdata();
     for(u32 i = 0; i < s; i++){
@@ -252,7 +255,7 @@ void String::toupper(){
     }
 }
 
-void String::tolower(){
+void String::to_lower(){
     u32 s = size();
     char * p = cdata();
     for(u32 i = 0; i < s; i++){

@@ -476,8 +476,8 @@ public:
      * that was connected (including the currently connected device)
      * @return A string containing the serial number of the last connected (or currently connected) device
      */
-    const var::String & serail_number() const { return m_serial_number; }
-    const var::String & serial_no() const { return serial_no(); }
+    const var::String & serial_number() const { return m_serial_number; }
+    const var::String & serial_no() const { return serial_number(); }
 
     /*! \details The path of the currently connected (or last connected) device */
     const var::String & path() const { return m_path; }
