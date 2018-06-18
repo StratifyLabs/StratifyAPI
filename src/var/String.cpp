@@ -7,6 +7,7 @@
 #include <cstdarg>
 #include <cstring>
 #include "var/String.hpp"
+#include "sys.hpp"
 
 using namespace var;
 
@@ -69,6 +70,14 @@ int String::sprintf(const char * format, ...){
     return ret;
 }
 
+int String::set_capacity(u32 s){
+    if( Data::set_capacity(s+1) < 0 ){
+        return -1;
+    }
+    //ensure zero termination on resized string
+    return 0;
+}
+
 char String::at(u32 pos) const {
     const char * s = c_str();
     if (pos < strlen(s)){
@@ -91,7 +100,7 @@ int String::assign(const char * a, u32 n){
         if( n == (u32)npos ){
             n = strlen(a);
         }
-        if( set_capacity(n+1) < 0 ){
+        if( set_capacity(n) < 0 ){
             return -1;
         }
         clear();

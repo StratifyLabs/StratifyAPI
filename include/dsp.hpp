@@ -9,6 +9,7 @@
  * wrappers and data management tools for using the
  * ARM CMSIS DSP library.
  *
+ *
  */
 namespace dsp {}
 

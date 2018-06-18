@@ -5,9 +5,39 @@
 
 #include <cstring>
 #include <cstdio>
+#include <malloc.h>
 #include "../api/VarObject.hpp"
 
 namespace var {
+
+class DataInfo : public api::InfoObject {
+public:
+    DataInfo(){ refresh(); }
+
+    void refresh(){ m_info = mallinfo(); }
+
+    u32 arena() const { return m_info.arena; }
+    u32 free_block_count() const { return m_info.ordblks; }
+    u32 free_size() const { return m_info.fordblks; }
+    u32 used_size() const { return m_info.uordblks; }
+
+    void print(){
+        printf("Total Malloc Memory %d bytes\n", m_info.arena);
+        printf("Total Free Chunks %d\n", m_info.ordblks);
+        printf("Total Free Memory %d bytes\n", m_info.fordblks);
+        printf("Total Used Memory %d bytes\n", m_info.uordblks);
+    }
+
+#if 0
+    mi.arena = (total_chunks) * MALLOC_CHUNK_SIZE + (sizeof(malloc_chunk_t) - MALLOC_DATA_SIZE);
+    mi.ordblks = total_free_chunks;
+    mi.fordblks = total_free_chunks * MALLOC_CHUNK_SIZE;
+    mi.uordblks = total_used_memory;
+#endif
+
+private:
+    struct mallinfo m_info;
+};
 
 /*! \brief Data storage class
  * \details The Data storage class can be used to manage both statically
@@ -84,6 +114,17 @@ public:
      */
     Data& operator=(const Data & a);
 
+    bool operator == (const Data & a ) const {
+        if( a.capacity() == capacity() ){
+            return memcmp(cdata_const(), a.cdata_const(), capacity()) == 0;
+        }
+        return false;
+    }
+
+    bool operator != (const Data & a ) const {
+        return !(*this == a);
+    }
+
 
 	/*! \details Constructs a data object with non-mutable data pointers (not memory managed)
 	 *
@@ -114,6 +155,7 @@ public:
 
 	/*! \details Returns the minimum data storage size of any Data object. */
 	static u32 minimum_size();
+    static u32 block_size();
 
 	/*! \details Sets the storage object of the data. This object
 	 * will treat the data as statically allocated and will not free the memory
@@ -293,10 +335,6 @@ public:
         m_o_flags |= FLAG_IS_TRANSFER_OWNERSHIP;
     }
 
-    Data & transfer_ownership(){
-        set_transfer_ownership();
-        return *this;
-    }
 
 protected:
     void copy(const Data & a);

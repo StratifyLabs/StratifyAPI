@@ -18,14 +18,13 @@ Token::Token(char * mem, u32 s, const char * src, const char * delim, const char
 }
 
 Token::Token(const char * src, const char * delim, const char * ignore, bool count_empty) : String(src){
-	init_members();
+    init_members();
 	m_is_count_empty_tokens = count_empty;
     parse(delim, ignore);
 }
 
 bool Token::belongs_to(const char c, const char * str, unsigned int len){
 	unsigned int i;
-	len = strlen(str);
 	for(i=0; i < len; i++){
 		if( c == *str++ ){
 			return true;
@@ -47,7 +46,7 @@ void Token::parse(const char * delim, const char * ignore){
 	bool on_token = false;
 	char end_match;
 	m_num_tokens = 0;
-	len0 = strlen(delim);
+    len0 = strlen(delim);
 	if( ignore ){
 		len1 = strlen(ignore);
 	}
@@ -74,6 +73,7 @@ void Token::parse(const char * delim, const char * ignore){
 
 		//check to see if the current character is part of the delimiter string
 		if( belongs_to(*p, delim, len0) ){
+            //::printf("mark token zero '%c'\n", *p);
 			*p = 0; //set the character to zero
 			if( m_is_count_empty_tokens == true ){
 				m_num_tokens++;

@@ -158,7 +158,7 @@ public:
 	 * without changing the capacity.
 	 *
 	 */
-    int set_capacity(u32 s){ return Data::set_capacity(s+1); }
+    int set_capacity(u32 s);
 
     /*! \details Assigns a c-string to a String. */
     String& operator=(const char * a){

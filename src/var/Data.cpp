@@ -19,10 +19,15 @@ const int Data::m_zero_value = 0;
 
 //this value corresponds to the malloc chunk size used in Stratify OS
 //this may be something that could be determined through a system call
-#define MIN_CHUNK_SIZE 56
+#define MIN_CHUNK_SIZE 52
+#define MALLOC_CHUNK_SIZE 64
 
 u32 Data::minimum_size(){
     return MIN_CHUNK_SIZE;
+}
+
+u32 Data::block_size(){
+    return MALLOC_CHUNK_SIZE;
 }
 
 Data::Data(){
@@ -127,14 +132,19 @@ int Data::alloc(u32 s, bool resize){
         return 0;
     }
 
-    s = ((s + MIN_CHUNK_SIZE-1) / MIN_CHUNK_SIZE) * MIN_CHUNK_SIZE;
+    if( s <= minimum_size() ){
+        s = minimum_size();
+    } else {
+        u32 blocks = (s - minimum_size() + block_size() - 1) / block_size();
+        s = minimum_size() + blocks * block_size();
+    }
 
     new_data = malloc(s);
     if( set_error_number_if_null(new_data) == 0 ){
         return -1;
     }
 
-    if( resize ){
+    if( resize && m_capacity ){
         memcpy(new_data, m_mem, s > m_capacity ? m_capacity : s);
     }
 
@@ -149,9 +159,7 @@ int Data::alloc(u32 s, bool resize){
 }
 
 int Data::set_capacity(u32 s){
-    if( s <= capacity() ){
-        return 0;
-    }
+    if( s <= capacity() ){ return 0; } //no need to increase size
 
     return alloc(s, true);
 }

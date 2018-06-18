@@ -82,7 +82,7 @@ void Task::print(int pid){
     TaskInfo::print_header();
     for(int i = 0; i < count; i++){
         info = get_info(i);
-        if( pid < 0 || (pid == (int)info.pid()) ){
+        if( (pid < 0 || (pid == (int)info.pid())) && info.is_enabled() ){
             info.print();
         }
     }
