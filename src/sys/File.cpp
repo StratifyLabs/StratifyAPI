@@ -164,20 +164,16 @@ u32 File::size(const char * name, link_transport_mdriver_t * driver){
 #endif
 
 int File::read(int loc, void * buf, int nbyte) const {
-    if( seek(loc) < 0 ){
-        return -1;
-    }
-
+    int result = seek(loc);
+    if( result < 0 ){ return result; }
     return read(buf, nbyte);
 }
 
 int File::write(int loc, const void * buf, int nbyte) const {
-    if( seek(loc) < 0 ){
-        return -1;
-    }
+    int result = seek(loc);
+    if( result < 0 ){ return result; }
     return write(buf, nbyte);
 }
-
 
 int File::readline(char * buf, int nbyte, int timeout, char term) const {
     int t;

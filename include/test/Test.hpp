@@ -258,20 +258,6 @@ public:
      */
     bool result() const { return m_test_result; }
 
-protected:
-
-    /*! \details Returns a reference to the case timer.
-     *
-     * The case timer is used to time each case. It
-     * is started and stopped automatically.
-     *
-     * Test methods can access the value of the case timer
-     * while the test is running.
-     *
-     */
-    const chrono::Timer & case_timer() const { return m_case_timer; }
-    chrono::Timer & case_timer(){ return m_case_timer; }
-
     /*! \details Opens a new test case.
      *
      * @param case_name The name of the case
@@ -292,6 +278,19 @@ protected:
      */
     void close_case(bool result);
 
+protected:
+
+    /*! \details Returns a reference to the case timer.
+     *
+     * The case timer is used to time each case. It
+     * is started and stopped automatically.
+     *
+     * Test methods can access the value of the case timer
+     * while the test is running.
+     *
+     */
+    const chrono::Timer & case_timer() const { return m_case_timer; }
+    chrono::Timer & case_timer(){ return m_case_timer; }
 
     /*! \details Prints a message to the test report.
      *
@@ -316,6 +315,7 @@ protected:
     void print_case_message_with_key(const char * key, const char * fmt, ...);
 
     int indent() const { return m_indent_count; }
+
 
 private:
 

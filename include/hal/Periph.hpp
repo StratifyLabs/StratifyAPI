@@ -269,7 +269,7 @@ public:
      * @return Zero on success
      */
     int set_priority(s8 priority, u32 o_events, int channel = 0){
-        return set_action(channel, o_events, priority);
+        return set_action(channel, o_events | MCU_EVENT_FLAG_SET_PRIORITY, priority);
     }
 
     port_t port() const{ return m_periph_port & 0xFF; }

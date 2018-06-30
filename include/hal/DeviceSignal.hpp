@@ -32,7 +32,7 @@ namespace hal {
  * int main(int argc, char * argv[]){
  * 	Eint eint(0);
  *
- * 	DevSignal dev_signal(true, Signal::USR1);  //send SIGUSR1 to this thread on every rising edge
+ * 	DeviceSignal dev_signal(true, Signal::USR1);  //send SIGUSR1 to this thread on every rising edge
  * 	SignalHandler handler(my_handler);
  *
  * 	eint.init(0);
