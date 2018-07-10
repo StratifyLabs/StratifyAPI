@@ -158,7 +158,7 @@ public:
 
 	/*! \details Opens /dev/sys.
 	 *
-	 * @return Zero on success
+     * @return Less than zero for an error
 	 *
 	 */
 	int open(){
