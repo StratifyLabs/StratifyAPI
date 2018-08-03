@@ -1,6 +1,7 @@
 #ifndef QUEUE_HPP
 #define QUEUE_HPP
 
+#include <new>
 #include <cstdio>
 #include "LinkedList.hpp"
 #include "../api/VarObject.hpp"
@@ -87,7 +88,7 @@ public:
             }
             m_back_idx = 0;
         }
-        back() = value;
+        new((void*)&back()) T(value);
         return 0;
     }
 
@@ -97,13 +98,14 @@ public:
             return;
         }
 
+        front().~T();
+
         //if the last item was popped -- clear the list (ie make empty)
         if( (m_linked_list.front() == m_linked_list.back())
                 && (m_front_idx == m_back_idx) ){
             m_linked_list.clear();
             set_initial_values();
         } else {
-
             m_front_idx++;
 
             //if all items in the front array have been popped free it

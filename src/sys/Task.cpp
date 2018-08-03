@@ -46,7 +46,7 @@ int Task::count_free(){
 }
 
 
-int Task::get_next(TaskInfo & attr){
+int Task::get_next(TaskInfo & info){
     sys_taskattr_t task_attr;
     int ret;
 
@@ -57,11 +57,11 @@ int Task::get_next(TaskInfo & attr){
 
     ret = set_error_number_if_error( m_sys_device.ioctl(I_SYS_GETTASK, &task_attr) );
     if( ret < 0 ){
-        attr = TaskInfo::invalid();
+        info = TaskInfo::invalid();
         return ret;
     }
 
-    attr = task_attr;
+    info = task_attr;
     return ret;
 }
 
@@ -96,14 +96,14 @@ void TaskInfo::print_header(){
 void TaskInfo::print() const {
     if( is_valid() ){
         if( is_thread() ){
-            printf("%s(%ld,%ld): prio:%d/%d memory:%ld (NA,%ld)\n",
+            printf("%s(" F32D "," F32D "): prio:%d/%d memory:" F32D " (NA," F32D ")\n",
                    name(),
                    pid(),
                    id(),
                    priority(), priority_ceiling(),
                    memory_size(), stack_size());
         } else {
-            printf("%s(%ld,%ld): prio:%d/%d memory:%ld (%ld,%ld)\n",
+            printf("%s(" F32D "," F32D "): prio:%d/%d memory:" F32D " (" F32D "," F32D ")\n",
                    name(),
                    pid(),
                    id(),

@@ -5,11 +5,16 @@
 
 #include <cstring>
 #include <cstdio>
-#include <malloc.h>
 #include "../api/VarObject.hpp"
+
+#if !defined __link
+#include <malloc.h>
+#endif
+
 
 namespace var {
 
+#if !defined __link
 class DataInfo : public api::InfoObject {
 public:
     DataInfo(){ refresh(); }
@@ -38,6 +43,7 @@ public:
 private:
     struct mallinfo m_info;
 };
+#endif
 
 /*! \brief Data storage class
  * \details The Data storage class can be used to manage both statically
@@ -115,8 +121,8 @@ public:
     Data& operator=(const Data & a);
 
     bool operator == (const Data & a ) const {
-        if( a.capacity() == capacity() ){
-            return memcmp(cdata_const(), a.cdata_const(), capacity()) == 0;
+        if( a.size() == size() ){
+            return memcmp(cdata_const(), a.cdata_const(), size()) == 0;
         }
         return false;
     }
@@ -204,10 +210,32 @@ public:
      * this will return an error.
 	 *
 	 * If the current capacity is less than \a s, the object will
-	 * be resized. Otherwise, the data will
+     * be resized and possibly copied to a new location.
+     *
+     * If the capacity is more than \a s, the effective size
+     * will be updated to \a s.
 	 *
 	 */
-    int set_capacity(u32 s);
+    int set_size(u32 s);
+    int set_capacity(u32 s){ return set_size(s); }
+
+
+    /*!
+     * \details Returns the effective size of the data.
+     *
+     * \return The effective size of the data object
+     *
+     * For dynamically allocated objects, the capacity will
+     * be greater than or equal to the size.
+     *
+     * Inherited objects can override this value with additional
+     * context. For example, var::String implements size()
+     * to return the length of the string.  var::Vector returns
+     * the number of items times the size of each item.
+     *
+     *
+     */
+    virtual u32 size() const { return m_size; }
 
     /*! \details Returns a pointer to the data.
 	 * This will return zero if the data is readonly.
@@ -353,6 +381,7 @@ private:
 	const void * m_mem;
 	void * m_mem_write;
 	u32 m_capacity;
+    u32 m_size;
 
     enum {
         FLAG_NEEDS_FREE = (1<<0),

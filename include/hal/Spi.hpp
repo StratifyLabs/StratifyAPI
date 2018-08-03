@@ -17,6 +17,33 @@ namespace hal {
 class SpiPinAssignment : public PinAssignment<spi_pin_assignment_t>{};
 
 
+class SpiAttr : public PinAssignmentPeriphAttr<spi_attr_t, spi_pin_assignment_t> {
+public:
+
+    SpiAttr(){
+        set_freq(1000000);
+        set_width(8);
+        set_flags(SPI_FLAG_SET_MASTER | SPI_FLAG_IS_FORMAT_SPI | SPI_FLAG_IS_MODE0 | SPI_FLAG_IS_HALF_DUPLEX);
+    }
+
+    void set_miso(const mcu_pin_t & pin){ m_attr.pin_assignment.miso = pin; }
+    void set_mosi(const mcu_pin_t & pin){ m_attr.pin_assignment.mosi = pin; }
+    void set_sck(const mcu_pin_t & pin){ m_attr.pin_assignment.sck = pin; }
+    void set_cs(const mcu_pin_t & pin){ m_attr.pin_assignment.cs = pin; }
+    void set_width(u8 value){ m_attr.width = value; }
+
+    mcu_pin_t miso() const { return m_attr.pin_assignment.miso; }
+    mcu_pin_t mosi() const { return m_attr.pin_assignment.mosi; }
+    mcu_pin_t sck() const { return m_attr.pin_assignment.sck; }
+    mcu_pin_t cs() const { return m_attr.pin_assignment.cs; }
+    u8 width() const { return m_attr.width; }
+
+private:
+
+
+};
+
+
 /*! \brief SPI Class
  * \details This class gives access to a SPI port.
  *
@@ -97,16 +124,27 @@ public:
      * @param pin_assignment SPI pin assignment
      * @return Zero on success	 *
      */
-    int init(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0){
+    int initialize(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0){
 
         if( open() < 0 ){
             return -1;
         }
         return set_attr(o_flags, freq, width, pin_assignment);
     }
+    int init(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0){ return initialize(o_flags, freq, width, pin_assignment); }
+
+    int initialize(const spi_attr_t & attr){
+        if( open() < 0 ){ return -1; }
+        return set_attr(attr);
+    }
+    int init(const spi_attr_t & attr){ return initialize(attr); }
 
     using Periph::init;
     using Periph::set_attr;
+
+#if !defined __link
+    int transfer(const void * write_data, void * read_data, int nbytes);
+#endif
 
 private:
 

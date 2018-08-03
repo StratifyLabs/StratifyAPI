@@ -66,6 +66,7 @@ public:
     bool is_active() const { return get_is_active(); }
     void reset();
 
+
 protected:
     void update();
     virtual bool get_is_active() const;

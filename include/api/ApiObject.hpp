@@ -35,7 +35,7 @@
  * \code
  * #include <sapi/hal.hpp> //this will include all namespace classes and add the namespace i.e. "using namespace hal;"
  * #include <sapi/sys.hpp> //includes all sys classes plus "using namespace sys;"
- * #include <sapi/chrono.hpp> //includes all sys classes plus "using namespace sys;"
+ * #include <sapi/chrono.hpp> //includes all chrono classes plus "using namespace chrono;"
  *
  * int main(int argc, char * argv[]){
  *  Pin p(2, 10);
@@ -141,6 +141,8 @@ public:
      * that shows the API version.
      */
     static const char * api_version(){ return "3.7.0"; }
+
+    static const char * api_git_hash(){ return SOS_GIT_HASH; }
 };
 
 }

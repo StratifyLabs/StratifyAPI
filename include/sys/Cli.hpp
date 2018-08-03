@@ -41,7 +41,7 @@ public:
 	 * \endcode
 	 *
 	 */
-	Cli(int argc, char * argv[]);
+    Cli(int argc, char * argv[], const char * app_git_hash = 0);
 
 	/*! \details Handles the --version and -v options to show the version.
 	 *
@@ -166,7 +166,7 @@ public:
 	 *
 	 * @param option The option to match
 	 * @return The value of the argument or 0 if the option wasn't found
-	 *
+     *SOS_GIT_HASH="${SOS_GIT_HASH}"
 	 * For example, take the given command line
 	 *
 	 * > program -i 2.1
@@ -217,6 +217,8 @@ public:
 	 */
 	bool handle_i2c(hal::I2CAttr & attr) const;
 
+    var::String get_version_details() const;
+
 
 private:
 
@@ -229,6 +231,7 @@ private:
 	var::String m_name;
 	var::String m_path;
     bool m_is_case_sensitive;
+    const char * const m_app_git_hash;
 
 
 };

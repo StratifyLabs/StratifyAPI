@@ -32,6 +32,12 @@ class I2CPinAssignment : public PinAssignment<i2c_pin_assignment_t>{};
 class I2CAttr : public PinAssignmentPeriphAttr<i2c_attr_t, i2c_pin_assignment_t> {
 public:
 
+
+    I2CAttr(){
+        set_freq(100000);
+        set_flags(I2C_FLAG_SET_MASTER);
+    }
+
     /*! \details Accesses the SDA pin assignment value. */
 	mcu_pin_t sda() const { return m_attr.pin_assignment.sda; }
     /*! \details Access the SCL pin assignment value. */
@@ -50,10 +56,14 @@ public:
     void set_slave_addr16(u16 addr){ m_attr.slave_addr[0].addr16 = addr; }
 
     /*! \details Sets the SDA pin assignment value. */
-	void set_sda(const mcu_pin_t & pin){ m_attr.pin_assignment.sda = pin;}
+    void set_sda(const mcu_pin_t & pin){ m_attr.pin_assignment.sda = pin;}
+    /*! \details Sets the SDA pin assignment value. */
+    void set_sda(u8 port, u8 pin){ m_attr.pin_assignment.sda = mcu_pin(port, pin);}
 
     /*! \details Sets the SCL pin assignment value. */
-	void set_scl(const mcu_pin_t & pin){ m_attr.pin_assignment.scl = pin;}
+    void set_scl(const mcu_pin_t & pin){ m_attr.pin_assignment.scl = pin;}
+    /*! \details Sets the SCL pin assignment value. */
+    void set_scl(u8 port, u8 pin){ m_attr.pin_assignment.scl = mcu_pin(port, pin);}
 
 };
 
@@ -264,9 +274,9 @@ public:
 	using Periph::init;
 	using Periph::set_attr;
 
-	/*! \details Read the value of a register on an I2C device */
+    /*! \details Reads the value of a register on an I2C device */
 	int read(int loc, u8 & reg);
-	/*! \details Write the value of a register on an I2C device */
+    /*! \details Writes the value of a register on an I2C device */
 	int write(int loc, u8 reg);
 
 	/*! \details Sets (or clears) a specific bit in a a register

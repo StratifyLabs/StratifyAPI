@@ -92,7 +92,7 @@ public:
      */
     int push_back(const T & value){
         if( add_space() == 0 ){
-            vector_data()[m_count++] = value;
+            new((void*)(vector_data() + m_count++)) T(value);
             return 0;
         }
         return -1;
@@ -107,6 +107,8 @@ public:
      */
     void pop_back(){
         if( m_count ){
+            //call the destructor
+            vector_data()[m_count-1].~T();
             m_count--;
         }
     }
@@ -167,7 +169,10 @@ public:
      * free any memory associated with the object.
      *
      */
-    void clear(){ m_count = 0; }
+    void clear(){
+        //call the destructor on each item
+        m_count = 0;
+    }
 
     /*! \details Inserts an element at the specified position.
      *
@@ -245,6 +250,8 @@ private:
                 return -1;
             }
         }
+        //construct the new items?
+
         return 0;
     }
 

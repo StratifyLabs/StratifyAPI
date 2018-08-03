@@ -245,6 +245,38 @@ void SignalType::filter(SignalType & output, const FirFilterType & filter) const
 #endif
 }
 
+#if IS_FLOAT == 1
+SignalType SignalType::create_sin_wave(native_type wave_frequency, native_type sampling_frequency, u32 nsamples, native_type phase){
+#else
+SignalType SignalType::create_sin_wave(u32 wave_frequency, u32 sampling_frequency, u32 nsamples, native_type phase){
+#endif
+    SignalType ret(nsamples);
+    u32 i;
+#if IS_FLOAT == 1
+    native_type theta = phase; //theta 0 to max is 0 to 2*pi
+    native_type theta_step = wave_frequency * sampling_frequency;
+#else
+    unsigned_native_type theta = phase; //theta 0 to max is 0 to 2*pi
+    unsigned_native_type theta_step = (big_type)wave_frequency * LOCAL_INT_MAX / sampling_frequency;
+#endif
+
+    //fsamp = 16K and fmax = 8k - theta step is pi or (1/2)
+    //theta step is f / fsamp
+    for(i=0; i < nsamples; i++){
+        ret[i] = arm_dsp_api_function()->sin(theta);
+        theta += theta_step;
+#if IS_FLOAT == 0
+        if( theta > LOCAL_INT_MAX ){
+            theta -= (LOCAL_INT_MAX);
+        }
+#endif
+    }
+
+    ret.set_transfer_ownership();
+    return ret;
+}
+
+
 
 void SignalComplexType::transform(FftComplexType & fft, bool is_inverse, bool is_bit_reversal){
     arm_dsp_api_function()->cfft(fft.instance(), (native_type*)vector_data(), is_inverse, is_bit_reversal);
@@ -272,3 +304,5 @@ SignalComplexType SignalComplexType::transform(FftRealType & fft, bool is_invers
     ret.set_transfer_ownership();
     return ret;
 }
+
+

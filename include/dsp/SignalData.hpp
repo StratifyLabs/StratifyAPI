@@ -537,6 +537,8 @@ public:
     //SignalQ15 filter(const FirDecimateFilterQ15 & filter);
     //void filter(SignalQ15 & output, const FirDecimateFilterQ15 & filter);
 
+    static SignalQ15 create_sin_wave(u32 wave_freauency, u32 sampling_frequency, u32 nsamples, q15_t phase = 0);
+
 private:
 
 
@@ -658,7 +660,7 @@ public:
     //void filter(const LmsFilterQ31 & filter);
     //void filter(const LmsNormalFilterQ31 & filter);
 
-    static SignalQ31 create_sin_wave(u32 wave_freauency, u32 sampling_frequency, u32 samples, q31_t phase = 0);
+    static SignalQ31 create_sin_wave(u32 wave_freauency, u32 sampling_frequency, u32 nsamples, q31_t phase = 0);
 
 private:
 
@@ -772,6 +774,8 @@ public:
 
     SignalF32 filter(const BiquadFilterF32 & filter) const;
     void filter(SignalF32 & output, const BiquadFilterF32 & filter) const;
+
+    static SignalF32 create_sin_wave(float32_t wave_freauency, float32_t sampling_frequency, u32 nsamples, float32_t phase = 0);
 
 private:
 

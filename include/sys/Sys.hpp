@@ -13,6 +13,37 @@
 
 namespace sys {
 
+class Sys;
+
+class SysInfo : public api::SysInfoObject {
+    friend class Sys;
+public:
+
+    SysInfo(){ memset(&m_info, 0, sizeof(m_info)); }
+
+    bool is_valid() const { return cpu_frequency() != 0; }
+    static SysInfo get();
+
+    const char * system_version() const { return m_info.sys_version; }
+    const char * bsp_version() const { return m_info.sys_version; }
+    const char * kernel_version() const { return m_info.kernel_version; }
+    const char * sos_version() const { return m_info.kernel_version; }
+    const char * arch() const { return m_info.arch; }
+    const char * cpu_architecture() const { return m_info.arch; }
+    u32 cpu_frequency() const { return m_info.cpu_freq; }
+    u32 application_signature() const { return m_info.signature; }
+    const char * bsp_git_hash() const { return m_info.bsp_git_hash; }
+    const char * sos_git_hash() const { return m_info.sos_git_hash; }
+    const char * mcu_git_hash() const { return m_info.mcu_git_hash; }
+
+    void print();
+
+private:
+    sys_info_t m_info;
+
+
+};
+
 /*! \brief Sys Class
  * \details This class allows access to system attributes and functions.
  */

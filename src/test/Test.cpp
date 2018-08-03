@@ -62,7 +62,12 @@ void Test::open_case(const char * case_name){
     print("\"%s\": {\n", case_name);
     increment_indent();
     m_case_message_number = 0;
+    m_case_result = true;
     m_case_timer.restart();
+}
+
+void Test::close_case(){
+    close_case(case_result());
 }
 
 void Test::close_case(bool result){
@@ -79,6 +84,7 @@ void Test::close_case(bool result){
     print("\"microseconds\": %ld.0\n", m_case_timer.microseconds());
     decrement_indent();
     print("},\n");
+    m_case_result = true;
 }
 
 void Test::print_case_message(const char * fmt, ...){
@@ -91,6 +97,20 @@ void Test::print_case_message(const char * fmt, ...){
     va_start (args, fmt);
     vprint_case_message(key, fmt, args);
     va_end(args);
+    m_case_timer.resume();
+}
+
+void Test::print_case_failed(const char * fmt, ...){
+    m_case_timer.stop();
+    char key[16];
+    key[15] = 0; //enforce null termination
+    snprintf(key, 15, "msg-%ld", m_case_message_number);
+    m_case_message_number++;
+    va_list args;
+    va_start (args, fmt);
+    vprint_case_message(key, fmt, args);
+    va_end(args);
+    m_case_result = false;
     m_case_timer.resume();
 }
 

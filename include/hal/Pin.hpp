@@ -57,7 +57,7 @@ public:
 	}
 
 	/*! \details Contructs a new pin object from an mcu_pin_t data structure. */
-	Pin(mcu_pin_t p) : Pio(p.port) { m_pinmask = 1<<p.pin; }
+    Pin(const mcu_pin_t & p) : Pio(p.port) { m_pinmask = 1<<p.pin; }
 
 	using Pio::set_attr;
 

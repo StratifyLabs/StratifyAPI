@@ -107,7 +107,17 @@ public:
 
 	/*! \details Returns a copy of the message queue attributes. */
 	MqAttr get_attr();
+
 	int set_attr(const struct mq_attr * mqstat, struct mq_attr * omqstat = 0);
+
+    /*! \details Sets the message queue attributes.
+     *
+     * The flags() value can be set using this method.
+     *
+     * The maxmsg(), msgsize() and curmsgs() are ignored (these
+     * properties are not mutable.
+     *
+     */
 	int set_attr(const MqAttr & attr);
 
 	/*! \details Receives a message from the queue.

@@ -8,6 +8,8 @@ using namespace dsp;
 
 #define IS_FLOAT 0
 #define HAS_SHIFT 1
+#define LOCAL_INT_MAX INT16_MAX
+#define unsigned_native_type u16
 #define native_type q15_t
 #define arm_dsp_api_function() arm_dsp_api_q15()
 #define SignalDataType SignalDataQ15

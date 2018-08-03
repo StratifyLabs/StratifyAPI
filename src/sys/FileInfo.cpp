@@ -24,6 +24,17 @@ int FileInfo::get_info(const char * path){
     return set_error_number_if_error(ret);
 }
 
+int FileInfo::get_info(int file_no){
+    int ret;
+#if defined __link
+    ret = link_fstat(m_driver, file_no, &m_stat);
+#else
+    ret = ::fstat(file_no, &m_stat);
+#endif
+
+    return set_error_number_if_error(ret);
+}
+
 
 bool FileInfo::is_directory() const {
     return (m_stat.st_mode & File::FORMAT) == File::DIRECTORY;

@@ -78,6 +78,23 @@ void Link::reset_progress(){
     m_progress_max = 0;
 }
 
+var::Vector<var::String> Link::get_port_list(){
+    var::Vector<var::String> result;
+    var::String device_name;
+    var::String last_device;
+
+    last_device.set_capacity(256);
+    device_name.set_capacity(256);
+
+    while( driver()->getname(device_name.cdata(), last_device.str(), device_name.capacity()) == 0 ){
+        result.push_back( device_name ); //this will make a copy of device name and put it on the list
+        last_device = device_name;
+    }
+
+    result.set_transfer_ownership();
+    return result;
+}
+
 
 int Link::connect(const var::String & path, const var::String & sn, bool is_legacy){
     int err;

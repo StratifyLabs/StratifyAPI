@@ -20,7 +20,7 @@ public:
 
     /*! \details Returns the number of objects in the array. */
     u32 count() const { return size_value; }
-    u32 size() const { return size_value; }
+    u32 size() const { return count() * sizeof(T); }
 
     /*! \details Returns the first object in the array. */
     T front(){ return m_array[0]; }

@@ -8,7 +8,7 @@ using namespace var;
 
 namespace sys {
 
-Cli::Cli(int argc, char * argv[]){
+Cli::Cli(int argc, char * argv[], const char * app_git_hash) : m_app_git_hash(app_git_hash){
     u16 version;
 	if( argc < 0 ){
 		argc = 0;
@@ -36,7 +36,26 @@ void Cli::handle_version() const {
         printf("%s version: %s by %s\n", m_name.str(), m_version.str(), m_publisher.str());
 		exit(0);
 	}
+
+    if( is_option("--version-details") ){
+        String details = get_version_details();
+        printf("%s\n", details.str());
+        exit(0);
+    }
 #endif
+}
+
+var::String Cli::get_version_details() const {
+    String result;
+
+    if( m_app_git_hash == 0 ){
+        result.sprintf("%s (api:%s)", m_version.str(), api_git_hash());
+    } else {
+        result.sprintf("%s (app:%s, api:%s)", m_version.str(), m_app_git_hash, api_git_hash());
+    }
+
+    result.set_transfer_ownership();
+    return result;
 }
 
 

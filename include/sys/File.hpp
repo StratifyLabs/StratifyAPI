@@ -19,8 +19,6 @@
 
 #include "../var/String.hpp"
 
-
-
 namespace sys {
 
 /*! \brief File Class
@@ -276,7 +274,10 @@ public:
 	 * @param nbyte The number of bytes to read
 	 * @return The number of bytes read or less than zero on an error
 	 */
-	virtual int read(void * buf, int nbyte) const;
+    virtual int read(void * buf, int nbyte) const;
+
+    /*! \details Reads the file into a var::Data object. */
+    int read(var::Data & data) const { return read(data.data(), data.size()); }
 
 	/*! \details Write the file.
 	 *
@@ -284,7 +285,10 @@ public:
 	 * @param nbyte The number of bytes to read
 	 * @return The number of bytes read or less than zero on an error
 	 */
-	virtual int write(const void * buf, int nbyte) const;
+    virtual int write(const void * buf, int nbyte) const;
+
+    /*! \details Writes the file using a var::Data object. */
+    int write(const var::Data & data) const { return write(data.data_const(), data.size()); }
 
 	/*! \details Reads the file.
 	 *
@@ -293,7 +297,10 @@ public:
 	 * @param nbyte The number of bytes to read
 	 * @return The number of bytes read or less than zero on an error
 	 */
-	int read(int loc, void * buf, int nbyte) const;
+    int read(int loc, void * buf, int nbyte) const;
+
+    /*! \details Reads the file using a var::Data object. */
+    int read(int loc, var::Data & data) const { return read(loc, data.data(), data.size()); }
 
 	/*! \details writes the device at the location
 	 *
@@ -302,7 +309,10 @@ public:
 	 * @param nbyte Number of bytes to write
 	 * @return Number of bytes successfully written or -1 with errno set
 	 */
-	int write(int loc, const void * buf, int nbyte) const;
+    int write(int loc, const void * buf, int nbyte) const;
+
+    /*! \details Writes the file using a var::Data object. */
+    int write(int loc, const var::Data & data) const { return write(loc, data.data_const(), data.size()); }
 
 	/*! \details Reads a line from a file.
 	 *

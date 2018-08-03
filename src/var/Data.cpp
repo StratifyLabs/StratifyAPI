@@ -74,20 +74,21 @@ void Data::copy(const Data & a){
         if( a.is_transfer_ownership() ){
             //set this memory to the memory of a
             set(a.data(), a.capacity(), false);
+            m_size = a.size();
 
             //setting needs free on this and clearing it on a will complete the transfer
             set_needs_free();
             a.clear_needs_free();
         } else {
-
             //allocate memory for a copy of a
-            set_capacity(a.capacity());
+            set_size(a.capacity());
             if( data() && (capacity() >= a.capacity()) ){
                 memcpy(data(), a.data(), a.capacity());
             }
         }
     } else {
         set(a.data(), a.capacity(), a.is_read_only());
+        m_size = a.size();
     }
 }
 
@@ -99,6 +100,7 @@ void Data::set(void * mem, u32 s, bool readonly){
     m_mem_write = mem;
     clear_needs_free();
     m_capacity = s;
+    m_size = s;
     if( m_mem_write ){
         this->m_mem = m_mem_write;
     } else {
@@ -115,6 +117,8 @@ void Data::zero(){
     m_mem_write = 0;
     clear_needs_free();
     m_capacity = 0;
+    m_size = 0;
+    m_o_flags = 0;
 }
 
 
@@ -132,9 +136,12 @@ int Data::alloc(u32 s, bool resize){
         return 0;
     }
 
+    m_size = s;
+
     if( s <= minimum_size() ){
         s = minimum_size();
     } else {
+        //change s to allocate an integer multiple of minimum_size()
         u32 blocks = (s - minimum_size() + block_size() - 1) / block_size();
         s = minimum_size() + blocks * block_size();
     }
@@ -158,8 +165,11 @@ int Data::alloc(u32 s, bool resize){
     return 0;
 }
 
-int Data::set_capacity(u32 s){
-    if( s <= capacity() ){ return 0; } //no need to increase size
+int Data::set_size(u32 s){
+    if( s <= capacity() ){
+        m_size = s;
+        return 0;
+    } //no need to increase size
 
     return alloc(s, true);
 }
@@ -180,21 +190,21 @@ int Data::print(u32 o_flags) const {
     const u16 * ptru16 = (const u16*)data_const();
     const u32 * ptru32 = (const u32*)data_const();
 
-    int size;
+    int s;
     if( o_flags & PRINT_32 ){
-        size = capacity() / 4;
+        s = size() / 4;
     } else if( o_flags & PRINT_16 ){
-        size = capacity() / 2;
+        s = size() / 2;
     } else {
-        size = capacity();
+        s = size();
     }
 
     int i;
-    for(i=0; i < size; i++){
+    for(i=0; i < s; i++){
         printf("[%d]=", i);
         if( o_flags & PRINT_HEX ){
             if( o_flags & PRINT_32 ){
-                printf("%lX", ptru32[i]);
+                printf(F32X, ptru32[i]);
             } else if( o_flags & PRINT_16 ){
                 printf("%X", ptru16[i]);
             } else {
@@ -204,7 +214,7 @@ int Data::print(u32 o_flags) const {
         }
         if( o_flags & PRINT_UNSIGNED ){
             if( o_flags & PRINT_32 ){
-                printf("%lu", ptru32[i]);
+                printf(F32U, ptru32[i]);
             } else if( o_flags & PRINT_16 ){
                 printf("%u", ptru16[i]);
             } else {
@@ -214,7 +224,7 @@ int Data::print(u32 o_flags) const {
         }
         if( o_flags & PRINT_SIGNED ){
             if( o_flags & PRINT_32 ){
-                printf("%ld", ptrs32[i]);
+                printf(F32D, ptrs32[i]);
             } else if( o_flags & PRINT_16 ){
                 printf("%d", ptrs16[i]);
             } else {

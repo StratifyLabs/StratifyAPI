@@ -24,4 +24,5 @@ project(${SOS_LIB_NAME} CXX C)
 install(DIRECTORY include/ DESTINATION include/sapi)
 set(SOS_LIB_INCLUDE_DIRECTORIES include)
 
+
 include( ${CMAKE_SOURCE_DIR}/${SOS_BUILD_CONFIG}.cmake )

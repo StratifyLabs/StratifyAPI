@@ -258,6 +258,21 @@ public:
      */
     bool result() const { return m_test_result; }
 
+    /*! \details Returns the current value of the case result.
+     *
+     * When a case is opened, the case result is set to true (passing).
+     *
+     * Calling set_case_failed() or print_case_failed() will set
+     * the case result value to false.
+     *
+     * case_result() is the default return value of close_case().
+     *
+     */
+    bool case_result() const { return m_case_result; }
+
+    /*! \details Sets the current case result to failed. */
+    void set_case_failed() { m_case_result = false; }
+
     /*! \details Opens a new test case.
      *
      * @param case_name The name of the case
@@ -277,6 +292,12 @@ public:
      *
      */
     void close_case(bool result);
+
+    /*! \details Closes the test case using the
+     * current case_result() value.
+     *
+     */
+    void close_case();
 
 protected:
 
@@ -304,6 +325,9 @@ protected:
      *
      */
     void print_case_message(const char * fmt, ...);
+
+    void print_case_failed(const char * fmt, ...);
+
 
     /*! \details Prints a message to the test report.
      *
@@ -341,6 +365,7 @@ private:
     }
 
     bool m_test_result;
+    bool m_case_result;
     chrono::Timer m_case_timer;
     u32 m_test_duration_microseconds;
     u32 m_case_message_number;

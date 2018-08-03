@@ -32,6 +32,9 @@ public:
     Link();
     ~Link();
 
+
+    var::Vector<var::String> get_port_list();
+
     typedef bool (*update_callback_t)(void*, int, int);
 
     /*! \details Gets the error message if an operation fails.

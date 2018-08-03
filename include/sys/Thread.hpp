@@ -118,10 +118,21 @@ public:
      */
 	int set_priority(int prio, enum Sched::policy policy = Sched::RR);
 
-	/*! \details Gets the thread priority. */
+    /*! \details Gets the thread priority.
+     *
+     *
+     * Calling this method before the thread is created
+     * will return an error.
+     *
+     */
 	int get_priority() const;
 
-	/*! \details Get the thread policy. */
+    /*! \details Get the thread policy.
+     *
+     * Calling this method before the thread is created
+     * will return an error.
+     *
+     */
 	int get_policy() const;
 
 	/*! \details Gets the ID of the thread. */

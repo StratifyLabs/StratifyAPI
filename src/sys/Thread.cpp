@@ -131,17 +131,18 @@ int Thread::create(handler_function_t func, void * args, int prio, enum Sched::p
 
 
 
+    if( set_error_number_if_error(pthread_attr_setschedpolicy(&m_pthread_attr, policy)) < 0 ){
+        return -1;
+    }
+
+    struct sched_param param;
+    param.sched_priority = prio;
+    if( set_error_number_if_error(pthread_attr_setschedparam(&m_pthread_attr, &param)) < 0 ){
+        return -1;
+    }
+
     //First create the thread
-    if( set_error_number_if_error(pthread_create(&m_id, &m_pthread_attr, func, args)) < 0 ){
-        return -1;
-    }
-
-    //now set the priority
-    if( set_priority(prio, policy) < 0 ){
-        return -1;
-    }
-
-    return 0;
+    return set_error_number_if_error(pthread_create(&m_id, &m_pthread_attr, func, args));
 }
 
 bool Thread::is_running() const {

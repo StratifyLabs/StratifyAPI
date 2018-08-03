@@ -143,9 +143,20 @@ public:
      *
      *
      */
-    void set_id(int value){ m_id = value; }
+    void set_id(u32 value){ m_id = value; }
 
-    /*! \details Returns the index of the current task. */
+    /*! \details Returns the index of the current task as
+     * this object goes through all tasks using get_next().
+     *
+     * Use sys::Thread::self() to get the id
+     * of the currently executing thread.
+     *
+     *
+     * \endcode
+     *
+     *
+     *
+     */
     int id() const { return m_id; }
 
     /*! \details Gets the attributes for the next task.
@@ -156,6 +167,19 @@ public:
     int get_next(TaskInfo & attr);
 
     /*! \details Gets the task attributes for the specifed id.
+     *
+     *
+     * The code below gets the task information for the
+     * currently executing thread.
+     *
+     * \code
+     *
+     * #include <sapi/sys.hpp>
+     *
+     * TaskInfo info;
+     * Task task;
+     *
+     * info = task(Thread::self());
      *
      */
     TaskInfo get_info(int id);

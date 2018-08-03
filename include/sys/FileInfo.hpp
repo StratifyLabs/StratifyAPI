@@ -23,6 +23,9 @@ public:
 	int get_info(const char * path);
 
 
+    int get_info(int file_no);
+
+
 	/*! \details Returns true if the file is a directory. */
     bool is_directory() const;
 

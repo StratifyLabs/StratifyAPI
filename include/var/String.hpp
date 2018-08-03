@@ -75,7 +75,7 @@ public:
      * to the same memory as str.
      *
      */
-    String(const String & str) : Data(str){}
+    String(const String & a) : Data(a){}
 
     /*! \details Assigns the value of a String to another String.
      *
