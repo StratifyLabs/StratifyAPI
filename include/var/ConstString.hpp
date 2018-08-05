@@ -14,8 +14,16 @@ class ConstString : public api::VarWorkObject
 {
 public:
     ConstString();
+
+    /*! \details Constructs a ConstString from a pointer
+     * to a string of zero-terminated characters.
+     */
     ConstString(const char * a);
 
+    /*! \details Points the ConstString to a new
+     * string of zero-terminated characters.
+     *
+     */
     ConstString& operator=(const char * a){
         m_string = a; return *this;
     }
@@ -29,6 +37,12 @@ public:
         return compare(a) == 0;
     }
 
+    /*! \details Access a byte from the string.
+     *
+     * This operator does not check the bounds of the access.
+     * The at() method checks the bounds.
+     *
+     */
     char operator[](u32 idx) const { return str()[idx]; }
 
     /*! \details Compares to a c-string (inequality). */
@@ -69,15 +83,24 @@ public:
     /*! \details Finds a character within the object. */
     u32 find(const char a, u32 pos = 0) const;
 
-    /*! \details Finds a var::String within the object.
+    /*! \details Finds a var::ConstString within the object.
      *
-     * @param str The String to find
-     * @param pos The position to start searching
+     * @param a The String to find
+     * @param pos The position to start searching (default is beginning)
      * @return The position of the string or var::String::npos if the String was not found
      */
     u32 find(const ConstString & a, u32 pos = 0) const;
 
-    /*! \details Finds a string within the object. */
+    /*! \details Finds a string within the object.
+     *
+     * @param a A reference to the string to search for
+     * @param pos Where in this string to start looking
+     * @param n The number of bytes to match
+     *
+     * @return The offset in this string where the match occurred
+     * or npos if \a a was not found
+     *
+     */
     u32 find(const ConstString & a, u32 pos, u32 n) const;
 
     /*! \details Finds a string within the string searching from right to left. */
@@ -106,9 +129,6 @@ public:
      *
      */
     int compare(u32 pos, u32 len, const ConstString & s) const;
-
-
-
 
     /*! \details Compares the object to \a str.
      *

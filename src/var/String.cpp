@@ -100,7 +100,7 @@ int String::assign(const char * a, u32 n){
 
 int String::append(const char * a){
     if( a == 0 ){ return 0; }
-    u32 len = size();
+    u32 len = length();
     u32 alen = strlen(a);
     set_capacity(len + alen); //try to make min capacity
     if( len == 0 ){
@@ -112,7 +112,7 @@ int String::append(const char * a){
 }
 
 int String::append(char c){
-    u32 len = size();
+    u32 len = length();
     u32 alen = 1;
     set_capacity(len + alen + 1); //try to make min capacity
     if( cdata() == 0 ){ return -1; }
@@ -126,7 +126,7 @@ bool String::get_delimited_data(String & dest, int n, char sep, char term){
     int start = 0;
     int end = 0;
     char c;
-    for(u32 i=0; i < size(); i++){
+    for(u32 i=0; i < length(); i++){
         c = at(i);
         if( (c == sep) || (c == term) ){
             end = i;
@@ -144,7 +144,7 @@ bool String::get_delimited_data(String & dest, int n, char sep, char term){
 int String::calc_delimited_data_size(char sep, char term){
     int elements = 1;
     //return the total number of elements
-    for(u32 i=0; i < size(); i++){
+    for(u32 i=0; i < length(); i++){
         if( at(i) == sep ){
             elements++;
         }
@@ -198,7 +198,7 @@ String& String::insert(u32 pos, const char * str){
 
 String& String::erase(u32 pos, u32 len){
     char * p = cdata();
-    u32 s = size();
+    u32 s = length();
     if( p == 0 ){ return *this; }
     if( (len != npos) && (pos + len < s) ){
         int remaining;
@@ -218,7 +218,7 @@ String& String::erase(u32 pos, u32 len){
 
 u32 String::copy(String & s, u32 len, u32 pos) const {
     const char * p = c_str();
-    u32 siz = size();
+    u32 siz = length();
     u32 n;
     if( pos < siz ){
         n = siz - pos;
@@ -232,19 +232,19 @@ u32 String::copy(String & s, u32 len, u32 pos) const {
 }
 
 String String::substr(u32 pos, u32 len) const {
-    if( pos >= size() ){
+    if( pos >= length() ){
         return String();
     }
 
     String ret;
-    ret.assign(c_str() + pos, len);
+    ret.assign(str() + pos, len);
     ret.set_transfer_ownership();
     return ret;
 }
 
 
 void String::to_upper(){
-    u32 s = size();
+    u32 s = length();
     char * p = cdata();
     for(u32 i = 0; i < s; i++){
         p[i] = ::toupper(p[i]);
@@ -252,7 +252,7 @@ void String::to_upper(){
 }
 
 void String::to_lower(){
-    u32 s = size();
+    u32 s = length();
     char * p = cdata();
     for(u32 i = 0; i < s; i++){
         p[i] = ::tolower(p[i]);
