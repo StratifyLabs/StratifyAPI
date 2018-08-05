@@ -45,8 +45,8 @@ int DeviceButton::set_attributes(int location, int id,
 }
 
 
-u32 DeviceButton::get_duration(){
-    u32 duration = m_status.active_duration_msec;
+chrono::MicroTime DeviceButton::get_duration(){
+    chrono::MicroTime duration = chrono::MicroTime::from_milliseconds(m_status.active_duration_msec);
     m_status.active_duration_msec = 0;
     return duration;
 }

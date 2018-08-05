@@ -369,6 +369,8 @@ protected:
 
 private:
 
+    friend class ConstString;
+
     void set_needs_free() const { m_o_flags |= FLAG_NEEDS_FREE; }
     void clear_needs_free() const { m_o_flags &= ~FLAG_NEEDS_FREE; }
 

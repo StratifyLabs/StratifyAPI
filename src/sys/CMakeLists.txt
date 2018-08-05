@@ -6,7 +6,8 @@ set(SOURCELIST
 	${SOURCES_PREFIX}/File.cpp
   ${SOURCES_PREFIX}/FileInfo.cpp
 	${SOURCES_PREFIX}/Sys.cpp
-	${SOURCES_PREFIX}/Task.cpp)
+	${SOURCES_PREFIX}/Task.cpp
+	${SOURCES_PREFIX}/Printer.cpp)
 
 
 if( ${SOS_BUILD_CONFIG} STREQUAL arm )

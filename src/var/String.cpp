@@ -28,6 +28,11 @@ String::String(const char * s){
     assign(s);
 }
 
+String::String(const ConstString & s){
+    assign(s.str());
+}
+
+
 String::String(const char * s, u32 len){
     assign(s, len);
 }
@@ -48,14 +53,6 @@ u32 String::capacity() const {
 
 //assignment
 
-float String::atoff() const {
-#ifndef __link
-    return ::atoff(c_str());
-#else
-    return ::atof(c_str());
-#endif
-}
-
 int String::sprintf(const char * format, ...){
     int ret;
     va_list args;
@@ -71,19 +68,9 @@ int String::sprintf(const char * format, ...){
 }
 
 int String::set_capacity(u32 s){
-    if( Data::set_capacity(s+1) < 0 ){
-        return -1;
-    }
-    //ensure zero termination on resized string
-    return 0;
-}
-
-char String::at(u32 pos) const {
-    const char * s = c_str();
-    if (pos < strlen(s)){
-        return s[pos];
-    }
-    return 0;
+    int result = Data::set_capacity(s+1);
+    set_string_pointer(cdata_const());
+    return result;
 }
 
 int String::assign(const char * a){
@@ -144,7 +131,7 @@ bool String::get_delimited_data(String & dest, int n, char sep, char term){
         if( (c == sep) || (c == term) ){
             end = i;
             if( n == element ){
-                copy(dest.cdata(), end - start, start);
+                copy(dest, end - start, start);
                 return true;
             }
             element++;
@@ -229,7 +216,7 @@ String& String::erase(u32 pos, u32 len){
 }
 
 
-u32 String::copy(char * s, u32 len, u32 pos) const {
+u32 String::copy(String & s, u32 len, u32 pos) const {
     const char * p = c_str();
     u32 siz = size();
     u32 n;
@@ -238,7 +225,7 @@ u32 String::copy(char * s, u32 len, u32 pos) const {
         if( len > n ){
             len = n;
         }
-        memcpy(s,p+pos,len);
+        memcpy(s.data(),p+pos,len);
         return len;
     }
     return 0;
@@ -270,130 +257,6 @@ void String::to_lower(){
     for(u32 i = 0; i < s; i++){
         p[i] = ::tolower(p[i]);
     }
-}
-
-u32 String::find(const String & str, u32 pos) const{
-    return find(str.c_str(), pos, str.size());
-}
-
-u32 String::find(const char * str, u32 pos) const {
-    if( str == 0 ){
-        return npos;
-    }
-    int len = strlen(str);
-    return find(str, pos, len);
-}
-
-u32 String::find(const char c, u32 pos) const{
-    char str[2];
-    str[0] = c;
-    str[1] = 0;
-    return find(str, pos);
-}
-
-u32 String::find(const char * s, u32 pos, u32 n) const {
-    //find s (length n) starting at pos
-    if( s != 0 ){
-        u32 i;
-        for(i=pos; i < size(); i++){
-            if( strncmp(c_str() + i, s, n) == 0 ){
-                return i;
-            }
-        }
-    }
-    return npos;
-}
-
-u32 String::rfind(const String & str, u32 pos) const{
-    return rfind(str.c_str(), pos, str.size());
-}
-
-u32 String::rfind(const char * str, u32 pos) const {
-    if( str == 0 ){
-        return npos;
-    }
-    int len = strlen(str);
-    return rfind(str, pos, len);
-}
-
-u32 String::rfind(const char c, u32 pos) const{
-    char str[2];
-    str[0] = c;
-    str[1] = 0;
-    return rfind(str, pos);
-}
-
-u32 String::rfind(const char * s, u32 pos, u32 n) const {
-    //find s (length n) starting at pos
-    if( s != 0 ){
-        s32 i;
-        u32 len = strlen(s);
-        if( n > len ){
-            n = len;
-        }
-        for(i=size()-n; i >= (s32)pos; i--){
-            if( strncmp(c_str() + i, s, n) == 0 ){
-                return i;
-            }
-        }
-    }
-    return npos;
-}
-
-int String::compare(const String & str) const {
-    return compare(str.c_str());
-}
-
-int String::compare(u32 pos, u32 len, const String & str) const{
-    return strncmp(&(c_str()[pos]), str.c_str(), len);
-}
-
-int String::compare(u32 pos, u32 len, const String & str, u32 subpos, u32 sublen) const{
-    int l_compared;
-    int l_comparing;
-
-    const char * compared = &(c_str()[pos]);
-    const char * comparing = &(str.c_str()[subpos]);
-
-    l_compared = strnlen(compared, len);
-    l_comparing = strnlen(comparing, sublen);
-
-    if( l_compared != l_comparing ){
-        return l_comparing - l_compared;
-    }
-
-    return strncmp(compared, comparing, l_compared);
-}
-
-int String::compare(const char * s) const{
-    if( s == 0 ){
-        return npos;
-    }
-    return strcmp(s, c_str());
-}
-
-int String::compare(u32 pos, u32 len, const char * s){
-    if( s == 0 ){
-        return npos;
-    }
-    return strncmp(&(c_str()[pos]), s, len);
-}
-
-int String::compare(u32 pos, u32 len, const char * s, u32 n) const {
-    u32 l;
-    const char * str_at_position;
-    if( s == 0 ){
-        return npos;
-    }
-
-    str_at_position = &(c_str()[pos]);
-
-    l = strnlen(str_at_position, n);
-    if( l != n ){
-        return l - n;
-    }
-
-    return strncmp(str_at_position, s, n);
 }
 
 void PathString::strip_suffix(){

@@ -430,8 +430,8 @@ int Xml::parse_ref(String & name, String & value, const char * str, const char *
 	if( open_bracket > 0 ){
 		close_bracket = s0.find(enclosing[1], open_bracket+1);
 		if( close_bracket > 0 ){
-			s0.copy(value.cdata(), close_bracket-open_bracket-1, open_bracket+1);
-			s0.copy(name.cdata(), open_bracket, 0);
+            s0.copy(value, close_bracket-open_bracket-1, open_bracket+1);
+            s0.copy(name, open_bracket, 0);
 			return 1;
 		} else {
 			//malformed statement

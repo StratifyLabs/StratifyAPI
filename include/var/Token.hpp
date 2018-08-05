@@ -15,7 +15,7 @@ namespace var {
 class Token : public var::String {
 public:
     Token();
-    Token(char * mem, u32 s, const char * src, const char * delim, const char * ignore = 0, bool count_empty = false);
+    Token(char * mem, u32 s, const ConstString & src, const char * delim, const char * ignore = 0, bool count_empty = false);
 
     /*! \details Constructs and parses a new Token.
      *
@@ -26,7 +26,7 @@ public:
      *
      * \sa parse()
      */
-    Token(const char * src, const char * delim, const char * ignore = 0, bool count_empty = false);
+    Token(const ConstString & src, const char * delim, const char * ignore = 0, bool count_empty = false);
 
 
     /*! \details Sorting Options used with sort() */
@@ -65,11 +65,11 @@ public:
     u32 count() const { return m_num_tokens; }
 
     /*! \details Returns a pointer to the token specified by offset. */
-    const char * at(u32 n) const;
+    const ConstString at(u32 n) const;
 
-    static bool belongs_to(const char c, const char * str, unsigned int len);
-    static bool belongs_to(const char c, const char * str){
-        return belongs_to(c, str, strlen(str));
+    static bool belongs_to(const char c, const ConstString & str, unsigned int len);
+    static bool belongs_to(const char c, const ConstString & str){
+        return belongs_to(c, str, str.length());
     }
 
 

@@ -10,7 +10,8 @@ set(SOURCES
 	${SOURCES_PREFIX}/JsonString.cpp
 	${SOURCES_PREFIX}/Queue.cpp
 	${SOURCES_PREFIX}/Ring.cpp
+	${SOURCES_PREFIX}/ConstString.cpp
 	${SOURCES_PREFIX}/String.cpp
-  ${SOURCES_PREFIX}/StringUtil.cpp
+	${SOURCES_PREFIX}/StringUtil.cpp
   ${SOURCES_PREFIX}/Token.cpp
   PARENT_SCOPE)

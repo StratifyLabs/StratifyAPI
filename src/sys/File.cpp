@@ -27,18 +27,18 @@ File::File() {
 }
 #endif
 
-int File::open(const char * name, int flags){
+int File::open(const var::ConstString & name, int flags){
     return open(name, flags, 0);
 }
 
 #if !defined __link
-int File::remove(const char * path){
-    return ::remove(path);
+int File::remove(const var::ConstString & path){
+    return ::remove(path.str());
 }
 #else
-int File::remove(const char * name, link_transport_mdriver_t * driver){
+int File::remove(const var::ConstString & name, link_transport_mdriver_t * driver){
     if( (driver = check_driver(driver)) == 0 ){ return -1; }
-    return link_unlink(driver, name);
+    return link_unlink(driver, name.str());
 }
 #endif
 
@@ -61,18 +61,18 @@ int File::copy(const var::String & source_path, const var::String & dest_path, l
 #endif
 
 #if !defined __link
-int File::rename(var::String & old_path, var::String & new_path){
+int File::rename(const var::ConstString & old_path, const var::ConstString & new_path){
     return ::rename(old_path.str(), new_path.str());
 }
 #else
-int File::rename(const var::String & old_path, const var::String & new_path, link_transport_mdriver_t * driver){
+int File::rename(const var::ConstString & old_path, const var::ConstString & new_path, link_transport_mdriver_t * driver){
     if( (driver = check_driver(driver)) == 0 ){ return -1; }
     return link_rename(driver, old_path.str(), new_path.str());
 }
 #endif
 
 
-int File::copy(File & source, File & dest, const var::String & source_path, const var::String & dest_path){
+int File::copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path){
     if( source.open(source_path.str(), File::RDONLY) < 0 ){
         return -1;
     }
@@ -94,23 +94,23 @@ int File::copy(File & source, File & dest, const var::String & source_path, cons
 }
 
 
-int File::open(const char * name, int access, int perms){
+int File::open(const var::ConstString & name, int access, int perms){
     if( m_fd != -1 ){
         close(); //close and re-open
     }
 
 #if defined __link
     if( check_driver() < 0 ){ return -1; }
-    m_fd = link_open(driver(), name, access, perms);
+    m_fd = link_open(driver(), name.str(), access, perms);
 #else
-    m_fd = ::open(name, access, perms);
+    m_fd = ::open(name.str(), access, perms);
 #endif
 
     return set_error_number_if_error(m_fd);
 
 }
 
-int File::create(const char * name, bool overwrite, int perms){
+int File::create(const var::ConstString & name, bool overwrite, int perms){
     int access = O_RDWR | O_CREAT;
     if( overwrite ){
         access |= O_TRUNC;
@@ -133,29 +133,29 @@ u32 File::size() const {
 }
 
 #if defined __link
-int File::stat(const char * name, struct link_stat * st, link_transport_mdriver_t * driver){
+int File::stat(const var::ConstString & name, struct link_stat * st, link_transport_mdriver_t * driver){
     if( (driver = check_driver(driver)) == 0 ){ return -1; }
-    return link_stat(driver, name, st);
+    return link_stat(driver, name.str(), st);
 }
 #else
-int File::stat(const char * name, struct stat * st){
-    return ::stat(name, st);
+int File::stat(const var::ConstString & name, struct stat * st){
+    return ::stat(name.str(), st);
 }
 #endif
 
 #if !defined __link
-u32 File::size(const char * name){
+u32 File::size(const var::ConstString & name){
     struct stat st;
-    if( stat(name, &st) < 0 ){
+    if( stat(name.str(), &st) < 0 ){
         return (s32)-1;
     }
     return st.st_size;
 }
 #else
-u32 File::size(const char * name, link_transport_mdriver_t * driver){
+u32 File::size(const var::ConstString & name, link_transport_mdriver_t * driver){
     struct link_stat st;
     if( (driver = check_driver(driver)) == 0 ){ return -1; }
-    if( stat(name, &st, driver) < 0 ){
+    if( stat(name.str(), &st, driver) < 0 ){
         return (s32)-1;
     }
     return st.st_size;
@@ -325,32 +325,32 @@ char * File::gets(var::String & s, char term) const {
 }
 
 
-const char * File::name(const char * path){
+var::ConstString File::name(const var::ConstString & path){
     int len;
     int i;
-    len = strnlen(path, LINK_PATH_MAX);
+    len = path.length();
     for(i = len; i >= 0; i--){
-        if( path[i] == '/' ){
-            return &(path[i+1]);
+        if( path.at(i) == '/' ){
+            return path.str() + i + 1;
         }
     }
     return 0;
 }
 
 #if !defined __link
-int File::access(const char * path, int o_access){
-    return ::access(path, o_access);
+int File::access(const var::ConstString & path, int o_access){
+    return ::access(path.str(), o_access);
 }
 #endif
 
 
-const char * File::suffix(const char * path){
+var::ConstString File::suffix(const var::ConstString & path){
     int len;
     int i;
-    len = strnlen(path, LINK_PATH_MAX);
+    len = path.length();
     for(i = len; i >= 0; i--){
-        if( path[i] == '.' ){
-            return &(path[i+1]);
+        if( path.at(i) == '.' ){
+            return path.str() + i + 1;
         }
     }
     return 0;

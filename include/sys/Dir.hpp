@@ -11,6 +11,7 @@
 
 #include "../api/SysObject.hpp"
 #include "../var/String.hpp"
+#include "../var/ConstString.hpp"
 
 namespace sys {
 

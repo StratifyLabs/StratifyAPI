@@ -8,7 +8,7 @@ using namespace var;
 
 namespace sys {
 
-Cli::Cli(int argc, char * argv[], const char * app_git_hash) : m_app_git_hash(app_git_hash){
+Cli::Cli(int argc, char * argv[], const var::ConstString & app_git_hash) : m_app_git_hash(app_git_hash){
     u16 version;
 	if( argc < 0 ){
 		argc = 0;
@@ -19,7 +19,7 @@ Cli::Cli(int argc, char * argv[], const char * app_git_hash) : m_app_git_hash(ap
 
 	if( argc > 0 ){
 		m_path = argv[0];
-		m_name = File::name(argv[0]);
+        m_name = File::name(argv[0]).str();
 #if defined __link
         version = Appfs::get_version(m_path.str(), 0);
 #else
@@ -51,7 +51,7 @@ var::String Cli::get_version_details() const {
     if( m_app_git_hash == 0 ){
         result.sprintf("%s (api:%s)", m_version.str(), api_git_hash());
     } else {
-        result.sprintf("%s (app:%s, api:%s)", m_version.str(), m_app_git_hash, api_git_hash());
+        result.sprintf("%s (app:%s, api:%s)", m_version.str(), m_app_git_hash.str(), api_git_hash());
     }
 
     result.set_transfer_ownership();
@@ -130,8 +130,8 @@ mcu_pin_t Cli::get_option_pin(const char * option) const {
 	arg.parse(".");
 
 	if( arg.size() == 2 ){
-		pio.port = atoi(arg.at(0));
-		pio.pin = atoi(arg.at(1));
+        pio.port = arg.at(0).atoi();
+        pio.pin = arg.at(1).atoi();
 	} else {
 		pio.port = 255;
 		pio.pin = 255;
@@ -148,8 +148,8 @@ mcu_pin_t Cli::pin_at(u16 value) const {
 	arg.parse(".");
 
 	if( arg.size() == 2 ){
-		pio.port = atoi(arg.at(0));
-		pio.pin = atoi(arg.at(1));
+        pio.port = arg.at(0).atoi();
+        pio.pin = arg.at(1).atoi();
 	} else {
 		pio.port = 255;
 		pio.pin = 255;

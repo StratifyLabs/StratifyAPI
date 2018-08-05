@@ -10,6 +10,7 @@
 #include "../sys/Dir.hpp"
 #include "LinkedElement.hpp"
 #include "List.hpp"
+#include "../var/ConstString.hpp"
 
 
 namespace ui {

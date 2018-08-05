@@ -13,10 +13,10 @@
 using namespace sys;
 
 #if defined __link
-int Appfs::create(const char * name, const void * buf, int nbyte, const char * mount, bool (*update)(void *, int, int), void * context, link_transport_mdriver_t * driver){
+int Appfs::create(const var::ConstString & name, const void * buf, int nbyte, const char * mount, bool (*update)(void *, int, int), void * context, link_transport_mdriver_t * driver){
 	File file(driver);
 #else
-int Appfs::create(const char * name, const void * buf, int nbyte, const char * mount, bool (*update)(void *, int, int), void * context){
+int Appfs::create(const var::ConstString & name, const void * buf, int nbyte, const char * mount, bool (*update)(void *, int, int), void * context){
 	File file;
 #endif
 	char buffer[LINK_PATH_MAX];
@@ -28,11 +28,11 @@ int Appfs::create(const char * name, const void * buf, int nbyte, const char * m
 	appfs_file_t f;
 	strcpy(buffer, mount);
 	strcat(buffer, "/flash/");
-	strcat(buffer, name);
+    strcat(buffer, name.str());
 
 
 	//delete the settings if they exist
-	strncpy(f.hdr.name, name, LINK_NAME_MAX);
+    strncpy(f.hdr.name, name.str(), LINK_NAME_MAX);
 	f.hdr.mode = 0666;
 	f.exec.code_size = nbyte + sizeof(f); //total number of bytes in file
 	f.exec.signature = APPFS_CREATE_SIGNATURE;
@@ -95,10 +95,10 @@ int Appfs::create(const char * name, const void * buf, int nbyte, const char * m
 }
 
 #if defined __link
-int Appfs::get_info(const char * path, appfs_info_t & info, link_transport_mdriver_t * driver){
+int Appfs::get_info(const var::ConstString & path, appfs_info_t & info, link_transport_mdriver_t * driver){
 	File f(driver);
 #else
-int Appfs::get_info(const char * path, appfs_info_t & info){
+int Appfs::get_info(const var::ConstString & path, appfs_info_t & info){
 	File f;
 #endif
 	var::String app_name;
@@ -114,7 +114,7 @@ int Appfs::get_info(const char * path, appfs_info_t & info){
 	f.close();
 	if( ret == sizeof(appfs_file_header) ){
 		//first check to see if the name matches -- otherwise it isn't an app file
-		path_name = File::name(path);
+        path_name = File::name(path).str();
 		app_name = appfs_file_header.hdr.name;
 		if( path_name == app_name ){
 			info.mode = appfs_file_header.hdr.mode;
@@ -136,7 +136,7 @@ int Appfs::get_info(const char * path, appfs_info_t & info){
 }
 
 #if defined __link
-u16 Appfs::get_version(const char * path, link_transport_mdriver_t * driver){
+u16 Appfs::get_version(const var::ConstString & path, link_transport_mdriver_t * driver){
 	appfs_info_t info;
 	if( get_info(path, info, driver) < 0 ){
 		return 0x0000;
@@ -145,7 +145,7 @@ u16 Appfs::get_version(const char * path, link_transport_mdriver_t * driver){
 }
 
 #else
-u16 Appfs::get_version(const char * path){
+u16 Appfs::get_version(const var::ConstString & path){
 	appfs_info_t info;
 	if( get_info(path, info) < 0 ){
 		return 0x0000;
@@ -156,25 +156,26 @@ u16 Appfs::get_version(const char * path){
 
 #if defined __link
 
-int Appfs::get_id(const char * path, char * id, u32 capacity, link_transport_mdriver_t * driver){
+var::String Appfs::get_id(const var::ConstString & path, link_transport_mdriver_t * driver){
 	appfs_info_t info;
-	if( get_info(path, info, driver) < 0 ){
-		return -1;
+    var::String result;
+    if( get_info(path, info, driver) < 0 ){
+        return result;
 	}
 
 #else
 
-int Appfs::get_id(const char * path, char * id, u32 capacity){
+var::String Appfs::get_id(const var::ConstString & path){
 	appfs_info_t info;
+    var::String result;
 	if( get_info(path, info) < 0 ){
-		return -1;
+        return result;
 	}
 #endif
 
-	int bytes;
-	bytes = capacity > (LINK_NAME_MAX-2) ? (LINK_NAME_MAX-2) : capacity;
-	strncpy(id, (char*)info.id, bytes);
-	return 0;
+    result = (const char*)info.id;
+    result.set_transfer_ownership();
+    return result;
 }
 
 

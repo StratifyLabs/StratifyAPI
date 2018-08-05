@@ -7,6 +7,7 @@
 #include "../api/WorkObject.hpp"
 #include "../var/String.hpp"
 #include "../api/SysObject.hpp"
+#include "../var/ConstString.hpp"
 
 namespace sys {
 
@@ -61,14 +62,14 @@ public:
 	 *
 	 */
 #if !defined __link
-	static int create(const char * name,
+    static int create(const var::ConstString & name,
 			const void * buf,
 			int nbyte,
 			const char * mount = "/app",
 			bool (*update)(void *, int, int) = 0,
 			void * context = 0);
 #else
-	static int create(const char * name,
+    static int create(const var::ConstString & name,
 			const void * buf,
 			int nbyte,
 			const char * mount = "/app",
@@ -78,7 +79,7 @@ public:
 #endif
 
 #if 0
-    static int create(const char * name,
+    static int create(const var::ConstString name,
                       const File & source,
                       const char * mount = "/app",
                       bool (*update)(void *, int, int) = 0,
@@ -100,9 +101,9 @@ public:
      *
 	 */
 #if !defined __link
-	static int get_info(const char * path, appfs_info_t & info);
+    static int get_info(const var::ConstString & path, appfs_info_t & info);
 #else
-	static int get_info(const char * path, appfs_info_t & info, link_transport_mdriver_t * driver);
+    static int get_info(const var::ConstString & path, appfs_info_t & info, link_transport_mdriver_t * driver);
 #endif
 
 	/*! \details Gets the application version.
@@ -114,9 +115,9 @@ public:
 	 *
 	 */
 #if !defined __link
-	static u16 get_version(const char * path);
+    static u16 get_version(const var::ConstString & path);
 #else
-	static u16 get_version(const char * path, link_transport_mdriver_t * driver);
+    static u16 get_version(const var::ConstString & path, link_transport_mdriver_t * driver);
 #endif
 
 	/*! \details Gets the application ID value.
@@ -129,21 +130,9 @@ public:
 	 *
 	 */
 #if !defined __link
-	static int get_id(const char * path, char * id, u32 capacity);
+    static var::String get_id(const var::ConstString & path);
 #else
-	static int get_id(const char * path, char * id, u32 capacity, link_transport_mdriver_t * driver);
-#endif
-
-	/*! \details Gets the application ID value.
-	 *
-	 * @param path The path to the application
-	 * @param id A var::String reference that will store the ID
-	 * @return Zero on success
-	 */
-#if !defined __link
-	static int get_id(const char * path, var::String & id){
-		return get_id(path, id.cdata(), id.capacity());
-	}
+    static var::String get_id(const var::ConstString & path, link_transport_mdriver_t * driver);
 #endif
 
 #if !defined __link

@@ -27,20 +27,22 @@ Font::Font() {
 	m_letter_spacing = 1;
 }
 
-int Font::calc_len(const char * str) const {
+int Font::calc_len(const var::ConstString & str) const {
 	int l;
 	l = 0;
 
-	while( *str != 0 ){
+    const char * s = str.str();
 
-		if( *str == ' ' ){
+    while( *s != 0 ){
+
+        if( *s == ' ' ){
 			l += space_size();
 		} else {
-			if( load_char(m_char, *str, true) == 0){
+            if( load_char(m_char, *s, true) == 0){
 				l += m_char.xadvance;
 			}
 		}
-		str++;
+        s++;
 	}
 	return l;
 }

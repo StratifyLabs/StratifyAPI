@@ -5,6 +5,7 @@
 #define VAR_JSONSTRING_HPP_
 
 #include "String.hpp"
+#include "ConstString.hpp"
 
 namespace var {
 

@@ -11,6 +11,7 @@
 
 #include "Data.hpp"
 #include "StringUtil.hpp"
+#include "ConstString.hpp"
 
 namespace var {
 
@@ -45,8 +46,13 @@ namespace var {
  * \endcode
  *
  */
-class String : public Data {
+class String : public Data, public ConstString {
 public:
+
+    enum {
+        npos /*! Defines an invalid string length and position */ = (u32)-1
+    };
+
     /*! \details Constructs an empty string and allocates the minimum capacity.
      *
      * To construct a String without using any memory allocation us String(0).
@@ -75,7 +81,16 @@ public:
      * to the same memory as str.
      *
      */
-    String(const String & a) : Data(a){}
+    String(const String & a) : Data(a){
+        set_string_pointer(cdata_const());
+    }
+
+    /*! \details Declares a string and initialize to \a s. */
+    String(const char * s);
+    String(const ConstString & s);
+
+    /*! \details Declares a string and initialize to \a s. */
+    String(const char * s, u32 len);
 
     /*! \details Assigns the value of a String to another String.
      *
@@ -104,12 +119,6 @@ public:
         return *this;
     }
 
-    /*! \details Appends a string to this string. */
-    String& operator+=(const char * a){
-        append(a);
-        return *this;
-    }
-
     /*! \details Appends a character to this string. */
     String& operator+=(char a){
         append(a);
@@ -127,16 +136,6 @@ public:
 
     ~String(){}
 
-	/*! \details Declares a string and initialize to \a s. */
-	String(const char * s);
-
-	/*! \details Declares a string and initialize to \a s. */
-	String(const char * s, u32 len);
-
-
-	enum {
-        npos /*! Defines an invalid string length and position */ = (u32)-1
-    };
 
 	/*! \details Constructs a string using statically allocated memory.
 	 *
@@ -183,31 +182,6 @@ public:
 	String& operator<<(char c){ append(c); return *this; }
 
 
-	/*! \details Compares to a c-string. */
-	bool operator==(const char * cmp) const { return (strncmp(this->c_str(), cmp, this->capacity()) == 0); }
-
-	/*! \details Compares to a c-string (inequality). */
-	bool operator!=(const char * cmp) const { return (strncmp(this->c_str(), cmp, this->capacity()) != 0); }
-
-    /*! \details Compares to a var::String. */
-    bool operator==(const String & cmp) const { return *this == cmp.c_str(); }
-
-    /*! \details Compares to a var::String. */
-    bool operator!=(const String & cmp) const { return *this != cmp.c_str(); }
-
-	/*! \details Converts to an integer.
-	 *
-	 * \code
-	 * String x = "10";
-	 * printf("X is %d\n", x.atoi());
-	 * \endcode
-	 *
-	 */
-	int atoi() const { return ::atoi(c_str()); }
-
-	/*! \details Converts to a float. */
-	float atoff() const;
-
 	/*! \details Gets a sub string of the string.
 	 *
 	 * @param pos Starting position to look for the sub-string
@@ -235,8 +209,7 @@ public:
      */
 	String& erase(u32 pos, u32 len = -1);
 
-	/*! \details Returns character at \a pos. */
-	char at(u32 pos) const;
+
 
 	/*! \details Prints a formatted string to this String.
 	 *
@@ -250,22 +223,6 @@ public:
 	int sprintf(const char * format, ...);
 
 
-	/*! \details Prints the string on the standard output.
-	 *
-     * @param o_flags This is ignored but is used to override Data::print
-	 * @return The total number of characters written to the stdout
-     *
-	 */
-    int print(u32 o_flags = PRINT_HEX) const {
-        (void)o_flags; //unused
-        return ::printf("%s", str());
-    }
-    //deprecated
-#if !defined __link
-    [[deprecated("Replaced by String::print()")]]
-#endif
-    int printf() const { return ::printf("%s", str()); }
-
 
 	/*! \details Returns the capacity of the string.
 	 *
@@ -278,24 +235,6 @@ public:
 	 */
 	u32 capacity() const;
 
-	/*! \details Returns a c-style string pointer. */
-    const char * str() const { return cdata_const(); }
-    //compatible with std::string (but not Stratify API convention)
-    const char * c_str() const { return cdata_const(); }
-
-	/*! \details Returns the length of the string. */
-    u32 size() const { return strnlen(c_str(), capacity()); }
-
-	/*! \details Returns the length of the string. */
-	u32 length() const { return size(); }
-    //compatible with std::string
-	u32 len() const { return size(); }
-
-	/*! \details Tests if string is empty. */
-	bool is_empty() const { return size() == 0; }
-    //compatible with std::string
-    bool empty() const { return size() == 0; }
-
 	/*! \details Assigns a substring of \a a to string. */
     int assign(const char * a, u32 subpos, u32 sublen){ return assign(a + subpos, sublen); }
 	/*! \details Assigns a maximum of \a n characters of \a a to string. */
@@ -304,6 +243,7 @@ public:
     int assign(const char * a);
     /*! \details Assigns \a a to this String.  */
     int assign(const String & a){ return assign(a.str()); }
+
 	/*! \details Appends \a a (zero terminated) to string.  */
     int append(const char * a);
     /*! \details Appends a String to this string. */
@@ -318,16 +258,12 @@ public:
 	/*! \details Returns the number of elements in the String. */
 	int calc_delimited_data_size(char sep = ',', char term = '\n');
 
-	/*! \details Copies a portion of the string to \a s. */
-	u32 copy(char * s, u32 len, u32 pos = 0) const;
-
 	/*! \details Copies a portion of this string to \a s. */
-	u32 copy(String & s, u32 n, u32 pos = 0) const {
-		return copy(s.cdata(), n, pos);
-	}
+    u32 copy(String & s, u32 n, u32 pos = 0) const;
 
 	/*! \details Converts to upper case. */
     void to_upper();
+
     //compatible with C++ string
     void toupper(){ to_upper(); }
 
@@ -337,96 +273,13 @@ public:
     //compatible with C++ string
     void tolower(){ to_lower(); }
 
-	/*! \details Finds a var::String within the object.
-	 *
-	 * @param str The String to find
-	 * @param pos The position to start searching
-	 * @return The position of the string or var::String::npos if the String was not found
-	 */
-	u32 find(const String & str, u32 pos = 0) const;
-
-	/*! \details Finds a c string within the object. */
-	u32 find(const char * str, u32 pos = 0) const;
-
-	/*! \details Finds a character within the object. */
-	u32 find(const char c, u32 pos = 0) const;
-
-	/*! \details Finds a string within the object. */
-	u32 find(const char * s, u32 pos, u32 n) const;
-
-	/*! \details Finds a string within the string searching from right to left. */
-	u32 rfind(const String & str, u32 pos = 0) const;
-
-	/*! \details Finds a string within the string searching from right to left. */
-	u32 rfind(const char * str, u32 pos = 0) const;
-
-	/*! \details Finds a character within the string searching from right to left. */
-	u32 rfind(const char c, u32 pos = 0) const;
-
-	/*! \details Finds a string within the string searching from right to left. */
-	u32 rfind(const char * s, u32 pos, u32 n) const;
-
-    /*! \details Compares the object to \a str.
-     *
-     * @param str A reference comparing string
-     * @returns Zero if the strings are the same
-     *
-     */
-	int compare(const String & str) const;
-
-    /*! \details Compares the object to \a str.
-     *
-     * @param pos The position in this object to start the comparison
-     * @param len The number of characters to compare
-     * @param str A reference to the comparing string
-     * @return Zero if the strings match
-     *
-     */
-	int compare(u32 pos, u32 len, const String & str) const;
-
-
-    /*! \details Compares the object to \a str.
-     *
-     * @param pos The position in this object to start the comparison
-     * @param len The length of the compared string (this object)
-     * @param str A reference to the comparing string
-     * @param subpos The position in the comparing string to start comparing
-     * @param n The number os characters to compare
-     * @return Zero if the strings match
-     *
-     */
-    int compare(u32 pos, u32 len, const String & str, u32 subpos, u32 n) const;
-
-    /*! \details Compares the object to \a str.
-     *
-     * @param str A reference comparing string
-     * @returns Zero if the strings are the same
-     *
-     */
-    int compare(const char * str) const;
-
-    /*! \details Compares the object to \a str.
-     *
-     * @param pos The position in this object to start the comparison
-     * @param len The length of the compared string (this object)
-     * @param s The characters to compare
-     * @return Zero if the strings match
-     *
-     */
-	int compare(u32 pos, u32 len, const char * s);
-
-    /*! \details Compares the object to \a str.
-     *
-     * @param pos The position in this object to start the comparison
-     * @param len The length of the compared string (this object)
-     * @param s The characters to compare
-     * @param n The number of characters to compare
-     * @return Zero if the strings match
-     *
-     */
-	int compare(u32 pos, u32 len, const char * s, u32 n) const;
+    using ConstString::operator ==;
+    using ConstString::operator !=;
 
 private:
+
+    int update_capacity(u32 size);
+
 };
 
 /*! \brief String using static memory allocation

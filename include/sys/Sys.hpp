@@ -10,6 +10,7 @@
 #include <sos/dev/sys.h>
 #include <sos/link.h>
 #include "File.hpp"
+#include "../var/ConstString.hpp"
 
 namespace sys {
 
@@ -20,10 +21,14 @@ class SysInfo : public api::SysInfoObject {
 public:
 
     SysInfo(){ memset(&m_info, 0, sizeof(m_info)); }
+    SysInfo(const sys_info_t & info ){
+        m_info = info;
+    }
 
     bool is_valid() const { return cpu_frequency() != 0; }
     static SysInfo get();
 
+    const char * name() const { return m_info.name; }
     const char * system_version() const { return m_info.sys_version; }
     const char * bsp_version() const { return m_info.sys_version; }
     const char * kernel_version() const { return m_info.kernel_version; }
@@ -36,7 +41,7 @@ public:
     const char * sos_git_hash() const { return m_info.sos_git_hash; }
     const char * mcu_git_hash() const { return m_info.mcu_git_hash; }
 
-    void print();
+    mcu_sn_t serial_number() const { return m_info.serial; }
 
 private:
     sys_info_t m_info;

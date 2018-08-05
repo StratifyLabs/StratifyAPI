@@ -82,7 +82,7 @@ public:
                        const chrono::MicroTime held_threshold = chrono::MicroTime::invalid(),
                        const chrono::MicroTime actuated_threshold = chrono::MicroTime::invalid());
 
-    u32 get_duration();
+    chrono::MicroTime get_duration();
     bool get_pressed();
     bool get_released();
     bool get_actuated();

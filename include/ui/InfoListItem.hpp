@@ -9,6 +9,7 @@
 #include "../draw/Icon.hpp"
 #include "LinkedElement.hpp"
 #include "ListItem.hpp"
+#include "../var/ConstString.hpp"
 
 namespace ui {
 

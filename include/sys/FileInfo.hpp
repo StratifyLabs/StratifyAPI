@@ -7,6 +7,7 @@
 
 #include "File.hpp"
 #include "../api/SysObject.hpp"
+#include "../var/ConstString.hpp"
 
 namespace sys {
 

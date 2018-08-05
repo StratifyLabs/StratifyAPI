@@ -9,6 +9,7 @@
 #include "../fmt/Son.hpp"
 #include "File.hpp"
 #include "Mutex.hpp"
+#include "../var/ConstString.hpp"
 
 namespace sys {
 

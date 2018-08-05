@@ -29,6 +29,7 @@ namespace var {}
 #include "var/Ring.hpp"
 #include "var/LinkedList.hpp"
 #include "var/Queue.hpp"
+#include "var/ConstString.hpp"
 #include "var/String.hpp"
 #include "var/StringUtil.hpp"
 #include "var/Token.hpp"

@@ -5,6 +5,7 @@
 
 #include "Font.hpp"
 #include "../sys/File.hpp"
+#include "../var/ConstString.hpp"
 
 namespace sgfx {
 
@@ -16,10 +17,10 @@ namespace sgfx {
 class FileFont : public Font {
 public:
     FileFont();
-    FileFont(const char * name, int offset = 0);
+    FileFont(const var::ConstString & name, int offset = 0);
     ~FileFont();
 
-	int set_file(const char * name, int offset = 0);
+    int set_file(const var::ConstString & name, int offset = 0);
 
 	sg_size_t get_height() const;
 	sg_size_t get_width() const;

@@ -8,6 +8,7 @@
 #include <limits.h>
 
 #include "Test.hpp"
+#include "../var/ConstString.hpp"
 
 namespace test {
 

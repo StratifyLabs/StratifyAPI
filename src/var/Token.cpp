@@ -11,22 +11,23 @@ Token::Token(){
     m_is_count_empty_tokens = false;
 }
 
-Token::Token(char * mem, u32 s, const char * src, const char * delim, const char * ignore, bool count_empty) : String(mem, s, false){
+Token::Token(char * mem, u32 s, const ConstString & src, const char * delim, const char * ignore, bool count_empty) : String(mem, s, false){
 	init_members();
 	m_is_count_empty_tokens = count_empty;
     clear(); assign(src); parse(delim, ignore);
 }
 
-Token::Token(const char * src, const char * delim, const char * ignore, bool count_empty) : String(src){
+Token::Token(const ConstString & src, const char * delim, const char * ignore, bool count_empty) : String(src){
     init_members();
 	m_is_count_empty_tokens = count_empty;
     parse(delim, ignore);
 }
 
-bool Token::belongs_to(const char c, const char * str, unsigned int len){
+bool Token::belongs_to(const char c, const ConstString & src, unsigned int len){
 	unsigned int i;
+    const char * s = src.str();
 	for(i=0; i < len; i++){
-		if( c == *str++ ){
+        if( c == *s++ ){
 			return true;
 		}
 	}
@@ -52,7 +53,7 @@ void Token::parse(const char * delim, const char * ignore){
 	}
 
 	p = cdata();
-	m_string_size = String::size();
+    m_string_size = String::length();
 	end = p + m_string_size;
 	if( m_is_count_empty_tokens == true ){
 		m_num_tokens++;
@@ -95,12 +96,12 @@ void Token::parse(const char * delim, const char * ignore){
     }
 }
 
-const char * Token::at(u32 n) const {
+const ConstString Token::at(u32 n) const {
     const char * p;
     unsigned int i;
 	bool on_token = false;
 	unsigned int token = 0;
-	p = c_str();
+    p = str();
 
 	if( n >= size() ){
 		return 0;
@@ -142,7 +143,7 @@ void Token::sort(enum sort_options sort_option){
 	u32 j;
 	Token tmp;
 	int current;
-	const char * string_to_copy;
+    ConstString string_to_copy;
 	char * next;
 	u8 sort_init;
 	char a;
@@ -191,8 +192,8 @@ void Token::sort(enum sort_options sort_option){
 			}
 		}
 		string_to_copy = tmp.at(current);
-		strcpy(next, string_to_copy);
-		next += strlen(string_to_copy) + 1;
+        strcpy(next, string_to_copy.str());
+        next += string_to_copy.length() + 1;
 		used[current] = 1;
     }
 }

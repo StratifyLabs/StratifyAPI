@@ -5,6 +5,7 @@
 
 #include <cstring>
 #include "../api/WorkObject.hpp"
+#include "../var/ConstString.hpp"
 
 namespace var {
 

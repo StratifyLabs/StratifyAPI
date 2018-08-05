@@ -11,17 +11,6 @@
 using namespace sys;
 
 
-void SysInfo::print(){
-    printf("BSP Version: %s\n", bsp_version());
-    printf("SOS Version: %s\n", sos_version());
-    printf("CPU Architecture: %s\n", cpu_architecture());
-    printf("CPU Frequency: " F32D "\n", cpu_frequency());
-    printf("Application Signature: " F32X "\n", application_signature());
-    printf("BSP Git Hash: %s\n", bsp_git_hash());
-    printf("SOS Git Hash: %s\n", sos_git_hash());
-    printf("MCU Git Hash: %s\n", mcu_git_hash());
-}
-
 SysInfo SysInfo::get(){
     SysInfo result;
 #if !defined __link

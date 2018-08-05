@@ -76,6 +76,39 @@ TaskInfo Task::get_info(int id){
     return TaskInfo(attr);
 }
 
+bool Task::is_pid_running(int pid){
+    int tmp_id = id();
+    set_id(1);
+
+    TaskInfo info;
+    while( get_next(info) > 0 ){
+        if( (pid == (int)info.pid()) && info.is_enabled() ){
+            set_id(tmp_id);
+            return true;
+        }
+    }
+
+    set_id(tmp_id);
+    return false;
+}
+
+int Task::get_pid(const var::String & name){
+    int tmp_id = id();
+    set_id(1);
+
+    TaskInfo info;
+
+    while( get_next(info) > 0 ){
+        if( name == info.name() && info.is_enabled() ){
+            set_id(tmp_id);
+            return info.pid();
+        }
+    }
+
+    set_id(tmp_id);
+    return -1;
+}
+
 void Task::print(int pid){
     int count = count_total();
     TaskInfo info;

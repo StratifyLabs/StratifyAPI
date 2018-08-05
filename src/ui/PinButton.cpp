@@ -5,7 +5,7 @@ using namespace ui;
 using namespace sys;
 using namespace hal;
 
-u32 PinButton::m_held_duration = 800;
+chrono::MicroTime PinButton::m_held_duration = 800;
 
 
 PinButton::PinButton(int port, int pin, bool active_value) : Pin(port, pin) {
@@ -42,8 +42,8 @@ void PinButton::update(void){
     }
 }
 
-u32 PinButton::get_duration(){
-    u32 value = m_timer.msec();
+chrono::MicroTime PinButton::get_duration(){
+    chrono::MicroTime value = m_timer.microseconds();
 
     //reset the timer so the duration is only returned once after the button is released
     if( m_timer.is_stopped() ){

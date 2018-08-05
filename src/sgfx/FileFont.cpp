@@ -9,7 +9,7 @@ FileFont::FileFont() {
 	m_kerning_pairs = 0;
 }
 
-FileFont::FileFont(const char * name, int offset) {
+FileFont::FileFont(const var::ConstString & name, int offset) {
 	m_kerning_pairs = 0;
 	set_file(name, offset);
 }
@@ -21,7 +21,7 @@ FileFont::~FileFont(){
 	m_file.close();
 }
 
-int FileFont::set_file(const char * name, int offset){
+int FileFont::set_file(const var::ConstString & name, int offset){
 	u32 pair_size;
 
 	if( m_kerning_pairs ){

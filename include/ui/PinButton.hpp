@@ -39,11 +39,11 @@ public:
      *
      * @return The duration in milliseconds
      */
-    static u32 held_duration(){ return m_held_duration; }
+    static chrono::MicroTime held_duration(){ return m_held_duration; }
 
     /*! \details This method sets the duration of the hold event.
      */
-    static void set_held_duration(u32 duration_ms){ m_held_duration = duration_ms; }
+    static void set_held_duration(chrono::MicroTime duration){ m_held_duration = duration; }
 
 
 	/*! \details This method accesses the active value.
@@ -58,7 +58,7 @@ public:
 
     //methods documented at ui::Button
     enum ev::Event::button_id event_id() const { return m_event_id; }
-    u32 get_duration();
+    chrono::MicroTime get_duration();
     bool get_pressed();
     bool get_released();
     bool get_actuated();
@@ -73,7 +73,7 @@ protected:
 
 private:
 
-    static u32 m_held_duration;
+    static chrono::MicroTime m_held_duration;
     enum ev::Event::button_id m_event_id;
 
 	bool m_active_value;

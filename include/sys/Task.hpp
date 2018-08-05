@@ -3,6 +3,7 @@
 
 #include "../api/SysObject.hpp"
 #include "../hal/Device.hpp"
+#include "../var/ConstString.hpp"
 
 namespace sys {
 
@@ -163,6 +164,11 @@ public:
      *
      * @param attr A reference for the destination information.
      *
+     * @return
+     *  - Zero if there are no more tasks
+     *  - One if the task was successfully read
+     *  - less than zero for an error readin the task
+     *
      */
     int get_next(TaskInfo & attr);
 
@@ -187,6 +193,10 @@ public:
 
     /*! \details Prints info for all enabled tasks. */
     void print(int pid = -1);
+
+    int get_pid(const var::String & name);
+
+    bool is_pid_running(int pid);
 
 
 private:

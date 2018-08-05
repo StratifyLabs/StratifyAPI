@@ -11,6 +11,7 @@
 #include "../hal/Dac.hpp"
 #include "../var/String.hpp"
 #include "../var/Token.hpp"
+#include "../var/ConstString.hpp"
 
 namespace sys {
 
@@ -41,7 +42,7 @@ public:
 	 * \endcode
 	 *
 	 */
-    Cli(int argc, char * argv[], const char * app_git_hash = 0);
+    Cli(int argc, char * argv[], const var::ConstString & app_git_hash = 0);
 
 	/*! \details Handles the --version and -v options to show the version.
 	 *
@@ -178,8 +179,8 @@ public:
 	mcu_pin_t get_option_pin(const char * option) const;
 
 	/*! \details Returns the number of arguments. */
-	int count() const { return m_argc; }
-	int size() const { return m_argc; }
+    u32 count() const { return m_argc; }
+    u32 size() const { return m_argc; }
 
 	//handling hardware inputs
 	/*! \details Handles arguments for setting UART attributes.
@@ -231,7 +232,7 @@ private:
 	var::String m_name;
 	var::String m_path;
     bool m_is_case_sensitive;
-    const char * const m_app_git_hash;
+    const var::ConstString m_app_git_hash;
 
 
 };

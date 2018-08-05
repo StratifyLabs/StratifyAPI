@@ -7,6 +7,7 @@
 #include <fcntl.h>
 
 #include "../api/SysObject.hpp"
+#include "../var/ConstString.hpp"
 
 #ifndef __link
 #include <unistd.h>
@@ -121,7 +122,7 @@ public:
 	 * \endcode
 	 *
 	 */
-	static const char * name(const char * path);
+    static var::ConstString name(const var::ConstString & path);
 
 
 #if !defined __link
@@ -131,12 +132,12 @@ public:
      * @param o_access Bit-wise OR of access flags READ_OK | WRITE_OK | EXECUTE_OK | FILE_OK
      *
      */
-    static int access(const char * path, int o_access);
+    static int access(const var::ConstString & path, int o_access);
 
     /*! \details Returns true if the file exists.
      *
      */
-    static bool exists(const char * path){ return access(path, FILE_OK) >= 0; }
+    static bool exists(const var::ConstString & path){ return access(path, FILE_OK) >= 0; }
 #endif
 
 	/*! \details Returns a pointer to the file suffix.
@@ -147,8 +148,8 @@ public:
 	 * For example:
 	 *
 	 * \code
-	 * const char * path = "/home/data.txt";
-	 * printf("Suffix is %s", File::suffix(path));
+     * const var::ConstString path = "/home/data.txt";
+     * printf("Suffix is %s", File::suffix(path).str());
 	 * \endcode
 	 *
 	 * The above code will output:
@@ -157,7 +158,7 @@ public:
 	 * \endcode
 	 *
 	 */
-	static const char * suffix(const char * path);
+    static var::ConstString suffix(const var::ConstString & path);
 
 	/*! \details Deletes a file.
 	 *
@@ -166,9 +167,9 @@ public:
 	 *
 	 */
 #if !defined __link
-	static int remove(const char * path);
+    static int remove(const var::ConstString & path);
 #else
-    static int remove(const char * path, link_transport_mdriver_t * driver = 0);
+    static int remove(const var::ConstString & path, link_transport_mdriver_t * driver = 0);
 #endif
 
 	/*! \details Gets file stat data.
@@ -179,9 +180,9 @@ public:
 	 *
 	 */
 #if !defined __link
-	static int stat(const char * path, struct stat * st);
+    static int stat(const var::ConstString & path, struct stat * st);
 #else
-    static int stat(const char * path, struct link_stat * st, link_transport_mdriver_t * driver = 0);
+    static int stat(const var::ConstString & path, struct link_stat * st, link_transport_mdriver_t * driver = 0);
 #endif
 
 	/*! \details Gets the size of the file.
@@ -191,9 +192,9 @@ public:
 	 *
 	 */
 #if !defined __link
-	static u32 size(const char * path);
+    static u32 size(const var::ConstString & path);
 #else
-    static u32 size(const char * path, link_transport_mdriver_t * driver);
+    static u32 size(const var::ConstString & path, link_transport_mdriver_t * driver);
 #endif
 
 
@@ -203,7 +204,7 @@ public:
 	 * @param flags The flags used to open the flag (e.g. File::READONLY)
 	 * @return Zero on success
 	 */
-    virtual int open(const char * name, int flags = RDWR);
+    virtual int open(const var::ConstString & name, int flags = RDWR);
 
 	/*! \details Opens a file.
 	 *
@@ -216,14 +217,14 @@ public:
 	 * file will be closed.
 	 *
 	 */
-	int open(const char * name, int access, int perms);
+    int open(const var::ConstString & name, int access, int perms);
 
 	/*! \details Opens a file for read/write.
 	 *
 	 * @param path The path to the file
 	 *
 	 */
-	inline int open_readwrite(const char * path){
+    inline int open_readwrite(const var::ConstString & path){
 		return open(path, RDWR);
 	}
 
@@ -232,7 +233,7 @@ public:
 	 * @param path The path to the file
 	 *
 	 */
-	inline int open_readonly(const char * path){
+    inline int open_readonly(const var::ConstString & path){
 		return open(path, READONLY);
 	}
 
@@ -241,7 +242,7 @@ public:
 	 * @param path The path to the file
 	 *
 	 */
-	inline int open_append(const char * path){
+    inline int open_append(const var::ConstString & path){
 		return open(path, APPEND | CREATE | WRITEONLY);
 	}
 
@@ -251,7 +252,7 @@ public:
 	 * @param overwrite Overwrite (truncate) the existing file (defaults to true)
 	 * @param perms The permissions to assign to the newly created file
 	 */
-	int create(const char * path, bool overwrite = true, int perms = 0666);
+    int create(const var::ConstString & path, bool overwrite = true, int perms = 0666);
 
 	/*! \details Returns the file size. */
 	u32 size() const;
@@ -330,11 +331,11 @@ public:
 	 * @param str The string to write
 	 * @return The number of bytes written
 	 */
-	int write(const var::String & str) const {
-		return write(str.c_str(), str.size());
+    int write(const var::ConstString & str) const {
+        return write(str.str(), str.length());
 	}
 
-	File& operator<<(const char * a){ write(a, strlen(a)); return *this; }
+    File& operator<<(const var::ConstString & a){ write(a.str(), a.length()); return *this; }
 
 	/*! \details Seeks to a location in the file or on the device. */
 	virtual int seek(int loc, int whence = LINK_SEEK_SET) const;
@@ -420,15 +421,15 @@ public:
      *
      */
 #if !defined __link
-    static int rename(var::String & old_path, var::String & new_path);
+    static int rename(const var::ConstString & old_path, const var::ConstString & new_path);
 #else
-    static int rename(const var::String & old_path, const var::String & new_path, link_transport_mdriver_t * driver = 0);
+    static int rename(const var::ConstString & old_path, const var::ConstString & new_path, link_transport_mdriver_t * driver = 0);
 #endif
 
 
 protected:
 
-    static int copy(File & source, File & dest, const var::String & source_path, const var::String & dest_path);
+    static int copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path);
 
     enum {
         GETS_BUFFER_SIZE = 128

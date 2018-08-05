@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include "../api/SysObject.hpp"
 #include "../chrono/ClockTime.hpp"
+#include "../var/ConstString.hpp"
 
 namespace sys {
 

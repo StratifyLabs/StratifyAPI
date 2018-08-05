@@ -55,7 +55,10 @@ public:
      *
      */
     const T & at(u32 pos) const {
-        return at(pos);
+        if( pos < count() ){
+            return *(vector_data_const() + pos);
+        }
+        return *vector_data_const();
     }
 
     /*! \details Provides un-bounded access to the specified element (read-only).

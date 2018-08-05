@@ -8,6 +8,7 @@
 
 #include "../ev/Event.hpp"
 #include "../api/UiObject.hpp"
+#include "../chrono/MicroTime.hpp"
 
 namespace ui {
 
@@ -49,7 +50,7 @@ public:
 	/*! \details Returns the duration of the last button press.
 	 * This method will only return a non-zero value once per button press.
 	 */
-    virtual u32 get_duration() = 0;
+    virtual chrono::MicroTime get_duration() = 0;
 
 	/*! \details Returns true if the button has been pressed. This will
 	 * only return true once per button press.

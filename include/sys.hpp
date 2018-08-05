@@ -23,14 +23,15 @@ namespace sys {}
 #include "sys/Sched.hpp"
 #include "sys/Timer.hpp"
 #include "sys/Time.hpp"
-#include "sys/Task.hpp"
 #include "sys/Messenger.hpp"
 #include "sys/Trace.hpp"
 #else
 #include "sys/Link.hpp"
 #endif
 
+#include "sys/Task.hpp"
 #include "sys/Cli.hpp"
+#include "sys/Printer.hpp"
 #include "sys/Sys.hpp"
 #include "sys/Appfs.hpp"
 #include "sys/Dir.hpp"

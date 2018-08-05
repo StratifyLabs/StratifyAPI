@@ -4,6 +4,7 @@
 #include "../api/SmObject.hpp"
 #include "../var/Data.hpp"
 #include "../sys/Timer.hpp"
+#include "../var/ConstString.hpp"
 
 namespace sm {
 

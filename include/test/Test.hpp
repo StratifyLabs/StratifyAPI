@@ -7,6 +7,7 @@
 #include "../chrono/MicroTime.hpp"
 #include "../chrono/Timer.hpp"
 #include "../sys/Cli.hpp"
+#include "../var/ConstString.hpp"
 
 namespace test {
 
