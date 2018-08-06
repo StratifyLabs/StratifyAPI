@@ -7,6 +7,8 @@ set(SOURCELIST
   ${SOURCES_PREFIX}/FileInfo.cpp
 	${SOURCES_PREFIX}/Sys.cpp
 	${SOURCES_PREFIX}/Task.cpp
+	${SOURCES_PREFIX}/Thread.cpp
+	${SOURCES_PREFIX}/Mutex.cpp
 	${SOURCES_PREFIX}/Printer.cpp)
 
 
@@ -14,9 +16,7 @@ if( ${SOS_BUILD_CONFIG} STREQUAL arm )
     set(SOURCELIST ${SOURCELIST}
 			${SOURCES_PREFIX}/Assets.cpp
       ${SOURCES_PREFIX}/Sem.cpp
-      ${SOURCES_PREFIX}/Thread.cpp
       ${SOURCES_PREFIX}/Sched.cpp
-      ${SOURCES_PREFIX}/Mutex.cpp
       ${SOURCES_PREFIX}/Mq.cpp
 			${SOURCES_PREFIX}/Messenger.cpp
 			${SOURCES_PREFIX}/Signal.cpp

@@ -3,7 +3,7 @@
 #ifndef SYS_MUTEX_HPP_
 #define SYS_MUTEX_HPP_
 
-#ifndef __link
+#if !defined __win32
 
 #include "../api/SysObject.hpp"
 #include "../chrono/MicroTime.hpp"
@@ -122,7 +122,9 @@ public:
      * @param clock_time A clock time object that defines the maximum amount of time to wait for a lock
      *
      */
+#if !defined __link
     int lock_timed(const chrono::ClockTime & clock_time);
+#endif
 
     /*! \details Attempts to lock the mutex.
      *

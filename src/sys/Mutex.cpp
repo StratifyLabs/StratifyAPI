@@ -1,6 +1,6 @@
 /* Copyright 2016 tgil All Rights Reserved */
 
-#if !defined __link
+#if !defined __win32
 
 
 #include <time.h>
@@ -81,12 +81,14 @@ int Mutex::lock(){
     return set_error_number_if_error(pthread_mutex_lock(&m_item));
 }
 
+#if !defined __link
 int Mutex::lock_timed(const chrono::ClockTime & clock_time){
     ClockTime calc_time;
     calc_time = Clock::get_time();
     calc_time += clock_time;
     return set_error_number_if_error(pthread_mutex_timedlock(&m_item, calc_time));
 }
+#endif
 
 int Mutex::try_lock(){
     return set_error_number_if_error(pthread_mutex_trylock(&m_item));

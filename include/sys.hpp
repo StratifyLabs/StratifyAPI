@@ -16,10 +16,8 @@ namespace sys {}
 #include "sys/Assets.hpp"
 #include "sys/Aio.hpp"
 #include "sys/Mq.hpp"
-#include "sys/Mutex.hpp"
 #include "sys/Sem.hpp"
 #include "sys/Signal.hpp"
-#include "sys/Thread.hpp"
 #include "sys/Sched.hpp"
 #include "sys/Timer.hpp"
 #include "sys/Time.hpp"
@@ -29,6 +27,8 @@ namespace sys {}
 #include "sys/Link.hpp"
 #endif
 
+#include "sys/Mutex.hpp"
+#include "sys/Thread.hpp"
 #include "sys/Task.hpp"
 #include "sys/Cli.hpp"
 #include "sys/Printer.hpp"

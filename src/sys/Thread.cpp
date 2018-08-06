@@ -1,6 +1,6 @@
 //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#if !defined __link
+#if !defined __win32
 
 #include <errno.h>
 #include "sys/Thread.hpp"
@@ -169,7 +169,11 @@ int Thread::wait(void**ret, int interval){
         } else {
             //just keep sampling until the thread completes
             while( is_running() ){
+#if defined __link
+                usleep(interval*1000);
+#else
                 Timer::wait_milliseconds(interval);
+#endif
             }
         }
     }
@@ -196,7 +200,7 @@ int Thread::reset(){
     return -1;
 }
 
-int Thread::join(int ident, void ** value_ptr){
+int Thread::join(pthread_t ident, void ** value_ptr){
     void * tmp_ptr;
     void ** ptr;
     if( value_ptr == 0 ){

@@ -5,7 +5,7 @@
 
 
 
-#ifndef __link
+#if !defined __win32
 
 #include "../api/WorkObject.hpp"
 #include <mcu/types.h>
@@ -197,7 +197,7 @@ public:
      *
      *
 	 */
-	static int join(int ident, void ** value_ptr = 0);
+    static int join(pthread_t ident, void ** value_ptr = 0);
 
     /*! \details Joins the calling thread to the specified thread.
      *
@@ -270,11 +270,39 @@ private:
 	int init(int stack_size, bool detached);
     int reset();
 
-    void set_id_pending(){ m_id = ID_PENDING; }
-	void set_id_error(){ m_id = ID_ERROR; }
+#if defined __link
+    int m_status;
+#endif
 
-    bool is_id_pending() const { return m_id == ID_PENDING; }
-    bool is_id_error() const { return m_id == ID_ERROR; }
+    void set_id_pending(){
+#if defined __link
+        m_status = ID_PENDING;
+#else
+        m_id = ID_PENDING;
+#endif
+    }
+    void set_id_error(){
+#if defined __link
+        m_status = ID_ERROR;
+#else
+        m_id = ID_ERROR;
+#endif
+    }
+
+    bool is_id_pending() const {
+#if defined __link
+        return m_status == ID_PENDING;
+#else
+        return m_id == ID_PENDING;
+#endif
+    }
+    bool is_id_error() const {
+#if defined __link
+        return m_status == ID_ERROR;
+#else
+        return m_id == ID_ERROR;
+#endif
+    }
 };
 
 }
