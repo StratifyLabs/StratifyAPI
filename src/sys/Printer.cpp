@@ -16,10 +16,11 @@ Printer::Printer(){
     m_base = BASE10;
     m_o_flags = 0;
     m_indent = 0;
+    m_progress_width = 50;
 }
 
 Printer::~Printer(){
-   print("\n");
+    print("\n");
 }
 
 void Printer::print_indentation(){
@@ -165,7 +166,7 @@ Printer & Printer::operator << (const var::Vector<var::String> & a){
 Printer & Printer::operator << (const sys::SysInfo & a ){
     print_indented("Name", "%s", a.name());
     print_indented("Serial Number", F3208X F3208X F3208X F3208X,
-           a.serial_number().sn[3],
+                   a.serial_number().sn[3],
             a.serial_number().sn[2],
             a.serial_number().sn[1],
             a.serial_number().sn[0]);
@@ -182,8 +183,24 @@ Printer & Printer::operator << (const sys::SysInfo & a ){
 }
 
 bool Printer::update_progress(int progress, int total){
+    const int width = m_progress_width;
+    printf("\r[");
+    for(u32 i = 0; i < width; i++){
+        if( (total != 0) && (i < (progress*width+total/2)/total) ){
+            printf("#");
+        } else {
+            printf(" ");
+        }
+    }
+    printf("]");
+    fflush(stdout);
 
-    print("%d of %d\r", progress, total);
+    if( (progress >= total) || (total == 0) ){
+        for(u32 i = 0; i < width+2; i++){
+            printf("\b \b");
+        }
+        fflush(stdout);
+    }
 
     return false;
 }
@@ -210,7 +227,7 @@ Printer & Printer::key(const char * key, const char * fmt, ...){
 Printer & Printer::message(const char * fmt, ...){
     va_list list;
     va_start(list, fmt);
-    vprint_indented("MESSAGE", fmt, list);
+    vprint_indented("message", fmt, list);
     va_end(list);
     return *this;
 }
@@ -218,7 +235,7 @@ Printer & Printer::message(const char * fmt, ...){
 Printer & Printer::warning(const char * fmt, ...){
     va_list list;
     va_start(list, fmt);
-    vprint_indented("WARNING", fmt, list);
+    vprint_indented("warning!", fmt, list);
     va_end(list);
     return *this;
 }
@@ -226,7 +243,7 @@ Printer & Printer::warning(const char * fmt, ...){
 Printer & Printer::error(const char * fmt, ...){
     va_list list;
     va_start(list, fmt);
-    vprint_indented("ERROR", fmt, list);
+    vprint_indented("!error!", fmt, list);
     va_end(list);
     return *this;
 }
@@ -234,7 +251,7 @@ Printer & Printer::error(const char * fmt, ...){
 Printer & Printer::fatal(const char * fmt, ...){
     va_list list;
     va_start(list, fmt);
-    vprint_indented("FATAL", fmt, list);
+    vprint_indented("~fatal~", fmt, list);
     va_end(list);
     return *this;
 }

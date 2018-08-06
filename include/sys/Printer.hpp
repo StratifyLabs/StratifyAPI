@@ -35,7 +35,7 @@ class SysInfo;
 class Cli;
 
 
-#define PRINTER_TRACE(printer) (printer.print("%s():%d", __FUNCTION__, __LINE__))
+#define PRINTER_TRACE(printer) (printer.print("\n%s():%d", __FUNCTION__, __LINE__))
 
 class Printer : public api::SysWorkObject {
 public:
@@ -115,6 +115,7 @@ protected:
 
 private:
 
+    u16 m_progress_width;
     u16 m_indent;
     u8 m_base;
     bool m_is_json;

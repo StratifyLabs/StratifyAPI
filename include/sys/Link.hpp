@@ -272,6 +272,10 @@ public:
      */
     bool is_bootloader() const { return m_is_bootloader; }
 
+    bool is_connected_and_is_not_bootloader() const {
+        return is_connected() && !is_bootloader();
+    }
+
     bool is_legacy() const { return m_is_legacy; }
 
 
