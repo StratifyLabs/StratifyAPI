@@ -4,6 +4,7 @@
 #include <sos/dev/switchboard.h>
 #include <sos/fs/sysfs.h>
 #include "Device.hpp"
+#include "../var/ConstString.hpp"
 
 namespace hal {
 
@@ -30,7 +31,7 @@ public:
      * \param loc The channel/location to read or write
      * \param priority Zero for default priority
      */
-    SwitchboardTerminal(const char * name, int loc = 0, s8 priority = 0){
+    SwitchboardTerminal(const var::ConstString & name, int loc = 0, s8 priority = 0){
         set_name(name);
         set_loc(loc);
         set_priority(priority);
@@ -46,9 +47,9 @@ public:
      * \details Sets the name of the terminal.
      * \param name A pointer to the terminal name
      */
-    void set_name(const char * name){
+    void set_name(const var::ConstString & name){
         m_terminal.name[LINK_NAME_MAX-1]=0; //guarantee zero termination
-        strncpy(m_terminal.name, name, LINK_NAME_MAX-1);
+        strncpy(m_terminal.name, name.str(), LINK_NAME_MAX-1);
     }
 
     /*!
@@ -60,7 +61,7 @@ public:
     void set_priority(s8 priority){ m_terminal.priority = priority; }
 
     /*! \details Returns the terminal's name. */
-    const char * name() const { return m_terminal.name; }
+    var::ConstString name() const { return m_terminal.name; }
     /*! \details Returns the terminal interrupt priority. */
     s8 priority() const { return m_terminal.priority; }
     /*! \details Returns the location/channel value for the terminal. */
@@ -227,7 +228,7 @@ public:
      * \endcode
      *
      */
-    int open(const char * name = "/dev/switchboard0");
+    int open(const var::ConstString & name = "/dev/switchboard0");
 
     /*! \details Gets the connection specified by id. */
     SwitchboardConnection get_connection(u16 id) const;

@@ -109,7 +109,7 @@ public:
      *
      */
     String& operator=(const String & a){
-        assign(a);
+        assign(a.str());
         return *this;
     }
 

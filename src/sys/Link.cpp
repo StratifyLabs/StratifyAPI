@@ -96,14 +96,14 @@ var::Vector<var::String> Link::get_port_list(){
 }
 
 
-int Link::connect(const var::String & path, const var::String & sn, bool is_legacy){
+int Link::connect(const var::ConstString & path, const var::ConstString & sn, bool is_legacy){
     int err;
 
     reset_progress();
 
     if ( m_driver->dev.handle == LINK_PHY_OPEN_ERROR ){
 
-        m_driver->dev.handle = m_driver->dev.open(path.c_str(), 0);
+        m_driver->dev.handle = m_driver->dev.open(path.str(), 0);
         if( m_driver->dev.handle == LINK_PHY_OPEN_ERROR ){
             m_error_message = "Failed to Connect to Device";
             return -1;
@@ -130,6 +130,7 @@ int Link::connect(const var::String & path, const var::String & sn, bool is_lega
         m_is_bootloader = false;
     } else {
         m_error_message.sprintf("Failed to check for Bootloader status (%d)", link_errno);
+        m_driver->dev.close(&m_driver->dev.handle);
         return -1;
     }
 
@@ -153,7 +154,17 @@ int Link::connect(const var::String & path, const var::String & sn, bool is_lega
 }
 
 
-int Link::open(const var::String & file, int flags, link_mode_t mode){
+int Link::reconnect(u32 retries, u32 delay_ms){
+    for(u32 i = 0; i < retries; i++){
+        if( connect(path(), serial_no()) >= 0 ){
+            return 0;
+        }
+        driver()->dev.wait(delay_ms);
+    }
+    return -1;
+}
+
+int Link::open(const var::ConstString & file, int flags, link_mode_t mode){
     int err;
     if ( m_is_bootloader ){
         return -1;
@@ -239,7 +250,7 @@ int Link::read_flash(int addr, void * buf, int nbyte){
 
 }
 
-int Link::get_is_executing(const var::String & name){
+int Link::get_is_executing(const var::ConstString & name){
     sys_taskattr_t task;
     int id;
     int err;
@@ -451,7 +462,7 @@ int Link::set_time(struct tm * gt){
 }
 
 //Operations on the device
-int Link::mkdir(const var::String & directory, link_mode_t mode){
+int Link::mkdir(const var::ConstString & directory, link_mode_t mode){
     int err;
     if ( m_is_bootloader ){
         return -1;
@@ -468,7 +479,7 @@ int Link::mkdir(const var::String & directory, link_mode_t mode){
     return check_error(err);
 }
 
-int Link::rmdir(const var::String & directory){
+int Link::rmdir(const var::ConstString & directory){
     int err;
     if ( m_is_bootloader ){
         return -1;
@@ -485,7 +496,7 @@ int Link::rmdir(const var::String & directory){
     return check_error(err);
 }
 
-var::Vector<var::String> Link::get_dir_list(const var::String & directory){
+var::Vector<var::String> Link::get_dir_list(const var::ConstString & directory){
 
     var::Vector<var::String> list;
     int dirp;
@@ -650,7 +661,7 @@ int Link::closedir(int dirp){
     return check_error(err);
 }
 
-int Link::symlink(const var::String & oldPath, const var::String & newPath){
+int Link::symlink(const var::ConstString & oldPath, const var::ConstString & newPath){
     int err;
     if ( m_is_bootloader ){
         return -1;
@@ -667,7 +678,7 @@ int Link::symlink(const var::String & oldPath, const var::String & newPath){
     return check_error(err);
 }
 
-int Link::unlink(const var::String & filename){
+int Link::unlink(const var::ConstString & filename){
     int err;
     if ( m_is_bootloader ){
         return -1;
@@ -684,7 +695,7 @@ int Link::unlink(const var::String & filename){
     return check_error(err);
 }
 
-int Link::copy(const var::String & src, const var::String & dest, link_mode_t mode, bool toDevice, bool (*update)(void*, int, int), void * context){
+int Link::copy(const var::ConstString & src, const var::ConstString & dest, link_mode_t mode, bool toDevice, bool (*update)(void*, int, int), void * context){
     FILE * hostFile;
     int err;
     int deviceFile;
@@ -847,7 +858,7 @@ int Link::copy(const var::String & src, const var::String & dest, link_mode_t mo
     return 0;
 }
 
-int Link::run_app(const var::String & path){
+int Link::run_app(const var::ConstString & path){
     int err;
     if ( m_is_bootloader ){
         return -1;
@@ -877,7 +888,7 @@ int Link::run_app(const var::String & path){
     return err;
 }
 
-int Link::format(const var::String & path){
+int Link::format(const var::ConstString & path){
     int err;
     if ( m_is_bootloader ){
         return -1;
@@ -916,6 +927,7 @@ int Link::kill_pid(int pid, int signo){
 int Link::reset(){
     lock_device();
     link_reset(m_driver);
+
     unlock_device();
     m_driver->dev.handle = LINK_PHY_OPEN_ERROR;
     return 0;
@@ -929,7 +941,7 @@ int Link::reset_bootloader(){
     return 0;
 }
 
-int Link::rename(const var::String & old_path, const var::String & new_path){
+int Link::rename(const var::ConstString & old_path, const var::ConstString & new_path){
     int err;
     if ( m_is_bootloader ){
         return -1;
@@ -946,7 +958,7 @@ int Link::rename(const var::String & old_path, const var::String & new_path){
     return check_error(err);
 }
 
-int Link::chown(const var::String & path, int owner, int group){
+int Link::chown(const var::ConstString & path, int owner, int group){
     int err;
     if ( m_is_bootloader ){
         return -1;
@@ -963,7 +975,7 @@ int Link::chown(const var::String & path, int owner, int group){
     return check_error(err);
 }
 
-int Link::chmod(const var::String & path, int mode){
+int Link::chmod(const var::ConstString & path, int mode){
     int err;
     if ( m_is_bootloader ){
         m_error_message = "Target is a bootloader";
@@ -1002,7 +1014,7 @@ int Link::get_bootloader_attr(bootloader_attr_t & attr){
     return 0;
 }
 
-int Link::update_os(const var::String & path, bool verify, bool (*update)(void*,int,int), void * context){
+int Link::update_os(const var::ConstString & path, bool verify, bool (*update)(void*,int,int), void * context){
     int err;
     uint32_t loc;
     int bytesRead;
@@ -1064,12 +1076,15 @@ int Link::update_os(const var::String & path, bool verify, bool (*update)(void*,
     }
 
     lock_device();
+    if( update ){ update(context, 0,100); }
     //first erase the flash
     err = link_eraseflash(m_driver);
+
 
     if ( err < 0 ){
         unlock_device();
         fclose(hostFile);
+        if( update ){ update(context, 0,0); }
         m_error_message = "Failed to erase flash";
         return check_error(err);
     }
@@ -1159,6 +1174,7 @@ int Link::update_os(const var::String & path, bool verify, bool (*update)(void*,
 
         //write the stack address
         if( (err = link_writeflash(m_driver, startAddr, stackaddr, 256)) != 256 ){
+            if( update ){ update(context, 0,0); }
             m_error_message.sprintf("Failed to write stack addr", err);
             return -1;
         }
@@ -1168,6 +1184,7 @@ int Link::update_os(const var::String & path, bool verify, bool (*update)(void*,
             //verify the stack address
             if( (err = link_readflash(m_driver, startAddr, buffer, 256)) != 256 ){
                 m_error_message.sprintf("Failed to write stack addr", err);
+                if( update ){ update(context, 0,0); }
                 fclose(hostFile);
                 unlock_device();
                 return -1;
@@ -1176,6 +1193,7 @@ int Link::update_os(const var::String & path, bool verify, bool (*update)(void*,
             if( memcmp(buffer, stackaddr, 256) != 0 ){
                 link_eraseflash(m_driver);
                 m_error_message = "Failed to verify stack address";
+                if( update ){ update(context, 0,0); }
                 fclose(hostFile);
                 unlock_device();
                 return -1;
@@ -1195,10 +1213,12 @@ int Link::update_os(const var::String & path, bool verify, bool (*update)(void*,
         link_eraseflash(m_driver);
     }
 
+    if( update ){ update(context, 0,0); }
+
     return check_error(err);
 }
 
-int Link::update_binary_install_options(const var::String & path, const var::String & name, const var::String & id, int version, bool startup, bool run_in_ram, int ram_size){
+int Link::update_binary_install_options(const var::ConstString & path, const var::ConstString & name, const var::ConstString & id, int version, bool startup, bool run_in_ram, int ram_size){
     appfs_file_t appfs_file;
     FILE * binary_file;
 
@@ -1254,7 +1274,7 @@ int Link::update_binary_install_options(const var::String & path, const var::Str
     return 0;
 }
 
-int Link::install_app(const var::String & source, const var::String & dest, const var::String & name, bool (*update)(void*,int,int), void * context){
+int Link::install_app(const var::ConstString & source, const var::ConstString & dest, const var::ConstString & name, bool (*update)(void*,int,int), void * context){
     FILE * source_file;
     ssize_t source_size;
     int bytes_read;
@@ -1281,7 +1301,7 @@ int Link::install_app(const var::String & source, const var::String & dest, cons
     source_size = ftell(source_file);
     fseek(source_file, 0, SEEK_SET);
 
-    if( dest.substr(0, strlen("/app")) == var::String("/app")){
+    if( dest.find("/app") == 0 ){
         fd = open("/app/.install", LINK_O_WRONLY);
         if( fd < 0 ){
             fclose(source_file);

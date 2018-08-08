@@ -399,7 +399,7 @@ int Xml::find_context(const char * str, const context_t & current, context_t & t
 }
 
 //private workhorse functions
-int Xml::parse_ref_array(String & name, const char * str){
+int Xml::parse_ref_array(String & name, const ConstString & str){
 	String s0;
 	int ret;
 	ret = parse_ref(name, s0, str, "[]");
@@ -409,7 +409,7 @@ int Xml::parse_ref_array(String & name, const char * str){
 	return ret;
 }
 
-int Xml::parse_ref_attr(String & name, String & attr_name, const char * str){
+int Xml::parse_ref_attr(String & name, String & attr_name, const ConstString & str){
 	String s0;
 	int ret;
 	ret = parse_ref(name, attr_name, str, "()");
@@ -419,7 +419,7 @@ int Xml::parse_ref_attr(String & name, String & attr_name, const char * str){
 	return 0;
 }
 
-int Xml::parse_ref(String & name, String & value, const char * str, const char * enclosing){
+int Xml::parse_ref(String & name, String & value, const ConstString & str, const ConstString & enclosing){
 	String s0;
 	int open_bracket;
 	int close_bracket;

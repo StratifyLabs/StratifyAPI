@@ -5,7 +5,7 @@ using namespace hal;
 Switchboard::Switchboard(){}
 
 
-int Switchboard::open(const char * name){
+int Switchboard::open(const var::ConstString & name){
     int ret;
     ret = File::open(name, RDWR);
     if (ret < 0 ){ return ret; }
@@ -173,7 +173,7 @@ int Switchboard::destroy_connection(SwitchboardConnection & connection){
 
 void SwitchboardConnection::print() const {
     if( id() != invalid_id() ){
-        printf("%s -> %s total:" F32D " size:" F32D "\n", input().name(), output().name(), input().bytes_transferred(), nbyte());
+        printf("%s -> %s total:" F32D " size:" F32D "\n", input().name().str(), output().name().str(), input().bytes_transferred(), nbyte());
     } else {
         printf("Invalid Connection ID\n");
     }

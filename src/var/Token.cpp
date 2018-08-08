@@ -11,13 +11,13 @@ Token::Token(){
     m_is_count_empty_tokens = false;
 }
 
-Token::Token(char * mem, u32 s, const ConstString & src, const char * delim, const char * ignore, bool count_empty) : String(mem, s, false){
+Token::Token(char * mem, u32 s, const ConstString & src, const ConstString & delim, const ConstString & ignore, bool count_empty) : String(mem, s, false){
 	init_members();
 	m_is_count_empty_tokens = count_empty;
     clear(); assign(src); parse(delim, ignore);
 }
 
-Token::Token(const ConstString & src, const char * delim, const char * ignore, bool count_empty) : String(src){
+Token::Token(const ConstString & src, const ConstString & delim, const ConstString & ignore, bool count_empty) : String(src){
     init_members();
 	m_is_count_empty_tokens = count_empty;
     parse(delim, ignore);
@@ -40,17 +40,15 @@ void Token::init_members(){
 }
 
 
-void Token::parse(const char * delim, const char * ignore){
+void Token::parse(const ConstString & delim, const ConstString & ignore){
 	char * p;
 	char * end;
 	unsigned int len0, len1;
 	bool on_token = false;
 	char end_match;
 	m_num_tokens = 0;
-    len0 = strlen(delim);
-	if( ignore ){
-		len1 = strlen(ignore);
-	}
+    len0 = delim.length();
+    len1 = ignore.length();
 
 	p = cdata();
     m_string_size = String::length();
@@ -59,7 +57,7 @@ void Token::parse(const char * delim, const char * ignore){
 		m_num_tokens++;
 	}
 	while( p < end ){
-		if( ignore != 0 ){
+        if( len1 > 0 ){
 			//this can be used to skip items in quotes "ignore=this"
 			if( belongs_to(*p, ignore, len1) ){
 				end_match = *p;

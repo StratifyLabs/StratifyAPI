@@ -6,6 +6,7 @@
 
 #include <unistd.h>
 #include "../var/String.hpp"
+#include "../var/ConstString.hpp"
 #include "../api/FmtObject.hpp"
 
 namespace fmt {
@@ -290,9 +291,9 @@ private:
 
 	bool is_empty_element_tag(context_t & target) const;
 
-	static int parse_ref_array(var::String & name, const char * str);
-	static int parse_ref_attr(var::String & name, var::String & attr_name, const char * str);
-	static int parse_ref(var::String & name, var::String & value, const char * str, const char * enclosing);
+    static int parse_ref_array(var::String & name, const var::ConstString & str);
+    static int parse_ref_attr(var::String & name, var::String & attr_name, const var::ConstString & str);
+    static int parse_ref(var::String & name, var::String & value, const var::ConstString & str, const var::ConstString & enclosing);
 
 	static int check_chars(const char * src, const char * allowed);
 

@@ -28,18 +28,18 @@ public:
     bool is_valid() const { return cpu_frequency() != 0; }
     static SysInfo get();
 
-    const char * name() const { return m_info.name; }
-    const char * system_version() const { return m_info.sys_version; }
-    const char * bsp_version() const { return m_info.sys_version; }
-    const char * kernel_version() const { return m_info.kernel_version; }
-    const char * sos_version() const { return m_info.kernel_version; }
-    const char * arch() const { return m_info.arch; }
-    const char * cpu_architecture() const { return m_info.arch; }
+    var::ConstString name() const { return m_info.name; }
+    var::ConstString system_version() const { return m_info.sys_version; }
+    var::ConstString bsp_version() const { return m_info.sys_version; }
+    var::ConstString kernel_version() const { return m_info.kernel_version; }
+    var::ConstString sos_version() const { return m_info.kernel_version; }
+    var::ConstString arch() const { return m_info.arch; }
+    var::ConstString cpu_architecture() const { return m_info.arch; }
     u32 cpu_frequency() const { return m_info.cpu_freq; }
     u32 application_signature() const { return m_info.signature; }
-    const char * bsp_git_hash() const { return m_info.bsp_git_hash; }
-    const char * sos_git_hash() const { return m_info.sos_git_hash; }
-    const char * mcu_git_hash() const { return m_info.mcu_git_hash; }
+    var::ConstString bsp_git_hash() const { return m_info.bsp_git_hash; }
+    var::ConstString sos_git_hash() const { return m_info.sos_git_hash; }
+    var::ConstString mcu_git_hash() const { return m_info.mcu_git_hash; }
 
     mcu_sn_t serial_number() const { return m_info.serial; }
 

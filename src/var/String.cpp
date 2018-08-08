@@ -83,15 +83,16 @@ int String::assign(const char * a){
 }
 
 int String::assign(const char * a, u32 n){
+    //check for null
     if( a != 0 ){
-        if( n == (u32)npos ){
-            n = strlen(a);
+
+        if( a != str() ){ //check for assignment to self - no action needed
+            if( n == (u32)npos ){ n = strlen(a); }
+            if( set_capacity(n) < 0 ){ return -1; }
+            clear();
+            strncpy(cdata(), a, n);
         }
-        if( set_capacity(n) < 0 ){
-            return -1;
-        }
-        clear();
-        strncpy(cdata(), a, n);
+
     } else {
         clear();
     }

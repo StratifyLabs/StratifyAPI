@@ -64,12 +64,14 @@ public:
      * @param is_legacy True if connected to older devices
      *
      */
-    int connect(const var::String & path,
-             const var::String & serial_number,
+    int connect(const var::ConstString & path,
+             const var::ConstString & serial_number,
              bool is_legacy = false);
 
     /*! \details Reconnects to the last known path and serial number. */
     int reinit(){ return connect(path(), serial_no()); }
+
+    int reconnect(u32 retries = 5, u32 delay_ms = 500);
 
     /*! \details This disconnects from the device.  After calling this,
      * other applications can access the device.
@@ -97,18 +99,18 @@ public:
     /*! \details Creates a directory on the target device.
      *
      */
-    int mkdir(const var::String & directory /*! The directory name */,
+    int mkdir(const var::ConstString & directory /*! The directory name */,
               link_mode_t mode /*! The access permissions */);
 
     /*! \details Removes a directory on the target device.
      *
      */
-    int rmdir(const var::String & directory /*! The directory name (must be empty) */); //Directory must be empty
+    int rmdir(const var::ConstString & directory /*! The directory name (must be empty) */); //Directory must be empty
 
     /*! \details Deletes a file on the target device.
      *
      */
-    int unlink(const var::String & filename /*! The filename to delete */);
+    int unlink(const var::ConstString & filename /*! The filename to delete */);
 
     /*! \details Creates a symbolic link on the device.
      * \note Stratify OS does not currently support symbolic links.  This function will
@@ -118,11 +120,11 @@ public:
      *
      * \return Zero on sucess.
      */
-    int symlink(const var::String & oldPath /*! The existing path */,
-                const var::String & newPath /*! The path to the new link */);
+    int symlink(const var::ConstString & oldPath /*! The existing path */,
+                const var::ConstString & newPath /*! The path to the new link */);
 
     /*! \details Loads the entries of a directory. */
-    var::Vector<var::String> get_dir_list(const var::String & directory);
+    var::Vector<var::String> get_dir_list(const var::ConstString & directory);
 
     /*! \details Converts the permissions to a
      * string of the format:
@@ -164,8 +166,8 @@ public:
      *
      * \return Zero on success
      */
-    int copy(const var::String & src /*! The path to the source file */,
-             const var::String & dest /*! The path to the destination file */,
+    int copy(const var::ConstString & src /*! The path to the source file */,
+             const var::ConstString & dest /*! The path to the destination file */,
              link_mode_t mode /*! The access permissions if copying to the device */,
              bool to_device = true /*! When true, copy is from host to device */,
              bool (*update)(void *, int, int) = 0,
@@ -182,7 +184,7 @@ public:
      * \param context Argument to pass to update callback
      * \return Zero on success
      */
-    int copy_file_to_device(const var::String & src, const var::String & dest, link_mode_t mode, bool (*update)(void*,int,int) = 0, void * context = 0){
+    int copy_file_to_device(const var::ConstString & src, const var::ConstString & dest, link_mode_t mode, bool (*update)(void*,int,int) = 0, void * context = 0){
         return copy(src, dest, mode, true, update, context);
     }
 
@@ -196,7 +198,7 @@ public:
      * \param context Argument to pass to update callback
      * \return Zero on success
      */
-    int copy_file_from_device(const var::String & src, const var::String & dest, link_mode_t mode, bool (*update)(void*,int,int) = 0, void * context = 0){
+    int copy_file_from_device(const var::ConstString & src, const var::ConstString & dest, link_mode_t mode, bool (*update)(void*,int,int) = 0, void * context = 0){
         return copy(src, dest, mode, false, update, context);
     }
 
@@ -204,13 +206,13 @@ public:
      *
      * \return Zero on success
      */
-    int format(const var::String & path); //Format the drive
+    int format(const var::ConstString & path); //Format the drive
 
     /*! \details Funs an application on the target device.
      *
      * \return The PID of the new process or less than zero for an error
      */
-    int run_app(const var::String & path);
+    int run_app(const var::ConstString & path);
 
 
     /*! \details Opens a file (or device such as /dev/adc0) on the target device.
@@ -242,7 +244,7 @@ public:
      *
      *
      */
-    int open(const var::String & file /*! The name of the file to open */,
+    int open(const var::ConstString & file /*! The name of the file to open */,
              int flags /*! The access flags such as LINK_O_RDWR */,
              link_mode_t mode = 0 /*! The access permissions when creating a new file */);
 
@@ -266,9 +268,9 @@ public:
      */
     int write(int fd, const void * buf, int nbyte);
 
-    /*! \details Checks to see if the target is in bootloader mode.
+    /*! \details Checks to see if the target is in = mode.
      *
-     * \return Non zero if bootloader mode is active.
+     * \return Non zero if = mode is active.
      */
     bool is_bootloader() const { return m_is_bootloader; }
 
@@ -335,7 +337,7 @@ public:
      * @param name The name of the application to find the pid
      * @return The PID or -1 if the application is not currently running
      */
-    int get_pid(const var::String & name){ return get_is_executing(name); }
+    int get_pid(const var::ConstString & name){ return get_is_executing(name); }
 
     /*! \details Resets the device (connection will be terminated).
      *
@@ -376,7 +378,7 @@ public:
      *
      * \return Zero on success
      */
-    int rename(const var::String & old_path, const var::String & new_path);
+    int rename(const var::ConstString & old_path, const var::ConstString & new_path);
 
     /*! \details Changes the ownership of a file.
      * \return Zero on success.
@@ -384,14 +386,14 @@ public:
      * \note Ownership is not supported on all filesystems.
      *
      */
-    int chown(const var::String & path, int owner, int group);
+    int chown(const var::ConstString & path, int owner, int group);
 
     /*! \details Changes the mode of a file.
      * \return Zero on success.
      *
      * \note Ownership is not supported on all filesystems.
      */
-    int chmod(const var::String & path, int mode);
+    int chmod(const var::ConstString & path, int mode);
 
     /*! \details Checks to see if a process called \a name is running.
      *
@@ -399,7 +401,7 @@ public:
      *
      * \return The pid of the running process or -1 if no processes match the name
      */
-    int get_is_executing(const var::String & name);
+    int get_is_executing(const var::ConstString & name);
 
     /*!
      * \details Updates the operating system.
@@ -414,7 +416,7 @@ public:
      * before calling this method.
      *
      */
-    int update_os(const var::String & path, bool verify, bool (*update)(void*,int,int) = 0, void * context = 0);
+    int update_os(const var::ConstString & path, bool verify, bool (*update)(void*,int,int) = 0, void * context = 0);
 
     /*! \details Returns the driver needed by other API objects.
      *
@@ -458,7 +460,7 @@ public:
      * @param ram_size Number of bytes the app needs for RAM (excluding code if run_in_ram is true)
      * @return Zero on success or -1 with error() set to an appropriate message
      */
-    int update_binary_install_options(const var::String & path, const var::String & name, const var::String & id, int version, bool startup, bool run_in_ram, int ram_size);
+    int update_binary_install_options(const var::ConstString & path, const var::ConstString & name, const var::ConstString & id, int version, bool startup, bool run_in_ram, int ram_size);
 
     /*! \details Installs a binary to the specified location.
      *
@@ -477,7 +479,7 @@ public:
      * it can be executed.
      *
      */
-    int install_app(const var::String & source, const var::String & dest, const var::String & name, bool (*update)(void*,int,int) = 0, void * context = 0);
+    int install_app(const var::ConstString & source, const var::ConstString & dest, const var::ConstString & name, bool (*update)(void*,int,int) = 0, void * context = 0);
 
     /*! \details Returns the serial number of the last device
      * that was connected (including the currently connected device)

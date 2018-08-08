@@ -3,6 +3,7 @@
 
 #include "sys/Printer.hpp"
 #include "sys/Sys.hpp"
+#include "sys/Task.hpp"
 #include "sys/Cli.hpp"
 #include "var/Data.hpp"
 #include "var/Vector.hpp"
@@ -162,28 +163,39 @@ Printer & Printer::operator << (const var::Vector<var::String> & a){
     return *this;
 }
 
+Printer & Printer::operator << (const sys::TaskInfo & a){
+    print_indented("name", "%s", a.name());
+    print_indented("id", "%ld", a.id());
+    print_indented("pid", "%ld", a.pid());
+    print_indented("memory size", "%ld", a.memory_size());
+    print_indented("stack size", "%s", a.stack_size());
+    print_indented("heap size", "%s", a.heap_size());
+    return *this;
+}
 
 Printer & Printer::operator << (const sys::SysInfo & a ){
-    print_indented("Name", "%s", a.name());
+    print_indented("Name", "%s", a.name().str());
     print_indented("Serial Number", F3208X F3208X F3208X F3208X,
                    a.serial_number().sn[3],
             a.serial_number().sn[2],
             a.serial_number().sn[1],
             a.serial_number().sn[0]);
-    print_indented("BSP Version",  "%s", a.bsp_version());
-    print_indented("SOS Version",  "%s", a.sos_version());
-    print_indented("CPU Architecture",  "%s", a.cpu_architecture());
-    print_indented("CPU Frequency", F32D, a.cpu_frequency());
-    print_indented("Application Signature", F32X, a.application_signature());
+    if( a.name() != "bootloader" ){
+        print_indented("BSP Version",  "%s", a.bsp_version().str());
+        print_indented("SOS Version",  "%s", a.sos_version().str());
+        print_indented("CPU Architecture",  "%s", a.cpu_architecture().str());
+        print_indented("CPU Frequency", F32D, a.cpu_frequency());
+        print_indented("Application Signature", F32X, a.application_signature());
 
-    print_indented("BSP Git Hash",  "%s", a.bsp_git_hash());
-    print_indented("SOS Git Hash",  "%s", a.sos_git_hash());
-    print_indented("MCU Git Hash",  "%s", a.mcu_git_hash());
+        print_indented("BSP Git Hash",  "%s", a.bsp_git_hash().str());
+        print_indented("SOS Git Hash",  "%s", a.sos_git_hash().str());
+        print_indented("MCU Git Hash",  "%s", a.mcu_git_hash().str());
+    }
     return *this;
 }
 
 bool Printer::update_progress(int progress, int total){
-    const int width = m_progress_width;
+    const u32 width = m_progress_width;
     printf("\r[");
     for(u32 i = 0; i < width; i++){
         if( (total != 0) && (i < (progress*width+total/2)/total) ){
