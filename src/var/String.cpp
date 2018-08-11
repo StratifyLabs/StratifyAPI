@@ -12,9 +12,7 @@
 using namespace var;
 
 String::String(){
-    //set up the minimum size
-    set_capacity(minimum_size()-1);
-    clear();
+    //creates an empty string -- Data class and ConstString class will point to a zero value variable
 }
 
 String::String(u32 capacity){
@@ -67,8 +65,8 @@ int String::sprintf(const char * format, ...){
     return ret;
 }
 
-int String::set_capacity(u32 s){
-    int result = Data::set_capacity(s+1);
+int String::set_size(u32 s){
+    int result = Data::set_size(s+1);
     set_string_pointer(cdata_const());
     return result;
 }

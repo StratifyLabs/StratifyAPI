@@ -9,7 +9,52 @@
 namespace var {
 
 
-
+/*! \brief Constant String Class
+ * \details The ConstString class is basically
+ * just a pointer to a string literal with methods added
+ * that make immuatable strings easier to work with (as
+ * compared to C).
+ *
+ *
+ * Here are a few examples
+ *
+ * \code
+ *
+ * //comparing strings
+ *
+ * const char * c_str0 = "hello";
+ * const char * c_str1 = "world";
+ * ConstString const_string0 = "hello";
+ * ConstString const_string1 = "world";
+ *
+ * if (strcmp(c_str0, c_str1) == 0 ){
+ *   //they are the same
+ * }
+ *
+ * if( const_string0 == const_string1 ){
+ *  //they are the same
+ * }
+ *
+ * //finding strings
+ *
+ * if( const_string1.find("worl") == 0 ){
+ *  //const_string1 starts with "worl"
+ * }
+ *
+ * //converting to numbers
+ * ConstString number_string = "123";
+ *
+ * printf("Number string is %d\n", number_string.atoi());
+ *
+ *
+ * \endcode
+ *
+ * The class var::String inherits ConstString and
+ * adds the ability to dyncamically allocate and
+ * modify strings.
+ *
+ *
+ */
 class ConstString : public api::VarWorkObject
 {
 public:

@@ -217,6 +217,8 @@ public:
 	 *
 	 */
     int set_size(u32 s);
+
+    //doesn't really make sense to set the capacity because it will always jump to the next largest block
     int set_capacity(u32 s){ return set_size(s); }
 
 
@@ -236,6 +238,17 @@ public:
      *
      */
     virtual u32 size() const { return m_size; }
+
+    /*! \details Returns the current capcity of the data storage object.
+     *
+     * @return Number of bytes in the data object
+     *
+     * The capacity of the object will always be greater than
+     * or equal to size().
+     *
+     *
+     */
+    u32 capacity() const { return m_capacity; }
 
     /*! \details Returns a pointer to the data.
 	 * This will return zero if the data is readonly.
@@ -260,12 +273,6 @@ public:
 	 *
 	 */
 	const void * data_const() const { return m_mem; }
-
-    /*! \details Returns the current capcity of the data storage object.
-	 *
-	 * @return Number of bytes in the data object
-	 */
-	u32 capacity() const { return m_capacity; }
 
 	/*! \details Free the memory associated with this object.
 	 * This will only perform any operations if the memory was

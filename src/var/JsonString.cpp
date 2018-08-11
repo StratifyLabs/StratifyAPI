@@ -35,17 +35,17 @@ void JsonString::append_separator(){
 	}
 }
 
-void JsonString::append_object(const char * key){
+void JsonString::append_object(const ConstString & key){
 	String str;
-	str.sprintf("\"%s\": {", key);
+    str.sprintf("\"%s\": {", key.str());
 	append_separator();
     append(str.str());
 	m_is_first = true;
 }
 
-void JsonString::append_array(const char * key){
+void JsonString::append_array(const ConstString & key){
 	String str;
-	str.sprintf("\"%s\": [", key);
+    str.sprintf("\"%s\": [", key.str());
 	append_separator();
     append(str.str());
 	m_is_first = true;
@@ -59,47 +59,45 @@ void JsonString::end_array(){
 	append("]");
 }
 
-void JsonString::append_string(const char * key, const char * value){
+void JsonString::append_string(const ConstString & key, const ConstString & value){
 	String str;
-	str.sprintf("\"%s\": \"");
-	str.append(value);
-	str.append("\"");
+    str.sprintf("\"%s\": \"%s\"", key.str(), value.str());
 	append_separator();
     append(str.str());
 }
 
-void JsonString::append_number(const char * key, int number){
+void JsonString::append_number(const ConstString & key, int number){
 	String str;
-	str.sprintf("\"%s\": \"%d\"", key, number);
+    str.sprintf("\"%s\": \"%d\"", key.str(), number);
 	append_separator();
     append(str.str());
 }
 
-void JsonString::append_float(const char * key, float number){
+void JsonString::append_float(const ConstString & key, float number){
 	String str;
-	str.sprintf("\"%s\": \"%f\"", key, number);
+    str.sprintf("\"%s\": \"%f\"", key.str(), number);
 	append_separator();
     append(str.str());
 }
 
 
-void JsonString::append_true(const char * key){
+void JsonString::append_true(const ConstString & key){
 	String str;
-	str.sprintf("\"%s\":true", key);
+    str.sprintf("\"%s\":true", key.str());
 	append_separator();
     append(str.str());
 }
 
-void JsonString::append_false(const char * key){
+void JsonString::append_false(const ConstString & key){
 	String str;
-	str.sprintf("\"%s\":false", key);
+    str.sprintf("\"%s\":false", key.str());
 	append_separator();
     append(str.str());
 }
 
-void JsonString::append_null(const char * key){
+void JsonString::append_null(const ConstString & key){
 	String str;
-	str.sprintf("\"%s\": null", key);
+    str.sprintf("\"%s\": null", key.str());
 	append_separator();
     append(str.str());
 }
@@ -116,7 +114,7 @@ void JsonString::append_array(){
 	m_is_first = true;
 }
 
-void JsonString::append_string(const char * value){
+void JsonString::append_string(const ConstString & value){
 	append_separator();
 	append("\"");
 	append(value);
