@@ -120,7 +120,7 @@ public:
     u32 len() const { return length(); }
 
     /*! \details Tests if string is empty. */
-    bool is_empty() const { return length() == 0; }
+    bool is_empty() const { return m_string[0] == 0; }
     //compatible with std::string
     bool empty() const { return is_empty(); }
 

@@ -10,7 +10,7 @@ bool Test::m_is_initialized = false;
 bool Test::m_all_test_result = true;
 u32 Test::m_all_test_duration_microseconds = 0;
 
-Test::Test(const char * name, Test * parent){
+Test::Test(const var::ConstString & name, Test * parent){
     //start a JSON object
 
 
@@ -30,7 +30,7 @@ Test::Test(const char * name, Test * parent){
 
     m_test_result = true;
 
-    print("\"%s\": {\n", name);
+    print("\"%s\": {\n", name.str());
     increment_indent();
 
     m_test_duration_microseconds = 0;
@@ -58,8 +58,8 @@ Test::~Test(){
 }
 
 
-void Test::open_case(const char * case_name){
-    print("\"%s\": {\n", case_name);
+void Test::open_case(const var::ConstString & case_name){
+    print("\"%s\": {\n", case_name.str());
     increment_indent();
     m_case_message_number = 0;
     m_case_result = true;
@@ -114,22 +114,22 @@ void Test::print_case_failed(const char * fmt, ...){
     m_case_timer.resume();
 }
 
-void Test::print_case_message_with_key(const char * key, const char * fmt, ...){
+void Test::print_case_message_with_key(const var::ConstString & key, const char * fmt, ...){
     m_case_timer.stop();
     va_list args;
     va_start (args, fmt);
-    vprint_case_message(key, fmt, args);
+    vprint_case_message(key.str(), fmt, args);
     va_end(args);
     m_case_timer.resume();
 }
 
-void Test::vprint_case_message(const char * key, const char * fmt, va_list args){
-    print("\"%s\": \"", key);
+void Test::vprint_case_message(const var::ConstString & key, const char * fmt, va_list args){
+    print("\"%s\": \"", key.str());
     vprintf(fmt, args);
     printf("\",\n");
 }
 
-void Test::initialize(const char * name, const char * version){
+void Test::initialize(const var::ConstString & name, const var::ConstString & version, const var::ConstString & git_hash){
     m_is_initialized = true;
     m_all_test_duration_microseconds = 0;
 
@@ -147,7 +147,7 @@ void Test::initialize(const char * name, const char * version){
         print_indent(2, "\"kernel version\": \"%s\",\n", info.kernel_version);
         print_indent(2, "\"shared memory size\": \"%ld\",\n", info.sys_mem_size);
         print_indent(2, "\"id\": \"%s\",\n", info.id);
-        print_indent(2, "\"serial\": \"%lX%lX%lX%lX\",\n", info.serial.sn[3], info.serial.sn[2], info.serial.sn[1], info.serial.sn[0]);
+        print_indent(2, "\"serial\": \"%08lX%08lX%08lX%08lX\",\n", info.serial.sn[3], info.serial.sn[2], info.serial.sn[1], info.serial.sn[0]);
         print_indent(2, "\"frequency\": \"%ld\"\n", info.cpu_freq);
         print_indent(2, "\"bsp git hash\": \"%s\"\n", info.bsp_git_hash);
         print_indent(2, "\"sos git hash\": \"%s\"\n", info.sos_git_hash);
@@ -157,9 +157,12 @@ void Test::initialize(const char * name, const char * version){
     sys.close();
     print_indent(1, "},\n");
     print_indent(1, "\"test\": {\n");
-    print_indent(2, "\"name\": \"%s\",\n", name);
+    print_indent(2, "\"name\": \"%s\",\n", name.str());
     //need to add the amount of RAM the program has to output
-    print_indent(2, "\"version\": \"%s\"\n", version);
+    print_indent(2, "\"version\": \"%s\"\n", version.str());
+    print_indent(2, "\"git hash\": \"%s\"\n", git_hash.str());
+    print_indent(2, "\"api version\": \"%s\"\n", api_version());
+    print_indent(2, "\"api git hash\": \"%s\"\n", api_git_hash());
     print_indent(1, "},\n");
 }
 

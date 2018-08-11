@@ -1,6 +1,7 @@
 #ifndef ARRAY_HPP
 #define ARRAY_HPP
 
+#include <cstdio>
 #include "../api/VarObject.hpp"
 
 namespace var {
@@ -20,6 +21,12 @@ public:
 
     /*! \details Returns the number of objects in the array. */
     u32 count() const { return size_value; }
+
+    /*! \details Returns the size of the array in bytes.
+     *
+     * Use count() to get the number of objects in the array.
+     *
+     */
     u32 size() const { return count() * sizeof(T); }
 
     /*! \details Returns the first object in the array. */
@@ -47,7 +54,7 @@ public:
     /*! \details Fills the array with the specified \a value. */
     void fill(const T & value){
         u32 i;
-        for(i=0; i < size(); i++){
+        for(i=0; i < size_value; i++){
             m_array[i] = value;
         }
     }

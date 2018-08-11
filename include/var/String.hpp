@@ -68,9 +68,14 @@ public:
         npos /*! Defines an invalid string length and position */ = (u32)-1
     };
 
-    /*! \details Constructs an empty string and allocates the minimum capacity.
+    /*! \details Constructs an empty string.
      *
-     * To construct a String without using any memory allocation us String(0).
+     * This constructor does not use any dyncamic memory allocation.
+     *
+     * The str() method will return a valid zero-length, null-terminated string.
+     *
+     * If the string is modified using methods herein, the memory
+     * will be automatically allocated as needed.
      *
      */
     String();
@@ -78,9 +83,9 @@ public:
     /*! \details Contructs a string as a copy of the string
      * specified.
      *
-     * @param str A reference to the string to copy.
+     * @param a A reference to the string to copy
      *
-     * if \a s is_internally_managed(), this object will
+     * If \a a is_internally_managed(), this object will
      * allocate memory internally and copy the contents of str.
      *
      * If str !is_internally_managed(), this object will refer

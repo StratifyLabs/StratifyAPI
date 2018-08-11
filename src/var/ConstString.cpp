@@ -49,13 +49,15 @@ u32 ConstString::find(const char c, u32 pos) const{
 
 u32 ConstString::find(const ConstString & s, u32 pos, u32 n) const {
     //find s (length n) starting at pos
-    u32 len = length();
-    for(u32 i=pos; i < len; i++){
-        if( strncmp(str() + i, s.str(), n) == 0 ){
-            return i;
+
+    if( !s.is_empty() ){
+        u32 len = length();
+        for(u32 i=pos; i < len; i++){
+            if( strncmp(str() + i, s.str(), n) == 0 ){
+                return i;
+            }
         }
     }
-
     return npos;
 }
 

@@ -81,7 +81,7 @@ public:
      * constructed.
      *
      */
-    static void initialize(const char * name, const char * version);
+    static void initialize(const var::ConstString & name, const var::ConstString & version, const var::ConstString & git_hash = "");
 
     /*! \details Finalizes the test report.
      *
@@ -167,7 +167,7 @@ public:
      * be used as the value of the parent.
      *
      */
-    Test(const char * name, Test * parent = 0);
+    Test(const var::ConstString & name, Test * parent = 0);
 
     /*! \details Deconstructs the test object.
      *
@@ -282,7 +282,7 @@ public:
      * execute_additional_cases().
      *
      */
-    void open_case(const char * case_name);
+    void open_case(const var::ConstString & case_name);
 
     /*! \details Closes a test case.
      *
@@ -337,7 +337,7 @@ protected:
      *
      *
      */
-    void print_case_message_with_key(const char * key, const char * fmt, ...);
+    void print_case_message_with_key(const var::ConstString & key, const char * fmt, ...);
 
     int indent() const { return m_indent_count; }
 
@@ -345,7 +345,7 @@ protected:
 private:
 
 
-    void vprint_case_message(const char * key, const char * fmt, va_list args);
+    void vprint_case_message(const var::ConstString & key, const char * fmt, va_list args);
 
     void print(const char * fmt, ...);
     static void print_indent(int indent, const char * fmt, ...);
