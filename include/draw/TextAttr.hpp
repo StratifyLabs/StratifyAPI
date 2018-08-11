@@ -20,7 +20,7 @@ public:
 	TextAttr() { set_font_size(0); m_font = 0; }
 
 	/*! \details Assign a value to the string */
-	void assign(const char * str){ m_str.assign(str); }
+    void assign(const var::ConstString & str){ m_str.assign(str); }
 
 	/*! \details Get a pointer to a const char of the string */
 	const char * text() const { return m_str.c_str(); }

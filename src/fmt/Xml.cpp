@@ -12,7 +12,7 @@ using namespace var;
 
 //static const char * white_space = "\r\n\t ";
 
-Xml::Xml(const char * path, int mode, int perms){
+Xml::Xml(const var::ConstString & path, int mode, int perms){
 	//init all values to zero
 	file_size = 0;
 	init(path, mode, perms);
@@ -24,7 +24,7 @@ Xml::Xml(){
 }
 
 
-int Xml::init(const char * path, int mode, int perms){
+int Xml::init(const var::ConstString & path, int mode, int perms){
 	indent = 0;
 
 	//close if already open
@@ -50,11 +50,11 @@ int Xml::init(const char * path, int mode, int perms){
 
 
 //this doesn't modify the context -- just grabs the values
-int Xml::get_value(String & dest, const char * key) const {
+int Xml::get_value(String & dest, const var::ConstString & key) const {
 	return set_get_value(dest, key, false);
 }
 
-int Xml::set_get_value(String & dest, const char * key, bool set) const {
+int Xml::set_get_value(String & dest, const var::ConstString & key, bool set) const {
 	String s0;
 	String s1; //str stripped of attr
 	String s2; //attr
@@ -64,7 +64,7 @@ int Xml::set_get_value(String & dest, const char * key, bool set) const {
 
 	//strip the attribute from the str -- attr is only valid for this method
 
-	if( strlen(key) == 0 ){
+    if( key.length() == 0 ){
 		return -1; //empty key
 	}
 
@@ -85,7 +85,7 @@ int Xml::set_get_value(String & dest, const char * key, bool set) const {
 
 
 	//find the descriptor
-	if( s1 != "" ){
+    if( !s1.is_empty() ){
 		if( find_context(s1.c_str(), content, tmp_content) < 0 ){
 			return -1;
 		}
@@ -93,7 +93,7 @@ int Xml::set_get_value(String & dest, const char * key, bool set) const {
 		tmp_content = content;
 	}
 
-	if( s2 != "" ){
+    if( !s2.is_empty() ){
 		//this is an attribute value that needs to be fetched
 		dest.clear();
 		return find_attribute(s2, dest, tmp_content);
@@ -119,13 +119,13 @@ int Xml::set_get_value(String & dest, const char * key, bool set) const {
 	return 0;
 }
 
-int Xml::set_value(const String * src, const char * key) const {
+int Xml::set_value(const String * src, const var::ConstString & key) const {
 	return set_get_value((String&)*src, key, true);
 }
 
 
 //this will define the current context from str
-int Xml::find(const char * str){
+int Xml::find(const var::ConstString & str){
 	int ret;
 	context_t tmp;
 
@@ -140,7 +140,7 @@ int Xml::find(const char * str){
 	return 0;
 }
 
-int Xml::find_next(const char * str){
+int Xml::find_next(const var::ConstString & str){
 	int ret;
 	context_t tmp;
 
@@ -238,7 +238,7 @@ int Xml::child(String & name, String * value){
 	}
 
 	tmp = content;
-	name = "";
+    name = "";
 	if( find_target_tag(name, tmp, target) < 0 ){
 		return -1;
 	}
@@ -256,7 +256,7 @@ int Xml::attr(String & name, String * value){
 	return 0;
 }
 
-int Xml::write_start_tag(const char * name, const char * attrs){
+int Xml::write_start_tag(const var::ConstString & name, const var::ConstString & attrs){
 	String str;
 	int i;
 	for(i=0; i < indent; i++){
@@ -273,7 +273,7 @@ int Xml::write_start_tag(const char * name, const char * attrs){
 	return write(str.c_str(), str.size());
 }
 
-int Xml::write_cdata(const char * str){
+int Xml::write_cdata(const var::ConstString & str){
 	String s;
 	int i;
 	for(i=0; i < indent; i++){
@@ -285,7 +285,7 @@ int Xml::write_cdata(const char * str){
 	return write(s.c_str(), s.size());
 }
 
-int Xml::write_end_tag(const char * name){
+int Xml::write_end_tag(const var::ConstString & name){
 	String str;
 	int i;
 	if( indent ){
@@ -299,7 +299,7 @@ int Xml::write_end_tag(const char * name){
 	str.append(">\n");
 	return write(str.c_str(), str.size());
 }
-int Xml::write_empty_element_tag(const char * name, const char * attrs){
+int Xml::write_empty_element_tag(const var::ConstString & name, const var::ConstString & attrs){
 	String str;
 	int i;
 	for(i=0; i < indent; i++){
@@ -313,7 +313,7 @@ int Xml::write_empty_element_tag(const char * name, const char * attrs){
 	return write(str.c_str(), str.size());
 }
 
-int Xml::write_element(const char * name, const char * data, const char * attrs){
+int Xml::write_element(const var::ConstString & name, const var::ConstString & data, const var::ConstString & attrs){
 	String str;
 	int i;
 	for(i=0; i < indent; i++){
@@ -328,11 +328,11 @@ int Xml::write_element(const char * name, const char * data, const char * attrs)
 	}
 	str.append(">");
 
-	if(  write(str.c_str(), str.size()) != (int)str.size() ){
+    if(  write(str) != (int)str.size() ){
 		return -1;
 	}
 
-	if(  write(data, strlen(data)) < 0 ){
+    if(  write(data) < 0 ){
 		return -1;
 	}
 
@@ -341,14 +341,14 @@ int Xml::write_element(const char * name, const char * data, const char * attrs)
 	str.append(name);
 	str.append(">\n");
 
-	if(  write(str.c_str(), str.size()) != (int)str.size() ){
+    if(  write(str) != (int)str.size() ){
 		return -1;
 	}
 	return 0;
 }
 
 //find str in the current context and define a target context that defines str
-int Xml::find_context(const char * str, const context_t & current, context_t & target) const{
+int Xml::find_context(const var::ConstString & str, const context_t & current, context_t & target) const{
 	Token tokens(str, ".");
 	String s0;
 	String s1;
@@ -466,7 +466,7 @@ int Xml::find_target_tag(String & name, context_t & context, context_t & target)
 
 		context.cursor = start_offset - context.offset; //add 1 to advance past start tag
 
-		if( name == "" ){
+        if( name.is_empty() ){
 			load_start_tag(str, target);
             Token t0(str.str(), "\t\r\n <>/", "\"'");
 			if( t0.size() ){
@@ -550,9 +550,9 @@ int Xml::check_string_for_open_bracket(String * src, String * cmp) const {
 }
 
 
-int Xml::find_tag(const char * name,
+int Xml::find_tag(const var::ConstString & name,
 		const context_t & context,
-		const char * tag_style,
+        const var::ConstString & tag_style,
 		s32 & tag_size) const {
 	int ret;
 	int loc;

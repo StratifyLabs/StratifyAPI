@@ -28,8 +28,7 @@ namespace var {
  * String s1;
  * String s2;
  * s1 = "This is my string";
- * s1 << " " << s1.capacity() << "\n";
- * printf("%s", s1.c_str());
+ * printf("%s", s1.str());
  *  //Strings can be compared
  * s2 = "This is another string";
  * if( s1 == s2 ){
@@ -45,8 +44,24 @@ namespace var {
  * The strings are different
  * \endcode
  *
+ *
+ *
+ * \note
+ *
+ * A note about copy initialization:
+ *
+ * \code
+ *
+ * String hello("hello"); //OK: const char[6] converted from ConstString
+ * String hello = "hello"; //Error: no conversion from const char [6] to String (in copy-initialization)
+ *
+ * String hello; hello = "hello"; //OK const char[6] converted from ConstString for assignment
+ *
+ * \endcode
+ *
+ *
  */
-class String : public Data, public ConstString {
+class String : public ConstString, public Data {
 public:
 
     enum {
@@ -58,16 +73,7 @@ public:
      * To construct a String without using any memory allocation us String(0).
      *
      */
-	String();
-
-    /*! \details Declares an empty string of a specified capacity.
-     *
-     * @param capacity The minimum capacity of the string.
-     *
-     * If \a capacity is zero, no memory will be allocated to the string.
-     *
-     */
-	String(u32 capacity);
+    String();
 
     /*! \details Contructs a string as a copy of the string
      * specified.
@@ -86,11 +92,23 @@ public:
     }
 
     /*! \details Declares a string and initialize to \a s. */
-    String(const char * s);
     String(const ConstString & s);
 
     /*! \details Declares a string and initialize to \a s. */
-    String(const char * s, u32 len);
+    String(const ConstString & s, u32 len);
+
+
+    /*! \details Assigns a to this string.
+     *
+     * This will do a data copy is a has
+     * called Data::set_transfer_ownership().
+     *
+     */
+    String& operator=(const String & a){
+        Data::copy(a);
+        set_string_pointer(cdata_const());
+        return *this;
+    }
 
     /*! \details Assigns the value of a String to another String.
      *
@@ -108,13 +126,13 @@ public:
      * \endcode
      *
      */
-    String& operator=(const String & a){
-        assign(a.str());
+    String& operator=(const ConstString & a){
+        assign(a);
         return *this;
     }
 
     /*! \details Appends a string to this string. */
-    String& operator+=(const String & a){
+    String& operator+=(const ConstString & a){
         append(a);
         return *this;
     }
@@ -125,9 +143,19 @@ public:
         return *this;
     }
 
+    /*! \details Appends a c style string go the string.
+     *
+     * The string will be resized to accept the string if needed.
+     *
+     */
+    String& operator<<(const ConstString & a){ append(a); return *this; }
+
+    /*! \details Appends a character to the string. */
+    String& operator<<(char c){ append(c); return *this; }
+
 
     /*! \details Appends a string to this string and returns a new string. */
-    String operator + (const String & a){
+    String operator + (const ConstString & a){
         String ret = *this;
         ret.append(a);
         ret.set_transfer_ownership();
@@ -137,59 +165,37 @@ public:
     ~String(){}
 
 
-	/*! \details Constructs a string using statically allocated memory.
-	 *
-	 * @param mem A pointer to memory to use
-	 * @param capacity The number of bytes available
-	 * @param readonly True if the mem is in readonly memory
-	 */
-	String(char * mem, u32 capacity, bool readonly = false);
+    /*! \details Constructs a string using statically allocated memory.
+     *
+     * @param mem A pointer to memory to use
+     * @param capacity The number of bytes available
+     * @param readonly True if the mem is in readonly memory
+     */
+    String(char * mem, u32 capacity, bool readonly = false);
 
 
-	/*! \details Sets the capacity of the string.
-	 *
-	 * @param s The number of bytes to reserve to string capacity.
-	 * @return Less than zero on an error
-	 *
-	 * If a String uses dynamic memory allocation, this method
-	 * will increase the capacity of the String. If \a s
-	 * is smaller than capacity(), this function return
-	 * without changing the capacity.
-	 *
-	 */
+    /*! \details Sets the capacity of the string.
+     *
+     * @param s The number of bytes to reserve to string capacity.
+     * @return Less than zero on an error
+     *
+     * If a String uses dynamic memory allocation, this method
+     * will increase the capacity of the String. If \a s
+     * is smaller than capacity(), this function return
+     * without changing the capacity.
+     *
+     */
     int set_size(u32 s);
     int set_capacity(u32 s){ return set_size(s); }
 
-    /*! \details Assigns a c-string to a String. */
-    String& operator=(const char * a){
-        assign(a); return *this;
-    }
 
-	/*! \details Appends a c style string go the string.
-	 *
-	 * The string will be resized to accept the string if needed.
-	 *
-	 */
-	String& operator<<(const char * a){ append(a); return *this; }
-
-    /*! \details Appends a var::String to this String.
+    /*! \details Gets a sub string of the string.
      *
-     * The string will be resized to accept the string if needed.
+     * @param pos Starting position to look for the sub-string
+     * @param len The number of bytes in the String to search
      *
      */
-    String& operator<<(const String & a){ append(a.str()); return *this; }
-
-	/*! \details Appends a character to the string. */
-	String& operator<<(char c){ append(c); return *this; }
-
-
-	/*! \details Gets a sub string of the string.
-	 *
-	 * @param pos Starting position to look for the sub-string
-	 * @param len The number of bytes in the String to search
-	 *
-	 */
-	String substr(u32 pos = 0, u32 len = npos) const;
+    String substr(u32 pos = 0, u32 len = npos) const;
 
     /*! \details Inserts \a s (zero terminated) into string at \a pos.
      *
@@ -199,7 +205,7 @@ public:
      * If \a pos is greater than length(), error_number() is set to EINVAL.
      *
      */
-	String& insert(u32 pos, const char * s);
+    String& insert(u32 pos, const ConstString & s);
 
     /*! \details Erases a portion of the string starting with the character at \a pos.
      *
@@ -208,67 +214,64 @@ public:
      * @return A reference to this string.
      *
      */
-	String& erase(u32 pos, u32 len = -1);
+    String& erase(u32 pos, u32 len = -1);
 
 
 
-	/*! \details Prints a formatted string to this String.
-	 *
-	 * @param format Formatted string
-	 * @return Total number of characters written to the string
-	 *
-	 * If the formatted string exceeds the length of the string capacity,
+    /*! \details Prints a formatted string to this String.
+     *
+     * @param format Formatted string
+     * @return Total number of characters written to the string
+     *
+     * If the formatted string exceeds the length of the string capacity,
      * the string will be resized to accomate the full formatted string.
-	 *
-	 */
-	int sprintf(const char * format, ...);
+     *
+     */
+    int sprintf(const char * format, ...);
 
 
 
-	/*! \details Returns the capacity of the string.
-	 *
-	 * The capacity is the current number of bytes allocated
-	 * in memory for the string. set_capacity() will
-	 * increase the capacity of the string. The append()
-	 * method will also increase the capacity of the
-	 * String if the appended string needs the extra space.
-	 *
-	 */
-	u32 capacity() const;
+    /*! \details Returns the capacity of the string.
+     *
+     * The capacity is the current number of bytes allocated
+     * in memory for the string. set_capacity() will
+     * increase the capacity of the string. The append()
+     * method will also increase the capacity of the
+     * String if the appended string needs the extra space.
+     *
+     */
+    u32 capacity() const;
 
-	/*! \details Assigns a substring of \a a to string. */
-    int assign(const char * a, u32 subpos, u32 sublen){ return assign(a + subpos, sublen); }
-	/*! \details Assigns a maximum of \a n characters of \a a to string. */
-    int assign(const char * a, u32 n);
-	/*! \details Assigns \a a (zero terminated) to string.  */
-    int assign(const char * a);
-    /*! \details Assigns \a a to this String.  */
-    int assign(const String & a){ return assign(a.str()); }
+    /*! \details Assigns a substring of \a a to string. */
+    int assign(const ConstString & a, u32 subpos, u32 sublen){ return assign(a.str() + subpos, sublen); }
+    /*! \details Assigns a maximum of \a n characters of \a a to string. */
+    int assign(const ConstString & a, u32 n);
+    /*! \details Assigns \a a (zero terminated) to string.  */
+    int assign(const ConstString & a);
 
-	/*! \details Appends \a a (zero terminated) to string.  */
-    int append(const char * a);
-    /*! \details Appends a String to this string. */
-    int append(const String & a){ return append(a.c_str()); }
-	/*! \details Appends \a c to string.  */
+    /*! \details Appends \a a (zero terminated) to string.  */
+    int append(const ConstString & a);
+    /*! \details Appends \a c to string.  */
     int append(char c);
-	/*! \details Appends \a c to string.  */
+    /*! \details Appends \a c to string
+     *
+     *
+     */
     void push_back(char c){ append(c); }
 
-	/*! \details Copies the \a nth element (separated by \a sep) of the string to to \a dest. */
-	bool get_delimited_data(String & dest, int n, char sep = ',', char term = '\n');
-	/*! \details Returns the number of elements in the String. */
-	int calc_delimited_data_size(char sep = ',', char term = '\n');
+    bool get_delimited_data(String & dest, int n, char sep = ',', char term = '\n');
+    int calc_delimited_data_size(char sep = ',', char term = '\n');
 
-	/*! \details Copies a portion of this string to \a s. */
+    /*! \details Copies a portion of this string to \a s. */
     u32 copy(String & s, u32 n, u32 pos = 0) const;
 
-	/*! \details Converts to upper case. */
+    /*! \details Converts to upper case. */
     void to_upper();
 
     //compatible with C++ string
     void toupper(){ to_upper(); }
 
-	/*! \details Converts to lower case. */
+    /*! \details Converts to lower case. */
     void to_lower();
 
     //compatible with C++ string
@@ -283,12 +286,7 @@ private:
 
 };
 
-/*! \brief String using static memory allocation
- * \details Static String Template Class
- *
- * This template is used for declaring fixed memory size strings.
- *
- */
+
 template <unsigned int arraysize>
 class StaticString : public String {
 public:
@@ -307,7 +305,9 @@ private:
  */
 class NameString : public String {
 public:
-    NameString() : String(LINK_NAME_MAX){}
+    NameString(){
+        set_capacity(LINK_NAME_MAX);
+    }
 };
 
 //deprecated
@@ -320,11 +320,13 @@ typedef NameString StringName;
  */
 class PathString : public String {
 public:
-    PathString() : String(LINK_PATH_MAX){}
+    PathString(){
+        set_capacity(LINK_PATH_MAX);
+    }
 
-	void strip_suffix();
-	const char * file_name() const;
-	const char * filename() const { return file_name(); }
+    void strip_suffix();
+    const char * file_name() const;
+    const char * filename() const { return file_name(); }
 };
 
 //deprecated

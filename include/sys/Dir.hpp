@@ -32,7 +32,7 @@ public:
 	~Dir();
 
 	/*! \details Opens a directory. */
-	int open(const char * name);
+    int open(const var::ConstString & name);
 	/*! \details Closes the directory. */
 	int close();
 
@@ -52,9 +52,9 @@ public:
 	 *
 	 */
 #if !defined __link
-	static int remove(const char * path, bool recursive = false);
+    static int remove(const var::ConstString & path, bool recursive = false);
 #else
-	static int remove(const char * path, bool recursive, link_transport_mdriver_t * d);
+    static int remove(const var::ConstString & path, bool recursive, link_transport_mdriver_t * d);
 #endif
 
 	/*! \details Gets the next entry and writes the full path of the entry to the given string.

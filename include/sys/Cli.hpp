@@ -56,7 +56,7 @@ public:
 	 * @param publisher A pointer to the publisher's name
 	 *
 	 */
-	void set_publisher(const char * publisher){ m_publisher = publisher; }
+    void set_publisher(const var::ConstString & publisher){ m_publisher = publisher; }
 
 
     /*! \details Sets whether the arguments are case sensitive. */
@@ -223,7 +223,7 @@ public:
 
 private:
 
-    bool is_option_equivalent_to_argument(const char * option, const char * argument) const;
+    bool is_option_equivalent_to_argument(const var::ConstString & option, const var::ConstString & argument) const;
 
 	u16 m_argc;
 	char ** m_argv;

@@ -160,7 +160,7 @@ ListItemCheck::ListItemCheck(const char * label, List * parent) :
 }
 
 
-DirList::DirList(const char * path,
+DirList::DirList(const var::ConstString & path,
 		const sg_vector_icon_t * icon,
 		LinkedElement * parent,
 		LinkedElement * child) :
@@ -202,10 +202,10 @@ LinkedElement & DirList::at(list_attr_size_t i){
 }
 
 
-void DirList::set_path(const char * path){
+void DirList::set_path(const var::ConstString & path){
 	m_path = path;
 	m_dir.close();
-	if( m_dir.open(path) < 0 ){
+    if( m_dir.open(path) < 0 ){
 
 	}
 	recount();

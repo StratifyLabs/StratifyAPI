@@ -70,8 +70,8 @@ String Cli::at(u16 value) const {
 }
 
 bool Cli::is_option_equivalent_to_argument(
-        const char * option,
-        const char * argument) const {
+        const ConstString & option,
+        const ConstString & argument) const {
     String option_string = option;
     String argument_string = argument;
 

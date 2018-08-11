@@ -38,8 +38,7 @@ public:
 	Trace(){}
 
 #if !defined __link
-	Trace& operator=(const char * a){ var::String::operator=(a); return *this; }
-	Trace& operator=(const var::String & a){ var::String::operator=(a); return *this; }
+    Trace& operator=(const var::ConstString & a){ var::String::operator=(a); return *this; }
 	/*! \details Sends trace as a message. */
 	inline void trace_message() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_MESSAGE, c_str(), size()); }
 	/*! \details Sends trace as a warning. */

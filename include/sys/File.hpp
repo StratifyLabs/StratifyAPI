@@ -291,6 +291,20 @@ public:
     /*! \details Writes the file using a var::Data object. */
     int write(const var::Data & data) const { return write(data.data_const(), data.size()); }
 
+    /*! \details Writes a var::ConstString to the file.
+     *
+     * @param str The string to write
+     * @return The number of bytes written
+     */
+    int write(const var::ConstString & str) const { return write(str.str(), str.length()); }
+
+    /*! \details Writes a var::String to the file.
+     *
+     * @param str The string to write
+     * @return The number of bytes written
+     */
+    int write(const var::String & str) const { return write(str.str(), str.length()); }
+
 	/*! \details Reads the file.
 	 *
 	 * @param loc The location of the file to read
@@ -303,7 +317,7 @@ public:
     /*! \details Reads the file using a var::Data object. */
     int read(int loc, var::Data & data) const { return read(loc, data.data(), data.size()); }
 
-	/*! \details writes the device at the location
+    /*! \details Writes the file at the location specified.
 	 *
 	 * @param loc Location to write (not application to character devices)
 	 * @param buf Pointer to the source data
@@ -312,8 +326,14 @@ public:
 	 */
     int write(int loc, const void * buf, int nbyte) const;
 
-    /*! \details Writes the file using a var::Data object. */
+    /*! \details Writes the file using a var::Data object at the location specified. */
     int write(int loc, const var::Data & data) const { return write(loc, data.data_const(), data.size()); }
+
+    /*! \details Writes the file using a var::ConstString object at the location specified. */
+    int write(int loc, const var::ConstString & str) const { return write(str.str(), str.length()); }
+
+    /*! \details Writes the file using a var::String object at the location specified. */
+    int write(int loc, const var::String & str) const { return write(str.str(), str.length()); }
 
 	/*! \details Reads a line from a file.
 	 *
@@ -325,25 +345,16 @@ public:
 	 */
 	int readline(char * buf, int nbyte, int timeout_msec, char terminator = '\n') const;
 
-
-	/*! \details Writes a var::String to the file.
-	 *
-	 * @param str The string to write
-	 * @return The number of bytes written
-	 */
-    int write(const var::ConstString & str) const {
-        return write(str.str(), str.length());
-	}
-
     File& operator<<(const var::ConstString & a){ write(a.str(), a.length()); return *this; }
 
 	/*! \details Seeks to a location in the file or on the device. */
 	virtual int seek(int loc, int whence = LINK_SEEK_SET) const;
 
     /*! \details Reads a line in to the var::String until end-of-file or \a term is reached. */
+    var::String gets(char term = '\n') const;
+
     char * gets(var::String & s, char term = '\n') const;
 
-    var::String gets(char term = '\n') const;
 
 #ifndef __link
     [[deprecated("Use gets(var::String & s) instead")]]

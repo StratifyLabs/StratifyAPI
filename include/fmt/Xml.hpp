@@ -58,11 +58,11 @@ public:
 	 * @param perms File permissions if creating a new file (WRONLY)
 	 *
 	 */
-	Xml(const char * path, int mode, int perms = 0666);
+    Xml(const var::ConstString & path, int mode, int perms = 0666);
 
 	Xml();
 
-	int init(const char * path, int mode, int perms = 0666);
+    int init(const var::ConstString & path, int mode, int perms = 0666);
 
 	inline int close(){
 		file_size = 0;
@@ -94,12 +94,12 @@ public:
 	 *
 	 *  \return Zero if \a key is successfully fetched
 	 */
-	int get_value(var::String & dest, const char * key = 0) const;
+    int get_value(var::String & dest, const var::ConstString & key = 0) const;
 	inline int get_value(var::String * dest, const char * key = 0) const {
 		return get_value(*dest, key);
 	}
 
-	int set_value(const var::String * src, const char * key) const;
+    int set_value(const var::String * src, const var::ConstString & key) const;
 	inline int set_value(const var::String & src, const char * key) const {
 		return set_value(&src, key);
 	}
@@ -125,8 +125,8 @@ public:
 	 * \return Zero on success of -1 if the element was not found
 	 *
 	 */
-	int find(const char * str);
-	int find_next(const char * str);
+    int find(const var::ConstString & str);
+    int find_next(const var::ConstString & str);
 
 
 	/*! \brief Returns the number of immediate children */
@@ -219,11 +219,11 @@ public:
 	inline int size() const { return content.size; }
 
 
-	int write_start_tag(const char * name, const char * attrs = 0);
-	int write_cdata(const char * str);
-	int write_end_tag(const char * name);
-	int write_empty_element_tag(const char * name, const char * attrs = 0);
-	int write_element(const char * name, const char * data, const char * attrs = 0);
+    int write_start_tag(const var::ConstString & name, const var::ConstString & attrs = 0);
+    int write_cdata(const var::ConstString & str);
+    int write_end_tag(const var::ConstString & name);
+    int write_empty_element_tag(const var::ConstString & name, const var::ConstString & attrs = 0);
+    int write_element(const var::ConstString & name, const var::ConstString & data, const var::ConstString & attrs = 0);
 
 	/*
 	 * Empty tag (no content) = < Name (optional attributes--zero or more)  />
@@ -267,13 +267,13 @@ private:
 
 	void reset_context();
 
-	int find_context(const char * str, const context_t & current, context_t & target) const;
+    int find_context(const var::ConstString & str, const context_t & current, context_t & target) const;
 
 	int check_string_for_open_bracket(var::String * src, var::String * cmp) const;
 
-	int find_tag(const char * name,
+    int find_tag(const var::ConstString & name,
 			const context_t & context,
-			const char * tag_style,
+            const var::ConstString & tag_style,
 			s32 & tag_size) const;
 
 	int next_tag_name(
@@ -305,7 +305,7 @@ private:
 		FIND_STATE_CLOSEBRACKET
 	};
 
-	int set_get_value(var::String & dest, const char * key, bool set = false) const;
+    int set_get_value(var::String & dest, const var::ConstString & key, bool set = false) const;
 
 
 };

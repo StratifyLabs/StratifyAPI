@@ -15,23 +15,12 @@ String::String(){
     //creates an empty string -- Data class and ConstString class will point to a zero value variable
 }
 
-String::String(u32 capacity){
-    if( (capacity > 0) && (capacity != npos) ){
-        set_capacity(capacity);
-        clear();
-    }
-}
-
-String::String(const char * s){
+String::String(const ConstString & s){
     assign(s);
 }
 
-String::String(const ConstString & s){
-    assign(s.str());
-}
 
-
-String::String(const char * s, u32 len){
+String::String(const ConstString & s, u32 len){
     assign(s, len);
 }
 
@@ -71,42 +60,31 @@ int String::set_size(u32 s){
     return result;
 }
 
-int String::assign(const char * a){
-    if( a == 0 ){
-        clear();
-        return 0;
-    }
-    u32 len = strlen(a);
-    return assign(a, len);
+int String::assign(const ConstString & a){
+    return assign(a, a.length());
 }
 
-int String::assign(const char * a, u32 n){
+int String::assign(const ConstString & a, u32 n){
     //check for null
-    if( a != 0 ){
-
-        if( a != str() ){ //check for assignment to self - no action needed
-            if( n == (u32)npos ){ n = strlen(a); }
-            if( set_capacity(n) < 0 ){ return -1; }
-            clear();
-            strncpy(cdata(), a, n);
-        }
-
-    } else {
+    if( a.str() != str() ){ //check for assignment to self - no action needed
+        if( n == (u32)npos ){ n = a.length(); }
+        if( set_capacity(n) < 0 ){ return -1; }
         clear();
+        strncpy(cdata(), a.str(), n);
     }
     return 0;
 }
 
-int String::append(const char * a){
+int String::append(const ConstString & a){
     if( a == 0 ){ return 0; }
     u32 len = length();
-    u32 alen = strlen(a);
+    u32 alen = a.length();
     set_capacity(len + alen); //try to make min capacity
     if( len == 0 ){
         clear(); //previous length was zero -- ensure string is valid
     }
     if( cdata() == 0 ){ return -1; }
-    strncat(cdata(), a, capacity() - len);
+    strncat(cdata(), a.str(), capacity() - len);
     return 0;
 }
 
@@ -155,11 +133,7 @@ int String::calc_delimited_data_size(char sep, char term){
 }
 
 
-String& String::insert(u32 pos, const char * str){
-
-    if( str == 0 ){
-        return *this;
-    }
+String& String::insert(u32 pos, const ConstString & str){
 
     if( cdata() == 0 ){
         assign(str);
@@ -177,7 +151,7 @@ String& String::insert(u32 pos, const char * str){
     } else {
 
         //this needs a limit
-        s = strlen(str);
+        s = str.length();
 
         char buffer[len+1];
 
@@ -187,10 +161,9 @@ String& String::insert(u32 pos, const char * str){
         }
 
         strncpy(buffer, cdata()+pos, len+1); //copy the existing string to buffer
-        strncpy(cdata()+pos, str, capacity() - pos);
+        strncpy(cdata()+pos, str.str(), capacity() - pos);
         strncat(cdata(), buffer, capacity());
     }
-
 
     return *this;
 }

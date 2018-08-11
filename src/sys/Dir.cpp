@@ -26,7 +26,7 @@ Dir::~Dir(){
 }
 
 #if !defined __link
-int Dir::remove(const char * path, bool recursive){
+int Dir::remove(const var::ConstString & path, bool recursive){
 	int ret = 0;
 	if( recursive ){
 		Dir d;
@@ -58,11 +58,11 @@ int Dir::remove(const char * path, bool recursive, link_transport_mdriver_t * d)
 }
 #endif
 
-int Dir::open(const char * name){
+int Dir::open(const var::ConstString & name){
 #if defined __link
 	m_dirp = link_opendir(driver(), name);
 #else
-	m_dirp = opendir(name);
+    m_dirp = opendir(name.str());
 #endif
 	if( m_dirp == 0 ){
         set_error_number_to_errno();
