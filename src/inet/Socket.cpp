@@ -5,11 +5,9 @@
 
 using namespace inet;
 
-Socket::Socket(){
-    m_fileno = -1;
-}
+Socket::Socket(){}
 
-int Socket::create(){
+int Socket::create(const SocketAddress & address){
 
     return -1;
 }
@@ -26,14 +24,4 @@ int Socket::connect(){
     return -1;
 }
 
-int Socket::read(void * buffer, int nbyte){
-    return ::read(fileno(), buffer, nbyte);
-}
 
-int Socket::write(const void * buffer, int nbyte){
-    return ::write(fileno(), buffer, nbyte);
-}
-
-int Socket::close(){
-    return ::close(fileno());
-}

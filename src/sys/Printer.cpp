@@ -147,6 +147,10 @@ Printer & Printer::operator << (const var::String & a){
     return key(0, a);
 }
 
+Printer & Printer::operator << (const char * a){
+    return key(0, a);
+}
+
 Printer & Printer::operator << (const var::Token & a){
     m_indent++;
     for(u32 i=0; i < a.count(); i++){
@@ -168,8 +172,8 @@ Printer & Printer::operator << (const sys::TaskInfo & a){
     print_indented("id", "%ld", a.id());
     print_indented("pid", "%ld", a.pid());
     print_indented("memory size", "%ld", a.memory_size());
-    print_indented("stack size", "%s", a.stack_size());
-    print_indented("heap size", "%s", a.heap_size());
+    print_indented("stack size", "%ld", a.stack_size());
+    print_indented("heap size", "%ld", a.heap_size());
     return *this;
 }
 

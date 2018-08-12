@@ -60,7 +60,8 @@ public:
     Printer & operator << (u16 a);
     Printer & operator << (s8 a);
     Printer & operator << (u8 a);
-    Printer & operator << (void *);
+    Printer & operator << (void * a);
+    Printer & operator << (const char * a);
     Printer & operator << (float a);
 
     virtual Printer & message(const char * fmt, ...);

@@ -6,6 +6,7 @@
 
 #include <sos/link.h>
 #include <cstring>
+#include <cstdarg>
 #include <cstdlib>
 #include <cstdio>
 
@@ -20,6 +21,14 @@ namespace var {
  * to the C++ string type but is built on var::Data and
  * cstring functions.  The naming convention follows includes
  * many std::string methods.
+ *
+ * This class is for manipulating and modifying strings. The
+ * var::ConstString class is for static strings (basically just
+ * a `const char *` wrapper). This class inherits var::ConstString
+ * which contains methods for getting the length, comparing,
+ * finding strings within the string. This class adds the
+ * ability to append strings, create sub-strings, add strings, insert,
+ * erase, and convert the case.
  *
  *
  * \code
@@ -85,12 +94,6 @@ public:
      *
      * @param a A reference to the string to copy
      *
-     * If \a a is_internally_managed(), this object will
-     * allocate memory internally and copy the contents of str.
-     *
-     * If str !is_internally_managed(), this object will refer
-     * to the same memory as str.
-     *
      */
     String(const String & a) : Data(a){
         set_string_pointer(cdata_const());
@@ -125,8 +128,8 @@ public:
      * of the source string.
      *
      * \code
-     * String str1 = "hello";
-     * String str2 = "goodbye";
+     * String str1("hello");
+     * String str2("goodbye");
      * str2 = str1; //both strings are now "hello"
      * \endcode
      *
@@ -152,6 +155,31 @@ public:
      *
      * The string will be resized to accept the string if needed.
      *
+     * \code
+     * #include <sapi/var.hpp>
+     * String str0;
+     * String str1;
+     *
+     * str0 = "hello";  //str0 is "hello"
+     * str1 << "hello"; //str1 is "hello"
+     *
+     * //combining = and << can create unwanted effects
+     * str0 = "Hello";
+     * str1 = str0 << "World"; //str1 == str0 == "HelloWorld"
+     * //in the above, << operates on str0 then str1 is assiged to str0
+     *
+     * //to append numbers (or any printf() compatible formatting)
+     * str1.clear();
+     * str1 << "String data is at 0x" << String().format("%p", str1.data());
+     * u32 value = 0xaa55;
+     *
+     * str1.clear();
+     * str1 << "Value is HEX 0x" << String().format("%08lX", value); //with leading zero, uppercase hex
+     * str1 << " hex: 0x" << String().format("%lx", value); //no leading zeros, lower-case hex
+     * str1 << " or decimal: " << String().format("%ld", value); //unsigned value
+     *
+     * \endcode
+     *
      */
     String& operator<<(const ConstString & a){ append(a); return *this; }
 
@@ -168,7 +196,6 @@ public:
     }
 
     ~String(){}
-
 
     /*! \details Constructs a string using statically allocated memory.
      *
@@ -225,13 +252,32 @@ public:
 
     /*! \details Prints a formatted string to this String.
      *
-     * @param format Formatted string
-     * @return Total number of characters written to the string
+     * @param format Formatted string (same as printf())
+     * @return A reference to this String
      *
      * If the formatted string exceeds the length of the string capacity,
      * the string will be resized to accomate the full formatted string.
      *
+     * \code
+     * #include <sapi/var.hpp>
+     * String serial_number;
+     * u32 serial_number_value[2] = { 0xAAAABBBB, 0xCCCCEEEE };
+     *
+     * //prints the formatted serial number to the string
+     * serial_number.format("%08lX%08lX",
+     *   serial_number_value[1],
+     *   serial_number_value[0]);
+     *
+     * //append to the serial number
+     * serial_number << " <- hex dec -> " << String().format("%ld, %ld",
+     *   serial_number_value[1],
+     *   serial_number_value[0]) << " shown in decimal too."
+     * \endcode
+     *
      */
+    String& format(const char * format, ...);
+
+    //deprecated
     int sprintf(const char * format, ...);
 
 
@@ -286,6 +332,8 @@ public:
     using ConstString::operator !=;
 
 private:
+
+    int vformat(const char * fmt, va_list list);
 
     int update_capacity(u32 size);
 

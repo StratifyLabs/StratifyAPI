@@ -53,14 +53,14 @@ int Dir::remove(const var::ConstString & path, bool recursive){
 	return ret;
 }
 #else
-int Dir::remove(const char * path, bool recursive, link_transport_mdriver_t * d){
+int Dir::remove(const var::ConstString & path, bool recursive, link_transport_mdriver_t * d){
 	return -1;
 }
 #endif
 
 int Dir::open(const var::ConstString & name){
 #if defined __link
-	m_dirp = link_opendir(driver(), name);
+    m_dirp = link_opendir(driver(), name.str());
 #else
     m_dirp = opendir(name.str());
 #endif

@@ -38,20 +38,32 @@ u32 String::capacity() const {
     return 0;
 }
 
-//assignment
-
-int String::sprintf(const char * format, ...){
-    int ret;
+String& String::format(const char * format, ...){
     va_list args;
     va_start (args, format);
-    ret = vsnprintf(cdata(), capacity(), format, args);
-    if( ret > (int)capacity() ){ //if the data did not fit, make the buffer bigger
-        if( set_capacity(ret+1) >= 0 ){
-            vsnprintf(cdata(), capacity(), format, args);
+    vformat(format, args);
+    va_end (args);
+    return *this;
+}
+
+int String::sprintf(const char * format, ...){
+    int result;
+    va_list args;
+    va_start (args, format);
+    result = vformat(format, args);
+    va_end (args);
+    return result;
+}
+
+int String::vformat(const char * fmt, va_list list){
+    int result;
+    result = vsnprintf(cdata(), capacity(), fmt, list);
+    if( result > (int)capacity() ){ //if the data did not fit, make the buffer bigger
+        if( set_capacity(result+1) >= 0 ){
+            vsnprintf(cdata(), capacity(), fmt, list);
         }
     }
-    va_end (args);
-    return ret;
+    return result;
 }
 
 int String::set_size(u32 s){

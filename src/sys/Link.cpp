@@ -514,7 +514,7 @@ var::Vector<var::String> Link::get_dir_list(const var::ConstString & directory){
     }
 
     while( readdir_r(dirp, &entry, &result) == 0 ){
-        list.push_back(entry.d_name);
+        list.push_back(var::String(entry.d_name));
     }
 
     if( closedir(dirp) < 0 ){
@@ -532,22 +532,22 @@ var::String Link::convert_permissions(link_mode_t mode){
     type = mode & LINK_S_IFMT;
     switch(type){
     case LINK_S_IFDIR:
-        ret = 'd';
+        ret = "d";
         break;
     case LINK_S_IFCHR:
-        ret = 'c';
+        ret = "c";
         break;
     case LINK_S_IFBLK:
-        ret = 'b';
+        ret = "b";
         break;
     case LINK_S_IFLNK:
-        ret = 'l';
+        ret = "l";
         break;
     case LINK_S_IFREG:
-        ret = '-';
+        ret = "-";
         break;
     default:
-        ret = 'x';
+        ret = "x";
     }
 
     if( mode & LINK_S_IROTH ){
