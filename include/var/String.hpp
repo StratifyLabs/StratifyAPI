@@ -286,27 +286,25 @@ public:
      *
      * The capacity is the current number of bytes allocated
      * in memory for the string. set_capacity() will
-     * increase the capacity of the string. The append()
-     * method will also increase the capacity of the
-     * String if the appended string needs the extra space.
+     * increase the capacity of the string. Appending to the
+     * String will increate the capacity as necessary.
      *
      */
     u32 capacity() const;
 
-    /*! \details Assigns a substring of \a a to string. */
+    /*! \details Assigns a substring of \a a to this String. */
     int assign(const ConstString & a, u32 subpos, u32 sublen){ return assign(a.str() + subpos, sublen); }
-    /*! \details Assigns a maximum of \a n characters of \a a to string. */
+    /*! \details Assigns a maximum of \a n characters of \a a to this String. */
     int assign(const ConstString & a, u32 n);
-    /*! \details Assigns \a a (zero terminated) to string.  */
+    /*! \details Assigns \a a to this String.  */
     int assign(const ConstString & a);
 
-    /*! \details Appends \a a (zero terminated) to string.  */
+    /*! \details Appends \a a to this String.  */
     int append(const ConstString & a);
-    /*! \details Appends \a c to string.  */
+    /*! \details Appends \a c to this String.  */
     int append(char c);
-    /*! \details Appends \a c to string
-     *
-     *
+
+    /*! \details Appends \a c to this String
      */
     void push_back(char c){ append(c); }
 
@@ -316,17 +314,45 @@ public:
     /*! \details Copies a portion of this string to \a s. */
     u32 copy(String & s, u32 n, u32 pos = 0) const;
 
-    /*! \details Converts to upper case. */
-    void to_upper();
+    /*! \details Converts the string to upper case.
+     *
+     * This method operates on the current string (rather
+     * than returning a copy.
+     *
+     * \code
+     * #include <sapi/var.hpp>
+     *
+     * String hello("hello");
+     *
+     * hello.to_upper(); //hello is now "HELLO"
+     * hello.to_lower(); //hellos is now "hello"
+     *
+     * //making an uppercase copy of a string
+     *
+     * String hello_to_upper = hello.to_upper(); //both hello and hello_to_upper are "HELLO"
+     *
+     * String world = String(hello).to_upper(); //world is "HELLO", hello is still "hello"
+     *
+     * \endcode
+     *
+     */
+    String & to_upper();
 
     //compatible with C++ string
-    void toupper(){ to_upper(); }
+    String & toupper(){ return to_upper(); }
 
-    /*! \details Converts to lower case. */
-    void to_lower();
+    /*! \details Converts the string lower case.
+     *
+     * This method functions like to_upper() but converts
+     * to lower case instead of upper case.
+     *
+     * See to_upper() for code examples.
+     *
+     */
+    String & to_lower();
 
     //compatible with C++ string
-    void tolower(){ to_lower(); }
+    String & tolower(){ return to_lower(); }
 
     using ConstString::operator ==;
     using ConstString::operator !=;

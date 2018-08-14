@@ -26,13 +26,6 @@ public:
     u32 free_size() const { return m_info.fordblks; }
     u32 used_size() const { return m_info.uordblks; }
 
-    void print(){
-        printf("Total Malloc Memory %d bytes\n", m_info.arena);
-        printf("Total Free Chunks %d\n", m_info.ordblks);
-        printf("Total Free Memory %d bytes\n", m_info.fordblks);
-        printf("Total Used Memory %d bytes\n", m_info.uordblks);
-    }
-
 #if 0
     mi.arena = (total_chunks) * MALLOC_CHUNK_SIZE + (sizeof(malloc_chunk_t) - MALLOC_DATA_SIZE);
     mi.ordblks = total_free_chunks;
@@ -57,7 +50,7 @@ private:
  * char buffer[16];
  *
  * Data empty; //the size of the data is zero. data_const() will return a pointer to a zero-length null-terminated string
- * Data data_dynamic(16); //this will dynamically allocate 16 bytes (see alloc())
+ * Data data_dynamic(16); //this will dynamically allocate at least 16 bytes (see alloc())
  * Data data_static(buffer, 16); //will use buffer and consider it statically allocated (see set())
  * Data data_readonly(buffer_const, 16, true); //this will consider the data read only -- calls to data() will return 0
  *
@@ -68,6 +61,31 @@ private:
  * printf("This is empty data %s\n", empty.cdata_const()); //this is OK because empty data will return a valid string pointer
  *
  * \endcode
+ *
+ * Data objects that are dynamically allocated and returned from a method
+ * can use the set_transfer_ownership() method to pass the interal pointer
+ * to a new object rather that making a copy and freeing the temporary object.
+ *
+ * \code
+ *
+ * #include <sapi/var.hpp>
+ *
+ * Data my_data_function(){
+ *   Data result;
+ *   result.set_capacity(128);
+ *   result.fill(0xaa);
+ *   result.set_transfer_ownership();
+ *   return result;
+ * }
+ *
+ * //here the result will not be freed but the pointer will be taken over by my_data
+ *
+ * Data my_data = my_data_function();
+ *
+ * my_data_function(); //this the ownership transfer is not complete, the result data will be freed right away
+ *
+ * \endcode
+ *
  *
  *
  */
@@ -295,17 +313,6 @@ public:
 	 */
     virtual void fill(unsigned char d);
 
-	/*! \details For top level data objects this is the
-	 * same as capacity().  Other objects may re-implement
-	 * to change how much user data is available.  For example,
-     * var::String will return the size of the string rather
-     * than the capacity of the data object.
-	 *
-	 * @return The number of bytes availabe in a data object
-	 *
-	 */
-	virtual u32 calc_size() const { return m_capacity; }
-
     enum {
         PRINT_HEX /*! Print hex data */ = (1<<0),
         PRINT_UNSIGNED /*! Print unsigned integers */ = (1<<1),
@@ -322,20 +329,79 @@ public:
 
     /*! \details Swaps the byte order of the data.
      *
-     * @param size 4 to swap as 32-bit words, otherwise swap 16-bit words
+     * @param size 4 to swap as 32-bit words, otherwise swap 16-bit words (default is 4)
      *
      * If the data is read-only, no change is made
      * and error_number() is set to EINVAL.
      *
+     * On Cortex-M chips this method makes use of the built-in byte
+     * swapping instructions (so it is fast).
+     *
+     * \code
+     * #include <sapi/var.hpp>
+     * #include <sapi/hal.hpp>
+     *
+     * Spi spi(0);
+     * Data buffer(16);
+     * spi.init();
+     * spi.read(buffer);
+     *
+     * //assume the spi outputs big endian data -- swaps 32-bit words
+     * buffer.swap_byte_order();
+     * buffer.swap_byte_order(4); //this is the same as calling swap_byte_order()
+     *
+     * //or if the spi is big endian but uses 16-bit words
+     * buffer.swap_byte_order(2);
+     * \endcode
+     *
+     *
      */
     void swap_byte_order(int size = 4);
 
-    /*! \details Returns true if the data is internally managed. */
+    /*! \details Returns true if the data is internally managed.
+     *
+     * The data is internally managed if it has been dynamically allocated.
+     *
+     * \code
+     *
+     * u8 my_buffer[16];
+     *
+     * Data my_data_buffer(my_buffer, 16); //
+     * my_data_buffer.is_internally_managed(); //false because my buffer was provided externally
+     * Data my_data(16);
+     * my_data.is_internally_managed(); //true because 16 bytes were allocated internally
+     *
+     * \endcode
+     *
+     */
     bool is_internally_managed() const {
         return needs_free();
     }
 
-    /*! \details Returns true if the data object is read only. */
+    /*! \details Returns true if the data object is read only.
+     *
+     * Data objects are only read-only if they are set that way.
+     * Only externally managed data can be read-only.
+     *
+     * \code
+     * u8 my_buffer[16];
+     * Data my_readonly_buffer(my_buffer, 16, true); //marked as read-only
+     * Data my_readwrite_buffer0(my_buffer, 16, false); //marked as read-write
+     * Data my_readwrite_buffer1(my_buffer, 16); //same as line above
+     * Data my_interally_managaed_data(64);
+     *
+     * my_readonly_buffer.is_read_only(); //true
+     * my_readwrite_buffer0.is_read_only(); //false
+     * my_readwrite_buffer1.is_read_only(); //false
+     * my_interally_managaed_data.is_read_only(); //false
+     *
+     * \endcode
+     *
+     * Calling read/write operations (fill(), clear(), swap_byte_order()) on read-only data will
+     * have no effect.
+     *
+     *
+     */
     bool is_read_only() const {
         return m_mem_write == 0;
     }

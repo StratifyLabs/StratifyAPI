@@ -250,29 +250,39 @@ int Data::print(u32 o_flags) const {
 
 void Data::swap_byte_order(int size){
 
+    if( data() ){
+        if( size == 4 ){
+            u32 * p = (u32*)data();
+            if( p ){
+                u32 i;
+                for(i=0; i < capacity()/4; i++){
 #if !defined __link
-    if( size == 4 ){
-        u32 * p = (u32*)data();
-        if( p ){
-            u32 i;
-            for(i=0; i < capacity()/4; i++){
-                p[i] = __REV(p[i]);
+                    p[i] = __REV(p[i]);
+#else
+                    //swap manually
+#endif
+
+                }
+            } else {
+                set_error_number(EINVAL);
             }
         } else {
-            set_error_number(EINVAL);
-        }
-    } else {
-        u16 * p = (u16*)data();
-        if( p ){
-            u16 i;
-            for(i=0; i < capacity()/2; i++){
-                p[i] = __REV16(p[i]);
+            u16 * p = (u16*)data();
+            if( p ){
+                u16 i;
+                for(i=0; i < capacity()/2; i++){
+#if !defined __link
+                    p[i] = __REV16(p[i]);
+#else
+                    //swap manually
+#endif
+
+                }
+            } else {
+                set_error_number(EINVAL);
             }
-        } else {
-            set_error_number(EINVAL);
         }
     }
-#endif
 
 }
 

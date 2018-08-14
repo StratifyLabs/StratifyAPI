@@ -227,20 +227,22 @@ String String::substr(u32 pos, u32 len) const {
 }
 
 
-void String::to_upper(){
+String & String::to_upper(){
     u32 s = length();
     char * p = cdata();
     for(u32 i = 0; i < s; i++){
         p[i] = ::toupper(p[i]);
     }
+    return *this;
 }
 
-void String::to_lower(){
+String & String::to_lower(){
     u32 s = length();
     char * p = cdata();
     for(u32 i = 0; i < s; i++){
         p[i] = ::tolower(p[i]);
     }
+    return *this;
 }
 
 void PathString::strip_suffix(){

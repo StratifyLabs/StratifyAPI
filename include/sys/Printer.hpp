@@ -7,6 +7,7 @@
 
 
 namespace var {
+class DataInfo;
 class Data;
 class String;
 class Token;
@@ -43,6 +44,7 @@ public:
     ~Printer();
 
     Printer & operator << (const var::Data & a);
+    Printer & operator << (const var::DataInfo & a);
     Printer & operator << (const var::String & a);
     Printer & operator << (const var::Token & a);
     Printer & operator << (const var::Vector<var::String> & a);

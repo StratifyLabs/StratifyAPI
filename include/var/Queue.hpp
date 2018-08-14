@@ -121,7 +121,7 @@ public:
     bool is_empty() const { return m_linked_list.is_empty(); }
 
     /*! \details Returns the number of items in the queue. */
-    int count() const {
+    u32 count() const {
         int linked_count = m_linked_list.count();
         if( linked_count ){
 
