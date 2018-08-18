@@ -5,11 +5,18 @@
 
 #ifdef __link
 #include <sos/link.h>
+
+#if !defined __win32
+#include <dirent.h>
+#endif
+
+
 #else
 #include <dirent.h>
 #endif
 
 #include "../api/SysObject.hpp"
+#include "../var/Vector.hpp"
 #include "../var/String.hpp"
 #include "../var/ConstString.hpp"
 
@@ -66,6 +73,8 @@ public:
 
     var::String get_entry();
 
+    var::Vector<var::String> read_list();
+
 	/*! \details Returns a pointer (const) to the name of the most recently read entry. */
 	const char * name(){ return m_entry.d_name; }
 
@@ -96,6 +105,12 @@ private:
 	struct link_dirent m_entry;
 	link_transport_mdriver_t * m_driver;
 	link_transport_mdriver_t * driver(){ return m_driver; }
+
+//#if defined __macosx || defined __linux
+    DIR * m_dirp_local;
+    struct dirent m_entry_local;
+//#endif
+
 #else
 	DIR * m_dirp;
 	struct dirent m_entry;
@@ -106,6 +121,6 @@ private:
 
 };
 
-};
+}
 
 #endif /* DIR_HPP_ */

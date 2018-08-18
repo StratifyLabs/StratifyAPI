@@ -7,9 +7,44 @@ const JsonObject & JsonValue::to_object() const {
     return (const JsonObject &)*this;
 }
 
+JsonObject & JsonValue::to_object(){
+    return (JsonObject&)*this;
+}
+
 const JsonArray & JsonValue::to_array() const {
     return (const JsonArray &)*this;
 }
+
+JsonArray & JsonValue::to_array(){
+    return (JsonArray &)*this;
+}
+
+int JsonValue::assign(const var::ConstString & value){
+    if( is_string() ){
+        return json_string_set(m_value, value.str());
+    } else if( is_real() ){
+        return json_real_set(m_value, ::atof(value.str()));
+    } else if( is_integer() ){
+        return json_integer_set(m_value, ::atoi(value.str()));
+    }
+
+    //can't assign string to object, array, bool, or null
+
+    return -1;
+}
+
+int JsonValue::assign(float value){
+    return 0;
+}
+
+int JsonValue::assign(int value){
+    return 0;
+}
+
+int JsonValue::assign(bool value){
+    return 0;
+}
+
 
 var::String JsonValue::to_string() const {
     var::String result;
@@ -30,7 +65,7 @@ var::String JsonValue::to_string() const {
     } else if ( is_array() ){
         result = "[array]";
     } else {
-        result = "unknown";
+        result = "invalid";
     }
     result.set_transfer_ownership();
     return result;
@@ -106,9 +141,37 @@ JsonValue JsonObject::at(const var::ConstString & key) const {
     return json_object_get(m_value, key.str());
 }
 
-JsonArray::JsonArray(){ m_value = json_array(); }
+JsonArray::JsonArray(){
+    m_value = json_array();
+}
 
-u32 JsonArray::count() const { return json_array_size(m_value); }
+u32 JsonArray::count() const {
+    return json_array_size(m_value);
+}
+
+JsonValue JsonArray::at(u32 idx) const {
+    return json_array_get(m_value, idx);
+}
+
+int JsonArray::append(const JsonValue & value){
+    return json_array_append(m_value, value.m_value);
+}
+
+int JsonArray::append(const JsonArray & array){
+    return json_array_extend(m_value, array.m_value);
+}
+
+int JsonArray::insert(u32 idx, const JsonValue & value){
+    return json_array_insert(m_value, idx, value.m_value);
+}
+
+int JsonArray::remove(u32 idx){
+    return json_array_remove(m_value, idx);
+}
+
+int JsonArray::clear(){
+    return json_array_clear(m_value);
+}
 
 JsonString::JsonString(const var::ConstString & str){
     m_value = json_string(str.str());

@@ -78,6 +78,21 @@ public:
     T & operator[](u32 idx) { return vector_data()[idx]; }
 
 
+    /*! \details Finds an object in the array.
+     *
+     * @param a The equivalent object to find
+     * @return The index of the object or count() it if wasn't found
+     *
+     */
+    u32 find(const T & a){
+        for(u32 i=0; i < count(); i++){
+            if( at(i) == a ){
+                return i;
+            }
+        }
+        return count();
+    }
+
 
     /*! \details Returns the number of elements that are
      * able to fit in the memory that is already allocated.

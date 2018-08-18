@@ -36,20 +36,29 @@ class JsonString;
 
 class JsonValue : public api::FmtInfoObject {
 public:
-    JsonValue(){ m_value = 0; }
+    JsonValue(){
+        m_value = 0;
+        m_is_reference = false;
+    }
 
     JsonValue(json_t * value){
         m_value = value;
+        m_is_reference = true;
     }
 
     ~JsonValue(){
-        json_decref(m_value);
+        //only decref if object was create (not just a reference)
+        if( !m_is_reference ){
+            json_decref(m_value);
+        }
         m_value = 0;
     }
 
+    bool is_reference() const { return m_is_reference; }
     bool is_valid() const{ return m_value != 0; }
 
     enum type {
+        INVALID = -1,
         OBJECT = JSON_OBJECT,
         ARRAY = JSON_ARRAY,
         STRING = JSON_STRING,
@@ -60,7 +69,12 @@ public:
         ZERO = JSON_NULL
     };
 
-    enum type type() const { return (enum type)json_typeof(m_value); }
+    enum type type() const {
+        if( m_value ){
+            return (enum type)json_typeof(m_value);
+        }
+        return INVALID;
+    }
 
     bool is_object() const { return type() == OBJECT; }
     bool is_array() const { return type() == ARRAY; }
@@ -73,12 +87,43 @@ public:
     bool is_zero() const { return is_null(); }
 
     const JsonObject & to_object() const;
+    JsonObject & to_object();
     const JsonArray & to_array() const;
+    JsonArray & to_array();
     var::String to_string() const;
     float to_real() const;
     int to_integer() const;
     bool to_bool() const;
 
+    /*! \details Assigns a string to the current JSON value.
+     *
+     * @param value The string to assign
+     *
+     * This method will not change the underlying JSON type. If a
+     * string value is assigned to a real type, the string
+     * will be converted to a real. Consider the following
+     * code snippet.
+     *
+     * \code
+     * JsonReal real_value(100.0f);
+     * real_value.assign("200.0"); //"200.0" is converted to 200.0f
+     * real_value.assign("Hello World"); //"Hello World" is converted to 0.0f
+     *
+     * JsonBool bool_value(true);
+     *
+     * bool_value.assign("false"); //assigns false
+     * bool_value.assign("true"); /assign true
+     * bool_value.assign("Hello World"); assigns false
+     * \endcode
+     *
+     *
+     */
+    int assign(const var::ConstString & value);
+
+
+    int assign(float value);
+    int assign(int value);
+    int assign(bool value);
 
 private:
     friend class Json;
@@ -92,6 +137,7 @@ private:
     friend class JsonString;
     friend class JsonNull;
     json_t * m_value;
+    bool m_is_reference;
 
 };
 
@@ -117,6 +163,22 @@ class JsonArray : public JsonValue {
 public:
     JsonArray();
     u32 count() const;
+
+    /*! \details Returns a JsonValue as a reference at
+     * the specified index.
+     *
+     * @param idx The index of the value to access
+     * @return A JsonValue as a reference (see JsonValue::is_reference())
+     *
+     */
+    JsonValue at(u32 idx) const;
+
+    int append(const JsonValue & value);
+    int append(const JsonArray & array);
+    int insert(u32 idx, const JsonValue & value);
+    int remove(u32 idx);
+    int clear();
+
 };
 
 class JsonString : public JsonValue {
