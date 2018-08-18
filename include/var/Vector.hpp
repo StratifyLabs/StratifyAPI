@@ -1,6 +1,7 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
+#include <new>
 #include "Data.hpp"
 
 namespace var {
