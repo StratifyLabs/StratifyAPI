@@ -26,7 +26,7 @@ Token::Token(const ConstString & src, const ConstString & delim, const ConstStri
 bool Token::belongs_to(const char c, const ConstString & src, unsigned int len){
 	unsigned int i;
     const char * s = src.str();
-	for(i=0; i < len; i++){
+    for(i=0; i < len; i++){
         if( c == *s++ ){
 			return true;
 		}
@@ -58,16 +58,16 @@ void Token::parse(const ConstString & delim, const ConstString & ignore){
 	}
 	while( p < end ){
         if( len1 > 0 ){
-			//this can be used to skip items in quotes "ignore=this"
-			if( belongs_to(*p, ignore, len1) ){
-				end_match = *p;
+            //this can be used to skip items in quotes "ignore=this"
+            while( belongs_to(*p, ignore, len1) ){
+                end_match = *p;
 				//fast forward to next member of ignore
 				p++;
-				while( *p != end_match ){
+                while( (*p != end_match) && (*p != 0) ){
 					p++;
 				}
 				p++;
-			}
+            }
 		}
 
 		//check to see if the current character is part of the delimiter string
@@ -102,7 +102,7 @@ const ConstString Token::at(u32 n) const {
     p = str();
 
 	if( n >= size() ){
-		return 0;
+        return ConstString();
 	}
 
 	if( m_is_count_empty_tokens ){

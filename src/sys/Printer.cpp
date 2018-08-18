@@ -26,22 +26,22 @@ Printer::~Printer(){
 
 void Printer::print_indentation(){
     for(u16 i = 0; i < m_indent; i++){
-        print("\t");
+        print("  ");
     }
 }
 
-void Printer::vprint_indented(const char * key, const char * fmt, va_list list){
+void Printer::vprint_indented(const var::ConstString & key, const char * fmt, va_list list){
     print("\n");
     print_indentation();
-    if( key ){
-        print("%s: ", key);
+    if( !key.is_empty() ){
+        print("%s: ", key.str());
     } else {
         //generate a unique key for JSON
     }
     vprint(fmt, list);
 }
 
-void Printer::print_indented(const char * key, const char * fmt, ...){
+void Printer::print_indented(const var::ConstString & key, const char * fmt, ...){
     va_list list;
     va_start(list, fmt);
     vprint_indented(key, fmt, list);
@@ -221,18 +221,18 @@ bool Printer::update_progress(int progress, int total){
     return false;
 }
 
-Printer & Printer::open_object(const char * key){
+Printer & Printer::open_object(const var::ConstString & key){
     print_indented(key, "");
     m_indent++;
     return *this;
 }
 
-Printer & Printer::key(const char * key, const var::String & a){
+Printer & Printer::key(const var::ConstString & key, const var::String & a){
     print_indented(key, "%s", a.str());
     return *this;
 }
 
-Printer & Printer::key(const char * key, const char * fmt, ...){
+Printer & Printer::key(const var::ConstString & key, const char * fmt, ...){
     va_list list;
     va_start(list, fmt);
     vprint_indented(key, fmt, list);

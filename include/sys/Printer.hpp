@@ -70,8 +70,8 @@ public:
     virtual Printer & warning(const char * fmt, ...);
     virtual Printer & error(const char * fmt, ...);
     virtual Printer & fatal(const char * fmt, ...);
-    virtual Printer & key(const char * key, const char * fmt, ...);
-    virtual Printer & key(const char * key, const var::String & a);
+    virtual Printer & key(const var::ConstString & key, const char * fmt, ...);
+    virtual Printer & key(const var::ConstString & key, const var::String & a);
 
     void print(const char * fmt, ...);
 
@@ -96,7 +96,7 @@ public:
     void set_base(enum base value){ m_base = value; }
     void set_flags(u32 value){ m_o_flags = value; }
 
-    Printer & open_object(const char * key);
+    Printer & open_object(const var::ConstString & key);
     void close_object(){ m_indent--; }
 
 
@@ -111,8 +111,8 @@ protected:
 
     void print_indentation();
 
-    virtual void print_indented(const char * key, const char * fmt, ...);
-    virtual void vprint_indented(const char * key, const char * fmt, va_list list);
+    virtual void print_indented(const var::ConstString & key, const char * fmt, ...);
+    virtual void vprint_indented(const var::ConstString & key, const char * fmt, va_list list);
 
     void vprint(const char * fmt, va_list list);
 
