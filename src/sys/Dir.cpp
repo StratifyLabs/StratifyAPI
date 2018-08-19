@@ -125,6 +125,7 @@ var::Vector<var::String> Dir::read_list(){
     var::String entry;
 
     do {
+        entry.clear();
         entry = read();
         if( !entry.is_empty() ){
             result.push_back(entry);
@@ -146,10 +147,10 @@ const char * Dir::read(){
         }
     } else {
         struct dirent * result_local;
-        if( readdir_r(m_dirp_local, &m_entry_local, &result_local) < 0 ){
+        if( (readdir_r(m_dirp_local, &m_entry_local, &result_local) < 0) || (result_local == 0) ){
             return 0;
         }
-        return m_entry.d_name;
+        return m_entry_local.d_name;
     }
 #else
     struct dirent * result;

@@ -94,22 +94,23 @@ bool JsonValue::to_bool() const {
 
 JsonObject::JsonObject(){
     m_value = json_object();
+    m_is_observer = false;
 }
 
 int JsonObject::insert(const var::ConstString & key, const JsonValue & value){
     return json_object_set(m_value, key.str(), value.m_value);
 }
 
-int JsonObject::update(const JsonValue & value){
+int JsonObject::update(const JsonValue & value, u8 o_flags){
+    if( o_flags & UPDATE_EXISTING ){
+        return json_object_update_existing(m_value, value.m_value);
+    }
+
+    if( o_flags & UPDATE_MISSING ){
+        return json_object_update_missing(m_value, value.m_value);
+    }
+
     return json_object_update(m_value, value.m_value);
-}
-
-int JsonObject::update_existing(const JsonValue & value){
-    return json_object_update_existing(m_value, value.m_value);
-}
-
-int JsonObject::update_missing(const JsonValue & value){
-    return json_object_update_missing(m_value, value.m_value);
 }
 
 int JsonObject::remove(const var::ConstString & key){
@@ -143,6 +144,7 @@ JsonValue JsonObject::at(const var::ConstString & key) const {
 
 JsonArray::JsonArray(){
     m_value = json_array();
+    m_is_observer = false;
 }
 
 u32 JsonArray::count() const {
@@ -175,10 +177,12 @@ int JsonArray::clear(){
 
 JsonString::JsonString(const var::ConstString & str){
     m_value = json_string(str.str());
+    m_is_observer = false;
 }
 
 JsonReal::JsonReal(float value){
     m_value = json_real(value);
+    m_is_observer = false;
 }
 
 JsonReal & JsonReal::operator=(float a){
@@ -188,6 +192,7 @@ JsonReal & JsonReal::operator=(float a){
 
 JsonInteger::JsonInteger(int value){
     m_value = json_integer(value);
+    m_is_observer = false;
 }
 
 JsonInteger & JsonInteger::operator=(int a){
@@ -197,6 +202,7 @@ JsonInteger & JsonInteger::operator=(int a){
 
 JsonNull::JsonNull(){
     m_value = json_null();
+    m_is_observer = false;
 }
 
 JsonBool::JsonBool(bool value){
@@ -205,6 +211,7 @@ JsonBool::JsonBool(bool value){
     } else {
         m_value = json_false();
     }
+    m_is_observer = false;
 }
 
 Json::Json(){
@@ -230,5 +237,21 @@ int Json::load(const sys::File & file){
 int Json::load(json_load_callback_t callback, void * context){
     m_value = json_load_callback(callback, context, flags(), &m_error.m_value);
     return m_value == 0 ? -1 : 0;
+}
+
+int Json::save(const var::ConstString & path){
+    return json_dump_file(m_value, path.str(), flags());
+}
+
+int Json::save(var::Data & data){
+    return json_dumpb(m_value, data.cdata(), data.capacity(), flags());
+}
+
+int Json::save(const sys::File & file){
+    return json_dumpfd(m_value, file.fileno(), flags());
+}
+
+int Json::save(json_dump_callback_t callback, void * context){
+    return json_dump_callback(m_value, callback, context, flags());
 }
 
