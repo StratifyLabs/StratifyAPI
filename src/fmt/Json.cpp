@@ -3,6 +3,32 @@
 
 using namespace fmt;
 
+JsonValue::JsonValue(json_t * value){
+    set_observer(value);
+}
+
+JsonValue::JsonValue(const JsonValue & value){
+    set_observer(value.m_value);
+}
+
+JsonValue & JsonValue::operator=(const JsonValue & value){
+    if( is_valid() ){ json_decref(m_value); }
+    set_observer(value.m_value);
+    return *this;
+}
+
+void JsonValue::set_observer(json_t * value){
+    m_value = value;
+    m_is_observer = true;
+}
+
+JsonValue::~JsonValue(){
+    //only decref if object was create (not just a reference)
+    if( was_created() ){ json_decref(m_value); }
+    m_value = 0;
+}
+
+
 const JsonObject & JsonValue::to_object() const {
     return (const JsonObject &)*this;
 }
@@ -17,6 +43,14 @@ const JsonArray & JsonValue::to_array() const {
 
 JsonArray & JsonValue::to_array(){
     return (JsonArray &)*this;
+}
+
+int JsonValue::create_if_not_valid(){
+    if( is_valid() ){ return 0; }
+    if( create() == 0 ){
+        m_is_observer = false;
+    }
+    return 0;
 }
 
 int JsonValue::assign(const var::ConstString & value){
@@ -92,12 +126,52 @@ bool JsonValue::to_bool() const {
     return false;
 }
 
-JsonObject::JsonObject(){
-    m_value = json_object();
-    m_is_observer = false;
+JsonObject::JsonObject(){}
+
+JsonObject::JsonObject(const JsonObject & value){
+    set_observer(value.m_value);
+}
+
+JsonObject & JsonObject::operator=(const JsonObject & value){
+    if( was_created() ){ json_decref(m_value); }
+    set_observer(value.m_value);
+    return *this;
+}
+
+json_t * JsonObject::create(){
+    return json_object();
+}
+
+json_t * JsonArray::create(){
+    return json_array();
+}
+
+json_t * JsonReal::create(){
+    return json_real(0.0f);
+}
+
+json_t * JsonInteger::create(){
+    return json_integer(0);
+}
+
+json_t * JsonTrue::create(){
+    return json_true();
+}
+
+json_t * JsonFalse::create(){
+    return json_false();
+}
+
+json_t * JsonString::create(){
+    return json_string("");
+}
+
+json_t * Json::create(){
+    return 0;
 }
 
 int JsonObject::insert(const var::ConstString & key, const JsonValue & value){
+
     return json_object_set(m_value, key.str(), value.m_value);
 }
 
@@ -147,6 +221,16 @@ JsonArray::JsonArray(){
     m_is_observer = false;
 }
 
+JsonArray::JsonArray(const JsonArray & value){
+    set_observer(value.m_value);
+}
+
+JsonArray & JsonArray::operator=(const JsonArray & value){
+    if( was_created() ){ json_decref(m_value); }
+    set_observer(value.m_value);
+    return *this;
+}
+
 u32 JsonArray::count() const {
     return json_array_size(m_value);
 }
@@ -181,37 +265,30 @@ JsonString::JsonString(const var::ConstString & str){
 }
 
 JsonReal::JsonReal(float value){
-    m_value = json_real(value);
-    m_is_observer = false;
+    if( create_if_not_valid() == 0 ){
+        json_real_set(m_value, value);
+    }
+
 }
 
 JsonReal & JsonReal::operator=(float a){
-    json_real_set(m_value, a);
+    if( create_if_not_valid() == 0 ){
+        json_real_set(m_value, a);
+    }
     return *this;
 }
 
 JsonInteger::JsonInteger(int value){
-    m_value = json_integer(value);
-    m_is_observer = false;
+    if( create_if_not_valid() == 0 ){
+        json_integer_set(m_value, value);
+    }
 }
 
 JsonInteger & JsonInteger::operator=(int a){
-    json_integer_set(m_value, a);
-    return *this;
-}
-
-JsonNull::JsonNull(){
-    m_value = json_null();
-    m_is_observer = false;
-}
-
-JsonBool::JsonBool(bool value){
-    if( value ){
-        m_value = json_true();
-    } else {
-        m_value = json_false();
+    if( create_if_not_valid() == 0 ){
+        json_integer_set(m_value, a);
     }
-    m_is_observer = false;
+    return *this;
 }
 
 Json::Json(){
@@ -219,24 +296,40 @@ Json::Json(){
 }
 
 int Json::load(const var::ConstString & path){
+    if( was_created() ){ json_decref(m_value); }
     m_value = json_load_file(path.str(), flags(), &m_error.m_value);
-    return m_value == 0 ? -1 : 0;
+    if( m_value ){
+        m_is_observer = false;
+        return 0;
+    }
+    return -1;
 }
 
 int Json::load(const var::Data & data){
+    if( was_created() ){ json_decref(m_value); }
     m_value = json_loadb(data.cdata_const(), data.size(), flags(), &m_error.m_value);
-    return m_value == 0 ? -1 : 0;
+    if( m_value ){
+        m_is_observer = false;
+        return 0;
+    }
+    return -1;
 }
 
 //only use on Stratify OS
 int Json::load(const sys::File & file){
+    if( was_created() ){ json_decref(m_value); }
     m_value = json_loadfd(file.fileno(), flags(), &m_error.m_value);
     return m_value == 0 ? -1 : 0;
 }
 
 int Json::load(json_load_callback_t callback, void * context){
+    if( was_created() ){ json_decref(m_value); }
     m_value = json_load_callback(callback, context, flags(), &m_error.m_value);
-    return m_value == 0 ? -1 : 0;
+    if( m_value ){
+        m_is_observer = false;
+        return 0;
+    }
+    return -1;
 }
 
 int Json::save(const var::ConstString & path){

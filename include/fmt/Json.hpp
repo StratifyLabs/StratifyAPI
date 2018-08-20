@@ -41,16 +41,10 @@ public:
         m_is_observer = true;
     }
 
-    JsonValue(json_t * value){
-        m_value = value;
-        m_is_observer = true;
-    }
-
-    ~JsonValue(){
-        //only decref if object was create (not just a reference)
-        if( !m_is_observer ){ json_decref(m_value); }
-        m_value = 0;
-    }
+    JsonValue(json_t * value);
+    JsonValue(const JsonValue & value);
+    JsonValue & operator=(const JsonValue & value);
+    ~JsonValue();
 
     /*! \details Returns true if the JsonValue is a reference
      * to an object that is owned and managed by another instance.
@@ -154,6 +148,24 @@ public:
     int to_integer() const;
     bool to_bool() const;
 
+    //how to handle object creation -- explicitly or implicity so memory isn't leaked
+    /*
+     * For object creation, create objects on demand. When
+     *
+     * JsonObject object; //not valid yet
+     *
+     * object.insert("foo", "bar"); // object is created upon insert
+     *
+     * object.load("/path/to/json"); //object is now valid
+     *
+     * object.load("/path/to/other/json"); //previous object is freed before new one loaded
+     *
+     * //here other_object is not created but is just observing - if it was previously created - it is decremented
+     * JsonObject other_object = object.at("object").to_object();
+     *
+     *
+     */
+
     /*! \details Assigns a string to the current JSON value.
      *
      * @param value The string to assign
@@ -184,6 +196,14 @@ public:
     int assign(int value);
     int assign(bool value);
 
+protected:
+    int create_if_not_valid();
+    virtual json_t * create(){ return 0; }
+
+    bool was_created(){
+        return is_valid() && !is_observer();
+    }
+
 private:
     friend class Json;
     friend class JsonObject;
@@ -198,12 +218,17 @@ private:
     json_t * m_value;
     bool m_is_observer;
 
+    void set_observer(json_t * value);
+
 };
 
 class JsonObject : public JsonValue {
 public:
 
     JsonObject();
+
+    JsonObject(const JsonObject & value);
+    JsonObject & operator=(const JsonObject & value);
 
     /*!
      * \details Inserts the key value pair into the object.
@@ -269,11 +294,18 @@ public:
 
     var::Vector<var::String> keys() const;
 
+private:
+
+    json_t * create();
+
 };
 
 class JsonArray : public JsonValue {
 public:
     JsonArray();
+    JsonArray(const JsonArray & value);
+    JsonArray & operator=(const JsonArray & value);
+
     u32 count() const;
 
     /*! \details Returns a JsonValue as a reference at
@@ -290,45 +322,57 @@ public:
     int insert(u32 idx, const JsonValue & value);
     int remove(u32 idx);
     int clear();
+private:
 
+    json_t * create();
 };
 
 class JsonString : public JsonValue {
 public:
+    JsonString();
     JsonString(const var::ConstString & str);
+private:
+    json_t * create();
 };
 
 class JsonReal : public JsonValue {
 public:
+    JsonReal(){}
     JsonReal(float value);
     JsonReal & operator=(float a);
-
+private:
+    json_t * create();
 };
 
 class JsonInteger : public JsonValue {
 public:
+    JsonInteger(){}
     JsonInteger(int value);
     JsonInteger & operator=(int a);
+private:
+    json_t * create();
 };
 
 class JsonNull : public JsonValue {
 public:
-    JsonNull();
+    JsonNull(){}
+private:
+    json_t * create();
 };
 
-class JsonBool : public JsonValue {
+
+class JsonTrue : public JsonValue {
 public:
-    JsonBool(bool value);
+    JsonTrue(){}
+private:
+    json_t * create();
 };
 
-class JsonTrue : public JsonBool {
+class JsonFalse : public JsonValue {
 public:
-    JsonTrue() : JsonBool(true){}
-};
-
-class JsonFalse : public JsonBool {
-public:
-    JsonFalse() : JsonBool(false){}
+    JsonFalse(){}
+private:
+    json_t * create();
 };
 
 class Json : public JsonValue {
@@ -390,6 +434,7 @@ public:
 private:
     u32 m_flags;
     JsonError m_error;
+    json_t * create();
 };
 
 }
