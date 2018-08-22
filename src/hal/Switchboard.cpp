@@ -1,3 +1,4 @@
+#include <sos/link/types.h>
 #include "hal/Switchboard.hpp"
 
 using namespace hal;
@@ -117,7 +118,9 @@ int Switchboard::create_persistent_connection(
     int ret;
 
     if( id < 0 ){
+#if !defined __link
         set_error_number(ENOSPC);
+#endif
         return -1;
     }
 
@@ -141,7 +144,9 @@ int Switchboard::create_fixed_size_connection(
     int id = get_available_connection();
 
     if( id < 0 ){
+#if !defined __link
         set_error_number(ENOSPC);
+#endif
         return -1;
     }
 

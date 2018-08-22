@@ -2,7 +2,9 @@
 #define SWITCHBOARD_HPP
 
 #include <sos/dev/switchboard.h>
+#if !defined __link
 #include <sos/fs/sysfs.h>
+#endif
 #include "Device.hpp"
 #include "../var/ConstString.hpp"
 
@@ -125,9 +127,11 @@ public:
      *
      */
     s32 nbyte() const {
+#if !defined __link
         if( m_connection.nbyte < 0 ){
             return SYSFS_GET_RETURN(m_connection.nbyte);
         }
+#endif
         return m_connection.nbyte;
     }
 
@@ -147,9 +151,11 @@ public:
 
     /*! \details Returns the error number associated with the is_stopped_on_error() condition. */
     int error_number() const {
+#if !defined __link
         if( m_connection.nbyte < 0 ){
             return SYSFS_GET_RETURN_ERRNO(m_connection.nbyte);
         }
+#endif
         return 0;
     }
 
