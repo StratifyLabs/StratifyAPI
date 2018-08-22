@@ -142,7 +142,13 @@ public:
      */
     static const char * api_version(){ return "3.7.0"; }
 
-    static const char * api_git_hash(){ return SOS_GIT_HASH; }
+    static const char * api_git_hash(){
+#if defined SOS_GIT_HASH
+        return SOS_GIT_HASH;
+#else
+        return "unknown";
+#endif
+    }
 };
 
 }
