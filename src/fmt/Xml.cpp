@@ -75,7 +75,7 @@ int Xml::set_get_value(String & dest, const var::ConstString & key, bool set) co
 	if( start_attr > -1 ){
 		end_attr = s1.find(')', start_attr+1);
 		if( end_attr > -1 ){
-			s1.copy(s2, end_attr-start_attr-1, start_attr+1);
+            s2.copy_contents(s1, start_attr+1, end_attr-start_attr-1);
 			s1.cdata()[start_attr] = 0;
 		} else {
 			//malformed argument
@@ -430,8 +430,8 @@ int Xml::parse_ref(String & name, String & value, const ConstString & str, const
 	if( open_bracket > 0 ){
 		close_bracket = s0.find(enclosing[1], open_bracket+1);
 		if( close_bracket > 0 ){
-            s0.copy(value, close_bracket-open_bracket-1, open_bracket+1);
-            s0.copy(name, open_bracket, 0);
+            value.copy_contents(s0, open_bracket+1, close_bracket-open_bracket-1);
+            name.copy_contents(s0, open_bracket);
 			return 1;
 		} else {
 			//malformed statement

@@ -105,6 +105,14 @@ public:
     /*! \details Declares a string and initialize to \a s. */
     String(const ConstString & s, u32 len);
 
+    /*! \details Constructs a string using statically allocated memory.
+     *
+     * @param mem A pointer to memory to use
+     * @param capacity The number of bytes available
+     * @param readonly True if the mem is in readonly memory
+     */
+    String(char * mem, u32 capacity, bool readonly = false);
+
 
     /*! \details Assigns a to this string.
      *
@@ -197,14 +205,6 @@ public:
 
     ~String(){}
 
-    /*! \details Constructs a string using statically allocated memory.
-     *
-     * @param mem A pointer to memory to use
-     * @param capacity The number of bytes available
-     * @param readonly True if the mem is in readonly memory
-     */
-    String(char * mem, u32 capacity, bool readonly = false);
-
 
     /*! \details Sets the capacity of the string.
      *
@@ -225,6 +225,7 @@ public:
      *
      * @param pos Starting position to look for the sub-string
      * @param len The number of bytes in the String to search
+     * @return A new string object containing the sub string specified
      *
      */
     String substr(u32 pos = 0, u32 len = npos) const;
