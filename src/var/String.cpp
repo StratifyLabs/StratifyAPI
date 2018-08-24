@@ -112,41 +112,6 @@ int String::append(char c){
     return 0;
 }
 
-bool String::get_delimited_data(String & dest, int n, char sep, char term){
-    dest.clear();
-    int element = 0;
-    int start = 0;
-    int end = 0;
-    char c;
-    for(u32 i=0; i < length(); i++){
-        c = at(i);
-        if( (c == sep) || (c == term) ){
-            end = i;
-            if( n == element ){
-                copy(dest, end - start, start);
-                return true;
-            }
-            element++;
-            start = i+1;
-        }
-    }
-    return false;
-}
-
-int String::calc_delimited_data_size(char sep, char term){
-    int elements = 1;
-    //return the total number of elements
-    for(u32 i=0; i < length(); i++){
-        if( at(i) == sep ){
-            elements++;
-        }
-        if( at(i) == term ){
-            break;
-        }
-    }
-    return elements;
-}
-
 
 String& String::insert(u32 pos, const ConstString & str){
 
@@ -200,22 +165,6 @@ String& String::erase(u32 pos, u32 len){
         p[pos] = 0;
     }
     return *this;
-}
-
-
-u32 String::copy(String & s, u32 len, u32 pos) const {
-    const char * p = c_str();
-    u32 siz = length();
-    u32 n;
-    if( pos < siz ){
-        n = siz - pos;
-        if( len > n ){
-            len = n;
-        }
-        ::memcpy(s.data(),p+pos,len);
-        return len;
-    }
-    return 0;
 }
 
 String String::substr(u32 pos, u32 len) const {

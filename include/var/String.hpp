@@ -308,12 +308,6 @@ public:
      */
     void push_back(char c){ append(c); }
 
-    bool get_delimited_data(String & dest, int n, char sep = ',', char term = '\n');
-    int calc_delimited_data_size(char sep = ',', char term = '\n');
-
-    /*! \details Copies a portion of this string to \a s. */
-    u32 copy(String & s, u32 n, u32 pos = 0) const;
-
     /*! \details Converts the string to upper case.
      *
      * This method operates on the current string (rather
