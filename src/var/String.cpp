@@ -40,7 +40,7 @@ u32 String::capacity() const {
 
 String& String::format(const char * format, ...){
     va_list args;
-    va_start (args, format);
+    va_start(args, format);
     vformat(format, args);
     va_end (args);
     return *this;
@@ -49,7 +49,7 @@ String& String::format(const char * format, ...){
 int String::sprintf(const char * format, ...){
     int result;
     va_list args;
-    va_start (args, format);
+    va_start(args, format);
     result = vformat(format, args);
     va_end (args);
     return result;
@@ -57,6 +57,9 @@ int String::sprintf(const char * format, ...){
 
 int String::vformat(const char * fmt, va_list list){
     int result;
+    if( capacity() == 0 ){
+        set_size(minimum_size());
+    }
     result = vsnprintf(cdata(), capacity(), fmt, list);
     if( result > (int)capacity() ){ //if the data did not fit, make the buffer bigger
         if( set_capacity(result+1) >= 0 ){
@@ -188,7 +191,7 @@ String& String::erase(u32 pos, u32 len){
         int remaining;
         remaining = s - pos - len;
         if( remaining > 0 ){
-            memcpy(p + pos, p + pos + len, remaining);
+            ::memcpy(p + pos, p + pos + len, remaining);
             p[pos+remaining] = 0;
         } else {
             p[pos] = 0;
@@ -209,7 +212,7 @@ u32 String::copy(String & s, u32 len, u32 pos) const {
         if( len > n ){
             len = n;
         }
-        memcpy(s.data(),p+pos,len);
+        ::memcpy(s.data(),p+pos,len);
         return len;
     }
     return 0;

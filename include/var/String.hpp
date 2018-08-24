@@ -113,7 +113,7 @@ public:
      *
      */
     String& operator=(const String & a){
-        Data::copy(a);
+        Data::copy_object(a);
         set_string_pointer(cdata_const());
         return *this;
     }

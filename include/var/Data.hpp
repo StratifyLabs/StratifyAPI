@@ -436,9 +436,42 @@ public:
         m_o_flags |= FLAG_IS_TRANSFER_OWNERSHIP;
     }
 
+    /*! \details Copies the contents of a into the memory of
+     * this object.
+     *
+     * @param a Data to copy contents of
+     * @param size The number of bytes to copy
+     *
+     * The capacity() of this object must be greater
+     * than or equal to the size() of a.
+     *
+     * On successful copy, the size() of this object will
+     * be set to the \a size parameter.
+     *
+     *
+     */
+    int copy_contents(const Data & a, u32 size);
+
+
+    /*!
+     * \details Copies the contents of another data object.
+     * \param a The object whose contents will be copied
+     * \return Zero on success or less than zero if memory could not be allocated
+     *
+     */
+    int copy_contents(const Data & a);
+
+    /*!
+     * \details Copies the contents of another data object to this object.
+     * \param a The data object whose contents will be copied
+     * \param destination_position The offset in this object for the copy destination
+     * \param size The number of bytes to copy
+     * \return Zero on success or less than zero if memory could not be allocated
+     */
+    int copy_contents(const Data & a, u32 destination_position, u32 size);
 
 protected:
-    void copy(const Data & a);
+    void copy_object(const Data & a);
 
 private:
 

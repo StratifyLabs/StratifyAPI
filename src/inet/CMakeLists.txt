@@ -1,11 +1,9 @@
 
 
-if( ${SOS_BUILD_CONFIG} STREQUAL arm )
-    set(SOURCELIST
+set(SOURCELIST
 			${SOURCES_PREFIX}/Socket.cpp
 			${SOURCES_PREFIX}/Http.cpp
-	${SOURCES_PREFIX}/SecureSocket.cpp)
-endif()
+			${SOURCES_PREFIX}/SecureSocket.cpp)
 
 
 set(SOURCES ${SOURCELIST} PARENT_SCOPE)  

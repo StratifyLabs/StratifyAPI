@@ -198,7 +198,7 @@ void Token::sort(enum sort_options sort_option){
 
 Token & Token::operator=(const Token & token){
     set_capacity(token.capacity());
-	memcpy(data(), token.data_const(), token.capacity());
+    ::memcpy(data(), token.data_const(), token.capacity());
 	m_num_tokens = token.m_num_tokens;
 	m_string_size = token.m_string_size;
     m_is_count_empty_tokens = token.m_is_count_empty_tokens;

@@ -47,11 +47,11 @@ Data::Data(u32 s){
 
 Data::Data(const Data & a){
     zero();
-    copy(a);
+    copy_object(a);
 }
 
 Data& Data::operator=(const Data & a){
-    copy(a);
+    copy_object(a);
     return *this;
 }
 
@@ -68,7 +68,29 @@ Data::~Data(){
     free();
 }
 
-void Data::copy(const Data & a){
+int Data::copy_contents(const Data & a){
+    return copy_contents(a, 0, a.size());
+}
+
+
+int Data::copy_contents(const Data & a, u32 size){
+    return copy_contents(a, 0, size);
+}
+
+int Data::copy_contents(const Data & a, u32 destination_position, u32 size){
+    if( size > a.capacity() ){ size = a.capacity(); }
+    if( capacity() < (size + destination_position) ){
+        if( set_size(size + destination_position) < 0 ){
+            return -1;
+        }
+    } else {
+        m_size = size + destination_position;
+    }
+    ::memcpy(cdata() + destination_position, a.data_const(), size);
+    return 0;
+}
+
+void Data::copy_object(const Data & a){
     if( a.is_internally_managed() ){
         //is the new object taking ownership or making a copy
         if( a.is_transfer_ownership() ){
@@ -80,11 +102,8 @@ void Data::copy(const Data & a){
             set_needs_free();
             a.clear_needs_free();
         } else {
-            //allocate memory for a copy of a
-            set_size(a.capacity());
-            if( data() && (capacity() >= a.capacity()) ){
-                memcpy(data(), a.data(), a.capacity());
-            }
+            //copy the contents of a to this object
+            copy_contents(a, a.capacity());
         }
     } else {
         set(a.data(), a.capacity(), a.is_read_only());
@@ -125,6 +144,7 @@ void Data::zero(){
 int Data::alloc(u32 s, bool resize){
 
     void * new_data;
+    u32 original_size = s;
 
     if( ( !needs_free() ) && (m_mem != &m_zero_value) ){
         //this data object can't be resized -- it was created using a pointer (not dyn memory)
@@ -136,7 +156,6 @@ int Data::alloc(u32 s, bool resize){
         return 0;
     }
 
-    m_size = s;
 
     if( s <= minimum_size() ){
         s = minimum_size();
@@ -152,11 +171,12 @@ int Data::alloc(u32 s, bool resize){
     }
 
     if( resize && m_capacity ){
-        memcpy(new_data, m_mem, s > m_capacity ? m_capacity : s);
+        ::memcpy(new_data, m_mem, s > m_capacity ? m_capacity : s);
     }
 
     free();
 
+    m_size = original_size;
     m_mem_write = new_data;
     set_needs_free();
     m_mem = m_mem_write;
