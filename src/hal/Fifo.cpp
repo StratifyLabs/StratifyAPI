@@ -7,7 +7,7 @@ using namespace hal;
 Fifo::Fifo(){}
 
 int Fifo::get_info(FifoInfo & info) const { return ioctl(I_FIFO_GETINFO, (void*)&info.m_info); }
-const FifoInfo Fifo::get_info() const {
+FifoInfo Fifo::get_info() const {
     FifoInfo a;
     set_error_number_if_error(get_info(a));
     return a;

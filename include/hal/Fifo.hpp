@@ -115,7 +115,7 @@ public:
     int get_info(FifoInfo & info) const;
 
 	/*! \details Returns the fifo info. */
-    const FifoInfo get_info() const;
+    FifoInfo get_info() const;
 
 	/*! \details Flushes the FIFO. */
 	int flush() const;

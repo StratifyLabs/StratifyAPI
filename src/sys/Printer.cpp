@@ -180,10 +180,11 @@ Printer & Printer::operator << (const sys::TaskInfo & a){
 Printer & Printer::operator << (const sys::SysInfo & a ){
     print_indented("Name", "%s", a.name().str());
     print_indented("Serial Number", F3208X F3208X F3208X F3208X,
-                   a.serial_number().sn[3],
+            a.serial_number().sn[3],
             a.serial_number().sn[2],
             a.serial_number().sn[1],
             a.serial_number().sn[0]);
+    print_indented("Hardware ID",  F3208X, a.hardware_id());
     if( a.name() != "bootloader" ){
         print_indented("BSP Version",  "%s", a.bsp_version().str());
         print_indented("SOS Version",  "%s", a.sos_version().str());

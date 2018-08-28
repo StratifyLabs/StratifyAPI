@@ -20,7 +20,7 @@ class SysInfo : public api::SysInfoObject {
     friend class Sys;
 public:
 
-    SysInfo(){ memset(&m_info, 0, sizeof(m_info)); }
+    SysInfo(){ clear(); }
     SysInfo(const sys_info_t & info ){
         m_info = info;
     }
@@ -41,7 +41,17 @@ public:
     var::ConstString sos_git_hash() const { return m_info.sos_git_hash; }
     var::ConstString mcu_git_hash() const { return m_info.mcu_git_hash; }
 
+    var::ConstString stdin_name() const { return m_info.stdin_name; }
+    var::ConstString stdout_name() const { return m_info.stdout_name; }
+    var::ConstString trace_name() const { return m_info.trace_name; }
+    u32 hardware_id() const { return m_info.hardware_id; }
+
+
     mcu_sn_t serial_number() const { return m_info.serial; }
+
+    void clear(){
+        memset(&m_info, 0, sizeof(m_info));
+    }
 
 private:
     sys_info_t m_info;

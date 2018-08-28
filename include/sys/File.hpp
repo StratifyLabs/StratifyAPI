@@ -277,14 +277,21 @@ public:
 	 */
     virtual int read(void * buf, int nbyte) const;
 
-    /*! \details Reads the file into a var::Data object. */
+    /*! \details Reads the file into a var::Data object.
+     *
+     * @param data The destination data object
+     * @return The number of bytes read
+     *
+     * This method will read up to data.size() bytes.
+     *
+     */
     int read(var::Data & data) const { return read(data.data(), data.size()); }
 
 	/*! \details Write the file.
 	 *
 	 * @param buf A pointer to the source buffer
 	 * @param nbyte The number of bytes to read
-	 * @return The number of bytes read or less than zero on an error
+     * @return The number of bytes written or less than zero on an error
 	 */
     virtual int write(const void * buf, int nbyte) const;
 
@@ -322,7 +329,7 @@ public:
 	 * @param loc Location to write (not application to character devices)
 	 * @param buf Pointer to the source data
 	 * @param nbyte Number of bytes to write
-	 * @return Number of bytes successfully written or -1 with errno set
+     * @return Number of bytes successfully written or less than zero with errno set
 	 */
     int write(int loc, const void * buf, int nbyte) const;
 
@@ -330,10 +337,10 @@ public:
     int write(int loc, const var::Data & data) const { return write(loc, data.data_const(), data.size()); }
 
     /*! \details Writes the file using a var::ConstString object at the location specified. */
-    int write(int loc, const var::ConstString & str) const { return write(str.str(), str.length()); }
+    int write(int loc, const var::ConstString & str) const { return write(loc, str.str(), str.length()); }
 
     /*! \details Writes the file using a var::String object at the location specified. */
-    int write(int loc, const var::String & str) const { return write(str.str(), str.length()); }
+    int write(int loc, const var::String & str) const { return write(loc, str.str(), str.length()); }
 
 	/*! \details Reads a line from a file.
 	 *
@@ -408,7 +415,19 @@ public:
 	int ioctl(int req, int arg) const { return ioctl(req, MCU_INT_CAST(arg)); }
 
     /*! \details Sets the file descriptor for this object. */
-	void set_fileno(int fd){ m_fd = fd; }
+    void set_fileno(int fd){ m_fd = fd; }
+
+    /*! \details Sets the file descriptor of this object to the file descriptor of file.
+     *
+     * @param file A reference to the file to share the fileno with.
+     *
+     * The reference \a file must already be opened and have a valid file
+     * number. This won't bind the file number to file just assign
+     * it based on the state of file.fileno() when this method is called.
+     *
+     *
+     */
+    void set_fileno(const File & file){ m_fd = file.fileno(); }
 
     /*! \details Copies a file from the source to the destination.
      *

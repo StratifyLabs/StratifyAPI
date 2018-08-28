@@ -42,10 +42,8 @@ Link::Link(){
     m_is_bootloader = false;
     m_status_message = "";
     m_error_message = "";
-    m_serial_number = "";
     m_driver = &m_default_driver;
     link_load_default_driver(m_driver);
-    memset(&m_sys_info, 0, sizeof(m_sys_info));
 }
 
 Link::~Link(){}
@@ -95,8 +93,28 @@ var::Vector<var::String> Link::get_port_list(){
     return result;
 }
 
+var::Vector<LinkInfo> Link::get_info_list(){
+    var::Vector<LinkInfo> result;
+    var::Vector<var::String> port_list = get_port_list();
 
-int Link::connect(const var::ConstString & path, const var::ConstString & sn, bool is_legacy){
+    //disconnect if already connected
+    disconnect();
+
+    for(u32 i = 0; i < port_list.count(); i++){
+        //ping and grab the info
+        if( connect(port_list.at(i)) < 0 ){
+            //couldn't connect
+        } else {
+            result.push_back(LinkInfo(port_list.at(i), sys_info()));
+            disconnect();
+        }
+    }
+
+    result.set_transfer_ownership();
+    return result;
+}
+
+int Link::connect(const var::ConstString & path, bool is_legacy){
     int err;
 
     reset_progress();
@@ -108,8 +126,6 @@ int Link::connect(const var::ConstString & path, const var::ConstString & sn, bo
             m_error_message = "Failed to Connect to Device";
             return -1;
         }
-        m_serial_number = sn;
-        m_path = path;
 
     } else {
         m_error_message.sprintf("Already Connected (%d)", 1);
@@ -134,17 +150,19 @@ int Link::connect(const var::ConstString & path, const var::ConstString & sn, bo
         return -1;
     }
 
-
+    sys_info_t sys_info;
     if( m_is_bootloader == false ){
-        link_get_sys_info(driver(), &m_sys_info);
+        link_get_sys_info(driver(), &sys_info);
     } else {
         bootloader_attr_t boot_attr;
         get_bootloader_attr(boot_attr);
-        memset(&m_sys_info, 0, sizeof(m_sys_info));
-        strcpy(m_sys_info.name, "bootloader");
-        m_sys_info.hardware_id = boot_attr.hardware_id;
-        memcpy(&m_sys_info.serial, boot_attr.serialno, sizeof(mcu_sn_t));
+        memset(&sys_info, 0, sizeof(sys_info));
+        strcpy(sys_info.name, "bootloader");
+        sys_info.hardware_id = boot_attr.hardware_id;
+        memcpy(&sys_info.serial, boot_attr.serialno, sizeof(mcu_sn_t));
     }
+
+    m_link_info.set(path, sys_info);
 
     if( File::default_driver() == 0 ){
         File::set_default_driver( driver() );
@@ -155,12 +173,36 @@ int Link::connect(const var::ConstString & path, const var::ConstString & sn, bo
 
 
 int Link::reconnect(u32 retries, u32 delay_ms){
+    int result;
+    LinkInfo last_info(info());
     for(u32 i = 0; i < retries; i++){
-        if( connect(path(), serial_no()) >= 0 ){
-            return 0;
+        result = connect(last_info.port());
+        if( result >= 0 ){
+            if( last_info.serial_number() == info().serial_number() ){
+                return 0;
+            }
+            disconnect();
         }
+
+        var::Vector<var::String> port_list = get_port_list();
+        for(u32 j=0; j < port_list.count(); j++){
+            result = connect(port_list.at(j));
+            if( result < 0 ){
+                //didn't connect
+            } else {
+                if( last_info.serial_number() == info().serial_number() ){
+                    return 0;
+                }
+                disconnect();
+            }
+        }
+
         driver()->dev.wait(delay_ms);
     }
+
+    //restore the last known information on failure
+    m_link_info = last_info;
+
     return -1;
 }
 
@@ -366,10 +408,8 @@ int Link::disconnect(){
     m_is_bootloader = false;
     m_status_message = "";
     m_error_message = "";
-    m_serial_number = "";
     m_stdout_fd = -1;
     m_stdin_fd = -1;
-    memset(&m_sys_info, 0, sizeof(m_sys_info));
     return 0;
 
 }

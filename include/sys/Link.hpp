@@ -12,8 +12,45 @@
 #include <sos/link.h>
 #include "../var/String.hpp"
 #include "../var/Vector.hpp"
+#include "../sys/Sys.hpp"
 
 namespace sys {
+
+class LinkInfo {
+public:
+
+    LinkInfo(){}
+    LinkInfo(const var::ConstString & port, const sys::SysInfo & sys_info){
+        set(port, sys_info);
+    }
+
+    void clear(){
+        m_serial_number.clear();
+        m_port.clear();
+        m_sys_info.clear();
+    }
+
+    void set(const var::ConstString & port, const sys::SysInfo & sys_info){
+        m_port = port;
+        m_sys_info = sys_info;
+        m_serial_number.format("%08X%08X%08X%08X",
+                sys_info.serial_number().sn[3],
+                sys_info.serial_number().sn[2],
+                sys_info.serial_number().sn[1],
+                sys_info.serial_number().sn[0]
+                );
+    }
+
+    const var::String & port() const { return m_port; }
+    const sys::SysInfo & sys_info() const { return m_sys_info; }
+    const var::String & serial_number() const { return m_serial_number; }
+
+private:
+    var::String m_port;
+    sys::SysInfo m_sys_info;
+    var::String m_serial_number;
+
+};
 
 /*! \brief Link for Controlling Stratify OS remotely
  * \details This class is used to access devices
@@ -34,6 +71,13 @@ public:
 
 
     var::Vector<var::String> get_port_list();
+
+    typedef struct {
+        var::String port;
+        sys::SysInfo sys_info;
+    } port_device_t;
+
+    var::Vector<LinkInfo> get_info_list();
 
     typedef bool (*update_callback_t)(void*, int, int);
 
@@ -65,11 +109,10 @@ public:
      *
      */
     int connect(const var::ConstString & path,
-             const var::ConstString & serial_number,
              bool is_legacy = false);
 
     /*! \details Reconnects to the last known path and serial number. */
-    int reinit(){ return connect(path(), serial_no()); }
+    int reinit(){ return connect(path()); }
 
     int reconnect(u32 retries = 5, u32 delay_ms = 500);
 
@@ -485,11 +528,11 @@ public:
      * that was connected (including the currently connected device)
      * @return A string containing the serial number of the last connected (or currently connected) device
      */
-    const var::String & serial_number() const { return m_serial_number; }
+    const var::String & serial_number() const { return m_link_info.serial_number(); }
     const var::String & serial_no() const { return serial_number(); }
 
     /*! \details The path of the currently connected (or last connected) device */
-    const var::String & path() const { return m_path; }
+    const var::String & path() const { return m_link_info.port(); }
 
     /*! \details The path of the currently connected (or last connected) notify device */
     const var::String & notify_path() const { return m_notify_path; }
@@ -501,7 +544,9 @@ public:
      * is loaded. This object keeps a copy.
      *
      */
-    sys_info_t sys_info() const { return m_sys_info; }
+    const sys::SysInfo & sys_info() const { return m_link_info.sys_info(); }
+
+    const LinkInfo & info() const { return m_link_info; }
 
 
 private:
@@ -511,8 +556,6 @@ private:
     int unlock_device();
     void reset_progress();
 
-    var::String m_serial_number;
-    var::String m_path;
     var::String m_notify_path;
     var::String m_error_message;
     var::String m_status_message;
@@ -524,7 +567,8 @@ private:
     bool m_is_bootloader;
     bool m_is_legacy;
 
-    sys_info_t m_sys_info;
+    LinkInfo m_link_info;
+
 
     link_transport_mdriver_t m_default_driver;
     link_transport_mdriver_t * m_driver;
