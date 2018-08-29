@@ -50,6 +50,7 @@ void Printer::print_indented(const var::ConstString & key, const char * fmt, ...
 
 void Printer::vprint(const char * fmt, va_list list){
     vprintf(fmt, list);
+    fflush(stdout);
 }
 
 

@@ -20,3 +20,12 @@ int Device::write(sys::Aio & aio) const {
 	return ::aio_write(&(aio.m_aio_var));
 }
 #endif
+
+
+int Device::set_interrupt_priority(int priority, int request){
+    mcu_action_t action;
+    memset(&action, 0, sizeof(action));
+    action.o_events = MCU_EVENT_FLAG_SET_PRIORITY;
+    action.prio = priority;
+    return ioctl(request, &action);
+}

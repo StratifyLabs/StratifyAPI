@@ -66,6 +66,8 @@ public:
 	 */
     virtual int write(sys::Aio & aio) const;
 
+    int set_interrupt_priority(int priority, int request = I_MCU_SETACTION);
+
 	using File::read;
 	using File::write;
 #endif
