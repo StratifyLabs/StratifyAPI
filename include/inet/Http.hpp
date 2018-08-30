@@ -42,7 +42,7 @@ public:
     int patch(const var::ConstString & url, const var::Data & data);
 
     //http delete
-    int remove(const var::ConstString & url, const var::ConstString & data, var::String & response);
+    int remove(const var::ConstString & url, const var::Data & data);
 
     int options(const var::ConstString & url);
     int trace(const var::ConstString & url);
