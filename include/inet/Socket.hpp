@@ -1,6 +1,7 @@
 #ifndef SOCKET_HPP
 #define SOCKET_HPP
 
+// \tg use __win32 rather than __WIN32
 #ifdef __WIN32
 #define _BSD_SOURCE
 #include <winsock2.h>
@@ -16,6 +17,13 @@
 #include "../api/InetObject.hpp"
 #include "../var/ConstString.hpp"
 
+
+/* \tg
+ *
+ * We don't want to expose any Winsocket API's in any hpp files.
+ *
+ *
+ */
 #define WS_ERR_NET_SOCKET_FAILED                     -0x0042  /**< Failed to open a socket. */
 #define WS_ERR_NET_CONNECT_FAILED                    -0x0044  /**< The connection to the given server / port failed. */
 #define WS_ERR_NET_BIND_FAILED                       -0x0046  /**< Binding of the socket failed. */
@@ -36,7 +44,14 @@ class Socket;
 class SocketAddress : public api::InetInfoObject {
 public:
 
-    SocketAddress(){};
+    /*
+     * \tg
+     *
+     * This is where constsocketaddress() should go.
+     *
+     *
+     */
+    SocketAddress(){}
 
 
 protected:
@@ -86,11 +101,37 @@ private:
 
 
 
-
-#ifdef _WIN32
+/*
+ * \tg
+ *
+ * The interface for __win32 should be the same for everything
+ * else. We shouldn't have to
+ *
+ */
+#ifdef __win32
 class Socket  {
 public:
     Socket();
+
+
+    /*
+     * \tg Please look at the API documentation in all the other
+     * hpp files. They are like this
+     *
+     * \details Describes what the method does.
+     *
+     * @param a Describes what a does
+     *
+     * These are complete sentences with additional details
+     * about how to use the method. Notice we use \details
+     * rather than \brief
+     *
+     * \code
+     *
+     * \endcode
+     *
+     *
+     */
 
     /**
      * @brief constructsockaddr - constructs the sockaddr structure using the
@@ -101,6 +142,16 @@ public:
      *
      * @return        - none
      */
+
+    /*
+     * \tg Constructing a SocketAddress should happen in the
+     * SocketAddress class.  See comments above.
+     *
+     * For naming conventions, please see https://github.com/StratifyLabs/StratifyAPI
+     *
+     * Also, don't use `const char*` anywhere. Use `const var::ConstString &` instead.
+     *
+     */
     void constructsockaddr(SocketAddress& address, const char* ipaddr, int port);
 
 
@@ -110,6 +161,22 @@ public:
      * \return         WS_OK if successful, or
      *                 WS_ERR_NET_SOCKET_FAILED
      */
+    /*
+     * \tg
+     *
+     * We shouldn't return WS_ERR_...
+     *
+     * Just return -1 if something fails. We need to
+     * define posix error number values for windows. That
+     * will go in the file include/api/ApiObject.hpp
+     *
+     * Then if the fucntion fails, we use set_error_number(EIO);
+     * where EIO is replaced with something appropriate for the failure.
+     *
+     * The list should match: https://stratifylabs.co/StratifyOS/html/group___e_r_r_n_o.html
+     *
+     */
+
     int create(const SocketAddress & address);
 
 
@@ -140,8 +207,7 @@ public:
     int create(const SocketAddress & address);
 
 
-    int connect(const char *host,
-                const char *port, int proto);
+    int connect();
     int listen();
     int accept();
 

@@ -37,6 +37,8 @@ public:
     /*! \details Constructs a Device. */
     Device();
 
+    int set_interrupt_priority(int priority, int request = I_MCU_SETACTION);
+
 #if !defined __link
     /*! \details Configures the device to send a signal when an event happens.
      *
@@ -66,7 +68,6 @@ public:
 	 */
     virtual int write(sys::Aio & aio) const;
 
-    int set_interrupt_priority(int priority, int request = I_MCU_SETACTION);
 
 	using File::read;
 	using File::write;

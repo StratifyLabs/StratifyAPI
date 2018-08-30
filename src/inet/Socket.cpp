@@ -7,6 +7,20 @@ Socket::Socket(){}
 
 int Socket::create(const SocketAddress & address){
 
+/*
+ * \tg
+ *
+ * Enclose all windows specific code in
+ * #if defined __win32
+ *
+ * //windows code goes in here
+ *
+ * #endif
+ *
+ *
+ */
+
+#if defined __win32
     WSADATA wsadata;
     int result;
     // Initialize Winsock
@@ -18,8 +32,24 @@ int Socket::create(const SocketAddress & address){
     memcpy((void*)&(m_sockaddress.m_address),(void*)&(address.m_address), sizeof(address.m_address));
     printf("Ip addr=%s\n",inet_ntoa(((struct sockaddr_in*)&(m_sockaddress.m_address))->sin_addr));
     return WS_OK;
+#endif
+
+    return -1;
 }
 
+
+/*
+ * \tg
+ *
+ * Method names should be construct_sockaddr() but we
+ * also don't want to abbreviate. So this should be
+ * construct_socket_address() - but this will actually
+ * go away because the SocketAddress() constructor should be used
+ * to construct a socket address.
+ *
+ *
+ */
+#if defined __win32
 void Socket::constructsockaddr(SocketAddress& address, const char* ipaddr, int port) {
     struct sockaddr* sockaddress = &(address.m_address);
     struct sockaddr_in* s_address = (struct sockaddr_in*)sockaddress;
@@ -28,6 +58,7 @@ void Socket::constructsockaddr(SocketAddress& address, const char* ipaddr, int p
     s_address->sin_port = htons(port);
     printf("Ip addr=%s\n",inet_ntoa(s_address->sin_addr));
 }
+#endif
 
 int Socket::listen(){
     return -1;
@@ -96,6 +127,19 @@ int Socket::accept(){
 //}
 
 int Socket::connect() {
+
+#if defined __win32
+
+    /*
+     * Please only use CamelCase for class names like
+     * SocketAddress. Variable names should be socket_address.
+     *
+     * So ConnectSocket should be connect_socket
+     *
+     *
+     *
+     */
+
         SOCKET ConnectSocket = INVALID_SOCKET;
         sockaddr addr=m_sockaddress.m_address;
         struct sockaddr_in *addr_in = (struct sockaddr_in *)&addr;
@@ -117,6 +161,10 @@ int Socket::connect() {
              return WS_ERR_NET_CONNECT_FAILED;
          }
          return ConnectSocket;
+#endif
+
+         return -1;
+
 }
 
 

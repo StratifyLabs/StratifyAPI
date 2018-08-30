@@ -89,6 +89,22 @@
  */
 
 #include <mcu/types.h>
+#if defined __win32
+
+/*
+ * \tg
+ *
+ * There needs to be a list of POSIX error number
+ *
+ * For example,
+ *
+ * #define EIO 5
+ *
+ */
+
+//need to manually define POSIX error numbers
+
+#endif
 
 
 /*!
