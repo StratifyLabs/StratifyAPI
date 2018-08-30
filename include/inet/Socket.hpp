@@ -2,13 +2,16 @@
 #define SOCKET_HPP
 
 // \tg use __win32 rather than __WIN32
-#ifdef __WIN32
+// \ck Is __win32 a predefined macro? It does not seem to work with __win32.
+#ifdef _WIN32
 #define _BSD_SOURCE
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
+
+#define DEFAULT_PORT "27015"
 #else
 #include <sys/socket.h>
 #include "../sys/File.hpp"
@@ -43,14 +46,16 @@ class Socket;
 
 class SocketAddress : public api::InetInfoObject {
 public:
-
-    /*
-     * \tg
+    /**
+     * \details constructor to build the sockaddr structure using the host and port details.
      *
-     * This is where constsocketaddress() should go.
+     * @param address - sockaddr structure that needs to be constructed.
+     * @param host    - ip address of the endpoint.
+     * @param port    - port number
      *
-     *
+     * @return        - none
      */
+    SocketAddress(const var::ConstString& ipaddr, int port);
     SocketAddress(){}
 
 
@@ -107,59 +112,30 @@ private:
  * The interface for __win32 should be the same for everything
  * else. We shouldn't have to
  *
+ * \ck The Socket class is derfived from Sys::File which has an enum SOCKET.
+ * So the SOCKET variable used in connect function was wrongly resolving to this enum
+ * SOCKET and throwing an error. I had to move the class definition under the ifdef for
+ * that reason. We should address that.
+ *
  */
-#ifdef __win32
+#ifdef _WIN32
 class Socket  {
 public:
     Socket();
 
-
-    /*
-     * \tg Please look at the API documentation in all the other
-     * hpp files. They are like this
+    /**
+     * \details        Initializes WS2_32.dll.
      *
-     * \details Describes what the method does.
-     *
-     * @param a Describes what a does
-     *
-     * These are complete sentences with additional details
-     * about how to use the method. Notice we use \details
-     * rather than \brief
-     *
-     * \code
-     *
-     * \endcode
-     *
-     *
+     * @return         WS_OK if successful, or
+     *                 -1
      */
+    int create();
 
     /**
-     * @brief constructsockaddr - constructs the sockaddr structure using the
-     *                            host and port details
-     * @param address - sockaddr structure that needs to be constructed.
-     * @param host    - ip address of the endpoint.
-     * @param port    - port number
+     * \details        Initializes WS2_32.dll.Stores socket address.
      *
-     * @return        - none
-     */
-
-    /*
-     * \tg Constructing a SocketAddress should happen in the
-     * SocketAddress class.  See comments above.
-     *
-     * For naming conventions, please see https://github.com/StratifyLabs/StratifyAPI
-     *
-     * Also, don't use `const char*` anywhere. Use `const var::ConstString &` instead.
-     *
-     */
-    void constructsockaddr(SocketAddress& address, const char* ipaddr, int port);
-
-
-    /**
-     * \brief          Initializes WS2_32.dll.Stores socket address.
-     *
-     * \return         WS_OK if successful, or
-     *                 WS_ERR_NET_SOCKET_FAILED
+     * @return         WS_OK if successful, or
+     *                 -1
      */
     /*
      * \tg
@@ -175,17 +151,19 @@ public:
      *
      * The list should match: https://stratifylabs.co/StratifyOS/html/group___e_r_r_n_o.html
      *
+     * \ck should I do this now?
+     *
      */
 
     int create(const SocketAddress & address);
 
 
     /**
-     * @brief connect - connects to the server using the SocketAddress object passed to
+     * \details       connects to the server using the SocketAddress object passed to
      *                  create() function.
      *
-     * @return        - WS_ERR_NET_CONNECT_FAILED if the connection failed.
-     *                  int socket descriptor
+     * @return        - -1 if the connection failed.
+     *                  int socket descriptor if the connection was successful.
      */
     int connect();
 
@@ -195,6 +173,7 @@ public:
 
 private:
     SocketAddress m_sockaddress;
+    SOCKET m_listen_socket;
 };
 #else
 class Socket : public sys::File {
