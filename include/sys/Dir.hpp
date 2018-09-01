@@ -6,7 +6,9 @@
 #ifdef __link
 #include <sos/link.h>
 
-#if !defined __win32
+#if defined __win32
+#include <windows.h>
+#else
 #include <dirent.h>
 #endif
 
@@ -106,10 +108,13 @@ private:
 	link_transport_mdriver_t * m_driver;
 	link_transport_mdriver_t * driver(){ return m_driver; }
 
-//#if defined __macosx || defined __linux
+#if defined __win32
+
+
+#else
     DIR * m_dirp_local;
     struct dirent m_entry_local;
-//#endif
+#endif
 
 #else
 	DIR * m_dirp;

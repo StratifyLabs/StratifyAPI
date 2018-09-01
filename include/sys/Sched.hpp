@@ -4,6 +4,8 @@
 #ifndef SYS_SCHED_HPP_
 #define SYS_SCHED_HPP_
 
+#if !defined __link
+
 #include <unistd.h>
 #include <sched.h>
 #include "../api/SysObject.hpp"
@@ -69,17 +71,17 @@ public:
 	/*! \details Gets the min priority for the specified policy. */
 	static int get_priority_min(enum policy value);
 	/*! \details Gets the max priority for the specified policy. */
-	static int get_priority(pid_t pid);
+    static int get_priority(pid_t pid);
 
 	/*! \details Gets the current proccess ID (equivalent to getpid()). */
-	static pid_t get_pid(){ return getpid(); }
+    static pid_t get_pid(){ return getpid(); }
 
 	/*! \details Gets the RR interval for the pid.
 	 *
 	 * @param pid  The process ID
 	 * @return The RR interval in microseconds
 	 */
-	static int get_rr_interval(pid_t pid);
+    static int get_rr_interval(pid_t pid);
 
 	/*! \details Sets the scheduler with the given parameters.
 	 *
@@ -93,5 +95,8 @@ public:
 };
 
 } /* namespace sys */
+
+#endif
+
 
 #endif /* SYS_SCHED_HPP_ */

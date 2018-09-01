@@ -169,11 +169,7 @@ int Thread::wait(void**ret, int interval){
         } else {
             //just keep sampling until the thread completes
             while( is_running() ){
-#if defined __link
-                usleep(interval*1000);
-#else
                 Timer::wait_milliseconds(interval);
-#endif
             }
         }
     }

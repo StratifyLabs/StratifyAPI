@@ -70,7 +70,7 @@ namespace var {
  *
  *
  */
-class String : public ConstString, public Data {
+class String : public Data, public ConstString {
 public:
 
     enum {
@@ -95,7 +95,7 @@ public:
      * @param a A reference to the string to copy
      *
      */
-    String(const String & a) : Data(a){
+    String(const String & a) : Data(a), ConstString(cdata_const()){
         set_string_pointer(cdata_const());
     }
 

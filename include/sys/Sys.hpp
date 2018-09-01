@@ -35,11 +35,13 @@ public:
     var::ConstString sos_version() const { return m_info.kernel_version; }
     var::ConstString arch() const { return m_info.arch; }
     var::ConstString cpu_architecture() const { return m_info.arch; }
+    var::ConstString id() const { return m_info.id; }
     u32 cpu_frequency() const { return m_info.cpu_freq; }
     u32 application_signature() const { return m_info.signature; }
     var::ConstString bsp_git_hash() const { return m_info.bsp_git_hash; }
     var::ConstString sos_git_hash() const { return m_info.sos_git_hash; }
     var::ConstString mcu_git_hash() const { return m_info.mcu_git_hash; }
+    u32 o_flags() const { return m_info.o_flags; }
 
     var::ConstString stdin_name() const { return m_info.stdin_name; }
     var::ConstString stdout_name() const { return m_info.stdout_name; }

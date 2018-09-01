@@ -11,8 +11,13 @@ using namespace sys;
 #if defined __link
 Dir::Dir(link_transport_mdriver_t * driver){
     m_dirp = 0;
-    m_dirp_local = 0;
     m_driver = driver;
+
+#if defined __win32
+#else
+    m_dirp_local = 0;
+#endif
+
 }
 
 #else
@@ -65,19 +70,27 @@ int Dir::open(const var::ConstString & name){
         m_dirp = link_opendir(driver(), name.str());
     } else {
         //open a directory on the local system (not over link)
+
+#if defined __win32
+        return -1;
+#else
         m_dirp_local = opendir(name.str());
         if( m_dirp_local == 0 ){
             return -1;
         }
+#endif
+
         return 0;
     }
 #else
     m_dirp = opendir(name.str());
 #endif
+
     if( m_dirp == 0 ){
         set_error_number_to_errno();
         return -1;
     }
+
 
     m_path.assign(name);
 
@@ -191,14 +204,18 @@ int Dir::close(){
         if( driver() ){
             link_closedir(driver(), m_dirp);
         } else {
+
+#if defined __win32
+#else
             DIR * dirp_copy = m_dirp_local;
             m_dirp_local = 0;
             if( closedir(dirp_copy) < 0 ){
                 return -1;
             }
+#endif
             return 0;
         }
-#else
+#else //__link
         if( closedir(m_dirp) < 0 ){
             set_error_number_to_errno();
         }
