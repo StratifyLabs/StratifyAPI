@@ -8,6 +8,7 @@
 
 #if defined __win32
 #include <windows.h>
+#undef ERROR
 #else
 #include <dirent.h>
 #endif

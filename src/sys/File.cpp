@@ -111,9 +111,9 @@ int File::open(const var::ConstString & name, int access, int perms){
 }
 
 int File::create(const var::ConstString & name, bool overwrite, int perms){
-    int access = O_RDWR | O_CREAT;
+    int access = LINK_O_RDWR | LINK_O_CREAT;
     if( overwrite ){
-        access |= O_TRUNC;
+        access |= LINK_O_TRUNC;
     }
     return open(name, access, perms);
 }

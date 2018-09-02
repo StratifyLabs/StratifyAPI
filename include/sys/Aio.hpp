@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef AIO_HPP_
-#define AIO_HPP_
+#ifndef SAPI_SYS_AIO_HPP_
+#define SAPI_SYS_AIO_HPP_
 
 #ifndef __link
 
@@ -183,4 +183,4 @@ private:
 #endif
 
 
-#endif /* AIO_HPP_ */
+#endif /* SAPI_SYS_AIO_HPP_ */

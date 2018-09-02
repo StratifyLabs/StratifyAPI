@@ -3,10 +3,6 @@
 #ifndef THREAD_HPP_
 #define THREAD_HPP_
 
-
-
-#if !defined __win32
-
 #include "../api/WorkObject.hpp"
 #include <mcu/types.h>
 #include <pthread.h>
@@ -271,7 +267,7 @@ private:
     int reset();
 
 #if defined __link
-    int m_status;
+    u32 m_status;
 #endif
 
     void set_id_pending(){
@@ -306,7 +302,5 @@ private:
 };
 
 }
-
-#endif
 
 #endif /* THREAD_HPP_ */

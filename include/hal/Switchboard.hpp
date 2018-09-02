@@ -99,6 +99,7 @@ public:
      *
      */
     SwitchboardConnection(const SwitchboardTerminal & input, const SwitchboardTerminal & output, s32 nbyte){
+        MCU_UNUSED_ARGUMENT(nbyte);
         set_input(input);
         set_output(output);
     }

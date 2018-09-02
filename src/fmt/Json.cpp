@@ -47,7 +47,7 @@ JsonArray & JsonValue::to_array(){
 
 int JsonValue::create_if_not_valid(){
     if( is_valid() ){ return 0; }
-    if( create() == 0 ){
+    if( (m_value = create()) == 0 ){
         m_is_observer = false;
     }
     return 0;
@@ -171,8 +171,15 @@ json_t * Json::create(){
 }
 
 int JsonObject::insert(const var::ConstString & key, const JsonValue & value){
-
-    return json_object_set(m_value, key.str(), value.m_value);
+    if( create_if_not_valid() < 0 ){
+        printf("Could not create -- still invalid\n");
+        return -1;
+    }
+    int result = json_object_set(m_value, key.str(), value.m_value);
+    if( result < 0 ){
+        printf("Failed to set JSON key %s to %s %p\n", key.str(), value.to_string().str(), m_value);
+    }
+    return result;
 }
 
 int JsonObject::update(const JsonValue & value, u8 o_flags){
@@ -209,7 +216,6 @@ var::Vector<var::String> JsonObject::keys() const {
     }
 
     return result;
-
 }
 
 JsonValue JsonObject::at(const var::ConstString & key) const {
@@ -240,14 +246,17 @@ JsonValue JsonArray::at(u32 idx) const {
 }
 
 int JsonArray::append(const JsonValue & value){
+    if( create_if_not_valid() < 0 ){ return -1; }
     return json_array_append(m_value, value.m_value);
 }
 
 int JsonArray::append(const JsonArray & array){
+    if( create_if_not_valid() < 0 ){ return -1; }
     return json_array_extend(m_value, array.m_value);
 }
 
 int JsonArray::insert(u32 idx, const JsonValue & value){
+    if( create_if_not_valid() < 0 ){ return -1; }
     return json_array_insert(m_value, idx, value.m_value);
 }
 
@@ -265,10 +274,8 @@ JsonString::JsonString(const var::ConstString & str){
 }
 
 JsonReal::JsonReal(float value){
-    if( create_if_not_valid() == 0 ){
-        json_real_set(m_value, value);
-    }
-
+    m_value = json_real(value);
+    m_is_observer = false;
 }
 
 JsonReal & JsonReal::operator=(float a){
@@ -279,9 +286,8 @@ JsonReal & JsonReal::operator=(float a){
 }
 
 JsonInteger::JsonInteger(int value){
-    if( create_if_not_valid() == 0 ){
-        json_integer_set(m_value, value);
-    }
+    m_value = json_integer(value);
+    m_is_observer = false;
 }
 
 JsonInteger & JsonInteger::operator=(int a){

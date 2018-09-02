@@ -4,15 +4,15 @@
 #define SYS_FILE_HPP_
 
 #include <sos/link.h>
-#include <fcntl.h>
 
 #include "../api/SysObject.hpp"
 #include "../var/ConstString.hpp"
 
-#ifndef __link
+#if !defined __link
 #include <unistd.h>
 #include "../sys/Aio.hpp"
 #define MCU_INT_CAST(var) ((void*)(u32)var)
+#include <fcntl.h>
 #else
 #undef fileno
 #define MCU_INT_CAST(var) ((void*)(u64)var)

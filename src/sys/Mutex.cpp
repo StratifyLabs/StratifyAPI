@@ -1,7 +1,5 @@
 /* Copyright 2016 tgil All Rights Reserved */
 
-#if !defined __win32
-
 
 #include <time.h>
 #include "sys/Mutex.hpp"
@@ -97,7 +95,4 @@ int Mutex::try_lock(){
 int Mutex::unlock(){
     return set_error_number_if_error(pthread_mutex_unlock(&m_item));
 }
-
-
-#endif // !defined __link
 

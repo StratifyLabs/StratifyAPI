@@ -1,7 +1,5 @@
 //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#if !defined __win32
-
 #include <errno.h>
 #include "sys/Thread.hpp"
 #include "chrono.hpp"
@@ -222,6 +220,4 @@ int Thread::join(void ** value_ptr) const {
     }
     return set_error_number_if_error(pthread_join(id(), ptr));
 }
-
-#endif
 

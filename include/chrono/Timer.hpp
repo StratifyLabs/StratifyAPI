@@ -56,7 +56,6 @@ public:
     static void wait_sec(u32 timeout){ wait_seconds(timeout); }
     static void wait_msec(u32 timeout){ wait_milliseconds(timeout); }
     static void wait_usec(u32 timeout){ wait_microseconds(timeout); }
-#if !defined __link
 
     /*! \details Constructs an empty Timer. */
     Timer();
@@ -176,16 +175,12 @@ public:
      */
     void stop();
 
-#endif
-
 private:
     MicroTime calc_value() const;
 
 
-#if !defined __link
     ClockTime m_start;
     ClockTime m_stop;
-#endif
 };
 
 }

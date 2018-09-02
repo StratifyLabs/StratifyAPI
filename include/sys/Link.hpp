@@ -5,14 +5,14 @@
  *
  */
 
-#ifndef LINK_HPP
-#define LINK_HPP
+#ifndef SAPI_SYS_LINK_HPP
+#define SAPI_SYS_LINK_HPP
 
 #include <mcu/types.h>
 #include <sos/link.h>
 #include "../var/String.hpp"
 #include "../var/Vector.hpp"
-#include "../sys/Sys.hpp"
+#include "Sys.hpp"
 
 namespace sys {
 
@@ -356,7 +356,7 @@ public:
      *
      * \return Zero on success with \a st populated or less than zero on failure
      */
-    int stat(const var::String & path /*! The path to the target device file */,
+    int stat(const var::ConstString & path /*! The path to the target device file */,
              struct link_stat * st /*! A pointer to the destination structure */);
 
     /*!
@@ -576,4 +576,4 @@ private:
 
 }
 
-#endif // LINK_H
+#endif // SAPI_SYS_LINK_HPP

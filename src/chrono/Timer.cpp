@@ -8,7 +8,6 @@
 #include "chrono/Clock.hpp"
 using namespace chrono;
 
-#if !defined __link
 
 Timer::Timer() { reset(); }
 
@@ -73,4 +72,3 @@ void Timer::stop(){
     }
 }
 
-#endif

@@ -3,7 +3,6 @@
 #ifndef SYS_MUTEX_HPP_
 #define SYS_MUTEX_HPP_
 
-#if !defined __win32
 
 #include "../api/SysObject.hpp"
 #include "../chrono/MicroTime.hpp"
@@ -147,6 +146,5 @@ private:
 
 
 }
-#endif //__link
 
 #endif /* SYS_MUTEX_HPP_ */

@@ -1,13 +1,13 @@
 //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#if !defined __link
 
-#include <sys/time.h>
-#include <sos/dev/rtc.h>
 #include "hal.hpp"
-#include "sys/Time.hpp"
+#include "chrono/Time.hpp"
+#if defined __StratifyOS__
+#include <sos/dev/rtc.h>
+#endif
 
-using namespace sys;
+using namespace chrono;
 
 
 const char * month_names[] = {
@@ -44,7 +44,8 @@ Time& Time::operator-=(const Time & a){
 }
 
 int Time::set_time_of_day(const Time & t){
-	int ret;
+#if defined __StratifyOS__
+    int ret;
 	int fd = ::open("/dev/rtc", O_RDWR);
 	if( fd < 0 ){
 		return -1;
@@ -53,7 +54,9 @@ int Time::set_time_of_day(const Time & t){
 	ret = ::ioctl(fd, I_RTC_SET, &t_data);
 	close(fd);
 	return ret;
-
+#else
+    return -1;
+#endif
 }
 
 int Time::set_time_of_day(){
@@ -94,7 +97,7 @@ u32 Time::get_yearday() const{
 	return get_tm().tm_yday;
 }
 u32 Time::get_month() const{
-	return get_tm().tm_mon;
+    return get_tm().tm_mon + 1;
 }
 u32 Time::get_year() const{
 	return get_tm().tm_year + 1900;
@@ -110,9 +113,14 @@ const var::ConstString Time::get_month_name() const {
 
 struct tm Time::get_tm() const{
 	struct tm time_struct;
+#if defined __win32
+    struct tm * ptr;
+    ptr = gmtime(&m_time);
+    time_struct = *ptr;
+#else
 	gmtime_r(&m_time, &time_struct);
+#endif
 	return time_struct;
 }
 
-#endif
 

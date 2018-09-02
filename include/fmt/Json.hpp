@@ -8,6 +8,9 @@
 
 namespace fmt {
 
+#undef TRUE
+#undef FALSE
+
 class Json;
 
 class JsonError : public api::FmtInfoObject {
@@ -139,6 +142,8 @@ public:
     bool is_null() const { return type() == ZERO; }
     bool is_zero() const { return is_null(); }
 
+    JsonValue & to_value(){ return *this; }
+    const JsonValue & to_value() const { return *this; }
     const JsonObject & to_object() const;
     JsonObject & to_object();
     const JsonArray & to_array() const;

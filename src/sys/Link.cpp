@@ -84,6 +84,9 @@ var::Vector<var::String> Link::get_port_list(){
     last_device.set_capacity(256);
     device_name.set_capacity(256);
 
+    last_device.clear();
+    device_name.clear();
+
     while( driver()->getname(device_name.cdata(), last_device.str(), device_name.capacity()) == 0 ){
         result.push_back( device_name ); //this will make a copy of device name and put it on the list
         last_device = device_name;
@@ -427,7 +430,7 @@ bool Link::is_connected() const {
 }
 
 
-int Link::stat(const var::String & path, struct link_stat * st){
+int Link::stat(const var::ConstString & path, struct link_stat * st){
     int err;
     if ( m_is_bootloader ){
         return -1;

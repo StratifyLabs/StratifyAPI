@@ -5,10 +5,14 @@
 #define SYS_SCHED_HPP_
 
 #if !defined __link
-
 #include <unistd.h>
 #include <sched.h>
+#endif
 #include "../api/SysObject.hpp"
+
+#if defined __win32
+typedef int pid_t;
+#endif
 
 namespace sys {
 
@@ -54,9 +58,13 @@ class Sched : public api::SysInfoObject {
 public:
 
 	enum policy {
+#if defined __win32
+        RR, FIFO, OTHER
+#else
 		RR /*! Round Robin style (task yields periodically) */ = SCHED_RR,
 		FIFO /*! First in, first out (task won't yield until it calls Sched::yield(), sleeps or uses Sync IO) */ = SCHED_FIFO,
         OTHER /*! Default scheduling: round robin with no priority) */ = SCHED_OTHER
+#endif
 	};
 
 	/*! \details Yields the processor to another thread or process.
@@ -90,13 +98,12 @@ public:
 	 * @param priority The priority (higher is higher priority)
 	 * @return Zero on success of -1 with errno set
 	 */
-	static int set_scheduler(pid_t pid, enum policy value, int priority);
+    static int set_scheduler(pid_t pid, enum policy value, int priority);
 
 };
 
 } /* namespace sys */
 
-#endif
 
 
 #endif /* SYS_SCHED_HPP_ */

@@ -25,6 +25,8 @@ public:
         m_info = info;
     }
 
+    operator const sys_info_t & () const { return m_info; }
+
     bool is_valid() const { return cpu_frequency() != 0; }
     static SysInfo get();
 
