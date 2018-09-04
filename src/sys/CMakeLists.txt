@@ -19,8 +19,7 @@ if( ${SOS_BUILD_CONFIG} STREQUAL arm )
       ${SOURCES_PREFIX}/Sched.cpp
       ${SOURCES_PREFIX}/Mq.cpp
 			${SOURCES_PREFIX}/Messenger.cpp
-			${SOURCES_PREFIX}/Signal.cpp
-			${SOURCES_PREFIX}/Time.cpp)
+			${SOURCES_PREFIX}/Signal.cpp)
 endif()
 
 if( ${SOS_BUILD_CONFIG} STREQUAL link )

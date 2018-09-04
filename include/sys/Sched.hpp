@@ -4,7 +4,7 @@
 #ifndef SYS_SCHED_HPP_
 #define SYS_SCHED_HPP_
 
-#if !defined __link
+#if !defined __link || defined __macosx
 #include <unistd.h>
 #include <sched.h>
 #endif

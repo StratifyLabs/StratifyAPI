@@ -16,8 +16,8 @@ SocketAddress::SocketAddress(const var::ConstString& ipaddr, int port) {
 
 Socket::Socket(){}
 
-int Socket::create() {
 #if defined _WIN32
+int Socket::create() {
     WSADATA wsadata;
     int result;
     // Initialize Winsock
@@ -27,10 +27,8 @@ int Socket::create() {
         return -1;
     }
     return 0;
-#else
-    return -1;
-#endif
 }
+#endif
 
 int Socket::create(const SocketAddress & address){
 #if defined _WIN32

@@ -2,6 +2,7 @@
 set(SOURCELIST
 	${SOURCES_PREFIX}/Bmp.cpp
 	${SOURCES_PREFIX}/Json.cpp
+	${SOURCES_PREFIX}/Wav.cpp
 	${SOURCES_PREFIX}/Son.cpp)
 
 if( ${SOS_BUILD_CONFIG} STREQUAL arm )

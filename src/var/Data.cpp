@@ -95,7 +95,7 @@ void Data::copy_object(const Data & a){
         //is the new object taking ownership or making a copy
         if( a.is_transfer_ownership() ){
             //set this memory to the memory of a
-            set(a.data(), a.capacity(), false);
+            set((void*)a.data(), a.capacity(), false);
             m_size = a.size();
 
             //setting needs free on this and clearing it on a will complete the transfer
@@ -106,7 +106,7 @@ void Data::copy_object(const Data & a){
             copy_contents(a, a.capacity());
         }
     } else {
-        set(a.data(), a.capacity(), a.is_read_only());
+        set((void*)a.data(), a.capacity(), a.is_read_only());
         m_size = a.size();
     }
 }

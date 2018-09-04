@@ -16,11 +16,26 @@ namespace sys {
 
 class Sys;
 
+/*! \brief System Information Class
+ * \details This class holds the system information.
+ *
+ *
+ * \code
+ * #include <sapi/sys.hpp>
+ * SysInfo info = SysInfo::get(); //grab system information
+ * Printer p;
+ * p << info; //print system information using the printer
+ * \endcode
+ *
+ */
 class SysInfo : public api::SysInfoObject {
     friend class Sys;
 public:
 
+    /*! \details Constructs an empty SysInfo object. */
     SysInfo(){ clear(); }
+
+
     SysInfo(const sys_info_t & info ){
         m_info = info;
     }
@@ -30,8 +45,11 @@ public:
     bool is_valid() const { return cpu_frequency() != 0; }
     static SysInfo get();
 
+    /*! \details Returns the name of the system. */
     var::ConstString name() const { return m_info.name; }
+    /*! \details Returns the system version. */
     var::ConstString system_version() const { return m_info.sys_version; }
+    /*! \details Retusn the board support package version (same as system_version()). */
     var::ConstString bsp_version() const { return m_info.sys_version; }
     var::ConstString kernel_version() const { return m_info.kernel_version; }
     var::ConstString sos_version() const { return m_info.kernel_version; }

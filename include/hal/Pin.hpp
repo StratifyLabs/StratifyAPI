@@ -170,6 +170,15 @@ public:
 	/*! \details Accesses the pin's associated Pio pinmask. */
 	u32 pinmask() const { return m_pinmask; }
 
+    static bool is_floating(mcu_pin_t pin){
+        Pin p(pin);
+        p.set_input(Pin::IS_PULLUP);
+        if( p == false ){ return false; }
+        p.set_attr(Pin::IS_PULLDOWN);
+        if( p == true ){ return false; }
+        return true;
+    }
+
 private:
 	u32 m_pinmask;
 };

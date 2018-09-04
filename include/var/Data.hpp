@@ -273,14 +273,36 @@ public:
 	 *
 	 * \sa set()
 	 */
-	void * data() const { return m_mem_write; }
+    void * data(){ return m_mem_write; }
+    const void * data() const { return m_mem; }
+    u8 * data_u8() { return (u8*)m_mem_write; }
+    s8 * data_s8() { return (s8*)m_mem_write; }
+    u16 * data_u16() { return (u16*)m_mem_write; }
+    s16 * data_s16() { return (s16*)m_mem_write; }
+    u32 * data_u32() { return (u32*)m_mem_write; }
+    s32 * data_s32() { return (s32*)m_mem_write; }
+
+    const u8 * data_u8() const { return (const u8*)m_mem; }
+    const s8 * data_s8() const { return (const s8*)m_mem; }
+    const u16 * data_u16() const { return (const u16*)m_mem; }
+    const s16 * data_s16() const { return (const s16*)m_mem; }
+    const u32 * data_u32() const { return (const u32*)m_mem; }
+    const s32 * data_s32() const { return (const s32*)m_mem; }
+
+    char * data_char(){ return (char *)m_mem_write; }
+    const char * data_char() const { return (const char *)m_mem; }
+
+    float * data_float(){ return (float *)m_mem_write; }
+    const float * data_float() const { return (const float *)m_mem; }
 
     /*! \details Returns a char pointer to the data.
 	 * This will return zero if the data is readonly.
 	 *
 	 * \sa set()
 	 */
-	char * cdata() const { return (char *)m_mem_write; }
+    char * cdata() const { return (char *)m_mem_write; }
+
+
 
     /*! \details Returns a pointer to const char data.
 	 */
@@ -470,6 +492,32 @@ public:
      */
     int copy_contents(const Data & a, u32 destination_position, u32 size);
 
+    /*! \details Append data to this object.
+     *
+     * @param a A reference to the data that will be appended.
+     * @return Zero on success or -1 if an error occurred (unable to allocate memory)
+     *
+     */
+    int append(const Data & a){
+        return copy_contents(a, size(), a.size());
+    }
+
+    int append(u8 value){ return append(Data(&value, sizeof(value), true)); }
+    int append(s8 value){ return append(Data(&value, sizeof(value), true)); }
+    int append(u16 value){ return append(Data(&value, sizeof(value), true)); }
+    int append(s16 value){ return append(Data(&value, sizeof(value), true)); }
+    int append(u32 value){ return append(Data(&value, sizeof(value), true)); }
+    int append(s32 value){ return append(Data(&value, sizeof(value), true)); }
+    int append(float value){ return append(Data(&value, sizeof(value), true)); }
+
+    Data & operator << (const Data & a){ append(a); return *this; }
+    Data & operator << (u8 a){ append(a); return *this; }
+    Data & operator << (s8 a){ append(a); return *this; }
+    Data & operator << (u16 a){ append(a); return *this; }
+    Data & operator << (s16 a){ append(a); return *this; }
+    Data & operator << (u32 a){ append(a); return *this; }
+    Data & operator << (s32 a){ append(a); return *this; }
+
 protected:
     void copy_object(const Data & a);
 
@@ -497,6 +545,61 @@ private:
     };
     mutable u32 m_o_flags;
 
+};
+
+/*! \brief Structured Data Class
+ * \details The Structured Data class is used for encapsulating
+ * data structures in the Data class.
+ *
+ * This makes it much easier to compare, manipulate, and integrate the
+ * data.  Here are some examples:
+ *
+ * \code
+ *
+ * typedef struct {
+ *   u32 number;
+ *   const char * name;
+ *   void * next;
+ *   u32 checksum;
+ * } my_struct_t;
+ *
+ * StructuredData<my_struct_t> my_struct;
+ *
+ * my_struct.clear(); //set to all zeros
+ *
+ * my_struct->number = 47; //use -> to access members of my_struct_t
+ *
+ * File f;
+ * f.write(my_struct); //write to a file
+ *
+ *
+ * \endcode
+ *
+ *
+ */
+template <class T> class StructuredData : public Data {
+public:
+
+    /*! \details Constructs an empty data structure (fills with zero). */
+    StructuredData() : Data(&m_item, sizeof(m_item)){
+        clear();
+    }
+
+    /*! \details Constructs a data structure based on the value passed. */
+    StructuredData(const T & item) : Data(&m_item, sizeof(m_item)){
+        m_item = item;
+    }
+
+    /*! \details Accesses a member of the struct (read/write). */
+    T * operator -> () { return (T*)data(); }
+    /*! \details Accesses a member of the struct (read only). */
+    const T * operator -> () const { return (T*)data(); }
+
+    //operator const T & () const { return m_item; }
+    //operator T & () { return m_item; }
+
+private:
+    T m_item;
 };
 
 }

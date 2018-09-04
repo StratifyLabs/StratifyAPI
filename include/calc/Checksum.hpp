@@ -1,7 +1,7 @@
 #ifndef CHECKSUM_HPP
 #define CHECKSUM_HPP
 
-
+#include "../var/Data.hpp"
 #include "../api/CalcObject.hpp"
 
 
@@ -105,6 +105,7 @@ public:
      */
     static u32 calc_zero_sum(const u32 * data, int size);
 
+
     /*! \details Verifies the u32 checksum at the end of a data structure.
      *
      * @param data A pointer to the data
@@ -117,6 +118,12 @@ public:
      *
      */
     static bool verify_zero_sum(const u32 * data, int size);
+
+
+    static u32 calc_zero_sum32(const var::Data & data);
+    static bool verify_zero_sum32(const var::Data & data);
+    static u32 calc_zero_sum8(const var::Data & data);
+    static bool verify_zero_sum8(const var::Data & data);
 
 
 };

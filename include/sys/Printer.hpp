@@ -37,6 +37,7 @@ class Cli;
 
 
 #define PRINTER_TRACE(printer) (printer.print("\n%s():%d", __FUNCTION__, __LINE__))
+#define PRINTER_TRACE_ERROR(printer, x) int printer_result = x; if( printer_result < 0 ) printer.print("\nError: %s():%d (%d)", __FUNCTION__, __LINE__, x, y)
 
 class Printer : public api::SysWorkObject {
 public:

@@ -6,7 +6,7 @@
 using namespace fmt;
 using namespace sys;
 
-Wav::Wav(const char * name) {
+Wav::Wav(const var::ConstString & name) {
 	// TODO Auto-generated constructor stub
 	open(name, File::READONLY);
 	if( read(&m_hdr, sizeof(m_hdr)) < 0 ){

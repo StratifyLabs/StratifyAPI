@@ -25,6 +25,21 @@ bool Checksum::verify_zero_sum(const u8 * data, int size){
     return (sum == 0);
 }
 
+u32 Checksum::calc_zero_sum8(const var::Data & data){
+    return calc_zero_sum((const u8*)data.data(), data.size());
+}
+
+bool Checksum::verify_zero_sum8(const var::Data & data){
+    return verify_zero_sum((const u8*)data.data(), data.size());
+}
+
+u32 Checksum::calc_zero_sum32(const var::Data & data){
+    return calc_zero_sum((const u32*)data.data(), data.size());
+}
+
+bool Checksum::verify_zero_sum32(const var::Data & data){
+    return verify_zero_sum((const u32*)data.data(), data.size());
+}
 
 u32 Checksum::calc_zero_sum(const u32 * data, int size){
     int i;
