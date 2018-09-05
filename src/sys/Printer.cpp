@@ -14,8 +14,7 @@
 using namespace sys;
 
 Printer::Printer(){
-    m_base = BASE10;
-    m_o_flags = 0;
+    m_o_flags = PRINT_8 | PRINT_HEX;
     m_indent = 0;
     m_progress_width = 50;
 }

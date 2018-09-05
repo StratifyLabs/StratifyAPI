@@ -156,7 +156,7 @@ public:
     /*! \details Returns a pointer to a string
      * that shows the API version.
      */
-    static const char * api_version(){ return "3.7.0"; }
+    static const char * api_version(){ return "3.8.0b"; }
 
     static const char * api_git_hash(){
 #if defined SOS_GIT_HASH

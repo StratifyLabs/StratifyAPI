@@ -52,6 +52,7 @@ protected:
     u16 m_periph_port;
 
     int open(const char * name, int flags);
+    using Device::open;
 
     void update_fileno() const;
     int lookup_fileno() const;
@@ -220,9 +221,8 @@ public:
      * If the information is not provided, this method will return an error.
      *
      */
-    int set_attr() const {
-        return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), 0);
-    }
+    int set_attributes() const { return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), 0); }
+    int set_attr() const { return set_attributes(); }
 
     /*! \details Initializes the hardware using the default attributes.
      */
@@ -232,6 +232,10 @@ public:
             return ret;
         }
         return set_attr();
+    }
+
+    int set_attributes(const attr_t & attr) const {
+        return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), (const attr_t*)&attr);
     }
 
     int set_attr(const attr_t & attr) const {

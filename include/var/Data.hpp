@@ -273,46 +273,77 @@ public:
 	 *
 	 * \sa set()
 	 */
+
+    template<typename T> T * to(){ return (T*)m_mem_write; }
+    template<typename T> const T * to() const { return (const T*)m_mem; }
+
+    template<typename T> T & at(u32 idx){
+        if( idx*sizeof(T) >= size() ){
+            //set the error number to overflow
+            idx = 0;
+        }
+        return to<T>()[idx];
+    }
+
+    template<typename T> const T & at(u32 idx) const {
+        if( idx*sizeof(T) >= size() ){
+            //set the error number to overflow
+            idx = 0;
+        }
+        return to<T>()[idx];
+    }
+
+
+    void * to_void() { return to<void>(); }
+    char * to_char() { return to<char>(); }
+    u8 * to_u8() { return to<u8>(); }
+    s8 * to_s8() { return to<s8>(); }
+    u16 * to_u16() { return to<u16>(); }
+    s16 * to_s16() { return to<s16>(); }
+    u32 * to_u32() { return to<u32>(); }
+    s32 * to_s32() { return to<s32>(); }
+    u64 * to_u64() { return to<u64>(); }
+    s64 * to_s64() { return to<s64>(); }
+    float * to_float(){ return to<float>(); }
+
+    const void * to_void() const { return to<void>(); }
+    const char * to_char() const { return to<char>(); }
+    const u8 * to_u8() const { return to<u8>(); }
+    const s8 * to_s8() const { return to<s8>(); }
+    const u16 * to_u16() const { return to<u16>(); }
+    const s16 * to_s16() const { return to<s16>(); }
+    const u32 * to_u32() const { return to<u32>(); }
+    const s32 * to_s32() const { return to<s32>(); }
+    const u64 * to_u64() const { return to<u64>(); }
+    const s64 * to_s64() const { return to<s64>(); }
+    const float * to_float() const { return to<float>(); }
+
+    u8 & at_u8(u32 idx) { return at<u8>(idx); }
+    s8 & at_s8(u32 idx) { return at<s8>(idx); }
+    u16 & at_u16(u32 idx) { return at<u16>(idx); }
+    s16 & at_s16(u32 idx) { return at<s16>(idx); }
+    u32 & at_u32_at(u32 idx) { return at<u32>(idx); }
+    s32 & at_s32(u32 idx) { return at<s32>(idx); }
+    u64 & at_u64(u32 idx) { return at<u64>(idx); }
+    s64 & at_s64(u32 idx) { return at<s64>(idx); }
+    float & at_float(u32 idx) { return at<float>(idx); }
+
+    const u8 & at_u8(u32 idx) const { return at<u8>(idx); }
+    const s8 & at_s8(u32 idx) const { return at<s8>(idx); }
+    const u16 & at_u16(u32 idx) const { return at<u16>(idx); }
+    const s16 & at_s16(u32 idx) const { return at<s16>(idx); }
+    const u32 & at_u32(u32 idx) const { return at<u32>(idx); }
+    const s32 & at_s32(u32 idx) const { return at<s32>(idx); }
+    const u64 & at_u64(u32 idx) const { return at<u64>(idx); }
+    const s64 & at_s64(u32 idx) const { return at<s64>(idx); }
+    const float & at_float(u32 idx) const { return at<float>(idx); }
+
+    //deprecated access
+    char * cdata() const { return (char *)m_mem_write; }
+	const char * cdata_const() const { return (const char *)m_mem; }
+	const void * data_const() const { return m_mem; }
     void * data(){ return m_mem_write; }
     const void * data() const { return m_mem; }
-    u8 * data_u8() { return (u8*)m_mem_write; }
-    s8 * data_s8() { return (s8*)m_mem_write; }
-    u16 * data_u16() { return (u16*)m_mem_write; }
-    s16 * data_s16() { return (s16*)m_mem_write; }
-    u32 * data_u32() { return (u32*)m_mem_write; }
-    s32 * data_s32() { return (s32*)m_mem_write; }
-
-    const u8 * data_u8() const { return (const u8*)m_mem; }
-    const s8 * data_s8() const { return (const s8*)m_mem; }
-    const u16 * data_u16() const { return (const u16*)m_mem; }
-    const s16 * data_s16() const { return (const s16*)m_mem; }
-    const u32 * data_u32() const { return (const u32*)m_mem; }
-    const s32 * data_s32() const { return (const s32*)m_mem; }
-
-    char * data_char(){ return (char *)m_mem_write; }
-    const char * data_char() const { return (const char *)m_mem; }
-
-    float * data_float(){ return (float *)m_mem_write; }
-    const float * data_float() const { return (const float *)m_mem; }
-
-    /*! \details Returns a char pointer to the data.
-	 * This will return zero if the data is readonly.
-	 *
-	 * \sa set()
-	 */
-    char * cdata() const { return (char *)m_mem_write; }
-
-
-
-    /*! \details Returns a pointer to const char data.
-	 */
-	const char * cdata_const() const { return (const char *)m_mem; }
-
-    /*! \details Returns a pointer to const data. This will return the
-	 * memory pointer whether the memory is read-only or read-write.
-	 *
-	 */
-	const void * data_const() const { return m_mem; }
 
 	/*! \details Free the memory associated with this object.
 	 * This will only perform any operations if the memory was
@@ -508,6 +539,8 @@ public:
     int append(s16 value){ return append(Data(&value, sizeof(value), true)); }
     int append(u32 value){ return append(Data(&value, sizeof(value), true)); }
     int append(s32 value){ return append(Data(&value, sizeof(value), true)); }
+    int append(u64 value){ return append(Data(&value, sizeof(value), true)); }
+    int append(s64 value){ return append(Data(&value, sizeof(value), true)); }
     int append(float value){ return append(Data(&value, sizeof(value), true)); }
 
     Data & operator << (const Data & a){ append(a); return *this; }
@@ -517,6 +550,8 @@ public:
     Data & operator << (s16 a){ append(a); return *this; }
     Data & operator << (u32 a){ append(a); return *this; }
     Data & operator << (s32 a){ append(a); return *this; }
+    Data & operator << (u64 a){ append(a); return *this; }
+    Data & operator << (s64 a){ append(a); return *this; }
 
 protected:
     void copy_object(const Data & a);

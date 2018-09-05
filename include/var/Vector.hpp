@@ -43,24 +43,14 @@ public:
      * that is no longer valid.
      *
      */
-    T & at(u32 pos){
-        if( pos < count() ){
-            return *(vector_data() + pos);
-        }
-        return *vector_data();
-    }
+    T & at(u32 pos){ return Data::at<T>(pos); }
 
     /*! \details Provides a read-only reference to an element in the Vector.
      *
      * The same limitations apply to this method as apply to the read-write version.
      *
      */
-    const T & at(u32 pos) const {
-        if( pos < count() ){
-            return *(vector_data_const() + pos);
-        }
-        return *vector_data_const();
-    }
+    const T & at(u32 pos) const { return Data::at<T>(pos); }
 
     /*! \details Provides un-bounded access to the specified element (read-only).
      *

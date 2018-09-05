@@ -285,7 +285,11 @@ public:
      * This method will read up to data.size() bytes.
      *
      */
-    int read(var::Data & data) const { return read(data.data(), data.size()); }
+    int read(var::Data & data) const {
+        int result = read(data.to_void(), data.size());
+        if( result > 0 ){ data.set_size(result); }
+        return result;
+    }
 
 	/*! \details Write the file.
 	 *
@@ -296,7 +300,7 @@ public:
     virtual int write(const void * buf, int nbyte) const;
 
     /*! \details Writes the file using a var::Data object. */
-    int write(const var::Data & data) const { return write(data.data_const(), data.size()); }
+    int write(const var::Data & data) const { return write(data.to_void(), data.size()); }
 
     /*! \details Writes a var::ConstString to the file.
      *
@@ -322,7 +326,11 @@ public:
     int read(int loc, void * buf, int nbyte) const;
 
     /*! \details Reads the file using a var::Data object. */
-    int read(int loc, var::Data & data) const { return read(loc, data.data(), data.size()); }
+    int read(int loc, var::Data & data) const {
+        int result = read(loc, data.to_void(), data.size());
+        if( result > 0 ){ data.set_size(result); }
+        return result;
+    }
 
     /*! \details Writes the file at the location specified.
 	 *
@@ -334,7 +342,7 @@ public:
     int write(int loc, const void * buf, int nbyte) const;
 
     /*! \details Writes the file using a var::Data object at the location specified. */
-    int write(int loc, const var::Data & data) const { return write(loc, data.data_const(), data.size()); }
+    int write(int loc, const var::Data & data) const { return write(loc, data.to_void(), data.size()); }
 
     /*! \details Writes the file using a var::ConstString object at the location specified. */
     int write(int loc, const var::ConstString & str) const { return write(loc, str.str(), str.length()); }
