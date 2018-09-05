@@ -4,7 +4,7 @@
 using namespace inet;
 
 SocketAddress::SocketAddress(const var::ConstString& ipaddr, int port) {
-#if defined _WIN32
+#if defined __win32
     struct sockaddr* sockaddress = &(m_address);
     struct sockaddr_in* s_address = (struct sockaddr_in*)sockaddress;
     s_address->sin_family = AF_INET;
@@ -16,7 +16,7 @@ SocketAddress::SocketAddress(const var::ConstString& ipaddr, int port) {
 
 Socket::Socket(){}
 
-#if defined _WIN32
+#if defined __win32
 int Socket::create() {
     WSADATA wsadata;
     int result;
@@ -31,7 +31,7 @@ int Socket::create() {
 #endif
 
 int Socket::create(const SocketAddress & address){
-#if defined _WIN32
+#if defined __win32
     create();
     memcpy((void*)&(m_sockaddress.m_address),(void*)&(address.m_address), sizeof(address.m_address));
     printf("Ip addr=%s\n",inet_ntoa(((struct sockaddr_in*)&(m_sockaddress.m_address))->sin_addr));
@@ -43,7 +43,7 @@ int Socket::create(const SocketAddress & address){
 }
 
 int Socket::listen(){
-#if defined _WIN32
+#if defined __win32
     struct addrinfo *result = NULL;
         struct addrinfo hints;
     ZeroMemory(&hints, sizeof(hints));
@@ -106,7 +106,7 @@ int Socket::listen(){
 }
 
 int Socket::accept(){
-#if defined _WIN32
+#if defined __win32
     int ret;
     int send_result;
     char recv_buf[512];
@@ -231,7 +231,7 @@ int Socket::accept(){
 
 int Socket::connect() {
 
-#if defined _WIN32
+#if defined __win32
         SOCKET connect_socket = INVALID_SOCKET;
         sockaddr addr=m_sockaddress.m_address;
         struct sockaddr_in *addr_in = (struct sockaddr_in *)&addr;
