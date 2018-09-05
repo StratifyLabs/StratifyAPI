@@ -1,9 +1,7 @@
 #ifndef SOCKET_HPP
 #define SOCKET_HPP
 
-// \tg use __win32 rather than __WIN32
-// \ck Is __win32 a predefined macro? It does not seem to work with __win32.
-#ifdef _WIN32
+#ifdef __win32
 #define _BSD_SOURCE
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -118,7 +116,7 @@ private:
  * that reason. We should address that.
  *
  */
-#ifdef _WIN32
+#ifdef __win32
 class Socket  {
 public:
     Socket();
