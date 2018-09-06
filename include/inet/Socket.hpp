@@ -120,6 +120,7 @@ private:
 class Socket  {
 public:
     Socket();
+    ~Socket();
 
     /**
      * \details        Initializes WS2_32.dll.
@@ -131,6 +132,11 @@ public:
 
     /**
      * \details        Initializes WS2_32.dll.Stores socket address.
+     *
+     * @params         address - instance of SocketAddress containing the host address and port
+     *                 blocking - 1 to turn on blocking mode
+     *                            0 to turn off blocking mode
+     *                 proto    - Indicates the protocol TCP/UDP to be used for connection
      *
      * @return         WS_OK if successful, or
      *                 -1
@@ -153,7 +159,7 @@ public:
      *
      */
 
-    int create(const SocketAddress & address);
+    int create(const SocketAddress & address, bool blocking, int proto);
 
 
     /**
@@ -165,18 +171,64 @@ public:
      */
     int connect();
 
+    /**
+     * \details       binds and listens to the port for which the socket is created
+     *
+     *
+     * @return        - -1 if failed.
+     *                  int socket descriptor if the connection was successful.
+     */
     int listen();
+
+    /**
+     * \details       connects to the server using the SocketAddress object passed to
+     *                  create() function.
+     *
+     * @return        - -1 if failed.
+     *                  int socket descriptor if the connection was successful.
+     */
     int accept();
 
+    /**
+     * \details       sends data on the connected socket
+     *
+     * @param           socket - descriptor identifying the connecting socket.
+     * @param           send_buffer - character buffer containing the data to be sent.
+     * @param           buffer-length - length of the buffer
+     *
+     * @return        - -1 if failed.
+     *                  number of bytes sent if successful.
+     */
+    int send(SOCKET socket, var::ConstString send_buffer, int buffer_length);
+
+    /**
+     * \details       receives data on the connected socket.
+     *
+     * @param           socket - descriptor identifying the connecting socket.
+     * @param           receive_buffer - character buffer containing the data received.
+     * @param           buffer-length - length of the buffer
+     *
+     * @return        - -1 if failed.
+     *                  number of bytes sent if successful.
+     */
+    int receive(SOCKET socket, var::ConstString receive_buffer, int buffer_length);
+
+    /**
+     * \details       closes all the sockets and cleans ws2_32 lib
+     *
+     */
+    void close_socket();
 
 private:
     SocketAddress m_sockaddress;
     SOCKET m_listen_socket;
+    SOCKET m_connect_socket;
 };
 #else
 class Socket : public sys::File {
 public:
     Socket();
+    ~Socket();
 
     int init();
 
