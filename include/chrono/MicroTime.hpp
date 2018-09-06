@@ -11,6 +11,8 @@
 
 namespace chrono {
 
+class Timer;
+
 /*! \details Defines the type for a chrono::MicroTime value. */
 typedef u32 micro_time_t;
 
@@ -45,6 +47,8 @@ public:
     MicroTime(const ClockTime & clock_time){
         m_value_microseconds = clock_time.seconds() * 1000000UL + (clock_time.nanoseconds() + 500) / 1000;
     }
+
+    MicroTime(const Timer & timer);
 
     /*! \details Create a MicroTime object from a second value. */
     static MicroTime from_seconds(u32 sec){ return MicroTime(sec*1000000UL); }
@@ -135,6 +139,11 @@ public:
     /*! \details Returns the value in milliseconds. */
     u32 milliseconds() const { return usec() / 1000UL; }
     u32 msec() const { return milliseconds(); }
+
+    /*! \details Waits for the value of the microtime.
+     *
+     */
+    void wait() const { wait_microseconds( m_value_microseconds );}
 
 private:
     micro_time_t m_value_microseconds;

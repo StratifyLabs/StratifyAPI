@@ -104,6 +104,7 @@ void Data::copy_object(const Data & a){
         } else {
             //copy the contents of a to this object
             copy_contents(a, a.capacity());
+            m_size = a.size();
         }
     } else {
         set((void*)a.data(), a.capacity(), a.is_read_only());

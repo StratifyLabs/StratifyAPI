@@ -107,10 +107,7 @@ public:
 	 */
     int write(const T * buf, u32 count){
         u32 i;
-        u32 free_items;
-
         count = get_free_count(count);
-
         for(i=0; i < count; i++){
             type_data()[m_head] = buf[i];
             inc_head();

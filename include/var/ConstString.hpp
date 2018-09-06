@@ -110,6 +110,8 @@ public:
     char at(u32 pos) const;
 
     /*! \details Returns a c-style string pointer. */
+    const char * to_char() const { return m_string; }
+
     virtual const char * str() const { return m_string; }
     //compatible with std::string (but not Stratify API convention)
     const char * c_str() const { return str(); }

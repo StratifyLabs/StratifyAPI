@@ -193,7 +193,7 @@ bool Cli::handle_uart(hal::UartAttr & attr) const {
         if( is_option("-cts") ){ attr.set_cts(get_option_pin("-cts")); }
 
 		if( is_option("-width") ){
-			attr.set_width(get_option_value("-w"));
+            attr.set_width(get_option_value("-width"));
 		} else {
 			attr.set_width(8);
 		}

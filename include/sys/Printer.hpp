@@ -87,14 +87,6 @@ public:
         PRINT_32 /*! Print as 32 bit values */ = (1<<5),
     };
 
-    enum base {
-        BASE2 = 2,
-        BASE8 = 8,
-        BASE10 = 10,
-        BASE16 = 16
-    };
-
-    void set_base(enum base value){ m_base = value; }
     void set_flags(u32 value){ m_o_flags = value; }
 
     Printer & open_object(const var::ConstString & key);
@@ -121,7 +113,6 @@ private:
 
     u16 m_progress_width;
     u16 m_indent;
-    u8 m_base;
     bool m_is_json;
     u32 m_o_flags;
 
