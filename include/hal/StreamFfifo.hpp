@@ -28,6 +28,10 @@ public:
         memset(&m_info, 0, sizeof(m_info));
     }
 
+    operator stream_ffifo_info_t & (){ return m_info; }
+    operator const stream_ffifo_info_t & () const { return m_info; }
+
+
     bool is_valid() const {
         return receive().is_valid() || transmit().is_valid();
     }
@@ -62,7 +66,7 @@ private:
 typedef StreamFFifoAttributes StreamFFifoAttr;
 
 
-class StreamFFifo : public api::HalWorkObject {
+class StreamFFifo : public Device {
 public:
     StreamFFifo();
 
@@ -76,11 +80,11 @@ public:
         return ioctl(I_STREAM_FFIFO_SETATTR, &attributes);
     }
 
-    int start(){
-        StreamFFifoAttributes attributes;
-        attributes.set_flags(START);
-        return set_attributes(attributes);
-    }
+    int start();
+    int stop();
+    int flush();
+
+    int get_info(stream_ffifo_info_t & info);
 
 
 };

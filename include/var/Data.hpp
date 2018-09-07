@@ -62,29 +62,7 @@ private:
  *
  * \endcode
  *
- * Data objects that are dynamically allocated and returned from a method
- * can use the set_transfer_ownership() method to pass the interal pointer
- * to a new object rather that making a copy and freeing the temporary object.
  *
- * \code
- *
- * #include <sapi/var.hpp>
- *
- * Data my_data_function(){
- *   Data result;
- *   result.set_capacity(128);
- *   result.fill(0xaa);
- *   result.set_transfer_ownership();
- *   return result;
- * }
- *
- * //here the result will not be freed but the pointer will be taken over by my_data
- *
- * Data my_data = my_data_function();
- *
- * my_data_function(); //this the ownership transfer is not complete, the result data will be freed right away
- *
- * \endcode
  *
  *
  *
@@ -122,7 +100,8 @@ public:
      * \endcode
      *
      */
-    Data(const Data & a);
+	Data(const Data & a);
+	Data(Data && a);
 
     /*! \details Constant assignment operator.
      *
@@ -137,6 +116,7 @@ public:
      *
      */
     Data& operator=(const Data & a);
+	Data& operator=(Data && a);
 
     bool operator == (const Data & a ) const {
         if( a.size() == size() ){
@@ -459,36 +439,6 @@ public:
         return m_mem_write == 0;
     }
 
-    /*! \details Sets the object to transfer
-     * the ownership when copied.
-     *
-     * If this method is called, the object will
-     * not free dynamically allocated memory when destroyed.
-     *
-     * Also, if the object is copied, the copying object will take
-     * ownership of dyncamilly allocated memory.
-     *
-     * This method is desiged to be used on objects that are used
-     * to return a var::Data object.
-     *
-     * The following example, shows how this can be used with var::String,
-     * which inherits var::Data.
-     *
-     * \code
-     * String get_string(){
-     *   String ret;
-     *   ret.set_transfer_ownership();
-     *   ret.assign("This is a String");
-     *   return ret;
-     * }
-     *
-     * String a = get_string(); //a takes ownership of pointer that ret creates
-     * \endcode
-     */
-    void set_transfer_ownership(){
-        m_o_flags |= FLAG_IS_TRANSFER_OWNERSHIP;
-    }
-
     /*! \details Copies the contents of a into the memory of
      * this object.
      *
@@ -555,6 +505,7 @@ public:
 
 protected:
     void copy_object(const Data & a);
+	void move_object(Data & a);
 
 private:
 
@@ -564,7 +515,6 @@ private:
     void clear_needs_free() const { m_o_flags &= ~FLAG_NEEDS_FREE; }
 
     bool needs_free() const { return m_o_flags & FLAG_NEEDS_FREE; }
-    bool is_transfer_ownership() const { return m_o_flags & FLAG_IS_TRANSFER_OWNERSHIP; }
 	void zero();
 
 	static const int m_zero_value;
@@ -575,8 +525,7 @@ private:
     u32 m_size;
 
     enum {
-        FLAG_NEEDS_FREE = (1<<0),
-        FLAG_IS_TRANSFER_OWNERSHIP = (1<<1)
+		FLAG_NEEDS_FREE = (1<<0)
     };
     mutable u32 m_o_flags;
 

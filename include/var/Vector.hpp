@@ -232,8 +232,8 @@ public:
      */
     u32 size() const { return count()*sizeof(T); }
 
-    T * vector_data(){ return (T*)data(); }
-    const T * vector_data_const() const { return (const T*)data(); }
+	T * vector_data(){ return to<T>(); }
+	const T * vector_data_const() const { return to<T>(); }
 
 protected:
 

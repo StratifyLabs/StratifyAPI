@@ -38,7 +38,7 @@ u32 String::capacity() const {
     return 0;
 }
 
-String& String::format(const char * format, ...){
+String & String::format(const char * format, ...){
     va_list args;
     va_start(args, format);
     vformat(format, args);
@@ -171,10 +171,8 @@ String String::substr(u32 pos, u32 len) const {
     if( pos >= length() ){
         return String();
     }
-
     String ret;
     ret.assign(str() + pos, len);
-    ret.set_transfer_ownership();
     return ret;
 }
 

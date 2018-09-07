@@ -98,6 +98,9 @@ public:
     String(const String & a) : Data(a), ConstString(cdata_const()){
         set_string_pointer(cdata_const());
     }
+	String(String && a) : Data(a), ConstString(Data::to_char()){
+		set_string_pointer(Data::to_char());
+	}
 
     /*! \details Declares a string and initialize to \a s. */
     String(const ConstString & s);
@@ -116,15 +119,25 @@ public:
 
     /*! \details Assigns a to this string.
      *
-     * This will do a data copy is a has
-     * called Data::set_transfer_ownership().
-     *
      */
     String& operator=(const String & a){
-        Data::copy_object(a);
-        set_string_pointer(cdata_const());
+		printf("copy assign\n");
+		copy_object(a);
+		set_string_pointer(Data::to_char());
         return *this;
     }
+
+	/*! \details Assigns a (as an rvalue) to this string.
+	 *
+	 * The memory allocated to a is moved to this object.
+	 *
+	 */
+	String & operator = (String && a){
+		printf("move assign\n");
+		move_object(a);
+		set_string_pointer(Data::to_char());
+		return *this;
+	}
 
     /*! \details Assigns the value of a String to another String.
      *
@@ -199,7 +212,6 @@ public:
     String operator + (const ConstString & a){
         String ret = *this;
         ret.append(a);
-        ret.set_transfer_ownership();
         return ret;
     }
 

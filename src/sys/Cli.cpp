@@ -54,33 +54,31 @@ var::String Cli::get_version_details() const {
         result.sprintf("%s (app:%s, api:%s)", m_version.str(), m_app_git_hash.str(), api_git_hash());
     }
 
-    result.set_transfer_ownership();
     return result;
 }
 
 
 String Cli::at(u16 value) const {
 	String arg;
-    arg.set_transfer_ownership();
 	if( value < m_argc ){
 		arg.assign(m_argv[value]);
 	}
-    arg.set_transfer_ownership();
 	return arg;
 }
 
 bool Cli::is_option_equivalent_to_argument(
         const ConstString & option,
         const ConstString & argument) const {
-    String option_string = option;
-    String argument_string = argument;
 
     if( is_case_senstive() == false ){
+		String option_string = option;
+		String argument_string = argument;
         option_string.to_upper();
         argument_string.to_upper();
-    }
+		return option_string == argument_string;
+	}
 
-    return option_string == argument_string;
+	return option == argument;
 }
 
 String Cli::get_option_argument(const char * option) const {

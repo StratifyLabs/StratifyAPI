@@ -101,7 +101,6 @@ var::String JsonValue::to_string() const {
     } else {
         result = "invalid";
     }
-    result.set_transfer_ownership();
     return result;
 }
 
@@ -210,9 +209,7 @@ var::Vector<var::String> JsonObject::keys() const {
     var::Vector<var::String> result;
 
     json_object_foreach(m_value, key, value) {
-        var::String key_string(key);
-        key_string.set_transfer_ownership();
-        result.push_back(key_string);
+		result.push_back(var::String(key));
     }
 
     return result;

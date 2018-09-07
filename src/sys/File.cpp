@@ -305,7 +305,6 @@ char * File::gets(char * s, int n, char term) const {
 var::String File::gets(char term) const {
     var::String ret;
     gets(ret, term);
-    ret.set_transfer_ownership();
     return ret;
 }
 

@@ -61,7 +61,6 @@ SignalType SignalType::abs() const {
                 (native_type *)data_const(),
                 ret.vector_data(),
                 count());
-    ret.set_transfer_ownership();
     return ret;
 }
 
@@ -81,7 +80,6 @@ big_type SignalType::dot_product(const SignalType & a) const {
 SignalType SignalType::negate() const {
     SignalType ret(count());
     arm_dsp_api_function()->negate((native_type*)vector_data_const(), ret.vector_data(), count());
-    ret.set_transfer_ownership();
     return ret;
 }
 
@@ -97,7 +95,6 @@ SignalType SignalType::convolve(const SignalType & a) const {
 #else
     arm_dsp_api_function()->conv((native_type*)vector_data_const(), count(), (native_type*)a.vector_data_const(), a.count(), ret.vector_data());
 #endif
-    ret.set_transfer_ownership();
     return ret;
 }
 
@@ -118,7 +115,6 @@ void SignalType::shift(SignalType & output, s8 value) const {
 SignalDataType SignalType::shift(s8 value) const {
     SignalType ret(count());
     arm_dsp_api_function()->shift((native_type*)vector_data_const(), value, ret.vector_data(), count());
-    ret.set_transfer_ownership();
     return ret;
 }
 
@@ -135,7 +131,7 @@ SignalType SignalType::scale(native_type scale_fraction, s8 shift) const {
 #else
     arm_dsp_api_function()->scale((native_type*)vector_data_const(), scale_fraction, ret.vector_data(), count());
 #endif
-    ret.set_transfer_ownership();
+
     return ret;
 }
 
@@ -151,7 +147,7 @@ void SignalType::scale(SignalType & output, native_type scale_fraction, s8 shift
 SignalDataType SignalType::add(native_type offset_value) const {
     SignalType ret(count());
     arm_dsp_api_function()->offset((native_type*)vector_data_const(), offset_value, ret.vector_data(), count());
-    ret.set_transfer_ownership();
+
     return ret;
 }
 
@@ -163,7 +159,7 @@ SignalDataType & SignalType::add_assign(native_type offset_value){
 SignalDataType SignalType::add(const SignalType & a) const {
     SignalType ret(count());
     arm_dsp_api_function()->add((native_type*)vector_data_const(), (native_type*)a.vector_data_const(), ret.vector_data(), count());
-    ret.set_transfer_ownership();
+
     return ret;
 }
 
@@ -185,7 +181,7 @@ SignalDataType & SignalType::multiply_assign(native_type value){
 SignalDataType SignalType::multiply(const SignalType & a) const {
     SignalType ret(count());
     arm_dsp_api_function()->mult((native_type*)vector_data_const(), (native_type*)a.vector_data_const(), ret.vector_data(), count());
-    ret.set_transfer_ownership();
+
     return ret;
 }
 
@@ -198,7 +194,7 @@ SignalDataType & SignalType::multiply_assign(const SignalType & a){
 SignalDataType SignalType::subtract(const SignalType & a) const{
     SignalType ret(count());
     arm_dsp_api_function()->sub((native_type*)vector_data_const(), (native_type*)a.vector_data_const(), ret.vector_data(), count());
-    ret.set_transfer_ownership();
+
     return ret;
 }
 
@@ -214,7 +210,7 @@ SignalType SignalType::filter(const BiquadFilterType & filter) const {
 #else
     arm_dsp_api_function()->biquad_cascade_df1(filter.instance(), (native_type*)vector_data_const(), ret.vector_data(), count());
 #endif
-    ret.set_transfer_ownership();
+
     return ret;
 }
 
@@ -233,7 +229,7 @@ SignalType SignalType::filter(const FirFilterType & filter) const {
 #else
     arm_dsp_api_function()->fir(filter.instance(), (native_type*)vector_data_const(), ret.vector_data(), count());
 #endif
-    ret.set_transfer_ownership();
+
     return ret;
 }
 
@@ -272,7 +268,7 @@ SignalType SignalType::create_sin_wave(u32 wave_frequency, u32 sampling_frequenc
 #endif
     }
 
-    ret.set_transfer_ownership();
+
     return ret;
 }
 
@@ -301,7 +297,7 @@ SignalComplexType SignalComplexType::transform(FftRealType & fft, bool is_invers
 #else
     arm_dsp_api_function()->rfft_fast(fft.instance(), (native_type*)vector_data(), (native_type*)ret.vector_data(), is_inverse);
 #endif
-    ret.set_transfer_ownership();
+
     return ret;
 }
 

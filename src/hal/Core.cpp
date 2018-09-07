@@ -65,7 +65,6 @@ void SerialNumber::print() const {
 
 var::String SerialNumber::to_string() const {
     var::String ret;
-    ret.set_transfer_ownership();
 #if defined __link
     ret.sprintf("SN:%X%X%X%X\n",
 #else

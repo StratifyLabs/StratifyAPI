@@ -34,7 +34,7 @@ public:
     StateMachine & state_machine(){ return m_state_machine; }
 
 private:
-    StateMachine & m_state_machine; // a pointer to the owning machine
+    StateMachine & m_state_machine; // a reference to the owning machine
 };
 
 /*! \brief State Machine Condition

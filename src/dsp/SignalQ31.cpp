@@ -23,7 +23,7 @@ using namespace dsp;
 SignalQ31 SignalQ31::filter(const FirDecimateFilterQ31 & filter){
     SignalQ31 ret(count());
     arm_dsp_api_q31()->fir_decimate_fast((arm_fir_decimate_instance_q31*)filter.instance(), (q31_t*)vector_data_const(), ret.vector_data(), count());
-    ret.set_transfer_ownership();
+
     return ret;
 }
 

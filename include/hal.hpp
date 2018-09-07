@@ -33,6 +33,7 @@ namespace hal {}
 #include "hal/Fifo.hpp"
 #include "hal/FFifo.hpp"
 #include "hal/CFifo.hpp"
+#include "hal/StreamFFifo.hpp"
 #include "hal/Led.hpp"
 #include "hal/I2C.hpp"
 #include "hal/I2S.hpp"

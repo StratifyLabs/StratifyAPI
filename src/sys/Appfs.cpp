@@ -174,7 +174,6 @@ var::String Appfs::get_id(const var::ConstString & path){
 #endif
 
     result = (const char*)info.id;
-    result.set_transfer_ownership();
     return result;
 }
 

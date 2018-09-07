@@ -145,7 +145,6 @@ var::Vector<var::String> Dir::read_list(){
         }
     } while( entry.is_empty() == false );
 
-    result.set_transfer_ownership();
     return result;
 
 }
@@ -192,7 +191,6 @@ bool Dir::get_entry(var::String & path_dest){
 
 var::String Dir::get_entry(){
     var::String entry;
-    entry.set_transfer_ownership();
     get_entry(entry);
     return entry;
 }

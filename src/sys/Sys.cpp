@@ -132,7 +132,6 @@ int Sys::get_version(var::String & version){
 
 var::String Sys::get_version(){
     var::String version;
-    version.set_transfer_ownership();
     get_version(version);
     return version;
 }

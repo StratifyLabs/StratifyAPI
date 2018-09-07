@@ -88,6 +88,7 @@ public:
             }
             m_back_idx = 0;
         }
+		//execute the copy construtor in place (at memory location back())
         new((void*)&back()) T(value);
         return 0;
     }
@@ -98,6 +99,7 @@ public:
             return;
         }
 
+		//execute the descructor explicitly
         front().~T();
 
         //if the last item was popped -- clear the list (ie make empty)
