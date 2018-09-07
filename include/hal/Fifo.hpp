@@ -19,21 +19,21 @@ class Fifo;
 class FifoInfo : public api::HalInfoObject {
 public:
 
-    /*! \details Constructs an object with all zeros. */
-    FifoInfo(){ memset(&m_info, 0, sizeof(m_info)); }
+	/*! \details Constructs an object with all zeros. */
+	FifoInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 
-    /*! \details Constructs an object from a fifo_info_t reference. */
-    FifoInfo(const fifo_info_t & info){ m_info = info; }
+	/*! \details Constructs an object from a fifo_info_t reference. */
+	FifoInfo(const fifo_info_t & info){ m_info = info; }
 
-    /*! \details Returns true if the FIFO info object is valid. */
-    bool is_valid() const { return m_info.size > 0; }
+	/*! \details Returns true if the FIFO info object is valid. */
+	bool is_valid() const { return m_info.size > 0; }
 
 	/*! \details The number of bytes in the FIFO that are currently used (ie available
 	 * for reading.
 	 *
 	 * @return The number of bytes available for reading.
 	 */
-    u32 size_ready() const { return m_info.size_ready; }
+	u32 size_ready() const { return m_info.size_ready; }
 
 	/*! \details This method accesses the maximum number of bytes allocated for the FIFO.
 	 *
@@ -46,8 +46,8 @@ public:
 	bool is_overflow() const { return m_info.overflow != 0; }
 	bool overflow() const { return m_info.overflow != 0; }
 private:
-    friend class CFifo;
-    friend class Fifo;
+	friend class CFifo;
+	friend class Fifo;
 	fifo_info_t m_info;
 };
 
@@ -101,22 +101,22 @@ public:
 		FLAG_NOTIFY_READ = FIFO_FLAG_NOTIFY_READ,
 		FLAG_INIT = FIFO_FLAG_INIT,
 		FLAG_EXIT = FIFO_FLAG_EXIT,
-        FLAG_FLUSH = FIFO_FLAG_FLUSH,
+		FLAG_FLUSH = FIFO_FLAG_FLUSH,
 
-        SET_WRITEBLOCK = FIFO_FLAG_SET_WRITEBLOCK,
-        IS_OVERFLOW = FIFO_FLAG_IS_OVERFLOW,
-        IS_NOTIFY_WRITE = FIFO_FLAG_NOTIFY_WRITE,
-        IS_NOTIFY_READ = FIFO_FLAG_NOTIFY_READ,
-        INIT = FIFO_FLAG_INIT,
-        EXIT = FIFO_FLAG_EXIT,
-        FLUSH = FIFO_FLAG_FLUSH
+		SET_WRITEBLOCK = FIFO_FLAG_SET_WRITEBLOCK,
+		IS_OVERFLOW = FIFO_FLAG_IS_OVERFLOW,
+		IS_NOTIFY_WRITE = FIFO_FLAG_NOTIFY_WRITE,
+		IS_NOTIFY_READ = FIFO_FLAG_NOTIFY_READ,
+		INIT = FIFO_FLAG_INIT,
+		EXIT = FIFO_FLAG_EXIT,
+		FLUSH = FIFO_FLAG_FLUSH
 	};
 
 	/*! \details Reads the Fifo Attributes. */
-    int get_info(FifoInfo & info) const;
+	int get_info(FifoInfo & info) const;
 
 	/*! \details Returns the fifo info. */
-    FifoInfo get_info() const;
+	FifoInfo get_info() const;
 
 	/*! \details Flushes the FIFO. */
 	int flush() const;

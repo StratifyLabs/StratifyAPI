@@ -15,7 +15,7 @@ namespace hal {
  * \details This class allows simple manipulation of the i2c_pin_assignment_t.
  *
  * \sa hal::I2C
- * \sa hal::I2CAttr
+ * \sa hal::I2CAttributes
  *
  */
 class I2CPinAssignment : public PinAssignment<i2c_pin_assignment_t>{};
@@ -29,43 +29,45 @@ class I2CPinAssignment : public PinAssignment<i2c_pin_assignment_t>{};
  * \sa hal::I2C
  *
  */
-class I2CAttr : public PinAssignmentPeriphAttr<i2c_attr_t, i2c_pin_assignment_t> {
+class I2CAttributes : public PinAssignmentPeriphAttr<i2c_attr_t, i2c_pin_assignment_t> {
 public:
 
 
-    I2CAttr(){
-        set_freq(100000);
-        set_flags(I2C_FLAG_SET_MASTER);
-    }
+	I2CAttributes(){
+		set_freq(100000);
+		set_flags(I2C_FLAG_SET_MASTER);
+	}
 
-    /*! \details Accesses the SDA pin assignment value. */
+	/*! \details Accesses the SDA pin assignment value. */
 	mcu_pin_t sda() const { return m_attr.pin_assignment.sda; }
-    /*! \details Access the SCL pin assignment value. */
+	/*! \details Access the SCL pin assignment value. */
 	mcu_pin_t scl() const { return m_attr.pin_assignment.scl; }
 
-    /*! \details Access the slave address value. */
-    u8 slave_addr() const { return m_attr.slave_addr[0].addr8[0]; }
+	/*! \details Access the slave address value. */
+	u8 slave_addr() const { return m_attr.slave_addr[0].addr8[0]; }
 
-    /*! \details Accesses the 16-bit slave address value. */
-    u8 slave_addr16() const { return m_attr.slave_addr[0].addr16; }
+	/*! \details Accesses the 16-bit slave address value. */
+	u8 slave_addr16() const { return m_attr.slave_addr[0].addr16; }
 
-    /*! \details Sets the 7-bit slave address value. */
-    void set_slave_addr(u8 addr){ m_attr.slave_addr[0].addr8[0] = addr; }
+	/*! \details Sets the 7-bit slave address value. */
+	void set_slave_addr(u8 addr){ m_attr.slave_addr[0].addr8[0] = addr; }
 
-    /*! \details Sets the 16-bit slave address value. */
-    void set_slave_addr16(u16 addr){ m_attr.slave_addr[0].addr16 = addr; }
+	/*! \details Sets the 16-bit slave address value. */
+	void set_slave_addr16(u16 addr){ m_attr.slave_addr[0].addr16 = addr; }
 
-    /*! \details Sets the SDA pin assignment value. */
-    void set_sda(const mcu_pin_t & pin){ m_attr.pin_assignment.sda = pin;}
-    /*! \details Sets the SDA pin assignment value. */
-    void set_sda(u8 port, u8 pin){ m_attr.pin_assignment.sda = mcu_pin(port, pin);}
+	/*! \details Sets the SDA pin assignment value. */
+	void set_sda(const mcu_pin_t & pin){ m_attr.pin_assignment.sda = pin;}
+	/*! \details Sets the SDA pin assignment value. */
+	void set_sda(u8 port, u8 pin){ m_attr.pin_assignment.sda = mcu_pin(port, pin);}
 
-    /*! \details Sets the SCL pin assignment value. */
-    void set_scl(const mcu_pin_t & pin){ m_attr.pin_assignment.scl = pin;}
-    /*! \details Sets the SCL pin assignment value. */
-    void set_scl(u8 port, u8 pin){ m_attr.pin_assignment.scl = mcu_pin(port, pin);}
+	/*! \details Sets the SCL pin assignment value. */
+	void set_scl(const mcu_pin_t & pin){ m_attr.pin_assignment.scl = pin;}
+	/*! \details Sets the SCL pin assignment value. */
+	void set_scl(u8 port, u8 pin){ m_attr.pin_assignment.scl = mcu_pin(port, pin);}
 
 };
+
+typedef I2CAttributes I2CAttr;
 
 /*! \brief I2C Peripheral Class
  * \details This class implements I2C device peripherals.
@@ -167,41 +169,41 @@ public:
 
 	enum {
 		FLAG_NONE = I2C_FLAG_NONE,
-        FLAG_SET_MASTER = I2C_FLAG_SET_MASTER,
-        FLAG_SET_SLAVE = I2C_FLAG_SET_SLAVE,
-        FLAG_IS_SLAVE_ACK_GENERAL_CALL = I2C_FLAG_IS_SLAVE_ACK_GENERAL_CALL,
-        FLAG_IS_PULLUP = I2C_FLAG_IS_PULLUP,
-        FLAG_PREPARE_PTR_DATA = I2C_FLAG_PREPARE_PTR_DATA,
-        FLAG_IS_PTR_16 = I2C_FLAG_IS_PTR_16,
-        FLAG_PREPARE_PTR = I2C_FLAG_PREPARE_PTR,
-        FLAG_PREPARE_DATA = I2C_FLAG_PREPARE_DATA,
-        FLAG_IS_SLAVE_ADDR0 = I2C_FLAG_IS_SLAVE_ADDR0,
-        FLAG_IS_SLAVE_ADDR1 = I2C_FLAG_IS_SLAVE_ADDR1,
-        FLAG_IS_SLAVE_ADDR2 = I2C_FLAG_IS_SLAVE_ADDR2,
-        FLAG_IS_SLAVE_ADDR3 = I2C_FLAG_IS_SLAVE_ADDR3,
-        FLAG_IS_SLAVE_PTR_8 = I2C_FLAG_IS_SLAVE_PTR_8,
-        FLAG_IS_SLAVE_PTR_16 = I2C_FLAG_IS_SLAVE_PTR_16,
-        FLAG_RESET = I2C_FLAG_RESET,
+		FLAG_SET_MASTER = I2C_FLAG_SET_MASTER,
+		FLAG_SET_SLAVE = I2C_FLAG_SET_SLAVE,
+		FLAG_IS_SLAVE_ACK_GENERAL_CALL = I2C_FLAG_IS_SLAVE_ACK_GENERAL_CALL,
+		FLAG_IS_PULLUP = I2C_FLAG_IS_PULLUP,
+		FLAG_PREPARE_PTR_DATA = I2C_FLAG_PREPARE_PTR_DATA,
+		FLAG_IS_PTR_16 = I2C_FLAG_IS_PTR_16,
+		FLAG_PREPARE_PTR = I2C_FLAG_PREPARE_PTR,
+		FLAG_PREPARE_DATA = I2C_FLAG_PREPARE_DATA,
+		FLAG_IS_SLAVE_ADDR0 = I2C_FLAG_IS_SLAVE_ADDR0,
+		FLAG_IS_SLAVE_ADDR1 = I2C_FLAG_IS_SLAVE_ADDR1,
+		FLAG_IS_SLAVE_ADDR2 = I2C_FLAG_IS_SLAVE_ADDR2,
+		FLAG_IS_SLAVE_ADDR3 = I2C_FLAG_IS_SLAVE_ADDR3,
+		FLAG_IS_SLAVE_PTR_8 = I2C_FLAG_IS_SLAVE_PTR_8,
+		FLAG_IS_SLAVE_PTR_16 = I2C_FLAG_IS_SLAVE_PTR_16,
+		FLAG_RESET = I2C_FLAG_RESET,
 		FLAG_STRETCH_CLOCK = I2C_FLAG_STRETCH_CLOCK,
-        FLAG_IS_NO_STOP = I2C_FLAG_IS_NO_STOP,
+		FLAG_IS_NO_STOP = I2C_FLAG_IS_NO_STOP,
 
-        SET_MASTER /*! Operate as a master I2C bus */ = I2C_FLAG_SET_MASTER,
-        SET_SLAVE/*! Operate as a slave (ignored if master is set) */ = I2C_FLAG_SET_SLAVE,
-        IS_SLAVE_ACK_GENERAL_CALL /*! If slave operation, ack general call */ = I2C_FLAG_IS_SLAVE_ACK_GENERAL_CALL,
-        IS_PULLUP /*! Enable internal pullups if available (ignore otherwise) */ = I2C_FLAG_IS_PULLUP,
-        PREPARE_PTR_DATA /*! This prepares the driver to write the ptr then read/write data */ = I2C_FLAG_PREPARE_PTR_DATA,
-        IS_PTR_16 /*! This prepares the driver to write a 16-bit ptr then read/write data */ = I2C_FLAG_IS_PTR_16,
-        PREPARE_PTR /*! This will write the ptr value only without writing or reading any data. */ = I2C_FLAG_PREPARE_PTR,
-        PREPARE_DATA /*! This will read/write data without first writing the pointer information */ = I2C_FLAG_PREPARE_DATA,
-        IS_SLAVE_ADDR0 /*! If hardware supports multiple slave addrs, use the first slot (default) */ = I2C_FLAG_IS_SLAVE_ADDR0,
-        IS_SLAVE_ADDR1 /*! If hardware supports multiple slave addrs, use the second slot */ = I2C_FLAG_IS_SLAVE_ADDR1,
-        IS_SLAVE_ADDR2 /*! If hardware supports multiple slave addrs, use the third slot */ = I2C_FLAG_IS_SLAVE_ADDR2,
-        IS_SLAVE_ADDR3 /*! If hardware supports multiple slave addrs, use the fourth slot */ = I2C_FLAG_IS_SLAVE_ADDR3,
-        IS_SLAVE_PTR_8 /*! Use a 8-bit address pointer when accessing data (default) */ = I2C_FLAG_IS_SLAVE_PTR_8,
-        IS_SLAVE_PTR_16 /*! Use a 16-bit address pointer when accessing data (set automatically is size > 255) */ = I2C_FLAG_IS_SLAVE_PTR_16,
-        RESET /*! Reset the state of the I2C */ = I2C_FLAG_RESET,
-        IS_STRETCH_CLOCK = I2C_FLAG_STRETCH_CLOCK,
-        IS_NO_STOP /*! Don't issue a stop condition when complete (use with I2C_FLAG_PREPARE_DATA) */ = I2C_FLAG_IS_NO_STOP
+		SET_MASTER /*! Operate as a master I2C bus */ = I2C_FLAG_SET_MASTER,
+		SET_SLAVE/*! Operate as a slave (ignored if master is set) */ = I2C_FLAG_SET_SLAVE,
+		IS_SLAVE_ACK_GENERAL_CALL /*! If slave operation, ack general call */ = I2C_FLAG_IS_SLAVE_ACK_GENERAL_CALL,
+		IS_PULLUP /*! Enable internal pullups if available (ignore otherwise) */ = I2C_FLAG_IS_PULLUP,
+		PREPARE_PTR_DATA /*! This prepares the driver to write the ptr then read/write data */ = I2C_FLAG_PREPARE_PTR_DATA,
+		IS_PTR_16 /*! This prepares the driver to write a 16-bit ptr then read/write data */ = I2C_FLAG_IS_PTR_16,
+		PREPARE_PTR /*! This will write the ptr value only without writing or reading any data. */ = I2C_FLAG_PREPARE_PTR,
+		PREPARE_DATA /*! This will read/write data without first writing the pointer information */ = I2C_FLAG_PREPARE_DATA,
+		IS_SLAVE_ADDR0 /*! If hardware supports multiple slave addrs, use the first slot (default) */ = I2C_FLAG_IS_SLAVE_ADDR0,
+		IS_SLAVE_ADDR1 /*! If hardware supports multiple slave addrs, use the second slot */ = I2C_FLAG_IS_SLAVE_ADDR1,
+		IS_SLAVE_ADDR2 /*! If hardware supports multiple slave addrs, use the third slot */ = I2C_FLAG_IS_SLAVE_ADDR2,
+		IS_SLAVE_ADDR3 /*! If hardware supports multiple slave addrs, use the fourth slot */ = I2C_FLAG_IS_SLAVE_ADDR3,
+		IS_SLAVE_PTR_8 /*! Use a 8-bit address pointer when accessing data (default) */ = I2C_FLAG_IS_SLAVE_PTR_8,
+		IS_SLAVE_PTR_16 /*! Use a 16-bit address pointer when accessing data (set automatically is size > 255) */ = I2C_FLAG_IS_SLAVE_PTR_16,
+		RESET /*! Reset the state of the I2C */ = I2C_FLAG_RESET,
+		IS_STRETCH_CLOCK = I2C_FLAG_STRETCH_CLOCK,
+		IS_NO_STOP /*! Don't issue a stop condition when complete (use with I2C_FLAG_PREPARE_DATA) */ = I2C_FLAG_IS_NO_STOP
 	};
 
 
@@ -220,25 +222,18 @@ public:
 	 */
 	int prepare(u8 slave_addr, u32 o_flags = FLAG_PREPARE_PTR_DATA) const;
 
-    /*! \details Resets the I2C bus state. */
+	/*! \details Resets the I2C bus state. */
 	int reset() const;
 
-    /*! \details Gets the last error. */
-    int get_error() const;
+	/*! \details Gets the last error. */
+	int get_error() const;
 
-    //deprecated
+	//deprecated
 #if !defined __link
-    [[deprecated("use get_error()")]]
+	[[deprecated("use get_error()")]]
 #endif
-    int get_err() const { return get_error(); }
+	int get_err() const { return get_error(); }
 
-	/*! \details Sets the attributes of the I2C bus.
-	 *
-	 * @param o_flags Flag bitmask
-	 * @param freq Bitrate
-	 * @param pin_assignment Pin assignment or null to use default pin assignment
-	 * @return Zero on success
-	 */
 	int set_attr(u32 o_flags, u32 freq, const i2c_pin_assignment_t * pin_assignment = 0){
 		i2c_attr_t attr;
 		attr.o_flags = o_flags;
@@ -274,9 +269,9 @@ public:
 	using Periph::init;
 	using Periph::set_attr;
 
-    /*! \details Reads the value of a register on an I2C device */
+	/*! \details Reads the value of a register on an I2C device */
 	int read(int loc, u8 & reg);
-    /*! \details Writes the value of a register on an I2C device */
+	/*! \details Writes the value of a register on an I2C device */
 	int write(int loc, u8 reg);
 
 	/*! \details Sets (or clears) a specific bit in a a register

@@ -22,8 +22,8 @@ class Time;
 
 
 namespace hal{
-class I2CAttr;
-class UartAttr;
+class I2CAttributes;
+class UartAttributes;
 }
 
 

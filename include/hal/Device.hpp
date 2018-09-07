@@ -34,39 +34,39 @@ namespace hal {
  */
 class Device : public api::HalWorkObject {
 public:
-    /*! \details Constructs a Device. */
-    Device();
+	/*! \details Constructs a Device. */
+	Device();
 
-    int set_interrupt_priority(int priority, int request = I_MCU_SETACTION);
+	int set_interrupt_priority(int priority, int request = I_MCU_SETACTION);
 
 #if !defined __link
-    /*! \details Configures the device to send a signal when an event happens.
-     *
-     * @param signal The signal to send
-     * @param o_events A bitmask of events which will cause the signal to be sent
-     * @param channel The hardware channel to listen for events on
-     *
-     */
-    int set_signal_action(const DeviceSignal & signal, u32 o_events, u32 channel){
-        mcu_action_t action = signal.create_action(o_events, channel);
-        return ioctl(I_MCU_SETACTION, &action);
-    }
+	/*! \details Configures the device to send a signal when an event happens.
+	 *
+	 * @param signal The signal to send
+	 * @param o_events A bitmask of events which will cause the signal to be sent
+	 * @param channel The hardware channel to listen for events on
+	 *
+	 */
+	int set_signal_action(const DeviceSignal & signal, u32 o_events, u32 channel){
+		mcu_action_t action = signal.create_action(o_events, channel);
+		return ioctl(I_MCU_SETACTION, &action);
+	}
 
 	/*! \details Reads the device asynchronously.
-     *
-     * @param aio A reference to the sys::Aio object to use for reading
+	 *
+	 * @param aio A reference to the sys::Aio object to use for reading
 	 *
 	 * \sa sys::Aio
 	 */
-    virtual int read(sys::Aio & aio) const;
+	virtual int read(sys::Aio & aio) const;
 
 	/*! \details Writes the device asynchronously.
 	 *
-     * @param aio A reference to the sys::Aio object to use for writing
-     *
+	 * @param aio A reference to the sys::Aio object to use for writing
+	 *
 	 * \sa sys::Aio
 	 */
-    virtual int write(sys::Aio & aio) const;
+	virtual int write(sys::Aio & aio) const;
 
 
 	using File::read;

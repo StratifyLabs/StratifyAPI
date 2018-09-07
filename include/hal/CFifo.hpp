@@ -17,18 +17,18 @@ namespace hal {
  */
 class CFifoInfo : public api::HalInfoObject {
 public:
-    CFifoInfo(){ memset(&m_info, 0, sizeof(cfifo_info_t)); }
-    CFifoInfo(const cfifo_info_t & info){ m_info = info; }
+	CFifoInfo(){ memset(&m_info, 0, sizeof(cfifo_info_t)); }
+	CFifoInfo(const cfifo_info_t & info){ m_info = info; }
 
-    u32 o_flags() const { return m_info.o_flags; }
-    u16 count() const { return m_info.count; }
-    u16 size() const { return m_info.size; }
-    u32 o_ready() const { return m_info.o_ready; }
+	u32 o_flags() const { return m_info.o_flags; }
+	u16 count() const { return m_info.count; }
+	u16 size() const { return m_info.size; }
+	u32 o_ready() const { return m_info.o_ready; }
 
-    operator const cfifo_info_t & () const { return m_info; }
+	operator const cfifo_info_t & () const { return m_info; }
 private:
-    friend class CFifo;
-    cfifo_info_t m_info;
+	friend class CFifo;
+	cfifo_info_t m_info;
 };
 
 /*! \brief Channeled FIFO Class
@@ -94,7 +94,8 @@ public:
 	 * @param channel The FIFO channel to initialize
 	 * @return Zero on success
 	 */
-	int init(int channel) const;
+	int initialize(int channel) const;
+	int init(int channel) const	{ return initialize(channel); }
 
 	/*! \details Flushes the FIFO specified by \a channel.
 	 *
@@ -118,8 +119,8 @@ public:
 	 */
 	int get_info(int channel, fifo_info_t & info) const;
 
-    /*! \details Returns the Fifo info for the specified channel. */
-    FifoInfo get_info(int channel);
+	/*! \details Returns the Fifo info for the specified channel. */
+	FifoInfo get_info(int channel);
 
 	/*! \details Sets the FIFO attributes specified by \a channel.
 	 *
@@ -127,7 +128,8 @@ public:
 	 * @param attr A reference to the fifo attributes
 	 * @return
 	 */
-	int set_attr(int channel, const fifo_attr_t & attr) const;
+	int set_attributes(int channel, const fifo_attr_t & attr) const;
+	int set_attr(int channel, const fifo_attr_t & attr) const { return set_attributes(channel, attr); }
 
 	/*! \details Enables or disables write blocking on the FIFO specified by \a channel.
 	 *

@@ -51,7 +51,7 @@ class UartPinAssignment : public PinAssignment<uart_pin_assignment_t>{};
  * \sa hal::Uart
  *
  */
-class UartAttr : public PinAssignmentPeriphAttr<uart_attr_t, uart_pin_assignment_t> {
+class UartAttributes : public PinAssignmentPeriphAttr<uart_attr_t, uart_pin_assignment_t> {
 public:
 
 	/*! \details Accesses the tx pin assignment value. */
@@ -101,6 +101,8 @@ public:
 	 */
 	void set_width(u8 bits){ m_attr.width = bits; }
 };
+
+typedef UartAttributes UartAttr;
 
 /*! \brief UART Class
  * \details This class implements a serial UART port.
@@ -192,24 +194,24 @@ public:
 	Uart(port_t port);
 
 	enum {
-        FLAG_SET_LINE_CODING = UART_FLAG_SET_LINE_CODING,
-        FLAG_IS_STOP1 = UART_FLAG_IS_STOP1,
-        FLAG_IS_STOP2 = UART_FLAG_IS_STOP2,
-        FLAG_IS_STOP0_5 = UART_FLAG_IS_STOP0_5,
-        FLAG_IS_STOP1_5 = UART_FLAG_IS_STOP1_5,
-        FLAG_IS_PARITY_NONE = UART_FLAG_IS_PARITY_NONE,
-        FLAG_IS_PARITY_ODD = UART_FLAG_IS_PARITY_ODD,
-        FLAG_IS_PARITY_EVEN = UART_FLAG_IS_PARITY_EVEN,
+		FLAG_SET_LINE_CODING = UART_FLAG_SET_LINE_CODING,
+		FLAG_IS_STOP1 = UART_FLAG_IS_STOP1,
+		FLAG_IS_STOP2 = UART_FLAG_IS_STOP2,
+		FLAG_IS_STOP0_5 = UART_FLAG_IS_STOP0_5,
+		FLAG_IS_STOP1_5 = UART_FLAG_IS_STOP1_5,
+		FLAG_IS_PARITY_NONE = UART_FLAG_IS_PARITY_NONE,
+		FLAG_IS_PARITY_ODD = UART_FLAG_IS_PARITY_ODD,
+		FLAG_IS_PARITY_EVEN = UART_FLAG_IS_PARITY_EVEN,
 
-        SET_LINE_CODING_DEFAULT /*! See \ref UART_FLAG_SET_LINE_CODING_DEFAULT */ = UART_FLAG_SET_LINE_CODING_DEFAULT,
-        SET_LINE_CODING /*! See \ref UART_FLAG_SET_LINE_CODING */ = UART_FLAG_SET_LINE_CODING,
-        IS_STOP1 /*! See \ref UART_FLAG_IS_STOP1 */ = UART_FLAG_IS_STOP1,
-        IS_STOP2 /*! See \ref UART_FLAG_IS_STOP2 */ = UART_FLAG_IS_STOP2,
-        IS_STOP0_5 /*! See \ref UART_FLAG_IS_STOP0_5 */ = UART_FLAG_IS_STOP0_5,
-        IS_STOP1_5 /*! See \ref UART_FLAG_IS_STOP1_5 */ = UART_FLAG_IS_STOP1_5,
-        IS_PARITY_NONE /*! See \ref UART_FLAG_IS_PARITY_NONE */ = UART_FLAG_IS_PARITY_NONE,
-        IS_PARITY_ODD /*! See \ref UART_FLAG_IS_PARITY_ODD */ = UART_FLAG_IS_PARITY_ODD,
-        IS_PARITY_EVEN /*! See \ref UART_FLAG_IS_PARITY_EVEN */ = UART_FLAG_IS_PARITY_EVEN,
+		SET_LINE_CODING_DEFAULT /*! See \ref UART_FLAG_SET_LINE_CODING_DEFAULT */ = UART_FLAG_SET_LINE_CODING_DEFAULT,
+		SET_LINE_CODING /*! See \ref UART_FLAG_SET_LINE_CODING */ = UART_FLAG_SET_LINE_CODING,
+		IS_STOP1 /*! See \ref UART_FLAG_IS_STOP1 */ = UART_FLAG_IS_STOP1,
+		IS_STOP2 /*! See \ref UART_FLAG_IS_STOP2 */ = UART_FLAG_IS_STOP2,
+		IS_STOP0_5 /*! See \ref UART_FLAG_IS_STOP0_5 */ = UART_FLAG_IS_STOP0_5,
+		IS_STOP1_5 /*! See \ref UART_FLAG_IS_STOP1_5 */ = UART_FLAG_IS_STOP1_5,
+		IS_PARITY_NONE /*! See \ref UART_FLAG_IS_PARITY_NONE */ = UART_FLAG_IS_PARITY_NONE,
+		IS_PARITY_ODD /*! See \ref UART_FLAG_IS_PARITY_ODD */ = UART_FLAG_IS_PARITY_ODD,
+		IS_PARITY_EVEN /*! See \ref UART_FLAG_IS_PARITY_EVEN */ = UART_FLAG_IS_PARITY_EVEN,
 	};
 
 	/*! \details Reads a single byte (if available from the UART).  Upon

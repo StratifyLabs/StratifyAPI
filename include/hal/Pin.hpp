@@ -57,7 +57,7 @@ public:
 	}
 
 	/*! \details Contructs a new pin object from an mcu_pin_t data structure. */
-    Pin(const mcu_pin_t & p) : Pio(p.port) { m_pinmask = 1<<p.pin; }
+	Pin(const mcu_pin_t & p) : Pio(p.port) { m_pinmask = 1<<p.pin; }
 
 	using Pio::set_attr;
 
@@ -128,21 +128,21 @@ public:
 		return *this;
 	}
 
-    /*! \details Returns true if the pin is high and false if it is low.
-     *
-     * This allows the following code to work:
-     * \code
-     * Pin button;
-     *
-     * if( button ){
-     *   printf("Button is logic high\n");
-     * } else {
-     *   printf("Button is logic low\n");
-     * }
-     * \endcode
-     *
-     */
-    operator bool(){ return get_value(); }
+	/*! \details Returns true if the pin is high and false if it is low.
+	 *
+	 * This allows the following code to work:
+	 * \code
+	 * Pin button;
+	 *
+	 * if( button ){
+	 *   printf("Button is logic high\n");
+	 * } else {
+	 *   printf("Button is logic low\n");
+	 * }
+	 * \endcode
+	 *
+	 */
+	operator bool(){ return get_value(); }
 
 	/*! \details Assigns a boolean to the pin.
 	 *
@@ -170,14 +170,14 @@ public:
 	/*! \details Accesses the pin's associated Pio pinmask. */
 	u32 pinmask() const { return m_pinmask; }
 
-    static bool is_floating(mcu_pin_t pin){
-        Pin p(pin);
-        p.set_input(Pin::IS_PULLUP);
-        if( p == false ){ return false; }
-        p.set_attr(Pin::IS_PULLDOWN);
-        if( p == true ){ return false; }
-        return true;
-    }
+	static bool is_floating(mcu_pin_t pin){
+		Pin p(pin);
+		p.set_input(Pin::IS_PULLUP);
+		if( p == false ){ return false; }
+		p.set_attr(Pin::IS_PULLDOWN);
+		if( p == true ){ return false; }
+		return true;
+	}
 
 private:
 	u32 m_pinmask;

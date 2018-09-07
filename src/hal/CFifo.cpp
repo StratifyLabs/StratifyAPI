@@ -51,14 +51,14 @@ FifoInfo CFifo::get_info(int channel){
 }
 
 
-int CFifo::set_attr(int channel, const fifo_attr_t & attr) const {
+int CFifo::set_attributes(int channel, const fifo_attr_t & attr) const {
 	cfifo_fifoattr_t fifo_attr;
 	fifo_attr.channel = channel;
 	fifo_attr.attr = attr;
 	return ioctl(I_CFIFO_FIFOSETATTR, &fifo_attr);
 }
 
-int CFifo::init(int channel) const {
+int CFifo::initialize(int channel) const {
 	cfifo_fiforequest_t request;
 	request.channel = channel;
 	return ioctl(I_CFIFO_FIFOINIT, &request);}

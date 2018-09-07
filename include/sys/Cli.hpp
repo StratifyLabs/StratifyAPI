@@ -200,7 +200,7 @@ public:
 	 * - "-cts [X.Y]" (optional port.pin, uses system default otherwise)
 	 *
 	 */
-	bool handle_uart(hal::UartAttr & attr) const;
+	bool handle_uart(hal::UartAttributes & attr) const;
 
 	/*! \details Handles arguments for setting I2C attributes.
 	 *

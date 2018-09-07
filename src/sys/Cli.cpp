@@ -160,7 +160,7 @@ int Cli::value_at(u16 value) const {
 	return at(value).atoi();
 }
 
-bool Cli::handle_uart(hal::UartAttr & attr) const {
+bool Cli::handle_uart(hal::UartAttributes & attr) const {
 	if( is_option("-uart") ){
 		u32 o_flags = hal::Uart::FLAG_SET_LINE_CODING;
 		attr.set_port(get_option_value("-uart"));

@@ -13,26 +13,26 @@ namespace hal {
 
 class SerialNumber {
 public:
-    SerialNumber();
+	SerialNumber();
 
-    SerialNumber(const u32 serial_number[4]){
-        memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4);
-    }
+	SerialNumber(const u32 serial_number[4]){
+		memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4);
+	}
 
-    int get();
+	int get();
 
-    static SerialNumber from_string(const char * str);
+	static SerialNumber from_string(const char * str);
 
 
-    SerialNumber& operator = (const char * str);
+	SerialNumber& operator = (const char * str);
 
-    bool operator == (const SerialNumber & serial_number);
+	bool operator == (const SerialNumber & serial_number);
 
-    void print() const;
-    var::String to_string() const;
+	void print() const;
+	var::String to_string() const;
 
 private:
-    mcu_sn_t m_serial_number;
+	mcu_sn_t m_serial_number;
 };
 
 /*!
@@ -40,24 +40,24 @@ private:
  */
 class CoreInfo : public api::HalInfoObject {
 public:
-    /*! \details Constructs an empty Core Info object. */
-    CoreInfo(){ memset(&m_info, 0, sizeof(m_info)); }
+	/*! \details Constructs an empty Core Info object. */
+	CoreInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 
-    /*! \details Constructs a Core Info object from a core_info_t data structure. */
-    CoreInfo(const core_info_t & info){
-        m_info = info;
-    }
+	/*! \details Constructs a Core Info object from a core_info_t data structure. */
+	CoreInfo(const core_info_t & info){
+		m_info = info;
+	}
 
-    /*! \details Returns the events that are supported by the core. */
-    u32 o_events() const { return m_info.o_events; }
-    /*! \details Returns the flags that are supported by the core. */
-    u32 o_flags() const { return m_info.o_flags; }
+	/*! \details Returns the events that are supported by the core. */
+	u32 o_events() const { return m_info.o_events; }
+	/*! \details Returns the flags that are supported by the core. */
+	u32 o_flags() const { return m_info.o_flags; }
 
-    /*! \details Returns the serial number of the MCU. */
-    SerialNumber serial_number() const{ return SerialNumber(m_info.serial_number); }
+	/*! \details Returns the serial number of the MCU. */
+	SerialNumber serial_number() const{ return SerialNumber(m_info.serial_number); }
 
 private:
-    core_info_t m_info;
+	core_info_t m_info;
 };
 
 /*! \brief Core Class
@@ -132,7 +132,7 @@ public:
 	 *
 	 * @param port The core port (zero for all single core devices)
 	 */
-    Core(port_t port);
+	Core(port_t port);
 
 	/*! \details Changes pin functionality using a core_pinfunc_t structure. */
 	int set_pin_function(const core_pinfunc_t & req);

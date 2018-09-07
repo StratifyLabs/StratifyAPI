@@ -24,99 +24,94 @@ class I2SPinAssignment : public PinAssignment<i2s_pin_assignment_t>{};
  * \sa hal::I2C
  *
  */
-class I2SAttr : public PinAssignmentPeriphAttr<i2s_attr_t, i2s_pin_assignment_t> {
+class I2SAttributes : public PinAssignmentPeriphAttr<i2s_attr_t, i2s_pin_assignment_t> {
 public:
 
-    /*! \details Accesses the serial data input pin assignment value. */
-    mcu_pin_t sdin() const { return m_attr.pin_assignment.sdin; }
-    /*! \details Access the serial data output pin assignment value. */
-    mcu_pin_t sdout() const { return m_attr.pin_assignment.sdout; }
+	/*! \details Accesses the serial data input pin assignment value. */
+	mcu_pin_t sdin() const { return m_attr.pin_assignment.sdin; }
+	/*! \details Access the serial data output pin assignment value. */
+	mcu_pin_t sdout() const { return m_attr.pin_assignment.sdout; }
 
-    /*! \details Sets the SDA pin assignment value. */
-    void set_sdin(const mcu_pin_t & pin){ m_attr.pin_assignment.sdin = pin;}
+	/*! \details Sets the SDA pin assignment value. */
+	void set_sdin(const mcu_pin_t & pin){ m_attr.pin_assignment.sdin = pin;}
 
-    /*! \details Sets the SCL pin assignment value. */
-    void set_sdout(const mcu_pin_t & pin){ m_attr.pin_assignment.sdout = pin;}
+	/*! \details Sets the SCL pin assignment value. */
+	void set_sdout(const mcu_pin_t & pin){ m_attr.pin_assignment.sdout = pin;}
 
-    /*! \details Sets the SCL pin assignment value. */
-    void set_ws(const mcu_pin_t & pin){ m_attr.pin_assignment.ws = pin;}
+	/*! \details Sets the SCL pin assignment value. */
+	void set_ws(const mcu_pin_t & pin){ m_attr.pin_assignment.ws = pin;}
 
-    /*! \details Sets the SCL pin assignment value. */
-    void set_sck(const mcu_pin_t & pin){ m_attr.pin_assignment.sck = pin;}
+	/*! \details Sets the SCL pin assignment value. */
+	void set_sck(const mcu_pin_t & pin){ m_attr.pin_assignment.sck = pin;}
 
-    /*! \details Sets the SCL pin assignment value. */
-    void set_mck(const mcu_pin_t & pin){ m_attr.pin_assignment.mck = pin;}
+	/*! \details Sets the SCL pin assignment value. */
+	void set_mck(const mcu_pin_t & pin){ m_attr.pin_assignment.mck = pin;}
 
-    void set_freq(u32 frequency){ m_attr.freq = frequency; }
+	void set_freq(u32 frequency){ m_attr.freq = frequency; }
 
-    void set_flags(u32 o_flags){ m_attr.o_flags = o_flags; }
+	void set_flags(u32 o_flags){ m_attr.o_flags = o_flags; }
 
 };
 
+typedef I2SAttributes I2SAttr;
+
 class I2S : public Periph<i2s_info_t, i2s_attr_t, 'I'> {
 public:
-    I2S(port_t port);
+	I2S(port_t port);
 
-    enum {
-        IS_WIDTH_8 /*! I2S Word Width 8 bits */ = I2S_FLAG_IS_WIDTH_8,
-        IS_WIDTH_16 /*! I2S Word Width 16 bits */ = I2S_FLAG_IS_WIDTH_16,
-        IS_WIDTH_24 /*! I2S Word Width 24 bits */ = I2S_FLAG_IS_WIDTH_24,
-        IS_WIDTH_32 /*! I2S Word Width 32 bits */ = I2S_FLAG_IS_WIDTH_32,
-        IS_MONO /*! I2S Mono mode */ = I2S_FLAG_IS_MONO,
-        IS_STEREO /*! I2S Stereo mode (default behavoir) */ = I2S_FLAG_IS_STEREO,
-        SET_MASTER /*! Set the I2S as a master */ = I2S_FLAG_SET_MASTER,
-        SET_SLAVE /*! Set the I2S as a slave */ = I2S_FLAG_SET_SLAVE,
-        IS_TRANSMITTER /*! Set the I2S transmitter (master or slave) */ = I2S_FLAG_IS_TRANSMITTER,
-        IS_RECEIVER /*! Set the I2S receiver (master or slave) */ = I2S_FLAG_IS_RECEIVER,
-        IS_FORMAT_MSB /*! Set this bit for MSB format */ = I2S_FLAG_IS_FORMAT_MSB,
-        IS_FORMAT_LSB /*! Set this bit for LSB format */ = I2S_FLAG_IS_FORMAT_LSB,
-        IS_MCK_ENABLED /*! Set this bit to enable the mclk output */ = I2S_FLAG_IS_MCK_ENABLED,
-        IS_FORMAT_PCM_SHORT /*! Set this bit for PCM Short format*/ = I2S_FLAG_IS_FORMAT_PCM_SHORT,
-        IS_FORMAT_PCM_LONG /*! Set this bit for PCM Long format*/ = I2S_FLAG_IS_FORMAT_PCM_LONG,
-        IS_WIDTH_16_EXTENDED /*! I2S has 16-bits of data in 32-bit blocks */ = I2S_FLAG_IS_WIDTH_16_EXTENDED
+	enum {
+		IS_WIDTH_8 /*! I2S Word Width 8 bits */ = I2S_FLAG_IS_WIDTH_8,
+		IS_WIDTH_16 /*! I2S Word Width 16 bits */ = I2S_FLAG_IS_WIDTH_16,
+		IS_WIDTH_24 /*! I2S Word Width 24 bits */ = I2S_FLAG_IS_WIDTH_24,
+		IS_WIDTH_32 /*! I2S Word Width 32 bits */ = I2S_FLAG_IS_WIDTH_32,
+		IS_MONO /*! I2S Mono mode */ = I2S_FLAG_IS_MONO,
+		IS_STEREO /*! I2S Stereo mode (default behavoir) */ = I2S_FLAG_IS_STEREO,
+		SET_MASTER /*! Set the I2S as a master */ = I2S_FLAG_SET_MASTER,
+		SET_SLAVE /*! Set the I2S as a slave */ = I2S_FLAG_SET_SLAVE,
+		IS_TRANSMITTER /*! Set the I2S transmitter (master or slave) */ = I2S_FLAG_IS_TRANSMITTER,
+		IS_RECEIVER /*! Set the I2S receiver (master or slave) */ = I2S_FLAG_IS_RECEIVER,
+		IS_FORMAT_MSB /*! Set this bit for MSB format */ = I2S_FLAG_IS_FORMAT_MSB,
+		IS_FORMAT_LSB /*! Set this bit for LSB format */ = I2S_FLAG_IS_FORMAT_LSB,
+		IS_MCK_ENABLED /*! Set this bit to enable the mclk output */ = I2S_FLAG_IS_MCK_ENABLED,
+		IS_FORMAT_PCM_SHORT /*! Set this bit for PCM Short format*/ = I2S_FLAG_IS_FORMAT_PCM_SHORT,
+		IS_FORMAT_PCM_LONG /*! Set this bit for PCM Long format*/ = I2S_FLAG_IS_FORMAT_PCM_LONG,
+		IS_WIDTH_16_EXTENDED /*! I2S has 16-bits of data in 32-bit blocks */ = I2S_FLAG_IS_WIDTH_16_EXTENDED
 
-    };
+	};
 
-    /*! \details Sets the attributes of the I2C bus.
-     *
-     * @param o_flags Flag bitmask
-     * @param freq Bitrate
-     * @param pin_assignment Pin assignment or null to use default pin assignment
-     * @return Zero on success
-     */
-    int set_attr(u32 o_flags, u32 freq, u32 mck_mult = 256, const i2s_pin_assignment_t * pin_assignment = 0){
-        i2s_attr_t attr;
-        attr.o_flags = o_flags;
-        attr.mck_mult = mck_mult;
-        attr.freq = freq;
-        if( pin_assignment != 0 ){
-            memcpy(&attr.pin_assignment, pin_assignment, sizeof(i2s_pin_assignment_t));
-        } else {
-            memset(&attr.pin_assignment, 0xff, sizeof(i2s_pin_assignment_t));
-        }
-        return set_attr(attr);
-    }
+	int set_attr(u32 o_flags, u32 freq, u32 mck_mult = 256, const i2s_pin_assignment_t * pin_assignment = 0){
+		i2s_attr_t attr;
+		attr.o_flags = o_flags;
+		attr.mck_mult = mck_mult;
+		attr.freq = freq;
+		if( pin_assignment != 0 ){
+			memcpy(&attr.pin_assignment, pin_assignment, sizeof(i2s_pin_assignment_t));
+		} else {
+			memset(&attr.pin_assignment, 0xff, sizeof(i2s_pin_assignment_t));
+		}
+		return set_attr(attr);
+	}
 
-    /*! \details This method initializes the I2C port.
-     *
-     * @param o_flags Flag bitmask
-     * @param freq Bitrate
-     * @param pin_assignment Pin assignment or null to use default pin assignment
-     * @return Zero on success
-     *
-     * This method calls open() then set_attr().
-     *
-     */
-    int init(u32 o_flags, u32 freq, u32 mck_mult = 256, const i2s_pin_assignment_t * pin_assignment = 0){
-        if( open() < 0 ){
-            return -1;
-        }
-        return set_attr(o_flags, freq, mck_mult, pin_assignment);
-    }
+	/*! \details This method initializes the I2C port.
+	 *
+	 * @param o_flags Flag bitmask
+	 * @param freq Bitrate
+	 * @param pin_assignment Pin assignment or null to use default pin assignment
+	 * @return Zero on success
+	 *
+	 * This method calls open() then set_attr().
+	 *
+	 */
+	int init(u32 o_flags, u32 freq, u32 mck_mult = 256, const i2s_pin_assignment_t * pin_assignment = 0){
+		if( open() < 0 ){
+			return -1;
+		}
+		return set_attr(o_flags, freq, mck_mult, pin_assignment);
+	}
 
 
-    using Periph::init;
-    using Periph::set_attr;
+	using Periph::init;
+	using Periph::set_attr;
 
 
 private:
