@@ -92,7 +92,6 @@ var::Vector<var::String> Link::get_port_list(){
         last_device = device_name;
     }
 
-    result.set_transfer_ownership();
     return result;
 }
 
@@ -113,7 +112,6 @@ var::Vector<LinkInfo> Link::get_info_list(){
         }
     }
 
-    result.set_transfer_ownership();
     return result;
 }
 
@@ -564,7 +562,6 @@ var::Vector<var::String> Link::get_dir_list(const var::ConstString & directory){
         m_error_message.sprintf("Failed to close dir (%d)", link_errno);
     }
 
-    list.set_transfer_ownership();
     return list;
 }
 

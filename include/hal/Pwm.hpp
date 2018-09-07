@@ -17,7 +17,7 @@ class PwmAttributes : public PinAssignmentPeriphAttr<pwm_attr_t, pwm_pin_assignm
 public:
 	//period, channel
 
-	PwmAttr(){
+	PwmAttributes(){
 		m_attr.channel = mcu_channel(-1, -1);
 	}
 
