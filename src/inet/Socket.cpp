@@ -15,8 +15,10 @@ SocketAddress::SocketAddress(const var::ConstString& ipaddr, int port) {
 }
 
 Socket::Socket(){
+#if defined __win32
     m_listen_socket=INVALID_SOCKET;
     m_connect_socket=INVALID_SOCKET;
+#endif
 }
 
 #if defined __win32
@@ -33,17 +35,14 @@ int Socket::create() {
 }
 #endif
 
-int Socket::create(const SocketAddress & address, bool blocking, int proto){
 #if defined __win32
+int Socket::create(const SocketAddress & address, bool blocking, int proto){
     create();
     memcpy((void*)&(m_sockaddress.m_address),(void*)&(address.m_address), sizeof(address.m_address));
     printf("Ip addr=%s\n",inet_ntoa(((struct sockaddr_in*)&(m_sockaddress.m_address))->sin_addr));
     return WS_OK;
-#else
-
-    return -1;
-#endif
 }
+#endif
 
 int Socket::listen(){
 #if defined __win32
@@ -108,8 +107,8 @@ int Socket::listen(){
 #endif
 }
 
-int Socket::accept(){
 #if defined __win32
+int Socket::accept(){
     int ret;
     int send_result;
     char recv_buf[512];
@@ -167,10 +166,8 @@ int Socket::accept(){
 //        WSACleanup();
 
         return 0;
-#else
-    return -1;
-#endif
 }
+#endif
 
 //int Socket::connect(const char *host,
 //                    const char *port, int proto){
@@ -303,6 +300,7 @@ int Socket::connect() {
 #endif
 }
 
+#if defined __win32
 int Socket::send(SOCKET socket, var::ConstString send_buffer, int buffer_length) {
     printf("Send : buffer length=%d\n",buffer_length);
     printf("Send : message - %s\n",send_buffer.c_str());
@@ -342,9 +340,12 @@ void Socket::close_socket() {
     WSACleanup();
 }
 
+
 Socket::~Socket() {
     close_socket();
 }
+#endif
+
 
 
 //TODO:1)Move target_link_libraries(lws2_32.a) from CMakefiles.txt of sl to StratifyAPI

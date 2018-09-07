@@ -53,7 +53,7 @@ public:
      *
      * @return        - none
      */
-    SocketAddress(const var::ConstString& ipaddr, int port);
+    SocketAddress(const var::ConstString & ipaddr, int port);
     SocketAddress(){}
 
 
@@ -101,6 +101,74 @@ private:
     u32 m_address;
 };
 
+/*
+ * \tg
+ *
+ * This object should contain everything needed
+ * to create a socket so Socket::create becomes
+ *
+ * int Socket::create(const SocketAttributes & attributes);
+ *
+ *
+ */
+class SocketAttributes : public api::InetInfoObject {
+public:
+
+    SocketAttributes(){
+        m_family = FAMILY_NONE;
+        //init the rest
+    }
+
+    bool is_valid() const {
+        //check other members for invalid settings
+        return m_family != FAMILY_NONE;
+    }
+
+    enum family {
+        FAMILY_NONE,
+        FAMILY_INET
+    };
+
+    enum type {
+        TYPE_NONE,
+        TYPE_STREAM
+    };
+
+    enum protocol {
+        PROTOCOL_TCP,
+        PROTOCOL_UDP
+    };
+
+    //these may need to be Or'd so an anonymous enum is OK
+    enum {
+        FLAG_PASSIVE
+    };
+
+    //need functions to set these
+    void set_family(enum family value){ m_family = value; }
+
+    int flags() const { return m_flags; }
+    int family() const { return m_family; }
+    int protocol() const { return m_protocol; }
+    int type() const { return m_type; }
+
+    //allows read access
+    const Ipv4Address & ipv4_address() const { return m_ipv4_address; }
+    //allows write access
+    Ipv4Address & ipv4_address(){ return m_ipv4_address; }
+
+private:
+    Ipv4Address m_ipv4_address;
+    //family
+    enum family m_family;
+    //type
+    int m_type;
+    //protocol
+    int m_protocol;
+    //flags
+    int m_flags;
+
+};
 
 
 
@@ -115,12 +183,21 @@ private:
  * SOCKET and throwing an error. I had to move the class definition under the ifdef for
  * that reason. We should address that.
  *
+ * \tg You should be able to do ::SOCKET to push the definition to
+ * the global scope. If that doesn't work change the enum in File to FILE_SOCKET
+ *
+ * Also please look closely at sys::File and how it reads and writes data.
+ * The Socket class should be able to read and write data in a very similar
+ * manner (like using int File::write(const var::Data & data))
+ *
+ *
  */
 #ifdef __win32
 class Socket  {
 public:
     Socket();
     ~Socket();
+
 
     /**
      * \details        Initializes WS2_32.dll.
@@ -155,10 +232,15 @@ public:
      *
      * The list should match: https://stratifylabs.co/StratifyOS/html/group___e_r_r_n_o.html
      *
-     * \ck should I do this now?
+     * \ck should I do this now? Yes :)
+     *
+     *
+     * \tg Try implementing int create(const SocketAttributes & attributes) which
+     * should call ::socket() and store the result in the m_socket member
+     * variable. It should turn -1 if ::socket() fails.
      *
      */
-
+    int create(const SocketAttributes & attributes);
     int create(const SocketAddress & address, bool blocking, int proto);
 
 
@@ -178,6 +260,17 @@ public:
      * @return        - -1 if failed.
      *                  int socket descriptor if the connection was successful.
      */
+
+    /*
+     * \tg
+     * This method should only listen on the socket. It shouldn't
+     * bind() or create the socket. Just listen.  There should be
+     * another method for bind().
+     *
+     * the create() method should be equivalent to calling socket()
+     *
+     *
+     */
     int listen();
 
     /**
@@ -189,6 +282,20 @@ public:
      */
     int accept();
 
+    /*
+     * \tg
+     * Please look at how the comments are done on all the other
+     * modules and follow the same format. Use *! instead of ** when
+     * starting comment blocks
+     *
+     * \details Sends data on the connected socket. Details should
+     * start with a capital letter and end with a period.
+     *
+     *
+     *
+     *
+     */
+
     /**
      * \details       sends data on the connected socket
      *
@@ -198,6 +305,30 @@ public:
      *
      * @return        - -1 if failed.
      *                  number of bytes sent if successful.
+     */
+
+    /*
+     *
+     * \tg
+     * `SOCKET socket` should be a member variable called m_socket.
+     *
+     * So this API would then be int send(const var::ConstString & send_buffer);
+     *
+     * You don't need to pass socket because you will just use m_socket.
+     *
+     * You don't need to pass the lenght because you can use send_buffer.length()
+     *
+     * So the code would look like this:
+     *
+     * \code
+     * Socket s;
+     * s.connect();
+     * s.send("Hello World");
+     *
+     * \endcode
+     *
+     *
+     *
      */
     int send(SOCKET socket, var::ConstString send_buffer, int buffer_length);
 
@@ -217,14 +348,61 @@ public:
      * \details       closes all the sockets and cleans ws2_32 lib
      *
      */
+
+    /*
+     * \tgil
+     *
+     * This should just be close();
+     *
+     * Example:
+     *
+     * Socket s;
+     * s.connect();
+     * s.close();
+     *
+     *
+     */
     void close_socket();
 
 private:
     SocketAddress m_sockaddress;
+
+
+    /*
+     * \tgil
+     *
+     * You should only have one member socket (m_socket) per
+     * Socket object.
+     *
+     * If you need a socket for listening and one for connecting,
+     * you would instantiate two sockets.
+     *
+     * Socket listen_socket;
+     * Socket connect_socket;
+     *
+     * listen_socket.listen();
+     * connect_socket.connect();
+     *
+     * connect_socket.send("Hello");
+     *
+     *
+     *
+     *
+     */
     SOCKET m_listen_socket;
     SOCKET m_connect_socket;
 };
 #else
+
+/*
+ * \tg The socket API above will eventually
+ * be the same as the one below.  The only
+ * place we should really need to say
+ * #if defined __win32 is for declaring
+ * the ::SOCKET member variable m_socket.
+ *
+ *
+ */
 class Socket : public sys::File {
 public:
     Socket();
@@ -233,15 +411,20 @@ public:
     int init();
 
     /*! \details Opens a new socket. */
-    int create(const SocketAddress & address);
+    int create(const SocketAttributes & attributes); //calls ::socket() - calls File::set_fileno();
 
+    int connect(); //calls ::connect()
+    int listen(); //calls ::listen()
+    Socket accept(); //calls ::accept(m_socket); and returns a new Socket
+    int bind(); //calls ::bind()
 
-    int connect();
-    int listen();
-    int accept();
-
+    //read and write are inherited from sys::File and will work without any additional methods
 
 private:
+
+#if defined __win32
+    ::SOCKET m_socket;
+#endif
 
 };
 #endif

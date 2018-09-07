@@ -7,16 +7,16 @@
 
 namespace hal {
 
-class FFifoAttr : public api::HalInfoObject {
+class FFifoAttributes : public api::HalInfoObject {
 public:
 
     /*! \details Constructs an object set to all zeros. */
-    FFifoAttr(){
+    FFifoAttributes(){
         memset(&m_ffifo_attr, 0, sizeof(ffifo_attr_t));
     }
 
     /*! \details Constructs an object from a ffifo_attr_t data structure. */
-    FFifoAttr(const ffifo_attr_t & attr){
+    FFifoAttributes(const ffifo_attr_t & attr){
         memcpy(&m_ffifo_attr, &attr, sizeof(ffifo_attr_t));
     }
 
@@ -41,6 +41,8 @@ private:
     ffifo_attr_t m_ffifo_attr;
 };
 
+typedef FFifoAttributes FFifoAttr;
+
 /*! \brief FFIFO Info Class
  *
  */
@@ -61,7 +63,7 @@ public:
     bool is_valid() const { return m_ffifo_info.frame_size != 0; }
 
     /*! \details Returns the number of frames in the framed FIFO. */
-    u16 frame_count() const { return m_ffifo_info.count; }
+    u16 frame_count() const { return m_ffifo_info.frame_count; }
 
     /*! \details Returns the number of frames in the framed FIFO. */
     u16 frame_size() const { return m_ffifo_info.frame_size; }
@@ -70,7 +72,7 @@ public:
      *
      * This is the number of frames that is ready to be read.
      */
-    u16 frames_used() const { return m_ffifo_info.used; }
+    u16 frame_count_ready() const { return m_ffifo_info.frame_count_ready; }
 
     /*! \details Returns the total number of bytes used by the FFIFO buffer (frame size * frame count). */
     u32 size() const { return frame_size() * frame_count(); }

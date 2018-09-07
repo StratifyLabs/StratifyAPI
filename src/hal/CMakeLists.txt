@@ -17,6 +17,7 @@ set(SOURCELIST
 	${SOURCES_PREFIX}/Rtc.cpp
 	${SOURCES_PREFIX}/Spi.cpp
 	${SOURCES_PREFIX}/Switchboard.cpp
+	${SOURCES_PREFIX}/StreamFFifo.cpp
 	${SOURCES_PREFIX}/Tmr.cpp
 	${SOURCES_PREFIX}/Uart.cpp
   ${SOURCES_PREFIX}/Usb.cpp)

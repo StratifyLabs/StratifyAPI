@@ -16,10 +16,10 @@ namespace hal {
  */
 class TmrPinAssignment : public PinAssignment<tmr_pin_assignment_t>{};
 
-class TmrAttr {
+class TmrAttributes {
 public:
 
-	TmrAttr(){
+    TmrAttributes(){
 		m_port = 0;
 		memset(&m_attr, 0, sizeof(m_attr));
 		memset(&m_attr.pin_assignment, 0xff, sizeof(tmr_pin_assignment_t));
@@ -32,8 +32,9 @@ public:
 		if( channel < 4 ){ return m_attr.pin_assignment.channel[channel]; }
 		return mcu_pin(0xff, 0xff);
 	}
-	u32 freq() const { return m_attr.freq; }
-	u32 period() const { return m_attr.period; }
+    u32 frequency() const { return m_attr.freq; }
+    u32 freq() const { return frequency(); }
+    u32 period() const { return m_attr.period; }
 
 	void set_channel_pin(u8 channel, const mcu_pin_t & pin){
 		if( channel < 4 ){
@@ -42,8 +43,9 @@ public:
 	}
 	void set_port(u8 p){ m_port = p; }
 	void set_flags(u32 flags){ m_attr.o_flags = flags; }
-	void set_freq(u32 frequency){ m_attr.freq = frequency; }
-	void set_period(u32 period){ m_attr.period = period; }
+    void set_frequency(u32 frequency){ m_attr.freq = frequency; }
+    void set_freq(u32 frequency){ set_frequency(frequency); }
+    void set_period(u32 period){ m_attr.period = period; }
 	void set_channel(const mcu_channel_t & channel){
 		m_attr.channel = channel;
 	}
@@ -52,6 +54,8 @@ private:
 	u8 m_port;
 	tmr_attr_t m_attr;
 };
+
+typedef TmrAttributes TmrAttr;
 
 /*! \brief Tmr (hardware timer) Class
  * \details This class implements a hardware timer.  The Timer class implements
@@ -131,7 +135,17 @@ public:
         IS_CHANNEL_CLEAR_OUTPUT_ON_MATCH /*! See \ref TMR_FLAG_IS_CHANNEL_CLEAR_OUTPUT_ON_MATCH */ = TMR_FLAG_IS_CHANNEL_CLEAR_OUTPUT_ON_MATCH,
         IS_CHANNEL_TOGGLE_OUTPUT_ON_MATCH /*! See \ref TMR_FLAG_IS_CHANNEL_TOGGLE_OUTPUT_ON_MATCH */ = TMR_FLAG_IS_CHANNEL_TOGGLE_OUTPUT_ON_MATCH,
         IS_CHANNEL_PWM_MODE /*! See \ref TMR_FLAG_IS_CHANNEL_PWM_MODE */ = TMR_FLAG_IS_CHANNEL_PWM_MODE,
-	};
+        SET_TRIGGER /*! See \ref TMR_FLAG_SET_TRIGGER */ = TMR_FLAG_SET_TRIGGER,
+        IS_SLAVE /*! See \ref TMR_FLAG_IS_SLAVE */ = TMR_FLAG_IS_SLAVE,
+        IS_MASTER /*! See \ref TMR_FLAG_IS_MASTER */ = TMR_FLAG_IS_MASTER,
+        IS_TRIGGER_RELOAD /*! See \ref TMR_FLAG_IS_TRIGGER_RELOAD */ = TMR_FLAG_IS_TRIGGER_RELOAD,
+        IS_TRIGGER_RESET /*! See \ref TMR_FLAG_IS_TRIGGER_RESET */ = TMR_FLAG_IS_TRIGGER_RESET,
+        IS_TRIGGER_ENABLE /*! See \ref TMR_FLAG_IS_TRIGGER_ENABLE */ = TMR_FLAG_IS_TRIGGER_ENABLE,
+        IS_TRIGGER_OC0 /*! See \ref TMR_FLAG_IS_TRIGGER_OC0 */ = TMR_FLAG_IS_TRIGGER_OC0,
+        IS_TRIGGER_OC1 /*! See \ref TMR_FLAG_IS_TRIGGER_OC1 */ = TMR_FLAG_IS_TRIGGER_OC1,
+        IS_TRIGGER_OC2 /*! See \ref TMR_FLAG_IS_TRIGGER_OC2 */ = TMR_FLAG_IS_TRIGGER_OC2,
+        IS_TRIGGER_OC3 /*! See \ref TMR_FLAG_IS_TRIGGER_OC3 */ = TMR_FLAG_IS_TRIGGER_OC3,
+    };
 
 	/*! \details Turns the TMR on (start counting) */
 	int enable() const;

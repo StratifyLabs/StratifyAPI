@@ -12,7 +12,13 @@ namespace hal {
 /*! \brief ADC Attributes Class
  * \details This class is for containing ADC attributes.
  */
-class AdcAttr : public PinAssignmentPeriphAttr<adc_attr_t, adc_pin_assignment_t> {};
+class AdcAttributes : public PinAssignmentPeriphAttr<adc_attr_t, adc_pin_assignment_t> {
+public:
+
+
+};
+
+typedef AdcAttributes AdcAttr;
 
 /*! \brief ADC Pin Assignment
  * \details This class allows simple manipulation of the adc_pin_assignment_t.
@@ -59,7 +65,8 @@ public:
         IS_SCAN_MODE = ADC_FLAG_IS_SCAN_MODE /*! ADC will read every enabled channel when reading rather than the channel based on the location value */,
         IS_TRIGGER_EINT_EDGE_RISING = ADC_FLAG_IS_TRIGGER_EINT_EDGE_RISING,
         IS_TRIGGER_EINT_EDGE_FALLING = ADC_FLAG_IS_TRIGGER_EINT_EDGE_FALLING,
-        IS_GROUP = ADC_FLAG_IS_GROUP
+        IS_GROUP = ADC_FLAG_IS_GROUP,
+        IS_CONTINOUS_CONVERSION = ADC_FLAG_IS_CONTINOUS_CONVERSION
 
 	};
 

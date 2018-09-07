@@ -33,7 +33,8 @@ public:
 	 *
 	 * @return The number of bytes available for reading.
 	 */
-	u32 used() const { return m_info.used; }
+    u32 size_ready() const { return m_info.size_ready; }
+
 	/*! \details This method accesses the maximum number of bytes allocated for the FIFO.
 	 *
 	 */
