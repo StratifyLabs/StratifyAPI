@@ -77,7 +77,7 @@ void Messenger::listener(){
 		if( ret >= 0 ){
 			handle_message(son);
 		} else {
-			Timer::wait_msec(m_timeout_ms);
+			Timer::wait_milliseconds(m_timeout_ms);
 		}
 	}
 

@@ -48,7 +48,7 @@ class EintPinAssignment : public PinAssignment<eint_pin_assignment_t>{};
  * 		);
  *
  * 	while( done == 0 ){
- * 		Timer::wait_msec(1); //wait for the signal to arrive
+ * 		Timer::wait_milliseconds(1); //wait for the signal to arrive
  * 	}
  *
  * }

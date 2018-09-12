@@ -121,7 +121,6 @@ public:
      *
      */
     String& operator=(const String & a){
-		printf("copy assign\n");
 		copy_object(a);
 		set_string_pointer(Data::to_char());
         return *this;
@@ -133,7 +132,6 @@ public:
 	 *
 	 */
 	String & operator = (String && a){
-		printf("move assign\n");
 		move_object(a);
 		set_string_pointer(Data::to_char());
 		return *this;

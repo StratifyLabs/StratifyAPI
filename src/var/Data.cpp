@@ -110,8 +110,7 @@ void Data::move_object(Data & a){
 		set_needs_free();
 		a.clear_needs_free();
 	} else {
-		set((void*)a.data(), a.capacity(), a.is_read_only());
-		m_size = a.size();
+		set(a.to_void(), a.size(), a.is_read_only());
 	}
 }
 
@@ -216,77 +215,11 @@ void Data::fill(unsigned char d){
 	}
 }
 
-int Data::print(u32 o_flags) const {
-	const s8 * ptrs8 = (const s8*)data_const();
-	const s16 * ptrs16 = (const s16*)data_const();
-	const s32 * ptrs32 = (const s32*)data_const();
-	const u8 * ptru8 = (const u8*)data_const();
-	const u16 * ptru16 = (const u16*)data_const();
-	const u32 * ptru32 = (const u32*)data_const();
-
-	int s;
-	if( o_flags & PRINT_32 ){
-		s = size() / 4;
-	} else if( o_flags & PRINT_16 ){
-		s = size() / 2;
-	} else {
-		s = size();
-	}
-
-	int i;
-	for(i=0; i < s; i++){
-		printf("[%d]=", i);
-		if( o_flags & PRINT_HEX ){
-			if( o_flags & PRINT_32 ){
-				printf(F32X, ptru32[i]);
-			} else if( o_flags & PRINT_16 ){
-				printf("%X", ptru16[i]);
-			} else {
-				printf("%X", ptru8[i]);
-			}
-			printf(" ");
-		}
-		if( o_flags & PRINT_UNSIGNED ){
-			if( o_flags & PRINT_32 ){
-				printf(F32U, ptru32[i]);
-			} else if( o_flags & PRINT_16 ){
-				printf("%u", ptru16[i]);
-			} else {
-				printf("%u", ptru8[i]);
-			}
-			printf(" ");
-		}
-		if( o_flags & PRINT_SIGNED ){
-			if( o_flags & PRINT_32 ){
-				printf(F32D, ptrs32[i]);
-			} else if( o_flags & PRINT_16 ){
-				printf("%d", ptrs16[i]);
-			} else {
-				printf("%d", ptrs8[i]);
-			}
-			printf(" ");
-		}
-		if( o_flags & PRINT_CHAR ){
-			if( ptru8[i] == '\n' ){
-				printf(" \\n");
-			} else if( ptru8[i] == '\r' ){
-				printf(" \\r");
-			} else if( ptru8[i] == 0 ){
-				printf(" null");
-			} else if( ptru8[i] < 128){
-				printf(" %c", ptru8[i]);
-			}
-		}
-		printf("\n");
-	}
-	return capacity();
-}
-
 void Data::swap_byte_order(int size){
 
 	if( data() ){
 		if( size == 4 ){
-			u32 * p = (u32*)data();
+			u32 * p = to_u32();
 			if( p ){
 				u32 i;
 				for(i=0; i < capacity()/4; i++){
@@ -301,7 +234,7 @@ void Data::swap_byte_order(int size){
 				set_error_number(EINVAL);
 			}
 		} else {
-			u16 * p = (u16*)data();
+			u16 * p = to_u16();
 			if( p ){
 				u16 i;
 				for(i=0; i < capacity()/2; i++){

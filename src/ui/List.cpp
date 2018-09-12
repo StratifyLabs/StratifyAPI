@@ -109,7 +109,7 @@ void List::animate_scroll(i8 dir, const DrawingAttr & attr){
 			type = AnimationAttr::PUSH_UP;
 		}
 
-		if( m_scroll_timer.msec() < 250 ){
+		if( m_scroll_timer.milliseconds() < 250 ){
 			m_scroll_animation.set_step_total(scroll_animation_frames() * 2 / 3);
 			m_scroll_animation.set_path(AnimationAttr::LINEAR);
 		} else {

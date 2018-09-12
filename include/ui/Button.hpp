@@ -31,7 +31,7 @@ public:
      *  Button::set_held_duration( Button::max_held_duration() );
      *  \endcode
      */
-    static u32 max_held_duration(){ return (u32)-1; }
+	static chrono::MicroTime max_held_duration(){ return (u32)-1; }
 
 	/*! \details This method checks the state of the actuation and then returns
 	 * an Event if needed.

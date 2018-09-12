@@ -59,6 +59,7 @@ public:
 	/*! \details Contructs a new pin object from an mcu_pin_t data structure. */
 	Pin(const mcu_pin_t & p) : Pio(p.port) { m_pinmask = 1<<p.pin; }
 
+
 	using Pio::set_attr;
 
 	/*! \details Initializes the pin with the specified mode.
@@ -114,7 +115,11 @@ public:
 	 * @return Zero on success
 	 *
 	 */
-	int set_attr(u32 o_flags) const {
+	int set_attributes(u32 o_flags) const {
+		return Pio::set_attr(o_flags, m_pinmask);
+	}
+
+	int set_attr(u32 o_flags){
 		return Pio::set_attr(o_flags, m_pinmask);
 	}
 
@@ -142,7 +147,7 @@ public:
 	 * \endcode
 	 *
 	 */
-	operator bool(){ return get_value(); }
+	operator bool() const { return get_value(); }
 
 	/*! \details Assigns a boolean to the pin.
 	 *

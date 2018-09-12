@@ -54,6 +54,14 @@ class UartPinAssignment : public PinAssignment<uart_pin_assignment_t>{};
 class UartAttributes : public PinAssignmentPeriphAttr<uart_attr_t, uart_pin_assignment_t> {
 public:
 
+	UartAttributes(){}
+
+	UartAttributes(u32 o_flags, u32 freq = 115200, u32 width = 8){
+		set_flags(o_flags);
+		set_freq(freq);
+		set_width(width);
+	}
+
 	/*! \details Accesses the tx pin assignment value. */
 	mcu_pin_t tx() const { return m_attr.pin_assignment.tx; }
 	/*! \details Accesses the rx pin assignment value. */

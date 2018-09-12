@@ -48,7 +48,7 @@ namespace sys {
  *  //This thread keeps the processor -- so we can do something else in parallel
  *
  * 	while( aio.done() == false ){
- *  	Timer::wait_msec(5); //wait for the operation to complete
+ *  	Timer::wait_milliseconds(5); //wait for the operation to complete
  * 	}
  *
  * 	return 0;

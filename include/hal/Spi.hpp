@@ -97,14 +97,6 @@ public:
 	/*! \details swap a byte on the SPI bus */
 	int swap(int byte) const;
 
-	/*! \details Sets the SPI attributes.
-	 *
-	 * @param o_flags SPI Flags
-	 * @param freq SPI bitrate
-	 * @param width Data width
-	 * @param pin_assignment SPI pin assignment
-	 * @return Zero on success
-	 */
 	int set_attr(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0) const {
 		spi_attr_t attr;
 		attr.o_flags = o_flags;

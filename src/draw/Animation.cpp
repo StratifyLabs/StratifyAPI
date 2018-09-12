@@ -2,6 +2,8 @@
 
 #include "draw/Animation.hpp"
 #include "sys.hpp"
+#include "chrono.hpp"
+
 using namespace draw;
 
 AnimationAttr::AnimationAttr(){
@@ -129,7 +131,7 @@ int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
 
 	m_drawing_attr->bitmap().set_pen_flags(o_flags);
 	m_drawing_attr->bitmap().refresh();
-	Timer::wait_msec(frame_delay());
+	Timer::wait_milliseconds(frame_delay());
 
 	m_drawing_attr->bitmap().wait(1000);
 

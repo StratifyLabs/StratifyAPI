@@ -248,15 +248,43 @@ public:
 	 */
 	u32 capacity() const { return m_capacity; }
 
-	/*! \details Returns a pointer to the data.
+	/*! \details Returns a pointer to the data (read/write)
 	 * This will return zero if the data is readonly.
 	 *
-	 * \sa set()
+	 * \code
+	 * Data a(64); //allocate 64 bytes of data
+	 * u32 * value = a.to<u32>(); //casts data as u32*
+	 * \endcode
+	 *
+	 * Many common types are implemented as a non-template
+	 * function.
+	 *
+	 * See to_u8(), to_u16(), to_s32(), etc
+	 *
 	 */
-
 	template<typename T> T * to(){ return (T*)m_mem_write; }
+
+	/*! \details Casts data as a read-only pointer.
+	 *
+	 */
 	template<typename T> const T * to() const { return (const T*)m_mem; }
 
+	/*! \details Accesses a value in the data.
+	 *
+	 * @param T template typename
+	 * @param idx index of the value to access
+	 *
+	 * If the index exceeds the size of the data, the index is set to 0.
+	 *
+	 * \code
+	 * Data a(64); //a is 64 bytes
+	 * a.at<char>(0) = 'a'; //assign 'a' to the first char location
+	 * a.at<u32>(4) = 0xAAAA5555; //assigns a u32 value assuming a is a u32 array
+	 * u32 value = a.at<u32>(4); //reads a value as if a is a u32 array
+	 * \endcode
+	 *
+	 *
+	 */
 	template<typename T> T & at(u32 idx){
 		if( idx*sizeof(T) >= size() ){
 			//set the error number to overflow
@@ -273,49 +301,88 @@ public:
 		return to<T>()[idx];
 	}
 
-
+	/*! \details Returns a pointer to the data as a `void*`. */
 	void * to_void() { return to<void>(); }
+	/*! \details Returns a pointer to the data as a `char*`. */
 	char * to_char() { return to<char>(); }
+	/*! \details Returns a pointer to the data as a `u8*`. */
 	u8 * to_u8() { return to<u8>(); }
+	/*! \details Returns a pointer to the data as a `s8*`. */
 	s8 * to_s8() { return to<s8>(); }
+	/*! \details Returns a pointer to the data as a `u16*`. */
 	u16 * to_u16() { return to<u16>(); }
+	/*! \details Returns a pointer to the data as a `s16*`. */
 	s16 * to_s16() { return to<s16>(); }
+	/*! \details Returns a pointer to the data as a `u32*`. */
 	u32 * to_u32() { return to<u32>(); }
+	/*! \details Returns a pointer to the data as a `s32*`. */
 	s32 * to_s32() { return to<s32>(); }
+	/*! \details Returns a pointer to the data as a `u64*`. */
 	u64 * to_u64() { return to<u64>(); }
+	/*! \details Returns a pointer to the data as a `s64*`. */
 	s64 * to_s64() { return to<s64>(); }
+	/*! \details Returns a pointer to the data as a `float*`. */
 	float * to_float(){ return to<float>(); }
 
+	/*! \details Returns a pointer to the data as a `const void*`. */
 	const void * to_void() const { return to<void>(); }
+	/*! \details Returns a pointer to the data as a `const char*`. */
 	const char * to_char() const { return to<char>(); }
+	/*! \details Returns a pointer to the data as a `const u8*`. */
 	const u8 * to_u8() const { return to<u8>(); }
+	/*! \details Returns a pointer to the data as a `const s8*`. */
 	const s8 * to_s8() const { return to<s8>(); }
+	/*! \details Returns a pointer to the data as a `const u16*`. */
 	const u16 * to_u16() const { return to<u16>(); }
+	/*! \details Returns a pointer to the data as a `const s16*`. */
 	const s16 * to_s16() const { return to<s16>(); }
+	/*! \details Returns a pointer to the data as a `const u32*`. */
 	const u32 * to_u32() const { return to<u32>(); }
+	/*! \details Returns a pointer to the data as a `const s32*`. */
 	const s32 * to_s32() const { return to<s32>(); }
+	/*! \details Returns a pointer to the data as a `const u64*`. */
 	const u64 * to_u64() const { return to<u64>(); }
+	/*! \details Returns a pointer to the data as a `const s64*`. */
 	const s64 * to_s64() const { return to<s64>(); }
+	/*! \details Returns a pointer to the data as a `const float*`. */
 	const float * to_float() const { return to<float>(); }
 
+	/*! \details Accesses a referece to a value in the data as a u8 array. */
 	u8 & at_u8(u32 idx) { return at<u8>(idx); }
+	/*! \details Accesses a referece to a value in the data as a s8 array. */
 	s8 & at_s8(u32 idx) { return at<s8>(idx); }
+	/*! \details Accesses a referece to a value in the data as a u16 array. */
 	u16 & at_u16(u32 idx) { return at<u16>(idx); }
+	/*! \details Accesses a referece to a value in the data as a s16 array. */
 	s16 & at_s16(u32 idx) { return at<s16>(idx); }
+	/*! \details Accesses a referece to a value in the data as a u32 array. */
 	u32 & at_u32_at(u32 idx) { return at<u32>(idx); }
+	/*! \details Accesses a referece to a value in the data as a s32 array. */
 	s32 & at_s32(u32 idx) { return at<s32>(idx); }
+	/*! \details Accesses a referece to a value in the data as a u64 array. */
 	u64 & at_u64(u32 idx) { return at<u64>(idx); }
+	/*! \details Accesses a referece to a value in the data as a s64 array. */
 	s64 & at_s64(u32 idx) { return at<s64>(idx); }
+	/*! \details Accesses a referece to a value in the data as a float array. */
 	float & at_float(u32 idx) { return at<float>(idx); }
 
+	/*! \details Accesses a referece to a value in the data as a u8 array. */
 	const u8 & at_u8(u32 idx) const { return at<u8>(idx); }
+	/*! \details Accesses a referece to a value in the data as a s8 array. */
 	const s8 & at_s8(u32 idx) const { return at<s8>(idx); }
+	/*! \details Accesses a referece to a value in the data as a u16 array. */
 	const u16 & at_u16(u32 idx) const { return at<u16>(idx); }
+	/*! \details Accesses a referece to a value in the data as a s16 array. */
 	const s16 & at_s16(u32 idx) const { return at<s16>(idx); }
+	/*! \details Accesses a referece to a value in the data as a u32 array. */
 	const u32 & at_u32(u32 idx) const { return at<u32>(idx); }
+	/*! \details Accesses a referece to a value in the data as a s32 array. */
 	const s32 & at_s32(u32 idx) const { return at<s32>(idx); }
+	/*! \details Accesses a referece to a value in the data as a u64 array. */
 	const u64 & at_u64(u32 idx) const { return at<u64>(idx); }
+	/*! \details Accesses a referece to a value in the data as a s64 array. */
 	const s64 & at_s64(u32 idx) const { return at<s64>(idx); }
+	/*! \details Accesses a referece to a value in the data as a float array. */
 	const float & at_float(u32 idx) const { return at<float>(idx); }
 
 	//deprecated access
@@ -329,13 +396,11 @@ public:
 	 * This will only perform any operations if the memory was
 	 * dynamically allocating using this object.
 	 *
-	 * @return
+	 * @return Zero on success
 	 */
 	int free();
 
-	/*! \details Write all zeros to the data.
-	 * This will not attempt to write read-only data.
-	 */
+	//deprecated -- use fill(0);
 	void clear();
 
 	/*! \details Fill the data with the specified value.
@@ -345,20 +410,6 @@ public:
 	 *
 	 */
 	virtual void fill(unsigned char d);
-
-	enum {
-		PRINT_HEX /*! Print hex data */ = (1<<0),
-		PRINT_UNSIGNED /*! Print unsigned integers */ = (1<<1),
-		PRINT_SIGNED /*! Printd signed integers */ = (1<<2),
-		PRINT_CHAR /*! Print Characters */ = (1<<3),
-		PRINT_8 /*! Print as 8 bit values (default) */ = 0,
-		PRINT_16 /*! Print as 16 bit values */ = (1<<4),
-		PRINT_32 /*! Print as 32 bit values */ = (1<<5),
-	};
-
-	/*! \details Prints the data to the standard output. */
-	virtual int print(u32 o_flags = PRINT_HEX) const;
-
 
 	/*! \details Swaps the byte order of the data.
 	 *
