@@ -88,7 +88,7 @@ public:
 		NDELAY /*! Open as non-blocking */ = LINK_O_NONBLOCK,
         ACCMODE /*! Access mode mask */ = LINK_O_ACCMODE,
         FORMAT /*! Mode format mask */ = LINK_S_IFMT,
-        SOCKET /*! Mode Socket mask */ = LINK_S_IFSOCK,
+        FILE_SOCKET /*! Mode Socket mask */ = LINK_S_IFSOCK,
         REGULAR /*! Mode regular file value */ = LINK_S_IFREG,
         BLOCK /*! Mode block device value */ = LINK_S_IFBLK,
         CHARACTER /*! Mode character device value */ = LINK_S_IFCHR,
