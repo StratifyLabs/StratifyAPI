@@ -5,7 +5,7 @@ using namespace ui;
 using namespace sys;
 using namespace hal;
 
-chrono::MicroTime PinButton::m_held_duration = 800;
+chrono::MicroTime PinButton::m_held_duration = 800000;
 
 
 PinButton::PinButton(int port, int pin, bool active_value) : Pin(port, pin) {
@@ -84,9 +84,9 @@ bool PinButton::get_actuated(){
 
     ret = false;
     if( m_flags.actuation_reported == 0 ){
-        msec = m_timer.msec();
+		msec = m_timer.milliseconds();
         //true if time meets minimum and less than maximum and timer is not running
-        if( (msec > 5) && (msec < m_held_duration) && (!m_timer.is_running()) ){
+		if( (msec > 5) && (msec < m_held_duration.milliseconds()) && (!m_timer.is_running()) ){
             ret = true;
             m_flags.actuation_reported = 1;
         }
@@ -100,7 +100,7 @@ bool PinButton::get_held(){
 
     if( m_flags.held_reported == 0 ){
         //true if timer is greater than a maximum and held has not been reported
-        if ( (m_timer.milliseconds() >= m_held_duration) && (m_timer.is_running()) ){
+		if ( (m_timer.milliseconds() >= m_held_duration.milliseconds()) && (m_timer.is_running()) ){
             ret = true;
             m_flags.held_reported = 1;
         }

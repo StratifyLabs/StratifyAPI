@@ -149,7 +149,7 @@ String& String::insert(u32 pos, const ConstString & str){
 }
 
 String& String::erase(u32 pos, u32 len){
-    char * p = cdata();
+	char * p = to<char>();
     u32 s = length();
     if( p == 0 ){ return *this; }
     if( (len != npos) && (pos + len < s) ){
@@ -161,15 +161,25 @@ String& String::erase(u32 pos, u32 len){
         } else {
             p[pos] = 0;
         }
-    } else if (pos < s ){
-        p[pos] = 0;
-    }
-    return *this;
+	} else if (pos < s ){
+		p[pos] = 0;
+	}
+	return *this;
+}
+
+String& String::erase(const ConstString & s, u32 pos, u32 occurences){
+	u32 erase_pos;
+	u32 count = 0;
+	u32 len = s.length();
+	while( (count++ < occurences) && ((erase_pos = find(s, pos, len)) != npos) ){
+		erase(erase_pos, len);
+	}
+	return *this;
 }
 
 String String::substr(u32 pos, u32 len) const {
-    if( pos >= length() ){
-        return String();
+	if( pos >= length() ){
+		return String();
     }
     String ret;
     ret.assign(str() + pos, len);

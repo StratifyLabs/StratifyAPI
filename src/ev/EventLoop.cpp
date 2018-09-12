@@ -9,7 +9,7 @@
 
 namespace ev {
 
-EventLoopAttr::EventLoopAttr(){
+EventLoopAttributes::EventLoopAttributes(){
     m_attr.update_period_msec = 0;
     m_attr.hibernation_threshold_msec = 0xffff;
     m_attr.period_msec = 10;
@@ -99,7 +99,7 @@ void EventLoop::execute(){
 }
 
 void EventLoop::check_loop_for_update(){
-    if( update_period() && ((update_timer().msec() >= update_period()) || update_period() >= hibernation_threshold()) ){
+	if( update_period() && ((update_timer().milliseconds() >= update_period().milliseconds()) || update_period() >= hibernation_threshold()) ){
         m_update_timer.restart();
         handle_event(Event(Event::UPDATE));
     }
@@ -109,18 +109,18 @@ void EventLoop::check_loop_for_update(){
 void EventLoop::check_loop_for_hibernate(){
     if( update_period() >= hibernation_threshold() ){
         sapi_request_hibernate_t request;
-        request.update_period = update_period();
-        request.loop_period = period();
+		request.update_period_milliseconds = update_period().milliseconds();
+		request.loop_period_milliseconds = period().milliseconds();
         if( Sys::request(SAPI_REQUEST_HIBERNATE, &request) < 0 ){
-            Sys::hibernate( (update_period() + 500)/ 1000 );
+			Sys::hibernate( (update_period().milliseconds() + 500)/ 1000 );
         }
     } else {
         s32 ms_remaining;
-        ms_remaining = period() - loop_timer().msec();
+		ms_remaining = period().milliseconds() - loop_timer().milliseconds();
         if( ms_remaining > 0 ){
-            Timer::wait_msec(ms_remaining);
+			chrono::Timer::wait_milliseconds(ms_remaining);
         }
     }
 }
 
-} /* namespace sm */
+} /* namespace ev */

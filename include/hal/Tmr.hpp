@@ -72,7 +72,7 @@ typedef TmrAttributes TmrAttr;
  * tmr.init(); //initialize the timer
  * tmr.set(0); //set the value to zero
  * tmr.on(); //turn the timer on
- * Timer::wait_msec(100);
+ * Timer::wait_milliseconds(100);
  * printf("My timer value is %d\n", tmr.value()); //The value will be about 100,000
  * \endcode
  *

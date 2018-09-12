@@ -52,7 +52,7 @@ u32 ConstString::find(const ConstString & s, u32 pos, u32 n) const {
 
     if( !s.is_empty() ){
         u32 len = length();
-        for(u32 i=pos; i < len; i++){
+		for(u32 i=pos; i < len - n + 1; i++){
             if( strncmp(str() + i, s.str(), n) == 0 ){
                 return i;
             }

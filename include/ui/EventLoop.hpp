@@ -13,7 +13,7 @@
 namespace ui {
 
 typedef ev::event_loop_attr_t event_loop_attr_t;
-typedef ev::EventLoopAttr EventLoopAttr;
+typedef ev::EventLoopAttributes EventLoopAttributes;
 
 
 /*! \brief Event Loop Class (Graphical UI)
@@ -70,7 +70,8 @@ public:
 	draw::DrawingAttr & drawing_attr(){ return m_drawing_attr; }
 
     /*! \details Updates the drawing attributes. */
-	void set_drawing_attr(const draw::DrawingAttr & attr){ m_drawing_attr = attr; }
+	void set_drawing_attributes(const draw::DrawingAttr & attributes){ m_drawing_attr = attributes; }
+	void set_drawing_attr(const draw::DrawingAttr & attributes){ set_drawing_attributes(attributes); }
 
     virtual Element * catch_null_handler(Element * last_element){ return 0; }
 

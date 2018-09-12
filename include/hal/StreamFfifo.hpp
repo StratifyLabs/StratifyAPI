@@ -16,6 +16,7 @@ public:
 		return m_info.ffifo.frame_count != 0;
 	}
 
+	FFifoInfo ffifo() const { return m_info.ffifo; }
 	FFifoInfo ffifo_info() const { return m_info.ffifo; }
 
 private:

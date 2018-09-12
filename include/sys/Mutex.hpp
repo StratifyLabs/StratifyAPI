@@ -17,7 +17,7 @@ namespace sys {
  *
  *
  */
-class MutexAttr : public api::SysInfoObject {
+class MutexAttributes : public api::SysInfoObject {
 public:
 
     /*! \details Mutex Types */
@@ -35,14 +35,14 @@ public:
 
 
     /*! \details Constructs a Mutex attributes object with default values. */
-    MutexAttr();
+	MutexAttributes();
 
     /*! \details Constructs a Mutex attributes object using the specified attributes. */
-    MutexAttr(const pthread_mutexattr_t & mutexattr){
+	MutexAttributes(const pthread_mutexattr_t & mutexattr){
         m_item = mutexattr;
     }
 
-    ~MutexAttr();
+	~MutexAttributes();
 
     /*! \details Constructs a mutex attributs object with the specified values.
      *
@@ -51,7 +51,7 @@ public:
      * @param pshared True if mutex is to be shared between processes
      *
      */
-    MutexAttr(enum type t, int prio_ceiling = 0, bool pshared = false);
+	MutexAttributes(enum type t, int prio_ceiling = 0, bool pshared = false, enum protocol protocol = PRIO_NONE_PROTOCOL);
 
     /*! \details Sets the priority ceiling.
      *
@@ -87,6 +87,8 @@ private:
     pthread_mutexattr_t m_item;
 };
 
+typedef MutexAttributes MutexAttr;
+
 
 /*! \brief Mutex Class
  * \details This class holds a Mutex used with
@@ -102,7 +104,8 @@ public:
     Mutex(const MutexAttr & attr);
 
     /*! \details Sets the mutex attributes. */
-    int set_attr(const MutexAttr & attr);
+	int set_attributes(const MutexAttributes & attr);
+	int set_attr(const MutexAttributes & attr){ return set_attributes(attr); }
 
     /*! \details Attempts to lock the mutex.
      *

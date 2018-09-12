@@ -121,7 +121,6 @@ public:
      *
      */
     String& operator=(const String & a){
-		printf("copy assign\n");
 		copy_object(a);
 		set_string_pointer(Data::to_char());
         return *this;
@@ -133,7 +132,6 @@ public:
 	 *
 	 */
 	String & operator = (String && a){
-		printf("move assign\n");
 		move_object(a);
 		set_string_pointer(Data::to_char());
 		return *this;
@@ -223,15 +221,18 @@ public:
 
 
 
-    /*! \details Sets the capacity of the string.
+	/*! \details Sets the number of bytes allocated for the string.
      *
-     * @param s The number of bytes to reserve to string capacity.
+	 * @param s The number of bytes to reserve to string capacity (plus a byte for a zero terminator).
      * @return Less than zero on an error
      *
      * If a String uses dynamic memory allocation, this method
      * will increase the capacity of the String. If \a s
      * is smaller than capacity(), this function return
      * without changing the capacity.
+	 *
+	 * The size() method will return the number of bytes availabe. length() returns
+	 * the length of the string.
      *
      */
     int set_size(u32 s);
@@ -264,7 +265,8 @@ public:
      * @return A reference to this string.
      *
      */
-    String& erase(u32 pos, u32 len = -1);
+	String& erase(u32 pos, u32 len = npos);
+	String& erase(const ConstString & s, u32 pos = 0, u32 occurences = npos);
 
 
 
