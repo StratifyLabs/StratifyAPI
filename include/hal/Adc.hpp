@@ -16,6 +16,18 @@ class AdcAttributes : public PinAssignmentPeriphAttr<adc_attr_t, adc_pin_assignm
 public:
 
 
+	void set_channel(u16 channel){ m_attr.channel = channel; }
+	void set_rank(u32 rank){ m_attr.rank = rank; }
+	void set_sampling_time(u32 sampling_time){ m_attr.sampling_time = sampling_time; }
+
+
+	void configure_group_channel(u16 channel, u32 rank, u32 sampling_time = 15){
+		set_flags(ADC_FLAG_SET_CHANNELS | ADC_FLAG_IS_GROUP);
+		set_channel(channel);
+		set_rank(rank);
+		set_sampling_time(sampling_time);
+	}
+
 };
 
 typedef AdcAttributes AdcAttr;

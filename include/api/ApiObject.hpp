@@ -157,14 +157,7 @@ public:
      * that shows the API version.
      */
     static const char * api_version(){ return "3.8.0b"; }
-
-    static const char * api_git_hash(){
-#if defined SOS_GIT_HASH
-        return SOS_GIT_HASH;
-#else
-        return "unknown";
-#endif
-    }
+	static const char * api_git_hash();
 };
 
 }

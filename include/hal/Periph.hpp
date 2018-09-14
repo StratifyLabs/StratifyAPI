@@ -130,6 +130,10 @@ public:
 
 	/*! \details Gets a pointer of the pin assignment. */
 	const pin_assignment_t * pin_assignment() const { return &m_attr.pin_assignment; }
+	const attr_t * attributes() const { return &m_attr; }
+
+	attr_t * operator ->() { return &m_attr; }
+	const attr_t * operator ->() const { return &m_attr; }
 
 protected:
 	attr_t m_attr;
