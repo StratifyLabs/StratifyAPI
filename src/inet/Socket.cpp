@@ -13,6 +13,7 @@ int Socket::init() {
 #if defined __win32
     WSADATA wsadata;
     int result;
+
     // Initialize Winsock
     result = WSAStartup(MAKEWORD(2,2), &wsadata);
     if (result != 0) {
@@ -20,6 +21,7 @@ int Socket::init() {
         set_error_number(WS_ERR_NET_INIT_FAILED);
         return WS_ERROR;
     }
+
     return WS_OK;
 #endif
 }
@@ -38,9 +40,12 @@ int Socket::create(const SocketAttributes & socket_attributes){
     //printf("Ip addr=%s\n",inet_ntoa(((struct sockaddr_in*)&(m_sockaddress.m_address))->sin_addr));
     //sockaddr addr=m_sockaddress.m_address;
     //struct sockaddr_in *addr_in = (struct sockaddr_in *)&address;
+    m_socketattributes=socket_attributes;
+    int family = socket_attributes.family() == m_socketattributes.FAMILY_INET ? AF_INET : AF_UNSPEC;
+    int type = socket_attributes.type() == m_socketattributes.TYPE_STREAM ? SOCK_STREAM : SOCK_DGRAM;
+    int protocol = socket_attributes.protocol() == m_socketattributes.PROTOCOL_TCP ? IPPROTO_TCP : IPPROTO_UDP;
 
-    m_socket = socket(socket_attributes.family(), socket_attributes.type(),
-                        socket_attributes.protocol());
+    m_socket = socket(family, type, protocol);
     if (m_socket == INVALID_SOCKET) {
         printf("socket failed with error: %ld\n", WSAGetLastError());
         //WSACleanup();
@@ -62,9 +67,9 @@ int Socket::bind() {
     struct addrinfo *result = NULL;
         struct addrinfo hints;
     ZeroMemory(&hints, sizeof(hints));
-        hints.ai_family = m_socketattributes.family();
-        hints.ai_socktype = m_socketattributes.type();
-        hints.ai_protocol = m_socketattributes.protocol();
+        hints.ai_family = m_socketattributes.family() == m_socketattributes.FAMILY_INET ? AF_INET : AF_UNSPEC;
+        hints.ai_socktype = m_socketattributes.type() == m_socketattributes.TYPE_STREAM ? SOCK_STREAM : SOCK_DGRAM;
+        hints.ai_protocol = m_socketattributes.protocol() == m_socketattributes.PROTOCOL_TCP ? IPPROTO_TCP : IPPROTO_UDP;;
         int flags = m_socketattributes.flags();
         if(flags&m_socketattributes.FLAG_PASSIVE){
             hints.ai_flags = AI_PASSIVE;
@@ -149,12 +154,12 @@ int Socket::accept(){
         char* receive_buffer=new char[512];
             var::ConstString receive_buffer_str(receive_buffer);
         do {
-            ret = receive(receive_buffer_str, 512);
+            ret = receive(client_socket,receive_buffer_str, 512);
             if (ret > 0) {
                 printf("Bytes received: %d\nMessage: %s\n", ret, receive_buffer_str.c_str());
 
             // Echo the buffer back to the sender
-                send_result = send(receive_buffer);
+                send_result = send(client_socket,receive_buffer);
                 if (send_result == SOCKET_ERROR) {
                     printf("send failed with error: %d\n", WSAGetLastError());
                     closesocket(client_socket);
@@ -275,7 +280,7 @@ int Socket::connect() {
         scanf("%[^\n]s",send_buffer);
         //strcpy(send_buffer,"Test message");
         printf("\nData entered:%s\n",send_buffer);
-        ret = send( send_buffer_str);
+        ret = send( m_socket, send_buffer_str);
             if (ret == SOCKET_ERROR) {
                 printf("send failed with error: %d\n", WSAGetLastError());
 //                closesocket(ConnectSocket);
@@ -300,7 +305,7 @@ int Socket::connect() {
             char* receive_buffer=new char[512];
             var::ConstString receive_buffer_str(receive_buffer);
             do {
-                ret = receive(receive_buffer_str, 512);
+                ret = receive(m_socket, receive_buffer_str, 512);
                 if ( ret > 0 )
                     printf("Bytes received: %d\n%s\n", ret, receive_buffer_str.c_str());
                 else if ( ret == 0 )
@@ -322,11 +327,11 @@ int Socket::connect() {
 #endif
 }
 
-int Socket::send(var::ConstString send_buffer) {
+int Socket::send(SOCKET send_socket, var::ConstString send_buffer) {
 #if defined __win32
     printf("Send : buffer length=%d\n",send_buffer.length());
     printf("Send : message - %s\n",send_buffer.c_str());
-    int ret = ::send( m_socket, send_buffer.c_str(), (int)send_buffer.length(), 0 );
+    int ret = ::send( send_socket, send_buffer.c_str(), (int)send_buffer.length(), 0 );
     if (ret == SOCKET_ERROR) {
         printf("send failed with error: %d\n", WSAGetLastError());
 //      closesocket(socket);
@@ -342,13 +347,13 @@ int Socket::send(var::ConstString send_buffer) {
 }
 
 
-int Socket::receive(var::ConstString receive_buffer, int buffer_length) {
+int Socket::receive(SOCKET receive_socket, var::ConstString receive_buffer, int buffer_length) {
 #if defined __win32
     // Receive until the peer closes the connection
     int result = 0;
         //do {
 
-            result = ::recv(m_socket, (char*)receive_buffer.c_str(), buffer_length, 0);
+            result = ::recv(receive_socket, (char*)receive_buffer.c_str(), buffer_length, 0);
 
         //} while( result > 0 );
     return result;

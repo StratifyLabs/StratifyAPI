@@ -129,15 +129,14 @@ public:
     /*!
      * \details       Sends data on the connected socket
      *
-     * @param           socket - descriptor identifying the connecting socket.
+     * @param           socket - descriptor identifying the socket to send the data to.
      * @param           send_buffer - character buffer containing the data to be sent.
-     * @param           buffer-length - length of the buffer
      *
      * @return        - -1 if failed.
      *                  number of bytes sent if successful.
      */
 
-    int send(var::ConstString send_buffer);
+    int send(SOCKET send_socket, var::ConstString send_buffer);
 
     /*!
      * \details       Receives data on the connected socket.
@@ -149,7 +148,7 @@ public:
      * @return        - -1 if failed.
      *                  number of bytes sent if successful.
      */
-    int receive(var::ConstString receive_buffer, int buffer_length);
+    int receive(SOCKET receive_socket, var::ConstString receive_buffer, int buffer_length);
 
     /*!
      * \details       Closes all the sockets and cleans ws2_32 lib

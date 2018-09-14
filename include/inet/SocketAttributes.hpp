@@ -13,8 +13,7 @@
 //#include "../sys/File.hpp"
 #include "../api/InetObject.hpp"
 #include "../var/ConstString.hpp"
-#include "../var/Token.hpp"
-#include "../var/Vector.hpp"
+#include "../var/StringUtil.hpp"
 
 /* \tg
  *
@@ -22,18 +21,6 @@
  *
  *
  */
-#define WS_ERR_NET_SOCKET_FAILED                     -0x0042  /**< Failed to open a socket. */
-#define WS_ERR_NET_CONNECT_FAILED                    -0x0044  /**< The connection to the given server / port failed. */
-#define WS_ERR_NET_BIND_FAILED                       -0x0046  /**< Binding of the socket failed. */
-#define WS_ERR_NET_LISTEN_FAILED                     -0x0048  /**< Could not listen on the socket. */
-#define WS_ERR_NET_ACCEPT_FAILED                     -0x004A  /**< Could not accept the incoming connection. */
-#define WS_ERR_NET_RECV_FAILED                       -0x004C  /**< Reading information from the socket failed. */
-#define WS_ERR_NET_SEND_FAILED                       -0x004E  /**< Sending information through the socket failed. */
-#define WS_OK                                         0x0000  /**< Operation successful. */
-#define WS_NET_PROTO_TCP 0 /**< The TCP transport protocol */
-#define WS_NET_PROTO_UDP 1 /**< The UDP transport protocol */
-
-
 
 namespace inet {
 
@@ -53,6 +40,8 @@ public:
     SocketAddress(const var::ConstString & ipaddr, int port);
     SocketAddress(const SocketAddress& socketaddress);
     SocketAddress();
+    void set_socketipaddress(const var::ConstString &ipaddr);
+    void set_port(u32 port);
 
 
 protected:
@@ -86,17 +75,26 @@ public:
      * \endcode
      *
      */
-    void set_address(u8 a, u8 b, u8 c, u8 d){ m_address = a | (b<<8) | (c<<16) | (d<<24); }
+    void set_address(u8 a, u8 b, u8 c, u8 d){
+        u32 address = a | (b<<8) | (c<<16) | (d<<24);
+        char address_string[32];
+        var::StringUtil::utoa(address_string,address);
+        m_address=(const char*)address_string;
+        set_socketipaddress(m_address);
+    }
 
     /*! \details Sets the address based on the string provided.
      *
      * @param address Address a string, e.g., "192.186.1.1"
      *
      */
-    void set_address(const var::ConstString & address);
+    void set_address(const var::ConstString & address){
+        m_address=address;
+        set_socketipaddress(m_address);
+    }
 
 private:
-    u32 m_address;
+    var::ConstString m_address;
 };
 
 /*
@@ -118,7 +116,7 @@ public:
 
     enum type {
         TYPE_NONE,
-        TYPE_STREAM
+        TYPE_STREAM,
     };
 
     enum protocol {
@@ -143,6 +141,11 @@ public:
     void set_flag(int value){ m_flag = value; }
     void set_ipaddress(u8 a, u8 b,u8 c,u8 d) {m_ipv4_address.set_address(a,b,c,d);}
     void set_ipaddress(var::ConstString& address) {m_ipv4_address.set_address(address);}
+    void set_ipaddressandport(var::ConstString& address,u32 port) {
+        set_ipaddress(address);
+        set_port(port);
+    }
+    void set_port(u32 port) { m_ipv4_address.set_port(port);}
 
     int flags() const { return m_flag; }
     enum family family() const { return m_family; }
@@ -156,6 +159,7 @@ public:
 
 private:
     Ipv4Address m_ipv4_address;
+    u32 m_port;
     //family
     enum family m_family;
     //type
@@ -163,7 +167,7 @@ private:
     //protocol
     enum protocol m_protocol;
     //flags
-    int m_flag;
+    u32 m_flag;
 
 };
 }
