@@ -127,3 +127,22 @@ int ConstString::compare(u32 pos, u32 len, const ConstString & s, u32 n) const {
 
     return strncmp(str_at_position, s.str(), n);
 }
+
+//ConstString ConstString::substr (u32 pos, u32 len) const {
+//    u32 current_length = length();
+//    if(pos<0||pos>current_length) {
+//        return NULL;
+//    }
+//    if(pos+len>current_length||len==npos) {
+//        len=current_length-pos;
+//    }
+//    ConstString sub_string;
+//    int length=pos+len;
+//    const char* new_string=new const char[len];
+//    int string_index=0;
+//    for(int index=pos;index<length;index++) {
+//        new_string[string_index++]=at(pos);
+//    }
+//    sub_string.set_string_pointer(new_string);
+//    return sub_string;
+//}

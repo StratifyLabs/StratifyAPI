@@ -58,7 +58,7 @@ bool FileInfo::is_character_device() const {
 }
 
 bool FileInfo::is_socket() const {
-    return (m_stat.st_mode & File::FORMAT) == File::SOCKET;
+    return (m_stat.st_mode & File::FORMAT) == File::FILE_SOCKET;
 }
 
 
