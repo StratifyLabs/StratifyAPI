@@ -15,12 +15,31 @@ namespace hal {
 class AdcAttributes : public PinAssignmentPeriphAttr<adc_attr_t, adc_pin_assignment_t> {
 public:
 
+	AdcAttributes(u32 o_flags, u32 freq){
+		set_flags(o_flags);
+		set_freq(freq);
+	}
 
 	void set_channel(u16 channel){ m_attr.channel = channel; }
 	void set_rank(u32 rank){ m_attr.rank = rank; }
 	void set_sampling_time(u32 sampling_time){ m_attr.sampling_time = sampling_time; }
 
-
+	/*! \details Configures a channel in a group for sampling.
+	 *
+	 * @param channel The channel number to sample
+	 * @param rank The rank (order) of the channel
+	 * @param sampling_time The sampling time (in ADC clocks for the channel)
+	 *
+	 * \code
+	 * AdcAttributes adc_attributes;
+	 * adc_attributes.configure_group_channel(0, 1, 15);
+	 * Adc adc(0);
+	 *
+	 * adc.init();
+	 * adc.set_attributes(adc_attributes);
+	 * \endcode
+	 *
+	 */
 	void configure_group_channel(u16 channel, u32 rank, u32 sampling_time = 15){
 		set_flags(ADC_FLAG_SET_CHANNELS | ADC_FLAG_IS_GROUP);
 		set_channel(channel);
@@ -75,10 +94,10 @@ public:
 		IS_TRIGGER_EINT = ADC_FLAG_IS_TRIGGER_EINT /*! Used to trigger the ADC read on a external interrupt */,
 		SET_CHANNELS = ADC_FLAG_SET_CHANNELS /*! Configure the channels withouth changing ADC settings */,
 		IS_SCAN_MODE = ADC_FLAG_IS_SCAN_MODE /*! ADC will read every enabled channel when reading rather than the channel based on the location value */,
-		IS_TRIGGER_EINT_EDGE_RISING = ADC_FLAG_IS_TRIGGER_EINT_EDGE_RISING,
-		IS_TRIGGER_EINT_EDGE_FALLING = ADC_FLAG_IS_TRIGGER_EINT_EDGE_FALLING,
-		IS_GROUP = ADC_FLAG_IS_GROUP,
-		IS_CONTINOUS_CONVERSION = ADC_FLAG_IS_CONTINOUS_CONVERSION
+		IS_TRIGGER_EINT_EDGE_RISING /*! Trigger the sample on the rising edge */ = ADC_FLAG_IS_TRIGGER_EINT_EDGE_RISING,
+		IS_TRIGGER_EINT_EDGE_FALLING /*! Trigger the sample on the falling edge */ = ADC_FLAG_IS_TRIGGER_EINT_EDGE_FALLING,
+		IS_GROUP /*! Set channel as part of a group */ = ADC_FLAG_IS_GROUP,
+		IS_CONTINOUS_CONVERSION /*! Start the next conversion as soon as the previous conversion completes */ = ADC_FLAG_IS_CONTINOUS_CONVERSION
 
 	};
 

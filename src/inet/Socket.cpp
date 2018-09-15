@@ -23,6 +23,8 @@ int Socket::init() {
     }
 
     return WS_OK;
+#else
+	return 0;
 #endif
 }
 
@@ -327,7 +329,7 @@ int Socket::connect() {
 #endif
 }
 
-int Socket::send(SOCKET send_socket, var::ConstString send_buffer) {
+int Socket::send(var::ConstString send_buffer) {
 #if defined __win32
     printf("Send : buffer length=%d\n",send_buffer.length());
     printf("Send : message - %s\n",send_buffer.c_str());
@@ -347,7 +349,7 @@ int Socket::send(SOCKET send_socket, var::ConstString send_buffer) {
 }
 
 
-int Socket::receive(SOCKET receive_socket, var::ConstString receive_buffer, int buffer_length) {
+int Socket::receive(var::ConstString receive_buffer, int buffer_length) {
 #if defined __win32
     // Receive until the peer closes the connection
     int result = 0;

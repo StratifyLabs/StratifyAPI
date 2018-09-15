@@ -32,10 +32,9 @@ class I2CPinAssignment : public PinAssignment<i2c_pin_assignment_t>{};
 class I2CAttributes : public PinAssignmentPeriphAttr<i2c_attr_t, i2c_pin_assignment_t> {
 public:
 
-
-	I2CAttributes(){
-		set_freq(100000);
-		set_flags(I2C_FLAG_SET_MASTER);
+	I2CAttributes(u32 o_flags = I2C_FLAG_SET_MASTER, u32 freq = 100000){
+		set_flags(o_flags);
+		set_freq(freq);
 	}
 
 	/*! \details Accesses the SDA pin assignment value. */
