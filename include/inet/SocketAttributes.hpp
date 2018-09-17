@@ -13,7 +13,6 @@
 //#include "../sys/File.hpp"
 #include "../api/InetObject.hpp"
 #include "../var/ConstString.hpp"
-#include "../var/StringUtil.hpp"
 
 /* \tg
  *
@@ -31,16 +30,34 @@ public:
     /*!
      * \details Constructor to build the sockaddr structure using the host and port details.
      *
-     * @param address - sockaddr structure that needs to be constructed.
-     * @param host    - ip address of the endpoint.
-     * @param port    - port number
+     * @param ipaddress     - ip address of the endpoint.
+     * @param port          - port number
      *
-     * @return        - none
      */
-    SocketAddress(const var::ConstString & ipaddr, int port);
+    SocketAddress(u32& ipaddress, int port);
+    /*!
+     * \details Copy Constructor
+     *
+     * @param socketaddress     - SocketAddress structure to be copied from.
+     *
+     */
     SocketAddress(const SocketAddress& socketaddress);
+    /*!
+     * \details Constructor to set the sockaddr structure to 0.
+     */
     SocketAddress();
-    void set_socketipaddress(const var::ConstString &ipaddr);
+    /*!
+     * \details Sets the ipaddress of the sockaddr structure
+     *
+     * @param ipaddress     - ip address of the endpoint.
+     *
+     */
+    void set_socketipaddress(u32 ipaddress);
+    /*!
+     * \details Sets the port number of the sockaddr structure
+     * @param port          - port number
+     *
+     */
     void set_port(u32 port);
 
 
@@ -60,7 +77,7 @@ protected:
 class Ipv4Address : public SocketAddress {
 public:
 
-    Ipv4Address(){ m_address = 0; }
+    Ipv4Address(){}
 
     Ipv4Address(u8 a, u8 b, u8 c, u8 d){
         set_address(a,b,c,d);
@@ -76,10 +93,7 @@ public:
      *
      */
     void set_address(u8 a, u8 b, u8 c, u8 d){
-        u32 address = a | (b<<8) | (c<<16) | (d<<24);
-        char address_string[32];
-        var::StringUtil::utoa(address_string,address);
-        m_address=(const char*)address_string;
+        m_address = a | (b<<8) | (c<<16) | (d<<24);
         set_socketipaddress(m_address);
     }
 
@@ -88,13 +102,10 @@ public:
      * @param address Address a string, e.g., "192.186.1.1"
      *
      */
-    void set_address(const var::ConstString & address){
-        m_address=address;
-        set_socketipaddress(m_address);
-    }
+    void set_address(const var::ConstString & address);
 
 private:
-    var::ConstString m_address;
+    u32 m_address;
 };
 
 /*
@@ -143,6 +154,10 @@ public:
     void set_ipaddress(var::ConstString& address) {m_ipv4_address.set_address(address);}
     void set_ipaddressandport(var::ConstString& address,u32 port) {
         set_ipaddress(address);
+        set_port(port);
+    }
+    void set_ipaddressandport(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint32_t port) {
+        set_ipaddress(a,b,c,d);
         set_port(port);
     }
     void set_port(u32 port) { m_ipv4_address.set_port(port);}
