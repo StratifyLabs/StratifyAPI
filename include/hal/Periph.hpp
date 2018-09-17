@@ -130,6 +130,10 @@ public:
 
 	/*! \details Gets a pointer of the pin assignment. */
 	const pin_assignment_t * pin_assignment() const { return &m_attr.pin_assignment; }
+	const attr_t * attributes() const { return &m_attr; }
+
+	attr_t * operator ->() { return &m_attr; }
+	const attr_t * operator ->() const { return &m_attr; }
 
 protected:
 	attr_t m_attr;
@@ -242,8 +246,34 @@ public:
 	}
 	int init(){ return initialize(); }
 
-	int set_attributes(const attr_t & attr) const {
-		return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), (const attr_t*)&attr);
+	/*! \details Initializes the peripheral using the provided attributes
+	 *
+	 */
+	int initialize(const attr_t & attributes){
+		int result = open();
+		if( result < 0 ){ return result; }
+		return set_attributes(attributes);
+	}
+
+	/*! \details Sets the peripheral attributes based on the attributes passed.
+	 *
+	 * @param attributes A const reference to the attributes used to apply to the peripheral.
+	 * @return Zero on success or less than zero for an error
+	 *
+	 * \code
+	 * UartAttributes uart_attributes; //default attributes
+	 * uart_attributes.set_frequency(9600);
+	 *
+	 * Uart uart(0);
+	 * uart.open();
+	 * uart.set_attributes(uart_attributes);
+	 *
+	 * \endcode
+	 *
+	 *
+	 */
+	int set_attributes(const attr_t & attributes) const {
+		return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), (const attr_t*)&attributes);
 	}
 
 	int set_attr(const attr_t & attr) const {
@@ -253,7 +283,6 @@ public:
 	int set_action(mcu_action_t & action) const {
 		return ioctl(_IOCTLW(ident_char, I_MCU_SETACTION, mcu_action_t), &action);
 	}
-
 
 
 	/*! \details Sets the action callback for the event.

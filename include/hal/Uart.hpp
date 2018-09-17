@@ -54,9 +54,14 @@ class UartPinAssignment : public PinAssignment<uart_pin_assignment_t>{};
 class UartAttributes : public PinAssignmentPeriphAttr<uart_attr_t, uart_pin_assignment_t> {
 public:
 
-	UartAttributes(){}
-
-	UartAttributes(u32 o_flags, u32 freq = 115200, u32 width = 8){
+	/*! \details Constructs UART attributes with default settings.
+	 *
+	 * @param o_flags Flags for attibutes (default is UART_FLAG_SET_LINE_CODING_DEFAULT)
+	 * @param freq UART frequency (bitrate; default is 115200)
+	 * @param width UART byte width (default is 8)
+	 *
+	 */
+	UartAttributes(u32 o_flags = UART_FLAG_SET_LINE_CODING_DEFAULT, u32 freq = 115200, u32 width = 8){
 		set_flags(o_flags);
 		set_freq(freq);
 		set_width(width);

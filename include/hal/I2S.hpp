@@ -27,6 +27,7 @@ class I2SPinAssignment : public PinAssignment<i2s_pin_assignment_t>{};
 class I2SAttributes : public PinAssignmentPeriphAttr<i2s_attr_t, i2s_pin_assignment_t> {
 public:
 
+
 	/*! \details Accesses the serial data input pin assignment value. */
 	mcu_pin_t sdin() const { return m_attr.pin_assignment.sdin; }
 	/*! \details Access the serial data output pin assignment value. */

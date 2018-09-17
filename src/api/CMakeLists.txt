@@ -1,6 +1,7 @@
 
 
 set(SOURCELIST
+	${SOURCES_PREFIX}/ApiObject.cpp
 	${SOURCES_PREFIX}/WorkObject.cpp
 	PARENT_SCOPE)
 

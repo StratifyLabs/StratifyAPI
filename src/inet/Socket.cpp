@@ -24,6 +24,8 @@ int Socket::init() {
     }
 
     return WS_OK;
+#else
+	return 0;
 #endif
 }
 

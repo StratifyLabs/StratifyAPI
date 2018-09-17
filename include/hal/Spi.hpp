@@ -20,10 +20,12 @@ class SpiPinAssignment : public PinAssignment<spi_pin_assignment_t>{};
 class SpiAttributes : public PinAssignmentPeriphAttr<spi_attr_t, spi_pin_assignment_t> {
 public:
 
-	SpiAttributes(){
-		set_freq(1000000);
-		set_width(8);
-		set_flags(SPI_FLAG_SET_MASTER | SPI_FLAG_IS_FORMAT_SPI | SPI_FLAG_IS_MODE0 | SPI_FLAG_IS_HALF_DUPLEX);
+	SpiAttributes(u32 o_flags = SPI_FLAG_SET_MASTER | SPI_FLAG_IS_FORMAT_SPI | SPI_FLAG_IS_MODE0 | SPI_FLAG_IS_HALF_DUPLEX,
+				  u32 freq = 1000000,
+				  u8 width = 8){
+		set_freq(freq);
+		set_width(width);
+		set_flags(o_flags);
 	}
 
 	void set_miso(const mcu_pin_t & pin){ m_attr.pin_assignment.miso = pin; }

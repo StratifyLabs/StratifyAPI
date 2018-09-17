@@ -99,7 +99,7 @@ void EventLoop::execute(){
 }
 
 void EventLoop::check_loop_for_update(){
-	if( update_period() && ((update_timer().milliseconds() >= update_period().milliseconds()) || update_period() >= hibernation_threshold()) ){
+	if( update_period() && ((update_timer().milliseconds() >= update_period().milliseconds()) || (update_period() >= hibernation_threshold())) ){
         m_update_timer.restart();
         handle_event(Event(Event::UPDATE));
     }
