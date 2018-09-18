@@ -173,14 +173,14 @@ int Socket::close() {
 #if defined __win32
     // cleanup
     int ret = WS_OK;
-    ret = ::shutdown(m_connectedsocket, SD_SEND);
-    if (ret == SOCKET_ERROR) {
-        printf("shutdown failed with error: %d\n", WSAGetLastError());
-        set_error_number(WS_ERR_NET_SHUTDOWN_FAILED);
-        return WS_ERROR;
-    }
-
     if(m_connectedsocket!=INVALID_SOCKET) {
+        ret = ::shutdown(m_connectedsocket, SD_SEND);
+        if (ret == SOCKET_ERROR) {
+            printf("shutdown failed with error: %d\n", WSAGetLastError());
+            set_error_number(WS_ERR_NET_SHUTDOWN_FAILED);
+            return WS_ERROR;
+        }
+
         closesocket(m_connectedsocket);
         m_connectedsocket=INVALID_SOCKET;
         ret = WS_ERROR;
