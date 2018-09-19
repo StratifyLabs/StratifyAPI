@@ -10,6 +10,9 @@ namespace ev {}
 #include "ev/Event.hpp"
 #include "ev/EventHandler.hpp"
 #include "ev/EventLoop.hpp"
+#include "ev/Button.hpp"
+#include "ev/PinButton.hpp"
+#include "ev/DeviceButton.hpp"
 
 using namespace ev;
 

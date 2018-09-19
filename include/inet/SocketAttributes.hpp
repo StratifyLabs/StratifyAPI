@@ -8,6 +8,9 @@
 #include <ws2tcpip.h>
 
 //#define DEFAULT_PORT "27015"
+#else
+
+#include <sys/socket.h>
 #endif
 
 //#include "../sys/File.hpp"

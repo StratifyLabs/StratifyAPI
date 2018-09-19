@@ -6,31 +6,31 @@
 
 #include <mcu/types.h>
 
-#include "../ev/Event.hpp"
-#include "../api/UiObject.hpp"
+#include "Event.hpp"
+#include "../api/EvObject.hpp"
 #include "../chrono/MicroTime.hpp"
 
-namespace ui {
+namespace ev {
 
 /*! \brief Button Class
  * \details This class implements a button
  * that can be pressed by the user.  It implements the timing
  * for button actuations, button holds, presses and releases.  It
  * is an abstract class where the inheriting classes must implement
- * the ui::Button::get_value() method which returns the value of input.
+ * the ev::Button::get_value() method which returns the value of input.
  */
-class Button : public api::UiWorkObject {
+class Button : public api::EvWorkObject {
 public:
 
 
-    /*! \details This method returns the max held duration which will effectively disable the
-     * reporting of button holds
-     *
-     *
-     *  \code
-     *  Button::set_held_duration( Button::max_held_duration() );
-     *  \endcode
-     */
+	/*! \details Returns the max held duration which will effectively disable the
+	  * reporting of button holds
+	  *
+	  *
+	  *  \code
+	  *  Button::set_held_duration( Button::max_held_duration() );
+	  *  \endcode
+	  */
 	static chrono::MicroTime max_held_duration(){ return (u32)-1; }
 
 	/*! \details This method checks the state of the actuation and then returns
@@ -41,58 +41,58 @@ public:
 	 *  - ui::Event::BUTTON_PRESSED
 	 *  - ui::Event::BUTTON_RELEASED
 	 *  - ui::Event::BUTTON_ACTUATED
-     *  - ui::Event::BUTTON_HELD
+	  *  - ui::Event::BUTTON_HELD
 	 *
 	 */
-    ev::Event get_event();
-    ev::Event event(){ return get_event(); }
+	ev::Event get_event();
+	ev::Event event(){ return get_event(); }
 
 	/*! \details Returns the duration of the last button press.
 	 * This method will only return a non-zero value once per button press.
 	 */
-    virtual chrono::MicroTime get_duration() = 0;
+	virtual chrono::MicroTime get_duration() = 0;
 
 	/*! \details Returns true if the button has been pressed. This will
 	 * only return true once per button press.
 	 *
 	 */
-    virtual bool get_pressed() = 0;
+	virtual bool get_pressed() = 0;
 
 	/*! \details Returns true if the button has been released.
 	 * This will only return true one time for each button press.
 	 */
-    virtual bool get_released() = 0;
+	virtual bool get_released() = 0;
 
 	/*! \details Returns true if the button was pressed then released
 	 * This will return true only once per button press.
 	 */
-    virtual bool get_actuated() = 0;
+	virtual bool get_actuated() = 0;
 
 	/*! \details Returns true if the button has been held for the specified duration
 	 * This will only return true once per button press.
 	 *
-     */
-    virtual bool get_held() = 0;
+	  */
+	virtual bool get_held() = 0;
 
 	/*! \details Returns true if the button is currently in the active state.
 	 * The active state is updated each time Button::update() is called.
 	 *
 	 */
-    virtual bool is_active() const = 0;
+	virtual bool is_active() const = 0;
 
-    /*! \details Access the event ID of the button */
-    virtual enum ev::Event::button_id event_id() const = 0;
+	/*! \details Access the event ID of the button */
+	virtual enum ev::Event::button_id event_id() const = 0;
 
 
-    /*! \details Reset the state of the button */
-    virtual void reset();
+	/*! \details Reset the state of the button */
+	virtual void reset();
 
 
 protected:
-    /*! \details This will update the state of the button. This method
-     * should be called periodically.
-     */
-    virtual void update();
+	/*! \details This will update the state of the button. This method
+	  * should be called periodically.
+	  */
+	virtual void update();
 };
 
 }

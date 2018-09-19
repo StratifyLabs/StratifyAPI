@@ -1,8 +1,8 @@
 /* Copyright 2016 tgil All Rights Reserved */
 
-#include "ui/Button.hpp"
+#include "ev/Button.hpp"
 
-using namespace ui;
+using namespace ev;
 
 ev::Event Button::get_event(){
 

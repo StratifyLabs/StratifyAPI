@@ -1,8 +1,8 @@
 /* Copyright 2016 tgil All Rights Reserved */
 
-#include "ui/DeviceButton.hpp"
+#include "ev/DeviceButton.hpp"
 
-using namespace ui;
+using namespace ev;
 
 DeviceButton::DeviceButton(){
     memset(&m_status, 0, sizeof(m_status));

@@ -7,7 +7,7 @@
 #include "../chrono/Timer.hpp"
 #include "Button.hpp"
 
-namespace ui {
+namespace ev {
 
 /*! \brief Pin Button Class
  * \details This class implements a button using a hal::Pin object.

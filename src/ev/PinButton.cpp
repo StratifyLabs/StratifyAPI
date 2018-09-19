@@ -1,7 +1,7 @@
 /* Copyright 2016 tgil All Rights Reserved */
 
-#include "ui/PinButton.hpp"
-using namespace ui;
+#include "ev/PinButton.hpp"
+using namespace ev;
 using namespace sys;
 using namespace hal;
 

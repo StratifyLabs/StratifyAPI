@@ -136,7 +136,7 @@ public:
      *                  number of bytes sent if successful.
      */
 
-    int send(SOCKET send_socket, var::ConstString send_buffer);
+	 int send(var::ConstString send_buffer);
 
     /*!
      * \details       Receives data on the connected socket.
@@ -148,7 +148,7 @@ public:
      * @return        - -1 if failed.
      *                  number of bytes sent if successful.
      */
-    int receive(SOCKET receive_socket, var::ConstString receive_buffer, int buffer_length);
+	 int receive(var::ConstString receive_buffer, int buffer_length);
 
     /*!
      * \details       Closes all the sockets and cleans ws2_32 lib

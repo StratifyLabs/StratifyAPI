@@ -15,6 +15,8 @@ namespace hal {
 class AdcAttributes : public PinAssignmentPeriphAttr<adc_attr_t, adc_pin_assignment_t> {
 public:
 
+	AdcAttributes(){}
+
 	AdcAttributes(u32 o_flags, u32 freq){
 		set_flags(o_flags);
 		set_freq(freq);

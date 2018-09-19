@@ -1,8 +1,5 @@
 
 set(SOURCES
-  ${SOURCES_PREFIX}/Button.cpp
-  ${SOURCES_PREFIX}/PinButton.cpp
-  ${SOURCES_PREFIX}/DeviceButton.cpp
   ${SOURCES_PREFIX}/Element.cpp
   ${SOURCES_PREFIX}/LinkedElement.cpp
   ${SOURCES_PREFIX}/EventLoop.cpp

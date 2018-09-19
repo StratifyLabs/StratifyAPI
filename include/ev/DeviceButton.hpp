@@ -6,7 +6,7 @@
 #include "../sys/MicroTime.hpp"
 #include "../hal/Device.hpp"
 
-namespace ui {
+namespace ev {
 
 
 /*! \brief Device Button Class
