@@ -94,7 +94,7 @@ public:
      * \details       Connects to the server using the SocketAddress object passed to
      *                  create() function.
      *
-     * @return         WS_OK if successful, or
+     * @return         Socket descriptor identifying the connection if successful, or
      *                 WS_ERROR if not successful
      */
     int connect();
@@ -121,7 +121,7 @@ public:
      * \details       Connects to the server using the SocketAttributes object passed to
      *                  create() function.
      *
-     * @return         WS_OK if successful, or
+     * @return         Socket descriptor identifying the connection if successful, or
      *                 WS_ERROR if not successful
      */
     int accept();
@@ -129,7 +129,8 @@ public:
     /*!
      * \details       Sends data on the connected socket
      *
-     * @param           socket - descriptor identifying the socket to send the data to.
+     * @param           connected_socket - descriptor returned from connect/accept
+     *                  identifying the connection.
      * @param           send_buffer - character buffer containing the data to be sent.
      *
      * @return        - -1 if failed.
@@ -141,7 +142,8 @@ public:
     /*!
      * \details       Receives data on the connected socket.
      *
-     * @param           socket - descriptor identifying the connecting socket.
+     * @param           connected_socket - descriptor returned from connect/accept
+     *                  identifying the connection.
      * @param           receive_buffer - character buffer containing the data received.
      * @param           buffer-length - length of the buffer
      *
@@ -172,6 +174,7 @@ private:
 
 #if defined __win32
     ::SOCKET m_socket;
+    ::SOCKET m_connectedsocket;
 #endif
 };
 
