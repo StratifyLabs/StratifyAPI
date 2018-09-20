@@ -409,7 +409,7 @@ public:
 	 * @param d The value to write to the data
 	 *
 	 */
-	virtual void fill(unsigned char d);
+	void fill(unsigned char d);
 
 	/*! \details Swaps the byte order of the data.
 	 *
@@ -553,6 +553,8 @@ public:
 	Data & operator << (s32 a){ append(a); return *this; }
 	Data & operator << (u64 a){ append(a); return *this; }
 	Data & operator << (s64 a){ append(a); return *this; }
+
+	void print(unsigned int value) const;
 
 protected:
 	void copy_object(const Data & a);

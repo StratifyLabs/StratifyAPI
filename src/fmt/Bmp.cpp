@@ -17,15 +17,15 @@ Bmp::Bmp(const char * name){
 }
 
 
-int Bmp::open_readonly(const char * name){
+int Bmp::open_readonly(const var::ConstString & name){
 	return open(name, Bmp::READONLY);
 }
 
-int Bmp::open_readwrite(const char * name){
+int Bmp::open_readwrite(const var::ConstString & name){
 	return open(name, Bmp::RDWR);
 }
 
-int Bmp::open(const char * name, int access){
+int Bmp::open(const var::ConstString & name, int access){
 	bmp_header_t hdr;
 
 	m_dib.width = -1;
@@ -58,7 +58,7 @@ int Bmp::open(const char * name, int access){
 	return 0;
 }
 
-int Bmp::create(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel){
+int Bmp::create(const var::ConstString & name, s32 width, s32 height, u16 planes, u16 bits_per_pixel){
 
 	bmp_header_t hdr;
 
@@ -89,7 +89,7 @@ int Bmp::create(const char * name, s32 width, s32 height, u16 planes, u16 bits_p
 	return 0;
 }
 
-int Bmp::create_appfs(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, u32 nbyte){
+int Bmp::create_appfs(const var::ConstString & name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, u32 nbyte){
 	bmp_header_t hdr;
 	bmp_dib_t dib;
 

@@ -1,5 +1,5 @@
-#ifndef SOCKET_HPP
-#define SOCKET_HPP
+#ifndef SAPI_SOCKET_HPP
+#define SAPI_SOCKET_HPP
 
 //#if defined __win32
 
@@ -216,4 +216,4 @@ private:
 
 }
 
-#endif // SOCKET_HPP
+#endif // SAPI_SOCKET_HPP

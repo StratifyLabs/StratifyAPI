@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef INET_HPP_
-#define INET_HPP_
+#ifndef SAPI_INET_HPP_
+#define SAPI_INET_HPP_
 
 /*! \brief Internet Namespace
  * \details These classes are currently experimental.
@@ -17,4 +17,4 @@ namespace inet {}
 
 using namespace inet;
 
-#endif /* INET_HPP_ */
+#endif /* SAPI_INET_HPP_ */

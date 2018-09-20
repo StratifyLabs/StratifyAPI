@@ -6,9 +6,9 @@ using namespace hal;
 Switchboard::Switchboard(){}
 
 
-int Switchboard::open(const var::ConstString & name){
+int Switchboard::open(const var::ConstString & name, int o_flags){
     int ret;
-    ret = File::open(name, RDWR);
+	 ret = File::open(name, o_flags);
     if (ret < 0 ){ return ret; }
 
     switchboard_info_t info;

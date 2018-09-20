@@ -114,10 +114,10 @@ public:
 
     virtual const char * str() const { return m_string; }
     //compatible with std::string (but not Stratify API convention)
-    const char * c_str() const { return str(); }
+	 const char * c_str() const { return m_string; }
 
     /*! \details Returns the length of the string. */
-    u32 length() const { return strlen(str()); }
+	 u32 length() const { return strlen(m_string); }
     //compatible with std::string
     u32 len() const { return length(); }
 

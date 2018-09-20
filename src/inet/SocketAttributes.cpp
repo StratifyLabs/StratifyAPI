@@ -24,7 +24,7 @@ void SocketAddress::set_socketipaddress(u32 ipaddress) {
     struct sockaddr_in* s_address = (struct sockaddr_in*)(&m_sockaddr);
     s_address->sin_family = AF_INET;
     s_address->sin_addr.s_addr = ipaddress;
-    printf("Constructor:Ip addr=%s\n",inet_ntoa(s_address->sin_addr));
+	 //printf("Constructor:Ip addr=%s\n",inet_ntoa(s_address->sin_addr));
 }
 
 void SocketAddress::set_port(u32 port) {

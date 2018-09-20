@@ -11,6 +11,7 @@
 #else
 
 #include <sys/socket.h>
+#include <netinet/in.h>
 #endif
 
 //#include "../sys/File.hpp"

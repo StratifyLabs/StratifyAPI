@@ -235,7 +235,7 @@ public:
 	 * \endcode
 	 *
 	 */
-	int open(const var::ConstString & name = "/dev/switchboard0");
+	int open(const var::ConstString & name = "/dev/switchboard0", int o_flags = READWRITE);
 
 	/*! \details Gets the connection specified by id. */
 	SwitchboardConnection get_connection(u16 id) const;

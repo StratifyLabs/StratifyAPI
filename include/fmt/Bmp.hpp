@@ -33,19 +33,19 @@ public:
 	unsigned int calc_row_size() const;
 
 	/*! \details Opens the specified bitmap as readonly. */
-	int open_readonly(const char * name);
+	int open_readonly(const var::ConstString & name);
 
 	/*! \details Opens the specified bitmap as read write. */
-	int open_readwrite(const char * name);
+	int open_readwrite(const var::ConstString & name);
 
 	/*! \details Opens the specified bitmap with the specified access (e.g., Bmp::READONLY). */
-	int open(const char * name, int access);
+	int open(const var::ConstString & name, int access);
 
 	/*! \details Creates a new bitmap using the specified parameters. */
-	int create(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel);
+	int create(const var::ConstString & name, s32 width, s32 height, u16 planes, u16 bits_per_pixel);
 
 	/*! \details Creates a new bitmap and save it to the /app filesystem (flash memory). */
-	static int create_appfs(const char * name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, u32 nbyte);
+	static int create_appfs(const var::ConstString & name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, u32 nbyte);
 
 	/*! \details Moves file pointer to the start of the bitmap data. */
 	void rewind(){ seek(m_offset); }

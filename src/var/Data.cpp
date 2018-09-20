@@ -253,4 +253,8 @@ void Data::swap_byte_order(int size){
 
 }
 
+void Data::print(unsigned int value) const {
+	MCU_UNUSED_ARGUMENT(value);
+}
+
 
