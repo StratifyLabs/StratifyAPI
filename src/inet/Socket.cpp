@@ -142,10 +142,9 @@ int Socket::connect() {
 }
 
 int Socket::send(var::ConstString send_buffer) {
-#if defined __win32
+#if 0
     printf("Send : buffer length=%d\n",send_buffer.length());
     printf("Send : message - %s\n",send_buffer.c_str());
-    printf("Connected socket=%d\n",connected_socket);
     int ret = ::send(connected_socket, send_buffer.c_str(), (int)send_buffer.length(), 0 );
     if (ret == SOCKET_ERROR) {
         printf("send failed with error: %d\n", WSAGetLastError());
@@ -161,7 +160,7 @@ int Socket::send(var::ConstString send_buffer) {
 
 
 int Socket::receive(var::ConstString receive_buffer, int buffer_length) {
-#if defined __win32
+#if 0
     return ::recv(connected_socket, (char*)receive_buffer.c_str(), buffer_length, 0);
 #else
 
