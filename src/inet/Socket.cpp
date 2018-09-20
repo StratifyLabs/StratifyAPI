@@ -141,7 +141,7 @@ int Socket::connect() {
 #endif
 }
 
-int Socket::send(::SOCKET connected_socket, var::ConstString send_buffer) {
+int Socket::send(var::ConstString send_buffer) {
 #if defined __win32
     printf("Send : buffer length=%d\n",send_buffer.length());
     printf("Send : message - %s\n",send_buffer.c_str());
@@ -160,7 +160,7 @@ int Socket::send(::SOCKET connected_socket, var::ConstString send_buffer) {
 }
 
 
-int Socket::receive(::SOCKET connected_socket, var::ConstString receive_buffer, int buffer_length) {
+int Socket::receive(var::ConstString receive_buffer, int buffer_length) {
 #if defined __win32
     return ::recv(connected_socket, (char*)receive_buffer.c_str(), buffer_length, 0);
 #else
