@@ -91,7 +91,7 @@ void Test::print_case_message(const char * fmt, ...){
     m_case_timer.stop();
     char key[16];
     key[15] = 0; //enforce null termination
-    snprintf(key, 15, "msg-%ld", m_case_message_number);
+	 snprintf(key, 15, "msg-" F32D, m_case_message_number);
     m_case_message_number++;
     va_list args;
     va_start (args, fmt);
@@ -104,7 +104,7 @@ void Test::print_case_failed(const char * fmt, ...){
     m_case_timer.stop();
     char key[16];
     key[15] = 0; //enforce null termination
-    snprintf(key, 15, "msg-%ld", m_case_message_number);
+	 snprintf(key, 15, "msg-" F32D, m_case_message_number);
     m_case_message_number++;
     va_list args;
     va_start (args, fmt);
@@ -135,6 +135,7 @@ void Test::initialize(const var::ConstString & name, const var::ConstString & ve
 
     print_indent(0, "{\n");
 
+#if !defined __link
     Sys sys;
     sys_info_t info;
     print_indent(1, "\"system\": {\n");
@@ -156,6 +157,8 @@ void Test::initialize(const var::ConstString & name, const var::ConstString & ve
     }
     sys.close();
     print_indent(1, "},\n");
+#endif
+
     print_indent(1, "\"test\": {\n");
     print_indent(2, "\"name\": \"%s\",\n", name.str());
     //need to add the amount of RAM the program has to output

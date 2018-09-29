@@ -102,16 +102,6 @@
  *
  */
 
-//need to manually define POSIX error numbers
-#define WS_ERR_NET_INIT_FAILED                       -0x0040  /**< Failed to initialize WinSock library. */
-#define WS_ERR_NET_SOCKET_FAILED                     -0x0042  /**< Failed to open a socket. */
-#define WS_ERR_NET_CONNECT_FAILED                    -0x0044  /**< The connection to the given server / port failed. */
-#define WS_ERR_NET_BIND_FAILED                       -0x0046  /**< Binding of the socket failed. */
-#define WS_ERR_NET_LISTEN_FAILED                     -0x0048  /**< Could not listen on the socket. */
-#define WS_ERR_NET_ACCEPT_FAILED                     -0x004A  /**< Could not accept the incoming connection. */
-#define WS_ERR_NET_RECV_FAILED                       -0x004C  /**< Reading information from the socket failed. */
-#define WS_ERR_NET_SEND_FAILED                       -0x004E  /**< Sending information through the socket failed. */
-#define WS_ERR_NET_SHUTDOWN_FAILED                   -0x004F  /**< Failed to shutdown the socket. */
 #endif
 
 

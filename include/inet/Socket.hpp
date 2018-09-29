@@ -14,16 +14,6 @@
 
 #define DEFAULT_PORT "27015"
 
-/* \tg
- *
- * We don't want to expose any Winsocket API's in any hpp files.
- *
- *
- */
-
-#define WS_OK                                           0x0000  /**< Operation successful. */
-#define WS_ERROR                                        -0x0001 /**< Operation not successful. */
-
 
 namespace inet {
 
@@ -174,7 +164,9 @@ private:
 
 #if defined __win32
     ::SOCKET m_socket;
-    ::SOCKET m_connectedsocket;
+#else
+	 //socket on all other platforms is a file handler
+	 int m_socket;
 #endif
 };
 

@@ -19,10 +19,6 @@ if( ${SOS_BUILD_CONFIG} STREQUAL arm )
   add_subdirectory(ui)
   list(APPEND SOURCELIST ${SOURCES})
 
-	set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/test)
-	add_subdirectory(test)
-	list(APPEND SOURCELIST ${SOURCES})
-
 endif()
 
 set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/api)
@@ -59,6 +55,10 @@ list(APPEND SOURCELIST ${SOURCES})
 
 set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/sys)
 add_subdirectory(sys)
+list(APPEND SOURCELIST ${SOURCES})
+
+set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/test)
+add_subdirectory(test)
 list(APPEND SOURCELIST ${SOURCES})
 
 set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/var)
