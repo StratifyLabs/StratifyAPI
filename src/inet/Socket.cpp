@@ -1,6 +1,12 @@
 #include "var.hpp"
 #include "inet/Socket.hpp"
 
+#if defined __win32
+#define SHUT_RD SD_RECEIVE
+#define SHUT_WR SD_SEND
+#define SHUT_RDWR SD_BOTH
+#endif
+
 using namespace inet;
 
 bool Socket::m_is_initialized = false;
@@ -26,9 +32,9 @@ int Socket::decode_socket_return(int value){
 		case INVALID_SOCKET:
 			//set error number
 			return -1;
-		case SOCKET_ERROR:
+        //case SOCKET_ERROR:
 			//set error number
-			return -1;
+            //return -1;
 		default:
 			return value;
 	}
@@ -93,7 +99,7 @@ int Socket::bind() {
 		hints->ai_flags = AI_PASSIVE;
 	}
 
-#if defined __win32
+#if 0
 
 	// Resolve the server address and port
 	int ret = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
@@ -134,16 +140,16 @@ int Socket::connect() {
 }
 
 int Socket::write(const void * buf, int nbyte) {
-	return decode_socket_return( ::send(m_socket, buf, nbyte, 0 ) );
+    return decode_socket_return( ::send(m_socket, (const char*)buf, nbyte, 0 ) );
 }
 
 
 int Socket::read(void * buf, int nbyte) {
-	return decode_socket_return( ::recv(m_socket, buf, nbyte, 0 ) );
+    return decode_socket_return( ::recv(m_socket, (char*)buf, nbyte, 0 ) );
 }
 
 int Socket::shutdown(int how){
-	int socket_how = SHUT_RDWR;
+    int socket_how = SHUT_RDWR;
 	if( (how & ACCESS_MODE) == READONLY ){
 		socket_how = SHUT_RD;
 	} else if( (how & ACCESS_MODE) == WRITEONLY ){
