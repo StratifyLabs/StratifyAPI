@@ -173,8 +173,3 @@ int Socket::close() {
 Socket::~Socket() {
 	close();
 }
-
-
-
-//TODO:1)Move target_link_libraries(lws2_32.a) from CMakefiles.txt of sl to StratifyAPI
-//2)Add variables to store Address family, protocol to be used.
