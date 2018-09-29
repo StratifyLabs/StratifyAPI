@@ -2,19 +2,16 @@
 #define SOCKETATTRIBUTES_HPP
 
 #if defined __win32
-
 #define _BSD_SOURCE
 #include <winsock2.h>
 #include <ws2tcpip.h>
-
-//#define DEFAULT_PORT "27015"
 #else
-
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netdb.h>
+#include <unistd.h>
 #endif
 
-//#include "../sys/File.hpp"
 #include "../api/InetObject.hpp"
 #include "../var/ConstString.hpp"
 
@@ -140,9 +137,9 @@ public:
     };
 
     //these may need to be Or'd so an anonymous enum is OK
-    enum flag{
-        FLAG_PASSIVE=0x01,
-        FLAG_BLOCKING=0x02
+	 enum {
+		  FLAG_PASSIVE = (1<<0),
+		  FLAG_BLOCKING = (1<<1)
     };
 
     SocketAttributes();
@@ -179,13 +176,9 @@ public:
 private:
     Ipv4Address m_ipv4_address;
     u32 m_port;
-    //family
     enum family m_family;
-    //type
     enum type m_type;
-    //protocol
     enum protocol m_protocol;
-    //flags
     u32 m_flag;
 
 };

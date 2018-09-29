@@ -1,173 +1,99 @@
 #ifndef SAPI_SOCKET_HPP
 #define SAPI_SOCKET_HPP
 
-//#if defined __win32
-
-//#define _BSD_SOURCE
-//#include <winsock2.h>
-//#include <ws2tcpip.h>
-
-//#define DEFAULT_PORT "27015"
-//#endif
 #include "SocketAttributes.hpp"
 #include "../sys/File.hpp"
 
-#define DEFAULT_PORT "27015"
-
-
 namespace inet {
 
-/*
- * \tg
- *
- * The interface for __win32 should be the same for everything
- * else. We shouldn't have to
- *
- * \ck The Socket class is derfived from Sys::File which has an enum SOCKET.
- * So the SOCKET variable used in connect function was wrongly resolving to this enum
- * SOCKET and throwing an error. I had to move the class definition under the ifdef for
- * that reason. We should address that.
- *
- * \tg You should be able to do ::SOCKET to push the definition to
- * the global scope. If that doesn't work change the enum in File to FILE_SOCKET
- *
- * \ck : INVALID_SOCKET is a macro which defines as SOCKET ~(0) in winsock2.h. So
- * I have to change the enum in File to FILE_SOCKET.
- *
- * Also please look closely at sys::File and how it reads and writes data.
- * The Socket class should be able to read and write data in a very similar
- * manner (like using int File::write(const var::Data & data))
- *
- *
- */
 class Socket : public sys::File {
 public:
-    Socket();
-    ~Socket();
+	Socket();
+	~Socket();
 
-    /*!
-     * \details        Initializes WS2_32.dll.Stores socket address.
-     *
-     * @params         address - instance of SocketAddress containing the host address and port
-     *                 blocking - 1 to turn on blocking mode
-     *                            0 to turn off blocking mode
-     *                 proto    - Indicates the protocol TCP/UDP to be used for connection
-     *
-     * @return         WS_OK if successful, or
-     *                 WS_ERROR if not successful
-     */
-    /*
-     * \tg
-     *
-     * We shouldn't return WS_ERR_...
-     *
-     * Just return -1 if something fails. We need to
-     * define posix error number values for windows. That
-     * will go in the file include/api/ApiObject.hpp
-     *
-     * Then if the fucntion fails, we use set_error_number(EIO);
-     * where EIO is replaced with something appropriate for the failure.
-     *
-     * The list should match: https://stratifylabs.co/StratifyOS/html/group___e_r_r_n_o.html
-     *
-     * \ck should I do this now? Yes :)
-     *
-     *
-     * \tg Try implementing int create(const SocketAttributes & attributes) which
-     * should call ::socket() and store the result in the m_socket member
-     * variable. It should turn -1 if ::socket() fails.
-     *
-     */
-    int create(const SocketAttributes & attributes);
+	/*!
+	  * \details Creates a new socket.
+	  *
+	  * @params attributes The Socket Attributes
+	  *
+	  * @return Zero on success
+	  */
+	int create(const SocketAttributes & attributes);
 
-    /*!
-     * \details       Connects to the server using the SocketAddress object passed to
-     *                  create() function.
-     *
-     * @return         Socket descriptor identifying the connection if successful, or
-     *                 WS_ERROR if not successful
-     */
-    int connect();
+	/*!
+	  * \details Connects to the server using the SocketAddress
+	  * object passed to create() method.
+	  * @return Less than zero on error or zero on success
+	  */
+	int connect();
 
-    /*!
-     * \details       Binds to the port for which the socket is created
-     *
-     *
-     * @return         WS_OK if successful, or
-     *                 WS_ERROR if not successful
-     */
-    int bind();
+	/*!
+	  * \details Binds to the port for which the socket was created.
+	  * @return Less than zero on error and zero on success
+	  */
+	int bind();
 
-    /*!
-     * \details       Listens to the port for which the socket is created
-     *
-     *
-     * @return         WS_OK if successful, or
-     *                 WS_ERROR if not successful
-     */
-    int listen();
+	/*!
+	  * \details Listens on the port specified during create().
+	  * @return Less than zero on error or zero on success
+	  */
+	int listen();
 
-    /*!
-     * \details       Connects to the server using the SocketAttributes object passed to
-     *                  create() function.
-     *
-     * @return         Socket descriptor identifying the connection if successful, or
-     *                 WS_ERROR if not successful
-     */
-    int accept();
+	/*!
+	  * \details Accepts a socket connection on a socket that is listening.
+	  *
+	  * @return A valid Socket if the operation is successful.
+	  */
+	Socket accept();
 
-    /*!
-     * \details       Sends data on the connected socket
-     *
-     * @param           connected_socket - descriptor returned from connect/accept
-     *                  identifying the connection.
-     * @param           send_buffer - character buffer containing the data to be sent.
-     *
-     * @return        - -1 if failed.
-     *                  number of bytes sent if successful.
-     */
+	/*! \details Shuts down the socket.
+	 *
+	 * @param how Use READWRITE, READONLY, or WRITEONLY to disable the specified operations
+	 *
+	 * \code
+	 * Socket s;
+	 * s.shutdown(); //disables further send/receive operations
+	 * s.shutdown(Socket::READWRITE); //disables further send/receive operations
+	 * s.shutdown(Socket::WRITEONLY); //disables further send operations
+	 * s.shutdown(Socket::READONLY); //disables further receive operations
+	 * \endcode
+	 *
+	 * @return Zero on success
+	 */
+	int shutdown(int how = 0);
 
-	 int send(var::ConstString send_buffer);
+	//already documented in sys::File
+	int write(const void * buf, int nbyte);
 
-    /*!
-     * \details       Receives data on the connected socket.
-     *
-     * @param           connected_socket - descriptor returned from connect/accept
-     *                  identifying the connection.
-     * @param           receive_buffer - character buffer containing the data received.
-     * @param           buffer-length - length of the buffer
-     *
-     * @return        - -1 if failed.
-     *                  number of bytes sent if successful.
-     */
-	 int receive(var::ConstString receive_buffer, int buffer_length);
+	//already documented in sys::File
+	int read(void * buf, int nbyte);
 
-    /*!
-     * \details       Closes all the sockets and cleans ws2_32 lib
-     *
-     * @return         WS_OK if successful, or
-     *                 WS_ERROR if not successful
-     */
-    int close();
+	//already documented in sys::File
+	int close();
+
+	bool is_valid() const;
 
 private:
-    SocketAttributes m_socketattributes;
+	SocketAttributes m_socketattributes;
 
 
-    /*!
-     * \details        Initializes WS2_32.dll.
-     *
-     * @return         WS_OK if successful, or
-     *                 WS_ERROR if not successful
-     */
-    int init();
+	/*!
+	  * \details Initializes the system socket API.
+	  *
+	  * @return Zero on success
+	  */
+	int init();
+
+	static int decode_socket_return(int value);
 
 #if defined __win32
-    ::SOCKET m_socket;
+	::SOCKET m_socket;
 #else
-	 //socket on all other platforms is a file handler
-	 int m_socket;
+	//socket on all other platforms is a file handler
+	int m_socket;
 #endif
+
+	static bool m_is_initialized;
 };
 
 

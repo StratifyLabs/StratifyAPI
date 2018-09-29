@@ -64,9 +64,9 @@ class File : public api::SysWorkObject {
 public:
 
 #if defined __link
-    File(link_transport_mdriver_t * driver = 0);
+	File(link_transport_mdriver_t * driver = 0);
 #else
-    File();
+	File();
 #endif
 
 	/*! \details These values are used as flags when opening devices or files */
@@ -86,19 +86,20 @@ public:
 		RDWR /*! Open as read-write */ = LINK_O_RDWR,
 		NONBLOCK /*! Open as non-blocking */ = LINK_O_NONBLOCK,
 		NDELAY /*! Open as non-blocking */ = LINK_O_NONBLOCK,
-        ACCMODE /*! Access mode mask */ = LINK_O_ACCMODE,
-        FORMAT /*! Mode format mask */ = LINK_S_IFMT,
-        FILE_SOCKET /*! Mode Socket mask */ = LINK_S_IFSOCK,
-        REGULAR /*! Mode regular file value */ = LINK_S_IFREG,
-        BLOCK /*! Mode block device value */ = LINK_S_IFBLK,
-        CHARACTER /*! Mode character device value */ = LINK_S_IFCHR,
-        DIRECTORY /*! Mode directory value */ = LINK_S_IFDIR,
-        FIFO /*! Mode FIFO value */ = LINK_S_IFDIR,
-        SYMBOLIC_LINK /*! Mode symbolic link value */ = LINK_S_IFLNK,
-        READ_OK /*! Check if read access is allowed */ = LINK_R_OK,
-        WRITE_OK /*! Check if write access is allowed */ = LINK_W_OK,
-        EXECUTE_OK /*! Check if execute access is allowed */ = LINK_X_OK,
-        FILE_OK /*! Check if file exists */ = LINK_F_OK,
+		ACCMODE /*! Access mode mask */ = LINK_O_ACCMODE,
+		ACCESS_MODE /*! Access mode mask */ = LINK_O_ACCMODE,
+		FORMAT /*! Mode format mask */ = LINK_S_IFMT,
+		FILE_SOCKET /*! Mode Socket mask */ = LINK_S_IFSOCK,
+		REGULAR /*! Mode regular file value */ = LINK_S_IFREG,
+		BLOCK /*! Mode block device value */ = LINK_S_IFBLK,
+		CHARACTER /*! Mode character device value */ = LINK_S_IFCHR,
+		DIRECTORY /*! Mode directory value */ = LINK_S_IFDIR,
+		FIFO /*! Mode FIFO value */ = LINK_S_IFDIR,
+		SYMBOLIC_LINK /*! Mode symbolic link value */ = LINK_S_IFLNK,
+		READ_OK /*! Check if read access is allowed */ = LINK_R_OK,
+		WRITE_OK /*! Check if write access is allowed */ = LINK_W_OK,
+		EXECUTE_OK /*! Check if execute access is allowed */ = LINK_X_OK,
+		FILE_OK /*! Check if file exists */ = LINK_F_OK,
 
 	};
 
@@ -122,22 +123,22 @@ public:
 	 * \endcode
 	 *
 	 */
-    static var::ConstString name(const var::ConstString & path);
+	static var::ConstString name(const var::ConstString & path);
 
 
 #if !defined __link
-    /*! \details Returns an error if the access is not allowed.
-     *
-     * @param path path to the file
-     * @param o_access Bit-wise OR of access flags READ_OK | WRITE_OK | EXECUTE_OK | FILE_OK
-     *
-     */
-    static int access(const var::ConstString & path, int o_access);
+	/*! \details Returns an error if the access is not allowed.
+	  *
+	  * @param path path to the file
+	  * @param o_access Bit-wise OR of access flags READ_OK | WRITE_OK | EXECUTE_OK | FILE_OK
+	  *
+	  */
+	static int access(const var::ConstString & path, int o_access);
 
-    /*! \details Returns true if the file exists.
-     *
-     */
-    static bool exists(const var::ConstString & path){ return access(path, FILE_OK) >= 0; }
+	/*! \details Returns true if the file exists.
+	  *
+	  */
+	static bool exists(const var::ConstString & path){ return access(path, FILE_OK) >= 0; }
 #endif
 
 	/*! \details Returns a pointer to the file suffix.
@@ -148,8 +149,8 @@ public:
 	 * For example:
 	 *
 	 * \code
-     * const var::ConstString path = "/home/data.txt";
-     * printf("Suffix is %s", File::suffix(path).str());
+	  * const var::ConstString path = "/home/data.txt";
+	  * printf("Suffix is %s", File::suffix(path).str());
 	 * \endcode
 	 *
 	 * The above code will output:
@@ -158,7 +159,7 @@ public:
 	 * \endcode
 	 *
 	 */
-    static var::ConstString suffix(const var::ConstString & path);
+	static var::ConstString suffix(const var::ConstString & path);
 
 	/*! \details Deletes a file.
 	 *
@@ -167,9 +168,9 @@ public:
 	 *
 	 */
 #if !defined __link
-    static int remove(const var::ConstString & path);
+	static int remove(const var::ConstString & path);
 #else
-    static int remove(const var::ConstString & path, link_transport_mdriver_t * driver = 0);
+	static int remove(const var::ConstString & path, link_transport_mdriver_t * driver = 0);
 #endif
 
 	/*! \details Gets file stat data.
@@ -180,9 +181,9 @@ public:
 	 *
 	 */
 #if !defined __link
-    static int stat(const var::ConstString & path, struct stat * st);
+	static int stat(const var::ConstString & path, struct stat * st);
 #else
-    static int stat(const var::ConstString & path, struct link_stat * st, link_transport_mdriver_t * driver = 0);
+	static int stat(const var::ConstString & path, struct link_stat * st, link_transport_mdriver_t * driver = 0);
 #endif
 
 	/*! \details Gets the size of the file.
@@ -192,9 +193,9 @@ public:
 	 *
 	 */
 #if !defined __link
-    static u32 size(const var::ConstString & path);
+	static u32 size(const var::ConstString & path);
 #else
-    static u32 size(const var::ConstString & path, link_transport_mdriver_t * driver);
+	static u32 size(const var::ConstString & path, link_transport_mdriver_t * driver);
 #endif
 
 
@@ -204,7 +205,7 @@ public:
 	 * @param flags The flags used to open the flag (e.g. File::READONLY)
 	 * @return Zero on success
 	 */
-    virtual int open(const var::ConstString & name, int flags = RDWR);
+	virtual int open(const var::ConstString & name, int flags = RDWR);
 
 	/*! \details Opens a file.
 	 *
@@ -217,14 +218,14 @@ public:
 	 * file will be closed.
 	 *
 	 */
-    int open(const var::ConstString & name, int access, int perms);
+	int open(const var::ConstString & name, int access, int perms);
 
 	/*! \details Opens a file for read/write.
 	 *
 	 * @param path The path to the file
 	 *
 	 */
-    inline int open_readwrite(const var::ConstString & path){
+	inline int open_readwrite(const var::ConstString & path){
 		return open(path, RDWR);
 	}
 
@@ -233,7 +234,7 @@ public:
 	 * @param path The path to the file
 	 *
 	 */
-    inline int open_readonly(const var::ConstString & path){
+	inline int open_readonly(const var::ConstString & path){
 		return open(path, READONLY);
 	}
 
@@ -242,7 +243,7 @@ public:
 	 * @param path The path to the file
 	 *
 	 */
-    inline int open_append(const var::ConstString & path){
+	inline int open_append(const var::ConstString & path){
 		return open(path, APPEND | CREATE | WRITEONLY);
 	}
 
@@ -252,7 +253,7 @@ public:
 	 * @param overwrite Overwrite (truncate) the existing file (defaults to true)
 	 * @param perms The permissions to assign to the newly created file
 	 */
-    int create(const var::ConstString & path, bool overwrite = true, int perms = 0666);
+	int create(const var::ConstString & path, bool overwrite = true, int perms = 0666);
 
 	/*! \details Returns the file size. */
 	u32 size() const;
@@ -275,46 +276,46 @@ public:
 	 * @param nbyte The number of bytes to read
 	 * @return The number of bytes read or less than zero on an error
 	 */
-    virtual int read(void * buf, int nbyte) const;
+	virtual int read(void * buf, int nbyte) const;
 
-    /*! \details Reads the file into a var::Data object.
-     *
-     * @param data The destination data object
-     * @return The number of bytes read
-     *
-     * This method will read up to data.size() bytes.
-     *
-     */
-    int read(var::Data & data) const {
-        int result = read(data.to_void(), data.size());
-        if( result > 0 ){ data.set_size(result); }
-        return result;
-    }
+	/*! \details Reads the file into a var::Data object.
+	  *
+	  * @param data The destination data object
+	  * @return The number of bytes read
+	  *
+	  * This method will read up to data.size() bytes.
+	  *
+	  */
+	int read(var::Data & data) const {
+		int result = read(data.to_void(), data.size());
+		if( result > 0 ){ data.set_size(result); }
+		return result;
+	}
 
 	/*! \details Write the file.
 	 *
 	 * @param buf A pointer to the source buffer
 	 * @param nbyte The number of bytes to read
-     * @return The number of bytes written or less than zero on an error
+	  * @return The number of bytes written or less than zero on an error
 	 */
-    virtual int write(const void * buf, int nbyte) const;
+	virtual int write(const void * buf, int nbyte) const;
 
-    /*! \details Writes the file using a var::Data object. */
-    int write(const var::Data & data) const { return write(data.to_void(), data.size()); }
+	/*! \details Writes the file using a var::Data object. */
+	int write(const var::Data & data) const { return write(data.to_void(), data.size()); }
 
-    /*! \details Writes a var::ConstString to the file.
-     *
-     * @param str The string to write
-     * @return The number of bytes written
-     */
-    int write(const var::ConstString & str) const { return write(str.str(), str.length()); }
+	/*! \details Writes a var::ConstString to the file.
+	  *
+	  * @param str The string to write
+	  * @return The number of bytes written
+	  */
+	int write(const var::ConstString & str) const { return write(str.str(), str.length()); }
 
-    /*! \details Writes a var::String to the file.
-     *
-     * @param str The string to write
-     * @return The number of bytes written
-     */
-    int write(const var::String & str) const { return write(str.str(), str.length()); }
+	/*! \details Writes a var::String to the file.
+	  *
+	  * @param str The string to write
+	  * @return The number of bytes written
+	  */
+	int write(const var::String & str) const { return write(str.str(), str.length()); }
 
 	/*! \details Reads the file.
 	 *
@@ -323,32 +324,32 @@ public:
 	 * @param nbyte The number of bytes to read
 	 * @return The number of bytes read or less than zero on an error
 	 */
-    int read(int loc, void * buf, int nbyte) const;
+	int read(int loc, void * buf, int nbyte) const;
 
-    /*! \details Reads the file using a var::Data object. */
-    int read(int loc, var::Data & data) const {
-        int result = read(loc, data.to_void(), data.size());
-        if( result > 0 ){ data.set_size(result); }
-        return result;
-    }
+	/*! \details Reads the file using a var::Data object. */
+	int read(int loc, var::Data & data) const {
+		int result = read(loc, data.to_void(), data.size());
+		if( result > 0 ){ data.set_size(result); }
+		return result;
+	}
 
-    /*! \details Writes the file at the location specified.
+	/*! \details Writes the file at the location specified.
 	 *
 	 * @param loc Location to write (not application to character devices)
 	 * @param buf Pointer to the source data
 	 * @param nbyte Number of bytes to write
-     * @return Number of bytes successfully written or less than zero with errno set
+	  * @return Number of bytes successfully written or less than zero with errno set
 	 */
-    int write(int loc, const void * buf, int nbyte) const;
+	int write(int loc, const void * buf, int nbyte) const;
 
-    /*! \details Writes the file using a var::Data object at the location specified. */
-    int write(int loc, const var::Data & data) const { return write(loc, data.to_void(), data.size()); }
+	/*! \details Writes the file using a var::Data object at the location specified. */
+	int write(int loc, const var::Data & data) const { return write(loc, data.to_void(), data.size()); }
 
-    /*! \details Writes the file using a var::ConstString object at the location specified. */
-    int write(int loc, const var::ConstString & str) const { return write(loc, str.str(), str.length()); }
+	/*! \details Writes the file using a var::ConstString object at the location specified. */
+	int write(int loc, const var::ConstString & str) const { return write(loc, str.str(), str.length()); }
 
-    /*! \details Writes the file using a var::String object at the location specified. */
-    int write(int loc, const var::String & str) const { return write(loc, str.str(), str.length()); }
+	/*! \details Writes the file using a var::String object at the location specified. */
+	int write(int loc, const var::String & str) const { return write(loc, str.str(), str.length()); }
 
 	/*! \details Reads a line from a file.
 	 *
@@ -360,29 +361,29 @@ public:
 	 */
 	int readline(char * buf, int nbyte, int timeout_msec, char terminator = '\n') const;
 
-    File& operator<<(const var::ConstString & a){ write(a.str(), a.length()); return *this; }
+	File& operator<<(const var::ConstString & a){ write(a.str(), a.length()); return *this; }
 
 	/*! \details Seeks to a location in the file or on the device. */
 	virtual int seek(int loc, int whence = LINK_SEEK_SET) const;
 
-    /*! \details Reads a line in to the var::String until end-of-file or \a term is reached. */
-    var::String gets(char term = '\n') const;
+	/*! \details Reads a line in to the var::String until end-of-file or \a term is reached. */
+	var::String gets(char term = '\n') const;
 
-    char * gets(var::String & s, char term = '\n') const;
+	char * gets(var::String & s, char term = '\n') const;
 
 
 #ifndef __link
-    [[deprecated("Use gets(var::String & s) instead")]]
+	[[deprecated("Use gets(var::String & s) instead")]]
 #endif
-    char * gets(char * s, int n, char term = '\n') const;
+	char * gets(char * s, int n, char term = '\n') const;
 
 #ifdef __link
-    static void set_default_driver(link_transport_mdriver_t * driver){
-        m_default_driver = driver;
-    }
-    void set_driver(link_transport_mdriver_t * driver){ m_driver = driver; }
+	static void set_default_driver(link_transport_mdriver_t * driver){
+		m_default_driver = driver;
+	}
+	void set_driver(link_transport_mdriver_t * driver){ m_driver = driver; }
 	link_transport_mdriver_t * driver() const { return m_driver; }
-    static link_transport_mdriver_t * default_driver(){ return m_default_driver; }
+	static link_transport_mdriver_t * default_driver(){ return m_default_driver; }
 
 #endif
 
@@ -422,78 +423,78 @@ public:
 	 */
 	int ioctl(int req, int arg) const { return ioctl(req, MCU_INT_CAST(arg)); }
 
-    /*! \details Sets the file descriptor for this object. */
-    void set_fileno(int fd){ m_fd = fd; }
+	/*! \details Sets the file descriptor for this object. */
+	void set_fileno(int fd){ m_fd = fd; }
 
-    /*! \details Sets the file descriptor of this object to the file descriptor of file.
-     *
-     * @param file A reference to the file to share the fileno with.
-     *
-     * The reference \a file must already be opened and have a valid file
-     * number. This won't bind the file number to file just assign
-     * it based on the state of file.fileno() when this method is called.
-     *
-     *
-     */
-    void set_fileno(const File & file){ m_fd = file.fileno(); }
+	/*! \details Sets the file descriptor of this object to the file descriptor of file.
+	  *
+	  * @param file A reference to the file to share the fileno with.
+	  *
+	  * The reference \a file must already be opened and have a valid file
+	  * number. This won't bind the file number to file just assign
+	  * it based on the state of file.fileno() when this method is called.
+	  *
+	  *
+	  */
+	void set_fileno(const File & file){ m_fd = file.fileno(); }
 
-    /*! \details Copies a file from the source to the destination.
-     *
-     * \param source_path Path to the source file
-     * \param dest_path Path to the destination file (new location)
-     * \return Zero on success
-     *
-     *
-     */
+	/*! \details Copies a file from the source to the destination.
+	  *
+	  * \param source_path Path to the source file
+	  * \param dest_path Path to the destination file (new location)
+	  * \return Zero on success
+	  *
+	  *
+	  */
 #if !defined __link
-    static int copy(var::String & source_path, var::String & dest_path);
+	static int copy(var::String & source_path, var::String & dest_path);
 #else
-    static int copy(const var::String & source_path, const var::String & dest_path, link_transport_mdriver_t * driver = 0);
+	static int copy(const var::String & source_path, const var::String & dest_path, link_transport_mdriver_t * driver = 0);
 #endif
 
-    /*! \details Renames a file.
-     *
-     * \param old_path Current path to the file (will be old path after rename)
-     * \param new_path New path to the file
-     * \return Zero on success
-     *
-     */
+	/*! \details Renames a file.
+	  *
+	  * \param old_path Current path to the file (will be old path after rename)
+	  * \param new_path New path to the file
+	  * \return Zero on success
+	  *
+	  */
 #if !defined __link
-    static int rename(const var::ConstString & old_path, const var::ConstString & new_path);
+	static int rename(const var::ConstString & old_path, const var::ConstString & new_path);
 #else
-    static int rename(const var::ConstString & old_path, const var::ConstString & new_path, link_transport_mdriver_t * driver = 0);
+	static int rename(const var::ConstString & old_path, const var::ConstString & new_path, link_transport_mdriver_t * driver = 0);
 #endif
 
 
 protected:
 
-    static int copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path);
+	static int copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path);
 
-    enum {
-        GETS_BUFFER_SIZE = 128
-    };
+	enum {
+		GETS_BUFFER_SIZE = 128
+	};
 
 	mutable int m_fd;
 #ifdef __link
-    mutable link_transport_mdriver_t * m_driver;
-    static link_transport_mdriver_t * m_default_driver;
-    int check_driver() const {
-        if( m_driver == 0 ){
-            m_driver = m_default_driver;
-            if( m_driver == 0 ){
-                set_error_number(2);
-                return -1;
-            }
-        }
-        return 0;
-    }
+	mutable link_transport_mdriver_t * m_driver;
+	static link_transport_mdriver_t * m_default_driver;
+	int check_driver() const {
+		if( m_driver == 0 ){
+			m_driver = m_default_driver;
+			if( m_driver == 0 ){
+				set_error_number(2);
+				return -1;
+			}
+		}
+		return 0;
+	}
 
-    static link_transport_mdriver_t * check_driver(link_transport_mdriver_t * driver){
-        if( driver == 0 ){
-            return m_default_driver;
-        }
-        return driver;
-    }
+	static link_transport_mdriver_t * check_driver(link_transport_mdriver_t * driver){
+		if( driver == 0 ){
+			return m_default_driver;
+		}
+		return driver;
+	}
 
 #endif
 

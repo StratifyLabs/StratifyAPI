@@ -1,29 +1,59 @@
-#include <unistd.h>
+
 #include "inet/Socket.hpp"
 
 using namespace inet;
 
+bool Socket::m_is_initialized = false;
+
 Socket::Socket(){
 #if defined __win32
-    m_socket=INVALID_SOCKET;
-    m_connectedsocket=INVALID_SOCKET;
+	m_socket=INVALID_SOCKET;
+#endif
+	init();
+}
+
+bool Socket::is_valid() const {
+#if defined __win32
+	return m_socket != INVALID_SOCKET;
+#else
+	return m_socket >= 0;
+#endif
+}
+
+int Socket::decode_socket_return(int value){
+#if defined __win32
+	switch(value){
+		case INVALID_SOCKET:
+			//set error number
+			return -1;
+		case SOCKET_ERROR:
+			//set error number
+			return -1;
+		default:
+			return value;
+	}
+#else
+	return value;
 #endif
 }
 
 int Socket::init() {
+	if( m_is_initialized ){
+		return 0;
+	}
+	m_is_initialized = true;
 #if defined __win32
-    WSADATA wsadata;
-    int result;
+	WSADATA wsadata;
+	int result;
 
-    // Initialize Winsock
-    result = WSAStartup(MAKEWORD(2,2), &wsadata);
-    if (result != 0) {
-        printf("WSAStartup failed with error: %d\n", result);
-        set_error_number(WS_ERR_NET_INIT_FAILED);
-        return WS_ERROR;
-    }
+	// Initialize Winsock
+	result = WSAStartup(MAKEWORD(2,2), &wsadata);
+	if (result != 0) {
+		//set_error_number(EPIPE);
+		return -1;
+	}
 
-    return WS_OK;
+	return 0;
 #else
 	return 0;
 #endif
@@ -32,175 +62,116 @@ int Socket::init() {
 
 
 int Socket::create(const SocketAttributes & socket_attributes){
-#if defined __win32
-    //SocketAddress address;
-    m_socket = INVALID_SOCKET;
-    init();
-    m_socketattributes=socket_attributes;
-    int family = socket_attributes.family() == m_socketattributes.FAMILY_INET ? AF_INET : AF_UNSPEC;
-    int type = socket_attributes.type() == m_socketattributes.TYPE_STREAM ? SOCK_STREAM : SOCK_DGRAM;
-    int protocol = socket_attributes.protocol() == m_socketattributes.PROTOCOL_TCP ? IPPROTO_TCP : IPPROTO_UDP;
 
-    m_socket = socket(family, type, protocol);
-    if (m_socket == INVALID_SOCKET) {
-        printf("socket failed with error: %ld\n", WSAGetLastError());
-        set_error_number(WS_ERR_NET_SOCKET_FAILED);
-        return WS_ERROR;
-    }
+	m_socketattributes = socket_attributes;
+	int family = socket_attributes.family() == SocketAttributes::FAMILY_INET ? AF_INET : AF_UNSPEC;
+	int type = socket_attributes.type() == SocketAttributes::TYPE_STREAM ? SOCK_STREAM : SOCK_DGRAM;
+	int protocol = socket_attributes.protocol() == SocketAttributes::PROTOCOL_TCP ? IPPROTO_TCP : IPPROTO_UDP;
 
 
-    return WS_OK;
-#else
-    return -1;
-#endif
+	m_socket = socket(family, type, protocol);
+
+	if( is_valid() == false ){
+		//set_error_number_if_error(??);
+		return -1;
+	}
+
+	return 0;
 }
 
 
 int Socket::bind() {
+	struct addrinfo *result = NULL;
+	struct addrinfo hints;
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = m_socketattributes.family() == SocketAttributes::FAMILY_INET ? AF_INET : AF_UNSPEC;
+	hints.ai_socktype = m_socketattributes.type() == SocketAttributes::TYPE_STREAM ? SOCK_STREAM : SOCK_DGRAM;
+	hints.ai_protocol = m_socketattributes.protocol() == SocketAttributes::PROTOCOL_TCP ? IPPROTO_TCP : IPPROTO_UDP;;
+	int flags = m_socketattributes.flags();
+	if(flags & SocketAttributes::FLAG_PASSIVE ){
+		hints.ai_flags = AI_PASSIVE;
+	}
 #if defined __win32
-    struct addrinfo *result = NULL;
-    struct addrinfo hints;
-    ZeroMemory(&hints, sizeof(hints));
-    hints.ai_family = m_socketattributes.family() == m_socketattributes.FAMILY_INET ? AF_INET : AF_UNSPEC;
-    hints.ai_socktype = m_socketattributes.type() == m_socketattributes.TYPE_STREAM ? SOCK_STREAM : SOCK_DGRAM;
-    hints.ai_protocol = m_socketattributes.protocol() == m_socketattributes.PROTOCOL_TCP ? IPPROTO_TCP : IPPROTO_UDP;;
-    int flags = m_socketattributes.flags();
-    if(flags&m_socketattributes.FLAG_PASSIVE){
-        hints.ai_flags = AI_PASSIVE;
-    }
-    // Resolve the server address and port
-    int ret = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
-    if ( ret != 0 ) {
-        printf("getaddrinfo failed with error: %d\n", ret);
-        return WS_ERROR;
-    }
-    // Setup the TCP listening socket
-    ret = ::bind( m_socket, result->ai_addr, (int)result->ai_addrlen);
-    if (ret == SOCKET_ERROR) {
-        printf("bind failed with error: %d\n", WSAGetLastError());
-        freeaddrinfo(result);
-        set_error_number(WS_ERR_NET_BIND_FAILED);
-        return WS_ERROR;
-    } else {
-        memcpy((void*)&(m_socketattributes.ipv4_address().m_sockaddr),(void*)result->ai_addr, sizeof(result->ai_addrlen));
-    }
-    freeaddrinfo(result);
-    return WS_OK;
+
+	// Resolve the server address and port
+	int ret = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
+	if ( ret != 0 ) {
+		printf("getaddrinfo failed with error: %d\n", ret);
+		return WS_ERROR;
+	}
+	// Setup the TCP listening socket
+	ret = decode_socket_return( ::bind( m_socket, result->ai_addr, (int)result->ai_addrlen) );
+	if (ret == SOCKET_ERROR) {
+		printf("bind failed with error: %d\n", WSAGetLastError());
+		freeaddrinfo(result);
+		set_error_number(WS_ERR_NET_BIND_FAILED);
+		return WS_ERROR;
+	} else {
+		memcpy((void*)&(m_socketattributes.ipv4_address().m_sockaddr),(void*)result->ai_addr, sizeof(result->ai_addrlen));
+	}
+	freeaddrinfo(result);
+	return WS_OK;
 #else
-    return -1;
+	return -1;
 #endif
 }
 
 int Socket::listen(){
 #if defined __win32
-    int ret = ::listen(m_socket, SOMAXCONN);
-        if (ret == SOCKET_ERROR) {
-            printf("listen failed with error: %d\n", WSAGetLastError());
-            set_error_number(WS_ERR_NET_LISTEN_FAILED);
-            return WS_ERROR;
-        }
-        return WS_OK;
+	int ret = decode_socket_return( ::listen(m_socket, SOMAXCONN) );
+	if (ret == SOCKET_ERROR) {
+		printf("listen failed with error: %d\n", WSAGetLastError());
+		set_error_number(WS_ERR_NET_LISTEN_FAILED);
+		return WS_ERROR;
+	}
+	return WS_OK;
 #else
-    return -1;
+	return -1;
 #endif
 }
 
-int Socket::accept(){
-#if defined __win32
-    int ret = WS_OK;
-
-    // Accept a client socket
-    m_connectedsocket = INVALID_SOCKET;
-    m_connectedsocket = ::accept(m_socket, NULL, NULL);
-    if (m_connectedsocket == INVALID_SOCKET) {
-        printf("accept failed with error: %d\n", WSAGetLastError());
-        closesocket(m_connectedsocket);
-        set_error_number(WS_ERR_NET_ACCEPT_FAILED);
-        return WS_ERROR;
-    }
-    return m_connectedsocket;
-#else
-        return -1;
-#endif
+Socket Socket::accept(){
+	Socket result;
+	result.m_socket = decode_socket_return( ::accept(m_socket, 0, 0) );
+	return result;
 }
 int Socket::connect() {
-#if defined __win32
-        // Connect to server.
-    int ret = WS_OK;
-    struct sockaddr_in* addr = (struct sockaddr_in*)&(m_socketattributes.ipv4_address().m_sockaddr);
-    ret = ::connect( m_socket, (SOCKADDR*)addr, sizeof(*addr));
-    if (ret == SOCKET_ERROR) {
-        printf("Unable to connect to server!\n");
-        set_error_number(WS_ERR_NET_CONNECT_FAILED);
-        ret = WS_ERROR;
-    }
-    return m_socket;
-#else
-
-    return -1;
-#endif
+	// Connect to server.
+	struct sockaddr_in* addr = (struct sockaddr_in*)&(m_socketattributes.ipv4_address().m_sockaddr);
+	return decode_socket_return( ::connect(m_socket, (struct sockaddr*)addr, sizeof(*addr)) );
 }
 
-int Socket::send(var::ConstString send_buffer) {
-#if 0
-    printf("Send : buffer length=%d\n",send_buffer.length());
-    printf("Send : message - %s\n",send_buffer.c_str());
-    int ret = ::send(connected_socket, send_buffer.c_str(), (int)send_buffer.length(), 0 );
-    if (ret == SOCKET_ERROR) {
-        printf("send failed with error: %d\n", WSAGetLastError());
-        return WS_ERROR;
-    }
-    printf("Bytes Sent: %ld\n", ret);
-    return ret;
-#else
-
-         return -1;
-#endif
+int Socket::write(const void * buf, int nbyte) {
+	return decode_socket_return( ::send(m_socket, buf, nbyte, 0 ) );
 }
 
 
-int Socket::receive(var::ConstString receive_buffer, int buffer_length) {
-#if 0
-    return ::recv(connected_socket, (char*)receive_buffer.c_str(), buffer_length, 0);
-#else
-
-         return -1;
-#endif
+int Socket::read(void * buf, int nbyte) {
+	return decode_socket_return( ::recv(m_socket, buf, nbyte, 0 ) );
 }
+
+int Socket::shutdown(int how){
+	int socket_how = SHUT_RDWR;
+	if( (how & ACCESS_MODE) == READONLY ){
+		socket_how = SHUT_RD;
+	} else if( (how & ACCESS_MODE) == WRITEONLY ){
+		socket_how = SHUT_WR;
+	}
+	return decode_socket_return( ::shutdown(m_socket, socket_how) );
+}
+
 
 int Socket::close() {
 #if defined __win32
-    // cleanup
-    int ret = WS_OK;
-    if(m_connectedsocket!=INVALID_SOCKET) {
-        ret = ::shutdown(m_connectedsocket, SD_SEND);
-        if (ret == SOCKET_ERROR) {
-            printf("shutdown failed with error: %d\n", WSAGetLastError());
-            set_error_number(WS_ERR_NET_SHUTDOWN_FAILED);
-            return WS_ERROR;
-        }
-
-        closesocket(m_connectedsocket);
-        m_connectedsocket=INVALID_SOCKET;
-        ret = WS_ERROR;
-    }
-
-    if(m_socket!=INVALID_SOCKET) {
-        closesocket(m_socket);
-        m_socket=INVALID_SOCKET;
-        ret = WS_ERROR;
-    }
-    WSACleanup();
-    return ret;
+	return decode_socket_return( closesocket(m_socket) );
 #else
-
-         return -1;
+	return ::close(m_socket);
 #endif
 }
 
 
 Socket::~Socket() {
-    close();
+	close();
 }
 
 
