@@ -35,9 +35,11 @@ public:
 
 	/*!
 	  * \details Listens on the port specified during create().
+	  *
+	  * @param backlog Limit the number of outstanding connections in the socket's listen queue
 	  * @return Less than zero on error or zero on success
 	  */
-	int listen();
+	int listen(int backlog = 4);
 
 	/*!
 	  * \details Accepts a socket connection on a socket that is listening.

@@ -1,4 +1,4 @@
-
+#include "var.hpp"
 #include "inet/Socket.hpp"
 
 using namespace inet;
@@ -82,15 +82,17 @@ int Socket::create(const SocketAttributes & socket_attributes){
 
 int Socket::bind() {
 	struct addrinfo *result = NULL;
-	struct addrinfo hints;
-	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = m_socketattributes.family() == SocketAttributes::FAMILY_INET ? AF_INET : AF_UNSPEC;
-	hints.ai_socktype = m_socketattributes.type() == SocketAttributes::TYPE_STREAM ? SOCK_STREAM : SOCK_DGRAM;
-	hints.ai_protocol = m_socketattributes.protocol() == SocketAttributes::PROTOCOL_TCP ? IPPROTO_TCP : IPPROTO_UDP;;
+
+	StructuredData<struct addrinfo> hints;
+	hints.fill(0);
+	hints->ai_family = m_socketattributes.family() == SocketAttributes::FAMILY_INET ? AF_INET : AF_UNSPEC;
+	hints->ai_socktype = m_socketattributes.type() == SocketAttributes::TYPE_STREAM ? SOCK_STREAM : SOCK_DGRAM;
+	hints->ai_protocol = m_socketattributes.protocol() == SocketAttributes::PROTOCOL_TCP ? IPPROTO_TCP : IPPROTO_UDP;;
 	int flags = m_socketattributes.flags();
 	if(flags & SocketAttributes::FLAG_PASSIVE ){
-		hints.ai_flags = AI_PASSIVE;
+		hints->ai_flags = AI_PASSIVE;
 	}
+
 #if defined __win32
 
 	// Resolve the server address and port
@@ -116,18 +118,8 @@ int Socket::bind() {
 #endif
 }
 
-int Socket::listen(){
-#if defined __win32
-	int ret = decode_socket_return( ::listen(m_socket, SOMAXCONN) );
-	if (ret == SOCKET_ERROR) {
-		printf("listen failed with error: %d\n", WSAGetLastError());
-		set_error_number(WS_ERR_NET_LISTEN_FAILED);
-		return WS_ERROR;
-	}
-	return WS_OK;
-#else
-	return -1;
-#endif
+int Socket::listen(int backlog){
+	return decode_socket_return( ::listen(m_socket, backlog) );
 }
 
 Socket Socket::accept(){
