@@ -19,6 +19,23 @@ int Device::write(sys::Aio & aio) const {
 	aio.m_aio_var.aio_fildes = m_fd;
 	return ::aio_write(&(aio.m_aio_var));
 }
+
+int Device::cancel_read(int channel){
+	return cancel(channel, MCU_EVENT_FLAG_DATA_READY);
+}
+
+int Device::cancel_write(int channel){
+	return cancel(channel, MCU_EVENT_FLAG_WRITE_COMPLETE);
+}
+
+int Device::cancel(int channel, int o_events){
+	mcu_action_t action;
+	memset(&action, 0, sizeof(action));
+	action.channel = channel;
+	action.o_events = o_events;
+	return ioctl(I_MCU_SETACTION, &action);
+}
+
 #endif
 
 
@@ -29,5 +46,7 @@ int Device::set_interrupt_priority(int priority, int request){
     action.prio = priority;
     return ioctl(request, &action);
 }
+
+
 
 

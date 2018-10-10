@@ -112,16 +112,7 @@ public:
 		return Periph::set_attr(attr);
 	}
 
-	/*! \details Initializes the SPI port as specified.
-	 *
-	 * @param o_flags SPI Flags
-	 * @param freq SPI bitrate
-	 * @param width Data width
-	 * @param pin_assignment SPI pin assignment
-	 * @return Zero on success	 *
-	 */
 	int initialize(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0){
-
 		if( open() < 0 ){
 			return -1;
 		}
@@ -129,14 +120,10 @@ public:
 	}
 	int init(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0){ return initialize(o_flags, freq, width, pin_assignment); }
 
-	int initialize(const spi_attr_t & attr){
-		if( open() < 0 ){ return -1; }
-		return set_attr(attr);
-	}
-	int init(const spi_attr_t & attr){ return initialize(attr); }
-
 	using Periph::init;
 	using Periph::set_attr;
+	using Periph::initialize;
+	using Periph::set_attributes;
 
 #if !defined __link
 	int transfer(const void * write_data, void * read_data, int nbytes);

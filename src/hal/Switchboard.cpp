@@ -172,7 +172,7 @@ int Switchboard::destroy_connection(u16 id) const {
 
 int Switchboard::destroy_connection(SwitchboardConnection & connection){
     u16 id = connection.id();
-    connection = SwitchboardConnection();
+	 connection = SwitchboardConnection(); //invalidate the connection
     return destroy_connection(id);
 }
 

@@ -18,23 +18,23 @@ public:
 	void end_object();
 	void end_array();
 
-    void append_object(const ConstString & key);
-    void append_array(const ConstString & key);
+	void append_object(const ConstString & key);
+	void append_array(const ConstString & key);
 
 
-    void append_string(const ConstString & key, const ConstString & value);
-    void append_number(const ConstString & key, int number);
-    void append_float(const ConstString & key, float number);
-    void append_true(const ConstString & key);
-    void append_false(const ConstString & key);
-    void append_null(const ConstString & key);
+	void append_string(const ConstString & key, const ConstString & value);
+	void append_number(const ConstString & key, int number);
+	void append_float(const ConstString & key, float number);
+	void append_true(const ConstString & key);
+	void append_false(const ConstString & key);
+	void append_null(const ConstString & key);
 
 
 	//appending in arrays
 	void append_object();
 	void append_array();
 
-    void append_string(const ConstString & value);
+	void append_string(const ConstString & value);
 	void append_number(int number);
 	void append_float(float number);
 	void append_true();

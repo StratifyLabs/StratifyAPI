@@ -15,7 +15,7 @@
 using namespace var;
 
 //This is here so that by default that data can point to a null value rather than be a null value
-const int Data::m_zero_value = 0;
+const int Data::m_zero_value MCU_ALIGN(4) = 0;
 
 //this value corresponds to the malloc chunk size used in Stratify OS
 //this may be something that could be determined through a system call

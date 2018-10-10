@@ -267,6 +267,8 @@ public:
 	using Periph::write;
 	using Periph::init;
 	using Periph::set_attr;
+	using Periph::initialize;
+	using Periph::set_attributes;
 
 	/*! \details Reads the value of a register on an I2C device */
 	int read(int loc, u8 & reg);

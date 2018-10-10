@@ -59,11 +59,11 @@ public:
 
 	enum policy {
 #if defined __win32
-        RR, FIFO, OTHER
+		RR, FIFO, OTHER
 #else
 		RR /*! Round Robin style (task yields periodically) */ = SCHED_RR,
 		FIFO /*! First in, first out (task won't yield until it calls Sched::yield(), sleeps or uses Sync IO) */ = SCHED_FIFO,
-        OTHER /*! Default scheduling: round robin with no priority) */ = SCHED_OTHER
+		OTHER /*! Default scheduling: round robin with no priority) */ = SCHED_OTHER
 #endif
 	};
 
@@ -79,17 +79,17 @@ public:
 	/*! \details Gets the min priority for the specified policy. */
 	static int get_priority_min(enum policy value);
 	/*! \details Gets the max priority for the specified policy. */
-    static int get_priority(pid_t pid);
+	static int get_priority(pid_t pid);
 
 	/*! \details Gets the current proccess ID (equivalent to getpid()). */
-    static pid_t get_pid(){ return getpid(); }
+	static pid_t get_pid(){ return getpid(); }
 
 	/*! \details Gets the RR interval for the pid.
 	 *
 	 * @param pid  The process ID
 	 * @return The RR interval in microseconds
 	 */
-    static int get_rr_interval(pid_t pid);
+	static int get_rr_interval(pid_t pid);
 
 	/*! \details Sets the scheduler with the given parameters.
 	 *
@@ -98,7 +98,7 @@ public:
 	 * @param priority The priority (higher is higher priority)
 	 * @return Zero on success of -1 with errno set
 	 */
-    static int set_scheduler(pid_t pid, enum policy value, int priority);
+	static int set_scheduler(pid_t pid, enum policy value, int priority);
 
 };
 

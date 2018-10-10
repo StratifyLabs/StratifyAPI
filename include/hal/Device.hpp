@@ -71,6 +71,12 @@ public:
 
 	using File::read;
 	using File::write;
+
+
+	int cancel_read(int channel = 0);
+	int cancel_write(int channel = 0);
+	int cancel(int channel, int o_events);
+
 #endif
 
 protected:

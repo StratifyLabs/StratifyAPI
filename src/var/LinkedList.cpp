@@ -7,7 +7,7 @@
 using namespace var;
 
 LinkedList::LinkedList(u32 size){
-	m_size = size;
+	m_list_size = size;
 	m_front = 0;
 	m_back = 0;
 }
@@ -17,19 +17,18 @@ LinkedList::~LinkedList(){
 }
 
 void LinkedList::swap(LinkedList & list){
-	printf("Swap lists\n");
 	u16 size;
 	item_t * front;
 	item_t * back;
 	front = this->m_front;
 	back = this->m_back;
-	size = this->m_size;
+	size = this->m_list_size;
 	this->m_front = list.m_front;
 	this->m_back = list.m_back;
-	this->m_size = list.m_size;
+	this->m_list_size = list.m_list_size;
 	list.m_front = front;
 	list.m_back = back;
-	list.m_size = size;
+	list.m_list_size = size;
 }
 
 LinkedList::LinkedList(const LinkedList & list){
@@ -52,13 +51,13 @@ LinkedList & LinkedList::operator=(LinkedList && list){
 
 void LinkedList::assign(const LinkedList & list){
 	clear();
-	m_size = list.m_size;
+	m_list_size = list.m_list_size;
 	item_t * next_item;
 	if( list.m_front ){
 		next_item = list.m_front;
 		do {
 			if( push_back() ){
-				memcpy(back(), data(next_item), m_size);
+				memcpy(back(), data(next_item), m_list_size);
 				next_item = next(next_item);
 			} else {
 				next_item = 0;
@@ -94,7 +93,6 @@ void LinkedList::clear(){
 		m_front = 0;
 		m_back = 0;
 	}
-	m_size = 0;
 }
 
 

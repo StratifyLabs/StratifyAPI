@@ -146,8 +146,23 @@ public:
 	SwitchboardTerminal output() const { return m_connection.output; }
 
 	/*! \details Returns true if the connection has stopped on an error. */
-	bool is_stopped_on_error() const {
-		return (o_flags() & SWITCHBOARD_FLAG_IS_STOPPED_ON_ERROR) != 0;
+	bool is_error() const {
+		return (o_flags() & SWITCHBOARD_FLAG_IS_ERROR) != 0;
+	}
+
+	/*! \details Returns true if the connection stopped because an operation was canceled. */
+	bool is_canceled() const {
+		return (o_flags() & SWITCHBOARD_FLAG_IS_CANCELED) != 0;
+	}
+
+	/*! \details Returns true if the connection has been destroyed. */
+	bool is_destroyed() const {
+		return (o_flags() & SWITCHBOARD_FLAG_IS_DESTROYED) != 0;
+	}
+
+	/*! \details Returns true if the connection is currently running. */
+	bool is_connected() const {
+		return (o_flags() & SWITCHBOARD_FLAG_IS_CONNECTED) != 0;
 	}
 
 	/*! \details Returns the error number associated with the is_stopped_on_error() condition. */
@@ -198,6 +213,17 @@ private:
  * such that when data is received on one device,
  * it will be written to another device.
  *
+ * A good application for using the switchboard is connecting streaming audio devices together.
+ *
+ * \code
+ * #include <sapi/hal.hpp>
+ * Switchboard switchboard;
+ * SwitchboardTerminal input("mic"); //will refer to /dev/mic
+ * SwitchboardTerminal output("speaker"); //refers to /dev/speaker
+ * SwitchboardConnection connection = switchboard.create_persistent_connnection(input, output);
+ *
+ * \endcode
+ *
  *
  */
 class Switchboard : public Device {
@@ -211,8 +237,10 @@ public:
 		DISCONNECT /*! Disconnect Flag */ = SWITCHBOARD_FLAG_DISCONNECT,
 		IS_PERSISTENT /*! Is Persistent Flag */ = SWITCHBOARD_FLAG_IS_PERSISTENT,
 		IS_FIXED_SIZE /*! Is Fixed Size Flag */ = 0,
-		IS_CONNECTED /*! Is Connected Flag */ = SWITCHBOARD_FLAG_IS_CONNECTED,
-		IS_STOPPED_ON_ERROR /*! Is Stopped on Error */ = SWITCHBOARD_FLAG_IS_STOPPED_ON_ERROR,
+		IS_CONNECTED /*! Connection is connected and running (otherwise IS_ERROR, IS_CANCELED, or IS_DESTROYED) */ = SWITCHBOARD_FLAG_IS_CONNECTED,
+		IS_ERROR /*! Stopped because of an error */ = SWITCHBOARD_FLAG_IS_ERROR,
+		IS_CANCELED /*! Stopped because an operation was canceled */ = SWITCHBOARD_FLAG_IS_CANCELED,
+		IS_DESTROYED /*! Stopped because the connection was destroyed */ = SWITCHBOARD_FLAG_IS_DESTROYED,
 		IS_FILL_ZERO /*! Fill output with zeros if no input data is available */ = SWITCHBOARD_FLAG_IS_FILL_ZERO,
 		IS_INPUT_NON_BLOCKING /*! Execute input transactions as non-blocking */ = SWITCHBOARD_FLAG_IS_INPUT_NON_BLOCKING,
 		IS_OUTPUT_NON_BLOCKING /*! Execute input transactions as non-blocking */ = SWITCHBOARD_FLAG_IS_OUTPUT_NON_BLOCKING,

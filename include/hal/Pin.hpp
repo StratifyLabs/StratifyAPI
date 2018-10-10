@@ -47,7 +47,7 @@ namespace hal {
  */
 class Pin : public Pio {
 public:
-	/*! \details Initializes the object with a port/pin combination. */
+	/*! \details Constructs the object with a port/pin combination. */
 	Pin(port_t port, u32 pin, bool ismask = false) : Pio(port){
 		if( ismask ){
 			m_pinmask = pin;
@@ -86,6 +86,10 @@ public:
 	 * \sa open(), set_attr()
 	 *
 	 */
+	int initialize(u32 o_flags){
+		return Pio::initialize(o_flags, m_pinmask);
+	}
+
 	int init(u32 o_flags){
 		return Pio::init(o_flags, m_pinmask);
 	}

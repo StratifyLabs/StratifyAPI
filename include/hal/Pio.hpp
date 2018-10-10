@@ -115,6 +115,8 @@ public:
 	int set_value(unsigned int value) const;
 
 	using Periph::set_attr;
+	using Periph::set_attributes;
+	using Periph::initialize;
 
 	/*! \details Sets the attributes of the IO port as specified.
 	 *
@@ -122,11 +124,15 @@ public:
 	 * @param o_pinmask A bitmask of the pins to operate on
 	 * @return Zero on success
 	 */
-	int set_attr(u32 o_flags, u32 o_pinmask) const {
+	int set_attributes(u32 o_flags, u32 o_pinmask) const {
 		pio_attr_t attr;
 		attr.o_flags = o_flags;
 		attr.o_pinmask = o_pinmask;
-		return set_attr(attr);
+		return set_attributes(attr);
+	}
+
+	int set_attr(u32 o_flags, u32 o_pinmask) const {
+		return set_attributes(o_flags, o_pinmask);
 	}
 
 	/*! \details Opens the port
@@ -137,11 +143,16 @@ public:
 	 * @return Zero on success
 	 *
 	 */
-	int init(u32 o_flags, u32 o_pinmask){
+	int initialize(u32 o_flags, u32 o_pinmask){
 		if( open() <  0 ){
 			return -1;
 		}
 		return set_attr(o_flags, o_pinmask);
+	}
+
+
+	int init(u32 o_flags, u32 o_pinmask){
+		return initialize(o_flags, o_pinmask);
 	}
 
 

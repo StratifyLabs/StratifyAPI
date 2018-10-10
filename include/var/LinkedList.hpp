@@ -86,12 +86,14 @@ private:
 		void * next;
 	} item_t;
 
-	u16 m_size;
+	u16 m_list_size;
 	item_t * m_front;
 	item_t * m_back;
 
 	static void * data(const item_t * item){
-		if( item ){ return (void*)(item + 1); }
+		if( item ){
+			return (void*)(item + 1);
+		}
 		return 0;
 	}
 
@@ -105,8 +107,11 @@ private:
 		return 0;
 	}
 
-	item_t * new_item(){ return (item_t*)malloc(calc_item_size()); }
-	u16 calc_item_size() const { return sizeof(item_t) + m_size; }
+	item_t * new_item(){
+		return (item_t*)malloc(calc_item_size());
+	}
+
+	u16 calc_item_size() const { return sizeof(item_t) + m_list_size; }
 
 };
 

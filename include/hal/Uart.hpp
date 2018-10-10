@@ -285,6 +285,8 @@ public:
 
 	using Periph::init;
 	using Periph::set_attr;
+	using Periph::initialize;
+	using Periph::set_attributes;
 
 private:
 
