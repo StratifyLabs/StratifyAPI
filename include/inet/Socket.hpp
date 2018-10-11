@@ -67,7 +67,7 @@ public:
 
 	int flags() const { return m_addrinfo.ai_flags; }
 	int family() const { return m_addrinfo.ai_family; }
-	int socktype() const { return m_addrinfo.ai_socktype; }
+	int type() const { return m_addrinfo.ai_socktype; }
 	int protocol() const { return m_addrinfo.ai_protocol; }
 
 	var::Vector<SocketAddressInfo> get_address_info(
@@ -88,17 +88,24 @@ public:
 		return a | b<<8 | c<<16 | d<<24;
 	}
 
-	SocketAddressIpv4(in_addr_t address, u16 port){
+	SocketAddressIpv4(in_addr_t address,
+							u16 port,
+							int protocol = SocketAddressInfo::PROTOCOL_TCP,
+							int type = SocketAddressInfo::TYPE_STREAM){
 		m_sockaddr_in.sin_family = AF_INET;
 		m_sockaddr_in.sin_len = sizeof(struct sockaddr_in);
 		m_sockaddr_in.sin_addr.s_addr = address;
 		m_sockaddr_in.sin_port = htons(port);
 		memset(m_sockaddr_in.sin_zero, 0, sizeof(m_sockaddr_in.sin_zero));
+		m_protocol = protocol;
+		m_type = type;
 	}
 
 private:
 	friend class SocketAddress;
 	struct sockaddr_in m_sockaddr_in;
+	int m_protocol;
+	int m_type;
 };
 
 class SocketAddress : public api::InetInfoObject {
@@ -110,11 +117,22 @@ public:
 	SocketAddress();
 	SocketAddress(const SocketAddressIpv4 & ipv4){
 		m_sockaddr.copy_contents(var::Data((void*)&ipv4.m_sockaddr_in, sizeof(struct sockaddr_in)));
+		m_protocol = ipv4.m_protocol;
+		m_type = ipv4.m_type;
 	}
 
-	SocketAddress(const SocketAddressInfo & info){ m_sockaddr = info.m_sockaddr; }
-	SocketAddress(const sockaddr_in & ipv4){
+	SocketAddress(const SocketAddressInfo & info){
+		m_sockaddr = info.m_sockaddr;
+		m_protocol = info.m_addrinfo.ai_protocol;
+		m_type = info.m_addrinfo.ai_socktype;
+	}
+
+	SocketAddress(const sockaddr_in & ipv4,
+					  int protocol = SocketAddressInfo::PROTOCOL_TCP,
+					  int type = SocketAddressInfo::TYPE_STREAM){
 		m_sockaddr.copy_contents(var::Data((void*)&ipv4, sizeof(ipv4)));
+		m_protocol = protocol;
+		m_type = type;
 	}
 
 	SocketAddress(const sockaddr_in6 & ipv6){
@@ -123,6 +141,12 @@ public:
 
 
 	u32 length() const { return m_sockaddr.size(); }
+
+	int type() const { return m_type; }
+	int protocol() const { return m_protocol; }
+
+	void set_protocol(enum SocketAddressInfo::protocol value){ m_protocol = value; }
+	void set_type(enum SocketAddressInfo::type value){ m_type = value; }
 
 	u16 family() const {
 		return m_sockaddr.to<const sockaddr>()->sa_family;
@@ -148,6 +172,8 @@ public:
 protected:
 	friend class Socket;
 	var::Data m_sockaddr;
+	int m_protocol;
+	int m_type;
 
 };
 
@@ -164,7 +190,7 @@ public:
 	  *
 	  * @return Zero on success
 	  */
-	int create(const SocketAddressInfo & info);
+	int create(const SocketAddress & address);
 
 	/*!
 	  * \details Connects to the server using the SocketAddress
@@ -177,7 +203,7 @@ public:
 	  * \details Binds to the port for which the socket was created.
 	  * @return Less than zero on error and zero on success
 	  */
-	int bind(const Socket & socket, const SocketAddress & addr);
+	int bind(const Socket & socket, const SocketAddress & address);
 
 	/*!
 	  * \details Listens on the port specified during create().
@@ -222,7 +248,7 @@ public:
 	bool is_valid() const;
 
 private:
-	SocketAddressInfo m_info;
+	SocketAddress m_address;
 
 
 	/*!

@@ -125,12 +125,11 @@ int Socket::initialize() {
 
 
 
-int Socket::create(const SocketAddressInfo & info){
+int Socket::create(const SocketAddress & address){
 
-	SocketAddress address(info);
-	m_info = info;
+	m_address = address;
 
-	m_socket = socket(address.family(), info.socktype(), info.protocol());
+	m_socket = socket(address.family(), address.type(), address.protocol());
 
 	if( is_valid() == false ){
 		//set_error_number_if_error(??);
@@ -156,10 +155,9 @@ Socket Socket::accept(){
 }
 int Socket::connect() {
 	// Connect to server.
-	SocketAddress address(m_info);
 
 	return decode_socket_return(
-				::connect(m_socket, address.to_sockaddr(), address.length())
+				::connect(m_socket, m_address.to_sockaddr(), m_address.length())
 				);
 }
 
