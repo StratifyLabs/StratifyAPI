@@ -11,11 +11,69 @@ using namespace inet;
 
 bool Socket::m_is_initialized = false;
 
+var::Vector<SocketAddressInfo> SocketAddressInfo::get_address_info(
+		const var::ConstString & node,
+		const var::ConstString & server){
+	var::Vector<SocketAddressInfo> result;
+
+	struct addrinfo * info;
+
+	if( getaddrinfo(node.str(), server.str(), &m_addrinfo, &info) < 0 ){
+		return result;
+	}
+
+	do {
+		SocketAddressInfo value;
+		value.m_addrinfo = *info;
+		if( info->ai_addr ){
+			value.m_sockaddr.copy_contents(var::Data(info->ai_addr, info->ai_addrlen));
+		}
+
+		if( info->ai_canonname ){
+			value.m_canon_name = info->ai_canonname;
+		}
+
+		result.push_back(value);
+
+		info = info->ai_next;
+
+	} while(info);
+
+	freeaddrinfo(info);
+
+	return result.count();
+}
+
+#if 0
+int Ipv4Address::set_address(const var::ConstString & address) {
+	var::Token address_token(address,".");
+	if( address_token.count() != 4 ){
+		return -1;
+	}
+
+	set_address(var::ConstString(address_token.at(0)).atoi(),
+					var::ConstString(address_token.at(0)).atoi(),
+					var::ConstString(address_token.at(0)).atoi(),
+					var::ConstString(address_token.at(0)).atoi());
+
+	return 0;
+}
+#endif
+
+u16 SocketAddress::port() const {
+	if( family() == SocketAddressInfo::FAMILY_INET ){
+		return htons(m_sockaddr.to<const sockaddr_in>()->sin_port);
+	} else if( family() == SocketAddressInfo::FAMILY_INET6 ){
+		return htons(m_sockaddr.to<const sockaddr_in6>()->sin6_port);
+	}
+	return 0;
+}
+
 Socket::Socket(){
 #if defined __win32
 	m_socket=INVALID_SOCKET;
 #endif
-	init();
+	initialize();
 }
 
 bool Socket::is_valid() const {
@@ -32,9 +90,9 @@ int Socket::decode_socket_return(int value){
 		case INVALID_SOCKET:
 			//set error number
 			return -1;
-        //case SOCKET_ERROR:
+			//case SOCKET_ERROR:
 			//set error number
-            //return -1;
+			//return -1;
 		default:
 			return value;
 	}
@@ -43,7 +101,7 @@ int Socket::decode_socket_return(int value){
 #endif
 }
 
-int Socket::init() {
+int Socket::initialize() {
 	if( m_is_initialized ){
 		return 0;
 	}
@@ -67,15 +125,12 @@ int Socket::init() {
 
 
 
-int Socket::create(const SocketAttributes & socket_attributes){
+int Socket::create(const SocketAddressInfo & info){
 
-	m_socketattributes = socket_attributes;
-	int family = socket_attributes.family() == SocketAttributes::FAMILY_INET ? AF_INET : AF_UNSPEC;
-	int type = socket_attributes.type() == SocketAttributes::TYPE_STREAM ? SOCK_STREAM : SOCK_DGRAM;
-	int protocol = socket_attributes.protocol() == SocketAttributes::PROTOCOL_TCP ? IPPROTO_TCP : IPPROTO_UDP;
+	SocketAddress address(info);
+	m_info = info;
 
-
-	m_socket = socket(family, type, protocol);
+	m_socket = socket(address.family(), info.socktype(), info.protocol());
 
 	if( is_valid() == false ){
 		//set_error_number_if_error(??);
@@ -86,42 +141,8 @@ int Socket::create(const SocketAttributes & socket_attributes){
 }
 
 
-int Socket::bind() {
-	struct addrinfo *result = NULL;
-
-	StructuredData<struct addrinfo> hints;
-	hints.fill(0);
-	hints->ai_family = m_socketattributes.family() == SocketAttributes::FAMILY_INET ? AF_INET : AF_UNSPEC;
-	hints->ai_socktype = m_socketattributes.type() == SocketAttributes::TYPE_STREAM ? SOCK_STREAM : SOCK_DGRAM;
-	hints->ai_protocol = m_socketattributes.protocol() == SocketAttributes::PROTOCOL_TCP ? IPPROTO_TCP : IPPROTO_UDP;;
-	int flags = m_socketattributes.flags();
-	if(flags & SocketAttributes::FLAG_PASSIVE ){
-		hints->ai_flags = AI_PASSIVE;
-	}
-
-#if 0
-
-	// Resolve the server address and port
-	int ret = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
-	if ( ret != 0 ) {
-		printf("getaddrinfo failed with error: %d\n", ret);
-		return WS_ERROR;
-	}
-	// Setup the TCP listening socket
-	ret = decode_socket_return( ::bind( m_socket, result->ai_addr, (int)result->ai_addrlen) );
-	if (ret == SOCKET_ERROR) {
-		printf("bind failed with error: %d\n", WSAGetLastError());
-		freeaddrinfo(result);
-		set_error_number(WS_ERR_NET_BIND_FAILED);
-		return WS_ERROR;
-	} else {
-		memcpy((void*)&(m_socketattributes.ipv4_address().m_sockaddr),(void*)result->ai_addr, sizeof(result->ai_addrlen));
-	}
-	freeaddrinfo(result);
-	return WS_OK;
-#else
-	return -1;
-#endif
+int Socket::bind(const Socket & socket, const SocketAddress & addr){
+	return ::bind(socket.fileno(), addr.m_sockaddr.to<struct sockaddr>(), addr.length());
 }
 
 int Socket::listen(int backlog){
@@ -135,21 +156,24 @@ Socket Socket::accept(){
 }
 int Socket::connect() {
 	// Connect to server.
-	struct sockaddr_in* addr = (struct sockaddr_in*)&(m_socketattributes.ipv4_address().m_sockaddr);
-	return decode_socket_return( ::connect(m_socket, (struct sockaddr*)addr, sizeof(*addr)) );
+	SocketAddress address(m_info);
+
+	return decode_socket_return(
+				::connect(m_socket, address.to_sockaddr(), address.length())
+				);
 }
 
 int Socket::write(const void * buf, int nbyte) {
-    return decode_socket_return( ::send(m_socket, (const char*)buf, nbyte, 0 ) );
+	return decode_socket_return( ::send(m_socket, (const char*)buf, nbyte, 0 ) );
 }
 
 
 int Socket::read(void * buf, int nbyte) {
-    return decode_socket_return( ::recv(m_socket, (char*)buf, nbyte, 0 ) );
+	return decode_socket_return( ::recv(m_socket, (char*)buf, nbyte, 0 ) );
 }
 
 int Socket::shutdown(int how){
-    int socket_how = SHUT_RDWR;
+	int socket_how = SHUT_RDWR;
 	if( (how & ACCESS_MODE) == READONLY ){
 		socket_how = SHUT_RD;
 	} else if( (how & ACCESS_MODE) == WRITEONLY ){

@@ -119,14 +119,16 @@ public:
 	/*! \details Sets the value of the flags. */
 	void set_flags(u32 o_flags){ m_attr.o_flags = o_flags; }
 
-	/*! \details Access the frequency. */
-	u32 freq() const { return m_attr.freq; }
+	/*! \details Access the frequency in hertz (bits/second). */
+	u32 frequency() const { return m_attr.freq; }
+	u32 freq() const { return frequency(); }
 
 	/*! \details Set the frequency.
 	 *
-	 * @param freq_hz The frequency in Hertz
+	 * @param freq_hz The frequency in Hertz (bits/second)
 	 */
-	void set_freq(u32 freq_hz){ m_attr.freq = freq_hz; }
+	void set_frequency(u32 freq_hz){ m_attr.freq = freq_hz; }
+	void set_freq(u32 freq_hz){ set_frequency(freq_hz); }
 
 	/*! \details Gets a pointer of the pin assignment. */
 	const pin_assignment_t * pin_assignment() const { return &m_attr.pin_assignment; }

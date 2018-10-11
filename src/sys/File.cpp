@@ -333,7 +333,7 @@ var::ConstString File::name(const var::ConstString & path){
             return path.str() + i + 1;
         }
     }
-    return 0;
+	 return path;
 }
 
 #if !defined __link

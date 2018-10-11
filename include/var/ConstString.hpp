@@ -191,16 +191,6 @@ public:
 
 	int compare(u32 pos, u32 len, const ConstString & s, u32 n) const;
 
-	/*! \details Returns a newly constructed string object with its value
-	  *           initialized to a copy of a substring of this object.
-	  *
-	  * @param pos Position of the first character to be copied as a substring.
-	  * @param len Number of characters to include in the substring
-	  * @return A string object with a substring of this object.
-	  *
-	  */
-	ConstString substr (u32 pos = 0, u32 len = npos) const;
-
 protected:
 	void set_string_pointer(const char * s);
 

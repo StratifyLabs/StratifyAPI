@@ -244,15 +244,6 @@ public:
 	/*! \details Flushes the TX/RX buffers. */
 	int flush();
 
-
-	/*! \details Sets the attributes of the Uart.
-	 *
-	 * @param o_flags Bitmask of attribute flags
-	 * @param freq Baudrate
-	 * @param width Number of bits (usually 8)
-	 * @param pin_assignment A pointer to the pin assignment (null to use the default)
-	 * @return Zero on success
-	 */
 	int set_attr(u32 o_flags, u32 freq, u32 width = 8, const uart_pin_assignment_t * pin_assignment = 0) const {
 		uart_attr_t attr;
 		attr.o_flags = o_flags;
@@ -266,16 +257,7 @@ public:
 		return set_attr(attr);
 	}
 
-	/*! \details Initializes the uart with the specified attributes.
-	 *
-	 * @param o_flags Bitmask of attribute flags
-	 * @param freq Baudrate
-	 * @param width Number of bits (usually 8)
-	 * @param pin_assignment A pointer to the pin assignment (null to use the default)
-	 * @return Zero on success
-	 *
-	 * This method calls open() and set_attr().
-	 */
+
 	int init(u32 o_flags, u32 freq, u32 width = 8, const uart_pin_assignment_t * pin_assignment = 0){
 		if( open() < 0 ){
 			return -1;
@@ -287,6 +269,11 @@ public:
 	using Periph::set_attr;
 	using Periph::initialize;
 	using Periph::set_attributes;
+
+	Uart& operator = (const UartAttributes & attributes){
+		set_attributes(attributes);
+		return *this;
+	}
 
 private:
 
