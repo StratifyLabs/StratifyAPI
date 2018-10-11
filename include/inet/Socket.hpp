@@ -58,11 +58,16 @@ public:
 		PROTOCOL_IP = IPPROTO_IP
 	};
 
-	SocketAddressInfo(int flags = 0, int family = 0, int socktype = 0, int protocol = 0);
+	SocketAddressInfo(int flags = 0, int family = 0, int type = 0, int protocol = 0){
+		set_flags(flags);
+		set_family(family);
+		set_type(type);
+		set_protocol(protocol);
+	}
 
 	void set_flags(int value){ m_addrinfo.ai_flags = value; }
 	void set_family(int value){ m_addrinfo.ai_family = value; }
-	void set_socktype(int value){ m_addrinfo.ai_socktype = value; }
+	void set_type(int value){ m_addrinfo.ai_socktype = value; }
 	void set_protocol(int value){ m_addrinfo.ai_protocol = value; }
 
 	int flags() const { return m_addrinfo.ai_flags; }
@@ -114,7 +119,11 @@ public:
 	/*!
 	  * \details Constructor to set the sockaddr structure to 0.
 	  */
-	SocketAddress();
+	SocketAddress(){
+		m_protocol = 0;
+		m_type = 0;
+	}
+
 	SocketAddress(const SocketAddressIpv4 & ipv4){
 		m_sockaddr.copy_contents(var::Data((void*)&ipv4.m_sockaddr_in, sizeof(struct sockaddr_in)));
 		m_protocol = ipv4.m_protocol;

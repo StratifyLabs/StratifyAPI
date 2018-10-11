@@ -41,7 +41,7 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::get_address_info(
 
 	freeaddrinfo(info);
 
-	return result.count();
+	return result;
 }
 
 #if 0
