@@ -58,7 +58,15 @@ public:
 		PROTOCOL_IP = IPPROTO_IP
 	};
 
-	SocketAddressInfo(int flags = 0, int family = 0, int type = 0, int protocol = 0){
+	/*! \details Constructs a new socket address infomation object.
+	 *
+	 * @param family Socket family (defautl is FAMILY_INET)
+	 * @param type Socket type (default is TYPE_STREAM)
+	 * @param protocol Socket protocol (default is PROTOCOL_TCP)
+	 * @param flags Socket flags (default is none)
+	 *
+	 */
+	SocketAddressInfo(int family = FAMILY_INET, int type = TYPE_STREAM, int protocol = PROTOCOL_TCP, int flags = 0){
 		set_flags(flags);
 		set_family(family);
 		set_type(type);
@@ -75,9 +83,28 @@ public:
 	int type() const { return m_addrinfo.ai_socktype; }
 	int protocol() const { return m_addrinfo.ai_protocol; }
 
-	var::Vector<SocketAddressInfo> get_address_info(
+	/*! \details Fetches the socket address information from
+	 * DNS servers based on the node and service specified.
+	 *
+	 * \code
+	 * #include <sapi/var.hpp>
+	 * #include <sapi/inet.hpp>
+	 *
+	 * SocketAddressInfo address_info;
+	 * Vector<SocketAddressInfo> address_info.fetch_node("stratifylabs.co"); //get IP address and other info for stratifylabs.co
+	 *
+	 */
+	var::Vector<SocketAddressInfo> fetch_node(const var::ConstString & node){
+		return fetch(node, "");
+	}
+
+	var::Vector<SocketAddressInfo> fetch_service(const var::ConstString & service){
+		return fetch("", service);
+	}
+
+	var::Vector<SocketAddressInfo> fetch(
 			const var::ConstString & node,
-			const var::ConstString & server);
+			const var::ConstString & service);
 
 private:
 	friend class SocketAddress;
@@ -130,10 +157,11 @@ public:
 		m_type = ipv4.m_type;
 	}
 
-	SocketAddress(const SocketAddressInfo & info){
+	SocketAddress(const SocketAddressInfo & info, u16 port = 0){
 		m_sockaddr = info.m_sockaddr;
 		m_protocol = info.m_addrinfo.ai_protocol;
 		m_type = info.m_addrinfo.ai_socktype;
+		set_port(port);
 	}
 
 	SocketAddress(const sockaddr_in & ipv4,
@@ -148,6 +176,7 @@ public:
 		m_sockaddr.copy_contents(var::Data((void*)&ipv6, sizeof(ipv6)));
 	}
 
+	void set_port(u16 port);
 
 	u32 length() const { return m_sockaddr.size(); }
 
@@ -172,6 +201,7 @@ public:
 	u16 port() const;
 
 	in_addr_t address_ipv4() const { return m_sockaddr.to<const sockaddr_in>()->sin_addr.s_addr; }
+	var::String address_to_string() const;
 	//struct in_addr6 address_ipv6() const { return m_sockaddr.to<const sockaddr_in6>()->sin6_addr.un; }
 
 	const struct sockaddr * to_sockaddr() const {

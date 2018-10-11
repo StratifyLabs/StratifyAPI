@@ -11,7 +11,7 @@ using namespace inet;
 
 bool Socket::m_is_initialized = false;
 
-var::Vector<SocketAddressInfo> SocketAddressInfo::get_address_info(
+var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 		const var::ConstString & node,
 		const var::ConstString & server){
 	var::Vector<SocketAddressInfo> result;
@@ -68,6 +68,35 @@ u16 SocketAddress::port() const {
 	}
 	return 0;
 }
+
+void SocketAddress::set_port(u16 port){
+	if( is_ipv4() ){
+		m_sockaddr.to<struct sockaddr_in>()->sin_port = htons(port);
+	} else if( is_ipv6() ){
+		m_sockaddr.to<struct sockaddr_in6>()->sin6_port = htons(port);
+	}
+}
+
+var::String SocketAddress::address_to_string() const {
+	var::String result;
+	if( is_ipv4() ){
+		u32 address = address_ipv4();
+		result.format("%d.%d.%d.%d",
+						  (address >> 0) & 0xff,
+						  (address >> 8) & 0xff,
+						  (address >> 16) & 0xff,
+						  (address >> 24) & 0xff
+						  );
+	}
+
+
+	if( is_ipv6() ){
+		result.format("ipv6 address");
+	}
+
+	return result;
+}
+
 
 Socket::Socket(){
 #if defined __win32
