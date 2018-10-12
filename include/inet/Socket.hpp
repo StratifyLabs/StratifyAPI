@@ -1,10 +1,13 @@
 #ifndef SAPI_SOCKET_HPP
 #define SAPI_SOCKET_HPP
 
+#include <mcu/types.h>
+
 #if defined __win32
 #define _BSD_SOURCE
 #include <winsock2.h>
 #include <ws2tcpip.h>
+typedef u32 in_addr_t;
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -126,7 +129,9 @@ public:
 							int protocol = SocketAddressInfo::PROTOCOL_TCP,
 							int type = SocketAddressInfo::TYPE_STREAM){
 		m_sockaddr_in.sin_family = AF_INET;
+#if !defined __win32
 		m_sockaddr_in.sin_len = sizeof(struct sockaddr_in);
+#endif
 		m_sockaddr_in.sin_addr.s_addr = htonl(address);
 		m_sockaddr_in.sin_port = htons(port);
 		memset(m_sockaddr_in.sin_zero, 0, sizeof(m_sockaddr_in.sin_zero));
@@ -233,8 +238,10 @@ public:
 		BROADCAST = SO_BROADCAST,
 		REUSE_ADDRESS = SO_REUSEADDR,
 		REUSEADDR = SO_REUSEADDR,
+#if !defined __win32
 		REUSEPORT = SO_REUSEPORT,
 		REUSE_PORT = SO_REUSEPORT,
+#endif
 		SET_SEND_SIZE = SO_SNDBUF,
 		SNDBUF = SO_SNDBUF,
 		SET_RECEIVE_SIZE = SO_RCVBUF,
@@ -261,9 +268,11 @@ public:
 		return set_integer_value(REUSE_ADDRESS, value);
 	}
 
+#if !defined __win32
 	SocketOption & reuse_port(bool value = true){
 		return set_integer_value(REUSE_PORT, value);
 	}
+#endif
 
 	SocketOption & dont_route(bool value = true){
 		return set_integer_value(DONT_ROUTE, value);
