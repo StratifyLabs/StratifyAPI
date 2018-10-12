@@ -113,7 +113,7 @@ bool Socket::is_valid() const {
 #endif
 }
 
-int Socket::decode_socket_return(int value){
+int Socket::decode_socket_return(int value) const {
 #if defined __win32
 	switch(value){
 		case INVALID_SOCKET:
@@ -189,12 +189,12 @@ int Socket::connect() {
 				);
 }
 
-int Socket::write(const void * buf, int nbyte) {
+int Socket::write(const void * buf, int nbyte) const {
 	return decode_socket_return( ::send(m_socket, (const char*)buf, nbyte, 0 ) );
 }
 
 
-int Socket::read(void * buf, int nbyte) {
+int Socket::read(void * buf, int nbyte) const {
 	return decode_socket_return( ::recv(m_socket, (char*)buf, nbyte, 0 ) );
 }
 

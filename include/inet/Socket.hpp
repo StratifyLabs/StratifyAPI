@@ -127,7 +127,7 @@ public:
 							int type = SocketAddressInfo::TYPE_STREAM){
 		m_sockaddr_in.sin_family = AF_INET;
 		m_sockaddr_in.sin_len = sizeof(struct sockaddr_in);
-		m_sockaddr_in.sin_addr.s_addr = address;
+		m_sockaddr_in.sin_addr.s_addr = htonl(address);
 		m_sockaddr_in.sin_port = htons(port);
 		memset(m_sockaddr_in.sin_zero, 0, sizeof(m_sockaddr_in.sin_zero));
 		m_protocol = protocol;
@@ -382,11 +382,11 @@ public:
 
 	//already documented in sys::File
 	using File::write;
-	int write(const void * buf, int nbyte);
+	int write(const void * buf, int nbyte) const;
 
 	//already documented in sys::File
 	using File::read;
-	int read(void * buf, int nbyte);
+	int read(void * buf, int nbyte) const;
 
 	//already documented in sys::File
 	int close();
@@ -408,7 +408,7 @@ private:
 	  */
 	int initialize();
 
-	int decode_socket_return(int value);
+	int decode_socket_return(int value) const;
 
 #if defined __win32
 	::SOCKET m_socket;
@@ -419,42 +419,6 @@ private:
 
 	static bool m_is_initialized;
 };
-
-
-/*
- * \tg The socket API above will eventually
- * be the same as the one below.  The only
- * place we should really need to say
- * #if defined __win32 is for declaring
- * the ::SOCKET member variable m_socket.
- *
- *
- */
-//class Socket : public sys::File {
-//public:
-//    Socket();
-//    ~Socket();
-
-//    int init();
-
-//    /*! \details Opens a new socket. */
-//    int create(const SocketAttributes & attributes); //calls ::socket() - calls File::set_fileno();
-
-//    int connect(); //calls ::connect()
-//    int listen(); //calls ::listen()
-//    Socket accept(); //calls ::accept(m_socket); and returns a new Socket
-//    int bind(); //calls ::bind()
-
-//    //read and write are inherited from sys::File and will work without any additional methods
-
-//private:
-
-//#if defined __win32
-//    ::SOCKET m_socket;
-//#endif
-
-//};
-//#endif
 
 }
 
