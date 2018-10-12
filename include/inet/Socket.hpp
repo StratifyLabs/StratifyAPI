@@ -334,35 +334,33 @@ public:
 	  *
 	  * @return Zero on success
 	  */
-	int create(const SocketAddress & address);
+	virtual int create(const SocketAddress & address);
 
 	/*!
 	  * \details Connects to the server using the SocketAddress
 	  * object passed to create() method.
 	  * @return Less than zero on error or zero on success
 	  */
-	int connect();
+	virtual int connect(const SocketAddress & address);
+
 
 	/*!
-	  * \details Binds to the port for which the socket was created.
+	  * \details Binds and listens to the port for which the socket was created.
 	  * @return Less than zero on error and zero on success
-	  */
-	int bind(const SocketAddress & address);
-
-	/*!
-	  * \details Listens on the port specified during create().
 	  *
-	  * @param backlog Limit the number of outstanding connections in the socket's listen queue
-	  * @return Less than zero on error or zero on success
+	  * This method will always bind but it will only listen
+	  * when using TCP sockets where listen is applicable.
+	  *
 	  */
-	int listen(int backlog = 4);
+	virtual int bind_and_listen(const SocketAddress & address, int backlog = 4) const;
+
 
 	/*!
 	  * \details Accepts a socket connection on a socket that is listening.
 	  *
 	  * @return A valid Socket if the operation is successful.
 	  */
-	Socket accept();
+	Socket accept(SocketAddress & address) const;
 
 	/*! \details Shuts down the socket.
 	 *
@@ -378,28 +376,39 @@ public:
 	 *
 	 * @return Zero on success
 	 */
-	int shutdown(int how = 0);
+	virtual int shutdown(int how = 0) const;
 
 	//already documented in sys::File
 	using File::write;
-	int write(const void * buf, int nbyte) const;
+	virtual int write(const void * buf, int nbyte) const;
 
 	//already documented in sys::File
 	using File::read;
-	int read(void * buf, int nbyte) const;
+	virtual int read(void * buf, int nbyte) const;
 
 	//already documented in sys::File
-	int close();
+	virtual int close();
 
 	bool is_valid() const;
 
+	/*! \details Sets options for the socket.
+	 *
+	 * @param option The option to set for the socket
+	 *
+	 * \code
+	 *
+	 * SocketAddressIpv4 address(0, 8080);
+	 * Socket socket;
+	 * socket.create(address);
+	 * socket << SocketOption().set_reuse_address() << SocketOption().set_reuse_port();
+	 * socket.bind(address);
+	 *
+	 * \endcode
+	 *
+	 */
 	Socket & operator << (const SocketOption & option);
 
-	const SocketAddress & address() const { return m_address; }
-
-private:
-	SocketAddress m_address;
-
+protected:
 
 	/*!
 	  * \details Initializes the system socket API.
@@ -417,6 +426,7 @@ private:
 	int m_socket;
 #endif
 
+private:
 	static bool m_is_initialized;
 };
 

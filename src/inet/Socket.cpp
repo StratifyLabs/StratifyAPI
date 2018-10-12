@@ -7,6 +7,10 @@
 #define SHUT_RDWR SD_BOTH
 #endif
 
+#if !defined INVALID_SOCKET
+#define INVALID_SOCKET -1
+#endif
+
 using namespace inet;
 
 bool Socket::m_is_initialized = false;
@@ -156,8 +160,6 @@ int Socket::initialize() {
 
 int Socket::create(const SocketAddress & address){
 
-	m_address = address;
-
 	m_socket = socket(address.family(), address.type(), address.protocol());
 
 	if( is_valid() == false ){
@@ -169,23 +171,35 @@ int Socket::create(const SocketAddress & address){
 }
 
 
-int Socket::bind(const SocketAddress & addr){
-	return ::bind(m_socket, addr.to_sockaddr(), addr.length());
-}
+int Socket::bind_and_listen(const SocketAddress & addr, int backlog) const {
+	int result = decode_socket_return( ::bind(m_socket, addr.to_sockaddr(), addr.length()) );
+	if( result < 0 ){
+		return result;
+	}
 
-int Socket::listen(int backlog){
-	return decode_socket_return( ::listen(m_socket, backlog) );
-}
+	if( addr.port() == SocketAddressInfo::PROTOCOL_TCP ){
+		result =  decode_socket_return( ::listen(m_socket, backlog) );
+	}
 
-Socket Socket::accept(){
-	Socket result;
-	result.m_socket = decode_socket_return( ::accept(m_socket, 0, 0) );
 	return result;
 }
-int Socket::connect() {
+
+Socket Socket::accept(SocketAddress & address) const{
+	Socket result;
+	socklen_t len = 0;
+	address.m_sockaddr.alloc(sizeof(struct sockaddr_in6));
+	result.m_socket = decode_socket_return(
+				::accept(m_socket,
+							address.m_sockaddr.to<struct sockaddr>(),
+							&len)
+				);
+	address.m_sockaddr.set_size(len);
+	return result;
+}
+int Socket::connect(const SocketAddress & address) {
 	// Connect to server.
 	return decode_socket_return(
-				::connect(m_socket, m_address.to_sockaddr(), m_address.length())
+				::connect(m_socket, address.to_sockaddr(), address.length())
 				);
 }
 
@@ -198,7 +212,7 @@ int Socket::read(void * buf, int nbyte) const {
 	return decode_socket_return( ::recv(m_socket, (char*)buf, nbyte, 0 ) );
 }
 
-int Socket::shutdown(int how){
+int Socket::shutdown(int how) const{
 	int socket_how = SHUT_RDWR;
 	if( (how & ACCESS_MODE) == READONLY ){
 		socket_how = SHUT_RD;
@@ -213,7 +227,9 @@ int Socket::close() {
 #if defined __win32
 	return decode_socket_return( closesocket(m_socket) );
 #else
-	return decode_socket_return( ::close(m_socket) );
+	int result = decode_socket_return( ::close(m_socket) );
+	m_socket = INVALID_SOCKET;
+	return result;
 #endif
 }
 
