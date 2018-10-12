@@ -126,7 +126,7 @@ int Socket::decode_socket_return(int value){
 			return value;
 	}
 #else
-	return value;
+	return set_error_number_if_error(value);
 #endif
 }
 
@@ -169,8 +169,8 @@ int Socket::create(const SocketAddress & address){
 }
 
 
-int Socket::bind(const Socket & socket, const SocketAddress & addr){
-	return ::bind(socket.fileno(), addr.m_sockaddr.to<struct sockaddr>(), addr.length());
+int Socket::bind(const SocketAddress & addr){
+	return ::bind(m_socket, addr.to_sockaddr(), addr.length());
 }
 
 int Socket::listen(int backlog){
@@ -184,7 +184,6 @@ Socket Socket::accept(){
 }
 int Socket::connect() {
 	// Connect to server.
-
 	return decode_socket_return(
 				::connect(m_socket, m_address.to_sockaddr(), m_address.length())
 				);
@@ -214,9 +213,19 @@ int Socket::close() {
 #if defined __win32
 	return decode_socket_return( closesocket(m_socket) );
 #else
-	return ::close(m_socket);
+	return decode_socket_return( ::close(m_socket) );
 #endif
 }
+
+Socket & Socket::operator << (const SocketOption & option){
+	decode_socket_return( ::setsockopt(m_socket,
+									  option.m_level,
+									  option.m_name,
+									  option.m_option_value.to_void(),
+									  option.m_option_value.size()) );
+	return *this;
+}
+
 
 
 Socket::~Socket() {

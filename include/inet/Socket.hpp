@@ -16,6 +16,7 @@
 #include "../sys/File.hpp"
 #include "../var/String.hpp"
 #include "../var/Vector.hpp"
+#include "../chrono/MicroTime.hpp"
 
 namespace inet {
 
@@ -216,6 +217,110 @@ protected:
 
 };
 
+class SocketOption : public api::InetInfoObject {
+public:
+
+	enum {
+		LEVEL_SOCKET = SOL_SOCKET,
+	};
+
+	SocketOption(int level = LEVEL_SOCKET){
+		m_level = level;
+	}
+
+	enum {
+		DEBUG = SO_DEBUG,
+		BROADCAST = SO_BROADCAST,
+		REUSE_ADDRESS = SO_REUSEADDR,
+		REUSEADDR = SO_REUSEADDR,
+		REUSEPORT = SO_REUSEPORT,
+		REUSE_PORT = SO_REUSEPORT,
+		SET_SEND_SIZE = SO_SNDBUF,
+		SNDBUF = SO_SNDBUF,
+		SET_RECEIVE_SIZE = SO_RCVBUF,
+		RCVBUF = SO_RCVBUF,
+		DONT_ROUTE = SO_DONTROUTE,
+		KEEP_ALIVE = SO_KEEPALIVE,
+		LINGER = SO_LINGER,
+		OOBINLINE = SO_OOBINLINE,
+		RCVLOWAT = SO_RCVLOWAT,
+		SET_RECEIVE_MINIMUM_SIZE = SO_RCVLOWAT,
+		RECEIVE_TIMEOUT = SO_RCVTIMEO,
+		RCVTIMEO = SO_RCVTIMEO,
+		SNDLOWAT = SO_SNDLOWAT,
+		SET_SEND_MINIMUM_SIZE = SO_SNDLOWAT,
+		SEND_TIMEOUT = SO_SNDTIMEO,
+		SNDTIMEO = SO_SNDTIMEO
+	};
+
+	SocketOption & broadcast(bool value = true){
+		return set_integer_value(BROADCAST, value);
+	}
+
+	SocketOption & reuse_address(bool value = true){
+		return set_integer_value(REUSE_ADDRESS, value);
+	}
+
+	SocketOption & reuse_port(bool value = true){
+		return set_integer_value(REUSE_PORT, value);
+	}
+
+	SocketOption & dont_route(bool value = true){
+		return set_integer_value(DONT_ROUTE, value);
+	}
+
+	SocketOption & keep_alive(bool value = true){
+		return set_integer_value(KEEP_ALIVE, value);
+	}
+
+	SocketOption & set_send_size(int value){
+		return set_integer_value(SET_SEND_SIZE, value);
+	}
+
+	SocketOption & set_send_minimum_size(int value){
+		return set_integer_value(SET_SEND_MINIMUM_SIZE, value);
+	}
+
+	SocketOption & set_receive_size(int value){
+		return set_integer_value(SET_RECEIVE_SIZE, value);
+	}
+
+	SocketOption & set_receive_minimum_size(int value){
+		return set_integer_value(SET_RECEIVE_MINIMUM_SIZE, value);
+	}
+
+	SocketOption & set_send_timeout(const chrono::ClockTime & timeout){
+		return set_timeout(SEND_TIMEOUT, timeout);
+	}
+
+	SocketOption & set_receive_timeout(const chrono::ClockTime & timeout){
+		return set_timeout(RECEIVE_TIMEOUT, timeout);
+	}
+
+private:
+
+	friend class Socket;
+	SocketOption & set_integer_value(int name, int value){
+		m_name = name;
+		m_option_value.alloc(sizeof(int));
+		*m_option_value.to<int>() = value;
+		return *this;
+	}
+
+	SocketOption & set_timeout(int name, const chrono::ClockTime & timeout){
+		m_name = name;
+		m_option_value.alloc(sizeof(struct timeval));
+		m_option_value.to<struct timeval>()->tv_sec = timeout.seconds();
+		m_option_value.to<struct timeval>()->tv_usec = timeout.nanoseconds() / 1000UL;
+		return *this;
+	}
+
+	int m_level;
+	int m_name;
+	var::Data m_option_value;
+
+};
+
 
 class Socket : public sys::File {
 public:
@@ -242,7 +347,7 @@ public:
 	  * \details Binds to the port for which the socket was created.
 	  * @return Less than zero on error and zero on success
 	  */
-	int bind(const Socket & socket, const SocketAddress & address);
+	int bind(const SocketAddress & address);
 
 	/*!
 	  * \details Listens on the port specified during create().
@@ -276,15 +381,21 @@ public:
 	int shutdown(int how = 0);
 
 	//already documented in sys::File
+	using File::write;
 	int write(const void * buf, int nbyte);
 
 	//already documented in sys::File
+	using File::read;
 	int read(void * buf, int nbyte);
 
 	//already documented in sys::File
 	int close();
 
 	bool is_valid() const;
+
+	Socket & operator << (const SocketOption & option);
+
+	const SocketAddress & address() const { return m_address; }
 
 private:
 	SocketAddress m_address;
@@ -297,7 +408,7 @@ private:
 	  */
 	int initialize();
 
-	static int decode_socket_return(int value);
+	int decode_socket_return(int value);
 
 #if defined __win32
 	::SOCKET m_socket;
