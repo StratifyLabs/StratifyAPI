@@ -139,6 +139,12 @@ public:
 		m_type = type;
 	}
 
+	void set_address(u8 a, u8 b, u8 c, u8 d){
+		m_sockaddr_in.sin_addr.s_addr = address(a,b,c,d);
+	}
+
+	int set_address(const var::ConstString & addr);
+
 private:
 	friend class SocketAddress;
 	struct sockaddr_in m_sockaddr_in;

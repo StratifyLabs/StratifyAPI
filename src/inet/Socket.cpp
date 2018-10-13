@@ -95,11 +95,51 @@ var::String SocketAddress::address_to_string() const {
 
 
 	if( is_ipv6() ){
-		result.format("ipv6 address");
+		const struct sockaddr_in6 * addr = m_sockaddr.to<struct sockaddr_in6>();
+#if defined __link
+#if defined __macosx
+		result.format("%04X:%04X:%04X:%04X:%04X:%04X:%04X:%04X",
+						  ((u16)addr->sin6_addr.__u6_addr.__u6_addr8[0]) << 8 | addr->sin6_addr.__u6_addr.__u6_addr8[1],
+				((u16)addr->sin6_addr.__u6_addr.__u6_addr8[2]) << 8 | addr->sin6_addr.__u6_addr.__u6_addr8[3],
+				((u16)addr->sin6_addr.__u6_addr.__u6_addr8[4]) << 8 | addr->sin6_addr.__u6_addr.__u6_addr8[5],
+				((u16)addr->sin6_addr.__u6_addr.__u6_addr8[6]) << 8 | addr->sin6_addr.__u6_addr.__u6_addr8[7],
+				((u16)addr->sin6_addr.__u6_addr.__u6_addr8[8]) << 8 | addr->sin6_addr.__u6_addr.__u6_addr8[9],
+				((u16)addr->sin6_addr.__u6_addr.__u6_addr8[10]) << 8 | addr->sin6_addr.__u6_addr.__u6_addr8[11],
+				((u16)addr->sin6_addr.__u6_addr.__u6_addr8[12]) << 8 | addr->sin6_addr.__u6_addr.__u6_addr8[13],
+				((u16)addr->sin6_addr.__u6_addr.__u6_addr8[14]) << 8 | addr->sin6_addr.__u6_addr.__u6_addr8[15]);
+#else
+
+#endif
+#else
+		result.format("%04X:%04X:%04X:%04X:%04X:%04X:%04X:%04X",
+						  ((u16)addr->sin6_addr.un.u8_addr[0]) << 8 | addr->sin6_addr.un.u8_addr[1],
+				((u16)addr->sin6_addr.un.u8_addr[2]) << 8 | addr->sin6_addr.un.u8_addr[3],
+				((u16)addr->sin6_addr.un.u8_addr[4]) << 8 | addr->sin6_addr.un.u8_addr[5],
+				((u16)addr->sin6_addr.un.u8_addr[6]) << 8 | addr->sin6_addr.un.u8_addr[7],
+				((u16)addr->sin6_addr.un.u8_addr[8]) << 8 | addr->sin6_addr.un.u8_addr[9],
+				((u16)addr->sin6_addr.un.u8_addr[10]) << 8 | addr->sin6_addr.un.u8_addr[11],
+				((u16)addr->sin6_addr.un.u8_addr[12]) << 8 | addr->sin6_addr.un.u8_addr[13],
+				((u16)addr->sin6_addr.un.u8_addr[14]) << 8 | addr->sin6_addr.un.u8_addr[15]);
+#endif
 	}
 
 	return result;
 }
+
+int SocketAddressIpv4::set_address(const var::ConstString & addr){
+	Token tokens(addr, ".");
+	if( tokens.count() != 4 ){
+		return -1;
+	}
+
+	set_address(tokens.at(0).atoi(),
+					tokens.at(1).atoi(),
+					tokens.at(2).atoi(),
+					tokens.at(3).atoi());
+
+	return 0;
+}
+
 
 
 Socket::Socket(){
@@ -186,8 +226,8 @@ int Socket::bind_and_listen(const SocketAddress & addr, int backlog) const {
 
 Socket Socket::accept(SocketAddress & address) const{
 	Socket result;
-	socklen_t len = 0;
-	address.m_sockaddr.alloc(sizeof(struct sockaddr_in6));
+	socklen_t len = sizeof(struct sockaddr_in6);
+	address.m_sockaddr.alloc(len);
 	result.m_socket = decode_socket_return(
 				::accept(m_socket,
 							address.m_sockaddr.to<struct sockaddr>(),
@@ -196,6 +236,7 @@ Socket Socket::accept(SocketAddress & address) const{
 	address.m_sockaddr.set_size(len);
 	return result;
 }
+
 int Socket::connect(const SocketAddress & address) {
 	// Connect to server.
 	return decode_socket_return(
