@@ -71,6 +71,7 @@ public:
 	 *
 	 */
 	SocketAddressInfo(int family = FAMILY_INET, int type = TYPE_STREAM, int protocol = PROTOCOL_TCP, int flags = 0){
+		memset(&m_addrinfo, 0, sizeof(m_addrinfo));
 		set_flags(flags);
 		set_family(family);
 		set_type(type);
@@ -246,7 +247,7 @@ public:
 		REUSEADDR = SO_REUSEADDR,
 #if !defined __win32
 		REUSEPORT = SO_REUSEPORT,
-		REUSE_PORT = SO_REUSEPORT,
+		REUSE_PORT = SO_REUSEPORT,		
 #endif
 		SET_SEND_SIZE = SO_SNDBUF,
 		SNDBUF = SO_SNDBUF,
@@ -274,11 +275,14 @@ public:
 		return set_integer_value(REUSE_ADDRESS, value);
 	}
 
-#if !defined __win32
 	SocketOption & reuse_port(bool value = true){
+#if !defined __win32
 		return set_integer_value(REUSE_PORT, value);
-	}
+#else
+		//windows doesn't support this -- ignore it
+		return *this;
 #endif
+	}
 
 	SocketOption & dont_route(bool value = true){
 		return set_integer_value(DONT_ROUTE, value);
@@ -442,7 +446,7 @@ protected:
 #endif
 
 private:
-	static bool m_is_initialized;
+	static int m_is_initialized;
 };
 
 }

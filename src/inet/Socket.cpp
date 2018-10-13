@@ -13,7 +13,7 @@
 
 using namespace inet;
 
-bool Socket::m_is_initialized = false;
+int Socket::m_is_initialized = 0;
 
 var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 		const var::ConstString & node,
@@ -175,11 +175,10 @@ int Socket::decode_socket_return(int value) const {
 }
 
 int Socket::initialize() {
-	if( m_is_initialized ){
-		return 0;
-	}
-	m_is_initialized = true;
+	if( m_is_initialized == 0 ){
+
 #if defined __win32
+
 	WSADATA wsadata;
 	int result;
 
@@ -190,10 +189,24 @@ int Socket::initialize() {
 		return -1;
 	}
 
-	return 0;
-#else
-	return 0;
 #endif
+	}
+
+	m_is_initialized++;
+	return 0;
+}
+
+Socket::~Socket() {
+	close();
+
+	if( m_is_initialized > 0 ){
+		m_is_initialized--;
+		if( m_is_initialized == 0 ){
+#if defined __win32
+			WSACleanup();
+#endif
+		}
+	}
 }
 
 
@@ -281,10 +294,4 @@ Socket & Socket::operator << (const SocketOption & option){
 												  option.m_option_value.to_char(),
 												  option.m_option_value.size()) );
 	return *this;
-}
-
-
-
-Socket::~Socket() {
-	close();
 }
