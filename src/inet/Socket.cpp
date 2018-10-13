@@ -22,6 +22,8 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 
 	struct addrinfo * info;
 
+	Socket::initialize();
+
 	if( getaddrinfo(node.str(), server.str(), &m_addrinfo, &info) < 0 ){
 		return result;
 	}
@@ -44,6 +46,8 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 	} while(info);
 
 	freeaddrinfo(info);
+
+	Socket::deinitialize();
 
 	return result;
 }
@@ -178,16 +182,16 @@ int Socket::initialize() {
 	if( m_is_initialized == 0 ){
 
 #if defined __win32
+		WSADATA wsadata;
+		int result;
 
-	WSADATA wsadata;
-	int result;
-
-	// Initialize Winsock
-	result = WSAStartup(MAKEWORD(2,2), &wsadata);
-	if (result != 0) {
-		//set_error_number(EPIPE);
-		return -1;
-	}
+		// Initialize Winsock
+		WSAStartup(MAKEWORD(1,0), &wsadata);
+		result = WSAStartup(wsadata.wHighVersion, &wsadata);
+		if (result != 0) {
+			//set_error_number(EPIPE);
+			return -1;
+		}
 
 #endif
 	}
@@ -196,9 +200,7 @@ int Socket::initialize() {
 	return 0;
 }
 
-Socket::~Socket() {
-	close();
-
+int Socket::deinitialize(){
 	if( m_is_initialized > 0 ){
 		m_is_initialized--;
 		if( m_is_initialized == 0 ){
@@ -207,6 +209,10 @@ Socket::~Socket() {
 #endif
 		}
 	}
+}
+
+Socket::~Socket() {
+	close();
 }
 
 

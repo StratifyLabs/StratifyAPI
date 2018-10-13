@@ -427,6 +427,10 @@ public:
 	 */
 	Socket & operator << (const SocketOption & option);
 
+
+	static int initialize();
+	static int deinitialize();
+
 protected:
 
 	/*!
@@ -434,7 +438,6 @@ protected:
 	  *
 	  * @return Zero on success
 	  */
-	int initialize();
 
 	int decode_socket_return(int value) const;
 
