@@ -209,6 +209,7 @@ int Socket::deinitialize(){
 #endif
 		}
 	}
+	return 0;
 }
 
 Socket::~Socket() {
