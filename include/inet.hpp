@@ -12,7 +12,6 @@
 namespace inet {}
 
 #include "inet/Socket.hpp"
-#include "inet/SocketAttributes.hpp"
 #include "inet/SecureSocket.hpp"
 
 using namespace inet;
