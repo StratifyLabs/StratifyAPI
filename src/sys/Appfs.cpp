@@ -28,11 +28,11 @@ int Appfs::create(const var::ConstString & name, const void * buf, int nbyte, co
 	appfs_file_t f;
 	strcpy(buffer, mount);
 	strcat(buffer, "/flash/");
-    strcat(buffer, name.str());
+	strcat(buffer, name.str());
 
 
 	//delete the settings if they exist
-    strncpy(f.hdr.name, name.str(), LINK_NAME_MAX);
+	strncpy(f.hdr.name, name.str(), LINK_NAME_MAX);
 	f.hdr.mode = 0666;
 	f.exec.code_size = nbyte + sizeof(f); //total number of bytes in file
 	f.exec.signature = APPFS_CREATE_SIGNATURE;
@@ -107,6 +107,7 @@ int Appfs::get_info(const var::ConstString & path, appfs_info_t & info){
 
 	int ret;
 	if( f.open(path, File::RDONLY) < 0 ){
+		errno = ENOENT;
 		return -1;
 	}
 
@@ -114,7 +115,7 @@ int Appfs::get_info(const var::ConstString & path, appfs_info_t & info){
 	f.close();
 	if( ret == sizeof(appfs_file_header) ){
 		//first check to see if the name matches -- otherwise it isn't an app file
-        path_name = File::name(path).str();
+		path_name = File::name(path).str();
 		app_name = appfs_file_header.hdr.name;
 		if( path_name == app_name ){
 			info.mode = appfs_file_header.hdr.mode;
@@ -125,9 +126,11 @@ int Appfs::get_info(const var::ConstString & path, appfs_info_t & info){
 			info.o_flags = appfs_file_header.exec.o_flags;
 			info.signature = appfs_file_header.exec.signature;
 		} else {
+			errno = ENOEXEC;
 			ret = -1;
 		}
 	} else {
+		errno = ENOEXEC;
 		ret = -1;
 	}
 
@@ -158,23 +161,23 @@ u16 Appfs::get_version(const var::ConstString & path){
 
 var::String Appfs::get_id(const var::ConstString & path, link_transport_mdriver_t * driver){
 	appfs_info_t info;
-    var::String result;
-    if( get_info(path, info, driver) < 0 ){
-        return result;
+	var::String result;
+	if( get_info(path, info, driver) < 0 ){
+		return result;
 	}
 
 #else
 
 var::String Appfs::get_id(const var::ConstString & path){
 	appfs_info_t info;
-    var::String result;
+	var::String result;
 	if( get_info(path, info) < 0 ){
-        return result;
+		return result;
 	}
 #endif
 
-    result = (const char*)info.id;
-    return result;
+	result = (const char*)info.id;
+	return result;
 }
 
 

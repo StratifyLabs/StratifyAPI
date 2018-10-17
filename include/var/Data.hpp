@@ -556,6 +556,12 @@ public:
 
 	void print(unsigned int value) const;
 
+	static void reclaim_heap_space(){
+#if !defined __link
+		::free((void*)1);
+#endif
+	}
+
 protected:
 	void copy_object(const Data & a);
 	void move_object(Data & a);

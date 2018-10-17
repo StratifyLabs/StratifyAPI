@@ -35,31 +35,62 @@ class SocketAddress;
  * can be used to converto that to information that can be
  * used to open a socket.
  *
+ * The following is an example of how to use
+ * this class for connected to a server.
+ *
+ * \code
+ * #include <sapi/inet.hpp>
+ * #include <sapi/var.hpp>
+ *
+ * SocketAddressInfo socket_address_info; //construct with defaults
+ * Vector<SocketAddressInfo> result = socket_address_info.fetch_node("stratifylabs.co");
+ *
+ * if( result.count() > 0 ){
+ *	 SocketAddress socket_address(result.at(0));
+ *  Socket socket;
+ *  socket.create(socket_address); //create a socket that can connect to stratifylabs.co
+ *
+ *  socket.connect(socket_address); //connect to stratifylabs.co
+ *
+ *  String request = "...";
+ *  socket.write(request);
+ *  //then read the response
+ *
+ *  socket.close();
+ * }
+ *
+ * \endcode
+ *
+ *
+ *
  */
 class SocketAddressInfo : public::api::InetInfoObject {
 public:
 
+	/*! \details Enumerates the socket address family options. */
 	enum family {
 		FAMILY_NONE,
-		FAMILY_INET = AF_INET,
-		FAMILY_INET6 = AF_INET6
+		FAMILY_INET /*! IPV4 */ = AF_INET,
+		FAMILY_INET6 /*! IPV6 */ = AF_INET6
 	};
 
+	/*! \details Enumerates the socket address type options. */
 	enum type {
 		TYPE_NONE,
-		TYPE_RAW = SOCK_RAW,
-		TYPE_STREAM = SOCK_STREAM,
-		TYPE_DGRAM = SOCK_DGRAM
+		TYPE_RAW /*! Raw socket data */ = SOCK_RAW,
+		TYPE_STREAM /*! Streaming socket data */ = SOCK_STREAM,
+		TYPE_DGRAM /*! Datagram socket data */ = SOCK_DGRAM
 	};
 
+	/*! \details Enumerates the socket address protocol options. */
 	enum protocol {
-		PROTOCOL_RAW = IPPROTO_RAW,
-		PROTOCOL_TCP = IPPROTO_TCP,
-		PROTOCOL_UDP = IPPROTO_UDP,
-		PROTOCOL_ICMP = IPPROTO_ICMP,
+		PROTOCOL_RAW /*! Raw protocol */ = IPPROTO_RAW,
+		PROTOCOL_TCP /*! TCP Protocol */ = IPPROTO_TCP,
+		PROTOCOL_UDP /*! UDP Procotol */ = IPPROTO_UDP,
+		PROTOCOL_ICMP /*! ICMP Procotol */ = IPPROTO_ICMP,
 		PROTOCOL_ICMP6 = IPPROTO_ICMPV6,
-		PROTOCOL_ICMPV6 = IPPROTO_ICMPV6,
-		PROTOCOL_IP = IPPROTO_IP
+		PROTOCOL_ICMPV6 /*! ICMPv6 Protocol */ = IPPROTO_ICMPV6,
+		PROTOCOL_IP /*! IP Protocol */ = IPPROTO_IP
 	};
 
 	/*! \details Constructs a new socket address infomation object.
@@ -78,14 +109,25 @@ public:
 		set_protocol(protocol);
 	}
 
+	/*! \details Sets the flags used for getting address info.
+	 *
+	 */
 	void set_flags(int value){ m_addrinfo.ai_flags = value; }
+
+	/*! \details Sets the family for getting address info. */
 	void set_family(int value){ m_addrinfo.ai_family = value; }
+	/*! \details Sets the type for getting address info. */
 	void set_type(int value){ m_addrinfo.ai_socktype = value; }
+	/*! \details Sets the protocol for getting address info. */
 	void set_protocol(int value){ m_addrinfo.ai_protocol = value; }
 
+	/*! \details Accesses the flags. */
 	int flags() const { return m_addrinfo.ai_flags; }
+	/*! \details Accesses the family. */
 	int family() const { return m_addrinfo.ai_family; }
+	/*! \details Accesses the type. */
 	int type() const { return m_addrinfo.ai_socktype; }
+	/*! \details Accesses the protocol. */
 	int protocol() const { return m_addrinfo.ai_protocol; }
 
 	/*! \details Fetches the socket address information from

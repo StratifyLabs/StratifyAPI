@@ -62,48 +62,71 @@ public:
 	 *
 	 */
 #if !defined __link
-    static int create(const var::ConstString & name,
-			const void * buf,
-			int nbyte,
-			const char * mount = "/app",
-			bool (*update)(void *, int, int) = 0,
-			void * context = 0);
+	static int create(const var::ConstString & name,
+							const void * buf,
+							int nbyte,
+							const char * mount = "/app",
+							bool (*update)(void *, int, int) = 0,
+							void * context = 0);
+
+	static int create(const var::ConstString & name,
+							const var::Data & data,
+							const char * mount = "/app",
+							bool (*update)(void *, int, int) = 0,
+							void * context = 0){
+		return create(name, data.to_void(), data.size(), mount, update, context);
+	}
 #else
-    static int create(const var::ConstString & name,
-			const void * buf,
-			int nbyte,
-			const char * mount = "/app",
-			bool (*update)(void *, int, int) = 0,
-			void * context = 0,
-			link_transport_mdriver_t * driver = 0);
+	static int create(const var::ConstString & name,
+							const void * buf,
+							int nbyte,
+							const char * mount = "/app",
+							bool (*update)(void *, int, int) = 0,
+							void * context = 0,
+							link_transport_mdriver_t * driver = 0);
+
+	static int create(const var::ConstString & name,
+							const var::Data & data,
+							const char * mount = "/app",
+							bool (*update)(void *, int, int) = 0,
+							void * context = 0,
+							link_transport_mdriver_t * driver = 0){
+		return create(name, data.to_void(), data.size(), mount, update, context, driver);
+	}
 #endif
 
 #if 0
-    static int create(const var::ConstString name,
-                      const File & source,
-                      const char * mount = "/app",
-                      bool (*update)(void *, int, int) = 0,
-                      void * context = 0);
+	static int create(const var::ConstString name,
+							const File & source,
+							const char * mount = "/app",
+							bool (*update)(void *, int, int) = 0,
+							void * context = 0);
 #endif
 
 
 	/*! \details Returns the page size for writing data. */
 	static int page_size(){ return APPFS_PAGE_SIZE; }
 
-	/*! \details Gets the info associated with the file.
+	/*! \details Gets the info associated with an executable file.
 	 *
-     * @param path The path to the file
+	  * @param path The path to the file
 	 * @param info A reference to the destination info
 	 * @return Zero on success
-     *
-     * This method will work if the file is installed in the
-     * application filesystem or on a normal data filesystem.
-     *
+	  *
+	  * This method will work if the file is installed in the
+	  * application filesystem or on a normal data filesystem.
+	  *
+	  * The method will return less than zero if the file is not
+	  * a recognized executable file.
+	  *
+	  * The errno will be set to ENOENT or ENOEXEC if the file
+	  * does not exist or is not a recognized executable, respectively.
+	  *
 	 */
 #if !defined __link
-    static int get_info(const var::ConstString & path, appfs_info_t & info);
+	static int get_info(const var::ConstString & path, appfs_info_t & info);
 #else
-    static int get_info(const var::ConstString & path, appfs_info_t & info, link_transport_mdriver_t * driver);
+	static int get_info(const var::ConstString & path, appfs_info_t & info, link_transport_mdriver_t * driver);
 #endif
 
 	/*! \details Gets the application version.
@@ -115,9 +138,9 @@ public:
 	 *
 	 */
 #if !defined __link
-    static u16 get_version(const var::ConstString & path);
+	static u16 get_version(const var::ConstString & path);
 #else
-    static u16 get_version(const var::ConstString & path, link_transport_mdriver_t * driver);
+	static u16 get_version(const var::ConstString & path, link_transport_mdriver_t * driver);
 #endif
 
 	/*! \details Gets the application ID value.
@@ -130,9 +153,9 @@ public:
 	 *
 	 */
 #if !defined __link
-    static var::String get_id(const var::ConstString & path);
+	static var::String get_id(const var::ConstString & path);
 #else
-    static var::String get_id(const var::ConstString & path, link_transport_mdriver_t * driver);
+	static var::String get_id(const var::ConstString & path, link_transport_mdriver_t * driver);
 #endif
 
 #if !defined __link
