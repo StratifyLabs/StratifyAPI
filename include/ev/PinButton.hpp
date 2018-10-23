@@ -45,6 +45,18 @@ public:
      */
     static void set_held_duration(chrono::MicroTime duration){ m_held_duration = duration; }
 
+	 /*! \details Sets the duration of a button press before a actuation is trigger.
+	  *
+	  * This can be used to debounce the button.
+	  *
+	  */
+	 static void set_actuation_duration(chrono::MicroTime duration){ m_actuation_duration = duration; }
+
+	 /*! \details Returns the actuation duration (amount of time button is pressed
+	  * before triggering an acutation.
+	  *
+	  */
+	 static chrono::MicroTime actuation_duration(){ return m_actuation_duration; }
 
 	/*! \details This method accesses the active value.
 	 *
@@ -73,8 +85,9 @@ protected:
 
 private:
 
-    static chrono::MicroTime m_held_duration;
-    enum ev::Event::button_id m_event_id;
+	 static chrono::MicroTime m_held_duration;
+	 static chrono::MicroTime m_actuation_duration;
+	 enum ev::Event::button_id m_event_id;
 
 	bool m_active_value;
 

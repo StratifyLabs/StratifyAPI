@@ -28,6 +28,7 @@ class I2SAttributes : public PinAssignmentPeriphAttr<i2s_attr_t, i2s_pin_assignm
 public:
 
 
+
 	/*! \details Accesses the serial data input pin assignment value. */
 	mcu_pin_t sdin() const { return m_attr.pin_assignment.sdin; }
 	/*! \details Access the serial data output pin assignment value. */
@@ -48,8 +49,11 @@ public:
 	/*! \details Sets the SCL pin assignment value. */
 	void set_mck(const mcu_pin_t & pin){ m_attr.pin_assignment.mck = pin;}
 
-	void set_freq(u32 frequency){ m_attr.freq = frequency; }
+	/*! \details Sets the frequency (rate for left/right clock). */
+	void set_frequency(u32 frequency){ m_attr.freq = frequency; }
+	void set_freq(u32 frequency){ set_frequency(frequency); }
 
+	/*! \details Sets the o_flags value as specified. */
 	void set_flags(u32 o_flags){ m_attr.o_flags = o_flags; }
 
 };
