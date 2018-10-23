@@ -1,4 +1,4 @@
-#ifndef SAPI_SOCKET_HPP
+﻿#ifndef SAPI_SOCKET_HPP
 #define SAPI_SOCKET_HPP
 
 #include <mcu/types.h>
@@ -446,6 +446,30 @@ public:
 	//already documented in sys::File
 	using File::read;
 	virtual int read(void * buf, int nbyte) const;
+
+
+    /*@brief use for get ip address from recved data in socket
+     * necceserly set ai_addrlen before use "recvfrom"
+     * getaddrinfo(use self port)->socket->bind-> read_from
+     * @param ai_addr - will address info accept
+     * @param ai_addrlen - write address ip len (IPv4 or IPv6) before use!!!
+     * */
+    int read_from(void * buf, int nbyte, struct sockaddr * ai_addr,socklen_t * ai_addrlen) const;
+    /*@brief use for write to socket with specific address "sendto"
+     * getaddrinfo(use server port to connect)->socket->write_to
+     * @param ai_addr - address to
+     * @param ai_addrlen - write address ip len (IPv4 or IPv6)
+     * */
+    int write_to(const void * buf, int nbyte, const struct sockaddr * ai_addr,socklen_t ai_addrlen) const;
+    int write_to(const void * buf, int nbyte, SocketAddress &socket_address) const {
+        socklen_t len;
+        if(socket_address.is_ipv4()){
+            len = sizeof(sockaddr_in);
+        }else{
+            len = sizeof(sockaddr_in6);
+        }
+        return write_to(buf, nbyte, socket_address.to_sockaddr(),len);
+    }
 
 	//already documented in sys::File
 	virtual int close();

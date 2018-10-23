@@ -23,8 +23,8 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 	struct addrinfo * info;
 
 	Socket::initialize();
-
-	if( getaddrinfo(node.str(), server.str(), &m_addrinfo, &info) < 0 ){
+    //may return error number
+    if( getaddrinfo(node.str(), server.str(), &m_addrinfo, &info) != 0 ){
 		return result;
 	}
 
@@ -268,9 +268,16 @@ int Socket::write(const void * buf, int nbyte) const {
 	return decode_socket_return( ::send(m_socket, (const char*)buf, nbyte, 0 ) );
 }
 
+int Socket::write_to(const void * buf, int nbyte, const struct sockaddr * ai_addr,socklen_t ai_addrlen) const {
+    return decode_socket_return( ::sendto(m_socket, (const char*)buf, nbyte, 0, ai_addr, ai_addrlen));
+}
+
 
 int Socket::read(void * buf, int nbyte) const {
 	return decode_socket_return( ::recv(m_socket, (char*)buf, nbyte, 0 ) );
+}
+int Socket::read_from(void * buf, int nbyte,struct sockaddr * ai_addr,socklen_t * ai_addrlen) const {
+    return decode_socket_return( ::recvfrom(m_socket, (char*)buf, nbyte, 0 ,ai_addr, ai_addrlen) );
 }
 
 int Socket::shutdown(int how) const{
