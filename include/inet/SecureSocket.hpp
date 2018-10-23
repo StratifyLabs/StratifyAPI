@@ -23,7 +23,7 @@ public:
 	/*! \details
 	  *
 	  */
-	SecureSocket accept(SocketAddress & address) const;
+	Socket accept(SocketAddress & address) const;
 
 	//already documented in inet::Socket
 	virtual int shutdown(int how = 0) const;

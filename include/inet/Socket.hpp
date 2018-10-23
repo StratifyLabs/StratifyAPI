@@ -289,7 +289,7 @@ public:
 		REUSEADDR = SO_REUSEADDR,
 #if !defined __win32
 		REUSEPORT = SO_REUSEPORT,
-		REUSE_PORT = SO_REUSEPORT,		
+		REUSE_PORT = SO_REUSEPORT,
 #endif
 		SET_SEND_SIZE = SO_SNDBUF,
 		SNDBUF = SO_SNDBUF,
@@ -448,28 +448,31 @@ public:
 	virtual int read(void * buf, int nbyte) const;
 
 
-    /*@brief use for get ip address from recved data in socket
-     * necceserly set ai_addrlen before use "recvfrom"
-     * getaddrinfo(use self port)->socket->bind-> read_from
-     * @param ai_addr - will address info accept
-     * @param ai_addrlen - write address ip len (IPv4 or IPv6) before use!!!
-     * */
-    int read_from(void * buf, int nbyte, struct sockaddr * ai_addr,socklen_t * ai_addrlen) const;
-    /*@brief use for write to socket with specific address "sendto"
-     * getaddrinfo(use server port to connect)->socket->write_to
-     * @param ai_addr - address to
-     * @param ai_addrlen - write address ip len (IPv4 or IPv6)
-     * */
-    int write_to(const void * buf, int nbyte, const struct sockaddr * ai_addr,socklen_t ai_addrlen) const;
-    int write_to(const void * buf, int nbyte, SocketAddress &socket_address) const {
-        socklen_t len;
-        if(socket_address.is_ipv4()){
-            len = sizeof(sockaddr_in);
-        }else{
-            len = sizeof(sockaddr_in6);
-        }
-        return write_to(buf, nbyte, socket_address.to_sockaddr(),len);
-    }
+	/*@brief use for get ip address from recved data in socket
+	  * necceserly set ai_addrlen before use "recvfrom"
+	  * getaddrinfo(use self port)->socket->bind-> read_from
+	  * @param ai_addr - will address info accept
+	  * @param ai_addrlen - write address ip len (IPv4 or IPv6) before use!!!
+	  * */
+	int read(var::Data & data, SocketAddress & address);
+	int read(void * buf, int nbyte, SocketAddress & address);
+	int read(void * buf, int nbyte, struct sockaddr * ai_addr,socklen_t * ai_addrlen) const;
+
+	/*! \brief Writes to the address specified.
+	  *
+	  * @param data The data to write
+	  * @param address The address to write to.
+	  *
+	  * This method implements the socket call sendto().
+	  *
+	  */
+	int write(const var::Data & data, const SocketAddress & address){
+		return write(data.to_char(), data.size(), address);
+	}
+	int write(const void * buf, int nbyte, const struct sockaddr * ai_addr,socklen_t ai_addrlen) const;
+	int write(const void * buf, int nbyte, const SocketAddress &socket_address) const {
+		return write(buf, nbyte, socket_address.to_sockaddr(), socket_address.length());
+	}
 
 	//already documented in sys::File
 	virtual int close();

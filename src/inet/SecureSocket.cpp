@@ -24,8 +24,8 @@ int SecureSocket::bind_and_listen(const SocketAddress & address, int backlog) co
 
 
 //already documented in inet::Socket
-SecureSocket SecureSocket::accept(SocketAddress & address) const {
-	return SecureSocket();
+Socket SecureSocket::accept(SocketAddress & address) const {
+	return Socket();
 }
 
 //already documented in inet::Socket

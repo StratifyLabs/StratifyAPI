@@ -268,7 +268,7 @@ int Socket::write(const void * buf, int nbyte) const {
 	return decode_socket_return( ::send(m_socket, (const char*)buf, nbyte, 0 ) );
 }
 
-int Socket::write_to(const void * buf, int nbyte, const struct sockaddr * ai_addr,socklen_t ai_addrlen) const {
+int Socket::write(const void * buf, int nbyte, const struct sockaddr * ai_addr,socklen_t ai_addrlen) const {
     return decode_socket_return( ::sendto(m_socket, (const char*)buf, nbyte, 0, ai_addr, ai_addrlen));
 }
 
@@ -276,7 +276,18 @@ int Socket::write_to(const void * buf, int nbyte, const struct sockaddr * ai_add
 int Socket::read(void * buf, int nbyte) const {
 	return decode_socket_return( ::recv(m_socket, (char*)buf, nbyte, 0 ) );
 }
-int Socket::read_from(void * buf, int nbyte,struct sockaddr * ai_addr,socklen_t * ai_addrlen) const {
+
+int Socket::read(var::Data & data, SocketAddress & address){
+	socklen_t address_len = address.m_sockaddr.size();
+	return decode_socket_return( ::recvfrom(m_socket, data.to_char(), data.size(), 0 , address.m_sockaddr.to<struct sockaddr>(), &address_len) );
+}
+
+int Socket::read(void * buf, int nbyte, SocketAddress & address){
+	socklen_t address_len = address.m_sockaddr.size();
+	return decode_socket_return( ::recvfrom(m_socket, buf, nbyte, 0 , address.m_sockaddr.to<struct sockaddr>(), &address_len) );
+}
+
+int Socket::read(void * buf, int nbyte,struct sockaddr * ai_addr,socklen_t * ai_addrlen) const {
     return decode_socket_return( ::recvfrom(m_socket, (char*)buf, nbyte, 0 ,ai_addr, ai_addrlen) );
 }
 
