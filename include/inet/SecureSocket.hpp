@@ -36,7 +36,10 @@ public:
 
 	virtual int close();
 
+
 private:
+
+	void * m_context;
 
 };
 

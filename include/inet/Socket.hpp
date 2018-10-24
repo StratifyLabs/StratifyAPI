@@ -130,6 +130,8 @@ public:
 	/*! \details Accesses the protocol. */
 	int protocol() const { return m_addrinfo.ai_protocol; }
 
+	const var::ConstString & canon_name() const { return m_canon_name; }
+
 	/*! \details Fetches the socket address information from
 	 * DNS servers based on the node and service specified.
 	 *
@@ -215,6 +217,7 @@ public:
 	SocketAddress(const SocketAddressInfo & info, u16 port = 0){
 		m_sockaddr = info.m_sockaddr;
 		m_protocol = info.m_addrinfo.ai_protocol;
+		m_canon_name = info.m_canon_name;
 		m_type = info.m_addrinfo.ai_socktype;
 		set_port(port);
 	}
@@ -263,9 +266,12 @@ public:
 		return m_sockaddr.to<struct sockaddr>();
 	}
 
+	const var::ConstString & canon_name() const { return m_canon_name; }
+
 protected:
 	friend class Socket;
 	var::Data m_sockaddr;
+	var::String m_canon_name;
 	int m_protocol;
 	int m_type;
 

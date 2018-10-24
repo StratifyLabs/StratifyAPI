@@ -13,6 +13,8 @@ namespace inet {}
 
 #include "inet/Socket.hpp"
 #include "inet/SecureSocket.hpp"
+#include "inet/Http.hpp"
+#include "inet/Url.hpp"
 
 using namespace inet;
 

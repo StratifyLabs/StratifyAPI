@@ -23,8 +23,9 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 	struct addrinfo * info;
 
 	Socket::initialize();
-    //may return error number
-    if( getaddrinfo(node.str(), server.str(), &m_addrinfo, &info) != 0 ){
+	//may return error number
+	m_addrinfo.ai_flags |= AI_CANONNAME;
+	if( getaddrinfo(node.str(), server.str(), &m_addrinfo, &info) != 0 ){
 		return result;
 	}
 
@@ -269,7 +270,7 @@ int Socket::write(const void * buf, int nbyte) const {
 }
 
 int Socket::write(const void * buf, int nbyte, const struct sockaddr * ai_addr,socklen_t ai_addrlen) const {
-    return decode_socket_return( ::sendto(m_socket, (const char*)buf, nbyte, 0, ai_addr, ai_addrlen));
+	return decode_socket_return( ::sendto(m_socket, (const char*)buf, nbyte, 0, ai_addr, ai_addrlen));
 }
 
 
@@ -288,7 +289,7 @@ int Socket::read(void * buf, int nbyte, SocketAddress & address){
 }
 
 int Socket::read(void * buf, int nbyte,struct sockaddr * ai_addr,socklen_t * ai_addrlen) const {
-    return decode_socket_return( ::recvfrom(m_socket, (char*)buf, nbyte, 0 ,ai_addr, ai_addrlen) );
+	return decode_socket_return( ::recvfrom(m_socket, (char*)buf, nbyte, 0 ,ai_addr, ai_addrlen) );
 }
 
 int Socket::shutdown(int how) const{
