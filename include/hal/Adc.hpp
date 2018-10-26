@@ -12,7 +12,7 @@ namespace hal {
 /*! \brief ADC Attributes Class
  * \details This class is for containing ADC attributes.
  */
-class AdcAttributes : public PinAssignmentPeriphAttr<adc_attr_t, adc_pin_assignment_t> {
+class AdcAttributes : public PinAssignmentPeriphAttributes<adc_attr_t, adc_pin_assignment_t> {
 public:
 
 	AdcAttributes(){}
@@ -76,7 +76,7 @@ class AdcPinAssignment : public PinAssignment<adc_pin_assignment_t>{};
  * \endcode
  *
  */
-class Adc : public Periph<adc_info_t, adc_attr_t, 'a'> {
+class Adc : public Periph<adc_info_t, adc_attr_t, AdcAttributes, ADC_IOC_IDENT_CHAR> {
 public:
 
 	/*! \details Initializes the object with \a port. */
@@ -103,13 +103,6 @@ public:
 
 	};
 
-	/*! \details Sets the attributes of the ADC.
-	 *
-	 * @param o_flags The ADC flags (e.g. FLAG_SET_CONVERTER)
-	 * @param freq The ADC frequency (set to 0 to use the maximum available)
-	 * @param pin_assignment A pointer to the pin assignment data structure (0 to use default pin assignment)
-	 * @return Zero on success or less than zero for an error
-	 */
 	int set_attr(u32 o_flags, u32 freq, const adc_pin_assignment_t * pin_assignment = 0) const {
 		adc_attr_t attr;
 		attr.o_flags = o_flags;
@@ -119,30 +112,15 @@ public:
 			memset(&attr.pin_assignment, 0xff, sizeof(adc_pin_assignment_t));
 		}
 		attr.freq = freq;
-		return Periph::set_attr(attr);
+		return set_attributes(attr);
 	}
 
-
-	/*! \details Opens the ADC port and sets the attributes as specified.
-	 *
-	 * @param o_flags The ADC flags (e.g. FLAG_SET_CONVERTER)
-	 * @param freq The ADC frequency (set to 0 to use the maximum available)
-	 * @param pin_assignment A pointer to the pin assignment data structure (0 to use default pin assignment)
-	 * @return Zero on success or less than zero for an error
-	 *
-	 */
-	int initialize(u32 o_flags, u32 freq, const adc_pin_assignment_t * pin_assignment = 0){
+	int init(u32 o_flags, u32 freq, const adc_pin_assignment_t * pin_assignment = 0){
 		if( open() < 0 ){
 			return -1;
 		}
 		return set_attr(o_flags, freq, pin_assignment);
 	}
-	int init(u32 o_flags, u32 freq, const adc_pin_assignment_t * pin_assignment = 0){
-		return initialize(o_flags, freq, pin_assignment);
-	}
-
-	using Periph::init;
-	using Periph::set_attr;
 
 private:
 

@@ -59,8 +59,8 @@ public:
 	/*! \details Contructs a new pin object from an mcu_pin_t data structure. */
 	Pin(const mcu_pin_t & p) : Pio(p.port) { m_pinmask = 1<<p.pin; }
 
-
-	using Pio::set_attr;
+	using Pio::set_attributes;
+	using Pio::initialize;
 
 	/*! \details Initializes the pin with the specified mode.
 	 *
@@ -87,13 +87,8 @@ public:
 	 *
 	 */
 	int initialize(u32 o_flags){
-		return Pio::initialize(o_flags, m_pinmask);
+		return initialize( PioAttributes(o_flags, m_pinmask) );
 	}
-
-	int init(u32 o_flags){
-		return Pio::init(o_flags, m_pinmask);
-	}
-
 
 	/*! \details Initializes the pin as an input.
 	 *
@@ -101,7 +96,7 @@ public:
 	 * @return Zero on success
 	 */
 	int set_input(u32 o_flags = 0){
-		return init(FLAG_SET_INPUT | o_flags);
+		return initialize(FLAG_SET_INPUT | o_flags);
 	}
 
 	/*! \details Initializes the pin as an input.
@@ -110,7 +105,7 @@ public:
 	 * @return Zero on success
 	 */
 	int set_output(u32 o_flags = 0){
-		return init(FLAG_SET_OUTPUT | o_flags);
+		return initialize(FLAG_SET_OUTPUT | o_flags);
 	}
 
 	/*! \details Sets the pin attributes.
@@ -120,11 +115,7 @@ public:
 	 *
 	 */
 	int set_attributes(u32 o_flags) const {
-		return Pio::set_attr(o_flags, m_pinmask);
-	}
-
-	int set_attr(u32 o_flags){
-		return Pio::set_attr(o_flags, m_pinmask);
+		return set_attributes(PioAttributes(o_flags, m_pinmask));
 	}
 
 	/*! \details Assigns a boolean to the pin (true is high, false is low). */
@@ -183,7 +174,7 @@ public:
 		Pin p(pin);
 		p.set_input(Pin::IS_PULLUP);
 		if( p == false ){ return false; }
-		p.set_attr(Pin::IS_PULLDOWN);
+		p.set_attributes(Pin::IS_PULLDOWN);
 		if( p == true ){ return false; }
 		return true;
 	}

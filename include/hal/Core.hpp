@@ -60,6 +60,12 @@ private:
 	core_info_t m_info;
 };
 
+class CoreAttributes : public PeriphAttributes<core_attr_t> {
+public:
+
+private:
+};
+
 /*! \brief Core Class
  * \details This is the Core class.  It is used to
  * access core MCU information such as clock speed and
@@ -87,7 +93,7 @@ private:
  * \endcode
  *
  */
-class Core : public Periph<core_info_t, core_attr_t, 'c'> {
+class Core : public Periph<core_info_t, core_attr_t, CoreAttributes, 'c'> {
 public:
 
 	/*! \details Core functional types */

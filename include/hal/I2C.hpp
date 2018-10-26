@@ -29,7 +29,7 @@ class I2CPinAssignment : public PinAssignment<i2c_pin_assignment_t>{};
  * \sa hal::I2C
  *
  */
-class I2CAttributes : public PinAssignmentPeriphAttr<i2c_attr_t, i2c_pin_assignment_t> {
+class I2CAttributes : public PinAssignmentPeriphAttributes<i2c_attr_t, i2c_pin_assignment_t> {
 public:
 
 	I2CAttributes(u32 o_flags = I2C_FLAG_SET_MASTER, u32 freq = 100000){
@@ -149,7 +149,7 @@ typedef I2CAttributes I2CAttr;
  * \sa hal::I2CAttr
  *
  */
-class I2C : public Periph<i2c_info_t, i2c_attr_t, 'i'> {
+class I2C : public Periph<i2c_info_t, i2c_attr_t, I2CAttributes, 'i'> {
 public:
 	/*! \details Constructs an I2C object using the specified port. */
 	I2C(port_t port);
@@ -242,19 +242,9 @@ public:
 		} else {
 			memset(&attr.pin_assignment, 0xff, sizeof(i2c_pin_assignment_t));
 		}
-		return set_attr(attr);
+		return set_attributes(attr);
 	}
 
-	/*! \details This method initializes the I2C port.
-	 *
-	 * @param o_flags Flag bitmask
-	 * @param freq Bitrate
-	 * @param pin_assignment Pin assignment or null to use default pin assignment
-	 * @return Zero on success
-	 *
-	 * This method calls open() then set_attr().
-	 *
-	 */
 	int init(u32 o_flags, u32 freq, const i2c_pin_assignment_t * pin_assignment = 0){
 		if( open() < 0 ){
 			return -1;
@@ -265,10 +255,6 @@ public:
 
 	using Periph::read;
 	using Periph::write;
-	using Periph::init;
-	using Periph::set_attr;
-	using Periph::initialize;
-	using Periph::set_attributes;
 
 	/*! \details Reads the value of a register on an I2C device */
 	int read(int loc, u8 & reg);

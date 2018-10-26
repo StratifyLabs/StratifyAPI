@@ -17,6 +17,13 @@ namespace hal {
  */
 class EintPinAssignment : public PinAssignment<eint_pin_assignment_t>{};
 
+class EintAttributes : public PinAssignmentPeriphAttributes<eint_attr_t, eint_pin_assignment_t>{
+public:
+	//construct with default values
+
+
+};
+
 /*! \brief External Interrupt Class
  * \details This class gives access to external interrupt circuitry.  You can use this class
  * to have the interrupt trigger a function or block a thread until the interrupt arrives.
@@ -65,7 +72,7 @@ class EintPinAssignment : public PinAssignment<eint_pin_assignment_t>{};
  * \endcode
  *
  */
-class Eint : public Periph<eint_info_t, eint_attr_t, 'e'> {
+class Eint : public Periph<eint_info_t, eint_attr_t, EintAttributes, 'e'> {
 public:
 	Eint(port_t port);
 

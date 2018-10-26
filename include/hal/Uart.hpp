@@ -51,7 +51,7 @@ class UartPinAssignment : public PinAssignment<uart_pin_assignment_t>{};
  * \sa hal::Uart
  *
  */
-class UartAttributes : public PinAssignmentPeriphAttr<uart_attr_t, uart_pin_assignment_t> {
+class UartAttributes : public PinAssignmentPeriphAttributes<uart_attr_t, uart_pin_assignment_t> {
 public:
 
 	/*! \details Constructs UART attributes with default settings.
@@ -197,7 +197,7 @@ typedef UartAttributes UartAttr;
  * \sa hal::UartPinAssignment
  * \sa hal::UartAttr
  */
-class Uart : public Periph<uart_info_t, uart_attr_t, UART_IOC_IDENT_CHAR> {
+class Uart : public Periph<uart_info_t, uart_attr_t, UartAttributes, UART_IOC_IDENT_CHAR> {
 public:
 
 	/*! \details Constructs a new Uart object.
@@ -254,7 +254,7 @@ public:
 		}
 		attr.freq = freq;
 		attr.width = width;
-		return set_attr(attr);
+		return set_attributes(attr);
 	}
 
 
@@ -265,15 +265,6 @@ public:
 		return set_attr(o_flags, freq, width, pin_assignment);
 	}
 
-	using Periph::init;
-	using Periph::set_attr;
-	using Periph::initialize;
-	using Periph::set_attributes;
-
-	Uart& operator = (const UartAttributes & attributes){
-		set_attributes(attributes);
-		return *this;
-	}
 
 private:
 

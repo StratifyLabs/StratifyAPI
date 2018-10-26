@@ -24,10 +24,15 @@ class I2SPinAssignment : public PinAssignment<i2s_pin_assignment_t>{};
  * \sa hal::I2C
  *
  */
-class I2SAttributes : public PinAssignmentPeriphAttr<i2s_attr_t, i2s_pin_assignment_t> {
+class I2SAttributes : public PinAssignmentPeriphAttributes<i2s_attr_t, i2s_pin_assignment_t> {
 public:
 
 
+	I2SAttributes(u32 o_flags = 0, u32 freq = 0, u32 mck_mult = 256){
+		set_flags(o_flags);
+		set_frequency(freq);
+		m_attr.mck_mult = mck_mult;
+	}
 
 	/*! \details Accesses the serial data input pin assignment value. */
 	mcu_pin_t sdin() const { return m_attr.pin_assignment.sdin; }
@@ -60,7 +65,7 @@ public:
 
 typedef I2SAttributes I2SAttr;
 
-class I2S : public Periph<i2s_info_t, i2s_attr_t, 'I'> {
+class I2S : public Periph<i2s_info_t, i2s_attr_t, I2SAttributes, 'I'> {
 public:
 	I2S(port_t port);
 
@@ -94,7 +99,7 @@ public:
 		} else {
 			memset(&attr.pin_assignment, 0xff, sizeof(i2s_pin_assignment_t));
 		}
-		return set_attr(attr);
+		return set_attributes(attr);
 	}
 
 	/*! \details This method initializes the I2C port.
@@ -113,10 +118,6 @@ public:
 		}
 		return set_attr(o_flags, freq, mck_mult, pin_assignment);
 	}
-
-
-	using Periph::init;
-	using Periph::set_attr;
 
 
 private:

@@ -62,10 +62,10 @@ private:
 
 };
 
-template<typename attr_t> class PeriphAttr {
+template<typename attr_t> class PeriphAttributes {
 public:
 
-	PeriphAttr(){
+	PeriphAttributes(){
 		m_port = 0;
 		memset(&m_attr, 0, sizeof(m_attr));
 	}
@@ -76,45 +76,9 @@ public:
 	/*! \details Sets the value of the port. */
 	void set_port(u8 port){ m_port = port; }
 
-	/*! \details Returns a copy of the attributes. */
-	operator attr_t() const { return m_attr; }
-
-	/*! \details Returns a reference to the attributes object. */
-	const attr_t & attr() const { return m_attr; }
-
-	attr_t & attr(){ return m_attr; }
-
-protected:
-	attr_t m_attr;
-
-private:
-	u8 m_port;
-};
-
-template<typename attr_t, typename pin_assignment_t>
-class PinAssignmentPeriphAttr {
-public:
-
-	PinAssignmentPeriphAttr(){
-		m_port = 0;
-		memset(&m_attr, 0, sizeof(m_attr));
-		memset(&m_attr.pin_assignment, 0xff, sizeof(pin_assignment_t));
-	}
-
-	/*! \details Accesses the value of the port. */
-	u8 port() const { return m_port; }
-
-	/*! \details Sets teh value of the port. */
-	void set_port(u8 port){ m_port = port; }
-
-	/*! \details Returns a copy of the attributes. */
-	operator attr_t() const { return m_attr; }
-
-	/*! \details Returns a reference to the attributes object. */
-	const attr_t & attr() const { return m_attr; }
 
 	/*! \details Accesses the value of the flags. */
-	u8 o_flags() const { return m_attr.o_flags; }
+	u32 o_flags() const { return m_attr.o_flags; }
 
 	/*! \details Sets the value of the flags. */
 	void set_flags(u32 o_flags){ m_attr.o_flags = o_flags; }
@@ -130,9 +94,8 @@ public:
 	void set_frequency(u32 freq_hz){ m_attr.freq = freq_hz; }
 	void set_freq(u32 freq_hz){ set_frequency(freq_hz); }
 
-	/*! \details Gets a pointer of the pin assignment. */
-	const pin_assignment_t * pin_assignment() const { return &m_attr.pin_assignment; }
-	const attr_t * attributes() const { return &m_attr; }
+
+	const attr_t & attributes() const { return m_attr; }
 
 	attr_t * operator ->() { return &m_attr; }
 	const attr_t * operator ->() const { return &m_attr; }
@@ -142,6 +105,22 @@ protected:
 
 private:
 	u8 m_port;
+};
+
+template<typename attr_t, typename pin_assignment_t>
+class PinAssignmentPeriphAttributes : public PeriphAttributes<attr_t>{
+public:
+
+	PinAssignmentPeriphAttributes(){
+		memset(&m_attr, 0, sizeof(m_attr));
+		memset(&m_attr.pin_assignment, 0xff, sizeof(pin_assignment_t));
+	}
+
+	/*! \details Gets a pointer of the pin assignment. */
+	const pin_assignment_t * pin_assignment() const { return &m_attr.pin_assignment; }
+
+protected:
+	attr_t m_attr;
 
 };
 
@@ -161,7 +140,7 @@ private:
  * the method Uart::set_attr() implements the ioctl request.
  *
  */
-template<typename info_t, typename attr_t, char ident_char> class Periph : public PeriphObject {
+template<typename info_t, typename attr_t, typename AttributesClass, char ident_char> class Periph : public PeriphObject {
 public:
 
 	/*!
@@ -231,7 +210,6 @@ public:
 	 *
 	 */
 	int set_attributes() const { return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), 0); }
-	int set_attr() const { return set_attributes(); }
 
 	/*! \details Initializes the hardware using the default attributes.
 	 *
@@ -244,14 +222,13 @@ public:
 	int initialize(){
 		int result = open();
 		if( result < 0 ){ return result; }
-		return set_attr();
+		return set_attributes();
 	}
-	int init(){ return initialize(); }
 
 	/*! \details Initializes the peripheral using the provided attributes
 	 *
 	 */
-	int initialize(const attr_t & attributes){
+	int initialize(const AttributesClass & attributes){
 		int result = open();
 		if( result < 0 ){ return result; }
 		return set_attributes(attributes);
@@ -274,12 +251,22 @@ public:
 	 *
 	 *
 	 */
-	int set_attributes(const attr_t & attributes) const {
-		return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), (const attr_t*)&attributes);
+	int set_attributes(const AttributesClass & attributes) const {
+		return set_attributes(attributes.attributes());
 	}
 
-	int set_attr(const attr_t & attr) const {
-		return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), (const attr_t*)&attr);
+	/*! \details Applies the given attributes to the peripheral.
+	 *
+	 * Use error_number() to see if the operation was successful.
+	 *
+	 */
+	Periph & operator << (const AttributesClass & attributes) const {
+		set_attributes(attributes);
+		return *this;
+	}
+
+	int set_attributes(const attr_t & attr) const {
+		return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), &attr);
 	}
 
 	int set_action(mcu_action_t & action) const {

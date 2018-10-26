@@ -36,6 +36,7 @@ public:
 	 */
 	void set_write_block(){ m_ffifo_attr.o_flags |= FFIFO_FLAG_SET_WRITEBLOCK; }
 
+
 private:
 	friend class FFifo;
 	ffifo_attr_t m_ffifo_attr;
@@ -111,7 +112,7 @@ public:
 	 * @return Zero on success or less than zero for an error
 	 *
 	 */
-	int init(const char * path, const FFifoAttr & attr, int o_flags = 0);
+	int initialize(const var::ConstString & path, const FFifoAttributes & attributes, int o_flags = 0);
 
 	/*! \details Flushes the FIFO.
 	 *
@@ -121,7 +122,12 @@ public:
 	int flush() const;
 
 	/*! \details Sets the FIFO attributes. */
-	int set_attr(const FFifoAttr & attr) const;
+	int set_attributes(const FFifoAttributes & attributes) const;
+
+	FFifo & operator << (const FFifoAttributes & attributes){
+		set_attributes(attributes);
+		return *this;
+	}
 
 	/*! \details Returns the information for the FFIFO. */
 	FFifoInfo get_info() const;
@@ -133,6 +139,7 @@ public:
 	 * \returns Less than zero on an error
 	 */
 	int get_info(FFifoInfo & info) const;
+
 
 
 };

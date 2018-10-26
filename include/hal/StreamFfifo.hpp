@@ -8,6 +8,8 @@
 
 namespace hal {
 
+class StreamFFifo;
+
 class StreamFFifoChannelInfo : public api::HalInfoObject {
 public:
 
@@ -50,17 +52,18 @@ private:
 class StreamFFifoAttributes : public api::HalInfoObject {
 public:
 	StreamFFifoAttributes(){
-		memset(&m_attributes, 0, sizeof(m_attributes));
+		memset(&m_attr, 0, sizeof(m_attr));
 	}
 
-	operator const stream_ffifo_attr_t & () const { return m_attributes; }
+	operator const stream_ffifo_attr_t & () const { return m_attr; }
 
 	void set_flags(u32 value){
-		m_attributes.o_flags = value;
+		m_attr.o_flags = value;
 	}
 
 private:
-	stream_ffifo_attr_t m_attributes;
+	friend class StreamFFifo;
+	stream_ffifo_attr_t m_attr;
 
 };
 
@@ -77,8 +80,13 @@ public:
 		FLUSH = STREAM_FFIFO_FLAG_FLUSH
 	};
 
-	int set_attributes(const stream_ffifo_attr_t & attributes){
-		return ioctl(I_STREAM_FFIFO_SETATTR, &attributes);
+	int set_attributes(const StreamFFifoAttributes & attributes){
+		return ioctl(I_STREAM_FFIFO_SETATTR, &attributes.m_attr);
+	}
+
+	StreamFFifo & operator << (const StreamFFifoAttributes & attributes){
+		set_attributes(attributes);
+		return *this;
 	}
 
 	int start();

@@ -12,8 +12,16 @@ namespace hal {
 /*! \brief DAC Attributes Class
  * \details This class is for containing DAC attributes.
  */
-class DacAttr : public PinAssignmentPeriphAttr<dac_attr_t, dac_pin_assignment_t> {};
+class DacAttributes : public PinAssignmentPeriphAttributes<dac_attr_t, dac_pin_assignment_t> {
+public:
+	DacAttributes(u32 o_flags = DAC_FLAG_SET_CONVERTER, u32 freq = 0){
+		set_flags(o_flags);
+		set_frequency(freq);
+	}
 
+};
+
+typedef DacAttributes DacAttr;
 
 /*! \brief DAC Pin Assignment
  * \details This class allows simple manipulation of the dac_pin_assignment_t.
@@ -55,7 +63,7 @@ class DacPinAssignment : public PinAssignment<dac_pin_assignment_t>{};
  * \endcode
  *
  */
-class Dac : public Periph<dac_info_t, dac_attr_t, 'd'> {
+class Dac : public Periph<dac_info_t, dac_attr_t, DacAttributes, 'd'> {
 public:
 
     Dac(port_t port);
@@ -86,7 +94,7 @@ public:
 			memset(&attr.pin_assignment, 0xff, sizeof(dac_pin_assignment_t));
 		}
 		attr.freq = freq;
-		return set_attr(attr);
+		return set_attributes(attr);
 	}
 
 
@@ -121,9 +129,6 @@ public:
 	u32 get_channel(u32 loc) const {
 		return Periph::get_channel(loc, I_DAC_GET);
 	}
-
-	using Periph::init;
-	using Periph::set_attr;
 
 private:
 

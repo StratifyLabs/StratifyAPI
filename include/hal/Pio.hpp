@@ -9,6 +9,21 @@
 namespace hal {
 
 
+class PioAttributes : public PeriphAttributes<pio_attr_t> {
+public:
+	PioAttributes(u32 o_flags, u32 o_pinmask){
+		set_flags(o_flags);
+		set_pinmask(o_pinmask);
+	}
+
+	u32 o_flags() const { return m_attr.o_flags; }
+	u32 o_pinmask() const { return m_attr.o_pinmask; }
+
+	void set_flags(u32 value){ m_attr.o_flags = value; }
+	void set_pinmask(u32 value){ m_attr.o_pinmask = value; }
+
+};
+
 /*! \brief Pin Input/Output Class
  * \details This class controls pin input/output.
  *
@@ -46,7 +61,7 @@ namespace hal {
  *
  * \endcode
  */
-class Pio : public Periph<pio_info_t, pio_attr_t, 'p'> {
+class Pio : public Periph<pio_info_t, pio_attr_t, PioAttributes, 'p'> {
 public:
 	Pio(port_t port);
 
@@ -113,47 +128,6 @@ public:
 	 *
 	 */
 	int set_value(unsigned int value) const;
-
-	using Periph::set_attr;
-	using Periph::set_attributes;
-	using Periph::initialize;
-
-	/*! \details Sets the attributes of the IO port as specified.
-	 *
-	 * @param o_flags A bitmask of the effective flags
-	 * @param o_pinmask A bitmask of the pins to operate on
-	 * @return Zero on success
-	 */
-	int set_attributes(u32 o_flags, u32 o_pinmask) const {
-		pio_attr_t attr;
-		attr.o_flags = o_flags;
-		attr.o_pinmask = o_pinmask;
-		return set_attributes(attr);
-	}
-
-	int set_attr(u32 o_flags, u32 o_pinmask) const {
-		return set_attributes(o_flags, o_pinmask);
-	}
-
-	/*! \details Opens the port
-	 * then sets the attributes using the specified mask and mode.
-	 *
-	 * @param o_flags A bitmask of the effective flags
-	 * @param o_pinmask A bitmask of the pins to operate on
-	 * @return Zero on success
-	 *
-	 */
-	int initialize(u32 o_flags, u32 o_pinmask){
-		if( open() <  0 ){
-			return -1;
-		}
-		return set_attr(o_flags, o_pinmask);
-	}
-
-
-	int init(u32 o_flags, u32 o_pinmask){
-		return initialize(o_flags, o_pinmask);
-	}
 
 
 private:

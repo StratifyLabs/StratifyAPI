@@ -13,7 +13,7 @@ namespace fmt {
 class Wav : public api::FmtFileObject {
 public:
 	/*! \details Constructs a new WAV object and open the WAV as a read-only file. */
-    Wav(const var::ConstString & name);
+	Wav(const var::ConstString & name);
 
 	u32 size() const { return m_hdr.size; }
 	u32 wav_size() const { return m_hdr.wav_size; }

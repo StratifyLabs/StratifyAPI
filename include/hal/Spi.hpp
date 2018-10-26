@@ -17,13 +17,13 @@ namespace hal {
 class SpiPinAssignment : public PinAssignment<spi_pin_assignment_t>{};
 
 
-class SpiAttributes : public PinAssignmentPeriphAttr<spi_attr_t, spi_pin_assignment_t> {
+class SpiAttributes : public PinAssignmentPeriphAttributes<spi_attr_t, spi_pin_assignment_t> {
 public:
 
 	SpiAttributes(u32 o_flags = SPI_FLAG_SET_MASTER | SPI_FLAG_IS_FORMAT_SPI | SPI_FLAG_IS_MODE0 | SPI_FLAG_IS_HALF_DUPLEX,
 				  u32 freq = 1000000,
 				  u8 width = 8){
-		set_freq(freq);
+		set_frequency(freq);
 		set_width(width);
 		set_flags(o_flags);
 	}
@@ -64,7 +64,7 @@ typedef SpiAttributes SpiAttr;
  * }
  * \endcode
  */
-class Spi : public Periph<spi_info_t, spi_attr_t, 's'>{
+class Spi : public Periph<spi_info_t, spi_attr_t, SpiAttributes, 's'>{
 public:
 
 	/*! \details Constructs a SPI object using \a port. */
@@ -109,7 +109,7 @@ public:
 			memset(&attr.pin_assignment, 0xff, sizeof(spi_pin_assignment_t));
 		}
 		attr.width = width;
-		return Periph::set_attr(attr);
+		return set_attributes(attr);
 	}
 
 	int initialize(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0){
@@ -120,10 +120,7 @@ public:
 	}
 	int init(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0){ return initialize(o_flags, freq, width, pin_assignment); }
 
-	using Periph::init;
-	using Periph::set_attr;
 	using Periph::initialize;
-	using Periph::set_attributes;
 
 #if !defined __link
 	int transfer(const void * write_data, void * read_data, int nbytes);

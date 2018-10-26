@@ -9,11 +9,17 @@
 
 namespace hal {
 
+class RtcAttributes : public PeriphAttributes<rtc_attr_t> {
+public:
+
+private:
+
+};
 
 /*! \brief RTC Class
  * \details This class implements an RTC. (Not yet implemented)
  */
-class Rtc : public Periph<rtc_info_t, rtc_attr_t, 'r'> {
+class Rtc : public Periph<rtc_info_t, rtc_attr_t, RtcAttributes, 'r'> {
 public:
 	Rtc(port_t port);
 

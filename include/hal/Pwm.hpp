@@ -13,7 +13,7 @@ namespace hal {
 /*! \brief PWM Attributes Class
  * \details This class is for containing ADC attributes.
  */
-class PwmAttributes : public PinAssignmentPeriphAttr<pwm_attr_t, pwm_pin_assignment_t> {
+class PwmAttributes : public PinAssignmentPeriphAttributes<pwm_attr_t, pwm_pin_assignment_t> {
 public:
 	//period, channel
 
@@ -68,7 +68,7 @@ class PwmPinAssignment : public PinAssignment<pwm_pin_assignment_t>{};
  *
  *
  */
-class Pwm : public Periph<pwm_info_t, pwm_attr_t, 'p'> {
+class Pwm : public Periph<pwm_info_t, pwm_attr_t, PwmAttributes, 'p'> {
 public:
 	Pwm(port_t port);
 
@@ -160,7 +160,7 @@ public:
 		}
 		attr.freq = freq;
 		attr.period = period;
-		return set_attr(attr);
+		return set_attributes(attr);
 	}
 
 	/*! \details Sets the channel configuration.
@@ -188,8 +188,6 @@ public:
 		return set_attr(o_flags, freq, period, pin_assignment);
 	}
 
-	using Periph::init;
-	using Periph::set_attr;
 	using Periph::get_channel;
 
 #ifdef __MCU_ONLY__

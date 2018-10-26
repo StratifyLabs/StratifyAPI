@@ -185,7 +185,7 @@ int HttpClient::listen_for_header(var::String & response){
 int HttpClient::listen_for_data(var::String & response){
 	int result = 0;
 	u32 last_size;
-	while( (response.size() < m_content_length) && (result > 0) ){
+	while( (response.size() < (u32)m_content_length) && (result > 0) ){
 		last_size = response.size();
 		//make room for a packet
 		response.set_size( response.size() + 256 );

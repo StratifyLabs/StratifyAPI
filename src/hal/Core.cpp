@@ -96,12 +96,12 @@ int Core::set_clock_divide(u32 value){
 void Core::reset(){
     core_attr_t attr;
     attr.o_flags = CORE_FLAG_EXEC_RESET;
-    set_attr(attr);
+	 set_attributes(attr);
 }
 
 void Core::invoke_bootloader(){
     core_attr_t attr;
     attr.o_flags = CORE_FLAG_EXEC_INVOKE_BOOTLOADER;
-    set_attr(attr);
+	 set_attributes(attr);
 }
 

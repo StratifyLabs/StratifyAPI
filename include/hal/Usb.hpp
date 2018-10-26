@@ -9,15 +9,21 @@
 
 namespace hal {
 
+
+
 /*! \brief USB Pin Assignment
  * \details This class allows simple manipulation of the usb_pin_assignment_t.
  */
 class UsbPinAssignment : public PinAssignment<usb_pin_assignment_t>{};
 
+class UsbAttributes : public PinAssignmentPeriphAttributes<usb_attr_t, usb_pin_assignment_t> {
+
+};
+
 /*! \brief USB Class
  * \details This class implements a USB transceiver.
  */
-class Usb : public Periph<usb_info_t, usb_attr_t, 'u'> {
+class Usb : public Periph<usb_info_t, usb_attr_t, UsbAttributes, 'u'> {
 public:
 	Usb(port_t port);
 
@@ -57,17 +63,17 @@ public:
 		CONFIGURE_ENDPOINT = USB_FLAG_CONFIGURE_ENDPOINT
 	};
 
-	int reset();
-	int attach();
-	int configure();
-	int detach();
-	int disable_endpoint(int ep);
-	int enable_endpoint(int ep);
-	bool is_connected();
-	int reset_endpoint(int ep);
-	int set_addr(int addr);
-	int stall_endpoint(int ep);
-	int unstall_endpoint(int ep);
+	int reset() const;
+	int attach() const;
+	int configure() const;
+	int detach() const;
+	int disable_endpoint(int ep) const;
+	int enable_endpoint(int ep) const;
+	bool is_connected() const;
+	int reset_endpoint(int ep) const;
+	int set_addr(int addr) const;
+	int stall_endpoint(int ep) const;
+	int unstall_endpoint(int ep) const;
 
 private:
 

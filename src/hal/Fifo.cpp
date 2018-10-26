@@ -13,8 +13,8 @@ FifoInfo Fifo::get_info() const {
     return a;
 }
 int Fifo::flush() const { return ioctl(I_FIFO_FLUSH); }
-int Fifo::init() const { return ioctl(I_FIFO_INIT); }
-int Fifo::exit() const { return ioctl(I_FIFO_EXIT); }
+int Fifo::initialize() const { return ioctl(I_FIFO_INIT); }
+int Fifo::finalize() const { return ioctl(I_FIFO_EXIT); }
 int Fifo::set_writeblock(bool value) const {
 	fifo_attr_t attr;
 	attr.o_flags = FLAG_SET_WRITEBLOCK;

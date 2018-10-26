@@ -127,9 +127,9 @@ public:
 	 *  @return Less than zero for an error.
 	 *
 	 */
-	int init() const;
+	int initialize() const;
 
-	int exit() const;
+	int finalize() const;
 
 	/*! \details Sets the FIFO in write block mode.
 	 *

@@ -14,14 +14,14 @@ int I2C::prepare(u8 slave_addr, u32 o_flags) const {
 	i2c_attr_t attr;
 	attr.o_flags = o_flags;
 	attr.slave_addr[0].addr8[0] = slave_addr;
-	return set_attr(attr);
+	return set_attributes(attr);
 }
 
 
 int I2C::reset() const {
 	i2c_attr_t attr;
 	attr.o_flags = I2C::FLAG_RESET;
-	return set_attr(attr);
+	return set_attributes(attr);
 }
 
 int I2C::get_error() const {
