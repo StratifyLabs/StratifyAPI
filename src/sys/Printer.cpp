@@ -34,6 +34,27 @@ void Printer::clear_color_code(){
 #endif
 }
 
+u32 Printer::color_code(const var::ConstString & color){
+	var::String color_upper(color);
+	color_upper.to_upper();
+	if( color_upper == "BLACK" ){ return COLOR_CODE_BLACK; }
+	if( color_upper == "RED" ){ return COLOR_CODE_RED; }
+	if( color_upper == "GREEN" ){ return COLOR_CODE_GREEN; }
+	if( color_upper == "YELLOW" ){ return COLOR_CODE_YELLOW; }
+	if( color_upper == "BLUE" ){ return COLOR_CODE_BLUE; }
+	if( color_upper == "MAGENTA" ){ return COLOR_CODE_MAGENTA; }
+	if( color_upper == "CYAN" ){ return COLOR_CODE_CYAN; }
+	if( color_upper == "LIGHT GRAY" ){ return COLOR_CODE_LIGHT_GRAY; }
+	if( color_upper == "DARK GRAY" ){ return COLOR_CODE_DARK_GRAY; }
+	if( color_upper == "LIGHT RED" ){ return COLOR_CODE_LIGHT_RED; }
+	if( color_upper == "LIGHT GREEN" ){ return COLOR_CODE_LIGHT_GREEN; }
+	if( color_upper == "LIGHT YELLOW" ){ return COLOR_CODE_LIGHT_YELLOW; }
+	if( color_upper == "LIGHT BLUE" ){ return COLOR_CODE_LIGHT_BLUE; }
+
+	return COLOR_CODE_DEFAULT;
+}
+
+
 Printer::~Printer(){
 	print("\n");
 }
@@ -228,6 +249,7 @@ Printer & Printer::operator << (const TraceEvent & a){
 	print_indented("thread id", "%d", a.thread_id());
 	print_indented("pid", "%d", a.pid());
 	print_indented("program address", "0x%lX", a.program_address());
+	print_indented("message", a.message().str());
 	return *this;
 }
 

@@ -33,9 +33,11 @@ public:
 		return chrono::ClockTime(m_event.posix_trace_event.posix_timestamp_tv_sec, m_event.posix_trace_event.posix_timestamp_tv_nsec);
 	}
 
-	var::String message(){
-		m_event.posix_trace_event.data[LINK_POSIX_TRACE_DATA_SIZE-1] = 0;
-		return var::String(var::ConstString((const char*)m_event.posix_trace_event.data));
+	var::String message() const {
+		char buffer[LINK_POSIX_TRACE_DATA_SIZE];
+		memcpy(buffer, m_event.posix_trace_event.data, LINK_POSIX_TRACE_DATA_SIZE);
+		buffer[LINK_POSIX_TRACE_DATA_SIZE-1] = 0;
+		return var::String(var::ConstString(buffer));
 	}
 
 	link_trace_event_t & event(){ return m_event; }

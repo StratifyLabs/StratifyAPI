@@ -46,6 +46,26 @@ public:
 	Printer();
 	~Printer();
 
+	enum {
+		COLOR_CODE_DEFAULT = 39,
+		COLOR_CODE_BLACK = 30,
+		COLOR_CODE_RED = 31,
+		COLOR_CODE_GREEN = 32,
+		COLOR_CODE_YELLOW = 33,
+		COLOR_CODE_BLUE = 34,
+		COLOR_CODE_MAGENTA = 35,
+		COLOR_CODE_CYAN = 36,
+		COLOR_CODE_LIGHT_GRAY = 37,
+		COLOR_CODE_DARK_GRAY = 90,
+		COLOR_CODE_LIGHT_RED = 91,
+		COLOR_CODE_LIGHT_GREEN = 92,
+		COLOR_CODE_LIGHT_YELLOW = 93,
+		COLOR_CODE_LIGHT_BLUE = 94
+	};
+
+	static u32 color_code(const var::ConstString & color);
+
+
 	void set_color_code(u32 code);
 	void clear_color_code();
 
