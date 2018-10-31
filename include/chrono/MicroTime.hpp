@@ -42,7 +42,8 @@ public:
 	  * The default initial value is zero.
 	  *
 	  */
-	MicroTime(u32 microseconds = 0){ m_value_microseconds = microseconds; }
+	explicit MicroTime(u32 microseconds = 0){ m_value_microseconds = microseconds; }
+	//MicroTime(){ m_value_microseconds = 0; }
 
 	MicroTime(const ClockTime & clock_time){
 		m_value_microseconds = clock_time.seconds() * 1000000UL + (clock_time.nanoseconds() + 500) / 1000;
@@ -71,17 +72,8 @@ public:
 	  * \endcode
 	  *
 	  */
-	static MicroTime from_microseconds(u32 microseconds){ return microseconds; }
-	static MicroTime from_usec(u32 usec){ return usec; }
-
-	/*! \details Returns the usec() value when
-	  * the comipler wants to convert to an unsigned 32-bit value.
-	  *
-	  * This allows times to be easily added, subtracted, and compared
-	  * as a u32.
-	  *
-	  */
-	operator micro_time_t () const { return microseconds(); }
+	static MicroTime from_microseconds(u32 microseconds){ return MicroTime(microseconds); }
+	static MicroTime from_usec(u32 usec){ return from_microseconds(usec); }
 
 	/*! \details Returns true if the time is set to a valid value.
 	  *
@@ -103,6 +95,18 @@ public:
 		m_value_microseconds -= micro_time.usec();
 		return *this;
 	}
+
+	bool operator == (const MicroTime & a ) const { return microseconds() == a.microseconds(); }
+
+	bool operator != (const MicroTime & a ) const { return microseconds() != a.microseconds(); }
+
+	bool operator > (const MicroTime & a ) const { return microseconds() > a.microseconds(); }
+
+	bool operator < (const MicroTime & a ) const { return microseconds() < a.microseconds(); }
+
+	bool operator >= (const MicroTime & a ) const { return microseconds() >= a.microseconds(); }
+
+	bool operator <= (const MicroTime & a ){ return microseconds() <= a.microseconds(); }
 
 	/*! \details Sets the value of the time in seconds.
 	  *

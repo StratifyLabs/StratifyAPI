@@ -5,8 +5,8 @@ using namespace ev;
 using namespace sys;
 using namespace hal;
 
-chrono::MicroTime PinButton::m_held_duration = 800000;
-chrono::MicroTime PinButton::m_actuation_duration = 20000;
+chrono::MicroTime PinButton::m_held_duration = chrono::MicroTime(800000UL);
+chrono::MicroTime PinButton::m_actuation_duration = chrono::MicroTime(20000UL);
 
 
 PinButton::PinButton(int port, int pin, bool active_value) : Pin(port, pin) {
@@ -44,14 +44,14 @@ void PinButton::update(void){
 }
 
 chrono::MicroTime PinButton::get_duration(){
-	chrono::MicroTime value = m_timer.microseconds();
+	chrono::MicroTime value = chrono::MicroTime(m_timer.microseconds());
 
 	//reset the timer so the duration is only returned once after the button is released
 	if( m_timer.is_stopped() ){
 		if( m_flags.duration_reported == 0 ){
 			m_flags.duration_reported = 1;
 		} else {
-			value = 0;
+			value.set_microseconds(0);
 		}
 		//m_timer.reset();
 	}

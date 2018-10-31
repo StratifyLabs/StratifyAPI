@@ -7,6 +7,7 @@
 
 #include "../api/SysObject.hpp"
 #include "../var/ConstString.hpp"
+#include "../chrono/MicroTime.hpp"
 
 #if !defined __link
 #include <unistd.h>
@@ -371,7 +372,10 @@ public:
 	 */
 	int readline(char * buf, int nbyte, int timeout_msec, char terminator = '\n') const;
 
-	File& operator<<(const var::ConstString & a){ write(a.str(), a.length()); return *this; }
+	const File& operator<<(const var::ConstString & a) const { write(a); return *this; }
+	const File& operator<<(const var::String & a) const { write(a); return *this; }
+	const File& operator<<(const var::Data & a) const { write(a); return *this; }
+	const File& operator>>(var::Data & a) const { read(a); return *this; }
 
 	/*! \details Seeks to a location in the file or on the device. */
 	virtual int seek(int loc, int whence = LINK_SEEK_SET) const;

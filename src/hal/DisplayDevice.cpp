@@ -9,7 +9,7 @@ namespace hal {
 DisplayDevice::DisplayDevice(){}
 
 /*! \brief Pure virtual function to initialize the LCD */
-int DisplayDevice::init(const char * name){
+int DisplayDevice::initialize(const var::ConstString & name){
 	//open and populate attr
 	display_info_t info;
 

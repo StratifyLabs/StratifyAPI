@@ -103,7 +103,7 @@ public:
 	 * between polling events to the display driver.
 	 *
 	 */
-	chrono::MicroTime refresh_wait_resolution() const { return m_attr.refresh_wait_resolution_usec; }
+	chrono::MicroTime refresh_wait_resolution() const { return chrono::MicroTime(m_attr.refresh_wait_resolution_usec); }
 
 	/*! \details Sets the value of the display refresh wait resolution in microseconds.
 	 *

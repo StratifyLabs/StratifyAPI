@@ -5,6 +5,7 @@
 #define SAPI_DEVICE_HPP_
 
 #include "../sys/File.hpp"
+#include "../chrono/MicroTime.hpp"
 #include "../api/HalObject.hpp"
 #include "DeviceSignal.hpp"
 
@@ -76,6 +77,11 @@ public:
 	int cancel_read(int channel = 0);
 	int cancel_write(int channel = 0);
 	int cancel(int channel, int o_events);
+
+	virtual const Device & operator << (const chrono::MicroTime & t) const {
+		t.wait();
+		return *this;
+	}
 
 #endif
 

@@ -3,6 +3,7 @@
 #ifndef HAL_DISPLAY_HPP_
 #define HAL_DISPLAY_HPP_
 
+#include <mcu/types.h>
 #include <sos/dev/display.h>
 
 #include "../var/Item.hpp"
@@ -29,8 +30,11 @@ namespace hal {
  * a color on the display.
  *
  */
-class DisplayPalette : public var::Item<display_palette_t>, public api::HalInfoObject {
+class DisplayPalette : public api::HalInfoObject {
 public:
+
+	DisplayPalette();
+	DisplayPalette(const display_palette_t & palette, bool readonly = false);
 
 	enum {
 		PIXEL_FORMAT_1BPP = DISPLAY_PALETTE_ATTR_PIXEL_FORMAT_1BPP,
@@ -44,7 +48,7 @@ public:
 
 	int set_monochrome();
 
-	void set_pixel_format(int v){ data()->pixel_format = v; }
+	void set_pixel_format(int v){ m_palette.pixel_format = v; }
 	void set_colors(void * v, int count, int pixel_size, bool readonly = false);
 
 	/*! \details Allocates memory for \a count colors with \a pixel_size bytes
@@ -72,20 +76,18 @@ public:
 	void set_color(u32 v, u8 r, u8 g, u8 b);
 
 	/*! \details Returns the pixel format. */
-	u8 pixel_format() const { return item().pixel_format; }
+	u8 pixel_format() const { return m_palette.pixel_format; }
 
 	/*! \details Returns the number of colors in the palette. */
-	u8 count() const { return item().count; }
+	u8 count() const { return m_palette.count; }
 	/*! \details Returns the number of bytes per pixel stored in the palette */
-	u8 pixel_size() const { return item().pixel_size; }
-	/*! \details Returns a pointer to the color index specified.
-	 *
-	 * @param v The color index
-	 * @return A pointer to the color
-	 */
-	u8 * color(u32 v) const;
+	u8 pixel_size() const { return m_palette.pixel_size; }
+
+	var::Data & colors(){ return m_colors; }
+	const var::Data & colors() const { return m_colors; }
 
 private:
+	display_palette_t m_palette;
 	var::Data m_colors;
 };
 
@@ -116,7 +118,7 @@ public:
 	Display(sg_size_t w, sg_size_t h) : sgfx::Bitmap(w,h){};
 
 	/*! \details Initializes the display. */
-	virtual int init(const char * name = 0) = 0;
+	virtual int initialize(const var::ConstString & name = "") = 0;
 
 	/*! \details Turns the display on. */
 	virtual int enable() const = 0;

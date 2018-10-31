@@ -33,7 +33,7 @@ void Animation::init(Drawing * current,
 	m_drawing_attr = &drawing_attr;
 
 	if( current != 0 ){
-		m_drawing_attr->bitmap().wait(1000);
+		m_drawing_attr->bitmap().wait(chrono::MicroTime(1000));
 		current->draw(drawing_attr);
 		m_drawing_attr->bitmap().refresh();
 	}
@@ -106,7 +106,7 @@ void Animation::reinit(){
 
 
 bool Animation::exec(void (*draw)(void *, int, int), void * obj){
-	m_drawing_attr->bitmap().wait(1000);
+	m_drawing_attr->bitmap().wait(MicroTime(1000));
 	while(animate_frame(draw, obj) > 0){
 		;
 	}
@@ -133,7 +133,7 @@ int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
 	m_drawing_attr->bitmap().refresh();
 	Timer::wait_milliseconds(frame_delay());
 
-	m_drawing_attr->bitmap().wait(1000);
+	m_drawing_attr->bitmap().wait(MicroTime(1000));
 
 	return ret;
 }

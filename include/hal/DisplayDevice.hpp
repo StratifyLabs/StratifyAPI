@@ -19,7 +19,7 @@ class DisplayDevice : public Display, public Device {
 public:
 	DisplayDevice();
 
-	int init(const char * name);
+	int initialize(const var::ConstString & name);
 
 	/*! \details Refreshes the display.
 	 *

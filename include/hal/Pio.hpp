@@ -129,6 +129,11 @@ public:
 	 */
 	int set_value(unsigned int value) const;
 
+	using Device::operator <<;
+	const Pio & operator << (u32 value) const {
+		assign(value);
+		return *this;
+	}
 
 private:
 

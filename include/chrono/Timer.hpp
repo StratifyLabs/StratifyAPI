@@ -144,11 +144,11 @@ public:
 	  *
 	  * @return The number of microseconds that have elapsed since start.
 	  */
-	u32 microseconds() const { return calc_value(); }
+	u32 microseconds() const { return calc_value().microseconds(); }
 
 	//deprecated
-	u32 usec() const { return calc_value(); }
-	u32 calc_usec() const { return calc_value(); }
+	u32 usec() const { return microseconds(); }
+	u32 calc_usec() const { return microseconds(); }
 
 
 	/*! \details Calculates the timer value in seconds.

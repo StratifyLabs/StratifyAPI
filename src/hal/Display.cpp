@@ -5,115 +5,107 @@
 
 namespace hal {
 
+DisplayPalette::DisplayPalette(){
+	memset(&m_palette, 0, sizeof(m_palette));
+}
+
+DisplayPalette::DisplayPalette(const display_palette_t & palette, bool readonly){
+	set_colors(palette.colors, palette.count, palette.pixel_format, readonly);
+}
+
 void DisplayPalette::set_color(u32 v, u8 r, u8 g, u8 b){
-	u8 * ptr = color(v);
-	if( ptr == 0 ){
-		return;
-	}
+	if( v < count() ){
+		switch(pixel_format()){
+			default:
+			case PIXEL_FORMAT_1BPP:
+				//displays with 1bpp don't really use a palette?
+				break;
 
-	switch(pixel_format()){
-	default:
-	case PIXEL_FORMAT_1BPP: break;
-	case PIXEL_FORMAT_RGB565:
-		break;
-	case PIXEL_FORMAT_RGB666:
-		break;
-	case PIXEL_FORMAT_RGB888:
-		ptr[0] = r;
-		ptr[1] = g;
-		ptr[2] = b;
-		break;
+			case PIXEL_FORMAT_RGB565:
+				colors().at<display_palette_pixel_format_rgb565_t>(v).rgb565 =
+						(r << (5+6)) | ((b & 0x3f) << 5) | (g & 0x1f);
+				break;
+			case PIXEL_FORMAT_RGB666:
+				colors().at<display_palette_pixel_format_rgb666_t>(v).r = r;
+				colors().at<display_palette_pixel_format_rgb666_t>(v).g = g;
+				colors().at<display_palette_pixel_format_rgb666_t>(v).b = b;
+				break;
+			case PIXEL_FORMAT_RGB888:
+				colors().at<display_palette_pixel_format_rgb888_t>(v).r = r;
+				colors().at<display_palette_pixel_format_rgb888_t>(v).g = g;
+				colors().at<display_palette_pixel_format_rgb888_t>(v).b = b;
+				break;
+		}
 	}
-
 }
 
 void DisplayPalette::set_colors(void * v, int count, int pixel_size, bool readonly){
 	m_colors.free();
-	data()->pixel_size = pixel_size;
-	data()->count = count;
-	data()->colors = v;
-	m_colors.set(v, item().count*item().pixel_size, readonly);
-}
-
-u8 * DisplayPalette::color(u32 v) const {
-	if( v < count() ){
-		return ((u8*)(item().colors)) + (v*pixel_size());
-	}
-	return 0;
+	m_palette.pixel_size = pixel_size;
+	m_palette.count = count;
+	m_palette.colors = v;
+	m_colors.set(v, m_palette.count*m_palette.pixel_size, readonly);
 }
 
 int DisplayPalette::alloc_colors(int count, int pixel_size){
-	data()->pixel_size = pixel_size;
-	data()->count = count;
-
-	if( m_colors.alloc(item().count * item().pixel_size) < 0 ){
-		data()->pixel_size = 0;
-		data()->count = 0;
-		data()->colors = 0;
+	if( m_colors.alloc(count * pixel_size) < 0 ){
+		m_palette.pixel_size = 0;
+		m_palette.count = 0;
+		m_palette.colors = 0;
 		return -1;
 	}
 
-	data()->colors = m_colors.data();
-
+	m_palette.pixel_size = pixel_size;
+	m_palette.count = count;
+	m_palette.colors = m_colors.data();
 	return 0;
 }
 
 int DisplayPalette::save(const char * path) const{
 	File f;
-	int ret;
 	display_palette_t palette;
 
 	if( f.create(path, true) < 0 ){ return -1; }
-
-	palette = item();
-	palette.colors = 0;
-	if( f.write(&palette, size()) != (int)size() ){
-		f.close();
-		return -1;
-	}
-	ret = f.write(item().colors, item().count * item().pixel_size);
+	f << var::Data(&palette, sizeof(palette)) << colors();
 	f.close();
 
-	if( ret < 0 ){ return ret; }
+	if( f.error_number() != 0 ){
+		return -1;
+	}
+
 	return 0;
 }
 
 int DisplayPalette::set_monochrome(){
-	if( alloc_colors(2, 1) < 0 ){
-		return -1;
-	}
+	if( alloc_colors(2, 1) < 0 ){ return -1; }
 
-	u8 * colors = (u8*)data()->colors;
-	colors[0] = 0;
-	colors[1] = 255;
-
+	set_color(0, 0, 0, 0);
+	set_color(1, 255, 255, 255);
 	return 0;
 }
 
 int DisplayPalette::load(const char * path){
 	File f;
-	int ret;
 
 	if( f.open_readonly(path) < 0 ){ return -1; }
 
-	if( f.read(data(), size()) != (int)size() ){
+	if( f.read(&m_palette, sizeof(m_palette)) != sizeof(m_palette) ){
 		f.close();
 		return -1;
 	}
 
-	if( m_colors.alloc(item().count * item().pixel_size) < 0 ){
+	if( m_colors.alloc(m_palette.count * m_palette.pixel_size) < 0 ){
 		f.close();
 		return -1;
 	}
 
-	data()->colors = m_colors.data();
+	m_palette.colors = colors().to_void();
 
-	ret = f.read(item().colors, item().count * item().pixel_size);
-
+	f >> m_colors;
 	f.close();
 
-	if( ret < 0 ){
-		return ret;
+	if( f.error_number() ){
+		return -1;
 	}
 	return 0;
 

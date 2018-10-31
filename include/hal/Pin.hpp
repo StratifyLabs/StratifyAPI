@@ -119,8 +119,22 @@ public:
 	}
 
 	/*! \details Assigns a boolean to the pin (true is high, false is low). */
-	Pin& operator = (bool on){
-		if( on ){
+	const Pin& operator = (bool value) const {
+		if( value ){
+			set_mask(m_pinmask);
+		} else {
+			clear_mask(m_pinmask);
+		}
+		return *this;
+	}
+
+	const Pin & operator << (const chrono::MicroTime & a) const {
+		a.wait(); return *this;
+	}
+
+	/*! \details Assigns a boolean to the pin (true is high, false is low). */
+	const Pin & operator << (bool value) const {
+		if( value ){
 			set_mask(m_pinmask);
 		} else {
 			clear_mask(m_pinmask);

@@ -21,6 +21,7 @@ public:
 	TraceEvent(){
 		memset(&m_event, 0, sizeof(m_event));
 	}
+
 	TraceEvent(const link_trace_event_t & event){
 		m_event = event;
 	}

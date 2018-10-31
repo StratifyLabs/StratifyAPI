@@ -9,6 +9,7 @@
 #include "Region.hpp"
 #include "Pen.hpp"
 #include "../api/SgfxObject.hpp"
+#include "../chrono/MicroTime.hpp"
 
 
 namespace sgfx {
@@ -359,7 +360,7 @@ public:
 	virtual bool is_busy() const { return false; }
 
 	/*! \details This method will block until the refresh operation is complete */
-	virtual void wait(u16 resolution) const {}
+	virtual void wait(const chrono::MicroTime & resolution) const {}
 
 
 	sg_size_t height() const { return m_bmap.dim.height; }
