@@ -15,9 +15,8 @@ class SerialNumber {
 public:
 	SerialNumber();
 
-	SerialNumber(const u32 serial_number[4]){
-		memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4);
-	}
+	SerialNumber(const u32 serial_number[4]){ memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4); }
+	SerialNumber(const mcu_sn_t serial_number){ m_serial_number = serial_number; }
 
 	int get();
 

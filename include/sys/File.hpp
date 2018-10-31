@@ -292,6 +292,9 @@ public:
 		return result;
 	}
 
+	int read(api::InfoObject & info){ return read(info.info_to_void(), info.info_size()); }
+
+
 	/*! \details Write the file.
 	 *
 	 * @param buf A pointer to the source buffer
@@ -316,6 +319,9 @@ public:
 	  * @return The number of bytes written
 	  */
 	int write(const var::String & str) const { return write(str.str(), str.length()); }
+	int write(const api::InfoObject & info) const { return write(info.info_to_void(), info.info_size()); }
+
+
 
 	/*! \details Reads the file.
 	 *
@@ -332,6 +338,8 @@ public:
 		if( result > 0 ){ data.set_size(result); }
 		return result;
 	}
+
+	int read(int loc, api::InfoObject & info){ return read(loc, info.info_to_void(), info.info_size()); }
 
 	/*! \details Writes the file at the location specified.
 	 *
@@ -350,6 +358,8 @@ public:
 
 	/*! \details Writes the file using a var::String object at the location specified. */
 	int write(int loc, const var::String & str) const { return write(loc, str.str(), str.length()); }
+
+	int write(int loc, const api::InfoObject & info) const { return write(loc, info.info_to_void(), info.info_size()); }
 
 	/*! \details Reads a line from a file.
 	 *

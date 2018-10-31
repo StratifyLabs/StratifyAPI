@@ -16,7 +16,7 @@ namespace ui {
  */
 class ProgressTab : public Tab {
 public:
-    ProgressTab();
+	ProgressTab();
 	virtual void draw(const draw::DrawingAttr & attr);
 
 	/*! \details This method gives access to the draw::Progress
@@ -35,7 +35,7 @@ class ArcProgressTab : public ProgressTab {
 public:
 
 	/*! \details Construct a progress arc tab */
-    ArcProgressTab(){}
+	ArcProgressTab(){}
 	draw::Progress & progress(){ return m_progress; }
 private:
 	draw::ArcProgress m_progress;
@@ -47,7 +47,7 @@ private:
 class CircleProgressTab : public ProgressTab {
 public:
 	/*! \details Construct a progress circle tab */
-    CircleProgressTab(){}
+	CircleProgressTab(){}
 	draw::Progress & progress(){ return m_progress; }
 private:
 	draw::CircleProgress m_progress;

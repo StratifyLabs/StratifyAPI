@@ -128,12 +128,12 @@ public:
 class Ema_f : public api::CalcWorkObject {
 public:
 	/*! \details Constructs a EMA object for floating point calculations */
-    Ema_f(float start, float alpha){ m_alpha = alpha; m_average = start; }
-    static float small_max(){ return 1.0f; }
+	Ema_f(float start, float alpha){ m_alpha = alpha; m_average = start; }
+	static float small_max(){ return 1.0f; }
 	/*! \details Calculates the next value based on the given input */
 	float calc(float in){
 		float tmp;
-        m_average = in * (m_alpha) + m_average * (1.0f - m_alpha);
+		m_average = in * (m_alpha) + m_average * (1.0f - m_alpha);
 		return m_average;
 	}
 	/*! \details Accesses the current average value */

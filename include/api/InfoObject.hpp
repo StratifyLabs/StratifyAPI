@@ -18,6 +18,13 @@ namespace api {
  *
  */
 class InfoObject : public virtual ApiObject {
+public:
+
+	virtual void * info_to_void(){ return 0; }
+	virtual const void * info_to_void() const { return 0; }
+	virtual u32 info_size() const { return 0; }
+protected:
+
 
 };
 

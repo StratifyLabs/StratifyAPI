@@ -101,13 +101,13 @@ public:
 	void set_animation_frame_delay(u16 delay){ m_animation_attr.set_frame_delay(delay); }
 	u16 animation_frame_delay() const { return m_animation_attr.frame_delay(); }
 
-    /*! \details Handles an event sent by the event loop.
-     *
-     * @param event The event that should be handled
-     * @param attr The draw::DrawingAttr to use to update the display based on the event.
-     *
-     */
-    virtual Element * handle_event(const Event & event, const draw::DrawingAttr & attr);
+	/*! \details Handles an event sent by the event loop.
+	  *
+	  * @param event The event that should be handled
+	  * @param attr The draw::DrawingAttr to use to update the display based on the event.
+	  *
+	  */
+	virtual Element * handle_event(const Event & event, const draw::DrawingAttr & attr);
 
 protected:
 

@@ -1,5 +1,4 @@
 //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
-#if !defined __link
 
 
 #include "sys/Signal.hpp"
@@ -16,5 +15,3 @@ int Signal::set_handler(const SignalHandler & handler) const {
 	}
 }
 
-
-#endif

@@ -16,15 +16,15 @@ namespace ui {
 class TextTab : public Tab {
 public:
 
-    /*! \details Construct a TabText object */
-    TextTab();
-    void draw(const draw::DrawingAttr & attr);
+	/*! \details Construct a TabText object */
+	TextTab();
+	void draw(const draw::DrawingAttr & attr);
 
-    /*! \details Access the draw::Text object associated with the Tab */
-    draw::Text & text(){ return m_text; }
+	/*! \details Access the draw::Text object associated with the Tab */
+	draw::Text & text(){ return m_text; }
 
 private:
-    draw::Text m_text;
+	draw::Text m_text;
 };
 
 }

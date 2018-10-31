@@ -19,8 +19,8 @@ namespace ui {
  */
 class InfoListItem : public ListItem {
 public:
-    InfoListItem(LinkedElement * parent = 0);
-    InfoListItem(const char * label, const char * value, LinkedElement * parent = 0);
+	InfoListItem(LinkedElement * parent = 0);
+	InfoListItem(const char * label, const char * value, LinkedElement * parent = 0);
 
 	void set(const char * l, const char * v);
 

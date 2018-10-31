@@ -151,10 +151,10 @@ namespace api {
  */
 class ApiObject {
 public:
-    /*! \details Returns a pointer to a string
-     * that shows the API version.
-     */
-    static const char * api_version(){ return "3.8.0b"; }
+	/*! \details Returns a pointer to a string
+	  * that shows the API version.
+	  */
+	static const char * api_version(){ return "3.8.0b"; }
 	static const char * api_git_hash();
 };
 

@@ -46,7 +46,7 @@ protected:
 	list_attr_size_t m_draw_animation_item;
 	list_attr_size_t m_draw_animation_offset;
 	i8 m_select_top_bottom;
-    chrono::Timer m_scroll_timer;
+	chrono::Timer m_scroll_timer;
 
 private:
 

@@ -23,85 +23,85 @@ namespace ev {
  */
 class DeviceButton : public Button, public hal::Device {
 public:
-    DeviceButton();
+	DeviceButton();
 
-    /*! \details Returns the number of buttons available.
-     *
-     * This will query the device for the number of buttons
-     * available. The set() method will select which button
-     * is read.
-     *
-     */
-    int count() const;
+	/*! \details Returns the number of buttons available.
+	  *
+	  * This will query the device for the number of buttons
+	  * available. The set() method will select which button
+	  * is read.
+	  *
+	  */
+	int count() const;
 
-    /*! \details Sets the button to the index specified.
-     *
-     * @param location The button channel/location value
-     *
-     * If the device supports multiple buttons, this method
-     * will select which button is effective.
-     *
-     * One object can emit events for multiple buttons using
-     * this method.
-     *
-     * \code
-     *
-     * #include <sapi/ui.hpp>
-     *
-     * DeviceButton button;
-     *
-     * button.open("/dev/button0");
-     *
-     * int count = button.count();
-     * for(int i = 0; i < count; i++){
-     *   button.set(i);
-     *   Event event = button.get_event();
-     * }
-     *
-     * \endcode
-     *
-     */
-    void set(int location){ m_location = location; }
+	/*! \details Sets the button to the index specified.
+	  *
+	  * @param location The button channel/location value
+	  *
+	  * If the device supports multiple buttons, this method
+	  * will select which button is effective.
+	  *
+	  * One object can emit events for multiple buttons using
+	  * this method.
+	  *
+	  * \code
+	  *
+	  * #include <sapi/ui.hpp>
+	  *
+	  * DeviceButton button;
+	  *
+	  * button.open("/dev/button0");
+	  *
+	  * int count = button.count();
+	  * for(int i = 0; i < count; i++){
+	  *   button.set(i);
+	  *   Event event = button.get_event();
+	  * }
+	  *
+	  * \endcode
+	  *
+	  */
+	void set(int location){ m_location = location; }
 
-    /*! \details Initializes the button driver.
-     *
-     * @return Zero on success.
-     */
-    int init();
+	/*! \details Initializes the button driver.
+	  *
+	  * @return Zero on success.
+	  */
+	int init();
 
-    /*! \details Sets the attributes for the specified button.
-     *
-     * @param location The button index
-     * @param id The Event ID to assign to the button
-     * @param held_threshold The threshold to wait before button held event is triggered
-     * @param actuated_threshold The minimum button press time for an actuation event
-     * @returns Zero on success
-     *
-     */
-    int set_attributes(int location, int id,
-                       const chrono::MicroTime held_threshold = chrono::MicroTime::invalid(),
-                       const chrono::MicroTime actuated_threshold = chrono::MicroTime::invalid());
+	/*! \details Sets the attributes for the specified button.
+	  *
+	  * @param location The button index
+	  * @param id The Event ID to assign to the button
+	  * @param held_threshold The threshold to wait before button held event is triggered
+	  * @param actuated_threshold The minimum button press time for an actuation event
+	  * @returns Zero on success
+	  *
+	  */
+	int set_attributes(int location, int id,
+							 const chrono::MicroTime held_threshold = chrono::MicroTime::invalid(),
+							 const chrono::MicroTime actuated_threshold = chrono::MicroTime::invalid());
 
-    chrono::MicroTime get_duration();
-    bool get_pressed();
-    bool get_released();
-    bool get_actuated();
-    bool get_held();
-    void reset();
-    bool is_active() const;
+	chrono::MicroTime get_duration();
+	bool get_pressed();
+	bool get_released();
+	bool get_actuated();
+	bool get_held();
+	void reset();
+	bool is_active() const;
 
-    enum ev::Event::button_id event_id() const {
-        return (enum ev::Event::button_id)m_status.id;
-    }
+	enum ev::Event::button_id event_id() const {
+		return (enum ev::Event::button_id)m_status.id;
+	}
 
 protected:
-    void update();
+	void update();
 
 
 private:
-    bool get_is_active() const;
-    button_status_t m_status;
-    int m_location;
+	bool get_is_active() const;
+	button_status_t m_status;
+	int m_location;
 
 };
 

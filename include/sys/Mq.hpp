@@ -21,7 +21,7 @@ class Mq;
 class MqAttr : public api::SysInfoObject {
 	friend class Mq;
 public:
-    MqAttr(){ memset(&m_attr, 0, sizeof(m_attr)); }
+	MqAttr(){ memset(&m_attr, 0, sizeof(m_attr)); }
 	MqAttr(long f, long m, long s){
 		m_attr.mq_flags = f;
 		m_attr.mq_curmsgs = 0;
@@ -89,11 +89,11 @@ public:
 	 * @return Less than zero for an error (use perror())
 	 */
 	int create(const char * name,
-			int oflag,
-			mode_t mode,
-			long flags,
-			long maxmsg,
-			long msgsize);
+				  int oflag,
+				  mode_t mode,
+				  long flags,
+				  long maxmsg,
+				  long msgsize);
 	/*! \brief Closes the message queue. */
 	int close();
 
@@ -111,14 +111,14 @@ public:
 
 	int set_attr(const struct mq_attr * mqstat, struct mq_attr * omqstat = 0);
 
-    /*! \details Sets the message queue attributes.
-     *
-     * The flags() value can be set using this method.
-     *
-     * The maxmsg(), msgsize() and curmsgs() are ignored (these
-     * properties are not mutable.
-     *
-     */
+	/*! \details Sets the message queue attributes.
+	  *
+	  * The flags() value can be set using this method.
+	  *
+	  * The maxmsg(), msgsize() and curmsgs() are ignored (these
+	  * properties are not mutable.
+	  *
+	  */
 	int set_attr(const MqAttr & attr);
 
 	/*! \details Receives a message from the queue.

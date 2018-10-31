@@ -8,38 +8,38 @@ namespace dsp {
 
 template<typename T, typename SignalType> class Fft : public api::DspWorkObject {
 public:
-    const T * instance() const { return &m_instance; }
-    T * instance(){ return &m_instance; }
+	const T * instance() const { return &m_instance; }
+	T * instance(){ return &m_instance; }
 
-    virtual u32 samples() const = 0;
+	virtual u32 samples() const = 0;
 
-    /*! \details Returns a signal capable of holding FFT source data and IFFT
-     * destination data.
-     */
-    SignalType create_time_signal() const {
-        SignalType output( samples() );
-        output.set_transfer_ownership();
-        return output;
-    }
+	/*! \details Returns a signal capable of holding FFT source data and IFFT
+	  * destination data.
+	  */
+	SignalType create_time_signal() const {
+		SignalType output( samples() );
+		output.set_transfer_ownership();
+		return output;
+	}
 
-    /*! \details Returns a signal capable of holding FFT destination data and IFFT
-     * source data.
-     */
-    SignalType create_frequency_signal() const {
-        SignalType output( samples()*2 );
-        output.set_transfer_ownership();
-        return output;
-    }
+	/*! \details Returns a signal capable of holding FFT destination data and IFFT
+	  * source data.
+	  */
+	SignalType create_frequency_signal() const {
+		SignalType output( samples()*2 );
+		output.set_transfer_ownership();
+		return output;
+	}
 
 
 private:
-    T m_instance;
+	T m_instance;
 };
 
 class FftComplexQ15 : public Fft<arm_cfft_instance_q15, SignalComplexQ15> {
 public:
-    FftComplexQ15(u32 n_samples);
-    u32 samples() const { return instance()->fftLen; }
+	FftComplexQ15(u32 n_samples);
+	u32 samples() const { return instance()->fftLen; }
 };
 
 /*! \brief Complex FFT for Fixed Point q1.31 format
@@ -57,34 +57,34 @@ public:
 class FftComplexQ31 : public Fft<arm_cfft_instance_q31, SignalComplexQ31> {
 public:
 
-    /*! \details Contructs a new object.
-     *
-     * @param n_samples The number of samples to compute on each transform
-     *
-     * The object is passed to the signal transform() methods.
-     *
-     *
-     */
-    FftComplexQ31(u32 n_samples);
+	/*! \details Contructs a new object.
+	  *
+	  * @param n_samples The number of samples to compute on each transform
+	  *
+	  * The object is passed to the signal transform() methods.
+	  *
+	  *
+	  */
+	FftComplexQ31(u32 n_samples);
 
-    /*! \details Returns the number of samples used on each computation. */
-    u32 samples() const { return instance()->fftLen; }
+	/*! \details Returns the number of samples used on each computation. */
+	u32 samples() const { return instance()->fftLen; }
 
 };
 
 class FftComplexF32 : public Fft<arm_cfft_instance_f32, SignalComplexF32> {
 public:
-    FftComplexF32(u32 n_samples);
-    u32 samples() const { return instance()->fftLen; }
+	FftComplexF32(u32 n_samples);
+	u32 samples() const { return instance()->fftLen; }
 
 };
 
 class FftRealQ15 : public Fft<arm_rfft_instance_q15, SignalComplexQ15> {
 public:
-    FftRealQ15(u32 n_samples);
-    u32 samples() const {
-        return instance()->fftLenReal;
-    }
+	FftRealQ15(u32 n_samples);
+	u32 samples() const {
+		return instance()->fftLenReal;
+	}
 
 private:
 };
@@ -111,18 +111,18 @@ private:
 class FftRealQ31 : public Fft<arm_rfft_instance_q31, SignalComplexQ31> {
 public:
 
-    /*! \details Contructs an object.
-     *
-     * @param n_samples The number of samples to compute on each transform
-     *
-     * The n_samples value must be a power of 2 between 32 and 2048.
-     *
-     */
-    FftRealQ31(u32 n_samples);
+	/*! \details Contructs an object.
+	  *
+	  * @param n_samples The number of samples to compute on each transform
+	  *
+	  * The n_samples value must be a power of 2 between 32 and 2048.
+	  *
+	  */
+	FftRealQ31(u32 n_samples);
 
 
-    /*! \details Returns the number of samples computed on each transform. */
-    u32 samples() const { return instance()->fftLenReal; }
+	/*! \details Returns the number of samples computed on each transform. */
+	u32 samples() const { return instance()->fftLenReal; }
 
 
 private:
@@ -131,10 +131,10 @@ private:
 
 class FftRealF32 : public Fft<arm_rfft_fast_instance_f32, SignalComplexF32> {
 public:
-    FftRealF32(u32 n_samples);
-    u32 samples() const {
-        return instance()->fftLenRFFT;
-    }
+	FftRealF32(u32 n_samples);
+	u32 samples() const {
+		return instance()->fftLenRFFT;
+	}
 
 private:
 

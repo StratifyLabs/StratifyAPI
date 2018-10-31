@@ -40,7 +40,7 @@ public:
 
 
 	/*! \details Calculates the length (pixels on x-axis) of the specified string. */
-    int calc_len(const var::ConstString & str) const;
+	int calc_len(const var::ConstString & str) const;
 
 	/*! \details Returns the number of characters in the font. */
 	int size() const { return m_hdr.num_chars; }

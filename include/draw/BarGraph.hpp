@@ -13,7 +13,7 @@ namespace draw {
  */
 class BarGraph : public Graph {
 public:
-    BarGraph();
+	BarGraph();
 
 private:
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);

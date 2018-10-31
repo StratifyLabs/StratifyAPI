@@ -120,8 +120,8 @@ public:
 	drawing_int_t y() const { return m_attr.region.point.y; }
 
 
-    /*! \details Checks to see if bitmap is available. */
-    bool is_bitmap_available() const { return m_attr.bitmap != 0; }
+	/*! \details Checks to see if bitmap is available. */
+	bool is_bitmap_available() const { return m_attr.bitmap != 0; }
 
 	/*! \details Access the bitmap */
 	sgfx::Bitmap & bitmap() const { return *(m_attr.bitmap); }

@@ -15,15 +15,15 @@ namespace ui {
  */
 class IconTab : public Tab {
 public:
-    /*! \details Construct an icon tab */
-    IconTab();
-    virtual void draw(const draw::DrawingAttr & attr);
+	/*! \details Construct an icon tab */
+	IconTab();
+	virtual void draw(const draw::DrawingAttr & attr);
 
-    /*! \details This method accesses the draw::Icon object that is drawn on the tab */
-    draw::Icon & icon(){ return m_icon; }
+	/*! \details This method accesses the draw::Icon object that is drawn on the tab */
+	draw::Icon & icon(){ return m_icon; }
 
 private:
-    draw::Icon m_icon;
+	draw::Icon m_icon;
 };
 
 }

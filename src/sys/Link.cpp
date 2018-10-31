@@ -16,19 +16,6 @@
 
 using namespace sys;
 
-//#include "link_flags.h"
-
-/*
-static int atoh(string s){
-	 stringstream ss;
-	 int x;
-	 ss << hex << s;
-	 ss >> x;
-	 return x;
-}
- */
-
-
 static var::String gen_error(const var::String & msg, int err_number){
 	var::String s;
 	s.sprintf("%s (%d)", msg.str(), err_number);
@@ -130,7 +117,7 @@ int Link::connect(const var::ConstString & path, bool is_legacy){
 		}
 
 	} else {
-		m_error_message.sprintf("Already Connected (%d)", 1);
+		m_error_message.format("Already Connected (%d)", 1);
 		return -1;
 	}
 
@@ -949,7 +936,7 @@ int Link::run_app(const var::ConstString & path){
 			this->disconnect();
 			return -2;
 		} else {
-			m_error_message.sprintf("Failed to run program: %s (%d)", path.str(), link_errno);
+			m_error_message.format("Failed to run program: %s (%d, %d)", path.str(), err, link_errno);
 			return -1;
 		}
 	}
@@ -1286,65 +1273,32 @@ int Link::update_os(const var::ConstString & path, bool verify, bool (*update)(v
 	return check_error(err);
 }
 
-int Link::update_binary_install_options(const var::ConstString & path, const var::ConstString & name, const var::ConstString & id, int version, bool startup, bool run_in_ram, int ram_size){
-	appfs_file_t appfs_file;
-	FILE * binary_file;
+int Link::update_binary_install_options(const var::ConstString & path, const AppfsFileAttributes & attributes){
+	File binary_file;
 
-	binary_file = fopen(path.c_str(), "rb+");
-	if( binary_file ==  0 ){
-		m_error_message.sprintf("Failed to open %s (%d)", path.c_str(), link_errno);
+	if( binary_file.open(path, File::READWRITE) < 0 ){
+		m_error_message.format("Failed to open %s (%d)", path.str(), link_errno);
 		return -1;
 	}
 
+	var::Data image(sizeof(appfs_file_t));
 
-	if( fread((char*)&appfs_file, sizeof(appfs_file), 1, binary_file) <= 0 ){
-		fclose(binary_file);
-		m_error_message = "Failed to read app filesystem data";
+	if( binary_file.read(0, image) < 0 ){
+		m_error_message.format("Failed to read from binary file");
 		return -1;
 	}
 
-	memset(appfs_file.hdr.name, 0, LINK_NAME_MAX);
-	strncpy(appfs_file.hdr.name, name.c_str(), LINK_NAME_MAX - 2);
-	memset(appfs_file.hdr.id, 0, LINK_NAME_MAX);
-	strncpy(appfs_file.hdr.id, id.c_str(), LINK_NAME_MAX - 2);
-	appfs_file.hdr.mode = 0777;
-	appfs_file.hdr.version = version;
+	attributes.apply(image.to<appfs_file_t>());
 
-	if ( startup == true ){
-		appfs_file.exec.o_flags |= APPFS_FLAG_IS_STARTUP;
-	} else {
-		appfs_file.exec.o_flags &= ~APPFS_FLAG_IS_STARTUP;
-	}
-
-	if ( run_in_ram == true ){
-		appfs_file.exec.o_flags &= ~(APPFS_FLAG_IS_FLASH);
-	} else {
-		appfs_file.exec.o_flags |= (APPFS_FLAG_IS_FLASH);
-	}
-
-	if( ram_size >= 4096 ){
-		appfs_file.exec.ram_size = ram_size;
-	}
-
-	if( appfs_file.exec.ram_size < 4096 ){
-		appfs_file.exec.ram_size = 4096;
-	}
-
-	fseek(binary_file, 0, SEEK_SET);
-
-	if( fwrite((char*)&appfs_file, sizeof(appfs_file), 1, binary_file) <= 0 ){
-		fclose(binary_file);
-		m_error_message = "Failed to write updated binary info";
+	if( binary_file.write(0, image) < 0 ){
+		m_error_message.format("Failed to write new attributes to binary file");
 		return -1;
 	}
 
-	fclose(binary_file);
-	return 0;
+	return binary_file.close();
 }
 
-int Link::install_app(const var::ConstString & source, const var::ConstString & dest, const var::ConstString & name, bool (*update)(void*,int,int), void * context){
-	FILE * source_file;
-	ssize_t source_size;
+int Link::install_app(const var::Data & image, const var::ConstString & dest, const var::ConstString & name, bool (*update)(void*,int,int), void * context){
 	int bytes_read;
 	int fd;
 	appfs_installattr_t attr;
@@ -1353,21 +1307,135 @@ int Link::install_app(const var::ConstString & source, const var::ConstString & 
 	var::String tmp_error;
 	int loc_err;
 
+	if( dest.find("/app") == 0 ){
+		fd = open("/app/.install", LINK_O_WRONLY);
+		if( fd < 0 ){
+			m_error_message.sprintf("Failed to open destination: %s", dest.c_str());
+			return -1;
+		}
+
+		attr.loc = 0;
+
+		bytes_total = image.size();
+		bytes_cumm = 0;
+
+		do {
+			memset(attr.buffer, 0xFF, APPFS_PAGE_SIZE);
+			//bytes_read = fread((char*)attr.buffer, 1, APPFS_PAGE_SIZE, source_file);
+			bytes_read = image.size() - bytes_cumm;
+			if( bytes_read > APPFS_PAGE_SIZE ){
+				bytes_read = APPFS_PAGE_SIZE;
+			}
+
+			memcpy(attr.buffer, image.to_char() + bytes_cumm, bytes_read);
+
+			if( bytes_cumm == 0 ){
+				//app_file = (link_appfs_file_t *)attr.buffer;
+			}
+
+			if( bytes_read > 0 ){
+				attr.nbyte = bytes_read;
+				bytes_cumm += attr.nbyte;
+				if( (loc_err = ioctl(fd, I_APPFS_INSTALL, &attr)) < 0 ){
+					if( link_errno == 5 ){ //EIO
+						if( loc_err < -1 ){
+							m_error_message.sprintf("Failed to install: missing symbol on device near", loc_err+1);
+						} else {
+							m_error_message = "Failed to install: unknown symbol error";
+						}
+					} if( link_errno == 8 ){ //ENOEXEC
+						m_error_message = "Failed to install: symbol table signature mismatch";
+					} else {
+						tmp_error = m_error_message;
+						m_error_message = "Failed to install file on device (";
+						m_error_message.append(tmp_error);
+						m_error_message.append(")");
+					}
+					close(fd);
+					return -1;
+				}
+				if( update ){ update(context, bytes_cumm, bytes_total); }
+
+				attr.loc += APPFS_PAGE_SIZE;
+			}
+		} while( bytes_read == APPFS_PAGE_SIZE );
+
+		if( close(fd) < 0 ){
+			m_error_message.sprintf("Failed to close file on device", link_errno);
+			return -1;
+		}
+
+
+		if( update ){ update(context, 0, 0); }
+
+	} else {
+
+		File f(driver());
+
+		//copy the file to the destination directory
+		var::String dest_str;
+		dest_str << dest << "/" << name;
+
+		if( f.create(dest) < 0 ){
+			m_error_message.format("failed to create %s on target", dest_str.str());
+			return -1;
+		}
+
+		bytes_cumm = 0;
+		bytes_read = 0;
+
+		do {
+			bytes_read = image.size() - bytes_cumm;
+			if( bytes_read > APPFS_PAGE_SIZE ){
+				bytes_read = APPFS_PAGE_SIZE;
+			}
+			if( f.write(&image.at_u8(bytes_cumm), bytes_read) < 0 ){
+				f.close();
+				m_error_message.format("failed to write to destination file");
+				return -1;
+			}
+			bytes_cumm += bytes_read;
+			if( update ){ update(context, bytes_cumm, image.size()); }
+		} while( bytes_read < bytes_cumm);
+
+		if( update ){ update(context, 0, 0); }
+	}
+
+	return 0;
+}
+
+int Link::install_app(const var::ConstString & source, const var::ConstString & dest, const var::ConstString & name, bool (*update)(void*,int,int), void * context){
+	File source_file;
+	ssize_t source_size;
+
 	if ( m_is_bootloader ){
 		return -1;
 	}
 
 	//link_appfs_file_t * app_file;
 
-	source_file = fopen(source.c_str(), "rb");
-	if( source_file == 0 ){
-		m_status_message.sprintf("Failed to open file: %s", source.c_str());
+	if( source_file.open(source, File::READONLY) < 0){
+		m_status_message.format("Failed to open file: %s", source.c_str());
 		return -1;
 	}
 
-	fseek(source_file, 0, SEEK_END);
-	source_size = ftell(source_file);
-	fseek(source_file, 0, SEEK_SET);
+	source_size = source_file.size();
+	var::Data image(source_size);
+
+	if( source_file.read(image) < 0 ){
+		m_status_message.format("Failed to open file: %s", source.c_str());
+		return -1;
+	}
+
+	source_file.close();
+
+	return install_app(image, dest, name, update, context);
+
+#if 0
+
+	fread(image.to_void(), 1, image.size(), source_file);
+	fclose(source_file);
+
 
 	if( dest.find("/app") == 0 ){
 		fd = open("/app/.install", LINK_O_WRONLY);
@@ -1439,6 +1507,8 @@ int Link::install_app(const var::ConstString & source, const var::ConstString & 
 
 		if( update ){ update(context, 0, 0); }
 	}
+
+#endif
 
 	return 0;
 }

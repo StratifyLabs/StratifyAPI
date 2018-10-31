@@ -3,6 +3,7 @@
 
 #include "sys/Printer.hpp"
 #include "sys/Sys.hpp"
+#include "hal/Core.hpp"
 #include "sys/Task.hpp"
 #include "sys/Cli.hpp"
 #include "var/Data.hpp"
@@ -17,6 +18,20 @@ Printer::Printer(){
 	m_o_flags = PRINT_8 | PRINT_HEX;
 	m_indent = 0;
 	m_progress_width = 50;
+}
+
+void Printer::set_color_code(u32 code){
+
+#if defined __link
+	printf("\033[1;%dm", code);
+#endif
+}
+
+void Printer::clear_color_code(){
+
+#if defined __link
+	printf("\033[0m");
+#endif
 }
 
 Printer::~Printer(){
@@ -178,12 +193,9 @@ Printer & Printer::operator << (const sys::TaskInfo & a){
 }
 
 Printer & Printer::operator << (const sys::SysInfo & a ){
+	hal::SerialNumber serial_number(a.serial_number());
 	print_indented("Name", "%s", a.name().str());
-	print_indented("Serial Number", F3208X F3208X F3208X F3208X,
-						a.serial_number().sn[3],
-			a.serial_number().sn[2],
-			a.serial_number().sn[1],
-			a.serial_number().sn[0]);
+	print_indented("Serial Number", serial_number.to_string().str());
 	print_indented("Hardware ID",  F3208X, a.hardware_id());
 	if( a.name() != "bootloader" ){
 		print_indented("BSP Version",  "%s", a.bsp_version().str());
@@ -196,6 +208,51 @@ Printer & Printer::operator << (const sys::SysInfo & a ){
 		print_indented("SOS Git Hash",  "%s", a.sos_git_hash().str());
 		print_indented("MCU Git Hash",  "%s", a.mcu_git_hash().str());
 	}
+	return *this;
+}
+
+Printer & Printer::operator << (const TraceEvent & a){
+	var::String id;
+	chrono::ClockTime clock_time;
+	clock_time = a.timestamp();
+	switch(a.id()){
+		case LINK_POSIX_TRACE_FATAL: id = "fatal"; break;
+		case LINK_POSIX_TRACE_CRITICAL: id = "critical"; break;
+		case LINK_POSIX_TRACE_WARNING: id = "warning"; break;
+		case LINK_POSIX_TRACE_MESSAGE: id = "message"; break;
+		case LINK_POSIX_TRACE_ERROR: id = "error"; break;
+		default: id = "other"; break;
+	}
+	print_indented("timestamp", "%ld.%ld", clock_time.seconds(), clock_time.nanoseconds()/1000UL);
+	print_indented("id", "%s", id.str());
+	print_indented("thread id", "%d", a.thread_id());
+	print_indented("pid", "%d", a.pid());
+	print_indented("program address", "0x%lX", a.program_address());
+	return *this;
+}
+
+Printer & Printer::operator << (const appfs_file_t & a){
+	print_indented("name", "%s", a.hdr.name);
+	print_indented("id", "%s", a.hdr.id);
+	print_indented("mode", "0%o", a.hdr.mode);
+	print_indented("version", "%d.%d", a.hdr.version >> 8, a.hdr.version & 0xff);
+	print_indented("startup", "%p", a.exec.startup);
+	print_indented("code_start", "%p", a.exec.code_start);
+	print_indented("code_size", "%p", a.exec.code_size);
+	print_indented("ram_start", "%p", a.exec.ram_start);
+	print_indented("ram_size", "%ld", a.exec.ram_size);
+	print_indented("data_size", "%ld", a.exec.data_size);
+	print_indented("o_flags", "0x%lX", a.exec.o_flags);
+	print_indented("signature", "0x%lX", a.exec.signature);
+	return *this;
+}
+
+Printer & Printer::operator << (const AppfsFileAttributes & a){
+	print_indented("name", a.name().str());
+	print_indented("id", a.id().str());
+	print_indented("version", "%d.%d", a.version() >> 8, a.version() & 0xff);
+	print_indented("o_flags", "0x%lX", a.o_flags());
+	print_indented("ram_size", "%ld", a.ram_size());
 	return *this;
 }
 

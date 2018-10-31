@@ -3,16 +3,16 @@
 #ifndef SIGNAL_HPP_
 #define SIGNAL_HPP_
 
-#ifndef __link
-
 #include <pthread.h>
 #include <signal.h>
-#include <sos/sos.h>
 
-#include <mcu/mcu.h>
 
 #include "../ev/Event.hpp"
 #include "../api/SysObject.hpp"
+
+#if defined __link
+typedef void (*_sig_func_ptr)(int);
+#endif
 
 namespace sys {
 
@@ -175,7 +175,6 @@ public:
 		TTOU /*! TTOU signal, default action is to stop */ = SIGTTOU,
 		USR1 /*! User signal, default action is to terminate */ = SIGUSR1,
 		USR2 /*! User signal, default action is to terminate */ = SIGUSR2,
-		POLL /*! Poll signal, default action is to terminate */ = SIGPOLL,
 		PROF /*! PROF signal, default action is to terminate */ = SIGPROF,
 		SYS /*! System signal, default action is to abort */ = SIGSYS,
 		TRAP /*! Trap signal, default action is to abort */ = SIGTRAP,
@@ -183,9 +182,12 @@ public:
 		TALRM /*! TALRM signal, default action is to terminate */ = SIGVTALRM,
 		XCPU /*! XCPU signal, default action is to abort */ = SIGXCPU,
 		XFSZ /*! XFSZ signal, default action is to abort */ = SIGXFSZ,
+#if !defined __link
+		POLL /*! Poll signal, default action is to terminate */ = SIGPOLL,
 		RTMIN /*! Real time signal, default action is to ignore */ = SIGRTMIN,
 		RT /*! Real time signal, default action is to ignore */ = SIGRTMIN + 1,
-		RTMAX /*! Real time signal, default action is to ignore */ = SIGRTMAX,
+		RTMAX /*! Real time signal, default action is to ignore */ = SIGRTMAX
+#endif
 	};
 
 	/*! \details Constructs an event based on a signal number.
@@ -194,50 +196,52 @@ public:
 	 * @param sigvalue The signal value
 	 *
 	 */
-    Signal(int signo, int sigvalue = 0){ m_signo = signo; m_sigvalue.sival_int = sigvalue; }
+	Signal(int signo, int sigvalue = 0){ m_signo = signo; m_sigvalue.sival_int = sigvalue; }
 
-    /*! \details Constructs an event based on a signal number.
-     *
-     * @param signo The signal number
-     * @param sigptr The signal value as a pointer
-     *
-     */
-    Signal(int signo, void * sigptr = 0){ m_signo = signo; m_sigvalue.sival_ptr = sigptr; }
+	/*! \details Constructs an event based on a signal number.
+	  *
+	  * @param signo The signal number
+	  * @param sigptr The signal value as a pointer
+	  *
+	  */
+	Signal(int signo, void * sigptr){ m_signo = signo; m_sigvalue.sival_ptr = sigptr; }
 
 	/*! \details Returns a UI Event based on this signal event. */
-    ev::Event event(){ return ev::Event(ev::Event::SIGNAL, this); }
+	ev::Event event(){ return ev::Event(ev::Event::SIGNAL, this); }
 
 	/*! \details Sends a signal to a process.
 	 *
 	 * @param pid The process ID of the receiving signal
 	 * @return Zero on success
-     *
-     * This method sends this signal to the specified PID.
-     * It uses the POSIX kill() function.
+	  *
+	  * This method sends this signal to the specified PID.
+	  * It uses the POSIX kill() function.
 	 */
-    int send(pid_t pid) const { return ::kill(pid, m_signo); }
+	int send(pid_t pid) const { return ::kill(pid, m_signo); }
 
+#if !defined __link
 	/*! \details Sends a signal and associated sigvalue to a process.
 	 *
-     * @param pid The process ID of the receiving signal
+	  * @param pid The process ID of the receiving signal
 	 * @return Zero on success
-     *
-     * This method sends this signal to the specified PID.
-     * It uses the POSIX sigqueue() function meaning the the signal
-     * will be sent along with signo and sigvalue.
-     *
+	  *
+	  * This method sends this signal to the specified PID.
+	  * It uses the POSIX sigqueue() function meaning the the signal
+	  * will be sent along with signo and sigvalue.
+	  *
 	 */
-    int queue(pid_t pid) const { return ::sigqueue(pid, m_signo, m_sigvalue); }
+	int queue(pid_t pid) const { return ::sigqueue(pid, m_signo, m_sigvalue); }
+#endif
 
 	/*! \details Sends a signal to a thread within a process.
 	 *
 	 * @param t The thread ID
 	 * @return Zero on success
 	 */
-    int send(pthread_t t) const { return ::pthread_kill(t, m_signo); }
+	int send(pthread_t t) const { return ::pthread_kill(t, m_signo); }
 
 	/*! \details Triggers the event on the current thread. */
-    int send() const { return ::pthread_kill(pthread_self(), m_signo); }
+	int send() const { return ::pthread_kill(pthread_self(), m_signo); }
 
 	/*! \details Sets the event handler.
 	 *
@@ -262,7 +266,5 @@ private:
 };
 
 }
-
-#endif
 
 #endif /* SIGNAL_HPP_ */

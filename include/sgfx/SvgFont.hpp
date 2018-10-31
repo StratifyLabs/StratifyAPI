@@ -16,8 +16,8 @@ namespace sgfx {
  */
 class SvgFont : public Font {
 public:
-    SvgFont();
-    virtual ~SvgFont();
+	SvgFont();
+	virtual ~SvgFont();
 
 	virtual sg_size_t get_height() const { return m_height; }
 	virtual sg_size_t get_width() const { return m_width; }

@@ -29,54 +29,54 @@ class Sys;
  *
  */
 class SysInfo : public api::SysInfoObject {
-    friend class Sys;
+	friend class Sys;
 public:
 
-    /*! \details Constructs an empty SysInfo object. */
-    SysInfo(){ clear(); }
+	/*! \details Constructs an empty SysInfo object. */
+	SysInfo(){ clear(); }
 
 
-    SysInfo(const sys_info_t & info ){
-        m_info = info;
-    }
+	SysInfo(const sys_info_t & info ){
+		m_info = info;
+	}
 
-    operator const sys_info_t & () const { return m_info; }
+	operator const sys_info_t & () const { return m_info; }
 
-    bool is_valid() const { return cpu_frequency() != 0; }
-    static SysInfo get();
+	bool is_valid() const { return cpu_frequency() != 0; }
+	static SysInfo get();
 
-    /*! \details Returns the name of the system. */
-    var::ConstString name() const { return m_info.name; }
-    /*! \details Returns the system version. */
-    var::ConstString system_version() const { return m_info.sys_version; }
-    /*! \details Retusn the board support package version (same as system_version()). */
-    var::ConstString bsp_version() const { return m_info.sys_version; }
-    var::ConstString kernel_version() const { return m_info.kernel_version; }
-    var::ConstString sos_version() const { return m_info.kernel_version; }
-    var::ConstString arch() const { return m_info.arch; }
-    var::ConstString cpu_architecture() const { return m_info.arch; }
-    var::ConstString id() const { return m_info.id; }
-    u32 cpu_frequency() const { return m_info.cpu_freq; }
-    u32 application_signature() const { return m_info.signature; }
-    var::ConstString bsp_git_hash() const { return m_info.bsp_git_hash; }
-    var::ConstString sos_git_hash() const { return m_info.sos_git_hash; }
-    var::ConstString mcu_git_hash() const { return m_info.mcu_git_hash; }
-    u32 o_flags() const { return m_info.o_flags; }
+	/*! \details Returns the name of the system. */
+	var::ConstString name() const { return m_info.name; }
+	/*! \details Returns the system version. */
+	var::ConstString system_version() const { return m_info.sys_version; }
+	/*! \details Retusn the board support package version (same as system_version()). */
+	var::ConstString bsp_version() const { return m_info.sys_version; }
+	var::ConstString kernel_version() const { return m_info.kernel_version; }
+	var::ConstString sos_version() const { return m_info.kernel_version; }
+	var::ConstString arch() const { return m_info.arch; }
+	var::ConstString cpu_architecture() const { return m_info.arch; }
+	var::ConstString id() const { return m_info.id; }
+	u32 cpu_frequency() const { return m_info.cpu_freq; }
+	u32 application_signature() const { return m_info.signature; }
+	var::ConstString bsp_git_hash() const { return m_info.bsp_git_hash; }
+	var::ConstString sos_git_hash() const { return m_info.sos_git_hash; }
+	var::ConstString mcu_git_hash() const { return m_info.mcu_git_hash; }
+	u32 o_flags() const { return m_info.o_flags; }
 
-    var::ConstString stdin_name() const { return m_info.stdin_name; }
-    var::ConstString stdout_name() const { return m_info.stdout_name; }
-    var::ConstString trace_name() const { return m_info.trace_name; }
-    u32 hardware_id() const { return m_info.hardware_id; }
+	var::ConstString stdin_name() const { return m_info.stdin_name; }
+	var::ConstString stdout_name() const { return m_info.stdout_name; }
+	var::ConstString trace_name() const { return m_info.trace_name; }
+	u32 hardware_id() const { return m_info.hardware_id; }
 
 
-    mcu_sn_t serial_number() const { return m_info.serial; }
+	mcu_sn_t serial_number() const { return m_info.serial; }
 
-    void clear(){
-        memset(&m_info, 0, sizeof(m_info));
-    }
+	void clear(){
+		memset(&m_info, 0, sizeof(m_info));
+	}
 
 private:
-    sys_info_t m_info;
+	sys_info_t m_info;
 
 
 };
@@ -93,13 +93,13 @@ public:
 	Sys();
 #endif
 
-    /*! \details Returns a c style string pointer
-     * to the API version.
-     *
-     * This version is 2.4.0
-     *
-     */
-    static const char * version(){ return "2.4.0"; }
+	/*! \details Returns a c style string pointer
+	  * to the API version.
+	  *
+	  * This version is 2.4.0
+	  *
+	  */
+	static const char * version(){ return "2.4.0"; }
 
 	enum {
 		LAUNCH_OPTIONS_FLASH /*! Install in flash memory */ = APPFS_FLAG_IS_FLASH,
@@ -125,13 +125,13 @@ public:
 	 * This method must be called locally in an app. It can't be executed over the link protocol.
 	 */
 	static int launch(const char * path,
-			char * exec_dest = 0,
-			const char * args = 0,
-			int options = 0, //run in RAM, discard on exit
-			int ram_size = LAUNCH_RAM_SIZE_DEFAULT,
-			int (*update_progress)(int, int) = 0,
-			char *const envp[] = 0
-	);
+							char * exec_dest = 0,
+							const char * args = 0,
+							int options = 0, //run in RAM, discard on exit
+							int ram_size = LAUNCH_RAM_SIZE_DEFAULT,
+							int (*update_progress)(int, int) = 0,
+							char *const envp[] = 0
+			);
 
 	/*! \details Frees the RAM associated with the app without deleting the code from flash
 	 * (should not be called when the app is currently running).
@@ -171,7 +171,7 @@ public:
 	 * @return Zero on success
 	 */
 	static int get_version(var::String & version);
-    static var::String get_version();
+	static var::String get_version();
 
 	/*! \details Gets the version (kernel version).
 	 *
@@ -226,7 +226,7 @@ public:
 
 	/*! \details Opens /dev/sys.
 	 *
-     * @return Less than zero for an error
+	  * @return Less than zero for an error
 	 *
 	 */
 	int open(){
@@ -250,7 +250,7 @@ public:
 	int get_26_info(sys_26_info_t & attr);
 
 
-    //these are deprecated: use sys::Task instead
+	//these are deprecated: use sys::Task instead
 	int get_taskattr(sys_taskattr_t & attr, int task = -1);
 	inline int get_taskattr(sys_taskattr_t * attr, int task = -1){
 		return get_taskattr(*attr, task);

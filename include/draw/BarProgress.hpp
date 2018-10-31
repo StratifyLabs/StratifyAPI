@@ -14,7 +14,7 @@ namespace draw {
  */
 class BarProgress : public Progress {
 public:
-    BarProgress();
+	BarProgress();
 
 	virtual void draw(const DrawingAttr & attr){
 		drawing_size_t thickness = attr.calc_height(border_thickness());

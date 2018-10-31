@@ -426,10 +426,10 @@ public:
 	  */
 	int load(json_load_callback_t callback, void * context);
 
-	int save(const var::ConstString & path);
-	int save(var::Data & data);
-	int save(const sys::File & file);
-	int save(json_dump_callback_t callback, void * context);
+	int save(const var::ConstString & path) const;
+	int save(var::Data & data) const;
+	int save(const sys::File & file) const;
+	int save(json_dump_callback_t callback, void * context) const;
 
 
 	enum {

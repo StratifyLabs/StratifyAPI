@@ -96,6 +96,7 @@ public:
 
 
 	const attr_t & attributes() const { return m_attr; }
+	attr_t & attributes(){ return m_attr; }
 
 	attr_t * operator ->() { return &m_attr; }
 	const attr_t * operator ->() const { return &m_attr; }
@@ -112,15 +113,11 @@ class PinAssignmentPeriphAttributes : public PeriphAttributes<attr_t>{
 public:
 
 	PinAssignmentPeriphAttributes(){
-		memset(&m_attr, 0, sizeof(m_attr));
-		memset(&m_attr.pin_assignment, 0xff, sizeof(pin_assignment_t));
+		memset(&PeriphAttributes<attr_t>::m_attr.pin_assignment, 0xff, sizeof(pin_assignment_t));
 	}
 
 	/*! \details Gets a pointer of the pin assignment. */
-	const pin_assignment_t * pin_assignment() const { return &m_attr.pin_assignment; }
-
-protected:
-	attr_t m_attr;
+	const pin_assignment_t * pin_assignment() const { return &PeriphAttributes<attr_t>::m_attr.pin_assignment; }
 
 };
 

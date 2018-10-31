@@ -4,17 +4,50 @@
 #ifndef SYS_TRACE_HPP_
 #define SYS_TRACE_HPP_
 
-
-#include <mcu/types.h>
-#include <sos/link.h>
+#include <sos/link/types.h>
 
 #if !defined __link
-#include <sos/link/transport_usb.h>
+#include <sos/sos.h>
 #endif
 
+#include "../api/SysObject.hpp"
 #include "../var/String.hpp"
+#include "../chrono/ClockTime.hpp"
 
 namespace sys {
+
+class TraceEvent : public api::SysInfoObject {
+public:
+	TraceEvent(){
+		memset(&m_event, 0, sizeof(m_event));
+	}
+	TraceEvent(const link_trace_event_t & event){
+		m_event = event;
+	}
+
+	u16 id() const{ return m_event.posix_trace_event.posix_event_id; }
+	u16 thread_id() const{ return m_event.posix_trace_event.posix_thread_id; }
+	u16 pid() const{ return m_event.posix_trace_event.posix_pid; }
+	u32 program_address() const{ return m_event.posix_trace_event.posix_prog_address; }
+	chrono::ClockTime timestamp() const{
+		return chrono::ClockTime(m_event.posix_trace_event.posix_timestamp_tv_sec, m_event.posix_trace_event.posix_timestamp_tv_nsec);
+	}
+
+	var::String message(){
+		m_event.posix_trace_event.data[LINK_POSIX_TRACE_DATA_SIZE-1] = 0;
+		return var::String(var::ConstString((const char*)m_event.posix_trace_event.data));
+	}
+
+	link_trace_event_t & event(){ return m_event; }
+	const link_trace_event_t & event() const { return m_event; }
+
+	void * info_to_void(){ return &m_event; }
+	const void * info_to_void() const { return &m_event; }
+	u32 info_size() const { return sizeof(m_event); }
+
+private:
+	link_trace_event_t m_event;
+};
 
 /*! \brief Trace Class
  * \details The Trace class is used for writing messages, warnings and
@@ -38,15 +71,15 @@ public:
 	Trace(){}
 
 #if !defined __link
-    Trace& operator=(const var::ConstString & a){ var::String::operator=(a); return *this; }
+	Trace& operator=(const var::ConstString & a){ var::String::operator=(a); return *this; }
 	/*! \details Sends trace as a message. */
-	inline void trace_message() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_MESSAGE, c_str(), size()); }
+	inline void trace_message() MCU_ALWAYS_INLINE { sos_trace_event(LINK_POSIX_TRACE_MESSAGE, c_str(), size()); }
 	/*! \details Sends trace as a warning. */
-	inline void trace_warning() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_WARNING, c_str(), size()); }
+	inline void trace_warning() MCU_ALWAYS_INLINE { sos_trace_event(LINK_POSIX_TRACE_WARNING, c_str(), size()); }
 	/*! \details Sends trace as an error. */
-	inline void trace_error() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_ERROR, c_str(), size()); }
+	inline void trace_error() MCU_ALWAYS_INLINE { sos_trace_event(LINK_POSIX_TRACE_ERROR, c_str(), size()); }
 	/*! \details Sends trace as a critical message. */
-	inline void trace_critical() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_CRITICAL, c_str(), size()); }
+	inline void trace_critical() MCU_ALWAYS_INLINE { sos_trace_event(LINK_POSIX_TRACE_CRITICAL, c_str(), size()); }
 	/*! \details Sends trace as a fatal message.
 	 *
 	 * Trace fatal will not cause the program to exit but for good practice, you must

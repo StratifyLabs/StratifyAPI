@@ -16,7 +16,7 @@ namespace ui {
 class TimeTab : public Tab {
 public:
 	/*! \details Construct a TabTime object */
-    TimeTab();
+	TimeTab();
 	void draw(const draw::DrawingAttr & attr);
 
 };

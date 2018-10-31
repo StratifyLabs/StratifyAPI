@@ -12,7 +12,7 @@ namespace draw {
  */
 class LineGraph : public Graph {
 public:
-    LineGraph();
+	LineGraph();
 
 private:
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);

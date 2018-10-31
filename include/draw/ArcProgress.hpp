@@ -13,7 +13,7 @@ namespace draw {
  */
 class ArcProgress : public Progress {
 public:
-    ArcProgress();
+	ArcProgress();
 
 	/*! \details Draw a scaled version of the arc using the specified \a attr */
 	void draw_to_scale(const DrawingScaledAttr & attr);

@@ -20,15 +20,15 @@ namespace chrono {
 class Clock : public api::ChronoInfoObject {
 public:
 
-    enum {
-        REALTIME /*! Realtime clock ID used with get_time() and get_resolution() */ = CLOCK_REALTIME
-    };
+	enum {
+		REALTIME /*! Realtime clock ID used with get_time() and get_resolution() */ = CLOCK_REALTIME
+	};
 
-    /*! \details Assigns the value of CLOCK_REALTIME to this object */
-    static ClockTime get_time(int clock_id = REALTIME);
+	/*! \details Assigns the value of CLOCK_REALTIME to this object */
+	static ClockTime get_time(int clock_id = REALTIME);
 
-    /*! \details Gets the resolution of the specified clock. */
-    static ClockTime get_resolution(int clock_id = REALTIME);
+	/*! \details Gets the resolution of the specified clock. */
+	static ClockTime get_resolution(int clock_id = REALTIME);
 };
 
 }

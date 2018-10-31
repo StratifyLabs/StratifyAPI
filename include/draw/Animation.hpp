@@ -130,8 +130,8 @@ public:
 	 *
 	 */
 	void init(Drawing * current,
-			Drawing * target,
-			const DrawingAttr & attr);
+				 Drawing * target,
+				 const DrawingAttr & attr);
 
 	void reinit();
 

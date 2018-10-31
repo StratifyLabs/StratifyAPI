@@ -92,6 +92,8 @@ public:
 
 	/*! \details Compares to a c-string (inequality). */
 	bool operator!=(const ConstString & a) const { return compare(a) != 0; }
+	bool operator>(const ConstString & a) const { return compare(a) > 0; }
+	bool operator<(const ConstString & a) const { return compare(a) < 0; }
 
 	/*! \details Converts to an integer.
 	  *

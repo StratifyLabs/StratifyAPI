@@ -20,71 +20,71 @@ namespace sys {
 class MutexAttributes : public api::SysInfoObject {
 public:
 
-    /*! \details Mutex Types */
-    enum type {
-        NORMAL /*! Normal Mutex Type */ = PTHREAD_MUTEX_NORMAL,
-        RECURSIVE /*! Recursive Mutex tyep */ = PTHREAD_MUTEX_RECURSIVE
-    };
+	/*! \details Mutex Types */
+	enum type {
+		NORMAL /*! Normal Mutex Type */ = PTHREAD_MUTEX_NORMAL,
+		RECURSIVE /*! Recursive Mutex tyep */ = PTHREAD_MUTEX_RECURSIVE
+	};
 
-    /*! \details Mutex Protocol values */
-    enum protocol {
-        PRIO_NONE_PROTOCOL = PTHREAD_PRIO_NONE,
-        PRIO_INHERIT_PROTOCOL = PTHREAD_PRIO_INHERIT,
-        PRIO_PROTECT_PROTOCOL = PTHREAD_PRIO_PROTECT,
-    };
+	/*! \details Mutex Protocol values */
+	enum protocol {
+		PRIO_NONE_PROTOCOL = PTHREAD_PRIO_NONE,
+		PRIO_INHERIT_PROTOCOL = PTHREAD_PRIO_INHERIT,
+		PRIO_PROTECT_PROTOCOL = PTHREAD_PRIO_PROTECT,
+	};
 
 
-    /*! \details Constructs a Mutex attributes object with default values. */
+	/*! \details Constructs a Mutex attributes object with default values. */
 	MutexAttributes();
 
-    /*! \details Constructs a Mutex attributes object using the specified attributes. */
+	/*! \details Constructs a Mutex attributes object using the specified attributes. */
 	MutexAttributes(const pthread_mutexattr_t & mutexattr){
-        m_item = mutexattr;
-    }
+		m_item = mutexattr;
+	}
 
 	~MutexAttributes();
 
-    /*! \details Constructs a mutex attributs object with the specified values.
-     *
-     * @param t Mutex type (NORMAL or RECURSIVE)
-     * @param prio_ceiling The priority ceiling (0 is default, lowest priority)
-     * @param pshared True if mutex is to be shared between processes
-     *
-     */
+	/*! \details Constructs a mutex attributs object with the specified values.
+	  *
+	  * @param t Mutex type (NORMAL or RECURSIVE)
+	  * @param prio_ceiling The priority ceiling (0 is default, lowest priority)
+	  * @param pshared True if mutex is to be shared between processes
+	  *
+	  */
 	MutexAttributes(enum type t, int prio_ceiling = 0, bool pshared = false, enum protocol protocol = PRIO_NONE_PROTOCOL);
 
-    /*! \details Sets the priority ceiling.
-     *
-     * @param ceiling The priority ceiling of the mutex
-     * @return Zero on success
-     *
-     */
-    int set_prio_ceiling(int ceiling);
+	/*! \details Sets the priority ceiling.
+	  *
+	  * @param ceiling The priority ceiling of the mutex
+	  * @return Zero on success
+	  *
+	  */
+	int set_prio_ceiling(int ceiling);
 
-    /*! \details Sets the protocol. */
-    int set_protocol(enum protocol value);
+	/*! \details Sets the protocol. */
+	int set_protocol(enum protocol value);
 
-    /*! \details Sets whether this is shared between processes. */
-    int set_pshared(bool value = true);
+	/*! \details Sets whether this is shared between processes. */
+	int set_pshared(bool value = true);
 
-    /*! \details Set the mutex type (NORMAL_TYPE or RECURSIVE_TYPE) */
-    int set_type(enum type value);
+	/*! \details Set the mutex type (NORMAL_TYPE or RECURSIVE_TYPE) */
+	int set_type(enum type value);
 
-    /*! \details Returns the priority ceiling. */
-    int get_prio_ceiling() const;
+	/*! \details Returns the priority ceiling. */
+	int get_prio_ceiling() const;
 
-    /*! \details Returns the protocol. */
-    int get_protocol() const;
+	/*! \details Returns the protocol. */
+	int get_protocol() const;
 
-    /*! \details Returns the type. */
-    int get_type() const;
+	/*! \details Returns the type. */
+	int get_type() const;
 
-    /*! \details Returns true if the mutex attributes are for process sharing. */
-    bool get_pshared() const;
+	/*! \details Returns true if the mutex attributes are for process sharing. */
+	bool get_pshared() const;
 
 private:
-    friend class Mutex;
-    pthread_mutexattr_t m_item;
+	friend class Mutex;
+	pthread_mutexattr_t m_item;
 };
 
 typedef MutexAttributes MutexAttr;
@@ -97,54 +97,54 @@ typedef MutexAttributes MutexAttr;
  */
 class Mutex : public api::SysWorkObject {
 public:
-    /*! \details Constructs a Mutex with the default settings. */
-    Mutex();
+	/*! \details Constructs a Mutex with the default settings. */
+	Mutex();
 
-    /*! \details Constructs a Mutex using the specified attributes. */
-    Mutex(const MutexAttr & attr);
+	/*! \details Constructs a Mutex using the specified attributes. */
+	Mutex(const MutexAttr & attr);
 
-    /*! \details Sets the mutex attributes. */
+	/*! \details Sets the mutex attributes. */
 	int set_attributes(const MutexAttributes & attr);
 	int set_attr(const MutexAttributes & attr){ return set_attributes(attr); }
 
-    /*! \details Attempts to lock the mutex.
-     *
-     * If the mutex is locked by
-     * another thread, the thread will block until the mutex becomes available.
-     *
-     * If the thread already holds a lock on the mutex, it will
-     *
-     * - increment the count if the mutex is recursive, or
-     * - return less than zero and set errno to EDEADLK
-     */
-    int lock();
+	/*! \details Attempts to lock the mutex.
+	  *
+	  * If the mutex is locked by
+	  * another thread, the thread will block until the mutex becomes available.
+	  *
+	  * If the thread already holds a lock on the mutex, it will
+	  *
+	  * - increment the count if the mutex is recursive, or
+	  * - return less than zero and set errno to EDEADLK
+	  */
+	int lock();
 
-    /*! \details Attempts to lock the mutex but times out after the specified duration.
-     *
-     * @param clock_time A clock time object that defines the maximum amount of time to wait for a lock
-     *
-     */
+	/*! \details Attempts to lock the mutex but times out after the specified duration.
+	  *
+	  * @param clock_time A clock time object that defines the maximum amount of time to wait for a lock
+	  *
+	  */
 #if !defined __link
-    int lock_timed(const chrono::ClockTime & clock_time);
+	int lock_timed(const chrono::ClockTime & clock_time);
 #endif
 
-    /*! \details Attempts to lock the mutex.
-     *
-     * If the mutex is
-     * locked by another thread, the method returns immediately, returns less than zero,
-     * and sets errno to EBUSY.
-     *
-     * If the mutex is locked by the current thread, it will be incremented if it is recursive or just
-     * return zero and keep the lock if non-recursive.
-     *
-     */
-    int try_lock();
+	/*! \details Attempts to lock the mutex.
+	  *
+	  * If the mutex is
+	  * locked by another thread, the method returns immediately, returns less than zero,
+	  * and sets errno to EBUSY.
+	  *
+	  * If the mutex is locked by the current thread, it will be incremented if it is recursive or just
+	  * return zero and keep the lock if non-recursive.
+	  *
+	  */
+	int try_lock();
 
-    /*! \details Unlocks the mutex. */
-    int unlock();
+	/*! \details Unlocks the mutex. */
+	int unlock();
 
 private:
-    pthread_mutex_t m_item;
+	pthread_mutex_t m_item;
 };
 
 

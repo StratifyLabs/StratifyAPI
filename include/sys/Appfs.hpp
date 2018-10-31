@@ -11,6 +11,61 @@
 
 namespace sys {
 
+class AppfsFileAttributes : public api::SysInfoObject {
+public:
+
+	enum {
+		IS_FLASH = APPFS_FLAG_IS_FLASH,
+		IS_STARTUP = APPFS_FLAG_IS_STARTUP,
+		IS_ROOT = APPFS_FLAG_IS_ROOT,
+		IS_REPLACE = APPFS_FLAG_IS_REPLACE,
+		IS_ORPHAN = APPFS_FLAG_IS_ORPHAN,
+		IS_UNIQUE = APPFS_FLAG_IS_UNIQUE
+	};
+
+	AppfsFileAttributes(){
+		m_version = 0;
+		m_ram_size = 0;
+		m_o_flags = APPFS_FLAG_IS_FLASH;
+	}
+
+	void apply(appfs_file_t * dest) const;
+
+	void set_name(const var::ConstString & value){ m_name = value; }
+	const var::String & name() const { return m_name; }
+	void set_id(const var::ConstString & value){ m_id = value; }
+	const var::String & id() const { return m_id; }
+	void set_version(u16 value){ m_version = value; }
+	u16 version() const { return m_version; }
+	void set_flags(u32 o_value){ m_o_flags = o_value; }
+	u16 o_flags() const { return m_o_flags; }
+	void set_ram_size(u32 value){ m_ram_size = value; }
+	u16 ram_size() const { return m_ram_size; }
+	void set_startup(bool value = true){
+		if( value ){
+			m_o_flags |= IS_STARTUP;
+		} else {
+			m_o_flags &= ~IS_STARTUP;
+		}
+	}
+
+	void set_flash(bool value = true){
+		if( value ){
+			m_o_flags |= IS_FLASH;
+		} else {
+			m_o_flags &= ~IS_FLASH;
+		}
+	}
+
+
+private:
+	var::String m_name;
+	var::String m_id;
+	u32 m_ram_size;
+	u32 m_o_flags;
+	u16 m_version;
+};
+
 /*! \brief Application File System Class
  * \details This class provides an interface for creating data files in flash
  * memory.

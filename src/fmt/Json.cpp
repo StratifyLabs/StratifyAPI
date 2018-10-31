@@ -335,19 +335,19 @@ int Json::load(json_load_callback_t callback, void * context){
     return -1;
 }
 
-int Json::save(const var::ConstString & path){
+int Json::save(const var::ConstString & path) const {
     return json_dump_file(m_value, path.str(), flags());
 }
 
-int Json::save(var::Data & data){
+int Json::save(var::Data & data) const {
     return json_dumpb(m_value, data.cdata(), data.capacity(), flags());
 }
 
-int Json::save(const sys::File & file){
+int Json::save(const sys::File & file) const {
     return json_dumpfd(m_value, file.fileno(), flags());
 }
 
-int Json::save(json_dump_callback_t callback, void * context){
+int Json::save(json_dump_callback_t callback, void * context) const {
     return json_dump_callback(m_value, callback, context, flags());
 }
 

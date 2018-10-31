@@ -15,10 +15,10 @@ class MemoryFont: public Font {
 public:
 
 	/*! \details Construct an object */
-    MemoryFont();
+	MemoryFont();
 
 	/*! \details Construct an object pointing to the font. */
-    MemoryFont(const void * ptr);
+	MemoryFont(const void * ptr);
 
 	/*! \details Set the location of the font in memory
 	 *

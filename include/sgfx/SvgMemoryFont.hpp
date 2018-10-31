@@ -16,8 +16,8 @@ namespace sgfx {
  */
 class SvgMemoryFont : public SvgFont {
 public:
-    SvgMemoryFont();
-    virtual ~SvgMemoryFont();
+	SvgMemoryFont();
+	virtual ~SvgMemoryFont();
 
 protected:
 	void draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_point_t point) const;

@@ -21,8 +21,8 @@ class SpiAttributes : public PinAssignmentPeriphAttributes<spi_attr_t, spi_pin_a
 public:
 
 	SpiAttributes(u32 o_flags = SPI_FLAG_SET_MASTER | SPI_FLAG_IS_FORMAT_SPI | SPI_FLAG_IS_MODE0 | SPI_FLAG_IS_HALF_DUPLEX,
-				  u32 freq = 1000000,
-				  u8 width = 8){
+					  u32 freq = 1000000,
+					  u8 width = 8){
 		set_frequency(freq);
 		set_width(width);
 		set_flags(o_flags);

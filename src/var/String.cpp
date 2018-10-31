@@ -70,8 +70,12 @@ int String::vformat(const char * fmt, va_list list){
 }
 
 int String::set_size(u32 s){
+	bool is_zero_size = (to_void() == 0);
 	int result = Data::set_size(s+1);
 	set_string_pointer(cdata_const());
+	if( is_zero_size ){
+		fill(0);
+	}
 	return result;
 }
 
@@ -108,7 +112,7 @@ int String::append(char c){
 	u32 alen = 1;
 	set_capacity(len + alen + 1); //try to make min capacity
 	if( cdata() == 0 ){ return -1; }
-	strncat(cdata(),&c,1);
+	strncat(cdata(), &c, 1);
 	return 0;
 }
 

@@ -9,52 +9,52 @@ using namespace var;
 namespace sys {
 
 Cli::Cli(int argc, char * argv[], const var::ConstString & app_git_hash) : m_app_git_hash(app_git_hash){
-    u16 version;
+	u16 version;
 	if( argc < 0 ){
 		argc = 0;
 	}
 	m_argc = argc;
 	m_argv = argv;
-    m_is_case_sensitive = true;
+	m_is_case_sensitive = true;
 
 	if( argc > 0 ){
 		m_path = argv[0];
-        m_name = File::name(argv[0]).str();
+		m_name = File::name(argv[0]).str();
 #if defined __link
-        version = Appfs::get_version(m_path.str(), 0);
+		version = Appfs::get_version(m_path.str(), 0);
 #else
-        version = Appfs::get_version(m_path.str());
+		version = Appfs::get_version(m_path.str());
 #endif
 
-        m_version.sprintf("%d.%d", version >> 8, version & 0xff);
+		m_version.format("%d.%d", version >> 8, version & 0xff);
 	}
 }
 
 void Cli::handle_version() const {
 #if !defined __link
-    if( is_option("--version") || is_option("-v") ){
-        printf("%s version: %s by %s\n", m_name.str(), m_version.str(), m_publisher.str());
+	if( is_option("--version") || is_option("-v") ){
+		printf("%s version: %s by %s\n", m_name.str(), m_version.str(), m_publisher.str());
 		exit(0);
 	}
 
-    if( is_option("--version-details") ){
-        String details = get_version_details();
-        printf("%s\n", details.str());
-        exit(0);
-    }
+	if( is_option("--version-details") ){
+		String details = get_version_details();
+		printf("%s\n", details.str());
+		exit(0);
+	}
 #endif
 }
 
 var::String Cli::get_version_details() const {
-    String result;
+	String result;
 
-    if( m_app_git_hash == 0 ){
-        result.sprintf("%s (api:%s)", m_version.str(), api_git_hash());
-    } else {
-        result.sprintf("%s (app:%s, api:%s)", m_version.str(), m_app_git_hash.str(), api_git_hash());
-    }
+	if( m_app_git_hash == 0 ){
+		result.sprintf("%s (api:%s)", m_version.str(), api_git_hash());
+	} else {
+		result.sprintf("%s (app:%s, api:%s)", m_version.str(), m_app_git_hash.str(), api_git_hash());
+	}
 
-    return result;
+	return result;
 }
 
 
@@ -67,14 +67,14 @@ String Cli::at(u16 value) const {
 }
 
 bool Cli::is_option_equivalent_to_argument(
-        const ConstString & option,
-        const ConstString & argument) const {
+		const ConstString & option,
+		const ConstString & argument) const {
 
-    if( is_case_senstive() == false ){
+	if( is_case_senstive() == false ){
 		String option_string = option;
 		String argument_string = argument;
-        option_string.to_upper();
-        argument_string.to_upper();
+		option_string.to_upper();
+		argument_string.to_upper();
 		return option_string == argument_string;
 	}
 
@@ -82,11 +82,11 @@ bool Cli::is_option_equivalent_to_argument(
 }
 
 String Cli::get_option_argument(const char * option) const {
-    u16 args;
+	u16 args;
 	for(args = 0; args < m_argc; args++){
-        if( is_option_equivalent_to_argument(option, at(args).str()) ){
-            return at(args+1);
-        }
+		if( is_option_equivalent_to_argument(option, at(args).str()) ){
+			return at(args+1);
+		}
 	}
 	return String();
 }
@@ -94,8 +94,8 @@ String Cli::get_option_argument(const char * option) const {
 bool Cli::is_option(const char * value) const {
 	u16 i;
 	for(i=0; i < m_argc; i++){
-        if( is_option_equivalent_to_argument(value, at(i).str()) ){
-            return true;
+		if( is_option_equivalent_to_argument(value, at(i).str()) ){
+			return true;
 		}
 	}
 	return false;
@@ -124,12 +124,12 @@ int Cli::get_option_hex_value(const char * option) const {
 mcu_pin_t Cli::get_option_pin(const char * option) const {
 	mcu_pin_t pio;
 	Token arg;
-    arg.assign(get_option_argument(option));
+	arg.assign(get_option_argument(option));
 	arg.parse(".");
 
 	if( arg.size() == 2 ){
-        pio.port = arg.at(0).atoi();
-        pio.pin = arg.at(1).atoi();
+		pio.port = arg.at(0).atoi();
+		pio.pin = arg.at(1).atoi();
 	} else {
 		pio.port = 255;
 		pio.pin = 255;
@@ -146,8 +146,8 @@ mcu_pin_t Cli::pin_at(u16 value) const {
 	arg.parse(".");
 
 	if( arg.size() == 2 ){
-        pio.port = arg.at(0).atoi();
-        pio.pin = arg.at(1).atoi();
+		pio.port = arg.at(0).atoi();
+		pio.pin = arg.at(1).atoi();
 	} else {
 		pio.port = 255;
 		pio.pin = 255;
@@ -186,12 +186,12 @@ bool Cli::handle_uart(hal::UartAttributes & attr) const {
 		}
 
 		if( is_option("-tx") ){ attr.set_tx(get_option_pin("-tx")); }
-        if( is_option("-rx") ){ attr.set_rx(get_option_pin("-rx")); }
-        if( is_option("-rts") ){ attr.set_rts(get_option_pin("-rts")); }
-        if( is_option("-cts") ){ attr.set_cts(get_option_pin("-cts")); }
+		if( is_option("-rx") ){ attr.set_rx(get_option_pin("-rx")); }
+		if( is_option("-rts") ){ attr.set_rts(get_option_pin("-rts")); }
+		if( is_option("-cts") ){ attr.set_cts(get_option_pin("-cts")); }
 
 		if( is_option("-width") ){
-            attr.set_width(get_option_value("-width"));
+			attr.set_width(get_option_value("-width"));
 		} else {
 			attr.set_width(8);
 		}

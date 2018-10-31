@@ -3,8 +3,12 @@
 
 using namespace sys;
 
-
+#if defined __link
+Task::Task(link_transport_mdriver_t * driver){
+	m_sys_device.set_driver(driver);
+#else
 Task::Task(){
+#endif
     m_id = 0;
 }
 

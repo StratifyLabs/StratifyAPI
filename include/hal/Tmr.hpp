@@ -79,7 +79,7 @@ typedef TmrAttributes TmrAttr;
  *
  *
  */
-class Tmr : public Periph<tmr_info_t, tmr_attr_t, TmrAttributes, 't'> {
+class Tmr : public Periph<tmr_info_t, tmr_attr_t, TmrAttributes, TMR_IOC_IDENT_CHAR> {
 public:
 
 	/*! \details Constructs a new timer object using \a port. */

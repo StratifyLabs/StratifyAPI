@@ -4,6 +4,7 @@
 #define BASE64_HPP_
 
 #include "../api/CalcObject.hpp"
+#include "../var/String.hpp"
 
 namespace calc {
 
@@ -58,30 +59,18 @@ public:
 	 *
 	 * \code
 	 * #include <sapi/calc.hpp>
+	 * #include <sapi/var.hpp>
 	 *
-	 * u8 raw_data[64]; //raw binary data that needs to be encoded
-	 * char * encoded_data;
-	 * int encoded_size;
+	 * Data raw_data(64); //raw binary data that needs to be encoded
 	 *
-	 * encoded_size = Base64::calc_encoded_size(64);
-	 * encoded_data = malloc(encoded_size);
-	 * Base64::encode(encoded_data, raw_data, 64);
+	 * String result = encode(raw_data);
+	 * if( result.is_empty() ){
+	 *  //failed to encode
+	 * }
 	 * \endcode
 	 *
 	 */
-	static int encode(char * dest, const void * src, int nbyte);
-
-	/*! \details Calculates encoded size of \a nbyte.  This function
-	 * can be used to allocate memory for a buffer that can
-	 * be used to hold encoded data.
-	 *
-	 * @param nbyte Number of bytes to encode
-	 * @return The string length required to encode \a nbyte bytes
-	 *
-	 * The number of encoded bytes is rougly \a nbyte * 4/3.
-	 *
-	 */
-	static int calc_encoded_size(int nbyte);
+	static var::String encode(const var::Data & input);
 
 	/*! \details Decodes base64 encoded data.
 	 *
@@ -103,23 +92,20 @@ public:
 	 * \endcode
 	 *
 	 */
+	static var::Data decode(const var::String & input);
+
+
+private:
+	static int encode(char * dest, const void * src, int nbyte);
 	static int decode(void * dest, const char * src, int nbyte);
-
-	/*! \details Calculates decoded size of \a nbyte.  This function
-	 * can be used to allocate memory for a buffer that can
-	 * be used to hold decoded data.
-	 *
-	 * @param nbyte Number of bytes to decode
-	 * @return The number of bytes needed to decode \a nbyte encoded bytes
-	 *
-	 * The number of decoded bytes is rougly \a nbyte * 3/4.
-	 *
-	 *
-	 *
-	 */
 	static int calc_decoded_size(int nbyte);
+	static int calc_encoded_size(int nbyte);
+	static char encode_six(uint8_t six_bit_value);
+	static char decode_eigth(uint8_t eight_bit_value);
+
 
 };
-};
+
+}
 
 #endif /* BASE64_HPP_ */

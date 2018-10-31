@@ -1,5 +1,10 @@
 //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
+
+#if defined __win32
+#include "dirent_windows.h"
+#endif
+
 #include "var/String.hpp"
 #include "sys/File.hpp"
 #include "sys/FileInfo.hpp"

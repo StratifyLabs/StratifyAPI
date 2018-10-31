@@ -13,7 +13,7 @@ namespace draw {
  */
 class CircleProgress : public Progress {
 public:
-    CircleProgress();
+	CircleProgress();
 
 	/*! \details Draw a scaled version of the circle as specified by \a attr */
 	void draw_to_scale(const DrawingScaledAttr & attr);

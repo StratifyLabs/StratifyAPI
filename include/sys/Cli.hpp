@@ -24,8 +24,8 @@ class Cli : public api::SysWorkObject {
 public:
 
 	enum {
-        FORMAT_TEXT,
-        FORMAT_JSON,
+		FORMAT_TEXT,
+		FORMAT_JSON,
 		FORMAT_TOTAL
 	};
 
@@ -42,7 +42,7 @@ public:
 	 * \endcode
 	 *
 	 */
-    Cli(int argc, char * argv[], const var::ConstString & app_git_hash = 0);
+	Cli(int argc, char * argv[], const var::ConstString & app_git_hash = 0);
 
 	/*! \details Handles the --version and -v options to show the version.
 	 *
@@ -56,22 +56,22 @@ public:
 	 * @param publisher A pointer to the publisher's name
 	 *
 	 */
-    void set_publisher(const var::ConstString & publisher){ m_publisher = publisher; }
+	void set_publisher(const var::ConstString & publisher){ m_publisher = publisher; }
 
 
-    /*! \details Sets whether the arguments are case sensitive. */
-    void set_case_sensitive(bool value = true){
-        m_is_case_sensitive = value;
-    }
+	/*! \details Sets whether the arguments are case sensitive. */
+	void set_case_sensitive(bool value = true){
+		m_is_case_sensitive = value;
+	}
 
-    /*!
-     * \details Returns true if parsing is case sensitive.
-     *
-     * By default, parsing is case senstive unless set_case_sensitive(false)
-     * is called.
-     *
-     */
-    bool is_case_senstive() const { return m_is_case_sensitive; }
+	/*!
+	  * \details Returns true if parsing is case sensitive.
+	  *
+	  * By default, parsing is case senstive unless set_case_sensitive(false)
+	  * is called.
+	  *
+	  */
+	bool is_case_senstive() const { return m_is_case_sensitive; }
 
 	enum {
 		PRINT_DEBUG,
@@ -83,16 +83,16 @@ public:
 	};
 
 	/*! \details Accesses the program version. */
-    const char * version() const { return m_version.str(); }
+	const char * version() const { return m_version.str(); }
 
 	/*! \details Accesses the program publisher. */
-    const char * publisher() const { return m_publisher.str(); }
+	const char * publisher() const { return m_publisher.str(); }
 
 	/*! \details Accesses the program name. */
-    const char * name() const { return m_name.str(); }
+	const char * name() const { return m_name.str(); }
 
 	/*! \details Accesses the path to the program (including the name). */
-    const char * path() const { return m_path.str(); }
+	const char * path() const { return m_path.str(); }
 
 	/*! \details Returns the argument offset by value as a var::String. */
 	var::String at(u16 value) const;
@@ -167,7 +167,7 @@ public:
 	 *
 	 * @param option The option to match
 	 * @return The value of the argument or 0 if the option wasn't found
-     *SOS_GIT_HASH="${SOS_GIT_HASH}"
+	  *SOS_GIT_HASH="${SOS_GIT_HASH}"
 	 * For example, take the given command line
 	 *
 	 * > program -i 2.1
@@ -179,8 +179,8 @@ public:
 	mcu_pin_t get_option_pin(const char * option) const;
 
 	/*! \details Returns the number of arguments. */
-    u32 count() const { return m_argc; }
-    u32 size() const { return m_argc; }
+	u32 count() const { return m_argc; }
+	u32 size() const { return m_argc; }
 
 	//handling hardware inputs
 	/*! \details Handles arguments for setting UART attributes.
@@ -218,12 +218,12 @@ public:
 	 */
 	bool handle_i2c(hal::I2CAttr & attr) const;
 
-    var::String get_version_details() const;
+	var::String get_version_details() const;
 
 
 private:
 
-    bool is_option_equivalent_to_argument(const var::ConstString & option, const var::ConstString & argument) const;
+	bool is_option_equivalent_to_argument(const var::ConstString & option, const var::ConstString & argument) const;
 
 	u16 m_argc;
 	char ** m_argv;
@@ -231,8 +231,8 @@ private:
 	var::String m_publisher;
 	var::String m_name;
 	var::String m_path;
-    bool m_is_case_sensitive;
-    const var::ConstString m_app_git_hash;
+	bool m_is_case_sensitive;
+	const var::ConstString m_app_git_hash;
 
 
 };

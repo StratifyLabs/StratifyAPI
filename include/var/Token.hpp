@@ -23,10 +23,11 @@ public:
 	  * @param delim Delimiter string
 	  * @param ignore Ignore string
 	  * @param count_empty Create empty tokens
+	  * @param max_delim The maximum number of delimiters to parse before giving up (0 for no limit)
 	  *
 	  * \sa parse()
 	  */
-	Token(const ConstString & src, const ConstString & delim, const ConstString & ignore = "", bool count_empty = false);
+	Token(const ConstString & src, const ConstString & delim, const ConstString & ignore = "", bool count_empty = false, u32 max_delim = 0);
 
 
 	/*! \details Sorting Options used with sort() */
@@ -41,6 +42,7 @@ public:
 	  *
 	  * @param delim Delimiter string
 	  * @param ignore Ignore string
+	  * @param max_delim The maximum number of delimiters to parse before giving up (0 for no limit)
 	  *
 	  * This method will re-parse the current string.  The \a delim value
 	  * contains all separators.  For example, " \t" will create a new token
@@ -52,7 +54,7 @@ public:
 	  *
 	  *
 	  */
-	void parse(const ConstString & delim, const ConstString & ignore = "");
+	void parse(const ConstString & delim, const ConstString & ignore = "", u32 max_delim = 0);
 
 
 	/*! \details Sorts the tokens as specified. */

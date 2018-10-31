@@ -55,103 +55,103 @@ namespace test {
 template<typename return_type, typename...args> class Function : public Test {
 public:
 
-    /*! \details Constructs a new function test object.
-     *
-     * @param test_name The name of the test
-     * @param function A function pointer to the function that will be tested
-     * @param parent The parent test or zero if there is no parent
-     *
-     */
-    Function(const char * test_name, return_type (*function)(args...), Test * parent = 0) : Test(test_name, parent){
-        m_function = function;
-    }
+	/*! \details Constructs a new function test object.
+	  *
+	  * @param test_name The name of the test
+	  * @param function A function pointer to the function that will be tested
+	  * @param parent The parent test or zero if there is no parent
+	  *
+	  */
+	Function(const char * test_name, return_type (*function)(args...), Test * parent = 0) : Test(test_name, parent){
+		m_function = function;
+	}
 
-    ~Function(){}
+	~Function(){}
 
-    /*! \details Executes a test case.
-     *
-     * @param case_name The name of the case
-     * @param expected_value The expected return value
-     * @param expected_errno The expected error number
-     * @param arguments The arguments to pass to the test function
-     * @return The value that the tested function returns
-     *
-     */
-    return_type execute_case_with_expected_return(const char * case_name, return_type expected_value, int expected_errno, args... arguments){
-        return_type return_value;
-        bool result = true;
-        errno = 0;
+	/*! \details Executes a test case.
+	  *
+	  * @param case_name The name of the case
+	  * @param expected_value The expected return value
+	  * @param expected_errno The expected error number
+	  * @param arguments The arguments to pass to the test function
+	  * @return The value that the tested function returns
+	  *
+	  */
+	return_type execute_case_with_expected_return(const char * case_name, return_type expected_value, int expected_errno, args... arguments){
+		return_type return_value;
+		bool result = true;
+		errno = 0;
 
-        open_case(case_name);
+		open_case(case_name);
 
-        case_timer().start();
-        return_value = m_function(arguments...);
-        case_timer().stop();
+		case_timer().start();
+		return_value = m_function(arguments...);
+		case_timer().stop();
 
 
-        if( return_value != expected_value ){
-            result = false;
-            print_case_message("expected return %d != actual return %d", expected_value, return_value);
-        } else {
-            print_case_message("expected value returned");
-        }
+		if( return_value != expected_value ){
+			result = false;
+			print_case_message("expected return %d != actual return %d", expected_value, return_value);
+		} else {
+			print_case_message("expected value returned");
+		}
 
-        if( expected_errno > 0 ){
-            if( expected_errno != errno ){
-                result = false;
-                print_case_message("expected errno %d != actual errno %d", expected_errno, errno);
-            } else {
-                print_case_message("expected errno match: %d", errno);
-            }
-        }
+		if( expected_errno > 0 ){
+			if( expected_errno != errno ){
+				result = false;
+				print_case_message("expected errno %d != actual errno %d", expected_errno, errno);
+			} else {
+				print_case_message("expected errno match: %d", errno);
+			}
+		}
 
-        close_case(result);
-        return return_value;
-    }
+		close_case(result);
+		return return_value;
+	}
 
-    return_type execute_case_with_less_than_zero_on_error(const char * case_name, int expected_errno, args... arguments){
-        return_type return_value;
-        bool result = true;
-        errno = 0;
+	return_type execute_case_with_less_than_zero_on_error(const char * case_name, int expected_errno, args... arguments){
+		return_type return_value;
+		bool result = true;
+		errno = 0;
 
-        open_case(case_name);
+		open_case(case_name);
 
-        case_timer().start();
-        return_value = m_function(arguments...);
-        case_timer().stop();
+		case_timer().start();
+		return_value = m_function(arguments...);
+		case_timer().stop();
 
-        if( expected_errno > 0 ){
+		if( expected_errno > 0 ){
 
-            if( return_value >= 0 ){
-                print_case_message("expected an error but returned: %d", return_value);
-                result = false;
-            }
+			if( return_value >= 0 ){
+				print_case_message("expected an error but returned: %d", return_value);
+				result = false;
+			}
 
-            if( expected_errno != errno ){
-                result = false;
-                print_case_message("expected errno %d != actual errno %d", expected_errno, errno);
-            } else {
-                print_case_message("expected errno match: %d", errno);
-            }
+			if( expected_errno != errno ){
+				result = false;
+				print_case_message("expected errno %d != actual errno %d", expected_errno, errno);
+			} else {
+				print_case_message("expected errno match: %d", errno);
+			}
 
-        } else {
+		} else {
 
-            if( return_value < 0 ){
-                result = false;
-                print_case_message("expected success but ret: %d errno: %d", return_value, errno);
-            } else {
-                print_case_message("returned: %d", return_value);
-            }
+			if( return_value < 0 ){
+				result = false;
+				print_case_message("expected success but ret: %d errno: %d", return_value, errno);
+			} else {
+				print_case_message("returned: %d", return_value);
+			}
 
-        }
+		}
 
-        close_case(result);
-        return return_value;
-    }
+		close_case(result);
+		return return_value;
+	}
 
 
 private:
-    return_type (*m_function)(args...);
+	return_type (*m_function)(args...);
 };
 
 }

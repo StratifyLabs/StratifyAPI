@@ -12,6 +12,24 @@
 
 using namespace sys;
 
+void AppfsFileAttributes::apply(appfs_file_t * dest) const {
+	memcpy(dest->hdr.name, m_name.str(), LINK_NAME_MAX);
+	memcpy(dest->hdr.id, m_id.str(), LINK_NAME_MAX);
+	dest->hdr.version = m_version;
+	dest->exec.o_flags = m_o_flags;
+	dest->hdr.mode = 0777;
+
+	if( m_ram_size >= 4096 ){
+		dest->exec.ram_size = m_ram_size;
+	}
+
+	if( dest->exec.ram_size < 4096 ){
+		dest->exec.ram_size = 4096;
+	}
+
+	dest->exec.o_flags = m_o_flags;
+}
+
 #if defined __link
 int Appfs::create(const var::ConstString & name, const void * buf, int nbyte, const char * mount, bool (*update)(void *, int, int), void * context, link_transport_mdriver_t * driver){
 	File file(driver);
@@ -97,6 +115,11 @@ int Appfs::create(const var::ConstString & name, const void * buf, int nbyte, co
 #if defined __link
 int Appfs::get_info(const var::ConstString & path, appfs_info_t & info, link_transport_mdriver_t * driver){
 	File f(driver);
+
+	if( driver == 0 ){
+		errno = ENOTSUP;
+		return -1;
+	}
 #else
 int Appfs::get_info(const var::ConstString & path, appfs_info_t & info){
 	File f;

@@ -122,16 +122,16 @@ public:
 		m_aio_var.aio_nbytes = nbytes;
 	}
 
-    /*! \details Sets the buffer using a var::Data object.
-     *
-     * @param data The data object
-     *
-     * The data object must not change the buffer
-     * allocation after calling this method. If it
-     * does, it will need to set the buffer again.
-     *
-     */
-    void set_buf(var::Data & data){ set_buf(data.data(), data.capacity()); }
+	/*! \details Sets the buffer using a var::Data object.
+	  *
+	  * @param data The data object
+	  *
+	  * The data object must not change the buffer
+	  * allocation after calling this method. If it
+	  * does, it will need to set the buffer again.
+	  *
+	  */
+	void set_buf(var::Data & data){ set_buf(data.data(), data.capacity()); }
 
 	/*! \details Returns the number of bytes to transfer. */
 	int nbytes() const { return m_aio_var.aio_nbytes; }
