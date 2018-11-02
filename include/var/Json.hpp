@@ -6,7 +6,7 @@
 #include "../var/Vector.hpp"
 #include "../var/String.hpp"
 
-namespace fmt {
+namespace var {
 
 #undef TRUE
 #undef FALSE
@@ -220,7 +220,8 @@ public:
 	int assign(int value);
 	int assign(bool value);
 
-	void * value(){ return m_value; }
+	int copy(const JsonValue & value, bool is_deep = true);
+
 
 protected:
 	int create_if_not_valid();
@@ -399,7 +400,7 @@ private:
 
 /*! \brief Json Class
  * \details The Json class is a JsonValue
- * that cna be loaded and saved from
+ * that can be loaded and saved from
  * either memory or the filesystem.
  *
  */
@@ -407,6 +408,11 @@ class Json : public JsonValue {
 public:
 	Json();
 
+	/*! \details Constructs a Json object from a JsonValue.
+	 *
+	 * @param value JsonValue in memory that this class will refer to.
+	 *
+	 */
 	Json(const JsonValue & value) : JsonValue(value.m_value){}
 
 	void set_flags(u32 flags){ m_flags = flags; }

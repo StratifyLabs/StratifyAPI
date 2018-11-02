@@ -24,11 +24,11 @@ namespace var {}
 
 #include "var/Data.hpp"
 #include "var/Flags.hpp"
-#include "var/JsonString.hpp"
 #include "var/Item.hpp"
 #include "var/Ring.hpp"
 #include "var/LinkedList.hpp"
 #include "var/Queue.hpp"
+#include "var/Json.hpp"
 #include "var/ConstString.hpp"
 #include "var/VersionString.hpp"
 #include "var/String.hpp"

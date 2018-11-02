@@ -28,9 +28,6 @@ class I2CAttributes;
 class UartAttributes;
 }
 
-
-
-
 namespace sys {
 
 class TaskInfo;

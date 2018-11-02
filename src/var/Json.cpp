@@ -1,7 +1,7 @@
 #include "var/Vector.hpp"
-#include "fmt/Json.hpp"
+#include "var/Json.hpp"
 
-using namespace fmt;
+using namespace var;
 
 JsonValue::JsonValue(json_t * value){
 	add_reference(value);
@@ -70,6 +70,10 @@ int JsonValue::assign(const var::ConstString & value){
 		return json_real_set(m_value, ::atof(value.str()));
 	} else if( is_integer() ){
 		return json_integer_set(m_value, ::atoi(value.str()));
+	} else if ( is_true() ){
+		if( value == "false" ){
+
+		}
 	}
 
 	//can't assign string to object, array, bool, or null
@@ -89,6 +93,16 @@ int JsonValue::assign(bool value){
 	return 0;
 }
 
+
+int JsonValue::copy(const JsonValue & value, bool is_deep){
+	json_decref(m_value);
+	if( is_deep ){
+		m_value = json_deep_copy(value.m_value);
+	} else {
+		m_value = json_copy(value.m_value);
+	}
+	return 0;
+}
 
 var::String JsonValue::to_string() const {
 	var::String result;
