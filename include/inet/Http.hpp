@@ -31,12 +31,12 @@ public:
 
 	int head(const var::ConstString & url);
 	int get(const var::ConstString & url);
-	int post(const var::ConstString & url, const var::Data & data);
-	int put(const var::ConstString & url, const var::Data & data);
-	int patch(const var::ConstString & url, const var::Data & data);
+	int post(const var::ConstString & url, const var::String & data);
+	int put(const var::ConstString & url, const var::String & data);
+	int patch(const var::ConstString & url, const var::String & data);
 
 	//http delete
-	int remove(const var::ConstString & url, const var::Data & data);
+	int remove(const var::ConstString & url, const var::String & data);
 
 	int options(const var::ConstString & url);
 	int trace(const var::ConstString & url);
@@ -93,14 +93,14 @@ private:
 
 	int query(const var::ConstString & command,
 				 const var::ConstString & url,
-				 const var::Data & data = var::Data());
+				 const var::String & data = var::String());
 
 	int send_string(const var::ConstString & str);
 
 	int send_header(const var::ConstString & method,
 						 const var::ConstString & host,
 						 const var::ConstString & path,
-						 const var::Data & data);
+						 const var::String & data);
 
 	int listen_for_header(var::String & response);
 	int listen_for_data(var::String & response);

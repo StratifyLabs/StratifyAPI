@@ -11,12 +11,6 @@ Token::Token(){
 	m_is_count_empty_tokens = false;
 }
 
-Token::Token(char * mem, u32 s, const ConstString & src, const ConstString & delim, const ConstString & ignore, bool count_empty) : String(mem, s, false){
-	init_members();
-	m_is_count_empty_tokens = count_empty;
-	clear(); assign(src); parse(delim, ignore);
-}
-
 Token::Token(const ConstString & src, const ConstString & delim, const ConstString & ignore, bool count_empty, u32 max_delim) : String(src){
 	init_members();
 	m_is_count_empty_tokens = count_empty;

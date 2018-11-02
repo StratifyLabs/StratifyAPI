@@ -108,14 +108,6 @@ public:
 	/*! \details Declares a string and initialize to \a s. */
 	String(const ConstString & s, u32 len);
 
-	/*! \details Constructs a string using statically allocated memory.
-	  *
-	  * @param mem A pointer to memory to use
-	  * @param capacity The number of bytes available
-	  * @param readonly True if the mem is in readonly memory
-	  */
-	String(char * mem, u32 capacity, bool readonly = false);
-
 
 	/*! \details Assigns a to this string.
 	  *

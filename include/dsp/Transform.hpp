@@ -18,7 +18,6 @@ public:
 	  */
 	SignalType create_time_signal() const {
 		SignalType output( samples() );
-		output.set_transfer_ownership();
 		return output;
 	}
 
@@ -27,7 +26,6 @@ public:
 	  */
 	SignalType create_frequency_signal() const {
 		SignalType output( samples()*2 );
-		output.set_transfer_ownership();
 		return output;
 	}
 

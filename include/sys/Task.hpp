@@ -202,9 +202,11 @@ public:
 
 	bool is_pid_running(int pid);
 
+	void initialize();
+	void finalize();
+
 
 private:
-	void initialize();
 	hal::Device m_sys_device;
 	int m_id;
 

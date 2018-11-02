@@ -244,7 +244,7 @@ Printer & Printer::operator << (const TraceEvent & a){
 		case LINK_POSIX_TRACE_ERROR: id = "error"; break;
 		default: id = "other"; break;
 	}
-	print_indented("timestamp", "%ld.%ld", clock_time.seconds(), clock_time.nanoseconds()/1000UL);
+	print_indented("timestamp", F32U ".%06ld", clock_time.seconds(), clock_time.nanoseconds()/1000UL);
 	print_indented("id", "%s", id.str());
 	print_indented("thread id", "%d", a.thread_id());
 	print_indented("pid", "%d", a.pid());

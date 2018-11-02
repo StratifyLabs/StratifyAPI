@@ -37,10 +37,11 @@ public:
 	DisplayPalette(const display_palette_t & palette, bool readonly = false);
 
 	enum {
-		PIXEL_FORMAT_1BPP = DISPLAY_PALETTE_ATTR_PIXEL_FORMAT_1BPP,
-		PIXEL_FORMAT_RGB565 = DISPLAY_PALETTE_ATTR_PIXEL_FORMAT_RGB565,
-		PIXEL_FORMAT_RGB666 = DISPLAY_PALETTE_ATTR_PIXEL_FORMAT_RGB666,
-		PIXEL_FORMAT_RGB888 = DISPLAY_PALETTE_ATTR_PIXEL_FORMAT_RGB888
+		PIXEL_FORMAT_1BPP = DISPLAY_PALETTE_PIXEL_FORMAT_1BPP,
+		PIXEL_FORMAT_RGB444 = DISPLAY_PALETTE_PIXEL_FORMAT_RGB444,
+		PIXEL_FORMAT_RGB565 = DISPLAY_PALETTE_PIXEL_FORMAT_RGB565,
+		PIXEL_FORMAT_RGB666 = DISPLAY_PALETTE_PIXEL_FORMAT_RGB666,
+		PIXEL_FORMAT_RGB888 = DISPLAY_PALETTE_PIXEL_FORMAT_RGB888
 	};
 
 	int save(const char * path) const;
@@ -80,11 +81,16 @@ public:
 
 	/*! \details Returns the number of colors in the palette. */
 	u8 count() const { return m_palette.count; }
-	/*! \details Returns the number of bytes per pixel stored in the palette */
-	u8 pixel_size() const { return m_palette.pixel_size; }
+
+	u16 bits_per_pixel() const;
 
 	var::Data & colors(){ return m_colors; }
 	const var::Data & colors() const { return m_colors; }
+
+	static void set_color(display_palette_pixel_format_rgb444_t & pixel, u8 r, u8 g, u8 b, u8 offset);
+	static void set_color(display_palette_pixel_format_rgb565_t & pixel, u8 r, u8 g, u8 b);
+	static void set_color(display_palette_pixel_format_rgb666_t & pixel, u8 r, u8 g, u8 b);
+	static void set_color(display_palette_pixel_format_rgb888_t & pixel, u8 r, u8 g, u8 b);
 
 private:
 	display_palette_t m_palette;

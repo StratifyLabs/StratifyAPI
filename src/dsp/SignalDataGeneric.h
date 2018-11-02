@@ -1,6 +1,9 @@
 
 native_type SignalType::mean() const {
     native_type result;
+	 if( arm_dsp_api_function()->mean == 0 ){
+		 exit_fatal("arm_dsp_api_function()->mean == 0");
+	 }
     arm_dsp_api_function()->mean((native_type*)data_const(), count(), &result);
     return result;
 }
@@ -112,13 +115,13 @@ void SignalType::shift(SignalType & output, s8 value) const {
     arm_dsp_api_function()->shift((native_type*)vector_data_const(), value, output.vector_data(), count());
 }
 
-SignalDataType SignalType::shift(s8 value) const {
+SignalType SignalType::shift(s8 value) const {
     SignalType ret(count());
     arm_dsp_api_function()->shift((native_type*)vector_data_const(), value, ret.vector_data(), count());
     return ret;
 }
 
-SignalDataType & SignalType::shift_assign(s8 value){
+SignalType & SignalType::shift_assign(s8 value){
     arm_dsp_api_function()->shift((native_type*)vector_data_const(), value, vector_data(), count());
     return *this;
 }
@@ -144,61 +147,64 @@ void SignalType::scale(SignalType & output, native_type scale_fraction, s8 shift
 }
 
 
-SignalDataType SignalType::add(native_type offset_value) const {
+SignalType SignalType::add(native_type offset_value) const {
     SignalType ret(count());
     arm_dsp_api_function()->offset((native_type*)vector_data_const(), offset_value, ret.vector_data(), count());
 
     return ret;
 }
 
-SignalDataType & SignalType::add_assign(native_type offset_value){
+SignalType & SignalType::add_assign(native_type offset_value){
     arm_dsp_api_function()->offset((native_type*)vector_data_const(), offset_value, vector_data(), count());
     return *this;
 }
 
-SignalDataType SignalType::add(const SignalType & a) const {
+SignalType SignalType::add(const SignalType & a) const {
     SignalType ret(count());
-    arm_dsp_api_function()->add((native_type*)vector_data_const(), (native_type*)a.vector_data_const(), ret.vector_data(), count());
-
+	 if( ret.count() != count() ){
+		 printf("Failed to alloc for count\n");
+		 return ret;
+	 }
+	 arm_dsp_api_function()->add((native_type*)vector_data_const(), (native_type*)a.vector_data_const(), ret.vector_data(), count());
     return ret;
 }
 
 
-SignalDataType & SignalType::add_assign(const SignalType & a){
+SignalType & SignalType::add_assign(const SignalType & a){
     arm_dsp_api_function()->add((native_type*)vector_data_const(), (native_type*)a.vector_data_const(), vector_data(), count());
     return *this;
 }
 
-SignalDataType SignalType::multiply(native_type value) const {
+SignalType SignalType::multiply(native_type value) const {
     return scale(value);
 }
 
-SignalDataType & SignalType::multiply_assign(native_type value){
+SignalType & SignalType::multiply_assign(native_type value){
     scale(*this, value);
     return *this;
 }
 
-SignalDataType SignalType::multiply(const SignalType & a) const {
+SignalType SignalType::multiply(const SignalType & a) const {
     SignalType ret(count());
     arm_dsp_api_function()->mult((native_type*)vector_data_const(), (native_type*)a.vector_data_const(), ret.vector_data(), count());
 
     return ret;
 }
 
-SignalDataType & SignalType::multiply_assign(const SignalType & a){
+SignalType & SignalType::multiply_assign(const SignalType & a){
     arm_dsp_api_function()->mult((native_type*)vector_data_const(), (native_type*)a.vector_data_const(), vector_data(), count());
     return *this;
 }
 
 //subtract
-SignalDataType SignalType::subtract(const SignalType & a) const{
+SignalType SignalType::subtract(const SignalType & a) const{
     SignalType ret(count());
     arm_dsp_api_function()->sub((native_type*)vector_data_const(), (native_type*)a.vector_data_const(), ret.vector_data(), count());
 
     return ret;
 }
 
-SignalDataType & SignalType::subtract_assign(const SignalType & a){
+SignalType & SignalType::subtract_assign(const SignalType & a){
     arm_dsp_api_function()->sub((native_type*)vector_data_const(), (native_type*)a.vector_data_const(), vector_data(), count());
     return *this;
 }

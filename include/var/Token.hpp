@@ -15,7 +15,6 @@ namespace var {
 class Token : public var::String {
 public:
 	Token();
-	Token(char * mem, u32 s, const ConstString & src, const ConstString & delim, const ConstString & ignore = "", bool count_empty = false);
 
 	/*! \details Constructs and parses a new Token.
 	  *

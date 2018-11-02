@@ -13,6 +13,7 @@ const arm_dsp_conversion_api_t * DspWorkObject::m_arm_dsp_conversion_api;
 
 int DspWorkObject::request_arm_dsp_api(){
     sapi_request_arm_dsp_api_t api_request;
+	 memset(&api_request, 0, sizeof(api_request));
     int ret = Sys::request(SAPI_REQUEST_ARM_DSP_API, &api_request);
     if( ret >= 0 ){
         if( api_request.api_q7 ){ m_arm_dsp_api_q7 = api_request.api_q7; }

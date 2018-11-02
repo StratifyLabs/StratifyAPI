@@ -144,10 +144,18 @@ public:
  * class.
  *
  */
-template<typename T, typename BigType> class SignalData : public var::Vector<T>, public api::DspWorkObject {
+template<class Derived, typename T, typename BigType> class SignalData : public var::Vector<T>, public api::DspWorkObject {
 public:
 	SignalData(){}
-	SignalData(int count) : var::Vector<T>(count){}
+	SignalData(int count) : var::Vector<T>(count){
+		if( is_api_available() == false ){
+			request_arm_dsp_api();
+		}
+	}
+
+	virtual bool is_api_available() const {
+		return false;
+	}
 
 	/*! \details Performs element-wise addition.
 	  *
@@ -156,13 +164,13 @@ public:
 	  * \note This operator uses dynamic memory allocation
 	  *
 	  */
-	SignalData operator + (const SignalData & a ) const { return add(a); }
+	Derived operator + (const Derived & a ) const { return add(a); }
 
 	/*! \details Performs element-wise addition.
 	  *
 	  * Operators are not implemented on complex signals.
 	  */
-	SignalData & operator += (const SignalData & a ){ return add_assign(a); }
+	Derived & operator += (const Derived & a ){ return add_assign(a); }
 
 	/*! \details Adds a constant value to all elements.
 	  *
@@ -170,10 +178,10 @@ public:
 	  *
 	  * \note This operator uses dynamic memory allocation
 	  */
-	SignalData operator + (const T & a ) const { return add(a); }
+	Derived operator + (const T & a ) const { return add(a); }
 
 	/*! \details Adds a constant value to all elements in this signal. */
-	SignalData & operator += (const T & a ){ return add_assign(a); }
+	Derived & operator += (const T & a ){ return add_assign(a); }
 
 	/*! \details Performs element-wise subtraction.
 	  *
@@ -181,7 +189,7 @@ public:
 	  *
 	  * \note This operator uses dynamic memory allocation
 	  */
-	SignalData operator - (const SignalData & a) const { return subtract(a); }
+	Derived operator - (const Derived & a) const { return subtract(a); }
 
 	/*! \details Performs element-wise subtraction and saves the result in this signal.
 	  *
@@ -190,7 +198,7 @@ public:
 	  *
 	  *
 	  */
-	SignalData & operator -= (const SignalData & a){ return subtract_assign(a); }
+	Derived & operator -= (const Derived & a){ return subtract_assign(a); }
 
 	/*! \details Subtracts a scalar value from each element.
 	  *
@@ -200,14 +208,14 @@ public:
 	  *
 	  * \note This operator uses dynamic memory allocation
 	  */
-	SignalData operator - (const T & a) const { return add(-a); }
+	Derived operator - (const T & a) const { return add(-a); }
 
 	/*! \details Subtracts a scalar value from each element in this signal.
 	  *
 	  * Operators are not implemented on complex signals.
 	  *
 	  */
-	SignalData & operator -= (const T & a){ return add_assign(-a); }
+	Derived & operator -= (const T & a){ return add_assign(-a); }
 
 	/*!
 	  * \details Calculates element-by-element multiplication.
@@ -218,7 +226,7 @@ public:
 	  * This operator requires the use of dynamic memory allocation. operator *=() does not.
 	  *
 	  */
-	SignalData operator * (const SignalData & a ) const { return multiply(a); }
+	Derived operator * (const Derived & a ) const { return multiply(a); }
 
 	/*! \details Multiples this with \a and stores the result in this signal.
 	  *
@@ -227,7 +235,7 @@ public:
 	  * This is faster than operator *() because no dynamic memory allocation is used.
 	  *
 	  */
-	SignalData & operator *= (const SignalData & a ){ return multiply_assign(a); }
+	Derived & operator *= (const Derived & a ){ return multiply_assign(a); }
 
 	/*! \details Multiplies each element by a scaling value.
 	  *
@@ -235,7 +243,7 @@ public:
 	  * Operators are not implemented on complex signals.
 	  *
 	  */
-	SignalData operator * (const T & value) const { return multiply(value); }
+	Derived operator * (const T & value) const { return multiply(value); }
 
 	/*! \details Multiplies each element of this signal by a scalar value.
 	  *
@@ -243,7 +251,7 @@ public:
 	  * Operators are not implemented on complex signals.
 	  *
 	  */
-	SignalData & operator *= (const T & value){ return multiply_assign(value); }
+	Derived & operator *= (const T & value){ return multiply_assign(value); }
 
 	/*! \details Shifts this signal.
 	  *
@@ -255,7 +263,7 @@ public:
 	  * Operators are not implemented on complex signals. Shift is not available for any floating-point types.
 	  *
 	  */
-	SignalData operator << (s8 value) const { return shift(value); }
+	Derived operator << (s8 value) const { return shift(value); }
 
 	/*! \details Shifts this signal.
 	  *
@@ -268,29 +276,29 @@ public:
 	  *
 	  *
 	  */
-	SignalData operator >> (s8 value) const { return shift(-1*value); }
+	Derived operator >> (s8 value) const { return shift(-1*value); }
 
 	/*! \details Shifts this signal \a value bits to the left.
 	  *
 	  * Operators are not implemented on complex signals. Shift is not available for any floating-point types.
 	  *
 	  */
-	SignalData & operator <<= (s8 value){ return shift_assign(value); }
+	Derived & operator <<= (s8 value){ return shift_assign(value); }
 
 	/*! \details Shifts this signal \a value bits to the right.
 	  *
 	  * Operators are not implemented on complex signals. Shift is not available for any floating-point types.
 	  *
 	  */
-	SignalData & operator >>= (s8 value){ return shift_assign(-1*value); }
+	Derived & operator >>= (s8 value){ return shift_assign(-1*value); }
 
 	/*! \details Returns true if this signal is equivalent as \a a. */
-	bool operator == (const SignalData & a) const {
+	bool operator == (const Derived & a) const {
 		return this->compare(*this, a);
 	}
 
 	/*! \details Returns true if this signal is not equivalent as \a a. */
-	bool operator != (const SignalData & a) const {
+	bool operator != (const Derived & a) const {
 		return !this->compare(*this, a);
 	}
 
@@ -441,18 +449,21 @@ public:
 #endif
 
 	//these are used by operators and are not documented
-	virtual SignalData shift(s8 value) const { return SignalData(); }
-	virtual SignalData & shift_assign(s8 value){ return *this; }
-	virtual SignalData add(const SignalData & a) const { return SignalData(); }
-	virtual SignalData & add_assign(const SignalData & a){ return *this; }
-	virtual SignalData add(const T & a) const { return SignalData(); }
-	virtual SignalData & add_assign(const T & a){ return *this; }
-	virtual SignalData subtract(const SignalData & a) const { return SignalData(); }
-	virtual SignalData & subtract_assign(const SignalData & a){ return *this; }
-	virtual SignalData multiply(const SignalData & a) const { return SignalData(); }
-	virtual SignalData & multiply_assign(const SignalData & a){ return *this; }
-	virtual SignalData multiply(const T & scale_fraction) const { return SignalData(); }
-	virtual SignalData & multiply_assign(const T & scale_fraction){ return *this; }
+	virtual Derived shift(s8 value) const { return Derived(); }
+	virtual Derived & shift_assign(s8 value){ return (Derived&)*this; }
+	virtual Derived add(const Derived & a) const {
+		printf("not overloaded\n");
+		return Derived();
+	}
+	virtual Derived & add_assign(const Derived & a){ return (Derived&)*this; }
+	virtual Derived add(const T & a) const { return Derived(); }
+	virtual Derived & add_assign(const T & a){ return (Derived&)*this; }
+	virtual Derived subtract(const Derived & a) const { return Derived(); }
+	virtual Derived & subtract_assign(const Derived & a){ return (Derived&)*this; }
+	virtual Derived multiply(const Derived & a) const { return Derived(); }
+	virtual Derived & multiply_assign(const Derived & a){ return (Derived&)*this; }
+	virtual Derived multiply(const T & scale_fraction) const { return Derived(); }
+	virtual Derived & multiply_assign(const T & scale_fraction){ return (Derived&)*this; }
 
 protected:
 
@@ -471,25 +482,19 @@ public:
 };
 #endif
 
-typedef SignalData<q15_t, q63_t> SignalDataQ15;
 
 /*! \brief Signal q1.15
  * \details This class holds signal data in the q1.15
  * fixed-point format.
  *
  */
-class SignalQ15 : public SignalDataQ15 {
+class SignalQ15 : public SignalData<SignalQ15, q15_t, q63_t> {
 public:
 	SignalQ15(int count) : SignalData(count){}
 	SignalQ15(){}
 
-	SignalQ15(const SignalData & a){
-		(SignalData &)*this = a;
-	}
-
-	SignalQ15 & operator = (const SignalData & a){
-		(SignalData &)*this = a;
-		return *this;
+	bool is_api_available() const {
+		return arm_dsp_api_q7() != 0;
 	}
 
 	q15_t mean() const;
@@ -513,18 +518,18 @@ public:
 	void scale(SignalQ15 & output, q15_t scale_fraction, s8 shift = 0) const;
 
 
-	SignalDataQ15 add(q15_t offset_value) const;
-	SignalDataQ15 & add_assign(q15_t offset_value);
-	SignalDataQ15 add(const SignalQ15 & a) const;
-	SignalDataQ15 & add_assign(const SignalQ15 & a);
-	SignalDataQ15 shift(s8 value) const;
-	SignalDataQ15 & shift_assign(s8 value);
-	SignalDataQ15 multiply(q15_t value) const;
-	SignalDataQ15 & multiply_assign(q15_t value);
-	SignalDataQ15 multiply(const SignalQ15 & a) const;
-	SignalDataQ15 & multiply_assign(const SignalQ15 & a);
-	SignalDataQ15 subtract(const SignalQ15 & a) const;
-	SignalDataQ15 & subtract_assign(const SignalQ15 & a);
+	SignalQ15 add(q15_t offset_value) const;
+	SignalQ15 & add_assign(q15_t offset_value);
+	SignalQ15 add(const SignalQ15 & a) const;
+	SignalQ15 & add_assign(const SignalQ15 & a);
+	SignalQ15 shift(s8 value) const;
+	SignalQ15 & shift_assign(s8 value);
+	SignalQ15 multiply(q15_t value) const;
+	SignalQ15 & multiply_assign(q15_t value);
+	SignalQ15 multiply(const SignalQ15 & a) const;
+	SignalQ15 & multiply_assign(const SignalQ15 & a);
+	SignalQ15 subtract(const SignalQ15 & a) const;
+	SignalQ15 & subtract_assign(const SignalQ15 & a);
 
 
 	//Filters
@@ -544,8 +549,6 @@ private:
 
 };
 
-typedef SignalData<ComplexQ15, q63_t> SignalDataComplexQ15;
-
 /*!
  * \brief Signal with Complex q1.15 data
  * \details This class is used for storing complex signal data in q1.15
@@ -555,19 +558,14 @@ typedef SignalData<ComplexQ15, q63_t> SignalDataComplexQ15;
  *
  *
  */
-class SignalComplexQ15 : public SignalDataComplexQ15 {
+class SignalComplexQ15 : public SignalData<SignalComplexQ15, ComplexQ15, q63_t> {
 public:
 
 	SignalComplexQ15(){}
 	SignalComplexQ15(u32 count) : SignalData(count){}
 
-	SignalComplexQ15(const SignalData & a){
-		(SignalData&)*this = a;
-	}
-
-	SignalComplexQ15 & operator = (const SignalData & a){
-		(SignalData&)*this = a;
-		return *this;
+	bool is_api_available() const {
+		return arm_dsp_api_q15() != 0;
 	}
 
 	SignalComplexQ15 transform(FftRealQ15 & fft, bool is_inverse = false);
@@ -582,15 +580,13 @@ private:
 };
 
 
-typedef SignalData<q31_t, q63_t> SignalDataQ31;
-
 /*! \brief Fixed point q1.31 data signal
  * \details The SignalQ31 class stores
  * a real q1.31 data signal.
  *
  *
  */
-class SignalQ31 : public SignalDataQ31 {
+class SignalQ31 : public SignalData<SignalQ31, q31_t, q63_t> {
 public:
 
 	/*! \details Constructs a signal with uninitialized
@@ -601,17 +597,13 @@ public:
 	  */
 	SignalQ31(int count) : SignalData(count){}
 
+	bool is_api_available() const {
+		return arm_dsp_api_q31() != 0;
+	}
+
 	/*! \details Contructs an empty signal. */
 	SignalQ31(){}
 
-	SignalQ31(const SignalData & a){
-		(SignalData&)*this = a;
-	}
-
-	SignalQ31 & operator = (const SignalData & a){
-		(SignalData&)*this = a;
-		return *this;
-	}
 
 	q31_t mean() const;
 	q63_t power() const;
@@ -633,18 +625,18 @@ public:
 	SignalQ31 scale(q31_t scale_fraction, s8 shift = 0) const;
 	void scale(SignalQ31 & output, q31_t scale_fraction, s8 shift = 0) const;
 
-	SignalDataQ31 add(q31_t offset_value) const;
-	SignalDataQ31 & add_assign(q31_t offset_value);
-	SignalDataQ31 add(const SignalQ31 & a) const;
-	SignalDataQ31 & add_assign(const SignalQ31 & a);
-	SignalDataQ31 shift(s8 value) const ;
-	SignalDataQ31 & shift_assign(s8 value);
-	SignalDataQ31 multiply(q31_t value) const;
-	SignalDataQ31 & multiply_assign(q31_t value);
-	SignalDataQ31 multiply(const SignalQ31 & a) const;
-	SignalDataQ31 & multiply_assign(const SignalQ31 & a);
-	SignalDataQ31 subtract(const SignalQ31 & a) const;
-	SignalDataQ31 & subtract_assign(const SignalQ31 & a);
+	SignalQ31 add(q31_t offset_value) const;
+	SignalQ31 & add_assign(q31_t offset_value);
+	SignalQ31 add(const SignalQ31 & a) const;
+	SignalQ31 & add_assign(const SignalQ31 & a);
+	SignalQ31 shift(s8 value) const ;
+	SignalQ31 & shift_assign(s8 value);
+	SignalQ31 multiply(q31_t value) const;
+	SignalQ31 & multiply_assign(q31_t value);
+	SignalQ31 multiply(const SignalQ31 & a) const;
+	SignalQ31 & multiply_assign(const SignalQ31 & a);
+	SignalQ31 subtract(const SignalQ31 & a) const;
+	SignalQ31 & subtract_assign(const SignalQ31 & a);
 
 	SignalQ31 filter(const FirFilterQ31 & filter) const;
 	void filter(SignalQ31 & output, const FirFilterQ31 & filter) const;
@@ -666,8 +658,6 @@ private:
 
 };
 
-typedef SignalData<ComplexQ31, q63_t> SignalDataComplexQ31;
-
 /*!
  * \brief Signal with Complex q1.31 Data
  * \details This class is used for storing complex signal data in q1.31
@@ -677,11 +667,15 @@ typedef SignalData<ComplexQ31, q63_t> SignalDataComplexQ31;
  *
  *
  */
-class SignalComplexQ31 : public SignalDataComplexQ31 {
+class SignalComplexQ31 : public SignalData<SignalComplexQ31, ComplexQ31, q63_t> {
 public:
 
 	SignalComplexQ31(){}
 	SignalComplexQ31(u32 count) : SignalData(count){}
+
+	bool is_api_available() const {
+		return arm_dsp_api_q31() != 0;
+	}
 
 	/*! \details Transforms this object and returns a new signal with the transformed data.
 	  */
@@ -701,7 +695,6 @@ private:
 	friend class FftComplexQ31;
 };
 
-typedef SignalData<float32_t, float32_t> SignalDataF32;
 
 /*! \brief Signal with 32-bit Floating Point values
  * \details This class holds a 32-bit floating point
@@ -721,18 +714,13 @@ typedef SignalData<float32_t, float32_t> SignalDataF32;
  *
  *
  */
-class SignalF32 : public SignalDataF32 {
+class SignalF32 : public SignalData<SignalF32, float32_t, float32_t> {
 public:
 	SignalF32(int count) : SignalData(count){}
 	SignalF32(){}
 
-	SignalF32(const SignalData & a){
-		(SignalData&)*this = a;
-	}
-
-	SignalF32 & operator = (const SignalData & a){
-		(SignalData&)*this = a;
-		return *this;
+	bool is_api_available() const {
+		return arm_dsp_api_f32() != 0;
 	}
 
 	float32_t mean() const;
@@ -755,18 +743,18 @@ public:
 	SignalF32 scale(float32_t scale_fraction, s8 shift = 0) const;
 	void scale(SignalF32 & output, float32_t scale_fraction, s8 shift = 0) const;
 
-	SignalDataF32 add(float32_t offset_value) const;
-	SignalDataF32 & add_assign(float32_t offset_value);
-	SignalDataF32 add(const SignalF32 & a) const;
-	SignalDataF32 & add_assign(const SignalF32 & a);
+	SignalF32 add(float32_t offset_value) const;
+	SignalF32 & add_assign(float32_t offset_value);
+	SignalF32 add(const SignalF32 & a) const;
+	SignalF32 & add_assign(const SignalF32 & a);
 	//SignalDataF32 shift(s8 value) const;
 	//SignalDataF32 & shift_assign(s8 value);
-	SignalDataF32 multiply(float32_t value) const;
-	SignalDataF32 & multiply_assign(float32_t value);
-	SignalDataF32 multiply(const SignalF32 & a) const;
-	SignalDataF32 & multiply_assign(const SignalF32 & a);
-	SignalDataF32 subtract(const SignalF32 & a) const;
-	SignalDataF32 & subtract_assign(const SignalF32 & a);
+	SignalF32 multiply(float32_t value) const;
+	SignalF32 & multiply_assign(float32_t value);
+	SignalF32 multiply(const SignalF32 & a) const;
+	SignalF32 & multiply_assign(const SignalF32 & a);
+	SignalF32 subtract(const SignalF32 & a) const;
+	SignalF32 & subtract_assign(const SignalF32 & a);
 
 	//Filters
 	SignalF32 filter(const FirFilterF32 & filter) const;
@@ -784,11 +772,15 @@ private:
 
 typedef SignalF32 SignalFloat32;
 
-class SignalComplexF32 : public SignalData<ComplexF32, float32_t> {
+class SignalComplexF32 : public SignalData<SignalComplexF32, ComplexF32, float32_t> {
 public:
 
 	SignalComplexF32(){}
 	SignalComplexF32(u32 count) : SignalData(count){}
+
+	bool is_api_available() const {
+		return arm_dsp_api_f32() != 0;
+	}
 
 	SignalComplexF32 transform(FftRealF32 & fft, bool is_inverse = false);
 	void transform(SignalComplexF32 & output, FftRealF32 & fft, bool is_inverse = false);

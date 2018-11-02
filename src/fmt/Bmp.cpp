@@ -12,7 +12,7 @@ Bmp::Bmp(){
 	m_offset = 0;
 }
 
-Bmp::Bmp(const char * name){
+Bmp::Bmp(const var::ConstString & name){
 	open_readonly(name);
 }
 

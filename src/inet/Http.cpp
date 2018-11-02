@@ -17,15 +17,15 @@ int HttpClient::get(const var::ConstString & url){
 	return query("GET", url);
 }
 
-int HttpClient::post(const var::ConstString & url, const var::Data & data){
+int HttpClient::post(const var::ConstString & url, const var::String & data){
 	return query("POST", url, data);
 }
 
-int HttpClient::put(const var::ConstString & url, const var::Data & data){
+int HttpClient::put(const var::ConstString & url, const var::String & data){
 	return query("PUT", url, data);
 }
 
-int HttpClient::patch(const var::ConstString & url, const var::Data & data){
+int HttpClient::patch(const var::ConstString & url, const var::String & data){
 	return query("PATCH", url, data);
 }
 
@@ -34,37 +34,26 @@ int HttpClient::head(const var::ConstString & url){
 	return 0;
 }
 
-int HttpClient::remove(const var::ConstString & request, const var::Data & data){
+int HttpClient::remove(const var::ConstString & request, const var::String & data){
 
 	return 0;
 }
 
 
-int HttpClient::query(const var::ConstString & command, const var::ConstString & url, const var::Data & data){
+int HttpClient::query(const var::ConstString & command, const var::ConstString & url, const var::String & data){
 	int result;
-
 	Url u(url);
-
-	printf("Connect to server %s %d\n", u.domain_name().str(), u.port());
 	result = connect_to_server(u.domain_name(), u.port());
 	if( result < 0 ){ return result; }
 
-	printf("Send header\n");
 	result = send_header(command, u.domain_name(), u.path(), data);
 	if( result < 0 ){
-		printf("Failed to send header\n");
 		return result;
 	}
 
 	m_response.fill(0);
-	printf("Listen for header\n");
 	listen_for_header(m_response);
-
-
-
-	printf("Listen for data\n");
 	listen_for_data(m_response);
-	printf("Close connection\n");
 	close_connection();
 
 	return 0;
@@ -106,7 +95,7 @@ int HttpClient::connect_to_server(const var::ConstString & domain_name, u16 port
 	return -1;
 }
 
-int HttpClient::send_header(const var::ConstString & method, const var::ConstString & host, const var::ConstString & path, const var::Data & data){
+int HttpClient::send_header(const var::ConstString & method, const var::ConstString & host, const var::ConstString & path, const var::String & data){
 
 	m_header.clear();
 	m_header << method << " " << path << " HTTP/1.1\r\n";

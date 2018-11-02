@@ -41,7 +41,6 @@ class JsonValue : public api::FmtInfoObject {
 public:
 	JsonValue(){
 		m_value = 0;
-		m_is_observer = true;
 	}
 
 	JsonValue(json_t * value);
@@ -49,48 +48,8 @@ public:
 	JsonValue & operator=(const JsonValue & value);
 	~JsonValue();
 
-	/*! \details Returns true if the JsonValue is a reference
-	  * to an object that is owned and managed by another instance.
-	  *
-	  * When a JsonValue class object is created directly,
-	  * it is simply used to reference and access other objects.
-	  * When a specific type of JsonValue is created (like JsonObject),
-	  * memory is dynamically allocated for that object and managed
-	  * within JsonValue.
-	  *
-	  * \code
-	  * JsonArray array; //allocate memory for a new array
-	  * JsonObject object; //allocate memory for an object
-	  * array.append(JsonReal(0.0f)); //allocate memory for an real and reference it to array
-	  * object.insert(array); //reference array to object
-	  * \endcode
-	  *
-	  * In the above snippet, array is allocated and referenced by
-	  * object. The memory allocated for array will not be destroyed
-	  * until array and all references to it are destroyed. This will
-	  * happen automatically when the object's deconstructors are called.
-	  *
-	  * In the code below, we observe values without affecting
-	  * how their memory is managed.
-	  *
-	  * \code
-	  * JsonArray array; //allocate memory for a new array
-	  * JsonObject object; //allocate memory for an object
-	  * array.append(JsonReal(0.0f)); //allocate memory for an real and reference it to array
-	  * object.insert("array", array); //reference array to object
-	  *
-	  * //value_observer observes array without affecting how it is freed
-	  * JsonValue value_observer = object.at("array");
-	  *
-	  * \endcode
-	  *
-	  * In the above code, if `value_observer` is accessed after array has
-	  * been freed, there will be problems. However, `object` will
-	  * always be valid because it references `array` so that array is not freed
-	  * until `object` is done with it.
-	  *
-	  */
-	bool is_observer() const { return m_is_observer; }
+	JsonValue(JsonValue && a);
+	JsonValue& operator=(JsonValue && a);
 
 	/*! \details Returns true if the value is valid.
 	  *
@@ -148,9 +107,69 @@ public:
 	JsonObject & to_object();
 	const JsonArray & to_array() const;
 	JsonArray & to_array();
+
+	/*! \details Converts the JSON value to string.
+	 *
+	 * @return A string representing the value
+	 *
+	 * The following types are converting to a string
+	 * - STRING: as a string
+	 * - INTEGER: as a formatted string
+	 * - FLOAT: as a formatted string
+	 * - TRUE: "true"
+	 * - FALSE: "false"
+	 * - NULL: "null"
+	 * - OBJECT: "{object}"
+	 * - ARRAY: "[array]"
+	 * - INVALID: "<invalid>"
+	 *
+	 * To convert a json object or array to a
+	 * proper string using Json::stringify().
+	 *
+	 * \code
+	 * JsonValue json_value; //can be any JSON type
+	 * Json json = json_value;
+	 * var::String as_string = json.stringify();
+	 * \endcode
+	 *
+	 */
 	var::String to_string() const;
+
+	/*! \details Returns a float value of the JSON value.
+	 *
+	 * If the JSON value is of type float, integer, or string,
+	 * it will be converted to a real number.
+	 *
+	 * Otherwise, 0.0f is returned.
+	 *
+	 */
 	float to_real() const;
+
+	/*! \details Returns an integer value of the JSON value.
+	 *
+	 * If the JSON value is of type float, integer, or string,
+	 * it will be converted to an integer.
+	 *
+	 * Otherwise, 0 is returned.
+	 *
+	 */
 	int to_integer() const;
+
+	/*! \details Returns a bool value of the JSON value.
+	 *
+	 * If the value is a string, it will return true
+	 * if the string is "true" (not case sensitive).
+	 *
+	 * - INTEGER: true if non-zero
+	 * - FLOAT: true if non-zero
+	 * - TRUE: true
+	 * - FALSE: false
+	 * - NULL: false
+	 * - OBJECT: true
+	 * - ARRAY: true
+	 * - INVALID: false
+	 *
+	 */
 	bool to_bool() const;
 
 	//how to handle object creation -- explicitly or implicity so memory isn't leaked
@@ -201,13 +220,12 @@ public:
 	int assign(int value);
 	int assign(bool value);
 
+	void * value(){ return m_value; }
+
 protected:
 	int create_if_not_valid();
 	virtual json_t * create(){ return 0; }
 
-	bool was_created(){
-		return is_valid() && !is_observer();
-	}
 
 private:
 	friend class Json;
@@ -221,9 +239,8 @@ private:
 	friend class JsonString;
 	friend class JsonNull;
 	json_t * m_value;
-	bool m_is_observer;
 
-	void set_observer(json_t * value);
+	void add_reference(json_t * value);
 
 };
 
@@ -402,21 +419,21 @@ public:
 	  * \param path The path to the file
 	  * \return Zero on success
 	  */
-	int load(const var::ConstString & path);
+	int load_from_file(const var::ConstString & path);
 
 	/*!
 	  * \details Loads a JSON value from a data object
 	  * \param data A reference to the data object containing the JSON
 	  * \return
 	  */
-	int load(const var::Data & data);
+	int load_from_string(const var::ConstString & json);
 
 	/*!
 	  * \details Loads a JSON value from an already open file
 	  * \param file A reference to the file containing JSON
 	  * \return Zero on success
 	  */
-	int load(const sys::File & file);
+	int load_from_file(const sys::File & file);
 
 	/*!
 	  * \details Loads a JSON value from streaming data
@@ -426,18 +443,31 @@ public:
 	  */
 	int load(json_load_callback_t callback, void * context);
 
-	int save(const var::ConstString & path) const;
-	int save(var::Data & data) const;
-	int save(const sys::File & file) const;
+	int save_to_file(const var::ConstString & path) const;
+	var::String stringify() const;
+	int save_to_file(const sys::File & file) const;
 	int save(json_dump_callback_t callback, void * context) const;
-
 
 	enum {
 		REJECT_DUPLICATES = JSON_REJECT_DUPLICATES,
 		DISABLE_EOF_CHECK = JSON_DISABLE_EOF_CHECK,
 		DECODE_ANY = JSON_DECODE_ANY,
 		DECODE_INT_AS_REAL = JSON_DECODE_INT_AS_REAL,
-		ALLOW_NULL = JSON_ALLOW_NUL
+		ALLOW_NULL = JSON_ALLOW_NUL,
+		INDENT_1 = JSON_INDENT(1),
+		INDENT_2 = JSON_INDENT(2),
+		INDENT_3 = JSON_INDENT(3),
+		INDENT_4 = JSON_INDENT(4),
+		INDENT_5 = JSON_INDENT(5),
+		INDENT_6 = JSON_INDENT(6),
+		INDENT_7 = JSON_INDENT(7),
+		INDENT_8 = JSON_INDENT(8),
+		COMPACT = JSON_COMPACT,
+		ENSURE_ASCII = JSON_ENSURE_ASCII,
+		ENCODE_ANY = JSON_ENCODE_ANY,
+		PRESERVE_ORDER = JSON_PRESERVE_ORDER,
+		ESCAPE_SLASH = JSON_ESCAPE_SLASH,
+		EMBED = JSON_EMBED
 	};
 
 	const JsonError & error() const { return m_error; }

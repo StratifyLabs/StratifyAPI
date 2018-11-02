@@ -15,7 +15,7 @@ class Bmp: public api::FmtFileObject {
 public:
 
 	/*! \details Constructs a new bitmap object and opens the bitmap as a read-only file. */
-	Bmp(const char * name);
+	Bmp(const var::ConstString & name);
 
 	/*! \details Constructs an empty bitmap object. */
 	Bmp();

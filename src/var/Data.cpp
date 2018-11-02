@@ -34,9 +34,14 @@ Data::Data(){
 	zero();
 }
 
-Data::Data(void * mem, u32 s, bool readonly){
+Data::Data(void * mem, u32 s){
 	zero();
-	set(mem, s, readonly);
+	set(mem, s, false);
+}
+
+Data::Data(const void * mem, u32 s){
+	zero();
+	set((void*)mem, s, true);
 }
 
 Data::Data(u32 s){

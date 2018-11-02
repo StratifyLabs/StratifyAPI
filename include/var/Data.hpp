@@ -140,7 +140,16 @@ public:
 	 * methods will have no effect.
 	 *
 	 */
-	Data(void * mem, u32 size, bool readonly = false);
+	Data(void * mem, u32 size);
+
+	/*! \details Constructs a data object with non-mutable data pointers to constant memory.
+	 *
+	 * @param mem A pointer to constant data
+	 * @param size The number of bytes for mem
+	 *
+	 *
+	 */
+	Data(const void * mem, u32 size);
 
 	/*! \details Constructs data with dynamically allocated memory with \a size bytes (resizeable)
 	 *
@@ -534,15 +543,15 @@ public:
 		return copy_contents(a, size(), a.size());
 	}
 
-	int append(u8 value){ return append(Data(&value, sizeof(value), true)); }
-	int append(s8 value){ return append(Data(&value, sizeof(value), true)); }
-	int append(u16 value){ return append(Data(&value, sizeof(value), true)); }
-	int append(s16 value){ return append(Data(&value, sizeof(value), true)); }
-	int append(u32 value){ return append(Data(&value, sizeof(value), true)); }
-	int append(s32 value){ return append(Data(&value, sizeof(value), true)); }
-	int append(u64 value){ return append(Data(&value, sizeof(value), true)); }
-	int append(s64 value){ return append(Data(&value, sizeof(value), true)); }
-	int append(float value){ return append(Data(&value, sizeof(value), true)); }
+	int append(u8 value){ return append(Data((const void*)&value, sizeof(value))); }
+	int append(s8 value){ return append(Data((const void*)&value, sizeof(value))); }
+	int append(u16 value){ return append(Data((const void*)&value, sizeof(value))); }
+	int append(s16 value){ return append(Data((const void*)&value, sizeof(value))); }
+	int append(u32 value){ return append(Data((const void*)&value, sizeof(value))); }
+	int append(s32 value){ return append(Data((const void*)&value, sizeof(value))); }
+	int append(u64 value){ return append(Data((const void*)&value, sizeof(value))); }
+	int append(s64 value){ return append(Data((const void*)&value, sizeof(value))); }
+	int append(float value){ return append(Data(&value, sizeof(value))); }
 
 	Data & operator << (const Data & a){ append(a); return *this; }
 	Data & operator << (u8 a){ append(a); return *this; }

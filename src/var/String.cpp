@@ -24,13 +24,6 @@ String::String(const ConstString & s, u32 len){
 	assign(s, len);
 }
 
-
-String::String(char * mem, u32 capacity, bool readonly) : Data((void*)mem, capacity, readonly){
-	if( !readonly ){
-		clear();
-	}
-}
-
 u32 String::capacity() const {
 	if( Data::capacity() ){
 		return Data::capacity() - 1;
