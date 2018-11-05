@@ -3,6 +3,10 @@
 
 using namespace var;
 
+JsonValue::JsonValue(){
+	m_value = 0; //create() method from children are not available in the constructor
+}
+
 JsonValue::JsonValue(json_t * value){
 	add_reference(value);
 }
@@ -160,7 +164,9 @@ bool JsonValue::to_bool() const {
 	return false;
 }
 
-JsonObject::JsonObject(){}
+JsonObject::JsonObject(){
+	m_value = create();
+}
 
 JsonObject::JsonObject(const JsonObject & value){
 	add_reference(value.m_value);
@@ -200,13 +206,14 @@ json_t * JsonString::create(){
 	return json_string("");
 }
 
-json_t * Json::create(){
-	return 0;
+json_t * JsonNull::create(){
+	return json_null();
 }
+
 
 int JsonObject::insert(const var::ConstString & key, const JsonValue & value){
 	if( create_if_not_valid() < 0 ){
-		printf("Could not create -- still invalid\n");
+		printf("Could not create -- still invalid for %s\n", key.str());
 		return -1;
 	}
 	int result = json_object_set(m_value, key.str(), value.m_value);
@@ -255,7 +262,7 @@ JsonValue JsonObject::at(const var::ConstString & key) const {
 }
 
 JsonArray::JsonArray(){
-	m_value = json_array();
+	m_value = create();
 }
 
 JsonArray::JsonArray(const JsonArray & value){
@@ -299,8 +306,17 @@ int JsonArray::clear(){
 	return json_array_clear(m_value);
 }
 
+JsonString::JsonString(){
+	m_value = create();
+}
+
+
 JsonString::JsonString(const var::ConstString & str){
 	m_value = json_string(str.str());
+}
+
+JsonReal::JsonReal(){
+	m_value = create();
 }
 
 JsonReal::JsonReal(float value){
@@ -314,6 +330,10 @@ JsonReal & JsonReal::operator=(float a){
 	return *this;
 }
 
+JsonInteger::JsonInteger(){
+	m_value = create();
+}
+
 JsonInteger::JsonInteger(int value){
 	m_value = json_integer(value);
 }
@@ -325,50 +345,49 @@ JsonInteger & JsonInteger::operator=(int a){
 	return *this;
 }
 
-Json::Json(){
-	m_flags = 0;
+JsonNull::JsonNull(){
+	m_value = create();
 }
 
-int Json::load_from_file(const var::ConstString & path){
-	json_decref(m_value);
-	m_value = json_load_file(path.str(), flags(), &m_error.m_value);
-	if( m_value ){
-		return 0;
-	}
-	return -1;
+JsonTrue::JsonTrue(){
+	m_value = create();
 }
 
-int Json::load_from_string(const var::ConstString & json){
-	json_decref(m_value);
-	m_value = json_loadb(json.str(), json.length(), flags(), &m_error.m_value);
-	if( m_value ){
-		return 0;
-	}
-	return -1;
+JsonFalse::JsonFalse(){
+	m_value = create();
+}
+
+JsonValue JsonDocument::load_from_file(const var::ConstString & path){
+	JsonValue value;
+	value.m_value = json_load_file(path.str(), flags(), &m_error.m_value);
+	return value;
+}
+
+JsonValue JsonDocument::load_from_string(const var::ConstString & json){
+	JsonValue value;
+	value.m_value = json_loadb(json.str(), json.length(), flags(), &m_error.m_value);
+	return value;
 }
 
 //only use on Stratify OS
-int Json::load_from_file(const sys::File & file){
-	json_decref(m_value);
-	m_value = json_loadfd(file.fileno(), flags(), &m_error.m_value);
-	return m_value == 0 ? -1 : 0;
+JsonValue JsonDocument::load_from_file(const sys::File & file){
+	JsonValue value;
+	value.m_value = json_loadfd(file.fileno(), flags(), &m_error.m_value);
+	return value;
 }
 
-int Json::load(json_load_callback_t callback, void * context){
-	json_decref(m_value);
-	m_value = json_load_callback(callback, context, flags(), &m_error.m_value);
-	if( m_value ){
-		return 0;
-	}
-	return -1;
+JsonValue JsonDocument::load(json_load_callback_t callback, void * context){
+	JsonValue value;
+	value.m_value = json_load_callback(callback, context, flags(), &m_error.m_value);
+	return value;
 }
 
-int Json::save_to_file(const var::ConstString & path) const {
-	return json_dump_file(m_value, path.str(), flags());
+int JsonDocument::save_to_file(const JsonValue & value, const var::ConstString & path) const {
+	return json_dump_file(value.m_value, path.str(), flags());
 }
 
-var::String Json::stringify() const {
-	u32 size = json_dumpb(m_value, 0, 0, flags());
+var::String JsonDocument::stringify(const JsonValue & value) const {
+	u32 size = json_dumpb(value.m_value, 0, 0, flags());
 	if( size == 0 ){
 		return var::String();
 	}
@@ -376,17 +395,17 @@ var::String Json::stringify() const {
 	if( result.set_capacity(size) < 0 ){
 		return var::String();
 	}
-	if( json_dumpb(m_value, result.to<char>(), result.capacity(), flags()) == 0 ){
+	if( json_dumpb(value.m_value, result.to<char>(), result.capacity(), flags()) == 0 ){
 		return var::String();
 	}
 	return result;
 }
 
-int Json::save_to_file(const sys::File & file) const {
-	return json_dumpfd(m_value, file.fileno(), flags());
+int JsonDocument::save_to_file(const JsonValue & value, const sys::File & file) const {
+	return json_dumpfd(value.m_value, file.fileno(), flags());
 }
 
-int Json::save(json_dump_callback_t callback, void * context) const {
-	return json_dump_callback(m_value, callback, context, flags());
+int JsonDocument::save(const JsonValue & value, json_dump_callback_t callback, void * context) const {
+	return json_dump_callback(value.m_value, callback, context, flags());
 }
 

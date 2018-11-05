@@ -298,6 +298,7 @@ char * File::gets(var::String & s, char term) const {
             return 0;
         }
     } while(c != term);
+
     return s.cdata();
 }
 

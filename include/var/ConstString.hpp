@@ -94,6 +94,8 @@ public:
 	bool operator!=(const ConstString & a) const { return compare(a) != 0; }
 	bool operator>(const ConstString & a) const { return compare(a) > 0; }
 	bool operator<(const ConstString & a) const { return compare(a) < 0; }
+	bool operator>=(const ConstString & a) const { return compare(a) >= 0; }
+	bool operator<=(const ConstString & a) const { return compare(a) <= 0; }
 
 	/*! \details Converts to an integer.
 	  *
@@ -103,10 +105,15 @@ public:
 	  * \endcode
 	  *
 	  */
-	int atoi() const { return ::atoi(str()); }
+	int to_integer() const { return ::atoi(str()); }
+	int atoi() const { return to_integer(); }
 
 	/*! \details Converts to a float. */
-	float atoff() const;
+	float to_float() const;
+	float atoff() const { return to_float(); };
+
+	int to_long(int base = 10){ return ::strtol(str(), 0, base); }
+	int to_unsigned_long(int base = 10){ return ::strtoul(str(), 0, base); }
 
 	/*! \details Returns character at \a pos. */
 	char at(u32 pos) const;

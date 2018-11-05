@@ -13,7 +13,6 @@ HttpClient::HttpClient(Socket & socket) : Http(socket){
 }
 
 int HttpClient::get(const var::ConstString & url){
-	printf("Get %s\n", url.str());
 	return query("GET", url);
 }
 
@@ -44,7 +43,9 @@ int HttpClient::query(const var::ConstString & command, const var::ConstString &
 	int result;
 	Url u(url);
 	result = connect_to_server(u.domain_name(), u.port());
-	if( result < 0 ){ return result; }
+	if( result < 0 ){
+		return result;
+	}
 
 	result = send_header(command, u.domain_name(), u.path(), data);
 	if( result < 0 ){
@@ -102,88 +103,109 @@ int HttpClient::send_header(const var::ConstString & method, const var::ConstStr
 	m_header << "Host: " << host << "\r\n";
 	m_header << "User-Agent: StratifyOS\r\n";
 	m_header << "Accept: */*\r\n";
-	if( data.size() > 0 ){
-		m_header << "Content-Length: " << String().format(F32U, data.size()) << "\r\n";
+	for(u32 i = 0; i < header_request_fields().count(); i++){
+		m_header << header_request_fields().at(i) << "\r\n";
+	}
+	if( data.length() > 0 ){
+		m_header << "Content-Length: " << String().format(F32U, data.length()) << "\r\n";
 	}
 	m_header << "\r\n";
 
-	if( data.size() > 0 ){
-		m_header << String(data.to_char());
+	if( data.length() > 0 ){
+		m_header << data;
 	}
 
 	printf(">> %s\n", m_header.str());
 
+	int result = socket().write(m_header);
+	if( result != (int)m_header.length() ){
+		printf("Only send %d of %d\n", result, m_header.length());
+	}
+
+#if 0
 	if( socket().write(m_header) != (int)m_header.length() ){
 		socket().close();
 		return -1;
 	}
+#endif
 
 	return 0;
 }
 
 
 int HttpClient::listen_for_header(var::String & response){
-	m_header.set_size(1024);
 
-	int response_size = socket().read(m_header);
+	var::String line;
+	do {
+		line = socket().gets('\n');
+		if( line.length() > 2 ){
 
-	if( (response_size > 0) && (response_size < (int)m_header.capacity()) ){
-		m_header.cdata()[response_size] = 0; //make sure m_header is null terminated
+			m_header << line;
 
+			printf("> %s\n", line.str());
 
-		u32 pos = 0;
-		var::String line;
-		do {
-			u32 end_of_line = m_header.find("\r\n", pos);
-			line = m_header.substr(pos, end_of_line - pos);
-			pos = end_of_line + 2;
-
-			if( !line.is_empty() ){
-
-				printf("> %s\n", line.str());
-
-				var::Token line_tokens(line, ": \t");
-				var::String title = line_tokens.at(0);
-				var::String value;
-				if( line_tokens.count() > 1 ){
-					value = line_tokens.at(1);
-				}
-
-				title.to_upper();
-				value.to_upper();
-
-				if( title == "HTTP/1.1" ){
-					m_reply = value.atoi();
-				}
-				if( title == "CONTENT-LENGTH" ){ m_content_length = value.atoi(); }
-				if( title == "CONNECTION" ){ value == "CLOSE" ? m_is_keep_alive = false : m_is_keep_alive = true; }
-			} else {
-				response.set_size(response_size - pos);
-				memcpy(response.data(), (char*)m_header.data() + pos, response.size());
-				pos = var::String::npos;
+			var::Token line_tokens(line, ": \t\r\n");
+			var::String title = line_tokens.at(0);
+			var::String value;
+			if( line_tokens.count() > 1 ){
+				value = line_tokens.at(1);
 			}
 
-		} while( pos != var::String::npos );
+			var::String rebuild_line;
+			rebuild_line << title << ": " << value;
+			m_header_response_fields.push_back(rebuild_line);
 
-		return pos;
-	}
+			title.to_upper();
+			value.to_upper();
+
+			if( title == "HTTP/1.1" ){ m_status_code = value.atoi(); }
+			if( title == "CONTENT-LENGTH" ){ m_content_length = value.atoi(); }
+			if( title == "CONNECTION" ){ value == "CLOSE" ? m_is_keep_alive = false : m_is_keep_alive = true; }
+			if( title == "TRANSFER-ENCODING" ){ m_transfer_encoding = value; }
+		}
+
+
+	} while( line.length() > 2 ); //while reading the header
 
 	return -1;
 }
 
 int HttpClient::listen_for_data(var::String & response){
-	int result = 0;
-	u32 last_size;
-	while( (response.size() < (u32)m_content_length) && (result > 0) ){
-		last_size = response.size();
-		//make room for a packet
-		response.set_size( response.size() + 256 );
-		int result = socket().read(response.cdata() + last_size, response.capacity() - last_size);
-		if( result > 0 ){
-			response.set_size( response.size() + result );
-		}
-	}
+	if( m_transfer_encoding == "CHUNKED" ){
+		u32 bytes_incoming = 0;
+		do {
+			String line = socket().gets();
+			//convert line from hex
+			bytes_incoming = line.to_unsigned_long(16);
+			String chunk;
+			if( chunk.set_size(bytes_incoming) < 0 ){
+				return -1;
+			}
+			int result;
+			int page_size = bytes_incoming;
+			if( page_size ){
+				do {
+					chunk.clear();
+					if( chunk.set_size(page_size) < 0 ){
+						return -1;
+					}
+					result = socket().read(chunk);
+					if( result > 0 ){
+						page_size -= result;
+						response << chunk;
+					}
+				} while( page_size > 0 );
+			}
 
+		} while( bytes_incoming > 0 );
+
+	} else {
+		if( response.set_size( m_content_length ) < 0 ){
+			//memory allocation failed
+			return -1;
+		}
+		return socket().read(response);
+	}
 	return 0;
 }
 

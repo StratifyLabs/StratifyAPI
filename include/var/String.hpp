@@ -211,8 +211,6 @@ public:
 	char at(u32 pos) const { return ConstString::at(pos); }
 	const char * to_char() const { return ConstString::to_char(); }
 
-
-
 	/*! \details Sets the number of bytes allocated for the string.
 	  *
 	 * @param s The number of bytes to reserve to string capacity (plus a byte for a zero terminator).
@@ -220,7 +218,7 @@ public:
 	  *
 	  * If a String uses dynamic memory allocation, this method
 	  * will increase the capacity of the String. If \a s
-	  * is smaller than capacity(), this function return
+	  * is smaller than capacity(), this function returns
 	  * without changing the capacity.
 	 *
 	 * The size() method will return the number of bytes availabe. length() returns

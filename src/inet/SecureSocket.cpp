@@ -47,7 +47,15 @@ int SecureSocket::shutdown(int how) const {
 
 int SecureSocket::write(const void * buf, int nbyte) const {
 #if defined __link
-	return mbedtls_api.write(m_context, buf, nbyte);
+	int bytes_written = 0;
+	int result;
+	do {
+		result = mbedtls_api.write(m_context, (const u8*)buf + bytes_written, nbyte - bytes_written);
+		if( result > 0 ){
+			bytes_written += result;
+		}
+	} while( result > 0 );
+	return bytes_written;
 #else
 	//need to request the API from the system
 	return -1;

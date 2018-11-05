@@ -85,7 +85,20 @@ public:
 	  */
 	u32 maximum_response_size() const { return m_maximum_response_size; }
 
+	/*! \details Returns the status code of the last request.
+	 *
+	 * The status code will be 200 for a successful request.
+	 *
+	 */
+	int status_code() const { return m_status_code; }
+
 	int close_connection();
+
+	var::Vector<var::String> & header_request_fields(){ return m_header_request_fields; }
+	const var::Vector<var::String> & header_request_fields() const { return m_header_request_fields; }
+
+	var::Vector<var::String> & header_response_fields(){ return m_header_response_fields; }
+	const var::Vector<var::String> & header_response_fields() const { return m_header_response_fields; }
 
 private:
 
@@ -107,10 +120,13 @@ private:
 
 	SocketAddress m_address;
 
+	var::String m_transfer_encoding;
+	var::Vector<var::String> m_header_request_fields;
+	var::Vector<var::String> m_header_response_fields;
 	u32 m_maximum_response_size;
 	var::String m_header;
 	var::String m_response;
-	int m_reply;
+	int m_status_code;
 
 	int m_content_length;
 	bool m_is_keep_alive;

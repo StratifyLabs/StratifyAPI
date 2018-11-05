@@ -2,18 +2,19 @@
 #define JSON_HPP
 
 #include <jansson/jansson.h>
-#include "../api/FmtObject.hpp"
+#include "../api/VarObject.hpp"
 #include "../var/Vector.hpp"
 #include "../var/String.hpp"
+#include "../sys/File.hpp"
 
 namespace var {
 
 #undef TRUE
 #undef FALSE
 
-class Json;
+class JsonDocument;
 
-class JsonError : public api::FmtInfoObject {
+class JsonError : public api::VarInfoObject {
 public:
 	JsonError(){
 		memset(&m_value, 0, sizeof(m_value));
@@ -25,23 +26,20 @@ public:
 	var::ConstString text() const { return m_value.text; }
 
 private:
-	friend class Json;
+	friend class JsonDocument;
 	json_error_t m_value;
 };
 
 class JsonObject;
 class JsonArray;
-class JsonBool;
 class JsonReal;
 class JsonNull;
 class JsonInteger;
 class JsonString;
 
-class JsonValue : public api::FmtInfoObject {
+class JsonValue : public api::VarWorkObject {
 public:
-	JsonValue(){
-		m_value = 0;
-	}
+	JsonValue();
 
 	JsonValue(json_t * value);
 	JsonValue(const JsonValue & value);
@@ -204,11 +202,11 @@ public:
 	  * real_value.assign("200.0"); //"200.0" is converted to 200.0f
 	  * real_value.assign("Hello World"); //"Hello World" is converted to 0.0f
 	  *
-	  * JsonBool bool_value(true);
+	  * JsonInteger integer_value(1);
 	  *
-	  * bool_value.assign("false"); //assigns false
-	  * bool_value.assign("true"); /assign true
-	  * bool_value.assign("Hello World"); assigns false
+	  * bool_value.assign("2"); //assigns 2
+	  * bool_value.assign("3"); /assign 3
+	  * bool_value.assign("Hello World"); //assigns 0
 	  * \endcode
 	  *
 	  *
@@ -225,14 +223,16 @@ public:
 
 protected:
 	int create_if_not_valid();
-	virtual json_t * create(){ return 0; }
+	virtual json_t * create(){
+		printf("create JSON Value -- 0\n");
+		return 0;
+	}
 
 
 private:
-	friend class Json;
+	friend class JsonDocument;
 	friend class JsonObject;
 	friend class JsonArray;
-	friend class JsonBool;
 	friend class JsonTrue;
 	friend class JsonFalse;
 	friend class JsonReal;
@@ -318,7 +318,6 @@ public:
 	var::Vector<var::String> keys() const;
 
 private:
-
 	json_t * create();
 
 };
@@ -360,7 +359,7 @@ private:
 
 class JsonReal : public JsonValue {
 public:
-	JsonReal(){}
+	JsonReal();
 	JsonReal(float value);
 	JsonReal & operator=(float a);
 private:
@@ -369,7 +368,7 @@ private:
 
 class JsonInteger : public JsonValue {
 public:
-	JsonInteger(){}
+	JsonInteger();
 	JsonInteger(int value);
 	JsonInteger & operator=(int a);
 private:
@@ -378,7 +377,7 @@ private:
 
 class JsonNull : public JsonValue {
 public:
-	JsonNull(){}
+	JsonNull();
 private:
 	json_t * create();
 };
@@ -386,14 +385,14 @@ private:
 
 class JsonTrue : public JsonValue {
 public:
-	JsonTrue(){}
+	JsonTrue();
 private:
 	json_t * create();
 };
 
 class JsonFalse : public JsonValue {
 public:
-	JsonFalse(){}
+	JsonFalse();
 private:
 	json_t * create();
 };
@@ -404,19 +403,19 @@ private:
  * either memory or the filesystem.
  *
  */
-class Json : public JsonValue {
+class JsonDocument : public api::VarWorkObject {
 public:
-	Json();
 
 	/*! \details Constructs a Json object from a JsonValue.
 	 *
 	 * @param value JsonValue in memory that this class will refer to.
 	 *
 	 */
-	Json(const JsonValue & value) : JsonValue(value.m_value){}
+	JsonDocument(u32 o_flags = INDENT_3){
+		set_flags(o_flags);
+	}
 
 	void set_flags(u32 flags){ m_flags = flags; }
-
 	u32 flags() const { return m_flags; }
 
 	//load a JSON object or array from a file?
@@ -425,21 +424,21 @@ public:
 	  * \param path The path to the file
 	  * \return Zero on success
 	  */
-	int load_from_file(const var::ConstString & path);
+	JsonValue load_from_file(const var::ConstString & path);
 
 	/*!
 	  * \details Loads a JSON value from a data object
 	  * \param data A reference to the data object containing the JSON
 	  * \return
 	  */
-	int load_from_string(const var::ConstString & json);
+	JsonValue load_from_string(const var::ConstString & json);
 
 	/*!
 	  * \details Loads a JSON value from an already open file
 	  * \param file A reference to the file containing JSON
 	  * \return Zero on success
 	  */
-	int load_from_file(const sys::File & file);
+	JsonValue load_from_file(const sys::File & file);
 
 	/*!
 	  * \details Loads a JSON value from streaming data
@@ -447,12 +446,12 @@ public:
 	  * \param context This is passed to \a callback but not used internally
 	  * \return Zero on success
 	  */
-	int load(json_load_callback_t callback, void * context);
+	JsonValue load(json_load_callback_t callback, void * context);
 
-	int save_to_file(const var::ConstString & path) const;
-	var::String stringify() const;
-	int save_to_file(const sys::File & file) const;
-	int save(json_dump_callback_t callback, void * context) const;
+	int save_to_file(const JsonValue & value, const var::ConstString & path) const;
+	var::String stringify(const JsonValue & value) const;
+	int save_to_file(const JsonValue & value, const sys::File & file) const;
+	int save(const JsonValue & value, json_dump_callback_t callback, void * context) const;
 
 	enum {
 		REJECT_DUPLICATES = JSON_REJECT_DUPLICATES,
@@ -481,7 +480,6 @@ public:
 private:
 	u32 m_flags;
 	JsonError m_error;
-	json_t * create();
 };
 
 }

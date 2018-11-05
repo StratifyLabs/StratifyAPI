@@ -20,7 +20,7 @@ void ConstString::set_string_pointer(const char * s){
 	}
 }
 
-float ConstString::atoff() const {
+float ConstString::to_float() const {
 #ifndef __link
 	return ::atoff(str());
 #else
