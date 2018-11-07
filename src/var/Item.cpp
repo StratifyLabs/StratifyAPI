@@ -5,7 +5,6 @@
 
 namespace var {
 
-#if !defined __link
 int ItemObject::save(const char * path) const {
 	File f;
 	int ret;
@@ -27,7 +26,7 @@ int ItemObject::load(const char * path){
 	f.close();
 	return ret;
 }
-#endif
+
 
 void ItemObject::clear(){ memset(data_void(), 0, size()); }
 

@@ -23,11 +23,19 @@ class EventHandler : public api::EvWorkObject {
 public:
 	EventHandler();
 
-	/*! \details This method is called on the current Element when an event (e.g., Element::ENTER,
-	  * Element::UPDATE, Element::TOP_PRESS) happens.
+	/*! \details Handles an event for the currently active EventHandler.
 	  *
 	  * @param event The event to execute
-	  * @return For transitions, the new element is returned; otherwise this
+	  * @return Determines if the ev::EventLoop transitions to another EventHandler
+	  * or stays on this one.
+	  *
+	  *
+	  * ev::EventLoop::execute() and ev::EventLoop::run() execute this method
+	  * each time an event happens (e.g., ev::Event::UPDATE, ev::Event::SETUP, ev::Event::BUTTON_PRESSED).
+	  *
+	  * If this method returns a pointer to another EventHandler, then that event handler
+	  * becomes the active ev::EventHandler.
+	  *
 	  */
 	virtual EventHandler * handle_event(const Event & event);
 

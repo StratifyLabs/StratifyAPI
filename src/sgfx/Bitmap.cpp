@@ -206,13 +206,13 @@ int Bitmap::save(const char * path) const{
 
 	if( f.write(&hdr, sizeof(hdr)) < 0 ){
 		f.close();
-		unlink(path);
+		File::remove(path);
 		return -1;
 	}
 
 	if( f.write(data(), hdr.size) != (s32)hdr.size ){
 		f.close();
-		unlink(path);
+		File::remove(path);
 		return -1;
 	}
 

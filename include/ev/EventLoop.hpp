@@ -160,23 +160,21 @@ public:
 
 	/*! \details Executes the event loop.
 	 *
-	 * First the event loop will have the current element handle Event::SETUP.
+	 * First the event loop will have the current ev::EventHandler handle Event::SETUP.
 	 *
-	 * The loop will then transition (execute the animation) for the first
-	 * element then Event::ENTER.
+	 * The loop will then transition to the initial ev::EventHandler and execute Event::ENTER.
 	 *
-	 * The loop will then loop firing Event::UPDATE every update_period() milliseconds.
+	 * The loop will then fire Event::UPDATE every update_period().
 	 * If hibernation_threshold() is less than update_period(), the loop will attempt
 	 * to put the processor in hibernation periodically to save power.
 	 *
-	 * If update_period() is less then hibernation_threshold(), the loop will execute
-	 * process_events() every period() milliseconds.
+	 * If period() is less then hibernation_threshold(), the loop will execute
+	 * process_events() every period().
 	 *
-	 * If EventHandler::handle_event() returns a pointer to a new element, a transtion will occur
+	 * If EventHandler::handle_event() returns a pointer to a new EventHandler, a transtion will occur
 	 * which includes:
-	 * - Event::EXIT the current element
-	 * - Transition (animation) to the new element
-	 * - Event::ENTER the new element
+	 * - Event::EXIT on the current EventHandler
+	 * - Event::ENTER the new EventHandler
 	 *
 	 * The loop will then continue to process_events() and fire Event::UPDATE as well as hibernate
 	 * as appropriate for the new element.
@@ -196,7 +194,7 @@ public:
 	static void start(EventHandler * event_handler);
 
 
-	/*! \details This method will loop while the current element is valid.
+	/*! \details Loops while the current element is valid.
 	 * It handles sending events to the active element. See execute() for
 	 * more details.
 	 */

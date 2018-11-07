@@ -20,6 +20,10 @@ int HttpClient::post(const var::ConstString & url, const var::String & data){
 	return query("POST", url, data);
 }
 
+int HttpClient::post_file(const var::ConstString & url, const var::ConstString & path){
+	return query_with_file("POST", url, path);
+}
+
 int HttpClient::put(const var::ConstString & url, const var::String & data){
 	return query("PUT", url, data);
 }
@@ -61,6 +65,46 @@ int HttpClient::query(const var::ConstString & command, const var::ConstString &
 
 }
 
+int HttpClient::query_with_file(const var::ConstString & method,
+										  const var::ConstString & url,
+										  const var::ConstString & file_path){
+
+	sys::File f;
+	if( f.open(file_path, sys::File::READONLY) < 0 ){ return -1; }
+
+	u32 file_size = f.size();
+
+	int result;
+	Url u(url);
+	result = connect_to_server(u.domain_name(), u.port());
+	if( result < 0 ){
+		f.close();
+		return result;
+	}
+
+	build_header(method, u.domain_name(), u.path(), file_size);
+	if( socket().write(m_header) != m_header.length() ){
+		f.close();
+		return -1;
+	}
+
+	//write the file in chunks
+	var::Data data(1024); //what is the best chunk size??
+	while( f.read(data) > 0 ){
+		//if chunked socket().write(String().format("%x", data.size());
+		socket().write(data);
+		//if chunked socket().write("\r\n");
+	}
+	f.close();
+
+	m_response.fill(0);
+	listen_for_header(m_response);
+	listen_for_data(m_response);
+	close_connection();
+
+	return 0;
+}
+
 int HttpClient::send_string(const var::ConstString & str){
 	if( !str.is_empty() ){
 		return socket().write(str.str(), str.length());
@@ -96,40 +140,39 @@ int HttpClient::connect_to_server(const var::ConstString & domain_name, u16 port
 	return -1;
 }
 
-int HttpClient::send_header(const var::ConstString & method, const var::ConstString & host, const var::ConstString & path, const var::String & data){
-
+int HttpClient::build_header(const var::ConstString & method, const var::ConstString & host, const var::ConstString & path, u32 length){
+	bool is_user_agent_present = false;
+	bool is_accept_present = false;
 	m_header.clear();
 	m_header << method << " " << path << " HTTP/1.1\r\n";
 	m_header << "Host: " << host << "\r\n";
-	m_header << "User-Agent: StratifyOS\r\n";
-	m_header << "Accept: */*\r\n";
+
 	for(u32 i = 0; i < header_request_fields().count(); i++){
 		m_header << header_request_fields().at(i) << "\r\n";
+		if( header_request_fields().at(i).find("User-Agent:") == 0 ){ is_user_agent_present = true; }
+		if( header_request_fields().at(i).find("Accept:") == 0 ){ is_accept_present = true; }
 	}
-	if( data.length() > 0 ){
-		m_header << "Content-Length: " << String().format(F32U, data.length()) << "\r\n";
+
+	if( !is_user_agent_present ){ m_header << "User-Agent: StratifyOS\r\n"; }
+	if( !is_accept_present ){ m_header << "Accept: */*\r\n"; }
+
+	if( length > 0 ){
+		m_header << "Content-Length: " << String().format(F32U, length) << "\r\n";
 	}
 	m_header << "\r\n";
 
-	if( data.length() > 0 ){
-		m_header << data;
-	}
+	return 0;
+}
+
+int HttpClient::send_header(const var::ConstString & method, const var::ConstString & host, const var::ConstString & path, const var::String & data){
+
+	build_header(method, host, path, data.length());
+
+	if( data.length() > 0 ){ m_header << data; }
 
 	printf(">> %s\n", m_header.str());
 
-	int result = socket().write(m_header);
-	if( result != (int)m_header.length() ){
-		printf("Only send %d of %d\n", result, m_header.length());
-	}
-
-#if 0
-	if( socket().write(m_header) != (int)m_header.length() ){
-		socket().close();
-		return -1;
-	}
-#endif
-
-	return 0;
+	return socket().write(m_header);
 }
 
 

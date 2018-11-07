@@ -235,7 +235,87 @@ public:
 	T * vector_data(){ return to<T>(); }
 	const T * vector_data_const() const { return to<T>(); }
 
+	Vector<T> operator + (const Vector<T> & a) const {
+		return operate(a, add);
+	}
+
+	Vector<T> operator - (const Vector<T> & a) const {
+		return operate(a, subtract);
+	}
+
+	Vector<T> operator * (const Vector<T> & a) const {
+		return operate(a, multiply);
+	}
+
+	Vector<T> operator / (const Vector<T> & a) const {
+		return operate(a, divide);
+	}
+
+	Vector<T> operator + (const T & a) const {
+		return operate_single(a, add);
+	}
+
+	Vector<T> operator - (const T & a) const {
+		return operate_single(a, subtract);
+	}
+
+	Vector<T> operator * (const T & a) const {
+		return operate_single(a, multiply);
+	}
+
+	Vector<T> operator / (const T & a) const {
+		return operate_single(a, divide);
+	}
+
+	Vector<T> operator << (u32 a) const {
+		Vector<T> result;
+		result.resize(count());
+		result.fill(T());
+		if( a < count() ){
+			for(u32 i=0; i < count()-a; i++){
+				result.at(i) = at(i+a);
+			}
+		}
+		return result;
+	}
+
+	Vector<T> operator >> (u32 a) const {
+		Vector<T> result;
+		result.resize(count());
+		result.fill(T());
+		if( a < count() ){
+			for(u32 i=0; i < count()-a; i++){
+				result.at(i+a) = at(i);
+			}
+		}
+		return result;
+	}
+
 protected:
+
+
+	Vector<T> operate(const Vector<T> & a, T (*fn)(const T &, const T &)) const {
+		Vector<T> result;
+		u32 c = a.count() < count() ? a.count() : count();
+		for(u32 i=0; i < c; i++){
+			result.push_back(fn(at(i), a.at(i)));
+		}
+		return result;
+	}
+
+	Vector<T> operate_single(const T & a, T (*fn)(const T &, const T &)) const {
+		Vector<T> result;
+		u32 c = count();
+		for(u32 i=0; i < c; i++){
+			result.push_back(fn(at(i), a));
+		}
+		return result;
+	}
+
+	static T add(const T & a, const T & b){ return a+b; }
+	static T subtract(const T & a, const T & b){ return a-b; }
+	static T multiply(const T & a, const T & b){ return a*b; }
+	static T divide(const T & a, const T & b){ return a/b; }
 
 
 	static bool compare(const Vector<T> & a, const Vector<T> & b){

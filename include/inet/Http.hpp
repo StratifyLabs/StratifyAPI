@@ -32,6 +32,8 @@ public:
 	int head(const var::ConstString & url);
 	int get(const var::ConstString & url);
 	int post(const var::ConstString & url, const var::String & data);
+	int post_file(const var::ConstString & url, const var::ConstString & path);
+	int post_data(const var::ConstString & url, const var::Data & data);
 	int put(const var::ConstString & url, const var::String & data);
 	int patch(const var::ConstString & url, const var::String & data);
 
@@ -108,7 +110,17 @@ private:
 				 const var::ConstString & url,
 				 const var::String & data = var::String());
 
+	int query_with_file(const var::ConstString & command,
+				 const var::ConstString & url,
+				 const var::ConstString & file_path);
+
+	int query_with_data(const var::ConstString & command,
+				 const var::ConstString & url,
+				 const var::Data & data = var::Data());
+
 	int send_string(const var::ConstString & str);
+
+	int build_header(const var::ConstString & method, const var::ConstString & host, const var::ConstString & path, u32 length);
 
 	int send_header(const var::ConstString & method,
 						 const var::ConstString & host,

@@ -65,17 +65,20 @@ public:
 	 * @param in Input value
 	 * @return The updated average (same as average())
 	 */
-	intmedium calc(intmedium in){
+	intmedium calculate(intmedium in){
 		intlarge tmp0;
 		tmp0 = (intlarge)in * (m_alpha) + (intlarge)m_average * (small_max() - m_alpha);
 		m_average = (intmedium)(((intlarge)tmp0 + (intlarge)small_max()) >> (sizeof(intsmall)*8));
 		return m_average;
 	}
 
+	intmedium calc(intmedium in){ return calculate(in); }
+
 	/*! \details Accesses the current average (no calculations are made here).
 	 *
 	 * @return The current average value
 	 */
+	intmedium present_value() const { return m_average; }
 	intmedium average() const { return m_average; }
 
 	/*! \details Sets the average value.
@@ -131,14 +134,20 @@ public:
 	Ema_f(float start, float alpha){ m_alpha = alpha; m_average = start; }
 	static float small_max(){ return 1.0f; }
 	/*! \details Calculates the next value based on the given input */
-	float calc(float in){
+	float calculate(float in){
 		float tmp;
 		m_average = in * (m_alpha) + m_average * (1.0f - m_alpha);
 		return m_average;
 	}
-	/*! \details Accesses the current average value */
+
+	float calc(float in){ return calculate(in); }
+
+	/*! \details Accesses the present value of the filter. */
+	float present_value() const { return m_average; }
+
 	float average() const { return m_average; }
-	/*! \details Sets the average value */
+	/*! \details Sets the present value of the filter. */
+	void set_present_value(float v){ m_average = v; }
 	void set_average(float v){ m_average = v; }
 
 	//deprecated methods
