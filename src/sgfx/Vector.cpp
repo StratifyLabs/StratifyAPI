@@ -67,11 +67,11 @@ void VectorMap::fill_region(const sg_region_t & region, s16 rotation){
 
 
 void Vector::draw(Bitmap & bitmap, const sg_vector_icon_t & icon, const sg_vector_map_t & map, sg_region_t * bounds){
-	sg_api()->vector_draw_icon(bitmap.bmap(), &icon, &map, bounds);
+	api()->vector_draw_icon(bitmap.bmap(), &icon, &map, bounds);
 }
 
 void Vector::draw_path(Bitmap & bitmap, sg_vector_path_t & path, const sg_vector_map_t & map){
-	sg_api()->vector_draw_path(bitmap.bmap(), &path, &map);
+	api()->vector_draw_path(bitmap.bmap(), &path, &map);
 }
 
 sg_vector_primitive_t Vector::line(const Point & p1, const Point & p2){

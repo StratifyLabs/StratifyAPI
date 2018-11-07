@@ -19,7 +19,7 @@ Region Bitmap::get_viewable_region() const {
 }
 
 void Bitmap::calc_members(sg_size_t w, sg_size_t h){
-	sg_api()->bmap_set_data(&m_bmap, (sg_bmap_data_t*)data_const(), sg_dim(w,h));
+	api()->bmap_set_data(&m_bmap, (sg_bmap_data_t*)data_const(), sg_dim(w,h));
 }
 
 void Bitmap::init_members(){
@@ -97,7 +97,7 @@ sg_point_t Bitmap::calc_center() const{
 
 bool Bitmap::set_size(sg_size_t w, sg_size_t h, sg_size_t offset){
 	if( calc_size(w,h) <= capacity() ){
-		sg_api()->bmap_set_data(&m_bmap, (sg_bmap_data_t*)data_const(), sg_dim(w,h));
+		api()->bmap_set_data(&m_bmap, (sg_bmap_data_t*)data_const(), sg_dim(w,h));
 		return true;
 	}
 	return false;
@@ -109,11 +109,11 @@ sg_bmap_data_t * Bitmap::data(sg_point_t p) const {
 		return 0;
 	}
 
-	return sg_api()->bmap_data(bmap_const(),p);
+	return api()->bmap_data(bmap_const(),p);
 }
 
 sg_bmap_data_t * Bitmap::data(sg_int_t x, sg_int_t y) const{
-	return sg_api()->bmap_data(bmap_const(), sg_point(x,y));
+	return api()->bmap_data(bmap_const(), sg_point(x,y));
 }
 
 const sg_bmap_data_t * Bitmap::data_const(sg_point_t p) const {
@@ -139,7 +139,7 @@ int Bitmap::load(const char * path){
 		return -1;
 	}
 
-	if( (hdr.version != sg_api()->version) || (hdr.bits_per_pixel != sg_api()->bits_per_pixel) ){
+	if( (hdr.version != api()->version) || (hdr.bits_per_pixel != api()->bits_per_pixel) ){
 		return -1;
 	}
 
@@ -172,7 +172,7 @@ Dim Bitmap::load_dim(const char * path){
 		return Dim();
 	}
 
-	if( (hdr.version != sg_api()->version) || (hdr.bits_per_pixel != sg_api()->bits_per_pixel) ){
+	if( (hdr.version != api()->version) || (hdr.bits_per_pixel != api()->bits_per_pixel) ){
 		return Dim(0,0);
 	}
 
@@ -185,8 +185,8 @@ int Bitmap::save(const char * path) const{
 	hdr.width = width();
 	hdr.height = height();
 	hdr.size = calc_size(width(), height());
-	hdr.bits_per_pixel = sg_api()->bits_per_pixel;
-	hdr.version = sg_api()->version;
+	hdr.bits_per_pixel = api()->bits_per_pixel;
+	hdr.version = api()->version;
 
 	File f;
 	if( f.create(path, true) < 0 ){
@@ -213,32 +213,32 @@ int Bitmap::save(const char * path) const{
 }
 
 void Bitmap::show() const{
-	//sg_api()->show(bmap_const());
+	//api()->show(bmap_const());
 	sg_size_t i,j;
 
 	sg_color_t color;
 	sg_cursor_t y_cursor;
 	sg_cursor_t x_cursor;
 
-	sg_api()->cursor_set(&y_cursor, bmap_const(), sg_point(0,0));
+	api()->cursor_set(&y_cursor, bmap_const(), sg_point(0,0));
 
 	for(i=0; i < bmap_const()->dim.height; i++){
 		sg_cursor_copy(&x_cursor, &y_cursor);
 		for(j=0; j < bmap_const()->dim.width; j++){
-			color = sg_api()->cursor_get_pixel(&x_cursor);
-			if( sg_api()->bits_per_pixel > 8 ){
+			color = api()->cursor_get_pixel(&x_cursor);
+			if( api()->bits_per_pixel > 8 ){
 				::printf("%04X", color);
-			} else if(sg_api()->bits_per_pixel > 4){
+			} else if(api()->bits_per_pixel > 4){
 				::printf("%02X", color);
 			} else {
 				::printf("%X", color);
 			}
-			if( (j < bmap_const()->dim.width - 1) && (sg_api()->bits_per_pixel > 4)){
+			if( (j < bmap_const()->dim.width - 1) && (api()->bits_per_pixel > 4)){
 				::printf(" ");
 			}
 		}
 		::printf("\n");
-		sg_api()->cursor_inc_y(&y_cursor);
+		api()->cursor_inc_y(&y_cursor);
 	}
 }
 

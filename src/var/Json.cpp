@@ -1,7 +1,12 @@
 #include "var/Vector.hpp"
 #include "var/Json.hpp"
+#include "sys/Sys.hpp"
+#include "sys/requests.h"
+
 
 using namespace var;
+
+JsonApi JsonValue::m_api;
 
 JsonValue::JsonValue(){
 	m_value = 0; //create() method from children are not available in the constructor
@@ -16,14 +21,14 @@ JsonValue::JsonValue(const JsonValue & value){
 }
 
 JsonValue & JsonValue::operator=(const JsonValue & value){
-	json_decref(m_value);
+	api()->decref(m_value);
 	add_reference(value.m_value);
 	return *this;
 }
 
 void JsonValue::add_reference(json_t * value){
 	m_value = value;
-	json_incref(value);
+	api()->incref(value);
 }
 
 JsonValue::JsonValue(JsonValue && a){
@@ -39,7 +44,7 @@ JsonValue& JsonValue::operator=(JsonValue && a){
 
 JsonValue::~JsonValue(){
 	//only decref if object was create (not just a reference)
-	json_decref(m_value);
+	api()->decref(m_value);
 	m_value = 0;
 }
 
@@ -69,11 +74,11 @@ int JsonValue::create_if_not_valid(){
 
 int JsonValue::assign(const var::ConstString & value){
 	if( is_string() ){
-		return json_string_set(m_value, value.str());
+		return api()->string_set(m_value, value.str());
 	} else if( is_real() ){
-		return json_real_set(m_value, ::atof(value.str()));
+		return api()->real_set(m_value, ::atof(value.str()));
 	} else if( is_integer() ){
-		return json_integer_set(m_value, ::atoi(value.str()));
+		return api()->integer_set(m_value, ::atoi(value.str()));
 	} else if ( is_true() ){
 		if( value == "false" ){
 
@@ -99,11 +104,11 @@ int JsonValue::assign(bool value){
 
 
 int JsonValue::copy(const JsonValue & value, bool is_deep){
-	json_decref(m_value);
+	api()->decref(m_value);
 	if( is_deep ){
-		m_value = json_deep_copy(value.m_value);
+		m_value = api()->deep_copy(value.m_value);
 	} else {
-		m_value = json_copy(value.m_value);
+		m_value = api()->copy(value.m_value);
 	}
 	return 0;
 }
@@ -111,11 +116,11 @@ int JsonValue::copy(const JsonValue & value, bool is_deep){
 var::String JsonValue::to_string() const {
 	var::String result;
 	if( is_string() ){
-		result = json_string_value(m_value);
+		result = api()->string_value(m_value);
 	} else if( is_real() ){
-		result.format("%f", json_real_value(m_value));
+		result.format("%f", api()->real_value(m_value));
 	} else if (is_integer() ){
-		result.format("%ld", json_integer_value(m_value));
+		result.format("%ld", api()->integer_value(m_value));
 	} else if( is_true() ){
 		result = "true";
 	} else if( is_false() ){
@@ -136,14 +141,14 @@ float JsonValue::to_real() const {
 	if( is_string() ){
 		return ::atof(json_string_value(m_value));
 	}
-	return json_real_value(m_value);
+	return api()->real_value(m_value);
 }
 
 int JsonValue::to_integer() const {
 	if( is_string() ){
 		return ::atol(json_string_value(m_value));
 	}
-	return json_integer_value(m_value);
+	return api()->integer_value(m_value);
 }
 
 bool JsonValue::to_bool() const {
@@ -173,41 +178,41 @@ JsonObject::JsonObject(const JsonObject & value){
 }
 
 JsonObject & JsonObject::operator=(const JsonObject & value){
-	json_decref(m_value);
+	api()->decref(m_value);
 	add_reference(value.m_value);
 	return *this;
 }
 
 json_t * JsonObject::create(){
-	return json_object();
+	return api()->create_object();
 }
 
 json_t * JsonArray::create(){
-	return json_array();
+	return api()->create_array();
 }
 
 json_t * JsonReal::create(){
-	return json_real(0.0f);
+	return api()->create_real(0.0f);
 }
 
 json_t * JsonInteger::create(){
-	return json_integer(0);
+	return api()->create_integer(0);
 }
 
 json_t * JsonTrue::create(){
-	return json_true();
+	return api()->create_true();
 }
 
 json_t * JsonFalse::create(){
-	return json_false();
+	return api()->create_false();
 }
 
 json_t * JsonString::create(){
-	return json_string("");
+	return api()->create_string("");
 }
 
 json_t * JsonNull::create(){
-	return json_null();
+	return api()->create_null();
 }
 
 
@@ -225,22 +230,22 @@ int JsonObject::insert(const var::ConstString & key, const JsonValue & value){
 
 int JsonObject::update(const JsonValue & value, u8 o_flags){
 	if( o_flags & UPDATE_EXISTING ){
-		return json_object_update_existing(m_value, value.m_value);
+		return api()->object_update_existing(m_value, value.m_value);
 	}
 
 	if( o_flags & UPDATE_MISSING ){
-		return json_object_update_missing(m_value, value.m_value);
+		return api()->object_update_missing(m_value, value.m_value);
 	}
 
-	return json_object_update(m_value, value.m_value);
+	return api()->object_update(m_value, value.m_value);
 }
 
 int JsonObject::remove(const var::ConstString & key){
-	return json_object_del(m_value, key.str());
+	return api()->object_del(m_value, key.str());
 }
 
 u32 JsonObject::count() const {
-	return json_object_size(m_value);
+	return api()->object_size(m_value);
 }
 
 int JsonObject::clear(){ return json_object_clear(m_value); }
@@ -258,7 +263,7 @@ var::Vector<var::String> JsonObject::keys() const {
 }
 
 JsonValue JsonObject::at(const var::ConstString & key) const {
-	return json_object_get(m_value, key.str());
+	return api()->object_get(m_value, key.str());
 }
 
 JsonArray::JsonArray(){
@@ -270,40 +275,40 @@ JsonArray::JsonArray(const JsonArray & value){
 }
 
 JsonArray & JsonArray::operator=(const JsonArray & value){
-	json_decref(m_value);
+	api()->decref(m_value);
 	add_reference(value.m_value);
 	return *this;
 }
 
 u32 JsonArray::count() const {
-	return json_array_size(m_value);
+	return api()->array_size(m_value);
 }
 
 JsonValue JsonArray::at(u32 idx) const {
-	return json_array_get(m_value, idx);
+	return api()->array_get(m_value, idx);
 }
 
 int JsonArray::append(const JsonValue & value){
 	if( create_if_not_valid() < 0 ){ return -1; }
-	return json_array_append(m_value, value.m_value);
+	return api()->array_append_new(m_value, value.m_value);
 }
 
 int JsonArray::append(const JsonArray & array){
 	if( create_if_not_valid() < 0 ){ return -1; }
-	return json_array_extend(m_value, array.m_value);
+	return api()->array_extend(m_value, array.m_value);
 }
 
 int JsonArray::insert(u32 idx, const JsonValue & value){
 	if( create_if_not_valid() < 0 ){ return -1; }
-	return json_array_insert(m_value, idx, value.m_value);
+	return api()->array_insert_new(m_value, idx, value.m_value);
 }
 
 int JsonArray::remove(u32 idx){
-	return json_array_remove(m_value, idx);
+	return api()->array_remove(m_value, idx);
 }
 
 int JsonArray::clear(){
-	return json_array_clear(m_value);
+	return api()->array_clear(m_value);
 }
 
 JsonString::JsonString(){
@@ -312,7 +317,7 @@ JsonString::JsonString(){
 
 
 JsonString::JsonString(const var::ConstString & str){
-	m_value = json_string(str.str());
+	m_value = api()->create_string(str.str());
 }
 
 JsonReal::JsonReal(){
@@ -320,12 +325,12 @@ JsonReal::JsonReal(){
 }
 
 JsonReal::JsonReal(float value){
-	m_value = json_real(value);
+	m_value = api()->create_real(value);
 }
 
 JsonReal & JsonReal::operator=(float a){
 	if( create_if_not_valid() == 0 ){
-		json_real_set(m_value, a);
+		api()->real_set(m_value, a);
 	}
 	return *this;
 }
@@ -335,12 +340,12 @@ JsonInteger::JsonInteger(){
 }
 
 JsonInteger::JsonInteger(int value){
-	m_value = json_integer(value);
+	m_value = api()->create_integer(value);
 }
 
 JsonInteger & JsonInteger::operator=(int a){
 	if( create_if_not_valid() == 0 ){
-		json_integer_set(m_value, a);
+		api()->integer_set(m_value, a);
 	}
 	return *this;
 }
@@ -359,35 +364,35 @@ JsonFalse::JsonFalse(){
 
 JsonValue JsonDocument::load_from_file(const var::ConstString & path){
 	JsonValue value;
-	value.m_value = json_load_file(path.str(), flags(), &m_error.m_value);
+	value.m_value = JsonValue::api()->load_file(path.str(), flags(), &m_error.m_value);
 	return value;
 }
 
 JsonValue JsonDocument::load_from_string(const var::ConstString & json){
 	JsonValue value;
-	value.m_value = json_loadb(json.str(), json.length(), flags(), &m_error.m_value);
+	value.m_value = JsonValue::api()->loadb(json.str(), json.length(), flags(), &m_error.m_value);
 	return value;
 }
 
 //only use on Stratify OS
 JsonValue JsonDocument::load_from_file(const sys::File & file){
 	JsonValue value;
-	value.m_value = json_loadfd(file.fileno(), flags(), &m_error.m_value);
+	value.m_value = JsonValue::api()->loadfd(file.fileno(), flags(), &m_error.m_value);
 	return value;
 }
 
 JsonValue JsonDocument::load(json_load_callback_t callback, void * context){
 	JsonValue value;
-	value.m_value = json_load_callback(callback, context, flags(), &m_error.m_value);
+	value.m_value = JsonValue::api()->load_callback(callback, context, flags(), &m_error.m_value);
 	return value;
 }
 
 int JsonDocument::save_to_file(const JsonValue & value, const var::ConstString & path) const {
-	return json_dump_file(value.m_value, path.str(), flags());
+	return JsonValue::api()->dump_file(value.m_value, path.str(), flags());
 }
 
 var::String JsonDocument::stringify(const JsonValue & value) const {
-	u32 size = json_dumpb(value.m_value, 0, 0, flags());
+	u32 size = JsonValue::api()->dumpb(value.m_value, 0, 0, flags());
 	if( size == 0 ){
 		return var::String();
 	}
@@ -395,17 +400,17 @@ var::String JsonDocument::stringify(const JsonValue & value) const {
 	if( result.set_capacity(size) < 0 ){
 		return var::String();
 	}
-	if( json_dumpb(value.m_value, result.to<char>(), result.capacity(), flags()) == 0 ){
+	if( JsonValue::api()->dumpb(value.m_value, result.to<char>(), result.capacity(), flags()) == 0 ){
 		return var::String();
 	}
 	return result;
 }
 
 int JsonDocument::save_to_file(const JsonValue & value, const sys::File & file) const {
-	return json_dumpfd(value.m_value, file.fileno(), flags());
+	return JsonValue::api()->dumpfd(value.m_value, file.fileno(), flags());
 }
 
 int JsonDocument::save(const JsonValue & value, json_dump_callback_t callback, void * context) const {
-	return json_dump_callback(value.m_value, callback, context, flags());
+	return JsonValue::api()->dump_callback(value.m_value, callback, context, flags());
 }
 

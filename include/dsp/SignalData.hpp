@@ -149,7 +149,7 @@ public:
 	SignalData(){}
 	SignalData(int count) : var::Vector<T>(count){
 		if( is_api_available() == false ){
-			request_arm_dsp_api();
+			//request_arm_dsp_api();
 		}
 	}
 
@@ -494,7 +494,7 @@ public:
 	SignalQ15(){}
 
 	bool is_api_available() const {
-		return arm_dsp_api_q7() != 0;
+		return api_a7().is_valid();
 	}
 
 	q15_t mean() const;
@@ -565,7 +565,7 @@ public:
 	SignalComplexQ15(u32 count) : SignalData(count){}
 
 	bool is_api_available() const {
-		return arm_dsp_api_q15() != 0;
+		return api_q15().is_valid();
 	}
 
 	SignalComplexQ15 transform(FftRealQ15 & fft, bool is_inverse = false);
@@ -598,7 +598,7 @@ public:
 	SignalQ31(int count) : SignalData(count){}
 
 	bool is_api_available() const {
-		return arm_dsp_api_q31() != 0;
+		return api_q31().is_valid();
 	}
 
 	/*! \details Contructs an empty signal. */
@@ -674,7 +674,7 @@ public:
 	SignalComplexQ31(u32 count) : SignalData(count){}
 
 	bool is_api_available() const {
-		return arm_dsp_api_q31() != 0;
+		return api_q31().is_valid();
 	}
 
 	/*! \details Transforms this object and returns a new signal with the transformed data.
@@ -720,7 +720,7 @@ public:
 	SignalF32(){}
 
 	bool is_api_available() const {
-		return arm_dsp_api_f32() != 0;
+		return api_f32().is_valid();
 	}
 
 	float32_t mean() const;
@@ -779,7 +779,7 @@ public:
 	SignalComplexF32(u32 count) : SignalData(count){}
 
 	bool is_api_available() const {
-		return arm_dsp_api_f32() != 0;
+		return api_f32().is_valid();
 	}
 
 	SignalComplexF32 transform(FftRealF32 & fft, bool is_inverse = false);

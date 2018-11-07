@@ -1,11 +1,12 @@
 #ifndef JSON_HPP
 #define JSON_HPP
 
-#include <jansson/jansson.h>
+#include <jansson/jansson_api.h>
 #include "../api/VarObject.hpp"
 #include "../var/Vector.hpp"
 #include "../var/String.hpp"
 #include "../sys/File.hpp"
+#include "../sys/requests.h"
 
 namespace var {
 
@@ -36,6 +37,8 @@ class JsonReal;
 class JsonNull;
 class JsonInteger;
 class JsonString;
+
+typedef api::Api<jansson_api_t, SAPI_API_REQUEST_JSON> JsonApi;
 
 class JsonValue : public api::VarWorkObject {
 public:
@@ -221,12 +224,16 @@ public:
 	int copy(const JsonValue & value, bool is_deep = true);
 
 
+	static JsonApi & api(){ return m_api; }
+
 protected:
 	int create_if_not_valid();
 	virtual json_t * create(){
 		printf("create JSON Value -- 0\n");
 		return 0;
 	}
+
+
 
 
 private:
@@ -242,6 +249,9 @@ private:
 	json_t * m_value;
 
 	void add_reference(json_t * value);
+
+	static JsonApi m_api;
+
 
 };
 

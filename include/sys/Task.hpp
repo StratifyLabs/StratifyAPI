@@ -78,7 +78,10 @@ public:
 	u32 memory_size() const{ return m_value.mem_size; }
 
 	/*! \details Returns the heap size available to the task. */
-	u32 heap_size() const { return m_value.malloc_loc - m_value.mem_loc; }
+	u32 heap_size() const {
+		if( m_value.is_thread ){ return 0; }
+		return m_value.malloc_loc - m_value.mem_loc;
+	}
 
 	/*! \details Returns the stack sizve of the current task. */
 	u32 stack_size() const { return m_value.mem_loc + m_value.mem_size - m_value.stack_ptr; }

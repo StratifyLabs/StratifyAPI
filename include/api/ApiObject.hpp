@@ -158,6 +158,40 @@ public:
 	static const char * api_git_hash();
 };
 
+#if defined __link
+template<typename A, const A * initial_value> class Api : public ApiObject {
+#else
+extern const void * kernel_request_api(u32 request);
+template<typename A, u32 request> class Api : public ApiObject {
+#endif
+public:
+
+	Api(){ initialize(); }
+
+	bool is_valid() const {
+		return m_api != 0;
+	}
+
+	Api & operator = (const A * value){
+		m_api = value;
+		return *this;
+	}
+
+	const A * operator ->() const { return m_api; }
+
+private:
+	void initialize(){
+		if( m_api == 0 ){
+#if defined __link
+			m_api = initial_value;
+#else
+			m_api = (const A*)kernel_request_api(request);
+#endif
+		}
+	}
+	const A * m_api;
+};
+
 }
 
 #endif // APIOBJECT_HPP

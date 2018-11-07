@@ -3,6 +3,7 @@
 
 #include "WorkObject.hpp"
 #include "InfoObject.hpp"
+#include "SgfxObject.hpp"
 
 namespace api {
 
@@ -12,7 +13,7 @@ namespace api {
  * \sa draw namespace
  *
  */
-class DrawInfoObject : public virtual InfoObject {
+class DrawInfoObject : public virtual InfoObject, public SgfxObject {
 
 };
 
@@ -20,7 +21,7 @@ class DrawInfoObject : public virtual InfoObject {
  * \details
  * \sa draw namespace
  */
-class DrawWorkObject : public virtual WorkObject {
+class DrawWorkObject : public virtual WorkObject, public SgfxObject {
 
 };
 

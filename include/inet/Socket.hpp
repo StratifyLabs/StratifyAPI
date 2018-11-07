@@ -1,4 +1,6 @@
-﻿#ifndef SAPI_SOCKET_HPP
+﻿/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
+
+#ifndef SAPI_SOCKET_HPP
 #define SAPI_SOCKET_HPP
 
 #include <mcu/types.h>

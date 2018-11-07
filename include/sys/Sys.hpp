@@ -207,6 +207,21 @@ public:
 	 */
 	static int request(int req, void * arg = 0);
 
+	/*! \details Request a kernel install library's API.
+	 *
+	 * @param request The API request value (ie SAPI_API_REQUEST_ARM_DSP)
+	 * @return A pointer to the api_t.
+	 *
+	 * This method will request a library API from the kernel. If
+	 * the library is install in the kernel. This method will return
+	 * a pointer to the api. Otherwise, zero will be retured. It is
+	 * possible for the application to link directly to the library
+	 * if the library is not provided by the kernel.
+	 *
+	 */
+	template<typename T> static const T * request_api(int request){
+		return (const T*)::kernel_request_api(request);
+	}
 
 	/*! \details Forces a reset of the device. */
 	static void reset();

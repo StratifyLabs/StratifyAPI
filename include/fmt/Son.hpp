@@ -12,10 +12,13 @@
 
 #include "../api/FmtObject.hpp"
 #include "../var/String.hpp"
-#include "../sys/Timer.hpp" //for chrono::MicroTime
+#include "../chrono/MicroTime.hpp"
+#include "../sys/requests.h"
 
 
 namespace fmt {
+
+typedef api::Api<son_api_t, SAPI_API_REQUEST_SON> SonApi;
 
 /*! \brief Stratify Object Notation
  *
@@ -122,7 +125,7 @@ public:
 	 * @param name The name of the file
 	 * @return Zero on success
 	 */
-	int create(const var::ConstString & name){ return son_api()->create(&m_son, name.str(), m_stack, m_stack_size); }
+	int create(const var::ConstString & name){ return api()->create(&m_son, name.str(), m_stack, m_stack_size); }
 
 	/*! \details Creates a memory message SON object.
 	 *
@@ -131,7 +134,7 @@ public:
 	 *
 	 * @return Zero on success
 	 */
-	int create_message(void * message, int nbyte){ return son_api()->create_message(&m_son, message, nbyte, m_stack, m_stack_size); }
+	int create_message(void * message, int nbyte){ return api()->create_message(&m_son, message, nbyte, m_stack, m_stack_size); }
 
 	/*! \details Creates a memory message SON object.
 	 *
@@ -139,7 +142,7 @@ public:
 	 *
 	 * @return Zero on success
 	 */
-	int create_message(var::Data & data){ return son_api()->create_message(&m_son, data.data(), data.capacity(), m_stack, m_stack_size); }
+	int create_message(var::Data & data){ return api()->create_message(&m_son, data.data(), data.capacity(), m_stack, m_stack_size); }
 
 
 	/*! \details Creates a memory message SON object using dynamic memory allocation.
@@ -148,7 +151,7 @@ public:
 	 *
 	 * @return Zero on success
 	 */
-	int create_message(int nbyte){ return son_api()->create_message(&m_son, 0, nbyte, m_stack, m_stack_size); }
+	int create_message(int nbyte){ return api()->create_message(&m_son, 0, nbyte, m_stack, m_stack_size); }
 
 
 	/*! \details Sends a message on the specified file descriptor.
@@ -157,7 +160,7 @@ public:
 	 * @param timeout_msec The max number of milliseconds to wait between bytes before aborting.
 	 * @return The number of bytes sent or less then zero for an error
 	 */
-	int send_message(int fd, int timeout_msec){ return son_api()->send_message(&m_son, fd, timeout_msec); }
+	int send_message(int fd, int timeout_msec){ return api()->send_message(&m_son, fd, timeout_msec); }
 
 
 	/*! \details Receives a message on the specified file descriptor.
@@ -166,14 +169,14 @@ public:
 	 * @param timeout_msec The max number of milliseconds to wait between bytes before aborting.
 	 * @return The number of bytes received or less than zero for an error
 	 */
-	int recv_message(int fd, int timeout_msec){ return son_api()->recv_message(&m_son, fd, timeout_msec); }
+	int recv_message(int fd, int timeout_msec){ return api()->recv_message(&m_son, fd, timeout_msec); }
 
 
 	/*! \details Gets the size of the message in bytes.
 	 *
 	 * @return The number of bytes that will be sent is send_message() is called or less than zero for an error.
 	 */
-	int get_message_size(){ return son_api()->get_message_size(&m_son); }
+	int get_message_size(){ return api()->get_message_size(&m_son); }
 
 
 	/*! \details Opens a file for appending data.
@@ -181,14 +184,14 @@ public:
 	 * @param name The path/name of the file to open
 	 * @return Less than zero for an error
 	 */
-	int open_append(const var::ConstString & name){ return son_api()->append(&m_son, name.str(), m_stack, m_stack_size); }
+	int open_append(const var::ConstString & name){ return api()->append(&m_son, name.str(), m_stack, m_stack_size); }
 
 	/*! \details Opens a SON file for reading.
 	 *
 	 * @param name Name of the file
 	 * @return Zero on success
 	 */
-	int open_read(const var::ConstString & name){ return son_api()->open(&m_son, name.str()); }
+	int open_read(const var::ConstString & name){ return api()->open(&m_son, name.str()); }
 
 	/*! \details Opens a SON message for reading.
 	 *
@@ -196,8 +199,8 @@ public:
 	 * @param nbyte The number of bytes in the message
 	 * @return Zero on success
 	 */
-	int open_message(void * message, int nbyte){ return son_api()->open_message(&m_son, message, nbyte); }
-	int open_message(var::Data & data){ return son_api()->open_message(&m_son, data.data(), data.capacity()); }
+	int open_message(void * message, int nbyte){ return api()->open_message(&m_son, message, nbyte); }
+	int open_message(var::Data & data){ return api()->open_message(&m_son, data.data(), data.capacity()); }
 
 	int open_read_message(void * message, int nbyte){ return open_message(message, nbyte); }
 	int open_read_message(var::Data & data){ return open_message(data); }
@@ -207,7 +210,7 @@ public:
 	 * @param name Name of the file
 	 * @return Zero on success
 	 */
-	int open_edit(const var::ConstString & name){ return son_api()->edit(&m_son, name.str()); }
+	int open_edit(const var::ConstString & name){ return api()->edit(&m_son, name.str()); }
 
 	/*! \details Opens a SON message for editing.
 	 *
@@ -215,10 +218,10 @@ public:
 	 * @param nbyte The number of bytes in the message
 	 * @return Zero on success
 	 */
-	int open_edit_message(void * message, int nbyte){ return son_api()->edit_message(&m_son, message, nbyte); }
+	int open_edit_message(void * message, int nbyte){ return api()->edit_message(&m_son, message, nbyte); }
 
 	/*! \details Closes a SON file. */
-	int close(){ return son_api()->close(&m_son); }
+	int close(){ return api()->close(&m_son); }
 
 	/*! \details Seeks to the location of the access code and gets the size of the data in bytes.
 	 *
@@ -226,7 +229,7 @@ public:
 	 * @param data_size A pointer to write the data size to (null if not needed)
 	 * @return Zero on success
 	 */
-	int seek(const var::ConstString & access, son_size_t & data_size){ return son_api()->seek(&m_son, access.str(), &data_size); }
+	int seek(const var::ConstString & access, son_size_t & data_size){ return api()->seek(&m_son, access.str(), &data_size); }
 
 	/*! \details Seeks the next value in the file.
 	 *
@@ -238,12 +241,12 @@ public:
 	 */
 	int seek_next(var::String & name, son_value_t * type = 0){
 		name.set_capacity(SON_KEY_NAME_CAPACITY);
-		return son_api()->seek_next(&m_son, name.cdata(), type);
+		return api()->seek_next(&m_son, name.cdata(), type);
 	}
 
 	int seek_next(var::String & name, son_value_t & type){
 		name.set_capacity(SON_KEY_NAME_CAPACITY);
-		return son_api()->seek_next(&m_son, name.cdata(), &type);
+		return api()->seek_next(&m_son, name.cdata(), &type);
 	}
 
 	/*! \details Converts the data file to JSON.
@@ -252,7 +255,7 @@ public:
 	 * @return Zero on success
 	 */
 	int to_json(const var::ConstString & path){
-		return son_api()->to_json(&m_son, path.str(), 0, 0);
+		return api()->to_json(&m_son, path.str(), 0, 0);
 	}
 
 	/*! \details Converts the data file to JSON.
@@ -262,7 +265,7 @@ public:
 	 * @return Zero on success
 	 */
 	int to_json(son_to_json_callback_t callback, void * context = 0){
-		return son_api()->to_json(&m_son, 0, callback, context);
+		return api()->to_json(&m_son, 0, callback, context);
 	}
 
 	/*! \details Opens a new object while writing or appending.
@@ -270,18 +273,18 @@ public:
 	 * @param key The key to use for the new object
 	 * @return Zero on success
 	 */
-	int open_object(const var::ConstString & key){ return son_api()->open_object(&m_son, key.str()); }
+	int open_object(const var::ConstString & key){ return api()->open_object(&m_son, key.str()); }
 	/*! \details Closes an object while writing or appending a file.
 	 *
 	 */
-	int close_object(){ return son_api()->close_object(&m_son); }
+	int close_object(){ return api()->close_object(&m_son); }
 
 	/*! \details Opens a new array while writing or appending.
 	 *
 	 * @param key The key to use for the new array
 	 * @return Zero on success
 	 */
-	int open_array(const var::ConstString & key){ return son_api()->open_array(&m_son, key.str()); }
+	int open_array(const var::ConstString & key){ return api()->open_array(&m_son, key.str()); }
 
 	/*! \details Closes an array while writing or appending.
 	 *
@@ -290,14 +293,14 @@ public:
 	 * To proper operation, this a call to this method must correspond to a
 	 * call to open_data().
 	 */
-	int close_array(){ return son_api()->close_array(&m_son); }
+	int close_array(){ return api()->close_array(&m_son); }
 
 	/*! \details Opens a data object while writing or appending.
 	 *
 	 * @param key The key to use for the new data
 	 * @return Zero on success
 	 */
-	int open_data(const var::ConstString & key){ return son_api()->open_data(&m_son, key.str()); }
+	int open_data(const var::ConstString & key){ return api()->open_data(&m_son, key.str()); }
 
 	/*! \details Closes a data object.
 	 *
@@ -307,7 +310,7 @@ public:
 	 * call to open_data().
 	 *
 	 */
-	int close_data(){ return son_api()->close_data(&m_son); }
+	int close_data(){ return api()->close_data(&m_son); }
 
 	/*! \details Writes a key/string pair to the file.
 	 *
@@ -317,9 +320,9 @@ public:
 	 */
 	int write(const var::ConstString & key, const var::ConstString & v){
 		if( v != "" ){
-			return son_api()->write_str(&m_son, key.str(), v.str());
+			return api()->write_str(&m_son, key.str(), v.str());
 		} else {
-			return son_api()->write_null(&m_son, key.str());
+			return api()->write_null(&m_son, key.str());
 		}
 	}
 
@@ -329,7 +332,7 @@ public:
 	 * @param v The number to write
 	 * @return Number of bytes stored (4) if successful
 	 */
-	int write(const var::ConstString & key, s32 v){ return son_api()->write_num(&m_son, key.str(), v); }
+	int write(const var::ConstString & key, s32 v){ return api()->write_num(&m_son, key.str(), v); }
 
 	/*! \details Writes a key/number pair to the file (u32).
 	 *
@@ -337,7 +340,7 @@ public:
 	 * @param v The number to write
 	 * @return Number of bytes stored (4) if successful
 	 */
-	int write(const var::ConstString & key, u32 v){ return son_api()->write_unum(&m_son, key.str(), v); }
+	int write(const var::ConstString & key, u32 v){ return api()->write_unum(&m_son, key.str(), v); }
 
 	/*! \details Writes a key/number pair to the file (float).
 	 *
@@ -345,7 +348,7 @@ public:
 	 * @param v The number to write
 	 * @return Number of bytes stored (4) if successful
 	 */
-	int write(const var::ConstString & key, float v){ return son_api()->write_float(&m_son, key.str(), v); }
+	int write(const var::ConstString & key, float v){ return api()->write_float(&m_son, key.str(), v); }
 
 	/*! \details Writes a key/bool pair to the file.
 	 *
@@ -355,9 +358,9 @@ public:
 	 */
 	int write(const var::ConstString & key, bool v){
 		if( v ){
-			return son_api()->write_true(&m_son, key.str());
+			return api()->write_true(&m_son, key.str());
 		} else {
-			return son_api()->write_false(&m_son, key.str());
+			return api()->write_false(&m_son, key.str());
 		}
 	}
 
@@ -369,7 +372,7 @@ public:
 	 * @param size The number of bytes to write
 	 * @return Number of bytes stored (4) if successful
 	 */
-	int write(const var::ConstString & key, const void * v, son_size_t size){ return son_api()->write_data(&m_son, key.str(), v, size); }
+	int write(const var::ConstString & key, const void * v, son_size_t size){ return api()->write_data(&m_son, key.str(), v, size); }
 
 	/*! \details Adds data to an open key.
 	 *
@@ -391,7 +394,7 @@ public:
 	 * son.close_data();
 	 * \endcode
 	 */
-	int write_open_data(const void * v, son_size_t size){ return son_api()->write_open_data(&m_son, v, size); }
+	int write_open_data(const void * v, son_size_t size){ return api()->write_open_data(&m_son, v, size); }
 
 	/*! \details Reads the specified key as a string.  If the original
 	 * key was not written as a string, it will be converted to a string.  For example,
@@ -407,7 +410,7 @@ public:
 		son_size_t size;
 		if( seek(access, size) >= 0 ){
 			result.set_capacity(size);
-			if( son_api()->read_str(&m_son, access.str(), result.cdata(), result.capacity()) < 0 ){
+			if( api()->read_str(&m_son, access.str(), result.cdata(), result.capacity()) < 0 ){
 				return var::String();
 			}
 			return result;
@@ -422,7 +425,7 @@ public:
 	 * @param access Key parameters
 	 * @return The number
 	 */
-	s32 read_num(const var::ConstString & access){ return son_api()->read_num(&m_son, access.str()); }
+	s32 read_num(const var::ConstString & access){ return api()->read_num(&m_son, access.str()); }
 
 	/*! \details Reads the specified key as a number (u32).  If the original
 	 * key was not written as a s32, it will be converted to one.  A string
@@ -431,7 +434,7 @@ public:
 	 * @param access Key parameters
 	 * @return The number
 	 */
-	u32 read_unum(const var::ConstString & access){ return son_api()->read_unum(&m_son, access.str()); }
+	u32 read_unum(const var::ConstString & access){ return api()->read_unum(&m_son, access.str()); }
 
 	/*! \details Reads the specified key as a number (float).
 	 *
@@ -444,7 +447,7 @@ public:
 	 *
 	 *
 	 */
-	float read_float(const var::ConstString & access){ return son_api()->read_float(&m_son, access.str()); }
+	float read_float(const var::ConstString & access){ return api()->read_float(&m_son, access.str()); }
 
 	/*! \details Reads the specified key as data.  Regardless of the storage
 	 * type, the key will be returned as binary data.
@@ -454,14 +457,14 @@ public:
 	 * @param size The number of bytes to read
 	 * @return The number of bytes read
 	 */
-	int read_data(const var::ConstString & access, void * data, son_size_t size){ return son_api()->read_data(&m_son, access.str(), data, size); }
+	int read_data(const var::ConstString & access, void * data, son_size_t size){ return api()->read_data(&m_son, access.str(), data, size); }
 
 	/*! \details Reads the specified key as a bool.
 	 *
 	 * @param access Key parameters
 	 * @return True if the key is found and is true; false otherwise.
 	 */
-	bool read_bool(const var::ConstString & access){ return son_api()->read_bool(&m_son, access.str()); }
+	bool read_bool(const var::ConstString & access){ return api()->read_bool(&m_son, access.str()); }
 
 	/*! \details Edits a float value.
 	 *
@@ -469,7 +472,7 @@ public:
 	 * @param v The new value to write
 	 * @return Zero on success
 	 */
-	int edit(const var::ConstString & access, float v){ return son_api()->edit_float(&m_son, access.str(), v); }
+	int edit(const var::ConstString & access, float v){ return api()->edit_float(&m_son, access.str(), v); }
 
 	/*! \details Edits a data value.
 	 *
@@ -482,7 +485,7 @@ public:
 	 * will be truncated to that size.
 	 *
 	 */
-	int edit(const var::ConstString & access,  const void * data, son_size_t size){ return son_api()->edit_data(&m_son, access.str(), data, size); }
+	int edit(const var::ConstString & access,  const void * data, son_size_t size){ return api()->edit_data(&m_son, access.str(), data, size); }
 
 	/*! \details Edits a string value.
 	 *
@@ -494,7 +497,7 @@ public:
 	 * string, the new string will be truncated to fit.
 	 *
 	 */
-	int edit(const var::ConstString & access, const var::ConstString & str){ return son_api()->edit_str(&m_son, access.str(), str.str()); }
+	int edit(const var::ConstString & access, const var::ConstString & str){ return api()->edit_str(&m_son, access.str(), str.str()); }
 
 	/*! \details Edits a string value.
 	 *
@@ -506,7 +509,7 @@ public:
 	 * string, the new string will be truncated to fit.
 	 *
 	 */
-	int edit(const var::ConstString & access, const var::String & v){ return son_api()->edit_str(&m_son, access.str(), v.c_str()); }
+	int edit(const var::ConstString & access, const var::String & v){ return api()->edit_str(&m_son, access.str(), v.c_str()); }
 
 	/*! \details Edits a number value (signed 32-bit).
 	 *
@@ -514,7 +517,7 @@ public:
 	 * @param v The new value
 	 * @return Zero on success
 	 */
-	int edit(const var::ConstString & access, s32 v){ return son_api()->edit_num(&m_son, access.str(), v); }
+	int edit(const var::ConstString & access, s32 v){ return api()->edit_num(&m_son, access.str(), v); }
 
 	/*! \details Edits a number value (unsigned 32-bit).
 	 *
@@ -522,7 +525,7 @@ public:
 	 * @param v The new value
 	 * @return Zero on success
 	 */
-	int edit(const var::ConstString & access, u32 v){ return son_api()->edit_unum(&m_son, access.str(), v); }
+	int edit(const var::ConstString & access, u32 v){ return api()->edit_unum(&m_son, access.str(), v); }
 
 	/*! \details Edits a boolean value.
 	 *
@@ -530,7 +533,7 @@ public:
 	 * @param v The new value
 	 * @return Zero on success
 	 */
-	int edit(const var::ConstString & access, bool v){ return son_api()->edit_bool(&m_son, access.str(), v); }
+	int edit(const var::ConstString & access, bool v){ return api()->edit_bool(&m_son, access.str(), v); }
 
 	typedef enum {
 		ERR_NONE /*! This value indicates no error has occurred. */ = SON_ERR_NONE,
@@ -566,7 +569,7 @@ public:
 	 * return the error then it will return SON_ERR_NONE.
 	 *
 	 */
-	int get_error(){ return son_api()->get_error(&m_son); }
+	int get_error(){ return api()->get_error(&m_son); }
 
 	/*! \details Access the son_t data object. */
 	son_t & son(){ return m_son; }
@@ -591,13 +594,16 @@ public:
 	u16 max_depth() const { return m_stack_size; }
 	u16 stack_size() const { return m_stack_size; }
 
+	static SonApi & api(){ return m_api; }
 private:
 	son_t m_son;
 	son_stack_t * m_stack;
 	u16 m_stack_size;
 	bool m_is_stack_needs_free;
+
+	static SonApi m_api;
 };
 
-};
+}
 
 #endif /* SON_HPP_ */

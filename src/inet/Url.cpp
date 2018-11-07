@@ -1,3 +1,5 @@
+/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
+
 #include "inet/Url.hpp"
 #include "var/Token.hpp"
 

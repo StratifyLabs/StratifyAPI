@@ -161,8 +161,8 @@ int Sys::hibernate(int count){
 	return ::hibernate(count);
 }
 
-int Sys::request(int req, void * arg){
-	return kernel_request(req, arg);
+int Sys::request(int request, void * arg){
+	return kernel_request(request, arg);
 }
 
 void Sys::reset(){

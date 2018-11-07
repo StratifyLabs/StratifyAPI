@@ -3,6 +3,7 @@
 set(SOURCELIST
 	${SOURCES_PREFIX}/ApiObject.cpp
 	${SOURCES_PREFIX}/WorkObject.cpp
+	${SOURCES_PREFIX}/SgfxObject.cpp
 	PARENT_SCOPE)
 
 if( ${SOS_BUILD_CONFIG} STREQUAL arm )

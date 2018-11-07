@@ -1,3 +1,5 @@
+/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
+
 #ifndef URL_HPP
 #define URL_HPP
 

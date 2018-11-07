@@ -24,8 +24,6 @@ namespace hal {
 class PeriphObject : public Device {
 public:
 
-	~PeriphObject();
-
 	/*! \details Defines the type to use when specifying a peripheral port. */
 	typedef unsigned int port_t;
 

@@ -1,9 +1,15 @@
+/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
+
 #ifndef SECURESOCKET_HP
 #define SECURESOCKET_HP
 
+#include <mbedtls_api.h>
+#include "../sys/requests.h"
 #include "Socket.hpp"
 
 namespace inet {
+
+typedef api::Api<mbedtls_api_t, SAPI_API_REQUEST_MBEDTLS> SecureSocketApi;
 
 class SecureSocket : public Socket {
 public:
@@ -37,8 +43,11 @@ public:
 	virtual int close();
 
 
+	static SecureSocketApi api(){ return m_api; }
+
 private:
 
+	static SecureSocketApi m_api;
 	void * m_context;
 
 };

@@ -38,20 +38,20 @@ public:
 	}
 
 
-	void map(const sg_vector_map_t & m){ sg_api()->point_map(&m_value, &m); }
+	void map(const sg_vector_map_t & m){ api()->point_map(&m_value, &m); }
 
 	static sg_size_t map_pixel_size(const sg_vector_map_t & m){ return sg_point_map_pixel_size(&m); }
 
 	Point & operator=(const sg_point_t & a){ m_value = a; return *this; }
-	Point & operator+=(const sg_point_t & a){ sg_api()->point_shift(&m_value, a); return *this; }
+	Point & operator+=(const sg_point_t & a){ api()->point_shift(&m_value, a); return *this; }
 	Point operator*(float f) const;
 	Point operator+(const sg_point_t & a) const;
 	Point operator-(const sg_point_t & a) const;
 
-	void rotate(s16 angle){ sg_api()->point_rotate(&m_value, angle); }
-	void scale(u16 a){ sg_api()->point_scale(&m_value, a); }
-	void shift(s16 x, s16 y){ sg_api()->point_shift(&m_value, sg_point(x,y)); }
-	void shift(sg_point_t p){ sg_api()->point_shift(&m_value, p); }
+	void rotate(s16 angle){ api()->point_rotate(&m_value, angle); }
+	void scale(u16 a){ api()->point_scale(&m_value, a); }
+	void shift(s16 x, s16 y){ api()->point_shift(&m_value, sg_point(x,y)); }
+	void shift(sg_point_t p){ api()->point_shift(&m_value, p); }
 
 private:
 	sg_point_t m_value;

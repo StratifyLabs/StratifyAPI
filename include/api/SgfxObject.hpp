@@ -1,11 +1,22 @@
 #ifndef API_SGFX_OBJECT_HPP
 #define API_SGFX_OBJECT_HPP
 
+#include <sapi/sg.h>
 #include "WorkObject.hpp"
 #include "InfoObject.hpp"
 #include "../var/Data.hpp"
+#include "../sys/requests.h"
 
 namespace api {
+
+typedef Api<sg_api_t, SAPI_API_REQUEST_SGFX> SgfxApi;
+
+class SgfxObject {
+public:
+	static const SgfxApi & api(){ return m_api; }
+private:
+	static SgfxApi m_api;
+};
 
 /*! \brief Sgfx Information Object
  *
@@ -13,7 +24,7 @@ namespace api {
  * \sa sgfx namespace
  *
  */
-class SgfxInfoObject : public virtual InfoObject {
+class SgfxInfoObject : public virtual InfoObject, public SgfxObject {
 
 };
 
@@ -23,7 +34,7 @@ class SgfxInfoObject : public virtual InfoObject {
  *
  * \sa sgfx namespace
  */
-class SgfxWorkObject : public virtual WorkObject {
+class SgfxWorkObject : public virtual WorkObject, public SgfxObject {
 
 };
 
@@ -34,7 +45,11 @@ class SgfxWorkObject : public virtual WorkObject {
  * \sa sgfx namespace
  *
  */
-class SgfxDataObject : public var::Data {
+class SgfxDataObject : public var::Data, public SgfxObject {
+public:
+
+private:
+
 
 };
 
