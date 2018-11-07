@@ -64,7 +64,7 @@ int Xml::set_get_value(String & dest, const var::ConstString & key, bool set) co
 
 	//strip the attribute from the str -- attr is only valid for this method
 
-    if( key.length() == 0 ){
+	if( key.length() == 0 ){
 		return -1; //empty key
 	}
 
@@ -75,7 +75,7 @@ int Xml::set_get_value(String & dest, const var::ConstString & key, bool set) co
 	if( start_attr > -1 ){
 		end_attr = s1.find(')', start_attr+1);
 		if( end_attr > -1 ){
-            s2.copy_contents(s1, start_attr+1, end_attr-start_attr-1);
+			s2.copy_contents(s1, start_attr+1, end_attr-start_attr-1);
 			s1.cdata()[start_attr] = 0;
 		} else {
 			//malformed argument
@@ -85,7 +85,7 @@ int Xml::set_get_value(String & dest, const var::ConstString & key, bool set) co
 
 
 	//find the descriptor
-    if( !s1.is_empty() ){
+	if( !s1.is_empty() ){
 		if( find_context(s1.c_str(), content, tmp_content) < 0 ){
 			return -1;
 		}
@@ -93,7 +93,7 @@ int Xml::set_get_value(String & dest, const var::ConstString & key, bool set) co
 		tmp_content = content;
 	}
 
-    if( !s2.is_empty() ){
+	if( !s2.is_empty() ){
 		//this is an attribute value that needs to be fetched
 		dest.clear();
 		return find_attribute(s2, dest, tmp_content);
@@ -238,13 +238,13 @@ int Xml::child(String & name, String * value){
 	}
 
 	tmp = content;
-    name = "";
+	name = "";
 	if( find_target_tag(name, tmp, target) < 0 ){
 		return -1;
 	}
 
 	if( value != 0 ){
-        this->get_value(*value, name.str());
+		this->get_value(*value, name.str());
 	}
 
 	content.cursor += target.size;
@@ -328,11 +328,11 @@ int Xml::write_element(const var::ConstString & name, const var::ConstString & d
 	}
 	str.append(">");
 
-    if(  write(str) != (int)str.size() ){
+	if(  write(str) != (int)str.size() ){
 		return -1;
 	}
 
-    if(  write(data) < 0 ){
+	if(  write(data) < 0 ){
 		return -1;
 	}
 
@@ -341,7 +341,7 @@ int Xml::write_element(const var::ConstString & name, const var::ConstString & d
 	str.append(name);
 	str.append(">\n");
 
-    if(  write(str) != (int)str.size() ){
+	if(  write(str) != (int)str.size() ){
 		return -1;
 	}
 	return 0;
@@ -430,8 +430,8 @@ int Xml::parse_ref(String & name, String & value, const ConstString & str, const
 	if( open_bracket > 0 ){
 		close_bracket = s0.find(enclosing[1], open_bracket+1);
 		if( close_bracket > 0 ){
-            value.copy_contents(s0, open_bracket+1, close_bracket-open_bracket-1);
-            name.copy_contents(s0, open_bracket);
+			value.copy_contents(s0, open_bracket+1, close_bracket-open_bracket-1);
+			name.copy_contents(s0, open_bracket);
 			return 1;
 		} else {
 			//malformed statement
@@ -456,7 +456,7 @@ int Xml::find_target_tag(String & name, context_t & context, context_t & target)
 	int end_offset;
 	String str;
 
-    start_offset = find_tag(name.str(), context, "<", target.start_tag_size); //find a normal start tag
+	start_offset = find_tag(name.str(), context, "<", target.start_tag_size); //find a normal start tag
 	if( start_offset > -1 ){
 		target.offset = start_offset;
 		//check to see if the start-tag is an empty element tag
@@ -466,9 +466,9 @@ int Xml::find_target_tag(String & name, context_t & context, context_t & target)
 
 		context.cursor = start_offset - context.offset; //add 1 to advance past start tag
 
-        if( name.is_empty() ){
+		if( name.is_empty() ){
 			load_start_tag(str, target);
-            Token t0(str.str(), "\t\r\n <>/", "\"'");
+			Token t0(str.str(), "\t\r\n <>/", "\"'");
 			if( t0.size() ){
 				name = t0.at(0);
 			} else {
@@ -478,7 +478,7 @@ int Xml::find_target_tag(String & name, context_t & context, context_t & target)
 		}
 
 		//now find the end tag
-        end_offset = find_tag(name.str(), context, "</", target.end_tag_size);
+		end_offset = find_tag(name.str(), context, "</", target.end_tag_size);
 		if( end_offset > -1 ){
 			target.cursor = 0;
 			target.offset = start_offset;
@@ -517,7 +517,7 @@ int Xml::next_tag_name(
 		return -1;
 	}
 
-    Token t0(s0.str(), "\t\r\n <>/", "\"'");
+	Token t0(s0.str(), "\t\r\n <>/", "\"'");
 
 	//the name is t0.at(0)
 	if( t0.size() ){
@@ -551,9 +551,9 @@ int Xml::check_string_for_open_bracket(String * src, String * cmp) const {
 
 
 int Xml::find_tag(const var::ConstString & name,
-		const context_t & context,
-        const var::ConstString & tag_style,
-		s32 & tag_size) const {
+						const context_t & context,
+						const var::ConstString & tag_style,
+						s32 & tag_size) const {
 	int ret;
 	int loc;
 	int start_loc;
@@ -599,32 +599,32 @@ int Xml::find_tag(const var::ConstString & name,
 
 			bytes_read += ret;
 			switch(state){
-			case FIND_STATE_OPENBRACKET:
-				if( (loc = check_string_for_open_bracket(&str, &str_cmp)) > -1 ){
+				case FIND_STATE_OPENBRACKET:
+					if( (loc = check_string_for_open_bracket(&str, &str_cmp)) > -1 ){
 
 
-					state = FIND_STATE_CLOSEBRACKET;
-					start_loc = offset + loc;
-					loc += str_cmp.size();
-				} else {
-					break;
-				}
-				//no break;
-			case FIND_STATE_CLOSEBRACKET:
-				//found part of the start tag -- now find the closing tag -- validate attr's?
-				/*
+						state = FIND_STATE_CLOSEBRACKET;
+						start_loc = offset + loc;
+						loc += str_cmp.size();
+					} else {
+						break;
+					}
+					//no break;
+				case FIND_STATE_CLOSEBRACKET:
+					//found part of the start tag -- now find the closing tag -- validate attr's?
+					/*
 				if( allowed_chars != 0 ){
 					//check to see that the chars between the name and close bracket are valid
 				}
 				 */
 
 
-				if( (loc = str.find(">", loc)) > -1 ){
-					//found the end
-					end_loc = offset + loc;
-					tag_size = end_loc - start_loc + 1;
-					return start_loc; //location of the start of the tag
-				}
+					if( (loc = str.find(">", loc)) > -1 ){
+						//found the end
+						end_loc = offset + loc;
+						tag_size = end_loc - start_loc + 1;
+						return start_loc; //location of the start of the tag
+					}
 			}
 			offset += ret;
 		}
@@ -716,7 +716,7 @@ int Xml::find_attribute(String & key, String & value, context_t & target) const{
 	}
 
 
-    Token t0(s0.str(), "\t\r\n <>/", "\"'");
+	Token t0(s0.str(), "\t\r\n <>/", "\"'");
 	for(i=0; i < t0.size(); i++){
 		Token t1(t0.at(i), "=");
 		if( key == t1.at(0) ){

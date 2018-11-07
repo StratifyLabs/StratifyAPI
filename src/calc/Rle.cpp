@@ -20,8 +20,8 @@ int Rle::calc_size(const void * src, int nbyte){
 		bp++;
 		srcp++;
 		while( (size != 255) &&
-				(bp < nbyte) &&
-				(*(srcp-1) == *(srcp)) ){
+				 (bp < nbyte) &&
+				 (*(srcp-1) == *(srcp)) ){
 			size++;
 			bp++;
 			srcp++;
@@ -52,8 +52,8 @@ int Rle::encode(void * dest, s32 & dest_size, const void * src, s32 src_size){
 		bp++;
 		value = *srcp++;
 		while( (size != 255) &&
-				(bp < src_size) &&
-				(*(srcp-1) == *(srcp)) ){
+				 (bp < src_size) &&
+				 (*(srcp-1) == *(srcp)) ){
 			size++;
 			bp++;
 			srcp++;

@@ -8,9 +8,9 @@ Fifo::Fifo(){}
 
 int Fifo::get_info(FifoInfo & info) const { return ioctl(I_FIFO_GETINFO, (void*)&info.m_info); }
 FifoInfo Fifo::get_info() const {
-    FifoInfo a;
-    set_error_number_if_error(get_info(a));
-    return a;
+	FifoInfo a;
+	set_error_number_if_error(get_info(a));
+	return a;
 }
 int Fifo::flush() const { return ioctl(I_FIFO_FLUSH); }
 int Fifo::initialize() const { return ioctl(I_FIFO_INIT); }

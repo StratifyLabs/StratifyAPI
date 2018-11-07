@@ -175,27 +175,27 @@ void List::handle_select_button_actuation(const Event  & event, const DrawingAtt
 Element * List::handle_event(const Event  & event, const DrawingAttr & attr){
 	u32 i;
 	switch(event.type()){
-	default: break;
-	case Event::SETUP:
-		m_draw_animation_item = size();
-		LinkedElement::handle_event(event, attr);
-		/* no break */
-	case Event::ENTER:
-		for(i=0; i < size(); i++){
-			at(i).handle_event(event, attr);
-		}
-		return this;
+		default: break;
+		case Event::SETUP:
+			m_draw_animation_item = size();
+			LinkedElement::handle_event(event, attr);
+			/* no break */
+		case Event::ENTER:
+			for(i=0; i < size(); i++){
+				at(i).handle_event(event, attr);
+			}
+			return this;
 
-	case Event::LIST_ACTUATED:
-		return current().handle_event(Event(Event::LIST_ITEM_ACTUATED), attr);
+		case Event::LIST_ACTUATED:
+			return current().handle_event(Event(Event::LIST_ITEM_ACTUATED), attr);
 
-	case Event::LIST_UP:
-		handle_up_button_actuation(event, attr);
-		break;
+		case Event::LIST_UP:
+			handle_up_button_actuation(event, attr);
+			break;
 
-	case Event::LIST_DOWN:
-		handle_down_button_actuation(event, attr);
-		break;
+		case Event::LIST_DOWN:
+			handle_down_button_actuation(event, attr);
+			break;
 
 
 	}

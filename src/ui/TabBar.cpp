@@ -22,27 +22,27 @@ Element * TabBar::handle_event(const Event  & event, const DrawingAttr & attr){
 	DrawingAttr tab_attr = attr + drawing_point(0,0) + drawing_dim(1000, height());
 
 	switch(event.type()){
-	default: break;
-	case Event::SETUP:
-		for(i=0; i < size(); i++){
-			at(i).element()->handle_event(event, view_attr);
-		}
-		return this;
-	case Event::ENTER:
-		at(selected()).element()->handle_event(event, view_attr);
-		return this;
+		default: break;
+		case Event::SETUP:
+			for(i=0; i < size(); i++){
+				at(i).element()->handle_event(event, view_attr);
+			}
+			return this;
+		case Event::ENTER:
+			at(selected()).element()->handle_event(event, view_attr);
+			return this;
 
-	case Event::TAB_LEFT:
-		at(selected()).element()->handle_event(event, view_attr);
-		scroll(-1, false, view_attr);
-		draw_tab_bar(tab_attr, selected());
-		return this;
+		case Event::TAB_LEFT:
+			at(selected()).element()->handle_event(event, view_attr);
+			scroll(-1, false, view_attr);
+			draw_tab_bar(tab_attr, selected());
+			return this;
 
-	case Event::TAB_RIGHT:
-		at(selected()).element()->handle_event(event, view_attr);
-		scroll(1, false, view_attr);
-		draw_tab_bar(tab_attr, selected());
-		return this;
+		case Event::TAB_RIGHT:
+			at(selected()).element()->handle_event(event, view_attr);
+			scroll(1, false, view_attr);
+			draw_tab_bar(tab_attr, selected());
+			return this;
 	}
 
 	if( at(selected()).element()->handle_event(event, view_attr) > 0 ){

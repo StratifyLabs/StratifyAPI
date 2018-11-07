@@ -31,18 +31,18 @@ int Font::calc_len(const var::ConstString & str) const {
 	int l;
 	l = 0;
 
-    const char * s = str.str();
+	const char * s = str.str();
 
-    while( *s != 0 ){
+	while( *s != 0 ){
 
-        if( *s == ' ' ){
+		if( *s == ' ' ){
 			l += space_size();
 		} else {
-            if( load_char(m_char, *s, true) == 0){
+			if( load_char(m_char, *s, true) == 0){
 				l += m_char.xadvance;
 			}
 		}
-        s++;
+		s++;
 	}
 	return l;
 }

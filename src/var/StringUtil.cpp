@@ -10,7 +10,7 @@
 using namespace var;
 
 static const int bases[StringUtil::MODE_TOTAL] = {
-		2, 8, 16, 16, 10
+	2, 8, 16, 16, 10
 };
 
 
@@ -174,9 +174,9 @@ int StringUtil::utoa(char dest[BUF_SIZE], uint32_t num, int base, bool upper, in
 	}
 
 	switch(base){
-	case 16: format[i+1] = 'X'; break;
-	case 8: format[i+1] = 'o'; break;
-	default: format[i+1] = 'd';
+		case 16: format[i+1] = 'X'; break;
+		case 8: format[i+1] = 'o'; break;
+		default: format[i+1] = 'd';
 	}
 
 	return sprintf(dest, format, num);

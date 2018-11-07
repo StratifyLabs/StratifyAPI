@@ -45,9 +45,9 @@ int CFifo::get_info(int channel, fifo_info_t & info) const {
 }
 
 FifoInfo CFifo::get_info(int channel){
-    FifoInfo info;
-    get_info(channel, info.m_info);
-    return info;
+	FifoInfo info;
+	get_info(channel, info.m_info);
+	return info;
 }
 
 

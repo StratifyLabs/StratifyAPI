@@ -17,13 +17,13 @@ LinkedElement::LinkedElement(LinkedElement * parent, LinkedElement * child) {
 
 Element * LinkedElement::handle_event(const Event  & event, const DrawingAttr & attr){
 	switch(event.type()){
-	case Event::SETUP:
-		if( child() && (child() != this) ){
-			child()->handle_event(event, attr);
-		}
-		break;
-	default:
-		break;
+		case Event::SETUP:
+			if( child() && (child() != this) ){
+				child()->handle_event(event, attr);
+			}
+			break;
+		default:
+			break;
 	}
 	return Element::handle_event(event, attr);
 }

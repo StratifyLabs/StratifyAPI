@@ -9,9 +9,9 @@ using namespace ui;
 Element::Element(){}
 
 void Element::draw_scroll(const DrawingScaledAttr & attr,
-		int selected,
-		int total,
-		int visible){
+								  int selected,
+								  int total,
+								  int visible){
 	sg_point_t p = attr.point();
 	Dim d = attr.dim();
 	int bar_size;

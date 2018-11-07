@@ -205,18 +205,18 @@ void Drawing::draw_checkerboard(const DrawingAttr & attr, sg_size_t pattern_heig
 	sg_bmap_data_t odd = 0xAAAAAAAA;
 	sg_bmap_data_t even = 0x55555555;
 	switch(pattern_height){
-	case 2:
-		odd = 0xCCCCCCCC;
-		even = 0x33333333;
-		break;
-	case 4:
-		odd = 0xF0F0F0F0;
-		even = 0x0F0F0F0F;
-		break;
-	case 8:
-		odd = 0xFF00FF00;
-		even = 0x00FF00FF;
-		break;
+		case 2:
+			odd = 0xCCCCCCCC;
+			even = 0x33333333;
+			break;
+		case 4:
+			odd = 0xF0F0F0F0;
+			even = 0x0F0F0F0F;
+			break;
+		case 8:
+			odd = 0xFF00FF00;
+			even = 0x00FF00FF;
+			break;
 	}
 	draw_pattern(attr, odd, even, pattern_height);
 }

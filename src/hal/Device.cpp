@@ -41,11 +41,11 @@ int Device::cancel(int channel, int o_events){
 
 
 int Device::set_interrupt_priority(int priority, int request){
-    mcu_action_t action;
-    memset(&action, 0, sizeof(action));
-    action.o_events = MCU_EVENT_FLAG_SET_PRIORITY;
-    action.prio = priority;
-    return ioctl(request, &action);
+	mcu_action_t action;
+	memset(&action, 0, sizeof(action));
+	action.o_events = MCU_EVENT_FLAG_SET_PRIORITY;
+	action.prio = priority;
+	return ioctl(request, &action);
 }
 
 

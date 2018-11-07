@@ -38,9 +38,9 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 		icon_bitmap.clear();
 		VectorMap map(icon_bitmap, icon_attr().rotation());
 		Vector::draw(icon_bitmap,
-				icon_attr_const().icon(),
-				map,
-				&bounds);
+						 icon_attr_const().icon(),
+						 map,
+						 &bounds);
 		icon_dim = bounds.dim;
 	} else {
 		icon_dim.dim = 0;
@@ -114,7 +114,7 @@ Element * ListItem::handle_event(const Event  & event, const DrawingAttr & attr)
 
 
 ListItemToggle::ListItemToggle(const char * label, LinkedElement * parent) :
-															ListItem(label, 0, parent){
+	ListItem(label, 0, parent){
 	m_toggle_enabled_icon = 0;
 	m_toggle_disabled_icon = 0;
 }
@@ -155,17 +155,17 @@ ListItemExit::ListItemExit(const sg_vector_icon_t * icon, LinkedElement * parent
 
 
 ListItemCheck::ListItemCheck(const char * label, List * parent) :
-																		ListItem(label, 0, parent){
+	ListItem(label, 0, parent){
 	set_enabled(false);
 }
 
 
 DirList::DirList(const var::ConstString & path,
-		const sg_vector_icon_t * icon,
-		LinkedElement * parent,
-		LinkedElement * child) :
-								List(parent),
-								m_item("TBD", icon, this, child) {
+					  const sg_vector_icon_t * icon,
+					  LinkedElement * parent,
+					  LinkedElement * child) :
+	List(parent),
+	m_item("TBD", icon, this, child) {
 	set_path(path);
 }
 
@@ -205,7 +205,7 @@ LinkedElement & DirList::at(list_attr_size_t i){
 void DirList::set_path(const var::ConstString & path){
 	m_path = path;
 	m_dir.close();
-    if( m_dir.open(path) < 0 ){
+	if( m_dir.open(path) < 0 ){
 
 	}
 	recount();
@@ -226,13 +226,13 @@ void DirList::recount(void){
 Element * DirList::handle_event(const Event  & event, const DrawingAttr & attr){
 	switch(event.type()){
 
-	case Event::BUTTON_ACTUATION:
-		if( event.button()->event_id() == Event::SELECT_BUTTON ){
-			if( m_callback ){ m_callback(this); }
-		}
-		// no break
-	default:
-		return List::handle_event(event, attr);
+		case Event::BUTTON_ACTUATION:
+			if( event.button()->event_id() == Event::SELECT_BUTTON ){
+				if( m_callback ){ m_callback(this); }
+			}
+			// no break
+		default:
+			return List::handle_event(event, attr);
 	}
 
 }

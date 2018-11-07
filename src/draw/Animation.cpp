@@ -26,8 +26,8 @@ Animation::Animation(const AnimationAttr & attr){
 }
 
 void Animation::init(Drawing * current,
-		Drawing * target,
-		const DrawingAttr & drawing_attr){
+							Drawing * target,
+							const DrawingAttr & drawing_attr){
 
 
 	m_drawing_attr = &drawing_attr;
@@ -59,46 +59,46 @@ void Animation::reinit(){
 
 		//convert motion total
 		switch(type()){
-		case AnimationAttr::PUSH_DOWN:
-		case AnimationAttr::PUSH_UP:
-		case AnimationAttr::SLIDE_DOWN:
-		case AnimationAttr::UNDO_SLIDE_DOWN:
-		case AnimationAttr::SLIDE_UP:
-		case AnimationAttr::UNDO_SLIDE_UP:
-		case AnimationAttr::BOUNCE_UP:
-		case AnimationAttr::BOUNCE_DOWN:
-			//convert motion total as a height
-			if( drawing_motion_total() > m_drawing_attr->height() ){
-				motion = m_drawing_attr->height();
-			} else {
-				motion = drawing_motion_total();
-			}
-			set_motion_total( motion * d.height / m_drawing_attr->height() );
-			break;
-		case AnimationAttr::PUSH_LEFT:
-		case AnimationAttr::PUSH_RIGHT:
-		case AnimationAttr::SLIDE_LEFT:
-		case AnimationAttr::UNDO_SLIDE_LEFT:
-		case AnimationAttr::SLIDE_RIGHT:
-		case AnimationAttr::UNDO_SLIDE_RIGHT:
-		case AnimationAttr::BOUNCE_LEFT:
-		case AnimationAttr::BOUNCE_RIGHT:
-			if( drawing_motion_total() > m_drawing_attr->width() ){
-				motion = m_drawing_attr->width();
-			} else {
-				motion = drawing_motion_total();
-			}
-			set_motion_total( motion * d.width / m_drawing_attr->width() );
-			break;
+			case AnimationAttr::PUSH_DOWN:
+			case AnimationAttr::PUSH_UP:
+			case AnimationAttr::SLIDE_DOWN:
+			case AnimationAttr::UNDO_SLIDE_DOWN:
+			case AnimationAttr::SLIDE_UP:
+			case AnimationAttr::UNDO_SLIDE_UP:
+			case AnimationAttr::BOUNCE_UP:
+			case AnimationAttr::BOUNCE_DOWN:
+				//convert motion total as a height
+				if( drawing_motion_total() > m_drawing_attr->height() ){
+					motion = m_drawing_attr->height();
+				} else {
+					motion = drawing_motion_total();
+				}
+				set_motion_total( motion * d.height / m_drawing_attr->height() );
+				break;
+			case AnimationAttr::PUSH_LEFT:
+			case AnimationAttr::PUSH_RIGHT:
+			case AnimationAttr::SLIDE_LEFT:
+			case AnimationAttr::UNDO_SLIDE_LEFT:
+			case AnimationAttr::SLIDE_RIGHT:
+			case AnimationAttr::UNDO_SLIDE_RIGHT:
+			case AnimationAttr::BOUNCE_LEFT:
+			case AnimationAttr::BOUNCE_RIGHT:
+				if( drawing_motion_total() > m_drawing_attr->width() ){
+					motion = m_drawing_attr->width();
+				} else {
+					motion = drawing_motion_total();
+				}
+				set_motion_total( motion * d.width / m_drawing_attr->width() );
+				break;
 		};
 
 		sg_api()->animate_init(pattr(),
-				type(),
-				path(),
-				step_total(),
-				motion_total(),
-				p,
-				d);
+									  type(),
+									  path(),
+									  step_total(),
+									  motion_total(),
+									  p,
+									  d);
 
 	}
 
@@ -126,8 +126,8 @@ int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
 	m_drawing_attr->bitmap().set_pen_flags(sgfx::Pen::FLAG_IS_SOLID);
 
 	ret = sg_api()->animate(m_drawing_attr->bitmap().bmap(),
-			m_drawing_attr->scratch()->bmap(),
-			data());
+									m_drawing_attr->scratch()->bmap(),
+									data());
 
 	m_drawing_attr->bitmap().set_pen_flags(o_flags);
 	m_drawing_attr->bitmap().refresh();

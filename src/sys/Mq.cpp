@@ -11,19 +11,19 @@ Mq::Mq(){
 }
 
 int Mq::open(const char * name,
-		int oflag,
-		mode_t mode,
-		const struct mq_attr * attr){
+				 int oflag,
+				 mode_t mode,
+				 const struct mq_attr * attr){
 	m_handle = mq_open(name, oflag, mode, attr);
 	return m_handle;
 }
 
 int Mq::create(const char * name,
-		int oflag,
-		mode_t mode,
-		long flags,
-		long maxmsg,
-		long msgsize){
+					int oflag,
+					mode_t mode,
+					long flags,
+					long maxmsg,
+					long msgsize){
 	struct mq_attr attr;
 	attr.mq_flags = flags;
 	attr.mq_maxmsg = maxmsg;
@@ -55,7 +55,7 @@ MqAttr Mq::get_attr(){
 }
 
 int Mq::set_attr(const struct mq_attr * mqstat,
-		struct mq_attr * omqstat){
+					  struct mq_attr * omqstat){
 	return mq_setattr(m_handle, mqstat, omqstat);
 }
 
@@ -64,25 +64,25 @@ int Mq::set_attr(const MqAttr & attr){
 }
 
 s32 Mq::receive(char * msg_ptr,
-		u32 msg_len){
+					 u32 msg_len){
 	return mq_receive(m_handle, msg_ptr, msg_len, &m_msg_prio);
 }
 s32 Mq::timedreceive(char * msg_ptr,
-		u32 msg_len,
-		const struct timespec * abs_timeout){
+							u32 msg_len,
+							const struct timespec * abs_timeout){
 	return mq_timedreceive(m_handle, msg_ptr, msg_len, &m_msg_prio, abs_timeout);
 }
 
 int Mq::send(const char * msg_ptr,
-		u32 msg_len,
-		unsigned msg_prio){
+				 u32 msg_len,
+				 unsigned msg_prio){
 	return mq_send(m_handle, msg_ptr, msg_len, msg_prio);
 }
 
 int Mq::timedsend(const char * msg_ptr,
-		u32 msg_len,
-		unsigned msg_prio,
-		const struct timespec * abs_timeout){
+						u32 msg_len,
+						unsigned msg_prio,
+						const struct timespec * abs_timeout){
 	return mq_timedsend(m_handle, msg_ptr, msg_len, msg_prio, abs_timeout);
 
 }

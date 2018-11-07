@@ -24,7 +24,7 @@ int Sem::get_value() const {
 
 int Sem::init(sem_t * sem, int pshared, unsigned int value){
 	m_handle = sem;
-    return set_error_number_if_error(sem_init(m_handle, pshared, value));
+	return set_error_number_if_error(sem_init(m_handle, pshared, value));
 }
 
 int Sem::open(const char * name, int o_flags, int mode, int value){
@@ -32,7 +32,7 @@ int Sem::open(const char * name, int o_flags, int mode, int value){
 	if( m_handle != 0 ){
 		return 0;
 	}
-    set_error_number_to_errno();
+	set_error_number_to_errno();
 	return -1;
 }
 

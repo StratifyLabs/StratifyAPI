@@ -12,63 +12,63 @@ using namespace chrono;
 Timer::Timer() { reset(); }
 
 void Timer::reset(){
-    m_start.reset();
-    m_stop.reset();
-    //when stop.seconds() value is 0, the timer is in reset mode
-    //when stop.seconds() value is -1, the timer is currently running
+	m_start.reset();
+	m_stop.reset();
+	//when stop.seconds() value is 0, the timer is in reset mode
+	//when stop.seconds() value is -1, the timer is currently running
 }
 
 void Timer::restart(){
-    m_start = Clock::get_time();
-    m_stop.set(-1, 0);
+	m_start = Clock::get_time();
+	m_stop.set(-1, 0);
 }
 
 
 void Timer::start(){
-    if( is_running() == false ){
-        restart();
-    }
+	if( is_running() == false ){
+		restart();
+	}
 }
 
 void Timer::resume(){
-    ClockTime new_start;
-    ClockTime now;
+	ClockTime new_start;
+	ClockTime now;
 
-    if( m_stop.seconds() < 0 ){
-        return; //timer is not stopped
-    }
+	if( m_stop.seconds() < 0 ){
+		return; //timer is not stopped
+	}
 
-    //if timer has been stopped, then resume counting
-    if( m_start.seconds() + m_start.nanoseconds() ){ //start is non-zero
-        new_start = m_stop - m_start;
-        now = Clock::get_time();
-        m_start = now - new_start;
-        m_stop.set(-1, 0);
-    } else {
-        //if timer is not running then start it
-        restart();
-    }
+	//if timer has been stopped, then resume counting
+	if( m_start.seconds() + m_start.nanoseconds() ){ //start is non-zero
+		new_start = m_stop - m_start;
+		now = Clock::get_time();
+		m_start = now - new_start;
+		m_stop.set(-1, 0);
+	} else {
+		//if timer is not running then start it
+		restart();
+	}
 }
 
 ClockTime Timer::clock_time() const {
-    ClockTime now;
-    if( m_stop.seconds() < 0 ){
-        now = Clock::get_time();
-    } else {
-        now = m_stop;
-    }
-    //difference between now and start_
-    now -= m_start;
-    return now;
+	ClockTime now;
+	if( m_stop.seconds() < 0 ){
+		now = Clock::get_time();
+	} else {
+		now = m_stop;
+	}
+	//difference between now and start_
+	now -= m_start;
+	return now;
 }
 
 MicroTime Timer::calc_value() const {
-    return MicroTime(clock_time());
+	return MicroTime(clock_time());
 }
 
 void Timer::stop(){
-    if( is_running() ){
-        m_stop = Clock::get_time();
-    }
+	if( is_running() ){
+		m_stop = Clock::get_time();
+	}
 }
 

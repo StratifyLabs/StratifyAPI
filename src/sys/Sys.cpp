@@ -12,14 +12,14 @@ using namespace sys;
 
 
 SysInfo SysInfo::get(){
-    SysInfo result;
+	SysInfo result;
 #if !defined __link
-    Sys sys;
-    if( sys.open() < 0 ){ return result; }
-    sys.ioctl(I_SYS_GETINFO, &result.m_info);
-    sys.close();
+	Sys sys;
+	if( sys.open() < 0 ){ return result; }
+	sys.ioctl(I_SYS_GETINFO, &result.m_info);
+	sys.close();
 #endif
-    return result;
+	return result;
 }
 
 #if defined __link
@@ -131,9 +131,9 @@ int Sys::get_version(var::String & version){
 }
 
 var::String Sys::get_version(){
-    var::String version;
-    get_version(version);
-    return version;
+	var::String version;
+	get_version(version);
+	return version;
 }
 
 
