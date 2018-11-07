@@ -35,7 +35,19 @@ namespace hal {
  */
 class Device : public api::HalWorkObject {
 public:
-	/*! \details Constructs a Device. */
+	/*! \details Constructs a Device.
+	 *
+	 * Unlike sys::File, upon creation the
+	 * is_close_on_destruct() flag is cleared for
+	 * all devices (and hal::Periph). In
+	 * order to close a device, close() must
+	 * be called explicitly.
+	 *
+	 * This is the desired behavior because
+	 * it is common to create more than one hal::Device
+	 * object to access the same hardware in different contexts.
+	 *
+	 */
 	Device();
 
 	int set_interrupt_priority(int priority, int request = I_MCU_SETACTION);

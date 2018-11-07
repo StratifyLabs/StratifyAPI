@@ -90,7 +90,6 @@ int Appfs::create(const var::ConstString & name, const void * buf, int nbyte, co
 		attr.loc = loc;
 
 		if( (tmp = file.ioctl(I_APPFS_CREATE, &attr)) < 0 ){
-			file.close();
 			return tmp;
 		}
 
@@ -108,7 +107,6 @@ int Appfs::create(const var::ConstString & name, const void * buf, int nbyte, co
 
 	} while( bw < f.exec.code_size);
 
-	file.close();
 	return nbyte;
 }
 
@@ -135,7 +133,6 @@ int Appfs::get_info(const var::ConstString & path, appfs_info_t & info){
 	}
 
 	ret = f.read(&appfs_file_header, sizeof(appfs_file_header));
-	f.close();
 	if( ret == sizeof(appfs_file_header) ){
 		//first check to see if the name matches -- otherwise it isn't an app file
 		path_name = File::name(path).str();
@@ -156,8 +153,6 @@ int Appfs::get_info(const var::ConstString & path, appfs_info_t & info){
 		errno = ENOEXEC;
 		ret = -1;
 	}
-
-
 	return ret;
 }
 

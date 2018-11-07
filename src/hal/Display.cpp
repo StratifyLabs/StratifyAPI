@@ -124,7 +124,6 @@ int DisplayPalette::save(const char * path) const{
 
 	if( f.create(path, true) < 0 ){ return -1; }
 	f << var::Data(&palette, sizeof(palette)) << colors();
-	f.close();
 
 	if( f.error_number() != 0 ){
 		return -1;
@@ -147,19 +146,16 @@ int DisplayPalette::load(const char * path){
 	if( f.open_readonly(path) < 0 ){ return -1; }
 
 	if( f.read(&m_palette, sizeof(m_palette)) != sizeof(m_palette) ){
-		f.close();
 		return -1;
 	}
 
 	if( m_colors.alloc(m_palette.count * bits_per_pixel()/8) < 0 ){
-		f.close();
 		return -1;
 	}
 
 	m_palette.colors = colors().to_void();
 
 	f >> m_colors;
-	f.close();
 
 	if( f.error_number() ){
 		return -1;

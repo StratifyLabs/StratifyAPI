@@ -63,26 +63,26 @@ int PeriphObject::lookup_fileno() const {
 }
 
 void PeriphObject::update_fileno() const {
-    if( (m_fd >= 0) && (m_fd_map[m_fd] == 0) ){ //fd is no longer valid
-        m_fd = -1; //kill the fileno
+	 if( (fileno() >= 0) && (m_fd_map[fileno()] == 0) ){ //fd is no longer valid
+		  set_fileno(-1); //kill the fileno
     }
 }
 
 
 int PeriphObject::open(const char * name, int flags){
     //check map
-    int fileno;
+	 int fd;
     int ret;
-    fileno = lookup_fileno();
-    if( fileno < 0 ){
+	 fd = lookup_fileno();
+	 if( fd < 0 ){
         ret = Device::open(name, flags);
-        if( m_fd >= 0 ){
-            m_fd_map[m_fd] = m_periph_port;
+		  if( fileno() >= 0 ){
+				m_fd_map[fileno()] = m_periph_port;
         } else {
             return ret;
         }
     } else {
-        m_fd = fileno;
+		 set_fileno(fd);
     }
 
     return 0;
@@ -113,10 +113,10 @@ int PeriphObject::open(int flags){
 int PeriphObject::close(){
     int ret = 0;
     update_fileno();
-    if( m_fd >= 0 ){
-        m_fd_map[m_fd] = 0;
+	 if( fileno() >= 0 ){
+		  m_fd_map[fileno()] = 0;
         Device::close();
-        m_fd = -1;
+		  set_fileno(-1);
     }
     return ret;
 }

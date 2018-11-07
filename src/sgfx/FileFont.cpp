@@ -18,7 +18,6 @@ FileFont::~FileFont(){
 	if( m_kerning_pairs != 0 ){
 		free(m_kerning_pairs);
 	}
-	m_file.close();
 }
 
 int FileFont::set_file(const var::ConstString & name, int offset){
@@ -111,16 +110,10 @@ void FileFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_
 	if( ch.canvas_idx != m_current_canvas ){
 		canvas_offset = m_canvas_start + ch.canvas_idx*m_canvas_size;
 		if( m_file.read(m_offset + canvas_offset, m_canvas.data(), m_canvas_size) != (int)m_canvas_size ){
-			printf("failed to load canvas %ld\n", canvas_offset);
 			return;
 		}
 		m_current_canvas = ch.canvas_idx;
 	}
-
-	printf("Loaded canvas %d %ld (%d,%d %dx%d)\n",
-			m_current_canvas,
-			m_canvas_start + ch.canvas_idx*m_canvas_size,
-			ch.canvas_x, ch.canvas_y, ch.width, ch.height);
 
 	Region region(ch.canvas_x, ch.canvas_y, ch.width, ch.height);
 	dest.draw_sub_bitmap(point, m_canvas, region);

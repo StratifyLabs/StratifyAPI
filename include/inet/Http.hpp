@@ -94,6 +94,18 @@ public:
 	 */
 	int status_code() const { return m_status_code; }
 
+	u32 transfer_size() const {
+		return m_transfer_size;
+	}
+
+	void set_transfer_size(u32 value){
+		m_transfer_size = value;
+	}
+
+	void set_chunked_transfer_encoding_enabled(bool value = true){
+		m_is_chunked_transfer_encoding = value;
+	}
+
 	int close_connection();
 
 	var::Vector<var::String> & header_request_fields(){ return m_header_request_fields; }
@@ -142,6 +154,9 @@ private:
 
 	int m_content_length;
 	bool m_is_keep_alive;
+
+	bool m_is_chunked_transfer_encoding;
+	u32 m_transfer_size;
 
 };
 

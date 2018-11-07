@@ -9,7 +9,8 @@ Http::Http(Socket & socket) : m_socket(socket){
 }
 
 HttpClient::HttpClient(Socket & socket) : Http(socket){
-
+	m_transfer_size = 1024;
+	m_is_chunked_transfer_encoding = false;
 }
 
 int HttpClient::get(const var::ConstString & url){
@@ -78,18 +79,19 @@ int HttpClient::query_with_file(const var::ConstString & method,
 	Url u(url);
 	result = connect_to_server(u.domain_name(), u.port());
 	if( result < 0 ){
-		f.close();
 		return result;
 	}
 
 	build_header(method, u.domain_name(), u.path(), file_size);
-	if( socket().write(m_header) != m_header.length() ){
-		f.close();
+	if( socket().write(m_header) != (int)m_header.length() ){
 		return -1;
 	}
 
-	//write the file in chunks
-	var::Data data(1024); //what is the best chunk size??
+	//write the file in chunks -- is chunked encoding??
+	var::Data data(transfer_size()); //what is the best chunk size??
+	if( data.size() == 0 ){
+		return -1;
+	}
 	while( f.read(data) > 0 ){
 		//if chunked socket().write(String().format("%x", data.size());
 		socket().write(data);

@@ -13,14 +13,24 @@ link_transport_mdriver_t * File::m_default_driver = 0;
 
 File::File(link_transport_mdriver_t * driver){
     m_fd = -1; //The file is not open
+	 set_keep_open(false);
 	 m_driver = driver;
 }
 
 #else
 File::File() {
     m_fd = -1; //The file is not open
+	 set_keep_open(false);
 }
 #endif
+
+File::~File(){
+	if( is_keep_open() == false ){
+		if( fileno() >= 0 ){
+			close();
+		}
+	}
+}
 
 int File::open(const var::ConstString & name, int flags){
 	 return open(name, flags, 0);
@@ -70,7 +80,6 @@ int File::copy(File & source, File & dest, const var::ConstString & source_path,
     }
 
     if( dest.create(dest_path.str()) < 0 ){
-        source.close();
         return -1;
     }
 
@@ -80,15 +89,15 @@ int File::copy(File & source, File & dest, const var::ConstString & source_path,
         dest.write(buffer, bytes);
     }
 
-    source.close();
-    dest.close();
     return -1;
 }
 
 
 int File::open(const var::ConstString & name, int access, int perms){
     if( m_fd != -1 ){
-        close(); //close and re-open
+		 if( is_keep_open() == false ){
+		  close(); //close first so the file ca
+		 }
     }
 
 #if defined __link

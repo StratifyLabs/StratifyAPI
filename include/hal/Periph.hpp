@@ -24,6 +24,8 @@ namespace hal {
 class PeriphObject : public Device {
 public:
 
+	~PeriphObject();
+
 	/*! \details Defines the type to use when specifying a peripheral port. */
 	typedef unsigned int port_t;
 
@@ -147,7 +149,7 @@ public:
 	 */
 	Periph(core_periph_t periph, port_t port){
 		m_periph_port = (periph << 8) | port;
-		m_fd = lookup_fileno();
+		set_fileno( lookup_fileno() );
 	}
 
 	/*! \details Gets the version of the peripheral driver.

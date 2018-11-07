@@ -12,7 +12,6 @@ int ItemObject::save(const char * path) const {
 		return -1;
 	}
 	ret = f.write(data_void_const(), size());
-	f.close();
 	return ret;
 }
 
@@ -23,7 +22,6 @@ int ItemObject::load(const char * path){
 		return -1;
 	}
 	ret = f.read(data_void(), size());
-	f.close();
 	return ret;
 }
 

@@ -12,7 +12,14 @@
 
 #if defined __link
 typedef void (*_sig_func_ptr)(int);
+#define SIGNAL_SIGINFO_FLAG SA_SIGINFO
 #endif
+
+
+#if defined __StratifyOS__
+#define SIGNAL_SIGINFO_FLAG (1<<SA_SIGINFO)
+#endif
+
 
 namespace sys {
 
@@ -77,7 +84,7 @@ public:
 	 */
 	SignalHandler(void (*sigaction)(int, siginfo_t*, void*), int flags = 0, sigset_t mask = 0){
 		m_sig_action.sa_sigaction = sigaction;
-		m_sig_action.sa_flags = flags | (1<<SA_SIGINFO);
+		m_sig_action.sa_flags = flags | SIGNAL_SIGINFO_FLAG;
 		m_sig_action.sa_mask = mask;
 	}
 

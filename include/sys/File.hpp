@@ -34,7 +34,6 @@ namespace sys {
  * #include <sapi/sys.hpp>
  * #include <sapi/var.hpp>
  *
- *
  * int main(int argc, char * argv[]){
  * 	File f;
  * 	String str;
@@ -55,6 +54,18 @@ namespace sys {
  * 	printf("The String is %s\n", str.c_str());
  *
  * 	File::remove("/home/myfile.txt"); //delete the file
+ *
+ *    int fd;
+ *    if(1){
+ *      File file;
+ *      file.open("/home/file.txt", File::READONLY);
+ *      fd = file.fileno();
+ *		  file.set_keep_open(); //will keep the file open after ~File()
+ *      //~File() is called here
+ *    }
+ *
+ *    char buffer[16];
+ *    read(fd, buffer, 16); //OK because file.set_keep_open() was used
  * 	return 0;
  * }
  *
@@ -69,6 +80,8 @@ public:
 #else
 	File();
 #endif
+
+	~File();
 
 	/*! \details These values are used as flags when opening devices or files */
 	enum {
@@ -125,6 +138,45 @@ public:
 	 *
 	 */
 	static var::ConstString name(const var::ConstString & path);
+
+	/*! \details Sets the file to stay open even
+	 * after the destructor has been called.
+	 *
+	 * The default value on object creation is true.
+	 *
+	 * \code
+	 * #include <sapi/sys.hpp>
+	 *
+	 * int fd;
+	 * if(1){
+	 *   File f;
+	 *   f.open("/home/data.txt");
+	 *   fd = f.fileno();
+	 *   f.set_keep_open();
+	 *   //~File() will be called here
+	 * }
+	 *
+	 * //fd is still open because set_keep_open() was called
+	 * char buffer[16];
+	 * read(fd, buffer, 16);
+	 * \endcode
+	 *
+	 */
+	void set_keep_open(bool value = true){
+		m_is_keep_open = value;
+	}
+
+	/*! \details Returns whether the file will
+	 * be closed upon object destruction.
+	 *
+	 * The default value on object creation is true.
+	 *
+	 * \sa set_keep_open()
+	 *
+	 */
+	bool is_keep_open() const {
+		return m_is_keep_open;
+	}
 
 
 #if !defined __link
@@ -438,7 +490,7 @@ public:
 	int ioctl(int req, int arg) const { return ioctl(req, MCU_INT_CAST(arg)); }
 
 	/*! \details Sets the file descriptor for this object. */
-	void set_fileno(int fd){ m_fd = fd; }
+	void set_fileno(int fd) const { m_fd = fd; }
 
 	/*! \details Sets the file descriptor of this object to the file descriptor of file.
 	  *
@@ -450,7 +502,7 @@ public:
 	  *
 	  *
 	  */
-	void set_fileno(const File & file){ m_fd = file.fileno(); }
+	void set_fileno(const File & file) const { m_fd = file.fileno(); }
 
 	/*! \details Copies a file from the source to the destination.
 	  *
@@ -482,13 +534,10 @@ public:
 
 protected:
 
-	static int copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path);
-
 	enum {
 		GETS_BUFFER_SIZE = 128
 	};
 
-	mutable int m_fd;
 #ifdef __link
 	mutable link_transport_mdriver_t * m_driver;
 	static link_transport_mdriver_t * m_default_driver;
@@ -511,6 +560,11 @@ protected:
 	}
 
 #endif
+
+private:
+	static int copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path);
+	mutable int m_fd;
+	bool m_is_keep_open;
 
 };
 

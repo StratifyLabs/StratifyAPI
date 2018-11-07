@@ -136,19 +136,16 @@ int Bitmap::load(const char * path){
 	}
 
 	if( f.read(&hdr, sizeof(hdr)) != sizeof(hdr) ){
-		f.close();
 		return -1;
 	}
 
 	if( (hdr.version != sg_api()->version) || (hdr.bits_per_pixel != sg_api()->bits_per_pixel) ){
-		f.close();
 		return -1;
 	}
 
 	if( set_size(hdr.width, hdr.height) == false ){
 		//couln't resize using existing memory -- try re-allocating
 		if( alloc(hdr.width, hdr.height) < 0 ){
-			f.close();
 			return -1;
 		}
 	}
@@ -157,11 +154,6 @@ int Bitmap::load(const char * path){
 
 
 	if( f.read(src, hdr.size) != (s32)hdr.size ){
-		f.close();
-		return -1;
-	}
-
-	if( f.close() < 0 ){
 		return -1;
 	}
 
@@ -177,11 +169,8 @@ Dim Bitmap::load_dim(const char * path){
 	}
 
 	if( f.read(&hdr, sizeof(hdr)) != sizeof(hdr) ){
-		f.close();
 		return Dim();
 	}
-
-	f.close();
 
 	if( (hdr.version != sg_api()->version) || (hdr.bits_per_pixel != sg_api()->bits_per_pixel) ){
 		return Dim(0,0);
