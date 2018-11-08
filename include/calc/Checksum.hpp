@@ -55,6 +55,27 @@ public:
 	  */
 	static u8 calc_zero_sum(const u8 * data, int size);
 
+	template<typename T> static T calculate_zero_sum(const var::Data & data){
+		u32 i;
+		T sum = 0;
+		int count = data.size()/sizeof(T) - 1;
+		for(i=0; i < count; i++){
+			sum += data.at<T>(i);
+		}
+		return (0 - sum);
+	}
+
+	template<typename T> static T verify_zero_sum(const var::Data & data){
+		int i;
+		T sum = 0;
+		int count = data.size()/sizeof(T);
+		for(i=0; i < count; i++){
+			sum += data.at<T>(i);
+		}
+
+		return (sum == 0);
+	}
+
 
 	/*! \details Verifies the u8 checksum at the end of a data structure.
 	  *

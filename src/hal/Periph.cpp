@@ -96,8 +96,6 @@ int PeriphObject::open(int flags){
 
 	name = periph_name[periph_type];
 
-	printf("%s():%d\n", __FUNCTION__, __LINE__);
-
 	strncpy(buffer, "/dev/", LINK_NAME_MAX-1);
 	strncat(buffer, name, LINK_NAME_MAX-1);
 	len = strnlen(buffer, LINK_NAME_MAX-1);
@@ -109,7 +107,6 @@ int PeriphObject::open(int flags){
 			return -1;
 		}
 	}
-	printf("%s():%d\n", __FUNCTION__, __LINE__);
 	return open(buffer, flags);
 }
 
