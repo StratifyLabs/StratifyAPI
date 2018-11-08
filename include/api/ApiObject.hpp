@@ -161,7 +161,7 @@ public:
 #if defined __link
 template<typename A, const A * initial_value> class Api : public ApiObject {
 #else
-extern const void * kernel_request_api(u32 request);
+extern "C" const void * kernel_request_api(u32 request);
 template<typename A, u32 request> class Api : public ApiObject {
 #endif
 public:

@@ -51,7 +51,7 @@ public:
 protected:
 	u16 m_periph_port;
 
-	int open(const char * name, int flags);
+	int open(const var::ConstString & name, int flags);
 	using Device::open;
 
 	void update_fileno() const;

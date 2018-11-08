@@ -561,9 +561,11 @@ protected:
 
 #endif
 
+	mutable int m_fd;
+
+
 private:
 	static int copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path);
-	mutable int m_fd;
 	bool m_is_keep_open;
 
 };

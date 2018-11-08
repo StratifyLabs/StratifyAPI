@@ -221,7 +221,8 @@ int JsonObject::insert(const var::ConstString & key, const JsonValue & value){
 		printf("Could not create -- still invalid for %s\n", key.str());
 		return -1;
 	}
-	int result = json_object_set(m_value, key.str(), value.m_value);
+
+	int result = api()->object_set(m_value, key.str(), value.m_value);
 	if( result < 0 ){
 		printf("Failed to set JSON key %s to %s %p\n", key.str(), value.to_string().str(), m_value);
 	}
@@ -290,7 +291,7 @@ JsonValue JsonArray::at(u32 idx) const {
 
 int JsonArray::append(const JsonValue & value){
 	if( create_if_not_valid() < 0 ){ return -1; }
-	return api()->array_append_new(m_value, value.m_value);
+	return api()->array_append(m_value, value.m_value);
 }
 
 int JsonArray::append(const JsonArray & array){
@@ -300,7 +301,7 @@ int JsonArray::append(const JsonArray & array){
 
 int JsonArray::insert(u32 idx, const JsonValue & value){
 	if( create_if_not_valid() < 0 ){ return -1; }
-	return api()->array_insert_new(m_value, idx, value.m_value);
+	return api()->array_insert(m_value, idx, value.m_value);
 }
 
 int JsonArray::remove(u32 idx){

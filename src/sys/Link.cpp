@@ -1339,7 +1339,7 @@ int Link::install_app(const var::Data & image, const var::ConstString & dest, co
 				if( (loc_err = ioctl(fd, I_APPFS_INSTALL, &attr)) < 0 ){
 					if( link_errno == 5 ){ //EIO
 						if( loc_err < -1 ){
-							m_error_message.sprintf("Failed to install: missing symbol on device near", loc_err+1);
+							m_error_message.format("Failed to install: missing symbol on device near " F32D, loc_err+1);
 						} else {
 							m_error_message = "Failed to install: unknown symbol error";
 						}
