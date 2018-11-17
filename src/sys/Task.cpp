@@ -101,7 +101,7 @@ bool Task::is_pid_running(int pid){
 	return false;
 }
 
-int Task::get_pid(const var::String & name){
+int Task::get_pid(const var::ConstString & name){
 	int tmp_id = id();
 	set_id(1);
 

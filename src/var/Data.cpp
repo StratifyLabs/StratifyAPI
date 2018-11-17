@@ -83,6 +83,23 @@ Data::~Data(){
 	free();
 }
 
+int Data::copy_data(const void * buffer, u32 size){
+	if( set_size(size) < 0 ){
+		return -1;
+	}
+	::memcpy(to_u8(), buffer, size);
+	return 0;
+}
+
+int Data::copy_cstring(const char * str){
+	int length = strlen(str);
+	if( set_size(length) < 0 ){
+		return -1;
+	}
+	::memcpy(to_char(), str, length);
+	return 0;
+}
+
 int Data::copy_contents(const Data & a){
 	return copy_contents(a, 0, a.size());
 }
@@ -93,7 +110,7 @@ int Data::copy_contents(const Data & a, u32 size){
 }
 
 int Data::copy_contents(const Data & a, u32 destination_position, u32 size){
-	if( size > a.capacity() ){ size = a.capacity(); }
+	if( size > a.size() ){ size = a.size(); }
 	if( capacity() < (size + destination_position) ){
 		if( set_size(size + destination_position) < 0 ){
 			return -1;
@@ -101,7 +118,7 @@ int Data::copy_contents(const Data & a, u32 destination_position, u32 size){
 	} else {
 		m_size = size + destination_position;
 	}
-	::memcpy(cdata() + destination_position, a.data_const(), size);
+	::memcpy(to_u8() + destination_position, a.to_void(), size);
 	return 0;
 }
 
@@ -261,5 +278,4 @@ void Data::swap_byte_order(int size){
 void Data::print(unsigned int value) const {
 	MCU_UNUSED_ARGUMENT(value);
 }
-
 

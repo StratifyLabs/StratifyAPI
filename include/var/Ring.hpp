@@ -17,7 +17,12 @@ namespace var {
 
 /*! \brief Ring Buffer
  * \details Ring is a ring buffer (or circular buffer)
- * that uses a local memory buffer for the data.
+ * that uses a local memory buffer for the data. It is
+ * a first in/first out style buffer. Where push() adds
+ * data to the front() and pop() removes data from the back().
+ *
+ * The push() method can will pop() a value if the buffer is full
+ * and overflow is allowed.
  *
  * The Ring can handle items of any type.
  *
@@ -100,7 +105,7 @@ public:
 	}
 
 	const T & at(u32 pos) const {
-		u32 offset = m_head/sizeof(T) + pos;
+		u32 offset = m_head + pos;
 		if( offset >= count() ){
 			offset -= count();
 		}
@@ -134,7 +139,7 @@ public:
 		return Data::at<T>(m_count-1);
 	}
 
-	/*! \details Pushes a value on the Ring buffer.
+	/*! \details Pushes a value on the front of the buffer.
 	  *
 	  * The ring buffer is a first-in first-out buffer. So
 	  * The first object pushed is the first one popped.
@@ -161,7 +166,7 @@ public:
 		return 0;
 	}
 
-	/*! \details Pops a value from the Ring buffer.
+	/*! \details Pops a value from the back of the buffer.
 	  *
 	  * \sa push()
 	  *

@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DATA_HPP_
-#define DATA_HPP_
+#ifndef SAPI_VAR_DATA_HPP_
+#define SAPI_VAR_DATA_HPP_
 
 #include <cstring>
 #include <cstdio>
@@ -499,6 +499,10 @@ public:
 		return m_mem_write == 0;
 	}
 
+	int copy_data(const void * buffer, u32 size);
+	int copy_cstring(const char * str);
+
+
 	/*! \details Copies the contents of a into the memory of
 	 * this object.
 	 *
@@ -658,4 +662,5 @@ private:
 
 
 
-#endif /* DATA_HPP_ */
+
+#endif /* SAPI_VAR_DATA_HPP_ */

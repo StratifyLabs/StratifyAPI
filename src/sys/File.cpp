@@ -352,3 +352,96 @@ int File::ioctl(int req, void * arg) const {
 #endif
 }
 
+
+int File::write(const sys::File & source_file, u32 chunk_size, u32 size) const {
+	u32 size_processed = 0;
+	u8 buffer[chunk_size];
+	int result;
+	do {
+		if( size - size_processed < chunk_size ){
+			chunk_size = size - size_processed;
+		}
+
+		result = source_file.read(buffer, chunk_size);
+		if( result > 0 ){
+			result = write(buffer, result);
+			if( result > 0 ){
+				size_processed += result;
+			}
+		}
+
+	} while( (result > 0) && (size > size_processed) );
+
+	return size_processed;
+}
+
+int DataFile::open(const var::ConstString & name, int flags){
+	MCU_UNUSED_ARGUMENT(name);
+	MCU_UNUSED_ARGUMENT(flags);
+	return 0;
+}
+
+int DataFile::read(void * buf, int nbyte) const {
+	if( (m_o_flags & File::ACCESS_MODE) == File::WRITEONLY ){
+		return -1;
+	}
+
+	int size_ready = m_data.size() - m_location;
+	if( size_ready > nbyte ){
+		size_ready = nbyte;
+	}
+
+	memcpy(buf, m_data.to_u8() + m_location, size_ready);
+	m_location += size_ready;
+	return size_ready;
+}
+
+int DataFile::write(const void * buf, int nbyte) const {
+	if( (m_o_flags & File::ACCESS_MODE) == File::READONLY ){
+		return -1;
+	}
+
+	int size_ready = 0;
+	if( m_o_flags & File::APPEND ){
+		//make room in the m_data object for more bytes
+		m_location = m_data.size();
+		if( m_data.set_size(m_data.size() + nbyte) < 0 ){
+			set_error_number_to_errno();
+			return -1;
+		}
+		size_ready = nbyte;
+	} else {
+		//limit writes to the current size of the data
+		size_ready = m_data.size() - m_location;
+		if( size_ready > nbyte ){
+			size_ready = nbyte;
+		}
+	}
+
+	memcpy(m_data.to_u8() + m_location, buf, size_ready);
+	m_location += size_ready;
+	return size_ready;
+}
+
+int DataFile::seek(int loc, int whence) const {
+	switch(whence){
+		case LINK_SEEK_CUR:
+			m_location += loc;
+			break;
+		case LINK_SEEK_END:
+			m_location = m_data.size();
+			break;
+		case LINK_SEEK_SET:
+			m_location = loc;
+			break;
+	}
+
+	if( m_location > size() ){
+		m_location = m_data.size();
+	} else if ( m_location < 0 ){
+		m_location = 0;
+	}
+
+	return m_location;
+}
+

@@ -222,6 +222,7 @@ void Bitmap::show() const{
 
 	api()->cursor_set(&y_cursor, bmap_const(), sg_point(0,0));
 
+	printf("\nshow bitmap %d x %d\n", bmap_const()->dim.width, bmap_const()->dim.height);
 	for(i=0; i < bmap_const()->dim.height; i++){
 		sg_cursor_copy(&x_cursor, &y_cursor);
 		for(j=0; j < bmap_const()->dim.width; j++){

@@ -309,7 +309,7 @@ public:
 	int create(const var::ConstString & path, bool overwrite = true, int perms = 0666);
 
 	/*! \details Returns the file size. */
-	u32 size() const;
+	virtual u32 size() const;
 
 	/*! \details Returns the location of the cursor in the device or file. */
 	int loc() const;
@@ -413,6 +413,8 @@ public:
 	int write(int loc, const var::String & str) const { return write(loc, str.str(), str.length()); }
 
 	int write(int loc, const api::InfoObject & info) const { return write(loc, info.info_to_void(), info.info_size()); }
+
+	int write(const sys::File & source_file, u32 chunk_size, u32 size = 0xffffffff) const;
 
 	/*! \details Reads a line from a file.
 	 *
@@ -567,6 +569,36 @@ protected:
 private:
 	static int copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path);
 	bool m_is_keep_open;
+
+};
+
+class DataFile : public sys::File {
+public:
+
+	DataFile(int o_flags = File::RDWR){
+		m_location = 0;
+		m_o_flags = o_flags;
+	}
+
+	int open(const var::ConstString & name, int flags = File::RDWR);
+	int close(){ return 0; }
+
+	int read(void * buf, int nbyte) const;
+	int write(const void * buf, int nbyte) const;
+	int seek(int loc, int whence = LINK_SEEK_SET) const;
+	int ioctl(int req, void * arg) const { return 0; }
+	u32 size() const { return data().size(); }
+
+	void set_flags(int o_flags){ m_o_flags = o_flags; }
+	int flags() const { return m_o_flags; }
+
+	const var::Data & data() const { return m_data; }
+	var::Data & data(){ return m_data; }
+
+private:
+	mutable int m_location; //offset location for seeking/reading/writing
+	int m_o_flags;
+	mutable var::Data m_data;
 
 };
 

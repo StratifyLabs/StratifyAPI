@@ -35,15 +35,15 @@ public:
 	virtual sg_size_t get_width() const = 0;
 
 	//Attribute access methods
-	int xoffset() const { return m_char.xoffset; }
-	int yoffset() const { return m_char.yoffset; }
+	int offset_x() const { return m_char.offset_x; }
+	int offset_y() const { return m_char.offset_y; }
 
 
 	/*! \details Calculates the length (pixels on x-axis) of the specified string. */
 	int calc_len(const var::ConstString & str) const;
 
 	/*! \details Returns the number of characters in the font. */
-	int size() const { return m_hdr.num_chars; }
+	int size() const { return m_hdr.character_count; }
 
 	/*! \details Sets the spacing between letters within a word. */
 	void set_letter_spacing(sg_size_t spacing){ m_letter_spacing = spacing; }
@@ -78,11 +78,11 @@ public:
 	const sg_font_char_t & character() const { return m_char; }
 
 	/*! \details Accesses the number of characters in the font. */
-	u16 num_chars() const { return m_hdr.num_chars; }
+	u16 character_count() const { return m_hdr.character_count; }
 	/*! \details Accesses the number of bits per pixel in the font. */
 	u16 bits_per_pixel() const { return m_hdr.bits_per_pixel; }
 	/*! \details Accesses the number of kerning pairs in the font. */
-	u16 kerning_pairs() const { return m_hdr.kerning_pairs; }
+	u16 kerning_pair_count() const { return m_hdr.kerning_pair_count; }
 
 protected:
 

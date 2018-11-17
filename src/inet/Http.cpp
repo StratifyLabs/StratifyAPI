@@ -1,6 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #include "var.hpp"
+#include "sys.hpp"
 #include "inet/Http.hpp"
 #include "inet/Url.hpp"
 
@@ -15,24 +16,40 @@ HttpClient::HttpClient(Socket & socket) : Http(socket){
 	m_is_chunked_transfer_encoding = false;
 }
 
-int HttpClient::get(const var::ConstString & url){
-	return query("GET", url);
+int HttpClient::get(const var::ConstString & url, const sys::File & response){
+	return query("GET", url, 0, &response);
 }
 
-int HttpClient::post(const var::ConstString & url, const var::String & data){
-	return query("POST", url, data);
+int HttpClient::post(const var::ConstString & url, const var::ConstString & request, const sys::File & response){
+	DataFile request_file;
+	request_file.data().copy_cstring(request.cstring());
+	return post(url, request_file, response);
 }
 
-int HttpClient::post_file(const var::ConstString & url, const var::ConstString & path){
-	return query_with_file("POST", url, path);
+
+
+int HttpClient::post(const var::ConstString & url, const sys::File & data, const sys::File & response){
+	return query("POST", url, &data, &response);
 }
 
-int HttpClient::put(const var::ConstString & url, const var::String & data){
-	return query("PUT", url, data);
+int HttpClient::put(const var::ConstString & url, const var::ConstString & request, const sys::File & response){
+	DataFile request_file;
+	request_file.data().copy_cstring(request.cstring());
+	return put(url, request_file, response);
 }
 
-int HttpClient::patch(const var::ConstString & url, const var::String & data){
-	return query("PATCH", url, data);
+int HttpClient::put(const var::ConstString & url, const sys::File & data, const sys::File & response){
+	return query("PUT", url, &data, &response);
+}
+
+int HttpClient::patch(const var::ConstString & url, const var::ConstString & request, const sys::File & response){
+	DataFile request_file;
+	request_file.data().copy_cstring(request.cstring());
+	return patch(url, request_file, response);
+}
+
+int HttpClient::patch(const var::ConstString & url, const sys::File & data, const sys::File & response){
+	return query("PATCH", url, &data, &response);
 }
 
 int HttpClient::head(const var::ConstString & url){
@@ -46,7 +63,10 @@ int HttpClient::remove(const var::ConstString & request, const var::String & dat
 }
 
 
-int HttpClient::query(const var::ConstString & command, const var::ConstString & url, const var::String & data){
+int HttpClient::query(const var::ConstString & command,
+							 const var::ConstString & url,
+							 const sys::File * send_file,
+							 const sys::File * get_file){
 	int result;
 	Url u(url);
 	result = connect_to_server(u.domain_name(), u.port());
@@ -54,60 +74,26 @@ int HttpClient::query(const var::ConstString & command, const var::ConstString &
 		return result;
 	}
 
-	result = send_header(command, u.domain_name(), u.path(), data);
+	result = send_header(command, u.domain_name(), u.path(), send_file);
 	if( result < 0 ){
 		return result;
 	}
 
-	m_response.fill(0);
-	listen_for_header(m_response);
-	listen_for_data(m_response);
+	if( send_file ){
+		//send the file on the socket
+		socket().write(*send_file, m_transfer_size);
+	}
+
+	listen_for_header(m_header_response);
+	if( get_file ){
+		listen_for_data(*get_file);
+	}
 	close_connection();
 
 	return 0;
 
 }
 
-int HttpClient::query_with_file(const var::ConstString & method,
-										  const var::ConstString & url,
-										  const var::ConstString & file_path){
-
-	sys::File f;
-	if( f.open(file_path, sys::File::READONLY) < 0 ){ return -1; }
-
-	u32 file_size = f.size();
-
-	int result;
-	Url u(url);
-	result = connect_to_server(u.domain_name(), u.port());
-	if( result < 0 ){
-		return result;
-	}
-
-	build_header(method, u.domain_name(), u.path(), file_size);
-	if( socket().write(m_header) != (int)m_header.length() ){
-		return -1;
-	}
-
-	//write the file in chunks -- is chunked encoding??
-	var::Data data(transfer_size()); //what is the best chunk size??
-	if( data.size() == 0 ){
-		return -1;
-	}
-	while( f.read(data) > 0 ){
-		//if chunked socket().write(String().format("%x", data.size());
-		socket().write(data);
-		//if chunked socket().write("\r\n");
-	}
-	f.close();
-
-	m_response.fill(0);
-	listen_for_header(m_response);
-	listen_for_data(m_response);
-	close_connection();
-
-	return 0;
-}
 
 int HttpClient::send_string(const var::ConstString & str){
 	if( !str.is_empty() ){
@@ -168,15 +154,29 @@ int HttpClient::build_header(const var::ConstString & method, const var::ConstSt
 	return 0;
 }
 
-int HttpClient::send_header(const var::ConstString & method, const var::ConstString & host, const var::ConstString & path, const var::String & data){
+int HttpClient::send_header(const var::ConstString & method,
+									 const var::ConstString & host,
+									 const var::ConstString & path,
+									 const sys::File * file){
 
-	build_header(method, host, path, data.length());
 
-	if( data.length() > 0 ){ m_header << data; }
+	u32 data_length = file != 0 ? file->size() : 0;
 
-	printf(">> %s\n", m_header.str());
+	build_header(method, host, path, data_length);
 
-	return socket().write(m_header);
+	printf(">> %s", m_header.str());
+
+	if( socket().write(m_header) != m_header.length() ){
+		return -1;
+	}
+
+	if( file ){
+		if( socket().write(*file, m_transfer_size) < 0 ){
+			return -1;
+		}
+	}
+
+	return 0;
 }
 
 
@@ -217,41 +217,25 @@ int HttpClient::listen_for_header(var::String & response){
 	return -1;
 }
 
-int HttpClient::listen_for_data(var::String & response){
+int HttpClient::listen_for_data(const sys::File & file){
 	if( m_transfer_encoding == "CHUNKED" ){
 		u32 bytes_incoming = 0;
 		do {
 			String line = socket().gets();
 			//convert line from hex
 			bytes_incoming = line.to_unsigned_long(16);
-			String chunk;
-			if( chunk.set_size(bytes_incoming) < 0 ){
+
+			//read bytes_incoming from the socket and write it to the output file
+			if( file.write(socket(), bytes_incoming, bytes_incoming) != bytes_incoming ){
+				printf("failed to transfer %d\n", bytes_incoming);
 				return -1;
-			}
-			int result;
-			int page_size = bytes_incoming;
-			if( page_size ){
-				do {
-					chunk.clear();
-					if( chunk.set_size(page_size) < 0 ){
-						return -1;
-					}
-					result = socket().read(chunk);
-					if( result > 0 ){
-						page_size -= result;
-						response << chunk;
-					}
-				} while( page_size > 0 );
 			}
 
 		} while( bytes_incoming > 0 );
 
 	} else {
-		if( response.set_size( m_content_length ) < 0 ){
-			//memory allocation failed
-			return -1;
-		}
-		return socket().read(response);
+		//read the response from the socket
+		file.write(socket(), m_content_length, m_content_length);
 	}
 	return 0;
 }

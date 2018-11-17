@@ -78,11 +78,11 @@ int String::assign(const ConstString & a){
 
 int String::assign(const ConstString & a, u32 n){
 	//check for null
-	if( a.to_char() != this->to_char() ){ //check for assignment to self - no action needed
+	if( a.cstring() != this->to_char() ){ //check for assignment to self - no action needed
 		if( n == (u32)npos ){ n = a.length(); }
 		if( set_capacity(n) < 0 ){ return -1; }
 		clear();
-		strncpy(cdata(), a.to_char(), n);
+		strncpy(cdata(), a.cstring(), n);
 	}
 	return 0;
 }

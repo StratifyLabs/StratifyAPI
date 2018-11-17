@@ -48,7 +48,7 @@ int FileFont::set_file(const var::ConstString & name, int offset){
 	m_canvas_start = m_hdr.size;
 	m_canvas_size = m_canvas.calc_size();
 
-	pair_size = sizeof(sg_font_kerning_pair_t)*m_hdr.kerning_pairs;
+	pair_size = sizeof(sg_font_kerning_pair_t)*m_hdr.kerning_pair_count;
 
 	m_kerning_pairs = (sg_font_kerning_pair_t*)malloc(pair_size);
 
@@ -81,7 +81,7 @@ int FileFont::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 		return -1;
 	}
 
-	offset = m_offset + sizeof(sg_font_header_t) + sizeof(sg_font_kerning_pair_t)*m_hdr.kerning_pairs + ind*sizeof(sg_font_char_t);
+	offset = m_offset + sizeof(sg_font_header_t) + sizeof(sg_font_kerning_pair_t)*m_hdr.kerning_pair_count + ind*sizeof(sg_font_char_t);
 	if( (ret = m_file.read(offset, &ch, sizeof(ch))) != sizeof(ch) ){
 		return -1;
 	}
@@ -89,16 +89,14 @@ int FileFont::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 }
 
 int FileFont::load_kerning(u16 first, u16 second) const {
-	int kerning_count = m_hdr.kerning_pairs;
+	int kerning_count = m_hdr.kerning_pair_count;
 	int i;
 
-	if( m_kerning_pairs == 0 ){
-		return 0;
-	}
+	if( m_kerning_pairs == 0 ){ return 0; }
 
 	for(i=0; i < kerning_count; i++){
-		if( (m_kerning_pairs[i].first == first) && (m_kerning_pairs[i].second == second) ){
-			return m_kerning_pairs[i].kerning;
+		if( (m_kerning_pairs[i].unicode_first == first) && (m_kerning_pairs[i].unicode_second == second) ){
+			return m_kerning_pairs[i].horizontal_kerning;
 		}
 	}
 

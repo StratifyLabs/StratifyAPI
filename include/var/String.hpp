@@ -209,7 +209,6 @@ public:
 
 	//these are both implemented in Data and ConstString -- need to be disambiguated
 	char at(u32 pos) const { return ConstString::at(pos); }
-	const char * to_char() const { return ConstString::to_char(); }
 
 	/*! \details Sets the number of bytes allocated for the string.
 	  *

@@ -39,7 +39,7 @@ int Font::calc_len(const var::ConstString & str) const {
 			l += space_size();
 		} else {
 			if( load_char(m_char, *s, true) == 0){
-				l += m_char.xadvance;
+				l += m_char.advance_x;
 			}
 		}
 		s++;
@@ -53,13 +53,13 @@ int Font::draw_char(char c, Bitmap & dest, sg_point_t point) const {
 		return -1;
 	}
 
-	point.x += m_char.xoffset;
-	point.y += m_char.yoffset;
+	point.x += m_char.offset_x;
+	point.y += m_char.offset_y;
 
 	draw_char_on_bitmap(m_char, dest, point);
 
 	//this needs to be char width not bitmap width
-	return m_char.xadvance;
+	return m_char.advance_x;
 }
 
 int Font::draw_str(const char * str, Bitmap & bitmap, sg_point_t point) const {
@@ -72,7 +72,7 @@ int Font::draw_str(const char * str, Bitmap & bitmap, sg_point_t point) const {
 			w = space_size();
 		} else {
 			draw_char(c, bitmap, point);
-			w = m_char.xadvance;
+			w = m_char.advance_x;
 		}
 
 		//apply kerning

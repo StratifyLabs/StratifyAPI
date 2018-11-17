@@ -50,13 +50,13 @@ sg_size_t MemoryFont::get_width() const {
 }
 
 int MemoryFont::load_kerning(u16 first, u16 second) const {
-	int kerning_count = m_hdr.kerning_pairs;
+	int kerning_count = m_hdr.kerning_pair_count;
 	const sg_font_kerning_pair_t * pairs = (const sg_font_kerning_pair_t *)((const char *)m_font + sizeof(sg_font_header_t));
 	int i;
 
 	for(i=0; i < kerning_count; i++){
-		if( (pairs[i].first == first) && (pairs[i].second == second) ){
-			return pairs[i].kerning;
+		if( (pairs[i].unicode_first == first) && (pairs[i].unicode_second == second) ){
+			return pairs[i].horizontal_kerning;
 		}
 	}
 
@@ -80,7 +80,7 @@ int MemoryFont::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 	}
 
 	//header has sg_font_header_t then kerning pairs then char indices
-	offset = sizeof(sg_font_header_t) + sizeof(sg_font_kerning_pair_t)*hdr->kerning_pairs + ind*sizeof(sg_font_char_t);
+	offset = sizeof(sg_font_header_t) + sizeof(sg_font_kerning_pair_t)*hdr->kerning_pair_count + ind*sizeof(sg_font_char_t);
 	chp = (sg_font_char_t *)((char*)m_font + offset);
 
 	memcpy(&ch, chp, sizeof(sg_font_char_t));

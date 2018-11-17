@@ -201,7 +201,7 @@ public:
 	/*! \details Prints info for all enabled tasks. */
 	void print(int pid = -1);
 
-	int get_pid(const var::String & name);
+	int get_pid(const var::ConstString & name);
 
 	bool is_pid_running(int pid);
 

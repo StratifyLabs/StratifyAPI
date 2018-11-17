@@ -32,16 +32,23 @@ public:
 	HttpClient(Socket & socket);
 
 	int head(const var::ConstString & url);
-	int get(const var::ConstString & url);
-	int post(const var::ConstString & url, const var::String & data);
-	int post_file(const var::ConstString & url, const var::ConstString & path);
-	int post_data(const var::ConstString & url, const var::Data & data);
-	int put(const var::ConstString & url, const var::String & data);
-	int patch(const var::ConstString & url, const var::String & data);
+
+
+	int get(const var::ConstString & url, const sys::File & response);
+
+
+	int post(const var::ConstString & url, const var::ConstString & request, const sys::File & response);
+	int post(const var::ConstString & url, const sys::File & request, const sys::File & response);
+
+
+	int put(const var::ConstString & url, const var::ConstString & request, const sys::File & response);
+	int put(const var::ConstString & url, const sys::File & request, const sys::File & response);
+
+	int patch(const var::ConstString & url, const var::ConstString & request, const sys::File & response);
+	int patch(const var::ConstString & url, const sys::File & request, const sys::File & response);
 
 	//http delete
 	int remove(const var::ConstString & url, const var::String & data);
-
 	int options(const var::ConstString & url);
 	int trace(const var::ConstString & url);
 	int connect(const var::ConstString & url);
@@ -52,42 +59,7 @@ public:
 	  *
 	  */
 	const var::String & header() const { return m_header; }
-
-	/*! \details Returns a reference to the response that is returned
-	  * by the request.
-	  *
-	  *
-	  */
-	const var::String & response() const { return m_response; }
-
-
-	/*! \details Handles incoming data if the response size exceeds maximum_response_size().
-	  *
-	  * @return Return true to continue the request and false to abort.
-	  *
-	  */
-	virtual bool handle_incoming_data(){ return true; }
-
-	/*! \details Sets the maximum amount of data that can be allocated
-	  * for the response.
-	  *
-	  * If the response exceeds maximum data size, handle_incoming_data() will
-	  * be called. The application should implement handle_incoming_data() to
-	  * store the data (e.g. to a file). If handle_incoming_data() returns false,
-	  * the request will be aborted.
-	  *
-	  */
-	void set_maximum_response_size(u32 value){
-		m_maximum_response_size = value;
-	}
-
-	/*! \details Returns the maximum number of bytes that can be allocated for the response
-	  * to any request.
-	  *
-	  * See set_maximum_response_size() for details.
-	  *
-	  */
-	u32 maximum_response_size() const { return m_maximum_response_size; }
+	const var::String & header_response() const { return m_header_response; }
 
 	/*! \details Returns the status code of the last request.
 	 *
@@ -122,15 +94,9 @@ private:
 
 	int query(const var::ConstString & command,
 				 const var::ConstString & url,
-				 const var::String & data = var::String());
+				 const sys::File * send_file = 0,
+				 const sys::File * get_file = 0);
 
-	int query_with_file(const var::ConstString & command,
-				 const var::ConstString & url,
-				 const var::ConstString & file_path);
-
-	int query_with_data(const var::ConstString & command,
-				 const var::ConstString & url,
-				 const var::Data & data = var::Data());
 
 	int send_string(const var::ConstString & str);
 
@@ -139,19 +105,18 @@ private:
 	int send_header(const var::ConstString & method,
 						 const var::ConstString & host,
 						 const var::ConstString & path,
-						 const var::String & data);
+						 const sys::File * file);
 
 	int listen_for_header(var::String & response);
-	int listen_for_data(var::String & response);
+	int listen_for_data(const sys::File & file);
 
 	SocketAddress m_address;
 
 	var::String m_transfer_encoding;
 	var::Vector<var::String> m_header_request_fields;
 	var::Vector<var::String> m_header_response_fields;
-	u32 m_maximum_response_size;
 	var::String m_header;
-	var::String m_response;
+	var::String m_header_response;
 	int m_status_code;
 
 	int m_content_length;
