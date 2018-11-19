@@ -354,6 +354,10 @@ int File::ioctl(int req, void * arg) const {
 
 
 int File::write(const sys::File & source_file, u32 chunk_size, u32 size) const {
+	return write(source_file, chunk_size, size, 0);
+}
+
+int File::write(const sys::File & source_file, u32 chunk_size, u32 size, const ProgressCallback * progress_callback) const {
 	u32 size_processed = 0;
 	u8 buffer[chunk_size];
 	int result;
@@ -370,10 +374,18 @@ int File::write(const sys::File & source_file, u32 chunk_size, u32 size) const {
 			}
 		}
 
+		if( progress_callback ){
+			bool is_abort = progress_callback->update(size_processed, size);
+		}
+
 	} while( (result > 0) && (size > size_processed) );
+
+	//this will terminate the progress operation
+	if( progress_callback ){ progress_callback->update(0,0); }
 
 	return size_processed;
 }
+
 
 int DataFile::open(const var::ConstString & name, int flags){
 	MCU_UNUSED_ARGUMENT(name);

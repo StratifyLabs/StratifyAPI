@@ -16,40 +16,40 @@ HttpClient::HttpClient(Socket & socket) : Http(socket){
 	m_is_chunked_transfer_encoding = false;
 }
 
-int HttpClient::get(const var::ConstString & url, const sys::File & response){
-	return query("GET", url, 0, &response);
+int HttpClient::get(const var::ConstString & url, const sys::File & response, const sys::ProgressCallback * progress_callback){
+	return query("GET", url, 0, &response, progress_callback);
 }
 
-int HttpClient::post(const var::ConstString & url, const var::ConstString & request, const sys::File & response){
+int HttpClient::post(const var::ConstString & url, const var::ConstString & request, const sys::File & response, const sys::ProgressCallback * progress_callback){
 	DataFile request_file;
 	request_file.data().copy_cstring(request.cstring());
-	return post(url, request_file, response);
+	return post(url, request_file, response, progress_callback);
 }
 
 
 
-int HttpClient::post(const var::ConstString & url, const sys::File & data, const sys::File & response){
-	return query("POST", url, &data, &response);
+int HttpClient::post(const var::ConstString & url, const sys::File & request, const sys::File & response, const sys::ProgressCallback * progress_callback){
+	return query("POST", url, &request, &response, progress_callback);
 }
 
-int HttpClient::put(const var::ConstString & url, const var::ConstString & request, const sys::File & response){
+int HttpClient::put(const var::ConstString & url, const var::ConstString & request, const sys::File & response, const sys::ProgressCallback * progress_callback){
 	DataFile request_file;
 	request_file.data().copy_cstring(request.cstring());
-	return put(url, request_file, response);
+	return put(url, request_file, response, progress_callback);
 }
 
-int HttpClient::put(const var::ConstString & url, const sys::File & data, const sys::File & response){
-	return query("PUT", url, &data, &response);
+int HttpClient::put(const var::ConstString & url, const sys::File & data, const sys::File & response, const sys::ProgressCallback * progress_callback){
+	return query("PUT", url, &data, &response, progress_callback);
 }
 
-int HttpClient::patch(const var::ConstString & url, const var::ConstString & request, const sys::File & response){
+int HttpClient::patch(const var::ConstString & url, const var::ConstString & request, const sys::File & response, const sys::ProgressCallback * progress_callback){
 	DataFile request_file;
 	request_file.data().copy_cstring(request.cstring());
-	return patch(url, request_file, response);
+	return patch(url, request_file, response, progress_callback);
 }
 
-int HttpClient::patch(const var::ConstString & url, const sys::File & data, const sys::File & response){
-	return query("PATCH", url, &data, &response);
+int HttpClient::patch(const var::ConstString & url, const sys::File & data, const sys::File & response, const sys::ProgressCallback * progress_callback){
+	return query("PATCH", url, &data, &response, progress_callback);
 }
 
 int HttpClient::head(const var::ConstString & url){
@@ -66,7 +66,8 @@ int HttpClient::remove(const var::ConstString & request, const var::String & dat
 int HttpClient::query(const var::ConstString & command,
 							 const var::ConstString & url,
 							 const sys::File * send_file,
-							 const sys::File * get_file){
+							 const sys::File * get_file,
+							 const sys::ProgressCallback * progress_callback){
 	int result;
 	Url u(url);
 	result = connect_to_server(u.domain_name(), u.port());
@@ -74,7 +75,7 @@ int HttpClient::query(const var::ConstString & command,
 		return result;
 	}
 
-	result = send_header(command, u.domain_name(), u.path(), send_file);
+	result = send_header(command, u.domain_name(), u.path(), send_file, progress_callback);
 	if( result < 0 ){
 		return result;
 	}
@@ -84,9 +85,9 @@ int HttpClient::query(const var::ConstString & command,
 		socket().write(*send_file, m_transfer_size);
 	}
 
-	listen_for_header(m_header_response);
+	listen_for_header();
 	if( get_file ){
-		listen_for_data(*get_file);
+		listen_for_data(*get_file, progress_callback);
 	}
 	close_connection();
 
@@ -138,9 +139,11 @@ int HttpClient::build_header(const var::ConstString & method, const var::ConstSt
 	m_header << "Host: " << host << "\r\n";
 
 	for(u32 i = 0; i < header_request_fields().count(); i++){
-		m_header << header_request_fields().at(i) << "\r\n";
-		if( header_request_fields().at(i).find("User-Agent:") == 0 ){ is_user_agent_present = true; }
-		if( header_request_fields().at(i).find("Accept:") == 0 ){ is_accept_present = true; }
+		if( header_request_fields().at(i).is_empty() == false ){
+			m_header << header_request_fields().at(i) << "\r\n";
+			if( header_request_fields().at(i).find("User-Agent:") == 0 ){ is_user_agent_present = true; }
+			if( header_request_fields().at(i).find("Accept:") == 0 ){ is_accept_present = true; }
+		}
 	}
 
 	if( !is_user_agent_present ){ m_header << "User-Agent: StratifyOS\r\n"; }
@@ -157,7 +160,8 @@ int HttpClient::build_header(const var::ConstString & method, const var::ConstSt
 int HttpClient::send_header(const var::ConstString & method,
 									 const var::ConstString & host,
 									 const var::ConstString & path,
-									 const sys::File * file){
+									 const sys::File * file,
+									 const sys::ProgressCallback * progress_callback){
 
 
 	u32 data_length = file != 0 ? file->size() : 0;
@@ -171,7 +175,7 @@ int HttpClient::send_header(const var::ConstString & method,
 	}
 
 	if( file ){
-		if( socket().write(*file, m_transfer_size) < 0 ){
+		if( socket().write(*file, m_transfer_size, file->size(), progress_callback) < 0 ){
 			return -1;
 		}
 	}
@@ -180,7 +184,7 @@ int HttpClient::send_header(const var::ConstString & method,
 }
 
 
-int HttpClient::listen_for_header(var::String & response){
+int HttpClient::listen_for_header(){
 
 	var::String line;
 	do {
@@ -189,7 +193,7 @@ int HttpClient::listen_for_header(var::String & response){
 
 			m_header << line;
 
-			printf("> %s\n", line.str());
+			printf("> %s", line.str());
 
 			var::Token line_tokens(line, ": \t\r\n");
 			var::String title = line_tokens.at(0);
@@ -217,7 +221,7 @@ int HttpClient::listen_for_header(var::String & response){
 	return -1;
 }
 
-int HttpClient::listen_for_data(const sys::File & file){
+int HttpClient::listen_for_data(const sys::File & file, const sys::ProgressCallback * progress_callback){
 	if( m_transfer_encoding == "CHUNKED" ){
 		u32 bytes_incoming = 0;
 		do {
@@ -231,11 +235,13 @@ int HttpClient::listen_for_data(const sys::File & file){
 				return -1;
 			}
 
+			//need to call the progress callback -- what is the total?
+
 		} while( bytes_incoming > 0 );
 
 	} else {
 		//read the response from the socket
-		file.write(socket(), m_content_length, m_content_length);
+		file.write(socket(), m_transfer_size, m_content_length, progress_callback);
 	}
 	return 0;
 }

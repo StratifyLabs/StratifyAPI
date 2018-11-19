@@ -5,6 +5,7 @@
 
 #include "../api/InetObject.hpp"
 #include "../var/String.hpp"
+#include "../sys/ProgressCallback.hpp"
 #include "Socket.hpp"
 
 namespace inet {
@@ -34,18 +35,18 @@ public:
 	int head(const var::ConstString & url);
 
 
-	int get(const var::ConstString & url, const sys::File & response);
+	int get(const var::ConstString & url, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
 
 
-	int post(const var::ConstString & url, const var::ConstString & request, const sys::File & response);
-	int post(const var::ConstString & url, const sys::File & request, const sys::File & response);
+	int post(const var::ConstString & url, const var::ConstString & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
+	int post(const var::ConstString & url, const sys::File & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
 
 
-	int put(const var::ConstString & url, const var::ConstString & request, const sys::File & response);
-	int put(const var::ConstString & url, const sys::File & request, const sys::File & response);
+	int put(const var::ConstString & url, const var::ConstString & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
+	int put(const var::ConstString & url, const sys::File & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
 
-	int patch(const var::ConstString & url, const var::ConstString & request, const sys::File & response);
-	int patch(const var::ConstString & url, const sys::File & request, const sys::File & response);
+	int patch(const var::ConstString & url, const var::ConstString & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
+	int patch(const var::ConstString & url, const sys::File & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
 
 	//http delete
 	int remove(const var::ConstString & url, const var::String & data);
@@ -94,8 +95,9 @@ private:
 
 	int query(const var::ConstString & command,
 				 const var::ConstString & url,
-				 const sys::File * send_file = 0,
-				 const sys::File * get_file = 0);
+				 const sys::File * send_file,
+				 const sys::File * get_file,
+				 const sys::ProgressCallback * progress_callback);
 
 
 	int send_string(const var::ConstString & str);
@@ -105,10 +107,11 @@ private:
 	int send_header(const var::ConstString & method,
 						 const var::ConstString & host,
 						 const var::ConstString & path,
-						 const sys::File * file);
+						 const sys::File * file,
+						 const sys::ProgressCallback * progress_callback);
 
-	int listen_for_header(var::String & response);
-	int listen_for_data(const sys::File & file);
+	int listen_for_header();
+	int listen_for_data(const sys::File & file, const sys::ProgressCallback * progress_callback);
 
 	SocketAddress m_address;
 

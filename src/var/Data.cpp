@@ -147,7 +147,7 @@ void Data::copy_object(const Data & a){
 	}
 }
 
-void Data::set(void * mem, u32 s, bool readonly){
+void Data::refer_to(void * mem, u32 s, bool readonly){
 
 	//free the data if it was previously allocated dynamically
 	free();

@@ -14,6 +14,7 @@
 #include "../var/Vector.hpp"
 #include "Appfs.hpp"
 #include "Sys.hpp"
+#include "ProgressCallback.hpp"
 
 namespace sys {
 
@@ -79,8 +80,6 @@ public:
 	} port_device_t;
 
 	var::Vector<LinkInfo> get_info_list();
-
-	typedef bool (*update_callback_t)(void*, int, int);
 
 	/*! \details Gets the error message if an operation fails.
 	  */
@@ -214,8 +213,7 @@ public:
 				const var::ConstString & dest /*! The path to the destination file */,
 				link_mode_t mode /*! The access permissions if copying to the device */,
 				bool to_device = true /*! When true, copy is from host to device */,
-				bool (*update)(void *, int, int) = 0,
-				void * context = 0);
+				const ProgressCallback * progress_callback = 0);
 
 
 	/*!
@@ -228,8 +226,8 @@ public:
 	  * \param context Argument to pass to update callback
 	  * \return Zero on success
 	  */
-	int copy_file_to_device(const var::ConstString & src, const var::ConstString & dest, link_mode_t mode, bool (*update)(void*,int,int) = 0, void * context = 0){
-		return copy(src, dest, mode, true, update, context);
+	int copy_file_to_device(const var::ConstString & src, const var::ConstString & dest, link_mode_t mode, const ProgressCallback * progress_callback = 0){
+		return copy(src, dest, mode, true, progress_callback);
 	}
 
 	/*!
@@ -242,8 +240,8 @@ public:
 	  * \param context Argument to pass to update callback
 	  * \return Zero on success
 	  */
-	int copy_file_from_device(const var::ConstString & src, const var::ConstString & dest, link_mode_t mode, bool (*update)(void*,int,int) = 0, void * context = 0){
-		return copy(src, dest, mode, false, update, context);
+	int copy_file_from_device(const var::ConstString & src, const var::ConstString & dest, link_mode_t mode, const ProgressCallback * progress_callback = 0){
+		return copy(src, dest, mode, false, progress_callback);
 	}
 
 	/*! \details Formats the filesystem on the device.
@@ -460,8 +458,7 @@ public:
 	  * before calling this method.
 	  *
 	  */
-	int update_os(const var::ConstString & path, bool verify, bool (*update)(void*,int,int) = 0, void * context = 0);
-	int update_os(const var::Data & image, bool verify, bool (*update)(void*,int,int) = 0, void * context = 0);
+	int update_os(const sys::File & image, bool verify, const ProgressCallback * progress_callback = 0);
 
 	/*! \details Returns the driver needed by other API objects.
 	  *
@@ -505,7 +502,7 @@ public:
 	  * @param ram_size Number of bytes the app needs for RAM (excluding code if run_in_ram is true)
 	  * @return Zero on success or -1 with error() set to an appropriate message
 	  */
-	int update_binary_install_options(const var::ConstString & path, const AppfsFileAttributes & attributes);
+	int update_binary_install_options(const sys::File & file, const AppfsFileAttributes & attributes);
 
 	/*! \details Installs a binary to the specified location.
 	  *
@@ -524,8 +521,7 @@ public:
 	  * it can be executed.
 	  *
 	  */
-	int install_app(const var::ConstString & source, const var::ConstString & dest, const var::ConstString & name, bool (*update)(void*,int,int) = 0, void * context = 0);
-	int install_app(const var::Data & image, const var::ConstString & dest, const var::ConstString & name, bool (*update)(void*,int,int) = 0, void * context = 0);
+	int install_app(const sys::File & source, const var::ConstString & dest, const var::ConstString & name, const ProgressCallback * progress_callback = 0);
 
 	/*! \details Returns the serial number of the last device
 	  * that was connected (including the currently connected device)

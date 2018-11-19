@@ -20,6 +20,7 @@
 #endif
 
 #include "../var/String.hpp"
+#include "ProgressCallback.hpp"
 
 namespace sys {
 
@@ -415,6 +416,7 @@ public:
 	int write(int loc, const api::InfoObject & info) const { return write(loc, info.info_to_void(), info.info_size()); }
 
 	int write(const sys::File & source_file, u32 chunk_size, u32 size = 0xffffffff) const;
+	int write(const sys::File & source_file, u32 chunk_size, u32 size, const ProgressCallback * progress_callback) const;
 
 	/*! \details Reads a line from a file.
 	 *
@@ -588,6 +590,9 @@ public:
 	int seek(int loc, int whence = LINK_SEEK_SET) const;
 	int ioctl(int req, void * arg) const { return 0; }
 	u32 size() const { return data().size(); }
+
+	using File::read;
+	using File::write;
 
 	void set_flags(int o_flags){ m_o_flags = o_flags; }
 	int flags() const { return m_o_flags; }

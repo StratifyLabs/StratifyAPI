@@ -14,7 +14,7 @@
 
 using namespace sys;
 
-Printer::Printer(){
+Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this){
 	m_o_flags = PRINT_8 | PRINT_HEX;
 	m_indent = 0;
 	m_progress_width = 50;

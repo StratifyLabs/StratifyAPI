@@ -25,6 +25,9 @@ public:
 	const var::String & domain_name() const { return m_domain_name; }
 	const var::String & path() const { return m_path; }
 
+	static var::String encode(const var::ConstString & input);
+	static var::String decode(const var::ConstString & input);
+
 private:
 	var::String m_domain_name;
 	var::String m_path;

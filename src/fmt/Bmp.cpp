@@ -108,9 +108,11 @@ int Bmp::create_appfs(const var::ConstString & name, s32 width, s32 height, u16 
 	memcpy(img, &hdr, sizeof(hdr));
 	memcpy(img + sizeof(hdr), &dib, sizeof(dib));
 
+	DataFile source_data;
 
-	Appfs::create(name, img, nbyte);
+	source_data.data().set(img, nbyte);
 
+	Appfs::create(name, source_data);
 
 
 	return 0;

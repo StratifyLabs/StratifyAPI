@@ -8,6 +8,8 @@
 #include "../var/String.hpp"
 #include "../api/SysObject.hpp"
 #include "../var/ConstString.hpp"
+#include "ProgressCallback.hpp"
+#include "File.hpp"
 
 namespace sys {
 
@@ -118,44 +120,22 @@ public:
 	 */
 #if !defined __link
 	static int create(const var::ConstString & name,
-							const void * buf,
-							int nbyte,
-							const char * mount = "/app",
-							bool (*update)(void *, int, int) = 0,
-							void * context = 0);
+							const sys::File & source_data,
+							const var::ConstString & mount = "/app",
+							const ProgressCallback * progress_callback = 0);
 
 	static int create(const var::ConstString & name,
 							const var::Data & data,
 							const char * mount = "/app",
-							bool (*update)(void *, int, int) = 0,
-							void * context = 0){
-		return create(name, data.to_void(), data.size(), mount, update, context);
+							const ProgressCallback * progress_callback = 0){
+		return create(name, data.to_void(), data.size(), mount, progress_callback);
 	}
 #else
 	static int create(const var::ConstString & name,
-							const void * buf,
-							int nbyte,
-							const char * mount = "/app",
-							bool (*update)(void *, int, int) = 0,
-							void * context = 0,
+							const sys::File & source_data,
+							const var::ConstString & mount = "/app",
+							const ProgressCallback * progress_callback = 0,
 							link_transport_mdriver_t * driver = 0);
-
-	static int create(const var::ConstString & name,
-							const var::Data & data,
-							const char * mount = "/app",
-							bool (*update)(void *, int, int) = 0,
-							void * context = 0,
-							link_transport_mdriver_t * driver = 0){
-		return create(name, data.to_void(), data.size(), mount, update, context, driver);
-	}
-#endif
-
-#if 0
-	static int create(const var::ConstString name,
-							const File & source,
-							const char * mount = "/app",
-							bool (*update)(void *, int, int) = 0,
-							void * context = 0);
 #endif
 
 

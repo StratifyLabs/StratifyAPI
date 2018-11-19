@@ -31,20 +31,19 @@ void AppfsFileAttributes::apply(appfs_file_t * dest) const {
 }
 
 #if defined __link
-int Appfs::create(const var::ConstString & name, const void * buf, int nbyte, const char * mount, bool (*update)(void *, int, int), void * context, link_transport_mdriver_t * driver){
+int Appfs::create(const var::ConstString & name, const sys::File & source_data, const var::ConstString & mount, const ProgressCallback * progress_callback, link_transport_mdriver_t * driver){
 	File file(driver);
 #else
-int Appfs::create(const var::ConstString & name, const void * buf, int nbyte, const char * mount, bool (*update)(void *, int, int), void * context){
+int Appfs::create(const var::ConstString & name, const sys::File & source_data, const var::ConstString & mount, bool (*update)(void *, int, int), void * context){
 	File file;
 #endif
 	char buffer[LINK_PATH_MAX];
 	int tmp;
-	const char * p = (const char*)buf;
 	appfs_createattr_t attr;
 	int loc;
 	unsigned int bw; //bytes written
 	appfs_file_t f;
-	strcpy(buffer, mount);
+	strcpy(buffer, mount.cstring());
 	strcat(buffer, "/flash/");
 	strcat(buffer, name.str());
 
@@ -52,7 +51,7 @@ int Appfs::create(const var::ConstString & name, const void * buf, int nbyte, co
 	//delete the settings if they exist
 	strncpy(f.hdr.name, name.str(), LINK_NAME_MAX);
 	f.hdr.mode = 0666;
-	f.exec.code_size = nbyte + sizeof(f); //total number of bytes in file
+	f.exec.code_size = source_data.size() + sizeof(f); //total number of bytes in file
 	f.exec.signature = APPFS_CREATE_SIGNATURE;
 
 #if defined __link
@@ -69,10 +68,11 @@ int Appfs::create(const var::ConstString & name, const void * buf, int nbyte, co
 	memcpy(attr.buffer, &f, sizeof(f));
 	//now copy some bytes
 	attr.nbyte = APPFS_PAGE_SIZE - sizeof(f);
-	if( nbyte < (int)attr.nbyte ){
-		attr.nbyte = nbyte;
+	if( source_data.size() < (int)attr.nbyte ){
+		attr.nbyte = source_data.size();
 	}
-	memcpy(attr.buffer + sizeof(f), p, attr.nbyte);
+
+	source_data.read(attr.buffer + sizeof(f), attr.nbyte);
 	attr.nbyte += sizeof(f);
 	loc = 0;
 	bw = 0;
@@ -83,7 +83,7 @@ int Appfs::create(const var::ConstString & name, const void * buf, int nbyte, co
 			} else {
 				attr.nbyte = f.exec.code_size - bw;
 			}
-			memcpy(attr.buffer, p, attr.nbyte);
+			source_data.read(attr.buffer, attr.nbyte);
 		}
 
 		//location gets modified by the driver so it needs to be fixed on each loop
@@ -93,21 +93,16 @@ int Appfs::create(const var::ConstString & name, const void * buf, int nbyte, co
 			return tmp;
 		}
 
-		if( loc != 0 ){
-			p += attr.nbyte;
-		} else {
-			p += (attr.nbyte - sizeof(f));
-		}
 		bw += attr.nbyte;
 		loc += attr.nbyte;
 
-		if( update ){
-			update(context, bw, f.exec.code_size);
+		if( progress_callback ){
+			progress_callback->update(bw, f.exec.code_size);
 		}
 
 	} while( bw < f.exec.code_size);
 
-	return nbyte;
+	return f.exec.code_size;
 }
 
 #if defined __link

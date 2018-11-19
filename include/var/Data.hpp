@@ -185,7 +185,15 @@ public:
 	 * when this method is called.
 	 *
 	 */
-	void set(void * mem, u32 size, bool readonly = false);
+	void refer_to(void * mem, u32 size, bool readonly = false);
+
+	void refer_to(const Data & data){
+		refer_to((void*)data.to_void(), data.size(), data.is_read_only());
+	}
+
+	void set(void * mem, u32 size, bool readonly = false){
+		return refer_to(mem, size, readonly);
+	}
 
 	/*! \details Allocates (or reallocates) memory for the Data object.
 	 *

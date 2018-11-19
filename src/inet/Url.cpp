@@ -59,3 +59,25 @@ var::String Url::to_string() const {
 	result << p << "://" << m_domain_name << m_path;
 	return result;
 }
+
+var::String Url::encode(const var::ConstString & input){
+	var::String result;
+	u32 length = input.length();
+	for(u32 i=0; i < length; i++){
+		char c = input.at(i);
+		if( (c < '0') ||
+			 ((c > '9') && (c < 'A')) ||
+			 ((c > 'Z') && (c < 'a')) ||
+			 (c > 'z')
+			 ){
+			result << var::String().format("%%%X", c);
+		} else {
+			result << c;
+		}
+	}
+	return result;
+}
+
+var::String Url::decode(const var::ConstString & input){
+	return var::String();
+}

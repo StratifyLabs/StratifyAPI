@@ -6,6 +6,7 @@
 #include "../var/ConstString.hpp"
 #include "../sys/Appfs.hpp"
 #include "../sys/Trace.hpp"
+#include "../sys/ProgressCallback.hpp"
 
 
 namespace var {
@@ -62,7 +63,6 @@ public:
 
 	static u32 color_code(const var::ConstString & color);
 
-
 	void set_color_code(u32 code);
 	void clear_color_code();
 
@@ -118,6 +118,10 @@ public:
 	void close_object(){ m_indent--; }
 
 
+	const sys::ProgressCallback * progress_callback() const {
+		return &m_progress_callback;
+	}
+
 	static bool update_progress_callback(void * context, int progress, int total){
 		Printer * printer = (Printer*)context;
 		return printer->update_progress(progress, total);
@@ -136,6 +140,7 @@ protected:
 
 private:
 
+	ProgressCallback m_progress_callback;
 	u16 m_progress_width;
 	u16 m_indent;
 	bool m_is_json;

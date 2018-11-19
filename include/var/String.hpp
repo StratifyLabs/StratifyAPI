@@ -108,6 +108,8 @@ public:
 	/*! \details Declares a string and initialize to \a s. */
 	String(const ConstString & s, u32 len);
 
+	explicit String(const Data & data){ assign(data.to_char(), data.size()); }
+
 
 	/*! \details Assigns a to this string.
 	  *
