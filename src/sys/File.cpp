@@ -375,7 +375,7 @@ int File::write(const sys::File & source_file, u32 chunk_size, u32 size, const P
 		}
 
 		if( progress_callback ){
-			bool is_abort = progress_callback->update(size_processed, size);
+			progress_callback->update(size_processed, size);
 		}
 
 	} while( (result > 0) && (size > size_processed) );
@@ -448,7 +448,7 @@ int DataFile::seek(int loc, int whence) const {
 			break;
 	}
 
-	if( m_location > size() ){
+	if( m_location > (int)size() ){
 		m_location = m_data.size();
 	} else if ( m_location < 0 ){
 		m_location = 0;

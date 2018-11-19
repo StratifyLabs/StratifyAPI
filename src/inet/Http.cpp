@@ -170,7 +170,7 @@ int HttpClient::send_header(const var::ConstString & method,
 
 	printf(">> %s", m_header.str());
 
-	if( socket().write(m_header) != m_header.length() ){
+	if( socket().write(m_header) != (int)m_header.length() ){
 		return -1;
 	}
 
@@ -230,8 +230,8 @@ int HttpClient::listen_for_data(const sys::File & file, const sys::ProgressCallb
 			bytes_incoming = line.to_unsigned_long(16);
 
 			//read bytes_incoming from the socket and write it to the output file
-			if( file.write(socket(), bytes_incoming, bytes_incoming) != bytes_incoming ){
-				printf("failed to transfer %d\n", bytes_incoming);
+			if( file.write(socket(), bytes_incoming, bytes_incoming) != (int)bytes_incoming ){
+				printf("failed to transfer " F32U "\n", bytes_incoming);
 				return -1;
 			}
 

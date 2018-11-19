@@ -123,13 +123,6 @@ public:
 							const sys::File & source_data,
 							const var::ConstString & mount = "/app",
 							const ProgressCallback * progress_callback = 0);
-
-	static int create(const var::ConstString & name,
-							const var::Data & data,
-							const char * mount = "/app",
-							const ProgressCallback * progress_callback = 0){
-		return create(name, data.to_void(), data.size(), mount, progress_callback);
-	}
 #else
 	static int create(const var::ConstString & name,
 							const sys::File & source_data,

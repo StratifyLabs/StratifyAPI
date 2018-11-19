@@ -1179,16 +1179,17 @@ int Link::update_os(const sys::File & image, bool verify, const ProgressCallback
 
 int Link::update_binary_install_options(const sys::File & file, const AppfsFileAttributes & attributes){
 	var::Data image(sizeof(appfs_file_t));
+	int result;
 
-	if( file.read(0, image) < 0 ){
-		m_error_message.format("Failed to read from binary file");
+	if( (result = file.read(0, image)) != image.size() ){
+		m_error_message.format("Failed to read from binary file (%d, %d)", result, file.error_number());
 		return -1;
 	}
 
 	attributes.apply(image.to<appfs_file_t>());
 
-	if( file.write(0, image) < 0 ){
-		m_error_message.format("Failed to write new attributes to binary file");
+	if( (result = file.write(0, image)) != image.size() ){
+		m_error_message.format("Failed to write new attributes to binary file (%d, %d)", result, file.error_number());
 		return -1;
 	}
 

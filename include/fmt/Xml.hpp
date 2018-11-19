@@ -216,7 +216,7 @@ public:
 	 * \details This method returns the size of the current object.  It
 	 * represents the number of bytes in the file
 	 */
-	inline int size() const { return content.size; }
+	u32 size() const { return content.size; }
 
 
 	int write_start_tag(const var::ConstString & name, const var::ConstString & attrs = 0);

@@ -34,7 +34,7 @@ void AppfsFileAttributes::apply(appfs_file_t * dest) const {
 int Appfs::create(const var::ConstString & name, const sys::File & source_data, const var::ConstString & mount, const ProgressCallback * progress_callback, link_transport_mdriver_t * driver){
 	File file(driver);
 #else
-int Appfs::create(const var::ConstString & name, const sys::File & source_data, const var::ConstString & mount, bool (*update)(void *, int, int), void * context){
+int Appfs::create(const var::ConstString & name, const sys::File & source_data, const var::ConstString & mount, const ProgressCallback * progress_callback){
 	File file;
 #endif
 	char buffer[LINK_PATH_MAX];
@@ -68,7 +68,7 @@ int Appfs::create(const var::ConstString & name, const sys::File & source_data, 
 	memcpy(attr.buffer, &f, sizeof(f));
 	//now copy some bytes
 	attr.nbyte = APPFS_PAGE_SIZE - sizeof(f);
-	if( source_data.size() < (int)attr.nbyte ){
+	if( source_data.size() < (u32)attr.nbyte ){
 		attr.nbyte = source_data.size();
 	}
 
