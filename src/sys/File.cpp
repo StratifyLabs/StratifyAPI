@@ -95,9 +95,7 @@ int File::copy(File & source, File & dest, const var::ConstString & source_path,
 
 int File::open(const var::ConstString & name, int access, int perms){
 	if( m_fd != -1 ){
-		if( is_keep_open() == false ){
-			close(); //close first so the file ca
-		}
+		close(); //close first so the fileno can be changed
 	}
 
 #if defined __link

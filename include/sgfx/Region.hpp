@@ -18,12 +18,12 @@ namespace sgfx {
  */
 class Region : public api::SgfxInfoObject {
 public:
-	Region(){}
-	Region(sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h){
-		m_region.point.x = x;
-		m_region.point.y = y;
-		m_region.dim.width = w;
-		m_region.dim.height = h;
+	Region(){
+		memset(&m_region, 0, sizeof(m_region));
+	}
+
+	bool is_valid() const {
+		return (m_region.dim.width != 0) && (m_region.dim.height != 0);
 	}
 
 
@@ -36,21 +36,47 @@ public:
 		m_region.dim = dim;
 	}
 
+	Point center() const {
+		return Point(m_region.point.x + m_region.dim.width/2,
+						 m_region.point.y + m_region.dim.height/2);
+	}
+
+	void set_region(const Point & top_left, const Point & bottom_right){
+		m_region.point = top_left;
+		m_region.dim.width = bottom_right.x() - top_left.x() + 1;
+		m_region.dim.height = bottom_right.y() - top_left.y() + 1;
+	}
+
 	void set_point(const Point & value){ m_region.point = value; }
 	void set_dim(const Dim & value){ m_region.dim = value; }
 
 	Point point() const { return m_region.point; }
 	Dim dim() const { return m_region.dim; }
 
+	const sg_int_t & x() const { return m_region.point.x; }
+	const sg_int_t & y() const { return m_region.point.y; }
+	const sg_size_t & width() const { return m_region.dim.width; }
+	const sg_size_t & height() const { return m_region.dim.height; }
 
-	sg_region_t region() const { return m_region; }
-	operator sg_region_t() const { return m_region; }
+	sg_int_t & x(){ return m_region.point.x; }
+	sg_int_t & y(){ return m_region.point.y; }
+	sg_size_t & width(){ return m_region.dim.width; }
+	sg_size_t & height(){ return m_region.dim.height; }
 
-	sg_int_t x() const { return m_region.point.x; }
-	sg_int_t y() const { return m_region.point.y; }
-	sg_int_t width() const { return m_region.dim.width; }
-	sg_int_t height() const { return m_region.dim.height; }
+	Region & operator << (const Point & point){
+		set_point(point);
+		return *this;
+	}
 
+	Region & operator << (const Dim & dimension){
+		set_dim(dimension);
+		return *this;
+	}
+
+	const sg_region_t & region() const { return m_region; }
+	sg_region_t region(){ return m_region; }
+
+	operator	const sg_region_t & () const { return m_region; }
 
 private:
 	sg_region_t m_region;

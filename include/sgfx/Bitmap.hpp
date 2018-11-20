@@ -18,7 +18,7 @@ namespace sgfx {
  * \details This class implements a bitmap and is
  * powered by the sgfx library.
  */
-class Bitmap : public api::SgfxDataObject {
+class Bitmap : virtual public var::Data, public api::SgfxObject {
 public:
 	/*! \details Constructs an empty bitmap. */
 	Bitmap();
@@ -57,6 +57,25 @@ public:
 	 * @param d Dimensions of the bitmap
 	 */
 	Bitmap(sg_dim_t d);
+
+	Bitmap(const Bitmap & bitmap) : var::Data(bitmap){
+		m_bmap = bitmap.m_bmap;
+		m_saved_pen = bitmap.m_saved_pen;
+		m_bmap.data = to<sg_bmap_data_t>();
+	}
+
+	Bitmap & operator = (const Bitmap & bitmap){
+		copy_contents(bitmap);
+		m_bmap = bitmap.m_bmap;
+		m_saved_pen = bitmap.m_saved_pen;
+		m_bmap.data = to<sg_bmap_data_t>();
+		return *this;
+	}
+
+	Bitmap(Bitmap && bitmap): var::Data(bitmap){
+		m_bmap = bitmap.m_bmap;
+		m_saved_pen = bitmap.m_saved_pen;
+	}
 
 	/*! \details Sets the color of the pen.
 	 *
@@ -159,7 +178,7 @@ public:
 
 	/*! \details Returns the number of bytes used to store the Bitmap. */
 	u32 calc_size(){ return calc_size(width(), height()); }
-	sg_point_t calc_center() const;
+	Point center() const;
 
 	/*! \details Returns the maximum x value. */
 	sg_int_t x_max() const { return width()-1; }
@@ -173,7 +192,7 @@ public:
 	 * @param path The path to the bitmap file name
 	 * @return Zero on success
 	 */
-	int load(const char * path);
+	int load(const var::ConstString & path);
 
 	/*! \details Saves a bitmap to a file.
 	 *
@@ -183,7 +202,7 @@ public:
 	 * If the file already exists, it will be overwritten.
 	 *
 	 */
-	int save(const char * path) const;
+	int save(const var::ConstString & path) const;
 
 
 	/*! \details Allocates memory for the bitmap data using the specified
@@ -195,9 +214,9 @@ public:
 	/*! \details Free memory associated with bitmap (auto freed on ~Bitmap) */
 	void free();
 
-	void transform_flip_x() const { api()->transform_flip_x(bmap_const()); }
-	void transform_flip_y() const { api()->transform_flip_y(bmap_const()); }
-	void transform_flip_xy() const { api()->transform_flip_xy(bmap_const()); }
+	void transform_flip_x() const { api()->transform_flip_x(bmap()); }
+	void transform_flip_y() const { api()->transform_flip_y(bmap()); }
+	void transform_flip_xy() const { api()->transform_flip_xy(bmap()); }
 
 	/*! \details Performs a shift operation on an area of the bitmap.
 	 *
@@ -214,7 +233,7 @@ public:
 	 *
 	 *
 	 */
-	void transform_shift(sg_point_t shift, const sg_region_t & region) const { api()->transform_shift(bmap_const(), shift, &region); }
+	void transform_shift(sg_point_t shift, const sg_region_t & region) const { api()->transform_shift(bmap(), shift, &region); }
 	void transform_shift(sg_point_t shift, sg_point_t p, sg_dim_t d) const { transform_shift(shift, Region(p,d)); }
 
 
@@ -223,7 +242,7 @@ public:
 	 * @param p The point to get the pixel color
 	 * @return The color of the pixel at \a p
 	 */
-	sg_color_t get_pixel(sg_point_t p) const { return api()->get_pixel(bmap_const(), p); }
+	sg_color_t get_pixel(const Point & p) const { return api()->get_pixel(bmap(), p); }
 
 	/*! \details Draws a pixel at the specified point.
 	 *
@@ -233,7 +252,7 @@ public:
 	 *
 	 * \sa set_pen_color()
 	 */
-	void draw_pixel(sg_point_t p) const { api()->draw_pixel(bmap_const(), p); }
+	void draw_pixel(const Point & p) const { api()->draw_pixel(bmap(), p); }
 
 	/*! \details Draws a line on the bitmap.
 	 *
@@ -243,11 +262,13 @@ public:
 	 * The bitmap's pen will determine the color, thickness, and drawing mode.
 	 *
 	 */
-	void draw_line(sg_point_t p1, sg_point_t p2) const { api()->draw_line(bmap_const(), p1, p2); }
-	void draw_quadtratic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3, sg_point_t * corners = 0) const { api()->draw_quadtratic_bezier(bmap_const(), p1, p2, p3, corners); }
-	void draw_cubic_bezier(sg_point_t p1, sg_point_t p2, sg_point_t p3, sg_point_t p4, sg_point_t * corners = 0) const { api()->draw_cubic_bezier(bmap_const(), p1, p2, p3, p4, corners); }
-	void draw_arc(const sg_region_t & region, s16 start, s16 end, s16 rotation = 0, sg_point_t * corners = 0) const { api()->draw_arc(bmap_const(), &region, start, end, rotation, corners); }
-	void draw_arc(sg_point_t p, sg_dim_t d, s16 start, s16 end, s16 rotation = 0) const { draw_arc(Region(p,d), start, end, rotation); }
+	void draw_line(const Point & p1, const Point & p2) const { api()->draw_line(bmap(), p1, p2); }
+	void draw_quadtratic_bezier(const Point & p1, const Point & p2, const Point & p3, sg_point_t * corners = 0) const { api()->draw_quadtratic_bezier(bmap(), p1, p2, p3, corners); }
+	void draw_cubic_bezier(const Point & p1, const Point & p2, const Point & p3, sg_point_t p4, sg_point_t * corners = 0) const { api()->draw_cubic_bezier(bmap(), p1, p2, p3, p4, corners); }
+	void draw_arc(const Region & region, s16 start, s16 end, s16 rotation = 0, sg_point_t * corners = 0) const {
+		api()->draw_arc(bmap(), &region.region(), start, end, rotation, corners);
+	}
+	void draw_arc(const Point & p, const Dim & d, s16 start, s16 end, s16 rotation = 0) const { draw_arc(Region(p,d), start, end, rotation); }
 
 	/*! \details Draws a rectangle on the bitmap.
 	 *
@@ -256,8 +277,8 @@ public:
 	 * The bitmap's pen color and drawing mode will affect how the rectangle is drawn. This method
 	 * affects every pixel in the rectangle not just the border.
 	 */
-	void draw_rectangle(const sg_region_t & region) const { api()->draw_rectangle(bmap_const(), &region); }
-	void draw_rectangle(sg_point_t p, sg_dim_t d) const { draw_rectangle(Region(p,d)); }
+	void draw_rectangle(const Region & region) const { api()->draw_rectangle(bmap(), &region.region()); }
+	void draw_rectangle(const Point & p, const Dim & d) const { draw_rectangle(Region(p,d)); }
 
 	/*! \details Pours an area on the bitmap.
 	 *
@@ -267,7 +288,7 @@ public:
 	 * The pour will seek boundaries going outward until it hits
 	 * a non-zero color or hits the bounding box.
 	 */
-	void draw_pour(const sg_point_t & point, const sg_region_t & bounds) const { api()->draw_pour(bmap_const(), point, &bounds); }
+	void draw_pour(const Point & point, const Region & bounds) const { api()->draw_pour(bmap(), point, &bounds.region()); }
 
 	/*! \details This function sets the pixels in a bitmap
 	 * based on the pixels of the source bitmap
@@ -276,8 +297,8 @@ public:
 	 * @param src The source bitmap
 	 * @return Zero on success
 	 */
-	void draw_bitmap(sg_point_t p_dest, const Bitmap & src) const {
-		api()->draw_bitmap(bmap_const(), p_dest, src.bmap_const());
+	void draw_bitmap(const Point & p_dest, const Bitmap & src) const {
+		api()->draw_bitmap(bmap(), p_dest, src.bmap());
 	}
 
 	/*! \details This function draws a pattern on the bitmap.
@@ -287,10 +308,10 @@ public:
 	 * @param even_pattern The even pattern as a 1bpp bitmask (e.g. 0x55)
 	 * @param pattern_height The pixel height of alternating pixels
 	 */
-	void draw_pattern(const sg_region_t & region, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height) const {
-		api()->draw_pattern(bmap_const(), &region, odd_pattern, even_pattern, pattern_height);
+	void draw_pattern(const Region & region, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height) const {
+		api()->draw_pattern(bmap(), &region.region(), odd_pattern, even_pattern, pattern_height);
 	}
-	void draw_pattern(sg_point_t p, sg_dim_t d, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height) const {
+	void draw_pattern(const Point & p, const Dim & d, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height) const {
 		draw_pattern(Region(p,d), odd_pattern, even_pattern, pattern_height);
 	}
 
@@ -302,31 +323,33 @@ public:
 	 * @param region_src The regions of the source bitmap to draw
 	 * @return Zero on success
 	 */
-	void draw_sub_bitmap(sg_point_t p_dest, const Bitmap & src, const sg_region_t & region_src) const {
-		api()->draw_sub_bitmap(bmap_const(), p_dest, src.bmap_const(), &region_src);
+	void draw_sub_bitmap(const Point & p_dest, const Bitmap & src, const Region & region_src) const {
+		api()->draw_sub_bitmap(bmap(), p_dest, src.bmap(), &region_src.region());
 	}
 
-	void draw_sub_bitmap(sg_point_t p_dest, const Bitmap & src, sg_point_t p_src, sg_dim_t d_src) const {
+	void draw_sub_bitmap(const Point & p_dest, const Bitmap & src, const Point & p_src, const Dim & d_src) const {
 		draw_sub_bitmap(p_dest, src, Region(p_src, d_src));
 	}
 
+	Region calculate_active_region() const;
+
 	//these are deprecated and shouldn't be documented?
 	void invert(){ invert_rectangle(sg_point(0,0), dim()); }
-	void invert_rectangle(sg_point_t p, sg_dim_t d){
+	void invert_rectangle(const Point & p, const Dim & d){
 		u16 o_flags;
 		sg_region_t region = sg_region(p,d);
 		o_flags = m_bmap.pen.o_flags;
 		m_bmap.pen.o_flags = SG_PEN_FLAG_IS_INVERT;
-		api()->draw_rectangle(bmap_const(), &region);
+		api()->draw_rectangle(bmap(), &region);
 		m_bmap.pen.o_flags = o_flags;
 	}
 
-	void clear_rectangle(sg_point_t p, sg_dim_t d){
+	void clear_rectangle(const Point & p, const Dim & d){
 		u16 o_flags;
 		sg_region_t region = sg_region(p,d);
 		o_flags = m_bmap.pen.o_flags;
 		m_bmap.pen.o_flags = SG_PEN_FLAG_IS_ERASE;
-		api()->draw_rectangle(bmap_const(), &region);
+		api()->draw_rectangle(bmap(), &region);
 		m_bmap.pen.o_flags = o_flags;
 	}
 
@@ -362,12 +385,13 @@ public:
 	/*! \details This method will block until the refresh operation is complete */
 	virtual void wait(const chrono::MicroTime & resolution) const {}
 
+	bool is_empty(const Region & region) const;
+
 
 	sg_size_t height() const { return m_bmap.dim.height; }
 	sg_size_t width() const { return m_bmap.dim.width; }
 	const Dim dim() const {
-		Dim d(m_bmap.dim);
-		return d;
+		return m_bmap.dim;
 	}
 
 	inline sg_size_t columns() const { return m_bmap.columns; }
@@ -386,16 +410,11 @@ public:
 	/*! \details Shows the bitmap on the standard output. */
 	void show() const;
 
-	sg_bmap_data_t * data() const{ return (sg_bmap_data_t *)Data::data(); }
-	const sg_bmap_data_t * data_const() const { return (const sg_bmap_data_t *)Data::data_const(); }
-
-	sg_bmap_data_t * data(sg_point_t p) const;
-	sg_bmap_data_t * data(sg_int_t x, sg_int_t y) const;
-	const sg_bmap_data_t * data_const(sg_point_t p) const;
-
+	const sg_bmap_data_t * bmap_data(const Point & p) const;
+	sg_bmap_data_t * bmap_data(const Point & p);
 
 	sg_bmap_t * bmap() { return &m_bmap; }
-	const sg_bmap_t * bmap_const() const { return &m_bmap; }
+	const sg_bmap_t * bmap() const { return &m_bmap; }
 
 
 protected:
@@ -405,6 +424,7 @@ private:
 
 	sg_pen_t m_saved_pen;
 	sg_bmap_t m_bmap;
+
 	void init_members();
 	void calc_members(sg_size_t w, sg_size_t h);
 

@@ -38,21 +38,6 @@ class SgfxWorkObject : public virtual WorkObject, public SgfxObject {
 
 };
 
-/*! \brief Sgfx Data Object
- * \details The Sgfx Data Object Class is the parent class
- * of all data objects in the sgfx namespace.
- *
- * \sa sgfx namespace
- *
- */
-class SgfxDataObject : public var::Data, public SgfxObject {
-public:
-
-private:
-
-
-};
-
 
 }
 

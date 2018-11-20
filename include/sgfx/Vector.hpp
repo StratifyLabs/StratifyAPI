@@ -17,7 +17,7 @@ namespace sgfx {
 /*! \brief Vecotor Map Class
  * \details This class is a wrapper for a sg_vector_map_t data structure.
  */
-class VectorMap : public var::Item<sg_vector_map_t>, public api::SgfxInfoObject {
+class VectorMap : public api::SgfxInfoObject {
 public:
 
 	/*! \details Constructs an empty vector map. */
@@ -43,22 +43,34 @@ public:
 	 * rotated, parts of the vector may not fit in the bitmap.
 	 *
 	 */
-	void set_bitmap_center(const Bitmap & bitmap, s16 rotation = 0);
+	void calculate_for_bitmap(const Bitmap & bitmap, s16 rotation = 0);
 
-	void set_region(const sg_region_t & region, s16 rotation = 0);
 
-	void fill_region(const sg_region_t & region, s16 rotation = 0);
+	void calculate_for_region(const sg_region_t & region, s16 rotation = 0);
 
-	void set_dim(sg_size_t w, sg_size_t h);
-	void set_point(sg_int_t x, sg_int_t y);
-	void set_point(const sg_point_t & p);
-	void set_dim(const sg_dim_t & d);
-	void set_rotation(s16 rot){ data()->rotation = rot; }
+	void set_region(const Region & region);
+	void set_rotation(s16 value){ m_value.rotation = value; }
 
-	sg_size_t width() const { return data_const()->region.dim.width; }
-	sg_size_t height() const { return data_const()->region.dim.height; }
-	sg_int_t x() const { return data_const()->region.point.x; }
-	sg_int_t y() const { return data_const()->region.point.y; }
+	VectorMap & operator << (const Region & a){
+		set_region(a);
+		return *this;
+	}
+
+	VectorMap & operator << (const s16 & a){
+		m_value.rotation = a;
+		return *this;
+	}
+
+	const sg_region_t & region() const { return m_value.region; }
+	sg_region_t region(){ return m_value.region; }
+
+	const sg_vector_map_t & vector_map() const { return m_value; }
+	sg_vector_map_t vector_map(){ return m_value; }
+
+	operator const sg_vector_map_t & () const { return m_value; }
+
+private:
+	sg_vector_map_t m_value;
 
 
 };

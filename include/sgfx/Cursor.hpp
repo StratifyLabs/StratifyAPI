@@ -14,23 +14,31 @@
 
 namespace sgfx {
 
-class Cursor : public var::Item<sg_cursor_t>, public api::SgfxWorkObject {
+class Cursor :	public api::SgfxWorkObject {
 public:
 	Cursor();
 	virtual ~Cursor();
 
-	void set(const Bitmap & bitmap, sg_point_t p){ api()->cursor_set(data(), bitmap.bmap_const(), p); }
-	void inc_x(){ api()->cursor_inc_x(data()); }
-	void dec_x(){ api()->cursor_dec_x(data()); }
-	void inc_y(){ api()->cursor_inc_y(data()); }
-	void dec_y(){ api()->cursor_dec_y(data()); }
-	sg_color_t get_pixel(){ return api()->cursor_get_pixel(data()); }
-	void draw_pixel() { api()->cursor_draw_pixel(data()); }
-	void draw_hline(sg_size_t width){ api()->cursor_draw_hline(data(), width); }
-	void draw_cursor(const Cursor & src, sg_size_t width){ api()->cursor_draw_cursor(data(), src.data_const(), width); }
-	void shift_right(sg_size_t shift_width, sg_size_t shift_distance){ api()->cursor_shift_right(data(), shift_width, shift_distance); }
-	void shift_left(sg_size_t shift_width, sg_size_t shift_distance){ api()->cursor_shift_left(data(), shift_width, shift_distance); }
 
+	void set(const Bitmap & bitmap, const Point & p){ api()->cursor_set(&m_cursor, bitmap.bmap(), p); }
+	void inc_x(){ api()->cursor_inc_x(&m_cursor); }
+	void increment_x(){ api()->cursor_inc_x(&m_cursor); }
+	void dec_x(){ api()->cursor_dec_x(&m_cursor); }
+	void decrement_x(){ api()->cursor_dec_x(&m_cursor); }
+	void inc_y(){ api()->cursor_inc_y(&m_cursor); }
+	void increment_y(){ api()->cursor_inc_y(&m_cursor); }
+	void dec_y(){ api()->cursor_dec_y(&m_cursor); }
+	void decrement_y(){ api()->cursor_dec_y(&m_cursor); }
+	sg_color_t get_pixel(){ return api()->cursor_get_pixel(&m_cursor); }
+	void draw_pixel() { api()->cursor_draw_pixel(&m_cursor); }
+	void draw_hline(sg_size_t width){ api()->cursor_draw_hline(&m_cursor, width); }
+	void draw_cursor(const Cursor & src, sg_size_t width){ api()->cursor_draw_cursor(&m_cursor, &src.m_cursor, width); }
+	void shift_right(sg_size_t shift_width, sg_size_t shift_distance){ api()->cursor_shift_right(&m_cursor, shift_width, shift_distance); }
+	void shift_left(sg_size_t shift_width, sg_size_t shift_distance){ api()->cursor_shift_left(&m_cursor, shift_width, shift_distance); }
+
+	sg_cursor_t & cursor() { return m_cursor; }
+	const sg_cursor_t & cursor() const { return m_cursor; }
+	operator const sg_cursor_t & () const { return m_cursor; }
 
 private:
 	sg_cursor_t m_cursor;

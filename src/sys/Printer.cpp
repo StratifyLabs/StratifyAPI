@@ -10,6 +10,7 @@
 #include "var/Vector.hpp"
 #include "var/String.hpp"
 #include "var/Token.hpp"
+#include "sgfx/Bitmap.hpp"
 
 
 using namespace sys;
@@ -229,6 +230,68 @@ Printer & Printer::operator << (const sys::SysInfo & a ){
 		print_indented("SOS Git Hash",  "%s", a.sos_git_hash().str());
 		print_indented("MCU Git Hash",  "%s", a.mcu_git_hash().str());
 	}
+	return *this;
+}
+
+Printer & Printer::operator << (const sgfx::Bitmap & a){
+	sg_size_t i,j;
+
+	sg_color_t color;
+	sg_cursor_t y_cursor;
+	sg_cursor_t x_cursor;
+
+	sgfx::Bitmap::api()->cursor_set(&y_cursor, a.bmap(), sg_point(0,0));
+
+	for(i=0; i < a.bmap()->dim.height; i++){
+		sg_cursor_copy(&x_cursor, &y_cursor);
+		print_indented(var::String().format("line-%04d", i), "");
+		for(j=0; j < a.bmap()->dim.width; j++){
+			color = sgfx::Bitmap::api()->cursor_get_pixel(&x_cursor);
+			if( sgfx::Bitmap::api()->bits_per_pixel > 8 ){
+				::printf("%04X", color);
+			} else if(sgfx::Bitmap::api()->bits_per_pixel > 4){
+				::printf("%02X", color);
+			} else {
+				::printf("%X", color);
+			}
+			if( (j < a.bmap()->dim.width - 1) && (sgfx::Bitmap::api()->bits_per_pixel > 4)){
+				::printf(" ");
+			}
+		}
+		sgfx::Bitmap::api()->cursor_inc_y(&y_cursor);
+	}
+	return *this;
+}
+
+Printer & Printer::operator << (const sgfx::Cursor & a){
+	return *this;
+}
+
+Printer & Printer::operator << (const sgfx::Point & a){
+	print_indented("x", "%d", a.x());
+	print_indented("y", "%d", a.y());
+	return *this;
+}
+
+Printer & Printer::operator << (const sgfx::Region & a){
+	print_indented("x", "%d", a.point().x());
+	print_indented("y", "%d", a.point().y());
+	print_indented("width", "%d", a.dim().width());
+	print_indented("height", "%d", a.dim().height());
+	return *this;
+}
+
+Printer & Printer::operator << (const sgfx::Dim & a){
+	print_indented("width", "%d", a.width());
+	print_indented("height", "%d", a.height());
+	return *this;
+}
+
+Printer & Printer::operator << (const sgfx::Pen & a){
+	return *this;
+}
+
+Printer & Printer::operator << (const sgfx::Vector & a){
 	return *this;
 }
 

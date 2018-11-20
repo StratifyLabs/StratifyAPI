@@ -34,37 +34,45 @@ int FileFont::set_file(const var::ConstString & name, int offset){
 		return -1;
 	}
 
-	if( m_file.read(offset, &m_hdr, sizeof(m_hdr)) != sizeof(m_hdr) ){
-		m_file.close();
+	if( m_file.read(offset, &m_header, sizeof(m_header)) != sizeof(m_header) ){
 		return -1;
 	}
 
 	m_canvas.free();
-	if( m_canvas.alloc(m_hdr.canvas_width, m_hdr.canvas_height) < 0 ){
+	if( m_canvas.alloc(m_header.canvas_width, m_header.canvas_height) < 0 ){
 		return -1;
 	}
 	m_offset = offset;
 	m_current_canvas = 255;
-	m_canvas_start = m_hdr.size;
+	m_canvas_start = m_header.size;
 	m_canvas_size = m_canvas.calc_size();
 
-	pair_size = sizeof(sg_font_kerning_pair_t)*m_hdr.kerning_pair_count;
+	printf("Header size %d\n", m_header.size);
+	printf("canvas %dx%d\n", m_header.canvas_width, m_header.canvas_height);
+
+
+	pair_size = sizeof(sg_font_kerning_pair_t)*m_header.kerning_pair_count;
 
 	m_kerning_pairs = (sg_font_kerning_pair_t*)malloc(pair_size);
+	printf("kerning pairs %d\n", m_header.kerning_pair_count);
+	printf("character count %d\n", m_header.character_count);
+	printf("bits per pixel %d\n", m_header.bits_per_pixel);
+	printf("word width %d\n", m_header.max_word_width);
+	printf("height %d\n", m_header.max_height);
 
 	if( m_kerning_pairs ){
 		m_file.read(m_offset + sizeof(sg_font_header_t), m_kerning_pairs, pair_size);
 	}
 
-	set_space_size(m_hdr.max_word_width);
-	set_letter_spacing(m_hdr.max_height/8);
+	set_space_size(m_header.max_word_width);
+	set_letter_spacing(m_header.max_height/8);
 
 	return 0;
 
 }
 
-sg_size_t FileFont::get_height() const { return m_hdr.max_height; }
-sg_size_t FileFont::get_width() const { return m_hdr.max_word_width*32; }
+sg_size_t FileFont::get_height() const { return m_header.max_height; }
+sg_size_t FileFont::get_width() const { return m_header.max_word_width*32; }
 
 
 int FileFont::load_char(sg_font_char_t & ch, char c, bool ascii) const {
@@ -81,15 +89,21 @@ int FileFont::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 		return -1;
 	}
 
-	offset = m_offset + sizeof(sg_font_header_t) + sizeof(sg_font_kerning_pair_t)*m_hdr.kerning_pair_count + ind*sizeof(sg_font_char_t);
+	offset = m_offset + sizeof(sg_font_header_t) + sizeof(sg_font_kerning_pair_t)*m_header.kerning_pair_count + ind*sizeof(sg_font_char_t);
 	if( (ret = m_file.read(offset, &ch, sizeof(ch))) != sizeof(ch) ){
 		return -1;
 	}
+
+	printf("loaded character %d\n", ch.id);
+	printf("loaded dims %d,%d %dx%d\n", ch.canvas_x, ch.canvas_y, ch.width, ch.height);
+	printf("loaded offset %d,%d\n", ch.offset_x, ch.offset_y);
+	printf("loaded advance %d\n", ch.advance_x);
+
 	return 0;
 }
 
 int FileFont::load_kerning(u16 first, u16 second) const {
-	int kerning_count = m_hdr.kerning_pair_count;
+	int kerning_count = m_header.kerning_pair_count;
 	int i;
 
 	if( m_kerning_pairs == 0 ){ return 0; }
@@ -107,12 +121,15 @@ void FileFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_
 	u32 canvas_offset;
 	if( ch.canvas_idx != m_current_canvas ){
 		canvas_offset = m_canvas_start + ch.canvas_idx*m_canvas_size;
-		if( m_file.read(m_offset + canvas_offset, m_canvas.data(), m_canvas_size) != (int)m_canvas_size ){
+
+		//need to read the character row by row
+
+		if( m_file.read(m_offset + canvas_offset, m_canvas.to_void(), m_canvas_size) != (int)m_canvas_size ){
 			return;
 		}
 		m_current_canvas = ch.canvas_idx;
 	}
 
-	Region region(ch.canvas_x, ch.canvas_y, ch.width, ch.height);
+	Region region(Point(ch.canvas_x, ch.canvas_y), Dim(ch.width, ch.height));
 	dest.draw_sub_bitmap(point, m_canvas, region);
 }

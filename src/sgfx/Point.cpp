@@ -6,22 +6,20 @@ using namespace sgfx;
 
 
 Point Point::operator*(float f) const {
-	Point p(*this);
 	float x, y;
-	x = f * p.x();
-	y = f * p.y();
-	p.set(rintf(x), rintf(y));
+	x = f * this->x();
+	y = f * this->y();
+	return Point(rintf(x), rintf(y));
+}
+
+Point Point::operator+(const Point & a) const{
+	Point p(*this);
+	api()->point_shift(&p.point(), a.point());
 	return p;
 }
 
-Point Point::operator+(const sg_point_t & a) const{
+Point Point::operator-(const Point & a) const {
 	Point p(*this);
-	api()->point_shift(&p.m_value, a);
-	return p;
-}
-
-Point Point::operator-(const sg_point_t & a) const {
-	Point p(*this);
-	api()->point_subtract(&p.m_value, &a);
+	api()->point_subtract(&p.point(), &a.point());
 	return p;
 }

@@ -23,6 +23,16 @@ class MicroTime;
 class Time;
 }
 
+namespace sgfx{
+class Point;
+class Dim;
+class Region;
+class Bitmap;
+class Pen;
+class Vector;
+class Cursor;
+}
+
 
 namespace hal{
 class I2CAttributes;
@@ -75,6 +85,15 @@ public:
 	Printer & operator << (const appfs_file_t & a);
 	Printer & operator << (const AppfsFileAttributes & a);
 	Printer & operator << (const TraceEvent & a);
+
+	Printer & operator << (const sgfx::Bitmap & a);
+	Printer & operator << (const sgfx::Cursor & a);
+	Printer & operator << (const sgfx::Point & a);
+	Printer & operator << (const sgfx::Region & a);
+	Printer & operator << (const sgfx::Dim & a);
+	Printer & operator << (const sgfx::Pen & a);
+	Printer & operator << (const sgfx::Vector & a);
+
 
 	Printer & operator << (const sys::SysInfo & a);
 	Printer & operator << (const sys::TaskInfo & a);

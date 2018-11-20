@@ -6,63 +6,45 @@
 using namespace sgfx;
 
 
-void VectorMap::set_region(const sg_region_t & region, s16 rotation){
-	data()->region = region;
-	data()->rotation = rotation;
-}
-
-void VectorMap::set_dim(const sg_dim_t & dim){
-	data()->region.dim = dim;
-}
-
-void VectorMap::set_point(const sg_point_t & p){
-	data()->region.point = p;
-}
-
-void VectorMap::set_point(sg_int_t x, sg_int_t y){
-	data()->region.point.x = x;
-	data()->region.point.y = y;
-}
-
-
-void VectorMap::set_dim(sg_size_t w, sg_size_t h){
-	data()->region.dim.width = w;
-	data()->region.dim.height = h;
+void VectorMap::set_region(const Region & region){
+	m_value.region = region;
 }
 
 VectorMap::VectorMap(const Bitmap & bitmap, s16 rotation){
-	set_bitmap_center(bitmap, rotation);
+	calculate_for_bitmap(bitmap, rotation);
 }
 
-void VectorMap::set_bitmap_center(const Bitmap & bitmap, s16 rotation){
+void VectorMap::calculate_for_bitmap(const Bitmap & bitmap, s16 rotation){
 	u8 thickness = bitmap.pen_thickness();
 	u32 max_width;
 	u32 max_height;
 	s32 tmp;
+
+	//this is multiplied by a scaling factor that represents sqrt(2) which allows for full rotation without losing data
 	max_width = (bitmap.width() - bitmap.margin_left() - bitmap.margin_right()) * 1414UL / 1000UL ;
 	max_height = (bitmap.height() - bitmap.margin_top() - bitmap.margin_bottom()) * 1414UL / 1000UL;
-	data()->region.dim.width = max_width - 2*thickness;
-	data()->region.dim.height = max_height - 2*thickness;
+	m_value.region.dim.width = max_width - 2*thickness;
+	m_value.region.dim.height = max_height - 2*thickness;
 	tmp = bitmap.width() - max_width + 1;
-	data()->region.point.x = tmp/2;
+	m_value.region.point.x = tmp/2;
 	tmp = bitmap.height() - max_height + 1;
-	data()->region.point.y = tmp/2;
-	data()->rotation = rotation;
+	m_value.region.point.y = tmp/2;
+	m_value.rotation = rotation;
 }
 
-void VectorMap::fill_region(const sg_region_t & region, s16 rotation){
+void VectorMap::calculate_for_region(const sg_region_t & region, s16 rotation){
 	u32 max_width;
 	u32 max_height;
 	s32 tmp;
 	max_width = (region.dim.width) * 1414UL / 1000UL ;
 	max_height = (region.dim.height) * 1414UL / 1000UL;
-	data()->region.dim.width = max_width;
-	data()->region.dim.height = max_height;
+	m_value.region.dim.width = max_width;
+	m_value.region.dim.height = max_height;
 	tmp = region.dim.width - max_width + 1;
-	data()->region.point.x = region.point.x + tmp/2;
+	m_value.region.point.x = region.point.x + tmp/2;
 	tmp = region.dim.height - max_height + 1;
-	data()->region.point.y = region.point.y + tmp/2;
-	data()->rotation = rotation;
+	m_value.region.point.y = region.point.y + tmp/2;
+	m_value.rotation = rotation;
 }
 
 
@@ -303,7 +285,7 @@ void Vector::draw_remove(Bitmap & bitmap, const VectorMap & map, sg_region_t * b
 	objs[0] = line(-SG_MAX/2, -SG_MAX/2, SG_MAX/2, SG_MAX/2);
 	objs[1] = line(-SG_MAX/2, SG_MAX/2, SG_MAX/2, -SG_MAX/2);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -319,7 +301,7 @@ void Vector::draw_ok(Bitmap & bitmap, const VectorMap & map, sg_region_t * bound
 	objs[0] = line(-SG_MAX/2, SG_MAX/4, -SG_MAX/4, SG_MAX/2);
 	objs[1] = line(-SG_MAX/4, SG_MAX/2, SG_MAX/2, -SG_MAX/4);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -336,7 +318,7 @@ void Vector::draw_bars(Bitmap & bitmap, const VectorMap & map, sg_region_t * bou
 	objs[1] = Vector::line(SG_MIN/2, 0, SG_MAX/2, 0);
 	objs[2] = Vector::line(SG_MIN/2, SG_MAX/2, SG_MAX/2, SG_MAX/2);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -350,7 +332,7 @@ void Vector::draw_circle(Bitmap & bitmap, const VectorMap & map, sg_region_t * b
 	icon.total = total;
 	icon.fill_total = 0;
 	objs[0] = circle(0, 0, SG_MAX/2);
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -365,7 +347,7 @@ void Vector::draw_circle_fill(Bitmap & bitmap, const VectorMap & map, sg_region_
 	icon.fill_total = 0;
 	objs[0] = circle(0, 0, SG_MAX/2);
 	objs[1] = fill(0, 0);
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -384,7 +366,7 @@ void Vector::draw_toggle_off(Bitmap & bitmap, const VectorMap & map, sg_region_t
 	objs[3] = arc(SG_MAX/4, 0, SG_MAX/4, SG_MAX/4, SG_TRIG_POINTS*3/4, SG_TRIG_POINTS*5/4);
 	objs[4] = circle(-SG_MAX/4, 0, SG_MAX/4);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -404,7 +386,7 @@ void Vector::draw_toggle_on(Bitmap & bitmap, const VectorMap & map, sg_region_t 
 	objs[4] = circle(SG_MAX/4, 0, SG_MAX/4);
 	objs[5] = fill(-SG_MAX/4, 0);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -420,7 +402,7 @@ void Vector::draw_power(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[0] = line(0, 0, 0, -SG_MAX/2);
 	objs[1] = arc(0, 0, SG_MAX/2, SG_MAX/2, SG_TRIG_POINTS*7/8, SG_TRIG_POINTS*7/8 + SG_TRIG_POINTS*3/4);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -436,7 +418,7 @@ void Vector::draw_chevron(Bitmap & bitmap, const VectorMap & map, sg_region_t * 
 	objs[0] = line(-SG_MAX/8, -SG_MAX/2, SG_MAX/8, 0);
 	objs[1] = line(SG_MAX/8, 0, -SG_MAX/8, SG_MAX/2);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -453,7 +435,7 @@ void Vector::draw_arrow(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[1] = line(0, SG_MAX/2, SG_MAX/2, 0);
 	objs[2] = line(0, -SG_MAX/2, SG_MAX/2, 0);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -469,7 +451,7 @@ void Vector::draw_zoom(Bitmap & bitmap, const VectorMap & map, sg_region_t * bou
 	objs[0] = circle(SG_MAX/6, -SG_MAX/6, SG_MAX*3/10);
 	objs[1] = line(-SG_MAX/20, SG_MAX/20, -SG_MAX/2, SG_MAX/2);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -486,7 +468,7 @@ void Vector::draw_reset(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[1] = line(SG_MAX*3/10, 0, SG_MAX*1/10, -SG_MAX*2/20);
 	objs[2] = arc(-SG_MAX/40, 0, SG_MAX*3/10 + SG_MAX*3/40, SG_MAX*3/10 + SG_MAX*3/40, SG_TRIG_POINTS/12, SG_TRIG_POINTS);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -503,7 +485,7 @@ void Vector::draw_lightning(Bitmap & bitmap, const VectorMap & map, sg_region_t 
 	objs[1] = line(-SG_MAX/4, SG_MAX/10, SG_MAX/4, -SG_MAX/10);
 	objs[2] = line(SG_MAX/4, -SG_MAX/10, 0, SG_MAX/2);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -521,7 +503,7 @@ void Vector::draw_play(Bitmap & bitmap, const VectorMap & map, sg_region_t * bou
 	objs[2] = line(SG_MAX/2, 0, -SG_MAX/2, -SG_MAX/2);
 	objs[3] = fill(0, 0);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -538,7 +520,7 @@ void Vector::draw_pause(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[0] = line(-SG_MAX/4, -SG_MAX/2, -SG_MAX/4, SG_MAX/2);
 	objs[1] = line(SG_MAX/4, -SG_MAX/2, SG_MAX/4, SG_MAX/2);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -559,7 +541,7 @@ void Vector::draw_button_bar(Bitmap & bitmap, const VectorMap & map, sg_region_t
 	objs[5] = Vector::arc(SG_MIN/2+ SG_MAX/32, SG_MAX/4-SG_MAX/32, SG_MAX/32, SG_MAX/32, SG_TRIG_POINTS/4, SG_TRIG_POINTS*2/4);
 	objs[6] = Vector::fill(0, SG_MAX/8);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -583,7 +565,7 @@ void Vector::draw_mic(Bitmap & bitmap, const VectorMap & map, sg_region_t * boun
 	objs[6] = Vector::line(-SG_MAX/5, SG_MAX/2, SG_MAX/5, SG_MAX/2);
 	objs[7] = Vector::fill(0, -SG_MAX/8);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -602,7 +584,7 @@ void Vector::draw_clock(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[1] = Vector::line(0, 0, SG_MAX/4, 0);
 	objs[2] = Vector::line(0, 0, 0, -SG_MAX/3);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -623,7 +605,7 @@ void Vector::draw_heart(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[3] = Vector::line(SG_MAX/2 - SG_MAX*1/20, SG_MAX*3/10 - SG_MAX*3/20, 0, SG_MAX/2);
 	objs[4] = Vector::fill(SG_MAX/4, 0);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -645,7 +627,7 @@ void Vector::draw_plot(Bitmap & bitmap, const VectorMap & map, sg_region_t * bou
 	objs[4] = Vector::line(0, 0, SG_MAX/4, -SG_MAX/4);
 	objs[5] = Vector::line(SG_MAX/4, -SG_MAX/4, SG_MAX/2, SG_MAX/4);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -671,7 +653,7 @@ void Vector::draw_bike(Bitmap & bitmap, const VectorMap & map, sg_region_t * bou
 	objs[9] = Vector::line(SG_MAX*1/16, -SG_MAX*3/8, SG_MAX*3/16, -SG_MAX*3/8);
 	objs[10] = Vector::line(-SG_MAX*4/16, -SG_MAX*5/16, -SG_MAX*2/16, -SG_MAX*5/16);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -692,7 +674,7 @@ void Vector::draw_mountain(Bitmap & bitmap, const VectorMap & map, sg_region_t *
 	objs[4] = Vector::line(-SG_MAX/2, SG_MAX/2, SG_MAX/2, SG_MAX/2);
 	objs[5] = Vector::fill(SG_MAX/8, 0);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -714,7 +696,7 @@ void Vector::draw_compass(Bitmap & bitmap, const VectorMap & map, sg_region_t * 
 	objs[4] = Vector::line(SG_MAX/8, 0, 0, SG_MAX/4);
 	objs[5] = Vector::fill(0, -SG_MAX/8);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -739,7 +721,7 @@ void Vector::draw_compass_outer(Bitmap & bitmap, const VectorMap & map, sg_regio
 	objs[7] = Vector::line(SG_MAX*5/20, -SG_MAX*5/20, SG_MAX*7/20, -SG_MAX*7/20);
 	objs[8] = Vector::line(-SG_MAX*5/20, -SG_MAX*5/20, -SG_MAX*7/20, -SG_MAX*7/20);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -762,7 +744,7 @@ void Vector::draw_panel(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[6] = Vector::line(-SG_MAX/2, -SG_MAX/4+SG_MAX/16, -SG_MAX/2, SG_MAX/4-SG_MAX/16);
 	objs[7] = Vector::line(SG_MAX/2, -SG_MAX/4+SG_MAX/16, SG_MAX/2, SG_MAX/4-SG_MAX/16);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -787,7 +769,7 @@ void Vector::draw_panel_fill(Bitmap & bitmap, const VectorMap & map, sg_region_t
 	objs[7] = Vector::line(SG_MAX/2, -SG_MAX/4+SG_MAX/16, SG_MAX/2, SG_MAX/4-SG_MAX/16);
 	objs[8] = Vector::fill(0, 0);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -812,7 +794,7 @@ void Vector::draw_sun(Bitmap & bitmap, const VectorMap & map, sg_region_t * boun
 	objs[7] = Vector::line(SG_MAX*5/20, -SG_MAX*5/20, SG_MAX*7/20, -SG_MAX*7/20);
 	objs[8] = Vector::line(-SG_MAX*5/20, -SG_MAX*5/20, -SG_MAX*7/20, -SG_MAX*7/20);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -835,7 +817,7 @@ void Vector::draw_battery(Bitmap & bitmap, const VectorMap & map, sg_region_t * 
 	objs[5] = Vector::line(SG_MAX*4/10, -SG_MAX*1/10, SG_MAX*5/10, -SG_MAX*1/10);
 	objs[6] = Vector::line(SG_MAX*5/10, -SG_MAX*1/10, SG_MAX*5/10, SG_MAX*1/10);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -855,7 +837,7 @@ void Vector::draw_arrowhead(Bitmap & bitmap, const VectorMap & map, sg_region_t 
 	objs[2] = Vector::line(SG_MAX/4, SG_MAX/2, 0, SG_MAX/4);
 	objs[3] = Vector::line(-SG_MAX/4, SG_MAX/2, 0, SG_MAX/4);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -871,7 +853,7 @@ void Vector::draw_dot(Bitmap & bitmap, const VectorMap & map, sg_region_t * boun
 
 	objs[0] = Vector::circle(0, 0, SG_MAX*1/10);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -887,7 +869,7 @@ void Vector::draw_dash(Bitmap & bitmap, const VectorMap & map, sg_region_t * bou
 
 	objs[0] = Vector::line(-SG_MAX/4, 0, SG_MAX/4, 0);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -909,7 +891,7 @@ void Vector::draw_message(Bitmap & bitmap, const VectorMap & map, sg_region_t * 
 	objs[4] = Vector::line(-SG_MAX/2, -SG_MAX/4, 0, 0);
 	objs[5] = Vector::line(0, 0, SG_MAX/2, -SG_MAX/4);
 
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){
 		Vector::show(icon);
 	}
@@ -928,7 +910,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[0] = Vector::line(-SG_MAX/4, SG_MAX/2, 0, -SG_MAX/2);
 	objs[1] = Vector::line(SG_MAX/4, SG_MAX/2, 0, -SG_MAX/2);
 	objs[2] = Vector::line(-SG_MAX/8, 0, SG_MAX/8, 0);
-	//draw(bitmap, icon, map.item());
+	//draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//B
@@ -939,7 +921,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[0] = Vector::line(-SG_MAX/4, -SG_MAX/4, -SG_MAX/4, SG_MAX/4);
 	objs[1] = Vector::arc(0,SG_MAX/4,SG_MAX/4,0,0,SG_TRIG_POINTS/2);
 	objs[2] = Vector::arc(0,-SG_MAX/4,SG_MAX/4,SG_MAX/4,SG_TRIG_POINTS/2,SG_TRIG_POINTS);
-	//draw(bitmap, icon, map.item());
+	//draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//D
@@ -951,7 +933,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[1] = Vector::line(-SG_MAX/4, 0, 0, 0);
 	objs[2] = Vector::line(-SG_MAX/4, -SG_MAX/2, SG_MAX/4, -SG_MAX/2);
 	objs[3] = Vector::line(-SG_MAX/4, -SG_MAX/2, -SG_MAX/4, SG_MAX/2);
-	//draw(bitmap, icon, map.item());
+	//draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//F
@@ -959,7 +941,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[0] = Vector::line(-SG_MAX/4, -SG_MAX/2, SG_MAX/4, -SG_MAX/2);
 	objs[1] = Vector::line(-SG_MAX/4, 0, 0, 0);
 	objs[2] = Vector::line(-SG_MAX/4, -SG_MAX/2, -SG_MAX/4, SG_MAX/2);
-	//draw(bitmap, icon, map.item());
+	//draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//G
@@ -970,7 +952,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[0] = Vector::line(-SG_MAX/4, 0, SG_MAX/4, 0);
 	objs[1] = Vector::line(SG_MAX/4, -SG_MAX/2, SG_MAX/4, SG_MAX/2);
 	objs[2] = Vector::line(-SG_MAX/4, -SG_MAX/2, -SG_MAX/4, SG_MAX/2);
-	//draw(bitmap, icon, map.item());
+	//draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//I
@@ -978,7 +960,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[0] = Vector::line(-SG_MAX/4, -SG_MAX/2, SG_MAX/4, -SG_MAX/2);
 	objs[1] = Vector::line(-SG_MAX/4, SG_MAX/2, SG_MAX/4, SG_MAX/2);
 	objs[2] = Vector::line(0, -SG_MAX/2, 0, SG_MAX/2);
-	//draw(bitmap, icon, map.item());
+	//draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//J
@@ -989,14 +971,14 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[0] = Vector::line(-SG_MAX/4, -SG_MAX/2, -SG_MAX/4, SG_MAX/2);
 	objs[1] = Vector::line(-SG_MAX/4, 0, SG_MAX/4, SG_MAX/2);
 	objs[2] = Vector::line(-SG_MAX/4, 0, SG_MAX/4, -SG_MAX/2);
-	//draw(bitmap, icon, map.item());
+	//draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//L
 	icon.total = 2;
 	objs[0] = Vector::line(-SG_MAX/4, -SG_MAX/2, -SG_MAX/4, SG_MAX/2);
 	objs[1] = Vector::line(-SG_MAX/4, SG_MAX/2, SG_MAX/4, SG_MAX/2);
-	//draw(bitmap, icon, map.item());
+	//draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//M
@@ -1005,7 +987,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[1] = Vector::line(SG_MAX/4, SG_MAX/2, SG_MAX/4, -SG_MAX/2);
 	objs[2] = Vector::line(-SG_MAX/4, -SG_MAX/2, 0, SG_MAX/4);
 	objs[3] = Vector::line(SG_MAX/4, -SG_MAX/2, 0, SG_MAX/4);
-	//draw(bitmap, icon, map.item());
+	//draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//N
@@ -1013,7 +995,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[0] = Vector::line(-SG_MAX/4, SG_MAX/2, -SG_MAX/4, -SG_MAX/2);
 	objs[1] = Vector::line(SG_MAX/4, SG_MAX/2, SG_MAX/4, -SG_MAX/2);
 	objs[2] = Vector::line(-SG_MAX/4, -SG_MAX/2, SG_MAX/4, SG_MAX/2);
-	//draw(bitmap, icon, map.item());
+	//draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//O
@@ -1022,7 +1004,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[1] = Vector::line(SG_MAX/4, -SG_MAX/4, SG_MAX/4, SG_MAX/4);
 	objs[2] = Vector::arc(0,SG_MAX/4,SG_MAX/4,SG_MAX/4,0,SG_TRIG_POINTS/2);
 	objs[3] = Vector::arc(0,-SG_MAX/4,SG_MAX/4,SG_MAX/4,SG_TRIG_POINTS/2,SG_TRIG_POINTS);
-	//draw(bitmap, icon, map.item());
+	//draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//P
@@ -1031,7 +1013,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[1] = Vector::line(-SG_MAX/4, -SG_MAX/2, 0, -SG_MAX/2);
 	objs[2] = Vector::line(-SG_MAX/4, 0, 0, 0);
 	objs[3] = Vector::arc(0,-SG_MAX/4,SG_MAX/4,SG_MAX/4,SG_TRIG_POINTS*3/4,SG_TRIG_POINTS*5/4);
-	//draw(bitmap, icon, map.item());
+	//draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//Q
@@ -1041,7 +1023,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[2] = Vector::arc(0,SG_MAX/4,SG_MAX/4,SG_MAX/4,0,SG_TRIG_POINTS/2);
 	objs[3] = Vector::arc(0,-SG_MAX/4,SG_MAX/4,SG_MAX/4,SG_TRIG_POINTS/2,SG_TRIG_POINTS);
 	objs[4] = Vector::line(SG_MAX/4, SG_MAX/4, SG_MAX/4, SG_MAX/2);
-	//draw(bitmap, icon, map.item());
+	//draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//R
@@ -1051,7 +1033,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[2] = Vector::line(-SG_MAX/4, 0, 0, 0);
 	objs[3] = Vector::arc(0,-SG_MAX/4,SG_MAX/4,SG_MAX/4,SG_TRIG_POINTS*3/4,SG_TRIG_POINTS*5/4);
 	objs[4] = Vector::line(0, 0, SG_MAX/4, SG_MAX/2);
-	//draw(bitmap, icon, map.item());
+	//draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 
@@ -1059,7 +1041,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	icon.total = 2;
 	objs[0] = Vector::arc(0,-SG_MAX/4,SG_MAX/4,SG_MAX/4,SG_TRIG_POINTS/4,SG_TRIG_POINTS);
 	objs[1] = Vector::arc(0,SG_MAX/4,SG_MAX/4,SG_MAX/4,SG_TRIG_POINTS*3/4,SG_TRIG_POINTS*3/2);
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	return;
@@ -1068,7 +1050,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	icon.total = 2;
 	objs[0] = Vector::line(-SG_MAX/4, SG_MAX/2, SG_MAX/4, SG_MAX/2);
 	objs[1] = Vector::line(0, SG_MAX/2, 0, -SG_MAX/2);
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//U
@@ -1076,14 +1058,14 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[0] = Vector::line(-SG_MAX/4, -SG_MAX/4, -SG_MAX/4, SG_MAX/2);
 	objs[1] = Vector::line(SG_MAX/4, -SG_MAX/4, SG_MAX/4, SG_MAX/2);
 	objs[2] = Vector::arc(0,-SG_MAX/4,0,0,SG_TRIG_POINTS/2,SG_TRIG_POINTS);
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//V
 	icon.total = 2;
 	objs[0] = Vector::line(-SG_MAX/4, SG_MAX/2, 0, -SG_MAX/2);
 	objs[1] = Vector::line(SG_MAX/4, SG_MAX/2, 0, -SG_MAX/2);
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//W
@@ -1092,14 +1074,14 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[1] = Vector::line(SG_MAX/4, -SG_MAX/2, SG_MAX/4, SG_MAX/2);
 	objs[2] = Vector::line(-SG_MAX/4, -SG_MAX/2, 0, SG_MAX/4);
 	objs[3] = Vector::line(SG_MAX/4, -SG_MAX/2, 0, SG_MAX/4);
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//X
 	icon.total = 2;
 	objs[0] = Vector::line(-SG_MAX/4, -SG_MAX/2, SG_MAX/4, SG_MAX/2);
 	objs[1] = Vector::line(-SG_MAX/4, SG_MAX/2, SG_MAX/4, -SG_MAX/2);
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//Y
@@ -1107,7 +1089,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[0] = Vector::line(-SG_MAX/4, -SG_MAX/2, 0, 0);
 	objs[1] = Vector::line(SG_MAX/4, SG_MAX/2, 0, 0);
 	objs[2] = Vector::line(0, 0, 0, -SG_MAX/2);
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 
 	//Z
@@ -1115,7 +1097,7 @@ void Vector::draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bo
 	objs[0] = Vector::line(-SG_MAX/4, -SG_MAX/2, SG_MAX/4, -SG_MAX/2);
 	objs[1] = Vector::line(-SG_MAX/4, SG_MAX/2, SG_MAX/4, SG_MAX/2);
 	objs[2] = Vector::line(-SG_MAX/4, -SG_MAX/2, SG_MAX/4, SG_MAX/2);
-	draw(bitmap, icon, map.item());
+	draw(bitmap, icon, map.vector_map());
 	if( show ){ Vector::show(icon); }
 }
 

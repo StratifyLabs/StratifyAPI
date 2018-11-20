@@ -6,6 +6,7 @@
 #include "calc/Rle.hpp"
 #include "sys/File.hpp"
 #include "sgfx/Bitmap.hpp"
+#include "sgfx/Cursor.hpp"
 
 using namespace sgfx;
 using namespace sys;
@@ -19,7 +20,7 @@ Region Bitmap::get_viewable_region() const {
 }
 
 void Bitmap::calc_members(sg_size_t w, sg_size_t h){
-	api()->bmap_set_data(&m_bmap, (sg_bmap_data_t*)data_const(), sg_dim(w,h));
+	api()->bmap_set_data(&m_bmap, to<sg_bmap_data_t>(), sg_dim(w,h));
 }
 
 void Bitmap::init_members(){
@@ -88,45 +89,35 @@ Bitmap::~Bitmap(){
 	free();
 }
 
-sg_point_t Bitmap::calc_center() const{
-	sg_point_t p;
-	p.x = width()/2;
-	p.y = height()/2;
-	return p;
+Point Bitmap::center() const{
+	return Point(width()/2, height()/2);
 }
 
 bool Bitmap::set_size(sg_size_t w, sg_size_t h, sg_size_t offset){
-	if( calc_size(w,h) <= capacity() ){
-		api()->bmap_set_data(&m_bmap, (sg_bmap_data_t*)data_const(), sg_dim(w,h));
+	u32 size = calc_size(w,h);
+	if( size <= capacity() ){
+		Data::set_size(size);
+		api()->bmap_set_data(&m_bmap, to<sg_bmap_data_t>(), sg_dim(w,h));
 		return true;
 	}
 	return false;
 }
 
-sg_bmap_data_t * Bitmap::data(sg_point_t p) const {
-
-	if( data() == 0 ){
-		return 0;
-	}
-
-	return api()->bmap_data(bmap_const(),p);
+const sg_bmap_data_t * Bitmap::bmap_data(const Point & p) const {
+	const sg_bmap_data_t * data = to<sg_bmap_data_t>();
+	if( data == 0 ){ return 0; }
+	return api()->bmap_data(bmap(), p);
 }
 
-sg_bmap_data_t * Bitmap::data(sg_int_t x, sg_int_t y) const{
-	return api()->bmap_data(bmap_const(), sg_point(x,y));
-}
-
-const sg_bmap_data_t * Bitmap::data_const(sg_point_t p) const {
-	if( data_const() == 0 ){
-		return 0;
-	}
-
-	return data_const() + p.x / 8 + p.y * m_bmap.columns;
+sg_bmap_data_t * Bitmap::bmap_data(const Point & p){
+	sg_bmap_data_t * data = to<sg_bmap_data_t>();
+	if( data == 0 ){ return 0; }
+	return api()->bmap_data(bmap(), p);
 }
 
 
 
-int Bitmap::load(const char * path){
+int Bitmap::load(const var::ConstString & path){
 	sg_bmap_header_t hdr;
 	File f;
 	void * src;
@@ -179,7 +170,7 @@ Dim Bitmap::load_dim(const char * path){
 	return Dim(hdr.width, hdr.height);
 }
 
-int Bitmap::save(const char * path) const{
+int Bitmap::save(const var::ConstString & path) const{
 	sg_bmap_header_t hdr;
 
 	hdr.width = width();
@@ -212,20 +203,77 @@ int Bitmap::save(const char * path) const{
 	return 0;
 }
 
+Region Bitmap::calculate_active_region() const {
+	Region result;
+	sg_point_t point;
+	sg_point_t top_left;
+	sg_point_t bottom_right;
+
+	top_left.x = width();
+	top_left.y = height();
+	bottom_right.x = 0;
+	bottom_right.y = 0;
+
+	for(point.y = 0; point.y < height(); point.y++){
+		for(point.x = 0; point.x < width(); point.x++){
+
+			if( get_pixel(point) ){
+
+				if( point.x < top_left.x ){
+					top_left.x = point.x;
+				}
+
+				if( point.x > bottom_right.x ){
+					bottom_right.x = point.x;
+				}
+
+				if( point.y < top_left.y ){
+					top_left.y = point.y;
+				}
+
+				if( point.y > bottom_right.y ){
+					bottom_right.y = point.y;
+				}
+			}
+		}
+	}
+
+	result.set_region(top_left, bottom_right);
+
+	return result;
+}
+
+bool Bitmap::is_empty(const Region & region) const {
+	Cursor x_cursor;
+	Cursor y_cursor;
+	y_cursor.set(*this, region.point());
+	for(u32 h = 0; h < region.dim().height(); h++){
+		x_cursor = y_cursor;
+		for(u32 w = 0; w < region.dim().width(); w++){
+			//get pixel increments the cursor
+			if( x_cursor.get_pixel() != 0 ){
+				return false;
+			}
+		}
+		y_cursor.increment_y();
+	}
+	return true;
+}
+
 void Bitmap::show() const{
-	//api()->show(bmap_const());
+	//api()->show(bmap());
 	sg_size_t i,j;
 
 	sg_color_t color;
 	sg_cursor_t y_cursor;
 	sg_cursor_t x_cursor;
 
-	api()->cursor_set(&y_cursor, bmap_const(), sg_point(0,0));
+	api()->cursor_set(&y_cursor, bmap(), sg_point(0,0));
 
-	printf("\nshow bitmap %d x %d\n", bmap_const()->dim.width, bmap_const()->dim.height);
-	for(i=0; i < bmap_const()->dim.height; i++){
+	printf("\nshow bitmap %d x %d\n", bmap()->dim.width, bmap()->dim.height);
+	for(i=0; i < bmap()->dim.height; i++){
 		sg_cursor_copy(&x_cursor, &y_cursor);
-		for(j=0; j < bmap_const()->dim.width; j++){
+		for(j=0; j < bmap()->dim.width; j++){
 			color = api()->cursor_get_pixel(&x_cursor);
 			if( api()->bits_per_pixel > 8 ){
 				::printf("%04X", color);
@@ -234,7 +282,7 @@ void Bitmap::show() const{
 			} else {
 				::printf("%X", color);
 			}
-			if( (j < bmap_const()->dim.width - 1) && (api()->bits_per_pixel > 4)){
+			if( (j < bmap()->dim.width - 1) && (api()->bits_per_pixel > 4)){
 				::printf(" ");
 			}
 		}
