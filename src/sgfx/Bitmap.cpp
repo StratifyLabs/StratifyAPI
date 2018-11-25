@@ -19,11 +19,30 @@ Region Bitmap::get_viewable_region() const {
 	return region;
 }
 
-void Bitmap::calc_members(sg_size_t w, sg_size_t h){
-	api()->bmap_set_data(&m_bmap, to<sg_bmap_data_t>(), sg_dim(w,h));
+void Bitmap::calculate_members(const Dim & dim){
+	api()->bmap_set_data(&m_bmap, to<sg_bmap_data_t>(), dim, m_bmap.bits_per_pixel);
 }
 
-void Bitmap::init_members(){
+int Bitmap::set_bits_per_pixel(u8 bits_per_pixel){
+	if( api()->bits_per_pixel == 0 ){
+		switch(bits_per_pixel){
+			case 1:
+			case 2:
+			case 4:
+			case 8:
+				m_bmap.bits_per_pixel = bits_per_pixel;
+				return 0;
+		}
+	}
+	return -1;
+}
+
+void Bitmap::initialize_members(){
+	if( api()->bits_per_pixel == 0 ){
+		m_bmap.bits_per_pixel = 1;
+	} else {
+		m_bmap.bits_per_pixel = api()->bits_per_pixel;
+	}
 	m_bmap.margin_bottom_right.dim = 0;
 	m_bmap.margin_top_left.dim = 0;
 	m_bmap.pen.thickness = 1;
@@ -33,7 +52,7 @@ void Bitmap::init_members(){
 
 void Bitmap::set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly){
 	Data::set(mem, calc_size(w,h), readonly);
-	calc_members(w,h);
+	calculate_members(Dim(w,h));
 }
 
 void Bitmap::set_data(const sg_bmap_header_t * hdr, bool readonly){
@@ -41,47 +60,47 @@ void Bitmap::set_data(const sg_bmap_header_t * hdr, bool readonly){
 	ptr = (char*)hdr;
 	ptr += sizeof(sg_bmap_header_t);
 	Data::set(ptr, calc_size(hdr->width, hdr->height), readonly);
-	calc_members(hdr->width, hdr->height);
+	calculate_members(Dim(hdr->width, hdr->height));
 }
 
-int Bitmap::alloc(sg_size_t w, sg_size_t h){
-	if( Data::alloc(calc_size(w,h)) < 0 ){
-		calc_members(0,0);
+int Bitmap::allocate(const Dim & dim){
+	if( Data::alloc( calculate_size(dim) ) < 0 ){
+		calculate_members(Dim());
 		return -1;
 	}
-	calc_members(w,h);
+	calculate_members(dim);
 	return 0;
 }
 
 void Bitmap::free(){
 	if( Data::free() == 0 ){
-		calc_members(0, 0);
+		calculate_members(Dim());
 	}
 }
 
 Bitmap::Bitmap(){
-	init_members();
-	calc_members(0, 0);
+	initialize_members();
+	calculate_members(Dim());
 }
 
 Bitmap::Bitmap(sg_size_t w, sg_size_t h){
-	init_members();
+	initialize_members();
 	alloc(w,h);
 }
 
 Bitmap::Bitmap(sg_dim_t d){
-	init_members();
+	initialize_members();
 	alloc(d.width,d.height);
 }
 
 
 Bitmap::Bitmap(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly){
-	init_members();
+	initialize_members();
 	set_data(mem, w, h, readonly);
 }
 
 Bitmap::Bitmap(const sg_bmap_header_t * hdr, bool readonly){
-	init_members();
+	initialize_members();
 	set_data(hdr, readonly);
 }
 
@@ -97,7 +116,7 @@ bool Bitmap::set_size(sg_size_t w, sg_size_t h, sg_size_t offset){
 	u32 size = calc_size(w,h);
 	if( size <= capacity() ){
 		Data::set_size(size);
-		api()->bmap_set_data(&m_bmap, to<sg_bmap_data_t>(), sg_dim(w,h));
+		api()->bmap_set_data(&m_bmap, to<sg_bmap_data_t>(), sg_dim(w,h), m_bmap.bits_per_pixel);
 		return true;
 	}
 	return false;
@@ -175,7 +194,7 @@ int Bitmap::save(const var::ConstString & path) const{
 
 	hdr.width = width();
 	hdr.height = height();
-	hdr.size = calc_size(width(), height());
+	hdr.size = calculate_size();
 	hdr.bits_per_pixel = api()->bits_per_pixel;
 	hdr.version = api()->version;
 

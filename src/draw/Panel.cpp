@@ -22,7 +22,7 @@ void Panel::draw_to_scale(const DrawingScaledAttr & attr){
 
 	u32 radius;
 
-	map.fill_region(attr.region());
+	map.calculate_for_region(attr.region());
 
 	radius = m_radius * SG_MAX/4 / DrawingAttr::scale();
 

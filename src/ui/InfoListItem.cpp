@@ -32,7 +32,7 @@ void InfoListItem::draw_to_scale(const DrawingScaledAttr & attr){
 
 	//draw the label and the icon
 	Dim padded;
-	padded.set_value(d.width, d.height);
+	padded = Dim(d.width, d.height);
 
 	if( label().font_size() == 0 ){
 		height = padded.height();
@@ -52,12 +52,12 @@ void InfoListItem::draw_to_scale(const DrawingScaledAttr & attr){
 			p.y = p.y + d.height/2 - height/2;
 		}
 
-		font->draw_str(label().text(), attr.bitmap(), p);
+		font->draw(label().text(), attr.bitmap(), p);
 
 		//draw the value on the right side
 		len = font->calc_len(value().text());
 		p.x = p.x + d.width - len - d.width/40;
-		font->draw_str(value().text(), attr.bitmap(), p);
+		font->draw(value().text(), attr.bitmap(), p);
 	}
 }
 

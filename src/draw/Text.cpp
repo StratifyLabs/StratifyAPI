@@ -48,7 +48,7 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 		}
 
 
-		font->draw_str(text(), attr.bitmap(), top_left);
+		font->draw(text(), attr.bitmap(), top_left);
 
 	}
 

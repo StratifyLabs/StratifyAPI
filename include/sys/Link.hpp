@@ -35,12 +35,7 @@ public:
 	void set(const var::ConstString & port, const sys::SysInfo & sys_info){
 		m_port = port;
 		m_sys_info = sys_info;
-		m_serial_number.format("%08X%08X%08X%08X",
-									  sys_info.serial_number().sn[3],
-				sys_info.serial_number().sn[2],
-				sys_info.serial_number().sn[1],
-				sys_info.serial_number().sn[0]
-				);
+		m_serial_number = sys_info.serial_number().to_string();
 	}
 
 	const var::String & port() const { return m_port; }

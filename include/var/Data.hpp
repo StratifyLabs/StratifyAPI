@@ -50,7 +50,7 @@ private:
  * char buffer[16];
  *
  * Data empty; //the size of the data is zero. data_const() will return a pointer to a zero-length null-terminated string
- * Data data_dynamic(16); //this will dynamically allocate at least 16 bytes (see alloc())
+ * Data data_dynamic(16); //this will dynamically allocate at least 16 bytes (see allocate())
  * Data data_static(buffer, 16); //will use buffer and consider it statically allocated (see set())
  * Data data_readonly(buffer_const, 16, true); //this will consider the data read only -- calls to data() will return 0
  *
@@ -91,7 +91,7 @@ public:
 	 * //b will be of size 32 and point to static_buffer
 	 * Data b = a;
 	 *
-	 * a.alloc(64);
+	 * a.allocate(64);
 	 * a.fill(0x55);
 	 *
 	 * //c will have it's own 64 byte buffer that is filled with 0x55
@@ -136,7 +136,7 @@ public:
 	 * @param size The number of bytes available
 	 * @param readonly If true, the data will be accessible as read-only
 	 *
-	 * The function does not manage the memory provided. The alloc() and free()
+	 * The function does not manage the memory provided. The allocate() and free()
 	 * methods will have no effect.
 	 *
 	 */
@@ -204,17 +204,18 @@ public:
 	 * If the memory was specified using the set() method or constructed as
 	 * statically allocated memory, this will return an error.
 	 */
-	int alloc(u32 size, bool resize = false);
+	int allocate(u32 size, bool resize = false);
+	int alloc(u32 size, bool resize = false){ return allocate(size, resize); }
 
-	/*! \details Resizes the data (equivalent to alloc()).
+	/*! \details Resizes the data (equivalent to allocate()).
 	 *
 	 * @param size The number of new bytes
 	 * @return Zero on success or -1 with errno set
 	 *
-	 * This is the same as alloc() with \a resize set to true
+	 * This is the same as allocate() with \a resize set to true
 	 *
 	 */
-	int resize(u32 size) { return alloc(size, true); }
+	int resize(u32 size) { return allocate(size, true); }
 
 	/*! \details Dynamically allocates memory for the data object.
 	 *

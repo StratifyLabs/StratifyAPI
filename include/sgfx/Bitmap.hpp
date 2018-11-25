@@ -23,9 +23,9 @@ public:
 	/*! \details Constructs an empty bitmap. */
 	Bitmap();
 
-	static u8 bits_per_pixel(){
-		return api()->bits_per_pixel;
-	}
+	u8 bits_per_pixel(){ return m_bmap.bits_per_pixel; }
+
+	int set_bits_per_pixel(u8 bits_per_pixel);
 
 	operator const sg_bmap_t*() const { return &m_bmap; }
 
@@ -162,7 +162,7 @@ public:
 	void set_data(sg_bmap_data_t * mem, const Dim & dim){ set_data(mem, dim.width(), dim.height()); }
 	void set_data(sg_bmap_data_t * mem, bool readonly = false){ set_data(mem, width(), height(), readonly); }
 
-	/*! \details Changes effective size without free/alloc sequence */
+	/*! \details Changes effective size without free/allocate sequence */
 	bool set_size(sg_size_t w, sg_size_t h, sg_size_t offset = 0);
 
 	/*! \details Returns the number of bytes used to store a Bitmap of specified size
@@ -170,14 +170,16 @@ public:
 	 * @param w Width used for calculation
 	 * @param h Height used for calculation
 	 */
-	static u32 calc_size(int w, int h){ return api()->calc_bmap_size(sg_dim(w,h)); }
+	u32 calculate_size(const Dim & dim) const { return api()->calc_bmap_size(bmap(), dim); }
+	u32 calc_size(int w, int h) const { return calculate_size(Dim(w,h)); }
 
 	static u16 calc_word_width(sg_size_t w){
 		return sg_calc_word_width(w);
 	}
 
 	/*! \details Returns the number of bytes used to store the Bitmap. */
-	u32 calc_size(){ return calc_size(width(), height()); }
+	u32 calculate_size() const { return calculate_size(dim()); }
+	u32 calc_size() const { return calculate_size(); }
 	Point center() const;
 
 	/*! \details Returns the maximum x value. */
@@ -209,8 +211,11 @@ public:
 	 * width and height.  If the bitmap already has a memory associated
 	 * with it, it will be freed before the new memory is assigned.
 	 */
-	int alloc(sg_size_t w, sg_size_t h);
-	int alloc(const Dim & d){ return alloc(d.width(), d.height()); }
+	int allocate(const Dim & d);
+
+	int alloc(sg_size_t w, sg_size_t h){ return allocate(Dim(w,h)); }
+	int alloc(const Dim & d){ return allocate(d); }
+
 	/*! \details Free memory associated with bitmap (auto freed on ~Bitmap) */
 	void free();
 
@@ -425,8 +430,8 @@ private:
 	sg_pen_t m_saved_pen;
 	sg_bmap_t m_bmap;
 
-	void init_members();
-	void calc_members(sg_size_t w, sg_size_t h);
+	void initialize_members();
+	void calculate_members(const Dim & dim);
 
 };
 

@@ -115,7 +115,11 @@ public:
 	int to_long(int base = 10){ return ::strtol(str(), 0, base); }
 	int to_unsigned_long(int base = 10){ return ::strtoul(str(), 0, base); }
 
-	/*! \details Returns character at \a pos. */
+	/*! \details Returns character at \a pos.
+	 *
+	 * Returns 0 if pos is past the end of the string.
+	 *
+	 */
 	char at(u32 pos) const;
 
 	/*! \details Returns a c-style string pointer. */

@@ -1206,9 +1206,9 @@ int Link::install_app(const sys::File & image_source, const var::ConstString & d
 	int loc_err;
 
 	if( dest.find("/app") == 0 ){
-		fd = open("/app/.install", LINK_O_WRONLY);
+		fd = this->open("/app/.install", LINK_O_WRONLY);
 		if( fd < 0 ){
-			m_error_message.sprintf("Failed to open destination: %s", dest.c_str());
+			m_error_message.format("Failed to open destination: %s (%d, %d)", dest.c_str(), link_errno, fd);
 			return -1;
 		}
 

@@ -14,6 +14,9 @@ class DataInfo;
 class Data;
 class String;
 class Token;
+class JsonObject;
+class JsonArray;
+class JsonValue;
 template<typename T> class Vector;
 }
 
@@ -80,6 +83,8 @@ public:
 	Printer & operator << (const var::DataInfo & a);
 	Printer & operator << (const var::String & a);
 	Printer & operator << (const var::Token & a);
+	Printer & operator << (const var::JsonObject & a);
+	Printer & operator << (const var::JsonArray & a);
 	Printer & operator << (const var::Vector<var::String> & a);
 	Printer & operator << (const Cli & a);
 	Printer & operator << (const appfs_file_t & a);
@@ -117,6 +122,7 @@ public:
 	virtual Printer & fatal(const char * fmt, ...);
 	virtual Printer & key(const var::ConstString & key, const char * fmt, ...);
 	virtual Printer & key(const var::ConstString & key, const var::String & a);
+	virtual Printer & key(const var::ConstString & key, const var::JsonValue & a);
 
 	void print(const char * fmt, ...);
 

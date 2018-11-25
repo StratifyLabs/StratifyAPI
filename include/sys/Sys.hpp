@@ -16,6 +16,29 @@ namespace sys {
 
 class Sys;
 
+class SerialNumber {
+public:
+	SerialNumber();
+
+	SerialNumber(const u32 serial_number[4]){ memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4); }
+	SerialNumber(const mcu_sn_t serial_number){ m_serial_number = serial_number; }
+
+	int get();
+
+	static SerialNumber from_string(const char * str);
+
+
+	SerialNumber& operator = (const char * str);
+
+	bool operator == (const SerialNumber & serial_number);
+
+	void print() const;
+	var::String to_string() const;
+
+private:
+	mcu_sn_t m_serial_number;
+};
+
 /*! \brief System Information Class
  * \details This class holds the system information.
  *
@@ -69,7 +92,7 @@ public:
 	u32 hardware_id() const { return m_info.hardware_id; }
 
 
-	mcu_sn_t serial_number() const { return m_info.serial; }
+	SerialNumber serial_number() const { return SerialNumber(m_info.serial); }
 
 	void clear(){
 		memset(&m_info, 0, sizeof(m_info));

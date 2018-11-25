@@ -89,7 +89,10 @@ int HttpClient::query(const var::ConstString & command,
 	if( get_file ){
 		listen_for_data(*get_file, progress_callback);
 	}
-	close_connection();
+
+	if( is_keep_alive() == false ){
+		close_connection();
+	}
 
 	return 0;
 
@@ -111,6 +114,11 @@ int HttpClient::close_connection(){
 
 int HttpClient::connect_to_server(const var::ConstString & domain_name, u16 port){
 	SocketAddressInfo address_info;
+
+	if( (socket().fileno() >= 0) && is_keep_alive() ){
+		//already connected
+		return 0;
+	}
 
 	var::Vector<SocketAddressInfo> address_list = address_info.fetch_node(domain_name);
 	if( address_list.count() > 0 ){
@@ -134,6 +142,7 @@ int HttpClient::connect_to_server(const var::ConstString & domain_name, u16 port
 int HttpClient::build_header(const var::ConstString & method, const var::ConstString & host, const var::ConstString & path, u32 length){
 	bool is_user_agent_present = false;
 	bool is_accept_present = false;
+	bool is_keep_alive_present = false;
 	m_header.clear();
 	m_header << method << " " << path << " HTTP/1.1\r\n";
 	m_header << "Host: " << host << "\r\n";
@@ -143,9 +152,15 @@ int HttpClient::build_header(const var::ConstString & method, const var::ConstSt
 			m_header << header_request_fields().at(i) << "\r\n";
 			if( header_request_fields().at(i).find("User-Agent:") == 0 ){ is_user_agent_present = true; }
 			if( header_request_fields().at(i).find("Accept:") == 0 ){ is_accept_present = true; }
+			if( header_request_fields().at(i).find("Connection:") == 0 ){ is_keep_alive_present = true; }
 		}
 	}
 
+	if( !is_keep_alive_present ){
+		if( is_keep_alive() ){
+			m_header << "Connection: keep-alive\r\n";
+		}
+	}
 	if( !is_user_agent_present ){ m_header << "User-Agent: StratifyOS\r\n"; }
 	if( !is_accept_present ){ m_header << "Accept: */*\r\n"; }
 
@@ -168,7 +183,7 @@ int HttpClient::send_header(const var::ConstString & method,
 
 	build_header(method, host, path, data_length);
 
-	printf(">> %s", m_header.str());
+	//printf(">> %s", m_header.str());
 
 	if( socket().write(m_header) != (int)m_header.length() ){
 		return -1;
@@ -193,7 +208,7 @@ int HttpClient::listen_for_header(){
 
 			m_header << line;
 
-			printf("> %s", line.str());
+			//printf("> %s", line.str());
 
 			var::Token line_tokens(line, ": \t\r\n");
 			var::String title = line_tokens.at(0);
@@ -211,7 +226,6 @@ int HttpClient::listen_for_header(){
 
 			if( title == "HTTP/1.1" ){ m_status_code = value.atoi(); }
 			if( title == "CONTENT-LENGTH" ){ m_content_length = value.atoi(); }
-			if( title == "CONNECTION" ){ value == "CLOSE" ? m_is_keep_alive = false : m_is_keep_alive = true; }
 			if( title == "TRANSFER-ENCODING" ){ m_transfer_encoding = value; }
 		}
 
@@ -231,7 +245,6 @@ int HttpClient::listen_for_data(const sys::File & file, const sys::ProgressCallb
 
 			//read bytes_incoming from the socket and write it to the output file
 			if( file.write(socket(), bytes_incoming, bytes_incoming) != (int)bytes_incoming ){
-				printf("failed to transfer " F32U "\n", bytes_incoming);
 				return -1;
 			}
 

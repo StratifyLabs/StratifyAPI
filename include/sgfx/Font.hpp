@@ -21,11 +21,7 @@ public:
 	Font();
 
 	/*! \details Returns a string of the available character set */
-	static const char * charset();
-
-	enum {
-		CHARSET_SIZE = 95
-	};
+	static const var::ConstString & ascii_character_set();
 
 
 	/*! \details Returns the maximum height of any character in the font. */
@@ -63,7 +59,7 @@ public:
 	 * @param point The top left corner to start drawing the string
 	 * @return Zero on success
 	 */
-	int draw_str(const char * str, Bitmap & dest, sg_point_t point) const;
+	int draw(const var::ConstString & const_string, Bitmap & dest, const Point & point) const;
 
 	/*! \details Draws a character on the bitmap.
 	 *
@@ -72,7 +68,7 @@ public:
 	 * @param point The top-left corner where to draw on \a dest
 	 * @return Zero on success (-1 if character fails to load)
 	 */
-	int draw_char(char c, Bitmap & dest, sg_point_t point) const;
+	int draw(char c, Bitmap & dest, const Point & point) const;
 
 	const sg_font_char_t & character() const { return m_char; }
 
@@ -87,7 +83,9 @@ protected:
 
 	static int to_charset(char ascii);
 
-	virtual void draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_point_t point) const = 0;
+	static const var::ConstString m_ascii_character_set;
+
+	virtual void draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, const Point & point) const = 0;
 	virtual int load_char(sg_font_char_t & ch, char c, bool ascii) const = 0;
 	virtual int load_kerning(u16 first, u16 second) const { return 0; }
 

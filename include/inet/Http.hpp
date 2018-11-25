@@ -32,15 +32,21 @@ class HttpClient : public Http {
 public:
 	HttpClient(Socket & socket);
 
+	/*! \details Keeps the connection alive between requests.
+	 *
+	 * @param value If true, the connection is kept alive between requests
+	 *
+	 *
+	 */
+	void set_keep_alive(bool value = true){ m_is_keep_alive = value; }
+
+	bool is_keep_alive() const { return m_is_keep_alive; }
+
 	int head(const var::ConstString & url);
-
-
 	int get(const var::ConstString & url, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
-
 
 	int post(const var::ConstString & url, const var::ConstString & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
 	int post(const var::ConstString & url, const sys::File & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
-
 
 	int put(const var::ConstString & url, const var::ConstString & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
 	int put(const var::ConstString & url, const sys::File & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
@@ -90,6 +96,7 @@ public:
 	const var::Vector<var::String> & header_response_fields() const { return m_header_response_fields; }
 
 private:
+
 
 	int connect_to_server(const var::ConstString & domain_name, u16 port);
 

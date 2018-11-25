@@ -176,13 +176,13 @@ void Data::zero(){
 }
 
 
-int Data::alloc(u32 s, bool resize){
+int Data::allocate(u32 s, bool resize){
 
 	void * new_data;
 	u32 original_size = s;
 
 	if( ( !needs_free() ) && (m_mem != &m_zero_value) ){
-		//this data object can't be resized -- it was created using a pointer (not dyn memory)
+		//this data object can't be resized -- it was created using a pointer (not dynanmic memory allocation)
 		return -1;
 	}
 

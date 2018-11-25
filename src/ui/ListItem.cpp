@@ -46,7 +46,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 		icon_dim.dim = 0;
 	}
 
-	padded.set_value(d.width() - icon_dim.width, d.height()*80/100 );
+	padded = Dim(d.width() - icon_dim.width, d.height()*80/100 );
 
 	if( m_text_attr.font_size() == 0 ){
 		height = padded.height();
@@ -84,7 +84,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 		}
 	}
 
-	font->draw_str(buffer, attr.bitmap(), p);
+	font->draw(buffer, attr.bitmap(), p);
 
 	//draw the icon -- on the right side
 	if( icon_dim.width > 0 ){

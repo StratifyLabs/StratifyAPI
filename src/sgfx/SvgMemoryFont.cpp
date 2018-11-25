@@ -23,7 +23,7 @@ int SvgMemoryFont::load_kerning(u16 first, u16 second) const {
 	return -1;
 }
 
-void SvgMemoryFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_point_t point) const {
+void SvgMemoryFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, const Point & point) const {
 
 
 	//draw directly on the dest bitmap using Vector::draw_path()

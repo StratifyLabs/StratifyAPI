@@ -34,12 +34,42 @@ public:
 	/*! \details Constructs using current time. */
 	Time();
 
+	explicit Time(const time_t & t){ m_time = t; }
+
 	/*! \details Constructs using an amount of time. */
 	Time(u32 sec, u32 min = 0, u32 hour = 0);
 
-	/*! \details Returns the time (time_t). */
-	operator u32() const { return m_time; }
+	bool is_valid(){ return m_time != 0; }
 
+	static Time current_time();
+	static Time from_seconds(u32 value){ return Time(value); }
+	static Time from_minutes(u32 value){ return Time(value*60); }
+	static Time from_hours(u32 value){ return Time(value*60*60); }
+	static Time from_days(u32 value){ return Time(value*24*60*60); }
+	static Time from_weeks(u32 value){ return Time(value*24*60*60*7); }
+
+	Time operator + (const Time & a ) const {
+		Time result;
+		result.m_time = m_time + a.m_time;
+		return result;
+	}
+
+	Time operator - (const Time & a ) const {
+		Time result;
+		result.m_time = m_time - a.m_time;
+		return result;
+	}
+
+	bool operator == (const Time & a ) const { return m_time == a.m_time; }
+	bool operator != (const Time & a ) const { return m_time != a.m_time; }
+	bool operator > (const Time & a ) const { return m_time > a.m_time; }
+	bool operator < (const Time & a ) const { return m_time < a.m_time; }
+	bool operator >= (const Time & a ) const { return m_time >= a.m_time; }
+	bool operator <= (const Time & a ) const { return m_time <= a.m_time; }
+
+	Time age() const {
+		return Time::get_time_of_day() - *this;
+	}
 
 	/*! \details Adds to the current value. */
 	Time& operator+=(const Time & a);
@@ -62,7 +92,7 @@ public:
 	/*! \details Assigns the system time of day to the time stored in this object
 	  * and returns the current system time.
 	  */
-	time_t get_time_of_day();
+	static Time get_time_of_day();
 
 	/*! \details Sets the value in Time to a number of seconds.
 	  *
@@ -74,19 +104,19 @@ public:
 	  * calendar time.
 	  *
 	  */
-	void set_value(u32 hour, u32 min, u32 sec);
+	void set_time(u32 hour, u32 min, u32 sec);
 
 	/*! \details Sets the current value.
 	  *
 	  * @param tm Number of seconds since epoch
 	  */
-	inline void set_value(time_t tm){ m_time = tm; }
+	void set_time(time_t tm){ m_time = tm; }
 
 	/*! \details Gets the name of the month. */
-	const var::ConstString get_month_name() const;
+	const var::ConstString month_name() const;
 
 	/*! \details Returns the time value (number of seconds since epoch). */
-	inline time_t value() const { return m_time; }
+	inline time_t time() const { return m_time; }
 
 	/*! \details Returns seconds (from 0 to 59). */
 	u32 second() const;
@@ -96,15 +126,15 @@ public:
 	u32 hour() const;
 
 	/*! \details Returns the day of month (from 1 to 31). */
-	u32 get_day() const;
+	u32 day() const;
 	/*! \details Returns the day of week (from 1 to 7). */
-	u32 get_weekday() const;
+	u32 weekday() const;
 	/*! \details Returns the day of the year (1 to 366). */
-	u32 get_yearday() const;
+	u32 yearday() const;
 	/*! \details Returns the month (from 1 to 12). */
-	u32 get_month() const;
+	u32 month() const;
 	/*! \details Returns the year (e.g. 2014) */
-	u32 get_year() const;
+	u32 year() const;
 
 	/*! \details Converts the time to a struct tm. */
 	struct tm get_tm() const;

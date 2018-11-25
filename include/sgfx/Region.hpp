@@ -53,15 +53,10 @@ public:
 	Point point() const { return m_region.point; }
 	Dim dim() const { return m_region.dim; }
 
-	const sg_int_t & x() const { return m_region.point.x; }
-	const sg_int_t & y() const { return m_region.point.y; }
-	const sg_size_t & width() const { return m_region.dim.width; }
-	const sg_size_t & height() const { return m_region.dim.height; }
-
-	sg_int_t & x(){ return m_region.point.x; }
-	sg_int_t & y(){ return m_region.point.y; }
-	sg_size_t & width(){ return m_region.dim.width; }
-	sg_size_t & height(){ return m_region.dim.height; }
+	sg_int_t x() const { return m_region.point.x; }
+	sg_int_t y() const { return m_region.point.y; }
+	sg_size_t width() const { return m_region.dim.width; }
+	sg_size_t height() const { return m_region.dim.height; }
 
 	Region & operator << (const Point & point){
 		set_point(point);

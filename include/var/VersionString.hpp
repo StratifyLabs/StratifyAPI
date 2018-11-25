@@ -27,6 +27,14 @@ public:
 		return compare(*this, a) < 0;
 	}
 
+	bool operator <= (const VersionString & a) const{
+		return compare(*this, a) <= 0;
+	}
+
+	bool operator >= (const VersionString & a) const{
+		return compare(*this, a) >= 0;
+	}
+
 	String & string(){ return m_version; }
 	const String & string() const { return m_version; }
 

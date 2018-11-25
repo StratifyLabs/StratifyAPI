@@ -7,32 +7,9 @@
 #include <sos/dev/core.h>
 #include "Periph.hpp"
 #include "../var/String.hpp"
+#include "../sys/Sys.hpp"
 
 namespace hal {
-
-
-class SerialNumber {
-public:
-	SerialNumber();
-
-	SerialNumber(const u32 serial_number[4]){ memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4); }
-	SerialNumber(const mcu_sn_t serial_number){ m_serial_number = serial_number; }
-
-	int get();
-
-	static SerialNumber from_string(const char * str);
-
-
-	SerialNumber& operator = (const char * str);
-
-	bool operator == (const SerialNumber & serial_number);
-
-	void print() const;
-	var::String to_string() const;
-
-private:
-	mcu_sn_t m_serial_number;
-};
 
 /*!
  * \brief The Core Info class
@@ -53,7 +30,7 @@ public:
 	u32 o_flags() const { return m_info.o_flags; }
 
 	/*! \details Returns the serial number of the MCU. */
-	SerialNumber serial_number() const{ return SerialNumber(m_info.serial_number); }
+	sys::SerialNumber serial_number() const{ return sys::SerialNumber(m_info.serial_number); }
 
 private:
 	core_info_t m_info;

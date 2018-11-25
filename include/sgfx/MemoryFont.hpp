@@ -37,7 +37,7 @@ public:
 
 protected:
 
-	void draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_point_t point) const;
+	void draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, const Point & point) const;
 	int load_char(sg_font_char_t & ch, char c, bool ascii) const;
 	int load_kerning(u16 first, u16 second) const;
 

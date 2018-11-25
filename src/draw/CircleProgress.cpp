@@ -17,7 +17,7 @@ void CircleProgress::draw_to_scale(const DrawingScaledAttr & attr){
 
 	int16_t end_angle;
 
-	map.fill_region(attr.region());
+	map.calculate_for_region(attr.region());
 
 	Point end;
 

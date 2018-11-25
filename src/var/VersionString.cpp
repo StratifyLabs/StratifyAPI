@@ -24,10 +24,10 @@ int VersionString::compare(const VersionString & a, const VersionString & b){
 
 	for(u32 i = 0; i < a_tokens.count(); i++){
 		if( b_tokens.count() > i ){
-			if( a_tokens.at(i) > b_tokens.at(i) ){
+			if( a_tokens.at(i).to_integer() > b_tokens.at(i).to_integer() ){
 				return 1;
 			}
-			if( a_tokens.at(i) < b_tokens.at(i) ){
+			if( a_tokens.at(i).to_integer() < b_tokens.at(i).to_integer() ){
 				return -1;
 			}
 		} else {

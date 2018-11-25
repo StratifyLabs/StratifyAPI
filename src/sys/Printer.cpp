@@ -8,6 +8,7 @@
 #include "sys/Cli.hpp"
 #include "var/Data.hpp"
 #include "var/Vector.hpp"
+#include "var/Json.hpp"
 #include "var/String.hpp"
 #include "var/Token.hpp"
 #include "sgfx/Bitmap.hpp"
@@ -197,6 +198,53 @@ Printer & Printer::operator << (const var::Token & a){
 	return *this;
 }
 
+Printer & Printer::operator << (const var::JsonObject & a){
+
+	var::Vector<var::String> keys = a.keys();
+	for(u32 i=0; i < keys.count(); i++){
+		var::JsonValue entry = a.at(keys.at(i));
+		if( entry.is_object() ){
+			open_object(keys.at(i));
+			*this << entry.to_object();
+			close_object();
+		} else if( entry.is_array() ){
+			open_object(keys.at(i));
+			*this << entry.to_array();
+			close_object();
+		} else {
+			print_indented(keys.at(i), entry.to_string().cstring());
+		}
+
+	}
+
+
+	return *this;
+}
+
+Printer & Printer::operator << (const var::JsonArray & a){
+
+	for(u32 i=0; i < a.count(); i++){
+		var::JsonValue entry = a.at(i);
+		var::String key;
+		key.format("[%d]", i);
+		if( entry.is_object() ){
+			open_object(key);
+			*this << entry.to_object();
+			close_object();
+		} else if( entry.is_array() ){
+			open_object(key);
+			*this << entry.to_array();
+			close_object();
+		} else {
+			print_indented(key, entry.to_string().cstring());
+		}
+	}
+
+	return *this;
+}
+
+
+
 Printer & Printer::operator << (const var::Vector<var::String> & a){
 	for(u32 i=0; i < a.count(); i++){
 		print_indented(0, "%s", a.at(i).str());
@@ -215,9 +263,8 @@ Printer & Printer::operator << (const sys::TaskInfo & a){
 }
 
 Printer & Printer::operator << (const sys::SysInfo & a ){
-	hal::SerialNumber serial_number(a.serial_number());
 	print_indented("Name", "%s", a.name().str());
-	print_indented("Serial Number", serial_number.to_string().str());
+	print_indented("Serial Number", a.serial_number().to_string().cstring());
 	print_indented("Hardware ID",  F3208X, a.hardware_id());
 	if( a.name() != "bootloader" ){
 		print_indented("BSP Version",  "%s", a.bsp_version().str());
@@ -385,6 +432,23 @@ Printer & Printer::key(const var::ConstString & key, const char * fmt, ...){
 	va_end(list);
 	return *this;
 }
+
+Printer & Printer::key(const var::ConstString & key, const var::JsonValue & a){
+
+	if(a.is_object()){
+		open_object(key);
+		*this << a.to_object();
+		close_object();
+	} else if( a.is_array() ){
+		open_object(key);
+		*this << a.to_array();
+		close_object();
+	} else {
+		this->key(key, a.to_string());
+	}
+	return *this;
+}
+
 
 Printer & Printer::message(const char * fmt, ...){
 	va_list list;

@@ -45,20 +45,10 @@ int FileFont::set_file(const var::ConstString & name, int offset){
 	m_offset = offset;
 	m_current_canvas = 255;
 	m_canvas_start = m_header.size;
-	m_canvas_size = m_canvas.calc_size();
-
-	printf("Header size %d\n", m_header.size);
-	printf("canvas %dx%d\n", m_header.canvas_width, m_header.canvas_height);
-
+	m_canvas_size = m_canvas.calculate_size();
 
 	pair_size = sizeof(sg_font_kerning_pair_t)*m_header.kerning_pair_count;
-
 	m_kerning_pairs = (sg_font_kerning_pair_t*)malloc(pair_size);
-	printf("kerning pairs %d\n", m_header.kerning_pair_count);
-	printf("character count %d\n", m_header.character_count);
-	printf("bits per pixel %d\n", m_header.bits_per_pixel);
-	printf("word width %d\n", m_header.max_word_width);
-	printf("height %d\n", m_header.max_height);
 
 	if( m_kerning_pairs ){
 		m_file.read(m_offset + sizeof(sg_font_header_t), m_kerning_pairs, pair_size);
@@ -68,12 +58,10 @@ int FileFont::set_file(const var::ConstString & name, int offset){
 	set_letter_spacing(m_header.max_height/8);
 
 	return 0;
-
 }
 
 sg_size_t FileFont::get_height() const { return m_header.max_height; }
 sg_size_t FileFont::get_width() const { return m_header.max_word_width*32; }
-
 
 int FileFont::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 	int offset;
@@ -98,6 +86,7 @@ int FileFont::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 	printf("loaded dims %d,%d %dx%d\n", ch.canvas_x, ch.canvas_y, ch.width, ch.height);
 	printf("loaded offset %d,%d\n", ch.offset_x, ch.offset_y);
 	printf("loaded advance %d\n", ch.advance_x);
+	printf("loaded canvas idx %d\n", ch.canvas_idx);
 
 	return 0;
 }
@@ -117,13 +106,12 @@ int FileFont::load_kerning(u16 first, u16 second) const {
 	return 0;
 }
 
-void FileFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, sg_point_t point) const {
+void FileFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, const Point & point) const {
 	u32 canvas_offset;
 	if( ch.canvas_idx != m_current_canvas ){
 		canvas_offset = m_canvas_start + ch.canvas_idx*m_canvas_size;
 
 		//need to read the character row by row
-
 		if( m_file.read(m_offset + canvas_offset, m_canvas.to_void(), m_canvas_size) != (int)m_canvas_size ){
 			return;
 		}
