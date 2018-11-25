@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
+#include "inet/Http.hpp"
 #include "var.hpp"
 #include "sys.hpp"
-#include "inet/Http.hpp"
 #include "inet/Url.hpp"
 
 using namespace inet;

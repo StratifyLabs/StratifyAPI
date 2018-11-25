@@ -3,10 +3,10 @@
 #ifndef HTTP_HPP
 #define HTTP_HPP
 
+#include "Socket.hpp"
 #include "../api/InetObject.hpp"
 #include "../var/String.hpp"
 #include "../sys/ProgressCallback.hpp"
-#include "Socket.hpp"
 
 namespace inet {
 

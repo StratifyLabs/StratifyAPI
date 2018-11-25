@@ -7,6 +7,7 @@
 #include <sos/link.h>
 
 #if defined __win32
+#include <winsock2.h>
 #include <windows.h>
 #undef ERROR
 #else

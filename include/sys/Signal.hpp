@@ -10,14 +10,40 @@
 #include "../ev/Event.hpp"
 #include "../api/SysObject.hpp"
 
+
 #if defined __link
-typedef void (*_sig_func_ptr)(int);
+typedef void (*signal_function_callback_t)(int);
+#if defined __win32
+typedef void (*signal_action_callback_t)(int, void*, void*);
+#define SIGNAL_SIGINFO_FLAG 0
+#else
+typedef void (*signal_action_callback_t)(int, siginfo_t*, void*);
 #define SIGNAL_SIGINFO_FLAG SA_SIGINFO
+#endif
 #endif
 
 
 #if defined __StratifyOS__
+typedef void (*signal_function_callback_t)(int);
+typedef void (*signal_action_callback_t)(int, siginfo_t*, void*);
 #define SIGNAL_SIGINFO_FLAG (1<<SA_SIGINFO)
+#endif
+
+#if defined __win32
+#define sapi_signal_posix_kill raise
+typedef u32 sigset_t;
+struct sigaction {
+	signal_function_callback_t sa_handler;
+	signal_action_callback_t sa_sigaction;
+	u32 sa_flags;
+	u32 sa_mask;
+};
+union sigval {
+	int sival_int;
+	void * sival_ptr;
+};
+#else
+#define sapi_signal_posix_kill kill
 #endif
 
 
@@ -69,8 +95,12 @@ public:
 	 *
 	 * @param handler The function to execute with an associated signal
 	 */
-	SignalHandler(void (*handler)(int) ){
+	SignalHandler(signal_function_callback_t handler){
+#if defined __win32
+		m_sig_action.sa_handler = handler;
+#else
 		m_sig_action.sa_handler = (_sig_func_ptr)handler;
+#endif
 		m_sig_action.sa_flags = 0;
 		m_sig_action.sa_mask = 0;
 	}
@@ -82,8 +112,8 @@ public:
 	 * @param mask Not used
 	 *
 	 */
-	SignalHandler(void (*sigaction)(int, siginfo_t*, void*), int flags = 0, sigset_t mask = 0){
-		m_sig_action.sa_sigaction = sigaction;
+	SignalHandler(signal_action_callback_t signal_action, int flags = 0, sigset_t mask = 0){
+		m_sig_action.sa_sigaction = signal_action;
 		m_sig_action.sa_flags = flags | SIGNAL_SIGINFO_FLAG;
 		m_sig_action.sa_mask = mask;
 	}
@@ -163,20 +193,21 @@ public:
 
 	enum {
 		ABRT /*! Abort signal, default action is to abort */ = SIGABRT,
+		FPE /*! FPE signal, default action is to abort */ = SIGFPE,
+		INT /*! Interrupt signal, default action is to terminate */ = SIGINT,
+		ILL /*! Illegal signal, default action is to abort */ = SIGILL,
+		SEGV /*! Segmentation signal, default action is to abort */ = SIGSEGV,
+		TERM /*! Terminal signal, default action is to terminate */ = SIGTERM,
+#if !defined __win32
 		ALRM /*! Alarm signal, default action is to terminate */ = SIGALRM,
 		BUS /*! Bus signal, default action is to abort */ = SIGBUS,
 		CHLD /*! Child signal, default action is to ignore */ = SIGCHLD,
 		CONT /*! Continue signal, default action is to continue */ = SIGCONT,
-		FPE /*! FPE signal, default action is to abort */ = SIGFPE,
 		HUP /*! Hangup signal, default action is to terminate */ = SIGHUP,
-		ILL /*! Illegal signal, default action is to abort */ = SIGILL,
-		INT /*! Interrupt signal, default action is to terminate */ = SIGINT,
 		KILL /*! Kill signal, default action is to terminate (cannot be caught or ignored) */ = SIGKILL,
 		PIPE /*! Pipe signal, default action is to terminate */ = SIGPIPE,
 		QUIT /*! Quit signal, default action is to abort */ = SIGQUIT,
-		SEGV /*! Segmentation signal, default action is to abort */ = SIGSEGV,
 		STOP /*! Stop signal, default action is to stop (cannot be caught or ignored) */ = SIGSTOP,
-		TERM /*! Terminal signal, default action is to terminate */ = SIGTERM,
 		TSTP /*! TSTP signal, default action is to stop */ = SIGTSTP,
 		TTIN /*! TTIN signal, default action is to stop */ = SIGTTIN,
 		TTOU /*! TTOU signal, default action is to stop */ = SIGTTOU,
@@ -189,6 +220,7 @@ public:
 		TALRM /*! TALRM signal, default action is to terminate */ = SIGVTALRM,
 		XCPU /*! XCPU signal, default action is to abort */ = SIGXCPU,
 		XFSZ /*! XFSZ signal, default action is to abort */ = SIGXFSZ,
+#endif
 #if !defined __link
 		POLL /*! Poll signal, default action is to terminate */ = SIGPOLL,
 		RTMIN /*! Real time signal, default action is to ignore */ = SIGRTMIN,
@@ -224,7 +256,13 @@ public:
 	  * This method sends this signal to the specified PID.
 	  * It uses the POSIX kill() function.
 	 */
-	int send(pid_t pid) const { return ::kill(pid, m_signo); }
+	int send(pid_t pid) const {
+		return ::sapi_signal_posix_kill(
+			#if !defined __win32
+					pid,
+			#endif
+					m_signo);
+	}
 
 #if !defined __link
 	/*! \details Sends a signal and associated sigvalue to a process.
@@ -273,5 +311,6 @@ private:
 };
 
 }
+
 
 #endif /* SIGNAL_HPP_ */

@@ -287,7 +287,7 @@ int Socket::read(var::Data & data, SocketAddress & address){
 
 int Socket::read(void * buf, int nbyte, SocketAddress & address){
 	socklen_t address_len = address.m_sockaddr.size();
-	return decode_socket_return( ::recvfrom(m_socket, buf, nbyte, 0 , address.m_sockaddr.to<struct sockaddr>(), &address_len) );
+	return decode_socket_return( ::recvfrom(m_socket, (char*)buf, nbyte, 0 , address.m_sockaddr.to<struct sockaddr>(), &address_len) );
 }
 
 int Socket::read(void * buf, int nbyte,struct sockaddr * ai_addr,socklen_t * ai_addrlen) const {
