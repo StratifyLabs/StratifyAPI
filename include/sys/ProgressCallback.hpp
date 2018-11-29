@@ -14,6 +14,12 @@ public:
 	ProgressCallback(callback_t callback, void * context = 0);
 
 
+	void set_callback(bool (*callback)(void*,int,int)){
+		m_update = callback;
+	}
+
+	void set_context(void * context){ m_context = context; }
+
 	bool update(int value, int total) const;
 
 private:

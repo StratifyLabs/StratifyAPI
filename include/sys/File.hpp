@@ -588,7 +588,11 @@ public:
 	int read(void * buf, int nbyte) const;
 	int write(const void * buf, int nbyte) const;
 	int seek(int loc, int whence = LINK_SEEK_SET) const;
-	int ioctl(int req, void * arg) const { return 0; }
+	int ioctl(int req, void * arg) const {
+		MCU_UNUSED_ARGUMENT(req);
+		MCU_UNUSED_ARGUMENT(arg);
+		return 0;
+	}
 	u32 size() const { return data().size(); }
 
 	using File::read;

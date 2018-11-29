@@ -279,6 +279,56 @@ bool Bitmap::is_empty(const Region & region) const {
 	return true;
 }
 
+void Bitmap::downsample_bitmap(const Bitmap & source, const Dim & factor){
+
+	sg_cursor_t x_cursor;
+	sg_cursor_t y_cursor;
+	sg_color_t color;
+
+
+	sg_cursor_t source_x_cursor;
+	sg_cursor_t source_y_cursor;
+
+	if( factor.width() == 0 ){ return; }
+	if( factor.height() == 0 ){ return; }
+
+	if( factor.width() > source.width() ){ return; }
+	if( factor.height() > source.height() ){ return; }
+
+
+	api()->cursor_set(&y_cursor, bmap(), sg_point(0,0));
+	api()->cursor_set(&source_y_cursor, source.bmap(), sg_point(0,0));
+
+	for(sg_int_t y = 0; y < source.height(); y+=factor.height()){
+		sg_cursor_copy(&source_x_cursor, &source_y_cursor);
+		sg_cursor_copy(&x_cursor, &y_cursor);
+
+		for(sg_int_t y_sample = 0; y_sample < factor.height()/2; y_sample++){
+			api()->cursor_inc_y(&source_y_cursor);
+		}
+
+		for(sg_int_t x = 0; x < source.width(); x+=factor.width()){
+			for(sg_int_t x_sample = 0; x_sample < factor.width(); x_sample++){
+				color = api()->cursor_get_pixel(&source_x_cursor);
+				if( x_sample == factor.width()/2 ){
+					set_pen_color(color);
+					api()->cursor_draw_pixel(&x_cursor);
+				}
+			}
+
+		}
+
+
+		for(sg_int_t y_sample = 0; y_sample < factor.height()/2; y_sample++){
+			api()->cursor_inc_y(&source_y_cursor);
+		}
+
+		api()->cursor_inc_y(&y_cursor);
+
+	}
+
+}
+
 void Bitmap::show() const{
 	//api()->show(bmap());
 	sg_size_t i,j;

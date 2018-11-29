@@ -306,6 +306,15 @@ public:
 		api()->draw_bitmap(bmap(), p_dest, src.bmap());
 	}
 
+	/*!
+	 * \details Draws the source bitmap by down sampling by factor
+	 * \param source The bitmap to draw
+	 * \param factor number to downsample by with different values for width and height (2 means have the size of source)
+	 *
+	 *
+	 */
+	void downsample_bitmap(const Bitmap & source, const Dim & factor);
+
 	/*! \details This function draws a pattern on the bitmap.
 	 *
 	 * @param region The region to draw the pattern in
@@ -331,6 +340,7 @@ public:
 	void draw_sub_bitmap(const Point & p_dest, const Bitmap & src, const Region & region_src) const {
 		api()->draw_sub_bitmap(bmap(), p_dest, src.bmap(), &region_src.region());
 	}
+
 
 	void draw_sub_bitmap(const Point & p_dest, const Bitmap & src, const Point & p_src, const Dim & d_src) const {
 		draw_sub_bitmap(p_dest, src, Region(p_src, d_src));

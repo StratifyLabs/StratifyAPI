@@ -18,6 +18,7 @@ typedef void (*signal_action_callback_t)(int, void*, void*);
 #define SIGNAL_SIGINFO_FLAG 0
 #else
 typedef void (*signal_action_callback_t)(int, siginfo_t*, void*);
+typedef signal_function_callback_t _sig_func_ptr;
 #define SIGNAL_SIGINFO_FLAG SA_SIGINFO
 #endif
 #endif

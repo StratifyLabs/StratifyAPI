@@ -31,17 +31,22 @@ int FileFont::set_file(const var::ConstString & name, int offset){
 	m_file.close();
 
 	if( m_file.open(name, File::RDONLY) < 0 ){
+		set_error_number(m_file.error_number());
 		return -1;
 	}
 
 	if( m_file.read(offset, &m_header, sizeof(m_header)) != sizeof(m_header) ){
+		set_error_number(m_file.error_number());
 		return -1;
 	}
 
+
 	m_canvas.free();
-	if( m_canvas.alloc(m_header.canvas_width, m_header.canvas_height) < 0 ){
+	if( m_canvas.allocate(Dim(m_header.canvas_width, m_header.canvas_height)) < 0 ){
+		set_error_number(m_canvas.error_number());
 		return -1;
 	}
+
 	m_offset = offset;
 	m_current_canvas = 255;
 	m_canvas_start = m_header.size;
@@ -81,12 +86,6 @@ int FileFont::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 	if( (ret = m_file.read(offset, &ch, sizeof(ch))) != sizeof(ch) ){
 		return -1;
 	}
-
-	printf("loaded character %d\n", ch.id);
-	printf("loaded dims %d,%d %dx%d\n", ch.canvas_x, ch.canvas_y, ch.width, ch.height);
-	printf("loaded offset %d,%d\n", ch.offset_x, ch.offset_y);
-	printf("loaded advance %d\n", ch.advance_x);
-	printf("loaded canvas idx %d\n", ch.canvas_idx);
 
 	return 0;
 }

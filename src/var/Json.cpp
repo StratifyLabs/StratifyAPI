@@ -256,7 +256,9 @@ var::Vector<var::String> JsonObject::keys() const {
 	json_t *value;
 	var::Vector<var::String> result;
 
-	json_object_foreach(m_value, key, value) {
+	for(key = api()->object_iter_key(json_object_iter(m_value));
+		 key && (value = api()->object_iter_value(api()->object_key_to_iter(key)));
+		 key = api()->object_iter_key(api()->object_iter_next(m_value, api()->object_key_to_iter(key)))){
 		result.push_back(var::String(key));
 	}
 
