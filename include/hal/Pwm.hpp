@@ -11,14 +11,26 @@
 namespace hal {
 
 /*! \brief PWM Attributes Class
- * \details This class is for containing ADC attributes.
+ * \details This class is for containing PWM attributes.
+ *
+ *
  */
 class PwmAttributes : public PinAssignmentPeriphAttributes<pwm_attr_t, pwm_pin_assignment_t> {
 public:
 	//period, channel
 
-	PwmAttributes(){
+	/*! \details Constructs an object with detault values.
+	 *
+	 * @param o_flags Flags to apply
+	 * @param frequency Frequency of timer
+	 * @param period Period of PWM timer
+	 *
+	 */
+	PwmAttributes(u32 o_flags = PWM_FLAG_SET_TIMER, u32 frequency = 1000000, u32 period = 1000){
 		m_attr.channel = mcu_channel(-1, -1);
+		m_attr.o_flags = o_flags;
+		m_attr.freq	= frequency;
+		m_attr.period = period;
 	}
 
 	/*! \details Accesses the PWM period. */
@@ -27,10 +39,10 @@ public:
 	/*! \details Sets the PWM period. */
 	void set_period(u32 period){ m_attr.period = period; }
 
-	/*! details Access the attibutes channel. */
+	/*! details Access the current channel that the attributes refers to. */
 	mcu_channel_t channel() const { return m_attr.channel; }
 
-	/*! \details Sets the PWM attributes channel. */
+	/*! \details Sets the PWM channel associated with the attributes. */
 	void set_channel(u32 loc, u32 value){
 		m_attr.channel = mcu_channel(loc, value);
 	}
@@ -68,7 +80,7 @@ class PwmPinAssignment : public PinAssignment<pwm_pin_assignment_t>{};
  *
  *
  */
-class Pwm : public Periph<pwm_info_t, pwm_attr_t, PwmAttributes, 'p'> {
+class Pwm : public Periph<pwm_info_t, pwm_attr_t, PwmAttributes, PWM_IOC_IDENT_CHAR> {
 public:
 	Pwm(port_t port);
 
@@ -141,15 +153,6 @@ public:
 	}
 
 
-	/*! \details Sets the PWM attributes.
-	 *
-	 * @param o_flags PWM flags to apply (for example, \ref SET_TIMER)
-	 * @param freq The PWM timer frequency
-	 * @param period The PWM timer period
-	 * @param pin_assignment A pointer to the pin assignment (leave blank to use BSP pin assignment)
-	 * @return Zero on success or less than zero for an error
-	 *
-	 */
 	int set_attr(u32 o_flags, u32 freq, u32 period, const pwm_pin_assignment_t * pin_assignment = 0) const {
 		pwm_attr_t attr;
 		attr.o_flags = o_flags;
@@ -174,11 +177,7 @@ public:
 		return set_attr(FLAG_SET_CHANNELS, 0, 0, pin_assignment);
 	}
 
-	/*! \details Opens the PWM and sets the attributes.
-	 *
-	 * This method takes the same arguments as set_attr().
-	 *
-	 */
+
 	int init(u32 o_flags, u32 freq, u32 period, const pwm_pin_assignment_t * pin_assignment = 0){
 
 		if( open() < 0 ){
