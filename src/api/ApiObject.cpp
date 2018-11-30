@@ -21,7 +21,7 @@ const char * ApiObject::operating_system_name(){
 #endif
 
 #else
-	return "stratifyos"
+	return "stratifyos";
 #endif
 
 	return "unknown";
