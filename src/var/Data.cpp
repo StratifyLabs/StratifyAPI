@@ -226,7 +226,7 @@ int Data::set_size(u32 s){
 		return 0;
 	} //no need to increase size
 
-	return alloc(s, true);
+	return allocate(s, true);
 }
 
 void Data::clear(){ fill(0); }

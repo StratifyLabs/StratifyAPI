@@ -156,6 +156,7 @@ public:
 	  */
 	static const char * api_version(){ return "3.8.0b"; }
 	static const char * api_git_hash();
+	static const char * operating_system_name();
 };
 
 #if defined __link
