@@ -26,7 +26,7 @@ Font::Font() {
 	m_letter_spacing = 1;
 }
 
-int Font::calc_len(const var::ConstString & str) const {
+int Font::calculate_length(const var::ConstString & str) const {
 	int l;
 	l = 0;
 
@@ -56,7 +56,6 @@ int Font::draw(char c, Bitmap & dest, const Point & point) const {
 
 	draw_char_on_bitmap(m_char, dest, p);
 
-	//this needs to be char width not bitmap width
 	return m_char.advance_x;
 }
 
@@ -66,7 +65,6 @@ int Font::draw(const var::ConstString & const_string, Bitmap & bitmap, const Poi
 
 	//draw characters on the bitmap
 	Point p(point);
-
 	u32 i = 0;
 	while( (c = const_string.at(i++)) != 0){
 		if( c == ' ' ){
@@ -82,6 +80,8 @@ int Font::draw(const var::ConstString & const_string, Bitmap & bitmap, const Poi
 		if( w < 0 ){
 			return -1;
 		}
+
+
 
 		p += Point(w,0);
 

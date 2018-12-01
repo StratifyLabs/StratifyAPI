@@ -35,7 +35,8 @@ public:
 	int offset_y() const { return m_char.offset_y; }
 
 	/*! \details Calculates the length (pixels on x-axis) of the specified string. */
-	int calc_len(const var::ConstString & str) const;
+	int calculate_length(const var::ConstString & str) const;
+	int calc_len(const var::ConstString & str) const { return calculate_length(str); }
 
 	/*! \details Returns the number of characters in the font. */
 	int size() const { return m_header.character_count; }

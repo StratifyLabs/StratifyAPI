@@ -10,6 +10,9 @@ SonApi Son::m_api;
 
 
 Son::Son(u16 max_depth, son_stack_t * stack){
+	if( api().is_valid() == false ){
+		exit_fatal("son api missing");
+	}
 	memset(&m_son, 0, sizeof(m_son));
 	m_stack_size = max_depth;
 	if( stack == 0 ){

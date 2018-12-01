@@ -19,7 +19,7 @@ Cli::Cli(int argc, char * argv[], const var::ConstString & app_git_hash) : m_app
 
 	if( argc > 0 ){
 		m_path = argv[0];
-		m_name = File::name(argv[0]).str();
+		m_name = File::name(argv[0]);
 #if defined __link
 		version = Appfs::get_version(m_path.str(), 0);
 #else
@@ -49,9 +49,9 @@ var::String Cli::get_version_details() const {
 	String result;
 
 	if( m_app_git_hash == 0 ){
-		result.sprintf("%s (api:%s)", m_version.str(), api_git_hash());
+		result.sprintf("%s (api:%s)", m_version.str(), api::ApiInfo::git_hash());
 	} else {
-		result.sprintf("%s (app:%s, api:%s)", m_version.str(), m_app_git_hash.str(), api_git_hash());
+		result.sprintf("%s (app:%s, api:%s)", m_version.str(), m_app_git_hash.cstring(), api::ApiInfo::git_hash());
 	}
 
 	return result;

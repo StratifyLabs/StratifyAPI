@@ -38,7 +38,7 @@ public:
 		return *this;
 	}
 
-	u32 size() const { return m_value.width * m_value.height; }
+	u32 area() const { return m_value.width * m_value.height; }
 
 	sg_size_t width() const { return m_value.width; }
 	sg_size_t height() const { return m_value.height; }

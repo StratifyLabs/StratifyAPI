@@ -83,16 +83,20 @@ public:
 	};
 
 	/*! \details Accesses the program version. */
-	const char * version() const { return m_version.str(); }
+	const var::String & version() const { return m_version; }
 
 	/*! \details Accesses the program publisher. */
-	const char * publisher() const { return m_publisher.str(); }
+	const var::String publisher() const { return m_publisher; }
 
 	/*! \details Accesses the program name. */
-	const char * name() const { return m_name.str(); }
+	const var::String name() const { return m_name; }
 
 	/*! \details Accesses the path to the program (including the name). */
-	const char * path() const { return m_path.str(); }
+	const var::String path() const { return m_path; }
+
+	/*! \details Accesses the path to the program (including the name). */
+	const var::String app_git_hash() const { return m_app_git_hash; }
+
 
 	/*! \details Returns the argument offset by value as a var::String. */
 	var::String at(u16 value) const;

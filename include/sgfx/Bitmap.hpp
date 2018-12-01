@@ -437,6 +437,8 @@ protected:
 
 private:
 
+	sg_color_t calculate_color_sum();
+
 	sg_pen_t m_saved_pen;
 	sg_bmap_t m_bmap;
 

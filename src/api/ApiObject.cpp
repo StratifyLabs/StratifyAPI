@@ -2,7 +2,7 @@
 
 using namespace api;
 
-const char * ApiObject::api_git_hash(){
+const char * ApiInfo::git_hash(){
 #if defined SOS_GIT_HASH
 	return SOS_GIT_HASH;
 #else
@@ -10,7 +10,7 @@ const char * ApiObject::api_git_hash(){
 #endif
 }
 
-const char * ApiObject::operating_system_name(){
+const char * ApiInfo::operating_system_name(){
 #if defined __link
 
 #if defined __macosx

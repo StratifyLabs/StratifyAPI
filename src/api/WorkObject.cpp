@@ -16,7 +16,7 @@ WorkObject::WorkObject(){
 
 
 void WorkObject::exit_fatal(const char * message){
-	printf("FATAL:%s\n", message);
+	printf("\nFATAL:%s\n", message);
 	exit(1);
 }
 

@@ -13,7 +13,7 @@ typedef Api<sg_api_t, SAPI_API_REQUEST_SGFX> SgfxApi;
 
 class SgfxObject {
 public:
-	static const SgfxApi & api(){ return m_api; }
+	static SgfxApi & api(){ return m_api; }
 private:
 	static SgfxApi m_api;
 };

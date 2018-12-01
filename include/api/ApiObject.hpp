@@ -151,11 +151,20 @@ namespace api {
  */
 class ApiObject {
 public:
+
+};
+
+/*! \brief ApiInfo Class
+ * \details Provides inforamation abou the API library.
+ *
+ */
+class ApiInfo : public ApiObject {
+public:
 	/*! \details Returns a pointer to a string
 	  * that shows the API version.
 	  */
-	static const char * api_version(){ return "3.8.0b"; }
-	static const char * api_git_hash();
+	static const char * version(){ return "3.8.0b"; }
+	static const char * git_hash();
 	static const char * operating_system_name();
 };
 
@@ -169,7 +178,8 @@ public:
 
 	Api(){ initialize(); }
 
-	bool is_valid() const {
+	bool is_valid(){
+		initialize();
 		return m_api != 0;
 	}
 
@@ -179,6 +189,8 @@ public:
 	}
 
 	const A * operator ->() const { return m_api; }
+
+	const A * api() const { return m_api; }
 
 private:
 	void initialize(){
@@ -190,7 +202,7 @@ private:
 #endif
 		}
 	}
-	const A * m_api;
+	const A * m_api = 0;
 };
 
 }

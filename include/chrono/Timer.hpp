@@ -175,6 +175,33 @@ public:
 	  */
 	void stop();
 
+
+	bool operator == (const chrono::MicroTime & a) const {
+		return microseconds() == a.microseconds();
+	}
+
+	bool operator != (const chrono::MicroTime & a) const {
+		return microseconds() != a.microseconds();
+	}
+
+	bool operator <= (const chrono::MicroTime & a) const {
+		return microseconds() <= a.microseconds();
+	}
+
+	bool operator >= (const chrono::MicroTime & a) const {
+		return microseconds() >= a.microseconds();
+	}
+
+	bool operator > (const chrono::MicroTime & a) const {
+		return microseconds() > a.microseconds();
+	}
+
+	bool operator < (const chrono::MicroTime & a) const {
+		return microseconds() < a.microseconds();
+	}
+
+
+
 private:
 	MicroTime calc_value() const;
 

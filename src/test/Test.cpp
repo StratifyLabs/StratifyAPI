@@ -164,8 +164,8 @@ void Test::initialize(const var::ConstString & name, const var::ConstString & ve
 	//need to add the amount of RAM the program has to output
 	print_indent(2, "\"version\": \"%s\"\n", version.str());
 	print_indent(2, "\"git hash\": \"%s\"\n", git_hash.str());
-	print_indent(2, "\"api version\": \"%s\"\n", api_version());
-	print_indent(2, "\"api git hash\": \"%s\"\n", api_git_hash());
+	print_indent(2, "\"api version\": \"%s\"\n", api::ApiInfo::version());
+	print_indent(2, "\"api git hash\": \"%s\"\n", api::ApiInfo::git_hash());
 	print_indent(1, "},\n");
 }
 

@@ -9,14 +9,17 @@ using namespace var;
 JsonApi JsonValue::m_api;
 
 JsonValue::JsonValue(){
+	if( api().is_valid() == false ){ exit_fatal("json api missing"); }
 	m_value = 0; //create() method from children are not available in the constructor
 }
 
 JsonValue::JsonValue(json_t * value){
+	if( api().is_valid() == false ){ exit_fatal("json api missing"); }
 	add_reference(value);
 }
 
 JsonValue::JsonValue(const JsonValue & value){
+	if( api().is_valid() == false ){ exit_fatal("json api missing"); }
 	add_reference(value.m_value);
 }
 
@@ -139,14 +142,14 @@ var::String JsonValue::to_string() const {
 
 float JsonValue::to_real() const {
 	if( is_string() ){
-		return ::atof(json_string_value(m_value));
+		return ::atof(api()->string_value(m_value));
 	}
 	return api()->real_value(m_value);
 }
 
 int JsonValue::to_integer() const {
 	if( is_string() ){
-		return ::atol(json_string_value(m_value));
+		return ::atol(api()->string_value(m_value));
 	}
 	return api()->integer_value(m_value);
 }

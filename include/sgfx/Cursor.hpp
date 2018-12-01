@@ -21,13 +21,9 @@ public:
 
 
 	void set(const Bitmap & bitmap, const Point & p){ api()->cursor_set(&m_cursor, bitmap.bmap(), p); }
-	void inc_x(){ api()->cursor_inc_x(&m_cursor); }
 	void increment_x(){ api()->cursor_inc_x(&m_cursor); }
-	void dec_x(){ api()->cursor_dec_x(&m_cursor); }
 	void decrement_x(){ api()->cursor_dec_x(&m_cursor); }
-	void inc_y(){ api()->cursor_inc_y(&m_cursor); }
 	void increment_y(){ api()->cursor_inc_y(&m_cursor); }
-	void dec_y(){ api()->cursor_dec_y(&m_cursor); }
 	void decrement_y(){ api()->cursor_dec_y(&m_cursor); }
 	sg_color_t get_pixel(){ return api()->cursor_get_pixel(&m_cursor); }
 	void draw_pixel() { api()->cursor_draw_pixel(&m_cursor); }
@@ -35,6 +31,11 @@ public:
 	void draw_cursor(const Cursor & src, sg_size_t width){ api()->cursor_draw_cursor(&m_cursor, &src.m_cursor, width); }
 	void shift_right(sg_size_t shift_width, sg_size_t shift_distance){ api()->cursor_shift_right(&m_cursor, shift_width, shift_distance); }
 	void shift_left(sg_size_t shift_width, sg_size_t shift_distance){ api()->cursor_shift_left(&m_cursor, shift_width, shift_distance); }
+
+	void inc_x(){ api()->cursor_inc_x(&m_cursor); }
+	void dec_x(){ api()->cursor_dec_x(&m_cursor); }
+	void inc_y(){ api()->cursor_inc_y(&m_cursor); }
+	void dec_y(){ api()->cursor_dec_y(&m_cursor); }
 
 	sg_cursor_t & cursor() { return m_cursor; }
 	const sg_cursor_t & cursor() const { return m_cursor; }

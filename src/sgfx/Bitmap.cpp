@@ -37,7 +37,16 @@ int Bitmap::set_bits_per_pixel(u8 bits_per_pixel){
 	return -1;
 }
 
+#include "sys/requests.h"
+extern "C" const void * kernel_request_api(u32 request);
+
 void Bitmap::initialize_members(){
+
+	//ensure api() is valid
+	if( api().is_valid() == false ){
+		exit_fatal("sgfx api not available");
+	}
+
 	if( api()->bits_per_pixel == 0 ){
 		m_bmap.bits_per_pixel = 1;
 	} else {
@@ -280,14 +289,7 @@ bool Bitmap::is_empty(const Region & region) const {
 }
 
 void Bitmap::downsample_bitmap(const Bitmap & source, const Dim & factor){
-
-	sg_cursor_t x_cursor;
-	sg_cursor_t y_cursor;
-	sg_color_t color;
-
-
-	sg_cursor_t source_x_cursor;
-	sg_cursor_t source_y_cursor;
+	Cursor cursor_x, cursor_y;
 
 	if( factor.width() == 0 ){ return; }
 	if( factor.height() == 0 ){ return; }
@@ -296,38 +298,51 @@ void Bitmap::downsample_bitmap(const Bitmap & source, const Dim & factor){
 	if( factor.height() > source.height() ){ return; }
 
 
-	api()->cursor_set(&y_cursor, bmap(), sg_point(0,0));
-	api()->cursor_set(&source_y_cursor, source.bmap(), sg_point(0,0));
+	Bitmap sample(factor);
 
-	for(sg_int_t y = 0; y < source.height(); y+=factor.height()){
-		sg_cursor_copy(&source_x_cursor, &source_y_cursor);
-		sg_cursor_copy(&x_cursor, &y_cursor);
+	cursor_y.set(*this, Point(0,0));
 
-		for(sg_int_t y_sample = 0; y_sample < factor.height()/2; y_sample++){
-			api()->cursor_inc_y(&source_y_cursor);
-		}
+	for(sg_int_t y = 0; y <= source.height() - factor.height()/2; y+=factor.height()){
 
-		for(sg_int_t x = 0; x < source.width(); x+=factor.width()){
-			for(sg_int_t x_sample = 0; x_sample < factor.width(); x_sample++){
-				color = api()->cursor_get_pixel(&source_x_cursor);
-				if( x_sample == factor.width()/2 ){
-					set_pen_color(color);
-					api()->cursor_draw_pixel(&x_cursor);
-				}
+		cursor_x = cursor_y;
+
+		for(sg_int_t x = 0; x <= source.width() - factor.width()/2; x+=factor.width()){
+			Region region(Point(x,y), factor);
+			sample.clear();
+			sample.draw_sub_bitmap(Point(0,0), source, region);
+
+			u32 color = sample.calculate_color_sum();
+			if( color >= factor.area()/2 ){
+				set_pen_color(1);
+			} else {
+				set_pen_color(0);
 			}
 
+			cursor_x.draw_pixel();
 		}
 
+		cursor_y.increment_y();
 
-		for(sg_int_t y_sample = 0; y_sample < factor.height()/2; y_sample++){
-			api()->cursor_inc_y(&source_y_cursor);
-		}
 
-		api()->cursor_inc_y(&y_cursor);
 
 	}
 
 }
+
+sg_color_t Bitmap::calculate_color_sum(){
+	sg_color_t color = 0;
+	Cursor cursor_y, cursor_x;
+	cursor_y.set(*this, Point(0,0));
+	for(sg_size_t y = 0; y < height(); y++){
+		cursor_x = cursor_y;
+		for(sg_size_t x = 0; x < width(); x++){
+			color += cursor_x.get_pixel();
+		}
+		cursor_y.increment_y();
+	}
+	return color;
+}
+
 
 void Bitmap::show() const{
 	//api()->show(bmap());

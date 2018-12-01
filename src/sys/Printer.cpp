@@ -100,13 +100,17 @@ void Printer::print(const char * fmt, ...){
 
 Printer & Printer::operator << (const Cli & a){
 	open_object(a.name());
-	print_indented("publisher", "%s", a.publisher());
-	open_object("arguments");
-	for(u32 i = 0; i < a.count(); i++){
-		print_indented(0, "%s", a.at(i).str());
+	{
+		print_indented("publisher", "%s", a.publisher().cstring());
+		open_object("arguments");
+		{
+			for(u32 i = 0; i < a.count(); i++){
+				print_indented(0, "%s", a.at(i).str());
+			}
+			close_object();
+		}
+		close_object();
 	}
-	close_object();
-	close_object();
 
 	return *this;
 }
