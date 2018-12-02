@@ -166,6 +166,9 @@ public:
 	static const char * version(){ return "3.8.0b"; }
 	static const char * git_hash();
 	static const char * operating_system_name();
+	static bool is_windows();
+	static bool is_macosx();
+	static bool is_stratify_os();
 };
 
 #if defined __link

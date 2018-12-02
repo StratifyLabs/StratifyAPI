@@ -1,3 +1,4 @@
+#include <cstring>
 #include "api/ApiObject.hpp"
 
 using namespace api;
@@ -26,3 +27,7 @@ const char * ApiInfo::operating_system_name(){
 
 	return "unknown";
 }
+
+bool ApiInfo::is_windows(){ return strcmp(operating_system_name(), "windows") == 0; }
+bool ApiInfo::is_macosx(){ return strcmp(operating_system_name(), "macosx") == 0; }
+bool ApiInfo::is_stratify_os(){ return strcmp(operating_system_name(), "stratifyos") == 0; }
