@@ -30,6 +30,7 @@ public:
 
 
 	void map(const sg_vector_map_t & m){ api()->point_map(&m_value, &m); }
+	void unmap(const sg_vector_map_t & m){ api()->point_unmap(&m_value, &m); }
 
 	static sg_size_t map_pixel_size(const sg_vector_map_t & m){ return sg_point_map_pixel_size(&m); }
 

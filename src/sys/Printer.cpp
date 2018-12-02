@@ -12,6 +12,7 @@
 #include "var/String.hpp"
 #include "var/Token.hpp"
 #include "sgfx/Bitmap.hpp"
+#include "sgfx/Vector.hpp"
 
 
 using namespace sys;
@@ -343,6 +344,88 @@ Printer & Printer::operator << (const sgfx::Pen & a){
 }
 
 Printer & Printer::operator << (const sgfx::Vector & a){
+	return *this;
+}
+
+Printer & Printer::operator << (const sgfx::VectorPath & a){
+	for(u32 i=0; i < a.icon_count(); i++){
+		open_object(var::String().format("[%d]", i));
+		{
+			*this << a.icon_list()[i];
+			close_object();
+		}
+	}
+	return *this;
+}
+
+Printer & Printer::operator << (const sgfx::VectorPathDescription & a){
+
+	switch( a.type() ){
+		case sgfx::VectorPathDescription::NONE:
+			print_indented("type", "none");
+			break;
+		case sgfx::VectorPathDescription::MOVE:
+			print_indented("type", "move");
+			open_object("point");
+			{
+				*this << a.to_move().point;
+				close_object();
+			}
+			break;
+		case sgfx::VectorPathDescription::LINE:
+			print_indented("type", "line");
+			open_object("point");
+			{
+				*this << a.to_line().point;
+				close_object();
+			}
+			break;
+		case sgfx::VectorPathDescription::QUADRATIC_BEZIER:
+			print_indented("type", "quadratic bezier");
+			open_object("point");
+			{
+				*this << a.to_quadratic_bezier().point;
+				close_object();
+			}
+
+			open_object("control");
+			{
+				*this << a.to_quadratic_bezier().control;
+				close_object();
+			}
+			break;
+		case sgfx::VectorPathDescription::CUBIC_BEZIER:
+			print_indented("type", "cubic bezier");
+			open_object("point");
+			{
+				*this << a.to_cubic_bezier().point;
+				close_object();
+			}
+
+			open_object("control0");
+			{
+				*this << a.to_cubic_bezier().control[0];
+				close_object();
+			}
+			open_object("control1");
+			{
+				*this << a.to_cubic_bezier().control[1];
+				close_object();
+			}
+			break;
+		case sgfx::VectorPathDescription::CLOSE:
+			print_indented("type", "close");
+			break;
+		case sgfx::VectorPathDescription::POUR:
+			print_indented("type", "pour");
+			open_object("point");
+			{
+				*this << a.to_pour().point;
+				close_object();
+			}
+			break;
+	}
+
 	return *this;
 }
 

@@ -34,6 +34,8 @@ class Bitmap;
 class Pen;
 class Vector;
 class Cursor;
+class VectorPath;
+class VectorPathDescription;
 }
 
 
@@ -51,6 +53,12 @@ class Cli;
 
 #define PRINTER_TRACE(printer) (printer.print("\n%s():%d", __FUNCTION__, __LINE__))
 #define PRINTER_TRACE_ERROR(printer, x) int printer_result = x; if( printer_result < 0 ) printer.print("\nError: %s():%d (%d)", __FUNCTION__, __LINE__, x, y)
+
+class PrinterTermination {
+public:
+
+private:
+};
 
 class Printer : public api::SysWorkObject {
 public:
@@ -79,6 +87,15 @@ public:
 	void set_color_code(u32 code);
 	void clear_color_code();
 
+	static PrinterTermination close(){
+		return PrinterTermination();
+	}
+
+	Printer & operator << (const PrinterTermination & printer_termination){
+		m_indent--;
+		return *this;
+	}
+
 	Printer & operator << (const var::Data & a);
 	Printer & operator << (const var::DataInfo & a);
 	Printer & operator << (const var::String & a);
@@ -98,6 +115,8 @@ public:
 	Printer & operator << (const sgfx::Dim & a);
 	Printer & operator << (const sgfx::Pen & a);
 	Printer & operator << (const sgfx::Vector & a);
+	Printer & operator << (const sgfx::VectorPath & a);
+	Printer & operator << (const sgfx::VectorPathDescription & a);
 
 
 	Printer & operator << (const sys::SysInfo & a);

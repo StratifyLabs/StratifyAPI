@@ -43,6 +43,14 @@ public:
 	sg_size_t width() const { return m_value.width; }
 	sg_size_t height() const { return m_value.height; }
 
+	sg_size_t maximum_dimension() const {
+		return m_value.width > m_value.height ? m_value.width : m_value.height;
+	}
+
+	sg_size_t minimum_dimension() const {
+		return m_value.width < m_value.height ? m_value.width : m_value.height;
+	}
+
 	const sg_dim_t & dim() const { return m_value; }
 	sg_dim_t & dim(){ return m_value; }
 

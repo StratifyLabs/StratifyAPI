@@ -10,6 +10,7 @@
 #include "Bitmap.hpp"
 #include "Pen.hpp"
 #include "../var/Item.hpp"
+#include "../var/Vector.hpp"
 #include "../api/SgfxObject.hpp"
 
 namespace sgfx {
@@ -67,12 +68,86 @@ public:
 	const sg_vector_map_t & vector_map() const { return m_value; }
 	sg_vector_map_t vector_map(){ return m_value; }
 
+	const sg_vector_map_t & map() const { return m_value; }
+	sg_vector_map_t map(){ return m_value; }
+
 	operator const sg_vector_map_t & () const { return m_value; }
 
 private:
 	sg_vector_map_t m_value;
 
 
+};
+
+class VectorPathDescription : public api::SgfxInfoObject {
+public:
+	VectorPathDescription(const sg_vector_path_description_t & value){ m_value = value; }
+	operator const sg_vector_path_description_t & () const { return m_value; }
+
+	enum {
+		NONE = SG_VECTOR_PATH_NONE,
+		MOVE = SG_VECTOR_PATH_MOVE,
+		LINE = SG_VECTOR_PATH_LINE,
+		QUADRATIC_BEZIER = SG_VECTOR_PATH_QUADRATIC_BEZIER,
+		CUBIC_BEZIER = SG_VECTOR_PATH_CUBIC_BEZIER,
+		CLOSE = SG_VECTOR_PATH_CLOSE,
+		POUR = SG_VECTOR_PATH_POUR,
+	};
+
+	u16 type() const { return m_value.type; }
+	sg_vector_path_move_t to_move() const { return m_value.move; }
+	sg_vector_path_line_t to_line() const { return m_value.line; }
+	sg_vector_path_quadtratic_bezier_t to_quadratic_bezier() const { return m_value.quadratic_bezier; }
+	sg_vector_path_cubic_bezier_t to_cubic_bezier() const { return m_value.cubic_bezier; }
+	sg_vector_path_pour_t to_pour() const { return m_value.pour; }
+
+private:
+	sg_vector_path_description_t m_value;
+};
+
+class VectorPath : public api::SgfxInfoObject {
+public:
+
+	VectorPath(){ memset(&m_path, 0, sizeof(m_path)); }
+	VectorPath(const sg_vector_path_t & path){ m_path = path; }
+
+
+	VectorPath & operator << (const var::Vector<sg_vector_path_description_t> & vector){
+		m_path.icon.list = vector.to<sg_vector_path_description_t>();
+		m_path.icon.count = vector.count();
+		return *this;
+	}
+
+	VectorPath & operator << (const Region & region){
+		m_path.region = region.region();
+		return *this;
+	}
+
+	const sg_vector_path_description_t * icon_list() const { return m_path.icon.list; }
+	u32 icon_count() const { return m_path.icon.count; }
+
+	operator const sg_vector_path_t & () const { return m_path; }
+	operator sg_vector_path_t & (){ return m_path; }
+
+	void shift(Point point);
+	void scale(float value);
+
+	VectorPath & operator += (Point point){
+		shift(point);
+		return *this;
+	}
+
+
+	VectorPath & operator *= (float value){
+		scale(value);
+		return *this;
+	}
+
+	const sg_vector_path_t & path() const { return m_path; }
+	sg_vector_path_t & path(){ return m_path; }
+
+private:
+	sg_vector_path_t m_path;
 };
 
 
@@ -98,7 +173,7 @@ public:
 	static void draw(Bitmap & bitmap, const sg_vector_icon_t & icon, const sg_vector_map_t & map, sg_region_t * bounds = 0);
 
 
-	static void draw_path(Bitmap & bitmap, sg_vector_path_t & path, const sg_vector_map_t & map);
+	static void draw(Bitmap & bitmap, VectorPath & path, const VectorMap & map);
 
 
 	static sg_vector_primitive_t fill(const Point & p);
@@ -136,48 +211,6 @@ public:
 	static void show(const sg_vector_primitive_t & mg);
 	static void show(const sg_vector_icon_t & icon);
 
-	static void draw_remove(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_ok(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_bars(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_circle(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_circle_fill(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_toggle_off(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_toggle_on(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_power(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_chevron(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_arrow(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_zoom(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_reset(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_lightning(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_play(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_pause(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_button_bar(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_mic(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_clock(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_heart(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_plot(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_bike(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_mountain(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_compass(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_compass_outer(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_panel(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_panel_fill(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_sun(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_battery(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_arrowhead(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_dot(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_dash(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_message(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_contact(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_contact_fill(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_speaker(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_speaker_fill(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_antenna(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_marker(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_zoom_plus(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_zoom_minus(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_hike(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
-	static void draw_ALPHA(Bitmap & bitmap, const VectorMap & map, sg_region_t * bounds = 0, bool show = false);
 
 private:
 	static sg_int_t find_top(const Bitmap & bitmap);

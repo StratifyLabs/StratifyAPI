@@ -416,11 +416,14 @@ public:
 	inline sg_size_t margin_top() const { return m_bmap.margin_top_left.height; }
 	inline sg_size_t margin_bottom() const { return m_bmap.margin_bottom_right.height; }
 
+
 	inline void set_margin_left(sg_size_t v) { m_bmap.margin_top_left.width = v; }
 	inline void set_margin_right(sg_size_t v) { m_bmap.margin_bottom_right.width = v; }
 	inline void set_margin_top(sg_size_t v) { m_bmap.margin_top_left.height = v; }
 	inline void set_margin_bottom(sg_size_t v) { m_bmap.margin_bottom_right.height = v; }
-
+	inline void set_margin(sg_size_t v){
+		set_margin_bottom(v); set_margin_left(v); set_margin_right(v); set_margin_top(v);
+	}
 
 	/*! \details Shows the bitmap on the standard output. */
 	void show() const;
