@@ -68,6 +68,7 @@ int HttpClient::query(const var::ConstString & command,
 							 const sys::File * send_file,
 							 const sys::File * get_file,
 							 const sys::ProgressCallback * progress_callback){
+	m_status_code = -1;
 	int result;
 	Url u(url);
 	result = connect_to_server(u.domain_name(), u.port());
