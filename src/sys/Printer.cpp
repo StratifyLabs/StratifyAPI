@@ -25,14 +25,14 @@ Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this
 
 void Printer::set_color_code(u32 code){
 
-#if defined __link
+#if defined __link && defined __macosx
 	printf("\033[1;%dm", code);
 #endif
 }
 
 void Printer::clear_color_code(){
 
-#if defined __link
+#if defined __link && defined __macosx
 	printf("\033[0m");
 #endif
 }
