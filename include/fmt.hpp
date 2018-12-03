@@ -11,6 +11,7 @@ namespace fmt {}
 #include "fmt/Bmp.hpp"
 #include "fmt/Wav.hpp"
 #include "fmt/Son.hpp"
+#include "fmt/Svic.hpp"
 
 #if !defined __link
 #include "fmt/Xml.hpp"

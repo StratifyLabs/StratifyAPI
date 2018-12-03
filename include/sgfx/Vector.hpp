@@ -29,7 +29,7 @@ public:
 	 * @param bitmap Bitmap used to center map
 	 * @param rotation Rotation mapping
 	 *
-	 * This uses method set_bitmap_center().
+	 * This uses method calculate_for_bitmap().
 	 */
 	VectorMap(const Bitmap & bitmap, s16 rotation = 0);
 
@@ -111,6 +111,7 @@ public:
 	VectorPath(){ memset(&m_path, 0, sizeof(m_path)); }
 	VectorPath(const sg_vector_path_t & path){ m_path = path; }
 
+	bool is_valid() const { return m_path.icon.count > 0; }
 
 	VectorPath & operator << (const var::Vector<sg_vector_path_description_t> & vector){
 		m_path.icon.list = vector.to<sg_vector_path_description_t>();
@@ -136,7 +137,6 @@ public:
 		shift(point);
 		return *this;
 	}
-
 
 	VectorPath & operator *= (float value){
 		scale(value);
@@ -199,6 +199,7 @@ public:
 	static sg_vector_primitive_t quadratic_bezier(const Point & p1, const Point & p2, const Point & p3);
 	static sg_vector_primitive_t cubic_bezier(const Point & p1, const Point & p2, const Point & p3, const Point & p4);
 
+	//need to add arc
 	static sg_vector_path_description_t get_path_move(const Point & p);
 	static sg_vector_path_description_t get_path_line(const Point & p);
 	static sg_vector_path_description_t get_path_pour(const Point & p);

@@ -16,7 +16,7 @@ int Font::to_charset(char ascii){
 	if( (ascii < ' ') || (ascii > '~') ){
 		return -1;
 	}
-	return (int)(ascii - ' ');
+	return (int)(ascii - ' ' - 1);
 }
 
 Font::Font() {
@@ -27,23 +27,20 @@ Font::Font() {
 }
 
 int Font::calculate_length(const var::ConstString & str) const {
-	int l;
-	l = 0;
-
-	const char * s = str.str();
-
+	u32 length = 0;
+	const char * s = str.cstring();
 	while( *s != 0 ){
 
 		if( *s == ' ' ){
-			l += space_size();
+			length += space_size();
 		} else {
 			if( load_char(m_char, *s, true) == 0){
-				l += m_char.advance_x;
+				length += m_char.advance_x;
 			}
 		}
 		s++;
 	}
-	return l;
+	return length;
 }
 
 int Font::draw(char c, Bitmap & dest, const Point & point) const {

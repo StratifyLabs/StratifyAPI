@@ -88,7 +88,7 @@ private:
 	u32 m_offset;
 };
 
-};
+}
 
 
 #endif /* BMP_HPP_ */
