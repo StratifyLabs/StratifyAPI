@@ -21,7 +21,6 @@ FontInfo::FontInfo(const var::ConstString & path){
 
 	if( tokens.count() != 4 ){
 		m_point_size = 0;
-		printf("Font name is not valid\n");
 	} else {
 
 		m_font = 0;
@@ -47,7 +46,6 @@ FontInfo::FontInfo(const var::ConstString & path){
 		if( style == "bi" ){ m_style = BOLD_ITALIC; }
 		if( style == "eb" ){ m_style = EXTRA_BOLD; }
 		if( style == "ebi" ){ m_style = EXTRA_BOLD_ITALIC; }
-		printf("Font is %s %d %d\n", m_name.cstring(), m_point_size, m_style);
 	}
 }
 
@@ -78,7 +76,7 @@ int Font::to_charset(char ascii){
 	if( (ascii < ' ') || (ascii > '~') ){
 		return -1;
 	}
-	return (int)(ascii - ' ' - 1);
+	return (int)(ascii - ' ');
 }
 
 Font::Font() {
