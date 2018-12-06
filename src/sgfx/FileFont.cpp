@@ -42,7 +42,7 @@ int FileFont::set_file(const var::ConstString & name, int offset){
 
 
 	m_canvas.free();
-	if( m_canvas.allocate(Dim(m_header.canvas_width, m_header.canvas_height)) < 0 ){
+	if( m_canvas.allocate(Area(m_header.canvas_width, m_header.canvas_height)) < 0 ){
 		set_error_number(m_canvas.error_number());
 		return -1;
 	}
@@ -117,6 +117,6 @@ void FileFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, con
 		m_current_canvas = ch.canvas_idx;
 	}
 
-	Region region(Point(ch.canvas_x, ch.canvas_y), Dim(ch.width, ch.height));
+	Region region(Point(ch.canvas_x, ch.canvas_y), Area(ch.width, ch.height));
 	dest.draw_sub_bitmap(point, m_canvas, region);
 }

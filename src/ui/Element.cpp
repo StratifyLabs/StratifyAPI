@@ -13,9 +13,9 @@ void Element::draw_scroll(const DrawingScaledAttr & attr,
 								  int total,
 								  int visible){
 	sg_point_t p = attr.point();
-	Dim d = attr.dim();
+	Area d = attr.area();
 	int bar_size;
-	sg_dim_t bar;
+	sg_area_t bar;
 	bar_size = d.height() / total;
 	attr.bitmap().draw_rectangle(p, d);
 	p.y = p.y + selected*bar_size;

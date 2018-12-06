@@ -8,9 +8,7 @@
 
 namespace sgfx {
 
-#if !defined __link
-[[deprecated("Use MemoryFont")]]
-#endif
+API_DEPRECATED("Use MemoryFont")
 typedef MemoryFont FontMemory;
 
 }

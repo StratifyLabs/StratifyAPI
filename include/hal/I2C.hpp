@@ -228,9 +228,7 @@ public:
 	int get_error() const;
 
 	//deprecated
-#if !defined __link
-	[[deprecated("use get_error()")]]
-#endif
+	API_DEPRECATED("use get_error()")
 	int get_err() const { return get_error(); }
 
 	int set_attr(u32 o_flags, u32 freq, const i2c_pin_assignment_t * pin_assignment = 0){

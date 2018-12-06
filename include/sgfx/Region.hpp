@@ -6,7 +6,7 @@
 #include <sapi/sg_types.h>
 
 #include "Point.hpp"
-#include "Dim.hpp"
+#include "Area.hpp"
 #include "../api/SgfxObject.hpp"
 
 namespace sgfx {
@@ -23,7 +23,7 @@ public:
 	}
 
 	bool is_valid() const {
-		return (m_region.dim.width != 0) && (m_region.dim.height != 0);
+		return (m_region.area.width != 0) && (m_region.area.height != 0);
 	}
 
 
@@ -31,40 +31,41 @@ public:
 		m_region = region;
 	}
 
-	Region(const Point & point, const Dim & dim){
+	Region(const Point & point, const Area & area){
 		m_region.point = point;
-		m_region.dim = dim;
+		m_region.area = area;
 	}
 
 	Point center() const {
-		return Point(m_region.point.x + m_region.dim.width/2,
-						 m_region.point.y + m_region.dim.height/2);
+		return Point(m_region.point.x + m_region.area.width/2,
+						 m_region.point.y + m_region.area.height/2);
 	}
 
 	void set_region(const Point & top_left, const Point & bottom_right){
 		m_region.point = top_left;
-		m_region.dim.width = bottom_right.x() - top_left.x() + 1;
-		m_region.dim.height = bottom_right.y() - top_left.y() + 1;
+		m_region.area.width = bottom_right.x() - top_left.x() + 1;
+		m_region.area.height = bottom_right.y() - top_left.y() + 1;
 	}
 
 	void set_point(const Point & value){ m_region.point = value; }
-	void set_dim(const Dim & value){ m_region.dim = value; }
+	void set_area(const Area & value){ m_region.area = value; }
+	void set_dim(const Area & value){ m_region.area = value; }
 
 	Point point() const { return m_region.point; }
-	Dim dim() const { return m_region.dim; }
+	Area area() const { return m_region.area; }
 
 	sg_int_t x() const { return m_region.point.x; }
 	sg_int_t y() const { return m_region.point.y; }
-	sg_size_t width() const { return m_region.dim.width; }
-	sg_size_t height() const { return m_region.dim.height; }
+	sg_size_t width() const { return m_region.area.width; }
+	sg_size_t height() const { return m_region.area.height; }
 
 	Region & operator << (const Point & point){
 		set_point(point);
 		return *this;
 	}
 
-	Region & operator << (const Dim & dimension){
-		set_dim(dimension);
+	Region & operator << (const Area & dimension){
+		set_area(dimension);
 		return *this;
 	}
 

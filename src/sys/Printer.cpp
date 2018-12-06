@@ -194,7 +194,7 @@ Printer & Printer::operator << (const char * a){
 	return key(0, a);
 }
 
-Printer & Printer::operator << (const var::Token & a){
+Printer & Printer::operator << (const var::Tokenizer & a){
 	m_indent++;
 	for(u32 i=0; i < a.count(); i++){
 		print_indented("%s", a.at(i).str());
@@ -294,19 +294,29 @@ Printer & Printer::operator << (const sgfx::Bitmap & a){
 
 	sgfx::Bitmap::api()->cursor_set(&y_cursor, a.bmap(), sg_point(0,0));
 
-	for(i=0; i < a.bmap()->dim.height; i++){
+	for(i=0; i < a.bmap()->area.height; i++){
 		sg_cursor_copy(&x_cursor, &y_cursor);
 		print_indented(var::String().format("line-%04d", i), "");
-		for(j=0; j < a.bmap()->dim.width; j++){
+		for(j=0; j < a.bmap()->area.width; j++){
 			color = sgfx::Bitmap::api()->cursor_get_pixel(&x_cursor);
-			if( sgfx::Bitmap::api()->bits_per_pixel > 8 ){
-				::printf("%04X", color);
-			} else if(sgfx::Bitmap::api()->bits_per_pixel > 4){
-				::printf("%02X", color);
+			if( color ){
+				if( sgfx::Bitmap::api()->bits_per_pixel > 8 ){
+					::printf("%04X", color);
+				} else if(sgfx::Bitmap::api()->bits_per_pixel > 4){
+					::printf("%02X", color);
+				} else {
+					::printf("%X", color);
+				}
 			} else {
-				::printf("%X", color);
+				if( sgfx::Bitmap::api()->bits_per_pixel > 8 ){
+					::printf("....");
+				} else if(sgfx::Bitmap::api()->bits_per_pixel > 4){
+					::printf("..");
+				} else {
+					::printf(".");
+				}
 			}
-			if( (j < a.bmap()->dim.width - 1) && (sgfx::Bitmap::api()->bits_per_pixel > 4)){
+			if( (j < a.bmap()->area.width - 1) && (sgfx::Bitmap::api()->bits_per_pixel > 4)){
 				::printf(" ");
 			}
 		}
@@ -328,12 +338,12 @@ Printer & Printer::operator << (const sgfx::Point & a){
 Printer & Printer::operator << (const sgfx::Region & a){
 	print_indented("x", "%d", a.point().x());
 	print_indented("y", "%d", a.point().y());
-	print_indented("width", "%d", a.dim().width());
-	print_indented("height", "%d", a.dim().height());
+	print_indented("width", "%d", a.area().width());
+	print_indented("height", "%d", a.area().height());
 	return *this;
 }
 
-Printer & Printer::operator << (const sgfx::Dim & a){
+Printer & Printer::operator << (const sgfx::Area & a){
 	print_indented("width", "%d", a.width());
 	print_indented("height", "%d", a.height());
 	return *this;

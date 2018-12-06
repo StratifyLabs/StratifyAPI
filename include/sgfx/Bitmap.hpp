@@ -54,9 +54,9 @@ public:
 
 	/*! \details Constructs a new bitmap (dynamic memory allocation).
 	 *
-	 * @param d Dimensions of the bitmap
+	 * @param d Areaensions of the bitmap
 	 */
-	Bitmap(sg_dim_t d);
+	Bitmap(sg_area_t d);
 
 	Bitmap(const Bitmap & bitmap) : var::Data(bitmap){
 		m_bmap = bitmap.m_bmap;
@@ -159,7 +159,7 @@ public:
 	 * @param readonly True if \a mem is read-only
 	 */
 	void set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly = false);
-	void set_data(sg_bmap_data_t * mem, const Dim & dim){ set_data(mem, dim.width(), dim.height()); }
+	void set_data(sg_bmap_data_t * mem, const Area & area){ set_data(mem, area.width(), area.height()); }
 	void set_data(sg_bmap_data_t * mem, bool readonly = false){ set_data(mem, width(), height(), readonly); }
 
 	/*! \details Changes effective size without free/allocate sequence */
@@ -170,15 +170,15 @@ public:
 	 * @param w Width used for calculation
 	 * @param h Height used for calculation
 	 */
-	u32 calculate_size(const Dim & dim) const { return api()->calc_bmap_size(bmap(), dim); }
-	u32 calc_size(int w, int h) const { return calculate_size(Dim(w,h)); }
+	u32 calculate_size(const Area & area) const { return api()->calc_bmap_size(bmap(), area); }
+	u32 calc_size(int w, int h) const { return calculate_size(Area(w,h)); }
 
 	static u16 calc_word_width(sg_size_t w){
 		return sg_calc_word_width(w);
 	}
 
 	/*! \details Returns the number of bytes used to store the Bitmap. */
-	u32 calculate_size() const { return calculate_size(dim()); }
+	u32 calculate_size() const { return calculate_size(area()); }
 	u32 calc_size() const { return calculate_size(); }
 	Point center() const;
 
@@ -187,7 +187,7 @@ public:
 	/*! \details Returns the maximum y value. */
 	sg_int_t y_max() const { return height()-1; }
 
-	static Dim load_dim(const char * path);
+	static Area load_dim(const char * path);
 
 	/*! \details Loads a bitmap from a file.
 	 *
@@ -211,10 +211,10 @@ public:
 	 * width and height.  If the bitmap already has a memory associated
 	 * with it, it will be freed before the new memory is assigned.
 	 */
-	int allocate(const Dim & d);
+	int allocate(const Area & d);
 
-	int alloc(sg_size_t w, sg_size_t h){ return allocate(Dim(w,h)); }
-	int alloc(const Dim & d){ return allocate(d); }
+	int alloc(sg_size_t w, sg_size_t h){ return allocate(Area(w,h)); }
+	int alloc(const Area & d){ return allocate(d); }
 
 	/*! \details Free memory associated with bitmap (auto freed on ~Bitmap) */
 	void free();
@@ -239,7 +239,7 @@ public:
 	 *
 	 */
 	void transform_shift(sg_point_t shift, const sg_region_t & region) const { api()->transform_shift(bmap(), shift, &region); }
-	void transform_shift(sg_point_t shift, sg_point_t p, sg_dim_t d) const { transform_shift(shift, Region(p,d)); }
+	void transform_shift(sg_point_t shift, sg_point_t p, sg_area_t d) const { transform_shift(shift, Region(p,d)); }
 
 
 	/*! \details Gets the value of the pixel at the specified point.
@@ -273,7 +273,7 @@ public:
 	void draw_arc(const Region & region, s16 start, s16 end, s16 rotation = 0, sg_point_t * corners = 0) const {
 		api()->draw_arc(bmap(), &region.region(), start, end, rotation, corners);
 	}
-	void draw_arc(const Point & p, const Dim & d, s16 start, s16 end, s16 rotation = 0) const { draw_arc(Region(p,d), start, end, rotation); }
+	void draw_arc(const Point & p, const Area & d, s16 start, s16 end, s16 rotation = 0) const { draw_arc(Region(p,d), start, end, rotation); }
 
 	/*! \details Draws a rectangle on the bitmap.
 	 *
@@ -283,7 +283,7 @@ public:
 	 * affects every pixel in the rectangle not just the border.
 	 */
 	void draw_rectangle(const Region & region) const { api()->draw_rectangle(bmap(), &region.region()); }
-	void draw_rectangle(const Point & p, const Dim & d) const { draw_rectangle(Region(p,d)); }
+	void draw_rectangle(const Point & p, const Area & d) const { draw_rectangle(Region(p,d)); }
 
 	/*! \details Pours an area on the bitmap.
 	 *
@@ -313,7 +313,7 @@ public:
 	 *
 	 *
 	 */
-	void downsample_bitmap(const Bitmap & source, const Dim & factor);
+	void downsample_bitmap(const Bitmap & source, const Area & factor);
 
 	/*! \details This function draws a pattern on the bitmap.
 	 *
@@ -325,7 +325,7 @@ public:
 	void draw_pattern(const Region & region, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height) const {
 		api()->draw_pattern(bmap(), &region.region(), odd_pattern, even_pattern, pattern_height);
 	}
-	void draw_pattern(const Point & p, const Dim & d, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height) const {
+	void draw_pattern(const Point & p, const Area & d, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height) const {
 		draw_pattern(Region(p,d), odd_pattern, even_pattern, pattern_height);
 	}
 
@@ -342,15 +342,15 @@ public:
 	}
 
 
-	void draw_sub_bitmap(const Point & p_dest, const Bitmap & src, const Point & p_src, const Dim & d_src) const {
+	void draw_sub_bitmap(const Point & p_dest, const Bitmap & src, const Point & p_src, const Area & d_src) const {
 		draw_sub_bitmap(p_dest, src, Region(p_src, d_src));
 	}
 
 	Region calculate_active_region() const;
 
 	//these are deprecated and shouldn't be documented?
-	void invert(){ invert_rectangle(sg_point(0,0), dim()); }
-	void invert_rectangle(const Point & p, const Dim & d){
+	void invert(){ invert_rectangle(sg_point(0,0), area()); }
+	void invert_rectangle(const Point & p, const Area & d){
 		u16 o_flags;
 		sg_region_t region = sg_region(p,d);
 		o_flags = m_bmap.pen.o_flags;
@@ -359,7 +359,7 @@ public:
 		m_bmap.pen.o_flags = o_flags;
 	}
 
-	void clear_rectangle(const Point & p, const Dim & d){
+	void clear_rectangle(const Point & p, const Area & d){
 		u16 o_flags;
 		sg_region_t region = sg_region(p,d);
 		o_flags = m_bmap.pen.o_flags;
@@ -403,10 +403,10 @@ public:
 	bool is_empty(const Region & region) const;
 
 
-	sg_size_t height() const { return m_bmap.dim.height; }
-	sg_size_t width() const { return m_bmap.dim.width; }
-	const Dim dim() const {
-		return m_bmap.dim;
+	sg_size_t height() const { return m_bmap.area.height; }
+	sg_size_t width() const { return m_bmap.area.width; }
+	const Area area() const {
+		return m_bmap.area;
 	}
 
 	inline sg_size_t columns() const { return m_bmap.columns; }
@@ -446,7 +446,7 @@ private:
 	sg_bmap_t m_bmap;
 
 	void initialize_members();
-	void calculate_members(const Dim & dim);
+	void calculate_members(const Area & dim);
 
 };
 

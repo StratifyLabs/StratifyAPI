@@ -8,9 +8,7 @@
 
 namespace sgfx {
 
-#if !defined __link
-[[deprecated("Use SvgFont")]]
-#endif
+API_DEPRECATED("Use SvgFont")
 typedef SvgFont FontSvg;
 
 }

@@ -7,5 +7,5 @@ Rect::Rect(){
 
 }
 void Rect::draw_to_scale(const DrawingScaledAttr & attr){
-	attr.bitmap().draw_rectangle(attr.point(), attr.dim());
+	attr.bitmap().draw_rectangle(attr.point(), attr.area());
 }

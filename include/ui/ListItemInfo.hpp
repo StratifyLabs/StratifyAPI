@@ -9,9 +9,7 @@
 
 namespace ui {
 
-#if !defined __link
-[[deprecated("Use InfoListItem")]]
-#endif
+API_DEPRECATED("Use InfoListItem")
 typedef InfoListItem ListItemInfo;
 
 }

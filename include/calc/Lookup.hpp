@@ -35,7 +35,7 @@ namespace calc {
  *
  *
  */
-template<typename data_type>class Lookup : public api::CalcWorkObject {
+template<typename T>class Lookup : public api::CalcWorkObject {
 public:
 	/*! \details Constructs a lookup table object.
 	 *
@@ -43,7 +43,7 @@ public:
 	 * be in ascending order
 	 * @param size The number of x,y entries in the table
 	 */
-	Lookup(const data_type * table, int size){
+	Lookup(const T * table, int size){
 		m_table = table;
 		m_size = size;
 	}
@@ -53,11 +53,11 @@ public:
 	 * @param x Input value
 	 * @return y Value calculated using linear interpolation
 	 */
-	data_type calc_value(data_type x){
+	T calc_value(T x){
 		unsigned int p1, p2;
 		unsigned int i;
-		data_type delta_x, delta_y;
-		data_type output;
+		T delta_x, delta_y;
+		T output;
 
 		i = 0;
 		while( (x >= m_table[i+2]) && (i < (m_size-2)*2) ){
@@ -79,7 +79,7 @@ public:
 	}
 
 private:
-	const data_type * m_table;
+	const T * m_table;
 	unsigned int m_size;
 };
 

@@ -83,6 +83,10 @@ public:
 		return count();
 	}
 
+	T * search(const T & a){
+		return (T*)bsearch(&a, to_void(), count(), sizeof(T), ascending);
+	}
+
 
 	/*! \details Returns the number of elements that are
 	  * able to fit in the memory that is already allocated.
@@ -181,6 +185,28 @@ public:
 	void clear(){
 		//call the destructor on each item
 		m_count = 0;
+	}
+
+	static int ascending(const void * a, const void * b){
+		const T * object_a = (const T*)a;
+		const T * object_b = (const T*)b;
+		if( *object_a < *object_b ){ return -1; }
+		if( *object_b < *object_a ){ return 1; }
+		return 0;
+	}
+
+	static int descending(const void * a, const void * b){
+		const T * object_a = (const T*)a;
+		const T * object_b = (const T*)b;
+		if( *object_a < *object_b ){ return 1; }
+		if( *object_b < *object_a ){ return -1; }
+		return 0;
+	}
+
+	typedef int (*sort_compartor_t)(const void*, const void *);
+
+	void sort(sort_compartor_t compare_function){
+		qsort(to_void(), count(), sizeof(T), compare_function);
 	}
 
 	/*! \details Inserts an element at the specified position.
@@ -292,6 +318,7 @@ public:
 	}
 
 protected:
+
 
 
 	Vector<T> operate(const Vector<T> & a, T (*fn)(const T &, const T &)) const {

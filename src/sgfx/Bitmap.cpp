@@ -14,12 +14,12 @@ using namespace calc;
 
 Region Bitmap::get_viewable_region() const {
 	Point point(margin_left(), margin_top());
-	Dim dim(width() - margin_left() - margin_right(), height() - margin_top() - margin_bottom());
+	Area dim(width() - margin_left() - margin_right(), height() - margin_top() - margin_bottom());
 	Region region(point, dim);
 	return region;
 }
 
-void Bitmap::calculate_members(const Dim & dim){
+void Bitmap::calculate_members(const Area & dim){
 	api()->bmap_set_data(&m_bmap, to<sg_bmap_data_t>(), dim, m_bmap.bits_per_pixel);
 }
 
@@ -52,8 +52,8 @@ void Bitmap::initialize_members(){
 	} else {
 		m_bmap.bits_per_pixel = api()->bits_per_pixel;
 	}
-	m_bmap.margin_bottom_right.dim = 0;
-	m_bmap.margin_top_left.dim = 0;
+	m_bmap.margin_bottom_right.area = 0;
+	m_bmap.margin_top_left.area = 0;
 	m_bmap.pen.thickness = 1;
 	m_bmap.pen.o_flags = 0;
 	m_bmap.pen.color = 65535;
@@ -61,7 +61,7 @@ void Bitmap::initialize_members(){
 
 void Bitmap::set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly){
 	Data::set(mem, calc_size(w,h), readonly);
-	calculate_members(Dim(w,h));
+	calculate_members(Area(w,h));
 }
 
 void Bitmap::set_data(const sg_bmap_header_t * hdr, bool readonly){
@@ -69,12 +69,12 @@ void Bitmap::set_data(const sg_bmap_header_t * hdr, bool readonly){
 	ptr = (char*)hdr;
 	ptr += sizeof(sg_bmap_header_t);
 	Data::set(ptr, calc_size(hdr->width, hdr->height), readonly);
-	calculate_members(Dim(hdr->width, hdr->height));
+	calculate_members(Area(hdr->width, hdr->height));
 }
 
-int Bitmap::allocate(const Dim & dim){
+int Bitmap::allocate(const Area & dim){
 	if( Data::alloc( calculate_size(dim) ) < 0 ){
-		calculate_members(Dim());
+		calculate_members(Area());
 		return -1;
 	}
 	calculate_members(dim);
@@ -83,13 +83,13 @@ int Bitmap::allocate(const Dim & dim){
 
 void Bitmap::free(){
 	if( Data::free() == 0 ){
-		calculate_members(Dim());
+		calculate_members(Area());
 	}
 }
 
 Bitmap::Bitmap(){
 	initialize_members();
-	calculate_members(Dim());
+	calculate_members(Area());
 }
 
 Bitmap::Bitmap(sg_size_t w, sg_size_t h){
@@ -97,7 +97,7 @@ Bitmap::Bitmap(sg_size_t w, sg_size_t h){
 	alloc(w,h);
 }
 
-Bitmap::Bitmap(sg_dim_t d){
+Bitmap::Bitmap(sg_area_t d){
 	initialize_members();
 	alloc(d.width,d.height);
 }
@@ -180,22 +180,22 @@ int Bitmap::load(const var::ConstString & path){
 }
 
 
-Dim Bitmap::load_dim(const char * path){
+Area Bitmap::load_dim(const char * path){
 	sg_bmap_header_t hdr;
 	File f;
 	if( f.open(path, File::READONLY) < 0 ){
-		return Dim();
+		return Area();
 	}
 
 	if( f.read(&hdr, sizeof(hdr)) != sizeof(hdr) ){
-		return Dim();
+		return Area();
 	}
 
 	if( (hdr.version != api()->version) || (hdr.bits_per_pixel != api()->bits_per_pixel) ){
-		return Dim(0,0);
+		return Area(0,0);
 	}
 
-	return Dim(hdr.width, hdr.height);
+	return Area(hdr.width, hdr.height);
 }
 
 int Bitmap::save(const var::ConstString & path) const{
@@ -275,9 +275,9 @@ bool Bitmap::is_empty(const Region & region) const {
 	Cursor x_cursor;
 	Cursor y_cursor;
 	y_cursor.set(*this, region.point());
-	for(u32 h = 0; h < region.dim().height(); h++){
+	for(u32 h = 0; h < region.area().height(); h++){
 		x_cursor = y_cursor;
-		for(u32 w = 0; w < region.dim().width(); w++){
+		for(u32 w = 0; w < region.area().width(); w++){
 			//get pixel increments the cursor
 			if( x_cursor.get_pixel() != 0 ){
 				return false;
@@ -288,7 +288,7 @@ bool Bitmap::is_empty(const Region & region) const {
 	return true;
 }
 
-void Bitmap::downsample_bitmap(const Bitmap & source, const Dim & factor){
+void Bitmap::downsample_bitmap(const Bitmap & source, const Area & factor){
 	Cursor cursor_x, cursor_y;
 
 	if( factor.width() == 0 ){ return; }
@@ -312,7 +312,7 @@ void Bitmap::downsample_bitmap(const Bitmap & source, const Dim & factor){
 			sample.draw_sub_bitmap(Point(0,0), source, region);
 
 			u32 color = sample.calculate_color_sum();
-			if( color >= factor.area()/2 ){
+			if( color >= factor.calculate_area()/2 ){
 				set_pen_color(1);
 			} else {
 				set_pen_color(0);
@@ -354,19 +354,23 @@ void Bitmap::show() const{
 
 	api()->cursor_set(&y_cursor, bmap(), sg_point(0,0));
 
-	printf("\nshow bitmap %d x %d\n", bmap()->dim.width, bmap()->dim.height);
-	for(i=0; i < bmap()->dim.height; i++){
+	printf("\nshow bitmap %d x %d\n", bmap()->area.width, bmap()->area.height);
+	for(i=0; i < bmap()->area.height; i++){
 		sg_cursor_copy(&x_cursor, &y_cursor);
-		for(j=0; j < bmap()->dim.width; j++){
+		for(j=0; j < bmap()->area.width; j++){
 			color = api()->cursor_get_pixel(&x_cursor);
-			if( api()->bits_per_pixel > 8 ){
-				::printf("%04X", color);
-			} else if(api()->bits_per_pixel > 4){
-				::printf("%02X", color);
+			if( color ){
+				if( api()->bits_per_pixel > 8 ){
+					::printf("%04X", color);
+				} else if(api()->bits_per_pixel > 4){
+					::printf("%02X", color);
+				} else {
+					::printf("%X", color);
+				}
 			} else {
-				::printf("%X", color);
+				printf(".");
 			}
-			if( (j < bmap()->dim.width - 1) && (api()->bits_per_pixel > 4)){
+			if( (j < bmap()->area.width - 1) && (api()->bits_per_pixel > 4)){
 				::printf(" ");
 			}
 		}

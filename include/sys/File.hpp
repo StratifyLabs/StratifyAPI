@@ -442,9 +442,7 @@ public:
 	char * gets(var::String & s, char term = '\n') const;
 
 
-#ifndef __link
-	[[deprecated("Use gets(var::String & s) instead")]]
-#endif
+	API_DEPRECATED("Use gets(var::String & s) instead")
 	char * gets(char * s, int n, char term = '\n') const;
 
 #ifdef __link

@@ -4,8 +4,11 @@
 #define STRINGUTIL_HPP_
 
 #include <stdint.h>
+#include "../api/ApiObject.hpp"
 
 namespace var {
+
+class API_DEPRECATED_NO_REPLACEMENT StringUtil;
 
 class StringUtil {
 public:
@@ -26,9 +29,7 @@ public:
 
 	static int utoa_mode(enum StringUtil::mode mode, char dest[BUF_SIZE], uint32_t num, int width);
 
-	/*! \brief Converts a signed integer to a string (base 10 only) */
 	static int itoa(char dest[BUF_SIZE], int32_t num, int width = 0);
-	/*! \brief Converts an unsigned integer to a string (any base--most useful are of course 2, 8, 10 and 16) */
 	static int utoa(char dest[BUF_SIZE], uint32_t num, int base = 10, bool upper = true, int width = 0);
 #ifdef USE_FLOAT
 	static int ftoa(char dest[BUF_SIZE], float num, int width = 0);

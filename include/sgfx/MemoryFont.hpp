@@ -3,32 +3,19 @@
 #ifndef SGFX_MEMORYFONT_HPP_
 #define SGFX_MEMORYFONT_HPP_
 
-
 #include "Font.hpp"
 
 namespace sgfx {
 
-/*! \brief Monochrome Bitmap Font class (stored in flash memory)
- *
- */
+class API_DEPRECATED_NO_REPLACEMENT MemoryFont;
+
 class MemoryFont: public Font {
 public:
 
-	/*! \details Construct an object */
 	MemoryFont();
 
-	/*! \details Construct an object pointing to the font. */
 	MemoryFont(const void * ptr);
-
-	/*! \details Set the location of the font in memory
-	 *
-	 * @param ptr A pointer to the font (sg_font_header_t*)
-	 */
 	void set_font_memory(const void * ptr);
-
-	/*! \details Returns a pointer to the font (\sa set())
-	 *
-	 */
 	const void * font_memory() const { return m_font; }
 
 

@@ -61,7 +61,7 @@ public:
 
 	//void set_drawing_start(drawing_point_t v){ m_drawing_attr.start = v; }
 	//void set_drawing_start(drawing_int_t x, drawing_int_t y){ m_drawing_attr.start.x = x; m_drawing_attr.start.y = y; }
-	//void set_drawing_dim(drawing_dim_t v){ m_drawing_attr.dim = v; }
+	//void set_drawing_dim(drawing_area_t v){ m_drawing_attr.dim = v; }
 	//void set_drawing_dim(drawing_size_t w, drawing_size_t h){ m_drawing_attr.dim.width = w; m_drawing_attr.dim.height = h; }
 	/*! \details Sets the total amount of motion as a ratio to the drawing scale. */
 	void set_drawing_motion_total(drawing_size_t v){ m_drawing_motion_total = v; }
@@ -75,7 +75,7 @@ public:
 	/*! \details Accesses the animation start point (top-left corner). */
 	sg_point_t start() const { return m_attr.region.point; }
 	/*! \details Accesses the animation's dimension (width and height from top-left corner). */
-	sg_dim_t dim() const { return m_attr.region.dim; }
+	sg_area_t area() const { return m_attr.region.area; }
 	/*! \details Accesses the total motion (in pixels). */
 	sg_size_t motion_total() const { return m_attr.path.motion_total; }
 	/*! \details Accesses the motion total in a drawing scale. */

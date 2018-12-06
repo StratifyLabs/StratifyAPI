@@ -37,7 +37,7 @@ private:
 
 	sys::File & m_file;
 
-	var::Vector<sg_vector_path_icon_header_t> m_icons;
+	var::Vector<sg_vector_icon_header_t> m_icons;
 	var::Vector<sg_vector_path_description_t> m_current_icon;
 
 };

@@ -18,7 +18,7 @@ List::List(LinkedElement * parent) : LinkedElement(parent) {
 void List::draw_item_to_scale(const DrawingScaledAttr & attr, sg_size_t x_offset, list_attr_size_t item){
 	sg_point_t p1 = attr.point();
 	sg_point_t p2 = attr.point();
-	sg_dim_t d = attr.dim();
+	sg_area_t d = attr.area();
 	at(item).draw_to_scale(attr);
 	p1.x =- x_offset;
 	p2.x += d.width + x_offset;
@@ -31,7 +31,7 @@ void List::draw_item_to_scale(const DrawingScaledAttr & attr, sg_size_t x_offset
 void List::draw_to_scale(const DrawingScaledAttr & attr){
 	int i;
 	sg_point_t p = attr.point();
-	Dim d = attr.dim();
+	Area d = attr.area();
 	DrawingScaledAttr item_attr;
 	sg_size_t remainder;
 
@@ -39,7 +39,7 @@ void List::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_point_t top_left;
 	int display_items;
 	list_attr_size_t index_offset;
-	Dim item_d;
+	Area item_d;
 	sg_int_t x_offset;
 
 	//list item height

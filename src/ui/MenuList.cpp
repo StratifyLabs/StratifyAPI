@@ -6,12 +6,9 @@
 #include "ui/MenuList.hpp"
 using namespace ui;
 
-MenuList::MenuList(LinkedElement * parent) : List(parent), m_back(0, this){}
+MenuList::MenuList(LinkedElement * parent) : List(parent){}
 
 
-LinkedElement & MenuList::at(list_attr_size_t i){
-	return back();
-}
 
 list_attr_size_t MenuList::size() const {
 	return 1;

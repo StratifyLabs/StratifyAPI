@@ -23,12 +23,10 @@ public:
 	MenuList(ui::LinkedElement * parent = 0);
 
 	/*! \details Access the reference to the back entry */
-	ui::ListItemBack & back(){ return m_back; }
 	virtual ui::LinkedElement & at(ui::list_attr_size_t i);
 	virtual ui::list_attr_size_t size() const;
 
 private:
-	ui::ListItemBack m_back;
 
 };
 

@@ -32,8 +32,7 @@ namespace var {}
 #include "var/ConstString.hpp"
 #include "var/VersionString.hpp"
 #include "var/String.hpp"
-#include "var/StringUtil.hpp"
-#include "var/Token.hpp"
+#include "var/Tokenizer.hpp"
 #include "var/Vector.hpp"
 #include "var/Array.hpp"
 

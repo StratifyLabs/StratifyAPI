@@ -1,7 +1,8 @@
 
 set(SOURCES
-  ${SOURCES_PREFIX}/Bitmap.cpp
-  ${SOURCES_PREFIX}/Cursor.cpp
+	${SOURCES_PREFIX}/Area.cpp
+	${SOURCES_PREFIX}/Bitmap.cpp
+	${SOURCES_PREFIX}/Cursor.cpp
   ${SOURCES_PREFIX}/Font.cpp
 	${SOURCES_PREFIX}/FileFont.cpp
 	${SOURCES_PREFIX}/MemoryFont.cpp

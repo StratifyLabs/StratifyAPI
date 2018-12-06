@@ -134,7 +134,7 @@ var::String SocketAddress::address_to_string() const {
 }
 
 int SocketAddressIpv4::set_address(const var::ConstString & addr){
-	Token tokens(addr, ".");
+	Tokenizer tokens(addr, ".");
 	if( tokens.count() != 4 ){
 		return -1;
 	}

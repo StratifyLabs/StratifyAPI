@@ -123,7 +123,7 @@ int Cli::get_option_hex_value(const char * option) const {
 
 mcu_pin_t Cli::get_option_pin(const char * option) const {
 	mcu_pin_t pio;
-	Token arg;
+	Tokenizer arg;
 	arg.assign(get_option_argument(option));
 	arg.parse(".");
 
@@ -140,7 +140,7 @@ mcu_pin_t Cli::get_option_pin(const char * option) const {
 
 mcu_pin_t Cli::pin_at(u16 value) const {
 	mcu_pin_t pio;
-	Token arg;
+	Tokenizer arg;
 
 	arg.assign( at(value).c_str() );
 	arg.parse(".");

@@ -78,6 +78,7 @@ public:
 	var::String get_entry();
 
 	var::Vector<var::String> read_list();
+	static var::Vector<var::String> read_list(const var::ConstString & path);
 
 	/*! \details Returns a pointer (const) to the name of the most recently read entry. */
 	const char * name(){ return m_entry.d_name; }

@@ -73,7 +73,7 @@ Time Time::get_time_of_day(){
 	return Time(t);
 }
 
-void Time::set_time(u32 hour, u32 min, u32 sec){
+void Time::set_time(u32 sec, u32 min, u32 hour){
 	m_time = sec + min*60 + hour*3600;
 }
 

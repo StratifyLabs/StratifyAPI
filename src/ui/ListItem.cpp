@@ -9,17 +9,17 @@
 
 using namespace ui;
 
-ListItem::ListItem(const char * label, const sg_vector_icon_t * icon, LinkedElement * parent, LinkedElement * child) : LinkedElement(parent, child){
-	m_text_attr.assign(label);
-	icon_attr().set_attr(icon, Pen(), 0);
+ListItem::ListItem(const var::ConstString & label, LinkedElement * parent, LinkedElement * child) : LinkedElement(parent, child){
+	m_text_attr.string() = label;
 	set_animation_type(AnimationAttr::PUSH_LEFT);
 }
 
 
 void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
+#if defined LEGACY_ICON
 	sg_region_t bounds;
-	sg_dim_t icon_dim;
-	Dim d = attr.dim();
+	sg_area_t icon_dim;
+	Area d = attr.area();
 	sg_point_t p = attr.point();
 	char buffer[32];
 
@@ -29,7 +29,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 	Font * font;
 
 	//draw the label and the icon
-	Dim padded;
+	Area padded;
 	icon_height = d.height()/2;
 	Bitmap icon_bitmap(icon_height, icon_height);
 	icon_bitmap.set_pen(icon().pen());
@@ -46,7 +46,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 		icon_dim.dim = 0;
 	}
 
-	padded = Dim(d.width() - icon_dim.width, d.height()*80/100 );
+	padded = Area(d.width() - icon_dim.width, d.height()*80/100 );
 
 	if( m_text_attr.font_size() == 0 ){
 		height = padded.height();
@@ -90,6 +90,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttr & attr){
 	if( icon_dim.width > 0 ){
 		attr.bitmap().draw_bitmap(icon_point, icon_bitmap);
 	}
+#endif
 }
 
 
@@ -115,17 +116,21 @@ Element * ListItem::handle_event(const Event  & event, const DrawingAttr & attr)
 
 ListItemToggle::ListItemToggle(const char * label, LinkedElement * parent) :
 	ListItem(label, 0, parent){
+#if defined LEGACY_ICON
 	m_toggle_enabled_icon = 0;
 	m_toggle_disabled_icon = 0;
+#endif
 }
 
 void ListItemToggle::set_enabled(bool v){
 	ListItem::set_enabled(v);
+#if defined LEGACY_ICON
 	if( v ){
 		icon_attr().set_icon(m_toggle_enabled_icon);
 	} else {
 		icon_attr().set_icon(m_toggle_disabled_icon);
 	}
+#endif
 }
 
 
@@ -139,19 +144,6 @@ Element * ListItemToggle::handle_event(const Event  & event, const DrawingAttr &
 
 
 
-ListItemBack::ListItemBack(const sg_vector_icon_t * icon, LinkedElement * parent) : ListItem("Back", icon, parent){
-	icon_attr().set_rotation(IconAttr::LEFT);
-	if( parent ){
-		set_child(parent->parent());
-	}
-}
-
-
-
-ListItemExit::ListItemExit(const sg_vector_icon_t * icon, LinkedElement * parent) : ListItemBack(icon, parent){
-	text_attr().assign("Exit");
-	icon_attr().set_rotation(IconAttr::DOWN);
-}
 
 
 ListItemCheck::ListItemCheck(const char * label, List * parent) :
@@ -161,11 +153,10 @@ ListItemCheck::ListItemCheck(const char * label, List * parent) :
 
 
 DirList::DirList(const var::ConstString & path,
-					  const sg_vector_icon_t * icon,
 					  LinkedElement * parent,
 					  LinkedElement * child) :
 	List(parent),
-	m_item("TBD", icon, this, child) {
+	m_item("TBD", this, child) {
 	set_path(path);
 }
 
@@ -196,7 +187,7 @@ LinkedElement & DirList::at(list_attr_size_t i){
 		}
 	}
 
-	m_item.text_attr().assign(m_dir.name());
+	m_item.text_attr().string().assign(m_dir.name());
 
 	return m_item;
 }
@@ -219,7 +210,7 @@ void DirList::recount(void){
 		m_size = ret;
 	} else {
 		m_size = 1;
-		m_item.text_attr().assign("Empty");
+		m_item.text_attr().string().assign("Empty");
 	}
 }
 

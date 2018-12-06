@@ -13,7 +13,7 @@ ProgressTab::ProgressTab() {
 void ProgressTab::draw(const DrawingAttr & attr){
 	DrawingAttr da;
 	drawing_point_t p = attr.point();
-	drawing_dim_t d = attr.dim();
+	drawing_area_t d = attr.area();
 	Tab::calc_square(p, d);
 	da = attr;
 	da.set_point(p);

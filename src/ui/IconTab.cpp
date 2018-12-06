@@ -9,10 +9,10 @@ IconTab::IconTab(){}
 
 void IconTab::draw(const draw::DrawingAttr & attr){
 	drawing_point_t p;
-	drawing_dim_t d;
+	drawing_area_t d;
 	DrawingAttr icon_draw_attr;
 
-	d = attr.dim();
+	d = attr.area();
 	p = attr.point();
 	Tab::calc_square(p, d);
 

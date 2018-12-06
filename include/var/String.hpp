@@ -11,7 +11,6 @@
 #include <cstdio>
 
 #include "Data.hpp"
-#include "StringUtil.hpp"
 #include "ConstString.hpp"
 
 namespace var {

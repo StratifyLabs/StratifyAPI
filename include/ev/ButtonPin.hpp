@@ -8,9 +8,7 @@
 
 namespace ui {
 
-#if !defined __link
-[[deprecated("Use PinButton")]]
-#endif
+API_DEPRECATED("Use PinButton")
 typedef PinButton ButtonPin;
 
 }

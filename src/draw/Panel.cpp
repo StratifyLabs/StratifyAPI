@@ -13,6 +13,7 @@ Panel::Panel(){
 
 
 void Panel::draw_to_scale(const DrawingScaledAttr & attr){
+#if defined LEGACY_ICON
 	sg_vector_primitive_t objs[9];
 	sg_vector_icon_t icon;
 	VectorMap map;
@@ -57,5 +58,6 @@ void Panel::draw_to_scale(const DrawingScaledAttr & attr){
 	Vector::draw(attr.bitmap(), icon, map);
 
 	attr.bitmap().set_pen(p);
+#endif
 
 }

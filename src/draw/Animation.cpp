@@ -48,7 +48,7 @@ void Animation::init(Drawing * current,
 
 void Animation::reinit(){
 
-	sg_dim_t d;
+	sg_area_t d;
 	sg_point_t p;
 	drawing_size_t motion;
 

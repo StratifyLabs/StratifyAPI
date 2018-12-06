@@ -9,7 +9,7 @@ VersionString::VersionString(u8 major, u8 minor, u8 patch){
 
 
 u32 VersionString::to_bcd() const {
-	Token tokens(m_version, ".");
+	Tokenizer tokens(m_version, ".");
 	u32 result = 0;
 	u32 token_max = tokens.count() < 3 ? tokens.count() : 3;
 	for(u32 i = 0; i < token_max; i++){
@@ -19,8 +19,8 @@ u32 VersionString::to_bcd() const {
 }
 
 int VersionString::compare(const VersionString & a, const VersionString & b){
-	Token a_tokens(a.m_version, ".");
-	Token b_tokens(b.m_version, ".");
+	Tokenizer a_tokens(a.m_version, ".");
+	Tokenizer b_tokens(b.m_version, ".");
 
 	for(u32 i = 0; i < a_tokens.count(); i++){
 		if( b_tokens.count() > i ){

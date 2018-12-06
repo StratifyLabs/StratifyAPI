@@ -137,6 +137,14 @@ int Dir::count(){
 
 #endif
 
+var::Vector<var::String> Dir::read_list(const var::ConstString & path){
+	Dir directory;
+	var::Vector<var::String> result;
+	if( directory.open(path) < 0 ){ return result; }
+	result = directory.read_list();
+	directory.close();
+	return result;
+}
 
 var::Vector<var::String> Dir::read_list(){
 	var::Vector<var::String> result;

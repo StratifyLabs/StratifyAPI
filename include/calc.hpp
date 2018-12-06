@@ -10,7 +10,7 @@ namespace calc {}
 
 #include "calc/Base64.hpp"
 #include "calc/Checksum.hpp"
-#include "calc/Ema.hpp"
+#include "calc/Filter.hpp"
 #include "calc/Lookup.hpp"
 #include "calc/Pid.hpp"
 #include "calc/Rle.hpp"

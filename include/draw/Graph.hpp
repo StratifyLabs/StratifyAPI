@@ -102,7 +102,7 @@ public:
 	DataSet & y_data(){ return m_y_data; }
 
 protected:
-	sgfx::Point point_on_bitmap(sgfx::Bitmap * b, float x, float y, const sgfx::Dim & d);
+	sgfx::Point point_on_bitmap(sgfx::Bitmap * b, float x, float y, const sgfx::Area & d);
 
 private:
 	Axis m_x_axis;

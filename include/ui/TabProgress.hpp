@@ -10,19 +10,13 @@
 namespace ui {
 
 
-#if !defined __link
-[[deprecated("Use ProgressTab")]]
-#endif
+API_DEPRECATED("Use ProgressTab")
 typedef ProgressTab ProgressTab;
 
-#if !defined __link
-[[deprecated("Use ArcProgressTab")]]
-#endif
+API_DEPRECATED("Use ArcProgressTab")
 typedef ArcProgressTab TabProgressArc;
 
-#if !defined __link
-[[deprecated("Use CircleProgressTab")]]
-#endif
+API_DEPRECATED("Use CircleProgressTab")
 typedef CircleProgressTab TabProgressCircle;
 
 }

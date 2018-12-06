@@ -27,7 +27,7 @@ public:
 	Element * element(){ return m_element; }
 
 	/*! \details Calculate a square within the tab */
-	static void calc_square(draw::drawing_point_t & point, draw::drawing_dim_t & dim);
+	static void calc_square(draw::drawing_point_t & point, draw::drawing_area_t & dim);
 
 protected:
 

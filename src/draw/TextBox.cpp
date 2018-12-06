@@ -14,7 +14,7 @@ int TextBox::count_lines(sg_size_t w){
 }
 
 int TextBox::count_lines(const Font * font, sg_size_t w, const TextAttr & text_attr){
-	Token tokens(text_attr.text(), " ");
+	Tokenizer tokens(text_attr.string(), " ");
 	u32 i;
 	String line;
 	int len;
@@ -36,12 +36,12 @@ int TextBox::count_lines(const Font * font, sg_size_t w, const TextAttr & text_a
 
 
 void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
-	Token tokens(text(), " ");
+	Tokenizer tokens(string(), " ");
 	String line;
 	u32 i;
 	sg_size_t w;
 	sg_point_t p = attr.point();
-	sg_dim_t d = attr.dim();
+	sg_area_t d = attr.area();
 	sg_point_t start;
 
 	sg_int_t line_y;
@@ -106,7 +106,7 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 	} while( i < tokens.size() );
 }
 
-void TextBox::build_line(const Font * font, u32 & i, String & line, Token & tokens, int & build_len, sg_size_t w){
+void TextBox::build_line(const Font * font, u32 & i, String & line, Tokenizer & tokens, int & build_len, sg_size_t w){
 	int len;
 	int line_len;
 	u32 j;

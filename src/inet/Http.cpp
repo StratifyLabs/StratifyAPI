@@ -211,7 +211,7 @@ int HttpClient::listen_for_header(){
 
 			//printf("> %s", line.str());
 
-			var::Token line_tokens(line, ": \t\r\n");
+			var::Tokenizer line_tokens(line, ": \t\r\n");
 			var::String title = line_tokens.at(0);
 			var::String value;
 			if( line_tokens.count() > 1 ){

@@ -105,6 +105,9 @@
 #endif
 
 
+#define API_DEPRECATED(message) [[deprecated( message )]]
+#define API_DEPRECATED_NO_REPLACEMENT [[deprecated]]
+
 /*!
  * \brief Application Programming Interface
  *

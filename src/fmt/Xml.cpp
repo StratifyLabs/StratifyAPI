@@ -349,7 +349,7 @@ int Xml::write_element(const var::ConstString & name, const var::ConstString & d
 
 //find str in the current context and define a target context that defines str
 int Xml::find_context(const var::ConstString & str, const context_t & current, context_t & target) const{
-	Token tokens(str, ".");
+	Tokenizer tokens(str, ".");
 	String s0;
 	String s1;
 	seek(current.offset);
@@ -468,7 +468,7 @@ int Xml::find_target_tag(String & name, context_t & context, context_t & target)
 
 		if( name.is_empty() ){
 			load_start_tag(str, target);
-			Token t0(str.str(), "\t\r\n <>/", "\"'");
+			Tokenizer t0(str.str(), "\t\r\n <>/", "\"'");
 			if( t0.size() ){
 				name = t0.at(0);
 			} else {
@@ -517,7 +517,7 @@ int Xml::next_tag_name(
 		return -1;
 	}
 
-	Token t0(s0.str(), "\t\r\n <>/", "\"'");
+	Tokenizer t0(s0.str(), "\t\r\n <>/", "\"'");
 
 	//the name is t0.at(0)
 	if( t0.size() ){
@@ -716,9 +716,9 @@ int Xml::find_attribute(String & key, String & value, context_t & target) const{
 	}
 
 
-	Token t0(s0.str(), "\t\r\n <>/", "\"'");
+	Tokenizer t0(s0.str(), "\t\r\n <>/", "\"'");
 	for(i=0; i < t0.size(); i++){
-		Token t1(t0.at(i), "=");
+		Tokenizer t1(t0.at(i), "=");
 		if( key == t1.at(0) ){
 			value = t1.at(1);
 			return 0;

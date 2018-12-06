@@ -43,10 +43,10 @@ public:
 
 	static Time current_time();
 	static Time from_seconds(u32 value){ return Time(value); }
-	static Time from_minutes(u32 value){ return Time(value*60); }
-	static Time from_hours(u32 value){ return Time(value*60*60); }
-	static Time from_days(u32 value){ return Time(value*24*60*60); }
-	static Time from_weeks(u32 value){ return Time(value*24*60*60*7); }
+	static Time from_minutes(u32 value){ return Time(0, value, 0); }
+	static Time from_hours(u32 value){ return Time(0, 0, value); }
+	static Time from_days(u32 value){ return Time(0, 0, value*24); }
+	static Time from_weeks(u32 value){ return Time(0, 0, value*24*7); }
 
 	Time operator + (const Time & a ) const {
 		Time result;
@@ -104,7 +104,7 @@ public:
 	  * calendar time.
 	  *
 	  */
-	void set_time(u32 hour, u32 min, u32 sec);
+	void set_time(u32 sec, u32 min, u32 hour);
 
 	/*! \details Sets the current value.
 	  *

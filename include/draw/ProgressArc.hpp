@@ -7,9 +7,7 @@
 
 namespace draw {
 
-#if !defined __link
-[[deprecated("Use ArcProgress")]]
-#endif
+API_DEPRECATED("Use ArcProgress")
 typedef ArcProgress ProgressArc;
 
 }

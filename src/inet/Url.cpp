@@ -13,7 +13,7 @@ int Url::set(const var::ConstString & url){
 
 	if( url.is_empty() == false ){
 
-		var::Token url_tokens(url, "/");
+		var::Tokenizer url_tokens(url, "/");
 
 		// https://domain.name:port/path
 
@@ -29,7 +29,7 @@ int Url::set(const var::ConstString & url){
 			m_protocol = PROTOCOL_HTTP;
 		}
 
-		var::Token domain_name(url_tokens.at(1), ":");
+		var::Tokenizer domain_name(url_tokens.at(1), ":");
 
 		if( domain_name.count() > 1 ){
 			m_port = domain_name.at(1).atoi();

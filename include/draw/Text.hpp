@@ -18,10 +18,10 @@ namespace draw {
  * be invoked so that the application is aware of the system fonts.
  *
  */
-class Text : public Drawing, public TextAttr {
+class Text : public Drawing, public TextAttributes {
 public:
 	/*! \details Construct a label with text */
-	Text(const char * text = 0);
+	Text(const var::ConstString & text = "");
 
 	/*! \details Draw the scaled text as specified by \a attr */
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);

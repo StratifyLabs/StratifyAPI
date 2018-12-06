@@ -2,9 +2,71 @@
 
 #include <cstdio>
 #include <errno.h>
+#include "var/Token.hpp"
+#include "sys/File.hpp"
 #include "sgfx/Font.hpp"
 
 using namespace sgfx;
+
+FontInfo::FontInfo(u8 point_size, u8 style, const Font * font){
+	m_point_size = point_size;
+	m_style = style;
+	m_font = font;
+}
+
+FontInfo::FontInfo(const var::ConstString & path){
+	m_path = path;
+
+	var::Tokenizer tokens(sys::File::name(path), "-.");
+
+	if( tokens.count() != 4 ){
+		m_point_size = 0;
+		printf("Font name is not valid\n");
+	} else {
+
+		m_font = 0;
+		m_name = tokens.at(0);
+		m_point_size = tokens.at(2).to_integer();
+		var::String style = tokens.at(1);
+		style.to_lower();
+
+		m_style = ANY;
+		if( style == "t" ){ m_style = THIN; }
+		if( style == "ti" ){ m_style = THIN_ITALIC; }
+		if( style == "el" ){ m_style = EXTRA_LIGHT; }
+		if( style == "eli" ){ m_style = EXTRA_LIGHT_ITALIC; }
+		if( style == "l" ){ m_style = LIGHT; }
+		if( style == "li" ){ m_style = LIGHT_ITALIC; }
+		if( style == "r" ){ m_style = REGULAR; }
+		if( style == "ri" ){ m_style = REGULAR_ITALIC; }
+		if( style == "m" ){ m_style = MEDIUM; }
+		if( style == "mi" ){ m_style = MEDIUM_ITALIC; }
+		if( style == "sb" ){ m_style = SEMI_BOLD; }
+		if( style == "sbi" ){ m_style = SEMI_BOLD_ITALIC; }
+		if( style == "b" ){ m_style = BOLD; }
+		if( style == "bi" ){ m_style = BOLD_ITALIC; }
+		if( style == "eb" ){ m_style = EXTRA_BOLD; }
+		if( style == "ebi" ){ m_style = EXTRA_BOLD_ITALIC; }
+		printf("Font is %s %d %d\n", m_name.cstring(), m_point_size, m_style);
+	}
+}
+
+
+int FontInfo::ascending_point_size(const void * a, const void * b){
+	const FontInfo * info_a = (const FontInfo *)a;
+	const FontInfo * info_b = (const FontInfo *)b;
+	if( info_a->point_size() < info_b->point_size() ){ return -1; }
+	if( info_b->point_size() < info_a->point_size() ){ return 1; }
+	return 0;
+}
+
+int FontInfo::ascending_style(const void * a, const void * b){
+	const FontInfo * info_a = (const FontInfo *)a;
+	const FontInfo * info_b = (const FontInfo *)b;
+	if( info_a->style() < info_b->style() ){ return -1; }
+	if( info_b->style() < info_a->style() ){ return 1; }
+	return 0;
+}
 
 const var::ConstString Font::m_ascii_character_set = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 

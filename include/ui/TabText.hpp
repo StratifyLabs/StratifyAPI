@@ -9,9 +9,7 @@
 
 namespace ui {
 
-#if !defined __link
-[[deprecated("Use TextTab")]]
-#endif
+API_DEPRECATED("Use TextTab")
 typedef TextTab TabText;
 }
 

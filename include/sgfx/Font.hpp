@@ -8,9 +8,60 @@
 #include "../api/WorkObject.hpp"
 #include "Bitmap.hpp"
 #include "../api/SgfxObject.hpp"
-#include "../var/ConstString.hpp"
+#include "../var/String.hpp"
 
 namespace sgfx {
+
+class Font;
+
+class FontInfo : public api::SgfxInfoObject {
+public:
+
+	FontInfo(u8 point_size = 0, u8 style = 0, const Font * font = 0);
+	FontInfo(const var::ConstString & path);
+
+	bool is_valid() const { return m_point_size; }
+
+	enum style {
+		ANY,
+		THIN,
+		THIN_ITALIC,
+		EXTRA_LIGHT,
+		EXTRA_LIGHT_ITALIC,
+		LIGHT,
+		LIGHT_ITALIC,
+		REGULAR,
+		REGULAR_ITALIC,
+		MEDIUM,
+		MEDIUM_ITALIC,
+		SEMI_BOLD,
+		SEMI_BOLD_ITALIC,
+		BOLD,
+		BOLD_ITALIC,
+		EXTRA_BOLD,
+		EXTRA_BOLD_ITALIC
+	};
+
+	const var::ConstString & name() const { return m_name; }
+	const var::String & path() const { return m_path; }
+
+	u8 style() const { return m_style; }
+	u8 point_size() const { return m_point_size; }
+
+	const Font * font() const { return m_font; }
+	void set_font(const Font * font){ m_font = font; }
+
+	static int ascending_point_size(const void * a, const void * b);
+	static int ascending_style(const void * a, const void * b);
+
+private:
+	var::String m_name;
+	var::String m_path;
+	u8 m_style;
+	u8 m_point_size;
+	const Font * m_font;
+
+};
 
 /*! \brief Font class
  *

@@ -15,22 +15,26 @@ namespace draw {
  * information needed to draw text.  It allows
  * the text to be stored separate from the drawing object.
  */
-class TextAttr : public api::DrawInfoObject {
+class TextAttributes : public api::DrawInfoObject {
 public:
-	TextAttr() { set_font_size(0); m_font = 0; }
+	TextAttributes() {
+		set_font_size(0);
+		m_font = 0;
+		set_font_style(sgfx::FontInfo::REGULAR);
+	}
 
-	/*! \details Assign a value to the string */
-	void assign(const var::ConstString & str){ m_str.assign(str); }
+	/*! \details Gets a reference to the text string. */
+	var::String & string(){ return m_string; }
 
-	/*! \details Get a pointer to a const char of the string */
-	const char * text() const { return m_str.c_str(); }
+	/*! \details Gets a reference to the text string (read-only). */
+	const var::String & string() const { return m_string; }
 
-	/*! \details Get a pointer to the specified font */
+	/*! \details Gets a pointer to the current font. */
 	const sgfx::Font * font() const { return m_font; }
 
 	/*! \details Specify a font
 	 *
-	 * If no font is specified, the text will use sys::Assets::get_font() to
+	 * If no font is specified, the text will use sys::Assets::find_font() to
 	 * load a font that most closely matches font_size().  If font_size() is
 	 * zero, the text will get a font that most close matches the height
 	 * of the container without exceeding the container height.
@@ -43,30 +47,29 @@ public:
 	/*! \details Return the font size */
 	sg_size_t font_size() const { return m_font_size; }
 
-	/*! \details Direct access to object's String */
-	var::String & str(){ return m_str; }
-
-	/*! \details Set the font to bold (or not) */
-	void set_font_bold(bool v = true){ m_flags.set_value(FLAG_BOLD, v); }
+	/*! \details Sets the font style.
+	 *
+	 * @param style Should be a value from enum sgfx::FontInfo::style
+	 *
+	 *
+	 */
+	void set_font_style(u8 style){ m_font_style = style; }
 
 	/*! \details Returns whether font is bold or not */
-	bool font_bold() const { return m_flags.value(FLAG_BOLD); }
+	bool font_style() const { return m_font_style; }
 
 protected:
 	const sgfx::Font * resolve_font(sg_size_t h) const;
 
 private:
-	var::String m_str;
-	sg_size_t m_font_size;
+	var::String m_string;
 	sgfx::Font * m_font;
 
-	enum {
-		FLAG_BOLD,
-		FLAG_TOTAL
-	};
-
-	var::Flags m_flags;
+	sg_size_t m_font_size;
+	u8 m_font_style;
 };
+
+typedef TextAttributes TextAttr;
 
 }
 

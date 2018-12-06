@@ -13,7 +13,7 @@ namespace var {
 class DataInfo;
 class Data;
 class String;
-class Token;
+class Tokenizer;
 class JsonObject;
 class JsonArray;
 class JsonValue;
@@ -28,7 +28,7 @@ class Time;
 
 namespace sgfx{
 class Point;
-class Dim;
+class Area;
 class Region;
 class Bitmap;
 class Pen;
@@ -99,7 +99,7 @@ public:
 	Printer & operator << (const var::Data & a);
 	Printer & operator << (const var::DataInfo & a);
 	Printer & operator << (const var::String & a);
-	Printer & operator << (const var::Token & a);
+	Printer & operator << (const var::Tokenizer & a);
 	Printer & operator << (const var::JsonObject & a);
 	Printer & operator << (const var::JsonArray & a);
 	Printer & operator << (const var::Vector<var::String> & a);
@@ -112,7 +112,7 @@ public:
 	Printer & operator << (const sgfx::Cursor & a);
 	Printer & operator << (const sgfx::Point & a);
 	Printer & operator << (const sgfx::Region & a);
-	Printer & operator << (const sgfx::Dim & a);
+	Printer & operator << (const sgfx::Area & a);
 	Printer & operator << (const sgfx::Pen & a);
 	Printer & operator << (const sgfx::Vector & a);
 	Printer & operator << (const sgfx::VectorPath & a);

@@ -8,7 +8,7 @@
 #include "../sgfx/Font.hpp"
 
 namespace var {
-class Token;
+class Tokenizer;
 }
 
 namespace draw {
@@ -41,7 +41,7 @@ public:
 private:
 
 
-	static void build_line(const sgfx::Font * font, u32 & i, var::String & line, var::Token & tokens, int & build_len, sg_size_t w);
+	static void build_line(const sgfx::Font * font, u32 & i, var::String & line, var::Tokenizer & tokens, int & build_len, sg_size_t w);
 
 	sg_size_t m_scroll;
 	sg_size_t m_scroll_max;

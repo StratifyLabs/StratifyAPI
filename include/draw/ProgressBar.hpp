@@ -7,9 +7,7 @@
 
 namespace draw {
 
-#if !defined __link
-[[deprecated("Use BarProgress")]]
-#endif
+API_DEPRECATED("Use BarProgress")
 typedef BarProgress ProgressBar;
 
 }

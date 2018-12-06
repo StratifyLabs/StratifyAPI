@@ -7,9 +7,7 @@
 
 namespace draw {
 
-#if !defined __link
-[[deprecated("Use CircleProgress")]]
-#endif
+API_DEPRECATED("Use CircleProgress")
 typedef CircleProgress ProgressCircle;
 
 }

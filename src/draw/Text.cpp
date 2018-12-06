@@ -5,19 +5,19 @@
 using namespace draw;
 
 
-Text::Text(const char * text){
-	assign(text);
+Text::Text(const var::ConstString & text){
+	string() = text;
 }
 
 void Text::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_point_t top_left;
 	int len;
 	int h;
-	Dim d = attr.dim();
+	Area d = attr.area();
 	sg_point_t p = attr.point();
 	const Font * font;
 
-	if( text() ){
+	if( !string().is_empty() ){
 
 		font = resolve_font(d.height());
 
@@ -25,7 +25,7 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 			return;
 		}
 		h = font->get_height();
-		len = font->calc_len(text());
+		len = font->calculate_length(string());
 		top_left.y = p.y;
 		if( is_align_left() ){
 			top_left.x = p.x;
@@ -48,7 +48,7 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 		}
 
 
-		font->draw(text(), attr.bitmap(), top_left);
+		font->draw(string(), attr.bitmap(), top_left);
 
 	}
 

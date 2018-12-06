@@ -10,6 +10,7 @@ CircleProgress::CircleProgress(){}
 void CircleProgress::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
 	sgfx::VectorMap map;
+#if defined LEGACY_ICON
 
 	sg_vector_icon_t icon;
 
@@ -34,5 +35,6 @@ void CircleProgress::draw_to_scale(const DrawingScaledAttr & attr){
 	icon.fill_total = 0;
 
 	Vector::draw(attr.bitmap(), icon, map);
+#endif
 
 }

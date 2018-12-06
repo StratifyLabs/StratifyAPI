@@ -6,17 +6,7 @@ using namespace draw;
 
 
 const Font * TextAttr::resolve_font(sg_size_t h) const{
-	const Font * ret;
-	sg_size_t font_height;
-	if( font() == 0 ){
-		if( font_size() == 0 ){
-			font_height = h;
-		} else {
-			font_height = font_size();
-		}
-		ret = sys::Assets::get_font(font_height, font_bold());
-	} else {
-		ret = font();
-	}
-	return ret;
+	const FontInfo * info = sys::Assets::find_font(h, m_font_style);
+	if( info ){ return info->font(); }
+	return 0;
 }

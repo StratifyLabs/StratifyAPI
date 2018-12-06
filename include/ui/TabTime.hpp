@@ -9,9 +9,7 @@
 
 namespace ui {
 
-#if !defined __link
-[[deprecated("Use TimeTab")]]
-#endif
+API_DEPRECATED("Use TimeTab")
 typedef TimeTab TabTime;
 
 }

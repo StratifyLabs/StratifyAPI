@@ -9,9 +9,7 @@
 
 namespace ui {
 
-#if !defined __link
-[[deprecated("Use LinkedElement")]]
-#endif
+API_DEPRECATED("Use LinkedElement")
 typedef LinkedElement ElementLinked;
 
 }

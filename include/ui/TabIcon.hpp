@@ -9,9 +9,7 @@
 
 namespace ui {
 
-#if !defined __link
-[[deprecated("Use IconTab")]]
-#endif
+API_DEPRECATED("Use IconTab")
 typedef IconTab TabIcon;
 
 }

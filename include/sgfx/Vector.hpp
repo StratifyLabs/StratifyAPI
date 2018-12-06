@@ -170,34 +170,9 @@ public:
 	 * @param map The map describing how the icon will be mapped to the bitmap
 	 * @param bounds A pointer to the bounds if needed (otherwise null)
 	 */
-	static void draw(Bitmap & bitmap, const sg_vector_icon_t & icon, const sg_vector_map_t & map, sg_region_t * bounds = 0);
 
 
 	static void draw(Bitmap & bitmap, VectorPath & path, const VectorMap & map);
-
-
-	static sg_vector_primitive_t fill(const Point & p);
-	static sg_vector_primitive_t fill(sg_int_t x, sg_int_t y){
-		return fill(Point(x,y));
-	}
-
-	static sg_vector_primitive_t line(const Point & p1, const Point & p2);
-	static sg_vector_primitive_t line(sg_int_t x1, sg_int_t y1, sg_int_t x2, sg_int_t y2){
-		return line(sg_point(x1, y1), sg_point(x2, y2));
-	}
-
-	static sg_vector_primitive_t circle(const Point & p, sg_size_t r);
-	static sg_vector_primitive_t circle(sg_int_t x, sg_int_t y, sg_size_t r){
-		return circle(Point(x,y), r);
-	}
-
-	static sg_vector_primitive_t arc(const Point & p, sg_size_t rx, sg_size_t ry, s16 start, s16 stop, s16 rotation = 0);
-	static sg_vector_primitive_t arc(sg_int_t x, sg_int_t y, sg_size_t rx, sg_size_t ry, s16 start, s16 stop, s16 rotation = 0){
-		return arc(sg_point(x,y), rx, ry, start, stop, rotation);
-	}
-
-	static sg_vector_primitive_t quadratic_bezier(const Point & p1, const Point & p2, const Point & p3);
-	static sg_vector_primitive_t cubic_bezier(const Point & p1, const Point & p2, const Point & p3, const Point & p4);
 
 	//need to add arc
 	static sg_vector_path_description_t get_path_move(const Point & p);
@@ -208,9 +183,6 @@ public:
 	static sg_vector_path_description_t get_path_close();
 
 	static Region find_active_region(const Bitmap & bitmap);
-
-	static void show(const sg_vector_primitive_t & mg);
-	static void show(const sg_vector_icon_t & icon);
 
 
 private:

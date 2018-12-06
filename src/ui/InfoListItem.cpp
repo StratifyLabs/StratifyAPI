@@ -7,32 +7,32 @@
 
 using namespace ui;
 
-InfoListItem::InfoListItem(LinkedElement * parent) : ListItem("Label", 0, parent, 0) {
+InfoListItem::InfoListItem(LinkedElement * parent) : ListItem("Label", parent, 0) {
 	// TODO Auto-generated constructor stub
 	set(0,0);
 }
 
-InfoListItem::InfoListItem(const char * l, const char * v, LinkedElement * parent) : ListItem(l, 0, parent, 0) {
+InfoListItem::InfoListItem(const char * l, const char * v, LinkedElement * parent) : ListItem(l, parent, 0) {
 	// TODO Auto-generated constructor stub
 	set(l,v);
 }
 
 void InfoListItem::set(const char * l, const char * v){
-	label().assign(l);
-	value().assign(v);
+	label().string().assign(l);
+	value().string().assign(v);
 }
 
 
 void InfoListItem::draw_to_scale(const DrawingScaledAttr & attr){
 	int height;
 	sg_size_t len;
-	sg_dim_t d = attr.dim();
+	sg_area_t d = attr.area();
 	sg_point_t p = attr.point();
 	Font * font;
 
 	//draw the label and the icon
-	Dim padded;
-	padded = Dim(d.width, d.height);
+	Area padded;
+	padded = Area(d.width, d.height);
 
 	if( label().font_size() == 0 ){
 		height = padded.height();
@@ -40,7 +40,7 @@ void InfoListItem::draw_to_scale(const DrawingScaledAttr & attr){
 		height = label().font_size();
 	}
 
-	font = sys::Assets::get_font(height, label().font_bold());
+	font = 0;
 	if( font ){
 		height = font->get_height();
 
@@ -52,12 +52,12 @@ void InfoListItem::draw_to_scale(const DrawingScaledAttr & attr){
 			p.y = p.y + d.height/2 - height/2;
 		}
 
-		font->draw(label().text(), attr.bitmap(), p);
+		font->draw(label().string(), attr.bitmap(), p);
 
 		//draw the value on the right side
-		len = font->calc_len(value().text());
+		len = font->calc_len(value().string());
 		p.x = p.x + d.width - len - d.width/40;
-		font->draw(value().text(), attr.bitmap(), p);
+		font->draw(value().string(), attr.bitmap(), p);
 	}
 }
 

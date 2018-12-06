@@ -7,9 +7,7 @@
 
 namespace sgfx {
 
-#if !defined __link
-[[deprecated("Use FileFont")]]
-#endif
+API_DEPRECATED("Use FileFont")
 typedef FileFont FontFile;
 
 }

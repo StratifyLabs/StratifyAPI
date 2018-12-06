@@ -3,7 +3,7 @@
 
 #include <cstdio>
 #include <cstring>
-#include "var/Token.hpp"
+#include "var/Tokenizer.hpp"
 using namespace var;
 
 Tokenizer::Tokenizer(){

@@ -11,7 +11,7 @@ int Svic::parse_icons(){
 
 	int cursor = file().seek(0, sys::File::CURRENT);
 
-	sg_vector_path_icon_header_t header;
+	sg_vector_icon_header_t header;
 	while( file().read(&header, sizeof(header)) == sizeof(header) ){
 		if( m_icons.push_back(header) < 0 ){
 			set_error_number(m_icons.error_number());
@@ -54,7 +54,7 @@ sgfx::VectorPath Svic::at(u32 i){
 }
 
 int Svic::append(const var::ConstString & name, const var::Vector<sg_vector_path_description_t> & list){
-	sg_vector_path_icon_header_t header;
+	sg_vector_icon_header_t header;
 	var::Data list_data;
 	memset(&header, 0, sizeof(header));
 	strncpy(header.name, name.cstring(), 23);
@@ -65,7 +65,7 @@ int Svic::append(const var::ConstString & name, const var::Vector<sg_vector_path
 		return -1;
 	}
 	list_data.refer_to((void*)list.to_void(), list.size(), true);
-	if( file().write(list_data) != list.size() ){
+	if( file().write(list_data) != (int)list.size() ){
 		set_error_number( file().error_number() );
 		return -1;
 	}

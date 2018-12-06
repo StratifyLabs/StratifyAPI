@@ -25,11 +25,11 @@ typedef struct MCU_PACK {
 typedef struct MCU_PACK {
 	drawing_size_t width /*! Width of the object */;
 	drawing_size_t height /*! Height of the object */;
-} drawing_dim_t;
+} drawing_area_t;
 
 typedef struct MCU_PACK {
 	drawing_point_t point /*! Point in the region */;
-	drawing_dim_t dim /*! Height of the object */;
+	drawing_area_t area /*! Height of the object */;
 } drawing_region_t;
 
 
@@ -38,8 +38,8 @@ typedef struct MCU_PACK {
  * \details This data structure holds a real bitmap but the point
  * and dimensions haven't been mapped to the bitmap.
  * The point \a p and dimension \a d are both in a universal coordinate
- * system from 0 to draw::DrawingAttr::scale().  For example
- * if draw::DrawingAttr::scale() is 1000 and p.x and p.y both are equal to 500,
+ * system from 0 to draw::DrawingAttributes::scale().  For example
+ * if draw::DrawingAttributes::scale() is 1000 and p.x and p.y both are equal to 500,
  * the top left corner of any item drawn using these attibutes will be
  * in the center of the target bitmap (regardless of the target bitmap's
  * size).
@@ -61,13 +61,13 @@ typedef struct MCU_PACK {
 /*! \details This returns a drawing_point_t populated with x and y */
 drawing_point_t drawing_point(drawing_int_t x, drawing_int_t y);
 
-/*! \details This returns a drawing_dim_t populated with the width and height.
+/*! \details This returns a drawing_area_t populated with the width and height.
  *
  * @param w Width of the returned data
  * @param h Height of the retured data
- * @return A drawing_dim_t with w and h populated as specified
+ * @return A drawing_area_t with w and h populated as specified
  */
-drawing_dim_t drawing_dim(drawing_size_t w, drawing_size_t h);
+drawing_area_t drawing_dim(drawing_size_t w, drawing_size_t h);
 
 /*! \brief Drawing Attribute Class
  * \details This class contains the information needed to draw various
@@ -77,20 +77,20 @@ drawing_dim_t drawing_dim(drawing_size_t w, drawing_size_t h);
  *
  *
  */
-class DrawingAttr : public api::DrawInfoObject {
+class DrawingAttributes : public api::DrawInfoObject {
 public:
 
 	/*! \details Construct an object */
-	DrawingAttr();
+	DrawingAttributes();
 
 	/*! \details Construct an object from a drawing_attr_t */
-	DrawingAttr(const drawing_attr_t & attr);
+	DrawingAttributes(const drawing_attr_t & attr);
 
 	/*! \details Return the underlying drawing_attr_t */
 	operator drawing_attr_t (){ return m_attr; }
 
 	/*! \details Assign the bitmap point and dimensions */
-	void set(sgfx::Bitmap & b, drawing_point_t p, drawing_dim_t d, sgfx::Bitmap * scratch = 0);
+	void set(sgfx::Bitmap & b, drawing_point_t p, drawing_area_t d, sgfx::Bitmap * scratch = 0);
 
 	/*! \details Set the bitmap */
 	void set_bitmap(sgfx::Bitmap & b){ m_attr.bitmap = &b; }
@@ -99,10 +99,10 @@ public:
 	void set_scratch(sgfx::Bitmap * b){ m_attr.scratch = b; }
 
 	/*! \details Set the dimensions.  Both width and height are from 0 to 1000. */
-	void set_dim(drawing_dim_t d){ m_attr.region.dim = d; }
+	void set_dim(drawing_area_t d){ m_attr.region.area = d; }
 
 	/*! \details Set the dimensions.  Both width and height are from 0 to 1000. */
-	void set_dim(drawing_size_t w, drawing_size_t h){ m_attr.region.dim.width = w; m_attr.region.dim.height = h; }
+	void set_dim(drawing_size_t w, drawing_size_t h){ m_attr.region.area.width = w; m_attr.region.area.height = h; }
 
 	/*! \details Set the location.  Both x and y are from 0 to 1000. */
 	void set_point(drawing_point_t p){ m_attr.region.point = p; }
@@ -111,9 +111,9 @@ public:
 	void set_point(drawing_int_t x, drawing_int_t y){ m_attr.region.point.x = x; m_attr.region.point.y = y; }
 
 	/*! \details Return the width */
-	drawing_size_t width() const { return m_attr.region.dim.width; }
+	drawing_size_t width() const { return m_attr.region.area.width; }
 	/*! \details Return the height */
-	drawing_size_t height() const { return m_attr.region.dim.height; }
+	drawing_size_t height() const { return m_attr.region.area.height; }
 	/*! \details Return the x value */
 	drawing_int_t x() const { return m_attr.region.point.x; }
 	/*! \details Return the y value */
@@ -136,19 +136,19 @@ public:
 	/*! \details Returns a copy of the position. */
 	drawing_point_t point() const { return m_attr.region.point; }
 	/*! \details Returns a copy of the dimensions. */
-	drawing_dim_t dim() const { return m_attr.region.dim; }
+	drawing_area_t area() const { return m_attr.region.area; }
 
 	/*! \details Access the underlying attr object */
 	drawing_attr_t & attr(){ return m_attr; }
 
-	/*! \details Calculate the scaled height relative to the height of the DrawingAttr object.
+	/*! \details Calculate the scaled height relative to the height of the DrawingAttributes object.
 	 *
 	 * @param v The value to calculate
 	 *
 	 * This method will calculate a height relative to the heigh of the object
 	 * and the scale() value.  For example, if the current object maps to a region of
 	 * a bitmap height of 500 pixels, this method will return a drawing height that will
-	 * be from 0 to 500 pixels with \a v being from 0 to DrawingAttr::scale().
+	 * be from 0 to 500 pixels with \a v being from 0 to DrawingAttributes::scale().
 	 *
 	 */
 	drawing_size_t calc_height(drawing_size_t v) const;
@@ -159,12 +159,12 @@ public:
 	/*! \details Add a drawing_point_t offset
 	 *
 	 * This operated can be used to create a subregion within the object
-	 * when used with operation+ (drawing_dim_t).
+	 * when used with operation+ (drawing_area_t).
 	 *
 	 * For example:
 	 * \code
-	 * DrawingAttr attr0;
-	 * DrawingAttr attr1;
+	 * DrawingAttributes attr0;
+	 * DrawingAttributes attr1;
 	 * attr0 = attr1 + drawing_point(250,250) + drawing_dim(500,500);
 	 * \endcode
 	 *
@@ -175,7 +175,7 @@ public:
 	 * example draws a rectangles recursively in an object.
 	 *
 	 * \code
-	 * void draw_rect_recursive(const DrawingAttr & attr){
+	 * void draw_rect_recursive(const DrawingAttributes & attr){
 	 *  Rect rect;
 	 *  attr.bitmap().set_pen_flags(Pen::FLAG_IS_INVERT);
 	 *  rect.draw(attr + drawing_point(250,250) + drawing_dim(500,500);
@@ -186,16 +186,16 @@ public:
 	 * \endcode
 	 *
 	 */
-	DrawingAttr operator+ (drawing_point_t d) const;
+	DrawingAttributes operator+ (drawing_point_t d) const;
 	/*! \details Update the dimension (must come after adding drawing_point_t) */
-	DrawingAttr operator+ (drawing_dim_t d) const;
+	DrawingAttributes operator+ (drawing_area_t d) const;
 
 	/*! \details Calculate dimensions that will map to the bitmap as a square.
 	 *
 	 * @param v The maximum width or height
 	 * @return Square dimensions
 	 */
-	drawing_dim_t calc_square(drawing_size_t v) const;
+	drawing_area_t calc_square(drawing_size_t v) const;
 
 	/*! \details Calculate dimensions that will map to the bitmap as a square
 	 * with the given width.
@@ -203,8 +203,8 @@ public:
 	 * @param v The width (height will be calculated)
 	 * @return Square dimensions
 	 */
-	drawing_dim_t calc_square_width(drawing_size_t v) const;
-	drawing_dim_t calc_square_w(drawing_size_t v) const  { return calc_square_width(v); }
+	drawing_area_t calc_square_width(drawing_size_t v) const;
+	drawing_area_t calc_square_w(drawing_size_t v) const  { return calc_square_width(v); }
 
 	/*! \details Calculate dimensions that will map to the bitmap as a square
 	 * with the given height.
@@ -212,19 +212,19 @@ public:
 	 * @param v The height (width will be calculated)
 	 * @return Square dimensions
 	 */
-	drawing_dim_t calc_square_height(drawing_size_t v) const;
-	drawing_dim_t calc_square_h(drawing_size_t v) const { return calc_square_height(v); }
+	drawing_area_t calc_square_height(drawing_size_t v) const;
+	drawing_area_t calc_square_h(drawing_size_t v) const { return calc_square_height(v); }
 
 	/*! \details Return the dimensions (in pixels) if any Element is drawn on the specified bitmap */
-	static sg_dim_t calc_dim_on_bitmap(const DrawingAttr & attr);
-	static sg_size_t calc_height_on_bitmap(const DrawingAttr & attr);
-	static sg_size_t calc_height_on_bitmap(const DrawingAttr & attr, drawing_size_t value);
-	static sg_size_t calc_width_on_bitmap(const DrawingAttr & attr);
-	static sg_size_t calc_width_on_bitmap(const DrawingAttr & attr, drawing_size_t value);
-	static sg_point_t calc_point_on_bitmap(const DrawingAttr & attr);
-	static sg_region_t calc_region_on_bitmap(const DrawingAttr & attr);
+	static sg_area_t calc_dim_on_bitmap(const DrawingAttributes & attr);
+	static sg_size_t calc_height_on_bitmap(const DrawingAttributes & attr);
+	static sg_size_t calc_height_on_bitmap(const DrawingAttributes & attr, drawing_size_t value);
+	static sg_size_t calc_width_on_bitmap(const DrawingAttributes & attr);
+	static sg_size_t calc_width_on_bitmap(const DrawingAttributes & attr, drawing_size_t value);
+	static sg_point_t calc_point_on_bitmap(const DrawingAttributes & attr);
+	static sg_region_t calc_region_on_bitmap(const DrawingAttributes & attr);
 
-	sg_dim_t calc_dim_on_bitmap() const { return calc_dim_on_bitmap(*this); }
+	sg_area_t calc_dim_on_bitmap() const { return calc_dim_on_bitmap(*this); }
 	sg_size_t calc_height_on_bitmap() const { return calc_height_on_bitmap(*this); }
 	sg_size_t calc_height_on_bitmap(drawing_size_t value) const { return calc_height_on_bitmap(*this, value); }
 	sg_size_t calc_width_on_bitmap() const { return calc_width_on_bitmap(*this); }
@@ -246,36 +246,38 @@ private:
 	drawing_attr_t m_attr;
 };
 
+typedef DrawingAttributes DrawingAttr;
+
 /*! \brief Scaled Drawing Attributes
  * \details This is similar to draw::DrawingAttr but the point
  * and dimensions have been scaled to fit in the target bitmap.
  */
-class DrawingScaledAttr : public api::DrawInfoObject {
+class DrawingScaledAttributes : public api::DrawInfoObject {
 public:
 
-	DrawingScaledAttr(){}
-	DrawingScaledAttr(const DrawingAttr & attr){
+	DrawingScaledAttributes(){}
+	DrawingScaledAttributes(const DrawingAttributes & attr){
 		set(attr.bitmap(), attr.calc_point_on_bitmap(), attr.calc_dim_on_bitmap());
 	}
 
 	operator drawing_scaled_attr_t (){ return m_attr; }
 
-	void set(sgfx::Bitmap & b, sg_point_t p, sg_dim_t d);
+	void set(sgfx::Bitmap & b, sg_point_t p, sg_area_t d);
 
 	/*! \details Assign a value to the bitmap pointer using a reference */
 	void set_bitmap(sgfx::Bitmap & b){ m_attr.bitmap = &b; }
 	/*! \details Assign dimensions */
-	void set_dim(sg_dim_t d){ m_attr.region.dim = d; }
+	void set_dim(sg_area_t d){ m_attr.region.area = d; }
 	/*! \details Set the height of the object */
-	void set_height(sg_size_t h){ m_attr.region.dim.height = h; }
+	void set_height(sg_size_t h){ m_attr.region.area.height = h; }
 	/*! \details Set the width of the object */
-	void set_width(sg_size_t w){ m_attr.region.dim.height = w; }
+	void set_width(sg_size_t w){ m_attr.region.area.height = w; }
 	/*! \details Set the x value of the object */
 	void set_x(sg_int_t x){ m_attr.region.point.x = x; }
 	/*! \details Set the y value of the object */
 	void set_y(sg_int_t y){ m_attr.region.point.y = y; }
 	/*! \details Assign dimensions using width and height parameters */
-	void set_dim(sg_size_t w, sg_size_t h){ m_attr.region.dim.width = w; m_attr.region.dim.height = h; }
+	void set_dim(sg_size_t w, sg_size_t h){ m_attr.region.area.width = w; m_attr.region.area.height = h; }
 
 	/*! \details Assign the position */
 	void set_point(sg_point_t p){ m_attr.region.point = p; }
@@ -284,22 +286,22 @@ public:
 
 	sg_region_t region() const { return m_attr.region; }
 	sg_point_t point() const { return m_attr.region.point; }
-	sg_dim_t dim() const { return m_attr.region.dim; }
+	sg_area_t area() const { return m_attr.region.area; }
 	drawing_scaled_attr_t & attr(){ return m_attr; }
 
 	/*! \details Return the width */
-	sg_size_t width() const { return m_attr.region.dim.width; }
+	sg_size_t width() const { return m_attr.region.area.width; }
 	/*! \details Return the height */
-	sg_size_t height() const { return m_attr.region.dim.height; }
+	sg_size_t height() const { return m_attr.region.area.height; }
 	/*! \details Return the x value */
 	sg_int_t x() const { return m_attr.region.point.x; }
 	/*! \details Return the y value */
 	sg_int_t y() const { return m_attr.region.point.y; }
 
 	/*! \details Add an sg_point_t */
-	DrawingScaledAttr operator+ (sg_point_t d) const;
-	/*! \details Add an sg_dim_t */
-	DrawingScaledAttr operator+ (sg_dim_t d) const;
+	DrawingScaledAttributes operator+ (sg_point_t d) const;
+	/*! \details Add an sg_area_t */
+	DrawingScaledAttributes operator+ (sg_area_t d) const;
 
 	/*! \details Calculate a width value
 	 *
@@ -314,6 +316,9 @@ private:
 	drawing_scaled_attr_t m_attr;
 };
 
+typedef DrawingScaledAttributes DrawingScaledAttr;
+
+
 
 /*! \brief Drawing Class
  * \details This is the base class for creating drawings.  A Drawing class
@@ -322,13 +327,13 @@ private:
  * \code
  *	void MyObject::draw(const DrawingAttr::attr){
  *		Icon my_icon;
- *		drawing_dim_t square;
+ *		drawing_area_t square;
  *
  *		square = attr.square_w(500);
  *
  *		//this will draw my icon centered in the bitmap specified by attr
  *		//adding drawing_point(250, 250) offset the icon by 25% of the bitmap in both x and y
- *		//adding a drawing_dim_t will then scale icon to fit in a square that is half the width of the bitmap (see square_width())
+ *		//adding a drawing_area_t will then scale icon to fit in a square that is half the width of the bitmap (see square_width())
  *		//draw will call the underlying draw_to_scale() method unless Icon re-implements draw
  *		my_icon.draw(attr + drawing_point(250, 250) + square);
  *
@@ -344,11 +349,11 @@ public:
 
 
 
-	static sg_size_t width(sg_size_t scale, sg_dim_t d);
-	static sg_size_t height(sg_size_t scale, sg_dim_t d);
+	static sg_size_t width(sg_size_t scale, sg_area_t d);
+	static sg_size_t height(sg_size_t scale, sg_area_t d);
 
-	static sg_size_t w(sg_size_t scale, sg_dim_t d){ return width(scale, d); }
-	static sg_size_t h(sg_size_t scale, sg_dim_t d){ return height(scale, d); }
+	static sg_size_t w(sg_size_t scale, sg_area_t d){ return width(scale, d); }
+	static sg_size_t h(sg_size_t scale, sg_area_t d){ return height(scale, d); }
 
 	/*! \details This method draws the object using the specified drawing attributes.
 	 *
@@ -356,8 +361,8 @@ public:
 	 * The dimensions and position are scaled to fit on the bitmap.
 	 *
 	 */
-	virtual void draw(const DrawingAttr & attr);
-	virtual void draw_scratch(const DrawingAttr & attr);
+	virtual void draw(const DrawingAttributes & attr);
+	virtual void draw_scratch(const DrawingAttributes & attr);
 	void draw(sgfx::Bitmap & b, drawing_int_t x, drawing_int_t y, drawing_size_t w, drawing_size_t h);
 
 	/*! \details This method will set the pixels in the area of the bitmap
@@ -366,10 +371,10 @@ public:
 	 * @param attr Specifies the bitmap and area
 	 * @param color Specifies the fill pattern
 	 */
-	static void set(const DrawingAttr & attr, sg_color_t color = 0xffff);
+	static void set(const DrawingAttributes & attr, sg_color_t color = 0xffff);
 
-	static void draw_pattern(const DrawingAttr & attr, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height);
-	static void draw_checkerboard(const DrawingAttr & attr, sg_size_t pattern_height = 1);
+	static void draw_pattern(const DrawingAttributes & attr, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height);
+	static void draw_checkerboard(const DrawingAttributes & attr, sg_size_t pattern_height = 1);
 
 	/*! \details This method will clear the pixels in the area of the bitmap
 	 * specified.
@@ -377,7 +382,7 @@ public:
 	 * @param attr Specifies the bitmap and area
 	 * @param v Specifies the fill pattern
 	 */
-	static void clear(const DrawingAttr & attr, sg_bmap_data_t v = 0xFF);
+	static void clear(const DrawingAttributes & attr, sg_bmap_data_t v = 0xFF);
 
 	/*! \details This method will invert the pixels in the area of the bitmap
 	 * specified.
@@ -385,7 +390,7 @@ public:
 	 * @param attr Specifies the bitmap and area
 	 * @param v Specifies the fill pattern
 	 */
-	static void invert(const DrawingAttr & attr, sg_bmap_data_t v = 0xFF);
+	static void invert(const DrawingAttributes & attr, sg_bmap_data_t v = 0xFF);
 
 	/*! \brief Sets the scale value (see Element::scale() for details). */
 	static void set_scale(drawing_size_t s){ m_scale = s; }
@@ -438,8 +443,8 @@ public:
 
 protected:
 
-	sg_point_t point_on_bitmap(sgfx::Bitmap & b, drawing_size_t x, drawing_size_t y, sg_dim_t d);
-	sg_dim_t dim_on_bitmap(sgfx::Bitmap & b) const;
+	sg_point_t point_on_bitmap(sgfx::Bitmap & b, drawing_size_t x, drawing_size_t y, sg_area_t d);
+	sg_area_t dim_on_bitmap(sgfx::Bitmap & b) const;
 
 	enum {
 		FLAG_VISIBLE,
@@ -464,7 +469,7 @@ protected:
 
 private:
 
-	static void draw_rectangle(const DrawingAttr & attr, const sgfx::Pen & pen);
+	static void draw_rectangle(const DrawingAttributes & attr, const sgfx::Pen & pen);
 
 	u32 m_flags;
 	static drawing_size_t m_scale;

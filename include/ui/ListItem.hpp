@@ -22,7 +22,7 @@ namespace ui {
 class ListItem : public LinkedElement {
 public:
 	/*! \details Construct a new list item */
-	ListItem(const char * label, const sg_vector_icon_t * icon = 0, LinkedElement * parent = 0, LinkedElement * child = 0);
+	ListItem(const var::ConstString & label, LinkedElement * parent = 0, LinkedElement * child = 0);
 
 	void draw_to_scale(const draw::DrawingScaledAttr & attr);
 
@@ -67,14 +67,16 @@ public:
 	void set_enabled(bool v = true);
 
 	/*! \details This method will set the icon used when the item is enabled */
-	void set_toggle_enabled_icon(const sg_vector_icon_t * icon){ m_toggle_enabled_icon = icon; }
+	//void set_toggle_enabled_icon(const sg_vector_icon_t * icon){ m_toggle_enabled_icon = icon; }
 
 	/*! \details This method will set the icon used when the item is enabled */
-	void set_toggle_disabled_icon(const sg_vector_icon_t * icon){ m_toggle_disabled_icon = icon; }
+	//void set_toggle_disabled_icon(const sg_vector_icon_t * icon){ m_toggle_disabled_icon = icon; }
 
 private:
+#if defined LEGACY_ICON
 	const sg_vector_icon_t * m_toggle_enabled_icon;
 	const sg_vector_icon_t * m_toggle_disabled_icon;
+#endif
 
 };
 
@@ -89,21 +91,6 @@ public:
 	void set_enabled(bool v = true);
 	virtual Element * handle_event(const Event  & event, const draw::DrawingAttr & attr);
 
-};
-
-
-/*! \brief List Item Back Entry
- * \details This is an item that
- * returns the list's parent element when selected.
- */
-class ListItemBack : public ListItem {
-public:
-	ListItemBack(const sg_vector_icon_t * icon = 0, LinkedElement * parent = 0);
-};
-
-class ListItemExit : public ListItemBack {
-public:
-	ListItemExit(const sg_vector_icon_t * icon = 0, LinkedElement * parent = 0);
 };
 
 
@@ -154,7 +141,7 @@ public:
 	typedef void (*list_dir_callback_t)(DirList * list);
 
 	/*! \details Contruct a new list */
-	DirList(const var::ConstString & path, const sg_vector_icon_t * icon = 0, LinkedElement * parent = 0, LinkedElement * child = 0);
+	DirList(const var::ConstString & path, LinkedElement * parent = 0, LinkedElement * child = 0);
 	~DirList();
 
 	/*! \details Set the path for the directory */
@@ -209,9 +196,7 @@ private:
 	var::String m_path;
 };
 
-#if !defined __link
-[[deprecated("Use DirList")]]
-#endif
+API_DEPRECATED("Use DirList")
 typedef class DirList ListDir;
 
 }
