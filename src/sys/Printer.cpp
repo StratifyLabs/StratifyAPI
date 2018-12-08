@@ -72,7 +72,7 @@ void Printer::vprint_indented(const var::ConstString & key, const char * fmt, va
 	print("\n");
 	print_indentation();
 	if( !key.is_empty() ){
-		print("%s: ", key.str());
+		print("%s: ", key.cstring());
 	} else {
 		//generate a unique key for JSON
 	}
@@ -106,7 +106,7 @@ Printer & Printer::operator << (const Cli & a){
 		open_object("arguments");
 		{
 			for(u32 i = 0; i < a.count(); i++){
-				print_indented(0, "%s", a.at(i).str());
+				print_indented(0, "%s", a.at(i).cstring());
 			}
 			close_object();
 		}
@@ -197,7 +197,7 @@ Printer & Printer::operator << (const char * a){
 Printer & Printer::operator << (const var::Tokenizer & a){
 	m_indent++;
 	for(u32 i=0; i < a.count(); i++){
-		print_indented("%s", a.at(i).str());
+		print_indented("%s", a.at(i).cstring());
 	}
 	m_indent--;
 	return *this;
@@ -252,7 +252,7 @@ Printer & Printer::operator << (const var::JsonArray & a){
 
 Printer & Printer::operator << (const var::Vector<var::String> & a){
 	for(u32 i=0; i < a.count(); i++){
-		print_indented(0, "%s", a.at(i).str());
+		print_indented(0, "%s", a.at(i).cstring());
 	}
 	return *this;
 }
@@ -268,19 +268,20 @@ Printer & Printer::operator << (const sys::TaskInfo & a){
 }
 
 Printer & Printer::operator << (const sys::SysInfo & a ){
-	print_indented("Name", "%s", a.name().str());
+	print_indented("Name", "%s", a.name().cstring());
 	print_indented("Serial Number", a.serial_number().to_string().cstring());
 	print_indented("Hardware ID",  F3208X, a.hardware_id());
 	if( a.name() != "bootloader" ){
-		print_indented("BSP Version",  "%s", a.bsp_version().str());
-		print_indented("SOS Version",  "%s", a.sos_version().str());
-		print_indented("CPU Architecture",  "%s", a.cpu_architecture().str());
+		print_indented("Project ID", "%s", a.id().cstring());
+		print_indented("BSP Version",  "%s", a.bsp_version().cstring());
+		print_indented("SOS Version",  "%s", a.sos_version().cstring());
+		print_indented("CPU Architecture",  "%s", a.cpu_architecture().cstring());
 		print_indented("CPU Frequency", F32D, a.cpu_frequency());
 		print_indented("Application Signature", F32X, a.application_signature());
 
-		print_indented("BSP Git Hash",  "%s", a.bsp_git_hash().str());
-		print_indented("SOS Git Hash",  "%s", a.sos_git_hash().str());
-		print_indented("MCU Git Hash",  "%s", a.mcu_git_hash().str());
+		print_indented("BSP Git Hash",  "%s", a.bsp_git_hash().cstring());
+		print_indented("SOS Git Hash",  "%s", a.sos_git_hash().cstring());
+		print_indented("MCU Git Hash",  "%s", a.mcu_git_hash().cstring());
 	}
 	return *this;
 }
@@ -452,11 +453,11 @@ Printer & Printer::operator << (const TraceEvent & a){
 		default: id = "other"; break;
 	}
 	print_indented("timestamp", F32U ".%06ld", clock_time.seconds(), clock_time.nanoseconds()/1000UL);
-	print_indented("id", "%s", id.str());
+	print_indented("id", "%s", id.cstring());
 	print_indented("thread id", "%d", a.thread_id());
 	print_indented("pid", "%d", a.pid());
 	print_indented("program address", "0x%lX", a.program_address());
-	print_indented("message", a.message().str());
+	print_indented("message", a.message().cstring());
 	return *this;
 }
 
@@ -477,8 +478,8 @@ Printer & Printer::operator << (const appfs_file_t & a){
 }
 
 Printer & Printer::operator << (const AppfsFileAttributes & a){
-	print_indented("name", a.name().str());
-	print_indented("id", a.id().str());
+	print_indented("name", a.name().cstring());
+	print_indented("id", a.id().cstring());
 	print_indented("version", "%d.%d", a.version() >> 8, a.version() & 0xff);
 	print_indented("o_flags", "0x%lX", a.o_flags());
 	print_indented("ram_size", "%ld", a.ram_size());
@@ -518,7 +519,7 @@ Printer & Printer::open_object(const var::ConstString & key){
 }
 
 Printer & Printer::key(const var::ConstString & key, const var::String & a){
-	print_indented(key, "%s", a.str());
+	print_indented(key, "%s", a.cstring());
 	return *this;
 }
 

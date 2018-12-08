@@ -27,6 +27,12 @@ public:
 
 	static SerialNumber from_string(const char * str);
 
+	u32 at(u32 idx) const {
+		if( idx >= 4 ){
+			idx = 3;
+		}
+		return m_serial_number.sn[idx];
+	}
 
 	SerialNumber& operator = (const char * str);
 

@@ -13,7 +13,5 @@ set(SOURCES
 	${SOURCES_PREFIX}/ConstString.cpp
 	${SOURCES_PREFIX}/VersionString.cpp
 	${SOURCES_PREFIX}/String.cpp
-	${SOURCES_PREFIX}/StringUtil.cpp
-	${SOURCES_PREFIX}/Token.cpp
 	${SOURCES_PREFIX}/Tokenizer.cpp
 	PARENT_SCOPE)
