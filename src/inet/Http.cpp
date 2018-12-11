@@ -148,12 +148,16 @@ int HttpClient::build_header(const var::ConstString & method, const var::ConstSt
 	m_header << method << " " << path << " HTTP/1.1\r\n";
 	m_header << "Host: " << host << "\r\n";
 
-	for(u32 i = 0; i < header_request_fields().count(); i++){
-		if( header_request_fields().at(i).is_empty() == false ){
-			m_header << header_request_fields().at(i) << "\r\n";
-			if( header_request_fields().at(i).find("User-Agent:") == 0 ){ is_user_agent_present = true; }
-			if( header_request_fields().at(i).find("Accept:") == 0 ){ is_accept_present = true; }
-			if( header_request_fields().at(i).find("Connection:") == 0 ){ is_keep_alive_present = true; }
+	for(u32 i = 0; i < header_request_pairs().count(); i++){
+		String key = header_request_pairs().at(i).key();
+		if( key.is_empty() == false ){
+			String entry;
+			entry << key << ": " << header_request_pairs().at(i).value() << "\r\n";
+			m_header << entry;
+			key.to_lower();
+			if( key == "user-Agent" ){ is_user_agent_present = true; }
+			if( key == "accept" ){ is_accept_present = true; }
+			if( key == "connection" ){ is_keep_alive_present = true; }
 		}
 	}
 
@@ -211,23 +215,21 @@ int HttpClient::listen_for_header(){
 
 			//printf("> %s", line.str());
 
-			var::Tokenizer line_tokens(line, ": \t\r\n");
-			var::String title = line_tokens.at(0);
-			var::String value;
-			if( line_tokens.count() > 1 ){
-				value = line_tokens.at(1);
+			HttpHeaderPair pair = HttpHeaderPair::from_string(line);
+			m_header_response_pairs.push_back(pair);
+
+			String title = pair.key();
+			title.to_upper();
+
+			if( title == "HTTP/1.1" ){
+				m_status_code = pair.value().atoi();
+				if( (m_status_code >= 300) && (m_status_code < 400) ){
+					//redirect
+				}
 			}
 
-			var::String rebuild_line;
-			rebuild_line << title << ": " << value;
-			m_header_response_fields.push_back(rebuild_line);
-
-			title.to_upper();
-			value.to_upper();
-
-			if( title == "HTTP/1.1" ){ m_status_code = value.atoi(); }
-			if( title == "CONTENT-LENGTH" ){ m_content_length = value.atoi(); }
-			if( title == "TRANSFER-ENCODING" ){ m_transfer_encoding = value; }
+			if( title == "CONTENT-LENGTH" ){ m_content_length = pair.value().atoi(); }
+			if( title == "TRANSFER-ENCODING" ){ m_transfer_encoding = pair.value(); }
 		}
 
 
@@ -258,5 +260,13 @@ int HttpClient::listen_for_data(const sys::File & file, const sys::ProgressCallb
 		file.write(socket(), m_transfer_size, m_content_length, progress_callback);
 	}
 	return 0;
+}
+
+HttpHeaderPair HttpHeaderPair::from_string(const var::ConstString & string){
+	var::Tokenizer tokens(string, ": \t\r\n");
+	if( tokens.count() == 2 ){
+		return HttpHeaderPair(tokens.at(0), tokens.at(1));
+	}
+	return HttpHeaderPair();
 }
 

@@ -8,6 +8,7 @@
 #include "sys/Cli.hpp"
 #include "var/Data.hpp"
 #include "var/Vector.hpp"
+#include "var/Ring.hpp"
 #include "var/Json.hpp"
 #include "var/String.hpp"
 #include "var/Token.hpp"
@@ -256,6 +257,49 @@ Printer & Printer::operator << (const var::Vector<var::String> & a){
 	}
 	return *this;
 }
+
+Printer & Printer::operator << (const var::Ring<u32> & a){
+	for(u32 i=0; i < a.count_ready(); i++){
+		print_indented(0, F32U, a.at(i));
+	}
+	return *this;
+}
+
+Printer & Printer::operator << (const var::Ring<s32> & a){
+	for(u32 i=0; i < a.count_ready(); i++){
+		print_indented(0, F32D, a.at(i));
+	}
+	return *this;
+}
+
+Printer & Printer::operator << (const var::Ring<u16> & a){
+	for(u32 i=0; i < a.count_ready(); i++){
+		print_indented(0, "%u", a.at(i));
+	}
+	return *this;
+}
+
+Printer & Printer::operator << (const var::Ring<s16> & a){
+	for(u32 i=0; i < a.count_ready(); i++){
+		print_indented(0, "%d", a.at(i));
+	}
+	return *this;
+}
+
+Printer & Printer::operator << (const var::Ring<u8> & a){
+	for(u32 i=0; i < a.count_ready(); i++){
+		print_indented(0, "%u", a.at(i));
+	}
+	return *this;
+}
+
+Printer & Printer::operator << (const var::Ring<s8> & a){
+	for(u32 i=0; i < a.count_ready(); i++){
+		print_indented(0, "%d", a.at(i));
+	}
+	return *this;
+}
+
 
 Printer & Printer::operator << (const sys::TaskInfo & a){
 	print_indented("name", "%s", a.name());

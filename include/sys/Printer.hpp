@@ -18,6 +18,7 @@ class JsonObject;
 class JsonArray;
 class JsonValue;
 template<typename T> class Vector;
+template<typename T> class Ring;
 }
 
 namespace chrono{
@@ -103,6 +104,12 @@ public:
 	Printer & operator << (const var::JsonObject & a);
 	Printer & operator << (const var::JsonArray & a);
 	Printer & operator << (const var::Vector<var::String> & a);
+	Printer & operator << (const var::Ring<u32> & a);
+	Printer & operator << (const var::Ring<s32> & a);
+	Printer & operator << (const var::Ring<u16> & a);
+	Printer & operator << (const var::Ring<s16> & a);
+	Printer & operator << (const var::Ring<u8> & a);
+	Printer & operator << (const var::Ring<s8> & a);
 	Printer & operator << (const Cli & a);
 	Printer & operator << (const appfs_file_t & a);
 	Printer & operator << (const AppfsFileAttributes & a);
@@ -117,6 +124,7 @@ public:
 	Printer & operator << (const sgfx::Vector & a);
 	Printer & operator << (const sgfx::VectorPath & a);
 	Printer & operator << (const sgfx::VectorPathDescription & a);
+
 
 
 	Printer & operator << (const sys::SysInfo & a);

@@ -143,12 +143,11 @@ int Link::connect(const var::ConstString & path, bool is_legacy){
 	if( m_is_bootloader == false ){
 		link_get_sys_info(driver(), &sys_info);
 	} else {
-		bootloader_attr_t boot_attr;
-		get_bootloader_attr(boot_attr);
+		get_bootloader_attr(m_bootloader_attributes);
 		memset(&sys_info, 0, sizeof(sys_info));
 		strcpy(sys_info.name, "bootloader");
-		sys_info.hardware_id = boot_attr.hardware_id;
-		memcpy(&sys_info.serial, boot_attr.serialno, sizeof(mcu_sn_t));
+		sys_info.hardware_id = m_bootloader_attributes.hardware_id;
+		memcpy(&sys_info.serial, m_bootloader_attributes.serialno, sizeof(mcu_sn_t));
 	}
 
 	m_link_info.set(path, sys_info);
@@ -999,7 +998,6 @@ int Link::update_os(const sys::File & image, bool verify, const ProgressCallback
 	unsigned char buffer[bufferSize];
 	unsigned char cmpBuffer[bufferSize];
 	int i;
-	bootloader_attr_t attr;
 	uint32_t startAddr;
 	uint32_t image_id;
 	char tmp[256];
@@ -1024,21 +1022,22 @@ int Link::update_os(const sys::File & image, bool verify, const ProgressCallback
 
 	m_progress_max = image.size();
 
+#if 0
 	err = get_bootloader_attr(attr);
 	if( err < 0 ){
-		m_error_message = "Failed to read attributes";
 		return check_error(err);
 	}
+#endif
 
-	startAddr = attr.startaddr;
+	startAddr = m_bootloader_attributes.startaddr;
 	loc = startAddr;
 
-	if( (image_id & ~0x01) != (attr.hardware_id & ~0x01) ){
+	if( (image_id & ~0x01) != (m_bootloader_attributes.hardware_id & ~0x01) ){
 		err = -1;
 		m_error_message.format(tmp,
 									  "Kernel Image ID (0x%X) does not match Bootloader ID (0x%X)",
 									  image_id,
-									  attr.hardware_id);
+									  m_bootloader_attributes.hardware_id);
 		return check_error(err);
 	}
 
@@ -1129,9 +1128,9 @@ int Link::update_os(const sys::File & image, bool verify, const ProgressCallback
 			}
 		}
 
-		if( image_id != attr.hardware_id ){
+		if( image_id != m_bootloader_attributes.hardware_id ){
 			//if the LSb of the image_id doesn't match the bootloader HW ID, this will correct it
-			memcpy(stackaddr + BOOTLOADER_HARDWARE_ID_OFFSET, &attr.hardware_id, sizeof(u32));
+			memcpy(stackaddr + BOOTLOADER_HARDWARE_ID_OFFSET, &m_bootloader_attributes.hardware_id, sizeof(u32));
 		}
 
 		//write the stack address

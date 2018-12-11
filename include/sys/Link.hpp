@@ -562,6 +562,7 @@ private:
 	bool m_is_legacy;
 
 	LinkInfo m_link_info;
+	bootloader_attr_t m_bootloader_attributes;
 
 
 	link_transport_mdriver_t m_default_driver;

@@ -33,7 +33,6 @@ namespace var {
  * ring.write(&next, 1);
  * ring.read(&next, 1); //read into next variable
  *
- *
  * \endcode
  *
  *
@@ -89,6 +88,8 @@ public:
 		return m_count - (m_tail - m_head);
 	}
 
+	bool is_full() const { return m_tail == m_count; }
+
 	void set_overflow_allowed(bool value = true){
 		m_is_overflow_allowed = value;
 	}
@@ -109,7 +110,7 @@ public:
 		if( offset >= count() ){
 			offset -= count();
 		}
-		return Data::at<T>(pos);
+		return Data::at<T>(offset);
 	}
 
 	T & back(){
@@ -184,6 +185,60 @@ public:
 		m_tail++;
 		if( m_tail == m_count ){ m_tail = 0; }
 	}
+
+
+
+	/*!
+	 * \details Rotates all the values in the buffer from front to
+	 * back.
+	 *
+	 * @return Zero if the ring is full and the rotate is completed, -1 if the ring is not full (no action taken)
+	 *
+	 * All items will be shifted toward the front. The front
+	 * item will be carried to the back.
+	 *
+	 * This method requires the buffer to be full (is_full() == true) or
+	 * no action is taken.
+	 *
+	 * The operation is completed by adjusting the head and the tail
+	 * of the ring. Data does not move location in memory.
+	 *
+	 */
+	int rotate_forward(){
+		if( m_tail == m_count ){
+			//buffer is full - just rewind the head the head
+			if( m_head ){ m_head--; } else { m_head = m_count-1; }
+			return 0;
+		}
+		return -1;
+	}
+
+	/*!
+	 * \details Rotates all the values in the buffer from front to
+	 * back.
+	 *
+	 * @return Zero if the ring is full and the rotate is completed, -1 if the ring is not full (no action taken)
+	 *
+	 * All items will be shifed toward the back. The back item
+	 * will be carried to the front.
+	 *
+	 * This method requires the buffer to be full (is_full() == true) or
+	 * no action is taken.
+	 *
+	 * The operation is completed by adjusting the head and the tail
+	 * of the ring. Data does not move location in memory.
+	 *
+	 */
+	int rotate_backward(){
+		if( m_tail == m_count ){
+			//buffer is full - just increment the head
+			m_head++;
+			if( m_head == m_count ){ m_head = 0; }
+			return 0;
+		}
+		return -1;
+	}
+
 
 private:
 

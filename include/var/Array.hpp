@@ -142,6 +142,24 @@ private:
 	T m_array[size_value];
 };
 
+template <typename T> class Pair : public Array<T, 2> {
+public:
+
+	Pair(){}
+
+	Pair(const T & k, const T & v){
+		key() = k;
+		value() = v;
+	}
+
+	T & key(){ return Array<T,2>::at(0); }
+	const T & key() const { return Array<T,2>::at(0); }
+
+	T & value(){ return Array<T,2>::at(1); }
+	const T & value() const { return Array<T,2>::at(1); }
+
+};
+
 }
 
 #endif // ARRAY_HPP

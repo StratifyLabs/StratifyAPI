@@ -6,6 +6,7 @@
 #include "Socket.hpp"
 #include "../api/InetObject.hpp"
 #include "../var/String.hpp"
+#include "../var/Array.hpp"
 #include "../sys/ProgressCallback.hpp"
 
 namespace inet {
@@ -27,6 +28,19 @@ private:
 
 };
 
+class HttpHeaderPair : public var::Pair<var::String> {
+public:
+	HttpHeaderPair(){}
+	HttpHeaderPair(const var::ConstString & key, const var::ConstString & value) : var::Pair<var::String>(key, value){}
+
+	static HttpHeaderPair from_string(const var::ConstString & string);
+
+	var::String to_string() const {
+		return var::String() << key() << ": " << value();
+	}
+
+};
+
 
 class HttpClient : public Http {
 public:
@@ -41,6 +55,9 @@ public:
 	void set_keep_alive(bool value = true){ m_is_keep_alive = value; }
 
 	bool is_keep_alive() const { return m_is_keep_alive; }
+
+	void set_follow_redirects(bool value){ m_is_follow_redirects = value; }
+	bool is_follow_redirects() const { return m_is_follow_redirects; }
 
 	int head(const var::ConstString & url);
 	int get(const var::ConstString & url, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
@@ -66,7 +83,6 @@ public:
 	  *
 	  */
 	const var::String & header() const { return m_header; }
-	const var::String & header_response() const { return m_header_response; }
 
 	/*! \details Returns the status code of the last request.
 	 *
@@ -89,11 +105,11 @@ public:
 
 	int close_connection();
 
-	var::Vector<var::String> & header_request_fields(){ return m_header_request_fields; }
-	const var::Vector<var::String> & header_request_fields() const { return m_header_request_fields; }
+	var::Vector<HttpHeaderPair> & header_request_pairs(){ return m_header_request_pairs; }
+	const var::Vector<HttpHeaderPair> & header_request_pairs() const { return m_header_request_pairs; }
 
-	var::Vector<var::String> & header_response_fields(){ return m_header_response_fields; }
-	const var::Vector<var::String> & header_response_fields() const { return m_header_response_fields; }
+	var::Vector<HttpHeaderPair> & header_response_pairs(){ return m_header_response_pairs; }
+	const var::Vector<HttpHeaderPair> & header_response_pairs() const { return m_header_response_pairs; }
 
 private:
 
@@ -123,14 +139,14 @@ private:
 	SocketAddress m_address;
 
 	var::String m_transfer_encoding;
-	var::Vector<var::String> m_header_request_fields;
-	var::Vector<var::String> m_header_response_fields;
+	var::Vector<HttpHeaderPair> m_header_request_pairs;
+	var::Vector<HttpHeaderPair> m_header_response_pairs;
 	var::String m_header;
-	var::String m_header_response;
 	int m_status_code;
 
 	int m_content_length;
 	bool m_is_keep_alive;
+	bool m_is_follow_redirects;
 
 	bool m_is_chunked_transfer_encoding;
 	u32 m_transfer_size;
