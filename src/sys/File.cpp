@@ -373,7 +373,10 @@ int File::write(const sys::File & source_file, u32 chunk_size, u32 size, const P
 		}
 
 		if( progress_callback ){
-			progress_callback->update(size_processed, size);
+			//abort the transaction
+			if( progress_callback->update(size_processed, size) == true ){
+				return size_processed;
+			}
 		}
 
 	} while( (result > 0) && (size > size_processed) );

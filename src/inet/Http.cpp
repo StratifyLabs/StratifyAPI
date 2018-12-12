@@ -69,6 +69,8 @@ int HttpClient::query(const var::ConstString & command,
 							 const sys::File * get_file,
 							 const sys::ProgressCallback * progress_callback){
 	m_status_code = -1;
+
+	m_content_length = -1;
 	int result;
 	Url u(url);
 	result = connect_to_server(u.domain_name(), u.port());
@@ -228,8 +230,13 @@ int HttpClient::listen_for_header(){
 				}
 			}
 
-			if( title == "CONTENT-LENGTH" ){ m_content_length = pair.value().atoi(); }
-			if( title == "TRANSFER-ENCODING" ){ m_transfer_encoding = pair.value(); }
+			if( title == "CONTENT-LENGTH" ){
+				m_content_length = pair.value().atoi();
+			}
+			if( title == "TRANSFER-ENCODING" ){
+				m_transfer_encoding = pair.value();
+				m_transfer_encoding.to_upper();
+			}
 		}
 
 
@@ -264,7 +271,7 @@ int HttpClient::listen_for_data(const sys::File & file, const sys::ProgressCallb
 
 HttpHeaderPair HttpHeaderPair::from_string(const var::ConstString & string){
 	var::Tokenizer tokens(string, ": \t\r\n");
-	if( tokens.count() == 2 ){
+	if( tokens.count() >= 2 ){
 		return HttpHeaderPair(tokens.at(0), tokens.at(1));
 	}
 	return HttpHeaderPair();
