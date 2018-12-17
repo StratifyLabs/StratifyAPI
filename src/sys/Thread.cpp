@@ -149,7 +149,7 @@ bool Thread::is_running() const {
 	return false;
 }
 
-int Thread::wait(void**ret, int interval){
+int Thread::wait(void**ret, int interval) const {
 
 	void * dummy;
 

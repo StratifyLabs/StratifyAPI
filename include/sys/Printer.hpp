@@ -167,7 +167,7 @@ public:
 	void set_flags(u32 value){ m_o_flags = value; }
 
 	Printer & open_object(const var::ConstString & key);
-	void close_object(){ m_indent--; }
+	void close_object(){ if( m_indent ){ m_indent--; } }
 
 
 	const sys::ProgressCallback * progress_callback() const {

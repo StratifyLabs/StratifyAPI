@@ -98,6 +98,9 @@ public:
 	const var::String app_git_hash() const { return m_app_git_hash; }
 
 
+	var::String to_string() const;
+
+
 	/*! \details Returns the argument offset by value as a var::String. */
 	var::String at(u16 value) const;
 

@@ -57,6 +57,17 @@ var::String Cli::get_version_details() const {
 	return result;
 }
 
+var::String Cli::to_string() const {
+	String result;
+	for(u32 i=1; i < count(); i++){
+		result << at(i);
+		if( i < count()-1){
+			result << " ";
+		}
+	}
+	return result;
+}
+
 
 String Cli::at(u16 value) const {
 	String arg;

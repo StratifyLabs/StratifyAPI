@@ -3,6 +3,10 @@
 #include "sys/Sys.hpp"
 #include "sys/requests.h"
 
+#if defined __link
+#define atoff atof
+#endif
+
 
 using namespace var;
 
@@ -79,7 +83,7 @@ int JsonValue::assign(const var::ConstString & value){
 	if( is_string() ){
 		return api()->string_set(m_value, value.str());
 	} else if( is_real() ){
-		return api()->real_set(m_value, ::atof(value.str()));
+		return api()->real_set(m_value, ::atoff(value.str()));
 	} else if( is_integer() ){
 		return api()->integer_set(m_value, ::atoi(value.str()));
 	} else if ( is_true() ){
@@ -142,7 +146,7 @@ var::String JsonValue::to_string() const {
 
 float JsonValue::to_real() const {
 	if( is_string() ){
-		return ::atof(api()->string_value(m_value));
+		return ::atoff(api()->string_value(m_value));
 	}
 	return api()->real_value(m_value);
 }

@@ -177,7 +177,7 @@ public:
 	 * is_running() until the thread completes.
 	 *
 	 */
-	int wait(void ** ret = 0, int interval = 1000);
+	int wait(void ** ret = 0, int interval = 1000) const;
 
 	/*! \details Yields the processor to another thread */
 	static void yield(){ return Sched::yield(); }
