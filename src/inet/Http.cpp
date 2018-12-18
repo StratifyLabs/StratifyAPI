@@ -5,6 +5,8 @@
 #include "sys.hpp"
 #include "inet/Url.hpp"
 
+#define SHOW_HEADERS 0
+
 using namespace inet;
 
 Http::Http(Socket & socket) : m_socket(socket){
@@ -190,7 +192,9 @@ int HttpClient::send_header(const var::ConstString & method,
 
 	build_header(method, host, path, data_length);
 
-	//printf(">> %s", m_header.str());
+#if SHOW_HEADERS
+	printf(">> %s", m_header.str());
+#endif
 
 	if( socket().write(m_header) != (int)m_header.length() ){
 		return -1;
@@ -214,8 +218,9 @@ int HttpClient::listen_for_header(){
 		if( line.length() > 2 ){
 
 			m_header << line;
-
-			//printf("> %s", line.str());
+#if SHOW_HEADERS
+			printf("> %s", line.str());
+#endif
 
 			HttpHeaderPair pair = HttpHeaderPair::from_string(line);
 			m_header_response_pairs.push_back(pair);
