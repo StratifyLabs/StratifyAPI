@@ -192,9 +192,12 @@ protected:
 
 private:
 
+
 	ProgressCallback m_progress_callback;
 	u16 m_progress_width;
+	u16 m_progress_state;
 	u16 m_indent;
+	u32 m_key_count;
 	bool m_is_json;
 	u32 m_o_flags;
 

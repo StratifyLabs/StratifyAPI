@@ -1,33 +1,33 @@
-#include "sys/Task.hpp"
+#include "sys/TaskManager.hpp"
 
 
 using namespace sys;
 
 #if defined __link
-Task::Task(link_transport_mdriver_t * driver){
+TaskManager::TaskManager(link_transport_mdriver_t * driver){
 	m_sys_device.set_driver(driver);
 #else
-Task::Task(){
+TaskManager::TaskManager(){
 #endif
 	m_id = 0;
 }
 
-Task::~Task(){
+TaskManager::~TaskManager(){
 	finalize();
 }
 
-void Task::initialize(){
+void TaskManager::initialize(){
 	if( m_sys_device.fileno() < 0 ){
 		m_sys_device.open("/dev/sys");
 	}
 }
 
-void Task::finalize(){
+void TaskManager::finalize(){
 	m_sys_device.close();
 }
 
 
-int Task::count_total(){
+int TaskManager::count_total(){
 	int idx = m_id;
 	int count = 0;
 	set_id(0);
@@ -40,7 +40,7 @@ int Task::count_total(){
 }
 
 
-int Task::count_free(){
+int TaskManager::count_free(){
 	int idx = m_id;
 	int count = 0;
 	set_id(0);
@@ -55,7 +55,7 @@ int Task::count_free(){
 }
 
 
-int Task::get_next(TaskInfo & info){
+int TaskManager::get_next(TaskInfo & info){
 	sys_taskattr_t task_attr;
 	int ret;
 
@@ -74,7 +74,7 @@ int Task::get_next(TaskInfo & info){
 	return ret;
 }
 
-TaskInfo Task::get_info(int id){
+TaskInfo TaskManager::get_info(int id){
 	sys_taskattr_t attr;
 	attr.tid = id;
 	initialize();
@@ -85,7 +85,7 @@ TaskInfo Task::get_info(int id){
 	return TaskInfo(attr);
 }
 
-bool Task::is_pid_running(int pid){
+bool TaskManager::is_pid_running(int pid){
 	int tmp_id = id();
 	set_id(1);
 
@@ -101,7 +101,7 @@ bool Task::is_pid_running(int pid){
 	return false;
 }
 
-int Task::get_pid(const var::ConstString & name){
+int TaskManager::get_pid(const var::ConstString & name){
 	int tmp_id = id();
 	set_id(1);
 
@@ -118,7 +118,7 @@ int Task::get_pid(const var::ConstString & name){
 	return -1;
 }
 
-void Task::print(int pid){
+void TaskManager::print(int pid){
 	int count = count_total();
 	TaskInfo info;
 	TaskInfo::print_header();
@@ -139,14 +139,14 @@ void TaskInfo::print() const {
 	if( is_valid() ){
 		if( is_thread() ){
 			printf("%s(" F32D "," F32D "): prio:%d/%d memory:" F32D " (NA," F32D ")\n",
-					 name(),
+					 name().cstring(),
 					 pid(),
 					 id(),
 					 priority(), priority_ceiling(),
 					 memory_size(), stack_size());
 		} else {
 			printf("%s(" F32D "," F32D "): prio:%d/%d memory:" F32D " (" F32D "," F32D ")\n",
-					 name(),
+					 name().cstring(),
 					 pid(),
 					 id(),
 					 priority(), priority_ceiling(),

@@ -1,5 +1,5 @@
-#ifndef SYS_TASK_HPP
-#define SYS_TASK_HPP
+#ifndef SAPI_SYS_TASK_MANAGER_HPP
+#define SAPI_SYS_TASK_MANAGER_HPP
 
 #include "../api/SysObject.hpp"
 #include "../hal/Device.hpp"
@@ -72,7 +72,7 @@ public:
 	bool is_enabled() const { return m_value.is_enabled != 0; }
 
 	/*! \details Returns the name of the task. */
-	const char * name() const { return m_value.name; }
+	const var::ConstString name() const { return m_value.name; }
 
 	/*! \details Returns the number of bytes of memory available to the task. */
 	u32 memory_size() const{ return m_value.mem_size; }
@@ -99,6 +99,7 @@ private:
 
 //this more closely matches the driver variable name
 typedef TaskInfo TaskAttr;
+typedef TaskInfo TaskAttributes;
 
 /*! \brief Task Class
  * \details The Task Class is used to query
@@ -123,15 +124,15 @@ typedef TaskInfo TaskAttr;
  *
  *
  */
-class Task : public api::SysWorkObject {
+class TaskManager : public api::SysWorkObject {
 public:
 
 #if defined __link
-	Task(link_transport_mdriver_t * driver);
+	TaskManager(link_transport_mdriver_t * driver);
 #else
-	Task();
+	TaskManager();
 #endif
-	~Task();
+	~TaskManager();
 
 	/*! \details Returns the total number of tasks that can
 	  * run on the system.
@@ -196,7 +197,7 @@ public:
 	  *
 	  */
 	TaskInfo get_info(int id);
-	TaskAttr get_attr(int id){ return get_info(id); }
+	TaskAttributes get_attributes(int id){ return get_info(id); }
 
 	/*! \details Prints info for all enabled tasks. */
 	void print(int pid = -1);
@@ -218,4 +219,4 @@ private:
 
 }
 
-#endif // SYS_TASK_HPP
+#endif // SAPI_SYS_TASK_HPP

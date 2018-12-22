@@ -4,7 +4,7 @@
 #include "sys/Printer.hpp"
 #include "sys/Sys.hpp"
 #include "hal/Core.hpp"
-#include "sys/Task.hpp"
+#include "sys/TaskManager.hpp"
 #include "sys/Cli.hpp"
 #include "var/Data.hpp"
 #include "var/Vector.hpp"
@@ -22,6 +22,8 @@ Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this
 	m_o_flags = PRINT_8 | PRINT_HEX;
 	m_indent = 0;
 	m_progress_width = 50;
+	m_progress_state = 0;
+	m_key_count = 0;
 }
 
 void Printer::set_color_code(u32 code){
@@ -302,7 +304,7 @@ Printer & Printer::operator << (const var::Ring<s8> & a){
 
 
 Printer & Printer::operator << (const sys::TaskInfo & a){
-	print_indented("name", "%s", a.name());
+	print_indented("name", "%s", a.name().cstring());
 	print_indented("id", "%ld", a.id());
 	print_indented("pid", "%ld", a.pid());
 	print_indented("memory size", "%ld", a.memory_size());
@@ -532,26 +534,31 @@ Printer & Printer::operator << (const AppfsFileAttributes & a){
 
 bool Printer::update_progress(int progress, int total){
 	const u32 width = m_progress_width;
-	printf("\r[");
-	for(u32 i = 0; i < width; i++){
-		if( (total != 0) && (i < (progress*width+total/2)/total) ){
-			printf("#");
-		} else {
-			printf(" ");
-		}
-	}
-	printf("]");
-	fflush(stdout);
 
-	if( (progress >= total) || (total == 0) ){
-		for(u32 i = 0; i < width+2; i++){
-			printf("\b \b");
+	if( (m_progress_state == 0) && total ){
+		key(var::String().format("progress-%d", m_key_count++), "");
+		for(u32 i=0; i < width; i++){
+			printf(".");
 		}
+		for(u32 i = 0; i < width; i++){
+			printf("\b"); //backspace
+		}
+		m_progress_state++;
 		fflush(stdout);
-		print_indentation();
-		print("progress: %s", "complete");
 	}
 
+	if( m_progress_state	> 0 ){
+
+		if( (total != 0) && (m_progress_state <= (progress*width+total/2)/total) ){
+			printf("#");
+			m_progress_state++;
+			fflush(stdout);
+		}
+
+		if( (progress >= total) || (total == 0) ){
+			m_progress_state = 0;
+		}
+	}
 
 	return false;
 }
@@ -595,7 +602,7 @@ Printer & Printer::key(const var::ConstString & key, const var::JsonValue & a){
 Printer & Printer::message(const char * fmt, ...){
 	va_list list;
 	va_start(list, fmt);
-	vprint_indented("message", fmt, list);
+	vprint_indented(var::String().format("message-%d", m_key_count++), fmt, list);
 	va_end(list);
 	return *this;
 }
@@ -603,7 +610,7 @@ Printer & Printer::message(const char * fmt, ...){
 Printer & Printer::warning(const char * fmt, ...){
 	va_list list;
 	va_start(list, fmt);
-	vprint_indented("warning!", fmt, list);
+	vprint_indented(var::String().format("warning-%d", m_key_count++), fmt, list);
 	va_end(list);
 	return *this;
 }
@@ -611,7 +618,7 @@ Printer & Printer::warning(const char * fmt, ...){
 Printer & Printer::error(const char * fmt, ...){
 	va_list list;
 	va_start(list, fmt);
-	vprint_indented("!error!", fmt, list);
+	vprint_indented(var::String().format("error-%d", m_key_count++), fmt, list);
 	va_end(list);
 	return *this;
 }
@@ -619,7 +626,7 @@ Printer & Printer::error(const char * fmt, ...){
 Printer & Printer::fatal(const char * fmt, ...){
 	va_list list;
 	va_start(list, fmt);
-	vprint_indented("~fatal~", fmt, list);
+	vprint_indented(var::String().format("fatal-%d", m_key_count++), fmt, list);
 	va_end(list);
 	return *this;
 }

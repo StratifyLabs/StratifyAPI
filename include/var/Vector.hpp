@@ -83,8 +83,21 @@ public:
 		return count();
 	}
 
+	u32 find(const T & a, bool (*compare)(const T & a, const T & b)){
+		for(u32 i=0; i < count(); i++){
+			if( compare(at(i), a) ){
+				return i;
+			}
+		}
+		return count();
+	}
+
 	T * search(const T & a){
 		return (T*)bsearch(&a, to_void(), count(), sizeof(T), ascending);
+	}
+
+	T * search(const T & a, int (*compare)(const void *, const void *)){
+		return (T*)bsearch(&a, to_void(), count(), sizeof(T), compare);
 	}
 
 
@@ -184,7 +197,9 @@ public:
 	  */
 	void clear(){
 		//call the destructor on each item
-		m_count = 0;
+		while( count() ){
+			pop_back();
+		}
 	}
 
 	static int ascending(const void * a, const void * b){

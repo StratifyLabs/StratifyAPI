@@ -6,7 +6,7 @@ set(SOURCELIST
 	${SOURCES_PREFIX}/File.cpp
 	${SOURCES_PREFIX}/FileInfo.cpp
 	${SOURCES_PREFIX}/Sys.cpp
-	${SOURCES_PREFIX}/Task.cpp
+	${SOURCES_PREFIX}/TaskManager.cpp
 	${SOURCES_PREFIX}/Thread.cpp
 	${SOURCES_PREFIX}/Mutex.cpp
 	${SOURCES_PREFIX}/JsonPrinter.cpp
