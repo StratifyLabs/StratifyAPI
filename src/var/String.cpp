@@ -149,7 +149,7 @@ String& String::erase(u32 pos, u32 len){
 	char * p = to<char>();
 	u32 s = length();
 	if( p == 0 ){ return *this; }
-	if( (len != npos) && (pos + len < s) ){
+	if( (len != npos) && (pos != npos) && (pos + len < s) ){
 		int remaining;
 		remaining = s - pos - len;
 		if( remaining > 0 ){

@@ -78,8 +78,10 @@ public:
 
 #if defined __link
 	File(link_transport_mdriver_t * driver = 0);
+	static bool exists(const var::ConstString & path, link_transport_mdriver_t * driver = 0);
 #else
 	File();
+	static bool exists(const var::ConstString & path);
 #endif
 
 	~File();

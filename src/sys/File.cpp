@@ -65,11 +65,14 @@ int File::copy(const var::String & source_path, const var::String & dest_path, l
 
 #if !defined __link
 int File::rename(const var::ConstString & old_path, const var::ConstString & new_path){
-	return ::rename(old_path.str(), new_path.str());
+	return ::rename(old_path.cstring(), new_path.cstring());
 }
 #else
 int File::rename(const var::ConstString & old_path, const var::ConstString & new_path, link_transport_mdriver_t * driver){
-	return link_rename(driver, old_path.str(), new_path.str());
+	if( driver == 0 ){
+		return ::rename(old_path.cstring(), new_path.cstring());
+	}
+	return link_rename(driver, old_path.cstring(), new_path.cstring());
 }
 #endif
 
@@ -92,6 +95,18 @@ int File::copy(File & source, File & dest, const var::ConstString & source_path,
 	return -1;
 }
 
+
+#if defined __link
+bool File::exists(const var::ConstString & path, link_transport_mdriver_t * driver){
+	File f(driver);
+#else
+bool File::exists(const var::ConstString & path){
+	File f;
+#endif
+	if( f.open_readonly(path) < 0 ){ return false; }
+	f.close();
+	return true;
+}
 
 int File::open(const var::ConstString & name, int access, int perms){
 	if( m_fd != -1 ){

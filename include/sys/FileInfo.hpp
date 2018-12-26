@@ -21,7 +21,7 @@ public:
 	 * @param path The file path (can be a file, directory or device)
 	 * @return Zero on success or less than zero with errno set
 	 */
-	int get_info(const char * path);
+	int get_info(const var::ConstString & path);
 
 
 	int get_info(int file_no);

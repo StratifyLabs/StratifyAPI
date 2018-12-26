@@ -122,7 +122,29 @@ public:
 	 * `is_option("-v")` will return true.
 	 *
 	 */
-	bool is_option(const char * value) const;
+	bool is_option(const var::ConstString & value) const;
+
+
+	/*! \details Checks to see if the option exists and returns its value
+	 *  as a String.
+	 *
+	 * @param name The option name
+	 *
+	 * This method will work with the following notations
+	 *
+	 * ```
+	 * -<name>
+	 * -<name> <value>
+	 * -<name>=<value>
+	 * --<name>
+	 * --<name> <value>
+	 * --<name>=<value>
+	 * ```
+	 *
+	 * If `-<name>` or `--<name>` is given, the return value is set to "true".
+	 *
+	 */
+	var::String get_option(const var::ConstString & name) const;
 
 	/*! \details Gets the argument of an option as a var::String.
 	 *
@@ -231,6 +253,9 @@ public:
 private:
 
 	bool is_option_equivalent_to_argument(const var::ConstString & option, const var::ConstString & argument) const;
+	bool is_option_equivalent_to_argument_with_equality(const var::ConstString & option, const var::ConstString & argument, var::String & value) const;
+
+	bool compare_with_prefix(const var::ConstString & option, const var::ConstString & argument) const;
 
 	u16 m_argc;
 	char ** m_argv;

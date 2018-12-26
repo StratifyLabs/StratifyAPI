@@ -37,8 +37,17 @@ public:
 	/*! \details Constructs a Dir object. */
 #if defined __link
 	Dir(link_transport_mdriver_t * driver = 0);
+	static int create(const var::ConstString & path, int mode = 0777, link_transport_mdriver_t * driver = 0);
+	static bool exists(const var::ConstString & path, link_transport_mdriver_t * driver = 0);
+
 #else
 	Dir();
+
+	/*! \details Returns true if the directory exists. */
+	int create(const var::ConstString & path, int mode = 0777);
+	/*! \details Returns true if the directory exists. */
+	static bool exists(const var::ConstString & path);
+
 #endif
 	~Dir();
 
@@ -65,7 +74,7 @@ public:
 #if !defined __link
 	static int remove(const var::ConstString & path, bool recursive = false);
 #else
-	static int remove(const var::ConstString & path, bool recursive, link_transport_mdriver_t * d);
+	static int remove(const var::ConstString & path, bool recursive, link_transport_mdriver_t * driver = 0);
 #endif
 
 	/*! \details Gets the next entry and writes the full path of the entry to the given string.

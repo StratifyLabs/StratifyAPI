@@ -80,16 +80,75 @@ String Cli::at(u16 value) const {
 bool Cli::is_option_equivalent_to_argument(
 		const ConstString & option,
 		const ConstString & argument) const {
-
+	String option_string = option;
+	String argument_string = argument;
 	if( is_case_senstive() == false ){
-		String option_string = option;
-		String argument_string = argument;
 		option_string.to_upper();
 		argument_string.to_upper();
-		return option_string == argument_string;
 	}
 
-	return option == argument;
+	return compare_with_prefix(option_string, argument_string);
+}
+
+bool Cli::compare_with_prefix(const var::ConstString & option, const var::ConstString & argument) const {
+	String with_prefix;
+	if( argument.at(0) != '-' ){ return false; }
+	if( option == argument ){ return true; }
+	with_prefix << "--" << option;
+	if( with_prefix == argument ){ return true; }
+	if( with_prefix.substr(1) == argument ){ return true; }
+	return false;
+}
+
+
+bool Cli::is_option_equivalent_to_argument_with_equality(
+		const var::ConstString & option,
+		const var::ConstString & argument,
+		var::String & value) const {
+
+	if( argument.at(0) != '-' ){
+		return false;
+	}
+
+	Tokenizer tokens(argument, "=", "", false, 1);
+	if( tokens.count() == 2 ){
+		String a = option;
+		String b = tokens.at(0);
+		if( is_case_senstive() == false ){
+			a.to_upper();
+			b.to_upper();
+		}
+
+		if( compare_with_prefix(a, b) ){
+			value = tokens.at(1);
+			return true;
+		}
+	}
+	return false;
+}
+
+
+var::String Cli::get_option(const var::ConstString & name) const {
+	var::String result;
+	int args;
+	for(args = 1; args < count(); args++){
+		if( is_option_equivalent_to_argument(name, at(args)) ){
+			if( count() > args+1 ){
+				ConstString value = at(args+1);
+				if( value.at(0) == '-' ){
+					result = "true";
+				} else {
+					result = at(args+1);
+				}
+				return result;
+			} else {
+				return ConstString("true");
+			}
+		} else if( is_option_equivalent_to_argument_with_equality(name, at(args), result)){
+			return result;
+		}
+	}
+	return String();
 }
 
 String Cli::get_option_argument(const char * option) const {
@@ -102,10 +161,10 @@ String Cli::get_option_argument(const char * option) const {
 	return String();
 }
 
-bool Cli::is_option(const char * value) const {
+bool Cli::is_option(const var::ConstString & value) const {
 	u16 i;
 	for(i=0; i < m_argc; i++){
-		if( is_option_equivalent_to_argument(value, at(i).str()) ){
+		if( is_option_equivalent_to_argument(value, at(i).cstring()) ){
 			return true;
 		}
 	}

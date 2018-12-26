@@ -50,6 +50,7 @@ namespace sys {
 class TaskInfo;
 class SysInfo;
 class Cli;
+class FileInfo;
 
 
 #define PRINTER_TRACE(printer) (printer.print("\n%s():%d", __FUNCTION__, __LINE__))
@@ -129,6 +130,7 @@ public:
 
 	Printer & operator << (const sys::SysInfo & a);
 	Printer & operator << (const sys::TaskInfo & a);
+	Printer & operator << (const sys::FileInfo & a);
 
 	Printer & operator << (const chrono::ClockTime & a);
 	Printer & operator << (const chrono::MicroTime & a);

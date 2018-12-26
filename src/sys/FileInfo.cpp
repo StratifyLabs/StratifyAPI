@@ -13,12 +13,12 @@ FileInfo::FileInfo() {
 #endif
 }
 
-int FileInfo::get_info(const char * path){
+int FileInfo::get_info(const var::ConstString & path){
 	int ret;
 #if defined __link
-	ret = File::stat(path, &m_stat, m_driver);
+	ret = File::stat(path.cstring(), &m_stat, m_driver);
 #else
-	ret = File::stat(path, &m_stat);
+	ret = File::stat(path.cstring(), &m_stat);
 #endif
 
 	return set_error_number_if_error(ret);

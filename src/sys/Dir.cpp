@@ -1,6 +1,6 @@
 //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-
+#include <sys/stat.h>
 #if defined __win32
 #include "dirent_windows.h"
 #endif
@@ -38,6 +38,9 @@ Dir::~Dir(){
 
 #if !defined __link
 int Dir::remove(const var::ConstString & path, bool recursive){
+#else
+int Dir::remove(const var::ConstString & path, bool recursive, link_transport_mdriver_t * driver){
+#endif
 	int ret = 0;
 	if( recursive ){
 		Dir d;
@@ -47,9 +50,19 @@ int Dir::remove(const var::ConstString & path, bool recursive){
 				FileInfo info;
 				info.get_info(entry.str());
 				if( info.is_directory() ){
-					ret = Dir::remove(entry.str(), true);
+					if( entry != "." && entry != ".." ){
+#if defined __link
+						ret = Dir::remove(entry.cstring(), true, driver);
+#else
+						ret = Dir::remove(entry.cstring(), true);
+#endif
+					}
 				} else {
-					ret = File::remove(entry.str());
+#if defined __link
+					ret = File::remove(entry.cstring(), driver);
+#else
+					ret = File::remove(entry.cstring());
+#endif
 				}
 			}
 		}
@@ -58,16 +71,45 @@ int Dir::remove(const var::ConstString & path, bool recursive){
 
 	if( ret >= 0 ){
 		//this will remove an empty directory or a file
+#if defined __link
+		ret = File::remove(path, driver);
+#else
 		ret = File::remove(path);
+#endif
 	}
 
 	return ret;
 }
+
+#if defined __link
+int Dir::create(const var::ConstString & path, int mode, link_transport_mdriver_t * driver){
+	int result;
+	if( driver ){
+		result = link_mkdir(driver, path.cstring(), mode);
+	} else {
+		//open a directory on the local system (not over link)
+		result = mkdir(path.cstring(), mode);
+	}
+	return result;
+}
 #else
-int Dir::remove(const var::ConstString & path, bool recursive, link_transport_mdriver_t * d){
-	return -1;
+int Dir::create(const var::ConstString & path, int mode){
+	return mkdir(path.cstring(), mode);
 }
 #endif
+
+#if defined __link
+bool Dir::exists(const var::ConstString & path, link_transport_mdriver_t * driver){
+	Dir d(driver);
+#else
+bool Dir::exists(const var::ConstString & path){
+	Dir d;
+#endif
+	if( d.open(path) < 0 ){ return false; }
+	d.close();
+	return true;
+}
+
 
 int Dir::open(const var::ConstString & name){
 #if defined __link
