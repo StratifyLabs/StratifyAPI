@@ -70,12 +70,12 @@ public:
 	enum {
 		COLOR_CODE_DEFAULT = 39,
 		COLOR_CODE_BLACK = 30,
-		COLOR_CODE_RED = 31,
-		COLOR_CODE_GREEN = 32,
+		COLOR_CODE_RED = 31, //RED
+		COLOR_CODE_GREEN = 32, //GREEN
 		COLOR_CODE_YELLOW = 33,
-		COLOR_CODE_BLUE = 34,
+		COLOR_CODE_BLUE = 34, //BLUE
 		COLOR_CODE_MAGENTA = 35,
-		COLOR_CODE_CYAN = 36,
+		COLOR_CODE_CYAN = 36, //BLUE | GREEN
 		COLOR_CODE_LIGHT_GRAY = 37,
 		COLOR_CODE_DARK_GRAY = 90,
 		COLOR_CODE_LIGHT_RED = 91,
@@ -88,6 +88,9 @@ public:
 
 	void set_color_code(u32 code);
 	void clear_color_code();
+#if defined __win32
+	static unsigned int m_default_color;
+#endif
 
 	static PrinterTermination close(){
 		return PrinterTermination();

@@ -16,6 +16,11 @@
 #include "sgfx/Bitmap.hpp"
 #include "sgfx/Vector.hpp"
 
+#if defined __win32
+#include <windows.h>
+unsigned int sys::Printer::m_default_color = (unsigned int)-1;
+#endif
+
 
 using namespace sys;
 
@@ -25,6 +30,13 @@ Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this
 	m_progress_width = 50;
 	m_progress_state = 0;
 	m_key_count = 0;
+#if defined __win32
+	if( m_default_color == (unsigned int)-1 ){
+		CONSOLE_SCREEN_BUFFER_INFO info;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+		m_default_color = info.wAttributes;
+	}
+#endif
 }
 
 void Printer::set_color_code(u32 code){
@@ -32,13 +44,41 @@ void Printer::set_color_code(u32 code){
 #if defined __link && defined __macosx
 	printf("\033[1;%dm", code);
 #endif
+
+#if defined __link && defined __win32
+	WORD color;
+	switch(code){
+		case COLOR_CODE_DEFAULT: color = m_default_color; break;
+		case COLOR_CODE_BLACK: color = 0; break;
+		case COLOR_CODE_RED: color = FOREGROUND_RED; break;
+		case COLOR_CODE_GREEN: color = FOREGROUND_GREEN; break;
+		case COLOR_CODE_YELLOW: color = FOREGROUND_RED | FOREGROUND_GREEN; break;
+		case COLOR_CODE_BLUE: color = FOREGROUND_BLUE; break;
+		case COLOR_CODE_MAGENTA: color = FOREGROUND_BLUE | FOREGROUND_RED; break;
+		case COLOR_CODE_CYAN: color = FOREGROUND_BLUE | FOREGROUND_GREEN; break;
+		case COLOR_CODE_LIGHT_GRAY: color = FOREGROUND_INTENSITY; break;
+		case COLOR_CODE_DARK_GRAY: color = 0; break;
+		case COLOR_CODE_LIGHT_RED: color = FOREGROUND_RED | FOREGROUND_INTENSITY; break;
+		case COLOR_CODE_LIGHT_GREEN: color = FOREGROUND_GREEN | FOREGROUND_INTENSITY; break;
+		case COLOR_CODE_LIGHT_YELLOW: color = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY; break;
+		case COLOR_CODE_LIGHT_BLUE: color = FOREGROUND_BLUE | FOREGROUND_INTENSITY; break;
+	}
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+#endif
+
 }
 
 void Printer::clear_color_code(){
 
-#if defined __link && defined __macosx
+#if defined __macosx
 	printf("\033[0m");
 #endif
+
+#if defined __win32
+	set_color_code(COLOR_CODE_DEFAULT);
+#endif
+
+
 }
 
 u32 Printer::color_code(const var::ConstString & color){

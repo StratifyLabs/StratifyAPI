@@ -88,7 +88,11 @@ int Dir::create(const var::ConstString & path, int mode, link_transport_mdriver_
 		result = link_mkdir(driver, path.cstring(), mode);
 	} else {
 		//open a directory on the local system (not over link)
+#if defined __win32
+		result = mkdir(path.cstring());
+#else
 		result = mkdir(path.cstring(), mode);
+#endif
 	}
 	return result;
 }
@@ -118,14 +122,10 @@ int Dir::open(const var::ConstString & name){
 	} else {
 		//open a directory on the local system (not over link)
 
-#if defined __win32
-		return -1;
-#else
 		m_dirp_local = opendir(name.str());
 		if( m_dirp_local == 0 ){
 			return -1;
 		}
-#endif
 
 		return 0;
 	}
