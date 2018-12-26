@@ -130,7 +130,7 @@ bool Cli::is_option_equivalent_to_argument_with_equality(
 
 var::String Cli::get_option(const var::ConstString & name) const {
 	var::String result;
-	int args;
+	u32 args;
 	for(args = 1; args < count(); args++){
 		if( is_option_equivalent_to_argument(name, at(args)) ){
 			if( count() > args+1 ){

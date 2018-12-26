@@ -190,11 +190,6 @@ public:
 	  *
 	  */
 	static int access(const var::ConstString & path, int o_access);
-
-	/*! \details Returns true if the file exists.
-	  *
-	  */
-	static bool exists(const var::ConstString & path){ return access(path, FILE_OK) >= 0; }
 #endif
 
 	/*! \details Returns a pointer to the file suffix.
