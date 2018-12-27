@@ -258,6 +258,15 @@ public:
 	String& erase(u32 pos, u32 len = npos);
 	String& erase(const ConstString & s, u32 pos = 0, u32 occurences = npos);
 
+	/*! \details Replaces one or more instances of a string with another string
+	 *
+	 * @param old_string The string to search for and replace
+	 * @param new_string The string that will be inserted in place of the old string
+	 * @return A reference to this string
+	 *
+	 */
+	String& replace(const ConstString & old_string, const ConstString & new_string, u32 start_pos = 0, u32 count = 0);
+
 
 
 	/*! \details Prints a formatted string to this String.

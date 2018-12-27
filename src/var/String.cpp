@@ -174,6 +174,20 @@ String& String::erase(const ConstString & s, u32 pos, u32 occurences){
 	return *this;
 }
 
+String& String::replace(const ConstString & old_string, const ConstString & new_string, u32 start_pos, u32 count){
+	u32 pos = start_pos;
+	u32 old_length = old_string.length();
+	u32 new_length = new_string.length();
+	u32 replaced_count = 0;
+	while( ((pos = find(old_string, pos)) != String::npos) && (count ? replaced_count < count : 1) ){
+		erase(pos, old_length);
+		insert(pos, new_string);
+		pos += new_length;
+		replaced_count++;
+	}
+	return *this;
+}
+
 String String::substr(u32 pos, u32 len) const {
 	if( pos >= length() ){
 		return String();
