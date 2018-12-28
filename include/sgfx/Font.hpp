@@ -18,28 +18,48 @@ class FontInfo : public api::SgfxInfoObject {
 public:
 
 	FontInfo(u8 point_size = 0, u8 style = 0, const Font * font = 0);
+
+	/*! \details Contsructs an object by parsing the path.
+	 *
+	 * @param path Path to the font. The font name needs to follow the rules below:
+	 *
+	 * The font name should be name-style-size.ext
+	 *
+	 * - name is the name of the font
+	 * - style can be t, ti, el, eli, l, li, r, ri, m, mi, sb, sbi, b, bi, eb, ebi (see enum style for details)
+	 *
+	 * Examples include:
+	 *
+	 * - roboto-l-28.sbf which is Roboto Light size 28 in Stratify bitmap font format.
+	 * - opensans-b-32.sbf which is Opensans bold 32
+	 *
+	 */
 	FontInfo(const var::ConstString & path);
 
+	/*! \details Returns true if the object is valid. */
 	bool is_valid() const { return m_point_size; }
 
+	/*! \details Lists the font styles that are available.
+	 *
+	 */
 	enum style {
 		ANY,
-		THIN,
-		THIN_ITALIC,
-		EXTRA_LIGHT,
-		EXTRA_LIGHT_ITALIC,
-		LIGHT,
-		LIGHT_ITALIC,
-		REGULAR,
-		REGULAR_ITALIC,
-		MEDIUM,
-		MEDIUM_ITALIC,
-		SEMI_BOLD,
-		SEMI_BOLD_ITALIC,
-		BOLD,
-		BOLD_ITALIC,
-		EXTRA_BOLD,
-		EXTRA_BOLD_ITALIC
+		THIN /*! Thin font (t) */,
+		THIN_ITALIC /*! Thin italic (ti) */,
+		EXTRA_LIGHT /*! Extra light (el) */,
+		EXTRA_LIGHT_ITALIC /*! Extra light italic (eli) */,
+		LIGHT /*! Light (l) */,
+		LIGHT_ITALIC /*! Light italic (li) */,
+		REGULAR /*! Regular (r) */,
+		REGULAR_ITALIC /*! Regular Italic (ri) */,
+		MEDIUM /*! Medium (m) */,
+		MEDIUM_ITALIC /*! Medium italic (m) */,
+		SEMI_BOLD /*! Semi bold (sb) */,
+		SEMI_BOLD_ITALIC /*! Semi bold italic (sbi) */,
+		BOLD /*! Bold (b) */,
+		BOLD_ITALIC /*! Bold italic (bi) */,
+		EXTRA_BOLD /*! Extra bold (eb) */,
+		EXTRA_BOLD_ITALIC /*! Extra bold italic (ebi) */
 	};
 
 	const var::ConstString & name() const { return m_name; }

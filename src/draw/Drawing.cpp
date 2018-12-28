@@ -20,11 +20,15 @@ drawing_point_t draw::drawing_point(drawing_int_t x, drawing_int_t y){
 	return p;
 }
 
-drawing_area_t draw::drawing_dim(drawing_size_t w, drawing_size_t h){
+drawing_area_t draw::drawing_area(drawing_size_t w, drawing_size_t h){
 	drawing_area_t d;
 	d.width = w;
 	d.height = h;
 	return d;
+}
+
+drawing_area_t draw::drawing_dim(drawing_size_t w, drawing_size_t h){
+	return drawing_area(w,h);
 }
 
 DrawingAttributes::DrawingAttributes(){
@@ -112,6 +116,14 @@ DrawingAttributes DrawingAttributes::operator+ (drawing_area_t d) const {
 	attr.attr().region.area.width = calc_width(d.width);
 	attr.attr().region.area.height = calc_height(d.height);
 	return attr;
+}
+
+DrawingAttributes DrawingAttributes::operator+ (DrawingPoint d) const {
+	return *this + d.point();
+}
+
+DrawingAttributes DrawingAttributes::operator+ (DrawingArea d) const {
+	return *this + d.area();
 }
 
 drawing_area_t DrawingAttributes::calc_square(drawing_size_t v) const {

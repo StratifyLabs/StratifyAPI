@@ -26,7 +26,7 @@ void PinButton::reset(){
 	m_timer.reset();
 }
 
-void PinButton::update(void){
+void PinButton::update(){
 	if( get_is_active() == true ){ //check to see if Pin is in the active state
 		if( m_timer.is_running() == false ){
 			m_flags.press_reported = 0;

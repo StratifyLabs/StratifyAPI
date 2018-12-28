@@ -6,6 +6,7 @@
 
 #include "Drawing.hpp"
 #include "../sgfx/Vector.hpp"
+#include "../var/String.hpp"
 
 namespace draw {
 
@@ -14,16 +15,13 @@ namespace draw {
  * \details This class defines the attributes of a Gfx object.
  */
 
-class IconAttr : public api::DrawInfoObject {
+class IconAttributes : public api::DrawInfoObject {
 public:
 
-	enum sys_gfx {
-		OK,
-		CHEVRON,
-		TOTAL
-	};
-
-
+	IconAttributes(const var::ConstString & name = ""){
+		set_name(name);
+		m_rotation = RIGHT;
+	}
 
 	/*! \details Icon rotation orientations */
 	enum {
@@ -38,7 +36,12 @@ public:
 	};
 
 	sgfx::Pen & pen(){ return m_pen; }
-	const sgfx::Pen & pen_const() const { return m_pen; }
+	const sgfx::Pen & pen() const { return m_pen; }
+
+	const var::String & name() const { return m_name; }
+	void set_name(const var::ConstString & name){
+		m_name = name;
+	}
 
 	/*! \details Set the rotation */
 	void set_rotation(s16 rotation){ m_rotation = rotation; }
@@ -47,9 +50,12 @@ public:
 	s16 rotation() const { return m_rotation; }
 
 private:
+	var::String m_name;
 	sgfx::Pen m_pen;
 	s16 m_rotation;
 };
+
+typedef IconAttributes IconAttr;
 
 /*! \brief Icon Class
  * \details This class draws icons that can be scaled and rotated on a bitmap.
@@ -59,7 +65,7 @@ private:
  *
  */
 
-class Icon : public Drawing, public IconAttr {
+class Icon : public Drawing, public IconAttributes {
 public:
 	/*! \details Construct an empty graphic */
 	Icon();

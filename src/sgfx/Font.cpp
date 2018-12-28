@@ -76,7 +76,7 @@ int Font::to_charset(char ascii){
 	if( (ascii < ' ') || (ascii > '~') ){
 		return -1;
 	}
-	return (int)(ascii - ' ');
+	return (int)(ascii - ' ' - 1);
 }
 
 Font::Font() {

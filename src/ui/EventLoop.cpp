@@ -27,7 +27,7 @@ Element * EventLoop::handle_event(Element * current_element, const ui::Event & e
 			next_element = current_element->handle_event(event, drawing_attr);
 		}
 
-		if( next_element != current_element ){
+		if( next_element && (next_element != current_element) ){
 			next_element->set_event_loop(event_loop);
 			handle_transition(current_element, next_element, drawing_attr);
 		}

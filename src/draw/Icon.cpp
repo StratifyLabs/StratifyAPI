@@ -18,25 +18,31 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	}
 #endif
 
-	Bitmap bitmap(attr.area());
-	bitmap.clear();
-	bitmap.set_pen( pen() );
 
-	VectorMap map(bitmap, rotation());
-	//Vector::draw(bitmap, icon(), map, &m_bounds);
+	VectorPath vector_path = sys::Assets::find_vector_path(name());
 
-	//check for alignment values left/right/top/bottom
-	if( is_align_top() ){
-		p.y -= m_bounds.point.y;
-	} else if( is_align_bottom() ){
-		p.y += bitmap.height() - (m_bounds.point.y + m_bounds.area.height);
+	if( vector_path.is_valid() ){
+		Bitmap bitmap(attr.area());
+		bitmap.clear();
+		bitmap.set_pen( pen() );
+
+		VectorMap map(bitmap, rotation());
+		sgfx::Vector::draw(bitmap, vector_path, map);
+
+		//check for alignment values left/right/top/bottom
+		if( is_align_top() ){
+			p.y -= m_bounds.point.y;
+		} else if( is_align_bottom() ){
+			p.y += bitmap.height() - (m_bounds.point.y + m_bounds.area.height);
+		}
+
+		if( is_align_left() ){
+			p.x -= m_bounds.point.x;
+		} else if( is_align_right() ){
+			p.y += bitmap.width() - (m_bounds.point.x + m_bounds.area.width);
+		}
+
+		//now draw on the bitmap
+		attr.bitmap().draw_bitmap(p, bitmap);
 	}
-
-	if( is_align_left() ){
-		p.x -= m_bounds.point.x;
-	} else if( is_align_right() ){
-		p.y += bitmap.width() - (m_bounds.point.x + m_bounds.area.width);
-	}
-
-	attr.bitmap().draw_bitmap(p, bitmap);
 }

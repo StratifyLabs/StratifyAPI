@@ -67,7 +67,59 @@ drawing_point_t drawing_point(drawing_int_t x, drawing_int_t y);
  * @param h Height of the retured data
  * @return A drawing_area_t with w and h populated as specified
  */
+drawing_area_t drawing_area(drawing_size_t w, drawing_size_t h);
 drawing_area_t drawing_dim(drawing_size_t w, drawing_size_t h);
+
+
+class DrawingArea : public api::DrawInfoObject {
+public:
+
+	DrawingArea(){ m_area.height = 0; m_area.width = 0; }
+	DrawingArea(drawing_size_t w, drawing_size_t h){
+		m_area.height = h; m_area.width = w;
+	}
+
+	DrawingArea(const drawing_area_t & area){
+		m_area = area;
+	}
+
+	drawing_size_t width() const { return m_area.width; }
+	void set_width(drawing_size_t value){ m_area.width = value; }
+
+	drawing_size_t height() const { return m_area.height; }
+	void set_height(drawing_size_t value){ m_area.height = value; }
+
+	const drawing_area_t & area() const { return m_area; }
+	drawing_area_t & area(){ return m_area; }
+
+private:
+	drawing_area_t m_area;
+};
+
+class DrawingPoint : public api::DrawInfoObject {
+public:
+
+	DrawingPoint(){ m_point.x = 0; m_point.y = 0; }
+	DrawingPoint(drawing_int_t x, drawing_int_t y){
+		m_point.x = x; m_point.y = y;
+	}
+
+	DrawingPoint(const drawing_point_t & point){
+		m_point = point;
+	}
+
+	drawing_size_t x() const { return m_point.x; }
+	void set_x(drawing_size_t value){ m_point.x = value; }
+
+	drawing_size_t y() const { return m_point.y; }
+	void set_y(drawing_size_t value){ m_point.y = value; }
+
+	const drawing_point_t & point() const { return m_point; }
+	drawing_point_t & point(){ return m_point; }
+
+private:
+	drawing_point_t m_point;
+};
 
 /*! \brief Drawing Attribute Class
  * \details This class contains the information needed to draw various
@@ -189,6 +241,9 @@ public:
 	DrawingAttributes operator+ (drawing_point_t d) const;
 	/*! \details Update the dimension (must come after adding drawing_point_t) */
 	DrawingAttributes operator+ (drawing_area_t d) const;
+
+	DrawingAttributes operator+ (DrawingPoint d) const;
+	DrawingAttributes operator+ (DrawingArea d) const;
 
 	/*! \details Calculate dimensions that will map to the bitmap as a square.
 	 *

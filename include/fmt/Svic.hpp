@@ -15,30 +15,26 @@ namespace fmt {
  * contain collections of Stratify Vector icons.
  *
  */
-class Svic : public api::FmtWorkObject {
+class Svic : public api::FmtFileObject {
 public:
-	Svic(sys::File & file);
+	Svic(const var::ConstString & path = "");
 
 	u32 count() const { return m_icons.count(); }
 
-	var::String name_at(u32 i);
+	var::String name_at(u32 i) const;
 
 	int append(const var::ConstString & name, const var::Vector<sg_vector_path_description_t> & list);
 
-	sgfx::VectorPath get(const var::ConstString & name);
-	sgfx::VectorPath at(u32 i);
-
-	sys::File & file(){ return m_file; }
-	const sys::File & file() const { return m_file; }
+	sgfx::VectorPath get(const var::ConstString & name) const;
+	sgfx::VectorPath at(u32 i) const;
 
 private:
-
 	int parse_icons();
-
-	sys::File & m_file;
-
 	var::Vector<sg_vector_icon_header_t> m_icons;
-	var::Vector<sg_vector_path_description_t> m_current_icon;
+
+	//these track internal state used for caching
+	mutable u32 m_current_icon_at;
+	mutable var::Vector<sg_vector_path_description_t> m_current_icon;
 
 };
 

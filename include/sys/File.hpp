@@ -117,7 +117,6 @@ public:
 		WRITE_OK /*! Check if write access is allowed */ = LINK_W_OK,
 		EXECUTE_OK /*! Check if execute access is allowed */ = LINK_X_OK,
 		FILE_OK /*! Check if file exists */ = LINK_F_OK,
-
 	};
 
 	/*! \details List of options for \a whence argument of seek() */
