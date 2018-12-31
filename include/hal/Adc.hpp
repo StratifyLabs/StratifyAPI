@@ -9,6 +9,38 @@
 
 namespace hal {
 
+/*! \brief ADC Info Class
+ *
+ *
+ */
+class AdcInfo : public api::HalInfoObject {
+public:
+	AdcInfo(){ memset(&m_adc_info, 0, sizeof(m_adc_info)); }
+
+	bool is_valid() const { return m_adc_info.bytes_per_sample; }
+
+	u32 o_flags() const { return m_adc_info.o_flags; }
+	u32 o_events() const { return m_adc_info.o_events; }
+	u32 resolution() const { return m_adc_info.resolution; }
+	u8 bytes_per_sample() const { return m_adc_info.bytes_per_sample; }
+	u32 frequency() const { return m_adc_info.freq; }
+	u32 maximum_value() const { return m_adc_info.maximum; }
+	u32 reference_millivolts() const { return m_adc_info.reference_mv; }
+
+
+	u32 calculate_millivolts(u32 sample_value) const {
+		return (sample_value + maximum_value()/2) * reference_millivolts() / maximum_value();
+	}
+
+
+	const adc_info_t & info() const{ return m_adc_info; }
+	adc_info_t & info(){ return m_adc_info; }
+
+private:
+	adc_info_t m_adc_info;
+};
+
+
 /*! \brief ADC Attributes Class
  * \details This class is for containing ADC attributes.
  */
@@ -102,6 +134,11 @@ public:
 		IS_CONTINOUS_CONVERSION /*! Start the next conversion as soon as the previous conversion completes */ = ADC_FLAG_IS_CONTINOUS_CONVERSION
 
 	};
+
+	/*! \details Returns an AdcInfo object associated with the ADC.
+	 *
+	 */
+	AdcInfo get_info() const;
 
 	int set_attr(u32 o_flags, u32 freq, const adc_pin_assignment_t * pin_assignment = 0) const {
 		adc_attr_t attr;

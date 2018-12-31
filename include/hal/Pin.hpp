@@ -184,6 +184,19 @@ public:
 	/*! \details Accesses the pin's associated Pio pinmask. */
 	u32 pinmask() const { return m_pinmask; }
 
+	bool is_floating(u32 o_restore_flags = Pin::IS_FLOAT) const {
+		bool result;
+		set_attributes(Pin::SET_INPUT | Pin::IS_PULLUP);
+		if( get_value() == false ){
+			set_attributes(Pin::SET_INPUT | o_restore_flags);
+			return false;
+		}
+		set_attributes(Pin::SET_INPUT | Pin::IS_FLOAT);
+		result = get_value();
+		set_attributes(Pin::SET_INPUT | o_restore_flags);
+		return result != true;
+	}
+
 	static bool is_floating(mcu_pin_t pin){
 		Pin p(pin);
 		p.set_input(Pin::IS_PULLUP);

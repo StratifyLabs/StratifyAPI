@@ -53,8 +53,6 @@ sgfx::VectorPath Svic::at(u32 i) const {
 		m_current_icon.resize(m_icons.at(i).count);
 		int result;
 		if( (result = read(m_icons.at(i).list_offset, m_current_icon)) < 0 ){
-			printf("\nFailed to read file %d at %d of %ld (%d, %d)\n",
-					 fileno(), m_icons.at(i).list_offset, m_current_icon.size(), result, error_number());
 			return sgfx::VectorPath();
 		}
 		m_current_icon_at = i;

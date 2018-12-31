@@ -9,4 +9,11 @@ using namespace hal;
 
 Adc::Adc(port_t port) : Periph(CORE_PERIPH_ADC, port){}
 
+AdcInfo Adc::get_info() const {
+	AdcInfo result;
+	ioctl(I_ADC_GETINFO, &result.info());
+	return result;
+}
+
+
 
