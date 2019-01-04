@@ -42,6 +42,10 @@ public:
 	/*! \details Constructs a zero value ClockTime object. */
 	ClockTime(){ reset(); }
 
+	static ClockTime from_seconds(u32 seconds){
+		return ClockTime(seconds, 0);
+	}
+
 	/*! \details Resets the value of the clock to zero. */
 	void reset(){
 		m_value.tv_sec = 0; m_value.tv_nsec = 0;
@@ -101,6 +105,7 @@ public:
 	/*! \details Returns the difference of this object and \a a. */
 	ClockTime operator - (const ClockTime & a) const { return subtract(*this, a); }
 
+	ClockTime age() const;
 
 	/*! \details Adds \a to this and assigned to this. */
 	ClockTime & operator += (const ClockTime & a){

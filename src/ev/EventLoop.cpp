@@ -10,9 +10,9 @@
 namespace ev {
 
 EventLoopAttributes::EventLoopAttributes(){
-	m_attr.update_period_msec = 0;
+	m_attr.update_period_usec = 0;
 	m_attr.hibernation_threshold_msec = 0xffff;
-	m_attr.period_msec = 10;
+	m_attr.period_usec = 10000UL;
 	m_attr.refresh_wait_resolution_usec = 5000;
 }
 
@@ -99,7 +99,7 @@ void EventLoop::execute(){
 }
 
 void EventLoop::check_loop_for_update(){
-	if( update_period().microseconds() && ((update_timer().milliseconds() >= update_period().milliseconds()) || (update_period() >= hibernation_threshold())) ){
+	if( update_period().microseconds() && ((update_timer() >= update_period()) || (update_period() >= hibernation_threshold())) ){
 		m_update_timer.restart();
 		handle_event(Event(Event::UPDATE));
 	}
@@ -115,10 +115,10 @@ void EventLoop::check_loop_for_hibernate(){
 			Sys::hibernate( (update_period().milliseconds() + 500)/ 1000 );
 		}
 	} else {
-		s32 ms_remaining;
-		ms_remaining = period().milliseconds() - loop_timer().milliseconds();
-		if( ms_remaining > 0 ){
-			chrono::Timer::wait_milliseconds(ms_remaining);
+		s32 us_remaining;
+		us_remaining = period().microseconds() - loop_timer().microseconds();
+		if( us_remaining > 0 ){
+			chrono::Timer::wait_microseconds(us_remaining);
 		}
 	}
 }

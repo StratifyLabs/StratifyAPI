@@ -112,6 +112,19 @@ public:
 	 * @param flags Not used
 	 * @param mask Not used
 	 *
+	 * \code
+	 *
+	 * void action_callback(int signo, siginfo_t * info, void * context);
+	 *
+	 * SignalHandler handler(action_callback);
+	 *
+	 * Signal alarm(Signal::INT, 10);
+	 * alarm.set_handler(handler);
+	 *
+	 *
+	 *
+	 * \endcode
+	 *
 	 */
 	SignalHandler(signal_action_callback_t signal_action, int flags = 0, sigset_t mask = 0){
 		m_sig_action.sa_sigaction = signal_action;
@@ -295,6 +308,31 @@ public:
 	 * @return Zero on success
 	 */
 	int set_handler(const SignalHandler & handler) const;
+
+
+	/*! \details Assigns the handler to the event.
+	 *
+	 * @param handler A reference to the SignalHandler
+	 *
+	 * \code
+	 *	void handle_abort(int a){
+	 *
+	 * }
+	 *
+	 * Signal abort_signal(Signal::ABRT);
+	 * abort_signal << SignalHandler(handle_abort);
+	 *
+	 * //code is all set up to execute handle_abort() when SIGABRT fires
+	 * abort_signal.send(); //send abort to self
+	 *
+	 * \endcode
+	 *
+	 *
+	 */
+	Signal & operator << (const SignalHandler & handler){
+		set_handler(handler);
+		return *this;
+	}
 
 	/*! \details Returns the signal number. */
 	int signo() const { return m_signo; }

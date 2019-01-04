@@ -7,7 +7,7 @@
 #include "../sys/Appfs.hpp"
 #include "../sys/Trace.hpp"
 #include "../sys/ProgressCallback.hpp"
-
+#include "../var/Vector.hpp"
 
 namespace var {
 class DataInfo;
@@ -92,15 +92,6 @@ public:
 	static unsigned int m_default_color;
 #endif
 
-	static PrinterTermination close(){
-		return PrinterTermination();
-	}
-
-	Printer & operator << (const PrinterTermination & printer_termination){
-		m_indent--;
-		return *this;
-	}
-
 	Printer & operator << (const var::Data & a);
 	Printer & operator << (const var::DataInfo & a);
 	Printer & operator << (const var::String & a);
@@ -148,10 +139,37 @@ public:
 	Printer & operator << (const char * a);
 	Printer & operator << (float a);
 
+	enum verbose_level {
+		FATAL,
+		ERROR,
+		WARNING,
+		INFO,
+		MESSAGE,
+		DEBUG
+	};
+
+	void set_verbose_level(enum verbose_level level){
+		m_verbose_level = level;
+	}
+
+	int set_verbose_level(const var::ConstString & level);
+
+	enum verbose_level verbose_level() const { return m_verbose_level; }
+
+	virtual Printer & debug(const char * fmt, ...);
 	virtual Printer & message(const char * fmt, ...);
+	virtual Printer & info(const char * fmt, ...);
 	virtual Printer & warning(const char * fmt, ...);
 	virtual Printer & error(const char * fmt, ...);
 	virtual Printer & fatal(const char * fmt, ...);
+
+	Printer & debug(const var::ConstString & a){ return debug(a.cstring()); }
+	Printer & message(const var::ConstString & a){ return message(a.cstring()); }
+	Printer & info(const var::ConstString & a){ return info(a.cstring()); }
+	Printer & warning(const var::ConstString & a){ return warning(a.cstring()); }
+	Printer & error(const var::ConstString & a){ return error(a.cstring()); }
+	Printer & fatal(const var::ConstString & a){ return fatal(a.cstring()); }
+
 	virtual Printer & key(const var::ConstString & key, const char * fmt, ...);
 	virtual Printer & key(const var::ConstString & key, const var::String & a);
 	virtual Printer & key(const var::ConstString & key, const var::JsonValue & a);
@@ -171,8 +189,27 @@ public:
 
 	void set_flags(u32 value){ m_o_flags = value; }
 
-	Printer & open_object(const var::ConstString & key);
-	void close_object(){ if( m_indent ){ m_indent--; } }
+	Printer & open_object(const var::ConstString & key, enum verbose_level level = FATAL);
+	void close_object(){
+		if( m_indent ){
+			m_container.pop_back();
+			m_indent--;
+		}
+	}
+
+	Printer & open_array(const var::ConstString & key, enum verbose_level level = FATAL);
+	void close_array(){
+		close_object();
+	}
+
+	static PrinterTermination close(){
+		return PrinterTermination();
+	}
+
+	Printer & operator << (const PrinterTermination & printer_termination){
+		close_object();
+		return *this;
+	}
 
 
 	const sys::ProgressCallback * progress_callback() const {
@@ -197,7 +234,26 @@ protected:
 
 private:
 
+	enum {
+		CONTAINER_OBJECT,
+		CONTAINER_ARRAY
+	};
 
+	u8 current_container(){
+		if( m_container.count() ){
+			return m_container.at( m_container.count() - 1 ) & 0xff;
+		}
+		return CONTAINER_ARRAY;
+	}
+
+	enum verbose_level current_level(){
+		if( m_container.count() ){
+			return (enum verbose_level)(m_container.at( m_container.count() - 1 ) >> 8);
+		}
+		return FATAL;
+	}
+
+	var::Vector<u16> m_container;
 	ProgressCallback m_progress_callback;
 	u16 m_progress_width;
 	u16 m_progress_state;
@@ -205,6 +261,8 @@ private:
 	u32 m_key_count;
 	bool m_is_json;
 	u32 m_o_flags;
+
+	enum verbose_level m_verbose_level;
 
 };
 

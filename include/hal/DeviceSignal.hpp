@@ -40,7 +40,7 @@ namespace hal {
  *
  * 	//this configures the hardware to send the signal to this thread (my_handler() will execute)
  * 	//dev_signal MUST exist as long as this action is set
- * 	eint.set_action( phy_event.action(EINT_ACTION_EVENT_RISING) );
+ * 	eint.set_action( dev_signal.create_action(EINT_ACTION_EVENT_RISING) );
  *
  * 	while(my_var == false){
  * 		Timer::wait_sec(1);
@@ -62,7 +62,7 @@ public:
 	 * @param sigcode The signal code
 	 * @param sigvalue The signal value
 	 */
-	DeviceSignal(bool persistent, int signo, int sigcode = 0, int sigvalue = 0) : Signal(signo, sigvalue){
+	DeviceSignal(bool persistent, int signo, int sigvalue = 0, int sigcode = 0) : Signal(signo, sigvalue){
 		m_context.tid = sys::Thread::self();
 		m_context.si_signo = signo;
 		m_context.si_sigcode = sigcode;
@@ -77,7 +77,7 @@ public:
 	 * @param sigcode The signal code
 	 * @param sigptr The signal value as a pointer
 	 */
-	DeviceSignal(bool persistent, int signo, int sigcode = 0, void * sigptr = 0) : Signal(signo, sigptr){
+	DeviceSignal(bool persistent, int signo, void * sigptr, int sigcode = 0) : Signal(signo, sigptr){
 		m_context.tid = pthread_self();
 		m_context.si_signo = signo;
 		m_context.si_sigcode = sigcode;
@@ -102,12 +102,13 @@ public:
 	 * @return a copy of a mcu_action_t data structure
 	 *
 	 */
-	mcu_action_t create_action(int event, int channel = 0) const {
+	mcu_action_t create_action(int event, int channel = 0, int prio = 0) const {
 		mcu_action_t a;
 		a.handler.callback = devfs_signal_callback;
 		a.handler.context = (void*)&m_context;
 		a.channel = channel;
 		a.o_events = event;
+		a.prio = prio;
 		return a;
 	}
 

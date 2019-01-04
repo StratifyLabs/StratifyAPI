@@ -41,7 +41,7 @@ public:
 
 	bool is_valid(){ return m_time != 0; }
 
-	static Time current_time();
+	static Time current_time(){ return get_time_of_day(); }
 	static Time from_seconds(u32 value){ return Time(value); }
 	static Time from_minutes(u32 value){ return Time(0, value, 0); }
 	static Time from_hours(u32 value){ return Time(0, 0, value); }

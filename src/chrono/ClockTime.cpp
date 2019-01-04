@@ -1,8 +1,13 @@
 #include "chrono/ClockTime.hpp"
+#include "chrono/Clock.hpp"
 #include "chrono/MicroTime.hpp"
 
 using namespace chrono;
 
+
+ClockTime ClockTime::age() const {
+	return Clock::get_time() - *this;
+}
 
 ClockTime::ClockTime(const MicroTime & micro_time){
 	m_value.tv_sec = micro_time.seconds();

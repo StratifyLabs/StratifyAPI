@@ -14,9 +14,9 @@ namespace ev {
 
 typedef struct MCU_PACK {
 	u16 hibernation_threshold_msec;
-	u16 update_period_msec;
+	u16 update_period_usec;
 	u16 refresh_wait_resolution_usec;
-	u16 period_msec;
+	u16 period_usec;
 } event_loop_attr_t;
 
 
@@ -66,10 +66,10 @@ public:
 	void set_hibernation_threshold(const chrono::MicroTime & value){ m_attr.hibernation_threshold_msec = value.milliseconds(); }
 
 	/*! \details Accesses the period for firing the Event::UPDATE in chrono::MicroTime. */
-	chrono::MicroTime update_period() const { return chrono::MicroTime::from_milliseconds(m_attr.update_period_msec); }
+	chrono::MicroTime update_period() const { return chrono::MicroTime::from_microseconds(m_attr.update_period_usec); }
 
 	/*! \details Accesses the minimum period of the event loop in chrono::MicroTime. */
-	chrono::MicroTime period() const { return chrono::MicroTime::from_milliseconds(m_attr.period_msec); }
+	chrono::MicroTime period() const { return chrono::MicroTime::from_microseconds(m_attr.period_usec); }
 
 	/*! \details Sets the period of the event loop in chrono::MicroTime.
 	 *
@@ -81,7 +81,7 @@ public:
 	 * is handled.
 	 *
 	 */
-	void set_period(const chrono::MicroTime & value){ m_attr.period_msec = value.milliseconds(); }
+	void set_period(const chrono::MicroTime & value){ m_attr.period_usec = value.microseconds(); }
 
 
 	/*! \details Sets the Event::UPDATE period which defines
@@ -94,7 +94,7 @@ public:
 	 * will be called on every loop at the loop period interval.
 	 *
 	 */
-	void set_update_period(const chrono::MicroTime & value){ m_attr.update_period_msec = value.milliseconds(); }
+	void set_update_period(const chrono::MicroTime & value){ m_attr.update_period_usec = value.microseconds(); }
 
 	/*! \details Accesses the display refresh wait resolution time in microseconds.
 	 *

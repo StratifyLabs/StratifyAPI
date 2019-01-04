@@ -1,5 +1,6 @@
 
 set(SOURCELIST
+	${SOURCES_PREFIX}/Png.cpp
 	${SOURCES_PREFIX}/Bmp.cpp
 	${SOURCES_PREFIX}/Wav.cpp
 	${SOURCES_PREFIX}/Svic.cpp

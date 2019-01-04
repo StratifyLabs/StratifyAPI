@@ -30,6 +30,8 @@ Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this
 	m_progress_width = 50;
 	m_progress_state = 0;
 	m_key_count = 0;
+	m_verbose_level = INFO;
+	m_container.push_back(CONTAINER_ARRAY);
 #if defined __win32
 	if( m_default_color == (unsigned int)-1 ){
 		CONSOLE_SCREEN_BUFFER_INFO info;
@@ -107,19 +109,30 @@ Printer::~Printer(){
 }
 
 void Printer::print_indentation(){
-	for(u16 i = 0; i < m_indent; i++){
-		print("  ");
+	s32 indent_count = m_container.count() - 1;
+	if( indent_count < 0 ){
+		indent_count = 0;
+	}
+	for(u16 i = 0; i < indent_count; i++){
+		print("   ");
 	}
 }
 
 void Printer::vprint_indented(const var::ConstString & key, const char * fmt, va_list list){
 	print("\n");
 	print_indentation();
+
+	u8 container = current_container();
+
+	if( container == CONTAINER_ARRAY ){
+		printf("- ");
+	}
+
 	if( !key.is_empty() ){
 		print("%s: ", key.cstring());
-	} else {
-		//generate a unique key for JSON
 	}
+
+
 	vprint(fmt, list);
 }
 
@@ -144,13 +157,13 @@ void Printer::print(const char * fmt, ...){
 }
 
 Printer & Printer::operator << (const Cli & a){
-	open_object(a.name());
+	open_object(a.name(), current_level());
 	{
-		print_indented("publisher", "%s", a.publisher().cstring());
-		open_object("arguments");
+		key("publisher", "%s", a.publisher().cstring());
+		open_object("arguments", current_level());
 		{
 			for(u32 i = 0; i < a.count(); i++){
-				print_indented(0, "%s", a.at(i).cstring());
+				key(0, "%s", a.at(i).cstring());
 			}
 			close_object();
 		}
@@ -241,7 +254,7 @@ Printer & Printer::operator << (const char * a){
 Printer & Printer::operator << (const var::Tokenizer & a){
 	m_indent++;
 	for(u32 i=0; i < a.count(); i++){
-		print_indented("%s", a.at(i).cstring());
+		key("%s", a.at(i).cstring());
 	}
 	m_indent--;
 	return *this;
@@ -253,15 +266,15 @@ Printer & Printer::operator << (const var::JsonObject & a){
 	for(u32 i=0; i < keys.count(); i++){
 		var::JsonValue entry = a.at(keys.at(i));
 		if( entry.is_object() ){
-			open_object(keys.at(i));
+			open_object(keys.at(i), current_level());
 			*this << entry.to_object();
 			close_object();
 		} else if( entry.is_array() ){
-			open_object(keys.at(i));
+			open_object(keys.at(i), current_level());
 			*this << entry.to_array();
 			close_object();
 		} else {
-			print_indented(keys.at(i), entry.to_string().cstring());
+			key(keys.at(i), entry.to_string().cstring());
 		}
 
 	}
@@ -277,80 +290,89 @@ Printer & Printer::operator << (const var::JsonArray & a){
 		var::String key;
 		key.format("[%d]", i);
 		if( entry.is_object() ){
-			open_object(key);
+			open_object(key, current_level());
 			*this << entry.to_object();
 			close_object();
 		} else if( entry.is_array() ){
-			open_object(key);
+			open_array(key, current_level());
 			*this << entry.to_array();
-			close_object();
+			close_array();
 		} else {
-			print_indented(key, entry.to_string().cstring());
+			this->key(key, entry.to_string().cstring());
 		}
 	}
-
 	return *this;
+}
+
+int Printer::set_verbose_level(const var::ConstString & level){
+	if( level == "debug" ){ set_verbose_level(DEBUG); return 0; }
+	if( level == "info" ){ set_verbose_level(Printer::INFO); return 0; }
+	if( level == "message" ){ set_verbose_level(Printer::MESSAGE); return 0; }
+	if( level == "warning" ){ set_verbose_level(Printer::WARNING); return 0; }
+	if( level == "error" ){ set_verbose_level(Printer::ERROR); return 0; }
+	if( level == "fatal" ){ set_verbose_level(Printer::FATAL); return 0; }
+	return -1;
 }
 
 
 
 Printer & Printer::operator << (const var::Vector<var::String> & a){
 	for(u32 i=0; i < a.count(); i++){
-		print_indented(0, "%s", a.at(i).cstring());
+		key(0, "%s", a.at(i).cstring());
 	}
 	return *this;
 }
 
 Printer & Printer::operator << (const var::Ring<u32> & a){
 	for(u32 i=0; i < a.count_ready(); i++){
-		print_indented(0, F32U, a.at(i));
+		key(0, F32U, a.at(i));
 	}
 	return *this;
 }
 
 Printer & Printer::operator << (const var::Ring<s32> & a){
 	for(u32 i=0; i < a.count_ready(); i++){
-		print_indented(0, F32D, a.at(i));
+		key(0, F32D, a.at(i));
 	}
 	return *this;
 }
 
 Printer & Printer::operator << (const var::Ring<u16> & a){
 	for(u32 i=0; i < a.count_ready(); i++){
-		print_indented(0, "%u", a.at(i));
+		key(0, "%u", a.at(i));
 	}
 	return *this;
 }
 
 Printer & Printer::operator << (const var::Ring<s16> & a){
 	for(u32 i=0; i < a.count_ready(); i++){
-		print_indented(0, "%d", a.at(i));
+		key(0, "%d", a.at(i));
 	}
 	return *this;
 }
 
 Printer & Printer::operator << (const var::Ring<u8> & a){
 	for(u32 i=0; i < a.count_ready(); i++){
-		print_indented(0, "%u", a.at(i));
+		key(0, "%u", a.at(i));
 	}
 	return *this;
 }
 
 Printer & Printer::operator << (const var::Ring<s8> & a){
 	for(u32 i=0; i < a.count_ready(); i++){
-		print_indented(0, "%d", a.at(i));
+		key(0, "%d", a.at(i));
 	}
 	return *this;
 }
 
 
 Printer & Printer::operator << (const sys::TaskInfo & a){
-	print_indented("name", "%s", a.name().cstring());
-	print_indented("id", "%ld", a.id());
-	print_indented("pid", "%ld", a.pid());
-	print_indented("memory size", "%ld", a.memory_size());
-	print_indented("stack size", "%ld", a.stack_size());
-	print_indented("heap size", "%ld", a.heap_size());
+	key("name", "%s", a.name().cstring());
+	key("id", "%ld", a.id());
+	key("pid", "%ld", a.pid());
+	key("memory size", "%ld", a.memory_size());
+	key("stack size", "%ld", a.stack_size());
+	key("heap size", "%ld", a.heap_size());
 	return *this;
 }
 
@@ -362,30 +384,30 @@ Printer & Printer::operator << (const sys::FileInfo & a){
 	if( a.is_block_device() ){ type = "block device"; }
 	if( a.is_character_device() ){ type = "character device"; }
 	if( a.is_socket() ){ type = "socket"; }
-	print_indented("type", type.cstring());
+	key("type", type.cstring());
 	if( a.is_file() ){
-		print_indented("size", "%ld", a.size());
+		key("size", "%ld", a.size());
 	}
-	print_indented("mode", "0%o", a.mode() & 0777);
+	key("mode", "0%o", a.mode() & 0777);
 
 	return *this;
 }
 
 Printer & Printer::operator << (const sys::SysInfo & a ){
-	print_indented("Name", "%s", a.name().cstring());
-	print_indented("serialNumber", a.serial_number().to_string().cstring());
-	print_indented("hardwareId",  F3208X, a.hardware_id());
+	key("Name", "%s", a.name().cstring());
+	key("serialNumber", a.serial_number().to_string().cstring());
+	key("hardwareId",  F3208X, a.hardware_id());
 	if( a.name() != "bootloader" ){
-		print_indented("projectId", a.id().cstring());
-		print_indented("bspVersion",  a.bsp_version().cstring());
-		print_indented("sosVersion",  a.sos_version().cstring());
-		print_indented("cpuArchitecture",  a.cpu_architecture().cstring());
-		print_indented("cpuFreqency", F32D, a.cpu_frequency());
-		print_indented("applicationSignature", F32X, a.application_signature());
+		key("projectId", a.id().cstring());
+		key("bspVersion",  a.bsp_version().cstring());
+		key("sosVersion",  a.sos_version().cstring());
+		key("cpuArchitecture",  a.cpu_architecture().cstring());
+		key("cpuFreqency", F32D, a.cpu_frequency());
+		key("applicationSignature", F32X, a.application_signature());
 
-		print_indented("bspGitHash",  a.bsp_git_hash().cstring());
-		print_indented("sosGitHash",  a.sos_git_hash().cstring());
-		print_indented("mcuGitHash",  a.mcu_git_hash().cstring());
+		key("bspGitHash",  a.bsp_git_hash().cstring());
+		key("sosGitHash",  a.sos_git_hash().cstring());
+		key("mcuGitHash",  a.mcu_git_hash().cstring());
 	}
 	return *this;
 }
@@ -401,7 +423,7 @@ Printer & Printer::operator << (const sgfx::Bitmap & a){
 
 	for(i=0; i < a.bmap()->area.height; i++){
 		sg_cursor_copy(&x_cursor, &y_cursor);
-		print_indented(var::String().format("line-%04d", i), "");
+		key(var::String().format("line-%04d", i), "");
 		for(j=0; j < a.bmap()->area.width; j++){
 			color = sgfx::Bitmap::api()->cursor_get_pixel(&x_cursor);
 			if( color ){
@@ -435,22 +457,22 @@ Printer & Printer::operator << (const sgfx::Cursor & a){
 }
 
 Printer & Printer::operator << (const sgfx::Point & a){
-	print_indented("x", "%d", a.x());
-	print_indented("y", "%d", a.y());
+	key("x", "%d", a.x());
+	key("y", "%d", a.y());
 	return *this;
 }
 
 Printer & Printer::operator << (const sgfx::Region & a){
-	print_indented("x", "%d", a.point().x());
-	print_indented("y", "%d", a.point().y());
-	print_indented("width", "%d", a.area().width());
-	print_indented("height", "%d", a.area().height());
+	key("x", "%d", a.point().x());
+	key("y", "%d", a.point().y());
+	key("width", "%d", a.area().width());
+	key("height", "%d", a.area().height());
 	return *this;
 }
 
 Printer & Printer::operator << (const sgfx::Area & a){
-	print_indented("width", "%d", a.width());
-	print_indented("height", "%d", a.height());
+	key("width", "%d", a.width());
+	key("height", "%d", a.height());
 	return *this;
 }
 
@@ -464,7 +486,7 @@ Printer & Printer::operator << (const sgfx::Vector & a){
 
 Printer & Printer::operator << (const sgfx::VectorPath & a){
 	for(u32 i=0; i < a.icon_count(); i++){
-		open_object(var::String().format("[%d]", i));
+		open_array(var::String().format("[%d]", i), current_level());
 		{
 			*this << a.icon_list()[i];
 			close_object();
@@ -477,63 +499,63 @@ Printer & Printer::operator << (const sgfx::VectorPathDescription & a){
 
 	switch( a.type() ){
 		case sgfx::VectorPathDescription::NONE:
-			print_indented("type", "none");
+			key("type", "none");
 			break;
 		case sgfx::VectorPathDescription::MOVE:
-			print_indented("type", "move");
-			open_object("point");
+			key("type", "move");
+			open_object("point", current_level());
 			{
 				*this << a.to_move().point;
 				close_object();
 			}
 			break;
 		case sgfx::VectorPathDescription::LINE:
-			print_indented("type", "line");
-			open_object("point");
+			key("type", "line");
+			open_object("point", current_level());
 			{
 				*this << a.to_line().point;
 				close_object();
 			}
 			break;
 		case sgfx::VectorPathDescription::QUADRATIC_BEZIER:
-			print_indented("type", "quadratic bezier");
-			open_object("point");
+			key("type", "quadratic bezier");
+			open_object("point", current_level());
 			{
 				*this << a.to_quadratic_bezier().point;
 				close_object();
 			}
 
-			open_object("control");
+			open_object("control", current_level());
 			{
 				*this << a.to_quadratic_bezier().control;
 				close_object();
 			}
 			break;
 		case sgfx::VectorPathDescription::CUBIC_BEZIER:
-			print_indented("type", "cubic bezier");
-			open_object("point");
+			key("type", "cubic bezier");
+			open_object("point", current_level());
 			{
 				*this << a.to_cubic_bezier().point;
 				close_object();
 			}
 
-			open_object("control0");
+			open_object("control0", current_level());
 			{
 				*this << a.to_cubic_bezier().control[0];
 				close_object();
 			}
-			open_object("control1");
+			open_object("control1", current_level());
 			{
 				*this << a.to_cubic_bezier().control[1];
 				close_object();
 			}
 			break;
 		case sgfx::VectorPathDescription::CLOSE:
-			print_indented("type", "close");
+			key("type", "close");
 			break;
 		case sgfx::VectorPathDescription::POUR:
-			print_indented("type", "pour");
-			open_object("point");
+			key("type", "pour");
+			open_object("point", current_level());
 			{
 				*this << a.to_pour().point;
 				close_object();
@@ -556,98 +578,114 @@ Printer & Printer::operator << (const TraceEvent & a){
 		case LINK_POSIX_TRACE_ERROR: id = "error"; break;
 		default: id = "other"; break;
 	}
-	print_indented("timestamp", F32U ".%06ld", clock_time.seconds(), clock_time.nanoseconds()/1000UL);
-	print_indented("id", "%s", id.cstring());
-	print_indented("thread id", "%d", a.thread_id());
-	print_indented("pid", "%d", a.pid());
-	print_indented("program address", "0x%lX", a.program_address());
-	print_indented("message", a.message().cstring());
+	key("timestamp", F32U ".%06ld", clock_time.seconds(), clock_time.nanoseconds()/1000UL);
+	key("id", "%s", id.cstring());
+	key("thread id", "%d", a.thread_id());
+	key("pid", "%d", a.pid());
+	key("program address", "0x%lX", a.program_address());
+	key("message", a.message().cstring());
 	return *this;
 }
 
 Printer & Printer::operator << (const appfs_file_t & a){
-	print_indented("name", "%s", a.hdr.name);
-	print_indented("id", "%s", a.hdr.id);
-	print_indented("mode", "0%o", a.hdr.mode);
-	print_indented("version", "%d.%d", a.hdr.version >> 8, a.hdr.version & 0xff);
-	print_indented("startup", "%p", a.exec.startup);
-	print_indented("code_start", "%p", a.exec.code_start);
-	print_indented("code_size", "%p", a.exec.code_size);
-	print_indented("ram_start", "%p", a.exec.ram_start);
-	print_indented("ram_size", "%ld", a.exec.ram_size);
-	print_indented("data_size", "%ld", a.exec.data_size);
-	print_indented("o_flags", "0x%lX", a.exec.o_flags);
-	print_indented("signature", "0x%lX", a.exec.signature);
+	key("name", "%s", a.hdr.name);
+	key("id", "%s", a.hdr.id);
+	key("mode", "0%o", a.hdr.mode);
+	key("version", "%d.%d", a.hdr.version >> 8, a.hdr.version & 0xff);
+	key("startup", "%p", a.exec.startup);
+	key("code_start", "%p", a.exec.code_start);
+	key("code_size", "%p", a.exec.code_size);
+	key("ram_start", "%p", a.exec.ram_start);
+	key("ram_size", "%ld", a.exec.ram_size);
+	key("data_size", "%ld", a.exec.data_size);
+	key("o_flags", "0x%lX", a.exec.o_flags);
+	key("signature", "0x%lX", a.exec.signature);
 	return *this;
 }
 
 Printer & Printer::operator << (const AppfsFileAttributes & a){
-	print_indented("name", a.name().cstring());
-	print_indented("id", a.id().cstring());
-	print_indented("version", "%d.%d", a.version() >> 8, a.version() & 0xff);
-	print_indented("o_flags", "0x%lX", a.o_flags());
-	print_indented("ram_size", "%ld", a.ram_size());
+	key("name", a.name().cstring());
+	key("id", a.id().cstring());
+	key("version", "%d.%d", a.version() >> 8, a.version() & 0xff);
+	key("o_flags", "0x%lX", a.o_flags());
+	key("ram_size", "%ld", a.ram_size());
 	return *this;
 }
 
 bool Printer::update_progress(int progress, int total){
 	const u32 width = m_progress_width;
 
-	if( (m_progress_state == 0) && total ){
-		key(var::String().format("progress-%d", m_key_count++), "");
-		for(u32 i=0; i < width; i++){
-			printf(".");
-		}
-		for(u32 i = 0; i < width; i++){
-			printf("\b"); //backspace
-		}
-		m_progress_state++;
-		fflush(stdout);
-	}
-
-	if( m_progress_state	> 0 ){
-
-		while( (total != 0) && (m_progress_state <= (progress*width+total/2)/total) ){
-			printf("#");
+	if( verbose_level() >= Printer::INFO ){
+		if( (m_progress_state == 0) && total ){
+			key("progress", "");
+			for(u32 i=0; i < width; i++){
+				printf(".");
+			}
+			for(u32 i = 0; i < width; i++){
+				printf("\b"); //backspace
+			}
 			m_progress_state++;
 			fflush(stdout);
 		}
 
-		if( (progress >= total) || (total == 0) ){
-			m_progress_state = 0;
+		if( m_progress_state	> 0 ){
+
+			while( (total != 0) && (m_progress_state <= (progress*width+total/2)/total) ){
+				printf("#");
+				m_progress_state++;
+				fflush(stdout);
+			}
+
+			if( (progress >= total) || (total == 0) ){
+				m_progress_state = 0;
+			}
 		}
 	}
 
 	return false;
 }
 
-Printer & Printer::open_object(const var::ConstString & key){
-	print_indented(key, "");
+Printer & Printer::open_object(const var::ConstString & key, enum verbose_level level){
+	if( verbose_level() >= level ){
+		print_indented(key, "");
+	}
+	m_container.push_back(CONTAINER_OBJECT | (level << 8));
+	m_indent++;
+	return *this;
+}
+
+Printer & Printer::open_array(const var::ConstString & key, enum verbose_level level){
+	if( verbose_level() >= level ){
+		print_indented(key, "");
+	}
+	m_container.push_back(CONTAINER_ARRAY | (level << 8));
 	m_indent++;
 	return *this;
 }
 
 Printer & Printer::key(const var::ConstString & key, const var::String & a){
-	print_indented(key, "%s", a.cstring());
+	this->key(key, "%s", a.cstring());
 	return *this;
 }
 
 Printer & Printer::key(const var::ConstString & key, const char * fmt, ...){
-	va_list list;
-	va_start(list, fmt);
-	vprint_indented(key, fmt, list);
-	va_end(list);
+	if( verbose_level() >= current_level() ){
+		va_list list;
+		va_start(list, fmt);
+		vprint_indented(key, fmt, list);
+		va_end(list);
+	}
 	return *this;
 }
 
 Printer & Printer::key(const var::ConstString & key, const var::JsonValue & a){
 
 	if(a.is_object()){
-		open_object(key);
+		open_object(key, current_level() );
 		*this << a.to_object();
 		close_object();
 	} else if( a.is_array() ){
-		open_object(key);
+		open_object(key, current_level() );
 		*this << a.to_array();
 		close_object();
 	} else {
@@ -656,35 +694,62 @@ Printer & Printer::key(const var::ConstString & key, const var::JsonValue & a){
 	return *this;
 }
 
+Printer & Printer::debug(const char * fmt, ...){
+	if( verbose_level() == DEBUG ){
+		va_list list;
+		va_start(list, fmt);
+		vprint_indented("debug", fmt, list);
+		va_end(list);
+	}
+	return *this;
+
+}
+
+Printer & Printer::info(const char * fmt, ...){
+	if( verbose_level() >= INFO ){
+		va_list list;
+		va_start(list, fmt);
+		vprint_indented("info", fmt, list);
+		va_end(list);
+	}
+	return *this;
+}
+
 
 Printer & Printer::message(const char * fmt, ...){
-	va_list list;
-	va_start(list, fmt);
-	vprint_indented(var::String().format("message-%d", m_key_count++), fmt, list);
-	va_end(list);
+	if( verbose_level() >= MESSAGE ){
+		va_list list;
+		va_start(list, fmt);
+		vprint_indented("message", fmt, list);
+		va_end(list);
+	}
 	return *this;
 }
 
 Printer & Printer::warning(const char * fmt, ...){
-	va_list list;
-	va_start(list, fmt);
-	vprint_indented(var::String().format("warning-%d", m_key_count++), fmt, list);
-	va_end(list);
+	if( verbose_level() >= WARNING ){
+		va_list list;
+		va_start(list, fmt);
+		vprint_indented("warning", fmt, list);
+		va_end(list);
+	}
 	return *this;
 }
 
 Printer & Printer::error(const char * fmt, ...){
-	va_list list;
-	va_start(list, fmt);
-	vprint_indented(var::String().format("error-%d", m_key_count++), fmt, list);
-	va_end(list);
+	if( verbose_level() >= ERROR ){
+		va_list list;
+		va_start(list, fmt);
+		vprint_indented("error", fmt, list);
+		va_end(list);
+	}
 	return *this;
 }
 
 Printer & Printer::fatal(const char * fmt, ...){
 	va_list list;
 	va_start(list, fmt);
-	vprint_indented(var::String().format("fatal-%d", m_key_count++), fmt, list);
+	vprint_indented("fatal", fmt, list);
 	va_end(list);
 	return *this;
 }

@@ -266,8 +266,13 @@ public:
 		return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), &attr);
 	}
 
-	int set_action(mcu_action_t & action) const {
+	int set_action(const mcu_action_t & action) const {
 		return ioctl(_IOCTLW(ident_char, I_MCU_SETACTION, mcu_action_t), &action);
+	}
+
+	Periph & operator << (const mcu_action_t & action){
+		set_action(action);
+		return *this;
 	}
 
 
