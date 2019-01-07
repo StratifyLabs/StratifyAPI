@@ -1,5 +1,8 @@
 
 #include <cstdarg>
+#if defined __win32
+#include <windows.h>
+#endif
 
 #include "sys/Printer.hpp"
 #include "sys/Sys.hpp"
@@ -17,7 +20,6 @@
 #include "sgfx/Vector.hpp"
 
 #if defined __win32
-#include <windows.h>
 unsigned int sys::Printer::m_default_color = (unsigned int)-1;
 #endif
 

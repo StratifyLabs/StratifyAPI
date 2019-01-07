@@ -9,6 +9,10 @@
 #include "../sys/ProgressCallback.hpp"
 #include "../var/Vector.hpp"
 
+#if defined __win32
+#undef ERROR
+#endif
+
 namespace var {
 class DataInfo;
 class Data;
