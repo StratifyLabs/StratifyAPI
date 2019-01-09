@@ -14,10 +14,14 @@ namespace sys {
 class FileInfo : public api::SysWorkObject {
 public:
 
+#if defined __link
+	FileInfo(link_transport_mdriver_t * driver = 0);
+#else
 	FileInfo();
+#endif
 
 	/*! Gets the file info for the specified path.
-	 *
+
 	 * @param path The file path (can be a file, directory or device)
 	 * @return Zero on success or less than zero with errno set
 	 */

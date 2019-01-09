@@ -30,7 +30,7 @@ Link::Link(){
 	m_is_bootloader = false;
 	m_status_message = "";
 	m_error_message = "";
-	m_driver = &m_default_driver;
+	m_driver = &m_driver_instance;
 	link_load_default_driver(m_driver);
 }
 
@@ -110,7 +110,7 @@ int Link::connect(const var::ConstString & path, bool is_legacy){
 
 	if ( m_driver->dev.handle == LINK_PHY_OPEN_ERROR ){
 
-		m_driver->dev.handle = m_driver->dev.open(path.str(), 0);
+		m_driver->dev.handle = m_driver->dev.open(path.str(), m_driver->options);
 		if( m_driver->dev.handle == LINK_PHY_OPEN_ERROR ){
 			m_error_message = "Failed to Connect to Device";
 			return -1;

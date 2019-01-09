@@ -4,14 +4,20 @@
 #include "sys/File.hpp"
 #include "sys/FileInfo.hpp"
 
-namespace sys {
+using namespace sys;
+#if defined __link
+
+FileInfo::FileInfo(link_transport_mdriver_t * driver) {
+	memset(&m_stat, 0, sizeof(m_stat));
+	m_driver = driver;
+}
+#else
 
 FileInfo::FileInfo() {
 	memset(&m_stat, 0, sizeof(m_stat));
-#if defined __link
-	m_driver = File::default_driver();
-#endif
 }
+#endif
+
 
 int FileInfo::get_info(const var::ConstString & path){
 	int ret;
@@ -70,4 +76,4 @@ bool FileInfo::is_executable() const {
 	return false;
 }
 
-} /* namespace sys */
+

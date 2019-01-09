@@ -477,6 +477,17 @@ public:
 	  */
 	link_transport_mdriver_t * driver() const { return m_driver; }
 
+	/*! \details Assigns the driver options to the link driver.
+	 *
+	 */
+	void set_driver_options(const void * options){
+		if( m_driver ){
+			m_driver->options = options;
+		} else {
+			m_error_message = "driver is null";
+		}
+	}
+
 	/*! \details Sets the driver used by this object.
 	  *
 	  * If no driver is set, the default driver (serial port) is used.
@@ -565,7 +576,7 @@ private:
 	bootloader_attr_t m_bootloader_attributes;
 
 
-	link_transport_mdriver_t m_default_driver;
+	link_transport_mdriver_t m_driver_instance;
 	link_transport_mdriver_t * m_driver;
 };
 
