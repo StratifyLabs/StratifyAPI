@@ -856,7 +856,7 @@ int Link::run_app(const var::ConstString & path){
 			this->disconnect();
 			return -2;
 		} else {
-			m_error_message.format("Failed to run program: %s (%d, %d)", path.str(), err, link_errno);
+			m_error_message.format("Failed to run program -> %s (%d, %d)", path.cstring(), err, link_errno);
 			return -1;
 		}
 	}

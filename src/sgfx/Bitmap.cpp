@@ -20,7 +20,8 @@ Region Bitmap::get_viewable_region() const {
 }
 
 void Bitmap::calculate_members(const Area & dim){
-	api()->bmap_set_data(&m_bmap, to<sg_bmap_data_t>(), dim, m_bmap.bits_per_pixel);
+	//we need to grab the read only in case the Data object is read only
+	api()->bmap_set_data(&m_bmap, (sg_bmap_data_t*)read_only_data(), dim, m_bmap.bits_per_pixel);
 }
 
 int Bitmap::set_bits_per_pixel(u8 bits_per_pixel){

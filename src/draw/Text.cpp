@@ -19,11 +19,13 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 
 	if( !string().is_empty() ){
 
-		font = resolve_font(d.height());
-
-		if( font == 0 ){
-			return;
+		if( this->font() == 0 ){
+			font = resolve_font(d.height());
+			if( font == 0 ){ return; }
+		} else {
+			font = this->font();
 		}
+
 		h = font->get_height();
 		len = font->calculate_length(string());
 		top_left.y = p.y;

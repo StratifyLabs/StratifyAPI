@@ -410,6 +410,9 @@ public:
 	void * data(){ return m_mem_write; }
 	const void * data() const { return m_mem; }
 
+	const void * read_only_data() const{ return m_mem; }
+	void * read_write_data(){ return m_mem_write; }
+
 	/*! \details Free the memory associated with this object.
 	 * This will only perform any operations if the memory was
 	 * dynamically allocating using this object.
