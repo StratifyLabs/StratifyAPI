@@ -1,14 +1,11 @@
 #include <cstring>
+#include <mcu/types.h>
 #include "api/ApiObject.hpp"
 
 using namespace api;
 
 const char * ApiInfo::git_hash(){
-#if defined SOS_GIT_HASH
 	return SOS_GIT_HASH;
-#else
-	return "unknown";
-#endif
 }
 
 const char * ApiInfo::operating_system_name(){
