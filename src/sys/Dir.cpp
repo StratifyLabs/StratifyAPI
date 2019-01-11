@@ -1,9 +1,6 @@
 //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #include <sys/stat.h>
-#if defined __win32
-#include "dirent_windows.h"
-#endif
 
 #include "var/String.hpp"
 #include "sys/File.hpp"
@@ -212,14 +209,12 @@ const char * Dir::read(){
 		if( link_readdir_r(driver(), m_dirp, &m_entry, &result) < 0 ){
 			return 0;
 		}
-#if defined __macosx
 	} else {
 		struct dirent * result_local;
 		if( (readdir_r(m_dirp_local, &m_entry_local, &result_local) < 0) || (result_local == 0) ){
 			return 0;
 		}
 		return m_entry_local.d_name;
-#endif
 	}
 #else
 	struct dirent * result;

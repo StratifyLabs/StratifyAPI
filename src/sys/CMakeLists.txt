@@ -10,7 +10,6 @@ set(SOURCELIST
 	${SOURCES_PREFIX}/Thread.cpp
 	${SOURCES_PREFIX}/Mutex.cpp
 	${SOURCES_PREFIX}/JsonPrinter.cpp
-	${SOURCES_PREFIX}/dirent_windows.h
 	${SOURCES_PREFIX}/Signal.cpp
 	${SOURCES_PREFIX}/ProgressCallback.cpp
 	${SOURCES_PREFIX}/Printer.cpp)

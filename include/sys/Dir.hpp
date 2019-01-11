@@ -9,6 +9,13 @@
 #if defined __win32
 #include <winsock2.h>
 #include <windows.h>
+#if !defined FALSE
+#define FALSE 0
+#endif
+#if !defined TRUE
+#define TRUE 1
+#endif
+#include "dirent_windows.h"
 #undef ERROR
 #else
 #include <dirent.h>
@@ -120,12 +127,8 @@ private:
 	link_transport_mdriver_t * m_driver;
 	link_transport_mdriver_t * driver(){ return m_driver; }
 
-#if defined __win32
-	void * m_dirp_local;
-#else
 	DIR * m_dirp_local;
 	struct dirent m_entry_local;
-#endif
 
 #else
 	DIR * m_dirp;
