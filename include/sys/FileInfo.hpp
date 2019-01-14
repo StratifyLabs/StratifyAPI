@@ -75,6 +75,7 @@ private:
 #ifdef __link
 	struct link_stat m_stat;
 	link_transport_mdriver_t * m_driver;
+	bool m_is_local;
 #else
 	struct stat m_stat;
 #endif

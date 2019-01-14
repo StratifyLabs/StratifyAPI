@@ -17,6 +17,29 @@ using namespace inet;
 
 int Socket::m_is_initialized = 0;
 
+SocketAddressInfo::SocketAddressInfo(int family, int type, int protocol, int flags){
+	memset(&m_addrinfo, 0, sizeof(m_addrinfo));
+	set_flags(flags);
+	set_family(family);
+	set_type(type);
+	set_protocol(protocol);
+	if( family == FAMILY_INET ){
+		m_sockaddr.allocate(sizeof(struct sockaddr_in));
+		m_sockaddr.to<struct sockaddr_in>()->sin_len = m_sockaddr.size();
+		m_sockaddr.to<struct sockaddr_in>()->sin_family = family;
+		memset(&(m_sockaddr.to<struct sockaddr_in>()->sin_addr), 0, sizeof(struct in_addr));
+		memset(m_sockaddr.to<struct sockaddr_in>()->sin_zero, 0, sizeof(m_sockaddr.to<struct sockaddr_in>()->sin_zero));
+	} else {
+		m_sockaddr.allocate(sizeof(struct sockaddr_in6));
+		m_sockaddr.to<struct sockaddr_in6>()->sin6_len = m_sockaddr.size();
+		m_sockaddr.to<struct sockaddr_in6>()->sin6_family = family;
+		m_sockaddr.to<struct sockaddr_in6>()->sin6_flowinfo = 0;
+		m_sockaddr.to<struct sockaddr_in6>()->sin6_scope_id = 0;
+		m_sockaddr.to<struct sockaddr_in6>()->sin6_port = 0;
+		memset(&(m_sockaddr.to<struct sockaddr_in6>()->sin6_addr), 0, sizeof(struct in6_addr));
+	}
+}
+
 var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 		const var::ConstString & node,
 		const var::ConstString & server){

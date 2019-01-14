@@ -1,5 +1,8 @@
 /*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
+#if defined __link
+#include <sys/stat.h>
+#endif
 
 #include "sys/File.hpp"
 #include "sys/FileInfo.hpp"
@@ -33,6 +36,7 @@ int FileInfo::get_info(const var::ConstString & path){
 int FileInfo::get_info(int file_no){
 	int ret;
 #if defined __link
+	m_is_local = (m_driver == 0);
 	ret = link_fstat(m_driver, file_no, &m_stat);
 #else
 	ret = ::fstat(file_no, &m_stat);
@@ -43,10 +47,20 @@ int FileInfo::get_info(int file_no){
 
 
 bool FileInfo::is_directory() const {
+#if defined __link
+	if( m_is_local ){
+		return (m_stat.st_mode & S_IFMT) == S_IFDIR;
+	}
+#endif
 	return (m_stat.st_mode & File::FORMAT) == File::DIRECTORY;
 }
 
 bool FileInfo::is_file() const {
+#if defined __link
+	if( m_is_local ){
+		return (m_stat.st_mode & S_IFMT) == S_IFREG;
+	}
+#endif
 	return (m_stat.st_mode & File::FORMAT) == File::REGULAR;
 }
 
@@ -56,14 +70,29 @@ bool FileInfo::is_device() const {
 }
 
 bool FileInfo::is_block_device() const {
+#if defined __link
+	if( m_is_local ){
+		return (m_stat.st_mode & S_IFMT) == S_IFBLK;
+	}
+#endif
 	return (m_stat.st_mode & (File::FORMAT)) == File::BLOCK;
 }
 
 bool FileInfo::is_character_device() const {
+#if defined __link
+	if( m_is_local ){
+		return (m_stat.st_mode & S_IFMT) == S_IFCHR;
+	}
+#endif
 	return (m_stat.st_mode & (File::FORMAT)) == File::CHARACTER;
 }
 
 bool FileInfo::is_socket() const {
+#if defined __link
+	if( m_is_local ){
+		return (m_stat.st_mode & S_IFMT) == S_IFSOCK;
+	}
+#endif
 	return (m_stat.st_mode & File::FORMAT) == File::FILE_SOCKET;
 }
 

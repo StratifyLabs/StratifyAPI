@@ -130,17 +130,19 @@ int HttpClient::connect_to_server(const var::ConstString & domain_name, u16 port
 		m_address = address_list.at(0);
 		m_address.set_port(port);
 		if( socket().create(m_address)  < 0 ){
+			set_error_number(FAILED_TO_CREATE_SOCKET);
 			return -1;
 		}
 
 		if( socket().connect(m_address) < 0 ){
+			set_error_number(FAILED_TO_CONNECT_TO_SOCKET);
 			return -1;
 		}
 
 		return 0;
 	}
 
-
+	set_error_number(FAILED_TO_FIND_ADDRESS);
 	return -1;
 }
 
@@ -197,11 +199,13 @@ int HttpClient::send_header(const var::ConstString & method,
 #endif
 
 	if( socket().write(m_header) != (int)m_header.length() ){
+		set_error_number(FAILED_TO_WRITE_HEADER);
 		return -1;
 	}
 
 	if( file ){
 		if( socket().write(*file, m_transfer_size, file->size(), progress_callback) < 0 ){
+			set_error_number(FAILED_TO_WRITE_DATA);
 			return -1;
 		}
 	}
@@ -260,6 +264,7 @@ int HttpClient::listen_for_data(const sys::File & file, const sys::ProgressCallb
 
 			//read bytes_incoming from the socket and write it to the output file
 			if( file.write(socket(), bytes_incoming, bytes_incoming) != (int)bytes_incoming ){
+				set_error_number(FAILED_TO_WRITE_INCOMING_DATA_TO_FILE);
 				return -1;
 			}
 

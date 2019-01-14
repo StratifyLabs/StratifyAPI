@@ -77,6 +77,15 @@ public:
 	int trace(const var::ConstString & url);
 	int connect(const var::ConstString & url);
 
+	enum {
+		NONE,
+		FAILED_TO_CREATE_SOCKET,
+		FAILED_TO_CONNECT_TO_SOCKET,
+		FAILED_TO_WRITE_HEADER,
+		FAILED_TO_WRITE_DATA,
+		FAILED_TO_WRITE_INCOMING_DATA_TO_FILE,
+		FAILED_TO_FIND_ADDRESS
+	};
 
 	/*! \details Returns a reference to the header that is returned
 	  * by the request.

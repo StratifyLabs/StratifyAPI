@@ -202,6 +202,11 @@ public:
 		}
 	}
 
+	int free(){
+		clear();
+		return Data::free();
+	}
+
 	static int ascending(const void * a, const void * b){
 		const T * object_a = (const T*)a;
 		const T * object_b = (const T*)b;

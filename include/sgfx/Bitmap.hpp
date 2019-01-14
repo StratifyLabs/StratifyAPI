@@ -217,7 +217,7 @@ public:
 	int alloc(const Area & d){ return allocate(d); }
 
 	/*! \details Free memory associated with bitmap (auto freed on ~Bitmap) */
-	void free();
+	int free();
 
 	void transform_flip_x() const { api()->transform_flip_x(bmap()); }
 	void transform_flip_y() const { api()->transform_flip_y(bmap()); }

@@ -419,7 +419,7 @@ public:
 	 *
 	 * @return Zero on success
 	 */
-	int free();
+	virtual int free();
 
 	//deprecated -- use fill(0);
 	void clear();

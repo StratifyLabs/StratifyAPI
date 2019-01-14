@@ -197,6 +197,8 @@ Printer & Printer::operator << (const var::Data & a){
 
 	int i;
 	for(i=0; i < s; i++){
+		print("\n");
+		print_indentation();
 		print("[%d]=", i);
 		if( o_flags & PRINT_HEX ){
 			if( o_flags & PRINT_32 ){
@@ -239,7 +241,6 @@ Printer & Printer::operator << (const var::Data & a){
 				print(" %c", ptru8[i]);
 			}
 		}
-		print("\n");
 	}
 
 	return *this;

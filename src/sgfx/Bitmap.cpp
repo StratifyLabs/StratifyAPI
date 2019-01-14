@@ -82,10 +82,12 @@ int Bitmap::allocate(const Area & dim){
 	return 0;
 }
 
-void Bitmap::free(){
-	if( Data::free() == 0 ){
+int Bitmap::free(){
+	int result = Data::free();
+	if( result == 0 ){
 		calculate_members(Area());
 	}
+	return result;
 }
 
 Bitmap::Bitmap(){

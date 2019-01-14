@@ -1,6 +1,7 @@
 //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include "var/String.hpp"
 #include "sys/File.hpp"
@@ -43,22 +44,26 @@ int Dir::remove(const var::ConstString & path, bool recursive, link_transport_md
 		Dir d;
 		if( d.open(path) == 0 ){
 			var::String entry;
-			while( d.get_entry(entry) && (ret >= 0) ){
+			while( (entry = d.read()).is_empty() == false ){
 				FileInfo info;
-				info.get_info(entry.str());
+				var::String entry_path;
+				entry_path << path << "/" << entry;
+				if( info.get_info(entry_path) < 0 ){
+
+				}
 				if( info.is_directory() ){
-					if( entry != "." && entry != ".." ){
+					if( entry != "." && entry != ".."){
 #if defined __link
-						ret = Dir::remove(entry.cstring(), true, driver);
+						ret = Dir::remove(entry_path, true, driver);
 #else
-						ret = Dir::remove(entry.cstring(), true);
+						ret = Dir::remove(entry_path, true);
 #endif
 					}
 				} else {
 #if defined __link
-					ret = File::remove(entry.cstring(), driver);
+					ret = File::remove(entry_path, driver);
 #else
-					ret = File::remove(entry.cstring());
+					ret = File::remove(entry_path);
 #endif
 				}
 			}
@@ -69,7 +74,11 @@ int Dir::remove(const var::ConstString & path, bool recursive, link_transport_md
 	if( ret >= 0 ){
 		//this will remove an empty directory or a file
 #if defined __link
-		ret = File::remove(path, driver);
+		if( driver ){
+			ret = File::remove(path, driver);
+		} else {
+			ret = ::rmdir(path.cstring());
+		}
 #else
 		ret = File::remove(path);
 #endif
@@ -123,7 +132,7 @@ int Dir::open(const var::ConstString & name){
 		if( m_dirp_local == 0 ){
 			return -1;
 		}
-
+		m_path.assign(name);
 		return 0;
 	}
 #else
@@ -137,7 +146,6 @@ int Dir::open(const var::ConstString & name){
 
 
 	m_path.assign(name);
-
 	return 0;
 }
 
@@ -233,9 +241,11 @@ bool Dir::get_entry(var::String & path_dest){
 		return false;
 	}
 
-	path_dest.assign(m_path.str());
-	path_dest.append("/");
-	path_dest.append(entry);
+	path_dest.clear();
+	path_dest << m_path;
+	if( m_path.is_empty() == false ){
+		m_path << "/" << entry;
+	}
 	return true;
 }
 

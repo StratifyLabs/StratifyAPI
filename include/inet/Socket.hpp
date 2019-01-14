@@ -15,6 +15,7 @@ typedef uint32_t in_addr_t;
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <arpa/inet.h>
 #endif
 
 #include <mcu/types.h>
@@ -106,12 +107,10 @@ public:
 	 * @param flags Socket flags (default is none)
 	 *
 	 */
-	SocketAddressInfo(int family = FAMILY_INET, int type = TYPE_STREAM, int protocol = PROTOCOL_TCP, int flags = 0){
-		memset(&m_addrinfo, 0, sizeof(m_addrinfo));
-		set_flags(flags);
-		set_family(family);
-		set_type(type);
-		set_protocol(protocol);
+	SocketAddressInfo(int family = FAMILY_INET, int type = TYPE_STREAM, int protocol = PROTOCOL_TCP, int flags = 0);
+
+	bool is_valid(){
+		return m_sockaddr.size() > 0;
 	}
 
 	/*! \details Sets the flags used for getting address info.
@@ -211,6 +210,10 @@ public:
 	SocketAddress(){
 		m_protocol = 0;
 		m_type = 0;
+	}
+
+	bool is_valid(){
+		return m_sockaddr.size() > 0;
 	}
 
 	SocketAddress(const SocketAddressIpv4 & ipv4){
