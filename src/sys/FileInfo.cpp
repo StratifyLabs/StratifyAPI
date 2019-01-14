@@ -90,7 +90,11 @@ bool FileInfo::is_character_device() const {
 bool FileInfo::is_socket() const {
 #if defined __link
 	if( m_is_local ){
+#if !defined __win32
 		return (m_stat.st_mode & S_IFMT) == S_IFSOCK;
+#else
+		return false;
+#endif
 	}
 #endif
 	return (m_stat.st_mode & File::FORMAT) == File::FILE_SOCKET;

@@ -381,13 +381,11 @@ protected:
 private:
 
 	int add_space(){
-		if( count() >= capacity() ){
+		if( (capacity() == 0) || (count() >= capacity()-1) ){
 			if( Data::resize((m_count + jump_size()) * sizeof(T)) < 0 ){
 				return -1;
 			}
 		}
-		//construct the new items?
-
 		return 0;
 	}
 
