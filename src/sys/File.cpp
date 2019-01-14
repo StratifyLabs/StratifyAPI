@@ -3,6 +3,8 @@
 
 #include <cstdio>
 #include <cstring>
+#include <fcntl.h>
+
 #include "sys/File.hpp"
 #include "chrono/Timer.hpp"
 using namespace sys;
@@ -127,7 +129,21 @@ int File::create(const var::ConstString & name, bool overwrite, int perms){
 	int access = LINK_O_RDWR | LINK_O_CREAT;
 	if( overwrite ){
 		access |= LINK_O_TRUNC;
+	} else {
+		access |= LINK_O_EXCL;
 	}
+
+#if defined __link
+	if( m_driver == 0 ){
+		access = O_RDWR | O_CREAT;
+		if( overwrite ){
+			access |= O_TRUNC;
+		} else {
+			access |= O_EXCL;
+		}
+	}
+#endif
+
 	return open(name, access, perms);
 }
 
