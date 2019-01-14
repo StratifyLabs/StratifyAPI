@@ -132,18 +132,6 @@ int File::create(const var::ConstString & name, bool overwrite, int perms){
 	} else {
 		access |= LINK_O_EXCL;
 	}
-
-#if defined __link
-	if( m_driver == 0 ){
-		access = O_RDWR | O_CREAT;
-		if( overwrite ){
-			access |= O_TRUNC;
-		} else {
-			access |= O_EXCL;
-		}
-	}
-#endif
-
 	return open(name, access, perms);
 }
 
