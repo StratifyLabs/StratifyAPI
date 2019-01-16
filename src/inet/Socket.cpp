@@ -52,19 +52,29 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 		const var::ConstString & node,
 		const var::ConstString & server){
 	var::Vector<SocketAddressInfo> result;
+	int result_int;
 
 	struct addrinfo * info;
 
+	const char * server_cstring;
+	const char * node_cstring;
+
+	server_cstring = server.is_empty() ? 0 : server.cstring();
+	node_cstring = node.is_empty() ? 0 : node.cstring();
+
+
 	Socket::initialize();
 	//may return error number
+
+
 	m_addrinfo.ai_flags |= AI_CANONNAME;
-	if( getaddrinfo(node.str(), server.str(), &m_addrinfo, &info) != 0 ){
+	if( (result_int = getaddrinfo(node_cstring, server_cstring, &m_addrinfo, &info)) != 0 ){
 		return result;
 	}
 
 	do {
 		SocketAddressInfo value;
-		value.m_addrinfo = *info;
+		value.m_addrinfo = * info;
 		if( info->ai_addr ){
 			value.m_sockaddr.copy_contents(var::Data(info->ai_addr, info->ai_addrlen));
 		}
@@ -80,7 +90,6 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 	} while(info);
 
 	freeaddrinfo(info);
-
 	Socket::deinitialize();
 
 	return result;
@@ -181,18 +190,12 @@ int SocketAddressIpv4::set_address(const var::ConstString & addr){
 
 
 Socket::Socket(){
-#if defined __win32
-	m_socket=INVALID_SOCKET;
-#endif
+	m_socket = SOCKET_INVALID;
 	initialize();
 }
 
 bool Socket::is_valid() const {
-#if defined __win32
-	return m_socket != INVALID_SOCKET;
-#else
-	return m_socket >= 0;
-#endif
+	return m_socket != SOCKET_INVALID;
 }
 
 int Socket::decode_socket_return(int value) const {
@@ -337,13 +340,17 @@ int Socket::shutdown(int how) const{
 
 
 int Socket::close() {
+	int result = 0;
+	printf("Close regular socket\n");
+	if( m_socket != SOCKET_INVALID ){
 #if defined __win32
-	return decode_socket_return( closesocket(m_socket) );
+		result = decode_socket_return( closesocket(m_socket) );
 #else
-	int result = decode_socket_return( ::close(m_socket) );
-	m_socket = INVALID_SOCKET;
-	return result;
+		result = decode_socket_return( ::close(m_socket) );
 #endif
+		m_socket = SOCKET_INVALID;
+	}
+	return result;
 }
 
 Socket & Socket::operator << (const SocketOption & option){

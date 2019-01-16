@@ -11,6 +11,7 @@ namespace sgfx {}
 #include "sgfx/Bitmap.hpp"
 #include "sgfx/Area.hpp"
 #include "sgfx/Font.hpp"
+#include "sgfx/Cursor.hpp"
 #include "sgfx/FileFont.hpp"
 #include "sgfx/MemoryFont.hpp"
 #include "sgfx/SvgFont.hpp"

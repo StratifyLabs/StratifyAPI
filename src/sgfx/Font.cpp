@@ -8,7 +8,7 @@
 
 using namespace sgfx;
 
-FontInfo::FontInfo(u8 point_size, u8 style, const Font * font){
+FontInfo::FontInfo(u8 point_size, u8 style, Font * font){
 	m_point_size = point_size;
 	m_style = style;
 	m_font = font;
@@ -132,7 +132,7 @@ int Font::draw(const var::ConstString & const_string, Bitmap & bitmap, const Poi
 		}
 
 		//apply kerning
-		w += load_kerning(c, const_string.at(i));
+		w -= load_kerning(c, const_string.at(i));
 
 		if( w < 0 ){
 			return -1;

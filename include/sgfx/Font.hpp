@@ -17,7 +17,7 @@ class Font;
 class FontInfo : public api::SgfxInfoObject {
 public:
 
-	FontInfo(u8 point_size = 0, u8 style = 0, const Font * font = 0);
+	FontInfo(u8 point_size = 0, u8 style = 0,	Font * font = 0);
 
 	/*! \details Contsructs an object by parsing the path.
 	 *
@@ -69,7 +69,8 @@ public:
 	u8 point_size() const { return m_point_size; }
 
 	const Font * font() const { return m_font; }
-	void set_font(const Font * font){ m_font = font; }
+	Font * font(){ return m_font; }
+	void set_font(Font * font){ m_font = font; }
 
 	static int ascending_point_size(const void * a, const void * b);
 	static int ascending_style(const void * a, const void * b);
@@ -79,7 +80,7 @@ private:
 	var::String m_path;
 	u8 m_style;
 	u8 m_point_size;
-	const Font * m_font;
+	Font * m_font;
 
 };
 

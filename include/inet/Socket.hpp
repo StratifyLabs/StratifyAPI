@@ -526,7 +526,13 @@ protected:
 
 #if defined __win32
 	::SOCKET m_socket;
+	enum {
+		SOCKET_INVALID = INVALID_SOCKET
+	};
 #else
+	enum {
+		SOCKET_INVALID = -1
+	};
 	//socket on all other platforms is a file handler
 	int m_socket;
 #endif

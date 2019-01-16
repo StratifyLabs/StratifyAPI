@@ -412,7 +412,15 @@ public:
 	int write(int loc, const api::InfoObject & info) const { return write(loc, info.info_to_void(), info.info_size()); }
 
 	int write(const sys::File & source_file, u32 chunk_size, u32 size = 0xffffffff) const;
+	int write(int loc, const sys::File & source_file, u32 chunk_size, u32 size = 0xffffffff) const {
+		seek(loc);
+		return write(source_file, chunk_size, size);
+	}
 	int write(const sys::File & source_file, u32 chunk_size, u32 size, const ProgressCallback * progress_callback) const;
+	int write(int loc, const sys::File & source_file, u32 chunk_size, u32 size, const ProgressCallback * progress_callback) const {
+		seek(loc);
+		return write(source_file, chunk_size, size, progress_callback);
+	}
 
 	/*! \details Reads a line from a file.
 	 *

@@ -10,12 +10,12 @@
 using namespace inet;
 
 Http::Http(Socket & socket) : m_socket(socket){
-
 }
 
 HttpClient::HttpClient(Socket & socket) : Http(socket){
 	m_transfer_size = 1024;
 	m_is_chunked_transfer_encoding = false;
+	m_is_keep_alive = false;
 }
 
 int HttpClient::get(const var::ConstString & url, const sys::File & response, const sys::ProgressCallback * progress_callback){

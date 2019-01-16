@@ -32,7 +32,7 @@ public:
 	 * This list contains a list of the fonts that are available in the system assets.
 	 *
 	 */
-	static const var::Vector<sgfx::FontInfo> & font_info_list(){
+	static var::Vector<sgfx::FontInfo> & font_info_list(){
 		initialize();
 		return m_font_info_list;
 	}
