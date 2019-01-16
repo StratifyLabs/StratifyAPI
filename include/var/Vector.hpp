@@ -159,6 +159,11 @@ public:
 	  *
 	  */
 	int resize(u32 count){
+		//this needs to destruct each item that will be lost
+		u32 pop_count = count;
+		while( pop_count++ < this->count() ){
+			pop_back();
+		}
 		if( Data::resize(count*sizeof(T)) < 0 ){
 			return -1;
 		}

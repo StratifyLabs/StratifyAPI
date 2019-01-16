@@ -1,5 +1,5 @@
-#ifndef TEST_HPP
-#define TEST_HPP
+#ifndef SAPI_TEST_HPP
+#define SAPI_TEST_HPP
 
 /*! \brief Test framework
  * \details The test namespace includes a collection of
@@ -19,4 +19,4 @@ using namespace test;
 
 
 
-#endif // TEST_HPP
+#endif // SAPI_TEST_HPP

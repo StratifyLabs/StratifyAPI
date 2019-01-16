@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SGFX_HPP_
-#define SGFX_HPP_
+#ifndef SAPI_SGFX_HPP_
+#define SAPI_SGFX_HPP_
 
 /*! \brief Classes for Stratify Graphics library
  *
@@ -24,4 +24,4 @@ namespace sgfx {}
 using namespace sgfx;
 
 
-#endif /* SGFX_HPP_ */
+#endif /* SAPI_SGFX_HPP_ */

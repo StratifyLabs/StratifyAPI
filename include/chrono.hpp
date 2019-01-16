@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef CHRONO_HPP_
-#define CHRONO_HPP_
+#ifndef SAPI_CHRONO_HPP_
+#define SAPI_CHRONO_HPP_
 
 /*! \brief Chrono (managing time, timers and clocks)
  *
@@ -50,4 +50,4 @@ namespace chrono {}
 using namespace chrono;
 
 
-#endif /* CHRONO_HPP_ */
+#endif /* SAPI_CHRONO_HPP_ */

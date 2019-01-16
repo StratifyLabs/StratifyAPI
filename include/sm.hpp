@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SM_HPP_
-#define SM_HPP_
+#ifndef SAPI_SM_HPP_
+#define SAPI_SM_HPP_
 
 /*! \brief State Machine
  */
@@ -11,4 +11,4 @@ namespace sm {}
 
 using namespace sm;
 
-#endif /* SM_HPP_ */
+#endif /* SAPI_SM_HPP_ */

@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef FMT_HPP_
-#define FMT_HPP_
+#ifndef SAPI_FMT_HPP_
+#define SAPI_FMT_HPP_
 
 /*! \brief File Formats
  *
@@ -19,4 +19,4 @@ namespace fmt {}
 
 using namespace fmt;
 
-#endif /* FMT_HPP_ */
+#endif /* SAPI_FMT_HPP_ */

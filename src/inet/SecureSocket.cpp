@@ -9,16 +9,45 @@ using namespace inet;
 
 SecureSocketApi SecureSocket::m_api;
 
-SecureSocket::SecureSocket(){}
+SecureSocket::SecureSocket(){
+	m_ticket_lifetime = 0; //don't generate a ticket
+}
 
+SecureSocket::SecureSocket(u32 ticket_lifetime){
+	m_ticket_lifetime = ticket_lifetime;
+	m_ticket.set_size(0);
+}
 
 int SecureSocket::create(const SocketAddress & address){
-	return api()->socket(&m_context, address.family(), address.type(), address.protocol());
+	int result = api()->socket(&m_context, address.family(), address.type(), address.protocol());
+	m_fd = api()->fileno(&m_context);
+	return result;
 }
 
 //already documented in inet::Socket
 int SecureSocket::connect(const SocketAddress & address){
-	return api()->connect(m_context, address.to_sockaddr(), address.length(), address.canon_name().str());
+	int result;
+
+	if( m_ticket.size() > 0 ){
+		result = api()->parse_ticket(m_context, m_ticket.to_void(), m_ticket.size());
+	}
+
+	result = api()->connect(m_context, address.to_sockaddr(), address.length(), address.canon_name().str());
+
+	if( m_ticket_lifetime && result == 0){
+		m_ticket.set_size(2619);
+		do {
+			result = api()->write_ticket(m_context, m_ticket.to_void(), m_ticket.size(), m_ticket_lifetime);
+			if( result == MBEDTLS_ERR_SSL_BUFFER_TOO_SMALL ){
+				m_ticket.set_size(m_ticket.size() + 64);
+			}
+		} while( (result == MBEDTLS_ERR_SSL_BUFFER_TOO_SMALL) && (m_ticket.size() < 4096) );
+
+		if( result > 0 ){
+			m_ticket.set_size(result);
+		}
+	}
+	return result;
 }
 
 

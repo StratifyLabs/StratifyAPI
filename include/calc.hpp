@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef CALC_HPP_
-#define CALC_HPP_
+#ifndef SAPI_CALC_HPP_
+#define SAPI_CALC_HPP_
 
 /*! \brief Standard Calculation and Software Routines
  *
@@ -19,4 +19,4 @@ using namespace calc;
 
 
 
-#endif /* CALC_HPP_ */
+#endif /* SAPI_CALC_HPP_ */

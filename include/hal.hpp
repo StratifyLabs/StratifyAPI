@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef HAL_HPP_
-#define HAL_HPP_
+#ifndef SAPI_HAL_HPP_
+#define SAPI_HAL_HPP_
 
 /*! \brief Hardware Abstraction Layer
  * \details The hal namespace includes classes for accessing
@@ -55,4 +55,4 @@ namespace hal {}
 
 using namespace hal;
 
-#endif /* HAL_HPP_ */
+#endif /* SAPI_HAL_HPP_ */

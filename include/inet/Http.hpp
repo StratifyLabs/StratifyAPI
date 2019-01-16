@@ -84,7 +84,8 @@ public:
 		FAILED_TO_WRITE_HEADER,
 		FAILED_TO_WRITE_DATA,
 		FAILED_TO_WRITE_INCOMING_DATA_TO_FILE,
-		FAILED_TO_FIND_ADDRESS
+		FAILED_TO_FIND_ADDRESS,
+		FAILED_WRONG_DOMAIN
 	};
 
 	/*! \details Returns a reference to the header that is returned
@@ -155,6 +156,7 @@ private:
 
 	int m_content_length;
 	bool m_is_keep_alive;
+	var::String m_alive_domain;
 	bool m_is_follow_redirects;
 
 	bool m_is_chunked_transfer_encoding;

@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef EV_HPP_
-#define EV_HPP_
+#ifndef SAPI_EV_HPP_
+#define SAPI_EV_HPP_
 
 /*! \brief Events
  */
@@ -16,4 +16,4 @@ namespace ev {}
 
 using namespace ev;
 
-#endif /* SM_HPP_ */
+#endif /* SAPI_SM_HPP_ */

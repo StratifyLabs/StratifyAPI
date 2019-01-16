@@ -4,6 +4,7 @@
 #include "var.hpp"
 #include "sys.hpp"
 #include "inet/Url.hpp"
+#include "inet/SecureSocket.hpp"
 
 #define SHOW_HEADERS 0
 
@@ -27,8 +28,6 @@ int HttpClient::post(const var::ConstString & url, const var::ConstString & requ
 	request_file.data().copy_cstring(request.cstring());
 	return post(url, request_file, response, progress_callback);
 }
-
-
 
 int HttpClient::post(const var::ConstString & url, const sys::File & request, const sys::File & response, const sys::ProgressCallback * progress_callback){
 	return query("POST", url, &request, &response, progress_callback);
@@ -75,6 +74,7 @@ int HttpClient::query(const var::ConstString & command,
 	m_content_length = -1;
 	int result;
 	Url u(url);
+
 	result = connect_to_server(u.domain_name(), u.port());
 	if( result < 0 ){
 		return result;
@@ -122,13 +122,20 @@ int HttpClient::connect_to_server(const var::ConstString & domain_name, u16 port
 
 	if( (socket().fileno() >= 0) && is_keep_alive() ){
 		//already connected
-		return 0;
+		if( m_alive_domain == domain_name ){
+			return 0;
+		} else {
+			set_error_number(FAILED_WRONG_DOMAIN);
+			return -1;
+		}
 	}
 
+	m_alive_domain.clear();
 	var::Vector<SocketAddressInfo> address_list = address_info.fetch_node(domain_name);
 	if( address_list.count() > 0 ){
 		m_address = address_list.at(0);
 		m_address.set_port(port);
+
 		if( socket().create(m_address)  < 0 ){
 			set_error_number(FAILED_TO_CREATE_SOCKET);
 			return -1;
@@ -138,7 +145,7 @@ int HttpClient::connect_to_server(const var::ConstString & domain_name, u16 port
 			set_error_number(FAILED_TO_CONNECT_TO_SOCKET);
 			return -1;
 		}
-
+		m_alive_domain = domain_name;
 		return 0;
 	}
 
@@ -217,6 +224,7 @@ int HttpClient::send_header(const var::ConstString & method,
 int HttpClient::listen_for_header(){
 
 	var::String line;
+	m_header_response_pairs.clear();
 	do {
 		line = socket().gets('\n');
 		if( line.length() > 2 ){

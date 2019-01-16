@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef VAR_HPP_
-#define VAR_HPP_
+#ifndef SAPI_VAR_HPP_
+#define SAPI_VAR_HPP_
 
 
 /*! \brief Data Management
@@ -39,4 +39,4 @@ namespace var {}
 using namespace var;
 
 
-#endif /* VAR_HPP_ */
+#endif /* SAPI_VAR_HPP_ */

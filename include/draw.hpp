@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_HPP_
-#define DRAW_HPP_
+#ifndef SAPI_DRAW_HPP_
+#define SAPI_DRAW_HPP_
 
 /*! \brief Drawing Graphics
  *
@@ -47,4 +47,4 @@ namespace draw {}
 using namespace draw;
 
 
-#endif /* DRAW_HPP_ */
+#endif /* SAPI_DRAW_HPP_ */

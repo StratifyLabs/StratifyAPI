@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SYS_HPP_
-#define SYS_HPP_
+#ifndef SAPI_SYS_HPP_
+#define SAPI_SYS_HPP_
 
 /*! \brief System Access (POSIX wrappers)
  * \details The sys namespace includes classes for
@@ -41,4 +41,4 @@ namespace sys {}
 using namespace sys;
 
 
-#endif /* SYS_HPP_ */
+#endif /* SAPI_SYS_HPP_ */

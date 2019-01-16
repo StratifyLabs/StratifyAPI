@@ -1067,7 +1067,7 @@ int Link::update_os(const sys::File & image, bool verify, const ProgressCallback
 		}
 
 		if ( (err = link_writeflash(m_driver, loc, buffer, bytesRead)) != bytesRead ){
-			m_error_message.sprintf("Failed to write to link flash", link_errno);
+			m_error_message.format("Failed to write to link flash (%d) -> try the operation again", link_errno);
 			if ( err < 0 ){
 				err = -1;
 			}

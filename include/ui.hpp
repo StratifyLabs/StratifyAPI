@@ -1,8 +1,8 @@
 /* Copyright 2016 tgil All Rights Reserved */
 
 
-#ifndef UI_HPP_
-#define UI_HPP_
+#ifndef SAPI_UI_HPP_
+#define SAPI_UI_HPP_
 
 /*! \brief User Interface
  * \details The ui namespace is a collection of classes
@@ -40,4 +40,4 @@ using namespace ui;
 
 
 
-#endif /* UI_HPP_ */
+#endif /* SAPI_UI_HPP_ */
