@@ -424,36 +424,79 @@ Printer & Printer::operator << (const sgfx::Bitmap & a){
 
 	sgfx::Bitmap::api()->cursor_set(&y_cursor, a.bmap(), sg_point(0,0));
 
+	key(var::String().format("lines    "), "");
+	printf(" ");
+	for(j=0; j < a.bmap()->area.width; j++){
+		if( j % 10 ){
+			::printf("%d", j % 10);
+		} else {
+			::printf(" ");
+		}
+	}
+
+	key(var::String().format("start    "), "");
+	for(j=0; j < a.bmap()->area.width; j++){
+		::printf("-");
+	}
+	::printf("--");
 	for(i=0; i < a.bmap()->area.height; i++){
 		sg_cursor_copy(&x_cursor, &y_cursor);
+
 		key(var::String().format("line-%04d", i), "");
+		::printf("|");
 		for(j=0; j < a.bmap()->area.width; j++){
 			color = sgfx::Bitmap::api()->cursor_get_pixel(&x_cursor);
-			if( color ){
-				if( sgfx::Bitmap::api()->bits_per_pixel > 8 ){
-					::printf("%04X", color);
-				} else if(sgfx::Bitmap::api()->bits_per_pixel > 4){
-					::printf("%02X", color);
-				} else {
-					::printf("%X", color);
-				}
-			} else {
-				if( sgfx::Bitmap::api()->bits_per_pixel > 8 ){
-					::printf("....");
-				} else if(sgfx::Bitmap::api()->bits_per_pixel > 4){
-					::printf("..");
-				} else {
-					::printf(".");
-				}
-			}
-			if( (j < a.bmap()->area.width - 1) && (sgfx::Bitmap::api()->bits_per_pixel > 4)){
+			print_bitmap_color(color, a.bmap()->bits_per_pixel);
+			if( (j < a.bmap()->area.width - 1) && (a.bmap()->bits_per_pixel > 4)){
 				::printf(" ");
 			}
 		}
+		::printf("|");
 		sgfx::Bitmap::api()->cursor_inc_y(&y_cursor);
 	}
+	key(var::String().format("lines end", i), "");
+	for(j=0; j < a.bmap()->area.width; j++){
+		::printf("-");
+	}
+	::printf("--");
+
 	return *this;
 }
+
+void Printer::print_bitmap_color(u32 color, u8 bits_per_pixel){
+	if( color == 0 ){
+		printf(" ");
+	} else {
+		if( bits_per_pixel == 2 ){
+			switch(color){
+				case 1: printf("."); break;
+				case 2: printf("+"); break;
+				case 3: printf("@"); break;
+			}
+		} else if( bits_per_pixel < 8 ){
+			switch(color){
+				case 1: printf("."); break;
+				case 2: printf(","); break;
+				case 3: printf("-"); break;
+				case 4: printf("+"); break;
+				case 5: printf("="); break;
+				case 6: printf("^"); break;
+				case 7: printf("x"); break;
+				case 8: printf("o"); break;
+				case 9: printf("*"); break;
+				case 10: printf("#"); break;
+				case 11: printf("%%"); break;
+				case 12: printf("$"); break;
+				case 13: printf("@"); break;
+				case 14: printf("O"); break;
+				case 15: printf("X"); break;
+			}
+		} else {
+			printf("#");
+		}
+	}
+}
+
 
 Printer & Printer::operator << (const sgfx::Cursor & a){
 	return *this;

@@ -265,6 +265,7 @@ private:
 	u32 m_key_count;
 	bool m_is_json;
 	u32 m_o_flags;
+	void print_bitmap_color(u32 color, u8 bits_per_pixel);
 
 	enum verbose_level m_verbose_level;
 

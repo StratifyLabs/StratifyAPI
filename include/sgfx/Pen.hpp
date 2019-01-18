@@ -45,15 +45,17 @@ class Pen : public var::Item<sg_pen_t>, public api::SgfxInfoObject {
 public:
 
 	Pen();
-	Pen(sg_color_t color, u8 thickness = 1, bool fill = false);
+	Pen(sg_color_t color);
+	Pen(sg_color_t color, u8 thickness, bool fill);
+	Pen(sg_color_t color, u16 o_flags);
 	Pen(const sg_pen_t & pen){ set(pen); }
 
 	enum {
-		FLAG_IS_SOLID /*! Draw solid */ = SG_PEN_FLAG_IS_SOLID,
-		FLAG_IS_INVERT /*! Draw Invert (XOR) */ = SG_PEN_FLAG_IS_INVERT,
-		FLAG_IS_BLEND /*! Draw Blend (OR) */ = SG_PEN_FLAG_IS_BLEND,
-		FLAG_IS_ERASE /*! Draw Erase (NOT AND) */ = SG_PEN_FLAG_IS_ERASE,
-		FLAG_IS_FILL /*! Draw Icon with fill points */ = SG_PEN_FLAG_IS_FILL
+		IS_SOLID /*! Draw solid */ = SG_PEN_FLAG_IS_SOLID,
+		IS_INVERT /*! Draw Invert (XOR) */ = SG_PEN_FLAG_IS_INVERT,
+		IS_BLEND /*! Draw Blend (OR) */ = SG_PEN_FLAG_IS_BLEND,
+		IS_ERASE /*! Draw Erase (NOT AND) */ = SG_PEN_FLAG_IS_ERASE,
+		IS_FILL /*! Draw Icon with fill points */ = SG_PEN_FLAG_IS_FILL
 	};
 
 
@@ -86,6 +88,7 @@ public:
 	/*! \details Sets the pen to a blending mode (OR). */
 	void set_blend(){ set_solid(); data()->o_flags |= SG_PEN_FLAG_IS_INVERT; }
 
+	u16 o_flags() const { return data_const()->o_flags; }
 
 	/*! \details Sets the pen color.
 	 *

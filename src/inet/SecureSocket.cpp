@@ -30,6 +30,9 @@ int SecureSocket::connect(const SocketAddress & address){
 
 	if( m_ticket.size() > 0 ){
 		result = api()->parse_ticket(m_context, m_ticket.to_void(), m_ticket.size());
+		if( result < 0 ){
+			printf("Ticket parse failed: 0x%X\n", result*-1);
+		}
 	}
 
 	result = api()->connect(m_context, address.to_sockaddr(), address.length(), address.canon_name().str());

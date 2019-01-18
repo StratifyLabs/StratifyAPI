@@ -123,7 +123,7 @@ int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
 
 	o_flags = m_drawing_attr->bitmap().pen_flags();
 
-	m_drawing_attr->bitmap().set_pen_flags(sgfx::Pen::FLAG_IS_SOLID);
+	m_drawing_attr->bitmap().set_pen_flags(sgfx::Pen::IS_SOLID);
 
 	ret = api()->animate(m_drawing_attr->bitmap().bmap(),
 									m_drawing_attr->scratch()->bmap(),

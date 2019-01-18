@@ -32,6 +32,7 @@ int Bitmap::set_bits_per_pixel(u8 bits_per_pixel){
 			case 4:
 			case 8:
 				m_bmap.bits_per_pixel = bits_per_pixel;
+				allocate(area());
 				return 0;
 		}
 	}
@@ -74,7 +75,7 @@ void Bitmap::set_data(const sg_bmap_header_t * hdr, bool readonly){
 }
 
 int Bitmap::allocate(const Area & dim){
-	if( Data::alloc( calculate_size(dim) ) < 0 ){
+	if( Data::allocate( calculate_size(dim) ) < 0 ){
 		calculate_members(Area());
 		return -1;
 	}

@@ -3,8 +3,10 @@
 using namespace fmt;
 
 Svic::Svic(const var::ConstString & path){
-	open_readonly(path);
-	parse_icons();
+	if( path.is_empty() == false ){
+		open_readonly(path);
+		parse_icons();
+	}
 	m_current_icon_at = (u32)-1;
 }
 

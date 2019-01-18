@@ -35,9 +35,6 @@ public:
 		EIGHTH_COUNTER_CLOCKWISE /*! \brief Add/subtract to/from RIGHT, DOWN, etc */  = -SG_TRIG_POINTS/8,
 	};
 
-	sgfx::Pen & pen(){ return m_pen; }
-	const sgfx::Pen & pen() const { return m_pen; }
-
 	const var::String & name() const { return m_name; }
 	void set_name(const var::ConstString & name){
 		m_name = name;
@@ -51,7 +48,6 @@ public:
 
 private:
 	var::String m_name;
-	sgfx::Pen m_pen;
 	s16 m_rotation;
 };
 
