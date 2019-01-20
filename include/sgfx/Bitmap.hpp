@@ -23,7 +23,7 @@ public:
 	/*! \details Constructs an empty bitmap. */
 	Bitmap();
 
-	u8 bits_per_pixel(){ return m_bmap.bits_per_pixel; }
+	u8 bits_per_pixel() const { return m_bmap.bits_per_pixel; }
 
 	int set_bits_per_pixel(u8 bits_per_pixel);
 
@@ -51,6 +51,13 @@ public:
 	 * @param h Height of the new bitmap
 	 */
 	Bitmap(sg_size_t w, sg_size_t h);
+
+	/*! \details Constructs a new bitmap (dynamic memory allocation).
+	 *
+	 * @param area Dimensions of the bitmap
+	 * @param bits_per_pixel Number of bits per pixel (if not fixed by the library)
+	 */
+	Bitmap(const Area & area, u8 bits_per_pixel);
 
 	/*! \details Constructs a new bitmap (dynamic memory allocation).
 	 *
@@ -424,9 +431,6 @@ public:
 	inline void set_margin(sg_size_t v){
 		set_margin_bottom(v); set_margin_left(v); set_margin_right(v); set_margin_top(v);
 	}
-
-	/*! \details Shows the bitmap on the standard output. */
-	void show() const;
 
 	const sg_bmap_data_t * bmap_data(const Point & p) const;
 	sg_bmap_data_t * bmap_data(const Point & p);

@@ -31,6 +31,8 @@ int Bitmap::set_bits_per_pixel(u8 bits_per_pixel){
 			case 2:
 			case 4:
 			case 8:
+			case 16:
+			case 32:
 				m_bmap.bits_per_pixel = bits_per_pixel;
 				allocate(area());
 				return 0;
@@ -98,12 +100,12 @@ Bitmap::Bitmap(){
 
 Bitmap::Bitmap(sg_size_t w, sg_size_t h){
 	initialize_members();
-	alloc(w,h);
+	allocate(Area(w,h));
 }
 
 Bitmap::Bitmap(sg_area_t d){
 	initialize_members();
-	alloc(d.width,d.height);
+	allocate(d);
 }
 
 
@@ -115,6 +117,22 @@ Bitmap::Bitmap(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly){
 Bitmap::Bitmap(const sg_bmap_header_t * hdr, bool readonly){
 	initialize_members();
 	set_data(hdr, readonly);
+}
+
+Bitmap::Bitmap(const Area & area, u8 bits_per_pixel){
+	initialize_members();
+	if( api()->bits_per_pixel == 0 ){
+		switch(bits_per_pixel){
+			case 1:
+			case 2:
+			case 4:
+			case 8:
+			case 16:
+			case 32:
+				m_bmap.bits_per_pixel = bits_per_pixel;
+		}
+	}
+	allocate(area);
 }
 
 Bitmap::~Bitmap(){
@@ -347,41 +365,6 @@ sg_color_t Bitmap::calculate_color_sum(){
 	return color;
 }
 
-
-void Bitmap::show() const{
-	//api()->show(bmap());
-	sg_size_t i,j;
-
-	sg_color_t color;
-	sg_cursor_t y_cursor;
-	sg_cursor_t x_cursor;
-
-	api()->cursor_set(&y_cursor, bmap(), sg_point(0,0));
-
-	printf("\nshow bitmap %d x %d\n", bmap()->area.width, bmap()->area.height);
-	for(i=0; i < bmap()->area.height; i++){
-		sg_cursor_copy(&x_cursor, &y_cursor);
-		for(j=0; j < bmap()->area.width; j++){
-			color = api()->cursor_get_pixel(&x_cursor);
-			if( color ){
-				if( api()->bits_per_pixel > 8 ){
-					::printf("%04X", color);
-				} else if(api()->bits_per_pixel > 4){
-					::printf("%02X", color);
-				} else {
-					::printf("%X", color);
-				}
-			} else {
-				printf(".");
-			}
-			if( (j < bmap()->area.width - 1) && (api()->bits_per_pixel > 4)){
-				::printf(" ");
-			}
-		}
-		::printf("\n");
-		api()->cursor_inc_y(&y_cursor);
-	}
-}
 
 
 

@@ -26,7 +26,7 @@ public:
 	 * The font name should be name-style-size.ext
 	 *
 	 * - name is the name of the font
-	 * - style can be t, ti, el, eli, l, li, r, ri, m, mi, sb, sbi, b, bi, eb, ebi (see enum style for details)
+	 * - style can be t, ti, el, eli, l, li, r, ri, m, mi, sb, sbi, b, bi, eb, ebi, ico (see enum style for details)
 	 *
 	 * Examples include:
 	 *
@@ -59,7 +59,8 @@ public:
 		BOLD /*! Bold (b) */,
 		BOLD_ITALIC /*! Bold italic (bi) */,
 		EXTRA_BOLD /*! Extra bold (eb) */,
-		EXTRA_BOLD_ITALIC /*! Extra bold italic (ebi) */
+		EXTRA_BOLD_ITALIC /*! Extra bold italic (ebi) */,
+		ICONS /*! Font is a collection of bitmap icons (ico) */
 	};
 
 	const var::ConstString & name() const { return m_name; }

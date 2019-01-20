@@ -216,7 +216,7 @@ public:
 		const T * object_a = (const T*)a;
 		const T * object_b = (const T*)b;
 		if( *object_a < *object_b ){ return -1; }
-		if( *object_b > *object_a ){ return 1; }
+		if( *object_a > *object_b ){ return 1; }
 		return 0;
 	}
 
@@ -224,7 +224,7 @@ public:
 		const T * object_a = (const T*)a;
 		const T * object_b = (const T*)b;
 		if( *object_a < *object_b ){ return 1; }
-		if( *object_b > *object_a ){ return -1; }
+		if( *object_a > *object_b ){ return -1; }
 		return 0;
 	}
 

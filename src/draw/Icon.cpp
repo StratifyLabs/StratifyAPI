@@ -25,11 +25,10 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	VectorPath vector_path = sys::Assets::find_vector_path(name());
 
 	if( vector_path.is_valid() ){
-		Bitmap bitmap(attr.area());
+		Bitmap bitmap(attr.area(), attr.bitmap().bits_per_pixel());
 		bitmap.clear();
 		bitmap.set_pen( attr.bitmap().pen() );
 
-		printf("draw using pen color %d\n", bitmap.pen_color());
 		VectorMap map(bitmap, rotation());
 		sgfx::Vector::draw(bitmap, vector_path, map);
 
@@ -45,10 +44,6 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 		} else if( is_align_right() ){
 			p.y += bitmap.width() - (m_bounds.point.x + m_bounds.area.width);
 		}
-
-		sys::Printer printer;
-
-		printer << bitmap;
 
 		//now draw on the bitmap
 		attr.bitmap().draw_bitmap(p, bitmap);

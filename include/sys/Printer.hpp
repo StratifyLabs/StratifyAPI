@@ -227,6 +227,8 @@ public:
 
 	bool update_progress(int progress, int total);
 
+	static char get_bitmap_pixel_character(u32 color, u8 bits_per_pixel);
+
 protected:
 
 	void print_indentation();
@@ -265,7 +267,7 @@ private:
 	u32 m_key_count;
 	bool m_is_json;
 	u32 m_o_flags;
-	void print_bitmap_color(u32 color, u8 bits_per_pixel);
+	static void print_bitmap_pixel(u32 color, u8 bits_per_pixel);
 
 	enum verbose_level m_verbose_level;
 

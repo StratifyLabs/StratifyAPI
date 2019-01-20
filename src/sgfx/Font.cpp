@@ -46,6 +46,7 @@ FontInfo::FontInfo(const var::ConstString & path){
 		if( style == "bi" ){ m_style = BOLD_ITALIC; }
 		if( style == "eb" ){ m_style = EXTRA_BOLD; }
 		if( style == "ebi" ){ m_style = EXTRA_BOLD_ITALIC; }
+		if( style == "ico" ){ m_style = ICONS; }
 	}
 }
 

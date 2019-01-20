@@ -122,7 +122,7 @@ unsigned int Bmp::calc_row_size() const{
 	return (((m_dib.bits_per_pixel/8)*m_dib.width + 3) / 4) * 4;
 }
 
-int Bmp::seek_row(s32 y){
+int Bmp::seek_row(s32 y) const {
 	if( m_dib.height > 0 ){
 		//image is upside down -- seek to beginning of row
 		return seek(m_offset + calc_row_size() * (m_dib.height - (y + 1)));

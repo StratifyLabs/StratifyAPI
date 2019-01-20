@@ -75,7 +75,6 @@ sgfx::VectorPath Assets::find_vector_path(const var::ConstString & name){
 			}
 		}
 	}
-
 	return sgfx::VectorPath();
 }
 
@@ -89,21 +88,25 @@ const sgfx::FontInfo * Assets::find_font(u8 point_size, u8 style, const var::Con
 	//find point size and weight
 	for(u32 i=0; i < font_info_list().count(); i++){
 		sgfx::FontInfo & info(m_font_info_list.at(i));
-		if( info.point_size() <= point_size ){
-			closest_point_size = info.point_size();
-			if( info.style() <= style ){
-				closest_style = info.style();
-			}
-		}
+		if( ((style == FontInfo::ICONS) && (info.style() == FontInfo::ICONS)) ||
+			 ((style != FontInfo::ICONS) && (info.style() != FontInfo::ICONS)) ){
 
-		if( (info.style() == style) &&
-			 (info.point_size() == point_size) &&
-			 (info.name() == name || name.is_empty()) ){
-			//exact match
-			if( info.font() == 0 ){
-				info.set_font(new FileFont(info.path()));
+			if( info.point_size() <= point_size ){
+				closest_point_size = info.point_size();
+				if( info.style() <= style ){
+					closest_style = info.style();
+				}
 			}
-			return &info;
+
+			if( (info.style() == style) &&
+				 (info.point_size() == point_size) &&
+				 (info.name() == name || name.is_empty()) ){
+				//exact match
+				if( info.font() == 0 ){
+					info.set_font(new FileFont(info.path()));
+				}
+				return &info;
+			}
 		}
 	}
 
@@ -116,11 +119,14 @@ const sgfx::FontInfo * Assets::find_font(u8 point_size, u8 style, const var::Con
 	//first pass is to find the exact style in a point size that is less than or equal
 	for(u32 i=0; i < font_info_list().count(); i++){
 		sgfx::FontInfo & info(m_font_info_list.at(i));
-		if( (info.point_size() == closest_point_size) && (info.style() == closest_style) ){
-			if( info.font() == 0 ){
-				info.set_font(new FileFont(info.path()));
+		if( ((style == FontInfo::ICONS) && (info.style() == FontInfo::ICONS)) ||
+			 ((style != FontInfo::ICONS) && (info.style() != FontInfo::ICONS)) ){
+			if( (info.point_size() == closest_point_size) && (info.style() == closest_style) ){
+				if( info.font() == 0 ){
+					info.set_font(new FileFont(info.path()));
+				}
+				return &info;
 			}
-			return &info;
 		}
 	}
 

@@ -21,11 +21,14 @@ public:
 
 
 	void set(const Bitmap & bitmap, const Point & p){ api()->cursor_set(&m_cursor, bitmap.bmap(), p); }
+	void update(const Point & p){ api()->cursor_update(&m_cursor, p); }
 	void increment_x(){ api()->cursor_inc_x(&m_cursor); }
 	void decrement_x(){ api()->cursor_dec_x(&m_cursor); }
 	void increment_y(){ api()->cursor_inc_y(&m_cursor); }
 	void decrement_y(){ api()->cursor_dec_y(&m_cursor); }
 	sg_color_t get_pixel(){ return api()->cursor_get_pixel(&m_cursor); }
+	sg_color_t get_pixel(int x_direction, int y_direction){
+		return api()->cursor_get_pixel_increment(&m_cursor, x_direction, y_direction); }
 	void draw_pixel() { api()->cursor_draw_pixel(&m_cursor); }
 	void draw_hline(sg_size_t width){ api()->cursor_draw_hline(&m_cursor, width); }
 	void draw_cursor(const Cursor & src, sg_size_t width){ api()->cursor_draw_cursor(&m_cursor, &src.m_cursor, width); }

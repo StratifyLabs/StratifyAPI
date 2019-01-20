@@ -51,7 +51,7 @@ public:
 	void rewind(){ seek(m_offset); }
 
 	/*! \details Seeks the file to the data at the specified row. */
-	int seek_row(s32 y);
+	int seek_row(s32 y) const;
 
 	/*! \details Reads a pixel from the bitmap (optionally convert to a mono value).
 	 *

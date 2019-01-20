@@ -186,6 +186,10 @@ Printer & Printer::operator << (const var::Data & a){
 	const u16 * ptru16 = (const u16*)a.data_const();
 	const u32 * ptru32 = (const u32*)a.data_const();
 
+	if( verbose_level() < current_level() ){
+		return *this;
+	}
+
 	int s;
 	if( o_flags & PRINT_32 ){
 		s = a.size() / 4;
@@ -422,6 +426,11 @@ Printer & Printer::operator << (const sgfx::Bitmap & a){
 	sg_cursor_t y_cursor;
 	sg_cursor_t x_cursor;
 
+	if( verbose_level() < current_level() ){
+		return *this;
+	}
+
+
 	sgfx::Bitmap::api()->cursor_set(&y_cursor, a.bmap(), sg_point(0,0));
 
 	key(var::String().format("lines    "), "");
@@ -446,7 +455,7 @@ Printer & Printer::operator << (const sgfx::Bitmap & a){
 		::printf("|");
 		for(j=0; j < a.bmap()->area.width; j++){
 			color = sgfx::Bitmap::api()->cursor_get_pixel(&x_cursor);
-			print_bitmap_color(color, a.bmap()->bits_per_pixel);
+			print_bitmap_pixel(color, a.bmap()->bits_per_pixel);
 			if( (j < a.bmap()->area.width - 1) && (a.bmap()->bits_per_pixel > 4)){
 				::printf(" ");
 			}
@@ -463,38 +472,43 @@ Printer & Printer::operator << (const sgfx::Bitmap & a){
 	return *this;
 }
 
-void Printer::print_bitmap_color(u32 color, u8 bits_per_pixel){
+char Printer::get_bitmap_pixel_character(u32 color, u8 bits_per_pixel){
 	if( color == 0 ){
-		printf(" ");
+		return ' ';
 	} else {
 		if( bits_per_pixel == 2 ){
 			switch(color){
-				case 1: printf("."); break;
-				case 2: printf("+"); break;
-				case 3: printf("@"); break;
+				case 1: return '.';
+				case 2: return '+';
+				case 3: return '@';
 			}
 		} else if( bits_per_pixel < 8 ){
 			switch(color){
-				case 1: printf("."); break;
-				case 2: printf(","); break;
-				case 3: printf("-"); break;
-				case 4: printf("+"); break;
-				case 5: printf("="); break;
-				case 6: printf("^"); break;
-				case 7: printf("x"); break;
-				case 8: printf("o"); break;
-				case 9: printf("*"); break;
-				case 10: printf("#"); break;
-				case 11: printf("%%"); break;
-				case 12: printf("$"); break;
-				case 13: printf("@"); break;
-				case 14: printf("O"); break;
-				case 15: printf("X"); break;
+				case 1: return '.';
+				case 2: return ',';
+				case 3: return '-';
+				case 4: return '+';
+				case 5: return '=';
+				case 6: return '^';
+				case 7: return 'x';
+				case 8: return 'o';
+				case 9: return '*';
+				case 10: return '#';
+				case 11: return '%';
+				case 12: return '$';
+				case 13: return 'O';
+				case 14: return 'X';
+				case 15: return '@';
 			}
 		} else {
-			printf("#");
+			return '#';
 		}
 	}
+	return '?';
+}
+
+void Printer::print_bitmap_pixel(u32 color, u8 bits_per_pixel){
+	::printf("%c", get_bitmap_pixel_character(color, bits_per_pixel));
 }
 
 
