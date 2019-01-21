@@ -125,6 +125,7 @@ int HttpClient::connect_to_server(const var::ConstString & domain_name, u16 port
 		if( m_alive_domain == domain_name ){
 			return 0;
 		} else {
+			m_header.format("socket is 0x%X, domain is %s", socket().fileno(), m_alive_domain.cstring());
 			set_error_number(FAILED_WRONG_DOMAIN);
 			return -1;
 		}
@@ -143,6 +144,7 @@ int HttpClient::connect_to_server(const var::ConstString & domain_name, u16 port
 
 		if( socket().connect(m_address) < 0 ){
 			set_error_number(FAILED_TO_CONNECT_TO_SOCKET);
+			socket().close();
 			return -1;
 		}
 		m_alive_domain = domain_name;
