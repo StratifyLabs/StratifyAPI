@@ -421,8 +421,10 @@ public:
 	 */
 	int free();
 
-	//deprecated -- use fill(0);
-	void clear();
+	/*! \details Fill the data with zeros.
+	 *
+	 */
+	virtual void clear(){ fill(0); }
 
 	/*! \details Fill the data with the specified value.
 	 * This will not attempt to write read-only data.

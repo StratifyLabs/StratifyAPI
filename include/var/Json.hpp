@@ -38,7 +38,7 @@ class JsonNull;
 class JsonInteger;
 class JsonString;
 
-typedef api::Api<jansson_api_t, SAPI_API_REQUEST_JSON> JsonApi;
+typedef api::Api<jansson_api_t, JANSSON_API_REQUEST> JsonApi;
 
 class JsonValue : public api::VarWorkObject {
 public:

@@ -9,6 +9,7 @@
 #include "../hal/Pwm.hpp"
 #include "../hal/Adc.hpp"
 #include "../hal/Dac.hpp"
+#include "../var/Vector.hpp"
 #include "../var/String.hpp"
 #include "../var/Token.hpp"
 #include "../var/ConstString.hpp"
@@ -144,7 +145,7 @@ public:
 	 * If `-<name>` or `--<name>` is given, the return value is set to "true".
 	 *
 	 */
-	var::String get_option(const var::ConstString & name) const;
+	var::String get_option(const var::ConstString & name, const var::ConstString & help = "") const;
 
 	/*! \details Gets the argument of an option as a var::String.
 	 *
@@ -246,8 +247,9 @@ public:
 	 *
 	 */
 	bool handle_i2c(hal::I2CAttr & attr) const;
-
 	var::String get_version_details() const;
+
+	void show_options() const;
 
 
 private:
@@ -265,6 +267,7 @@ private:
 	var::String m_path;
 	bool m_is_case_sensitive;
 	const var::ConstString m_app_git_hash;
+	mutable var::Vector<var::String> m_help_list;
 
 
 };

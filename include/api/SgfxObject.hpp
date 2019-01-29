@@ -9,7 +9,7 @@
 
 namespace api {
 
-typedef Api<sg_api_t, SAPI_API_REQUEST_SGFX> SgfxApi;
+typedef Api<sg_api_t, SGFX_API_REQUEST> SgfxApi;
 
 class SgfxObject {
 public:

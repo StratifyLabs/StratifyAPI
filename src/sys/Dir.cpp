@@ -124,11 +124,11 @@ bool Dir::exists(const var::ConstString & path){
 int Dir::open(const var::ConstString & name){
 #if defined __link
 	if( driver() ){
-		m_dirp = link_opendir(driver(), name.str());
+		m_dirp = link_opendir(driver(), name.cstring());
 	} else {
 		//open a directory on the local system (not over link)
 
-		m_dirp_local = opendir(name.str());
+		m_dirp_local = opendir(name.cstring());
 		if( m_dirp_local == 0 ){
 			return -1;
 		}
@@ -136,7 +136,7 @@ int Dir::open(const var::ConstString & name){
 		return 0;
 	}
 #else
-	m_dirp = opendir(name.str());
+	m_dirp = opendir(name.cstring());
 #endif
 
 	if( m_dirp == 0 ){
@@ -184,14 +184,21 @@ int Dir::count(){
 
 #endif
 
+
+#if defined __link
+var::Vector<var::String> Dir::read_list(const var::ConstString & path, link_transport_mdriver_t * driver){
+	Dir directory(driver);
+#else
 var::Vector<var::String> Dir::read_list(const var::ConstString & path){
 	Dir directory;
+#endif
 	var::Vector<var::String> result;
 	if( directory.open(path) < 0 ){ return result; }
 	result = directory.read_list();
 	directory.close();
 	return result;
 }
+
 
 var::Vector<var::String> Dir::read_list(){
 	var::Vector<var::String> result;
@@ -214,6 +221,7 @@ const char * Dir::read(){
 #if defined __link
 	if( driver() ){
 		struct link_dirent * result;
+		memset(&m_entry, 0, sizeof(m_entry));
 		if( link_readdir_r(driver(), m_dirp, &m_entry, &result) < 0 ){
 			return 0;
 		}

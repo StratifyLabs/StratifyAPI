@@ -12,6 +12,41 @@ using namespace sgfx;
 using namespace sys;
 using namespace calc;
 
+void Palette::fill_gradient_argb8888(sg_color_t color){
+	sg_color_t gradient_color;
+	u16 alpha;
+	set_color(0, 0);
+	for(u32 i=1; i < m_colors.count() - 1; i++){
+		alpha = i * 255 / m_colors.count();
+		gradient_color = (alpha << 24) | color;
+		set_color(i, gradient_color);
+	}
+	set_color(m_colors.count() - 1, 0xff000000 | color);
+}
+
+void Palette::fill_gradient_gray(bool is_ascending){
+	sg_color_t gradient_color;
+	u8 component;
+	if( is_ascending ){
+		set_color(0, 0xff000000);
+		for(u32 i=1; i < m_colors.count() - 1; i++){
+			component = i * 255 / m_colors.count();
+			gradient_color = (0xff << 24) | (component << 16) | (component << 8) | (component);
+			set_color(i, gradient_color);
+		}
+		set_color(m_colors.count() - 1, 0xffffffff);
+	} else {
+		set_color(0, 0xffffffff);
+		for(u32 i=1; i < m_colors.count() - 1; i++){
+			component = 255 - (i * 255 / m_colors.count());
+			gradient_color = (0xff << 24) | (component << 16) | (component << 8) | (component);
+			set_color(i, gradient_color);
+		}
+		set_color(m_colors.count() - 1, 0xff000000);
+	}
+}
+
+
 Region Bitmap::get_viewable_region() const {
 	Point point(margin_left(), margin_top());
 	Area dim(width() - margin_left() - margin_right(), height() - margin_top() - margin_bottom());
@@ -344,9 +379,6 @@ void Bitmap::downsample_bitmap(const Bitmap & source, const Area & factor){
 		}
 
 		cursor_y.increment_y();
-
-
-
 	}
 
 }

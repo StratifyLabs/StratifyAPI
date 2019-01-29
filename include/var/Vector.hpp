@@ -160,14 +160,16 @@ public:
 	  */
 	int resize(u32 count){
 		//this needs to destruct each item that will be lost
-		u32 pop_count = count;
-		while( pop_count++ < this->count() ){
-			pop_back();
+		if( count < this->count() ){
+			//size reduction if count < this->count()
+			while( count < this->count() ){
+				pop_back();
+			}
+		} else {
+			while( count > this->count() ){
+				push_back(T());
+			}
 		}
-		if( Data::resize(count*sizeof(T)) < 0 ){
-			return -1;
-		}
-		m_count = count;
 		return 0;
 	}
 

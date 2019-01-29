@@ -21,6 +21,9 @@ endif()
 set(SOS_LIB_NAME api)
 project(${SOS_LIB_NAME} CXX C)
 
+include(CheckIncludeFiles)
+check_include_files("mbedtls_api.h" HAVE_MBEDTLS_H)
+
 install(DIRECTORY include/ DESTINATION include/sapi)
 set(SOS_LIB_INCLUDE_DIRECTORIES include)
 

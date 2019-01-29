@@ -311,6 +311,22 @@ Printer & Printer::operator << (const var::JsonArray & a){
 	return *this;
 }
 
+Printer & Printer::key(const var::ConstString & key, const var::JsonValue & a){
+
+	if(a.is_object()){
+		open_object(key, current_level() );
+		*this << a.to_object();
+		close_object();
+	} else if( a.is_array() ){
+		open_object(key, current_level() );
+		*this << a.to_array();
+		close_object();
+	} else {
+		this->key(key, a.to_string());
+	}
+	return *this;
+}
+
 int Printer::set_verbose_level(const var::ConstString & level){
 	if( level == "debug" ){ set_verbose_level(DEBUG); return 0; }
 	if( level == "info" ){ set_verbose_level(Printer::INFO); return 0; }
@@ -734,22 +750,6 @@ Printer & Printer::key(const var::ConstString & key, const char * fmt, ...){
 		va_start(list, fmt);
 		vprint_indented(key, fmt, list);
 		va_end(list);
-	}
-	return *this;
-}
-
-Printer & Printer::key(const var::ConstString & key, const var::JsonValue & a){
-
-	if(a.is_object()){
-		open_object(key, current_level() );
-		*this << a.to_object();
-		close_object();
-	} else if( a.is_array() ){
-		open_object(key, current_level() );
-		*this << a.to_array();
-		close_object();
-	} else {
-		this->key(key, a.to_string());
 	}
 	return *this;
 }

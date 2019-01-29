@@ -229,11 +229,18 @@ int Data::set_size(u32 s){
 	return allocate(s, true);
 }
 
-void Data::clear(){ fill(0); }
-
 void Data::fill(unsigned char d){
 	if( m_mem_write ){
-		memset(m_mem_write, d, capacity());
+		u32 * dest = (u32*)m_mem_write;
+		u32 value = d << 24 | d << 16 | d << 8 | d;
+		if( capacity() % 4 == 0 ){
+			const u32 count = capacity()/4;
+			for(u32 i=0; i < count; i++){
+				*dest++ = value;
+			}
+		} else {
+			memset(m_mem_write, d, capacity());
+		}
 	}
 }
 

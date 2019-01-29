@@ -28,6 +28,8 @@ public:
 	 */
 	void refresh() const;
 
+	void clear();
+
 	/*! \details Returns true if the display is
 	 * actively copying the video buffer to the display
 	 *

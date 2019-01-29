@@ -29,7 +29,7 @@ public:
 
 
 	u32 calculate_millivolts(u32 sample_value) const {
-		return (sample_value + maximum_value()/2) * reference_millivolts() / maximum_value();
+		return (sample_value * reference_millivolts() + maximum_value()/2) / maximum_value();
 	}
 
 

@@ -21,7 +21,6 @@ namespace sys {}
 #include "sys/Sched.hpp"
 #include "sys/Timer.hpp"
 #include "sys/Time.hpp"
-#include "sys/Messenger.hpp"
 #include "sys/Trace.hpp"
 #else
 #include "sys/Link.hpp"

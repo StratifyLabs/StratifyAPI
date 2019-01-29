@@ -20,8 +20,7 @@ if( ${SOS_BUILD_CONFIG} STREQUAL arm )
 		${SOURCES_PREFIX}/Assets.cpp
 		${SOURCES_PREFIX}/Sem.cpp
 		${SOURCES_PREFIX}/Sched.cpp
-		${SOURCES_PREFIX}/Mq.cpp
-		${SOURCES_PREFIX}/Messenger.cpp)
+		${SOURCES_PREFIX}/Mq.cpp)
 endif()
 
 if( ${SOS_BUILD_CONFIG} STREQUAL link )

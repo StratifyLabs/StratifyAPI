@@ -9,7 +9,7 @@ Image::Image(){
 	m_bitmap = 0;
 }
 
-Image::Image(sgfx::Bitmap & bitmap){
+Image::Image(const sgfx::Bitmap & bitmap){
 	m_bitmap = &bitmap;
 }
 

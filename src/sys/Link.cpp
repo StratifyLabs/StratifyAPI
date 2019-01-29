@@ -13,6 +13,7 @@
 #include "sys/File.hpp"
 #include "sys/Link.hpp"
 #include "sys/Appfs.hpp"
+#include "chrono/Timer.hpp"
 
 using namespace sys;
 
@@ -475,6 +476,7 @@ int Link::set_time(struct tm * gt){
 	ltm.tm_year = gt->tm_year;
 
 	if ( m_is_bootloader ){
+		m_error_message.format("can't set time for bootloader");
 		return -1;
 	}
 	lock_device();
@@ -484,7 +486,7 @@ int Link::set_time(struct tm * gt){
 	}
 	unlock_device();
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to Set Time", link_errno);
+		m_error_message.format("failed to set time with device errno %d", link_errno);
 	}
 	return check_error(err);
 }
@@ -877,7 +879,7 @@ int Link::format(const var::ConstString & path){
 	}
 	unlock_device();
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to Format Filesystem", link_errno);
+		m_error_message.sprintf("failed to format filesystem with device errno %d", link_errno);
 	}
 	return check_error(err);
 }
@@ -894,7 +896,7 @@ int Link::kill_pid(int pid, int signo){
 	}
 	unlock_device();
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to kill process %d (%d)", pid, link_errno);
+		m_error_message.sprintf("Failed to kill process %d with device errno %d", pid, link_errno);
 	}
 	return check_error(err);
 }
@@ -928,7 +930,7 @@ int Link::rename(const var::ConstString & old_path, const var::ConstString & new
 	}
 	unlock_device();
 	if( err < 0 ){
-		m_error_message.sprintf("Failed to rename file", link_errno);
+		m_error_message.sprintf("failed to rename file with device errno %d", link_errno);
 	}
 	return check_error(err);
 }
@@ -945,7 +947,7 @@ int Link::chown(const var::ConstString & path, int owner, int group){
 	}
 	unlock_device();
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to chown file", link_errno);
+		m_error_message.sprintf("Failed to chown file with device errno %d", link_errno);
 	}
 	return check_error(err);
 }
@@ -953,7 +955,7 @@ int Link::chown(const var::ConstString & path, int owner, int group){
 int Link::chmod(const var::ConstString & path, int mode){
 	int err;
 	if ( m_is_bootloader ){
-		m_error_message = "Target is a bootloader";
+		m_error_message = "target is a bootloader";
 		return -1;
 	}
 	lock_device();
@@ -963,7 +965,7 @@ int Link::chmod(const var::ConstString & path, int mode){
 	}
 	unlock_device();
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to chmod file", link_errno);
+		m_error_message.sprintf("Failed to chmod file with device errno %d", link_errno);
 	}
 	return check_error(err);
 
@@ -1236,17 +1238,14 @@ int Link::install_app(const sys::File & image_source, const var::ConstString & d
 				if( (loc_err = ioctl(fd, I_APPFS_INSTALL, &attr)) < 0 ){
 					if( link_errno == 5 ){ //EIO
 						if( loc_err < -1 ){
-							m_error_message.format("Failed to install: missing symbol on device near " F32D, loc_err+1);
+							m_error_message.format("Failed to install because of missing symbol on device near " F32D, loc_err+1);
 						} else {
-							m_error_message = "Failed to install: unknown symbol error";
+							m_error_message = "Failed to install because of unknown symbol error";
 						}
 					} if( link_errno == 8 ){ //ENOEXEC
-						m_error_message = "Failed to install: symbol table signature mismatch";
+						m_error_message = "Failed to install because of symbol table signature mismatch";
 					} else {
-						tmp_error = m_error_message;
-						m_error_message = "Failed to install file on device (";
-						m_error_message.append(tmp_error);
-						m_error_message.append(")");
+						m_error_message.format("Failed to install file on device with device errno %d", link_errno);
 					}
 					close(fd);
 					return -1;

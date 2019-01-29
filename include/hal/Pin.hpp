@@ -3,6 +3,7 @@
 #ifndef PIN_HPP_
 #define PIN_HPP_
 
+#include "../var/Tokenizer.hpp"
 #include "Pio.hpp"
 
 namespace hal {
@@ -47,6 +48,19 @@ namespace hal {
  */
 class Pin : public Pio {
 public:
+
+	static mcu_pin_t from_string(const var::ConstString & port_pin){
+		var::Tokenizer tokens(port_pin, ".");
+		mcu_pin_t result;
+		result.port = 0xff;
+		result.pin = 0xff;
+		if( tokens.count() == 2 ){
+			result.port = tokens.at(0).to_integer();
+			result.pin = tokens.at(1).to_integer();
+		}
+		return result;
+	}
+
 	/*! \details Constructs the object with a port/pin combination. */
 	Pin(port_t port, u32 pin, bool ismask = false) : Pio(port){
 		if( ismask ){

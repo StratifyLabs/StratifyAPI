@@ -22,6 +22,7 @@ int DisplayDevice::initialize(const var::ConstString & name){
 			return -1;
 		}
 
+		set_bits_per_pixel(info.bits_per_pixel);
 		set_data((sg_bmap_data_t*)info.mem, info.width, info.height);
 
 		set_margin_left(info.margin_left);
@@ -42,6 +43,13 @@ void DisplayDevice::refresh() const {
 int DisplayDevice::enable() const {
 	return ioctl(I_DISPLAY_ENABLE);
 }
+
+void DisplayDevice::clear(){
+	if( ioctl(I_DISPLAY_CLEAR) < 0 ){
+		Data::clear();
+	}
+}
+
 
 /*! \brief Turn the LCD pixels off */
 int DisplayDevice::disable() const {

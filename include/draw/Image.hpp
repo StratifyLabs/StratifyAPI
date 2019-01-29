@@ -16,7 +16,7 @@ namespace draw {
 class Image : public Drawing {
 public:
 	Image();
-	Image(sgfx::Bitmap & bitmap);
+	Image(const sgfx::Bitmap & bitmap);
 	void draw_to_scale(const DrawingScaledAttr & attr);
 
 	drawing_area_t calc_area();

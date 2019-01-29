@@ -4,7 +4,6 @@
 #include "var.hpp"
 #include "sys.hpp"
 #include "inet/Url.hpp"
-#include "inet/SecureSocket.hpp"
 
 #define SHOW_HEADERS 0
 

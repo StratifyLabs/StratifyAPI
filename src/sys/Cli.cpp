@@ -128,9 +128,17 @@ bool Cli::is_option_equivalent_to_argument_with_equality(
 }
 
 
-var::String Cli::get_option(const var::ConstString & name) const {
+var::String Cli::get_option(const var::ConstString & name, const var::ConstString & help) const {
 	var::String result;
 	u32 args;
+
+
+	if( help.is_empty() ){
+		m_help_list.push_back(String() << name);
+	} else {
+		m_help_list.push_back(String() << name << ": " << help);
+	}
+
 	for(args = 1; args < count(); args++){
 		if( is_option_equivalent_to_argument(name, at(args)) ){
 			if( count() > args+1 ){
@@ -299,6 +307,12 @@ bool Cli::handle_i2c(hal::I2CAttr & attr) const {
 }
 
 
+void Cli::show_options() const {
+	printf("%s options:\n", name().cstring());
+	for(u32 i=0; i < m_help_list.count(); i++){
+		printf("	%s\n", m_help_list.at(i).cstring());
+	}
+}
 
 
 

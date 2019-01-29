@@ -6,6 +6,7 @@
 #include <sapi/sg.h>
 
 #include "../var/Data.hpp"
+#include "../var/Vector.hpp"
 #include "Region.hpp"
 #include "Pen.hpp"
 #include "../api/SgfxObject.hpp"
@@ -13,6 +14,38 @@
 
 
 namespace sgfx {
+
+class Palette : public api::SgfxObject {
+public:
+
+	enum color_count {
+		COUNT_1BPP = 2,
+		COUNT_2BPP = 4,
+		COUNT_4BPP = 8,
+		COUNT_8BPP = 256
+	};
+
+	void set_count(enum color_count count){
+		//must be 2,4,16,256
+		m_colors.resize(count);
+		m_palette.mask = (count-1);
+		m_palette.colors = m_colors.to<sg_color_t>();
+	}
+
+	void set_color(u32 idx, sg_color_t color){
+		m_colors.at(idx & m_palette.mask) = color;
+	}
+
+	void fill_gradient_argb8888(sg_color_t color);
+	void fill_gradient_gray(bool is_ascending);
+
+	const var::Vector<sg_color_t> colors() const { return m_colors; }
+
+private:
+	friend class Bitmap;
+	sg_palette_t m_palette;
+	var::Vector<sg_color_t> m_colors;
+};
 
 /*! \brief Bitmap Class
  * \details This class implements a bitmap and is
@@ -76,6 +109,11 @@ public:
 		m_bmap = bitmap.m_bmap;
 		m_saved_pen = bitmap.m_saved_pen;
 		m_bmap.data = to<sg_bmap_data_t>();
+		return *this;
+	}
+
+	Bitmap & operator << (const Palette & palette){
+		m_bmap.palette = &palette.m_palette;
 		return *this;
 	}
 

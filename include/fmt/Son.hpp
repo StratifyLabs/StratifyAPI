@@ -18,7 +18,7 @@
 
 namespace fmt {
 
-typedef api::Api<son_api_t, SAPI_API_REQUEST_SON> SonApi;
+typedef api::Api<son_api_t, SON_API_REQUEST> SonApi;
 
 /*! \brief Stratify Object Notation
  *

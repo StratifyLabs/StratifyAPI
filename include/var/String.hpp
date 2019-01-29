@@ -382,7 +382,7 @@ private:
 template <unsigned int arraysize>
 class StaticString : public String {
 public:
-	StaticString() : String(m_str, arraysize+1, false){ clear(); }
+	StaticString() : String(m_str, arraysize+1, false){ fill(0); }
 	StaticString(const char * str) : String(m_str, arraysize+1, false){ assign(str); }
 	StaticString(const String & str) : String(m_str, arraysize+1, false){ assign(str); }
 

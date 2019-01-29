@@ -46,6 +46,7 @@ public:
 	Dir(link_transport_mdriver_t * driver = 0);
 	static int create(const var::ConstString & path, int mode = 0777, link_transport_mdriver_t * driver = 0);
 	static bool exists(const var::ConstString & path, link_transport_mdriver_t * driver = 0);
+	static var::Vector<var::String> read_list(const var::ConstString & path, link_transport_mdriver_t * driver = 0);
 
 #else
 	Dir();
@@ -54,8 +55,9 @@ public:
 	int create(const var::ConstString & path, int mode = 0777);
 	/*! \details Returns true if the directory exists. */
 	static bool exists(const var::ConstString & path);
-
+	static var::Vector<var::String> read_list(const var::ConstString & path);
 #endif
+
 	~Dir();
 
 	/*! \details Opens a directory. */
@@ -94,7 +96,8 @@ public:
 	var::String get_entry();
 
 	var::Vector<var::String> read_list();
-	static var::Vector<var::String> read_list(const var::ConstString & path);
+
+
 
 	/*! \details Returns a pointer (const) to the name of the most recently read entry. */
 	const char * name(){ return m_entry.d_name; }

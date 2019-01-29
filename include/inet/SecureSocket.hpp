@@ -9,7 +9,7 @@
 
 namespace inet {
 
-typedef api::Api<mbedtls_api_t, SAPI_API_REQUEST_MBEDTLS> SecureSocketApi;
+typedef api::Api<mbedtls_api_t, MBEDTLS_API_REQUEST> SecureSocketApi;
 
 class SecureSocket : public Socket {
 public:
