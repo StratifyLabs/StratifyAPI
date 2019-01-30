@@ -50,13 +50,13 @@ int File::remove(const var::ConstString & name, link_transport_mdriver_t * drive
 
 
 #if !defined __link
-int File::copy(var::String & source_path, var::String & dest_path){
+int File::copy(const var::ConstString & source_path, const var::ConstString & dest_path){
 	File source;
 	File dest;
 	return copy(source, dest, source_path, dest_path);
 }
 #else
-int File::copy(const var::String & source_path, const var::String & dest_path, link_transport_mdriver_t * driver){
+int File::copy(const var::ConstString & source_path, const var::ConstString & dest_path, link_transport_mdriver_t * driver){
 	File source;
 	File dest;
 	source.set_driver(driver);
@@ -66,13 +66,13 @@ int File::copy(const var::String & source_path, const var::String & dest_path, l
 #endif
 
 #if !defined __link
-int File::copy(var::String & source_path, var::String & dest_path, int mode, bool is_overwrite){
+int File::copy(const var::ConstString & source_path, const var::ConstString & dest_path, bool is_overwrite){
 	File source;
 	File dest;
-	return copy(source, dest, source_path, dest_path);
+	return copy(source, dest, source_path, dest_path, is_overwrite);
 }
 #else
-int File::copy(const var::String & source_path, const var::String & dest_path, int mode, bool is_overwrite, link_transport_mdriver_t * driver){
+int File::copy(const var::ConstString & source_path, const var::ConstString & dest_path, int mode, bool is_overwrite, link_transport_mdriver_t * driver){
 	File source;
 	File dest;
 	source.set_driver(driver);
@@ -97,13 +97,25 @@ int File::rename(const var::ConstString & old_path, const var::ConstString & new
 #endif
 
 
-int File::copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path, int mode, bool is_overwrite){
-	if( source.open(source_path, File::RDONLY) < 0 ){
+int File::copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path, bool is_overwrite){
+
+#if defined __link
+	struct link_stat st;
+#else
+	struct stat st;
+#endif
+
+	if( File::stat(source_path, &st) < 0 ){
 		return -1;
 	}
 
-	if( dest.create(dest_path, is_overwrite, mode) < 0 ){
+	if( source.open(source_path, File::RDONLY) < 0 ){
 		return -2;
+	}
+
+
+	if( dest.create(dest_path, is_overwrite, st.st_mode & 0777) < 0 ){
+		return -3;
 	}
 
 	return dest.write(source, 256);
@@ -111,7 +123,7 @@ int File::copy(File & source, File & dest, const var::ConstString & source_path,
 
 
 int File::copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path){
-	return copy(source, dest, source_path, dest_path, 0666, true);
+	return copy(source, dest, source_path, dest_path, true);
 }
 
 
@@ -166,6 +178,16 @@ int File::stat(const var::ConstString & name, struct link_stat * st, link_transp
 #else
 int File::stat(const var::ConstString & name, struct stat * st){
 	return ::stat(name.cstring(), st);
+}
+#endif
+
+#if defined __link
+int File::fstat(struct link_stat * st) const {
+	return link_fstat(driver, m_fd, st);
+}
+#else
+int File::fstat(struct stat * st) const {
+	return ::fstat(m_fd, st);
 }
 #endif
 
