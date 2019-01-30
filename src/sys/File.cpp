@@ -72,12 +72,12 @@ int File::copy(const var::ConstString & source_path, const var::ConstString & de
 	return copy(source, dest, source_path, dest_path, is_overwrite);
 }
 #else
-int File::copy(const var::ConstString & source_path, const var::ConstString & dest_path, int mode, bool is_overwrite, link_transport_mdriver_t * driver){
+int File::copy(const var::ConstString & source_path, const var::ConstString & dest_path, bool is_overwrite, link_transport_mdriver_t * driver){
 	File source;
 	File dest;
 	source.set_driver(driver);
 	dest.set_driver(driver);
-	return copy(source, dest, source_path, dest_path, mode, is_overwrite);
+	return copy(source, dest, source_path, dest_path, is_overwrite);
 }
 #endif
 
@@ -183,7 +183,7 @@ int File::stat(const var::ConstString & name, struct stat * st){
 
 #if defined __link
 int File::fstat(struct link_stat * st) const {
-	return link_fstat(driver, m_fd, st);
+	return link_fstat(driver(), m_fd, st);
 }
 #else
 int File::fstat(struct stat * st) const {
