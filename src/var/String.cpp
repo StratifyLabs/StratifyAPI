@@ -54,7 +54,7 @@ int String::vformat(const char * fmt, va_list list){
 		set_size(minimum_size());
 	}
 	result = vsnprintf(cdata(), capacity(), fmt, list);
-	if( result > (int)capacity() ){ //if the data did not fit, make the buffer bigger
+	if( result >= (int)capacity() ){ //if the data did not fit, make the buffer bigger
 		if( set_capacity(result+1) >= 0 ){
 			vsnprintf(cdata(), capacity(), fmt, list);
 		}
@@ -82,7 +82,7 @@ int String::assign(const ConstString & a, u32 n){
 		if( n == (u32)npos ){ n = a.length(); }
 		if( set_capacity(n) < 0 ){ return -1; }
 		clear();
-		strncpy(cdata(), a.cstring(), n);
+		strncpy(to_char(), a.cstring(), n);
 	}
 	return 0;
 }

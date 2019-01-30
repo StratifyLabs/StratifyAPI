@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include "var/String.hpp"
+#include "var/Tokenizer.hpp"
 #include "sys/File.hpp"
 #include "sys/FileInfo.hpp"
 #include "sys/Dir.hpp"
@@ -107,6 +108,40 @@ int Dir::create(const var::ConstString & path, int mode){
 	return mkdir(path.cstring(), mode);
 }
 #endif
+
+#if defined __link
+int Dir::create(const var::ConstString & path, int mode, bool is_recursive, link_transport_mdriver_t * driver){
+	if( is_recursive == false ){
+		return create(path, mode, driver);
+	}
+#else
+int Dir::create(const var::ConstString & path, int mode, bool is_recursive){
+	if( is_recursive == false ){
+		return create(path, mode);
+	}
+#endif
+	var::Tokenizer path_tokens(path, "/");
+	var::String base_path;
+
+	if( path.find("/") == 0 ){
+		base_path << "/";
+	}
+
+	for(u32 i=0; i < path_tokens.count(); i++){
+		base_path << path_tokens.at(i);
+#if defined __link
+		create(base_path, mode, driver);
+#else
+		create(base_path, mode);
+#endif
+		base_path << "/";
+	}
+
+
+	return 0;
+}
+
+
 
 #if defined __link
 bool Dir::exists(const var::ConstString & path, link_transport_mdriver_t * driver){

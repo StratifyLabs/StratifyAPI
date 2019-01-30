@@ -141,6 +141,8 @@ public:
 	 */
 	static var::ConstString name(const var::ConstString & path);
 
+	static var::String parent_directory(const var::ConstString & path);
+
 	/*! \details Sets the file to stay open even
 	 * after the destructor has been called.
 	 *

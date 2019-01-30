@@ -45,6 +45,7 @@ public:
 #if defined __link
 	Dir(link_transport_mdriver_t * driver = 0);
 	static int create(const var::ConstString & path, int mode = 0777, link_transport_mdriver_t * driver = 0);
+	static int create(const var::ConstString & path, int mode, bool is_recursive, link_transport_mdriver_t * driver = 0);
 	static bool exists(const var::ConstString & path, link_transport_mdriver_t * driver = 0);
 	static var::Vector<var::String> read_list(const var::ConstString & path, link_transport_mdriver_t * driver = 0);
 
@@ -53,6 +54,7 @@ public:
 
 	/*! \details Returns true if the directory exists. */
 	int create(const var::ConstString & path, int mode = 0777);
+	int create(const var::ConstString & path, int mode, bool is_recursive);
 	/*! \details Returns true if the directory exists. */
 	static bool exists(const var::ConstString & path);
 	static var::Vector<var::String> read_list(const var::ConstString & path);

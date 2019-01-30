@@ -68,7 +68,9 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 
 
 	m_addrinfo.ai_flags |= AI_CANONNAME;
+
 	if( (result_int = getaddrinfo(node_cstring, server_cstring, &m_addrinfo, &info)) != 0 ){
+		set_error_number(result_int);
 		return result;
 	}
 

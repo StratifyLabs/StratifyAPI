@@ -80,21 +80,15 @@ int File::rename(const var::ConstString & old_path, const var::ConstString & new
 
 
 int File::copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path){
-	if( source.open(source_path.str(), File::RDONLY) < 0 ){
+	if( source.open(source_path, File::RDONLY) < 0 ){
 		return -1;
 	}
 
-	if( dest.create(dest_path.str()) < 0 ){
-		return -1;
+	if( dest.create(dest_path) < 0 ){
+		return -2;
 	}
 
-	char buffer[128];
-	int bytes;
-	while( (bytes = source.read(buffer, 128)) > 0 ){
-		dest.write(buffer, bytes);
-	}
-
-	return -1;
+	return dest.write(source, 256);
 }
 
 
@@ -339,6 +333,17 @@ var::ConstString File::name(const var::ConstString & path){
 		}
 	}
 	return path;
+}
+
+var::String File::parent_directory(const var::ConstString & path){
+	var::String result;
+	result << path;
+	u32 pos = result.rfind("/");
+	if( pos == var::String::npos ){
+		return var::String();
+	}
+	result.erase(pos);
+	return result;
 }
 
 #if !defined __link

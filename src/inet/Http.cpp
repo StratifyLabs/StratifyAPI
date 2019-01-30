@@ -105,7 +105,7 @@ int HttpClient::query(const var::ConstString & command,
 
 int HttpClient::send_string(const var::ConstString & str){
 	if( !str.is_empty() ){
-		return socket().write(str.str(), str.length());
+		return socket().write(str.cstring(), str.length());
 	}
 	return 0;
 }
@@ -131,6 +131,7 @@ int HttpClient::connect_to_server(const var::ConstString & domain_name, u16 port
 	}
 
 	m_alive_domain.clear();
+
 	var::Vector<SocketAddressInfo> address_list = address_info.fetch_node(domain_name);
 	if( address_list.count() > 0 ){
 		m_address = address_list.at(0);
@@ -150,6 +151,7 @@ int HttpClient::connect_to_server(const var::ConstString & domain_name, u16 port
 		return 0;
 	}
 
+	m_header.format("failed to find address with result (%d)", address_info.error_number());
 	set_error_number(FAILED_TO_FIND_ADDRESS);
 	return -1;
 }
@@ -203,7 +205,8 @@ int HttpClient::send_header(const var::ConstString & method,
 	build_header(method, host, path, data_length);
 
 #if SHOW_HEADERS
-	printf(">> %s", m_header.str());
+	printf(">> %s", m_header.cstring());
+	printf("Sending %d data bytes\n", file ? file->size() : 0);
 #endif
 
 	if( socket().write(m_header) != (int)m_header.length() ){
@@ -232,7 +235,7 @@ int HttpClient::listen_for_header(){
 
 			m_header << line;
 #if SHOW_HEADERS
-			printf("> %s", line.str());
+			printf("> %s", line.cstring());
 #endif
 
 			HttpHeaderPair pair = HttpHeaderPair::from_string(line);
@@ -242,7 +245,7 @@ int HttpClient::listen_for_header(){
 			title.to_upper();
 
 			if( title == "HTTP/1.1" ){
-				m_status_code = pair.value().atoi();
+				m_status_code = pair.value().to_integer();
 				if( (m_status_code >= 300) && (m_status_code < 400) ){
 					//redirect
 				}

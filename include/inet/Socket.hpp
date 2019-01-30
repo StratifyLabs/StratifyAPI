@@ -70,7 +70,7 @@ class SocketAddress;
  *
  *
  */
-class SocketAddressInfo : public::api::InetInfoObject {
+class SocketAddressInfo : public::api::InetWorkObject {
 public:
 
 	/*! \details Enumerates the socket address family options. */
