@@ -40,11 +40,11 @@ int File::open(const var::ConstString & name, int flags){
 
 #if !defined __link
 int File::remove(const var::ConstString & path){
-	return ::remove(path.str());
+	return ::remove(path.cstring());
 }
 #else
 int File::remove(const var::ConstString & name, link_transport_mdriver_t * driver){
-	return link_unlink(driver, name.str());
+	return link_unlink(driver, name.cstring());
 }
 #endif
 
@@ -66,6 +66,24 @@ int File::copy(const var::String & source_path, const var::String & dest_path, l
 #endif
 
 #if !defined __link
+int File::copy(var::String & source_path, var::String & dest_path, int mode, bool is_overwrite){
+	File source;
+	File dest;
+	return copy(source, dest, source_path, dest_path);
+}
+#else
+int File::copy(const var::String & source_path, const var::String & dest_path, int mode, bool is_overwrite, link_transport_mdriver_t * driver){
+	File source;
+	File dest;
+	source.set_driver(driver);
+	dest.set_driver(driver);
+	return copy(source, dest, source_path, dest_path, mode, is_overwrite);
+}
+#endif
+
+
+
+#if !defined __link
 int File::rename(const var::ConstString & old_path, const var::ConstString & new_path){
 	return ::rename(old_path.cstring(), new_path.cstring());
 }
@@ -79,16 +97,21 @@ int File::rename(const var::ConstString & old_path, const var::ConstString & new
 #endif
 
 
-int File::copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path){
+int File::copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path, int mode, bool is_overwrite){
 	if( source.open(source_path, File::RDONLY) < 0 ){
 		return -1;
 	}
 
-	if( dest.create(dest_path) < 0 ){
+	if( dest.create(dest_path, is_overwrite, mode) < 0 ){
 		return -2;
 	}
 
 	return dest.write(source, 256);
+}
+
+
+int File::copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path){
+	return copy(source, dest, source_path, dest_path, 0666, true);
 }
 
 
@@ -110,9 +133,9 @@ int File::open(const var::ConstString & name, int access, int perms){
 	}
 
 #if defined __link
-	m_fd = link_open(driver(), name.str(), access, perms);
+	m_fd = link_open(driver(), name.cstring(), access, perms);
 #else
-	m_fd = ::open(name.str(), access, perms);
+	m_fd = ::open(name.cstring(), access, perms);
 #endif
 
 	return set_error_number_if_error(m_fd);
@@ -138,18 +161,18 @@ u32 File::size() const {
 
 #if defined __link
 int File::stat(const var::ConstString & name, struct link_stat * st, link_transport_mdriver_t * driver){
-	return link_stat(driver, name.str(), st);
+	return link_stat(driver, name.cstring(), st);
 }
 #else
 int File::stat(const var::ConstString & name, struct stat * st){
-	return ::stat(name.str(), st);
+	return ::stat(name.cstring(), st);
 }
 #endif
 
 #if !defined __link
 u32 File::size(const var::ConstString & name){
 	struct stat st;
-	if( stat(name.str(), &st) < 0 ){
+	if( stat(name.cstring(), &st) < 0 ){
 		return (s32)-1;
 	}
 	return st.st_size;
@@ -157,7 +180,7 @@ u32 File::size(const var::ConstString & name){
 #else
 u32 File::size(const var::ConstString & name, link_transport_mdriver_t * driver){
 	struct link_stat st;
-	if( stat(name.str(), &st, driver) < 0 ){
+	if( stat(name.cstring(), &st, driver) < 0 ){
 		return (s32)-1;
 	}
 	return st.st_size;
@@ -329,7 +352,7 @@ var::ConstString File::name(const var::ConstString & path){
 	len = path.length();
 	for(i = len; i >= 0; i--){
 		if( path.at(i) == '/' ){
-			return path.str() + i + 1;
+			return path.cstring() + i + 1;
 		}
 	}
 	return path;
@@ -348,7 +371,7 @@ var::String File::parent_directory(const var::ConstString & path){
 
 #if !defined __link
 int File::access(const var::ConstString & path, int o_access){
-	return ::access(path.str(), o_access);
+	return ::access(path.cstring(), o_access);
 }
 #endif
 
@@ -359,7 +382,7 @@ var::ConstString File::suffix(const var::ConstString & path){
 	len = path.length();
 	for(i = len; i >= 0; i--){
 		if( path.at(i) == '.' ){
-			return path.str() + i + 1;
+			return path.cstring() + i + 1;
 		}
 	}
 	return 0;

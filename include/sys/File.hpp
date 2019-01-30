@@ -522,8 +522,10 @@ public:
 	  */
 #if !defined __link
 	static int copy(var::String & source_path, var::String & dest_path);
+	static int copy(const var::String & source_path, const var::String & dest_path, int mode, bool overwrite);
 #else
 	static int copy(const var::String & source_path, const var::String & dest_path, link_transport_mdriver_t * driver = 0);
+	static int copy(const var::String & source_path, const var::String & dest_path, int mode, bool overwrite, link_transport_mdriver_t * driver = 0);
 #endif
 
 	/*! \details Renames a file.
@@ -574,6 +576,7 @@ protected:
 
 private:
 	static int copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path);
+	static int copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path, int mode, bool is_overwrite);
 	bool m_is_keep_open;
 
 };

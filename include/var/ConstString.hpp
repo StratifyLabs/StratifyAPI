@@ -105,15 +105,15 @@ public:
 	  * \endcode
 	  *
 	  */
-	int to_integer() const { return ::atoi(str()); }
+	int to_integer() const { return ::atoi(cstring()); }
 	int atoi() const { return to_integer(); }
 
 	/*! \details Converts to a float. */
 	float to_float() const;
-	float atoff() const { return to_float(); };
+	float atoff() const { return to_float(); }
 
-	int to_long(int base = 10){ return ::strtol(str(), 0, base); }
-	int to_unsigned_long(int base = 10){ return ::strtoul(str(), 0, base); }
+	int to_long(int base = 10){ return ::strtol(cstring(), 0, base); }
+	int to_unsigned_long(int base = 10){ return ::strtoul(cstring(), 0, base); }
 
 	/*! \details Returns character at \a pos.
 	 *

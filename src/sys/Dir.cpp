@@ -304,17 +304,6 @@ int Dir::close(){
 #if defined __link
 		if( driver() ){
 			link_closedir(driver(), m_dirp);
-		} else {
-
-#if defined __win32
-#else
-			DIR * dirp_copy = m_dirp_local;
-			m_dirp_local = 0;
-			if( closedir(dirp_copy) < 0 ){
-				return -1;
-			}
-#endif
-			return 0;
 		}
 #else //__link
 		if( closedir(m_dirp) < 0 ){
@@ -323,6 +312,19 @@ int Dir::close(){
 #endif
 		m_dirp = 0;
 	}
+
+#if defined __link
+	if( m_dirp_local ){
+		DIR * dirp_copy = m_dirp_local;
+		m_dirp_local = 0;
+		if( closedir(dirp_copy) < 0 ){
+			return -1;
+		}
+		return 0;
+	}
+#endif
+
+
 	return 0;
 }
 
