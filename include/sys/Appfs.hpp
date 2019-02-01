@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
+﻿/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #ifndef APPFS_HPP_
 #define APPFS_HPP_
@@ -12,6 +12,44 @@
 #include "File.hpp"
 
 namespace sys {
+
+class AppfsInfo : public api::SysInfoObject {
+public:
+
+	AppfsInfo(){
+		memset(&m_info, 0, sizeof(m_info));
+	}
+
+	AppfsInfo(const appfs_info_t & info){
+		memcpy(&m_info, &info, sizeof(appfs_info_t));
+	}
+
+	bool is_valid() const {
+		return m_info.signature != 0;
+	}
+
+	const var::ConstString id() const { return (const char*)m_info.id; }
+	const var::ConstString name() const { return (const char*)m_info.name; }
+
+	u16 mode() const { return m_info.mode; }
+	u16 version() const { return m_info.version; }
+	u32 ram_size() const { return m_info.ram_size; }
+	u32 o_flags() const { return m_info.o_flags; }
+	u32 signature() const { return m_info.signature; }
+
+	bool is_startup() const { return (m_info.o_flags & APPFS_FLAG_IS_STARTUP) != 0; }
+	bool is_flash() const { return (m_info.o_flags & APPFS_FLAG_IS_FLASH) != 0; }
+	bool is_orphan() const { return (m_info.o_flags & APPFS_FLAG_IS_ORPHAN) != 0; }
+	bool is_root() const { return (m_info.o_flags & APPFS_FLAG_IS_ROOT) != 0; }
+	bool is_unique() const { return (m_info.o_flags & APPFS_FLAG_IS_UNIQUE) != 0; }
+
+	const appfs_info_t & info() const { return m_info; }
+	appfs_info_t & info(){ return m_info; }
+
+
+private:
+	appfs_info_t m_info;
+};
 
 class AppfsFileAttributes : public api::SysInfoObject {
 public:
@@ -152,9 +190,9 @@ public:
 	  *
 	 */
 #if !defined __link
-	static int get_info(const var::ConstString & path, appfs_info_t & info);
+	static AppfsInfo get_info(const var::ConstString & path);
 #else
-	static int get_info(const var::ConstString & path, appfs_info_t & info, link_transport_mdriver_t * driver);
+	static AppfsInfo get_info(const var::ConstString & path, link_transport_mdriver_t * driver);
 #endif
 
 	/*! \details Gets the application version.

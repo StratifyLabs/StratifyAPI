@@ -115,9 +115,9 @@ int Ipv4Address::set_address(const var::ConstString & address) {
 
 u16 SocketAddress::port() const {
 	if( family() == SocketAddressInfo::FAMILY_INET ){
-		return htons(m_sockaddr.to<const sockaddr_in>()->sin_port);
+		return ntohs(m_sockaddr.to<const sockaddr_in>()->sin_port);
 	} else if( family() == SocketAddressInfo::FAMILY_INET6 ){
-		return htons(m_sockaddr.to<const sockaddr_in6>()->sin6_port);
+		return ntohs(m_sockaddr.to<const sockaddr_in6>()->sin6_port);
 	}
 	return 0;
 }
@@ -259,6 +259,10 @@ Socket::~Socket() {
 
 int Socket::create(const SocketAddress & address){
 
+	if( m_socket != SOCKET_INVALID ){
+		this->close();
+	}
+
 	m_socket = socket(address.family(), address.type(), address.protocol());
 
 	if( is_valid() == false ){
@@ -269,9 +273,13 @@ int Socket::create(const SocketAddress & address){
 	return 0;
 }
 
+int Socket::bind(const SocketAddress & addr) const {
+	return decode_socket_return( ::bind(m_socket, addr.to_sockaddr(), addr.length()) );
+}
+
 
 int Socket::bind_and_listen(const SocketAddress & addr, int backlog) const {
-	int result = decode_socket_return( ::bind(m_socket, addr.to_sockaddr(), addr.length()) );
+	int result = bind(addr);
 	if( result < 0 ){
 		return result;
 	}
@@ -298,6 +306,14 @@ Socket Socket::accept(SocketAddress & address) const{
 
 int Socket::connect(const SocketAddress & address) {
 	// Connect to server.
+
+	if( m_socket == SOCKET_INVALID ){
+		int result;
+		if( (result = this->create(address)) < 0 ){
+			return result;
+		}
+	}
+
 	return decode_socket_return(
 				::connect(m_socket, address.to_sockaddr(), address.length())
 				);
@@ -307,7 +323,7 @@ int Socket::write(const void * buf, int nbyte) const {
 	return decode_socket_return( ::send(m_socket, (const char*)buf, nbyte, 0 ) );
 }
 
-int Socket::write(const void * buf, int nbyte, const struct sockaddr * ai_addr,socklen_t ai_addrlen) const {
+int Socket::write(const void * buf, int nbyte, const struct sockaddr * ai_addr, socklen_t ai_addrlen) const {
 	return decode_socket_return( ::sendto(m_socket, (const char*)buf, nbyte, 0, ai_addr, ai_addrlen));
 }
 
@@ -358,7 +374,7 @@ Socket & Socket::operator << (const SocketOption & option){
 	decode_socket_return( ::setsockopt(m_socket,
 												  option.m_level,
 												  option.m_name,
-												  option.m_option_value.to_char(),
+												  option.m_option_value.to_void(),
 												  option.m_option_value.size()) );
 	return *this;
 }

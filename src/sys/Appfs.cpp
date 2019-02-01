@@ -106,31 +106,37 @@ int Appfs::create(const var::ConstString & name, const sys::File & source_data, 
 }
 
 #if defined __link
-int Appfs::get_info(const var::ConstString & path, appfs_info_t & info, link_transport_mdriver_t * driver){
+AppfsInfo Appfs::get_info(const var::ConstString & path, link_transport_mdriver_t * driver){
 	File f(driver);
-
 	if( driver == 0 ){
 		errno = ENOTSUP;
-		return -1;
+		return AppfsInfo();
 	}
 #else
-int Appfs::get_info(const var::ConstString & path, appfs_info_t & info){
+AppfsInfo Appfs::get_info(const var::ConstString & path){
 	File f;
 #endif
 	var::String app_name;
 	var::String path_name;
 	appfs_file_t appfs_file_header;
-
+	appfs_info_t info;
 	int ret;
 	if( f.open(path, File::RDONLY) < 0 ){
-		errno = ENOENT;
-		return -1;
+		return AppfsInfo();
 	}
 
 	ret = f.read(&appfs_file_header, sizeof(appfs_file_header));
 	if( ret == sizeof(appfs_file_header) ){
 		//first check to see if the name matches -- otherwise it isn't an app file
-		path_name = File::name(path).str();
+		path_name = File::name(path);
+		if( path_name.find(".sys") == 0 ){
+			return AppfsInfo();
+		}
+
+		if( path_name.find(".free") == 0 ){
+			return AppfsInfo();
+		}
+
 		app_name = appfs_file_header.hdr.name;
 		if( path_name == app_name ){
 			info.mode = appfs_file_header.hdr.mode;
@@ -148,49 +154,36 @@ int Appfs::get_info(const var::ConstString & path, appfs_info_t & info){
 		errno = ENOEXEC;
 		ret = -1;
 	}
-	return ret;
+	return AppfsInfo(info);
 }
 
 #if defined __link
 u16 Appfs::get_version(const var::ConstString & path, link_transport_mdriver_t * driver){
-	appfs_info_t info;
-	if( get_info(path, info, driver) < 0 ){
-		return 0x0000;
-	}
-	return info.version;
-}
-
+	AppfsInfo info;
+	info = get_info(path, driver);
 #else
 u16 Appfs::get_version(const var::ConstString & path){
-	appfs_info_t info;
-	if( get_info(path, info) < 0 ){
-		return 0x0000;
-	}
-	return info.version;
-}
+	AppfsInfo info;
+	info = get_info(path);
 #endif
+	return info.version();
+}
 
 #if defined __link
 
 var::String Appfs::get_id(const var::ConstString & path, link_transport_mdriver_t * driver){
-	appfs_info_t info;
-	var::String result;
-	if( get_info(path, info, driver) < 0 ){
-		return result;
-	}
-
+	AppfsInfo info;
+	info = get_info(path, driver);
 #else
-
 var::String Appfs::get_id(const var::ConstString & path){
-	appfs_info_t info;
-	var::String result;
-	if( get_info(path, info) < 0 ){
-		return result;
-	}
+	AppfsInfo info;
+	info = get_info(path);
 #endif
+	if( info.is_valid() == false ){
+		return var::String();
+	}
 
-	result = (const char*)info.id;
-	return result;
+	return info.id();
 }
 
 
@@ -203,7 +196,6 @@ int Appfs::cleanup(bool data){
 	const char * name;
 
 	if( dir.open("/app/ram") < 0 ){
-		perror("failed to open dir");
 		return -1;
 	}
 

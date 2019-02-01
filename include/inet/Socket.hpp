@@ -170,7 +170,7 @@ class SocketAddressIpv4 : public api::InetInfoObject {
 public:
 
 	static in_addr_t address(u8 a, u8 b, u8 c, u8 d){
-		return a | b<<8 | c<<16 | d<<24;
+		return a<<24 | b<<16 | c<<8 | d;
 	}
 
 	SocketAddressIpv4(in_addr_t address,
@@ -290,6 +290,9 @@ public:
 
 	enum {
 		LEVEL_SOCKET = SOL_SOCKET,
+		LEVEL_IP = IPPROTO_IP,
+		LEVEL_IPV6 = IPPROTO_IPV6,
+		LEVEL_TCP = IPPROTO_TCP
 	};
 
 	SocketOption(int level = LEVEL_SOCKET){
@@ -297,79 +300,112 @@ public:
 	}
 
 	enum {
-		DEBUG = SO_DEBUG,
-		BROADCAST = SO_BROADCAST,
-		REUSE_ADDRESS = SO_REUSEADDR,
-		REUSEADDR = SO_REUSEADDR,
+		SOCKET_DEBUG = SO_DEBUG,
+		SOCKET_BROADCAST = SO_BROADCAST,
+		SOCKET_REUSE_ADDRESS = SO_REUSEADDR,
+		SOCKET_REUSEADDR = SO_REUSEADDR,
 #if !defined __win32
-		REUSEPORT = SO_REUSEPORT,
-		REUSE_PORT = SO_REUSEPORT,
+		SOCKET_REUSEPORT = SO_REUSEPORT,
+		SOCKET_REUSE_PORT = SO_REUSEPORT,
 #endif
-		SET_SEND_SIZE = SO_SNDBUF,
-		SNDBUF = SO_SNDBUF,
-		SET_RECEIVE_SIZE = SO_RCVBUF,
-		RCVBUF = SO_RCVBUF,
-		DONT_ROUTE = SO_DONTROUTE,
-		KEEP_ALIVE = SO_KEEPALIVE,
-		LINGER = SO_LINGER,
-		OOBINLINE = SO_OOBINLINE,
-		RCVLOWAT = SO_RCVLOWAT,
-		SET_RECEIVE_MINIMUM_SIZE = SO_RCVLOWAT,
-		RECEIVE_TIMEOUT = SO_RCVTIMEO,
-		RCVTIMEO = SO_RCVTIMEO,
-		SNDLOWAT = SO_SNDLOWAT,
-		SET_SEND_MINIMUM_SIZE = SO_SNDLOWAT,
-		SEND_TIMEOUT = SO_SNDTIMEO,
-		SNDTIMEO = SO_SNDTIMEO
+		SOCKET_SET_SEND_SIZE = SO_SNDBUF,
+		SOCKET_SNDBUF = SO_SNDBUF,
+		SOCKET_SET_RECEIVE_SIZE = SO_RCVBUF,
+		SOCKET_RCVBUF = SO_RCVBUF,
+		SOCKET_DONT_ROUTE = SO_DONTROUTE,
+		SOCKET_KEEP_ALIVE = SO_KEEPALIVE,
+		SOCKET_LINGER = SO_LINGER,
+		SOCKET_OOBINLINE = SO_OOBINLINE,
+		SOCKET_RCVLOWAT = SO_RCVLOWAT,
+		SOCKET_SET_RECEIVE_MINIMUM_SIZE = SO_RCVLOWAT,
+		SOCKET_RECEIVE_TIMEOUT = SO_RCVTIMEO,
+		SOCKET_RCVTIMEO = SO_RCVTIMEO,
+		SOCKET_SNDLOWAT = SO_SNDLOWAT,
+		SOCKET_SET_SEND_MINIMUM_SIZE = SO_SNDLOWAT,
+		SOCKET_SEND_TIMEOUT = SO_SNDTIMEO,
+		SOCKET_SNDTIMEO = SO_SNDTIMEO,
+
+		IP_TYPE_OF_SERVICE = IP_TOS,
+		IP_TIME_TO_LIVE = IP_TTL,
+		IP_PACKET_INFO = IP_PKTINFO,
+
+#if !defined __link
+		TCP_NO_DELAY = TCP_NODELAY,
+		TCP_KEEP_ALIVE = TCP_KEEPALIVE,
+		TCP_KEEP_IDLE = TCP_KEEPIDLE,
+		TCP_KEEP_INTERVAL = TCP_KEEPINTVL,
+		TCP_KEEP_COUNT = TCP_KEEPCNT
+#endif
 	};
 
-	SocketOption & broadcast(bool value = true){
-		return set_integer_value(BROADCAST, value);
+	SocketOption & socket_broadcast(bool value = true){
+		m_level = LEVEL_SOCKET;
+		return set_integer_value(SOCKET_BROADCAST, value);
 	}
 
-	SocketOption & reuse_address(bool value = true){
-		return set_integer_value(REUSE_ADDRESS, value);
+	SocketOption & socket_reuse_address(bool value = true){
+		m_level = LEVEL_SOCKET;
+		return set_integer_value(SOCKET_REUSE_ADDRESS, value);
 	}
 
-	SocketOption & reuse_port(bool value = true){
+	SocketOption & socket_reuse_port(bool value = true){
 #if !defined __win32
-		return set_integer_value(REUSE_PORT, value);
+		m_level = LEVEL_SOCKET;
+		return set_integer_value(SOCKET_REUSE_PORT, value);
 #else
 		//windows doesn't support this -- ignore it
 		return *this;
 #endif
 	}
 
-	SocketOption & dont_route(bool value = true){
-		return set_integer_value(DONT_ROUTE, value);
+	SocketOption & socket_dont_route(bool value = true){
+		m_level = LEVEL_SOCKET;
+		return set_integer_value(SOCKET_DONT_ROUTE, value);
 	}
 
-	SocketOption & keep_alive(bool value = true){
-		return set_integer_value(KEEP_ALIVE, value);
+	SocketOption & socket_keep_alive(bool value = true){
+		m_level = LEVEL_SOCKET;
+		return set_integer_value(SOCKET_KEEP_ALIVE, value);
 	}
 
-	SocketOption & set_send_size(int value){
-		return set_integer_value(SET_SEND_SIZE, value);
+	SocketOption & socket_send_size(int value){
+		m_level = LEVEL_SOCKET;
+		return set_integer_value(SOCKET_SET_SEND_SIZE, value);
 	}
 
-	SocketOption & set_send_minimum_size(int value){
-		return set_integer_value(SET_SEND_MINIMUM_SIZE, value);
+	SocketOption & socket_send_minimum_size(int value){
+		m_level = LEVEL_SOCKET;
+		return set_integer_value(SOCKET_SET_SEND_MINIMUM_SIZE, value);
 	}
 
-	SocketOption & set_receive_size(int value){
-		return set_integer_value(SET_RECEIVE_SIZE, value);
+	SocketOption & socket_receive_size(int value){
+		m_level = LEVEL_SOCKET;
+		return set_integer_value(SOCKET_SET_RECEIVE_SIZE, value);
 	}
 
-	SocketOption & set_receive_minimum_size(int value){
-		return set_integer_value(SET_RECEIVE_MINIMUM_SIZE, value);
+	SocketOption & socket_receive_minimum_size(int value){
+		m_level = LEVEL_SOCKET;
+		return set_integer_value(SOCKET_SET_RECEIVE_MINIMUM_SIZE, value);
 	}
 
-	SocketOption & set_send_timeout(const chrono::ClockTime & timeout){
-		return set_timeout(SEND_TIMEOUT, timeout);
+	SocketOption & socket_send_timeout(const chrono::ClockTime & timeout){
+		m_level = LEVEL_SOCKET;
+		return set_timeout(SOCKET_SEND_TIMEOUT, timeout);
 	}
 
-	SocketOption & set_receive_timeout(const chrono::ClockTime & timeout){
-		return set_timeout(RECEIVE_TIMEOUT, timeout);
+	SocketOption & socket_receive_timeout(const chrono::ClockTime & timeout){
+		m_level = LEVEL_SOCKET;
+		return set_timeout(SOCKET_RECEIVE_TIMEOUT, timeout);
+	}
+
+	SocketOption & ip_type_of_service(int service){
+		m_level = LEVEL_IP;
+		return set_integer_value(IP_TYPE_OF_SERVICE, service);
+	}
+
+	SocketOption & ip_time_to_live(int ttl){
+		m_level = LEVEL_IP;
+		return set_integer_value(IP_TIME_TO_LIVE, ttl);
 	}
 
 private:
@@ -429,6 +465,8 @@ public:
 	  */
 	virtual int bind_and_listen(const SocketAddress & address, int backlog = 4) const;
 
+
+	virtual int bind(const SocketAddress & address) const;
 
 	/*!
 	  * \details Accepts a socket connection on a socket that is listening.
