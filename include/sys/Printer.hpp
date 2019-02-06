@@ -55,6 +55,7 @@ class TaskInfo;
 class SysInfo;
 class Cli;
 class FileInfo;
+class AppfsInfo;
 
 
 #define PRINTER_TRACE(printer) (printer.print("\n%s():%d", __FUNCTION__, __LINE__))
@@ -127,6 +128,7 @@ public:
 
 
 	Printer & operator << (const sys::SysInfo & a);
+	Printer & operator << (const sys::AppfsInfo & a);
 	Printer & operator << (const sys::TaskInfo & a);
 	Printer & operator << (const sys::FileInfo & a);
 
@@ -189,6 +191,7 @@ public:
 		PRINT_8 /*! Print as 8 bit values (default) */ = 0,
 		PRINT_16 /*! Print as 16 bit values */ = (1<<4),
 		PRINT_32 /*! Print as 32 bit values */ = (1<<5),
+		PRINT_SIMPLE_PROGRESS /*! Just print # for progress */ = (1<<6)
 	};
 
 	void set_flags(u32 value){ m_o_flags = value; }
@@ -226,6 +229,9 @@ public:
 	}
 
 	bool update_progress(int progress, int total);
+
+	var::String & progress_key(){ return m_progress_key; }
+	const var::String & progress_key() const { return m_progress_key; }
 
 	static char get_bitmap_pixel_character(u32 color, u8 bits_per_pixel);
 
@@ -267,6 +273,7 @@ private:
 	bool m_is_json;
 	u32 m_o_flags;
 	void print_bitmap_pixel(u32 color, u8 bits_per_pixel);
+	var::String m_progress_key;
 
 	enum verbose_level m_verbose_level;
 

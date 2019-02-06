@@ -10,6 +10,7 @@
 #include "sys/TaskManager.hpp"
 #include "sys/Cli.hpp"
 #include "sys/FileInfo.hpp"
+#include "sys/Appfs.hpp"
 #include "var/Data.hpp"
 #include "var/Vector.hpp"
 #include "var/Ring.hpp"
@@ -34,6 +35,7 @@ Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this
 	m_key_count = 0;
 	m_verbose_level = INFO;
 	m_container.push_back(CONTAINER_ARRAY);
+	m_progress_key = "progress";
 #if defined __win32
 	if( m_default_color == (unsigned int)-1 ){
 		CONSOLE_SCREEN_BUFFER_INFO info;
@@ -415,7 +417,7 @@ Printer & Printer::operator << (const sys::FileInfo & a){
 }
 
 Printer & Printer::operator << (const sys::SysInfo & a ){
-	key("Name", "%s", a.name().cstring());
+	key("name", "%s", a.name().cstring());
 	key("serialNumber", a.serial_number().to_string().cstring());
 	key("hardwareId",  F3208X, a.hardware_id());
 	if( a.name() != "bootloader" ){
@@ -432,6 +434,21 @@ Printer & Printer::operator << (const sys::SysInfo & a ){
 	}
 	return *this;
 }
+
+Printer & Printer::operator << (const sys::AppfsInfo & a){
+	key("name", "%s", a.name().cstring());
+	key("id", "%s", a.id().cstring());
+	key("version", "%d.%d", a.version() >> 8, a.version() & 0xff);
+	key("signature", F3208X, a.signature());
+	key("ram", F32U, a.ram_size());
+	key("orphan", a.is_orphan() ? "true" : "false");
+	key("flash", a.is_flash() ? "true" : "false");
+	key("startup", a.is_startup() ? "true" : "false");
+	key("unique", a.is_unique() ? "true" : "false");
+	key("mode", "0%o", a.mode());
+	return *this;
+}
+
 
 Printer & Printer::operator << (const sgfx::Bitmap & a){
 	sg_size_t i,j;
@@ -691,12 +708,14 @@ bool Printer::update_progress(int progress, int total){
 
 	if( verbose_level() >= Printer::INFO ){
 		if( (m_progress_state == 0) && total ){
-			key("progress", "");
-			for(u32 i=0; i < width; i++){
-				print(".");
-			}
-			for(u32 i = 0; i < width; i++){
-				print("\b"); //backspace
+			key(m_progress_key, "");
+			if( (m_o_flags & PRINT_SIMPLE_PROGRESS) == 0 ){
+				for(u32 i=0; i < width; i++){
+					print(".");
+				}
+				for(u32 i = 0; i < width; i++){
+					print("\b"); //backspace
+				}
 			}
 			m_progress_state++;
 			fflush(stdout);
