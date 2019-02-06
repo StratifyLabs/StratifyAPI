@@ -46,7 +46,7 @@ Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this
 void Printer::set_color_code(u32 code){
 
 #if defined __link && defined __macosx
-	printf("\033[1;%dm", code);
+	print("\033[1;%dm", code);
 #endif
 
 #if defined __link && defined __win32
@@ -127,7 +127,7 @@ void Printer::vprint_indented(const var::ConstString & key, const char * fmt, va
 	u8 container = current_container();
 
 	if( container == CONTAINER_ARRAY ){
-		printf("- ");
+		print("- ");
 	}
 
 	if( !key.is_empty() ){
@@ -176,9 +176,7 @@ Printer & Printer::operator << (const Cli & a){
 }
 
 Printer & Printer::operator << (const var::Data & a){
-
 	u32 o_flags = m_o_flags;
-
 	const s8 * ptrs8 = (const s8*)a.data_const();
 	const s16 * ptrs16 = (const s16*)a.data_const();
 	const s32 * ptrs32 = (const s32*)a.data_const();
@@ -450,40 +448,40 @@ Printer & Printer::operator << (const sgfx::Bitmap & a){
 	sgfx::Bitmap::api()->cursor_set(&y_cursor, a.bmap(), sg_point(0,0));
 
 	key(var::String().format("lines    "), "");
-	printf(" ");
+	print(" ");
 	for(j=0; j < a.bmap()->area.width; j++){
 		if( j % 10 ){
-			::printf("%d", j % 10);
+			print("%d", j % 10);
 		} else {
-			::printf(" ");
+			print(" ");
 		}
 	}
 
 	key(var::String().format("start    "), "");
 	for(j=0; j < a.bmap()->area.width; j++){
-		::printf("-");
+		print("-");
 	}
-	::printf("--");
+	print("--");
 	for(i=0; i < a.bmap()->area.height; i++){
 		sg_cursor_copy(&x_cursor, &y_cursor);
 
 		key(var::String().format("line-%04d", i), "");
-		::printf("|");
+		print("|");
 		for(j=0; j < a.bmap()->area.width; j++){
 			color = sgfx::Bitmap::api()->cursor_get_pixel(&x_cursor);
 			print_bitmap_pixel(color, a.bmap()->bits_per_pixel);
 			if( (j < a.bmap()->area.width - 1) && (a.bmap()->bits_per_pixel > 4)){
-				::printf(" ");
+				print(" ");
 			}
 		}
-		::printf("|");
+		print("|");
 		sgfx::Bitmap::api()->cursor_inc_y(&y_cursor);
 	}
 	key(var::String().format("lines end", i), "");
 	for(j=0; j < a.bmap()->area.width; j++){
-		::printf("-");
+		print("-");
 	}
-	::printf("--");
+	print("--");
 
 	return *this;
 }
@@ -524,7 +522,7 @@ char Printer::get_bitmap_pixel_character(u32 color, u8 bits_per_pixel){
 }
 
 void Printer::print_bitmap_pixel(u32 color, u8 bits_per_pixel){
-	::printf("%c", get_bitmap_pixel_character(color, bits_per_pixel));
+	print("%c", get_bitmap_pixel_character(color, bits_per_pixel));
 }
 
 
@@ -695,10 +693,10 @@ bool Printer::update_progress(int progress, int total){
 		if( (m_progress_state == 0) && total ){
 			key("progress", "");
 			for(u32 i=0; i < width; i++){
-				printf(".");
+				print(".");
 			}
 			for(u32 i = 0; i < width; i++){
-				printf("\b"); //backspace
+				print("\b"); //backspace
 			}
 			m_progress_state++;
 			fflush(stdout);
@@ -707,7 +705,7 @@ bool Printer::update_progress(int progress, int total){
 		if( m_progress_state	> 0 ){
 
 			while( (total != 0) && (m_progress_state <= (progress*width+total/2)/total) ){
-				printf("#");
+				print("#");
 				m_progress_state++;
 				fflush(stdout);
 			}

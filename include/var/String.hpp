@@ -295,6 +295,7 @@ public:
 	  *
 	  */
 	String& format(const char * format, ...);
+	int vformat(const char * fmt, va_list list);
 
 	//deprecated
 	int sprintf(const char * format, ...);
@@ -371,8 +372,6 @@ public:
 	using ConstString::operator !=;
 
 private:
-
-	int vformat(const char * fmt, va_list list);
 
 	int update_capacity(u32 size);
 

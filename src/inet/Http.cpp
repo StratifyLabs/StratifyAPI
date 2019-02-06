@@ -69,7 +69,6 @@ int HttpClient::query(const var::ConstString & command,
 							 const sys::File * get_file,
 							 const sys::ProgressCallback * progress_callback){
 	m_status_code = -1;
-
 	m_content_length = -1;
 	int result;
 	Url u(url);
@@ -84,14 +83,21 @@ int HttpClient::query(const var::ConstString & command,
 		return result;
 	}
 
+#if 0
 	if( send_file ){
 		//send the file on the socket
-		socket().write(*send_file, m_transfer_size);
+		socket().write(*send_file, m_transfer_size, send_file->size(), progress_callback);
 	}
+#endif
 
 	listen_for_header();
 	if( get_file ){
-		listen_for_data(*get_file, progress_callback);
+		const sys::ProgressCallback * callback = 0;
+		//don't show the progress on the response if a file was transmitted
+		if( send_file == 0 ){
+			callback = progress_callback;
+		}
+		listen_for_data(*get_file, callback);
 	}
 
 	if( is_keep_alive() == false ){
@@ -263,7 +269,7 @@ int HttpClient::listen_for_header(){
 
 	} while( line.length() > 2 ); //while reading the header
 
-	return -1;
+	return 0;
 }
 
 int HttpClient::listen_for_data(const sys::File & file, const sys::ProgressCallback * progress_callback){

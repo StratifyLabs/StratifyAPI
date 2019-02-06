@@ -39,6 +39,7 @@ String & String::format(const char * format, ...){
 	return *this;
 }
 
+
 int String::sprintf(const char * format, ...){
 	int result;
 	va_list args;
@@ -53,10 +54,10 @@ int String::vformat(const char * fmt, va_list list){
 	if( capacity() == 0 ){
 		set_size(minimum_size());
 	}
-	result = vsnprintf(cdata(), capacity(), fmt, list);
-	if( result >= (int)capacity() ){ //if the data did not fit, make the buffer bigger
+	result = vsnprintf(to_char(), capacity()-1, fmt, list);
+	if( result >= (int)capacity()-1 ){ //if the data did not fit, make the buffer bigger
 		if( set_capacity(result+1) >= 0 ){
-			vsnprintf(cdata(), capacity(), fmt, list);
+			vsnprintf(to_char(), capacity()-1, fmt, list);
 		}
 	}
 	return result;

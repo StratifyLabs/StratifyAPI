@@ -235,8 +235,7 @@ protected:
 
 	virtual void print_indented(const var::ConstString & key, const char * fmt, ...);
 	virtual void vprint_indented(const var::ConstString & key, const char * fmt, va_list list);
-
-	void vprint(const char * fmt, va_list list);
+	virtual void vprint(const char * fmt, va_list list);
 
 private:
 
@@ -267,7 +266,7 @@ private:
 	u32 m_key_count;
 	bool m_is_json;
 	u32 m_o_flags;
-	static void print_bitmap_pixel(u32 color, u8 bits_per_pixel);
+	void print_bitmap_pixel(u32 color, u8 bits_per_pixel);
 
 	enum verbose_level m_verbose_level;
 
