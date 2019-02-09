@@ -310,7 +310,7 @@ bool Cli::handle_i2c(hal::I2CAttr & attr) const {
 void Cli::show_options() const {
 	printf("%s options:\n", name().cstring());
 	for(u32 i=0; i < m_help_list.count(); i++){
-		printf("	%s\n", m_help_list.at(i).cstring());
+		printf("- %s\n", m_help_list.at(i).cstring());
 	}
 }
 

@@ -198,8 +198,8 @@ public:
 
 	Printer & open_object(const var::ConstString & key, enum verbose_level level = FATAL);
 	void close_object(){
+		m_container.pop_back();
 		if( m_indent ){
-			m_container.pop_back();
 			m_indent--;
 		}
 	}
@@ -254,7 +254,7 @@ private:
 		if( m_container.count() ){
 			return m_container.at( m_container.count() - 1 ) & 0xff;
 		}
-		return CONTAINER_ARRAY;
+		return CONTAINER_OBJECT;
 	}
 
 	enum verbose_level current_level(){
