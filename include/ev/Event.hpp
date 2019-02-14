@@ -204,6 +204,7 @@ public:
 
 private:
 
+	/*! \cond */
 	enum event_type m_type;
 	union event_objects {
 		void * object;
@@ -213,6 +214,7 @@ private:
 		sys::Signal * signal;
 		EventHandler * event_handler;
 	} m_objects;
+	/*! \endcond */
 
 
 };

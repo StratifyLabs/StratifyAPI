@@ -430,7 +430,7 @@ public:
 
 	//load a JSON object or array from a file?
 	/*!
-	  * \defails Loads a JSON value from a file
+	  * \details Loads a JSON value from a file
 	  * \param path The path to the file
 	  * \return Zero on success
 	  */

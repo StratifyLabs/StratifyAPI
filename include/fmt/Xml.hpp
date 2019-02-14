@@ -9,6 +9,8 @@
 #include "../var/ConstString.hpp"
 #include "../api/FmtObject.hpp"
 
+/*! \cond */
+
 namespace fmt {
 
 /*! \brief XML Class
@@ -310,6 +312,9 @@ private:
 
 };
 
-};
+}
+
+/*! \endcond */
+
 
 #endif /* XML_HPP_ */

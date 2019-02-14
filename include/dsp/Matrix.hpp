@@ -4,6 +4,9 @@
 #include "../api/DspObject.hpp"
 #include "../var/Vector.hpp"
 
+/*! \cond */
+namespace dsp {
+
 template<typename T, typename M> class Matrix : public var::Vector<T>, public api::DspWorkObject {
 public:
 
@@ -115,5 +118,9 @@ private:
 
 
 };
+
+}
+
+/*! \endcond */
 
 #endif // DSP_MATRIX_HPP

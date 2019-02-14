@@ -85,6 +85,7 @@ protected:
 
 private:
 
+	/*! \cond */
 	static chrono::MicroTime m_held_duration;
 	static chrono::MicroTime m_actuation_duration;
 	enum ev::Event::button_id m_event_id;
@@ -102,6 +103,7 @@ private:
 	};
 
 	struct button_flags m_flags;
+	/*! \endcond */
 
 };
 

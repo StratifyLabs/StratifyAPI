@@ -75,12 +75,10 @@ public:
 
 private:
 
+	/*! \cond */
 	void swap(LinkedList & list);
-
 	void assign(const LinkedList & list);
-
 	friend class LinkedListIndex;
-
 	typedef struct {
 		void * previous;
 		void * next;
@@ -112,6 +110,7 @@ private:
 	}
 
 	u16 calc_item_size() const { return sizeof(item_t) + m_list_size; }
+	/*! \endcond */
 
 };
 

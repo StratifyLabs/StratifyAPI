@@ -137,22 +137,27 @@ AppfsInfo Appfs::get_info(const var::ConstString & path){
 			return AppfsInfo();
 		}
 
+		if( (appfs_file_header.hdr.mode & 0111) == 0 ){
+			return AppfsInfo();
+		}
+
 		app_name = appfs_file_header.hdr.name;
+		memset(&info, 0, sizeof(info));
 		if( path_name == app_name ){
+			memcpy(info.name, appfs_file_header.hdr.name, LINK_NAME_MAX);
 			info.mode = appfs_file_header.hdr.mode;
 			info.version = appfs_file_header.hdr.version;
-			memcpy(info.name, appfs_file_header.hdr.name, LINK_NAME_MAX);
 			memcpy(info.id, appfs_file_header.hdr.id, LINK_NAME_MAX);
 			info.ram_size = appfs_file_header.exec.ram_size;
 			info.o_flags = appfs_file_header.exec.o_flags;
 			info.signature = appfs_file_header.exec.signature;
 		} else {
 			errno = ENOEXEC;
-			ret = -1;
+			return AppfsInfo();
 		}
 	} else {
 		errno = ENOEXEC;
-		ret = -1;
+		return AppfsInfo();
 	}
 	return AppfsInfo(info);
 }

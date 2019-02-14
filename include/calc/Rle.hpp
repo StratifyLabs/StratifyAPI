@@ -49,6 +49,7 @@ public:
 	static int calc_size(const void * src, int nbyte);
 
 private:
+	/*! \cond */
 	typedef struct MCU_PACK {
 		u8 size;
 		u8 data;
@@ -58,6 +59,7 @@ private:
 		u32 size;
 		u32 data;
 	} element32_t;
+	/*! \endcond */
 
 };
 

@@ -174,6 +174,7 @@ public:
 	static bool is_stratify_os();
 };
 
+/** \cond */
 #if defined __link
 template<typename A, const A * initial_value> class Api : public ApiObject {
 #else
@@ -210,6 +211,9 @@ private:
 	}
 	const A * m_api = 0;
 };
+
+/** \endcond */
+
 
 }
 

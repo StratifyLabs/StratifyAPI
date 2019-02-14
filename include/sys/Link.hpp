@@ -69,10 +69,12 @@ public:
 
 	var::Vector<var::String> get_port_list();
 
+	/*! \cond */
 	typedef struct {
 		var::String port;
 		sys::SysInfo sys_info;
 	} port_device_t;
+	/*! \endcond */
 
 	var::Vector<LinkInfo> get_info_list();
 

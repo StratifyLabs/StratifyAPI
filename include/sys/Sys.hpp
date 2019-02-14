@@ -290,6 +290,8 @@ public:
 	 *
 	 */
 	int get_info(sys_info_t & attr);
+
+	/*! \cond */
 	int get_23_info(sys_23_info_t & attr);
 	int get_26_info(sys_26_info_t & attr);
 
@@ -302,6 +304,7 @@ public:
 
 	int current_task() const { return m_current_task; }
 	void set_current_task(int v){ m_current_task = v; }
+	/*! \endcond */
 
 	/*! \details Loads the cloud kernel ID.
 	 *
@@ -362,7 +365,9 @@ public:
 
 
 private:
+	/*! \cond */
 	int m_current_task;
+	/*! \endcond */
 
 };
 

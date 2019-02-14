@@ -19,8 +19,13 @@ const int Data::m_zero_value MCU_ALIGN(4) = 0;
 
 //this value corresponds to the malloc chunk size used in Stratify OS
 //this may be something that could be determined through a system call
+#if defined __link
+#define MIN_CHUNK_SIZE 1024
+#define MALLOC_CHUNK_SIZE 1024
+#else
 #define MIN_CHUNK_SIZE 52
 #define MALLOC_CHUNK_SIZE 64
+#endif
 
 u32 Data::minimum_size(){
 	return MIN_CHUNK_SIZE;
@@ -231,16 +236,7 @@ int Data::set_size(u32 s){
 
 void Data::fill(unsigned char d){
 	if( m_mem_write ){
-		u32 * dest = (u32*)m_mem_write;
-		u32 value = d << 24 | d << 16 | d << 8 | d;
-		if( capacity() % 4 == 0 ){
-			const u32 count = capacity()/4;
-			for(u32 i=0; i < count; i++){
-				*dest++ = value;
-			}
-		} else {
-			memset(m_mem_write, d, capacity());
-		}
+		memset(m_mem_write, d, capacity());
 	}
 }
 

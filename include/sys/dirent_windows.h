@@ -10,6 +10,7 @@
 #ifndef DIRENT_WINDOWS_H
 #define DIRENT_WINDOWS_H
 
+/*! \cond */
 /*
  * Include windows.h without Windows Sockets 1.1 to prevent conflicts with
  * Windows Sockets 2.0.
@@ -1152,6 +1153,7 @@ dirent_set_errno(
 #endif
 }
 
+/*! \endcond */
 
 #ifdef __cplusplus
 }

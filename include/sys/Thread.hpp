@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef THREAD_HPP_
-#define THREAD_HPP_
+#ifndef SAPI_SYS_THREAD_HPP
+#define SAPI_SYS_THREAD_HPP
 
 #include "../api/WorkObject.hpp"
 #include <mcu/types.h>
@@ -303,4 +303,4 @@ private:
 
 }
 
-#endif /* THREAD_HPP_ */
+#endif /* SAPI_SYS_THREAD_HPP */

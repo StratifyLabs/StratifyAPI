@@ -37,6 +37,7 @@ public:
 	u32 o_flags() const { return m_info.o_flags; }
 	u32 signature() const { return m_info.signature; }
 
+	bool is_executable() const { return m_info.mode & 0111; }
 	bool is_startup() const { return (m_info.o_flags & APPFS_FLAG_IS_STARTUP) != 0; }
 	bool is_flash() const { return (m_info.o_flags & APPFS_FLAG_IS_FLASH) != 0; }
 	bool is_orphan() const { return (m_info.o_flags & APPFS_FLAG_IS_ORPHAN) != 0; }

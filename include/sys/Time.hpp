@@ -1,15 +1,17 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SYS_TIME_HPP_
-#define SYS_TIME_HPP_
+#ifndef SAPI_SYS_TIME
+#define SAPI_SYS_TIME
 
 
 #include "../chrono/Time.hpp"
 
+/*! \cond */
 namespace sys {
 typedef chrono::Time Time;
 }
+/*! \endcond */
 
 
 
-#endif /* SYS_TIME_HPP_ */
+#endif /* SAPI_SYS_TIME */

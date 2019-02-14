@@ -8,6 +8,7 @@
 
 #include <mcu/types.h>
 
+/*! \cond */
 typedef struct {
 	const void * list;
 	u16 count;
@@ -47,6 +48,7 @@ enum {
 #define SAPI_API_REQUEST_JSON &jansson_api
 
 #endif
+/*! \endcond */
 
 
 #endif /* SYS_REQUESTS_H_ */

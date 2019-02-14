@@ -1,3 +1,5 @@
+/*! \file */
+
 #ifndef SAPI_SYS_TASK_MANAGER_HPP
 #define SAPI_SYS_TASK_MANAGER_HPP
 
@@ -9,7 +11,7 @@ namespace sys {
 
 
 /*!
- * \brief The Task Attributes Class
+ * \brief The Task Info Class
  */
 class TaskInfo : public api::SysInfoObject {
 public:
@@ -109,7 +111,6 @@ typedef TaskInfo TaskAttributes;
  * to create threads or processes respectively.
  *
  * \code
- *
  * Task task;
  * TaskAttr attr;
  * do {
@@ -161,8 +162,6 @@ public:
 	  * of the currently executing thread.
 	  *
 	  *
-	  * \endcode
-	  *
 	  *
 	  *
 	  */
@@ -187,17 +186,19 @@ public:
 	  * currently executing thread.
 	  *
 	  * \code
-	  *
 	  * #include <sapi/sys.hpp>
 	  *
 	  * TaskInfo info;
 	  * Task task;
 	  *
 	  * info = task(Thread::self());
+	  * \endcode
 	  *
 	  */
 	TaskInfo get_info(int id);
+	/*! \cond */
 	TaskAttributes get_attributes(int id){ return get_info(id); }
+	/*! \endcond */
 
 	/*! \details Prints info for all enabled tasks. */
 	void print(int pid = -1);

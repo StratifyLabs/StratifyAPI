@@ -62,6 +62,7 @@ public:
 	 */
 	int read_pixel(u8 * pixel, u32 pixel_size, bool mono = false, u8 thres = 128);
 
+	/*! \cond */
 	typedef struct MCU_PACK {
 		u16 signature;
 		u32 size;
@@ -81,6 +82,7 @@ public:
 	enum {
 		SIGNATURE = 0x4D42
 	};
+	/*! \bmpcond */
 
 private:
 

@@ -437,15 +437,17 @@ Printer & Printer::operator << (const sys::SysInfo & a ){
 
 Printer & Printer::operator << (const sys::AppfsInfo & a){
 	key("name", "%s", a.name().cstring());
-	key("id", "%s", a.id().cstring());
-	key("version", "%d.%d", a.version() >> 8, a.version() & 0xff);
-	key("signature", F3208X, a.signature());
-	key("ram", F32U, a.ram_size());
-	key("orphan", a.is_orphan() ? "true" : "false");
-	key("flash", a.is_flash() ? "true" : "false");
-	key("startup", a.is_startup() ? "true" : "false");
-	key("unique", a.is_unique() ? "true" : "false");
 	key("mode", "0%o", a.mode());
+	if( a.is_executable() ){
+		key("id", "%s", a.id().cstring());
+		key("version", "%d.%d", a.version() >> 8, a.version() & 0xff);
+		key("signature", F3208X, a.signature());
+		key("ram", F32U, a.ram_size());
+		key("orphan", a.is_orphan() ? "true" : "false");
+		key("flash", a.is_flash() ? "true" : "false");
+		key("startup", a.is_startup() ? "true" : "false");
+		key("unique", a.is_unique() ? "true" : "false");
+	}
 	return *this;
 }
 
