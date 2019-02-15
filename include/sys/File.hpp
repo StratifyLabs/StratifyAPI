@@ -587,25 +587,79 @@ private:
 
 };
 
+
+/*! \brief DataFile Class
+ * \details The DataFile class is a class
+ * that uses a var::Data object to allow
+ * sys::File operations. This allows for an
+ * easy way to have a valid sys::File object
+ * that can be passed to methods that read/write
+ * data from the file.
+ *
+ *
+ *
+ *
+ */
 class DataFile : public sys::File {
 public:
 
+	/*! \details Constructs a data file. */
 	DataFile(int o_flags = File::RDWR){
 		m_location = 0;
 		m_o_flags = o_flags;
 	}
 
+	/*! \details Reimplements sys::File::open() to have no
+	 * functionality.
+	 *
+	 */
 	int open(const var::ConstString & name, int flags = File::RDWR);
+
+	/*! \details Reimplements sys::File::close() to have no
+	 * functionality.
+	 *
+	 */
 	int close(){ return 0; }
 
+	/*! \details Reimplements sys::File::read() to simply
+	 * read from the var::Data object contained herein
+	 * rather than from the filesystem.
+	 */
 	int read(void * buf, int nbyte) const;
+
+	/*! \details Reimplements sys::File::write() to simply
+	 * write to the var::Data object contained herein
+	 * rather than to the filesystem.
+	 *
+	 * @param buf source data pointer
+	 * @param nbyte number of bytes to write
+	 * @return The number of bytes successfully written
+	 */
 	int write(const void * buf, int nbyte) const;
+
+	/*! \details Seeks to the specified location in the file.
+	 *
+	 * @param loc The location to seek to
+	 * @param whence The location to seek from (e.g. sys::File::SET)
+	 * @return Zero on success
+	 *
+	 */
 	int seek(int loc, int whence = LINK_SEEK_SET) const;
+
+	/*! \details Reimplements sys::File::ioctl() to have
+	 * no functionality.
+	 *
+	 */
 	int ioctl(int req, void * arg) const {
 		MCU_UNUSED_ARGUMENT(req);
 		MCU_UNUSED_ARGUMENT(arg);
 		return 0;
 	}
+
+	/*! \details Returns the size of the
+	 * file (size of the data).
+	 *
+	 */
 	u32 size() const { return data().size(); }
 
 	using File::read;
@@ -614,7 +668,9 @@ public:
 	void set_flags(int o_flags){ m_o_flags = o_flags; }
 	int flags() const { return m_o_flags; }
 
+	/*! \details Accesses (read-only) the member data object. */
 	const var::Data & data() const { return m_data; }
+	/*! \details Accesses the member data object. */
 	var::Data & data(){ return m_data; }
 
 private:

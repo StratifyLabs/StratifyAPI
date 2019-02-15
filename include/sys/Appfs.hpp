@@ -13,35 +13,83 @@
 
 namespace sys {
 
+
+/*! \brief AppfsInfo Class
+ * \details The AppfsInfo class is for
+ * getting information associated with
+ * executable files that are either installed
+ * in or built for the application filesystem.
+ *
+ */
 class AppfsInfo : public api::SysInfoObject {
 public:
 
-	AppfsInfo(){
-		memset(&m_info, 0, sizeof(m_info));
-	}
+	/*! \details Constructs an empty object. */
+	AppfsInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 
+	/*! \details Constructs an object from a *appfs_info_t* object. */
 	AppfsInfo(const appfs_info_t & info){
 		memcpy(&m_info, &info, sizeof(appfs_info_t));
 	}
 
+	/*! \details Returns true if the object is valid. */
 	bool is_valid() const {
 		return m_info.signature != 0;
 	}
 
+	/*! \details Returns the application ID (cloud id). */
 	const var::ConstString id() const { return (const char*)m_info.id; }
+
+	/*! \details Returns the name of the application. */
 	const var::ConstString name() const { return (const char*)m_info.name; }
 
+	/*! \details Returns the file mode. */
 	u16 mode() const { return m_info.mode; }
+	/*! \details Returns the version. */
 	u16 version() const { return m_info.version; }
+
+	/*! \details Returns the data RAM size used by the application. */
 	u32 ram_size() const { return m_info.ram_size; }
+
+	/*! \details Returns the flags.
+	 *
+	 * See also: is_executable(), is_startup(), is_flash(), is_orphan(), is_root(),
+	 * is_unique().
+	 *
+	 */
 	u32 o_flags() const { return m_info.o_flags; }
+
+	/*! \details Returns the application signature.
+	 *
+	 * This value specifies the version of the table that
+	 * connects the application to the operating system. Every
+	 * OS package has a signature that is associated with
+	 * the calls (such as printf(), pthread_create()) that are available to
+	 * application installed on the system.
+	 *
+	 */
 	u32 signature() const { return m_info.signature; }
 
+	/*! \details Returns true if the application is executable. */
 	bool is_executable() const { return m_info.mode & 0111; }
+
+	/*! \details Returns true if the application runs at startup. */
 	bool is_startup() const { return (m_info.o_flags & APPFS_FLAG_IS_STARTUP) != 0; }
+	/*! \details Returns true if the application is to be installed in flash. */
 	bool is_flash() const { return (m_info.o_flags & APPFS_FLAG_IS_FLASH) != 0; }
+	/*! \details Returns true if the application should run as an orphan. */
 	bool is_orphan() const { return (m_info.o_flags & APPFS_FLAG_IS_ORPHAN) != 0; }
+	/*! \details Returns true if the application should run as root. */
 	bool is_root() const { return (m_info.o_flags & APPFS_FLAG_IS_ROOT) != 0; }
+	/*! \details Returns true if the application should create a unique instance.
+	 *
+	 * If unique is false, the system will not allow a second copy of
+	 * the application to be installed on the system.
+	 *
+	 * If unique is true, the application will be assigned a unique
+	 * name when it is installed in RAM or flash.
+	 *
+	 */
 	bool is_unique() const { return (m_info.o_flags & APPFS_FLAG_IS_UNIQUE) != 0; }
 
 	const appfs_info_t & info() const { return m_info; }
@@ -52,6 +100,22 @@ private:
 	appfs_info_t m_info;
 };
 
+
+/*! \brief AppfsFileAttributes Class
+ * \details The AppfsFileAttributes class holds the
+ * information that is needed to modify an application
+ * binary that has been built with the compiler.
+ *
+ * The compiler is unable to build some information
+ * directly into the binary but it allocates space
+ * for the information.
+ *
+ * This class is used for that information and includes
+ * things like the application name, project id,
+ * and execution flags.
+ *
+ *
+ */
 class AppfsFileAttributes : public api::SysInfoObject {
 public:
 

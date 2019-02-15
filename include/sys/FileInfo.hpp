@@ -11,6 +11,14 @@
 
 namespace sys {
 
+
+/*! \brief FileInfo Class
+ * \details The FileInfo class is basically
+ * a wrapper of `struct stat` and provides
+ * information on the type and size
+ * of the file.
+ *
+ */
 class FileInfo : public api::SysWorkObject {
 public:
 
@@ -21,7 +29,6 @@ public:
 #endif
 
 	/*! Gets the file info for the specified path.
-
 	 * @param path The file path (can be a file, directory or device)
 	 * @return Zero on success or less than zero with errno set
 	 */
