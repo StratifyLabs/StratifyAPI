@@ -16,6 +16,13 @@
 
 namespace sys {
 
+
+/*! \brief TraceEvent class
+ * \details The TraceEvent class
+ * holds the information that was fired
+ * in from a Trace.
+ *
+ */
 class TraceEvent : public api::SysInfoObject {
 public:
 	TraceEvent(){
@@ -26,14 +33,20 @@ public:
 		m_event = event;
 	}
 
+	/*! \details Returns the trace id. */
 	u16 id() const{ return m_event.posix_trace_event.posix_event_id; }
+	/*! \details Returns the thread id. */
 	u16 thread_id() const{ return m_event.posix_trace_event.posix_thread_id; }
+	/*! \details Returns the process id. */
 	u16 pid() const{ return m_event.posix_trace_event.posix_pid; }
+	/*! \details Returns the program address where the trace was fired. */
 	u32 program_address() const{ return m_event.posix_trace_event.posix_prog_address; }
+	/*! \details Returns the timestamp when the trace was fired. */
 	chrono::ClockTime timestamp() const{
 		return chrono::ClockTime(m_event.posix_trace_event.posix_timestamp_tv_sec, m_event.posix_trace_event.posix_timestamp_tv_nsec);
 	}
 
+	/*! \details Returns the trace's message. */
 	var::String message() const {
 		char buffer[LINK_POSIX_TRACE_DATA_SIZE];
 		memcpy(buffer, m_event.posix_trace_event.data, LINK_POSIX_TRACE_DATA_SIZE);
@@ -41,12 +54,14 @@ public:
 		return var::String(var::ConstString(buffer));
 	}
 
+	/*! \cond */
 	link_trace_event_t & event(){ return m_event; }
 	const link_trace_event_t & event() const { return m_event; }
 
 	void * info_to_void(){ return &m_event; }
 	const void * info_to_void() const { return &m_event; }
 	u32 info_size() const { return sizeof(m_event); }
+	/*! \endcond */
 
 private:
 	link_trace_event_t m_event;

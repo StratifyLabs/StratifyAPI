@@ -25,6 +25,7 @@ public:
 	u32 data_size() const { return m_hdr.data_size; }
 
 private:
+	/*! \cond */
 	typedef struct {
 		char riff[4];
 		u32 size;
@@ -42,9 +43,10 @@ private:
 	} wav_hdr_t;
 
 	wav_hdr_t m_hdr;
+	/*! \endcond */
 
 };
 
-};
+}
 
 #endif /* WAV_HPP_ */
