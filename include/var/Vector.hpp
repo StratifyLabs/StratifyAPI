@@ -22,6 +22,7 @@ public:
 
 	/*! \details Constructs a vector with \a count uninitialized items. */
 	Vector(int count){
+		m_count = 0;
 		resize(count);
 	}
 
