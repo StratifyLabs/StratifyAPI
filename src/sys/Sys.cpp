@@ -14,15 +14,15 @@ SerialNumber::SerialNumber(){
 	memset(&m_serial_number, 0, sizeof(mcu_sn_t));
 }
 
-SerialNumber SerialNumber::from_string(const char * str){
+SerialNumber SerialNumber::from_string(const var::ConstString & str){
 	SerialNumber ret;
-	u32 len = strnlen(str, 8*4);
+	u32 len = strnlen(str.cstring(), 8*4);
 	if( len == 8*4 ){
 #if defined __link
-		sscanf(str, "%08X%08X%08X%08X",
-		 #else
-		sscanf(str, "%08lX%08lX%08lX%08lX",
-		 #endif
+		sscanf(str.cstring(), "%08X%08X%08X%08X",
+#else
+		sscanf(str.cstring(), "%08lX%08lX%08lX%08lX",
+#endif
 				 &ret.m_serial_number.sn[3],
 				&ret.m_serial_number.sn[2],
 				&ret.m_serial_number.sn[1],
@@ -31,33 +31,26 @@ SerialNumber SerialNumber::from_string(const char * str){
 	return ret;
 }
 
-SerialNumber& SerialNumber::operator = (const char * str){
+SerialNumber::SerialNumber(const var::ConstString & str){
 	SerialNumber serial_number = from_string(str);
 	memcpy(&m_serial_number, &serial_number.m_serial_number, sizeof(mcu_sn_t));
-	return *this;
 }
 
 bool SerialNumber::operator == (const SerialNumber & serial_number){
 	return memcmp(&serial_number.m_serial_number, &m_serial_number, sizeof(mcu_sn_t)) == 0;
 }
 
-int SerialNumber::get(){
-	int ret = -1;
+SerialNumber SerialNumber::get(){
+	SerialNumber result;
 	Core core(0);
 	core_info_t info;
 	if( core.open() >= 0 ){
 		if( core.get_info(info) >= 0 ){
-			memcpy(&m_serial_number, &info.serial_number, sizeof(mcu_sn_t));
-			ret = 0;
+			memcpy(&result.m_serial_number, &info.serial_number, sizeof(mcu_sn_t));
 		}
 		core.close();
 	}
-	return ret;
-}
-
-void SerialNumber::print() const {
-	var::String sn = to_string();
-	::printf("SN:%s", sn.str());
+	return result;
 }
 
 var::String SerialNumber::to_string() const {

@@ -16,17 +16,47 @@ namespace sys {
 
 class Sys;
 
-class SerialNumber {
+
+/*! \brief Serial Number class
+ * \details The SerialNumber class holds a value for an
+ * MCU serial number.
+ *
+ * Stratify OS supports reading the serial number directly
+ * from the chip. This class makes doing so as simply as possible.
+ *
+ */
+class SerialNumber : public api::SysInfoObject {
 public:
+
+	/*! \details Constructs an empty serial number. */
 	SerialNumber();
 
+	/*! \details Constructs a serial number for an array of u32 values. */
 	SerialNumber(const u32 serial_number[4]){ memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4); }
+
+	/*! \details Constructs a serial number from an mcu_sn_t. */
 	SerialNumber(const mcu_sn_t serial_number){ m_serial_number = serial_number; }
 
-	int get();
+	/*! \details Constructs this serial number from \a str. */
+	SerialNumber(const var::ConstString & str);
 
-	static SerialNumber from_string(const char * str);
+	/*! \details Returns true if a valid serial number is held. */
+	bool is_valid() const {
+		return at(0) + at(1) + at(2) + at(3) != 0;
+	}
 
+	/*! \details Queries the system for the MCU serial number associated
+	 * with the device.
+	 *
+	 * @return Zero on success.
+	 *
+	 */
+	static SerialNumber get();
+
+	/*! \details Returns a serial number object from a string type. */
+	static SerialNumber from_string(const var::ConstString & str);
+
+	/*! \details Returns the u32 section of the serial number specified by *idx*. */
 	u32 at(u32 idx) const {
 		if( idx >= 4 ){
 			idx = 3;
@@ -34,11 +64,12 @@ public:
 		return m_serial_number.sn[idx];
 	}
 
-	SerialNumber& operator = (const char * str);
 
+
+	/*! \details Compares this strig to \a serial_number. */
 	bool operator == (const SerialNumber & serial_number);
 
-	void print() const;
+	/*! \details Converts the serial number to a string. */
 	var::String to_string() const;
 
 private:
