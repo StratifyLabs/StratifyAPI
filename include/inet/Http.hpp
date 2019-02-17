@@ -56,7 +56,7 @@ public:
 
 	bool is_keep_alive() const { return m_is_keep_alive; }
 
-	void set_follow_redirects(bool value){ m_is_follow_redirects = value; }
+	void set_follow_redirects(bool value = true){ m_is_follow_redirects = value; }
 	bool is_follow_redirects() const { return m_is_follow_redirects; }
 
 	int head(const var::ConstString & url);

@@ -82,7 +82,7 @@ public:
 	enum {
 		SIGNATURE = 0x4D42
 	};
-	/*! \bmpcond */
+	/*! \endcond */
 
 private:
 

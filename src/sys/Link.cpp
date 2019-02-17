@@ -1055,6 +1055,16 @@ int Link::update_os(const sys::File & image, bool verify, const ProgressCallback
 		return check_error(err);
 	}
 
+	bootloader_attr_t attr;
+	err = get_bootloader_attr(attr);
+	if( err < 0 ){
+		err = get_bootloader_attr(attr);
+		if( err < 0 ){
+			m_error_message = "Failed to ping bootloader after erase";
+			return err;
+		}
+	}
+
 	m_error_message = "";
 	m_status_message = "Writing OS to Target...";
 

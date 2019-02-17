@@ -16,6 +16,7 @@ HttpClient::HttpClient(Socket & socket) : Http(socket){
 	m_transfer_size = 1024;
 	m_is_chunked_transfer_encoding = false;
 	m_is_keep_alive = false;
+	m_transfer_encoding = "";
 }
 
 int HttpClient::get(const var::ConstString & url, const sys::File & response, const sys::ProgressCallback * progress_callback){
@@ -91,13 +92,37 @@ int HttpClient::query(const var::ConstString & command,
 #endif
 
 	listen_for_header();
-	if( get_file ){
+	if( (m_content_length > 0) && get_file ){
 		const sys::ProgressCallback * callback = 0;
 		//don't show the progress on the response if a file was transmitted
 		if( send_file == 0 ){
 			callback = progress_callback;
 		}
 		listen_for_data(*get_file, callback);
+	}
+
+	if( is_follow_redirects() ){
+
+		if( (status_code() == 301) ||
+			 (status_code() == 302) ||
+			 (status_code() == 303) ||
+			 (status_code() == 307) ||
+			 (status_code() == 308) ){
+
+			close_connection();
+			for(u32 i=0; i < header_response_pairs().count(); i++){
+
+				String key = header_response_pairs().at(i).key();
+				key.to_lower();
+				if( key == "location" ){
+					return query(command,
+									 header_response_pairs().at(i).value(),
+									 send_file,
+									 get_file,
+									 progress_callback);
+				}
+			}
+		}
 	}
 
 	if( is_keep_alive() == false ){
@@ -235,6 +260,7 @@ int HttpClient::listen_for_header(){
 
 	var::String line;
 	m_header_response_pairs.clear();
+	m_transfer_encoding = "";
 	do {
 		line = socket().gets('\n');
 		if( line.length() > 2 ){
@@ -250,11 +276,9 @@ int HttpClient::listen_for_header(){
 			String title = pair.key();
 			title.to_upper();
 
-			if( title == "HTTP/1.1" ){
-				m_status_code = pair.value().to_integer();
-				if( (m_status_code >= 300) && (m_status_code < 400) ){
-					//redirect
-				}
+			if( title.find("HTTP/") == 0 ){
+				Tokenizer tokens(pair.value(), " ");
+				m_status_code = tokens.at(0).to_integer();
 			}
 
 			if( title == "CONTENT-LENGTH" ){
@@ -292,15 +316,21 @@ int HttpClient::listen_for_data(const sys::File & file, const sys::ProgressCallb
 
 	} else {
 		//read the response from the socket
-		file.write(socket(), m_transfer_size, m_content_length, progress_callback);
+		if( file.write(socket(), m_transfer_size, m_content_length, progress_callback) != m_content_length ){
+			return -1;
+		}
 	}
 	return 0;
 }
 
 HttpHeaderPair HttpHeaderPair::from_string(const var::ConstString & string){
-	var::Tokenizer tokens(string, ": \t\r\n");
-	if( tokens.count() >= 2 ){
-		return HttpHeaderPair(tokens.at(0), tokens.at(1));
+	var::Tokenizer tokens(string, ": ", "", false, 1);
+	if( tokens.count() == 2 ){
+		String value = tokens.at(1);
+		value.replace("\n", "");
+		value.replace("\r", "");
+		value.replace("\t", "");
+		return HttpHeaderPair(tokens.at(0), value);
 	}
 	return HttpHeaderPair();
 }
