@@ -286,6 +286,8 @@ public:
 	/*! \details Sets the flags that modify how numbers and some messages are printed. */
 	void set_flags(u32 value){ m_o_flags = value; }
 
+	u32 flags() const { return m_o_flags; }
+
 	/*! \details Opens a YAML object.
 	 *
 	 * @param key The key to be used for the object

@@ -74,6 +74,11 @@ int HttpClient::query(const var::ConstString & command,
 	int result;
 	Url u(url);
 
+	u32 get_file_pos;
+	if( get_file ){
+		get_file_pos = get_file->seek(0, File::CURRENT);
+	}
+
 	result = connect_to_server(u.domain_name(), u.port());
 	if( result < 0 ){
 		return result;
@@ -92,37 +97,51 @@ int HttpClient::query(const var::ConstString & command,
 #endif
 
 	listen_for_header();
-	if( (m_content_length > 0) && get_file ){
-		const sys::ProgressCallback * callback = 0;
-		//don't show the progress on the response if a file was transmitted
-		if( send_file == 0 ){
-			callback = progress_callback;
-		}
-		listen_for_data(*get_file, callback);
-	}
+	bool is_redirected = false;
 
-	if( is_follow_redirects() ){
-
-		if( (status_code() == 301) ||
+	if( is_follow_redirects() &&
+		 (
+			 (status_code() == 301) ||
 			 (status_code() == 302) ||
 			 (status_code() == 303) ||
 			 (status_code() == 307) ||
-			 (status_code() == 308) ){
+			 (status_code() == 308) )
+		 ){
+		is_redirected = true;
+	}
 
-			close_connection();
-			for(u32 i=0; i < header_response_pairs().count(); i++){
+	const sys::ProgressCallback * callback = 0;
+	//don't show the progress on the response if a file was transmitted
+	if( send_file == 0 ){
+		callback = progress_callback;
+	}
+	if( get_file && (is_redirected == false)){
+		listen_for_data(*get_file, callback);
+	} else {
+		NullFile null_file;
+		listen_for_data(null_file, callback);
+	}
 
-				String key = header_response_pairs().at(i).key();
-				key.to_lower();
-				if( key == "location" ){
-					return query(command,
-									 header_response_pairs().at(i).value(),
-									 send_file,
-									 get_file,
-									 progress_callback);
-				}
+	if( is_redirected ){
+		close_connection();
+
+		if( get_file ){
+			get_file->seek(get_file_pos, File::SET);
+		}
+
+		for(u32 i=0; i < header_response_pairs().count(); i++){
+
+			String key = header_response_pairs().at(i).key();
+			key.to_lower();
+			if( key == "location" ){
+				return query(command,
+								 header_response_pairs().at(i).value(),
+								 send_file,
+								 get_file,
+								 progress_callback);
 			}
 		}
+
 	}
 
 	if( is_keep_alive() == false ){
@@ -277,13 +296,19 @@ int HttpClient::listen_for_header(){
 			title.to_upper();
 
 			if( title.find("HTTP/") == 0 ){
-				Tokenizer tokens(pair.value(), " ");
-				m_status_code = tokens.at(0).to_integer();
+				Tokenizer tokens(title, " ");
+				if( tokens.size() < 2 ){
+					set_error_number(FAILED_TO_GET_STATUS_CODE);
+					m_status_code = -1;
+					return -1;
+				}
+				m_status_code = tokens.at(1).to_integer();
 			}
 
 			if( title == "CONTENT-LENGTH" ){
 				m_content_length = pair.value().atoi();
 			}
+
 			if( title == "TRANSFER-ENCODING" ){
 				m_transfer_encoding = pair.value();
 				m_transfer_encoding.to_upper();
@@ -316,22 +341,29 @@ int HttpClient::listen_for_data(const sys::File & file, const sys::ProgressCallb
 
 	} else {
 		//read the response from the socket
-		if( file.write(socket(), m_transfer_size, m_content_length, progress_callback) != m_content_length ){
-			return -1;
+		if( m_content_length > 0 ){
+			int result = file.write(socket(), m_transfer_size, m_content_length, progress_callback);
+			if( result != m_content_length ){
+				return -1;
+			}
 		}
 	}
 	return 0;
 }
 
 HttpHeaderPair HttpHeaderPair::from_string(const var::ConstString & string){
-	var::Tokenizer tokens(string, ": ", "", false, 1);
-	if( tokens.count() == 2 ){
-		String value = tokens.at(1);
-		value.replace("\n", "");
+	String string_copy = string;
+	u32 colon_pos = string_copy.find(":");
+	String key = string_copy.substr(0, colon_pos);
+	String value;
+	if( colon_pos != String::npos ){
+		value = string_copy.substr(colon_pos+1);
+		if( value.at(0) == ' ' ){
+			value.erase(0,1);
+		}
 		value.replace("\r", "");
-		value.replace("\t", "");
-		return HttpHeaderPair(tokens.at(0), value);
+		value.replace("\n", "");
 	}
-	return HttpHeaderPair();
+	return HttpHeaderPair(key, value);
 }
 

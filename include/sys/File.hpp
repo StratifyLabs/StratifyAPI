@@ -680,6 +680,78 @@ private:
 
 };
 
+class NullFile : public sys::File {
+public:
+
+	/*! \details Constructs a null file. */
+	NullFile(){}
+
+	/*! \details Reimplements sys::File::open() to have no
+	 * functionality.
+	 *
+	 */
+	int open(const var::ConstString & name, int flags = File::RDWR);
+
+	/*! \details Reimplements sys::File::close() to have no
+	 * functionality.
+	 *
+	 */
+	int close(){ return 0; }
+
+	/*! \details Reimplements sys::File::read() to simply
+	 * return -1 if a read is attempted.
+	 *
+	 * @param buf dest data pointer
+	 * @param nbyte number of bytes to read
+	 * @return -1 to indicate reads are not valid
+	 */
+	int read(void * buf, int nbyte) const;
+
+	/*! \details Reimplements sys::File::write() to simply
+	 * to accept the data but it is not stored anywhere.
+	 *
+	 * @param buf source data pointer
+	 * @param nbyte number of bytes to write
+	 * @return The number of bytes successfully written
+	 */
+	int write(const void * buf, int nbyte) const;
+
+	/*! \details Returns an error.
+	 *
+	 * @param loc The location to seek to
+	 * @param whence The location to seek from (e.g. sys::File::SET)
+	 * @return -1 because seeking is not valid
+	 *
+	 */
+	int seek(int loc, int whence = LINK_SEEK_SET) const;
+
+	/*! \details Reimplements sys::File::ioctl() to have
+	 * no functionality.
+	 *
+	 */
+	int ioctl(int req, void * arg) const {
+		MCU_UNUSED_ARGUMENT(req);
+		MCU_UNUSED_ARGUMENT(arg);
+		return 0;
+	}
+
+	/*! \details Returns zero.
+	 *
+	 */
+	u32 size() const { return 0; }
+
+	using File::read;
+	using File::write;
+
+	void set_flags(int o_flags){ m_o_flags = o_flags; }
+	int flags() const { return m_o_flags; }
+
+
+private:
+	int m_o_flags;
+
+};
+
 }
 
 #endif /* SYS_FILE_HPP_ */

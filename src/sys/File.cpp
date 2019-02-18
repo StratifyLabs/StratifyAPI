@@ -527,3 +527,27 @@ int DataFile::seek(int loc, int whence) const {
 	return m_location;
 }
 
+int NullFile::open(const var::ConstString & name, int flags){
+	MCU_UNUSED_ARGUMENT(name);
+	MCU_UNUSED_ARGUMENT(flags);
+	return 0;
+}
+
+int NullFile::read(void * buf, int nbyte) const {
+	MCU_UNUSED_ARGUMENT(buf);
+	MCU_UNUSED_ARGUMENT(nbyte);
+	return -1;
+}
+
+int NullFile::write(const void * buf, int nbyte) const {
+	MCU_UNUSED_ARGUMENT(buf);
+	return nbyte;
+}
+
+int NullFile::seek(int loc, int whence) const {
+	MCU_UNUSED_ARGUMENT(loc);
+	MCU_UNUSED_ARGUMENT(whence);
+	return -1;
+
+}
+
