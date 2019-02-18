@@ -30,7 +30,7 @@ public:
 	u32 o_flags() const { return m_info.o_flags; }
 
 	/*! \details Returns the serial number of the MCU. */
-	sys::SerialNumber serial_number() const{ return sys::SerialNumber(m_info.serial_number); }
+	sys::SerialNumber serial_number() const{ return sys::SerialNumber(m_info.serial); }
 
 private:
 	core_info_t m_info;
@@ -69,7 +69,7 @@ private:
  * \endcode
  *
  */
-class Core : public Periph<core_info_t, core_attr_t, CoreAttributes, 'c'> {
+class Core : public Periph<core_info_t, core_attr_t, CoreAttributes, CORE_IOC_IDENT_CHAR> {
 public:
 
 	/*! \details Core functional types */

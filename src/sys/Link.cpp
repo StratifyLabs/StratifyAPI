@@ -1056,13 +1056,13 @@ int Link::update_os(const sys::File & image, bool verify, const ProgressCallback
 	}
 
 	bootloader_attr_t attr;
-	err = get_bootloader_attr(attr);
-	if( err < 0 ){
+	int retry = 0;
+	do {
 		err = get_bootloader_attr(attr);
-		if( err < 0 ){
-			m_error_message = "Failed to ping bootloader after erase";
-			return err;
-		}
+	} while ( err < 0 && retry++ < 5);
+	if( err < 0 ){
+		m_error_message = "Failed to ping bootloader after erase (try the operation again)";
+		return err;
 	}
 
 	m_error_message = "";

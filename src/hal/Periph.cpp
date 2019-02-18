@@ -90,22 +90,19 @@ int PeriphObject::open(const var::ConstString & name, int flags){
 
 int PeriphObject::open(int flags){
 	char buffer[LINK_NAME_MAX];
-	int len;
 	const char * name;
 	u8 periph_type = m_periph_port >> 8;
 
-	name = periph_name[periph_type];
 
-	strncpy(buffer, "/dev/", LINK_NAME_MAX-1);
-	strncat(buffer, name, LINK_NAME_MAX-1);
-	len = strnlen(buffer, LINK_NAME_MAX-1);
 	if( periph_type != CORE_PERIPH_RTC ){ //RTC is at /dev/rtc (there can only be one)
 		if( m_periph_port != 0 ){
-			buffer[len] = '0' + (m_periph_port & 0xFF);
-			buffer[len+1] = '\0';
+			name = periph_name[periph_type];
+			snprintf(buffer, LINK_NAME_MAX-1, "/dev/%s%d", name, (m_periph_port & 0xff));
 		} else {
 			return -1;
 		}
+	} else {
+		strncpy(buffer, "/dev/rtc", LINK_NAME_MAX-1);
 	}
 	return open(buffer, flags);
 }

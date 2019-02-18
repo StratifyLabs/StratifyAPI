@@ -46,7 +46,7 @@ SerialNumber SerialNumber::get(){
 	core_info_t info;
 	if( core.open() >= 0 ){
 		if( core.get_info(info) >= 0 ){
-			memcpy(&result.m_serial_number, &info.serial_number, sizeof(mcu_sn_t));
+			memcpy(&result.m_serial_number, &info.serial, sizeof(mcu_sn_t));
 		}
 		core.close();
 	}
