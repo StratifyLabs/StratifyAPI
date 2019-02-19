@@ -77,15 +77,16 @@ public:
 	int trace(const var::ConstString & url);
 	int connect(const var::ConstString & url);
 
+	/*! \details List of values for error_number() when using the HttpClient class. */
 	enum {
-		NONE,
-		FAILED_TO_CREATE_SOCKET,
-		FAILED_TO_CONNECT_TO_SOCKET,
-		FAILED_TO_WRITE_HEADER,
-		FAILED_TO_WRITE_DATA,
-		FAILED_TO_WRITE_INCOMING_DATA_TO_FILE,
-		FAILED_TO_FIND_ADDRESS,
-		FAILED_TO_GET_STATUS_CODE,
+		NONE /*! No Errors */,
+		FAILED_TO_CREATE_SOCKET /*! Failed to create a socket (1) */,
+		FAILED_TO_CONNECT_TO_SOCKET /*! Failed to connect to socket (2) */,
+		FAILED_TO_WRITE_HEADER /*! Failed to write request header (3) */,
+		FAILED_TO_WRITE_DATA /*! Failed to write data (4) */,
+		FAILED_TO_WRITE_INCOMING_DATA_TO_FILE /*! Failed  write incoming data to file provided (5) */,
+		FAILED_TO_FIND_ADDRESS /*! Failed to find IP address of URL (6) */,
+		FAILED_TO_GET_STATUS_CODE /*! Failed to get a status code in the HTTP response (7) */,
 		FAILED_WRONG_DOMAIN
 	};
 
