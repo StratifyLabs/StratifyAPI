@@ -7,6 +7,49 @@
 
 using namespace calc;
 
+int Base64::encode(const sys::File & input, sys::File & output, u32 size){
+	u32 chunk_size = 96;
+	const u32 output_buffer_size = calc_encoded_size(chunk_size);
+	char input_buffer[chunk_size];
+	char output_buffer[output_buffer_size];
+	u32 size_processed = 0;
+	int result;
+	do {
+		if( size - size_processed < chunk_size ){ chunk_size = size - size_processed; }
+		result = input.read(input_buffer, chunk_size);
+		if( result > 0 ){
+			size_processed += result;
+			int len = encode(output_buffer, input_buffer, result);
+			if( output.write(output_buffer, len) != len ){
+				result = 0;
+			}
+		}
+	} while( (result > 0) && (size > size_processed) );
+	return size_processed;
+}
+
+int Base64::decode(const sys::File & input, sys::File & output, u32 size){
+	u32 chunk_size = 96;
+	const u32 output_buffer_size = calc_decoded_size(chunk_size);
+	char input_buffer[chunk_size];
+	char output_buffer[output_buffer_size];
+	u32 size_processed = 0;
+	int result;
+	do {
+		if( size - size_processed < chunk_size ){ chunk_size = size - size_processed; }
+		result = input.read(input_buffer, chunk_size);
+		if( result > 0 ){
+			size_processed += result;
+			int len = decode(output_buffer, input_buffer, result);
+			if( output.write(output_buffer, len) != len ){
+				result = 0;
+			}
+
+		}
+	} while( (result > 0) && (size > size_processed) );
+	return size_processed;
+}
+
 var::String Base64::encode(const var::Data & input){
 	var::String result;
 
@@ -58,7 +101,7 @@ int Base64::encode(char * dest, const void * src, int nbyte){
 		//two equals at end
 		dest[k-2] = '=';
 		dest[k-1] = '=';
-	} else if ( (len %3 ) == 2 ){
+	} else if ( (len % 3) == 2 ){
 		dest[k-1] = '=';
 	}
 

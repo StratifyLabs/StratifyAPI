@@ -95,34 +95,61 @@ public:
 	/*! \details Constructs an empty SysInfo object. */
 	SysInfo(){ clear(); }
 
-
+	/*! \details Constructs an object from *info*. */
 	SysInfo(const sys_info_t & info ){
 		m_info = info;
 	}
 
 	operator const sys_info_t & () const { return m_info; }
 
+	/*! \details Returns true if the object is valid. */
 	bool is_valid() const { return cpu_frequency() != 0; }
+
+	/*! \details Gets the system information from the OS and returns a SysInfo object. */
 	static SysInfo get();
 
+	/*! \details Returns the OS package project ID. */
+	var::ConstString id() const { return m_info.id; }
 	/*! \details Returns the name of the system. */
 	var::ConstString name() const { return m_info.name; }
 	/*! \details Returns the system version. */
 	var::ConstString system_version() const { return m_info.sys_version; }
-	/*! \details Retusn the board support package version (same as system_version()). */
+	/*! \details Returns the board support package version (same as system_version()). */
 	var::ConstString bsp_version() const { return m_info.sys_version; }
-	var::ConstString kernel_version() const { return m_info.kernel_version; }
+	/*! \details Returns the Stratify OS version version. */
 	var::ConstString sos_version() const { return m_info.kernel_version; }
-	var::ConstString arch() const { return m_info.arch; }
+	/*! \details Returns the kernel version (same as sos_version()). */
+	var::ConstString kernel_version() const { return m_info.kernel_version; }
+
+	/*! \details Returns the CPU architecture.
+	 *
+	 * Applications that are installed on the system must
+	 * have a compatible architecture.
+	 *
+	 *
+	 */
 	var::ConstString cpu_architecture() const { return m_info.arch; }
-	var::ConstString id() const { return m_info.id; }
+
+	/*! \details Returns the CPU core clock frequency in Hertz. */
 	u32 cpu_frequency() const { return m_info.cpu_freq; }
+
+	/*! \details Returns the signature for the system call table.
+	 *
+	 * Applications that are installed must have a compatible signature.
+	 *
+	 */
 	u32 application_signature() const { return m_info.signature; }
+
+	/*! \details Returns the GIT Hash of the OS package as built. */
 	var::ConstString bsp_git_hash() const { return m_info.bsp_git_hash; }
+	/*! \details Returns the Stratify OS library used to link the OS package. */
 	var::ConstString sos_git_hash() const { return m_info.sos_git_hash; }
+	/*! \details Returns the Stratify OS MCU library used to link the OS package. */
 	var::ConstString mcu_git_hash() const { return m_info.mcu_git_hash; }
+
 	u32 o_flags() const { return m_info.o_flags; }
 
+	var::ConstString arch() const { return m_info.arch; }
 	var::ConstString stdin_name() const { return m_info.stdin_name; }
 	var::ConstString stdout_name() const { return m_info.stdout_name; }
 	var::ConstString trace_name() const { return m_info.trace_name; }
@@ -161,6 +188,7 @@ public:
 	  */
 	static const char * version(){ return "2.4.0"; }
 
+	/*! \details Options for launching applications. */
 	enum {
 		LAUNCH_OPTIONS_FLASH /*! Install in flash memory */ = APPFS_FLAG_IS_FLASH,
 		LAUNCH_OPTIONS_STARTUP /*! Run at startup (must be in flash) */ = APPFS_FLAG_IS_STARTUP,
@@ -308,8 +336,6 @@ public:
 		return File::open("/dev/sys", RDWR);
 	}
 
-	using File::open;
-
 	/*! \details Loads the current system info.
 	 *
 	 * @param attr A reference to where the data should be stored
@@ -323,6 +349,7 @@ public:
 	int get_info(sys_info_t & attr);
 
 	/*! \cond */
+	using File::open;
 	int get_23_info(sys_23_info_t & attr);
 	int get_26_info(sys_26_info_t & attr);
 

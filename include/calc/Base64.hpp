@@ -5,6 +5,7 @@
 
 #include "../api/CalcObject.hpp"
 #include "../var/String.hpp"
+#include "../sys/File.hpp"
 
 namespace calc {
 
@@ -72,6 +73,23 @@ public:
 	 */
 	static var::String encode(const var::Data & input);
 
+
+	/*! \details Reads binary data from *input* and writes a Base64
+	 * encoded string to *output*.
+	 *
+	 * @param input The input sys::File
+	 * @param output The output sys::File
+	 * @param size The number of bytes from input to read (0 to read to EOF)
+	 * @return Number of encoded bytes written to *output*
+	 *
+	 * The method reads *size* bytes (or to EOF if *size* is zero) from *input*
+	 * start at the current location. The output string is written to *output*
+	 * at the current location.
+	 *
+	 *
+	 */
+	static int encode(const sys::File & input, sys::File & output, u32 size = 0);
+
 	/*! \details Decodes base64 encoded data.
 	 *
 	 * @param dest Pointer to destination memory (binary format)
@@ -93,6 +111,22 @@ public:
 	 *
 	 */
 	static var::Data decode(const var::String & input);
+
+	/*! \details Reads base64 encoded data from *input* and writes raw,
+	 * decoded data to *output*.
+	 *
+	 * @param input The input sys::File
+	 * @param output The output sys::File
+	 * @param size The number of bytes from input to read (0 to read to EOF)
+	 * @return Number of decoded bytes written to *output*
+	 *
+	 * The method reads *size* bytes (or to EOF if *size* is zero) from *input*
+	 * start at the current location. The output string is written to *output*
+	 * at the current location.
+	 *
+	 *
+	 */
+	static int decode(const sys::File & input, sys::File & output, u32 size = 0);
 
 
 private:

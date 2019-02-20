@@ -424,6 +424,7 @@ int File::write(const sys::File & source_file, u32 chunk_size, u32 size) const {
 	return write(source_file, chunk_size, size, 0);
 }
 
+
 int File::write(const sys::File & source_file, u32 chunk_size, u32 size, const ProgressCallback * progress_callback) const {
 	u32 size_processed = 0;
 	u8 buffer[chunk_size];

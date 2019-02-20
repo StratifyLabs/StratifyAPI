@@ -225,13 +225,12 @@ json_t * JsonNull::create(){
 
 int JsonObject::insert(const var::ConstString & key, const JsonValue & value){
 	if( create_if_not_valid() < 0 ){
-		printf("Could not create -- still invalid for %s\n", key.str());
 		return -1;
 	}
 
 	int result = api()->object_set(m_value, key.str(), value.m_value);
 	if( result < 0 ){
-		printf("Failed to set JSON key %s to %s %p\n", key.str(), value.to_string().str(), m_value);
+		//printf("Failed to set JSON key %s to %s %p\n", key.str(), value.to_string().str(), m_value);
 	}
 	return result;
 }
