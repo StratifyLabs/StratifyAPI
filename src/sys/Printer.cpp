@@ -147,17 +147,23 @@ void Printer::vprint_indented(const var::ConstString & key, const char * fmt, va
 
 	if( !key.is_empty() ){
 		if( m_o_flags & PRINT_BOLD_KEYS ){ set_format_code(FORMAT_BOLD); }
+		if( m_o_flags & PRINT_CYAN_KEYS ){ set_color_code(COLOR_CODE_CYAN); }
+		if( m_o_flags & PRINT_YELLOW_KEYS ){ set_color_code(COLOR_CODE_YELLOW); }
+		if( m_o_flags & PRINT_MAGENTA_KEYS ){ set_color_code(COLOR_CODE_MAGENTA); }
 		print("%s: ", key.cstring());
 		if( m_o_flags & PRINT_BOLD_KEYS ){ clear_format_code(FORMAT_BOLD); }
+		if( m_o_flags & (PRINT_CYAN_KEYS | PRINT_YELLOW_KEYS | PRINT_MAGENTA_KEYS) ){ clear_color_code(); }
+
 	}
 
+	if( m_o_flags & PRINT_BOLD_VALUES ){ set_format_code(FORMAT_BOLD); }
 	if( m_o_flags & PRINT_GREEN_VALUES){ set_color_code(COLOR_CODE_GREEN); }
 	if( m_o_flags & PRINT_YELLOW_VALUES){ set_color_code(COLOR_CODE_YELLOW); }
 	if( m_o_flags & PRINT_RED_VALUES){ set_color_code(COLOR_CODE_RED); }
 	vprint(fmt, list);
-	if( m_o_flags & (PRINT_GREEN_VALUES | PRINT_YELLOW_VALUES | PRINT_RED_VALUES) ){
-		clear_color_code();
-	}
+	if( m_o_flags & (PRINT_GREEN_VALUES | PRINT_YELLOW_VALUES | PRINT_RED_VALUES) ){ clear_color_code(); }
+	if( m_o_flags & PRINT_BOLD_VALUES ){ clear_format_code(FORMAT_BOLD); }
+
 }
 
 void Printer::print_indented(const var::ConstString & key, const char * fmt, ...){

@@ -144,7 +144,7 @@ public:
 	 * Otherwise, 0.0f is returned.
 	 *
 	 */
-	float to_real() const;
+	float to_float() const;
 
 	/*! \details Returns an integer value of the JSON value.
 	 *

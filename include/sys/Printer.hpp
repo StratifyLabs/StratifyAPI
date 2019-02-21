@@ -302,7 +302,10 @@ public:
 		PRINT_RED_VALUES = (1<<12),
 		PRINT_YELLOW_VALUES = (1<<13),
 		PRINT_RED_ERRORS = (1<<14),
-		PRINT_YELLOW_WARNINGS = (1<<15)
+		PRINT_YELLOW_WARNINGS = (1<<15),
+		PRINT_CYAN_KEYS = (1<<16),
+		PRINT_YELLOW_KEYS = (1<<17),
+		PRINT_MAGENTA_KEYS = (1<<18)
 	};
 
 	/*! \details Sets the flags that modify how numbers and some messages are printed. */

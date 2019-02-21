@@ -368,6 +368,7 @@ public:
 	//compatible with C++ string
 	String & tolower(){ return to_lower(); }
 
+	using ConstString::to_float;
 	using ConstString::operator ==;
 	using ConstString::operator !=;
 

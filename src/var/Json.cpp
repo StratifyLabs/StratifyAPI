@@ -144,16 +144,16 @@ var::String JsonValue::to_string() const {
 	return result;
 }
 
-float JsonValue::to_real() const {
+float JsonValue::to_float() const {
 	if( is_string() ){
-		return ::atoff(api()->string_value(m_value));
+		return to_string().to_float();
 	}
 	return api()->real_value(m_value);
 }
 
 int JsonValue::to_integer() const {
 	if( is_string() ){
-		return ::atol(api()->string_value(m_value));
+		return to_string().to_integer();
 	}
 	return api()->integer_value(m_value);
 }
@@ -170,7 +170,7 @@ bool JsonValue::to_bool() const {
 	}
 
 	if( is_integer() ){ return to_integer() != 0; }
-	if( is_real() ){ return to_real() != 0.0f; }
+	if( is_real() ){ return to_float() != 0.0f; }
 	if( is_object() ){ return true; }
 	if( is_array() ){ return true; }
 	return false;

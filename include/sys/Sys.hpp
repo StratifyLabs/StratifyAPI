@@ -191,11 +191,11 @@ public:
 	/*! \details Options for launching applications. */
 	enum {
 		LAUNCH_OPTIONS_FLASH /*! Install in flash memory */ = APPFS_FLAG_IS_FLASH,
-		LAUNCH_OPTIONS_RAM /*! Install in ram memory */ = 0,
+		LAUNCH_OPTIONS_RAM /*! Install in ram memory (default behavior) */ = 0,
 		LAUNCH_OPTIONS_STARTUP /*! Run at startup (must be in flash) */ = APPFS_FLAG_IS_STARTUP,
 		LAUNCH_OPTIONS_ROOT /*! Run as root (if applicable) */ = APPFS_FLAG_IS_ROOT,
-		LAUNCH_OPTIONS_REPLACE /*! Delete if application exists */ = APPFS_FLAG_IS_REPLACE,
-		LAUNCH_OPTIONS_ORPHAN /*! Allow app to become an orphan */ = APPFS_FLAG_IS_ORPHAN,
+		LAUNCH_OPTIONS_REPLACE /*! Delete if application exists and install in the same location */ = APPFS_FLAG_IS_REPLACE,
+		LAUNCH_OPTIONS_ORPHAN /*! If this option is not set, the calling process MUST call wait() or waitpid() to finalize the process. */ = APPFS_FLAG_IS_ORPHAN,
 		LAUNCH_OPTIONS_UNIQUE_NAMES /*! Create a unique name on install */ = APPFS_FLAG_IS_UNIQUE,
 		LAUNCH_RAM_SIZE_DEFAULT = 0
 	};
@@ -203,12 +203,9 @@ public:
 	/*! \details Launches a new application.
 	 *
 	 * @param path The path to the application
-	 * @param exec_dest A pointer to a buffer where the execution path will be written (null if not needed)
 	 * @param args The arguments to pass to the applications
 	 * @param options For example:  LAUNCH_OPTIONS_FLASH | LAUNCH_OPTIONS_STARTUP
 	 * @param ram_size The amount of RAM that will be used by the app
-	 * @param update_progress A callback to show the progress if the app needs to be installed (copied to flash/RAM)
-	 * @param envp Not used (set to zero)
 	 * @return The process ID of the new app if successful
 	 *
 	 * This method must be called locally in an app. It can't be executed over the link protocol.
@@ -219,6 +216,18 @@ public:
 							int ram_size = LAUNCH_RAM_SIZE_DEFAULT
 			);
 
+	/*! \details Launches a new application.
+	 *
+	 * @param path The path to the application
+	 * @param exec_dest A pointer to a buffer where the execution path will be written (null if not needed)
+	 * @param args The arguments to pass to the applications
+	 * @param options For example:  LAUNCH_OPTIONS_FLASH | LAUNCH_OPTIONS_STARTUP
+	 * @param ram_size The amount of RAM that will be used by the app (0 assumes default value)
+	 * @param update_progress A callback to show the progress if the app needs to be installed (copied to flash/RAM)
+	 * @param envp Not used (leave as default empty string)
+	 * @return The process ID of the new app if successful
+	 *
+	 */
 	static int launch(const var::ConstString & path,
 							const var::ConstString & args,
 							var::String & exec_destination,

@@ -142,7 +142,7 @@ var::String Sys::install(const var::ConstString & path,
 								 const sys::ProgressCallback * progress_callback
 		){
 #if defined __link
-	return -1;
+	return var::String();
 #else
 	var::String result;
 	result.set_capacity(PATH_MAX);
