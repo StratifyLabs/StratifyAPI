@@ -19,7 +19,7 @@ typedef u32 micro_time_t;
 /*! \brief MicroTime Class
  * \details The MicroTime class is used for keeping track
  * of microsecond accurate time intervals. It uses
- * a 32-bit value so it is good for 4B microseconds
+ * a 32-bit value so it is good for 4 billion microseconds
  * (or about 66 minutes).
  *
  * It is very handy for converting between microseconds,
@@ -37,7 +37,7 @@ typedef u32 micro_time_t;
 class MicroTime : public api::ChronoInfoObject {
 public:
 
-	/*! \details Constructs a MicroTime object using a u32 value.
+	/*! \details Constructs a MicroTime object using a u32 microsecond value.
 	  *
 	  * The default initial value is zero.
 	  *
@@ -45,20 +45,21 @@ public:
 	explicit MicroTime(u32 microseconds = 0){ m_value_microseconds = microseconds; }
 	//MicroTime(){ m_value_microseconds = 0; }
 
+	/*! \details Constructs a MicroTime object from a chrono::ClockTime value. */
 	MicroTime(const ClockTime & clock_time){
 		m_value_microseconds = clock_time.seconds() * 1000000UL + (clock_time.nanoseconds() + 500) / 1000;
 	}
 
+	/*! \details Constructs a MicroTime object from the current value of a chrono::Timer. */
 	MicroTime(const Timer & timer);
 
 	/*! \details Create a MicroTime object from a second value. */
 	static MicroTime from_seconds(u32 sec){ return MicroTime(sec*1000000UL); }
-	static MicroTime from_sec(u32 sec){ return from_seconds(1000000UL*sec); }
 
 
 	/*! \details Create a MicroTime object from a millisecond value. */
 	static MicroTime from_milliseconds(u32 msec){ return MicroTime(msec*1000UL); }
-	static MicroTime from_msec(u32 msec){ return from_milliseconds(msec); }
+
 
 	/*! \details Create a MicroTime object from a microsecond value.
 	  *
@@ -73,7 +74,12 @@ public:
 	  *
 	  */
 	static MicroTime from_microseconds(u32 microseconds){ return MicroTime(microseconds); }
+
+	/*! \cond */
+	static MicroTime from_msec(u32 msec){ return from_milliseconds(msec); }
+	static MicroTime from_sec(u32 sec){ return from_seconds(1000000UL*sec); }
 	static MicroTime from_usec(u32 usec){ return from_microseconds(usec); }
+	/*! \endcond */
 
 	/*! \details Returns true if the time is set to a valid value.
 	  *
@@ -82,30 +88,38 @@ public:
 		return m_value_microseconds != (u32)-1;
 	}
 
-	/*! \details Returns a MicroTime object set to the invalid time. */
+	/*! \details Returns a MicroTime object set to the invalid time value. */
 	static MicroTime invalid(){ return MicroTime((u32)-1); }
 
 
+	/*! \details Assignment addition to another MicroTime object. */
 	MicroTime & operator += (const MicroTime & micro_time){
 		m_value_microseconds += micro_time.usec();
 		return *this;
 	}
 
+	/*! \details Assignment addition to another MicroTime object. */
 	MicroTime & operator -= (const MicroTime & micro_time){
 		m_value_microseconds -= micro_time.usec();
 		return *this;
 	}
 
+	/*! \details Compares equality to another MicroTime object. */
 	bool operator == (const MicroTime & a ) const { return microseconds() == a.microseconds(); }
 
+	/*! \details Compares inequality to another MicroTime object. */
 	bool operator != (const MicroTime & a ) const { return microseconds() != a.microseconds(); }
 
+	/*! \details Compares > to another MicroTime object. */
 	bool operator > (const MicroTime & a ) const { return microseconds() > a.microseconds(); }
 
+	/*! \details Compares < to another MicroTime object. */
 	bool operator < (const MicroTime & a ) const { return microseconds() < a.microseconds(); }
 
+	/*! \details Compares >= to another MicroTime object. */
 	bool operator >= (const MicroTime & a ) const { return microseconds() >= a.microseconds(); }
 
+	/*! \details Compares <= to another MicroTime object. */
 	bool operator <= (const MicroTime & a ){ return microseconds() <= a.microseconds(); }
 
 	/*! \details Sets the value of the time in seconds.
@@ -114,7 +128,6 @@ public:
 	  *
 	  */
 	void set_seconds(u32 sec){ set_usec(sec*1000000UL); }
-	void set_sec(u32 sec){ set_seconds(sec); }
 
 	/*! \details Sets the value of the time in milliseconds.
 	  *
@@ -122,7 +135,6 @@ public:
 	  *
 	  */
 	void set_milliseconds(u32 msec){ set_usec(msec*1000UL); }
-	void set_msec(u32 msec){ set_milliseconds(msec); }
 
 	/*! \details Sets the value of the time in microseconds.
 	  *
@@ -130,19 +142,24 @@ public:
 	  *
 	  */
 	void set_microseconds(micro_time_t microseconds){ m_value_microseconds = microseconds; }
-	void set_usec(micro_time_t usec){ set_microseconds(usec); }
 
 	/*! \details Returns the value in seconds. */
 	u32 seconds() const { return microseconds() / 1000000UL; }
-	u32 sec() const { return seconds(); }
 
 	/*! \details Returns the value in microseconds. */
 	micro_time_t microseconds() const { return m_value_microseconds; }
-	micro_time_t usec() const { return microseconds(); }
 
 	/*! \details Returns the value in milliseconds. */
 	u32 milliseconds() const { return usec() / 1000UL; }
+
+	/*! \cond */
+	void set_sec(u32 sec){ set_seconds(sec); }
+	void set_msec(u32 msec){ set_milliseconds(msec); }
+	void set_usec(micro_time_t usec){ set_microseconds(usec); }
+	u32 sec() const { return seconds(); }
 	u32 msec() const { return milliseconds(); }
+	micro_time_t usec() const { return microseconds(); }
+	/*! \endcond */
 
 	/*! \details Waits for the value of the microtime.
 	  *

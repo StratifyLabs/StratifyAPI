@@ -13,7 +13,7 @@ Http::Http(Socket & socket) : m_socket(socket){
 }
 
 HttpClient::HttpClient(Socket & socket) : Http(socket){
-	m_transfer_size = 1024;
+	m_transfer_size = 512;
 	m_is_chunked_transfer_encoding = false;
 	m_is_keep_alive = false;
 	m_transfer_encoding = "";
@@ -115,6 +115,7 @@ int HttpClient::query(const var::ConstString & command,
 	if( send_file == 0 ){
 		callback = progress_callback;
 	}
+
 	if( get_file && (is_redirected == false)){
 		listen_for_data(*get_file, callback);
 	} else {

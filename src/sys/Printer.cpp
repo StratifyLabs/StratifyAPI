@@ -45,6 +45,19 @@ Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this
 #endif
 }
 
+
+void Printer::set_format_code(u32 code){
+#if defined __link && defined __macosx
+	print("\033[1;%dm", code);
+#endif
+}
+
+void Printer::clear_format_code(u32 code){
+#if defined __link && defined __macosx
+	print("\033[1;2%dm", code);
+#endif
+}
+
 void Printer::set_color_code(u32 code){
 
 #if defined __link && defined __macosx
@@ -133,11 +146,18 @@ void Printer::vprint_indented(const var::ConstString & key, const char * fmt, va
 	}
 
 	if( !key.is_empty() ){
+		if( m_o_flags & PRINT_BOLD_KEYS ){ set_format_code(FORMAT_BOLD); }
 		print("%s: ", key.cstring());
+		if( m_o_flags & PRINT_BOLD_KEYS ){ clear_format_code(FORMAT_BOLD); }
 	}
 
-
+	if( m_o_flags & PRINT_GREEN_VALUES){ set_color_code(COLOR_CODE_GREEN); }
+	if( m_o_flags & PRINT_YELLOW_VALUES){ set_color_code(COLOR_CODE_YELLOW); }
+	if( m_o_flags & PRINT_RED_VALUES){ set_color_code(COLOR_CODE_RED); }
 	vprint(fmt, list);
+	if( m_o_flags & (PRINT_GREEN_VALUES | PRINT_YELLOW_VALUES | PRINT_RED_VALUES) ){
+		clear_color_code();
+	}
 }
 
 void Printer::print_indented(const var::ConstString & key, const char * fmt, ...){
@@ -742,7 +762,9 @@ bool Printer::update_progress(int progress, int total){
 
 Printer & Printer::open_object(const var::ConstString & key, enum verbose_level level){
 	if( verbose_level() >= level ){
+		if( m_o_flags & PRINT_BOLD_OBJECTS ){ set_format_code(FORMAT_BOLD); }
 		print_indented(key, "");
+		if( m_o_flags & PRINT_BOLD_OBJECTS ){ clear_format_code(FORMAT_BOLD); }
 	}
 	m_container.push_back(CONTAINER_OBJECT | (level << 8));
 	m_indent++;
@@ -751,7 +773,9 @@ Printer & Printer::open_object(const var::ConstString & key, enum verbose_level 
 
 Printer & Printer::open_array(const var::ConstString & key, enum verbose_level level){
 	if( verbose_level() >= level ){
+		if( m_o_flags & PRINT_BOLD_ARRAYS ){ set_format_code(FORMAT_BOLD); }
 		print_indented(key, "");
+		if( m_o_flags & PRINT_BOLD_ARRAYS ){ clear_format_code(FORMAT_BOLD); }
 	}
 	m_container.push_back(CONTAINER_ARRAY | (level << 8));
 	m_indent++;
@@ -808,8 +832,11 @@ Printer & Printer::message(const char * fmt, ...){
 Printer & Printer::warning(const char * fmt, ...){
 	if( verbose_level() >= WARNING ){
 		va_list list;
+		if( flags() & PRINT_YELLOW_WARNINGS ){ set_color_code(COLOR_CODE_YELLOW); }
+		print_indented("warning", "");
+		if( flags() & PRINT_YELLOW_WARNINGS ){ clear_color_code(); }
 		va_start(list, fmt);
-		vprint_indented("warning", fmt, list);
+		vprint(fmt, list);
 		va_end(list);
 	}
 	return *this;
@@ -818,8 +845,11 @@ Printer & Printer::warning(const char * fmt, ...){
 Printer & Printer::error(const char * fmt, ...){
 	if( verbose_level() >= ERROR ){
 		va_list list;
+		if( flags() & PRINT_RED_ERRORS ){ set_color_code(COLOR_CODE_RED); }
+		print_indented("error", "");
+		if( flags() & PRINT_RED_ERRORS ){ clear_color_code(); }
 		va_start(list, fmt);
-		vprint_indented("error", fmt, list);
+		vprint(fmt, list);
 		va_end(list);
 	}
 	return *this;

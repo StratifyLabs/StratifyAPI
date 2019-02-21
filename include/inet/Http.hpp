@@ -59,6 +59,10 @@ public:
 	void set_follow_redirects(bool value = true){ m_is_follow_redirects = value; }
 	bool is_follow_redirects() const { return m_is_follow_redirects; }
 
+	/*! \details Executes a HEAD request.
+	 *
+	 * @param url target URL for request.
+	 */
 	int head(const var::ConstString & url);
 	int get(const var::ConstString & url, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
 
@@ -103,18 +107,32 @@ public:
 	 */
 	int status_code() const { return m_status_code; }
 
+	/*! \details Returns the current transfer chunk size. */
 	u32 transfer_size() const {
 		return m_transfer_size;
 	}
 
+	/*! \details Sets the transfer chunk size.
+	 *
+	 * @param value Transfer size in bytes
+	 *
+	 * This sets the maximum chunk size used when downloading a file. This amount
+	 * will be read from the socket then written to the file before
+	 * another chunkc is ready from the socket.
+	 *
+	 */
 	void set_transfer_size(u32 value){
 		m_transfer_size = value;
 	}
 
+	/*! \details Sets the transfer encoding to chunked.
+	 *
+	 */
 	void set_chunked_transfer_encoding_enabled(bool value = true){
 		m_is_chunked_transfer_encoding = value;
 	}
 
+	/*! \details Closes the socket. */
 	int close_connection();
 
 	var::Vector<HttpHeaderPair> & header_request_pairs(){ return m_header_request_pairs; }
@@ -125,7 +143,7 @@ public:
 
 private:
 
-
+	/*! \cond */
 	int connect_to_server(const var::ConstString & domain_name, u16 port);
 
 	int query(const var::ConstString & command,
@@ -147,6 +165,7 @@ private:
 
 	int listen_for_header();
 	int listen_for_data(const sys::File & file, const sys::ProgressCallback * progress_callback);
+	/*! \endcond */
 
 	SocketAddress m_address;
 

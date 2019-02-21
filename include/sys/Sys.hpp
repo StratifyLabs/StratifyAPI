@@ -221,6 +221,22 @@ public:
 							char *const envp[] = 0
 			);
 
+	static int launch(const var::ConstString & path,
+							const var::ConstString & args,
+							var::String * exec_dest = 0,
+							int options = 0, //run in RAM, discard on exit
+							int ram_size = LAUNCH_RAM_SIZE_DEFAULT,
+							const sys::ProgressCallback * progress_callback = 0,
+							const var::ConstString & envp = ""
+			);
+
+	static int install(const var::ConstString & path,
+							var::String * exec_dest = 0,
+							int options = 0, //run in RAM, discard on exit
+							int ram_size = LAUNCH_RAM_SIZE_DEFAULT,
+							const sys::ProgressCallback * progress_callback = 0
+			);
+
 	/*! \details Frees the RAM associated with the app without deleting the code from flash
 	 * (should not be called when the app is currently running).
 	 *

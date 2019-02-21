@@ -111,7 +111,20 @@ public:
 		COLOR_CODE_LIGHT_BLUE = 94
 	};
 
+	enum {
+		FORMAT_NORMAL = 0,
+		FORMAT_BOLD = 1,
+		FORMAT_DIM = 2,
+		FORMAT_UNDERLINE = 4,
+		FORMAT_BLINK = 5,
+		FORMAT_INVERTED = 7,
+		FORMAT_HIDDEN = 8
+	};
+
 	static u32 color_code(const var::ConstString & color);
+
+	void set_format_code(u32 code);
+	void clear_format_code(u32 code);
 
 	void set_color_code(u32 code);
 	void clear_color_code();
@@ -280,11 +293,23 @@ public:
 		PRINT_8 /*! Print as 8 bit values (default) */ = 0,
 		PRINT_16 /*! Print as 16 bit values */ = (1<<4),
 		PRINT_32 /*! Print as 32 bit values */ = (1<<5),
-		PRINT_SIMPLE_PROGRESS /*! Just print # for progress */ = (1<<6)
+		PRINT_SIMPLE_PROGRESS /*! Just print # for progress */ = (1<<6),
+		PRINT_BOLD_KEYS /*! Print keys in bold if supported */ = (1<<7),
+		PRINT_BOLD_VALUES /*! Print keys in bold if supported */ = (1<<8),
+		PRINT_BOLD_OBJECTS /*! Print keys in bold if supported */ = (1<<9),
+		PRINT_BOLD_ARRAYS /*! Print keys in bold if supported */ = (1<<10),
+		PRINT_GREEN_VALUES = (1<<11),
+		PRINT_RED_VALUES = (1<<12),
+		PRINT_YELLOW_VALUES = (1<<13),
+		PRINT_RED_ERRORS = (1<<14),
+		PRINT_YELLOW_WARNINGS = (1<<15)
 	};
 
 	/*! \details Sets the flags that modify how numbers and some messages are printed. */
 	void set_flags(u32 value){ m_o_flags = value; }
+
+	void enable_flags(u32 value){ m_o_flags |= value; }
+	void disable_flags(u32 value){ m_o_flags &= ~value; }
 
 	u32 flags() const { return m_o_flags; }
 
