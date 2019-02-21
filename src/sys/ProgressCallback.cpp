@@ -19,3 +19,11 @@ bool ProgressCallback::update(int value, int total) const {
 	//do not abort the operation
 	return false;
 }
+
+int ProgressCallback::update_function(const void * context, int value, int total){
+	const ProgressCallback * progress_callback = (const ProgressCallback*)context;
+	if( progress_callback ){
+		return progress_callback->update(value, total);
+	}
+	return 0;
+}

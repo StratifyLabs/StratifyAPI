@@ -20,9 +20,9 @@ SerialNumber SerialNumber::from_string(const var::ConstString & str){
 	if( len == 8*4 ){
 #if defined __link
 		sscanf(str.cstring(), "%08X%08X%08X%08X",
-#else
+		 #else
 		sscanf(str.cstring(), "%08lX%08lX%08lX%08lX",
-#endif
+		 #endif
 				 &ret.m_serial_number.sn[3],
 				&ret.m_serial_number.sn[2],
 				&ret.m_serial_number.sn[1],
@@ -89,11 +89,72 @@ Sys::Sys() {
 
 
 
-int Sys::launch(const char * path, char * exec_path, const char * args, int options, int ram_size, int (*update_progress)(int, int), char *const envp[]){
+int Sys::launch(const var::ConstString & path,
+					 const var::ConstString & args,
+					 int options,
+					 int ram_size){
 #if defined __link
 	return -1;
 #else
-	return ::launch(path, exec_path, args, options, ram_size, update_progress, envp);
+	return ::launch(path.cstring(),
+						 0,
+						 args.cstring(),
+						 options,
+						 ram_size,
+						 0, 0,
+						 0);
+#endif
+}
+
+int Sys::launch(const var::ConstString & path,
+								const var::ConstString & args,
+								var::String & exec_destination,
+								int options, //run in RAM, discard on exit
+								int ram_size,
+								const sys::ProgressCallback * progress_callback,
+								const var::ConstString & envp
+								){
+#if defined __link
+	return -1;
+#else
+	exec_destination.set_capacity(PATH_MAX);
+	return ::launch(path.cstring(),
+						 exec_destination.to_char(),
+						 args.cstring(),
+						 options,
+						 ram_size,
+						 sys::ProgressCallback::update_function, (void*)progress_callback,
+						 0);
+#endif
+}
+
+var::String Sys::install(const var::ConstString & path,
+						int options, //run in RAM, discard on exit
+						int ram_size
+		){
+	return install(path, options, ram_size, 0);
+}
+
+
+var::String Sys::install(const var::ConstString & path,
+								 int options, //run in RAM, discard on exit
+								 int ram_size,
+								 const sys::ProgressCallback * progress_callback
+		){
+#if defined __link
+	return -1;
+#else
+	var::String result;
+	result.set_capacity(PATH_MAX);
+			if( ::install(path.cstring(),
+							  result.to_char(),
+							  options,
+							  ram_size,
+							  sys::ProgressCallback::update_function,
+							  progress_callback) < 0){
+		return var::String();
+	}
+	return result;
 #endif
 }
 

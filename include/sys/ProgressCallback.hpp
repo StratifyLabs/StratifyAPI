@@ -69,6 +69,8 @@ public:
 	 */
 	bool update(int value, int total) const;
 
+	static int update_function(const void * context, int value, int total);
+
 private:
 	bool (*m_update)(void*, int, int);
 	void * m_context;

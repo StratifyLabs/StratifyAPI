@@ -191,6 +191,7 @@ public:
 	/*! \details Options for launching applications. */
 	enum {
 		LAUNCH_OPTIONS_FLASH /*! Install in flash memory */ = APPFS_FLAG_IS_FLASH,
+		LAUNCH_OPTIONS_RAM /*! Install in ram memory */ = 0,
 		LAUNCH_OPTIONS_STARTUP /*! Run at startup (must be in flash) */ = APPFS_FLAG_IS_STARTUP,
 		LAUNCH_OPTIONS_ROOT /*! Run as root (if applicable) */ = APPFS_FLAG_IS_ROOT,
 		LAUNCH_OPTIONS_REPLACE /*! Delete if application exists */ = APPFS_FLAG_IS_REPLACE,
@@ -212,30 +213,33 @@ public:
 	 *
 	 * This method must be called locally in an app. It can't be executed over the link protocol.
 	 */
-	static int launch(const char * path,
-							char * exec_dest = 0,
-							const char * args = 0,
+	static int launch(const var::ConstString & path,
+							const var::ConstString & args,
 							int options = 0, //run in RAM, discard on exit
-							int ram_size = LAUNCH_RAM_SIZE_DEFAULT,
-							int (*update_progress)(int, int) = 0,
-							char *const envp[] = 0
+							int ram_size = LAUNCH_RAM_SIZE_DEFAULT
 			);
 
 	static int launch(const var::ConstString & path,
 							const var::ConstString & args,
-							var::String * exec_dest = 0,
-							int options = 0, //run in RAM, discard on exit
-							int ram_size = LAUNCH_RAM_SIZE_DEFAULT,
-							const sys::ProgressCallback * progress_callback = 0,
+							var::String & exec_destination,
+							int options, //run in RAM, discard on exit
+							int ram_size,
+							const sys::ProgressCallback * progress_callback,
 							const var::ConstString & envp = ""
 			);
 
-	static int install(const var::ConstString & path,
-							var::String * exec_dest = 0,
+	static var::String install(const var::ConstString & path,
 							int options = 0, //run in RAM, discard on exit
-							int ram_size = LAUNCH_RAM_SIZE_DEFAULT,
-							const sys::ProgressCallback * progress_callback = 0
+							int ram_size = LAUNCH_RAM_SIZE_DEFAULT
 			);
+
+	static var::String install(const var::ConstString & path,
+							int options, //run in RAM, discard on exit
+							int ram_size,
+							const sys::ProgressCallback * progress_callback
+			);
+
+
 
 	/*! \details Frees the RAM associated with the app without deleting the code from flash
 	 * (should not be called when the app is currently running).
