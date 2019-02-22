@@ -172,6 +172,7 @@ public:
 	static bool is_windows();
 	static bool is_macosx();
 	static bool is_stratify_os();
+	static const char * user_data_path();
 };
 
 /** \cond */

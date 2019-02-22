@@ -153,7 +153,6 @@ void Printer::vprint_indented(const var::ConstString & key, const char * fmt, va
 		print("%s: ", key.cstring());
 		if( m_o_flags & PRINT_BOLD_KEYS ){ clear_format_code(FORMAT_BOLD); }
 		if( m_o_flags & (PRINT_CYAN_KEYS | PRINT_YELLOW_KEYS | PRINT_MAGENTA_KEYS) ){ clear_color_code(); }
-
 	}
 
 	if( m_o_flags & PRINT_BOLD_VALUES ){ set_format_code(FORMAT_BOLD); }
