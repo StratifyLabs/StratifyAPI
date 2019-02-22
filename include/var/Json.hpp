@@ -263,6 +263,9 @@ public:
 	JsonObject(const JsonObject & value);
 	JsonObject & operator=(const JsonObject & value);
 
+	/*! \details Returns true if the object is empty. */
+	bool is_empty() const { return count() == 0; }
+
 	/*!
 	  * \details Inserts the key value pair into the object.
 	  *
@@ -337,6 +340,9 @@ public:
 	JsonArray();
 	JsonArray(const JsonArray & value);
 	JsonArray & operator=(const JsonArray & value);
+
+	/*! \details Returns true if the object is empty. */
+	bool is_empty() const { return count() == 0; }
 
 	u32 count() const;
 

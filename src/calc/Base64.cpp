@@ -35,18 +35,21 @@ int Base64::decode(const sys::File & input, sys::File & output, u32 size){
 	char output_buffer[output_buffer_size];
 	u32 size_processed = 0;
 	int result;
+
 	do {
 		if( size - size_processed < chunk_size ){ chunk_size = size - size_processed; }
 		result = input.read(input_buffer, chunk_size);
 		if( result > 0 ){
 			size_processed += result;
-			int len = decode(output_buffer, input_buffer, result);
+			int len = calc_decoded_size(result);
+			decode(output_buffer, input_buffer, result);
 			if( output.write(output_buffer, len) != len ){
 				result = 0;
 			}
 
 		}
 	} while( (result > 0) && (size > size_processed) );
+
 	return size_processed;
 }
 
