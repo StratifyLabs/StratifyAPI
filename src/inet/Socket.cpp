@@ -374,7 +374,11 @@ Socket & Socket::operator << (const SocketOption & option){
 	decode_socket_return( ::setsockopt(m_socket,
 												  option.m_level,
 												  option.m_name,
+											  #if defined __win32
+												  option.m_option_value.to_char(),
+											  #else
 												  option.m_option_value.to_void(),
+											  #endif
 												  option.m_option_value.size()) );
 	return *this;
 }
