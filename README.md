@@ -9,13 +9,12 @@
 If you want to write programs using the Stratify API, you should read through the naming conventions then dive into the API documentation. Also, please look at the Stratify OS programs that are published on Github as they make use of the API.
 
 - [HelloWorld](https://github.com/StratifyLabs/HelloWorld)
-- [gpio](https://github.com/StratifyLabs/gpio)
-- [i2cprobe](https://github.com/StratifyLabs/i2cprobe)
-- [uartprobe](https://github.com/StratifyLabs/uartprobe)
+- [gpiotool](https://github.com/StratifyLabs/gpiotool)
+- [i2ctool](https://github.com/StratifyLabs/i2ctool)
 
 ## API Documenation
 
-If you want to write applications using the Stratify API, please see the [API documentation](https://stratifylabs.co/StratifyAPI/html/).
+If you want to write applications using the Stratify API, please see the [API documentation](https://docs.stratifylabs.co/StratifyAPI/).
 
 ## Naming Conventions
 
@@ -100,44 +99,13 @@ enum {
 
 ## Building the Stratify API
 
-The latest API is built and distributed with the [Stratify Labs SDK](https://stratifylabs.co/download/). You only need to build and install the source code if you want to debug, contribute new features, or equip your local SDK with a previous version.
+The latest API is built and distributed with the [Stratify Labs SDK](https://app.stratifylabs.co/). You only need to build and install the source code if you want to debug, contribute new features, or equip your local SDK with a previous version.
 
-Here are the steps to build and install the API. You need to have git, CMake and the Stratify Labs SDK installed before running these commands.
-
-The API builds for running with Stratify OS on embedded platforms. The API can also run on Windows and Mac OS X by using a serialization protocol (called link) to Stratify OS devices.  The cmake scripts check for the suffix "_arm" or "_link" to see which to build.
-
-### Mac OS X
+Here are the steps to build and install the API using the Stratify Labs command line tool `sl`.
 
 ```
-git clone https://github.com/StratifyLabs/StratifyAPI.git
-cd StratifyAPI
-mkdir cmake_arm; mkdir cmake_link
-cd cmake_arm
-cmake ..; make; make install
-cd ../cmake_link
-cmake ..; make; make install
+sl sdk.install # install the SDK (if it isn't already installed)
+sl sdk.update:library=StratifyOS # StratifyAPI needs the latest copy of StratifyOS
+sl sdk.update:library=StratifyAPI
+sl sdk.update # this will pull, build, and install StratifyOS and StratifyAPI
 ```
-
-### Windows
-
-For windows, you need to specify some additional options because "make" typically isn't available in the PATH environment. If you are using CMD or powershell use "-G "MinGW Makefiles. If you are using msys, you can use -G "Unix Makefiles" and use the commands listed above for Mac OS X.
-
-```
-git clone https://github.com/StratifyLabs/StratifyAPI.git
-cd StratifyAPI
-mkdir cmake_arm; mkdir cmake_link
-cd cmake_arm
-cmake .. -G "MinGW Makefiles"
-cmake --build . --target install
-cd ../cmake_link
-cmake .. -G "MinGW Makefiles"
-cmake --build . --target install
-```
-
-
-
-
-
-
-
-
