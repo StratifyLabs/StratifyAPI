@@ -43,7 +43,10 @@ Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this
 		m_default_color = info.wAttributes;
 	}
 #endif
+
+#if defined __link
 	m_is_bash = false;
+#endif
 }
 
 
