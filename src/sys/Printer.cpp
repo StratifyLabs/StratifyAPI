@@ -43,25 +43,32 @@ Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this
 		m_default_color = info.wAttributes;
 	}
 #endif
+	m_is_bash = false;
 }
 
 
 void Printer::set_format_code(u32 code){
-#if defined __link && defined __macosx
-	print("\033[1;%dm", code);
+#if defined __link
+	if( api::ApiInfo::is_macosx() || is_bash() ){
+		print("\033[1;%dm", code);
+	}
 #endif
 }
 
 void Printer::clear_format_code(u32 code){
-#if defined __link && defined __macosx
+#if defined __link
+	if( api::ApiInfo::is_macosx() || is_bash() ){
 	print("\033[1;2%dm", code);
+	}
 #endif
 }
 
 void Printer::set_color_code(u32 code){
 
-#if defined __link && defined __macosx
-	print("\033[1;%dm", code);
+#if defined __link
+	if( api::ApiInfo::is_macosx() || is_bash() ){
+		print("\033[1;%dm", code);
+	}
 #endif
 
 #if defined __link && defined __win32
@@ -88,16 +95,13 @@ void Printer::set_color_code(u32 code){
 }
 
 void Printer::clear_color_code(){
-
-#if defined __macosx
-	printf("\033[0m");
+#if defined __link
+	if( api::ApiInfo::is_macosx() || is_bash() ){
+		printf("\033[0m");
+	} else {
+		set_color_code(COLOR_CODE_DEFAULT);
+	}
 #endif
-
-#if defined __win32
-	set_color_code(COLOR_CODE_DEFAULT);
-#endif
-
-
 }
 
 u32 Printer::color_code(const var::ConstString & color){

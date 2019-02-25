@@ -459,6 +459,11 @@ public:
 	 */
 	static char get_bitmap_pixel_character(u32 color, u8 bits_per_pixel);
 
+#if defined __link
+	bool is_bash() const { return m_is_bash; }
+	void set_bash(bool value = true){ m_is_bash = value; }
+#endif
+
 protected:
 
 	/*! \details Prints the YAML indentation. */
@@ -510,6 +515,10 @@ private:
 	var::String m_progress_key;
 
 	enum verbose_level m_verbose_level;
+
+#if defined __link
+	bool m_is_bash;
+#endif
 
 };
 
