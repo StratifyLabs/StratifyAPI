@@ -175,7 +175,7 @@ private:
 	var::String m_header;
 	int m_status_code;
 
-	int m_content_length;
+	u32 m_content_length;
 	bool m_is_keep_alive;
 	var::String m_alive_domain;
 	bool m_is_follow_redirects;

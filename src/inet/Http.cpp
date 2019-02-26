@@ -70,7 +70,7 @@ int HttpClient::query(const var::ConstString & command,
 							 const sys::File * get_file,
 							 const sys::ProgressCallback * progress_callback){
 	m_status_code = -1;
-	m_content_length = -1;
+	m_content_length = 0;
 	int result;
 	Url u(url);
 
@@ -310,6 +310,14 @@ int HttpClient::listen_for_header(){
 				m_content_length = pair.value().atoi();
 			}
 
+			if( title == "CONTENT-TYPE" ){
+				//check for evnt streams
+				Tokenizer tokens(pair.value(), " ;");
+				if( tokens.at(0) == "text/event-stream" ){
+					m_content_length = (u32)-1; //accept data until the operation is cancelled
+				}
+			}
+
 			if( title == "TRANSFER-ENCODING" ){
 				m_transfer_encoding = pair.value();
 				m_transfer_encoding.to_upper();
@@ -342,9 +350,9 @@ int HttpClient::listen_for_data(const sys::File & file, const sys::ProgressCallb
 
 	} else {
 		//read the response from the socket
-		if( m_content_length > 0 ){
+		if( m_content_length != 0 ){
 			int result = file.write(socket(), m_transfer_size, m_content_length, progress_callback);
-			if( result != m_content_length ){
+			if( result != (int)m_content_length ){
 				return -1;
 			}
 		}
