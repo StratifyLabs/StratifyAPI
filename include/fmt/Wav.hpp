@@ -13,16 +13,24 @@ namespace fmt {
 class Wav : public api::FmtFileObject {
 public:
 	/*! \details Constructs a new WAV object and open the WAV as a read-only file. */
-	Wav(const var::ConstString & name);
+	Wav(const var::ConstString & name = "");
 
-	u32 size() const { return m_hdr.size; }
-	u32 wav_size() const { return m_hdr.wav_size; }
-	u32 wav_fmt() const { return m_hdr.wav_fmt; }
-	u32 channels() const { return m_hdr.channels; }
-	u32 sample_rate() const { return m_hdr.sample_rate; }
-	u32 bytes_sec() const { return m_hdr.bytes_sec; }
-	u32 bits_sample() const { return m_hdr.bits_sample; }
-	u32 data_size() const { return m_hdr.data_size; }
+	int create(const var::ConstString & path);
+
+	void set_header(u16 channels, u32 sample_rate, u16 bits_per_sample, u32 samples);
+
+
+	u32 size() const { return m_header.size; }
+	u32 wav_size() const { return m_header.format_size; }
+	u32 wav_format() const { return m_header.wav_format; }
+	u32 channels() const { return m_header.channels; }
+	u32 sample_rate() const { return m_header.sample_rate; }
+	u32 bytes_per_second() const { return m_header.bytes_per_second; }
+	u32 bits_per_sample() const { return m_header.bits_per_sample; }
+	u32 data_size() const { return m_header.data_size; }
+
+	const void * header() const{ return &m_header; }
+	u32 header_size() const { return sizeof(header_t); }
 
 private:
 	/*! \cond */
@@ -30,19 +38,19 @@ private:
 		char riff[4];
 		u32 size;
 		char wave[4];
-		char fmt[4];
-		u32 wav_size;
-		u16 wav_fmt;
+		char format_description[4];
+		u32 format_size;
+		u16 wav_format;
 		u16 channels;
 		u32 sample_rate;
-		u32 bytes_sec;
-		u16 block_align;
-		u16 bits_sample;
-		char data_desc[4];
+		u32 bytes_per_second;
+		u16 block_alignment;
+		u16 bits_per_sample;
+		char data_description[4];
 		u32 data_size;
-	} wav_hdr_t;
+	} header_t;
 
-	wav_hdr_t m_hdr;
+	header_t m_header;
 	/*! \endcond */
 
 };

@@ -280,10 +280,11 @@ int Sys::request(int request, void * arg){
 }
 
 void Sys::reset(){
-	Core core(0);
-	core.open();
-	core.reset();
-	core.close(); //in case the operation fails
+	int fd = ::open("/dev/core", O_RDWR);
+	core_attr_t attr;
+	attr.o_flags = CORE_FLAG_EXEC_RESET;
+	::ioctl(fd, I_CORE_SETATTR, &attr);
+	::close(fd); //incase reset fails
 }
 
 int Sys::get_board_config(sos_board_config_t & config){
