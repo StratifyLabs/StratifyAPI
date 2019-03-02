@@ -280,6 +280,7 @@ int HttpClient::listen_for_header(){
 
 	var::String line;
 	m_header_response_pairs.clear();
+	bool is_first_line = true;
 	m_transfer_encoding = "";
 	do {
 		line = socket().gets('\n');
@@ -298,6 +299,7 @@ int HttpClient::listen_for_header(){
 
 			if( title.find("HTTP/") == 0 ){
 				Tokenizer tokens(title, " ");
+				is_first_line = false;
 				if( tokens.size() < 2 ){
 					set_error_number(FAILED_TO_GET_STATUS_CODE);
 					m_status_code = -1;
@@ -325,7 +327,7 @@ int HttpClient::listen_for_header(){
 		}
 
 
-	} while( line.length() > 2 ); //while reading the header
+	} while( line.length() > 2 || is_first_line ); //while reading the header
 
 	return 0;
 }

@@ -52,15 +52,28 @@ void Tokenizer::parse(const ConstString & delim, const ConstString & ignore, u32
 	}
 	while( p < end ){
 		if( len1 > 0 ){
-			//this can be used to skip items in quotes "ignore=this"
+			//this can be used to skip items in quotes "ignore=this" when delim includes = (don't split it)
 			while( belongs_to(*p, ignore, len1) ){
 				end_match = *p;
-				//fast forward to next member of ignore
+				//fast forward to next member of ignore that matches the first
 				p++;
 				while( (*p != end_match) && (*p != 0) ){
 					p++;
 				}
-				p++;
+				if( *p == 0 ){
+					if( (m_is_count_empty_tokens == false) && (on_token == false) ){
+						m_num_tokens++;
+					}
+					return;
+				}
+				p++; //move past the last token
+				if( *p == 0 ){
+					if( (m_is_count_empty_tokens == false) && (on_token == false) ){
+						m_num_tokens++;
+					}
+					return;
+				}
+
 			}
 		}
 
