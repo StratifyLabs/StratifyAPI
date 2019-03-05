@@ -91,6 +91,7 @@ public:
 		FAILED_TO_WRITE_INCOMING_DATA_TO_FILE /*! Failed  write incoming data to file provided (5) */,
 		FAILED_TO_FIND_ADDRESS /*! Failed to find IP address of URL (6) */,
 		FAILED_TO_GET_STATUS_CODE /*! Failed to get a status code in the HTTP response (7) */,
+		FAILED_TO_GET_HEADER /*! Failed to receive the header (8) */,
 		FAILED_WRONG_DOMAIN
 	};
 

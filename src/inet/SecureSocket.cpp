@@ -21,7 +21,7 @@ SecureSocket::SecureSocket(u32 ticket_lifetime){
 int SecureSocket::create(const SocketAddress & address){
 	int result = api()->socket(&m_context, address.family(), address.type(), address.protocol());
 	m_fd = api()->fileno(&m_context);
-	return result;
+	return set_error_number_if_error(result);
 }
 
 //already documented in inet::Socket
@@ -79,13 +79,16 @@ int SecureSocket::write(const void * buf, int nbyte) const {
 			bytes_written += result;
 		}
 	} while( result > 0 );
+	if( result < 0 && bytes_written == 0 ){
+		return set_error_number_if_error( result );
+	}
 	return bytes_written;
 }
 
 int SecureSocket::read(void * buf, int nbyte) const {
-	return api()->read(m_context, buf, nbyte);
+	return set_error_number_if_error( api()->read(m_context, buf, nbyte) );
 }
 
 int SecureSocket::close(){
-	return api()->close(&m_context);
+	return set_error_number_if_error( api()->close(&m_context) );
 }

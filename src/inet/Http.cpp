@@ -96,7 +96,10 @@ int HttpClient::query(const var::ConstString & command,
 	}
 #endif
 
-	listen_for_header();
+	if( listen_for_header() < 0 ){
+		set_error_number(FAILED_TO_GET_HEADER);
+		return -1;
+	}
 	bool is_redirected = false;
 
 	if( is_follow_redirects() &&
@@ -282,6 +285,7 @@ int HttpClient::listen_for_header(){
 	m_header_response_pairs.clear();
 	bool is_first_line = true;
 	m_transfer_encoding = "";
+	socket().clear_error_number();
 	do {
 		line = socket().gets('\n');
 		if( line.length() > 2 ){
@@ -327,7 +331,11 @@ int HttpClient::listen_for_header(){
 		}
 
 
-	} while( line.length() > 2 || is_first_line ); //while reading the header
+	} while( (line.length() > 2 || is_first_line) && (socket().error_number() == 0) ); //while reading the header
+
+	if( socket().error_number() != 0 ){
+		return -1;
+	}
 
 	return 0;
 }
