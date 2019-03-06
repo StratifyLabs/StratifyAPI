@@ -90,5 +90,10 @@ int SecureSocket::read(void * buf, int nbyte) const {
 }
 
 int SecureSocket::close(){
-	return set_error_number_if_error( api()->close(&m_context) );
+	int result = 0;
+	if( m_fd != -1 ){
+		result = set_error_number_if_error( api()->close(&m_context) );
+		m_fd = -1;
+	}
+	return result;
 }

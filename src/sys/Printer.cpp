@@ -425,9 +425,9 @@ Printer & Printer::operator << (const sys::TaskInfo & a){
 	key("name", "%s", a.name().cstring());
 	key("id", "%ld", a.id());
 	key("pid", "%ld", a.pid());
-	key("memory size", "%ld", a.memory_size());
-	key("stack size", "%ld", a.stack_size());
-	key("heap size", "%ld", a.heap_size());
+	key("memorySize", "%ld", a.memory_size());
+	key("stackSize", "%ld", a.stack_size());
+	key("heapSize", "%ld", a.heap_size());
 	return *this;
 }
 
@@ -705,9 +705,9 @@ Printer & Printer::operator << (const TraceEvent & a){
 	}
 	key("timestamp", F32U ".%06ld", clock_time.seconds(), clock_time.nanoseconds()/1000UL);
 	key("id", "%s", id.cstring());
-	key("thread id", "%d", a.thread_id());
+	key("thread", "%d", a.thread_id());
 	key("pid", "%d", a.pid());
-	key("program address", "0x%lX", a.program_address());
+	key("programAddress", "0x%lX", a.program_address());
 	key("message", a.message().cstring());
 	return *this;
 }
@@ -718,12 +718,12 @@ Printer & Printer::operator << (const appfs_file_t & a){
 	key("mode", "0%o", a.hdr.mode);
 	key("version", "%d.%d", a.hdr.version >> 8, a.hdr.version & 0xff);
 	key("startup", "%p", a.exec.startup);
-	key("code_start", "%p", a.exec.code_start);
-	key("code_size", "%p", a.exec.code_size);
-	key("ram_start", "%p", a.exec.ram_start);
-	key("ram_size", "%ld", a.exec.ram_size);
-	key("data_size", "%ld", a.exec.data_size);
-	key("o_flags", "0x%lX", a.exec.o_flags);
+	key("codeStart", "%p", a.exec.code_start);
+	key("codeSize", "%p", a.exec.code_size);
+	key("ramStart", "%p", a.exec.ram_start);
+	key("ramSize", "%ld", a.exec.ram_size);
+	key("dataSize", "%ld", a.exec.data_size);
+	key("oFlags", "0x%lX", a.exec.o_flags);
 	key("signature", "0x%lX", a.exec.signature);
 	return *this;
 }
@@ -732,8 +732,8 @@ Printer & Printer::operator << (const AppfsFileAttributes & a){
 	key("name", a.name().cstring());
 	key("id", a.id().cstring());
 	key("version", "%d.%d", a.version() >> 8, a.version() & 0xff);
-	key("o_flags", "0x%lX", a.o_flags());
-	key("ram_size", "%ld", a.ram_size());
+	key("oFlags", "0x%lX", a.o_flags());
+	key("ramSize", "%ld", a.ram_size());
 	return *this;
 }
 
