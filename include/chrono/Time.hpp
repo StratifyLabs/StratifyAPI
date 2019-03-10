@@ -116,7 +116,8 @@ public:
 	const var::ConstString month_name() const;
 
 	/*! \details Returns the time value (number of seconds since epoch). */
-	inline time_t time() const { return m_time; }
+	time_t ctime() const { return m_time; }
+	time_t time() const { return m_time; }
 
 	/*! \details Returns seconds (from 0 to 59). */
 	u32 second() const;
