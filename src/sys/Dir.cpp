@@ -42,11 +42,19 @@ int Dir::remove(const var::ConstString & path, bool recursive, link_transport_md
 #endif
 	int ret = 0;
 	if( recursive ){
+#if defined __link
+		Dir d(driver);
+#else
 		Dir d;
+#endif
 		if( d.open(path) == 0 ){
 			var::String entry;
 			while( (entry = d.read()).is_empty() == false ){
+#if defined __link
+				FileInfo info(driver);
+#else
 				FileInfo info;
+#endif
 				var::String entry_path;
 				entry_path << path << "/" << entry;
 				if( info.get_info(entry_path) < 0 ){

@@ -53,8 +53,8 @@ public:
 	Dir();
 
 	/*! \details Returns true if the directory exists. */
-	int create(const var::ConstString & path, int mode = 0777);
-	int create(const var::ConstString & path, int mode, bool is_recursive);
+	static int create(const var::ConstString & path, int mode = 0777);
+	static int create(const var::ConstString & path, int mode, bool is_recursive);
 	/*! \details Returns true if the directory exists. */
 	static bool exists(const var::ConstString & path);
 	static var::Vector<var::String> read_list(const var::ConstString & path);

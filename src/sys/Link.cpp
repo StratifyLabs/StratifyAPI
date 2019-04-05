@@ -991,7 +991,7 @@ int Link::get_bootloader_attr(bootloader_attr_t & attr){
 	return 0;
 }
 
-int Link::update_os(const sys::File & image, bool verify, const ProgressCallback * progress_callback){
+int Link::update_os(const sys::File & image, bool verify, const ProgressCallback * progress_callback, u32 bootloader_retry_total){
 	int err;
 	uint32_t loc;
 	int bytesRead;
@@ -1059,7 +1059,7 @@ int Link::update_os(const sys::File & image, bool verify, const ProgressCallback
 	int retry = 0;
 	do {
 		err = get_bootloader_attr(attr);
-	} while ( err < 0 && retry++ < 5);
+	} while ( err < 0 && retry++ < bootloader_retry_total);
 	if( err < 0 ){
 		m_error_message = "Failed to ping bootloader after erase (try the operation again)";
 		return err;

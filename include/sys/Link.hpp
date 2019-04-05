@@ -455,7 +455,7 @@ public:
 	  * before calling this method.
 	  *
 	  */
-	int update_os(const sys::File & image, bool verify, const ProgressCallback * progress_callback = 0);
+	int update_os(const sys::File & image, bool verify, const ProgressCallback * progress_callback = 0, u32 bootloader_retry_total = 20);
 
 	/*! \details Returns the driver needed by other API objects.
 	  *
