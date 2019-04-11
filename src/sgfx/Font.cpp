@@ -85,6 +85,7 @@ Font::Font() {
 	m_offset = 0;
 	m_space_size = 8;
 	m_letter_spacing = 1;
+	m_is_kerning_enabled = true;
 }
 
 int Font::calculate_length(const var::ConstString & str) const {
@@ -133,13 +134,12 @@ int Font::draw(const var::ConstString & const_string, Bitmap & bitmap, const Poi
 		}
 
 		//apply kerning
-		w -= load_kerning(c, const_string.at(i));
-
-		if( w < 0 ){
-			return -1;
+		if( is_kerning_enabled() ){
+			w -= load_kerning(c, const_string.at(i));
+			if( w < 0 ){
+				return -1;
+			}
 		}
-
-
 
 		p += Point(w,0);
 

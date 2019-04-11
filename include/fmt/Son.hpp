@@ -409,8 +409,8 @@ public:
 		var::String result;
 		son_size_t size;
 		if( seek(access, size) >= 0 ){
-			result.set_capacity(size);
-			if( api()->read_str(&m_son, access.str(), result.cdata(), result.capacity()) < 0 ){
+			result.set_capacity(size+1);
+			if( api()->read_str(&m_son, access.cstring(), result.to_char(), result.capacity()) < 0 ){
 				return var::String();
 			}
 			return result;

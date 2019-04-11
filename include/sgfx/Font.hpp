@@ -69,8 +69,7 @@ public:
 	u8 style() const { return m_style; }
 	u8 point_size() const { return m_point_size; }
 
-	const Font * font() const { return m_font; }
-	Font * font(){ return m_font; }
+	Font * font() const { return m_font; }
 	void set_font(Font * font){ m_font = font; }
 
 	static int ascending_point_size(const void * a, const void * b);
@@ -153,6 +152,12 @@ public:
 	/*! \details Accesses the number of kerning pairs in the font. */
 	u16 kerning_pair_count() const { return m_header.kerning_pair_count; }
 
+	/*! \details Enables (or disables) kerning. */
+	void set_kerning_enabled(bool value = true){ m_is_kerning_enabled = value; }
+
+	/*! \details Returns true if kerning is enabled. */
+	bool is_kerning_enabled() const { return m_is_kerning_enabled; }
+
 protected:
 
 	static int to_charset(char ascii);
@@ -165,6 +170,7 @@ protected:
 
 	mutable int m_offset;
 	mutable sg_font_char_t m_char;
+	bool m_is_kerning_enabled;
 
 	sg_size_t m_letter_spacing;
 	int m_space_size;

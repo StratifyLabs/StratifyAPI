@@ -457,7 +457,7 @@ Printer & Printer::operator << (const sys::SysInfo & a ){
 		key("bspVersion",  a.bsp_version().cstring());
 		key("sosVersion",  a.sos_version().cstring());
 		key("cpuArchitecture",  a.cpu_architecture().cstring());
-		key("cpuFreqency", F32D, a.cpu_frequency());
+		key("cpuFrequency", F32D, a.cpu_frequency());
 		key("applicationSignature", F32X, a.application_signature());
 
 		key("bspGitHash",  a.bsp_git_hash().cstring());
