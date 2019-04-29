@@ -237,11 +237,31 @@ public:
 							const var::ConstString & envp = ""
 			);
 
+	/*!
+	 * \details Installs an application from the data filesystem
+	 * to the application filesystem.
+	 *
+	 * \param path The path to the source application to install
+	 * \param options The installation flag options
+	 * \param ram_size The number of bytes to allow for the application's data section
+	 *
+	 * \return Zero on success or less than zero with errno set.
+	 */
 	static var::String install(const var::ConstString & path,
 							int options = 0, //run in RAM, discard on exit
 							int ram_size = LAUNCH_RAM_SIZE_DEFAULT
 			);
 
+	/*!
+	 * \details Installs an application from the data filesystem
+	 * to the application filesystem.
+	 *
+	 * \param path The path to the source file.
+	 * \param options The installation options.
+	 * \param ram_size The number of bytes to allow for the application's data section.
+	 * \param progress_callback A pointer to a callback to indicate the installation progress.
+	 * \return
+	 */
 	static var::String install(const var::ConstString & path,
 							int options, //run in RAM, discard on exit
 							int ram_size,
@@ -383,7 +403,7 @@ public:
 	int get_26_info(sys_26_info_t & attr);
 
 
-	//these are deprecated: use sys::Task instead
+	//these are deprecated: use sys::TaskManager instead
 	int get_taskattr(sys_taskattr_t & attr, int task = -1);
 	inline int get_taskattr(sys_taskattr_t * attr, int task = -1){
 		return get_taskattr(*attr, task);

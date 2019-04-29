@@ -1213,7 +1213,6 @@ int Link::install_app(const sys::File & image_source, const var::ConstString & d
 	appfs_installattr_t attr;
 	int bytes_cumm;
 	int bytes_total;
-	var::String tmp_error;
 	int loc_err;
 
 	if( dest.find("/app") == 0 ){

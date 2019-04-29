@@ -90,35 +90,56 @@ public:
 
 	bool is_full() const { return m_tail == m_count; }
 
+	/*! \details Sets a flag to allow overflow.
+	 *
+	 * @param value true to allow overflow
+	 *
+	 * If overflow is allowed, writes will keep the newest
+	 * data and drop the oldest data.
+	 *
+	 * If overflow is disallowed, writes will only work
+	 * until the buffer is full and will then return an error.
+	 *
+	 */
 	void set_overflow_allowed(bool value = true){
 		m_is_overflow_allowed = value;
 	}
 
+	/*! \details Returns true if overflow is allowed. */
 	bool is_overflow_allowed() const { return m_is_overflow_allowed; }
 
 
+	/*! \details Accesses the item at the specified position.
+	 *
+	 * @param pos The position in the ring with 0 being the oldest valid data.
+	 * @return A reference to the item at *pos*.
+	 *
+	 */
 	T & at(u32 pos){
 		u32 offset = m_head + pos;
-		if( offset >= count() ){
-			offset -= count();
-		}
-		return Data::at<T>(offset);
+		return Data::at<T>(offset % count());
 	}
 
+	/*! \details Accesses a read-only copy of the item at the specified position.
+	 *
+	 * @param pos The position in the ring with 0 being the oldest valid data.
+	 * @return A read-only reference to the item at *pos*.
+	 *
+	 */
 	const T & at(u32 pos) const {
 		u32 offset = m_head + pos;
-		if( offset >= count() ){
-			offset -= count();
-		}
-		return Data::at<T>(offset);
+		return Data::at<T>(offset % count());
 	}
 
+	/*! \details Access the item at the back of the ring (the oldest valid data). */
 	T & back(){
 		if( m_tail == m_count ){
 			return Data::at<T>(m_head);
 		}
 		return Data::at<T>(m_tail);
 	}
+
+	/*! \details Access the item (read-only) at the back of the ring (the oldest valid data). */
 	const T & back() const {
 		if( m_tail == m_count ){
 			return Data::at<T>(m_head);
@@ -126,6 +147,7 @@ public:
 		return Data::at<T>(m_tail);
 	}
 
+	/*! \details Access the item at the back of the ring (the newest valid data). */
 	T & front()	{
 		if( m_head ){
 			return Data::at<T>(m_head-1);
@@ -133,6 +155,7 @@ public:
 		return Data::at<T>(m_count-1);
 	}
 
+	/*! \details Access the item (read-only) at the back of the ring (the newest valid data). */
 	const T & front()	const {
 		if( m_head ){
 			return Data::at<T>(m_head-1);
@@ -186,6 +209,27 @@ public:
 		if( m_tail == m_count ){ m_tail = 0; }
 	}
 
+
+	/*! \details Puts the data in the Ring buffer in a
+	 * linear data object.
+	 *
+	 */
+	Data to_linear_data() const {
+		Data result;
+		result.set_size( size() );
+		//this needs to be constructed
+		for(u32 i=0; i < count(); i++){
+			new((void*)(result.to<T>() + i)) T(at(i));
+		}
+		return result;
+	}
+
+	Ring & operator << (const Data & data){
+		for(u32 i=0; i < data.size() / sizeof(T); i++){
+			push(data.at<T>(i));
+		}
+		return *this;
+	}
 
 
 	/*!

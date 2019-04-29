@@ -18,6 +18,30 @@ namespace sys {
  * information on the type and size
  * of the file.
  *
+ *
+ * ```
+ * #include <sapi/sys.hpp>
+ *
+ * FileInfo info;
+ *
+ * info.get_info("/home/test.txt");
+ *
+ * if( info.is_file() ){
+ *   printf("Is a file\n");
+ * } else if( info.is_directory() ){
+ *   printf("Is a directory\n");
+ * }
+ *
+ * File file;
+ *
+ * file.open("/home/test.txt", File::RDONLY);
+ *
+ * //grab the info from a file that is already open
+ * info.get_info(file.fileno());
+ * file.close();
+ *
+ * ```
+ *
  */
 class FileInfo : public api::SysWorkObject {
 public:

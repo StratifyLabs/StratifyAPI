@@ -54,11 +54,10 @@ private:
  * Data data_static(buffer, 16); //will use buffer and consider it statically allocated (see set())
  * Data data_readonly(buffer_const, 16, true); //this will consider the data read only -- calls to data() will return 0
  *
- * if( data_readonly.data() == 0 ){
+ * if( data_readonly.to_void() == 0 ){
  * 	printf("Data is read only\n"); //this will print
  * }
  *
- * printf("This is empty data %s\n", empty.cdata_const()); //this is OK because empty data will return a valid string pointer
  *
  * \endcode
  *
@@ -69,10 +68,10 @@ private:
  */
 class Data : public api::VarWorkObject {
 public:
-	/*! \details Constructs a data object with no data */
+	/*! \details Constructs a data object with no data. */
 	Data();
 
-	/*! \details Copy constructor.
+	/*! \details Constructs a new data object as a copy of another object.
 	 *
 	 * @param a The data that will be copied into a new object
 	 *
@@ -255,7 +254,7 @@ public:
 	 */
 	virtual u32 size() const { return m_size; }
 
-	/*! \details Returns the current capcity of the data storage object.
+	/*! \details Returns the current capacity of the data storage object.
 	 *
 	 * @return Number of bytes in the data object
 	 *
@@ -513,8 +512,10 @@ public:
 		return m_mem_write == 0;
 	}
 
+	/*! \cond */
 	int copy_data(const void * buffer, u32 size);
 	int copy_cstring(const char * str);
+	/*! \endcond */
 
 
 	/*! \details Copies the contents of a into the memory of
@@ -580,8 +581,6 @@ public:
 	Data & operator << (s32 a){ append(a); return *this; }
 	Data & operator << (u64 a){ append(a); return *this; }
 	Data & operator << (s64 a){ append(a); return *this; }
-
-	void print(unsigned int value) const;
 
 	static void reclaim_heap_space(){
 #if !defined __link

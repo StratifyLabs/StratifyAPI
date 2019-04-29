@@ -162,6 +162,16 @@ public:
 		}
 	}
 
+	void set_unique(bool value = true){
+		if( value ){
+			m_o_flags |= IS_UNIQUE;
+		} else {
+			m_o_flags &= ~IS_UNIQUE;
+		}
+	}
+
+
+
 
 private:
 	var::String m_name;
