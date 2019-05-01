@@ -2,6 +2,7 @@
 #include <cstdio>
 #include "test/Test.hpp"
 #include "sys.hpp"
+#include "var/String.hpp"
 
 
 using namespace test;
@@ -30,7 +31,7 @@ Test::Test(const var::ConstString & name, Test * parent){
 
 	m_test_result = true;
 
-	print("\"%s\": {\n", name.str());
+	print("\"%s\": {\n", name.cstring());
 	increment_indent();
 
 	m_test_duration_microseconds = 0;
@@ -59,7 +60,7 @@ Test::~Test(){
 
 
 void Test::open_case(const var::ConstString & case_name){
-	print("\"%s\": {\n", case_name.str());
+	print("\"%s\": {\n", case_name.cstring());
 	increment_indent();
 	m_case_message_number = 0;
 	m_case_result = true;
@@ -118,13 +119,13 @@ void Test::print_case_message_with_key(const var::ConstString & key, const char 
 	m_case_timer.stop();
 	va_list args;
 	va_start (args, fmt);
-	vprint_case_message(key.str(), fmt, args);
+	vprint_case_message(key.cstring(), fmt, args);
 	va_end(args);
 	m_case_timer.resume();
 }
 
 void Test::vprint_case_message(const var::ConstString & key, const char * fmt, va_list args){
-	print("\"%s\": \"", key.str());
+	print("\"%s\": \"", key.cstring());
 	vprintf(fmt, args);
 	printf("\",\n");
 }
@@ -144,28 +145,49 @@ void Test::initialize(const var::ConstString & name, const var::ConstString & ve
 	} else {
 		print_indent(2, "\"name\": \"%s\",\n", info.name);
 		print_indent(2, "\"arch\": \"%s\",\n", info.arch);
-		print_indent(2, "\"sys version\": \"%s\",\n", info.sys_version);
-		print_indent(2, "\"kernel version\": \"%s\",\n", info.kernel_version);
-		print_indent(2, "\"shared memory size\": \"%ld\",\n", info.sys_mem_size);
-		print_indent(2, "\"id\": \"%s\",\n", info.id);
-		print_indent(2, "\"serial\": \"%08lX%08lX%08lX%08lX\",\n", info.serial.sn[3], info.serial.sn[2], info.serial.sn[1], info.serial.sn[0]);
-		print_indent(2, "\"frequency\": \"%ld\"\n", info.cpu_freq);
-		print_indent(2, "\"bsp git hash\": \"%s\"\n", info.bsp_git_hash);
-		print_indent(2, "\"sos git hash\": \"%s\"\n", info.sos_git_hash);
-		print_indent(2, "\"mcu git hash\": \"%s\"\n", info.mcu_git_hash);
+		print_indent(2, "\"bspVersion\": \"%s\",\n", info.sys_version);
+		print_indent(2, "\"sosVersion\": \"%s\",\n", info.kernel_version);
+		print_indent(2, "\"memorySize\": \"%ld\",\n", info.sys_mem_size);
+		print_indent(2, "\"projectId\": \"%s\",\n", info.id);
+		print_indent(2, "\"hardwareId\": \"%08X\",\n", info.hardware_id);
+		print_indent(2, "\"serialNumber\": \"%08lX%08lX%08lX%08lX\",\n", info.serial.sn[3], info.serial.sn[2], info.serial.sn[1], info.serial.sn[0]);
+		print_indent(2, "\"cpuFrequency\": \"%ld\",\n", info.cpu_freq);
+		print_indent(2, "\"bspGitHash\": \"%s\",\n", info.bsp_git_hash);
+		print_indent(2, "\"sosGitHash\": \"%s\",\n", info.sos_git_hash);
+		print_indent(2, "\"mcuGitHash\": \"%s\"\n", info.mcu_git_hash);
 
 	}
 	sys.close();
 	print_indent(1, "},\n");
 #endif
 
+	AppfsInfo appfs_info;
+
+	var::String path;
+	path << "/app/flash/" << name;
+	appfs_info = Appfs::get_info(path);
+	if( appfs_info.is_valid() == false ){
+		path.assign("/app/ram/");
+		path << name;
+		appfs_info = Appfs::get_info(path);
+	}
+
 	print_indent(1, "\"test\": {\n");
-	print_indent(2, "\"name\": \"%s\",\n", name.str());
+	print_indent(2, "\"name\": \"%s\",\n", name.cstring());
 	//need to add the amount of RAM the program has to output
-	print_indent(2, "\"version\": \"%s\"\n", version.str());
-	print_indent(2, "\"git hash\": \"%s\"\n", git_hash.str());
-	print_indent(2, "\"api version\": \"%s\"\n", api::ApiInfo::version());
-	print_indent(2, "\"api git hash\": \"%s\"\n", api::ApiInfo::git_hash());
+	print_indent(2, "\"version\": \"%s\",\n", version.cstring());
+	if( appfs_info.is_valid() ){
+		print_indent(2, "\"ramSize\": \"%ld\",\n", appfs_info.ram_size());
+		if( appfs_info.is_flash() ){
+			print_indent(2, "\"isRam\": false,\n");
+		} else {
+			print_indent(2, "\"isRam\": true,\n");
+		}
+		print_indent(2, "\"applicationSignature\": \"%X\",\n", appfs_info.signature());
+	}
+	print_indent(2, "\"gitHash\": \"%s\",\n", git_hash.cstring());
+	print_indent(2, "\"apiVersion\": \"%s\",\n", api::ApiInfo::version());
+	print_indent(2, "\"apiGitHash\": \"%s\"\n", api::ApiInfo::git_hash());
 	print_indent(1, "},\n");
 }
 

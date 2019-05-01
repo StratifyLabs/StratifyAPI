@@ -16,6 +16,7 @@
 namespace var {
 class DataInfo;
 class Data;
+class Datum;
 class String;
 class Tokenizer;
 class JsonObject;
@@ -134,6 +135,8 @@ public:
 
 	/*! \details Prints a var::Data object. */
 	Printer & operator << (const var::Data & a);
+	/*! \details Prints a var::Datum object. */
+	Printer & operator << (const var::Datum & a);
 	/*! \details Prints a var::DataInfo object. */
 	Printer & operator << (const var::DataInfo & a);
 	/*! \details Prints a var::String object. */

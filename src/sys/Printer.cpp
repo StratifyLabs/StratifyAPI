@@ -12,6 +12,7 @@
 #include "sys/FileInfo.hpp"
 #include "sys/Appfs.hpp"
 #include "var/Data.hpp"
+#include "var/Datum.hpp"
 #include "var/Vector.hpp"
 #include "var/Ring.hpp"
 #include "var/Json.hpp"
@@ -19,6 +20,8 @@
 #include "var/Token.hpp"
 #include "sgfx/Bitmap.hpp"
 #include "sgfx/Vector.hpp"
+#include "chrono/Time.hpp"
+#include "chrono/ClockTime.hpp"
 
 #if defined __win32
 unsigned int sys::Printer::m_default_color = (unsigned int)-1;
@@ -209,6 +212,7 @@ Printer & Printer::operator << (const Cli & a){
 	return *this;
 }
 
+
 Printer & Printer::operator << (const var::Data & a){
 	u32 o_flags = m_o_flags;
 	const s8 * ptrs8 = (const s8*)a.data_const();
@@ -279,6 +283,11 @@ Printer & Printer::operator << (const var::Data & a){
 		}
 	}
 
+	return *this;
+}
+
+Printer & Printer::operator << (const var::Datum & a){
+	*this << a.to_json();
 	return *this;
 }
 

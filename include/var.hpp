@@ -35,6 +35,7 @@ namespace var {}
 #include "var/Tokenizer.hpp"
 #include "var/Vector.hpp"
 #include "var/Array.hpp"
+#include "var/Datum.hpp"
 
 using namespace var;
 

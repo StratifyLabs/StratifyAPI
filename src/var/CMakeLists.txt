@@ -8,6 +8,7 @@ set(SOURCES
 	${SOURCES_PREFIX}/LinkedList.cpp
 	${SOURCES_PREFIX}/List.cpp
 	${SOURCES_PREFIX}/Json.cpp
+	${SOURCES_PREFIX}/Datum.cpp
 	${SOURCES_PREFIX}/Queue.cpp
 	${SOURCES_PREFIX}/Ring.cpp
 	${SOURCES_PREFIX}/ConstString.cpp
