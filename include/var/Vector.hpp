@@ -68,6 +68,18 @@ public:
 	  */
 	T & operator[](u32 idx) { return vector_data()[idx]; }
 
+	Vector<T> & operator << (const T & a){
+		push_back(a);
+		return *this;
+	}
+
+	Vector<T> & operator << (const Vector<T> & a){
+		for(u32 i=0; i < a.count(); i++){
+			*this << a.at(i);
+		}
+		return *this;
+	}
+
 
 	/*! \details Finds an object in the array.
 	  *

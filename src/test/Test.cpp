@@ -159,10 +159,8 @@ void Test::initialize(const var::ConstString & name, const var::ConstString & ve
 	}
 	sys.close();
 	print_indent(1, "},\n");
-#endif
 
 	AppfsInfo appfs_info;
-
 	var::String path;
 	path << "/app/flash/" << name;
 	appfs_info = Appfs::get_info(path);
@@ -171,11 +169,14 @@ void Test::initialize(const var::ConstString & name, const var::ConstString & ve
 		path << name;
 		appfs_info = Appfs::get_info(path);
 	}
+#endif
+
 
 	print_indent(1, "\"test\": {\n");
 	print_indent(2, "\"name\": \"%s\",\n", name.cstring());
 	//need to add the amount of RAM the program has to output
 	print_indent(2, "\"version\": \"%s\",\n", version.cstring());
+#if !defined __link
 	if( appfs_info.is_valid() ){
 		print_indent(2, "\"ramSize\": \"%ld\",\n", appfs_info.ram_size());
 		if( appfs_info.is_flash() ){
@@ -185,6 +186,7 @@ void Test::initialize(const var::ConstString & name, const var::ConstString & ve
 		}
 		print_indent(2, "\"applicationSignature\": \"%X\",\n", appfs_info.signature());
 	}
+#endif
 	print_indent(2, "\"gitHash\": \"%s\",\n", git_hash.cstring());
 	print_indent(2, "\"apiVersion\": \"%s\",\n", api::ApiInfo::version());
 	print_indent(2, "\"apiGitHash\": \"%s\"\n", api::ApiInfo::git_hash());
