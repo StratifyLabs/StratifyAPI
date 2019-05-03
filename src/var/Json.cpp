@@ -81,11 +81,11 @@ int JsonValue::create_if_not_valid(){
 
 int JsonValue::assign(const var::ConstString & value){
 	if( is_string() ){
-		return api()->string_set(m_value, value.str());
+		return api()->string_set(m_value, value.cstring());
 	} else if( is_real() ){
-		return api()->real_set(m_value, ::atoff(value.str()));
+		return api()->real_set(m_value, ::atoff(value.cstring()));
 	} else if( is_integer() ){
-		return api()->integer_set(m_value, ::atoi(value.str()));
+		return api()->integer_set(m_value, ::atoi(value.cstring()));
 	} else if ( is_true() ){
 		if( value == "false" ){
 
@@ -228,9 +228,9 @@ int JsonObject::insert(const var::ConstString & key, const JsonValue & value){
 		return -1;
 	}
 
-	int result = api()->object_set(m_value, key.str(), value.m_value);
+	int result = api()->object_set(m_value, key.cstring(), value.m_value);
 	if( result < 0 ){
-		//printf("Failed to set JSON key %s to %s %p\n", key.str(), value.to_string().str(), m_value);
+		//printf("Failed to set JSON key %s to %s %p\n", key.cstring(), value.to_string().cstring(), m_value);
 	}
 	return result;
 }
@@ -248,7 +248,7 @@ int JsonObject::update(const JsonValue & value, u8 o_flags){
 }
 
 int JsonObject::remove(const var::ConstString & key){
-	return api()->object_del(m_value, key.str());
+	return api()->object_del(m_value, key.cstring());
 }
 
 u32 JsonObject::count() const {
@@ -272,7 +272,7 @@ var::Vector<var::String> JsonObject::keys() const {
 }
 
 JsonValue JsonObject::at(const var::ConstString & key) const {
-	return api()->object_get(m_value, key.str());
+	return api()->object_get(m_value, key.cstring());
 }
 
 JsonArray::JsonArray(){
@@ -326,7 +326,7 @@ JsonString::JsonString(){
 
 
 JsonString::JsonString(const var::ConstString & str){
-	m_value = api()->create_string(str.str());
+	m_value = api()->create_string(str.cstring());
 }
 
 JsonReal::JsonReal(){
@@ -373,13 +373,13 @@ JsonFalse::JsonFalse(){
 
 JsonValue JsonDocument::load_from_file(const var::ConstString & path){
 	JsonValue value;
-	value.m_value = JsonValue::api()->load_file(path.str(), flags(), &m_error.m_value);
+	value.m_value = JsonValue::api()->load_file(path.cstring(), flags(), &m_error.m_value);
 	return value;
 }
 
 JsonValue JsonDocument::load_from_string(const var::ConstString & json){
 	JsonValue value;
-	value.m_value = JsonValue::api()->loadb(json.str(), json.length(), flags(), &m_error.m_value);
+	value.m_value = JsonValue::api()->loadb(json.cstring(), json.length(), flags(), &m_error.m_value);
 	return value;
 }
 
@@ -397,7 +397,20 @@ JsonValue JsonDocument::load(json_load_callback_t callback, void * context){
 }
 
 int JsonDocument::save_to_file(const JsonValue & value, const var::ConstString & path) const {
-	return JsonValue::api()->dump_file(value.m_value, path.str(), flags());
+	sys::File f;
+	int result;
+	if( f.create(path) < 0 ){
+		set_error_number(f.error_number());
+		return -1;
+	}
+	result = JsonValue::api()->dumpfd(value.m_value, f.fileno(), flags());
+
+	if( f.close() < 0 ){
+		set_error_number(f.error_number());
+		return -1;
+	}
+
+	return result;
 }
 
 var::String JsonDocument::stringify(const JsonValue & value) const {
