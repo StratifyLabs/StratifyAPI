@@ -6,6 +6,35 @@
 
 namespace api {
 
+class Result {
+public:
+	Result(int return_value = 0, int error_number = 0){
+		m_return_value = return_value;
+		m_error_number = error_number;
+	}
+
+	/*! \details Returns true if the return value is
+	 * less than zero indicating an error condition.
+	 */
+	bool is_error() const { return m_return_value < 0; }
+
+	/*! \details Returns the C errno value.
+	 */
+	int error_number() const { return m_error_number; }
+
+	/*! \details Returns the return value associated with the result.
+	 */
+	int return_value() const { return m_return_value; }
+
+
+	void set_error_number(int error_number){ m_error_number = error_number; }
+	void set_return_value(int return_value){ m_return_value = return_value; }
+
+private:
+	int m_error_number;
+	int m_return_value;
+};
+
 /*! \brief Work Object
  * \details The WorkObject is the base
  * object for all work classes in the Stratify API.
@@ -27,7 +56,6 @@ class WorkObject : public virtual ApiObject {
 public:
 	WorkObject();
 
-
 	enum {
 		ERROR_NONE /*! No Errors */
 	};
@@ -41,31 +69,43 @@ public:
 	  * an error indicator from the standard C library (such as
 	  * ENOENT).
 	  *
-	  * If the error number is less than zero, it
+	  * If the error number is zero or less, it
 	  * refers to a StratifyAPI defined error like
 	  * ERROR_NONE.
 	  *
 	  */
-	int error_number() const { return m_error_number; }
+	int error_number() const { return m_result.error_number(); }
+
+	/*! \details Returns the return value of the last operation.
+	 */
+	int return_value() const { return m_result.return_value(); }
+
+	/*! \details Returns a referenct to the result of the last
+	 * operation.
+	 */
+	const Result & result() const { return m_result; }
 
 	//assert?
 
 	//some way to fatal
 	static void exit_fatal(const char * message);
 
-	/*! \details Clears the current error.
+	/*! \details Clears the current result.
 	  */
-	void clear_error_number() const { m_error_number = ERROR_NONE; }
+	void clear_result() const { m_result = Result(); }
+	void clear_error_number() const { m_result = Result(); }
 
 protected:
 	//These methods are used internally to assign the error_number() value
-	int set_error_number_if_error(int ret) const;
+	int set_error_number_if_error(int result) const;
 	void * set_error_number_if_null(void * ret) const;
 	void set_error_number_to_errno() const;
-	void set_error_number(int value) const { m_error_number = value; }
+	void set_error_number(int value) const {
+		m_result.set_error_number(value);
+	}
 
 private:
-	mutable int m_error_number;
+	mutable Result m_result;
 };
 
 

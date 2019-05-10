@@ -390,6 +390,17 @@ JsonValue JsonDocument::load_from_file(const sys::File & file){
 	return value;
 }
 
+size_t JsonDocument::load_file_data(void *buffer, size_t buflen, void *data){
+	const sys::File * f = (const sys::File *)data;
+	return f->read(buffer, buflen);
+}
+
+JsonValue JsonDocument::load(const sys::File & file){
+	JsonValue value;
+	value.m_value = JsonValue::api()->load_callback(load_file_data, (void*)&file, flags(), &m_error.m_value);
+	return value;
+}
+
 JsonValue JsonDocument::load(json_load_callback_t callback, void * context){
 	JsonValue value;
 	value.m_value = JsonValue::api()->load_callback(callback, context, flags(), &m_error.m_value);
@@ -435,4 +446,26 @@ int JsonDocument::save_to_file(const JsonValue & value, const sys::File & file) 
 int JsonDocument::save(const JsonValue & value, json_dump_callback_t callback, void * context) const {
 	return JsonValue::api()->dump_callback(value.m_value, callback, context, flags());
 }
+
+JsonValue JsonDocument::load_yaml(const sys::File & file, u32 pos, u32 count){
+	JsonValue result;
+	u32 object_count = 0;
+	String line;
+
+	//seek to the start
+	if( pos != 0 ){ file.seek(pos, sys::File::SET); }
+
+	do {
+		line = file.gets();
+
+		//how much indent is there?
+		//is the first character a '-' indicating an array entry
+		//are we entering an object 'object:\n'
+
+	} while( line.is_empty() == false && object_count < count );
+
+	return result;
+}
+
+
 

@@ -20,26 +20,30 @@ void WorkObject::exit_fatal(const char * message){
 	exit(1);
 }
 
-int WorkObject::set_error_number_if_error(int ret) const {
-	if( ret < 0 ){
+int WorkObject::set_error_number_if_error(int result) const {
+	if( result < 0 ){
 #if defined __link
 		set_error_number(link_errno);
 #else
 		set_error_number(errno);
 #endif
 	}
-	return ret;
+	m_result.set_return_value(result);
+	return result;
 }
 
-void * WorkObject::set_error_number_if_null(void * ret) const {
-	if( ret == 0 ){
+void * WorkObject::set_error_number_if_null(void * result) const {
+	if( result == 0 ){
 #if defined __link
 		set_error_number(link_errno);
 #else
 		set_error_number(errno);
 #endif
+		m_result.set_return_value(-1);
+	} else {
+		m_result.set_return_value(0);
 	}
-	return ret;
+	return result;
 }
 
 void WorkObject::set_error_number_to_errno() const {

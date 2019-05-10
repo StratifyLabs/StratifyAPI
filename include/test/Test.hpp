@@ -328,6 +328,15 @@ protected:
 	void print_case_message(const char * fmt, ...);
 
 	void print_case_failed(const char * fmt, ...);
+	void print_case_failed(const api::Result & result, int line = 0){
+		if( line ){
+			print_case_failed("failed on line %d with return value %d and errno %d",
+									line, result.return_value(), result.error_number());
+		} else {
+			print_case_failed("failed with return value %d and errno %d",
+									line, result.return_value(), result.error_number());
+		}
+	}
 
 
 	/*! \details Prints a message to the test report.
