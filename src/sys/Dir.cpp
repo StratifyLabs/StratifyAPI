@@ -16,12 +16,7 @@ using namespace sys;
 Dir::Dir(link_transport_mdriver_t * driver){
 	m_dirp = 0;
 	m_driver = driver;
-
-#if defined __win32
-#else
 	m_dirp_local = 0;
-#endif
-
 }
 
 #else
