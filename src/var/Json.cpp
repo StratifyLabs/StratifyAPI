@@ -410,6 +410,10 @@ JsonValue JsonDocument::load(json_load_callback_t callback, void * context){
 int JsonDocument::save_to_file(const JsonValue & value, const var::ConstString & path) const {
 	sys::File f;
 	int result;
+
+#if defined __win32
+	result = JsonValue::api()->dump_file(value.m_value, path.cstring(), flags());
+#else
 	if( f.create(path) < 0 ){
 		set_error_number(f.error_number());
 		return -1;
@@ -420,6 +424,7 @@ int JsonDocument::save_to_file(const JsonValue & value, const var::ConstString &
 		set_error_number(f.error_number());
 		return -1;
 	}
+#endif
 
 	return result;
 }
