@@ -16,12 +16,34 @@ Datum::Datum(const var::ConstString & type, const var::ConstString & key, const 
 	this->value() = value;
 }
 
+Datum::Datum(const JsonObject & json_object){
+	type() = json_object.at("type").to_string();
+	key() = json_object.at("key").to_string();
+	value() = json_object.at("value").to_string();
+
+	u32 seconds;
+	u32 nanoseconds;
+	String clock_time_value = json_object.at("clockTime").to_string();
+	sscanf(clock_time_value.cstring(), F32U "." F32U, &seconds, &nanoseconds);
+
+	m_clocktime.set(seconds, nanoseconds);
+
+	this->m_time = json_object.at("deviceTime").to_integer();
+	this->metadata() = json_object.at("metadata").to_object();
+}
+
 
 void Datum::refresh_timestamp(){
 	m_clocktime = chrono::Clock::get_time();
 	m_time = chrono::Time::get_time_of_day();
 }
 
+String Datum::stringify() const {
+	JsonDocument document;
+	document.set_flags(JsonDocument::COMPACT);
+	//compact object on one line
+	return document.stringify(to_json()) << "\n";
+}
 
 var::JsonObject Datum::to_json() const {
 	JsonObject result;

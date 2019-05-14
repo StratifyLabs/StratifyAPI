@@ -64,6 +64,10 @@ public:
 		m_is_overflow_allowed = true;
 	}
 
+	~Ring(){
+		while( is_empty() == false ){ pop(); }
+	}
+
 	u32 count() const { return m_count; }
 
 	/*! \details Returns the number of items in the Ring
@@ -89,6 +93,7 @@ public:
 	}
 
 	bool is_full() const { return m_tail == m_count; }
+	bool is_empty() const { return m_tail == m_head; }
 
 	/*! \details Sets a flag to allow overflow.
 	 *
@@ -162,6 +167,7 @@ public:
 		}
 		return Data::at<T>(m_count-1);
 	}
+
 
 	/*! \details Pushes a value on the front of the buffer.
 	  *

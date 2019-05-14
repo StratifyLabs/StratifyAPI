@@ -39,7 +39,7 @@ public:
 	void fill_gradient_argb8888(sg_color_t color);
 	void fill_gradient_gray(bool is_ascending);
 
-	const var::Vector<sg_color_t> colors() const { return m_colors; }
+	const var::Vector<sg_color_t> & colors() const { return m_colors; }
 
 private:
 	friend class Bitmap;

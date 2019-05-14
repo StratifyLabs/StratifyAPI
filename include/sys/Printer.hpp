@@ -137,8 +137,12 @@ public:
 	Printer & operator << (const var::Data & a);
 	/*! \details Prints a var::Datum object. */
 	Printer & operator << (const var::Datum & a);
+
+#if !defined __link
 	/*! \details Prints a var::DataInfo object. */
 	Printer & operator << (const var::DataInfo & a);
+#endif
+
 	/*! \details Prints a var::String object. */
 	Printer & operator << (const var::String & a);
 	/*! \details Prints a var::Tokenizer object. */

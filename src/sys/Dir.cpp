@@ -256,7 +256,6 @@ var::Vector<var::String> Dir::read_list(){
 	} while( entry.is_empty() == false );
 
 	return result;
-
 }
 
 const char * Dir::read(){

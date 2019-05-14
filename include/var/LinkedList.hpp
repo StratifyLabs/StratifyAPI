@@ -72,11 +72,14 @@ public:
 	/*! \details Returns true if the list is empty. */
 	bool is_empty() const { return (m_front == 0); }
 
+	/*! \cond */
+	void swap(LinkedList & list);
+	/*! \endcond */
 
+protected:
 private:
 
 	/*! \cond */
-	void swap(LinkedList & list);
 	void assign(const LinkedList & list);
 	friend class LinkedListIndex;
 	typedef struct {
@@ -133,26 +136,15 @@ public:
 		}
 	}
 
-	LinkedListIndex & operator=(const LinkedList & value){
-		m_list = &value;
+	LinkedListIndex & operator=(const LinkedList & a){
+		m_list = &a;
 		set_front();
 		return *this;
 	}
 
-	LinkedListIndex operator++(int){
-		LinkedListIndex result(*this);
-		increment();
-		return result;
-	}
-
 	LinkedListIndex & operator++(){ increment(); return *this; }
-
 	LinkedListIndex & operator--(){ decrement(); return *this; }
-	LinkedListIndex operator--(int){
-		LinkedListIndex result(*this);
-		decrement();
-		return result;
-	}
+
 
 	void set_front(){ m_current_item = linked_list().m_front; }
 	void set_back(){ m_current_item = linked_list().m_back; }

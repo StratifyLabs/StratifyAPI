@@ -26,6 +26,30 @@ public:
 		resize(count);
 	}
 
+	~Vector(){
+		//call destructors on objects in array
+		clear();
+	}
+
+	Vector(const Vector<T> & a){
+		copy_object(a);
+	}
+
+	Vector(Vector<T> && a){
+		move_object(a);
+	}
+
+	Vector& operator=(Vector<T> && a){
+		move_object(a);
+		return *this;
+	}
+
+	Vector& operator=(const Vector<T> & a){
+		copy_object(a);
+		return *this;
+	}
+
+
 	/*! \details Returns a referece to the element
 	  * at the specified position.
 	  *
@@ -407,6 +431,23 @@ private:
 			}
 		}
 		return 0;
+	}
+
+	void copy_object(const Vector<T> & a){
+		if( this != &a ){
+			clear();
+			for(u32 i=0; i < a.count(); i++){
+				push_back(a.at(i));
+			}
+		}
+	}
+
+	void move_object(Vector<T> & a){
+		if( this != &a ){
+			Data::move_object(a);
+			m_count = a.m_count;
+			a.m_count = 0;
+		}
 	}
 
 	static u32 jump_size(){ return 16; }

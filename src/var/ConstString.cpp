@@ -47,6 +47,15 @@ u32 ConstString::find(const char c, u32 pos) const{
 	return find(str, pos);
 }
 
+u32 ConstString::find_not(const char a, u32 pos) const {
+	u32 l = length();
+	while( (at(pos) != a) && (pos < l) ){
+		pos++;
+	}
+	return pos;
+}
+
+
 u32 ConstString::find(const ConstString & s, u32 pos, u32 n) const {
 	//find s (length n) starting at pos
 

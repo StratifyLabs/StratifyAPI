@@ -26,12 +26,6 @@ public:
 	u32 free_size() const { return m_info.fordblks; }
 	u32 used_size() const { return m_info.uordblks; }
 
-#if 0
-	mi.arena = (total_chunks) * MALLOC_CHUNK_SIZE + (sizeof(malloc_chunk_t) - MALLOC_DATA_SIZE);
-	mi.ordblks = total_free_chunks;
-	mi.fordblks = total_free_chunks * MALLOC_CHUNK_SIZE;
-	mi.uordblks = total_used_memory;
-#endif
 
 private:
 	struct mallinfo m_info;

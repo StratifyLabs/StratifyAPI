@@ -23,6 +23,18 @@ public:
 		set_initial_values();
 	}
 
+	~Queue(){
+		clear();
+	}
+
+	Queue(const Queue & a) : m_linked_list(sizeof(T)*jump_size()){
+		set_initial_values();
+		copy_object(a);
+	}
+
+	Queue & operator=(const Queue & a){ copy_object(a); }
+	Queue(Queue && a){ move_object(a); }
+	Queue & operator=(Queue && a){ move_object(a); }
 
 	/*! \details Returns a reference to the back item.
 	  *
@@ -103,7 +115,7 @@ public:
 		return 0;
 	}
 
-	/*! \details Pops an item from the front fo the queue. */
+	/*! \details Pops an item from the front of the queue. */
 	void pop(){
 		if( m_linked_list.is_empty() ){
 			return;
@@ -156,14 +168,15 @@ public:
 	  *
 	  */
 	void clear(){
-		m_linked_list.clear();
-		set_initial_values();
+		//deconstruct objects in the list using pop
+		while( is_empty() == false ){ pop(); }
 	}
 
 
 private:
 	u16 m_front_idx;
 	u16 m_back_idx;
+	LinkedList m_linked_list;
 
 	void set_initial_values(){
 		m_front_idx = 0;
@@ -172,7 +185,35 @@ private:
 
 	static int jump_size(){ return 16; }
 
-	LinkedList m_linked_list;
+
+	void copy_object(const Queue<T> & a){
+		if( this != &a ){
+			clear();
+			LinkedListIndex idx(a.m_linked_list);
+			const T * current;
+			u32 count = 0;
+			u32 a_count	= a.count();
+
+			//go through each linked list and push items
+			while( (current = (const T *)idx.current()) != 0 ){
+				for(u32 i=0; i < jump_size() && count < a_count; i++){
+					push(current[i]);
+					count++;
+				}
+				idx.increment();
+			}
+		}
+	}
+
+	void move_object(Queue<T> & a){
+		if( this != &a ){
+			m_linked_list.swap(a.m_linked_list);
+			m_front_idx = a.m_front_idx;
+			m_back_idx = a.m_back_idx;
+			a.m_front_idx = 0;
+			a.m_back_idx = 0;
+		}
+	}
 
 };
 

@@ -142,6 +142,9 @@ public:
 	/*! \details Finds a character within the object. */
 	u32 find(const char a, u32 pos = 0) const;
 
+	/*! \details Finds a character within the object. */
+	u32 find_not(const char a, u32 pos = 0) const;
+
 	/*! \details Finds a var::ConstString within the object.
 	  *
 	  * @param a The String to find

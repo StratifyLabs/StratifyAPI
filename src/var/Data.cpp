@@ -128,27 +128,31 @@ int Data::copy_contents(const Data & a, u32 destination_position, u32 size){
 }
 
 void Data::move_object(Data & a){
-	if( a.is_internally_managed() ){
-		//set this memory to the memory of a
-		set(a.to_void(), a.capacity(), false);
-		m_size = a.size();
+	if( this != &a ){
+		if( a.is_internally_managed() ){
+			//set this memory to the memory of a
+			set(a.to_void(), a.capacity(), false);
+			m_size = a.size();
 
-		//setting needs free on this and clearing it on a will complete the transfer
-		set_needs_free();
-		a.clear_needs_free();
-	} else {
-		set(a.to_void(), a.size(), a.is_read_only());
+			//setting needs free on this and clearing it on a will complete the transfer
+			set_needs_free();
+			a.clear_needs_free();
+		} else {
+			set(a.to_void(), a.size(), a.is_read_only());
+		}
 	}
 }
 
 void Data::copy_object(const Data & a){
-	if( a.is_internally_managed() ){
-		//copy the contents of a to this object
-		copy_contents(a, a.capacity());
-		m_size = a.size();
-	} else {
-		set((void*)a.data(), a.capacity(), a.is_read_only());
-		m_size = a.size();
+	if( this != &a ){
+		if( a.is_internally_managed() ){
+			//copy the contents of a to this object
+			copy_contents(a, a.capacity());
+			m_size = a.size();
+		} else {
+			set((void*)a.data(), a.capacity(), a.is_read_only());
+			m_size = a.size();
+		}
 	}
 }
 

@@ -448,7 +448,6 @@ public:
 	  * \return
 	  */
 	JsonValue load_from_string(const var::ConstString & json);
-	JsonValue load_from_yaml_string(const var::ConstString & yaml, u32 pos  = 0, u32 count = 0);
 
 	/*!
 	  * \details Loads a JSON value from an already open file
@@ -457,7 +456,6 @@ public:
 	  */
 	JsonValue load_from_file(const sys::File & file);
 	JsonValue load(const sys::File & file);
-	JsonValue load_yaml(const sys::File & file, u32 pos = 0, u32 count = 1);
 
 	/*!
 	  * \details Loads a JSON value from streaming data
@@ -502,7 +500,6 @@ private:
 	JsonError m_error;
 
 	static size_t load_file_data(void *buffer, size_t buflen, void *data);
-
 
 };
 

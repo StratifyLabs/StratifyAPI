@@ -212,6 +212,16 @@ Printer & Printer::operator << (const Cli & a){
 	return *this;
 }
 
+#if !defined __link
+Printer & Printer::operator << (const var::DataInfo & a){
+	key("arena", F32U, a.arena());
+	key("freeBlockCount", F32U, a.free_block_count());
+	key("freeSize", F32U, a.free_size());
+	key("usedSize", F32U, a.used_size());
+	return *this;
+}
+#endif
+
 
 Printer & Printer::operator << (const var::Data & a){
 	u32 o_flags = m_o_flags;

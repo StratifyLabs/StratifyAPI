@@ -1,4 +1,5 @@
 #include "var/Vector.hpp"
+#include "var/Tokenizer.hpp"
 #include "var/Json.hpp"
 #include "sys/Sys.hpp"
 #include "sys/requests.h"
@@ -39,13 +40,17 @@ void JsonValue::add_reference(json_t * value){
 }
 
 JsonValue::JsonValue(JsonValue && a){
-	m_value = a.m_value;
-	a.m_value = 0;
+	if( this != &a ){
+		m_value = a.m_value;
+		a.m_value = 0;
+	}
 }
 
 JsonValue& JsonValue::operator=(JsonValue && a){
-	m_value = a.m_value;
-	a.m_value = 0;
+	if( this != &a ){
+		m_value = a.m_value;
+		a.m_value = 0;
+	}
 	return *this;
 }
 
@@ -447,25 +452,6 @@ int JsonDocument::save(const JsonValue & value, json_dump_callback_t callback, v
 	return JsonValue::api()->dump_callback(value.m_value, callback, context, flags());
 }
 
-JsonValue JsonDocument::load_yaml(const sys::File & file, u32 pos, u32 count){
-	JsonValue result;
-	u32 object_count = 0;
-	String line;
-
-	//seek to the start
-	if( pos != 0 ){ file.seek(pos, sys::File::SET); }
-
-	do {
-		line = file.gets();
-
-		//how much indent is there?
-		//is the first character a '-' indicating an array entry
-		//are we entering an object 'object:\n'
-
-	} while( line.is_empty() == false && object_count < count );
-
-	return result;
-}
 
 
 
