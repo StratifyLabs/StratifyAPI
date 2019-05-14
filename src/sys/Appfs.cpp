@@ -126,6 +126,8 @@ AppfsInfo Appfs::get_info(const var::ConstString & path){
 	}
 
 	ret = f.read(&appfs_file_header, sizeof(appfs_file_header));
+	f.close();
+
 	if( ret == sizeof(appfs_file_header) ){
 		//first check to see if the name matches -- otherwise it isn't an app file
 		path_name = File::name(path);
