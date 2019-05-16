@@ -445,7 +445,9 @@ Printer & Printer::operator << (const sys::TaskInfo & a){
 	key("id", "%ld", a.id());
 	key("pid", "%ld", a.pid());
 	key("memorySize", "%ld", a.memory_size());
+	key("stack", "%ld", a.stack());
 	key("stackSize", "%ld", a.stack_size());
+	key("heap", "%ld", a.heap());
 	key("heapSize", "%ld", a.heap_size());
 	return *this;
 }

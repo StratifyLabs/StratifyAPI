@@ -85,8 +85,14 @@ public:
 		return m_value.malloc_loc - m_value.mem_loc;
 	}
 
-	/*! \details Returns the stack sizve of the current task. */
+	/*! \details Returns the stack size of the current task. */
 	u32 stack_size() const { return m_value.mem_loc + m_value.mem_size - m_value.stack_ptr; }
+
+	/*! \details Returns the location of the stack in memory. */
+	u32 stack() const { return m_value.stack_ptr; }
+
+	/*! \details Returns the location of the heap in memory. */
+	u32 heap() const { return m_value.mem_loc; }
 
 	/*! \details Prints the header info for the print() method. */
 	static void print_header();
