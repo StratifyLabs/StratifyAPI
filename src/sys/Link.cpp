@@ -1002,7 +1002,6 @@ int Link::update_os(const sys::File & image, bool verify, const ProgressCallback
 	int i;
 	uint32_t startAddr;
 	uint32_t image_id;
-	char tmp[256];
 
 	if ( m_is_bootloader == false ){
 		m_error_message = "Target is not a bootloader";
@@ -1014,13 +1013,18 @@ int Link::update_os(const sys::File & image, bool verify, const ProgressCallback
 	m_progress = 0;
 
 	if( image.seek(BOOTLOADER_HARDWARE_ID_OFFSET, LINK_SEEK_SET) < 0 ){
+		m_error_message = "Failed to seek to bootloader image hardware ID value";
 		return -1;
 	}
 	if( image.read(&image_id, sizeof(u32)) != sizeof(u32) ){
+		m_error_message = "Failed to read bootloader image id";
 		return -1;
 	}
 
-	image.seek(0, LINK_SEEK_SET);
+	if( image.seek(0, LINK_SEEK_SET) < 0 ){
+		m_error_message = "Failed to seek bootloader image start";
+		return -1;
+	}
 
 	m_progress_max = image.size();
 
@@ -1036,8 +1040,7 @@ int Link::update_os(const sys::File & image, bool verify, const ProgressCallback
 
 	if( (image_id & ~0x01) != (m_bootloader_attributes.hardware_id & ~0x01) ){
 		err = -1;
-		m_error_message.format(tmp,
-									  "Kernel Image ID (0x%X) does not match Bootloader ID (0x%X)",
+		m_error_message.format("Kernel Image ID (0x%X) does not match Bootloader ID (0x%X)",
 									  image_id,
 									  m_bootloader_attributes.hardware_id);
 		return check_error(err);
@@ -1148,7 +1151,7 @@ int Link::update_os(const sys::File & image, bool verify, const ProgressCallback
 		//write the stack address
 		if( (err = link_writeflash(m_driver, startAddr, stackaddr, 256)) != 256 ){
 			if( progress_callback ){ progress_callback->update(0,0); }
-			m_error_message.sprintf("Failed to write stack addr", err);
+			m_error_message.format("Failed to write stack addr %d", err);
 			return -1;
 		}
 
@@ -1156,7 +1159,7 @@ int Link::update_os(const sys::File & image, bool verify, const ProgressCallback
 		if( verify == true ){
 			//verify the stack address
 			if( (err = link_readflash(m_driver, startAddr, buffer, 256)) != 256 ){
-				m_error_message.sprintf("Failed to write stack addr", err);
+				m_error_message.format("Failed to write stack addr %d", err);
 				if( progress_callback ){ progress_callback->update(0,0); }
 				unlock_device();
 				return -1;
