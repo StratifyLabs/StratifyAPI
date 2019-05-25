@@ -105,7 +105,7 @@ public:
 	/*! \details Returns true if the object is valid. */
 	bool is_valid() const { return cpu_frequency() != 0; }
 
-	/*! \details Gets the system information from the OS and returns a SysInfo object. */
+	//use Sys::get_info()
 	static SysInfo get();
 
 	/*! \details Returns the OS package project ID. */
@@ -374,6 +374,12 @@ public:
 	 * \sa open()
 	 */
 	int get_board_config(sos_board_config_t & config);
+
+	/*! \details Loads the current system info.
+	 *
+	 *
+	 */
+	static SysInfo get_info();
 #endif
 
 	/*! \details Opens /dev/sys.

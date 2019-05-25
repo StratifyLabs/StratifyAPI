@@ -290,10 +290,22 @@ void Sys::reset(){
 int Sys::get_board_config(sos_board_config_t & config){
 	return ioctl(I_SYS_GETBOARDCONFIG, &config);
 }
+
+SysInfo Sys::get_info(){
+	sys_info_t sys_info;
+	Sys sys;
+	sys.set_keep_open(false);
+	if( sys.open() < 0 ){ return SysInfo(); }
+	if( sys.get_info(sys_info) < 0 ){ return SysInfo(); }
+	return SysInfo(sys_info);
+}
 #endif
 
-int Sys::get_info(sys_info_t & attr){
-	return ioctl(I_SYS_GETINFO, &attr);
+
+
+
+int Sys::get_info(sys_info_t & info){
+	return ioctl(I_SYS_GETINFO, &info);
 }
 
 int Sys::get_23_info(sys_23_info_t & attr){

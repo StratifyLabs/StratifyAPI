@@ -77,6 +77,14 @@ public:
 	bool is_startup() const { return (m_info.o_flags & APPFS_FLAG_IS_STARTUP) != 0; }
 	/*! \details Returns true if the application is to be installed in flash. */
 	bool is_flash() const { return (m_info.o_flags & APPFS_FLAG_IS_FLASH) != 0; }
+	/*! \details Returns true if the application code is to be installed in external memory. */
+	bool is_code_external() const { return (m_info.o_flags & APPFS_FLAG_IS_CODE_EXTERNAL) != 0; }
+	/*! \details Returns true if the application data is to be installed in external memory. */
+	bool is_data_external() const { return (m_info.o_flags & APPFS_FLAG_IS_DATA_EXTERNAL) != 0; }
+	/*! \details Returns true if the application code is to be installed in tightly coupled memory. */
+	bool is_code_tightly_coupled() const { return (m_info.o_flags & APPFS_FLAG_IS_CODE_TIGHTLY_COUPLED) != 0; }
+	/*! \details Returns true if the application data is to be installed in tightly coupled memory. */
+	bool is_data_tightly_coupled() const { return (m_info.o_flags & APPFS_FLAG_IS_DATA_TIGHTLY_COUPLED) != 0; }
 	/*! \details Returns true if the application should run as an orphan. */
 	bool is_orphan() const { return (m_info.o_flags & APPFS_FLAG_IS_ORPHAN) != 0; }
 	/*! \details Returns true if the application should run as root. */
@@ -125,7 +133,11 @@ public:
 		IS_ROOT = APPFS_FLAG_IS_ROOT,
 		IS_REPLACE = APPFS_FLAG_IS_REPLACE,
 		IS_ORPHAN = APPFS_FLAG_IS_ORPHAN,
-		IS_UNIQUE = APPFS_FLAG_IS_UNIQUE
+		IS_UNIQUE = APPFS_FLAG_IS_UNIQUE,
+		IS_CODE_EXTERNAL = APPFS_FLAG_IS_CODE_EXTERNAL,
+		IS_DATA_EXTERNAL = APPFS_FLAG_IS_DATA_EXTERNAL,
+		IS_CODE_TIGHTLY_COUPLED = APPFS_FLAG_IS_CODE_TIGHTLY_COUPLED,
+		IS_DATA_TIGHTLY_COUPLED = APPFS_FLAG_IS_DATA_TIGHTLY_COUPLED
 	};
 
 	AppfsFileAttributes(){
@@ -146,6 +158,15 @@ public:
 	u16 o_flags() const { return m_o_flags; }
 	void set_ram_size(u32 value){ m_ram_size = value; }
 	u16 ram_size() const { return m_ram_size; }
+
+	bool is_flash() const { return m_o_flags & IS_FLASH; }
+	bool is_code_external() const { return m_o_flags & IS_CODE_EXTERNAL; }
+	bool is_data_external() const { return m_o_flags & IS_DATA_EXTERNAL; }
+	bool is_code_tightly_coupled() const { return m_o_flags & IS_CODE_TIGHTLY_COUPLED; }
+	bool is_data_tightly_coupled() const { return m_o_flags & IS_DATA_TIGHTLY_COUPLED; }
+	bool is_startup() const { return m_o_flags & IS_STARTUP; }
+	bool is_unique() const { return m_o_flags & IS_UNIQUE; }
+
 	void set_startup(bool value = true){
 		if( value ){
 			m_o_flags |= IS_STARTUP;
@@ -159,6 +180,38 @@ public:
 			m_o_flags |= IS_FLASH;
 		} else {
 			m_o_flags &= ~IS_FLASH;
+		}
+	}
+
+	void set_code_external(bool value = true){
+		if( value ){
+			m_o_flags |= IS_CODE_EXTERNAL;
+		} else {
+			m_o_flags &= ~IS_CODE_EXTERNAL;
+		}
+	}
+
+	void set_data_external(bool value = true){
+		if( value ){
+			m_o_flags |= IS_DATA_EXTERNAL;
+		} else {
+			m_o_flags &= ~IS_DATA_EXTERNAL;
+		}
+	}
+
+	void set_code_tightly_coupled(bool value = true){
+		if( value ){
+			m_o_flags |= IS_CODE_TIGHTLY_COUPLED;
+		} else {
+			m_o_flags &= ~IS_CODE_TIGHTLY_COUPLED;
+		}
+	}
+
+	void set_data_tightly_coupled(bool value = true){
+		if( value ){
+			m_o_flags |= IS_DATA_TIGHTLY_COUPLED;
+		} else {
+			m_o_flags &= ~IS_DATA_TIGHTLY_COUPLED;
 		}
 	}
 

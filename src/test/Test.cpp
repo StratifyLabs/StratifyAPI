@@ -184,6 +184,31 @@ void Test::initialize(const var::ConstString & name, const var::ConstString & ve
 		} else {
 			print_indent(2, "\"isRam\": true,\n");
 		}
+
+		if( appfs_info.is_code_external() ){
+			print_indent(2, "\"isCodeExternal\": true,\n");
+		} else {
+			print_indent(2, "\"isCodeExternal\": false,\n");
+		}
+
+		if( appfs_info.is_data_external() ){
+			print_indent(2, "\"isDataExternal\": true,\n");
+		} else {
+			print_indent(2, "\"isDataExternal\": false,\n");
+		}
+
+		if( appfs_info.is_code_tightly_coupled() ){
+			print_indent(2, "\"isCodeTightlyCoupled\": true,\n");
+		} else {
+			print_indent(2, "\"isCodeTightlyCoupled\": false,\n");
+		}
+
+		if( appfs_info.is_data_tightly_coupled() ){
+			print_indent(2, "\"isDataTightlyCoupled\": true,\n");
+		} else {
+			print_indent(2, "\"isDataTightlyCoupled\": false,\n");
+		}
+
 		print_indent(2, "\"applicationSignature\": \"%X\",\n", appfs_info.signature());
 	}
 #endif
