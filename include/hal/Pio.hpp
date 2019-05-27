@@ -65,7 +65,8 @@ class Pio : public Periph<pio_info_t, pio_attr_t, PioAttributes, 'p'> {
 public:
 	Pio(port_t port);
 
-	enum {
+	enum pin_flags {
+		/*! \cond */
 		FLAG_SET_INPUT = PIO_FLAG_SET_INPUT,
 		FLAG_SET_OUTPUT = PIO_FLAG_SET_OUTPUT,
 		FLAG_IS_PULLUP = PIO_FLAG_IS_PULLUP,
@@ -85,26 +86,27 @@ public:
 		FLAG_SET = PIO_FLAG_SET,
 		FLAG_CLEAR = PIO_FLAG_CLEAR,
 		FLAG_ASSIGN = PIO_FLAG_ASSIGN,
+		/*! \endcond */
 
-		SET_INPUT /*! See \ref PIO_FLAG_SET_INPUT */ = PIO_FLAG_SET_INPUT,
-		SET_OUTPUT /*! See \ref PIO_FLAG_SET_OUTPUT */ = PIO_FLAG_SET_OUTPUT,
-		IS_PULLUP /*! See \ref PIO_FLAG_IS_PULLUP */ = PIO_FLAG_IS_PULLUP,
-		IS_PULLDOWN /*! See \ref PIO_FLAG_IS_PULLDOWN */ = PIO_FLAG_IS_PULLDOWN,
-		IS_REPEATER /*! See \ref PIO_FLAG_IS_REPEATER */ = PIO_FLAG_IS_REPEATER,
-		IS_FLOAT /*! See \ref PIO_FLAG_IS_FLOAT */ = PIO_FLAG_IS_FLOAT,
-		IS_SPEED_LOW /*! See \ref PIO_FLAG_IS_SPEED_LOW */ = PIO_FLAG_IS_SPEED_LOW,
-		IS_SPEED_MEDIUM /*! See \ref PIO_FLAG_IS_SPEED_MEDIUM */ = PIO_FLAG_IS_SPEED_MEDIUM,
-		IS_SPEED_HIGH /*! See \ref PIO_FLAG_IS_SPEED_HIGH */ = PIO_FLAG_IS_SPEED_HIGH,
-		IS_SPEED_BLAZING /*! See \ref PIO_FLAG_IS_SPEED_BLAZING */ = PIO_FLAG_IS_SPEED_BLAZING,
-		IS_OPENDRAIN /*! See \ref PIO_FLAG_IS_OPENDRAIN */ = PIO_FLAG_IS_OPENDRAIN,
-		IS_HYSTERESIS /*! See \ref PIO_FLAG_IS_HYSTERESIS */ = PIO_FLAG_IS_HYSTERESIS,
-		IS_DIRONLY /*! See \ref PIO_FLAG_IS_DIRONLY */ = PIO_FLAG_IS_DIRONLY,
-		IS_ANALOG /*! See \ref PIO_FLAG_IS_ANALOG */ = PIO_FLAG_IS_ANALOG,
+		SET_INPUT /*! Sets the pinmask as input */ = PIO_FLAG_SET_INPUT,
+		SET_OUTPUT /*! Sets the pinmask as output */ = PIO_FLAG_SET_OUTPUT,
+		IS_PULLUP /*! When setting as input, enables the pullup */ = PIO_FLAG_IS_PULLUP,
+		IS_PULLDOWN /*! When setting as input, enables the pulldown */ = PIO_FLAG_IS_PULLDOWN,
+		IS_REPEATER /*! When setting as input, enables repeater mode (if available) */ = PIO_FLAG_IS_REPEATER,
+		IS_FLOAT /*! When setting as input, enables floating mode (no pullup or pulldown) */ = PIO_FLAG_IS_FLOAT,
+		IS_SPEED_LOW /*! When setting as output, enables low speed mode */ = PIO_FLAG_IS_SPEED_LOW,
+		IS_SPEED_MEDIUM /*! When setting as output, enables medium speed mode */ = PIO_FLAG_IS_SPEED_MEDIUM,
+		IS_SPEED_HIGH /*! When setting as output, enables high speed mode */ = PIO_FLAG_IS_SPEED_HIGH,
+		IS_SPEED_BLAZING /*! When setting as output, enables blazing speed mode */ = PIO_FLAG_IS_SPEED_BLAZING,
+		IS_OPENDRAIN /*! When setting as output, enables open drain mode */ = PIO_FLAG_IS_OPENDRAIN,
+		IS_HYSTERESIS /*! When setting as input, enables hysteresis */ = PIO_FLAG_IS_HYSTERESIS,
+		IS_DIRONLY /*! When set, only affects the direction withouth setting other attributes */ = PIO_FLAG_IS_DIRONLY,
+		IS_ANALOG /*! When setting as input, sets pin as analog mode */ = PIO_FLAG_IS_ANALOG,
 		IS_INVERT /*! See \ref PIO_FLAG_IS_INVERT */ = PIO_FLAG_IS_INVERT,
 		IS_FILTER /*! See \ref PIO_FLAG_IS_FILTER */ = PIO_FLAG_IS_FILTER,
-		SET /*! See \ref PIO_FLAG_SET */ = PIO_FLAG_SET,
-		CLEAR /*! See \ref PIO_FLAG_CLEAR */ = PIO_FLAG_CLEAR,
-		ASSIGN /*! See \ref PIO_FLAG_ASSIGN */ = PIO_FLAG_ASSIGN
+		SET /*! Assigns the value of the port to one if the corresponding bit in the pin mask is set. */ = PIO_FLAG_SET,
+		CLEAR /*! Assigns the value of the port to zero if the corresponding bit in the pin mask is set. */ = PIO_FLAG_CLEAR,
+		ASSIGN /*! Assigns the value of the port to the value of the pin mask. */ = PIO_FLAG_ASSIGN
 	};
 
 	/*! \details Sets the specified pin mask */

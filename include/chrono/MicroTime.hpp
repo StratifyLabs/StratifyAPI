@@ -63,13 +63,13 @@ public:
 
 	/*! \details Create a MicroTime object from a microsecond value.
 	  *
-	  * This method is only provided for completeness. The following objects
+	  * The following objects
 	  * will be initialized with the same value because the constructor
 	  * value assumes microseconds.
 	  *
 	  * \code
-	  * MicroTime time_from_usec(MicroTime::from_usec(1000));
-	  * MicroTime time_usec(1000);
+	  * MicroTime time_from_microseconds(MicroTime::from_microseconds(1000));
+	  * MicroTime time_microseconds(1000);
 	  * \endcode
 	  *
 	  */

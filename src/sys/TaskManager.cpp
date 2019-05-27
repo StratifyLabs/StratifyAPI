@@ -74,6 +74,13 @@ int TaskManager::get_next(TaskInfo & info){
 	return ret;
 }
 
+#if !defined __link
+TaskInfo TaskManager::get_info(){
+	TaskManager manager;
+	return manager.get_info( Thread::self() );
+}
+#endif
+
 TaskInfo TaskManager::get_info(int id){
 	sys_taskattr_t attr;
 	attr.tid = id;

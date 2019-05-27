@@ -92,7 +92,10 @@ public:
 	u32 stack() const { return m_value.stack_ptr; }
 
 	/*! \details Returns the location of the heap in memory. */
-	u32 heap() const { return m_value.mem_loc; }
+	u32 heap() const {
+		if( m_value.is_thread ){ return 0; }
+		return m_value.mem_loc;
+	}
 
 	/*! \details Prints the header info for the print() method. */
 	static void print_header();
@@ -202,6 +205,11 @@ public:
 	  *
 	  */
 	TaskInfo get_info(int id);
+
+#if !defined __link
+	static TaskInfo get_info();
+#endif
+
 	/*! \cond */
 	TaskAttributes get_attributes(int id){ return get_info(id); }
 	/*! \endcond */

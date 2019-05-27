@@ -70,7 +70,8 @@ public:
 	/*! \details Constructs a SPI object using \a port. */
 	Spi(port_t port);
 
-	enum {
+	enum spi_flags {
+		/*! \cond */
 		FLAG_IS_FORMAT_SPI = SPI_FLAG_IS_FORMAT_SPI,
 		FLAG_IS_FORMAT_TI = SPI_FLAG_IS_FORMAT_TI,
 		FLAG_IS_FORMAT_MICROWIRE = SPI_FLAG_IS_FORMAT_MICROWIRE,
@@ -82,6 +83,7 @@ public:
 		FLAG_SET_SLAVE = SPI_FLAG_SET_SLAVE,
 		FLAG_IS_FULL_DUPLEX = SPI_FLAG_IS_FULL_DUPLEX,
 		FLAG_IS_HALF_DUPLEX = SPI_FLAG_IS_HALF_DUPLEX,
+		/*! \endcond */
 
 		IS_FORMAT_SPI/*! See \ref SPI_FLAG_IS_FORMAT_SPI */ = SPI_FLAG_IS_FORMAT_SPI,
 		IS_FORMAT_TI /*! See \ref SPI_FLAG_IS_FORMAT_TI */ = SPI_FLAG_IS_FORMAT_TI,

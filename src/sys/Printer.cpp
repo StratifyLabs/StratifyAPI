@@ -64,7 +64,7 @@ void Printer::set_format_code(u32 code){
 void Printer::clear_format_code(u32 code){
 #if defined __link
 	if( api::ApiInfo::is_macosx() || is_bash() ){
-	print("\033[1;2%dm", code);
+		print("\033[1;2%dm", code);
 	}
 #endif
 }
@@ -445,10 +445,13 @@ Printer & Printer::operator << (const sys::TaskInfo & a){
 	key("id", "%ld", a.id());
 	key("pid", "%ld", a.pid());
 	key("memorySize", "%ld", a.memory_size());
-	key("stack", "%ld", a.stack());
+	key("stack", "0x%lX", a.stack());
 	key("stackSize", "%ld", a.stack_size());
-	key("heap", "%ld", a.heap());
-	key("heapSize", "%ld", a.heap_size());
+	key("isThread", a.is_thread() ? "true" : "false");
+	if( a.is_thread() == false ){
+		key("heap", "0x%lX", a.heap());
+		key("heapSize", "%ld", a.heap_size());
+	}
 	return *this;
 }
 

@@ -15,15 +15,14 @@ namespace hal {
  *
  * Here is an example of using the Pin class:
  *
- * \code
+ * ```
  * #include <sapi/hal.hpp>
  *
  * Pin pin(1,0); //control pin P1.0
- * //Or if working with the pinmask Pin  pin(1, 1<<0, true);
  *
- * pin.init(Pin::OUTPUT); //initialize as an output
+ * pin.initialize(Pin::OUTPUT); //initialize as an output
  *
- * //These three all set the pin high
+ * //set the pin high
  * pin = true;
  * pin.set();
  *
@@ -32,18 +31,18 @@ namespace hal {
  * pin.clear();
  *
  * //now convert to an input
- * pin.set_attr(Pin::INPUT | Pin::PULLUP); //or use Pin::FLOAT, Pin::PULLDOWN, etc
- * //or to init as an input use pin.init(Pin::INPUT);
+ * pin.set_attributes(Pin::INPUT | Pin::PULLUP); //or use Pin::FLOAT, Pin::PULLDOWN, etc
+ * //or to initialize as an input use pin.initialize(Pin::INPUT);
  *
  *  //now check to see if the value is high or low
  * if( pin.get_value() == true ){
  *  //pin is high
  * } else {
- * 	//pin is low
+ *	 //pin is low
  * }
  *
  * pin.close(); //close the associated file descriptor (pin keeps its IO properties and state)
- * \endcode
+ * ```
  *
  */
 class Pin : public Pio {
