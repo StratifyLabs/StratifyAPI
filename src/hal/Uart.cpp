@@ -18,3 +18,12 @@ int Uart::flush(){
 	return ioctl(I_UART_FLUSH);
 }
 
+
+UartInfo Uart::get_info() const {
+	uart_info_t info;
+	if( get_info(info) < 0 ){
+		return UartInfo();
+	}
+
+	return UartInfo(info);
+}
