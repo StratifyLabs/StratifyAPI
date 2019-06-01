@@ -2,6 +2,7 @@
 #include <cstdio>
 #include "test/Test.hpp"
 #include "sys.hpp"
+#include "hal/Core.hpp"
 #include "var/String.hpp"
 
 
@@ -138,6 +139,7 @@ void Test::initialize(const var::ConstString & name, const var::ConstString & ve
 
 #if !defined __link
 	Sys sys;
+	sys.set_keep_open(false);
 	sys_info_t info;
 	print_indent(1, "\"system\": {\n");
 	if( (sys.open() < 0) || (sys.get_info(info) < 0) ){
@@ -152,12 +154,15 @@ void Test::initialize(const var::ConstString & name, const var::ConstString & ve
 		print_indent(2, "\"hardwareId\": \"%08X\",\n", info.hardware_id);
 		print_indent(2, "\"serialNumber\": \"%08lX%08lX%08lX%08lX\",\n", info.serial.sn[3], info.serial.sn[2], info.serial.sn[1], info.serial.sn[0]);
 		print_indent(2, "\"cpuFrequency\": \"%ld\",\n", info.cpu_freq);
+		if( info.o_mcu_board_config_flags & MCU_BOARD_CONFIG_FLAG_ENABLE_CACHE ){
+			print_indent(2, "\"cache\": true,\n");
+		} else {
+			print_indent(2, "\"cache\": false,\n");
+		}
 		print_indent(2, "\"bspGitHash\": \"%s\",\n", info.bsp_git_hash);
 		print_indent(2, "\"sosGitHash\": \"%s\",\n", info.sos_git_hash);
 		print_indent(2, "\"mcuGitHash\": \"%s\"\n", info.mcu_git_hash);
-
 	}
-	sys.close();
 	print_indent(1, "},\n");
 
 	AppfsInfo appfs_info;

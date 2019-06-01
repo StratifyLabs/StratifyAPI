@@ -117,6 +117,28 @@ public:
 
 typedef UartAttributes UartAttr;
 
+class UartInfo : public api::HalInfoObject {
+public:
+	UartInfo(){ memset(&m_info, 0, sizeof(m_info)); }
+	UartInfo(const uart_info_t & info){ m_info = info; }
+
+	bool is_valid() const {
+		return m_info.o_flags != 0;
+	}
+
+	bool is_rx_fifo() const {
+		return m_info.o_flags & UART_FLAG_IS_RX_FIFO;
+	}
+
+	u32 size() const { return m_info.size; }
+	u32 size_ready() const { return m_info.size_ready; }
+
+
+private:
+	uart_info_t m_info;
+};
+
+
 /*! \brief UART Class
  * \details This class implements a serial UART port.
  *
@@ -264,6 +286,9 @@ public:
 		}
 		return set_attr(o_flags, freq, width, pin_assignment);
 	}
+
+	using Periph::get_info;
+	UartInfo get_info() const;
 
 
 private:

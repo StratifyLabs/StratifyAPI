@@ -20,11 +20,25 @@ namespace chrono {
 class Clock : public api::ChronoInfoObject {
 public:
 
-	enum {
+	enum clock_id {
 		REALTIME /*! Realtime clock ID used with get_time() and get_resolution() */ = CLOCK_REALTIME
 	};
 
-	/*! \details Assigns the value of CLOCK_REALTIME to this object */
+	/*! \details Returns the present value of the specified clock.
+	 *
+	 * @param clock_id The block to get.
+	 * @return The time as a ClockTime object.
+	 *
+	 * ```
+	 * #include <sapi/chrono.hpp>
+	 *
+	 * ClockTime now;
+	 * now = Clock::get_time();
+	 *
+	 * ```
+	 *
+	 *
+	 */
 	static ClockTime get_time(int clock_id = REALTIME);
 
 	/*! \details Gets the resolution of the specified clock. */

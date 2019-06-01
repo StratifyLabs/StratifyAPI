@@ -23,7 +23,11 @@ int DisplayDevice::initialize(const var::ConstString & name){
 		}
 
 		set_bits_per_pixel(info.bits_per_pixel);
-		set_data((sg_bmap_data_t*)info.mem, info.width, info.height);
+		if( info.mem != 0 ){
+			set_data((sg_bmap_data_t*)info.mem, info.width, info.height);
+		} else {
+			allocate(sgfx::Area(info.width, info.height));
+		}
 
 		set_margin_left(info.margin_left);
 		set_margin_right(info.margin_right);

@@ -22,9 +22,8 @@ class MicroTime;
 class ClockTime : public api::ChronoInfoObject {
 public:
 
-	/*! \details Constructs a MicroTime object using a u32 value.
+	/*! \details Constructs a ClockTime object from seconds and nanoseconds.
 	  *
-	  * The default initial value is zero.
 	  *
 	  */
 	ClockTime(s32 seconds, s32 nanoseconds){
@@ -51,7 +50,7 @@ public:
 		m_value.tv_sec = 0; m_value.tv_nsec = 0;
 	}
 
-	/*! \details Sets the value of the clock.
+	/*! \details Sets the value of the clock time.
 	  *
 	  * @param seconds The seconds value
 	  * @param nanoseconds The nanosecond value
@@ -105,6 +104,20 @@ public:
 	/*! \details Returns the difference of this object and \a a. */
 	ClockTime operator - (const ClockTime & a) const { return subtract(*this, a); }
 
+	/*! \details Returns the age of this object as a ClockTime value.
+	 *
+	 * This will read the current time using Clock::get_time() and returns
+	 * the difference between the present time and the time held by this object.
+	 *
+	 * ```
+	 * #include <sapi/chrono.hpp>
+	 *
+	 * ClockTime instant = Clock::get_time();
+	 * ClockTime::wait_seconds(5);
+	 * printf("Age is %d\n", instant.age().seconds());
+	 * ```
+	 *
+	 */
 	ClockTime age() const;
 
 	/*! \details Adds \a to this and assigned to this. */
