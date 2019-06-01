@@ -22,6 +22,8 @@ set(SOURCELIST
 	${SOURCES_PREFIX}/Uart.cpp
   ${SOURCES_PREFIX}/Usb.cpp
   ${SOURCES_PREFIX}/QSPI.cpp
+  ${SOURCES_PREFIX}/Emc.cpp
+
   )
 
 if( ${SOS_BUILD_CONFIG} STREQUAL arm )

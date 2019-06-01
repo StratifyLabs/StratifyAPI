@@ -9,6 +9,10 @@
 
 using namespace hal;
 
+QSPI::QSPI(port_t port) : Periph(CORE_PERIPH_QSPI, port){}
+QSPI_FLASH::QSPI_FLASH(port_t port) : QSPI(port){}
+
+
 u8 QSPI_FLASH::read_status_reg(){
     u8 data = 0;
     read_reg(read_status_command,&data,FLAG_IS_REGISTER_WIDTH_8);

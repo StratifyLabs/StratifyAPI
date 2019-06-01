@@ -1,0 +1,171 @@
+#ifndef EMC_HPP
+#define EMC_HPP
+
+#include <sapi/hal.hpp>
+#include "sos/dev/emc.h"
+namespace hal {
+
+
+class EmcAttributes : public PinAssignmentPeriphAttributes<emc_attr_t, emc_pin_assignment_t> {
+public:
+    EmcAttributes(u32 o_flags = EMC_FLAG_ENABLE,
+                  u8 data_bus_size = 16,u8 address_bus_size = 18,u8 bl_bus_size = 2,
+                  u8 ncs_bus_size = 1){
+        m_attr.o_flags = o_flags;
+        data_bus_size_m = data_bus_size;
+        address_bus_size_m = address_bus_size;
+        bl_bus_size_m = bl_bus_size;
+        ncs_bus_size_m = ncs_bus_size;
+    }
+    void set_data(const mcu_pin_t * pin){
+        int i=0;
+        for (i =0; i<data_bus_size_m ;i++) {
+            m_attr.pin_assignment.data[i] = pin[i];
+        }
+        for (i =0; i<MAX_DATA_BUS_SIZE ;i++) {
+            m_attr.pin_assignment.data[i] = {0xff,0xff};
+        }
+    }
+    void set_address(const mcu_pin_t * pin){
+        int i=0;
+        for (i =0; i<address_bus_size_m ;i++) {
+            m_attr.pin_assignment.address[i] = pin[i];
+        }
+        for (; i<MAX_ADDRESS_BUS_SIZE ;i++) {
+            m_attr.pin_assignment.address[i] = {0xff,0xff};
+        }
+    }
+    void set_bl(const mcu_pin_t * pin){
+        int i=0;
+        for (i =0; i< bl_bus_size_m;i++) {
+            m_attr.pin_assignment.bl[i] = pin[i];
+        }
+        for (; i< MAX_BL_NUM;i++) {
+            m_attr.pin_assignment.bl[i] = {0xff,0xff};
+        }
+    }
+    void set_ncs(const mcu_pin_t * pin){
+        int i=0;
+        for ( i =0; i< ncs_bus_size_m;i++) {
+            m_attr.pin_assignment.ncs[i] = pin[i];
+        }
+        for ( ; i< MAX_NCS_NUM;i++) {
+            m_attr.pin_assignment.ncs[i] = {0xff,0xff};
+        }
+    }
+    void set_oe(const mcu_pin_t & pin){ m_attr.pin_assignment.oe = pin; }
+    void set_we(const mcu_pin_t & pin){ m_attr.pin_assignment.we = pin; }
+    void set_nadv(const mcu_pin_t & pin){ m_attr.pin_assignment.nadv = pin; }
+    void set_nwait(const mcu_pin_t & pin){ m_attr.pin_assignment.nwait = pin; }
+
+    const mcu_pin_t * pins_data() const { return (const mcu_pin_t *)m_attr.pin_assignment.data; }
+    const mcu_pin_t * pins_address() const { return (const mcu_pin_t *)m_attr.pin_assignment.address; }
+    const mcu_pin_t * pins_bl() const { return (const mcu_pin_t *)m_attr.pin_assignment.bl; }
+    const mcu_pin_t * pins_ncs() const { return (const mcu_pin_t *)m_attr.pin_assignment.ncs;; }
+    mcu_pin_t oe() const { return m_attr.pin_assignment.oe; }
+    mcu_pin_t we() const { return m_attr.pin_assignment.we; }
+    mcu_pin_t nadv() const { return m_attr.pin_assignment.nadv; }
+    mcu_pin_t nwait() const { return m_attr.pin_assignment.nwait; }
+private:
+    u8 data_bus_size_m = 16;
+    u8 address_bus_size_m = 18;
+    u8 bl_bus_size_m = 2;
+    u8 ncs_bus_size_m = 1;
+};
+
+typedef EmcAttributes EmcAttr;
+
+
+class EmcPinAssignment : public PinAssignment<emc_pin_assignment_t>{};
+
+class Emc: public Periph<emc_info_t, emc_attr_t, EmcAttributes, EMC_IOC_IDENT_CHAR> {
+public:
+    Emc(port_t port);
+    enum {
+        FLAG_DISABLE = EMC_FLAG_DISABLE,
+        FLAG_ENABLE = EMC_FLAG_ENABLE,
+        FLAG_IS_SDRAM  = EMC_FLAG_IS_SDRAM,
+        FLAG_IS_PSRAM = EMC_FLAG_IS_PSRAM,
+        FLAG_IS_SRAM = EMC_FLAG_IS_SRAM,
+        FLAG_IS_NOR = EMC_FLAG_IS_NOR,
+        FLAG_IS_NAND = EMC_FLAG_IS_NAND,
+        FLAG_IS_8B_ACCESS = EMC_FLAG_IS_8B_ACCESS,
+        FLAG_IS_16B_ACCESS = EMC_FLAG_IS_16B_ACCESS,
+        FLAG_IS_32B_ACCESS = EMC_FLAG_IS_32B_ACCESS ,
+        FLAG_IS_AHB = EMC_FLAG_IS_AHB ,	/*!< use only data bus without address*/
+        FLAG_IS_PSRAM_BANK1 = EMC_FLAG_IS_PSRAM_BANK1 ,	/*!< use subbank BANK1 - cs0*/
+        FLAG_IS_PSRAM_BANK2 = EMC_FLAG_IS_PSRAM_BANK2 ,	/*!< use subbank BANK2 - cs1*/
+        FLAG_IS_PSRAM_BANK3 = EMC_FLAG_IS_PSRAM_BANK3 ,	/*!< use subbank BANK3 - cs2*/
+        FLAG_IS_PSRAM_BANK4 = EMC_FLAG_IS_PSRAM_BANK4,	/*!< use subbank BANK4 - cs3*/
+        FLAG_AHB_WRITE_DATA = EMC_FLAG_AHB_WRITE_DATA,	/*!< write data throuth ahb */
+        FLAG_AHB_WRITE_REG = EMC_FLAG_AHB_WRITE_REG,	/*!< write reg  throuth ahb*/
+    };
+    int set_attr(u32 o_flags,u32 size,u32 base_address,u8 bus_width, const emc_pin_assignment_t * pin_assignment = 0) const {
+        emc_attr_t attr;
+        memset(&attr,0,sizeof(emc_attr_t));
+        memset(&attr.pin_assignment, 0xff, sizeof(emc_pin_assignment_t));
+        if( pin_assignment != 0 ){
+            memcpy(&attr.pin_assignment, pin_assignment, sizeof(emc_pin_assignment_t));
+        }
+        attr.size = size;
+        attr.base_address = base_address;
+        attr.o_flags = o_flags ;
+        attr.data_bus_width = bus_width;
+        return set_attributes(attr);
+    }
+
+    int init(u32 o_flags,u32 size,u32 base_address,u8 bus_width, const emc_pin_assignment_t * pin_assignment = 0){
+        o_flags |= FLAG_ENABLE;
+        if( open(READWRITE) < 0 ){
+            return -1;
+        }
+        return set_attr(o_flags,size,base_address,bus_width,pin_assignment);
+    }
+private:
+
+};
+
+class Emc_psram : public Emc {
+public:
+    Emc_psram(port_t port);/* : Emc( port){}*/
+    int init(u32 o_flags,u32 size,u32 base_address,u8 bus_width, const emc_pin_assignment_t * pin_assignment = 0){
+        o_flags |= FLAG_IS_PSRAM | FLAG_ENABLE;
+        if( open(READWRITE) < 0 ){
+            return -1;
+        }
+        return set_attr(o_flags,size,base_address,bus_width,pin_assignment);
+    }
+    using Periph::get_channel;
+#ifdef __MCU_ONLY__
+    //using Pblock::write;
+    //int write(const void * buf, int nbyte);
+    int close();
+#endif
+private:
+    int m_page_size;
+};
+class Emc_ahb : public Emc {
+public:
+    Emc_ahb(port_t port);/* : Emc( port){}*/
+    int init(u32 o_flags,u32 size,u32 base_address,u8 bus_width, const emc_pin_assignment_t * pin_assignment = 0){
+        o_flags |= FLAG_IS_AHB | FLAG_ENABLE;
+        if( open(READWRITE) < 0 ){
+            return -1;
+        }
+        return set_attr(o_flags,size,base_address,bus_width,pin_assignment);
+    }
+
+    using Periph::get_channel;
+
+#ifdef __MCU_ONLY__
+    //using Pblock::write;
+    //int write(const void * buf, int nbyte);
+    int close();
+#endif
+private:
+    int m_page_size;
+};
+
+}
+
+#endif // EMC_HPP

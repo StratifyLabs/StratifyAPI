@@ -2,9 +2,12 @@
 #define QSPI_HPP
 
 #include <sapi/hal.hpp>
-#include <sapi/test.hpp>
 #include "sos/dev/qspi.h"
+namespace hal {
 
+/**
+ * @brief The QSPIAttributes class
+ */
 class QSPIAttributes : public PinAssignmentPeriphAttributes<qspi_attr_t, qspi_pin_assignment_t> {
 public:
     QSPIAttributes(u32 o_flags = QSPI_FLAG_SET_MASTER, u32 frequency = 1000000){
@@ -33,10 +36,12 @@ typedef QSPIAttributes QSPIAttr;
 
 
 class QSPIPinAssignment : public PinAssignment<qspi_pin_assignment_t>{};
-
+/**
+ * @brief The QSPI class
+ */
 class QSPI: public Periph<qspi_info_t, qspi_attr_t, QSPIAttributes, QSPI_IOC_IDENT_CHAR> {
 public:
-    QSPI(port_t port) : Periph(CORE_PERIPH_QSPI, port){}
+    QSPI(port_t port);/* : Periph(CORE_PERIPH_QSPI, port){}*/
     enum {
             FLAG_SET_MASTER = QSPI_FLAG_SET_MASTER /*! Configure the QSPI as master */ ,
             FLAG_IS_READ_MEM_MAPPED_MODE = QSPI_FLAG_IS_READ_MEM_MAPPED_MODE /*! Configure the QSPI as mem mapped mode(read only)*/ ,
@@ -128,11 +133,13 @@ public:
 private:
 
 };
-
+/**
+ * @brief The QSPI_FLASH class
+ */
 class QSPI_FLASH : public QSPI {
 public:
 
-    QSPI_FLASH(port_t port) : QSPI( port){}
+    QSPI_FLASH(port_t port);/* : QSPI( port){}*/
 
     void set_commands(u32 read_status,u32 write_enable,u32 write_enabled,u32 write_in_progress){
         read_status_command = read_status;
@@ -217,4 +224,6 @@ private:
     int m_page_size;
 };
 
-#endif
+}
+
+#endif //QSPI_HPP
