@@ -28,7 +28,7 @@ void BarProgress::draw_to_scale(const DrawingScaledAttr & attr){
 	x_progress = tmp;
 
 	//draw bar
-	attr.bitmap().set_pen(Pen(1,1));
+	attr.bitmap().set_pen_thickness(1);
 	attr.bitmap().draw_rectangle(attr.region());
 
 	//clear un-progress section

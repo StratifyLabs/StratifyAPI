@@ -5,7 +5,6 @@
 #define SYS_FILEINFO_HPP_
 
 
-#include "File.hpp"
 #include "../api/SysObject.hpp"
 #include "../var/ConstString.hpp"
 
@@ -43,23 +42,25 @@ namespace sys {
  * ```
  *
  */
-class FileInfo : public api::SysWorkObject {
+class FileInfo : public api::SysInfoObject {
 public:
 
 #if defined __link
-	FileInfo(link_transport_mdriver_t * driver = 0);
+	FileInfo(bool is_local = false);
+	FileInfo(const struct link_stat & st, bool is_local = false){
+		m_is_local = is_local;
+		m_stat = st;
+	}
 #else
 	FileInfo();
+	FileInfo(const struct stat & st){
+		m_stat = st;
+	}
 #endif
 
-	/*! Gets the file info for the specified path.
-	 * @param path The file path (can be a file, directory or device)
-	 * @return Zero on success or less than zero with errno set
-	 */
-	int get_info(const var::ConstString & path);
-
-
-	int get_info(int file_no);
+	bool is_valid() const {
+		return m_stat.st_mode != 0;
+	}
 
 
 	/*! \details Returns true if the file is a directory. */
@@ -95,17 +96,10 @@ public:
 	/*! \details Returns the file mode value. */
 	u32 mode() const { return m_stat.st_mode; }
 
-#ifdef __link
-	void set_driver(link_transport_mdriver_t * driver){
-		m_driver = driver;
-	}
-#endif
-
 private:
 
 #ifdef __link
 	struct link_stat m_stat;
-	link_transport_mdriver_t * m_driver;
 	bool m_is_local;
 #else
 	struct stat m_stat;

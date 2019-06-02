@@ -42,6 +42,8 @@ public:
 
 	int enable() const;
 	int disable() const;
+
+	DisplayInfo get_info() const;
 };
 
 } /* namespace hal */

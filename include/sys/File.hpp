@@ -8,6 +8,7 @@
 #include "../api/SysObject.hpp"
 #include "../var/ConstString.hpp"
 #include "../chrono/MicroTime.hpp"
+#include "FileInfo.hpp"
 
 #if !defined __link
 #include <unistd.h>
@@ -79,10 +80,15 @@ public:
 #if defined __link
 	File(link_transport_mdriver_t * driver = 0);
 	static bool exists(const var::ConstString & path, link_transport_mdriver_t * driver = 0);
+	static FileInfo get_info(const var::ConstString & path, link_transport_mdriver_t * driver = 0);
+	static FileInfo get_info(int fd, link_transport_mdriver_t * driver = 0);
 #else
 	File();
 	static bool exists(const var::ConstString & path);
+	static FileInfo get_info(const var::ConstString & path);
+	static FileInfo get_info(int fd);
 #endif
+
 
 	~File();
 
@@ -118,6 +124,7 @@ public:
 		EXECUTE_OK /*! Check if execute access is allowed */ = LINK_X_OK,
 		FILE_OK /*! Check if file exists */ = LINK_F_OK,
 	};
+
 
 	/*! \details List of options for \a whence argument of seek() */
 	enum o_seek_whence {

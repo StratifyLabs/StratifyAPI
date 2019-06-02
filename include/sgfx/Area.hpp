@@ -32,6 +32,20 @@ public:
 		return d;
 	}
 
+	Area operator * (sg_size_t a) const {
+		Area d;
+		d.m_value.width = m_value.width * a;
+		d.m_value.height = m_value.height * a;
+		return d;
+	}
+
+	Area operator / (sg_size_t a) const {
+		Area d;
+		d.m_value.width = m_value.width / a;
+		d.m_value.height = m_value.height / a;
+		return d;
+	}
+
 	Area & operator *= (float a){
 		m_value.width *= a;
 		m_value.height *= a;

@@ -11,13 +11,15 @@ DisplayDevice::DisplayDevice(){}
 /*! \brief Pure virtual function to initialize the LCD */
 int DisplayDevice::initialize(const var::ConstString & name){
 	//open and populate attr
-	display_info_t info;
 
 	if( name != 0 ){
+
+		//only open the device if it isn't already open
 		if ( Device::open(name, READWRITE) < 0 ){
 			return -1;
 		}
 
+		display_info_t info;
 		if( ioctl(I_DISPLAY_GETINFO, &info) < 0 ){
 			return -1;
 		}
@@ -52,6 +54,14 @@ void DisplayDevice::clear(){
 	if( ioctl(I_DISPLAY_CLEAR) < 0 ){
 		Data::clear();
 	}
+}
+
+DisplayInfo DisplayDevice::get_info() const {
+	display_info_t info;
+	if( ioctl(I_DISPLAY_GETINFO, &info) < 0 ){
+		return DisplayInfo();
+	}
+	return DisplayInfo(info);
 }
 
 

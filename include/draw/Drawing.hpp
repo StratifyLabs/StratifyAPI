@@ -83,6 +83,12 @@ public:
 		m_area = area;
 	}
 
+	bool is_valid() const {
+		return m_area.width * m_area.height;
+	}
+
+	static DrawingArea maximum();
+
 	drawing_size_t width() const { return m_area.width; }
 	void set_width(drawing_size_t value){ m_area.width = value; }
 
@@ -91,6 +97,9 @@ public:
 
 	const drawing_area_t & area() const { return m_area; }
 	drawing_area_t & area(){ return m_area; }
+
+	operator	const drawing_area_t & () const { return m_area; }
+
 
 private:
 	drawing_area_t m_area;
@@ -108,6 +117,10 @@ public:
 		m_point = point;
 	}
 
+	static DrawingPoint origin(){
+		return DrawingPoint(0,0);
+	}
+
 	drawing_size_t x() const { return m_point.x; }
 	void set_x(drawing_size_t value){ m_point.x = value; }
 
@@ -117,8 +130,47 @@ public:
 	const drawing_point_t & point() const { return m_point; }
 	drawing_point_t & point(){ return m_point; }
 
+	operator	const drawing_point_t & () const { return m_point; }
+
+
 private:
 	drawing_point_t m_point;
+};
+
+class DrawingRegion : public api::DrawInfoObject {
+
+public:
+	DrawingRegion(){
+		m_region.point = DrawingPoint(0,0);
+	}
+
+	bool is_valid() const {
+		return DrawingArea(m_region.area).is_valid();
+	}
+
+	DrawingRegion(const DrawingPoint & point, const DrawingArea & area){
+		m_region.point = point;
+		m_region.area = area;
+	}
+
+	DrawingRegion & operator << (const DrawingArea & area){
+		m_region.area = area; return *this;
+	}
+
+	DrawingRegion & operator << (const DrawingPoint & point){
+		m_region.point = point; return *this;
+	}
+
+	const drawing_area_t & area() const { return m_region.area; }
+	drawing_area_t & area(){ return m_region.area; }
+
+	const drawing_point_t & point() const { return m_region.point; }
+	drawing_point_t & point(){ return m_region.point; }
+
+	operator	const drawing_region_t & () const { return m_region; }
+
+private:
+	drawing_region_t m_region;
 };
 
 /*! \brief Drawing Attribute Class
@@ -137,6 +189,17 @@ public:
 
 	/*! \details Construct an object from a drawing_attr_t */
 	DrawingAttributes(const drawing_attr_t & attr);
+
+
+	DrawingAttributes(sgfx::Bitmap & bitmap);
+	DrawingAttributes(sgfx::Bitmap & bitmap, const DrawingRegion & region);
+
+	DrawingAttributes & operator << (sgfx::Bitmap & bitmap);
+	DrawingAttributes & operator << (const DrawingRegion & region);
+	DrawingAttributes & operator << (const DrawingPoint & point);
+	DrawingAttributes & operator << (const DrawingArea & area);
+
+	bool is_valid() const { return m_attr.bitmap != 0; }
 
 	/*! \details Return the underlying drawing_attr_t */
 	operator drawing_attr_t (){ return m_attr; }

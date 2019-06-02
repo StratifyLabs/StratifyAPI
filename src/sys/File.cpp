@@ -139,6 +139,42 @@ bool File::exists(const var::ConstString & path){
 	return true;
 }
 
+#if defined __link
+FileInfo File::get_info(const var::ConstString & path, link_transport_mdriver_t * driver){
+#else
+FileInfo File::get_info(const var::ConstString & path){
+#endif
+#if defined __link
+	struct link_stat stat;
+	memset(&stat, 0, sizeof(stat));
+	File::stat(path, &stat, driver);
+#else
+	struct stat stat;
+	memset(&stat, 0, sizeof(stat));
+	File::stat(path, &stat);
+#endif
+
+	return FileInfo(stat);
+}
+
+#if defined __link
+FileInfo File::get_info(int fd, link_transport_mdriver_t * driver){
+#else
+FileInfo File::get_info(int fd){
+#endif
+#if defined __link
+	struct link_stat stat;
+	memset(&stat, 0, sizeof(stat));
+	::link_fstat(driver, fd, &stat);
+#else
+	struct stat stat;
+	memset(&stat, 0, sizeof(stat));
+	::fstat(fd, &stat);
+#endif
+
+	return FileInfo(stat);
+}
+
 int File::open(const var::ConstString & name, int access, int perms){
 	if( m_fd != -1 ){
 		close(); //close first so the fileno can be changed

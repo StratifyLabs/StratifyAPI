@@ -9,10 +9,9 @@
 
 using namespace sys;
 #if defined __link
-
-FileInfo::FileInfo(link_transport_mdriver_t * driver) {
+FileInfo::FileInfo(bool is_local) {
 	memset(&m_stat, 0, sizeof(m_stat));
-	m_driver = driver;
+	m_is_local = is_local;
 }
 #else
 
@@ -20,30 +19,6 @@ FileInfo::FileInfo() {
 	memset(&m_stat, 0, sizeof(m_stat));
 }
 #endif
-
-
-int FileInfo::get_info(const var::ConstString & path){
-	int ret;
-#if defined __link
-	ret = File::stat(path.cstring(), &m_stat, m_driver);
-#else
-	ret = File::stat(path.cstring(), &m_stat);
-#endif
-
-	return set_error_number_if_error(ret);
-}
-
-int FileInfo::get_info(int file_no){
-	int ret;
-#if defined __link
-	m_is_local = (m_driver == 0);
-	ret = link_fstat(m_driver, file_no, &m_stat);
-#else
-	ret = ::fstat(file_no, &m_stat);
-#endif
-
-	return set_error_number_if_error(ret);
-}
 
 
 bool FileInfo::is_directory() const {

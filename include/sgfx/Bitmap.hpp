@@ -313,8 +313,8 @@ public:
 	 *
 	 */
 	void draw_line(const Point & p1, const Point & p2) const { api()->draw_line(bmap(), p1, p2); }
-	void draw_quadtratic_bezier(const Point & p1, const Point & p2, const Point & p3, sg_point_t * corners = 0) const { api()->draw_quadtratic_bezier(bmap(), p1, p2, p3, corners); }
-	void draw_cubic_bezier(const Point & p1, const Point & p2, const Point & p3, sg_point_t p4, sg_point_t * corners = 0) const { api()->draw_cubic_bezier(bmap(), p1, p2, p3, p4, corners); }
+	void draw_quadratic_bezier(const Point & p1, const Point & p2, const Point & p3, sg_point_t * corners = 0) const { api()->draw_quadratic_bezier(bmap(), p1, p2, p3, corners); }
+	void draw_cubic_bezier(const Point & p1, const Point & p2, const Point & p3, const Point & p4, sg_point_t * corners = 0) const { api()->draw_cubic_bezier(bmap(), p1, p2, p3, p4, corners); }
 	void draw_arc(const Region & region, s16 start, s16 end, s16 rotation = 0, sg_point_t * corners = 0) const {
 		api()->draw_arc(bmap(), &region.region(), start, end, rotation, corners);
 	}

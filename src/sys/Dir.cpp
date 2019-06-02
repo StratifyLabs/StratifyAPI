@@ -52,9 +52,7 @@ int Dir::remove(const var::ConstString & path, bool recursive, link_transport_md
 #endif
 				var::String entry_path;
 				entry_path << path << "/" << entry;
-				if( info.get_info(entry_path) < 0 ){
-
-				}
+				info = File::get_info(entry_path);
 				if( info.is_directory() ){
 					if( entry != "." && entry != ".."){
 #if defined __link

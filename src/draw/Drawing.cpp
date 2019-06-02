@@ -5,7 +5,11 @@
 #include "draw/Drawing.hpp"
 using namespace draw;
 
-drawing_size_t Drawing::m_scale = 100;
+drawing_size_t Drawing::m_scale = 1000;
+
+DrawingArea DrawingArea::maximum(){
+	return DrawingArea(DrawingAttributes::scale(), DrawingAttributes::scale());
+}
 
 static sg_int_t scale_to_bitmap(drawing_size_t d, sg_size_t s, drawing_size_t max){
 	int tmp;
@@ -37,6 +41,35 @@ DrawingAttributes::DrawingAttributes(){
 
 DrawingAttributes::DrawingAttributes(const drawing_attr_t & attr){
 	m_attr = attr;
+}
+
+DrawingAttributes::DrawingAttributes(sgfx::Bitmap & bitmap){
+	m_attr.bitmap = &bitmap;
+	m_attr.region.point.x = 0;
+	m_attr.region.point.y = 0;
+	m_attr.scratch = 0;
+}
+
+DrawingAttributes::DrawingAttributes(sgfx::Bitmap & bitmap, const DrawingRegion & region){
+	m_attr.bitmap = &bitmap;
+	m_attr.region = region;
+	m_attr.scratch = 0;
+}
+
+DrawingAttributes & DrawingAttributes::operator << (sgfx::Bitmap & bitmap){
+	m_attr.bitmap = &bitmap; return *this;
+}
+
+DrawingAttributes & DrawingAttributes::operator << (const DrawingRegion & region){
+	m_attr.region = region; return *this;
+}
+
+DrawingAttributes & DrawingAttributes::operator << (const DrawingPoint & point){
+	m_attr.region.point = point; return *this;
+}
+
+DrawingAttributes & DrawingAttributes::operator << (const DrawingArea & area){
+	m_attr.region.area = area; return *this;
 }
 
 sg_area_t DrawingAttributes::calc_dim_on_bitmap(const DrawingAttributes & attr){

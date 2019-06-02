@@ -13,6 +13,38 @@
 
 namespace hal {
 
+class DisplayInfo : public api::HalInfoObject {
+public:
+	DisplayInfo(){ memset(&m_info, 0, sizeof(m_info)); }
+	DisplayInfo(const display_info_t & info){
+		m_info = info;
+	}
+
+	bool is_valid() const { return memory_size() != 0; }
+
+	sg_size_t width() const { return m_info.width; }
+	sg_size_t height() const { return m_info.width; }
+
+	sg_size_t margin_right() const { return m_info.margin_right; }
+	sg_size_t margin_left() const { return m_info.margin_left; }
+	sg_size_t margin_top() const { return m_info.margin_top; }
+	sg_size_t margin_bottom() const { return m_info.margin_bottom; }
+
+	u16 bits_per_pixel() const { return m_info.bits_per_pixel; }
+
+	u32 memory_size() const {
+		//number of bytes needed to store an image
+		return width() * height() * bits_per_pixel() / 8;
+	}
+
+	u16 columns() const { return m_info.cols; }
+	u16 rows() const { return m_info.rows; }
+	u32 frequency() const { return m_info.freq; }
+
+private:
+	display_info_t m_info;
+};
+
 /*! \brief Display Palette Class
  * \details A display palette is used to map bitmap colors
  * to an actual display. The Stratify graphics library supports
@@ -131,6 +163,10 @@ public:
 
 	/*! \details Turns the display off. */
 	virtual int disable() const = 0;
+
+	virtual DisplayInfo get_info() const {
+		return DisplayInfo();
+	}
 };
 
 } /* namespace hal */
