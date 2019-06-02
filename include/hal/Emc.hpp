@@ -12,6 +12,7 @@ public:
                   u8 data_bus_size = 16,u8 address_bus_size = 18,u8 bl_bus_size = 2,
                   u8 ncs_bus_size = 1){
         m_attr.o_flags = o_flags;
+        m_attr.data_bus_width = data_bus_size;
         data_bus_size_m = data_bus_size;
         address_bus_size_m = address_bus_size;
         bl_bus_size_m = bl_bus_size;
@@ -100,6 +101,15 @@ public:
         FLAG_AHB_WRITE_DATA = EMC_FLAG_AHB_WRITE_DATA,	/*!< write data throuth ahb */
         FLAG_AHB_WRITE_REG = EMC_FLAG_AHB_WRITE_REG,	/*!< write reg  throuth ahb*/
     };
+    /**
+     * @brief set_attr
+     * @param o_flags
+     * @param size psram in mbyte Ex. 0x80000 -> 524288 mbyte
+     * @param base_address - Bank address Ex. 0x60000000
+     * @param bus_width - data bus width
+     * @param pin_assignment
+     * @return
+     */
     int set_attr(u32 o_flags,u32 size,u32 base_address,u8 bus_width, const emc_pin_assignment_t * pin_assignment = 0) const {
         emc_attr_t attr;
         memset(&attr,0,sizeof(emc_attr_t));
@@ -113,7 +123,15 @@ public:
         attr.data_bus_width = bus_width;
         return set_attributes(attr);
     }
-
+    /**
+     * @brief init
+     * @param o_flags
+     * @param size psram in mbyte Ex. 0x80000 -> 524288 mbyte
+     * @param base_address - Bank address Ex. 0x60000000
+     * @param bus_width - data bus width
+     * @param pin_assignment
+     * @return
+     */
     int init(u32 o_flags,u32 size,u32 base_address,u8 bus_width, const emc_pin_assignment_t * pin_assignment = 0){
         o_flags |= FLAG_ENABLE;
         if( open(READWRITE) < 0 ){
@@ -128,6 +146,15 @@ private:
 class Emc_psram : public Emc {
 public:
     Emc_psram(port_t port);/* : Emc( port){}*/
+    /**
+     * @brief Open and setattr for psram
+     * @param o_flags Flags
+     * @param size psram in mbyte Ex. 0x80000 -> 524288 mbyte
+     * @param base_address - Bank address Ex. 0x60000000
+     * @param bus_width - data bus width
+     * @param pin_assignment
+     * @return result of setattr
+     */
     int init(u32 o_flags,u32 size,u32 base_address,u8 bus_width, const emc_pin_assignment_t * pin_assignment = 0){
         o_flags |= FLAG_IS_PSRAM | FLAG_ENABLE;
         if( open(READWRITE) < 0 ){
@@ -147,14 +174,34 @@ private:
 class Emc_ahb : public Emc {
 public:
     Emc_ahb(port_t port);/* : Emc( port){}*/
-    int init(u32 o_flags,u32 size,u32 base_address,u8 bus_width, const emc_pin_assignment_t * pin_assignment = 0){
+    /**
+     * @brief init - open and setattr for with FLAG_IS_AHB flags
+     * @param o_flags - flags
+     * @param bus_width - data bus width
+     * @param size - for ahb may be 0
+     * @param base_address may be 0
+     * @param pin_assignment
+     * @return
+     */
+    int init(u32 o_flags, u32 size = 0,u32 base_address = 0,u8 bus_width = 16,const emc_pin_assignment_t * pin_assignment = 0){
         o_flags |= FLAG_IS_AHB | FLAG_ENABLE;
         if( open(READWRITE) < 0 ){
             return -1;
         }
         return set_attr(o_flags,size,base_address,bus_width,pin_assignment);
     }
-
+    /**
+     * @brief write_reg write reg throuth ahb interface
+     * @param reg - reg value
+     * @return les then zero value if error occured
+     */
+    int write_reg(u32 reg){
+        emc_attr_t emc_attr;
+        /* Send command */
+        emc_attr.o_flags =EMC_FLAG_IS_AHB|EMC_FLAG_AHB_WRITE_REG;
+        emc_attr.data_or_reg = reg;
+        return ioctl(I_EMC_SETATTR, &emc_attr);
+    }
     using Periph::get_channel;
 
 #ifdef __MCU_ONLY__
