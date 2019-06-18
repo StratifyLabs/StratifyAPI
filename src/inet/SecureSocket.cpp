@@ -18,6 +18,10 @@ SecureSocket::SecureSocket(u32 ticket_lifetime){
 	m_ticket.set_size(0);
 }
 
+SecureSocket::~SecureSocket(){
+	close();
+}
+
 int SecureSocket::create(const SocketAddress & address){
 	int result = api()->socket(&m_context, address.family(), address.type(), address.protocol());
 	m_fd = api()->fileno(&m_context);

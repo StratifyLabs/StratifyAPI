@@ -13,7 +13,11 @@ Http::Http(Socket & socket) : m_socket(socket){
 }
 
 HttpClient::HttpClient(Socket & socket) : Http(socket){
-	m_transfer_size = 512;
+#if defined __link
+	m_transfer_size = 1024;
+#else
+	m_transfer_size = 1024;
+#endif
 	m_is_chunked_transfer_encoding = false;
 	m_is_keep_alive = false;
 	m_transfer_encoding = "";
@@ -83,6 +87,7 @@ int HttpClient::query(const var::ConstString & command,
 	if( result < 0 ){
 		return result;
 	}
+
 
 	result = send_header(command, u.domain_name(), u.path(), send_file, progress_callback);
 	if( result < 0 ){

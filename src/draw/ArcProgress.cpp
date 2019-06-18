@@ -39,7 +39,7 @@ void ArcProgress::draw_to_scale(const DrawingScaledAttr & attr){
 	float theta;
 	float offset = m_offset * two_pi / 360;
 
-	progress = (points * value()) / max();
+	progress = (points * value()) / maximum();
 	if( progress > points ){
 		progress = points;
 	}
@@ -91,7 +91,7 @@ void ArcProgress::draw_to_scale(const DrawingScaledAttr & attr){
 
 	attr.bitmap().draw_line(arc_inner, arc);
 
-	if( progress > 0 && (attr.bitmap().pen_flags() & Pen::IS_FILL) ){
+	if( progress > 0 && (attr.bitmap().pen().is_fill()) ){
 		theta = (two_pi * progress / (2*points) - half_pi) + offset;
 		xf = ((rx + rx_inner)/2) * cosf(theta);
 		yf = ((ry + ry_inner)/2)* sinf(theta);

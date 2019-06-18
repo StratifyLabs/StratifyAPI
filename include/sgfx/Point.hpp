@@ -21,6 +21,7 @@ public:
 
 	const sg_point_t & point() const { return m_value; }
 	sg_point_t & point(){ return m_value; }
+
 	operator const sg_point_t & () const { return m_value; }
 
 	void set(sg_int_t x, sg_int_t y){ m_value.x = x; m_value.y = y; }

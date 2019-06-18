@@ -22,6 +22,7 @@
 #include "sgfx/Vector.hpp"
 #include "chrono/Time.hpp"
 #include "chrono/ClockTime.hpp"
+#include "draw/Drawing.hpp"
 
 #if defined __win32
 unsigned int sys::Printer::m_default_color = (unsigned int)-1;
@@ -602,6 +603,26 @@ void Printer::print_bitmap_pixel(u32 color, u8 bits_per_pixel){
 
 
 Printer & Printer::operator << (const sgfx::Cursor & a){
+	return *this;
+}
+
+Printer & Printer::operator << (const draw::DrawingPoint & a){
+	key("x", "%d", a.x());
+	key("y", "%d", a.y());
+	return *this;
+}
+
+Printer & Printer::operator << (const draw::DrawingArea & a){
+	key("width", "%d", a.width());
+	key("height", "%d", a.height());
+	return *this;
+}
+
+Printer & Printer::operator << (const draw::DrawingRegion & a){
+	key("x", "%d", a.point().x());
+	key("y", "%d", a.point().y());
+	key("width", "%d", a.area().width());
+	key("height", "%d", a.area().height());
 	return *this;
 }
 

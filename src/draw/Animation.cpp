@@ -121,15 +121,15 @@ int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
 		draw(obj, data()->path.step, data()->path.step_total);
 	}
 
-	o_flags = m_drawing_attr->bitmap().pen_flags();
+	o_flags = m_drawing_attr->bitmap().pen().o_flags();
 
-	m_drawing_attr->bitmap().set_pen_flags(sgfx::Pen::IS_SOLID);
+	m_drawing_attr->bitmap() << m_drawing_attr->bitmap().pen().set_flags(sgfx::Pen::IS_SOLID);
 
 	ret = api()->animate(m_drawing_attr->bitmap().bmap(),
 									m_drawing_attr->scratch()->bmap(),
 									data());
 
-	m_drawing_attr->bitmap().set_pen_flags(o_flags);
+	m_drawing_attr->bitmap() << m_drawing_attr->bitmap().pen().set_flags(o_flags);
 	m_drawing_attr->bitmap().refresh();
 	Timer::wait_milliseconds(frame_delay());
 

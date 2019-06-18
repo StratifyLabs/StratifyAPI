@@ -32,6 +32,13 @@ Datum::Datum(const JsonObject & json_object){
 	this->metadata() = json_object.at("metadata").to_object();
 }
 
+int Datum::save(const sys::File & f) const {
+
+	String value = stringify();
+	value << "\n";
+	return f.write(value);
+}
+
 
 void Datum::refresh_timestamp(){
 	m_clocktime = chrono::Clock::get_time();

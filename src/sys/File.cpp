@@ -463,16 +463,27 @@ int File::write(const sys::File & source_file, u32 chunk_size, u32 size) const {
 
 int File::write(const sys::File & source_file, u32 chunk_size, u32 size, const ProgressCallback * progress_callback) const {
 	u32 size_processed = 0;
-	u8 buffer[chunk_size];
+
+	var::Data buffer(chunk_size);
+
+	if( buffer.size() == 0 ){
+		return -1;
+	}
+
 	int result;
 	do {
 		if( size - size_processed < chunk_size ){
 			chunk_size = size - size_processed;
 		}
 
-		result = source_file.read(buffer, chunk_size);
+		buffer.set_size(chunk_size);
+		if( buffer.size()	!= chunk_size ){
+			return -1;
+		}
+
+		result = source_file.read(buffer);
 		if( result > 0 ){
-			result = write(buffer, result);
+			result = write(buffer);
 			if( result > 0 ){
 				size_processed += result;
 			}

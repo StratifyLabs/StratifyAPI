@@ -30,6 +30,18 @@ public:
 
 	void clear();
 
+	int set_window(const sgfx::Region & region);
+
+	enum mode {
+		PALETTE,
+		RAW
+	};
+
+	DisplayInfo get_info() const;
+	DisplayPalette get_palette() const;
+
+	int set_mode(enum mode value);
+
 	/*! \details Returns true if the display is
 	 * actively copying the video buffer to the display
 	 *
@@ -38,12 +50,12 @@ public:
 	bool is_busy() const;
 
 	/*! \details Blocks until the display is not busy anymore. */
-	void wait(u16 resolution) const;
+	void wait(const chrono::MicroTime & resolution) const;
 
 	int enable() const;
 	int disable() const;
 
-	DisplayInfo get_info() const;
+	using Data::size;
 };
 
 } /* namespace hal */

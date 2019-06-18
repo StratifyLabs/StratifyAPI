@@ -15,7 +15,7 @@ VectorMap::VectorMap(const Bitmap & bitmap, s16 rotation){
 }
 
 void VectorMap::calculate_for_bitmap(const Bitmap & bitmap, s16 rotation){
-	u8 thickness = bitmap.pen_thickness();
+	u8 thickness = bitmap.pen().thickness();
 	u32 max_width;
 	u32 max_height;
 	s32 tmp;

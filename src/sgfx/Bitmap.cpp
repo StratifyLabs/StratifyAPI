@@ -370,9 +370,9 @@ void Bitmap::downsample_bitmap(const Bitmap & source, const Area & factor){
 
 			u32 color = sample.calculate_color_sum();
 			if( color >= factor.calculate_area()/2 ){
-				set_pen_color(1);
+				bmap()->pen.color = 1;
 			} else {
-				set_pen_color(0);
+				bmap()->pen.color = 0;
 			}
 
 			cursor_x.draw_pixel();

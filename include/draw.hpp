@@ -35,7 +35,7 @@ namespace draw {}
 #include "draw/BarProgress.hpp"
 #include "draw/ArcProgress.hpp"
 #include "draw/CircleProgress.hpp"
-#include "draw/Rect.hpp"
+#include "draw/Rectangle.hpp"
 #include "draw/Text.hpp"
 #include "draw/TextBox.hpp"
 

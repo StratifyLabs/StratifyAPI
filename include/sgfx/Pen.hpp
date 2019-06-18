@@ -41,14 +41,14 @@ namespace sgfx {
  *
  *
  */
-class Pen : public var::Item<sg_pen_t>, public api::SgfxInfoObject {
+class Pen : public api::SgfxInfoObject {
 public:
 
 	Pen();
 	Pen(sg_color_t color);
 	Pen(sg_color_t color, u8 thickness, bool fill);
 	Pen(sg_color_t color, u16 o_flags);
-	Pen(const sg_pen_t & pen){ set(pen); }
+	Pen(const sg_pen_t & pen){ m_pen = pen; }
 
 	enum {
 		IS_SOLID /*! Draw solid */ = SG_PEN_FLAG_IS_SOLID,
@@ -60,53 +60,64 @@ public:
 
 
 	/*! \details Accesses the pen thickness. */
-	u8 thickness() const { return item().thickness; }
+	u8 thickness() const { return m_pen.thickness; }
 
-	bool is_solid() const { return (item().o_flags & SG_PEN_FLAG_NOT_SOLID_MASK) == 0; }
+	bool is_solid() const { return (m_pen.o_flags & SG_PEN_FLAG_NOT_SOLID_MASK) == 0; }
 	/*! \details Returns true if pen is in invert mode. */
-	bool is_invert() const { return (item().o_flags & SG_PEN_FLAG_IS_INVERT) != 0; }
+	bool is_invert() const { return (m_pen.o_flags & SG_PEN_FLAG_IS_INVERT) != 0; }
 	/*! \details Returns true if pen is in blend mode. */
-	bool is_blend() const { return (item().o_flags & SG_PEN_FLAG_IS_BLEND) != 0; }
+	bool is_blend() const { return (m_pen.o_flags & SG_PEN_FLAG_IS_BLEND) != 0; }
 	/*! \details Returns true if pen is in erase mode. */
-	bool is_erase() const { return (item().o_flags & SG_PEN_FLAG_IS_ERASE) != 0; }
+	bool is_erase() const { return (m_pen.o_flags & SG_PEN_FLAG_IS_ERASE) != 0; }
 
 	/*! \details Returns true if fill is enabled for pen (used with icons). */
-	bool is_fill() const { return (item().o_flags & SG_PEN_FLAG_IS_FILL) != 0; }
+	bool is_fill() const { return (m_pen.o_flags & SG_PEN_FLAG_IS_FILL) != 0; }
 
 	/*! \details Access the pen color. */
-	sg_color_t color() const { return item().color; }
+	sg_color_t color() const { return m_pen.color; }
 
 	/*! \details Sets the pen to a solid color mode (assign value). */
-	void set_solid(){ data()->o_flags &= ~SG_PEN_FLAG_NOT_SOLID_MASK; }
+	Pen & set_solid(){ m_pen.o_flags &= ~SG_PEN_FLAG_NOT_SOLID_MASK; return *this; }
 
 	/*! \details Sets the pen to inverting color mode (XOR). */
-	void set_invert(){ set_solid(); data()->o_flags |= SG_PEN_FLAG_IS_INVERT; }
+	Pen & set_invert(){ set_solid(); m_pen.o_flags |= SG_PEN_FLAG_IS_INVERT; return *this; }
 
 	/*! \details Sets the pen to a clearing mode (AND). */
-	void set_erase(){ set_solid(); data()->o_flags |= SG_PEN_FLAG_IS_ERASE; }
+	Pen & set_erase(){ set_solid(); m_pen.o_flags |= SG_PEN_FLAG_IS_ERASE; return *this; }
 
 	/*! \details Sets the pen to a blending mode (OR). */
-	void set_blend(){ set_solid(); data()->o_flags |= SG_PEN_FLAG_IS_INVERT; }
+	Pen & set_blend(){ set_solid(); m_pen.o_flags |= SG_PEN_FLAG_IS_INVERT; return *this; }
 
-	u16 o_flags() const { return data_const()->o_flags; }
+	u16 o_flags() const { return m_pen.o_flags; }
+	u16 flags() const { return m_pen.o_flags; }
+	Pen & set_flags(u16 flags){	m_pen.o_flags = flags; return *this; }
 
 	/*! \details Sets the pen color.
 	 *
 	 * @param color The color
 	 */
-	void set_color(sg_color_t color){ data()->color = color; }
+	Pen & set_color(sg_color_t color){ m_pen.color = color; return *this; }
 
 	/*! \details Sets the pen thickness. */
-	void set_thickness(u8 v){ data()->thickness = v; }
+	Pen & set_thickness(u8 v){ m_pen.thickness = v; return *this; }
 
 	/*! \details Sets the pen to fill when drawing vector icons. */
-	void set_fill(bool v = true){
+	Pen & set_fill(bool v = true){
 		if( v ){
-			data()->o_flags |= SG_PEN_FLAG_IS_FILL;
+			m_pen.o_flags |= SG_PEN_FLAG_IS_FILL;
 		} else {
-			data()->o_flags &= ~SG_PEN_FLAG_IS_FILL;
+			m_pen.o_flags &= ~SG_PEN_FLAG_IS_FILL;
 		}
+		return *this;
 	}
+
+
+	const sg_pen_t & pen() const { return m_pen; }
+	sg_pen_t & pen(){ return m_pen; }
+	operator const sg_pen_t & () const { return m_pen; }
+
+private:
+	sg_pen_t m_pen;
 
 };
 

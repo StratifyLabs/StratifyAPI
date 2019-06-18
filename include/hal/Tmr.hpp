@@ -33,15 +33,17 @@ public:
 
 	u32 period() const { return m_attr.period; }
 
-	void set_channel_pin(u8 channel, const mcu_pin_t & pin){
+	TmrAttributes & set_channel_pin(u8 channel, const mcu_pin_t & pin){
 		if( channel < 4 ){
 			m_attr.pin_assignment.channel[channel] = pin;
 		}
+		return *this;
 	}
 
-	void set_period(u32 period){ m_attr.period = period; }
-	void set_channel(const mcu_channel_t & channel){
+	TmrAttributes & set_period(u32 period){ m_attr.period = period; return *this; }
+	TmrAttributes & set_channel(const mcu_channel_t & channel){
 		m_attr.channel = channel;
+		return *this;
 	}
 
 };

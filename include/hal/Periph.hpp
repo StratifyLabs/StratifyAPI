@@ -74,14 +74,14 @@ public:
 	u8 port() const { return m_port; }
 
 	/*! \details Sets the value of the port. */
-	void set_port(u8 port){ m_port = port; }
+	PeriphAttributes & set_port(u8 port){ m_port = port; return *this; }
 
 
 	/*! \details Accesses the value of the flags. */
 	u32 o_flags() const { return m_attr.o_flags; }
 
 	/*! \details Sets the value of the flags. */
-	void set_flags(u32 o_flags){ m_attr.o_flags = o_flags; }
+	PeriphAttributes & set_flags(u32 o_flags){ m_attr.o_flags = o_flags; return *this; }
 
 	/*! \details Access the frequency in hertz (bits/second). */
 	u32 frequency() const { return m_attr.freq; }
@@ -91,8 +91,8 @@ public:
 	 *
 	 * @param freq_hz The frequency in Hertz (bits/second)
 	 */
-	void set_frequency(u32 freq_hz){ m_attr.freq = freq_hz; }
-	void set_freq(u32 freq_hz){ set_frequency(freq_hz); }
+	PeriphAttributes & set_frequency(u32 freq_hz){ m_attr.freq = freq_hz; return *this; }
+	PeriphAttributes & set_freq(u32 freq_hz){ set_frequency(freq_hz); return *this; }
 
 
 	const attr_t & attributes() const { return m_attr; }

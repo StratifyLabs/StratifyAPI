@@ -28,11 +28,11 @@ public:
 		set_flags(o_flags);
 	}
 
-	void set_miso(const mcu_pin_t & pin){ m_attr.pin_assignment.miso = pin; }
-	void set_mosi(const mcu_pin_t & pin){ m_attr.pin_assignment.mosi = pin; }
-	void set_sck(const mcu_pin_t & pin){ m_attr.pin_assignment.sck = pin; }
-	void set_cs(const mcu_pin_t & pin){ m_attr.pin_assignment.cs = pin; }
-	void set_width(u8 value){ m_attr.width = value; }
+	SpiAttributes & set_miso(const mcu_pin_t & pin){ m_attr.pin_assignment.miso = pin; return *this; }
+	SpiAttributes & set_mosi(const mcu_pin_t & pin){ m_attr.pin_assignment.mosi = pin; return *this; }
+	SpiAttributes & set_sck(const mcu_pin_t & pin){ m_attr.pin_assignment.sck = pin; return *this; }
+	SpiAttributes & set_cs(const mcu_pin_t & pin){ m_attr.pin_assignment.cs = pin; return *this; }
+	SpiAttributes & set_width(u8 value){ m_attr.width = value; return *this; }
 
 	mcu_pin_t miso() const { return m_attr.pin_assignment.miso; }
 	mcu_pin_t mosi() const { return m_attr.pin_assignment.mosi; }

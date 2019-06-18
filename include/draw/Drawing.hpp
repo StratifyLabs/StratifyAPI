@@ -48,6 +48,7 @@ typedef struct MCU_PACK {
 	sgfx::Bitmap * bitmap /*! A pointer to the target bitmap */;
 	drawing_region_t region /*! The region on the bitmap where draw::Drawing will be drawn */;
 	sgfx::Bitmap * scratch /*! A pointer to the scratch bitmap used for animations (0 if not available) */;
+	drawing_point_t offset /*! An offset that applies a shift to any objects drawn on the bitmap */;
 } drawing_attr_t;
 
 
@@ -121,11 +122,11 @@ public:
 		return DrawingPoint(0,0);
 	}
 
-	drawing_size_t x() const { return m_point.x; }
-	void set_x(drawing_size_t value){ m_point.x = value; }
+	drawing_int_t x() const { return m_point.x; }
+	void set_x(drawing_int_t value){ m_point.x = value; }
 
-	drawing_size_t y() const { return m_point.y; }
-	void set_y(drawing_size_t value){ m_point.y = value; }
+	drawing_int_t y() const { return m_point.y; }
+	void set_y(drawing_int_t value){ m_point.y = value; }
 
 	const drawing_point_t & point() const { return m_point; }
 	drawing_point_t & point(){ return m_point; }
@@ -142,6 +143,10 @@ class DrawingRegion : public api::DrawInfoObject {
 public:
 	DrawingRegion(){
 		m_region.point = DrawingPoint(0,0);
+	}
+
+	DrawingRegion(const drawing_region_t & region){
+		m_region = region;
 	}
 
 	bool is_valid() const {
@@ -161,11 +166,8 @@ public:
 		m_region.point = point; return *this;
 	}
 
-	const drawing_area_t & area() const { return m_region.area; }
-	drawing_area_t & area(){ return m_region.area; }
-
-	const drawing_point_t & point() const { return m_region.point; }
-	drawing_point_t & point(){ return m_region.point; }
+	DrawingArea area() const { return m_region.area; }
+	DrawingPoint point() const { return m_region.point; }
 
 	operator	const drawing_region_t & () const { return m_region; }
 
@@ -246,12 +248,12 @@ public:
 
 
 	/*! \details Returns a copy of the region. */
-	drawing_region_t region() const { return m_attr.region; }
+	DrawingRegion region() const { return m_attr.region; }
 
 	/*! \details Returns a copy of the position. */
-	drawing_point_t point() const { return m_attr.region.point; }
+	DrawingPoint point() const { return m_attr.region.point; }
 	/*! \details Returns a copy of the dimensions. */
-	drawing_area_t area() const { return m_attr.region.area; }
+	DrawingArea area() const { return m_attr.region.area; }
 
 	/*! \details Access the underlying attr object */
 	drawing_attr_t & attr(){ return m_attr; }
@@ -307,6 +309,10 @@ public:
 
 	DrawingAttributes operator+ (DrawingPoint d) const;
 	DrawingAttributes operator+ (DrawingArea d) const;
+
+	DrawingAttributes operator+ (DrawingRegion region) const{
+		return *this + region.point() + region.area();
+	}
 
 	/*! \details Calculate dimensions that will map to the bitmap as a square.
 	 *
@@ -402,9 +408,9 @@ public:
 
 	sgfx::Bitmap & bitmap() const { return *m_attr.bitmap; }
 
-	sg_region_t region() const { return m_attr.region; }
-	sg_point_t point() const { return m_attr.region.point; }
-	sg_area_t area() const { return m_attr.region.area; }
+	sgfx::Region region() const { return m_attr.region; }
+	sgfx::Point point() const { return m_attr.region.point; }
+	sgfx::Area area() const { return m_attr.region.area; }
 	drawing_scaled_attr_t & attr(){ return m_attr; }
 
 	/*! \details Return the width */
@@ -557,8 +563,6 @@ public:
 	bool invert() const { return flag(FLAG_INVERT); }
 	void set_invert(bool v = true){ set_flag(FLAG_INVERT, v); }
 
-
-
 protected:
 
 	sg_point_t point_on_bitmap(sgfx::Bitmap & b, drawing_size_t x, drawing_size_t y, sg_area_t d);
@@ -590,6 +594,7 @@ private:
 	static void draw_rectangle(const DrawingAttributes & attr, const sgfx::Pen & pen);
 
 	u32 m_flags;
+
 	static drawing_size_t m_scale;
 
 

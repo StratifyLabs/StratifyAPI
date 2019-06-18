@@ -44,6 +44,13 @@ class VectorPath;
 class VectorPathDescription;
 }
 
+namespace draw {
+class DrawingPoint;
+class DrawingArea;
+class DrawingRegion;
+class DrawingAttributes;
+}
+
 
 namespace hal{
 class I2CAttributes;
@@ -229,6 +236,10 @@ public:
 	Printer & operator << (const char * a);
 	/*! \details Prints a float type. */
 	Printer & operator << (float a);
+
+	Printer & operator << (const draw::DrawingPoint & a);
+	Printer & operator << (const draw::DrawingArea & a);
+	Printer & operator << (const draw::DrawingRegion & a);
 
 	/*! \details Filtering levels. */
 	enum verbose_level {

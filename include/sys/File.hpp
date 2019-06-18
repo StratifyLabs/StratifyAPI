@@ -383,7 +383,7 @@ public:
 	  * @param str The string to write
 	  * @return The number of bytes written
 	  */
-	int write(const var::String & str) const { return write(str.str(), str.length()); }
+	int write(const var::String & str) const { return write(str.cstring(), str.length()); }
 	int write(const api::InfoObject & info) const { return write(info.info_to_void(), info.info_size()); }
 
 

@@ -9,71 +9,77 @@ namespace draw {
 
 typedef struct MCU_PACK {
 	u16 value;
-	u16 max;
+	u16 maximum;
 } progress_t;
-
-/*! \brief Progress Attribute Class
- * \details This class defines the attributes of any
- * progress object.  This class is available as a minimal
- * way to store progress without having to inherit Drawing by using
- * Progress object.
- */
-class ProgressAttr : public api::DrawInfoObject {
-public:
-	ProgressAttr() : m_pen(1,3,false) { memset(&m_progress, 0, sizeof(progress_t)); }
-	ProgressAttr(u16 value, u16 max){ set_attr(value, max); }
-
-	/*! \details The progress value */
-	u16 value() const { return m_progress.value; }
-	/*! \details The maximum value for progress */
-	u16 max() const { return m_progress.max; }
-
-	/*! \details Set the progress value */
-	void set_value(u16 value){ m_progress.value = value; }
-
-	/*! \details Set the maximum value */
-	void set_max(u16 max){ m_progress.max = max; }
-
-	/*! \details Set both the value and the max */
-	void set_attr(u16 value, u16 max){ set_value(value); set_max(max); }
-
-	operator progress_t() const { return m_progress; }
-
-	void set_attr(const progress_t * progress){ m_progress = *progress; }
-	void set_attr(const progress_t & progress){ m_progress = progress; }
-
-	sgfx::Pen & pen(){ return m_pen; }
-
-private:
-	progress_t m_progress;
-	sgfx::Pen m_pen;
-
-};
 
 /*! \brief Progress Class
  * \ingroup element
  * \details The Progress Class defines the top level object for progress bars etc.
  */
-class Progress : public Drawing, public ProgressAttr {
+class Progress : public Drawing {
 public:
 	Progress(){
-		m_border_thickness = 333;
+		m_border_thickness = 25;
 	}
 
-
-
-	void set_border_thickness(drawing_size_t border_thickness){
-		m_border_thickness = border_thickness;
+	/*! \details Sets the progress.
+	 *
+	 * @param value value from 0 to maximum
+	 * @param maximum maximum possible for value
+	 * @return A reference to this object
+	 *
+	 */
+	Progress & set_progress(u16 value, u16 maximum){
+		m_progress.value = value; m_progress.maximum = maximum; return *this;
 	}
 
+	/*! \details Returns the value of the progress. */
+	u16 value() const { return m_progress.value; }
+
+	/*! \details Returns the maximum value of the progress. */
+	u16 maximum() const { return m_progress.maximum; }
+
+	/*! \details Sets the border thickness.
+	 *
+	 * @param border_thickness value from 0 to 100 representing a percentage of height/2.
+	 *
+	 * If border_thickness is 50, the border will take up 50% of the top half and 50% of
+	 * the bottom half of the progress bar.
+	 *
+	 */
+	Progress & set_border_thickness(drawing_size_t border_thickness){
+		m_border_thickness = border_thickness; return *this;
+	}
+
+	/*! \details Sets the color of the progress. */
+	Progress & set_color(sg_color_t value){
+		m_color = value; return *this;
+	}
+
+	/*! \details Sets the background color.
+	 *
+	 * If border thickness is 0, the background is not
+	 * drawn.
+	 *
+	 */
+	Progress & set_background_color(sg_color_t value){
+		m_background_color = value; return *this;
+	}
+
+	/*! \details Returns the border thickness. */
 	drawing_size_t border_thickness() const { return m_border_thickness; }
 
-protected:
-	sg_size_t scaled_border_thickness() const { return m_scaled_border_thickness; }
-	sg_size_t m_scaled_border_thickness;
+	/*! \details Returns the color. */
+	sg_color_t color() const { return m_color; }
+
+	/*! \details Returns the background color. */
+	sg_color_t background_color() const { return m_background_color; }
 
 private:
+	progress_t m_progress;
 	drawing_size_t m_border_thickness;
+	sg_color_t m_color;
+	sg_color_t m_background_color;
 
 };
 

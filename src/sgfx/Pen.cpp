@@ -21,7 +21,7 @@ Pen::Pen(sg_color_t color){
 Pen::Pen(sg_color_t color, u16 o_flags){
 	set_color(color);
 	set_thickness(1);
-	data()->o_flags = o_flags;
+	m_pen.o_flags = o_flags;
 }
 
 Pen::Pen(sg_color_t color, u8 thickness, bool fill){

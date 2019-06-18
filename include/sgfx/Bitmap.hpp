@@ -55,6 +55,7 @@ class Bitmap : virtual public var::Data, public api::SgfxObject {
 public:
 	/*! \details Constructs an empty bitmap. */
 	Bitmap();
+	virtual ~Bitmap();
 
 	u8 bits_per_pixel() const { return m_bmap.bits_per_pixel; }
 
@@ -94,104 +95,57 @@ public:
 
 	/*! \details Constructs a new bitmap (dynamic memory allocation).
 	 *
-	 * @param d Areaensions of the bitmap
+	 * @param d Area of the bitmap
 	 */
 	Bitmap(sg_area_t d);
 
 	Bitmap(const Bitmap & bitmap) : var::Data(bitmap){
 		m_bmap = bitmap.m_bmap;
-		m_saved_pen = bitmap.m_saved_pen;
 		m_bmap.data = to<sg_bmap_data_t>();
 	}
 
 	Bitmap & operator = (const Bitmap & bitmap){
 		copy_contents(bitmap);
 		m_bmap = bitmap.m_bmap;
-		m_saved_pen = bitmap.m_saved_pen;
 		m_bmap.data = to<sg_bmap_data_t>();
 		return *this;
 	}
+
 
 	Bitmap & operator << (const Palette & palette){
 		m_bmap.palette = &palette.m_palette;
 		return *this;
 	}
 
-	Bitmap(Bitmap && bitmap): var::Data(bitmap){
-		m_bmap = bitmap.m_bmap;
-		m_saved_pen = bitmap.m_saved_pen;
+	Bitmap & operator << (const Pen & pen){
+		m_bmap.pen = pen;
+		return *this;
 	}
 
-	/*! \details Sets the color of the pen.
-	 *
-	 * @param color The color of the pen
-	 *
-	 * Valid colors value depend on the format of the underlying Stratify graphics library.
-	 * The Stratify graphics library supports the following formats.
-	 *  - 1bpp (bit per pixel)
-	 *  - 2bpp
-	 *  - 4bpp
-	 *  - 8bpp
-	 *
-	 * For example, for 4bpp, there are 16 colors so \a color can be from 0 to 15 (inclusive).
-	 * The actual color that displays on the screen depends on the DisplayPalette associated
-	 * with the Display.
-	 *
-	 * \sa DisplayPalette, Display
-	 *
-	 */
-	void set_pen_color(sg_color_t color){ m_bmap.pen.color = color; }
-
-	/*! \details Sets the bitmap's pen by making a copy of the \a pen parameter. */
-	void set_pen(const Pen & pen){ m_bmap.pen = pen; }
-
-	/*! \details Sets the thickness of the pen.
-	 *
-	 * @param thickness The thickness in pixels
-	 */
-	void set_pen_thickness(sg_size_t thickness){ m_bmap.pen.thickness = thickness; }
+	Bitmap(Bitmap && bitmap): var::Data(bitmap){
+		m_bmap = bitmap.m_bmap;
+	}
 
 	/*! \details Returns a copy of the bitmap's pen. */
 	Pen pen() const { return m_bmap.pen; }
 
-	/*! \details Returns the pen color. */
-	sg_color_t pen_color() const { return m_bmap.pen.color; }
+	/*! \details Sets the bitmap's pen by making a copy of the \a pen parameter.
+	 *
+	 * The current pen can be modified using this method:
+	 *
+	 * ```
+	 * Bitmap b;
+	 * b.set_pen( b.pen().set_color(5).set_solid() );
+	 * ```
+	 *
+	 * Any methods available from sgfx::Pen can be used to update the pen.
+	 *
+	 *
+	 */
+	void set_pen(const Pen & pen){ m_bmap.pen = pen; }
 
-	/*! \details Returns the pen thickness. */
-	sg_color_t pen_thickness() const { return m_bmap.pen.thickness; }
-
-	/*! \details Set the pen flags. */
-	void set_pen_flags(u16 o_flags){ m_bmap.pen.o_flags = o_flags; }
-
-	/*! \details Returns the pen flags. */
-	u16 pen_flags() const { return m_bmap.pen.o_flags; }
 
 	Region get_viewable_region() const;
-
-	/*! \details Stores the current pen.
-	 *
-	 * Only one pen can be stored with the object. This can be used
-	 * to temporarily draw with another pen type then restore
-	 * the original pen (see restore_pen()).
-	 *
-	 * \code
-	 * Bitmap bmap(16,16);
-	 *
-	 * bmap.store_pen(); //saves the pen
-	 * bmap.set_pen_color(4);
-	 * bmap.draw_line(sg_point(0,0), sg_point(10,10)); //draw with color 4
-	 * bmap.restore_pen(); //restores the pen
-	 * bmap.draw_line(sg_point(10,0), sg_point(0,10)); //draw with original color
-	 *
-	 * \endcode
-	 */
-	void store_pen(){ m_saved_pen = m_bmap.pen; }
-
-	/*! \details Restores the stored pen.
-	 *
-	 */
-	void restore_pen(){ m_bmap.pen = m_saved_pen; }
-	virtual ~Bitmap();
 
 	/*! \details Sets data pointer and size for bitmap */
 	void set_data(const sg_bmap_header_t * hdr, bool readonly = false);
@@ -450,7 +404,8 @@ public:
 
 	sg_size_t height() const { return m_bmap.area.height; }
 	sg_size_t width() const { return m_bmap.area.width; }
-	const Area area() const {
+
+	Area area() const {
 		return m_bmap.area;
 	}
 
@@ -483,8 +438,6 @@ protected:
 private:
 
 	sg_color_t calculate_color_sum();
-
-	sg_pen_t m_saved_pen;
 	sg_bmap_t m_bmap;
 
 	void initialize_members();

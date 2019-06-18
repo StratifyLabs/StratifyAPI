@@ -84,35 +84,35 @@ public:
 	 * @param pin The tx pin
 	 *
 	 */
-	void set_tx(const mcu_pin_t & pin){ m_attr.pin_assignment.tx = pin;}
+	UartAttributes & set_tx(const mcu_pin_t & pin){ m_attr.pin_assignment.tx = pin; return *this; }
 
 	/*! \details Sets the rx pin assignment value.
 	 *
 	 * @param pin The rx pin
 	 *
 	 */
-	void set_rx(const mcu_pin_t & pin){ m_attr.pin_assignment.rx = pin;}
+	UartAttributes & set_rx(const mcu_pin_t & pin){ m_attr.pin_assignment.rx = pin; return *this; }
 
 	/*! \details Sets the cts pin assignment value.
 	 *
 	 * @param pin The cts pin
 	 *
 	 */
-	void set_cts(const mcu_pin_t & pin){ m_attr.pin_assignment.cts = pin;}
+	UartAttributes & set_cts(const mcu_pin_t & pin){ m_attr.pin_assignment.cts = pin; return *this; }
 
 	/*! \details Sets the rts pin assignment value.
 	 *
 	 * @param pin The rts pin
 	 *
 	 */
-	void set_rts(const mcu_pin_t & pin){ m_attr.pin_assignment.rts = pin;}
+	UartAttributes & set_rts(const mcu_pin_t & pin){ m_attr.pin_assignment.rts = pin; return *this; }
 
 	/*! \details Sets the width in bits.
 	 *
 	 * @param bits The number of bits to use
 	 *
 	 */
-	void set_width(u8 bits){ m_attr.width = bits; }
+	UartAttributes & set_width(u8 bits){ m_attr.width = bits; return *this; }
 };
 
 typedef UartAttributes UartAttr;

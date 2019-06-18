@@ -38,6 +38,8 @@ public:
 
 	String stringify() const;
 
+	int save(const sys::File & f) const;
+
 private:
 	String m_type;
 	String m_key;

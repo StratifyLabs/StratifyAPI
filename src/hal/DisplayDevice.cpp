@@ -25,35 +25,23 @@ int DisplayDevice::initialize(const var::ConstString & name){
 		}
 
 		set_bits_per_pixel(info.bits_per_pixel);
-		if( info.mem != 0 ){
-			set_data((sg_bmap_data_t*)info.mem, info.width, info.height);
-		} else {
-			allocate(sgfx::Area(info.width, info.height));
-		}
+
+		allocate(sgfx::Area(info.width, info.height));
 
 		set_margin_left(info.margin_left);
 		set_margin_right(info.margin_right);
 		set_margin_top(info.margin_top);
 		set_margin_bottom(info.margin_bottom);
 
+		display_attr_t attr;
+		attr.o_flags = DISPLAY_FLAG_INIT;
+		if( ioctl(I_DISPLAY_SETATTR, &attr) < 0 ){
+			return -1;
+		}
+
 		return 0;
 	}
 	return -1;
-}
-
-/*! \brief Pure virtual function that copies local LCD memory to the LCD screen */
-void DisplayDevice::refresh() const {
-	ioctl(I_DISPLAY_REFRESH);
-}
-
-int DisplayDevice::enable() const {
-	return ioctl(I_DISPLAY_ENABLE);
-}
-
-void DisplayDevice::clear(){
-	if( ioctl(I_DISPLAY_CLEAR) < 0 ){
-		Data::clear();
-	}
 }
 
 DisplayInfo DisplayDevice::get_info() const {
@@ -64,17 +52,66 @@ DisplayInfo DisplayDevice::get_info() const {
 	return DisplayInfo(info);
 }
 
-
-/*! \brief Turn the LCD pixels off */
-int DisplayDevice::disable() const {
-	return ioctl(I_DISPLAY_DISABLE);
+DisplayPalette DisplayDevice::get_palette() const {
+	display_palette_t palette;
+	if( ioctl(I_DISPLAY_GETPALETTE, &palette) < 0 ){
+		return DisplayPalette();
+	}
+	return DisplayPalette(palette);
 }
 
-void DisplayDevice::wait(u16 resolution) const{
+
+int DisplayDevice::set_window(const sgfx::Region & region){
+	display_attr_t attr;
+	attr.o_flags = DISPLAY_FLAG_SET_WINDOW;
+	attr.window_x = region.point().x();
+	attr.window_y = region.point().y();
+	attr.window_width = region.area().width();
+	attr.window_height = region.area().height();
+	return ioctl(I_DISPLAY_SETATTR, &attr);
+}
+
+int DisplayDevice::set_mode(enum mode value){
+	display_attr_t attr;
+	attr.o_flags = DISPLAY_FLAG_SET_MODE;
+	if( value == PALETTE ){
+		attr.o_flags |= DISPLAY_FLAG_IS_MODE_PALETTE;
+	} else {
+		attr.o_flags |= DISPLAY_FLAG_IS_MODE_RAW;
+	}
+	return ioctl(I_DISPLAY_SETATTR, &attr);
+}
+
+void DisplayDevice::refresh() const {
+
+	//write the bitmap to the display
+
+	ioctl(I_DISPLAY_REFRESH);
+}
+
+int DisplayDevice::enable() const {
+	display_attr_t attr;
+	attr.o_flags = DISPLAY_FLAG_ENABLE;
+	return ioctl(I_DISPLAY_SETATTR, &attr);
+}
+
+void DisplayDevice::clear(){
+	if( ioctl(I_DISPLAY_CLEAR) < 0 ){
+		Data::clear();
+	}
+}
+
+int DisplayDevice::disable() const {
+	display_attr_t attr;
+	attr.o_flags = DISPLAY_FLAG_DISABLE;
+	return ioctl(I_DISPLAY_SETATTR, &attr);
+}
+
+void DisplayDevice::wait(const chrono::MicroTime & resolution) const{
 	bool ret;
 	do {
 		if( (ret = is_busy()) ){
-			Timer::wait_usec(resolution);
+			resolution.wait();
 		}
 	} while( ret );
 }

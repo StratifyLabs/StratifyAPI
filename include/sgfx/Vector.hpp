@@ -75,8 +75,6 @@ public:
 
 private:
 	sg_vector_map_t m_value;
-
-
 };
 
 class VectorPathDescription : public api::SgfxInfoObject {

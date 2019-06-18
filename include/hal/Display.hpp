@@ -20,26 +20,51 @@ public:
 		m_info = info;
 	}
 
+	/*! \details Returns true if this object is valid.
+	 *
+	 *
+	 * ```
+	 * DisplayInfo info;
+	 * Display display;
+	 *
+	 * info = display.get_info();
+	 * if( info.is_valid() ){
+	 *   //info was successfully retrieved
+	 * }
+	 * ```
+	 *
+	 *
+	 */
 	bool is_valid() const { return memory_size() != 0; }
 
+	/*! \details Returns the width of the display. */
 	sg_size_t width() const { return m_info.width; }
+	/*! \details Returns the height of the display. */
 	sg_size_t height() const { return m_info.width; }
 
+	/*! \details Returns the right margin of the display. */
 	sg_size_t margin_right() const { return m_info.margin_right; }
+	/*! \details Returns the left margin of the display. */
 	sg_size_t margin_left() const { return m_info.margin_left; }
+	/*! \details Returns the top margin of the display. */
 	sg_size_t margin_top() const { return m_info.margin_top; }
+	/*! \details Returns the bottom margin of the display. */
 	sg_size_t margin_bottom() const { return m_info.margin_bottom; }
 
 	u16 bits_per_pixel() const { return m_info.bits_per_pixel; }
 
+	/*! \details Returns the number of bytes needed for video memory for the entire display. */
 	u32 memory_size() const {
 		//number of bytes needed to store an image
 		return width() * height() * bits_per_pixel() / 8;
 	}
 
+	/*! \details Returns the maximum update frequency of the display. */
+	u32 frequency() const { return m_info.freq; }
+
 	u16 columns() const { return m_info.cols; }
 	u16 rows() const { return m_info.rows; }
-	u32 frequency() const { return m_info.freq; }
+
 
 private:
 	display_info_t m_info;
@@ -55,7 +80,7 @@ private:
  *  - 4bpp
  *  - 8bpp
  *
- * This class is used to manage how the graphics pixel formats maps
+ * This class is used to manage how the pixel maps
  * to the display. For example, if the graphics use 4bpp and the display
  * uses RGB565, the palette would have 16 entries that contain
  * RGB565 values and define how a color in the 4bpp format maps to
@@ -164,8 +189,16 @@ public:
 	/*! \details Turns the display off. */
 	virtual int disable() const = 0;
 
+	/*! \details Returns a DisplayInfo object that desribes
+	 * the display.
+	 *
+	 */
 	virtual DisplayInfo get_info() const {
 		return DisplayInfo();
+	}
+
+	virtual DisplayPalette get_palette() const {
+		return DisplayPalette();
 	}
 };
 

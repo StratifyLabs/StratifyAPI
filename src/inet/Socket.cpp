@@ -54,6 +54,7 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 	var::Vector<SocketAddressInfo> result;
 	int result_int;
 
+	struct addrinfo * info_start;
 	struct addrinfo * info;
 
 	const char * server_cstring;
@@ -64,8 +65,6 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 
 
 	Socket::initialize();
-	//may return error number
-
 
 	m_addrinfo.ai_flags |= AI_CANONNAME;
 
@@ -74,6 +73,7 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 		return result;
 	}
 
+	info_start = info;
 	do {
 		SocketAddressInfo value;
 		value.m_addrinfo = * info;
@@ -91,7 +91,7 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 
 	} while(info);
 
-	freeaddrinfo(info);
+	freeaddrinfo(info_start);
 	Socket::deinitialize();
 
 	return result;
@@ -358,6 +358,7 @@ int Socket::shutdown(int how) const{
 
 
 int Socket::close() {
+	printf("close socket\n");
 	int result = 0;
 	if( m_socket != SOCKET_INVALID ){
 #if defined __win32

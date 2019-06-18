@@ -15,6 +15,7 @@ class SecureSocket : public Socket {
 public:
 	SecureSocket();
 	SecureSocket(u32 ticket_lifetime);
+	~SecureSocket();
 
 	//already documented in inet::Socket
 	virtual int create(const SocketAddress & address);

@@ -357,6 +357,8 @@ public:
 		return operate_single(a, divide);
 	}
 
+
+
 	Vector<T> operator << (u32 a) const {
 		Vector<T> result;
 		result.resize(count());
