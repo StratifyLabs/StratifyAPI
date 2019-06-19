@@ -58,8 +58,10 @@ public:
 
 	/*! \details Sets the background color.
 	 *
-	 * If border thickness is 0, the background is not
-	 * drawn.
+	 * @param value The background color value.
+	 *
+	 * If the value is draw::color_transparent(),
+	 * the background is not drawn.
 	 *
 	 */
 	Progress & set_background_color(sg_color_t value){

@@ -12,7 +12,7 @@ void BarProgress::draw_to_scale(const DrawingScaledAttr & attr){
 	thickness = (border_thickness() > 100 ? 100 : border_thickness()) * (attr.area().height() / 2) / 100;
 
 	//draw bar
-	if( thickness ){
+	if( background_color() != color_transparent() ){
 		attr.bitmap() << attr.bitmap().pen().set_color( background_color() );
 		attr.bitmap().draw_rectangle(attr.region());
 	}

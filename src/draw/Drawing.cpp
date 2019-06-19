@@ -7,6 +7,10 @@ using namespace draw;
 
 drawing_size_t Drawing::m_scale = 1000;
 
+sg_color_t draw::color_transparent(){
+	return (sg_color_t)-1;
+}
+
 DrawingArea DrawingArea::maximum(){
 	return DrawingArea(DrawingAttributes::scale(), DrawingAttributes::scale());
 }

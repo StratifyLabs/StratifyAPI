@@ -6,7 +6,7 @@ using namespace draw;
 
 
 Text::Text(const var::ConstString & text){
-	string() = text;
+	m_string = text;
 }
 
 void Text::draw_to_scale(const DrawingScaledAttr & attr){

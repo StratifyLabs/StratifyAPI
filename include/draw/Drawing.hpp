@@ -33,6 +33,7 @@ typedef struct MCU_PACK {
 } drawing_region_t;
 
 
+sg_color_t color_transparent();
 
 /*! \brief Data used for drawing a draw::Drawing on a bitmap
  * \details This data structure holds a real bitmap but the point

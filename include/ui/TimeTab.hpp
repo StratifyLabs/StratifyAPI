@@ -6,6 +6,7 @@
 #define UI_TIMETAB_HPP_
 
 #include "../draw/Drawing.hpp"
+#include "../var/String.hpp"
 #include "Tab.hpp"
 
 namespace ui {
@@ -17,7 +18,7 @@ class TimeTab : public Tab {
 public:
 	/*! \details Construct a TabTime object */
 	TimeTab();
-	void draw(const draw::DrawingAttr & attr);
+	void draw(const draw::DrawingAttributes & attr);
 
 };
 

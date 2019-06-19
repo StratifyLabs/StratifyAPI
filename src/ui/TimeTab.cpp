@@ -8,7 +8,7 @@ using namespace ui;
 
 TimeTab::TimeTab(){}
 
-void TimeTab::draw(const DrawingAttr & attr){
+void TimeTab::draw(const DrawingAttributes & attr){
 	Time t;
 	u32 hour;
 	t.get_time_of_day();
@@ -16,8 +16,10 @@ void TimeTab::draw(const DrawingAttr & attr){
 	if( hour == 0 ){
 		hour = 12;
 	}
-	Text label;
-	label.string().format("%ld:%02ld", hour, t.minute());
-	label.set_font_size( attr.calc_height_on_bitmap() * 800 / 1000 );
-	label.draw(attr);
+	var::String time_string;
+	time_string.format("%ld:%02ld", hour, t.minute());
+	Text()
+			.set_string(time_string)
+			.set_font_point_size(attr.calc_height_on_bitmap() * 800 / 1000)
+			.draw(attr);
 }
