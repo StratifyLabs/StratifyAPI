@@ -102,12 +102,30 @@ public:
      */
     int write_reg(u32 command,void * data,u32 flag_width){
         qspi_attr_t qspi_attr;
+        u8 len;
         /*change mode for read operations*/
         memset(&qspi_attr,0,sizeof(qspi_attr_t));
         qspi_attr.o_flags = FLAG_WRITE_REGISTER;
         qspi_attr.o_flags |= flag_width;
-        qspi_attr.command = command;
-        qspi_attr.data = (u8*)data;
+        qspi_attr.command.opcode = command;
+        switch (flag_width){
+        case(QSPI_FLAG_IS_REGISTER_WIDTH_8):
+            len =1;
+            break;
+        case(QSPI_FLAG_IS_REGISTER_WIDTH_16):
+            len =2;
+            break;
+        case(QSPI_FLAG_IS_REGISTER_WIDTH_24):
+            len =3;
+            break;
+        case(QSPI_FLAG_IS_REGISTER_WIDTH_32):
+            len =4;
+            break;
+        default:
+            len = 1;
+        }
+        memcpy(qspi_attr.command.data , data, len);
+
         ioctl(I_QSPI_SETATTR, &qspi_attr);
         return 0;
     }
@@ -122,12 +140,31 @@ public:
      */
     int read_reg(u32 command,void * data,u32 flag_width){
         qspi_attr_t qspi_attr;
+        u8 len;
         memset(&qspi_attr,0,sizeof(qspi_attr_t));
         qspi_attr.o_flags = QSPI_FLAG_READ_REGISTER ;
         qspi_attr.o_flags |= flag_width;
-        qspi_attr.command = command;
-        qspi_attr.data = (u8*)data;
+        qspi_attr.command.opcode = command;
         ioctl(I_QSPI_SETATTR, &qspi_attr);
+        switch (flag_width){
+        case(QSPI_FLAG_IS_REGISTER_WIDTH_8):
+            len =1;
+            break;
+        case(QSPI_FLAG_IS_REGISTER_WIDTH_16):
+            len =2;
+            break;
+        case(QSPI_FLAG_IS_REGISTER_WIDTH_24):
+            len =3;
+            break;
+        case(QSPI_FLAG_IS_REGISTER_WIDTH_32):
+            len =4;
+            break;
+        default:
+            len = 1;
+        }
+
+        memcpy( data, qspi_attr.command.data, len);
+
         return 0;
     }
 private:
