@@ -47,7 +47,17 @@ static const char * const periph_name[CORE_PERIPH_TOTAL] = {
 	"ssp" /* CORE_PERIPH_SSP SSP */,
 	"mcpwm" /* CORE_PERIPH_MCPWM Motor Control PWM */,
 	"nmi" /* CORE_PERIPH_NMI Non-maskable Interrupt */,
-	"trace" /* CORE_PERIPH_TRACE Trace data */
+    "trace" /* CORE_PERIPH_TRACE Trace data */,
+    "sys" /*! System data */,
+    "qspi" /*! Quad SPI */,
+    "usart" /*! USART */,
+    "sdio" /*! SD Input/output */,
+    "spdif" /*! SPDIF */,
+    "hdmi" /*! HDMI CEC */,
+    "mco" /*! MCO Pins */,
+    "dfsdm" /*! DFSDM Pins */,
+    "i2c" /*! Fast Mode Plus I2C */,
+    "dcmi" /*! Digital Camera interface */
 };
 
 u16 PeriphObject::m_fd_map[LINK_OPEN_MAX];
