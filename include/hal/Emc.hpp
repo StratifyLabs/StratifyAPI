@@ -22,19 +22,19 @@ public:
         int i=0;
         for (i =0; i<data_bus_size_m ;i++) {
             m_attr.pin_assignment.data[i] = pin[i];
-        }
+		  }
         for (i =0; i<MAX_DATA_BUS_SIZE ;i++) {
             m_attr.pin_assignment.data[i] = {0xff,0xff};
-        }
+		  }
     }
     void set_address(const mcu_pin_t * pin){
         int i=0;
         for (i =0; i<address_bus_size_m ;i++) {
             m_attr.pin_assignment.address[i] = pin[i];
-        }
+		  }
         for (; i<MAX_ADDRESS_BUS_SIZE ;i++) {
             m_attr.pin_assignment.address[i] = {0xff,0xff};
-        }
+		  }
     }
     void set_bl(const mcu_pin_t * pin){
         int i=0;

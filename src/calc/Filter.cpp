@@ -10,7 +10,7 @@ HighPassFilterF32::HighPassFilterF32(float start, float r_value){
 
 void HighPassFilterF32::reset(float start){
 	m_last_input = start;
-	set_present_value(start);
+	set_present_value(0.0f);
 }
 
 void HighPassFilterF32::set_r_value(float r_value){

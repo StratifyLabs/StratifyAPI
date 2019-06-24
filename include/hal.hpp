@@ -28,6 +28,7 @@ namespace hal {}
 #include "hal/DeviceSignal.hpp"
 #include "hal/Adc.hpp"
 #include "hal/Dac.hpp"
+#include "hal/Drive.hpp"
 #include "hal/Core.hpp"
 #include "hal/Eint.hpp"
 #include "hal/Fifo.hpp"

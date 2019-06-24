@@ -160,6 +160,18 @@ public:
 	/*! \details Constructs a EMA object for floating point calculations */
 	LowPassFilterF32(float start, float alpha);
 
+	/*! \details Sets the filtering value.
+	 *
+	 * @param value The alpha value for the filter (0.0f to 1.0f)
+	 *
+	 * When alpha is 1.0f, no filtering is applied. The closer
+	 * alpha is to 0.0f, the lower the cutoff frequency is for the filter.
+	 *
+	 */
+	void set_alpha(float value){
+		m_alpha = value;
+	}
+
 	void reset(float start);
 	float calculate(float in);
 
@@ -168,17 +180,27 @@ private:
 };
 
 
-/*! \brief LowPassFilterF32 class (float) */
-/*! \details See \ref LowPassFilter for details */
+/*! \brief HighPassFilterF32 class (float) */
+/*! \details
+ *
+ *
+ *
+ *
+ *
+ */
 class HighPassFilterF32 : public SimpleFilter<float, HighPassFilterF32> {
 public:
-	/*! \details Constructs a EMA object for floating point calculations */
+	/*! \details Constructs a High pass filter object for floating point calculations. */
 	HighPassFilterF32(float start, float r_value);
 
 	/*! \details Resets the filter to the given start value. */
 	void reset(float start);
 
 	void set_r_value(float r_value);
+
+	void set_initial_input(float value){
+		m_last_input = value;
+	}
 
 	float calculate(float input);
 

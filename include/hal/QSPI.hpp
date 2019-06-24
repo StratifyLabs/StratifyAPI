@@ -20,7 +20,6 @@ public:
     void set_data3(const mcu_pin_t & pin){ m_attr.pin_assignment.data[3] = pin; }
     void set_sck(const mcu_pin_t & pin){ m_attr.pin_assignment.sck = pin; }
     void set_cs(const mcu_pin_t & pin){ m_attr.pin_assignment.cs = pin; }
-    void set_width(u8 value){ m_attr.width = value; }
 
     mcu_pin_t data0() const { return m_attr.pin_assignment.data[0]; }
     mcu_pin_t data1() const { return m_attr.pin_assignment.data[1]; }
@@ -28,7 +27,6 @@ public:
     mcu_pin_t data3() const { return m_attr.pin_assignment.data[3]; }
     mcu_pin_t sck() const { return m_attr.pin_assignment.sck; }
     mcu_pin_t cs() const { return m_attr.pin_assignment.cs; }
-    u8 width() const { return m_attr.width; }
 
 };
 

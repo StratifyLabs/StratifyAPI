@@ -4,8 +4,9 @@ set(SOURCELIST
   ${SOURCES_PREFIX}/CFifo.cpp
   ${SOURCES_PREFIX}/Core.cpp
   ${SOURCES_PREFIX}/Dac.cpp
-  ${SOURCES_PREFIX}/Device.cpp
-  ${SOURCES_PREFIX}/Eint.cpp
+	${SOURCES_PREFIX}/Device.cpp
+	${SOURCES_PREFIX}/Drive.cpp
+	${SOURCES_PREFIX}/Eint.cpp
 	${SOURCES_PREFIX}/FFifo.cpp
 	${SOURCES_PREFIX}/Fifo.cpp
 	${SOURCES_PREFIX}/I2C.cpp
@@ -21,9 +22,6 @@ set(SOURCELIST
 	${SOURCES_PREFIX}/Tmr.cpp
 	${SOURCES_PREFIX}/Uart.cpp
   ${SOURCES_PREFIX}/Usb.cpp
-  ${SOURCES_PREFIX}/QSPI.cpp
-  ${SOURCES_PREFIX}/Emc.cpp
-
   )
 
 if( ${SOS_BUILD_CONFIG} STREQUAL arm )

@@ -185,6 +185,8 @@ public:
 		EXECUTE_ALL /*! API Execution flag */ = (int)-1
 	};
 
+	void execute(const sys::Cli & cli);
+
 	/*! \details Executes the tests specified by \a o_flags.
 	  *
 	  * @param o_flags Bitmask of the tests to execute (e.g., Test::EXECUTE_API)

@@ -59,6 +59,18 @@ Test::~Test(){
 	print("},\n");
 }
 
+void Test::execute(const sys::Cli & cli){
+	u32 o_flags = 0;
+
+	if( cli.get_option("api") == "true" ){ o_flags |= EXECUTE_API; }
+	if( cli.get_option("stress") == "true" ){ o_flags |= EXECUTE_STRESS; }
+	if( cli.get_option("performance") == "true" ){ o_flags |= EXECUTE_PERFORMANCE; }
+	if( cli.get_option("additional") == "true" ){ o_flags |= EXECUTE_ADDITIONAL; }
+	if( cli.get_option("all") == "true" ){ o_flags |= EXECUTE_ALL; }
+
+	execute(o_flags);
+}
+
 
 void Test::open_case(const var::ConstString & case_name){
 	print("\"%s\": {\n", case_name.cstring());
