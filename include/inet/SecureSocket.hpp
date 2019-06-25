@@ -49,10 +49,12 @@ public:
 
 private:
 
+	/*! \cond */
 	static SecureSocketApi m_api;
 	void * m_context;
 	u32 m_ticket_lifetime;
 	var::Data m_ticket;
+	/*! \endcond */
 
 };
 

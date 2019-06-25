@@ -29,10 +29,13 @@ public:
 	static var::String decode(const var::ConstString & input);
 
 private:
+	/*! \cond */
 	var::String m_domain_name;
 	var::String m_path;
 	u8 m_protocol;
 	u16 m_port;
+	/*! \endcond */
+
 
 };
 

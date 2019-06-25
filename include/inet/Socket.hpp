@@ -554,12 +554,7 @@ public:
 
 protected:
 
-	/*!
-	  * \details Initializes the system socket API.
-	  *
-	  * @return Zero on success
-	  */
-
+	/*! \cond */
 	int decode_socket_return(int value) const;
 
 #if defined __win32
@@ -577,6 +572,8 @@ protected:
 
 private:
 	static int m_is_initialized;
+	/*! \endcond */
+
 };
 
 }
