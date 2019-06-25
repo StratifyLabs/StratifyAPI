@@ -5,7 +5,8 @@
 
 using namespace draw;
 
-Rectangle::Rectangle(){}
+Rectangle::Rectangle(){
+}
 
 void Rectangle::draw_to_scale(const DrawingScaledAttributes & attr){
 	attr.bitmap().set_pen( attr.bitmap().pen().set_color( color()) );

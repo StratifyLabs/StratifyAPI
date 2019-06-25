@@ -18,11 +18,10 @@ public:
 	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
 
 	Rectangle & set_color(sg_color_t value){
-		m_color = value;
+		Drawing::set_color(value);
 		return *this;
 	}
 
-	sg_color_t color() const { return m_color; }
 
 private:
 	sg_color_t m_color;
@@ -60,14 +59,11 @@ public:
 	}
 
 	RoundedRectangle & set_color(sg_color_t value){
-		m_color = value;
+		Drawing::set_color(value);
 		return *this;
 	}
 
-	sg_color_t color() const { return m_color; }
-
 private:
-	sg_color_t m_color;
 	u8 m_corners;
 	sg_size_t m_radius;
 };

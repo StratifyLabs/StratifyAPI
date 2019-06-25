@@ -2,12 +2,24 @@
 
 #include "sgfx.hpp"
 #include "draw/Text.hpp"
+#include "sys/Assets.hpp"
+
 using namespace draw;
 
 
 Text::Text(const var::ConstString & text){
 	m_string = text;
+	m_font = 0;
+	m_font_point_size = 0;
+	m_font_style = FontInfo::REGULAR;
 }
+
+const Font * Text::resolve_font(sg_size_t h) const{
+	const FontInfo * info = sys::Assets::find_font(h, m_font_style);
+	if( info ){ return info->font(); }
+	return 0;
+}
+
 
 void Text::draw_to_scale(const DrawingScaledAttr & attr){
 	sg_point_t top_left;
@@ -20,7 +32,7 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 	if( !string().is_empty() ){
 
 		if( this->font() == 0 ){
-			font = resolve_font(d.height());
+			font = resolve_font(m_font_point_size == 0 ? d.height() : m_font_point_size);
 			if( font == 0 ){ return; }
 		} else {
 			font = this->font();
@@ -49,9 +61,8 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 			top_left.y = p.y + d.height()/2 - h/2;
 		}
 
-
+		attr.bitmap().set_pen( attr.bitmap().pen().set_color( color() ) );
 		font->draw(string(), attr.bitmap(), top_left);
-
 	}
 
 }

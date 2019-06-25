@@ -33,7 +33,6 @@ int Assets::initialize(){
 	find_icons_in_directory("/home");
 	find_icons_in_directory("/home/assets");
 
-
 	m_is_initialized = true;
 	return 0;
 }
@@ -60,7 +59,7 @@ void Assets::find_icons_in_directory(const var::ConstString & path){
 			var::String icon_path = path;
 			icon_path << "/" << file_list.at(i);
 			fmt::Svic svic(icon_path);
-			svic.set_keep_open();
+			svic.set_keep_open(); //keep it open because the object is copied to the vector
 			m_vector_path_list.push_back(svic);
 		}
 	}
@@ -83,7 +82,6 @@ const sgfx::FontInfo * Assets::find_font(u8 point_size, u8 style, const var::Con
 
 	u8 closest_point_size = 0;
 	u8 closest_style = 0;
-
 
 	//find point size and weight
 	for(u32 i=0; i < font_info_list().count(); i++){

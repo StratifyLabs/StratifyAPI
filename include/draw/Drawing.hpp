@@ -527,6 +527,11 @@ public:
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);
 	void draw_to_scale(sgfx::Bitmap & b, sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h);
 
+	sg_color_t default_color(){ return m_default_color; }
+	void set_default_color(sg_color_t value){ m_default_color = value; }
+
+	sg_color_t color(){ return m_color; }
+	void set_color(sg_color_t value){ m_color = value; }
 
 	/*! \brief Returns true if element is visible */
 	bool is_visible() const { return flag(FLAG_VISIBLE); }
@@ -592,11 +597,16 @@ protected:
 
 private:
 
-	static void draw_rectangle(const DrawingAttributes & attr, const sgfx::Pen & pen);
-
+	static drawing_size_t m_scale;
+	static sg_color_t m_default_color;
 	u32 m_flags;
 
-	static drawing_size_t m_scale;
+	sg_color_t m_color;
+
+
+	static void draw_rectangle(const DrawingAttributes & attr, const sgfx::Pen & pen);
+
+
 
 
 };

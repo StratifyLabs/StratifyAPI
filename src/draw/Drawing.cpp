@@ -6,6 +6,7 @@
 using namespace draw;
 
 drawing_size_t Drawing::m_scale = 1000;
+sg_color_t Drawing::m_default_color = 1;
 
 sg_color_t draw::color_transparent(){
 	return (sg_color_t)-1;
@@ -229,6 +230,7 @@ sg_size_t DrawingScaledAttr::calc_height(drawing_size_t v) const {
 
 Drawing::Drawing(){
 	m_flags = 0;
+	set_color( default_color() );
 }
 
 bool Drawing::flag(u32 flag) const{

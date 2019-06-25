@@ -20,6 +20,9 @@ class Progress : public Drawing {
 public:
 	Progress(){
 		m_border_thickness = 25;
+		m_background_color = color_transparent();
+		m_progress.value = 0;
+		m_progress.maximum = 100;
 	}
 
 	/*! \details Sets the progress.
@@ -53,7 +56,8 @@ public:
 
 	/*! \details Sets the color of the progress. */
 	Progress & set_color(sg_color_t value){
-		m_color = value; return *this;
+		Drawing::set_color(value);
+		return *this;
 	}
 
 	/*! \details Sets the background color.
@@ -71,16 +75,12 @@ public:
 	/*! \details Returns the border thickness. */
 	drawing_size_t border_thickness() const { return m_border_thickness; }
 
-	/*! \details Returns the color. */
-	sg_color_t color() const { return m_color; }
-
 	/*! \details Returns the background color. */
 	sg_color_t background_color() const { return m_background_color; }
 
 private:
 	progress_t m_progress;
 	drawing_size_t m_border_thickness;
-	sg_color_t m_color;
 	sg_color_t m_background_color;
 
 };

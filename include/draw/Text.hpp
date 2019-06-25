@@ -31,6 +31,18 @@ public:
 		return *this;
 	}
 
+	Text & set_align_left(){ Drawing::set_align_left(); return *this; }
+	Text & set_align_right(){ Drawing::set_align_right(); return *this; }
+	Text & set_align_center(){ Drawing::set_align_center(); return *this; }
+	Text & set_align_top(){ Drawing::set_align_top(); return *this; }
+	Text & set_align_middle(){ Drawing::set_align_middle(); return *this; }
+	Text & set_align_bottom(){ Drawing::set_align_bottom(); return *this; }
+
+	Text & set_color(sg_color_t value){
+		Drawing::set_color(value);
+		return *this;
+	}
+
 	/*! \details Gets a pointer to the current font. */
 	const sgfx::Font * font() const { return m_font; }
 
@@ -65,7 +77,7 @@ protected:
 	const sgfx::Font * resolve_font(sg_size_t h) const;
 
 private:
-	var::ConstString m_string;
+	var::String m_string;
 	sgfx::Font * m_font;
 	sg_size_t m_font_point_size;
 	u8 m_font_style;

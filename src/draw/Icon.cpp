@@ -8,7 +8,9 @@
 
 using namespace draw;
 
-Icon::Icon(){}
+Icon::Icon(){
+	m_rotation = RIGHT;
+}
 
 
 
