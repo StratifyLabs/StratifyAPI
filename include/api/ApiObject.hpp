@@ -113,21 +113,40 @@
  *
  * \details
  *
- * The api namespace contains all top level objects.  All objects inherit from api::ApiObject. Below
- * api::ApiObject this is api::ApiWorkObject and api::ApiInfoObject.
+ * **Introduction**
+ *
+ * The Stratify API library contains classes that allow easy access
+ * to Stratify OS hardware and POSIX constructs such as threads (sys::Thread),
+ * mutexes (sys::Mutex), files (sys::File) and many more. It also contains
+ * classes used to manage data (see the var namespace) in an embedded
+ * friendly way.
+ *
+ * If you are just getting started with Stratify OS and the Stratify API,
+ * try reading through some of the guides:
+ *
+ * - [Stratify OS](https://docs.stratifylabs.co/Guide-Stratify-OS/)
+ * - [Filesystems](https://docs.stratifylabs.co/Guide-Filesystems/)
+ * - [Threads](https://docs.stratifylabs.co/Guide-Threads/)
+ * - [CMake Projects](https://docs.stratifylabs.co/Guide-CMake/)
+ *
+ * If you are ready to start tinkering, hal::Pin is a nice place to
+ * start and allows you to read and write GPIO values. hal::Uart
+ * can be used to access UART peripherals and sys::File is for
+ * reading and writing files on any mounted filesystem.
+ *
+ * **Code Hierarchy**
+ *
+ * The api namespace contains all top level objects. All objects inherit
+ * from api::ApiObject. Below api::ApiObject this is api::ApiWorkObject
+ * and api::ApiInfoObject.
+ *
+ * **None of the classes that are part of the api
+ * namespace should be directly declared.**
  *
  * Work objects include an error number and are the base for objects that do work and make system calls.
  *
  * Info objects are used for storing and managing static data structures. They don't make
  * system calls and can't store errors. Info objects also include classes with only static methods.
- *
- * ### Diagrams
- *
- * To see a top level inheritance diagram of the entire API see api::ApiObject.
- *
- * For work objects only, see api::WorkObject.
- *
- * For info object only, see api::InfoObject.
  *
  *
  */

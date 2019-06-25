@@ -14,6 +14,30 @@ namespace sgfx {
 
 class Font;
 
+/*!
+ * \brief The FontInfo class
+ * \details This class contains
+ * information that describes a font.
+ *
+ * The information can be used to allow various classes
+ * to auto select a font installed in the system
+ * to best match what the user specifies.
+ *
+ * See sys::Assets for font installation locations.
+ *
+ * Font names MUST follow the naming conventions for
+ * this class to parse the font correctly:
+ *
+ * ```
+ * <name>-<style>-<point size>.sbf
+ * ```
+ *
+ * - name: the name of the font
+ * - style: the font style (see enum FontInfo::style for details).
+ * - point size: the pixel height of the tallest character in the font
+ *
+ *
+ */
 class FontInfo : public api::SgfxInfoObject {
 public:
 
@@ -63,16 +87,30 @@ public:
 		ICONS /*! Font is a collection of bitmap icons (ico) */
 	};
 
+	/*! \details Returns the name of the font. */
 	const var::ConstString & name() const { return m_name; }
+
+	/*! \details Returns the file path of the font. */
 	const var::String & path() const { return m_path; }
 
+	/*! \details Returns the font style (see enum FontInfo::style). */
 	u8 style() const { return m_style; }
+	/*! \details Returns the point size of the font. */
 	u8 point_size() const { return m_point_size; }
 
+	/*! \details Returns a pointer to the Font that can
+	 * be used to draw characters and strings on a bitmap.
+	 *
+	 */
 	Font * font() const { return m_font; }
+
+	/*! \details Assigns a pointer to the font that is used for drawing.
+	 */
 	void set_font(Font * font){ m_font = font; }
 
+	/*! \details Enables sorting FontInfo objects by point size. */
 	static int ascending_point_size(const void * a, const void * b);
+	/*! \details Enables sorting FontInfo objects by style. */
 	static int ascending_style(const void * a, const void * b);
 
 private:
@@ -108,7 +146,10 @@ public:
 
 	/*! \details Calculates the length (pixels on x-axis) of the specified string. */
 	int calculate_length(const var::ConstString & str) const;
+	/*! \cond */
 	int calc_len(const var::ConstString & str) const { return calculate_length(str); }
+	/*! \endcond */
+
 
 	/*! \details Returns the number of characters in the font. */
 	int size() const { return m_header.character_count; }
@@ -160,21 +201,21 @@ public:
 
 protected:
 
-	static int to_charset(char ascii);
+	/*! \cond */
+	mutable int m_offset;
+	mutable sg_font_char_t m_char;
+	bool m_is_kerning_enabled;
+	sg_size_t m_letter_spacing;
+	int m_space_size;
+	sg_font_header_t m_header;
 
+	static int to_charset(char ascii);
 	static const var::ConstString m_ascii_character_set;
 
 	virtual void draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, const Point & point) const = 0;
 	virtual int load_char(sg_font_char_t & ch, char c, bool ascii) const = 0;
 	virtual int load_kerning(u16 first, u16 second) const { return 0; }
-
-	mutable int m_offset;
-	mutable sg_font_char_t m_char;
-	bool m_is_kerning_enabled;
-
-	sg_size_t m_letter_spacing;
-	int m_space_size;
-	sg_font_header_t m_header;
+	/*! \endcond */
 
 private:
 

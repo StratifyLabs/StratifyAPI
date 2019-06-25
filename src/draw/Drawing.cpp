@@ -140,7 +140,7 @@ drawing_size_t DrawingAttributes::calc_height(drawing_size_t v) const {
 	return m_attr.region.area.height * v / DrawingAttributes::scale();
 }
 
-DrawingAttributes DrawingAttributes::operator+ (drawing_point_t p) const {
+DrawingAttributes DrawingAttributes::operator+ (const drawing_point_t & p) const {
 	DrawingAttributes attr;
 	attr = *this;
 	attr.attr().region.point.x += calc_width(p.x);
@@ -148,7 +148,7 @@ DrawingAttributes DrawingAttributes::operator+ (drawing_point_t p) const {
 	return attr;
 }
 
-DrawingAttributes DrawingAttributes::operator+ (drawing_area_t d) const {
+DrawingAttributes DrawingAttributes::operator+ (const drawing_area_t & d) const {
 	DrawingAttributes attr;
 	attr = *this;
 	attr.attr().region.area.width = calc_width(d.width);
@@ -156,15 +156,15 @@ DrawingAttributes DrawingAttributes::operator+ (drawing_area_t d) const {
 	return attr;
 }
 
-DrawingAttributes DrawingAttributes::operator+ (DrawingPoint d) const {
+DrawingAttributes DrawingAttributes::operator+ (const DrawingPoint & d) const {
 	return *this + d.point();
 }
 
-DrawingAttributes DrawingAttributes::operator+ (DrawingArea d) const {
+DrawingAttributes DrawingAttributes::operator+ (const DrawingArea & d) const {
 	return *this + d.area();
 }
 
-drawing_area_t DrawingAttributes::calc_square(drawing_size_t v) const {
+drawing_area_t DrawingAttributes::calculate_square(drawing_size_t v) const {
 	drawing_area_t dim;
 	if( width() > height() ){
 		dim = calc_square_h(v);
@@ -174,7 +174,7 @@ drawing_area_t DrawingAttributes::calc_square(drawing_size_t v) const {
 	return dim;
 }
 
-drawing_area_t DrawingAttributes::calc_square_width(drawing_size_t v) const {
+drawing_area_t DrawingAttributes::calculate_square_width(drawing_size_t v) const {
 	u32 pixel_width;
 	u32 drawing_height;
 	drawing_area_t area;
@@ -186,7 +186,7 @@ drawing_area_t DrawingAttributes::calc_square_width(drawing_size_t v) const {
 	return area;
 }
 
-drawing_area_t DrawingAttributes::calc_square_height(drawing_size_t v) const {
+drawing_area_t DrawingAttributes::calculate_square_height(drawing_size_t v) const {
 	u32 pixel_height;
 	u32 drawing_width;
 	drawing_area_t area;
@@ -201,7 +201,7 @@ drawing_area_t DrawingAttributes::calc_square_height(drawing_size_t v) const {
 void DrawingScaledAttr::set(Bitmap & b, sg_point_t p, sg_area_t d){
 	set_bitmap(b);
 	set_point(p);
-	set_dim(d);
+	set_area(d);
 }
 
 DrawingScaledAttr DrawingScaledAttr::operator+ (sg_point_t p) const {

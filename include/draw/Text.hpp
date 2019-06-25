@@ -73,6 +73,7 @@ public:
 	int font_style() const { return m_font_style; }
 
 protected:
+	/*! \cond */
 	const var::ConstString & string() const { return m_string; }
 	const sgfx::Font * resolve_font(sg_size_t h) const;
 
@@ -81,6 +82,7 @@ private:
 	sgfx::Font * m_font;
 	sg_size_t m_font_point_size;
 	u8 m_font_style;
+	/*! \endcond */
 
 
 };

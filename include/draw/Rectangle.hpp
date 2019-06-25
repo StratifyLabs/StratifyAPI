@@ -7,10 +7,22 @@
 
 namespace draw {
 
-/*! \brief Rect Class
+/*! \brief Rectangle Class
  * \ingroup element
  * \details The Rect class draws a rectangle on the display.  It can be used for
  * both horizontal and vertical separators as well.
+ *
+ * The following code snippet will draw a rectangle using color 1 in the
+ * middle of the bitmap specified by attributes.
+ *
+ * ```
+ * #include <sapi/draw.hpp>
+ * DrawingAttributes attributes;
+ *
+ * //construct attributes
+ *
+ * Rectangle().set_color(1).draw(attributes + DrawingPoint(250,250) + DrawingArea(500,500));
+ * ```
  */
 class Rectangle : public Drawing {
 public:
@@ -22,9 +34,7 @@ public:
 		return *this;
 	}
 
-
 private:
-	sg_color_t m_color;
 };
 
 /*! \brief Rect Class
@@ -64,8 +74,11 @@ public:
 	}
 
 private:
+	/*! \cond */
 	u8 m_corners;
 	sg_size_t m_radius;
+	/*! \endcond */
+
 };
 
 

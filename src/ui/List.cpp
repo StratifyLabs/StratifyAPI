@@ -49,7 +49,7 @@ void List::draw_to_scale(const DrawingScaledAttr & attr){
 
 	index_offset = calc_visible_offset();
 	display_items = calc_display_items();
-	item_attr.set_dim(d.width() - x_offset, list_item_height );
+	item_attr.set_area(d.width() - x_offset, list_item_height );
 	item_attr.set_bitmap(attr.bitmap());
 
 	attr.bitmap().clear_rectangle(p,d);

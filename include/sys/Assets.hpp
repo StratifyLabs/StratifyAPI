@@ -17,6 +17,21 @@ namespace sys {
  * \details The Assets class is a static class
  * that allows the application to access kernel assets
  * such as fonts, bitmaps, and vector graphics.
+ *
+ * This class will search the following locations
+ * for fonts and graphics files:
+ *
+ * - /assets
+ * - /home
+ * - /home/assets
+ *
+ * Several other classes within the StratifyAPI use
+ * this class without the user ever needed to reference it.
+ *
+ * - draw::Text will lookup fonts using this class
+ * - draw::Icon will lookup icons files installed as assets
+ *
+ *
  */
 class Assets : public api::SysInfoObject {
 public:
@@ -24,6 +39,10 @@ public:
 	/*! \details Initializes system assets.
 	 *
 	 * @return Zero
+	 *
+	 * This method can be called explicitly, but will
+	 * be called whenever as needed if not.
+	 *
 	 */
 	static int initialize();
 

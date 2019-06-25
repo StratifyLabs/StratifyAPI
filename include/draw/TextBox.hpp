@@ -39,12 +39,13 @@ public:
 
 
 private:
-
-
-	static void build_line(const sgfx::Font * font, u32 & i, var::String & line, var::Tokenizer & tokens, int & build_len, sg_size_t w);
-
+	/*! \cond */
 	sg_size_t m_scroll;
 	sg_size_t m_scroll_max;
+
+	static void build_line(const sgfx::Font * font, u32 & i, var::String & line, var::Tokenizer & tokens, int & build_len, sg_size_t w);
+	/*! \endcond */
+
 };
 
 }

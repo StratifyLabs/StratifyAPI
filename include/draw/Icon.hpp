@@ -10,11 +10,7 @@
 
 namespace draw {
 
-/*! \brief Icon Attributes Class
- * \ingroup element
- * \details This class defines the attributes of a Gfx object.
- */
-
+/*! \cond */
 class IconAttributes : public api::DrawInfoObject {
 public:
 
@@ -23,7 +19,6 @@ public:
 		m_rotation = RIGHT;
 	}
 
-	/*! \details Icon rotation orientations */
 	enum {
 		RIGHT /*! \brief Point to the right */ = 0,
 		DOWN /*! \brief Point down */ = SG_TRIG_POINTS/4,
@@ -53,11 +48,17 @@ private:
 
 typedef IconAttributes IconAttr;
 
+/*! \endcond */
+
 /*! \brief Icon Class
  * \details This class draws icons that can be scaled and rotated on a bitmap.
  *
  * When an icon is drawn, the icon's pen attributes are used to draw on
  * the bitmap.
+ *
+ * The icon is looked up by name using any icon files that are installed
+ * in any of the system assets locations.
+ *
  *
  */
 
@@ -84,6 +85,9 @@ public:
 		return *this;
 	}
 
+
+	Icon & set_color(sg_color_t value){ Drawing::set_color(value); return *this; }
+
 	Icon & set_align_left(){ Drawing::set_align_left(); return *this; }
 	Icon & set_align_right(){ Drawing::set_align_right(); return *this; }
 	Icon & set_align_center(){ Drawing::set_align_center(); return *this; }
@@ -108,9 +112,11 @@ public:
 	sgfx::Region bounds() const { return m_bounds; }
 
 private:
+	/*! \cond */
 	sg_region_t m_bounds;
 	var::String m_name;
 	s16 m_rotation;
+	/*! \endcond */
 
 };
 

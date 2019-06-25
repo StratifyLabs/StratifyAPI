@@ -180,8 +180,71 @@ private:
  * \details This class contains the information needed to draw various
  * Drawing objects on a bitmap.
  *
- * This class is passed to Drawing::drawidth() to render graphics on a bitmap.
+ * This class is passed to Drawing::draw() to render graphics on a bitmap.
  *
+ * The following code will draw an rectangle in the middle of a 64x64
+ * pixel bitmap.
+ *
+ * ```
+ * #include <sapi/sgfx.hpp>
+ * #include <sapi/draw.hpp>
+ *
+ * Bitmap bitmap(64,64); //64x64 pixel bitmap
+ * DrawingAttributes attributes;
+ *
+ * attributes << bitmap; //apply bitmap to attributes
+ *
+ * Rectangle().draw(attributes + DrawingPoint(250,250) + DrawingArea(500,500));
+ * ```
+ *
+ * A DrawingAttributes object is always passed to the Drawing::draw() method.
+ *
+ * The + operator when adding a DrawingPoint will create a new
+ * DrawingAttributes object that starts at the specified point. The coordinates
+ * are the width of the bitmap / 1000.
+ *
+ * The + operator when adding a DrawingArea will scale the region of the
+ * DrawingAttributes based on the size of the bitmap where 1000 represents
+ * full width and height.
+ *
+ * So in the example above, the top left corner of the rectangle is mapped
+ * to 16,16 (64*250/1000=16). The width and height of the rectangle are both
+ * 32 (64*500/1000=32).
+ *
+ * These operators allow the cascading of drawing objects as the region scales.
+ * For example, if we create a DrawingAttributes object that is already
+ * region limited, the + operators will operate within the existing region.
+ *
+ * ```
+ * Bitmap bitmap(64,64); //64x64 pixel bitmap
+ * DrawingAttributes attributes;
+ *
+ * DrawingRegion region(DrawingPoint(0,0), DrawingArea(500,500));
+ * attributes << bitmap << region; //apply bitmap and region to attributes
+ *
+ * //rectangle will be 500/1000 of 500/1000 of the area of the bitmap
+ * Rectangle().draw(attributes + DrawingArea(500,500));
+ * ```
+ *
+ * In this second example, because the DrawingAttributes region was already set
+ * to a subregion of the bitmap, the + operator with the DrawingArea scales
+ * the region down by 500/1000. So the rectangle is 16,16 (64*500/1000 * 500/1000).
+ *
+ * Using these operators to cascade is great for creating compound
+ * drawing objects like a button.
+ *
+ * ```
+ * class Button: public Drawing {
+ * public:
+ *  void draw(const DrawingAttributes & attributes){
+ *    RoundedRectangle().draw(attributes); //files entire attributes region
+ *
+ *    //The Icon is scaled down to half the width/height and centered
+ *    Icon().set_name("OK").draw(attributes + DrawingPoint(250,250) + DrawingArea(500,500));
+ *
+ *  }
+ * };
+ * ```
  *
  */
 class DrawingAttributes : public api::DrawInfoObject {
@@ -283,7 +346,7 @@ public:
 	 * \code
 	 * DrawingAttributes attr0;
 	 * DrawingAttributes attr1;
-	 * attr0 = attr1 + drawing_point(250,250) + drawing_dim(500,500);
+	 * attr0 = attr1 + DrawingPoint(250,250) + DrawingArea(500,500);
 	 * \endcode
 	 *
 	 * When mapped to the same bitmap, attr0 will be half the height and half
@@ -292,24 +355,23 @@ public:
 	 * These operators can be used to draw sub-drawings on drawings. The following
 	 * example draws a rectangles recursively in an object.
 	 *
-	 * \code
+	 * ```
 	 * void draw_rect_recursive(const DrawingAttributes & attr){
-	 *  Rect rect;
-	 *  attr.bitmap().set_pen_flags(Pen::FLAG_IS_INVERT);
-	 *  rect.draw(attr + drawing_point(250,250) + drawing_dim(500,500);
+	 *  static sg_color_t color = 0;
+	 *  Rectangle().set_color(color++ % 1).draw(attr + DrawingPoint(250,250) + DrawingArea(500,500);
 	 *  if( attr.width() > 100 ){
 	 *  	draw_rect_recursive(attr);
-	 *  	}
+	 *	 }
 	 * }
-	 * \endcode
+	 * ```
 	 *
 	 */
-	DrawingAttributes operator+ (drawing_point_t d) const;
+	DrawingAttributes operator+ (const drawing_point_t & d) const;
 	/*! \details Update the dimension (must come after adding drawing_point_t) */
-	DrawingAttributes operator+ (drawing_area_t d) const;
+	DrawingAttributes operator+ (const drawing_area_t & d) const;
 
-	DrawingAttributes operator+ (DrawingPoint d) const;
-	DrawingAttributes operator+ (DrawingArea d) const;
+	DrawingAttributes operator+ (const DrawingPoint & d) const;
+	DrawingAttributes operator+ (const DrawingArea & d) const;
 
 	DrawingAttributes operator+ (DrawingRegion region) const{
 		return *this + region.point() + region.area();
@@ -320,7 +382,11 @@ public:
 	 * @param v The maximum width or height
 	 * @return Square dimensions
 	 */
-	drawing_area_t calc_square(drawing_size_t v) const;
+	drawing_area_t calculate_square(drawing_size_t v) const;
+
+	/*! \cond */
+	drawing_area_t calc_square(drawing_size_t v) const { return calculate_square(v); }
+	/*! \endcond */
 
 	/*! \details Calculate dimensions that will map to the bitmap as a square
 	 * with the given width.
@@ -328,8 +394,11 @@ public:
 	 * @param v The width (height will be calculated)
 	 * @return Square dimensions
 	 */
-	drawing_area_t calc_square_width(drawing_size_t v) const;
-	drawing_area_t calc_square_w(drawing_size_t v) const  { return calc_square_width(v); }
+	drawing_area_t calculate_square_width(drawing_size_t v) const;
+
+	/*! \cond */
+	drawing_area_t calc_square_w(drawing_size_t v) const  { return calculate_square_width(v); }
+	/*! \endcond */
 
 	/*! \details Calculate dimensions that will map to the bitmap as a square
 	 * with the given height.
@@ -337,8 +406,8 @@ public:
 	 * @param v The height (width will be calculated)
 	 * @return Square dimensions
 	 */
-	drawing_area_t calc_square_height(drawing_size_t v) const;
-	drawing_area_t calc_square_h(drawing_size_t v) const { return calc_square_height(v); }
+	drawing_area_t calculate_square_height(drawing_size_t v) const;
+	drawing_area_t calc_square_h(drawing_size_t v) const { return calculate_square_height(v); }
 
 	/*! \details Return the dimensions (in pixels) if any Element is drawn on the specified bitmap */
 	static sg_area_t calc_dim_on_bitmap(const DrawingAttributes & attr);
@@ -368,14 +437,16 @@ public:
 
 
 private:
+	/*! \cond */
 	drawing_attr_t m_attr;
+	/*! \endcond */
 };
 
 typedef DrawingAttributes DrawingAttr;
 
 /*! \brief Scaled Drawing Attributes
- * \details This is similar to draw::DrawingAttr but the point
- * and dimensions have been scaled to fit in the target bitmap.
+ * \details This is similar to draw::DrawingAttributes but the point
+ * and area have been scaled to fit in the target bitmap.
  */
 class DrawingScaledAttributes : public api::DrawInfoObject {
 public:
@@ -389,20 +460,20 @@ public:
 
 	void set(sgfx::Bitmap & b, sg_point_t p, sg_area_t d);
 
-	/*! \details Assign a value to the bitmap pointer using a reference */
+	/*! \details Assign a value to the bitmap pointer using a reference. */
 	void set_bitmap(sgfx::Bitmap & b){ m_attr.bitmap = &b; }
-	/*! \details Assign dimensions */
-	void set_dim(sg_area_t d){ m_attr.region.area = d; }
-	/*! \details Set the height of the object */
+	/*! \details Assigns area. */
+	void set_area(sg_area_t d){ m_attr.region.area = d; }
+	/*! \details Sets the height of the object */
 	void set_height(sg_size_t h){ m_attr.region.area.height = h; }
-	/*! \details Set the width of the object */
+	/*! \details Sets the width of the object. */
 	void set_width(sg_size_t w){ m_attr.region.area.height = w; }
-	/*! \details Set the x value of the object */
+	/*! \details Sets the x value of the object. */
 	void set_x(sg_int_t x){ m_attr.region.point.x = x; }
-	/*! \details Set the y value of the object */
+	/*! \details Sets the y value of the object. */
 	void set_y(sg_int_t y){ m_attr.region.point.y = y; }
-	/*! \details Assign dimensions using width and height parameters */
-	void set_dim(sg_size_t w, sg_size_t h){ m_attr.region.area.width = w; m_attr.region.area.height = h; }
+	/*! \details Assign dimensions using width and height parameters. */
+	void set_area(sg_size_t w, sg_size_t h){ m_attr.region.area.width = w; m_attr.region.area.height = h; }
 
 	/*! \details Assign the position */
 	void set_point(sg_point_t p){ m_attr.region.point = p; }
@@ -449,8 +520,8 @@ typedef DrawingScaledAttributes DrawingScaledAttr;
  * \details This is the base class for creating drawings.  A Drawing class
  * allows for nesting and positioning of graphics within a bitmap.
  *
- * \code
- *	void MyObject::draw(const DrawingAttr::attr){
+ * ```
+ *	void MyObject::draw(const DrawingAttributes::attr){
  *		Icon my_icon;
  *		drawing_area_t square;
  *
@@ -460,12 +531,10 @@ typedef DrawingScaledAttributes DrawingScaledAttr;
  *		//adding drawing_point(250, 250) offset the icon by 25% of the bitmap in both x and y
  *		//adding a drawing_area_t will then scale icon to fit in a square that is half the width of the bitmap (see square_width())
  *		//draw will call the underlying draw_to_scale() method unless Icon re-implements draw
- *		my_icon.draw(attr + drawing_point(250, 250) + square);
+ *		my_icon.draw(attr + DrawingPoint(250, 250) + square);
  *
  *	}
- *
- *
- * \endcode
+ * ```
  *
  */
 class Drawing : public api::DrawWorkObject {
@@ -571,6 +640,8 @@ public:
 
 protected:
 
+	/*! \cond */
+
 	sg_point_t point_on_bitmap(sgfx::Bitmap & b, drawing_size_t x, drawing_size_t y, sg_area_t d);
 	sg_area_t dim_on_bitmap(sgfx::Bitmap & b) const;
 
@@ -605,6 +676,7 @@ private:
 
 
 	static void draw_rectangle(const DrawingAttributes & attr, const sgfx::Pen & pen);
+	/*! \endcond */
 
 
 
