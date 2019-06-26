@@ -316,6 +316,8 @@ protected:
 	const chrono::Timer & case_timer() const { return m_case_timer; }
 	chrono::Timer & case_timer(){ return m_case_timer; }
 
+	u32 score() const;
+
 	/*! \details Prints a message to the test report.
 	  *
 	  * @param fmt Formatted string with variable arguments.

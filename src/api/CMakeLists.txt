@@ -5,6 +5,7 @@ set(SOURCELIST
 	${SOURCES_PREFIX}/WorkObject.cpp
 	${SOURCES_PREFIX}/SgfxObject.cpp
 	${SOURCES_PREFIX}/DspObject.cpp
+	${SOURCES_PREFIX}/CryptObject.cpp
 	PARENT_SCOPE)
 
 set(SOURCES ${SOURCELIST} PARENT_SCOPE)

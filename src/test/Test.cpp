@@ -59,6 +59,11 @@ Test::~Test(){
 	print("},\n");
 }
 
+u32 Test::score() const {
+	const u32 baseline_microseconds = 1000000000UL;
+	return baseline_microseconds / case_timer().microseconds();
+}
+
 void Test::execute(const sys::Cli & cli){
 	u32 o_flags = 0;
 
