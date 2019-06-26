@@ -1,5 +1,5 @@
-#ifndef I2S_HPP
-#define I2S_HPP
+#ifndef SAPI_HAL_I2S_HPP_
+#define SAPI_HAL_I2S_HPP_
 
 #include <sos/dev/i2s.h>
 #include "Periph.hpp"
@@ -271,4 +271,4 @@ private:
 
 }
 
-#endif // I2S_HPP
+#endif // SAPI_HAL_I2S_HPP_

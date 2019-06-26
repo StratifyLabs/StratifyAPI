@@ -1,5 +1,5 @@
-#ifndef SAPI_VAR_VERSIONSTRING_HPP
-#define SAPI_VAR_VERSIONSTRING_HPP
+#ifndef SAPI_VAR_VERSIONSTRING_HPP_
+#define SAPI_VAR_VERSIONSTRING_HPP_
 
 #include "String.hpp"
 
@@ -76,4 +76,4 @@ private:
 
 }
 
-#endif // SAPI_VAR_VERSIONSTRING_HPP
+#endif // SAPI_VAR_VERSIONSTRING_HPP_

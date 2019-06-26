@@ -1,5 +1,5 @@
-#ifndef DATUM_HPP
-#define DATUM_HPP
+#ifndef SAPI_VAR_DATUM_HPP_
+#define SAPI_VAR_DATUM_HPP_
 
 
 #include "String.hpp"
@@ -58,4 +58,4 @@ private:
 
 
 
-#endif // DATUM_HPP
+#endif // SAPI_VAR_DATUM_HPP_

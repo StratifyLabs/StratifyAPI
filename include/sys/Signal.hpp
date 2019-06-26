@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SIGNAL_HPP_
-#define SIGNAL_HPP_
+#ifndef SAPI_SYS_SIGNAL_HPP_
+#define SAPI_SYS_SIGNAL_HPP_
 
 #include <pthread.h>
 #include <signal.h>
@@ -352,4 +352,4 @@ private:
 }
 
 
-#endif /* SIGNAL_HPP_ */
+#endif /* SAPI_SYS_SIGNAL_HPP_ */

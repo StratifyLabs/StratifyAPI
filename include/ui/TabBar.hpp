@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_TABBAR_HPP_
-#define UI_TABBAR_HPP_
+#ifndef SAPI_UI_TABBAR_HPP_
+#define SAPI_UI_TABBAR_HPP_
 
 #include "../sys/Timer.hpp"
 #include "../draw/Drawing.hpp"
@@ -81,4 +81,4 @@ private:
 
 }
 
-#endif /* UI_TABBAR_HPP_ */
+#endif /* SAPI_UI_TABBAR_HPP_ */

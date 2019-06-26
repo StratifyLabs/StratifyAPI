@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_ADC_HPP_
-#define SAPI_ADC_HPP_
+#ifndef SAPI_HAL_ADC_HPP_
+#define SAPI_HAL_ADC_HPP_
 
 #include <sos/dev/adc.h>
 #include "PinAssignment.hpp"
@@ -165,4 +165,4 @@ private:
 
 }
 
-#endif /* SAPI_ADC_HPP_ */
+#endif /* SAPI_HAL_ADC_HPP_ */

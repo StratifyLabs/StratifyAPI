@@ -1,5 +1,5 @@
-#ifndef API_DSP_OBJECT_HPP
-#define API_DSP_OBJECT_HPP
+#ifndef SAPI_API_DSP_OBJECT_HPP_
+#define SAPI_API_DSP_OBJECT_HPP_
 
 #if !defined __link
 
@@ -57,4 +57,4 @@ protected:
 
 #endif
 
-#endif // API_DSP_OBJECT_HPP
+#endif // SAPI_API_DSP_OBJECT_HPP_

@@ -1,5 +1,5 @@
-#ifndef DSP_SIGNAL_DATA_HPP
-#define DSP_SIGNAL_DATA_HPP
+#ifndef SAPI_DSP_SIGNAL_DATA_HPP_
+#define SAPI_DSP_SIGNAL_DATA_HPP_
 
 #include "../api/DspObject.hpp"
 #include "../var/Vector.hpp"
@@ -795,4 +795,4 @@ private:
 
 }
 
-#endif // DSP_SIGNAL_DATA_HPP
+#endif // SAPI_DSP_SIGNAL_DATA_HPP_

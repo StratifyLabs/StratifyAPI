@@ -1,7 +1,9 @@
-#ifndef LIST_HPP
-#define LIST_HPP
+#ifndef SAPI_VAR_LIST_HPP_
+#define SAPI_VAR_LIST_HPP_
 
 #include "Queue.hpp"
+
+/*! \cond */
 
 #if 0
 namespace var {
@@ -43,4 +45,7 @@ public:
 }
 #endif
 
-#endif // LIST_HPP
+/*! \endcond */
+
+
+#endif // SAPI_VAR_LIST_HPP_

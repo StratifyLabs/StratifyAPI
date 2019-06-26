@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_TAB_HPP_
-#define UI_TAB_HPP_
+#ifndef SAPI_UI_TAB_HPP_
+#define SAPI_UI_TAB_HPP_
 
 
 #include "Element.hpp"
@@ -37,4 +37,4 @@ private:
 
 }
 
-#endif /* UI_TAB_HPP_ */
+#endif /* SAPI_UI_TAB_HPP_ */

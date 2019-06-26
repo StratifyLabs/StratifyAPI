@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef SYS_REQUESTS_H_
-#define SYS_REQUESTS_H_
+#ifndef SAPI_SYS_REQUESTS_H_
+#define SAPI_SYS_REQUESTS_H_
 
 #if !defined __link
 
@@ -51,4 +51,4 @@ enum {
 /*! \endcond */
 
 
-#endif /* SYS_REQUESTS_H_ */
+#endif /* SAPI_SYS_REQUESTS_H_ */

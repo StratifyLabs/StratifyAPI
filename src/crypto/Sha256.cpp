@@ -1,6 +1,6 @@
-#include "crypt/Sha256.hpp"
+#include "crypto/Sha256.hpp"
 
-using namespace crypt;
+using namespace crypto;
 
 Sha256::Sha256(){
 	if( sha256_api().is_valid() == false ){

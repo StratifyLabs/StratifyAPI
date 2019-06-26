@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_RTC_HPP_
-#define SAPI_RTC_HPP_
+#ifndef SAPI_HAL_RTC_HPP_
+#define SAPI_HAL_RTC_HPP_
 
 #include <sos/dev/rtc.h>
 #include "Periph.hpp"
@@ -87,4 +87,4 @@ private:
 
 }
 
-#endif /* SAPI_RTC_HPP_ */
+#endif /* SAPI_HAL_RTC_HPP_ */

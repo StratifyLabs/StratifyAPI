@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_SYS_TIME
-#define SAPI_SYS_TIME
+#ifndef SAPI_SYS_TIME_
+#define SAPI_SYS_TIME_
 
 
 #include "../chrono/Time.hpp"
@@ -14,4 +14,4 @@ typedef chrono::Time Time;
 
 
 
-#endif /* SAPI_SYS_TIME */
+#endif /* SAPI_SYS_TIME_ */

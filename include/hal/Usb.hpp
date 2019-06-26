@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_USB_HPP_
-#define SAPI_USB_HPP_
+#ifndef SAPI_HAL_USB_HPP_
+#define SAPI_HAL_USB_HPP_
 
 #include <sos/dev/usb.h>
 #include "PinAssignment.hpp"
@@ -81,4 +81,4 @@ private:
 
 }
 
-#endif /* SAPI_USB_HPP_ */
+#endif /* SAPI_HAL_USB_HPP_ */

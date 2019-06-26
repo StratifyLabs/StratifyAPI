@@ -1,5 +1,5 @@
-#ifndef DSP_TRANSFORM_HPP
-#define DSP_TRANSFORM_HPP
+#ifndef SAPI_DSP_TRANSFORM_HPP_
+#define SAPI_DSP_TRANSFORM_HPP_
 
 #include "../api/DspObject.hpp"
 #include "SignalData.hpp"
@@ -142,4 +142,4 @@ private:
 
 }
 
-#endif // DSP_TRANSFORM_HPP
+#endif // SAPI_DSP_TRANSFORM_HPP_

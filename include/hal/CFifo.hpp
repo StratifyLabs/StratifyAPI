@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef HAL_CFIFO_HPP_
-#define HAL_CFIFO_HPP_
+#ifndef SAPI_HAL_CFIFO_HPP_
+#define SAPI_HAL_CFIFO_HPP_
 
 #include <sos/dev/cfifo.h>
 
@@ -151,4 +151,4 @@ public:
 
 } /* namespace hal */
 
-#endif /* HAL_CFIFO_HPP_ */
+#endif /* SAPI_HAL_CFIFO_HPP_ */

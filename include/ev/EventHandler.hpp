@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef EV_EVENTHANDLER_HPP
-#define EV_EVENTHANDLER_HPP
+#ifndef SAPI_EV_EVENTHANDLER_HPP
+#define SAPI_EV_EVENTHANDLER_HPP
 
 #include "../api/EvObject.hpp"
 #include "Event.hpp"
@@ -61,4 +61,4 @@ private:
 
 }
 
-#endif // EV_EVENTHANDLER_HPP
+#endif // SAPI_EV_EVENTHANDLER_HPP

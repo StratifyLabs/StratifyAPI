@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SGFX_FILEFONT_HPP_
-#define SGFX_FILEFONT_HPP_
+#ifndef SAPI_SGFX_FILEFONT_HPP_
+#define SAPI_SGFX_FILEFONT_HPP_
 
 #include "Font.hpp"
 #include "../sys/File.hpp"
@@ -42,4 +42,4 @@ private:
 
 }
 
-#endif /* SGFX_FILEFONT_HPP_ */
+#endif /* SAPI_SGFX_FILEFONT_HPP_ */

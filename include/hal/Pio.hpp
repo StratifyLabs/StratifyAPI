@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_PIO_HPP_
-#define SAPI_PIO_HPP_
+#ifndef SAPI_HAL_PIO_HPP_
+#define SAPI_HAL_PIO_HPP_
 
 #include <sos/dev/pio.h>
 #include "Periph.hpp"
@@ -143,4 +143,4 @@ private:
 
 }
 
-#endif /* SAPI_PIO_HPP_ */
+#endif /* SAPI_HAL_PIO_HPP_ */

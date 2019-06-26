@@ -1,12 +1,14 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef EMA_HPP_
-#define EMA_HPP_
+#ifndef SAPI_CALC_EMA_HPP_
+#define SAPI_CALC_EMA_HPP_
 
 #include <cstdio>
 #include "../api/CalcObject.hpp"
 
 namespace calc {
+
+/*! \cond */
 
 /*! \brief Macro for creating the alpha value for 32-bit calculations */
 /*! \details This value can be set between 0.0 and 1.0.  More weight is
@@ -163,6 +165,7 @@ private:
 //deprecated
 typedef Ema_f Ema_float;
 
+/*! \endcond */
 
 }
-#endif /* EMA_HPP_ */
+#endif /* SAPI_CALC_EMA_HPP_ */

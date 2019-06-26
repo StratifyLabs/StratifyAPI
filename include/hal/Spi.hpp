@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_SPI_HPP_
-#define SAPI_SPI_HPP_
+#ifndef SAPI_HAL_SPI_HPP_
+#define SAPI_HAL_SPI_HPP_
 
 #include <sos/dev/spi.h>
 #include "PinAssignment.hpp"
@@ -134,4 +134,4 @@ private:
 
 }
 
-#endif /* SAPI_SPI_HPP_ */
+#endif /* SAPI_HAL_SPI_HPP_ */

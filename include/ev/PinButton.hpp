@@ -1,7 +1,7 @@
 /* Copyright 2016 tgil All Rights Reserved */
 
-#ifndef UI_PINBUTTON_HPP_
-#define UI_PINBUTTON_HPP_
+#ifndef SAPI_EV_PINBUTTON_HPP_
+#define SAPI_EV_PINBUTTON_HPP_
 
 #include "../hal/Pin.hpp"
 #include "../chrono/Timer.hpp"
@@ -109,4 +109,4 @@ private:
 
 }
 
-#endif /* UI_PINBUTTON_HPP_ */
+#endif /* SAPI_EV_PINBUTTON_HPP_ */

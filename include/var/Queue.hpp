@@ -1,5 +1,5 @@
-#ifndef QUEUE_HPP
-#define QUEUE_HPP
+#ifndef SAPI_VAR_QUEUE_HPP_
+#define SAPI_VAR_QUEUE_HPP_
 
 #include <new>
 #include <cstdio>
@@ -218,4 +218,4 @@ private:
 };
 
 }
-#endif // QUEUE_HPP
+#endif // SAPI_VAR_QUEUE_HPP_

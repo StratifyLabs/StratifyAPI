@@ -1,7 +1,7 @@
-/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
+/*! \file */ //Copyright 2011-2019 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_RECTANGLE_HPP_
-#define DRAW_RECTANGLE_HPP_
+#ifndef SAPI_DRAW_RECTANGLE_HPP_
+#define SAPI_DRAW_RECTANGLE_HPP_
 
 #include "Drawing.hpp"
 
@@ -86,4 +86,4 @@ typedef Rectangle Rect;
 
 }
 
-#endif /* DRAW_RECTANGLE_HPP_ */
+#endif /* SAPI_DRAW_RECTANGLE_HPP_ */

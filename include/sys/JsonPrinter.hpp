@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef SYS_JSON_PRINTER_HPP_
-#define SYS_JSON_PRINTER_HPP_
+#ifndef SAPI_SYS_JSON_PRINTER_HPP_
+#define SAPI_SYS_JSON_PRINTER_HPP_
 
 #include "../var/String.hpp"
 
@@ -50,4 +50,4 @@ private:
 
 } /* namespace var */
 
-#endif /* SYS_JSON_PRINTER_HPP_ */
+#endif /* SAPI_SYS_JSON_PRINTER_HPP_ */

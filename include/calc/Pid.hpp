@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef PID_HPP_
-#define PID_HPP_
+#ifndef SAPI_CALC_PID_HPP_
+#define SAPI_CALC_PID_HPP_
 
 #include "../api/CalcObject.hpp"
 
@@ -64,7 +64,7 @@ namespace calc {
  *
  *
  */
-class Pid_f : public api::CalcWorkObject {
+class PidF32 : public api::CalcWorkObject {
 public:
 
 	/*! \details Constructs a new PID (float) object.
@@ -76,7 +76,7 @@ public:
 	 * @param min The minimum value for the calculated control value
 	 * @param max The maximum value for the calculated control value
 	 */
-	Pid_f(float target = 0.0, float kp = 1.0, float ki = 0.1, float kd = 0.0, float min = 1.0, float max = 0.0);
+	PidF32(float target = 0.0, float kp = 1.0, float ki = 0.1, float kd = 0.0, float min = 1.0, float max = 0.0);
 
 	/*! \details Resets the state of the PID control loop. */
 	void reset();
@@ -127,6 +127,8 @@ private:
 	float m_min;
 };
 
+typedef PidF32 Pid_f;
+
 }
 
-#endif /* PID_HPP_ */
+#endif /* SAPI_CALC_PID_HPP_ */

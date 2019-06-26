@@ -1,5 +1,5 @@
-#ifndef ARRAY_HPP
-#define ARRAY_HPP
+#ifndef SAPI_VAR_ARRAY_HPP_
+#define SAPI_VAR_ARRAY_HPP_
 
 #include <cstdio>
 #include "../api/VarObject.hpp"
@@ -162,4 +162,4 @@ public:
 
 }
 
-#endif // ARRAY_HPP
+#endif // SAPI_VAR_ARRAY_HPP_

@@ -1,5 +1,5 @@
-#ifndef FFIFO_HPP
-#define FFIFO_HPP
+#ifndef SAPI_HAL_FFIFO_HPP_
+#define SAPI_HAL_FFIFO_HPP_
 
 #include <sos/dev/ffifo.h>
 
@@ -146,4 +146,4 @@ public:
 
 }
 
-#endif // FFIFO_HPP
+#endif // SAPI_HAL_FFIFO_HPP_

@@ -1,8 +1,11 @@
-#ifndef EMC_HPP
-#define EMC_HPP
+#ifndef SAPI_HAL_EMC_HPP_
+#define SAPI_HAL_EMC_HPP_
 
 #include <sapi/hal.hpp>
 #include "sos/dev/emc.h"
+
+/*! \cond */
+
 namespace hal {
 
 
@@ -215,4 +218,7 @@ private:
 
 }
 
-#endif // EMC_HPP
+/*! \endcond */
+
+
+#endif // SAPI_HAL_EMC_HPP_

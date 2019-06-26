@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef MQ_HPP_
-#define MQ_HPP_
+#ifndef SAPI_SYS_MQ_HPP_
+#define SAPI_SYS_MQ_HPP_
 
 #ifndef __link
 
@@ -162,4 +162,4 @@ private:
 
 #endif
 
-#endif /* MQ_HPP_ */
+#endif /* SAPI_SYS_MQ_HPP_ */

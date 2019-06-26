@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DAC_HPP_
-#define DAC_HPP_
+#ifndef SAPI_HAL_DAC_HPP_
+#define SAPI_HAL_DAC_HPP_
 
 #include <sos/dev/dac.h>
 #include "PinAssignment.hpp"
@@ -138,4 +138,4 @@ private:
 
 }
 
-#endif /* DAC_HPP_ */
+#endif /* SAPI_HAL_DAC_HPP_ */

@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_TIMETAB_HPP_
-#define UI_TIMETAB_HPP_
+#ifndef SAPI_UI_TIMETAB_HPP_
+#define SAPI_UI_TIMETAB_HPP_
 
 #include "../draw/Drawing.hpp"
 #include "../var/String.hpp"
@@ -24,4 +24,4 @@ public:
 
 }
 
-#endif /* UI_TIMETAB_HPP_ */
+#endif /* SAPI_UI_TIMETAB_HPP_ */

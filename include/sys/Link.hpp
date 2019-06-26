@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef SAPI_SYS_LINK_HPP
-#define SAPI_SYS_LINK_HPP
+#ifndef SAPI_SYS_LINK_HPP_
+#define SAPI_SYS_LINK_HPP_
 
 #include <mcu/types.h>
 #include <sos/link.h>
@@ -584,4 +584,4 @@ private:
 
 }
 
-#endif // SAPI_SYS_LINK_HPP
+#endif // SAPI_SYS_LINK_HPP_

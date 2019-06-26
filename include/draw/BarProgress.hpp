@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_BARPROGRESS_HPP_
-#define DRAW_BARPROGRESS_HPP_
+#ifndef SAPI_DRAW_BARPROGRESS_HPP_
+#define SAPI_DRAW_BARPROGRESS_HPP_
 
 #include "Progress.hpp"
 
@@ -36,4 +36,4 @@ public:
 
 }
 
-#endif /* DRAW_BARPROGRESS_HPP_ */
+#endif /* SAPI_DRAW_BARPROGRESS_HPP_ */

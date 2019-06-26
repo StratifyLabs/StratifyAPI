@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef SAPI_DEVICE_HPP_
-#define SAPI_DEVICE_HPP_
+#ifndef SAPI_HAL_DEVICE_HPP_
+#define SAPI_HAL_DEVICE_HPP_
 
 #include "../sys/File.hpp"
 #include "../chrono/MicroTime.hpp"
@@ -106,4 +106,4 @@ protected:
 
 }
 
-#endif /* SAPI_DEV_HPP_ */
+#endif /* SAPI_HAL_DEVICE_HPP_ */

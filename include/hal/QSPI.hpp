@@ -1,5 +1,7 @@
-#ifndef QSPI_HPP
-#define QSPI_HPP
+#ifndef SAPI_HAL_QSPI_HPP_
+#define SAPI_HAL_QSPI_HPP_
+
+/*! \cond */
 
 #include <sapi/hal.hpp>
 #include "sos/dev/qspi.h"
@@ -261,4 +263,7 @@ private:
 
 }
 
-#endif //QSPI_HPP
+/*! \endcond */
+
+
+#endif //SAPI_HAL_QSPI_HPP_

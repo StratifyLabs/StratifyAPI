@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_EINT_HPP_
-#define SAPI_EINT_HPP_
+#ifndef SAPI_HAL_EINT_HPP_
+#define SAPI_HAL_EINT_HPP_
 
 
 #include <sos/dev/eint.h>
@@ -91,4 +91,4 @@ private:
 
 }
 
-#endif /* SAPI_EINT_HPP_ */
+#endif /* SAPI_HAL_EINT_HPP_ */

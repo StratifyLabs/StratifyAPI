@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_LISTITEMINFO_HPP_
-#define UI_LISTITEMINFO_HPP_
+#ifndef SAPI_UI_LISTITEMINFO_HPP_
+#define SAPI_UI_LISTITEMINFO_HPP_
 
 #include "InfoListItem.hpp"
 
@@ -14,4 +14,4 @@ typedef InfoListItem ListItemInfo;
 
 }
 
-#endif /* UI_LISTITEMINFO_HPP_ */
+#endif /* SAPI_UI_LISTITEMINFO_HPP_ */

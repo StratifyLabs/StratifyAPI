@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef SYS_SCHED_HPP_
-#define SYS_SCHED_HPP_
+#ifndef SAPI_SYS_SCHED_HPP_
+#define SAPI_SYS_SCHED_HPP_
 
 #if !defined __link || defined __macosx
 #include <unistd.h>
@@ -106,4 +106,4 @@ public:
 
 
 
-#endif /* SYS_SCHED_HPP_ */
+#endif /* SAPI_SYS_SCHED_HPP_ */

@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_LINEGRAPH_HPP_
-#define DRAW_LINEGRAPH_HPP_
+#ifndef SAPI_DRAW_LINEGRAPH_HPP_
+#define SAPI_DRAW_LINEGRAPH_HPP_
 
 #include "Graph.hpp"
 
@@ -20,4 +20,4 @@ private:
 
 }
 
-#endif /* DRAW_LINEGRAPH_HPP_ */
+#endif /* SAPI_DRAW_LINEGRAPH_HPP_ */

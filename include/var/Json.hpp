@@ -1,5 +1,5 @@
-#ifndef JSON_HPP
-#define JSON_HPP
+#ifndef SAPI_VAR_JSON_HPP_
+#define SAPI_VAR_JSON_HPP_
 
 #include <jansson/jansson_api.h>
 #include "../api/VarObject.hpp"
@@ -505,4 +505,4 @@ private:
 
 }
 
-#endif // JSON_HPP
+#endif // SAPI_VAR_JSON_HPP_

@@ -1,5 +1,5 @@
-#ifndef PNG_HPP
-#define PNG_HPP
+#ifndef SAPI_FMT_PNG_HPP_
+#define SAPI_FMT_PNG_HPP_
 
 #include "../api/FmtObject.hpp"
 
@@ -15,4 +15,4 @@ public:
 
 }
 
-#endif // PNG_HPP
+#endif // SAPI_FMT_PNG_HPP_

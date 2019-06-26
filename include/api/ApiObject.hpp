@@ -1,5 +1,5 @@
-#ifndef APIOBJECT_HPP
-#define APIOBJECT_HPP
+#ifndef SAPI_API_APIOBJECT_HPP_
+#define SAPI_API_APIOBJECT_HPP_
 
 /*! \mainpage
  *
@@ -216,7 +216,6 @@ public:
 	}
 
 	const A * operator ->() const { return m_api; }
-
 	const A * api() const { return m_api; }
 
 private:
@@ -237,4 +236,4 @@ private:
 
 }
 
-#endif // APIOBJECT_HPP
+#endif // SAPI_API_APIOBJECT_HPP_

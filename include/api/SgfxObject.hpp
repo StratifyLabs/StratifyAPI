@@ -1,5 +1,5 @@
-#ifndef API_SGFX_OBJECT_HPP
-#define API_SGFX_OBJECT_HPP
+#ifndef SAPI_API_SGFX_OBJECT_HPP_
+#define SAPI_API_SGFX_OBJECT_HPP_
 
 #include <sapi/sg.h>
 #include "WorkObject.hpp"
@@ -41,4 +41,4 @@ class SgfxWorkObject : public virtual WorkObject, public SgfxObject {
 
 }
 
-#endif // API_SGFX_OBJECT_HPP
+#endif // SAPI_API_SGFX_OBJECT_HPP_

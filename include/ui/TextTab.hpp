@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_TEXTTAB_HPP_
-#define UI_TEXTTAB_HPP_
+#ifndef SAPI_UI_TEXTTAB_HPP_
+#define SAPI_UI_TEXTTAB_HPP_
 
 #include "../draw/Text.hpp"
 #include "Tab.hpp"
@@ -29,4 +29,4 @@ private:
 
 }
 
-#endif /* UI_TEXTTAB_HPP_ */
+#endif /* SAPI_UI_TEXTTAB_HPP_ */

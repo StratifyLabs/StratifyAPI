@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_LISTITEM_HPP_
-#define UI_LISTITEM_HPP_
+#ifndef SAPI_UI_LISTITEM_HPP_
+#define SAPI_UI_LISTITEM_HPP_
 
 #include "../draw/TextAttr.hpp"
 #include "../draw/Icon.hpp"
@@ -201,4 +201,4 @@ typedef class DirList ListDir;
 
 }
 
-#endif /* UI_LISTITEM_HPP_ */
+#endif /* SAPI_UI_LISTITEM_HPP_ */

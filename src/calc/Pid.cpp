@@ -6,7 +6,7 @@
 
 using namespace calc;
 
-Pid_f::Pid_f(float target, float kp, float ki, float kd, float min, float max) {
+PidF32::PidF32(float target, float kp, float ki, float kd, float min, float max) {
 	m_kp = kp;
 	m_ki = ki;
 	m_kd = kd;
@@ -16,12 +16,12 @@ Pid_f::Pid_f(float target, float kp, float ki, float kd, float min, float max) {
 	reset();
 }
 
-void Pid_f::reset(){
+void PidF32::reset(){
 	m_integral = 0.0;
 	m_error = 0.0;
 }
 
-float Pid_f::calc_control_variable(float input){
+float PidF32::calc_control_variable(float input){
 	float err;
 	float output;
 	float de;

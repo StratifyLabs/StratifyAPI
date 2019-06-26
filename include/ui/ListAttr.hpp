@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_LISTATTR_HPP_
-#define UI_LISTATTR_HPP_
+#ifndef SAPI_UI_LISTATTR_HPP_
+#define SAPI_UI_LISTATTR_HPP_
 
 #include <mcu/types.h>
 
@@ -66,4 +66,4 @@ private:
 
 }
 
-#endif /* UI_LISTATTR_HPP_ */
+#endif /* SAPI_UI_LISTATTR_HPP_ */

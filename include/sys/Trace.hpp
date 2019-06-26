@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef SYS_TRACE_HPP_
-#define SYS_TRACE_HPP_
+#ifndef SAPI_SYS_TRACE_HPP_
+#define SAPI_SYS_TRACE_HPP_
 
 #include <sos/link/types.h>
 
@@ -122,4 +122,4 @@ private:
 
 }
 
-#endif /* SYS_TRACE_HPP_ */
+#endif /* SAPI_SYS_TRACE_HPP_ */

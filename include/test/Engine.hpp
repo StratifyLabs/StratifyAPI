@@ -1,5 +1,7 @@
-#ifndef TEST_ENGINE_HPP
-#define TEST_ENGINE_HPP
+#ifndef SAPI_TEST_ENGINE_HPP_
+#define SAPI_TEST_ENGINE_HPP_
+
+/*! \cond */
 
 #include "Test.hpp"
 #include "../var/Queue.hpp"
@@ -16,4 +18,7 @@ public:
 
 }
 
-#endif // ENGINE_HPP
+/*! \endcond */
+
+
+#endif // SAPI_TEST_ENGINE_HPP_

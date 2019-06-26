@@ -1,15 +1,15 @@
 /*! \file */ //Copyright 2011-2019 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_CRYPT_SHA256_HPP_HPP_
-#define SAPI_CRYPT_SHA256_HPP_HPP_
+#ifndef SAPI_CRYPTO_SHA256_HPP_HPP_
+#define SAPI_CRYPTO_SHA256_HPP_HPP_
 
-#include "../api/CryptObject.hpp"
+#include "../api/CryptoObject.hpp"
 #include "../var/Array.hpp"
 #include "../var/String.hpp"
 
-namespace crypt {
+namespace crypto {
 
-class Sha256 : public api::CryptWorkObject {
+class Sha256 : public api::CryptoWorkObject {
 public:
 	Sha256();
 	~Sha256();

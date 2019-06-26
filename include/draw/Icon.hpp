@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_ICON_HPP_
-#define DRAW_ICON_HPP_
+#ifndef SAPI_DRAW_ICON_HPP_
+#define SAPI_DRAW_ICON_HPP_
 
 
 #include "Drawing.hpp"
@@ -123,4 +123,4 @@ private:
 }
 
 
-#endif /* DRAW_ICON_HPP_ */
+#endif /* SAPI_DRAW_ICON_HPP_ */

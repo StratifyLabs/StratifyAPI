@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_LIST_HPP_
-#define UI_LIST_HPP_
+#ifndef SAPI_UI_LIST_HPP_
+#define SAPI_UI_LIST_HPP_
 
 
 #include "../draw/Animation.hpp"
@@ -67,4 +67,4 @@ private:
 
 
 
-#endif /* UI_LIST_HPP_ */
+#endif /* SAPI_UI_LIST_HPP_ */

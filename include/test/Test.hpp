@@ -1,5 +1,5 @@
-#ifndef SAPI_TEST_TEST_HPP
-#define SAPI_TEST_TEST_HPP
+#ifndef SAPI_TEST_TEST_HPP_
+#define SAPI_TEST_TEST_HPP_
 
 #include <cstdarg>
 
@@ -392,4 +392,4 @@ private:
 
 }
 
-#endif // SAPI_TEST_TEST_HPP
+#endif // SAPI_TEST_TEST_HPP_

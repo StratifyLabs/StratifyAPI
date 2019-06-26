@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef BMP_HPP_
-#define BMP_HPP_
+#ifndef SAPI_FMT_BMP_HPP_
+#define SAPI_FMT_BMP_HPP_
 
 #include <mcu/types.h>
 #include "../sys/File.hpp"
@@ -93,4 +93,4 @@ private:
 }
 
 
-#endif /* BMP_HPP_ */
+#endif /* SAPI_FMT_BMP_HPP_ */

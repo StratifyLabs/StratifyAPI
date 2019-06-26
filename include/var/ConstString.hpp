@@ -1,5 +1,5 @@
-#ifndef CONSTSTRING_HPP
-#define CONSTSTRING_HPP
+#ifndef SAPI_VAR_CONSTSTRING_HPP
+#define SAPI_VAR_CONSTSTRING_HPP
 
 #include <cstdlib>
 #include <cstdio>
@@ -215,4 +215,4 @@ private:
 
 }
 
-#endif // CONSTSTRING_HPP
+#endif // SAPI_VAR_CONSTSTRING_HPP

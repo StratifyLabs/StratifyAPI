@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef DRAW_IMAGE_HPP_
-#define DRAW_IMAGE_HPP_
+#ifndef SAPI_DRAW_IMAGE_HPP_
+#define SAPI_DRAW_IMAGE_HPP_
 
 #include "Drawing.hpp"
 
@@ -59,4 +59,4 @@ private:
 
 } /* namespace draw */
 
-#endif /* DRAW_IMAGE_HPP_ */
+#endif /* SAPI_DRAW_IMAGE_HPP_ */

@@ -1,10 +1,12 @@
-#ifndef STATEMACHINE_HPP
-#define STATEMACHINE_HPP
+#ifndef SAPI_SM_STATEMACHINE_HPP_
+#define SAPI_SM_STATEMACHINE_HPP_
 
 #include "../api/SmObject.hpp"
 #include "../var/Data.hpp"
 #include "../sys/Timer.hpp"
 #include "../var/ConstString.hpp"
+
+/*! \cond */
 
 namespace sm {
 
@@ -275,4 +277,6 @@ private:
 
 }
 
-#endif // STATEMACHINE_HPP
+/*! \endcond */
+
+#endif // SAPI_SM_STATEMACHINE_HPP_

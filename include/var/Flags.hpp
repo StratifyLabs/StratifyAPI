@@ -1,7 +1,9 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef FLAGS_HPP_
-#define FLAGS_HPP_
+#ifndef SAPI_VAR_FLAGS_HPP_
+#define SAPI_VAR_FLAGS_HPP_
+
+/*! \cond */
 
 #include "../api/VarObject.hpp"
 
@@ -39,4 +41,7 @@ private:
 
 }
 
-#endif /* FLAGS_HPP_ */
+/*! \endcond */
+
+
+#endif /* SAPI_VAR_FLAGS_HPP_ */

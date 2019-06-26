@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_TABTEXT_HPP_
-#define UI_TABTEXT_HPP_
+#ifndef SAPI_UI_TABTEXT_HPP_
+#define SAPI_UI_TABTEXT_HPP_
 
 #include "TextTab.hpp"
 
@@ -13,4 +13,4 @@ API_DEPRECATED("Use TextTab")
 typedef TextTab TabText;
 }
 
-#endif /* UI_TABTEXT_HPP_ */
+#endif /* SAPI_UI_TABTEXT_HPP_ */

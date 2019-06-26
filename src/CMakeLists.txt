@@ -46,8 +46,8 @@ set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/calc)
 add_subdirectory(calc)
 list(APPEND SOURCELIST ${SOURCES})
 
-set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/crypt)
-add_subdirectory(crypt)
+set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/crypto)
+add_subdirectory(crypto)
 list(APPEND SOURCELIST ${SOURCES})
 
 set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/fmt)

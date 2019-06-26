@@ -1,9 +1,9 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SYS_MICRO_TIME_HPP_
-#define SYS_MICRO_TIME_HPP_
+#ifndef SAPI_SYS_MICRO_TIME_HPP_
+#define SAPI_SYS_MICRO_TIME_HPP_
 
 #include "../chrono/MicroTime.hpp"
 
 
-#endif /* SYS_MICRO_TIME_HPP_ */
+#endif /* SAPI_SYS_MICRO_TIME_HPP_ */

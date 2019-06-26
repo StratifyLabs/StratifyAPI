@@ -1,7 +1,7 @@
 /* Copyright 2016 tgil All Rights Reserved */
 
-#ifndef UI_BUTTON_HPP_
-#define UI_BUTTON_HPP_
+#ifndef SAPI_EV_BUTTON_HPP_
+#define SAPI_EV_BUTTON_HPP_
 
 
 #include <mcu/types.h>
@@ -97,4 +97,4 @@ protected:
 
 }
 
-#endif /* UI_BUTTON_HPP_ */
+#endif /* SAPI_EV_BUTTON_HPP_ */

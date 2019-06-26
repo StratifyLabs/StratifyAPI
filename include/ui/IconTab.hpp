@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_ICONTAB_HPP_
-#define UI_ICONTAB_HPP_
+#ifndef SAPI_UI_ICONTAB_HPP_
+#define SAPI_UI_ICONTAB_HPP_
 
 #include "../draw/Icon.hpp"
 #include "Tab.hpp"
@@ -28,4 +28,4 @@ private:
 
 }
 
-#endif /* UI_ICONTAB_HPP_ */
+#endif /* SAPI_UI_ICONTAB_HPP_ */

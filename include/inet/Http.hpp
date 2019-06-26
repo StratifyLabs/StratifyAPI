@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef HTTP_HPP
-#define HTTP_HPP
+#ifndef SAPI_INET_HTTP_HPP_
+#define SAPI_INET_HTTP_HPP_
 
 #include "Socket.hpp"
 #include "../api/InetObject.hpp"
@@ -263,4 +263,4 @@ private:
 
 }
 
-#endif // HTTP_HPP
+#endif // SAPI_INET_HTTP_HPP_

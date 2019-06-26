@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_ELEMENTLINKED_HPP_
-#define UI_ELEMENTLINKED_HPP_
+#ifndef SAPI_UI_ELEMENTLINKED_HPP_
+#define SAPI_UI_ELEMENTLINKED_HPP_
 
 #include "LinkedElement.hpp"
 
@@ -14,4 +14,4 @@ typedef LinkedElement ElementLinked;
 
 }
 
-#endif /* UI_ELEMENTLINKED_HPP_ */
+#endif /* SAPI_UI_ELEMENTLINKED_HPP_ */

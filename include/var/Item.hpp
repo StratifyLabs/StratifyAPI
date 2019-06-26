@@ -1,7 +1,10 @@
 /*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
-#ifndef ITEM_HPP_
-#define ITEM_HPP_
+#ifndef SAPI_VAR_ITEM_HPP_
+#define SAPI_VAR_ITEM_HPP_
+
+/*! \cond */
+
 
 #include <cstring>
 #include "../api/WorkObject.hpp"
@@ -75,5 +78,8 @@ private:
 };
 
 }
+
+/*! \endcond */
+
 
 #endif /* ITEM_HPP_ */

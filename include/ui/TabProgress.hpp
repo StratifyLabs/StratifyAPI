@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_TABPROGRESS_HPP_
-#define UI_TABPROGRESS_HPP_
+#ifndef SAPI_UI_TABPROGRESS_HPP_
+#define SAPI_UI_TABPROGRESS_HPP_
 
 #include "ProgressTab.hpp"
 
@@ -22,4 +22,4 @@ typedef CircleProgressTab TabProgressCircle;
 }
 
 
-#endif /* UI_TAB_TABPROGRESS_HPP_ */
+#endif /* SAPI_UI_TABPROGRESS_HPP_ */

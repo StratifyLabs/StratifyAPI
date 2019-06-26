@@ -1,7 +1,7 @@
 /* Copyright 2016 tgil All Rights Reserved */
 
-#ifndef UI_BUTTONPIN_HPP_
-#define UI_BUTTONPIN_HPP_
+#ifndef SAPI_EV_BUTTONPIN_HPP_
+#define SAPI_EV_BUTTONPIN_HPP_
 
 #include "../hal/Pin.hpp"
 #include "Button.hpp"
@@ -13,4 +13,4 @@ typedef PinButton ButtonPin;
 
 }
 
-#endif /* UI_BUTTONPIN_HPP_ */
+#endif /* SAPI_EV_BUTTONPIN_HPP_ */

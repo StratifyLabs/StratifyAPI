@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_ELEMENT_HPP_
-#define UI_ELEMENT_HPP_
+#ifndef SAPI_UI_ELEMENT_HPP_
+#define SAPI_UI_ELEMENT_HPP_
 
 #include <cstring>
 
@@ -137,4 +137,4 @@ private:
 
 }
 
-#endif /* UI_ELEMENT_HPP_ */
+#endif /* SAPI_UI_ELEMENT_HPP_ */

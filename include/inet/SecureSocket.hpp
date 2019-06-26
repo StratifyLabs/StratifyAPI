@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SECURESOCKET_HP
-#define SECURESOCKET_HP
+#ifndef SAPI_INET_SECURESOCKET_HPP_
+#define SAPI_INET_SECURESOCKET_HPP_
 
 #include <mbedtls_api.h>
 #include "../sys/requests.h"
@@ -60,4 +60,4 @@ private:
 
 }
 
-#endif // SECURESOCKET_HP
+#endif // SAPI_INET_SECURESOCKET_HPP_

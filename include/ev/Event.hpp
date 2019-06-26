@@ -1,8 +1,8 @@
 /* Copyright 2014-2018 Tyler Gilbert, Inc; All Rights Reserved
  *
  */
-#ifndef EV_EVENT_HPP_
-#define EV_EVENT_HPP_
+#ifndef SAPI_EV_EVENT_HPP_
+#define SAPI_EV_EVENT_HPP_
 
 #include <sos/dev/button.h>
 #include "../api/EvObject.hpp"
@@ -221,4 +221,4 @@ private:
 
 }
 
-#endif /* EV_EVENT_HPP_ */
+#endif /* SAPI_EV_EVENT_HPP_ */

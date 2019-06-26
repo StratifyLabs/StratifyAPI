@@ -1,7 +1,7 @@
 
 
-#ifndef SAPI_DEV_HPP_
-#define SAPI_DEV_HPP_
+#ifndef SAPI_HAL_DEV_HPP_
+#define SAPI_HAL_DEV_HPP_
 
 #include "Device.hpp"
 
@@ -12,4 +12,4 @@ typedef Device Dev;
 
 }
 
-#endif /* SAPI_DEV_HPP_ */
+#endif /* SAPI_HAL_DEV_HPP_ */

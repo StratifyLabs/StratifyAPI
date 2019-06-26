@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_BARGRAPH_HPP_
-#define DRAW_BARGRAPH_HPP_
+#ifndef SAPI_DRAW_BARGRAPH_HPP_
+#define SAPI_DRAW_BARGRAPH_HPP_
 
 #include "Graph.hpp"
 
@@ -22,4 +22,4 @@ private:
 
 }
 
-#endif /* DRAW_GRAPHBAR_HPP_ */
+#endif /* SAPI_DRAW_BARGRAPH_HPP_ */

@@ -1,5 +1,5 @@
-#ifndef CHRONO_TIMER_HPP
-#define CHRONO_TIMER_HPP
+#ifndef SAPI_CHRONO_TIMER_HPP_
+#define SAPI_CHRONO_TIMER_HPP_
 
 #include "ClockTime.hpp"
 #include "MicroTime.hpp"
@@ -212,4 +212,4 @@ private:
 
 }
 
-#endif // CHRONO_MICRO_TIMER_HPP
+#endif // SAPI_CHRONO_TIMER_HPP_

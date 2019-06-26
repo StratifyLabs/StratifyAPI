@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef SYS_ASSETS_HPP_
-#define SYS_ASSETS_HPP_
+#ifndef SAPI_SYS_ASSETS_HPP_
+#define SAPI_SYS_ASSETS_HPP_
 
 #include "../api/WorkObject.hpp"
 #include "../sgfx/FileFont.hpp"
@@ -83,4 +83,4 @@ private:
 
 }
 
-#endif /* SYS_ASSETS_HPP_ */
+#endif /* SAPI_SYS_ASSETS_HPP_ */

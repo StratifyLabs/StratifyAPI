@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SEM_HPP_
-#define SEM_HPP_
+#ifndef SAPI_SYS_SEM_HPP_
+#define SAPI_SYS_SEM_HPP_
 
 #ifndef __link
 
@@ -144,4 +144,4 @@ private:
 
 #endif
 
-#endif /* SEM_HPP_ */
+#endif /* SAPI_SYS_SEM_HPP_ */

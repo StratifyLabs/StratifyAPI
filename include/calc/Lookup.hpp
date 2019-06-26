@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef LOOKUP_HPP_
-#define LOOKUP_HPP_
+#ifndef SAPI_CALC_LOOKUP_HPP_
+#define SAPI_CALC_LOOKUP_HPP_
 
 #include "../api/CalcObject.hpp"
 
@@ -85,4 +85,4 @@ private:
 
 };
 
-#endif /* LOOKUP_HPP_ */
+#endif /* SAPI_CALC_LOOKUP_HPP_ */

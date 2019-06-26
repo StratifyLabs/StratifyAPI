@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_TEXT_HPP_
-#define DRAW_TEXT_HPP_
+#ifndef SAPI_DRAW_TEXT_HPP_
+#define SAPI_DRAW_TEXT_HPP_
 
 #include "Drawing.hpp"
 #include "TextAttr.hpp"
@@ -89,4 +89,4 @@ private:
 
 }
 
-#endif /* DRAW_TEXT_HPP_ */
+#endif /* SAPI_DRAW_TEXT_HPP_ */

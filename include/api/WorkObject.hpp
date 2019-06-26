@@ -1,5 +1,5 @@
-#ifndef API_WORK_OBJECT_HPP
-#define API_WORK_OBJECT_HPP
+#ifndef SAPI_API_WORK_OBJECT_HPP_
+#define SAPI_API_WORK_OBJECT_HPP_
 
 #include "ApiObject.hpp"
 
@@ -110,4 +110,4 @@ private:
 
 
 }
-#endif // API_WORK_OBJECT_HPP
+#endif // SAPI_API_WORK_OBJECT_HPP_

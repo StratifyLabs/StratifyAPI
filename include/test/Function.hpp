@@ -1,5 +1,5 @@
-#ifndef TEST_FUNCTION_HPP
-#define TEST_FUNCTION_HPP
+#ifndef SAPI_TEST_FUNCTION_HPP_
+#define SAPI_TEST_FUNCTION_HPP_
 
 #include <mcu/types.h>
 #include <errno.h>
@@ -156,4 +156,4 @@ private:
 
 }
 
-#endif // TEST_FUNCTION_HPP
+#endif // SAPI_TEST_FUNCTION_HPP_

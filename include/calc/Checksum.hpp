@@ -1,5 +1,5 @@
-#ifndef CHECKSUM_HPP
-#define CHECKSUM_HPP
+#ifndef SAPI_CALC_CHECKSUM_HPP_
+#define SAPI_CALC_CHECKSUM_HPP_
 
 #include "../var/Data.hpp"
 #include "../api/CalcObject.hpp"
@@ -151,4 +151,4 @@ public:
 
 }
 
-#endif // CHECKSUM_HPP
+#endif // SAPI_CALC_CHECKSUM_HPP_

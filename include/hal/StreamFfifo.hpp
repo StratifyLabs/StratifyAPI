@@ -1,5 +1,5 @@
-#ifndef SAPI_HAL_STREAMFFIFO_HPP
-#define SAPI_HAL_STREAMFFIFO_HPP
+#ifndef SAPI_HAL_STREAMFFIFO_HPP_
+#define SAPI_HAL_STREAMFFIFO_HPP_
 
 #include <sos/dev/stream_ffifo.h>
 
@@ -100,4 +100,4 @@ public:
 
 }
 
-#endif // SAPI_HAL_STREAMFFIFO_HPP
+#endif // SAPI_HAL_STREAMFFIFO_HPP_

@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_MENU_HPP_
-#define UI_MENU_HPP_
+#ifndef SAPI_UI_MENU_HPP_
+#define SAPI_UI_MENU_HPP_
 
 #include "LinkedElement.hpp"
 
@@ -44,4 +44,4 @@ private:
 
 }
 
-#endif /* UI_MENU_HPP_ */
+#endif /* SAPI_UI_MENU_HPP_ */

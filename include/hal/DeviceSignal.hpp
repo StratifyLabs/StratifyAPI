@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef HAL_DEVICESIGNAL_HPP_
-#define HAL_DEVICESIGNAL_HPP_
+#ifndef SAPI_HAL_DEVICESIGNAL_HPP_
+#define SAPI_HAL_DEVICESIGNAL_HPP_
 
 #if !defined __link
 
@@ -120,4 +120,4 @@ private:
 
 #endif
 
-#endif /* HAL_DEVICESIGNAL_HPP_ */
+#endif /* SAPI_HAL_DEVICESIGNAL_HPP_ */

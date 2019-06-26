@@ -1,7 +1,9 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef STRINGUTIL_HPP_
-#define STRINGUTIL_HPP_
+#ifndef SAPI_VAR_STRINGUTIL_HPP_
+#define SAPI_VAR_STRINGUTIL_HPP_
+
+/*! \cond */
 
 #include <stdint.h>
 #include "../api/ApiObject.hpp"
@@ -43,4 +45,7 @@ private:
 
 }
 
-#endif /* STRINGUTIL_HPP_ */
+/*! \endcond */
+
+
+#endif /* SAPI_VAR_STRINGUTIL_HPP_ */

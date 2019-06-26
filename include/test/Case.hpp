@@ -1,5 +1,7 @@
-#ifndef TEST_CASE_HPP
-#define TEST_CASE_HPP
+#ifndef SAPI_TEST_CASE_HPP_
+#define SAPI_TEST_CASE_HPP_
+
+/*! \cond */
 
 namespace test {
 
@@ -13,4 +15,7 @@ public:
 
 }
 
-#endif // TEST_CASE_HPP
+/*! \endcond */
+
+
+#endif // SAPI_TEST_CASE_HPP_

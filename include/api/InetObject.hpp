@@ -1,5 +1,5 @@
-#ifndef API_INET_OBJECT_HPP
-#define API_INET_OBJECT_HPP
+#ifndef SAPI_API_INET_OBJECT_HPP_
+#define SAPI_API_INET_OBJECT_HPP_
 
 #include "WorkObject.hpp"
 #include "InfoObject.hpp"
@@ -27,4 +27,4 @@ class InetWorkObject : public virtual WorkObject {
 
 }
 
-#endif // API_INET_OBJECT_HPP
+#endif // SAPI_API_INET_OBJECT_HPP_

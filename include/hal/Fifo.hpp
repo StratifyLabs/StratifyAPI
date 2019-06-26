@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
-#ifndef FIFO_HPP_
-#define FIFO_HPP_
+#ifndef SAPI_HAL_FIFO_HPP_
+#define SAPI_HAL_FIFO_HPP_
 
 #include <cstring>
 #include <sos/dev/fifo.h>
@@ -149,4 +149,4 @@ public:
 
 }
 
-#endif /* FIFO_HPP_ */
+#endif /* SAPI_HAL_FIFO_HPP_ */

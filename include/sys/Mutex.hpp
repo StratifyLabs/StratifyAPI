@@ -1,7 +1,7 @@
 /* Copyright 2016 tgil All Rights Reserved */
 
-#ifndef SYS_MUTEX_HPP_
-#define SYS_MUTEX_HPP_
+#ifndef SAPI_SYS_MUTEX_HPP_
+#define SAPI_SYS_MUTEX_HPP_
 
 
 #include "../api/SysObject.hpp"
@@ -150,4 +150,4 @@ private:
 
 }
 
-#endif /* SYS_MUTEX_HPP_ */
+#endif /* SAPI_SYS_MUTEX_HPP_ */

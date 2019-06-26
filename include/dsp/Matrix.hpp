@@ -1,5 +1,5 @@
-#ifndef DSP_MATRIX_HPP
-#define DSP_MATRIX_HPP
+#ifndef SAPI_DSP_MATRIX_HPP_
+#define SAPI_DSP_MATRIX_HPP_
 
 #include "../api/DspObject.hpp"
 #include "../var/Vector.hpp"
@@ -123,4 +123,4 @@ private:
 
 /*! \endcond */
 
-#endif // DSP_MATRIX_HPP
+#endif // SAPI_DSP_MATRIX_HPP_

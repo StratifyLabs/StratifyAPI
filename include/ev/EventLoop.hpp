@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef SM_EVENTLOOP_HPP_
-#define SM_EVENTLOOP_HPP_
+#ifndef SAPI_EV_EVENTLOOP_HPP_
+#define SAPI_EV_EVENTLOOP_HPP_
 
 #include "../api/WorkObject.hpp"
 #include "../chrono/Timer.hpp"
@@ -289,4 +289,4 @@ private:
 
 } /* namespace ui */
 
-#endif /* SM_EVENTLOOP_HPP_ */
+#endif /* SAPI_EV_EVENTLOOP_HPP_ */

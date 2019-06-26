@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef HAL_PINASSIGNMENT_HPP_
-#define HAL_PINASSIGNMENT_HPP_
+#ifndef SAPI_HAL_PINASSIGNMENT_HPP_
+#define SAPI_HAL_PINASSIGNMENT_HPP_
 
 #include "../api/HalObject.hpp"
 #include "../var/Item.hpp"
@@ -92,4 +92,4 @@ private:
 
 } /* namespace hal */
 
-#endif /* HAL_PINASSIGNMENT_HPP_ */
+#endif /* SAPI_HAL_PINASSIGNMENT_HPP_ */

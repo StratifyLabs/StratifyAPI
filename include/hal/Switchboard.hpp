@@ -1,5 +1,5 @@
-#ifndef SWITCHBOARD_HPP
-#define SWITCHBOARD_HPP
+#ifndef SAPI_HAL_SWITCHBOARD_HPP_
+#define SAPI_HAL_SWITCHBOARD_HPP_
 
 #include <sos/dev/switchboard.h>
 #if !defined __link
@@ -370,4 +370,4 @@ public:
 };
 }
 
-#endif // SWITCHBOARD_HPP
+#endif // SAPI_HAL_SWITCHBOARD_HPP_

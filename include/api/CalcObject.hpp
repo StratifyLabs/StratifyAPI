@@ -1,5 +1,5 @@
-#ifndef CALC_CALCOBJECT_HPP
-#define CALC_CALCOBJECT_HPP
+#ifndef SAPI_API_CALCOBJECT_HPP_
+#define SAPI_API_CALCOBJECT_HPP_
 
 #include "WorkObject.hpp"
 #include "InfoObject.hpp"
@@ -26,4 +26,4 @@ class CalcWorkObject : public virtual WorkObject {
 
 }
 
-#endif // CALC_CALCOBJECT_HPP
+#endif // SAPI_API_CALCOBJECT_HPP_

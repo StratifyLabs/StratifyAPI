@@ -1,5 +1,5 @@
-#ifndef CHRONO_MICRO_TIMER_HPP
-#define CHRONO_MICRO_TIMER_HPP
+#ifndef CHRONO_MICRO_TIMER_HPP_
+#define CHRONO_MICRO_TIMER_HPP_
 
 #include "Timer.hpp"
 
@@ -7,4 +7,4 @@ namespace chrono {
 typedef class Timer MicroTimer;
 }
 
-#endif // CHRONO_MICRO_TIMER_HPP
+#endif // CHRONO_MICRO_TIMER_HPP_

@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_MENULIST_HPP_
-#define UI_MENULIST_HPP_
+#ifndef SAPI_UI_MENULIST_HPP_
+#define SAPI_UI_MENULIST_HPP_
 
 
 #include "List.hpp"
@@ -32,4 +32,4 @@ private:
 
 }
 
-#endif /* UI_MENULIST_HPP_ */
+#endif /* SAPI_UI_MENULIST_HPP_ */

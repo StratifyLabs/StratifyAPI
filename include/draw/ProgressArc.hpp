@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_PROGRESSARC_HPP_
-#define DRAW_PROGRESSARC_HPP_
+#ifndef SAPI_DRAW_PROGRESSARC_HPP_
+#define SAPI_DRAW_PROGRESSARC_HPP_
 
 #include "ArcProgress.hpp"
 
@@ -12,4 +12,4 @@ typedef ArcProgress ProgressArc;
 
 }
 
-#endif /* DRAW_PROGRESSARC_HPP_ */
+#endif /* SAPI_DRAW_PROGRESSARC_HPP_ */

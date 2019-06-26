@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_I2C_HPP_
-#define SAPI_I2C_HPP_
+#ifndef SAPI_HAL_I2C_HPP_
+#define SAPI_HAL_I2C_HPP_
 
 #include <sos/dev/i2c.h>
 #include "PinAssignment.hpp"
@@ -279,4 +279,4 @@ private:
 }
 
 
-#endif /* SAPI_I2C_HPP_ */
+#endif /* SAPI_HAL_I2C_HPP_ */

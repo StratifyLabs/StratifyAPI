@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef STRING_HPP_
-#define STRING_HPP_
+#ifndef SAPI_VAR_STRING_HPP_
+#define SAPI_VAR_STRING_HPP_
 
 
 #include <sos/link.h>
@@ -427,4 +427,4 @@ typedef PathString StringPath;
 
 }
 
-#endif /* STRING_HPP_ */
+#endif /* SAPI_VAR_STRING_HPP_ */

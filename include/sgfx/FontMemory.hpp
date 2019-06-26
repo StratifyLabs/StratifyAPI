@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SGFX_FONTMEMORY_HPP_
-#define SGFX_FONTMEMORY_HPP_
+#ifndef SAPI_SGFX_FONTMEMORY_HPP_
+#define SAPI_SGFX_FONTMEMORY_HPP_
 
 
 #include "MemoryFont.hpp"
@@ -13,4 +13,4 @@ typedef MemoryFont FontMemory;
 
 }
 
-#endif /* SGFX_FONTMEMORY_HPP_ */
+#endif /* SAPI_SGFX_FONTMEMORY_HPP_ */

@@ -1,5 +1,5 @@
-#ifndef API_SYS_OBJECT_HPP
-#define API_SYS_OBJECT_HPP
+#ifndef SAPI_API_SYS_OBJECT_HPP_
+#define SAPI_API_SYS_OBJECT_HPP_
 
 #include "WorkObject.hpp"
 #include "InfoObject.hpp"
@@ -30,4 +30,4 @@ class SysWorkObject : public virtual WorkObject {
 
 }
 
-#endif // API_SYS_OBJECT_HPP
+#endif // SAPI_API_SYS_OBJECT_HPP_

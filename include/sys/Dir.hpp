@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DIR_HPP_
-#define DIR_HPP_
+#ifndef SAPI_SYS_DIR_HPP_
+#define SAPI_SYS_DIR_HPP_
 
 #ifdef __link
 #include <sos/link.h>
@@ -147,4 +147,4 @@ private:
 
 }
 
-#endif /* DIR_HPP_ */
+#endif /* SAPI_SYS_DIR_HPP_ */

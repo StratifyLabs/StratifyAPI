@@ -1,7 +1,9 @@
 /* Copyright 2017 tgil All Rights Reserved */
 
-#ifndef MESSENGER_HPP_
-#define MESSENGER_HPP_
+#ifndef SAPI_SYS_MESSENGER_HPP_
+#define SAPI_SYS_MESSENGER_HPP_
+
+/*! \cond */
 
 #include <pthread.h>
 #include "../api/SysObject.hpp"
@@ -106,4 +108,7 @@ private:
 
 }
 
-#endif /* MESSENGER_HPP_ */
+/*! \endcond */
+
+
+#endif /* SAPI_SYS_MESSENGER_HPP_ */

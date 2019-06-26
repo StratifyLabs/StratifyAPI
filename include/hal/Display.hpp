@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef HAL_DISPLAY_HPP_
-#define HAL_DISPLAY_HPP_
+#ifndef SAPI_HAL_DISPLAY_HPP_
+#define SAPI_HAL_DISPLAY_HPP_
 
 #include <mcu/types.h>
 #include <sos/dev/display.h>
@@ -204,4 +204,4 @@ public:
 
 } /* namespace hal */
 
-#endif /* HAL_DISPLAY_HPP_ */
+#endif /* SAPI_HAL_DISPLAY_HPP_ */

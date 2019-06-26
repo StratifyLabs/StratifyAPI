@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_DSP_HPP
-#define SAPI_DSP_HPP
+#ifndef SAPI_DSP_HPP_
+#define SAPI_DSP_HPP_
 
 /*! \brief Digital Signal Processing
  * \details The Digital Signal Processing (dsp) namespace
@@ -19,4 +19,4 @@ namespace dsp {}
 
 using namespace dsp;
 
-#endif // SAPI_DSP_HPP
+#endif // SAPI_DSP_HPP_

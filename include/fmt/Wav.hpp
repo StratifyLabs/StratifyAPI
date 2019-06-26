@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef WAV_HPP_
-#define WAV_HPP_
+#ifndef SAPI_FMT_WAV_HPP_
+#define SAPI_FMT_WAV_HPP_
 
 #include <mcu/types.h>
 #include "../api/FmtObject.hpp"
@@ -57,4 +57,4 @@ private:
 
 }
 
-#endif /* WAV_HPP_ */
+#endif /* SAPI_FMT_WAV_HPP_ */

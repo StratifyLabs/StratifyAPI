@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SON_HPP_
-#define SON_HPP_
+#ifndef SAPI_FMT_SON_HPP_
+#define SAPI_FMT_SON_HPP_
 
 #include <cstring>
 #include <sapi/son.h>
@@ -15,6 +15,8 @@
 #include "../chrono/MicroTime.hpp"
 #include "../sys/requests.h"
 
+
+/*! \cond */
 
 namespace fmt {
 
@@ -606,4 +608,7 @@ private:
 
 }
 
-#endif /* SON_HPP_ */
+/*! \endcond */
+
+
+#endif /* SAPI_FMT_SON_HPP_ */

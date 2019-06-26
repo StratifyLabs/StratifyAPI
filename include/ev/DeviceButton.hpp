@@ -1,5 +1,5 @@
-#ifndef UI_DEVICEBUTTON_HPP
-#define UI_DEVICEBUTTON_HPP
+#ifndef SAPI_EV_DEVICEBUTTON_HPP_
+#define SAPI_EV_DEVICEBUTTON_HPP_
 
 #include <sos/dev/button.h>
 #include "Button.hpp"
@@ -107,4 +107,4 @@ private:
 
 }
 
-#endif // UI_DEVICEBUTTON_HPP
+#endif // SAPI_EV_DEVICEBUTTON_HPP_

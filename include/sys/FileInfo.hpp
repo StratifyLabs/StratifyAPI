@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef SYS_FILEINFO_HPP_
-#define SYS_FILEINFO_HPP_
+#ifndef SAPI_SYS_FILEINFO_HPP_
+#define SAPI_SYS_FILEINFO_HPP_
 
 
 #include "../api/SysObject.hpp"
@@ -110,4 +110,4 @@ private:
 
 } /* namespace sys */
 
-#endif /* SYS_FILEINFO_HPP_ */
+#endif /* SAPI_SYS_FILEINFO_HPP_ */

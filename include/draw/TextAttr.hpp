@@ -8,6 +8,7 @@
 #include "../var/Flags.hpp"
 #include "../sgfx/Font.hpp"
 
+/*! \cond */
 namespace draw {
 
 /*! \brief Text Attribute Class
@@ -72,5 +73,7 @@ private:
 typedef TextAttributes TextAttr;
 
 }
+
+/*! \endcond */
 
 #endif /* DRAW_TEXTATTR_HPP_ */

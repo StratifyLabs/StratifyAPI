@@ -1,5 +1,5 @@
-#ifndef VECTOR_HPP
-#define VECTOR_HPP
+#ifndef SAPI_VAR_VECTOR_HPP_
+#define SAPI_VAR_VECTOR_HPP_
 
 #include <new>
 #include "Data.hpp"
@@ -459,4 +459,4 @@ private:
 
 }
 
-#endif // VECTOR_HPP
+#endif // SAPI_VAR_VECTOR_HPP_

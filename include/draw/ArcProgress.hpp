@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_ARCPROGRESS_HPP_
-#define DRAW_ARCPROGRESS_HPP_
+#ifndef SAPI_DRAW_ARCPROGRESS_HPP_
+#define SAPI_DRAW_ARCPROGRESS_HPP_
 
 #include "Progress.hpp"
 
@@ -34,4 +34,4 @@ private:
 
 }
 
-#endif /* DRAW_ARCPROGRESS_HPP_ */
+#endif /* SAPI_DRAW_ARCPROGRESS_HPP_ */

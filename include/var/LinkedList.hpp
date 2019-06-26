@@ -1,5 +1,5 @@
-#ifndef LINKEDLIST_HPP
-#define LINKEDLIST_HPP
+#ifndef SAPI_VAR_LINKEDLIST_HPP_
+#define SAPI_VAR_LINKEDLIST_HPP_
 
 #include <cstdlib>
 #include "../api/VarObject.hpp"
@@ -179,4 +179,4 @@ private:
 
 }
 
-#endif // LINKEDLIST_HPP
+#endif // SAPI_VAR_LINKEDLIST_HPP_

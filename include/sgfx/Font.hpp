@@ -1,8 +1,8 @@
 
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SGFX_FONT_HPP_
-#define SGFX_FONT_HPP_
+#ifndef SAPI_SGFX_FONT_HPP_
+#define SAPI_SGFX_FONT_HPP_
 
 #include <sapi/sg_font_types.h>
 #include "../api/WorkObject.hpp"
@@ -223,4 +223,4 @@ private:
 
 }
 
-#endif /* SGFX_FONT_HPP_ */
+#endif /* SAPI_SGFX_FONT_HPP_ */

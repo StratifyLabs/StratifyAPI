@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_TABICON_HPP_
-#define UI_TABICON_HPP_
+#ifndef SAPI_UI_TABICON_HPP_
+#define SAPI_UI_TABICON_HPP_
 
 #include "IconTab.hpp"
 
@@ -14,4 +14,4 @@ typedef IconTab TabIcon;
 
 }
 
-#endif /* UI_TABICON_HPP_ */
+#endif /* SAPI_UI_TABICON_HPP_ */

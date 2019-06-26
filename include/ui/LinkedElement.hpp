@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_LINKEDELEMENT_HPP_
-#define UI_LINKEDELEMENT_HPP_
+#ifndef SAPI_UI_LINKEDELEMENT_HPP_
+#define SAPI_UI_LINKEDELEMENT_HPP_
 
 #include "../draw/Animation.hpp"
 #include "Element.hpp"
@@ -52,4 +52,4 @@ private:
 
 }
 
-#endif /* UI_LINKEDELEMENT_HPP_ */
+#endif /* SAPI_UI_LINKEDELEMENT_HPP_ */

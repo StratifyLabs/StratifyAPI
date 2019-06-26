@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_EVENTLOOP_HPP_
-#define UI_EVENTLOOP_HPP_
+#ifndef SAPI_UI_EVENTLOOP_HPP_
+#define SAPI_UI_EVENTLOOP_HPP_
 
 #include "../sys/Timer.hpp"
 #include "../draw/Drawing.hpp"
@@ -90,4 +90,4 @@ private:
 
 } /* namespace ui */
 
-#endif /* UI_EVENTLOOP_HPP_ */
+#endif /* SAPI_UI_EVENTLOOP_HPP_ */

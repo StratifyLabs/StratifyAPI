@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SYS_CLI_HPP_
-#define SYS_CLI_HPP_
+#ifndef SAPI_SYS_CLI_HPP_
+#define SAPI_SYS_CLI_HPP_
 
 #include "../api/SysObject.hpp"
 #include "../hal/Uart.hpp"
@@ -274,4 +274,4 @@ private:
 
 } /* namespace sys */
 
-#endif /* SYS_CLI_HPP_ */
+#endif /* SAPI_SYS_CLI_HPP_ */

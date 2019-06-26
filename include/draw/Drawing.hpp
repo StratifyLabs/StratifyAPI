@@ -1,7 +1,7 @@
 //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_DRAWING_HPP_
-#define DRAW_DRAWING_HPP_
+#ifndef SAPI_DRAW_DRAWING_HPP_
+#define SAPI_DRAW_DRAWING_HPP_
 
 #include <mcu/types.h>
 #include "../sgfx/Bitmap.hpp"
@@ -685,4 +685,4 @@ private:
 
 }
 
-#endif /* DRAW_DRAWING_HPP_ */
+#endif /* SAPI_DRAW_DRAWING_HPP_ */

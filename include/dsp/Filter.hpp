@@ -1,5 +1,5 @@
-#ifndef DSP_FILTER_HPP
-#define DSP_FILTER_HPP
+#ifndef SAPI_DSP_FILTER_HPP_
+#define SAPI_DSP_FILTER_HPP_
 
 #include "../api/DspObject.hpp"
 #include "SignalData.hpp"
@@ -141,4 +141,4 @@ private:
 
 }
 
-#endif // FILTER_HPP
+#endif // SAPI_DSP_FILTER_HPP_

@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
-#ifndef PHY_PERIPH_HPP_
-#define PHY_PERIPH_HPP_
+#ifndef SAPI_HAL__PERIPH_HPP_
+#define SAPI_HAL__PERIPH_HPP_
 
 #include <sos/link.h>
 #include <fcntl.h>
@@ -333,4 +333,4 @@ protected:
 
 }
 
-#endif /* PHY_PERIPH_HPP_ */
+#endif /* SAPI_HAL__PERIPH_HPP_ */

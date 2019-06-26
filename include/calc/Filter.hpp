@@ -51,8 +51,28 @@ protected:
 
 /*! \brief LowPassFilter template class */
 /*! \details This class is a template for a simple low pass filter
- *	(also known as an exponential moving average)
- * calculation.
+ *	(also known as an exponential moving average) calculation.
+ *
+ * The filter uses the following difference equation:
+ *
+ * ```
+ * y[n] = alpha * x[n] + (1-alpha)*y[n-1]
+ * ```
+ *
+ * Alpha is a value between 0 and 1. If alpha is 0, there is no
+ * filtering. If alpha is close to 1, the cutoff frequency is closer
+ * to zero. The alpha value and the sampling frequency both
+ * affect the cutoff frequency.
+ *
+ * There are several classes that populate the template with
+ * reasonable values:
+ *
+ * - LowPassFilterS32
+ * - LowPassFilterS16
+ * - LowPassFilterU32
+ * - LowPassFilterU16
+ *
+ * LowPassFilterF32 is the same filter but with floating point values.
  *
  * The following is an example of using the Ema class using 32-bit integers.
  * \code
@@ -172,6 +192,8 @@ public:
 		m_alpha = value;
 	}
 
+	int calculate_alpha(float sampling_frequency, float magnitude = 0.5f);
+
 	void reset(float start);
 	float calculate(float in);
 
@@ -181,11 +203,27 @@ private:
 
 
 /*! \brief HighPassFilterF32 class (float) */
-/*! \details
+/*! \details This class implements a simple high
+ * pass filter. The filter is defined by the following difference
+ * equation:
  *
+ * ```
+ * y[n] = x[n] - x[n-1] + r * y[n-1]
+ * ```
  *
+ * The *r* value should be between zero and one. Values closer
+ * to one have a lower cutoff frequency.
  *
+ * ```
+ * #include <sapi/calc.hpp>
  *
+ * HighPassFilterF32 filter(0.0f, 0.9f);
+ *
+ * filter << 0.1f; //input 0.1 into the filter
+ * filter << 0.9f; //input another value
+ *
+ * printf("Filter value is %0.1f\n", filter.present_value());
+ * ```
  *
  */
 class HighPassFilterF32 : public SimpleFilter<float, HighPassFilterF32> {
@@ -196,6 +234,7 @@ public:
 	/*! \details Resets the filter to the given start value. */
 	void reset(float start);
 
+	/*! \details Updates the r value of the filter. */
 	void set_r_value(float r_value);
 
 	void set_initial_input(float value){

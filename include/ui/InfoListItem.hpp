@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_INFOLISTITEM_HPP_
-#define UI_INFOLISTITEM_HPP_
+#ifndef SAPI_UI_INFOLISTITEM_HPP_
+#define SAPI_UI_INFOLISTITEM_HPP_
 
 #include "../draw/TextAttr.hpp"
 #include "../draw/Icon.hpp"
@@ -37,4 +37,4 @@ private:
 
 }
 
-#endif /* UI_INFOLISTITEM_HPP_ */
+#endif /* SAPI_UI_INFOLISTITEM_HPP_ */

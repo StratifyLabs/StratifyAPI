@@ -1,8 +1,8 @@
 /* Copyright 2014-2016 Tyler Gilbert, Inc; All Rights Reserved
  *
  */
-#ifndef UI_EVENT_HPP_
-#define UI_EVENT_HPP_
+#ifndef SAPI_UI_EVENT_HPP_
+#define SAPI_UI_EVENT_HPP_
 
 #include "../ev/Event.hpp"
 
@@ -12,4 +12,4 @@ typedef ev::Event Event;
 
 }
 
-#endif /* UI_EVENT_HPP_ */
+#endif /* SAPI_UI_EVENT_HPP_ */

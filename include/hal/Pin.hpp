@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef PIN_HPP_
-#define PIN_HPP_
+#ifndef SAPI_HAL_PIN_HPP_
+#define SAPI_HAL_PIN_HPP_
 
 #include "../var/Tokenizer.hpp"
 #include "Pio.hpp"
@@ -225,4 +225,4 @@ private:
 
 }
 
-#endif /* PIN_HPP_ */
+#endif /* SAPI_HAL_PIN_HPP_ */

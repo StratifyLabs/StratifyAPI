@@ -1,7 +1,7 @@
 ﻿/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_SOCKET_HPP
-#define SAPI_SOCKET_HPP
+#ifndef SAPI_INET_SOCKET_HPP_
+#define SAPI_INET_SOCKET_HPP_
 
 
 #if defined __win32
@@ -578,4 +578,4 @@ private:
 
 }
 
-#endif // SAPI_SOCKET_HPP
+#endif // SAPISAPI_INET_SOCKET_HPP__SOCKET_HPP

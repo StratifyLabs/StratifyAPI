@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef SGFX_FONTSVGMEMORY_HPP_
-#define SGFX_FONTSVGMEMORY_HPP_
+#ifndef SAPI_SGFX_FONTSVGMEMORY_HPP_
+#define SAPI_SGFX_FONTSVGMEMORY_HPP_
 
 #include "FontSvg.hpp"
 
@@ -13,4 +13,4 @@ typedef SvgMemoryFont FontSvgMemory;
 
 }
 
-#endif /* SGFX_FONTSVGMEMORY_HPP_ */
+#endif /* SAPI_SGFX_FONTSVGMEMORY_HPP_ */

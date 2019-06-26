@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef CHRONO_CLOCK_HPP_
-#define CHRONO_CLOCK_HPP_
+#ifndef SAPI_CHRONO_CLOCK_HPP_
+#define SAPI_CHRONO_CLOCK_HPP_
 
 #include "../api/ChronoObject.hpp"
 #include "ClockTime.hpp"
@@ -47,4 +47,4 @@ public:
 
 }
 
-#endif // CLOCK_HPP
+#endif // SAPI_CHRONO_CLOCK_HPP_

@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_PROGRESS_HPP_
-#define DRAW_PROGRESS_HPP_
+#ifndef SAPI_DRAW_PROGRESS_HPP_
+#define SAPI_DRAW_PROGRESS_HPP_
 
 #include "Drawing.hpp"
 
@@ -87,4 +87,4 @@ private:
 
 }
 
-#endif /* DRAW_PROGRESS_HPP_ */
+#endif /* SAPI_DRAW_PROGRESS_HPP_ */

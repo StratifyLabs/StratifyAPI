@@ -1,5 +1,5 @@
-#ifndef SAPI_SYS_PRINTER_HPP
-#define SAPI_SYS_PRINTER_HPP
+#ifndef SAPI_SYS_PRINTER_HPP_
+#define SAPI_SYS_PRINTER_HPP_
 
 #include <cstdarg>
 #include "../api/SysObject.hpp"
@@ -543,4 +543,4 @@ private:
 
 }
 
-#endif // SAPI_SYS_PRINTER_HPP
+#endif // SAPI_SYS_PRINTER_HPP_

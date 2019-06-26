@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_PROGRESSCIRCLE_HPP_
-#define DRAW_PROGRESSCIRCLE_HPP_
+#ifndef SAPI_DRAW_PROGRESSCIRCLE_HPP_
+#define SAPI_DRAW_PROGRESSCIRCLE_HPP_
 
 #include "CircleProgress.hpp"
 
@@ -12,4 +12,4 @@ typedef CircleProgress ProgressCircle;
 
 }
 
-#endif /* DRAW_PROGRESSCIRCLE_HPP_ */
+#endif /* SAPI_DRAW_PROGRESSCIRCLE_HPP_ */

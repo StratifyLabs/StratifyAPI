@@ -1,5 +1,5 @@
-#ifndef API_VAR_OBJECT_HPP
-#define API_VAR_OBJECT_HPP
+#ifndef SAPI_API_VAR_OBJECT_HPP_
+#define SAPI_API_VAR_OBJECT_HPP_
 
 #include "WorkObject.hpp"
 #include "InfoObject.hpp"
@@ -28,4 +28,4 @@ class VarWorkObject : public virtual WorkObject {
 
 
 }
-#endif // API_VAR_OBJECT_HPP
+#endif // SAPI_API_VAR_OBJECT_HPP_

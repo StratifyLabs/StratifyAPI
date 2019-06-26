@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef PWM_HPP_
-#define PWM_HPP_
+#ifndef SAPI_HAL_PWM_HPP_
+#define SAPI_HAL_PWM_HPP_
 
 #include <sos/dev/pwm.h>
 #include "PinAssignment.hpp"
@@ -202,4 +202,4 @@ private:
 
 }
 
-#endif /* PWM_HPP_ */
+#endif /* SAPI_HAL_PWM_HPP_ */

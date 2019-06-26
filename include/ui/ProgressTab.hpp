@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_PROGRESSTAB_HPP_
-#define UI_PROGRESSTAB_HPP_
+#ifndef SAPI_UI_PROGRESSTAB_HPP_
+#define SAPI_UI_PROGRESSTAB_HPP_
 
 #include "Tab.hpp"
 #include "../draw/ArcProgress.hpp"
@@ -57,4 +57,4 @@ private:
 }
 
 
-#endif /* UI_PROGRESSTAB_HPP_ */
+#endif /* SAPI_UI_PROGRESSTAB_HPP_ */

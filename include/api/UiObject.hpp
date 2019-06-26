@@ -1,5 +1,5 @@
-#ifndef API_UI_OBJECT_HPP
-#define API_UI_OBJECT_HPP
+#ifndef SAPI_API_UI_OBJECT_HPP_
+#define SAPI_API_UI_OBJECT_HPP_
 
 #include "WorkObject.hpp"
 #include "InfoObject.hpp"
@@ -28,4 +28,4 @@ class UiWorkObject : public virtual WorkObject {
 
 }
 
-#endif // API_UI_OBJECT_HPP
+#endif // SAPI_API_UI_OBJECT_HPP_

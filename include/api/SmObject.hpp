@@ -1,5 +1,7 @@
-#ifndef API_SM_OBJECT_HPP
-#define API_SM_OBJECT_HPP
+#ifndef SAPI_API_SM_OBJECT_HPP_
+#define SAPI_API_SM_OBJECT_HPP_
+
+/*! \cond */
 
 #include "WorkObject.hpp"
 #include "InfoObject.hpp"
@@ -27,4 +29,6 @@ class SmWorkObject : public virtual WorkObject {
 
 }
 
-#endif // API_SM_OBJECT_HPP
+/*! \endcond */
+
+#endif // SAPI_API_SM_OBJECT_HPP_

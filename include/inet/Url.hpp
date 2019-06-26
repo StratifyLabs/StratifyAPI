@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef URL_HPP
-#define URL_HPP
+#ifndef SAPI_INET_URL_HPP_
+#define SAPI_INET_URL_HPP_
 
 #include "../api/InetObject.hpp"
 #include "../var/String.hpp"
@@ -41,4 +41,4 @@ private:
 
 }
 
-#endif // URL_HPP
+#endif // SAPI_INET_URL_HPP_

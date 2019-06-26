@@ -1,7 +1,7 @@
 ﻿/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef APPFS_HPP_
-#define APPFS_HPP_
+#ifndef SAPI_SYS_APPFS_HPP_
+#define SAPI_SYS_APPFS_HPP_
 
 #include <sos/link.h>
 #include "../api/WorkObject.hpp"
@@ -359,4 +359,4 @@ public:
 
 };
 
-#endif /* APPFS_HPP_ */
+#endif /* SAPI_SYS_APPFS_HPP_ */

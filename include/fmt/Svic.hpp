@@ -1,5 +1,5 @@
-#ifndef SAPI_FMT_SVIC_HPP
-#define SAPI_FMT_SVIC_HPP
+#ifndef SAPI_FMT_SVIC_HPP_
+#define SAPI_FMT_SVIC_HPP_
 
 #include "../sys/File.hpp"
 #include "../api/FmtObject.hpp"
@@ -7,8 +7,6 @@
 #include "../var/Vector.hpp"
 
 namespace fmt {
-
-
 
 /*! \brief Svc (Stratify Vector Collection) Class
  * \details The Svc class manages files that
@@ -40,4 +38,4 @@ private:
 
 }
 
-#endif // SAPI_FMT_SVIC_HPP
+#endif // SAPI_FMT_SVIC_HPP_

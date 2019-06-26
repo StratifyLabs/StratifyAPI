@@ -5,8 +5,8 @@
  *      Author: tgil
  */
 
-#ifndef VAR_RING_HPP_
-#define VAR_RING_HPP_
+#ifndef SAPI_VAR_RING_HPP_
+#define SAPI_VAR_RING_HPP_
 
 #include <new>
 #include <sos/dev/fifo.h>
@@ -303,4 +303,4 @@ private:
 
 } /* namespace var */
 
-#endif /* VAR_RING_HPP_ */
+#endif /* SAPI_VAR_RING_HPP_ */

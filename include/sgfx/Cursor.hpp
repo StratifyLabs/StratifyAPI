@@ -5,8 +5,8 @@
  *      Author: tgil
  */
 
-#ifndef SGFX_CURSOR_HPP_
-#define SGFX_CURSOR_HPP_
+#ifndef SAPI_SGFX_CURSOR_HPP_
+#define SAPI_SGFX_CURSOR_HPP_
 
 #include "../var/Item.hpp"
 #include "Bitmap.hpp"
@@ -50,4 +50,4 @@ private:
 
 } /* namespace sgfx */
 
-#endif /* SGFX_CURSOR_HPP_ */
+#endif /* SAPI_SGFX_CURSOR_HPP_ */

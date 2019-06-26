@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_CORE_HPP_
-#define SAPI_CORE_HPP_
+#ifndef SAPI_HAL_CORE_HPP_
+#define SAPI_HAL_CORE_HPP_
 
 #include <mcu/mcu.h>
 #include <sos/dev/core.h>
@@ -183,4 +183,4 @@ private:
 
 }
 
-#endif /* SAPI_CORE_HPP_ */
+#endif /* SAPI_HAL_CORE_HPP_ */

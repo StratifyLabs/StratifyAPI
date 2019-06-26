@@ -1,5 +1,5 @@
-#ifndef PROGRESSCALLBACK_HPP
-#define PROGRESSCALLBACK_HPP
+#ifndef SAPI_SYS_PROGRESSCALLBACK_HPP_
+#define SAPI_SYS_PROGRESSCALLBACK_HPP_
 
 #include "../api/SysObject.hpp"
 
@@ -80,4 +80,4 @@ private:
 
 }
 
-#endif // PROGRESSCALLBACK_HPP
+#endif // SAPI_SYS_PROGRESSCALLBACK_HPP_

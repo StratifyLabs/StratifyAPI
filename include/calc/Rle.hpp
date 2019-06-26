@@ -1,7 +1,9 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef RLE_HPP_
-#define RLE_HPP_
+#ifndef SAPI_CALC_RLE_HPP_
+#define SAPI_CALC_RLE_HPP_
+
+/*! \cond */
 
 #include "../sys/Appfs.hpp"
 #include "../sys/File.hpp"
@@ -112,4 +114,7 @@ public:
 };
 
 };
-#endif /* RLE_HPP_ */
+
+/*! \endcond */
+
+#endif /* SAPI_CALC_RLE_HPP_ */

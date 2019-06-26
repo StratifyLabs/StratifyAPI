@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
-#ifndef SYS_FILE_HPP_
-#define SYS_FILE_HPP_
+#ifndef SAPI_SYS_FILE_HPP_
+#define SAPI_SYS_FILE_HPP_
 
 #include <sos/link.h>
 
@@ -761,4 +761,4 @@ private:
 
 }
 
-#endif /* SYS_FILE_HPP_ */
+#endif /* SAPI_SYS_FILE_HPP_ */

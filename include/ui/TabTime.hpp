@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef UI_TABTIME_HPP_
-#define UI_TABTIME_HPP_
+#ifndef SAPI_UI_TABTIME_HPP_
+#define SAPI_UI_TABTIME_HPP_
 
 #include "TimeTab.hpp"
 
@@ -14,4 +14,4 @@ typedef TimeTab TabTime;
 
 }
 
-#endif /* UI_TABTIME_HPP_ */
+#endif /* SAPI_UI_TABTIME_HPP_ */

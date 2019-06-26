@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef BASE64_HPP_
-#define BASE64_HPP_
+#ifndef SAPI_CALC_BASE64_HPP_
+#define SAPI_CALC_BASE64_HPP_
 
 #include "../api/CalcObject.hpp"
 #include "../var/String.hpp"
@@ -142,4 +142,4 @@ private:
 
 }
 
-#endif /* BASE64_HPP_ */
+#endif /* SAPI_CALC_BASE64_HPP_ */

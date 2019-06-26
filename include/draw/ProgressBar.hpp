@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef DRAW_PROGRESSBAR_HPP_
-#define DRAW_PROGRESSBAR_HPP_
+#ifndef SAPI_DRAW_PROGRESSBAR_HPP_
+#define SAPI_DRAW_PROGRESSBAR_HPP_
 
 #include "BarProgress.hpp"
 
@@ -12,4 +12,4 @@ typedef BarProgress ProgressBar;
 
 }
 
-#endif /* DRAW_PROGRESSBAR_HPP_ */
+#endif /* SAPI_DRAW_PROGRESSBAR_HPP_ */

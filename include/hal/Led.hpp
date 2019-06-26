@@ -1,8 +1,8 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 
-#ifndef HAL_LED_HPP_
-#define HAL_LED_HPP_
+#ifndef SAPI_HAL_LED_HPP_
+#define SAPI_HAL_LED_HPP_
 
 #include <sos/dev/led.h>
 #include "Periph.hpp"
@@ -98,4 +98,4 @@ public:
 
 } /* namespace hal */
 
-#endif /* HAL_LED_HPP_ */
+#endif /* SAPI_HAL_LED_HPP_ */

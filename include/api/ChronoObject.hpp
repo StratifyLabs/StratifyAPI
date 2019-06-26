@@ -1,5 +1,5 @@
-#ifndef API_CHRONO_OBJECT_HPP
-#define API_CHRONO_OBJECT_HPP
+#ifndef SAPI_API_CHRONO_OBJECT_HPP_
+#define SAPI_API_CHRONO_OBJECT_HPP_
 
 #include "WorkObject.hpp"
 #include "InfoObject.hpp"
@@ -84,4 +84,4 @@ public:
 }
 
 
-#endif // API_UI_OBJECT_HPP
+#endif // SAPI_API_CHRONO_OBJECT_HPP_
