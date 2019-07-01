@@ -358,7 +358,6 @@ int Socket::shutdown(int how) const{
 
 
 int Socket::close() {
-	printf("close socket\n");
 	int result = 0;
 	if( m_socket != SOCKET_INVALID ){
 #if defined __win32
