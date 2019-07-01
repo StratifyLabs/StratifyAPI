@@ -44,7 +44,7 @@ bool Drive::is_busy() const {
 	return result > 0;
 }
 
-DriveInfo Drive::get_info(){
+DriveInfo Drive::get_info() const {
 	drive_info_t info;
 	if( ioctl(I_DRIVE_GETINFO, &info) < 0 ){
 		return DriveInfo();

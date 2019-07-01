@@ -55,9 +55,7 @@ protected:
  *
  * The filter uses the following difference equation:
  *
- * ```
- * y[n] = alpha * x[n] + (1-alpha)*y[n-1]
- * ```
+ * $$ y[n] = \alpha * x[n] + (1 - \alpha) * y[n] $$
  *
  * Alpha is a value between 0 and 1. If alpha is 0, there is no
  * filtering. If alpha is close to 1, the cutoff frequency is closer
@@ -207,9 +205,7 @@ private:
  * pass filter. The filter is defined by the following difference
  * equation:
  *
- * ```
- * y[n] = x[n] - x[n-1] + r * y[n-1]
- * ```
+ * $$ y[n] = x[n] - x[n-1] + r * y[n-1] $$
  *
  * The *r* value should be between zero and one. Values closer
  * to one have a lower cutoff frequency.

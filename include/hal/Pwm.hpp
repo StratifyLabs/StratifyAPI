@@ -84,13 +84,15 @@ class Pwm : public Periph<pwm_info_t, pwm_attr_t, PwmAttributes, PWM_IOC_IDENT_C
 public:
 	Pwm(port_t port);
 
-	enum {
+	enum pwm_flags {
+		/*! \cond */
 		FLAG_SET_TIMER = PWM_FLAG_SET_TIMER,
 		FLAG_IS_ACTIVE_HIGH = PWM_FLAG_IS_ACTIVE_HIGH,
 		FLAG_IS_ACTIVE_LOW = PWM_FLAG_IS_ACTIVE_LOW,
 		FLAG_SET_CHANNELS = PWM_FLAG_SET_CHANNELS,
 		FLAG_CLEAR_CHANNELS = PWM_FLAG_CLEAR_CHANNELS,
 		FLAG_IS_ENABLED = PWM_FLAG_IS_ENABLED,
+		/*! \endcond */
 
 		SET_TIMER /*! See \ref PWM_FLAG_SET_TIMER */ = PWM_FLAG_SET_TIMER,
 		IS_ACTIVE_HIGH /*! See \ref PWM_FLAG_IS_ACTIVE_HIGH */ = PWM_FLAG_IS_ACTIVE_HIGH,

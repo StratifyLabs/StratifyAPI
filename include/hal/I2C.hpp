@@ -154,7 +154,7 @@ public:
 	/*! \details Constructs an I2C object using the specified port. */
 	I2C(port_t port);
 
-	enum {
+	enum i2c_error {
 		ERROR_NONE /*! No errors */ = I2C_ERROR_NONE,
 		ERROR_START /*! Error while starting */ = I2C_ERROR_START,
 		ERROR_WRITE /*! Error while writing */ = I2C_ERROR_WRITE,
@@ -166,7 +166,8 @@ public:
 		ERROR_ARBITRATION_LOST /*! Arbitration lost on multi-master bus */ = I2C_ERROR_ARBITRATION_LOST
 	};
 
-	enum {
+	enum i2c_flags {
+		/*! \cond */
 		FLAG_NONE = I2C_FLAG_NONE,
 		FLAG_SET_MASTER = I2C_FLAG_SET_MASTER,
 		FLAG_SET_SLAVE = I2C_FLAG_SET_SLAVE,
@@ -185,6 +186,7 @@ public:
 		FLAG_RESET = I2C_FLAG_RESET,
 		FLAG_STRETCH_CLOCK = I2C_FLAG_STRETCH_CLOCK,
 		FLAG_IS_NO_STOP = I2C_FLAG_IS_NO_STOP,
+		/*! \endcond */
 
 		SET_MASTER /*! Operate as a master I2C bus */ = I2C_FLAG_SET_MASTER,
 		SET_SLAVE/*! Operate as a slave (ignored if master is set) */ = I2C_FLAG_SET_SLAVE,

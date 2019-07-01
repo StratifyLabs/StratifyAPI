@@ -23,7 +23,8 @@ class Rtc : public Periph<rtc_info_t, rtc_attr_t, RtcAttributes, 'r'> {
 public:
 	Rtc(port_t port);
 
-	enum {
+	enum rtc_flags {
+		/*! \cond */
 		FLAG_ENABLE = RTC_FLAG_ENABLE,
 		FLAG_DISABLE = RTC_FLAG_DISABLE,
 		FLAG_IS_SOURCE_EXTERNAL_32768 = RTC_FLAG_IS_SOURCE_EXTERNAL_32768,
@@ -48,6 +49,7 @@ public:
 		FLAG_IS_COUNT_MONTH = RTC_FLAG_IS_COUNT_MONTH,
 		FLAG_IS_COUNT_YEAR = RTC_FLAG_IS_COUNT_YEAR,
 		FLAG_DISABLE_COUNT_EVENT = RTC_FLAG_DISABLE_COUNT_EVENT,
+		/*! \endcond */
 
 		ENABLE /*! Set the alarm */ = RTC_FLAG_ENABLE,
 		DISABLE /*! Set the alarm */ = RTC_FLAG_DISABLE,

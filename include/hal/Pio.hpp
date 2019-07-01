@@ -65,7 +65,7 @@ class Pio : public Periph<pio_info_t, pio_attr_t, PioAttributes, 'p'> {
 public:
 	Pio(port_t port);
 
-	enum pin_flags {
+	enum pio_flags {
 		/*! \cond */
 		FLAG_SET_INPUT = PIO_FLAG_SET_INPUT,
 		FLAG_SET_OUTPUT = PIO_FLAG_SET_OUTPUT,

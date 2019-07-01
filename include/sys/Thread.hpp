@@ -23,7 +23,7 @@ namespace sys {
  *
  * - set_priority()
  *
- * \code
+ * ```
  *
  * static void thread_execute(void * args);
  *
@@ -45,16 +45,20 @@ namespace sys {
  * printf("Thread stacksize is %d\n", t.get_stacksize());
  * printf("Thread is joinable? %d\n", t.is_joinable());
  *
- * \endcode
+ * ```
  *
  *
  */
 class Thread : public api::SysWorkObject {
 public:
 
+	/*! \details Defines the function call type that is
+	 * used to create() a new thread.
+	 *
+	 */
 	typedef void * (*handler_function_t)(void *);
 
-	enum {
+	enum thread_flags {
 		ID_ERROR /*! ID is an error */ = (u32)-2,
 		ID_PENDING /*! ID is ready to be created (not valid yet) */ = (u32)-1,
 		JOINABLE /*! Joinable thread */ = PTHREAD_CREATE_JOINABLE,
@@ -225,7 +229,7 @@ public:
 	  * It causes the signal handler to be executed in the context of the thread,
 	  * but the signal action will affect the whole process.
 	  *
-	  * \code
+	  * ```
 	  *
 	  * Thread t;
 	  *
@@ -236,7 +240,7 @@ public:
 	  * t.kill(Signal::STOP); //will stop the thread from running
 	  *
 	  *
-	  * \endcode
+	  * ```
 	  *
 	  *
 	 */

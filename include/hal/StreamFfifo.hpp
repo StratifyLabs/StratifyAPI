@@ -74,7 +74,7 @@ class StreamFFifo : public Device {
 public:
 	StreamFFifo();
 
-	enum {
+	enum stream_ffifo_flags {
 		START = STREAM_FFIFO_FLAG_START,
 		STOP = STREAM_FFIFO_FLAG_STOP,
 		FLUSH = STREAM_FFIFO_FLAG_FLUSH

@@ -17,11 +17,13 @@ class Led : public Device {
 public:
 	Led();
 
-	enum {
+	enum led_flags {
+		/*! \cond */
 		FLAG_IS_HIGH_IMPEDANCE = LED_FLAG_IS_HIGH_IMPEDANCE,
 		FLAG_IS_DUTY_CYCLE = LED_FLAG_IS_DUTY_CYCLE,
 		FLAG_ENABLE = LED_FLAG_ENABLE,
 		FLAG_DISABLE = LED_FLAG_DISABLE,
+		/*! \endcond */
 
 		IS_HIGH_IMPEDANCE /*! See \ref LED_FLAG_IS_HIGH_IMPEDANCE */ = LED_FLAG_IS_HIGH_IMPEDANCE,
 		IS_DUTY_CYCLE /*! See \ref LED_FLAG_IS_DUTY_CYCLE */ = LED_FLAG_IS_DUTY_CYCLE,

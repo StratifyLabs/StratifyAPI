@@ -171,7 +171,7 @@ public:
 	 * populated with the infomration from the drive.
 	 *
 	 */
-	DriveInfo get_info();
+	DriveInfo get_info() const;
 
 
 };

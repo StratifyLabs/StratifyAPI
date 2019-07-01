@@ -232,7 +232,7 @@ public:
 	/*! \details Constructs a new object. */
 	Switchboard();
 
-	enum {
+	enum switchboard_flags {
 		CONNECT /*! Connect Flag */ = SWITCHBOARD_FLAG_CONNECT,
 		DISCONNECT /*! Disconnect Flag */ = SWITCHBOARD_FLAG_DISCONNECT,
 		IS_PERSISTENT /*! Is Persistent Flag */ = SWITCHBOARD_FLAG_IS_PERSISTENT,

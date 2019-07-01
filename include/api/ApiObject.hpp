@@ -124,10 +124,10 @@
  * If you are just getting started with Stratify OS and the Stratify API,
  * try reading through some of the guides:
  *
- * - [Stratify OS](https://docs.stratifylabs.co/Guide-Stratify-OS/)
- * - [Filesystems](https://docs.stratifylabs.co/Guide-Filesystems/)
- * - [Threads](https://docs.stratifylabs.co/Guide-Threads/)
- * - [CMake Projects](https://docs.stratifylabs.co/Guide-CMake/)
+ * - [Stratify OS](https://docs.stratifylabs.co/guides/Guide-Stratify-OS/)
+ * - [Filesystems](https://docs.stratifylabs.co/guides/Guide-Filesystems/)
+ * - [Threads](https://docs.stratifylabs.co/guides/Guide-Threads/)
+ * - [CMake Projects](https://docs.stratifylabs.co/guides/Guide-CMake/)
  *
  * If you are ready to start tinkering, hal::Pin is a nice place to
  * start and allows you to read and write GPIO values. hal::Uart

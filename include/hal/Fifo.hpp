@@ -94,7 +94,8 @@ class Fifo : public hal::Device {
 public:
 	Fifo();
 
-	enum {
+	enum fifo_flags {
+		/*! \cond */
 		FLAG_SET_WRITEBLOCK = FIFO_FLAG_SET_WRITEBLOCK,
 		FLAG_IS_OVERFLOW = FIFO_FLAG_IS_OVERFLOW,
 		FLAG_NOTIFY_WRITE = FIFO_FLAG_NOTIFY_WRITE,
@@ -102,6 +103,7 @@ public:
 		FLAG_INIT = FIFO_FLAG_INIT,
 		FLAG_EXIT = FIFO_FLAG_EXIT,
 		FLAG_FLUSH = FIFO_FLAG_FLUSH,
+		/*! \endcond */
 
 		SET_WRITEBLOCK = FIFO_FLAG_SET_WRITEBLOCK,
 		IS_OVERFLOW = FIFO_FLAG_IS_OVERFLOW,

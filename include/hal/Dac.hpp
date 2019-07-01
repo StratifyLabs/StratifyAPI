@@ -68,10 +68,12 @@ public:
 
 	Dac(port_t port);
 
-	enum {
+	enum dac_flags {
+		/*! \cond */
 		FLAG_SET_CONVERTER = DAC_FLAG_SET_CONVERTER,
 		FLAG_LEFT_JUSTIFIED = DAC_FLAG_IS_LEFT_JUSTIFIED,
 		FLAG_RIGHT_JUSTIFIED = DAC_FLAG_IS_RIGHT_JUSTIFIED,
+		/*! \endcond */
 
 		SET_CONVERTER /*! Set to configure the converter */ = DAC_FLAG_SET_CONVERTER,
 		LEFT_JUSTIFIED /*! Set to left justify the data */ = DAC_FLAG_IS_LEFT_JUSTIFIED,
