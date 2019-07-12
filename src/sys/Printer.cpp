@@ -786,14 +786,19 @@ bool Printer::update_progress(int progress, int total){
 	const u32 width = m_progress_width;
 
 	if( verbose_level() >= Printer::INFO ){
+
 		if( (m_progress_state == 0) && total ){
+
+			//only print the key once with total == -1
 			key(m_progress_key, "");
-			if( (m_o_flags & PRINT_SIMPLE_PROGRESS) == 0 ){
-				for(u32 i=0; i < width; i++){
-					print(".");
-				}
-				for(u32 i = 0; i < width; i++){
-					print("\b"); //backspace
+			if( total != -1 ){
+				if( (m_o_flags & PRINT_SIMPLE_PROGRESS) == 0 ){
+					for(u32 i=0; i < width; i++){
+						print(".");
+					}
+					for(u32 i = 0; i < width; i++){
+						print("\b"); //backspace
+					}
 				}
 			}
 			m_progress_state++;
@@ -802,14 +807,25 @@ bool Printer::update_progress(int progress, int total){
 
 		if( m_progress_state	> 0 ){
 
-			while( (total != 0) && (m_progress_state <= (progress*width+total/2)/total) ){
-				print("#");
-				m_progress_state++;
-				fflush(stdout);
-			}
+			if( total == -1 ){
+				var::String output;
+				output.format("#" F32U, progress);
+				print(output.cstring());
+				for(u32 i = 0; i < output.length(); i++){
+					print("\b"); //backspace
+				}
 
-			if( (progress >= total) || (total == 0) ){
-				m_progress_state = 0;
+			} else {
+
+				while( (total != 0) && (m_progress_state <= (progress*width+total/2)/total) ){
+					print("#");
+					m_progress_state++;
+					fflush(stdout);
+				}
+
+				if( (progress >= total) || (total == 0) ){
+					m_progress_state = 0;
+				}
 			}
 		}
 	}

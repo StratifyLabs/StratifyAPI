@@ -36,7 +36,8 @@ public:
 	 * is the total progress value.
 	 *
 	 * If the total (third argument) is zero, the operation is either complete
-	 * or aborted.
+	 * or aborted. If total is set to -1, the progress should be
+	 * shown as indeterminate.
 	 *
 	 */
 	typedef bool (*callback_t)(void*, int, int);
@@ -65,6 +66,10 @@ public:
 	 *
 	 * This method is called within operations in order
 	 * to execute the provided callback.
+	 *
+	 * @param value The value of the progress of the operation
+	 * @param total The total possible progress for the operation
+	 * @return true to abort the operation or false to continue as normal
 	 *
 	 */
 	bool update(int value, int total) const;

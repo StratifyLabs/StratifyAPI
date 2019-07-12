@@ -64,6 +64,10 @@ u32 Test::score() const {
 	return baseline_microseconds / case_timer().microseconds();
 }
 
+void Test::print_case_score(){
+	print_case_message_with_key("score", "%ld", score());
+}
+
 void Test::execute(const sys::Cli & cli){
 	u32 o_flags = 0;
 

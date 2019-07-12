@@ -367,7 +367,7 @@ public:
 	/*! \details Accesses a referece to a value in the data as a s16 array. */
 	s16 & at_s16(u32 idx) { return at<s16>(idx); }
 	/*! \details Accesses a referece to a value in the data as a u32 array. */
-	u32 & at_u32_at(u32 idx) { return at<u32>(idx); }
+	u32 & at_u32(u32 idx) { return at<u32>(idx); }
 	/*! \details Accesses a referece to a value in the data as a s32 array. */
 	s32 & at_s32(u32 idx) { return at<s32>(idx); }
 	/*! \details Accesses a referece to a value in the data as a u64 array. */

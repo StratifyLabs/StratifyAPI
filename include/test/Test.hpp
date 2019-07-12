@@ -316,6 +316,7 @@ protected:
 	const chrono::Timer & case_timer() const { return m_case_timer; }
 	chrono::Timer & case_timer(){ return m_case_timer; }
 
+
 	u32 score() const;
 
 	/*! \details Prints a message to the test report.
@@ -330,6 +331,8 @@ protected:
 	  *
 	  */
 	void print_case_message(const char * fmt, ...);
+
+	void print_case_score();
 
 	void print_case_failed(const char * fmt, ...);
 	void print_case_failed(const api::Result & result, int line = 0){

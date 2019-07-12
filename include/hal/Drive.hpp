@@ -58,7 +58,7 @@ public:
 	 * usually larger than one. For large SD cards, it is typically 512.
 	 *
 	 */
-	u16 address_size() const { return m_info.address_size; }
+	u16 addressable_size() const { return m_info.addressable_size; }
 
 	/*! \details Returns the size of the smallest writeable
 	 * block on the drive. If each byte can be
@@ -73,6 +73,7 @@ public:
 	 *
 	 */
 	u32 write_block_count() const { return m_info.num_write_blocks; }
+
 	/*! \details Returns the size of the smallest eraseable block on the drive. */
 	u32 erase_block_size() const { return m_info.erase_block_size; }
 
@@ -95,6 +96,12 @@ public:
 	chrono::MicroTime erase_block_time() const {
 		return chrono::MicroTime(m_info.erase_block_time);
 	}
+
+	/*! \details Returns the maximum number of bytes that can
+	 * be programmed as a single page.
+	 *
+	 */
+	u32 page_program_size() const { return m_info.page_program_size; }
 
 
 private:
