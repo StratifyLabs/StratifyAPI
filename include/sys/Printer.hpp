@@ -55,6 +55,7 @@ class DrawingAttributes;
 namespace hal{
 class I2CAttributes;
 class UartAttributes;
+class DriveInfo;
 }
 
 namespace sys {
@@ -237,6 +238,8 @@ public:
 	/*! \details Prints a float type. */
 	Printer & operator << (float a);
 
+	Printer & operator << (const hal::DriveInfo & a);
+
 	Printer & operator << (const draw::DrawingPoint & a);
 	Printer & operator << (const draw::DrawingArea & a);
 	Printer & operator << (const draw::DrawingRegion & a);
@@ -323,7 +326,8 @@ public:
 		PRINT_YELLOW_WARNINGS = (1<<15),
 		PRINT_CYAN_KEYS = (1<<16),
 		PRINT_YELLOW_KEYS = (1<<17),
-		PRINT_MAGENTA_KEYS = (1<<18)
+		PRINT_MAGENTA_KEYS = (1<<18),
+		PRINT_BLOB /*! Print Data as a blob */ = (1<<19)
 	};
 
 	/*! \details Sets the flags that modify how numbers and some messages are printed. */

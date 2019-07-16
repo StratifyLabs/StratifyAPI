@@ -25,6 +25,25 @@ int Drive::powerdown() const {
 	return ioctl(I_DRIVE_SETATTR, &attr);
 }
 
+int Drive::reset() const {
+	drive_attr_t attr;
+	attr.o_flags = DRIVE_FLAG_RESET;
+	return ioctl(I_DRIVE_SETATTR, &attr);
+}
+
+
+int Drive::protect() const {
+	drive_attr_t attr;
+	attr.o_flags = DRIVE_FLAG_PROTECT;
+	return ioctl(I_DRIVE_SETATTR, &attr);
+}
+
+int Drive::unprotect() const {
+	drive_attr_t attr;
+	attr.o_flags = DRIVE_FLAG_UNPROTECT;
+	return ioctl(I_DRIVE_SETATTR, &attr);
+}
+
 int Drive::erase_blocks(u32 start, u32 end) const {
 	drive_attr_t attr;
 	attr.o_flags = DRIVE_FLAG_ERASE_BLOCKS;

@@ -155,6 +155,12 @@ public:
 	 */
 	int powerdown() const;
 
+	int reset() const;
+
+
+	int protect() const;
+	int unprotect() const;
+
 	/*! \details Erases blocks on the drive.
 	 *
 	 * @param start An address containing the first block to erase

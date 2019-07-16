@@ -7,6 +7,7 @@
 #include "sys/Printer.hpp"
 #include "sys/Sys.hpp"
 #include "hal/Core.hpp"
+#include "hal/Drive.hpp"
 #include "sys/TaskManager.hpp"
 #include "sys/Cli.hpp"
 #include "sys/FileInfo.hpp"
@@ -242,6 +243,8 @@ Printer & Printer::operator << (const var::Data & a){
 		s = a.size() / 4;
 	} else if( o_flags & PRINT_16 ){
 		s = a.size() / 2;
+	} else if( o_flags & PRINT_BLOB ){
+		s = a.size() / 16;
 	} else {
 		s = a.size();
 	}
@@ -250,12 +253,19 @@ Printer & Printer::operator << (const var::Data & a){
 	for(i=0; i < s; i++){
 		print("\n");
 		print_indentation();
-		print("[%d]=", i);
+		print("[%04d]=", i);
 		if( o_flags & PRINT_HEX ){
 			if( o_flags & PRINT_32 ){
 				print(F32X, ptru32[i]);
 			} else if( o_flags & PRINT_16 ){
 				print("%X", ptru16[i]);
+			} else if( o_flags & PRINT_BLOB ){
+				for(u32 j=0; j < 16; j++){
+					print("%02X", ptru8[i*16+j]);
+					if( j < 15 ){
+						print(" ");
+					}
+				}
 			} else {
 				print("%X", ptru8[i]);
 			}
@@ -266,6 +276,13 @@ Printer & Printer::operator << (const var::Data & a){
 				print(F32U, ptru32[i]);
 			} else if( o_flags & PRINT_16 ){
 				print("%u", ptru16[i]);
+			} else if( o_flags & PRINT_BLOB ){
+				for(u32 j=0; j < 16; j++){
+					print("%u", ptru8[i*16+j]);
+					if( j < 15 ){
+						print(" ");
+					}
+				}
 			} else {
 				print("%u", ptru8[i]);
 			}
@@ -276,6 +293,13 @@ Printer & Printer::operator << (const var::Data & a){
 				print(F32D, ptrs32[i]);
 			} else if( o_flags & PRINT_16 ){
 				print("%d", ptrs16[i]);
+			} else if( o_flags & PRINT_BLOB ){
+				for(u32 j=0; j < 16; j++){
+					print("%d", ptru8[i*16+j]);
+					if( j < 15 ){
+						print(" ");
+					}
+				}
 			} else {
 				print("%d", ptrs8[i]);
 			}
@@ -505,6 +529,20 @@ Printer & Printer::operator << (const sys::AppfsInfo & a){
 		key("startup", a.is_startup() ? "true" : "false");
 		key("unique", a.is_unique() ? "true" : "false");
 	}
+	return *this;
+}
+
+Printer & Printer::operator << (const hal::DriveInfo & a){
+	key("addressableSize", "%ld", a.addressable_size());
+	key("eraseBlockSize", "%ld", a.erase_block_size());
+	key("eraseBlockTime", "%ldus", a.erase_block_time().microseconds());
+	key("eraseDeviceTime", "%ldms", a.erase_device_time().milliseconds());
+	key("frequency", "%ld", a.frequency());
+	key("events", "0x%lX", a.o_events());
+	key("flags", "0x%lX", a.o_flags());
+	key("pageProgramSize", "%ld", a.page_program_size());
+	key("writeBlockCount", "%ld", a.write_block_count());
+	key("writeBlockSize", "%ld", a.write_block_size());
 	return *this;
 }
 
