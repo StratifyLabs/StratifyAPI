@@ -61,10 +61,10 @@ public:
 	 * @param width UART byte width (default is 8)
 	 *
 	 */
-	UartAttributes(u32 o_flags = UART_FLAG_SET_LINE_CODING_DEFAULT, u32 freq = 115200, u32 width = 8){
-		set_flags(o_flags);
-		set_freq(freq);
-		set_width(width);
+	UartAttributes(){
+		set_flags(UART_FLAG_SET_LINE_CODING_DEFAULT);
+		set_freq(115200);
+		set_width(8);
 	}
 
 	/*! \details Accesses the tx pin assignment value. */
@@ -113,6 +113,10 @@ public:
 	 *
 	 */
 	UartAttributes & set_width(u8 bits){ m_attr.width = bits; return *this; }
+
+	UartAttributes & set_frequency(u32 value){ PeriphAttributes::set_frequency(value); return *this; }
+	UartAttributes & set_flags(u32 value){ PeriphAttributes::set_flags(value); return *this; }
+
 };
 
 typedef UartAttributes UartAttr;
@@ -268,26 +272,6 @@ public:
 	/*! \details Flushes the TX/RX buffers. */
 	int flush();
 
-	int set_attr(u32 o_flags, u32 freq, u32 width = 8, const uart_pin_assignment_t * pin_assignment = 0) const {
-		uart_attr_t attr;
-		attr.o_flags = o_flags;
-		if( pin_assignment ){
-			memcpy(&attr.pin_assignment, pin_assignment, sizeof(uart_pin_assignment_t));
-		} else {
-			memset(&attr.pin_assignment, 0xff, sizeof(uart_pin_assignment_t));
-		}
-		attr.freq = freq;
-		attr.width = width;
-		return set_attributes(attr);
-	}
-
-
-	int init(u32 o_flags, u32 freq, u32 width = 8, const uart_pin_assignment_t * pin_assignment = 0){
-		if( open() < 0 ){
-			return -1;
-		}
-		return set_attr(o_flags, freq, width, pin_assignment);
-	}
 
 	using Periph::get_info;
 	UartInfo get_info() const;

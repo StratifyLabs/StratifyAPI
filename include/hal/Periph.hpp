@@ -144,6 +144,11 @@ public:
 	 * \details Constructs an MCU peripheral object
 	 * \param periph Core peripheral value
 	 * \param port Port number
+	 *
+	 * If the peripheral has been opened by another
+	 * object, the file descriptor from that object
+	 * will be used with this object as well.
+	 *
 	 */
 	Periph(core_periph_t periph, port_t port){
 		m_periph_port = (periph << 8) | port;

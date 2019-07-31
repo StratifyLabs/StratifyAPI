@@ -36,3 +36,12 @@ int Spi::transfer(const void * write_data, void * read_data, int nbytes){
 	return result;
 }
 #endif
+
+SpiInfo Spi::get_info() const {
+	spi_info_t info;
+	if( get_info(info) < 0 ){
+		return SpiInfo();
+	}
+
+	return SpiInfo(info);
+}

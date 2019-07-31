@@ -244,12 +244,13 @@ Printer & Printer::operator << (const var::Data & a){
 	} else if( o_flags & PRINT_16 ){
 		s = a.size() / 2;
 	} else if( o_flags & PRINT_BLOB ){
-		s = a.size() / 16;
+		s = (a.size()+15) / 16;
 	} else {
 		s = a.size();
 	}
 
 	int i;
+	u32 bytes_printed = 0;
 	for(i=0; i < s; i++){
 		print("\n");
 		print_indentation();
@@ -264,6 +265,10 @@ Printer & Printer::operator << (const var::Data & a){
 					print("%02X", ptru8[i*16+j]);
 					if( j < 15 ){
 						print(" ");
+					}
+					bytes_printed++;
+					if( bytes_printed == a.size() ){
+						break;
 					}
 				}
 			} else {

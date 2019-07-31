@@ -20,12 +20,10 @@ class SpiPinAssignment : public PinAssignment<spi_pin_assignment_t>{};
 class SpiAttributes : public PinAssignmentPeriphAttributes<spi_attr_t, spi_pin_assignment_t> {
 public:
 
-	SpiAttributes(u32 o_flags = SPI_FLAG_SET_MASTER | SPI_FLAG_IS_FORMAT_SPI | SPI_FLAG_IS_MODE0 | SPI_FLAG_IS_HALF_DUPLEX,
-					  u32 freq = 1000000,
-					  u8 width = 8){
-		set_frequency(freq);
-		set_width(width);
-		set_flags(o_flags);
+	SpiAttributes(){
+		set_flags(SPI_FLAG_SET_MASTER | SPI_FLAG_IS_FORMAT_SPI | SPI_FLAG_IS_MODE0 | SPI_FLAG_IS_HALF_DUPLEX);
+		set_frequency(1000000);
+		set_width(8);
 	}
 
 	SpiAttributes & set_miso(const mcu_pin_t & pin){ m_attr.pin_assignment.miso = pin; return *this; }
@@ -33,6 +31,8 @@ public:
 	SpiAttributes & set_sck(const mcu_pin_t & pin){ m_attr.pin_assignment.sck = pin; return *this; }
 	SpiAttributes & set_cs(const mcu_pin_t & pin){ m_attr.pin_assignment.cs = pin; return *this; }
 	SpiAttributes & set_width(u8 value){ m_attr.width = value; return *this; }
+	SpiAttributes & set_frequency(u32 value){ PeriphAttributes::set_frequency(value); return *this; }
+	SpiAttributes & set_flags(u32 value){ PeriphAttributes::set_flags(value); return *this; }
 
 	mcu_pin_t miso() const { return m_attr.pin_assignment.miso; }
 	mcu_pin_t mosi() const { return m_attr.pin_assignment.mosi; }
@@ -46,6 +46,20 @@ private:
 };
 
 typedef SpiAttributes SpiAttr;
+
+class SpiInfo : public api::HalInfoObject {
+public:
+	SpiInfo(){ memset(&m_info, 0, sizeof(spi_info_t)); }
+	SpiInfo(const spi_info_t & info){ m_info = info; }
+
+	bool is_valid() const { return m_info.o_flags != 0; }
+	u32 o_flags() const { return m_info.o_flags; }
+	u32 o_events() const { return m_info.o_events; }
+
+
+private:
+	spi_info_t m_info;
+};
 
 
 /*! \brief SPI Class
@@ -123,6 +137,9 @@ public:
 	int init(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0){ return initialize(o_flags, freq, width, pin_assignment); }
 
 	using Periph::initialize;
+	using Periph::get_info;
+	SpiInfo get_info() const;
+
 
 #if !defined __link
 	int transfer(const void * write_data, void * read_data, int nbytes);
