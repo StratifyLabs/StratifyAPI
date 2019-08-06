@@ -1,5 +1,6 @@
 
 set(SOURCELIST
+	${SOURCES_PREFIX}/Auth.cpp
 	${SOURCES_PREFIX}/Appfs.cpp
 	${SOURCES_PREFIX}/Cli.cpp
 	${SOURCES_PREFIX}/Dir.cpp

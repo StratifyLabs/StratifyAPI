@@ -40,19 +40,6 @@ bool SerialNumber::operator == (const SerialNumber & serial_number){
 	return memcmp(&serial_number.m_serial_number, &m_serial_number, sizeof(mcu_sn_t)) == 0;
 }
 
-SerialNumber SerialNumber::get(){
-	SerialNumber result;
-	Core core(0);
-	core_info_t info;
-	if( core.open() >= 0 ){
-		if( core.get_info(info) >= 0 ){
-			memcpy(&result.m_serial_number, &info.serial, sizeof(mcu_sn_t));
-		}
-		core.close();
-	}
-	return result;
-}
-
 var::String SerialNumber::to_string() const {
 	var::String ret;
 	ret.format(F3208X F3208X F3208X F3208X,
@@ -298,6 +285,10 @@ SysInfo Sys::get_info(){
 	if( sys.open() < 0 ){ return SysInfo(); }
 	if( sys.get_info(sys_info) < 0 ){ return SysInfo(); }
 	return SysInfo(sys_info);
+}
+
+SerialNumber Sys::get_serial_number(){
+	return get_info().serial_number();
 }
 #endif
 

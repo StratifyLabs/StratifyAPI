@@ -45,14 +45,6 @@ public:
 		return at(0) + at(1) + at(2) + at(3) != 0;
 	}
 
-	/*! \details Queries the system for the MCU serial number associated
-	 * with the device.
-	 *
-	 * @return Zero on success.
-	 *
-	 */
-	static SerialNumber get();
-
 	/*! \details Returns a serial number object from a string type. */
 	static SerialNumber from_string(const var::ConstString & str);
 
@@ -380,6 +372,8 @@ public:
 	 *
 	 */
 	static SysInfo get_info();
+
+	static SerialNumber get_serial_number();
 #endif
 
 	/*! \details Opens /dev/sys.

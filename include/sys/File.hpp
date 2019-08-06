@@ -133,6 +133,10 @@ public:
 		END /*! Set the location relative to the end of the file or device */ = LINK_SEEK_END
 	};
 
+	FileInfo get_info() const {
+		return get_info(fileno());
+	}
+
 	/*! \details Gets the name of the file from a given path.
 	 *
 	 * \code

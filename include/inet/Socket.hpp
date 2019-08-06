@@ -44,7 +44,7 @@ class SocketAddress;
  * The following is an example of how to use
  * this class for connected to a server.
  *
- * \code
+ * ```
  * #include <sapi/inet.hpp>
  * #include <sapi/var.hpp>
  *
@@ -65,7 +65,7 @@ class SocketAddress;
  *  socket.close();
  * }
  *
- * \endcode
+ * ```
  *
  *
  *
@@ -139,13 +139,13 @@ public:
 	/*! \details Fetches the socket address information from
 	 * DNS servers based on the node and service specified.
 	 *
-	 * \code
+	 * ```
 	 * #include <sapi/var.hpp>
 	 * #include <sapi/inet.hpp>
 	 *
 	 * SocketAddressInfo address_info;
 	 * Vector<SocketAddressInfo> address_info.fetch_node("stratifylabs.co"); //get IP address and other info for stratifylabs.co
-	 *
+	 * ```
 	 */
 	var::Vector<SocketAddressInfo> fetch_node(const var::ConstString & node){
 		return fetch(node, "");
@@ -433,6 +433,24 @@ private:
 };
 
 
+/*! \brief Socket Class
+ * \details The Socket class is for accessing
+ * websockets that run on the TCP/IP stack.
+ *
+ *
+ * For a client, the typical exchange looks like this:
+ *
+ * ```msc
+ * Note left of Client: Create Socket
+ * Client->Server: connect()
+ * Note right of Server: accept() and bind()
+ * Client->Server: write()
+ * Server->Client: read()
+ * Client->Server: close()
+ * ```
+ *
+ *
+ */
 class Socket : public sys::File {
 public:
 	Socket();

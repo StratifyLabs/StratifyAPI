@@ -17,13 +17,14 @@ namespace sys {
  * information on the type and size
  * of the file.
  *
+ * The file can be any filesystem object including
+ * a file, directory, or device.
+ *
  *
  * ```
  * #include <sapi/sys.hpp>
  *
- * FileInfo info;
- *
- * info.get_info("/home/test.txt");
+ * FileInfo info = File::get_info("/home/test.txt");
  *
  * if( info.is_file() ){
  *   printf("Is a file\n");
@@ -31,14 +32,12 @@ namespace sys {
  *   printf("Is a directory\n");
  * }
  *
+ * //grabbing the info of an already open file
  * File file;
- *
  * file.open("/home/test.txt", File::RDONLY);
- *
  * //grab the info from a file that is already open
- * info.get_info(file.fileno());
+ * info = file.get_info();
  * file.close();
- *
  * ```
  *
  */
@@ -52,12 +51,24 @@ public:
 		m_stat = st;
 	}
 #else
+	/*! \details Constructs a new object.
+	 *
+	 * For the newly constructed object,
+	 * is_valid() returns false.
+	 *
+	 */
 	FileInfo();
+
+	/*! \details Constructs a new object
+	 * from the struct stat data provided.
+	 *
+	 */
 	FileInfo(const struct stat & st){
 		m_stat = st;
 	}
 #endif
 
+	/*! \details Returns true if the object is valid. */
 	bool is_valid() const {
 		return m_stat.st_mode != 0;
 	}

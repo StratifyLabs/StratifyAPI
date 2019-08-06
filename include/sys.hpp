@@ -26,6 +26,7 @@ namespace sys {}
 #include "sys/Link.hpp"
 #endif
 
+#include "sys/Auth.hpp"
 #include "sys/Mutex.hpp"
 #include "sys/Thread.hpp"
 #include "sys/TaskManager.hpp"

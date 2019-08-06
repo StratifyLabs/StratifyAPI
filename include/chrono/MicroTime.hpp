@@ -102,6 +102,10 @@ public:
 		return *this;
 	}
 
+	MicroTime operator + (const MicroTime & micro_time){
+		return MicroTime(microseconds() + micro_time.microseconds());
+	}
+
 	/*! \details Compares equality to another MicroTime object. */
 	bool operator == (const MicroTime & a ) const { return microseconds() == a.microseconds(); }
 
