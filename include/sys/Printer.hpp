@@ -13,6 +13,10 @@
 #undef ERROR
 #endif
 
+namespace api {
+class Result;
+}
+
 namespace var {
 class DataInfo;
 class Data;
@@ -140,6 +144,10 @@ public:
 #if defined __win32
 	static unsigned int m_default_color;
 #endif
+
+
+	Printer & operator << (const api::Result & a);
+
 
 	/*! \details Prints a var::Data object. */
 	Printer & operator << (const var::Data & a);

@@ -74,5 +74,5 @@ AuthToken Auth::finish(const AuthToken & token){
 	memcpy(&result, &token.auth_token(), sizeof(auth_token_t));
 	if( set_error_number_if_error( IOCTL(I_AUTH_FINISH, &result)) < 0 ){ return AuthToken(); }
 	close();
-	return AuthToken(token);
+	return AuthToken(result);
 }

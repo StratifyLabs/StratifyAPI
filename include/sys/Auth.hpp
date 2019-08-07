@@ -32,7 +32,7 @@ public:
 	var::String to_string() const {
 		var::String result;
 		for(u8 i=0; i < sizeof(auth_token_t); i++){
-			result << var::String().format("%02X", m_auth_token.data[i]);
+			result << var::String().format("%02x", m_auth_token.data[i]);
 		}
 		return result;
 	}

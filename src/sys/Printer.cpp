@@ -214,6 +214,12 @@ Printer & Printer::operator << (const Cli & a){
 	return *this;
 }
 
+Printer & Printer::operator << (const api::Result & a){
+	key("returnValue", "%d", a.return_value());
+	key("errorNumber", "%d", a.error_number());
+	return *this;
+}
+
 #if !defined __link
 Printer & Printer::operator << (const var::DataInfo & a){
 	key("arena", F32U, a.arena());
@@ -340,11 +346,12 @@ Printer & Printer::operator << (const char * a){
 }
 
 Printer & Printer::operator << (const var::Tokenizer & a){
-	m_indent++;
 	for(u32 i=0; i < a.count(); i++){
-		key("%s", a.at(i).cstring());
+		print("\n");
+		print_indentation();
+		print("[%04d]=", i);
+		print("%s", a.at(i).cstring());
 	}
-	m_indent--;
 	return *this;
 }
 
