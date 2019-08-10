@@ -10,13 +10,13 @@
 #include <errno.h>
 #include <aio.h>
 #include "../var/Data.hpp"
-#include "../api/SysObject.hpp"
+#include "../api/FsObject.hpp"
 
 namespace hal {
 class Device;
 }
 
-namespace sys {
+namespace fs {
 
 /*! \brief Asynchronous IO Class */
 /*! \details The Asynchronous IO class is used for performing asynchronous operations on
@@ -57,7 +57,7 @@ namespace sys {
  *
  *
  */
-class Aio : public api::SysWorkObject {
+class Aio : public api::FsWorkObject {
 	friend class hal::Device;
 public:
 
@@ -131,7 +131,10 @@ public:
 	  * does, it will need to set the buffer again.
 	  *
 	  */
-	void set_buf(var::Data & data){ set_buf(data.data(), data.capacity()); }
+	Aio & set_buf(var::Data & data){
+		set_buf(data.data(), data.size());
+		return *this;
+	}
 
 	/*! \details Returns the number of bytes to transfer. */
 	int nbytes() const { return m_aio_var.aio_nbytes; }
@@ -140,7 +143,10 @@ public:
 	int offset() const { return m_aio_var.aio_offset; }
 
 	/*! \details Sets the offset (or channcel for Dac, Adc, Pwm, etc). */
-	void set_offset(int offset){ m_aio_var.aio_offset = offset; }
+	Aio & set_offset(int offset){
+		m_aio_var.aio_offset = offset;
+		return *this;
+	}
 
 	/*! \details Returns the return value of the operation. */
 	int ret(){ return aio_return(&m_aio_var); }
@@ -161,7 +167,7 @@ public:
 	 * @param value The signal value (passed as an argument to the handler if using siginfo)
 	 * @return Zero on success
 	 */
-	void set_signal(int number, int value){
+	Aio & set_signal(int number, int value){
 		if( number >= 0 ){
 			m_aio_var.aio_sigevent.sigev_notify = SIGEV_SIGNAL;
 			m_aio_var.aio_sigevent.sigev_signo = number;
@@ -169,6 +175,22 @@ public:
 		} else {
 			m_aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
 		}
+		return *this;
+	}
+
+	Aio & set_signal_number(int number){
+		if( number >= 0 ){
+			m_aio_var.aio_sigevent.sigev_notify = SIGEV_SIGNAL;
+			m_aio_var.aio_sigevent.sigev_signo = number;
+		} else {
+			m_aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
+		}
+		return *this;
+	}
+
+	Aio & set_signal_value(int value){
+		m_aio_var.aio_sigevent.sigev_value.sival_int = value;
+		return *this;
 	}
 
 

@@ -65,9 +65,9 @@ bool ClockTime::operator != (const ClockTime & a) const {
 	return false;
 }
 
-void ClockTime::assign(s32 seconds, s32 nanoseconds){
-	m_value.tv_sec = seconds;
-	m_value.tv_nsec = nanoseconds;
+void ClockTime::assign(const Seconds & seconds, const Nanoseconds & nanoseconds){
+	m_value.tv_sec = seconds.seconds();
+	m_value.tv_nsec = nanoseconds.nanoseconds();
 	if( m_value.tv_nsec > 1000000000 ){
 		m_value.tv_sec++;
 		m_value.tv_nsec -= 1000000000;

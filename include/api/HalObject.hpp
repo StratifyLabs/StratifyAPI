@@ -3,7 +3,7 @@
 
 #include "WorkObject.hpp"
 #include "InfoObject.hpp"
-#include "../sys/File.hpp"
+#include "../fs/File.hpp"
 
 namespace api {
 
@@ -26,7 +26,7 @@ class HalInfoObject : public virtual InfoObject {
  * \sa hal namespace
  *
  */
-class HalWorkObject : public sys::File {
+class HalWorkObject : public fs::File {
 public:
 
 };

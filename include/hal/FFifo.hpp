@@ -112,7 +112,9 @@ public:
 	 * @return Zero on success or less than zero for an error
 	 *
 	 */
-	int initialize(const var::ConstString & path, const FFifoAttributes & attributes, int o_flags = 0);
+	int initialize(const var::ConstString & path,
+						const FFifoAttributes & attributes,
+						const fs::OpenFlags & flags = fs::OpenFlags());
 
 	/*! \details Flushes the FIFO.
 	 *

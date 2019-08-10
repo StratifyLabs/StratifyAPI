@@ -76,23 +76,23 @@ public:
 	 * @param min The minimum value for the calculated control value
 	 * @param max The maximum value for the calculated control value
 	 */
-	PidF32(float target = 0.0, float kp = 1.0, float ki = 0.1, float kd = 0.0, float min = 1.0, float max = 0.0);
+	PidF32();
 
 	/*! \details Resets the state of the PID control loop. */
 	void reset();
 
 	/*! \details Sets the proportional constant value. */
-	void set_kp(float v){ m_kp = v; }
+	PidF32 & set_kp(float v){ m_kp = v; return *this; }
 	/*! \details Sets the integral constant value. */
-	void set_ki(float v){ m_ki = v; }
+	PidF32 & set_ki(float v){ m_ki = v; return *this; }
 	/*! \details Sets the differential constant value. */
-	void set_kd(float v){ m_kd = v; }
+	PidF32 & set_kd(float v){ m_kd = v; return *this; }
 	/*! \details Sets the maximum allowed value of the target variable. */
-	void set_max(float v){ m_max = v; }
+	PidF32 & set_maximum(float v){ m_max = v; return *this; }
 	/*! \details Sets the minimum allowed value of the target variable. */
-	void set_min(float v){ m_min = v; }
+	PidF32 & set_minimum(float v){ m_min = v; return *this; }
 	/*! \details Sets the value for the target variable. */
-	void set_target(float v){ m_target = v; }
+	PidF32 & set_target(float v){ m_target = v; return *this; }
 
 	/*! \details Returns the proportional constant. */
 	float kp() const { return m_kp; }
@@ -113,8 +113,7 @@ public:
 	 * @param present_value The present value of the system
 	 * @return The updated control variable to be applied to the system
 	 */
-	float calc_control_variable(float present_value);
-	float calc_value(float present_value){ return calc_control_variable(present_value); }
+	float calculate_control_variable(float present_value);
 
 private:
 	float m_target;

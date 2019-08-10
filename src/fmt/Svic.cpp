@@ -4,7 +4,7 @@ using namespace fmt;
 
 Svic::Svic(const var::ConstString & path){
 	if( path.is_empty() == false ){
-		open_readonly(path);
+		open(path, fs::OpenFlags::read_only());
 		parse_icons();
 	}
 	m_current_icon_at = (u32)-1;
@@ -15,18 +15,27 @@ int Svic::parse_icons(){
 
 	if( fileno() >= 0 ){
 
-		int cursor = seek(0, sys::File::CURRENT);
+		int cursor = seek(fs::Location(0), fs::File::CURRENT);
 
 		sg_vector_icon_header_t header;
-		while( read(&header, sizeof(header)) == sizeof(header) ){
+		while( read(
+					 fs::DestinationBuffer(&header),
+					 fs::Size(sizeof(header))
+					 ) == sizeof(header) ){
 			if( m_icons.push_back(header) < 0 ){
 				set_error_number(m_icons.error_number());
 				return -1;
 			}
-			seek(header.count * sizeof(sg_vector_path_description_t), sys::File::CURRENT);
+			seek(
+						fs::Location(header.count * sizeof(sg_vector_path_description_t)),
+						fs::File::CURRENT
+						);
 		}
 
-		seek(cursor, sys::File::SET);
+		seek(
+					fs::Location(cursor),
+					fs::File::SET
+					);
 	}
 
 	return 0;
@@ -54,7 +63,10 @@ sgfx::VectorPath Svic::at(u32 i) const {
 	if( m_current_icon_at != i ){
 		m_current_icon.resize(m_icons.at(i).count);
 		int result;
-		if( (result = read(m_icons.at(i).list_offset, m_current_icon)) < 0 ){
+		if( (result = read(
+				  fs::Location(m_icons.at(i).list_offset),
+				  m_current_icon)
+			  ) < 0 ){
 			return sgfx::VectorPath();
 		}
 		m_current_icon_at = i;
@@ -70,8 +82,14 @@ int Svic::append(const var::ConstString & name, const var::Vector<sg_vector_path
 	memset(&header, 0, sizeof(header));
 	strncpy(header.name, name.cstring(), 23);
 	header.count = list.count();
-	header.list_offset = seek(0, sys::File::CURRENT) + sizeof(header);
-	if( write(&header, sizeof(header)) != sizeof(header) ){
+	header.list_offset = seek(
+				fs::Location(0),
+				fs::File::CURRENT
+				) + sizeof(header);
+	if( write(
+			 fs::SourceBuffer(&header),
+			 fs::Size(sizeof(header))
+			 ) != sizeof(header) ){
 		set_error_number( error_number() );
 		return -1;
 	}

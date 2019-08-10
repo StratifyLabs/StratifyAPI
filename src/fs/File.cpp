@@ -5,9 +5,9 @@
 #include <cstring>
 #include <fcntl.h>
 
-#include "sys/File.hpp"
+#include "fs/File.hpp"
 #include "chrono/Timer.hpp"
-using namespace sys;
+using namespace fs;
 
 #if defined __link
 
@@ -34,8 +34,8 @@ File::~File(){
 	}
 }
 
-int File::open(const var::ConstString & name, int flags){
-	return open(name, flags, 0);
+int File::open(const var::ConstString & name, const fs::OpenFlags & flags){
+	return open(name, flags, Permissions());
 }
 
 #if !defined __link
@@ -50,34 +50,89 @@ int File::remove(const var::ConstString & name, link_transport_mdriver_t * drive
 
 
 #if !defined __link
-int File::copy(const var::ConstString & source_path, const var::ConstString & dest_path){
+int File::copy(
+		const SourceFilePath & source_path,
+		const DestinationFilePath & dest_path
+		){
 	File source;
 	File dest;
-	return copy(source, dest, source_path, dest_path);
+
+	if( source.open(
+			 source_path.argument(),
+			 OpenFlags::read_only()
+			 ) < 0 ){
+		return -1;
+	}
+
+	return copy(
+				SourceFile(source),
+				DestinationFile(dest),
+				source_path,
+				dest_path
+				);
 }
 #else
-int File::copy(const var::ConstString & source_path, const var::ConstString & dest_path, link_transport_mdriver_t * driver){
+int File::copy(
+		const SourceFilePath & source_path,
+		const DestinationFilePath & dest_path,
+		link_transport_mdriver_t * driver){
 	File source;
 	File dest;
 	source.set_driver(driver);
 	dest.set_driver(driver);
-	return copy(source, dest, source_path, dest_path);
+	return copy(
+				SourceFile(source),
+				DestinationFile(dest),
+				source_path,
+				dest_path
+				);
 }
 #endif
 
 #if !defined __link
-int File::copy(const var::ConstString & source_path, const var::ConstString & dest_path, bool is_overwrite){
+int File::copy(
+		const SourceFilePath & source_path,
+		const DestinationFilePath & dest_path,
+		bool is_overwrite){
 	File source;
 	File dest;
-	return copy(source, dest, source_path, dest_path, is_overwrite);
+
+	if( source.open(
+			source_path.argument(),
+			 OpenFlags::read_only()
+			 ) < 0 ){
+		return -1;
+	}
+
+	return copy(
+				SourceFile(source),
+				DestinationFile(dest),
+				source_path,
+				dest_path,
+				is_overwrite);
 }
 #else
-int File::copy(const var::ConstString & source_path, const var::ConstString & dest_path, bool is_overwrite, link_transport_mdriver_t * driver){
+int File::copy(
+		const SourceFilePath & source_path,
+		const DestinationFilePath & dest_path,
+		bool is_overwrite,
+		link_transport_mdriver_t * driver
+		){
 	File source;
 	File dest;
 	source.set_driver(driver);
 	dest.set_driver(driver);
-	return copy(source, dest, source_path, dest_path, is_overwrite);
+
+	if( source.open(source_path.argument(), OpenFlags::read_only()) < 0 ){
+		return -1;
+	}
+
+	return copy(
+				SourceFile(source),
+				DestinationFile(dest),
+				source_path,
+				dest_path,
+				is_overwrite);
 }
 #endif
 
@@ -97,7 +152,12 @@ int File::rename(const var::ConstString & old_path, const var::ConstString & new
 #endif
 
 
-int File::copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path, bool is_overwrite){
+int File::copy(
+		const SourceFile & source,
+		const DestinationFile & dest,
+		const SourceFilePath & source_path,
+		const DestinationFilePath & dest_path,
+		bool is_overwrite){
 
 #if defined __link
 	struct link_stat st;
@@ -105,44 +165,66 @@ int File::copy(File & source, File & dest, const var::ConstString & source_path,
 	struct stat st;
 #endif
 
-	if( File::stat(source_path, &st) < 0 ){
+	if( File::stat(SourceFilePath(source_path), &st) < 0 ){
 		return -1;
 	}
 
-	if( source.open(source_path, File::RDONLY) < 0 ){
+#if 0
+	if( source.argument().open(
+			 source_path.argument(),
+			 fs::OpenFlags::read_only()
+			 ) < 0 ){
 		return -2;
 	}
+#endif
 
 
-	if( dest.create(dest_path, is_overwrite, st.st_mode & 0777) < 0 ){
+	if( dest.argument().create(
+			 dest_path.argument(),
+			 is_overwrite,
+			 Permissions(st.st_mode & 0777)
+			 ) < 0 ){
 		return -3;
 	}
 
-	return dest.write(source, 256);
+	return dest.argument().write(
+				source,
+				PageSize(256)
+				);
 }
 
 
-int File::copy(File & source, File & dest, const var::ConstString & source_path, const var::ConstString & dest_path){
+int File::copy(const SourceFile & source, const DestinationFile & dest, const SourceFilePath & source_path, const DestinationFilePath & dest_path){
 	return copy(source, dest, source_path, dest_path, true);
 }
 
 
 #if defined __link
-bool File::exists(const var::ConstString & path, link_transport_mdriver_t * driver){
+bool File::exists(
+		const SourceFilePath & path,
+		link_transport_mdriver_t * driver
+		){
 	File f(driver);
 #else
-bool File::exists(const var::ConstString & path){
+bool File::exists(
+		const SourceFilePath & path
+		){
 	File f;
 #endif
-	if( f.open_readonly(path) < 0 ){ return false; }
+	if( f.open(path.argument(), fs::OpenFlags::read_only()) < 0 ){ return false; }
 	f.close();
 	return true;
 }
 
 #if defined __link
-FileInfo File::get_info(const var::ConstString & path, link_transport_mdriver_t * driver){
+Stat File::get_info(
+		const SourceFilePath & path,
+		link_transport_mdriver_t * driver
+		){
 #else
-FileInfo File::get_info(const var::ConstString & path){
+Stat File::get_info(
+		const SourceFilePath & path
+		){
 #endif
 #if defined __link
 	struct link_stat stat;
@@ -154,13 +236,13 @@ FileInfo File::get_info(const var::ConstString & path){
 	File::stat(path, &stat);
 #endif
 
-	return FileInfo(stat);
+	return Stat(stat);
 }
 
 #if defined __link
-FileInfo File::get_info(int fd, link_transport_mdriver_t * driver){
+Stat File::get_info(int fd, link_transport_mdriver_t * driver){
 #else
-FileInfo File::get_info(int fd){
+Stat File::get_info(int fd){
 #endif
 #if defined __link
 	struct link_stat stat;
@@ -172,48 +254,55 @@ FileInfo File::get_info(int fd){
 	::fstat(fd, &stat);
 #endif
 
-	return FileInfo(stat);
+	return Stat(stat);
 }
 
-int File::open(const var::ConstString & name, int access, int perms){
+int File::open(const var::ConstString & name, const fs::OpenFlags & flags, const Permissions & permissions){
 	if( m_fd != -1 ){
 		close(); //close first so the fileno can be changed
 	}
 
 #if defined __link
-	m_fd = link_open(driver(), name.cstring(), access, perms);
+	m_fd = link_open(driver(), name.cstring(), flags.o_flags(), permissions.permissions());
 #else
-	m_fd = ::open(name.cstring(), access, perms);
+	m_fd = ::open(name.cstring(), flags.o_flags(), permissions.permissions());
 #endif
 
 	return set_error_number_if_error(m_fd);
 
 }
 
-int File::create(const var::ConstString & name, bool overwrite, int perms){
-	int access = LINK_O_RDWR | LINK_O_CREAT;
+int File::create(const var::ConstString & name, bool overwrite, const Permissions & perms){
+	fs::OpenFlags flags = fs::OpenFlags::create();
 	if( overwrite ){
-		access |= LINK_O_TRUNC;
+		flags.set_truncate();
 	} else {
-		access |= LINK_O_EXCL;
+		flags.set_exclusive();
 	}
-	return open(name, access, perms);
+	return open(name, flags, perms);
 }
 
 u32 File::size() const {
-	u32 loc = seek(0, SEEK_CUR); //get current cursor
-	u32 size = seek(0, SEEK_END); //seek to the end
-	seek(loc, SEEK_SET); //restore the cursor
+	u32 loc = seek(Location(0), CURRENT); //get current cursor
+	u32 size = seek(Location(0), END); //seek to the end
+	seek(Location(loc), SET); //restore the cursor
 	return size;
 }
 
 #if defined __link
-int File::stat(const var::ConstString & name, struct link_stat * st, link_transport_mdriver_t * driver){
-	return link_stat(driver, name.cstring(), st);
+int File::stat(
+		const SourceFilePath & name,
+		struct link_stat * st,
+		link_transport_mdriver_t * driver
+		){
+	return link_stat(driver, name.argument().cstring(), st);
 }
 #else
-int File::stat(const var::ConstString & name, struct stat * st){
-	return ::stat(name.cstring(), st);
+int File::stat(
+		const SourceFilePath & name,
+		struct stat * st
+		){
+	return ::stat(name.argument().cstring(), st);
 }
 #endif
 
@@ -228,17 +317,22 @@ int File::fstat(struct stat * st) const {
 #endif
 
 #if !defined __link
-u32 File::size(const var::ConstString & name){
+u32 File::size(
+		const SourceFilePath & name
+		){
 	struct stat st;
-	if( stat(name.cstring(), &st) < 0 ){
+	if( stat(name, &st) < 0 ){
 		return (s32)-1;
 	}
 	return st.st_size;
 }
 #else
-u32 File::size(const var::ConstString & name, link_transport_mdriver_t * driver){
+u32 File::size(
+		const SourceFilePath & name,
+		link_transport_mdriver_t * driver
+		){
 	struct link_stat st;
-	if( stat(name.cstring(), &st, driver) < 0 ){
+	if( stat(name, &st, driver) < 0 ){
 		return (s32)-1;
 	}
 	return st.st_size;
@@ -246,16 +340,16 @@ u32 File::size(const var::ConstString & name, link_transport_mdriver_t * driver)
 
 #endif
 
-int File::read(int loc, void * buf, int nbyte) const {
-	int result = seek(loc);
+int File::read(const Location & location, const DestinationBuffer & buf, const Size & size) const {
+	int result = seek(location);
 	if( result < 0 ){ return result; }
-	return read(buf, nbyte);
+	return read(buf, size);
 }
 
-int File::write(int loc, const void * buf, int nbyte) const {
-	int result = seek(loc);
+int File::write(const Location & location, const SourceBuffer & buf, const Size & size) const {
+	int result = seek(location);
 	if( result < 0 ){ return result; }
-	return write(buf, nbyte);
+	return write(buf, size);
 }
 
 int File::readline(char * buf, int nbyte, int timeout, char term) const {
@@ -265,7 +359,10 @@ int File::readline(char * buf, int nbyte, int timeout, char term) const {
 	t = 0;
 	bytes_recv = 0;
 	do {
-		if( read(&c, 1) == 1 ){
+		if( read(
+				 DestinationBuffer(&c),
+				 Size(1)
+				 ) == 1 ){
 			*buf = c;
 			buf++;
 			bytes_recv++;
@@ -299,27 +396,27 @@ int File::close(){
 	return ret;
 }
 
-int File::read(void * buf, int nbyte) const {
+int File::read(const DestinationBuffer & buf, const Size & size) const {
 #if defined __link
-	return set_error_number_if_error( link_read(driver(), m_fd, buf, nbyte) );
+	return set_error_number_if_error( link_read(driver(), m_fd, buf.argument(), size.argument()) );
 #else
-	return set_error_number_if_error( ::read(m_fd, buf, nbyte) );
+	return set_error_number_if_error( ::read(m_fd, buf.argument(), size.argument()) );
 #endif
 }
 
-int File::write(const void * buf, int nbyte) const {
+int File::write(const SourceBuffer & buf, const Size & size) const {
 #if defined __link
-	return set_error_number_if_error( link_write(driver(), m_fd, buf, nbyte) );
+	return set_error_number_if_error( link_write(driver(), m_fd, buf.argument(), size.argument()) );
 #else
-	return set_error_number_if_error( ::write(m_fd, buf, nbyte) );
+	return set_error_number_if_error( ::write(m_fd, buf.argument(), size.argument() ) );
 #endif
 }
 
-int File::seek(int loc, int whence) const {
+int File::seek(const Location & location, enum whence whence) const {
 #if defined __link
-	return set_error_number_if_error( link_lseek(driver(), m_fd, loc, whence) );
+	return set_error_number_if_error( link_lseek(driver(), m_fd, location.argument(), whence) );
 #else
-	return set_error_number_if_error( ::lseek(m_fd, loc, whence) );
+	return set_error_number_if_error( ::lseek(m_fd, location.argument(), whence) );
 #endif
 }
 
@@ -327,8 +424,8 @@ int File::fileno() const {
 	return m_fd;
 }
 
-int File::loc() const {
-	return seek(0, CURRENT);
+int File::location() const {
+	return seek(Location(0), CURRENT);
 }
 
 int File::flags() const{
@@ -355,7 +452,10 @@ char * File::gets(char * s, int n, char term) const {
 	s[0] = 0;
 	t = 0;
 	do {
-		ret = read(buffer, GETS_BUFFER_SIZE);
+		ret = read(
+					DestinationBuffer(buffer),
+					Size(GETS_BUFFER_SIZE)
+					);
 		for(i=0; i < ret; i++){
 			s[t] = buffer[i];
 			s[t+1] = 0;
@@ -374,7 +474,7 @@ char * File::gets(char * s, int n, char term) const {
 	}
 
 	if( ret > 0 ){
-		seek(i - ret + 1, CURRENT);
+		seek(Location(i - ret + 1), CURRENT);
 	}
 
 	return s;
@@ -392,7 +492,10 @@ char * File::gets(var::String & s, char term) const {
 	char c;
 	s.clear();
 	do {
-		ret = read(&c, 1);
+		ret = read(
+					DestinationBuffer(&c),
+					Size(1)
+					);
 		if( ret > 0 ){
 			s.append(c);
 		} else {
@@ -428,8 +531,8 @@ var::String File::parent_directory(const var::ConstString & path){
 }
 
 #if !defined __link
-int File::access(const var::ConstString & path, int o_access){
-	return ::access(path.cstring(), o_access);
+int File::access(const var::ConstString & path, const Access & access){
+	return ::access(path.cstring(), access.o_access());
 }
 #endif
 
@@ -456,15 +559,21 @@ int File::ioctl(int req, void * arg) const {
 }
 
 
-int File::write(const sys::File & source_file, u32 chunk_size, u32 size) const {
-	return write(source_file, chunk_size, size, 0);
+int File::write(const SourceFile & source_file, const PageSize & page_size, const Size & size) const {
+	return write(source_file, page_size, size, 0);
 }
 
 
-int File::write(const sys::File & source_file, u32 chunk_size, u32 size, const ProgressCallback * progress_callback) const {
+int File::write(
+		const SourceFile & source_file,
+		const PageSize & page_size,
+		const Size & size,
+		const sys::ProgressCallback * progress_callback
+		) const {
 	u32 size_processed = 0;
+	u32 page_size_value = page_size.argument();
 
-	var::Data buffer(chunk_size);
+	var::Data buffer(page_size_value);
 
 	if( buffer.size() == 0 ){
 		return -1;
@@ -472,16 +581,16 @@ int File::write(const sys::File & source_file, u32 chunk_size, u32 size, const P
 
 	int result;
 	do {
-		if( size - size_processed < chunk_size ){
-			chunk_size = size - size_processed;
+		if( size.argument() - size_processed < page_size_value ){
+			page_size_value = size.argument() - size_processed;
 		}
 
-		buffer.set_size(chunk_size);
-		if( buffer.size()	!= chunk_size ){
+		buffer.set_size(page_size_value);
+		if( buffer.size()	!= page_size_value ){
 			return -1;
 		}
 
-		result = source_file.read(buffer);
+		result = source_file.argument().read(buffer);
 		if( result > 0 ){
 			result = write(buffer);
 			if( result > 0 ){
@@ -491,13 +600,13 @@ int File::write(const sys::File & source_file, u32 chunk_size, u32 size, const P
 
 		if( progress_callback ){
 			//abort the transaction
-			if( progress_callback->update(size_processed, size) == true ){
+			if( progress_callback->update(size_processed, size.argument()) == true ){
 				progress_callback->update(0,0);
 				return size_processed;
 			}
 		}
 
-	} while( (result > 0) && (size > size_processed) );
+	} while( (result > 0) && (size.argument() > size_processed) );
 
 	//this will terminate the progress operation
 	if( progress_callback ){ progress_callback->update(0,0); }
@@ -506,14 +615,15 @@ int File::write(const sys::File & source_file, u32 chunk_size, u32 size, const P
 }
 
 
-int DataFile::open(const var::ConstString & name, int flags){
+int DataFile::open(const var::ConstString & name, const OpenFlags & flags){
 	MCU_UNUSED_ARGUMENT(name);
 	MCU_UNUSED_ARGUMENT(flags);
 	return 0;
 }
 
 int DataFile::read(void * buf, int nbyte) const {
-	if( (m_o_flags & File::ACCESS_MODE) == File::WRITEONLY ){
+
+	if( flags().is_write_only() ){
 		return -1;
 	}
 
@@ -528,12 +638,13 @@ int DataFile::read(void * buf, int nbyte) const {
 }
 
 int DataFile::write(const void * buf, int nbyte) const {
-	if( (m_o_flags & File::ACCESS_MODE) == File::READONLY ){
+
+	if( flags().is_read_only() ){
 		return -1;
 	}
 
 	int size_ready = 0;
-	if( m_o_flags & File::APPEND ){
+	if( flags().is_append() ){
 		//make room in the m_data object for more bytes
 		m_location = m_data.size();
 		if( m_data.set_size(m_data.size() + nbyte) < 0 ){
@@ -554,16 +665,16 @@ int DataFile::write(const void * buf, int nbyte) const {
 	return size_ready;
 }
 
-int DataFile::seek(int loc, int whence) const {
+int DataFile::seek(const Location & location, enum whence whence) const {
 	switch(whence){
-		case LINK_SEEK_CUR:
-			m_location += loc;
+		case CURRENT:
+			m_location += location.argument();
 			break;
-		case LINK_SEEK_END:
+		case END:
 			m_location = m_data.size();
 			break;
-		case LINK_SEEK_SET:
-			m_location = loc;
+		case SET:
+			m_location = location.argument();
 			break;
 	}
 
@@ -576,7 +687,7 @@ int DataFile::seek(int loc, int whence) const {
 	return m_location;
 }
 
-int NullFile::open(const var::ConstString & name, int flags){
+int NullFile::open(const var::ConstString & name, const OpenFlags & flags){
 	MCU_UNUSED_ARGUMENT(name);
 	MCU_UNUSED_ARGUMENT(flags);
 	return 0;
@@ -593,8 +704,8 @@ int NullFile::write(const void * buf, int nbyte) const {
 	return nbyte;
 }
 
-int NullFile::seek(int loc, int whence) const {
-	MCU_UNUSED_ARGUMENT(loc);
+int NullFile::seek(const Location & location, enum whence whence) const {
+	MCU_UNUSED_ARGUMENT(location);
 	MCU_UNUSED_ARGUMENT(whence);
 	return -1;
 

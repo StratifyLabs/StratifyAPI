@@ -4,65 +4,64 @@
 #include <sys/stat.h>
 #endif
 
-#include "sys/File.hpp"
-#include "sys/FileInfo.hpp"
+#include "fs/Stat.hpp"
 
-using namespace sys;
+using namespace fs;
 #if defined __link
-FileInfo::FileInfo(bool is_local) {
+Stat::Stat(bool is_local) {
 	memset(&m_stat, 0, sizeof(m_stat));
 	m_is_local = is_local;
 }
 #else
 
-FileInfo::FileInfo() {
+Stat::Stat() {
 	memset(&m_stat, 0, sizeof(m_stat));
 }
 #endif
 
 
-bool FileInfo::is_directory() const {
+bool Stat::is_directory() const {
 #if defined __link
 	if( m_is_local ){
 		return (m_stat.st_mode & S_IFMT) == S_IFDIR;
 	}
 #endif
-	return (m_stat.st_mode & File::FORMAT) == File::DIRECTORY;
+	return (m_stat.st_mode & Stat::FORMAT) == Stat::DIRECTORY;
 }
 
-bool FileInfo::is_file() const {
+bool Stat::is_file() const {
 #if defined __link
 	if( m_is_local ){
 		return (m_stat.st_mode & S_IFMT) == S_IFREG;
 	}
 #endif
-	return (m_stat.st_mode & File::FORMAT) == File::REGULAR;
+	return (m_stat.st_mode & Stat::FORMAT) == Stat::REGULAR;
 }
 
-bool FileInfo::is_device() const {
+bool Stat::is_device() const {
 	return is_block_device() || is_character_device();
 
 }
 
-bool FileInfo::is_block_device() const {
+bool Stat::is_block_device() const {
 #if defined __link
 	if( m_is_local ){
 		return (m_stat.st_mode & S_IFMT) == S_IFBLK;
 	}
 #endif
-	return (m_stat.st_mode & (File::FORMAT)) == File::BLOCK;
+	return (m_stat.st_mode & (Stat::FORMAT)) == Stat::BLOCK;
 }
 
-bool FileInfo::is_character_device() const {
+bool Stat::is_character_device() const {
 #if defined __link
 	if( m_is_local ){
 		return (m_stat.st_mode & S_IFMT) == S_IFCHR;
 	}
 #endif
-	return (m_stat.st_mode & (File::FORMAT)) == File::CHARACTER;
+	return (m_stat.st_mode & (Stat::FORMAT)) == Stat::CHARACTER;
 }
 
-bool FileInfo::is_socket() const {
+bool Stat::is_socket() const {
 #if defined __link
 	if( m_is_local ){
 #if !defined __win32
@@ -72,15 +71,15 @@ bool FileInfo::is_socket() const {
 #endif
 	}
 #endif
-	return (m_stat.st_mode & File::FORMAT) == File::FILE_SOCKET;
+	return (m_stat.st_mode & Stat::FORMAT) == Stat::FILE_SOCKET;
 }
 
 
-u32 FileInfo::size() const {
+u32 Stat::size() const {
 	return m_stat.st_size;
 }
 
-bool FileInfo::is_executable() const {
+bool Stat::is_executable() const {
 	return false;
 }
 

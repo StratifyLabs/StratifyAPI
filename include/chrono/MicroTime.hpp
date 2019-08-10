@@ -50,6 +50,22 @@ public:
 		m_value_microseconds = clock_time.seconds() * 1000000UL + (clock_time.nanoseconds() + 500) / 1000;
 	}
 
+	MicroTime(const Seconds & seconds){
+		m_value_microseconds = seconds.seconds()*1000000UL;
+	}
+
+	MicroTime(const Milliseconds & milliseconds){
+		m_value_microseconds = milliseconds.milliseconds()*1000UL;
+	}
+
+	MicroTime(const Microseconds & microseconds){
+		m_value_microseconds = microseconds.microseconds();
+	}
+
+	MicroTime(const Nanoseconds & nanoseconds){
+		m_value_microseconds = nanoseconds.nanoseconds() / 1000;
+	}
+
 	/*! \details Constructs a MicroTime object from the current value of a chrono::Timer. */
 	MicroTime(const Timer & timer);
 
@@ -123,6 +139,7 @@ public:
 
 	/*! \details Compares <= to another MicroTime object. */
 	bool operator <= (const MicroTime & a ){ return microseconds() <= a.microseconds(); }
+
 
 	/*! \details Sets the value of the time in seconds.
 	  *

@@ -26,12 +26,13 @@
 #include <dirent.h>
 #endif
 
-#include "../api/SysObject.hpp"
+#include "../api/FsObject.hpp"
 #include "../var/Vector.hpp"
 #include "../var/String.hpp"
 #include "../var/ConstString.hpp"
+#include "Stat.hpp"
 
-namespace sys {
+namespace fs {
 
 /*! \brief Dir class
  *
@@ -39,31 +40,57 @@ namespace sys {
  *
  *
  */
-class Dir : public api::SysWorkObject {
+class Dir : public api::FsWorkObject {
 public:
 	/*! \details Constructs a Dir object. */
 #if defined __link
 	Dir(link_transport_mdriver_t * driver = 0);
-	static int create(const var::ConstString & path, int mode = 0777, link_transport_mdriver_t * driver = 0);
-	static int create(const var::ConstString & path, int mode, bool is_recursive, link_transport_mdriver_t * driver = 0);
-	static bool exists(const var::ConstString & path, link_transport_mdriver_t * driver = 0);
-	static var::Vector<var::String> read_list(const var::ConstString & path, link_transport_mdriver_t * driver = 0);
+	static int create(
+			const DestinationDirectoryPath & path,
+			const Permissions & permissions = Permissions(0777),
+			link_transport_mdriver_t * driver = 0
+			);
+	static int create(
+			const DestinationDirectoryPath & path,
+			const Permissions & permissions,
+			bool is_recursive,
+			link_transport_mdriver_t * driver = 0
+			);
+	static bool exists(
+			const SourceDirectoryPath & path,
+			link_transport_mdriver_t * driver = 0
+			);
+	static var::Vector<var::String> read_list(
+			const SourceDirectoryPath & path,
+			link_transport_mdriver_t * driver = 0
+			);
 
 #else
 	Dir();
 
 	/*! \details Returns true if the directory exists. */
-	static int create(const var::ConstString & path, int mode = 0777);
-	static int create(const var::ConstString & path, int mode, bool is_recursive);
+	static int create(
+			const DestinationDirectoryPath & path,
+			const Permissions & permissions = Permissions(0777)
+			);
+	static int create(
+			const DestinationDirectoryPath & path,
+			const Permissions & permissions,
+			bool is_recursive
+			);
 	/*! \details Returns true if the directory exists. */
-	static bool exists(const var::ConstString & path);
-	static var::Vector<var::String> read_list(const var::ConstString & path);
+	static bool exists(
+			const SourceDirectoryPath & path
+			);
+	static var::Vector<var::String> read_list(
+			const SourceDirectoryPath & path
+			);
 #endif
 
 	~Dir();
 
 	/*! \details Opens a directory. */
-	int open(const var::ConstString & name);
+	int open(const SourceDirectoryPath & name);
 	/*! \details Closes the directory. */
 	int close();
 

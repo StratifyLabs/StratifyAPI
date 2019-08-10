@@ -34,10 +34,10 @@ class SAIPinAssignment : public PinAssignment<sai_pin_assignment_t>{};
  */
 class I2SAttributes : public PinAssignmentPeriphAttributes<i2s_attr_t, i2s_pin_assignment_t> {
 public:
-	I2SAttributes(u32 o_flags = 0, u32 freq = 0, u32 mck_mult = 256){
-		set_flags(o_flags);
-		set_frequency(freq);
-		m_attr.mck_mult = mck_mult;
+	I2SAttributes(){
+		set_flags(I2S_FLAG_SET_MASTER);
+		set_frequency(16000);
+		m_attr.mck_mult = 256;
 	}
 
 	/*! \details Accesses the serial data input pin assignment value. */
@@ -46,26 +46,25 @@ public:
 	mcu_pin_t sdout() const { return m_attr.pin_assignment.sdout; }
 
 	/*! \details Sets the SDA pin assignment value. */
-	void set_sdin(const mcu_pin_t & pin){ m_attr.pin_assignment.sdin = pin;}
+	I2SAttributes & set_sdin(const mcu_pin_t & pin){ m_attr.pin_assignment.sdin = pin; return *this; }
 
 	/*! \details Sets the SCL pin assignment value. */
-	void set_sdout(const mcu_pin_t & pin){ m_attr.pin_assignment.sdout = pin;}
+	I2SAttributes & set_sdout(const mcu_pin_t & pin){ m_attr.pin_assignment.sdout = pin; return *this; }
 
 	/*! \details Sets the SCL pin assignment value. */
-	void set_ws(const mcu_pin_t & pin){ m_attr.pin_assignment.ws = pin;}
+	I2SAttributes & set_ws(const mcu_pin_t & pin){ m_attr.pin_assignment.ws = pin; return *this; }
 
 	/*! \details Sets the SCL pin assignment value. */
-	void set_sck(const mcu_pin_t & pin){ m_attr.pin_assignment.sck = pin;}
+	I2SAttributes & set_sck(const mcu_pin_t & pin){ m_attr.pin_assignment.sck = pin; return *this; }
 
 	/*! \details Sets the SCL pin assignment value. */
-	void set_mck(const mcu_pin_t & pin){ m_attr.pin_assignment.mck = pin;}
+	I2SAttributes & set_mck(const mcu_pin_t & pin){ m_attr.pin_assignment.mck = pin; return *this; }
 
 	/*! \details Sets the frequency (rate for left/right clock). */
-	void set_frequency(u32 frequency){ m_attr.freq = frequency; }
-	void set_freq(u32 frequency){ set_frequency(frequency); }
+	I2SAttributes & set_frequency(u32 frequency){ m_attr.freq = frequency; return *this; }
 
 	/*! \details Sets the o_flags value as specified. */
-	void set_flags(u32 o_flags){ m_attr.o_flags = o_flags; }
+	I2SAttributes & set_flags(u32 o_flags){ m_attr.o_flags = o_flags; return *this; }
 
 };
 
@@ -146,37 +145,6 @@ public:
 		IS_FORMAT_PCM_LONG /*! Set this bit for PCM Long format*/ = I2S_FLAG_IS_FORMAT_PCM_LONG,
 		IS_WIDTH_16_EXTENDED /*! I2S has 16-bits of data in 32-bit blocks */ = I2S_FLAG_IS_WIDTH_16_EXTENDED
 	};
-
-	int set_attr(u32 o_flags, u32 freq, u32 mck_mult = 256, const i2s_pin_assignment_t * pin_assignment = 0){
-		i2s_attr_t attr;
-		attr.o_flags = o_flags;
-		attr.mck_mult = mck_mult;
-		attr.freq = freq;
-		if( pin_assignment != 0 ){
-			memcpy(&attr.pin_assignment, pin_assignment, sizeof(i2s_pin_assignment_t));
-		} else {
-			memset(&attr.pin_assignment, 0xff, sizeof(i2s_pin_assignment_t));
-		}
-		return set_attributes(attr);
-	}
-
-	/*! \details This method initializes the I2C port.
-	 *
-	 * @param o_flags Flag bitmask
-	 * @param freq Bitrate
-	 * @param pin_assignment Pin assignment or null to use default pin assignment
-	 * @return Zero on success
-	 *
-	 * This method calls open() then set_attr().
-	 *
-	 */
-	int init(u32 o_flags, u32 freq, u32 mck_mult = 256, const i2s_pin_assignment_t * pin_assignment = 0){
-		if( open() < 0 ){
-			return -1;
-		}
-		return set_attr(o_flags, freq, mck_mult, pin_assignment);
-	}
-
 
 private:
 

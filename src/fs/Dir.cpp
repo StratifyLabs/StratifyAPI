@@ -5,10 +5,9 @@
 
 #include "var/String.hpp"
 #include "var/Tokenizer.hpp"
-#include "sys/File.hpp"
-#include "sys/FileInfo.hpp"
-#include "sys/Dir.hpp"
-using namespace sys;
+#include "fs/File.hpp"
+#include "fs/Dir.hpp"
+using namespace fs;
 
 
 
@@ -42,17 +41,21 @@ int Dir::remove(const var::ConstString & path, bool recursive, link_transport_md
 #else
 		Dir d;
 #endif
-		if( d.open(path) == 0 ){
+		if( d.open(
+				 SourceDirectoryPath(path)
+				 ) == 0 ){
 			var::String entry;
 			while( (entry = d.read()).is_empty() == false ){
 #if defined __link
-				FileInfo info(driver);
+				Stat info(driver);
 #else
-				FileInfo info;
+				Stat info;
 #endif
 				var::String entry_path;
 				entry_path << path << "/" << entry;
-				info = File::get_info(entry_path);
+				info = File::get_info(
+							SourceFilePath(entry_path)
+							);
 				if( info.is_directory() ){
 					if( entry != "." && entry != ".."){
 #if defined __link
@@ -90,50 +93,77 @@ int Dir::remove(const var::ConstString & path, bool recursive, link_transport_md
 }
 
 #if defined __link
-int Dir::create(const var::ConstString & path, int mode, link_transport_mdriver_t * driver){
+int Dir::create(
+		const DestinationDirectoryPath & path,
+		const Permissions & permissions,
+		link_transport_mdriver_t * driver
+		){
 	int result;
 	if( driver ){
-		result = link_mkdir(driver, path.cstring(), mode);
+		result = link_mkdir(driver,
+								  path.argument().cstring(),
+								  permissions.permissions());
 	} else {
 		//open a directory on the local system (not over link)
 #if defined __win32
-		result = mkdir(path.cstring());
+		result = mkdir(path.argument().cstring());
 #else
-		result = mkdir(path.cstring(), mode);
+		result = mkdir(path.argument().cstring(), permissions.permissions());
 #endif
 	}
 	return result;
 }
 #else
-int Dir::create(const var::ConstString & path, int mode){
-	return mkdir(path.cstring(), mode);
+int Dir::create(
+		const DestinationDirectoryPath & path,
+		const Permissions & permissions
+		){
+	return mkdir(
+				path.argument().cstring(),
+				permissions.permissions()
+				);
 }
 #endif
 
 #if defined __link
-int Dir::create(const var::ConstString & path, int mode, bool is_recursive, link_transport_mdriver_t * driver){
+int Dir::create(
+		const DestinationDirectoryPath & path,
+		const Permissions & permissions,
+		bool is_recursive,
+		link_transport_mdriver_t * driver
+		){
 	if( is_recursive == false ){
-		return create(path, mode, driver);
+		return create(path, permissions, driver);
 	}
 #else
-int Dir::create(const var::ConstString & path, int mode, bool is_recursive){
+int Dir::create(
+		const DestinationDirectoryPath & path,
+		const Permissions & permissions,
+		bool is_recursive){
 	if( is_recursive == false ){
-		return create(path, mode);
+		return create(path, permissions);
 	}
 #endif
-	var::Tokenizer path_tokens(path, "/");
+	var::Tokenizer path_tokens(path.argument(), "/");
 	var::String base_path;
 
-	if( path.find("/") == 0 ){
+	if( path.argument().find("/") == 0 ){
 		base_path << "/";
 	}
 
 	for(u32 i=0; i < path_tokens.count(); i++){
 		base_path << path_tokens.at(i);
 #if defined __link
-		create(base_path, mode, driver);
+		create(
+					DestinationFilePath(base_path),
+					permissions,
+					driver
+					);
 #else
-		create(base_path, mode);
+		create(
+					DestinationFilePath(base_path),
+					permissions
+					);
 #endif
 		base_path << "/";
 	}
@@ -145,10 +175,15 @@ int Dir::create(const var::ConstString & path, int mode, bool is_recursive){
 
 
 #if defined __link
-bool Dir::exists(const var::ConstString & path, link_transport_mdriver_t * driver){
+bool Dir::exists(
+		const SourceDirectoryPath & path,
+		link_transport_mdriver_t * driver
+		){
 	Dir d(driver);
 #else
-bool Dir::exists(const var::ConstString & path){
+bool Dir::exists(
+		const SourceDirectoryPath & path
+		){
 	Dir d;
 #endif
 	if( d.open(path) < 0 ){ return false; }
@@ -157,22 +192,22 @@ bool Dir::exists(const var::ConstString & path){
 }
 
 
-int Dir::open(const var::ConstString & name){
+int Dir::open(const SourceDirectoryPath & name){
 #if defined __link
 	if( driver() ){
-		m_dirp = link_opendir(driver(), name.cstring());
+		m_dirp = link_opendir(driver(), name.argument().cstring());
 	} else {
 		//open a directory on the local system (not over link)
 
-		m_dirp_local = opendir(name.cstring());
+		m_dirp_local = opendir(name.argument().cstring());
 		if( m_dirp_local == 0 ){
 			return -1;
 		}
-		m_path.assign(name);
+		m_path.assign(name.argument());
 		return 0;
 	}
 #else
-	m_dirp = opendir(name.cstring());
+	m_dirp = opendir(name.argument().cstring());
 #endif
 
 	if( m_dirp == 0 ){
@@ -180,8 +215,7 @@ int Dir::open(const var::ConstString & name){
 		return -1;
 	}
 
-
-	m_path.assign(name);
+	m_path.assign(name.argument());
 	return 0;
 }
 
@@ -222,10 +256,15 @@ int Dir::count(){
 
 
 #if defined __link
-var::Vector<var::String> Dir::read_list(const var::ConstString & path, link_transport_mdriver_t * driver){
+var::Vector<var::String> Dir::read_list(
+		const SourceDirectoryPath & path,
+		link_transport_mdriver_t * driver
+		){
 	Dir directory(driver);
 #else
-var::Vector<var::String> Dir::read_list(const var::ConstString & path){
+var::Vector<var::String> Dir::read_list(
+		const SourceDirectoryPath & path
+		){
 	Dir directory;
 #endif
 	var::Vector<var::String> result;

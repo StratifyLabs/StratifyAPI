@@ -31,23 +31,31 @@ int I2C::get_error() const {
 }
 
 
-int I2C::read(int loc, u8 & reg){
+int I2C::read(const fs::Location & location, u8 & reg){
 	int ret;
-	ret = read(loc, &reg, 1);
+	ret = read(
+				location,
+				fs::DestinationBuffer(&reg),
+				fs::Size(1)
+				);
 	return ret;
 }
 
-int I2C::write(int loc, u8 reg){
+int I2C::write(const fs::Location & location, u8 reg){
 	int ret;
-	ret = write(loc, &reg, 1);
+	ret = write(
+				location,
+				fs::SourceBuffer(&reg),
+				fs::Size(1)
+				);
 	return ret;
 }
 
 
-int I2C::set(int loc, int bit, bool high){
+int I2C::set(const fs::Location & location, int bit, bool high){
 	int ret;
 	u8 tmp;
-	ret = read(loc, tmp);
+	ret = read(location, tmp);
 	if( ret < 0 ){
 		return ret;
 	}
@@ -56,5 +64,5 @@ int I2C::set(int loc, int bit, bool high){
 	} else {
 		tmp &= ~(1<<bit);
 	}
-	return write(loc, tmp);
+	return write(location, tmp);
 }

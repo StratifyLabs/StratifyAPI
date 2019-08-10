@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #include "calc/Rle.hpp"
-#include "sys/File.hpp"
+#include "fs/File.hpp"
 #include "sgfx/Bitmap.hpp"
 #include "sgfx/Cursor.hpp"
 
@@ -204,14 +204,17 @@ sg_bmap_data_t * Bitmap::bmap_data(const Point & p){
 
 int Bitmap::load(const var::ConstString & path){
 	sg_bmap_header_t hdr;
-	File f;
+	fs::File f;
 	void * src;
 
-	if( f.open(path, File::READONLY) < 0 ){
+	if( f.open(path, fs::OpenFlags::read_only()) < 0 ){
 		return -1;
 	}
 
-	if( f.read(&hdr, sizeof(hdr)) != sizeof(hdr) ){
+	if( f.read(
+			 fs::DestinationBuffer(&hdr),
+			 fs::Size(sizeof(hdr))
+			 ) != sizeof(hdr) ){
 		return -1;
 	}
 
@@ -229,7 +232,10 @@ int Bitmap::load(const var::ConstString & path){
 	src = data();
 
 
-	if( f.read(src, hdr.size) != (s32)hdr.size ){
+	if( f.read(
+			 fs::DestinationBuffer(src),
+			 fs::Size(hdr.size)
+			 ) != (s32)hdr.size ){
 		return -1;
 	}
 
@@ -239,12 +245,15 @@ int Bitmap::load(const var::ConstString & path){
 
 Area Bitmap::load_dim(const char * path){
 	sg_bmap_header_t hdr;
-	File f;
-	if( f.open(path, File::READONLY) < 0 ){
+	fs::File f;
+	if( f.open(path, fs::OpenFlags::read_only()) < 0 ){
 		return Area();
 	}
 
-	if( f.read(&hdr, sizeof(hdr)) != sizeof(hdr) ){
+	if( f.read(
+			 fs::DestinationBuffer(&hdr),
+			 fs::Size(sizeof(hdr))
+			 ) != sizeof(hdr) ){
 		return Area();
 	}
 
@@ -264,20 +273,26 @@ int Bitmap::save(const var::ConstString & path) const{
 	hdr.bits_per_pixel = api()->bits_per_pixel;
 	hdr.version = api()->version;
 
-	File f;
+	fs::File f;
 	if( f.create(path, true) < 0 ){
 		return -1;
 	}
 
-	if( f.write(&hdr, sizeof(hdr)) < 0 ){
+	if( f.write(
+			 fs::SourceBuffer(&hdr),
+			 fs::Size(sizeof(hdr))
+			 ) < 0 ){
 		f.close();
-		File::remove(path);
+		fs::File::remove(path);
 		return -1;
 	}
 
-	if( f.write(data(), hdr.size) != (s32)hdr.size ){
+	if( f.write(
+			 fs::SourceBuffer(data()),
+			 fs::Size(hdr.size)
+			 ) != (s32)hdr.size ){
 		f.close();
-		File::remove(path);
+		fs::File::remove(path);
 		return -1;
 	}
 

@@ -11,12 +11,12 @@ Device::Device(){
 }
 
 #ifndef __link
-int Device::read(sys::Aio & aio) const {
+int Device::read(fs::Aio & aio) const {
 	aio.m_aio_var.aio_fildes = fileno();
 	return ::aio_read(&(aio.m_aio_var));
 }
 
-int Device::write(sys::Aio & aio) const {
+int Device::write(fs::Aio & aio) const {
 	aio.m_aio_var.aio_fildes = fileno();
 	return ::aio_write(&(aio.m_aio_var));
 }

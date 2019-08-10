@@ -5,7 +5,7 @@
 #define SAPI_FMT_BMP_HPP_
 
 #include <mcu/types.h>
-#include "../sys/File.hpp"
+#include "../fs/File.hpp"
 #include "../api/FmtObject.hpp"
 
 namespace fmt {
@@ -39,16 +39,20 @@ public:
 	int open_readwrite(const var::ConstString & name);
 
 	/*! \details Opens the specified bitmap with the specified access (e.g., Bmp::READONLY). */
-	int open(const var::ConstString & name, int access);
+	int open(const var::ConstString & name, const fs::OpenFlags & flags);
 
 	/*! \details Creates a new bitmap using the specified parameters. */
-	int create(const var::ConstString & name, s32 width, s32 height, u16 planes, u16 bits_per_pixel);
+	int create(
+			const var::ConstString & name,
+			s32 width, s32 height,
+			u16 planes,
+			u16 bits_per_pixel);
 
 	/*! \details Creates a new bitmap and save it to the /app filesystem (flash memory). */
 	static int create_appfs(const var::ConstString & name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, u32 nbyte);
 
 	/*! \details Moves file pointer to the start of the bitmap data. */
-	void rewind(){ seek(m_offset); }
+	void rewind(){ seek(fs::Location(m_offset)); }
 
 	/*! \details Seeks the file to the data at the specified row. */
 	int seek_row(s32 y) const;

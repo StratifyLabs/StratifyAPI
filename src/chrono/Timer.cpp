@@ -20,7 +20,7 @@ void Timer::reset(){
 
 void Timer::restart(){
 	m_start = Clock::get_time();
-	m_stop.set(-1, 0);
+	m_stop.set(Seconds::invalid(), Nanoseconds(0));
 }
 
 
@@ -43,7 +43,7 @@ void Timer::resume(){
 		new_start = m_stop - m_start;
 		now = Clock::get_time();
 		m_start = now - new_start;
-		m_stop.set(-1, 0);
+		m_stop.set(Seconds::invalid(), Nanoseconds(0));
 	} else {
 		//if timer is not running then start it
 		restart();

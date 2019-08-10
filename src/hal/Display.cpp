@@ -119,7 +119,7 @@ int DisplayPalette::alloc_colors(int count, int pixel_format){
 }
 
 int DisplayPalette::save(const char * path) const{
-	File f;
+	fs::File f;
 	display_palette_t palette;
 
 	if( f.create(path, true) < 0 ){ return -1; }
@@ -141,11 +141,14 @@ int DisplayPalette::set_monochrome(){
 }
 
 int DisplayPalette::load(const char * path){
-	File f;
+	fs::File f;
 
-	if( f.open_readonly(path) < 0 ){ return -1; }
+	if( f.open(path, fs::OpenFlags::read_only()) < 0 ){ return -1; }
 
-	if( f.read(&m_palette, sizeof(m_palette)) != sizeof(m_palette) ){
+	if( f.read(
+			 fs::DestinationBuffer(&m_palette),
+			 fs::Size(sizeof(m_palette))
+			 ) != sizeof(m_palette) ){
 		return -1;
 	}
 

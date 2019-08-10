@@ -15,7 +15,7 @@ int DisplayDevice::initialize(const var::ConstString & name){
 	if( name != 0 ){
 
 		//only open the device if it isn't already open
-		if ( Device::open(name, READWRITE) < 0 ){
+		if ( Device::open(name, fs::OpenFlags::read_write()) < 0 ){
 			return -1;
 		}
 

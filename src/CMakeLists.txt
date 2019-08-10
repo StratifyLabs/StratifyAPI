@@ -22,6 +22,10 @@ set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/api)
 add_subdirectory(api)
 list(APPEND SOURCELIST ${SOURCES})
 
+set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/fs)
+add_subdirectory(fs)
+list(APPEND SOURCELIST ${SOURCES})
+
 set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/chrono)
 add_subdirectory(chrono)
 list(APPEND SOURCELIST ${SOURCES})

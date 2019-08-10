@@ -7,6 +7,7 @@
 #include <ctime>
 #include "../api/ChronoObject.hpp"
 #include "../var/ConstString.hpp"
+#include "ClockTime.hpp"
 
 namespace chrono {
 
@@ -37,16 +38,23 @@ public:
 	explicit Time(const time_t & t){ m_time = t; }
 
 	/*! \details Constructs using an amount of time. */
-	Time(u32 sec, u32 min = 0, u32 hour = 0);
+	Time(
+			const Seconds & seconds,
+			const Minutes & minutes = Minutes(0),
+			const Hours & hours = Hours(0)
+			);
+
+	Time(const Minutes & minutes){ m_time = minutes.minutes()*60; }
+	Time(const Hours & hours){ m_time = hours.hours()*3600; }
 
 	bool is_valid(){ return m_time != 0; }
 
 	static Time current_time(){ return get_time_of_day(); }
 	static Time from_seconds(u32 value){ return Time(value); }
-	static Time from_minutes(u32 value){ return Time(0, value, 0); }
-	static Time from_hours(u32 value){ return Time(0, 0, value); }
-	static Time from_days(u32 value){ return Time(0, 0, value*24); }
-	static Time from_weeks(u32 value){ return Time(0, 0, value*24*7); }
+	static Time from_minutes(u32 value){ return Time(Seconds(0), Minutes(value), Hours(0)); }
+	static Time from_hours(u32 value){ return Time(Seconds(0), Minutes(0), Hours(value)); }
+	static Time from_days(u32 value){ return Time(Seconds(0), Minutes(0), Hours(value*24)); }
+	static Time from_weeks(u32 value){ return Time(Seconds(0), Minutes(0), Hours(value*24*7)); }
 
 	Time operator + (const Time & a ) const {
 		Time result;
@@ -104,7 +112,11 @@ public:
 	  * calendar time.
 	  *
 	  */
-	void set_time(u32 sec, u32 min, u32 hour);
+	void set_time(
+			const Seconds & sec,
+			const Minutes & min,
+			const Hours & hour
+			);
 
 	/*! \details Sets the current value.
 	  *

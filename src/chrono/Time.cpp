@@ -9,7 +9,6 @@
 
 using namespace chrono;
 
-
 const char * month_names[] = {
 	"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
 };
@@ -20,7 +19,10 @@ Time::Time(){
 }
 
 /*! \brief Construct using an amount of time */
-Time::Time(u32 sec, u32 min, u32 hour){
+Time::Time(
+		const Seconds & sec,
+		const Minutes &  min,
+		const Hours &  hour){
 	set_time(sec, min, hour);
 }
 
@@ -73,8 +75,14 @@ Time Time::get_time_of_day(){
 	return Time(t);
 }
 
-void Time::set_time(u32 sec, u32 min, u32 hour){
-	m_time = sec + min*60 + hour*3600;
+void Time::set_time(
+		const Seconds & sec,
+		const Minutes & min,
+		const Hours & hour
+		){
+	m_time = sec.seconds() +
+			min.minutes()*60 +
+			hour.hours()*3600;
 }
 
 u32 Time::second() const {

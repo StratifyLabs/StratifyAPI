@@ -117,7 +117,7 @@
  *
  * The Stratify API library contains classes that allow easy access
  * to Stratify OS hardware and POSIX constructs such as threads (sys::Thread),
- * mutexes (sys::Mutex), files (sys::File) and many more. It also contains
+ * mutexes (sys::Mutex), files (fs::File) and many more. It also contains
  * classes used to manage data (see the var namespace) in an embedded
  * friendly way.
  *
@@ -131,7 +131,7 @@
  *
  * If you are ready to start tinkering, hal::Pin is a nice place to
  * start and allows you to read and write GPIO values. hal::Uart
- * can be used to access UART peripherals and sys::File is for
+ * can be used to access UART peripherals and fs::File is for
  * reading and writing files on any mounted filesystem.
  *
  * **Code Hierarchy**
@@ -233,6 +233,13 @@ private:
 
 /** \endcond */
 
+template<class T> class Argument : public ApiObject {
+public:
+	explicit Argument(T argument) : m_argument(argument){}
+	T argument() const { return m_argument; }
+private:
+	T m_argument;
+};
 
 }
 

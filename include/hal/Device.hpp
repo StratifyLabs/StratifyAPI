@@ -4,7 +4,8 @@
 #ifndef SAPI_HAL_DEVICE_HPP_
 #define SAPI_HAL_DEVICE_HPP_
 
-#include "../sys/File.hpp"
+#include "../fs/File.hpp"
+#include "../fs/Aio.hpp"
 #include "../chrono/MicroTime.hpp"
 #include "../api/HalObject.hpp"
 #include "DeviceSignal.hpp"
@@ -37,7 +38,7 @@ class Device : public api::HalWorkObject {
 public:
 	/*! \details Constructs a Device.
 	 *
-	 * Unlike sys::File, upon creation the
+	 * Unlike fs::File, upon creation the
 	 * is_close_on_destruct() flag is cleared for
 	 * all devices (and hal::Periph). In
 	 * order to close a device, close() must
@@ -67,19 +68,19 @@ public:
 
 	/*! \details Reads the device asynchronously.
 	 *
-	 * @param aio A reference to the sys::Aio object to use for reading
+	 * @param aio A reference to the fs::Aio object to use for reading
 	 *
-	 * \sa sys::Aio
+	 * \sa fs::Aio
 	 */
-	virtual int read(sys::Aio & aio) const;
+	virtual int read(fs::Aio & aio) const;
 
 	/*! \details Writes the device asynchronously.
 	 *
-	 * @param aio A reference to the sys::Aio object to use for writing
+	 * @param aio A reference to the fs::Aio object to use for writing
 	 *
-	 * \sa sys::Aio
+	 * \sa fs::Aio
 	 */
-	virtual int write(sys::Aio & aio) const;
+	virtual int write(fs::Aio & aio) const;
 
 
 	using File::read;

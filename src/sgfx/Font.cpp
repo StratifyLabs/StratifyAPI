@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <errno.h>
 #include "var/Token.hpp"
-#include "sys/File.hpp"
+#include "fs/File.hpp"
 #include "sgfx/Font.hpp"
 
 using namespace sgfx;
@@ -17,7 +17,7 @@ FontInfo::FontInfo(u8 point_size, u8 style, Font * font){
 FontInfo::FontInfo(const var::ConstString & path){
 	m_path = path;
 
-	var::Tokenizer tokens(sys::File::name(path), "-.");
+	var::Tokenizer tokens(fs::File::name(path), "-.");
 
 	if( tokens.count() != 4 ){
 		m_point_size = 0;

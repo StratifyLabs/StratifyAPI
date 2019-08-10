@@ -1,27 +1,33 @@
 //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#include "sys.hpp"
+#include "fs.hpp"
 #include "var/Item.hpp"
 
 namespace var {
 
 int ItemObject::save(const char * path) const {
-	File f;
+	fs::File f;
 	int ret;
 	if( f.create(path, true) < 0 ){
 		return -1;
 	}
-	ret = f.write(data_void_const(), size());
+	ret = f.write(
+				fs::SourceBuffer(data_void_const()),
+				fs::Size(size())
+				);
 	return ret;
 }
 
 int ItemObject::load(const char * path){
-	File f;
+	fs::File f;
 	int ret;
-	if( f.open_readonly(path) < 0 ){
+	if( f.open(path, fs::OpenFlags::read_only()) < 0 ){
 		return -1;
 	}
-	ret = f.read(data_void(), size());
+	ret = f.read(
+				fs::DestinationBuffer(data_void()),
+				fs::Size(size())
+				);
 	return ret;
 }
 

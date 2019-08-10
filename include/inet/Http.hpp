@@ -115,16 +115,53 @@ public:
 	 * ```
 	 *
 	 */
-	int get(const var::ConstString & url, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
+	int get(
+			const var::ConstString & url,
+			const fs::DestinationFile & response,
+			const sys::ProgressCallback * progress_callback = 0
+			);
 
-	int post(const var::ConstString & url, const var::ConstString & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
-	int post(const var::ConstString & url, const sys::File & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
+	int post(
+			const var::ConstString & url,
+			const var::ConstString & request,
+			const fs::DestinationFile & response,
+			const sys::ProgressCallback * progress_callback = 0
+			);
 
-	int put(const var::ConstString & url, const var::ConstString & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
-	int put(const var::ConstString & url, const sys::File & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
+	int post(
+			const var::ConstString & url,
+			const fs::SourceFile & request,
+			const fs::DestinationFile & response,
+			const sys::ProgressCallback * progress_callback = 0
+			);
 
-	int patch(const var::ConstString & url, const var::ConstString & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
-	int patch(const var::ConstString & url, const sys::File & request, const sys::File & response, const sys::ProgressCallback * progress_callback = 0);
+	int put(
+			const var::ConstString & url,
+			const var::ConstString & request,
+			const fs::DestinationFile & response,
+			const sys::ProgressCallback * progress_callback = 0
+			);
+
+	int put(
+			const var::ConstString & url,
+			const fs::SourceFile & request,
+			const fs::DestinationFile & response,
+			const sys::ProgressCallback * progress_callback = 0
+			);
+
+	int patch(
+			const var::ConstString & url,
+			const var::ConstString & request,
+			const fs::DestinationFile & response,
+			const sys::ProgressCallback * progress_callback = 0
+			);
+
+	int patch(
+			const var::ConstString & url,
+			const fs::SourceFile & request,
+			const fs::DestinationFile & response,
+			const sys::ProgressCallback * progress_callback = 0
+			);
 
 	//http delete
 	/*! \cond */
@@ -175,8 +212,9 @@ public:
 	 * another chunkc is ready from the socket.
 	 *
 	 */
-	void set_transfer_size(u32 value){
+	Http & set_transfer_size(u32 value){
 		m_transfer_size = value;
+		return *this;
 	}
 
 	/*! \details Sets the transfer encoding to chunked.
@@ -184,8 +222,9 @@ public:
 	 * @param value true if the transfer is to be chunked.
 	 *
 	 */
-	void set_chunked_transfer_encoding_enabled(bool value = true){
+	Http & set_chunked_transfer_encoding_enabled(bool value = true){
 		m_is_chunked_transfer_encoding = value;
+		return *this;
 	}
 
 	/*! \details Closes the socket.
@@ -218,27 +257,41 @@ private:
 	bool m_is_chunked_transfer_encoding;
 	u32 m_transfer_size;
 
-	int connect_to_server(const var::ConstString & domain_name, u16 port);
+	int connect_to_server(
+			const var::ConstString & domain_name,
+			u16 port
+			);
 
-	int query(const var::ConstString & command,
-				 const var::ConstString & url,
-				 const sys::File * send_file,
-				 const sys::File * get_file,
-				 const sys::ProgressCallback * progress_callback);
+	int query(
+			const var::ConstString & command,
+			const var::ConstString & url,
+			const fs::SourceFile * send_file,
+			const fs::DestinationFile * get_file,
+			const sys::ProgressCallback * progress_callback
+			);
 
 
 	int send_string(const var::ConstString & str);
 
-	int build_header(const var::ConstString & method, const var::ConstString & host, const var::ConstString & path, u32 length);
+	int build_header(
+			const var::ConstString & method,
+			const var::ConstString & host,
+			const var::ConstString & path,
+			u32 length
+			);
 
-	int send_header(const var::ConstString & method,
-						 const var::ConstString & host,
-						 const var::ConstString & path,
-						 const sys::File * file,
-						 const sys::ProgressCallback * progress_callback);
+	int send_header(
+			const var::ConstString & method,
+			const var::ConstString & host,
+			const var::ConstString & path,
+			const fs::SourceFile * file,
+			const sys::ProgressCallback * progress_callback
+			);
 
 	int listen_for_header();
-	int listen_for_data(const sys::File & file, const sys::ProgressCallback * progress_callback);
+	int listen_for_data(const fs::DestinationFile & data,
+			const sys::ProgressCallback * progress_callback
+			);
 	/*! \endcond */
 
 };

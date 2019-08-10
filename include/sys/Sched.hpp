@@ -79,7 +79,7 @@ public:
 	/*! \details Gets the min priority for the specified policy. */
 	static int get_priority_min(enum policy value);
 	/*! \details Gets the max priority for the specified policy. */
-	static int get_priority(pid_t pid);
+	static int get_priority(const Pid & pid);
 
 	/*! \details Gets the current proccess ID (equivalent to getpid()). */
 	static pid_t get_pid(){ return getpid(); }
@@ -89,7 +89,7 @@ public:
 	 * @param pid  The process ID
 	 * @return The RR interval in microseconds
 	 */
-	static int get_rr_interval(pid_t pid);
+	static int get_rr_interval(const Pid & pid);
 
 	/*! \details Sets the scheduler with the given parameters.
 	 *
@@ -98,7 +98,7 @@ public:
 	 * @param priority The priority (higher is higher priority)
 	 * @return Zero on success of -1 with errno set
 	 */
-	static int set_scheduler(pid_t pid, enum policy value, int priority);
+	static int set_scheduler(const Pid & pid, enum policy value, int priority);
 
 };
 

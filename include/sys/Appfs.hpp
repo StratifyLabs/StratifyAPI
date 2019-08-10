@@ -9,7 +9,7 @@
 #include "../api/SysObject.hpp"
 #include "../var/ConstString.hpp"
 #include "ProgressCallback.hpp"
-#include "File.hpp"
+#include "../fs/File.hpp"
 
 namespace sys {
 
@@ -148,15 +148,15 @@ public:
 
 	void apply(appfs_file_t * dest) const;
 
-	void set_name(const var::ConstString & value){ m_name = value; }
+	AppfsFileAttributes & set_name(const var::ConstString & value){ m_name = value; return *this; }
 	const var::String & name() const { return m_name; }
-	void set_id(const var::ConstString & value){ m_id = value; }
+	AppfsFileAttributes & set_id(const var::ConstString & value){ m_id = value; return *this; }
 	const var::String & id() const { return m_id; }
-	void set_version(u16 value){ m_version = value; }
+	AppfsFileAttributes & set_version(u16 value){ m_version = value; return *this; }
 	u16 version() const { return m_version; }
-	void set_flags(u32 o_value){ m_o_flags = o_value; }
+	AppfsFileAttributes & set_flags(u32 o_value){ m_o_flags = o_value; return *this; }
 	u16 o_flags() const { return m_o_flags; }
-	void set_ram_size(u32 value){ m_ram_size = value; }
+	AppfsFileAttributes & set_ram_size(u32 value){ m_ram_size = value; return *this; }
 	u16 ram_size() const { return m_ram_size; }
 
 	bool is_flash() const { return m_o_flags & IS_FLASH; }
@@ -167,60 +167,67 @@ public:
 	bool is_startup() const { return m_o_flags & IS_STARTUP; }
 	bool is_unique() const { return m_o_flags & IS_UNIQUE; }
 
-	void set_startup(bool value = true){
+	AppfsFileAttributes & set_startup(bool value = true){
 		if( value ){
 			m_o_flags |= IS_STARTUP;
 		} else {
 			m_o_flags &= ~IS_STARTUP;
 		}
+		return *this;
 	}
 
-	void set_flash(bool value = true){
+	AppfsFileAttributes & set_flash(bool value = true){
 		if( value ){
 			m_o_flags |= IS_FLASH;
 		} else {
 			m_o_flags &= ~IS_FLASH;
 		}
+		return *this;
 	}
 
-	void set_code_external(bool value = true){
+	AppfsFileAttributes & set_code_external(bool value = true){
 		if( value ){
 			m_o_flags |= IS_CODE_EXTERNAL;
 		} else {
 			m_o_flags &= ~IS_CODE_EXTERNAL;
 		}
+		return *this;
 	}
 
-	void set_data_external(bool value = true){
+	AppfsFileAttributes & set_data_external(bool value = true){
 		if( value ){
 			m_o_flags |= IS_DATA_EXTERNAL;
 		} else {
 			m_o_flags &= ~IS_DATA_EXTERNAL;
 		}
+		return *this;
 	}
 
-	void set_code_tightly_coupled(bool value = true){
+	AppfsFileAttributes & set_code_tightly_coupled(bool value = true){
 		if( value ){
 			m_o_flags |= IS_CODE_TIGHTLY_COUPLED;
 		} else {
 			m_o_flags &= ~IS_CODE_TIGHTLY_COUPLED;
 		}
+		return *this;
 	}
 
-	void set_data_tightly_coupled(bool value = true){
+	AppfsFileAttributes & set_data_tightly_coupled(bool value = true){
 		if( value ){
 			m_o_flags |= IS_DATA_TIGHTLY_COUPLED;
 		} else {
 			m_o_flags &= ~IS_DATA_TIGHTLY_COUPLED;
 		}
+		return *this;
 	}
 
-	void set_unique(bool value = true){
+	AppfsFileAttributes & set_unique(bool value = true){
 		if( value ){
 			m_o_flags |= IS_UNIQUE;
 		} else {
 			m_o_flags &= ~IS_UNIQUE;
 		}
+		return *this;
 	}
 
 
@@ -269,8 +276,14 @@ private:
  * \endcode
  *
  */
-class Appfs : public api::SysInfoObject {
+class Appfs : public api::SysWorkObject {
 public:
+
+#if defined __link
+	Appfs(link_transport_mdriver_t * driver = 0);
+#else
+	Appfs();
+#endif
 
 	/*! \details Creates a file in flash memory consisting
 	 * of the data specified.
@@ -286,16 +299,20 @@ public:
 	 */
 #if !defined __link
 	static int create(const var::ConstString & name,
-							const sys::File & source_data,
+							const fs::File & source_data,
 							const var::ConstString & mount = "/app",
 							const ProgressCallback * progress_callback = 0);
 #else
 	static int create(const var::ConstString & name,
-							const sys::File & source_data,
+							const fs::File & source_data,
 							const var::ConstString & mount = "/app",
 							const ProgressCallback * progress_callback = 0,
 							link_transport_mdriver_t * driver = 0);
 #endif
+
+	int create(const var::ConstString & name, u32 size);
+	Appfs & operator << (const var::Data & data);
+	int close();
 
 
 	/*! \details Returns the page size for writing data. */
@@ -355,8 +372,12 @@ public:
 #if !defined __link
 	static int cleanup(bool data = false);
 #endif
-};
+
+private:
+	fs::File m_file;
 
 };
+
+}
 
 #endif /* SAPI_SYS_APPFS_HPP_ */

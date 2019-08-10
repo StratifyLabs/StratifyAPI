@@ -30,12 +30,16 @@ int FileFont::set_file(const var::ConstString & name, int offset){
 	//close if not already closed
 	m_file.close();
 
-	if( m_file.open(name, File::RDONLY) < 0 ){
+	if( m_file.open(name, fs::OpenFlags::read_only()) < 0 ){
 		set_error_number(m_file.error_number());
 		return -1;
 	}
 
-	if( m_file.read(offset, &m_header, sizeof(m_header)) != sizeof(m_header) ){
+	if( m_file.read(
+			 fs::Location(offset),
+			 fs::DestinationBuffer(&m_header),
+			 fs::Size(sizeof(m_header))
+			 ) != sizeof(m_header) ){
 		set_error_number(m_file.error_number());
 		return -1;
 	}
@@ -57,7 +61,11 @@ int FileFont::set_file(const var::ConstString & name, int offset){
 	m_kerning_pairs = (sg_font_kerning_pair_t*)malloc(pair_size);
 
 	if( m_kerning_pairs ){
-		m_file.read(m_offset + sizeof(sg_font_header_t), m_kerning_pairs, pair_size);
+		m_file.read(
+					fs::Location(m_offset + sizeof(sg_font_header_t)),
+					fs::DestinationBuffer(m_kerning_pairs),
+					fs::Size(pair_size)
+					);
 	}
 
 	set_space_size(m_header.max_word_width);
@@ -84,7 +92,11 @@ int FileFont::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 	}
 
 	offset = m_offset + sizeof(sg_font_header_t) + sizeof(sg_font_kerning_pair_t)*m_header.kerning_pair_count + ind*sizeof(sg_font_char_t);
-	if( (ret = m_file.read(offset, &ch, sizeof(ch))) != sizeof(ch) ){
+	if( (ret = m_file.read(
+			  fs::Location(offset),
+			  fs::DestinationBuffer(&ch),
+			  fs::Size(sizeof(ch))
+			  ) ) != sizeof(ch) ){
 		return -1;
 	}
 
@@ -112,7 +124,11 @@ void FileFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, con
 		canvas_offset = m_canvas_start + ch.canvas_idx*m_canvas_size;
 
 		//need to read the character row by row
-		if( m_file.read(m_offset + canvas_offset, m_canvas.to_void(), m_canvas_size) != (int)m_canvas_size ){
+		if( m_file.read(
+				 fs::Location(m_offset + canvas_offset),
+				 fs::DestinationBuffer(m_canvas.to_void()),
+				 fs::Size(m_canvas_size)
+				 ) != (int)m_canvas_size ){
 			return;
 		}
 		m_current_canvas = ch.canvas_idx;

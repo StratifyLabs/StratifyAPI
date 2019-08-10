@@ -9,7 +9,7 @@
 
 #include <sos/dev/sys.h>
 #include <sos/link.h>
-#include "File.hpp"
+#include "../fs/File.hpp"
 #include "../var/ConstString.hpp"
 
 namespace sys {
@@ -163,7 +163,7 @@ private:
 /*! \brief Sys Class
  * \details This class allows access to system attributes and functions.
  */
-class Sys : public File {
+class Sys : public fs::File {
 public:
 
 #if defined __link
@@ -382,7 +382,7 @@ public:
 	 *
 	 */
 	int open(){
-		return File::open("/dev/sys", RDWR);
+		return fs::File::open("/dev/sys", fs::OpenFlags::read_write());
 	}
 
 	/*! \details Loads the current system info.

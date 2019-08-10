@@ -34,7 +34,7 @@ int Sha256::initialize(){
 	return set_error_number_if_error(sha256_api()->init(&m_context));
 }
 
-var::String Sha256::stringify(){
+var::String Sha256::to_string(){
 	var::String result;
 	const var::Array<u8, 32> & out = output();
 	for(u32 i=0; i < out.size(); i++){

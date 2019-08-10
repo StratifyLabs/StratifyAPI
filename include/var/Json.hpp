@@ -5,7 +5,7 @@
 #include "../api/VarObject.hpp"
 #include "../var/Vector.hpp"
 #include "../var/String.hpp"
-#include "../sys/File.hpp"
+#include "../fs/File.hpp"
 #include "../sys/requests.h"
 
 namespace var {
@@ -454,8 +454,8 @@ public:
 	  * \param file A reference to the file containing JSON
 	  * \return Zero on success
 	  */
-	JsonValue load_from_file(const sys::File & file);
-	JsonValue load(const sys::File & file);
+	JsonValue load_from_file(const fs::File & file);
+	JsonValue load(const fs::File & file);
 
 	/*!
 	  * \details Loads a JSON value from streaming data
@@ -467,7 +467,7 @@ public:
 
 	int save_to_file(const JsonValue & value, const var::ConstString & path) const;
 	var::String stringify(const JsonValue & value) const;
-	int save_to_file(const JsonValue & value, const sys::File & file) const;
+	int save_to_file(const JsonValue & value, const fs::File & file) const;
 	int save(const JsonValue & value, json_dump_callback_t callback, void * context) const;
 
 	enum {
@@ -499,7 +499,7 @@ private:
 	u32 m_flags;
 	JsonError m_error;
 
-	static size_t load_file_data(void *buffer, size_t buflen, void *data);
+	static size_t load_file_data(void * buffer, size_t buflen, void *data);
 
 };
 

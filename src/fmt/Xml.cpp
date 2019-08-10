@@ -12,10 +12,10 @@ using namespace var;
 
 //static const char * white_space = "\r\n\t ";
 
-Xml::Xml(const var::ConstString & path, int mode, int perms){
+Xml::Xml(const var::ConstString & path, const fs::OpenFlags & flags, const fs::Permissions & permissions){
 	//init all values to zero
 	file_size = 0;
-	init(path, mode, perms);
+	init(path, flags, permissions);
 }
 
 Xml::Xml(){
@@ -24,7 +24,7 @@ Xml::Xml(){
 }
 
 
-int Xml::init(const var::ConstString & path, int mode, int perms){
+int Xml::init(const var::ConstString & path, const fs::OpenFlags & flags, const fs::Permissions & permissions){
 	indent = 0;
 
 	//close if already open
@@ -32,12 +32,12 @@ int Xml::init(const var::ConstString & path, int mode, int perms){
 		close();
 	}
 
-	if( mode == WRONLY ){
-		if( create(path) < 0 ){
+	if( flags.is_write_only() ){
+		if( create(path, true, permissions) < 0 ){
 			return -1;
 		}
 	} else {
-		if( open(path, mode) < 0 ){
+		if( open(path, flags) < 0 ){
 			return -1;
 		}
 		file_size = File::size();
@@ -107,11 +107,19 @@ int Xml::set_get_value(String & dest, const var::ConstString & key, bool set) co
 				s0.append(" ");
 			}
 
-			if( write(tmp_content.offset + tmp_content.start_tag_size, s0.c_str(), tmp_content.size) < 0 ){
+			if( write(
+					 fs::Location(tmp_content.offset + tmp_content.start_tag_size),
+					 fs::SourceBuffer(s0.cstring()),
+					 fs::Size(tmp_content.size)
+					 ) < 0 ){
 				return -1;
 			}
 		} else {
-			read(tmp_content.offset, s0.data(), tmp_content.size);
+			read(
+						fs::Location(tmp_content.offset),
+						fs::DestinationBuffer(s0.data()),
+						fs::Size(tmp_content.size)
+						);
 			dest = s0.substr(tmp_content.start_tag_size, s0.size() - tmp_content.start_tag_size - tmp_content.end_tag_size);
 		}
 	}
@@ -180,10 +188,15 @@ int Xml::sibling(String & dest, String * value){
 	context_t target;
 	context_t tmp;
 
-	seek(content.offset + content.size);
+	seek(
+				fs::Location(content.offset + content.size)
+				);
 	nbytes = 0;
 	do {
-		if( read(str.cdata(), str.capacity()) < 0 ){
+		if( read(
+				 fs::DestinationBuffer(str.cdata()),
+				 fs::Size(str.capacity())
+				 ) < 0 ){
 			return -1;
 		}
 		loc = str.find('<');
@@ -192,9 +205,14 @@ int Xml::sibling(String & dest, String * value){
 		}
 	} while( loc < 0 );
 
-	seek(content.offset + content.size + nbytes + loc + 1);
+	seek(
+				fs::Location(content.offset + content.size + nbytes + loc + 1)
+				);
 
-	if( read(str.cdata(), str.capacity()) < 0 ){
+	if( read(
+			 fs::DestinationBuffer(str.cdata()),
+			 fs::Size(str.capacity())
+			 ) < 0 ){
 		return -1;
 	}
 
@@ -270,7 +288,7 @@ int Xml::write_start_tag(const var::ConstString & name, const var::ConstString &
 	}
 	str.append(">\n");
 	indent++;
-	return write(str.c_str(), str.size());
+	return write(str);
 }
 
 int Xml::write_cdata(const var::ConstString & str){
@@ -282,7 +300,7 @@ int Xml::write_cdata(const var::ConstString & str){
 	s.append("<![CDATA[");
 	s.append(str);
 	s.append("]]>");
-	return write(s.c_str(), s.size());
+	return write(s);
 }
 
 int Xml::write_end_tag(const var::ConstString & name){
@@ -297,7 +315,7 @@ int Xml::write_end_tag(const var::ConstString & name){
 	str.append("</");
 	str.append(name);
 	str.append(">\n");
-	return write(str.c_str(), str.size());
+	return write(str);
 }
 int Xml::write_empty_element_tag(const var::ConstString & name, const var::ConstString & attrs){
 	String str;
@@ -310,7 +328,7 @@ int Xml::write_empty_element_tag(const var::ConstString & name, const var::Const
 	str.append(" ");
 	str.append(attrs);
 	str.append(">\n");
-	return write(str.c_str(), str.size());
+	return write(str);
 }
 
 int Xml::write_element(const var::ConstString & name, const var::ConstString & data, const var::ConstString & attrs){
@@ -350,9 +368,9 @@ int Xml::write_element(const var::ConstString & name, const var::ConstString & d
 //find str in the current context and define a target context that defines str
 int Xml::find_context(const var::ConstString & str, const context_t & current, context_t & target) const{
 	Tokenizer tokens(str, ".");
-	String s0;
+	//String s0;
 	String s1;
-	seek(current.offset);
+	seek(fs::Location(current.offset));
 	int i, j;
 	context_t tmp;
 
@@ -492,7 +510,11 @@ int Xml::find_target_tag(String & name, context_t & context, context_t & target)
 bool Xml::is_empty_element_tag(context_t & target) const{
 	char c;
 	c = 0;
-	read(target.offset + target.start_tag_size - 2, &c, 1);
+	read(
+				fs::Location(target.offset + target.start_tag_size - 2),
+				fs::DestinationBuffer(&c),
+				fs::Size(1)
+				);
 	if( c == '/' ){
 		return true;
 	}
@@ -586,7 +608,11 @@ int Xml::find_tag(const var::ConstString & name,
 			return -1;
 		}
 
-		ret = read(offset, str.data(), page_size);
+		ret = read(
+					fs::Location(offset),
+					fs::DestinationBuffer(str.to_void()),
+					fs::Size(page_size)
+					);
 
 		loc = 0;
 		if( ret > 0 ){
@@ -671,7 +697,11 @@ void Xml::show_context(context_t & context){
 		}
 
 		memset(str.data(), 0, str.capacity());
-		if( read(offset, str.data(), page_size) > 0 ){
+		if( read(
+				 fs::Location(offset),
+				 fs::DestinationBuffer(str.to_void()),
+				 fs::Size(page_size)
+				 ) > 0 ){
 			printf("%s", str.c_str());
 		} else {
 			return;
@@ -694,7 +724,11 @@ int Xml::read_context(int offset, String & str, context_t & target) const {
 	if( page_size > str.capacity() ){
 		page_size = str.capacity();
 	}
-	return read(target.offset + target.cursor + offset, str.data(), str.capacity());
+	return read(
+				fs::Location(target.offset + target.cursor + offset),
+				fs::DestinationBuffer(str.to_void()),
+				fs::Size(str.capacity())
+				);
 }
 
 int Xml::load_start_tag(String & tag, const context_t & target) const {
@@ -702,7 +736,11 @@ int Xml::load_start_tag(String & tag, const context_t & target) const {
 		return -1;
 	}
 
-	return read(target.offset, tag.data(), target.start_tag_size);
+	return read(
+				fs::Location(target.offset),
+				fs::DestinationBuffer(tag.data()),
+				fs::Size(target.start_tag_size)
+				);
 
 }
 

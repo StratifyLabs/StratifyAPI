@@ -39,10 +39,10 @@ public:
 	 *
 	 *
 	 */
-	static ClockTime get_time(int clock_id = REALTIME);
+	static ClockTime get_time(enum clock_id clock_id = REALTIME);
 
 	/*! \details Gets the resolution of the specified clock. */
-	static ClockTime get_resolution(int clock_id = REALTIME);
+	static ClockTime get_resolution(enum clock_id clock_id = REALTIME);
 };
 
 }

@@ -3,7 +3,7 @@
 #include <limits.h>
 
 #include "sys/Sys.hpp"
-#include "sys/Dir.hpp"
+#include "fs/Dir.hpp"
 #include "var/Token.hpp"
 #include "sys/Assets.hpp"
 
@@ -39,9 +39,11 @@ int Assets::initialize(){
 
 void Assets::find_fonts_in_directory(const var::ConstString & path){
 	var::Vector<var::String> file_list;
-	file_list = Dir::read_list(path);
+	file_list = fs::Dir::read_list(
+				fs::SourceDirectoryPath(path)
+				);
 	for(u32 i=0; i < file_list.count(); i++){
-		if( File::suffix(file_list.at(i)) == "sbf" ){
+		if( fs::File::suffix(file_list.at(i)) == "sbf" ){
 			var::String font_path = path;
 			font_path << "/" << file_list.at(i);
 			FontInfo info(font_path);
@@ -52,9 +54,11 @@ void Assets::find_fonts_in_directory(const var::ConstString & path){
 
 void Assets::find_icons_in_directory(const var::ConstString & path){
 	var::Vector<var::String> file_list;
-	file_list = Dir::read_list(path);
+	file_list = fs::Dir::read_list(
+				fs::SourceDirectoryPath(path)
+				);
 	for(u32 i=0; i < file_list.count(); i++){
-		if( File::suffix(file_list.at(i)) == "svic" ){
+		if( fs::File::suffix(file_list.at(i)) == "svic" ){
 			//format is name-weight-size.sbf
 			var::String icon_path = path;
 			icon_path << "/" << file_list.at(i);

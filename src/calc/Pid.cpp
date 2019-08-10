@@ -6,13 +6,13 @@
 
 using namespace calc;
 
-PidF32::PidF32(float target, float kp, float ki, float kd, float min, float max) {
-	m_kp = kp;
-	m_ki = ki;
-	m_kd = kd;
-	m_max = max;
-	m_min = min;
-	m_target = target;
+PidF32::PidF32() {
+	m_kp = 1.0f;
+	m_ki = 0.0f;
+	m_kd = 0.0f;
+	m_max = 0.0f;
+	m_min = -0.0f;
+	m_target = 0.0f;
 	reset();
 }
 
@@ -21,7 +21,7 @@ void PidF32::reset(){
 	m_error = 0.0;
 }
 
-float PidF32::calc_control_variable(float input){
+float PidF32::calculate_control_variable(float input){
 	float err;
 	float output;
 	float de;

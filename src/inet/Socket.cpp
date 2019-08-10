@@ -346,11 +346,11 @@ int Socket::read(void * buf, int nbyte,struct sockaddr * ai_addr,socklen_t * ai_
 	return decode_socket_return( ::recvfrom(m_socket, (char*)buf, nbyte, 0 ,ai_addr, ai_addrlen) );
 }
 
-int Socket::shutdown(int how) const{
+int Socket::shutdown(const fs::OpenFlags how) const{
 	int socket_how = SHUT_RDWR;
-	if( (how & ACCESS_MODE) == READONLY ){
+	if( how.is_read_only() ){
 		socket_how = SHUT_RD;
-	} else if( (how & ACCESS_MODE) == WRITEONLY ){
+	} else if( how.is_write_only() ){
 		socket_how = SHUT_WR;
 	}
 	return decode_socket_return( ::shutdown(m_socket, socket_how) );

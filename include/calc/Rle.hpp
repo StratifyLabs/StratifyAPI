@@ -6,7 +6,7 @@
 /*! \cond */
 
 #include "../sys/Appfs.hpp"
-#include "../sys/File.hpp"
+#include "../fs/File.hpp"
 #include "../api/CalcObject.hpp"
 
 
@@ -65,7 +65,7 @@ private:
 
 };
 
-class RleFile : public Rle, public sys::File {
+class RleFile : public Rle, public fs::File {
 public:
 	/*! \details Encodes using run length encoding and writes the data to a file.
 	 *

@@ -38,8 +38,10 @@ class Sha256 : public api::CryptoWorkObject {
 public:
 	Sha256();
 	~Sha256();
+
 	int initialize();
 	int finalize();
+
 	int start();
 	int update(const char * input, u32 len);
 	int finish();
@@ -49,7 +51,7 @@ public:
 	Sha256 & operator << (const var::String & a);
 
 	const var::Array<u8, 32> & output();
-	var::String stringify();
+	var::String to_string();
 
 private:
 	var::Array<u8,32> m_output;

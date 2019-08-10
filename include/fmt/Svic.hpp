@@ -1,7 +1,7 @@
 #ifndef SAPI_FMT_SVIC_HPP_
 #define SAPI_FMT_SVIC_HPP_
 
-#include "../sys/File.hpp"
+#include "../fs/File.hpp"
 #include "../api/FmtObject.hpp"
 #include "../sgfx/Vector.hpp"
 #include "../var/Vector.hpp"
@@ -21,7 +21,10 @@ public:
 
 	var::String name_at(u32 i) const;
 
-	int append(const var::ConstString & name, const var::Vector<sg_vector_path_description_t> & list);
+	int append(
+			const var::ConstString & name,
+			const var::Vector<sg_vector_path_description_t> & list
+			);
 
 	sgfx::VectorPath get(const var::ConstString & name) const;
 	sgfx::VectorPath at(u32 i) const;

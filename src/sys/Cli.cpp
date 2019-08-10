@@ -1,6 +1,6 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#include "sys/File.hpp"
+#include "fs/File.hpp"
 #include "sys/Appfs.hpp"
 #include "sys/Cli.hpp"
 
@@ -19,7 +19,7 @@ Cli::Cli(int argc, char * argv[], const var::ConstString & app_git_hash) : m_app
 
 	if( argc > 0 ){
 		m_path = argv[0];
-		m_name = File::name(argv[0]);
+		m_name = fs::File::name(argv[0]);
 #if defined __link
 		version = Appfs::get_version(m_path.str(), 0);
 #else

@@ -4,7 +4,7 @@
 
 #include "String.hpp"
 #include "Json.hpp"
-#include "../sys/File.hpp"
+#include "../fs/File.hpp"
 #include "../chrono/ClockTime.hpp"
 #include "../chrono/Time.hpp"
 
@@ -38,7 +38,7 @@ public:
 
 	String stringify() const;
 
-	int save(const sys::File & f) const;
+	int save(const fs::File & f) const;
 
 private:
 	String m_type;

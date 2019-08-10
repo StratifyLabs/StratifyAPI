@@ -4,8 +4,10 @@
 #include <cstring>
 #include "fmt/Bmp.hpp"
 #include "sys/Appfs.hpp"
+
 using namespace fmt;
 using namespace sys;
+using namespace fs;
 
 
 Bmp::Bmp(){
@@ -18,35 +20,41 @@ Bmp::Bmp(const var::ConstString & name){
 
 
 int Bmp::open_readonly(const var::ConstString & name){
-	return open(name, Bmp::READONLY);
+	return open(name, fs::OpenFlags::read_only());
 }
 
 int Bmp::open_readwrite(const var::ConstString & name){
-	return open(name, Bmp::RDWR);
+	return open(name, fs::OpenFlags::read_write());
 }
 
-int Bmp::open(const var::ConstString & name, int access){
+int Bmp::open(const var::ConstString & name, const fs::OpenFlags & flags){
 	bmp_header_t hdr;
 
 	m_dib.width = -1;
 	m_dib.height = -1;
 	m_dib.bits_per_pixel = 0;
 
-	if( File::open(name, access) < 0 ){
+	if( File::open(name, flags) < 0 ){
 		return -1;
 	}
 
-	if( read(&hdr, sizeof(hdr)) != sizeof(hdr) ){
+	if( read(
+			 fs::DestinationBuffer(&hdr),
+			 fs::Size(sizeof(hdr))
+			 ) != sizeof(hdr) ){
 		close();
 		return -1;
 	}
 
-	if( read(&m_dib, sizeof(m_dib)) != sizeof(m_dib) ){
+	if( read(
+			 fs::DestinationBuffer(&m_dib),
+			 fs::Size(sizeof(m_dib))
+			 ) != sizeof(m_dib) ){
 		close();
 		return -1;
 	}
 
-	if( seek(hdr.offset) != (int)hdr.offset ){
+	if( seek(fs::Location(hdr.offset)) != (int)hdr.offset ){
 		m_dib.width = -1;
 		m_dib.height = -1;
 		m_dib.bits_per_pixel = 0;
@@ -72,7 +80,10 @@ int Bmp::create(const var::ConstString & name, s32 width, s32 height, u16 planes
 	hdr.resd1 = 0;
 	hdr.resd2 = 0;
 
-	if( write(&hdr, sizeof(hdr)) < 0 ){
+	if( write(
+			 fs::SourceBuffer(&hdr),
+			 fs::Size(sizeof(hdr))
+			 ) < 0 ){
 		return -1;
 	}
 
@@ -82,7 +93,10 @@ int Bmp::create(const var::ConstString & name, s32 width, s32 height, u16 planes
 	m_dib.width = width;
 	m_dib.planes = planes;
 
-	if( write(&m_dib, sizeof(m_dib)) < 0 ){
+	if( write(
+			 fs::SourceBuffer(&m_dib),
+			 fs::Size(sizeof(m_dib))
+			 ) < 0 ){
 		return -1;
 	}
 
@@ -125,17 +139,20 @@ unsigned int Bmp::calc_row_size() const{
 int Bmp::seek_row(s32 y) const {
 	if( m_dib.height > 0 ){
 		//image is upside down -- seek to beginning of row
-		return seek(m_offset + calc_row_size() * (m_dib.height - (y + 1)));
+		return seek(fs::Location(m_offset + calc_row_size() * (m_dib.height - (y + 1))));
 	}
 
-	return seek(m_offset + calc_row_size() * y);
+	return seek(fs::Location(m_offset + calc_row_size() * y));
 }
 
 int Bmp::read_pixel(uint8_t * pixel, u32 pixel_size, bool mono, uint8_t thres){
 	u32 avg;
 	u32 i;
 
-	if( read(pixel, pixel_size) != (int)pixel_size ){
+	if( read(
+			 fs::DestinationBuffer(pixel),
+			 fs::Size(pixel_size)
+			 ) != (int)pixel_size ){
 		return -1;
 	}
 

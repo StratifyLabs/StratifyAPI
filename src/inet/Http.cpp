@@ -3,6 +3,7 @@
 #include "inet/Http.hpp"
 #include "var.hpp"
 #include "sys.hpp"
+#include "fs.hpp"
 #include "inet/Url.hpp"
 
 #define SHOW_HEADERS 0
@@ -23,38 +24,57 @@ HttpClient::HttpClient(Socket & socket) : Http(socket){
 	m_transfer_encoding = "";
 }
 
-int HttpClient::get(const var::ConstString & url, const sys::File & response, const sys::ProgressCallback * progress_callback){
+int HttpClient::get(const var::ConstString & url, const fs::DestinationFile & response, const sys::ProgressCallback * progress_callback){
 	return query("GET", url, 0, &response, progress_callback);
 }
 
-int HttpClient::post(const var::ConstString & url, const var::ConstString & request, const sys::File & response, const sys::ProgressCallback * progress_callback){
+int HttpClient::post(const var::ConstString & url, const var::ConstString & request, const fs::DestinationFile & response, const sys::ProgressCallback * progress_callback){
 	DataFile request_file;
 	request_file.data().copy_cstring(request.cstring());
-	return post(url, request_file, response, progress_callback);
+	return post(
+				url,
+				SourceFile(request_file),
+				response,
+				progress_callback
+				);
 }
 
-int HttpClient::post(const var::ConstString & url, const sys::File & request, const sys::File & response, const sys::ProgressCallback * progress_callback){
+int HttpClient::post(const var::ConstString & url, const fs::SourceFile & request, const fs::DestinationFile & response, const sys::ProgressCallback * progress_callback){
 	return query("POST", url, &request, &response, progress_callback);
 }
 
-int HttpClient::put(const var::ConstString & url, const var::ConstString & request, const sys::File & response, const sys::ProgressCallback * progress_callback){
+int HttpClient::put(const var::ConstString & url, const var::ConstString & request, const fs::DestinationFile & response, const sys::ProgressCallback * progress_callback){
 	DataFile request_file;
 	request_file.data().copy_cstring(request.cstring());
-	return put(url, request_file, response, progress_callback);
+	return put(
+				url,
+				SourceFile(request_file),
+				response,
+				progress_callback
+				);
 }
 
-int HttpClient::put(const var::ConstString & url, const sys::File & data, const sys::File & response, const sys::ProgressCallback * progress_callback){
+int HttpClient::put(const var::ConstString & url, const fs::SourceFile & data, const fs::DestinationFile & response, const sys::ProgressCallback * progress_callback){
 	return query("PUT", url, &data, &response, progress_callback);
 }
 
-int HttpClient::patch(const var::ConstString & url, const var::ConstString & request, const sys::File & response, const sys::ProgressCallback * progress_callback){
+int HttpClient::patch(const var::ConstString & url, const var::ConstString & request, const fs::DestinationFile & response, const sys::ProgressCallback * progress_callback){
 	DataFile request_file;
 	request_file.data().copy_cstring(request.cstring());
-	return patch(url, request_file, response, progress_callback);
+	return patch(
+				url,
+				SourceFile(request_file),
+				response,
+				progress_callback);
 }
 
-int HttpClient::patch(const var::ConstString & url, const sys::File & data, const sys::File & response, const sys::ProgressCallback * progress_callback){
-	return query("PATCH", url, &data, &response, progress_callback);
+int HttpClient::patch(const var::ConstString & url, const fs::SourceFile & data, const fs::DestinationFile & response, const sys::ProgressCallback * progress_callback){
+	return query(
+				"PATCH",
+				url,
+				&data,
+				&response,
+				progress_callback);
 }
 
 int HttpClient::head(const var::ConstString & url){
@@ -68,11 +88,13 @@ int HttpClient::remove(const var::ConstString & request, const var::String & dat
 }
 
 
-int HttpClient::query(const var::ConstString & command,
-							 const var::ConstString & url,
-							 const sys::File * send_file,
-							 const sys::File * get_file,
-							 const sys::ProgressCallback * progress_callback){
+int HttpClient::query(
+		const var::ConstString & command,
+		const var::ConstString & url,
+		const fs::SourceFile * send_file,
+		const fs::DestinationFile * get_file,
+		const sys::ProgressCallback * progress_callback
+		){
 	m_status_code = -1;
 	m_content_length = 0;
 	int result;
@@ -80,7 +102,9 @@ int HttpClient::query(const var::ConstString & command,
 
 	u32 get_file_pos;
 	if( get_file ){
-		get_file_pos = get_file->seek(0, File::CURRENT);
+		get_file_pos = get_file->argument().seek(
+					fs::Location(0), File::CURRENT
+					);
 	}
 
 	result = connect_to_server(u.domain_name(), u.port());
@@ -89,7 +113,13 @@ int HttpClient::query(const var::ConstString & command,
 	}
 
 
-	result = send_header(command, u.domain_name(), u.path(), send_file, progress_callback);
+	result = send_header(
+				command,
+				u.domain_name(),
+				u.path(),
+				send_file,
+				progress_callback
+				);
 	if( result < 0 ){
 		return result;
 	}
@@ -128,14 +158,19 @@ int HttpClient::query(const var::ConstString & command,
 		listen_for_data(*get_file, callback);
 	} else {
 		NullFile null_file;
-		listen_for_data(null_file, callback);
+		listen_for_data(
+					DestinationFile(null_file),
+					callback
+					);
 	}
 
 	if( is_redirected ){
 		close_connection();
 
 		if( get_file ){
-			get_file->seek(get_file_pos, File::SET);
+			get_file->argument().seek(
+						fs::Location(get_file_pos),
+						File::SET);
 		}
 
 		for(u32 i=0; i < header_response_pairs().count(); i++){
@@ -252,14 +287,15 @@ int HttpClient::build_header(const var::ConstString & method, const var::ConstSt
 	return 0;
 }
 
-int HttpClient::send_header(const var::ConstString & method,
-									 const var::ConstString & host,
-									 const var::ConstString & path,
-									 const sys::File * file,
-									 const sys::ProgressCallback * progress_callback){
+int HttpClient::send_header(
+		const var::ConstString & method,
+		const var::ConstString & host,
+		const var::ConstString & path,
+		const fs::SourceFile * file,
+		const sys::ProgressCallback * progress_callback){
 
 
-	u32 data_length = file != 0 ? file->size() : 0;
+	u32 data_length = file != 0 ? file->argument().size() : 0;
 
 	build_header(method, host, path, data_length);
 
@@ -274,7 +310,12 @@ int HttpClient::send_header(const var::ConstString & method,
 	}
 
 	if( file ){
-		if( socket().write(*file, m_transfer_size, file->size(), progress_callback) < 0 ){
+		if( socket().write(
+				 *file,
+				 fs::PageSize(m_transfer_size),
+				 fs::Size(file->argument().size()),
+				 progress_callback
+				 ) < 0 ){
 			set_error_number(FAILED_TO_WRITE_DATA);
 			return -1;
 		}
@@ -345,7 +386,10 @@ int HttpClient::listen_for_header(){
 	return 0;
 }
 
-int HttpClient::listen_for_data(const sys::File & file, const sys::ProgressCallback * progress_callback){
+int HttpClient::listen_for_data(
+		const fs::DestinationFile & destination,
+		const sys::ProgressCallback * progress_callback
+		){
 	if( m_transfer_encoding == "CHUNKED" ){
 		u32 bytes_incoming = 0;
 		do {
@@ -354,7 +398,11 @@ int HttpClient::listen_for_data(const sys::File & file, const sys::ProgressCallb
 			bytes_incoming = line.to_unsigned_long(16);
 
 			//read bytes_incoming from the socket and write it to the output file
-			if( file.write(socket(), bytes_incoming, bytes_incoming) != (int)bytes_incoming ){
+			if( destination.argument().write(
+					 SourceFile(socket()),
+					 PageSize(bytes_incoming),
+					 Size(bytes_incoming)
+					 ) != (int)bytes_incoming ){
 				set_error_number(FAILED_TO_WRITE_INCOMING_DATA_TO_FILE);
 				return -1;
 			}
@@ -366,7 +414,12 @@ int HttpClient::listen_for_data(const sys::File & file, const sys::ProgressCallb
 	} else {
 		//read the response from the socket
 		if( m_content_length != 0 ){
-			int result = file.write(socket(), m_transfer_size, m_content_length, progress_callback);
+			int result = destination.argument().write(
+						SourceFile(socket()),
+						PageSize(m_transfer_size),
+						Size(m_content_length),
+						progress_callback
+						);
 			if( result != (int)m_content_length ){
 				return -1;
 			}

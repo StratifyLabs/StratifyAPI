@@ -218,7 +218,7 @@ int Sys::get_version(var::String & version){
 	sys_info_t info;
 	Device sys;
 	int ret;
-	if( sys.open("/dev/sys", Device::RDWR) < 0 ){
+	if( sys.open("/dev/sys", fs::OpenFlags::read_write()) < 0 ){
 		return -1;
 	}
 
@@ -242,7 +242,7 @@ int Sys::get_kernel_version(var::String & version){
 	sys_info_t info;
 	Device sys;
 	int ret;
-	if( sys.open("/dev/sys", Device::RDWR) < 0 ){
+	if( sys.open("/dev/sys", fs::OpenFlags::read_write()) < 0 ){
 		return -1;
 	}
 

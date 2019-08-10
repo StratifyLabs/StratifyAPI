@@ -22,7 +22,7 @@ typedef uint32_t in_addr_t;
 
 
 #include "../api/InetObject.hpp"
-#include "../sys/File.hpp"
+#include "../fs/File.hpp"
 #include "../var/String.hpp"
 #include "../var/Vector.hpp"
 #include "../chrono/MicroTime.hpp"
@@ -451,7 +451,7 @@ private:
  *
  *
  */
-class Socket : public sys::File {
+class Socket : public fs::File {
 public:
 	Socket();
 	~Socket();
@@ -507,13 +507,13 @@ public:
 	 *
 	 * @return Zero on success
 	 */
-	virtual int shutdown(int how = 0) const;
+	virtual int shutdown(const fs::OpenFlags how = fs::OpenFlags::read_write()) const;
 
-	//already documented in sys::File
+	//already documented in fs::File
 	using File::write;
 	virtual int write(const void * buf, int nbyte) const;
 
-	//already documented in sys::File
+	//already documented in fs::File
 	using File::read;
 	virtual int read(void * buf, int nbyte) const;
 
@@ -544,7 +544,7 @@ public:
 		return write(buf, nbyte, socket_address.to_sockaddr(), socket_address.length());
 	}
 
-	//already documented in sys::File
+	//already documented in fs::File
 	virtual int close();
 
 	bool is_valid() const;

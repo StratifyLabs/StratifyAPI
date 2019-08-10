@@ -5,8 +5,8 @@
 #include "chrono.hpp"
 using namespace sys;
 
-Thread::Thread(int stack_size, bool detached) {
-	init(stack_size, detached);
+Thread::Thread(const StackSize & stacksize, bool detached) {
+	init(stacksize.argument(), detached);
 }
 
 Thread::~Thread(){
@@ -67,7 +67,7 @@ int Thread::get_detachstate() const {
 	return value;
 }
 
-int Thread::set_detachstate(int value){
+int Thread::set_detachstate(detach_state value){
 
 	if( is_running() ){
 		set_error_number(EBUSY);

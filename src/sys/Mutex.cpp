@@ -8,35 +8,43 @@
 using namespace sys;
 
 MutexAttributes::MutexAttributes(){
-	pthread_mutexattr_init(&m_item);
-}
-
-MutexAttributes::MutexAttributes(enum type t, int prio_ceiling, bool pshared, enum protocol protocol){
-	pthread_mutexattr_init(&m_item);
-	set_type(t);
-	set_prio_ceiling(prio_ceiling);
-	set_pshared(pshared);
-	set_protocol(protocol);
+	validate();
+	if( pthread_mutexattr_init(&m_item) < 0 ){
+		invalidate();
+	}
 }
 
 MutexAttributes::~MutexAttributes(){
 	pthread_mutexattr_destroy(&m_item);
+	invalidate();
 }
 
-int MutexAttributes::set_prio_ceiling(int value){
-	return pthread_mutexattr_setprioceiling(&m_item, value);
+MutexAttributes & MutexAttributes::set_prio_ceiling(int value){
+	if( pthread_mutexattr_setprioceiling(&m_item, value) < 0 ){
+		invalidate();
+	}
+	return *this;
 }
 
-int MutexAttributes::set_protocol(enum protocol value){
-	return pthread_mutexattr_setprotocol(&m_item, value);
+MutexAttributes & MutexAttributes::set_protocol(enum protocol value){
+	if( pthread_mutexattr_setprotocol(&m_item, value) < 0 ){
+		invalidate();
+	}
+	return *this;
 }
 
-int MutexAttributes::set_pshared(bool value){
-	return pthread_mutexattr_setpshared(&m_item, value);
+MutexAttributes & MutexAttributes::set_pshared(bool value){
+	if( pthread_mutexattr_setpshared(&m_item, value) < 0){
+		invalidate();
+	}
+	return *this;
 }
 
-int MutexAttributes::set_type(enum type value){
-	return pthread_mutexattr_settype(&m_item, value);
+MutexAttributes & MutexAttributes::set_type(enum type value){
+	if( pthread_mutexattr_settype(&m_item, value) < 0){
+		invalidate();
+	}
+	return *this;
 }
 
 int MutexAttributes::get_prio_ceiling() const {
@@ -68,8 +76,8 @@ Mutex::Mutex(){
 	set_error_number_if_error( pthread_mutex_init(&m_item, &(attr.m_item)) );
 }
 
-Mutex::Mutex(const MutexAttr & attr){
-	set_attr(attr);
+Mutex::Mutex(const MutexAttributes & attr){
+	set_attributes(attr);
 }
 
 int Mutex::set_attributes(const MutexAttr & attr){

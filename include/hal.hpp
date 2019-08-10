@@ -12,7 +12,7 @@
  * - api::HalWorkObject
  * - api::HalInfoObject
  *
- * Work objects inherit sys::File and allow access to the hardware
+ * Work objects inherit fs::File and allow access to the hardware
  * using a POSIX style API (open(), close(), read(), write() and ioctl()).
  *
  * Info objects contain attributes that facilitate configuring and

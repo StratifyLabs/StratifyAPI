@@ -89,7 +89,12 @@ bool DeviceButton::is_active() const {
 
 void DeviceButton::update(){
 	u32 o_flags = m_status.o_flags;
-	if( (seek(m_location*sizeof(m_status)) >= 0) && (read(&m_status, sizeof(m_status)) == sizeof(m_status)) ){
+	if( (seek(
+			  fs::Location(m_location*sizeof(m_status))
+			  ) >= 0) && (read(
+								  fs::DestinationBuffer(&m_status),
+								  fs::Size(sizeof(m_status))
+								  ) == sizeof(m_status)) ){
 		//keep track of the flags because the driver will clear the flags before the EventLoop does
 		m_status.o_flags |= o_flags;
 	} else {
@@ -99,8 +104,11 @@ void DeviceButton::update(){
 }
 
 void DeviceButton::reset(){
-	seek(0);
-	while( read(&m_status, sizeof(m_status)) == sizeof(m_status) ){
+	seek(fs::Location(0));
+	while( read(
+				 fs::DestinationBuffer(&m_status),
+				 fs::Size(sizeof(m_status))
+				 ) == sizeof(m_status) ){
 		;
 	}
 	memset(&m_status, 0, sizeof(m_status));

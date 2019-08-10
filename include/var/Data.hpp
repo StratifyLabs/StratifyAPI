@@ -111,13 +111,21 @@ public:
 	Data& operator=(const Data & a);
 	Data& operator=(Data && a);
 
-	bool operator == (const Data & a ) const {
+	/*! \details Returns true if the contents
+	 * of both Data objects are the same.
+	 *
+	 */
+	bool operator == (const Data & a) const {
 		if( a.size() == size() ){
 			return memcmp(cdata_const(), a.cdata_const(), size()) == 0;
 		}
 		return false;
 	}
 
+	/*! \details Returns true if the contents of the
+	 * data objects are not the same.
+	 *
+	 */
 	bool operator != (const Data & a ) const {
 		return !(*this == a);
 	}
@@ -397,14 +405,17 @@ public:
 	const float & at_float(u32 idx) const { return at<float>(idx); }
 
 	//deprecated access
+	/*! \cond */
+	int copy_data(const void * buffer, u32 size);
+	int copy_cstring(const char * str);
 	char * cdata() const { return (char *)m_mem_write; }
 	const char * cdata_const() const { return (const char *)m_mem; }
 	const void * data_const() const { return m_mem; }
 	void * data(){ return m_mem_write; }
 	const void * data() const { return m_mem; }
-
 	const void * read_only_data() const{ return m_mem; }
 	void * read_write_data(){ return m_mem_write; }
+	/*! \endcond */
 
 	/*! \details Free the memory associated with this object.
 	 * This will only perform any operations if the memory was
@@ -505,12 +516,6 @@ public:
 	bool is_read_only() const {
 		return m_mem_write == 0;
 	}
-
-	/*! \cond */
-	int copy_data(const void * buffer, u32 size);
-	int copy_cstring(const char * str);
-	/*! \endcond */
-
 
 	/*! \details Copies the contents of a into the memory of
 	 * this object.

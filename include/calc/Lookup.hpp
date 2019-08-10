@@ -53,7 +53,7 @@ public:
 	 * @param x Input value
 	 * @return y Value calculated using linear interpolation
 	 */
-	T calc_value(T x){
+	T calculate(T x){
 		unsigned int p1, p2;
 		unsigned int i;
 		T delta_x, delta_y;

@@ -7,7 +7,10 @@
 
 using namespace calc;
 
-int Base64::encode(const sys::File & input, sys::File & output, u32 size){
+int Base64::encode(
+		const fs::SourceFile & input,
+		const fs::DestinationFile & output,
+		u32 size){
 	u32 chunk_size = 96;
 	const u32 output_buffer_size = calc_encoded_size(chunk_size);
 	char input_buffer[chunk_size];
@@ -16,11 +19,17 @@ int Base64::encode(const sys::File & input, sys::File & output, u32 size){
 	int result;
 	do {
 		if( size - size_processed < chunk_size ){ chunk_size = size - size_processed; }
-		result = input.read(input_buffer, chunk_size);
+		result = input.argument().read(
+					fs::DestinationBuffer(input_buffer),
+					fs::Size(chunk_size)
+					);
 		if( result > 0 ){
 			size_processed += result;
 			int len = encode(output_buffer, input_buffer, result);
-			if( output.write(output_buffer, len) != len ){
+			if( output.argument().write(
+					 fs::SourceBuffer(output_buffer),
+					 fs::Size(len)
+					 ) != len ){
 				result = 0;
 			}
 		}
@@ -28,7 +37,10 @@ int Base64::encode(const sys::File & input, sys::File & output, u32 size){
 	return size_processed;
 }
 
-int Base64::decode(const sys::File & input, sys::File & output, u32 size){
+int Base64::decode(
+		const fs::SourceFile & input,
+		fs::DestinationFile & output,
+		u32 size){
 	u32 chunk_size = 96;
 	const u32 output_buffer_size = calc_decoded_size(chunk_size);
 	char input_buffer[chunk_size];
@@ -38,12 +50,18 @@ int Base64::decode(const sys::File & input, sys::File & output, u32 size){
 
 	do {
 		if( size - size_processed < chunk_size ){ chunk_size = size - size_processed; }
-		result = input.read(input_buffer, chunk_size);
+		result = input.argument().read(
+					fs::DestinationBuffer(input_buffer),
+					fs::Size(chunk_size)
+					);
 		if( result > 0 ){
 			size_processed += result;
 			int len = calc_decoded_size(result);
 			decode(output_buffer, input_buffer, result);
-			if( output.write(output_buffer, len) != len ){
+			if( output.argument().write(
+					 fs::SourceBuffer(output_buffer),
+					 fs::Size(len)
+					 ) != len ){
 				result = 0;
 			}
 

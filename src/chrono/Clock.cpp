@@ -15,7 +15,7 @@ static int clock_gettime(int clk_id, struct timespec* t) {
 
 using namespace chrono;
 
-ClockTime Clock::get_time(int clock_id){
+ClockTime Clock::get_time(enum chrono::Clock::clock_id  clock_id){
 	ClockTime clock_time;
 	if( clock_gettime(clock_id, clock_time) < 0 ){
 		clock_time = ClockTime::invalid();
@@ -24,10 +24,10 @@ ClockTime Clock::get_time(int clock_id){
 }
 
 
-ClockTime Clock::get_resolution(int clock_id){
+ClockTime Clock::get_resolution(enum chrono::Clock::clock_id clock_id){
 #if defined __macosx
 
-	ClockTime resolution(0, 1000);
+	ClockTime resolution(Seconds(0), Nanoseconds(1000));
 
 #else
 	ClockTime resolution;

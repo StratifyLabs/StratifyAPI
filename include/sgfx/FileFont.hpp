@@ -4,7 +4,7 @@
 #define SAPI_SGFX_FILEFONT_HPP_
 
 #include "Font.hpp"
-#include "../sys/File.hpp"
+#include "../fs/File.hpp"
 #include "../var/ConstString.hpp"
 
 namespace sgfx {
@@ -31,7 +31,7 @@ protected:
 	int load_kerning(u16 first, u16 second) const;
 
 private:
-	mutable sys::File m_file;
+	mutable fs::File m_file;
 	mutable Bitmap m_canvas;
 	mutable u8 m_current_canvas;
 	u32 m_canvas_start;

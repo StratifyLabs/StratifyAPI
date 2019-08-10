@@ -4,9 +4,11 @@ using namespace hal;
 
 FFifo::FFifo(){}
 
-int FFifo::initialize(const var::ConstString & path, const FFifoAttributes & attributes, int o_flags){
+int FFifo::initialize(const var::ConstString & path, const FFifoAttributes & attributes, const fs::OpenFlags & flags){
 	int ret;
-	ret = set_error_number_if_error(open(path, o_flags | FFifo::READWRITE));
+	ret = open(path,
+				  fs::OpenFlags(flags).set_read_write()
+				  );
 	if( ret < 0 ){
 		return ret;
 	}

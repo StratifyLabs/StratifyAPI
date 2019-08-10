@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include "var/String.hpp"
 #include "sys/Appfs.hpp"
-#include "sys/Dir.hpp"
-#include "sys/File.hpp"
+#include "fs/Dir.hpp"
+#include "fs/File.hpp"
 
 using namespace sys;
 
@@ -31,11 +31,22 @@ void AppfsFileAttributes::apply(appfs_file_t * dest) const {
 }
 
 #if defined __link
-int Appfs::create(const var::ConstString & name, const sys::File & source_data, const var::ConstString & mount, const ProgressCallback * progress_callback, link_transport_mdriver_t * driver){
-	File file(driver);
+Appfs::Appfs(link_transport_mdriver_t * driver) : m_file(driver){
+
+}
 #else
-int Appfs::create(const var::ConstString & name, const sys::File & source_data, const var::ConstString & mount, const ProgressCallback * progress_callback){
-	File file;
+Appfs::Appfs(){}
+#endif
+
+#if defined __link
+int Appfs::create(const var::ConstString & name, const fs::File & source_data, const var::ConstString & mount, const ProgressCallback * progress_callback, link_transport_mdriver_t * driver){
+	fs::File file(driver);
+#else
+int Appfs::create(const var::ConstString & name,
+						const fs::File & source_data,
+						const var::ConstString & mount,
+						const ProgressCallback * progress_callback){
+	fs::File file;
 #endif
 	char buffer[LINK_PATH_MAX];
 	int tmp;
@@ -47,21 +58,20 @@ int Appfs::create(const var::ConstString & name, const sys::File & source_data, 
 	strcat(buffer, "/flash/");
 	strcat(buffer, name.str());
 
-
 	//delete the settings if they exist
-	strncpy(f.hdr.name, name.str(), LINK_NAME_MAX);
+	strncpy(f.hdr.name, name.cstring(), LINK_NAME_MAX);
 	f.hdr.mode = 0666;
 	f.exec.code_size = source_data.size() + sizeof(f); //total number of bytes in file
 	f.exec.signature = APPFS_CREATE_SIGNATURE;
 
 #if defined __link
-	File::remove(buffer, driver);
+	fs::File::remove(buffer, driver);
 #else
-	File::remove(buffer);
+	fs::File::remove(buffer);
 #endif
 
 
-	if( file.open("/app/.install", File::WRONLY) < 0 ){
+	if( file.open("/app/.install", fs::OpenFlags::write_only()) < 0 ){
 		return -1;
 	}
 
@@ -72,7 +82,10 @@ int Appfs::create(const var::ConstString & name, const sys::File & source_data, 
 		attr.nbyte = source_data.size();
 	}
 
-	source_data.read(attr.buffer + sizeof(f), attr.nbyte);
+	source_data.read(
+				fs::DestinationBuffer(attr.buffer + sizeof(f)),
+				fs::Size(attr.nbyte)
+				);
 	attr.nbyte += sizeof(f);
 	loc = 0;
 	bw = 0;
@@ -83,7 +96,10 @@ int Appfs::create(const var::ConstString & name, const sys::File & source_data, 
 			} else {
 				attr.nbyte = f.exec.code_size - bw;
 			}
-			source_data.read(attr.buffer, attr.nbyte);
+			source_data.read(
+						fs::DestinationBuffer(attr.buffer),
+						fs::Size(attr.nbyte)
+						);
 		}
 
 		//location gets modified by the driver so it needs to be fixed on each loop
@@ -107,30 +123,33 @@ int Appfs::create(const var::ConstString & name, const sys::File & source_data, 
 
 #if defined __link
 AppfsInfo Appfs::get_info(const var::ConstString & path, link_transport_mdriver_t * driver){
-	File f(driver);
+	fs::File f(driver);
 	if( driver == 0 ){
 		errno = ENOTSUP;
 		return AppfsInfo();
 	}
 #else
 AppfsInfo Appfs::get_info(const var::ConstString & path){
-	File f;
+	fs::File f;
 #endif
 	var::String app_name;
 	var::String path_name;
 	appfs_file_t appfs_file_header;
 	appfs_info_t info;
 	int ret;
-	if( f.open(path, File::RDONLY) < 0 ){
+	if( f.open(path, fs::OpenFlags::read_only()) < 0 ){
 		return AppfsInfo();
 	}
 
-	ret = f.read(&appfs_file_header, sizeof(appfs_file_header));
+	ret = f.read(
+				fs::DestinationBuffer(&appfs_file_header),
+				fs::Size(sizeof(appfs_file_header))
+				);
 	f.close();
 
 	if( ret == sizeof(appfs_file_header) ){
 		//first check to see if the name matches -- otherwise it isn't an app file
-		path_name = File::name(path);
+		path_name = fs::File::name(path);
 		if( path_name.find(".sys") == 0 ){
 			return AppfsInfo();
 		}
@@ -198,11 +217,13 @@ var::String Appfs::get_id(const var::ConstString & path){
 
 int Appfs::cleanup(bool data){
 	struct stat st;
-	Dir dir;
+	fs::Dir dir;
 	char buffer[LINK_PATH_MAX];
 	const char * name;
 
-	if( dir.open("/app/ram") < 0 ){
+	if( dir.open(
+			 fs::SourceDirectoryPath("/app/ram")
+			 ) < 0 ){
 		return -1;
 	}
 

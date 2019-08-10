@@ -43,7 +43,10 @@ public:
 	u32 program_address() const{ return m_event.posix_trace_event.posix_prog_address; }
 	/*! \details Returns the timestamp when the trace was fired. */
 	chrono::ClockTime timestamp() const{
-		return chrono::ClockTime(m_event.posix_trace_event.posix_timestamp_tv_sec, m_event.posix_trace_event.posix_timestamp_tv_nsec);
+		return chrono::ClockTime(
+					chrono::Seconds(m_event.posix_trace_event.posix_timestamp_tv_sec),
+					chrono::Nanoseconds(m_event.posix_trace_event.posix_timestamp_tv_nsec)
+					);
 	}
 
 	/*! \details Returns the trace's message. */

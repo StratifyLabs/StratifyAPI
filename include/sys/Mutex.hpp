@@ -44,14 +44,13 @@ public:
 
 	~MutexAttributes();
 
-	/*! \details Constructs a mutex attributs object with the specified values.
-	  *
-	  * @param t Mutex type (NORMAL or RECURSIVE)
-	  * @param prio_ceiling The priority ceiling (0 is default, lowest priority)
-	  * @param pshared True if mutex is to be shared between processes
-	  *
-	  */
-	MutexAttributes(enum type t, int prio_ceiling = 0, bool pshared = false, enum protocol protocol = PRIO_NONE_PROTOCOL);
+	bool is_valid() const {
+#if defined __link
+		return m_is_valid;
+#else
+		return m_item.is_initialized != 0;
+#endif
+	}
 
 	/*! \details Sets the priority ceiling.
 	  *
@@ -59,16 +58,16 @@ public:
 	  * @return Zero on success
 	  *
 	  */
-	int set_prio_ceiling(int ceiling);
+	MutexAttributes & set_prio_ceiling(int ceiling);
 
 	/*! \details Sets the protocol. */
-	int set_protocol(enum protocol value);
+	MutexAttributes & set_protocol(enum protocol value);
 
 	/*! \details Sets whether this is shared between processes. */
-	int set_pshared(bool value = true);
+	MutexAttributes & set_pshared(bool value = true);
 
 	/*! \details Set the mutex type (NORMAL_TYPE or RECURSIVE_TYPE) */
-	int set_type(enum type value);
+	MutexAttributes & set_type(enum type value);
 
 	/*! \details Returns the priority ceiling. */
 	int get_prio_ceiling() const;
@@ -84,7 +83,24 @@ public:
 
 private:
 	friend class Mutex;
+	void invalidate(){
+#if defined __link
+		m_is_valid = false;
+#else
+		m_item.is_initialized = 0;
+#endif
+	}
+
+	void validate(){
+#if defined __link
+		m_is_valid = true;
+#else
+#endif
+	}
 	pthread_mutexattr_t m_item;
+#if defined __link
+	bool m_is_valid;
+#endif
 };
 
 typedef MutexAttributes MutexAttr;
@@ -101,11 +117,14 @@ public:
 	Mutex();
 
 	/*! \details Constructs a Mutex using the specified attributes. */
-	Mutex(const MutexAttr & attr);
+	Mutex(const MutexAttributes & attr);
 
 	/*! \details Sets the mutex attributes. */
 	int set_attributes(const MutexAttributes & attr);
-	int set_attr(const MutexAttributes & attr){ return set_attributes(attr); }
+	Mutex & operator << (const MutexAttributes & a){
+		set_attributes(a);
+		return *this;
+	}
 
 	/*! \details Attempts to lock the mutex.
 	  *

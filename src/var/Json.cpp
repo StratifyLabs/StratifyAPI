@@ -389,18 +389,21 @@ JsonValue JsonDocument::load_from_string(const var::ConstString & json){
 }
 
 //only use on Stratify OS
-JsonValue JsonDocument::load_from_file(const sys::File & file){
+JsonValue JsonDocument::load_from_file(const fs::File & file){
 	JsonValue value;
 	value.m_value = JsonValue::api()->loadfd(file.fileno(), flags(), &m_error.m_value);
 	return value;
 }
 
 size_t JsonDocument::load_file_data(void *buffer, size_t buflen, void *data){
-	const sys::File * f = (const sys::File *)data;
-	return f->read(buffer, buflen);
+	const fs::File * f = (const fs::File *)data;
+	return f->read(
+				fs::DestinationBuffer(buffer),
+				fs::Size(buflen)
+				);
 }
 
-JsonValue JsonDocument::load(const sys::File & file){
+JsonValue JsonDocument::load(const fs::File & file){
 	JsonValue value;
 	value.m_value = JsonValue::api()->load_callback(load_file_data, (void*)&file, flags(), &m_error.m_value);
 	return value;
@@ -413,7 +416,7 @@ JsonValue JsonDocument::load(json_load_callback_t callback, void * context){
 }
 
 int JsonDocument::save_to_file(const JsonValue & value, const var::ConstString & path) const {
-	sys::File f;
+	fs::File f;
 	int result;
 
 #if defined __win32
@@ -449,7 +452,7 @@ var::String JsonDocument::stringify(const JsonValue & value) const {
 	return result;
 }
 
-int JsonDocument::save_to_file(const JsonValue & value, const sys::File & file) const {
+int JsonDocument::save_to_file(const JsonValue & value, const fs::File & file) const {
 	return JsonValue::api()->dumpfd(value.m_value, file.fileno(), flags());
 }
 

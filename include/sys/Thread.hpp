@@ -61,6 +61,9 @@ public:
 	enum thread_flags {
 		ID_ERROR /*! ID is an error */ = (u32)-2,
 		ID_PENDING /*! ID is ready to be created (not valid yet) */ = (u32)-1,
+	};
+
+	enum detach_state {
 		JOINABLE /*! Joinable thread */ = PTHREAD_CREATE_JOINABLE,
 		DETACHED /*! Detacthed thread */ = PTHREAD_CREATE_DETACHED
 	};
@@ -71,7 +74,7 @@ public:
 	 * @param detached Whether to create as a detached thread.  If this value is false,
 	 * another thread must use join() in order for the thread to terminate correctly.
 	 */
-	Thread(int stack_size = 4096, bool detached = true);
+	Thread(const StackSize & stacksize = StackSize(4096), bool detached = true);
 
 	~Thread();
 
@@ -102,7 +105,7 @@ public:
 	  *
 	  *
 	  */
-	int set_detachstate(int value);
+	int set_detachstate(enum detach_state value);
 
 	/*! \details Gets the detach state (Thread::JOINABLE or Thread::DETACHED). */
 	int get_detachstate() const;

@@ -26,13 +26,16 @@ Datum::Datum(const JsonObject & json_object){
 	String clock_time_value = json_object.at("clockTime").to_string();
 	sscanf(clock_time_value.cstring(), F32U "." F32U, &seconds, &nanoseconds);
 
-	m_clocktime.set(seconds, nanoseconds);
+	m_clocktime.set(
+				chrono::Seconds(seconds),
+				chrono::Nanoseconds(nanoseconds)
+				);
 
 	this->m_time = json_object.at("deviceTime").to_integer();
 	this->metadata() = json_object.at("metadata").to_object();
 }
 
-int Datum::save(const sys::File & f) const {
+int Datum::save(const fs::File & f) const {
 
 	String value = stringify();
 	value << "\n";

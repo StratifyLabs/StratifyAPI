@@ -12,12 +12,15 @@ bool Test::m_is_initialized = false;
 bool Test::m_all_test_result = true;
 u32 Test::m_all_test_duration_microseconds = 0;
 
-Test::Test(const var::ConstString & name, Test * parent){
+Test::Test(const Name & name, Test * parent){
 	//start a JSON object
 
 
 	if( !m_is_initialized ){
-		initialize("unknown", "0.0");
+		initialize(
+					Name("unknown"),
+					Version("0.0")
+					);
 	}
 
 	m_parent = parent;
@@ -32,7 +35,7 @@ Test::Test(const var::ConstString & name, Test * parent){
 
 	m_test_result = true;
 
-	print("\"%s\": {\n", name.cstring());
+	print("\"%s\": {\n", name.argument().cstring());
 	increment_indent();
 
 	m_test_duration_microseconds = 0;
@@ -152,7 +155,10 @@ void Test::vprint_case_message(const var::ConstString & key, const char * fmt, v
 	printf("\",\n");
 }
 
-void Test::initialize(const var::ConstString & name, const var::ConstString & version, const var::ConstString & git_hash){
+void Test::initialize(
+		const Name & name,
+		const Version & version,
+		const GitHash & git_hash){
 	m_is_initialized = true;
 	m_all_test_duration_microseconds = 0;
 
@@ -188,20 +194,20 @@ void Test::initialize(const var::ConstString & name, const var::ConstString & ve
 
 	AppfsInfo appfs_info;
 	var::String path;
-	path << "/app/flash/" << name;
+	path << "/app/flash/" << name.argument();
 	appfs_info = Appfs::get_info(path);
 	if( appfs_info.is_valid() == false ){
 		path.assign("/app/ram/");
-		path << name;
+		path << name.argument();
 		appfs_info = Appfs::get_info(path);
 	}
 #endif
 
 
 	print_indent(1, "\"test\": {\n");
-	print_indent(2, "\"name\": \"%s\",\n", name.cstring());
+	print_indent(2, "\"name\": \"%s\",\n", name.argument().cstring());
 	//need to add the amount of RAM the program has to output
-	print_indent(2, "\"version\": \"%s\",\n", version.cstring());
+	print_indent(2, "\"version\": \"%s\",\n", version.argument().cstring());
 #if !defined __link
 	if( appfs_info.is_valid() ){
 		print_indent(2, "\"ramSize\": \"%ld\",\n", appfs_info.ram_size());
@@ -238,7 +244,7 @@ void Test::initialize(const var::ConstString & name, const var::ConstString & ve
 		print_indent(2, "\"applicationSignature\": \"%X\",\n", appfs_info.signature());
 	}
 #endif
-	print_indent(2, "\"gitHash\": \"%s\",\n", git_hash.cstring());
+	print_indent(2, "\"gitHash\": \"%s\",\n", git_hash.argument().cstring());
 	print_indent(2, "\"apiVersion\": \"%s\",\n", api::ApiInfo::version());
 	print_indent(2, "\"apiGitHash\": \"%s\"\n", api::ApiInfo::git_hash());
 	print_indent(1, "},\n");

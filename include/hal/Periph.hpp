@@ -32,15 +32,15 @@ public:
 	 * configured with set_attr().  After that, other instances of the peripheral can read
 	 * and write without opening again.
 	 */
-	int open(int o_mode = READWRITE);
+	int open(const fs::OpenFlags & flags = fs::OpenFlags::read_write());
 	int ioctl(int req, void * arg) const;
-	int seek(int loc, int whence) const;
+	int seek(const fs::Location & location, PeriphObject::whence whence) const;
 	int fileno() const;
-	int read(void * buf, int nbyte) const;
-	int write(const void * buf, int nbyte) const;
+	int read(const fs::DestinationBuffer & buf, const fs::Size & size) const;
+	int write(const fs::SourceBuffer & buf, const fs::Size & size) const;
 #ifndef __link
-	int read(sys::Aio & aio) const;
-	int write(sys::Aio & aio) const;
+	int read(fs::Aio & aio) const;
+	int write(fs::Aio & aio) const;
 #endif
 	int close();
 
@@ -51,7 +51,7 @@ public:
 protected:
 	u16 m_periph_port;
 
-	int open(const var::ConstString & name, int flags);
+	int open(const var::ConstString & name, const fs::OpenFlags & flags);
 	using Device::open;
 
 	void update_fileno() const;

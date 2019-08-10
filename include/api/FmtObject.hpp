@@ -3,7 +3,7 @@
 
 #include "WorkObject.hpp"
 #include "InfoObject.hpp"
-#include "../sys/File.hpp"
+#include "../fs/File.hpp"
 
 namespace api {
 
@@ -29,12 +29,12 @@ class FmtWorkObject : public virtual WorkObject {
 
 /*! \brief Format File Class
  *
- * \details This class is for format object that inherit sys::File.
+ * \details This class is for format object that inherit fs::File.
  *
  * \sa fmt namespace
  *
  */
-class FmtFileObject : public sys::File {
+class FmtFileObject : public fs::File {
 
 };
 

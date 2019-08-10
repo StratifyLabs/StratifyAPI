@@ -79,7 +79,7 @@ void PeriphObject::update_fileno() const {
 }
 
 
-int PeriphObject::open(const var::ConstString & name, int flags){
+int PeriphObject::open(const var::ConstString & name, const fs::OpenFlags & flags){
 	//check map
 	int fd;
 	int ret;
@@ -98,7 +98,7 @@ int PeriphObject::open(const var::ConstString & name, int flags){
 	return 0;
 }
 
-int PeriphObject::open(int flags){
+int PeriphObject::open(const fs::OpenFlags & flags){
 	char buffer[LINK_NAME_MAX];
 	const char * name;
 	u8 periph_type = m_periph_port >> 8;
@@ -128,23 +128,23 @@ int PeriphObject::close(){
 	return ret;
 }
 
-int PeriphObject::read(void * buf, int nbyte) const {
+int PeriphObject::read(const fs::DestinationBuffer & buf, const fs::Size & size) const {
 	update_fileno();
-	return File::read(buf, nbyte);
+	return File::read(buf, size);
 }
 
-int PeriphObject::write(const void * buf, int nbyte) const {
+int PeriphObject::write(const fs::SourceBuffer & buf, const fs::Size & size) const {
 	update_fileno();
-	return File::write(buf, nbyte);
+	return File::write(buf, size);
 }
 
 #ifndef __link
-int PeriphObject::read(Aio & aio) const {
+int PeriphObject::read(fs::Aio & aio) const {
 	update_fileno();
 	return Device::read(aio);
 }
 
-int PeriphObject::write(Aio & aio) const {
+int PeriphObject::write(fs::Aio & aio) const {
 	update_fileno();
 	return Device::write(aio);
 }
@@ -155,9 +155,9 @@ int PeriphObject::ioctl(int req, void * arg) const {
 	return Device::ioctl(req, arg);
 }
 
-int PeriphObject::seek(int loc, int whence) const {
+int PeriphObject::seek(const fs::Location & location, enum whence whence) const {
 	update_fileno();
-	return Device::seek(loc, whence);
+	return Device::seek(location, whence);
 }
 
 int PeriphObject::fileno() const {

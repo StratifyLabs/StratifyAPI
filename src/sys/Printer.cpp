@@ -10,7 +10,7 @@
 #include "hal/Drive.hpp"
 #include "sys/TaskManager.hpp"
 #include "sys/Cli.hpp"
-#include "sys/FileInfo.hpp"
+#include "fs/Stat.hpp"
 #include "sys/Appfs.hpp"
 #include "var/Data.hpp"
 #include "var/Datum.hpp"
@@ -492,7 +492,7 @@ Printer & Printer::operator << (const sys::TaskInfo & a){
 	return *this;
 }
 
-Printer & Printer::operator << (const sys::FileInfo & a){
+Printer & Printer::operator << (const fs::Stat & a){
 	var::String type;
 	if( a.is_directory() ){ type = "directory"; }
 	if( a.is_file() ){ type = "file"; }

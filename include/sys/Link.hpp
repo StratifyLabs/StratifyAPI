@@ -22,8 +22,10 @@ class LinkInfo {
 public:
 
 	LinkInfo(){}
-	LinkInfo(const var::ConstString & port, const sys::SysInfo & sys_info){
-		set(port, sys_info);
+	LinkInfo(const var::ConstString & port,
+				const sys::SysInfo & sys_info){
+		set_port(port);
+		set_info(sys_info);
 	}
 
 	void clear(){
@@ -32,10 +34,15 @@ public:
 		m_sys_info.clear();
 	}
 
-	void set(const var::ConstString & port, const sys::SysInfo & sys_info){
+	LinkInfo & set_port(const var::ConstString & port){
 		m_port = port;
+		return *this;
+	}
+
+	LinkInfo & set_info(const sys::SysInfo & sys_info){
 		m_sys_info = sys_info;
 		m_serial_number = sys_info.serial_number().to_string();
+		return *this;
 	}
 
 	const var::String & port() const { return m_port; }
@@ -111,7 +118,10 @@ public:
 	/*! \details Reconnects to the last known path and serial number. */
 	int reinit(){ return connect(path()); }
 
-	int reconnect(u32 retries = 5, u32 delay_ms = 500);
+	int reconnect(
+			u32 retries = 5,
+			const chrono::MicroTime & delay = chrono::Milliseconds(500)
+			);
 
 	/*! \details This disconnects from the device.  After calling this,
 	  * other applications can access the device.
@@ -139,18 +149,24 @@ public:
 	/*! \details Creates a directory on the target device.
 	  *
 	  */
-	int mkdir(const var::ConstString & directory /*! The directory name */,
-				 link_mode_t mode /*! The access permissions */);
+	int mkdir(
+			const fs::DestinationDirectoryPath & directory /*! The directory name */,
+			const fs::Permissions & permissions /*! The access permissions */
+			);
 
 	/*! \details Removes a directory on the target device.
 	  *
 	  */
-	int rmdir(const var::ConstString & directory /*! The directory name (must be empty) */); //Directory must be empty
+	int rmdir(
+			const var::ConstString & directory /*! The directory name (must be empty) */
+			); //Directory must be empty
 
 	/*! \details Deletes a file on the target device.
 	  *
 	  */
-	int unlink(const var::ConstString & filename /*! The filename to delete */);
+	int unlink(
+			const var::ConstString & filename /*! The filename to delete */
+			);
 
 	/*! \details Creates a symbolic link on the device.
 	  * \note Stratify OS does not currently support symbolic links.  This function will
@@ -160,11 +176,15 @@ public:
 	  *
 	  * \return Zero on sucess.
 	  */
-	int symlink(const var::ConstString & oldPath /*! The existing path */,
-					const var::ConstString & newPath /*! The path to the new link */);
+	int symlink(
+			const fs::SourceFilePath & old_path /*! The existing path */,
+			const fs::DestinationFilePath & new_path /*! The path to the new link */
+			);
 
 	/*! \details Loads the entries of a directory. */
-	var::Vector<var::String> get_dir_list(const var::ConstString & directory);
+	var::Vector<var::String> get_dir_list(
+			const fs::SourceDirectoryPath & directory
+			);
 
 	/*! \details Converts the permissions to a
 	  * string of the format:
@@ -208,7 +228,7 @@ public:
 	  */
 	int copy(const var::ConstString & src /*! The path to the source file */,
 				const var::ConstString & dest /*! The path to the destination file */,
-				link_mode_t mode /*! The access permissions if copying to the device */,
+				const fs::Permissions & permissions /*! The access permissions if copying to the device */,
 				bool to_device = true /*! When true, copy is from host to device */,
 				const ProgressCallback * progress_callback = 0);
 
@@ -223,8 +243,12 @@ public:
 	  * \param context Argument to pass to update callback
 	  * \return Zero on success
 	  */
-	int copy_file_to_device(const var::ConstString & src, const var::ConstString & dest, link_mode_t mode, const ProgressCallback * progress_callback = 0){
-		return copy(src, dest, mode, true, progress_callback);
+	int copy_file_to_device(const var::ConstString & src, const var::ConstString & dest, const fs::Permissions & permissions, const ProgressCallback * progress_callback = 0){
+		return copy(src,
+						dest,
+						permissions,
+						true,
+						progress_callback);
 	}
 
 	/*!
@@ -237,8 +261,8 @@ public:
 	  * \param context Argument to pass to update callback
 	  * \return Zero on success
 	  */
-	int copy_file_from_device(const var::ConstString & src, const var::ConstString & dest, link_mode_t mode, const ProgressCallback * progress_callback = 0){
-		return copy(src, dest, mode, false, progress_callback);
+	int copy_file_from_device(const var::ConstString & src, const var::ConstString & dest, const fs::Permissions & permissions, const ProgressCallback * progress_callback = 0){
+		return copy(src, dest, permissions, false, progress_callback);
 	}
 
 	/*! \details Formats the filesystem on the device.
@@ -262,7 +286,7 @@ public:
 	  * be open at a time. It is important that the host close any
 	  * files that it opens.
 	  *
-	  * \note File access is more easily performed using sys::File
+	  * \note File access is more easily performed using fs::File
 	  * rather than accessing files using this object.
 	  *
 	  * \code
@@ -455,7 +479,7 @@ public:
 	  * before calling this method.
 	  *
 	  */
-	int update_os(const sys::File & image, bool verify, const ProgressCallback * progress_callback = 0, u32 bootloader_retry_total = 20);
+	int update_os(const fs::SourceFile & image, bool verify, const ProgressCallback * progress_callback = 0, u32 bootloader_retry_total = 20);
 
 	/*! \details Returns the driver needed by other API objects.
 	  *
@@ -503,14 +527,11 @@ public:
 
 	/*! details Updates a binary app with the specified settings.
 	  *
-	  * @param image The binary image to modify
-	  * @param name The name that should be assigned to the app
-	  * @param startup True if app should run at startup
-	  * @param run_in_ram True if app should run in ram
-	  * @param ram_size Number of bytes the app needs for RAM (excluding code if run_in_ram is true)
+	  * @param file The binary image to modify
+	  * @param attributes The attributes to apply
 	  * @return Zero on success or -1 with error() set to an appropriate message
 	  */
-	int update_binary_install_options(const sys::File & file, const AppfsFileAttributes & attributes);
+	int update_binary_install_options(const fs::DestinationFile & destination, const AppfsFileAttributes & attributes);
 
 	/*! \details Installs a binary to the specified location.
 	  *
@@ -529,7 +550,12 @@ public:
 	  * it can be executed.
 	  *
 	  */
-	int install_app(const sys::File & source, const var::ConstString & dest, const var::ConstString & name, const ProgressCallback * progress_callback = 0);
+	int install_app(
+			const fs::SourceFile & source,
+			const fs::DestinationDirectoryPath & path,
+			const fs::DestinationFileName & name,
+			const ProgressCallback * progress_callback = 0
+			);
 
 	/*! \details Returns the serial number of the last device
 	  * that was connected (including the currently connected device)

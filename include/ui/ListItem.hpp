@@ -7,7 +7,7 @@
 
 #include "../draw/TextAttr.hpp"
 #include "../draw/Icon.hpp"
-#include "../sys/Dir.hpp"
+#include "../fs/Dir.hpp"
 #include "LinkedElement.hpp"
 #include "List.hpp"
 #include "../var/ConstString.hpp"
@@ -141,11 +141,11 @@ public:
 	typedef void (*list_dir_callback_t)(DirList * list);
 
 	/*! \details Contruct a new list */
-	DirList(const var::ConstString & path, LinkedElement * parent = 0, LinkedElement * child = 0);
+	DirList(const fs::SourceDirectoryPath & path, LinkedElement * parent = 0, LinkedElement * child = 0);
 	~DirList();
 
 	/*! \details Set the path for the directory */
-	void set_path(const var::ConstString & path);
+	void set_path(const fs::SourceDirectoryPath & path);
 	/*! \details Access the path */
 	const var::String & path() const { return m_path; }
 
@@ -170,8 +170,8 @@ public:
 	/*! \details Assign the callback for when an item in the list is selected */
 	void set_callback(list_dir_callback_t callback){ m_callback = callback; }
 
-	/*! \details Accces the sys::Dir object used to read the directory */
-	sys::Dir & dir(){ return m_dir; }
+	/*! \details Accces the fs::Dir object used to read the directory */
+	fs::Dir & dir(){ return m_dir; }
 
 	/*! \details Access the currently selected item in the list */
 	ListItem & item(){ return m_item; }
@@ -187,7 +187,7 @@ protected:
 	inline void set_size(u32 total){ m_size = total; }
 
 private:
-	sys::Dir m_dir;
+	fs::Dir m_dir;
 	/*! \todo List inherits ListAttr so the total entries should already be stored somewhere */
 	u32 m_size;
 	ListItem m_item;

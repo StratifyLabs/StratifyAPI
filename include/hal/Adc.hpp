@@ -54,9 +54,9 @@ public:
 		set_freq(freq);
 	}
 
-	void set_channel(u16 channel){ m_attr.channel = channel; }
-	void set_rank(u32 rank){ m_attr.rank = rank; }
-	void set_sampling_time(u32 sampling_time){ m_attr.sampling_time = sampling_time; }
+	AdcAttributes & set_channel(u16 channel){ m_attr.channel = channel; return *this; }
+	AdcAttributes & set_rank(u32 rank){ m_attr.rank = rank; return *this; }
+	AdcAttributes & set_sampling_time(u32 sampling_time){ m_attr.sampling_time = sampling_time; return *this; }
 
 	/*! \details Configures a channel in a group for sampling.
 	 *
@@ -74,11 +74,12 @@ public:
 	 * \endcode
 	 *
 	 */
-	void configure_group_channel(u16 channel, u32 rank, u32 sampling_time = 15){
+	AdcAttributes & configure_group_channel(u16 channel, u32 rank, u32 sampling_time = 15){
 		set_flags(ADC_FLAG_SET_CHANNELS | ADC_FLAG_IS_GROUP);
 		set_channel(channel);
 		set_rank(rank);
 		set_sampling_time(sampling_time);
+		return *this;
 	}
 
 };
@@ -141,25 +142,6 @@ public:
 	 *
 	 */
 	AdcInfo get_info() const;
-
-	int set_attr(u32 o_flags, u32 freq, const adc_pin_assignment_t * pin_assignment = 0) const {
-		adc_attr_t attr;
-		attr.o_flags = o_flags;
-		if( pin_assignment != 0 ){
-			memcpy(&attr.pin_assignment, pin_assignment, sizeof(adc_pin_assignment_t));
-		} else {
-			memset(&attr.pin_assignment, 0xff, sizeof(adc_pin_assignment_t));
-		}
-		attr.freq = freq;
-		return set_attributes(attr);
-	}
-
-	int init(u32 o_flags, u32 freq, const adc_pin_assignment_t * pin_assignment = 0){
-		if( open() < 0 ){
-			return -1;
-		}
-		return set_attr(o_flags, freq, pin_assignment);
-	}
 
 private:
 

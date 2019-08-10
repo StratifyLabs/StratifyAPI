@@ -12,6 +12,62 @@ namespace chrono {
 
 class MicroTime;
 
+class Hours : public api::ChronoInfoObject {
+public:
+	explicit Hours(s32 value){ m_value = value; }
+	s32 hours() const { return m_value; }
+	static Hours invalid(){ return Hours(-1); }
+private:
+	s32 m_value;
+};
+
+class Minutes : public api::ChronoInfoObject {
+public:
+	explicit Minutes(s32 value){ m_value = value; }
+	s32 minutes() const { return m_value; }
+	static Minutes invalid(){ return Minutes(-1); }
+private:
+	s32 m_value;
+};
+
+
+class Seconds : public api::ChronoInfoObject {
+public:
+	explicit Seconds(s32 value){ m_value = value; }
+	s32 seconds() const { return m_value; }
+	static Seconds invalid(){ return Seconds(-1); }
+private:
+	s32 m_value;
+};
+
+class Milliseconds : public api::ChronoInfoObject {
+public:
+	explicit Milliseconds(s32 value){ m_value = value; }
+	s32 milliseconds() const { return m_value; }
+	static Milliseconds invalid(){ return Milliseconds(-1); }
+private:
+	s32 m_value;
+};
+
+class Microseconds : public api::ChronoInfoObject {
+public:
+	explicit Microseconds(s32 value){ m_value = value; }
+	s32 microseconds() const { return m_value; }
+	static Microseconds invalid(){ return Microseconds(-1); }
+private:
+	s32 m_value;
+};
+
+class Nanoseconds : public api::ChronoInfoObject {
+public:
+	explicit Nanoseconds(s32 value){ m_value = value; }
+	s32 nanoseconds() const { return m_value; }
+	static Nanoseconds invalid(){ return Nanoseconds(-1); }
+private:
+	s32 m_value;
+};
+
+
 /*! \brief Clock Time Class
  * \details The ClockTime class is a helper class for using
  * struct timespec times. This is a 64-bit time with a 32-bit
@@ -26,7 +82,7 @@ public:
 	  *
 	  *
 	  */
-	ClockTime(s32 seconds, s32 nanoseconds){
+	ClockTime(const Seconds & seconds, const Nanoseconds & nanoseconds){
 		assign(seconds, nanoseconds);
 	}
 
@@ -42,7 +98,7 @@ public:
 	ClockTime(){ reset(); }
 
 	static ClockTime from_seconds(u32 seconds){
-		return ClockTime(seconds, 0);
+		return ClockTime(Seconds(seconds), Nanoseconds(0));
 	}
 
 	/*! \details Resets the value of the clock to zero. */
@@ -56,8 +112,8 @@ public:
 	  * @param nanoseconds The nanosecond value
 	  *
 	  */
-	void set(s32 seconds, s32 nanoseconds){
-		m_value.tv_sec = seconds; m_value.tv_nsec = nanoseconds;
+	void set(const Seconds & seconds, const Nanoseconds & nanoseconds){
+		m_value.tv_sec = seconds.seconds(); m_value.tv_nsec = nanoseconds.nanoseconds();
 	}
 
 	/*! \details Returns a pointer to the struct timespec.
@@ -84,7 +140,7 @@ public:
 	}
 
 	/*! \details Returns a MicroTime object set to the invalid time. */
-	static ClockTime invalid(){ return ClockTime((u32)-1, (u32)-1); }
+	static ClockTime invalid(){ return ClockTime(Seconds(-1), Nanoseconds(-1)); }
 
 	/*! \details Returns true if this is greater than \a a. */
 	bool operator > (const ClockTime & a) const;
@@ -145,7 +201,7 @@ public:
 
 
 private:
-	void assign(s32 seconds, s32 nanoseconds);
+	void assign(const Seconds & seconds, const Nanoseconds & nanoseconds);
 	static ClockTime add(const ClockTime & a, const ClockTime & b);
 	static ClockTime subtract(const ClockTime & a, const ClockTime & b);
 

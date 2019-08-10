@@ -8,8 +8,11 @@ using namespace sys;
 
 Wav::Wav(const var::ConstString & name) {
 	// TODO Auto-generated constructor stub
-	if( !name.is_empty() && open(name, File::READONLY) >= 0 ){
-		if( read(&m_header, sizeof(m_header)) < 0 ){
+	if( !name.is_empty() && open(name, fs::OpenFlags::read_only()) >= 0 ){
+		if( read(
+				 fs::DestinationBuffer(&m_header),
+				 fs::Size(sizeof(m_header))
+				 ) < 0 ){
 			close();
 		} else {
 			return;
@@ -22,7 +25,10 @@ Wav::Wav(const var::ConstString & name) {
 int Wav::create(const var::ConstString & path){
 	int result = File::create(path);
 	if( result < 0 ){ return result; }
-	return write(&m_header, sizeof(m_header));
+	return write(
+				fs::SourceBuffer(&m_header),
+				fs::Size(sizeof(m_header))
+				);
 }
 
 void Wav::set_header(u16 channels,

@@ -11,6 +11,7 @@
 #include <cstring>
 #include "../api/SysObject.hpp"
 #include "../var/ConstString.hpp"
+#include "../fs/Stat.hpp"
 
 
 namespace sys {
@@ -18,11 +19,11 @@ namespace sys {
 class Mq;
 
 /*! \brief Message Queue Attribute Class */
-class MqAttr : public api::SysInfoObject {
+class MqAttributes : public api::SysInfoObject {
 	friend class Mq;
 public:
-	MqAttr(){ memset(&m_attr, 0, sizeof(m_attr)); }
-	MqAttr(long f, long m, long s){
+	MqAttributes(){ memset(&m_attr, 0, sizeof(m_attr)); }
+	MqAttributes(long f, long m, long s){
 		m_attr.mq_flags = f;
 		m_attr.mq_curmsgs = 0;
 		m_attr.mq_maxmsg = m;
@@ -38,15 +39,19 @@ public:
 		READONLY /*! \brief Read only queue */ = LINK_O_RDONLY
 	};
 
-	inline long flags() const { return m_attr.mq_flags; }
-	inline long curmsgs() const { return m_attr.mq_curmsgs; }
-	inline long maxmsg() const { return m_attr.mq_maxmsg; }
-	inline long msgsize() const { return m_attr.mq_msgsize; }
+	long flags() const { return m_attr.mq_flags; }
+	long current_message_count() const { return m_attr.mq_curmsgs; }
+	long maximum_message_count() const { return m_attr.mq_maxmsg; }
+	long message_size() const { return m_attr.mq_msgsize; }
 
-	inline void set_flags(long v) { m_attr.mq_flags = v; }
-	inline void set_curmsgs(long v) { m_attr.mq_curmsgs = v; }
-	inline void set_maxmsg(long v) { m_attr.mq_maxmsg = v; }
-	inline void set_msgsize(long v) { m_attr.mq_msgsize = v; }
+	long curmsgs() const { return m_attr.mq_curmsgs; }
+	long maxmsg() const { return m_attr.mq_maxmsg; }
+	long msgsize() const { return m_attr.mq_msgsize; }
+
+	MqAttributes & set_flags(long v) { m_attr.mq_flags = v; return *this; }
+	MqAttributes & set_current_message_count(long v) { m_attr.mq_curmsgs = v; return *this; }
+	MqAttributes & set_maximum_message_count(long v) { m_attr.mq_maxmsg = v; return *this; }
+	MqAttributes & set_message_size(long v) { m_attr.mq_msgsize = v; return *this; }
 
 private:
 	struct mq_attr m_attr;
@@ -76,7 +81,12 @@ public:
 	 * @param attr Pointer to attributes
 	 * @return Less than zero for an error (use perror())
 	 */
-	int open(const char * name, int oflag, mode_t mode = 0, const struct mq_attr * attr = 0);
+	int open(
+			const var::ConstString & name,
+			int oflag,
+			const fs::Permissions & permissions,
+			const struct mq_attr * attr = 0
+			);
 
 	/*! \details Creates a new message queue.
 	 *
@@ -88,12 +98,14 @@ public:
 	 * @param msgsize Message size
 	 * @return Less than zero for an error (use perror())
 	 */
-	int create(const char * name,
-				  int oflag,
-				  mode_t mode,
-				  long flags,
-				  long maxmsg,
-				  long msgsize);
+	int create(const var::ConstString & name,
+			int oflag,
+			const fs::Permissions & permissions,
+			long flags,
+			long maxmsg,
+			long msgsize
+			);
+
 	/*! \brief Closes the message queue. */
 	int close();
 
@@ -107,9 +119,9 @@ public:
 	int get_attr(struct mq_attr & mqstat);
 
 	/*! \details Returns a copy of the message queue attributes. */
-	MqAttr get_attr();
+	MqAttributes get_attributes();
 
-	int set_attr(const struct mq_attr * mqstat, struct mq_attr * omqstat = 0);
+	int set_attributes(const struct mq_attr * mqstat, struct mq_attr * omqstat = 0);
 
 	/*! \details Sets the message queue attributes.
 	  *
@@ -119,7 +131,12 @@ public:
 	  * properties are not mutable.
 	  *
 	  */
-	int set_attr(const MqAttr & attr);
+	int set_attributes(const MqAttributes & attributes);
+
+	Mq & operator << (const MqAttributes & attributes){
+		set_attributes(attributes);
+		return *this;
+	}
 
 	/*! \details Receives a message from the queue.
 	 *
@@ -151,6 +168,7 @@ public:
 	static int unlink(const char * name);
 
 	/*! \details Returns the message priority of last message received. */
+	unsigned message_priority() const { return m_msg_prio; }
 	unsigned msg_prio() const { return m_msg_prio; }
 
 private:

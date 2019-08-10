@@ -6,9 +6,9 @@ using namespace hal;
 Switchboard::Switchboard(){}
 
 
-int Switchboard::open(const var::ConstString & name, int o_flags){
+int Switchboard::open(const var::ConstString & name, const fs::OpenFlags & flags){
 	int ret;
-	ret = File::open(name, o_flags);
+	ret = File::open(name, flags);
 	if (ret < 0 ){ return ret; }
 
 	switchboard_info_t info;
@@ -18,7 +18,11 @@ int Switchboard::open(const var::ConstString & name, int o_flags){
 
 SwitchboardConnection Switchboard::get_connection(u16 id) const {
 	SwitchboardConnection connection;
-	if( set_error_number_if_error( read(id*sizeof(switchboard_connection_t), &connection.m_connection, sizeof(switchboard_connection_t)) ) < 0 ){
+	if( read(
+			 fs::Location(id*sizeof(switchboard_connection_t)),
+			 fs::DestinationBuffer(&connection.m_connection),
+			 fs::Size(sizeof(switchboard_connection_t))
+			 )  < 0 ){
 		connection = SwitchboardConnection();
 	}
 	return connection;
@@ -26,7 +30,11 @@ SwitchboardConnection Switchboard::get_connection(u16 id) const {
 
 int Switchboard::get_connection(SwitchboardConnection & connection) const {
 	if( connection.id() != SwitchboardConnection::invalid_id() ){
-		if( set_error_number_if_error( read(connection.id()*sizeof(switchboard_connection_t), &connection.m_connection, sizeof(switchboard_connection_t)) ) < 0 ){
+		if( read(
+				 fs::Location(connection.id()*sizeof(switchboard_connection_t)),
+				 fs::DestinationBuffer(&connection.m_connection),
+				 fs::Size(sizeof(switchboard_connection_t))
+				 )  < 0 ){
 			connection = SwitchboardConnection();
 		}
 	}
@@ -34,7 +42,7 @@ int Switchboard::get_connection(SwitchboardConnection & connection) const {
 }
 
 int Switchboard::get_available_connection() const {
-	int ret = seek(0);
+	int ret = seek(fs::Location(0));
 	if( ret < 0 ){
 		return ret;
 	}
@@ -42,7 +50,10 @@ int Switchboard::get_available_connection() const {
 	int id = 0;
 	switchboard_status_t status;
 	do {
-		ret = read(&status, sizeof(status));
+		ret = read(
+					fs::DestinationBuffer(&status),
+					fs::Size(sizeof(status))
+					);
 		if( ret == sizeof(status) ){
 			if( status.o_flags != 0 ){
 				id++; //this one is busy
@@ -59,14 +70,17 @@ int Switchboard::get_available_connection() const {
 }
 
 int Switchboard::get_active_connection_count() const {
-	int ret = seek(0);
+	int ret = seek(fs::Location(0));
 	if( ret < 0 ){
 		return ret;
 	}
 	int count = 0;
 	switchboard_status_t status;
 	do {
-		ret = read(&status, sizeof(status));
+		ret = read(
+					fs::DestinationBuffer(&status),
+					fs::Size(sizeof(status))
+					);
 		if( ret == sizeof(status) ){
 			if( status.o_flags != 0 ){
 				count++; //this one is active
@@ -78,14 +92,17 @@ int Switchboard::get_active_connection_count() const {
 }
 
 void Switchboard::print_connections() const {
-	int ret = seek(0);
+	int ret = seek(fs::Location(0));
 	if( ret < 0 ){
 		return;
 	}
 	int id = 0;
 	switchboard_status_t status;
 	do {
-		ret = read(&status, sizeof(status));
+		ret = read(
+					fs::DestinationBuffer(&status),
+					fs::Size(sizeof(status))
+					);
 		if( ret == sizeof(status) ){
 			if( status.o_flags != 0 ){
 				printf("%d:%s -> %s\n", id, status.input.name, status.output.name);

@@ -62,12 +62,16 @@ class UartAttributes;
 class DriveInfo;
 }
 
+namespace fs {
+class Stat;
+}
+
 namespace sys {
 
 class TaskInfo;
 class SysInfo;
 class Cli;
-class FileInfo;
+class Info;
 class AppfsInfo;
 
 
@@ -197,8 +201,8 @@ public:
 	Printer & operator << (const sys::AppfsInfo & a);
 	/*! \details Prints a sys::TaskInfo object. */
 	Printer & operator << (const sys::TaskInfo & a);
-	/*! \details Prints a sys::FileInfo object. */
-	Printer & operator << (const sys::FileInfo & a);
+	/*! \details Prints a file::Info object. */
+	Printer & operator << (const fs::Stat & a);
 
 	/*! \details Prints a sgfx::Bitmap object. */
 	Printer & operator << (const sgfx::Bitmap & a);
