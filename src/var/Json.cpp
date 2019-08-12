@@ -228,32 +228,39 @@ json_t * JsonNull::create(){
 }
 
 
-int JsonObject::insert(const var::ConstString & key, const JsonValue & value){
+int JsonObject::insert(const arg::JsonKey key,
+		const arg::ImplicitSourceJsonValue value
+		){
 	if( create_if_not_valid() < 0 ){
 		return -1;
 	}
 
-	int result = api()->object_set(m_value, key.cstring(), value.m_value);
+	int result = api()->object_set(
+				m_value, key.argument().cstring(),
+				value.argument().m_value
+				);
 	if( result < 0 ){
 		//printf("Failed to set JSON key %s to %s %p\n", key.cstring(), value.to_string().cstring(), m_value);
 	}
 	return result;
 }
 
-int JsonObject::update(const JsonValue & value, u8 o_flags){
+int JsonObject::update(const arg::SourceJsonValue value,
+		enum update_flags o_flags
+		){
 	if( o_flags & UPDATE_EXISTING ){
-		return api()->object_update_existing(m_value, value.m_value);
+		return api()->object_update_existing(m_value, value.argument().m_value);
 	}
 
 	if( o_flags & UPDATE_MISSING ){
-		return api()->object_update_missing(m_value, value.m_value);
+		return api()->object_update_missing(m_value, value.argument().m_value);
 	}
 
-	return api()->object_update(m_value, value.m_value);
+	return api()->object_update(m_value, value.argument().m_value);
 }
 
-int JsonObject::remove(const var::ConstString & key){
-	return api()->object_del(m_value, key.cstring());
+int JsonObject::remove(const arg::JsonKey key){
+	return api()->object_del(m_value, key.argument().cstring());
 }
 
 u32 JsonObject::count() const {
@@ -276,8 +283,8 @@ var::Vector<var::String> JsonObject::keys() const {
 	return result;
 }
 
-JsonValue JsonObject::at(const var::ConstString & key) const {
-	return api()->object_get(m_value, key.cstring());
+JsonValue JsonObject::at(const arg::JsonKey key) const {
+	return api()->object_get(m_value, key.argument().cstring());
 }
 
 JsonArray::JsonArray(){
@@ -298,13 +305,13 @@ u32 JsonArray::count() const {
 	return api()->array_size(m_value);
 }
 
-JsonValue JsonArray::at(u32 idx) const {
-	return api()->array_get(m_value, idx);
+JsonValue JsonArray::at(const arg::ImplicitPosition position) const {
+	return api()->array_get(m_value, position.argument());
 }
 
-int JsonArray::append(const JsonValue & value){
+int JsonArray::append(const arg::ImplicitSourceJsonValue value){
 	if( create_if_not_valid() < 0 ){ return -1; }
-	return api()->array_append(m_value, value.m_value);
+	return api()->array_append(m_value, value.argument().m_value);
 }
 
 int JsonArray::append(const JsonArray & array){
@@ -312,13 +319,23 @@ int JsonArray::append(const JsonArray & array){
 	return api()->array_extend(m_value, array.m_value);
 }
 
-int JsonArray::insert(u32 idx, const JsonValue & value){
+int JsonArray::insert(const arg::Position position,
+		const arg::ImplicitSourceJsonValue value
+		){
 	if( create_if_not_valid() < 0 ){ return -1; }
-	return api()->array_insert(m_value, idx, value.m_value);
+	return api()->array_insert(
+				m_value,
+				position.argument(),
+				value.argument().m_value
+				);
 }
 
-int JsonArray::remove(u32 idx){
-	return api()->array_remove(m_value, idx);
+int JsonArray::remove(const arg::ImplicitPosition position
+		){
+	return api()->array_remove(
+				m_value,
+				position.argument()
+				);
 }
 
 int JsonArray::clear(){
@@ -376,46 +393,60 @@ JsonFalse::JsonFalse(){
 	m_value = create();
 }
 
-JsonValue JsonDocument::load_from_file(const var::ConstString & path){
+JsonValue JsonDocument::load(const arg::SourceFilePath path
+		){
 	JsonValue value;
-	value.m_value = JsonValue::api()->load_file(path.cstring(), flags(), &m_error.m_value);
+	value.m_value = JsonValue::api()->load_file(
+				path.argument().cstring(),
+				flags(),
+				&m_error.m_value
+				);
 	return value;
 }
 
-JsonValue JsonDocument::load_from_string(const var::ConstString & json){
+JsonValue JsonDocument::load(const arg::JsonEncodedString json
+		){
 	JsonValue value;
-	value.m_value = JsonValue::api()->loadb(json.cstring(), json.length(), flags(), &m_error.m_value);
+	value.m_value = JsonValue::api()->loadb(
+				json.argument().cstring(),
+				json.argument().length(),
+				flags(),
+				&m_error.m_value);
 	return value;
 }
 
-//only use on Stratify OS
-JsonValue JsonDocument::load_from_file(const fs::File & file){
-	JsonValue value;
-	value.m_value = JsonValue::api()->loadfd(file.fileno(), flags(), &m_error.m_value);
-	return value;
-}
-
-size_t JsonDocument::load_file_data(void *buffer, size_t buflen, void *data){
+size_t JsonDocument::load_file_data(
+		void *buffer,
+		size_t buflen,
+		void *data
+		){
 	const fs::File * f = (const fs::File *)data;
 	return f->read(
-				fs::DestinationBuffer(buffer),
-				fs::Size(buflen)
+				arg::DestinationBuffer(buffer),
+				arg::Size(buflen)
 				);
 }
 
-JsonValue JsonDocument::load(const fs::File & file){
+JsonValue JsonDocument::load(const arg::SourceFile file
+		){
 	JsonValue value;
-	value.m_value = JsonValue::api()->load_callback(load_file_data, (void*)&file, flags(), &m_error.m_value);
+	value.m_value = JsonValue::api()->load_callback(load_file_data, (void*)&(file.argument()), flags(), &m_error.m_value);
 	return value;
 }
 
-JsonValue JsonDocument::load(json_load_callback_t callback, void * context){
+JsonValue JsonDocument::load(
+		json_load_callback_t callback,
+		void * context
+		){
 	JsonValue value;
 	value.m_value = JsonValue::api()->load_callback(callback, context, flags(), &m_error.m_value);
 	return value;
 }
 
-int JsonDocument::save_to_file(const JsonValue & value, const var::ConstString & path) const {
+int JsonDocument::save(
+		const arg::SourceJsonValue value,
+		const arg::DestinationFilePath path
+		) const {
 	fs::File f;
 	int result;
 
@@ -426,7 +457,10 @@ int JsonDocument::save_to_file(const JsonValue & value, const var::ConstString &
 		set_error_number(f.error_number());
 		return -1;
 	}
-	result = JsonValue::api()->dumpfd(value.m_value, f.fileno(), flags());
+	result = JsonValue::api()->dumpfd(
+				value.argument().m_value,
+				f.fileno(),
+				flags());
 
 	if( f.close() < 0 ){
 		set_error_number(f.error_number());
@@ -437,8 +471,10 @@ int JsonDocument::save_to_file(const JsonValue & value, const var::ConstString &
 	return result;
 }
 
-var::String JsonDocument::stringify(const JsonValue & value) const {
-	u32 size = JsonValue::api()->dumpb(value.m_value, 0, 0, flags());
+var::String JsonDocument::to_string(
+		const arg::ImplicitSourceJsonValue value
+		) const {
+	u32 size = JsonValue::api()->dumpb(value.argument().m_value, 0, 0, flags());
 	if( size == 0 ){
 		return var::String();
 	}
@@ -446,17 +482,32 @@ var::String JsonDocument::stringify(const JsonValue & value) const {
 	if( result.set_capacity(size) < 0 ){
 		return var::String();
 	}
-	if( JsonValue::api()->dumpb(value.m_value, result.to<char>(), result.capacity(), flags()) == 0 ){
+	if( JsonValue::api()->dumpb(
+			 value.argument().m_value,
+			 result.to<char>(),
+			 result.capacity(),
+			 flags()
+			 ) == 0 ){
 		return var::String();
 	}
 	return result;
 }
 
-int JsonDocument::save_to_file(const JsonValue & value, const fs::File & file) const {
-	return JsonValue::api()->dumpfd(value.m_value, file.fileno(), flags());
+int JsonDocument::save(
+		const arg::SourceJsonValue value,
+		const arg::DestinationFile file
+		) const {
+	return JsonValue::api()->dumpfd(
+				value.argument().m_value,
+				file.argument().fileno(),
+				flags());
 }
 
-int JsonDocument::save(const JsonValue & value, json_dump_callback_t callback, void * context) const {
+int JsonDocument::save(
+		const JsonValue & value,
+		json_dump_callback_t callback,
+		void * context
+		) const {
 	return JsonValue::api()->dump_callback(value.m_value, callback, context, flags());
 }
 

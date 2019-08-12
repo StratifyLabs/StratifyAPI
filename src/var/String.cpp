@@ -20,8 +20,8 @@ String::String(const ConstString & s){
 }
 
 
-String::String(const ConstString & s, u32 len){
-	assign(s, len);
+String::String(const ConstString & s, const arg::Length length){
+	assign(s, length);
 }
 
 u32 String::capacity() const {
@@ -49,7 +49,10 @@ int String::sprintf(const char * format, ...){
 	return result;
 }
 
-int String::vformat(const char * fmt, va_list list){
+int String::vformat(
+		const char * fmt,
+		va_list list
+		){
 	int result;
 	if( capacity() == 0 ){
 		set_size(minimum_size());
@@ -63,9 +66,11 @@ int String::vformat(const char * fmt, va_list list){
 	return result;
 }
 
-int String::set_size(u32 s){
+int String::set_size(
+		const arg::ImplicitSize size
+		){
 	bool is_zero_size = (to_void() == 0);
-	int result = Data::set_size(s+1);
+	int result = Data::set_size(size.argument()+1);
 	set_string_pointer(cdata_const());
 	if( is_zero_size ){
 		fill(0);
@@ -74,16 +79,19 @@ int String::set_size(u32 s){
 }
 
 int String::assign(const ConstString & a){
-	return assign(a, a.length());
+	return assign(a, arg::Length(a.length()));
 }
 
-int String::assign(const ConstString & a, u32 n){
+int String::assign(const ConstString & a,
+						 const arg::Length length
+						 ){
 	//check for null
+	u32 length_value = length.argument();
 	if( a.cstring() != this->to_char() ){ //check for assignment to self - no action needed
-		if( n == (u32)npos ){ n = a.length(); }
-		if( set_capacity(n) < 0 ){ return -1; }
+		if( length_value == (u32)npos ){ length_value = a.length(); }
+		if( set_capacity(length_value) < 0 ){ return -1; }
 		clear();
-		strncpy(to_char(), a.cstring(), n);
+		strncpy(to_char(), a.cstring(), length.argument());
 	}
 	return 0;
 }
@@ -97,7 +105,7 @@ int String::append(const ConstString & a){
 		clear(); //previous length was zero -- ensure string is valid
 	}
 	if( cdata() == 0 ){ return -1; }
-	strncat(cdata(), a.str(), capacity() - len);
+	strncat(cdata(), a.cstring(), capacity() - len);
 	return 0;
 }
 
@@ -111,25 +119,28 @@ int String::append(char c){
 }
 
 
-String& String::insert(u32 pos, const ConstString & str){
+String& String::insert(
+		const arg::Position position,
+		const arg::StringToInsert string_to_insert
+		){
 
 	if( cdata() == 0 ){
-		assign(str);
+		assign(string_to_insert.argument());
 		return *this;
 	}
 
 	u32 s;
 	u32 len = length();
 
-	if( pos > len ){
+	if( position.argument() > len ){
 		set_error_number(EINVAL);
 		return *this;
-	} else if( pos == len ){
-		append(str);
+	} else if( position.argument() == len ){
+		append(string_to_insert.argument());
 	} else {
 
 		//this needs a limit
-		s = str.length();
+		s = string_to_insert.argument().length();
 
 		char buffer[len+1];
 
@@ -138,63 +149,78 @@ String& String::insert(u32 pos, const ConstString & str){
 			return *this;
 		}
 
-		strncpy(buffer, cdata()+pos, len+1); //copy the existing string to buffer
-		strncpy(cdata()+pos, str.str(), capacity() - pos);
+		strncpy(buffer, to_char()+position.argument(), len+1); //copy the existing string to buffer
+		strncpy(cdata()+position.argument(), string_to_insert.argument().cstring(), capacity() - position.argument());
 		strncat(cdata(), buffer, capacity());
 	}
 
 	return *this;
 }
 
-String& String::erase(u32 pos, u32 len){
+String& String::erase(const arg::Position position,
+		const arg::Length length
+		){
 	char * p = to<char>();
-	u32 s = length();
+	u32 s = this->length();
 	if( p == 0 ){ return *this; }
-	if( (len != npos) && (pos != npos) && (pos + len < s) ){
+	if( (length.argument() != npos) && (position.argument() != npos) && (position.argument() + length.argument() < s) ){
 		int remaining;
-		remaining = s - pos - len;
+		remaining = s - position.argument() - length.argument();
 		if( remaining > 0 ){
-			::memcpy(p + pos, p + pos + len, remaining);
-			p[pos+remaining] = 0;
+			::memcpy(p + position.argument(), p + position.argument() + length.argument(), remaining);
+			p[position.argument()+remaining] = 0;
 		} else {
-			p[pos] = 0;
+			p[position.argument()] = 0;
 		}
-	} else if (pos < s ){
-		p[pos] = 0;
+	} else if (position.argument() < s ){
+		p[position.argument()] = 0;
 	}
 	return *this;
 }
 
-String& String::erase(const ConstString & s, u32 pos, u32 occurences){
+String& String::erase(
+		const arg::StringToErase string_to_erase,
+		const arg::Position position,
+		const arg::Length length
+		){
 	u32 erase_pos;
-	u32 count = 0;
-	u32 len = s.length();
-	while( (count++ < occurences) && ((erase_pos = find(s, pos, len)) != npos) ){
-		erase(erase_pos, len);
+	u32 count_value = 0;
+	u32 len = string_to_erase.argument().length();
+	while( (count_value++ < length.argument()) &&
+			 ((erase_pos = find(arg::StringToFind(string_to_erase.argument()), position, arg::Length(len))) != npos) ){
+		erase(arg::Position(erase_pos), arg::Length(len));
 	}
 	return *this;
 }
 
-String& String::replace(const ConstString & old_string, const ConstString & new_string, u32 start_pos, u32 count){
-	u32 pos = start_pos;
-	u32 old_length = old_string.length();
-	u32 new_length = new_string.length();
+String& String::replace(
+		const arg::StringToErase old_string,
+		const arg::StringToInsert new_string,
+		const arg::Position position,
+		const arg::Length length
+		){
+	u32 pos = position.argument();
+	u32 old_length = old_string.argument().length();
+	u32 new_length = new_string.argument().length();
 	u32 replaced_count = 0;
-	while( ((pos = find(old_string, pos)) != String::npos) && (count ? replaced_count < count : 1) ){
-		erase(pos, old_length);
-		insert(pos, new_string);
+	while( ((pos = find(arg::StringToFind(old_string.argument()), arg::Position(pos))) != String::npos) &&
+			 (length.argument() ? replaced_count < length.argument() : 1) ){
+		erase(arg::Position(pos), arg::Length(old_length));
+		insert(arg::Position(pos), new_string);
 		pos += new_length;
 		replaced_count++;
 	}
 	return *this;
 }
 
-String String::substr(u32 pos, u32 len) const {
-	if( pos >= length() ){
+String String::substr(const arg::Position position,
+		const arg::Length length
+		) const {
+	if( position.argument() >= this->length() ){
 		return String();
 	}
 	String ret;
-	ret.assign(str() + pos, len);
+	ret.assign(cstring() + position.argument(), length);
 	return ret;
 }
 
@@ -219,7 +245,7 @@ String & String::to_lower(){
 
 void PathString::strip_suffix(){
 	u32 dot;
-	dot = rfind('.');
+	dot = rfind(arg::CharacterToFind('.'));
 	if( dot != npos ){
 		cdata()[dot] = 0;
 	}
@@ -227,11 +253,11 @@ void PathString::strip_suffix(){
 
 const char * PathString::file_name() const{
 	u32 slash;
-	slash = rfind('/');
+	slash = rfind(arg::CharacterToFind('/'));
 	if( slash != npos ){
-		return c_str() + slash + 1;
+		return cstring() + slash + 1;
 	}
-	return c_str();
+	return cstring();
 }
 
 

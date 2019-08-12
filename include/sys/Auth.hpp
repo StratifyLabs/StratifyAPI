@@ -78,7 +78,6 @@ public:
 
 private:
 	int m_fd;
-
 	int open();
 	void close();
 

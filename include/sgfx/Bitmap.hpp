@@ -27,7 +27,7 @@ public:
 
 	void set_count(enum color_count count){
 		//must be 2,4,16,256
-		m_colors.resize(count);
+		m_colors.resize(arg::Count(count));
 		m_palette.mask = (count-1);
 		m_palette.colors = m_colors.to<sg_color_t>();
 	}
@@ -186,14 +186,14 @@ public:
 	/*! \details Returns the maximum y value. */
 	sg_int_t y_max() const { return height()-1; }
 
-	static Area load_dim(const char * path);
+	static Area load_dim(const arg::SourceFilePath & path);
 
 	/*! \details Loads a bitmap from a file.
 	 *
 	 * @param path The path to the bitmap file name
 	 * @return Zero on success
 	 */
-	int load(const var::ConstString & path);
+	int load(const arg::SourceFilePath & path);
 
 	/*! \details Saves a bitmap to a file.
 	 *
@@ -203,7 +203,7 @@ public:
 	 * If the file already exists, it will be overwritten.
 	 *
 	 */
-	int save(const var::ConstString & path) const;
+	int save(const arg::DestinationFilePath & path) const;
 
 
 	/*! \details Allocates memory for the bitmap data using the specified

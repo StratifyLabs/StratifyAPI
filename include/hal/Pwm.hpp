@@ -26,18 +26,22 @@ public:
 	 * @param period Period of PWM timer
 	 *
 	 */
-	PwmAttributes(u32 o_flags = PWM_FLAG_SET_TIMER, u32 frequency = 1000000, u32 period = 1000){
+	PwmAttributes(){
+		m_attr.o_flags = PWM_FLAG_SET_TIMER;
+		m_attr.freq	= 1000000;
 		m_attr.channel = mcu_channel(-1, -1);
-		m_attr.o_flags = o_flags;
-		m_attr.freq	= frequency;
-		m_attr.period = period;
+		m_attr.period = 1000;
 	}
 
 	/*! \details Accesses the PWM period. */
 	u32 period() const { return m_attr.period; }
 
+	PwmAttributes & set_frequency(u32 value){ m_attr.freq = value; return *this; }
+	PwmAttributes & set_flags(u32 value){ m_attr.o_flags = value; return *this; }
+
+
 	/*! \details Sets the PWM period. */
-	void set_period(u32 period){ m_attr.period = period; }
+	PwmAttributes & set_period(u32 period){ m_attr.period = period; return *this; }
 
 	/*! details Access the current channel that the attributes refers to. */
 	mcu_channel_t channel() const { return m_attr.channel; }
@@ -110,7 +114,7 @@ public:
 	 * @return Zero on success
 	 */
 	int set_channel(u32 loc, u32 value) const {
-		return Periph::set_channel(loc, value, I_PWM_SETCHANNEL);
+		return Periph::set_channel(loc, value, arg::IoRequest(I_PWM_SETCHANNEL));
 	}
 
 	/*! \details Sets the channel using the channel reference.
@@ -128,7 +132,7 @@ public:
 	 * @return The value of the channel or (u32)-1 for an error
 	 */
 	int get_channel(u32 loc){
-		return Periph::get_channel(loc, I_PWM_GETCHANNEL);
+		return Periph::get_channel(loc, arg::IoRequest(I_PWM_GETCHANNEL));
 	}
 
 	/*! \details Enables the PWM timer.
@@ -142,7 +146,9 @@ public:
 	 *
 	 */
 	int enable() const {
-		return ioctl(I_PWM_ENABLE);
+		return ioctl(
+					arg::IoRequest(I_PWM_ENABLE)
+					);
 	}
 
 	/*! \details Disables the PWM timer.
@@ -151,21 +157,9 @@ public:
 	 *
 	 */
 	int disable() const {
-		return ioctl(I_PWM_DISABLE);
-	}
-
-
-	int set_attr(u32 o_flags, u32 freq, u32 period, const pwm_pin_assignment_t * pin_assignment = 0) const {
-		pwm_attr_t attr;
-		attr.o_flags = o_flags;
-		if( pin_assignment != 0 ){
-			memcpy(&attr.pin_assignment, pin_assignment, sizeof(pwm_pin_assignment_t));
-		} else {
-			memset(&attr.pin_assignment, 0xff, sizeof(pwm_pin_assignment_t));
-		}
-		attr.freq = freq;
-		attr.period = period;
-		return set_attributes(attr);
+		return ioctl(
+					arg::IoRequest(I_PWM_DISABLE)
+					);
 	}
 
 	/*! \details Sets the channel configuration.
@@ -176,17 +170,12 @@ public:
 	 * This method is equivalent to set_attr() with o_flags set to PWM::FLAG_SET_CHANNELS.
 	 */
 	int set_channels(const pwm_pin_assignment_t * pin_assignment){
-		return set_attr(FLAG_SET_CHANNELS, 0, 0, pin_assignment);
-	}
-
-
-	int init(u32 o_flags, u32 freq, u32 period, const pwm_pin_assignment_t * pin_assignment = 0){
-
-		if( open() < 0 ){
-			return -1;
+		PwmAttributes attributes;
+		attributes.set_flags(FLAG_SET_CHANNELS);
+		if( pin_assignment ){
+			attributes << *pin_assignment;
 		}
-
-		return set_attr(o_flags, freq, period, pin_assignment);
+		return set_attributes(attributes);
 	}
 
 	using Periph::get_channel;

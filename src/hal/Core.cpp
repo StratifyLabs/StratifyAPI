@@ -10,15 +10,24 @@ Core::Core(port_t port) : Periph(CORE_PERIPH_CORE, port){}
 
 
 int Core::set_pin_function(const core_pinfunc_t & req){
-	return ioctl(I_CORE_SETPINFUNC, &req);
+	return ioctl(
+				arg::IoRequest(I_CORE_SETPINFUNC),
+				arg::IoConstArgument(&req)
+				);
 }
 
 int Core::get_mcu_board_config(mcu_board_config_t & config){
-	return ioctl(I_CORE_GETMCUBOARDCONFIG, &config);
+	return ioctl(
+				arg::IoRequest(I_CORE_GETMCUBOARDCONFIG),
+				arg::IoArgument(&config)
+				);
 }
 
 int Core::set_clock_divide(u32 value){
-	return ioctl(I_CORE_SETCLKDIVIDE, value);
+	return ioctl(
+				arg::IoRequest(I_CORE_SETCLKDIVIDE),
+				arg::IoIntArgument(value)
+				);
 }
 
 void Core::reset(){

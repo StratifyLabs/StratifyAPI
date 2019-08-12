@@ -24,7 +24,9 @@ SocketAddressInfo::SocketAddressInfo(int family, int type, int protocol, int fla
 	set_type(type);
 	set_protocol(protocol);
 	if( family == FAMILY_INET ){
-		m_sockaddr.allocate(sizeof(struct sockaddr_in));
+		m_sockaddr.allocate(
+					arg::Size(sizeof(struct sockaddr_in))
+					);
 #if !defined __win32
 		m_sockaddr.to<struct sockaddr_in>()->sin_len = m_sockaddr.size();
 #else
@@ -34,7 +36,9 @@ SocketAddressInfo::SocketAddressInfo(int family, int type, int protocol, int fla
 		memset(&(m_sockaddr.to<struct sockaddr_in>()->sin_addr), 0, sizeof(struct in_addr));
 		memset(m_sockaddr.to<struct sockaddr_in>()->sin_zero, 0, sizeof(m_sockaddr.to<struct sockaddr_in>()->sin_zero));
 	} else {
-		m_sockaddr.allocate(sizeof(struct sockaddr_in6));
+		m_sockaddr.allocate(
+					arg::Size(sizeof(struct sockaddr_in6))
+					);
 #if !defined __win32
 		m_sockaddr.to<struct sockaddr_in6>()->sin6_len = m_sockaddr.size();
 #else
@@ -78,7 +82,14 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 		SocketAddressInfo value;
 		value.m_addrinfo = * info;
 		if( info->ai_addr ){
-			value.m_sockaddr.copy_contents(var::Data(info->ai_addr, info->ai_addrlen));
+			value.m_sockaddr.copy_contents(
+						arg::SourceData(
+							var::Data(
+								arg::DestinationBuffer(info->ai_addr),
+								arg::Size(info->ai_addrlen)
+								)
+							)
+						);
 		}
 
 		if( info->ai_canonname ){
@@ -176,7 +187,10 @@ var::String SocketAddress::address_to_string() const {
 }
 
 int SocketAddressIpv4::set_address(const var::ConstString & addr){
-	Tokenizer tokens(addr, ".");
+	Tokenizer tokens(
+				arg::TokenEncodedString(addr),
+				arg::TokenDelimeters(".")
+				);
 	if( tokens.count() != 4 ){
 		return -1;
 	}
@@ -294,7 +308,7 @@ int Socket::bind_and_listen(const SocketAddress & addr, int backlog) const {
 Socket Socket::accept(SocketAddress & address) const{
 	Socket result;
 	socklen_t len = sizeof(struct sockaddr_in6);
-	address.m_sockaddr.alloc(len);
+	address.m_sockaddr.allocate(arg::Size(len));
 	result.m_socket = decode_socket_return(
 				::accept(m_socket,
 							address.m_sockaddr.to<struct sockaddr>(),

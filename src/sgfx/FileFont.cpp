@@ -9,7 +9,7 @@ FileFont::FileFont() {
 	m_kerning_pairs = 0;
 }
 
-FileFont::FileFont(const var::ConstString & name, int offset) {
+FileFont::FileFont(const arg::SourceFilePath & name, const arg::Location & offset) {
 	m_kerning_pairs = 0;
 	set_file(name, offset);
 }
@@ -20,7 +20,7 @@ FileFont::~FileFont(){
 	}
 }
 
-int FileFont::set_file(const var::ConstString & name, int offset){
+int FileFont::set_file(const arg::SourceFilePath & name, const arg::Location & offset){
 	u32 pair_size;
 
 	if( m_kerning_pairs ){
@@ -30,15 +30,17 @@ int FileFont::set_file(const var::ConstString & name, int offset){
 	//close if not already closed
 	m_file.close();
 
-	if( m_file.open(name, fs::OpenFlags::read_only()) < 0 ){
+	if( m_file.open(
+			 arg::FilePath(name.argument()),
+			 fs::OpenFlags::read_only()) < 0 ){
 		set_error_number(m_file.error_number());
 		return -1;
 	}
 
 	if( m_file.read(
-			 fs::Location(offset),
-			 fs::DestinationBuffer(&m_header),
-			 fs::Size(sizeof(m_header))
+			 offset,
+			 arg::DestinationBuffer(&m_header),
+			 arg::Size(sizeof(m_header))
 			 ) != sizeof(m_header) ){
 		set_error_number(m_file.error_number());
 		return -1;
@@ -52,7 +54,7 @@ int FileFont::set_file(const var::ConstString & name, int offset){
 		return -1;
 	}
 
-	m_offset = offset;
+	m_offset = offset.argument();
 	m_current_canvas = 255;
 	m_canvas_start = m_header.size;
 	m_canvas_size = m_canvas.calculate_size();
@@ -62,9 +64,9 @@ int FileFont::set_file(const var::ConstString & name, int offset){
 
 	if( m_kerning_pairs ){
 		m_file.read(
-					fs::Location(m_offset + sizeof(sg_font_header_t)),
-					fs::DestinationBuffer(m_kerning_pairs),
-					fs::Size(pair_size)
+					arg::Location(m_offset + sizeof(sg_font_header_t)),
+					arg::DestinationBuffer(m_kerning_pairs),
+					arg::Size(pair_size)
 					);
 	}
 
@@ -93,9 +95,9 @@ int FileFont::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 
 	offset = m_offset + sizeof(sg_font_header_t) + sizeof(sg_font_kerning_pair_t)*m_header.kerning_pair_count + ind*sizeof(sg_font_char_t);
 	if( (ret = m_file.read(
-			  fs::Location(offset),
-			  fs::DestinationBuffer(&ch),
-			  fs::Size(sizeof(ch))
+			  arg::Location(offset),
+			  arg::DestinationBuffer(&ch),
+			  arg::Size(sizeof(ch))
 			  ) ) != sizeof(ch) ){
 		return -1;
 	}
@@ -125,9 +127,9 @@ void FileFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, con
 
 		//need to read the character row by row
 		if( m_file.read(
-				 fs::Location(m_offset + canvas_offset),
-				 fs::DestinationBuffer(m_canvas.to_void()),
-				 fs::Size(m_canvas_size)
+				 arg::Location(m_offset + canvas_offset),
+				 arg::DestinationBuffer(m_canvas.to_void()),
+				 arg::Size(m_canvas_size)
 				 ) != (int)m_canvas_size ){
 			return;
 		}

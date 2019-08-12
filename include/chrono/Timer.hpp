@@ -133,9 +133,6 @@ public:
 	  * been stopped to get the time elapsed between start() and stop()
 	  */
 	u32 milliseconds() const { return calc_value().milliseconds(); }
-	//deprecated
-	u32 msec() const { return calc_msec(); }
-	u32 calc_msec() const { return calc_value().msec(); }
 
 	/*! \details Calculates the timer value in microseconds.
 	  *
@@ -145,10 +142,6 @@ public:
 	  * @return The number of microseconds that have elapsed since start.
 	  */
 	u32 microseconds() const { return calc_value().microseconds(); }
-
-	//deprecated
-	u32 usec() const { return microseconds(); }
-	u32 calc_usec() const { return microseconds(); }
 
 
 	/*! \details Calculates the timer value in seconds.
@@ -162,10 +155,6 @@ public:
 
 	/*! \details Returns the value of the timer as a ClockTime object. */
 	ClockTime clock_time() const;
-
-	//deprecated
-	u32 calc_sec() const { return seconds(); }
-	u32 sec() const { return seconds(); }
 
 	/*! \details Stops the timer from counting.
 	  *

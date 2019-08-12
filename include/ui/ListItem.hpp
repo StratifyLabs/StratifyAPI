@@ -141,11 +141,11 @@ public:
 	typedef void (*list_dir_callback_t)(DirList * list);
 
 	/*! \details Contruct a new list */
-	DirList(const fs::SourceDirectoryPath & path, LinkedElement * parent = 0, LinkedElement * child = 0);
+	DirList(const arg::SourceDirectoryPath & path, LinkedElement * parent = 0, LinkedElement * child = 0);
 	~DirList();
 
 	/*! \details Set the path for the directory */
-	void set_path(const fs::SourceDirectoryPath & path);
+	void set_path(const arg::SourceDirectoryPath & path);
 	/*! \details Access the path */
 	const var::String & path() const { return m_path; }
 

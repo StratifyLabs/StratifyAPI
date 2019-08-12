@@ -6,12 +6,14 @@
 using namespace fmt;
 using namespace sys;
 
-Wav::Wav(const var::ConstString & name) {
+Wav::Wav(const arg::SourceFilePath & name) {
 	// TODO Auto-generated constructor stub
-	if( !name.is_empty() && open(name, fs::OpenFlags::read_only()) >= 0 ){
+	if( !name.argument().is_empty() && open(
+			 arg::FilePath(name.argument()),
+			 fs::OpenFlags::read_only()) >= 0 ){
 		if( read(
-				 fs::DestinationBuffer(&m_header),
-				 fs::Size(sizeof(m_header))
+				 arg::DestinationBuffer(&m_header),
+				 arg::Size(sizeof(m_header))
 				 ) < 0 ){
 			close();
 		} else {
@@ -22,12 +24,12 @@ Wav::Wav(const var::ConstString & name) {
 }
 
 
-int Wav::create(const var::ConstString & path){
+int Wav::create(const arg::DestinationFilePath & path){
 	int result = File::create(path);
 	if( result < 0 ){ return result; }
 	return write(
-				fs::SourceBuffer(&m_header),
-				fs::Size(sizeof(m_header))
+				arg::SourceBuffer(&m_header),
+				arg::Size(sizeof(m_header))
 				);
 }
 

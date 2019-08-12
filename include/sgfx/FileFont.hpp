@@ -17,10 +17,10 @@ namespace sgfx {
 class FileFont : public Font {
 public:
 	FileFont();
-	FileFont(const var::ConstString & name, int offset = 0);
+	FileFont(const arg::SourceFilePath & name, const arg::Location & offset = arg::Location(0));
 	~FileFont();
 
-	int set_file(const var::ConstString & name, int offset = 0);
+	int set_file(const arg::SourceFilePath & name, const arg::Location & offset = arg::Location(0));
 
 	sg_size_t get_height() const;
 	sg_size_t get_width() const;

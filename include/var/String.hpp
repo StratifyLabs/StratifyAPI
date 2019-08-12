@@ -36,7 +36,7 @@ namespace var {
  * String s1;
  * String s2;
  * s1 = "This is my string";
- * printf("%s", s1.str());
+ * printf("%s", s1.cstring());
  *  //Strings can be compared
  * s2 = "This is another string";
  * if( s1 == s2 ){
@@ -105,9 +105,10 @@ public:
 	String(const ConstString & s);
 
 	/*! \details Declares a string and initialize to \a s. */
-	String(const ConstString & s, u32 len);
+	String(const ConstString & s, const arg::Length length);
 
-	explicit String(const Data & data){ assign(data.to_char(), data.size()); }
+	explicit String(const Data & data){
+		assign(data.to_char(), arg::Length(data.size())); }
 
 
 	/*! \details Assigns a to this string.
@@ -209,7 +210,11 @@ public:
 	~String(){}
 
 	//these are both implemented in Data and ConstString -- need to be disambiguated
-	char at(u32 pos) const { return ConstString::at(pos); }
+	char at(
+			const arg::ImplicitPosition position
+			) const {
+		return ConstString::at(position);
+	}
 
 	/*! \details Sets the number of bytes allocated for the string.
 	  *
@@ -225,9 +230,7 @@ public:
 	 * the length of the string.
 	  *
 	  */
-	int set_size(u32 s);
-	int set_capacity(u32 s){ return set_size(s); }
-
+	int set_size(const arg::ImplicitSize size);
 
 	/*! \details Gets a sub string of the string.
 	  *
@@ -236,7 +239,10 @@ public:
 	  * @return A new string object containing the sub string specified
 	  *
 	  */
-	String substr(u32 pos = 0, u32 len = npos) const;
+	String substr(
+			const arg::Position position = arg::Position(0),
+			const arg::Length length = arg::Length(npos)
+			) const;
 
 	/*! \details Inserts \a s (zero terminated) into string at \a pos.
 	  *
@@ -246,7 +252,10 @@ public:
 	  * If \a pos is greater than length(), error_number() is set to EINVAL.
 	  *
 	  */
-	String& insert(u32 pos, const ConstString & s);
+	String& insert(
+			const arg::Position position,
+			const arg::StringToInsert string_to_insert
+			);
 
 	/*! \details Erases a portion of the string starting with the character at \a pos.
 	  *
@@ -255,8 +264,16 @@ public:
 	  * @return A reference to this string.
 	  *
 	  */
-	String& erase(u32 pos, u32 len = npos);
-	String& erase(const ConstString & s, u32 pos = 0, u32 occurences = npos);
+	String& erase(
+			const arg::Position position,
+			const arg::Length length = arg::Length(npos)
+			);
+
+	String& erase(
+			const arg::StringToErase string_to_erase,
+			const arg::Position position = arg::Position(0),
+			const arg::Length length = arg::Length(npos)
+			);
 
 	/*! \details Replaces one or more instances of a string with another string
 	 *
@@ -265,7 +282,12 @@ public:
 	 * @return A reference to this string
 	 *
 	 */
-	String& replace(const ConstString & old_string, const ConstString & new_string, u32 start_pos = 0, u32 count = 0);
+	String& replace(
+			const arg::StringToErase old_string,
+			const arg::StringToInsert new_string,
+			const arg::Position position = arg::Position(0),
+			const arg::Length length = arg::Length(0)
+			);
 
 
 
@@ -300,8 +322,6 @@ public:
 	//deprecated
 	int sprintf(const char * format, ...);
 
-
-
 	/*! \details Returns the capacity of the string.
 	  *
 	  * The capacity is the current number of bytes allocated
@@ -313,14 +333,26 @@ public:
 	u32 capacity() const;
 
 	/*! \details Assigns a substring of \a a to this String. */
-	int assign(const ConstString & a, u32 subpos, u32 sublen){ return assign(a.str() + subpos, sublen); }
+	int assign(
+			const ConstString & a,
+			const arg::Position position,
+			const arg::Length length
+			){ return assign(
+					a.cstring() + position.argument(), length
+					);
+			 }
 	/*! \details Assigns a maximum of \a n characters of \a a to this String. */
-	int assign(const ConstString & a, u32 n);
+	int assign(
+			const ConstString & a,
+			const arg::Length length
+			);
+
 	/*! \details Assigns \a a to this String.  */
 	int assign(const ConstString & a);
 
 	/*! \details Appends \a a to this String.  */
 	int append(const ConstString & a);
+
 	/*! \details Appends \a c to this String.  */
 	int append(char c);
 

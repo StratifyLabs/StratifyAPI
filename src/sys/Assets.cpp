@@ -40,13 +40,18 @@ int Assets::initialize(){
 void Assets::find_fonts_in_directory(const var::ConstString & path){
 	var::Vector<var::String> file_list;
 	file_list = fs::Dir::read_list(
-				fs::SourceDirectoryPath(path)
+				arg::SourceDirectoryPath(path)
 				);
 	for(u32 i=0; i < file_list.count(); i++){
-		if( fs::File::suffix(file_list.at(i)) == "sbf" ){
+		if( fs::File::suffix(
+				 arg::FilePath(file_list.at(i))
+				 ) == "sbf" ){
 			var::String font_path = path;
 			font_path << "/" << file_list.at(i);
-			FontInfo info(font_path);
+			FontInfo info = FontInfo(
+						arg::SourceFilePath(font_path)
+						);
+
 			m_font_info_list.push_back(info);
 		}
 	}
@@ -55,14 +60,18 @@ void Assets::find_fonts_in_directory(const var::ConstString & path){
 void Assets::find_icons_in_directory(const var::ConstString & path){
 	var::Vector<var::String> file_list;
 	file_list = fs::Dir::read_list(
-				fs::SourceDirectoryPath(path)
+				arg::SourceDirectoryPath(path)
 				);
 	for(u32 i=0; i < file_list.count(); i++){
-		if( fs::File::suffix(file_list.at(i)) == "svic" ){
+		if( fs::File::suffix(
+				 arg::FilePath(file_list.at(i))
+				 ) == "svic" ){
 			//format is name-weight-size.sbf
 			var::String icon_path = path;
 			icon_path << "/" << file_list.at(i);
-			fmt::Svic svic(icon_path);
+			fmt::Svic svic = fmt::Svic(
+						arg::SourceFilePath(icon_path)
+						);
 			svic.set_keep_open(); //keep it open because the object is copied to the vector
 			m_vector_path_list.push_back(svic);
 		}
@@ -81,7 +90,11 @@ sgfx::VectorPath Assets::find_vector_path(const var::ConstString & name){
 	return sgfx::VectorPath();
 }
 
-const sgfx::FontInfo * Assets::find_font(u8 point_size, u8 style, const var::ConstString & name, bool is_exact_match){
+const sgfx::FontInfo * Assets::find_font(
+		const arg::FontPointSize point_size,
+		const arg::FontStyle style,
+		const arg::FontName name,
+		const arg::IsExactMatch is_exact_match){
 	initialize();
 
 	u8 closest_point_size = 0;
@@ -90,22 +103,24 @@ const sgfx::FontInfo * Assets::find_font(u8 point_size, u8 style, const var::Con
 	//find point size and weight
 	for(u32 i=0; i < font_info_list().count(); i++){
 		sgfx::FontInfo & info(m_font_info_list.at(i));
-		if( ((style == FontInfo::ICONS) && (info.style() == FontInfo::ICONS)) ||
-			 ((style != FontInfo::ICONS) && (info.style() != FontInfo::ICONS)) ){
+		if( ((style.argument() == FontInfo::ICONS) && (info.style() == FontInfo::ICONS)) ||
+			 ((style.argument() != FontInfo::ICONS) && (info.style() != FontInfo::ICONS)) ){
 
-			if( info.point_size() <= point_size ){
+			if( info.point_size() <= point_size.argument() ){
 				closest_point_size = info.point_size();
-				if( info.style() <= style ){
+				if( info.style() <= style.argument() ){
 					closest_style = info.style();
 				}
 			}
 
-			if( (info.style() == style) &&
-				 (info.point_size() == point_size) &&
-				 (info.name() == name || name.is_empty()) ){
+			if( (info.style() == style.argument()) &&
+				 (info.point_size() == point_size.argument()) &&
+				 (info.name() == name.argument() || name.argument().is_empty()) ){
 				//exact match
 				if( info.font() == 0 ){
-					info.set_font(new FileFont(info.path()));
+					info.set_font(new FileFont(
+										  arg::SourceFilePath(info.path())
+										  ));
 				}
 				return &info;
 			}
@@ -113,7 +128,7 @@ const sgfx::FontInfo * Assets::find_font(u8 point_size, u8 style, const var::Con
 	}
 
 	//could not find an exact match
-	if( is_exact_match ){
+	if( is_exact_match.argument() ){
 		return 0;
 	}
 
@@ -121,11 +136,13 @@ const sgfx::FontInfo * Assets::find_font(u8 point_size, u8 style, const var::Con
 	//first pass is to find the exact style in a point size that is less than or equal
 	for(u32 i=0; i < font_info_list().count(); i++){
 		sgfx::FontInfo & info(m_font_info_list.at(i));
-		if( ((style == FontInfo::ICONS) && (info.style() == FontInfo::ICONS)) ||
-			 ((style != FontInfo::ICONS) && (info.style() != FontInfo::ICONS)) ){
+		if( ((style.argument() == FontInfo::ICONS) && (info.style() == FontInfo::ICONS)) ||
+			 ((style.argument() != FontInfo::ICONS) && (info.style() != FontInfo::ICONS)) ){
 			if( (info.point_size() == closest_point_size) && (info.style() == closest_style) ){
 				if( info.font() == 0 ){
-					info.set_font(new FileFont(info.path()));
+					info.set_font(new FileFont(
+										  arg::SourceFilePath(info.path())
+										  ));
 				}
 				return &info;
 			}

@@ -51,7 +51,7 @@ public:
 	 */
 	void set_name(const var::ConstString & name){
 		m_terminal.name[LINK_NAME_MAX-1]=0; //guarantee zero termination
-		strncpy(m_terminal.name, name.str(), LINK_NAME_MAX-1);
+		strncpy(m_terminal.name, name.cstring(), LINK_NAME_MAX-1);
 	}
 
 	/*!
@@ -263,7 +263,10 @@ public:
 	 * \endcode
 	 *
 	 */
-	int open(const var::ConstString & name = "/dev/switchboard0", const fs::OpenFlags & flags = fs::OpenFlags::read_write());
+	int open(
+			const arg::SourceFilePath & name = arg::SourceFilePath("/dev/switchboard0"),
+			const fs::OpenFlags & flags = fs::OpenFlags::read_write()
+			);
 
 	/*! \details Gets the connection specified by id. */
 	SwitchboardConnection get_connection(u16 id) const;

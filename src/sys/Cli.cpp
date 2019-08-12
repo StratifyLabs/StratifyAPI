@@ -19,11 +19,17 @@ Cli::Cli(int argc, char * argv[], const var::ConstString & app_git_hash) : m_app
 
 	if( argc > 0 ){
 		m_path = argv[0];
-		m_name = fs::File::name(argv[0]);
+		m_name = fs::File::name(
+					arg::FilePath(argv[0])
+				);
 #if defined __link
-		version = Appfs::get_version(m_path.str(), 0);
+		version = Appfs::get_version(
+					arg::SourceFilePath(m_path.cstring()),
+					0);
 #else
-		version = Appfs::get_version(m_path.str());
+		version = Appfs::get_version(
+					arg::SourceFilePath(m_path.cstring())
+					);
 #endif
 
 		m_version.format("%d.%d", version >> 8, version & 0xff);
@@ -33,13 +39,13 @@ Cli::Cli(int argc, char * argv[], const var::ConstString & app_git_hash) : m_app
 void Cli::handle_version() const {
 #if !defined __link
 	if( is_option("--version") || is_option("-v") ){
-		printf("%s version: %s by %s\n", m_name.str(), m_version.str(), m_publisher.str());
+		printf("%s version: %s by %s\n", m_name.cstring(), m_version.cstring(), m_publisher.cstring());
 		exit(0);
 	}
 
 	if( is_option("--version-details") ){
 		String details = get_version_details();
-		printf("%s\n", details.str());
+		printf("%s\n", details.cstring());
 		exit(0);
 	}
 #endif
@@ -49,9 +55,9 @@ var::String Cli::get_version_details() const {
 	String result;
 
 	if( m_app_git_hash == 0 ){
-		result.sprintf("%s (api:%s)", m_version.str(), api::ApiInfo::git_hash());
+		result.sprintf("%s (api:%s)", m_version.cstring(), api::ApiInfo::git_hash());
 	} else {
-		result.sprintf("%s (app:%s, api:%s)", m_version.str(), m_app_git_hash.cstring(), api::ApiInfo::git_hash());
+		result.sprintf("%s (app:%s, api:%s)", m_version.cstring(), m_app_git_hash.cstring(), api::ApiInfo::git_hash());
 	}
 
 	return result;
@@ -90,13 +96,16 @@ bool Cli::is_option_equivalent_to_argument(
 	return compare_with_prefix(option_string, argument_string);
 }
 
-bool Cli::compare_with_prefix(const var::ConstString & option, const var::ConstString & argument) const {
+bool Cli::compare_with_prefix(
+		const var::ConstString & option,
+		const var::ConstString & argument
+		) const {
 	String with_prefix;
 	if( argument.at(0) != '-' ){ return false; }
 	if( option == argument ){ return true; }
 	with_prefix << "--" << option;
 	if( with_prefix == argument ){ return true; }
-	if( with_prefix.substr(1) == argument ){ return true; }
+	if( with_prefix.substr(arg::Position(1)) == argument ){ return true; }
 	return false;
 }
 
@@ -110,7 +119,12 @@ bool Cli::is_option_equivalent_to_argument_with_equality(
 		return false;
 	}
 
-	Tokenizer tokens(argument, "=", "", false, 1);
+	Tokenizer tokens(
+				arg::TokenEncodedString(argument),
+				arg::TokenDelimeters("="),
+				arg::IgnoreTokensBetween(""),
+				arg::IsCountEmptyTokens(false),
+				arg::MaximumTokenCount(1));
 	if( tokens.count() == 2 ){
 		String a = option;
 		String b = tokens.at(0);
@@ -162,7 +176,7 @@ var::String Cli::get_option(const var::ConstString & name, const var::ConstStrin
 String Cli::get_option_argument(const char * option) const {
 	u16 args;
 	for(args = 0; args < m_argc; args++){
-		if( is_option_equivalent_to_argument(option, at(args).str()) ){
+		if( is_option_equivalent_to_argument(option, at(args).cstring()) ){
 			return at(args+1);
 		}
 	}
@@ -181,7 +195,7 @@ bool Cli::is_option(const var::ConstString & value) const {
 
 int Cli::get_option_value(const char * option) const {
 	String arg = get_option_argument(option);
-	if( arg.empty() ){
+	if( arg.is_empty() ){
 		return 0;
 	}
 	return arg.atoi();
@@ -190,11 +204,11 @@ int Cli::get_option_value(const char * option) const {
 int Cli::get_option_hex_value(const char * option) const {
 	int value;
 	String arg = get_option_argument(option);
-	if( arg.empty() ){
+	if( arg.is_empty() ){
 		return 0;
 	}
 	value = 0;
-	sscanf(arg.c_str(), "0x%X", &value);
+	sscanf(arg.cstring(), "0x%X", &value);
 	return value;
 }
 
@@ -203,7 +217,9 @@ mcu_pin_t Cli::get_option_pin(const char * option) const {
 	mcu_pin_t pio;
 	Tokenizer arg;
 	arg.assign(get_option_argument(option));
-	arg.parse(".");
+	arg.parse(
+				arg::TokenDelimeters(".")
+				);
 
 	if( arg.size() == 2 ){
 		pio.port = arg.at(0).atoi();
@@ -220,8 +236,10 @@ mcu_pin_t Cli::pin_at(u16 value) const {
 	mcu_pin_t pio;
 	Tokenizer arg;
 
-	arg.assign( at(value).c_str() );
-	arg.parse(".");
+	arg.assign( at(value) );
+	arg.parse(
+				arg::TokenDelimeters(".")
+				);
 
 	if( arg.size() == 2 ){
 		pio.port = arg.at(0).atoi();

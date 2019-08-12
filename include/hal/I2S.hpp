@@ -221,14 +221,18 @@ public:
 		}
 		return set_attr(o_flags, freq, slot, mck_mult, pin_assignment);
 	}
-	int set_action(u8 channel, 	mcu_callback_t callback,
+	int set_action(u8 channel,
+						mcu_callback_t callback,
 						void * context = NULL,s8 prio = 3){
-		mcu_action_t action ;
+		mcu_action_t action;
 		action.channel = channel;
 		action.prio = prio;
 		action.handler.callback = callback;
 		action.handler.context = context;
-		return ioctl(I_MCU_SETACTION, &action);
+		return ioctl(
+					arg::IoRequest(I_MCU_SETACTION),
+					arg::IoArgument(&action)
+					);
 	}
 
 

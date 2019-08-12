@@ -71,10 +71,23 @@ public:
 	 * @param offset The file/device offset location
 	 *
 	 */
-	Aio(volatile void * buf, int nbytes, int offset = 0){
-		m_aio_var.aio_buf = buf;
-		m_aio_var.aio_nbytes = nbytes;
-		m_aio_var.aio_offset = offset;
+	Aio(
+			const arg::SourceBuffer & buf,
+			const arg::Size & nbytes,
+			const arg::Location & offset = arg::Location(0)){
+		m_aio_var.aio_buf = (volatile void*)buf.argument();
+		m_aio_var.aio_nbytes = nbytes.argument();
+		m_aio_var.aio_offset = offset.argument();
+		m_aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
+	}
+
+	Aio(
+			const arg::DestinationBuffer & buf,
+			const arg::Size & nbytes,
+			const arg::Location & offset = arg::Location(0)){
+		m_aio_var.aio_buf = (volatile void*)buf.argument();
+		m_aio_var.aio_nbytes = nbytes.argument();
+		m_aio_var.aio_offset = offset.argument();
 		m_aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
 	}
 
@@ -109,7 +122,7 @@ public:
 	}
 
 	/*! \details Returns the buffer pointer. */
-	volatile void * buf() const { return m_aio_var.aio_buf; }
+	volatile void * biffer() const { return m_aio_var.aio_buf; }
 
 	/*! \details Sets the buffer pointer.
 	 *
@@ -117,9 +130,18 @@ public:
 	 * @param nbytes The number of bytes to transfer
 	 *
 	 */
-	void set_buf(volatile void * buf, int nbytes){
-		m_aio_var.aio_buf = buf;
-		m_aio_var.aio_nbytes = nbytes;
+	void set_buffer(
+			const arg::DestinationBuffer & buf,
+			const arg::Size & nbytes){
+		m_aio_var.aio_buf = (volatile void*)buf.argument();
+		m_aio_var.aio_nbytes = nbytes.argument();
+	}
+
+	void set_buffer(
+			const arg::SourceBuffer & buf,
+			const arg::Size & nbytes){
+		m_aio_var.aio_buf = (volatile void*)buf.argument();
+		m_aio_var.aio_nbytes = nbytes.argument();
 	}
 
 	/*! \details Sets the buffer using a var::Data object.
@@ -131,11 +153,32 @@ public:
 	  * does, it will need to set the buffer again.
 	  *
 	  */
-	Aio & set_buf(var::Data & data){
-		set_buf(data.data(), data.size());
+	Aio & set_buffer(var::Data & data){
+		set_buffer(
+					arg::DestinationBuffer(data.to_void()),
+					arg::Size(data.size())
+					);
 		return *this;
 	}
 
+	Aio & set_buffer(const var::Data & data){
+		set_buffer(
+					arg::SourceBuffer(data.to_void()),
+					arg::Size(data.size())
+					);
+		return *this;
+	}
+
+	Aio & operator << (var::Data & data){
+		set_buffer(data);
+		return *this;
+	}
+
+
+	Aio & operator << (const var::Data & data){
+		set_buffer(data);
+		return *this;
+	}
 	/*! \details Returns the number of bytes to transfer. */
 	int nbytes() const { return m_aio_var.aio_nbytes; }
 
@@ -167,7 +210,10 @@ public:
 	 * @param value The signal value (passed as an argument to the handler if using siginfo)
 	 * @return Zero on success
 	 */
-	Aio & set_signal(int number, int value){
+	Aio & set_signal(
+			int number,
+			int value
+			){
 		if( number >= 0 ){
 			m_aio_var.aio_sigevent.sigev_notify = SIGEV_SIGNAL;
 			m_aio_var.aio_sigevent.sigev_signo = number;

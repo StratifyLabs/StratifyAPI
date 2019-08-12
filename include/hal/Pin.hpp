@@ -49,7 +49,10 @@ class Pin : public Pio {
 public:
 
 	static mcu_pin_t from_string(const var::ConstString & port_pin){
-		var::Tokenizer tokens(port_pin, ".");
+		var::Tokenizer tokens(
+					arg::TokenEncodedString(port_pin),
+					arg::TokenDelimeters(".")
+					);
 		mcu_pin_t result;
 		result.port = 0xff;
 		result.pin = 0xff;

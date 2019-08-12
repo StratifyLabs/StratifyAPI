@@ -14,18 +14,27 @@ Sha256::~Sha256(){
 	finalize();
 }
 
-Sha256 & Sha256::operator << ( const var::Data & a){
-	update(a.to_char(), a.size());
+Sha256 & Sha256::operator << (const var::Data & a){
+	update(
+				arg::SourceBuffer(a.to_char()),
+				arg::Size(a.size())
+				);
 	return *this;
 }
 
 Sha256 & Sha256::operator << (const var::ConstString & a){
-	update(a.cstring(), a.length());
+	update(
+				arg::SourceBuffer(a.cstring()),
+				arg::Size(a.length())
+				);
 	return *this;
 }
 
-Sha256 & Sha256::operator << ( const var::String & a){
-	update(a.cstring(), a.length());
+Sha256 & Sha256::operator << (const var::String & a){
+	update(
+				arg::SourceBuffer(a.cstring()),
+				arg::Size(a.length())
+				);
 	return *this;
 }
 
@@ -60,7 +69,9 @@ int Sha256::start(){
 	return set_error_number_if_error(sha256_api()->start(m_context));
 }
 
-int Sha256::update(const char * input, u32 len){
+int Sha256::update(const arg::SourceBuffer input,
+		const arg::Size size
+		){
 	if( is_initialized() == false ){
 		initialize();
 	}
@@ -69,7 +80,7 @@ int Sha256::update(const char * input, u32 len){
 		start();
 	}
 
-	return set_error_number_if_error(sha256_api()->update(m_context, (const unsigned char*)input, len));
+	return set_error_number_if_error(sha256_api()->update(m_context, (const unsigned char*)input.argument(), size.argument()));
 }
 
 int Sha256::finish(){

@@ -94,20 +94,20 @@ public:
 #if !defined __link
 	Trace& operator=(const var::ConstString & a){ var::String::operator=(a); return *this; }
 	/*! \details Sends trace as a message. */
-	inline void trace_message() MCU_ALWAYS_INLINE { sos_trace_event(LINK_POSIX_TRACE_MESSAGE, c_str(), size()); }
+	inline void trace_message() MCU_ALWAYS_INLINE { sos_trace_event(LINK_POSIX_TRACE_MESSAGE, cstring(), size()); }
 	/*! \details Sends trace as a warning. */
-	inline void trace_warning() MCU_ALWAYS_INLINE { sos_trace_event(LINK_POSIX_TRACE_WARNING, c_str(), size()); }
+	inline void trace_warning() MCU_ALWAYS_INLINE { sos_trace_event(LINK_POSIX_TRACE_WARNING, cstring(), size()); }
 	/*! \details Sends trace as an error. */
-	inline void trace_error() MCU_ALWAYS_INLINE { sos_trace_event(LINK_POSIX_TRACE_ERROR, c_str(), size()); }
+	inline void trace_error() MCU_ALWAYS_INLINE { sos_trace_event(LINK_POSIX_TRACE_ERROR, cstring(), size()); }
 	/*! \details Sends trace as a critical message. */
-	inline void trace_critical() MCU_ALWAYS_INLINE { sos_trace_event(LINK_POSIX_TRACE_CRITICAL, c_str(), size()); }
+	inline void trace_critical() MCU_ALWAYS_INLINE { sos_trace_event(LINK_POSIX_TRACE_CRITICAL, cstring(), size()); }
 	/*! \details Sends trace as a fatal message.
 	 *
 	 * Trace fatal will not cause the program to exit but for good practice, you must
 	 * invoke exit() immediately after a trace_fatal() call.
 	 *
 	 */
-	inline void trace_fatal() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_FATAL, c_str(), size()); }
+	inline void trace_fatal() MCU_ALWAYS_INLINE { sos_trace_event(POSIX_TRACE_FATAL, cstring(), size()); }
 #else
 	Trace& operator=(const char * a){ a = 0; return *this; }
 	char * cdata(){ return m_cdata; }

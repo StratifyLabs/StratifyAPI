@@ -8,9 +8,10 @@
 using namespace calc;
 
 int Base64::encode(
-		const fs::SourceFile & input,
-		const fs::DestinationFile & output,
-		u32 size){
+		const arg::SourceFile source,
+		const arg::DestinationFile destination,
+		const arg::Size size
+		){
 	u32 chunk_size = 96;
 	const u32 output_buffer_size = calc_encoded_size(chunk_size);
 	char input_buffer[chunk_size];
@@ -18,29 +19,30 @@ int Base64::encode(
 	u32 size_processed = 0;
 	int result;
 	do {
-		if( size - size_processed < chunk_size ){ chunk_size = size - size_processed; }
-		result = input.argument().read(
-					fs::DestinationBuffer(input_buffer),
-					fs::Size(chunk_size)
+		if( size.argument() - size_processed < chunk_size ){
+			chunk_size = size.argument() - size_processed;
+		}
+		result = source.argument().read(
+					arg::DestinationBuffer(input_buffer),
+					arg::Size(chunk_size)
 					);
 		if( result > 0 ){
 			size_processed += result;
 			int len = encode(output_buffer, input_buffer, result);
-			if( output.argument().write(
-					 fs::SourceBuffer(output_buffer),
-					 fs::Size(len)
+			if( destination.argument().write(
+					 arg::SourceBuffer(output_buffer),
+					 arg::Size(len)
 					 ) != len ){
 				result = 0;
 			}
 		}
-	} while( (result > 0) && (size > size_processed) );
+	} while( (result > 0) && (size.argument() > size_processed) );
 	return size_processed;
 }
 
-int Base64::decode(
-		const fs::SourceFile & input,
-		fs::DestinationFile & output,
-		u32 size){
+int Base64::decode(const arg::SourceFile input,
+		const arg::DestinationFile output,
+		const arg::Size size){
 	u32 chunk_size = 96;
 	const u32 output_buffer_size = calc_decoded_size(chunk_size);
 	char input_buffer[chunk_size];
@@ -49,46 +51,60 @@ int Base64::decode(
 	int result;
 
 	do {
-		if( size - size_processed < chunk_size ){ chunk_size = size - size_processed; }
+		if( size.argument() - size_processed < chunk_size ){
+			chunk_size = size.argument() - size_processed;
+		}
 		result = input.argument().read(
-					fs::DestinationBuffer(input_buffer),
-					fs::Size(chunk_size)
+					arg::DestinationBuffer(input_buffer),
+					arg::Size(chunk_size)
 					);
 		if( result > 0 ){
 			size_processed += result;
 			int len = calc_decoded_size(result);
 			decode(output_buffer, input_buffer, result);
 			if( output.argument().write(
-					 fs::SourceBuffer(output_buffer),
-					 fs::Size(len)
+					 arg::SourceBuffer(output_buffer),
+					 arg::Size(len)
 					 ) != len ){
 				result = 0;
 			}
 
 		}
-	} while( (result > 0) && (size > size_processed) );
+	} while( (result > 0) && (size.argument() > size_processed) );
 
 	return size_processed;
 }
 
-var::String Base64::encode(const var::Data & input){
+var::String Base64::encode(const arg::ImplicitSourceData input
+		){
 	var::String result;
 
-	if( result.set_capacity( calc_encoded_size(input.size()) ) < 0 ){
+	if( result.set_capacity( calc_encoded_size(input.argument().size()) ) < 0 ){
 		return var::String();
 	}
 
-	encode(result.to<char>(), input.to_void(), input.size());
+	encode(
+				result.to<char>(),
+				input.argument().to_void(),
+				input.argument().size());
 	return result;
 }
 
-var::Data Base64::decode(const var::String & input){
+var::Data Base64::decode(
+		const arg::ImplicitBase64EncodedString input
+		){
 	var::Data result;
-	if( result.set_size( calc_decoded_size( input.length() ) ) < 0 ){
+	if( result.set_size(
+			 arg::Size(calc_decoded_size(input.argument().length()))
+			 ) < 0 ){
 		return var::Data();
 	}
 
-	decode(result.to_void(), input.to_char(), input.length());
+	decode(
+				result.to_void(),
+				input.argument().cstring(),
+				input.argument().length()
+				);
 	return result;
 }
 

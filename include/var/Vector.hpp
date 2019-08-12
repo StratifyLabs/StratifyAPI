@@ -21,7 +21,7 @@ public:
 	Vector(){ m_count = 0; }
 
 	/*! \details Constructs a vector with \a count uninitialized items. */
-	Vector(int count){
+	Vector(const arg::Count count){
 		m_count = 0;
 		resize(count);
 	}
@@ -195,15 +195,15 @@ public:
 	  * not affect the count() of the object().
 	  *
 	  */
-	int resize(u32 count){
+	int resize(const arg::Count count){
 		//this needs to destruct each item that will be lost
-		if( count < this->count() ){
+		if( count.argument() < this->count() ){
 			//size reduction if count < this->count()
-			while( count < this->count() ){
+			while( count.argument() < this->count() ){
 				pop_back();
 			}
 		} else {
-			while( count > this->count() ){
+			while( count.argument() > this->count() ){
 				push_back(T());
 			}
 		}
@@ -227,9 +227,11 @@ public:
 	  * @param new_capacity The number of elements to make room for.
 	  *
 	  */
-	void reserve(u32 new_capacity){
-		if( Data::capacity() < new_capacity*sizeof(T) ){
-			Data::resize(new_capacity*sizeof(T));
+	void reserve(const arg::ImplicitSize new_capacity){
+		if( Data::capacity() < new_capacity.argument()*sizeof(T) ){
+			Data::resize(
+						new_capacity.argument()*sizeof(T)
+						);
 		}
 	}
 
@@ -428,7 +430,9 @@ private:
 
 	int add_space(){
 		if( (capacity() == 0) || (count() >= capacity()-1) ){
-			if( Data::resize((m_count + jump_size()) * sizeof(T)) < 0 ){
+			if( Data::resize(
+					 ((m_count + jump_size()) * sizeof(T))
+					 ) < 0 ){
 				return -1;
 			}
 		}

@@ -30,9 +30,5 @@ class SysWorkObject : public virtual WorkObject {
 
 }
 
-namespace sys {
-typedef api::Argument<const pid_t&> Pid;
-typedef api::Argument<const u32&> StackSize;
-}
 
 #endif // SAPI_API_SYS_OBJECT_HPP_

@@ -59,7 +59,7 @@ native_type SignalType::max(u32 & idx) const {
 }
 
 SignalType SignalType::abs() const {
-	SignalType ret(count());
+	SignalType ret = SignalType(arg::Count(count()));
 	arm_dsp_api_function()->abs(
 				(native_type *)data_const(),
 				ret.vector_data(),
@@ -81,7 +81,7 @@ big_type SignalType::dot_product(const SignalType & a) const {
 }
 
 SignalType SignalType::negate() const {
-	SignalType ret(count());
+	SignalType ret = SignalType(arg::Count(count()));
 	arm_dsp_api_function()->negate((native_type*)vector_data_const(), ret.vector_data(), count());
 	return ret;
 }
@@ -92,7 +92,7 @@ void SignalType::negate(SignalType & output) const {
 
 
 SignalType SignalType::convolve(const SignalType & a) const {
-	SignalType ret(count() + a.count() - 1);
+	SignalType ret(arg::Count(count() + a.count() - 1));
 #if IS_FLOAT == 0
 	arm_dsp_api_function()->conv_fast((native_type*)vector_data_const(), count(), (native_type*)a.vector_data_const(), a.count(), ret.vector_data());
 #else
@@ -116,7 +116,7 @@ void SignalType::shift(SignalType & output, s8 value) const {
 }
 
 SignalType SignalType::shift(s8 value) const {
-	SignalType ret(count());
+	SignalType ret = SignalType(arg::Count(count()));
 	arm_dsp_api_function()->shift((native_type*)vector_data_const(), value, ret.vector_data(), count());
 	return ret;
 }
@@ -128,7 +128,7 @@ SignalType & SignalType::shift_assign(s8 value){
 #endif
 
 SignalType SignalType::scale(native_type scale_fraction, s8 shift) const {
-	SignalType ret(count());
+	SignalType ret = SignalType(arg::Count(count()));
 #if IS_FLOAT == 0
 	arm_dsp_api_function()->scale((native_type*)vector_data_const(), scale_fraction, shift, ret.vector_data(), count());
 #else
@@ -148,7 +148,7 @@ void SignalType::scale(SignalType & output, native_type scale_fraction, s8 shift
 
 
 SignalType SignalType::add(native_type offset_value) const {
-	SignalType ret(count());
+	SignalType ret = SignalType(arg::Count(count()));
 	arm_dsp_api_function()->offset((native_type*)vector_data_const(), offset_value, ret.vector_data(), count());
 
 	return ret;
@@ -160,7 +160,7 @@ SignalType & SignalType::add_assign(native_type offset_value){
 }
 
 SignalType SignalType::add(const SignalType & a) const {
-	SignalType ret(count());
+	SignalType ret = SignalType(arg::Count(count()));
 	if( ret.count() != count() ){
 		printf("Failed to alloc for count\n");
 		return ret;
@@ -185,7 +185,7 @@ SignalType & SignalType::multiply_assign(native_type value){
 }
 
 SignalType SignalType::multiply(const SignalType & a) const {
-	SignalType ret(count());
+	SignalType ret = SignalType(arg::Count(count()));
 	arm_dsp_api_function()->mult((native_type*)vector_data_const(), (native_type*)a.vector_data_const(), ret.vector_data(), count());
 
 	return ret;
@@ -198,7 +198,7 @@ SignalType & SignalType::multiply_assign(const SignalType & a){
 
 //subtract
 SignalType SignalType::subtract(const SignalType & a) const{
-	SignalType ret(count());
+	SignalType ret = SignalType(arg::Count(count()));
 	arm_dsp_api_function()->sub((native_type*)vector_data_const(), (native_type*)a.vector_data_const(), ret.vector_data(), count());
 
 	return ret;
@@ -210,7 +210,7 @@ SignalType & SignalType::subtract_assign(const SignalType & a){
 }
 
 SignalType SignalType::filter(const BiquadFilterType & filter) const {
-	SignalType ret(count());
+	SignalType ret = SignalType(arg::Count(count()));
 #if IS_FLOAT == 0
 	arm_dsp_api_function()->biquad_cascade_df1_fast(filter.instance(), (native_type*)vector_data_const(), ret.vector_data(), count());
 #else
@@ -229,7 +229,7 @@ void SignalType::filter(SignalType & output, const BiquadFilterType & filter) co
 }
 
 SignalType SignalType::filter(const FirFilterType & filter) const {
-	SignalType ret(count());
+	SignalType ret = SignalType(arg::Count(count()));
 #if IS_FLOAT == 0
 	arm_dsp_api_function()->fir_fast(filter.instance(), (native_type*)vector_data_const(), ret.vector_data(), count());
 #else
@@ -252,7 +252,7 @@ SignalType SignalType::create_sin_wave(native_type wave_frequency, native_type s
 #else
 SignalType SignalType::create_sin_wave(u32 wave_frequency, u32 sampling_frequency, u32 nsamples, native_type phase){
 #endif
-	SignalType ret(nsamples);
+	SignalType ret = SignalType(arg::Count(nsamples));
 	u32 i;
 #if IS_FLOAT == 1
 	native_type theta = phase; //theta 0 to max is 0 to 2*pi
@@ -296,7 +296,7 @@ void SignalComplexType::transform(SignalComplexType & output, FftRealType & fft,
 SignalComplexType SignalComplexType::transform(FftRealType & fft, bool is_inverse){
 	int samples = count();
 	if( !is_inverse ){ samples *= 2; }
-	SignalComplexType ret(samples);
+	SignalComplexType ret = SignalComplexType(arg::Count(samples));
 #if IS_FLOAT == 0
 	fft.instance()->ifftFlagR = is_inverse;
 	arm_dsp_api_function()->rfft(fft.instance(), (native_type*)vector_data(), (native_type*)ret.vector_data());

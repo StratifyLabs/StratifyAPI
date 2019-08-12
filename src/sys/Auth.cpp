@@ -28,7 +28,8 @@ AuthToken::AuthToken(const var::ConstString & token){
 	for(u32 i=0; i < sizeof(m_auth_token); i++){
 		hex[0] = token.at(i*2);
 		hex[1] = token.at(i*2+1);
-		m_auth_token.data[i] = var::ConstString(hex).to_unsigned_long(16);
+		m_auth_token.data[i] =
+				var::ConstString(hex).to_unsigned_long(arg::NumberBase(16));
 	}
 
 }

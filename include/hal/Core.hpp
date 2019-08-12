@@ -131,12 +131,15 @@ public:
 	 * application.
 	 *
 	 */
-	int set_pin_function(int port, int pin, int func, int func_port){
+	int set_pin_function(
+			const arg::McuPin & pin,
+			enum func func,
+			const arg::Port & port){
 		core_pinfunc_t f;
-		f.io.port = port;
-		f.io.pin = pin;
+		f.io.port = pin.argument().port;
+		f.io.pin = pin.argument().pin;
 		f.periph_func = func;
-		f.periph_port = func_port;
+		f.periph_port = port.argument();
 		return set_pin_function(f);
 	}
 
@@ -147,7 +150,9 @@ public:
 	 * @param config A reference to the destination data
 	 * @return Zero on success
 	 */
-	int get_mcu_board_config(mcu_board_config_t & config);
+	int get_mcu_board_config(
+			mcu_board_config_t & config
+			);
 
 	/*! \details Sets the core CPU clock divider.
 	 *

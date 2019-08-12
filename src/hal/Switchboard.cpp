@@ -6,22 +6,28 @@ using namespace hal;
 Switchboard::Switchboard(){}
 
 
-int Switchboard::open(const var::ConstString & name, const fs::OpenFlags & flags){
+int Switchboard::open(const arg::SourceFilePath & name, const fs::OpenFlags & flags){
 	int ret;
-	ret = File::open(name, flags);
+	ret = File::open(
+				arg::FilePath(name.argument()),
+				flags
+				);
 	if (ret < 0 ){ return ret; }
 
 	switchboard_info_t info;
 	//see if the device responds to
-	return ioctl(I_SWITCHBOARD_GETINFO, &info);
+	return ioctl(
+				arg::IoRequest(I_SWITCHBOARD_GETINFO),
+				arg::IoArgument(&info)
+				);
 }
 
 SwitchboardConnection Switchboard::get_connection(u16 id) const {
 	SwitchboardConnection connection;
 	if( read(
-			 fs::Location(id*sizeof(switchboard_connection_t)),
-			 fs::DestinationBuffer(&connection.m_connection),
-			 fs::Size(sizeof(switchboard_connection_t))
+			 arg::Location(id*sizeof(switchboard_connection_t)),
+			 arg::DestinationBuffer(&connection.m_connection),
+			 arg::Size(sizeof(switchboard_connection_t))
 			 )  < 0 ){
 		connection = SwitchboardConnection();
 	}
@@ -31,9 +37,9 @@ SwitchboardConnection Switchboard::get_connection(u16 id) const {
 int Switchboard::get_connection(SwitchboardConnection & connection) const {
 	if( connection.id() != SwitchboardConnection::invalid_id() ){
 		if( read(
-				 fs::Location(connection.id()*sizeof(switchboard_connection_t)),
-				 fs::DestinationBuffer(&connection.m_connection),
-				 fs::Size(sizeof(switchboard_connection_t))
+				 arg::Location(connection.id()*sizeof(switchboard_connection_t)),
+				 arg::DestinationBuffer(&connection.m_connection),
+				 arg::Size(sizeof(switchboard_connection_t))
 				 )  < 0 ){
 			connection = SwitchboardConnection();
 		}
@@ -42,7 +48,7 @@ int Switchboard::get_connection(SwitchboardConnection & connection) const {
 }
 
 int Switchboard::get_available_connection() const {
-	int ret = seek(fs::Location(0));
+	int ret = seek(arg::Location(0));
 	if( ret < 0 ){
 		return ret;
 	}
@@ -51,8 +57,8 @@ int Switchboard::get_available_connection() const {
 	switchboard_status_t status;
 	do {
 		ret = read(
-					fs::DestinationBuffer(&status),
-					fs::Size(sizeof(status))
+					arg::DestinationBuffer(&status),
+					arg::Size(sizeof(status))
 					);
 		if( ret == sizeof(status) ){
 			if( status.o_flags != 0 ){
@@ -70,7 +76,7 @@ int Switchboard::get_available_connection() const {
 }
 
 int Switchboard::get_active_connection_count() const {
-	int ret = seek(fs::Location(0));
+	int ret = seek(arg::Location(0));
 	if( ret < 0 ){
 		return ret;
 	}
@@ -78,8 +84,8 @@ int Switchboard::get_active_connection_count() const {
 	switchboard_status_t status;
 	do {
 		ret = read(
-					fs::DestinationBuffer(&status),
-					fs::Size(sizeof(status))
+					arg::DestinationBuffer(&status),
+					arg::Size(sizeof(status))
 					);
 		if( ret == sizeof(status) ){
 			if( status.o_flags != 0 ){
@@ -92,7 +98,7 @@ int Switchboard::get_active_connection_count() const {
 }
 
 void Switchboard::print_connections() const {
-	int ret = seek(fs::Location(0));
+	int ret = seek(arg::Location(0));
 	if( ret < 0 ){
 		return;
 	}
@@ -100,8 +106,8 @@ void Switchboard::print_connections() const {
 	switchboard_status_t status;
 	do {
 		ret = read(
-					fs::DestinationBuffer(&status),
-					fs::Size(sizeof(status))
+					arg::DestinationBuffer(&status),
+					arg::Size(sizeof(status))
 					);
 		if( ret == sizeof(status) ){
 			if( status.o_flags != 0 ){
@@ -120,11 +126,17 @@ SwitchboardInfo Switchboard::get_info() const {
 }
 
 int Switchboard::get_info(switchboard_info_t & info) const {
-	return ioctl(I_SWITCHBOARD_GETINFO, &info);
+	return ioctl(
+				arg::IoRequest(I_SWITCHBOARD_GETINFO),
+				arg::IoArgument(&info)
+				);
 }
 
 int Switchboard::set_attr(switchboard_attr_t & attr) const {
-	return ioctl(I_SWITCHBOARD_SETATTR, &attr);
+	return ioctl(
+				arg::IoRequest(I_SWITCHBOARD_SETATTR),
+				arg::IoArgument(&attr)
+				);
 }
 
 int Switchboard::create_persistent_connection(
@@ -195,7 +207,7 @@ int Switchboard::destroy_connection(SwitchboardConnection & connection){
 
 void SwitchboardConnection::print() const {
 	if( id() != invalid_id() ){
-		printf("%s -> %s total:" F32D " size:" F32D "\n", input().name().str(), output().name().str(), input().bytes_transferred(), nbyte());
+		printf("%s -> %s total:" F32D " size:" F32D "\n", input().name().cstring(), output().name().cstring(), input().bytes_transferred(), nbyte());
 	} else {
 		printf("Invalid Connection ID\n");
 	}

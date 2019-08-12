@@ -195,11 +195,15 @@ void Test::initialize(
 	AppfsInfo appfs_info;
 	var::String path;
 	path << "/app/flash/" << name.argument();
-	appfs_info = Appfs::get_info(path);
+	appfs_info = Appfs::get_info(
+				arg::SourceFilePath(path)
+				);
 	if( appfs_info.is_valid() == false ){
 		path.assign("/app/ram/");
 		path << name.argument();
-		appfs_info = Appfs::get_info(path);
+		appfs_info = Appfs::get_info(
+					arg::SourceFilePath(path)
+					);
 	}
 #endif
 

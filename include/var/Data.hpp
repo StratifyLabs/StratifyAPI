@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cstdio>
 #include "../api/VarObject.hpp"
+#include "../arg/Argument.hpp"
 
 #if !defined __link
 #include <malloc.h>
@@ -96,6 +97,7 @@ public:
 	Data(const Data & a);
 	Data(Data && a);
 
+
 	/*! \details Constant assignment operator.
 	 *
 	 * @param a The data to assign to the object.
@@ -126,7 +128,7 @@ public:
 	 * data objects are not the same.
 	 *
 	 */
-	bool operator != (const Data & a ) const {
+	bool operator != (const Data & a) const {
 		return !(*this == a);
 	}
 
@@ -141,7 +143,10 @@ public:
 	 * methods will have no effect.
 	 *
 	 */
-	Data(void * mem, u32 size);
+	Data(
+			const arg::DestinationBuffer mem,
+			const arg::Size size
+			);
 
 	/*! \details Constructs a data object with non-mutable data pointers to constant memory.
 	 *
@@ -150,14 +155,17 @@ public:
 	 *
 	 *
 	 */
-	Data(const void * mem, u32 size);
+	Data(
+			const arg::SourceBuffer mem,
+			const arg::Size size
+			);
 
 	/*! \details Constructs data with dynamically allocated memory with \a size bytes (resizeable)
 	 *
 	 *  @param size The number of bytes to allocate
 	 *
 	 */
-	Data(u32 size);
+	Data(const arg::Size size);
 
 	/*! \details Deconstructs a Data object.
 	 *
@@ -186,14 +194,72 @@ public:
 	 * when this method is called.
 	 *
 	 */
-	void refer_to(void * mem, u32 size, bool readonly = false);
+	void refer_to(
+			const arg::DestinationBuffer mem,
+			const arg::Size size,
+			const arg::IsReadOnly readonly = arg::IsReadOnly(false)
+			);
 
-	void refer_to(const Data & data){
-		refer_to((void*)data.to_void(), data.size(), data.is_read_only());
+	void refer_to(
+			const arg::SourceBuffer mem,
+			const arg::Size size){
+		refer_to(
+					arg::DestinationBuffer((void*)mem.argument()),
+					size,
+					arg::IsReadOnly(true)
+					);
 	}
 
-	void set(void * mem, u32 size, bool readonly = false){
-		return refer_to(mem, size, readonly);
+	void refer_to(const arg::ImplicitSourceData data){
+		refer_to(
+					arg::DestinationBuffer((void*)data.argument().to_void()),
+					arg::Size(data.argument().size()),
+					arg::IsReadOnly(data.argument().is_read_only())
+					);
+	}
+
+	template<typename T> void refer_to(
+			arg::ImplicitDestinationBuffer memory
+			){
+		refer_to(
+					arg::DestinationBuffer(memory.argument()),
+					arg::Size(sizeof(T)),
+					arg::IsReadOnly(false)
+					);
+	}
+
+	template<typename T> void refer_to(
+			const arg::ImplicitSourceBuffer memory
+			){
+		refer_to(
+					arg::DestinationBuffer((void*)memory.argument()),
+					arg::Size(sizeof(T)),
+					arg::IsReadOnly(true)
+					);
+	}
+
+	template<typename T> static Data create_reference(
+			arg::ImplicitDestinationBuffer memory
+			){
+		Data a;
+		a.refer_to(
+					arg::DestinationBuffer(memory.argument()),
+					arg::Size(sizeof(T)),
+					arg::IsReadOnly(false)
+					);
+		return a;
+	}
+
+	template<typename T> static Data create_reference(
+			const arg::ImplicitSourceBuffer memory
+			){
+		Data a;
+		a.refer_to(
+					arg::DestinationBuffer((void*)memory.argument()),
+					arg::Size(sizeof(T)),
+					arg::IsReadOnly(true)
+					);
+		return a;
 	}
 
 	/*! \details Allocates (or reallocates) memory for the Data object.
@@ -205,8 +271,10 @@ public:
 	 * If the memory was specified using the set() method or constructed as
 	 * statically allocated memory, this will return an error.
 	 */
-	int allocate(u32 size, bool resize = false);
-	int alloc(u32 size, bool resize = false){ return allocate(size, resize); }
+	int allocate(
+			const arg::Size size,
+			const arg::IsResize resize = arg::IsResize(false)
+			);
 
 	/*! \details Resizes the data (equivalent to allocate()).
 	 *
@@ -216,7 +284,12 @@ public:
 	 * This is the same as allocate() with \a resize set to true
 	 *
 	 */
-	int resize(u32 size) { return allocate(size, true); }
+	int resize(const arg::ImplicitSize size) {
+		return allocate(
+					arg::Size(size.argument()),
+					arg::IsResize(true)
+					);
+	}
 
 	/*! \details Dynamically allocates memory for the data object.
 	 *
@@ -233,10 +306,10 @@ public:
 	 * will be updated to \a s.
 	 *
 	 */
-	int set_size(u32 s);
+	int set_size(const arg::ImplicitSize s);
 
 	//doesn't really make sense to set the capacity because it will always jump to the next largest block
-	int set_capacity(u32 s){ return set_size(s); }
+	int set_capacity(const arg::ImplicitSize s){ return set_size(s); }
 
 
 	/*!
@@ -304,20 +377,22 @@ public:
 	 *
 	 *
 	 */
-	template<typename T> T & at(u32 idx){
-		if( idx*sizeof(T) >= size() ){
+	template<typename T> T & at(arg::ImplicitPosition position){
+		if( position.argument()*sizeof(T) >= size() ){
 			//set the error number to overflow
-			idx = 0;
+			position.argument() = 0;
 		}
-		return to<T>()[idx];
+		return to<T>()[position.argument()];
 	}
 
-	template<typename T> const T & at(u32 idx) const {
-		if( idx*sizeof(T) >= size() ){
+	template<typename T> const T & at(
+			arg::ImplicitPosition position
+			) const {
+		if( position.argument()*sizeof(T) >= size() ){
 			//set the error number to overflow
-			idx = 0;
+			position.argument() = 0;
 		}
-		return to<T>()[idx];
+		return to<T>()[position.argument()];
 	}
 
 	/*! \details Returns a pointer to the data as a `void*`. */
@@ -367,42 +442,44 @@ public:
 	const float * to_float() const { return to<float>(); }
 
 	/*! \details Accesses a referece to a value in the data as a u8 array. */
-	u8 & at_u8(u32 idx) { return at<u8>(idx); }
+	u8 & at_u8(arg::ImplicitPosition position){
+		return at<u8>(position);
+	}
 	/*! \details Accesses a referece to a value in the data as a s8 array. */
-	s8 & at_s8(u32 idx) { return at<s8>(idx); }
+	s8 & at_s8(arg::ImplicitPosition position) { return at<s8>(position); }
 	/*! \details Accesses a referece to a value in the data as a u16 array. */
-	u16 & at_u16(u32 idx) { return at<u16>(idx); }
+	u16 & at_u16(arg::ImplicitPosition position) { return at<u16>(position); }
 	/*! \details Accesses a referece to a value in the data as a s16 array. */
-	s16 & at_s16(u32 idx) { return at<s16>(idx); }
+	s16 & at_s16(arg::ImplicitPosition position) { return at<s16>(position); }
 	/*! \details Accesses a referece to a value in the data as a u32 array. */
-	u32 & at_u32(u32 idx) { return at<u32>(idx); }
+	u32 & at_u32(arg::ImplicitPosition position) { return at<u32>(position); }
 	/*! \details Accesses a referece to a value in the data as a s32 array. */
-	s32 & at_s32(u32 idx) { return at<s32>(idx); }
+	s32 & at_s32(arg::ImplicitPosition position) { return at<s32>(position); }
 	/*! \details Accesses a referece to a value in the data as a u64 array. */
-	u64 & at_u64(u32 idx) { return at<u64>(idx); }
+	u64 & at_u64(arg::ImplicitPosition position) { return at<u64>(position); }
 	/*! \details Accesses a referece to a value in the data as a s64 array. */
-	s64 & at_s64(u32 idx) { return at<s64>(idx); }
+	s64 & at_s64(arg::ImplicitPosition position) { return at<s64>(position); }
 	/*! \details Accesses a referece to a value in the data as a float array. */
-	float & at_float(u32 idx) { return at<float>(idx); }
+	float & at_float(arg::ImplicitPosition position) { return at<float>(position); }
 
 	/*! \details Accesses a referece to a value in the data as a u8 array. */
-	const u8 & at_u8(u32 idx) const { return at<u8>(idx); }
+	const u8 & at_u8(arg::ImplicitPosition position) const { return at<u8>(position); }
 	/*! \details Accesses a referece to a value in the data as a s8 array. */
-	const s8 & at_s8(u32 idx) const { return at<s8>(idx); }
+	const s8 & at_s8(arg::ImplicitPosition position) const { return at<s8>(position); }
 	/*! \details Accesses a referece to a value in the data as a u16 array. */
-	const u16 & at_u16(u32 idx) const { return at<u16>(idx); }
+	const u16 & at_u16(arg::ImplicitPosition position) const { return at<u16>(position); }
 	/*! \details Accesses a referece to a value in the data as a s16 array. */
-	const s16 & at_s16(u32 idx) const { return at<s16>(idx); }
+	const s16 & at_s16(arg::ImplicitPosition position) const { return at<s16>(position); }
 	/*! \details Accesses a referece to a value in the data as a u32 array. */
-	const u32 & at_u32(u32 idx) const { return at<u32>(idx); }
+	const u32 & at_u32(arg::ImplicitPosition position) const { return at<u32>(position); }
 	/*! \details Accesses a referece to a value in the data as a s32 array. */
-	const s32 & at_s32(u32 idx) const { return at<s32>(idx); }
+	const s32 & at_s32(arg::ImplicitPosition position) const { return at<s32>(position); }
 	/*! \details Accesses a referece to a value in the data as a u64 array. */
-	const u64 & at_u64(u32 idx) const { return at<u64>(idx); }
+	const u64 & at_u64(arg::ImplicitPosition position) const { return at<u64>(position); }
 	/*! \details Accesses a referece to a value in the data as a s64 array. */
-	const s64 & at_s64(u32 idx) const { return at<s64>(idx); }
+	const s64 & at_s64(arg::ImplicitPosition position) const { return at<s64>(position); }
 	/*! \details Accesses a referece to a value in the data as a float array. */
-	const float & at_float(u32 idx) const { return at<float>(idx); }
+	const float & at_float(arg::ImplicitPosition position) const { return at<float>(position); }
 
 	//deprecated access
 	/*! \cond */
@@ -467,7 +544,7 @@ public:
 	 *
 	 *
 	 */
-	void swap_byte_order(int size = 4);
+	void swap_byte_order(const arg::ImplicitSize size = 4);
 
 	/*! \details Returns true if the data is internally managed.
 	 *
@@ -531,7 +608,10 @@ public:
 	 *
 	 *
 	 */
-	int copy_contents(const Data & a, u32 size);
+	int copy_contents(
+			const arg::SourceData a,
+			const arg::Size size
+			);
 
 
 	/*!
@@ -540,7 +620,7 @@ public:
 	 * \return Zero on success or less than zero if memory could not be allocated
 	 *
 	 */
-	int copy_contents(const Data & a);
+	int copy_contents(const arg::ImplicitSourceData a);
 
 	/*!
 	 * \details Copies the contents of another data object to this object.
@@ -549,7 +629,11 @@ public:
 	 * \param size The number of bytes to copy
 	 * \return Zero on success or less than zero if memory could not be allocated
 	 */
-	int copy_contents(const Data & a, u32 destination_position, u32 size);
+	int copy_contents(
+			const arg::SourceData a,
+			const arg::Location destination,
+			const arg::Size size
+			);
 
 	/*! \details Append data to this object.
 	 *
@@ -557,19 +641,31 @@ public:
 	 * @return Zero on success or -1 if an error occurred (unable to allocate memory)
 	 *
 	 */
-	int append(const Data & a){
-		return copy_contents(a, size(), a.size());
+	int append(const arg::ImplicitSourceData a){
+		return copy_contents(
+					arg::SourceData(a.argument()),
+					arg::Location(size()),
+					arg::Size(a.argument().size())
+					);
 	}
 
-	int append(u8 value){ return append(Data((const void*)&value, sizeof(value))); }
-	int append(s8 value){ return append(Data((const void*)&value, sizeof(value))); }
-	int append(u16 value){ return append(Data((const void*)&value, sizeof(value))); }
-	int append(s16 value){ return append(Data((const void*)&value, sizeof(value))); }
-	int append(u32 value){ return append(Data((const void*)&value, sizeof(value))); }
-	int append(s32 value){ return append(Data((const void*)&value, sizeof(value))); }
-	int append(u64 value){ return append(Data((const void*)&value, sizeof(value))); }
-	int append(s64 value){ return append(Data((const void*)&value, sizeof(value))); }
-	int append(float value){ return append(Data(&value, sizeof(value))); }
+	template <typename T> int append(T value){
+		return append(
+					Data::create_reference<T>(
+						arg::SourceBuffer(&value)
+						)
+					);
+	}
+
+	int append(u8 value){ return append<decltype(value)>(value); }
+	int append(s8 value){ return append<decltype(value)>(value); }
+	int append(u16 value){ return append<decltype(value)>(value); }
+	int append(s16 value){ return append<decltype(value)>(value); }
+	int append(u32 value){ return append<decltype(value)>(value); }
+	int append(s32 value){ return append<decltype(value)>(value); }
+	int append(u64 value){ return append<decltype(value)>(value); }
+	int append(s64 value){ return append<decltype(value)>(value); }
+	int append(float value){ return append<decltype(value)>(value); }
 
 	Data & operator << (const Data & a){ append(a); return *this; }
 	Data & operator << (u8 a){ append(a); return *this; }

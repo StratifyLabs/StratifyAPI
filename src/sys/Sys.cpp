@@ -56,21 +56,20 @@ SysInfo SysInfo::get(){
 #if !defined __link
 	Sys sys;
 	if( sys.open() < 0 ){ return result; }
-	sys.ioctl(I_SYS_GETINFO, &result.m_info);
+	sys.ioctl(
+				arg::IoRequest(I_SYS_GETINFO),
+				arg::IoArgument(&result.m_info)
+				);
 	sys.close();
 #endif
 	return result;
 }
 
 #if defined __link
-Sys::Sys(link_transport_mdriver_t * driver) : File(driver){
-	m_current_task = 0;
-}
+Sys::Sys(link_transport_mdriver_t * driver) : File(driver){}
 
 #else
 Sys::Sys() {
-	// TODO Auto-generated constructor stub
-	m_current_task = 0;
 }
 #endif
 
@@ -218,11 +217,17 @@ int Sys::get_version(var::String & version){
 	sys_info_t info;
 	Device sys;
 	int ret;
-	if( sys.open("/dev/sys", fs::OpenFlags::read_write()) < 0 ){
+	if( sys.open(
+			 arg::FilePath("/dev/sys"),
+			 fs::OpenFlags::read_write()
+			 ) < 0 ){
 		return -1;
 	}
 
-	ret = sys.ioctl(I_SYS_GETINFO, &info);
+	ret = sys.ioctl(
+				arg::IoRequest(I_SYS_GETINFO),
+				arg::IoArgument(&info)
+				);
 	sys.close();
 	if( ret >= 0 ){
 		version.assign(info.sys_version);
@@ -238,32 +243,43 @@ var::String Sys::get_version(){
 }
 
 
-int Sys::get_kernel_version(var::String & version){
+var::String Sys::get_kernel_version(){
 	sys_info_t info;
 	Device sys;
 	int ret;
-	if( sys.open("/dev/sys", fs::OpenFlags::read_write()) < 0 ){
-		return -1;
+	if( sys.open(
+			 arg::FilePath("/dev/sys"),
+			 fs::OpenFlags::read_write()
+			 ) < 0 ){
+		return var::String();
 	}
 
-	ret = sys.ioctl(I_SYS_GETINFO, &info);
+	ret = sys.ioctl(
+				arg::IoRequest(I_SYS_GETINFO),
+				arg::IoArgument(&info)
+				);
+
 	sys.close();
+
 	if( ret >= 0 ){
-		version.assign(info.kernel_version);
+		return var::String(info.kernel_version);
 	}
-	return ret;
+	return var::String();
 }
 
-void Sys::powerdown(int count){
-	::powerdown(count);
+void Sys::powerdown(const chrono::Milliseconds & milliseconds){
+	::powerdown(milliseconds.milliseconds());
 }
 
-int Sys::hibernate(int count){
-	return ::hibernate(count);
+int Sys::hibernate(const chrono::Milliseconds & milliseconds){
+	return ::hibernate(milliseconds.milliseconds());
 }
 
-int Sys::request(int request, void * arg){
-	return kernel_request(request, arg);
+int Sys::request(
+		const arg::KernelRequest request,
+		arg::DestinationBuffer arg
+		){
+	return kernel_request(request.argument(), arg.argument());
 }
 
 void Sys::reset(){
@@ -275,7 +291,10 @@ void Sys::reset(){
 }
 
 int Sys::get_board_config(sos_board_config_t & config){
-	return ioctl(I_SYS_GETBOARDCONFIG, &config);
+	return ioctl(
+				arg::IoRequest(I_SYS_GETBOARDCONFIG),
+				arg::IoArgument(&config)
+				);
 }
 
 SysInfo Sys::get_info(){
@@ -296,30 +315,30 @@ SerialNumber Sys::get_serial_number(){
 
 
 int Sys::get_info(sys_info_t & info){
-	return ioctl(I_SYS_GETINFO, &info);
+	return ioctl(
+				arg::IoRequest(I_SYS_GETINFO),
+				arg::IoArgument(&info)
+				);
 }
 
 int Sys::get_23_info(sys_23_info_t & attr){
-	return ioctl(I_SYS_23_GETINFO, &attr);
+	return ioctl(
+				arg::IoRequest(I_SYS_23_GETINFO),
+				arg::IoArgument(&attr)
+				);
 }
 
 int Sys::get_26_info(sys_26_info_t & attr){
-	return ioctl(I_SYS_26_GETINFO, &attr);
-}
-
-int Sys::get_taskattr(sys_taskattr_t & attr, int task){
-	if( task == -1 ){
-		task = m_current_task;
-	} else {
-		m_current_task = task;
-	}
-
-	attr.tid = m_current_task;
-	m_current_task++;
-	return ioctl(I_SYS_GETTASK, &attr);
+	return ioctl(
+				arg::IoRequest(I_SYS_26_GETINFO),
+				arg::IoArgument(&attr)
+				);
 }
 
 int Sys::get_id(sys_id_t & id){
-	return ioctl(I_SYS_GETID, &id);
+	return ioctl(
+				arg::IoRequest(I_SYS_GETID),
+				arg::IoArgument(&id)
+				);
 }
 

@@ -4,11 +4,12 @@ using namespace hal;
 
 FFifo::FFifo(){}
 
-int FFifo::initialize(const var::ConstString & path, const FFifoAttributes & attributes, const fs::OpenFlags & flags){
+int FFifo::initialize(const arg::SourceFilePath & path, const FFifoAttributes & attributes, const fs::OpenFlags & flags){
 	int ret;
-	ret = open(path,
-				  fs::OpenFlags(flags).set_read_write()
-				  );
+	ret = open(
+				arg::FilePath(path.argument()),
+				fs::OpenFlags(flags).set_read_write()
+				);
 	if( ret < 0 ){
 		return ret;
 	}
@@ -18,23 +19,42 @@ int FFifo::initialize(const var::ConstString & path, const FFifoAttributes & att
 		return ret;
 	}
 
-	return set_error_number_if_error(ioctl(I_FFIFO_INIT));
+	return set_error_number_if_error(
+				ioctl(arg::IoRequest(I_FFIFO_INIT))
+				);
 }
 
 int FFifo::flush() const {
-	return set_error_number_if_error(ioctl(I_FFIFO_FLUSH));
+	return set_error_number_if_error(
+				ioctl(arg::IoRequest(I_FFIFO_FLUSH))
+				);
 }
 
 int FFifo::set_attributes(const FFifoAttributes & attr) const {
-	return set_error_number_if_error( ioctl(I_FFIFO_SETATTR, &attr.m_ffifo_attr) );
+	return set_error_number_if_error(
+				ioctl(
+					arg::IoRequest(I_FFIFO_SETATTR),
+					arg::IoConstArgument(&attr.m_ffifo_attr)
+					)
+				);
 }
 
 FFifoInfo FFifo::get_info() const {
 	FFifoInfo info;
-	set_error_number_if_error( ioctl(I_FFIFO_GETINFO, &info.m_ffifo_info) );
+	set_error_number_if_error(
+				ioctl(
+					arg::IoRequest(I_FFIFO_GETINFO),
+					arg::IoArgument(&info.m_ffifo_info)
+					)
+				);
 	return info;
 }
 
 int FFifo::get_info(FFifoInfo & info) const {
-	return set_error_number_if_error( ioctl(I_FFIFO_GETINFO, &info.m_ffifo_info) );
+	return set_error_number_if_error(
+				ioctl(
+					arg::IoRequest(I_FFIFO_GETINFO),
+					arg::IoArgument(&info.m_ffifo_info)
+					)
+				);
 }

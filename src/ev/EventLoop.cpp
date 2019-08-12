@@ -111,8 +111,13 @@ void EventLoop::check_loop_for_hibernate(){
 		sapi_request_hibernate_t request;
 		request.update_period_milliseconds = update_period().milliseconds();
 		request.loop_period_milliseconds = period().milliseconds();
-		if( Sys::request(SAPI_REQUEST_HIBERNATE, &request) < 0 ){
-			Sys::hibernate( (update_period().milliseconds() + 500)/ 1000 );
+		if( Sys::request(
+				 arg::KernelRequest(SAPI_REQUEST_HIBERNATE),
+				 arg::DestinationBuffer(&request)
+				 ) < 0 ){
+			Sys::hibernate(
+						chrono::Milliseconds((update_period().milliseconds() + 500)/ 1000)
+						);
 		}
 	} else {
 		s32 us_remaining;

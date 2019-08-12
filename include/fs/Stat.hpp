@@ -15,7 +15,6 @@
 #define MCU_INT_CAST(var) ((void*)(u64)var)
 #endif
 
-
 #include "../api/FsObject.hpp"
 #include "../var/ConstString.hpp"
 
@@ -155,24 +154,6 @@ private:
 	int m_access;
 };
 
-typedef api::Argument<const int&> Location;
-typedef api::Argument<const int&> PageSize;
-typedef api::Argument<const u32&> Size;
-
-typedef api::Argument<const void*> SourceBuffer;
-typedef api::Argument<void*> DestinationBuffer;
-
-typedef api::Argument<const var::ConstString&> SourcePath;
-typedef api::Argument<const var::ConstString&> DestinationPath;
-
-typedef api::Argument<const var::ConstString&> SourceFilePath;
-typedef api::Argument<const var::ConstString&> DestinationFilePath;
-
-typedef api::Argument<const var::ConstString&> SourceDirectoryPath;
-typedef api::Argument<const var::ConstString&> DestinationDirectoryPath;
-
-typedef api::Argument<const var::ConstString&> SourceFileName;
-typedef api::Argument<const var::ConstString&> DestinationFileName;
 
 
 
@@ -281,7 +262,7 @@ public:
 	bool is_executable() const;
 
 	/*! \details Returns the file mode value. */
-	u32 mode() const { return m_stat.st_mode; }
+	Permissions permissions() const { return Permissions(m_stat.st_mode); }
 
 private:
 
@@ -293,6 +274,8 @@ private:
 #endif
 
 };
+
+typedef Stat FileInfo;
 
 } /* namespace sys */
 

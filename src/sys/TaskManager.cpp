@@ -18,7 +18,7 @@ TaskManager::~TaskManager(){
 
 void TaskManager::initialize(){
 	if( m_sys_device.fileno() < 0 ){
-		m_sys_device.open("/dev/sys");
+		m_sys_device.open(arg::FilePath("/dev/sys"));
 	}
 }
 
@@ -64,7 +64,12 @@ int TaskManager::get_next(TaskInfo & info){
 
 	initialize();
 
-	ret = set_error_number_if_error( m_sys_device.ioctl(I_SYS_GETTASK, &task_attr) );
+	ret = set_error_number_if_error(
+				m_sys_device.ioctl(
+					arg::IoRequest(I_SYS_GETTASK),
+					arg::IoArgument(&task_attr)
+					)
+				);
 	if( ret < 0 ){
 		info = TaskInfo::invalid();
 		return ret;
@@ -85,7 +90,11 @@ TaskInfo TaskManager::get_info(int id){
 	sys_taskattr_t attr;
 	attr.tid = id;
 	initialize();
-	if( set_error_number_if_error( m_sys_device.ioctl(I_SYS_GETTASK, &attr) ) < 0 ){
+	if( set_error_number_if_error(
+			 m_sys_device.ioctl(
+				 arg::IoRequest(I_SYS_GETTASK),
+				 arg::IoArgument(&attr)
+				 ) ) < 0 ){
 		return TaskInfo::invalid();
 	}
 

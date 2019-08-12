@@ -108,13 +108,13 @@ public:
 
 	/*! \details Assignment addition to another MicroTime object. */
 	MicroTime & operator += (const MicroTime & micro_time){
-		m_value_microseconds += micro_time.usec();
+		m_value_microseconds += micro_time.microseconds();
 		return *this;
 	}
 
 	/*! \details Assignment addition to another MicroTime object. */
 	MicroTime & operator -= (const MicroTime & micro_time){
-		m_value_microseconds -= micro_time.usec();
+		m_value_microseconds -= micro_time.microseconds();
 		return *this;
 	}
 
@@ -140,20 +140,25 @@ public:
 	/*! \details Compares <= to another MicroTime object. */
 	bool operator <= (const MicroTime & a ){ return microseconds() <= a.microseconds(); }
 
+	MicroTime & operator << (const Seconds & a){ return (*this) = a; }
+	MicroTime & operator << (const Milliseconds & a){ return (*this) = a; }
+	MicroTime & operator << (const Microseconds & a){ return (*this) = a; }
+	MicroTime & operator << (const Nanoseconds & a){ return (*this) = a; }
+
 
 	/*! \details Sets the value of the time in seconds.
 	  *
 	  * @param sec The number of seconds.
 	  *
 	  */
-	void set_seconds(u32 sec){ set_usec(sec*1000000UL); }
+	void set_seconds(u32 sec){ *this = Seconds(sec); }
 
 	/*! \details Sets the value of the time in milliseconds.
 	  *
 	  * @param msec The value to assign in milliseconds.
 	  *
 	  */
-	void set_milliseconds(u32 msec){ set_usec(msec*1000UL); }
+	void set_milliseconds(u32 msec){ *this = Milliseconds(msec); }
 
 	/*! \details Sets the value of the time in microseconds.
 	  *
@@ -169,16 +174,7 @@ public:
 	micro_time_t microseconds() const { return m_value_microseconds; }
 
 	/*! \details Returns the value in milliseconds. */
-	u32 milliseconds() const { return usec() / 1000UL; }
-
-	/*! \cond */
-	void set_sec(u32 sec){ set_seconds(sec); }
-	void set_msec(u32 msec){ set_milliseconds(msec); }
-	void set_usec(micro_time_t usec){ set_microseconds(usec); }
-	u32 sec() const { return seconds(); }
-	u32 msec() const { return milliseconds(); }
-	micro_time_t usec() const { return microseconds(); }
-	/*! \endcond */
+	u32 milliseconds() const { return microseconds() / 1000UL; }
 
 	/*! \details Waits for the value of the microtime.
 	  *

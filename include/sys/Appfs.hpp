@@ -297,20 +297,18 @@ public:
 	 * @return Zero on success or -1 with errno set accordingly
 	 *
 	 */
-#if !defined __link
-	static int create(const var::ConstString & name,
-							const fs::File & source_data,
-							const var::ConstString & mount = "/app",
-							const ProgressCallback * progress_callback = 0);
-#else
-	static int create(const var::ConstString & name,
-							const fs::File & source_data,
-							const var::ConstString & mount = "/app",
-							const ProgressCallback * progress_callback = 0,
-							link_transport_mdriver_t * driver = 0);
+	static int create(const arg::FileName & name,
+							const arg::SourceFile & source_data,
+							const arg::SourceDirectoryPath & mount = arg::SourceDirectoryPath("/app"),
+							const ProgressCallback * progress_callback = 0
+#if defined __link
+							, link_transport_mdriver_t * driver = 0
 #endif
+			);
 
-	int create(const var::ConstString & name, u32 size);
+	int create(
+			const var::ConstString & name,
+			const arg::Size & size);
 	Appfs & operator << (const var::Data & data);
 	int close();
 
@@ -335,9 +333,14 @@ public:
 	  *
 	 */
 #if !defined __link
-	static AppfsInfo get_info(const var::ConstString & path);
+	static AppfsInfo get_info(
+			const arg::SourceFilePath path
+			);
 #else
-	static AppfsInfo get_info(const var::ConstString & path, link_transport_mdriver_t * driver);
+	static AppfsInfo get_info(
+			const arg::SourceFilePath path,
+			link_transport_mdriver_t * driver
+			);
 #endif
 
 	/*! \details Gets the application version.
@@ -348,11 +351,12 @@ public:
 	 * For example, the BCD representation of version "1.1" is 0x0101.
 	 *
 	 */
-#if !defined __link
-	static u16 get_version(const var::ConstString & path);
-#else
-	static u16 get_version(const var::ConstString & path, link_transport_mdriver_t * driver);
+	static u16 get_version(
+			const arg::SourceFilePath path
+#if defined __link
+			, link_transport_mdriver_t * driver
 #endif
+			);
 
 	/*! \details Gets the application ID value.
 	 *
@@ -363,11 +367,12 @@ public:
 	 *
 	 *
 	 */
-#if !defined __link
-	static var::String get_id(const var::ConstString & path);
-#else
-	static var::String get_id(const var::ConstString & path, link_transport_mdriver_t * driver);
+	static var::String get_id(
+			const arg::SourceFilePath path
+#if defined __link
+			, link_transport_mdriver_t * driver
 #endif
+			);
 
 #if !defined __link
 	static int cleanup(bool data = false);

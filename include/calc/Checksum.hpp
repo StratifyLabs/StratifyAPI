@@ -53,7 +53,10 @@ public:
 	  *
 	  *
 	  */
-	static u8 calc_zero_sum(const u8 * data, int size);
+	static u8 calc_zero_sum(
+			const u8 * data,
+			int size
+			);
 
 	template<typename T> static T calculate_zero_sum(const var::Data & data){
 		u32 i;
@@ -65,7 +68,9 @@ public:
 		return (0 - sum);
 	}
 
-	template<typename T> static T verify_zero_sum(const var::Data & data){
+	template<typename T> static T verify_zero_sum(
+			const var::Data & data
+			){
 		int i;
 		T sum = 0;
 		int count = data.size()/sizeof(T);
@@ -85,7 +90,10 @@ public:
 	  *
 	  *
 	  */
-	static bool verify_zero_sum(const u8 * data, int size);
+	static bool verify_zero_sum(
+			const u8 * data,
+			int size
+			);
 
 
 	/*! \details Calculates a zero sum value for the data.
@@ -124,7 +132,10 @@ public:
 	  *
 	  *
 	  */
-	static u32 calc_zero_sum(const u32 * data, int size);
+	static u32 calc_zero_sum(
+			const u32 * data,
+			int size
+			);
 
 
 	/*! \details Verifies the u32 checksum at the end of a data structure.
@@ -138,7 +149,10 @@ public:
 	  *
 	  *
 	  */
-	static bool verify_zero_sum(const u32 * data, int size);
+	static bool verify_zero_sum(
+			const u32 * data,
+			int size
+			);
 
 
 	static u32 calc_zero_sum32(const var::Data & data);

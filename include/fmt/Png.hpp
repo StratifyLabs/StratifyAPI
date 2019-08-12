@@ -7,7 +7,7 @@ namespace fmt {
 
 class Png : public api::FmtFileObject {
 public:
-	Png(const var::ConstString & name);
+	Png(const arg::SourceFilePath & name);
 
 
 

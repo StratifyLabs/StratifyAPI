@@ -278,14 +278,21 @@ public:
 	  * exist in the object, it is created.
 	  *
 	  */
-	int insert(const var::ConstString & key, const JsonValue & value);
+	int insert(
+			const arg::JsonKey key,
+			const arg::ImplicitSourceJsonValue value
+			);
 
-	enum {
+	enum update_flags {
+		UPDATE_NONE = 0x00,
 		UPDATE_EXISTING = 0x01,
-		UPDATE_MISSING = 0x02
+		UPDATE_MISSING = 0x02,
+		UPDATE_MISSING_AND_EXISTING = 0x03
 	};
 
-	int update(const JsonValue & value, u8 o_flags = 0);
+	int update(const arg::SourceJsonValue value,
+				  enum update_flags o_flags = UPDATE_NONE
+			);
 
 	/*!
 	  * \details Removes the specified key from the object.
@@ -293,7 +300,7 @@ public:
 	  * \return Zero on success (-1 is key was not found)
 	  *
 	  */
-	int remove(const var::ConstString & key);
+	int remove(const arg::JsonKey key);
 
 	/*!
 	  * \details Returns the number of key/value pairs in the object
@@ -326,7 +333,8 @@ public:
 	  * JsonValue is destroyed.
 	  *
 	  */
-	JsonValue at(const var::ConstString & key) const;
+	JsonValue at(const arg::JsonKey key) const;
+
 
 	var::Vector<var::String> keys() const;
 
@@ -353,12 +361,18 @@ public:
 	  * @return A JsonValue as a reference (see JsonValue::is_observer())
 	  *
 	  */
-	JsonValue at(u32 idx) const;
+	JsonValue at(const arg::ImplicitPosition position) const;
 
-	int append(const JsonValue & value);
+	int append(const arg::ImplicitSourceJsonValue value);
+
 	int append(const JsonArray & array);
-	int insert(u32 idx, const JsonValue & value);
-	int remove(u32 idx);
+
+	int insert(
+			const arg::Position position,
+			const arg::ImplicitSourceJsonValue value
+			);
+
+	int remove(const arg::ImplicitPosition position);
 	int clear();
 private:
 
@@ -440,22 +454,27 @@ public:
 	  * \param path The path to the file
 	  * \return Zero on success
 	  */
-	JsonValue load_from_file(const var::ConstString & path);
+	JsonValue load(
+			const arg::SourceFilePath path
+			);
 
 	/*!
 	  * \details Loads a JSON value from a data object
 	  * \param data A reference to the data object containing the JSON
 	  * \return
 	  */
-	JsonValue load_from_string(const var::ConstString & json);
+	JsonValue load(
+			const arg::JsonEncodedString json
+			);
 
 	/*!
 	  * \details Loads a JSON value from an already open file
 	  * \param file A reference to the file containing JSON
 	  * \return Zero on success
 	  */
-	JsonValue load_from_file(const fs::File & file);
-	JsonValue load(const fs::File & file);
+	JsonValue load(
+			const arg::SourceFile file
+			);
 
 	/*!
 	  * \details Loads a JSON value from streaming data
@@ -463,12 +482,36 @@ public:
 	  * \param context This is passed to \a callback but not used internally
 	  * \return Zero on success
 	  */
-	JsonValue load(json_load_callback_t callback, void * context);
+	JsonValue load(
+			json_load_callback_t callback,
+			void * context
+			);
 
-	int save_to_file(const JsonValue & value, const var::ConstString & path) const;
-	var::String stringify(const JsonValue & value) const;
-	int save_to_file(const JsonValue & value, const fs::File & file) const;
-	int save(const JsonValue & value, json_dump_callback_t callback, void * context) const;
+	int save(
+			const arg::SourceJsonValue value,
+			const arg::DestinationFilePath path
+			) const;
+
+	var::String to_string(
+			const arg::ImplicitSourceJsonValue value
+			) const;
+
+	var::String stringify(
+			const arg::ImplicitSourceJsonValue value
+			) const {
+		return to_string(value);
+	}
+
+	int save(
+			const arg::SourceJsonValue value,
+			const arg::DestinationFile file
+			) const;
+
+	int save(
+			const JsonValue & value,
+			json_dump_callback_t callback,
+			void * context
+			) const;
 
 	enum {
 		REJECT_DUPLICATES = JSON_REJECT_DUPLICATES,

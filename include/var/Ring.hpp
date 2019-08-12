@@ -57,7 +57,7 @@ public:
 	  * @param size The number of bytes to allocate for the new buffer.
 	  *
 	  */
-	Ring(u32 count) : Data(count * sizeof(T)){
+	Ring(const arg::Count count) : Data(arg::Size(count.argument() * sizeof(T))){
 		m_count = count;
 		m_head = 0;
 		m_tail = 0;

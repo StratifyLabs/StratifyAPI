@@ -19,7 +19,7 @@ class DisplayDevice : public Display, public Device {
 public:
 	DisplayDevice();
 
-	int initialize(const var::ConstString & name);
+	int initialize(const arg::SourceFilePath & name);
 
 	/*! \details Refreshes the display.
 	 *

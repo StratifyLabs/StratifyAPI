@@ -115,7 +115,10 @@ public:
 	Event();
 
 	/*! \details Construct a new event with the specified type and object */
-	Event(enum event_type type, void * object = 0){
+	Event(
+			enum event_type type,
+			void * object = 0
+			){
 		m_type = type;
 		m_objects.object = object;
 	}
@@ -186,12 +189,18 @@ public:
 		return 0;
 	}
 
-	void set_event(enum event_type t, void * object = 0){
+	void set_event(
+			enum event_type t,
+			void * object = 0
+			){
 		m_type = t;
 		m_objects.object = 0;
 	}
 
-	void set_event(enum event_type t, ev::Button * button){
+	void set_event(
+			enum event_type t,
+			ev::Button * button
+			){
 		if( t & FLAG_IS_BUTTON ){
 			m_type = t;
 			m_objects.button = button;

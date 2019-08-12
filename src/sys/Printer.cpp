@@ -359,7 +359,7 @@ Printer & Printer::operator << (const var::JsonObject & a){
 
 	var::Vector<var::String> keys = a.keys();
 	for(u32 i=0; i < keys.count(); i++){
-		var::JsonValue entry = a.at(keys.at(i));
+		var::JsonValue entry = a.at(arg::JsonKey(keys.at(i)));
 		if( entry.is_object() ){
 			open_object(keys.at(i), current_level());
 			*this << entry.to_object();
@@ -504,7 +504,7 @@ Printer & Printer::operator << (const fs::Stat & a){
 	if( a.is_file() ){
 		key("size", "%ld", a.size());
 	}
-	key("mode", "0%o", a.mode() & 0777);
+	key("mode", "0%o", a.permissions().permissions() & 0777);
 
 	return *this;
 }

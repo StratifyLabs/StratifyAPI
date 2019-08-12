@@ -217,7 +217,11 @@ public:
 	}
 
 	SocketAddress(const SocketAddressIpv4 & ipv4){
-		m_sockaddr.copy_contents(var::Data((void*)&ipv4.m_sockaddr_in, sizeof(struct sockaddr_in)));
+		m_sockaddr.copy_contents(
+					arg::SourceData(
+						var::Data::create_reference<struct sockaddr_in>(&ipv4.m_sockaddr_in)
+						)
+					);
 		m_protocol = ipv4.m_protocol;
 		m_type = ipv4.m_type;
 	}
@@ -233,13 +237,21 @@ public:
 	SocketAddress(const sockaddr_in & ipv4,
 					  int protocol = SocketAddressInfo::PROTOCOL_TCP,
 					  int type = SocketAddressInfo::TYPE_STREAM){
-		m_sockaddr.copy_contents(var::Data((void*)&ipv4, sizeof(ipv4)));
+		m_sockaddr.copy_contents(
+					arg::SourceData(
+						var::Data::create_reference<sockaddr_in>(&ipv4)
+						)
+					);
 		m_protocol = protocol;
 		m_type = type;
 	}
 
 	SocketAddress(const sockaddr_in6 & ipv6){
-		m_sockaddr.copy_contents(var::Data((void*)&ipv6, sizeof(ipv6)));
+		m_sockaddr.copy_contents(
+					arg::SourceData(
+						var::Data::create_reference<sockaddr_in6>(&ipv6)
+						)
+					);
 	}
 
 	void set_port(u16 port);
@@ -413,14 +425,18 @@ private:
 	friend class Socket;
 	SocketOption & set_integer_value(int name, int value){
 		m_name = name;
-		m_option_value.alloc(sizeof(int));
+		m_option_value.allocate(
+					arg::Size(sizeof(int))
+					);
 		*m_option_value.to<int>() = value;
 		return *this;
 	}
 
 	SocketOption & set_timeout(int name, const chrono::ClockTime & timeout){
 		m_name = name;
-		m_option_value.alloc(sizeof(struct timeval));
+		m_option_value.allocate(
+					arg::Size(sizeof(struct timeval))
+					);
 		m_option_value.to<struct timeval>()->tv_sec = timeout.seconds();
 		m_option_value.to<struct timeval>()->tv_usec = timeout.nanoseconds() / 1000UL;
 		return *this;

@@ -33,11 +33,11 @@ public:
 	 * and write without opening again.
 	 */
 	int open(const fs::OpenFlags & flags = fs::OpenFlags::read_write());
-	int ioctl(int req, void * arg) const;
-	int seek(const fs::Location & location, PeriphObject::whence whence) const;
+	int ioctl(const arg::IoRequest request, const arg::IoArgument argument) const;
+	int seek(const arg::Location & location, PeriphObject::whence whence) const;
 	int fileno() const;
-	int read(const fs::DestinationBuffer & buf, const fs::Size & size) const;
-	int write(const fs::SourceBuffer & buf, const fs::Size & size) const;
+	int read(const arg::DestinationBuffer buf, const arg::Size size) const;
+	int write(const arg::SourceBuffer buf, const arg::Size size) const;
 #ifndef __link
 	int read(fs::Aio & aio) const;
 	int write(fs::Aio & aio) const;
@@ -51,7 +51,7 @@ public:
 protected:
 	u16 m_periph_port;
 
-	int open(const var::ConstString & name, const fs::OpenFlags & flags);
+	int open(const arg::SourceFilePath & name, const fs::OpenFlags & flags);
 	using Device::open;
 
 	void update_fileno() const;
@@ -119,6 +119,12 @@ public:
 	/*! \details Gets a pointer of the pin assignment. */
 	const pin_assignment_t * pin_assignment() const { return &PeriphAttributes<attr_t>::m_attr.pin_assignment; }
 
+	PinAssignmentPeriphAttributes & operator << (const pin_assignment_t & a){
+		memcpy(&PeriphAttributes<attr_t>::m_attr.pin_assignment, &a, sizeof(pin_assignment_t));
+		return *this;
+	}
+
+
 };
 
 
@@ -185,7 +191,9 @@ public:
 	 *
 	 */
 	int get_version() const {
-		return ioctl(_IOCTL(ident_char, I_MCU_GETVERSION));
+		return ioctl(
+					arg::IoRequest(_IOCTL(ident_char, I_MCU_GETVERSION))
+					);
 	}
 
 
@@ -196,7 +204,10 @@ public:
 	 *
 	 */
 	int get_info(info_t & info) const {
-		return ioctl(_IOCTLR(ident_char, I_MCU_GETINFO, info_t), &info);
+		return ioctl(
+					arg::IoRequest(_IOCTLR(ident_char, I_MCU_GETINFO, info_t)),
+					arg::IoArgument(&info)
+					);
 	}
 
 	/*! \details Sets the default attributes on the hardware.
@@ -211,7 +222,11 @@ public:
 	 * no default attributes are provided.
 	 *
 	 */
-	int set_attributes() const { return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), 0); }
+	int set_attributes() const {
+		return ioctl(
+					arg::IoRequest(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t))
+					);
+	}
 
 	/*! \details Initializes the hardware using the default attributes.
 	 *
@@ -268,11 +283,17 @@ public:
 	}
 
 	int set_attributes(const attr_t & attr) const {
-		return ioctl(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t), &attr);
+		return ioctl(
+					arg::IoRequest(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t)),
+					arg::IoConstArgument(&attr)
+					);
 	}
 
 	int set_action(const mcu_action_t & action) const {
-		return ioctl(_IOCTLW(ident_char, I_MCU_SETACTION, mcu_action_t), &action);
+		return ioctl(
+					arg::IoRequest(_IOCTLW(ident_char, I_MCU_SETACTION, mcu_action_t)),
+					arg::IoConstArgument(&action)
+					);
 	}
 
 	Periph & operator << (const mcu_action_t & action){
@@ -291,13 +312,19 @@ public:
 	 * @return
 	 */
 
-	int set_action(u32 channel, u32 o_events, s8 prio = 0, mcu_callback_t callback = 0, void * context = 0) const {
+	int set_action(
+			const arg::Channel & channel,
+			const arg::Events & o_events,
+			const arg::InterruptPriority & priority = arg::InterruptPriority(0),
+			const arg::McuCallback & callback = arg::McuCallback(0),
+			const arg::Context & context = arg::Context(0)
+			) const {
 		mcu_action_t action;
-		action.prio = prio;
-		action.channel = channel;
-		action.o_events = o_events;
-		action.handler.callback = callback;
-		action.handler.context = context;
+		action.prio = priority.argument();
+		action.channel = channel.argument();
+		action.o_events = o_events.argument();
+		action.handler.callback = callback.argument();
+		action.handler.context = context.argument();
 		return set_action(action);
 	}
 
@@ -305,8 +332,16 @@ public:
 	 *
 	 * @return Zero on success
 	 */
-	int set_priority(s8 priority, u32 o_events, int channel = 0){
-		return set_action(channel, o_events | MCU_EVENT_FLAG_SET_PRIORITY, priority);
+	int set_priority(
+			const arg::InterruptPriority & priority,
+			const arg::Events & o_events,
+			const arg::Channel & channel = arg::Channel(0)
+			){
+		return set_action(
+					channel,
+					arg::Events(o_events.argument() | MCU_EVENT_FLAG_SET_PRIORITY),
+					priority
+					);
 	}
 
 	port_t port() const{ return m_periph_port & 0xFF; }
@@ -315,20 +350,26 @@ protected:
 
 
 	int set_channel(const mcu_channel_t & channel, int request) const {
-		return ioctl(_IOCTLR(ident_char, request, mcu_channel_t), &channel);
+		return ioctl(
+					arg::IoRequest(_IOCTLR(ident_char, request, mcu_channel_t)),
+					arg::IoConstArgument(&channel)
+					);
 	}
 
-	int set_channel(u32 loc, u32 value, int request) const {
+	int set_channel(u32 loc, u32 value, const arg::IoRequest request) const {
 		mcu_channel_t channel;
 		channel.loc = loc;
 		channel.value = value;
-		return ioctl(request, &channel);
+		return ioctl(request, arg::IoArgument(&channel));
 	}
 
-	u32 get_channel(u32 loc, int request) const {
+	u32 get_channel(u32 loc, const arg::IoRequest request) const {
 		mcu_channel_t channel;
 		channel.loc = loc;
-		if( ioctl(request, &channel) < 0 ){
+		if( ioctl(
+				 request,
+				 arg::IoArgument(&channel)
+				 ) < 0 ){
 			return (u32)-1;
 		}
 		return channel.value;

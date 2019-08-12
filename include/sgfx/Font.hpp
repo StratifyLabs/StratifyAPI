@@ -58,7 +58,7 @@ public:
 	 * - opensans-b-32.sbf which is Opensans bold 32
 	 *
 	 */
-	FontInfo(const var::ConstString & path);
+	FontInfo(const arg::SourceFilePath & path);
 
 	/*! \details Returns true if the object is valid. */
 	bool is_valid() const { return m_point_size; }

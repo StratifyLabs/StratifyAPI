@@ -15,7 +15,10 @@ Text::Text(const var::ConstString & text){
 }
 
 const Font * Text::resolve_font(sg_size_t h) const{
-	const FontInfo * info = sys::Assets::find_font(h, m_font_style);
+	const FontInfo * info = sys::Assets::find_font(
+				arg::FontPointSize(h),
+				arg::FontStyle(m_font_style)
+				);
 	if( info ){ return info->font(); }
 	return 0;
 }

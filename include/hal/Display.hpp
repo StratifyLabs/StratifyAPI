@@ -101,8 +101,8 @@ public:
 		PIXEL_FORMAT_RGB888 = DISPLAY_PALETTE_PIXEL_FORMAT_RGB888
 	};
 
-	int save(const char * path) const;
-	int load(const char * path);
+	int save(const arg::DestinationFilePath & path) const;
+	int load(const arg::SourceFilePath & path);
 
 	int set_monochrome();
 

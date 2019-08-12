@@ -13,13 +13,19 @@ Spi::Spi(port_t port) : Periph(CORE_PERIPH_SPI, port){}
 
 
 int Spi::swap(int byte) const {
-	return ioctl(I_SPI_SWAP, byte);
+	return ioctl(
+				arg::IoRequest(I_SPI_SWAP),
+				arg::IoIntArgument(byte)
+				);
 }
 
 
 #if !defined __link
 int Spi::transfer(const void * write_data, void * read_data, int nbytes){
-	fs::Aio aio(read_data, nbytes);
+	fs::Aio aio = fs::Aio(
+				arg::DestinationBuffer(read_data),
+				arg::Size(nbytes)
+				);
 	int result;
 
 	result = read(aio);
@@ -28,8 +34,8 @@ int Spi::transfer(const void * write_data, void * read_data, int nbytes){
 	}
 
 	result = write(
-				fs::SourceBuffer(write_data),
-				fs::Size(nbytes)
+				arg::SourceBuffer(write_data),
+				arg::Size(nbytes)
 				);
 
 	while( aio.is_busy() ){ //aio must live until the read completes -- or big problems will happen

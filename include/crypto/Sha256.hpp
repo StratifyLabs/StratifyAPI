@@ -43,7 +43,10 @@ public:
 	int finalize();
 
 	int start();
-	int update(const char * input, u32 len);
+	int update(
+			const arg::SourceBuffer input,
+			const arg::Size size
+			);
 	int finish();
 
 	Sha256 & operator << (const var::Data & a);

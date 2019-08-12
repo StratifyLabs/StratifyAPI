@@ -5,8 +5,8 @@
 #include "chrono.hpp"
 using namespace sys;
 
-Thread::Thread(const StackSize & stacksize, bool detached) {
-	init(stacksize.argument(), detached);
+Thread::Thread(const arg::StackSize & stacksize, const arg::IsDetached detached) {
+	init(stacksize.argument(), detached.argument());
 }
 
 Thread::~Thread(){
@@ -77,10 +77,13 @@ int Thread::set_detachstate(detach_state value){
 	return set_error_number_if_error(pthread_attr_setdetachstate(&m_pthread_attr, value));
 }
 
-int Thread::set_priority(int prio, enum Sched::policy policy){
+int Thread::set_priority(
+		const arg::SchedulerPriority prio,
+		enum Sched::policy policy
+		){
 	struct sched_param param;
 	if( is_valid() ){
-		param.sched_priority = prio;
+		param.sched_priority = prio.argument();
 		return set_error_number_if_error(pthread_setschedparam(m_id, policy, &param));
 	}
 
@@ -116,7 +119,12 @@ int Thread::get_policy() const {
 	return policy;
 }
 
-int Thread::create(handler_function_t func, void * args, int prio, enum Sched::policy policy){
+int Thread::create(
+		arg::ThreadFunction func,
+		arg::Context args,
+		const arg::SchedulerPriority prio,
+		enum Sched::policy policy
+		){
 	if( reset() < 0 ){
 		set_error_number(EBUSY);
 		return -1;
@@ -132,13 +140,19 @@ int Thread::create(handler_function_t func, void * args, int prio, enum Sched::p
 	}
 
 	struct sched_param param;
-	param.sched_priority = prio;
+	param.sched_priority = prio.argument();
 	if( set_error_number_if_error(pthread_attr_setschedparam(&m_pthread_attr, &param)) < 0 ){
 		return -1;
 	}
 
 	//First create the thread
-	return set_error_number_if_error(pthread_create(&m_id, &m_pthread_attr, func, args));
+	return set_error_number_if_error(
+				pthread_create(&m_id,
+									&m_pthread_attr,
+									func.argument(),
+									args.argument()
+									)
+				);
 }
 
 bool Thread::is_running() const {

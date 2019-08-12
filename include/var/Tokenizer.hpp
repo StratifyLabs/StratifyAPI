@@ -3,6 +3,7 @@
 #ifndef SAPI_VAR_TOKENIZER_HPP_
 #define SAPI_VAR_TOKENIZER_HPP_
 
+#include "../arg/Argument.hpp"
 #include "String.hpp"
 
 namespace var {
@@ -26,7 +27,13 @@ public:
 	  *
 	  * \sa parse()
 	  */
-	Tokenizer(const ConstString & src, const ConstString & delim, const ConstString & ignore = "", bool count_empty = false, u32 max_delim = 0);
+	Tokenizer(
+			const arg::TokenEncodedString src,
+			const arg::TokenDelimeters delim,
+			const arg::IgnoreTokensBetween ignore = arg::IgnoreTokensBetween(""),
+			const arg::IsCountEmptyTokens is_count_empty = arg::IsCountEmptyTokens(false),
+			const	arg::MaximumTokenCount maximum_delimeter_count = arg::MaximumTokenCount(0)
+			);
 
 
 	/*! \details Sorting Options used with sort() */
@@ -53,7 +60,11 @@ public:
 	  *
 	  *
 	  */
-	void parse(const ConstString & delim, const ConstString & ignore = "", u32 max_delim = 0);
+	void parse(
+			const arg::TokenDelimeters delim,
+			const arg::IgnoreTokensBetween ignore = arg::IgnoreTokensBetween(""),
+			const arg::MaximumTokenCount = arg::MaximumTokenCount(0)
+			);
 
 
 	/*! \details Sorts the tokens as specified. */

@@ -147,7 +147,7 @@ public:
 template<class Derived, typename T, typename BigType> class SignalData : public var::Vector<T>, public api::DspWorkObject {
 public:
 	SignalData(){}
-	SignalData(int count) : var::Vector<T>(count){
+	SignalData(const arg::Count count) : var::Vector<T>(count){
 		if( is_api_available() == false ){
 			//request_arm_dsp_api();
 		}
@@ -477,7 +477,7 @@ typedef SignalData<q7_t, q63_t> SignalDataQ7;
 
 class SignalQ7 : public SignalDataQ7 {
 public:
-	SignalQ7(int count) : SignalData<q7_t>(count){}
+	SignalQ7(const arg::Count count) : SignalData<q7_t>(count){}
 
 };
 #endif
@@ -490,7 +490,7 @@ public:
  */
 class SignalQ15 : public SignalData<SignalQ15, q15_t, q63_t> {
 public:
-	SignalQ15(int count) : SignalData(count){}
+	SignalQ15(const arg::Count count) : SignalData(count){}
 	SignalQ15(){}
 
 	bool is_api_available() const {
@@ -562,7 +562,7 @@ class SignalComplexQ15 : public SignalData<SignalComplexQ15, ComplexQ15, q63_t> 
 public:
 
 	SignalComplexQ15(){}
-	SignalComplexQ15(u32 count) : SignalData(count){}
+	SignalComplexQ15(const arg::Count count) : SignalData(count){}
 
 	bool is_api_available() const {
 		return api_q15().is_valid();
@@ -595,7 +595,7 @@ public:
 	  * @param count The number of data points
 	  *
 	  */
-	SignalQ31(int count) : SignalData(count){}
+	SignalQ31(const arg::Count count) : SignalData(count){}
 
 	bool is_api_available() const {
 		return api_q31().is_valid();
@@ -671,7 +671,7 @@ class SignalComplexQ31 : public SignalData<SignalComplexQ31, ComplexQ31, q63_t> 
 public:
 
 	SignalComplexQ31(){}
-	SignalComplexQ31(u32 count) : SignalData(count){}
+	SignalComplexQ31(const arg::Count count) : SignalData(count){}
 
 	bool is_api_available() const {
 		return api_q31().is_valid();
@@ -716,7 +716,7 @@ private:
  */
 class SignalF32 : public SignalData<SignalF32, float32_t, float32_t> {
 public:
-	SignalF32(int count) : SignalData(count){}
+	SignalF32(const arg::Count count) : SignalData(count){}
 	SignalF32(){}
 
 	bool is_api_available() const {
@@ -776,7 +776,7 @@ class SignalComplexF32 : public SignalData<SignalComplexF32, ComplexF32, float32
 public:
 
 	SignalComplexF32(){}
-	SignalComplexF32(u32 count) : SignalData(count){}
+	SignalComplexF32(const arg::Count count) : SignalData(count){}
 
 	bool is_api_available() const {
 		return api_f32().is_valid();

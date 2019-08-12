@@ -30,6 +30,7 @@
 #include "../var/Vector.hpp"
 #include "../var/String.hpp"
 #include "../var/ConstString.hpp"
+#include "../arg/Argument.hpp"
 #include "Stat.hpp"
 
 namespace fs {
@@ -46,22 +47,22 @@ public:
 #if defined __link
 	Dir(link_transport_mdriver_t * driver = 0);
 	static int create(
-			const DestinationDirectoryPath & path,
+			const arg::DestinationDirectoryPath & path,
 			const Permissions & permissions = Permissions(0777),
 			link_transport_mdriver_t * driver = 0
 			);
 	static int create(
-			const DestinationDirectoryPath & path,
+			const arg::DestinationDirectoryPath & path,
 			const Permissions & permissions,
 			bool is_recursive,
 			link_transport_mdriver_t * driver = 0
 			);
 	static bool exists(
-			const SourceDirectoryPath & path,
+			const arg::SourceDirectoryPath & path,
 			link_transport_mdriver_t * driver = 0
 			);
 	static var::Vector<var::String> read_list(
-			const SourceDirectoryPath & path,
+			const arg::SourceDirectoryPath & path,
 			link_transport_mdriver_t * driver = 0
 			);
 
@@ -70,27 +71,27 @@ public:
 
 	/*! \details Returns true if the directory exists. */
 	static int create(
-			const DestinationDirectoryPath & path,
+			const arg::DestinationDirectoryPath & path,
 			const Permissions & permissions = Permissions(0777)
 			);
 	static int create(
-			const DestinationDirectoryPath & path,
+			const arg::DestinationDirectoryPath & path,
 			const Permissions & permissions,
 			bool is_recursive
 			);
 	/*! \details Returns true if the directory exists. */
 	static bool exists(
-			const SourceDirectoryPath & path
+			const arg::SourceDirectoryPath & path
 			);
 	static var::Vector<var::String> read_list(
-			const SourceDirectoryPath & path
+			const arg::SourceDirectoryPath & path
 			);
 #endif
 
 	~Dir();
 
 	/*! \details Opens a directory. */
-	int open(const SourceDirectoryPath & name);
+	int open(const arg::SourceDirectoryPath & name);
 	/*! \details Closes the directory. */
 	int close();
 
@@ -110,9 +111,14 @@ public:
 	 *
 	 */
 #if !defined __link
-	static int remove(const var::ConstString & path, bool recursive = false);
+	static int remove(
+			const arg::SourceDirectoryPath path,
+			const arg::IsRecursive recursive = arg::IsRecursive(false));
 #else
-	static int remove(const var::ConstString & path, bool recursive, link_transport_mdriver_t * driver = 0);
+	static int remove(const arg::SourceDirectoryPath path,
+			const arg::IsRecursive recursive,
+			link_transport_mdriver_t * driver = 0
+			);
 #endif
 
 	/*! \details Gets the next entry and writes the full path of the entry to the given string.

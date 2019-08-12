@@ -39,19 +39,29 @@ Data::Data(){
 	zero();
 }
 
-Data::Data(void * mem, u32 s){
+Data::Data(const arg::DestinationBuffer mem,
+			  const arg::Size s
+			  ){
 	zero();
-	set(mem, s, false);
+	refer_to(
+				mem,
+				s,
+				arg::IsReadOnly(false)
+				);
 }
 
-Data::Data(const void * mem, u32 s){
+Data::Data(const arg::SourceBuffer mem, const arg::Size s){
 	zero();
-	set((void*)mem, s, true);
+	refer_to(
+				arg::DestinationBuffer((void*)mem.argument()),
+				s,
+				arg::IsReadOnly(true)
+				);
 }
 
-Data::Data(u32 s){
+Data::Data(const arg::Size s){
 	zero();
-	alloc(s);
+	allocate(s);
 }
 
 
@@ -105,25 +115,36 @@ int Data::copy_cstring(const char * str){
 	return 0;
 }
 
-int Data::copy_contents(const Data & a){
-	return copy_contents(a, 0, a.size());
+int Data::copy_contents(const arg::ImplicitSourceData a){
+	return copy_contents(
+				arg::SourceData(a.argument()),
+				arg::Location(0),
+				arg::Size(a.argument().size()));
 }
 
 
-int Data::copy_contents(const Data & a, u32 size){
-	return copy_contents(a, 0, size);
+int Data::copy_contents(const arg::SourceData a,
+								const arg::Size size
+								){
+	return copy_contents(
+				a,
+				arg::Location(0),
+				arg::Size(size));
 }
 
-int Data::copy_contents(const Data & a, u32 destination_position, u32 size){
-	if( size > a.size() ){ size = a.size(); }
-	if( capacity() < (size + destination_position) ){
-		if( set_size(size + destination_position) < 0 ){
+int Data::copy_contents(const arg::SourceData a,
+		const arg::Location destination,
+		const arg::Size size){
+	u32 size_value = size.argument();
+	if( size_value > a.argument().size() ){ size_value = a.argument().size(); }
+	if( capacity() < (size.argument() + destination.argument()) ){
+		if( set_size(size_value + destination.argument()) < 0 ){
 			return -1;
 		}
 	} else {
-		m_size = size + destination_position;
+		m_size = size_value + destination.argument();
 	}
-	::memcpy(to_u8() + destination_position, a.to_void(), size);
+	::memcpy(to_u8() + destination.argument(), a.argument().to_void(), size_value);
 	return 0;
 }
 
@@ -131,14 +152,22 @@ void Data::move_object(Data & a){
 	if( this != &a ){
 		if( a.is_internally_managed() ){
 			//set this memory to the memory of a
-			set(a.to_void(), a.capacity(), false);
+			refer_to(
+						arg::DestinationBuffer(a.to_void()),
+						arg::Size(a.capacity()),
+						arg::IsReadOnly(false)
+						);
 			m_size = a.size();
 
 			//setting needs free on this and clearing it on a will complete the transfer
 			set_needs_free();
 			a.clear_needs_free();
 		} else {
-			set(a.to_void(), a.size(), a.is_read_only());
+			refer_to(
+						arg::DestinationBuffer(a.to_void()),
+						arg::Size(a.size()),
+						arg::IsReadOnly(a.is_read_only())
+						);
 		}
 	}
 }
@@ -147,30 +176,40 @@ void Data::copy_object(const Data & a){
 	if( this != &a ){
 		if( a.is_internally_managed() ){
 			//copy the contents of a to this object
-			copy_contents(a, a.capacity());
+			copy_contents(
+						arg::SourceData(a),
+						arg::Size(a.capacity())
+						);
 			m_size = a.size();
 		} else {
-			set((void*)a.data(), a.capacity(), a.is_read_only());
+			refer_to(
+						arg::DestinationBuffer((void*)a.to_void()),
+						arg::Size(a.capacity()),
+						arg::IsReadOnly(a.is_read_only())
+						);
 			m_size = a.size();
 		}
 	}
 }
 
-void Data::refer_to(void * mem, u32 s, bool readonly){
+void Data::refer_to(const arg::DestinationBuffer mem,
+						  const arg::Size s,
+						  const arg::IsReadOnly readonly){
 
 	//free the data if it was previously allocated dynamically
 	free();
 
-	m_mem_write = mem;
-	m_capacity = s;
-	m_size = s;
-	if( m_mem_write ){
+	m_mem_write = mem.argument();
+	m_capacity = s.argument();
+	m_size = s.argument();
+	if( mem.argument() ){
 		this->m_mem = m_mem_write;
 	} else {
-		mem = (void*)&m_zero_value;
+		//read should always point to a non-null
+		this->m_mem = (void*)&m_zero_value;
 	}
 
-	if( readonly ){
+	if( readonly.argument() ){
 		m_mem_write = 0;
 	}
 }
@@ -185,37 +224,43 @@ void Data::zero(){
 }
 
 
-int Data::allocate(u32 s, bool resize){
+int Data::allocate(
+		const arg::Size s,
+		const arg::IsResize resize){
 
 	void * new_data;
-	u32 original_size = s;
+	u32 original_size = s.argument();
+	u32 size_value = s.argument();
 
 	if( ( !needs_free() ) && (m_mem != &m_zero_value) ){
 		//this data object can't be resized -- it was created using a pointer (not dynanmic memory allocation)
 		return -1;
 	}
 
-	if( s == 0 ){
+	if( size_value == 0 ){
 		zero();
 		return 0;
 	}
 
-
-	if( s <= minimum_size() ){
-		s = minimum_size();
+	if( size_value <= minimum_size() ){
+		size_value = minimum_size();
 	} else {
 		//change s to allocate an integer multiple of minimum_size()
-		u32 blocks = (s - minimum_size() + block_size() - 1) / block_size();
-		s = minimum_size() + blocks * block_size();
+		u32 blocks = (size_value - minimum_size() + block_size() - 1) / block_size();
+		size_value = minimum_size() + blocks * block_size();
 	}
 
-	new_data = malloc(s);
+	new_data = malloc(size_value);
 	if( set_error_number_if_null(new_data) == 0 ){
 		return -1;
 	}
 
-	if( resize && m_capacity ){
-		::memcpy(new_data, m_mem, s > m_capacity ? m_capacity : s);
+	if( resize.argument() && m_capacity ){
+		::memcpy(
+					new_data,
+					m_mem,
+					size_value > m_capacity ? m_capacity : size_value
+													  );
 	}
 
 	free();
@@ -224,18 +269,18 @@ int Data::allocate(u32 s, bool resize){
 	m_mem_write = new_data;
 	set_needs_free();
 	m_mem = m_mem_write;
-	m_capacity = s;
+	m_capacity = size_value;
 
 	return 0;
 }
 
-int Data::set_size(u32 s){
-	if( s <= capacity() ){
-		m_size = s;
+int Data::set_size(const arg::ImplicitSize s){
+	if( s.argument() <= capacity() ){
+		m_size = s.argument();
 		return 0;
 	} //no need to increase size
 
-	return allocate(s, true);
+	return allocate(arg::Size(s.argument()), arg::IsResize(true));
 }
 
 void Data::fill(unsigned char d){
@@ -244,10 +289,10 @@ void Data::fill(unsigned char d){
 	}
 }
 
-void Data::swap_byte_order(int size){
+void Data::swap_byte_order(const arg::ImplicitSize size){
 
 	if( data() ){
-		if( size == 4 ){
+		if( size.argument() == 4 ){
 			u32 * p = to_u32();
 			if( p ){
 				u32 i;

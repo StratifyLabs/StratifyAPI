@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstring>
 #include "../api/VarObject.hpp"
+#include "../arg/Argument.hpp"
 
 namespace var {
 
@@ -78,8 +79,8 @@ public:
 	};
 
 	/*! \details Compares to a c-string. */
-	bool operator==(const ConstString & a) const {
-		return compare(a) == 0;
+	bool operator == (const ConstString & a) const {
+		return compare(arg::StringToCompare(a)) == 0;
 	}
 
 	/*! \details Access a byte from the string.
@@ -88,14 +89,14 @@ public:
 	  * The at() method checks the bounds.
 	  *
 	  */
-	char operator[](u32 idx) const { return str()[idx]; }
+	char operator[](u32 idx) const { return cstring()[idx]; }
 
 	/*! \details Compares to a c-string (inequality). */
-	bool operator!=(const ConstString & a) const { return compare(a) != 0; }
-	bool operator>(const ConstString & a) const { return compare(a) > 0; }
-	bool operator<(const ConstString & a) const { return compare(a) < 0; }
-	bool operator>=(const ConstString & a) const { return compare(a) >= 0; }
-	bool operator<=(const ConstString & a) const { return compare(a) <= 0; }
+	bool operator!=(const ConstString & a) const { return compare(arg::StringToCompare(a)) != 0; }
+	bool operator>(const ConstString & a) const { return compare(arg::StringToCompare(a)) > 0; }
+	bool operator<(const ConstString & a) const { return compare(arg::StringToCompare(a)) < 0; }
+	bool operator>=(const ConstString & a) const { return compare(arg::StringToCompare(a)) >= 0; }
+	bool operator<=(const ConstString & a) const { return compare(arg::StringToCompare(a)) <= 0; }
 
 	/*! \details Converts to an integer.
 	  *
@@ -112,38 +113,46 @@ public:
 	float to_float() const;
 	float atoff() const { return to_float(); }
 
-	int to_long(int base = 10){ return ::strtol(cstring(), 0, base); }
-	int to_unsigned_long(int base = 10){ return ::strtoul(cstring(), 0, base); }
+	int to_long(
+			const arg::NumberBase base = arg::NumberBase(10)
+			){
+		return ::strtol(cstring(), 0, base.argument());
+	}
+
+	int to_unsigned_long(
+			const arg::NumberBase base = arg::NumberBase(10)
+			){
+		return ::strtoul(cstring(), 0, base.argument());
+	}
 
 	/*! \details Returns character at \a pos.
 	 *
 	 * Returns 0 if pos is past the end of the string.
 	 *
 	 */
-	char at(u32 pos) const;
+	char at(const arg::ImplicitPosition position) const;
 
 	/*! \details Returns a c-style string pointer. */
 	const char * cstring() const { return m_string; }
-	virtual const char * str() const { return m_string; }
-	//compatible with std::string (but not Stratify API convention)
-	const char * c_str() const { return m_string; }
 
 	/*! \details Returns the length of the string. */
 	u32 length() const { return strlen(m_string); }
-	//compatible with std::string
-	u32 len() const { return length(); }
 
 	/*! \details Tests if string is empty. */
 	bool is_empty() const { return m_string[0] == 0; }
-	//compatible with std::string
-	bool empty() const { return is_empty(); }
 
 
 	/*! \details Finds a character within the object. */
-	u32 find(const char a, u32 pos = 0) const;
+	u32 find(
+			const arg::CharacterToFind a,
+			const arg::Position pos = arg::Position(0)
+			) const;
 
 	/*! \details Finds a character within the object. */
-	u32 find_not(const char a, u32 pos = 0) const;
+	u32 find_not(
+			const arg::CharacterToFind a,
+			const arg::Position pos = arg::Position(0)
+			) const;
 
 	/*! \details Finds a var::ConstString within the object.
 	  *
@@ -151,7 +160,10 @@ public:
 	  * @param pos The position to start searching (default is beginning)
 	  * @return The position of the string or var::String::npos if the String was not found
 	  */
-	u32 find(const ConstString & a, u32 pos = 0) const;
+	u32 find(
+			const arg::StringToFind a,
+			const arg::Position pos = arg::Position(0)
+			) const;
 
 	/*! \details Finds a string within the object.
 	  *
@@ -163,16 +175,30 @@ public:
 	  * or npos if \a a was not found
 	  *
 	  */
-	u32 find(const ConstString & a, u32 pos, u32 n) const;
+	u32 find(
+			const arg::StringToFind a,
+			arg::Position pos,
+			const arg::Length length
+			) const;
 
 	/*! \details Finds a string within the string searching from right to left. */
-	u32 rfind(const ConstString & a, u32 pos = 0) const;
+	u32 rfind(
+			const arg::StringToFind a,
+			const arg::Position pos = arg::Position(0)
+			) const;
 
 	/*! \details Finds a character within the string searching from right to left. */
-	u32 rfind(const char c, u32 pos = 0) const;
+	u32 rfind(
+			const arg::CharacterToFind c,
+			const arg::Position position = arg::Position(0)
+			) const;
 
 	/*! \details Finds a string within the string searching from right to left. */
-	u32 rfind(const ConstString & a, u32 pos, u32 n) const;
+	u32 rfind(
+			const arg::StringToFind a,
+			const arg::Position position,
+			arg::Length length
+			) const;
 
 	/*! \details Compares the object to \a str.
 	  *
@@ -180,7 +206,7 @@ public:
 	  * @returns Zero if the strings are the same
 	  *
 	  */
-	int compare(const ConstString & a) const;
+	int compare(const arg::StringToCompare a) const;
 
 	/*! \details Compares the object to \a str.
 	  *
@@ -190,7 +216,10 @@ public:
 	  * @return Zero if the strings match
 	  *
 	  */
-	int compare(u32 pos, u32 len, const ConstString & s) const;
+	int compare(
+			const arg::Position position,
+			const arg::Length	length,
+			const arg::StringToCompare s) const;
 
 	/*! \details Compares the object to \a str.
 	  *
@@ -198,13 +227,23 @@ public:
 	  * @param len The length of the compared string (this object)
 	  * @param str A reference to the comparing string
 	  * @param subpos The position in the comparing string to start comparing
-	  * @param n The number os characters to compare
+	  * @param n The number string characters to compare
 	  * @return Zero if the strings match
 	  *
 	  */
-	int compare(u32 pos, u32 len, const ConstString & str, u32 subpos, u32 n) const;
+	int compare(
+			const arg::Position position,
+			const arg::Length length,
+			const arg::StringToCompare string_to_compare,
+			const arg::SubPosition sub_position,
+			const arg::MatchLength match_length
+			) const;
 
-	int compare(u32 pos, u32 len, const ConstString & s, u32 n) const;
+	int compare(
+			const arg::Position position,
+			const arg::Length length,
+			const arg::StringToCompare string_to_compare,
+			const arg::MatchLength match_length) const;
 
 protected:
 	void set_string_pointer(const char * s);

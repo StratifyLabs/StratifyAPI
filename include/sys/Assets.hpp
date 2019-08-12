@@ -56,7 +56,11 @@ public:
 		return m_font_info_list;
 	}
 
-	static const sgfx::FontInfo * find_font(u8 point_size, u8 weight = sgfx::FontInfo::REGULAR, const var::ConstString & name = "", bool is_exact_match = false);
+	static const sgfx::FontInfo * find_font(
+			const arg::FontPointSize point_size,
+			const arg::FontStyle style = arg::FontStyle(sgfx::FontInfo::REGULAR),
+			const arg::FontName name = arg::FontName(""),
+			const arg::IsExactMatch is_exact_match = arg::IsExactMatch(false));
 
 	/*! \details Returns a read-only reference to the vector path list.
 	 *
@@ -68,7 +72,9 @@ public:
 		return m_vector_path_list;
 	}
 
-	static sgfx::VectorPath find_vector_path(const var::ConstString & name);
+	static sgfx::VectorPath find_vector_path(
+			const var::ConstString & name
+			);
 
 private:
 

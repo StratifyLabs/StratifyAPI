@@ -2,9 +2,12 @@
 
 using namespace fmt;
 
-Svic::Svic(const var::ConstString & path){
-	if( path.is_empty() == false ){
-		open(path, fs::OpenFlags::read_only());
+Svic::Svic(const arg::SourceFilePath & path){
+	if( path.argument().is_empty() == false ){
+		open(
+					arg::FilePath(path.argument()),
+					fs::OpenFlags::read_only()
+					);
 		parse_icons();
 	}
 	m_current_icon_at = (u32)-1;
@@ -15,25 +18,25 @@ int Svic::parse_icons(){
 
 	if( fileno() >= 0 ){
 
-		int cursor = seek(fs::Location(0), fs::File::CURRENT);
+		int cursor = seek(arg::Location(0), fs::File::CURRENT);
 
 		sg_vector_icon_header_t header;
 		while( read(
-					 fs::DestinationBuffer(&header),
-					 fs::Size(sizeof(header))
+					 arg::DestinationBuffer(&header),
+					 arg::Size(sizeof(header))
 					 ) == sizeof(header) ){
 			if( m_icons.push_back(header) < 0 ){
 				set_error_number(m_icons.error_number());
 				return -1;
 			}
 			seek(
-						fs::Location(header.count * sizeof(sg_vector_path_description_t)),
+						arg::Location(header.count * sizeof(sg_vector_path_description_t)),
 						fs::File::CURRENT
 						);
 		}
 
 		seek(
-					fs::Location(cursor),
+					arg::Location(cursor),
 					fs::File::SET
 					);
 	}
@@ -61,11 +64,11 @@ sgfx::VectorPath Svic::get(const var::ConstString & name) const {
 sgfx::VectorPath Svic::at(u32 i) const {
 	sgfx::VectorPath vector_path;
 	if( m_current_icon_at != i ){
-		m_current_icon.resize(m_icons.at(i).count);
+		m_current_icon.resize(arg::Count(m_icons.at(i).count));
 		int result;
 		if( (result = read(
-				  fs::Location(m_icons.at(i).list_offset),
-				  m_current_icon)
+				  arg::Location(m_icons.at(i).list_offset),
+				  arg::DestinationData(m_current_icon))
 			  ) < 0 ){
 			return sgfx::VectorPath();
 		}
@@ -83,17 +86,20 @@ int Svic::append(const var::ConstString & name, const var::Vector<sg_vector_path
 	strncpy(header.name, name.cstring(), 23);
 	header.count = list.count();
 	header.list_offset = seek(
-				fs::Location(0),
+				arg::Location(0),
 				fs::File::CURRENT
 				) + sizeof(header);
 	if( write(
-			 fs::SourceBuffer(&header),
-			 fs::Size(sizeof(header))
+			 arg::SourceBuffer(&header),
+			 arg::Size(sizeof(header))
 			 ) != sizeof(header) ){
 		set_error_number( error_number() );
 		return -1;
 	}
-	list_data.refer_to((void*)list.to_void(), list.size(), true);
+	list_data.refer_to(
+				arg::SourceBuffer(list.to_void()),
+				arg::Size(list.size())
+				);
 	if( write(list_data) != (int)list.size() ){
 		set_error_number( error_number() );
 		return -1;

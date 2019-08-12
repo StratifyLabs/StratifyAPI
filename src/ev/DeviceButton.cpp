@@ -14,7 +14,10 @@ int DeviceButton::init(){
 	button_attr_t attr;
 	memset(&attr, 0, sizeof(attr));
 	attr.o_flags = BUTTON_FLAG_INITIALIZE;
-	return ioctl(I_BUTTON_SETATTR, &attr);
+	return ioctl(
+				arg::IoRequest(I_BUTTON_SETATTR),
+				arg::IoArgument(&attr)
+				);
 }
 
 
@@ -33,12 +36,18 @@ int DeviceButton::set_attributes(int location, int id,
 		attr.threshold_msec = held_threshold.milliseconds();
 	}
 
-	ret = ioctl(I_BUTTON_SETATTR, &attr);
+	ret = ioctl(
+				arg::IoRequest(I_BUTTON_SETATTR),
+				arg::IoArgument(&attr)
+				);
 
 	if( (ret >= 0 ) && actuated_threshold.is_valid() ){
 		attr.o_flags = BUTTON_FLAG_SET_ACTUATED_THRESHOLD;
 		attr.threshold_msec = actuated_threshold.milliseconds();
-		ret = ioctl(I_BUTTON_SETATTR, &attr);
+		ret = ioctl(
+					arg::IoRequest(I_BUTTON_SETATTR),
+					arg::IoArgument(&attr)
+					);
 	}
 
 	return ret;
@@ -90,10 +99,10 @@ bool DeviceButton::is_active() const {
 void DeviceButton::update(){
 	u32 o_flags = m_status.o_flags;
 	if( (seek(
-			  fs::Location(m_location*sizeof(m_status))
+			  arg::Location(m_location*sizeof(m_status))
 			  ) >= 0) && (read(
-								  fs::DestinationBuffer(&m_status),
-								  fs::Size(sizeof(m_status))
+								  arg::DestinationBuffer(&m_status),
+								  arg::Size(sizeof(m_status))
 								  ) == sizeof(m_status)) ){
 		//keep track of the flags because the driver will clear the flags before the EventLoop does
 		m_status.o_flags |= o_flags;
@@ -104,10 +113,10 @@ void DeviceButton::update(){
 }
 
 void DeviceButton::reset(){
-	seek(fs::Location(0));
+	seek(arg::Location(0));
 	while( read(
-				 fs::DestinationBuffer(&m_status),
-				 fs::Size(sizeof(m_status))
+				 arg::DestinationBuffer(&m_status),
+				 arg::Size(sizeof(m_status))
 				 ) == sizeof(m_status) ){
 		;
 	}

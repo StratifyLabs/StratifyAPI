@@ -64,7 +64,7 @@ public:
 		m_label = label;
 	}
 
-	inline const char * label() const { return m_label.c_str(); }
+	inline const char * label() const { return m_label.cstring(); }
 
 
 	inline void set(float min, float max, float tick = -1.0){

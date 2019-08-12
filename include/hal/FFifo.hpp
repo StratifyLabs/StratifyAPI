@@ -112,7 +112,7 @@ public:
 	 * @return Zero on success or less than zero for an error
 	 *
 	 */
-	int initialize(const var::ConstString & path,
+	int initialize(const arg::SourceFilePath & path,
 						const FFifoAttributes & attributes,
 						const fs::OpenFlags & flags = fs::OpenFlags());
 

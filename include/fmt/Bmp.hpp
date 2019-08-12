@@ -15,7 +15,7 @@ class Bmp: public api::FmtFileObject {
 public:
 
 	/*! \details Constructs a new bitmap object and opens the bitmap as a read-only file. */
-	Bmp(const var::ConstString & name);
+	Bmp(const arg::SourceFilePath name);
 
 	/*! \details Constructs an empty bitmap object. */
 	Bmp();
@@ -33,26 +33,30 @@ public:
 	unsigned int calc_row_size() const;
 
 	/*! \details Opens the specified bitmap as readonly. */
-	int open_readonly(const var::ConstString & name);
+	int open_readonly(const arg::SourceFilePath name);
 
 	/*! \details Opens the specified bitmap as read write. */
-	int open_readwrite(const var::ConstString & name);
+	int open_readwrite(const arg::SourceFilePath name);
 
 	/*! \details Opens the specified bitmap with the specified access (e.g., Bmp::READONLY). */
-	int open(const var::ConstString & name, const fs::OpenFlags & flags);
+	int open(
+			const arg::FilePath name,
+			const fs::OpenFlags & flags
+			);
 
 	/*! \details Creates a new bitmap using the specified parameters. */
 	int create(
-			const var::ConstString & name,
-			s32 width, s32 height,
-			u16 planes,
-			u16 bits_per_pixel);
+			const arg::DestinationFilePath name,
+			const arg::Width width,
+			const arg::Height height,
+			const arg::PlaneCount planes,
+			const arg::BitsPerPixel bits_per_pixel);
 
 	/*! \details Creates a new bitmap and save it to the /app filesystem (flash memory). */
 	static int create_appfs(const var::ConstString & name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, u32 nbyte);
 
 	/*! \details Moves file pointer to the start of the bitmap data. */
-	void rewind(){ seek(fs::Location(m_offset)); }
+	void rewind(){ seek(arg::Location(m_offset)); }
 
 	/*! \details Seeks the file to the data at the specified row. */
 	int seek_row(s32 y) const;

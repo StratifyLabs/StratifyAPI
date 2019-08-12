@@ -307,7 +307,7 @@ public:
 	 * @param version The destination string for the version
 	 * @return Zero on success
 	 */
-	static int get_kernel_version(var::String & version);
+	static var::String get_kernel_version();
 
 	/*! \details Puts the kernel in powerdown mode.
 	 *
@@ -315,7 +315,9 @@ public:
 	 * device will power on (reset).  If this isn't supported,
 	 * the device will power off until reset by an external signal
 	 */
-	static void powerdown(int timeout_msec = 0);
+	static void powerdown(
+			const chrono::Milliseconds & milliseconds = chrono::Milliseconds(0)
+			);
 
 	/*! \details Puts the kernel in hibernate mode.
 	 *
@@ -323,7 +325,9 @@ public:
 	 * device will wake up from hibernation.  If this isn't supported,
 	 * the device will stay in hibernation until woken up externally
 	 */
-	static int hibernate(int timeout_msec = 0);
+	static int hibernate(
+			const chrono::Milliseconds & milliseconds = chrono::Milliseconds(0)
+			);
 
 	/*! \details Executes a kernel request.
 	 *
@@ -334,7 +338,10 @@ public:
 	 * The kernel request must
 	 * be defined and implemented by the board support package.
 	 */
-	static int request(int req, void * arg = 0);
+	static int request(
+			const arg::KernelRequest req,
+			arg::DestinationBuffer arg = arg::DestinationBuffer(0)
+			);
 
 	/*! \details Request a kernel install library's API.
 	 *
@@ -382,7 +389,10 @@ public:
 	 *
 	 */
 	int open(){
-		return fs::File::open("/dev/sys", fs::OpenFlags::read_write());
+		return fs::File::open(
+					arg::FilePath("/dev/sys"),
+					fs::OpenFlags::read_write()
+					);
 	}
 
 	/*! \details Loads the current system info.
@@ -401,16 +411,6 @@ public:
 	using File::open;
 	int get_23_info(sys_23_info_t & attr);
 	int get_26_info(sys_26_info_t & attr);
-
-
-	//these are deprecated: use sys::TaskManager instead
-	int get_taskattr(sys_taskattr_t & attr, int task = -1);
-	inline int get_taskattr(sys_taskattr_t * attr, int task = -1){
-		return get_taskattr(*attr, task);
-	}
-
-	int current_task() const { return m_current_task; }
-	void set_current_task(int v){ m_current_task = v; }
 	/*! \endcond */
 
 	/*! \details Loads the cloud kernel ID.
@@ -443,8 +443,8 @@ public:
 	 *
 	 *
 	 */
-	static void redirect_stdout(int fd){
-		_impure_ptr->_stdout->_file = fd;
+	static void redirect_stdout(const arg::FileDescriptor fd){
+		_impure_ptr->_stdout->_file = fd.argument();
 	}
 
 	/*! \details Redirects the standard input from the specified file descriptor.
@@ -454,8 +454,8 @@ public:
 	 * See Sys::redirect_stdout() for an example.
 	 *
 	 */
-	static void redirect_stdin(int fd){
-		_impure_ptr->_stdin->_file = fd;
+	static void redirect_stdin(const arg::FileDescriptor fd){
+		_impure_ptr->_stdin->_file = fd.argument();
 	}
 
 	/*! \details Redirects the standard error from the specified file descriptor.
@@ -465,16 +465,13 @@ public:
 	 * See Sys::redirect_stdout() for an example.
 	 *
 	 */
-	static void redirect_stderr(int fd){
-		_impure_ptr->_stderr->_file = fd;
+	static void redirect_stderr(const arg::FileDescriptor fd){
+		_impure_ptr->_stderr->_file = fd.argument();
 	}
 #endif
 
 
 private:
-	/*! \cond */
-	int m_current_task;
-	/*! \endcond */
 
 };
 

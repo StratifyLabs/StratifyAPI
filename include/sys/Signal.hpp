@@ -6,7 +6,7 @@
 #include <pthread.h>
 #include <signal.h>
 
-
+#include "../arg/Argument.hpp"
 #include "../ev/Event.hpp"
 #include "../api/SysObject.hpp"
 
@@ -205,7 +205,7 @@ private:
 class Signal : public api::SysWorkObject {
 public:
 
-	enum {
+	enum signal_number {
 		ABRT /*! Abort signal, default action is to abort */ = SIGABRT,
 		FPE /*! FPE signal, default action is to abort */ = SIGFPE,
 		INT /*! Interrupt signal, default action is to terminate */ = SIGINT,
@@ -249,7 +249,13 @@ public:
 	 * @param sigvalue The signal value
 	 *
 	 */
-	Signal(int signo, int sigvalue = 0){ m_signo = signo; m_sigvalue.sival_int = sigvalue; }
+	Signal(
+			enum signal_number signo,
+			const arg::SignalValueInteger sigvalue = arg::SignalValueInteger(0)
+			){
+		m_signo = signo;
+		m_sigvalue.sival_int = sigvalue.argument();
+	}
 
 	/*! \details Constructs an event based on a signal number.
 	  *
@@ -257,10 +263,18 @@ public:
 	  * @param sigptr The signal value as a pointer
 	  *
 	  */
-	Signal(int signo, void * sigptr){ m_signo = signo; m_sigvalue.sival_ptr = sigptr; }
+	Signal(
+			enum signal_number signo,
+			const arg::SignalValuePointer sigvalue
+			){
+		m_signo = signo;
+		m_sigvalue.sival_ptr = sigvalue.argument();
+	}
 
 	/*! \details Returns a UI Event based on this signal event. */
-	ev::Event event(){ return ev::Event(ev::Event::SIGNAL, this); }
+	ev::Event event(){
+		return ev::Event(ev::Event::SIGNAL, this);
+	}
 
 	/*! \details Sends a signal to a process.
 	 *
@@ -270,10 +284,12 @@ public:
 	  * This method sends this signal to the specified PID.
 	  * It uses the POSIX kill() function.
 	 */
-	int send(pid_t pid) const {
+	int send(
+			const arg::Pid pid
+			) const {
 		return ::sapi_signal_posix_kill(
 			#if !defined __win32
-					pid,
+					pid.argument(),
 			#endif
 					m_signo);
 	}
@@ -289,7 +305,9 @@ public:
 	  * will be sent along with signo and sigvalue.
 	  *
 	 */
-	int queue(pid_t pid) const { return ::sigqueue(pid, m_signo, m_sigvalue); }
+	int queue(const arg::Pid pid) const {
+		return ::sigqueue(pid.argument(), m_signo, m_sigvalue);
+	}
 #endif
 
 	/*! \details Sends a signal to a thread within a process.
@@ -297,10 +315,16 @@ public:
 	 * @param t The thread ID
 	 * @return Zero on success
 	 */
-	int send(pthread_t t) const { return ::pthread_kill(t, m_signo); }
+	int send(
+			const arg::ThreadId t
+			) const {
+		return ::pthread_kill(t.argument(), m_signo);
+	}
 
 	/*! \details Triggers the event on the current thread. */
-	int send() const { return ::pthread_kill(pthread_self(), m_signo); }
+	int send() const {
+		return ::pthread_kill(pthread_self(), m_signo);
+	}
 
 	/*! \details Sets the event handler.
 	 *

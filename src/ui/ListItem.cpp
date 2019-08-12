@@ -152,7 +152,7 @@ ListItemCheck::ListItemCheck(const char * label, List * parent) :
 }
 
 
-DirList::DirList(const fs::SourceDirectoryPath & path,
+DirList::DirList(const arg::SourceDirectoryPath & path,
 					  LinkedElement * parent,
 					  LinkedElement * child) :
 	List(parent),
@@ -193,7 +193,7 @@ LinkedElement & DirList::at(list_attr_size_t i){
 }
 
 
-void DirList::set_path(const fs::SourceDirectoryPath & path){
+void DirList::set_path(const arg::SourceDirectoryPath & path){
 	m_path = path.argument();
 	m_dir.close();
 	if( m_dir.open(

@@ -14,7 +14,10 @@ int TextBox::count_lines(sg_size_t w){
 }
 
 int TextBox::count_lines(const Font * font, sg_size_t w, const TextAttr & text_attr){
-	Tokenizer tokens(text_attr.string(), " ");
+	Tokenizer tokens(
+				arg::TokenEncodedString(text_attr.string()),
+				arg::TokenDelimeters(" ")
+				);
 	u32 i;
 	String line;
 	int len;
@@ -36,7 +39,10 @@ int TextBox::count_lines(const Font * font, sg_size_t w, const TextAttr & text_a
 
 
 void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
-	Tokenizer tokens(string(), " ");
+	Tokenizer tokens(
+				arg::TokenEncodedString(string()),
+				arg::TokenDelimeters(" ")
+				);
 	String line;
 	u32 i;
 	sg_size_t w;
@@ -99,7 +105,7 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 			} else {
 				start.x = p.x + (w - len)/2;
 			}
-			font->draw(line.c_str(), attr.bitmap(), start);
+			font->draw(line.cstring(), attr.bitmap(), start);
 			line_y += (font_height + line_spacing);
 		}
 		draw_line++;
@@ -114,7 +120,7 @@ void TextBox::build_line(const Font * font, u32 & i, String & line, Tokenizer & 
 	build_len = 0;
 
 	for(j=i; j < count; j++){
-		line_len = font->calc_len(line.c_str());
+		line_len = font->calc_len(line.cstring());
 		len = font->calc_len(tokens.at(i));
 		if( line_len + len <= w ){
 			line << tokens.at(j);
@@ -135,7 +141,7 @@ void TextBox::build_line(const Font * font, u32 & i, String & line, Tokenizer & 
 		}
 	}
 
-	build_len = font->calc_len(line.c_str());
+	build_len = font->calc_len(line.cstring());
 
 }
 

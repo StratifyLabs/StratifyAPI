@@ -186,6 +186,9 @@ public:
 	 */
 	DriveInfo get_info() const;
 
+private:
+	int set_attributes(const drive_attr_t & attributes) const;
+
 
 };
 

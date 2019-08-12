@@ -159,7 +159,7 @@ public:
 	 *
 	 */
 	int set_channel(u32 loc, u32 value){
-		return Periph::set_channel(loc, value, I_TMR_SETCHANNEL);
+		return Periph::set_channel(loc, value, arg::IoRequest(I_TMR_SETCHANNEL));
 	}
 
 	/*! \details Gets the value of the specified channel.
@@ -172,7 +172,7 @@ public:
 	 *
 	 */
 	u32 get_channel(u32 loc){
-		return Periph::get_channel(loc, I_TMR_GETCHANNEL);
+		return Periph::get_channel(loc, arg::IoRequest(I_TMR_GETCHANNEL));
 	}
 
 	/*! \details Gets the value of the timer. */

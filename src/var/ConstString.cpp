@@ -22,50 +22,67 @@ void ConstString::set_string_pointer(const char * s){
 
 float ConstString::to_float() const {
 #ifndef __link
-	return ::atoff(str());
+	return ::atoff(cstring());
 #else
-	return ::atof(str());
+	return ::atof(cstring());
 #endif
 }
 
-char ConstString::at(u32 pos) const {
-	if (pos < length()){
-		return str()[pos];
+char ConstString::at(
+		const arg::ImplicitPosition position
+		) const {
+	if (position.argument() < length()){
+		return cstring()[position.argument()];
 	}
 	return 0;
 }
 
 
-u32 ConstString::find(const ConstString & str, u32 pos) const {
-	return find(str, pos, str.length());
+u32 ConstString::find(const arg::StringToFind str,
+							 const arg::Position pos
+							 ) const {
+	return find(
+				str,
+				pos,
+				arg::Length(str.argument().length())
+				);
 }
 
-u32 ConstString::find(const char c, u32 pos) const{
+u32 ConstString::find(
+		const arg::CharacterToFind c,
+		const arg::Position pos
+		) const{
 	char str[2];
-	str[0] = c;
+	str[0] = c.argument();
 	str[1] = 0;
-	return find(str, pos);
+	return find(arg::StringToFind(str), pos);
 }
 
-u32 ConstString::find_not(const char a, u32 pos) const {
+u32 ConstString::find_not(
+		const arg::CharacterToFind a,
+		const arg::Position pos
+		) const {
 	u32 l = length();
-	while( (at(pos) != a) && (pos < l) ){
-		pos++;
+	u32 pos_value = pos.argument();
+	while( (at(pos_value) != a.argument()) && (pos_value < l) ){
+		pos_value++;
 	}
-	return pos;
+	return pos_value;
 }
 
 
-u32 ConstString::find(const ConstString & s, u32 pos, u32 n) const {
+u32 ConstString::find(const arg::StringToFind s,
+							 arg::Position pos,
+							 const arg::Length length) const {
 	//find s (length n) starting at pos
 
-	if( s.is_empty() == false ){
-		u32 len = length();
-		if( len < n ){
+	if( s.argument().is_empty() == false ){
+		u32 len = this->length();
+		if( len < length.argument() ){
 			return npos;
 		}
-		for(u32 i=pos; i < len - n + 1; i++){
-			if( strncmp(str() + i, s.str(), n) == 0 ){
+		for(u32 i=pos.argument(); i < len - length.argument() + 1; i++){
+			if( strncmp(cstring() + i, s.argument().cstring(), length.argument()) == 0 ){
 				return i;
 			}
 		}
@@ -73,27 +90,45 @@ u32 ConstString::find(const ConstString & s, u32 pos, u32 n) const {
 	return npos;
 }
 
-u32 ConstString::rfind(const ConstString & str, u32 pos) const {
-	return rfind(str, pos, str.length());
+u32 ConstString::rfind(
+		const arg::StringToFind str,
+		const arg::Position pos
+		) const {
+	return rfind(
+				str,
+				pos,
+				arg::Length(str.argument().length())
+				);
 }
 
-u32 ConstString::rfind(const char c, u32 pos) const{
+u32 ConstString::rfind(
+		const arg::CharacterToFind c,
+		const arg::Position position
+		) const{
 	char str[2];
-	str[0] = c;
+	str[0] = c.argument();
 	str[1] = 0;
-	return rfind(str, pos);
+	return rfind(arg::StringToFind(str), position);
 }
 
-u32 ConstString::rfind(const ConstString & s, u32 pos, u32 n) const {
+u32 ConstString::rfind(
+		const arg::StringToFind s,
+		const arg::Position position,
+		arg::Length length
+		) const {
 	//find s (length n) starting at pos
-	if( s != 0 ){
-		u32 len = s.length();
-		if( n > len ){
-			n = len;
+	u32 n_value = length.argument();
+	if( s.argument().length() != 0 ){
+		u32 len = s.argument().length();
+		if( n_value > len ){
+			n_value = len;
 		}
-		u32 this_len = length();
-		for(s32 i=this_len-n; i >= (s32)pos; i--){
-			if( strncmp(str() + i, s.str(), n) == 0 ){
+		u32 this_len = this->length();
+		for(s32 i=this_len-n_value; i >= (s32)position.argument(); i--){
+			if( strncmp(
+					 cstring() + i,
+					 s.argument().cstring(),
+					 n_value) == 0 ){
 				return i;
 			}
 		}
@@ -101,19 +136,32 @@ u32 ConstString::rfind(const ConstString & s, u32 pos, u32 n) const {
 	return npos;
 }
 
-int ConstString::compare(u32 pos, u32 len, const ConstString & s) const {
-	return strncmp(str() + pos, s.str(), len);
+int ConstString::compare(
+		const arg::Position position,
+		const arg::Length length,
+		const arg::StringToCompare s
+		) const {
+	return strncmp(
+				cstring() + position.argument(),
+				s.argument().cstring(),
+				length.argument());
 }
 
-int ConstString::compare(u32 pos, u32 len, const ConstString & s, u32 subpos, u32 sublen) const{
+int ConstString::compare(
+		const arg::Position position,
+		const arg::Length length,
+		const arg::StringToCompare string_to_compare,
+		const arg::SubPosition sub_position,
+		const arg::MatchLength match_length
+		) const{
 	int l_compared;
 	int l_comparing;
 
-	const char * compared = str() + pos;
-	const char * comparing = &(s.str()[subpos]);
+	const char * compared = cstring() + position.argument();
+	const char * comparing = &(string_to_compare.argument().cstring()[sub_position.argument()]);
 
-	l_compared = strnlen(compared, len);
-	l_comparing = strnlen(comparing, sublen);
+	l_compared = strnlen(compared, length.argument());
+	l_comparing = strnlen(comparing, match_length.argument());
 
 	if( l_compared != l_comparing ){
 		return l_comparing - l_compared;
@@ -122,22 +170,31 @@ int ConstString::compare(u32 pos, u32 len, const ConstString & s, u32 subpos, u3
 	return strncmp(compared, comparing, l_compared);
 }
 
-int ConstString::compare(const ConstString & s) const {
-	return strcmp(str(), s.str());
+int ConstString::compare(const arg::StringToCompare s) const {
+	return strcmp(cstring(), s.argument().cstring());
 }
 
-int ConstString::compare(u32 pos, u32 len, const ConstString & s, u32 n) const {
+int ConstString::compare(
+		const arg::Position position,
+		const arg::Length length,
+		const arg::StringToCompare string_to_compare,
+		const arg::MatchLength match_length
+		) const {
 	u32 l;
 	const char * str_at_position;
 
-	str_at_position = str() + pos;
+	str_at_position = cstring() + position.argument();
 
-	l = strnlen(str_at_position, n);
-	if( l != n ){
-		return l - n;
+	l = strnlen(str_at_position, match_length.argument());
+	if( l != match_length.argument() ){
+		return l - match_length.argument();
 	}
 
-	return strncmp(str_at_position, s.str(), n);
+	return strncmp(
+				str_at_position,
+				string_to_compare.argument().cstring(),
+				match_length.argument()
+				);
 }
 
 //ConstString ConstString::substr (u32 pos, u32 len) const {

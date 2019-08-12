@@ -11,15 +11,19 @@ Tokenizer::Tokenizer(){
 	m_is_count_empty_tokens = false;
 }
 
-Tokenizer::Tokenizer(const ConstString & src, const ConstString & delim, const ConstString & ignore, bool count_empty, u32 max_delim) : String(src){
+Tokenizer::Tokenizer(const arg::TokenEncodedString src,
+		const arg::TokenDelimeters delim,
+		const arg::IgnoreTokensBetween ignore,
+		const arg::IsCountEmptyTokens is_count_empty,
+		const arg::MaximumTokenCount maximum_delimeter_count) : String(src.argument()){
 	init_members();
-	m_is_count_empty_tokens = count_empty;
-	parse(delim, ignore, max_delim);
+	m_is_count_empty_tokens = is_count_empty.argument();
+	parse(delim, ignore, maximum_delimeter_count);
 }
 
 bool Tokenizer::belongs_to(const char c, const ConstString & src, unsigned int len){
 	unsigned int i;
-	const char * s = src.str();
+	const char * s = src.cstring();
 	for(i=0; i < len; i++){
 		if( c == *s++ ){
 			return true;
@@ -34,15 +38,17 @@ void Tokenizer::init_members(){
 }
 
 
-void Tokenizer::parse(const ConstString & delim, const ConstString & ignore, u32 max_delim){
+void Tokenizer::parse(const arg::TokenDelimeters delim,
+		const arg::IgnoreTokensBetween ignore,
+		const arg::MaximumTokenCount max_delim){
 	char * p;
 	char * end;
 	unsigned int len0, len1;
 	bool on_token = false;
 	char end_match;
 	m_num_tokens = 0;
-	len0 = delim.length();
-	len1 = ignore.length();
+	len0 = delim.argument().length();
+	len1 = ignore.argument().length();
 
 	p = cdata();
 	m_string_size = String::length();
@@ -53,7 +59,7 @@ void Tokenizer::parse(const ConstString & delim, const ConstString & ignore, u32
 	while( p < end ){
 		if( len1 > 0 ){
 			//this can be used to skip items in quotes "ignore=this" when delim includes = (don't split it)
-			while( belongs_to(*p, ignore, len1) ){
+			while( belongs_to(*p, ignore.argument(), len1) ){
 				end_match = *p;
 				//fast forward to next member of ignore that matches the first
 				p++;
@@ -78,7 +84,7 @@ void Tokenizer::parse(const ConstString & delim, const ConstString & ignore, u32
 		}
 
 		//check to see if the current character is part of the delimiter string
-		if( belongs_to(*p, delim, len0) ){
+		if( belongs_to(*p, delim.argument(), len0) ){
 			*p = 0; //set the character to zero
 			if( m_is_count_empty_tokens == true ){
 				m_num_tokens++;
@@ -91,7 +97,8 @@ void Tokenizer::parse(const ConstString & delim, const ConstString & ignore, u32
 				if( on_token == false ){
 					m_num_tokens++;
 					on_token = true;
-					if( max_delim && (m_num_tokens == max_delim+1) ){
+					if( max_delim.argument() &&
+						 (m_num_tokens == max_delim.argument()+1) ){
 						return;
 					}
 				}
@@ -108,7 +115,7 @@ const ConstString Tokenizer::at(u32 n) const {
 	unsigned int i;
 	bool on_token = false;
 	unsigned int token = 0;
-	p = str();
+	p = cstring();
 
 	if( n >= size() ){
 		return ConstString();
@@ -199,7 +206,7 @@ void Tokenizer::sort(enum sort_options sort_option){
 			}
 		}
 		string_to_copy = tmp.at(current);
-		strcpy(next, string_to_copy.str());
+		strcpy(next, string_to_copy.cstring());
 		next += string_to_copy.length() + 1;
 		used[current] = 1;
 	}

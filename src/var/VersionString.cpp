@@ -22,7 +22,10 @@ VersionString & VersionString::operator << (u32 value){
 
 
 u32 VersionString::to_bcd() const {
-	Tokenizer tokens(m_version, ".");
+	Tokenizer tokens(
+				arg::TokenEncodedString(m_version),
+				arg::TokenDelimeters(".")
+				);
 	u32 result = 0;
 	u32 token_max = tokens.count() < 3 ? tokens.count() : 3;
 	for(u32 i = 0; i < token_max; i++){
@@ -32,8 +35,14 @@ u32 VersionString::to_bcd() const {
 }
 
 int VersionString::compare(const VersionString & a, const VersionString & b){
-	Tokenizer a_tokens(a.m_version, ".");
-	Tokenizer b_tokens(b.m_version, ".");
+	Tokenizer a_tokens(
+				arg::TokenEncodedString(a.m_version),
+				arg::TokenDelimeters(".")
+				);
+	Tokenizer b_tokens(
+				arg::TokenEncodedString(b.m_version),
+				arg::TokenDelimeters(".")
+				);
 
 	if( a_tokens.count() > b_tokens.count() ){
 		return 1;

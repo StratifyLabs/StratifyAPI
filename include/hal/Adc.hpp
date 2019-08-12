@@ -16,6 +16,9 @@ namespace hal {
 class AdcInfo : public api::HalInfoObject {
 public:
 	AdcInfo(){ memset(&m_adc_info, 0, sizeof(m_adc_info)); }
+	AdcInfo(const adc_info_t & info){
+		m_adc_info = info;
+	}
 
 	bool is_valid() const { return m_adc_info.bytes_per_sample; }
 

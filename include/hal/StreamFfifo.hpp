@@ -81,7 +81,10 @@ public:
 	};
 
 	int set_attributes(const StreamFFifoAttributes & attributes){
-		return ioctl(I_STREAM_FFIFO_SETATTR, &attributes.m_attr);
+		return ioctl(
+					arg::IoRequest(I_STREAM_FFIFO_SETATTR),
+					arg::IoConstArgument(&attributes.m_attr)
+					);
 	}
 
 	StreamFFifo & operator << (const StreamFFifoAttributes & attributes){

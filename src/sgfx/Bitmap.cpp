@@ -99,7 +99,10 @@ void Bitmap::initialize_members(){
 }
 
 void Bitmap::set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly){
-	Data::set(mem, calc_size(w,h), readonly);
+	Data::refer_to(
+				arg::DestinationBuffer(mem),
+				arg::Size(calc_size(w,h)),
+				arg::IsReadOnly(readonly));
 	calculate_members(Area(w,h));
 }
 
@@ -107,12 +110,18 @@ void Bitmap::set_data(const sg_bmap_header_t * hdr, bool readonly){
 	char * ptr;
 	ptr = (char*)hdr;
 	ptr += sizeof(sg_bmap_header_t);
-	Data::set(ptr, calc_size(hdr->width, hdr->height), readonly);
+	Data::refer_to(
+				arg::DestinationBuffer(ptr),
+				arg::Size(calc_size(hdr->width, hdr->height)),
+				arg::IsReadOnly(readonly)
+				);
 	calculate_members(Area(hdr->width, hdr->height));
 }
 
 int Bitmap::allocate(const Area & dim){
-	if( Data::allocate( calculate_size(dim) ) < 0 ){
+	if( Data::allocate(
+			 arg::Size(calculate_size(dim))
+			 ) < 0 ){
 		calculate_members(Area());
 		return -1;
 	}
@@ -202,18 +211,21 @@ sg_bmap_data_t * Bitmap::bmap_data(const Point & p){
 
 
 
-int Bitmap::load(const var::ConstString & path){
+int Bitmap::load(const arg::SourceFilePath & path){
 	sg_bmap_header_t hdr;
 	fs::File f;
 	void * src;
 
-	if( f.open(path, fs::OpenFlags::read_only()) < 0 ){
+	if( f.open(
+			 arg::FilePath(path.argument()),
+			 fs::OpenFlags::read_only()
+			 ) < 0 ){
 		return -1;
 	}
 
 	if( f.read(
-			 fs::DestinationBuffer(&hdr),
-			 fs::Size(sizeof(hdr))
+			 arg::DestinationBuffer(&hdr),
+			 arg::Size(sizeof(hdr))
 			 ) != sizeof(hdr) ){
 		return -1;
 	}
@@ -233,8 +245,8 @@ int Bitmap::load(const var::ConstString & path){
 
 
 	if( f.read(
-			 fs::DestinationBuffer(src),
-			 fs::Size(hdr.size)
+			 arg::DestinationBuffer(src),
+			 arg::Size(hdr.size)
 			 ) != (s32)hdr.size ){
 		return -1;
 	}
@@ -243,16 +255,18 @@ int Bitmap::load(const var::ConstString & path){
 }
 
 
-Area Bitmap::load_dim(const char * path){
+Area Bitmap::load_dim(const arg::SourceFilePath & path){
 	sg_bmap_header_t hdr;
 	fs::File f;
-	if( f.open(path, fs::OpenFlags::read_only()) < 0 ){
+	if( f.open(
+			 arg::FilePath(path.argument()),
+			 fs::OpenFlags::read_only()) < 0 ){
 		return Area();
 	}
 
 	if( f.read(
-			 fs::DestinationBuffer(&hdr),
-			 fs::Size(sizeof(hdr))
+			 arg::DestinationBuffer(&hdr),
+			 arg::Size(sizeof(hdr))
 			 ) != sizeof(hdr) ){
 		return Area();
 	}
@@ -264,7 +278,7 @@ Area Bitmap::load_dim(const char * path){
 	return Area(hdr.width, hdr.height);
 }
 
-int Bitmap::save(const var::ConstString & path) const{
+int Bitmap::save(const arg::DestinationFilePath & path) const{
 	sg_bmap_header_t hdr;
 
 	hdr.width = width();
@@ -274,25 +288,32 @@ int Bitmap::save(const var::ConstString & path) const{
 	hdr.version = api()->version;
 
 	fs::File f;
-	if( f.create(path, true) < 0 ){
+	if( f.create(
+			 arg::DestinationFilePath(path),
+			 arg::IsOverwrite(true)
+			 ) < 0 ){
 		return -1;
 	}
 
 	if( f.write(
-			 fs::SourceBuffer(&hdr),
-			 fs::Size(sizeof(hdr))
+			 arg::SourceBuffer(&hdr),
+			 arg::Size(sizeof(hdr))
 			 ) < 0 ){
 		f.close();
-		fs::File::remove(path);
+		fs::File::remove(
+					arg::SourceFilePath(path.argument())
+					);
 		return -1;
 	}
 
 	if( f.write(
-			 fs::SourceBuffer(data()),
-			 fs::Size(hdr.size)
+			 arg::SourceBuffer(data()),
+			 arg::Size(hdr.size)
 			 ) != (s32)hdr.size ){
 		f.close();
-		fs::File::remove(path);
+		fs::File::remove(
+					arg::SourceFilePath(path.argument())
+					);
 		return -1;
 	}
 

@@ -6,6 +6,7 @@
 #include <mcu/types.h>
 #include "../api/FmtObject.hpp"
 #include "../var/ConstString.hpp"
+#include "../arg/Argument.hpp"
 
 namespace fmt {
 
@@ -13,9 +14,9 @@ namespace fmt {
 class Wav : public api::FmtFileObject {
 public:
 	/*! \details Constructs a new WAV object and open the WAV as a read-only file. */
-	Wav(const var::ConstString & name = "");
+	Wav(const arg::SourceFilePath & name = arg::SourceFilePath(""));
 
-	int create(const var::ConstString & path);
+	int create(const arg::DestinationFilePath & path);
 
 	void set_header(u16 channels, u32 sample_rate, u16 bits_per_sample, u32 samples);
 

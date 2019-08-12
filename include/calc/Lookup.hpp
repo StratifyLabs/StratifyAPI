@@ -4,6 +4,7 @@
 #define SAPI_CALC_LOOKUP_HPP_
 
 #include "../api/CalcObject.hpp"
+#include "../arg/Argument.hpp"
 
 namespace calc {
 
@@ -43,9 +44,11 @@ public:
 	 * be in ascending order
 	 * @param size The number of x,y entries in the table
 	 */
-	Lookup(const T * table, int size){
+	Lookup(
+			const T * table,
+			const arg::Size & size){
 		m_table = table;
-		m_size = size;
+		m_size = size.argument();
 	}
 
 	/*! \details Calculates the y value using linear interpolation.

@@ -3,9 +3,9 @@
 #ifndef SAPI_SYS_THREAD_HPP
 #define SAPI_SYS_THREAD_HPP
 
-#include "../api/WorkObject.hpp"
-#include <mcu/types.h>
 #include <pthread.h>
+
+#include "../api/WorkObject.hpp"
 #include "Sched.hpp"
 #include "../api/SysObject.hpp"
 
@@ -74,7 +74,10 @@ public:
 	 * @param detached Whether to create as a detached thread.  If this value is false,
 	 * another thread must use join() in order for the thread to terminate correctly.
 	 */
-	Thread(const StackSize & stacksize = StackSize(4096), bool detached = true);
+	Thread(
+			const arg::StackSize & stacksize = arg::StackSize(4096),
+			const arg::IsDetached detached = arg::IsDetached(true)
+			);
 
 	~Thread();
 
@@ -119,7 +122,9 @@ public:
 	  * This method must be called after calling create().
 	  *
 	  */
-	int set_priority(int prio, enum Sched::policy policy = Sched::RR);
+	int set_priority(
+			const arg::SchedulerPriority prio,
+			enum Sched::policy policy = Sched::RR);
 
 	/*! \details Gets the thread priority.
 	  *
@@ -172,7 +177,12 @@ public:
 	  *
 	 *
 	 */
-	int create(handler_function_t func, void * args = NULL, int prio = 0, enum Sched::policy policy = Sched::OTHER);
+	int create(
+			arg::ThreadFunction func,
+			arg::Context args = arg::Context(0),
+			const arg::SchedulerPriority prio = arg::SchedulerPriority(0),
+			enum Sched::policy policy = Sched::OTHER
+			);
 
 	/*! \details Checks if the thread is running. */
 	bool is_running() const;

@@ -10,21 +10,21 @@ Tmr::Tmr(port_t port) : Periph(CORE_PERIPH_TMR, port) {}
 
 
 int Tmr::enable() const {
-	return ioctl(I_TMR_ENABLE);
+	return ioctl(arg::IoRequest(I_TMR_ENABLE));
 }
 
 int Tmr::disable() const {
-	return ioctl(I_TMR_DISABLE);
+	return ioctl(arg::IoRequest(I_TMR_DISABLE));
 }
 
 u32 Tmr::get_value() const {
 	u32 value = 0;
-	ioctl(I_TMR_GET, &value);
+	ioctl(arg::IoRequest(I_TMR_GET), arg::IoArgument(&value));
 	return value;
 }
 
 int Tmr::set_value(u32 value) const {
-	return ioctl(I_TMR_SET, value);
+	return ioctl(arg::IoRequest(I_TMR_SET), arg::IoIntArgument(value));
 }
 
 

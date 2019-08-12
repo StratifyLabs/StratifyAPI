@@ -13,7 +13,10 @@ int CFifo::get_count() const {
 }
 
 int CFifo::get_info(cfifo_info_t & info) const {
-	return ioctl(I_CFIFO_GETINFO, &info);
+	return ioctl(
+				arg::IoRequest(I_CFIFO_GETINFO),
+				arg::IoArgument(&info)
+				);
 }
 
 int CFifo::get_owner(int channel, int & owner) const {
@@ -21,7 +24,10 @@ int CFifo::get_owner(int channel, int & owner) const {
 	int ret;
 	c.loc = channel;
 	c.value = (u32)-1;
-	ret = ioctl(I_CFIFO_GETOWNER, &c);
+	ret = ioctl(
+				arg::IoRequest(I_CFIFO_GETOWNER),
+				arg::IoArgument(&c)
+				);
 	if( ret >= 0 ){
 		owner = c.value;
 	}
@@ -32,13 +38,19 @@ int CFifo::set_owner(int channel, int owner) const {
 	mcu_channel_t c;
 	c.loc = channel;
 	c.value = owner;
-	return ioctl(I_CFIFO_SETOWNER, &c);
+	return ioctl(
+				arg::IoRequest(I_CFIFO_SETOWNER),
+				arg::IoArgument(&c)
+				);
 }
 
 int CFifo::get_info(int channel, fifo_info_t & info) const {
 	cfifo_fifoinfo_t fifo_info;
 	fifo_info.channel = channel;
-	if( ioctl(I_CFIFO_FIFOGETINFO, &fifo_info) >= 0 ){
+	if( ioctl(
+			 arg::IoRequest(I_CFIFO_FIFOGETINFO),
+			 arg::IoArgument(&fifo_info)
+			 ) >= 0 ){
 		info = fifo_info.info;
 	}
 	return 0;
@@ -55,24 +67,38 @@ int CFifo::set_attributes(int channel, const fifo_attr_t & attr) const {
 	cfifo_fifoattr_t fifo_attr;
 	fifo_attr.channel = channel;
 	fifo_attr.attr = attr;
-	return ioctl(I_CFIFO_FIFOSETATTR, &fifo_attr);
+	return ioctl(
+				arg::IoRequest(I_CFIFO_FIFOSETATTR),
+				arg::IoArgument(&fifo_attr)
+				);
 }
 
 int CFifo::initialize(int channel) const {
 	cfifo_fiforequest_t request;
 	request.channel = channel;
-	return ioctl(I_CFIFO_FIFOINIT, &request);}
+	return ioctl(
+				arg::IoRequest(I_CFIFO_FIFOINIT),
+				arg::IoArgument(&request)
+				);
+}
 
 int CFifo::flush(int channel) const {
 	cfifo_fiforequest_t request;
 	request.channel = channel;
-	return ioctl(I_CFIFO_FIFOFLUSH, &request);
+	return ioctl(
+				arg::IoRequest(I_CFIFO_FIFOFLUSH),
+				arg::IoArgument(&request)
+				);
 }
 
 int CFifo::exit(int channel) const {
 	cfifo_fiforequest_t request;
 	request.channel = channel;
-	return ioctl(I_CFIFO_FIFOEXIT, &request);}
+	return ioctl(
+				arg::IoRequest(I_CFIFO_FIFOEXIT),
+				arg::IoArgument(&request)
+				);
+}
 
 int CFifo::set_writeblock(int channel, bool value) const {
 	fifo_attr_t attr;
@@ -80,7 +106,7 @@ int CFifo::set_writeblock(int channel, bool value) const {
 	if( value == false ){
 		attr.o_flags |= Fifo::FLAG_IS_OVERFLOW;
 	}
-	return set_attr(channel, attr);
+	return set_attributes(channel, attr);
 }
 
 

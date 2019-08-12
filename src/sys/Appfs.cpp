@@ -13,8 +13,8 @@
 using namespace sys;
 
 void AppfsFileAttributes::apply(appfs_file_t * dest) const {
-	memcpy(dest->hdr.name, m_name.str(), LINK_NAME_MAX);
-	memcpy(dest->hdr.id, m_id.str(), LINK_NAME_MAX);
+	memcpy(dest->hdr.name, m_name.cstring(), LINK_NAME_MAX);
+	memcpy(dest->hdr.id, m_id.cstring(), LINK_NAME_MAX);
 	dest->hdr.version = m_version;
 	dest->exec.o_flags = m_o_flags;
 	dest->hdr.mode = 0777;
@@ -38,14 +38,16 @@ Appfs::Appfs(link_transport_mdriver_t * driver) : m_file(driver){
 Appfs::Appfs(){}
 #endif
 
+int Appfs::create(const arg::FileName & name,
+		const arg::SourceFile & source_data,
+		const arg::SourceDirectoryPath & mount,
+		const ProgressCallback * progress_callback
 #if defined __link
-int Appfs::create(const var::ConstString & name, const fs::File & source_data, const var::ConstString & mount, const ProgressCallback * progress_callback, link_transport_mdriver_t * driver){
+		, link_transport_mdriver_t * driver
+		){
 	fs::File file(driver);
 #else
-int Appfs::create(const var::ConstString & name,
-						const fs::File & source_data,
-						const var::ConstString & mount,
-						const ProgressCallback * progress_callback){
+){
 	fs::File file;
 #endif
 	char buffer[LINK_PATH_MAX];
@@ -54,37 +56,45 @@ int Appfs::create(const var::ConstString & name,
 	int loc;
 	unsigned int bw; //bytes written
 	appfs_file_t f;
-	strcpy(buffer, mount.cstring());
+	strcpy(buffer, mount.argument().cstring());
 	strcat(buffer, "/flash/");
-	strcat(buffer, name.str());
+	strcat(buffer, name.argument().cstring());
 
 	//delete the settings if they exist
-	strncpy(f.hdr.name, name.cstring(), LINK_NAME_MAX);
+	strncpy(f.hdr.name, name.argument().cstring(), LINK_NAME_MAX);
 	f.hdr.mode = 0666;
-	f.exec.code_size = source_data.size() + sizeof(f); //total number of bytes in file
+	f.exec.code_size = source_data.argument().size() + sizeof(f); //total number of bytes in file
 	f.exec.signature = APPFS_CREATE_SIGNATURE;
 
 #if defined __link
-	fs::File::remove(buffer, driver);
+	fs::File::remove(
+				arg::SourceFilePath(buffer),
+				driver
+				);
 #else
-	fs::File::remove(buffer);
+	fs::File::remove(
+				arg::SourceFilePath(buffer)
+				);
 #endif
 
 
-	if( file.open("/app/.install", fs::OpenFlags::write_only()) < 0 ){
+	if( file.open(
+			 arg::FilePath("/app/.install"),
+			 fs::OpenFlags::write_only()
+			 ) < 0 ){
 		return -1;
 	}
 
 	memcpy(attr.buffer, &f, sizeof(f));
 	//now copy some bytes
 	attr.nbyte = APPFS_PAGE_SIZE - sizeof(f);
-	if( source_data.size() < (u32)attr.nbyte ){
-		attr.nbyte = source_data.size();
+	if( source_data.argument().size() < (u32)attr.nbyte ){
+		attr.nbyte = source_data.argument().size();
 	}
 
-	source_data.read(
-				fs::DestinationBuffer(attr.buffer + sizeof(f)),
-				fs::Size(attr.nbyte)
+	source_data.argument().read(
+				arg::DestinationBuffer(attr.buffer + sizeof(f)),
+				arg::Size(attr.nbyte)
 				);
 	attr.nbyte += sizeof(f);
 	loc = 0;
@@ -96,16 +106,19 @@ int Appfs::create(const var::ConstString & name,
 			} else {
 				attr.nbyte = f.exec.code_size - bw;
 			}
-			source_data.read(
-						fs::DestinationBuffer(attr.buffer),
-						fs::Size(attr.nbyte)
+			source_data.argument().read(
+						arg::DestinationBuffer(attr.buffer),
+						arg::Size(attr.nbyte)
 						);
 		}
 
 		//location gets modified by the driver so it needs to be fixed on each loop
 		attr.loc = loc;
 
-		if( (tmp = file.ioctl(I_APPFS_CREATE, &attr)) < 0 ){
+		if( (tmp = file.ioctl(
+				  arg::IoRequest(I_APPFS_CREATE),
+				  arg::IoArgument(&attr)
+				  )) < 0 ){
 			return tmp;
 		}
 
@@ -122,14 +135,17 @@ int Appfs::create(const var::ConstString & name,
 }
 
 #if defined __link
-AppfsInfo Appfs::get_info(const var::ConstString & path, link_transport_mdriver_t * driver){
+AppfsInfo Appfs::get_info(
+		const arg::SourceFilePath path,
+		link_transport_mdriver_t * driver
+		){
 	fs::File f(driver);
 	if( driver == 0 ){
 		errno = ENOTSUP;
 		return AppfsInfo();
 	}
 #else
-AppfsInfo Appfs::get_info(const var::ConstString & path){
+AppfsInfo Appfs::get_info(const arg::SourceFilePath path){
 	fs::File f;
 #endif
 	var::String app_name;
@@ -137,24 +153,27 @@ AppfsInfo Appfs::get_info(const var::ConstString & path){
 	appfs_file_t appfs_file_header;
 	appfs_info_t info;
 	int ret;
-	if( f.open(path, fs::OpenFlags::read_only()) < 0 ){
+	if( f.open(
+			 arg::FilePath(path.argument()),
+			 fs::OpenFlags::read_only()
+			 ) < 0 ){
 		return AppfsInfo();
 	}
 
 	ret = f.read(
-				fs::DestinationBuffer(&appfs_file_header),
-				fs::Size(sizeof(appfs_file_header))
+				arg::DestinationBuffer(&appfs_file_header),
+				arg::Size(sizeof(appfs_file_header))
 				);
 	f.close();
 
 	if( ret == sizeof(appfs_file_header) ){
 		//first check to see if the name matches -- otherwise it isn't an app file
-		path_name = fs::File::name(path);
-		if( path_name.find(".sys") == 0 ){
+		path_name = fs::File::name(path.argument());
+		if( path_name.find(arg::StringToFind(".sys")) == 0 ){
 			return AppfsInfo();
 		}
 
-		if( path_name.find(".free") == 0 ){
+		if( path_name.find(arg::StringToFind(".free")) == 0 ){
 			return AppfsInfo();
 		}
 
@@ -184,11 +203,13 @@ AppfsInfo Appfs::get_info(const var::ConstString & path){
 }
 
 #if defined __link
-u16 Appfs::get_version(const var::ConstString & path, link_transport_mdriver_t * driver){
+u16 Appfs::get_version(
+		const arg::SourceFilePath path,
+		link_transport_mdriver_t * driver){
 	AppfsInfo info;
 	info = get_info(path, driver);
 #else
-u16 Appfs::get_version(const var::ConstString & path){
+u16 Appfs::get_version(const arg::SourceFilePath path){
 	AppfsInfo info;
 	info = get_info(path);
 #endif
@@ -197,11 +218,14 @@ u16 Appfs::get_version(const var::ConstString & path){
 
 #if defined __link
 
-var::String Appfs::get_id(const var::ConstString & path, link_transport_mdriver_t * driver){
+var::String Appfs::get_id(
+		const arg::SourceFilePath path,
+		link_transport_mdriver_t * driver
+		){
 	AppfsInfo info;
 	info = get_info(path, driver);
 #else
-var::String Appfs::get_id(const var::ConstString & path){
+var::String Appfs::get_id(const arg::SourceFilePath path){
 	AppfsInfo info;
 	info = get_info(path);
 #endif
@@ -222,7 +246,7 @@ int Appfs::cleanup(bool data){
 	const char * name;
 
 	if( dir.open(
-			 fs::SourceDirectoryPath("/app/ram")
+			 arg::SourceDirectoryPath("/app/ram")
 			 ) < 0 ){
 		return -1;
 	}

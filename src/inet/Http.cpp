@@ -24,51 +24,51 @@ HttpClient::HttpClient(Socket & socket) : Http(socket){
 	m_transfer_encoding = "";
 }
 
-int HttpClient::get(const var::ConstString & url, const fs::DestinationFile & response, const sys::ProgressCallback * progress_callback){
+int HttpClient::get(const var::ConstString & url, const arg::DestinationFile & response, const sys::ProgressCallback * progress_callback){
 	return query("GET", url, 0, &response, progress_callback);
 }
 
-int HttpClient::post(const var::ConstString & url, const var::ConstString & request, const fs::DestinationFile & response, const sys::ProgressCallback * progress_callback){
+int HttpClient::post(const var::ConstString & url, const var::ConstString & request, const arg::DestinationFile & response, const sys::ProgressCallback * progress_callback){
 	DataFile request_file;
 	request_file.data().copy_cstring(request.cstring());
 	return post(
 				url,
-				SourceFile(request_file),
+				arg::SourceFile(request_file),
 				response,
 				progress_callback
 				);
 }
 
-int HttpClient::post(const var::ConstString & url, const fs::SourceFile & request, const fs::DestinationFile & response, const sys::ProgressCallback * progress_callback){
+int HttpClient::post(const var::ConstString & url, const arg::SourceFile & request, const arg::DestinationFile & response, const sys::ProgressCallback * progress_callback){
 	return query("POST", url, &request, &response, progress_callback);
 }
 
-int HttpClient::put(const var::ConstString & url, const var::ConstString & request, const fs::DestinationFile & response, const sys::ProgressCallback * progress_callback){
+int HttpClient::put(const var::ConstString & url, const var::ConstString & request, const arg::DestinationFile & response, const sys::ProgressCallback * progress_callback){
 	DataFile request_file;
 	request_file.data().copy_cstring(request.cstring());
 	return put(
 				url,
-				SourceFile(request_file),
+				arg::SourceFile(request_file),
 				response,
 				progress_callback
 				);
 }
 
-int HttpClient::put(const var::ConstString & url, const fs::SourceFile & data, const fs::DestinationFile & response, const sys::ProgressCallback * progress_callback){
+int HttpClient::put(const var::ConstString & url, const arg::SourceFile & data, const arg::DestinationFile & response, const sys::ProgressCallback * progress_callback){
 	return query("PUT", url, &data, &response, progress_callback);
 }
 
-int HttpClient::patch(const var::ConstString & url, const var::ConstString & request, const fs::DestinationFile & response, const sys::ProgressCallback * progress_callback){
+int HttpClient::patch(const var::ConstString & url, const var::ConstString & request, const arg::DestinationFile & response, const sys::ProgressCallback * progress_callback){
 	DataFile request_file;
 	request_file.data().copy_cstring(request.cstring());
 	return patch(
 				url,
-				SourceFile(request_file),
+				arg::SourceFile(request_file),
 				response,
 				progress_callback);
 }
 
-int HttpClient::patch(const var::ConstString & url, const fs::SourceFile & data, const fs::DestinationFile & response, const sys::ProgressCallback * progress_callback){
+int HttpClient::patch(const var::ConstString & url, const arg::SourceFile & data, const arg::DestinationFile & response, const sys::ProgressCallback * progress_callback){
 	return query(
 				"PATCH",
 				url,
@@ -91,8 +91,8 @@ int HttpClient::remove(const var::ConstString & request, const var::String & dat
 int HttpClient::query(
 		const var::ConstString & command,
 		const var::ConstString & url,
-		const fs::SourceFile * send_file,
-		const fs::DestinationFile * get_file,
+		const arg::SourceFile * send_file,
+		const arg::DestinationFile * get_file,
 		const sys::ProgressCallback * progress_callback
 		){
 	m_status_code = -1;
@@ -103,7 +103,7 @@ int HttpClient::query(
 	u32 get_file_pos;
 	if( get_file ){
 		get_file_pos = get_file->argument().seek(
-					fs::Location(0), File::CURRENT
+					arg::Location(0), File::CURRENT
 					);
 	}
 
@@ -159,7 +159,7 @@ int HttpClient::query(
 	} else {
 		NullFile null_file;
 		listen_for_data(
-					DestinationFile(null_file),
+					arg::DestinationFile(null_file),
 					callback
 					);
 	}
@@ -169,7 +169,7 @@ int HttpClient::query(
 
 		if( get_file ){
 			get_file->argument().seek(
-						fs::Location(get_file_pos),
+						arg::Location(get_file_pos),
 						File::SET);
 		}
 
@@ -291,7 +291,7 @@ int HttpClient::send_header(
 		const var::ConstString & method,
 		const var::ConstString & host,
 		const var::ConstString & path,
-		const fs::SourceFile * file,
+		const arg::SourceFile * file,
 		const sys::ProgressCallback * progress_callback){
 
 
@@ -312,8 +312,8 @@ int HttpClient::send_header(
 	if( file ){
 		if( socket().write(
 				 *file,
-				 fs::PageSize(m_transfer_size),
-				 fs::Size(file->argument().size()),
+				 arg::PageSize(m_transfer_size),
+				 arg::Size(file->argument().size()),
 				 progress_callback
 				 ) < 0 ){
 			set_error_number(FAILED_TO_WRITE_DATA);
@@ -347,8 +347,11 @@ int HttpClient::listen_for_header(){
 			String title = pair.key();
 			title.to_upper();
 
-			if( title.find("HTTP/") == 0 ){
-				Tokenizer tokens(title, " ");
+			if( title.find(arg::StringToFind("HTTP/")) == 0 ){
+				Tokenizer tokens(
+							arg::TokenEncodedString(title),
+							arg::TokenDelimeters(" ")
+							);
 				is_first_line = false;
 				if( tokens.size() < 2 ){
 					set_error_number(FAILED_TO_GET_STATUS_CODE);
@@ -364,7 +367,10 @@ int HttpClient::listen_for_header(){
 
 			if( title == "CONTENT-TYPE" ){
 				//check for evnt streams
-				Tokenizer tokens(pair.value(), " ;");
+				Tokenizer tokens(
+							arg::TokenEncodedString(pair.value()),
+							arg::TokenDelimeters(" ;")
+							);
 				if( tokens.at(0) == "text/event-stream" ){
 					m_content_length = (u32)-1; //accept data until the operation is cancelled
 				}
@@ -387,7 +393,7 @@ int HttpClient::listen_for_header(){
 }
 
 int HttpClient::listen_for_data(
-		const fs::DestinationFile & destination,
+		const arg::DestinationFile & destination,
 		const sys::ProgressCallback * progress_callback
 		){
 	if( m_transfer_encoding == "CHUNKED" ){
@@ -395,13 +401,13 @@ int HttpClient::listen_for_data(
 		do {
 			String line = socket().gets();
 			//convert line from hex
-			bytes_incoming = line.to_unsigned_long(16);
+			bytes_incoming = line.to_unsigned_long(arg::NumberBase(16));
 
 			//read bytes_incoming from the socket and write it to the output file
 			if( destination.argument().write(
-					 SourceFile(socket()),
-					 PageSize(bytes_incoming),
-					 Size(bytes_incoming)
+					 arg::SourceFile(socket()),
+					 arg::PageSize(bytes_incoming),
+					 arg::Size(bytes_incoming)
 					 ) != (int)bytes_incoming ){
 				set_error_number(FAILED_TO_WRITE_INCOMING_DATA_TO_FILE);
 				return -1;
@@ -415,9 +421,9 @@ int HttpClient::listen_for_data(
 		//read the response from the socket
 		if( m_content_length != 0 ){
 			int result = destination.argument().write(
-						SourceFile(socket()),
-						PageSize(m_transfer_size),
-						Size(m_content_length),
+						arg::SourceFile(socket()),
+						arg::PageSize(m_transfer_size),
+						arg::Size(m_content_length),
 						progress_callback
 						);
 			if( result != (int)m_content_length ){
@@ -428,18 +434,34 @@ int HttpClient::listen_for_data(
 	return 0;
 }
 
-HttpHeaderPair HttpHeaderPair::from_string(const var::ConstString & string){
+HttpHeaderPair HttpHeaderPair::from_string(
+		const var::ConstString & string
+		){
 	String string_copy = string;
-	u32 colon_pos = string_copy.find(":");
-	String key = string_copy.substr(0, colon_pos);
+	u32 colon_pos = string_copy.find(arg::StringToFind(":"));
+	String key = string_copy.substr(
+				arg::Position(0),
+				arg::Length(colon_pos)
+				);
 	String value;
 	if( colon_pos != String::npos ){
-		value = string_copy.substr(colon_pos+1);
+		value = string_copy.substr(
+					arg::Position(colon_pos+1)
+					);
 		if( value.at(0) == ' ' ){
-			value.erase(0,1);
+			value.erase(
+						arg::Position(0),
+						arg::Length(1)
+						);
 		}
-		value.replace("\r", "");
-		value.replace("\n", "");
+		value.replace(
+					arg::StringToErase("\r"),
+					arg::StringToInsert("")
+					);
+		value.replace(
+					arg::StringToErase("\n"),
+					arg::StringToInsert("")
+					);
 	}
 	return HttpHeaderPair(key, value);
 }

@@ -8,7 +8,10 @@ StreamFFifo::StreamFFifo()
 }
 
 int StreamFFifo::get_info(stream_ffifo_info_t & info){
-	return ioctl(I_STREAM_FFIFO_GETINFO, &info);
+	return ioctl(
+				arg::IoRequest(I_STREAM_FFIFO_GETINFO),
+				arg::IoArgument(&info)
+				);
 }
 
 

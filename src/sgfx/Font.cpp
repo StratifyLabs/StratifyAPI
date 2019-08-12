@@ -14,10 +14,13 @@ FontInfo::FontInfo(u8 point_size, u8 style, Font * font){
 	m_font = font;
 }
 
-FontInfo::FontInfo(const var::ConstString & path){
-	m_path = path;
+FontInfo::FontInfo(const arg::SourceFilePath & path){
+	m_path = path.argument();
 
-	var::Tokenizer tokens(fs::File::name(path), "-.");
+	var::Tokenizer tokens(
+				arg::TokenEncodedString(fs::File::name(path.argument())),
+				arg::TokenDelimeters("-.")
+				);
 
 	if( tokens.count() != 4 ){
 		m_point_size = 0;

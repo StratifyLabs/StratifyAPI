@@ -50,7 +50,7 @@ private:
 
 class BiquadCoefficientsQ15 : public SignalQ15 {
 public:
-	BiquadCoefficientsQ15(u8 n_stages) : SignalQ15(n_stages*6){}
+	BiquadCoefficientsQ15(u8 n_stages) : SignalQ15(arg::Count(n_stages*6)){}
 
 	u8 stages() const { return count() / 6; }
 
@@ -76,7 +76,8 @@ private:
 
 class BiquadCoefficientsQ31 : public SignalQ31 {
 public:
-	BiquadCoefficientsQ31(u8 n_stages) : SignalQ31(n_stages*5){}
+	BiquadCoefficientsQ31(u8 n_stages) :
+		SignalQ31(arg::Count(n_stages*5)){}
 
 	u8 stages() const { return count() / 5; }
 
@@ -104,7 +105,11 @@ private:
 
 class BiquadCoefficientsF32 : public SignalF32 {
 public:
-	BiquadCoefficientsF32(u8 n_stages) : SignalF32(n_stages*5){}
+	BiquadCoefficientsF32(u8 n_stages)
+		: SignalF32(
+			  arg::Count
+			  (n_stages*5)
+			  ){}
 
 	u8 stages() const { return count() / 5; }
 

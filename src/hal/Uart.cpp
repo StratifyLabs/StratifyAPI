@@ -7,15 +7,15 @@ using namespace hal;
 Uart::Uart(port_t port) : Periph(CORE_PERIPH_UART, port) {}
 
 int Uart::get(char & c){
-	return ioctl(I_UART_GET, &c);
+	return ioctl(arg::IoRequest(I_UART_GET), arg::IoArgument(&c));
 }
 
 int Uart::put(char c){
-	return ioctl(I_UART_PUT, c);
+	return ioctl(arg::IoRequest(I_UART_PUT), arg::IoIntArgument(c));
 }
 
 int Uart::flush(){
-	return ioctl(I_UART_FLUSH);
+	return ioctl(arg::IoRequest(I_UART_FLUSH));
 }
 
 
@@ -24,6 +24,5 @@ UartInfo Uart::get_info() const {
 	if( get_info(info) < 0 ){
 		return UartInfo();
 	}
-
 	return UartInfo(info);
 }

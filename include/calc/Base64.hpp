@@ -71,7 +71,9 @@ public:
 	 * \endcode
 	 *
 	 */
-	static var::String encode(const var::Data & input);
+	static var::String encode(
+			const arg::ImplicitSourceData input
+			);
 
 
 	/*! \details Reads binary data from *input* and writes a Base64
@@ -88,9 +90,11 @@ public:
 	 *
 	 *
 	 */
-	static int encode(const fs::SourceFile & input,
-							const fs::DestinationFile & output,
-							u32 size = 0);
+	static int encode(
+			const arg::SourceFile source,
+			const arg::DestinationFile destination,
+			const arg::Size size = arg::Size(0)
+			);
 
 	/*! \details Decodes base64 encoded data.
 	 *
@@ -112,7 +116,9 @@ public:
 	 * \endcode
 	 *
 	 */
-	static var::Data decode(const var::String & input);
+	static var::Data decode(
+			const arg::ImplicitBase64EncodedString input
+			);
 
 	/*! \details Reads base64 encoded data from *input* and writes raw,
 	 * decoded data to *output*.
@@ -129,9 +135,9 @@ public:
 	 *
 	 */
 	static int decode(
-			const fs::SourceFile & input,
-			fs::DestinationFile & output,
-			u32 size = 0
+			const arg::SourceFile input,
+			const arg::DestinationFile output,
+			const arg::Size size = arg::Size(0)
 			);
 
 

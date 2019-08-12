@@ -112,11 +112,17 @@ public:
 	  * @param is_legacy True if connected to older devices
 	  *
 	  */
-	int connect(const var::ConstString & path,
-					bool is_legacy = false);
+	int connect(
+			const arg::SourceFilePath path,
+			const arg::IsLegacy is_legacy = arg::IsLegacy(false)
+			);
 
 	/*! \details Reconnects to the last known path and serial number. */
-	int reinit(){ return connect(path()); }
+	int reinit(){
+		return connect(
+					arg::SourceFilePath(path())
+					);
+	}
 
 	int reconnect(
 			u32 retries = 5,
@@ -150,22 +156,22 @@ public:
 	  *
 	  */
 	int mkdir(
-			const fs::DestinationDirectoryPath & directory /*! The directory name */,
-			const fs::Permissions & permissions /*! The access permissions */
+			const arg::DestinationDirectoryPath directory /*! The directory name */,
+			const fs::Permissions permissions /*! The access permissions */
 			);
 
 	/*! \details Removes a directory on the target device.
 	  *
 	  */
 	int rmdir(
-			const var::ConstString & directory /*! The directory name (must be empty) */
+			const arg::SourceDirectoryPath directory /*! The directory name (must be empty) */
 			); //Directory must be empty
 
 	/*! \details Deletes a file on the target device.
 	  *
 	  */
 	int unlink(
-			const var::ConstString & filename /*! The filename to delete */
+			const arg::SourceFilePath filename /*! The filename to delete */
 			);
 
 	/*! \details Creates a symbolic link on the device.
@@ -177,13 +183,13 @@ public:
 	  * \return Zero on sucess.
 	  */
 	int symlink(
-			const fs::SourceFilePath & old_path /*! The existing path */,
-			const fs::DestinationFilePath & new_path /*! The path to the new link */
+			const arg::SourceFilePath old_path /*! The existing path */,
+			const arg::DestinationFilePath new_path /*! The path to the new link */
 			);
 
 	/*! \details Loads the entries of a directory. */
 	var::Vector<var::String> get_dir_list(
-			const fs::SourceDirectoryPath & directory
+			const arg::SourceDirectoryPath directory
 			);
 
 	/*! \details Converts the permissions to a
@@ -206,28 +212,29 @@ public:
 	/*! \details Opens a directory such that it's contents can be
 	  * read with readdir().
 	  */
-	int opendir(const var::String & directory /*! The directory to open */);
+	int opendir(const arg::SourceDirectoryPath directory /*! The directory to open */);
 
 	/*! \details Reads an entry from an open directory.
 	  *
 	  * \return The name of the next entry in the directory.
 	  */
-	int readdir_r(int dirp /*! The directory to read (returned from opendir()) */,
+	int readdir_r(const arg::LinkDirp dirp /*! The directory to read (returned from opendir()) */,
 					  struct link_dirent * entry /*! A pointer to the destination memory */,
-					  struct link_dirent ** result /*! Assigned to \a entry on success or NULL on failure */);
+					  struct link_dirent ** result /*! Assigned to \a entry on success or NULL on failure */
+					  );
 
 	/*! \details Closes an open directory.
 	  *
 	  */
-	int closedir(int dirp /*! The directory to close */);
+	int closedir(const arg::LinkDirp dirp /*! The directory to close */);
 
 	/*! \details This copies a file either from the device to the
 	  * host or from the host to the device depending on the value of \a toDevice.
 	  *
 	  * \return Zero on success
 	  */
-	int copy(const var::ConstString & src /*! The path to the source file */,
-				const var::ConstString & dest /*! The path to the destination file */,
+	int copy(const arg::SourceFilePath & src /*! The path to the source file */,
+				const arg::DestinationFilePath & dest /*! The path to the destination file */,
 				const fs::Permissions & permissions /*! The access permissions if copying to the device */,
 				bool to_device = true /*! When true, copy is from host to device */,
 				const ProgressCallback * progress_callback = 0);
@@ -243,7 +250,12 @@ public:
 	  * \param context Argument to pass to update callback
 	  * \return Zero on success
 	  */
-	int copy_file_to_device(const var::ConstString & src, const var::ConstString & dest, const fs::Permissions & permissions, const ProgressCallback * progress_callback = 0){
+	int copy_file_to_device(
+			const arg::SourceFilePath & src,
+			const arg::DestinationFilePath & dest,
+			const fs::Permissions & permissions,
+			const ProgressCallback * progress_callback = 0
+			){
 		return copy(src,
 						dest,
 						permissions,
@@ -261,7 +273,12 @@ public:
 	  * \param context Argument to pass to update callback
 	  * \return Zero on success
 	  */
-	int copy_file_from_device(const var::ConstString & src, const var::ConstString & dest, const fs::Permissions & permissions, const ProgressCallback * progress_callback = 0){
+	int copy_file_from_device(
+			const arg::SourceFilePath & src,
+			const arg::DestinationFilePath & dest,
+			const fs::Permissions & permissions,
+			const ProgressCallback * progress_callback = 0
+			){
 		return copy(src, dest, permissions, false, progress_callback);
 	}
 
@@ -269,7 +286,7 @@ public:
 	  *
 	  * \return Zero on success
 	  */
-	int format(const var::ConstString & path); //Format the drive
+	int format(const arg::SourceDirectoryPath & path); //Format the drive
 
 	/*! \details Funs an application on the target device.
 	  *
@@ -307,9 +324,9 @@ public:
 	  *
 	  *
 	  */
-	int open(const var::ConstString & file /*! The name of the file to open */,
-				int flags /*! The access flags such as LINK_O_RDWR */,
-				link_mode_t mode = 0 /*! The access permissions when creating a new file */);
+	int open(const arg::FilePath & file /*! The name of the file to open */,
+				const fs::OpenFlags & flags /*! The access flags such as LINK_O_RDWR */,
+				const fs::Permissions & permissions = fs::Permissions(0) /*! The access permissions when creating a new file */);
 
 	/*! \details Reads an open file descriptor.
 	  *
@@ -319,7 +336,11 @@ public:
 	  *
 	  * \return Number of bytes read or less than zero on failure
 	  */
-	int read(int fd, void * buf, int nbyte);
+	int read(
+			const arg::FileDescriptor & fd,
+			const arg::DestinationBuffer & buf,
+			const arg::Size & nbyte
+			);
 
 	/*! \details Writes an open file descriptor.
 	  *
@@ -329,7 +350,11 @@ public:
 	  *
 	  * \return Number of bytes written or less than zero on failure
 	  */
-	int write(int fd, const void * buf, int nbyte);
+	int write(
+			const arg::FileDescriptor & fd,
+			const arg::SourceBuffer & buf,
+			const arg::Size & nbyte
+			);
 
 	/*! \details Checks to see if the target is in = mode.
 	  *
@@ -353,7 +378,11 @@ public:
 	  *
 	  * \return Value returned based on request and fd
 	  */
-	int ioctl(int fd, int request, void * ctl = NULL);
+	int ioctl(
+			const arg::FileDescriptor & fd,
+			const arg::IoRequest & request,
+			const arg::IoArgument & arg = arg::IoArgument(NULL)
+			);
 
 	enum {
 		SET /*! Whence value for lseek */ = LINK_SEEK_SET,
@@ -369,22 +398,27 @@ public:
 	  *
 	  * \return Zero on success
 	  */
-	int lseek(int fd, int offset, int whence);
+	int lseek(
+			const arg::FileDescriptor & fd,
+			const arg::Location & offset,
+			int whence);
 
 	/*! \details Reads the file statistics on
 	  * the specified target device file.
 	  *
 	  * \return Zero on success with \a st populated or less than zero on failure
 	  */
-	int stat(const var::ConstString & path /*! The path to the target device file */,
-				struct link_stat * st /*! A pointer to the destination structure */);
+	int stat(
+			const arg::SourceFilePath & path /*! The path to the target device file */,
+			struct link_stat * st /*! A pointer to the destination structure */
+			);
 
 	/*!
 	  * \details Closes an open file descriptor
 	  * \param fd File descriptor to close
 	  * \return Zero on success
 	  */
-	int close(int fd);
+	int close(const arg::FileDescriptor & fd);
 
 	/*! \details Sends a signal to the specified process.
 	  *
@@ -400,7 +434,11 @@ public:
 	  * @param name The name of the application to find the pid
 	  * @return The PID or -1 if the application is not currently running
 	  */
-	int get_pid(const var::ConstString & name){ return get_is_executing(name); }
+	int get_pid(
+			const arg::Name & name
+			){
+		return get_is_executing(name);
+	}
 
 	/*! \details Resets the device (connection will be terminated).
 	  *
@@ -441,7 +479,10 @@ public:
 	  *
 	  * \return Zero on success
 	  */
-	int rename(const var::ConstString & old_path, const var::ConstString & new_path);
+	int rename(
+			const arg::SourceFilePath & old_path,
+			const arg::DestinationFilePath & new_path
+			);
 
 	/*! \details Changes the ownership of a file.
 	  * \return Zero on success.
@@ -449,14 +490,21 @@ public:
 	  * \note Ownership is not supported on all filesystems.
 	  *
 	  */
-	int chown(const var::ConstString & path, int owner, int group);
+	int chown(
+			const arg::SourceFilePath & path,
+			int owner,
+			int group
+			);
 
 	/*! \details Changes the mode of a file.
 	  * \return Zero on success.
 	  *
 	  * \note Ownership is not supported on all filesystems.
 	  */
-	int chmod(const var::ConstString & path, int mode);
+	int chmod(
+			const arg::SourceFilePath & path,
+			const fs::Permissions & permissions
+			);
 
 	/*! \details Checks to see if a process called \a name is running.
 	  *
@@ -464,7 +512,9 @@ public:
 	  *
 	  * \return The pid of the running process or -1 if no processes match the name
 	  */
-	int get_is_executing(const var::ConstString & name);
+	int get_is_executing(
+			const arg::Name & name
+			);
 
 	/*!
 	  * \details Updates the operating system.
@@ -479,7 +529,12 @@ public:
 	  * before calling this method.
 	  *
 	  */
-	int update_os(const fs::SourceFile & image, bool verify, const ProgressCallback * progress_callback = 0, u32 bootloader_retry_total = 20);
+	int update_os(
+			const arg::SourceFile & image,
+			const arg::IsVerify & is_verify,
+			const ProgressCallback * progress_callback = 0,
+			const arg::BootloaderRetryCount & bootloader_retry_total = arg::BootloaderRetryCount(20)
+			);
 
 	/*! \details Returns the driver needed by other API objects.
 	  *
@@ -531,7 +586,9 @@ public:
 	  * @param attributes The attributes to apply
 	  * @return Zero on success or -1 with error() set to an appropriate message
 	  */
-	int update_binary_install_options(const fs::DestinationFile & destination, const AppfsFileAttributes & attributes);
+	int update_binary_install_options(
+			const arg::DestinationFile & destination,
+			const AppfsFileAttributes & attributes);
 
 	/*! \details Installs a binary to the specified location.
 	  *
@@ -551,9 +608,9 @@ public:
 	  *
 	  */
 	int install_app(
-			const fs::SourceFile & source,
-			const fs::DestinationDirectoryPath & path,
-			const fs::DestinationFileName & name,
+			const arg::SourceFile & source,
+			const arg::DestinationDirectoryPath & path,
+			const arg::DestinationFileName & name,
 			const ProgressCallback * progress_callback = 0
 			);
 

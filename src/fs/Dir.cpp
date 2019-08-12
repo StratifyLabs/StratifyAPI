@@ -8,6 +8,7 @@
 #include "fs/File.hpp"
 #include "fs/Dir.hpp"
 using namespace fs;
+using namespace arg;
 
 
 
@@ -30,19 +31,26 @@ Dir::~Dir(){
 }
 
 #if !defined __link
-int Dir::remove(const var::ConstString & path, bool recursive){
+int Dir::remove(
+		const arg::SourceDirectoryPath path,
+		const arg::IsRecursive recursive
+		){
 #else
-int Dir::remove(const var::ConstString & path, bool recursive, link_transport_mdriver_t * driver){
+int Dir::remove(
+		const arg::SourceDirectoryPath path,
+		const arg::IsRecursive recursive,
+		link_transport_mdriver_t * driver
+		){
 #endif
 	int ret = 0;
-	if( recursive ){
+	if( recursive.argument() ){
 #if defined __link
 		Dir d(driver);
 #else
 		Dir d;
 #endif
 		if( d.open(
-				 SourceDirectoryPath(path)
+				 path
 				 ) == 0 ){
 			var::String entry;
 			while( (entry = d.read()).is_empty() == false ){
@@ -52,23 +60,34 @@ int Dir::remove(const var::ConstString & path, bool recursive, link_transport_md
 				Stat info;
 #endif
 				var::String entry_path;
-				entry_path << path << "/" << entry;
+				entry_path << path.argument() << "/" << entry;
 				info = File::get_info(
 							SourceFilePath(entry_path)
 							);
 				if( info.is_directory() ){
 					if( entry != "." && entry != ".."){
 #if defined __link
-						ret = Dir::remove(entry_path, true, driver);
+						ret = Dir::remove(
+									arg::SourceDirectoryPath(entry_path),
+									arg::IsRecursive(true),
+									driver);
 #else
-						ret = Dir::remove(entry_path, true);
+						ret = Dir::remove(
+									arg::SourceDirectoryPath(entry_path),
+									arg::IsRecursive(true)
+									);
 #endif
 					}
 				} else {
 #if defined __link
-					ret = File::remove(entry_path, driver);
+					ret = File::remove(
+								arg::SourceFilePath(entry_path),
+								driver
+								);
 #else
-					ret = File::remove(entry_path);
+					ret = File::remove(
+								arg::SourceFilePath(entry_path)
+								);
 #endif
 				}
 			}
@@ -80,12 +99,19 @@ int Dir::remove(const var::ConstString & path, bool recursive, link_transport_md
 		//this will remove an empty directory or a file
 #if defined __link
 		if( driver ){
-			ret = File::remove(path, driver);
+			ret = File::remove(
+						arg::SourceFilePath(path.argument()),
+						driver
+						);
 		} else {
-			ret = ::rmdir(path.cstring());
+			ret = ::rmdir(
+						path.argument().cstring()
+						);
 		}
 #else
-		ret = File::remove(path);
+		ret = File::remove(
+					arg::SourceFilePath(path.argument())
+					);
 #endif
 	}
 
@@ -144,27 +170,27 @@ int Dir::create(
 		return create(path, permissions);
 	}
 #endif
-	var::Tokenizer path_tokens(path.argument(), "/");
+	var::Tokenizer path_tokens(
+				arg::TokenEncodedString(path.argument()),
+				arg::TokenDelimeters("/")
+				);
 	var::String base_path;
 
-	if( path.argument().find("/") == 0 ){
+	if( path.argument().find(
+			 arg::StringToFind("/")
+			 ) == 0 ){
 		base_path << "/";
 	}
 
 	for(u32 i=0; i < path_tokens.count(); i++){
 		base_path << path_tokens.at(i);
-#if defined __link
 		create(
-					DestinationFilePath(base_path),
-					permissions,
-					driver
-					);
-#else
-		create(
-					DestinationFilePath(base_path),
+					DestinationDirectoryPath(base_path),
 					permissions
-					);
+#if defined __link
+					, driver
 #endif
+					);
 		base_path << "/";
 	}
 

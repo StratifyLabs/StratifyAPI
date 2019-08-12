@@ -102,12 +102,18 @@ void DisplayPalette::set_colors(void * v, int count, int pixel_format, bool read
 	m_palette.count = count;
 	m_palette.colors = v;
 	m_palette.pixel_format = pixel_format;
-	m_colors.set(v, (m_palette.count*bits_per_pixel()+7)/8, readonly);
+	m_colors.refer_to(
+				arg::DestinationBuffer(v),
+				arg::Size((m_palette.count*bits_per_pixel()+7)/8),
+				arg::IsReadOnly(readonly)
+				);
 }
 
 int DisplayPalette::alloc_colors(int count, int pixel_format){
 	m_palette.pixel_format = pixel_format;
-	if( m_colors.alloc((count * bits_per_pixel()+7)/8) < 0 ){
+	if( m_colors.allocate(
+			 arg::Size((count * bits_per_pixel()+7)/8)
+			 ) < 0 ){
 		m_palette.count = 0;
 		m_palette.colors = 0;
 		return -1;
@@ -118,12 +124,15 @@ int DisplayPalette::alloc_colors(int count, int pixel_format){
 	return 0;
 }
 
-int DisplayPalette::save(const char * path) const{
+int DisplayPalette::save(const arg::DestinationFilePath & path) const{
 	fs::File f;
 	display_palette_t palette;
 
-	if( f.create(path, true) < 0 ){ return -1; }
-	f << var::Data(&palette, sizeof(palette)) << colors();
+	if( f.create(
+			 path,
+			 arg::IsOverwrite(true)
+			 ) < 0 ){ return -1; }
+	f << var::Data::create_reference<display_palette_t>(arg::SourceBuffer(&palette)) << colors();
 
 	if( f.error_number() != 0 ){
 		return -1;
@@ -140,19 +149,26 @@ int DisplayPalette::set_monochrome(){
 	return 0;
 }
 
-int DisplayPalette::load(const char * path){
+int DisplayPalette::load(
+		const arg::SourceFilePath & path
+		){
 	fs::File f;
 
-	if( f.open(path, fs::OpenFlags::read_only()) < 0 ){ return -1; }
+	if( f.open(
+			 arg::FilePath(path.argument()),
+			 fs::OpenFlags::read_only()
+			 ) < 0 ){ return -1; }
 
 	if( f.read(
-			 fs::DestinationBuffer(&m_palette),
-			 fs::Size(sizeof(m_palette))
+			 arg::DestinationBuffer(&m_palette),
+			 arg::Size(sizeof(m_palette))
 			 ) != sizeof(m_palette) ){
 		return -1;
 	}
 
-	if( m_colors.alloc(m_palette.count * bits_per_pixel()/8) < 0 ){
+	if( m_colors.allocate(
+			 arg::Size(m_palette.count * bits_per_pixel()/8)
+			 ) < 0 ){
 		return -1;
 	}
 

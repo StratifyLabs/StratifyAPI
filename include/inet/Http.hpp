@@ -117,49 +117,49 @@ public:
 	 */
 	int get(
 			const var::ConstString & url,
-			const fs::DestinationFile & response,
+			const arg::DestinationFile & response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int post(
 			const var::ConstString & url,
 			const var::ConstString & request,
-			const fs::DestinationFile & response,
+			const arg::DestinationFile & response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int post(
 			const var::ConstString & url,
-			const fs::SourceFile & request,
-			const fs::DestinationFile & response,
+			const arg::SourceFile & request,
+			const arg::DestinationFile & response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int put(
 			const var::ConstString & url,
 			const var::ConstString & request,
-			const fs::DestinationFile & response,
+			const arg::DestinationFile & response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int put(
 			const var::ConstString & url,
-			const fs::SourceFile & request,
-			const fs::DestinationFile & response,
+			const arg::SourceFile & request,
+			const arg::DestinationFile & response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int patch(
 			const var::ConstString & url,
 			const var::ConstString & request,
-			const fs::DestinationFile & response,
+			const arg::DestinationFile & response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int patch(
 			const var::ConstString & url,
-			const fs::SourceFile & request,
-			const fs::DestinationFile & response,
+			const arg::SourceFile & request,
+			const arg::DestinationFile & response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
@@ -265,8 +265,8 @@ private:
 	int query(
 			const var::ConstString & command,
 			const var::ConstString & url,
-			const fs::SourceFile * send_file,
-			const fs::DestinationFile * get_file,
+			const arg::SourceFile * send_file,
+			const arg::DestinationFile * get_file,
 			const sys::ProgressCallback * progress_callback
 			);
 
@@ -284,12 +284,12 @@ private:
 			const var::ConstString & method,
 			const var::ConstString & host,
 			const var::ConstString & path,
-			const fs::SourceFile * file,
+			const arg::SourceFile * file,
 			const sys::ProgressCallback * progress_callback
 			);
 
 	int listen_for_header();
-	int listen_for_data(const fs::DestinationFile & data,
+	int listen_for_data(const arg::DestinationFile & data,
 			const sys::ProgressCallback * progress_callback
 			);
 	/*! \endcond */

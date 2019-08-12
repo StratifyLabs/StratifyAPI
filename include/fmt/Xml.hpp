@@ -60,11 +60,11 @@ public:
 	 * @param perms File permissions if creating a new file (WRONLY)
 	 *
 	 */
-	Xml(const var::ConstString & path, const fs::OpenFlags & flags, const fs::Permissions & permissions = fs::Permissions(0666));
+	Xml(const arg::DestinationFilePath & path, const fs::OpenFlags & flags, const fs::Permissions & permissions = fs::Permissions(0666));
 
 	Xml();
 
-	int init(const var::ConstString & path, const fs::OpenFlags & flags, const fs::Permissions & perms = fs::Permissions(0666));
+	int init(const arg::DestinationFilePath & path, const fs::OpenFlags & flags, const fs::Permissions & perms = fs::Permissions(0666));
 
 	inline int close(){
 		file_size = 0;

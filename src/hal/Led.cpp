@@ -16,7 +16,10 @@ int Led::enable(u32 duty_cycle, u32 period) const{
 		attr.period = period;
 		attr.o_flags |= FLAG_IS_DUTY_CYCLE;
 	}
-	return ioctl(I_LED_SETATTR, &attr);
+	return ioctl(
+				arg::IoRequest(I_LED_SETATTR),
+				arg::IoArgument(&attr)
+				);
 }
 
 int Led::disable(bool high_impedance) const {
@@ -25,11 +28,17 @@ int Led::disable(bool high_impedance) const {
 	if( high_impedance ){
 		attr.o_flags |= FLAG_IS_HIGH_IMPEDANCE;
 	}
-	return ioctl(I_LED_SETATTR, &attr);
+	return ioctl(
+				arg::IoRequest(I_LED_SETATTR),
+				arg::IoArgument(&attr)
+				);
 }
 
 int Led::get_info(led_info_t & info) const {
-	return ioctl(I_LED_GETINFO, &info);
+	return ioctl(
+				arg::IoRequest(I_LED_GETINFO),
+				arg::IoArgument(&info)
+				);
 }
 
 } /* namespace hal */

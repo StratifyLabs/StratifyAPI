@@ -15,7 +15,7 @@ namespace fmt {
  */
 class Svic : public api::FmtFileObject {
 public:
-	Svic(const var::ConstString & path = "");
+	Svic(const arg::SourceFilePath & path = arg::SourceFilePath(""));
 
 	u32 count() const { return m_icons.count(); }
 

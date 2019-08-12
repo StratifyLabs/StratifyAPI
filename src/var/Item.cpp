@@ -5,28 +5,34 @@
 
 namespace var {
 
-int ItemObject::save(const char * path) const {
+int ItemObject::save(const arg::DestinationFilePath path) const {
 	fs::File f;
 	int ret;
-	if( f.create(path, true) < 0 ){
+	if( f.create(
+			 path,
+			 arg::IsOverwrite(true)
+			 ) < 0 ){
 		return -1;
 	}
 	ret = f.write(
-				fs::SourceBuffer(data_void_const()),
-				fs::Size(size())
+				arg::SourceBuffer(data_void_const()),
+				arg::Size(size())
 				);
 	return ret;
 }
 
-int ItemObject::load(const char * path){
+int ItemObject::load(const arg::SourceFilePath & path){
 	fs::File f;
 	int ret;
-	if( f.open(path, fs::OpenFlags::read_only()) < 0 ){
+	if( f.open(
+			 arg::FilePath(path.argument()),
+			 fs::OpenFlags::read_only()
+			 ) < 0 ){
 		return -1;
 	}
 	ret = f.read(
-				fs::DestinationBuffer(data_void()),
-				fs::Size(size())
+				arg::DestinationBuffer(data_void()),
+				arg::Size(size())
 				);
 	return ret;
 }

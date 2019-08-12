@@ -61,9 +61,19 @@ public:
 	 * @param channel The hardware channel to listen for events on
 	 *
 	 */
-	int set_signal_action(const DeviceSignal & signal, u32 o_events, u32 channel){
-		mcu_action_t action = signal.create_action(o_events, channel);
-		return ioctl(I_MCU_SETACTION, &action);
+	int set_signal_action(
+			const DeviceSignal & signal,
+			const arg::Events o_events,
+			const arg::Channel channel){
+		mcu_action_t action =
+				signal.create_action(
+					o_events,
+					channel
+					);
+		return ioctl(
+					arg::IoRequest(I_MCU_SETACTION),
+					arg::IoArgument(&action)
+					);
 	}
 
 	/*! \details Reads the device asynchronously.

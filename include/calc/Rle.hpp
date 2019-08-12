@@ -29,7 +29,11 @@ public:
 	 * @param src_size The number of bytes to encode
 	 * @return Number of un-encoded bytes that were processed
 	 */
-	static int encode(void * dest, s32 & dest_size, const void * src, s32 src_size);
+	static int encode(
+			void * dest,
+			s32 & dest_size,
+			const void * src, s32 src_size
+			);
 
 	/*! \details Decodes a block of data that has been run length encoded.
 	 *
@@ -39,7 +43,12 @@ public:
 	 * @param src_size The number of encoded bytes to process
 	 * @return Number of encoded bytes that were processed
 	 */
-	static int decode(void * dest, s32 & dest_size, const void * src, s32 src_size);
+	static int decode(
+			void * dest,
+			s32 & dest_size,
+			const void * src,
+			s32 src_size
+			);
 
 	/*! \details Calculates the number of bytes that will be used by the
 	 * compressed data.

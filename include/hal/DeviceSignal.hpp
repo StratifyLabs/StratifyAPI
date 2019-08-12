@@ -62,12 +62,17 @@ public:
 	 * @param sigcode The signal code
 	 * @param sigvalue The signal value
 	 */
-	DeviceSignal(bool persistent, int signo, int sigvalue = 0, int sigcode = 0) : Signal(signo, sigvalue){
+	DeviceSignal(
+			const arg::IsPersistent persistent,
+			const arg::SignalNumber signo,
+			const arg::SignalValueInteger sigvalue = arg::SignalValueInteger(0),
+			const arg::SignalCode sigcode = arg::SignalCode(0)) :
+		Signal(signo, sigvalue){
 		m_context.tid = sys::Thread::self();
-		m_context.si_signo = signo;
-		m_context.si_sigcode = sigcode;
-		m_context.sig_value = sigvalue;
-		m_context.keep = persistent;
+		m_context.si_signo = signo.argument();
+		m_context.si_sigcode = sigcode.argument();
+		m_context.sig_value = sigvalue.argument();
+		m_context.keep = persistent.argument();
 	}
 
 	/*! \details Constructs a signal event based on a hardware device action.
@@ -77,12 +82,17 @@ public:
 	 * @param sigcode The signal code
 	 * @param sigptr The signal value as a pointer
 	 */
-	DeviceSignal(bool persistent, int signo, void * sigptr, int sigcode = 0) : Signal(signo, sigptr){
+	DeviceSignal(
+			const arg::IsPersistent persistent,
+			const arg::SignalNumber signo,
+			const arg::SignalValuePointer sigvalue = arg::SignalValuePointer(0),
+			const arg::SignalCode sigcode = arg::SignalCode(0)) :
+		Signal(signo, sigvalue){
 		m_context.tid = pthread_self();
-		m_context.si_signo = signo;
-		m_context.si_sigcode = sigcode;
-		m_context.sig_ptr = sigptr;
-		m_context.keep = persistent;
+		m_context.si_signo = signo.argument();
+		m_context.si_sigcode = sigcode.argument();
+		m_context.sig_ptr = sigvalue.argument();
+		m_context.keep = persistent.argument();
 	}
 
 
@@ -90,7 +100,12 @@ public:
 	 *
 	 * @param context A copy of the signal_callback_t data to use to handle the event.
 	 */
-	DeviceSignal(const devfs_signal_callback_t & context) : Signal(context.si_signo, context.sig_value){
+	DeviceSignal(
+			const devfs_signal_callback_t & context
+			) : Signal(
+					 arg::SignalNumber(context.si_signo),
+					 arg::SignalValueInteger(context.sig_value)
+					 ){
 		this->m_context = context;
 	}
 
@@ -102,13 +117,17 @@ public:
 	 * @return a copy of a mcu_action_t data structure
 	 *
 	 */
-	mcu_action_t create_action(int event, int channel = 0, int prio = 0) const {
+	mcu_action_t create_action(
+			const arg::Events event,
+			const arg::Channel channel = arg::Channel(0),
+			const arg::InterruptPriority prio = arg::InterruptPriority(0)
+			) const {
 		mcu_action_t a;
 		a.handler.callback = devfs_signal_callback;
 		a.handler.context = (void*)&m_context;
-		a.channel = channel;
-		a.o_events = event;
-		a.prio = prio;
+		a.channel = channel.argument();
+		a.o_events = event.argument();
+		a.prio = prio.argument();
 		return a;
 	}
 

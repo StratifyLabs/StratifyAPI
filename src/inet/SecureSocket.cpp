@@ -39,7 +39,7 @@ int SecureSocket::connect(const SocketAddress & address){
 		}
 	}
 
-	result = api()->connect(m_context, address.to_sockaddr(), address.length(), address.canon_name().str());
+	result = api()->connect(m_context, address.to_sockaddr(), address.length(), address.canon_name().cstring());
 
 	if( m_ticket_lifetime && result == 0){
 		m_ticket.set_size(2619);
