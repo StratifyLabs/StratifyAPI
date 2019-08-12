@@ -479,14 +479,14 @@ public:
 	  *
 	  * @return Zero on success
 	  */
-	virtual int create(const SocketAddress & address);
+	virtual int create(const arg::SourceSocketAddress address);
 
 	/*!
 	  * \details Connects to the server using the SocketAddress
 	  * object passed to create() method.
 	  * @return Less than zero on error or zero on success
 	  */
-	virtual int connect(const SocketAddress & address);
+	virtual int connect(const arg::SourceSocketAddress address);
 
 
 	/*!
@@ -497,17 +497,19 @@ public:
 	  * when using TCP sockets where listen is applicable.
 	  *
 	  */
-	virtual int bind_and_listen(const SocketAddress & address, int backlog = 4) const;
+	virtual int bind_and_listen(
+			const arg::SourceSocketAddress address,
+			const arg::ListenBacklogCount backlog = arg::ListenBacklogCount(4)) const;
 
 
-	virtual int bind(const SocketAddress & address) const;
+	virtual int bind(const arg::SourceSocketAddress address) const;
 
 	/*!
 	  * \details Accepts a socket connection on a socket that is listening.
 	  *
 	  * @return A valid Socket if the operation is successful.
 	  */
-	Socket accept(SocketAddress & address) const;
+	Socket accept(arg::DestinationSocketAddress address) const;
 
 	/*! \details Shuts down the socket.
 	 *
@@ -527,11 +529,17 @@ public:
 
 	//already documented in fs::File
 	using File::write;
-	virtual int write(const void * buf, int nbyte) const;
+	virtual int write(
+			const arg::SourceBuffer buf,
+			const arg::Size nbyte
+			) const;
 
 	//already documented in fs::File
 	using File::read;
-	virtual int read(void * buf, int nbyte) const;
+	virtual int read(
+			arg::DestinationBuffer buf,
+			const arg::Size nbyte
+			) const;
 
 
 	/*@brief use for get ip address from recved data in socket
@@ -540,9 +548,22 @@ public:
 	  * @param ai_addr - will address info accept
 	  * @param ai_addrlen - write address ip len (IPv4 or IPv6) before use!!!
 	  * */
-	int read(var::Data & data, SocketAddress & address);
-	int read(void * buf, int nbyte, SocketAddress & address);
-	int read(void * buf, int nbyte, struct sockaddr * ai_addr,socklen_t * ai_addrlen) const;
+	int read(
+			arg::DestinationData data,
+			arg::DestinationSocketAddress address
+			);
+	int read(
+			arg::DestinationBuffer buf,
+			const arg::Size nbyte,
+			arg::DestinationSocketAddress address
+			);
+
+	int read(
+			arg::DestinationBuffer buf,
+			const arg::Size nbyte,
+			struct sockaddr * ai_addr,
+			socklen_t * ai_addrlen
+			) const;
 
 	/*! \brief Writes to the address specified.
 	  *
@@ -552,12 +573,30 @@ public:
 	  * This method implements the socket call sendto().
 	  *
 	  */
-	int write(const var::Data & data, const SocketAddress & address){
-		return write(data.to_char(), data.size(), address);
+	int write(
+			const arg::SourceData data,
+			const arg::SourceSocketAddress address
+			){
+		return write(
+					arg::SourceBuffer(data.argument().to_void()),
+					arg::Size(data.argument().size()),
+					address);
 	}
-	int write(const void * buf, int nbyte, const struct sockaddr * ai_addr,socklen_t ai_addrlen) const;
-	int write(const void * buf, int nbyte, const SocketAddress &socket_address) const {
-		return write(buf, nbyte, socket_address.to_sockaddr(), socket_address.length());
+	int write(
+			const arg::SourceBuffer buf,
+			const arg::Size nbyte,
+			const struct sockaddr * ai_addr,
+			socklen_t ai_addrlen) const;
+	int write(
+			const arg::SourceBuffer buf,
+			const arg::Size nbyte,
+			const arg::SourceSocketAddress socket_address) const {
+		return write(
+					buf,
+					nbyte,
+					socket_address.argument().to_sockaddr(),
+					socket_address.argument().length()
+					);
 	}
 
 	//already documented in fs::File

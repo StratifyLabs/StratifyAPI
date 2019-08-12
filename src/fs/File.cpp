@@ -612,10 +612,9 @@ int File::ioctl(const IoRequest request,
 }
 
 
-int File::write(
-		const arg::SourceFile & source_file,
-		const PageSize & page_size,
-		const Size & size
+int File::write(const SourceFile source_file,
+		const PageSize page_size,
+		const Size size
 		) const {
 	return write(source_file, page_size, size, 0);
 }

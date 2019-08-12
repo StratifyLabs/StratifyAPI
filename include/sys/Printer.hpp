@@ -373,7 +373,9 @@ public:
 	 * ```
 	 *
 	 */
-	Printer & open_object(const var::ConstString & key, enum verbose_level level = FATAL);
+	Printer & open_object(
+			const var::ConstString & key,
+			enum verbose_level level = FATAL);
 	void close_object(){
 		m_container.pop_back();
 		if( m_indent ){

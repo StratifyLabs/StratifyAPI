@@ -64,12 +64,15 @@ public:
 	 */
 	DeviceSignal(
 			const arg::IsPersistent persistent,
-			const arg::SignalNumber signo,
+			enum sys::Signal::signal_number signo,
 			const arg::SignalValueInteger sigvalue = arg::SignalValueInteger(0),
 			const arg::SignalCode sigcode = arg::SignalCode(0)) :
-		Signal(signo, sigvalue){
+		Signal(
+			signo,
+			sigvalue
+			){
 		m_context.tid = sys::Thread::self();
-		m_context.si_signo = signo.argument();
+		m_context.si_signo = signo;
 		m_context.si_sigcode = sigcode.argument();
 		m_context.sig_value = sigvalue.argument();
 		m_context.keep = persistent.argument();
@@ -84,12 +87,15 @@ public:
 	 */
 	DeviceSignal(
 			const arg::IsPersistent persistent,
-			const arg::SignalNumber signo,
+			enum sys::Signal::signal_number signo,
 			const arg::SignalValuePointer sigvalue = arg::SignalValuePointer(0),
 			const arg::SignalCode sigcode = arg::SignalCode(0)) :
-		Signal(signo, sigvalue){
+		Signal(
+			signo,
+			sigvalue
+			){
 		m_context.tid = pthread_self();
-		m_context.si_signo = signo.argument();
+		m_context.si_signo = signo;
 		m_context.si_sigcode = sigcode.argument();
 		m_context.sig_ptr = sigvalue.argument();
 		m_context.keep = persistent.argument();
@@ -103,7 +109,7 @@ public:
 	DeviceSignal(
 			const devfs_signal_callback_t & context
 			) : Signal(
-					 arg::SignalNumber(context.si_signo),
+					 (enum sys::Signal::signal_number)context.si_signo,
 					 arg::SignalValueInteger(context.sig_value)
 					 ){
 		this->m_context = context;

@@ -93,7 +93,7 @@ public:
 	 *
 	 * @param url target URL for request.
 	 */
-	int head(const var::ConstString & url);
+	int head(const arg::UrlEncodedString url);
 
 	/*! \details Executes an HTTP GET request.
 	 *
@@ -115,49 +115,48 @@ public:
 	 * ```
 	 *
 	 */
-	int get(
-			const var::ConstString & url,
+	int get(const arg::UrlEncodedString url,
 			const arg::DestinationFile & response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int post(
-			const var::ConstString & url,
-			const var::ConstString & request,
+			const arg::UrlEncodedString url,
+			const arg::HttpStringToPost request,
 			const arg::DestinationFile & response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int post(
-			const var::ConstString & url,
+			const arg::UrlEncodedString url,
 			const arg::SourceFile & request,
 			const arg::DestinationFile & response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int put(
-			const var::ConstString & url,
-			const var::ConstString & request,
+			const arg::UrlEncodedString url,
+			const arg::HttpStringToPost request,
 			const arg::DestinationFile & response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int put(
-			const var::ConstString & url,
+			const arg::UrlEncodedString url,
 			const arg::SourceFile & request,
 			const arg::DestinationFile & response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int patch(
-			const var::ConstString & url,
-			const var::ConstString & request,
+			const arg::UrlEncodedString url,
+			const arg::HttpStringToPost request,
 			const arg::DestinationFile & response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int patch(
-			const var::ConstString & url,
+			const arg::UrlEncodedString url,
 			const arg::SourceFile & request,
 			const arg::DestinationFile & response,
 			const sys::ProgressCallback * progress_callback = 0
@@ -165,10 +164,10 @@ public:
 
 	//http delete
 	/*! \cond */
-	int remove(const var::ConstString & url, const var::String & data);
-	int options(const var::ConstString & url);
-	int trace(const var::ConstString & url);
-	int connect(const var::ConstString & url);
+	int remove(const arg::UrlEncodedString url, const var::String & data);
+	int options(const arg::UrlEncodedString url);
+	int trace(const arg::UrlEncodedString url);
+	int connect(const arg::UrlEncodedString url);
 	/*! \endcond */
 
 	/*! \details List of values for error_number() when using the HttpClient class. */
@@ -264,7 +263,7 @@ private:
 
 	int query(
 			const var::ConstString & command,
-			const var::ConstString & url,
+			const arg::UrlEncodedString url,
 			const arg::SourceFile * send_file,
 			const arg::DestinationFile * get_file,
 			const sys::ProgressCallback * progress_callback

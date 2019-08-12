@@ -28,6 +28,22 @@ namespace fs {
 class File;
 }
 
+namespace sys {
+class Thread;
+}
+
+namespace inet {
+class SocketAddress;
+}
+
+namespace chrono {
+class MicroTime;
+class Seconds;
+class Milliseconds;
+class Microseconds;
+class Nanoseconds;
+}
+
 namespace arg {
 
 template <typename T, typename Parameter>
@@ -129,6 +145,10 @@ ARG_DEFINE_ARGUMENT(ThreadId, pthread_t);
 ARG_DEFINE_ARGUMENT(StackSize, u32);
 ARG_DEFINE_ARGUMENT(IsDetached, bool);
 ARG_DEFINE_ARGUMENT(ThreadFunction, void * (*)(void *));
+ARG_DEFINE_ARGUMENT(ThreadToJoin, const sys::Thread&);
+ARG_DEFINE_ARGUMENT(ThreadFunctionArgument, void *);
+ARG_DEFINE_ARGUMENT(ThreadReturn, void **);
+ARG_DEFINE_ARGUMENT(DelayInterval, const chrono::MicroTime &);
 
 //var::Tokenizer
 ARG_DEFINE_ARGUMENT(TokenEncodedString, const var::ConstString &);
@@ -225,6 +245,11 @@ ARG_DEFINE_ARGUMENT(FontStyle, u8);
 ARG_DEFINE_ARGUMENT(FontName, const var::ConstString&);
 ARG_DEFINE_ARGUMENT(IsExactMatch, bool);
 
+ARG_DEFINE_ARGUMENT(SourceSocketAddress, const inet::SocketAddress&);
+ARG_DEFINE_ARGUMENT(DestinationSocketAddress, inet::SocketAddress&);
+ARG_DEFINE_ARGUMENT(ListenBacklogCount, int);
+ARG_DEFINE_ARGUMENT(HttpStringToPost, const var::ConstString&);
+ARG_DEFINE_ARGUMENT(UrlEncodedString, const var::ConstString&);
 
 
 }

@@ -271,13 +271,17 @@ Socket::~Socket() {
 
 
 
-int Socket::create(const SocketAddress & address){
+int Socket::create(const arg::SourceSocketAddress address){
 
 	if( m_socket != SOCKET_INVALID ){
 		this->close();
 	}
 
-	m_socket = socket(address.family(), address.type(), address.protocol());
+	m_socket = socket(
+				address.argument().family(),
+				address.argument().type(),
+				address.argument().protocol()
+				);
 
 	if( is_valid() == false ){
 		//set_error_number_if_error(??);
@@ -287,38 +291,40 @@ int Socket::create(const SocketAddress & address){
 	return 0;
 }
 
-int Socket::bind(const SocketAddress & addr) const {
-	return decode_socket_return( ::bind(m_socket, addr.to_sockaddr(), addr.length()) );
+int Socket::bind(const arg::SourceSocketAddress addr) const {
+	return decode_socket_return( ::bind(m_socket, addr.argument().to_sockaddr(), addr.argument().length()) );
 }
 
 
-int Socket::bind_and_listen(const SocketAddress & addr, int backlog) const {
+int Socket::bind_and_listen(
+		const arg::SourceSocketAddress addr,
+		const arg::ListenBacklogCount backlog) const {
 	int result = bind(addr);
 	if( result < 0 ){
 		return result;
 	}
 
-	if( addr.protocol() == SocketAddressInfo::PROTOCOL_TCP ){
-		result =  decode_socket_return( ::listen(m_socket, backlog) );
+	if( addr.argument().protocol() == SocketAddressInfo::PROTOCOL_TCP ){
+		result =  decode_socket_return( ::listen(m_socket, backlog.argument()) );
 	}
 
 	return result;
 }
 
-Socket Socket::accept(SocketAddress & address) const{
+Socket Socket::accept(arg::DestinationSocketAddress address) const{
 	Socket result;
 	socklen_t len = sizeof(struct sockaddr_in6);
-	address.m_sockaddr.allocate(arg::Size(len));
+	address.argument().m_sockaddr.allocate(arg::Size(len));
 	result.m_socket = decode_socket_return(
 				::accept(m_socket,
-							address.m_sockaddr.to<struct sockaddr>(),
+							address.argument().m_sockaddr.to<struct sockaddr>(),
 							&len)
 				);
-	address.m_sockaddr.set_size(len);
+	address.argument().m_sockaddr.set_size(len);
 	return result;
 }
 
-int Socket::connect(const SocketAddress & address) {
+int Socket::connect(const arg::SourceSocketAddress address) {
 	// Connect to server.
 
 	if( m_socket == SOCKET_INVALID ){
@@ -329,35 +335,44 @@ int Socket::connect(const SocketAddress & address) {
 	}
 
 	return decode_socket_return(
-				::connect(m_socket, address.to_sockaddr(), address.length())
+				::connect(m_socket, address.argument().to_sockaddr(), address.argument().length())
 				);
 }
 
-int Socket::write(const void * buf, int nbyte) const {
-	return decode_socket_return( ::send(m_socket, (const char*)buf, nbyte, 0 ) );
+int Socket::write(const arg::SourceBuffer buf, const arg::Size nbyte) const {
+	return decode_socket_return( ::send(m_socket, (const char*)buf.argument(), nbyte.argument(), 0 ) );
 }
 
-int Socket::write(const void * buf, int nbyte, const struct sockaddr * ai_addr, socklen_t ai_addrlen) const {
-	return decode_socket_return( ::sendto(m_socket, (const char*)buf, nbyte, 0, ai_addr, ai_addrlen));
+int Socket::write(const arg::SourceBuffer buf, const arg::Size nbyte, const struct sockaddr * ai_addr, socklen_t ai_addrlen) const {
+	return decode_socket_return( ::sendto(m_socket, (const char*)buf.argument(), nbyte.argument(), 0, ai_addr, ai_addrlen));
 }
 
 
-int Socket::read(void * buf, int nbyte) const {
-	return decode_socket_return( ::recv(m_socket, (char*)buf, nbyte, 0 ) );
+int Socket::read(arg::DestinationBuffer buf, const arg::Size nbyte) const {
+	return decode_socket_return( ::recv(m_socket, (char*)buf.argument(), nbyte.argument(), 0 ) );
 }
 
-int Socket::read(var::Data & data, SocketAddress & address){
-	socklen_t address_len = address.m_sockaddr.size();
-	return decode_socket_return( ::recvfrom(m_socket, data.to_char(), data.size(), 0 , address.m_sockaddr.to<struct sockaddr>(), &address_len) );
+int Socket::read(arg::DestinationData data,
+		arg::DestinationSocketAddress address
+		){
+	socklen_t address_len = address.argument().m_sockaddr.size();
+	return decode_socket_return( ::recvfrom(
+											  m_socket,
+											  data.argument().to_char(),
+											  data.argument().size(),
+											  0,
+											  address.argument().m_sockaddr.to<struct sockaddr>(),
+											  &address_len) );
 }
 
-int Socket::read(void * buf, int nbyte, SocketAddress & address){
-	socklen_t address_len = address.m_sockaddr.size();
-	return decode_socket_return( ::recvfrom(m_socket, (char*)buf, nbyte, 0 , address.m_sockaddr.to<struct sockaddr>(), &address_len) );
+int Socket::read(arg::DestinationBuffer buf, const arg::Size nbyte,
+					  arg::DestinationSocketAddress address){
+	socklen_t address_len = address.argument().m_sockaddr.size();
+	return decode_socket_return( ::recvfrom(m_socket, (char*)buf.argument(), nbyte.argument(), 0 , address.argument().m_sockaddr.to<struct sockaddr>(), &address_len) );
 }
 
-int Socket::read(void * buf, int nbyte,struct sockaddr * ai_addr,socklen_t * ai_addrlen) const {
-	return decode_socket_return( ::recvfrom(m_socket, (char*)buf, nbyte, 0 ,ai_addr, ai_addrlen) );
+int Socket::read(arg::DestinationBuffer buf, const arg::Size nbyte, struct sockaddr * ai_addr, socklen_t * ai_addrlen) const {
+	return decode_socket_return( ::recvfrom(m_socket, (char*)buf.argument(), nbyte.argument(), 0 ,ai_addr, ai_addrlen) );
 }
 
 int Socket::shutdown(const fs::OpenFlags how) const{

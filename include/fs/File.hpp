@@ -468,8 +468,8 @@ public:
 
 	/*! \details Writes the file using a var::String object at the location specified. */
 	int write(
-			const arg::Location & location,
-			const var::String & str
+			const arg::Location location,
+			const var::String str
 			) const MCU_ALWAYS_INLINE {
 		return write(
 					location,
@@ -480,15 +480,15 @@ public:
 
 
 	int write(
-			const arg::SourceFile & source_file,
-			const arg::PageSize & page_size,
-			const arg::Size & size = arg::Size(0xffffffff)
+			const arg::SourceFile source_file,
+			const arg::PageSize page_size,
+			const arg::Size size = arg::Size(0xffffffff)
 			) const;
 	int write(
-			const arg::Location & location,
-			const arg::SourceFile & source_file,
-			const arg::PageSize & page_size,
-			const arg::Size & size = arg::Size(0xffffffff)
+			const arg::Location location,
+			const arg::SourceFile source_file,
+			const arg::PageSize page_size,
+			const arg::Size size = arg::Size(0xffffffff)
 			) const MCU_ALWAYS_INLINE {
 		seek(location);
 		return write(source_file, page_size, size);
@@ -501,10 +501,10 @@ public:
 				 ) const;
 
 	int write(
-			const arg::Location & location,
-			const arg::SourceFile & source_file,
-			const arg::PageSize & page_size,
-			const arg::Size & size,
+			const arg::Location location,
+			const arg::SourceFile source_file,
+			const arg::PageSize page_size,
+			const arg::Size size,
 			const sys::ProgressCallback * progress_callback
 			) const MCU_ALWAYS_INLINE {
 		seek(location);

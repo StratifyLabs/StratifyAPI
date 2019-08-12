@@ -119,9 +119,8 @@ int Thread::get_policy() const {
 	return policy;
 }
 
-int Thread::create(
-		arg::ThreadFunction func,
-		arg::Context args,
+int Thread::create(arg::ThreadFunction func,
+		arg::ThreadFunctionArgument args,
 		const arg::SchedulerPriority prio,
 		enum Sched::policy policy
 		){
@@ -163,7 +162,10 @@ bool Thread::is_running() const {
 	return false;
 }
 
-int Thread::wait(void**ret, int interval) const {
+int Thread::wait(
+		arg::ThreadReturn ret,
+		const arg::DelayInterval interval
+		) const {
 
 	void * dummy;
 
@@ -171,15 +173,15 @@ int Thread::wait(void**ret, int interval) const {
 
 		//if thread is joinable, then join it
 		if( is_joinable() ){
-			if( ret != 0 ){
+			if( ret.argument() != 0 ){
 				join(ret);
 			} else {
-				join(&dummy);
+				join(arg::ThreadReturn(&dummy));
 			}
 		} else {
 			//just keep sampling until the thread completes
 			while( is_running() ){
-				Timer::wait_milliseconds(interval);
+				interval.argument().wait();
 			}
 		}
 	}
@@ -206,15 +208,18 @@ int Thread::reset(){
 	return -1;
 }
 
-int Thread::join(pthread_t ident, void ** value_ptr){
+int Thread::join(
+		const arg::ThreadId ident,
+		arg::ThreadReturn value_ptr
+		){
 	void * tmp_ptr;
 	void ** ptr;
-	if( value_ptr == 0 ){
+	if( value_ptr.argument() == 0 ){
 		ptr = &tmp_ptr;
 	} else {
-		ptr = value_ptr;
+		ptr = value_ptr.argument();
 	}
-	return pthread_join(ident, ptr);
+	return pthread_join(ident.argument(), ptr);
 }
 
 bool Thread::is_joinable() const{
@@ -222,14 +227,19 @@ bool Thread::is_joinable() const{
 	return detach_state == JOINABLE;
 }
 
-int Thread::join(void ** value_ptr) const {
+int Thread::join(arg::ThreadReturn value_ptr) const {
 	void * tmp_ptr;
 	void ** ptr;
-	if( value_ptr == 0 ){
+	if( value_ptr.argument() == 0 ){
 		ptr = &tmp_ptr;
 	} else {
-		ptr = value_ptr;
+		ptr = value_ptr.argument();
 	}
-	return set_error_number_if_error(pthread_join(id(), ptr));
+	return set_error_number_if_error(
+				pthread_join(
+					id(),
+					ptr
+					)
+				);
 }
 

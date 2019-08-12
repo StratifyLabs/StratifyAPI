@@ -7,11 +7,8 @@
 #include <ctime>
 #include "../api/ChronoObject.hpp"
 #include "../var/ConstString.hpp"
-#include "ClockTime.hpp"
 
 namespace chrono {
-
-class MicroTime;
 
 class Hours : public api::ChronoInfoObject {
 public:

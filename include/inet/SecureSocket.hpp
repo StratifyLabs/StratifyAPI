@@ -18,28 +18,36 @@ public:
 	~SecureSocket();
 
 	//already documented in inet::Socket
-	virtual int create(const SocketAddress & address);
+	virtual int create(const arg::SourceSocketAddress address);
 
 	//already documented in inet::Socket
-	virtual int connect(const SocketAddress & address);
+	virtual int connect(const arg::SourceSocketAddress address);
 
 	//already documented in inet::Socket
-	virtual int bind_and_listen(const SocketAddress & address, int backlog = 4) const;
+	virtual int bind_and_listen(const arg::SourceSocketAddress address,
+										 const arg::ListenBacklogCount backlog = arg::ListenBacklogCount(4)
+			) const;
 
 
 	/*! \details
 	  *
 	  */
-	Socket accept(SocketAddress & address) const;
+	Socket accept(arg::DestinationSocketAddress address) const;
 
 	//already documented in inet::Socket
 	virtual int shutdown(int how = 0) const;
 
 	using File::write;
-	virtual int write(const void * buf, int nbyte) const;
+	virtual int write(
+			const arg::SourceBuffer buf,
+			const arg::Size nbyte
+			) const;
 
 	using File::read;
-	virtual int read(void * buf, int nbyte) const;
+	virtual int read(
+			arg::DestinationBuffer buf,
+			const arg::Size nbyte
+			) const;
 
 	virtual int close();
 

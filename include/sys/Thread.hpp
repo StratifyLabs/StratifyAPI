@@ -8,6 +8,8 @@
 #include "../api/WorkObject.hpp"
 #include "Sched.hpp"
 #include "../api/SysObject.hpp"
+#include "../chrono/Time.hpp"
+#include "../chrono/MicroTime.hpp"
 
 namespace sys {
 
@@ -179,7 +181,7 @@ public:
 	 */
 	int create(
 			arg::ThreadFunction func,
-			arg::Context args = arg::Context(0),
+			arg::ThreadFunctionArgument args = arg::ThreadFunctionArgument(0),
 			const arg::SchedulerPriority prio = arg::SchedulerPriority(0),
 			enum Sched::policy policy = Sched::OTHER
 			);
@@ -194,7 +196,10 @@ public:
 	 * is_running() until the thread completes.
 	 *
 	 */
-	int wait(void ** ret = 0, int interval = 1000) const;
+	int wait(
+			arg::ThreadReturn ret = arg::ThreadReturn(0),
+			const arg::DelayInterval interval = arg::DelayInterval(chrono::MicroTime(1000000UL))
+			) const;
 
 	/*! \details Yields the processor to another thread */
 	static void yield(){ return Sched::yield(); }
@@ -210,7 +215,10 @@ public:
 	  *
 	  *
 	 */
-	static int join(pthread_t ident, void ** value_ptr = 0);
+	static int join(
+			const arg::ThreadId ident,
+			arg::ThreadReturn value_ptr = arg::ThreadReturn(0)
+			);
 
 	/*! \details Joins the calling thread to the specified thread.
 	  *
@@ -222,8 +230,10 @@ public:
 	  * thread returns.
 	  *
 	  */
-	static int join(const Thread & thread, void ** value_ptr = 0){
-		return join(thread.id(), value_ptr);
+	static int join(
+			const arg::ThreadToJoin thread_to_join,
+			arg::ThreadReturn value_ptr = arg::ThreadReturn(0)){
+		return join(arg::ThreadId(thread_to_join.argument().id()), value_ptr);
 	}
 
 	/*! \details Returns the thread ID of the calling thread. */
@@ -257,7 +267,9 @@ public:
 	  *
 	  *
 	 */
-	int kill(int sig){ return pthread_kill(m_id, sig); }
+	int kill(const arg::SignalNumber sig){
+		return pthread_kill(m_id, sig.argument());
+	}
 
 
 	/*! \details This method returns true if the thread is joinable */
@@ -271,7 +283,7 @@ public:
 	  * This method will block the calling thread until the thread function
 	  * returns.
 	 */
-	int join(void ** value_ptr = 0) const;
+	int join(arg::ThreadReturn value_ptr = arg::ThreadReturn(0)) const;
 
 	/*! \details Allows read only access to the thread attributes. */
 	const pthread_attr_t & attr() const { return m_pthread_attr; }
