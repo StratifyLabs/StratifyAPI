@@ -64,16 +64,22 @@ public:
 	}
 
 	/*! \details Constructs the object with a port/pin combination. */
-	Pin(port_t port, u32 pin, bool ismask = false) : Pio(port){
-		if( ismask ){
-			m_pinmask = pin;
+	Pin(
+			const arg::PortNumber port,
+			const arg::PinNumber pin,
+			const arg::IsMcuPinMask is_mask = arg::IsMcuPinMask(false)
+			) : Pio(port.argument()){
+		if( is_mask.argument() ){
+			m_pinmask = pin.argument();
 		} else {
-			m_pinmask = (1<<pin);
+			m_pinmask = (1<<pin.argument());
 		}
 	}
 
 	/*! \details Contructs a new pin object from an mcu_pin_t data structure. */
-	Pin(const mcu_pin_t & p) : Pio(p.port) { m_pinmask = 1<<p.pin; }
+	Pin(const arg::ImplicitMcuPin p) : Pio(p.argument().port) {
+		m_pinmask = 1<<p.argument().pin;
+	}
 
 	using Pio::set_attributes;
 	using Pio::initialize;

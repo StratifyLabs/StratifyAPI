@@ -242,12 +242,12 @@ public:
 	 *
 	 */
 	int seek_next(var::String & name, son_value_t * type = 0){
-		name.set_capacity(SON_KEY_NAME_CAPACITY);
+		name.set_size(SON_KEY_NAME_CAPACITY);
 		return api()->seek_next(&m_son, name.cdata(), type);
 	}
 
 	int seek_next(var::String & name, son_value_t & type){
-		name.set_capacity(SON_KEY_NAME_CAPACITY);
+		name.set_size(SON_KEY_NAME_CAPACITY);
 		return api()->seek_next(&m_son, name.cdata(), &type);
 	}
 
@@ -411,7 +411,7 @@ public:
 		var::String result;
 		son_size_t size;
 		if( seek(access, size) >= 0 ){
-			result.set_capacity(size+1);
+			result.set_size(size+1);
 			if( api()->read_str(&m_son, access.cstring(), result.to_char(), result.capacity()) < 0 ){
 				return var::String();
 			}

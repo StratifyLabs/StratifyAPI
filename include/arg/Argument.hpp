@@ -222,9 +222,14 @@ ARG_DEFINE_ARGUMENT(IoIntArgument, int);
 ARG_DEFINE_ARGUMENT(NumberBase, int);
 
 //hal
-
 ARG_DEFINE_ARGUMENT(Port, u32);
+ARG_DEFINE_ARGUMENT(PortNumber, u32);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitPortNumber, u32, PortNumber);
+ARG_DEFINE_ARGUMENT(PinNumber, u32);
 ARG_DEFINE_ARGUMENT(McuPin, const mcu_pin_t &);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitMcuPin, const mcu_pin_t &, McuPin);
+ARG_DEFINE_ARGUMENT(IsMcuPinMask, bool);
+ARG_DEFINE_ARGUMENT(IsPinActiveHigh, bool);
 ARG_DEFINE_ARGUMENT(PinFunction, u32);
 
 ARG_DEFINE_ARGUMENT(Channel, u32);
@@ -258,6 +263,14 @@ ARG_DEFINE_ARGUMENT(UrlEncodedString, const var::ConstString&);
 ARG_DEFINE_ARGUMENT(VersionEncodedString, const var::ConstString&);
 ARG_DEFINE_ARGUMENT(GitHash, const var::ConstString&);
 
+
+ARG_DEFINE_ARGUMENT(RedColorComponent, u8);
+ARG_DEFINE_ARGUMENT(GreenColorComponent, u8);
+ARG_DEFINE_ARGUMENT(BlueColorComponent, u8);
+ARG_DEFINE_ARGUMENT(HueColorComponent, u8);
+ARG_DEFINE_ARGUMENT(ValueColorComponent, u8);
+ARG_DEFINE_ARGUMENT(SaturationColorComponent, u8);
+ARG_DEFINE_ARGUMENT(BrightnessComponent, u8);
 
 }
 

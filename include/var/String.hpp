@@ -430,7 +430,7 @@ private:
 class NameString : public String {
 public:
 	NameString(){
-		set_capacity(LINK_NAME_MAX);
+		set_size(LINK_NAME_MAX);
 	}
 };
 
@@ -445,7 +445,7 @@ typedef NameString StringName;
 class PathString : public String {
 public:
 	PathString(){
-		set_capacity(LINK_PATH_MAX);
+		set_size(LINK_PATH_MAX);
 	}
 
 	void strip_suffix();

@@ -479,7 +479,7 @@ var::String JsonDocument::to_string(
 		return var::String();
 	}
 	var::String result;
-	if( result.set_capacity(size) < 0 ){
+	if( result.set_size(size) < 0 ){
 		return var::String();
 	}
 	if( JsonValue::api()->dumpb(

@@ -9,9 +9,13 @@ chrono::MicroTime PinButton::m_held_duration = chrono::MicroTime(800000UL);
 chrono::MicroTime PinButton::m_actuation_duration = chrono::MicroTime(20000UL);
 
 
-PinButton::PinButton(int port, int pin, bool active_value) : Pin(port, pin) {
+PinButton::PinButton(
+		const arg::PortNumber port,
+		const arg::PinNumber pin,
+		const arg::IsPinActiveHigh is_active_high
+		) : Pin(port, pin) {
 	m_event_id = ev::Event::NO_BUTTON;
-	m_active_value = active_value;
+	m_active_value = is_active_high.argument();
 }
 
 bool PinButton::get_is_active() const {

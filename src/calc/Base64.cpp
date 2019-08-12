@@ -79,7 +79,7 @@ var::String Base64::encode(const arg::ImplicitSourceData input
 		){
 	var::String result;
 
-	if( result.set_capacity( calc_encoded_size(input.argument().size()) ) < 0 ){
+	if( result.set_size( calc_encoded_size(input.argument().size() ) ) < 0 ){
 		return var::String();
 	}
 

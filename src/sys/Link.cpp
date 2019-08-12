@@ -71,8 +71,8 @@ var::Vector<var::String> Link::get_port_list(){
 	var::String device_name;
 	var::String last_device;
 
-	last_device.set_capacity(256);
-	device_name.set_capacity(256);
+	last_device.set_size(256);
+	device_name.set_size(256);
 
 	last_device.clear();
 	device_name.clear();

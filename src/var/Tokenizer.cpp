@@ -213,7 +213,7 @@ void Tokenizer::sort(enum sort_options sort_option){
 }
 
 Tokenizer & Tokenizer::operator=(const Tokenizer & token){
-	set_capacity(token.capacity());
+	set_size(token.capacity());
 	::memcpy(data(), token.data_const(), token.capacity());
 	m_num_tokens = token.m_num_tokens;
 	m_string_size = token.m_string_size;

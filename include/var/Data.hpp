@@ -300,9 +300,6 @@ public:
 	 */
 	int set_size(const arg::ImplicitSize s);
 
-	//doesn't really make sense to set the capacity because it will always jump to the next largest block
-	int set_capacity(const arg::ImplicitSize s){ return set_size(s); }
-
 
 	/*!
 	 * \details Returns the effective size of the data.

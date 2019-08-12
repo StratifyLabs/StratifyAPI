@@ -31,7 +31,11 @@ public:
 	 * @param pin The pin number on the port for the button input
 	 * @param active_value true for active high and false for active low
 	 */
-	PinButton(int port, int pin, bool active_value = true);
+	PinButton(
+			const arg::PortNumber port,
+			const arg::PinNumber pin,
+			const arg::IsPinActiveHigh is_active_high = arg::IsPinActiveHigh(true)
+			);
 
 	/*! \details This method accesses how long the user must hold the
 	  * button in the application before the ui::Event::BUTTON_HELD is triggered

@@ -59,7 +59,7 @@ int String::vformat(
 	}
 	result = vsnprintf(to_char(), capacity()-1, fmt, list);
 	if( result >= (int)capacity()-1 ){ //if the data did not fit, make the buffer bigger
-		if( set_capacity(result+1) >= 0 ){
+		if( set_size(result+1) >= 0 ){
 			vsnprintf(to_char(), capacity()-1, fmt, list);
 		}
 	}
@@ -71,7 +71,7 @@ int String::set_size(
 		){
 	bool is_zero_size = (to_void() == 0);
 	int result = Data::set_size(size.argument()+1);
-	set_string_pointer(cdata_const());
+	set_string_pointer(to_char());
 	if( is_zero_size ){
 		fill(0);
 	}
@@ -89,9 +89,9 @@ int String::assign(const ConstString & a,
 	u32 length_value = length.argument();
 	if( a.cstring() != this->to_char() ){ //check for assignment to self - no action needed
 		if( length_value == (u32)npos ){ length_value = a.length(); }
-		if( set_capacity(length_value) < 0 ){ return -1; }
+		if( set_size(length_value) < 0 ){ return -1; }
 		clear();
-		strncpy(to_char(), a.cstring(), length.argument());
+		strncpy(to_char(), a.cstring(), length_value);
 	}
 	return 0;
 }
@@ -100,7 +100,7 @@ int String::append(const ConstString & a){
 	if( a == 0 ){ return 0; }
 	u32 len = length();
 	u32 alen = a.length();
-	set_capacity(len + alen); //try to make min capacity
+	set_size(len + alen); //try to make min capacity
 	if( len == 0 ){
 		clear(); //previous length was zero -- ensure string is valid
 	}
@@ -112,7 +112,7 @@ int String::append(const ConstString & a){
 int String::append(char c){
 	u32 len = length();
 	u32 alen = 1;
-	set_capacity(len + alen + 1); //try to make min capacity
+	set_size(len + alen + 1); //try to make min capacity
 	if( cdata() == 0 ){ return -1; }
 	strncat(cdata(), &c, 1);
 	return 0;
@@ -144,7 +144,7 @@ String& String::insert(
 
 		char buffer[len+1];
 
-		if( set_capacity( len + s ) < 0 ){
+		if( set_size( len + s ) < 0 ){
 			exit_fatal("failed to alloc for insert");
 			return *this;
 		}
