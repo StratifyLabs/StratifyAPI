@@ -103,7 +103,7 @@ int Sys::launch(const var::ConstString & path,
 #if defined __link
 	return -1;
 #else
-	exec_destination.set_capacity(PATH_MAX);
+	exec_destination.set_size(PATH_MAX);
 	return ::launch(path.cstring(),
 						 exec_destination.to_char(),
 						 args.cstring(),
@@ -131,7 +131,7 @@ var::String Sys::install(const var::ConstString & path,
 	return var::String();
 #else
 	var::String result;
-	result.set_capacity(PATH_MAX);
+	result.set_size(PATH_MAX);
 			if( ::install(path.cstring(),
 							  result.to_char(),
 							  options,
