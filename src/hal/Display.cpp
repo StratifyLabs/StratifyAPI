@@ -132,7 +132,7 @@ int DisplayPalette::save(const arg::DestinationFilePath & path) const{
 			 path,
 			 arg::IsOverwrite(true)
 			 ) < 0 ){ return -1; }
-	f << var::Data::create_reference<display_palette_t>(arg::SourceBuffer(&palette)) << colors();
+	f << var::Data::create_reference<display_palette_t>(palette) << colors();
 
 	if( f.error_number() != 0 ){
 		return -1;

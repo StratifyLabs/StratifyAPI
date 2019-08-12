@@ -134,6 +134,8 @@ ARG_DEFINE_ARGUMENT(SourceFileName, const var::ConstString &);
 ARG_DEFINE_ARGUMENT(DestinationFileName, const var::ConstString &);
 ARG_DEFINE_ARGUMENT(IsOverwrite, bool);
 
+
+
 ARG_DEFINE_ARGUMENT(SourceFile, const fs::File&);
 ARG_DEFINE_ARGUMENT(DestinationFile, fs::File&);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceFile, const fs::File&, SourceFile);
@@ -142,11 +144,12 @@ ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitDestinationFile,	fs::File&, DestinationFile
 //sys
 ARG_DEFINE_ARGUMENT(Pid, pid_t);
 ARG_DEFINE_ARGUMENT(ThreadId, pthread_t);
-ARG_DEFINE_ARGUMENT(StackSize, u32);
 ARG_DEFINE_ARGUMENT(IsDetached, bool);
 ARG_DEFINE_ARGUMENT(ThreadFunction, void * (*)(void *));
 ARG_DEFINE_ARGUMENT(ThreadToJoin, const sys::Thread&);
 ARG_DEFINE_ARGUMENT(ThreadFunctionArgument, void *);
+ARG_DEFINE_ARGUMENT(ThreadStackSize, u32);
+
 ARG_DEFINE_ARGUMENT(ThreadReturn, void **);
 ARG_DEFINE_ARGUMENT(DelayInterval, const chrono::MicroTime &);
 
@@ -250,6 +253,10 @@ ARG_DEFINE_ARGUMENT(DestinationSocketAddress, inet::SocketAddress&);
 ARG_DEFINE_ARGUMENT(ListenBacklogCount, int);
 ARG_DEFINE_ARGUMENT(HttpStringToPost, const var::ConstString&);
 ARG_DEFINE_ARGUMENT(UrlEncodedString, const var::ConstString&);
+
+
+ARG_DEFINE_ARGUMENT(VersionEncodedString, const var::ConstString&);
+ARG_DEFINE_ARGUMENT(GitHash, const var::ConstString&);
 
 
 }

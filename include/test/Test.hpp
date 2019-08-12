@@ -11,10 +11,6 @@
 
 namespace test {
 
-typedef api::Argument<const var::ConstString&> Name;
-typedef api::Argument<const var::ConstString&> Version;
-typedef api::Argument<const var::ConstString&> GitHash;
-
 /*! \brief Test Class
  * \details The Test class is designed to
  * be inherited to implement the following
@@ -86,9 +82,9 @@ public:
 	  *
 	  */
 	static void initialize(
-			const Name & name,
-			const Version & version,
-			const GitHash & git_hash = GitHash(""));
+			const arg::Name name,
+			const arg::VersionEncodedString version,
+			const arg::GitHash git_hash = arg::GitHash(""));
 
 	/*! \details Finalizes the test report.
 	  *
@@ -174,7 +170,7 @@ public:
 	  * be used as the value of the parent.
 	  *
 	  */
-	Test(const Name & name, Test * parent = 0);
+	Test(const arg::Name & name, Test * parent = 0);
 
 	/*! \details Deconstructs the test object.
 	  *

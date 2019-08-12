@@ -77,7 +77,7 @@ public:
 	 * another thread must use join() in order for the thread to terminate correctly.
 	 */
 	Thread(
-			const arg::StackSize & stacksize = arg::StackSize(4096),
+			const arg::ThreadStackSize & stacksize = arg::ThreadStackSize(4096),
 			const arg::IsDetached detached = arg::IsDetached(true)
 			);
 

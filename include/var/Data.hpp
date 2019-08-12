@@ -210,7 +210,7 @@ public:
 					);
 	}
 
-	void refer_to(const arg::ImplicitSourceData data){
+	void refer_to(const arg::SourceData data){
 		refer_to(
 					arg::DestinationBuffer((void*)data.argument().to_void()),
 					arg::Size(data.argument().size()),
@@ -218,44 +218,36 @@ public:
 					);
 	}
 
-	template<typename T> void refer_to(
-			arg::ImplicitDestinationBuffer memory
-			){
+	template<typename T> void refer_to(T & item){
 		refer_to(
-					arg::DestinationBuffer(memory.argument()),
+					arg::DestinationBuffer(&item),
 					arg::Size(sizeof(T)),
 					arg::IsReadOnly(false)
 					);
 	}
 
-	template<typename T> void refer_to(
-			const arg::ImplicitSourceBuffer memory
-			){
+	template<typename T> void refer_to(const T & item){
 		refer_to(
-					arg::DestinationBuffer((void*)memory.argument()),
+					arg::DestinationBuffer((void*)&item),
 					arg::Size(sizeof(T)),
 					arg::IsReadOnly(true)
 					);
 	}
 
-	template<typename T> static Data create_reference(
-			arg::ImplicitDestinationBuffer memory
-			){
+	template<typename T> static Data create_reference(T & item){
 		Data a;
 		a.refer_to(
-					arg::DestinationBuffer(memory.argument()),
+					arg::DestinationBuffer(&item),
 					arg::Size(sizeof(T)),
 					arg::IsReadOnly(false)
 					);
 		return a;
 	}
 
-	template<typename T> static Data create_reference(
-			const arg::ImplicitSourceBuffer memory
-			){
+	template<typename T> static Data create_reference(const T & item){
 		Data a;
 		a.refer_to(
-					arg::DestinationBuffer((void*)memory.argument()),
+					arg::DestinationBuffer((void*)&item),
 					arg::Size(sizeof(T)),
 					arg::IsReadOnly(true)
 					);
@@ -649,11 +641,9 @@ public:
 					);
 	}
 
-	template <typename T> int append(T value){
+	template <typename T> int append(const T & value){
 		return append(
-					Data::create_reference<T>(
-						arg::SourceBuffer(&value)
-						)
+					Data::create_reference<T>(value)
 					);
 	}
 
@@ -745,12 +735,18 @@ template <class T> class StructuredData : public Data {
 public:
 
 	/*! \details Constructs an empty data structure (fills with zero). */
-	StructuredData() : Data(&m_item, sizeof(m_item)){
+	StructuredData() : Data(
+								 arg::DestinationBuffer(&m_item),
+								 arg::Size(sizeof(m_item))
+								 ){
 		clear();
 	}
 
 	/*! \details Constructs a data structure based on the value passed. */
-	StructuredData(const T & item) : Data(&m_item, sizeof(m_item)){
+	StructuredData(const T & item) : Data(
+													arg::SourceBuffer(&m_item),
+													arg::Size(sizeof(m_item))
+													){
 		m_item = item;
 	}
 

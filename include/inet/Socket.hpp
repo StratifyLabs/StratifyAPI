@@ -219,7 +219,7 @@ public:
 	SocketAddress(const SocketAddressIpv4 & ipv4){
 		m_sockaddr.copy_contents(
 					arg::SourceData(
-						var::Data::create_reference<struct sockaddr_in>(&ipv4.m_sockaddr_in)
+						var::Data::create_reference<struct sockaddr_in>(ipv4.m_sockaddr_in)
 						)
 					);
 		m_protocol = ipv4.m_protocol;
@@ -239,7 +239,7 @@ public:
 					  int type = SocketAddressInfo::TYPE_STREAM){
 		m_sockaddr.copy_contents(
 					arg::SourceData(
-						var::Data::create_reference<sockaddr_in>(&ipv4)
+						var::Data::create_reference<sockaddr_in>(ipv4)
 						)
 					);
 		m_protocol = protocol;
@@ -249,7 +249,7 @@ public:
 	SocketAddress(const sockaddr_in6 & ipv6){
 		m_sockaddr.copy_contents(
 					arg::SourceData(
-						var::Data::create_reference<sockaddr_in6>(&ipv6)
+						var::Data::create_reference<sockaddr_in6>(ipv6)
 						)
 					);
 	}

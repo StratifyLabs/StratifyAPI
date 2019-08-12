@@ -72,9 +72,10 @@ public:
 	 *
 	 */
 	Aio(
-			const arg::SourceBuffer & buf,
-			const arg::Size & nbytes,
-			const arg::Location & offset = arg::Location(0)){
+			const arg::SourceBuffer buf,
+			const arg::Size nbytes,
+			const arg::Location offset = arg::Location(0)
+			){
 		m_aio_var.aio_buf = (volatile void*)buf.argument();
 		m_aio_var.aio_nbytes = nbytes.argument();
 		m_aio_var.aio_offset = offset.argument();
@@ -82,14 +83,36 @@ public:
 	}
 
 	Aio(
-			const arg::DestinationBuffer & buf,
-			const arg::Size & nbytes,
-			const arg::Location & offset = arg::Location(0)){
+			arg::DestinationBuffer buf,
+			const arg::Size nbytes,
+			const arg::Location offset = arg::Location(0)){
 		m_aio_var.aio_buf = (volatile void*)buf.argument();
 		m_aio_var.aio_nbytes = nbytes.argument();
 		m_aio_var.aio_offset = offset.argument();
 		m_aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
 	}
+
+	template<typename T> static Aio create_reference(
+			T & value,
+			const arg::Location offset = arg::Location(0)
+			){
+		return Aio(arg::DestinationBuffer(&value),
+					  arg::Size(sizeof(T)),
+					  offset
+					  );
+	}
+
+	template<typename T> static Aio create_reference(
+			const T & value,
+			const arg::Location offset = arg::Location(0)
+			){
+		return Aio(
+					arg::SourceBuffer(&value),
+					arg::Size(sizeof(T)),
+					offset
+					);
+	}
+
 
 	/*! \details Blocks until all transfers in list have completed or timeout is reached.
 	 *
@@ -122,7 +145,7 @@ public:
 	}
 
 	/*! \details Returns the buffer pointer. */
-	volatile void * biffer() const { return m_aio_var.aio_buf; }
+	volatile void * buffer() const { return m_aio_var.aio_buf; }
 
 	/*! \details Sets the buffer pointer.
 	 *
@@ -130,18 +153,20 @@ public:
 	 * @param nbytes The number of bytes to transfer
 	 *
 	 */
-	void set_buffer(
+	Aio & refer_to(
 			const arg::DestinationBuffer & buf,
 			const arg::Size & nbytes){
 		m_aio_var.aio_buf = (volatile void*)buf.argument();
 		m_aio_var.aio_nbytes = nbytes.argument();
+		return *this;
 	}
 
-	void set_buffer(
+	Aio & refer_to(
 			const arg::SourceBuffer & buf,
 			const arg::Size & nbytes){
 		m_aio_var.aio_buf = (volatile void*)buf.argument();
 		m_aio_var.aio_nbytes = nbytes.argument();
+		return *this;
 	}
 
 	/*! \details Sets the buffer using a var::Data object.
@@ -153,32 +178,25 @@ public:
 	  * does, it will need to set the buffer again.
 	  *
 	  */
-	Aio & set_buffer(var::Data & data){
-		set_buffer(
-					arg::DestinationBuffer(data.to_void()),
-					arg::Size(data.size())
+	Aio & refer_to(arg::DestinationData data){
+		return refer_to(
+					arg::DestinationBuffer(data.argument().to_void()),
+					arg::Size(data.argument().size())
 					);
-		return *this;
 	}
 
-	Aio & set_buffer(const var::Data & data){
-		set_buffer(
-					arg::SourceBuffer(data.to_void()),
-					arg::Size(data.size())
+	Aio & refer_to(const arg::SourceData data){
+		return refer_to(
+					arg::SourceBuffer(data.argument().to_void()),
+					arg::Size(data.argument().size())
 					);
-		return *this;
 	}
 
 	Aio & operator << (var::Data & data){
-		set_buffer(data);
-		return *this;
+		return refer_to(arg::DestinationData(data));
 	}
 
 
-	Aio & operator << (const var::Data & data){
-		set_buffer(data);
-		return *this;
-	}
 	/*! \details Returns the number of bytes to transfer. */
 	int nbytes() const { return m_aio_var.aio_nbytes; }
 

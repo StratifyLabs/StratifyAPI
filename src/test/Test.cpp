@@ -12,14 +12,14 @@ bool Test::m_is_initialized = false;
 bool Test::m_all_test_result = true;
 u32 Test::m_all_test_duration_microseconds = 0;
 
-Test::Test(const Name & name, Test * parent){
+Test::Test(const arg::Name & name, Test * parent){
 	//start a JSON object
 
 
 	if( !m_is_initialized ){
 		initialize(
-					Name("unknown"),
-					Version("0.0")
+					arg::Name("unknown"),
+					arg::VersionEncodedString("0.0")
 					);
 	}
 
@@ -156,9 +156,9 @@ void Test::vprint_case_message(const var::ConstString & key, const char * fmt, v
 }
 
 void Test::initialize(
-		const Name & name,
-		const Version & version,
-		const GitHash & git_hash){
+		const arg::Name name,
+		const arg::VersionEncodedString version,
+		const arg::GitHash git_hash){
 	m_is_initialized = true;
 	m_all_test_duration_microseconds = 0;
 

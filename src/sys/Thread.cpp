@@ -5,7 +5,7 @@
 #include "chrono.hpp"
 using namespace sys;
 
-Thread::Thread(const arg::StackSize & stacksize, const arg::IsDetached detached) {
+Thread::Thread(const arg::ThreadStackSize & stacksize, const arg::IsDetached detached) {
 	init(stacksize.argument(), detached.argument());
 }
 
