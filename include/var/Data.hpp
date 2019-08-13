@@ -33,6 +33,8 @@ private:
 };
 #endif
 
+//there needs to be a superclass here that defines all the interfaces
+
 /*! \brief Data storage class
  * \details The Data storage class can be used to manage both statically
  * and dyncamilly allocated data.  The statically allocated data can be
@@ -144,7 +146,7 @@ public:
 	 *
 	 */
 	Data(
-			const arg::DestinationBuffer mem,
+			arg::DestinationBuffer mem,
 			const arg::Size size
 			);
 
@@ -695,6 +697,19 @@ private:
 		FLAG_NEEDS_FREE = (1<<0)
 	};
 	mutable u32 m_o_flags;
+
+};
+
+
+class DataReference : public Data {
+public:
+	template<typename T> DataReference(T & item) :
+		Data(arg::DestinationBuffer(&item), arg::Size(sizeof(T))){
+	}
+
+	template<typename T> DataReference(const T & item) :
+		Data(arg::SourceBuffer(&item), arg::Size(sizeof(T))){
+	}
 
 };
 

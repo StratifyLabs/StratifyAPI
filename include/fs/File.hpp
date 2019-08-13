@@ -323,7 +323,7 @@ public:
 	 * @return The number of bytes read or less than zero on an error
 	 */
 	virtual int read(
-			const arg::DestinationBuffer buf,
+			arg::DestinationBuffer buf,
 			const arg::Size size
 			) const;
 
@@ -335,7 +335,7 @@ public:
 	  * This method will read up to data.size() bytes.
 	  *
 	  */
-	int read(var::Data & data) const MCU_ALWAYS_INLINE {
+	int read(var::Data & data) const {
 		int result = read(
 					arg::DestinationBuffer(data.to_void()),
 					arg::Size(data.size())
@@ -360,7 +360,7 @@ public:
 			) const;
 
 	/*! \details Writes the file using a var::Data object. */
-	int write(const var::Data & data) const MCU_ALWAYS_INLINE {
+	int write(const var::Data & data) const {
 		return write(
 					arg::SourceBuffer(data.to_void()),
 					arg::Size(data.size())
@@ -372,7 +372,7 @@ public:
 	  * @param str The string to write
 	  * @return The number of bytes written
 	  */
-	int write(const var::ConstString & str) const MCU_ALWAYS_INLINE {
+	int write(const var::ConstString & str) const {
 		return write(
 					arg::SourceBuffer(str.cstring()),
 					arg::Size(str.length())
@@ -384,7 +384,7 @@ public:
 	  * @param str The string to write
 	  * @return The number of bytes written
 	  */
-	int write(const var::String & str) const MCU_ALWAYS_INLINE {
+	int write(const var::String & str) const {
 		return write(
 					arg::SourceBuffer(str.cstring()),
 					arg::Size(str.length())
@@ -400,7 +400,7 @@ public:
 	 */
 	int read(
 			const arg::Location location,
-			const arg::DestinationBuffer buf,
+			arg::DestinationBuffer buf,
 			const arg::Size size
 			) const;
 
@@ -408,7 +408,7 @@ public:
 	int read(
 			const arg::Location location,
 			arg::DestinationData data
-			) const MCU_ALWAYS_INLINE {
+			) const {
 		int result = read(
 					location,
 					arg::DestinationBuffer(data.argument().to_void()),
@@ -422,7 +422,20 @@ public:
 		return result;
 	}
 
-	int read(api::InfoObject & info) MCU_ALWAYS_INLINE {
+	int read(
+			arg::DestinationData data
+			) const {
+		int result = read(
+					arg::DestinationBuffer(data.argument().to_void()),
+					arg::Size(data.argument().size())
+					);
+		if( result > 0 ){
+			data.argument().set_size(result);
+		}
+		return result;
+	}
+
+	int read(api::InfoObject & info) {
 		return read(
 					arg::DestinationBuffer(info.info_to_void()),
 					arg::Size(info.info_size())
@@ -446,9 +459,18 @@ public:
 	int write(
 			const arg::Location & location,
 			const arg::SourceData & data
-			) const MCU_ALWAYS_INLINE {
+			) const {
 		return write(
 					location,
+					arg::SourceBuffer(data.argument().to_void()),
+					arg::Size(data.argument().size())
+					);
+	}
+
+	int write(
+			const arg::SourceData & data
+			) const {
+		return write(
 					arg::SourceBuffer(data.argument().to_void()),
 					arg::Size(data.argument().size())
 					);
@@ -458,7 +480,7 @@ public:
 	int write(
 			const arg::Location & location,
 			const var::ConstString & str
-			) const MCU_ALWAYS_INLINE {
+			) const {
 		return write(
 					location,
 					arg::SourceBuffer(str.cstring()),
@@ -470,7 +492,7 @@ public:
 	int write(
 			const arg::Location location,
 			const var::String str
-			) const MCU_ALWAYS_INLINE {
+			) const {
 		return write(
 					location,
 					arg::SourceBuffer(str.cstring()),
@@ -478,25 +500,25 @@ public:
 					);
 	}
 
-
 	int write(
 			const arg::SourceFile source_file,
 			const arg::PageSize page_size,
 			const arg::Size size = arg::Size(0xffffffff)
 			) const;
+
 	int write(
 			const arg::Location location,
 			const arg::SourceFile source_file,
 			const arg::PageSize page_size,
 			const arg::Size size = arg::Size(0xffffffff)
-			) const MCU_ALWAYS_INLINE {
+			) const {
 		seek(location);
 		return write(source_file, page_size, size);
 	}
 
-	int write(const arg::SourceFile & source_file,
-				 const arg::PageSize & page_size,
-				 const arg::Size & size,
+	int write(const arg::SourceFile source_file,
+				 const arg::PageSize page_size,
+				 const arg::Size size,
 				 const sys::ProgressCallback * progress_callback
 				 ) const;
 
@@ -506,7 +528,7 @@ public:
 			const arg::PageSize page_size,
 			const arg::Size size,
 			const sys::ProgressCallback * progress_callback
-			) const MCU_ALWAYS_INLINE {
+			) const {
 		seek(location);
 		return write(source_file, page_size, size, progress_callback);
 	}
@@ -736,7 +758,9 @@ class DataFile : public File {
 public:
 
 	/*! \details Constructs a data file. */
-	DataFile(const OpenFlags & flags = OpenFlags::read_write()){
+	DataFile(
+			const OpenFlags & flags = OpenFlags::read_write()
+			){
 		m_location = 0;
 		m_open_flags = flags;
 	}
@@ -745,7 +769,10 @@ public:
 	 * functionality.
 	 *
 	 */
-	int open(const arg::FilePath & path, const OpenFlags & flags);
+	int open(
+			const arg::FilePath & path,
+			const OpenFlags & flags
+			);
 
 	/*! \details Reimplements fs::File::close() to have no
 	 * functionality.
@@ -757,7 +784,10 @@ public:
 	 * read from the var::Data object contained herein
 	 * rather than from the filesystem.
 	 */
-	int read(void * buf, int nbyte) const;
+	int read(
+			arg::DestinationBuffer buf,
+			const arg::Size nbyte
+			) const;
 
 	/*! \details Reimplements fs::File::write() to simply
 	 * write to the var::Data object contained herein
@@ -767,7 +797,10 @@ public:
 	 * @param nbyte number of bytes to write
 	 * @return The number of bytes successfully written
 	 */
-	int write(const void * buf, int nbyte) const;
+	int write(
+			const arg::SourceBuffer buf,
+			const arg::Size nbyte
+			) const;
 
 	/*! \details Seeks to the specified location in the file.
 	 *
@@ -776,7 +809,10 @@ public:
 	 * @return Zero on success
 	 *
 	 */
-	int seek(const arg::Location & location, enum whence whence = SET) const;
+	int seek(
+			const arg::Location location,
+			enum whence whence = SET
+			) const;
 
 	/*! \details Reimplements fs::File::ioctl() to have
 	 * no functionality.
@@ -840,7 +876,10 @@ public:
 	 * @param nbyte number of bytes to read
 	 * @return -1 to indicate reads are not valid
 	 */
-	int read(void * buf, int nbyte) const;
+	int read(
+			arg::DestinationBuffer buf,
+			const arg::Size nbyte
+			) const;
 
 	/*! \details Reimplements fs::File::write() to simply
 	 * to accept the data but it is not stored anywhere.
@@ -849,7 +888,10 @@ public:
 	 * @param nbyte number of bytes to write
 	 * @return The number of bytes successfully written
 	 */
-	int write(const void * buf, int nbyte) const;
+	int write(
+			const arg::SourceBuffer buf,
+			const arg::Size nbyte
+			) const;
 
 	/*! \details Returns an error.
 	 *
@@ -858,8 +900,9 @@ public:
 	 * @return -1 because seeking is not valid
 	 *
 	 */
-	int seek(const arg::Location & location,
-				enum whence whence = SET
+	int seek(
+			const arg::Location location,
+			enum whence whence = SET
 			) const;
 
 	/*! \details Reimplements fs::File::ioctl() to have

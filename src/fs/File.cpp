@@ -374,7 +374,7 @@ u32 File::size(
 
 #endif
 
-int File::read(const Location location, const DestinationBuffer buf, const Size size) const {
+int File::read(const Location location, DestinationBuffer buf, const Size size) const {
 	int result = seek(location);
 	if( result < 0 ){ return result; }
 	return read(buf, size);
@@ -430,7 +430,7 @@ int File::close(){
 	return ret;
 }
 
-int File::read(const DestinationBuffer buf, const Size size) const {
+int File::read(DestinationBuffer buf, const Size size) const {
 #if defined __link
 	return set_error_number_if_error( link_read(driver(), m_fd, buf.argument(), size.argument()) );
 #else
@@ -621,9 +621,9 @@ int File::write(const SourceFile source_file,
 
 
 int File::write(
-		const arg::SourceFile & source_file,
-		const PageSize & page_size,
-		const Size & size,
+		const arg::SourceFile source_file,
+		const PageSize page_size,
+		const Size size,
 		const sys::ProgressCallback * progress_callback
 		) const {
 	u32 size_processed = 0;
@@ -666,7 +666,9 @@ int File::write(
 
 	//this will terminate the progress operation
 	if( progress_callback ){ progress_callback->update(0,0); }
-
+	if( (result < 0) && (size_processed == 0) ){
+		return result;
+	}
 	return size_processed;
 }
 
@@ -677,23 +679,28 @@ int DataFile::open(const arg::FilePath & name, const OpenFlags & flags){
 	return 0;
 }
 
-int DataFile::read(void * buf, int nbyte) const {
+int DataFile::read(
+		DestinationBuffer buf,
+		const Size nbyte
+		) const {
 
 	if( flags().is_write_only() ){
 		return -1;
 	}
 
 	int size_ready = m_data.size() - m_location;
-	if( size_ready > nbyte ){
-		size_ready = nbyte;
+	if( size_ready > nbyte.argument() ){
+		size_ready = nbyte.argument();
 	}
 
-	memcpy(buf, m_data.to_u8() + m_location, size_ready);
+	memcpy(buf.argument(),
+			 m_data.to_u8() + m_location,
+			 size_ready);
 	m_location += size_ready;
 	return size_ready;
 }
 
-int DataFile::write(const void * buf, int nbyte) const {
+int DataFile::write(const SourceBuffer buf, const Size nbyte) const {
 
 	if( flags().is_read_only() ){
 		return -1;
@@ -703,25 +710,29 @@ int DataFile::write(const void * buf, int nbyte) const {
 	if( flags().is_append() ){
 		//make room in the m_data object for more bytes
 		m_location = m_data.size();
-		if( m_data.set_size(m_data.size() + nbyte) < 0 ){
+		if( m_data.set_size(m_data.size() + nbyte.argument()) < 0 ){
 			set_error_number_to_errno();
 			return -1;
 		}
-		size_ready = nbyte;
+		size_ready = nbyte.argument();
 	} else {
 		//limit writes to the current size of the data
 		size_ready = m_data.size() - m_location;
-		if( size_ready > nbyte ){
-			size_ready = nbyte;
+		if( size_ready > nbyte.argument() ){
+			size_ready = nbyte.argument();
 		}
 	}
 
-	memcpy(m_data.to_u8() + m_location, buf, size_ready);
+	memcpy(
+				m_data.to_u8() + m_location,
+				buf.argument(),
+				size_ready
+				);
 	m_location += size_ready;
 	return size_ready;
 }
 
-int DataFile::seek(const arg::Location & location, enum whence whence) const {
+int DataFile::seek(const Location location, enum whence whence) const {
 	switch(whence){
 		case CURRENT:
 			m_location += location.argument();
@@ -749,18 +760,24 @@ int NullFile::open(const var::ConstString & name, const OpenFlags & flags){
 	return 0;
 }
 
-int NullFile::read(void * buf, int nbyte) const {
+int NullFile::read(
+		arg::DestinationBuffer buf,
+		const arg::Size nbyte
+		) const {
 	MCU_UNUSED_ARGUMENT(buf);
 	MCU_UNUSED_ARGUMENT(nbyte);
-	return -1;
+	return -1; //end of file
 }
 
-int NullFile::write(const void * buf, int nbyte) const {
+int NullFile::write(
+		const arg::SourceBuffer buf,
+		const arg::Size nbyte
+		) const {
 	MCU_UNUSED_ARGUMENT(buf);
-	return nbyte;
+	return nbyte.argument();
 }
 
-int NullFile::seek(const arg::Location & location, enum whence whence) const {
+int NullFile::seek(const Location location, enum whence whence) const {
 	MCU_UNUSED_ARGUMENT(location);
 	MCU_UNUSED_ARGUMENT(whence);
 	return -1;

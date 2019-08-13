@@ -209,6 +209,7 @@ ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitDestinationJsonValue, var::JsonValue&, Dest
 #if defined __link
 ARG_DEFINE_ARGUMENT(LinkDriver, link_transport_mdriver_t*);
 ARG_DEFINE_ARGUMENT(LinkDirp, int);
+ARG_DEFINE_ARGUMENT(IsCopyToDevice, bool);
 #endif
 
 ARG_DEFINE_ARGUMENT(BootloaderRetryCount, u32);
@@ -259,10 +260,8 @@ ARG_DEFINE_ARGUMENT(ListenBacklogCount, int);
 ARG_DEFINE_ARGUMENT(HttpStringToPost, const var::ConstString&);
 ARG_DEFINE_ARGUMENT(UrlEncodedString, const var::ConstString&);
 
-
 ARG_DEFINE_ARGUMENT(VersionEncodedString, const var::ConstString&);
 ARG_DEFINE_ARGUMENT(GitHash, const var::ConstString&);
-
 
 ARG_DEFINE_ARGUMENT(RedColorComponent, u8);
 ARG_DEFINE_ARGUMENT(GreenColorComponent, u8);
@@ -270,7 +269,8 @@ ARG_DEFINE_ARGUMENT(BlueColorComponent, u8);
 ARG_DEFINE_ARGUMENT(HueColorComponent, u8);
 ARG_DEFINE_ARGUMENT(ValueColorComponent, u8);
 ARG_DEFINE_ARGUMENT(SaturationColorComponent, u8);
-ARG_DEFINE_ARGUMENT(BrightnessComponent, u8);
+ARG_DEFINE_ARGUMENT(AlphaColorComponent, u8);
+ARG_DEFINE_ARGUMENT(BrightnessColorComponent, u8);
 
 }
 

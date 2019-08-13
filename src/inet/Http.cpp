@@ -28,7 +28,12 @@ int HttpClient::get(const arg::UrlEncodedString url, const arg::DestinationFile 
 	return query("GET", url, 0, &response, progress_callback);
 }
 
-int HttpClient::post(const arg::UrlEncodedString url, const arg::HttpStringToPost request, const arg::DestinationFile & response, const sys::ProgressCallback * progress_callback){
+int HttpClient::post(
+		const arg::UrlEncodedString url,
+		const arg::HttpStringToPost request,
+		const arg::DestinationFile & response,
+		const sys::ProgressCallback * progress_callback
+		){
 	DataFile request_file;
 	request_file.data().copy_cstring(request.argument().cstring());
 	return post(
@@ -39,8 +44,18 @@ int HttpClient::post(const arg::UrlEncodedString url, const arg::HttpStringToPos
 				);
 }
 
-int HttpClient::post(const arg::UrlEncodedString url, const arg::SourceFile & request, const arg::DestinationFile & response, const sys::ProgressCallback * progress_callback){
-	return query("POST", url, &request, &response, progress_callback);
+int HttpClient::post(
+		const arg::UrlEncodedString url,
+		const arg::SourceFile & request,
+		const arg::DestinationFile & response,
+		const sys::ProgressCallback * progress_callback
+		){
+	return query(
+				"POST",
+				url,
+				&request,
+				&response,
+				progress_callback);
 }
 
 int HttpClient::put(
@@ -310,7 +325,7 @@ int HttpClient::send_header(
 
 #if SHOW_HEADERS
 	printf(">> %s", m_header.cstring());
-	printf("Sending %d data bytes\n", file ? file->size() : 0);
+	printf("Sending %d data bytes\n", file ? file->argument().size() : 0);
 #endif
 
 	if( socket().write(m_header) != (int)m_header.length() ){

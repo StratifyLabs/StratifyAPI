@@ -236,7 +236,8 @@ int JsonObject::insert(const arg::JsonKey key,
 	}
 
 	int result = api()->object_set(
-				m_value, key.argument().cstring(),
+				m_value,
+				key.argument().cstring(),
 				value.argument().m_value
 				);
 	if( result < 0 ){

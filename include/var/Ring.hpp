@@ -45,8 +45,8 @@ public:
 	 * @param buf A pointer to the data
 	 * @param size The number of bytes in the new ring buffer
 	 */
-	Ring(T * buf, u32 count) : Data(buf, count*sizeof(T)){
-		m_count = count;
+	Ring(T * buf, const arg::Count count) : Data(buf, count.argument()*sizeof(T)){
+		m_count = count.argument();
 		m_head = 0;
 		m_tail = 0;
 		m_is_overflow_allowed = true;
@@ -58,7 +58,7 @@ public:
 	  *
 	  */
 	Ring(const arg::Count count) : Data(arg::Size(count.argument() * sizeof(T))){
-		m_count = count;
+		m_count = count.argument();
 		m_head = 0;
 		m_tail = 0;
 		m_is_overflow_allowed = true;
@@ -120,8 +120,8 @@ public:
 	 * @return A reference to the item at *pos*.
 	 *
 	 */
-	T & at(u32 pos){
-		u32 offset = m_head + pos;
+	T & at(const arg::ImplicitPosition position){
+		u32 offset = m_head + position.argument();
 		return Data::at<T>(offset % count());
 	}
 
@@ -131,8 +131,8 @@ public:
 	 * @return A read-only reference to the item at *pos*.
 	 *
 	 */
-	const T & at(u32 pos) const {
-		u32 offset = m_head + pos;
+	const T & at(const arg::ImplicitPosition position) const {
+		u32 offset = m_head + position.argument();
 		return Data::at<T>(offset % count());
 	}
 

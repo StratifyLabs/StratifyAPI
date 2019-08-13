@@ -204,8 +204,7 @@ int Link::reconnect(u32 retries, const chrono::MicroTime & delay){
 	return -1;
 }
 
-int Link::open(
-		const arg::FilePath & file,
+int Link::open(const arg::FilePath file,
 		const OpenFlags & flags,
 		const Permissions & permissions
 		){
@@ -231,7 +230,7 @@ int Link::open(
 	return check_error(err);
 }
 
-int Link::close(const arg::FileDescriptor & fd){
+int Link::close(const arg::FileDescriptor fd){
 	int err;
 	if ( m_is_bootloader ){
 		return -1;
@@ -249,10 +248,9 @@ int Link::close(const arg::FileDescriptor & fd){
 }
 
 
-int Link::read(
-		const arg::FileDescriptor & fd,
-		const arg::DestinationBuffer & buf,
-		const arg::Size & nbyte
+int Link::read(const arg::FileDescriptor fd,
+		const arg::DestinationBuffer buf,
+		const arg::Size nbyte
 		){
 	int err;
 	if ( m_is_bootloader ){
@@ -270,10 +268,9 @@ int Link::read(
 	return check_error(err);
 }
 
-int Link::write(
-		const arg::FileDescriptor & fd,
-		const arg::SourceBuffer & buf,
-		const arg::Size & nbyte		){
+int Link::write(const arg::FileDescriptor fd,
+		const arg::SourceBuffer buf,
+		const arg::Size nbyte		){
 	int err;
 	if ( m_is_bootloader ){
 		return -1;
@@ -374,9 +371,8 @@ int Link::write_flash(int addr, const void * buf, int nbyte){
 }
 
 
-int Link::lseek(
-		const arg::FileDescriptor & fd,
-		const arg::Location & offset,
+int Link::lseek(const arg::FileDescriptor fd,
+		const arg::Location offset,
 		int whence
 		){
 	int err;
@@ -403,9 +399,9 @@ int Link::lseek(
 }
 
 
-int Link::ioctl(const arg::FileDescriptor & fd,
-		const arg::IoRequest & request,
-		const arg::IoArgument & arg
+int Link::ioctl(const arg::FileDescriptor fd,
+		const arg::IoRequest request,
+		const arg::IoArgument arg
 		){
 	int err;
 	if ( m_is_bootloader ){
@@ -466,8 +462,7 @@ bool Link::is_connected() const {
 }
 
 
-int Link::stat(
-		const arg::SourceFilePath & path,
+int Link::stat(const arg::SourceFilePath path,
 		struct link_stat * st
 		){
 	int err;
@@ -801,12 +796,15 @@ int Link::unlink(const arg::SourceFilePath filename){
 	return check_error(err);
 }
 
-int Link::copy(const arg::SourceFilePath & src, const arg::DestinationFilePath & dest, const Permissions & permissions, bool is_to_device, const ProgressCallback * progress_callback){
+int Link::copy(
+		const arg::SourceFilePath src,
+		const arg::DestinationFilePath dest,
+		const Permissions & permissions,
+		const arg::IsCopyToDevice is_to_device,
+		const ProgressCallback * progress_callback
+		){
 	int err;
 	int flags;
-	int bytesRead;
-	const int bufferSize = 512;
-	char buffer[bufferSize];
 	struct link_stat st;
 	File host_file;
 	File device_file(driver());
@@ -817,7 +815,7 @@ int Link::copy(const arg::SourceFilePath & src, const arg::DestinationFilePath &
 
 	err = 0;
 
-	if ( is_to_device == true ){
+	if ( is_to_device.argument() == true ){
 
 		m_progress_max = 0;
 		m_progress = 0;
@@ -944,20 +942,20 @@ int Link::copy(const arg::SourceFilePath & src, const arg::DestinationFilePath &
 	return 0;
 }
 
-int Link::run_app(const var::ConstString & path){
+int Link::run_app(const arg::SourceFilePath path){
 	int err;
 	if ( m_is_bootloader ){
 		return -1;
 	}
 
-	if( path.length() >= LINK_PATH_ARG_MAX-1 ){
+	if( path.argument().length() >= LINK_PATH_ARG_MAX-1 ){
 		m_error_message = "Path argument exceeds max";
 		return -1;
 	}
 
 	lock_device();
 	for(int tries = 0; tries < MAX_TRIES; tries++){
-		err = link_exec(m_driver, path.cstring());
+		err = link_exec(m_driver, path.argument().cstring());
 		if(err != LINK_PROT_ERROR) break;
 	}
 	unlock_device();
@@ -967,14 +965,14 @@ int Link::run_app(const var::ConstString & path){
 			this->disconnect();
 			return -2;
 		} else {
-			m_error_message.format("Failed to run program -> %s (%d, %d)", path.cstring(), err, link_errno);
+			m_error_message.format("Failed to run program -> %s (%d, %d)", path.argument().cstring(), err, link_errno);
 			return -1;
 		}
 	}
 	return err;
 }
 
-int Link::format(const arg::SourceDirectoryPath & path){
+int Link::format(const arg::SourceDirectoryPath path){
 	int err;
 	if ( m_is_bootloader ){
 		return -1;
@@ -1027,9 +1025,8 @@ int Link::reset_bootloader(){
 	return 0;
 }
 
-int Link::rename(
-		const arg::SourceFilePath & old_path,
-		const arg::DestinationFilePath & new_path
+int Link::rename(const arg::SourceFilePath old_path,
+		const arg::DestinationFilePath new_path
 		){
 	int err;
 	if ( m_is_bootloader ){
@@ -1051,8 +1048,7 @@ int Link::rename(
 	return check_error(err);
 }
 
-int Link::chown(
-		const arg::SourceFilePath & path,
+int Link::chown(const arg::SourceFilePath path,
 		int owner,
 		int group
 		){
@@ -1077,8 +1073,7 @@ int Link::chown(
 	return check_error(err);
 }
 
-int Link::chmod(
-		const arg::SourceFilePath & path,
+int Link::chmod(const arg::SourceFilePath path,
 		const Permissions & permissions
 		){
 	int err;
@@ -1123,10 +1118,10 @@ int Link::get_bootloader_attr(bootloader_attr_t & attr){
 	return 0;
 }
 
-int Link::update_os(const arg::SourceFile & image,
-		const arg::IsVerify & is_verify,
+int Link::update_os(const arg::SourceFile image,
+		const arg::IsVerify is_verify,
 		const ProgressCallback * progress_callback,
-		const arg::BootloaderRetryCount & bootloader_retry_total){
+		const arg::BootloaderRetryCount bootloader_retry_total){
 	int err;
 	uint32_t loc;
 	int bytesRead;
@@ -1339,8 +1334,7 @@ int Link::update_os(const arg::SourceFile & image,
 	return check_error(err);
 }
 
-int Link::update_binary_install_options(
-		const arg::DestinationFile & binary,
+int Link::update_binary_install_options(const arg::DestinationFile binary,
 		const AppfsFileAttributes & attributes){
 	var::Data image(arg::Size(sizeof(appfs_file_t)));
 	int result;
@@ -1366,10 +1360,9 @@ int Link::update_binary_install_options(
 	return 0;
 }
 
-int Link::install_app(
-		const arg::SourceFile & application_image,
-		const arg::DestinationDirectoryPath & path,
-		const arg::DestinationFileName & name,
+int Link::install_app(const arg::SourceFile application_image,
+		const arg::DestinationDirectoryPath path,
+		const arg::DestinationFileName name,
 		const ProgressCallback * progress_callback
 		){
 	int bytes_read;

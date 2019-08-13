@@ -39,7 +39,7 @@ Data::Data(){
 	zero();
 }
 
-Data::Data(const arg::DestinationBuffer mem,
+Data::Data(arg::DestinationBuffer mem,
 			  const arg::Size s
 			  ){
 	zero();
