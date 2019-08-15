@@ -47,20 +47,20 @@ public:
 
 	/*! \details This method sets the duration of the hold event.
 	  */
-	static void set_held_duration(chrono::MicroTime duration){ m_held_duration = duration; }
+	static void set_held_duration(const chrono::MicroTime & duration){ m_held_duration = duration; }
 
 	/*! \details Sets the duration of a button press before a actuation is trigger.
 	  *
 	  * This can be used to debounce the button.
 	  *
 	  */
-	static void set_actuation_duration(chrono::MicroTime duration){ m_actuation_duration = duration; }
+	static void set_actuation_duration(const chrono::MicroTime & duration){ m_actuation_duration = duration; }
 
 	/*! \details Returns the actuation duration (amount of time button is pressed
 	  * before triggering an acutation.
 	  *
 	  */
-	static chrono::MicroTime actuation_duration(){ return m_actuation_duration; }
+	static const chrono::MicroTime & actuation_duration(){ return m_actuation_duration; }
 
 	/*! \details This method accesses the active value.
 	 *
@@ -69,8 +69,7 @@ public:
 	bool active_value() const { return m_active_value; }
 
 	/*! \details Set the ID of the button for Events */
-	void set_id(enum ev::Event::button_id v){ m_event_id = v; }
-	void set_event_id(enum ev::Event::button_id v){ set_id(v); }
+	void set_event_id(enum ev::Event::button_id v){ m_event_id = v; }
 
 	//methods documented at ui::Button
 	enum ev::Event::button_id event_id() const { return m_event_id; }

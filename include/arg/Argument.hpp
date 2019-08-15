@@ -3,6 +3,8 @@
 
 #include <utility>
 #include <pthread.h>
+#include <signal.h>
+
 #if !defined __link || defined __macosx
 #include <unistd.h>
 #include <sched.h>
@@ -14,6 +16,42 @@ typedef int pid_t;
 
 #if defined __link
 #include <sos/link.h>
+#endif
+
+#if defined __link
+typedef void (*signal_function_callback_t)(int);
+#if defined __win32
+typedef void (*signal_action_callback_t)(int, void*, void*);
+#define SIGNAL_SIGINFO_FLAG 0
+#else
+typedef void (*signal_action_callback_t)(int, siginfo_t*, void*);
+typedef signal_function_callback_t _sig_func_ptr;
+#define SIGNAL_SIGINFO_FLAG SA_SIGINFO
+#endif
+#endif
+
+
+#if defined __StratifyOS__
+typedef void (*signal_function_callback_t)(int);
+typedef void (*signal_action_callback_t)(int, siginfo_t*, void*);
+#define SIGNAL_SIGINFO_FLAG (1<<SA_SIGINFO)
+#endif
+
+#if defined __win32
+#define sapi_signal_posix_kill raise
+typedef u32 sigset_t;
+struct sigaction {
+	signal_function_callback_t sa_handler;
+	signal_action_callback_t sa_sigaction;
+	u32 sa_flags;
+	u32 sa_mask;
+};
+union sigval {
+	int sival_int;
+	void * sival_ptr;
+};
+#else
+#define sapi_signal_posix_kill kill
 #endif
 
 #include "../api/ArgumentObject.hpp"
@@ -84,14 +122,18 @@ private:
 
 
 #define ARG_DEFINE_ARGUMENT(name, type) \
-	using name = Argument<type, struct name ## Parameter>
+	using name = Argument<type, struct name ## Tag>
 
 #define ARG_DEFINE_IMPLICIT_ARGUMENT(name, type, implicit_of) \
-	using name = ImplicitArgument<type, struct name ## Parameter, implicit_of>
+	using name = ImplicitArgument<type, struct name ## Tag, implicit_of>
 
 
 //fs
-ARG_DEFINE_ARGUMENT(Location, int);
+//ARG_DEFINE_ARGUMENT(Location, int);
+/*! \brief File Location Argument */
+typedef Argument<int, struct LocationTag> Location;
+
+/*! \cond */
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitLocation, const int &, Location);
 ARG_DEFINE_ARGUMENT(PageSize,	u32);
 
@@ -144,14 +186,31 @@ ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitDestinationFile,	fs::File&, DestinationFile
 //sys
 ARG_DEFINE_ARGUMENT(Pid, pid_t);
 ARG_DEFINE_ARGUMENT(ThreadId, pthread_t);
+#if defined __link
+ARG_DEFINE_ARGUMENT(DeviceThreadId, int);
+#else
+typedef ThreadId DeviceThreadId;
+#endif
 ARG_DEFINE_ARGUMENT(IsDetached, bool);
 ARG_DEFINE_ARGUMENT(ThreadFunction, void * (*)(void *));
 ARG_DEFINE_ARGUMENT(ThreadToJoin, const sys::Thread&);
 ARG_DEFINE_ARGUMENT(ThreadFunctionArgument, void *);
 ARG_DEFINE_ARGUMENT(ThreadStackSize, u32);
+ARG_DEFINE_ARGUMENT(GroupId, int);
+ARG_DEFINE_ARGUMENT(OwnerId, int);
+
+ARG_DEFINE_ARGUMENT(SignalFunction, signal_function_callback_t);
+ARG_DEFINE_ARGUMENT(SignalActionFunction, signal_action_callback_t);
+ARG_DEFINE_ARGUMENT(SignalFlags, int);
+ARG_DEFINE_ARGUMENT(SignalMask, sigset_t);
+
 
 ARG_DEFINE_ARGUMENT(ThreadReturn, void **);
 ARG_DEFINE_ARGUMENT(DelayInterval, const chrono::MicroTime &);
+
+ARG_DEFINE_ARGUMENT(ButtonHeldThreshold, const chrono::MicroTime &);
+ARG_DEFINE_ARGUMENT(ButtonActuatedThreshold, const chrono::MicroTime &);
+
 
 //var::Tokenizer
 ARG_DEFINE_ARGUMENT(TokenEncodedString, const var::ConstString &);
@@ -186,6 +245,11 @@ ARG_DEFINE_ARGUMENT(MatchLength, u32);
 ARG_DEFINE_ARGUMENT(Count, u32);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitCount, u32, Count);
 
+ARG_DEFINE_ARGUMENT(ActiveDuration, const chrono::MicroTime &);
+ARG_DEFINE_ARGUMENT(InActiveDuration, const chrono::MicroTime &);
+ARG_DEFINE_ARGUMENT(Period, const chrono::MicroTime &);
+ARG_DEFINE_ARGUMENT(Duration, const chrono::MicroTime &);
+
 ARG_DEFINE_ARGUMENT(Width, u32);
 ARG_DEFINE_ARGUMENT(Height, u32);
 ARG_DEFINE_ARGUMENT(XValue, s32);
@@ -213,6 +277,8 @@ ARG_DEFINE_ARGUMENT(IsCopyToDevice, bool);
 #endif
 
 ARG_DEFINE_ARGUMENT(BootloaderRetryCount, u32);
+ARG_DEFINE_ARGUMENT(RetryCount, u32);
+ARG_DEFINE_ARGUMENT(RetryDelay, const chrono::MicroTime &);
 ARG_DEFINE_ARGUMENT(IsVerify, bool);
 ARG_DEFINE_ARGUMENT(IsLegacy, bool);
 ARG_DEFINE_ARGUMENT(FileDescriptor, int);
@@ -271,6 +337,16 @@ ARG_DEFINE_ARGUMENT(ValueColorComponent, u8);
 ARG_DEFINE_ARGUMENT(SaturationColorComponent, u8);
 ARG_DEFINE_ARGUMENT(AlphaColorComponent, u8);
 ARG_DEFINE_ARGUMENT(BrightnessColorComponent, u8);
+
+
+ARG_DEFINE_ARGUMENT(CurrentProgress, int);
+ARG_DEFINE_ARGUMENT(TotalProgress, int);
+
+ARG_DEFINE_ARGUMENT(OptionName, const var::ConstString&);
+ARG_DEFINE_ARGUMENT(OptionDescription, const var::ConstString&);
+
+/*! \endcond */
+
 
 }
 

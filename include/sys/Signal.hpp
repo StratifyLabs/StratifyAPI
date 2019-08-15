@@ -3,49 +3,9 @@
 #ifndef SAPI_SYS_SIGNAL_HPP_
 #define SAPI_SYS_SIGNAL_HPP_
 
-#include <pthread.h>
-#include <signal.h>
-
 #include "../arg/Argument.hpp"
 #include "../ev/Event.hpp"
 #include "../api/SysObject.hpp"
-
-
-#if defined __link
-typedef void (*signal_function_callback_t)(int);
-#if defined __win32
-typedef void (*signal_action_callback_t)(int, void*, void*);
-#define SIGNAL_SIGINFO_FLAG 0
-#else
-typedef void (*signal_action_callback_t)(int, siginfo_t*, void*);
-typedef signal_function_callback_t _sig_func_ptr;
-#define SIGNAL_SIGINFO_FLAG SA_SIGINFO
-#endif
-#endif
-
-
-#if defined __StratifyOS__
-typedef void (*signal_function_callback_t)(int);
-typedef void (*signal_action_callback_t)(int, siginfo_t*, void*);
-#define SIGNAL_SIGINFO_FLAG (1<<SA_SIGINFO)
-#endif
-
-#if defined __win32
-#define sapi_signal_posix_kill raise
-typedef u32 sigset_t;
-struct sigaction {
-	signal_function_callback_t sa_handler;
-	signal_action_callback_t sa_sigaction;
-	u32 sa_flags;
-	u32 sa_mask;
-};
-union sigval {
-	int sival_int;
-	void * sival_ptr;
-};
-#else
-#define sapi_signal_posix_kill kill
-#endif
 
 
 namespace sys {
@@ -96,11 +56,13 @@ public:
 	 *
 	 * @param handler The function to execute with an associated signal
 	 */
-	SignalHandler(signal_function_callback_t handler){
+	SignalHandler(
+			arg::SignalFunction signal_function
+			){
 #if defined __win32
-		m_sig_action.sa_handler = handler;
+		m_sig_action.sa_handler = signal_function.argument();
 #else
-		m_sig_action.sa_handler = (_sig_func_ptr)handler;
+		m_sig_action.sa_handler = (_sig_func_ptr)signal_function.argument();
 #endif
 		m_sig_action.sa_flags = 0;
 		m_sig_action.sa_mask = 0;
@@ -126,10 +88,14 @@ public:
 	 * \endcode
 	 *
 	 */
-	SignalHandler(signal_action_callback_t signal_action, int flags = 0, sigset_t mask = 0){
-		m_sig_action.sa_sigaction = signal_action;
-		m_sig_action.sa_flags = flags | SIGNAL_SIGINFO_FLAG;
-		m_sig_action.sa_mask = mask;
+	SignalHandler(
+			arg::SignalActionFunction signal_action_function,
+			const arg::SignalFlags flags = arg::SignalFlags(0),
+			const arg::SignalMask mask = arg::SignalMask(0)
+			){
+		m_sig_action.sa_sigaction = signal_action_function.argument();
+		m_sig_action.sa_flags = flags.argument() | SIGNAL_SIGINFO_FLAG;
+		m_sig_action.sa_mask = mask.argument();
 	}
 
 	/*! \details Accesses the sigaction member. */
@@ -305,7 +271,9 @@ public:
 	  * will be sent along with signo and sigvalue.
 	  *
 	 */
-	int queue(const arg::Pid pid) const {
+	int queue(
+			const arg::Pid pid
+			) const {
 		return ::sigqueue(pid.argument(), m_signo, m_sigvalue);
 	}
 #endif
@@ -331,7 +299,9 @@ public:
 	 * @param handler A reference to the SignalHandler object
 	 * @return Zero on success
 	 */
-	int set_handler(const SignalHandler & handler) const;
+	int set_handler(
+			const SignalHandler & handler
+			) const;
 
 
 	/*! \details Assigns the handler to the event.

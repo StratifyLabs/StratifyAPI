@@ -688,7 +688,7 @@ int DataFile::read(
 		return -1;
 	}
 
-	int size_ready = m_data.size() - m_location;
+	u32 size_ready = m_data.size() - m_location;
 	if( size_ready > nbyte.argument() ){
 		size_ready = nbyte.argument();
 	}
@@ -706,7 +706,7 @@ int DataFile::write(const SourceBuffer buf, const Size nbyte) const {
 		return -1;
 	}
 
-	int size_ready = 0;
+	u32 size_ready = 0;
 	if( flags().is_append() ){
 		//make room in the m_data object for more bytes
 		m_location = m_data.size();

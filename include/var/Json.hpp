@@ -513,7 +513,7 @@ public:
 			void * context
 			) const;
 
-	enum {
+	enum flags {
 		REJECT_DUPLICATES = JSON_REJECT_DUPLICATES,
 		DISABLE_EOF_CHECK = JSON_DISABLE_EOF_CHECK,
 		DECODE_ANY = JSON_DECODE_ANY,

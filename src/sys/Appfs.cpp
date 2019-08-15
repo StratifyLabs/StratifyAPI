@@ -38,9 +38,9 @@ Appfs::Appfs(link_transport_mdriver_t * driver) : m_file(driver){
 Appfs::Appfs(){}
 #endif
 
-int Appfs::create(const arg::FileName & name,
-		const arg::SourceFile & source_data,
-		const arg::SourceDirectoryPath & mount,
+int Appfs::create(const arg::FileName name,
+		const arg::SourceFile source_data,
+		const arg::SourceDirectoryPath mount,
 		const ProgressCallback * progress_callback
 #if defined __link
 		, link_transport_mdriver_t * driver

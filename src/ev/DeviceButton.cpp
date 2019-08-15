@@ -21,19 +21,22 @@ int DeviceButton::init(){
 }
 
 
-int DeviceButton::set_attributes(int location, int id,
-											const chrono::MicroTime held_threshold,
-											const chrono::MicroTime actuated_threshold){
+int DeviceButton::set_attributes(
+		const arg::Location location,
+		enum ev::Event::button_id id,
+		const arg::ButtonHeldThreshold held_threshold,
+		const arg::ButtonActuatedThreshold actuated_threshold
+		){
 	button_attr_t attr;
 	int ret;
 	memset(&attr, 0, sizeof(attr));
 	attr.o_flags = BUTTON_FLAG_SET_ID;
 	attr.id = id;
-	attr.loc = location;
+	attr.loc = location.argument();
 
-	if( held_threshold.is_valid() ){
+	if( held_threshold.argument().is_valid() ){
 		attr.o_flags |= BUTTON_FLAG_SET_HELD_THRESHOLD;
-		attr.threshold_msec = held_threshold.milliseconds();
+		attr.threshold_msec = held_threshold.argument().milliseconds();
 	}
 
 	ret = ioctl(
@@ -41,9 +44,10 @@ int DeviceButton::set_attributes(int location, int id,
 				arg::IoArgument(&attr)
 				);
 
-	if( (ret >= 0 ) && actuated_threshold.is_valid() ){
+	if( (ret >= 0 ) &&
+		 actuated_threshold.argument().is_valid() ){
 		attr.o_flags = BUTTON_FLAG_SET_ACTUATED_THRESHOLD;
-		attr.threshold_msec = actuated_threshold.milliseconds();
+		attr.threshold_msec = actuated_threshold.argument().milliseconds();
 		ret = ioctl(
 					arg::IoRequest(I_BUTTON_SETATTR),
 					arg::IoArgument(&attr)
@@ -99,11 +103,11 @@ bool DeviceButton::is_active() const {
 void DeviceButton::update(){
 	u32 o_flags = m_status.o_flags;
 	if( (seek(
-			  arg::Location(m_location*sizeof(m_status))
-			  ) >= 0) && (read(
-								  arg::DestinationBuffer(&m_status),
-								  arg::Size(sizeof(m_status))
-								  ) == sizeof(m_status)) ){
+				 arg::Location(m_location*sizeof(m_status))
+				 ) >= 0) && (read(
+											 arg::DestinationBuffer(&m_status),
+											 arg::Size(sizeof(m_status))
+											 ) == sizeof(m_status)) ){
 		//keep track of the flags because the driver will clear the flags before the EventLoop does
 		m_status.o_flags |= o_flags;
 	} else {
@@ -115,9 +119,9 @@ void DeviceButton::update(){
 void DeviceButton::reset(){
 	seek(arg::Location(0));
 	while( read(
-				 arg::DestinationBuffer(&m_status),
-				 arg::Size(sizeof(m_status))
-				 ) == sizeof(m_status) ){
+					 arg::DestinationBuffer(&m_status),
+					 arg::Size(sizeof(m_status))
+					 ) == sizeof(m_status) ){
 		;
 	}
 	memset(&m_status, 0, sizeof(m_status));

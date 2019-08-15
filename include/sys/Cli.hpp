@@ -145,7 +145,10 @@ public:
 	 * If `-<name>` or `--<name>` is given, the return value is set to "true".
 	 *
 	 */
-	var::String get_option(const var::ConstString & name, const var::ConstString & help = "") const;
+	var::String get_option(
+			const arg::OptionName name,
+			const arg::OptionDescription help = arg::OptionDescription("")
+			) const;
 
 	/*! \details Gets the argument of an option as a var::String.
 	 *

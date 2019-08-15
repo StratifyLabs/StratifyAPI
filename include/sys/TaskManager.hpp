@@ -97,13 +97,6 @@ public:
 		return m_value.mem_loc;
 	}
 
-	/*! \details Prints the header info for the print() method. */
-	static void print_header();
-
-	/*! \details Prints information about the task to the standard output. */
-	void print() const;
-
-
 private:
 	sys_taskattr_t m_value;
 };
@@ -162,7 +155,11 @@ public:
 	  *
 	  *
 	  */
-	void set_id(u32 value){ m_id = value; }
+	void set_id(
+			const arg::DeviceThreadId value
+			){
+		m_id = value.argument();
+	}
 
 	/*! \details Returns the index of the current task as
 	  * this object goes through all tasks using get_next().
@@ -204,14 +201,18 @@ public:
 	  * \endcode
 	  *
 	  */
-	TaskInfo get_info(int id);
+	TaskInfo get_info(const arg::DeviceThreadId id);
 
 #if !defined __link
 	static TaskInfo get_info();
 #endif
 
 	/*! \cond */
-	TaskAttributes get_attributes(int id){ return get_info(id); }
+	TaskAttributes get_attributes(
+			const arg::DeviceThreadId id
+			){
+		return get_info(id);
+	}
 	/*! \endcond */
 
 	/*! \details Prints info for all enabled tasks. */
@@ -219,7 +220,7 @@ public:
 
 	int get_pid(const var::ConstString & name);
 
-	bool is_pid_running(int pid);
+	bool is_pid_running(const arg::Pid pid);
 
 	void initialize();
 	void finalize();

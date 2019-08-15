@@ -297,9 +297,9 @@ public:
 	 * @return Zero on success or -1 with errno set accordingly
 	 *
 	 */
-	static int create(const arg::FileName & name,
-							const arg::SourceFile & source_data,
-							const arg::SourceDirectoryPath & mount = arg::SourceDirectoryPath("/app"),
+	static int create(const arg::FileName name,
+							const arg::SourceFile source_data,
+							const arg::SourceDirectoryPath mount = arg::SourceDirectoryPath("/app"),
 							const ProgressCallback * progress_callback = 0
 #if defined __link
 							, link_transport_mdriver_t * driver = 0
@@ -307,8 +307,9 @@ public:
 			);
 
 	int create(
-			const var::ConstString & name,
-			const arg::Size & size);
+			const var::ConstString name,
+			const arg::Size size
+			);
 	Appfs & operator << (const var::Data & data);
 	int close();
 

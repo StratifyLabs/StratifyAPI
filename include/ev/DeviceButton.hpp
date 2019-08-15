@@ -78,9 +78,12 @@ public:
 	  * @returns Zero on success
 	  *
 	  */
-	int set_attributes(int location, int id,
-							 const chrono::MicroTime held_threshold = chrono::MicroTime::invalid(),
-							 const chrono::MicroTime actuated_threshold = chrono::MicroTime::invalid());
+	int set_attributes(
+			const arg::Location location,
+			enum ev::Event::button_id id,
+			const arg::ButtonHeldThreshold held_threshold = arg::ButtonHeldThreshold(chrono::MicroTime::invalid()),
+			const arg::ButtonActuatedThreshold actuated_threshold = arg::ButtonActuatedThreshold(chrono::MicroTime::invalid())
+			);
 
 	chrono::MicroTime get_duration();
 	bool get_pressed();

@@ -149,9 +149,7 @@ public:
 	static unsigned int m_default_color;
 #endif
 
-
 	Printer & operator << (const api::Result & a);
-
 
 	/*! \details Prints a var::Data object. */
 	Printer & operator << (const var::Data & a);

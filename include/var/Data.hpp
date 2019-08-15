@@ -237,23 +237,17 @@ public:
 	}
 
 	template<typename T> static Data create_reference(T & item){
-		Data a;
-		a.refer_to(
+		return Data(
 					arg::DestinationBuffer(&item),
-					arg::Size(sizeof(T)),
-					arg::IsReadOnly(false)
+					arg::Size(sizeof(T))
 					);
-		return a;
 	}
 
 	template<typename T> static Data create_reference(const T & item){
-		Data a;
-		a.refer_to(
-					arg::DestinationBuffer((void*)&item),
-					arg::Size(sizeof(T)),
-					arg::IsReadOnly(true)
+		return Data(
+					arg::SourceBuffer(&item),
+					arg::Size(sizeof(T))
 					);
-		return a;
 	}
 
 	/*! \details Allocates (or reallocates) memory for the Data object.

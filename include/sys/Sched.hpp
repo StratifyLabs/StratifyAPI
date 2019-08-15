@@ -94,7 +94,8 @@ public:
 	static int set_scheduler(
 			const arg::Pid pid,
 			enum policy value,
-			const arg::SchedulerPriority priority);
+			const arg::SchedulerPriority priority
+			);
 
 };
 

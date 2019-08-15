@@ -142,19 +142,22 @@ bool Cli::is_option_equivalent_to_argument_with_equality(
 }
 
 
-var::String Cli::get_option(const var::ConstString & name, const var::ConstString & help) const {
+var::String Cli::get_option(
+		const arg::OptionName name,
+		const arg::OptionDescription help
+		) const {
 	var::String result;
 	u32 args;
 
 
-	if( help.is_empty() ){
-		m_help_list.push_back(String() << name);
+	if( help.argument().is_empty() ){
+		m_help_list.push_back(String() << name.argument());
 	} else {
-		m_help_list.push_back(String() << name << ": " << help);
+		m_help_list.push_back(String() << name.argument() << ": " << help.argument());
 	}
 
 	for(args = 1; args < count(); args++){
-		if( is_option_equivalent_to_argument(name, at(args)) ){
+		if( is_option_equivalent_to_argument(name.argument(), at(args)) ){
 			if( count() > args+1 ){
 				ConstString value = at(args+1);
 				if( value.at(0) == '-' ){
@@ -166,7 +169,7 @@ var::String Cli::get_option(const var::ConstString & name, const var::ConstStrin
 			} else {
 				return ConstString("true");
 			}
-		} else if( is_option_equivalent_to_argument_with_equality(name, at(args), result)){
+		} else if( is_option_equivalent_to_argument_with_equality(name.argument(), at(args), result)){
 			return result;
 		}
 	}

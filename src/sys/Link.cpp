@@ -166,10 +166,13 @@ int Link::connect(const arg::SourceFilePath path,
 }
 
 
-int Link::reconnect(u32 retries, const chrono::MicroTime & delay){
+int Link::reconnect(
+		const arg::RetryCount retries,
+		const arg::RetryDelay delay
+		){
 	int result;
 	LinkInfo last_info(info());
-	for(u32 i = 0; i < retries; i++){
+	for(u32 i = 0; i < retries.argument(); i++){
 		result = connect(
 					arg::SourceFilePath(last_info.port())
 					);
@@ -195,7 +198,7 @@ int Link::reconnect(u32 retries, const chrono::MicroTime & delay){
 			}
 		}
 
-		delay.wait();
+		delay.argument().wait();
 	}
 
 	//restore the last known information on failure
@@ -462,8 +465,9 @@ bool Link::is_connected() const {
 }
 
 
-int Link::stat(const arg::SourceFilePath path,
-		struct link_stat * st
+int Link::stat(
+		const arg::SourceFilePath path,
+		struct link_stat & st
 		){
 	int err;
 	if ( m_is_bootloader ){
@@ -474,7 +478,7 @@ int Link::stat(const arg::SourceFilePath path,
 		err = link_stat(
 					m_driver,
 					path.argument().cstring(),
-					st
+					&st
 					);
 		if(err != LINK_PROT_ERROR) break;
 	}
@@ -1049,8 +1053,8 @@ int Link::rename(const arg::SourceFilePath old_path,
 }
 
 int Link::chown(const arg::SourceFilePath path,
-		int owner,
-		int group
+		const arg::OwnerId owner,
+		const arg::GroupId group
 		){
 	int err;
 	if ( m_is_bootloader ){
@@ -1061,8 +1065,8 @@ int Link::chown(const arg::SourceFilePath path,
 		err = link_chown(
 					m_driver,
 					path.argument().cstring(),
-					owner,
-					group
+					owner.argument(),
+					group.argument()
 					);
 		if(err != LINK_PROT_ERROR) break;
 	}
@@ -1073,7 +1077,8 @@ int Link::chown(const arg::SourceFilePath path,
 	return check_error(err);
 }
 
-int Link::chmod(const arg::SourceFilePath path,
+int Link::chmod(
+		const arg::SourceFilePath path,
 		const Permissions & permissions
 		){
 	int err;

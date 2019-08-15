@@ -74,11 +74,11 @@ void Test::print_case_score(){
 void Test::execute(const sys::Cli & cli){
 	u32 o_flags = 0;
 
-	if( cli.get_option("api") == "true" ){ o_flags |= EXECUTE_API; }
-	if( cli.get_option("stress") == "true" ){ o_flags |= EXECUTE_STRESS; }
-	if( cli.get_option("performance") == "true" ){ o_flags |= EXECUTE_PERFORMANCE; }
-	if( cli.get_option("additional") == "true" ){ o_flags |= EXECUTE_ADDITIONAL; }
-	if( cli.get_option("all") == "true" ){ o_flags |= EXECUTE_ALL; }
+	if( cli.get_option(arg::OptionName("api")) == "true" ){ o_flags |= EXECUTE_API; }
+	if( cli.get_option(arg::OptionName("stress")) == "true" ){ o_flags |= EXECUTE_STRESS; }
+	if( cli.get_option(arg::OptionName("performance")) == "true" ){ o_flags |= EXECUTE_PERFORMANCE; }
+	if( cli.get_option(arg::OptionName("additional")) == "true" ){ o_flags |= EXECUTE_ADDITIONAL; }
+	if( cli.get_option(arg::OptionName("all")) == "true" ){ o_flags |= EXECUTE_ALL; }
 
 	execute(o_flags);
 }

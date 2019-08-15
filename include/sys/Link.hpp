@@ -125,8 +125,8 @@ public:
 	}
 
 	int reconnect(
-			u32 retries = 5,
-			const chrono::MicroTime & delay = chrono::Milliseconds(500)
+			const arg::RetryCount retries = arg::RetryCount(5),
+			const arg::RetryDelay delay = arg::RetryDelay(chrono::Milliseconds(500))
 			);
 
 	/*! \details This disconnects from the device.  After calling this,
@@ -294,13 +294,17 @@ public:
 	  *
 	  * \return Zero on success
 	  */
-	int format(const arg::SourceDirectoryPath path); //Format the drive
+	int format(
+			const arg::SourceDirectoryPath path
+			); //Format the drive
 
 	/*! \details Funs an application on the target device.
 	  *
 	  * \return The PID of the new process or less than zero for an error
 	  */
-	int run_app(const arg::SourceFilePath path);
+	int run_app(
+			const arg::SourceFilePath path
+			);
 
 
 	/*! \details Opens a file (or device such as /dev/adc0) on the target device.
@@ -419,7 +423,7 @@ public:
 	  */
 	int stat(
 			const arg::SourceFilePath path /*! The path to the target device file */,
-			struct link_stat * st /*! A pointer to the destination structure */
+			struct link_stat & st /*! A pointer to the destination structure */
 			);
 
 	/*!
@@ -501,8 +505,8 @@ public:
 	  */
 	int chown(
 			const arg::SourceFilePath path,
-			int owner,
-			int group
+			const arg::OwnerId owner,
+			const arg::GroupId group
 			);
 
 	/*! \details Changes the mode of a file.

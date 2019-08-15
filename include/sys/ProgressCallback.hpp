@@ -51,7 +51,10 @@ public:
 	 * @param context The context (first argument passed to callback)
 	 *
 	 */
-	ProgressCallback(callback_t callback, void * context = 0);
+	ProgressCallback(
+			callback_t callback,
+			void * context = 0
+			);
 
 
 	/*! \details Assigns a callback. */
