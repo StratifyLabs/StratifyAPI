@@ -113,7 +113,15 @@ int Bmp::create(const arg::DestinationFilePath name,
 	return 0;
 }
 
-int Bmp::create_appfs(const var::ConstString & name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, u32 nbyte){
+int Bmp::create_appfs(
+		const var::ConstString & name,
+		s32 width,
+		s32 height,
+		u16 planes,
+		u16 bits_per_pixel,
+		char * img,
+		u32 nbyte
+		){
 	bmp_header_t hdr;
 	bmp_dib_t dib;
 
@@ -129,12 +137,13 @@ int Bmp::create_appfs(const var::ConstString & name, s32 width, s32 height, u16 
 	dib.width = width;
 	dib.planes = planes;
 
+#if 0
 	memcpy(img, &hdr, sizeof(hdr));
 	memcpy(img + sizeof(hdr), &dib, sizeof(dib));
 
-	DataFile source_data;
+	DataReferenceFile source_data;
 
-	source_data.data().refer_to(
+	source_data.data_reference().refer_to(
 				arg::SourceBuffer(img),
 				arg::Size(nbyte)
 				);
@@ -143,6 +152,7 @@ int Bmp::create_appfs(const var::ConstString & name, s32 width, s32 height, u16 
 				arg::FileName(name),
 				arg::SourceFile(source_data)
 				);
+#endif
 
 
 	return 0;

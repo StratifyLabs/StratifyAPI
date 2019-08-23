@@ -144,7 +144,16 @@ public:
 	 *
 	 * @return Zero on success
 	 */
-	int create_message(var::Data & data){ return api()->create_message(&m_son, data.data(), data.capacity(), m_stack, m_stack_size); }
+	int create_message(
+			var::Data & data
+			){
+		return api()->create_message(
+					&m_son,
+					data.to_void(),
+					data.capacity(),
+					m_stack,
+					m_stack_size);
+	}
 
 
 	/*! \details Creates a memory message SON object using dynamic memory allocation.
@@ -202,7 +211,7 @@ public:
 	 * @return Zero on success
 	 */
 	int open_message(void * message, int nbyte){ return api()->open_message(&m_son, message, nbyte); }
-	int open_message(var::Data & data){ return api()->open_message(&m_son, data.data(), data.capacity()); }
+	int open_message(var::Data & data){ return api()->open_message(&m_son, data.to_void(), data.capacity()); }
 
 	int open_read_message(void * message, int nbyte){ return open_message(message, nbyte); }
 	int open_read_message(var::Data & data){ return open_message(data); }
@@ -242,13 +251,13 @@ public:
 	 *
 	 */
 	int seek_next(var::String & name, son_value_t * type = 0){
-		name.set_size(SON_KEY_NAME_CAPACITY);
-		return api()->seek_next(&m_son, name.cdata(), type);
+		name.resize(SON_KEY_NAME_CAPACITY);
+		return api()->seek_next(&m_son, name.to_char(), type);
 	}
 
 	int seek_next(var::String & name, son_value_t & type){
-		name.set_size(SON_KEY_NAME_CAPACITY);
-		return api()->seek_next(&m_son, name.cdata(), &type);
+		name.resize(SON_KEY_NAME_CAPACITY);
+		return api()->seek_next(&m_son, name.to_char(), &type);
 	}
 
 	/*! \details Converts the data file to JSON.
@@ -411,7 +420,7 @@ public:
 		var::String result;
 		son_size_t size;
 		if( seek(access, size) >= 0 ){
-			result.set_size(size+1);
+			result.resize(size+1);
 			if( api()->read_str(&m_son, access.cstring(), result.to_char(), result.capacity()) < 0 ){
 				return var::String();
 			}

@@ -104,11 +104,7 @@ public:
 
 	/*! \details Removes a directory.
 	 *
-	 * @param path The path to remove
-	 * @param recursive If true will remove all subdirectories and files
 	 * @return Zero on success or -1 for an error
-	 *
-	 *
 	 */
 #if !defined __link
 	static int remove(

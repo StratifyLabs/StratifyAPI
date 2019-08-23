@@ -130,11 +130,11 @@ public:
 	}
 
 	T * search(const T & a){
-		return (T*)bsearch(&a, to_void(), count(), sizeof(T), ascending);
+		return (T*)bsearch(&a, to_const_void(), count(), sizeof(T), ascending);
 	}
 
 	T * search(const T & a, int (*compare)(const void *, const void *)){
-		return (T*)bsearch(&a, to_void(), count(), sizeof(T), compare);
+		return (T*)bsearch(&a, to_const_void(), count(), sizeof(T), compare);
 	}
 
 

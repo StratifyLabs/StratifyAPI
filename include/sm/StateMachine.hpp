@@ -268,7 +268,7 @@ private:
 	}
 
 	state_method_t * get_table() const {
-		state_method_t * table = (state_method_t *)m_state_table.data();
+		state_method_t * table = m_state_table.to<state_method_t>();
 		return table;
 	}
 

@@ -187,7 +187,7 @@ public:
 
 	Aio & refer_to(const arg::SourceData data){
 		return refer_to(
-					arg::SourceBuffer(data.argument().to_void()),
+					arg::SourceBuffer(data.argument().to_const_void()),
 					arg::Size(data.argument().size())
 					);
 	}

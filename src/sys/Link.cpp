@@ -40,11 +40,11 @@ Link::~Link(){}
 
 
 int Link::lock_device(){
-	return driver()->lock( driver()->dev.handle );
+	return driver()->lock( driver()->phy_driver.handle );
 }
 
 int Link::unlock_device(){
-	return driver()->unlock( driver()->dev.handle );
+	return driver()->unlock( driver()->phy_driver.handle );
 }
 
 int Link::check_error(int err){
@@ -71,13 +71,17 @@ var::Vector<var::String> Link::get_port_list(){
 	var::String device_name;
 	var::String last_device;
 
-	last_device.set_size(256);
-	device_name.set_size(256);
+	last_device.resize(256);
+	device_name.resize(256);
 
 	last_device.clear();
 	device_name.clear();
 
-	while( driver()->getname(device_name.cdata(), last_device.cstring(), device_name.capacity()) == 0 ){
+	while( driver()->getname(
+				 device_name.to_char(),
+				 last_device.cstring(),
+				 device_name.capacity()
+				 ) == 0 ){
 		result.push_back( device_name ); //this will make a copy of device name and put it on the list
 		last_device = device_name;
 	}
@@ -108,16 +112,17 @@ var::Vector<LinkInfo> Link::get_info_list(){
 }
 
 int Link::connect(const arg::SourceFilePath path,
-		const arg::IsLegacy is_legacy
-		){
+						const arg::IsLegacy is_legacy
+						){
 	int err;
 
 	reset_progress();
 
-	if ( m_driver->dev.handle == LINK_PHY_OPEN_ERROR ){
+	if ( m_driver->phy_driver.handle == LINK_PHY_OPEN_ERROR ){
 
-		m_driver->dev.handle = m_driver->dev.open(path.argument().cstring(), m_driver->options);
-		if( m_driver->dev.handle == LINK_PHY_OPEN_ERROR ){
+		m_driver->transport_version = 0;
+		m_driver->phy_driver.handle = m_driver->phy_driver.open(path.argument().cstring(), m_driver->options);
+		if( m_driver->phy_driver.handle == LINK_PHY_OPEN_ERROR ){
 			m_error_message = "Failed to Connect to Device";
 			return -1;
 		}
@@ -141,7 +146,7 @@ int Link::connect(const arg::SourceFilePath path,
 		m_is_bootloader = false;
 	} else {
 		m_error_message.sprintf("Failed to check for Bootloader status (%d)", link_errno);
-		m_driver->dev.close(&m_driver->dev.handle);
+		m_driver->phy_driver.close(&m_driver->phy_driver.handle);
 		return -1;
 	}
 
@@ -208,9 +213,9 @@ int Link::reconnect(
 }
 
 int Link::open(const arg::FilePath file,
-		const OpenFlags & flags,
-		const Permissions & permissions
-		){
+					const OpenFlags & flags,
+					const Permissions & permissions
+					){
 	int err;
 	if ( m_is_bootloader ){
 		return -1;
@@ -252,9 +257,9 @@ int Link::close(const arg::FileDescriptor fd){
 
 
 int Link::read(const arg::FileDescriptor fd,
-		const arg::DestinationBuffer buf,
-		const arg::Size nbyte
-		){
+					const arg::DestinationBuffer buf,
+					const arg::Size nbyte
+					){
 	int err;
 	if ( m_is_bootloader ){
 		return -1;
@@ -272,8 +277,8 @@ int Link::read(const arg::FileDescriptor fd,
 }
 
 int Link::write(const arg::FileDescriptor fd,
-		const arg::SourceBuffer buf,
-		const arg::Size nbyte		){
+					 const arg::SourceBuffer buf,
+					 const arg::Size nbyte		){
 	int err;
 	if ( m_is_bootloader ){
 		return -1;
@@ -375,9 +380,9 @@ int Link::write_flash(int addr, const void * buf, int nbyte){
 
 
 int Link::lseek(const arg::FileDescriptor fd,
-		const arg::Location offset,
-		int whence
-		){
+					 const arg::Location offset,
+					 int whence
+					 ){
 	int err;
 	if ( m_is_bootloader ){
 		return -1;
@@ -403,9 +408,9 @@ int Link::lseek(const arg::FileDescriptor fd,
 
 
 int Link::ioctl(const arg::FileDescriptor fd,
-		const arg::IoRequest request,
-		const arg::IoArgument arg
-		){
+					 const arg::IoRequest request,
+					 const arg::IoArgument arg
+					 ){
 	int err;
 	if ( m_is_bootloader ){
 		return -1;
@@ -431,10 +436,10 @@ int Link::ioctl(const arg::FileDescriptor fd,
 
 int Link::disconnect(){
 	lock_device();
-	if ( m_driver->dev.handle != LINK_PHY_OPEN_ERROR ){
+	if ( m_driver->phy_driver.handle != LINK_PHY_OPEN_ERROR ){
 		link_disconnect(m_driver);
 
-		if ( m_driver->dev.handle != LINK_PHY_OPEN_ERROR ){
+		if ( m_driver->phy_driver.handle != LINK_PHY_OPEN_ERROR ){
 			unlock_device(); //can't unlock the device if it has been destroyed
 		}
 	}
@@ -453,11 +458,12 @@ int Link::disconnect(){
 }
 
 void Link::set_disconnected(){
-	m_driver->dev.handle = LINK_PHY_OPEN_ERROR;
+	m_driver->transport_version = 0;
+	m_driver->phy_driver.handle = LINK_PHY_OPEN_ERROR;
 }
 
 bool Link::is_connected() const {
-	if( m_driver->dev.handle == LINK_PHY_OPEN_ERROR ){
+	if( m_driver->phy_driver.handle == LINK_PHY_OPEN_ERROR ){
 		return false;
 	}
 
@@ -549,8 +555,8 @@ int Link::set_time(struct tm * gt){
 
 //Operations on the device
 int Link::mkdir(const arg::DestinationDirectoryPath directory,
-		const Permissions permissions
-		){
+					 const Permissions permissions
+					 ){
 	int err;
 	if ( m_is_bootloader ){
 		return -1;
@@ -760,8 +766,8 @@ int Link::closedir(const arg::LinkDirp dirp){
 }
 
 int Link::symlink(const arg::SourceFilePath old_path,
-		const arg::DestinationFilePath new_path
-		){
+						const arg::DestinationFilePath new_path
+						){
 	int err;
 	if ( m_is_bootloader ){
 		return -1;
@@ -808,10 +814,10 @@ int Link::copy(
 		const ProgressCallback * progress_callback
 		){
 	int err;
-	int flags;
 	struct link_stat st;
 	File host_file;
 	File device_file(driver());
+	int copy_page_size = 4096;
 
 	if ( m_is_bootloader ){
 		return -1;
@@ -834,6 +840,11 @@ int Link::copy(
 		}
 
 		m_progress_max = host_file.size();
+		if( host_file.size() > 256*50 ){
+			copy_page_size = host_file.size() / 50;
+		} else {
+			copy_page_size = 256;
+		}
 
 		var::String dest_file = dest.argument();
 		if( dest_file.substr(
@@ -857,7 +868,6 @@ int Link::copy(
 		} else {
 
 			//Create the device file
-			flags = LINK_O_TRUNC | LINK_O_CREAT | LINK_O_WRONLY; //The create new flag settings
 			lock_device();
 			if( device_file.create(
 					 dest,
@@ -866,24 +876,24 @@ int Link::copy(
 				m_error_message.sprintf("Failed to create file %s on device", dest.argument().cstring(), link_errno);
 				unlock_device();
 				return -1;
-			} else {
-
-				m_error_message = "";
-				int result = device_file.write(
-							arg::SourceFile(host_file),
-							arg::PageSize(APPFS_PAGE_SIZE),
-							arg::Size(host_file.size()),
-							progress_callback
-							);
-				if( result < 0 ){
-
-				}
-				if( device_file.close() < 0 ){
-					m_error_message.sprintf("Failed to close Link device file (%d)", link_errno);
-					unlock_device();
-					return -1;
-				}
 			}
+
+			m_error_message = "";
+			int result = device_file.write(
+						arg::SourceFile(host_file),
+						arg::PageSize(copy_page_size),
+						arg::Size(host_file.size()),
+						progress_callback
+						);
+			if( result < 0 ){
+
+			}
+			if( device_file.close() < 0 ){
+				m_error_message.sprintf("Failed to close Link device file (%d)", link_errno);
+				unlock_device();
+				return -1;
+			}
+
 		}
 		unlock_device();
 
@@ -911,7 +921,6 @@ int Link::copy(
 
 
 		//Open the device file
-		flags = LINK_O_RDONLY; //Read the file only
 		lock_device();
 
 		if( device_file.open(
@@ -921,25 +930,31 @@ int Link::copy(
 			m_error_message.sprintf("Failed to open file %s on device (%d)", src.argument().cstring(), link_errno);
 			unlock_device();
 			return -1;
-		} else {
-			m_progress_max = st.st_size;
-
-			if( host_file.write(
-					 arg::SourceFile(device_file),
-					 arg::PageSize(APPFS_PAGE_SIZE),
-					 arg::Size(device_file.size()),
-					 progress_callback
-					 ) < 0 ){
-
-			}
-			host_file.close();
-
-			if( device_file.close() < 0 ){
-				m_error_message.sprintf("Failed to close file %s on device (%d)", src.argument().cstring(), link_errno);
-				unlock_device();
-				return -1;
-			}
 		}
+
+		m_progress_max = st.st_size;		
+		if( device_file.size() > 256*50 ){
+			copy_page_size = device_file.size() / 50;
+		} else {
+			copy_page_size = 256;
+		}
+
+		if( host_file.write(
+				 arg::SourceFile(device_file),
+				 arg::PageSize(copy_page_size),
+				 arg::Size(device_file.size()),
+				 progress_callback
+				 ) < 0 ){
+
+		}
+		host_file.close();
+
+		if( device_file.close() < 0 ){
+			m_error_message.sprintf("Failed to close file %s on device (%d)", src.argument().cstring(), link_errno);
+			unlock_device();
+			return -1;
+		}
+
 
 		unlock_device();
 	}
@@ -1015,9 +1030,9 @@ int Link::kill_pid(int pid, int signo){
 int Link::reset(){
 	lock_device();
 	link_reset(m_driver);
-
 	unlock_device();
-	m_driver->dev.handle = LINK_PHY_OPEN_ERROR;
+	m_driver->transport_version = 0;
+	m_driver->phy_driver.handle = LINK_PHY_OPEN_ERROR;
 	return 0;
 }
 
@@ -1025,13 +1040,14 @@ int Link::reset_bootloader(){
 	lock_device();
 	link_resetbootloader(m_driver);
 	unlock_device();
-	m_driver->dev.handle = LINK_PHY_OPEN_ERROR;
+	m_driver->transport_version = 0;
+	m_driver->phy_driver.handle = LINK_PHY_OPEN_ERROR;
 	return 0;
 }
 
 int Link::rename(const arg::SourceFilePath old_path,
-		const arg::DestinationFilePath new_path
-		){
+					  const arg::DestinationFilePath new_path
+					  ){
 	int err;
 	if ( m_is_bootloader ){
 		return -1;
@@ -1053,9 +1069,9 @@ int Link::rename(const arg::SourceFilePath old_path,
 }
 
 int Link::chown(const arg::SourceFilePath path,
-		const arg::OwnerId owner,
-		const arg::GroupId group
-		){
+					 const arg::OwnerId owner,
+					 const arg::GroupId group
+					 ){
 	int err;
 	if ( m_is_bootloader ){
 		return -1;
@@ -1124,9 +1140,9 @@ int Link::get_bootloader_attr(bootloader_attr_t & attr){
 }
 
 int Link::update_os(const arg::SourceFile image,
-		const arg::IsVerify is_verify,
-		const ProgressCallback * progress_callback,
-		const arg::BootloaderRetryCount bootloader_retry_total){
+						  const arg::IsVerify is_verify,
+						  const ProgressCallback * progress_callback,
+						  const arg::BootloaderRetryCount bootloader_retry_total){
 	int err;
 	uint32_t loc;
 	int bytesRead;
@@ -1340,7 +1356,7 @@ int Link::update_os(const arg::SourceFile image,
 }
 
 int Link::update_binary_install_options(const arg::DestinationFile binary,
-		const AppfsFileAttributes & attributes){
+													 const AppfsFileAttributes & attributes){
 	var::Data image(arg::Size(sizeof(appfs_file_t)));
 	int result;
 
@@ -1366,10 +1382,10 @@ int Link::update_binary_install_options(const arg::DestinationFile binary,
 }
 
 int Link::install_app(const arg::SourceFile application_image,
-		const arg::DestinationDirectoryPath path,
-		const arg::DestinationFileName name,
-		const ProgressCallback * progress_callback
-		){
+							 const arg::DestinationDirectoryPath path,
+							 const arg::DestinationFileName name,
+							 const ProgressCallback * progress_callback
+							 ){
 	int bytes_read;
 	int fd;
 	appfs_installattr_t attr;
@@ -1454,7 +1470,8 @@ int Link::install_app(const arg::SourceFile application_image,
 		dest_str << path.argument() << "/" << name.argument();
 
 		if( f.create(
-				 arg::DestinationFilePath(dest_str)
+				 arg::DestinationFilePath(dest_str),
+				 arg::IsOverwrite(true)
 				 ) < 0 ){
 			m_error_message.format("failed to create %s on target", dest_str.cstring());
 			return -1;

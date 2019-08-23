@@ -81,9 +81,12 @@ sgfx::VectorPath Svic::at(u32 i) const {
 
 }
 
-int Svic::append(const var::ConstString & name, const var::Vector<sg_vector_path_description_t> & list){
+int Svic::append(
+		const var::ConstString & name,
+		const var::Vector<sg_vector_path_description_t> & list
+		){
 	sg_vector_icon_header_t header;
-	var::Data list_data;
+	var::DataReference list_data;
 	memset(&header, 0, sizeof(header));
 	strncpy(header.name, name.cstring(), 23);
 	header.count = list.count();
@@ -98,11 +101,13 @@ int Svic::append(const var::ConstString & name, const var::Vector<sg_vector_path
 		set_error_number( error_number() );
 		return -1;
 	}
-	list_data.refer_to(
-				arg::SourceBuffer(list.to_void()),
-				arg::Size(list.size())
-				);
-	if( write(list_data) != (int)list.size() ){
+
+	list_data = list;
+
+	if( write(
+			 arg::SourceData(list_data)
+			 ) != (int)list.size()
+		 ){
 		set_error_number( error_number() );
 		return -1;
 	}

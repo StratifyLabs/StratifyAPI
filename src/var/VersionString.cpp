@@ -29,7 +29,7 @@ u32 VersionString::to_bcd() const {
 	u32 result = 0;
 	u32 token_max = tokens.count() < 3 ? tokens.count() : 3;
 	for(u32 i = 0; i < token_max; i++){
-		result |= (tokens.at(i).atoi() & 0xff) << (8*(2-i));
+		result |= (tokens.at(i).to_integer() & 0xff) << (8*(2-i));
 	}
 	return result;
 }

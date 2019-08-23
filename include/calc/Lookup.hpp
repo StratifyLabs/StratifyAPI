@@ -42,7 +42,6 @@ public:
 	 *
 	 * @param table A pointer to a table with x and y values alternating, x values must
 	 * be in ascending order
-	 * @param size The number of x,y entries in the table
 	 */
 	Lookup(
 			const T * table,

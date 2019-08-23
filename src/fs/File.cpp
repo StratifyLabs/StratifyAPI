@@ -183,7 +183,7 @@ int File::copy(
 	struct stat st;
 #endif
 
-	if( File::stat(arg::SourceFilePath(source_path), &st) < 0 ){
+	if( File::stat(arg::SourceFilePath(source_path), st) < 0 ){
 		return -1;
 	}
 
@@ -253,11 +253,11 @@ Stat File::get_info(
 #if defined __link
 	struct link_stat stat;
 	memset(&stat, 0, sizeof(stat));
-	File::stat(path, &stat, driver);
+	File::stat(path, stat, driver);
 #else
 	struct stat stat;
 	memset(&stat, 0, sizeof(stat));
-	File::stat(path, &stat);
+	File::stat(path, stat);
 #endif
 
 	return Stat(stat);
@@ -326,17 +326,17 @@ u32 File::size() const {
 #if defined __link
 int File::stat(
 		const arg::SourceFilePath & name,
-		struct link_stat * st,
+		struct link_stat & st,
 		link_transport_mdriver_t * driver
 		){
-	return link_stat(driver, name.argument().cstring(), st);
+	return link_stat(driver, name.argument().cstring(), &st);
 }
 #else
 int File::stat(
 		const arg::SourceFilePath & name,
-		struct stat * st
+		struct stat & st
 		){
-	return ::stat(name.argument().cstring(), st);
+	return ::stat(name.argument().cstring(), &st);
 }
 #endif
 
@@ -355,7 +355,7 @@ u32 File::size(
 		const arg::SourceFilePath & name
 		){
 	struct stat st;
-	if( stat(name, &st) < 0 ){
+	if( stat(name, st) < 0 ){
 		return (s32)-1;
 	}
 	return st.st_size;
@@ -366,7 +366,7 @@ u32 File::size(
 		link_transport_mdriver_t * driver
 		){
 	struct link_stat st;
-	if( stat(name, &st, driver) < 0 ){
+	if( stat(name, st, driver) < 0 ){
 		return (s32)-1;
 	}
 	return st.st_size;
@@ -537,7 +537,7 @@ char * File::gets(var::String & s, char term) const {
 		}
 	} while(c != term);
 
-	return s.cdata();
+	return s.to_char();
 }
 
 
@@ -641,7 +641,7 @@ int File::write(
 			page_size_value = size.argument() - size_processed;
 		}
 
-		buffer.set_size(page_size_value);
+		buffer.resize(page_size_value);
 		if( buffer.size()	!= page_size_value ){
 			return -1;
 		}
@@ -673,12 +673,6 @@ int File::write(
 }
 
 
-int DataFile::open(const arg::FilePath & name, const OpenFlags & flags){
-	MCU_UNUSED_ARGUMENT(name);
-	MCU_UNUSED_ARGUMENT(flags);
-	return 0;
-}
-
 int DataFile::read(
 		DestinationBuffer buf,
 		const Size nbyte
@@ -688,9 +682,13 @@ int DataFile::read(
 		return -1;
 	}
 
-	u32 size_ready = m_data.size() - m_location;
-	if( size_ready > nbyte.argument() ){
+	int size_ready = m_data.size() - m_location;
+	if( size_ready > (int)nbyte.argument() ){
 		size_ready = nbyte.argument();
+	}
+
+	if( size_ready < 0 ){
+		return -1;
 	}
 
 	memcpy(buf.argument(),
@@ -706,11 +704,11 @@ int DataFile::write(const SourceBuffer buf, const Size nbyte) const {
 		return -1;
 	}
 
-	u32 size_ready = 0;
+	int size_ready = 0;
 	if( flags().is_append() ){
 		//make room in the m_data object for more bytes
 		m_location = m_data.size();
-		if( m_data.set_size(m_data.size() + nbyte.argument()) < 0 ){
+		if( m_data.resize(m_data.size() + nbyte.argument()) < 0 ){
 			set_error_number_to_errno();
 			return -1;
 		}
@@ -718,16 +716,21 @@ int DataFile::write(const SourceBuffer buf, const Size nbyte) const {
 	} else {
 		//limit writes to the current size of the data
 		size_ready = m_data.size() - m_location;
-		if( size_ready > nbyte.argument() ){
+		if( size_ready > (int)nbyte.argument() ){
 			size_ready = nbyte.argument();
 		}
 	}
 
-	memcpy(
-				m_data.to_u8() + m_location,
-				buf.argument(),
-				size_ready
+	if( size_ready < 0 ){
+		return -1;
+	}
+
+	var::Data::memory_copy(
+				arg::SourceBuffer(buf.argument()),
+				arg::DestinationBuffer((u8*)data().to_u8() + m_location),
+				arg::Size(size_ready)
 				);
+
 	m_location += size_ready;
 	return size_ready;
 }
@@ -747,6 +750,90 @@ int DataFile::seek(const Location location, enum whence whence) const {
 
 	if( m_location > (int)size() ){
 		m_location = m_data.size();
+	} else if ( m_location < 0 ){
+		m_location = 0;
+	}
+
+	return m_location;
+}
+
+int DataReferenceFile::read(
+		DestinationBuffer buf,
+		const Size nbyte
+		) const {
+
+	if( flags().is_write_only() ){
+		return -1;
+	}
+
+	int size_ready = data_reference().size() - m_location;
+	if( size_ready > (int)nbyte.argument() ){
+		size_ready = nbyte.argument();
+	}
+
+	if( size_ready < 0 ){
+		return -1;
+	}
+
+	var::DataReference::memory_copy(
+				arg::SourceBuffer(data_reference().to_u8() + m_location),
+				arg::DestinationBuffer(buf.argument()),
+				arg::Size(size_ready)
+				);
+
+	m_location += size_ready;
+	return size_ready;
+}
+
+int DataReferenceFile::write(const SourceBuffer buf, const Size nbyte) const {
+
+	if( flags().is_read_only() ){
+		return -1;
+	}
+
+	if( data_reference().is_read_only() ){
+		return -1;
+	}
+
+	int size_ready = 0;
+	if( flags().is_append() ){
+		return -1;
+	} else {
+		//limit writes to the current size of the data
+		size_ready = data_reference().size() - m_location;
+		if( size_ready > (int)nbyte.argument() ){
+			size_ready = nbyte.argument();
+		}
+	}
+
+	if( size_ready < 0 ){
+		return -1;
+	}
+
+	var::DataReference::memory_copy(
+				arg::SourceBuffer(buf.argument()),
+				arg::DestinationBuffer((u8*)data_reference().to_u8() + m_location),
+				arg::Size(size_ready)
+				);
+	m_location += size_ready;
+	return size_ready;
+}
+
+int DataReferenceFile::seek(const Location location, enum whence whence) const {
+	switch(whence){
+		case CURRENT:
+			m_location += location.argument();
+			break;
+		case END:
+			m_location = data_reference().size();
+			break;
+		case SET:
+			m_location = location.argument();
+			break;
+	}
+
+	if( m_location > (int)size() ){
+		m_location = data_reference().size();
 	} else if ( m_location < 0 ){
 		m_location = 0;
 	}

@@ -38,7 +38,7 @@ int Url::set(const var::ConstString & url){
 					);
 
 		if( domain_name.count() > 1 ){
-			m_port = domain_name.at(1).atoi();
+			m_port = domain_name.at(1).to_integer();
 			m_domain_name = domain_name.at(0);
 		} else {
 			m_domain_name = url_tokens.at(1);

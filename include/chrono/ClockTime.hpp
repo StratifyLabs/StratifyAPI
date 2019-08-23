@@ -60,8 +60,6 @@ public:
 
 	/*! \details Sets the value of the clock time.
 	  *
-	  * @param seconds The seconds value
-	  * @param nanoseconds The nanosecond value
 	  *
 	  */
 	void set(

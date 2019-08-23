@@ -6,6 +6,15 @@
 #include "../api/CryptoObject.hpp"
 #include "../var/Array.hpp"
 #include "../var/String.hpp"
+#include "../var/Data.hpp"
+#include "../fs/File.hpp"
+
+#if defined __link
+#define CRYPTO_SHA256_DEFAULT_PAGE_SIZE 4096
+#else
+#define CRYPTO_SHA256_DEFAULT_PAGE_SIZE 256
+#endif
+
 
 namespace crypto {
 
@@ -26,7 +35,7 @@ namespace crypto {
  * hash.initialize(); //call once per object
  * hash.start(); //start a new digest
  * Data some_data(128);
- * some_data.fill(0xaa);
+ * some_data.fill((u8)0xaa);
  * hash << some_data; //update the digest with some data
  * hash.finalize();
  * printf("Hash is %s\n", hash.stringify());
@@ -43,11 +52,30 @@ public:
 	int finalize();
 
 	int start();
+
 	int update(
 			const arg::SourceBuffer input,
 			const arg::Size size
 			);
+
+	int update(
+			const arg::SourceData data
+			){
+		return update(arg::SourceBuffer(data.argument().to_const_void()),
+						  arg::Size(data.argument().size()));
+	}
+
 	int finish();
+
+	static var::String calculate(
+			const arg::SourceFile file,
+			arg::PageSize page_size = arg::PageSize(CRYPTO_SHA256_DEFAULT_PAGE_SIZE)
+			);
+
+	static var::String calculate(
+			const arg::SourceFilePath file_path,
+			arg::PageSize page_size = arg::PageSize(CRYPTO_SHA256_DEFAULT_PAGE_SIZE)
+			);
 
 	Sha256 & operator << (const var::Data & a);
 	Sha256 & operator << (const var::ConstString & a);

@@ -50,7 +50,7 @@ void Tokenizer::parse(const arg::TokenDelimeters delim,
 	len0 = delim.argument().length();
 	len1 = ignore.argument().length();
 
-	p = cdata();
+	p = to_char();
 	m_string_size = String::length();
 	end = p + m_string_size;
 	if( m_is_count_empty_tokens == true ){
@@ -180,7 +180,7 @@ void Tokenizer::sort(enum sort_options sort_option){
 
 	clear();
 	memset(used, 0, tmp.size());
-	next = cdata();
+	next = to_char();
 
 	for(j=0; j < tmp.size(); j++){
 		a = sort_init;
@@ -213,8 +213,14 @@ void Tokenizer::sort(enum sort_options sort_option){
 }
 
 Tokenizer & Tokenizer::operator=(const Tokenizer & token){
-	set_size(token.capacity());
-	::memcpy(data(), token.data_const(), token.capacity());
+	resize(token.capacity());
+
+	var::DataReference::memory_copy(
+				arg::SourceBuffer(token.to_const_void()),
+				arg::DestinationBuffer(to_void()),
+				arg::Size(token.capacity())
+				);
+
 	m_num_tokens = token.m_num_tokens;
 	m_string_size = token.m_string_size;
 	m_is_count_empty_tokens = token.m_is_count_empty_tokens;

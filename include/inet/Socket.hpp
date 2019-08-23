@@ -147,17 +147,25 @@ public:
 	 * Vector<SocketAddressInfo> address_info.fetch_node("stratifylabs.co"); //get IP address and other info for stratifylabs.co
 	 * ```
 	 */
-	var::Vector<SocketAddressInfo> fetch_node(const var::ConstString & node){
-		return fetch(node, "");
+	var::Vector<SocketAddressInfo> fetch_node(
+			const var::ConstString & node
+			){
+		return fetch(
+					arg::NodeToFetch(node),
+					arg::ServiceToFetch("")
+					);
 	}
 
 	var::Vector<SocketAddressInfo> fetch_service(const var::ConstString & service){
-		return fetch("", service);
+		return fetch(
+					arg::NodeToFetch(""),
+					arg::ServiceToFetch(service)
+					);
 	}
 
 	var::Vector<SocketAddressInfo> fetch(
-			const var::ConstString & node,
-			const var::ConstString & service);
+			const arg::NodeToFetch node,
+			const arg::ServiceToFetch service);
 
 private:
 	friend class SocketAddress;
@@ -219,7 +227,7 @@ public:
 	SocketAddress(const SocketAddressIpv4 & ipv4){
 		m_sockaddr.copy_contents(
 					arg::SourceData(
-						var::Data::create_reference<struct sockaddr_in>(ipv4.m_sockaddr_in)
+						var::DataReference(ipv4.m_sockaddr_in)
 						)
 					);
 		m_protocol = ipv4.m_protocol;
@@ -239,7 +247,7 @@ public:
 					  int type = SocketAddressInfo::TYPE_STREAM){
 		m_sockaddr.copy_contents(
 					arg::SourceData(
-						var::Data::create_reference<sockaddr_in>(ipv4)
+						var::DataReference(ipv4)
 						)
 					);
 		m_protocol = protocol;
@@ -249,7 +257,7 @@ public:
 	SocketAddress(const sockaddr_in6 & ipv6){
 		m_sockaddr.copy_contents(
 					arg::SourceData(
-						var::Data::create_reference<sockaddr_in6>(ipv6)
+						var::DataReference(ipv6)
 						)
 					);
 	}
@@ -578,7 +586,7 @@ public:
 			const arg::SourceSocketAddress address
 			){
 		return write(
-					arg::SourceBuffer(data.argument().to_void()),
+					arg::SourceBuffer(data.argument().to_const_void()),
 					arg::Size(data.argument().size()),
 					address);
 	}

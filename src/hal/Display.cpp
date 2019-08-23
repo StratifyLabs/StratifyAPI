@@ -97,19 +97,33 @@ u16 DisplayPalette::bits_per_pixel() const {
 }
 
 
-void DisplayPalette::set_colors(void * v, int count, int pixel_format, bool readonly){
+void DisplayPalette::set_colors(
+		void * v,
+		int count,
+		int pixel_format,
+		bool readonly
+		){
 	m_colors.free();
 	m_palette.count = count;
 	m_palette.colors = v;
 	m_palette.pixel_format = pixel_format;
-	m_colors.refer_to(
-				arg::DestinationBuffer(v),
-				arg::Size((m_palette.count*bits_per_pixel()+7)/8),
-				arg::IsReadOnly(readonly)
-				);
+	u32 size = (m_palette.count*bits_per_pixel()+7)/8;
+
+	if( readonly ){
+		m_colors.refer_to(
+					arg::ReadOnlyBuffer(v),
+					arg::Size(size)
+					);
+	} else {
+		m_colors.refer_to(
+					arg::ReadWriteBuffer(v),
+					arg::Size(size)
+					);
+	}
+
 }
 
-int DisplayPalette::alloc_colors(int count, int pixel_format){
+int DisplayPalette::allocate_colors(int count, int pixel_format){
 	m_palette.pixel_format = pixel_format;
 	if( m_colors.allocate(
 			 arg::Size((count * bits_per_pixel()+7)/8)
@@ -120,7 +134,7 @@ int DisplayPalette::alloc_colors(int count, int pixel_format){
 	}
 
 	m_palette.count = count;
-	m_palette.colors = m_colors.data();
+	m_palette.colors = m_colors.to_void();
 	return 0;
 }
 
@@ -132,7 +146,7 @@ int DisplayPalette::save(const arg::DestinationFilePath & path) const{
 			 path,
 			 arg::IsOverwrite(true)
 			 ) < 0 ){ return -1; }
-	f << var::Data::create_reference<display_palette_t>(palette) << colors();
+	f << var::DataReference(palette) << colors();
 
 	if( f.error_number() != 0 ){
 		return -1;
@@ -142,7 +156,7 @@ int DisplayPalette::save(const arg::DestinationFilePath & path) const{
 }
 
 int DisplayPalette::set_monochrome(){
-	if( alloc_colors(2, 1) < 0 ){ return -1; }
+	if( allocate_colors(2, 1) < 0 ){ return -1; }
 
 	set_color(0, 0, 0, 0);
 	set_color(1, 255, 255, 255);

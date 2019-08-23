@@ -90,7 +90,7 @@ int Xml::set_get_value(String & dest, const var::ConstString & key, bool set) co
 						arg::Location(start_attr+1),
 						arg::Size(end_attr-start_attr-1)
 						);
-			s1.cdata()[start_attr] = 0;
+			s1.to_char()[start_attr] = 0;
 		} else {
 			//malformed argument
 			return -1;
@@ -131,7 +131,7 @@ int Xml::set_get_value(String & dest, const var::ConstString & key, bool set) co
 		} else {
 			read(
 						arg::Location(tmp_content.offset),
-						arg::DestinationBuffer(s0.data()),
+						arg::DestinationBuffer(s0.to_void()),
 						arg::Size(tmp_content.size)
 						);
 			dest = s0.substr(
@@ -211,8 +211,8 @@ int Xml::sibling(String & dest, String * value){
 	nbytes = 0;
 	do {
 		if( read(
-				 arg::DestinationBuffer(str.cdata()),
-				 arg::Size(str.capacity())
+				 arg::DestinationBuffer(str.to_char()),
+				 arg::Size(str.size())
 				 ) < 0 ){
 			return -1;
 		}
@@ -227,8 +227,8 @@ int Xml::sibling(String & dest, String * value){
 				);
 
 	if( read(
-			 arg::DestinationBuffer(str.cdata()),
-			 arg::Size(str.capacity())
+			 arg::DestinationBuffer(str.to_char()),
+			 arg::Size(str.size())
 			 ) < 0 ){
 		return -1;
 	}
@@ -445,7 +445,7 @@ int Xml::parse_ref_array(String & name, const ConstString & str){
 	int ret;
 	ret = parse_ref(name, s0, str, "[]");
 	if( ret == 1 ){
-		ret = s0.atoi();
+		ret = s0.to_integer();
 	}
 	return ret;
 }
@@ -743,7 +743,7 @@ void Xml::show_context(context_t & context){
 			page_size = str.capacity();
 		}
 
-		memset(str.data(), 0, str.capacity());
+		memset(str.to_void(), 0, str.size());
 		if( read(
 				 arg::Location(offset),
 				 arg::DestinationBuffer(str.to_void()),
@@ -785,7 +785,7 @@ int Xml::load_start_tag(String & tag, const context_t & target) const {
 
 	return read(
 				arg::Location(target.offset),
-				arg::DestinationBuffer(tag.data()),
+				arg::DestinationBuffer(tag.to_void()),
 				arg::Size(target.start_tag_size)
 				);
 

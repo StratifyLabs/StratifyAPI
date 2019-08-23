@@ -59,27 +59,51 @@ namespace var {
 class ConstString : public api::VarWorkObject
 {
 public:
+	/*! \details Constructs an empty string. */
 	ConstString();
 
 	/*! \details Constructs a ConstString from a pointer
-	  * to a string of zero-terminated characters.
+	  * to a string of zero-terminated characters (c-style string).
+	  *
+	  * ```
+	  * ConstString hello("Hello");
+	  * ```
+	  *
 	  */
-	ConstString(const char * a);
+	ConstString(
+			const char * a /*! C-style, null terminated string */
+			);
 
 	/*! \details Points the ConstString to a new
 	  * string of zero-terminated characters.
 	  *
 	  */
-	ConstString& operator=(const char * a){
+	ConstString& operator=(
+			const char * a /*! C-style, null terminated string to assign to this object */
+			){
 		m_string = a; return *this;
 	}
 
-	enum {
+	enum npos {
 		npos /*! Defines an invalid string length and position */ = (u32)-1
 	};
 
-	/*! \details Compares to a c-string. */
-	bool operator == (const ConstString & a) const {
+	/*! \details Compares to another ConstString.
+	 *
+	 *
+	 * ```
+	 * ConstString a("hello");
+	 * ConstString b("world");
+	 *
+	 * if( a == b ){
+	 *   //won't get here
+	 * }
+	 * ```
+	 *
+	 */
+	bool operator == (
+			const ConstString & a /*! The ConstString to compare this object to */
+			) const {
 		return compare(arg::StringToCompare(a)) == 0;
 	}
 
@@ -89,7 +113,9 @@ public:
 	  * The at() method checks the bounds.
 	  *
 	  */
-	char operator[](u32 idx) const { return cstring()[idx]; }
+	char operator[](
+			u32 position /*! The position of the string to access */
+			) const { return cstring()[position]; }
 
 	/*! \details Compares to a c-string (inequality). */
 	bool operator!=(const ConstString & a) const { return compare(arg::StringToCompare(a)) != 0; }
@@ -98,57 +124,118 @@ public:
 	bool operator>=(const ConstString & a) const { return compare(arg::StringToCompare(a)) >= 0; }
 	bool operator<=(const ConstString & a) const { return compare(arg::StringToCompare(a)) <= 0; }
 
-	/*! \details Converts to an integer.
+	/*! \details Converts the string to an integer.
 	  *
-	  * \code
+	  * ```
 	  * ConstString x = "10";
-	  * printf("X is %d\n", x.atoi());
-	  * \endcode
+	  * printf("X is %d\n", x.to_integer());
+	  * ```
 	  *
 	  */
 	int to_integer() const { return ::atoi(cstring()); }
-	int atoi() const { return to_integer(); }
 
-	/*! \details Converts to a float. */
+	/*! \details Converts to a float.
+	 *
+	 * ```
+	 * ConstString pi = "3.14";
+	 * printf("pi is %0.2f\n", pi.to_float());
+	 * ```
+	 *
+	 */
 	float to_float() const;
-	float atoff() const { return to_float(); }
 
+	/*! \details Converts the string to a long integer
+	 * using the specified number base.
+	 *
+	 * ```
+	 * ConstString number("1000");
+	 * printf("Number is 0x%X\n",
+	 *   number.to_long(
+	 *     NumberBase(10)
+	 *     )
+	 *   );
+	 * ```
+	 *
+	 */
 	int to_long(
 			const arg::NumberBase base = arg::NumberBase(10)
 			){
 		return ::strtol(cstring(), 0, base.argument());
 	}
 
+	/*! \details Converts the string to a long integer
+	 * using the specified number base.
+	 *
+	 * ```
+	 * ConstString number("DEADBEEF");
+	 * printf("Number is 0x%X\n",
+	 *   number.to_long(
+	 *     NumberBase(16)
+	 *     )
+	 *   );
+	 * ```
+	 *
+	 */
 	int to_unsigned_long(
 			const arg::NumberBase base = arg::NumberBase(10)
 			){
 		return ::strtoul(cstring(), 0, base.argument());
 	}
 
-	/*! \details Returns character at \a pos.
+	/*! \details Returns character at the specified position.
 	 *
-	 * Returns 0 if pos is past the end of the string.
+	 * \return 0 if pos is past the end of the string.
+	 *
+	 * ```
+	 * ConstString hello("hello");
+	 * printf("First character is %c\n", hello.at(0));
+	 * printf("Second character is %c\n",
+	 *   hello.at(arg::Position(1))
+	 *   );
+	 * ```
 	 *
 	 */
-	char at(const arg::ImplicitPosition position) const;
+	char at(
+			const arg::ImplicitPosition position /*! */
+			) const;
 
 	/*! \details Returns a c-style string pointer. */
 	const char * cstring() const { return m_string; }
 
-	/*! \details Returns the length of the string. */
+	/*! \details Returns the length of the string.
+	 *
+	 * The string *must* be null-terminated.
+	 *
+	 * ```
+	 * ConstString testing("testing");
+	 * printf("length is %d\n", testing.length());
+	 * ```
+	 *
+	 */
 	u32 length() const { return strlen(m_string); }
 
-	/*! \details Tests if string is empty. */
-	bool is_empty() const { return m_string[0] == 0; }
+	/*! \details Tests if string is empty.
+	 *
+	 * ```
+	 * ConstString x;
+	 * if( x.is_empty() ){
+	 *   //we arrive here
+	 * }
+	 * ```
+	 *
+	 */
+	bool is_empty() const {
+		return m_string[0] == 0;
+	}
 
 
-	/*! \details Finds a character within the object. */
+	/*! \details Finds a character within this string. */
 	u32 find(
-			const arg::CharacterToFind a,
-			const arg::Position pos = arg::Position(0)
+			const arg::CharacterToFind a /*! Character to find */,
+			const arg::Position pos = arg::Position(0) /*! Start position */
 			) const;
 
-	/*! \details Finds a character within the object. */
+	/*! \details Finds the first character that is not as specified. */
 	u32 find_not(
 			const arg::CharacterToFind a,
 			const arg::Position pos = arg::Position(0)

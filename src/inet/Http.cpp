@@ -133,7 +133,6 @@ int HttpClient::query(const var::ConstString & command,
 		return result;
 	}
 
-
 	result = send_header(
 				command,
 				u.domain_name(),
@@ -270,6 +269,7 @@ int HttpClient::connect_to_server(const var::ConstString & domain_name, u16 port
 	}
 
 	m_header.format("failed to find address with result (%d)", address_info.error_number());
+
 	set_error_number(FAILED_TO_FIND_ADDRESS);
 	return -1;
 }
@@ -386,7 +386,7 @@ int HttpClient::listen_for_header(){
 			}
 
 			if( title == "CONTENT-LENGTH" ){
-				m_content_length = pair.value().atoi();
+				m_content_length = pair.value().to_integer();
 			}
 
 			if( title == "CONTENT-TYPE" ){

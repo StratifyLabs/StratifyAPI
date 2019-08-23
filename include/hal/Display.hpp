@@ -117,7 +117,7 @@ public:
 	 * @return Less than zero if there were an error allocating memory
 	 *
 	 */
-	int alloc_colors(int count, int pixel_size);
+	int allocate_colors(int count, int pixel_size);
 
 	/*! \details Sets the color.
 	 *

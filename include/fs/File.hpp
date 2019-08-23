@@ -176,9 +176,6 @@ public:
 #if !defined __link
 	/*! \details Returns an error if the access is not allowed.
 	  *
-	  * @param path path to the file
-	  * @param o_access Bit-wise OR of access flags READ_OK | WRITE_OK | EXECUTE_OK | FILE_OK
-	  *
 	  */
 	static int access(
 			const arg::SourceFilePath path,
@@ -188,7 +185,6 @@ public:
 
 	/*! \details Returns a pointer to the file suffix.
 	 *
-	 * @param path The path to search
 	 * @return A pointer to the suffix
 	 *
 	 * For example:
@@ -208,7 +204,6 @@ public:
 
 	/*! \details Deletes a file.
 	 *
-	 * @param path The path to the file
 	 * @return Zero on success
 	 *
 	 */
@@ -221,20 +216,17 @@ public:
 
 	/*! \details Gets file stat data.
 	 *
-	 * @param path The path to the file
-	 * @param st A pointer to the stat structure
 	 * @return Zero on success
 	 *
 	 */
 #if !defined __link
 	static int stat(
 			const arg::SourceFilePath & path,
-			struct stat * st
+			struct stat & st
 			);
 #else
-	static int stat(
-			const arg::SourceFilePath & path,
-			struct link_stat * st,
+	static int stat(const arg::SourceFilePath & path,
+			struct link_stat & st,
 			link_transport_mdriver_t * driver = 0
 			);
 #endif
@@ -297,7 +289,7 @@ public:
 	 */
 	int create(
 			const arg::DestinationFilePath & path,
-			const arg::IsOverwrite & is_overwrite = arg::IsOverwrite(true),
+			const arg::IsOverwrite & is_overwrite,
 			const Permissions & perms = Permissions(0666)
 			);
 
@@ -341,7 +333,7 @@ public:
 					arg::Size(data.size())
 					);
 		if( result > 0 ){
-			data.set_size(
+			data.resize(
 						arg::Size(result)
 						);
 		}
@@ -362,7 +354,7 @@ public:
 	/*! \details Writes the file using a var::Data object. */
 	int write(const var::Data & data) const {
 		return write(
-					arg::SourceBuffer(data.to_void()),
+					arg::SourceBuffer(data.to_const_void()),
 					arg::Size(data.size())
 					);
 	}
@@ -414,11 +406,6 @@ public:
 					arg::DestinationBuffer(data.argument().to_void()),
 					arg::Size(data.argument().size())
 					);
-		if( result > 0 ){
-			data.argument().set_size(
-						result
-						);
-		}
 		return result;
 	}
 
@@ -429,9 +416,6 @@ public:
 					arg::DestinationBuffer(data.argument().to_void()),
 					arg::Size(data.argument().size())
 					);
-		if( result > 0 ){
-			data.argument().set_size(result);
-		}
 		return result;
 	}
 
@@ -462,7 +446,7 @@ public:
 			) const {
 		return write(
 					location,
-					arg::SourceBuffer(data.argument().to_void()),
+					arg::SourceBuffer(data.argument().to_const_void()),
 					arg::Size(data.argument().size())
 					);
 	}
@@ -471,7 +455,7 @@ public:
 			const arg::SourceData & data
 			) const {
 		return write(
-					arg::SourceBuffer(data.argument().to_void()),
+					arg::SourceBuffer(data.argument().to_const_void()),
 					arg::Size(data.argument().size())
 					);
 	}
@@ -545,7 +529,7 @@ public:
 
 	const File& operator<<(const var::ConstString & a) const { write(a); return *this; }
 	const File& operator<<(const var::String & a) const { write(a); return *this; }
-	const File& operator<<(const var::Data & a) const { write(a); return *this; }
+	const File& operator<<(const var::DataReference & a) const { write( arg::SourceData(a) ); return *this; }
 	const File& operator>>(var::Data & a) const { read(a); return *this; }
 
 	/*! \details Seeks to a location in the file or on the device. */
@@ -575,8 +559,6 @@ public:
 
 	/*! \details Executes an IO control request.
 	 *
-	 * @param req The request value
-	 * @param arg A pointer to the arguments
 	 *
 	 * This method is typically only implemented for devices
 	 * and other special file systems.
@@ -589,8 +571,6 @@ public:
 
 	/*! \details Executes an ioctl() with request and const arg pointer.
 	 *
-	 * @param req The request value
-	 * @param arg A pointer to the arguments
 	 * @return Depends on request
 	 *
 	 */
@@ -605,7 +585,6 @@ public:
 	}
 	/*! \details Executes an ioctl() with just a request.
 	 *
-	 * @param req The request value
 	 * @return Depends on request
 	 *
 	 * The arg value for the ioctl is set to NULL.
@@ -616,8 +595,6 @@ public:
 	}
 	/*! \details Executes an ioctl() with request and integer arg.
 	 *
-	 * @param req The request value
-	 * @param arg An integer value (used with some requests)
 	 * @return Depends on request
 	 */
 	int ioctl(
@@ -635,7 +612,6 @@ public:
 
 	/*! \details Sets the file descriptor of this object to the file descriptor of file.
 	  *
-	  * @param file A reference to the file to share the fileno with.
 	  *
 	  * The reference \a file must already be opened and have a valid file
 	  * number. This won't bind the file number to file just assign
@@ -645,19 +621,25 @@ public:
 	  */
 	void set_fileno(const File & file) const { m_fd = file.fileno(); }
 
+
+#if !defined __link
 	/*! \details Copies a file from the source to the destination.
 	  *
-	  * \param source_path Path to the source file
-	  * \param dest_path Path to the destination file (new location)
-	  * \return Zero on success
+	  * @return Zero on success
 	  *
 	  *
 	  */
-#if !defined __link
 	static int copy(
 			const arg::SourceFilePath source_path,
 			const arg::DestinationFilePath dest_path
 			);
+
+	/*! \details Copies a file from the source to the destination.
+	  *
+	  * @return Zero on success
+	  *
+	  *
+	  */
 	static int copy(
 			const arg::SourceFilePath source_path,
 			const arg::DestinationFilePath dest_path,
@@ -751,8 +733,6 @@ private:
  * data from the file.
  *
  *
- *
- *
  */
 class DataFile : public File {
 public:
@@ -772,7 +752,11 @@ public:
 	int open(
 			const arg::FilePath & path,
 			const OpenFlags & flags
-			);
+			){
+		MCU_UNUSED_ARGUMENT(path);
+		this->flags() = flags;
+		return 0;
+	}
 
 	/*! \details Reimplements fs::File::close() to have no
 	 * functionality.
@@ -793,8 +777,6 @@ public:
 	 * write to the var::Data object contained herein
 	 * rather than to the filesystem.
 	 *
-	 * @param buf source data pointer
-	 * @param nbyte number of bytes to write
 	 * @return The number of bytes successfully written
 	 */
 	int write(
@@ -804,8 +786,6 @@ public:
 
 	/*! \details Seeks to the specified location in the file.
 	 *
-	 * @param loc The location to seek to
-	 * @param whence The location to seek from (e.g. fs::File::SET)
 	 * @return Zero on success
 	 *
 	 */
@@ -848,7 +828,103 @@ private:
 	mutable int m_location; //offset location for seeking/reading/writing
 	OpenFlags m_open_flags;
 	mutable var::Data m_data;
+};
 
+class DataReferenceFile : public File {
+public:
+
+	/*! \details Constructs a data file. */
+	DataReferenceFile(
+			const OpenFlags & flags = OpenFlags::read_write()
+			){
+		m_location = 0;
+		m_open_flags = flags;
+	}
+
+	/*! \details Reimplements fs::File::open() to have no
+	 * functionality.
+	 *
+	 */
+	int open(
+			const arg::FilePath & path,
+			const OpenFlags & flags
+			){
+		MCU_UNUSED_ARGUMENT(path);
+		this->flags() = flags;
+		if( flags.is_append() ){ return -1; }
+		return 0;
+	}
+
+	/*! \details Reimplements fs::File::close() to have no
+	 * functionality.
+	 *
+	 */
+	int close(){ return 0; }
+
+	/*! \details Reimplements fs::File::read() to simply
+	 * read from the var::Data object contained herein
+	 * rather than from the filesystem.
+	 */
+	int read(
+			arg::DestinationBuffer buf,
+			const arg::Size nbyte
+			) const;
+
+	/*! \details Reimplements fs::File::write() to simply
+	 * write to the var::Data object contained herein
+	 * rather than to the filesystem.
+	 *
+	 * @return The number of bytes successfully written
+	 */
+	int write(
+			const arg::SourceBuffer buf,
+			const arg::Size nbyte
+			) const;
+
+	/*! \details Seeks to the specified location in the file.
+	 *
+	 * @return Zero on success
+	 *
+	 */
+	int seek(
+			const arg::Location location,
+			enum whence whence = SET
+			) const;
+
+	/*! \details Reimplements fs::File::ioctl() to have
+	 * no functionality.
+	 *
+	 */
+	int ioctl(
+			const arg::IoRequest request,
+			const arg::IoArgument argument
+			) const {
+		MCU_UNUSED_ARGUMENT(request);
+		MCU_UNUSED_ARGUMENT(argument);
+		return 0;
+	}
+
+	/*! \details Returns the size of the
+	 * file (size of the data).
+	 *
+	 */
+	u32 size() const { return data_reference().size(); }
+
+	using File::read;
+	using File::write;
+
+	OpenFlags & flags(){ return m_open_flags; }
+	const OpenFlags & flags() const { return m_open_flags; }
+
+	/*! \details Accesses (read-only) the member data object. */
+	const var::DataReference & data_reference() const { return m_data_reference; }
+	/*! \details Accesses the member data object. */
+	var::DataReference & data_reference(){ return m_data_reference; }
+
+private:
+	mutable int m_location; //offset location for seeking/reading/writing
+	OpenFlags m_open_flags;
+	mutable var::DataReference m_data_reference;
 };
 
 class NullFile : public File {

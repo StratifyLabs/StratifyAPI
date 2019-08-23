@@ -56,7 +56,11 @@ Region Bitmap::get_viewable_region() const {
 
 void Bitmap::calculate_members(const Area & dim){
 	//we need to grab the read only in case the Data object is read only
-	api()->bmap_set_data(&m_bmap, (sg_bmap_data_t*)read_only_data(), dim, m_bmap.bits_per_pixel);
+	api()->bmap_set_data(&m_bmap,
+								(sg_bmap_data_t*)((const sg_bmap_data_t*)to<sg_bmap_data_t>()),
+								dim,
+								m_bmap.bits_per_pixel
+								);
 }
 
 int Bitmap::set_bits_per_pixel(u8 bits_per_pixel){
@@ -98,23 +102,38 @@ void Bitmap::initialize_members(){
 	m_bmap.pen.color = 65535;
 }
 
-void Bitmap::set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly){
+void Bitmap::set_data(
+		sg_bmap_data_t * mem,
+		sg_size_t w,
+		sg_size_t h,
+		bool readonly
+		){
+
+#if BITMAP_REFERENCE
 	Data::refer_to(
 				arg::DestinationBuffer(mem),
 				arg::Size(calc_size(w,h)),
 				arg::IsReadOnly(readonly));
+#endif
+
 	calculate_members(Area(w,h));
 }
 
-void Bitmap::set_data(const sg_bmap_header_t * hdr, bool readonly){
+void Bitmap::set_data(
+		const sg_bmap_header_t * hdr,
+		bool readonly
+		){
 	char * ptr;
 	ptr = (char*)hdr;
 	ptr += sizeof(sg_bmap_header_t);
+
+#if BITMAP_REFERENCE
 	Data::refer_to(
 				arg::DestinationBuffer(ptr),
 				arg::Size(calc_size(hdr->width, hdr->height)),
 				arg::IsReadOnly(readonly)
 				);
+#endif
 	calculate_members(Area(hdr->width, hdr->height));
 }
 
@@ -190,7 +209,7 @@ Point Bitmap::center() const{
 bool Bitmap::set_size(sg_size_t w, sg_size_t h, sg_size_t offset){
 	u32 size = calc_size(w,h);
 	if( size <= capacity() ){
-		Data::set_size(size);
+		Data::resize(size);
 		api()->bmap_set_data(&m_bmap, to<sg_bmap_data_t>(), sg_dim(w,h), m_bmap.bits_per_pixel);
 		return true;
 	}
@@ -241,7 +260,7 @@ int Bitmap::load(const arg::SourceFilePath & path){
 		}
 	}
 
-	src = data();
+	src = to_void();
 
 
 	if( f.read(
@@ -307,7 +326,7 @@ int Bitmap::save(const arg::DestinationFilePath & path) const{
 	}
 
 	if( f.write(
-			 arg::SourceBuffer(data()),
+			 arg::SourceBuffer(to_const_void()),
 			 arg::Size(hdr.size)
 			 ) != (s32)hdr.size ){
 		f.close();

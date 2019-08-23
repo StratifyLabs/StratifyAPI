@@ -94,21 +94,33 @@ public:
 	  * @param a A reference to the string to copy
 	  *
 	  */
-	String(const String & a) : Data(a), ConstString(cdata_const()){
-		set_string_pointer(cdata_const());
+	String(const String & a) :
+		Data(a),
+		ConstString(Data::to_const_char())
+	{
+
 	}
-	String(String && a) : Data(a), ConstString(Data::to_char()){
-		set_string_pointer(Data::to_char());
+
+	String(String && a) :
+		Data(a), //move from to this
+		ConstString(Data::to_const_char())
+	{
+
 	}
 
 	/*! \details Declares a string and initialize to \a s. */
 	String(const ConstString & s);
 
 	/*! \details Declares a string and initialize to \a s. */
-	String(const ConstString & s, const arg::Length length);
+	String(
+			const ConstString & s,
+			const arg::Length length
+			);
 
 	explicit String(const Data & data){
-		assign(data.to_char(), arg::Length(data.size())); }
+		assign(data.to_const_char(),
+				 arg::Length(data.size()));
+	}
 
 
 	/*! \details Assigns a to this string.
@@ -116,7 +128,7 @@ public:
 	  */
 	String& operator=(const String & a){
 		copy_object(a);
-		set_string_pointer(Data::to_char());
+		set_string_pointer(Data::to_const_char());
 		return *this;
 	}
 
@@ -127,7 +139,7 @@ public:
 	 */
 	String & operator = (String && a){
 		move_object(a);
-		set_string_pointer(Data::to_char());
+		set_string_pointer(Data::to_const_char());
 		return *this;
 	}
 
@@ -230,7 +242,7 @@ public:
 	 * the length of the string.
 	  *
 	  */
-	int set_size(const arg::ImplicitSize size);
+	int resize(const arg::ImplicitSize size);
 
 	/*! \details Gets a sub string of the string.
 	  *
@@ -430,7 +442,7 @@ private:
 class NameString : public String {
 public:
 	NameString(){
-		set_size(LINK_NAME_MAX);
+		resize(LINK_NAME_MAX);
 	}
 };
 
@@ -445,7 +457,7 @@ typedef NameString StringName;
 class PathString : public String {
 public:
 	PathString(){
-		set_size(LINK_PATH_MAX);
+		resize(LINK_PATH_MAX);
 	}
 
 	void strip_suffix();

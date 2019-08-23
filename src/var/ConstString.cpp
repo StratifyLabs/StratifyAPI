@@ -16,7 +16,7 @@ void ConstString::set_string_pointer(const char * s){
 	if( s != 0 ){
 		m_string = s;
 	} else {
-		m_string = (const char*)&Data::m_zero_value;
+		m_string = (const char*)&DataReference::m_zero_value;
 	}
 }
 

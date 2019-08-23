@@ -12,18 +12,17 @@ class Time;
 
 namespace chrono {
 /*! \details Wait for the specified number of seconds. */
-void wait_seconds(u32 timeout);
+void wait_seconds(u32 duration);
 
 /*! \details This method will delay the specified number of milliseconds.
   *
-  * @param timeout Time to wait in milliseconds
   */
-void wait_milliseconds(u32 timeout);
+void wait_milliseconds(u32 duration);
 /*! \details This method will delay the specified number of microseconds.
   *
-  * @param timeout Time to wait in microseconds
   */
 void wait_microseconds(u32 duration);
+
 /*! \details This method delays based on a chrono::ClockTime value. */
 void wait(const chrono::ClockTime & clock_time);
 /*! \details This method delays based on a chrono::MicroTime value. */

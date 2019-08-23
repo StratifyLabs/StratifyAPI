@@ -150,9 +150,7 @@ var::String Cli::get_option(
 	u32 args;
 
 
-	if( help.argument().is_empty() ){
-		m_help_list.push_back(String() << name.argument());
-	} else {
+	if( help.argument().is_empty() == false ){
 		m_help_list.push_back(String() << name.argument() << ": " << help.argument());
 	}
 
@@ -201,7 +199,7 @@ int Cli::get_option_value(const char * option) const {
 	if( arg.is_empty() ){
 		return 0;
 	}
-	return arg.atoi();
+	return arg.to_integer();
 }
 
 int Cli::get_option_hex_value(const char * option) const {
@@ -225,8 +223,8 @@ mcu_pin_t Cli::get_option_pin(const char * option) const {
 				);
 
 	if( arg.size() == 2 ){
-		pio.port = arg.at(0).atoi();
-		pio.pin = arg.at(1).atoi();
+		pio.port = arg.at(0).to_integer();
+		pio.pin = arg.at(1).to_integer();
 	} else {
 		pio.port = 255;
 		pio.pin = 255;
@@ -245,8 +243,8 @@ mcu_pin_t Cli::pin_at(u16 value) const {
 				);
 
 	if( arg.size() == 2 ){
-		pio.port = arg.at(0).atoi();
-		pio.pin = arg.at(1).atoi();
+		pio.port = arg.at(0).to_integer();
+		pio.pin = arg.at(1).to_integer();
 	} else {
 		pio.port = 255;
 		pio.pin = 255;
@@ -256,7 +254,7 @@ mcu_pin_t Cli::pin_at(u16 value) const {
 }
 
 int Cli::value_at(u16 value) const {
-	return at(value).atoi();
+	return at(value).to_integer();
 }
 
 bool Cli::handle_uart(hal::UartAttributes & attr) const {

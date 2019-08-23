@@ -26,7 +26,6 @@ public:
 
 	/*! \details Returns the present value of the specified clock.
 	 *
-	 * @param clock_id The block to get.
 	 * @return The time as a ClockTime object.
 	 *
 	 * ```

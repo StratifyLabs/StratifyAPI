@@ -6,7 +6,7 @@
  */
 namespace crypto {}
 
-#include "crypt/Sha256.hpp"
+#include "crypto/Sha256.hpp"
 
 using namespace crypto;
 

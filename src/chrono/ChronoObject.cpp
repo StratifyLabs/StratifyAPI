@@ -6,12 +6,12 @@
 
 using namespace api;
 
-void chrono::wait_seconds(u32 timeout){
-	sleep(timeout);
+void chrono::wait_seconds(u32 duration){
+	sleep(duration);
 }
 
-void chrono::wait_milliseconds(u32 timeout){
-	chrono::wait_microseconds(timeout*1000UL);
+void chrono::wait_milliseconds(u32 duration){
+	chrono::wait_microseconds(duration*1000UL);
 }
 
 void chrono::wait_microseconds(u32 duration){

@@ -73,8 +73,6 @@ public:
 
 	/*! \details Sets the period of the event loop in chrono::MicroTime.
 	 *
-	 * @param msec The loop period in milliseconds.
-	 *
 	 * The loop will delay this amount on every iteration. This determines
 	 * how often events are processed (such as buttons). It is typically a much smaller value
 	 * than the update period which determines how often Event::UPDATE

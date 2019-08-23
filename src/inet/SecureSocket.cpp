@@ -15,7 +15,7 @@ SecureSocket::SecureSocket(){
 
 SecureSocket::SecureSocket(u32 ticket_lifetime){
 	m_ticket_lifetime = ticket_lifetime;
-	m_ticket.set_size(0);
+	m_ticket.resize(0);
 }
 
 SecureSocket::~SecureSocket(){
@@ -52,16 +52,16 @@ int SecureSocket::connect(const arg::SourceSocketAddress address){
 				);
 
 	if( m_ticket_lifetime && result == 0){
-		m_ticket.set_size(2619);
+		m_ticket.resize(2619);
 		do {
 			result = api()->write_ticket(m_context, m_ticket.to_void(), m_ticket.size(), m_ticket_lifetime);
 			if( result == MBEDTLS_ERR_SSL_BUFFER_TOO_SMALL ){
-				m_ticket.set_size(m_ticket.size() + 64);
+				m_ticket.resize(m_ticket.size() + 64);
 			}
 		} while( (result == MBEDTLS_ERR_SSL_BUFFER_TOO_SMALL) && (m_ticket.size() < 4096) );
 
 		if( result > 0 ){
-			m_ticket.set_size(result);
+			m_ticket.resize(result);
 		}
 	}
 	return result;

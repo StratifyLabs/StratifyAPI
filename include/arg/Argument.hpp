@@ -58,7 +58,7 @@ union sigval {
 
 namespace var {
 class ConstString;
-class Data;
+class DataReference;
 class JsonValue;
 }
 
@@ -120,231 +120,233 @@ private:
 	T m_value;
 };
 
-
-#define ARG_DEFINE_ARGUMENT(name, type) \
-	using name = Argument<type, struct name ## Tag>
-
 #define ARG_DEFINE_IMPLICIT_ARGUMENT(name, type, implicit_of) \
 	using name = ImplicitArgument<type, struct name ## Tag, implicit_of>
 
 
 //fs
-//ARG_DEFINE_ARGUMENT(Location, int);
-/*! \brief File Location Argument */
-typedef Argument<int, struct LocationTag> Location;
+/*! \details File Location argument for seeking locations in files. */
+typedef Argument<int, struct LocationTag > Location;
 
-/*! \cond */
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitLocation, const int &, Location);
-ARG_DEFINE_ARGUMENT(PageSize,	u32);
+typedef Argument< u32, struct PageSizeTag > PageSize;
 
 
-ARG_DEFINE_ARGUMENT(Size, u32);
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSize, u32, Size);
-
-ARG_DEFINE_ARGUMENT(Capacity, u32);
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitCapacity, u32, Capacity);
-
-ARG_DEFINE_ARGUMENT(SourceBuffer, const void*);
-ARG_DEFINE_ARGUMENT(DestinationBuffer,	void*);
-
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceBuffer, const void*, SourceBuffer);
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitDestinationBuffer,	void*, DestinationBuffer);
-
-ARG_DEFINE_ARGUMENT(SourceData, const var::Data &);
-ARG_DEFINE_ARGUMENT(DestinationData, var::Data &);
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceData, const var::Data &, SourceData);
+typedef Argument< u32, struct SizeTag > Size;
 
 
-ARG_DEFINE_ARGUMENT(SourcePath, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(DestinationPath, const var::ConstString &);
+typedef Argument< u32, struct CapacityTag > Capacity;
 
-ARG_DEFINE_ARGUMENT(DirectoryPath, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(FilePath, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(Path, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(SourceFilePath, const var::ConstString &);
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceFilePath, const var::ConstString &, SourceFilePath);
-ARG_DEFINE_ARGUMENT(DestinationFilePath, const var::ConstString &);
+typedef Argument< const void*, struct SourceBufferTag > SourceBuffer;
+typedef Argument< const void*, struct ReadOnlyBufferTag > ReadOnlyBuffer;
+typedef Argument< void*, struct DestinationBufferTag > DestinationBuffer;
+typedef Argument< void*, struct ReadWriteBufferTag > ReadWriteBuffer;
 
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitFilePath, const var::ConstString &, FilePath);
 
-ARG_DEFINE_ARGUMENT(SourceDirectoryPath, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(DestinationDirectoryPath, const var::ConstString &);
+typedef Argument< const var::DataReference &, struct SourceDataTag > SourceData;
+typedef Argument< var::DataReference &, struct DestinationDataTag > DestinationData;
 
-ARG_DEFINE_ARGUMENT(FileName, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(Name, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(SourceFileName, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(DestinationFileName, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(IsOverwrite, bool);
+
+typedef Argument< const var::ConstString &, struct SourcePathTag > SourcePath;
+typedef Argument< const var::ConstString &, struct DestinationPathTag > DestinationPath;
+
+typedef Argument< const var::ConstString &, struct DirectoryPathTag > DirectoryPath;
+typedef Argument< const var::ConstString &, struct FilePathTag > FilePath;
+typedef Argument< const var::ConstString &, struct PathTag > Path;
+typedef Argument< const var::ConstString &, struct SourceFilePathTag > SourceFilePath;
+typedef Argument< const var::ConstString &, struct DestinationFilePathTag > DestinationFilePath;
+
+
+typedef Argument< const var::ConstString &, struct SourceDirectoryPathTag > SourceDirectoryPath;
+typedef Argument< const var::ConstString &, struct DestinationDirectoryPathTag > DestinationDirectoryPath;
+
+typedef Argument< const var::ConstString &, struct FileNameTag > FileName;
+typedef Argument< const var::ConstString &, struct NameTag > Name;
+typedef Argument< const var::ConstString &, struct SourceFileNameTag > SourceFileName;
+typedef Argument< const var::ConstString &, struct DestinationFileNameTag > DestinationFileName;
+typedef Argument< bool, struct IsOverwriteTag > IsOverwrite;
 
 
 
-ARG_DEFINE_ARGUMENT(SourceFile, const fs::File&);
-ARG_DEFINE_ARGUMENT(DestinationFile, fs::File&);
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceFile, const fs::File&, SourceFile);
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitDestinationFile,	fs::File&, DestinationFile);
+typedef Argument< const fs::File&, struct SourceFileTag > SourceFile;
+typedef Argument<	fs::File&, struct DestinationFileTag > DestinationFile;
 
 //sys
-ARG_DEFINE_ARGUMENT(Pid, pid_t);
-ARG_DEFINE_ARGUMENT(ThreadId, pthread_t);
+typedef Argument< pid_t, struct PidTag > Pid;
+typedef Argument< pthread_t, struct ThreadIdTag > ThreadId;
 #if defined __link
-ARG_DEFINE_ARGUMENT(DeviceThreadId, int);
+typedef Argument< int, struct DeviceThreadIdTag > DeviceThreadId;
 #else
 typedef ThreadId DeviceThreadId;
 #endif
-ARG_DEFINE_ARGUMENT(IsDetached, bool);
-ARG_DEFINE_ARGUMENT(ThreadFunction, void * (*)(void *));
-ARG_DEFINE_ARGUMENT(ThreadToJoin, const sys::Thread&);
-ARG_DEFINE_ARGUMENT(ThreadFunctionArgument, void *);
-ARG_DEFINE_ARGUMENT(ThreadStackSize, u32);
-ARG_DEFINE_ARGUMENT(GroupId, int);
-ARG_DEFINE_ARGUMENT(OwnerId, int);
+typedef Argument< bool, struct IsDetachedTag > IsDetached;
+typedef Argument< void * (*)(void *), struct ThreadFunctionTag > ThreadFunction;
+typedef Argument< const sys::Thread&, struct ThreadToJoinTag > ThreadToJoin;
+typedef Argument< void *, struct ThreadFunctionArgumentTag > ThreadFunctionArgument;
+typedef Argument< u32, struct ThreadStackSizeTag > ThreadStackSize;
+typedef Argument< int, struct GroupIdTag > GroupId;
+typedef Argument< int, struct OwnerIdTag > OwnerId;
 
-ARG_DEFINE_ARGUMENT(SignalFunction, signal_function_callback_t);
-ARG_DEFINE_ARGUMENT(SignalActionFunction, signal_action_callback_t);
-ARG_DEFINE_ARGUMENT(SignalFlags, int);
-ARG_DEFINE_ARGUMENT(SignalMask, sigset_t);
+typedef Argument< signal_function_callback_t, struct SignalFunctionTag > SignalFunction;
+typedef Argument< signal_action_callback_t, struct SignalActionFunctionTag > SignalActionFunction;
+typedef Argument< int, struct SignalFlagsTag> SignalFlags;
+typedef Argument< sigset_t, struct SignalMaskTag > SignalMask;
 
 
-ARG_DEFINE_ARGUMENT(ThreadReturn, void **);
-ARG_DEFINE_ARGUMENT(DelayInterval, const chrono::MicroTime &);
+typedef Argument< void **, struct ThreadReturnTag > ThreadReturn;
+typedef Argument< const chrono::MicroTime &, struct DelayIntervalTag > DelayInterval;
 
-ARG_DEFINE_ARGUMENT(ButtonHeldThreshold, const chrono::MicroTime &);
-ARG_DEFINE_ARGUMENT(ButtonActuatedThreshold, const chrono::MicroTime &);
+typedef Argument< const chrono::MicroTime &, struct ButtonHeldThresholdTag > ButtonHeldThreshold;
+typedef Argument< const chrono::MicroTime &, struct ButtonActuatedThresholdTag > ButtonActuatedThreshold;
 
 
 //var::Tokenizer
-ARG_DEFINE_ARGUMENT(TokenEncodedString, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(TokenDelimeters, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(IgnoreTokensBetween, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(IsCountEmptyTokens, bool);
-ARG_DEFINE_ARGUMENT(MaximumTokenCount,	u32);
+typedef Argument< const var::ConstString &, struct TokenEncodedStringTag > TokenEncodedString;
+typedef Argument< const var::ConstString &, struct TokenDelimetersTag > TokenDelimeters;
+typedef Argument< const var::ConstString &, struct IgnoreTokensBetweenTag > IgnoreTokensBetween;
+typedef Argument< bool, struct IsCountEmptyTokensTag > IsCountEmptyTokens;
+typedef Argument< u32, struct MaximumTokenCountTag > MaximumTokenCount;
 
 
-//var::Data
-ARG_DEFINE_ARGUMENT(IsReadOnly, bool);
-ARG_DEFINE_ARGUMENT(IsResize, bool);
-ARG_DEFINE_ARGUMENT(IsRecursive, bool);
+//var::DataReference
+typedef Argument< bool, struct IsReadOnlyTag > IsReadOnly;
+typedef Argument< bool, struct IsResizeTag > IsResize;
+typedef Argument< bool, struct IsRecursiveTag > IsRecursive;
 
 
 //var::String
-ARG_DEFINE_ARGUMENT(StringToAssign, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(StringToAppend, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(StringToCompare, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(StringToFind, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(StringToErase, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(StringToInsert, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(CharacterToFind, char);
+typedef Argument< const var::ConstString &, struct StringToAssignTag > StringToAssign;
+typedef Argument< const var::ConstString &, struct StringToAppendTag > StringToAppend;
+typedef Argument< const var::ConstString &, struct StringToCompareTag > StringToCompare;
+typedef Argument< const var::ConstString &, struct StringToFindTag > StringToFind;
+typedef Argument< const var::ConstString &, struct StringToEraseTag > StringToErase;
+typedef Argument< const var::ConstString &, struct StringToInsertTag > StringToInsert;
+typedef Argument< char, struct CharacterToFindTag > CharacterToFind;
+typedef Argument< char, struct CharacterToAssignTag > CharacterToAssign;
 
-ARG_DEFINE_ARGUMENT(Position, u32);
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitPosition, u32, Position);
-ARG_DEFINE_ARGUMENT(SubPosition, u32);
-ARG_DEFINE_ARGUMENT(Length, u32);
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitLength, u32, Length);
-ARG_DEFINE_ARGUMENT(SubLength, u32);
-ARG_DEFINE_ARGUMENT(MatchLength, u32);
-ARG_DEFINE_ARGUMENT(Count, u32);
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitCount, u32, Count);
+typedef Argument< u32, struct PositionTag > Position;
+typedef Argument< u32, struct SubPositionTag > SubPosition;
+typedef Argument< u32, struct LengthTag > Length;
+typedef Argument< u32, struct SubLengthTag > SubLength;
+typedef Argument< u32, struct MatchLengthTag > MatchLength;
+typedef Argument< u32, struct CountTag > Count;
 
-ARG_DEFINE_ARGUMENT(ActiveDuration, const chrono::MicroTime &);
-ARG_DEFINE_ARGUMENT(InActiveDuration, const chrono::MicroTime &);
-ARG_DEFINE_ARGUMENT(Period, const chrono::MicroTime &);
-ARG_DEFINE_ARGUMENT(Duration, const chrono::MicroTime &);
+typedef Argument< const chrono::MicroTime &, struct ActiveDurationTag > ActiveDuration;
+typedef Argument< const chrono::MicroTime &, struct InActiveDurationTag > InActiveDuration;
+typedef Argument< const chrono::MicroTime &, struct PeriodTag > Period;
+typedef Argument< const chrono::MicroTime &, struct DurationTag > Duration;
 
-ARG_DEFINE_ARGUMENT(Width, u32);
-ARG_DEFINE_ARGUMENT(Height, u32);
-ARG_DEFINE_ARGUMENT(XValue, s32);
-ARG_DEFINE_ARGUMENT(YValue, s32);
-ARG_DEFINE_ARGUMENT(BitsPerPixel, u16);
-ARG_DEFINE_ARGUMENT(PlaneCount, u16);
+typedef Argument< u32, struct WidthTag > Width;
+typedef Argument< u32, struct HeightTag > Height;
+typedef Argument< s32, struct XValueTag > XValue;
+typedef Argument< s32, struct YValueTag > YValue;
+typedef Argument< u16, struct BitsPerPixelTag > BitsPerPixel;
+typedef Argument< u16, struct PlaneCountTag > PlaneCount;
 
 
 //var::Json
-ARG_DEFINE_ARGUMENT(JsonKey, const var::ConstString &);
-ARG_DEFINE_ARGUMENT(JsonEncodedString, const var::ConstString&);
-ARG_DEFINE_ARGUMENT(Base64EncodedString, const var::ConstString&);
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitBase64EncodedString, const var::ConstString&, Base64EncodedString);
+typedef Argument< const var::ConstString &, struct JsonKeyTag > JsonKey;
+typedef Argument< const var::ConstString &, struct JsonEncodedStringTag > JsonEncodedString;
+typedef Argument< const var::ConstString &, struct Base64EncodedStringTag > Base64EncodedString;
 
-ARG_DEFINE_ARGUMENT(SourceJsonValue, const var::JsonValue&);
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceJsonValue, const var::JsonValue&, SourceJsonValue);
-ARG_DEFINE_ARGUMENT(DestinationJsonValue, var::JsonValue&);
-ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitDestinationJsonValue, var::JsonValue&, DestinationJsonValue);
+typedef Argument< const var::JsonValue&, struct SourceJsonValueTag > SourceJsonValue;
+typedef Argument< var::JsonValue&, struct DestinationJsonValueTag > DestinationJsonValue;
 
 
 #if defined __link
-ARG_DEFINE_ARGUMENT(LinkDriver, link_transport_mdriver_t*);
-ARG_DEFINE_ARGUMENT(LinkDirp, int);
-ARG_DEFINE_ARGUMENT(IsCopyToDevice, bool);
+typedef Argument< link_transport_mdriver_t*, struct LinkDriverTag > LinkDriver;
+typedef Argument< int, struct LinkDirpTag > LinkDirp;
+typedef Argument< bool , struct IsCopyToDeviceTag > IsCopyToDevice;
 #endif
 
-ARG_DEFINE_ARGUMENT(BootloaderRetryCount, u32);
-ARG_DEFINE_ARGUMENT(RetryCount, u32);
-ARG_DEFINE_ARGUMENT(RetryDelay, const chrono::MicroTime &);
-ARG_DEFINE_ARGUMENT(IsVerify, bool);
-ARG_DEFINE_ARGUMENT(IsLegacy, bool);
-ARG_DEFINE_ARGUMENT(FileDescriptor, int);
-ARG_DEFINE_ARGUMENT(IoRequest, int);
-ARG_DEFINE_ARGUMENT(IoArgument, void*);
-ARG_DEFINE_ARGUMENT(IoConstArgument, const void*);
-ARG_DEFINE_ARGUMENT(IoIntArgument, int);
-ARG_DEFINE_ARGUMENT(NumberBase, int);
+typedef Argument< u32, struct BootloaderRetryCountTag > BootloaderRetryCount;
+typedef Argument< u32, struct RetryCountTag > RetryCount;
+typedef Argument< const chrono::MicroTime &, struct RetryDelayTag > RetryDelay;
+typedef Argument< bool, struct IsVerifyTag > IsVerify;
+typedef Argument< bool, struct IsLegacyTag > IsLegacy;
+typedef Argument< int, struct FileDescriptorTag > FileDescriptor;
+typedef Argument< int, struct IoRequestTag > IoRequest;
+typedef Argument< void*, struct IoArgumentTag > IoArgument;
+typedef Argument< const void*, struct IoConstArgumentTag > IoConstArgument;
+typedef Argument< int, struct IoIntArgumentTag > IoIntArgument;
+typedef Argument< int, struct NumberBaseTag > NumberBase;
 
 //hal
-ARG_DEFINE_ARGUMENT(Port, u32);
-ARG_DEFINE_ARGUMENT(PortNumber, u32);
+typedef Argument< u32, struct PortTag > Port;
+typedef Argument< u32, struct PortNumberTag > PortNumber;
+typedef Argument< u32, struct PinNumberTag > PinNumber;
+typedef Argument< const mcu_pin_t &, struct McuPinTag > McuPin;
+typedef Argument< bool, struct IsMcuPinMaskTag > IsMcuPinMask;
+typedef Argument< bool, struct IsPinActiveHighTag > IsPinActiveHigh;
+typedef Argument< u32, struct PinFunctionTag > PinFunction;
+
+typedef Argument< u32, struct ChannelTag > Channel;
+typedef Argument< u32, struct EventsTag > Events;
+typedef Argument< s8, struct InterruptPriorityTag > InterruptPriority;
+typedef Argument< int, struct SchedulerPriorityTag > SchedulerPriority;
+typedef Argument< void*, struct ContextTag > Context;
+
+typedef Argument< const mcu_callback_t &, struct McuCallbackTag > McuCallback;
+
+typedef Argument< int, struct SignalNumberTag > SignalNumber;
+typedef Argument< int, struct SignalValueIntegerTag > SignalValueInteger;
+typedef Argument< void *, struct SignalValuePointerTag > SignalValuePointer;
+typedef Argument< int, struct SignalCodeTag > SignalCode;
+typedef Argument< bool, struct IsPersistentTag > IsPersistent;
+typedef Argument< u32, struct KernelRequestApiTag > KernelRequestApi;
+typedef Argument< int, struct KernelRequestTag > KernelRequest;
+typedef Argument< u8, struct FontPointSizeTag > FontPointSize;
+typedef Argument< u8, struct FontStyleTag > FontStyle;
+typedef Argument< const var::ConstString &, struct FontNameTag > FontName;
+typedef Argument< bool, struct IsExactMatchTag > IsExactMatch;
+
+typedef Argument< const inet::SocketAddress&, struct SourceSocketAddressTag > SourceSocketAddress;
+typedef Argument< inet::SocketAddress&, struct DestinationSocketAddressTag > DestinationSocketAddress;
+typedef Argument< int, struct ListenBacklogCountTag > ListenBacklogCount;
+typedef Argument< const var::ConstString &, struct HttpStringToPostTag > HttpStringToPost;
+typedef Argument< const var::ConstString &, struct UrlEncodedStringTag > UrlEncodedString;
+typedef Argument< const var::ConstString &, struct VersionEncodedStringTag > VersionEncodedString;
+typedef Argument< const var::ConstString &, struct GitHashTag > GitHash;
+
+typedef Argument< u8, struct RedColorComponentTag > RedColorComponent;
+typedef Argument< u8, struct GreenColorComponentTag > GreenColorComponent;
+typedef Argument< u8, struct BlueColorComponentTag > BlueColorComponent;
+typedef Argument< u8, struct HueColorComponentTag > HueColorComponent;
+typedef Argument< u8, struct ValueColorComponentTag > ValueColorComponent;
+typedef Argument< u8, struct SaturationColorComponentTag > SaturationColorComponent;
+typedef Argument< u8, struct AlphaColorComponentTag > AlphaColorComponent;
+typedef Argument< u8, struct BrightnessColorComponentTag > BrightnessColorComponent;
+
+
+typedef Argument< int, struct CurrentProgressTag > CurrentProgress;
+typedef Argument< int, struct TotalProgressTag > TotalProgress;
+
+typedef Argument< const var::ConstString &, struct OptionNameTag > OptionName;
+typedef Argument< const var::ConstString &, struct OptionDescriptionTag > OptionDescription;
+
+typedef Argument< const var::ConstString &, struct NodeToFetchTag > NodeToFetch;
+typedef Argument< const var::ConstString &, struct ServiceToFetchTag > ServiceToFetch;
+
+
+/*! \cond */
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSize, u32, Size);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitLocation, const int &, Location);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitCapacity, u32, Capacity);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceBuffer, const void*, SourceBuffer);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitDestinationBuffer,	void*, DestinationBuffer);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceData, const var::DataReference &, SourceData);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceFilePath, const var::ConstString &, SourceFilePath);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitFilePath, const var::ConstString &, FilePath);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceFile, const fs::File&, SourceFile);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitDestinationFile,	fs::File&, DestinationFile);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitLength, u32, Length);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitCount, u32, Count);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitBase64EncodedString, const var::ConstString&, Base64EncodedString);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceJsonValue, const var::JsonValue&, SourceJsonValue);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitDestinationJsonValue, var::JsonValue&, DestinationJsonValue);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitPortNumber, u32, PortNumber);
-ARG_DEFINE_ARGUMENT(PinNumber, u32);
-ARG_DEFINE_ARGUMENT(McuPin, const mcu_pin_t &);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitMcuPin, const mcu_pin_t &, McuPin);
-ARG_DEFINE_ARGUMENT(IsMcuPinMask, bool);
-ARG_DEFINE_ARGUMENT(IsPinActiveHigh, bool);
-ARG_DEFINE_ARGUMENT(PinFunction, u32);
-
-ARG_DEFINE_ARGUMENT(Channel, u32);
-ARG_DEFINE_ARGUMENT(Events, u32);
-ARG_DEFINE_ARGUMENT(InterruptPriority, s8);
-ARG_DEFINE_ARGUMENT(SchedulerPriority, int);
-ARG_DEFINE_ARGUMENT(Context, void*);
-
-ARG_DEFINE_ARGUMENT(McuCallback, const mcu_callback_t &);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitPosition, u32, Position);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitMcuCallback, const mcu_callback_t &, McuCallback);
-
-ARG_DEFINE_ARGUMENT(SignalNumber, int);
-ARG_DEFINE_ARGUMENT(SignalValueInteger, int);
-ARG_DEFINE_ARGUMENT(SignalValuePointer, void*);
-ARG_DEFINE_ARGUMENT(SignalCode, int);
-ARG_DEFINE_ARGUMENT(IsPersistent, bool);
-ARG_DEFINE_ARGUMENT(KernelRequestApi, u32);
-ARG_DEFINE_ARGUMENT(KernelRequest, int);
-ARG_DEFINE_ARGUMENT(FontPointSize, u8);
-ARG_DEFINE_ARGUMENT(FontStyle, u8);
-ARG_DEFINE_ARGUMENT(FontName, const var::ConstString&);
-ARG_DEFINE_ARGUMENT(IsExactMatch, bool);
-
-ARG_DEFINE_ARGUMENT(SourceSocketAddress, const inet::SocketAddress&);
-ARG_DEFINE_ARGUMENT(DestinationSocketAddress, inet::SocketAddress&);
-ARG_DEFINE_ARGUMENT(ListenBacklogCount, int);
-ARG_DEFINE_ARGUMENT(HttpStringToPost, const var::ConstString&);
-ARG_DEFINE_ARGUMENT(UrlEncodedString, const var::ConstString&);
-
-ARG_DEFINE_ARGUMENT(VersionEncodedString, const var::ConstString&);
-ARG_DEFINE_ARGUMENT(GitHash, const var::ConstString&);
-
-ARG_DEFINE_ARGUMENT(RedColorComponent, u8);
-ARG_DEFINE_ARGUMENT(GreenColorComponent, u8);
-ARG_DEFINE_ARGUMENT(BlueColorComponent, u8);
-ARG_DEFINE_ARGUMENT(HueColorComponent, u8);
-ARG_DEFINE_ARGUMENT(ValueColorComponent, u8);
-ARG_DEFINE_ARGUMENT(SaturationColorComponent, u8);
-ARG_DEFINE_ARGUMENT(AlphaColorComponent, u8);
-ARG_DEFINE_ARGUMENT(BrightnessColorComponent, u8);
-
-
-ARG_DEFINE_ARGUMENT(CurrentProgress, int);
-ARG_DEFINE_ARGUMENT(TotalProgress, int);
-
-ARG_DEFINE_ARGUMENT(OptionName, const var::ConstString&);
-ARG_DEFINE_ARGUMENT(OptionDescription, const var::ConstString&);
-
 /*! \endcond */
 
 

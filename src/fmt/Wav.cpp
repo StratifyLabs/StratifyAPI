@@ -25,7 +25,10 @@ Wav::Wav(const arg::SourceFilePath & name) {
 
 
 int Wav::create(const arg::DestinationFilePath & path){
-	int result = File::create(path);
+	int result = File::create(
+				arg::DestinationFilePath(path),
+				arg::IsOverwrite(true)
+				);
 	if( result < 0 ){ return result; }
 	return write(
 				arg::SourceBuffer(&m_header),

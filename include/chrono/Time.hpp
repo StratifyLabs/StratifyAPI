@@ -144,7 +144,6 @@ public:
 
 	/*! \details Sets the system time
 	  *
-	  * @param t Time to use to set the system time
 	  */
 	static int set_time_of_day(const Time & t);
 
@@ -158,10 +157,6 @@ public:
 
 	/*! \details Sets the value in Time to a number of seconds.
 	  *
-	  * @param hour Number of hours
-	  * @param min Number of minutes
-	  * @param sec Number of seconds
-	  *
 	  * This Time object will hold a duration of time rather than a
 	  * calendar time.
 	  *
@@ -174,7 +169,6 @@ public:
 
 	/*! \details Sets the current value.
 	  *
-	  * @param tm Number of seconds since epoch
 	  */
 	void set_time(time_t tm){ m_time = tm; }
 

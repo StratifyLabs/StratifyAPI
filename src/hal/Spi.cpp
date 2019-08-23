@@ -21,11 +21,17 @@ int Spi::swap(int byte) const {
 
 
 #if !defined __link
-int Spi::transfer(const void * write_data, void * read_data, int nbytes){
+int Spi::transfer(
+		const arg::SourceBuffer write_data,
+		arg::DestinationBuffer read_data,
+		arg::Size nbytes
+		){
+
 	fs::Aio aio = fs::Aio(
-				arg::DestinationBuffer(read_data),
-				arg::Size(nbytes)
+				read_data,
+				nbytes
 				);
+
 	int result;
 
 	result = read(aio);
@@ -34,8 +40,8 @@ int Spi::transfer(const void * write_data, void * read_data, int nbytes){
 	}
 
 	result = write(
-				arg::SourceBuffer(write_data),
-				arg::Size(nbytes)
+				write_data,
+				nbytes
 				);
 
 	while( aio.is_busy() ){ //aio must live until the read completes -- or big problems will happen

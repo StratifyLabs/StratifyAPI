@@ -233,12 +233,12 @@ Printer & Printer::operator << (const var::DataInfo & a){
 
 Printer & Printer::operator << (const var::Data & a){
 	u32 o_flags = m_o_flags;
-	const s8 * ptrs8 = (const s8*)a.data_const();
-	const s16 * ptrs16 = (const s16*)a.data_const();
-	const s32 * ptrs32 = (const s32*)a.data_const();
-	const u8 * ptru8 = (const u8*)a.data_const();
-	const u16 * ptru16 = (const u16*)a.data_const();
-	const u32 * ptru32 = (const u32*)a.data_const();
+	const s8 * ptrs8 = a.to_s8();
+	const s16 * ptrs16 = a.to_s16();
+	const s32 * ptrs32 = a.to_s32();
+	const u8 * ptru8 = a.to_u8();
+	const u16 * ptru16 = a.to_u16();
+	const u32 * ptru32 = a.to_u32();
 
 	if( verbose_level() < current_level() ){
 		return *this;

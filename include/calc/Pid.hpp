@@ -69,12 +69,6 @@ public:
 
 	/*! \details Constructs a new PID (float) object.
 	 *
-	 * @param target The target value
-	 * @param kp The proportional constant
-	 * @param ki The integral constant
-	 * @param kd The differential constant
-	 * @param min The minimum value for the calculated control value
-	 * @param max The maximum value for the calculated control value
 	 */
 	PidF32();
 

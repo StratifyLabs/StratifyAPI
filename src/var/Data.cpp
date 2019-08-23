@@ -6,6 +6,8 @@
 #include <cstring>
 #include <cstdio>
 
+#include "sys/Trace.hpp"
+
 #if !defined __link
 #include <reent.h>
 #include <mcu/arch.h>
@@ -15,7 +17,7 @@
 using namespace var;
 
 //This is here so that by default that data can point to a null value rather than be a null value
-const int Data::m_zero_value MCU_ALIGN(4) = 0;
+const int DataReference::m_zero_value MCU_ALIGN(4) = 0;
 
 //this value corresponds to the malloc chunk size used in Stratify OS
 //this may be something that could be determined through a system call
@@ -27,6 +29,117 @@ const int Data::m_zero_value MCU_ALIGN(4) = 0;
 #define MALLOC_CHUNK_SIZE 64
 #endif
 
+DataReference::DataReference(){
+	set_size_internally(0);
+}
+
+void DataReference::set_reference(
+		const arg::ReadOnlyBuffer read_data,
+		arg::ReadWriteBuffer write_data,
+		arg::Size size
+		){
+	set_reference_internally(
+				read_data,
+				write_data,
+				size);
+}
+
+void DataReference::set_reference_internally(
+		const arg::ReadOnlyBuffer read_data,
+		arg::ReadWriteBuffer write_data,
+		arg::Size size
+		){
+	m_data_read = read_data.argument();
+	if( m_data_read == 0 ){
+		m_data_read = &DataReference::m_zero_value;
+	}
+
+	m_data_write = write_data.argument();
+	m_size = size.argument();
+}
+
+void DataReference::set_size_internally(u32 size){
+	if( size == 0 ){
+		set_reference_internally(
+					arg::ReadOnlyBuffer(0),
+					arg::ReadWriteBuffer(0),
+					arg::Size(0)
+					);
+	} else {
+		m_size = size;
+	}
+}
+
+void DataReference::swap_byte_order(const arg::ImplicitSize size){
+
+	if( write_data() ){
+		if( size.argument() == 4 ){
+			u32 * p = to_u32();
+			if( p ){
+				u32 i;
+				for(i=0; i < this->size()/4; i++){
+#if !defined __link
+					p[i] = __REV(p[i]);
+#else
+					//swap manually
+#endif
+
+				}
+			} else {
+				set_error_number(EINVAL);
+			}
+		} else {
+			u16 * p = to_u16();
+			if( p ){
+				u16 i;
+				for(i=0; i < this->size()/2; i++){
+#if !defined __link
+					p[i] = __REV16(p[i]);
+#else
+					//swap manually
+#endif
+
+				}
+			} else {
+				set_error_number(EINVAL);
+			}
+		}
+	}
+}
+
+DataReference::DataReference(arg::ReadOnlyBuffer buffer,
+		arg::Size size
+		){
+	refer_to(buffer, size);
+}
+
+DataReference::DataReference(
+		arg::ReadWriteBuffer buffer,
+		arg::Size size
+		){
+	refer_to(buffer, size);
+}
+
+void DataReference::refer_to(
+		const arg::ReadOnlyBuffer read_only_data,
+		arg::Size size
+		){
+	set_reference(
+				read_only_data,
+				arg::ReadWriteBuffer(0),
+				size);
+}
+
+void DataReference::refer_to(
+		arg::ReadWriteBuffer data,
+		arg::Size size
+		){
+	set_reference(
+				arg::ReadOnlyBuffer(data.argument()),
+				data,
+				size);
+}
+
 u32 Data::minimum_size(){
 	return MIN_CHUNK_SIZE;
 }
@@ -37,26 +150,6 @@ u32 Data::block_size(){
 
 Data::Data(){
 	zero();
-}
-
-Data::Data(arg::DestinationBuffer mem,
-			  const arg::Size s
-			  ){
-	zero();
-	refer_to(
-				mem,
-				s,
-				arg::IsReadOnly(false)
-				);
-}
-
-Data::Data(const arg::SourceBuffer mem, const arg::Size s){
-	zero();
-	refer_to(
-				arg::DestinationBuffer((void*)mem.argument()),
-				s,
-				arg::IsReadOnly(true)
-				);
 }
 
 Data::Data(const arg::Size s){
@@ -87,8 +180,8 @@ Data& Data::operator=(Data && a){
 
 
 int Data::free(){
-	if( needs_free() ){
-		::free(m_mem_write);
+	if( is_free_needed() ){
+		::free(write_data());
 	}
 	zero();
 	return 0;
@@ -98,24 +191,123 @@ Data::~Data(){
 	free();
 }
 
-int Data::copy_data(const void * buffer, u32 size){
-	if( set_size(size) < 0 ){
+bool Data::is_reference() const {
+	return (is_free_needed() == false) &&
+			(size() > 0);
+}
+
+void Data::set_reference(
+		const arg::ReadOnlyBuffer read_data,
+		arg::ReadWriteBuffer write_data,
+		arg::Size size
+		){
+
+	//free if not already free
+	free();
+	set_reference_internally(read_data, write_data, size);
+}
+
+void Data::zero(){
+	set_size_internally(0);
+	set_free_needed(false);
+	m_capacity = 0;
+}
+
+
+int Data::allocate(
+		const arg::Size s,
+		const arg::IsResize is_resize){
+
+	void * new_data;
+	u32 size_value = s.argument();
+
+	if( is_reference() ){
+		//this data object can't be resized -- it was created using a data reference
 		return -1;
 	}
-	::memcpy(to_u8(), buffer, size);
+
+	if( s.argument() == 0 ){
+		free();
+		return 0;
+	}
+
+	if( s.argument() <= capacity() ){
+		//this will just change the effective size since capacity is already present
+		set_size_internally(size_value);
+		return 0;
+	}
+
+
+	if( size_value <= minimum_size() ){
+		size_value = minimum_size();
+	} else {
+		//change s to allocate an integer multiple of minimum_size()
+		u32 blocks = (size_value - minimum_size() + block_size() - 1) / block_size();
+		size_value = minimum_size() + blocks * block_size();
+	}
+
+	new_data = ::malloc(size_value);
+
+	if( set_error_number_if_null(new_data) == 0 ){
+		//created new data failed but current object is intact
+		return -1;
+	}
+
+	if( is_resize.argument() && (m_capacity > 0) ){
+		//when resizing, old buffer needs to be copied to the new buffer
+		//m_capacity has the capacity of the pre-allocation buffer
+		memory_copy(
+					arg::SourceBuffer(read_data()),
+					arg::DestinationBuffer(new_data),
+					arg::Size( size_value > m_capacity ? m_capacity : size_value )
+					);
+	}
+
+	free();
+
+	set_reference_internally(
+				arg::ReadOnlyBuffer(new_data),
+				arg::ReadWriteBuffer(new_data),
+				arg::Size(s.argument())
+				);
+
+	set_free_needed();
+	m_capacity = size_value;
+
+	return 0;
+}
+
+int Data::copy_data(
+		const void * buffer,
+		u32 size
+		){
+	if( resize(size) < 0 ){
+		return -1;
+	}
+
+	memory_copy(
+				arg::SourceBuffer(buffer),
+				arg::DestinationBuffer(to_u8()),
+				arg::Size(size)
+				);
+
 	return 0;
 }
 
 int Data::copy_cstring(const char * str){
 	int length = strlen(str);
-	if( set_size(length) < 0 ){
+	if( resize(length) < 0 ){
 		return -1;
 	}
-	::memcpy(to_char(), str, length);
+	memory_copy(
+				arg::SourceBuffer(str),
+				arg::DestinationBuffer(to_void()),
+				arg::Size(length)
+				);
 	return 0;
 }
 
-int Data::copy_contents(const arg::ImplicitSourceData a){
+int Data::copy_contents(const arg::SourceData a){
 	return copy_contents(
 				arg::SourceData(a.argument()),
 				arg::Location(0),
@@ -132,198 +324,62 @@ int Data::copy_contents(const arg::SourceData a,
 				arg::Size(size));
 }
 
-int Data::copy_contents(const arg::SourceData a,
+int Data::copy_contents(
+		const arg::SourceData a,
 		const arg::Location destination,
-		const arg::Size size){
-	u32 size_value = size.argument();
-	if( size_value > a.argument().size() ){ size_value = a.argument().size(); }
-	if( capacity() < (size.argument() + destination.argument()) ){
-		if( set_size(size_value + destination.argument()) < 0 ){
-			return -1;
-		}
-	} else {
-		m_size = size_value + destination.argument();
+		const arg::Size size
+		){
+
+	u32 bytes_to_copy = size.argument() < a.argument().size() ?
+				size.argument() :
+				a.argument().size();
+
+	u32 bytes_needed = bytes_to_copy + destination.argument();
+
+	if( resize(
+			 arg::Size(bytes_needed)
+			 ) < 0 ){
+		return -1;
 	}
-	::memcpy(to_u8() + destination.argument(), a.argument().to_void(), size_value);
+
+	memory_copy(
+				arg::SourceBuffer(a.argument().to_const_void()),
+				arg::DestinationBuffer(to_u8() + destination.argument()),
+				arg::Size(bytes_to_copy)
+			);
+
 	return 0;
 }
 
 void Data::move_object(Data & a){
 	if( this != &a ){
-		if( a.is_internally_managed() ){
-			//set this memory to the memory of a
-			refer_to(
-						arg::DestinationBuffer(a.to_void()),
-						arg::Size(a.capacity()),
-						arg::IsReadOnly(false)
-						);
-			m_size = a.size();
 
-			//setting needs free on this and clearing it on a will complete the transfer
-			set_needs_free();
-			a.clear_needs_free();
-		} else {
-			refer_to(
-						arg::DestinationBuffer(a.to_void()),
-						arg::Size(a.size()),
-						arg::IsReadOnly(a.is_read_only())
-						);
-		}
+		free();
+
+		set_reference_internally(
+					arg::ReadOnlyBuffer(a.read_data()),
+					arg::ReadWriteBuffer(a.write_data()),
+					arg::Size(a.size())
+					);
+
+		//setting needs free on this and clearing it on a will complete the transfer
+		m_capacity = a.capacity();
+		set_free_needed( a.is_free_needed() );
+		a.set_free_needed(false);
 	}
 }
 
 void Data::copy_object(const Data & a){
 	if( this != &a ){
-		if( a.is_internally_managed() ){
-			//copy the contents of a to this object
-			copy_contents(
-						arg::SourceData(a),
-						arg::Size(a.capacity())
-						);
-			m_size = a.size();
-		} else {
-			refer_to(
-						arg::DestinationBuffer((void*)a.to_void()),
-						arg::Size(a.capacity()),
-						arg::IsReadOnly(a.is_read_only())
-						);
-			m_size = a.size();
-		}
+		//copy the contents of a to this object
+		copy_contents(
+					arg::SourceData(a),
+					arg::Size(a.size())
+					);
 	}
 }
 
-void Data::refer_to(const arg::DestinationBuffer mem,
-						  const arg::Size s,
-						  const arg::IsReadOnly readonly){
-
-	//free the data if it was previously allocated dynamically
-	free();
-
-	m_mem_write = mem.argument();
-	m_capacity = s.argument();
-	m_size = s.argument();
-	if( mem.argument() ){
-		this->m_mem = m_mem_write;
-	} else {
-		//read should always point to a non-null
-		this->m_mem = (void*)&m_zero_value;
-	}
-
-	if( readonly.argument() ){
-		m_mem_write = 0;
-	}
-}
-
-void Data::zero(){
-	m_mem = &m_zero_value;
-	m_mem_write = 0;
-	clear_needs_free();
-	m_capacity = 0;
-	m_size = 0;
-	m_o_flags = 0;
-}
 
 
-int Data::allocate(
-		const arg::Size s,
-		const arg::IsResize resize){
 
-	void * new_data;
-	u32 original_size = s.argument();
-	u32 size_value = s.argument();
-
-	if( ( !needs_free() ) && (m_mem != &m_zero_value) ){
-		//this data object can't be resized -- it was created using a pointer (not dynanmic memory allocation)
-		return -1;
-	}
-
-	if( size_value == 0 ){
-		zero();
-		return 0;
-	}
-
-	if( size_value <= minimum_size() ){
-		size_value = minimum_size();
-	} else {
-		//change s to allocate an integer multiple of minimum_size()
-		u32 blocks = (size_value - minimum_size() + block_size() - 1) / block_size();
-		size_value = minimum_size() + blocks * block_size();
-	}
-
-	new_data = malloc(size_value);
-	if( set_error_number_if_null(new_data) == 0 ){
-		return -1;
-	}
-
-	if( resize.argument() && m_capacity ){
-		::memcpy(
-					new_data,
-					m_mem,
-					size_value > m_capacity ? m_capacity : size_value
-													  );
-	}
-
-	free();
-
-	m_size = original_size;
-	m_mem_write = new_data;
-	set_needs_free();
-	m_mem = m_mem_write;
-	m_capacity = size_value;
-
-	return 0;
-}
-
-int Data::set_size(const arg::ImplicitSize s){
-	if( s.argument() <= capacity() ){
-		m_size = s.argument();
-		return 0;
-	} //no need to increase size
-
-	return allocate(arg::Size(s.argument()), arg::IsResize(true));
-}
-
-void Data::fill(unsigned char d){
-	if( m_mem_write ){
-		memset(m_mem_write, d, capacity());
-	}
-}
-
-void Data::swap_byte_order(const arg::ImplicitSize size){
-
-	if( data() ){
-		if( size.argument() == 4 ){
-			u32 * p = to_u32();
-			if( p ){
-				u32 i;
-				for(i=0; i < capacity()/4; i++){
-#if !defined __link
-					p[i] = __REV(p[i]);
-#else
-					//swap manually
-#endif
-
-				}
-			} else {
-				set_error_number(EINVAL);
-			}
-		} else {
-			u16 * p = to_u16();
-			if( p ){
-				u16 i;
-				for(i=0; i < capacity()/2; i++){
-#if !defined __link
-					p[i] = __REV16(p[i]);
-#else
-					//swap manually
-#endif
-
-				}
-			} else {
-				set_error_number(EINVAL);
-			}
-		}
-	}
-
-}
 

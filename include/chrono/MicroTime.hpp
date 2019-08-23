@@ -107,19 +107,23 @@ public:
 
 
 	/*! \details Assignment addition to another MicroTime object. */
-	MicroTime & operator += (const MicroTime & micro_time){
-		m_value_microseconds += micro_time.microseconds();
+	MicroTime & operator += (const MicroTime & a){
+		m_value_microseconds += a.microseconds();
 		return *this;
 	}
 
 	/*! \details Assignment addition to another MicroTime object. */
-	MicroTime & operator -= (const MicroTime & micro_time){
-		m_value_microseconds -= micro_time.microseconds();
+	MicroTime & operator -= (const MicroTime & a){
+		m_value_microseconds -= a.microseconds();
 		return *this;
 	}
 
-	MicroTime operator + (const MicroTime & micro_time){
-		return MicroTime(microseconds() + micro_time.microseconds());
+	MicroTime operator + (const MicroTime & a) const {
+		return MicroTime(microseconds() + a.microseconds());
+	}
+
+	MicroTime operator - (const MicroTime & a) const {
+		return MicroTime(microseconds() - a.microseconds());
 	}
 
 	/*! \details Compares equality to another MicroTime object. */
@@ -148,21 +152,17 @@ public:
 
 	/*! \details Sets the value of the time in seconds.
 	  *
-	  * @param sec The number of seconds.
 	  *
 	  */
-	void set_seconds(u32 sec){ *this = Seconds(sec); }
+	void set_seconds(u32 seconds){ *this = Seconds(seconds); }
 
 	/*! \details Sets the value of the time in milliseconds.
 	  *
-	  * @param msec The value to assign in milliseconds.
 	  *
 	  */
-	void set_milliseconds(u32 msec){ *this = Milliseconds(msec); }
+	void set_milliseconds(u32 milliseconds){ *this = Milliseconds(milliseconds); }
 
 	/*! \details Sets the value of the time in microseconds.
-	  *
-	  * @param microseconds The value in microseconds
 	  *
 	  */
 	void set_microseconds(micro_time_t microseconds){ m_value_microseconds = microseconds; }

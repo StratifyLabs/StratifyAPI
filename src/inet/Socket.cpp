@@ -53,8 +53,8 @@ SocketAddressInfo::SocketAddressInfo(int family, int type, int protocol, int fla
 }
 
 var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
-		const var::ConstString & node,
-		const var::ConstString & server){
+		const arg::NodeToFetch node,
+		const arg::ServiceToFetch server){
 	var::Vector<SocketAddressInfo> result;
 	int result_int;
 
@@ -64,9 +64,8 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 	const char * server_cstring;
 	const char * node_cstring;
 
-	server_cstring = server.is_empty() ? 0 : server.cstring();
-	node_cstring = node.is_empty() ? 0 : node.cstring();
-
+	server_cstring = server.argument().is_empty() ? 0 : server.argument().cstring();
+	node_cstring = node.argument().is_empty() ? 0 : node.argument().cstring();
 
 	Socket::initialize();
 
@@ -82,13 +81,14 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
 		SocketAddressInfo value;
 		value.m_addrinfo = * info;
 		if( info->ai_addr ){
+
+			DataReference address(
+						arg::ReadOnlyBuffer(info->ai_addr),
+						arg::Size(info->ai_addrlen)
+						);
+
 			value.m_sockaddr.copy_contents(
-						arg::SourceData(
-							var::Data(
-								arg::DestinationBuffer(info->ai_addr),
-								arg::Size(info->ai_addrlen)
-								)
-							)
+						arg::SourceData(address)
 						);
 		}
 
@@ -195,10 +195,10 @@ int SocketAddressIpv4::set_address(const var::ConstString & addr){
 		return -1;
 	}
 
-	set_address(tokens.at(0).atoi(),
-					tokens.at(1).atoi(),
-					tokens.at(2).atoi(),
-					tokens.at(3).atoi());
+	set_address(tokens.at(0).to_integer(),
+					tokens.at(1).to_integer(),
+					tokens.at(2).to_integer(),
+					tokens.at(3).to_integer());
 
 	return 0;
 }
@@ -320,7 +320,7 @@ Socket Socket::accept(arg::DestinationSocketAddress address) const{
 							address.argument().m_sockaddr.to<struct sockaddr>(),
 							&len)
 				);
-	address.argument().m_sockaddr.set_size(len);
+	address.argument().m_sockaddr.resize(len);
 	return result;
 }
 
@@ -353,12 +353,12 @@ int Socket::read(arg::DestinationBuffer buf, const arg::Size nbyte) const {
 }
 
 int Socket::read(arg::DestinationData data,
-		arg::DestinationSocketAddress address
-		){
+					  arg::DestinationSocketAddress address
+					  ){
 	socklen_t address_len = address.argument().m_sockaddr.size();
 	return decode_socket_return( ::recvfrom(
 											  m_socket,
-											  data.argument().to_char(),
+											  data.argument().to_void(),
 											  data.argument().size(),
 											  0,
 											  address.argument().m_sockaddr.to<struct sockaddr>(),
@@ -404,9 +404,9 @@ Socket & Socket::operator << (const SocketOption & option){
 												  option.m_level,
 												  option.m_name,
 											  #if defined __win32
-												  option.m_option_value.to_char(),
+												  option.m_option_value.to_const_char(),
 											  #else
-												  option.m_option_value.to_void(),
+												  option.m_option_value.to_const_void(),
 											  #endif
 												  option.m_option_value.size()) );
 	return *this;

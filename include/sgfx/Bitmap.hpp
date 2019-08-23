@@ -47,6 +47,14 @@ private:
 	var::Vector<sg_color_t> m_colors;
 };
 
+class BitmapObject : public api::SgfxObject {
+public:
+
+
+private:
+
+};
+
 /*! \brief Bitmap Class
  * \details This class implements a bitmap and is
  * powered by the sgfx library.
@@ -105,7 +113,9 @@ public:
 	}
 
 	Bitmap & operator = (const Bitmap & bitmap){
-		copy_contents(bitmap);
+		copy_contents(
+					arg::SourceData(bitmap)
+						  );
 		m_bmap = bitmap.m_bmap;
 		m_bmap.data = to<sg_bmap_data_t>();
 		return *this;

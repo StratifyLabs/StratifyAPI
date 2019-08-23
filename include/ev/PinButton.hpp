@@ -27,9 +27,6 @@ public:
 	 *
 	 * The pin must be initialized using Pin::init()
 	 *
-	 * @param port The port associated with the pin
-	 * @param pin The pin number on the port for the button input
-	 * @param active_value true for active high and false for active low
 	 */
 	PinButton(
 			const arg::PortNumber port,
@@ -37,7 +34,7 @@ public:
 			const arg::IsPinActiveHigh is_active_high = arg::IsPinActiveHigh(true)
 			);
 
-	/*! \details This method accesses how long the user must hold the
+	/*! \details Accesses how long the user must hold the
 	  * button in the application before the ui::Event::BUTTON_HELD is triggered
 	  * when calling event()
 	  *
@@ -45,7 +42,7 @@ public:
 	  */
 	static chrono::MicroTime held_duration(){ return m_held_duration; }
 
-	/*! \details This method sets the duration of the hold event.
+	/*! \details Sets the duration of the hold event.
 	  */
 	static void set_held_duration(const chrono::MicroTime & duration){ m_held_duration = duration; }
 
@@ -62,13 +59,13 @@ public:
 	  */
 	static const chrono::MicroTime & actuation_duration(){ return m_actuation_duration; }
 
-	/*! \details This method accesses the active value.
+	/*! \details Accesses the active value.
 	 *
 	 * @return True for active high and false for active low.
 	 */
 	bool active_value() const { return m_active_value; }
 
-	/*! \details Set the ID of the button for Events */
+	/*! \details Sets the ID of the button for Events */
 	void set_event_id(enum ev::Event::button_id v){ m_event_id = v; }
 
 	//methods documented at ui::Button

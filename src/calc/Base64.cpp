@@ -41,8 +41,8 @@ int Base64::encode(
 }
 
 int Base64::decode(const arg::SourceFile input,
-		const arg::DestinationFile output,
-		const arg::Size size){
+						 const arg::DestinationFile output,
+						 const arg::Size size){
 	u32 chunk_size = 96;
 	const u32 output_buffer_size = calc_decoded_size(chunk_size);
 	char input_buffer[chunk_size];
@@ -76,17 +76,17 @@ int Base64::decode(const arg::SourceFile input,
 }
 
 var::String Base64::encode(const arg::ImplicitSourceData input
-		){
+									){
 	var::String result;
 
-	if( result.set_size( calc_encoded_size(input.argument().size() ) ) < 0 ){
+	if( result.resize( calc_encoded_size(input.argument().size() ) ) < 0 ){
 		return var::String();
 	}
 
-	encode(
-				result.to<char>(),
-				input.argument().to_void(),
-				input.argument().size());
+	encode(result.to_char(),
+			 input.argument().to_const_void(),
+			 input.argument().size());
+
 	return result;
 }
 
@@ -94,17 +94,16 @@ var::Data Base64::decode(
 		const arg::ImplicitBase64EncodedString input
 		){
 	var::Data result;
-	if( result.set_size(
+	if( result.allocate(
 			 arg::Size(calc_decoded_size(input.argument().length()))
 			 ) < 0 ){
 		return var::Data();
 	}
 
-	decode(
-				result.to_void(),
-				input.argument().cstring(),
-				input.argument().length()
-				);
+	decode(result.to_void(),
+			 input.argument().cstring(),
+			 input.argument().length());
+
 	return result;
 }
 

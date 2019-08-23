@@ -46,7 +46,7 @@ protected:
 #define LOW_PASS_FILTER_S32_ALPHA(x) ( (u16)(x * 65535) )
 
 /*! \brief Macro for creating the alpha avelu for 16-bit calculations */
-/*! \details See \ref DSP_LowPassFilter_I32_ALPHA for details */
+/*! \details See \ref LOW_PASS_FILTER_S32_ALPHA for details */
 #define LOW_PASS_FILTER_S16_ALPHA(x) ( (u8)(x * 255) )
 
 /*! \brief LowPassFilter template class */
@@ -140,7 +140,7 @@ private:
 };
 
 /*! \brief LowPassFilter class (s32) */
-/*! \details See \ref Ema for details */
+/*! \details See \ref LowPassFilter for details */
 class LowPassFilterS32 : public LowPassFilter<u16, s32, s64> {
 public:
 	/*! \details Construct a EMA object for a signed 32 bit calculations */
@@ -148,7 +148,7 @@ public:
 };
 
 /*! \brief LowPassFilter class (s16) */
-/*! \details See \ref Ema for details */
+/*! \details See \ref LowPassFilter for details */
 class LowPassFilterS16 : public LowPassFilter<u8, s16, s32> {
 public:
 	/*! \details Construct a EMA object for a signed 16 bit calculations */
@@ -156,7 +156,7 @@ public:
 };
 
 /*! \brief LowPassFilter class (u32) */
-/*! \details See \ref Ema for details */
+/*! \details See \ref LowPassFilter for details */
 class LowPassFilterU32 : public LowPassFilter<u16, u32, u64> {
 public:
 	/*! \details Construct a EMA object for a unsigned 32 bit calculations */
@@ -164,7 +164,7 @@ public:
 };
 
 /*! \brief LowPassFilter class (u16) */
-/*! \details See \ref Ema for details */
+/*! \details See \ref LowPassFilter for details */
 class LowPassFilterU16 : public LowPassFilter<u8, u16, u32> {
 public:
 	/*! \details Construct a EMA object for a unsigned 16 bit calculations */

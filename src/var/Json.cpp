@@ -454,7 +454,10 @@ int JsonDocument::save(
 #if defined __win32
 	result = JsonValue::api()->dump_file(value.m_value, path.cstring(), flags());
 #else
-	if( f.create(path) < 0 ){
+	if( f.create(
+			 arg::DestinationFilePath(path),
+			 arg::IsOverwrite(true)
+			 ) < 0 ){
 		set_error_number(f.error_number());
 		return -1;
 	}
@@ -480,7 +483,7 @@ var::String JsonDocument::to_string(
 		return var::String();
 	}
 	var::String result;
-	if( result.set_size(size) < 0 ){
+	if( result.resize(size) < 0 ){
 		return var::String();
 	}
 	if( JsonValue::api()->dumpb(

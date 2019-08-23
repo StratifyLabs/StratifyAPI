@@ -16,7 +16,7 @@ Sha256::~Sha256(){
 
 Sha256 & Sha256::operator << (const var::Data & a){
 	update(
-				arg::SourceBuffer(a.to_char()),
+				arg::SourceBuffer(a.to_const_char()),
 				arg::Size(a.size())
 				);
 	return *this;
@@ -70,8 +70,8 @@ int Sha256::start(){
 }
 
 int Sha256::update(const arg::SourceBuffer input,
-		const arg::Size size
-		){
+						 const arg::Size size
+						 ){
 	if( is_initialized() == false ){
 		initialize();
 	}
@@ -83,10 +83,58 @@ int Sha256::update(const arg::SourceBuffer input,
 	return set_error_number_if_error(sha256_api()->update(m_context, (const unsigned char*)input.argument(), size.argument()));
 }
 
+
+var::String Sha256::calculate(
+		const arg::SourceFile file,
+		arg::PageSize page_size){
+	var::Data page = var::Data(arg::Size(page_size.argument()));
+	Sha256 hash;
+
+	if( hash.initialize() < 0 ){
+		return var::String();
+	}
+
+	if( hash.start() < 0 ){
+		return var::String();
+	}
+
+	while( file.argument().read(
+				 arg::DestinationData(page)
+				 ) > 0 ){
+
+		hash.update(
+					arg::SourceData(page)
+					);
+
+	}
+
+	return hash.to_string();
+}
+
+var::String Sha256::calculate(
+		const arg::SourceFilePath file_path,
+		arg::PageSize page_size
+		){
+	fs::File f;
+
+	if( f.open(arg::FilePath(file_path.argument()),
+				  fs::OpenFlags::read_only()) < 0 ){
+		return var::String();
+	}
+
+	return calculate(arg::SourceFile(f));
+}
+
 int Sha256::finish(){
 	if( m_is_finished == false){
 		m_is_finished = true;
-		return set_error_number_if_error(sha256_api()->finish(m_context, (unsigned char*)m_output.data(), m_output.size()));
+		return set_error_number_if_error(
+					sha256_api()->finish(
+						m_context,
+						(unsigned char*)m_output.data(),
+						m_output.size()
+						)
+					);
 	}
 	return 0;
 }

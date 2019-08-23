@@ -221,8 +221,7 @@ public:
 	 *
 	 */
 	Data to_linear_data() const {
-		Data result;
-		result.set_size( size() );
+		Data result = Data(arg::Size(size()));
 		//this needs to be constructed
 		for(u32 i=0; i < count(); i++){
 			new((void*)(result.to<T>() + i)) T(at(i));

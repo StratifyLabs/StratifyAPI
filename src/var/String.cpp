@@ -55,25 +55,27 @@ int String::vformat(
 		){
 	int result;
 	if( capacity() == 0 ){
-		set_size(minimum_size());
+		resize(minimum_size());
 	}
 	result = vsnprintf(to_char(), capacity()-1, fmt, list);
 	if( result >= (int)capacity()-1 ){ //if the data did not fit, make the buffer bigger
-		if( set_size(result+1) >= 0 ){
+		if( resize(result+1) >= 0 ){
 			vsnprintf(to_char(), capacity()-1, fmt, list);
 		}
 	}
 	return result;
 }
 
-int String::set_size(
+int String::resize(
 		const arg::ImplicitSize size
 		){
-	bool is_zero_size = (to_void() == 0);
-	int result = Data::set_size(size.argument()+1);
-	set_string_pointer(to_char());
+	bool is_zero_size = (this->size() == 0);
+	int result = Data::resize(size.argument()+1);
+	set_string_pointer( to_const_char() );
+
+	//need to zero out the buffer if it wasn't a valid string
 	if( is_zero_size ){
-		fill(0);
+		fill((u8)0);
 	}
 	return result;
 }
@@ -87,9 +89,13 @@ int String::assign(const ConstString & a,
 						 ){
 	//check for null
 	u32 length_value = length.argument();
-	if( a.cstring() != this->to_char() ){ //check for assignment to self - no action needed
+	if( a.cstring() != this->to_const_char() ){ //check for assignment to self - no action needed
 		if( length_value == (u32)npos ){ length_value = a.length(); }
-		if( set_size(length_value) < 0 ){ return -1; }
+
+		if( resize(length_value) < 0 ){
+			return -1;
+		}
+
 		clear();
 		strncpy(to_char(), a.cstring(), length_value);
 	}
@@ -100,21 +106,23 @@ int String::append(const ConstString & a){
 	if( a == 0 ){ return 0; }
 	u32 len = length();
 	u32 alen = a.length();
-	set_size(len + alen); //try to make min capacity
+	if( resize(len + alen) < 0 ){
+		return -1;
+	}
 	if( len == 0 ){
 		clear(); //previous length was zero -- ensure string is valid
 	}
-	if( cdata() == 0 ){ return -1; }
-	strncat(cdata(), a.cstring(), capacity() - len);
+	strncat(to_char(), a.cstring(), capacity() - len);
 	return 0;
 }
 
 int String::append(char c){
 	u32 len = length();
 	u32 alen = 1;
-	set_size(len + alen + 1); //try to make min capacity
-	if( cdata() == 0 ){ return -1; }
-	strncat(cdata(), &c, 1);
+	if( resize(len + alen + 1) < 0 ){
+		return -1;
+	}
+	strncat(to_char(), &c, 1);
 	return 0;
 }
 
@@ -124,7 +132,7 @@ String& String::insert(
 		const arg::StringToInsert string_to_insert
 		){
 
-	if( cdata() == 0 ){
+	if( to_const_char() == 0 ){
 		assign(string_to_insert.argument());
 		return *this;
 	}
@@ -144,14 +152,14 @@ String& String::insert(
 
 		char buffer[len+1];
 
-		if( set_size( len + s ) < 0 ){
+		if( resize( len + s ) < 0 ){
 			exit_fatal("failed to alloc for insert");
 			return *this;
 		}
 
-		strncpy(buffer, to_char()+position.argument(), len+1); //copy the existing string to buffer
-		strncpy(cdata()+position.argument(), string_to_insert.argument().cstring(), capacity() - position.argument());
-		strncat(cdata(), buffer, capacity());
+		strncpy(buffer, to_const_char()+position.argument(), len+1); //copy the existing string to buffer
+		strncpy(to_char()+position.argument(), string_to_insert.argument().cstring(), capacity() - position.argument());
+		strncat(to_char(), buffer, capacity());
 	}
 
 	return *this;
@@ -227,7 +235,7 @@ String String::substr(const arg::Position position,
 
 String & String::to_upper(){
 	u32 s = length();
-	char * p = cdata();
+	char * p = to_char();
 	for(u32 i = 0; i < s; i++){
 		p[i] = ::toupper(p[i]);
 	}
@@ -236,7 +244,7 @@ String & String::to_upper(){
 
 String & String::to_lower(){
 	u32 s = length();
-	char * p = cdata();
+	char * p = to_char();
 	for(u32 i = 0; i < s; i++){
 		p[i] = ::tolower(p[i]);
 	}
@@ -247,7 +255,7 @@ void PathString::strip_suffix(){
 	u32 dot;
 	dot = rfind(arg::CharacterToFind('.'));
 	if( dot != npos ){
-		cdata()[dot] = 0;
+		to_char()[dot] = 0;
 	}
 }
 

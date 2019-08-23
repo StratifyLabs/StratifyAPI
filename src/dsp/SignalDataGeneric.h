@@ -4,64 +4,64 @@ native_type SignalType::mean() const {
 	if( arm_dsp_api_function()->mean == 0 ){
 		exit_fatal("arm_dsp_api_function()->mean == 0");
 	}
-	arm_dsp_api_function()->mean((native_type*)data_const(), count(), &result);
+	arm_dsp_api_function()->mean((native_type*)to_const_void(), count(), &result);
 	return result;
 }
 
 big_type SignalType::power() const {
 	big_type result;
-	arm_dsp_api_function()->power((native_type*)data_const(), count(), &result);
+	arm_dsp_api_function()->power((native_type*)to_const_void(), count(), &result);
 	return result;
 }
 
 native_type SignalType::variance() const {
 	native_type result;
-	arm_dsp_api_function()->var((native_type*)data_const(), count(), &result);
+	arm_dsp_api_function()->var((native_type*)to_const_void(), count(), &result);
 	return result;
 }
 
 native_type SignalType::rms() const {
 	native_type result;
-	arm_dsp_api_function()->rms((native_type*)data_const(), count(), &result);
+	arm_dsp_api_function()->rms((native_type*)to_const_void(), count(), &result);
 	return result;
 }
 
 native_type SignalType::std() const {
 	native_type result;
-	arm_dsp_api_function()->std((native_type*)data_const(), count(), &result);
+	arm_dsp_api_function()->std((native_type*)to_const_void(), count(), &result);
 	return result;
 }
 
 native_type SignalType::min() const {
 	native_type result;
 	u32 idx;
-	arm_dsp_api_function()->min((native_type*)data_const(), count(), &result, &idx);
+	arm_dsp_api_function()->min((native_type*)to_const_void(), count(), &result, &idx);
 	return result;
 }
 
 native_type SignalType::min(u32 & idx) const {
 	native_type result;
-	arm_dsp_api_function()->min((native_type*)data_const(), count(), &result, &idx);
+	arm_dsp_api_function()->min((native_type*)to_const_void(), count(), &result, &idx);
 	return result;
 }
 
 native_type SignalType::max() const {
 	native_type result;
 	u32 idx;
-	arm_dsp_api_function()->max((native_type*)data_const(), count(), &result, &idx);
+	arm_dsp_api_function()->max((native_type*)to_const_void(), count(), &result, &idx);
 	return result;
 }
 
 native_type SignalType::max(u32 & idx) const {
 	native_type result;
-	arm_dsp_api_function()->max((native_type*)data_const(), count(), &result, &idx);
+	arm_dsp_api_function()->max((native_type*)to_const_void(), count(), &result, &idx);
 	return result;
 }
 
 SignalType SignalType::abs() const {
 	SignalType ret = SignalType(arg::Count(count()));
 	arm_dsp_api_function()->abs(
-				(native_type *)data_const(),
+				(native_type *)to_const_void(),
 				ret.vector_data(),
 				count());
 	return ret;
@@ -69,7 +69,7 @@ SignalType SignalType::abs() const {
 
 void SignalType::abs(SignalType & output) const {
 	arm_dsp_api_function()->abs(
-				(native_type *)data_const(),
+				(native_type *)to_const_void(),
 				output.vector_data(),
 				count());
 }

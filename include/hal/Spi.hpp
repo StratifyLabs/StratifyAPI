@@ -142,7 +142,11 @@ public:
 
 
 #if !defined __link
-	int transfer(const void * write_data, void * read_data, int nbytes);
+	int transfer(
+			const arg::SourceBuffer write_data,
+			arg::DestinationBuffer read_data,
+			arg::Size nbytes
+			);
 #endif
 
 private:

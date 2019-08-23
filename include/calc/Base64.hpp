@@ -53,12 +53,9 @@ public:
 
 	/*! \details Encodes data to the base64 format.
 	 *
-	 * @param dest Pointer to destination memory
-	 * @param src Pointer to source data (binary)
-	 * @param nbyte Number of bytes to encode
 	 * @return Number of bytes in the encoded string
 	 *
-	 * \code
+	 * ```
 	 * #include <sapi/calc.hpp>
 	 * #include <sapi/var.hpp>
 	 *
@@ -68,7 +65,7 @@ public:
 	 * if( result.is_empty() ){
 	 *  //failed to encode
 	 * }
-	 * \endcode
+	 * ```
 	 *
 	 */
 	static var::String encode(
@@ -79,14 +76,35 @@ public:
 	/*! \details Reads binary data from *input* and writes a Base64
 	 * encoded string to *output*.
 	 *
-	 * @param input The source file
-	 * @param output The destination file
-	 * @param size The number of bytes from input to read (0 to read to EOF)
 	 * @return Number of encoded bytes written to *output*
 	 *
 	 * The method reads *size* bytes (or to EOF if *size* is zero) from *input*
 	 * start at the current location. The output string is written to *output*
 	 * at the current location.
+	 *
+	 * ```
+	 * #include <sapi/calc.hpp>
+	 * #include <sapi/fs.hpp>
+	 *
+	 * File source;
+	 * File destination;
+	 *
+	 * source.open(
+	 *   arg::FilePath("/home/raw_data.dat"),
+	 *   OpenFile::read_only()
+	 *   );
+	 *
+	 * destination.create(
+	 *   arg::DestinationFilePath("/home/base64_encoded.txt"),
+	 *   arg::IsOverwrite(true)
+	 * );
+	 *
+	 * Base64::encode(
+	 *   arg::SourceFile(source),
+	 *   arg::DestinationFile(destination),
+	 *   );
+	 * ```
+	 *
 	 *
 	 *
 	 */
@@ -98,22 +116,18 @@ public:
 
 	/*! \details Decodes base64 encoded data.
 	 *
-	 * @param dest Pointer to destination memory (binary format)
-	 * @param src Pointer to source data (base64 encoded)
-	 * @param nbyte Pointer the number of bytes to decode (src size)
 	 * @return Zero
 	 *
-	 * \code
+	 * ```
 	 * #include <sapi/calc.hpp>
+	 * #include <sapi/var.hpp>
 	 *
-	 * char encoded_data[64]; //Base64 encoded data that needs to be decoded
-	 * u8 * raw_data;
-	 * int decoded_size;
+	 * String encoded_string;
+	 * //assign base64 encoded string
+	 * Data raw_data;
 	 *
-	 * decoded_size = Base64::calc_decoded_size(64);
-	 * raw_data = malloc(decoded_size);
-	 * Base64::decode(raw_data, encoded_data, 64);
-	 * \endcode
+	 * raw_data = Base64::decode(encoded_string);
+	 * ```
 	 *
 	 */
 	static var::Data decode(
@@ -123,9 +137,6 @@ public:
 	/*! \details Reads base64 encoded data from *input* and writes raw,
 	 * decoded data to *output*.
 	 *
-	 * @param input The input fs::File
-	 * @param output The output fs::File
-	 * @param size The number of bytes from input to read (0 to read to EOF)
 	 * @return Number of decoded bytes written to *output*
 	 *
 	 * The method reads *size* bytes (or to EOF if *size* is zero) from *input*
