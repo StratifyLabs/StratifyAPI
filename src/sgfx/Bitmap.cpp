@@ -48,8 +48,14 @@ void Palette::fill_gradient_gray(bool is_ascending){
 
 
 Region Bitmap::get_viewable_region() const {
-	Point point(margin_left(), margin_top());
-	Area dim(width() - margin_left() - margin_right(), height() - margin_top() - margin_bottom());
+	Point point = Point(
+				arg::XValue(margin_left()),
+				arg::YValue(margin_top())
+				);
+	Area dim = Area(
+				arg::Width(width() - margin_left() - margin_right()),
+				arg::Height(height() - margin_top() - margin_bottom())
+				);
 	Region region(point, dim);
 	return region;
 }
@@ -80,8 +86,6 @@ int Bitmap::set_bits_per_pixel(u8 bits_per_pixel){
 	return -1;
 }
 
-#include "sys/requests.h"
-extern "C" const void * kernel_request_api(u32 request);
 
 void Bitmap::initialize_members(){
 
@@ -102,39 +106,44 @@ void Bitmap::initialize_members(){
 	m_bmap.pen.color = 65535;
 }
 
-void Bitmap::set_data(
+void Bitmap::refer_to(
 		sg_bmap_data_t * mem,
-		sg_size_t w,
-		sg_size_t h,
-		bool readonly
+		const Area & area,
+		const arg::IsReadOnly is_read_only
 		){
 
-#if BITMAP_REFERENCE
-	Data::refer_to(
-				arg::DestinationBuffer(mem),
-				arg::Size(calc_size(w,h)),
-				arg::IsReadOnly(readonly));
-#endif
+	if( is_read_only.argument() == true ){
+		Data::refer_to(
+					arg::ReadOnlyBuffer(mem),
+					arg::Size(calculate_size(area))
+					);
+	} else {
+		Data::refer_to(
+					arg::ReadWriteBuffer(mem),
+					arg::Size(calculate_size(area))
+					);
+	}
 
-	calculate_members(Area(w,h));
+
+	calculate_members(area);
 }
 
-void Bitmap::set_data(
+void Bitmap::refer_to(
 		const sg_bmap_header_t * hdr,
-		bool readonly
+		const arg::IsReadOnly is_read_only
 		){
 	char * ptr;
 	ptr = (char*)hdr;
 	ptr += sizeof(sg_bmap_header_t);
 
-#if BITMAP_REFERENCE
-	Data::refer_to(
-				arg::DestinationBuffer(ptr),
-				arg::Size(calc_size(hdr->width, hdr->height)),
-				arg::IsReadOnly(readonly)
+	Bitmap::refer_to(
+				(sg_bmap_data_t *)ptr,
+				Area(
+					arg::Width(hdr->width),
+					arg::Height(hdr->height)
+					),
+				is_read_only
 				);
-#endif
-	calculate_members(Area(hdr->width, hdr->height));
 }
 
 int Bitmap::allocate(const Area & dim){
@@ -161,10 +170,6 @@ Bitmap::Bitmap(){
 	calculate_members(Area());
 }
 
-Bitmap::Bitmap(sg_size_t w, sg_size_t h){
-	initialize_members();
-	allocate(Area(w,h));
-}
 
 Bitmap::Bitmap(sg_area_t d){
 	initialize_members();
@@ -172,14 +177,20 @@ Bitmap::Bitmap(sg_area_t d){
 }
 
 
-Bitmap::Bitmap(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly){
+Bitmap::Bitmap(
+		sg_bmap_data_t * mem,
+		const Area & area,
+		const arg::IsReadOnly is_read_only){
 	initialize_members();
-	set_data(mem, w, h, readonly);
+	refer_to(mem, area, is_read_only);
 }
 
-Bitmap::Bitmap(const sg_bmap_header_t * hdr, bool readonly){
+Bitmap::Bitmap(
+		const sg_bmap_header_t * hdr,
+		const arg::IsReadOnly is_read_only
+		){
 	initialize_members();
-	set_data(hdr, readonly);
+	refer_to(hdr, is_read_only);
 }
 
 Bitmap::Bitmap(const Area & area, u8 bits_per_pixel){
@@ -203,14 +214,20 @@ Bitmap::~Bitmap(){
 }
 
 Point Bitmap::center() const{
-	return Point(width()/2, height()/2);
+	return Point(
+				arg::XValue(width()/2),
+				arg::YValue(height()/2)
+				);
 }
 
-bool Bitmap::set_size(sg_size_t w, sg_size_t h, sg_size_t offset){
-	u32 size = calc_size(w,h);
+bool Bitmap::resize(const Area & area){
+	u32 size = calculate_size(area);
 	if( size <= capacity() ){
 		Data::resize(size);
-		api()->bmap_set_data(&m_bmap, to<sg_bmap_data_t>(), sg_dim(w,h), m_bmap.bits_per_pixel);
+		api()->bmap_set_data(&m_bmap, to<sg_bmap_data_t>(),
+									area,
+									m_bmap.bits_per_pixel
+									);
 		return true;
 	}
 	return false;
@@ -233,7 +250,6 @@ sg_bmap_data_t * Bitmap::bmap_data(const Point & p){
 int Bitmap::load(const arg::SourceFilePath & path){
 	sg_bmap_header_t hdr;
 	fs::File f;
-	void * src;
 
 	if( f.open(
 			 arg::FilePath(path.argument()),
@@ -253,18 +269,17 @@ int Bitmap::load(const arg::SourceFilePath & path){
 		return -1;
 	}
 
-	if( set_size(hdr.width, hdr.height) == false ){
-		//couln't resize using existing memory -- try re-allocating
-		if( alloc(hdr.width, hdr.height) < 0 ){
-			return -1;
-		}
+	if( resize(
+			 Area(
+				 arg::Width(hdr.width),
+				 arg::Height(hdr.height)
+				 )
+			 ) == false ){
+		return -1;
 	}
 
-	src = to_void();
-
-
 	if( f.read(
-			 arg::DestinationBuffer(src),
+			 arg::DestinationBuffer(to_void()),
 			 arg::Size(hdr.size)
 			 ) != (s32)hdr.size ){
 		return -1;
@@ -274,7 +289,7 @@ int Bitmap::load(const arg::SourceFilePath & path){
 }
 
 
-Area Bitmap::load_dim(const arg::SourceFilePath & path){
+Area Bitmap::load_area(const arg::SourceFilePath & path){
 	sg_bmap_header_t hdr;
 	fs::File f;
 	if( f.open(
@@ -291,10 +306,13 @@ Area Bitmap::load_dim(const arg::SourceFilePath & path){
 	}
 
 	if( (hdr.version != api()->version) || (hdr.bits_per_pixel != api()->bits_per_pixel) ){
-		return Area(0,0);
+		return Area();
 	}
 
-	return Area(hdr.width, hdr.height);
+	return Area(
+				arg::Width(hdr.width),
+				arg::Height(hdr.height)
+				);
 }
 
 int Bitmap::save(const arg::DestinationFilePath & path) const{
@@ -412,16 +430,21 @@ void Bitmap::downsample_bitmap(const Bitmap & source, const Area & factor){
 
 	Bitmap sample(factor);
 
-	cursor_y.set(*this, Point(0,0));
+	cursor_y.set(*this, Point());
 
 	for(sg_int_t y = 0; y <= source.height() - factor.height()/2; y+=factor.height()){
 
 		cursor_x = cursor_y;
 
 		for(sg_int_t x = 0; x <= source.width() - factor.width()/2; x+=factor.width()){
-			Region region(Point(x,y), factor);
+			Region region(
+						Point(
+							arg::XValue(x),
+							arg::YValue(y)
+							),
+						factor);
 			sample.clear();
-			sample.draw_sub_bitmap(Point(0,0), source, region);
+			sample.draw_sub_bitmap(Point(), source, region);
 
 			u32 color = sample.calculate_color_sum();
 			if( color >= factor.calculate_area()/2 ){
@@ -441,7 +464,7 @@ void Bitmap::downsample_bitmap(const Bitmap & source, const Area & factor){
 sg_color_t Bitmap::calculate_color_sum(){
 	sg_color_t color = 0;
 	Cursor cursor_y, cursor_x;
-	cursor_y.set(*this, Point(0,0));
+	cursor_y.set(*this, Point());
 	for(sg_size_t y = 0; y < height(); y++){
 		cursor_x = cursor_y;
 		for(sg_size_t x = 0; x < width(); x++){

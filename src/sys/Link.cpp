@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <sos/dev/sys.h>
+#include <sos/fs/sysfs.h>
 
 #define MAX_TRIES 3
 
@@ -30,22 +31,12 @@ Link::Link(){
 	m_stdin_fd = -1;
 	m_lock = 0;
 	m_is_bootloader = false;
-	m_status_message = "";
 	m_error_message = "";
 	m_driver = &m_driver_instance;
 	link_load_default_driver(m_driver);
 }
 
 Link::~Link(){}
-
-
-int Link::lock_device(){
-	return driver()->lock( driver()->phy_driver.handle );
-}
-
-int Link::unlock_device(){
-	return driver()->unlock( driver()->phy_driver.handle );
-}
 
 int Link::check_error(int err){
 	switch(err){
@@ -220,7 +211,7 @@ int Link::open(const arg::FilePath file,
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 
 		err = link_open(
@@ -231,7 +222,7 @@ int Link::open(const arg::FilePath file,
 					);
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to open file: %s  (%d)", file.argument().cstring(), link_errno);
 	}
@@ -243,12 +234,12 @@ int Link::close(const arg::FileDescriptor fd){
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_close(m_driver, fd.argument());
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to close file", link_errno);
 	}
@@ -264,12 +255,12 @@ int Link::read(const arg::FileDescriptor fd,
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err =  link_read(m_driver, fd.argument(), buf.argument(), nbyte.argument());
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to read", link_errno);
 	}
@@ -283,7 +274,7 @@ int Link::write(const arg::FileDescriptor fd,
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err =  link_write(m_driver, fd.argument(), buf.argument(), nbyte.argument());
 		if(err != LINK_PROT_ERROR) break;
@@ -291,14 +282,14 @@ int Link::write(const arg::FileDescriptor fd,
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to write", link_errno);
 	}
-	unlock_device();
+
 	return check_error(err);
 
 }
 
 int Link::read_flash(int addr, void * buf, int nbyte){
 	int err;
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err =  link_readflash(m_driver, addr, buf, nbyte);
 		if(err != LINK_PROT_ERROR) break;
@@ -306,7 +297,7 @@ int Link::read_flash(int addr, void * buf, int nbyte){
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to read flash", link_errno);
 	}
-	unlock_device();
+
 	return check_error(err);
 
 }
@@ -366,7 +357,7 @@ int Link::get_is_executing(
 
 int Link::write_flash(int addr, const void * buf, int nbyte){
 	int err;
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err =  link_writeflash(m_driver, addr, buf, nbyte);
 		if(err != LINK_PROT_ERROR) break;
@@ -374,7 +365,7 @@ int Link::write_flash(int addr, const void * buf, int nbyte){
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to write flash", link_errno);
 	}
-	unlock_device();
+
 	return check_error(err);
 }
 
@@ -388,7 +379,7 @@ int Link::lseek(const arg::FileDescriptor fd,
 		return -1;
 	}
 
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_lseek(
 					m_driver,
@@ -401,7 +392,7 @@ int Link::lseek(const arg::FileDescriptor fd,
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to lseek", link_errno);
 	}
-	unlock_device();
+
 	return check_error(err);
 
 }
@@ -415,7 +406,7 @@ int Link::ioctl(const arg::FileDescriptor fd,
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_ioctl(
 					m_driver,
@@ -429,18 +420,18 @@ int Link::ioctl(const arg::FileDescriptor fd,
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to ioctl", link_errno);
 	}
-	unlock_device();
+
 	return check_error(err);
 
 }
 
 int Link::disconnect(){
-	lock_device();
+
 	if ( m_driver->phy_driver.handle != LINK_PHY_OPEN_ERROR ){
 		link_disconnect(m_driver);
 
 		if ( m_driver->phy_driver.handle != LINK_PHY_OPEN_ERROR ){
-			unlock_device(); //can't unlock the device if it has been destroyed
+			//can't unlock the device if it has been destroyed
 		}
 	}
 
@@ -449,7 +440,6 @@ int Link::disconnect(){
 	}
 
 	m_is_bootloader = false;
-	m_status_message = "";
 	m_error_message = "";
 	m_stdout_fd = -1;
 	m_stdin_fd = -1;
@@ -479,7 +469,7 @@ int Link::stat(
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_stat(
 					m_driver,
@@ -488,7 +478,7 @@ int Link::stat(
 					);
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if( err < 0 ){
 		m_error_message.sprintf("Failed to Get Stat", link_errno);
 	}
@@ -501,12 +491,12 @@ int Link::get_time(struct tm * gt){
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_gettime(m_driver, &ltm);
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to Get Time", link_errno);
 	} else {
@@ -541,12 +531,12 @@ int Link::set_time(struct tm * gt){
 		m_error_message.format("can't set time for bootloader");
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_settime(m_driver, &ltm);
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.format("failed to set time with device errno %d", link_errno);
 	}
@@ -561,7 +551,7 @@ int Link::mkdir(const arg::DestinationDirectoryPath directory,
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_mkdir(
 					m_driver,
@@ -570,7 +560,7 @@ int Link::mkdir(const arg::DestinationDirectoryPath directory,
 					);
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to create %s (%d)", directory.argument().cstring(), link_errno);
 	}
@@ -584,12 +574,12 @@ int Link::rmdir(
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_rmdir(m_driver, directory.argument().cstring());
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to remove %s (%d)", directory.argument().cstring(), link_errno);
 	}
@@ -718,12 +708,12 @@ int Link::opendir(const arg::SourceDirectoryPath directory){
 	if ( m_is_bootloader ){
 		return 0;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_opendir(m_driver, directory.argument().cstring());
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to open %s (%d)", directory.argument().cstring(), link_errno);
 	}
@@ -735,12 +725,12 @@ int Link::readdir_r(const arg::LinkDirp dirp, struct link_dirent * entry, struct
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_readdir_r(m_driver, dirp.argument(), entry, result);
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to read directory", link_errno);
 		return -1;
@@ -753,12 +743,12 @@ int Link::closedir(const arg::LinkDirp dirp){
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_closedir(m_driver, dirp.argument());
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to close directory (%d)", link_errno);
 	}
@@ -772,7 +762,7 @@ int Link::symlink(const arg::SourceFilePath old_path,
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_symlink(m_driver,
 								 old_path.argument().cstring(),
@@ -780,7 +770,7 @@ int Link::symlink(const arg::SourceFilePath old_path,
 								 );
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to create symlink %s (%d)",
 										new_path.argument().cstring(),
@@ -794,12 +784,12 @@ int Link::unlink(const arg::SourceFilePath filename){
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_unlink(m_driver, filename.argument().cstring());
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to remove %s (%d)", filename.argument().cstring(), link_errno);
 	}
@@ -868,13 +858,13 @@ int Link::copy(
 		} else {
 
 			//Create the device file
-			lock_device();
+
 			if( device_file.create(
 					 dest,
 					 arg::IsOverwrite(true),
 					 permissions) < 0 ){
 				m_error_message.sprintf("Failed to create file %s on device", dest.argument().cstring(), link_errno);
-				unlock_device();
+
 				return -1;
 			}
 
@@ -890,12 +880,12 @@ int Link::copy(
 			}
 			if( device_file.close() < 0 ){
 				m_error_message.sprintf("Failed to close Link device file (%d)", link_errno);
-				unlock_device();
+
 				return -1;
 			}
 
 		}
-		unlock_device();
+
 
 		return err;
 
@@ -921,18 +911,18 @@ int Link::copy(
 
 
 		//Open the device file
-		lock_device();
+
 
 		if( device_file.open(
 				 arg::FilePath(src.argument()),
 				 fs::OpenFlags::read_only()
 				 ) < 0 ){
 			m_error_message.sprintf("Failed to open file %s on device (%d)", src.argument().cstring(), link_errno);
-			unlock_device();
+
 			return -1;
 		}
 
-		m_progress_max = st.st_size;		
+		m_progress_max = st.st_size;
 		if( device_file.size() > 256*50 ){
 			copy_page_size = device_file.size() / 50;
 		} else {
@@ -951,12 +941,12 @@ int Link::copy(
 
 		if( device_file.close() < 0 ){
 			m_error_message.sprintf("Failed to close file %s on device (%d)", src.argument().cstring(), link_errno);
-			unlock_device();
+
 			return -1;
 		}
 
 
-		unlock_device();
+
 	}
 	return 0;
 }
@@ -972,12 +962,12 @@ int Link::run_app(const arg::SourceFilePath path){
 		return -1;
 	}
 
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_exec(m_driver, path.argument().cstring());
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		if ( err == LINK_TRANSFER_ERR ){
 			m_error_message = "Connection Failed";
@@ -998,12 +988,12 @@ int Link::format(const arg::SourceDirectoryPath path){
 	}
 	m_error_message = "";
 	//Format the filesystem
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_mkfs(m_driver, path.argument().cstring());
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("failed to format filesystem with device errno %d", link_errno);
 	}
@@ -1015,12 +1005,12 @@ int Link::kill_pid(int pid, int signo){
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_kill_pid(m_driver, pid, signo);
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to kill process %d with device errno %d", pid, link_errno);
 	}
@@ -1028,18 +1018,18 @@ int Link::kill_pid(int pid, int signo){
 }
 
 int Link::reset(){
-	lock_device();
+
 	link_reset(m_driver);
-	unlock_device();
+
 	m_driver->transport_version = 0;
 	m_driver->phy_driver.handle = LINK_PHY_OPEN_ERROR;
 	return 0;
 }
 
 int Link::reset_bootloader(){
-	lock_device();
+
 	link_resetbootloader(m_driver);
-	unlock_device();
+
 	m_driver->transport_version = 0;
 	m_driver->phy_driver.handle = LINK_PHY_OPEN_ERROR;
 	return 0;
@@ -1052,7 +1042,7 @@ int Link::rename(const arg::SourceFilePath old_path,
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_rename(
 					m_driver,
@@ -1061,7 +1051,7 @@ int Link::rename(const arg::SourceFilePath old_path,
 					);
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if( err < 0 ){
 		m_error_message.sprintf("failed to rename file with device errno %d", link_errno);
 	}
@@ -1076,7 +1066,7 @@ int Link::chown(const arg::SourceFilePath path,
 	if ( m_is_bootloader ){
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_chown(
 					m_driver,
@@ -1086,7 +1076,7 @@ int Link::chown(const arg::SourceFilePath path,
 					);
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to chown file with device errno %d", link_errno);
 	}
@@ -1102,7 +1092,7 @@ int Link::chmod(
 		m_error_message = "target is a bootloader";
 		return -1;
 	}
-	lock_device();
+
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_chmod(
 					m_driver,
@@ -1111,7 +1101,7 @@ int Link::chmod(
 					);
 		if(err != LINK_PROT_ERROR) break;
 	}
-	unlock_device();
+
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to chmod file with device errno %d", link_errno);
 	}
@@ -1139,10 +1129,394 @@ int Link::get_bootloader_attr(bootloader_attr_t & attr){
 	return 0;
 }
 
-int Link::update_os(const arg::SourceFile image,
-						  const arg::IsVerify is_verify,
-						  const ProgressCallback * progress_callback,
-						  const arg::BootloaderRetryCount bootloader_retry_total){
+u32 Link::validate_os_image_id_with_connected_bootloader(
+		const arg::SourceFile image
+		){
+	int err;
+	u32 image_id;
+
+	if ( m_is_bootloader == false ){
+		m_error_message = "Target is not a bootloader";
+		return 0;
+	}
+
+	//now write the OS to the device using link_writeflash()
+	m_progress_max = 0;
+	m_progress = 0;
+
+	if( image.argument().seek(
+			 arg::Location(BOOTLOADER_HARDWARE_ID_OFFSET),
+			 File::SET
+			 ) < 0 ){
+		m_error_message = "Failed to seek to bootloader image hardware ID value";
+		return 0;
+	}
+
+	if( image.argument().read(
+			 arg::DestinationBuffer(&image_id),
+			 arg::Size(sizeof(u32))
+			 ) != sizeof(u32) ){
+		m_error_message = "Failed to read bootloader image id";
+		return 0;
+	}
+
+	if( image.argument().seek(arg::Location(0), File::SET) < 0 ){
+		m_error_message = "Failed to seek bootloader image start";
+		return 0;
+	}
+
+	m_progress_max = image.argument().size();
+
+	if( (image_id & ~0x01) != (m_bootloader_attributes.hardware_id & ~0x01) ){
+		err = -1;
+		m_error_message.format("Kernel Image ID (0x%X) does not match Bootloader ID (0x%X)",
+									  image_id,
+									  m_bootloader_attributes.hardware_id);
+		return 0;
+	}
+
+	return image_id;
+}
+
+int Link::erase_os(
+		arg::ProgressPrinter progress_printer,
+		const arg::BootloaderRetryCount bootloader_retry_total
+		){
+	int err;
+
+	if ( m_is_bootloader == false ){
+		m_error_message = "Target is not a bootloader";
+		return -1;
+	}
+
+	const sys::ProgressCallback * progress_callback =
+			progress_printer.argument().progress_callback();
+
+	progress_printer.argument().progress_key() = "erasing";
+
+
+	if( progress_callback ){
+		progress_callback->update(0, ProgressCallback::indeterminate_progress_total());
+	}
+	//first erase the flash
+	err = link_eraseflash(m_driver);
+
+	if ( err < 0 ){
+		if( progress_callback ){ progress_callback->update(0, 0); }
+		m_error_message = "Failed to erase flash";
+		return check_error(err);
+	}
+
+	bootloader_attr_t attr;
+	memset(&attr, 0, sizeof(attr));
+	int retry = 0;
+	do {
+		chrono::wait(chrono::Milliseconds(500));
+		err = get_bootloader_attr(attr);
+		if( progress_callback ){
+			progress_callback->update(
+						retry,
+						ProgressCallback::indeterminate_progress_total()
+						);
+		}
+	} while (
+				(err < 0) &&
+				(retry++ < bootloader_retry_total.argument())
+				);
+
+	chrono::wait(chrono::Milliseconds(250));
+
+	//flush just incase the protocol gets filled with get attr requests
+	driver()->phy_driver.flush( driver()->phy_driver.handle );
+
+	if( progress_callback ){ progress_callback->update(0, 0); }
+
+
+	if( err < 0 ){
+		var::String error = m_error_message;
+		m_error_message.format("Failed to ping bootloader after erase -> %s",
+									  error.cstring());
+		return err;
+	}
+
+	return 0;
+}
+
+int Link::install_os(
+		const arg::SourceFile image,
+		const arg::IsVerify is_verify,
+		const arg::HardwareId image_id,
+		arg::ProgressPrinter progress_printer
+		){
+
+	//must be connected to the bootloader with an erased OS
+	int err;
+	int bytes_read;
+	const int buffer_size = 1024;
+
+	const sys::ProgressCallback * progress_callback =
+			progress_printer.argument().progress_callback();
+
+	var::Data start_address_buffer = var::Data( arg::Size(256) );
+	var::Data buffer = var::Data( arg::Size(buffer_size) );
+	var::Data compare_buffer = var::Data( arg::Size(buffer_size) );
+
+
+	if ( m_is_bootloader == false ){
+		m_error_message = "Target is not a bootloader";
+		return -1;
+	}
+
+
+	if( image.argument().seek(arg::Location(0), File::SET) < 0 ){
+		m_error_message = "Failed to seek bootloader image start";
+		return -1;
+	}
+
+	u32 start_address = m_bootloader_attributes.startaddr;
+	u32 loc = start_address;
+
+
+	progress_printer.argument().progress_key() = "installing";
+	m_error_message = "";
+
+	if( progress_callback ){ progress_callback->update(0, 100); }
+
+	buffer.fill<u8>(0xff);
+
+	bootloader_attr_t attr;
+	if( get_bootloader_attr(attr) < 0 ){
+		m_error_message = "failed to get bootloader attributes before write";
+		return -1;
+	}
+
+	while(
+			(bytes_read = image.argument().read(
+				 arg::DestinationData(buffer)
+				 ) ) > 0
+			){
+
+		if( loc == start_address ){
+			//we want to write the first 256 bytes last because the bootloader checks this for a valid image
+			start_address_buffer.copy_contents(
+						arg::SourceData(buffer),
+						arg::Size(start_address_buffer.size())
+						);
+
+			//memcpy(stackaddr, buffer, 256);
+
+			//for now write 0xff to the first 256 bytes telling the bootloader the image isn't valid yet
+			//memset(buffer, 0xFF, 256);
+			buffer.fill(
+						(u8)0xff,
+						arg::Count(start_address_buffer.size())
+						);
+
+		}
+
+		if ( (err = link_writeflash(
+					m_driver,
+					loc,
+					buffer.to_const_void(),
+					bytes_read
+					)
+				) != bytes_read ){
+			m_error_message.format("Failed to write to link flash at 0x%x (%d, %d) -> try the operation again",
+										  loc,
+										  err, link_errno
+										  );
+			if ( err < 0 ){
+				err = -1;
+			}
+			break;
+		}
+
+
+		loc += bytes_read;
+		m_progress += bytes_read;
+		if( progress_callback && (progress_callback->update(m_progress, m_progress_max) == true)){
+			break;
+		}
+		err = 0;
+	}
+
+	if ( err == 0 ){
+
+		if ( is_verify.argument() == true ){
+
+			image.argument().seek(arg::Location(0), File::SET);
+			loc = start_address;
+			m_progress = 0;
+
+			progress_printer.argument().progress_key() = "verifying";
+
+			while(
+					(bytes_read = image.argument().read(
+						 arg::DestinationData(buffer)
+						 )) > 0
+					){
+
+				if ( (err = link_readflash(
+							m_driver,
+							loc,
+							compare_buffer.to_void(),
+							bytes_read)
+						) != bytes_read ){
+					m_error_message.sprintf("Failed to read flash memory", link_errno);
+					if ( err > 0 ){
+						err = -1;
+					}
+					break;
+
+				} else {
+
+					if( loc == start_address ){
+						buffer.fill(
+									(u8)0xff,
+									arg::Count(start_address_buffer.size())
+									);
+					}
+
+					compare_buffer.resize(bytes_read);
+					buffer.resize(bytes_read);
+
+					if( compare_buffer != buffer ){
+						//if ( memcmp((void*)cmpBuffer, buffer, bytes_read) != 0 ){
+						m_error_message.sprintf("Failed to verify program installation", link_errno);
+
+						return -1;
+					}
+
+					loc += bytes_read;
+					m_progress += bytes_read;
+					if( progress_callback && (progress_callback->update(m_progress, m_progress_max) == true)){
+						break;
+					}
+					err = 0;
+				}
+			}
+		}
+
+		if( image_id.argument() != m_bootloader_attributes.hardware_id ){
+			//if the LSb of the image_id doesn't match the bootloader HW ID, this will correct it
+			var::DataReference::memory_copy(
+						arg::SourceBuffer(&m_bootloader_attributes.hardware_id),
+						arg::DestinationBuffer(start_address_buffer.to_u8() + BOOTLOADER_HARDWARE_ID_OFFSET),
+						arg::Size( sizeof(u32) )
+						);
+		}
+
+		//write the start block
+		if( (err = link_writeflash(
+				  m_driver,
+				  start_address,
+				  start_address_buffer.to_const_void(),
+				  start_address_buffer.size())
+			  ) != start_address_buffer.size() ){
+
+			if( progress_callback ){
+				progress_callback->update(0,0);
+			}
+
+
+			m_error_message.format(
+						"Failed to write %d bytes to first block 0x%x (%d, %d)",
+						start_address_buffer.size(),
+						start_address,
+						SYSFS_GET_RETURN(err),
+						SYSFS_GET_RETURN_ERRNO(err)
+						);
+
+			link_eraseflash(m_driver);
+			return -1;
+		}
+
+
+		if( is_verify.argument() == true ){
+			//verify the stack address
+			buffer.resize( start_address_buffer.size() );
+			if( (err = link_readflash(
+					  m_driver,
+					  start_address,
+					  buffer.to_void(),
+					  start_address_buffer.size())
+				  ) != start_address_buffer.size() ){
+				m_error_message.format("Failed to write stack addr %d", err);
+				if( progress_callback ){ progress_callback->update(0,0); }
+
+				return -1;
+			}
+
+			if( buffer != start_address_buffer ){
+				m_error_message = "Failed to verify stack address block";
+				if( progress_callback ){ progress_callback->update(0,0); }
+				link_eraseflash(m_driver);
+				return -1;
+			}
+		}
+	}
+
+	if( progress_callback ){ progress_callback->update(0,0); }
+
+	return check_error(err);
+}
+
+int Link::update_os(
+		const arg::SourceFile image,
+		const arg::IsVerify is_verify,
+		arg::ProgressPrinter progress_printer,
+		const arg::BootloaderRetryCount bootloader_retry_total
+		){
+
+	u32 image_id = validate_os_image_id_with_connected_bootloader(
+				image
+				);
+
+	if( image_id == 0 ){
+		progress_printer.argument().error(
+					"failed to validate id '%s'",
+					error_message().cstring()
+					);
+		return -1;
+	}
+
+	var::String progress_key = progress_printer.argument().progress_key();
+
+	if( erase_os(
+			 progress_printer,
+			 bootloader_retry_total
+			 )
+		 ){
+		progress_printer.argument().error("failed to erase os '%s'",
+													 error_message().cstring()
+													 );
+		progress_printer.argument().progress_key() = progress_key;
+		return -1;
+	}
+
+	if( install_os(
+			 image,
+			 is_verify,
+			 arg::HardwareId(image_id),
+			 progress_printer
+			 ) < 0 ){
+		progress_printer.argument().error("failed to install os '%s'",
+													 error_message().cstring()
+													 );
+		progress_printer.argument().progress_key() = progress_key;
+		return -1;
+	}
+
+	progress_printer.argument().progress_key() = progress_key;
+	return 0;
+}
+
+int Link::update_os(
+		const arg::SourceFile image,
+		const arg::IsVerify is_verify,
+		const ProgressCallback * progress_callback,
+		const arg::BootloaderRetryCount bootloader_retry_total
+		){
 	int err;
 	uint32_t loc;
 	int bytesRead;
@@ -1204,13 +1578,12 @@ int Link::update_os(const arg::SourceFile image,
 		return check_error(err);
 	}
 
-	lock_device();
 	if( progress_callback ){ progress_callback->update(0, 100); }
 	//first erase the flash
 	err = link_eraseflash(m_driver);
 
 	if ( err < 0 ){
-		unlock_device();
+
 		if( progress_callback ){ progress_callback->update(0, 0); }
 		m_error_message = "Failed to erase flash";
 		return check_error(err);
@@ -1227,7 +1600,6 @@ int Link::update_os(const arg::SourceFile image,
 	}
 
 	m_error_message = "";
-	m_status_message = "Writing OS to Target...";
 
 	while( (bytesRead = image.argument().read(
 				  arg::DestinationBuffer(buffer),
@@ -1266,9 +1638,6 @@ int Link::update_os(const arg::SourceFile image,
 			loc = startAddr;
 			m_progress = 0;
 
-			m_status_message = "Verifying...";
-
-
 			while( (bytesRead = image.argument().read(
 						  arg::DestinationBuffer(buffer),
 						  arg::Size(buffer_size)
@@ -1293,7 +1662,7 @@ int Link::update_os(const arg::SourceFile image,
 							}
 						}
 						m_error_message.sprintf("Failed to verify program installation", link_errno);
-						unlock_device();
+
 						return -1;
 					}
 
@@ -1325,7 +1694,7 @@ int Link::update_os(const arg::SourceFile image,
 			if( (err = link_readflash(m_driver, startAddr, buffer, 256)) != 256 ){
 				m_error_message.format("Failed to write stack addr %d", err);
 				if( progress_callback ){ progress_callback->update(0,0); }
-				unlock_device();
+
 				return -1;
 			}
 
@@ -1333,18 +1702,15 @@ int Link::update_os(const arg::SourceFile image,
 				link_eraseflash(m_driver);
 				m_error_message = "Failed to verify stack address";
 				if( progress_callback ){ progress_callback->update(0,0); }
-				unlock_device();
+
 				return -1;
 			}
 		}
 
-		m_status_message = "Finalizing...";
-
 	}
 
-	m_status_message = "Done";
 
-	unlock_device();
+
 
 	if( err < 0 ){
 		link_eraseflash(m_driver);

@@ -95,6 +95,7 @@ const sgfx::FontInfo * Assets::find_font(
 		const arg::FontStyle style,
 		const arg::FontName name,
 		const arg::IsExactMatch is_exact_match){
+
 	initialize();
 
 	u8 closest_point_size = 0;
@@ -103,8 +104,11 @@ const sgfx::FontInfo * Assets::find_font(
 	//find point size and weight
 	for(u32 i=0; i < font_info_list().count(); i++){
 		sgfx::FontInfo & info(m_font_info_list.at(i));
-		if( ((style.argument() == FontInfo::ICONS) && (info.style() == FontInfo::ICONS)) ||
-			 ((style.argument() != FontInfo::ICONS) && (info.style() != FontInfo::ICONS)) ){
+		if( ((style.argument() == FontInfo::ICONS) &&
+			  (info.style() == FontInfo::ICONS))
+			 ||
+			 ((style.argument() != FontInfo::ICONS) &&
+			  (info.style() != FontInfo::ICONS)) ){
 
 			if( info.point_size() <= point_size.argument() ){
 				closest_point_size = info.point_size();
@@ -136,8 +140,11 @@ const sgfx::FontInfo * Assets::find_font(
 	//first pass is to find the exact style in a point size that is less than or equal
 	for(u32 i=0; i < font_info_list().count(); i++){
 		sgfx::FontInfo & info(m_font_info_list.at(i));
-		if( ((style.argument() == FontInfo::ICONS) && (info.style() == FontInfo::ICONS)) ||
-			 ((style.argument() != FontInfo::ICONS) && (info.style() != FontInfo::ICONS)) ){
+		if( ((style.argument() == FontInfo::ICONS) &&
+			  (info.style() == FontInfo::ICONS))
+			 ||
+			 ((style.argument() != FontInfo::ICONS) &&
+			  (info.style() != FontInfo::ICONS)) ){
 			if( (info.point_size() == closest_point_size) && (info.style() == closest_style) ){
 				if( info.font() == 0 ){
 					info.set_font(new FileFont(

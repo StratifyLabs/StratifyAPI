@@ -32,7 +32,7 @@ void InfoListItem::draw_to_scale(const DrawingScaledAttr & attr){
 
 	//draw the label and the icon
 	Area padded;
-	padded = Area(d.width, d.height);
+	padded = Area(d);
 
 	if( label().font_size() == 0 ){
 		height = padded.height();

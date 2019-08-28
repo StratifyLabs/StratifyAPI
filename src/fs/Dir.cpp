@@ -272,7 +272,7 @@ int Dir::count(){
 		count++;
 	}
 
-	seek(loc);
+	seek(arg::Location(loc));
 
 	return count;
 

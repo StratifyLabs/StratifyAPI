@@ -170,7 +170,7 @@ public:
 	 * @param w The width of the memory area in pixels
 	 * @param h The height of the memory area in pixels
 	 */
-	Display(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h) : sgfx::Bitmap(mem,w,h){};
+	Display(sg_bmap_data_t * mem, const sgfx::Area & area) : sgfx::Bitmap(mem,area){};
 
 	/*! \details Constructs a new object and dynamically allocates memory for
 	 * the buffer.
@@ -178,7 +178,7 @@ public:
 	 * @param w The width of the display
 	 * @param h The height of the display
 	 */
-	Display(sg_size_t w, sg_size_t h) : sgfx::Bitmap(w,h){};
+	Display(const sgfx::Area & area) : sgfx::Bitmap(area){};
 
 	/*! \details Initializes the display. */
 	virtual int initialize(const var::ConstString & name = "") = 0;

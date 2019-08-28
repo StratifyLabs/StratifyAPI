@@ -31,7 +31,12 @@ int DisplayDevice::initialize(const arg::SourceFilePath & name){
 
 		set_bits_per_pixel(info.bits_per_pixel);
 
-		allocate(sgfx::Area(info.width, info.height));
+		allocate(
+					sgfx::Area(
+						arg::Width(info.width),
+						arg::Height(info.height)
+						)
+					);
 
 		set_margin_left(info.margin_left);
 		set_margin_right(info.margin_right);

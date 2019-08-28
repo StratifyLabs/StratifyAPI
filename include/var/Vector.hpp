@@ -75,7 +75,7 @@ public:
 	  * The same limitations apply to this method as apply to the read-write version.
 	  *
 	  */
-	const T & at(u32 pos) const { return Data::at<T>(pos); }
+	const T & at(u32 pos) const { return Data::at<const T>(pos); }
 
 	/*! \details Provides un-bounded access to the specified element (read-only).
 	  *

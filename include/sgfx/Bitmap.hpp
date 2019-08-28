@@ -76,7 +76,10 @@ public:
 	 * @param hdr A pointer to the existing bitmap structure
 	 * @param readonly True if the data is stored in read-only memory
 	 */
-	Bitmap(const sg_bmap_header_t * hdr, bool readonly = false); //read/write bitmap
+	Bitmap(
+			const sg_bmap_header_t * hdr,
+			const arg::IsReadOnly is_read_only = arg::IsReadOnly(false)
+			); //read/write bitmap
 
 	/*! \details Constructs a bitmap using an existing memory buffer.
 	 *
@@ -85,14 +88,10 @@ public:
 	 * @param h The height of the bitmap buffer
 	 * @param readonly True if \a mem is in read-only memory
 	 */
-	Bitmap(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly = false); //read/write bitmap
-
-	/*! \details Constructs a new bitmap (dynamic memory allocation).
-	 *
-	 * @param w Width of the new bitmap
-	 * @param h Height of the new bitmap
-	 */
-	Bitmap(sg_size_t w, sg_size_t h);
+	Bitmap(sg_bmap_data_t * mem,
+			const Area & area,
+			 const arg::IsReadOnly is_read_only = arg::IsReadOnly(false)
+			); //read/write bitmap
 
 	/*! \details Constructs a new bitmap (dynamic memory allocation).
 	 *
@@ -158,7 +157,10 @@ public:
 	Region get_viewable_region() const;
 
 	/*! \details Sets data pointer and size for bitmap */
-	void set_data(const sg_bmap_header_t * hdr, bool readonly = false);
+	void refer_to(
+			const sg_bmap_header_t * hdr,
+			const arg::IsReadOnly is_read_only = arg::IsReadOnly(false)
+			);
 
 	/*! \details Sets the data pointer based on the width and height of the bitmap.
 	 *
@@ -167,28 +169,29 @@ public:
 	 * @param h The height of the bitmap in pixels
 	 * @param readonly True if \a mem is read-only
 	 */
-	void set_data(sg_bmap_data_t * mem, sg_size_t w, sg_size_t h, bool readonly = false);
-	void set_data(sg_bmap_data_t * mem, const Area & area){ set_data(mem, area.width(), area.height()); }
-	void set_data(sg_bmap_data_t * mem, bool readonly = false){ set_data(mem, width(), height(), readonly); }
+	void refer_to(
+			sg_bmap_data_t * mem,
+			const Area & area,
+			const arg::IsReadOnly is_read_only = arg::IsReadOnly(false)
+			);
 
 	/*! \details Changes effective size without free/allocate sequence */
-	bool set_size(sg_size_t w, sg_size_t h, sg_size_t offset = 0);
+	bool resize(const Area & area);
 
 	/*! \details Returns the number of bytes used to store a Bitmap of specified size
 	 *
 	 * @param w Width used for calculation
 	 * @param h Height used for calculation
 	 */
-	u32 calculate_size(const Area & area) const { return api()->calc_bmap_size(bmap(), area); }
-	u32 calc_size(int w, int h) const { return calculate_size(Area(w,h)); }
-
-	static u16 calc_word_width(sg_size_t w){
-		return sg_calc_word_width(w);
+	u32 calculate_size(const Area & area) const {
+		return api()->calc_bmap_size(bmap(), area);
 	}
+
 
 	/*! \details Returns the number of bytes used to store the Bitmap. */
 	u32 calculate_size() const { return calculate_size(area()); }
-	u32 calc_size() const { return calculate_size(); }
+
+
 	Point center() const;
 
 	/*! \details Returns the maximum x value. */
@@ -196,7 +199,7 @@ public:
 	/*! \details Returns the maximum y value. */
 	sg_int_t y_max() const { return height()-1; }
 
-	static Area load_dim(const arg::SourceFilePath & path);
+	static Area load_area(const arg::SourceFilePath & path);
 
 	/*! \details Loads a bitmap from a file.
 	 *
@@ -222,8 +225,6 @@ public:
 	 */
 	int allocate(const Area & d);
 
-	int alloc(sg_size_t w, sg_size_t h){ return allocate(Area(w,h)); }
-	int alloc(const Area & d){ return allocate(d); }
 
 	/*! \details Free memory associated with bitmap (auto freed on ~Bitmap) */
 	int free();

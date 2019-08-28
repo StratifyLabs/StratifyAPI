@@ -15,6 +15,7 @@
 #include "Appfs.hpp"
 #include "Sys.hpp"
 #include "ProgressCallback.hpp"
+#include "Printer.hpp"
 
 namespace sys {
 
@@ -98,11 +99,6 @@ public:
 	  *
 	  */
 	int progress_max() const { return m_progress_max; }
-
-	/*! \details Returns the status of the current operation in progress.
-	  *
-	  */
-	const var::String & status_message() const { return m_status_message; }
 
 	/*! \details Connects to the specified Stratify OS device. After calling this,
 	  * other applications will not have access to the device.
@@ -548,6 +544,12 @@ public:
 					  const arg::BootloaderRetryCount bootloader_retry_total = arg::BootloaderRetryCount(20)
 			);
 
+	int update_os(const arg::SourceFile image,
+					  const arg::IsVerify is_verify,
+					  arg::ProgressPrinter progress_printer,
+					  const arg::BootloaderRetryCount bootloader_retry_total = arg::BootloaderRetryCount(20)
+			);
+
 	/*! \details Returns the driver needed by other API objects.
 	  *
 	  * Other objects need the link driver in order to operate correctly.
@@ -652,15 +654,8 @@ public:
 
 
 private:
-
-	int check_error(int err);
-	int lock_device();
-	int unlock_device();
-	void reset_progress();
-
 	var::String m_notify_path;
 	var::String m_error_message;
-	var::String m_status_message;
 	int m_stdout_fd;
 	int m_stdin_fd;
 	volatile int m_progress;
@@ -675,6 +670,26 @@ private:
 
 	link_transport_mdriver_t m_driver_instance;
 	link_transport_mdriver_t * m_driver;
+
+
+	u32 validate_os_image_id_with_connected_bootloader(
+			const arg::SourceFile image
+			);
+
+	int erase_os(
+			arg::ProgressPrinter progress_printer,
+			const arg::BootloaderRetryCount bootloader_retry_total = arg::BootloaderRetryCount(20)
+			);
+
+	int install_os(const arg::SourceFile image,
+			const arg::IsVerify is_verify,
+			const arg::HardwareId image_id,
+			arg::ProgressPrinter progress_printer
+			);
+
+	int check_error(int err);
+	void reset_progress();
+
 };
 
 }

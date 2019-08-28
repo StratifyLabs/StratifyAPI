@@ -17,7 +17,13 @@ class Point : public api::SgfxInfoObject {
 public:
 	Point(){ m_value.x = 0; m_value.y = 0; }
 	Point(const sg_point_t & p){ m_value = p; }
-	Point(sg_int_t x, sg_int_t y){ m_value.x = x; m_value.y = y; }
+	Point(
+			const arg::XValue x,
+			const arg::YValue y
+			){
+		m_value.x = x.argument();
+		m_value.y = y.argument();
+	}
 
 	const sg_point_t & point() const { return m_value; }
 	sg_point_t & point(){ return m_value; }
@@ -37,10 +43,18 @@ public:
 
 	Point & operator=(const Point & a){ m_value = a; return *this; }
 	Point & operator+=(const Point & a){ api()->point_shift(&m_value, a); return *this; }
+	Point & operator+=(const arg::XValue x);
+	Point & operator+=(const arg::YValue y);
 	Point & operator-=(const Point & a){ api()->point_subtract(&m_value, &a.point()); return *this; }
+	Point & operator-=(const arg::XValue x);
+	Point & operator-=(const arg::YValue y);
 	Point operator*(float f) const;
 	Point operator+(const Point & a) const;
+	Point operator+(const arg::XValue x) const;
+	Point operator+(const arg::YValue y) const;
 	Point operator-(const Point & a) const;
+	Point operator-(const arg::XValue x) const;
+	Point operator-(const arg::YValue y) const;
 
 	void rotate(s16 angle){ api()->point_rotate(&m_value, angle); }
 	void scale(u16 a){ api()->point_scale(&m_value, a); }

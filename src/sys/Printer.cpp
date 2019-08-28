@@ -857,7 +857,7 @@ bool Printer::update_progress(int progress, int total){
 
 		if( m_progress_state	> 0 ){
 
-			if( total == -1 ){
+			if( total == ProgressCallback::indeterminate_progress_total() ){
 				var::String output;
 				output.format("#" F32U, progress);
 				print(output.cstring());

@@ -56,6 +56,10 @@ public:
 			void * context = 0
 			);
 
+	static int indeterminate_progress_total(){
+		return -1;
+	}
+
 
 	/*! \details Assigns a callback. */
 	void set_callback(bool (*callback)(void*,int,int)){

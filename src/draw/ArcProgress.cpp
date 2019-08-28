@@ -12,13 +12,13 @@ ArcProgress::ArcProgress() {
 
 void ArcProgress::draw_to_scale(const DrawingScaledAttr & attr){
 	//draw the progress bar on the bitmap with x, y at the top left corner
-	sg_point_t p = attr.point();
 	Area d = attr.area();
 	sg_region_t bounds;
 	s8 dir;
 	float xf, yf;
 	float xf_inner, yf_inner;
-	Point center(p.x + d.width()/2, p.y + d.height()/2);
+	Point center = attr.region().center();
+
 	sg_size_t rx = d.width()/2;
 	sg_size_t ry = d.height()/2;
 

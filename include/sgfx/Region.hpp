@@ -37,8 +37,10 @@ public:
 	}
 
 	Point center() const {
-		return Point(m_region.point.x + m_region.area.width/2,
-						 m_region.point.y + m_region.area.height/2);
+		return Point(
+					arg::XValue(m_region.point.x + m_region.area.width/2),
+					arg::YValue(m_region.point.y + m_region.area.height/2)
+					);
 	}
 
 	void set_region(const Point & top_left, const Point & bottom_right){

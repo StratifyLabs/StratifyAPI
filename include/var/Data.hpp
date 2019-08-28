@@ -114,9 +114,14 @@ public:
 	 * @param d The value to write to the data
 	 *
 	 */
-	template<typename T> void fill(const T & value){
-		u32 count = size() / sizeof(T);
-		for(u32 i=0; i < count; i++){
+	template<typename T> void fill(
+			const T & value,
+			arg::Count count = arg::Count(0)
+			){
+		if( count.argument() == 0 ){
+			count.argument() = size()/ sizeof(T);
+		}
+		for(u32 i=0; i < count.argument(); i++){
 			at<T>(i) = value;
 		}
 	}

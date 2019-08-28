@@ -88,14 +88,27 @@ public:
 			);
 #endif
 
+	/*! \details Destructs the object.
+	 *
+	 * If the object has a directory that is
+	 * currently open, the directory will
+	 * be closed upon destruction.
+	 *
+	 */
 	~Dir();
 
 	/*! \details Opens a directory. */
 	int open(const arg::SourceDirectoryPath & name);
-	/*! \details Closes the directory. */
+	/*! \details Closes the directory.
+	 *
+	 * If this method is not called explicitly before
+	 * the object is destroyed, it will be called
+	 * during destruction. See ~Dir().
+	 *
+	 */
 	int close();
 
-	/*! \details Returns a true if the directory is open. */
+	/*! \details Returns true if the directory is open. */
 	bool is_open() const { return m_dirp != 0; }
 
 	/*! \details Returns a pointer to the next entry or 0 if no more entries exist.
@@ -112,8 +125,8 @@ public:
 			const arg::IsRecursive recursive = arg::IsRecursive(false));
 #else
 	static int remove(const arg::SourceDirectoryPath path,
-			const arg::IsRecursive recursive,
-			link_transport_mdriver_t * driver = 0
+							const arg::IsRecursive recursive,
+							link_transport_mdriver_t * driver = 0
 			);
 #endif
 
@@ -126,18 +139,47 @@ public:
 
 	var::String get_entry();
 
+	/*! \details Returns a list of all
+	 * the entries in the directory.
+	 *
+	 *
+	 * ```
+	 * #include <sapi/fs.hpp>
+	 * #include <sapi/var.hpp>
+	 *
+	 *
+	 * Dir d;
+	 *
+	 * d.open(arg::SourceDirectoryPath("/home");
+	 * Vector<String> list = d.read_list();
+	 * d.close();
+	 *
+	 * for(u32 i=0; i < list.count(); i++){
+	 *   printf("Entry is %s\n", list.at(i).cstring());
+	 * }
+	 *
+	 * ```
+	 *
+	 *
+	 *
+	 */
 	var::Vector<var::String> read_list();
 
 
-
 	/*! \details Returns a pointer (const) to the name of the most recently read entry. */
-	const char * name(){ return m_entry.d_name; }
+	const char * name(){
+		return m_entry.d_name;
+	}
 
 	/*! \details Returns a pointer (editable) to the name of the most recently read entry. */
-	char * data(){ return m_entry.d_name; }
+	char * data(){
+		return m_entry.d_name;
+	}
 
 	/*! \details Returns the serial number of the most recently read entry. */
-	int ino(){ return m_entry.d_ino; }
+	int ino(){
+		return m_entry.d_ino;
+	}
 
 #ifndef __link
 	/*! \details Returns the directory handle pointer. */
@@ -145,11 +187,34 @@ public:
 	/*! \details Counts the total number of entries in the directory. */
 	int count();
 	/*! \details Rewinds the directory pointer. */
-	inline void rewind(){ if( m_dirp ) rewinddir(m_dirp); }
-	/*! \details Seeks to a location in the directory. */
-	inline void seek(long loc){ if( m_dirp ) seekdir(m_dirp, loc); }
-	/*! \details Returns the current pointer location in the directory. */
-	inline long tell(){ if( m_dirp ){ return telldir(m_dirp); } return 0; }
+	void rewind(){
+		if( m_dirp ) {
+			rewinddir(m_dirp);
+		}
+	}
+	/*! \details Seeks to a location in the directory.
+	 *
+	 * Each entry in the directory occupies 1 location
+	 * space. The first entry is at location 0.
+	 *
+	 *
+	 */
+	void seek(arg::Location location){
+		if( m_dirp ) {
+			seekdir(m_dirp, location.argument());
+		}
+	}
+
+	/*! \details Returns the current location in the directory.
+	 *
+	 *
+	 */
+	inline long tell(){
+		if( m_dirp ){
+			return telldir(m_dirp);
+		}
+		return 0;
+	}
 #else
 	void set_driver(link_transport_mdriver_t * d){ m_driver = d; }
 #endif

@@ -5,6 +5,7 @@
 
 #include <sapi/sg_types.h>
 #include "../api/SgfxObject.hpp"
+#include "../arg/Argument.hpp"
 
 namespace sgfx {
 
@@ -15,7 +16,14 @@ namespace sgfx {
 class Area : public api::SgfxInfoObject {
 public:
 	Area();
-	Area(sg_size_t w, sg_size_t h){ m_value.width = w; m_value.height = h; }
+	Area(
+			const arg::Width width,
+			const arg::Height height
+			){
+		m_value.width = width.argument();
+		m_value.height = height.argument();
+	}
+
 	Area(const sg_area_t & d){ m_value = d; }
 
 	bool is_valid() const {

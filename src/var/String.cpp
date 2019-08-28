@@ -165,7 +165,8 @@ String& String::insert(
 	return *this;
 }
 
-String& String::erase(const arg::Position position,
+String& String::erase(
+		const arg::Position position,
 		const arg::Length length
 		){
 	char * p = to<char>();

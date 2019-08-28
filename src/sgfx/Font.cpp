@@ -114,7 +114,11 @@ int Font::draw(char c, Bitmap & dest, const Point & point) const {
 		return -1;
 	}
 
-	Point p = point + Point(m_char.offset_x, m_char.offset_y);
+	Point p = point +
+			Point(
+				arg::XValue(m_char.offset_x),
+				arg::YValue(m_char.offset_y)
+				);
 
 	draw_char_on_bitmap(m_char, dest, p);
 
@@ -144,7 +148,10 @@ int Font::draw(const var::ConstString & const_string, Bitmap & bitmap, const Poi
 			}
 		}
 
-		p += Point(w,0);
+		p += Point(
+					arg::XValue(w),
+					arg::YValue(0)
+					);
 
 	}
 	return 0;
