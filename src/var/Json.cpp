@@ -452,7 +452,11 @@ int JsonDocument::save(
 	int result;
 
 #if defined __win32
-	result = JsonValue::api()->dump_file(value.m_value, path.cstring(), flags());
+	result = JsonValue::api()->dump_file(
+				value.argument().m_value,
+				path.argument().cstring(),
+				flags()
+				);
 #else
 	if( f.create(
 			 arg::DestinationFilePath(path),

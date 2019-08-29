@@ -358,7 +358,11 @@ int Socket::read(arg::DestinationData data,
 	socklen_t address_len = address.argument().m_sockaddr.size();
 	return decode_socket_return( ::recvfrom(
 											  m_socket,
+										  #if defined __win32
+											  data.argument().to_char(),
+										  #else
 											  data.argument().to_void(),
+										  #endif
 											  data.argument().size(),
 											  0,
 											  address.argument().m_sockaddr.to<struct sockaddr>(),
