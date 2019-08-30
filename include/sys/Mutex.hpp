@@ -17,7 +17,7 @@ namespace sys {
  *
  *
  */
-class MutexAttributes : public api::SysInfoObject {
+class MutexAttributes : public api::InfoObject {
 public:
 
 	/*! \details Mutex Types */
@@ -111,7 +111,7 @@ typedef MutexAttributes MutexAttr;
  * multi-threaded applications.
  *
  */
-class Mutex : public api::SysWorkObject {
+class Mutex : public api::WorkObject {
 public:
 	/*! \details Constructs a Mutex with the default settings. */
 	Mutex();

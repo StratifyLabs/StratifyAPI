@@ -216,7 +216,8 @@ void Data::zero(){
 
 int Data::allocate(
 		const arg::Size s,
-		const arg::IsResize is_resize){
+		const arg::IsResize is_resize
+		){
 
 	void * new_data;
 	u32 size_value = s.argument();

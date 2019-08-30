@@ -9,7 +9,7 @@
 
 namespace var {
 
-class Flags : public api::VarInfoObject {
+class Flags : public api::InfoObject {
 public:
 	Flags();
 

@@ -10,7 +10,7 @@ namespace draw {
 
 /*! \brief Data Set Class
  */
-class DataSet : public api::DrawInfoObject {
+class DataSet : public api::InfoObject {
 public:
 
 	/*! \brief Construct an empy data set */
@@ -56,7 +56,7 @@ private:
 /*! \brief Graph Axis Class
  *
  */
-class Axis : public api::DrawInfoObject {
+class Axis : public api::InfoObject {
 public:
 	Axis(){ m_min = 0.0; m_max = 10.0; m_tick = 1.0; }
 	Axis(float min, float max, const var::ConstString & label){

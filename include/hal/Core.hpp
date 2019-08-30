@@ -14,7 +14,7 @@ namespace hal {
 /*!
  * \brief The Core Info class
  */
-class CoreInfo : public api::HalInfoObject {
+class CoreInfo : public api::InfoObject {
 public:
 	/*! \details Constructs an empty Core Info object. */
 	CoreInfo(){ memset(&m_info, 0, sizeof(m_info)); }

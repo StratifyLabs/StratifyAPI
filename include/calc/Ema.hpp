@@ -52,7 +52,7 @@ namespace calc {
  * EMA filtering see <a href="http://stratifylabs.co/embedded%20design%20tips/2013/10/04/Tips-An-Easy-to-Use-Digital-Filter">this wiki article</a>.
  *
  */
-template<typename intsmall, typename intmedium, typename intlarge>class Ema : public api::CalcWorkObject {
+template<typename intsmall, typename intmedium, typename intlarge>class Ema : public api::WorkObject {
 public:
 	/*! \details Constructs a new Ema object.
 	 *
@@ -130,7 +130,7 @@ public:
 
 /*! \brief Exponential Moving Average class (float) */
 /*! \details See \ref Ema for details */
-class Ema_f : public api::CalcWorkObject {
+class Ema_f : public api::WorkObject {
 public:
 	/*! \details Constructs a EMA object for floating point calculations */
 	Ema_f(float start, float alpha){ m_alpha = alpha; m_average = start; }

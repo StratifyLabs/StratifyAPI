@@ -9,7 +9,7 @@
 #include "../chrono/Time.hpp"
 
 namespace var {
-class Datum : public api::VarInfoObject
+class Datum : public api::InfoObject
 {
 public:
 	Datum();

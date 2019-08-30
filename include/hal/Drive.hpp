@@ -17,7 +17,7 @@ namespace hal {
  *
  *
  */
-class DriveInfo : public api::HalInfoObject {
+class DriveInfo : public api::InfoObject {
 public:
 	DriveInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 	DriveInfo(const drive_info_t & info){

@@ -47,7 +47,7 @@ namespace sys {
  *
  *
  */
-class Sched : public api::SysInfoObject {
+class Sched : public api::InfoObject {
 public:
 
 	enum policy {

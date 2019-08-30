@@ -11,7 +11,7 @@
 
 namespace inet {
 
-class Http : public api::InetWorkObject {
+class Http : public api::WorkObject {
 public:
 	Http(Socket & socket);
 

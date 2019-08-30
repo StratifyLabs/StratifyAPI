@@ -1721,30 +1721,9 @@ int Link::update_os(
 	return check_error(err);
 }
 
-int Link::update_binary_install_options(const arg::DestinationFile binary,
+int Link::update_binary_install_options(arg::DestinationFile binary,
 													 const AppfsFileAttributes & attributes){
-	var::Data image(arg::Size(sizeof(appfs_file_t)));
-	int result;
-
-	if( (result = binary.argument().read(
-			  arg::Location(0),
-			  arg::DestinationData(image)
-			  )) != image.size() ){
-		m_error_message.format("Failed to read from binary file (%d, %d)", result, binary.argument().error_number());
-		return -1;
-	}
-
-	attributes.apply(image.to<appfs_file_t>());
-
-	if( (result = binary.argument().write(
-			  arg::Location(0),
-			  arg::SourceData(image)
-			  )) != image.size() ){
-		m_error_message.format("Failed to write new attributes to binary file (%d, %d)", result, binary.argument().error_number());
-		return -1;
-	}
-
-	return 0;
+	return attributes.apply(binary);
 }
 
 int Link::install_app(const arg::SourceFile application_image,
@@ -1776,6 +1755,8 @@ int Link::install_app(const arg::SourceFile application_image,
 
 		bytes_total = application_image.argument().size();
 		bytes_cumm = 0;
+		//make sure to instal from the beginning -- file is already open
+		application_image.argument().seek( arg::Location(0) );
 
 		do {
 			memset(attr.buffer, 0xFF, APPFS_PAGE_SIZE);
@@ -1804,7 +1785,10 @@ int Link::install_app(const arg::SourceFile application_image,
 						  )) < 0 ){
 					if( link_errno == 5 ){ //EIO
 						if( loc_err < -1 ){
-							m_error_message.format("Failed to install because of missing symbol on device near " F32D, loc_err+1);
+							m_error_message.format(
+										"Failed to install because of missing symbol on device near " F32D,
+										loc_err+1
+										);
 						} else {
 							m_error_message = "Failed to install because of unknown symbol error";
 						}

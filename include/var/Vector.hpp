@@ -18,7 +18,9 @@ public:
 	/*! \details Constructs an empty object.
 	  *
 	  */
-	Vector(){ m_count = 0; }
+	Vector(){
+		m_count = 0;
+	}
 
 	/*! \details Constructs a vector with \a count uninitialized items. */
 	Vector(const arg::Count count){
@@ -32,6 +34,7 @@ public:
 	}
 
 	Vector(const Vector<T> & a){
+		m_count = 0;
 		copy_object(a);
 	}
 
@@ -155,7 +158,9 @@ public:
 	  */
 	int push_back(const T & value){
 		if( add_space() == 0 ){
+			asm volatile("nop");
 			new((void*)(vector_data() + m_count++)) T(value);
+			asm volatile("nop");
 			return 0;
 		}
 		return -1;

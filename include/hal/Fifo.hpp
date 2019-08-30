@@ -16,7 +16,7 @@ class Fifo;
 /*! \brief Fifo Attributes Class
  *
  */
-class FifoInfo : public api::HalInfoObject {
+class FifoInfo : public api::InfoObject {
 public:
 
 	/*! \details Constructs an object with all zeros. */

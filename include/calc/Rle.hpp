@@ -17,7 +17,7 @@ namespace calc {
  * decoding algorithms.
  *
  */
-class Rle : public api::CalcInfoObject{
+class Rle : public api::InfoObject{
 public:
 	Rle();
 

@@ -21,7 +21,7 @@ namespace sys {
  * \details This class contains methods to help analyze input from the
  * command line.
  */
-class Cli : public api::SysWorkObject {
+class Cli : public api::WorkObject {
 public:
 
 	enum {

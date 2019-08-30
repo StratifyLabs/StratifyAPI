@@ -11,7 +11,7 @@
 namespace fmt {
 
 /*! \brief BMP File format */
-class Bmp: public api::FmtFileObject {
+class Bmp: public fs::File {
 public:
 
 	/*! \details Constructs a new bitmap object and opens the bitmap as a read-only file. */

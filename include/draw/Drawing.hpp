@@ -73,7 +73,7 @@ drawing_area_t drawing_area(drawing_size_t w, drawing_size_t h);
 drawing_area_t drawing_dim(drawing_size_t w, drawing_size_t h);
 
 
-class DrawingArea : public api::DrawInfoObject {
+class DrawingArea : public api::InfoObject {
 public:
 
 	DrawingArea(){ m_area.height = 0; m_area.width = 0; }
@@ -107,7 +107,7 @@ private:
 	drawing_area_t m_area;
 };
 
-class DrawingPoint : public api::DrawInfoObject {
+class DrawingPoint : public api::InfoObject {
 public:
 
 	DrawingPoint(){ m_point.x = 0; m_point.y = 0; }
@@ -139,7 +139,7 @@ private:
 	drawing_point_t m_point;
 };
 
-class DrawingRegion : public api::DrawInfoObject {
+class DrawingRegion : public api::InfoObject {
 
 public:
 	DrawingRegion(){
@@ -247,7 +247,7 @@ private:
  * ```
  *
  */
-class DrawingAttributes : public api::DrawInfoObject {
+class DrawingAttributes : public api::InfoObject {
 public:
 
 	/*! \details Construct an object */
@@ -448,7 +448,7 @@ typedef DrawingAttributes DrawingAttr;
  * \details This is similar to draw::DrawingAttributes but the point
  * and area have been scaled to fit in the target bitmap.
  */
-class DrawingScaledAttributes : public api::DrawInfoObject {
+class DrawingScaledAttributes : public api::InfoObject {
 public:
 
 	DrawingScaledAttributes(){}
@@ -537,7 +537,7 @@ typedef DrawingScaledAttributes DrawingScaledAttr;
  * ```
  *
  */
-class Drawing : public api::DrawWorkObject {
+class Drawing : public virtual api::WorkObject {
 public:
 	Drawing();
 

@@ -19,7 +19,7 @@ namespace sys {
  * \details This class creates a new thread dedicated to handling message passing.
  *
  */
-class Messenger : public api::SysWorkObject {
+class Messenger : public api::WorkObject {
 public:
 
 	enum {

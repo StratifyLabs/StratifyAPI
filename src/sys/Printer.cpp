@@ -827,7 +827,13 @@ Printer & Printer::operator << (const AppfsFileAttributes & a){
 	key("name", a.name().cstring());
 	key("id", a.id().cstring());
 	key("version", "%d.%d", a.version() >> 8, a.version() & 0xff);
-	key("oFlags", "0x%lX", a.o_flags());
+	key("flash", a.is_flash() ? "true" : "false");
+	key("codeExternal", a.is_code_external() ? "true" : "false");
+	key("dataExternal", a.is_data_external() ? "true" : "false");
+	key("codeTightlyCoupled", a.is_code_tightly_coupled() ? "true" : "false");
+	key("dataTightlyCoupled", a.is_data_tightly_coupled() ? "true" : "false");
+	key("startup", a.is_startup() ? "true" : "false");
+	key("unique", a.is_unique() ? "true" : "false");
 	key("ramSize", "%ld", a.ram_size());
 	return *this;
 }

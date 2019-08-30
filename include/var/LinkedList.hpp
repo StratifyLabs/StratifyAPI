@@ -13,7 +13,7 @@ class LinkedListIndex;
  * a class that manages dynamically allocated
  * linked lists of data.
  */
-class LinkedList : public api::VarWorkObject {
+class LinkedList : public api::WorkObject {
 public:
 	LinkedList(u32 size);
 	~LinkedList();

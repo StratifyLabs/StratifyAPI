@@ -13,7 +13,7 @@
 
 namespace hal {
 
-class DisplayInfo : public api::HalInfoObject {
+class DisplayInfo : public api::InfoObject {
 public:
 	DisplayInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 	DisplayInfo(const display_info_t & info){
@@ -87,7 +87,7 @@ private:
  * a color on the display.
  *
  */
-class DisplayPalette : public api::HalInfoObject {
+class DisplayPalette : public api::InfoObject {
 public:
 
 	DisplayPalette();

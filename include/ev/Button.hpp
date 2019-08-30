@@ -19,7 +19,7 @@ namespace ev {
  * is an abstract class where the inheriting classes must implement
  * the ev::Button::get_value() method which returns the value of input.
  */
-class Button : public api::EvWorkObject {
+class Button : public virtual api::WorkObject {
 public:
 
 

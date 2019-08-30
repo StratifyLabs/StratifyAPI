@@ -23,7 +23,7 @@ class Switchboard;
  * be written.
  *
  */
-class SwitchboardTerminal : public api::HalInfoObject {
+class SwitchboardTerminal : public api::InfoObject {
 public:
 
 	/*!
@@ -80,7 +80,7 @@ private:
 /*! \brief Switchboard Connection Class
  *
  */
-class SwitchboardConnection : public api::HalInfoObject {
+class SwitchboardConnection : public api::InfoObject {
 public:
 
 	/*! \details Constructs a new empty connection. */
@@ -186,7 +186,7 @@ private:
 /*! \brief Switchboard Connection Class
  *
  */
-class SwitchboardInfo : public api::HalInfoObject {
+class SwitchboardInfo : public api::InfoObject {
 public:
 	SwitchboardInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 

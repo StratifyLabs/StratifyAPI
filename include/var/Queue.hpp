@@ -15,7 +15,7 @@ namespace var {
  * std::queue container class.
  *
  */
-template<typename T> class Queue : public api::VarWorkObject {
+template<typename T> class Queue : public api::WorkObject {
 public:
 
 	/*! \details Constructs a new Queue. */

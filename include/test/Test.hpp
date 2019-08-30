@@ -71,7 +71,7 @@ namespace test {
  *
  *
  */
-class Test : public api::TestWorkObject {
+class Test : public api::WorkObject {
 public:
 
 

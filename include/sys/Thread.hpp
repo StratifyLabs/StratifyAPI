@@ -51,7 +51,7 @@ namespace sys {
  *
  *
  */
-class Thread : public api::SysWorkObject {
+class Thread : public api::WorkObject {
 public:
 
 	/*! \details Defines the function call type that is

@@ -11,7 +11,7 @@
 namespace fmt {
 
 /*! \brief WAV File format */
-class Wav : public api::FmtFileObject {
+class Wav : public fs::File {
 public:
 	/*! \details Constructs a new WAV object and open the WAV as a read-only file. */
 	Wav(const arg::SourceFilePath & name = arg::SourceFilePath(""));

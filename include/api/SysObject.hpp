@@ -6,28 +6,6 @@
 
 namespace api {
 
-/*! \brief System Info Object
- *
- * \details
- * \sa sys namespace
- *
- */
-class SysInfoObject : public virtual InfoObject {
-
-};
-
-/*! \brief System Work Object
- *
- * \details
- * \sa sys namespace
- *
- */
-class SysWorkObject : public virtual WorkObject {
-
-};
-
-
-
 }
 
 

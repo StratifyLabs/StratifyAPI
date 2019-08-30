@@ -23,7 +23,7 @@ typedef struct MCU_PACK {
 /*! \brief Event Loop Attributes
  * \details This class defines attributes that apply to an ui::EventLoop.
  */
-class EventLoopAttributes : public api::EvInfoObject {
+class EventLoopAttributes : public api::InfoObject {
 public:
 
 	/*! \details Construct new Event Loop attributes */
@@ -142,7 +142,7 @@ typedef EventLoopAttributes EventLoopAttr;
  *
  *
  */
-class EventLoop: public EventLoopAttributes, public api::EvWorkObject {
+class EventLoop: public EventLoopAttributes, public api::WorkObject {
 public:
 
 	/*! \details Constructs a new headless (no display) event loop.

@@ -49,7 +49,7 @@ namespace fmt {
  *
  * \endcode
  */
-class Xml : public api::FmtFileObject {
+class Xml : public fs::File {
 public:
 
 	/*! \brief Open an XML document

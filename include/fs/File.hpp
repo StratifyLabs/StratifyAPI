@@ -1002,12 +1002,12 @@ public:
 	using File::read;
 	using File::write;
 
-	void set_flags(int o_flags){ m_o_flags = o_flags; }
-	int flags() const { return m_o_flags; }
+	OpenFlags & flags(){ return m_open_flags; }
+	const OpenFlags & flags() const { return m_open_flags; }
 
 
 private:
-	int m_o_flags;
+	OpenFlags m_open_flags;
 
 };
 

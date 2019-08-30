@@ -11,7 +11,7 @@
 namespace draw {
 
 /*! \cond */
-class IconAttributes : public api::DrawInfoObject {
+class IconAttributes : public api::InfoObject {
 public:
 
 	IconAttributes(const var::ConstString & name = ""){

@@ -94,7 +94,7 @@ typedef api::Api<son_api_t, SON_API_REQUEST> SonApi;
  *  be in float format.
  *
  */
-class Son : public api::FmtWorkObject {
+class Son : public api::WorkObject {
 public:
 
 	/*! \details Constructs a new SON object. */

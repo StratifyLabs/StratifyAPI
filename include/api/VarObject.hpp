@@ -6,26 +6,6 @@
 
 namespace api {
 
-/*! \brief Var Infomation Object
- *
- * \details
- * \sa var namespace
- *
- */
-class VarInfoObject : public virtual InfoObject {
-
-};
-
-/*! \brief Var Work Object
- *
- * \details
- * \sa var namespace
- *
- */
-class VarWorkObject : public virtual WorkObject {
-
-};
-
-
 }
 #endif // SAPI_API_VAR_OBJECT_HPP_
+

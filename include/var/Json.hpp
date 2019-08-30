@@ -15,7 +15,7 @@ namespace var {
 
 class JsonDocument;
 
-class JsonError : public api::VarInfoObject {
+class JsonError : public api::InfoObject {
 public:
 	JsonError(){
 		memset(&m_value, 0, sizeof(m_value));
@@ -40,7 +40,7 @@ class JsonString;
 
 typedef api::Api<jansson_api_t, JANSSON_API_REQUEST> JsonApi;
 
-class JsonValue : public api::VarWorkObject {
+class JsonValue : public api::WorkObject {
 public:
 	JsonValue();
 
@@ -433,7 +433,7 @@ private:
  * either memory or the filesystem.
  *
  */
-class JsonDocument : public api::VarWorkObject {
+class JsonDocument : public api::WorkObject {
 public:
 
 	/*! \details Constructs a Json object from a JsonValue.

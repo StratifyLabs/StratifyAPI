@@ -21,7 +21,7 @@ namespace sys {
  * in or built for the application filesystem.
  *
  */
-class AppfsInfo : public api::SysInfoObject {
+class AppfsInfo : public api::InfoObject {
 public:
 
 	/*! \details Constructs an empty object. */
@@ -124,7 +124,7 @@ private:
  *
  *
  */
-class AppfsFileAttributes : public api::SysInfoObject {
+class AppfsFileAttributes : public api::InfoObject {
 public:
 
 	enum {
@@ -144,9 +144,13 @@ public:
 		m_version = 0;
 		m_ram_size = 0;
 		m_o_flags = APPFS_FLAG_IS_FLASH;
+		m_access_mode = 0777;
 	}
 
-	void apply(appfs_file_t * dest) const;
+	AppfsFileAttributes(const appfs_file_t & appfs_file);
+
+	void apply(appfs_file_t * appfs_file) const;
+	int apply(arg::DestinationFile file) const;
 
 	AppfsFileAttributes & set_name(const var::ConstString & value){ m_name = value; return *this; }
 	const var::String & name() const { return m_name; }
@@ -158,6 +162,8 @@ public:
 	u16 o_flags() const { return m_o_flags; }
 	AppfsFileAttributes & set_ram_size(u32 value){ m_ram_size = value; return *this; }
 	u16 ram_size() const { return m_ram_size; }
+	AppfsFileAttributes & set_access_mode(u32 value){ m_access_mode = value; return *this; }
+	u16 access_mode() const { return m_access_mode; }
 
 	bool is_flash() const { return m_o_flags & IS_FLASH; }
 	bool is_code_external() const { return m_o_flags & IS_CODE_EXTERNAL; }
@@ -231,14 +237,13 @@ public:
 	}
 
 
-
-
 private:
 	var::String m_name;
 	var::String m_id;
 	u32 m_ram_size;
 	u32 m_o_flags;
 	u16 m_version;
+	u16 m_access_mode;
 };
 
 /*! \brief Application File System Class
@@ -276,7 +281,7 @@ private:
  * \endcode
  *
  */
-class Appfs : public api::SysWorkObject {
+class Appfs : public api::WorkObject {
 public:
 
 #if defined __link

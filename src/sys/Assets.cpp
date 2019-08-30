@@ -20,6 +20,7 @@ bool Assets::m_is_initialized = false;
 int Assets::initialize(){
 	//search for fonts
 	if( m_is_initialized ){ return 0; }
+
 	find_fonts_in_directory("/assets");
 	find_fonts_in_directory("/home");
 	find_fonts_in_directory("/home/assets");
@@ -39,15 +40,19 @@ int Assets::initialize(){
 
 void Assets::find_fonts_in_directory(const var::ConstString & path){
 	var::Vector<var::String> file_list;
+
 	file_list = fs::Dir::read_list(
 				arg::SourceDirectoryPath(path)
 				);
+
 	for(u32 i=0; i < file_list.count(); i++){
 		if( fs::File::suffix(
 				 arg::FilePath(file_list.at(i))
 				 ) == "sbf" ){
+
 			var::String font_path = path;
 			font_path << "/" << file_list.at(i);
+
 			FontInfo info = FontInfo(
 						arg::SourceFilePath(font_path)
 						);
@@ -62,6 +67,7 @@ void Assets::find_icons_in_directory(const var::ConstString & path){
 	file_list = fs::Dir::read_list(
 				arg::SourceDirectoryPath(path)
 				);
+
 	for(u32 i=0; i < file_list.count(); i++){
 		if( fs::File::suffix(
 				 arg::FilePath(file_list.at(i))
@@ -69,11 +75,13 @@ void Assets::find_icons_in_directory(const var::ConstString & path){
 			//format is name-weight-size.sbf
 			var::String icon_path = path;
 			icon_path << "/" << file_list.at(i);
+
 			fmt::Svic svic = fmt::Svic(
 						arg::SourceFilePath(icon_path)
 						);
-			svic.set_keep_open(); //keep it open because the object is copied to the vector
-			m_vector_path_list.push_back(svic);
+			svic.set_keep_open();
+
+			m_vector_path_list << svic;
 		}
 	}
 }
@@ -135,7 +143,6 @@ const sgfx::FontInfo * Assets::find_font(
 	if( is_exact_match.argument() ){
 		return 0;
 	}
-
 
 	//first pass is to find the exact style in a point size that is less than or equal
 	for(u32 i=0; i < font_info_list().count(); i++){

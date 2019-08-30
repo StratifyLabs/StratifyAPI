@@ -25,7 +25,7 @@ class Sys;
  * from the chip. This class makes doing so as simply as possible.
  *
  */
-class SerialNumber : public api::SysInfoObject {
+class SerialNumber : public api::InfoObject {
 public:
 
 	/*! \details Constructs an empty serial number. */
@@ -80,7 +80,7 @@ private:
  * \endcode
  *
  */
-class SysInfo : public api::SysInfoObject {
+class SysInfo : public api::InfoObject {
 	friend class Sys;
 public:
 

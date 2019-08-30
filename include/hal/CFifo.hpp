@@ -15,7 +15,7 @@ namespace hal {
 /*! \brief Channeled FIFO Information Class
  *
  */
-class CFifoInfo : public api::HalInfoObject {
+class CFifoInfo : public api::InfoObject {
 public:
 	CFifoInfo(){ memset(&m_info, 0, sizeof(cfifo_info_t)); }
 	CFifoInfo(const cfifo_info_t & info){ m_info = info; }

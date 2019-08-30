@@ -8,7 +8,7 @@
 
 namespace inet {
 
-class Url : public api::InetInfoObject {
+class Url : public api::InfoObject {
 public:
 	enum {
 		PROTOCOL_HTTPS,

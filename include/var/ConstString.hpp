@@ -56,7 +56,7 @@ namespace var {
  *
  *
  */
-class ConstString : public api::VarWorkObject
+class ConstString : public virtual api::WorkObject
 {
 public:
 	/*! \details Constructs an empty string. */

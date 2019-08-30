@@ -13,7 +13,7 @@ namespace hal {
  *
  *
  */
-class AdcInfo : public api::HalInfoObject {
+class AdcInfo : public api::InfoObject {
 public:
 	AdcInfo(){ memset(&m_adc_info, 0, sizeof(m_adc_info)); }
 	AdcInfo(const adc_info_t & info){

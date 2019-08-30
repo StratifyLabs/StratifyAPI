@@ -36,7 +36,7 @@ namespace calc {
  *
  *
  */
-template<typename T>class Lookup : public api::CalcWorkObject {
+template<typename T>class Lookup : public api::WorkObject {
 public:
 	/*! \details Constructs a lookup table object.
 	 *

@@ -600,8 +600,7 @@ public:
 	  * @param attributes The attributes to apply
 	  * @return Zero on success or -1 with error() set to an appropriate message
 	  */
-	int update_binary_install_options(
-			const arg::DestinationFile destination,
+	int update_binary_install_options(arg::DestinationFile destination,
 			const AppfsFileAttributes & attributes);
 
 	/*! \details Installs a binary to the specified location.

@@ -106,7 +106,7 @@ private:
  * ```
  *
  */
-class Printer : public api::SysWorkObject {
+class Printer : public api::WorkObject {
 public:
 	Printer();
 	~Printer();

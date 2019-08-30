@@ -785,7 +785,10 @@ int DataReferenceFile::read(
 	return size_ready;
 }
 
-int DataReferenceFile::write(const SourceBuffer buf, const Size nbyte) const {
+int DataReferenceFile::write(
+		const SourceBuffer buf,
+		const Size nbyte
+		) const {
 
 	if( flags().is_read_only() ){
 		return -1;

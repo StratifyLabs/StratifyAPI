@@ -50,7 +50,7 @@ namespace sys {
  *
  * \endcode
  */
-class SignalHandler : public api::SysInfoObject {
+class SignalHandler : public api::InfoObject {
 public:
 	/*! \details Constructs a signal handler.
 	 *
@@ -168,7 +168,7 @@ private:
  * when a hardware event happens (such as a when a GPIO interrupt happens).
  *
  */
-class Signal : public api::SysWorkObject {
+class Signal : public api::WorkObject {
 public:
 
 	enum signal_number {

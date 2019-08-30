@@ -12,22 +12,64 @@
 
 using namespace sys;
 
-void AppfsFileAttributes::apply(appfs_file_t * dest) const {
-	memcpy(dest->hdr.name, m_name.cstring(), LINK_NAME_MAX);
-	memcpy(dest->hdr.id, m_id.cstring(), LINK_NAME_MAX);
-	dest->hdr.version = m_version;
-	dest->exec.o_flags = m_o_flags;
-	dest->hdr.mode = 0777;
+AppfsFileAttributes::AppfsFileAttributes(const appfs_file_t & appfs_file){
+	m_name = appfs_file.hdr.name;
+	m_id = appfs_file.hdr.id;
+	m_ram_size = appfs_file.exec.ram_size;
+	m_o_flags = appfs_file.exec.o_flags;
+	m_version = appfs_file.hdr.version;
+}
+
+void AppfsFileAttributes::apply(appfs_file_t * appfs_file) const {
+
+	if( m_name.is_empty() == false ){
+		memcpy(appfs_file->hdr.name, m_name.cstring(), LINK_NAME_MAX);
+	}
+
+	if( m_id.is_empty() == false ){
+		memcpy(appfs_file->hdr.id, m_id.cstring(), LINK_NAME_MAX);
+	}
+
+	if( m_version != 0 ){
+		appfs_file->hdr.version = m_version;
+	}
+
+	appfs_file->hdr.mode = m_access_mode;
 
 	if( m_ram_size >= 4096 ){
-		dest->exec.ram_size = m_ram_size;
+		appfs_file->exec.ram_size = m_ram_size;
 	}
 
-	if( dest->exec.ram_size < 4096 ){
-		dest->exec.ram_size = 4096;
+	if( appfs_file->exec.ram_size < 4096 ){
+		appfs_file->exec.ram_size = 4096;
 	}
 
-	dest->exec.o_flags = m_o_flags;
+	appfs_file->exec.o_flags = m_o_flags;
+}
+
+int AppfsFileAttributes::apply(arg::DestinationFile file) const {
+	appfs_file_t appfs_file;
+	var::DataReference appfs_file_reference(appfs_file);
+
+	int result;
+
+	if( (result = file.argument().read(
+			  arg::Location(0),
+			  arg::DestinationData(appfs_file_reference)
+			  )) != (int)appfs_file_reference.size() ){
+		return -1;
+	}
+
+	this->apply( appfs_file_reference.to<appfs_file_t>() );
+
+	if( (result = file.argument().write(
+			  arg::Location(0),
+			  arg::SourceData(appfs_file_reference)
+			  )) != (int)appfs_file_reference.size() ){
+		return -1;
+	}
+
+	return 0;
 }
 
 #if defined __link
@@ -39,15 +81,15 @@ Appfs::Appfs(){}
 #endif
 
 int Appfs::create(const arg::FileName name,
-		const arg::SourceFile source_data,
-		const arg::SourceDirectoryPath mount,
-		const ProgressCallback * progress_callback
-#if defined __link
-		, link_transport_mdriver_t * driver
-		){
+						const arg::SourceFile source_data,
+						const arg::SourceDirectoryPath mount,
+						const ProgressCallback * progress_callback
+						#if defined __link
+						, link_transport_mdriver_t * driver
+						){
 	fs::File file(driver);
 #else
-){
+						){
 	fs::File file;
 #endif
 	char buffer[LINK_PATH_MAX];

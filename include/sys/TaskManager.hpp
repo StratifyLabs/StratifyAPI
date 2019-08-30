@@ -13,7 +13,7 @@ namespace sys {
 /*!
  * \brief The Task Info Class
  */
-class TaskInfo : public api::SysInfoObject {
+class TaskInfo : public api::InfoObject {
 public:
 
 	/*! \details Constructs a new object with the give task ID. */
@@ -127,7 +127,7 @@ typedef TaskInfo TaskAttributes;
  *
  *
  */
-class TaskManager : public api::SysWorkObject {
+class TaskManager : public api::WorkObject {
 public:
 
 #if defined __link

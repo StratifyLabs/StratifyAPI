@@ -13,8 +13,9 @@ namespace fmt {
  * contain collections of Stratify Vector icons.
  *
  */
-class Svic : public api::FmtFileObject {
+class Svic : public fs::File {
 public:
+
 	Svic(const arg::SourceFilePath & path = arg::SourceFilePath(""));
 
 	u32 count() const { return m_icons.count(); }

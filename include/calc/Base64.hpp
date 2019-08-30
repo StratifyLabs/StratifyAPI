@@ -48,7 +48,7 @@ namespace calc {
  *
  *
  */
-class Base64 : public api::CalcInfoObject {
+class Base64 : public api::InfoObject {
 public:
 
 	/*! \details Encodes data to the base64 format.

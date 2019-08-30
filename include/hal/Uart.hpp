@@ -121,7 +121,7 @@ public:
 
 typedef UartAttributes UartAttr;
 
-class UartInfo : public api::HalInfoObject {
+class UartInfo : public api::InfoObject {
 public:
 	UartInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 	UartInfo(const uart_info_t & info){ m_info = info; }

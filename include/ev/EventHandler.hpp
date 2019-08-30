@@ -19,7 +19,7 @@ class EventLoop;
 /*! \brief Event Handler Class
  *
  */
-class EventHandler : public api::EvWorkObject {
+class EventHandler : public api::WorkObject {
 public:
 	EventHandler();
 

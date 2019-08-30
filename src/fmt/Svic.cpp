@@ -4,12 +4,12 @@ using namespace fmt;
 
 Svic::Svic(const arg::SourceFilePath & path){
 	if( path.argument().is_empty() == false ){
-		open(
-					arg::FilePath(path.argument()),
-					fs::OpenFlags::read_only()
-					);
+		open(arg::FilePath(path.argument()),
+			  fs::OpenFlags::read_only());
+
 		parse_icons();
 	}
+
 	m_current_icon_at = (u32)-1;
 }
 
@@ -25,24 +25,22 @@ int Svic::parse_icons(){
 					 arg::DestinationBuffer(&header),
 					 arg::Size(sizeof(header))
 					 ) == sizeof(header) ){
+
 			if( m_icons.push_back(header) < 0 ){
 				set_error_number(m_icons.error_number());
 				return -1;
 			}
-			seek(
-						arg::Location(header.count * sizeof(sg_vector_path_description_t)),
-						fs::File::CURRENT
-						);
+			seek(arg::Location(
+					  header.count * sizeof(sg_vector_path_description_t)
+					  ),
+				  fs::File::CURRENT);
 		}
 
-		seek(
-					arg::Location(cursor),
-					fs::File::SET
-					);
+		seek(arg::Location(cursor),
+			  fs::File::SET);
 	}
 
 	return 0;
-
 }
 
 var::String Svic::name_at(u32 i) const {

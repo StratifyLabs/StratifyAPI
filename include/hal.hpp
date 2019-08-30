@@ -10,7 +10,7 @@
  * All objects in the hal namespace inherit either:
  *
  * - api::HalWorkObject
- * - api::HalInfoObject
+ * - api::InfoObject
  *
  * Work objects inherit fs::File and allow access to the hardware
  * using a POSIX style API (open(), close(), read(), write() and ioctl()).

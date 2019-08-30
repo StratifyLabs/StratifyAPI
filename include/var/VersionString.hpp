@@ -5,7 +5,7 @@
 
 namespace var {
 
-class VersionString : public api::VarInfoObject {
+class VersionString : public api::InfoObject {
 public:
 	VersionString(u8 major = 0, u8 minor = 0, u8 patch = 0);
 

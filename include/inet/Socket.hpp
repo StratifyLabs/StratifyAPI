@@ -70,7 +70,7 @@ class SocketAddress;
  *
  *
  */
-class SocketAddressInfo : public::api::InetWorkObject {
+class SocketAddressInfo : public api::WorkObject {
 public:
 
 	/*! \details Enumerates the socket address family options. */
@@ -174,7 +174,7 @@ private:
 	var::String m_canon_name;
 };
 
-class SocketAddressIpv4 : public api::InetInfoObject {
+class SocketAddressIpv4 : public api::InfoObject {
 public:
 
 	static in_addr_t address(u8 a, u8 b, u8 c, u8 d){
@@ -209,7 +209,7 @@ private:
 	int m_type;
 };
 
-class SocketAddress : public api::InetInfoObject {
+class SocketAddress : public api::InfoObject {
 public:
 
 	/*!
@@ -305,7 +305,7 @@ protected:
 
 };
 
-class SocketOption : public api::InetInfoObject {
+class SocketOption : public api::InfoObject {
 public:
 
 	enum {

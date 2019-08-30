@@ -6,24 +6,6 @@
 
 namespace api {
 
-/*! \brief Calc Infomation Object
- * \details
- *
- * \sa calc namespace
- */
-class CalcInfoObject : public virtual InfoObject {
-
-};
-
-/*! \brief Calc Work Object
- * \details
- *
- * \sa calc namespace
- */
-class CalcWorkObject : public virtual WorkObject {
-
-};
-
 }
 
 #endif // SAPI_API_CALCOBJECT_HPP_

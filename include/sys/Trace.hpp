@@ -23,7 +23,7 @@ namespace sys {
  * in from a Trace.
  *
  */
-class TraceEvent : public api::SysInfoObject {
+class TraceEvent : public api::InfoObject {
 public:
 	TraceEvent(){
 		memset(&m_event, 0, sizeof(m_event));

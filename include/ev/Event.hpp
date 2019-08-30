@@ -32,7 +32,7 @@ class EventHandler;
  *
  *
  */
-class Event : public api::EvInfoObject {
+class Event : public api::InfoObject {
 public:
 
 	enum {

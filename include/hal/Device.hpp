@@ -34,7 +34,7 @@ namespace hal {
  * \endcode
  *
  */
-class Device : public api::HalWorkObject {
+class Device : public fs::File {
 public:
 	/*! \details Constructs a Device.
 	 *
@@ -93,8 +93,8 @@ public:
 	virtual int write(fs::Aio & aio) const;
 
 
-	using File::read;
-	using File::write;
+	using fs::File::read;
+	using fs::File::write;
 
 
 	int cancel_read(int channel = 0);

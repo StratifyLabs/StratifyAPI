@@ -19,7 +19,7 @@ namespace sys {
 class Mq;
 
 /*! \brief Message Queue Attribute Class */
-class MqAttributes : public api::SysInfoObject {
+class MqAttributes : public api::InfoObject {
 	friend class Mq;
 public:
 	MqAttributes(){ memset(&m_attr, 0, sizeof(m_attr)); }
@@ -61,7 +61,7 @@ private:
 /*! \details This class is a wrapper for POSIX message queues.
  *
  */
-class Mq : public api::SysWorkObject {
+class Mq : public api::WorkObject {
 public:
 	Mq();
 

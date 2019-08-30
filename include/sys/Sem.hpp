@@ -31,7 +31,7 @@ namespace sys {
  * \endcode
  *
  */
-class Sem : public api::SysWorkObject {
+class Sem : public api::WorkObject {
 public:
 	Sem();
 

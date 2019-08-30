@@ -25,7 +25,7 @@ namespace sys {
  * ```
  *
  */
-class ProgressCallback : public api::SysInfoObject {
+class ProgressCallback : public api::InfoObject {
 public:
 
 	/*! \details Defines the callback function prototype.

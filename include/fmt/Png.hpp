@@ -5,7 +5,7 @@
 
 namespace fmt {
 
-class Png : public api::FmtFileObject {
+class Png : public fs::File {
 public:
 	Png(const arg::SourceFilePath & name);
 

@@ -9,7 +9,7 @@
 namespace sys {
 
 
-class AuthToken : public api::SysInfoObject {
+class AuthToken : public api::InfoObject {
 public:
 	AuthToken(){ memset(&m_auth_token, 0, sizeof(auth_token_t)); }
 	AuthToken(const auth_token_t & auth_token){
@@ -61,7 +61,7 @@ private:
  * ```
  *
  */
-class Auth : public api::SysWorkObject {
+class Auth : public api::WorkObject {
 public:
 #if defined __link
 	Auth(link_transport_mdriver_t * driver);

@@ -64,7 +64,7 @@ namespace calc {
  *
  *
  */
-class PidF32 : public api::CalcWorkObject {
+class PidF32 : public api::WorkObject {
 public:
 
 	/*! \details Constructs a new PID (float) object.

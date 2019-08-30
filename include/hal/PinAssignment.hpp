@@ -35,7 +35,7 @@ namespace hal {
  *
  *
  */
-template<typename pin_assignment_type> class PinAssignment : public api::HalInfoObject {
+template<typename pin_assignment_type> class PinAssignment : public api::InfoObject {
 public:
 
 	/*! \details Contructs a new pin assignment object.

@@ -7,7 +7,7 @@
 
 namespace hal {
 
-class FFifoAttributes : public api::HalInfoObject {
+class FFifoAttributes : public api::InfoObject {
 public:
 
 	/*! \details Constructs an object set to all zeros. */
@@ -47,7 +47,7 @@ typedef FFifoAttributes FFifoAttr;
 /*! \brief FFIFO Info Class
  *
  */
-class FFifoInfo : public api::HalInfoObject {
+class FFifoInfo : public api::InfoObject {
 public:
 
 	/*! \details Constructs an object with all zeros. */

@@ -36,7 +36,7 @@ private:
 
 //there needs to be a superclass here that defines all the interfaces
 
-class DataReference : public api::VarWorkObject {
+class DataReference : public virtual api::WorkObject {
 public:
 
 	DataReference();

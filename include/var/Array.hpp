@@ -39,7 +39,7 @@ namespace var {
  * and popping them from the back.
  *
  */
-template <typename T, u32 size_value> class Array : public api::VarWorkObject {
+template <typename T, u32 size_value> class Array : public api::WorkObject {
 public:
 
 	Array(){}
