@@ -18,7 +18,7 @@ void HighPassFilterF32::set_r_value(float r_value){
 }
 
 float HighPassFilterF32::calculate(float input){
-	m_present_value = input - m_last_input + m_r_value * m_present_value;
+	m_present_value = input - m_r_value * m_last_input + m_present_value;
 	m_last_input = input;
 	return m_present_value;
 }
