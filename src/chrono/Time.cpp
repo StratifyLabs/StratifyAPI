@@ -3,11 +3,24 @@
 
 #include "hal.hpp"
 #include "chrono/Time.hpp"
+#include "chrono/Timer.hpp"
 #if defined __StratifyOS__
 #include <sos/dev/rtc.h>
 #endif
 
 using namespace chrono;
+
+Microseconds::Microseconds(const Timer & timer){
+	m_value_microseconds = timer.microseconds();
+}
+
+Microseconds::Microseconds(const ClockTime & clock_time){
+	m_value_microseconds = clock_time.seconds() * 1000000UL + (clock_time.nanoseconds() + 500) / 1000;
+}
+
+void Microseconds::wait() const {
+	chrono::wait(*this);
+}
 
 const char * month_names[] = {
 	"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"

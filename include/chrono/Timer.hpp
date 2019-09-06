@@ -34,7 +34,7 @@ namespace chrono {
  * int main(int argc, char * argv[]){
  * 	Timer t;
  * 	t.start(); //start
- * 	Timer::wait(500);
+ * 	chrono::wait(Microseconds(500));
  * 	t.stop();
  * 	printf("Timer value after 500usec is %d\n", t.usec());
  *
@@ -48,14 +48,8 @@ namespace chrono {
  *
  *
  */
-class Timer : public api::ChronoWorkObject {
+class Timer : public api::WorkObject {
 public:
-
-
-	//deprecated methods
-	static void wait_sec(u32 timeout){ wait_seconds(timeout); }
-	static void wait_msec(u32 timeout){ wait_milliseconds(timeout); }
-	static void wait_usec(u32 timeout){ wait_microseconds(timeout); }
 
 	/*! \details Constructs an empty Timer. */
 	Timer();

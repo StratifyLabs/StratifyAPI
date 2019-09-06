@@ -18,7 +18,7 @@ namespace chrono {
  *
  *
  */
-class ClockTime : public api::ChronoInfoObject {
+class ClockTime : public api::InfoObject {
 public:
 
 	/*! \details Constructs a ClockTime object from seconds and nanoseconds.

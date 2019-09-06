@@ -12,14 +12,14 @@
  * - ClockTime: 64-bit value for seconds and nanoseconds (clock as in CPU clock)
  * - Time: 32-bit value in seconds (basically a time_t object)
  *
- * The parent object for all chrono items is api::ChronoWorkObject or api::ChronoInfoObject.
+ * The parent object for all chrono items is api::WorkObject or api::InfoObject.
  * Both of the top level objects provide a way to insert a static delay.
  *
  * \code
  *
  * #include <sapi/chrono.hpp>
  *
- * Timer::wait_seconds(1); //wait for one second -- Timer inherits ChronoWorkObject so it can use the wait methods statically
+ * Timer::wait_seconds(1); //wait for one second -- Timer inherits WorkObject so it can use the wait methods statically
  * Timer::wait_milliseconds(100);
  * Timer::wait_microseconds(100);
  *

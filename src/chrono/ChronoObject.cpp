@@ -1,37 +1,16 @@
 #include <unistd.h>
 #include "chrono/ClockTime.hpp"
-#include "chrono/MicroTime.hpp"
 #include "chrono/Time.hpp"
 #include "api/ChronoObject.hpp"
 
 using namespace api;
 
-void chrono::wait_seconds(u32 duration){
-	sleep(duration);
-}
-
-void chrono::wait_milliseconds(u32 duration){
-	chrono::wait_microseconds(duration*1000UL);
-}
-
-void chrono::wait_microseconds(u32 duration){
-	u32 seconds = duration / 1000000UL;
+void chrono::wait(const Microseconds & duration){
+	Microseconds period = duration;
+	u32 seconds = period.seconds();
 	if( seconds > 0 ){
-		wait_seconds(seconds);
-		duration = duration - seconds * 1000000UL;
+		::sleep(seconds);
+		period = period - Seconds(seconds);
 	}
-	usleep(duration);
-}
-
-void chrono::wait(const chrono::ClockTime & clock_time){
-	wait_seconds(clock_time.seconds());
-	wait_microseconds(clock_time.nanoseconds()/1000UL);
-}
-
-void chrono::wait(const chrono::MicroTime & micro_time){
-	wait_microseconds(micro_time.microseconds());
-}
-
-void chrono::wait(const chrono::Time & time){
-	wait_seconds(time.hour() * 3600UL + time.minute()*60UL + time.second());
+	::usleep(period.microseconds());
 }

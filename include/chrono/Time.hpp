@@ -10,60 +10,200 @@
 
 namespace chrono {
 
-class Hours : public api::ChronoInfoObject {
+class Microseconds;
+
+class Hours : public api::InfoObject {
 public:
 	explicit Hours(s32 value){ m_value = value; }
-	s32 hours() const { return m_value; }
-	static Hours invalid(){ return Hours(-1); }
+	u32 hours() const { return m_value; }
+	static Hours invalid(){ return Hours((u32)-1); }
 private:
-	s32 m_value;
+	u32 m_value;
 };
 
-class Minutes : public api::ChronoInfoObject {
+class Minutes : public api::InfoObject {
 public:
 	explicit Minutes(s32 value){ m_value = value; }
-	s32 minutes() const { return m_value; }
-	static Minutes invalid(){ return Minutes(-1); }
+	u32 minutes() const { return m_value; }
+	static Minutes invalid(){ return Minutes((u32)-1); }
 private:
-	s32 m_value;
+	u32 m_value;
 };
 
 
-class Seconds : public api::ChronoInfoObject {
+class Seconds : public api::InfoObject {
 public:
 	explicit Seconds(s32 value){ m_value = value; }
-	s32 seconds() const { return m_value; }
-	static Seconds invalid(){ return Seconds(-1); }
+	u32 seconds() const { return m_value; }
+	static Seconds invalid(){ return Seconds((u32)-1); }
 private:
-	s32 m_value;
+	u32 m_value;
 };
 
-class Milliseconds : public api::ChronoInfoObject {
+class Milliseconds : public api::InfoObject {
 public:
 	explicit Milliseconds(s32 value){ m_value = value; }
-	s32 milliseconds() const { return m_value; }
-	static Milliseconds invalid(){ return Milliseconds(-1); }
+	u32 milliseconds() const { return m_value; }
+	static Milliseconds invalid(){ return Milliseconds((u32)-1); }
 private:
-	s32 m_value;
+	u32 m_value;
 };
 
-class Microseconds : public api::ChronoInfoObject {
-public:
-	explicit Microseconds(s32 value){ m_value = value; }
-	s32 microseconds() const { return m_value; }
-	static Microseconds invalid(){ return Microseconds(-1); }
-private:
-	s32 m_value;
-};
-
-class Nanoseconds : public api::ChronoInfoObject {
+class Nanoseconds : public api::InfoObject {
 public:
 	explicit Nanoseconds(s32 value){ m_value = value; }
-	s32 nanoseconds() const { return m_value; }
-	static Nanoseconds invalid(){ return Nanoseconds(-1); }
+	u32 nanoseconds() const { return m_value; }
+	static Nanoseconds invalid(){ return Nanoseconds((u32)-1); }
 private:
-	s32 m_value;
+	u32 m_value;
 };
+
+class Timer;
+class ClockTime;
+
+/*! \details Defines the type for a chrono::MicroTime value. */
+typedef u32 micro_time_t;
+
+/*! \brief MicroTime Class
+ * \details The MicroTime class is used for keeping track
+ * of microsecond accurate time intervals. It uses
+ * a 32-bit value so it is good for 4 billion microseconds
+ * (or about 66 minutes).
+ *
+ * It is very handy for converting between microseconds,
+ * milliseconds, and seconds. It also serves
+ * to remove ambiguity when specifying short time intervals.
+ *
+ * For example:
+ * \code
+ * void set_period(const MicroTime & micro_time); //un-ambiguous and nice code completion
+ * void set_period(u32 value); //the units here are not clear
+ * void set_period_milliseconds(u32 value); //this is better but adds complexity
+ * \endcode
+ *
+ */
+class Microseconds : public api::InfoObject {
+public:
+
+	/*! \details Constructs a MicroTime object using a u32 microsecond value.
+	  *
+	  * The default initial value is zero.
+	  *
+	  */
+	explicit Microseconds(u32 microseconds = 0){ m_value_microseconds = microseconds; }
+	//MicroTime(){ m_value_microseconds = 0; }
+
+	/*! \details Constructs a MicroTime object from a chrono::ClockTime value. */
+	Microseconds(const ClockTime & clock_time);
+
+	Microseconds(const Seconds & seconds){
+		m_value_microseconds = seconds.seconds()*1000000UL;
+	}
+
+	Microseconds(const Milliseconds & milliseconds){
+		m_value_microseconds = milliseconds.milliseconds()*1000UL;
+	}
+
+
+	Microseconds(const Nanoseconds & nanoseconds){
+		m_value_microseconds = nanoseconds.nanoseconds() / 1000;
+	}
+
+	/*! \details Constructs a MicroTime object from the current value of a chrono::Timer. */
+	Microseconds(const Timer & timer);
+
+
+	/*! \details Returns true if the time is set to a valid value.
+	  *
+	  */
+	bool is_valid() const {
+		return m_value_microseconds != (u32)-1;
+	}
+
+	/*! \details Returns a MicroTime object set to the invalid time value. */
+	static Microseconds invalid(){ return Microseconds((u32)-1); }
+
+
+	/*! \details Assignment addition to another MicroTime object. */
+	Microseconds & operator += (const Microseconds & a){
+		m_value_microseconds += a.microseconds();
+		return *this;
+	}
+
+	/*! \details Assignment addition to another MicroTime object. */
+	Microseconds & operator -= (const Microseconds & a){
+		m_value_microseconds -= a.microseconds();
+		return *this;
+	}
+
+	Microseconds operator + (const Microseconds & a) const {
+		return Microseconds(microseconds() + a.microseconds());
+	}
+
+	Microseconds operator - (const Microseconds & a) const {
+		return Microseconds(microseconds() - a.microseconds());
+	}
+
+	/*! \details Compares equality to another MicroTime object. */
+	bool operator == (const Microseconds & a ) const { return microseconds() == a.microseconds(); }
+
+	/*! \details Compares inequality to another MicroTime object. */
+	bool operator != (const Microseconds & a ) const { return microseconds() != a.microseconds(); }
+
+	/*! \details Compares > to another MicroTime object. */
+	bool operator > (const Microseconds & a ) const { return microseconds() > a.microseconds(); }
+
+	/*! \details Compares < to another MicroTime object. */
+	bool operator < (const Microseconds & a ) const { return microseconds() < a.microseconds(); }
+
+	/*! \details Compares >= to another MicroTime object. */
+	bool operator >= (const Microseconds & a ) const { return microseconds() >= a.microseconds(); }
+
+	/*! \details Compares <= to another MicroTime object. */
+	bool operator <= (const Microseconds & a ){ return microseconds() <= a.microseconds(); }
+
+	Microseconds & operator << (const Seconds & a){ return (*this) = a; }
+	Microseconds & operator << (const Milliseconds & a){ return (*this) = a; }
+	Microseconds & operator << (const Microseconds & a){ return (*this) = a; }
+	Microseconds & operator << (const Nanoseconds & a){ return (*this) = a; }
+
+
+	/*! \details Sets the value of the time in seconds.
+	  *
+	  *
+	  */
+	void set_seconds(u32 seconds){ *this = Seconds(seconds); }
+
+	/*! \details Sets the value of the time in milliseconds.
+	  *
+	  *
+	  */
+	void set_milliseconds(u32 milliseconds){ *this = Milliseconds(milliseconds); }
+
+	/*! \details Sets the value of the time in microseconds.
+	  *
+	  */
+	void set_microseconds(micro_time_t microseconds){ m_value_microseconds = microseconds; }
+
+	/*! \details Returns the value in seconds. */
+	u32 seconds() const { return microseconds() / 1000000UL; }
+
+	/*! \details Returns the value in microseconds. */
+	micro_time_t microseconds() const { return m_value_microseconds; }
+
+	/*! \details Returns the value in milliseconds. */
+	u32 milliseconds() const { return microseconds() / 1000UL; }
+
+	/*! \details Waits for the value of the microtime.
+	  *
+	  */
+	void wait() const;
+
+private:
+	micro_time_t m_value_microseconds;
+};
+
+using MicroTime = Microseconds;
 
 /*! \brief Time Class
  * \details This class is for accessing the current time as well
@@ -84,7 +224,7 @@ private:
  * \endcode
  *
  */
-class Time : public api::ChronoInfoObject {
+class Time : public api::InfoObject {
 public:
 	/*! \details Constructs using current time. */
 	Time();

@@ -45,7 +45,7 @@ int Spi::transfer(
 				);
 
 	while( aio.is_busy() ){ //aio must live until the read completes -- or big problems will happen
-		chrono::Timer::wait_microseconds(200);
+		chrono::wait(chrono::Microseconds(200));
 	}
 
 	return result;

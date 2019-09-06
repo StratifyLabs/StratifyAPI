@@ -406,7 +406,7 @@ int File::readline(char * buf, int nbyte, int timeout, char term) const {
 		} else {
 			t++;
 #if !defined __link
-			chrono::Timer::wait_milliseconds(1);
+			chrono::wait(chrono::Milliseconds(1));
 #endif
 		}
 	} while( (bytes_recv < nbyte) && (t < timeout) );

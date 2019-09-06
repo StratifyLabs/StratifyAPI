@@ -76,7 +76,6 @@ class SocketAddress;
 }
 
 namespace chrono {
-class MicroTime;
 class Seconds;
 class Milliseconds;
 class Microseconds;
@@ -251,13 +250,13 @@ typedef Argument< sigset_t, struct SignalMaskTag > SignalMask;
 typedef Argument< void * (*)(void *), struct ThreadFunctionTag > ThreadFunction;
 typedef Argument< void **, struct ThreadReturnTag > ThreadReturn;
 
-typedef Argument< const chrono::MicroTime &, struct DelayIntervalTag > DelayInterval;
-typedef Argument< const chrono::MicroTime &, struct ButtonHeldThresholdTag > ButtonHeldThreshold;
-typedef Argument< const chrono::MicroTime &, struct ButtonActuatedThresholdTag > ButtonActuatedThreshold;
-typedef Argument< const chrono::MicroTime &, struct ActiveDurationTag > ActiveDuration;
-typedef Argument< const chrono::MicroTime &, struct InActiveDurationTag > InActiveDuration;
-typedef Argument< const chrono::MicroTime &, struct PeriodTag > Period;
-typedef Argument< const chrono::MicroTime &, struct DurationTag > Duration;
+typedef Argument< const chrono::Microseconds &, struct DelayIntervalTag > DelayInterval;
+typedef Argument< const chrono::Microseconds &, struct ButtonHeldThresholdTag > ButtonHeldThreshold;
+typedef Argument< const chrono::Microseconds &, struct ButtonActuatedThresholdTag > ButtonActuatedThreshold;
+typedef Argument< const chrono::Microseconds &, struct ActiveDurationTag > ActiveDuration;
+typedef Argument< const chrono::Microseconds &, struct InActiveDurationTag > InActiveDuration;
+typedef Argument< const chrono::Microseconds &, struct PeriodTag > Period;
+typedef Argument< const chrono::Microseconds &, struct DurationTag > Duration;
 
 
 
@@ -269,7 +268,7 @@ typedef Argument< var::JsonValue&, struct DestinationJsonValueTag > DestinationJ
 
 typedef Argument< sys::Printer &, struct ProgressPrinterTag > ProgressPrinter;
 
-typedef Argument< const chrono::MicroTime &, struct RetryDelayTag > RetryDelay;
+typedef Argument< const chrono::Microseconds &, struct RetryDelayTag > RetryDelay;
 
 //hal
 typedef Argument< const mcu_pin_t &, struct McuPinTag > McuPin;

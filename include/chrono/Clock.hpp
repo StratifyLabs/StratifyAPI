@@ -17,7 +17,7 @@ namespace chrono {
  * on struct timeval.
  *
  */
-class Clock : public api::ChronoInfoObject {
+class Clock : public api::InfoObject {
 public:
 
 	enum clock_id {

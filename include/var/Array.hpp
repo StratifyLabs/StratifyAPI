@@ -1,10 +1,12 @@
 #ifndef SAPI_VAR_ARRAY_HPP_
 #define SAPI_VAR_ARRAY_HPP_
 
+#include <iterator>
 #include <cstdio>
 #include "../api/VarObject.hpp"
 
 namespace var {
+
 
 /*! \brief Array Class
  * \details The Array class is a template
@@ -43,6 +45,15 @@ template <typename T, u32 size_value> class Array : public api::WorkObject {
 public:
 
 	Array(){}
+
+	using iterator = std::iterator<std::random_access_iterator_tag,T,ptrdiff_t,T*,T&>;
+	using const_iterator = std::iterator<std::random_access_iterator_tag,const T,ptrdiff_t,const T*,const T&>;
+
+	T * begin(){ return m_array + 0; }
+	const T * begin() const { return m_array + 0; }
+	T * end(){ return m_array + size_value; }
+	const T * end() const { return m_array + size_value; }
+
 
 	/*! \details Returns the number of objects in the array.
 	  *

@@ -32,7 +32,7 @@ public:
 	operator event_loop_attr_t() const { return m_attr; }
 
 	/*! \details Accesses the hibernate timeout in chrono::MicroTime. */
-	chrono::MicroTime hibernation_threshold() const { return chrono::MicroTime::from_milliseconds(m_attr.hibernation_threshold_msec); }
+	chrono::Microseconds hibernation_threshold() const { return chrono::Milliseconds(m_attr.hibernation_threshold_msec); }
 
 	/*! \details Sets the hibernate threshold in MicroTime.
 	 *
@@ -66,10 +66,10 @@ public:
 	void set_hibernation_threshold(const chrono::MicroTime & value){ m_attr.hibernation_threshold_msec = value.milliseconds(); }
 
 	/*! \details Accesses the period for firing the Event::UPDATE in chrono::MicroTime. */
-	chrono::MicroTime update_period() const { return chrono::MicroTime::from_microseconds(m_attr.update_period_usec); }
+	chrono::Microseconds update_period() const { return chrono::Microseconds(m_attr.update_period_usec); }
 
 	/*! \details Accesses the minimum period of the event loop in chrono::MicroTime. */
-	chrono::MicroTime period() const { return chrono::MicroTime::from_microseconds(m_attr.period_usec); }
+	chrono::Microseconds period() const { return chrono::Microseconds(m_attr.period_usec); }
 
 	/*! \details Sets the period of the event loop in chrono::MicroTime.
 	 *

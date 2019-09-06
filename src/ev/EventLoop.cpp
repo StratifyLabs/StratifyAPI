@@ -123,7 +123,7 @@ void EventLoop::check_loop_for_hibernate(){
 		s32 us_remaining;
 		us_remaining = period().microseconds() - loop_timer().microseconds();
 		if( us_remaining > 0 ){
-			chrono::Timer::wait_microseconds(us_remaining);
+			chrono::wait(chrono::Microseconds(us_remaining));
 		}
 	}
 }

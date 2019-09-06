@@ -131,9 +131,9 @@ int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
 
 	m_drawing_attr->bitmap() << m_drawing_attr->bitmap().pen().set_flags(o_flags);
 	m_drawing_attr->bitmap().refresh();
-	Timer::wait_milliseconds(frame_delay());
+	chrono::wait(Milliseconds(frame_delay()));
 
-	m_drawing_attr->bitmap().wait(MicroTime(1000));
+	m_drawing_attr->bitmap().wait(Microseconds(1000));
 
 	return ret;
 }

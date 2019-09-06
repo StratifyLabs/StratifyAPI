@@ -1,6 +1,7 @@
 #ifndef SAPI_VAR_VECTOR_HPP_
 #define SAPI_VAR_VECTOR_HPP_
 
+#include <iterator>
 #include <new>
 #include "Data.hpp"
 
@@ -21,6 +22,27 @@ public:
 	Vector(){
 		m_count = 0;
 	}
+
+	using iterator = std::iterator<std::random_access_iterator_tag,T,ptrdiff_t,T*,T&>;
+	using const_iterator = std::iterator<std::random_access_iterator_tag,const T,ptrdiff_t,const T*,const T&>;
+
+	T * begin(){ return to<T>(); }
+	const T * begin() const { return to<const T>(); }
+	T * end(){
+		T * result = to<T>();
+		if( result ){
+			return result + m_count;
+		}
+		return nullptr;
+	}
+	const T * end() const {
+		const T * result = to<const T>();
+		if( result ){
+			return result + m_count;
+		}
+		return nullptr;
+	}
+
 
 	/*! \details Constructs a vector with \a count uninitialized items. */
 	Vector(const arg::Count count){

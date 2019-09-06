@@ -32,7 +32,7 @@ template<typename T> class Ring;
 
 namespace chrono{
 class ClockTime;
-class MicroTime;
+class Microseconds;
 class Time;
 }
 
