@@ -45,25 +45,28 @@ class Dir : public api::FsWorkObject {
 public:
 	/*! \details Constructs a Dir object. */
 #if defined __link
-	Dir(link_transport_mdriver_t * driver = 0);
+	Dir(arg::LinkDriver driver = arg::LinkDriver(0));
 	static int create(
 			const arg::DestinationDirectoryPath & path,
 			const Permissions & permissions = Permissions(0777),
-			link_transport_mdriver_t * driver = 0
+			arg::LinkDriver driver = arg::LinkDriver(0)
 			);
+
 	static int create(
 			const arg::DestinationDirectoryPath & path,
 			const Permissions & permissions,
-			bool is_recursive,
-			link_transport_mdriver_t * driver = 0
+			const arg::IsRecursive is_recursive,
+			arg::LinkDriver driver = arg::LinkDriver(0)
 			);
+
 	static bool exists(
 			const arg::SourceDirectoryPath & path,
-			link_transport_mdriver_t * driver = 0
+			arg::LinkDriver driver = arg::LinkDriver(0)
 			);
+
 	static var::Vector<var::String> read_list(
 			const arg::SourceDirectoryPath & path,
-			link_transport_mdriver_t * driver = 0
+			arg::LinkDriver driver = arg::LinkDriver(0)
 			);
 
 #else
@@ -77,7 +80,7 @@ public:
 	static int create(
 			const arg::DestinationDirectoryPath & path,
 			const Permissions & permissions,
-			bool is_recursive
+			const arg::IsRecursive is_recursive
 			);
 	/*! \details Returns true if the directory exists. */
 	static bool exists(
@@ -87,6 +90,15 @@ public:
 			const arg::SourceDirectoryPath & path
 			);
 #endif
+
+	static int copy(
+			const arg::SourceDirectoryPath source_path,
+			const arg::DestinationDirectoryPath destination_path
+		#if defined __link
+			, arg::SourceLinkDriver source_driver = arg::SourceLinkDriver(0),
+			arg::DestinationLinkDriver destination_driver = arg::DestinationLinkDriver(0)
+		#endif
+			);
 
 	/*! \details Destructs the object.
 	 *
@@ -126,7 +138,7 @@ public:
 #else
 	static int remove(const arg::SourceDirectoryPath path,
 							const arg::IsRecursive recursive,
-							link_transport_mdriver_t * driver = 0
+							arg::LinkDriver driver = arg::LinkDriver(0)
 			);
 #endif
 

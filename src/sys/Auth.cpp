@@ -35,8 +35,8 @@ AuthToken::AuthToken(const var::ConstString & token){
 }
 
 #if defined __link
-Auth::Auth(link_transport_mdriver_t * driver){
-	m_driver = driver;
+Auth::Auth(arg::LinkDriver driver){
+	m_driver = driver.argument();
 	m_fd = set_error_number_if_error(::link_open(m_driver, "/dev/auth", O_RDWR));
 }
 #else

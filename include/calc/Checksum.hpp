@@ -29,11 +29,14 @@ public:
 	  * If the data is 32-bit aligned, use calc_zero_sum(const u32 *, int);
 	  *
 	  *
-	  * \code
-	  *
-	  * #include <mcu/types.h>
+	  * ```
+	  * //md2code:include
 	  * #include <sapi/calc.hpp>
+	  * #include <sapi/var.hpp>
+	  * ```
 	  *
+	  * ```
+	  * //md2code:main
 	  * typedef struct MCU_PACK {
 	  *  u8 member_a;
 	  *  u32 member_b;
@@ -48,7 +51,7 @@ public:
 	  * if( Checksum::verify_zero_sum((u8*)&data, sizeof(data)) == true ){
 	  *  //checksum is good
 	  * }
-	  * \endcode
+	  * ```
 	  *
 	  *
 	  *
@@ -58,7 +61,7 @@ public:
 			int size
 			);
 
-	template<typename T> static T calculate_zero_sum(const var::Data & data){
+	template<typename T> static T calculate_zero_sum(const var::DataReference & data){
 		u32 i;
 		T sum = 0;
 		int count = data.size()/sizeof(T) - 1;
@@ -69,7 +72,7 @@ public:
 	}
 
 	template<typename T> static T verify_zero_sum(
-			const var::Data & data
+			const var::DataReference & data
 			){
 		int i;
 		T sum = 0;

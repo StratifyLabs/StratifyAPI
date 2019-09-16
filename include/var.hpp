@@ -8,17 +8,6 @@
  * \details The var namespace is a collection of data storage mechanisms and routines
  * such as buffers and strings.
  *
- * Here is a brief summary of the most commonly used classes:
- *
- * - Data: manages static and dynamic allocation of memory ensuring no memory leaks
- * - String: An embedded friendly String object that implements many methods from std::string
- * - Queue: similar to std::queue (inherits LinkedList)
- * - Vector: similar to std::vector (inherits Data)
- * - Ring: template class for creating first-in first-out buffers of fixed size (inherits Data)
- * - Token: Breaks strings into tokens (inherits String)
- * - Array: similar to std::array
- *
- *
  */
 namespace var {}
 

@@ -588,7 +588,9 @@ public:
 	  * If no driver is set, the default driver (serial port) is used.
 	  *
 	  */
-	void set_driver(link_transport_mdriver_t * driver){ m_driver = driver; }
+	void set_driver(arg::ImplicitLinkDriver driver){
+		m_driver = driver.argument();
+	}
 
 	void set_progress(int p){ m_progress = p; }
 	void set_progress_max(int p){ m_progress_max = p; }

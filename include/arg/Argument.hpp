@@ -295,8 +295,12 @@ typedef Argument< u8, struct BrightnessColorComponentTag > BrightnessColorCompon
 
 #if defined __link
 typedef Argument< link_transport_mdriver_t*, struct LinkDriverTag > LinkDriver;
+typedef Argument< link_transport_mdriver_t*, struct SourceLinkDriverTag > SourceLinkDriver;
+typedef Argument< link_transport_mdriver_t*, struct DestinationLinkDriverTag > DestinationLinkDriver;
 typedef Argument< int, struct LinkDirpTag > LinkDirp;
 typedef Argument< bool , struct IsCopyToDeviceTag > IsCopyToDevice;
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitLinkDriver, link_transport_mdriver_t*, LinkDriver);
+
 #endif
 
 #if defined __link

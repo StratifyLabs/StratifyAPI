@@ -100,7 +100,12 @@ private:
  * YAML object.
  *
  * ```
+ * //md2code:include
  * #include <sapi/sys.hpp>
+ * ```
+ *
+ * ```
+ * //md2code:main
  * Printer p;
  * p.open_object("System Information") << SysInfo::get() << p.close();
  * ```
@@ -361,6 +366,7 @@ public:
 	 * unique keys to each object.
 	 *
 	 * ```
+	 * //md2code:main
 	 * Printer p;
 	 * //whole object only prints with debug verbose level
 	 * p.open_object("keys", Printer::DEBUG);
@@ -395,6 +401,7 @@ public:
 	 *
 	 *
 	 * ```
+	 * //md2code:main
 	 * Printer p;
 	 * //whole object only prints with debug verbose level
 	 * p.open_array("keys", Printer::MESSAGE);
@@ -413,9 +420,10 @@ public:
 	 * code can change the top level type to an object.
 	 *
 	 * ```
+	 * //md2code:main
 	 * Printer p; //printer is now an array
 	 * p.close_array();
-	 * p.open_object(); //top level type is an object
+	 * p.open_object(""); //top level type is an object
 	 * ```
 	 *
 	 */
@@ -428,9 +436,10 @@ public:
 	 * an array or object with the `<<` operator.
 	 *
 	 * ```
+	 * //md2code:main
 	 * Printer p;
 	 * p.open_object("empty object") << p.close();
-	 * p.open_array("messages", Printer::MESSAGE) << p.message("hello") << p.close();
+	 * p.open_array("messages", Printer::MESSAGE) << "hello" << p.close();
 	 * ```
 	 *
 	 */
@@ -450,16 +459,27 @@ public:
 	 * with the key set to progress_key().
 	 *
 	 * ```
+	 * //md2code:include
 	 * #include <sapi/sys.hpp>
 	 * #include <sapi/inet.hpp>
+	 * #include <sapi/fs.hpp>
+	 * ```
+	 *
+	 * ```
+	 * //md2code:main
 	 * Printer p;
 	 *
-	 * p.set_progress_key("downloading");
-	 * HttpClient http_client;
-	 * DataFile data_file(File::APPEND);
+	 * p.progress_key() = var::ConstString("downloading");
+	 * Socket socket;
+	 * HttpClient http_client(socket);
+	 * DataFile data_file(OpenFlags::append_read_write());
 	 *
 	 * //download file to data_file and print the progress using #'s
-	 * http_client.get("http://some.url/file", data_file, p.progress_callback());
+	 * http_client.get(
+	 *   arg::UrlEncodedString("http://some.url/file"),
+	 *   arg::DestinationFile(data_file),
+	 *   p.progress_callback()
+	 *   );
 	 * ```
 	 *
 	 */

@@ -66,7 +66,9 @@ SysInfo SysInfo::get(){
 }
 
 #if defined __link
-Sys::Sys(link_transport_mdriver_t * driver) : File(driver){}
+Sys::Sys(
+		arg::LinkDriver driver
+		) : File(driver){}
 
 #else
 Sys::Sys() {
@@ -145,15 +147,20 @@ var::String Sys::install(const var::ConstString & path,
 #endif
 }
 
-int Sys::free_ram(const char * path, link_transport_mdriver_t * driver){
+int Sys::free_ram(const char * path, arg::LinkDriver driver){
 	int fd;
 	int ret;
 #if defined __link
-	if( (fd = link_open(driver, path, O_RDONLY)) < 0 ){
+	if( (fd = link_open(
+			  driver.argument(),
+			  path,
+			  O_RDONLY
+			  )
+		  ) < 0 ){
 		return -1;
 	}
-	ret = link_ioctl(driver, fd, I_APPFS_FREE_RAM);
-	link_close(driver, fd);
+	ret = link_ioctl(driver.argument(), fd, I_APPFS_FREE_RAM);
+	link_close(driver.argument(), fd);
 #else
 	if( (fd = ::open(path, O_RDONLY)) < 0 ){
 		return -1;
@@ -191,15 +198,15 @@ int Sys::verify_zero_sum32(void * data, int size){
 	return sum == 0;
 }
 
-int Sys::reclaim_ram(const char * path, link_transport_mdriver_t * driver){
+int Sys::reclaim_ram(const char * path, arg::LinkDriver driver){
 	int fd;
 	int ret;
 #if defined __link
-	if( (fd = link_open(driver, path, O_RDONLY)) < 0 ){
+	if( (fd = link_open(driver.argument(), path, O_RDONLY)) < 0 ){
 		return -1;
 	}
-	ret = link_ioctl(driver, fd, I_APPFS_RECLAIM_RAM);
-	link_close(driver, fd);
+	ret = link_ioctl(driver.argument(), fd, I_APPFS_RECLAIM_RAM);
+	link_close(driver.argument(), fd);
 #else
 	if( (fd = ::open(path, O_RDONLY)) < 0 ){
 		return -1;

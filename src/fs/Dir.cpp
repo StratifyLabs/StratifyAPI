@@ -13,9 +13,9 @@ using namespace arg;
 
 
 #if defined __link
-Dir::Dir(link_transport_mdriver_t * driver){
+Dir::Dir(arg::LinkDriver driver){
 	m_dirp = 0;
-	m_driver = driver;
+	m_driver = driver.argument();
 	m_dirp_local = 0;
 }
 
@@ -39,7 +39,7 @@ int Dir::remove(
 int Dir::remove(
 		const arg::SourceDirectoryPath path,
 		const arg::IsRecursive recursive,
-		link_transport_mdriver_t * driver
+		arg::LinkDriver driver
 		){
 #endif
 	int ret = 0;
@@ -54,41 +54,32 @@ int Dir::remove(
 				 ) == 0 ){
 			var::String entry;
 			while( (entry = d.read()).is_empty() == false ){
-#if defined __link
-				Stat info(driver);
-#else
 				Stat info;
-#endif
 				var::String entry_path;
 				entry_path << path.argument() << "/" << entry;
 				info = File::get_info(
 							SourceFilePath(entry_path)
+			#if defined __link
+							, driver
+			#endif
 							);
 				if( info.is_directory() ){
 					if( entry != "." && entry != ".."){
-#if defined __link
-						ret = Dir::remove(
-									arg::SourceDirectoryPath(entry_path),
-									arg::IsRecursive(true),
-									driver);
-#else
 						ret = Dir::remove(
 									arg::SourceDirectoryPath(entry_path),
 									arg::IsRecursive(true)
+			#if defined __link
+									, driver
+			#endif
 									);
-#endif
 					}
 				} else {
-#if defined __link
-					ret = File::remove(
-								arg::SourceFilePath(entry_path),
-								driver
-								);
-#else
 					ret = File::remove(
 								arg::SourceFilePath(entry_path)
+			#if defined __link
+								, driver
+			#endif
 								);
-#endif
 				}
 			}
 		}
@@ -98,7 +89,7 @@ int Dir::remove(
 	if( ret >= 0 ){
 		//this will remove an empty directory or a file
 #if defined __link
-		if( driver ){
+		if( driver.argument() ){
 			ret = File::remove(
 						arg::SourceFilePath(path.argument()),
 						driver
@@ -118,17 +109,92 @@ int Dir::remove(
 	return ret;
 }
 
+int Dir::copy(
+		const arg::SourceDirectoryPath source_path,
+		const arg::DestinationDirectoryPath destination_path
+		#if defined __link
+		, arg::SourceLinkDriver source_driver,
+		arg::DestinationLinkDriver destination_driver
+		#endif
+		){
+
+	var::Vector<var::String> source_contents =
+			Dir::read_list(
+				source_path
+			#if defined __link
+				, arg::LinkDriver(source_driver.argument())
+			#endif
+				);
+
+	for(auto entry: source_contents){
+		var::String entry_path =
+				var::String()
+				<< source_path.argument()
+				<< "/"
+				<< entry;
+
+		var::String destination_entry_path =
+				var::String()
+				<< destination_path.argument()
+				<< "/"
+				<< entry;
+
+		FileInfo info =
+				File::get_info(
+					arg::SourceFilePath(entry_path)
+			#if defined __link
+					, arg::LinkDriver(source_driver.argument())
+			#endif
+					);
+
+		if( info.is_directory() ){
+			//copy recursively
+
+			if( Dir::create(
+					 arg::DestinationDirectoryPath(destination_entry_path),
+					 Permissions::all_access(),
+					 arg::IsRecursive(true)
+		 #if defined __link
+					 , arg::LinkDriver(destination_driver.argument())
+		 #endif
+					 ) < 0 ){
+				return -1;
+			}
+
+			copy(arg::SourceDirectoryPath(entry_path),
+				  arg::DestinationDirectoryPath(destination_entry_path)
+	  #if defined __link
+				  , source_driver,
+				  destination_driver
+	  #endif
+				  );
+
+		} else if( info.is_file() ){
+			if( File::copy(
+						arg::SourceFilePath(entry_path),
+						arg::DestinationFilePath(destination_entry_path),
+						arg::IsOverwrite(true)
+						) < 0 ){
+				return -1;
+			}
+		}
+	}
+	return 0;
+}
+
 #if defined __link
 int Dir::create(
 		const DestinationDirectoryPath & path,
 		const Permissions & permissions,
-		link_transport_mdriver_t * driver
+		arg::LinkDriver driver
 		){
 	int result;
-	if( driver ){
-		result = link_mkdir(driver,
-								  path.argument().cstring(),
-								  permissions.permissions());
+	if( driver.argument() ){
+		result = link_mkdir(
+					driver.argument(),
+					path.argument().cstring(),
+					permissions.permissions()
+					);
 	} else {
 		//open a directory on the local system (not over link)
 #if defined __win32
@@ -155,18 +221,18 @@ int Dir::create(
 int Dir::create(
 		const DestinationDirectoryPath & path,
 		const Permissions & permissions,
-		bool is_recursive,
-		link_transport_mdriver_t * driver
+		const arg::IsRecursive is_recursive,
+		arg::LinkDriver driver
 		){
-	if( is_recursive == false ){
+	if( is_recursive.argument() == false ){
 		return create(path, permissions, driver);
 	}
 #else
 int Dir::create(
 		const DestinationDirectoryPath & path,
 		const Permissions & permissions,
-		bool is_recursive){
-	if( is_recursive == false ){
+		const arg::IsRecursive is_recursive){
+	if( is_recursive.argument() == false ){
 		return create(path, permissions);
 	}
 #endif
@@ -187,9 +253,9 @@ int Dir::create(
 		create(
 					DestinationDirectoryPath(base_path),
 					permissions
-#if defined __link
+			#if defined __link
 					, driver
-#endif
+			#endif
 					);
 		base_path << "/";
 	}
@@ -203,7 +269,7 @@ int Dir::create(
 #if defined __link
 bool Dir::exists(
 		const SourceDirectoryPath & path,
-		link_transport_mdriver_t * driver
+		arg::LinkDriver driver
 		){
 	Dir d(driver);
 #else
@@ -284,7 +350,7 @@ int Dir::count(){
 #if defined __link
 var::Vector<var::String> Dir::read_list(
 		const SourceDirectoryPath & path,
-		link_transport_mdriver_t * driver
+		arg::LinkDriver driver
 		){
 	Dir directory(driver);
 #else
@@ -308,7 +374,9 @@ var::Vector<var::String> Dir::read_list(){
 	do {
 		entry.clear();
 		entry = read();
-		if( !entry.is_empty() ){
+		if( !entry.is_empty() &&
+			 (entry != ".") &&
+			 (entry != "..") ){
 			result.push_back(entry);
 		}
 	} while( entry.is_empty() == false );

@@ -73,26 +73,33 @@ protected:
  * LowPassFilterF32 is the same filter but with floating point values.
  *
  * The following is an example of using the Ema class using 32-bit integers.
- * \code
+ * ```
+ * //md2code:include
  * #include <sapi/hal.hpp>
  * #include <sapi/calc.hpp>
- * #include <cstdio>
+ * ```
  *
- *  //first initialize a filter with a value of 0 and with an averaging constant of 0.1
+ * ```
+ * //md2code:main
+ *	//first initialize a filter with a value of 0 and with an averaging constant of 0.1
  * LowPassFilterS32 filter(0, LOW_PASS_FILTER_S32_ALPHA(0.1));
- *  //Or do:  LowPassFilter<u16, s32, s64> filter(0, LOW_PASS_FILTER_S32_ALPHA(0.1));
+ *	//Or do:  LowPassFilter<u16, s32, s64> filter(0, LOW_PASS_FILTER_S32_ALPHA(0.1));
  *
- *  //now use the ADC to get some data
+ *	//now use the ADC to get some data
  * Adc adc(0);
- * adc_sample_t sample;
- * adc.init(1<<0); //initialize with channel 0 enabled
+ * u16 sample;
+ * adc.initialize();
  *
- * for(i=0; i < 100; i++){  //take 100 samples and filter as we go
- * 	adc.read(0, &sample, sizeof(sample));
+ * for(u32 i=0; i < 100; i++){  //take 100 samples and filter as we go
+ * 	adc.read(
+ *       arg::Location(0),
+ *       arg::DestinationBuffer(&sample),
+ *       arg::Size(sizeof(sample))
+ *    );
  * 	filter << sample;
- * 	printf("%d %d %d;\n", i, sample, filter.present_value());
+ * 	printf("%ld %d %ld;\n", i, sample, filter.present_value());
  * }
- * \endcode
+ * ```
  *
  * For more information on this filter see <a href="http://stratifylabs.co/embedded%20design%20tips/2013/10/04/Tips-An-Easy-to-Use-Digital-Filter">this wiki article</a>.
  *
@@ -190,7 +197,12 @@ public:
 		m_alpha = value;
 	}
 
-	int calculate_alpha(float sampling_frequency, float magnitude = 0.5f);
+
+	/*! \details Calculates the alpha value for the given
+	 * magnitude (impulse response) and sampling frequency.
+	 *
+	 */
+	float calculate_alpha(float sampling_frequency, float magnitude = 0.5f);
 
 	void reset(float start);
 	float calculate(float in);
@@ -205,7 +217,7 @@ private:
  * pass filter. The filter is defined by the following difference
  * equation:
  *
- * $$ y[n] = x[n] - x[n-1] + r * y[n-1] $$
+ * $$ y[n] = x[n] - r \cdot x[n-1] + y[n-1] $$
  *
  * The *r* value should be between zero and one. Values closer
  * to one have a lower cutoff frequency.

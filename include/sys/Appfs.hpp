@@ -284,11 +284,11 @@ private:
 class Appfs : public api::WorkObject {
 public:
 
-#if defined __link
-	Appfs(link_transport_mdriver_t * driver = 0);
-#else
-	Appfs();
-#endif
+	Appfs(
+		#if defined __link
+			arg::LinkDriver driver = arg::LinkDriver(0)
+		#endif
+			);
 
 	/*! \details Creates a file in flash memory consisting
 	 * of the data specified.
@@ -302,13 +302,14 @@ public:
 	 * @return Zero on success or -1 with errno set accordingly
 	 *
 	 */
-	static int create(const arg::FileName name,
+	static int create(
+			const arg::FileName name,
 							const arg::SourceFile source_data,
 							const arg::SourceDirectoryPath mount = arg::SourceDirectoryPath("/app"),
 							const ProgressCallback * progress_callback = 0
-#if defined __link
-							, link_transport_mdriver_t * driver = 0
-#endif
+		#if defined __link
+			, arg::LinkDriver driver = arg::LinkDriver(0)
+		#endif
 			);
 
 	int create(
@@ -338,16 +339,13 @@ public:
 	  * does not exist or is not a recognized executable, respectively.
 	  *
 	 */
-#if !defined __link
+
 	static AppfsInfo get_info(
 			const arg::SourceFilePath path
+		#if defined __link
+			, arg::LinkDriver driver
+		#endif
 			);
-#else
-	static AppfsInfo get_info(
-			const arg::SourceFilePath path,
-			link_transport_mdriver_t * driver
-			);
-#endif
 
 	/*! \details Gets the application version.
 	 *
@@ -359,9 +357,9 @@ public:
 	 */
 	static u16 get_version(
 			const arg::SourceFilePath path
-#if defined __link
-			, link_transport_mdriver_t * driver
-#endif
+		#if defined __link
+			, arg::LinkDriver driver
+		#endif
 			);
 
 	/*! \details Gets the application ID value.
@@ -375,9 +373,9 @@ public:
 	 */
 	static var::String get_id(
 			const arg::SourceFilePath path
-#if defined __link
-			, link_transport_mdriver_t * driver
-#endif
+		#if defined __link
+			, arg::LinkDriver driver
+		#endif
 			);
 
 #if !defined __link

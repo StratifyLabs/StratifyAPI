@@ -19,61 +19,222 @@ namespace var {
 #if !defined __link
 class DataInfo : public api::InfoObject {
 public:
+
 	DataInfo(){ refresh(); }
 
 	void refresh(){ m_info = mallinfo(); }
-
 	u32 arena() const { return m_info.arena; }
 	u32 free_block_count() const { return m_info.ordblks; }
 	u32 free_size() const { return m_info.fordblks; }
 	u32 used_size() const { return m_info.uordblks; }
-
-
 private:
 	struct mallinfo m_info;
 };
 #endif
 
-//there needs to be a superclass here that defines all the interfaces
-
+/*! \brief Data Reference Class
+ * \details The Data Reference class
+ * is for referring to data (if that wasn't obvious
+ * from the name).
+ *
+ * ```
+ * //md2code:include
+ * #include <sapi/var.hpp>
+ * #include <sapi/fs.hpp>
+ * ```
+ *
+ * The reference includes a pointer to some data
+ * and the size of the data.
+ *
+ * This class allows passing the data reference as
+ * an argument without passing the size separately.
+ * Here is a quick example of how this is useful (and good).
+ *
+ * ```
+ * //this is good because you can't mess up the size
+ * int write(const DataReference & data);
+ *
+ * //this is not good because you can mess up the size
+ * int write(const void * data, int bytes_in_data);
+ * ```
+ *
+ * Now let's see this in practice.
+ *
+ * ```
+ * //md2code:main
+ *
+ * File f;
+ * f.open(
+ *   arg::FilePath("/home/test.txt"),
+ *   OpenFlags::append()
+ *   );
+ *
+ * u32 data[4];
+ *
+ * f.write(
+ *   arg::SourceData(DataReference(data))
+ *   ); //writes 4 * sizeof(u32) bytes
+ * //or
+ * f.write(
+ *   arg::SourceBuffer(data),
+ *   //above cases needn't worry about size
+ *   arg::Size(sizeof(data))
+ *   );
+ * ```
+ *
+ *
+ *
+ */
 class DataReference : public virtual api::WorkObject {
 public:
 
+	/*! \details Constructs an empty
+	 * data reference.
+	 *
+	 * is_valid() will return false until
+	 * refer_to() is called.
+	 *
+	 *
+	 */
 	DataReference();
 
+
+	/*! \details Constructs a read-only
+	 * data reference to buffer with
+	 * the specified size.
+	 *
+	 * ```
+	 * //md2code:main
+	 * const char buffer[16] = {0};
+	 * DataReference read_only_data =
+	 *   DataReference(
+	 *     arg::ReadOnlyBuffer(buffer),
+	 *     arg::Size(16)
+	 *   );
+	 *
+	 * if( read_only_data.to_char() == nullptr ){
+	 *   printf("this will print (data is read-only)\n");
+	 * }
+	 *
+	 * if( read_only_data.to_const_char() == nullptr ){
+	 *   printf("this won't print\n");
+	 * }
+	 * ```
+	 *
+	 *
+	 */
 	DataReference(
 			arg::ReadOnlyBuffer buffer,
 			arg::Size size
 			);
 
+	/*! \details Constructs a read-write
+	 * data reference to a buffer with
+	 * the specified size.
+	 *
+	 * ```
+	 * //md2code:main
+	 *	char buffer[16] = {0};
+	 * DataReference read_write_data =
+	 *   DataReference(
+	 *     arg::ReadWriteBuffer(buffer),
+	 *     arg::Size(16)
+	 *   );
+	 *
+	 * if( read_write_data.to_char() == nullptr ){
+	 *   printf("this won't print\n");
+	 * }
+	 *
+	 * if( read_write_data.to_const_char() == nullptr ){
+	 *   printf("this won't print\n");
+	 * }
+	 * ```
+	 *
+	 *
+	 */
 	DataReference(
 			arg::ReadWriteBuffer buffer,
 			arg::Size size
 			);
 
+	/*! \details Constructs a read-write
+	 * data reference to some other item.
+	 * The target item can be of any type. The size
+	 * will be figured out.
+	 *
+	 * If the item is a `const` item, the
+	 * data reference will be read only.
+	 *
+	 *
+	 * ```
+	 * //md2code:include
+	 * #include <sos/dev/pio.h>
+	 * ```
+	 *
+	 * ```
+	 * //md2code:main
+	 * pio_attr_t pio_attributes;
+	 *
+	 * DataReference data_structure(pio_attributes);
+	 * data_structure.fill<u8>(0);
+	 *
+	 * if( data_structure.to_void() == (void*)&pio_attributes ){
+	 *   printf("this will print\n");
+	 * }
+	 * ```
+	 *
+	 */
 	template<typename T> DataReference(T & item){
 		refer_to(item);
 	}
 
+	/*! \details Returns true if the data reference
+	 * is valid.
+	 *
+	 * If the read and write pointers are both `nullptr`,
+	 * this will return false.
+	 *
+	 * ```
+	 * //md2code:main
+	 * pio_attr_t pio_attributes;
+	 *
+	 * DataReference data_structure;
+	 * if( data_structure.is_valid() ){
+	 *   printf("this won't print\n");
+	 * }
+	 *
+	 * data_structure.refer_to(pio_attributes);
+	 *
+	 * if( data_structure.is_valid() ){
+	 *   printf("this will print\n");
+	 * }
+	 * ```
+	 *
+	 */
 	bool is_valid() const {
 		return size() > 0;
 	}
 
+	/*! \details Returns true if the data object
+	 * is not valid.
+	 *
+	 */
 	bool is_null() const { return size() == 0; }
 
-	/*! \details Sets the storage object of the data. This object
-	 * will treat the data as statically allocated and will not free the memory
-	 * if free() is called or the object is destroyed.
+	/*! \details Refers to an item.
 	 *
-	 * @param mem A pointer to a fixed place in memory to use as storage
-	 * @param size The number of bytes allocated
-	 * @param readonly true if readonly (used for data stored in flash)
+	 * ```
+	 * //md2code:main
+	 * pio_attr_t pio_attributes;
 	 *
-	 * If the memory is specified as read-only, data() will return 0 and data_const()
-	 * will return a pointer to the memory.
+	 * DataReference data_structure;
+	 * data_structure.refer_to(pio_attributes);
+	 * data_structure.fill<u8>(0);
 	 *
-	 * If this object had previously allocated memory dynamically, the memory will be freed
-	 * when this method is called.
+	 * if( data_structure.to_void() == (void*)&pio_attributes ){
+	 *   printf("this will print\n");
+	 * }
+	 * ```
 	 *
 	 */
 	template<typename T> void refer_to(T & item){
@@ -93,11 +254,58 @@ public:
 		}
 	}
 
+
+	/*! \details Refers to a readonly buffer
+	 * with the specified size.
+	 *
+	 * ```
+	 * //md2code:main
+	 * char buffer[16];
+	 *
+	 * DataReference data_reference =
+	 *   DataReference(
+	 *     arg::ReadOnlyBuffer(buffer),
+	 *     arg::Size(16)
+	 *   );
+	 *
+	 * if( data_reference.to_void() == nullptr ){
+	 *   printf("this will print\n");
+	 * }
+	 *
+	 * if( data_reference.to_const_void() == nullptr ){
+	 *   printf("this won't print\n");
+	 * }
+	 * ```
+	 *
+	 */
 	void refer_to(
 			const arg::ReadOnlyBuffer read_only_data,
 			arg::Size size
 			);
 
+	/*! \details Refers to a read-write buffer
+	 * with the specified size.
+	 *
+	 * ```
+	 * //md2code:main
+	 * char buffer[16];
+	 *
+	 * DataReference data_reference =
+	 *   DataReference(
+	 *     arg::ReadWriteBuffer(buffer),
+	 *     arg::Size(16)
+	 *   );
+	 *
+	 * if( data_reference.to_void() == nullptr ){
+	 *   printf("this won't print\n");
+	 * }
+	 *
+	 * if( data_reference.to_const_void() == nullptr ){
+	 *   printf("this won't print\n");
+	 * }
+	 * ```
+	 *
+	 */
 	void refer_to(
 			arg::ReadWriteBuffer data,
 			arg::Size size
@@ -111,7 +319,17 @@ public:
 	/*! \details Fill the data with the specified value.
 	 * This will not attempt to write read-only data.
 	 *
-	 * @param d The value to write to the data
+	 *
+	 * ```
+	 * //md2code:main
+	 * char buffer[16];
+	 *
+	 * DataReference data_reference(buffer);
+	 *
+	 * data_reference.fill<u8>(0xaa);
+	 * data_reference.fill<u32>(0xaabbccdd);
+	 * data_reference.fill((u16)0xaa55);
+	 * ```
 	 *
 	 */
 	template<typename T> void fill(
@@ -136,22 +354,24 @@ public:
 	 * On Cortex-M chips this method makes use of the built-in byte
 	 * swapping instructions (so it is fast).
 	 *
-	 * \code
+	 * ```
+	 * //md2code:include
 	 * #include <sapi/var.hpp>
 	 * #include <sapi/hal.hpp>
+	 * ```
 	 *
-	 * Spi spi(0);
-	 * Data buffer(16);
-	 * spi.init();
-	 * spi.read(buffer);
+	 * ```
+	 * //md2code:main
+	 * char buffer[16];
+	 * DataReference data_reference(buffer);
 	 *
 	 * //assume the spi outputs big endian data -- swaps 32-bit words
-	 * buffer.swap_byte_order();
-	 * buffer.swap_byte_order(4); //this is the same as calling swap_byte_order()
+	 * data_reference.swap_byte_order();
+	 * data_reference.swap_byte_order(4); //this is the same as calling swap_byte_order()
 	 *
-	 * //or if the spi is big endian but uses 16-bit words
-	 * buffer.swap_byte_order(2);
-	 * \endcode
+	 * //or for swapping bytes in 16-bit words
+	 * data_reference.swap_byte_order(2);
+	 * ```
 	 *
 	 *
 	 */
@@ -159,34 +379,13 @@ public:
 
 	/*! \details Returns true if the data object is read only.
 	 *
-	 * Data objects are only read-only if they are set that way.
-	 * Only externally managed data can be read-only.
-	 *
-	 * \code
-	 * u8 my_buffer[16];
-	 * Data my_readonly_buffer(my_buffer, 16, true); //marked as read-only
-	 * Data my_readwrite_buffer0(my_buffer, 16, false); //marked as read-write
-	 * Data my_readwrite_buffer1(my_buffer, 16); //same as line above
-	 * Data my_interally_managaed_data(64);
-	 *
-	 * my_readonly_buffer.is_read_only(); //true
-	 * my_readwrite_buffer0.is_read_only(); //false
-	 * my_readwrite_buffer1.is_read_only(); //false
-	 * my_interally_managaed_data.is_read_only(); //false
-	 *
-	 * \endcode
-	 *
-	 * Calling read/write operations (fill(), clear(), swap_byte_order()) on read-only data will
-	 * have no effect.
-	 *
-	 *
 	 */
 	bool is_read_only() const {
 		return m_data_write == 0;
 	}
 
 	/*! \details Returns true if the contents
-	 * of both Data objects are the same.
+	 * of both DataReference objects are the same.
 	 *
 	 */
 	bool operator == (const DataReference & a) const {
@@ -211,16 +410,6 @@ public:
 	/*!
 	 * \details Returns the effective size of the data.
 	 *
-	 * \return The effective size of the data object
-	 *
-	 * For dynamically allocated objects, the capacity will
-	 * be greater than or equal to the size.
-	 *
-	 * Inherited objects can override this value with additional
-	 * context. For example, var::String implements size()
-	 * to return the length of the string.  var::Vector returns
-	 * the number of items times the size of each item.
-	 *
 	 *
 	 */
 	virtual u32 size() const { return m_size; }
@@ -229,10 +418,16 @@ public:
 	/*! \details Returns a pointer to the data (read/write)
 	 * This will return zero if the data is readonly.
 	 *
-	 * \code
-	 * Data a(64); //allocate 64 bytes of data
+	 * ```
+	 * //md2code:main
+	 * char buffer[64];
+	 * DataReference a(buffer); //allocate 64 bytes of data
 	 * u32 * value = a.to<u32>(); //casts data as u32*
-	 * \endcode
+	 * const u32 * const_value = a.to<const u32>(); //works with read only data
+	 * if( value == const_value ){
+	 *   printf("prints for read-write objects but not read-only\n");
+	 * }
+	 * ```
 	 *
 	 * Many common types are implemented as a non-template
 	 * function.
@@ -249,17 +444,18 @@ public:
 
 	/*! \details Accesses a value in the data.
 	 *
-	 * @param T template typename
-	 * @param idx index of the value to access
 	 *
 	 * If the index exceeds the size of the data, the index is set to 0.
 	 *
-	 * \code
-	 * Data a(64); //a is 64 bytes
-	 * a.at<char>(0) = 'a'; //assign 'a' to the first char location
-	 * a.at<u32>(4) = 0xAAAA5555; //assigns a u32 value assuming a is a u32 array
-	 * u32 value = a.at<u32>(4); //reads a value as if a is a u32 array
-	 * \endcode
+	 * ```
+	 * //md2code:main
+	 * char buffer[64];
+	 * DataReference a(buffer); //a is 64 bytes
+	 * a.at<char>(arg::Position(0)) = 'a'; //assign 'a' to the first char location
+	 * a.at<u32>(arg::Position(4)) = 0xAAAA5555; //assigns a u32 value assuming a is a u32 array
+	 * u32 value = a.at<u32>(arg::Position(4)); //reads a value as if a is a u32 array
+	 * printf("value is 0x%lx\n", value);
+	 * ```
 	 *
 	 *
 	 */
@@ -404,25 +600,89 @@ private:
 };
 
 /*! \brief Data storage class
- * \details The Data storage class can be used to manage both statically
- * and dyncamilly allocated data.  The statically allocated data can be
- * either read/write or read-only.
+ * \details The Data class inherits
+ * DataReference and adds dynamic memory
+ * allocation so both the reference
+ * and the target data are managed by the same class.
+ *
  *
  * ```
+ * //md2code:include
  * #include <sapi/var.hpp>
+ * ```
  *
+ * ```
+ * //md2code:main
+ *
+ * //allocation 64 bytes
  * Data block = Data( arg::Size(64) );
  *
+ * //use DataReference inherited methods
+ * block.fill<u32>(0xaabbccdd);
+ * printf("First Byte: 0x%x\n",
+ *   block.at_const_char(
+ *     arg::Position(0)
+ *     )
+ *   );
+ *
+ * printf("Second Word: 0x%lx\n",
+ *   block.at_u32(
+ *     arg::Position(1)
+ *     )
+ *   );
+ *
+ * //once ~Data() is called the memory is freed
  * ```
  *
+ * Data objects can also act just like references
+ * without managing the memory internally.
  *
  *
+ * ```
+ * //md2code:include
+ * #include <sos/dev/pio.h>
+ * ```
+ *
+ * ```
+ * //md2code:main
+ * pio_attr_t pio_attributes;
+ *
+ * Data data;
+ * data.refer_to(pio_attributes);
+ *
+ * if( data.is_reference() == true ){
+ *   printf("this will print\n");
+ * }
+ *
+ * data.allocate( arg::Size(64) );
+ *
+ * if( data.is_reference() == true ){
+ *   printf("this won't print\n");
+ * }
+ * ```
  *
  *
  */
 class Data : public DataReference {
 public:
-	/*! \details Constructs a data object with no data. */
+	/*! \details Constructs a data object with no data.
+	 *
+	 * The new object has zero size and is not valid.
+	 *
+	 * ```
+	 * //md2code:main
+	 * Data a;
+	 * if( a.size() == 0 ){
+	 *   printf("yep!\n");
+	 * }
+	 *
+	 * if( a.is_valid() ){
+	 *   printf("nope!\n");
+	 * }
+	 * ```
+	 *
+	 *
+	 */
 	Data();
 
 	/*! \details Constructs a new data object as a copy of another object.
@@ -431,16 +691,30 @@ public:
 	 *
 	 *
 	 * ```
-	 * #include <sapi/var.hpp>
-	 *
+	 * //md2code:main
 	 * Data a = Data( arg::Size(128) );
 	 * a.fill(0);
 	 * Data b(a); //b has has a copy of a
-	 *
 	 * ```
 	 *
 	 */
 	Data(const Data & a);
+
+	/*! \details Constructs a data object by moving
+	 * the target's data to this object.
+	 *
+	 * C++ uses this constructor to move data and
+	 * avoid a malloc/copy/free operation sequence.
+	 *
+	 * This code uses the move operator:
+	 *
+	 * ```
+	 * //md2code:main
+	 * //data is moved from unnamed object to moved_to_object
+	 * Data moved_to_object = Data( arg::Size(64) );
+	 * ```
+	 *
+	 */
 	Data(Data && a);
 
 
@@ -475,15 +749,35 @@ public:
 	virtual ~Data();
 
 	/*! \details Returns the minimum data storage size of any Data object. */
-	static u32 minimum_size();
+	static u32 minimum_capacity();
+	/*! \cond */
 	static u32 block_size();
+	/*! \endcond */
 
 	/*! \details Returns the current capacity of the data storage object.
 	 *
-	 * @return Number of bytes in the data object
 	 *
 	 * The capacity of the object will always be greater than
-	 * or equal to size().
+	 * or equal to size(). When data is allocated, it is
+	 * allocated in minimum_capacity() blocks. The capacity
+	 * represents the actual amount of allocatd data
+	 * in bytes. The size() dictates how many of those
+	 * allocated bytes are effective.
+	 *
+	 * ```
+	 * //md2code:main
+	 * Data small_block(arg::Size(1));
+	 * printf(
+	 *   "Size is %ld, Capacity is %ld\n",
+	 *   small_block.size(),
+	 *   small_block.capacity()
+	 *   );
+	 *
+	 * //size will be one, capacity will be minimum_capacity()
+	 *
+	 * //this will just reassign size without using malloc/free
+	 * small_block.allocate(arg::Size(2));
+	 * ```
 	 *
 	 *
 	 */
@@ -528,17 +822,15 @@ public:
 
 
 
-	/*! \details Copies the contents of a into the memory of
-	 * this object.
+	/*! \details Copies the contents of another data object
+	 *  into the memory of this object.
 	 *
-	 * @param a Data to copy contents of
-	 * @param size The number of bytes to copy
+	 * This object will be resized if there
+	 * is not enough room to fit the contents.
 	 *
-	 * The capacity() of this object must be greater
-	 * than or equal to the size() of a.
+	 * This object's size won't necessarily be
+	 * equal to the copied object's size.
 	 *
-	 * On successful copy, the size() of this object will
-	 * be set to the \a size parameter.
 	 *
 	 *
 	 */
@@ -547,14 +839,13 @@ public:
 			const arg::Size size
 			);
 
+	/*! \cond */
 	int copy_data(const void * buffer, u32 size);
-
 	int copy_cstring(const char * str);
+	/*! \endcond */
 
 	/*!
 	 * \details Copies the contents of another data object.
-	 * \param a The object whose contents will be copied
-	 * \return Zero on success or less than zero if memory could not be allocated
 	 *
 	 */
 	int copy_contents(const arg::SourceData a);
@@ -562,30 +853,51 @@ public:
 	/*!
 	 * \details Copies the contents of another data object to this object.
 	 * \param a The data object whose contents will be copied
-	 * \param destination_position The offset in this object for the copy destination
+	 * \param destination The offset in this object for the copy destination
 	 * \param size The number of bytes to copy
 	 * \return Zero on success or less than zero if memory could not be allocated
 	 */
 	int copy_contents(
 			const arg::SourceData a,
-			const arg::Location destination,
+			const arg::Position destination,
 			const arg::Size size
 			);
 
-	/*! \details Append data to this object.
+	/*! \details Appends the contents of another
+	 * data object to this object.
 	 *
-	 * @param a A reference to the data that will be appended.
-	 * @return Zero on success or -1 if an error occurred (unable to allocate memory)
+	 * ```
+	 * //md2code:main
+	 * Data source_data(arg::Size(64));
+	 * Data destination_data(arg::Size(64));
+	 * source_data.fill<u8>(0x0a);
+	 * destination_data.fill<u8>(0x0b);
+	 * destination_data.append(
+	 *   arg::SourceData(source_data)
+	 *   );
+	 * ```
 	 *
 	 */
 	int append(const arg::SourceData & a){
 		return copy_contents(
 					a,
-					arg::Location(size()),
+					arg::Position(size()),
 					arg::Size(a.argument().size())
 					);
 	}
 
+	/*! \details Appends an arbitrary type to
+	 * this data object.
+	 *
+	 * ```
+	 * //md2code:main
+	 * pio_attr_t pio_attributes;
+	 * Data destination_data(arg::Size(64));
+	 * destination_data.fill<u8>(0x0b);
+	 * destination_data.append(pio_attributes);
+	 * ```
+	 *
+	 */
 	template <typename T> int append(const T & value){
 		return append(
 					arg::SourceData( DataReference(value) )
@@ -603,11 +915,42 @@ public:
 	Data & operator << (s64 a){ append(a); return *this; }
 
 #if !defined __link
+	/*! \details Releases heap space back to the stack.
+	 *
+	 * This method uses a special function available
+	 * only on Stratify OS that tells the malloc/free
+	 * system to decrease the heap space if the is free'd
+	 * memory on the top of the heap.
+	 *
+	 */
 	static void reclaim_heap_space(){
 		::free((void*)1);
 	}
 #endif
 
+	/*! \details Returns true if the data refers to another
+	 * item rather than managing memory dynamically.
+	 *
+	 * ```
+	 * //md2code:main
+	 *
+	 * Data data(arg::Size(64));
+	 *
+	 * if( data.is_reference() ){
+	 *   printf("this won't print\n");
+	 * }
+	 *
+	 * u32 some_value = 64;
+	 * data.refer_to(some_value); //64 bytes freed
+	 *
+	 *	if( data.is_reference() ){
+	 *   printf("this will print: %ld\n",
+	 *     data.at_u32(0)
+	 *   );
+	 * }
+	 * ```
+	 *
+	 */
 	bool is_reference() const;
 
 protected:

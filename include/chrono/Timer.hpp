@@ -14,37 +14,89 @@ namespace chrono {
  *
  * The Timer has the following states:
  *
- * - Reset: not running, not stopped
- * - Running: running, not stopped
- * - Stopped: not running, stopped
+ * - Reset: not started, not running. stopped
+ * - Running: started, running, not stopped
+ * - Stopped: started, not running, stopped
  *
  * These methods are used to jump between states:
  *
  * - start(): start running if not already running
- * - restart(): restart running from zero
+ * - restart(): restart running from zero even if already running
  * - stop(): stop running (if running)
  * - resume(): resume counting after a stop
  * - reset(): set to not running, not stopped, zero value
  *
+ * These methods can check the state:
  *
- * Here is an example of using the timer to time events.
- * \code
- * #include <sapi/sys.hpp>
+ * - is_reset(): Is in reset state
+ * - is_started(): has been started (not in reset state) possibly stopped
+ * - is_running(): started and not stopped
+ * - is_stopped(): started and stopped
  *
- * int main(int argc, char * argv[]){
- * 	Timer t;
- * 	t.start(); //start
- * 	chrono::wait(Microseconds(500));
- * 	t.stop();
- * 	printf("Timer value after 500usec is %d\n", t.usec());
+ * ```
+ * //md2code:include
+ * #include <sapi/chrono.hpp>
+ * ```
  *
+ * ```
+ * //md2code:main
+ *	Timer t;
+ *	t.start(); //start
+ *	wait(Microseconds(500));
+ *	t.stop();
+ *	printf("value after 500usec is %ld\n", t.microseconds());
+ *
+ * t.resume();
+ * wait(Microseconds(500));
+ * t.stop();
+ *	printf("value after another 500usec is %ld\n", t.microseconds());
+ *
+ * if( t.is_started() ){
+ *   printf("t has been started (not in reset state)\n");
  * }
- * \endcode
+ *
+ * //comparing to time values
+ * if( t > Seconds(1) ){
+ *   printf("Greater than a second\n");
+ * }
+ *
+ * if( t > Milliseconds(1) ){
+ *   printf("Greater than a millisecond\n");
+ * }
+ *
+ * if( t < Microseconds(500) ){
+ *   printf("Greater than a microsecond\n");
+ * }
+ *
+ * t.start(); //this will start from zero again
+ * t.start(); //calling start again has no effect
+ * if( t.is_running() ){
+ *   printf("t is running\n");
+ * }
+ * if( t.is_stopped() ){
+ *   printf("t is not stopped\n");
+ *	}
+ * t.restart(); //start from zero even if timer is running
+ * t.reset(); //reset to initial state: not running, stopped and reset
+ * if( t.is_reset() && t.is_stopped() ){
+ *   printf("t is reset\n");
+ * }
+ * if( t.is_started() ){
+ *   printf("this won't print in reset state\n");
+ * }
+ * ```
  *
  * The output of the above code varies depending on the MCU clock cycles and the
  * scheduler.  The following is a sample output.
  *
- *     Timer value after 500usec is 502
+ * <pre>
+ *	value after 500usec is 502
+ *	value after another 500usec is 1005
+ * t has been started (not in reset state)
+ * Greater than a millisecond
+ * t is running
+ * t is reset
+ * </pre>
  *
  *
  */
@@ -159,34 +211,34 @@ public:
 	void stop();
 
 
-	bool operator == (const chrono::MicroTime & a) const {
+	bool operator == (const chrono::Microseconds & a) const {
 		return microseconds() == a.microseconds();
 	}
 
-	bool operator != (const chrono::MicroTime & a) const {
+	bool operator != (const chrono::Microseconds & a) const {
 		return microseconds() != a.microseconds();
 	}
 
-	bool operator <= (const chrono::MicroTime & a) const {
+	bool operator <= (const chrono::Microseconds & a) const {
 		return microseconds() <= a.microseconds();
 	}
 
-	bool operator >= (const chrono::MicroTime & a) const {
+	bool operator >= (const chrono::Microseconds & a) const {
 		return microseconds() >= a.microseconds();
 	}
 
-	bool operator > (const chrono::MicroTime & a) const {
+	bool operator > (const chrono::Microseconds & a) const {
 		return microseconds() > a.microseconds();
 	}
 
-	bool operator < (const chrono::MicroTime & a) const {
+	bool operator < (const chrono::Microseconds & a) const {
 		return microseconds() < a.microseconds();
 	}
 
 
 
 private:
-	MicroTime calc_value() const;
+	Microseconds calc_value() const;
 
 
 	ClockTime m_start;

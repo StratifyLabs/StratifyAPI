@@ -24,64 +24,76 @@ namespace fs {
  *
  * Here is an example of using this class:
  *
- * \code
- * #include <sapi/sys.hpp>
+ * ```
+ * //md2code:include
+ * #include <sapi/fs.hpp>
  * #include <sapi/var.hpp>
+ * ```
  *
- * int main(int argc, char * argv[]){
- * 	File f;
- * 	String str;
+ * ```
+ * //md2code:main
+ * File f;
+ * String str;
  *
- *  //create a new file and write a string to it
- * 	f.create("/home/myfile.txt");
- * 	str = "Hello New File!\n";
- * 	f.write(str);
- * 	f.close();
+ *	//create a new file and write a string to it
+ *	f.create(
+ *    arg::DestinationFilePath("/home/myfile.txt"),
+ *    arg::IsOverwrite(true)
+ *    );
+ *	str = "Hello New File!\n";
+ *	f.write(str);
+ *	f.close();
  *
  *  //Now open the file we just closed
- * 	f.open("/home/myfile.txt");
- * 	str = "";
- * 	f.read(str.data(), str.capacity());
- * 	f.close();
+ *	f.open(
+ *   arg::FilePath("/home/myfile.txt"),
+ *	  OpenFlags::read_only()
+ *	  );
+ *	str = "";
+ *	str = f.gets(); //reads a line from the file
+ *	f.close();
  *
- *  //This is what was read from the file
- * 	printf("The String is %s\n", str.c_str());
+ * //This is what was read from the file
+ *	printf("The String is %s\n", str.cstring());
  *
- * 	File::remove("/home/myfile.txt"); //delete the file
+ *	File::remove(
+ *   arg::SourceFilePath("/home/myfile.txt")
+ *  ); //delete the file
  *
- *    int fd;
- *    if(1){
- *      File file;
- *      file.open("/home/file.txt", File::READONLY);
- *      fd = file.fileno();
- *		  file.set_keep_open(); //will keep the file open after ~File()
- *      //~File() is called here
- *    }
+ *	int fd;
+ *	if(1){
+ *	  File file;
+ *   file.open(
+ *     arg::FilePath("/home/file.txt"),
+ *     OpenFlags::read_only()
+ *   );
+ *   fd = file.fileno();
+ *	  file.set_keep_open(); //will keep the file open after ~File()
+ *	  //~File() is called here
+ *	 }
  *
- *    char buffer[16];
- *    read(fd, buffer, 16); //OK because file.set_keep_open() was used
- * 	return 0;
- * }
- *
- * \endcode
+ *	char buffer[16];
+ *	read(fd, buffer, 16); //OK because file.set_keep_open() was used
+ *	 return 0;
+ * ```
  *
  */
 class File : public api::FsWorkObject {
 public:
 
 #if defined __link
-	File(link_transport_mdriver_t * driver = 0);
+	File(arg::LinkDriver driver = arg::LinkDriver(0));
 	static bool exists(
 			const arg::SourceFilePath path,
-			link_transport_mdriver_t * driver = 0
+			arg::LinkDriver driver = arg::LinkDriver(0)
 			);
 	static Stat get_info(
 			const arg::SourceFilePath path,
-			link_transport_mdriver_t * driver = 0
+			arg::LinkDriver driver = arg::LinkDriver(0)
 			);
 	static Stat get_info(
 			const arg::FileDescriptor fd,
-			link_transport_mdriver_t * driver = 0
+			arg::LinkDriver driver = arg::LinkDriver(0)
 			);
 #else
 	File();
@@ -200,7 +212,9 @@ public:
 	 * \endcode
 	 *
 	 */
-	static var::ConstString suffix(const arg::ImplicitFilePath & path);
+	static var::ConstString suffix(
+			const arg::ImplicitFilePath & path
+			);
 
 	/*! \details Deletes a file.
 	 *
@@ -209,9 +223,9 @@ public:
 	 */
 	static int remove(
 			const arg::SourceFilePath path
-		#if defined __link
-			, link_transport_mdriver_t * driver = 0
-		#endif
+#if defined __link
+			, arg::LinkDriver driver = arg::LinkDriver(0)
+#endif
 			);
 
 	/*! \details Gets file stat data.
@@ -227,7 +241,7 @@ public:
 #else
 	static int stat(const arg::SourceFilePath & path,
 			struct link_stat & st,
-			link_transport_mdriver_t * driver = 0
+			arg::LinkDriver driver = arg::LinkDriver(0)
 			);
 #endif
 
@@ -243,16 +257,12 @@ public:
 	 * @return The number of bytes in the file or less than zero for an error
 	 *
 	 */
-#if !defined __link
 	static u32 size(
 			const arg::SourceFilePath & path
-			);
-#else
-	static u32 size(
-			const arg::SourceFilePath & path,
-			link_transport_mdriver_t * driver
-			);
+#if defined __link
+			, arg::LinkDriver driver
 #endif
+			);
 
 
 	/*! \details Opens a file.
@@ -548,10 +558,10 @@ public:
 	char * gets(char * s, int n, char term = '\n') const;
 
 #ifdef __link
-	static void set_default_driver(link_transport_mdriver_t * driver){
-		m_default_driver = driver;
+	static void set_default_driver(arg::ImplicitLinkDriver driver){
+		m_default_driver = driver.argument();
 	}
-	void set_driver(link_transport_mdriver_t * driver){ m_driver = driver; }
+	void set_driver(arg::ImplicitLinkDriver driver){ m_driver = driver.argument(); }
 	link_transport_mdriver_t * driver() const { return m_driver; }
 	static link_transport_mdriver_t * default_driver(){ return m_default_driver; }
 
@@ -648,11 +658,16 @@ public:
 	static int copy(
 			const arg::SourceFilePath source_path,
 			const arg::DestinationFilePath dest_path,
-			link_transport_mdriver_t * driver = 0);
-	static int copy(const arg::SourceFilePath source_path,
-						 const arg::DestinationFilePath dest_path,
-						 const arg::IsOverwrite overwrite,
-						 link_transport_mdriver_t * driver = 0);
+			link_transport_mdriver_t * source_driver = 0,
+			link_transport_mdriver_t * destination_driver = 0
+			);
+
+	static int copy(
+			const arg::SourceFilePath source_path,
+			const arg::DestinationFilePath dest_path,
+			const arg::IsOverwrite overwrite,
+			link_transport_mdriver_t * source_driver = 0,
+			link_transport_mdriver_t * destination_driver = 0);
 #endif
 
 	/*! \details Renames a file.
@@ -668,7 +683,7 @@ public:
 	static int rename(
 			const arg::SourceFilePath old_path,
 			const arg::DestinationFilePath new_path,
-			link_transport_mdriver_t * driver = 0
+			arg::LinkDriver driver = arg::LinkDriver(0)
 			);
 #endif
 
@@ -693,11 +708,11 @@ protected:
 		return 0;
 	}
 
-	static link_transport_mdriver_t * check_driver(link_transport_mdriver_t * driver){
-		if( driver == 0 ){
+	static link_transport_mdriver_t * check_driver(arg::ImplicitLinkDriver driver){
+		if( driver.argument() == 0 ){
 			return m_default_driver;
 		}
-		return driver;
+		return driver.argument();
 	}
 
 #endif

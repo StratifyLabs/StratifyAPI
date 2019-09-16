@@ -131,7 +131,7 @@ class TaskManager : public api::WorkObject {
 public:
 
 #if defined __link
-	TaskManager(link_transport_mdriver_t * driver);
+	TaskManager(arg::LinkDriver driver);
 #else
 	TaskManager();
 #endif

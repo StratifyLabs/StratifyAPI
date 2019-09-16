@@ -107,7 +107,12 @@ var::Data Base64::decode(
 	return result;
 }
 
-int Base64::encode(char * dest, const void * src, int nbyte){
+int Base64::encode(
+		char * dest,
+		const void * src,
+		int nbyte
+		){
+
 	int i;
 	int j;
 	int k;

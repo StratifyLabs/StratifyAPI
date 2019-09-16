@@ -55,7 +55,7 @@ int String::vformat(
 		){
 	int result;
 	if( capacity() == 0 ){
-		resize(minimum_size());
+		resize(minimum_capacity());
 	}
 	result = vsnprintf(to_char(), capacity()-1, fmt, list);
 	if( result >= (int)capacity()-1 ){ //if the data did not fit, make the buffer bigger

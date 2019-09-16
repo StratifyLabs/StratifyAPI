@@ -62,8 +62,8 @@ ClockTime Timer::clock_time() const {
 	return now;
 }
 
-MicroTime Timer::calc_value() const {
-	return MicroTime(clock_time());
+Microseconds Timer::calc_value() const {
+	return Microseconds(clock_time());
 }
 
 void Timer::stop(){

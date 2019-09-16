@@ -806,7 +806,7 @@ int Link::copy(
 	int err;
 	struct link_stat st;
 	File host_file;
-	File device_file(driver());
+	File device_file = File(arg::LinkDriver(driver()));
 	int copy_page_size = 4096;
 
 	if ( m_is_bootloader ){
@@ -844,12 +844,13 @@ int Link::copy(
 			int result;
 			var::String dest_name = File::name(dest.argument());
 
-			result = Appfs::create(
+			result =
+					Appfs::create(
 						arg::FileName(dest_name),
 						arg::SourceFile(host_file),
 						arg::SourceDirectoryPath("/app"),
 						progress_callback,
-						driver()
+						arg::LinkDriver(driver())
 						);
 			if( result < 0 ){
 				m_error_message.format("Failed to write file %s on device", dest.argument().cstring());
@@ -1813,7 +1814,7 @@ int Link::install_app(const arg::SourceFile application_image,
 		if( progress_callback ){ progress_callback->update(0,0); }
 	} else {
 
-		File f(driver());
+		File f = File(arg::LinkDriver(driver()));
 
 		//copy the file to the destination directory
 		var::String dest_str;

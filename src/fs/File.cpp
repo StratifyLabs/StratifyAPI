@@ -14,10 +14,10 @@ using namespace arg;
 
 link_transport_mdriver_t * File::m_default_driver = 0;
 
-File::File(link_transport_mdriver_t * driver){
+File::File(arg::LinkDriver driver){
 	m_fd = -1; //The file is not open
 	set_keep_open(false);
-	m_driver = driver;
+	m_driver = driver.argument();
 }
 
 #else
@@ -48,9 +48,12 @@ int File::remove(
 #else
 int File::remove(
 		const arg::SourceFilePath path,
-		link_transport_mdriver_t * driver
+		arg::LinkDriver driver
 		){
-	return link_unlink(driver, path.argument().cstring());
+	return link_unlink(
+				driver.argument(),
+				path.argument().cstring()
+				);
 }
 #endif
 
@@ -80,11 +83,12 @@ int File::copy(const SourceFilePath source_path,
 int File::copy(
 		const arg::SourceFilePath source_path,
 		const arg::DestinationFilePath dest_path,
-		link_transport_mdriver_t * driver){
+		link_transport_mdriver_t * source_driver,
+		link_transport_mdriver_t * destination_driver){
 	File source;
 	File dest;
-	source.set_driver(driver);
-	dest.set_driver(driver);
+	source.set_driver(source_driver);
+	dest.set_driver(destination_driver);
 
 	if( source.open(
 			 arg::FilePath(source_path.argument()),
@@ -128,12 +132,14 @@ int File::copy(
 		const arg::SourceFilePath source_path,
 		const arg::DestinationFilePath dest_path,
 		const arg::IsOverwrite is_overwrite,
-		link_transport_mdriver_t * driver
+		link_transport_mdriver_t * source_driver,
+		link_transport_mdriver_t * destination_driver
 		){
+
 	File source;
 	File dest;
-	source.set_driver(driver);
-	dest.set_driver(driver);
+	source.set_driver(source_driver);
+	dest.set_driver(destination_driver);
 
 	if( source.open(
 			 arg::FilePath(source_path.argument()),
@@ -160,12 +166,12 @@ int File::rename(const arg::SourceFilePath old_path, const arg::DestinationFileP
 int File::rename(
 		const arg::SourceFilePath old_path,
 		const arg::DestinationFilePath new_path,
-		link_transport_mdriver_t * driver
+		arg::LinkDriver driver
 		){
-	if( driver == 0 ){
+	if( driver.argument() == 0 ){
 		return ::rename(old_path.argument().cstring(), new_path.argument().cstring());
 	}
-	return link_rename(driver, old_path.argument().cstring(), new_path.argument().cstring());
+	return link_rename(driver.argument(), old_path.argument().cstring(), new_path.argument().cstring());
 }
 #endif
 
@@ -224,7 +230,7 @@ int File::copy(
 #if defined __link
 bool File::exists(
 		const arg::SourceFilePath path,
-		link_transport_mdriver_t * driver
+		arg::LinkDriver driver
 		){
 	File f(driver);
 #else
@@ -243,7 +249,7 @@ bool File::exists(
 #if defined __link
 Stat File::get_info(
 		const arg::SourceFilePath path,
-		link_transport_mdriver_t * driver
+		arg::LinkDriver driver
 		){
 #else
 Stat File::get_info(
@@ -266,7 +272,7 @@ Stat File::get_info(
 #if defined __link
 Stat File::get_info(
 		const arg::FileDescriptor fd,
-		link_transport_mdriver_t * driver
+		arg::LinkDriver driver
 		){
 #else
 Stat File::get_info(const FileDescriptor fd){
@@ -274,7 +280,11 @@ Stat File::get_info(const FileDescriptor fd){
 #if defined __link
 	struct link_stat stat;
 	memset(&stat, 0, sizeof(stat));
-	::link_fstat(driver, fd.argument(), &stat);
+	::link_fstat(
+				driver.argument(),
+				fd.argument(),
+				&stat
+				);
 #else
 	struct stat stat;
 	memset(&stat, 0, sizeof(stat));
@@ -327,9 +337,13 @@ u32 File::size() const {
 int File::stat(
 		const arg::SourceFilePath & name,
 		struct link_stat & st,
-		link_transport_mdriver_t * driver
+		arg::LinkDriver driver
 		){
-	return link_stat(driver, name.argument().cstring(), &st);
+	return link_stat(
+				driver.argument(),
+				name.argument().cstring(),
+				&st
+				);
 }
 #else
 int File::stat(
@@ -363,10 +377,14 @@ u32 File::size(
 #else
 u32 File::size(
 		const arg::SourceFilePath & name,
-		link_transport_mdriver_t * driver
+		arg::LinkDriver driver
 		){
 	struct link_stat st;
-	if( stat(name, st, driver) < 0 ){
+	if( stat(
+			 name,
+			 st,
+			 driver
+			 ) < 0 ){
 		return (s32)-1;
 	}
 	return st.st_size;

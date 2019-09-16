@@ -73,23 +73,26 @@ int AppfsFileAttributes::apply(arg::DestinationFile file) const {
 }
 
 #if defined __link
-Appfs::Appfs(link_transport_mdriver_t * driver) : m_file(driver){
+Appfs::Appfs(
+		arg::LinkDriver driver
+		) : m_file(driver){
 
 }
 #else
 Appfs::Appfs(){}
 #endif
 
-int Appfs::create(const arg::FileName name,
-						const arg::SourceFile source_data,
-						const arg::SourceDirectoryPath mount,
-						const ProgressCallback * progress_callback
-						#if defined __link
-						, link_transport_mdriver_t * driver
-						){
+int Appfs::create(
+		const arg::FileName name,
+		const arg::SourceFile source_data,
+		const arg::SourceDirectoryPath mount,
+		const ProgressCallback * progress_callback
+		#if defined __link
+		, arg::LinkDriver driver
+		){
 	fs::File file(driver);
 #else
-						){
+		){
 	fs::File file;
 #endif
 	char buffer[LINK_PATH_MAX];
@@ -179,10 +182,10 @@ int Appfs::create(const arg::FileName name,
 #if defined __link
 AppfsInfo Appfs::get_info(
 		const arg::SourceFilePath path,
-		link_transport_mdriver_t * driver
+		arg::LinkDriver driver
 		){
 	fs::File f(driver);
-	if( driver == 0 ){
+	if( driver.argument() == 0 ){
 		errno = ENOTSUP;
 		return AppfsInfo();
 	}
@@ -247,7 +250,7 @@ AppfsInfo Appfs::get_info(const arg::SourceFilePath path){
 #if defined __link
 u16 Appfs::get_version(
 		const arg::SourceFilePath path,
-		link_transport_mdriver_t * driver){
+		arg::LinkDriver driver){
 	AppfsInfo info;
 	info = get_info(path, driver);
 #else
@@ -262,7 +265,7 @@ u16 Appfs::get_version(const arg::SourceFilePath path){
 
 var::String Appfs::get_id(
 		const arg::SourceFilePath path,
-		link_transport_mdriver_t * driver
+		arg::LinkDriver driver
 		){
 	AppfsInfo info;
 	info = get_info(path, driver);

@@ -167,7 +167,7 @@ class Sys : public fs::File {
 public:
 
 #if defined __link
-	Sys(link_transport_mdriver_t * driver);
+	Sys(arg::LinkDriver driver);
 #else
 	Sys();
 #endif
@@ -275,7 +275,7 @@ public:
 	 *
 	 * \sa reclaim_ram()
 	 */
-	static int free_ram(const char * path, link_transport_mdriver_t * driver = 0);
+	static int free_ram(const char * path, arg::LinkDriver driver = arg::LinkDriver(0));
 
 	/*! \details Reclaims RAM that was freed using free_ram().
 	 *
@@ -285,7 +285,7 @@ public:
 	 *
 	 * \sa free_ram()
 	 */
-	static int reclaim_ram(const char * path, link_transport_mdriver_t * driver = 0);
+	static int reclaim_ram(const char * path, arg::LinkDriver driver = arg::LinkDriver(0));
 
 
 	static void assign_zero_sum32(void * data, int size);

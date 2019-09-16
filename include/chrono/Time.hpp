@@ -75,41 +75,83 @@ typedef u32 micro_time_t;
  * to remove ambiguity when specifying short time intervals.
  *
  * For example:
- * \code
- * void set_period(const MicroTime & micro_time); //un-ambiguous and nice code completion
+ * ```
+ * void set_period(const Microseconds & microseconds); //un-ambiguous and nice code completion
  * void set_period(u32 value); //the units here are not clear
  * void set_period_milliseconds(u32 value); //this is better but adds complexity
- * \endcode
+ * ```
+ *
+ *
+ * ```
+ * //md2code:include
+ * #include <sapi/chrono.hpp>
+ * ```
  *
  */
 class Microseconds : public api::InfoObject {
 public:
 
-	/*! \details Constructs a MicroTime object using a u32 microsecond value.
-	  *
-	  * The default initial value is zero.
-	  *
-	  */
+	/*! \details Constructs a Microseconds object using a u32 microsecond value.
+	 *
+	 *
+	 * The default initial value is zero.
+	 *
+	 * ```
+	 * //md2code:main
+	 * //must be explicitly constructed
+	 * Microseconds duration = Microseconds(5);
+	 * printf("Duration is %ld microseconds\n", duration.microseconds());
+	 * ```
+	 *
+	 */
 	explicit Microseconds(u32 microseconds = 0){ m_value_microseconds = microseconds; }
-	//MicroTime(){ m_value_microseconds = 0; }
 
-	/*! \details Constructs a MicroTime object from a chrono::ClockTime value. */
+	/*! \details Constructs a Microseconds object from a chrono::ClockTime value. */
 	Microseconds(const ClockTime & clock_time);
 
+	/*! \details Constructs a Microseconds object from a chrono::Seconds value.
+	 *
+	 * ```
+	 * //md2code:main
+	 * Microseconds duration = Seconds(5); //converted to microseconds
+	 * printf("Duration is %ld microseconds\n", duration.microseconds());
+	 * ```
+	 *
+	 */
 	Microseconds(const Seconds & seconds){
 		m_value_microseconds = seconds.seconds()*1000000UL;
 	}
 
+
+	/*! \details Constructs a Microseconds object from a chrono::Milliseconds value.
+	 *
+	 * ```
+	 * //md2code:main
+	 * Microseconds duration = Milliseconds(3000); //converted to microseconds
+	 * printf("Duration is %ld microseconds\n", duration.microseconds());
+	 * ```
+	 *
+	 */
 	Microseconds(const Milliseconds & milliseconds){
 		m_value_microseconds = milliseconds.milliseconds()*1000UL;
 	}
 
-
+	/*! \details Constructs a Microseconds object from a chrono::Nanoseconds value.
+	 *
+	 * ```
+	 * //md2code:main
+	 * Microseconds duration = Nanoseconds(3000); //converted to microseconds
+	 * Microseconds zero = Nanoseconds(999); //converted using truncation -- goes to zero
+	 * printf("Duration is %ld microseconds\n", duration.microseconds());
+	 * printf("Zero is %ld microseconds\n", zero.microseconds());
+	 * ```
+	 *
+	 */
 	Microseconds(const Nanoseconds & nanoseconds){
 		m_value_microseconds = nanoseconds.nanoseconds() / 1000;
 	}
 
-	/*! \details Constructs a MicroTime object from the current value of a chrono::Timer. */
+	/*! \details Constructs a Microseconds object from the current value of a chrono::Timer. */
 	Microseconds(const Timer & timer);
 
 
@@ -167,23 +209,6 @@ public:
 	Microseconds & operator << (const Microseconds & a){ return (*this) = a; }
 	Microseconds & operator << (const Nanoseconds & a){ return (*this) = a; }
 
-
-	/*! \details Sets the value of the time in seconds.
-	  *
-	  *
-	  */
-	void set_seconds(u32 seconds){ *this = Seconds(seconds); }
-
-	/*! \details Sets the value of the time in milliseconds.
-	  *
-	  *
-	  */
-	void set_milliseconds(u32 milliseconds){ *this = Milliseconds(milliseconds); }
-
-	/*! \details Sets the value of the time in microseconds.
-	  *
-	  */
-	void set_microseconds(micro_time_t microseconds){ m_value_microseconds = microseconds; }
 
 	/*! \details Returns the value in seconds. */
 	u32 seconds() const { return microseconds() / 1000000UL; }

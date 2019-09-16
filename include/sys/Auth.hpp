@@ -64,7 +64,7 @@ private:
 class Auth : public api::WorkObject {
 public:
 #if defined __link
-	Auth(link_transport_mdriver_t * driver);
+	Auth(arg::LinkDriver driver);
 #else
 	Auth();
 #endif

@@ -25,7 +25,7 @@ Cli::Cli(int argc, char * argv[], const var::ConstString & app_git_hash) : m_app
 #if defined __link
 		version = Appfs::get_version(
 					arg::SourceFilePath(m_path.cstring()),
-					0);
+					arg::LinkDriver(0));
 #else
 		version = Appfs::get_version(
 					arg::SourceFilePath(m_path.cstring())

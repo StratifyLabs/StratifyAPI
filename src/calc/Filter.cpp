@@ -33,7 +33,7 @@ void LowPassFilterF32::reset(float start){
 	set_present_value(start);
 }
 
-int LowPassFilterF32::calculate_alpha(float sampling_frequency, float magnitude){
+float LowPassFilterF32::calculate_alpha(float sampling_frequency, float magnitude){
 
 	return -1;
 }

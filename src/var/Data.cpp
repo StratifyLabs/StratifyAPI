@@ -140,7 +140,7 @@ void DataReference::refer_to(
 				size);
 }
 
-u32 Data::minimum_size(){
+u32 Data::minimum_capacity(){
 	return MIN_CHUNK_SIZE;
 }
 
@@ -239,12 +239,12 @@ int Data::allocate(
 	}
 
 
-	if( size_value <= minimum_size() ){
-		size_value = minimum_size();
+	if( size_value <= minimum_capacity() ){
+		size_value = minimum_capacity();
 	} else {
 		//change s to allocate an integer multiple of minimum_size()
-		u32 blocks = (size_value - minimum_size() + block_size() - 1) / block_size();
-		size_value = minimum_size() + blocks * block_size();
+		u32 blocks = (size_value - minimum_capacity() + block_size() - 1) / block_size();
+		size_value = minimum_capacity() + blocks * block_size();
 	}
 
 	new_data = ::malloc(size_value);
@@ -311,7 +311,7 @@ int Data::copy_cstring(const char * str){
 int Data::copy_contents(const arg::SourceData a){
 	return copy_contents(
 				arg::SourceData(a.argument()),
-				arg::Location(0),
+				arg::Position(0),
 				arg::Size(a.argument().size()));
 }
 
@@ -321,13 +321,13 @@ int Data::copy_contents(const arg::SourceData a,
 								){
 	return copy_contents(
 				a,
-				arg::Location(0),
+				arg::Position(0),
 				arg::Size(size));
 }
 
 int Data::copy_contents(
 		const arg::SourceData a,
-		const arg::Location destination,
+		const arg::Position destination,
 		const arg::Size size
 		){
 

@@ -4,7 +4,7 @@
 using namespace sys;
 
 #if defined __link
-TaskManager::TaskManager(link_transport_mdriver_t * driver){
+TaskManager::TaskManager(arg::LinkDriver driver){
 	m_sys_device.set_driver(driver);
 #else
 TaskManager::TaskManager(){

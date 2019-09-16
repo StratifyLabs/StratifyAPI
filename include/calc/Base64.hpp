@@ -16,36 +16,40 @@ namespace calc {
  * transmitting data over certain serial links that do not support binary
  * transfers.
  *
- * To encode data in Base 64 format use this code:
- * \code
- * #include <sapi/calc.hpp>
+ * The following example can be used to encode and decode
+ * using Base64.
  *
- * u8 raw_data[64]; //raw binary data that needs to be encoded
- * char * encoded_data;
- * int encoded_size;
- *
- * encoded_size = Base64::calc_encoded_size(64);
- * encoded_data = malloc(encoded_size);
- * Base64::encode(encoded_data, raw_data, 64);
- * \endcode
- *
- * You can then decode the data using this code snippet:
+ * First, include the Stratify API headers that we will
+ * need for these examples.
  *
  * \code
+ * //md2code:include
  * #include <sapi/calc.hpp>
- *
- * char encoded_data[64]; //Base64 encoded data that needs to be decoded
- * u8 * raw_data;
- * int decoded_size;
- *
- * decoded_size = Base64::calc_decoded_size(64);
- * raw_data = malloc(decoded_size);
- * Base64::decode(raw_data, encoded_data, 64);
+ * #include <sapi/var.hpp>
+ * #include <sapi/fs.hpp>
  * \endcode
  *
+ * Now do some encoding and decoding like a boss.
  *
+ * \code
+ * //md2code:main
+ * Data data_to_encode(arg::Size(128));
+ * data_to_encode.fill<u8>(32);
  *
+ * String encoded_string = Base64::encode(
+ *   arg::SourceData(data_to_encode)
+ * );
  *
+ * //You can then decode the data using this code snippet:
+ *
+ * Data original_data = Base64::decode(
+ *   arg::Base64EncodedString(encoded_string)
+ * );
+ *
+ * if( original_data == data_to_encode ){
+ *   printf("It works!\n");
+ * }
+ * \endcode
  *
  */
 class Base64 : public api::InfoObject {
@@ -56,15 +60,11 @@ public:
 	 * @return Number of bytes in the encoded string
 	 *
 	 * ```
-	 * #include <sapi/calc.hpp>
-	 * #include <sapi/var.hpp>
-	 *
-	 * Data raw_data(64); //raw binary data that needs to be encoded
-	 *
-	 * String result = encode(raw_data);
-	 * if( result.is_empty() ){
-	 *  //failed to encode
-	 * }
+	 * //md2code:main
+	 *	Data raw_data(arg::Size(64)); //raw binary data that needs to be encoded
+	 *	raw_data.fill<u8>(0xaa);
+	 *	String result = Base64::encode(arg::SourceData(raw_data));
+	 *	printf("Encoded string is '%s'\n", result.cstring());
 	 * ```
 	 *
 	 */
@@ -82,26 +82,25 @@ public:
 	 * start at the current location. The output string is written to *output*
 	 * at the current location.
 	 *
+	 *
 	 * ```
-	 * #include <sapi/calc.hpp>
-	 * #include <sapi/fs.hpp>
+	 * //md2code:main
+	 *	File source;
+	 *	File destination;
 	 *
-	 * File source;
-	 * File destination;
-	 *
-	 * source.open(
+	 *	source.open(
 	 *   arg::FilePath("/home/raw_data.dat"),
-	 *   OpenFile::read_only()
+	 *   OpenFlags::read_only()
 	 *   );
 	 *
-	 * destination.create(
+	 *	destination.create(
 	 *   arg::DestinationFilePath("/home/base64_encoded.txt"),
 	 *   arg::IsOverwrite(true)
-	 * );
+	 *   );
 	 *
-	 * Base64::encode(
+	 *	Base64::encode(
 	 *   arg::SourceFile(source),
-	 *   arg::DestinationFile(destination),
+	 *   arg::DestinationFile(destination)
 	 *   );
 	 * ```
 	 *
@@ -118,15 +117,14 @@ public:
 	 *
 	 * @return Zero
 	 *
+	 *
 	 * ```
-	 * #include <sapi/calc.hpp>
-	 * #include <sapi/var.hpp>
+	 * //md2code:main
+	 *	String encoded_string;
+	 *	//assign base64 encoded string
+	 *	Data raw_data;
 	 *
-	 * String encoded_string;
-	 * //assign base64 encoded string
-	 * Data raw_data;
-	 *
-	 * raw_data = Base64::decode(encoded_string);
+	 *	raw_data = Base64::decode(encoded_string);
 	 * ```
 	 *
 	 */

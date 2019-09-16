@@ -11,8 +11,25 @@ class Time;
 }
 
 namespace chrono {
-/*! \details This method delays based on a chrono::MicroTime value. */
-void wait(const chrono::Microseconds & micro_time);
+/*! \details Delays based on a chrono::Microseconds value.
+ *
+ * ```
+ * //md2code:main
+ *
+ * wait(Microseconds(100));
+ *
+ * //Milliseconds, Seconds, and Nanoseconds will convert to Microseconds automatically
+ * wait(Seconds(3));
+ * wait(Milliseconds(3000));
+ * wait(Nanoseconds(60000));
+ * wait(Nanoseconds(999)); //this won't wait because it converts to 0 microseconds
+ * ```
+ *
+ * This method will yield control of the processor to another thread. So
+ * the delay time may go over based on scheduling constraints.
+ *
+ */
+void wait(const chrono::Microseconds & microseconds);
 }
 
 namespace api {
