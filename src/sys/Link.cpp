@@ -912,14 +912,15 @@ int Link::copy(
 
 
 		//Open the device file
-
-
 		if( device_file.open(
 				 arg::FilePath(src.argument()),
 				 fs::OpenFlags::read_only()
 				 ) < 0 ){
-			m_error_message.sprintf("Failed to open file %s on device (%d)", src.argument().cstring(), link_errno);
-
+			m_error_message.format(
+						"Failed to open file %s on device (%d)",
+						src.argument().cstring(),
+						link_errno
+						);
 			return -1;
 		}
 
@@ -936,17 +937,27 @@ int Link::copy(
 				 arg::Size(device_file.size()),
 				 progress_callback
 				 ) < 0 ){
-
+			m_error_message.format(
+						"failed to write to host file",
+						);
 		}
-		host_file.close();
 
 		if( device_file.close() < 0 ){
-			m_error_message.sprintf("Failed to close file %s on device (%d)", src.argument().cstring(), link_errno);
-
+			m_error_message.format(
+						"Failed to close file %s on device (%d)",
+						src.argument().cstring(),
+						link_errno
+						);
 			return -1;
 		}
 
-
+		if( host_file.close() < 0 ){
+			m_error_message.format(
+						"Failed to close file %s on host",
+						dest.argument().cstring()
+						);
+			return -1;
+		}
 
 	}
 	return 0;

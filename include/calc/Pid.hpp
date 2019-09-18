@@ -52,11 +52,12 @@ namespace calc {
  *
  * volatile bool is_active = true;
  *
- * pid_loop.set_kp(1.0f);
- * pid_loop.set_ki(0.1f);
- * pid_loop.set_kd(0.001f);
- * pid_loop.set_maximum(1000.0f); //max duty cycle
- * pid_loop.set_minimum(0.0f); //min duty cycle
+ * pid_loop
+ *   .set_kp(1.0f)
+ *   .set_ki(0.1f)
+ *   .set_kd(0.001f)
+ *   .set_maximum(1000.0f) //max duty cycle
+ *   .set_minimum(0.0f); //min duty cycle
  *
  *  //Init the PWM output and ADC input
  *

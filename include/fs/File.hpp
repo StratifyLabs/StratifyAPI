@@ -320,9 +320,24 @@ public:
 
 	/*! \details Reads the file.
 	 *
-	 * @param buf A pointer to the destination buffer
-	 * @param nbyte The number of bytes to read
 	 * @return The number of bytes read or less than zero on an error
+	 *
+	 *
+	 * ```
+	 * //md2code:main
+	 * File f;
+	 * char buffer[64];
+	 * f.read(
+	 *   arg::DestinationBuffer(buffer),
+	 *   arg::Size(64)
+	 *	);
+	 *
+	 * //the above works but this is better
+	 * f.read(
+	 *   arg::DestinationData( DataReference(buffer) )
+	 *	);
+	 * ```
+	 *
 	 */
 	virtual int read(
 			arg::DestinationBuffer buf,
@@ -352,9 +367,7 @@ public:
 
 	/*! \details Write the file.
 	 *
-	 * @param buf A pointer to the source buffer
-	 * @param nbyte The number of bytes to read
-	  * @return The number of bytes written or less than zero on an error
+	 * @return The number of bytes written or less than zero on an error
 	 */
 	virtual int write(
 			const arg::SourceBuffer buf,
@@ -395,9 +408,6 @@ public:
 
 	/*! \details Reads the file.
 	 *
-	 * @param loc The location of the file to read
-	 * @param buf A pointer to the destination buffer
-	 * @param nbyte The number of bytes to read
 	 * @return The number of bytes read or less than zero on an error
 	 */
 	int read(

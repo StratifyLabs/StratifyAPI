@@ -179,18 +179,113 @@ public:
 /*! \brief ApiInfo Class
  * \details Provides inforamation abou the API library.
  *
+ * This object is available in the api
+ * namespace when including any object
+ * or namespace within the StratifyAPI. For
+ * this example, we will include `sapi/sys.hpp`
+ * but any `sapi` header file will do.
+ *
+ * ```
+ * //md2code:include
+ * #include <sapi/sys.hpp>
+ * ```
  */
 class ApiInfo : public ApiObject {
 public:
 	/*! \details Returns a pointer to a string
 	  * that shows the API version.
+	  *
+	 * ```
+	 * //md2code:main
+	 *	printf("The Stratify API version is %s\n",
+	 *	  api::ApiInfo::version()
+	 * );
+	 * ```
+	  *
 	  */
 	static const char * version(){ return "3.8.0b"; }
+
+	/*! \details Returns a c-style string pointer
+	 * to the git hash used to build the Stratify API.
+	 *
+	 * ```
+	 * //md2code:main
+	 *	printf("The Stratify API git hash is %s\n",
+	 *	  api::ApiInfo::git_hash()
+	 * );
+	 * ```
+	 *
+	 *
+	 */
 	static const char * git_hash();
+
+	/*! \details Returns a c-style string pointer
+	 * of the name of the operating system
+	 * the application is running on.
+	 *
+	 * ```
+	 * //md2code:main
+	 *	printf("The Stratify API application is running on %s\n",
+	 *	  api::ApiInfo::operating_system_name()
+	 * );
+	 * ```
+	 *
+	 * The names are:
+	 *
+	 * - `macosx`
+	 * - `windows`
+	 * - `stratifyos`
+	 *
+	 *
+	 */
 	static const char * operating_system_name();
+
+	/*! \details Returns true if the application
+	 * is running on a windows system.
+	 *
+	 * ```
+	 * //md2code:main
+	 * if( api::ApiInfo::is_windows() ){
+	 *   printf("This is windows baby!\n");
+	 * }
+	 * ```
+	 *
+	 */
 	static bool is_windows();
+
+	/*! \details Returns true if the application
+	 * is running on a mac os x system.
+	 *
+	 * ```
+	 * //md2code:main
+	 * if( api::ApiInfo::is_macosx() ){
+	 *   printf("Running on macosx\n");
+	 * }
+	 * ```
+	 *
+	 */
 	static bool is_macosx();
+
+	/*! \details Returns true if the application
+	 * is running on a Stratify OS system.
+	 *
+	 * ```
+	 * //md2code:main
+	 * if( api::ApiInfo::is_stratify_os() ){
+	 *   printf("Yep!\n");
+	 * }
+	 * ```
+	 *
+	 */
 	static bool is_stratify_os();
+
+	/*! \details Returns a directory path
+	 * that can be used to store application
+	 * data.
+	 *
+	 * For Stratify OS, this is `/home`.
+	 *
+	 */
 	static const char * user_data_path();
 };
 

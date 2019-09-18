@@ -12,11 +12,10 @@ namespace calc {
  * \details This class is for implementing lookup tables
  * using linear extrapolation.
  *
- * \code
- *
+ * ```
+ * //md2code:include
  * #include <sapi/calc.hpp>
- *
- * #define ENTRIES 4
+ *	#define ENTRIES 4
  *
  * const float lookup_table[ENTRIES*2] = {  //for each entry there are 2 float values
  * 	0.0, 2.0,  //this is an x,y pair where x is 0.0 and y is 2.0, list must have x values in ascending order
@@ -24,30 +23,28 @@ namespace calc {
  * 	2.0, 16.0,
  * 	3.0, 25.0
  * };
+ * ```
  *
- * float lookup_value(float x){
- * 	Lookup<float> lookup(lookup_table, ENTRIES);
- * 	return lookup.calc_value(x);
- * }
- *
- *
- * \endcode
- *
- *
+ * ```
+ * //md2code:main
+ *	Lookup<float> lookup(lookup_table, ENTRIES);
+ * printf("Value is %0.2f\n", lookup.calculate(1.5f));
+ * ```
  *
  */
 template<typename T>class Lookup : public api::WorkObject {
 public:
 	/*! \details Constructs a lookup table object.
 	 *
-	 * @param table A pointer to a table with x and y values alternating, x values must
-	 * be in ascending order
+	 * @param table
 	 */
 	Lookup(
-			const T * table,
-			const arg::Size & size){
+			const T * table /*! A pointer to a table with x and y values alternating, x values must
+			 * be in ascending order */,
+			const arg::Count & count /*! The number of entries in the table */
+			){
 		m_table = table;
-		m_size = size.argument();
+		m_count = count.argument();
 	}
 
 	/*! \details Calculates the y value using linear interpolation.
@@ -62,7 +59,7 @@ public:
 		T output;
 
 		i = 0;
-		while( (x >= m_table[i+2]) && (i < (m_size-2)*2) ){
+		while( (x >= m_table[i+2]) && (i < (m_count-2)*2) ){
 			i+=2;
 		}
 
@@ -82,9 +79,9 @@ public:
 
 private:
 	const T * m_table;
-	unsigned int m_size;
+	unsigned int m_count;
 };
 
-};
+}
 
 #endif /* SAPI_CALC_LOOKUP_HPP_ */
