@@ -938,7 +938,7 @@ int Link::copy(
 				 progress_callback
 				 ) < 0 ){
 			m_error_message.format(
-						"failed to write to host file",
+						"failed to write to host file"
 						);
 		}
 
