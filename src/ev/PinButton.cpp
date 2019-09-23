@@ -48,14 +48,14 @@ void PinButton::update(){
 }
 
 chrono::MicroTime PinButton::get_duration(){
-	chrono::MicroTime value = chrono::MicroTime(m_timer.microseconds());
+	chrono::Microseconds value = chrono::Microseconds(m_timer.microseconds());
 
 	//reset the timer so the duration is only returned once after the button is released
 	if( m_timer.is_stopped() ){
 		if( m_flags.duration_reported == 0 ){
 			m_flags.duration_reported = 1;
 		} else {
-			value.set_microseconds(0);
+			value = chrono::Microseconds(0);
 		}
 		//m_timer.reset();
 	}

@@ -865,10 +865,14 @@ bool Printer::update_progress(int progress, int total){
 
 			if( total == ProgressCallback::indeterminate_progress_total() ){
 				var::String output;
-				output.format("?" F32U, progress);
-				print(output.cstring());
-				for(u32 i = 0; i < output.length(); i++){
-					print("\b"); //backspace
+				if( (m_o_flags & PRINT_SIMPLE_PROGRESS) == 0 ){
+					output.format("?" F32U, progress);
+					print(output.cstring());
+					for(u32 i = 0; i < output.length(); i++){
+						print("\b"); //backspace
+					}
+				} else {
+					print("?");
 				}
 
 			} else {

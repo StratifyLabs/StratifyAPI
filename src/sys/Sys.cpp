@@ -147,7 +147,11 @@ var::String Sys::install(const var::ConstString & path,
 #endif
 }
 
-int Sys::free_ram(const char * path, arg::LinkDriver driver){
+int Sys::free_ram(const char * path
+						#if defined __link
+						, arg::LinkDriver driver
+						#endif
+						){
 	int fd;
 	int ret;
 #if defined __link
@@ -165,7 +169,6 @@ int Sys::free_ram(const char * path, arg::LinkDriver driver){
 	if( (fd = ::open(path, O_RDONLY)) < 0 ){
 		return -1;
 	}
-	driver = 0;
 	ret = ::ioctl(fd, I_APPFS_FREE_RAM);
 	::close(fd);
 #endif
@@ -198,7 +201,11 @@ int Sys::verify_zero_sum32(void * data, int size){
 	return sum == 0;
 }
 
-int Sys::reclaim_ram(const char * path, arg::LinkDriver driver){
+int Sys::reclaim_ram(const char * path
+							#if defined __link
+							, arg::LinkDriver driver
+							#endif
+							){
 	int fd;
 	int ret;
 #if defined __link
@@ -211,7 +218,6 @@ int Sys::reclaim_ram(const char * path, arg::LinkDriver driver){
 	if( (fd = ::open(path, O_RDONLY)) < 0 ){
 		return -1;
 	}
-	driver = 0;
 	ret = ::ioctl(fd, I_APPFS_RECLAIM_RAM);
 	::close(fd);
 #endif

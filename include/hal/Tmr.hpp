@@ -16,13 +16,17 @@ namespace hal {
  */
 class TmrPinAssignment : public PinAssignment<tmr_pin_assignment_t>{};
 
-class TmrAttributes : public PinAssignmentPeriphAttributes<tmr_attr_t, tmr_pin_assignment_t> {
+class TmrAttributes :
+		public PinAssignmentPeriphAttributes<
+		tmr_attr_t,
+		tmr_pin_assignment_t
+		> {
 public:
 
-	TmrAttributes(u32 o_flags = 0, u32 freq = 0, u32 period = 0){
-		set_flags(o_flags);
-		set_frequency(freq);
-		set_period(period);
+	TmrAttributes(){
+		set_flags(0);
+		set_frequency(0);
+		set_period(0);
 	}
 
 
@@ -33,6 +37,10 @@ public:
 
 	u32 period() const { return m_attr.period; }
 
+	TmrAttributes & set_port(u32 value){ PinAssignmentPeriphAttributes::set_port(value); return *this; }
+	TmrAttributes & set_flags(u32 value){ PinAssignmentPeriphAttributes::set_flags(value); return *this; }
+	TmrAttributes & set_frequency(u32 value){ PinAssignmentPeriphAttributes::set_frequency(value); return *this; }
+
 	TmrAttributes & set_channel_pin(u8 channel, const mcu_pin_t & pin){
 		if( channel < 4 ){
 			m_attr.pin_assignment.channel[channel] = pin;
@@ -40,7 +48,44 @@ public:
 		return *this;
 	}
 
+	TmrAttributes & assign_pin(
+			arg::Position position,
+			arg::PortNumber port,
+			arg::PinNumber pin){
+		if( position.argument() < sizeof(tmr_pin_assignment_t)/sizeof(mcu_pin_t) ){
+			m_attr.pin_assignment.channel[position.argument()] =
+					mcu_pin(port.argument(), pin.argument());
+		}
+		return *this;
+	}
+
+	TmrAttributes & set_channel(
+			arg::Location location,
+			arg::Value value
+			){
+		m_attr.channel = mcu_channel(
+					location.argument(),
+					value.argument()
+					);
+		return *this;
+	}
+
+	TmrAttributes & set_channel_pin(
+			arg::Channel channel,
+			arg::PortNumber port,
+			arg::PinNumber pin
+			){
+		if( channel.argument() < 4 ){
+			m_attr.pin_assignment.channel[channel.argument()] = mcu_pin(
+						port.argument(),
+						pin.argument()
+						);
+		}
+		return *this;
+	}
+
 	TmrAttributes & set_period(u32 period){ m_attr.period = period; return *this; }
+
 	TmrAttributes & set_channel(const mcu_channel_t & channel){
 		m_attr.channel = channel;
 		return *this;
@@ -58,26 +103,85 @@ typedef TmrAttributes TmrAttr;
  * or to generate waveforms on an output compare pin.  It can also configure the timer
  * to use the internal CPU clock at various frequencies.
  *
+ *
+ * ```
+ * //md2code:include
+ * #include <sapi/hal.hpp>
+ * #include <sapi/chrono.hpp>
+ * ```
+ *
  * For example this will start a microsecond timer (1Mhz) using an internal clock:
  *
- * \code
+ * ```
+ * //md2code:main
  * Tmr tmr(0); //use /dev/tmr0
- * tmr.init(); //initialize the timer
+ * tmr.initialize(); //initialize the timer
  * tmr.set(0); //set the value to zero
- * tmr.on(); //turn the timer on
- * Timer::wait_milliseconds(100);
- * printf("My timer value is %d\n", tmr.value()); //The value will be about 100,000
- * \endcode
+ * tmr.enable(); //turn the timer on
+ * chrono::wait(Milliseconds(100));
+ * printf(
+ *   "My timer value is %ld\n",
+ *   tmr.value()
+ * ); //The value will be about 100,000
+ * ```
  *
  * Here is an example using the Tmr to count external edges on input capture 0
  *
- * \code
- * \endcode
+ * ```
+ * //md2code:main
+ *
+ * ```
  *
  * You can also use the output compare channels to set the top value of the timer.
  *
- * \code
- * \endcode
+ * ```
+ *	//md2code:main
+ *
+ * ```
+ *
+ * Some timers support PWM mode.
+ *
+ *
+ * ```
+ * //md2code:main
+ *	Tmr pwm_timer(3);
+ *	TmrAttributes pwm_timer_attributes;
+ *	pwm_timer_attributes.set_flags(
+ *				Tmr::SET_TIMER |
+ *				Tmr::IS_SOURCE_CPU |
+ *				Tmr::IS_AUTO_RELOAD |
+ *				Tmr::SET_CHANNEL |
+ *				Tmr::IS_CHANNEL_PWM_MODE
+ *				)
+ *			.set_period(pwm_timer_period)
+ *			.set_frequency(pwm_timer_frequency)
+ *			.set_channel(
+ *				arg::Location(pmw_channel_number),
+ *				arg::Value(0)
+ *				)
+ *			.assign_pin( //assign PD15 to use as a channel
+ *				arg::Position(0), //use slot zero to assign this pin
+ *				arg::PortNumber(3), //PORTA -> 0 ... PORTD -> 3
+ *				arg::PinNumber(15) //Pin 15
+ *				);
+ *
+ *
+ *	printf("Initialize PWM timer\n");
+ *	pwm_timer.initialize(
+ *				pwm_timer_attributes
+ *				);
+
+ *	if( pwm_timer.return_value() < 0 ){
+ *		printf(
+ *					"Failed to initialize PWM timer (%d, %d)\n",
+ *					pwm_timer.return_value(),
+ *					pwm_timer.error_number()
+ *				 );
+ *		exit(1);
+ *	}
+ *
+ *	pwm_timer.enable();
+ * ```
  *
  *
  */
@@ -158,8 +262,15 @@ public:
 	 * should be or'd with the MCU_CHANNEL_FLAG_IS_INPUT value.
 	 *
 	 */
-	int set_channel(u32 loc, u32 value){
-		return Periph::set_channel(loc, value, arg::IoRequest(I_TMR_SETCHANNEL));
+	int set_channel(
+			arg::Location loc,
+			arg::Value value
+			){
+		return Periph::set_channel(
+					loc.argument(),
+					value.argument(),
+					arg::IoRequest(I_TMR_SETCHANNEL)
+					);
 	}
 
 	/*! \details Gets the value of the specified channel.
@@ -171,8 +282,8 @@ public:
 	 * should be or'd with the MCU_CHANNEL_FLAG_IS_INPUT value.
 	 *
 	 */
-	u32 get_channel(u32 loc){
-		return Periph::get_channel(loc, arg::IoRequest(I_TMR_GETCHANNEL));
+	u32 get_channel(arg::ImplicitLocation loc){
+		return Periph::get_channel(loc.argument(), arg::IoRequest(I_TMR_GETCHANNEL));
 	}
 
 	/*! \details Gets the value of the timer. */
@@ -180,27 +291,6 @@ public:
 
 	/*! \details Sets the value of the timer. */
 	int set_value(u32 value) const;
-
-
-	int set_attr(u32 o_flags, u32 freq, u32 period, const tmr_pin_assignment_t * pin_assignment = 0){
-		tmr_attr_t attr;
-		attr.o_flags = o_flags;
-		attr.freq = freq;
-		attr.period = period;
-		if( pin_assignment ){
-			memcpy(&attr.pin_assignment, pin_assignment, sizeof(uart_pin_assignment_t));
-		} else {
-			memset(&attr.pin_assignment, 0xff, sizeof(uart_pin_assignment_t));
-		}
-		return set_attributes(attr);
-	}
-
-	int init(u32 o_flags, u32 freq, u32 period, const tmr_pin_assignment_t * pin_assignment = 0){
-		if( open() < 0 ){
-			return -1;
-		}
-		return set_attr(o_flags, freq, period, pin_assignment);
-	}
 
 
 private:

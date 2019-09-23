@@ -199,6 +199,7 @@ typedef Argument< u32, struct PortNumberTag > PortNumber;
 typedef Argument< u32, struct PinNumberTag > PinNumber;
 typedef Argument< u32, struct PinFunctionTag > PinFunction;
 typedef Argument< u32, struct ChannelTag > Channel;
+typedef Argument< u32, struct ValueTag > Value;
 typedef Argument< u32, struct EventsTag > Events;
 typedef Argument< u32, struct KernelRequestApiTag > KernelRequestApi;
 
@@ -236,8 +237,6 @@ typedef Argument< bool, struct IsPinActiveHighTag > IsPinActiveHigh;
 typedef Argument< bool, struct IsPersistentTag > IsPersistent;
 typedef Argument< bool, struct IsExactMatchTag > IsExactMatch;
 
-
-
 typedef Argument< const fs::File&, struct SourceFileTag > SourceFile;
 typedef Argument<	fs::File&, struct DestinationFileTag > DestinationFile;
 
@@ -270,16 +269,11 @@ typedef Argument< sys::Printer &, struct ProgressPrinterTag > ProgressPrinter;
 
 typedef Argument< const chrono::Microseconds &, struct RetryDelayTag > RetryDelay;
 
-//hal
 typedef Argument< const mcu_pin_t &, struct McuPinTag > McuPin;
-
 typedef Argument< s8, struct InterruptPriorityTag > InterruptPriority;
-
 typedef Argument< const mcu_callback_t &, struct McuCallbackTag > McuCallback;
-
 typedef Argument< u8, struct FontPointSizeTag > FontPointSize;
 typedef Argument< u8, struct FontStyleTag > FontStyle;
-
 typedef Argument< const inet::SocketAddress&, struct SourceSocketAddressTag > SourceSocketAddress;
 typedef Argument< inet::SocketAddress&, struct DestinationSocketAddressTag > DestinationSocketAddress;
 
@@ -315,6 +309,7 @@ ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitFilePath, const var::ConstString &, FilePat
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitBase64EncodedString, const var::ConstString&, Base64EncodedString);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSize, u32, Size);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitLocation, const int &, Location);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitValue, const int &, Value);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitCapacity, u32, Capacity);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceBuffer, const void*, SourceBuffer);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitDestinationBuffer,	void*, DestinationBuffer);

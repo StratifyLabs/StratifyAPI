@@ -87,7 +87,7 @@ int Xml::set_get_value(String & dest, const var::ConstString & key, bool set) co
 		if( end_attr > -1 ){
 			s2.copy_contents(
 						arg::SourceData(s1),
-						arg::Location(start_attr+1),
+						arg::Position(start_attr+1),
 						arg::Size(end_attr-start_attr-1)
 						);
 			s1.to_char()[start_attr] = 0;
@@ -476,7 +476,7 @@ int Xml::parse_ref(String & name, String & value, const ConstString & str, const
 		if( close_bracket > 0 ){
 			value.copy_contents(
 						arg::SourceData(s0),
-						arg::Location(open_bracket+1),
+						arg::Position(open_bracket+1),
 						arg::Size(close_bracket-open_bracket-1)
 						);
 			name.copy_contents(

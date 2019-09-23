@@ -240,8 +240,8 @@ public:
 	 * \return Zero on success or less than zero with errno set.
 	 */
 	static var::String install(const var::ConstString & path,
-							int options = 0, //run in RAM, discard on exit
-							int ram_size = LAUNCH_RAM_SIZE_DEFAULT
+										int options = 0, //run in RAM, discard on exit
+										int ram_size = LAUNCH_RAM_SIZE_DEFAULT
 			);
 
 	/*!
@@ -255,10 +255,10 @@ public:
 	 * \return
 	 */
 	static var::String install(const var::ConstString & path,
-							int options, //run in RAM, discard on exit
-							int ram_size,
-							const sys::ProgressCallback * progress_callback
-			);
+										int options, //run in RAM, discard on exit
+										int ram_size,
+										const sys::ProgressCallback * progress_callback
+										);
 
 
 
@@ -275,7 +275,11 @@ public:
 	 *
 	 * \sa reclaim_ram()
 	 */
-	static int free_ram(const char * path, arg::LinkDriver driver = arg::LinkDriver(0));
+	static int free_ram(const char * path
+						  #if defined __link
+							  , arg::LinkDriver driver = arg::LinkDriver(0)
+		#endif
+			);
 
 	/*! \details Reclaims RAM that was freed using free_ram().
 	 *
@@ -285,7 +289,11 @@ public:
 	 *
 	 * \sa free_ram()
 	 */
-	static int reclaim_ram(const char * path, arg::LinkDriver driver = arg::LinkDriver(0));
+	static int reclaim_ram(const char * path
+							  #if defined __link
+								  , arg::LinkDriver driver = arg::LinkDriver(0)
+		#endif
+			);
 
 
 	static void assign_zero_sum32(void * data, int size);

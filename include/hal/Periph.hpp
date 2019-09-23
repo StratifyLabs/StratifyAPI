@@ -356,7 +356,10 @@ protected:
 					);
 	}
 
-	int set_channel(u32 loc, u32 value, const arg::IoRequest request) const {
+	int set_channel(
+			u32 loc,
+			u32 value,
+			const arg::IoRequest request) const {
 		mcu_channel_t channel;
 		channel.loc = loc;
 		channel.value = value;
