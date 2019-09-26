@@ -36,7 +36,7 @@ typedef api::Api<arm_dsp_conversion_api_t, SAPI_API_REQUEST_ARM_DSP_CONVERSION> 
 class DspWorkObject : public virtual WorkObject {
 public:
 
-	static DspQ7Api & api_a7(){ return m_api_q7; }
+	static DspQ7Api & api_q7(){ return m_api_q7; }
 	static DspQ15Api & api_q15(){ return m_api_q15; }
 	static DspQ31Api & api_q31(){ return m_api_q31; }
 	static DspF32Api & api_f32(){ return m_api_f32; }

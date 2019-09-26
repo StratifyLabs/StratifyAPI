@@ -313,7 +313,7 @@ public:
 			);
 
 	int create(
-			const var::ConstString name,
+			const arg::FileName name,
 			const arg::Size size
 			);
 	Appfs & operator << (const var::Data & data);

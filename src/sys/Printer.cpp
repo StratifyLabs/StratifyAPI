@@ -231,7 +231,7 @@ Printer & Printer::operator << (const var::DataInfo & a){
 #endif
 
 
-Printer & Printer::operator << (const var::Data & a){
+Printer & Printer::operator << (const var::DataReference & a){
 	u32 o_flags = m_o_flags;
 	const s8 * ptrs8 = a.to_s8();
 	const s16 * ptrs16 = a.to_s16();
@@ -708,7 +708,7 @@ Printer & Printer::operator << (const sgfx::VectorPath & a){
 	for(u32 i=0; i < a.icon_count(); i++){
 		open_array(var::String().format("[%d]", i), current_level());
 		{
-			*this << a.icon_list()[i];
+			*this << sgfx::VectorPathDescription(a.icon_list()[i]);
 			close_object();
 		}
 	}
@@ -761,12 +761,12 @@ Printer & Printer::operator << (const sgfx::VectorPathDescription & a){
 
 			open_object("control0", current_level());
 			{
-				*this << a.to_cubic_bezier().control[0];
+				*this << sgfx::Point(a.to_cubic_bezier().control[0]);
 				close_object();
 			}
 			open_object("control1", current_level());
 			{
-				*this << a.to_cubic_bezier().control[1];
+				*this << sgfx::Point(a.to_cubic_bezier().control[1]);
 				close_object();
 			}
 			break;

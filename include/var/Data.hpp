@@ -471,6 +471,24 @@ public:
 		return to<T>()[position.argument()];
 	}
 
+	/*! \details Returns the number of items that
+	 * fit into the data.
+	 *
+	 * ```
+	 * //md2code:main
+	 * Data items( arg::Size(64) );
+	 *
+	 * printf(
+	 *   "%ld int's fit in items\n",
+	 *   items.count<int>();
+	 * );
+	 * ```
+	 */
+	template<typename T> u32 count() const {
+		return size() / sizeof(T);
+	}
+
+
 	const char * to_const_char() const { return to<const char>(); }
 	char * to_char() const { return to<char>(); }
 

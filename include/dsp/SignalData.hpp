@@ -494,7 +494,7 @@ public:
 	SignalQ15(){}
 
 	bool is_api_available() const {
-		return api_a7().is_valid();
+		return api_q15().is_valid();
 	}
 
 	q15_t mean() const;

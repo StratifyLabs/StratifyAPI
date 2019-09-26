@@ -6,7 +6,19 @@ Drive::Drive(){
 
 }
 
-int Drive::initialize() const {
+int Drive::initialize(
+		const arg::SourceFilePath path
+		){
+
+	if( fileno() < 0 ){
+		if( open(
+				 arg::FilePath(path.argument()),
+				 fs::OpenFlags::read_write()
+				 ) < 0 ){
+			return return_value();
+		}
+	}
+
 	drive_attr_t attr;
 	attr.o_flags = DRIVE_FLAG_INIT;
 	return set_attributes(attr);

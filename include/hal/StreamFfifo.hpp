@@ -27,9 +27,20 @@ private:
 
 class StreamFFifoInfo : public api::InfoObject {
 public:
-	StreamFFifoInfo(): m_receive(m_info.rx), m_transmit(m_info.tx){
+	StreamFFifoInfo() :
+		m_receive(m_info.rx),
+		m_transmit(m_info.tx)
+	{
 		memset(&m_info, 0, sizeof(m_info));
 	}
+
+	StreamFFifoInfo(const stream_ffifo_info_t & info) :
+		m_receive(m_info.rx),
+		m_transmit(m_info.tx)
+	{
+		m_info = info;
+	}
+
 
 	operator stream_ffifo_info_t & (){ return m_info; }
 	operator const stream_ffifo_info_t & () const { return m_info; }
@@ -37,6 +48,18 @@ public:
 
 	bool is_valid() const {
 		return receive().is_valid() || transmit().is_valid();
+	}
+
+	bool is_stopped() const {
+		return (m_info.o_status & STREAM_FFIFO_FLAG_STOP) == 0;
+	}
+
+	bool is_running() const {
+		return (m_info.o_status & STREAM_FFIFO_FLAG_START) == 0;
+	}
+
+	bool is_reset() const {
+		return m_info.o_status == 0;
 	}
 
 	const StreamFFifoChannelInfo & receive() const { return m_receive; }
@@ -97,7 +120,7 @@ public:
 	int flush();
 
 	int get_info(stream_ffifo_info_t & info);
-
+	StreamFFifoInfo get_info();
 
 };
 

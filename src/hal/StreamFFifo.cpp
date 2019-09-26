@@ -14,6 +14,19 @@ int StreamFFifo::get_info(stream_ffifo_info_t & info){
 				);
 }
 
+StreamFFifoInfo StreamFFifo::get_info(){
+	stream_ffifo_info_t info;
+	if( ioctl(
+				arg::IoRequest(I_STREAM_FFIFO_GETINFO),
+				arg::IoArgument(&info)
+				) < 0 ){
+		return StreamFFifoInfo();
+	}
+
+	return StreamFFifoInfo(info);
+}
+
+
 
 int StreamFFifo::start(){
 	StreamFFifoAttributes attributes;

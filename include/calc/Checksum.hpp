@@ -64,7 +64,7 @@ public:
 	template<typename T> static T calculate_zero_sum(const var::DataReference & data){
 		u32 i;
 		T sum = 0;
-		int count = data.size()/sizeof(T) - 1;
+		int count = data.count<T>() - 1;
 		for(i=0; i < count; i++){
 			sum += data.at<T>(i);
 		}
@@ -76,7 +76,7 @@ public:
 			){
 		int i;
 		T sum = 0;
-		int count = data.size()/sizeof(T);
+		int count = data.count<T>();
 		for(i=0; i < count; i++){
 			sum += data.at<T>(i);
 		}

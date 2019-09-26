@@ -30,6 +30,23 @@ int Core::set_clock_divide(u32 value){
 				);
 }
 
+CoreInfo Core::get_info(){
+	Core core(0);
+	if( core.open() < 0 ){
+		return CoreInfo();
+	}
+	core.set_keep_open(false);
+	core_info_t info;
+	if( core.ioctl(
+			 arg::IoRequest(I_CORE_GETINFO),
+			 arg::IoArgument(&info)
+			 ) < 0 ){
+		return CoreInfo();
+	}
+	return CoreInfo(info);
+}
+
+
 void Core::reset(){
 	core_attr_t attr;
 	attr.o_flags = CORE_FLAG_EXEC_RESET;

@@ -156,8 +156,8 @@ public:
 
 	Printer & operator << (const api::Result & a);
 
-	/*! \details Prints a var::Data object. */
-	Printer & operator << (const var::Data & a);
+	/*! \details Prints a var::DataReference object. */
+	Printer & operator << (const var::DataReference & a);
 	/*! \details Prints a var::Datum object. */
 	Printer & operator << (const var::Datum & a);
 

@@ -143,7 +143,9 @@ public:
 	/*! \details Initializes the drive.
 	 *
 	 */
-	int initialize() const;
+	int initialize(
+			const arg::SourceFilePath path
+			);
 
 	/*! \details Powers up the drive.
 	 *

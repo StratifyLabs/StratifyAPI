@@ -29,6 +29,26 @@ public:
 	/*! \details Returns the flags that are supported by the core. */
 	u32 o_flags() const { return m_info.o_flags; }
 
+	bool is_software_reset() const {
+		return (o_flags() & (CORE_FLAG_IS_RESET_SOFTWARE|CORE_FLAG_IS_RESET_SYSTEM)) != 0;
+	}
+
+	bool is_power_on_reset() const {
+		return (o_flags() & CORE_FLAG_IS_RESET_POR) != 0;
+	}
+
+	bool is_external_reset() const {
+		return (o_flags() & CORE_FLAG_IS_RESET_EXTERNAL) != 0;
+	}
+
+	bool is_watchdog_timer_reset() const {
+		return (o_flags() & CORE_FLAG_IS_RESET_WDT) != 0;
+	}
+
+	bool is_brown_out_reset() const {
+		return (o_flags() & CORE_FLAG_IS_RESET_BOR) != 0;
+	}
+
 	/*! \details Returns the serial number of the MCU. */
 	sys::SerialNumber serial_number() const{ return sys::SerialNumber(m_info.serial); }
 
@@ -143,6 +163,7 @@ public:
 		return set_pin_function(f);
 	}
 
+	static CoreInfo get_info();
 
 	/*! \details Loads the MCU board configuration data
 	 * provided by the board support package.
