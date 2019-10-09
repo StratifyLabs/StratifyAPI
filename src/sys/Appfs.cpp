@@ -82,6 +82,54 @@ Appfs::Appfs(
 Appfs::Appfs(){}
 #endif
 
+bool Appfs::is_flash_available(
+		#if defined __link
+		arg::LinkDriver driver
+		#endif
+		){
+	fs::Dir dir
+		#if defined __link
+			(driver)
+		#endif
+			;
+	if( dir.open(
+			 arg::SourceDirectoryPath("/app/flash")
+			 ) < 0 ){
+		return false;
+	}
+
+	if( dir.read() != nullptr ){
+		return true;
+	}
+
+	return false;
+}
+
+bool Appfs::is_ram_available(
+		#if defined __link
+		arg::LinkDriver driver
+		#endif
+		){
+	fs::Dir dir
+		#if defined __link
+			(driver)
+		#endif
+			;
+	if( dir.open(
+			 arg::SourceDirectoryPath("/app/ram")
+			 ) < 0 ){
+		return false;
+	}
+
+	if( dir.read() != nullptr ){
+		return true;
+	}
+
+	return false;
+}
+
+
+
 int Appfs::create(
 		const arg::FileName name,
 		const arg::SourceFile source_data,

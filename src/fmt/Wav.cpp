@@ -24,10 +24,13 @@ Wav::Wav(const arg::SourceFilePath & name) {
 }
 
 
-int Wav::create(const arg::DestinationFilePath & path){
+int Wav::create(
+		const arg::DestinationFilePath & path,
+		arg::IsOverwrite is_overwrite
+		){
 	int result = File::create(
 				arg::DestinationFilePath(path),
-				arg::IsOverwrite(true)
+				is_overwrite
 				);
 	if( result < 0 ){ return result; }
 	return write(
@@ -36,10 +39,24 @@ int Wav::create(const arg::DestinationFilePath & path){
 				);
 }
 
-void Wav::set_header(u16 channels,
-							u32 sample_rate,
-							u16 bits_per_sample,
-							u32 samples){
+void Wav::copy_header(
+		const Wav & reference
+		){
+	set_header(
+				arg::ChannelCount(reference.channel_count()),
+				arg::SampleRate(reference.sample_rate()),
+				arg::BitsPerSample(reference.bits_per_sample()),
+				arg::SampleCount(reference.sample_count())
+				);
+}
+
+
+void Wav::set_header(
+		arg::ChannelCount channel_count,
+		arg::SampleRate sample_rate,
+		arg::BitsPerSample bits_per_sample,
+		arg::SampleCount sample_count
+		){
 	m_header.riff[0] = 'R';
 	m_header.riff[1] = 'I';
 	m_header.riff[2] = 'F';
@@ -55,16 +72,25 @@ void Wav::set_header(u16 channels,
 	m_header.format_description[3] = ' ';
 	m_header.format_size = 16;
 	m_header.wav_format = 1; //1 means PCM other value indicate compression
-	m_header.channels = channels;
-	m_header.sample_rate = sample_rate;
-	m_header.bytes_per_second = sample_rate * channels * bits_per_sample / 8;
-	m_header.block_alignment = channels*bits_per_sample/8;
-	m_header.bits_per_sample = bits_per_sample;
+	m_header.channels = channel_count.argument();
+	m_header.sample_rate = sample_rate.argument();
+	m_header.bytes_per_second =
+			sample_rate.argument() *
+			channel_count.argument() *
+			bits_per_sample.argument() / 8;
+	m_header.block_alignment =
+			channel_count.argument() *
+			bits_per_sample.argument()/8;
+	m_header.bits_per_sample =
+			bits_per_sample.argument();
 	m_header.data_description[0] = 'd';
 	m_header.data_description[1] = 'a';
 	m_header.data_description[2] = 't';
 	m_header.data_description[3] = 'a';
-	m_header.data_size = samples * channels * bits_per_sample / 8;
+	m_header.data_size =
+			sample_count.argument() *
+			channel_count.argument() *
+			bits_per_sample.argument() / 8;
 
 	m_header.size = 36 + m_header.data_size;
 

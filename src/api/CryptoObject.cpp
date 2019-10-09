@@ -4,4 +4,6 @@ using namespace api;
 
 Sha256Api CryptoObject::m_sha256_api;
 Sha512Api CryptoObject::m_sha512_api;
+AesApi CryptoObject::m_aes_api;
+RandomApi CryptoObject::m_random_api;
 

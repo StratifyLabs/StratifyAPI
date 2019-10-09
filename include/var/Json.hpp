@@ -122,7 +122,7 @@ public:
 	 * - NULL: "null"
 	 * - OBJECT: "{object}"
 	 * - ARRAY: "[array]"
-	 * - INVALID: "<invalid>"
+	 * - INVALID: ""
 	 *
 	 * To convert a json object or array to a
 	 * proper string using Json::stringify().

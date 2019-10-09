@@ -1733,8 +1733,10 @@ int Link::update_os(
 	return check_error(err);
 }
 
-int Link::update_binary_install_options(arg::DestinationFile binary,
-													 const AppfsFileAttributes & attributes){
+int Link::update_binary_install_options(
+		arg::DestinationFile binary,
+		const AppfsFileAttributes & attributes
+		){
 	return attributes.apply(binary);
 }
 
@@ -1751,6 +1753,9 @@ int Link::install_app(const arg::SourceFile application_image,
 	int loc_err;
 
 	if( path.argument().find(arg::StringToFind("/app")) == 0 ){
+
+
+
 		fd = this->open(
 					arg::FilePath("/app/.install"),
 					fs::OpenFlags::write_only()

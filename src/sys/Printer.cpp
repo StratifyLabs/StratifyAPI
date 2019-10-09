@@ -484,6 +484,8 @@ Printer & Printer::operator << (const sys::TaskInfo & a){
 	key("memorySize", "%ld", a.memory_size());
 	key("stack", "0x%lX", a.stack());
 	key("stackSize", "%ld", a.stack_size());
+	key("priority", "%ld", a.priority());
+	key("priorityCeiling", "%ld", a.priority_ceiling());
 	key("isThread", a.is_thread() ? "true" : "false");
 	if( a.is_thread() == false ){
 		key("heap", "0x%lX", a.heap());
@@ -985,6 +987,19 @@ Printer & Printer::error(const char * fmt, ...){
 		vprint(fmt, list);
 		va_end(list);
 	}
+	return *this;
+}
+
+Printer & Printer::error(
+		const api::Result result,
+		u32 line_number
+		){
+	error(
+				"returned %d with error number %d at line %d",
+				result.return_value(),
+				result.error_number(),
+				line_number
+			);
 	return *this;
 }
 

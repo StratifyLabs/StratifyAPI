@@ -70,6 +70,7 @@ int TaskManager::get_next(TaskInfo & info){
 					arg::IoArgument(&task_attr)
 					)
 				);
+
 	if( ret < 0 ){
 		info = TaskInfo::invalid();
 		return ret;

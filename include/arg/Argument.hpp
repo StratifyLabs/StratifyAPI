@@ -209,6 +209,11 @@ typedef Argument< s32, struct YValueTag > YValue;
 typedef Argument< u16, struct BitsPerPixelTag > BitsPerPixel;
 typedef Argument< u16, struct PlaneCountTag > PlaneCount;
 
+typedef Argument< u16, struct BitsPerSampleTag > BitsPerSample;
+typedef Argument< u16, struct ChannelCountTag > ChannelCount;
+typedef Argument< u16, struct SampleRateTag > SampleRate;
+typedef Argument< u32, struct SampleCountTag > SampleCount;
+
 typedef Argument< const void*, struct SourceBufferTag > SourceBuffer;
 typedef Argument< const void*, struct ReadOnlyBufferTag > ReadOnlyBuffer;
 typedef Argument< const void*, struct IoConstArgumentTag > IoConstArgument;
@@ -236,6 +241,7 @@ typedef Argument< bool, struct IsMcuPinMaskTag > IsMcuPinMask;
 typedef Argument< bool, struct IsPinActiveHighTag > IsPinActiveHigh;
 typedef Argument< bool, struct IsPersistentTag > IsPersistent;
 typedef Argument< bool, struct IsExactMatchTag > IsExactMatch;
+typedef Argument< bool, struct IsDebugTag > IsDebug;
 
 typedef Argument< const fs::File&, struct SourceFileTag > SourceFile;
 typedef Argument<	fs::File&, struct DestinationFileTag > DestinationFile;

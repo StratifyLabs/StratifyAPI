@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2019 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_CRYPTO_SHA256_HPP_HPP_
-#define SAPI_CRYPTO_SHA256_HPP_HPP_
+#ifndef SAPI_CRYPTO_SHA256_HPP_
+#define SAPI_CRYPTO_SHA256_HPP_
 
 #include "../api/CryptoObject.hpp"
 #include "../var/Array.hpp"
@@ -96,4 +96,4 @@ private:
 
 }
 
-#endif // SAPI_CRYPT_SHA256_HPP_HPP_
+#endif // SAPI_CRYPTO_SHA256_HPP_

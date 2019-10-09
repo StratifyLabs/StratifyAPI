@@ -7,6 +7,8 @@
 namespace crypto {}
 
 #include "crypto/Sha256.hpp"
+#include "crypto/Random.hpp"
+#include "crypto/Aes.hpp"
 
 using namespace crypto;
 

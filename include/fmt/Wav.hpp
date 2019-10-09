@@ -16,16 +16,35 @@ public:
 	/*! \details Constructs a new WAV object and open the WAV as a read-only file. */
 	Wav(const arg::SourceFilePath & name = arg::SourceFilePath(""));
 
-	int create(const arg::DestinationFilePath & path);
+	int create(
+			const arg::DestinationFilePath & path,
+			arg::IsOverwrite is_overwrite
+			);
 
-	void set_header(u16 channels, u32 sample_rate, u16 bits_per_sample, u32 samples);
+	void copy_header(
+			const Wav & reference
+			);
+
+	void set_header(
+			arg::ChannelCount channel_count,
+			arg::SampleRate sample_rate,
+			arg::BitsPerSample bits_per_sample,
+			arg::SampleCount sample_count
+			);
 
 
 	u32 size() const { return m_header.size; }
 	u32 wav_size() const { return m_header.format_size; }
 	u32 wav_format() const { return m_header.wav_format; }
+	/*! \cond */
 	u32 channels() const { return m_header.channels; }
+	/*! \endcond */
+	u32 channel_count() const { return m_header.channels; }
 	u32 sample_rate() const { return m_header.sample_rate; }
+	u32 sample_count() const {
+		return m_header.data_size /
+				(m_header.channels * m_header.bits_per_sample / 8);
+	}
 	u32 bytes_per_second() const { return m_header.bytes_per_second; }
 	u32 bits_per_sample() const { return m_header.bits_per_sample; }
 	u32 data_size() const { return m_header.data_size; }
@@ -51,6 +70,7 @@ private:
 		u32 data_size;
 	} header_t;
 
+	u32 m_sample_count;
 	header_t m_header;
 	/*! \endcond */
 

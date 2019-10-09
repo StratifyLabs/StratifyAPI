@@ -456,8 +456,6 @@ int Dir::close(){
 		return 0;
 	}
 #endif
-
-
 	return 0;
 }
 

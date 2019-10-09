@@ -344,6 +344,18 @@ public:
 		}
 	}
 
+	template<typename T> void populate(
+			T (*calculate_value)(arg::Position position),
+			arg::Count count = arg::Count(0)
+			){
+		if( count.argument() == 0 ){
+			count.argument() = this->count<T>();
+		}
+		for(u32 i=0; i < count.argument(); i++){
+			at<T>(i) = calculate_value(arg::Position(i));
+		}
+	}
+
 	/*! \details Swaps the byte order of the data.
 	 *
 	 * @param size 4 to swap as 32-bit words, otherwise swap 16-bit words (default is 4)
@@ -495,7 +507,7 @@ public:
 	const void * to_const_void() const { return to<const void>(); }
 	void * to_void() const { return to<void>(); }
 
-	const void * to_const_u8() const { return to<const u8>(); }
+	const u8 * to_const_u8() const { return to<const u8>(); }
 	u8 * to_u8() const { return to<u8>(); }
 
 	const u16 * to_const_u16() const { return to<const u16>(); }

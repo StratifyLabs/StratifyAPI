@@ -312,13 +312,33 @@ public:
 		#endif
 			);
 
+	/*! \cond */
 	int create(
 			const arg::FileName name,
 			const arg::Size size
 			);
 	Appfs & operator << (const var::Data & data);
 	int close();
+	/*! \endcond */
 
+	/*! \details Returns true if the application
+	 * filesystem includes flash memory.
+	 *
+	 */
+	static bool is_flash_available(
+		#if defined __link
+			arg::LinkDriver driver
+		#endif
+			);
+
+	/*! \details Returns true if the application
+	 * filesystem includes RAM.
+	 */
+	static bool is_ram_available(
+		#if defined __link
+			arg::LinkDriver driver
+		#endif
+			);
 
 	/*! \details Returns the page size for writing data. */
 	static int page_size(){ return APPFS_PAGE_SIZE; }
@@ -339,13 +359,13 @@ public:
 	  * does not exist or is not a recognized executable, respectively.
 	  *
 	 */
-
 	static AppfsInfo get_info(
 			const arg::SourceFilePath path
 		#if defined __link
 			, arg::LinkDriver driver
 		#endif
 			);
+
 
 	/*! \details Gets the application version.
 	 *

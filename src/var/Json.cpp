@@ -144,7 +144,7 @@ var::String JsonValue::to_string() const {
 	} else if ( is_array() ){
 		result = "[array]";
 	} else {
-		result = "<invalid>";
+		result = "";
 	}
 	return result;
 }

@@ -310,6 +310,9 @@ public:
 	/*! \details Prints a fatal error message. */
 	Printer & fatal(const var::ConstString & a){ return fatal(a.cstring()); }
 
+
+	Printer & error(const api::Result result, u32 line_number);
+
 	/*! \details Prints a key value pair. */
 	virtual Printer & key(const var::ConstString & key, const char * fmt, ...);
 	/*! \details Prints a key value pair. */
