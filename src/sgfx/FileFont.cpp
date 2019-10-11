@@ -9,7 +9,10 @@ FileFont::FileFont() {
 	m_kerning_pairs = 0;
 }
 
-FileFont::FileFont(const arg::SourceFilePath & name, const arg::Location & offset) {
+FileFont::FileFont(
+		const arg::SourceFilePath & name,
+		const arg::Location & offset
+		) {
 	m_kerning_pairs = 0;
 	set_file(name, offset);
 }
@@ -20,7 +23,10 @@ FileFont::~FileFont(){
 	}
 }
 
-int FileFont::set_file(const arg::SourceFilePath & name, const arg::Location & offset){
+int FileFont::set_file(
+		const arg::SourceFilePath & name,
+		const arg::Location & offset
+		){
 	u32 pair_size;
 
 	if( m_kerning_pairs ){

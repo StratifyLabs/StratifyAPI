@@ -579,6 +579,15 @@ private:
 
 };
 
+class NullPrinter : public Printer {
+protected:
+	void vprint(const char * fmt, va_list list){
+		MCU_UNUSED_ARGUMENT(fmt);
+		MCU_UNUSED_ARGUMENT(list);
+	}
+
+};
+
 
 }
 

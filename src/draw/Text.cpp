@@ -36,7 +36,9 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 
 		if( this->font() == 0 ){
 			font = resolve_font(m_font_point_size == 0 ? d.height() : m_font_point_size);
-			if( font == 0 ){ return; }
+			if( font == 0 ){
+				return;
+			}
 		} else {
 			font = this->font();
 		}

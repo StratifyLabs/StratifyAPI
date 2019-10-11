@@ -159,17 +159,12 @@ int Appfs::create(
 	f.exec.code_size = source_data.argument().size() + sizeof(f); //total number of bytes in file
 	f.exec.signature = APPFS_CREATE_SIGNATURE;
 
-#if defined __link
-	fs::File::remove(
-				arg::SourceFilePath(buffer),
-				driver
-				);
-#else
 	fs::File::remove(
 				arg::SourceFilePath(buffer)
+			#if defined __link
+				, driver
+			#endif
 				);
-#endif
-
 
 	if( file.open(
 			 arg::FilePath("/app/.install"),
@@ -178,7 +173,12 @@ int Appfs::create(
 		return -1;
 	}
 
-	memcpy(attr.buffer, &f, sizeof(f));
+	var::DataReference::memory_copy(
+				arg::SourceBuffer(&f),
+				arg::DestinationBuffer(attr.buffer),
+				arg::Size(sizeof(f))
+				);
+
 	//now copy some bytes
 	attr.nbyte = APPFS_PAGE_SIZE - sizeof(f);
 	if( source_data.argument().size() < (u32)attr.nbyte ){
@@ -189,9 +189,11 @@ int Appfs::create(
 				arg::DestinationBuffer(attr.buffer + sizeof(f)),
 				arg::Size(attr.nbyte)
 				);
+
 	attr.nbyte += sizeof(f);
 	loc = 0;
 	bw = 0;
+	printf("%s():%d\n", __FUNCTION__, __LINE__);
 	do {
 		if( loc != 0 ){ //when loc is 0 -- header is copied in
 			if( (f.exec.code_size - bw) > APPFS_PAGE_SIZE ){
@@ -218,12 +220,14 @@ int Appfs::create(
 		bw += attr.nbyte;
 		loc += attr.nbyte;
 
+		printf("%s():%d\n", __FUNCTION__, __LINE__);
 		if( progress_callback ){
 			progress_callback->update(bw, f.exec.code_size);
 		}
 
 	} while( bw < f.exec.code_size);
 
+	printf("%s():%d\n", __FUNCTION__, __LINE__);
 	return f.exec.code_size;
 }
 

@@ -709,9 +709,12 @@ int DataFile::read(
 		return -1;
 	}
 
-	memcpy(buf.argument(),
-			 m_data.to_u8() + m_location,
-			 size_ready);
+	var::Data::memory_copy(
+				arg::SourceBuffer(m_data.to_const_u8() + m_location),
+				arg::DestinationBuffer(buf.argument()),
+				arg::Size(size_ready)
+				);
+
 	m_location += size_ready;
 	return size_ready;
 }
@@ -794,7 +797,7 @@ int DataReferenceFile::read(
 	}
 
 	var::DataReference::memory_copy(
-				arg::SourceBuffer(data_reference().to_u8() + m_location),
+				arg::SourceBuffer(data_reference().to_const_u8() + m_location),
 				arg::DestinationBuffer(buf.argument()),
 				arg::Size(size_ready)
 				);

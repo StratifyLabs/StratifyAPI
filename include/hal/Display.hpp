@@ -166,11 +166,13 @@ public:
 
 	/*! \details Constructs a new object with the provided memory buffer
 	 *
-	 * @param mem A pointer to the bitmap memory
-	 * @param w The width of the memory area in pixels
-	 * @param h The height of the memory area in pixels
 	 */
-	Display(sg_bmap_data_t * mem, const sgfx::Area & area) : sgfx::Bitmap(mem,area){};
+	Display(
+			arg::ReadWriteBuffer buffer,
+			const sgfx::Area & area
+			) : sgfx::Bitmap(buffer,area){
+
+	}
 
 	/*! \details Constructs a new object and dynamically allocates memory for
 	 * the buffer.
@@ -178,7 +180,7 @@ public:
 	 * @param w The width of the display
 	 * @param h The height of the display
 	 */
-	Display(const sgfx::Area & area) : sgfx::Bitmap(area){};
+	Display(const sgfx::Area & area) : sgfx::Bitmap(area){}
 
 	/*! \details Initializes the display. */
 	virtual int initialize(const var::ConstString & name = "") = 0;

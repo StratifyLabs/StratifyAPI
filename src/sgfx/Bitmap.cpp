@@ -95,7 +95,7 @@ void Bitmap::initialize_members(){
 	}
 
 	if( api()->bits_per_pixel == 0 ){
-		m_bmap.bits_per_pixel = 1;
+		m_bmap.bits_per_pixel = 1; //use 1 as the default others are supported
 	} else {
 		m_bmap.bits_per_pixel = api()->bits_per_pixel;
 	}
@@ -107,23 +107,25 @@ void Bitmap::initialize_members(){
 }
 
 void Bitmap::refer_to(
-		sg_bmap_data_t * mem,
-		const Area & area,
-		const arg::IsReadOnly is_read_only
+		arg::ReadOnlyBuffer buffer,
+		const Area & area
 		){
+	Data::refer_to(
+				arg::ReadOnlyBuffer(buffer),
+				arg::Size(calculate_size(area))
+				);
 
-	if( is_read_only.argument() == true ){
-		Data::refer_to(
-					arg::ReadOnlyBuffer(mem),
-					arg::Size(calculate_size(area))
-					);
-	} else {
-		Data::refer_to(
-					arg::ReadWriteBuffer(mem),
-					arg::Size(calculate_size(area))
-					);
-	}
+	calculate_members(area);
+}
 
+void Bitmap::refer_to(
+		arg::ReadWriteBuffer buffer,
+		const Area & area
+		){
+	Data::refer_to(
+				arg::ReadWriteBuffer(buffer),
+				arg::Size(calculate_size(area))
+				);
 
 	calculate_members(area);
 }
@@ -136,14 +138,23 @@ void Bitmap::refer_to(
 	ptr = (char*)hdr;
 	ptr += sizeof(sg_bmap_header_t);
 
-	Bitmap::refer_to(
-				(sg_bmap_data_t *)ptr,
-				Area(
-					arg::Width(hdr->width),
-					arg::Height(hdr->height)
-					),
-				is_read_only
-				);
+	if( is_read_only.argument() ){
+		refer_to(
+					arg::ReadOnlyBuffer(ptr),
+					Area(
+						arg::Width(hdr->width),
+						arg::Height(hdr->height)
+						)
+					);
+	} else {
+		refer_to(
+					arg::ReadWriteBuffer(ptr),
+					Area(
+						arg::Width(hdr->width),
+						arg::Height(hdr->height)
+						)
+					);
+	}
 }
 
 int Bitmap::allocate(const Area & dim){
@@ -178,12 +189,19 @@ Bitmap::Bitmap(sg_area_t d){
 
 
 Bitmap::Bitmap(
-		sg_bmap_data_t * mem,
-		const Area & area,
-		const arg::IsReadOnly is_read_only){
+		arg::ReadOnlyBuffer buffer,
+		const Area & area){
 	initialize_members();
-	refer_to(mem, area, is_read_only);
+	refer_to(buffer,area);
 }
+
+Bitmap::Bitmap(
+		arg::ReadWriteBuffer buffer,
+		const Area & area){
+	initialize_members();
+	refer_to(buffer,area);
+}
+
 
 Bitmap::Bitmap(
 		const sg_bmap_header_t * hdr,

@@ -81,17 +81,21 @@ public:
 			const arg::IsReadOnly is_read_only = arg::IsReadOnly(false)
 			); //read/write bitmap
 
-	/*! \details Constructs a bitmap using an existing memory buffer.
-	 *
-	 * @param mem A pointer to the memory buffer
-	 * @param w The width of the bitmap that fits in the buffer
-	 * @param h The height of the bitmap buffer
-	 * @param readonly True if \a mem is in read-only memory
+	/*! \details Constructs a bitmap using an existing
+	 * read-only memory buffer.
 	 */
-	Bitmap(sg_bmap_data_t * mem,
-			const Area & area,
-			 const arg::IsReadOnly is_read_only = arg::IsReadOnly(false)
-			); //read/write bitmap
+	Bitmap(
+			arg::ReadOnlyBuffer buffer,
+			const Area & area
+			);
+
+	/*! \details Constructs a bitmap using an existing
+	 * read-write memory buffer.
+	 */
+	Bitmap(
+			arg::ReadWriteBuffer buffer,
+			const Area & area
+			);
 
 	/*! \details Constructs a new bitmap (dynamic memory allocation).
 	 *
@@ -162,17 +166,22 @@ public:
 			const arg::IsReadOnly is_read_only = arg::IsReadOnly(false)
 			);
 
-	/*! \details Sets the data pointer based on the width and height of the bitmap.
+	/*! \details Sets the data pointer based on the
+	 * area of the read-only bitmap.
 	 *
-	 * @param mem A pointer to the memory for the bitmap
-	 * @param w The width of the bitmap in pixels
-	 * @param h The height of the bitmap in pixels
-	 * @param readonly True if \a mem is read-only
 	 */
 	void refer_to(
-			sg_bmap_data_t * mem,
-			const Area & area,
-			const arg::IsReadOnly is_read_only = arg::IsReadOnly(false)
+			arg::ReadOnlyBuffer buffer,
+			const Area & area
+			);
+
+	/*! \details Sets the data pointer based on the
+	 * area of the bitmap.
+	 *
+	 */
+	void refer_to(
+			arg::ReadWriteBuffer buffer,
+			const Area & area
 			);
 
 	/*! \details Changes effective size without free/allocate sequence */
