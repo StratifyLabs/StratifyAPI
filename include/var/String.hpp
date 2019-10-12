@@ -96,8 +96,7 @@ public:
 	  */
 	String(const String & a) :
 		Data(a),
-		ConstString(Data::to_const_char())
-	{
+		ConstString(Data::to_const_char()){
 
 	}
 
@@ -210,6 +209,8 @@ public:
 
 	/*! \details Appends a character to the string. */
 	String& operator<<(char c){ append(c); return *this; }
+
+	String& operator<<(const arg::SourceData & data);
 
 
 	/*! \details Appends a string to this string and returns a new string. */

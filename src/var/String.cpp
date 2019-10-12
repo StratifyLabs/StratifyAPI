@@ -223,8 +223,8 @@ String& String::replace(
 }
 
 String String::substr(const arg::Position position,
-		const arg::Length length
-		) const {
+							 const arg::Length length
+							 ) const {
 	if( position.argument() >= this->length() ){
 		return String();
 	}
@@ -249,6 +249,24 @@ String & String::to_lower(){
 	for(u32 i = 0; i < s; i++){
 		p[i] = ::tolower(p[i]);
 	}
+	return *this;
+}
+
+String & String::operator<<(
+		const arg::SourceData & data
+		){
+
+	for(
+		 u32 i=0;
+		 i < data.argument().size();
+		 i++){
+
+		append(String().format(
+					 "%02x", data.argument().at_const_u8(i)
+					 )
+				 );
+	}
+
 	return *this;
 }
 

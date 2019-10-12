@@ -73,6 +73,37 @@ public:
 			);
 
 
+	/*! \details Encodes a string to base 64.
+	 */
+	static var::String encode(
+			const var::String & input
+			){
+		return encode(
+					arg::SourceData(
+						var::DataReference(
+							arg::ReadOnlyBuffer(input.cstring()),
+							arg::Size(input.length())
+							)
+						)
+					);
+	}
+
+	/*! \details Encodes a c-style string to base 64.
+	 */
+	static var::String encode(
+			const var::ConstString & input
+			){
+		return encode(
+					arg::SourceData(
+						var::DataReference(
+							arg::ReadOnlyBuffer(input.cstring()),
+							arg::Size(input.length())
+							)
+						)
+					);
+	}
+
+
 	/*! \details Reads binary data from *input* and writes a Base64
 	 * encoded string to *output*.
 	 *

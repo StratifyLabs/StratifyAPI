@@ -229,6 +229,7 @@ typedef Argument< void*, struct SignalValuePointerTag > SignalValuePointer;
 
 typedef Argument< const var::DataReference &, struct SourceDataTag > SourceData;
 typedef Argument< var::DataReference &, struct DestinationDataTag > DestinationData;
+typedef Argument<	var::DataReference &, struct SecretKeyDataTag > SecretKeyData;
 
 typedef Argument< bool, struct IsOverwriteTag > IsOverwrite;
 typedef Argument< bool, struct IsDetachedTag > IsDetached;
