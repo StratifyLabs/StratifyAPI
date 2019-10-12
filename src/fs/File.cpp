@@ -650,7 +650,7 @@ int File::write(
 	var::Data buffer = var::Data( arg::Size(page_size_value) );
 
 	if( buffer.size() == 0 ){
-		return -1;
+		return set_error_number_if_error(-1);
 	}
 
 	int result;
@@ -661,7 +661,7 @@ int File::write(
 
 		buffer.resize(page_size_value);
 		if( buffer.size()	!= page_size_value ){
-			return -1;
+			return set_error_number_if_error(-1);
 		}
 
 		result = source_file.argument().read(buffer);
@@ -687,7 +687,7 @@ int File::write(
 	if( (result < 0) && (size_processed == 0) ){
 		return result;
 	}
-	return size_processed;
+	return set_error_number_if_error(size_processed);
 }
 
 
@@ -697,7 +697,7 @@ int DataFile::read(
 		) const {
 
 	if( flags().is_write_only() ){
-		return -1;
+		return set_error_number_if_error(-1);
 	}
 
 	int size_ready = m_data.size() - m_location;
@@ -706,7 +706,7 @@ int DataFile::read(
 	}
 
 	if( size_ready < 0 ){
-		return -1;
+		return set_error_number_if_error(-1);
 	}
 
 	var::Data::memory_copy(
@@ -716,13 +716,13 @@ int DataFile::read(
 				);
 
 	m_location += size_ready;
-	return size_ready;
+	return set_error_number_if_error(size_ready);
 }
 
 int DataFile::write(const SourceBuffer buf, const Size nbyte) const {
 
 	if( flags().is_read_only() ){
-		return -1;
+		return set_error_number_if_error(-1);
 	}
 
 	int size_ready = 0;
@@ -731,7 +731,7 @@ int DataFile::write(const SourceBuffer buf, const Size nbyte) const {
 		m_location = m_data.size();
 		if( m_data.resize(m_data.size() + nbyte.argument()) < 0 ){
 			set_error_number_to_errno();
-			return -1;
+			return set_error_number_if_error(-1);
 		}
 		size_ready = nbyte.argument();
 	} else {
@@ -743,7 +743,7 @@ int DataFile::write(const SourceBuffer buf, const Size nbyte) const {
 	}
 
 	if( size_ready < 0 ){
-		return -1;
+		return set_error_number_if_error(-1);
 	}
 
 	var::Data::memory_copy(
@@ -753,7 +753,7 @@ int DataFile::write(const SourceBuffer buf, const Size nbyte) const {
 				);
 
 	m_location += size_ready;
-	return size_ready;
+	return set_error_number_if_error(size_ready);
 }
 
 int DataFile::seek(const Location location, enum whence whence) const {
@@ -784,7 +784,7 @@ int DataReferenceFile::read(
 		) const {
 
 	if( flags().is_write_only() ){
-		return -1;
+		return set_error_number_if_error(-1);
 	}
 
 	int size_ready = data_reference().size() - m_location;
@@ -793,7 +793,7 @@ int DataReferenceFile::read(
 	}
 
 	if( size_ready < 0 ){
-		return -1;
+		return set_error_number_if_error(-1);
 	}
 
 	var::DataReference::memory_copy(
@@ -803,7 +803,7 @@ int DataReferenceFile::read(
 				);
 
 	m_location += size_ready;
-	return size_ready;
+	return set_error_number_if_error(size_ready);
 }
 
 int DataReferenceFile::write(
@@ -812,16 +812,16 @@ int DataReferenceFile::write(
 		) const {
 
 	if( flags().is_read_only() ){
-		return -1;
+		return set_error_number_if_error(-1);
 	}
 
 	if( data_reference().is_read_only() ){
-		return -1;
+		return set_error_number_if_error(-1);
 	}
 
 	int size_ready = 0;
 	if( flags().is_append() ){
-		return -1;
+		return set_error_number_if_error(-1);
 	} else {
 		//limit writes to the current size of the data
 		size_ready = data_reference().size() - m_location;
@@ -831,7 +831,7 @@ int DataReferenceFile::write(
 	}
 
 	if( size_ready < 0 ){
-		return -1;
+		return set_error_number_if_error(-1);
 	}
 
 	var::DataReference::memory_copy(
@@ -840,7 +840,7 @@ int DataReferenceFile::write(
 				arg::Size(size_ready)
 				);
 	m_location += size_ready;
-	return size_ready;
+	return set_error_number_if_error(size_ready);
 }
 
 int DataReferenceFile::seek(const Location location, enum whence whence) const {

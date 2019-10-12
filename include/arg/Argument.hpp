@@ -125,6 +125,7 @@ private:
 
 typedef Argument< const var::ConstString &, struct HttpStringToPostTag > HttpStringToPost;
 typedef Argument< const var::ConstString &, struct UrlEncodedStringTag > UrlEncodedString;
+typedef Argument< const var::ConstString &, struct SerialNumberEncodedStringTag > SerialNumberEncodedString;
 typedef Argument< const var::ConstString &, struct VersionEncodedStringTag > VersionEncodedString;
 typedef Argument< const var::ConstString &, struct GitHashTag > GitHash;
 typedef Argument< const var::ConstString &, struct SourcePathTag > SourcePath;

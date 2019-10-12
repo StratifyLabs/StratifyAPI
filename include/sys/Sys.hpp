@@ -102,6 +102,8 @@ public:
 
 	/*! \details Returns the OS package project ID. */
 	var::ConstString id() const { return m_info.id; }
+	/*! \details Returns the team ID of the system. */
+	var::ConstString team_id() const { return m_info.team_id; }
 	/*! \details Returns the name of the system. */
 	var::ConstString name() const { return m_info.name; }
 	/*! \details Returns the system version. */

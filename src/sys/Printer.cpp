@@ -511,21 +511,26 @@ Printer & Printer::operator << (const fs::Stat & a){
 	return *this;
 }
 
-Printer & Printer::operator << (const sys::SysInfo & a ){
+Printer & Printer::operator << (
+		const sys::SysInfo & a
+		){
 	key("name", "%s", a.name().cstring());
 	key("serialNumber", a.serial_number().to_string().cstring());
 	key("hardwareId",  F3208X, a.hardware_id());
 	if( a.name() != "bootloader" ){
 		key("projectId", a.id().cstring());
-		key("bspVersion",  a.bsp_version().cstring());
-		key("sosVersion",  a.sos_version().cstring());
-		key("cpuArchitecture",  a.cpu_architecture().cstring());
+		if( a.team_id().is_empty() == false ){
+			key("teamId", a.team_id().cstring());
+		}
+		key("bspVersion",	a.bsp_version().cstring());
+		key("sosVersion",	a.sos_version().cstring());
+		key("cpuArchitecture", a.cpu_architecture().cstring());
 		key("cpuFrequency", F32D, a.cpu_frequency());
 		key("applicationSignature", F32X, a.application_signature());
 
-		key("bspGitHash",  a.bsp_git_hash().cstring());
-		key("sosGitHash",  a.sos_git_hash().cstring());
-		key("mcuGitHash",  a.mcu_git_hash().cstring());
+		key("bspGitHash",	a.bsp_git_hash().cstring());
+		key("sosGitHash",	a.sos_git_hash().cstring());
+		key("mcuGitHash",	a.mcu_git_hash().cstring());
 	}
 	return *this;
 }

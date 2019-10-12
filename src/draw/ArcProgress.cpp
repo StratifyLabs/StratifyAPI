@@ -34,8 +34,8 @@ void ArcProgress::draw_to_scale(const DrawingScaledAttr & attr){
 	u32 progress;
 	u32 points = 4 * (d.width() + d.height())/2;
 
-	float two_pi = 2.0 * M_PI;
-	float half_pi = M_PI / 2.0;
+	float two_pi = 2.0f * MCU_PI_FLOAT;
+	float half_pi = MCU_PI_FLOAT / 2.0f;
 	float theta;
 	float offset = m_offset * two_pi / 360;
 
