@@ -183,7 +183,7 @@ public:
 class LowPassFilterF32 : public SimpleFilter<float, LowPassFilterF32> {
 public:
 	/*! \details Constructs a EMA object for floating point calculations */
-	LowPassFilterF32(float start, float alpha);
+	LowPassFilterF32(float start = 0.0f, float alpha = 1.0f);
 
 	/*! \details Sets the filtering value.
 	 *

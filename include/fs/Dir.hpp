@@ -66,6 +66,7 @@ public:
 
 	static var::Vector<var::String> read_list(
 			const arg::SourceDirectoryPath & path,
+			arg::IsRecursive is_recursive = arg::IsRecursive(false),
 			arg::LinkDriver driver = arg::LinkDriver(0)
 			);
 
@@ -87,7 +88,8 @@ public:
 			const arg::SourceDirectoryPath & path
 			);
 	static var::Vector<var::String> read_list(
-			const arg::SourceDirectoryPath & path
+			const arg::SourceDirectoryPath & path,
+			arg::IsRecursive is_recursive = arg::IsRecursive(false)
 			);
 #endif
 
@@ -175,7 +177,9 @@ public:
 	 *
 	 *
 	 */
-	var::Vector<var::String> read_list();
+	var::Vector<var::String> read_list(
+			arg::IsRecursive is_recursive = arg::IsRecursive(false)
+			);
 
 
 	/*! \details Returns a pointer (const) to the name of the most recently read entry. */

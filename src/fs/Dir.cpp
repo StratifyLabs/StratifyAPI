@@ -120,7 +120,8 @@ int Dir::copy(
 
 	var::Vector<var::String> source_contents =
 			Dir::read_list(
-				source_path
+				source_path,
+				arg::IsRecursive(false)
 			#if defined __link
 				, arg::LinkDriver(source_driver.argument())
 			#endif
@@ -171,10 +172,10 @@ int Dir::copy(
 
 		} else if( info.is_file() ){
 			if( File::copy(
-						arg::SourceFilePath(entry_path),
-						arg::DestinationFilePath(destination_entry_path),
-						arg::IsOverwrite(true)
-						) < 0 ){
+					 arg::SourceFilePath(entry_path),
+					 arg::DestinationFilePath(destination_entry_path),
+					 arg::IsOverwrite(true)
+					 ) < 0 ){
 				return -1;
 			}
 		}
@@ -250,8 +251,7 @@ int Dir::create(
 
 	for(u32 i=0; i < path_tokens.count(); i++){
 		base_path << path_tokens.at(i);
-		create(
-					DestinationDirectoryPath(base_path),
+		create(DestinationDirectoryPath(base_path),
 					permissions
 			#if defined __link
 					, driver
@@ -350,24 +350,28 @@ int Dir::count(){
 #if defined __link
 var::Vector<var::String> Dir::read_list(
 		const SourceDirectoryPath & path,
+		arg::IsRecursive is_recursive,
 		arg::LinkDriver driver
 		){
 	Dir directory(driver);
 #else
 var::Vector<var::String> Dir::read_list(
-		const SourceDirectoryPath & path
+		const SourceDirectoryPath & path,
+		arg::IsRecursive is_recursive
 		){
 	Dir directory;
 #endif
 	var::Vector<var::String> result;
 	if( directory.open(path) < 0 ){ return result; }
-	result = directory.read_list();
+	result = directory.read_list(is_recursive);
 	directory.close();
 	return result;
 }
 
 
-var::Vector<var::String> Dir::read_list(){
+var::Vector<var::String> Dir::read_list(
+		const IsRecursive is_recursive
+		){
 	var::Vector<var::String> result;
 	var::String entry;
 
@@ -377,7 +381,40 @@ var::Vector<var::String> Dir::read_list(){
 		if( !entry.is_empty() &&
 			 (entry != ".") &&
 			 (entry != "..") ){
-			result.push_back(entry);
+
+			if( is_recursive.argument() ){
+				var::String entry_path;
+				entry_path << m_path << "/" << entry;
+				FileInfo info = File::get_info(
+							arg::SourceFilePath(entry_path)
+			#if defined __link
+							, arg::LinkDriver(driver())
+			#endif
+							);
+
+				if( info.is_directory() ){
+
+					var::Vector<var::String> intermediate_result =
+							Dir::read_list(
+								arg::SourceDirectoryPath(entry_path),
+								is_recursive
+			#if defined __link
+								, arg::LinkDriver(driver())
+			#endif
+								);
+
+
+					for(auto intermediate_entry: intermediate_result){
+						var::String push_entry;
+						push_entry << entry << "/" << intermediate_entry;
+						result.push_back(push_entry);
+					}
+				} else {
+					result.push_back(entry);
+				}
+			} else {
+				result.push_back(entry);
+			}
 		}
 	} while( entry.is_empty() == false );
 
