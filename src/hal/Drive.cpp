@@ -74,7 +74,6 @@ int Drive::erase_device() const {
 
 	u32 address = 0;
 	while( address < info.write_block_count() ){
-		printf("-- erasing at %ld\n", address);
 		if( erase_blocks(address, info.write_block_count()) < 0 ){
 			return return_value();
 		}
