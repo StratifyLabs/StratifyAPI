@@ -171,7 +171,6 @@ public:
 			arg::ReadWriteBuffer buffer,
 			const sgfx::Area & area
 			) : sgfx::Bitmap(buffer,area){
-
 	}
 
 	/*! \details Constructs a new object and dynamically allocates memory for
@@ -183,7 +182,9 @@ public:
 	Display(const sgfx::Area & area) : sgfx::Bitmap(area){}
 
 	/*! \details Initializes the display. */
-	virtual int initialize(const var::ConstString & name = "") = 0;
+	virtual int initialize(
+			const arg::SourceFilePath & name = arg::SourceFilePath("")
+			) = 0;
 
 	/*! \details Turns the display on. */
 	virtual int enable() const = 0;

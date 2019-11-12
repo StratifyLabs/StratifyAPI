@@ -14,9 +14,18 @@ namespace hal {
  */
 class DacAttributes : public PinAssignmentPeriphAttributes<dac_attr_t, dac_pin_assignment_t> {
 public:
-	DacAttributes(u32 o_flags = DAC_FLAG_SET_CONVERTER, u32 freq = 0){
-		set_flags(o_flags);
-		set_frequency(freq);
+	DacAttributes(){
+
+	}
+
+	DacAttributes & set_flags(u32 o_flags){
+		PinAssignmentPeriphAttributes::set_flags(o_flags);
+		return *this;
+	}
+
+	DacAttributes & set_frequency(u32 value){
+		PinAssignmentPeriphAttributes::set_frequency(value);
+		return *this;
 	}
 
 };

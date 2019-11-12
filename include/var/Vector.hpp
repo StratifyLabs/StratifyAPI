@@ -44,6 +44,8 @@ public:
 	}
 
 
+
+
 	/*! \details Constructs a vector with \a count uninitialized items. */
 	Vector(const arg::Count count){
 		m_count = 0;

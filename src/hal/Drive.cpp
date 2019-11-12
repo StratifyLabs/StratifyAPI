@@ -66,8 +66,26 @@ int Drive::erase_blocks(u32 start, u32 end) const {
 
 int Drive::erase_device() const {
 	drive_attr_t attr;
-	attr.o_flags = DRIVE_FLAG_ERASE_DEVICE;
-	return set_attributes(attr);
+	DriveInfo info = get_info();
+	if( info.o_flags() & DRIVE_FLAG_ERASE_DEVICE ){
+		attr.o_flags = DRIVE_FLAG_ERASE_DEVICE;
+		return set_attributes(attr);
+	}
+
+	u32 address = 0;
+	while( address < info.write_block_count() ){
+		printf("-- erasing at %ld\n", address);
+		if( erase_blocks(address, info.write_block_count()) < 0 ){
+			return return_value();
+		}
+		address += return_value();
+		while( is_busy() ){
+			chrono::wait(
+						info.erase_block_time()
+						);
+		}
+	}
+	return 0;
 }
 
 bool Drive::is_busy() const {

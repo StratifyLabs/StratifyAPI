@@ -832,6 +832,7 @@ int Link::copy(
 		m_progress_max = host_file.size();
 		if( host_file.size() > 256*50 ){
 			copy_page_size = host_file.size() / 50;
+			copy_page_size -= (copy_page_size % 1024);
 		} else {
 			copy_page_size = 256;
 		}
@@ -1800,19 +1801,24 @@ int Link::install_app(const arg::SourceFile application_image,
 						  arg::IoRequest(I_APPFS_INSTALL),
 						  arg::IoArgument(&attr)
 						  )) < 0 ){
+
 					if( link_errno == 5 ){ //EIO
 						if( loc_err < -1 ){
 							m_error_message.format(
-										"Failed to install because of missing symbol on device near " F32D,
-										loc_err+1
+										"Failed to install because of missing symbol on device at " F32D,
+										-1*(loc_err+1)
 										);
 						} else {
 							m_error_message = "Failed to install because of unknown symbol error";
 						}
-					} if( link_errno == 8 ){ //ENOEXEC
+					} else if( link_errno == 8 ){ //ENOEXEC
 						m_error_message = "Failed to install because of symbol table signature mismatch";
 					} else {
-						m_error_message.format("Failed to install file on device with device errno %d", link_errno);
+						m_error_message.format(
+									"Failed to install with result %d and errno %d",
+									loc_err,
+									link_errno
+									);
 					}
 					close(arg::FileDescriptor(fd));
 					return -1;

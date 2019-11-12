@@ -62,7 +62,11 @@ public:
 	  * @param parent The parent test or zero if there is no parent
 	  *
 	  */
-	Function(const char * test_name, return_type (*function)(args...), Test * parent = 0) : Test(test_name, parent){
+	Function(
+			const arg::Name test_name,
+			return_type (*function)(args...),
+			Test * parent = 0) :
+		Test(test_name, parent){
 		m_function = function;
 	}
 

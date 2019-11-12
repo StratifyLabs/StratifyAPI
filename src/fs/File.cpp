@@ -60,8 +60,8 @@ int File::remove(
 
 #if !defined __link
 int File::copy(const SourceFilePath source_path,
-		const DestinationFilePath dest_path
-		){
+					const DestinationFilePath dest_path
+					){
 	File source;
 	File dest;
 
@@ -108,8 +108,8 @@ int File::copy(
 
 #if !defined __link
 int File::copy(const SourceFilePath source_path,
-		const DestinationFilePath dest_path,
-		const IsOverwrite is_overwrite){
+					const DestinationFilePath dest_path,
+					const IsOverwrite is_overwrite){
 	File source;
 	File dest;
 
@@ -306,7 +306,6 @@ int File::open(const arg::FilePath & name, const fs::OpenFlags & flags, const Pe
 #endif
 
 	return set_error_number_if_error(m_fd);
-
 }
 
 int File::create(
@@ -588,9 +587,13 @@ var::String File::parent_directory(
 
 #if !defined __link
 int File::access(const SourceFilePath path,
-		const Access & access
-		){
-	return ::access(path.argument().cstring(), access.o_access());
+					  const Access & access
+					  ){
+	return ::access(
+				path.argument().cstring(),
+				access.o_access()
+				);
+
 }
 #endif
 
@@ -611,8 +614,8 @@ var::ConstString File::suffix(
 
 
 int File::ioctl(const IoRequest request,
-		const IoArgument argument
-		) const {
+					 const IoArgument argument
+					 ) const {
 #if defined __link
 	return set_error_number_if_error(
 				link_ioctl(
@@ -631,9 +634,9 @@ int File::ioctl(const IoRequest request,
 
 
 int File::write(const SourceFile source_file,
-		const PageSize page_size,
-		const Size size
-		) const {
+					 const PageSize page_size,
+					 const Size size
+					 ) const {
 	return write(source_file, page_size, size, 0);
 }
 

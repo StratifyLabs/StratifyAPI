@@ -21,6 +21,9 @@ public:
 	FFifoInfo ffifo() const { return m_info.ffifo; }
 	FFifoInfo ffifo_info() const { return m_info.ffifo; }
 
+	u32 access_count() const { return m_info.access_count; }
+	s32 error() const { return m_info.error; }
+
 private:
 	const stream_ffifo_channel_info_t & m_info;
 };
@@ -80,8 +83,9 @@ public:
 
 	operator const stream_ffifo_attr_t & () const { return m_attr; }
 
-	void set_flags(u32 value){
+	StreamFFifoAttributes & set_flags(u32 value){
 		m_attr.o_flags = value;
+		return *this;
 	}
 
 private:

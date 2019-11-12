@@ -46,8 +46,10 @@ public:
 
 	Array(){}
 
-	using iterator = std::iterator<std::random_access_iterator_tag,T,ptrdiff_t,T*,T&>;
-	using const_iterator = std::iterator<std::random_access_iterator_tag,const T,ptrdiff_t,const T*,const T&>;
+	using iterator =
+	std::iterator<std::random_access_iterator_tag,T,ptrdiff_t,T*,T&>;
+	using const_iterator =
+	std::iterator<std::random_access_iterator_tag,const T,ptrdiff_t,const T*,const T&>;
 
 	T * begin(){ return m_array + 0; }
 	const T * begin() const { return m_array + 0; }
