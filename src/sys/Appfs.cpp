@@ -237,10 +237,6 @@ AppfsInfo Appfs::get_info(
 		arg::LinkDriver driver
 		){
 	fs::File f(driver);
-	if( driver.argument() == 0 ){
-		errno = ENOTSUP;
-		return AppfsInfo();
-	}
 #else
 AppfsInfo Appfs::get_info(const arg::SourceFilePath path){
 	fs::File f;
@@ -266,6 +262,7 @@ AppfsInfo Appfs::get_info(const arg::SourceFilePath path){
 	if( ret == sizeof(appfs_file_header) ){
 		//first check to see if the name matches -- otherwise it isn't an app file
 		path_name = fs::File::name(path.argument());
+
 		if( path_name.find(arg::StringToFind(".sys")) == 0 ){
 			return AppfsInfo();
 		}
@@ -280,7 +277,14 @@ AppfsInfo Appfs::get_info(const arg::SourceFilePath path){
 
 		app_name = appfs_file_header.hdr.name;
 		memset(&info, 0, sizeof(info));
-		if( path_name == app_name ){
+		if( path_name == app_name
+	 #if defined __link
+			 || (path_name.find(
+				 arg::StringToFind(app_name)
+				 ) ==0)
+	 #endif
+
+			 ){
 			memcpy(info.name, appfs_file_header.hdr.name, LINK_NAME_MAX);
 			info.mode = appfs_file_header.hdr.mode;
 			info.version = appfs_file_header.hdr.version;

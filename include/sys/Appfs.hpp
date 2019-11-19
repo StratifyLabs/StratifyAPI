@@ -362,7 +362,7 @@ public:
 	static AppfsInfo get_info(
 			const arg::SourceFilePath path
 		#if defined __link
-			, arg::LinkDriver driver
+			, arg::LinkDriver driver = arg::LinkDriver(0)
 		#endif
 			);
 
