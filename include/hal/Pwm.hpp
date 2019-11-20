@@ -10,12 +10,26 @@
 
 namespace hal {
 
+class PwmFlags {
+public:
+	enum flags {
+		SET_TIMER /*! See \ref PWM_FLAG_SET_TIMER */ = PWM_FLAG_SET_TIMER,
+		IS_ACTIVE_HIGH /*! See \ref PWM_FLAG_IS_ACTIVE_HIGH */ = PWM_FLAG_IS_ACTIVE_HIGH,
+		IS_ACTIVE_LOW /*! See \ref PWM_FLAG_IS_ACTIVE_LOW */ = PWM_FLAG_IS_ACTIVE_LOW,
+		SET_CHANNELS /*! See \ref PWM_FLAG_SET_CHANNELS */ = PWM_FLAG_SET_CHANNELS,
+		CLEAR_CHANNELS /*! See \ref PWM_FLAG_CLEAR_CHANNELS */ = PWM_FLAG_CLEAR_CHANNELS,
+		IS_ENABLED /*! See \ref PWM_FLAG_IS_ENABLED */ = PWM_FLAG_IS_ENABLED
+	};
+};
+
 /*! \brief PWM Attributes Class
  * \details This class is for containing PWM attributes.
  *
  *
  */
-class PwmAttributes : public PinAssignmentPeriphAttributes<pwm_attr_t, pwm_pin_assignment_t> {
+class PwmAttributes :
+		public PinAssignmentPeriphAttributes<pwm_attr_t, pwm_pin_assignment_t>,
+		public PwmFlags {
 public:
 	//period, channel
 
@@ -84,28 +98,11 @@ class PwmPinAssignment : public PinAssignment<pwm_pin_assignment_t>{};
  *
  *
  */
-class Pwm : public Periph<pwm_info_t, pwm_attr_t, PwmAttributes, PWM_IOC_IDENT_CHAR> {
+class Pwm :
+		public Periph<pwm_info_t, pwm_attr_t, PwmAttributes, PWM_IOC_IDENT_CHAR>,
+		public PwmFlags {
 public:
 	Pwm(port_t port);
-
-	enum pwm_flags {
-		/*! \cond */
-		FLAG_SET_TIMER = PWM_FLAG_SET_TIMER,
-		FLAG_IS_ACTIVE_HIGH = PWM_FLAG_IS_ACTIVE_HIGH,
-		FLAG_IS_ACTIVE_LOW = PWM_FLAG_IS_ACTIVE_LOW,
-		FLAG_SET_CHANNELS = PWM_FLAG_SET_CHANNELS,
-		FLAG_CLEAR_CHANNELS = PWM_FLAG_CLEAR_CHANNELS,
-		FLAG_IS_ENABLED = PWM_FLAG_IS_ENABLED,
-		/*! \endcond */
-
-		SET_TIMER /*! See \ref PWM_FLAG_SET_TIMER */ = PWM_FLAG_SET_TIMER,
-		IS_ACTIVE_HIGH /*! See \ref PWM_FLAG_IS_ACTIVE_HIGH */ = PWM_FLAG_IS_ACTIVE_HIGH,
-		IS_ACTIVE_LOW /*! See \ref PWM_FLAG_IS_ACTIVE_LOW */ = PWM_FLAG_IS_ACTIVE_LOW,
-		SET_CHANNELS /*! See \ref PWM_FLAG_SET_CHANNELS */ = PWM_FLAG_SET_CHANNELS,
-		CLEAR_CHANNELS /*! See \ref PWM_FLAG_CLEAR_CHANNELS */ = PWM_FLAG_CLEAR_CHANNELS,
-		IS_ENABLED /*! See \ref PWM_FLAG_IS_ENABLED */ = PWM_FLAG_IS_ENABLED
-	};
-
 
 	/*! \details Sets the channel to the specified value.
 	 *
@@ -171,7 +168,7 @@ public:
 	 */
 	int set_channels(const pwm_pin_assignment_t * pin_assignment){
 		PwmAttributes attributes;
-		attributes.set_flags(FLAG_SET_CHANNELS);
+		attributes.set_flags(SET_CHANNELS);
 		if( pin_assignment ){
 			attributes << *pin_assignment;
 		}

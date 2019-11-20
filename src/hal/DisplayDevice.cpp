@@ -124,7 +124,12 @@ int DisplayDevice::enable() const {
 }
 
 void DisplayDevice::clear(){
-	if( ioctl(arg::IoRequest(I_DISPLAY_CLEAR)) < 0 ){
+	display_attr_t attributes;
+	attributes.o_flags = DISPLAY_FLAG_CLEAR;
+	if( ioctl(
+			 arg::IoRequest(I_DISPLAY_CLEAR),
+			 arg::IoArgument(&attributes)
+			 ) < 0 ){
 		Data::clear();
 	}
 }

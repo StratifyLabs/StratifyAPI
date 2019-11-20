@@ -13,10 +13,25 @@ namespace hal {
 class CFifo;
 class Fifo;
 
+class FifoFlags {
+public:
+	enum flags {
+		SET_WRITEBLOCK = FIFO_FLAG_SET_WRITEBLOCK,
+		IS_OVERFLOW = FIFO_FLAG_IS_OVERFLOW,
+		IS_NOTIFY_WRITE = FIFO_FLAG_NOTIFY_WRITE,
+		IS_NOTIFY_READ = FIFO_FLAG_NOTIFY_READ,
+		INIT = FIFO_FLAG_INIT,
+		EXIT = FIFO_FLAG_EXIT,
+		FLUSH = FIFO_FLAG_FLUSH
+	};
+};
+
 /*! \brief Fifo Attributes Class
  *
  */
-class FifoInfo : public api::InfoObject {
+class FifoInfo :
+		public api::InfoObject,
+		public FifoFlags {
 public:
 
 	/*! \details Constructs an object with all zeros. */
@@ -90,29 +105,11 @@ private:
  * \endcode
  *
  */
-class Fifo : public hal::Device {
+class Fifo :
+		public hal::Device,
+		public FifoFlags {
 public:
 	Fifo();
-
-	enum fifo_flags {
-		/*! \cond */
-		FLAG_SET_WRITEBLOCK = FIFO_FLAG_SET_WRITEBLOCK,
-		FLAG_IS_OVERFLOW = FIFO_FLAG_IS_OVERFLOW,
-		FLAG_NOTIFY_WRITE = FIFO_FLAG_NOTIFY_WRITE,
-		FLAG_NOTIFY_READ = FIFO_FLAG_NOTIFY_READ,
-		FLAG_INIT = FIFO_FLAG_INIT,
-		FLAG_EXIT = FIFO_FLAG_EXIT,
-		FLAG_FLUSH = FIFO_FLAG_FLUSH,
-		/*! \endcond */
-
-		SET_WRITEBLOCK = FIFO_FLAG_SET_WRITEBLOCK,
-		IS_OVERFLOW = FIFO_FLAG_IS_OVERFLOW,
-		IS_NOTIFY_WRITE = FIFO_FLAG_NOTIFY_WRITE,
-		IS_NOTIFY_READ = FIFO_FLAG_NOTIFY_READ,
-		INIT = FIFO_FLAG_INIT,
-		EXIT = FIFO_FLAG_EXIT,
-		FLUSH = FIFO_FLAG_FLUSH
-	};
 
 	/*! \details Reads the Fifo Attributes. */
 	int get_info(FifoInfo & info) const;

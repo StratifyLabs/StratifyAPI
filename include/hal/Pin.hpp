@@ -9,6 +9,8 @@
 namespace hal {
 
 
+
+
 /*! \brief Pin class
  * \details This class controls the operation of a single pin.  It works similarly
  * to the Pio class, but the mask is built-in.
@@ -118,7 +120,7 @@ public:
 	 * @return Zero on success
 	 */
 	int set_input(u32 o_flags = 0){
-		return initialize(FLAG_SET_INPUT | o_flags);
+		return initialize(SET_INPUT | o_flags);
 	}
 
 	/*! \details Initializes the pin as an input.
@@ -127,7 +129,7 @@ public:
 	 * @return Zero on success
 	 */
 	int set_output(u32 o_flags = 0){
-		return initialize(FLAG_SET_OUTPUT | o_flags);
+		return initialize(SET_OUTPUT | o_flags);
 	}
 
 	/*! \details Sets the pin attributes.

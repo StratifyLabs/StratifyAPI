@@ -9,10 +9,22 @@
 
 namespace hal {
 
+class DacFlags {
+public:
+	enum flags {
+		SET_CONVERTER /*! Set to configure the converter */ = DAC_FLAG_SET_CONVERTER,
+		LEFT_JUSTIFIED /*! Set to left justify the data */ = DAC_FLAG_IS_LEFT_JUSTIFIED,
+		RIGHT_JUSTIFIED /*! Set to right justify the data */ = DAC_FLAG_IS_RIGHT_JUSTIFIED
+	};
+
+};
+
 /*! \brief DAC Attributes Class
  * \details This class is for containing DAC attributes.
  */
-class DacAttributes : public PinAssignmentPeriphAttributes<dac_attr_t, dac_pin_assignment_t> {
+class DacAttributes :
+		public PinAssignmentPeriphAttributes<dac_attr_t, dac_pin_assignment_t>,
+		public DacFlags {
 public:
 	DacAttributes(){
 
@@ -72,55 +84,12 @@ class DacPinAssignment : public PinAssignment<dac_pin_assignment_t>{};
  * \endcode
  *
  */
-class Dac : public Periph<dac_info_t, dac_attr_t, DacAttributes, 'd'> {
+class Dac :
+		public Periph<dac_info_t, dac_attr_t, DacAttributes, 'd'>,
+		public DacFlags{
 public:
 
 	Dac(port_t port);
-
-	enum dac_flags {
-		/*! \cond */
-		FLAG_SET_CONVERTER = DAC_FLAG_SET_CONVERTER,
-		FLAG_LEFT_JUSTIFIED = DAC_FLAG_IS_LEFT_JUSTIFIED,
-		FLAG_RIGHT_JUSTIFIED = DAC_FLAG_IS_RIGHT_JUSTIFIED,
-		/*! \endcond */
-
-		SET_CONVERTER /*! Set to configure the converter */ = DAC_FLAG_SET_CONVERTER,
-		LEFT_JUSTIFIED /*! Set to left justify the data */ = DAC_FLAG_IS_LEFT_JUSTIFIED,
-		RIGHT_JUSTIFIED /*! Set to right justify the data */ = DAC_FLAG_IS_RIGHT_JUSTIFIED
-	};
-
-	/*! \details Sets the DAC attributes using specified values.
-	 *
-	 * @param o_flags Enabled channels as a bitmask
-	 * @param freq DAC output frequency
-	 * @param pin_assignment The pins to use (if null, default pins will be used if available)
-	 *
-	 */
-	int set_attr(u32 o_flags, u32 freq, const dac_pin_assignment_t * pin_assignment = 0) const {
-		dac_attr_t attr;
-		attr.o_flags = o_flags;
-		if( pin_assignment != 0 ){
-			memcpy(&attr.pin_assignment, pin_assignment, sizeof(dac_pin_assignment_t));
-		} else {
-			memset(&attr.pin_assignment, 0xff, sizeof(dac_pin_assignment_t));
-		}
-		attr.freq = freq;
-		return set_attributes(attr);
-	}
-
-
-	/*! \details Opens the DAC and sets the attributes using specified values.
-	 *
-	 * See set_attr() for parameter descriptions.
-	 *
-	 */
-	int init(u32 o_flags, u32 freq, const dac_pin_assignment_t * pin_assignment = 0){
-
-		if( open() < 0 ){
-			return -1;
-		}
-		return set_attr(o_flags, freq, pin_assignment);
-	}
 
 	/*! \details Sets the value of the DAC channel.
 	 *
@@ -128,7 +97,10 @@ public:
 	 * @param loc The DAC channel
 	 * @return Zero on success
 	 */
-	int set_channel(u32 loc, u32 value) const {
+	int set_channel(
+			u32 loc,
+			u32 value
+			) const {
 		return Periph::set_channel(loc, value, arg::IoRequest(I_DAC_SET));
 	}
 

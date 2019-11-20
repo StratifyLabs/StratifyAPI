@@ -345,14 +345,14 @@ public:
 	}
 
 	template<typename T> void populate(
-			T (*calculate_value)(arg::Position position),
+			T (*calculate_value)(arg::Position position, arg::Count count),
 			arg::Count count = arg::Count(0)
 			){
 		if( count.argument() == 0 ){
 			count.argument() = this->count<T>();
 		}
 		for(u32 i=0; i < count.argument(); i++){
-			at<T>(i) = calculate_value(arg::Position(i));
+			at<T>(i) = calculate_value(arg::Position(i), count);
 		}
 	}
 

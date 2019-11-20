@@ -9,44 +9,9 @@
 
 namespace hal {
 
-
-
-/*! \brief USB Pin Assignment
- * \details This class allows simple manipulation of the usb_pin_assignment_t.
- */
-class UsbPinAssignment : public PinAssignment<usb_pin_assignment_t>{};
-
-class UsbAttributes : public PinAssignmentPeriphAttributes<usb_attr_t, usb_pin_assignment_t> {
-
-};
-
-/*! \brief USB Class
- * \details This class implements a USB transceiver.
- */
-class Usb : public Periph<usb_info_t, usb_attr_t, UsbAttributes, 'u'> {
+class UsbFlags {
 public:
-	Usb(port_t port);
-
-	enum usb_flags {
-		/*! \cond */
-		FLAG_SET_UNCONFIGURED= USB_FLAG_SET_UNCONFIGURED,
-		FLAG_SET_DEVICE = USB_FLAG_SET_DEVICE,
-		FLAG_SET_HOST = USB_FLAG_SET_HOST,
-		FLAG_SET_OTG = USB_FLAG_SET_OTG,
-		FLAG_RESET = USB_FLAG_RESET,
-		FLAG_ATTACH = USB_FLAG_ATTACH,
-		FLAG_DETACH = USB_FLAG_DETACH,
-		FLAG_CONFIGURE = USB_FLAG_CONFIGURE,
-		FLAG_UNCONFIGURE = USB_FLAG_UNCONFIGURE,
-		FLAG_SET_ADDRESS = USB_FLAG_SET_ADDRESS,
-		FLAG_RESET_ENDPOINT = USB_FLAG_RESET_ENDPOINT,
-		FLAG_ENABLE_ENDPOINT = USB_FLAG_ENABLE_ENDPOINT,
-		FLAG_DISABLE_ENDPOINT = USB_FLAG_DISABLE_ENDPOINT,
-		FLAG_STALL_ENDPOINT = USB_FLAG_STALL_ENDPOINT,
-		FLAG_UNSTALL_ENDPOINT = USB_FLAG_UNSTALL_ENDPOINT,
-		FLAG_CONFIGURE_ENDPOINT = USB_FLAG_CONFIGURE_ENDPOINT,
-		/*! \endcond */
-
+	enum flags {
 		SET_UNCONFIGURED= USB_FLAG_SET_UNCONFIGURED,
 		SET_DEVICE = USB_FLAG_SET_DEVICE,
 		SET_HOST = USB_FLAG_SET_HOST,
@@ -64,6 +29,28 @@ public:
 		UNSTALL_ENDPOINT = USB_FLAG_UNSTALL_ENDPOINT,
 		CONFIGURE_ENDPOINT = USB_FLAG_CONFIGURE_ENDPOINT
 	};
+};
+
+
+/*! \brief USB Pin Assignment
+ * \details This class allows simple manipulation of the usb_pin_assignment_t.
+ */
+class UsbPinAssignment : public PinAssignment<usb_pin_assignment_t>{};
+
+class UsbAttributes :
+		public PinAssignmentPeriphAttributes<usb_attr_t, usb_pin_assignment_t>,
+		public UsbFlags {
+
+};
+
+/*! \brief USB Class
+ * \details This class implements a USB transceiver.
+ */
+class Usb :
+		public Periph<usb_info_t, usb_attr_t, UsbAttributes, 'u'>,
+		public UsbFlags {
+public:
+	Usb(port_t port);
 
 	int reset() const;
 	int attach() const;

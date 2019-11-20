@@ -9,6 +9,27 @@
 
 namespace hal {
 
+class AdcFlags {
+public:
+
+	enum flags {
+		SET_CONVERTER /*! See ADC_FLAG_SET_CONVERTER */ = ADC_FLAG_SET_CONVERTER,
+		IS_LEFT_JUSTIFIED /*! See ADC_FLAG_IS_LEFT_JUSTIFIED */ = ADC_FLAG_IS_LEFT_JUSTIFIED,
+		IS_RIGHT_JUSTIFIED /*! Set to specify right justified data */ = ADC_FLAG_IS_RIGHT_JUSTIFIED,
+		SET_MASTER = ADC_FLAG_SET_MASTER /*! Used with MCUs that have more than one ADC that can operate in master/slave mode */,
+		SET_SLAVE = ADC_FLAG_SET_SLAVE /*! Used with MCUs that have more than one ADC that can operate in master/slave mode */,
+		IS_TRIGGER_TMR = ADC_FLAG_IS_TRIGGER_TMR /*! Used to trigger the ADC read on a timer event */,
+		IS_TRIGGER_EINT = ADC_FLAG_IS_TRIGGER_EINT /*! Used to trigger the ADC read on a external interrupt */,
+		SET_CHANNELS = ADC_FLAG_SET_CHANNELS /*! Configure the channels withouth changing ADC settings */,
+		IS_SCAN_MODE = ADC_FLAG_IS_SCAN_MODE /*! ADC will read every enabled channel when reading rather than the channel based on the location value */,
+		IS_TRIGGER_EINT_EDGE_RISING /*! Trigger the sample on the rising edge */ = ADC_FLAG_IS_TRIGGER_EINT_EDGE_RISING,
+		IS_TRIGGER_EINT_EDGE_FALLING /*! Trigger the sample on the falling edge */ = ADC_FLAG_IS_TRIGGER_EINT_EDGE_FALLING,
+		IS_GROUP /*! Set channel as part of a group */ = ADC_FLAG_IS_GROUP,
+		IS_CONTINOUS_CONVERSION /*! Start the next conversion as soon as the previous conversion completes */ = ADC_FLAG_IS_CONTINOUS_CONVERSION
+
+	};
+};
+
 /*! \brief ADC Info Class
  *
  *
@@ -47,7 +68,9 @@ private:
 /*! \brief ADC Attributes Class
  * \details This class is for containing ADC attributes.
  */
-class AdcAttributes : public PinAssignmentPeriphAttributes<adc_attr_t, adc_pin_assignment_t> {
+class AdcAttributes :
+		public PinAssignmentPeriphAttributes<adc_attr_t, adc_pin_assignment_t>,
+		public AdcFlags {
 public:
 
 	AdcAttributes(){}
@@ -112,34 +135,13 @@ class AdcPinAssignment : public PinAssignment<adc_pin_assignment_t>{};
  * \endcode
  *
  */
-class Adc : public Periph<adc_info_t, adc_attr_t, AdcAttributes, ADC_IOC_IDENT_CHAR> {
+class Adc :
+		public Periph<adc_info_t, adc_attr_t, AdcAttributes, ADC_IOC_IDENT_CHAR>,
+		public AdcFlags{
 public:
 
 	/*! \details Initializes the object with \a port. */
 	Adc(port_t port);
-
-	enum adc_flags {
-		/*! \cond */
-		FLAG_SET_CONVERTER = ADC_FLAG_SET_CONVERTER,
-		FLAG_IS_LEFT_JUSTIFIED = ADC_FLAG_IS_LEFT_JUSTIFIED,
-		FLAG_IS_RIGHT_JUSTIFIED = ADC_FLAG_IS_RIGHT_JUSTIFIED,
-		/*! \endcond */
-
-		SET_CONVERTER /*! See ADC_FLAG_SET_CONVERTER */ = ADC_FLAG_SET_CONVERTER,
-		IS_LEFT_JUSTIFIED /*! See ADC_FLAG_IS_LEFT_JUSTIFIED */ = ADC_FLAG_IS_LEFT_JUSTIFIED,
-		IS_RIGHT_JUSTIFIED /*! Set to specify right justified data */ = ADC_FLAG_IS_RIGHT_JUSTIFIED,
-		SET_MASTER = ADC_FLAG_SET_MASTER /*! Used with MCUs that have more than one ADC that can operate in master/slave mode */,
-		SET_SLAVE = ADC_FLAG_SET_SLAVE /*! Used with MCUs that have more than one ADC that can operate in master/slave mode */,
-		IS_TRIGGER_TMR = ADC_FLAG_IS_TRIGGER_TMR /*! Used to trigger the ADC read on a timer event */,
-		IS_TRIGGER_EINT = ADC_FLAG_IS_TRIGGER_EINT /*! Used to trigger the ADC read on a external interrupt */,
-		SET_CHANNELS = ADC_FLAG_SET_CHANNELS /*! Configure the channels withouth changing ADC settings */,
-		IS_SCAN_MODE = ADC_FLAG_IS_SCAN_MODE /*! ADC will read every enabled channel when reading rather than the channel based on the location value */,
-		IS_TRIGGER_EINT_EDGE_RISING /*! Trigger the sample on the rising edge */ = ADC_FLAG_IS_TRIGGER_EINT_EDGE_RISING,
-		IS_TRIGGER_EINT_EDGE_FALLING /*! Trigger the sample on the falling edge */ = ADC_FLAG_IS_TRIGGER_EINT_EDGE_FALLING,
-		IS_GROUP /*! Set channel as part of a group */ = ADC_FLAG_IS_GROUP,
-		IS_CONTINOUS_CONVERSION /*! Start the next conversion as soon as the previous conversion completes */ = ADC_FLAG_IS_CONTINOUS_CONVERSION
-
-	};
 
 	/*! \details Returns an AdcInfo object associated with the ADC.
 	 *

@@ -11,6 +11,41 @@
 
 namespace hal {
 
+class I2CFlags {
+public:
+	enum flags {
+		SET_MASTER /*! Operate as a master I2C bus */ = I2C_FLAG_SET_MASTER,
+		SET_SLAVE/*! Operate as a slave (ignored if master is set) */ = I2C_FLAG_SET_SLAVE,
+		IS_SLAVE_ACK_GENERAL_CALL /*! If slave operation, ack general call */ = I2C_FLAG_IS_SLAVE_ACK_GENERAL_CALL,
+		IS_PULLUP /*! Enable internal pullups if available (ignore otherwise) */ = I2C_FLAG_IS_PULLUP,
+		PREPARE_PTR_DATA /*! This prepares the driver to write the ptr then read/write data */ = I2C_FLAG_PREPARE_PTR_DATA,
+		IS_PTR_16 /*! This prepares the driver to write a 16-bit ptr then read/write data */ = I2C_FLAG_IS_PTR_16,
+		PREPARE_PTR /*! This will write the ptr value only without writing or reading any data. */ = I2C_FLAG_PREPARE_PTR,
+		PREPARE_DATA /*! This will read/write data without first writing the pointer information */ = I2C_FLAG_PREPARE_DATA,
+		IS_SLAVE_ADDR0 /*! If hardware supports multiple slave addrs, use the first slot (default) */ = I2C_FLAG_IS_SLAVE_ADDR0,
+		IS_SLAVE_ADDR1 /*! If hardware supports multiple slave addrs, use the second slot */ = I2C_FLAG_IS_SLAVE_ADDR1,
+		IS_SLAVE_ADDR2 /*! If hardware supports multiple slave addrs, use the third slot */ = I2C_FLAG_IS_SLAVE_ADDR2,
+		IS_SLAVE_ADDR3 /*! If hardware supports multiple slave addrs, use the fourth slot */ = I2C_FLAG_IS_SLAVE_ADDR3,
+		IS_SLAVE_PTR_8 /*! Use a 8-bit address pointer when accessing data (default) */ = I2C_FLAG_IS_SLAVE_PTR_8,
+		IS_SLAVE_PTR_16 /*! Use a 16-bit address pointer when accessing data (set automatically is size > 255) */ = I2C_FLAG_IS_SLAVE_PTR_16,
+		RESET /*! Reset the state of the I2C */ = I2C_FLAG_RESET,
+		IS_STRETCH_CLOCK = I2C_FLAG_STRETCH_CLOCK,
+		IS_NO_STOP /*! Don't issue a stop condition when complete (use with I2C_FLAG_PREPARE_DATA) */ = I2C_FLAG_IS_NO_STOP
+	};
+
+	enum error {
+		ERROR_NONE /*! No errors */ = I2C_ERROR_NONE,
+		ERROR_START /*! Error while starting */ = I2C_ERROR_START,
+		ERROR_WRITE /*! Error while writing */ = I2C_ERROR_WRITE,
+		ERROR_ACK /*! Ack Error (most common error for a mis-wired hardware) */ = I2C_ERROR_ACK,
+		ERROR_STOP /*! Error while stopping */ = I2C_ERROR_STOP,
+		ERROR_MASTER_ACK /*! The master could not create an ACK */ = I2C_ERROR_MASTER_ACK,
+		ERROR_BUS_BUSY /*! The Bus is busy (happens with multi-masters on bus) */ = I2C_ERROR_BUS_BUSY,
+		ERROR_LONG_SLEW = I2C_ERROR_LONG_SLEW,
+		ERROR_ARBITRATION_LOST /*! Arbitration lost on multi-master bus */ = I2C_ERROR_ARBITRATION_LOST
+	};
+};
+
 /*! \brief I2C Pin Assignment
  * \details This class allows simple manipulation of the i2c_pin_assignment_t.
  *
@@ -29,11 +64,11 @@ class I2CPinAssignment : public PinAssignment<i2c_pin_assignment_t>{};
  * \sa hal::I2C
  *
  */
-class I2CAttributes : public PinAssignmentPeriphAttributes<i2c_attr_t, i2c_pin_assignment_t> {
+class I2CAttributes : public PinAssignmentPeriphAttributes<i2c_attr_t, i2c_pin_assignment_t>, public I2CFlags {
 public:
 
 	I2CAttributes(){
-		set_flags(I2C_FLAG_SET_MASTER);
+		set_flags(SET_MASTER);
 		set_frequency(100000);
 	}
 
@@ -153,63 +188,10 @@ typedef I2CAttributes I2CAttr;
  * \sa hal::I2CAttr
  *
  */
-class I2C : public Periph<i2c_info_t, i2c_attr_t, I2CAttributes, 'i'> {
+class I2C : public Periph<i2c_info_t, i2c_attr_t, I2CAttributes, 'i'>, public I2CFlags {
 public:
 	/*! \details Constructs an I2C object using the specified port. */
 	I2C(port_t port);
-
-	enum i2c_error {
-		ERROR_NONE /*! No errors */ = I2C_ERROR_NONE,
-		ERROR_START /*! Error while starting */ = I2C_ERROR_START,
-		ERROR_WRITE /*! Error while writing */ = I2C_ERROR_WRITE,
-		ERROR_ACK /*! Ack Error (most common error for a mis-wired hardware) */ = I2C_ERROR_ACK,
-		ERROR_STOP /*! Error while stopping */ = I2C_ERROR_STOP,
-		ERROR_MASTER_ACK /*! The master could not create an ACK */ = I2C_ERROR_MASTER_ACK,
-		ERROR_BUS_BUSY /*! The Bus is busy (happens with multi-masters on bus) */ = I2C_ERROR_BUS_BUSY,
-		ERROR_LONG_SLEW = I2C_ERROR_LONG_SLEW,
-		ERROR_ARBITRATION_LOST /*! Arbitration lost on multi-master bus */ = I2C_ERROR_ARBITRATION_LOST
-	};
-
-	enum i2c_flags {
-		/*! \cond */
-		FLAG_NONE = I2C_FLAG_NONE,
-		FLAG_SET_MASTER = I2C_FLAG_SET_MASTER,
-		FLAG_SET_SLAVE = I2C_FLAG_SET_SLAVE,
-		FLAG_IS_SLAVE_ACK_GENERAL_CALL = I2C_FLAG_IS_SLAVE_ACK_GENERAL_CALL,
-		FLAG_IS_PULLUP = I2C_FLAG_IS_PULLUP,
-		FLAG_PREPARE_PTR_DATA = I2C_FLAG_PREPARE_PTR_DATA,
-		FLAG_IS_PTR_16 = I2C_FLAG_IS_PTR_16,
-		FLAG_PREPARE_PTR = I2C_FLAG_PREPARE_PTR,
-		FLAG_PREPARE_DATA = I2C_FLAG_PREPARE_DATA,
-		FLAG_IS_SLAVE_ADDR0 = I2C_FLAG_IS_SLAVE_ADDR0,
-		FLAG_IS_SLAVE_ADDR1 = I2C_FLAG_IS_SLAVE_ADDR1,
-		FLAG_IS_SLAVE_ADDR2 = I2C_FLAG_IS_SLAVE_ADDR2,
-		FLAG_IS_SLAVE_ADDR3 = I2C_FLAG_IS_SLAVE_ADDR3,
-		FLAG_IS_SLAVE_PTR_8 = I2C_FLAG_IS_SLAVE_PTR_8,
-		FLAG_IS_SLAVE_PTR_16 = I2C_FLAG_IS_SLAVE_PTR_16,
-		FLAG_RESET = I2C_FLAG_RESET,
-		FLAG_STRETCH_CLOCK = I2C_FLAG_STRETCH_CLOCK,
-		FLAG_IS_NO_STOP = I2C_FLAG_IS_NO_STOP,
-		/*! \endcond */
-
-		SET_MASTER /*! Operate as a master I2C bus */ = I2C_FLAG_SET_MASTER,
-		SET_SLAVE/*! Operate as a slave (ignored if master is set) */ = I2C_FLAG_SET_SLAVE,
-		IS_SLAVE_ACK_GENERAL_CALL /*! If slave operation, ack general call */ = I2C_FLAG_IS_SLAVE_ACK_GENERAL_CALL,
-		IS_PULLUP /*! Enable internal pullups if available (ignore otherwise) */ = I2C_FLAG_IS_PULLUP,
-		PREPARE_PTR_DATA /*! This prepares the driver to write the ptr then read/write data */ = I2C_FLAG_PREPARE_PTR_DATA,
-		IS_PTR_16 /*! This prepares the driver to write a 16-bit ptr then read/write data */ = I2C_FLAG_IS_PTR_16,
-		PREPARE_PTR /*! This will write the ptr value only without writing or reading any data. */ = I2C_FLAG_PREPARE_PTR,
-		PREPARE_DATA /*! This will read/write data without first writing the pointer information */ = I2C_FLAG_PREPARE_DATA,
-		IS_SLAVE_ADDR0 /*! If hardware supports multiple slave addrs, use the first slot (default) */ = I2C_FLAG_IS_SLAVE_ADDR0,
-		IS_SLAVE_ADDR1 /*! If hardware supports multiple slave addrs, use the second slot */ = I2C_FLAG_IS_SLAVE_ADDR1,
-		IS_SLAVE_ADDR2 /*! If hardware supports multiple slave addrs, use the third slot */ = I2C_FLAG_IS_SLAVE_ADDR2,
-		IS_SLAVE_ADDR3 /*! If hardware supports multiple slave addrs, use the fourth slot */ = I2C_FLAG_IS_SLAVE_ADDR3,
-		IS_SLAVE_PTR_8 /*! Use a 8-bit address pointer when accessing data (default) */ = I2C_FLAG_IS_SLAVE_PTR_8,
-		IS_SLAVE_PTR_16 /*! Use a 16-bit address pointer when accessing data (set automatically is size > 255) */ = I2C_FLAG_IS_SLAVE_PTR_16,
-		RESET /*! Reset the state of the I2C */ = I2C_FLAG_RESET,
-		IS_STRETCH_CLOCK = I2C_FLAG_STRETCH_CLOCK,
-		IS_NO_STOP /*! Don't issue a stop condition when complete (use with I2C_FLAG_PREPARE_DATA) */ = I2C_FLAG_IS_NO_STOP
-	};
 
 
 	/*! \details Prepares an I2C transaction.
@@ -225,7 +207,7 @@ public:
 	 * - FLAG_PREPARE_DATA
 	 *
 	 */
-	int prepare(u8 slave_addr, u32 o_flags = FLAG_PREPARE_PTR_DATA) const;
+	int prepare(u8 slave_addr, u32 o_flags = PREPARE_PTR_DATA) const;
 
 	/*! \details Resets the I2C bus state. */
 	int reset() const;

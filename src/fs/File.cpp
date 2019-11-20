@@ -235,7 +235,7 @@ bool File::exists(
 	File f(driver);
 #else
 bool File::exists(
-		const SourceFilePath path
+		const ImplicitSourceFilePath path
 		){
 	File f;
 #endif
@@ -253,7 +253,7 @@ Stat File::get_info(
 		){
 #else
 Stat File::get_info(
-		const SourceFilePath path
+		const ImplicitSourceFilePath path
 		){
 #endif
 #if defined __link
@@ -263,7 +263,7 @@ Stat File::get_info(
 #else
 	struct stat stat;
 	memset(&stat, 0, sizeof(stat));
-	File::stat(path, stat);
+	File::stat(SourceFilePath(path.argument()), stat);
 #endif
 
 	return Stat(stat);

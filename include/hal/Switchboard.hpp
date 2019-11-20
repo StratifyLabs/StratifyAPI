@@ -12,6 +12,27 @@ namespace hal {
 
 class Switchboard;
 
+class SwitchboardFlags {
+public:
+	enum flags {
+		CONNECT /*! Connect Flag */ = SWITCHBOARD_FLAG_CONNECT,
+		DISCONNECT /*! Disconnect Flag */ = SWITCHBOARD_FLAG_DISCONNECT,
+		IS_PERSISTENT /*! Is Persistent Flag */ = SWITCHBOARD_FLAG_IS_PERSISTENT,
+		IS_FIXED_SIZE /*! Is Fixed Size Flag */ = 0,
+		IS_CONNECTED /*! Connection is connected and running (otherwise IS_ERROR, IS_CANCELED, or IS_DESTROYED) */ = SWITCHBOARD_FLAG_IS_CONNECTED,
+		IS_ERROR /*! Stopped because of an error */ = SWITCHBOARD_FLAG_IS_ERROR,
+		IS_CANCELED /*! Stopped because an operation was canceled */ = SWITCHBOARD_FLAG_IS_CANCELED,
+		IS_DESTROYED /*! Stopped because the connection was destroyed */ = SWITCHBOARD_FLAG_IS_DESTROYED,
+		IS_FILL_ZERO /*! Fill output with zeros if no input data is available */ = SWITCHBOARD_FLAG_IS_FILL_ZERO,
+		IS_INPUT_NON_BLOCKING /*! Execute input transactions as non-blocking */ = SWITCHBOARD_FLAG_IS_INPUT_NON_BLOCKING,
+		IS_OUTPUT_NON_BLOCKING /*! Execute input transactions as non-blocking */ = SWITCHBOARD_FLAG_IS_OUTPUT_NON_BLOCKING,
+		IS_FILL_LAST_8 /*! Fill output with last byte of most recent packet */ = SWITCHBOARD_FLAG_IS_FILL_LAST_8,
+		IS_FILL_LAST_16 /*! Fill output with last 16-bit word of most recent packet */ = SWITCHBOARD_FLAG_IS_FILL_LAST_16,
+		IS_FILL_LAST_32 /*! Fill output with last 32-bit word of most recent packet */ = SWITCHBOARD_FLAG_IS_FILL_LAST_32,
+		IS_FILL_LAST_64 /*! Fill output with last 64-bit word of most recent packet */ = SWITCHBOARD_FLAG_IS_FILL_LAST_64
+	};
+};
+
 /*! \brief Switchboard Terminal Class
  *
  * \details A Switchboard terminal defines
@@ -23,7 +44,7 @@ class Switchboard;
  * be written.
  *
  */
-class SwitchboardTerminal : public api::InfoObject {
+class SwitchboardTerminal : public api::InfoObject, public SwitchboardFlags {
 public:
 
 	/*!
@@ -80,7 +101,7 @@ private:
 /*! \brief Switchboard Connection Class
  *
  */
-class SwitchboardConnection : public api::InfoObject {
+class SwitchboardConnection : public api::InfoObject, public SwitchboardFlags {
 public:
 
 	/*! \details Constructs a new empty connection. */
@@ -147,22 +168,22 @@ public:
 
 	/*! \details Returns true if the connection has stopped on an error. */
 	bool is_error() const {
-		return (o_flags() & SWITCHBOARD_FLAG_IS_ERROR) != 0;
+		return (o_flags() & IS_ERROR) != 0;
 	}
 
 	/*! \details Returns true if the connection stopped because an operation was canceled. */
 	bool is_canceled() const {
-		return (o_flags() & SWITCHBOARD_FLAG_IS_CANCELED) != 0;
+		return (o_flags() & IS_CANCELED) != 0;
 	}
 
 	/*! \details Returns true if the connection has been destroyed. */
 	bool is_destroyed() const {
-		return (o_flags() & SWITCHBOARD_FLAG_IS_DESTROYED) != 0;
+		return (o_flags() & IS_DESTROYED) != 0;
 	}
 
 	/*! \details Returns true if the connection is currently running. */
 	bool is_connected() const {
-		return (o_flags() & SWITCHBOARD_FLAG_IS_CONNECTED) != 0;
+		return (o_flags() & IS_CONNECTED) != 0;
 	}
 
 	/*! \details Returns the error number associated with the is_stopped_on_error() condition. */
@@ -186,7 +207,7 @@ private:
 /*! \brief Switchboard Connection Class
  *
  */
-class SwitchboardInfo : public api::InfoObject {
+class SwitchboardInfo : public api::InfoObject, public SwitchboardFlags {
 public:
 	SwitchboardInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 
@@ -226,30 +247,11 @@ private:
  *
  *
  */
-class Switchboard : public Device {
+class Switchboard : public Device, public SwitchboardFlags {
 public:
 
 	/*! \details Constructs a new object. */
 	Switchboard();
-
-	enum switchboard_flags {
-		CONNECT /*! Connect Flag */ = SWITCHBOARD_FLAG_CONNECT,
-		DISCONNECT /*! Disconnect Flag */ = SWITCHBOARD_FLAG_DISCONNECT,
-		IS_PERSISTENT /*! Is Persistent Flag */ = SWITCHBOARD_FLAG_IS_PERSISTENT,
-		IS_FIXED_SIZE /*! Is Fixed Size Flag */ = 0,
-		IS_CONNECTED /*! Connection is connected and running (otherwise IS_ERROR, IS_CANCELED, or IS_DESTROYED) */ = SWITCHBOARD_FLAG_IS_CONNECTED,
-		IS_ERROR /*! Stopped because of an error */ = SWITCHBOARD_FLAG_IS_ERROR,
-		IS_CANCELED /*! Stopped because an operation was canceled */ = SWITCHBOARD_FLAG_IS_CANCELED,
-		IS_DESTROYED /*! Stopped because the connection was destroyed */ = SWITCHBOARD_FLAG_IS_DESTROYED,
-		IS_FILL_ZERO /*! Fill output with zeros if no input data is available */ = SWITCHBOARD_FLAG_IS_FILL_ZERO,
-		IS_INPUT_NON_BLOCKING /*! Execute input transactions as non-blocking */ = SWITCHBOARD_FLAG_IS_INPUT_NON_BLOCKING,
-		IS_OUTPUT_NON_BLOCKING /*! Execute input transactions as non-blocking */ = SWITCHBOARD_FLAG_IS_OUTPUT_NON_BLOCKING,
-		IS_FILL_LAST_8 /*! Fill output with last byte of most recent packet */ = SWITCHBOARD_FLAG_IS_FILL_LAST_8,
-		IS_FILL_LAST_16 /*! Fill output with last 16-bit word of most recent packet */ = SWITCHBOARD_FLAG_IS_FILL_LAST_16,
-		IS_FILL_LAST_32 /*! Fill output with last 32-bit word of most recent packet */ = SWITCHBOARD_FLAG_IS_FILL_LAST_32,
-		IS_FILL_LAST_64 /*! Fill output with last 64-bit word of most recent packet */ = SWITCHBOARD_FLAG_IS_FILL_LAST_64
-	};
-
 
 	/*!
 	 * \details Opens a switch board

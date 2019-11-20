@@ -11,6 +11,21 @@
 
 namespace hal {
 
+class UartFlags {
+public:
+	enum flags {
+		SET_LINE_CODING_DEFAULT /*! See \ref UART_FLAG_SET_LINE_CODING_DEFAULT */ = UART_FLAG_SET_LINE_CODING_DEFAULT,
+		SET_LINE_CODING /*! See \ref UART_FLAG_SET_LINE_CODING */ = UART_FLAG_SET_LINE_CODING,
+		IS_STOP1 /*! See \ref UART_FLAG_IS_STOP1 */ = UART_FLAG_IS_STOP1,
+		IS_STOP2 /*! See \ref UART_FLAG_IS_STOP2 */ = UART_FLAG_IS_STOP2,
+		IS_STOP0_5 /*! See \ref UART_FLAG_IS_STOP0_5 */ = UART_FLAG_IS_STOP0_5,
+		IS_STOP1_5 /*! See \ref UART_FLAG_IS_STOP1_5 */ = UART_FLAG_IS_STOP1_5,
+		IS_PARITY_NONE /*! See \ref UART_FLAG_IS_PARITY_NONE */ = UART_FLAG_IS_PARITY_NONE,
+		IS_PARITY_ODD /*! See \ref UART_FLAG_IS_PARITY_ODD */ = UART_FLAG_IS_PARITY_ODD,
+		IS_PARITY_EVEN /*! See \ref UART_FLAG_IS_PARITY_EVEN */ = UART_FLAG_IS_PARITY_EVEN,
+	};
+};
+
 /*! \brief UART Pin Assignment
  * \details This class allows simple manipulation of the uart_pin_assignment_t.
  *
@@ -51,7 +66,8 @@ class UartPinAssignment : public PinAssignment<uart_pin_assignment_t>{};
  * \sa hal::Uart
  *
  */
-class UartAttributes : public PinAssignmentPeriphAttributes<uart_attr_t, uart_pin_assignment_t> {
+class UartAttributes : public PinAssignmentPeriphAttributes<uart_attr_t, uart_pin_assignment_t>,
+		public UartFlags {
 public:
 
 	/*! \details Constructs UART attributes with default settings.
@@ -223,7 +239,8 @@ private:
  * \sa hal::UartPinAssignment
  * \sa hal::UartAttr
  */
-class Uart : public Periph<uart_info_t, uart_attr_t, UartAttributes, UART_IOC_IDENT_CHAR> {
+class Uart : public Periph<uart_info_t, uart_attr_t, UartAttributes, UART_IOC_IDENT_CHAR>,
+		public UartFlags{
 public:
 
 	/*! \details Constructs a new Uart object.
@@ -231,29 +248,6 @@ public:
 	 * @param port The port to use (Zero is always the first port)
 	 */
 	Uart(port_t port);
-
-	enum uart_flags {
-		/*! \cond */
-		FLAG_SET_LINE_CODING = UART_FLAG_SET_LINE_CODING,
-		FLAG_IS_STOP1 = UART_FLAG_IS_STOP1,
-		FLAG_IS_STOP2 = UART_FLAG_IS_STOP2,
-		FLAG_IS_STOP0_5 = UART_FLAG_IS_STOP0_5,
-		FLAG_IS_STOP1_5 = UART_FLAG_IS_STOP1_5,
-		FLAG_IS_PARITY_NONE = UART_FLAG_IS_PARITY_NONE,
-		FLAG_IS_PARITY_ODD = UART_FLAG_IS_PARITY_ODD,
-		FLAG_IS_PARITY_EVEN = UART_FLAG_IS_PARITY_EVEN,
-		/*! \endcond */
-
-		SET_LINE_CODING_DEFAULT /*! See \ref UART_FLAG_SET_LINE_CODING_DEFAULT */ = UART_FLAG_SET_LINE_CODING_DEFAULT,
-		SET_LINE_CODING /*! See \ref UART_FLAG_SET_LINE_CODING */ = UART_FLAG_SET_LINE_CODING,
-		IS_STOP1 /*! See \ref UART_FLAG_IS_STOP1 */ = UART_FLAG_IS_STOP1,
-		IS_STOP2 /*! See \ref UART_FLAG_IS_STOP2 */ = UART_FLAG_IS_STOP2,
-		IS_STOP0_5 /*! See \ref UART_FLAG_IS_STOP0_5 */ = UART_FLAG_IS_STOP0_5,
-		IS_STOP1_5 /*! See \ref UART_FLAG_IS_STOP1_5 */ = UART_FLAG_IS_STOP1_5,
-		IS_PARITY_NONE /*! See \ref UART_FLAG_IS_PARITY_NONE */ = UART_FLAG_IS_PARITY_NONE,
-		IS_PARITY_ODD /*! See \ref UART_FLAG_IS_PARITY_ODD */ = UART_FLAG_IS_PARITY_ODD,
-		IS_PARITY_EVEN /*! See \ref UART_FLAG_IS_PARITY_EVEN */ = UART_FLAG_IS_PARITY_EVEN,
-	};
 
 	/*! \details Reads a single byte (if available from the UART).  Upon
 	 * success, the byte is written to the value pointed to by \a c.

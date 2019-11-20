@@ -98,10 +98,10 @@ public:
 #else
 	File();
 	static bool exists(
-			const arg::SourceFilePath path
+			const arg::ImplicitSourceFilePath path
 			);
 	static Stat get_info(
-			const arg::SourceFilePath path
+			const arg::ImplicitSourceFilePath path
 			);
 	static Stat get_info(
 			const arg::FileDescriptor fd
@@ -430,7 +430,7 @@ public:
 	}
 
 	int read(
-			arg::DestinationData data
+			arg::ImplicitDestinationData data
 			) const {
 		int result = read(
 					arg::DestinationBuffer(data.argument().to_void()),
@@ -472,7 +472,7 @@ public:
 	}
 
 	int write(
-			const arg::SourceData & data
+			const arg::ImplicitSourceData & data
 			) const {
 		return write(
 					arg::SourceBuffer(data.argument().to_const_void()),

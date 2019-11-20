@@ -10,6 +10,24 @@
 
 namespace hal {
 
+class SpiFlags {
+public:
+	enum flags {
+		IS_FORMAT_SPI/*! See \ref SPI_FLAG_IS_FORMAT_SPI */ = SPI_FLAG_IS_FORMAT_SPI,
+		IS_FORMAT_TI /*! See \ref SPI_FLAG_IS_FORMAT_TI */ = SPI_FLAG_IS_FORMAT_TI,
+		IS_FORMAT_MICROWIRE /*! See \ref SPI_FLAG_IS_FORMAT_MICROWIRE */ = SPI_FLAG_IS_FORMAT_MICROWIRE,
+		IS_MODE0 /*! See \ref SPI_FLAG_IS_MODE0 */ = SPI_FLAG_IS_MODE0,
+		IS_MODE1 /*! See \ref SPI_FLAG_IS_MODE1 */ = SPI_FLAG_IS_MODE1,
+		IS_MODE2 /*! See \ref SPI_FLAG_IS_MODE2 */ = SPI_FLAG_IS_MODE2,
+		IS_MODE3 /*! See \ref SPI_FLAG_IS_MODE3 */ = SPI_FLAG_IS_MODE3,
+		SET_MASTER /*! See \ref SPI_FLAG_SET_MASTER */ = SPI_FLAG_SET_MASTER,
+		SET_SLAVE /*! See \ref SPI_FLAG_SET_SLAVE */ = SPI_FLAG_SET_SLAVE,
+		IS_FULL_DUPLEX /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */ = SPI_FLAG_IS_FULL_DUPLEX,
+		IS_HALF_DUPLEX /*! See \ref SPI_FLAG_IS_HALF_DUPLEX */ = SPI_FLAG_IS_HALF_DUPLEX,
+	};
+};
+
+
 /*! \brief SPI Pin Assignment
  * \details This class allows simple manipulation of the spi_pin_assignment_t.
  *
@@ -17,11 +35,11 @@ namespace hal {
 class SpiPinAssignment : public PinAssignment<spi_pin_assignment_t>{};
 
 
-class SpiAttributes : public PinAssignmentPeriphAttributes<spi_attr_t, spi_pin_assignment_t> {
+class SpiAttributes : public PinAssignmentPeriphAttributes<spi_attr_t, spi_pin_assignment_t>, public SpiFlags {
 public:
 
 	SpiAttributes(){
-		set_flags(SPI_FLAG_SET_MASTER | SPI_FLAG_IS_FORMAT_SPI | SPI_FLAG_IS_MODE0 | SPI_FLAG_IS_HALF_DUPLEX);
+		set_flags(SET_MASTER | IS_FORMAT_SPI | IS_MODE0 | IS_HALF_DUPLEX);
 		set_frequency(1000000);
 		set_width(8);
 	}
@@ -78,39 +96,11 @@ private:
  * }
  * \endcode
  */
-class Spi : public Periph<spi_info_t, spi_attr_t, SpiAttributes, 's'>{
+class Spi : public Periph<spi_info_t, spi_attr_t, SpiAttributes, 's'>, public SpiFlags {
 public:
 
 	/*! \details Constructs a SPI object using \a port. */
 	Spi(port_t port);
-
-	enum spi_flags {
-		/*! \cond */
-		FLAG_IS_FORMAT_SPI = SPI_FLAG_IS_FORMAT_SPI,
-		FLAG_IS_FORMAT_TI = SPI_FLAG_IS_FORMAT_TI,
-		FLAG_IS_FORMAT_MICROWIRE = SPI_FLAG_IS_FORMAT_MICROWIRE,
-		FLAG_IS_MODE0 = SPI_FLAG_IS_MODE0,
-		FLAG_IS_MODE1 = SPI_FLAG_IS_MODE1,
-		FLAG_IS_MODE2 = SPI_FLAG_IS_MODE2,
-		FLAG_IS_MODE3 = SPI_FLAG_IS_MODE3,
-		FLAG_SET_MASTER = SPI_FLAG_SET_MASTER,
-		FLAG_SET_SLAVE = SPI_FLAG_SET_SLAVE,
-		FLAG_IS_FULL_DUPLEX = SPI_FLAG_IS_FULL_DUPLEX,
-		FLAG_IS_HALF_DUPLEX = SPI_FLAG_IS_HALF_DUPLEX,
-		/*! \endcond */
-
-		IS_FORMAT_SPI/*! See \ref SPI_FLAG_IS_FORMAT_SPI */ = SPI_FLAG_IS_FORMAT_SPI,
-		IS_FORMAT_TI /*! See \ref SPI_FLAG_IS_FORMAT_TI */ = SPI_FLAG_IS_FORMAT_TI,
-		IS_FORMAT_MICROWIRE /*! See \ref SPI_FLAG_IS_FORMAT_MICROWIRE */ = SPI_FLAG_IS_FORMAT_MICROWIRE,
-		IS_MODE0 /*! See \ref SPI_FLAG_IS_MODE0 */ = SPI_FLAG_IS_MODE0,
-		IS_MODE1 /*! See \ref SPI_FLAG_IS_MODE1 */ = SPI_FLAG_IS_MODE1,
-		IS_MODE2 /*! See \ref SPI_FLAG_IS_MODE2 */ = SPI_FLAG_IS_MODE2,
-		IS_MODE3 /*! See \ref SPI_FLAG_IS_MODE3 */ = SPI_FLAG_IS_MODE3,
-		SET_MASTER /*! See \ref SPI_FLAG_SET_MASTER */ = SPI_FLAG_SET_MASTER,
-		SET_SLAVE /*! See \ref SPI_FLAG_SET_SLAVE */ = SPI_FLAG_SET_SLAVE,
-		IS_FULL_DUPLEX /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */ = SPI_FLAG_IS_FULL_DUPLEX,
-		IS_HALF_DUPLEX /*! See \ref SPI_FLAG_IS_HALF_DUPLEX */ = SPI_FLAG_IS_HALF_DUPLEX,
-	};
 
 	/*! \details swap a byte on the SPI bus */
 	int swap(int byte) const;

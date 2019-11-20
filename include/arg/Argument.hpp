@@ -322,6 +322,7 @@ ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitCapacity, u32, Capacity);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceBuffer, const void*, SourceBuffer);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitDestinationBuffer,	void*, DestinationBuffer);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceData, const var::DataReference &, SourceData);
+ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitDestinationData, const var::DataReference &, DestinationData);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitSourceFile, const fs::File&, SourceFile);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitDestinationFile,	fs::File&, DestinationFile);
 ARG_DEFINE_IMPLICIT_ARGUMENT(ImplicitLength, u32, Length);

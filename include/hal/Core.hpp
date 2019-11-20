@@ -11,86 +11,29 @@
 
 namespace hal {
 
-/*!
- * \brief The Core Info class
- */
-class CoreInfo : public api::InfoObject {
-public:
-	/*! \details Constructs an empty Core Info object. */
-	CoreInfo(){ memset(&m_info, 0, sizeof(m_info)); }
-
-	/*! \details Constructs a Core Info object from a core_info_t data structure. */
-	CoreInfo(const core_info_t & info){
-		m_info = info;
-	}
-
-	/*! \details Returns the events that are supported by the core. */
-	u32 o_events() const { return m_info.o_events; }
-	/*! \details Returns the flags that are supported by the core. */
-	u32 o_flags() const { return m_info.o_flags; }
-
-	bool is_software_reset() const {
-		return (o_flags() & (CORE_FLAG_IS_RESET_SOFTWARE|CORE_FLAG_IS_RESET_SYSTEM)) != 0;
-	}
-
-	bool is_power_on_reset() const {
-		return (o_flags() & CORE_FLAG_IS_RESET_POR) != 0;
-	}
-
-	bool is_external_reset() const {
-		return (o_flags() & CORE_FLAG_IS_RESET_EXTERNAL) != 0;
-	}
-
-	bool is_watchdog_timer_reset() const {
-		return (o_flags() & CORE_FLAG_IS_RESET_WDT) != 0;
-	}
-
-	bool is_brown_out_reset() const {
-		return (o_flags() & CORE_FLAG_IS_RESET_BOR) != 0;
-	}
-
-	/*! \details Returns the serial number of the MCU. */
-	sys::SerialNumber serial_number() const{ return sys::SerialNumber(m_info.serial); }
-
-private:
-	core_info_t m_info;
-};
-
-class CoreAttributes : public PeriphAttributes<core_attr_t> {
+class CoreFlags {
 public:
 
-private:
-};
-
-/*! \brief Core Class
- * \details This is the Core class.  It is used to
- * access core MCU information such as clock speed and
- * to adjust interrupt priorities.
- *
- * Here is an example of how to read the MCU serial number:
- *
- * \code
- * #include <sapi/hal.hpp>
- * #include <cstdio>
- *
- * int main(int argc, char * argv[]){
- * 	int i;
- * 	Core core(0);
- * 	core_attr_t attr;
- * 	core.open();
- * 	core.get_attr(&attr);
- * 	printf("Serial Number is:");
- * 	for(i=3; i >= 0; i--){
- * 		printf("%X", attr.serial_number[i]);
- * 	}
- * 	printf("\n");
- * 	core.close(); //core is never "powered-down" but this frees the file descriptor
- * }
- * \endcode
- *
- */
-class Core : public Periph<core_info_t, core_attr_t, CoreAttributes, CORE_IOC_IDENT_CHAR> {
-public:
+	enum flags {
+		IS_RESET_SOFTWARE = CORE_FLAG_IS_RESET_SOFTWARE /*! Software Reset (default if hardware reset cannot be determined) */,
+		IS_RESET_POR = CORE_FLAG_IS_RESET_POR /*! Power on Reset */,
+		IS_RESET_EXTERNAL = CORE_FLAG_IS_RESET_EXTERNAL /*! External Reset signal */,
+		IS_RESET_WDT = CORE_FLAG_IS_RESET_WDT /*! Watchdog Timer Reset */,
+		IS_RESET_BOR = CORE_FLAG_IS_RESET_BOR /*! Brown Out Reset */,
+		IS_RESET_SYSTEM = CORE_FLAG_IS_RESET_SYSTEM /*! Software System Reset */,
+		SET_CLKOUT = CORE_FLAG_SET_CLKOUT /*! Use the CPU Clock */,
+		IS_CLKOUT_CPU = CORE_FLAG_IS_CLKOUT_CPU /*! Use the CPU Clock */,
+		IS_CLKOUT_MAIN_OSC = CORE_FLAG_IS_CLKOUT_MAIN_OSC /*! Use the Main Oscillator */,
+		IS_CLKOUT_INTERNAL_OSC = CORE_FLAG_IS_CLKOUT_INTERNAL_OSC /*! Use the Internal Oscillator */,
+		IS_CLKOUT_USB = CORE_FLAG_IS_CLKOUT_USB /*! Use the USB Clock */,
+		IS_CLKOUT_RTC = CORE_FLAG_IS_CLKOUT_RTC /*! Use the RTC Clock */,
+		EXEC_SLEEP = CORE_FLAG_EXEC_SLEEP /*! Sleep */,
+		EXEC_DEEPSLEEP = CORE_FLAG_EXEC_DEEPSLEEP /*! Deep sleep (preserve SRAM) */,
+		EXEC_DEEPSLEEP_STOP = CORE_FLAG_EXEC_DEEPSLEEP_STOP /*! Deep sleep (preserve SRAM, stop clocks) */,
+		EXEC_DEEPSLEEP_STANDBY = CORE_FLAG_EXEC_DEEPSLEEP_STANDBY /*! Turn the device off (lose SRAM) */,
+		EXEC_RESET = CORE_FLAG_EXEC_RESET /*! Set this flag with I_CORE_SETATTR to reset the device */,
+		EXEC_INVOKE_BOOTLOADER = CORE_FLAG_EXEC_INVOKE_BOOTLOADER /*! Set this flag with I_CORE_SETATTR to reset the device and start the bootloader */
+	};
 
 	/*! \details Core functional types */
 	enum func {
@@ -129,6 +72,90 @@ public:
 		NMI /*! Non-maskable Interrupt */ = CORE_PERIPH_NMI,
 		TRACE /*! Trace data */ = CORE_PERIPH_TRACE,
 	};
+};
+
+/*!
+ * \brief The Core Info class
+ */
+class CoreInfo : public api::InfoObject, public CoreFlags {
+public:
+	/*! \details Constructs an empty Core Info object. */
+	CoreInfo(){ memset(&m_info, 0, sizeof(m_info)); }
+
+	/*! \details Constructs a Core Info object from a core_info_t data structure. */
+	CoreInfo(const core_info_t & info){
+		m_info = info;
+	}
+
+	/*! \details Returns the events that are supported by the core. */
+	u32 o_events() const { return m_info.o_events; }
+	/*! \details Returns the flags that are supported by the core. */
+	u32 o_flags() const { return m_info.o_flags; }
+
+	bool is_software_reset() const {
+		return (o_flags() & (IS_RESET_SOFTWARE|IS_RESET_SYSTEM)) != 0;
+	}
+
+	bool is_power_on_reset() const {
+		return (o_flags() & IS_RESET_POR) != 0;
+	}
+
+	bool is_external_reset() const {
+		return (o_flags() & IS_RESET_EXTERNAL) != 0;
+	}
+
+	bool is_watchdog_timer_reset() const {
+		return (o_flags() & IS_RESET_WDT) != 0;
+	}
+
+	bool is_brown_out_reset() const {
+		return (o_flags() & IS_RESET_BOR) != 0;
+	}
+
+	/*! \details Returns the serial number of the MCU. */
+	sys::SerialNumber serial_number() const{ return sys::SerialNumber(m_info.serial); }
+
+private:
+	core_info_t m_info;
+};
+
+class CoreAttributes : public PeriphAttributes<core_attr_t>, public CoreFlags {
+public:
+
+private:
+};
+
+/*! \brief Core Class
+ * \details This is the Core class.  It is used to
+ * access core MCU information such as clock speed and
+ * to adjust interrupt priorities.
+ *
+ * Here is an example of how to read the MCU serial number:
+ *
+ * \code
+ * #include <sapi/hal.hpp>
+ * #include <cstdio>
+ *
+ * int main(int argc, char * argv[]){
+ * 	int i;
+ * 	Core core(0);
+ * 	core_attr_t attr;
+ * 	core.open();
+ * 	core.get_attr(&attr);
+ * 	printf("Serial Number is:");
+ * 	for(i=3; i >= 0; i--){
+ * 		printf("%X", attr.serial_number[i]);
+ * 	}
+ * 	printf("\n");
+ * 	core.close(); //core is never "powered-down" but this frees the file descriptor
+ * }
+ * \endcode
+ *
+ */
+class Core :
+		public Periph<core_info_t, core_attr_t, CoreAttributes, CORE_IOC_IDENT_CHAR>,
+		public CoreFlags {
+public:
 
 	/*! \details Contructs a new core object using the specified port.
 	 *
