@@ -222,7 +222,7 @@ public:
 	 *
 	 */
 	static int remove(
-			const arg::SourceFilePath path
+			const arg::ImplicitSourceFilePath path
 #if defined __link
 			, arg::LinkDriver driver = arg::LinkDriver(0)
 #endif
@@ -272,7 +272,7 @@ public:
 	 * @return Zero on success
 	 */
 	virtual int open(
-			const arg::FilePath & name,
+			const arg::ImplicitFilePath & name,
 			const OpenFlags & flags = OpenFlags::read_write()
 			);
 
@@ -287,7 +287,7 @@ public:
 	 * file will be closed.
 	 *
 	 */
-	int open(const arg::FilePath & name,
+	int open(const arg::ImplicitFilePath & name,
 				const OpenFlags & flags,
 				const Permissions & permissions);
 
@@ -775,7 +775,7 @@ public:
 	 *
 	 */
 	int open(
-			const arg::FilePath & path,
+			const arg::ImplicitFilePath & path,
 			const OpenFlags & flags
 			){
 		MCU_UNUSED_ARGUMENT(path);
@@ -871,7 +871,7 @@ public:
 	 *
 	 */
 	int open(
-			const arg::FilePath & path,
+			const arg::ImplicitFilePath & path,
 			const OpenFlags & flags
 			){
 		MCU_UNUSED_ARGUMENT(path);
@@ -962,7 +962,7 @@ public:
 	 * functionality.
 	 *
 	 */
-	int open(const var::ConstString & name, const OpenFlags & flags);
+	int open(const arg::ImplicitFilePath name, const OpenFlags & flags);
 
 	/*! \details Reimplements fs::File::close() to have no
 	 * functionality.

@@ -35,19 +35,21 @@ File::~File(){
 	}
 }
 
-int File::open(const arg::FilePath & path, const fs::OpenFlags & flags){
+int File::open(
+		const arg::ImplicitFilePath & path,
+		const fs::OpenFlags & flags){
 	return open(path, flags, Permissions());
 }
 
 #if !defined __link
 int File::remove(
-		const arg::SourceFilePath path
+		const arg::ImplicitSourceFilePath path
 		){
 	return ::remove(path.argument().cstring());
 }
 #else
 int File::remove(
-		const arg::SourceFilePath path,
+		const arg::ImplicitSourceFilePath path,
 		arg::LinkDriver driver
 		){
 	return link_unlink(
@@ -59,8 +61,8 @@ int File::remove(
 
 
 #if !defined __link
-int File::copy(const SourceFilePath source_path,
-					const DestinationFilePath dest_path
+int File::copy(const arg::SourceFilePath source_path,
+					const arg::DestinationFilePath dest_path
 					){
 	File source;
 	File dest;
@@ -294,7 +296,11 @@ Stat File::get_info(const FileDescriptor fd){
 	return Stat(stat);
 }
 
-int File::open(const arg::FilePath & name, const fs::OpenFlags & flags, const Permissions & permissions){
+int File::open(
+		const arg::ImplicitFilePath & name,
+		const fs::OpenFlags & flags,
+		const Permissions & permissions
+		){
 	if( m_fd != -1 ){
 		close(); //close first so the fileno can be changed
 	}
@@ -868,7 +874,7 @@ int DataReferenceFile::seek(const Location location, enum whence whence) const {
 	return m_location;
 }
 
-int NullFile::open(const var::ConstString & name, const OpenFlags & flags){
+int NullFile::open(const ImplicitFilePath name, const OpenFlags & flags){
 	MCU_UNUSED_ARGUMENT(name);
 	MCU_UNUSED_ARGUMENT(flags);
 	return 0;
