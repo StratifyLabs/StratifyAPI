@@ -63,14 +63,14 @@ void ArcProgress::draw_to_scale(const DrawingScaledAttr & attr){
 		xf_inner = rx_inner * cosf(theta);
 		yf_inner = ry_inner * sinf(theta);
 
-		arc.set(xf, yf);
+		arc.set(Point::X(xf), Point::Y(yf));
 		arc = arc + center;
 
 		if( arc.x() > x_max ){
 			x_max = arc.x();
 		}
 
-		arc_inner.set(xf_inner, yf_inner);
+		arc_inner.set(Point::X(xf_inner), Point::Y(yf_inner));
 		arc_inner = arc_inner + center;
 
 		if( i == 0 ){
@@ -95,7 +95,7 @@ void ArcProgress::draw_to_scale(const DrawingScaledAttr & attr){
 		theta = (two_pi * progress / (2*points) - half_pi) + offset;
 		xf = ((rx + rx_inner)/2) * cosf(theta);
 		yf = ((ry + ry_inner)/2)* sinf(theta);
-		arc.set(xf, yf);
+		arc.set(Point::X(xf), Point::Y(yf));
 		arc = arc + center;
 		bounds = attr.region();
 		//attr.bitmap().draw_pixel(arc);

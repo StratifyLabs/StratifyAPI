@@ -3,12 +3,17 @@
 
 #include "../api/CryptoObject.hpp"
 #include "../arg/Argument.hpp"
-#include "../var/Data.hpp"
+#include "../var/Reference.hpp"
 
 namespace crypto {
 
 class Random : public api::CryptoWorkObject {
 public:
+
+	using SourceReference = var::Reference::Source;
+	using DestinationReference = var::Reference::Destination;
+
+
 	Random();
 	~Random();
 
@@ -16,11 +21,11 @@ public:
 	void finalize();
 
 	int seed(
-			arg::SourceData source_data
+			const var::Reference & source_data
 			);
 
 	int random(
-			arg::DestinationData destination_data
+			const var::Reference & destination_data
 			);
 
 

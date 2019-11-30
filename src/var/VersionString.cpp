@@ -23,25 +23,25 @@ VersionString & VersionString::operator << (u32 value){
 
 u32 VersionString::to_bcd() const {
 	Tokenizer tokens(
-				arg::TokenEncodedString(m_version),
-				arg::TokenDelimeters(".")
+				var::Tokenizer::EncodedString(m_version),
+				var::Tokenizer::Delimeters(".")
 				);
 	u32 result = 0;
 	u32 token_max = tokens.count() < 3 ? tokens.count() : 3;
 	for(u32 i = 0; i < token_max; i++){
-		result |= (tokens.at(i).to_integer() & 0xff) << (8*(2-i));
+		result |= (String(tokens.at(i)).to_integer() & 0xff) << (8*(2-i));
 	}
 	return result;
 }
 
 int VersionString::compare(const VersionString & a, const VersionString & b){
 	Tokenizer a_tokens(
-				arg::TokenEncodedString(a.m_version),
-				arg::TokenDelimeters(".")
+				var::Tokenizer::EncodedString(a.m_version),
+				var::Tokenizer::Delimeters(".")
 				);
 	Tokenizer b_tokens(
-				arg::TokenEncodedString(b.m_version),
-				arg::TokenDelimeters(".")
+				var::Tokenizer::EncodedString(b.m_version),
+				var::Tokenizer::Delimeters(".")
 				);
 
 	if( a_tokens.count() > b_tokens.count() ){
@@ -54,10 +54,12 @@ int VersionString::compare(const VersionString & a, const VersionString & b){
 
 	//count is equal -- check the numbers
 	for(u32 i = 0; i < a_tokens.count(); i++){
-		if( a_tokens.at(i).to_integer() > b_tokens.at(i).to_integer() ){
+		if( String(a_tokens.at(i)).to_integer() >
+			 String(b_tokens.at(i)).to_integer() ){
 			return 1;
 		}
-		if( a_tokens.at(i).to_integer() < b_tokens.at(i).to_integer() ){
+		if( String(a_tokens.at(i)).to_integer() <
+			 String(b_tokens.at(i)).to_integer() ){
 			return -1;
 		}
 	}

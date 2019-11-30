@@ -12,14 +12,14 @@ bool Test::m_is_initialized = false;
 bool Test::m_all_test_result = true;
 u32 Test::m_all_test_duration_microseconds = 0;
 
-Test::Test(const arg::Name & name, Test * parent){
+Test::Test(const var::String & name, Test * parent){
 	//start a JSON object
 
 
 	if( !m_is_initialized ){
 		initialize(
-					arg::Name("unknown"),
-					arg::VersionEncodedString("0.0")
+					Name("unknown"),
+					VersionEncodedString("0.0")
 					);
 	}
 
@@ -35,7 +35,7 @@ Test::Test(const arg::Name & name, Test * parent){
 
 	m_test_result = true;
 
-	print("\"%s\": {\n", name.argument().cstring());
+	print("\"%s\": {\n", name.cstring());
 	increment_indent();
 
 	m_test_duration_microseconds = 0;
@@ -74,17 +74,17 @@ void Test::print_case_score(){
 void Test::execute(const sys::Cli & cli){
 	u32 o_flags = 0;
 
-	if( cli.get_option(arg::OptionName("api")) == "true" ){ o_flags |= EXECUTE_API; }
-	if( cli.get_option(arg::OptionName("stress")) == "true" ){ o_flags |= EXECUTE_STRESS; }
-	if( cli.get_option(arg::OptionName("performance")) == "true" ){ o_flags |= EXECUTE_PERFORMANCE; }
-	if( cli.get_option(arg::OptionName("additional")) == "true" ){ o_flags |= EXECUTE_ADDITIONAL; }
-	if( cli.get_option(arg::OptionName("all")) == "true" ){ o_flags |= EXECUTE_ALL; }
+	if( cli.get_option("api") == "true" ){ o_flags |= EXECUTE_API; }
+	if( cli.get_option("stress") == "true" ){ o_flags |= EXECUTE_STRESS; }
+	if( cli.get_option("performance") == "true" ){ o_flags |= EXECUTE_PERFORMANCE; }
+	if( cli.get_option("additional") == "true" ){ o_flags |= EXECUTE_ADDITIONAL; }
+	if( cli.get_option("all") == "true" ){ o_flags |= EXECUTE_ALL; }
 
 	execute(o_flags);
 }
 
 
-void Test::open_case(const var::ConstString & case_name){
+void Test::open_case(const var::String & case_name){
 	print("\"%s\": {\n", case_name.cstring());
 	increment_indent();
 	m_case_message_number = 0;
@@ -140,7 +140,7 @@ void Test::print_case_failed(const char * fmt, ...){
 	m_case_timer.resume();
 }
 
-void Test::print_case_message_with_key(const var::ConstString & key, const char * fmt, ...){
+void Test::print_case_message_with_key(const var::String & key, const char * fmt, ...){
 	m_case_timer.stop();
 	va_list args;
 	va_start (args, fmt);
@@ -149,16 +149,17 @@ void Test::print_case_message_with_key(const var::ConstString & key, const char 
 	m_case_timer.resume();
 }
 
-void Test::vprint_case_message(const var::ConstString & key, const char * fmt, va_list args){
+void Test::vprint_case_message(const var::String & key, const char * fmt, va_list args){
 	print("\"%s\": \"", key.cstring());
 	vprintf(fmt, args);
 	printf("\",\n");
 }
 
 void Test::initialize(
-		const arg::Name name,
-		const arg::VersionEncodedString version,
-		const arg::GitHash git_hash){
+		Name name,
+		VersionEncodedString version,
+		GitHash git_hash
+		){
 	m_is_initialized = true;
 	m_all_test_duration_microseconds = 0;
 

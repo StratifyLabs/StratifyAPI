@@ -6,7 +6,6 @@
 
 #include <ctime>
 #include "../api/ChronoObject.hpp"
-#include "../var/ConstString.hpp"
 
 namespace chrono {
 
@@ -338,7 +337,7 @@ public:
 	void set_time(time_t tm){ m_time = tm; }
 
 	/*! \details Gets the name of the month. */
-	const var::ConstString month_name() const;
+	const char * month_name() const;
 
 	/*! \details Returns the time value (number of seconds since epoch). */
 	time_t ctime() const { return m_time; }

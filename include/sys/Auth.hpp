@@ -5,6 +5,7 @@
 #include <sos/dev/auth.h>
 #include "../api/SysObject.hpp"
 #include "../var/String.hpp"
+#include "../fs/File.hpp"
 
 namespace sys {
 
@@ -16,7 +17,7 @@ public:
 		m_auth_token = auth_token;
 	}
 
-	AuthToken(const var::ConstString & token);
+	AuthToken(const var::String & token);
 
 	bool is_valid() const {
 		for(u8 i=0; i < sizeof(auth_token_t); i++){
@@ -63,11 +64,10 @@ private:
  */
 class Auth : public api::WorkObject {
 public:
-#if defined __link
-	Auth(arg::LinkDriver driver);
-#else
-	Auth();
-#endif
+	Auth(
+			SAPI_LINK_DRIVER_NULLPTR
+			);
+
 	~Auth();
 
 	AuthToken start(const AuthToken & token);

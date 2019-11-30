@@ -54,7 +54,7 @@ public:
 		char buffer[LINK_POSIX_TRACE_DATA_SIZE];
 		memcpy(buffer, m_event.posix_trace_event.data, LINK_POSIX_TRACE_DATA_SIZE);
 		buffer[LINK_POSIX_TRACE_DATA_SIZE-1] = 0;
-		return var::String(var::ConstString(buffer));
+		return var::String(buffer);
 	}
 
 	/*! \cond */
@@ -92,7 +92,7 @@ public:
 	Trace(){}
 
 #if !defined __link
-	Trace& operator=(const var::ConstString & a){ var::String::operator=(a); return *this; }
+	Trace& operator=(const var::String & a){ var::String::operator=(a); return *this; }
 	/*! \details Sends trace as a message. */
 	inline void trace_message() MCU_ALWAYS_INLINE { sos_trace_event(LINK_POSIX_TRACE_MESSAGE, cstring(), size()); }
 	/*! \details Sends trace as a warning. */

@@ -2,8 +2,8 @@
 
 using namespace fmt;
 
-Png::Png(const arg::SourceFilePath & name){
-	open(arg::FilePath(name.argument()), fs::OpenFlags::read_only());
+Png::Png(const var::String & name){
+   open(name, fs::OpenFlags::read_only());
 }
 
 

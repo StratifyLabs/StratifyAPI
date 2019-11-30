@@ -9,59 +9,18 @@
 #include "Bitmap.hpp"
 #include "../api/SgfxObject.hpp"
 #include "../var/String.hpp"
+#include "../fs/File.hpp"
 
 namespace sgfx {
 
 class Font;
 
-/*!
- * \brief The FontInfo class
- * \details This class contains
- * information that describes a font.
- *
- * The information can be used to allow various classes
- * to auto select a font installed in the system
- * to best match what the user specifies.
- *
- * See sys::Assets for font installation locations.
- *
- * Font names MUST follow the naming conventions for
- * this class to parse the font correctly:
- *
- * ```
- * <name>-<style>-<point size>.sbf
- * ```
- *
- * - name: the name of the font
- * - style: the font style (see enum FontInfo::style for details).
- * - point size: the pixel height of the tallest character in the font
- *
- *
- */
-class FontInfo : public api::SgfxInfoObject {
+class FontFlags {
 public:
-
-	FontInfo(u8 point_size = 0, u8 style = 0,	Font * font = 0);
-
-	/*! \details Contsructs an object by parsing the path.
-	 *
-	 * @param path Path to the font. The font name needs to follow the rules below:
-	 *
-	 * The font name should be name-style-size.ext
-	 *
-	 * - name is the name of the font
-	 * - style can be t, ti, el, eli, l, li, r, ri, m, mi, sb, sbi, b, bi, eb, ebi, ico (see enum style for details)
-	 *
-	 * Examples include:
-	 *
-	 * - roboto-l-28.sbf which is Roboto Light size 28 in Stratify bitmap font format.
-	 * - opensans-b-32.sbf which is Opensans bold 32
-	 *
-	 */
-	FontInfo(const arg::SourceFilePath & path);
-
-	/*! \details Returns true if the object is valid. */
-	bool is_valid() const { return m_point_size; }
+	using PointSize = arg::Argument< u8, struct FontPointSizeTag >;
+	using Style = arg::Argument< u8, struct FontStyleTag >;
+	using Name = arg::Argument< const var::String &, struct FontNameTag >;
+	using FileLocation = fs::File::Location;
 
 	/*! \details Lists the font styles that are available.
 	 *
@@ -87,8 +46,64 @@ public:
 		ICONS /*! Font is a collection of bitmap icons (ico) */
 	};
 
+};
+
+/*!
+ * \brief The FontInfo class
+ * \details This class contains
+ * information that describes a font.
+ *
+ * The information can be used to allow various classes
+ * to auto select a font installed in the system
+ * to best match what the user specifies.
+ *
+ * See sys::Assets for font installation locations.
+ *
+ * Font names MUST follow the naming conventions for
+ * this class to parse the font correctly:
+ *
+ * ```
+ * <name>-<style>-<point size>.sbf
+ * ```
+ *
+ * - name: the name of the font
+ * - style: the font style (see enum FontInfo::style for details).
+ * - point size: the pixel height of the tallest character in the font
+ *
+ *
+ */
+class FontInfo : public api::SgfxInfoObject, public FontFlags {
+public:
+
+	FontInfo(
+			PointSize point_size = PointSize(0),
+			Style style = Style(0),
+			Font * font = nullptr
+			);
+
+	/*! \details Contsructs an object by parsing the path.
+	 *
+	 * @param path Path to the font. The font name needs to follow the rules below:
+	 *
+	 * The font name should be name-style-size.ext
+	 *
+	 * - name is the name of the font
+	 * - style can be t, ti, el, eli, l, li, r, ri, m, mi, sb, sbi, b, bi, eb, ebi, ico (see enum style for details)
+	 *
+	 * Examples include:
+	 *
+	 * - roboto-l-28.sbf which is Roboto Light size 28 in Stratify bitmap font format.
+	 * - opensans-b-32.sbf which is Opensans bold 32
+	 *
+	 */
+	FontInfo(const var::String & path);
+
+	/*! \details Returns true if the object is valid. */
+	bool is_valid() const { return m_point_size && (m_font != nullptr); }
+
+
 	/*! \details Returns the name of the font. */
-	const var::ConstString & name() const { return m_name; }
+	const var::String & name() const { return m_name; }
 
 	/*! \details Returns the file path of the font. */
 	const var::String & path() const { return m_path; }
@@ -106,7 +121,7 @@ public:
 
 	/*! \details Assigns a pointer to the font that is used for drawing.
 	 */
-	void set_font(Font * font){ m_font = font; }
+	FontInfo & set_font(Font * font){ m_font = font; return *this; }
 
 	/*! \details Enables sorting FontInfo objects by point size. */
 	static int ascending_point_size(const void * a, const void * b);
@@ -125,13 +140,13 @@ private:
 /*! \brief Font class
  *
  */
-class Font : public api::SgfxWorkObject {
+class Font : public api::SgfxWorkObject, public FontFlags {
 public:
 
 	Font();
 
 	/*! \details Returns a string of the available character set */
-	static const var::ConstString & ascii_character_set();
+	static const var::String & ascii_character_set();
 
 
 	/*! \details Returns the maximum height of any character in the font. */
@@ -145,9 +160,9 @@ public:
 	int offset_y() const { return m_char.offset_y; }
 
 	/*! \details Calculates the length (pixels on x-axis) of the specified string. */
-	int calculate_length(const var::ConstString & str) const;
+	int calculate_length(const var::String & str) const;
 	/*! \cond */
-	int calc_len(const var::ConstString & str) const { return calculate_length(str); }
+	int calc_len(const var::String & str) const { return calculate_length(str); }
 	/*! \endcond */
 
 
@@ -173,7 +188,11 @@ public:
 	 * @param point The top left corner to start drawing the string
 	 * @return Zero on success
 	 */
-	int draw(const var::ConstString & const_string, Bitmap & dest, const Point & point) const;
+	int draw(
+			const var::String & const_string,
+			Bitmap & dest,
+			const Point & point
+			) const;
 
 	/*! \details Draws a character on the bitmap.
 	 *
@@ -182,7 +201,11 @@ public:
 	 * @param point The top-left corner where to draw on \a dest
 	 * @return Zero on success (-1 if character fails to load)
 	 */
-	int draw(char c, Bitmap & dest, const Point & point) const;
+	int draw(
+			char c,
+			Bitmap & dest,
+			const Point & point
+			) const;
 
 	const sg_font_char_t & character() const { return m_char; }
 
@@ -194,7 +217,7 @@ public:
 	u16 kerning_pair_count() const { return m_header.kerning_pair_count; }
 
 	/*! \details Enables (or disables) kerning. */
-	void set_kerning_enabled(bool value = true){ m_is_kerning_enabled = value; }
+	Font & set_kerning_enabled(bool value = true){ m_is_kerning_enabled = value; return *this; }
 
 	/*! \details Returns true if kerning is enabled. */
 	bool is_kerning_enabled() const { return m_is_kerning_enabled; }
@@ -210,7 +233,7 @@ protected:
 	sg_font_header_t m_header;
 
 	static int to_charset(char ascii);
-	static const var::ConstString m_ascii_character_set;
+	static const var::String m_ascii_character_set;
 
 	virtual void draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, const Point & point) const = 0;
 	virtual int load_char(sg_font_char_t & ch, char c, bool ascii) const = 0;

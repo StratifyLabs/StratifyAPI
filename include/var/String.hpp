@@ -9,9 +9,8 @@
 #include <cstdarg>
 #include <cstdlib>
 #include <cstdio>
-
-#include "Data.hpp"
-#include "ConstString.hpp"
+#include <string>
+#include "../arg/Argument.hpp"
 
 namespace var {
 
@@ -21,13 +20,6 @@ namespace var {
  * cstring functions.  The naming convention follows includes
  * many std::string methods.
  *
- * This class is for manipulating and modifying strings. The
- * var::ConstString class is for static strings (basically just
- * a `const char *` wrapper). This class inherits var::ConstString
- * which contains methods for getting the length, comparing,
- * finding strings within the string. This class adds the
- * ability to append strings, create sub-strings, add strings, insert,
- * erase, and convert the case.
  *
  *
  * \code
@@ -69,11 +61,35 @@ namespace var {
  *
  *
  */
-class String : public Data, public ConstString {
+class String : public api::WorkObject {
 public:
 
-	enum {
-		npos /*! Defines an invalid string length and position */ = (u32)-1
+	enum npos {
+		npos /*! Defines an invalid string length and position */ = std::string::npos
+	};
+
+	using Source = arg::Argument<const String&, struct StringSourceTag >;
+	using Destination = arg::Argument<String&, struct StringDestinationTag >;
+
+	using Position = arg::Argument<size_t, struct PositionTag >;
+	using SubPosition = arg::Argument<size_t, struct SubPositionTag >;
+	using SubLength = arg::Argument<size_t, struct SubLengthTag >;
+	using Length = arg::Argument<size_t, struct LengthTag >;
+	using MatchLength = arg::Argument<size_t, struct MatchLengthTag >;
+	using Size = arg::Argument<size_t, struct SizeTag >;
+
+	using ToInsert = arg::Argument< const var::String &, struct ToInsertTag >;
+	using ToErase = arg::Argument< const var::String &, struct ToEraseTag >;
+	using ToCompare = arg::Argument< const var::String &, struct ToCompareTag >;
+	using ToAppend = arg::Argument< const var::String &, struct ToAppendTag >;
+	using ToAssign = arg::Argument< const var::String &, struct ToAssignTag >;
+	using CharacterToAssign = arg::Argument<char, struct CharacterToAssignTag >;
+	using CharacterToFind = arg::Argument<char, struct CharacterToFindTag >;
+
+	enum number_base {
+		BASE_8 = 8,
+		BASE_10 = 10,
+		BASE_16 = 16
 	};
 
 	/*! \details Constructs an empty string.
@@ -87,90 +103,35 @@ public:
 	  *
 	  */
 	String();
-
-	/*! \details Contructs a string as a copy of the string
-	  * specified.
-	  *
-	  * @param a A reference to the string to copy
-	  *
-	  */
-	String(const String & a) :
-		Data(a),
-		ConstString(Data::to_const_char()){
-
-	}
-
-	String(String && a) :
-		Data(a), //move from to this
-		ConstString(Data::to_const_char())
-	{
-
-	}
-
-	/*! \details Declares a string and initialize to \a s. */
-	String(const ConstString & s);
-
-	/*! \details Declares a string and initialize to \a s. */
 	String(
-			const ConstString & s,
-			const arg::Length length
-			);
-
-	explicit String(const Data & data){
-		assign(data.to_const_char(),
-				 arg::Length(data.size()));
+			const var::String & string_to_assign,
+			Position position,
+			Length length = Length(npos)
+			) : m_string(
+					 string_to_assign.string(),
+					 position.argument(),
+					 length.argument()
+					 ){
 	}
 
+	String(const char * s) : m_string(s){}
+	String(const String & s) : m_string(s.m_string){}
+	String(const char * s, u32 n) : m_string(s,n){}
+	String(u32 n, char c) : m_string(n,c){}
+	String(String && s) noexcept : m_string(s.m_string){}
+	String (std::initializer_list<char> il) : m_string(il){}
+	String& operator=(const char * s){ m_string = s; return *this; }
+	String& operator=(const String & s){ m_string = s.string(); return *this; }
+	String& operator=(char c){ m_string = c; return *this; }
 
-	/*! \details Assigns a to this string.
-	  *
-	  */
-	String& operator=(const String & a){
-		copy_object(a);
-		set_string_pointer(Data::to_const_char());
-		return *this;
-	}
 
-	/*! \details Assigns a (as an rvalue) to this string.
-	 *
-	 * The memory allocated to a is moved to this object.
-	 *
-	 */
-	String & operator = (String && a){
-		move_object(a);
-		set_string_pointer(Data::to_const_char());
-		return *this;
-	}
-
-	/*! \details Assigns the value of a String to another String.
-	  *
-	  * @param a The new String to assign
-	  * @return A reference to the destination String
-	  *
-	  * This method will make a copy of the string in a new memory
-	  * location rather than just using the data location
-	  * of the source string.
-	  *
-	  * \code
-	  * String str1("hello");
-	  * String str2("goodbye");
-	  * str2 = str1; //both strings are now "hello"
-	  * \endcode
-	  *
-	  */
-	String& operator=(const ConstString & a){
-		assign(a);
-		return *this;
-	}
-
-	/*! \details Appends a string to this string. */
-	String& operator+=(const ConstString & a){
+	/*! \details Appends a character to this string. */
+	String& operator+=(char a){
 		append(a);
 		return *this;
 	}
 
-	/*! \details Appends a character to this string. */
-	String& operator+=(char a){
+	String& operator+=(const String & a){
 		append(a);
 		return *this;
 	}
@@ -205,45 +166,35 @@ public:
 	  * \endcode
 	  *
 	  */
-	String& operator<<(const ConstString & a){ append(a); return *this; }
+	String& operator<<(const String & a){ append(a); return *this; }
 
 	/*! \details Appends a character to the string. */
 	String& operator<<(char c){ append(c); return *this; }
 
-	String& operator<<(const arg::SourceData & data);
+	//String& operator << (const SourceData & data);
 
 
 	/*! \details Appends a string to this string and returns a new string. */
-	String operator + (const ConstString & a){
-		String ret = *this;
-		ret.append(a);
-		return ret;
+	String operator + (const String & a){
+		String result = *this;
+		result.append(a);
+		return result;
 	}
 
 	~String(){}
 
-	//these are both implemented in Data and ConstString -- need to be disambiguated
-	char at(
-			const arg::ImplicitPosition position
-			) const {
-		return ConstString::at(position);
-	}
-
-	/*! \details Sets the number of bytes allocated for the string.
-	  *
-	 * @param s The number of bytes to reserve to string capacity (plus a byte for a zero terminator).
-	  * @return Less than zero on an error
-	  *
-	  * If a String uses dynamic memory allocation, this method
-	  * will increase the capacity of the String. If \a s
-	  * is smaller than capacity(), this function returns
-	  * without changing the capacity.
+	/*! \details Tests if string is empty.
 	 *
-	 * The size() method will return the number of bytes availabe. length() returns
-	 * the length of the string.
-	  *
-	  */
-	int resize(const arg::ImplicitSize size);
+	 * ```
+	 * ConstString x;
+	 * if( x.is_empty() ){
+	 *   //we arrive here
+	 * }
+	 * ```
+	 *
+	 */
+	bool is_empty() const { return m_string.empty(); }
+
 
 	/*! \details Gets a sub string of the string.
 	  *
@@ -252,10 +203,16 @@ public:
 	  * @return A new string object containing the sub string specified
 	  *
 	  */
-	String substr(
-			const arg::Position position = arg::Position(0),
-			const arg::Length length = arg::Length(npos)
-			) const;
+	String create_sub_string(
+			Position position = Position(0),
+			Length length = Length(npos)
+			) const {
+
+		return m_string.substr(
+					position.argument(),
+					length.argument()
+					).c_str();
+	}
 
 	/*! \details Inserts \a s (zero terminated) into string at \a pos.
 	  *
@@ -266,8 +223,8 @@ public:
 	  *
 	  */
 	String& insert(
-			const arg::Position position,
-			const arg::StringToInsert string_to_insert
+			Position position,
+			ToInsert string_to_insert
 			);
 
 	/*! \details Erases a portion of the string starting with the character at \a pos.
@@ -278,14 +235,13 @@ public:
 	  *
 	  */
 	String& erase(
-			const arg::Position position,
-			const arg::Length length = arg::Length(npos)
+			Position position,
+			Length length = Length(npos)
 			);
 
-	String& erase(
-			const arg::StringToErase string_to_erase,
-			const arg::Position position = arg::Position(0),
-			const arg::Length length = arg::Length(npos)
+	String& erase(const String & string_to_erase,
+					  Position position = Position(0),
+					  Length length = Length(npos)
 			);
 
 	/*! \details Replaces one or more instances of a string with another string
@@ -296,13 +252,22 @@ public:
 	 *
 	 */
 	String& replace(
-			const arg::StringToErase old_string,
-			const arg::StringToInsert new_string,
-			const arg::Position position = arg::Position(0),
-			const arg::Length length = arg::Length(0)
+			ToErase old_string,
+			ToInsert new_string,
+			Position position = Position(0),
+			Length length = Length(0)
 			);
 
 
+	size_t length() const { return m_string.length(); }
+	void clear(){ m_string.clear(); }
+
+	char & at (size_t pos){ return m_string.at(pos); }
+	const char & at (size_t pos) const { return m_string.at(pos); }
+
+	void resize(size_t size){
+		m_string.resize(size);
+	}
 
 	/*! \details Prints a formatted string to this String.
 	  *
@@ -335,43 +300,86 @@ public:
 	//deprecated
 	int sprintf(const char * format, ...);
 
-	/*! \details Returns the capacity of the string.
-	  *
-	  * The capacity is the current number of bytes allocated
-	  * in memory for the string. set_capacity() will
-	  * increase the capacity of the string. Appending to the
-	  * String will increate the capacity as necessary.
-	  *
-	  */
-	u32 capacity() const;
+
+	String & assign(const String & string_to_assign){
+		m_string.assign(string_to_assign.string());
+		return *this;
+	}
 
 	/*! \details Assigns a substring of \a a to this String. */
-	int assign(
-			const ConstString & a,
-			const arg::Position position,
-			const arg::Length length
-			){ return assign(
-					a.cstring() + position.argument(), length
+	String & assign(
+			const ToAssign string_to_assign,
+			SubPosition sub_position,
+			SubLength sub_length
+			){
+		m_string.assign(
+					string_to_assign.argument().string(),
+					sub_position.argument(),
+					sub_length.argument()
 					);
-			 }
+		return *this;
+	}
+
+
 	/*! \details Assigns a maximum of \a n characters of \a a to this String. */
-	int assign(
-			const ConstString & a,
-			const arg::Length length
-			);
+	String & assign(
+			const char * cstring_to_assign,
+			Length length
+			){
+		m_string.assign(
+					cstring_to_assign,
+					length.argument()
+					);
+		return *this;
+	}
 
 	/*! \details Assigns \a a to this String.  */
-	int assign(const ConstString & a);
+	String & assign(const char * cstring_to_assign){
+		m_string.assign(cstring_to_assign);
+		return *this;
+	}
+
+	String & assign(
+			CharacterToAssign character_to_assign,
+			Length length
+			){
+		m_string.assign(
+					character_to_assign.argument(),
+					length.argument()
+					);
+		return *this;
+	}
+
+	String & assign(String && string_to_move){
+		m_string.assign(string_to_move.m_string);
+		return *this;
+	}
 
 	/*! \details Appends \a a to this String.  */
-	int append(const ConstString & a);
+	String & append(const String & string_to_append){
+		m_string.append(string_to_append.string());
+		return *this;
+	}
+
+	String & append(
+			ToAppend string_to_append,
+			SubPosition sub_position,
+			SubLength sub_length
+			){
+		m_string.append(
+					string_to_append.argument().string(),
+					sub_position.argument(),
+					sub_length.argument()
+					);
+		return *this;
+	}
 
 	/*! \details Appends \a c to this String.  */
-	int append(char c);
+	String & append(char c){
+		m_string.append(&c, 1);
+		return *this;
+	}
 
-	/*! \details Appends \a c to this String
-	  */
-	void push_back(char c){ append(c); }
 
 	/*! \details Converts the string to upper case.
 	  *
@@ -397,8 +405,6 @@ public:
 	  */
 	String & to_upper();
 
-	//compatible with C++ string
-	String & toupper(){ return to_upper(); }
 
 	/*! \details Converts the string lower case.
 	  *
@@ -410,64 +416,258 @@ public:
 	  */
 	String & to_lower();
 
-	//compatible with C++ string
-	String & tolower(){ return to_lower(); }
+	const char * cstring() const {
+		return m_string.c_str();
+	}
 
-	using ConstString::to_float;
-	using ConstString::operator ==;
-	using ConstString::operator !=;
+	char * to_char(){
+		return (char*)m_string.data();
+	}
+
+	/*! \details Finds a character within this string. */
+	u32 find(
+			char character_to_find /*! Character to find */,
+			Position position = Position(0) /*! Start position */
+			) const {
+		return m_string.find(
+					character_to_find,
+					position.argument()
+					);
+	}
+
+	/*! \details Finds a var::ConstString within the object.
+	  *
+	  * @param string_to_find The String to find
+	  * @param position The position to start searching (default is beginning)
+	  * @return The position of the string or var::String::npos if the String was not found
+	  */
+	u32 find(
+			const String & string_to_find,
+			Position position = Position(0)
+			) const {
+		return m_string.find(
+					string_to_find.string(),
+					position.argument()
+					);
+	}
+
+	/*! \details Finds a string within the object.
+	  *
+	  * @param string_to_find A reference to the string to search for
+	  * @param position Where in this string to start looking
+	  * @param length The number of bytes to match
+	  *
+	  * @return The offset in this string where the match occurred
+	  * or npos if \a a was not found
+	  *
+	  */
+	u32 find(
+			const String & string_to_find,
+			Position position,
+			Length length
+			) const {
+
+		return m_string.find(
+					string_to_find.cstring(),
+					position.argument(),
+					length.argument()
+					);
+	}
+
+	/*! \details Finds the first character that is not as specified. */
+	u32 find_not(
+			char character_to_find,
+			Position position = Position(0)
+			) const {
+
+		return m_string.find_first_not_of(
+					character_to_find,
+					position.argument()
+					);
+	}
+
+	/*! \details Finds a string within the string searching from right to left. */
+	u32 rfind(
+			const String & string_to_find,
+			Position position = Position(0)
+			) const {
+		return m_string.rfind(
+					string_to_find.string(),
+					position.argument()
+					);
+	}
+
+	/*! \details Finds a character within the string searching from right to left. */
+	u32 rfind(
+			char c,
+			Position position = Position(0)
+			) const {
+		return m_string.rfind(
+					c,
+					position.argument()
+					);
+	}
+
+	/*! \details Finds a string within the string searching from right to left. */
+	u32 rfind(
+			const String & string_to_find,
+			Position position,
+			Length length
+			) const {
+		return m_string.rfind(
+					string_to_find.cstring(),
+					position.argument(),
+					length.argument()
+					);
+	}
+
+
+	int compare(const String & string_to_compare) const {
+		return m_string.compare(string_to_compare.string());
+	}
+
+	/*! \details Compares the object to \a str.
+	  *
+	  * @param position The position in this object to start the comparison
+	  * @param length The number of characters to compare
+	  * @param string_to_compare A reference to the comparing string
+	  * @return Zero if the strings match
+	  *
+	  */
+	int compare(
+			Position position,
+			Length length,
+			const String & string_to_compare
+			) const {
+		return m_string.compare(
+					position.argument(),
+					length.argument(),
+					string_to_compare.string()
+					);
+	}
+
+	/*! \details Compares the object to \a str.
+	  *
+	  * @param position The position in this object to start the comparison
+	  * @param length The length of the compared string (this object)
+	  * @param string_to_compare A reference to the comparing string
+	  * @param sub_position The position in the comparing string to start comparing
+	  * @param sub_length The number string characters to compare
+	  * @return Zero if the strings match
+	  *
+	  */
+	int compare(
+			Position position,
+			Length length,
+			const String & string_to_compare,
+			SubPosition sub_position,
+			SubLength sub_length
+			) const {
+		return m_string.compare(
+					position.argument(),
+					length.argument(),
+					string_to_compare.string(),
+					sub_position.argument(),
+					sub_length.argument()
+					);
+	}
+
+	/*! \details Compares to another ConstString.
+	 *
+	 *
+	 * ```
+	 * ConstString a("hello");
+	 * ConstString b("world");
+	 *
+	 * if( a == b ){
+	 *   //won't get here
+	 * }
+	 * ```
+	 *
+	 */
+	bool operator == (
+			const String & a /*! The ConstString to compare this object to */
+			) const {
+		return m_string == a.m_string;
+	}
+
+	/*! \details Compares to a c-string (inequality). */
+	bool operator!=(const String & string_to_compare) const { return m_string != string_to_compare.m_string; }
+	bool operator>(const String & string_to_compare) const { return m_string > string_to_compare.m_string; }
+	bool operator<(const String & string_to_compare) const { return m_string < string_to_compare.m_string; }
+	bool operator>=(const String & string_to_compare) const { return m_string >= string_to_compare.m_string; }
+	bool operator<=(const String & string_to_compare) const { return m_string <= string_to_compare.m_string; }
+
+	/*! \details Converts the string to an integer.
+		  *
+		  * ```
+		  * ConstString x = "10";
+		  * printf("X is %d\n", x.to_integer());
+		  * ```
+		  *
+		  */
+	int to_integer() const { return ::atoi(cstring()); }
+
+	/*! \details Converts to a float.
+		 *
+		 * ```
+		 * ConstString pi = "3.14";
+		 * printf("pi is %0.2f\n", pi.to_float());
+		 * ```
+		 *
+		 */
+	float to_float() const;
+
+	/*! \details Converts the string to a long integer
+		 * using the specified number base.
+		 *
+		 * ```
+		 * ConstString number("1000");
+		 * printf("Number is 0x%X\n",
+		 *   number.to_long(
+		 *     NumberBase(10)
+		 *     )
+		 *   );
+		 * ```
+		 *
+		 */
+	int to_long(
+			enum number_base base = BASE_10
+			){
+		return ::strtol(cstring(), 0, base);
+	}
+
+	/*! \details Converts the string to a long integer
+		 * using the specified number base.
+		 *
+		 * ```
+		 * ConstString number("DEADBEEF");
+		 * printf("Number is 0x%X\n",
+		 *   number.to_long(
+		 *     NumberBase(16)
+		 *     )
+		 *   );
+		 * ```
+		 *
+		 */
+	int to_unsigned_long(
+			enum number_base base = BASE_10
+			){
+		return ::strtoul(cstring(), 0, base);
+	}
+
+	std::string & string(){ return m_string; }
+	const std::string & string() const { return m_string; }
+
+
+	u32 capacity() const { return m_string.capacity(); }
+
 
 private:
 
-	int update_capacity(u32 size);
+	std::string m_string;
 
 };
-
-
-template <unsigned int arraysize>
-class StaticString : public String {
-public:
-	StaticString() : String(m_str, arraysize+1, false){ fill(0); }
-	StaticString(const char * str) : String(m_str, arraysize+1, false){ assign(str); }
-	StaticString(const String & str) : String(m_str, arraysize+1, false){ assign(str); }
-
-private:
-	char m_str[arraysize+1];
-};
-
-
-/*!
- * \brief String for file files
- * \details String for file names
- */
-class NameString : public String {
-public:
-	NameString(){
-		resize(LINK_NAME_MAX);
-	}
-};
-
-//deprecated
-typedef NameString StringName;
-
-/*! \brief String for file paths
- * \details String for path names
- *
- *
- */
-class PathString : public String {
-public:
-	PathString(){
-		resize(LINK_PATH_MAX);
-	}
-
-	void strip_suffix();
-	const char * file_name() const;
-	const char * filename() const { return file_name(); }
-};
-
-//deprecated
-typedef PathString StringPath;
 
 
 }

@@ -96,12 +96,12 @@ public:
 	 *
 	 *  \return Zero if \a key is successfully fetched
 	 */
-	int get_value(var::String & dest, const var::ConstString & key = 0) const;
+	int get_value(var::String & dest, const var::String & key = 0) const;
 	inline int get_value(var::String * dest, const char * key = 0) const {
 		return get_value(*dest, key);
 	}
 
-	int set_value(const var::String * src, const var::ConstString & key) const;
+	int set_value(const var::String * src, const var::String & key) const;
 	inline int set_value(const var::String & src, const char * key) const {
 		return set_value(&src, key);
 	}
@@ -127,8 +127,8 @@ public:
 	 * \return Zero on success of -1 if the element was not found
 	 *
 	 */
-	int find(const var::ConstString & str);
-	int find_next(const var::ConstString & str);
+	int find(const var::String & str);
+	int find_next(const var::String & str);
 
 
 	/*! \brief Returns the number of immediate children */
@@ -221,11 +221,11 @@ public:
 	u32 size() const { return content.size; }
 
 
-	int write_start_tag(const var::ConstString & name, const var::ConstString & attrs = 0);
-	int write_cdata(const var::ConstString & str);
-	int write_end_tag(const var::ConstString & name);
-	int write_empty_element_tag(const var::ConstString & name, const var::ConstString & attrs = 0);
-	int write_element(const var::ConstString & name, const var::ConstString & data, const var::ConstString & attrs = 0);
+	int write_start_tag(const var::String & name, const var::String & attrs = 0);
+	int write_cdata(const var::String & str);
+	int write_end_tag(const var::String & name);
+	int write_empty_element_tag(const var::String & name, const var::String & attrs = 0);
+	int write_element(const var::String & name, const var::String & data, const var::String & attrs = 0);
 
 	/*
 	 * Empty tag (no content) = < Name (optional attributes--zero or more)  />
@@ -269,13 +269,13 @@ private:
 
 	void reset_context();
 
-	int find_context(const var::ConstString & str, const context_t & current, context_t & target) const;
+	int find_context(const var::String & str, const context_t & current, context_t & target) const;
 
 	int check_string_for_open_bracket(var::String * src, var::String * cmp) const;
 
-	int find_tag(const var::ConstString & name,
+	int find_tag(const var::String & name,
 					 const context_t & context,
-					 const var::ConstString & tag_style,
+					 const var::String & tag_style,
 					 s32 & tag_size) const;
 
 	int next_tag_name(
@@ -293,9 +293,9 @@ private:
 
 	bool is_empty_element_tag(context_t & target) const;
 
-	static int parse_ref_array(var::String & name, const var::ConstString & str);
-	static int parse_ref_attr(var::String & name, var::String & attr_name, const var::ConstString & str);
-	static int parse_ref(var::String & name, var::String & value, const var::ConstString & str, const var::ConstString & enclosing);
+	static int parse_ref_array(var::String & name, const var::String & str);
+	static int parse_ref_attr(var::String & name, var::String & attr_name, const var::String & str);
+	static int parse_ref(var::String & name, var::String & value, const var::String & str, const var::String & enclosing);
 
 	static int check_chars(const char * src, const char * allowed);
 
@@ -307,7 +307,7 @@ private:
 		FIND_STATE_CLOSEBRACKET
 	};
 
-	int set_get_value(var::String & dest, const var::ConstString & key, bool set = false) const;
+	int set_get_value(var::String & dest, const var::String & key, bool set = false) const;
 
 
 };

@@ -1,9 +1,10 @@
 /*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_SYS_FILE_HPP_
-#define SAPI_SYS_FILE_HPP_
+#ifndef SAPI_FS_FILE_HPP_
+#define SAPI_FS_FILE_HPP_
 
 #include <sos/link.h>
+
 
 #include "../api/SysObject.hpp"
 #include "../var/ConstString.hpp"
@@ -11,8 +12,24 @@
 #include "Stat.hpp"
 #include "../arg/Argument.hpp"
 
+#include "../var/Data.hpp"
 #include "../var/String.hpp"
 #include "../sys/ProgressCallback.hpp"
+
+#if !defined __link
+#define SAPI_LINK_DRIVER_NULLPTR
+#define SAPI_LINK_DRIVER_NULLPTR_LAST
+#define SAPI_LINK_DRIVER
+#define SAPI_LINK_DRIVER_LAST
+#define SAPI_LINK_STAT stat
+#else
+#define SAPI_LINK_STAT link_stat
+#define SAPI_LINK_DRIVER_NULLPTR fs::File::LinkDriver link_driver = fs::File::LinkDriver(nullptr)
+#define SAPI_LINK_DRIVER_NULLPTR_LAST , fs::File::LinkDriver link_driver = fs::File::LinkDriver(nullptr)
+#define SAPI_LINK_DRIVER fs::File::LinkDriver link_driver
+#define SAPI_LINK_DRIVER_LAST , fs::File::LinkDriver link_driver
+#endif
+
 
 namespace fs {
 
@@ -37,8 +54,8 @@ namespace fs {
  *
  *	//create a new file and write a string to it
  *	f.create(
- *    arg::DestinationFilePath("/home/myfile.txt"),
- *    arg::IsOverwrite(true)
+ *    File::DestinationPath("/home/myfile.txt"),
+ *    File::IsOverwrite(true)
  *    );
  *	str = "Hello New File!\n";
  *	f.write(str);
@@ -78,35 +95,60 @@ namespace fs {
  * ```
  *
  */
-class File : public api::FsWorkObject {
+class File : public api::WorkObject {
 public:
 
+	using Source = arg::Argument<const File &, struct FileSourceTag>;
+	using Destination = arg::Argument<File &, struct FileDestinationTag>;
+
+	using SourcePath = arg::Argument<const var::String &, struct FileSourcePathTag>;
+	using ImplicitSourcePath = arg::ImplicitArgument<const var::String &, struct FileSourcePathTag, SourcePath>;
+	using DestinationPath = arg::Argument<const var::String &, struct FileDestinationPathTag>;
+	using IsOverwrite = arg::Argument<bool, struct FileIsOverwriteTag>;
+
+	using SourceReference = var::Reference::Source;
+	using DestinationReference = var::Reference::Destination;
+
+	using SourceBuffer = var::Reference::SourceBuffer;
+	using DestinationBuffer = var::Reference::DestinationBuffer;
+
+	using Size = var::Reference::Size;
+	using PageSize = var::Reference::PageSize;
+
+	using Descriptor = arg::Argument<int, struct FileDescriptorTag>;
+	using ImplicitDescriptor = arg::ImplicitArgument<int, struct FileImplicitDescriptorTag, Descriptor>;
+
+	using IoRequest = arg::Argument<int, struct FileIoRequestTag>;
+	using IoArgument = arg::Argument<void*, struct FileIoArgumentTag>;
+	using IoConstArgument = arg::Argument<const void*, struct FileIoConstArgumentTag>;
+	using IoIntArgument = arg::Argument<int, struct FileIoIntArgumentTag>;
+
+	using Location = arg::Argument<int, struct FileLocationTag>;
+	using OwnerId = arg::Argument<int, struct FileOwnerIdTag>;
+	using GroupId = arg::Argument<int, struct FileGroupIdTag>;
+
 #if defined __link
-	File(arg::LinkDriver driver = arg::LinkDriver(0));
-	static bool exists(
-			const arg::SourceFilePath path,
-			arg::LinkDriver driver = arg::LinkDriver(0)
-			);
-	static Stat get_info(
-			const arg::SourceFilePath path,
-			arg::LinkDriver driver = arg::LinkDriver(0)
-			);
-	static Stat get_info(
-			const arg::FileDescriptor fd,
-			arg::LinkDriver driver = arg::LinkDriver(0)
-			);
-#else
-	File();
-	static bool exists(
-			const arg::ImplicitSourceFilePath path
-			);
-	static Stat get_info(
-			const arg::ImplicitSourceFilePath path
-			);
-	static Stat get_info(
-			const arg::FileDescriptor fd
-			);
+	using LinkDriver = arg::Argument<link_transport_mdriver_t*, struct FileLinkDriverTag >;
+	using SourceLinkDriver = arg::Argument<link_transport_mdriver_t*, struct FileSourceLinkDriverTag >;
+	using DestinationLinkDriver = arg::Argument<link_transport_mdriver_t*, struct FileDestinationLinkDriverTag >;
+	using ImplicitLinkDriver = arg::ImplicitArgument<link_transport_mdriver_t*, struct FileImplicitLinkDriverTag, LinkDriver >;
 #endif
+
+	File(
+			SAPI_LINK_DRIVER_NULLPTR
+			);
+	static bool exists(
+			const var::String & path
+			SAPI_LINK_DRIVER_NULLPTR_LAST
+			);
+	static Stat get_info(
+			const var::String & path
+			SAPI_LINK_DRIVER_NULLPTR_LAST
+			);
+	static Stat get_info(
+			Descriptor fd
+			SAPI_LINK_DRIVER_NULLPTR_LAST
+			);
 
 
 	~File();
@@ -120,7 +162,7 @@ public:
 	};
 
 	Stat get_info() const {
-		return get_info(arg::FileDescriptor(fileno()));
+		return get_info(Descriptor(fileno()));
 	}
 
 	/*! \details Gets the name of the file from a given path.
@@ -136,12 +178,12 @@ public:
 	 * \endcode
 	 *
 	 */
-	static var::ConstString name(
-			const arg::ImplicitFilePath & path
+	static const var::String name(
+			const var::String & path
 			);
 
 	static var::String parent_directory(
-			const arg::ImplicitFilePath & path
+			const var::String & path
 			);
 
 	/*! \details Sets the file to stay open even
@@ -202,7 +244,7 @@ public:
 	 * For example:
 	 *
 	 * \code
-	  * const var::ConstString path = "/home/data.txt";
+	  * const var::String path = "/home/data.txt";
 	  * printf("Suffix is %s", File::suffix(path).cstring());
 	 * \endcode
 	 *
@@ -212,8 +254,8 @@ public:
 	 * \endcode
 	 *
 	 */
-	static var::ConstString suffix(
-			const arg::ImplicitFilePath & path
+	static const char * suffix(
+			const var::String & path
 			);
 
 	/*! \details Deletes a file.
@@ -222,10 +264,8 @@ public:
 	 *
 	 */
 	static int remove(
-			const arg::ImplicitSourceFilePath path
-#if defined __link
-			, arg::LinkDriver driver = arg::LinkDriver(0)
-#endif
+			const var::String & path
+			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
 
 	/*! \details Gets file stat data.
@@ -233,23 +273,16 @@ public:
 	 * @return Zero on success
 	 *
 	 */
-#if !defined __link
 	static int stat(
-			const arg::SourceFilePath & path,
-			struct stat & st
+			const var::String & path,
+			struct SAPI_LINK_STAT & st
+			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
-#else
-	static int stat(const arg::SourceFilePath & path,
-			struct link_stat & st,
-			arg::LinkDriver driver = arg::LinkDriver(0)
-			);
-#endif
 
-#if !defined __link
-	int fstat(struct stat * st) const;
-#else
-	int fstat(struct link_stat * st) const;
-#endif
+
+	int fstat(
+			struct SAPI_LINK_STAT * st
+			) const;
 
 	/*! \details Gets the size of the file.
 	 *
@@ -258,10 +291,8 @@ public:
 	 *
 	 */
 	static u32 size(
-			const arg::SourceFilePath & path
-#if defined __link
-			, arg::LinkDriver driver
-#endif
+			const var::String & path
+			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
 
 
@@ -272,7 +303,7 @@ public:
 	 * @return Zero on success
 	 */
 	virtual int open(
-			const arg::ImplicitFilePath & name,
+			const var::String & name,
 			const OpenFlags & flags = OpenFlags::read_write()
 			);
 
@@ -287,9 +318,11 @@ public:
 	 * file will be closed.
 	 *
 	 */
-	int open(const arg::ImplicitFilePath & name,
-				const OpenFlags & flags,
-				const Permissions & permissions);
+	int open(
+			const var::String & path,
+			const OpenFlags & flags,
+			const Permissions & permissions
+			);
 
 	/*! \details Creates a new file (using the open() method).
 	 *
@@ -298,8 +331,8 @@ public:
 	 * @param perms The permissions to assign to the newly created file
 	 */
 	int create(
-			const arg::DestinationFilePath & path,
-			const arg::IsOverwrite & is_overwrite,
+			const var::String & path,
+			IsOverwrite is_overwrite,
 			const Permissions & perms = Permissions(0666)
 			);
 
@@ -340,8 +373,8 @@ public:
 	 *
 	 */
 	virtual int read(
-			arg::DestinationBuffer buf,
-			const arg::Size size
+			void * buf,
+			Size size
 			) const;
 
 	/*! \details Reads the file into a var::Data object.
@@ -352,16 +385,11 @@ public:
 	  * This method will read up to data.size() bytes.
 	  *
 	  */
-	int read(var::Data & data) const {
+	int read(const var::Reference & reference) const {
 		int result = read(
-					arg::DestinationBuffer(data.to_void()),
-					arg::Size(data.size())
+					reference.to_void(),
+					Size(reference.size())
 					);
-		if( result > 0 ){
-			data.resize(
-						arg::Size(result)
-						);
-		}
 		return result;
 	}
 
@@ -370,39 +398,15 @@ public:
 	 * @return The number of bytes written or less than zero on an error
 	 */
 	virtual int write(
-			const arg::SourceBuffer buf,
-			const arg::Size size
+			const void * buf,
+			Size size
 			) const;
 
 	/*! \details Writes the file using a var::Data object. */
-	int write(const var::Data & data) const {
+	int write(const var::Reference & reference) const {
 		return write(
-					arg::SourceBuffer(data.to_const_void()),
-					arg::Size(data.size())
-					);
-	}
-
-	/*! \details Writes a var::ConstString to the file.
-	  *
-	  * @param str The string to write
-	  * @return The number of bytes written
-	  */
-	int write(const var::ConstString & str) const {
-		return write(
-					arg::SourceBuffer(str.cstring()),
-					arg::Size(str.length())
-					);
-	}
-
-	/*! \details Writes a var::String to the file.
-	  *
-	  * @param str The string to write
-	  * @return The number of bytes written
-	  */
-	int write(const var::String & str) const {
-		return write(
-					arg::SourceBuffer(str.cstring()),
-					arg::Size(str.length())
+					reference.to_const_void(),
+					Size(reference.size())
 					);
 	}
 
@@ -411,39 +415,22 @@ public:
 	 * @return The number of bytes read or less than zero on an error
 	 */
 	int read(
-			const arg::Location location,
-			arg::DestinationBuffer buf,
-			const arg::Size size
+			Location location,
+			void * buf,
+			Size size
 			) const;
 
 	/*! \details Reads the file using a var::Data object. */
 	int read(
-			const arg::Location location,
-			arg::DestinationData data
+			Location location,
+			const var::Reference & reference
 			) const {
 		int result = read(
 					location,
-					arg::DestinationBuffer(data.argument().to_void()),
-					arg::Size(data.argument().size())
+					reference.to_void(),
+					Size(reference.size())
 					);
 		return result;
-	}
-
-	int read(
-			arg::ImplicitDestinationData data
-			) const {
-		int result = read(
-					arg::DestinationBuffer(data.argument().to_void()),
-					arg::Size(data.argument().size())
-					);
-		return result;
-	}
-
-	int read(api::InfoObject & info) {
-		return read(
-					arg::DestinationBuffer(info.info_to_void()),
-					arg::Size(info.info_size())
-					);
 	}
 
 	/*! \details Writes the file at the location specified.
@@ -454,83 +441,51 @@ public:
 	  * @return Number of bytes successfully written or less than zero with errno set
 	 */
 	int write(
-			const arg::Location location,
-			const arg::SourceBuffer buf,
-			const arg::Size size
+			Location location,
+			const void * buf,
+			Size size
 			) const;
 
 	/*! \details Writes the file using a var::Data object at the location specified. */
 	int write(
-			const arg::Location & location,
-			const arg::SourceData & data
+			Location location,
+			const var::Reference & reference
 			) const {
 		return write(
 					location,
-					arg::SourceBuffer(data.argument().to_const_void()),
-					arg::Size(data.argument().size())
+					reference.to_const_void(),
+					Size(reference.size())
 					);
 	}
 
 	int write(
-			const arg::ImplicitSourceData & data
-			) const {
-		return write(
-					arg::SourceBuffer(data.argument().to_const_void()),
-					arg::Size(data.argument().size())
-					);
-	}
-
-	/*! \details Writes the file using a var::ConstString object at the location specified. */
-	int write(
-			const arg::Location & location,
-			const var::ConstString & str
-			) const {
-		return write(
-					location,
-					arg::SourceBuffer(str.cstring()),
-					arg::Size(str.length())
-					);
-	}
-
-	/*! \details Writes the file using a var::String object at the location specified. */
-	int write(
-			const arg::Location location,
-			const var::String str
-			) const {
-		return write(
-					location,
-					arg::SourceBuffer(str.cstring()),
-					arg::Size(str.length())
-					);
-	}
-
-	int write(
-			const arg::SourceFile source_file,
-			const arg::PageSize page_size,
-			const arg::Size size = arg::Size(0xffffffff)
+			const File & source_file,
+			PageSize page_size,
+			Size size = Size(size_t(-1))
 			) const;
 
 	int write(
-			const arg::Location location,
-			const arg::SourceFile source_file,
-			const arg::PageSize page_size,
-			const arg::Size size = arg::Size(0xffffffff)
+			Location location,
+			const File & source_file,
+			PageSize page_size,
+			Size size = Size(size_t(-1))
 			) const {
 		seek(location);
 		return write(source_file, page_size, size);
 	}
 
-	int write(const arg::SourceFile source_file,
-				 const arg::PageSize page_size,
-				 const arg::Size size,
-				 const sys::ProgressCallback * progress_callback
-				 ) const;
+	int write(
+			const File & source_file,
+			PageSize page_size,
+			Size size,
+			const sys::ProgressCallback * progress_callback
+			) const;
 
 	int write(
-			const arg::Location location,
-			const arg::SourceFile source_file,
-			const arg::PageSize page_size,
-			const arg::Size size,
+			Location location,
+			const File & source_file,
+			PageSize page_size,
+			Size size,
 			const sys::ProgressCallback * progress_callback
 			) const {
 		seek(location);
@@ -547,31 +502,40 @@ public:
 	 */
 	int readline(char * buf, int nbyte, int timeout_msec, char terminator = '\n') const;
 
-	const File& operator<<(const var::ConstString & a) const { write(a); return *this; }
-	const File& operator<<(const var::String & a) const { write(a); return *this; }
-	const File& operator<<(const var::DataReference & a) const { write( arg::SourceData(a) ); return *this; }
-	const File& operator>>(var::Data & a) const { read(a); return *this; }
+	const File& operator<<(const var::Reference & a) const {
+		write(a); return *this;
+	}
+
+	const File& operator>>(var::Reference & a) const {
+		read(a);
+		return *this;
+	}
 
 	/*! \details Seeks to a location in the file or on the device. */
 	virtual int seek(
-			const arg::Location location,
+			Location location,
 			enum whence whence = SET
 			) const;
 
 	/*! \details Reads a line in to the var::String until end-of-file or \a term is reached. */
 	var::String gets(char term = '\n') const;
 
-	char * gets(var::String & s, char term = '\n') const;
+	const char * gets(var::String & s, char term = '\n') const;
 
 
 	API_DEPRECATED("Use gets(var::String & s) instead")
 	char * gets(char * s, int n, char term = '\n') const;
 
 #ifdef __link
-	static void set_default_driver(arg::ImplicitLinkDriver driver){
+	static void set_default_driver(
+			LinkDriver driver
+			){
 		m_default_driver = driver.argument();
 	}
-	void set_driver(arg::ImplicitLinkDriver driver){ m_driver = driver.argument(); }
+
+	void set_driver(
+			LinkDriver driver
+			){ m_driver = driver.argument(); }
 	link_transport_mdriver_t * driver() const { return m_driver; }
 	static link_transport_mdriver_t * default_driver(){ return m_default_driver; }
 
@@ -585,8 +549,8 @@ public:
 	 *
 	 */
 	virtual int ioctl(
-			const arg::IoRequest request,
-			const arg::IoArgument arg
+			IoRequest request,
+			IoArgument arg
 			) const;
 
 	/*! \details Executes an ioctl() with request and const arg pointer.
@@ -595,12 +559,12 @@ public:
 	 *
 	 */
 	int ioctl(
-			const arg::IoRequest request,
-			const arg::IoConstArgument argument
+			IoRequest request,
+			IoConstArgument argument
 			) const {
 		return ioctl(
 					request,
-					arg::IoArgument((void*)argument.argument())
+					IoArgument((void*)argument.argument())
 					);
 	}
 	/*! \details Executes an ioctl() with just a request.
@@ -610,20 +574,22 @@ public:
 	 * The arg value for the ioctl is set to NULL.
 	 *
 	 */
-	int ioctl(const arg::IoRequest request) const {
-		return ioctl(request, arg::IoArgument(0));
+	int ioctl(
+			IoRequest request
+			) const {
+		return ioctl(request, IoArgument(nullptr));
 	}
 	/*! \details Executes an ioctl() with request and integer arg.
 	 *
 	 * @return Depends on request
 	 */
 	int ioctl(
-			const arg::IoRequest request,
-			const arg::IoIntArgument argument
+			IoRequest request,
+			IoIntArgument argument
 			) const {
 		return ioctl(
 					request,
-					arg::IoArgument(MCU_INT_CAST(argument.argument()))
+					IoArgument(MCU_INT_CAST(argument.argument()))
 					);
 	}
 
@@ -641,8 +607,6 @@ public:
 	  */
 	void set_fileno(const File & file) const { m_fd = file.fileno(); }
 
-
-#if !defined __link
 	/*! \details Copies a file from the source to the destination.
 	  *
 	  * @return Zero on success
@@ -650,8 +614,12 @@ public:
 	  *
 	  */
 	static int copy(
-			const arg::SourceFilePath source_path,
-			const arg::DestinationFilePath dest_path
+			SourcePath source_path,
+			DestinationPath dest_path
+		#if defined __link
+			, SourceLinkDriver source_driver = SourceLinkDriver(nullptr),
+			DestinationLinkDriver destination_driver = DestinationLinkDriver(nullptr)
+		#endif
 			);
 
 	/*! \details Copies a file from the source to the destination.
@@ -661,24 +629,14 @@ public:
 	  *
 	  */
 	static int copy(
-			const arg::SourceFilePath source_path,
-			const arg::DestinationFilePath dest_path,
-			const arg::IsOverwrite is_overwrite);
-#else
-	static int copy(
-			const arg::SourceFilePath source_path,
-			const arg::DestinationFilePath dest_path,
-			link_transport_mdriver_t * source_driver = 0,
-			link_transport_mdriver_t * destination_driver = 0
+			SourcePath source_path,
+			DestinationPath dest_path,
+			IsOverwrite overwrite
+		#if defined __link
+			, SourceLinkDriver source_driver = SourceLinkDriver(nullptr),
+			DestinationLinkDriver destination_driver = DestinationLinkDriver(nullptr)
+		#endif
 			);
-
-	static int copy(
-			const arg::SourceFilePath source_path,
-			const arg::DestinationFilePath dest_path,
-			const arg::IsOverwrite overwrite,
-			link_transport_mdriver_t * source_driver = 0,
-			link_transport_mdriver_t * destination_driver = 0);
-#endif
 
 	/*! \details Renames a file.
 	  *
@@ -687,15 +645,11 @@ public:
 	  * \return Zero on success
 	  *
 	  */
-#if !defined __link
-	static int rename(const arg::SourceFilePath old_path, const arg::DestinationFilePath new_path);
-#else
 	static int rename(
-			const arg::SourceFilePath old_path,
-			const arg::DestinationFilePath new_path,
-			arg::LinkDriver driver = arg::LinkDriver(0)
+			SourcePath old_path,
+			DestinationPath new_path
+			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
-#endif
 
 
 protected:
@@ -718,7 +672,9 @@ protected:
 		return 0;
 	}
 
-	static link_transport_mdriver_t * check_driver(arg::ImplicitLinkDriver driver){
+	static link_transport_mdriver_t * check_driver(
+			LinkDriver driver
+			){
 		if( driver.argument() == 0 ){
 			return m_default_driver;
 		}
@@ -732,17 +688,17 @@ protected:
 
 private:
 	static int copy(
-			const arg::SourceFile source,
-			const arg::DestinationFile dest,
-			const arg::SourceFilePath source_path,
-			const arg::DestinationFilePath dest_path
+			Source source,
+			Destination dest,
+			SourcePath source_path,
+			DestinationPath dest_path
 			);
 	static int copy(
-			const arg::SourceFile source,
-			const arg::DestinationFile dest,
-			const arg::SourceFilePath source_path,
-			const arg::DestinationFilePath dest_path,
-			const arg::IsOverwrite is_overwrite
+			Source source,
+			Destination dest,
+			SourcePath source_path,
+			DestinationPath dest_path,
+			IsOverwrite is_overwrite
 			);
 	bool m_is_keep_open;
 
@@ -775,7 +731,7 @@ public:
 	 *
 	 */
 	int open(
-			const arg::ImplicitFilePath & path,
+			const var::String & path,
 			const OpenFlags & flags
 			){
 		MCU_UNUSED_ARGUMENT(path);
@@ -794,8 +750,8 @@ public:
 	 * rather than from the filesystem.
 	 */
 	int read(
-			arg::DestinationBuffer buf,
-			const arg::Size nbyte
+			void * buf,
+			Size nbyte
 			) const;
 
 	/*! \details Reimplements fs::File::write() to simply
@@ -805,8 +761,8 @@ public:
 	 * @return The number of bytes successfully written
 	 */
 	int write(
-			const arg::SourceBuffer buf,
-			const arg::Size nbyte
+			const void * buf,
+			Size nbyte
 			) const;
 
 	/*! \details Seeks to the specified location in the file.
@@ -815,7 +771,7 @@ public:
 	 *
 	 */
 	int seek(
-			const arg::Location location,
+			Location location,
 			enum whence whence = SET
 			) const;
 
@@ -824,8 +780,8 @@ public:
 	 *
 	 */
 	int ioctl(
-			const arg::IoRequest request,
-			const arg::IoArgument argument
+			IoRequest request,
+			IoArgument argument
 			) const {
 		MCU_UNUSED_ARGUMENT(request);
 		MCU_UNUSED_ARGUMENT(argument);
@@ -855,11 +811,11 @@ private:
 	mutable var::Data m_data;
 };
 
-class DataReferenceFile : public File {
+class ReferenceFile : public File {
 public:
 
 	/*! \details Constructs a data file. */
-	DataReferenceFile(
+	ReferenceFile(
 			const OpenFlags & flags = OpenFlags::read_write()
 			){
 		m_location = 0;
@@ -871,7 +827,7 @@ public:
 	 *
 	 */
 	int open(
-			const arg::ImplicitFilePath & path,
+			const var::String & path,
 			const OpenFlags & flags
 			){
 		MCU_UNUSED_ARGUMENT(path);
@@ -891,8 +847,8 @@ public:
 	 * rather than from the filesystem.
 	 */
 	int read(
-			arg::DestinationBuffer buf,
-			const arg::Size nbyte
+			void * buf,
+			Size nbyte
 			) const;
 
 	/*! \details Reimplements fs::File::write() to simply
@@ -902,8 +858,8 @@ public:
 	 * @return The number of bytes successfully written
 	 */
 	int write(
-			const arg::SourceBuffer buf,
-			const arg::Size nbyte
+			const void * buf,
+			Size nbyte
 			) const;
 
 	/*! \details Seeks to the specified location in the file.
@@ -912,7 +868,7 @@ public:
 	 *
 	 */
 	int seek(
-			const arg::Location location,
+			Location location,
 			enum whence whence = SET
 			) const;
 
@@ -921,8 +877,8 @@ public:
 	 *
 	 */
 	int ioctl(
-			const arg::IoRequest request,
-			const arg::IoArgument argument
+			IoRequest request,
+			IoArgument argument
 			) const {
 		MCU_UNUSED_ARGUMENT(request);
 		MCU_UNUSED_ARGUMENT(argument);
@@ -933,7 +889,7 @@ public:
 	 * file (size of the data).
 	 *
 	 */
-	u32 size() const { return data_reference().size(); }
+	u32 size() const { return reference().size(); }
 
 	using File::read;
 	using File::write;
@@ -942,14 +898,14 @@ public:
 	const OpenFlags & flags() const { return m_open_flags; }
 
 	/*! \details Accesses (read-only) the member data object. */
-	const var::DataReference & data_reference() const { return m_data_reference; }
+	const var::Reference & reference() const { return m_reference; }
 	/*! \details Accesses the member data object. */
-	var::DataReference & data_reference(){ return m_data_reference; }
+	var::Reference & reference(){ return m_reference; }
 
 private:
 	mutable int m_location; //offset location for seeking/reading/writing
 	OpenFlags m_open_flags;
-	mutable var::DataReference m_data_reference;
+	mutable var::Reference m_reference;
 };
 
 class NullFile : public File {
@@ -962,7 +918,10 @@ public:
 	 * functionality.
 	 *
 	 */
-	int open(const arg::ImplicitFilePath name, const OpenFlags & flags);
+	int open(
+			const var::String & name,
+			const OpenFlags & flags
+			);
 
 	/*! \details Reimplements fs::File::close() to have no
 	 * functionality.
@@ -978,8 +937,8 @@ public:
 	 * @return -1 to indicate reads are not valid
 	 */
 	int read(
-			arg::DestinationBuffer buf,
-			const arg::Size nbyte
+			void * buf,
+			Size nbyte
 			) const;
 
 	/*! \details Reimplements fs::File::write() to simply
@@ -990,8 +949,8 @@ public:
 	 * @return The number of bytes successfully written
 	 */
 	int write(
-			const arg::SourceBuffer buf,
-			const arg::Size nbyte
+			const void * buf,
+			Size nbyte
 			) const;
 
 	/*! \details Returns an error.
@@ -1002,7 +961,7 @@ public:
 	 *
 	 */
 	int seek(
-			const arg::Location location,
+			Location location,
 			enum whence whence = SET
 			) const;
 
@@ -1011,8 +970,8 @@ public:
 	 *
 	 */
 	int ioctl(
-			const arg::IoRequest request,
-			const arg::IoArgument argument
+			IoRequest request,
+			IoArgument argument
 			) const {
 		MCU_UNUSED_ARGUMENT(request);
 		MCU_UNUSED_ARGUMENT(argument);
@@ -1039,4 +998,4 @@ private:
 
 }
 
-#endif /* SAPI_SYS_FILE_HPP_ */
+#endif /* SAPI_FS_FILE_HPP_ */

@@ -6,14 +6,16 @@
 using namespace fmt;
 using namespace sys;
 
-Wav::Wav(const arg::SourceFilePath & name) {
+Wav::Wav(const var::String & path) {
 	// TODO Auto-generated constructor stub
-	if( !name.argument().is_empty() && open(
-			 arg::FilePath(name.argument()),
-			 fs::OpenFlags::read_only()) >= 0 ){
+	if( !path.is_empty() &&
+		 open(
+			 path,
+			 fs::OpenFlags::read_only()
+			 ) >= 0 ){
 		if( read(
-				 arg::DestinationBuffer(&m_header),
-				 arg::Size(sizeof(m_header))
+				 &m_header,
+				 Size(sizeof(m_header))
 				 ) < 0 ){
 			close();
 		} else {
@@ -25,17 +27,17 @@ Wav::Wav(const arg::SourceFilePath & name) {
 
 
 int Wav::create(
-		const arg::DestinationFilePath & path,
-		arg::IsOverwrite is_overwrite
+		const var::String & path,
+		IsOverwrite is_overwrite
 		){
 	int result = File::create(
-				arg::DestinationFilePath(path),
+				path,
 				is_overwrite
 				);
 	if( result < 0 ){ return result; }
 	return write(
-				arg::SourceBuffer(&m_header),
-				arg::Size(sizeof(m_header))
+				&m_header,
+				Size(sizeof(m_header))
 				);
 }
 
@@ -43,19 +45,19 @@ void Wav::copy_header(
 		const Wav & reference
 		){
 	set_header(
-				arg::ChannelCount(reference.channel_count()),
-				arg::SampleRate(reference.sample_rate()),
-				arg::BitsPerSample(reference.bits_per_sample()),
-				arg::SampleCount(reference.sample_count())
+				ChannelCount(reference.channel_count()),
+				SampleRate(reference.sample_rate()),
+				BitsPerSample(reference.bits_per_sample()),
+				SampleCount(reference.sample_count())
 				);
 }
 
 
 void Wav::set_header(
-		arg::ChannelCount channel_count,
-		arg::SampleRate sample_rate,
-		arg::BitsPerSample bits_per_sample,
-		arg::SampleCount sample_count
+		ChannelCount channel_count,
+		SampleRate sample_rate,
+		BitsPerSample bits_per_sample,
+		SampleCount sample_count
 		){
 	m_header.riff[0] = 'R';
 	m_header.riff[1] = 'I';

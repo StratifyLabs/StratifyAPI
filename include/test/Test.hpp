@@ -74,6 +74,9 @@ namespace test {
 class Test : public api::WorkObject {
 public:
 
+	using Name = arg::Argument<const var::String &, struct TestNameTag>;
+	using VersionEncodedString = arg::Argument<const var::String &, struct TestVersionEncodedStringTag>;
+	using GitHash = arg::Argument<const var::String &, struct TestGitHashTag>;
 
 	/*! \details Initializes the test report.
 	  *
@@ -82,9 +85,10 @@ public:
 	  *
 	  */
 	static void initialize(
-			const arg::Name name,
-			const arg::VersionEncodedString version,
-			const arg::GitHash git_hash = arg::GitHash(""));
+			Name name,
+			VersionEncodedString version,
+			GitHash git_hash = GitHash("")
+			);
 
 	/*! \details Finalizes the test report.
 	  *
@@ -170,7 +174,7 @@ public:
 	  * be used as the value of the parent.
 	  *
 	  */
-	Test(const arg::Name & name, Test * parent = 0);
+	Test(const var::String & name, Test * parent = 0);
 
 	/*! \details Deconstructs the test object.
 	  *
@@ -287,7 +291,7 @@ public:
 	  * execute_additional_cases().
 	  *
 	  */
-	void open_case(const var::ConstString & case_name);
+	void open_case(const var::String & case_name);
 
 	/*! \details Closes a test case.
 	  *
@@ -356,7 +360,7 @@ protected:
 	  *
 	  *
 	  */
-	void print_case_message_with_key(const var::ConstString & key, const char * fmt, ...);
+	void print_case_message_with_key(const var::String & key, const char * fmt, ...);
 
 	int indent() const { return m_indent_count; }
 
@@ -364,7 +368,7 @@ protected:
 private:
 
 
-	void vprint_case_message(const var::ConstString & key, const char * fmt, va_list args);
+	void vprint_case_message(const var::String & key, const char * fmt, va_list args);
 
 	void print(const char * fmt, ...);
 	static void print_indent(int indent, const char * fmt, ...);

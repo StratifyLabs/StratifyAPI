@@ -29,8 +29,8 @@ void MemoryFont::set_font_memory(const void * ptr){
 		m_canvas_start = m_header.size;
 		m_canvas_size = m_canvas.calculate_size(
 					Area(
-						arg::Width(m_header.canvas_width),
-						arg::Height(m_header.canvas_height)
+						Area::Width(m_header.canvas_width),
+						Area::Height(m_header.canvas_height)
 						)
 					);
 	}
@@ -96,22 +96,16 @@ int MemoryFont::load_char(sg_font_char_t & ch, char c, bool ascii) const {
 void MemoryFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, const Point & point) const {
 	u32 canvas_offset = m_canvas_start + m_canvas_size * ch.canvas_idx;
 	m_canvas.refer_to(
-				arg::ReadOnlyBuffer((u8*)m_font + canvas_offset),
+				var::Reference::ReadOnlyBuffer((u8*)m_font + canvas_offset),
 				sgfx::Area(
-					arg::Width(m_header.canvas_width),
-					arg::Height(m_header.canvas_height)
+					Area::Width(m_header.canvas_width),
+					Area::Height(m_header.canvas_height)
 					)
 				);
 
 	Region region(
-				Point(
-					arg::XValue(ch.canvas_x),
-					arg::YValue(ch.canvas_y)
-					),
-				Area(
-					arg::Width(ch.width),
-					arg::Height(ch.height)
-					)
+				Point(ch.canvas_x, ch.canvas_y),
+				Area(ch.width,ch.height)
 				);
 	dest.draw_sub_bitmap(point, m_canvas, region);
 }

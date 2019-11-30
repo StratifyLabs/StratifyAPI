@@ -112,7 +112,7 @@ void Printer::clear_color_code(){
 #endif
 }
 
-u32 Printer::color_code(const var::ConstString & color){
+u32 Printer::color_code(const var::String & color){
 	var::String color_upper(color);
 	color_upper.to_upper();
 	if( color_upper == "BLACK" ){ return COLOR_CODE_BLACK; }
@@ -147,7 +147,7 @@ void Printer::print_indentation(){
 	}
 }
 
-void Printer::vprint_indented(const var::ConstString & key, const char * fmt, va_list list){
+void Printer::vprint_indented(const var::String & key, const char * fmt, va_list list){
 	print("\n");
 	print_indentation();
 
@@ -177,7 +177,7 @@ void Printer::vprint_indented(const var::ConstString & key, const char * fmt, va
 
 }
 
-void Printer::print_indented(const var::ConstString & key, const char * fmt, ...){
+void Printer::print_indented(const var::String & key, const char * fmt, ...){
 	va_list list;
 	va_start(list, fmt);
 	vprint_indented(key, fmt, list);
@@ -231,7 +231,7 @@ Printer & Printer::operator << (const var::DataInfo & a){
 #endif
 
 
-Printer & Printer::operator << (const var::DataReference & a){
+Printer & Printer::operator << (const var::Reference & a){
 	u32 o_flags = m_o_flags;
 	const s8 * ptrs8 = a.to_const_s8();
 	const s16 * ptrs16 = a.to_const_s16();
@@ -359,7 +359,7 @@ Printer & Printer::operator << (const var::JsonObject & a){
 
 	var::Vector<var::String> keys = a.keys();
 	for(u32 i=0; i < keys.count(); i++){
-		var::JsonValue entry = a.at(arg::JsonKey(keys.at(i)));
+		var::JsonValue entry = a.at(keys.at(i));
 		if( entry.is_object() ){
 			open_object(keys.at(i), current_level());
 			*this << entry.to_object();
@@ -399,7 +399,7 @@ Printer & Printer::operator << (const var::JsonArray & a){
 	return *this;
 }
 
-Printer & Printer::key(const var::ConstString & key, const var::JsonValue & a){
+Printer & Printer::key(const var::String & key, const var::JsonValue & a){
 
 	if(a.is_object()){
 		open_object(key, current_level() );
@@ -415,7 +415,7 @@ Printer & Printer::key(const var::ConstString & key, const var::JsonValue & a){
 	return *this;
 }
 
-int Printer::set_verbose_level(const var::ConstString & level){
+int Printer::set_verbose_level(const var::String & level){
 	if( level == "debug" ){ set_verbose_level(DEBUG); return 0; }
 	if( level == "info" ){ set_verbose_level(Printer::INFO); return 0; }
 	if( level == "message" ){ set_verbose_level(Printer::MESSAGE); return 0; }
@@ -900,7 +900,7 @@ bool Printer::update_progress(int progress, int total){
 	return false;
 }
 
-Printer & Printer::open_object(const var::ConstString & key, enum verbose_level level){
+Printer & Printer::open_object(const var::String & key, enum verbose_level level){
 	if( verbose_level() >= level ){
 		if( m_o_flags & PRINT_BOLD_OBJECTS ){ set_format_code(FORMAT_BOLD); }
 		print_indented(key, "");
@@ -911,7 +911,7 @@ Printer & Printer::open_object(const var::ConstString & key, enum verbose_level 
 	return *this;
 }
 
-Printer & Printer::open_array(const var::ConstString & key, enum verbose_level level){
+Printer & Printer::open_array(const var::String & key, enum verbose_level level){
 	if( verbose_level() >= level ){
 		if( m_o_flags & PRINT_BOLD_ARRAYS ){ set_format_code(FORMAT_BOLD); }
 		print_indented(key, "");
@@ -922,12 +922,12 @@ Printer & Printer::open_array(const var::ConstString & key, enum verbose_level l
 	return *this;
 }
 
-Printer & Printer::key(const var::ConstString & key, const var::String & a){
+Printer & Printer::key(const var::String & key, const var::String & a){
 	this->key(key, "%s", a.cstring());
 	return *this;
 }
 
-Printer & Printer::key(const var::ConstString & key, const char * fmt, ...){
+Printer & Printer::key(const var::String & key, const char * fmt, ...){
 	if( verbose_level() >= current_level() ){
 		va_list list;
 		va_start(list, fmt);

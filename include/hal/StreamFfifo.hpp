@@ -109,8 +109,8 @@ public:
 
 	int set_attributes(const StreamFFifoAttributes & attributes){
 		return ioctl(
-					arg::IoRequest(I_STREAM_FFIFO_SETATTR),
-					arg::IoConstArgument(&attributes.m_attr)
+					IoRequest(I_STREAM_FFIFO_SETATTR),
+					IoConstArgument(&attributes.m_attr)
 					);
 	}
 

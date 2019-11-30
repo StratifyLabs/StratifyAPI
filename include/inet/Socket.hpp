@@ -32,6 +32,11 @@ namespace inet {
 class Socket;
 class SocketAddress;
 
+class SocketFlags {
+public:
+   using Size = fs::File::Size;
+};
+
 /*! \brief Socket Address Info
  * \details The Socket Address Info class is used
  * to get socket address information for a given
@@ -72,6 +77,9 @@ class SocketAddress;
  */
 class SocketAddressInfo : public api::WorkObject {
 public:
+
+   using NodeToFetch = arg::Argument< const var::String &, struct SocketFlagsNodeToFetchTag >;
+   using ServiceToFetch = arg::Argument< const var::String &, struct SocketFlagsServiceToFetchTag >;
 
 	/*! \details Enumerates the socket address family options. */
 	enum family {
@@ -134,7 +142,7 @@ public:
 	/*! \details Accesses the protocol. */
 	int protocol() const { return m_addrinfo.ai_protocol; }
 
-	const var::ConstString & canon_name() const { return m_canon_name; }
+	const var::String & canon_name() const { return m_canon_name; }
 
 	/*! \details Fetches the socket address information from
 	 * DNS servers based on the node and service specified.
@@ -148,24 +156,24 @@ public:
 	 * ```
 	 */
 	var::Vector<SocketAddressInfo> fetch_node(
-			const var::ConstString & node
+			const var::String & node
 			){
 		return fetch(
-					arg::NodeToFetch(node),
-					arg::ServiceToFetch("")
+					NodeToFetch(node),
+					ServiceToFetch("")
 					);
 	}
 
-	var::Vector<SocketAddressInfo> fetch_service(const var::ConstString & service){
+	var::Vector<SocketAddressInfo> fetch_service(const var::String & service){
 		return fetch(
-					arg::NodeToFetch(""),
-					arg::ServiceToFetch(service)
+					NodeToFetch(""),
+					ServiceToFetch(service)
 					);
 	}
 
 	var::Vector<SocketAddressInfo> fetch(
-			const arg::NodeToFetch node,
-			const arg::ServiceToFetch service);
+			const NodeToFetch node,
+			const ServiceToFetch service);
 
 private:
 	friend class SocketAddress;
@@ -200,7 +208,7 @@ public:
 		m_sockaddr_in.sin_addr.s_addr = address(a,b,c,d);
 	}
 
-	int set_address(const var::ConstString & addr);
+	int set_address(const var::String & addr);
 
 private:
 	friend class SocketAddress;
@@ -226,9 +234,7 @@ public:
 
 	SocketAddress(const SocketAddressIpv4 & ipv4){
 		m_sockaddr.copy_contents(
-					arg::SourceData(
-						var::DataReference(ipv4.m_sockaddr_in)
-						)
+					var::Reference(ipv4.m_sockaddr_in)
 					);
 		m_protocol = ipv4.m_protocol;
 		m_type = ipv4.m_type;
@@ -246,9 +252,7 @@ public:
 					  int protocol = SocketAddressInfo::PROTOCOL_TCP,
 					  int type = SocketAddressInfo::TYPE_STREAM){
 		m_sockaddr.copy_contents(
-					arg::SourceData(
-						var::DataReference(ipv4)
-						)
+					var::Reference(ipv4)
 					);
 		m_protocol = protocol;
 		m_type = type;
@@ -256,9 +260,7 @@ public:
 
 	SocketAddress(const sockaddr_in6 & ipv6){
 		m_sockaddr.copy_contents(
-					arg::SourceData(
-						var::DataReference(ipv6)
-						)
+						var::Reference(ipv6)
 					);
 	}
 
@@ -294,7 +296,7 @@ public:
 		return m_sockaddr.to<struct sockaddr>();
 	}
 
-	const var::ConstString & canon_name() const { return m_canon_name; }
+	const var::String & canon_name() const { return m_canon_name; }
 
 protected:
 	friend class Socket;
@@ -433,18 +435,14 @@ private:
 	friend class Socket;
 	SocketOption & set_integer_value(int name, int value){
 		m_name = name;
-		m_option_value.allocate(
-					arg::Size(sizeof(int))
-					);
+		m_option_value.allocate(sizeof(int));
 		*m_option_value.to<int>() = value;
 		return *this;
 	}
 
 	SocketOption & set_timeout(int name, const chrono::ClockTime & timeout){
 		m_name = name;
-		m_option_value.allocate(
-					arg::Size(sizeof(struct timeval))
-					);
+		m_option_value.allocate(sizeof(struct timeval));
 		m_option_value.to<struct timeval>()->tv_sec = timeout.seconds();
 		m_option_value.to<struct timeval>()->tv_usec = timeout.nanoseconds() / 1000UL;
 		return *this;
@@ -477,6 +475,12 @@ private:
  */
 class Socket : public fs::File {
 public:
+
+
+   using SourceSocketAddress = arg::Argument< const inet::SocketAddress&, struct SourceSocketAddressTag >;
+   using DestinationSocketAddress = arg::Argument< inet::SocketAddress&, struct DestinationSocketAddressTag >;
+   using ListenBacklogCount = arg::Argument< int, struct ListenBacklogCountTag >;
+
 	Socket();
 	~Socket();
 
@@ -487,14 +491,14 @@ public:
 	  *
 	  * @return Zero on success
 	  */
-	virtual int create(const arg::SourceSocketAddress address);
+	virtual int create(const SocketAddress & address);
 
 	/*!
 	  * \details Connects to the server using the SocketAddress
 	  * object passed to create() method.
 	  * @return Less than zero on error or zero on success
 	  */
-	virtual int connect(const arg::SourceSocketAddress address);
+	virtual int connect(const SocketAddress & address);
 
 
 	/*!
@@ -505,19 +509,18 @@ public:
 	  * when using TCP sockets where listen is applicable.
 	  *
 	  */
-	virtual int bind_and_listen(
-			const arg::SourceSocketAddress address,
-			const arg::ListenBacklogCount backlog = arg::ListenBacklogCount(4)) const;
+	virtual int bind_and_listen(const SocketAddress & address,
+			ListenBacklogCount backlog = ListenBacklogCount(4)) const;
 
 
-	virtual int bind(const arg::SourceSocketAddress address) const;
+	virtual int bind(const SocketAddress & address) const;
 
 	/*!
 	  * \details Accepts a socket connection on a socket that is listening.
 	  *
 	  * @return A valid Socket if the operation is successful.
 	  */
-	Socket accept(arg::DestinationSocketAddress address) const;
+	Socket accept(SocketAddress & address) const;
 
 	/*! \details Shuts down the socket.
 	 *
@@ -533,20 +536,22 @@ public:
 	 *
 	 * @return Zero on success
 	 */
-	virtual int shutdown(const fs::OpenFlags how = fs::OpenFlags::read_write()) const;
+	virtual int shutdown(
+			const fs::OpenFlags how = fs::OpenFlags::read_write()
+			) const;
 
 	//already documented in fs::File
 	using File::write;
 	virtual int write(
-			const arg::SourceBuffer buf,
-			const arg::Size nbyte
+			SourceBuffer buf,
+			Size nbyte
 			) const;
 
 	//already documented in fs::File
 	using File::read;
 	virtual int read(
-			arg::DestinationBuffer buf,
-			const arg::Size nbyte
+			DestinationBuffer buf,
+			Size nbyte
 			) const;
 
 
@@ -557,18 +562,19 @@ public:
 	  * @param ai_addrlen - write address ip len (IPv4 or IPv6) before use!!!
 	  * */
 	int read(
-			arg::DestinationData data,
-			arg::DestinationSocketAddress address
-			);
-	int read(
-			arg::DestinationBuffer buf,
-			const arg::Size nbyte,
-			arg::DestinationSocketAddress address
+			var::Reference & data,
+			DestinationSocketAddress address
 			);
 
 	int read(
-			arg::DestinationBuffer buf,
-			const arg::Size nbyte,
+			DestinationBuffer buf,
+			Size nbyte,
+			DestinationSocketAddress address
+			);
+
+	int read(
+			DestinationBuffer buf,
+			Size nbyte,
 			struct sockaddr * ai_addr,
 			socklen_t * ai_addrlen
 			) const;
@@ -582,23 +588,24 @@ public:
 	  *
 	  */
 	int write(
-			const arg::SourceData data,
-			const arg::SourceSocketAddress address
+			const var::Reference & data,
+			SourceSocketAddress address
 			){
 		return write(
-					arg::SourceBuffer(data.argument().to_const_void()),
-					arg::Size(data.argument().size()),
+					SourceBuffer(data.to_const_void()),
+					Size(data.size()),
 					address);
 	}
 	int write(
-			const arg::SourceBuffer buf,
-			const arg::Size nbyte,
+			SourceBuffer buf,
+			Size nbyte,
 			const struct sockaddr * ai_addr,
 			socklen_t ai_addrlen) const;
 	int write(
-			const arg::SourceBuffer buf,
-			const arg::Size nbyte,
-			const arg::SourceSocketAddress socket_address) const {
+			SourceBuffer buf,
+			Size nbyte,
+			SourceSocketAddress socket_address
+			) const {
 		return write(
 					buf,
 					nbyte,

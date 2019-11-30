@@ -21,14 +21,14 @@ public:
 	 * @param path The path to the file
 	 * @return Zero on success
 	 */
-	virtual int save(const arg::DestinationFilePath path) const;
+	virtual int save(const String & path) const;
 
 	/*! \details Loads the item from a file.
 	 *
 	 * @param path The path to the file
 	 * @return Zero on success
 	 */
-	virtual int load(const arg::SourceFilePath & path);
+	virtual int load(const String & path);
 
 	/*! \details Clears the data in the item. */
 	virtual void clear();

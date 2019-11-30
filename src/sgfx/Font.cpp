@@ -8,18 +8,23 @@
 
 using namespace sgfx;
 
-FontInfo::FontInfo(u8 point_size, u8 style, Font * font){
-	m_point_size = point_size;
-	m_style = style;
+FontInfo::FontInfo(
+		PointSize point_size,
+		Style style,
+		Font * font){
+	m_point_size = point_size.argument();
+	m_style = style.argument();
 	m_font = font;
 }
 
-FontInfo::FontInfo(const arg::SourceFilePath & path){
-	m_path = path.argument();
+FontInfo::FontInfo(const var::String & path){
+	m_path = path;
 
 	var::Tokenizer tokens(
-				arg::TokenEncodedString(fs::File::name(path.argument())),
-				arg::TokenDelimeters("-.")
+				var::Tokenizer::EncodedString(
+					fs::File::name(path)
+					),
+				var::Tokenizer::Delimeters("-.")
 				);
 
 	if( tokens.count() != 4 ){
@@ -28,7 +33,7 @@ FontInfo::FontInfo(const arg::SourceFilePath & path){
 
 		m_font = 0;
 		m_name = tokens.at(0);
-		m_point_size = tokens.at(2).to_integer();
+		m_point_size = var::String(tokens.at(2)).to_integer();
 		var::String style = tokens.at(1);
 		style.to_lower();
 
@@ -54,7 +59,10 @@ FontInfo::FontInfo(const arg::SourceFilePath & path){
 }
 
 
-int FontInfo::ascending_point_size(const void * a, const void * b){
+int FontInfo::ascending_point_size(
+		const void * a,
+		const void * b
+		){
 	const FontInfo * info_a = (const FontInfo *)a;
 	const FontInfo * info_b = (const FontInfo *)b;
 	if( info_a->point_size() < info_b->point_size() ){ return -1; }
@@ -62,7 +70,10 @@ int FontInfo::ascending_point_size(const void * a, const void * b){
 	return 0;
 }
 
-int FontInfo::ascending_style(const void * a, const void * b){
+int FontInfo::ascending_style(
+		const void * a,
+		const void * b
+		){
 	const FontInfo * info_a = (const FontInfo *)a;
 	const FontInfo * info_b = (const FontInfo *)b;
 	if( info_a->style() < info_b->style() ){ return -1; }
@@ -70,9 +81,9 @@ int FontInfo::ascending_style(const void * a, const void * b){
 	return 0;
 }
 
-const var::ConstString Font::m_ascii_character_set = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+const var::String Font::m_ascii_character_set = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
-const var::ConstString & Font::ascii_character_set(){
+const var::String & Font::ascii_character_set(){
 	return m_ascii_character_set;
 }
 
@@ -91,7 +102,7 @@ Font::Font() {
 	m_is_kerning_enabled = true;
 }
 
-int Font::calculate_length(const var::ConstString & str) const {
+int Font::calculate_length(const var::String & str) const {
 	u32 length = 0;
 	const char * s = str.cstring();
 	while( *s != 0 ){
@@ -114,18 +125,18 @@ int Font::draw(char c, Bitmap & dest, const Point & point) const {
 		return -1;
 	}
 
-	Point p = point +
-			Point(
-				arg::XValue(m_char.offset_x),
-				arg::YValue(m_char.offset_y)
-				);
+	Point p = point + Point(m_char.offset_x, m_char.offset_y);
 
 	draw_char_on_bitmap(m_char, dest, p);
 
 	return m_char.advance_x;
 }
 
-int Font::draw(const var::ConstString & const_string, Bitmap & bitmap, const Point & point) const {
+int Font::draw(
+		const var::String & const_string,
+		Bitmap & bitmap,
+		const Point & point
+		) const {
 	char c;
 	sg_size_t w;
 
@@ -148,10 +159,7 @@ int Font::draw(const var::ConstString & const_string, Bitmap & bitmap, const Poi
 			}
 		}
 
-		p += Point(
-					arg::XValue(w),
-					arg::YValue(0)
-					);
+		p += Point::X(w);
 
 	}
 	return 0;

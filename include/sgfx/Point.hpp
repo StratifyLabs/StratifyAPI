@@ -15,11 +15,18 @@ namespace sgfx {
  */
 class Point : public api::SgfxInfoObject {
 public:
+
+	using X = arg::Argument<sg_int_t, struct PointXTag>;
+	using Y = arg::Argument<sg_int_t, struct PointYTag>;
+	using ImplicitX = arg::ImplicitArgument<sg_int_t, struct PointImplicitXTag, X>;
+	using ImplicitY = arg::ImplicitArgument<sg_int_t, struct PointImplicitYTag, Y>;
+
+
 	Point(){ m_value.x = 0; m_value.y = 0; }
 	Point(const sg_point_t & p){ m_value = p; }
 	Point(
-			const arg::XValue x,
-			const arg::YValue y
+			const ImplicitX x,
+			const ImplicitY y
 			){
 		m_value.x = x.argument();
 		m_value.y = y.argument();
@@ -30,7 +37,24 @@ public:
 
 	operator const sg_point_t & () const { return m_value; }
 
-	void set(sg_int_t x, sg_int_t y){ m_value.x = x; m_value.y = y; }
+	Point & set_x(sg_int_t value){
+		m_value.x = value;
+		return *this;
+	}
+
+	Point & set_y(sg_int_t value){
+		m_value.y = value;
+		return *this;
+	}
+
+	Point & set(
+			X x,
+			Y y
+			){
+		m_value.x = x.argument();
+		m_value.y = y.argument();
+		return *this;
+	}
 
 	sg_int_t x() const { return m_value.x; }
 	sg_int_t y() const { return m_value.y; }
@@ -43,18 +67,18 @@ public:
 
 	Point & operator=(const Point & a){ m_value = a; return *this; }
 	Point & operator+=(const Point & a){ api()->point_shift(&m_value, a); return *this; }
-	Point & operator+=(const arg::XValue x);
-	Point & operator+=(const arg::YValue y);
+	Point & operator+=(const X x);
+	Point & operator+=(const Y y);
 	Point & operator-=(const Point & a){ api()->point_subtract(&m_value, &a.point()); return *this; }
-	Point & operator-=(const arg::XValue x);
-	Point & operator-=(const arg::YValue y);
+	Point & operator-=(const X x);
+	Point & operator-=(const Y y);
 	Point operator*(float f) const;
 	Point operator+(const Point & a) const;
-	Point operator+(const arg::XValue x) const;
-	Point operator+(const arg::YValue y) const;
+	Point operator+(const X x) const;
+	Point operator+(const Y y) const;
 	Point operator-(const Point & a) const;
-	Point operator-(const arg::XValue x) const;
-	Point operator-(const arg::YValue y) const;
+	Point operator-(const X x) const;
+	Point operator-(const Y y) const;
 
 	void rotate(s16 angle){ api()->point_rotate(&m_value, angle); }
 	void scale(u16 a){ api()->point_scale(&m_value, a); }

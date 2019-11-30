@@ -15,9 +15,9 @@ public:
 		PROTOCOL_HTTP
 	};
 
-	Url(const var::ConstString & url = "");
+	Url(const var::String & url = "");
 
-	int set(const var::ConstString & url);
+	int set(const var::String & url);
 	var::String to_string() const;
 
 	u16 port() const { return m_port; }
@@ -25,8 +25,8 @@ public:
 	const var::String & domain_name() const { return m_domain_name; }
 	const var::String & path() const { return m_path; }
 
-	static var::String encode(const var::ConstString & input);
-	static var::String decode(const var::ConstString & input);
+	static var::String encode(const var::String & input);
+	static var::String decode(const var::String & input);
 
 private:
 	/*! \cond */

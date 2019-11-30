@@ -57,9 +57,9 @@ public:
 	}
 
 	static const sgfx::FontInfo * find_font(
-			const arg::FontPointSize point_size,
-			const arg::FontStyle style = arg::FontStyle(sgfx::FontInfo::REGULAR),
-			const arg::FontName name = arg::FontName(""),
+			const sgfx::FontInfo::PointSize point_size,
+			const sgfx::FontInfo::Style style = sgfx::FontInfo::Style(sgfx::FontInfo::REGULAR),
+			const sgfx::FontInfo::Name name = sgfx::FontInfo::Name(""),
 			const arg::IsExactMatch is_exact_match = arg::IsExactMatch(false));
 
 	/*! \details Returns a read-only reference to the vector path list.
@@ -73,7 +73,7 @@ public:
 	}
 
 	static sgfx::VectorPath find_vector_path(
-			const var::ConstString & name
+			const var::String & name
 			);
 
 private:
@@ -81,8 +81,8 @@ private:
 	static bool m_is_initialized;
 	static var::Vector<sgfx::FontInfo> m_font_info_list;
 	static var::Vector<fmt::Svic> m_vector_path_list;
-	static void find_fonts_in_directory(const var::ConstString & path);
-	static void find_icons_in_directory(const var::ConstString & path);
+	static void find_fonts_in_directory(const var::String & path);
+	static void find_icons_in_directory(const var::String & path);
 
 
 };

@@ -75,8 +75,8 @@ public:
 
 private:
 	/*! \cond */
-	u8 m_corners;
-	sg_size_t m_radius;
+	u8 m_corners = 0; //all rounded corners
+	drawing_size_t m_radius = 25;
 	/*! \endcond */
 
 };

@@ -46,7 +46,7 @@ int Usb::enable_endpoint(int ep) const {
 }
 
 bool Usb::is_connected() const {
-	return ioctl(arg::IoRequest(I_USB_ISCONNECTED));
+	return ioctl(IoRequest(I_USB_ISCONNECTED));
 }
 
 int Usb::reset_endpoint(int ep) const {

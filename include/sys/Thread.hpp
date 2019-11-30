@@ -54,6 +54,15 @@ namespace sys {
 class Thread : public api::WorkObject {
 public:
 
+
+	using Id = arg::Argument<pthread_t, struct ThreadIdTag>;
+	using StackSize = arg::Argument<u32, struct ThreadStackSizeTag>;
+	using IsDetached = arg::Argument<bool, struct ThreadIsDetachedTag>;
+	using Function = arg::Argument<void *(*)(void*), struct ThreadFunctionTag>;
+	using FunctionArgument = arg::Argument<void*, struct ThreadFunctionArgumentTag>;
+	using Return = arg::Argument<void**, struct ThreadReturnTag>;
+	using DelayInterval = arg::Argument<const chrono::MicroTime&, struct ThreadDelayIntervalTag>;
+
 	/*! \details Defines the function call type that is
 	 * used to create() a new thread.
 	 *
@@ -77,8 +86,8 @@ public:
 	 * another thread must use join() in order for the thread to terminate correctly.
 	 */
 	Thread(
-			const arg::ThreadStackSize & stacksize = arg::ThreadStackSize(4096),
-			const arg::IsDetached detached = arg::IsDetached(true)
+			StackSize stacksize = StackSize(4096),
+			IsDetached detached = IsDetached(true)
 			);
 
 	~Thread();
@@ -125,7 +134,7 @@ public:
 	  *
 	  */
 	int set_priority(
-			const arg::SchedulerPriority prio,
+			Sched::Priority prio,
 			enum Sched::policy policy = Sched::RR);
 
 	/*! \details Gets the thread priority.
@@ -180,9 +189,9 @@ public:
 	 *
 	 */
 	int create(
-			arg::ThreadFunction func,
-			arg::ThreadFunctionArgument args = arg::ThreadFunctionArgument(0),
-			const arg::SchedulerPriority prio = arg::SchedulerPriority(0),
+			Function func,
+			FunctionArgument args = FunctionArgument(nullptr),
+			Sched::Priority prio = Sched::Priority(0),
 			enum Sched::policy policy = Sched::OTHER
 			);
 
@@ -197,8 +206,8 @@ public:
 	 *
 	 */
 	int wait(
-			arg::ThreadReturn ret = arg::ThreadReturn(0),
-			const arg::DelayInterval interval = arg::DelayInterval(chrono::MicroTime(1000000UL))
+			Return ret = Return(nullptr),
+			DelayInterval interval = DelayInterval(chrono::Milliseconds(1000UL))
 			) const;
 
 	/*! \details Yields the processor to another thread */
@@ -216,8 +225,8 @@ public:
 	  *
 	 */
 	static int join(
-			const arg::ThreadId ident,
-			arg::ThreadReturn value_ptr = arg::ThreadReturn(0)
+			Id id_to_join,
+			Return value_ptr = Return(nullptr)
 			);
 
 	/*! \details Joins the calling thread to the specified thread.
@@ -231,9 +240,13 @@ public:
 	  *
 	  */
 	static int join(
-			const arg::ThreadToJoin thread_to_join,
-			arg::ThreadReturn value_ptr = arg::ThreadReturn(0)){
-		return join(arg::ThreadId(thread_to_join.argument().id()), value_ptr);
+			const Thread & thread_to_join,
+			Return return_value = Return(nullptr)
+			){
+		return join(
+					Id(thread_to_join.id()),
+					return_value
+					);
 	}
 
 	/*! \details Returns the thread ID of the calling thread. */
@@ -267,8 +280,8 @@ public:
 	  *
 	  *
 	 */
-	int kill(const arg::SignalNumber sig){
-		return pthread_kill(m_id, sig.argument());
+	int kill(int signal_number){
+		return pthread_kill(m_id, signal_number);
 	}
 
 
@@ -283,7 +296,7 @@ public:
 	  * This method will block the calling thread until the thread function
 	  * returns.
 	 */
-	int join(arg::ThreadReturn value_ptr = arg::ThreadReturn(0)) const;
+	int join(Return value_ptr = Return(nullptr)) const;
 
 	/*! \details Allows read only access to the thread attributes. */
 	const pthread_attr_t & attr() const { return m_pthread_attr; }

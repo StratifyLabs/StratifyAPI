@@ -14,6 +14,28 @@
 namespace sys {
 
 
+class AppfsFlags {
+public:
+
+#if defined __link
+	using LinkDriver = fs::File::LinkDriver;
+#endif
+
+	enum {
+		IS_FLASH = APPFS_FLAG_IS_FLASH,
+		IS_STARTUP = APPFS_FLAG_IS_STARTUP,
+		IS_ROOT = APPFS_FLAG_IS_ROOT,
+		IS_REPLACE = APPFS_FLAG_IS_REPLACE,
+		IS_ORPHAN = APPFS_FLAG_IS_ORPHAN,
+		IS_UNIQUE = APPFS_FLAG_IS_UNIQUE,
+		IS_CODE_EXTERNAL = APPFS_FLAG_IS_CODE_EXTERNAL,
+		IS_DATA_EXTERNAL = APPFS_FLAG_IS_DATA_EXTERNAL,
+		IS_CODE_TIGHTLY_COUPLED = APPFS_FLAG_IS_CODE_TIGHTLY_COUPLED,
+		IS_DATA_TIGHTLY_COUPLED = APPFS_FLAG_IS_DATA_TIGHTLY_COUPLED
+	};
+
+};
+
 /*! \brief AppfsInfo Class
  * \details The AppfsInfo class is for
  * getting information associated with
@@ -21,91 +43,95 @@ namespace sys {
  * in or built for the application filesystem.
  *
  */
-class AppfsInfo : public api::InfoObject {
+class AppfsInfo :
+      public api::InfoObject,
+      public AppfsFlags {
 public:
 
-	/*! \details Constructs an empty object. */
-	AppfsInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 
-	/*! \details Constructs an object from a *appfs_info_t* object. */
-	AppfsInfo(const appfs_info_t & info){
-		memcpy(&m_info, &info, sizeof(appfs_info_t));
-	}
 
-	/*! \details Returns true if the object is valid. */
-	bool is_valid() const {
-		return m_info.signature != 0;
-	}
+   /*! \details Constructs an empty object. */
+   AppfsInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 
-	/*! \details Returns the application ID (cloud id). */
-	const var::ConstString id() const { return (const char*)m_info.id; }
+   /*! \details Constructs an object from a *appfs_info_t* object. */
+   AppfsInfo(const appfs_info_t & info){
+      memcpy(&m_info, &info, sizeof(appfs_info_t));
+   }
 
-	/*! \details Returns the name of the application. */
-	const var::ConstString name() const { return (const char*)m_info.name; }
+   /*! \details Returns true if the object is valid. */
+   bool is_valid() const {
+      return m_info.signature != 0;
+   }
 
-	/*! \details Returns the file mode. */
-	u16 mode() const { return m_info.mode; }
-	/*! \details Returns the version. */
-	u16 version() const { return m_info.version; }
+   /*! \details Returns the application ID (cloud id). */
+   const var::String id() const { return var::String((const char *)m_info.id); }
 
-	/*! \details Returns the data RAM size used by the application. */
-	u32 ram_size() const { return m_info.ram_size; }
+   /*! \details Returns the name of the application. */
+   const var::String name() const { return var::String((const char *)m_info.name); }
 
-	/*! \details Returns the flags.
-	 *
-	 * See also: is_executable(), is_startup(), is_flash(), is_orphan(), is_root(),
-	 * is_unique().
-	 *
-	 */
-	u32 o_flags() const { return m_info.o_flags; }
+   /*! \details Returns the file mode. */
+   u16 mode() const { return m_info.mode; }
+   /*! \details Returns the version. */
+   u16 version() const { return m_info.version; }
 
-	/*! \details Returns the application signature.
-	 *
-	 * This value specifies the version of the table that
-	 * connects the application to the operating system. Every
-	 * OS package has a signature that is associated with
-	 * the calls (such as printf(), pthread_create()) that are available to
-	 * application installed on the system.
-	 *
-	 */
-	u32 signature() const { return m_info.signature; }
+   /*! \details Returns the data RAM size used by the application. */
+   u32 ram_size() const { return m_info.ram_size; }
 
-	/*! \details Returns true if the application is executable. */
-	bool is_executable() const { return m_info.mode & 0111; }
+   /*! \details Returns the flags.
+    *
+    * See also: is_executable(), is_startup(), is_flash(), is_orphan(), is_root(),
+    * is_unique().
+    *
+    */
+   u32 o_flags() const { return m_info.o_flags; }
 
-	/*! \details Returns true if the application runs at startup. */
-	bool is_startup() const { return (m_info.o_flags & APPFS_FLAG_IS_STARTUP) != 0; }
-	/*! \details Returns true if the application is to be installed in flash. */
-	bool is_flash() const { return (m_info.o_flags & APPFS_FLAG_IS_FLASH) != 0; }
-	/*! \details Returns true if the application code is to be installed in external memory. */
-	bool is_code_external() const { return (m_info.o_flags & APPFS_FLAG_IS_CODE_EXTERNAL) != 0; }
-	/*! \details Returns true if the application data is to be installed in external memory. */
-	bool is_data_external() const { return (m_info.o_flags & APPFS_FLAG_IS_DATA_EXTERNAL) != 0; }
-	/*! \details Returns true if the application code is to be installed in tightly coupled memory. */
-	bool is_code_tightly_coupled() const { return (m_info.o_flags & APPFS_FLAG_IS_CODE_TIGHTLY_COUPLED) != 0; }
-	/*! \details Returns true if the application data is to be installed in tightly coupled memory. */
-	bool is_data_tightly_coupled() const { return (m_info.o_flags & APPFS_FLAG_IS_DATA_TIGHTLY_COUPLED) != 0; }
-	/*! \details Returns true if the application should run as an orphan. */
-	bool is_orphan() const { return (m_info.o_flags & APPFS_FLAG_IS_ORPHAN) != 0; }
-	/*! \details Returns true if the application should run as root. */
-	bool is_root() const { return (m_info.o_flags & APPFS_FLAG_IS_ROOT) != 0; }
-	/*! \details Returns true if the application should create a unique instance.
-	 *
-	 * If unique is false, the system will not allow a second copy of
-	 * the application to be installed on the system.
-	 *
-	 * If unique is true, the application will be assigned a unique
-	 * name when it is installed in RAM or flash.
-	 *
-	 */
-	bool is_unique() const { return (m_info.o_flags & APPFS_FLAG_IS_UNIQUE) != 0; }
+   /*! \details Returns the application signature.
+    *
+    * This value specifies the version of the table that
+    * connects the application to the operating system. Every
+    * OS package has a signature that is associated with
+    * the calls (such as printf(), pthread_create()) that are available to
+    * application installed on the system.
+    *
+    */
+   u32 signature() const { return m_info.signature; }
 
-	const appfs_info_t & info() const { return m_info; }
-	appfs_info_t & info(){ return m_info; }
+   /*! \details Returns true if the application is executable. */
+   bool is_executable() const { return m_info.mode & 0111; }
+
+   /*! \details Returns true if the application runs at startup. */
+   bool is_startup() const { return (m_info.o_flags & IS_STARTUP) != 0; }
+   /*! \details Returns true if the application is to be installed in flash. */
+   bool is_flash() const { return (m_info.o_flags & IS_FLASH) != 0; }
+   /*! \details Returns true if the application code is to be installed in external memory. */
+   bool is_code_external() const { return (m_info.o_flags & IS_CODE_EXTERNAL) != 0; }
+   /*! \details Returns true if the application data is to be installed in external memory. */
+   bool is_data_external() const { return (m_info.o_flags & IS_DATA_EXTERNAL) != 0; }
+   /*! \details Returns true if the application code is to be installed in tightly coupled memory. */
+   bool is_code_tightly_coupled() const { return (m_info.o_flags & IS_CODE_TIGHTLY_COUPLED) != 0; }
+   /*! \details Returns true if the application data is to be installed in tightly coupled memory. */
+   bool is_data_tightly_coupled() const { return (m_info.o_flags & IS_DATA_TIGHTLY_COUPLED) != 0; }
+   /*! \details Returns true if the application should run as an orphan. */
+   bool is_orphan() const { return (m_info.o_flags & IS_ORPHAN) != 0; }
+   /*! \details Returns true if the application should run as root. */
+   bool is_root() const { return (m_info.o_flags & IS_ROOT) != 0; }
+   /*! \details Returns true if the application should create a unique instance.
+    *
+    * If unique is false, the system will not allow a second copy of
+    * the application to be installed on the system.
+    *
+    * If unique is true, the application will be assigned a unique
+    * name when it is installed in RAM or flash.
+    *
+    */
+   bool is_unique() const { return (m_info.o_flags & IS_UNIQUE) != 0; }
+
+   const appfs_info_t & info() const { return m_info; }
+   appfs_info_t & info(){ return m_info; }
 
 
 private:
-	appfs_info_t m_info;
+   appfs_info_t m_info;
 };
 
 
@@ -124,37 +150,28 @@ private:
  *
  *
  */
-class AppfsFileAttributes : public api::InfoObject {
+class AppfsFileAttributes :
+      public api::InfoObject,
+      public AppfsFlags{
 public:
-
-	enum {
-		IS_FLASH = APPFS_FLAG_IS_FLASH,
-		IS_STARTUP = APPFS_FLAG_IS_STARTUP,
-		IS_ROOT = APPFS_FLAG_IS_ROOT,
-		IS_REPLACE = APPFS_FLAG_IS_REPLACE,
-		IS_ORPHAN = APPFS_FLAG_IS_ORPHAN,
-		IS_UNIQUE = APPFS_FLAG_IS_UNIQUE,
-		IS_CODE_EXTERNAL = APPFS_FLAG_IS_CODE_EXTERNAL,
-		IS_DATA_EXTERNAL = APPFS_FLAG_IS_DATA_EXTERNAL,
-		IS_CODE_TIGHTLY_COUPLED = APPFS_FLAG_IS_CODE_TIGHTLY_COUPLED,
-		IS_DATA_TIGHTLY_COUPLED = APPFS_FLAG_IS_DATA_TIGHTLY_COUPLED
-	};
 
 	AppfsFileAttributes(){
 		m_version = 0;
 		m_ram_size = 0;
-		m_o_flags = APPFS_FLAG_IS_FLASH;
+		m_o_flags = IS_FLASH;
 		m_access_mode = 0777;
 	}
 
 	AppfsFileAttributes(const appfs_file_t & appfs_file);
 
 	void apply(appfs_file_t * appfs_file) const;
-	int apply(arg::DestinationFile file) const;
+	int apply(const fs::File & file) const;
 
-	AppfsFileAttributes & set_name(const var::ConstString & value){ m_name = value; return *this; }
+	AppfsFileAttributes & set_name(const var::String & value){
+		m_name = value; return *this;
+	}
 	const var::String & name() const { return m_name; }
-	AppfsFileAttributes & set_id(const var::ConstString & value){ m_id = value; return *this; }
+	AppfsFileAttributes & set_id(const var::String & value){ m_id = value; return *this; }
 	const var::String & id() const { return m_id; }
 	AppfsFileAttributes & set_version(u16 value){ m_version = value; return *this; }
 	u16 version() const { return m_version; }
@@ -281,13 +298,17 @@ private:
  * \endcode
  *
  */
-class Appfs : public api::WorkObject {
+class Appfs :
+      public api::WorkObject,
+      public AppfsFlags {
 public:
 
+	using Name = arg::Argument<const var::String &, struct AppfsNameTag>;
+	using MountPath = arg::Argument<const var::String &, struct AppfsMountPathTag>;
+
+
 	Appfs(
-		#if defined __link
-			arg::LinkDriver driver = arg::LinkDriver(0)
-		#endif
+			SAPI_LINK_DRIVER_NULLPTR
 			);
 
 	/*! \details Creates a file in flash memory consisting
@@ -303,20 +324,14 @@ public:
 	 *
 	 */
 	static int create(
-			const arg::FileName name,
-							const arg::SourceFile source_data,
-							const arg::SourceDirectoryPath mount = arg::SourceDirectoryPath("/app"),
-							const ProgressCallback * progress_callback = 0
-		#if defined __link
-			, arg::LinkDriver driver = arg::LinkDriver(0)
-		#endif
+			Name name,
+			const fs::File & source,
+			MountPath mount = MountPath("/app"),
+			const ProgressCallback * progress_callback = 0
+			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
 
 	/*! \cond */
-	int create(
-			const arg::FileName name,
-			const arg::Size size
-			);
 	Appfs & operator << (const var::Data & data);
 	int close();
 	/*! \endcond */
@@ -326,18 +341,14 @@ public:
 	 *
 	 */
 	static bool is_flash_available(
-		#if defined __link
-			arg::LinkDriver driver
-		#endif
+			SAPI_LINK_DRIVER
 			);
 
 	/*! \details Returns true if the application
 	 * filesystem includes RAM.
 	 */
 	static bool is_ram_available(
-		#if defined __link
-			arg::LinkDriver driver
-		#endif
+			SAPI_LINK_DRIVER
 			);
 
 	/*! \details Returns the page size for writing data. */
@@ -360,10 +371,8 @@ public:
 	  *
 	 */
 	static AppfsInfo get_info(
-			const arg::SourceFilePath path
-		#if defined __link
-			, arg::LinkDriver driver = arg::LinkDriver(0)
-		#endif
+			const var::String & path
+			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
 
 
@@ -376,10 +385,8 @@ public:
 	 *
 	 */
 	static u16 get_version(
-			const arg::SourceFilePath path
-		#if defined __link
-			, arg::LinkDriver driver
-		#endif
+			const var::String & path
+			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
 
 	/*! \details Gets the application ID value.
@@ -392,10 +399,8 @@ public:
 	 *
 	 */
 	static var::String get_id(
-			const arg::SourceFilePath path
-		#if defined __link
-			, arg::LinkDriver driver
-		#endif
+			const var::String & path
+			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
 
 #if !defined __link

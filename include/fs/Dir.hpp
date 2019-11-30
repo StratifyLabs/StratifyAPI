@@ -1,7 +1,7 @@
 /*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_SYS_DIR_HPP_
-#define SAPI_SYS_DIR_HPP_
+#ifndef SAPI_FS_DIR_HPP_
+#define SAPI_FS_DIR_HPP_
 
 #ifdef __link
 #include <sos/link.h>
@@ -31,6 +31,7 @@
 #include "../var/String.hpp"
 #include "../var/ConstString.hpp"
 #include "../arg/Argument.hpp"
+#include "File.hpp"
 #include "Stat.hpp"
 
 namespace fs {
@@ -41,64 +42,55 @@ namespace fs {
  *
  *
  */
-class Dir : public api::FsWorkObject {
+class Dir : public api::WorkObject {
 public:
-	/*! \details Constructs a Dir object. */
+
+	using SourcePath = File::SourcePath;
+	using DestinationPath = File::DestinationPath;
+	using IsRecursive = arg::Argument<bool, struct IsRecursiveTag>;
+	using IsOverwrite = File::IsOverwrite;
+
 #if defined __link
-	Dir(arg::LinkDriver driver = arg::LinkDriver(0));
-	static int create(
-			const arg::DestinationDirectoryPath & path,
-			const Permissions & permissions = Permissions(0777),
-			arg::LinkDriver driver = arg::LinkDriver(0)
-			);
-
-	static int create(
-			const arg::DestinationDirectoryPath & path,
-			const Permissions & permissions,
-			const arg::IsRecursive is_recursive,
-			arg::LinkDriver driver = arg::LinkDriver(0)
-			);
-
-	static bool exists(
-			const arg::SourceDirectoryPath & path,
-			arg::LinkDriver driver = arg::LinkDriver(0)
-			);
-
-	static var::Vector<var::String> read_list(
-			const arg::SourceDirectoryPath & path,
-			arg::IsRecursive is_recursive = arg::IsRecursive(false),
-			arg::LinkDriver driver = arg::LinkDriver(0)
-			);
-
-#else
-	Dir();
-
-	/*! \details Returns true if the directory exists. */
-	static int create(
-			const arg::DestinationDirectoryPath & path,
-			const Permissions & permissions = Permissions(0777)
-			);
-	static int create(
-			const arg::DestinationDirectoryPath & path,
-			const Permissions & permissions,
-			const arg::IsRecursive is_recursive
-			);
-	/*! \details Returns true if the directory exists. */
-	static bool exists(
-			const arg::SourceDirectoryPath & path
-			);
-	static var::Vector<var::String> read_list(
-			const arg::SourceDirectoryPath & path,
-			arg::IsRecursive is_recursive = arg::IsRecursive(false)
-			);
+	using LinkDriver = File::LinkDriver;
+	using ImplicitLinkDriver = File::ImplicitLinkDriver;
+	using SourceLinkDriver = File::SourceLinkDriver;
+	using DestinationLinkDriver = File::DestinationLinkDriver;
 #endif
 
+	/*! \details Constructs a Dir object. */
+	Dir(
+			SAPI_LINK_DRIVER_NULLPTR
+			);
+	static int create(
+			const var::String & path,
+			const Permissions & permissions = Permissions(0777)
+			SAPI_LINK_DRIVER_NULLPTR_LAST
+			);
+
+	static int create(
+			const var::String & path,
+			const Permissions & permissions,
+			IsRecursive is_recursive
+			SAPI_LINK_DRIVER_NULLPTR_LAST
+			);
+
+	static bool exists(
+			const var::String & path
+			SAPI_LINK_DRIVER_NULLPTR_LAST
+			);
+
+	static var::Vector<var::String> read_list(
+			const var::String & path,
+			IsRecursive is_recursive = IsRecursive(false)
+			SAPI_LINK_DRIVER_NULLPTR_LAST
+			);
+
 	static int copy(
-			const arg::SourceDirectoryPath source_path,
-			const arg::DestinationDirectoryPath destination_path
+			SourcePath source_path,
+			DestinationPath destination_path
 		#if defined __link
-			, arg::SourceLinkDriver source_driver = arg::SourceLinkDriver(0),
-			arg::DestinationLinkDriver destination_driver = arg::DestinationLinkDriver(0)
+			, SourceLinkDriver source_driver = SourceLinkDriver(nullptr),
+			DestinationLinkDriver destination_driver = DestinationLinkDriver(nullptr)
 		#endif
 			);
 
@@ -112,7 +104,7 @@ public:
 	~Dir();
 
 	/*! \details Opens a directory. */
-	int open(const arg::SourceDirectoryPath & name);
+	int open(const var::String & path);
 	/*! \details Closes the directory.
 	 *
 	 * If this method is not called explicitly before
@@ -133,16 +125,11 @@ public:
 	 *
 	 * @return Zero on success or -1 for an error
 	 */
-#if !defined __link
 	static int remove(
-			const arg::SourceDirectoryPath path,
-			const arg::IsRecursive recursive = arg::IsRecursive(false));
-#else
-	static int remove(const arg::SourceDirectoryPath path,
-							const arg::IsRecursive recursive,
-							arg::LinkDriver driver = arg::LinkDriver(0)
+			const var::String & path,
+			IsRecursive recursive
+			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
-#endif
 
 	/*! \details Gets the next entry and writes the full path of the entry to the given string.
 	 *
@@ -178,7 +165,7 @@ public:
 	 *
 	 */
 	var::Vector<var::String> read_list(
-			arg::IsRecursive is_recursive = arg::IsRecursive(false)
+			IsRecursive is_recursive = IsRecursive(false)
 			);
 
 
@@ -232,7 +219,10 @@ public:
 		return 0;
 	}
 #else
-	void set_driver(link_transport_mdriver_t * d){ m_driver = d; }
+	Dir & set_driver(ImplicitLinkDriver link_driver){
+		m_driver = link_driver.argument();
+		return *this;
+	}
 #endif
 
 private:
@@ -257,4 +247,4 @@ private:
 
 }
 
-#endif /* SAPI_SYS_DIR_HPP_ */
+#endif /* SAPI_FS_DIR_HPP_ */

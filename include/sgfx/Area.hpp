@@ -15,10 +15,17 @@ namespace sgfx {
  */
 class Area : public api::SgfxInfoObject {
 public:
+
+
+	using Width = arg::Argument<sg_size_t, struct AreaWidthTag>;
+	using Height = arg::Argument<sg_size_t, struct AreaHeightTag>;
+	using ImplicitWidth = arg::ImplicitArgument<sg_size_t, struct ImplicitWidthTag, Width>;
+	using ImplicitHeight = arg::ImplicitArgument<sg_size_t, struct ImplicitHeightTag, Height>;
+
 	Area();
 	Area(
-			const arg::Width width,
-			const arg::Height height
+			ImplicitWidth width,
+			ImplicitHeight height
 			){
 		m_value.width = width.argument();
 		m_value.height = height.argument();
@@ -30,8 +37,8 @@ public:
 		return (m_value.width && m_value.height);
 	}
 
-	void set_width(sg_size_t w){ m_value.width = w; }
-	void set_height(sg_size_t h){ m_value.height = h; }
+	Area & set_width(sg_size_t w){ m_value.width = w; return *this; }
+	Area & set_height(sg_size_t h){ m_value.height = h; return *this; }
 
 	Area operator * (float a) const {
 		Area d;

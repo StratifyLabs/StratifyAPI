@@ -36,6 +36,17 @@ namespace hal {
  */
 class Device : public fs::File {
 public:
+
+	using Channel = arg::Argument<u32, struct DeviceChannelTag>;
+	using Events = arg::Argument<u32, struct DeviceChannelTag>;
+	using InterruptPriority = arg::Argument<s8, struct DeviceInterruptPriorityTag>;
+	using McuCallback = arg::Argument<mcu_callback_t, struct DeviceMcuCallbackTag>;
+	using Context = arg::Argument<void*, struct DeviceMcuContextTag>;
+	using Port = arg::Argument<u8, struct DevicePortTag>;
+	using PinNumber = arg::Argument<u8, struct DevicePinNumberTag>;
+	using IsMcuPinMask = arg::Argument<bool, struct DeviceIsMcuPinMaskTag>;
+	using ThreadId = arg::Argument<u32, struct DeviceThreadIdTag>;
+
 	/*! \details Constructs a Device.
 	 *
 	 * Unlike fs::File, upon creation the
@@ -63,16 +74,16 @@ public:
 	 */
 	int set_signal_action(
 			const DeviceSignal & signal,
-			const arg::Events o_events,
-			const arg::Channel channel){
+			Events o_events,
+			Channel channel){
 		mcu_action_t action =
 				signal.create_action(
 					o_events,
 					channel
 					);
 		return ioctl(
-					arg::IoRequest(I_MCU_SETACTION),
-					arg::IoArgument(&action)
+					IoRequest(I_MCU_SETACTION),
+					IoArgument(&action)
 					);
 	}
 

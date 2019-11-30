@@ -14,7 +14,7 @@ SerialNumber::SerialNumber(){
 	memset(&m_serial_number, 0, sizeof(mcu_sn_t));
 }
 
-SerialNumber SerialNumber::from_string(const var::ConstString & str){
+SerialNumber SerialNumber::from_string(const var::String & str){
 	SerialNumber ret;
 	u32 len = strnlen(str.cstring(), 8*4);
 	if( len == 8*4 ){
@@ -31,7 +31,7 @@ SerialNumber SerialNumber::from_string(const var::ConstString & str){
 	return ret;
 }
 
-SerialNumber::SerialNumber(const var::ConstString & str){
+SerialNumber::SerialNumber(const var::String & str){
 	SerialNumber serial_number = from_string(str);
 	memcpy(&m_serial_number, &serial_number.m_serial_number, sizeof(mcu_sn_t));
 }
@@ -57,28 +57,30 @@ SysInfo SysInfo::get(){
 	Sys sys;
 	if( sys.open() < 0 ){ return result; }
 	sys.ioctl(
-				arg::IoRequest(I_SYS_GETINFO),
-				arg::IoArgument(&result.m_info)
+				IoRequest(I_SYS_GETINFO),
+				IoArgument(&result.m_info)
 				);
 	sys.close();
 #endif
 	return result;
 }
 
-#if defined __link
 Sys::Sys(
-		arg::LinkDriver driver
-		) : File(driver){}
+		SAPI_LINK_DRIVER
+		) : File(
+				 #if defined __link
+				 link_driver
+				 #endif
+				 ){
 
-#else
-Sys::Sys() {
 }
-#endif
 
 
 
-int Sys::launch(const var::ConstString & path,
-					 const var::ConstString & args,
+
+
+int Sys::launch(const var::String & path,
+					 const var::String & args,
 					 int options,
 					 int ram_size){
 #if defined __link
@@ -94,14 +96,14 @@ int Sys::launch(const var::ConstString & path,
 #endif
 }
 
-int Sys::launch(const var::ConstString & path,
-								const var::ConstString & args,
-								var::String & exec_destination,
-								int options, //run in RAM, discard on exit
-								int ram_size,
-								const sys::ProgressCallback * progress_callback,
-								const var::ConstString & envp
-								){
+int Sys::launch(const var::String & path,
+					 const var::String & args,
+					 var::String & exec_destination,
+					 int options, //run in RAM, discard on exit
+					 int ram_size,
+					 const sys::ProgressCallback * progress_callback,
+					 const var::String & envp
+					 ){
 #if defined __link
 	return -1;
 #else
@@ -117,56 +119,55 @@ int Sys::launch(const var::ConstString & path,
 #endif
 }
 
-var::String Sys::install(const var::ConstString & path,
-						int options, //run in RAM, discard on exit
-						int ram_size
-		){
+var::String Sys::install(const var::String & path,
+								 int options, //run in RAM, discard on exit
+								 int ram_size
+								 ){
 	return install(path, options, ram_size, 0);
 }
 
 
-var::String Sys::install(const var::ConstString & path,
+var::String Sys::install(const var::String & path,
 								 int options, //run in RAM, discard on exit
 								 int ram_size,
 								 const sys::ProgressCallback * progress_callback
-		){
+								 ){
 #if defined __link
 	return var::String();
 #else
 	var::String result;
 	result.resize(PATH_MAX);
-			if( ::install(path.cstring(),
-							  result.to_char(),
-							  options,
-							  ram_size,
-							  sys::ProgressCallback::update_function,
-							  progress_callback) < 0){
+	if( ::install(path.cstring(),
+					  result.to_char(),
+					  options,
+					  ram_size,
+					  sys::ProgressCallback::update_function,
+					  progress_callback) < 0){
 		return var::String();
 	}
 	return result;
 #endif
 }
 
-int Sys::free_ram(const char * path
-						#if defined __link
-						, arg::LinkDriver driver
-						#endif
+int Sys::free_ram(
+		const var::String & path
+		SAPI_LINK_DRIVER_LAST
 						){
 	int fd;
 	int ret;
 #if defined __link
 	if( (fd = link_open(
-			  driver.argument(),
-			  path,
+			  link_driver.argument(),
+			  path.cstring(),
 			  O_RDONLY
 			  )
 		  ) < 0 ){
 		return -1;
 	}
-	ret = link_ioctl(driver.argument(), fd, I_APPFS_FREE_RAM);
-	link_close(driver.argument(), fd);
+	ret = link_ioctl(link_driver.argument(), fd, I_APPFS_FREE_RAM);
+	link_close(link_driver.argument(), fd);
 #else
-	if( (fd = ::open(path, O_RDONLY)) < 0 ){
+	if( (fd = ::open(path.cstring(), O_RDONLY)) < 0 ){
 		return -1;
 	}
 	ret = ::ioctl(fd, I_APPFS_FREE_RAM);
@@ -201,19 +202,17 @@ int Sys::verify_zero_sum32(void * data, int size){
 	return sum == 0;
 }
 
-int Sys::reclaim_ram(const char * path
-							#if defined __link
-							, arg::LinkDriver driver
-							#endif
+int Sys::reclaim_ram(const var::String & path
+							SAPI_LINK_DRIVER_LAST
 							){
 	int fd;
 	int ret;
 #if defined __link
-	if( (fd = link_open(driver.argument(), path, O_RDONLY)) < 0 ){
+	if( (fd = link_open(link_driver.argument(), path.cstring(), O_RDONLY)) < 0 ){
 		return -1;
 	}
-	ret = link_ioctl(driver.argument(), fd, I_APPFS_RECLAIM_RAM);
-	link_close(driver.argument(), fd);
+	ret = link_ioctl(link_driver.argument(), fd, I_APPFS_RECLAIM_RAM);
+	link_close(link_driver.argument(), fd);
 #else
 	if( (fd = ::open(path, O_RDONLY)) < 0 ){
 		return -1;
@@ -239,8 +238,8 @@ int Sys::get_version(var::String & version){
 	}
 
 	ret = sys.ioctl(
-				arg::IoRequest(I_SYS_GETINFO),
-				arg::IoArgument(&info)
+				IoRequest(I_SYS_GETINFO),
+				IoArgument(&info)
 				);
 	sys.close();
 	if( ret >= 0 ){
@@ -269,8 +268,8 @@ var::String Sys::get_kernel_version(){
 	}
 
 	ret = sys.ioctl(
-				arg::IoRequest(I_SYS_GETINFO),
-				arg::IoArgument(&info)
+				IoRequest(I_SYS_GETINFO),
+				IoArgument(&info)
 				);
 
 	sys.close();
@@ -306,8 +305,8 @@ void Sys::reset(){
 
 int Sys::get_board_config(sos_board_config_t & config){
 	return ioctl(
-				arg::IoRequest(I_SYS_GETBOARDCONFIG),
-				arg::IoArgument(&config)
+				IoRequest(I_SYS_GETBOARDCONFIG),
+				IoArgument(&config)
 				);
 }
 
@@ -330,29 +329,29 @@ SerialNumber Sys::get_serial_number(){
 
 int Sys::get_info(sys_info_t & info){
 	return ioctl(
-				arg::IoRequest(I_SYS_GETINFO),
-				arg::IoArgument(&info)
+				IoRequest(I_SYS_GETINFO),
+				IoArgument(&info)
 				);
 }
 
 int Sys::get_23_info(sys_23_info_t & attr){
 	return ioctl(
-				arg::IoRequest(I_SYS_23_GETINFO),
-				arg::IoArgument(&attr)
+				IoRequest(I_SYS_23_GETINFO),
+				IoArgument(&attr)
 				);
 }
 
 int Sys::get_26_info(sys_26_info_t & attr){
 	return ioctl(
-				arg::IoRequest(I_SYS_26_GETINFO),
-				arg::IoArgument(&attr)
+				IoRequest(I_SYS_26_GETINFO),
+				IoArgument(&attr)
 				);
 }
 
 int Sys::get_id(sys_id_t & id){
 	return ioctl(
-				arg::IoRequest(I_SYS_GETID),
-				arg::IoArgument(&id)
+				IoRequest(I_SYS_GETID),
+				IoArgument(&id)
 				);
 }
 

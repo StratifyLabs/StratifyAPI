@@ -99,10 +99,11 @@ sgfx::VectorPath Assets::find_vector_path(const var::ConstString & name){
 }
 
 const sgfx::FontInfo * Assets::find_font(
-		const arg::FontPointSize point_size,
-		const arg::FontStyle style,
-		const arg::FontName name,
-		const arg::IsExactMatch is_exact_match){
+		const sgfx::FontInfo::PointSize point_size,
+		const sgfx::FontInfo::Style style,
+		const sgfx::FontInfo::Name name,
+		const arg::IsExactMatch is_exact_match
+		){
 
 	initialize();
 

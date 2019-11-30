@@ -33,11 +33,20 @@ public:
 	 * and write without opening again.
 	 */
 	int open(const fs::OpenFlags & flags = fs::OpenFlags::read_write());
-	int ioctl(const arg::IoRequest request, const arg::IoArgument argument) const;
-	int seek(const arg::Location & location, PeriphObject::whence whence) const;
+	int ioctl(IoRequest request, IoArgument argument) const;
+	int seek(Location location, PeriphObject::whence whence) const;
 	int fileno() const;
-	int read(const arg::DestinationBuffer buf, const arg::Size size) const;
-	int write(const arg::SourceBuffer buf, const arg::Size size) const;
+
+	int read(
+			void * buf,
+			Size size
+			) const;
+
+	int write(
+			const void * buf,
+			Size size
+			) const;
+
 #ifndef __link
 	int read(fs::Aio & aio) const;
 	int write(fs::Aio & aio) const;
@@ -51,7 +60,7 @@ public:
 protected:
 	u16 m_periph_port;
 
-	int open(const arg::SourceFilePath & name, const fs::OpenFlags & flags);
+	int open(const var::String & name, const fs::OpenFlags & flags);
 	using Device::open;
 
 	void update_fileno() const;
@@ -192,7 +201,7 @@ public:
 	 */
 	int get_version() const {
 		return ioctl(
-					arg::IoRequest(_IOCTL(ident_char, I_MCU_GETVERSION))
+					IoRequest(_IOCTL(ident_char, I_MCU_GETVERSION))
 					);
 	}
 
@@ -205,8 +214,8 @@ public:
 	 */
 	int get_info(info_t & info) const {
 		return ioctl(
-					arg::IoRequest(_IOCTLR(ident_char, I_MCU_GETINFO, info_t)),
-					arg::IoArgument(&info)
+					IoRequest(_IOCTLR(ident_char, I_MCU_GETINFO, info_t)),
+					IoArgument(&info)
 					);
 	}
 
@@ -224,7 +233,7 @@ public:
 	 */
 	int set_attributes() const {
 		return ioctl(
-					arg::IoRequest(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t))
+					IoRequest(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t))
 					);
 	}
 
@@ -284,15 +293,15 @@ public:
 
 	int set_attributes(const attr_t & attr) const {
 		return ioctl(
-					arg::IoRequest(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t)),
-					arg::IoConstArgument(&attr)
+					IoRequest(_IOCTLW(ident_char, I_MCU_SETATTR, attr_t)),
+					IoConstArgument(&attr)
 					);
 	}
 
 	int set_action(const mcu_action_t & action) const {
 		return ioctl(
-					arg::IoRequest(_IOCTLW(ident_char, I_MCU_SETACTION, mcu_action_t)),
-					arg::IoConstArgument(&action)
+					IoRequest(_IOCTLW(ident_char, I_MCU_SETACTION, mcu_action_t)),
+					IoConstArgument(&action)
 					);
 	}
 
@@ -313,11 +322,11 @@ public:
 	 */
 
 	int set_action(
-			const arg::Channel & channel,
-			const arg::Events & o_events,
-			const arg::InterruptPriority & priority = arg::InterruptPriority(0),
-			const arg::McuCallback & callback = arg::McuCallback(0),
-			const arg::Context & context = arg::Context(0)
+			Channel channel,
+			Events o_events,
+			InterruptPriority priority = InterruptPriority(0),
+			McuCallback callback = McuCallback(nullptr),
+			Context context = Context(nullptr)
 			) const {
 		mcu_action_t action;
 		action.prio = priority.argument();
@@ -333,13 +342,13 @@ public:
 	 * @return Zero on success
 	 */
 	int set_priority(
-			const arg::InterruptPriority & priority,
-			const arg::Events & o_events,
-			const arg::Channel & channel = arg::Channel(0)
+			InterruptPriority priority,
+			Events o_events,
+			Channel channel = Channel(0)
 			){
 		return set_action(
 					channel,
-					arg::Events(o_events.argument() | MCU_EVENT_FLAG_SET_PRIORITY),
+					Events(o_events.argument() | MCU_EVENT_FLAG_SET_PRIORITY),
 					priority
 					);
 	}
@@ -351,27 +360,27 @@ protected:
 
 	int set_channel(const mcu_channel_t & channel, int request) const {
 		return ioctl(
-					arg::IoRequest(_IOCTLR(ident_char, request, mcu_channel_t)),
-					arg::IoConstArgument(&channel)
+					IoRequest(_IOCTLR(ident_char, request, mcu_channel_t)),
+					IoConstArgument(&channel)
 					);
 	}
 
 	int set_channel(
 			u32 loc,
 			u32 value,
-			const arg::IoRequest request) const {
+			const IoRequest request) const {
 		mcu_channel_t channel;
 		channel.loc = loc;
 		channel.value = value;
-		return ioctl(request, arg::IoArgument(&channel));
+		return ioctl(request, IoArgument(&channel));
 	}
 
-	u32 get_channel(u32 loc, const arg::IoRequest request) const {
+	u32 get_channel(u32 loc, const IoRequest request) const {
 		mcu_channel_t channel;
 		channel.loc = loc;
 		if( ioctl(
 				 request,
-				 arg::IoArgument(&channel)
+				 IoArgument(&channel)
 				 ) < 0 ){
 			return (u32)-1;
 		}

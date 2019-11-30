@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include "var/Reference.hpp"
 #include "var/Tokenizer.hpp"
 using namespace var;
 
@@ -11,17 +12,24 @@ Tokenizer::Tokenizer(){
 	m_is_count_empty_tokens = false;
 }
 
-Tokenizer::Tokenizer(const arg::TokenEncodedString src,
-		const arg::TokenDelimeters delim,
-		const arg::IgnoreTokensBetween ignore,
-		const arg::IsCountEmptyTokens is_count_empty,
-		const arg::MaximumTokenCount maximum_delimeter_count) : String(src.argument()){
+Tokenizer::Tokenizer(
+		EncodedString src,
+		Delimeters delim,
+		IgnoreBetween ignore,
+		IsCountEmpty is_count_empty,
+		MaximumCount maximum_delimeter_count) : String(src.argument()){
 	init_members();
 	m_is_count_empty_tokens = is_count_empty.argument();
-	parse(delim, ignore, maximum_delimeter_count);
+	parse(delim,
+			ignore,
+			maximum_delimeter_count);
 }
 
-bool Tokenizer::belongs_to(const char c, const ConstString & src, unsigned int len){
+bool Tokenizer::belongs_to(
+		const char c,
+		const String & src,
+		unsigned int len
+		){
 	unsigned int i;
 	const char * s = src.cstring();
 	for(i=0; i < len; i++){
@@ -38,9 +46,10 @@ void Tokenizer::init_members(){
 }
 
 
-void Tokenizer::parse(const arg::TokenDelimeters delim,
-		const arg::IgnoreTokensBetween ignore,
-		const arg::MaximumTokenCount max_delim){
+void Tokenizer::parse(
+		Delimeters delim,
+		IgnoreBetween ignore,
+		MaximumCount max_delim){
 	char * p;
 	char * end;
 	unsigned int len0, len1;
@@ -110,7 +119,7 @@ void Tokenizer::parse(const arg::TokenDelimeters delim,
 	}
 }
 
-const ConstString Tokenizer::at(u32 n) const {
+const String Tokenizer::at(u32 n) const {
 	const char * p;
 	unsigned int i;
 	bool on_token = false;
@@ -118,7 +127,7 @@ const ConstString Tokenizer::at(u32 n) const {
 	p = cstring();
 
 	if( n >= size() ){
-		return ConstString();
+		return String();
 	}
 
 	if( m_is_count_empty_tokens ){
@@ -157,7 +166,7 @@ void Tokenizer::sort(enum sort_options sort_option){
 	u32 j;
 	Tokenizer tmp;
 	int current;
-	ConstString string_to_copy;
+	String string_to_copy;
 	char * next;
 	u8 sort_init;
 	char a;
@@ -186,7 +195,7 @@ void Tokenizer::sort(enum sort_options sort_option){
 		a = sort_init;
 		current = 0;
 		for(i=0; i < tmp.size(); i++){
-			b = tmp.at(i)[0];
+			b = tmp.at(i).at(0);
 			if( used[i] == 0 ){
 				switch(sort_option){
 					default: break;
@@ -215,10 +224,10 @@ void Tokenizer::sort(enum sort_options sort_option){
 Tokenizer & Tokenizer::operator=(const Tokenizer & token){
 	resize(token.capacity());
 
-	var::DataReference::memory_copy(
-				arg::SourceBuffer(token.to_const_void()),
-				arg::DestinationBuffer(to_void()),
-				arg::Size(token.capacity())
+	var::Reference::memory_copy(
+				var::Reference::SourceBuffer(token.cstring()),
+				var::Reference::DestinationBuffer(to_char()),
+				var::Reference::Size(token.capacity())
 				);
 
 	m_num_tokens = token.m_num_tokens;

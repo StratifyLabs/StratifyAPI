@@ -329,7 +329,7 @@ public:
 	 * @param v A pointer to the string
 	 * @return Number of bytes in the value portion to be successfully stored
 	 */
-	int write(const var::ConstString & key, const var::ConstString & v){
+	int write(const var::String & key, const var::String & v){
 		if( v != "" ){
 			return api()->write_str(&m_son, key.cstring(), v.cstring());
 		} else {

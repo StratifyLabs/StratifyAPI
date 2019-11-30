@@ -8,7 +8,11 @@ using namespace var;
 
 namespace sys {
 
-Cli::Cli(int argc, char * argv[], const var::ConstString & app_git_hash) : m_app_git_hash(app_git_hash){
+Cli::Cli(
+		int argc,
+		char * argv[],
+		const char * app_git_hash
+		) : m_app_git_hash(app_git_hash){
 	u16 version;
 	if( argc < 0 ){
 		argc = 0;
@@ -20,17 +24,15 @@ Cli::Cli(int argc, char * argv[], const var::ConstString & app_git_hash) : m_app
 	if( argc > 0 ){
 		m_path = argv[0];
 		m_name = fs::File::name(
-					arg::FilePath(argv[0])
+					argv[0]
 				);
-#if defined __link
 		version = Appfs::get_version(
-					arg::SourceFilePath(m_path.cstring()),
-					arg::LinkDriver(0));
-#else
-		version = Appfs::get_version(
-					arg::SourceFilePath(m_path.cstring())
+					m_path
+			#if defined __link
+					, fs::File::LinkDriver(nullptr)
+			#endif
 					);
-#endif
+
 
 		m_version.format("%d.%d", version >> 8, version & 0xff);
 	}
@@ -55,9 +57,14 @@ var::String Cli::get_version_details() const {
 	String result;
 
 	if( m_app_git_hash == 0 ){
-		result.sprintf("%s (api:%s)", m_version.cstring(), api::ApiInfo::git_hash());
+		result.format("%s (api:%s)", m_version.cstring(), api::ApiInfo::git_hash());
 	} else {
-		result.sprintf("%s (app:%s, api:%s)", m_version.cstring(), m_app_git_hash.cstring(), api::ApiInfo::git_hash());
+		result.format(
+					"%s (app:%s, api:%s)",
+					m_version.cstring(),
+					m_app_git_hash,
+					api::ApiInfo::git_hash()
+					);
 	}
 
 	return result;
@@ -84,8 +91,8 @@ String Cli::at(u16 value) const {
 }
 
 bool Cli::is_option_equivalent_to_argument(
-		const ConstString & option,
-		const ConstString & argument) const {
+		const String & option,
+		const String & argument) const {
 	String option_string = option;
 	String argument_string = argument;
 	if( is_case_senstive() == false ){
@@ -97,22 +104,25 @@ bool Cli::is_option_equivalent_to_argument(
 }
 
 bool Cli::compare_with_prefix(
-		const var::ConstString & option,
-		const var::ConstString & argument
+		const var::String & option,
+		const var::String & argument
 		) const {
 	String with_prefix;
+	printf("%s():%d\n", __PRETTY_FUNCTION__, __LINE__);
 	if( argument.at(0) != '-' ){ return false; }
 	if( option == argument ){ return true; }
 	with_prefix << "--" << option;
 	if( with_prefix == argument ){ return true; }
-	if( with_prefix.substr(arg::Position(1)) == argument ){ return true; }
+	if( with_prefix.create_sub_string(
+			 String::Position(1)
+			 ) == argument ){ return true; }
 	return false;
 }
 
 
 bool Cli::is_option_equivalent_to_argument_with_equality(
-		const var::ConstString & option,
-		const var::ConstString & argument,
+		const var::String & option,
+		const var::String & argument,
 		var::String & value) const {
 
 	if( argument.at(0) != '-' ){
@@ -120,11 +130,11 @@ bool Cli::is_option_equivalent_to_argument_with_equality(
 	}
 
 	Tokenizer tokens(
-				arg::TokenEncodedString(argument),
-				arg::TokenDelimeters("="),
-				arg::IgnoreTokensBetween(""),
-				arg::IsCountEmptyTokens(false),
-				arg::MaximumTokenCount(1));
+				var::Tokenizer::EncodedString(argument),
+				var::Tokenizer::Delimeters("="),
+				var::Tokenizer::IgnoreBetween(""),
+				var::Tokenizer::IsCountEmpty(false),
+				var::Tokenizer::MaximumCount(1));
 	if( tokens.count() == 2 ){
 		String a = option;
 		String b = tokens.at(0);
@@ -143,21 +153,24 @@ bool Cli::is_option_equivalent_to_argument_with_equality(
 
 
 var::String Cli::get_option(
-		const arg::OptionName name,
-		const arg::OptionDescription help
+		const String & name,
+		Description help
 		) const {
 	var::String result;
 	u32 args;
 
-
 	if( help.argument().is_empty() == false ){
-		m_help_list.push_back(String() << name.argument() << ": " << help.argument());
+		m_help_list.push_back(
+					String()
+					<< name
+					<< ": "
+					<< help.argument());
 	}
 
 	for(args = 1; args < count(); args++){
-		if( is_option_equivalent_to_argument(name.argument(), at(args)) ){
+		if( is_option_equivalent_to_argument(name, at(args)) ){
 			if( count() > args+1 ){
-				ConstString value = at(args+1);
+				String value = at(args+1);
 				if( value.at(0) == '-' ){
 					result = "true";
 				} else {
@@ -165,9 +178,14 @@ var::String Cli::get_option(
 				}
 				return result;
 			} else {
-				return ConstString("true");
+				return String("true");
 			}
-		} else if( is_option_equivalent_to_argument_with_equality(name.argument(), at(args), result)){
+		} else if( is_option_equivalent_to_argument_with_equality(
+						  name,
+						  at(args),
+						  result
+						  )
+					  ){
 			return result;
 		}
 	}
@@ -184,7 +202,7 @@ String Cli::get_option_argument(const char * option) const {
 	return String();
 }
 
-bool Cli::is_option(const var::ConstString & value) const {
+bool Cli::is_option(const var::String & value) const {
 	u16 i;
 	for(i=0; i < m_argc; i++){
 		if( is_option_equivalent_to_argument(value, at(i).cstring()) ){
@@ -219,7 +237,7 @@ mcu_pin_t Cli::get_option_pin(const char * option) const {
 	Tokenizer arg;
 	arg.assign(get_option_argument(option));
 	arg.parse(
-				arg::TokenDelimeters(".")
+				var::Tokenizer::Delimeters(".")
 				);
 
 	if( arg.size() == 2 ){
@@ -239,7 +257,7 @@ mcu_pin_t Cli::pin_at(u16 value) const {
 
 	arg.assign( at(value) );
 	arg.parse(
-				arg::TokenDelimeters(".")
+				var::Tokenizer::Delimeters(".")
 				);
 
 	if( arg.size() == 2 ){

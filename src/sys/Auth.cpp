@@ -15,7 +15,7 @@
 
 using namespace sys;
 
-AuthToken::AuthToken(const var::ConstString & token){
+AuthToken::AuthToken(const var::String & token){
 	memset(&m_auth_token, 0, sizeof(m_auth_token));
 
 	if( token.length() != 2*sizeof(m_auth_token) ){
@@ -29,15 +29,22 @@ AuthToken::AuthToken(const var::ConstString & token){
 		hex[0] = token.at(i*2);
 		hex[1] = token.at(i*2+1);
 		m_auth_token.data[i] =
-				var::ConstString(hex).to_unsigned_long(arg::NumberBase(16));
+				var::String(hex).to_unsigned_long(var::String::BASE_16);
 	}
 
 }
 
 #if defined __link
-Auth::Auth(arg::LinkDriver driver){
-	m_driver = driver.argument();
-	m_fd = set_error_number_if_error(::link_open(m_driver, "/dev/auth", O_RDWR));
+Auth::Auth(
+		SAPI_LINK_DRIVER
+		){
+	m_driver = link_driver.argument();
+	m_fd = set_error_number_if_error(
+				::link_open(
+					m_driver,
+					"/dev/auth",
+					O_RDWR)
+				);
 }
 #else
 Auth::Auth(){

@@ -8,8 +8,8 @@ Fifo::Fifo(){}
 
 int Fifo::get_info(FifoInfo & info) const {
 	return ioctl(
-				arg::IoRequest(I_FIFO_GETINFO),
-				arg::IoArgument(&info.m_info)
+				IoRequest(I_FIFO_GETINFO),
+				IoArgument(&info.m_info)
 				);
 }
 FifoInfo Fifo::get_info() const {
@@ -18,10 +18,10 @@ FifoInfo Fifo::get_info() const {
 	return a;
 }
 int Fifo::flush() const {
-	return ioctl(arg::IoRequest(I_FIFO_FLUSH));
+	return ioctl(IoRequest(I_FIFO_FLUSH));
 }
-int Fifo::initialize() const { return ioctl(arg::IoRequest(I_FIFO_INIT)); }
-int Fifo::finalize() const { return ioctl(arg::IoRequest(I_FIFO_EXIT)); }
+int Fifo::initialize() const { return ioctl(IoRequest(I_FIFO_INIT)); }
+int Fifo::finalize() const { return ioctl(IoRequest(I_FIFO_EXIT)); }
 int Fifo::set_writeblock(bool value) const {
 	fifo_attr_t attr;
 	attr.o_flags = SET_WRITEBLOCK;
@@ -29,7 +29,7 @@ int Fifo::set_writeblock(bool value) const {
 		attr.o_flags |= IS_OVERFLOW;
 	}
 	return ioctl(
-				arg::IoRequest(I_FIFO_SETATTR),
-				arg::IoConstArgument(&attr)
+				IoRequest(I_FIFO_SETATTR),
+				IoConstArgument(&attr)
 				);
 }

@@ -14,8 +14,8 @@ Spi::Spi(port_t port) : Periph(CORE_PERIPH_SPI, port){}
 
 int Spi::swap(int byte) const {
 	return ioctl(
-				arg::IoRequest(I_SPI_SWAP),
-				arg::IoIntArgument(byte)
+				IoRequest(I_SPI_SWAP),
+				IoIntArgument(byte)
 				);
 }
 

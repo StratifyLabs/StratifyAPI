@@ -22,7 +22,7 @@ namespace ui {
 class ListItem : public LinkedElement {
 public:
 	/*! \details Construct a new list item */
-	ListItem(const var::ConstString & label, LinkedElement * parent = 0, LinkedElement * child = 0);
+	ListItem(const var::String & label, LinkedElement * parent = 0, LinkedElement * child = 0);
 
 	void draw_to_scale(const draw::DrawingScaledAttr & attr);
 

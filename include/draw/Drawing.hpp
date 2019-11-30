@@ -76,9 +76,15 @@ drawing_area_t drawing_dim(drawing_size_t w, drawing_size_t h);
 class DrawingArea : public api::InfoObject {
 public:
 
+	using Width = arg::Argument<drawing_int_t, struct WidthTag>;
+	using Height = arg::Argument<drawing_int_t, struct HeightTag>;
+
+	using ImplicitWidth = arg::ImplicitArgument<drawing_int_t, struct ImplicitWidthTag, Width>;
+	using ImplicitHeight = arg::ImplicitArgument<drawing_int_t, struct ImplicitHeightTag, Height>;
+
 	DrawingArea(){ m_area.height = 0; m_area.width = 0; }
-	DrawingArea(drawing_size_t w, drawing_size_t h){
-		m_area.height = h; m_area.width = w;
+	DrawingArea(ImplicitWidth w, ImplicitHeight h){
+		m_area.height = h.argument(); m_area.width = w.argument();
 	}
 
 	DrawingArea(const drawing_area_t & area){
@@ -92,10 +98,10 @@ public:
 	static DrawingArea maximum();
 
 	drawing_size_t width() const { return m_area.width; }
-	void set_width(drawing_size_t value){ m_area.width = value; }
-
 	drawing_size_t height() const { return m_area.height; }
-	void set_height(drawing_size_t value){ m_area.height = value; }
+
+	DrawingArea & set_width(drawing_size_t value){ m_area.width = value; return *this; }
+	DrawingArea & set_height(drawing_size_t value){ m_area.height = value; return *this; }
 
 	const drawing_area_t & area() const { return m_area; }
 	drawing_area_t & area(){ return m_area; }
@@ -110,9 +116,15 @@ private:
 class DrawingPoint : public api::InfoObject {
 public:
 
+	using X = arg::Argument<drawing_int_t, struct XTag>;
+	using Y = arg::Argument<drawing_int_t, struct YTag>;
+
+	using ImplicitX = arg::ImplicitArgument<drawing_int_t, struct ImplicitXTag, X>;
+	using ImplicitY = arg::ImplicitArgument<drawing_int_t, struct ImplicitYTag, Y>;
+
 	DrawingPoint(){ m_point.x = 0; m_point.y = 0; }
-	DrawingPoint(drawing_int_t x, drawing_int_t y){
-		m_point.x = x; m_point.y = y;
+	DrawingPoint(ImplicitX x, ImplicitY y){
+		m_point.x = x.argument(); m_point.y = y.argument();
 	}
 
 	DrawingPoint(const drawing_point_t & point){
@@ -256,6 +268,14 @@ public:
 	/*! \details Construct an object from a drawing_attr_t */
 	DrawingAttributes(const drawing_attr_t & attr);
 
+	/*! \details Return the underlying drawing_attr_t */
+	operator drawing_attr_t & (){ return m_attr; }
+	operator const drawing_attr_t & () const { return m_attr; }
+
+	/*! \details Access the underlying attr object */
+	drawing_attr_t & attributes(){ return m_attr; }
+	const drawing_attr_t & attributes() const { return m_attr; }
+	drawing_attr_t & attr(){ return m_attr; }
 
 	DrawingAttributes(sgfx::Bitmap & bitmap);
 	DrawingAttributes(sgfx::Bitmap & bitmap, const DrawingRegion & region);
@@ -267,29 +287,24 @@ public:
 
 	bool is_valid() const { return m_attr.bitmap != 0; }
 
-	/*! \details Return the underlying drawing_attr_t */
-	operator drawing_attr_t (){ return m_attr; }
 
 	/*! \details Assign the bitmap point and dimensions */
 	void set(sgfx::Bitmap & b, drawing_point_t p, drawing_area_t d, sgfx::Bitmap * scratch = 0);
 
 	/*! \details Set the bitmap */
-	void set_bitmap(sgfx::Bitmap & b){ m_attr.bitmap = &b; }
+	DrawingAttributes & set_bitmap(sgfx::Bitmap & b){ m_attr.bitmap = &b; return *this; }
 
 	/*! \details Set the scratch bitmap */
-	void set_scratch(sgfx::Bitmap * b){ m_attr.scratch = b; }
+	DrawingAttributes & set_scratch(sgfx::Bitmap * b){ m_attr.scratch = b; return *this; }
 
 	/*! \details Set the dimensions.  Both width and height are from 0 to 1000. */
-	void set_dim(drawing_area_t d){ m_attr.region.area = d; }
-
-	/*! \details Set the dimensions.  Both width and height are from 0 to 1000. */
-	void set_dim(drawing_size_t w, drawing_size_t h){ m_attr.region.area.width = w; m_attr.region.area.height = h; }
+	DrawingAttributes & set_area(const DrawingArea & value){ m_attr.region.area = value; return *this; }
 
 	/*! \details Set the location.  Both x and y are from 0 to 1000. */
-	void set_point(drawing_point_t p){ m_attr.region.point = p; }
+	DrawingAttributes & set_point(const DrawingPoint & p){ m_attr.region.point = p; return *this; }
 
 	/*! \details Set the location.  Both x and y are from 0 to 1000. */
-	void set_point(drawing_int_t x, drawing_int_t y){ m_attr.region.point.x = x; m_attr.region.point.y = y; }
+	//void set_point(drawing_int_t x, drawing_int_t y){ m_attr.region.point.x = x; m_attr.region.point.y = y; }
 
 	/*! \details Return the width */
 	drawing_size_t width() const { return m_attr.region.area.width; }
@@ -313,14 +328,12 @@ public:
 
 	/*! \details Returns a copy of the region. */
 	DrawingRegion region() const { return m_attr.region; }
-
 	/*! \details Returns a copy of the position. */
 	DrawingPoint point() const { return m_attr.region.point; }
 	/*! \details Returns a copy of the dimensions. */
 	DrawingArea area() const { return m_attr.region.area; }
 
-	/*! \details Access the underlying attr object */
-	drawing_attr_t & attr(){ return m_attr; }
+
 
 	/*! \details Calculate the scaled height relative to the height of the DrawingAttributes object.
 	 *
@@ -461,19 +474,17 @@ public:
 	void set(sgfx::Bitmap & b, sg_point_t p, sg_area_t d);
 
 	/*! \details Assign a value to the bitmap pointer using a reference. */
-	void set_bitmap(sgfx::Bitmap & b){ m_attr.bitmap = &b; }
+	DrawingScaledAttributes & set_bitmap(sgfx::Bitmap & b){ m_attr.bitmap = &b; return *this; }
 	/*! \details Assigns area. */
-	void set_area(sg_area_t d){ m_attr.region.area = d; }
+	DrawingScaledAttributes & set_area(const sgfx::Area & area){ m_attr.region.area = area.area(); return *this; }
 	/*! \details Sets the height of the object */
-	void set_height(sg_size_t h){ m_attr.region.area.height = h; }
+	DrawingScaledAttributes & set_height(sg_size_t h){ m_attr.region.area.height = h; return *this; }
 	/*! \details Sets the width of the object. */
-	void set_width(sg_size_t w){ m_attr.region.area.height = w; }
+	DrawingScaledAttributes & set_width(sg_size_t w){ m_attr.region.area.height = w; return *this; }
 	/*! \details Sets the x value of the object. */
-	void set_x(sg_int_t x){ m_attr.region.point.x = x; }
+	DrawingScaledAttributes & set_x(sg_int_t x){ m_attr.region.point.x = x; return *this; }
 	/*! \details Sets the y value of the object. */
-	void set_y(sg_int_t y){ m_attr.region.point.y = y; }
-	/*! \details Assign dimensions using width and height parameters. */
-	void set_area(sg_size_t w, sg_size_t h){ m_attr.region.area.width = w; m_attr.region.area.height = h; }
+	DrawingScaledAttributes & set_y(sg_int_t y){ m_attr.region.point.y = y; return *this; }
 
 	/*! \details Assign the position */
 	void set_point(sg_point_t p){ m_attr.region.point = p; }
@@ -556,6 +567,11 @@ public:
 	 *
 	 */
 	virtual void draw(const DrawingAttributes & attr);
+
+	void draw(const DrawingAttributes & attr, const DrawingPoint & point, const DrawingArea & area){
+		draw(attr + point + area);
+	}
+
 	virtual void draw_scratch(const DrawingAttributes & attr);
 	void draw(sgfx::Bitmap & b, drawing_int_t x, drawing_int_t y, drawing_size_t w, drawing_size_t h);
 

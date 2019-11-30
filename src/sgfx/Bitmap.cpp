@@ -49,12 +49,11 @@ void Palette::fill_gradient_gray(bool is_ascending){
 
 Region Bitmap::get_viewable_region() const {
 	Point point = Point(
-				arg::XValue(margin_left()),
-				arg::YValue(margin_top())
+				margin_left(), margin_top()
 				);
 	Area dim = Area(
-				arg::Width(width() - margin_left() - margin_right()),
-				arg::Height(height() - margin_top() - margin_bottom())
+				Area::Width(width() - margin_left() - margin_right()),
+				Area::Height(height() - margin_top() - margin_bottom())
 				);
 	Region region(point, dim);
 	return region;
@@ -107,24 +106,24 @@ void Bitmap::initialize_members(){
 }
 
 void Bitmap::refer_to(
-		arg::ReadOnlyBuffer buffer,
+		ReadOnlyBuffer buffer,
 		const Area & area
 		){
 	Data::refer_to(
-				arg::ReadOnlyBuffer(buffer),
-				arg::Size(calculate_size(area))
+				buffer,
+				Size(calculate_size(area))
 				);
 
 	calculate_members(area);
 }
 
 void Bitmap::refer_to(
-		arg::ReadWriteBuffer buffer,
+		ReadWriteBuffer buffer,
 		const Area & area
 		){
 	Data::refer_to(
-				arg::ReadWriteBuffer(buffer),
-				arg::Size(calculate_size(area))
+				buffer,
+				Size(calculate_size(area))
 				);
 
 	calculate_members(area);
@@ -132,7 +131,7 @@ void Bitmap::refer_to(
 
 void Bitmap::refer_to(
 		const sg_bmap_header_t * hdr,
-		const arg::IsReadOnly is_read_only
+		IsReadOnly is_read_only
 		){
 	char * ptr;
 	ptr = (char*)hdr;
@@ -140,27 +139,19 @@ void Bitmap::refer_to(
 
 	if( is_read_only.argument() ){
 		refer_to(
-					arg::ReadOnlyBuffer(ptr),
-					Area(
-						arg::Width(hdr->width),
-						arg::Height(hdr->height)
-						)
+					ReadOnlyBuffer(ptr),
+					Area(hdr->width, hdr->height)
 					);
 	} else {
 		refer_to(
-					arg::ReadWriteBuffer(ptr),
-					Area(
-						arg::Width(hdr->width),
-						arg::Height(hdr->height)
-						)
+					ReadWriteBuffer(ptr),
+					Area(hdr->width ,hdr->height)
 					);
 	}
 }
 
 int Bitmap::allocate(const Area & dim){
-	if( Data::allocate(
-			 arg::Size(calculate_size(dim))
-			 ) < 0 ){
+	if( Data::allocate(calculate_size(dim) ) < 0 ){
 		calculate_members(Area());
 		return -1;
 	}
@@ -189,14 +180,14 @@ Bitmap::Bitmap(sg_area_t d){
 
 
 Bitmap::Bitmap(
-		arg::ReadOnlyBuffer buffer,
+		ReadOnlyBuffer buffer,
 		const Area & area){
 	initialize_members();
 	refer_to(buffer,area);
 }
 
 Bitmap::Bitmap(
-		arg::ReadWriteBuffer buffer,
+		ReadWriteBuffer buffer,
 		const Area & area){
 	initialize_members();
 	refer_to(buffer,area);
@@ -205,7 +196,7 @@ Bitmap::Bitmap(
 
 Bitmap::Bitmap(
 		const sg_bmap_header_t * hdr,
-		const arg::IsReadOnly is_read_only
+		IsReadOnly is_read_only
 		){
 	initialize_members();
 	refer_to(hdr, is_read_only);
@@ -232,10 +223,7 @@ Bitmap::~Bitmap(){
 }
 
 Point Bitmap::center() const{
-	return Point(
-				arg::XValue(width()/2),
-				arg::YValue(height()/2)
-				);
+	return Point(width()/2,height()/2);
 }
 
 bool Bitmap::resize(const Area & area){
@@ -265,20 +253,20 @@ sg_bmap_data_t * Bitmap::bmap_data(const Point & p){
 
 
 
-int Bitmap::load(const arg::SourceFilePath & path){
+int Bitmap::load(const var::String & path){
 	sg_bmap_header_t hdr;
 	fs::File f;
 
 	if( f.open(
-			 arg::FilePath(path.argument()),
+			 path,
 			 fs::OpenFlags::read_only()
 			 ) < 0 ){
 		return -1;
 	}
 
 	if( f.read(
-			 arg::DestinationBuffer(&hdr),
-			 arg::Size(sizeof(hdr))
+			 &hdr,
+			 fs::File::Size(sizeof(hdr))
 			 ) != sizeof(hdr) ){
 		return -1;
 	}
@@ -288,17 +276,14 @@ int Bitmap::load(const arg::SourceFilePath & path){
 	}
 
 	if( resize(
-			 Area(
-				 arg::Width(hdr.width),
-				 arg::Height(hdr.height)
-				 )
+			 Area(hdr.width, hdr.height)
 			 ) == false ){
 		return -1;
 	}
 
 	if( f.read(
-			 arg::DestinationBuffer(to_void()),
-			 arg::Size(hdr.size)
+			 to_void(),
+			 Size(hdr.size)
 			 ) != (s32)hdr.size ){
 		return -1;
 	}
@@ -307,18 +292,20 @@ int Bitmap::load(const arg::SourceFilePath & path){
 }
 
 
-Area Bitmap::load_area(const arg::SourceFilePath & path){
+Area Bitmap::load_area(
+		const var::String & path
+		){
 	sg_bmap_header_t hdr;
 	fs::File f;
 	if( f.open(
-			 arg::FilePath(path.argument()),
+			 path,
 			 fs::OpenFlags::read_only()) < 0 ){
 		return Area();
 	}
 
 	if( f.read(
-			 arg::DestinationBuffer(&hdr),
-			 arg::Size(sizeof(hdr))
+			 &hdr,
+			 fs::File::Size(sizeof(hdr))
 			 ) != sizeof(hdr) ){
 		return Area();
 	}
@@ -327,13 +314,10 @@ Area Bitmap::load_area(const arg::SourceFilePath & path){
 		return Area();
 	}
 
-	return Area(
-				arg::Width(hdr.width),
-				arg::Height(hdr.height)
-				);
+	return Area(hdr.width, hdr.height);
 }
 
-int Bitmap::save(const arg::DestinationFilePath & path) const{
+int Bitmap::save(const var::String & path) const{
 	sg_bmap_header_t hdr;
 
 	hdr.width = width();
@@ -344,31 +328,27 @@ int Bitmap::save(const arg::DestinationFilePath & path) const{
 
 	fs::File f;
 	if( f.create(
-			 arg::DestinationFilePath(path),
-			 arg::IsOverwrite(true)
+			 path,
+			 fs::File::IsOverwrite(true)
 			 ) < 0 ){
 		return -1;
 	}
 
 	if( f.write(
-			 arg::SourceBuffer(&hdr),
-			 arg::Size(sizeof(hdr))
+			 &hdr,
+			 fs::File::Size(sizeof(hdr))
 			 ) < 0 ){
 		f.close();
-		fs::File::remove(
-					arg::SourceFilePath(path.argument())
-					);
+		fs::File::remove(path);
 		return -1;
 	}
 
 	if( f.write(
-			 arg::SourceBuffer(to_const_void()),
-			 arg::Size(hdr.size)
+			 to_const_void(),
+			 fs::File::Size(hdr.size)
 			 ) != (s32)hdr.size ){
 		f.close();
-		fs::File::remove(
-					arg::SourceFilePath(path.argument())
-					);
+		fs::File::remove(path);
 		return -1;
 	}
 
@@ -456,11 +436,9 @@ void Bitmap::downsample_bitmap(const Bitmap & source, const Area & factor){
 
 		for(sg_int_t x = 0; x <= source.width() - factor.width()/2; x+=factor.width()){
 			Region region(
-						Point(
-							arg::XValue(x),
-							arg::YValue(y)
-							),
-						factor);
+						Point(x, y),
+						factor
+						);
 			sample.clear();
 			sample.draw_sub_bitmap(Point(), source, region);
 

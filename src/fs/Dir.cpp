@@ -12,72 +12,60 @@ using namespace arg;
 
 
 
+Dir::Dir(
+		SAPI_LINK_DRIVER
+		){
+	m_dirp = 0;
 #if defined __link
-Dir::Dir(arg::LinkDriver driver){
-	m_dirp = 0;
-	m_driver = driver.argument();
 	m_dirp_local = 0;
-}
-
-#else
-Dir::Dir(){
-	m_dirp = 0;
-}
-
+	m_driver = link_driver.argument();
 #endif
+}
 
 Dir::~Dir(){
 	close();
 }
 
-#if !defined __link
 int Dir::remove(
-		const arg::SourceDirectoryPath path,
-		const arg::IsRecursive recursive
+		const var::String & path,
+		IsRecursive recursive
+		SAPI_LINK_DRIVER_LAST
 		){
-#else
-int Dir::remove(
-		const arg::SourceDirectoryPath path,
-		const arg::IsRecursive recursive,
-		arg::LinkDriver driver
-		){
-#endif
 	int ret = 0;
 	if( recursive.argument() ){
-#if defined __link
-		Dir d(driver);
-#else
-		Dir d;
-#endif
-		if( d.open(
-				 path
-				 ) == 0 ){
+		Dir d(
+			#if defined __link
+					link_driver
+			#endif
+					);
+
+		if( d.open(path) == 0 ){
 			var::String entry;
 			while( (entry = d.read()).is_empty() == false ){
 				Stat info;
 				var::String entry_path;
-				entry_path << path.argument() << "/" << entry;
+				entry_path << path << "/" << entry;
 				info = File::get_info(
-							SourceFilePath(entry_path)
+							entry_path
 			#if defined __link
-							, driver
+							, link_driver
 			#endif
 							);
 				if( info.is_directory() ){
 					if( entry != "." && entry != ".."){
 						ret = Dir::remove(
-									arg::SourceDirectoryPath(entry_path),
-									arg::IsRecursive(true)
+									entry_path,
+									IsRecursive(true)
 			#if defined __link
-									, driver
+									, link_driver
 			#endif
 									);
 					}
 				} else {
 					ret = File::remove(
-								arg::SourceFilePath(entry_path)
+								entry_path
 			#if defined __link
-								, driver
+								, link_driver
 			#endif
 								);
 				}
@@ -89,19 +77,19 @@ int Dir::remove(
 	if( ret >= 0 ){
 		//this will remove an empty directory or a file
 #if defined __link
-		if( driver.argument() ){
+		if( link_driver.argument() ){
 			ret = File::remove(
-						arg::SourceFilePath(path.argument()),
-						driver
+						path,
+						link_driver
 						);
 		} else {
 			ret = ::rmdir(
-						path.argument().cstring()
+						path.cstring()
 						);
 		}
 #else
 		ret = File::remove(
-					arg::SourceFilePath(path.argument())
+					SourcePath(path.argument())
 					);
 #endif
 	}
@@ -110,24 +98,24 @@ int Dir::remove(
 }
 
 int Dir::copy(
-		const arg::SourceDirectoryPath source_path,
-		const arg::DestinationDirectoryPath destination_path
+		SourcePath source_path,
+		DestinationPath destination_path
 		#if defined __link
-		, arg::SourceLinkDriver source_driver,
-		arg::DestinationLinkDriver destination_driver
+		, SourceLinkDriver source_driver,
+		DestinationLinkDriver destination_driver
 		#endif
 		){
 
 	var::Vector<var::String> source_contents =
 			Dir::read_list(
-				source_path,
-				arg::IsRecursive(false)
+				source_path.argument(),
+				IsRecursive(false)
 			#if defined __link
-				, arg::LinkDriver(source_driver.argument())
+				, LinkDriver(source_driver.argument())
 			#endif
 				);
 
-	for(auto entry: source_contents){
+	for(auto entry: source_contents.vector()){
 		var::String entry_path =
 				var::String()
 				<< source_path.argument()
@@ -142,9 +130,9 @@ int Dir::copy(
 
 		FileInfo info =
 				File::get_info(
-					arg::SourceFilePath(entry_path)
+					entry_path
 			#if defined __link
-					, arg::LinkDriver(source_driver.argument())
+					, LinkDriver(source_driver.argument())
 			#endif
 					);
 
@@ -152,18 +140,18 @@ int Dir::copy(
 			//copy recursively
 
 			if( Dir::create(
-					 arg::DestinationDirectoryPath(destination_entry_path),
+					 destination_entry_path,
 					 Permissions::all_access(),
-					 arg::IsRecursive(true)
+					 IsRecursive(true)
 		 #if defined __link
-					 , arg::LinkDriver(destination_driver.argument())
+					 , LinkDriver(destination_driver.argument())
 		 #endif
 					 ) < 0 ){
 				return -1;
 			}
 
-			copy(arg::SourceDirectoryPath(entry_path),
-				  arg::DestinationDirectoryPath(destination_entry_path)
+			copy(SourcePath(entry_path),
+				  DestinationPath(destination_entry_path)
 	  #if defined __link
 				  , source_driver,
 				  destination_driver
@@ -172,9 +160,13 @@ int Dir::copy(
 
 		} else if( info.is_file() ){
 			if( File::copy(
-					 arg::SourceFilePath(entry_path),
-					 arg::DestinationFilePath(destination_entry_path),
-					 arg::IsOverwrite(true)
+					 SourcePath(entry_path),
+					 DestinationPath(destination_entry_path),
+					 IsOverwrite(true)
+		 #if defined __link
+					 , source_driver,
+					 destination_driver
+		 #endif
 					 ) < 0 ){
 				return -1;
 			}
@@ -183,78 +175,73 @@ int Dir::copy(
 	return 0;
 }
 
-#if defined __link
 int Dir::create(
-		const DestinationDirectoryPath & path,
-		const Permissions & permissions,
-		arg::LinkDriver driver
+		const var::String & path,
+		const Permissions & permissions
+		SAPI_LINK_DRIVER_LAST
 		){
 	int result;
-	if( driver.argument() ){
+
+#if defined __link
+	if( link_driver.argument() ){
 		result = link_mkdir(
-					driver.argument(),
-					path.argument().cstring(),
+					link_driver.argument(),
+					path.cstring(),
 					permissions.permissions()
 					);
 	} else {
 		//open a directory on the local system (not over link)
 #if defined __win32
-		result = mkdir(path.argument().cstring());
+		result = mkdir(path.cstring());
 #else
-		result = mkdir(path.argument().cstring(), permissions.permissions());
+		result = mkdir(
+					path.cstring(),
+					permissions.permissions()
+					);
 #endif
 	}
-	return result;
-}
 #else
-int Dir::create(
-		const DestinationDirectoryPath & path,
-		const Permissions & permissions
-		){
-	return mkdir(
+	result = mkdir(
 				path.argument().cstring(),
 				permissions.permissions()
 				);
-}
 #endif
+	return result;
+}
 
-#if defined __link
+
 int Dir::create(
-		const DestinationDirectoryPath & path,
+		const var::String & path,
 		const Permissions & permissions,
-		const arg::IsRecursive is_recursive,
-		arg::LinkDriver driver
+		IsRecursive is_recursive
+		SAPI_LINK_DRIVER_LAST
 		){
 	if( is_recursive.argument() == false ){
-		return create(path, permissions, driver);
+		return create(
+					path,
+					permissions
+			#if defined __link
+					, link_driver
+			#endif
+					);
 	}
-#else
-int Dir::create(
-		const DestinationDirectoryPath & path,
-		const Permissions & permissions,
-		const arg::IsRecursive is_recursive){
-	if( is_recursive.argument() == false ){
-		return create(path, permissions);
-	}
-#endif
 	var::Tokenizer path_tokens(
-				arg::TokenEncodedString(path.argument()),
-				arg::TokenDelimeters("/")
+				var::Tokenizer::EncodedString(path),
+				var::Tokenizer::Delimeters("/")
 				);
 	var::String base_path;
 
-	if( path.argument().find(
-			 arg::StringToFind("/")
-			 ) == 0 ){
+	if( path.find("/") == 0 ){
 		base_path << "/";
 	}
 
 	for(u32 i=0; i < path_tokens.count(); i++){
 		base_path << path_tokens.at(i);
-		create(DestinationDirectoryPath(base_path),
+		create(
+					base_path,
 					permissions
 			#if defined __link
-					, driver
+					, link_driver
 			#endif
 					);
 		base_path << "/";
@@ -264,38 +251,36 @@ int Dir::create(
 	return 0;
 }
 
-
-
-#if defined __link
 bool Dir::exists(
-		const SourceDirectoryPath & path,
-		arg::LinkDriver driver
+		const var::String & path
+		SAPI_LINK_DRIVER_LAST
 		){
-	Dir d(driver);
-#else
-bool Dir::exists(
-		const SourceDirectoryPath & path
-		){
-	Dir d;
-#endif
+	Dir d(
+			#if defined __link
+				link_driver
+			#endif
+				);
 	if( d.open(path) < 0 ){ return false; }
 	d.close();
 	return true;
 }
 
 
-int Dir::open(const SourceDirectoryPath & name){
+int Dir::open(const var::String & path){
 #if defined __link
 	if( driver() ){
-		m_dirp = link_opendir(driver(), name.argument().cstring());
+		m_dirp = link_opendir(
+					driver(),
+					path.cstring()
+					);
 	} else {
 		//open a directory on the local system (not over link)
 
-		m_dirp_local = opendir(name.argument().cstring());
+		m_dirp_local = opendir(path.cstring());
 		if( m_dirp_local == 0 ){
 			return -1;
 		}
-		m_path.assign(name.argument());
+		m_path.assign(path);
 		return 0;
 	}
 #else
@@ -307,7 +292,7 @@ int Dir::open(const SourceDirectoryPath & name){
 		return -1;
 	}
 
-	m_path.assign(name.argument());
+	m_path.assign(path);
 	return 0;
 }
 
@@ -347,20 +332,16 @@ int Dir::count(){
 #endif
 
 
-#if defined __link
 var::Vector<var::String> Dir::read_list(
-		const SourceDirectoryPath & path,
-		arg::IsRecursive is_recursive,
-		arg::LinkDriver driver
+		const var::String & path,
+		IsRecursive is_recursive
+		SAPI_LINK_DRIVER_LAST
 		){
-	Dir directory(driver);
-#else
-var::Vector<var::String> Dir::read_list(
-		const SourceDirectoryPath & path,
-		arg::IsRecursive is_recursive
-		){
-	Dir directory;
-#endif
+	Dir directory(
+			#if defined __link
+				link_driver
+			#endif
+				);
 	var::Vector<var::String> result;
 	if( directory.open(path) < 0 ){ return result; }
 	result = directory.read_list(is_recursive);
@@ -386,9 +367,9 @@ var::Vector<var::String> Dir::read_list(
 				var::String entry_path;
 				entry_path << m_path << "/" << entry;
 				FileInfo info = File::get_info(
-							arg::SourceFilePath(entry_path)
+							entry_path
 			#if defined __link
-							, arg::LinkDriver(driver())
+							, LinkDriver(driver())
 			#endif
 							);
 
@@ -396,15 +377,15 @@ var::Vector<var::String> Dir::read_list(
 
 					var::Vector<var::String> intermediate_result =
 							Dir::read_list(
-								arg::SourceDirectoryPath(entry_path),
+								entry_path,
 								is_recursive
 			#if defined __link
-								, arg::LinkDriver(driver())
+								, LinkDriver(driver())
 			#endif
 								);
 
 
-					for(auto intermediate_entry: intermediate_result){
+					for(auto intermediate_entry: intermediate_result.vector()){
 						var::String push_entry;
 						push_entry << entry << "/" << intermediate_entry;
 						result.push_back(push_entry);

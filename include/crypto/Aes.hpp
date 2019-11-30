@@ -3,13 +3,18 @@
 
 #include "../api/CryptoObject.hpp"
 #include "../arg/Argument.hpp"
+#include "../var/Reference.hpp"
 #include "../var/Data.hpp"
 
 namespace crypto {
 
-
 class Aes : public api::CryptoWorkObject {
 public:
+
+	using SourceReference = var::Reference::Source;
+	using DestinationReference = var::Reference::Destination;
+
+
 	Aes();
 	~Aes();
 
@@ -32,34 +37,34 @@ public:
 	}
 
 	int encrypt_ecb(
-			arg::SourceData source_data,
-			arg::DestinationData destination_data
+			SourceReference source_data,
+			DestinationReference destination_data
 			);
 
 	int decrypt_ecb(
-			arg::SourceData source_data,
-			arg::DestinationData destination_data
+			SourceReference source_data,
+			DestinationReference destination_data
 			);
 
 	int encrypt_cbc(
-			arg::SourceData source_data,
-			arg::DestinationData destination_data
+			SourceReference source_data,
+			DestinationReference destination_data
 			);
 
 	int decrypt_cbc(
-			arg::SourceData source_data,
-			arg::DestinationData destination_data
+			SourceReference source_data,
+			DestinationReference destination_data
 			);
 
 
 	int encrypt_ctr(
-			arg::SourceData source_data,
-			arg::DestinationData destination_data
+			SourceReference source_data,
+			DestinationReference destination_data
 			);
 
 	int decrypt_ctr(
-			arg::SourceData source_data,
-			arg::DestinationData destination_data
+			SourceReference source_data,
+			DestinationReference destination_data
 			);
 
 private:

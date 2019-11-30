@@ -13,12 +13,18 @@ namespace fmt {
 /*! \brief WAV File format */
 class Wav : public fs::File {
 public:
+
+	using BitsPerSample = arg::Argument< u16, struct WavBitsPerSampleTag > ;
+	using ChannelCount = arg::Argument< u16, struct WavChannelCountTag > ;
+	using SampleRate = arg::Argument< u16, struct WavSampleRateTag > ;
+	using SampleCount = arg::Argument< u32, struct WavSampleCountTag > ;
+
 	/*! \details Constructs a new WAV object and open the WAV as a read-only file. */
-	Wav(const arg::SourceFilePath & name = arg::SourceFilePath(""));
+	Wav(const var::String & path = var::String());
 
 	int create(
-			const arg::DestinationFilePath & path,
-			arg::IsOverwrite is_overwrite
+			const var::String & path,
+			IsOverwrite is_overwrite
 			);
 
 	void copy_header(
@@ -26,10 +32,10 @@ public:
 			);
 
 	void set_header(
-			arg::ChannelCount channel_count,
-			arg::SampleRate sample_rate,
-			arg::BitsPerSample bits_per_sample,
-			arg::SampleCount sample_count
+			ChannelCount channel_count,
+			SampleRate sample_rate,
+			BitsPerSample bits_per_sample,
+			SampleCount sample_count
 			);
 
 

@@ -104,8 +104,8 @@ int RleFile::write(const void * buf, int nbyte){
 			nbyte -= ret;
 			bw += ret;
 			File::write(
-						arg::SourceBuffer(this->buf),
-						arg::Size(dest_size)
+						this->buf,
+						Size(dest_size)
 						);
 		}
 	} while((ret > 0) && (nbyte > 0));

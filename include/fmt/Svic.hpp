@@ -16,18 +16,18 @@ namespace fmt {
 class Svic : public fs::File {
 public:
 
-	Svic(const arg::SourceFilePath & path = arg::SourceFilePath(""));
+	Svic(const var::String & path = var::String());
 
 	u32 count() const { return m_icons.count(); }
 
 	var::String name_at(u32 i) const;
 
 	int append(
-			const var::ConstString & name,
+			const var::String & name,
 			const var::Vector<sg_vector_path_description_t> & list
 			);
 
-	sgfx::VectorPath get(const var::ConstString & name) const;
+	sgfx::VectorPath get(const var::String & name) const;
 	sgfx::VectorPath at(u32 i) const;
 
 private:

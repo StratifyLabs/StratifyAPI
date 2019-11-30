@@ -54,7 +54,7 @@ public:
 	 * \param loc The channel/location to read or write
 	 * \param priority Zero for default priority
 	 */
-	SwitchboardTerminal(const var::ConstString & name, int loc = 0, s8 priority = 0){
+	SwitchboardTerminal(const var::String & name, int loc = 0, s8 priority = 0){
 		set_name(name);
 		set_loc(loc);
 		set_priority(priority);
@@ -70,7 +70,7 @@ public:
 	 * \details Sets the name of the terminal.
 	 * \param name A pointer to the terminal name
 	 */
-	void set_name(const var::ConstString & name){
+	void set_name(const var::String & name){
 		m_terminal.name[LINK_NAME_MAX-1]=0; //guarantee zero termination
 		strncpy(m_terminal.name, name.cstring(), LINK_NAME_MAX-1);
 	}
@@ -84,7 +84,7 @@ public:
 	void set_priority(s8 priority){ m_terminal.priority = priority; }
 
 	/*! \details Returns the terminal's name. */
-	var::ConstString name() const { return m_terminal.name; }
+	var::String name() const { return m_terminal.name; }
 	/*! \details Returns the terminal interrupt priority. */
 	s8 priority() const { return m_terminal.priority; }
 	/*! \details Returns the location/channel value for the terminal. */
@@ -266,7 +266,7 @@ public:
 	 *
 	 */
 	int open(
-			const arg::SourceFilePath & name = arg::SourceFilePath("/dev/switchboard0"),
+			const var::String & name = "/dev/switchboard0",
 			const fs::OpenFlags & flags = fs::OpenFlags::read_write()
 			);
 

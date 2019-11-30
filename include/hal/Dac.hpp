@@ -101,7 +101,7 @@ public:
 			u32 loc,
 			u32 value
 			) const {
-		return Periph::set_channel(loc, value, arg::IoRequest(I_DAC_SET));
+		return Periph::set_channel(loc, value, IoRequest(I_DAC_SET));
 	}
 
 	/*! \details Gets the current value of the DAC channel.
@@ -110,7 +110,7 @@ public:
 	 * @return The current value of the channel or (u32)-1 if ther is an error
 	 */
 	u32 get_channel(u32 loc) const {
-		return Periph::get_channel(loc, arg::IoRequest(I_DAC_GET));
+		return Periph::get_channel(loc, IoRequest(I_DAC_GET));
 	}
 
 private:

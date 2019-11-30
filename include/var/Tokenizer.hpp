@@ -17,6 +17,14 @@ class Tokenizer : public var::String {
 public:
 	Tokenizer();
 
+
+	using EncodedString = arg::Argument<const var::String &, struct TokenizerEncodedStringTag>;
+	using Delimeters = arg::Argument<const var::String &, struct TokenizerDelimetersTag>;
+	using IgnoreBetween = arg::Argument<const var::String &, struct TokenizerIgnoreBetweenTag>;
+
+	using IsCountEmpty = arg::Argument<bool, struct TokenizerIsCountEmptyTag>;
+	using MaximumCount = arg::Argument<bool, struct TokenizerMaximumCountTag>;
+
 	/*! \details Constructs and parses a new Token.
 	  *
 	  * @param src The Source string
@@ -28,11 +36,11 @@ public:
 	  * \sa parse()
 	  */
 	Tokenizer(
-			const arg::TokenEncodedString src,
-			const arg::TokenDelimeters delim,
-			const arg::IgnoreTokensBetween ignore = arg::IgnoreTokensBetween(""),
-			const arg::IsCountEmptyTokens is_count_empty = arg::IsCountEmptyTokens(false),
-			const	arg::MaximumTokenCount maximum_delimeter_count = arg::MaximumTokenCount(0)
+			EncodedString src,
+			Delimeters delim,
+			IgnoreBetween ignore = IgnoreBetween(""),
+			IsCountEmpty is_count_empty = IsCountEmpty(false),
+			MaximumCount maximum_delimeter_count = MaximumCount(0)
 			);
 
 
@@ -61,9 +69,9 @@ public:
 	  *
 	  */
 	void parse(
-			const arg::TokenDelimeters delim,
-			const arg::IgnoreTokensBetween ignore = arg::IgnoreTokensBetween(""),
-			const arg::MaximumTokenCount = arg::MaximumTokenCount(0)
+			Delimeters delim,
+			IgnoreBetween ignore = IgnoreBetween(""),
+			MaximumCount = MaximumCount(0)
 			);
 
 
@@ -77,11 +85,15 @@ public:
 	u32 count() const { return m_num_tokens; }
 
 	/*! \details Returns a pointer to the token specified by offset. */
-	const ConstString at(u32 n) const;
+	const String at(u32 n) const;
 
-	static bool belongs_to(const char c, const ConstString & str, unsigned int len);
-	static bool belongs_to(const char c, const ConstString & str){
-		return belongs_to(c, str, str.length());
+	static bool belongs_to(const char c, const String & str, unsigned int len);
+	static bool belongs_to(const char c, const String & str){
+		return belongs_to(
+					c,
+					str,
+					str.length()
+					);
 	}
 
 

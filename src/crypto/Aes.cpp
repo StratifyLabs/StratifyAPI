@@ -38,8 +38,8 @@ Aes & Aes::set_key(
 
 
 int Aes::encrypt_ecb(
-		arg::SourceData source_data,
-		arg::DestinationData destination_data
+		SourceReference source_data,
+		DestinationReference destination_data
 		){
 	if( source_data.argument().size() !=
 		 destination_data.argument().size() ){
@@ -68,8 +68,8 @@ int Aes::encrypt_ecb(
 }
 
 int Aes::decrypt_ecb(
-		arg::SourceData source_data,
-		arg::DestinationData destination_data
+		SourceReference source_data,
+		DestinationReference destination_data
 		){
 
 	if( source_data.argument().size() !=
@@ -94,8 +94,8 @@ int Aes::decrypt_ecb(
 }
 
 int Aes::encrypt_cbc(
-		arg::SourceData source_data,
-		arg::DestinationData destination_data
+		SourceReference source_data,
+		DestinationReference destination_data
 		){
 
 	if( source_data.argument().size() !=
@@ -122,8 +122,8 @@ int Aes::encrypt_cbc(
 }
 
 int Aes::decrypt_cbc(
-		arg::SourceData source_data,
-		arg::DestinationData destination_data
+		SourceReference source_data,
+		DestinationReference destination_data
 		){
 
 	if( source_data.argument().size() !=
@@ -150,15 +150,15 @@ int Aes::decrypt_cbc(
 }
 
 int Aes::encrypt_ctr(
-		arg::SourceData source_data,
-		arg::DestinationData destination_data
+		SourceReference source_data,
+		DestinationReference destination_data
 		){
 	return -1;
 }
 
 int Aes::decrypt_ctr(
-		arg::SourceData source_data,
-		arg::DestinationData destination_data
+		SourceReference source_data,
+		DestinationReference destination_data
 		){
 	return -1;
 }

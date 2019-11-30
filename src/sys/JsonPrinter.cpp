@@ -37,17 +37,17 @@ void JsonPrinter::append_separator(){
 	}
 }
 
-void JsonPrinter::append_object(const ConstString & key){
+void JsonPrinter::append_object(const String & key){
 	String str;
-	str.sprintf("\"%s\": {", key.cstring());
+	str.format("\"%s\": {", key.cstring());
 	append_separator();
 	append(str.cstring());
 	m_is_first = true;
 }
 
-void JsonPrinter::append_array(const ConstString & key){
+void JsonPrinter::append_array(const String & key){
 	String str;
-	str.sprintf("\"%s\": [", key.cstring());
+	str.format("\"%s\": [", key.cstring());
 	append_separator();
 	append(str.cstring());
 	m_is_first = true;
@@ -61,21 +61,21 @@ void JsonPrinter::end_array(){
 	append("]");
 }
 
-void JsonPrinter::append_string(const ConstString & key, const ConstString & value){
+void JsonPrinter::append_string(const String & key, const String & value){
 	String str;
 	str.sprintf("\"%s\": \"%s\"", key.cstring(), value.cstring());
 	append_separator();
 	append(str.cstring());
 }
 
-void JsonPrinter::append_number(const ConstString & key, int number){
+void JsonPrinter::append_number(const String & key, int number){
 	String str;
 	str.sprintf("\"%s\": \"%d\"", key.cstring(), number);
 	append_separator();
 	append(str.cstring());
 }
 
-void JsonPrinter::append_float(const ConstString & key, float number){
+void JsonPrinter::append_float(const String & key, float number){
 	String str;
 	str.sprintf("\"%s\": \"%f\"", key.cstring(), number);
 	append_separator();
@@ -83,21 +83,21 @@ void JsonPrinter::append_float(const ConstString & key, float number){
 }
 
 
-void JsonPrinter::append_true(const ConstString & key){
+void JsonPrinter::append_true(const String & key){
 	String str;
 	str.sprintf("\"%s\":true", key.cstring());
 	append_separator();
 	append(str.cstring());
 }
 
-void JsonPrinter::append_false(const ConstString & key){
+void JsonPrinter::append_false(const String & key){
 	String str;
 	str.sprintf("\"%s\":false", key.cstring());
 	append_separator();
 	append(str.cstring());
 }
 
-void JsonPrinter::append_null(const ConstString & key){
+void JsonPrinter::append_null(const String & key){
 	String str;
 	str.sprintf("\"%s\": null", key.cstring());
 	append_separator();
@@ -116,7 +116,7 @@ void JsonPrinter::append_array(){
 	m_is_first = true;
 }
 
-void JsonPrinter::append_string(const ConstString & value){
+void JsonPrinter::append_string(const String & value){
 	append_separator();
 	append("\"");
 	append(value);

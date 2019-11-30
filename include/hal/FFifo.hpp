@@ -112,9 +112,11 @@ public:
 	 * @return Zero on success or less than zero for an error
 	 *
 	 */
-	int initialize(const arg::SourceFilePath & path,
-						const FFifoAttributes & attributes,
-						const fs::OpenFlags & flags = fs::OpenFlags());
+	int initialize(
+			const var::String & path,
+			const FFifoAttributes & attributes,
+			const fs::OpenFlags & flags = fs::OpenFlags()
+			);
 
 	/*! \details Flushes the FIFO.
 	 *

@@ -14,8 +14,8 @@ EventLoop::EventLoop(ui::Element & start_element, sgfx::Bitmap & bitmap, sgfx::B
 	//use the full screen by default
 	m_drawing_attr.set_bitmap(bitmap);
 	m_drawing_attr.set_scratch(scratch);
-	m_drawing_attr.set_point(0,0);
-	m_drawing_attr.set_dim(1000, 1000);
+	m_drawing_attr.set_point(DrawingPoint(0,0));
+	m_drawing_attr.set_area(DrawingArea(1000, 1000));
 }
 
 

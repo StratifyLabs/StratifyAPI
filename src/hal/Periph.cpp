@@ -76,14 +76,17 @@ void PeriphObject::update_fileno() const {
 }
 
 
-int PeriphObject::open(const arg::SourceFilePath & name, const fs::OpenFlags & flags){
+int PeriphObject::open(
+		const var::String & name,
+		const fs::OpenFlags & flags
+		){
 	//check map
 	int fd;
 	int ret;
 	fd = lookup_fileno();
 	if( fd < 0 ){
 		ret = Device::open(
-					arg::FilePath(name.argument()),
+					name,
 					flags);
 		if( m_fd >= 0 ){
 			m_fd_map[m_fd] = m_periph_port;
@@ -114,7 +117,7 @@ int PeriphObject::open(const fs::OpenFlags & flags){
 		strncpy(buffer, "/dev/rtc", LINK_NAME_MAX-1);
 	}
 	return open(
-				arg::SourceFilePath(buffer),
+				buffer,
 				flags
 				);
 }
@@ -131,15 +134,15 @@ int PeriphObject::close(){
 }
 
 int PeriphObject::read(
-		const arg::DestinationBuffer buf,
-		const arg::Size size) const {
+		void * buf,
+		Size size) const {
 	update_fileno();
 	return File::read(buf, size);
 }
 
 int PeriphObject::write(
-		const arg::SourceBuffer buf,
-		const arg::Size size) const {
+		const void * buf,
+		Size size) const {
 	update_fileno();
 	return File::write(buf, size);
 }
@@ -157,15 +160,15 @@ int PeriphObject::write(fs::Aio & aio) const {
 #endif
 
 int PeriphObject::ioctl(
-		const arg::IoRequest request,
-		const arg::IoArgument argument
+		IoRequest request,
+		IoArgument argument
 		) const {
 	update_fileno();
 	return Device::ioctl(request, argument);
 }
 
 int PeriphObject::seek(
-		const arg::Location & location,
+		Location location,
 		enum whence whence
 		) const {
 	update_fileno();

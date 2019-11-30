@@ -8,6 +8,8 @@
 #ifndef SAPI_SYS_LINK_HPP_
 #define SAPI_SYS_LINK_HPP_
 
+#if defined __link
+
 #include <mcu/types.h>
 #include <sos/link.h>
 #include "../var/String.hpp"
@@ -23,7 +25,7 @@ class LinkInfo {
 public:
 
 	LinkInfo(){}
-	LinkInfo(const var::ConstString & port,
+	LinkInfo(const var::String & port,
 				const sys::SysInfo & sys_info){
 		set_port(port);
 		set_info(sys_info);
@@ -35,7 +37,7 @@ public:
 		m_sys_info.clear();
 	}
 
-	LinkInfo & set_port(const var::ConstString & port){
+	LinkInfo & set_port(const var::String & port){
 		m_port = port;
 		return *this;
 	}
@@ -71,6 +73,25 @@ private:
  */
 class Link {
 public:
+
+
+	using SourcePath = fs::File::SourcePath;
+	using DestinationPath = fs::File::DestinationPath;
+	using ApplicationName = arg::Argument<const var::String &, struct ApplicationNameTag>;
+	using IsLegacy = arg::Argument<bool, struct LinkIsLegacyTag>;
+	using RetryCount = arg::Argument<u32, struct LinkRetryCountTag>;
+	using RetryDelay = arg::Argument<const chrono::MicroTime &, struct LinkRetryDelayTag>;
+	using IsCopyToDevice = arg::Argument<bool, struct LinkIsCopyToDeviceTag>;
+	using FileDescriptor = fs::File::Descriptor;
+	using ImplicitFileDescriptor = fs::File::ImplicitDescriptor;
+
+	using SourceFile = fs::File::Source;
+	using DestinationFile = fs::File::Destination;
+
+	using BootloaderRetryCount = arg::Argument<u32, struct LinkBootloaderRetryCountTag>;
+	using IsVerify = arg::Argument<bool, struct LinkIsVerifyTag>;
+	using HardwareId = arg::Argument<u32, struct LinkHardwareIdTag>;
+
 	Link();
 	~Link();
 
@@ -109,20 +130,18 @@ public:
 	  *
 	  */
 	int connect(
-			const arg::SourceFilePath path,
-			const arg::IsLegacy is_legacy = arg::IsLegacy(false)
+			const var::String & path,
+			IsLegacy is_legacy = IsLegacy(false)
 			);
 
 	/*! \details Reconnects to the last known path and serial number. */
 	int reinit(){
-		return connect(
-					arg::SourceFilePath(path())
-					);
+		return connect(path());
 	}
 
 	int reconnect(
-			const arg::RetryCount retries = arg::RetryCount(5),
-			const arg::RetryDelay delay = arg::RetryDelay(chrono::Milliseconds(500))
+			RetryCount retries = RetryCount(5),
+			RetryDelay delay = RetryDelay(chrono::Milliseconds(500))
 			);
 
 	/*! \details This disconnects from the device.  After calling this,
@@ -152,7 +171,7 @@ public:
 	  *
 	  */
 	int mkdir(
-			const arg::DestinationDirectoryPath directory /*! The directory name */,
+			const var::String & directory /*! The directory name */,
 			const fs::Permissions permissions /*! The access permissions */
 			);
 
@@ -160,14 +179,14 @@ public:
 	  *
 	  */
 	int rmdir(
-			const arg::SourceDirectoryPath directory /*! The directory name (must be empty) */
+			const var::String & directory /*! The directory name (must be empty) */
 			); //Directory must be empty
 
 	/*! \details Deletes a file on the target device.
 	  *
 	  */
 	int unlink(
-			const arg::SourceFilePath filename /*! The filename to delete */
+			const var::String & filename /*! The filename to delete */
 			);
 
 	/*! \details Creates a symbolic link on the device.
@@ -179,14 +198,10 @@ public:
 	  * \return Zero on sucess.
 	  */
 	int symlink(
-			const arg::SourceFilePath old_path /*! The existing path */,
-			const arg::DestinationFilePath new_path /*! The path to the new link */
+			SourcePath old_path /*! The existing path */,
+			DestinationPath new_path /*! The path to the new link */
 			);
 
-	/*! \details Loads the entries of a directory. */
-	var::Vector<var::String> get_dir_list(
-			const arg::SourceDirectoryPath directory
-			);
 
 	/*! \details Converts the permissions to a
 	  * string of the format:
@@ -208,32 +223,35 @@ public:
 	/*! \details Opens a directory such that it's contents can be
 	  * read with readdir().
 	  */
-	int opendir(const arg::SourceDirectoryPath directory /*! The directory to open */);
+	int opendir(const var::String & directory /*! The directory to open */);
 
 	/*! \details Reads an entry from an open directory.
 	  *
 	  * \return The name of the next entry in the directory.
 	  */
-	int readdir_r(const arg::LinkDirp dirp /*! The directory to read (returned from opendir()) */,
-					  struct link_dirent * entry /*! A pointer to the destination memory */,
-					  struct link_dirent ** result /*! Assigned to \a entry on success or NULL on failure */
-					  );
+	int readdir_r(
+			int dirp /*! The directory to read (returned from opendir()) */,
+			struct link_dirent * entry /*! A pointer to the destination memory */,
+			struct link_dirent ** result /*! Assigned to \a entry on success or NULL on failure */
+			);
 
 	/*! \details Closes an open directory.
 	  *
 	  */
-	int closedir(const arg::LinkDirp dirp /*! The directory to close */);
+	int closedir(int dirp /*! The directory to close */);
 
 	/*! \details This copies a file either from the device to the
 	  * host or from the host to the device depending on the value of \a toDevice.
 	  *
 	  * \return Zero on success
 	  */
-	int copy(const arg::SourceFilePath src /*! The path to the source file */,
-				const arg::DestinationFilePath dest /*! The path to the destination file */,
-				const fs::Permissions & permissions /*! The access permissions if copying to the device */,
-				const arg::IsCopyToDevice to_device = arg::IsCopyToDevice(true) /*! When true, copy is from host to device */,
-				const ProgressCallback * progress_callback = 0);
+	int copy(
+			SourcePath src /*! The path to the source file */,
+			DestinationPath dest /*! The path to the destination file */,
+			const fs::Permissions & permissions /*! The access permissions if copying to the device */,
+			IsCopyToDevice to_device = IsCopyToDevice(true) /*! When true, copy is from host to device */,
+			const ProgressCallback * progress_callback = 0
+			);
 
 
 	/*!
@@ -247,8 +265,8 @@ public:
 	  * \return Zero on success
 	  */
 	int copy_file_to_device(
-			const arg::SourceFilePath src,
-			const arg::DestinationFilePath dest,
+			SourcePath src,
+			DestinationPath dest,
 			const fs::Permissions & permissions,
 			const ProgressCallback * progress_callback = 0
 			){
@@ -256,7 +274,7 @@ public:
 					src,
 					dest,
 					permissions,
-					arg::IsCopyToDevice(true),
+					IsCopyToDevice(true),
 					progress_callback
 					);
 	}
@@ -272,8 +290,8 @@ public:
 	  * \return Zero on success
 	  */
 	int copy_file_from_device(
-			const arg::SourceFilePath src,
-			const arg::DestinationFilePath dest,
+			SourcePath src,
+			DestinationPath dest,
 			const fs::Permissions & permissions,
 			const ProgressCallback * progress_callback = 0
 			){
@@ -281,7 +299,7 @@ public:
 					src,
 					dest,
 					permissions,
-					arg::IsCopyToDevice(false),
+					IsCopyToDevice(false),
 					progress_callback
 					);
 	}
@@ -291,7 +309,7 @@ public:
 	  * \return Zero on success
 	  */
 	int format(
-			const arg::SourceDirectoryPath path
+			const var::String & path
 			); //Format the drive
 
 	/*! \details Funs an application on the target device.
@@ -299,7 +317,7 @@ public:
 	  * \return The PID of the new process or less than zero for an error
 	  */
 	int run_app(
-			const arg::SourceFilePath path
+			const var::String & path
 			);
 
 
@@ -332,9 +350,10 @@ public:
 	  *
 	  *
 	  */
-	int open(const arg::FilePath file /*! The name of the file to open */,
-				const fs::OpenFlags & flags /*! The access flags such as LINK_O_RDWR */,
-				const fs::Permissions & permissions = fs::Permissions(0) /*! The access permissions when creating a new file */
+	int open(
+			const var::String & path /*! The name of the file to open */,
+			const fs::OpenFlags & flags /*! The access flags such as LINK_O_RDWR */,
+			const fs::Permissions & permissions = fs::Permissions(0) /*! The access permissions when creating a new file */
 			);
 
 	/*! \details Reads an open file descriptor.
@@ -345,10 +364,9 @@ public:
 	  *
 	  * \return Number of bytes read or less than zero on failure
 	  */
-	int read(
-			const arg::FileDescriptor fd,
-			const arg::DestinationBuffer buf,
-			const arg::Size nbyte
+	int read(FileDescriptor fd,
+			void * buf,
+			fs::File::Size nbyte
 			);
 
 	/*! \details Writes an open file descriptor.
@@ -360,9 +378,9 @@ public:
 	  * \return Number of bytes written or less than zero on failure
 	  */
 	int write(
-			const arg::FileDescriptor fd,
-			const arg::SourceBuffer buf,
-			const arg::Size nbyte
+			FileDescriptor fd,
+			const void * buf,
+			fs::File::Size nbyte
 			);
 
 	/*! \details Checks to see if the target is in = mode.
@@ -388,9 +406,9 @@ public:
 	  * \return Value returned based on request and fd
 	  */
 	int ioctl(
-			const arg::FileDescriptor fd,
-			const arg::IoRequest request,
-			const arg::IoArgument arg = arg::IoArgument(NULL)
+			FileDescriptor fd,
+			fs::File::IoRequest request,
+			fs::File::IoArgument arg = fs::File::IoArgument(nullptr)
 			);
 
 	enum {
@@ -408,9 +426,10 @@ public:
 	  * \return Zero on success
 	  */
 	int lseek(
-			const arg::FileDescriptor fd,
-			const arg::Location offset,
-			int whence);
+			FileDescriptor fd,
+			fs::File::Location offset,
+			int whence
+			);
 
 	/*! \details Reads the file statistics on
 	  * the specified target device file.
@@ -418,7 +437,7 @@ public:
 	  * \return Zero on success with \a st populated or less than zero on failure
 	  */
 	int stat(
-			const arg::SourceFilePath path /*! The path to the target device file */,
+			const var::String & path /*! The path to the target device file */,
 			struct link_stat & st /*! A pointer to the destination structure */
 			);
 
@@ -427,7 +446,7 @@ public:
 	  * \param fd File descriptor to close
 	  * \return Zero on success
 	  */
-	int close(const arg::FileDescriptor fd);
+	int close(int fd);
 
 	/*! \details Sends a signal to the specified process.
 	  *
@@ -444,7 +463,7 @@ public:
 	  * @return The PID or -1 if the application is not currently running
 	  */
 	int get_pid(
-			const arg::Name & name
+			const var::String & name
 			){
 		return get_is_executing(name);
 	}
@@ -489,8 +508,8 @@ public:
 	  * \return Zero on success
 	  */
 	int rename(
-			const arg::SourceFilePath old_path,
-			const arg::DestinationFilePath new_path
+			SourcePath old_path,
+			DestinationPath new_path
 			);
 
 	/*! \details Changes the ownership of a file.
@@ -500,9 +519,9 @@ public:
 	  *
 	  */
 	int chown(
-			const arg::SourceFilePath path,
-			const arg::OwnerId owner,
-			const arg::GroupId group
+			const var::String & path,
+			fs::File::OwnerId owner,
+			fs::File::GroupId group
 			);
 
 	/*! \details Changes the mode of a file.
@@ -511,7 +530,7 @@ public:
 	  * \note Ownership is not supported on all filesystems.
 	  */
 	int chmod(
-			const arg::SourceFilePath path,
+			const var::String & path,
 			const fs::Permissions & permissions
 			);
 
@@ -522,7 +541,7 @@ public:
 	  * \return The pid of the running process or -1 if no processes match the name
 	  */
 	int get_is_executing(
-			const arg::Name & name
+			const var::String & name
 			);
 
 	/*!
@@ -538,16 +557,17 @@ public:
 	  * before calling this method.
 	  *
 	  */
-	int update_os(const arg::SourceFile image,
-					  const arg::IsVerify is_verify,
-					  const ProgressCallback * progress_callback = 0,
-					  const arg::BootloaderRetryCount bootloader_retry_total = arg::BootloaderRetryCount(20)
+	int update_os(
+			const fs::File & image,
+			IsVerify is_verify,
+			const ProgressCallback * progress_callback = nullptr,
+			BootloaderRetryCount bootloader_retry_total = BootloaderRetryCount(20)
 			);
 
-	int update_os(const arg::SourceFile image,
-					  const arg::IsVerify is_verify,
-					  arg::ProgressPrinter progress_printer,
-					  const arg::BootloaderRetryCount bootloader_retry_total = arg::BootloaderRetryCount(20)
+	int update_os(const fs::File & image,
+			IsVerify is_verify,
+			Printer & progress_printer,
+			BootloaderRetryCount bootloader_retry_total = BootloaderRetryCount(20)
 			);
 
 	/*! \details Returns the driver needed by other API objects.
@@ -588,7 +608,7 @@ public:
 	  * If no driver is set, the default driver (serial port) is used.
 	  *
 	  */
-	void set_driver(arg::ImplicitLinkDriver driver){
+	void set_driver(fs::File::LinkDriver driver){
 		m_driver = driver.argument();
 	}
 
@@ -602,8 +622,10 @@ public:
 	  * @param attributes The attributes to apply
 	  * @return Zero on success or -1 with error() set to an appropriate message
 	  */
-	int update_binary_install_options(arg::DestinationFile destination,
-			const AppfsFileAttributes & attributes);
+	int update_binary_install_options(
+			const fs::File & file,
+			const AppfsFileAttributes & attributes
+			);
 
 	/*! \details Installs a binary to the specified location.
 	  *
@@ -623,9 +645,9 @@ public:
 	  *
 	  */
 	int install_app(
-			const arg::SourceFile source,
-			const arg::DestinationDirectoryPath path,
-			const arg::DestinationFileName name,
+			const fs::File & application_image,
+			DestinationPath path,
+			ApplicationName name,
 			const ProgressCallback * progress_callback = 0
 			);
 
@@ -668,30 +690,31 @@ private:
 	LinkInfo m_link_info;
 	bootloader_attr_t m_bootloader_attributes;
 
-
 	link_transport_mdriver_t m_driver_instance;
 	link_transport_mdriver_t * m_driver;
 
 
 	u32 validate_os_image_id_with_connected_bootloader(
-			const arg::SourceFile image
+			const fs::File & source_image
 			);
 
 	int erase_os(
-			arg::ProgressPrinter progress_printer,
-			const arg::BootloaderRetryCount bootloader_retry_total = arg::BootloaderRetryCount(20)
+			Printer & progress_printer,
+			BootloaderRetryCount bootloader_retry_total = BootloaderRetryCount(20)
 			);
 
-	int install_os(const arg::SourceFile image,
-			const arg::IsVerify is_verify,
-			const arg::HardwareId image_id,
-			arg::ProgressPrinter progress_printer
+	int install_os(const fs::File & image,
+			IsVerify is_verify,
+			HardwareId image_id,
+			Printer & progress_printer
 			);
 
 	int check_error(int err);
 	void reset_progress();
 
 };
+
+#endif
 
 }
 

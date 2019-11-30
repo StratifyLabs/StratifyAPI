@@ -128,7 +128,7 @@ sg_region_t DrawingAttributes::calc_region_on_bitmap(const DrawingAttributes & a
 void DrawingAttributes::set(Bitmap & b, drawing_point_t p, drawing_area_t d, Bitmap * scratch){
 	set_bitmap(b);
 	set_point(p);
-	set_dim(d);
+	set_area(d);
 	set_scratch(scratch);
 }
 

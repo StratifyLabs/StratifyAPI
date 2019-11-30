@@ -5,17 +5,19 @@
 
 using namespace inet;
 
-Url::Url(const var::ConstString & url){
+Url::Url(const var::String & url){
 	set(url);
 }
 
-int Url::set(const var::ConstString & url){
+int Url::set(const var::String & url){
 
-	if( url.is_empty() == false ){
+	var::String url_string(url);
+
+	if( url_string.is_empty() == false ){
 
 		var::Tokenizer url_tokens(
-					arg::TokenEncodedString(url),
-					arg::TokenDelimeters("/")
+					var::Tokenizer::EncodedString(url),
+					var::Tokenizer::Delimeters("/")
 					);
 
 		// https://domain.name:port/path
@@ -24,21 +26,21 @@ int Url::set(const var::ConstString & url){
 			return -1;
 		}
 
-		if( url_tokens.at(0) == "https:"){
+		if( var::String(url_tokens.at(0)) == "https:"){
 			m_port = 443;
 			m_protocol = PROTOCOL_HTTPS;
-		} else if( url_tokens.at(0) == "http:"){
+		} else if( var::String(url_tokens.at(0)) == "http:"){
 			m_port = 80;
 			m_protocol = PROTOCOL_HTTP;
 		}
 
 		var::Tokenizer domain_name(
-					arg::TokenEncodedString(url_tokens.at(1)),
-					arg::TokenDelimeters(":")
+					var::Tokenizer::EncodedString(url_tokens.at(1)),
+					var::Tokenizer::Delimeters(":")
 					);
 
 		if( domain_name.count() > 1 ){
-			m_port = domain_name.at(1).to_integer();
+			m_port = var::String(domain_name.at(1)).to_integer();
 			m_domain_name = domain_name.at(0);
 		} else {
 			m_domain_name = url_tokens.at(1);
@@ -66,7 +68,7 @@ var::String Url::to_string() const {
 	return result;
 }
 
-var::String Url::encode(const var::ConstString & input){
+var::String Url::encode(const var::String & input){
 	var::String result;
 	u32 length = input.length();
 	for(u32 i=0; i < length; i++){
@@ -84,6 +86,6 @@ var::String Url::encode(const var::ConstString & input){
 	return result;
 }
 
-var::String Url::decode(const var::ConstString & input){
+var::String Url::decode(const var::String & input){
 	return var::String();
 }

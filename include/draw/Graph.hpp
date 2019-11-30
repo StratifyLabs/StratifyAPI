@@ -59,7 +59,7 @@ private:
 class Axis : public api::InfoObject {
 public:
 	Axis(){ m_min = 0.0; m_max = 10.0; m_tick = 1.0; }
-	Axis(float min, float max, const var::ConstString & label){
+	Axis(float min, float max, const var::String & label){
 		m_min = min; m_max = max; m_tick = (max - min) / 10.0;
 		m_label = label;
 	}

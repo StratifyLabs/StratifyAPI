@@ -11,22 +11,22 @@ Core::Core(port_t port) : Periph(CORE_PERIPH_CORE, port){}
 
 int Core::set_pin_function(const core_pinfunc_t & req){
 	return ioctl(
-				arg::IoRequest(I_CORE_SETPINFUNC),
-				arg::IoConstArgument(&req)
+				IoRequest(I_CORE_SETPINFUNC),
+				IoConstArgument(&req)
 				);
 }
 
 int Core::get_mcu_board_config(mcu_board_config_t & config){
 	return ioctl(
-				arg::IoRequest(I_CORE_GETMCUBOARDCONFIG),
-				arg::IoArgument(&config)
+				IoRequest(I_CORE_GETMCUBOARDCONFIG),
+				IoArgument(&config)
 				);
 }
 
 int Core::set_clock_divide(u32 value){
 	return ioctl(
-				arg::IoRequest(I_CORE_SETCLKDIVIDE),
-				arg::IoIntArgument(value)
+				IoRequest(I_CORE_SETCLKDIVIDE),
+				IoIntArgument(value)
 				);
 }
 
@@ -38,8 +38,8 @@ CoreInfo Core::get_info(){
 	core.set_keep_open(false);
 	core_info_t info;
 	if( core.ioctl(
-			 arg::IoRequest(I_CORE_GETINFO),
-			 arg::IoArgument(&info)
+			 IoRequest(I_CORE_GETINFO),
+			 IoArgument(&info)
 			 ) < 0 ){
 		return CoreInfo();
 	}

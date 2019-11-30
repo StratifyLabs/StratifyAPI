@@ -9,16 +9,16 @@ StreamFFifo::StreamFFifo()
 
 int StreamFFifo::get_info(stream_ffifo_info_t & info){
 	return ioctl(
-				arg::IoRequest(I_STREAM_FFIFO_GETINFO),
-				arg::IoArgument(&info)
+				IoRequest(I_STREAM_FFIFO_GETINFO),
+				IoArgument(&info)
 				);
 }
 
 StreamFFifoInfo StreamFFifo::get_info(){
 	stream_ffifo_info_t info;
 	if( ioctl(
-				arg::IoRequest(I_STREAM_FFIFO_GETINFO),
-				arg::IoArgument(&info)
+				IoRequest(I_STREAM_FFIFO_GETINFO),
+				IoArgument(&info)
 				) < 0 ){
 		return StreamFFifoInfo();
 	}

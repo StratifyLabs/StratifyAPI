@@ -28,9 +28,9 @@ private:
 class HttpHeaderPair : public var::Pair<var::String> {
 public:
 	HttpHeaderPair(){}
-	HttpHeaderPair(const var::ConstString & key, const var::ConstString & value) : var::Pair<var::String>(key, value){}
+	HttpHeaderPair(const var::String & key, const var::String & value) : var::Pair<var::String>(key, value){}
 
-	static HttpHeaderPair from_string(const var::ConstString & string);
+	static HttpHeaderPair from_string(const var::String & string);
 
 	var::String to_string() const {
 		return var::String() << key() << ": " << value();
@@ -64,6 +64,12 @@ public:
  */
 class HttpClient : public Http {
 public:
+
+
+	using SendRequest = arg::Argument<const fs::File &, struct HttpClientSendRequestTag>;
+	using GetResponse = arg::Argument<fs::File &, struct HttpClientGetResponseTag>;
+	using UrlEncodedString = arg::Argument< const var::String &, struct HttpUrlEncodedStringTag >;
+
 	/*! \details Constructs a new HttpClient object.
 	 *
 	 * @param socket A reference to the socket to use
@@ -93,7 +99,7 @@ public:
 	 *
 	 * @param url target URL for request.
 	 */
-	int head(const arg::UrlEncodedString url);
+	int head(UrlEncodedString url);
 
 	/*! \details Executes an HTTP GET request.
 	 *
@@ -115,59 +121,60 @@ public:
 	 * ```
 	 *
 	 */
-	int get(const arg::UrlEncodedString url,
-			const arg::DestinationFile & response,
+	int get(
+			UrlEncodedString url,
+			GetResponse response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int post(
-			const arg::UrlEncodedString url,
-			const arg::HttpStringToPost request,
-			const arg::DestinationFile & response,
+			UrlEncodedString url,
+			const var::String & request,
+			GetResponse response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int post(
-			const arg::UrlEncodedString url,
-			const arg::SourceFile & request,
-			const arg::DestinationFile & response,
+			UrlEncodedString url,
+			SendRequest request,
+			GetResponse response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int put(
-			const arg::UrlEncodedString url,
-			const arg::HttpStringToPost request,
-			const arg::DestinationFile & response,
+			UrlEncodedString url,
+			const var::String & request,
+			GetResponse response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int put(
-			const arg::UrlEncodedString url,
-			const arg::SourceFile & request,
-			const arg::DestinationFile & response,
+			UrlEncodedString url,
+			SendRequest request,
+			GetResponse response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int patch(
-			const arg::UrlEncodedString url,
-			const arg::HttpStringToPost request,
-			const arg::DestinationFile & response,
+			UrlEncodedString url,
+			const var::String & request,
+			GetResponse response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int patch(
-			const arg::UrlEncodedString url,
-			const arg::SourceFile & request,
-			const arg::DestinationFile & response,
+			UrlEncodedString url,
+			SendRequest request,
+			GetResponse response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	//http delete
 	/*! \cond */
-	int remove(const arg::UrlEncodedString url, const var::String & data);
-	int options(const arg::UrlEncodedString url);
-	int trace(const arg::UrlEncodedString url);
-	int connect(const arg::UrlEncodedString url);
+	int remove(UrlEncodedString url, const var::String & data);
+	int options(UrlEncodedString url);
+	int trace(UrlEncodedString url);
+	int connect(UrlEncodedString url);
 	/*! \endcond */
 
 	/*! \details List of values for error_number() when using the HttpClient class. */
@@ -243,6 +250,10 @@ public:
 private:
 
 	/*! \cond */
+
+	using SendFile = arg::Argument<const fs::File *, struct HttpClientSendFile>;
+	using GetFile = arg::Argument<fs::File *, struct HttpClientSendFile>;
+
 	SocketAddress m_address;
 	var::String m_transfer_encoding;
 	var::Vector<HttpHeaderPair> m_header_request_pairs;
@@ -257,38 +268,37 @@ private:
 	u32 m_transfer_size;
 
 	int connect_to_server(
-			const var::ConstString & domain_name,
+			const var::String & domain_name,
 			u16 port
 			);
 
 	int query(
-			const var::ConstString & command,
-			const arg::UrlEncodedString url,
-			const arg::SourceFile * send_file,
-			const arg::DestinationFile * get_file,
+			const var::String & command,
+			UrlEncodedString url,
+			SendFile send_file,
+			GetFile get_file,
 			const sys::ProgressCallback * progress_callback
 			);
 
 
-	int send_string(const var::ConstString & str);
+	int send_string(const var::String & str);
 
-	int build_header(
-			const var::ConstString & method,
-			const var::ConstString & host,
-			const var::ConstString & path,
+	int build_header(const var::String & method,
+			const var::String & host,
+			const var::String & path,
 			u32 length
 			);
 
-	int send_header(
-			const var::ConstString & method,
-			const var::ConstString & host,
-			const var::ConstString & path,
-			const arg::SourceFile * file,
+	int send_header(const var::String & method,
+			const var::String & host,
+			const var::String & path,
+			const fs::File * file,
 			const sys::ProgressCallback * progress_callback
 			);
 
 	int listen_for_header();
-	int listen_for_data(const arg::DestinationFile & data,
+	int listen_for_data(
+			fs::File & data,
 			const sys::ProgressCallback * progress_callback
 			);
 	/*! \endcond */

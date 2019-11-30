@@ -14,20 +14,26 @@ Bmp::Bmp(){
 	m_offset = 0;
 }
 
-Bmp::Bmp(const arg::SourceFilePath name){
+Bmp::Bmp(const var::String & name){
 	open_readonly(name);
 }
 
 
-int Bmp::open_readonly(const arg::SourceFilePath name){
-	return open(arg::FilePath(name.argument()), fs::OpenFlags::read_only());
+int Bmp::open_readonly(const var::String & name){
+	return open(
+				name,
+				fs::OpenFlags::read_only()
+				);
 }
 
-int Bmp::open_readwrite(const arg::SourceFilePath name){
-	return open(arg::FilePath(name.argument()), fs::OpenFlags::read_write());
+int Bmp::open_readwrite(const var::String & name){
+	return open(name, fs::OpenFlags::read_write());
 }
 
-int Bmp::open(const arg::FilePath name, const fs::OpenFlags & flags){
+int Bmp::open(
+		const var::String & name,
+		const fs::OpenFlags & flags
+		){
 	bmp_header_t hdr;
 
 	m_dib.width = -1;
@@ -39,22 +45,22 @@ int Bmp::open(const arg::FilePath name, const fs::OpenFlags & flags){
 	}
 
 	if( read(
-			 arg::DestinationBuffer(&hdr),
-			 arg::Size(sizeof(hdr))
+			 &hdr,
+			 Size(sizeof(hdr))
 			 ) != sizeof(hdr) ){
 		close();
 		return -1;
 	}
 
 	if( read(
-			 arg::DestinationBuffer(&m_dib),
-			 arg::Size(sizeof(m_dib))
+			 &m_dib,
+			 Size(sizeof(m_dib))
 			 ) != sizeof(m_dib) ){
 		close();
 		return -1;
 	}
 
-	if( seek(arg::Location(hdr.offset)) != (int)hdr.offset ){
+	if( seek(Location(hdr.offset)) != (int)hdr.offset ){
 		m_dib.width = -1;
 		m_dib.height = -1;
 		m_dib.bits_per_pixel = 0;
@@ -66,18 +72,18 @@ int Bmp::open(const arg::FilePath name, const fs::OpenFlags & flags){
 	return 0;
 }
 
-int Bmp::create(const arg::DestinationFilePath name,
-		const arg::Width width,
-		const arg::Height height,
-		const arg::PlaneCount planes,
-		const arg::BitsPerPixel bits_per_pixel
-		){
+int Bmp::create(const var::String & name,
+					 Width width,
+					 Height height,
+					 PlaneCount planes,
+					 BitsPerPixel bits_per_pixel
+					 ){
 
 	bmp_header_t hdr;
 
 	if( File::create(
-			 arg::DestinationFilePath(name),
-			 arg::IsOverwrite(true)
+			 name,
+			 IsOverwrite(true)
 			 ) < 0 ){
 		return -1;
 	}
@@ -91,8 +97,8 @@ int Bmp::create(const arg::DestinationFilePath name,
 	hdr.resd2 = 0;
 
 	if( write(
-			 arg::SourceBuffer(&hdr),
-			 arg::Size(sizeof(hdr))
+			 &hdr,
+			 Size(sizeof(hdr))
 			 ) < 0 ){
 		return -1;
 	}
@@ -104,8 +110,8 @@ int Bmp::create(const arg::DestinationFilePath name,
 	m_dib.planes = planes.argument();
 
 	if( write(
-			 arg::SourceBuffer(&m_dib),
-			 arg::Size(sizeof(m_dib))
+			 &m_dib,
+			 Size(sizeof(m_dib))
 			 ) < 0 ){
 		return -1;
 	}
@@ -114,7 +120,7 @@ int Bmp::create(const arg::DestinationFilePath name,
 }
 
 int Bmp::create_appfs(
-		const var::ConstString & name,
+		const var::String & name,
 		s32 width,
 		s32 height,
 		u16 planes,
@@ -144,13 +150,13 @@ int Bmp::create_appfs(
 	DataReferenceFile source_data;
 
 	source_data.data_reference().refer_to(
-				arg::SourceBuffer(img),
-				arg::Size(nbyte)
+				SourceBuffer(img),
+				Size(nbyte)
 				);
 
 	Appfs::create(
-				arg::FileName(name),
-				arg::SourceFile(source_data)
+				FileName(name),
+				SourceFile(source_data)
 				);
 #endif
 
@@ -165,10 +171,12 @@ unsigned int Bmp::calc_row_size() const{
 int Bmp::seek_row(s32 y) const {
 	if( m_dib.height > 0 ){
 		//image is upside down -- seek to beginning of row
-		return seek(arg::Location(m_offset + calc_row_size() * (m_dib.height - (y + 1))));
+		return seek(
+					Location(m_offset + calc_row_size() * (m_dib.height - (y + 1)))
+					);
 	}
 
-	return seek(arg::Location(m_offset + calc_row_size() * y));
+	return seek(Location(m_offset + calc_row_size() * y));
 }
 
 int Bmp::read_pixel(uint8_t * pixel, u32 pixel_size, bool mono, uint8_t thres){
@@ -176,8 +184,8 @@ int Bmp::read_pixel(uint8_t * pixel, u32 pixel_size, bool mono, uint8_t thres){
 	u32 i;
 
 	if( read(
-			 arg::DestinationBuffer(pixel),
-			 arg::Size(pixel_size)
+			 pixel,
+			 Size(pixel_size)
 			 ) != (int)pixel_size ){
 		return -1;
 	}

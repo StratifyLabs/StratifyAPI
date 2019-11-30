@@ -14,8 +14,8 @@ int CFifo::get_count() const {
 
 int CFifo::get_info(cfifo_info_t & info) const {
 	return ioctl(
-				arg::IoRequest(I_CFIFO_GETINFO),
-				arg::IoArgument(&info)
+				IoRequest(I_CFIFO_GETINFO),
+				IoArgument(&info)
 				);
 }
 
@@ -25,8 +25,8 @@ int CFifo::get_owner(int channel, int & owner) const {
 	c.loc = channel;
 	c.value = (u32)-1;
 	ret = ioctl(
-				arg::IoRequest(I_CFIFO_GETOWNER),
-				arg::IoArgument(&c)
+				IoRequest(I_CFIFO_GETOWNER),
+				IoArgument(&c)
 				);
 	if( ret >= 0 ){
 		owner = c.value;
@@ -39,8 +39,8 @@ int CFifo::set_owner(int channel, int owner) const {
 	c.loc = channel;
 	c.value = owner;
 	return ioctl(
-				arg::IoRequest(I_CFIFO_SETOWNER),
-				arg::IoArgument(&c)
+				IoRequest(I_CFIFO_SETOWNER),
+				IoArgument(&c)
 				);
 }
 
@@ -48,8 +48,8 @@ int CFifo::get_info(int channel, fifo_info_t & info) const {
 	cfifo_fifoinfo_t fifo_info;
 	fifo_info.channel = channel;
 	if( ioctl(
-			 arg::IoRequest(I_CFIFO_FIFOGETINFO),
-			 arg::IoArgument(&fifo_info)
+			 IoRequest(I_CFIFO_FIFOGETINFO),
+			 IoArgument(&fifo_info)
 			 ) >= 0 ){
 		info = fifo_info.info;
 	}
@@ -68,8 +68,8 @@ int CFifo::set_attributes(int channel, const fifo_attr_t & attr) const {
 	fifo_attr.channel = channel;
 	fifo_attr.attr = attr;
 	return ioctl(
-				arg::IoRequest(I_CFIFO_FIFOSETATTR),
-				arg::IoArgument(&fifo_attr)
+				IoRequest(I_CFIFO_FIFOSETATTR),
+				IoArgument(&fifo_attr)
 				);
 }
 
@@ -77,8 +77,8 @@ int CFifo::initialize(int channel) const {
 	cfifo_fiforequest_t request;
 	request.channel = channel;
 	return ioctl(
-				arg::IoRequest(I_CFIFO_FIFOINIT),
-				arg::IoArgument(&request)
+				IoRequest(I_CFIFO_FIFOINIT),
+				IoArgument(&request)
 				);
 }
 
@@ -86,8 +86,8 @@ int CFifo::flush(int channel) const {
 	cfifo_fiforequest_t request;
 	request.channel = channel;
 	return ioctl(
-				arg::IoRequest(I_CFIFO_FIFOFLUSH),
-				arg::IoArgument(&request)
+				IoRequest(I_CFIFO_FIFOFLUSH),
+				IoArgument(&request)
 				);
 }
 
@@ -95,8 +95,8 @@ int CFifo::exit(int channel) const {
 	cfifo_fiforequest_t request;
 	request.channel = channel;
 	return ioctl(
-				arg::IoRequest(I_CFIFO_FIFOEXIT),
-				arg::IoArgument(&request)
+				IoRequest(I_CFIFO_FIFOEXIT),
+				IoArgument(&request)
 				);
 }
 

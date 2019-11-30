@@ -14,27 +14,10 @@ Sha256::~Sha256(){
 	finalize();
 }
 
-Sha256 & Sha256::operator << (const var::Data & a){
-	update(
-				arg::SourceBuffer(a.to_const_char()),
-				arg::Size(a.size())
-				);
-	return *this;
-}
-
-Sha256 & Sha256::operator << (const var::ConstString & a){
-	update(
-				arg::SourceBuffer(a.cstring()),
-				arg::Size(a.length())
-				);
-	return *this;
-}
-
-Sha256 & Sha256::operator << (const var::String & a){
-	update(
-				arg::SourceBuffer(a.cstring()),
-				arg::Size(a.length())
-				);
+Sha256 & Sha256::operator << (const var::Reference & a){
+	update(var::Reference::SourceBuffer(a.to_const_char()),
+			 var::Reference::Size(a.size())
+			 );
 	return *this;
 }
 
@@ -69,9 +52,10 @@ int Sha256::start(){
 	return set_error_number_if_error(sha256_api()->start(m_context));
 }
 
-int Sha256::update(const arg::SourceBuffer input,
-						 const arg::Size size
-						 ){
+int Sha256::update(
+		SourceBuffer input,
+		Size size
+		){
 	if( is_initialized() == false ){
 		initialize();
 	}
@@ -85,9 +69,9 @@ int Sha256::update(const arg::SourceBuffer input,
 
 
 var::String Sha256::calculate(
-		const arg::SourceFile file,
-		arg::PageSize page_size){
-	var::Data page = var::Data(arg::Size(page_size.argument()));
+		const fs::File & file,
+		PageSize page_size){
+	var::Data page(page_size.argument());
 	Sha256 hash;
 
 	if( hash.initialize() < 0 ){
@@ -98,13 +82,8 @@ var::String Sha256::calculate(
 		return var::String();
 	}
 
-	while( file.argument().read(
-				 arg::DestinationData(page)
-				 ) > 0 ){
-
-		hash.update(
-					arg::SourceData(page)
-					);
+	while( file.read(page) > 0 ){
+		hash.update(page);
 
 	}
 
@@ -112,17 +91,19 @@ var::String Sha256::calculate(
 }
 
 var::String Sha256::calculate(
-		const arg::SourceFilePath file_path,
-		arg::PageSize page_size
+		const var::String & file_path,
+		PageSize page_size
 		){
 	fs::File f;
 
-	if( f.open(arg::FilePath(file_path.argument()),
-				  fs::OpenFlags::read_only()) < 0 ){
+	if( f.open(
+			 file_path,
+			 fs::OpenFlags::read_only()
+			 ) < 0 ){
 		return var::String();
 	}
 
-	return calculate(arg::SourceFile(f));
+	return calculate(f);
 }
 
 int Sha256::finish(){

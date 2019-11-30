@@ -84,9 +84,9 @@ public:
 	}
 
 	TmrAttributes & assign_pin(
-			arg::Position position,
-			arg::PortNumber port,
-			arg::PinNumber pin){
+			Device::Location position,
+			Device::Port port,
+			Device::PinNumber pin){
 		if( position.argument() < sizeof(tmr_pin_assignment_t)/sizeof(mcu_pin_t) ){
 			m_attr.pin_assignment.channel[position.argument()] =
 					mcu_pin(port.argument(), pin.argument());
@@ -95,20 +95,20 @@ public:
 	}
 
 	TmrAttributes & set_channel(
-			arg::Location location,
-			arg::Value value
+			Device::Location location,
+			u32 value
 			){
 		m_attr.channel = mcu_channel(
 					location.argument(),
-					value.argument()
+					value
 					);
 		return *this;
 	}
 
 	TmrAttributes & set_channel_pin(
-			arg::Channel channel,
-			arg::PortNumber port,
-			arg::PinNumber pin
+			Device::Channel channel,
+			Device::Port port,
+			Device::PinNumber pin
 			){
 		if( channel.argument() < 4 ){
 			m_attr.pin_assignment.channel[channel.argument()] = mcu_pin(
@@ -250,13 +250,13 @@ public:
 	 *
 	 */
 	int set_channel(
-			arg::Location loc,
-			arg::Value value
+			Device::Location loc,
+			u32 value
 			){
 		return Periph::set_channel(
 					loc.argument(),
-					value.argument(),
-					arg::IoRequest(I_TMR_SETCHANNEL)
+					value,
+					IoRequest(I_TMR_SETCHANNEL)
 					);
 	}
 
@@ -269,8 +269,11 @@ public:
 	 * should be or'd with the MCU_CHANNEL_FLAG_IS_INPUT value.
 	 *
 	 */
-	u32 get_channel(arg::ImplicitLocation loc){
-		return Periph::get_channel(loc.argument(), arg::IoRequest(I_TMR_GETCHANNEL));
+	u32 get_channel(Device::Location location){
+		return Periph::get_channel(
+					location.argument(),
+					IoRequest(I_TMR_GETCHANNEL)
+					);
 	}
 
 	/*! \details Gets the value of the timer. */

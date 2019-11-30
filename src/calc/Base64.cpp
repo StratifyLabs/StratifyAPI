@@ -8,9 +8,9 @@
 using namespace calc;
 
 int Base64::encode(
-		const arg::SourceFile source,
-		const arg::DestinationFile destination,
-		const arg::Size size
+		SourceFile source,
+		DestinationFile destination,
+		Size size
 		){
 	u32 chunk_size = 96;
 	const u32 output_buffer_size = calc_encoded_size(chunk_size);
@@ -23,15 +23,15 @@ int Base64::encode(
 			chunk_size = size.argument() - size_processed;
 		}
 		result = source.argument().read(
-					arg::DestinationBuffer(input_buffer),
-					arg::Size(chunk_size)
+					input_buffer,
+					fs::File::Size(chunk_size)
 					);
 		if( result > 0 ){
 			size_processed += result;
 			int len = encode(output_buffer, input_buffer, result);
 			if( destination.argument().write(
-					 arg::SourceBuffer(output_buffer),
-					 arg::Size(len)
+					 output_buffer,
+					 fs::File::Size(len)
 					 ) != len ){
 				result = 0;
 			}
@@ -40,9 +40,11 @@ int Base64::encode(
 	return size_processed;
 }
 
-int Base64::decode(const arg::SourceFile input,
-						 const arg::DestinationFile output,
-						 const arg::Size size){
+int Base64::decode(
+		SourceFile input,
+		DestinationFile output,
+		Size size
+		){
 	u32 chunk_size = 96;
 	const u32 output_buffer_size = calc_decoded_size(chunk_size);
 	char input_buffer[chunk_size];
@@ -55,16 +57,16 @@ int Base64::decode(const arg::SourceFile input,
 			chunk_size = size.argument() - size_processed;
 		}
 		result = input.argument().read(
-					arg::DestinationBuffer(input_buffer),
-					arg::Size(chunk_size)
+					input_buffer,
+					fs::File::Size(chunk_size)
 					);
 		if( result > 0 ){
 			size_processed += result;
 			int len = calc_decoded_size(result);
 			decode(output_buffer, input_buffer, result);
 			if( output.argument().write(
-					 arg::SourceBuffer(output_buffer),
-					 arg::Size(len)
+					 output_buffer,
+					 fs::File::Size(len)
 					 ) != len ){
 				result = 0;
 			}
@@ -75,34 +77,35 @@ int Base64::decode(const arg::SourceFile input,
 	return size_processed;
 }
 
-var::String Base64::encode(const arg::ImplicitSourceData input
-									){
+var::String Base64::encode(
+		const var::Reference input
+		){
 	var::String result;
 
-	if( result.resize( calc_encoded_size(input.argument().size() ) ) < 0 ){
-		return var::String();
-	}
+	result.resize(
+				calc_encoded_size(input.size())
+				);
 
 	encode(result.to_char(),
-			 input.argument().to_const_void(),
-			 input.argument().size());
+			 input.to_const_void(),
+			 input.size());
 
 	return result;
 }
 
 var::Data Base64::decode(
-		const arg::ImplicitBase64EncodedString input
+		const var::String & input
 		){
 	var::Data result;
 	if( result.allocate(
-			 arg::Size(calc_decoded_size(input.argument().length()))
+			 calc_decoded_size(input.length())
 			 ) < 0 ){
 		return var::Data();
 	}
 
 	decode(result.to_void(),
-			 input.argument().cstring(),
-			 input.argument().length());
+			 input.cstring(),
+			 input.length());
 
 	return result;
 }

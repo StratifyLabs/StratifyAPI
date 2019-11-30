@@ -23,8 +23,8 @@ public:
 	int line() const { return m_value.line; }
 	int column() const { return m_value.column; }
 	int position() const { return m_value.position; }
-	var::ConstString source() const { return m_value.source; }
-	var::ConstString text() const { return m_value.text; }
+	var::String source() const { return m_value.source; }
+	var::String text() const { return m_value.text; }
 
 private:
 	friend class JsonDocument;
@@ -214,7 +214,7 @@ public:
 	  *
 	  *
 	  */
-	int assign(const var::ConstString & value);
+	int assign(const var::String & value);
 
 
 	int assign(float value);
@@ -279,8 +279,8 @@ public:
 	  *
 	  */
 	int insert(
-			const arg::JsonKey key,
-			const arg::ImplicitSourceJsonValue value
+			const var::String & key,
+			const JsonValue & value
 			);
 
 	enum update_flags {
@@ -290,8 +290,9 @@ public:
 		UPDATE_MISSING_AND_EXISTING = 0x03
 	};
 
-	int update(const arg::SourceJsonValue value,
-				  enum update_flags o_flags = UPDATE_NONE
+	int update(
+			const JsonValue & value,
+			enum update_flags o_flags = UPDATE_NONE
 			);
 
 	/*!
@@ -300,7 +301,7 @@ public:
 	  * \return Zero on success (-1 is key was not found)
 	  *
 	  */
-	int remove(const arg::JsonKey key);
+	int remove(const var::String & key);
 
 	/*!
 	  * \details Returns the number of key/value pairs in the object
@@ -333,7 +334,7 @@ public:
 	  * JsonValue is destroyed.
 	  *
 	  */
-	JsonValue at(const arg::JsonKey key) const;
+	JsonValue at(const var::String & key) const;
 
 
 	var::Vector<var::String> keys() const;
@@ -361,18 +362,18 @@ public:
 	  * @return A JsonValue as a reference (see JsonValue::is_observer())
 	  *
 	  */
-	JsonValue at(const arg::ImplicitPosition position) const;
+	JsonValue at(size_t position) const;
 
-	int append(const arg::ImplicitSourceJsonValue value);
+	int append(const JsonValue & value);
 
 	int append(const JsonArray & array);
 
 	int insert(
-			const arg::Position position,
-			const arg::ImplicitSourceJsonValue value
+			size_t position,
+			const JsonValue & value
 			);
 
-	int remove(const arg::ImplicitPosition position);
+	int remove(size_t position);
 	int clear();
 private:
 
@@ -382,7 +383,7 @@ private:
 class JsonString : public JsonValue {
 public:
 	JsonString();
-	JsonString(const var::ConstString & str);
+	JsonString(const var::String & str);
 private:
 	json_t * create();
 };
@@ -455,7 +456,7 @@ public:
 	  * \return Zero on success
 	  */
 	JsonValue load(
-			const arg::SourceFilePath path
+			const fs::File::SourcePath path
 			);
 
 	/*!
@@ -464,7 +465,7 @@ public:
 	  * \return
 	  */
 	JsonValue load(
-			const arg::JsonEncodedString json
+			const String & json
 			);
 
 	/*!
@@ -473,7 +474,7 @@ public:
 	  * \return Zero on success
 	  */
 	JsonValue load(
-			const arg::SourceFile file
+			const fs::File::Source file
 			);
 
 	/*!
@@ -487,24 +488,23 @@ public:
 			void * context
 			);
 
-	int save(
-			const arg::SourceJsonValue value,
-			const arg::DestinationFilePath path
-			) const;
+	int save(const var::JsonValue & value,
+				fs::File::DestinationPath path
+				) const;
 
 	var::String to_string(
-			const arg::ImplicitSourceJsonValue value
+			const JsonValue & value
 			) const;
 
 	var::String stringify(
-			const arg::ImplicitSourceJsonValue value
+			const JsonValue & value
 			) const {
 		return to_string(value);
 	}
 
 	int save(
-			const arg::SourceJsonValue value,
-			const arg::DestinationFile file
+			const JsonValue & value,
+			fs::File & file
 			) const;
 
 	int save(

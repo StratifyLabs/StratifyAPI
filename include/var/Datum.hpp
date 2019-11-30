@@ -13,7 +13,7 @@ class Datum : public api::InfoObject
 {
 public:
 	Datum();
-	Datum(const var::ConstString & type, const var::ConstString & key, const var::ConstString & value);
+	Datum(const var::String & type, const var::String & key, const var::String & value);
 	Datum(const JsonObject & json_object);
 
 	String & type(){ return m_type; }

@@ -179,14 +179,15 @@ public:
 	 *
 	 */
 	int set_pin_function(
-			const arg::McuPin & pin,
+			mcu_pin_t pin,
 			enum func func,
-			const arg::Port & port){
+			u8 port
+			){
 		core_pinfunc_t f;
-		f.io.port = pin.argument().port;
-		f.io.pin = pin.argument().pin;
+		f.io.port = pin.port;
+		f.io.pin = pin.pin;
 		f.periph_func = func;
-		f.periph_port = port.argument();
+		f.periph_port = port;
 		return set_pin_function(f);
 	}
 

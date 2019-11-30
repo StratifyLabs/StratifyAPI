@@ -243,9 +243,9 @@ public:
 	using Periph::write;
 
 	/*! \details Reads the value of a register on an I2C device */
-	int read(const arg::Location & location, u8 & reg);
+	int read(Location location, u8 & reg);
 	/*! \details Writes the value of a register on an I2C device */
-	int write(const arg::Location & location, u8 reg);
+	int write(Location location, u8 reg);
 
 	/*! \details Sets (or clears) a specific bit in a a register
 	 * on an I2C device.
@@ -255,10 +255,10 @@ public:
 	 * @param high true to set the bit and false to clear it
 	 * @return Zero on success
 	 */
-	int set(const arg::Location & location, int bit, bool high = true);
+	int set(Location location, int bit, bool high = true);
 
 	/*! \details Clears the bit in a register on an I2C device. */
-	int clear(const arg::Location & location, int bit){
+	int clear(Location location, int bit){
 		return set(location, bit, false);
 	}
 

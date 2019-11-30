@@ -20,21 +20,21 @@ void Random::finalize(){
 }
 
 int Random::seed(
-		arg::SourceData source_data
+		const var::Reference & source_data
 		){
 	return random_api()->seed(
 				m_context,
-				source_data.argument().to_const_u8(),
-				source_data.argument().size()
+				source_data.to_const_u8(),
+				source_data.size()
 				);
 }
 
 int Random::random(
-		arg::DestinationData destination_data
+		const var::Reference & destination_data
 		){
 	return random_api()->random(
 				m_context,
-				destination_data.argument().to_u8(),
-				destination_data.argument().size()
+				destination_data.to_u8(),
+				destination_data.size()
 				);
 }

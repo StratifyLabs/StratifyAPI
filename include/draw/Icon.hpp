@@ -14,7 +14,7 @@ namespace draw {
 class IconAttributes : public api::InfoObject {
 public:
 
-	IconAttributes(const var::ConstString & name = ""){
+	IconAttributes(const var::String & name = ""){
 		set_name(name);
 		m_rotation = RIGHT;
 	}
@@ -31,7 +31,7 @@ public:
 	};
 
 	const var::String & name() const { return m_name; }
-	void set_name(const var::ConstString & name){
+	void set_name(const var::String & name){
 		m_name = name;
 	}
 
@@ -80,7 +80,7 @@ public:
 	};
 
 	const var::String & name() const { return m_name; }
-	Icon & set_name(const var::ConstString & name){
+	Icon & set_name(const var::String & name){
 		m_name = name;
 		return *this;
 	}

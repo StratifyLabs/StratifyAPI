@@ -39,12 +39,11 @@ public:
 	 * @param table
 	 */
 	Lookup(
-			const T * table /*! A pointer to a table with x and y values alternating, x values must
-			 * be in ascending order */,
-			const arg::Count & count /*! The number of entries in the table */
+			const T * table /*! A pointer to a table with x and y values alternating, x values must be in ascending order */,
+			u32 count /*! The number of entries in the table */
 			){
 		m_table = table;
-		m_count = count.argument();
+		m_count = count;
 	}
 
 	/*! \details Calculates the y value using linear interpolation.

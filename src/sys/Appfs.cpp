@@ -47,24 +47,24 @@ void AppfsFileAttributes::apply(appfs_file_t * appfs_file) const {
 	appfs_file->exec.o_flags = m_o_flags;
 }
 
-int AppfsFileAttributes::apply(arg::DestinationFile file) const {
+int AppfsFileAttributes::apply(const fs::File & file) const {
 	appfs_file_t appfs_file;
-	var::DataReference appfs_file_reference(appfs_file);
+	var::Reference appfs_file_reference(appfs_file);
 
 	int result;
 
-	if( (result = file.argument().read(
-			  arg::Location(0),
-			  arg::DestinationData(appfs_file_reference)
+	if( (result = file.read(
+			  fs::File::Location(0),
+			  appfs_file_reference
 			  )) != (int)appfs_file_reference.size() ){
 		return -1;
 	}
 
 	this->apply( appfs_file_reference.to<appfs_file_t>() );
 
-	if( (result = file.argument().write(
-			  arg::Location(0),
-			  arg::SourceData(appfs_file_reference)
+	if( (result = file.write(
+			  fs::File::Location(0),
+			  appfs_file_reference
 			  )) != (int)appfs_file_reference.size() ){
 		return -1;
 	}
@@ -72,29 +72,26 @@ int AppfsFileAttributes::apply(arg::DestinationFile file) const {
 	return 0;
 }
 
-#if defined __link
 Appfs::Appfs(
-		arg::LinkDriver driver
-		) : m_file(driver){
+		SAPI_LINK_DRIVER
+		) :
+	m_file(
+		#if defined __link
+		link_driver
+		#endif
+		){
 
 }
-#else
-Appfs::Appfs(){}
-#endif
 
 bool Appfs::is_flash_available(
-		#if defined __link
-		arg::LinkDriver driver
-		#endif
+		SAPI_LINK_DRIVER
 		){
 	fs::Dir dir
 		#if defined __link
-			(driver)
+			(link_driver)
 		#endif
 			;
-	if( dir.open(
-			 arg::SourceDirectoryPath("/app/flash")
-			 ) < 0 ){
+	if( dir.open("/app/flash") < 0 ){
 		return false;
 	}
 
@@ -106,18 +103,14 @@ bool Appfs::is_flash_available(
 }
 
 bool Appfs::is_ram_available(
-		#if defined __link
-		arg::LinkDriver driver
-		#endif
+		SAPI_LINK_DRIVER
 		){
 	fs::Dir dir
 		#if defined __link
-			(driver)
+			(link_driver)
 		#endif
 			;
-	if( dir.open(
-			 arg::SourceDirectoryPath("/app/ram")
-			 ) < 0 ){
+	if( dir.open(var::String("/app/ram")) < 0 ){
 		return false;
 	}
 
@@ -131,63 +124,62 @@ bool Appfs::is_ram_available(
 
 
 int Appfs::create(
-		const arg::FileName name,
-		const arg::SourceFile source_data,
-		const arg::SourceDirectoryPath mount,
+		Name name,
+		const fs::File & source,
+		MountPath mount_path,
 		const ProgressCallback * progress_callback
-		#if defined __link
-		, arg::LinkDriver driver
+		SAPI_LINK_DRIVER_LAST
 		){
-	fs::File file(driver);
-#else
-		){
-	fs::File file;
-#endif
+	fs::File file(
+			#if defined __link
+				link_driver
+			#endif
+				);
 	char buffer[LINK_PATH_MAX];
 	int tmp;
 	appfs_createattr_t attr;
 	int loc;
 	unsigned int bw; //bytes written
 	appfs_file_t f;
-	strcpy(buffer, mount.argument().cstring());
+	strcpy(buffer, mount_path.argument().cstring());
 	strcat(buffer, "/flash/");
 	strcat(buffer, name.argument().cstring());
 
 	//delete the settings if they exist
 	strncpy(f.hdr.name, name.argument().cstring(), LINK_NAME_MAX);
 	f.hdr.mode = 0666;
-	f.exec.code_size = source_data.argument().size() + sizeof(f); //total number of bytes in file
+	f.exec.code_size = source.size() + sizeof(f); //total number of bytes in file
 	f.exec.signature = APPFS_CREATE_SIGNATURE;
 
 	fs::File::remove(
-				arg::SourceFilePath(buffer)
+				buffer
 			#if defined __link
-				, driver
+				, link_driver
 			#endif
 				);
 
 	if( file.open(
-			 arg::FilePath("/app/.install"),
+			 "/app/.install",
 			 fs::OpenFlags::write_only()
 			 ) < 0 ){
 		return -1;
 	}
 
-	var::DataReference::memory_copy(
-				arg::SourceBuffer(&f),
-				arg::DestinationBuffer(attr.buffer),
-				arg::Size(sizeof(f))
+	var::Reference::memory_copy(
+				var::Reference::SourceBuffer(&f),
+				var::Reference::DestinationBuffer(attr.buffer),
+				var::Reference::Size(sizeof(f))
 				);
 
 	//now copy some bytes
 	attr.nbyte = APPFS_PAGE_SIZE - sizeof(f);
-	if( source_data.argument().size() < (u32)attr.nbyte ){
-		attr.nbyte = source_data.argument().size();
+	if( source.size() < (u32)attr.nbyte ){
+		attr.nbyte = source.size();
 	}
 
-	source_data.argument().read(
-				arg::DestinationBuffer(attr.buffer + sizeof(f)),
-				arg::Size(attr.nbyte)
+	source.read(
+				attr.buffer + sizeof(f),
+				fs::File::Size(attr.nbyte)
 				);
 
 	attr.nbyte += sizeof(f);
@@ -201,9 +193,9 @@ int Appfs::create(
 			} else {
 				attr.nbyte = f.exec.code_size - bw;
 			}
-			source_data.argument().read(
-						arg::DestinationBuffer(attr.buffer),
-						arg::Size(attr.nbyte)
+			source.read(
+						attr.buffer,
+						fs::File::Size(attr.nbyte)
 						);
 		}
 
@@ -211,8 +203,8 @@ int Appfs::create(
 		attr.loc = loc;
 
 		if( (tmp = file.ioctl(
-				  arg::IoRequest(I_APPFS_CREATE),
-				  arg::IoArgument(&attr)
+				  fs::File::IoRequest(I_APPFS_CREATE),
+				  fs::File::IoArgument(&attr)
 				  )) < 0 ){
 			return tmp;
 		}
@@ -231,43 +223,42 @@ int Appfs::create(
 	return f.exec.code_size;
 }
 
-#if defined __link
 AppfsInfo Appfs::get_info(
-		const arg::SourceFilePath path,
-		arg::LinkDriver driver
+		const var::String & path
+		SAPI_LINK_DRIVER_LAST
 		){
-	fs::File f(driver);
-#else
-AppfsInfo Appfs::get_info(const arg::SourceFilePath path){
-	fs::File f;
-#endif
+	fs::File f(
+			#if defined __link
+				link_driver
+			#endif
+				);
 	var::String app_name;
 	var::String path_name;
 	appfs_file_t appfs_file_header;
 	appfs_info_t info;
 	int ret;
 	if( f.open(
-			 arg::FilePath(path.argument()),
+			 path,
 			 fs::OpenFlags::read_only()
 			 ) < 0 ){
 		return AppfsInfo();
 	}
 
 	ret = f.read(
-				arg::DestinationBuffer(&appfs_file_header),
-				arg::Size(sizeof(appfs_file_header))
+				&appfs_file_header,
+				fs::File::Size(sizeof(appfs_file_header))
 				);
 	f.close();
 
 	if( ret == sizeof(appfs_file_header) ){
 		//first check to see if the name matches -- otherwise it isn't an app file
-		path_name = fs::File::name(path.argument());
+		path_name = fs::File::name(path);
 
-		if( path_name.find(arg::StringToFind(".sys")) == 0 ){
+		if( path_name.find(".sys") == 0 ){
 			return AppfsInfo();
 		}
 
-		if( path_name.find(arg::StringToFind(".free")) == 0 ){
+		if( path_name.find(".free") == 0 ){
 			return AppfsInfo();
 		}
 
@@ -279,9 +270,7 @@ AppfsInfo Appfs::get_info(const arg::SourceFilePath path){
 		memset(&info, 0, sizeof(info));
 		if( path_name == app_name
 	 #if defined __link
-			 || (path_name.find(
-				 arg::StringToFind(app_name)
-				 ) ==0)
+			 || (path_name.find(app_name) ==0)
 	 #endif
 
 			 ){
@@ -303,33 +292,30 @@ AppfsInfo Appfs::get_info(const arg::SourceFilePath path){
 	return AppfsInfo(info);
 }
 
-#if defined __link
 u16 Appfs::get_version(
-		const arg::SourceFilePath path,
-		arg::LinkDriver driver){
+		const var::String & path
+		SAPI_LINK_DRIVER_LAST
+		){
 	AppfsInfo info;
-	info = get_info(path, driver);
-#else
-u16 Appfs::get_version(const arg::SourceFilePath path){
-	AppfsInfo info;
-	info = get_info(path);
-#endif
+	info = get_info(path
+					 #if defined __link
+						 , link_driver
+					 #endif
+						 );
 	return info.version();
 }
 
-#if defined __link
-
 var::String Appfs::get_id(
-		const arg::SourceFilePath path,
-		arg::LinkDriver driver
+		const var::String & path
+		SAPI_LINK_DRIVER_LAST
 		){
 	AppfsInfo info;
-	info = get_info(path, driver);
-#else
-var::String Appfs::get_id(const arg::SourceFilePath path){
-	AppfsInfo info;
-	info = get_info(path);
-#endif
+	info = get_info(path
+					 #if defined __link
+						 , link_driver
+					 #endif
+						 );
+
 	if( info.is_valid() == false ){
 		return var::String();
 	}

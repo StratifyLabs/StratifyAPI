@@ -7,7 +7,7 @@ namespace fmt {
 
 class Png : public fs::File {
 public:
-	Png(const arg::SourceFilePath & name);
+   Png(const var::String & name);
 
 
 

@@ -50,26 +50,26 @@ namespace hal {
 class Pin : public Pio {
 public:
 
-	static mcu_pin_t from_string(const var::ConstString & port_pin){
+	static mcu_pin_t from_string(const var::String & port_pin){
 		var::Tokenizer tokens(
-					arg::TokenEncodedString(port_pin),
-					arg::TokenDelimeters(".")
+					var::Tokenizer::EncodedString(port_pin),
+					var::Tokenizer::Delimeters(".")
 					);
 		mcu_pin_t result;
 		result.port = 0xff;
 		result.pin = 0xff;
 		if( tokens.count() == 2 ){
-			result.port = tokens.at(0).to_integer();
-			result.pin = tokens.at(1).to_integer();
+			result.port = var::String(tokens.at(0)).to_integer();
+			result.pin = var::String(tokens.at(1)).to_integer();
 		}
 		return result;
 	}
 
 	/*! \details Constructs the object with a port/pin combination. */
 	Pin(
-			const arg::PortNumber port,
-			const arg::PinNumber pin,
-			const arg::IsMcuPinMask is_mask = arg::IsMcuPinMask(false)
+			Port port,
+			PinNumber pin,
+			IsMcuPinMask is_mask = IsMcuPinMask(false)
 			) : Pio(port.argument()){
 		if( is_mask.argument() ){
 			m_pinmask = pin.argument();
@@ -79,8 +79,8 @@ public:
 	}
 
 	/*! \details Contructs a new pin object from an mcu_pin_t data structure. */
-	Pin(const arg::ImplicitMcuPin p) : Pio(p.argument().port) {
-		m_pinmask = 1<<p.argument().pin;
+	Pin(mcu_pin_t p) : Pio(p.port) {
+		m_pinmask = 1<<p.pin;
 	}
 
 	using Pio::set_attributes;

@@ -1,6 +1,7 @@
 
 set(SOURCES
 	${SOURCES_PREFIX}/Data.cpp
+	${SOURCES_PREFIX}/Reference.cpp
 	${SOURCES_PREFIX}/Array.cpp
 	${SOURCES_PREFIX}/Vector.cpp
 	${SOURCES_PREFIX}/Flags.cpp

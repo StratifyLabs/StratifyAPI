@@ -6,6 +6,8 @@
 #include "../arg/Argument.hpp"
 #include "../ev/Event.hpp"
 #include "../api/SysObject.hpp"
+#include "Sched.hpp"
+#include "Thread.hpp"
 
 
 namespace sys {
@@ -52,12 +54,18 @@ namespace sys {
  */
 class SignalHandler : public api::InfoObject {
 public:
+
+	using SignalFunction = arg::Argument<signal_function_callback_t, struct SignalHandlerSignalFunctionTag>;
+	using SignalActionFunction = arg::Argument<signal_action_callback_t, struct SignalHandlerSignalFunctionTag>;
+	using SignalFlags = arg::Argument<u32, struct SignalHandlerSignalFlagsTag>;
+	using SignalMask = arg::Argument<u32, struct SignalHandlerSignalMaskTag>;
+
 	/*! \details Constructs a signal handler.
 	 *
 	 * @param handler The function to execute with an associated signal
 	 */
 	SignalHandler(
-			arg::SignalFunction signal_function
+			SignalFunction signal_function
 			){
 #if defined __win32
 		m_sig_action.sa_handler = signal_function.argument();
@@ -89,9 +97,9 @@ public:
 	 *
 	 */
 	SignalHandler(
-			arg::SignalActionFunction signal_action_function,
-			const arg::SignalFlags flags = arg::SignalFlags(0),
-			const arg::SignalMask mask = arg::SignalMask(0)
+			SignalActionFunction signal_action_function,
+			SignalFlags flags = SignalFlags(0),
+			SignalMask mask = SignalMask(0)
 			){
 		m_sig_action.sa_sigaction = signal_action_function.argument();
 		m_sig_action.sa_flags = flags.argument() | SIGNAL_SIGINFO_FLAG;
@@ -217,10 +225,10 @@ public:
 	 */
 	Signal(
 			enum signal_number signo,
-			const arg::SignalValueInteger sigvalue = arg::SignalValueInteger(0)
+			int signal_value = (0)
 			){
 		m_signo = signo;
-		m_sigvalue.sival_int = sigvalue.argument();
+		m_sigvalue.sival_int = signal_value;
 	}
 
 	/*! \details Constructs an event based on a signal number.
@@ -231,10 +239,10 @@ public:
 	  */
 	Signal(
 			enum signal_number signo,
-			const arg::SignalValuePointer sigvalue
+			void * signal_pointer
 			){
 		m_signo = signo;
-		m_sigvalue.sival_ptr = sigvalue.argument();
+		m_sigvalue.sival_ptr = signal_pointer;
 	}
 
 	/*! \details Returns a UI Event based on this signal event. */
@@ -251,7 +259,7 @@ public:
 	  * It uses the POSIX kill() function.
 	 */
 	int send(
-			const arg::Pid pid
+			Sched::ProcessId pid
 			) const {
 		return ::sapi_signal_posix_kill(
 			#if !defined __win32
@@ -284,7 +292,7 @@ public:
 	 * @return Zero on success
 	 */
 	int send(
-			const arg::ThreadId t
+			Thread::Id t
 			) const {
 		return ::pthread_kill(t.argument(), m_signo);
 	}

@@ -18,15 +18,15 @@ class FileFont : public Font {
 public:
 	FileFont();
 	FileFont(
-			const arg::SourceFilePath & name,
-			const arg::Location & offset = arg::Location(0)
+			const var::String & name,
+			FileLocation offset = FileLocation(0)
 			);
 
 	~FileFont();
 
 	int set_file(
-			const arg::SourceFilePath & name,
-			const arg::Location & offset = arg::Location(0)
+			const var::String & path,
+			FileLocation offset = FileLocation(0)
 			);
 
 	sg_size_t get_height() const;

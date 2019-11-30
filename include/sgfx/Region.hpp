@@ -38,8 +38,8 @@ public:
 
 	Point center() const {
 		return Point(
-					arg::XValue(m_region.point.x + m_region.area.width/2),
-					arg::YValue(m_region.point.y + m_region.area.height/2)
+					Point::X(m_region.point.x + m_region.area.width/2),
+					Point::Y(m_region.point.y + m_region.area.height/2)
 					);
 	}
 
@@ -49,9 +49,8 @@ public:
 		m_region.area.height = bottom_right.y() - top_left.y() + 1;
 	}
 
-	void set_point(const Point & value){ m_region.point = value; }
-	void set_area(const Area & value){ m_region.area = value; }
-	void set_dim(const Area & value){ m_region.area = value; }
+	Region & set_point(const Point & value){ m_region.point = value; return *this; }
+	Region & set_area(const Area & value){ m_region.area = value; return *this; }
 
 	Point point() const { return m_region.point; }
 	Area area() const { return m_region.area; }
@@ -62,13 +61,11 @@ public:
 	sg_size_t height() const { return m_region.area.height; }
 
 	Region & operator << (const Point & point){
-		set_point(point);
-		return *this;
+		return set_point(point);
 	}
 
 	Region & operator << (const Area & dimension){
-		set_area(dimension);
-		return *this;
+		return set_area(dimension);
 	}
 
 	const sg_region_t & region() const { return m_region; }

@@ -38,7 +38,7 @@ public:
 	SerialNumber(const mcu_sn_t serial_number){ m_serial_number = serial_number; }
 
 	/*! \details Constructs this serial number from \a str. */
-	SerialNumber(const var::ConstString & str);
+	SerialNumber(const var::String & str);
 
 	/*! \details Returns true if a valid serial number is held. */
 	bool is_valid() const {
@@ -46,7 +46,7 @@ public:
 	}
 
 	/*! \details Returns a serial number object from a string type. */
-	static SerialNumber from_string(const var::ConstString & str);
+	static SerialNumber from_string(const var::String & str);
 
 	/*! \details Returns the u32 section of the serial number specified by *idx*. */
 	u32 at(u32 idx) const {
@@ -81,7 +81,7 @@ private:
  *
  */
 class SysInfo : public api::InfoObject {
-	friend class Sys;
+   friend class Sys;
 public:
 
 	/*! \details Constructs an empty SysInfo object. */
@@ -101,19 +101,19 @@ public:
 	static SysInfo get();
 
 	/*! \details Returns the OS package project ID. */
-	var::ConstString id() const { return m_info.id; }
+	var::String id() const { return m_info.id; }
 	/*! \details Returns the team ID of the system. */
-	var::ConstString team_id() const { return m_info.team_id; }
+	var::String team_id() const { return m_info.team_id; }
 	/*! \details Returns the name of the system. */
-	var::ConstString name() const { return m_info.name; }
+	var::String name() const { return m_info.name; }
 	/*! \details Returns the system version. */
-	var::ConstString system_version() const { return m_info.sys_version; }
+	var::String system_version() const { return m_info.sys_version; }
 	/*! \details Returns the board support package version (same as system_version()). */
-	var::ConstString bsp_version() const { return m_info.sys_version; }
+	var::String bsp_version() const { return m_info.sys_version; }
 	/*! \details Returns the Stratify OS version version. */
-	var::ConstString sos_version() const { return m_info.kernel_version; }
+	var::String sos_version() const { return m_info.kernel_version; }
 	/*! \details Returns the kernel version (same as sos_version()). */
-	var::ConstString kernel_version() const { return m_info.kernel_version; }
+	var::String kernel_version() const { return m_info.kernel_version; }
 
 	/*! \details Returns the CPU architecture.
 	 *
@@ -122,7 +122,7 @@ public:
 	 *
 	 *
 	 */
-	var::ConstString cpu_architecture() const { return m_info.arch; }
+	var::String cpu_architecture() const { return m_info.arch; }
 
 	/*! \details Returns the CPU core clock frequency in Hertz. */
 	u32 cpu_frequency() const { return m_info.cpu_freq; }
@@ -135,18 +135,18 @@ public:
 	u32 application_signature() const { return m_info.signature; }
 
 	/*! \details Returns the GIT Hash of the OS package as built. */
-	var::ConstString bsp_git_hash() const { return m_info.bsp_git_hash; }
+	var::String bsp_git_hash() const { return m_info.bsp_git_hash; }
 	/*! \details Returns the Stratify OS library used to link the OS package. */
-	var::ConstString sos_git_hash() const { return m_info.sos_git_hash; }
+	var::String sos_git_hash() const { return m_info.sos_git_hash; }
 	/*! \details Returns the Stratify OS MCU library used to link the OS package. */
-	var::ConstString mcu_git_hash() const { return m_info.mcu_git_hash; }
+	var::String mcu_git_hash() const { return m_info.mcu_git_hash; }
 
 	u32 o_flags() const { return m_info.o_flags; }
 
-	var::ConstString arch() const { return m_info.arch; }
-	var::ConstString stdin_name() const { return m_info.stdin_name; }
-	var::ConstString stdout_name() const { return m_info.stdout_name; }
-	var::ConstString trace_name() const { return m_info.trace_name; }
+	var::String arch() const { return m_info.arch; }
+	var::String stdin_name() const { return m_info.stdin_name; }
+	var::String stdout_name() const { return m_info.stdout_name; }
+	var::String trace_name() const { return m_info.trace_name; }
 	u32 hardware_id() const { return m_info.hardware_id; }
 
 
@@ -167,20 +167,9 @@ private:
  */
 class Sys : public fs::File {
 public:
-
-#if defined __link
-	Sys(arg::LinkDriver driver);
-#else
-	Sys();
-#endif
-
-	/*! \details Returns a c style string pointer
-	  * to the API version.
-	  *
-	  * This version is 2.4.0
-	  *
-	  */
-	static const char * version(){ return "2.4.0"; }
+	Sys(
+			SAPI_LINK_DRIVER_NULLPTR
+			);
 
 	/*! \details Options for launching applications. */
 	enum {
@@ -204,8 +193,8 @@ public:
 	 *
 	 * This method must be called locally in an app. It can't be executed over the link protocol.
 	 */
-	static int launch(const var::ConstString & path,
-							const var::ConstString & args,
+	static int launch(const var::String & path,
+							const var::String & args,
 							int options = 0, //run in RAM, discard on exit
 							int ram_size = LAUNCH_RAM_SIZE_DEFAULT
 			);
@@ -222,13 +211,13 @@ public:
 	 * @return The process ID of the new app if successful
 	 *
 	 */
-	static int launch(const var::ConstString & path,
-							const var::ConstString & args,
+	static int launch(const var::String & path,
+							const var::String & args,
 							var::String & exec_destination,
 							int options, //run in RAM, discard on exit
 							int ram_size,
 							const sys::ProgressCallback * progress_callback,
-							const var::ConstString & envp = ""
+							const var::String & envp = ""
 			);
 
 	/*!
@@ -241,7 +230,7 @@ public:
 	 *
 	 * \return Zero on success or less than zero with errno set.
 	 */
-	static var::String install(const var::ConstString & path,
+	static var::String install(const var::String & path,
 										int options = 0, //run in RAM, discard on exit
 										int ram_size = LAUNCH_RAM_SIZE_DEFAULT
 			);
@@ -256,7 +245,7 @@ public:
 	 * \param progress_callback A pointer to a callback to indicate the installation progress.
 	 * \return
 	 */
-	static var::String install(const var::ConstString & path,
+	static var::String install(const var::String & path,
 										int options, //run in RAM, discard on exit
 										int ram_size,
 										const sys::ProgressCallback * progress_callback
@@ -277,11 +266,11 @@ public:
 	 *
 	 * \sa reclaim_ram()
 	 */
-	static int free_ram(const char * path
+	static int free_ram(const var::String & path
 						  #if defined __link
-							  , arg::LinkDriver driver = arg::LinkDriver(0)
-		#endif
-			);
+							  SAPI_LINK_DRIVER_NULLPTR_LAST
+						  #endif
+							  );
 
 	/*! \details Reclaims RAM that was freed using free_ram().
 	 *
@@ -291,10 +280,9 @@ public:
 	 *
 	 * \sa free_ram()
 	 */
-	static int reclaim_ram(const char * path
-							  #if defined __link
-								  , arg::LinkDriver driver = arg::LinkDriver(0)
-		#endif
+	static int reclaim_ram(
+			const var::String & path
+			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
 
 
@@ -400,7 +388,7 @@ public:
 	 */
 	int open(){
 		return fs::File::open(
-					arg::FilePath("/dev/sys"),
+					"/dev/sys",
 					fs::OpenFlags::read_write()
 					);
 	}

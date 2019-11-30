@@ -24,6 +24,9 @@ namespace sys {
 class Cli : public api::WorkObject {
 public:
 
+
+	using Description = arg::Argument<const var::String &, struct CliDescriptionTag>;
+
 	enum {
 		FORMAT_TEXT,
 		FORMAT_JSON,
@@ -43,7 +46,10 @@ public:
 	 * \endcode
 	 *
 	 */
-	Cli(int argc, char * argv[], const var::ConstString & app_git_hash = 0);
+	Cli(int argc,
+		 char * argv[],
+		 const char * app_git_hash = nullptr
+			);
 
 	/*! \details Handles the --version and -v options to show the version.
 	 *
@@ -57,7 +63,11 @@ public:
 	 * @param publisher A pointer to the publisher's name
 	 *
 	 */
-	void set_publisher(const var::ConstString & publisher){ m_publisher = publisher; }
+	void set_publisher(
+			const var::String & publisher
+			){
+		m_publisher = publisher;
+	}
 
 
 	/*! \details Sets whether the arguments are case sensitive. */
@@ -123,7 +133,7 @@ public:
 	 * `is_option("-v")` will return true.
 	 *
 	 */
-	bool is_option(const var::ConstString & value) const;
+	bool is_option(const var::String & value) const;
 
 
 	/*! \details Checks to see if the option exists and returns its value
@@ -146,8 +156,8 @@ public:
 	 *
 	 */
 	var::String get_option(
-			const arg::OptionName name,
-			const arg::OptionDescription help = arg::OptionDescription("")
+			const var::String & name,
+			Description help = Description(var::String())
 			) const;
 
 	/*! \details Gets the argument of an option as a var::String.
@@ -257,10 +267,10 @@ public:
 
 private:
 
-	bool is_option_equivalent_to_argument(const var::ConstString & option, const var::ConstString & argument) const;
-	bool is_option_equivalent_to_argument_with_equality(const var::ConstString & option, const var::ConstString & argument, var::String & value) const;
+	bool is_option_equivalent_to_argument(const var::String & option, const var::String & argument) const;
+	bool is_option_equivalent_to_argument_with_equality(const var::String & option, const var::String & argument, var::String & value) const;
 
-	bool compare_with_prefix(const var::ConstString & option, const var::ConstString & argument) const;
+	bool compare_with_prefix(const var::String & option, const var::String & argument) const;
 
 	u16 m_argc;
 	char ** m_argv;
@@ -269,7 +279,7 @@ private:
 	var::String m_name;
 	var::String m_path;
 	bool m_is_case_sensitive;
-	const var::ConstString m_app_git_hash;
+	const char * m_app_git_hash;
 	mutable var::Vector<var::String> m_help_list;
 
 

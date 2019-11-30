@@ -7,12 +7,12 @@ Drive::Drive(){
 }
 
 int Drive::initialize(
-		const arg::SourceFilePath path
+		const var::String & path
 		){
 
 	if( fileno() < 0 ){
 		if( open(
-				 arg::FilePath(path.argument()),
+				 path,
 				 fs::OpenFlags::read_write()
 				 ) < 0 ){
 			return return_value();
@@ -88,15 +88,15 @@ int Drive::erase_device() const {
 }
 
 bool Drive::is_busy() const {
-	int result = ioctl(arg::IoRequest(I_DRIVE_ISBUSY));
+	int result = ioctl(IoRequest(I_DRIVE_ISBUSY));
 	return result > 0;
 }
 
 DriveInfo Drive::get_info() const {
 	drive_info_t info;
 	if( ioctl(
-			 arg::IoRequest(I_DRIVE_GETINFO),
-			 arg::IoArgument(&info)
+			 IoRequest(I_DRIVE_GETINFO),
+			 IoArgument(&info)
 			 ) < 0 ){
 		return DriveInfo();
 	}
@@ -105,8 +105,8 @@ DriveInfo Drive::get_info() const {
 
 int Drive::set_attributes(const drive_attr_t & attributes) const {
 	return ioctl(
-				arg::IoRequest(I_DRIVE_SETATTR),
-				arg::IoConstArgument(&attributes)
+				IoRequest(I_DRIVE_SETATTR),
+				IoConstArgument(&attributes)
 				);
 }
 

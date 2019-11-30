@@ -5,8 +5,7 @@
 
 #include "../api/CryptoObject.hpp"
 #include "../var/Array.hpp"
-#include "../var/String.hpp"
-#include "../var/Data.hpp"
+#include "../var/Reference.hpp"
 #include "../fs/File.hpp"
 
 #if defined __link
@@ -45,6 +44,12 @@ namespace crypto {
  */
 class Sha256 : public api::CryptoWorkObject {
 public:
+
+	using SourceBuffer = var::Reference::SourceBuffer;
+	using Size = var::Reference::Size;
+	using SourceFile = fs::File::Source;
+	using PageSize = fs::File::PageSize;
+
 	Sha256();
 	~Sha256();
 
@@ -54,32 +59,33 @@ public:
 	int start();
 
 	int update(
-			const arg::SourceBuffer input,
-			const arg::Size size
+			SourceBuffer input,
+			Size size
 			);
 
 	int update(
-			const arg::SourceData data
+			const var::Reference & data
 			){
-		return update(arg::SourceBuffer(data.argument().to_const_void()),
-						  arg::Size(data.argument().size()));
+
+		return update(
+					SourceBuffer(data.to_const_void()),
+					Size(data.size())
+					);
 	}
 
 	int finish();
 
 	static var::String calculate(
-			const arg::SourceFile file,
-			arg::PageSize page_size = arg::PageSize(CRYPTO_SHA256_DEFAULT_PAGE_SIZE)
+			const fs::File & file,
+			PageSize page_size = PageSize(CRYPTO_SHA256_DEFAULT_PAGE_SIZE)
 			);
 
 	static var::String calculate(
-			const arg::SourceFilePath file_path,
-			arg::PageSize page_size = arg::PageSize(CRYPTO_SHA256_DEFAULT_PAGE_SIZE)
+			const var::String & file_path,
+			PageSize page_size = PageSize(CRYPTO_SHA256_DEFAULT_PAGE_SIZE)
 			);
 
-	Sha256 & operator << (const var::Data & a);
-	Sha256 & operator << (const var::ConstString & a);
-	Sha256 & operator << (const var::String & a);
+	Sha256 & operator << (const var::Reference & a);
 
 	const var::Array<u8, 32> & output();
 	var::String to_string();

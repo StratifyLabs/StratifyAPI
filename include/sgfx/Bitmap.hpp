@@ -7,6 +7,7 @@
 
 #include "../var/Data.hpp"
 #include "../var/Vector.hpp"
+#include "../fs/File.hpp"
 #include "Region.hpp"
 #include "Pen.hpp"
 #include "../api/SgfxObject.hpp"
@@ -27,9 +28,9 @@ public:
 
 	void set_count(enum color_count count){
 		//must be 2,4,16,256
-		m_colors.resize(arg::Count(count));
+		m_colors.resize(count);
 		m_palette.mask = (count-1);
-		m_palette.colors = m_colors.to<sg_color_t>();
+		m_palette.colors = static_cast<sg_bmap_data_t*>(m_colors.data());
 	}
 
 	void set_color(u32 idx, sg_color_t color){
@@ -61,6 +62,12 @@ private:
  */
 class Bitmap : virtual public var::Data, public api::SgfxObject {
 public:
+
+	using ReadOnlyBuffer = var::Reference::ReadOnlyBuffer;
+	using ReadWriteBuffer = var::Reference::ReadWriteBuffer;
+
+	using IsReadOnly = arg::Argument<bool, struct BitmapIsReadOnlyTag>;
+
 	/*! \details Constructs an empty bitmap. */
 	Bitmap();
 	virtual ~Bitmap();
@@ -78,14 +85,14 @@ public:
 	 */
 	Bitmap(
 			const sg_bmap_header_t * hdr,
-			const arg::IsReadOnly is_read_only = arg::IsReadOnly(false)
+			IsReadOnly is_read_only = IsReadOnly(false)
 			); //read/write bitmap
 
 	/*! \details Constructs a bitmap using an existing
 	 * read-only memory buffer.
 	 */
 	Bitmap(
-			arg::ReadOnlyBuffer buffer,
+			ReadOnlyBuffer buffer,
 			const Area & area
 			);
 
@@ -93,7 +100,7 @@ public:
 	 * read-write memory buffer.
 	 */
 	Bitmap(
-			arg::ReadWriteBuffer buffer,
+			ReadWriteBuffer buffer,
 			const Area & area
 			);
 
@@ -112,15 +119,17 @@ public:
 
 	Bitmap(const Bitmap & bitmap) : var::Data(bitmap){
 		m_bmap = bitmap.m_bmap;
-		m_bmap.data = to<sg_bmap_data_t>();
+		m_bmap.data = var::Reference(*this).to<sg_bmap_data_t>();
 	}
 
 	Bitmap & operator = (const Bitmap & bitmap){
 		copy_contents(
-					arg::SourceData(bitmap)
-						  );
+					var::Reference(
+						bitmap
+						)
+					);
 		m_bmap = bitmap.m_bmap;
-		m_bmap.data = to<sg_bmap_data_t>();
+		m_bmap.data = var::Reference(*this).to<sg_bmap_data_t>();
 		return *this;
 	}
 
@@ -163,7 +172,7 @@ public:
 	/*! \details Sets data pointer and size for bitmap */
 	void refer_to(
 			const sg_bmap_header_t * hdr,
-			const arg::IsReadOnly is_read_only = arg::IsReadOnly(false)
+			IsReadOnly is_read_only = IsReadOnly(false)
 			);
 
 	/*! \details Sets the data pointer based on the
@@ -171,7 +180,7 @@ public:
 	 *
 	 */
 	void refer_to(
-			arg::ReadOnlyBuffer buffer,
+			ReadOnlyBuffer buffer,
 			const Area & area
 			);
 
@@ -180,7 +189,7 @@ public:
 	 *
 	 */
 	void refer_to(
-			arg::ReadWriteBuffer buffer,
+			ReadWriteBuffer buffer,
 			const Area & area
 			);
 
@@ -208,14 +217,14 @@ public:
 	/*! \details Returns the maximum y value. */
 	sg_int_t y_max() const { return height()-1; }
 
-	static Area load_area(const arg::SourceFilePath & path);
+	static Area load_area(const var::String& path);
 
 	/*! \details Loads a bitmap from a file.
 	 *
 	 * @param path The path to the bitmap file name
 	 * @return Zero on success
 	 */
-	int load(const arg::SourceFilePath & path);
+	int load(const var::String & path);
 
 	/*! \details Saves a bitmap to a file.
 	 *
@@ -225,7 +234,7 @@ public:
 	 * If the file already exists, it will be overwritten.
 	 *
 	 */
-	int save(const arg::DestinationFilePath & path) const;
+	int save(const var::String & path) const;
 
 
 	/*! \details Allocates memory for the bitmap data using the specified
@@ -356,13 +365,33 @@ public:
 	 * @param region_src The regions of the source bitmap to draw
 	 * @return Zero on success
 	 */
-	void draw_sub_bitmap(const Point & p_dest, const Bitmap & src, const Region & region_src) const {
-		api()->draw_sub_bitmap(bmap(), p_dest, src.bmap(), &region_src.region());
+	void draw_sub_bitmap(
+			const Point & destination_point,
+			const Bitmap & source_bitmap,
+			const Region & source_region
+			) const {
+		api()->draw_sub_bitmap(
+					bmap(),
+					destination_point,
+					source_bitmap.bmap(),
+					&source_region.region()
+					);
 	}
 
 
-	void draw_sub_bitmap(const Point & p_dest, const Bitmap & src, const Point & p_src, const Area & d_src) const {
-		draw_sub_bitmap(p_dest, src, Region(p_src, d_src));
+	void draw_sub_bitmap(
+			const Point & destination_point,
+			const Bitmap & source_bitmap,
+			const Point & source_point,
+			const Area & source_area
+			) const {
+
+		draw_sub_bitmap(
+					destination_point,
+					source_bitmap,
+					Region(source_point, source_area)
+					);
+
 	}
 
 	Region calculate_active_region() const;

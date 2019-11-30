@@ -111,7 +111,7 @@ public:
 	 * @return Zero on success
 	 */
 	int set_channel(u32 loc, u32 value) const {
-		return Periph::set_channel(loc, value, arg::IoRequest(I_PWM_SETCHANNEL));
+		return Periph::set_channel(loc, value, IoRequest(I_PWM_SETCHANNEL));
 	}
 
 	/*! \details Sets the channel using the channel reference.
@@ -129,7 +129,7 @@ public:
 	 * @return The value of the channel or (u32)-1 for an error
 	 */
 	int get_channel(u32 loc){
-		return Periph::get_channel(loc, arg::IoRequest(I_PWM_GETCHANNEL));
+		return Periph::get_channel(loc, IoRequest(I_PWM_GETCHANNEL));
 	}
 
 	/*! \details Enables the PWM timer.
@@ -144,7 +144,7 @@ public:
 	 */
 	int enable() const {
 		return ioctl(
-					arg::IoRequest(I_PWM_ENABLE)
+					IoRequest(I_PWM_ENABLE)
 					);
 	}
 
@@ -155,7 +155,7 @@ public:
 	 */
 	int disable() const {
 		return ioctl(
-					arg::IoRequest(I_PWM_DISABLE)
+					IoRequest(I_PWM_DISABLE)
 					);
 	}
 

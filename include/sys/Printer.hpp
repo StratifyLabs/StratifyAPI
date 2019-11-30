@@ -143,7 +143,7 @@ public:
 		FORMAT_HIDDEN = 8
 	};
 
-	static u32 color_code(const var::ConstString & color);
+	static u32 color_code(const var::String & color);
 
 	void set_format_code(u32 code);
 	void clear_format_code(u32 code);
@@ -157,7 +157,7 @@ public:
 	Printer & operator << (const api::Result & a);
 
 	/*! \details Prints a var::DataReference object. */
-	Printer & operator << (const var::DataReference & a);
+	Printer & operator << (const var::Reference & a);
 	/*! \details Prints a var::Datum object. */
 	Printer & operator << (const var::Datum & a);
 
@@ -279,7 +279,7 @@ public:
 	 * @param level The level as 'fatal', 'error', 'warning', 'info', 'message', or 'debug'
 	 * @return Zero on success
 	 */
-	int set_verbose_level(const var::ConstString & level);
+	int set_verbose_level(const var::String & level);
 
 	/*! \details Returns the current verbose level. */
 	enum verbose_level verbose_level() const { return m_verbose_level; }
@@ -298,27 +298,27 @@ public:
 	virtual Printer & fatal(const char * fmt, ...);
 
 	/*! \details Prints a debug message if the verbose level is set to debug. */
-	Printer & debug(const var::ConstString & a){ return debug(a.cstring()); }
+	Printer & debug(const var::String & a){ return debug(a.cstring()); }
 	/*! \details Prints a message (filtered according to verbose_level()). */
-	Printer & message(const var::ConstString & a){ return message(a.cstring()); }
+	Printer & message(const var::String & a){ return message(a.cstring()); }
 	/*! \details Prints information (filtered according to verbose_level()). */
-	Printer & info(const var::ConstString & a){ return info(a.cstring()); }
+	Printer & info(const var::String & a){ return info(a.cstring()); }
 	/*! \details Prints a warning (filtered according to verbose_level()). */
-	Printer & warning(const var::ConstString & a){ return warning(a.cstring()); }
+	Printer & warning(const var::String & a){ return warning(a.cstring()); }
 	/*! \details Prints an error (filtered according to verbose_level()). */
-	Printer & error(const var::ConstString & a){ return error(a.cstring()); }
+	Printer & error(const var::String & a){ return error(a.cstring()); }
 	/*! \details Prints a fatal error message. */
-	Printer & fatal(const var::ConstString & a){ return fatal(a.cstring()); }
+	Printer & fatal(const var::String & a){ return fatal(a.cstring()); }
 
 
 	Printer & error(const api::Result result, u32 line_number);
 
 	/*! \details Prints a key value pair. */
-	virtual Printer & key(const var::ConstString & key, const char * fmt, ...);
+	virtual Printer & key(const var::String & key, const char * fmt, ...);
 	/*! \details Prints a key value pair. */
-	virtual Printer & key(const var::ConstString & key, const var::String & a);
+	virtual Printer & key(const var::String & key, const var::String & a);
 	/*! \details Prints a key value pair. */
-	virtual Printer & key(const var::ConstString & key, const var::JsonValue & a);
+	virtual Printer & key(const var::String & key, const var::JsonValue & a);
 
 	void print(const char * fmt, ...);
 
@@ -381,7 +381,7 @@ public:
 	 *
 	 */
 	Printer & open_object(
-			const var::ConstString & key,
+			const var::String & key,
 			enum verbose_level level = FATAL);
 	void close_object(){
 		m_container.pop_back();
@@ -430,7 +430,7 @@ public:
 	 * ```
 	 *
 	 */
-	Printer & open_array(const var::ConstString & key, enum verbose_level level = FATAL);
+	Printer & open_array(const var::String & key, enum verbose_level level = FATAL);
 	void close_array(){
 		close_object();
 	}
@@ -472,7 +472,7 @@ public:
 	 * //md2code:main
 	 * Printer p;
 	 *
-	 * p.progress_key() = var::ConstString("downloading");
+	 * p.progress_key() = var::String("downloading");
 	 * Socket socket;
 	 * HttpClient http_client(socket);
 	 * DataFile data_file(OpenFlags::append_read_write());
@@ -527,9 +527,9 @@ protected:
 	void print_indentation();
 
 	/*! \details Prints an indented key (can be re-implemented). */
-	virtual void print_indented(const var::ConstString & key, const char * fmt, ...);
+	virtual void print_indented(const var::String & key, const char * fmt, ...);
 	/*! \details Prints an indented key (can be re-implemented). */
-	virtual void vprint_indented(const var::ConstString & key, const char * fmt, va_list list);
+	virtual void vprint_indented(const var::String & key, const char * fmt, va_list list);
 	/*! \details Prints all characters.
 	 *
 	 * This is the only method that needs to be re-implemented

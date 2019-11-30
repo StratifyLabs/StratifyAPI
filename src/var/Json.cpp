@@ -84,7 +84,7 @@ int JsonValue::create_if_not_valid(){
 	return 0;
 }
 
-int JsonValue::assign(const var::ConstString & value){
+int JsonValue::assign(const var::String & value){
 	if( is_string() ){
 		return api()->string_set(m_value, value.cstring());
 	} else if( is_real() ){
@@ -228,8 +228,9 @@ json_t * JsonNull::create(){
 }
 
 
-int JsonObject::insert(const arg::JsonKey key,
-		const arg::ImplicitSourceJsonValue value
+int JsonObject::insert(
+		const var::String & key,
+		const JsonValue & value
 		){
 	if( create_if_not_valid() < 0 ){
 		return -1;
@@ -237,8 +238,8 @@ int JsonObject::insert(const arg::JsonKey key,
 
 	int result = api()->object_set(
 				m_value,
-				key.argument().cstring(),
-				value.argument().m_value
+				key.cstring(),
+				value.m_value
 				);
 	if( result < 0 ){
 		//printf("Failed to set JSON key %s to %s %p\n", key.cstring(), value.to_string().cstring(), m_value);
@@ -246,22 +247,32 @@ int JsonObject::insert(const arg::JsonKey key,
 	return result;
 }
 
-int JsonObject::update(const arg::SourceJsonValue value,
+int JsonObject::update(
+		const JsonValue & value,
 		enum update_flags o_flags
 		){
 	if( o_flags & UPDATE_EXISTING ){
-		return api()->object_update_existing(m_value, value.argument().m_value);
+		return api()->object_update_existing(
+					m_value,
+					value.m_value
+					);
 	}
 
 	if( o_flags & UPDATE_MISSING ){
-		return api()->object_update_missing(m_value, value.argument().m_value);
+		return api()->object_update_missing(
+					m_value,
+					value.m_value
+					);
 	}
 
-	return api()->object_update(m_value, value.argument().m_value);
+	return api()->object_update(
+				m_value,
+				value.m_value
+				);
 }
 
-int JsonObject::remove(const arg::JsonKey key){
-	return api()->object_del(m_value, key.argument().cstring());
+int JsonObject::remove(const var::String & key){
+	return api()->object_del(m_value, key.cstring());
 }
 
 u32 JsonObject::count() const {
@@ -284,8 +295,8 @@ var::Vector<var::String> JsonObject::keys() const {
 	return result;
 }
 
-JsonValue JsonObject::at(const arg::JsonKey key) const {
-	return api()->object_get(m_value, key.argument().cstring());
+JsonValue JsonObject::at(const var::String & key) const {
+	return api()->object_get(m_value, key.cstring());
 }
 
 JsonArray::JsonArray(){
@@ -306,13 +317,19 @@ u32 JsonArray::count() const {
 	return api()->array_size(m_value);
 }
 
-JsonValue JsonArray::at(const arg::ImplicitPosition position) const {
-	return api()->array_get(m_value, position.argument());
+JsonValue JsonArray::at(size_t position) const {
+	return api()->array_get(
+				m_value,
+				position
+				);
 }
 
-int JsonArray::append(const arg::ImplicitSourceJsonValue value){
+int JsonArray::append(const JsonValue & value){
 	if( create_if_not_valid() < 0 ){ return -1; }
-	return api()->array_append(m_value, value.argument().m_value);
+	return api()->array_append(
+				m_value,
+				value.m_value
+				);
 }
 
 int JsonArray::append(const JsonArray & array){
@@ -320,22 +337,24 @@ int JsonArray::append(const JsonArray & array){
 	return api()->array_extend(m_value, array.m_value);
 }
 
-int JsonArray::insert(const arg::Position position,
-		const arg::ImplicitSourceJsonValue value
+int JsonArray::insert(
+		size_t position,
+		const JsonValue & value
 		){
 	if( create_if_not_valid() < 0 ){ return -1; }
 	return api()->array_insert(
 				m_value,
-				position.argument(),
-				value.argument().m_value
+				position,
+				value.m_value
 				);
 }
 
-int JsonArray::remove(const arg::ImplicitPosition position
+int JsonArray::remove(
+		size_t position
 		){
 	return api()->array_remove(
 				m_value,
-				position.argument()
+				position
 				);
 }
 
@@ -348,7 +367,7 @@ JsonString::JsonString(){
 }
 
 
-JsonString::JsonString(const var::ConstString & str){
+JsonString::JsonString(const var::String & str){
 	m_value = api()->create_string(str.cstring());
 }
 
@@ -394,7 +413,8 @@ JsonFalse::JsonFalse(){
 	m_value = create();
 }
 
-JsonValue JsonDocument::load(const arg::SourceFilePath path
+JsonValue JsonDocument::load(
+		const fs::File::SourcePath path
 		){
 	JsonValue value;
 	value.m_value = JsonValue::api()->load_file(
@@ -405,12 +425,13 @@ JsonValue JsonDocument::load(const arg::SourceFilePath path
 	return value;
 }
 
-JsonValue JsonDocument::load(const arg::JsonEncodedString json
+JsonValue JsonDocument::load(
+		const var::String & json
 		){
 	JsonValue value;
 	value.m_value = JsonValue::api()->loadb(
-				json.argument().cstring(),
-				json.argument().length(),
+				json.cstring(),
+				json.length(),
 				flags(),
 				&m_error.m_value);
 	return value;
@@ -423,12 +444,12 @@ size_t JsonDocument::load_file_data(
 		){
 	const fs::File * f = (const fs::File *)data;
 	return f->read(
-				arg::DestinationBuffer(buffer),
-				arg::Size(buflen)
+				buffer,
+				fs::File::Size(buflen)
 				);
 }
 
-JsonValue JsonDocument::load(const arg::SourceFile file
+JsonValue JsonDocument::load(const fs::File::Source file
 		){
 	JsonValue value;
 	value.m_value = JsonValue::api()->load_callback(load_file_data, (void*)&(file.argument()), flags(), &m_error.m_value);
@@ -445,8 +466,8 @@ JsonValue JsonDocument::load(
 }
 
 int JsonDocument::save(
-		const arg::SourceJsonValue value,
-		const arg::DestinationFilePath path
+		const JsonValue & value,
+		fs::File::DestinationPath path
 		) const {
 	fs::File f;
 	int result;
@@ -459,14 +480,14 @@ int JsonDocument::save(
 				);
 #else
 	if( f.create(
-			 arg::DestinationFilePath(path),
-			 arg::IsOverwrite(true)
+			 path.argument(),
+			 fs::File::IsOverwrite(true)
 			 ) < 0 ){
 		set_error_number(f.error_number());
 		return -1;
 	}
 	result = JsonValue::api()->dumpfd(
-				value.argument().m_value,
+				value.m_value,
 				f.fileno(),
 				flags());
 
@@ -480,19 +501,23 @@ int JsonDocument::save(
 }
 
 var::String JsonDocument::to_string(
-		const arg::ImplicitSourceJsonValue value
+		const var::JsonValue& value
 		) const {
-	u32 size = JsonValue::api()->dumpb(value.argument().m_value, 0, 0, flags());
+	u32 size = JsonValue::api()->dumpb(
+				value.m_value,
+				0,
+				0,
+				flags()
+				);
 	if( size == 0 ){
 		return var::String();
 	}
 	var::String result;
-	if( result.resize(size) < 0 ){
-		return var::String();
-	}
+	result.resize(size);
+
 	if( JsonValue::api()->dumpb(
-			 value.argument().m_value,
-			 result.to<char>(),
+			 value.m_value,
+			 result.to_char(),
 			 result.capacity(),
 			 flags()
 			 ) == 0 ){
@@ -502,12 +527,12 @@ var::String JsonDocument::to_string(
 }
 
 int JsonDocument::save(
-		const arg::SourceJsonValue value,
-		const arg::DestinationFile file
+		const JsonValue & value,
+		fs::File & file
 		) const {
 	return JsonValue::api()->dumpfd(
-				value.argument().m_value,
-				file.argument().fileno(),
+				value.m_value,
+				file.fileno(),
 				flags());
 }
 

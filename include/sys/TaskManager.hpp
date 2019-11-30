@@ -6,6 +6,7 @@
 #include "../api/SysObject.hpp"
 #include "../hal/Device.hpp"
 #include "../var/ConstString.hpp"
+#include "../sys/Sched.hpp"
 
 namespace sys {
 
@@ -74,7 +75,7 @@ public:
 	bool is_enabled() const { return m_value.is_enabled != 0; }
 
 	/*! \details Returns the name of the task. */
-	const var::ConstString name() const { return m_value.name; }
+	const var::String name() const { return m_value.name; }
 
 	/*! \details Returns the number of bytes of memory available to the task. */
 	u32 memory_size() const{ return m_value.mem_size; }
@@ -129,12 +130,10 @@ typedef TaskInfo TaskAttributes;
  */
 class TaskManager : public api::WorkObject {
 public:
+	TaskManager(
+			SAPI_LINK_DRIVER_NULLPTR
+			);
 
-#if defined __link
-	TaskManager(arg::LinkDriver driver);
-#else
-	TaskManager();
-#endif
 	~TaskManager();
 
 	/*! \details Returns the total number of tasks that can
@@ -156,9 +155,9 @@ public:
 	  *
 	  */
 	void set_id(
-			const arg::DeviceThreadId value
+			u32 value
 			){
-		m_id = value.argument();
+		m_id = value;
 	}
 
 	/*! \details Returns the index of the current task as
@@ -201,7 +200,7 @@ public:
 	  * \endcode
 	  *
 	  */
-	TaskInfo get_info(const arg::DeviceThreadId id);
+	TaskInfo get_info(u32 id);
 
 #if !defined __link
 	static TaskInfo get_info();
@@ -209,7 +208,7 @@ public:
 
 	/*! \cond */
 	TaskAttributes get_attributes(
-			const arg::DeviceThreadId id
+			u32 id
 			){
 		return get_info(id);
 	}
@@ -218,9 +217,9 @@ public:
 	/*! \details Prints info for all enabled tasks. */
 	void print(int pid = -1);
 
-	int get_pid(const var::ConstString & name);
+	int get_pid(const var::String & name);
 
-	bool is_pid_running(const arg::Pid pid);
+	bool is_pid_running(Sched::ProcessId pid);
 
 	void initialize();
 	void finalize();

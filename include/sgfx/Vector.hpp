@@ -112,7 +112,7 @@ public:
 	bool is_valid() const { return m_path.icon.count > 0; }
 
 	VectorPath & operator << (const var::Vector<sg_vector_path_description_t> & vector){
-		m_path.icon.list = vector.to<sg_vector_path_description_t>();
+		m_path.icon.list = vector.data();
 		m_path.icon.count = vector.count();
 		return *this;
 	}

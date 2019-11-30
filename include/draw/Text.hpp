@@ -21,12 +21,12 @@ namespace draw {
 class Text : public Drawing {
 public:
 	/*! \details Construct a label with text */
-	Text(const var::ConstString & text = "");
+	Text(const var::String & text = "");
 
 	/*! \details Draw the scaled text as specified by \a attr */
 	virtual void draw_to_scale(const DrawingScaledAttr & attr);
 
-	Text & set_string(const var::ConstString & value){
+	Text & set_string(const var::String & value){
 		m_string = value;
 		return *this;
 	}
@@ -74,7 +74,7 @@ public:
 
 protected:
 	/*! \cond */
-	const var::ConstString & string() const { return m_string; }
+	const var::String & string() const { return m_string; }
 	const sgfx::Font * resolve_font(sg_size_t h) const;
 
 private:

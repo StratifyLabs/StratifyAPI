@@ -4,7 +4,7 @@
 #define SAPI_CALC_BASE64_HPP_
 
 #include "../api/CalcObject.hpp"
-#include "../var/String.hpp"
+#include "../var/Reference.hpp"
 #include "../fs/File.hpp"
 
 namespace calc {
@@ -33,7 +33,7 @@ namespace calc {
  *
  * \code
  * //md2code:main
- * Data data_to_encode(arg::Size(128));
+ * Data data_to_encode(128);
  * data_to_encode.fill<u8>(32);
  *
  * String encoded_string = Base64::encode(
@@ -42,9 +42,7 @@ namespace calc {
  *
  * //You can then decode the data using this code snippet:
  *
- * Data original_data = Base64::decode(
- *   arg::Base64EncodedString(encoded_string)
- * );
+ * Data original_data = Base64::decode(encoded_string);
  *
  * if( original_data == data_to_encode ){
  *   printf("It works!\n");
@@ -55,13 +53,23 @@ namespace calc {
 class Base64 : public api::InfoObject {
 public:
 
+	using SourceReference = var::Reference::Source;
+	using DestinationReference = var::Reference::Destination;
+
+	using SourceString = var::String::Source;
+	using DestinationString = var::String::Destination;
+
+	using Size = var::Reference::Size;
+	using SourceFile = fs::File::Source;
+	using DestinationFile = fs::File::Destination;
+
 	/*! \details Encodes data to the base64 format.
 	 *
 	 * @return Number of bytes in the encoded string
 	 *
 	 * ```
 	 * //md2code:main
-	 *	Data raw_data(arg::Size(64)); //raw binary data that needs to be encoded
+	 *	Data raw_data(64); //raw binary data that needs to be encoded
 	 *	raw_data.fill<u8>(0xaa);
 	 *	String result = Base64::encode(arg::SourceData(raw_data));
 	 *	printf("Encoded string is '%s'\n", result.cstring());
@@ -69,39 +77,14 @@ public:
 	 *
 	 */
 	static var::String encode(
-			const arg::ImplicitSourceData input
+			const var::Reference input
 			);
 
-
-	/*! \details Encodes a string to base 64.
-	 */
-	static var::String encode(
-			const var::String & input
-			){
-		return encode(
-					arg::SourceData(
-						var::DataReference(
-							arg::ReadOnlyBuffer(input.cstring()),
-							arg::Size(input.length())
-							)
-						)
-					);
-	}
-
-	/*! \details Encodes a c-style string to base 64.
-	 */
-	static var::String encode(
-			const var::ConstString & input
-			){
-		return encode(
-					arg::SourceData(
-						var::DataReference(
-							arg::ReadOnlyBuffer(input.cstring()),
-							arg::Size(input.length())
-							)
-						)
-					);
-	}
+	static int encode(
+			SourceFile source,
+			DestinationFile destination,
+			Size size
+			);
 
 
 	/*! \details Reads binary data from *input* and writes a Base64
@@ -120,13 +103,13 @@ public:
 	 *	File destination;
 	 *
 	 *	source.open(
-	 *   arg::FilePath("/home/raw_data.dat"),
+	 *   "/home/raw_data.dat",
 	 *   OpenFlags::read_only()
 	 *   );
 	 *
 	 *	destination.create(
-	 *   arg::DestinationFilePath("/home/base64_encoded.txt"),
-	 *   arg::IsOverwrite(true)
+	 *   "/home/base64_encoded.txt",
+	 *   File::IsOverwrite(true)
 	 *   );
 	 *
 	 *	Base64::encode(
@@ -139,9 +122,9 @@ public:
 	 *
 	 */
 	static int encode(
-			const arg::SourceFile source,
-			const arg::DestinationFile destination,
-			const arg::Size size = arg::Size(0)
+			const var::Reference & source,
+			var::String & destination,
+			const Size size = Size(0)
 			);
 
 	/*! \details Decodes base64 encoded data.
@@ -160,7 +143,7 @@ public:
 	 *
 	 */
 	static var::Data decode(
-			const arg::ImplicitBase64EncodedString input
+			const var::String & input
 			);
 
 	/*! \details Reads base64 encoded data from *input* and writes raw,
@@ -175,9 +158,9 @@ public:
 	 *
 	 */
 	static int decode(
-			const arg::SourceFile input,
-			const arg::DestinationFile output,
-			const arg::Size size = arg::Size(0)
+			SourceFile input,
+			DestinationFile output,
+			Size size = Size(0)
 			);
 
 

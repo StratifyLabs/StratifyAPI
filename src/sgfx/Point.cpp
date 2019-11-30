@@ -10,27 +10,27 @@ Point Point::operator*(float f) const {
 	x = f * this->x();
 	y = f * this->y();
 	return Point(
-				arg::XValue(rintf(x)),
-				arg::YValue(rintf(y))
+				X(rintf(x)),
+				Y(rintf(y))
 				);
 }
 
-Point & Point::operator+=(const arg::XValue x){
+Point & Point::operator+=(const X x){
 	*this = *this + x;
 	return *this;
 }
 
-Point & Point::operator+=(const arg::YValue y){
+Point & Point::operator+=(const Y y){
 	*this = *this + y;
 	return *this;
 }
 
-Point & Point::operator-=(const arg::XValue x){
+Point & Point::operator-=(const X x){
 	*this = *this - x;
 	return *this;
 }
 
-Point & Point::operator-=(const arg::YValue y){
+Point & Point::operator-=(const Y y){
 	*this = *this - y;
 	return *this;
 }
@@ -41,13 +41,13 @@ Point Point::operator+(const Point & a) const{
 	return p;
 }
 
-Point Point::operator+(const arg::XValue x) const {
+Point Point::operator+(const X x) const {
 	Point p(*this);
 	api()->point_shift(&p.point(), sg_point(x.argument(),0));
 	return p;
 }
 
-Point Point::operator+(const arg::YValue y) const {
+Point Point::operator+(const Y y) const {
 	Point p(*this);
 	api()->point_shift(&p.point(), sg_point(0,y.argument()));
 	return p;
@@ -60,7 +60,7 @@ Point Point::operator-(const Point & a) const {
 	return p;
 }
 
-Point Point::operator-(const arg::XValue x) const{
+Point Point::operator-(const X x) const{
 	Point p(*this);
 	sg_point_t point;
 	point.x = x.argument();
@@ -69,7 +69,7 @@ Point Point::operator-(const arg::XValue x) const{
 	return p;
 }
 
-Point Point::operator-(const arg::YValue y) const {
+Point Point::operator-(const Y y) const {
 	Point p(*this);
 	sg_point_t point;
 	point.x = 0;

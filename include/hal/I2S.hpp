@@ -230,8 +230,8 @@ public:
 		action.handler.callback = callback;
 		action.handler.context = context;
 		return ioctl(
-					arg::IoRequest(I_MCU_SETACTION),
-					arg::IoArgument(&action)
+					IoRequest(I_MCU_SETACTION),
+					IoArgument(&action)
 					);
 	}
 

@@ -18,7 +18,7 @@ void IconTab::draw(const draw::DrawingAttr & attr){
 
 	icon_draw_attr = attr;
 	icon_draw_attr.set_point(p);
-	icon_draw_attr.set_dim(d);
+	icon_draw_attr.set_area(d);
 
 	icon().draw(icon_draw_attr);
 }

@@ -61,24 +61,25 @@ public:
 			int size
 			);
 
-	template<typename T> static T calculate_zero_sum(const var::DataReference & data){
+	template<typename T> static T calculate_zero_sum(const var::Reference & data){
 		u32 i;
 		T sum = 0;
-		int count = data.count<T>() - 1;
+		int count = data.size()/sizeof(T) - 1;
 		for(i=0; i < count; i++){
-			sum += data.at<T>(i);
+			sum += data.to<const T>()[i];
 		}
 		return (0 - sum);
 	}
 
 	template<typename T> static T verify_zero_sum(
-			const var::DataReference & data
+			const var::Reference & data
 			){
 		int i;
 		T sum = 0;
-		int count = data.count<T>();
+		int count = data.size()/sizeof(T);
+		const T * p = (const T*)data.to_const_void();
 		for(i=0; i < count; i++){
-			sum += data.at<T>(i);
+			sum += data.to<const T>()[i];
 		}
 
 		return (sum == 0);

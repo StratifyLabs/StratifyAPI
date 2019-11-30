@@ -50,6 +50,9 @@ namespace sys {
 class Sched : public api::InfoObject {
 public:
 
+	using ProcessId = arg::Argument<u32, struct SchedProcessIdTag>;
+	using Priority = arg::Argument<u32, struct SchedPriorityTag>;
+
 	enum policy {
 #if defined __win32
 		RR, FIFO, OTHER
@@ -72,7 +75,7 @@ public:
 	/*! \details Gets the min priority for the specified policy. */
 	static int get_priority_min(enum policy value);
 	/*! \details Gets the max priority for the specified policy. */
-	static int get_priority(const arg::Pid pid);
+	static int get_priority(ProcessId pid);
 
 	/*! \details Gets the current proccess ID (equivalent to getpid()). */
 	static pid_t get_pid(){ return getpid(); }
@@ -82,7 +85,7 @@ public:
 	 * @param pid  The process ID
 	 * @return The RR interval in microseconds
 	 */
-	static int get_rr_interval(const arg::Pid pid);
+	static int get_rr_interval(ProcessId pid);
 
 	/*! \details Sets the scheduler with the given parameters.
 	 *
@@ -92,9 +95,9 @@ public:
 	 * @return Zero on success of -1 with errno set
 	 */
 	static int set_scheduler(
-			const arg::Pid pid,
+			ProcessId pid,
 			enum policy value,
-			const arg::SchedulerPriority priority
+			Priority priority
 			);
 
 };

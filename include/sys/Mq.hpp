@@ -82,7 +82,7 @@ public:
 	 * @return Less than zero for an error (use perror())
 	 */
 	int open(
-			const var::ConstString & name,
+			const var::String & name,
 			int oflag,
 			const fs::Permissions & permissions,
 			const struct mq_attr * attr = 0
@@ -98,7 +98,7 @@ public:
 	 * @param msgsize Message size
 	 * @return Less than zero for an error (use perror())
 	 */
-	int create(const var::ConstString & name,
+	int create(const var::String & name,
 			int oflag,
 			const fs::Permissions & permissions,
 			long flags,

@@ -5,7 +5,7 @@
 #include "chrono.hpp"
 using namespace sys;
 
-Thread::Thread(const arg::ThreadStackSize & stacksize, const arg::IsDetached detached) {
+Thread::Thread(StackSize stacksize, IsDetached detached) {
 	init(stacksize.argument(), detached.argument());
 }
 
@@ -78,7 +78,7 @@ int Thread::set_detachstate(detach_state value){
 }
 
 int Thread::set_priority(
-		const arg::SchedulerPriority prio,
+		Sched::Priority prio,
 		enum Sched::policy policy
 		){
 	struct sched_param param;
@@ -119,9 +119,10 @@ int Thread::get_policy() const {
 	return policy;
 }
 
-int Thread::create(arg::ThreadFunction func,
-		arg::ThreadFunctionArgument args,
-		const arg::SchedulerPriority prio,
+int Thread::create(
+		Function func,
+		FunctionArgument args,
+		Sched::Priority prio,
 		enum Sched::policy policy
 		){
 	if( reset() < 0 ){
@@ -146,11 +147,12 @@ int Thread::create(arg::ThreadFunction func,
 
 	//First create the thread
 	return set_error_number_if_error(
-				pthread_create(&m_id,
-									&m_pthread_attr,
-									func.argument(),
-									args.argument()
-									)
+				pthread_create(
+					&m_id,
+					&m_pthread_attr,
+					func.argument(),
+					args.argument()
+					)
 				);
 }
 
@@ -163,8 +165,8 @@ bool Thread::is_running() const {
 }
 
 int Thread::wait(
-		arg::ThreadReturn ret,
-		const arg::DelayInterval interval
+		Return ret,
+		DelayInterval interval
 		) const {
 
 	void * dummy;
@@ -176,7 +178,7 @@ int Thread::wait(
 			if( ret.argument() != 0 ){
 				join(ret);
 			} else {
-				join(arg::ThreadReturn(&dummy));
+				join(Return(&dummy));
 			}
 		} else {
 			//just keep sampling until the thread completes
@@ -208,10 +210,9 @@ int Thread::reset(){
 	return -1;
 }
 
-int Thread::join(
-		const arg::ThreadId ident,
-		arg::ThreadReturn value_ptr
-		){
+int Thread::join(Id id_to_join,
+					  Return value_ptr
+					  ){
 	void * tmp_ptr;
 	void ** ptr;
 	if( value_ptr.argument() == 0 ){
@@ -219,7 +220,7 @@ int Thread::join(
 	} else {
 		ptr = value_ptr.argument();
 	}
-	return pthread_join(ident.argument(), ptr);
+	return pthread_join(id_to_join.argument(), ptr);
 }
 
 bool Thread::is_joinable() const{
@@ -227,7 +228,7 @@ bool Thread::is_joinable() const{
 	return detach_state == JOINABLE;
 }
 
-int Thread::join(arg::ThreadReturn value_ptr) const {
+int Thread::join(Return value_ptr) const {
 	void * tmp_ptr;
 	void ** ptr;
 	if( value_ptr.argument() == 0 ){

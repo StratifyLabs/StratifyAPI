@@ -14,8 +14,13 @@ namespace fmt {
 class Bmp: public fs::File {
 public:
 
+	using Width = arg::Argument< u32, struct BmpWidthTag > ;
+	using Height = arg::Argument< u32, struct BmpHeihtTag > ;
+	using BitsPerPixel = arg::Argument< u16, struct BmpBitsPerPixelTag >;
+	using PlaneCount = arg::Argument< u16, struct BmpPlaneCountTag >;
+
 	/*! \details Constructs a new bitmap object and opens the bitmap as a read-only file. */
-	Bmp(const arg::SourceFilePath name);
+	Bmp(const var::String & name);
 
 	/*! \details Constructs an empty bitmap object. */
 	Bmp();
@@ -33,30 +38,30 @@ public:
 	unsigned int calc_row_size() const;
 
 	/*! \details Opens the specified bitmap as readonly. */
-	int open_readonly(const arg::SourceFilePath name);
+	int open_readonly(const var::String & name);
 
 	/*! \details Opens the specified bitmap as read write. */
-	int open_readwrite(const arg::SourceFilePath name);
+	int open_readwrite(const var::String & name);
 
 	/*! \details Opens the specified bitmap with the specified access (e.g., Bmp::READONLY). */
 	int open(
-			const arg::FilePath name,
+			const var::String & name,
 			const fs::OpenFlags & flags
 			);
 
 	/*! \details Creates a new bitmap using the specified parameters. */
 	int create(
-			const arg::DestinationFilePath name,
-			const arg::Width width,
-			const arg::Height height,
-			const arg::PlaneCount planes,
-			const arg::BitsPerPixel bits_per_pixel);
+			const var::String & name,
+			Width width,
+			Height height,
+			PlaneCount planes,
+			BitsPerPixel bits_per_pixel);
 
 	/*! \details Creates a new bitmap and save it to the /app filesystem (flash memory). */
-	static int create_appfs(const var::ConstString & name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, u32 nbyte);
+	static int create_appfs(const var::String & name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, u32 nbyte);
 
 	/*! \details Moves file pointer to the start of the bitmap data. */
-	void rewind(){ seek(arg::Location(m_offset)); }
+	void rewind(){ seek(Location(m_offset)); }
 
 	/*! \details Seeks the file to the data at the specified row. */
 	int seek_row(s32 y) const;
