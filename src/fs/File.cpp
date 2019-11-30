@@ -78,8 +78,8 @@ int File::copy(
 	File source;
 	File dest;
 
-	LINK_SET_DRIVER(source, LinkDriver(source_driver.argument()));
-	LINK_SET_DRIVER(dest, LinkDriver(destination_driver.argument()));
+	LINK_SET_DRIVER(source, source_driver.argument());
+	LINK_SET_DRIVER(dest, destination_driver.argument());
 
 	if( source.open(
 			 source_path.argument(),
@@ -109,8 +109,8 @@ int File::copy(
 	File source;
 	File dest;
 
-	LINK_SET_DRIVER(source, LinkDriver(source_driver.argument()));
-	LINK_SET_DRIVER(dest, LinkDriver(destination_driver.argument()));
+	LINK_SET_DRIVER(source, source_driver.argument());
+	LINK_SET_DRIVER(dest, destination_driver.argument());
 
 	if( source.open(
 			 source_path.argument(),
@@ -210,7 +210,7 @@ bool File::exists(
 
 	File f;
 
-	LINK_SET_DRIVER(f, link_driver);
+	LINK_SET_DRIVER(f, link_driver.argument());
 
 	if( f.open(
 			 path,
@@ -232,6 +232,20 @@ Stat File::get_info(
 			#if defined __link
 				, link_driver
 			#endif
+				);
+	return Stat(stat);
+}
+
+Stat File::get_info(
+		Descriptor fd
+		SAPI_LINK_DRIVER_LAST
+		){
+	struct SAPI_LINK_STAT stat;
+	memset(&stat, 0, sizeof(stat));
+	link_fstat(
+				link_driver.argument(),
+				fd.argument(),
+				&stat
 				);
 	return Stat(stat);
 }
@@ -341,9 +355,9 @@ int File::read(
 }
 
 int File::write(Location location,
-		const void * buf,
-		Size size
-		) const {
+					 const void * buf,
+					 Size size
+					 ) const {
 	int result = seek(location);
 	if( result < 0 ){ return result; }
 	return write(

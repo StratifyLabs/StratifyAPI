@@ -479,7 +479,7 @@ public:
 	 *
 	 * //download file to data_file and print the progress using #'s
 	 * http_client.get(
-	 *   arg::UrlEncodedString("http://some.url/file"),
+	 *   arg::const var::String &("http://some.url/file"),
 	 *   arg::DestinationFile(data_file),
 	 *   p.progress_callback()
 	 *   );

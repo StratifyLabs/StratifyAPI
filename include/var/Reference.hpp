@@ -117,6 +117,8 @@ public:
 					);
 	}
 
+	var::String to_string() const;
+
 
 	template<typename T> Reference(const Vector<T> & vector){
 		set_reference(

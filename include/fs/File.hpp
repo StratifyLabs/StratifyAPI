@@ -101,8 +101,8 @@ public:
 	using Source = arg::Argument<const File &, struct FileSourceTag>;
 	using Destination = arg::Argument<File &, struct FileDestinationTag>;
 
+	using Path = arg::Argument<const var::String &, struct FilePathTag>;
 	using SourcePath = arg::Argument<const var::String &, struct FileSourcePathTag>;
-	using ImplicitSourcePath = arg::ImplicitArgument<const var::String &, struct FileSourcePathTag, SourcePath>;
 	using DestinationPath = arg::Argument<const var::String &, struct FileDestinationPathTag>;
 	using IsOverwrite = arg::Argument<bool, struct FileIsOverwriteTag>;
 
@@ -534,8 +534,11 @@ public:
 	}
 
 	void set_driver(
-			LinkDriver driver
-			){ m_driver = driver.argument(); }
+			link_transport_mdriver_t * driver
+			){
+		m_driver = driver;
+	}
+
 	link_transport_mdriver_t * driver() const { return m_driver; }
 	static link_transport_mdriver_t * default_driver(){ return m_default_driver; }
 

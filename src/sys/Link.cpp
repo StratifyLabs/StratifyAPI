@@ -1760,9 +1760,8 @@ int Link::update_binary_install_options(
 	return attributes.apply(file);
 }
 
-int Link::install_app(
-		const fs::File & application_image,
-		DestinationPath path,
+int Link::install_app(const fs::File & application_image,
+		Path path,
 		ApplicationName name,
 		const ProgressCallback * progress_callback
 		){

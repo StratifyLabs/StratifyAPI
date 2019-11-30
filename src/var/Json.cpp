@@ -413,8 +413,7 @@ JsonFalse::JsonFalse(){
 	m_value = create();
 }
 
-JsonValue JsonDocument::load(
-		const fs::File::SourcePath path
+JsonValue JsonDocument::load(const fs::File::Path path
 		){
 	JsonValue value;
 	value.m_value = JsonValue::api()->load_file(
@@ -467,7 +466,7 @@ JsonValue JsonDocument::load(
 
 int JsonDocument::save(
 		const JsonValue & value,
-		fs::File::DestinationPath path
+		fs::File::Path path
 		) const {
 	fs::File f;
 	int result;

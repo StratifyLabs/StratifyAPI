@@ -7,7 +7,7 @@ TaskManager::TaskManager(
 		SAPI_LINK_DRIVER
 		){
 #if defined __link
-	m_sys_device.set_driver(link_driver);
+	m_sys_device.set_driver(link_driver.argument());
 #endif
 	m_id = 0;
 }

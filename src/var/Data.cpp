@@ -40,6 +40,8 @@ int Data::free(){
 	return 0;
 }
 
+Data::Data(){}
+
 Data::Data(size_t size){
 	allocate(size);
 }

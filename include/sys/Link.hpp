@@ -75,6 +75,7 @@ class Link {
 public:
 
 
+	using Path = fs::File::Path;
 	using SourcePath = fs::File::SourcePath;
 	using DestinationPath = fs::File::DestinationPath;
 	using ApplicationName = arg::Argument<const var::String &, struct ApplicationNameTag>;
@@ -646,7 +647,7 @@ public:
 	  */
 	int install_app(
 			const fs::File & application_image,
-			DestinationPath path,
+			Path path,
 			ApplicationName name,
 			const ProgressCallback * progress_callback = 0
 			);

@@ -456,7 +456,7 @@ public:
 	  * \return Zero on success
 	  */
 	JsonValue load(
-			const fs::File::SourcePath path
+			const fs::File::Path path
 			);
 
 	/*!
@@ -489,7 +489,7 @@ public:
 			);
 
 	int save(const var::JsonValue & value,
-				fs::File::DestinationPath path
+				fs::File::Path path
 				) const;
 
 	var::String to_string(

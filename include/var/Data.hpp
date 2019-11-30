@@ -254,14 +254,6 @@ public:
 	 */
 	Data(size_t size);
 
-	/*! \details Deconstructs a Data object.
-	 *
-	 * This method will free any data that was allocated dynamically by this object.
-	 *
-	 *
-	 */
-	virtual ~Data();
-
 	/*! \details Returns the minimum data storage size of any Data object. */
 	static u32 minimum_capacity();
 	/*! \cond */
@@ -354,7 +346,6 @@ public:
 
 	/*! \cond */
 	int copy_data(const void * buffer, u32 size);
-	int copy_cstring(const char * str);
 	/*! \endcond */
 
 	/*!

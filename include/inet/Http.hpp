@@ -13,6 +13,11 @@ namespace inet {
 
 class Http : public api::WorkObject {
 public:
+
+	using RequestFile = arg::Argument<const fs::File &, struct HttpClientSendRequestTag>;
+	using ResponseFile = arg::Argument<const fs::File &, struct HttpClientGetResponseTag>;
+	using UrlEncodedString = arg::Argument<const var::String &, struct HttpClientGetResponseUrlEncodedStringTag>;
+
 	Http(Socket & socket);
 
 protected:
@@ -64,11 +69,6 @@ public:
  */
 class HttpClient : public Http {
 public:
-
-
-	using SendRequest = arg::Argument<const fs::File &, struct HttpClientSendRequestTag>;
-	using GetResponse = arg::Argument<fs::File &, struct HttpClientGetResponseTag>;
-	using UrlEncodedString = arg::Argument< const var::String &, struct HttpUrlEncodedStringTag >;
 
 	/*! \details Constructs a new HttpClient object.
 	 *
@@ -123,58 +123,58 @@ public:
 	 */
 	int get(
 			UrlEncodedString url,
-			GetResponse response,
+			ResponseFile response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int post(
 			UrlEncodedString url,
 			const var::String & request,
-			GetResponse response,
+			ResponseFile response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int post(
 			UrlEncodedString url,
-			SendRequest request,
-			GetResponse response,
+			RequestFile request,
+			ResponseFile response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int put(
 			UrlEncodedString url,
 			const var::String & request,
-			GetResponse response,
+			ResponseFile response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int put(
 			UrlEncodedString url,
-			SendRequest request,
-			GetResponse response,
+			RequestFile request,
+			ResponseFile response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int patch(
 			UrlEncodedString url,
 			const var::String & request,
-			GetResponse response,
+			ResponseFile response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int patch(
 			UrlEncodedString url,
-			SendRequest request,
-			GetResponse response,
+			RequestFile request,
+			ResponseFile response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	//http delete
 	/*! \cond */
-	int remove(UrlEncodedString url, const var::String & data);
-	int options(UrlEncodedString url);
-	int trace(UrlEncodedString url);
-	int connect(UrlEncodedString url);
+	int remove(const var::String & url, const var::String & data);
+	int options(const var::String & url);
+	int trace(const var::String & url);
+	int connect(const var::String & url);
 	/*! \endcond */
 
 	/*! \details List of values for error_number() when using the HttpClient class. */
@@ -252,7 +252,7 @@ private:
 	/*! \cond */
 
 	using SendFile = arg::Argument<const fs::File *, struct HttpClientSendFile>;
-	using GetFile = arg::Argument<fs::File *, struct HttpClientSendFile>;
+	using GetFile = arg::Argument<const fs::File *, struct HttpClientSendFile>;
 
 	SocketAddress m_address;
 	var::String m_transfer_encoding;
@@ -298,7 +298,7 @@ private:
 
 	int listen_for_header();
 	int listen_for_data(
-			fs::File & data,
+			const fs::File & data,
 			const sys::ProgressCallback * progress_callback
 			);
 	/*! \endcond */

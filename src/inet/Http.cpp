@@ -24,11 +24,10 @@ HttpClient::HttpClient(Socket & socket) : Http(socket){
 	m_transfer_encoding = "";
 }
 
-int HttpClient::get(
-		UrlEncodedString url,
-		GetResponse response,
-		const sys::ProgressCallback * progress_callback
-		){
+int HttpClient::get(UrlEncodedString url,
+						  ResponseFile response,
+						  const sys::ProgressCallback * progress_callback
+						  ){
 	return query(
 				"GET",
 				url,
@@ -38,17 +37,16 @@ int HttpClient::get(
 				);
 }
 
-int HttpClient::post(
-		UrlEncodedString url,
-		const var::String & request,
-		GetResponse response,
-		const sys::ProgressCallback * progress_callback
-		){
+int HttpClient::post(UrlEncodedString url,
+							const var::String & request,
+							ResponseFile response,
+							const sys::ProgressCallback * progress_callback
+							){
 	DataFile request_file;
-	request_file.data().copy_cstring(request.cstring());
+	request_file.data().copy_contents(request);
 	return post(
 				url,
-				SendRequest(request_file),
+				RequestFile(request_file),
 				response,
 				progress_callback
 				);
@@ -56,42 +54,40 @@ int HttpClient::post(
 
 int HttpClient::post(
 		UrlEncodedString url,
-		SendRequest request,
-		GetResponse response,
-		const sys::ProgressCallback * progress_callback
-		){
+							RequestFile request,
+							ResponseFile response,
+							const sys::ProgressCallback * progress_callback
+							){
 	return query(
 				"POST",
 				url,
 				SendFile(&request.argument()),
 				GetFile(&response.argument()),
 				progress_callback
-						  );
+				);
 }
 
-int HttpClient::put(
-		UrlEncodedString url,
-		const var::String & request,
-		GetResponse response,
-		const sys::ProgressCallback * progress_callback){
+int HttpClient::put(UrlEncodedString url,
+						  const var::String & request,
+						  ResponseFile response,
+						  const sys::ProgressCallback * progress_callback){
 	DataFile request_file;
 
-	request_file.data().copy_cstring(request.cstring());
+	request_file.data().copy_contents(request);
 
 	return put(
 				url,
-				SendRequest(request_file),
+				RequestFile(request_file),
 				response,
 				progress_callback
 				);
 }
 
-int HttpClient::put(
-		UrlEncodedString url,
-		SendRequest request,
-		GetResponse response,
-		const sys::ProgressCallback * progress_callback
-		){
+int HttpClient::put(UrlEncodedString url,
+						  RequestFile request,
+						  ResponseFile response,
+						  const sys::ProgressCallback * progress_callback
+						  ){
 	return query(
 				"PUT",
 				url,
@@ -101,21 +97,20 @@ int HttpClient::put(
 				);
 }
 
-int HttpClient::patch(
-		UrlEncodedString url,
-		const var::String & request,
-		GetResponse response,
-		const sys::ProgressCallback * progress_callback){
+int HttpClient::patch(UrlEncodedString url,
+							 const var::String & request,
+							 ResponseFile response,
+							 const sys::ProgressCallback * progress_callback){
 	DataFile request_file;
-	request_file.data().copy_cstring(request.cstring());
+	request_file.data().copy_contents(request);
 	return patch(
 				url,
-				SendRequest(request_file),
+				RequestFile(request_file),
 				response,
 				progress_callback);
 }
 
-int HttpClient::patch(UrlEncodedString url, SendRequest data, GetResponse response, const sys::ProgressCallback * progress_callback){
+int HttpClient::patch(UrlEncodedString url, RequestFile data, ResponseFile response, const sys::ProgressCallback * progress_callback){
 	return query(
 				"PATCH",
 				url,
@@ -124,21 +119,21 @@ int HttpClient::patch(UrlEncodedString url, SendRequest data, GetResponse respon
 				progress_callback);
 }
 
-int HttpClient::head(
-		UrlEncodedString url){
+int HttpClient::head(UrlEncodedString url){
 
 	return 0;
 }
 
 int HttpClient::remove(
-		UrlEncodedString url,
+		const var::String & url,
 		const var::String & data){
 
 	return 0;
 }
 
 
-int HttpClient::query(const var::String & command,
+int HttpClient::query(
+		const var::String & command,
 		UrlEncodedString url,
 		SendFile send_file,
 		GetFile get_file,
@@ -230,13 +225,15 @@ int HttpClient::query(const var::String & command,
 			String key = header_response_pairs().at(i).key();
 			key.to_lower();
 			if( key == "location" ){
-				return query(command,
-								 UrlEncodedString(
-									 header_response_pairs().at(i).value()
-									 ),
-								 send_file,
-								 get_file,
-								 progress_callback);
+				return query(
+							command,
+							UrlEncodedString(
+								header_response_pairs().at(i).value()
+								),
+							send_file,
+							get_file,
+							progress_callback
+							);
 			}
 		}
 
@@ -454,7 +451,7 @@ int HttpClient::listen_for_header(){
 }
 
 int HttpClient::listen_for_data(
-		fs::File & destination,
+		const fs::File & destination,
 		const sys::ProgressCallback * progress_callback
 		){
 	if( m_transfer_encoding == "CHUNKED" ){

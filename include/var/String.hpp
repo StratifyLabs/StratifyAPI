@@ -14,6 +14,8 @@
 
 namespace var {
 
+class Reference;
+
 /*! \brief String class
  * \details This is an embedded friendly string class.  It is similar
  * to the C++ string type but is built on var::Data and
@@ -116,14 +118,15 @@ public:
 
 	String(const char * s) : m_string(s){}
 	String(const String & s) : m_string(s.m_string){}
-	String(const char * s, u32 n) : m_string(s,n){}
-	String(u32 n, char c) : m_string(n,c){}
+	String(const char * s, size_t n) : m_string(s,n){}
+	String(size_t n, char c) : m_string(n,c){}
 	String(String && s) noexcept : m_string(s.m_string){}
 	String (std::initializer_list<char> il) : m_string(il){}
 	String& operator=(const char * s){ m_string = s; return *this; }
 	String& operator=(const String & s){ m_string = s.string(); return *this; }
 	String& operator=(char c){ m_string = c; return *this; }
 
+	explicit String(const Reference & reference);
 
 	/*! \details Appends a character to this string. */
 	String& operator+=(char a){
@@ -156,7 +159,7 @@ public:
 	  * //to append numbers (or any printf() compatible formatting)
 	  * str1.clear();
 	  * str1 << "String data is at 0x" << String().format("%p", str1.data());
-	  * u32 value = 0xaa55;
+	  * size_t value = 0xaa55;
 	  *
 	  * str1.clear();
 	  * str1 << "Value is HEX 0x" << String().format("%08lX", value); //with leading zero, uppercase hex
@@ -224,8 +227,29 @@ public:
 	  */
 	String& insert(
 			Position position,
-			ToInsert string_to_insert
-			);
+			const String & string_to_insert
+			){
+		m_string.insert(
+					position.argument(),
+					string_to_insert.string()
+					);
+		return *this;
+	}
+
+	String& insert(
+			Position position,
+			const String & string_to_insert,
+			SubPosition sub_position,
+			SubLength sub_length
+			){
+		m_string.insert(
+					position.argument(),
+					string_to_insert.string(),
+					sub_position.argument(),
+					sub_length.argument()
+					);
+		return *this;
+	}
 
 	/*! \details Erases a portion of the string starting with the character at \a pos.
 	  *
@@ -237,7 +261,13 @@ public:
 	String& erase(
 			Position position,
 			Length length = Length(npos)
-			);
+			){
+		m_string.erase(
+					position.argument(),
+					length.argument()
+					);
+		return *this;
+	}
 
 	String& erase(const String & string_to_erase,
 					  Position position = Position(0),
@@ -425,7 +455,7 @@ public:
 	}
 
 	/*! \details Finds a character within this string. */
-	u32 find(
+	size_t find(
 			char character_to_find /*! Character to find */,
 			Position position = Position(0) /*! Start position */
 			) const {
@@ -441,7 +471,7 @@ public:
 	  * @param position The position to start searching (default is beginning)
 	  * @return The position of the string or var::String::npos if the String was not found
 	  */
-	u32 find(
+	size_t find(
 			const String & string_to_find,
 			Position position = Position(0)
 			) const {
@@ -461,7 +491,7 @@ public:
 	  * or npos if \a a was not found
 	  *
 	  */
-	u32 find(
+	size_t find(
 			const String & string_to_find,
 			Position position,
 			Length length
@@ -475,7 +505,7 @@ public:
 	}
 
 	/*! \details Finds the first character that is not as specified. */
-	u32 find_not(
+	size_t find_not(
 			char character_to_find,
 			Position position = Position(0)
 			) const {
@@ -487,7 +517,7 @@ public:
 	}
 
 	/*! \details Finds a string within the string searching from right to left. */
-	u32 rfind(
+	size_t rfind(
 			const String & string_to_find,
 			Position position = Position(0)
 			) const {
@@ -498,7 +528,7 @@ public:
 	}
 
 	/*! \details Finds a character within the string searching from right to left. */
-	u32 rfind(
+	size_t rfind(
 			char c,
 			Position position = Position(0)
 			) const {
@@ -509,7 +539,7 @@ public:
 	}
 
 	/*! \details Finds a string within the string searching from right to left. */
-	u32 rfind(
+	size_t rfind(
 			const String & string_to_find,
 			Position position,
 			Length length

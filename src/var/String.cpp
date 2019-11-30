@@ -17,6 +17,13 @@ String::String(){
 }
 
 
+String::String(const Reference & reference){
+	m_string.assign(
+				reference.to_const_char(),
+				reference.size()
+				);
+}
+
 String & String::format(const char * format, ...){
 	va_list args;
 	va_start(args, format);
@@ -81,7 +88,7 @@ String& String::replace(
 	while( ((pos = find(old_string.argument(), Position(pos))) != String::npos) &&
 			 (length.argument() ? replaced_count < length.argument() : 1) ){
 		erase(Position(pos), Length(old_length));
-		insert(Position(pos), new_string);
+		insert(Position(pos), new_string.argument());
 		pos += new_length;
 		replaced_count++;
 	}
