@@ -108,7 +108,6 @@ bool Cli::compare_with_prefix(
 		const var::String & argument
 		) const {
 	String with_prefix;
-	printf("%s():%d\n", __PRETTY_FUNCTION__, __LINE__);
 	if( argument.at(0) != '-' ){ return false; }
 	if( option == argument ){ return true; }
 	with_prefix << "--" << option;

@@ -147,7 +147,11 @@ void Printer::print_indentation(){
 	}
 }
 
-void Printer::vprint_indented(const var::String & key, const char * fmt, va_list list){
+void Printer::vprint_indented(
+		const var::String & key,
+		const char * fmt,
+		va_list list
+		){
 	print("\n");
 	print_indentation();
 
@@ -338,11 +342,11 @@ Printer & Printer::operator << (const var::Datum & a){
 }
 
 Printer & Printer::operator << (const var::String & a){
-	return key(0, a);
+	return key("", a);
 }
 
 Printer & Printer::operator << (const char * a){
-	return key(0, a);
+	return key("", a);
 }
 
 Printer & Printer::operator << (const var::Tokenizer & a){

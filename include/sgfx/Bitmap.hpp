@@ -119,17 +119,13 @@ public:
 
 	Bitmap(const Bitmap & bitmap) : var::Data(bitmap){
 		m_bmap = bitmap.m_bmap;
-		m_bmap.data = var::Reference(*this).to<sg_bmap_data_t>();
+		m_bmap.data = to<sg_bmap_data_t>();
 	}
 
 	Bitmap & operator = (const Bitmap & bitmap){
-		copy_contents(
-					var::Reference(
-						bitmap
-						)
-					);
+		copy_contents(bitmap);
 		m_bmap = bitmap.m_bmap;
-		m_bmap.data = var::Reference(*this).to<sg_bmap_data_t>();
+		m_bmap.data = to<sg_bmap_data_t>();
 		return *this;
 	}
 

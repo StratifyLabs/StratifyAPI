@@ -117,7 +117,7 @@ public:
 	}
 
 	String(const char * s) : m_string(s){}
-	String(const String & s) : m_string(s.m_string){}
+	String(const String & s) : m_string(s.string()){}
 	String(const char * s, size_t n) : m_string(s,n){}
 	String(size_t n, char c) : m_string(n,c){}
 	String(String && s) noexcept : m_string(s.m_string){}
@@ -338,12 +338,12 @@ public:
 
 	/*! \details Assigns a substring of \a a to this String. */
 	String & assign(
-			const ToAssign string_to_assign,
+			const String & string_to_assign,
 			SubPosition sub_position,
 			SubLength sub_length
 			){
 		m_string.assign(
-					string_to_assign.argument().string(),
+					string_to_assign.string(),
 					sub_position.argument(),
 					sub_length.argument()
 					);
@@ -370,11 +370,11 @@ public:
 	}
 
 	String & assign(
-			CharacterToAssign character_to_assign,
+			char character_to_assign,
 			Length length
 			){
 		m_string.assign(
-					character_to_assign.argument(),
+					character_to_assign,
 					length.argument()
 					);
 		return *this;
@@ -451,7 +451,7 @@ public:
 	}
 
 	char * to_char(){
-		return (char*)m_string.data();
+		return &m_string[0];
 	}
 
 	/*! \details Finds a character within this string. */

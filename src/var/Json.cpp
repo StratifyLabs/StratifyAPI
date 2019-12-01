@@ -485,10 +485,12 @@ int JsonDocument::save(
 		set_error_number(f.error_number());
 		return -1;
 	}
+
 	result = JsonValue::api()->dumpfd(
 				value.m_value,
 				f.fileno(),
 				flags());
+
 
 	if( f.close() < 0 ){
 		set_error_number(f.error_number());

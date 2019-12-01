@@ -46,6 +46,14 @@ Data::Data(size_t size){
 	allocate(size);
 }
 
+void Data::update_reference(){
+	set_reference(
+				ReadOnlyBuffer(data()),
+				ReadWriteBuffer(data()),
+				Size(m_data.size())
+				);
+}
+
 bool Data::is_reference() const {
 	if( size() > 0 && m_data.empty() ){
 		return true;
@@ -60,12 +68,7 @@ int Data::allocate(
 	MCU_UNUSED_ARGUMENT(is_resize);
 
 	m_data.resize(s);
-
-	set_reference(
-				ReadOnlyBuffer(data()),
-				ReadWriteBuffer(data()),
-				Size(m_data.size())
-				);
+	update_reference();
 
 	return 0;
 }

@@ -39,7 +39,8 @@ public:
 	virtual int shutdown(int how = 0) const;
 
 	using File::write;
-	virtual int write(const void * buf,
+	virtual int write(
+			const void * buf,
 			Size nbyte
 			) const;
 

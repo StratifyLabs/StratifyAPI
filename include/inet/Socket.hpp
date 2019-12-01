@@ -228,14 +228,12 @@ public:
 		m_type = 0;
 	}
 
-	bool is_valid(){
+	bool is_valid() const {
 		return m_sockaddr.size() > 0;
 	}
 
 	SocketAddress(const SocketAddressIpv4 & ipv4){
-		m_sockaddr.copy_contents(
-					var::Reference(ipv4.m_sockaddr_in)
-					);
+		m_sockaddr.copy_contents(ipv4.m_sockaddr_in);
 		m_protocol = ipv4.m_protocol;
 		m_type = ipv4.m_type;
 	}
@@ -251,17 +249,13 @@ public:
 	SocketAddress(const sockaddr_in & ipv4,
 					  int protocol = SocketAddressInfo::PROTOCOL_TCP,
 					  int type = SocketAddressInfo::TYPE_STREAM){
-		m_sockaddr.copy_contents(
-					var::Reference(ipv4)
-					);
+		m_sockaddr.copy_contents(ipv4);
 		m_protocol = protocol;
 		m_type = type;
 	}
 
 	SocketAddress(const sockaddr_in6 & ipv6){
-		m_sockaddr.copy_contents(
-						var::Reference(ipv6)
-					);
+		m_sockaddr.copy_contents(ipv6);
 	}
 
 	void set_port(u16 port);
@@ -271,8 +265,15 @@ public:
 	int type() const { return m_type; }
 	int protocol() const { return m_protocol; }
 
-	void set_protocol(enum SocketAddressInfo::protocol value){ m_protocol = value; }
-	void set_type(enum SocketAddressInfo::type value){ m_type = value; }
+	SocketAddress & set_protocol(enum SocketAddressInfo::protocol value){
+		m_protocol = value;
+		return *this;
+	}
+
+	SocketAddress & set_type(enum SocketAddressInfo::type value){
+		m_type = value;
+		return *this;
+	}
 
 	u16 family() const {
 		return m_sockaddr.to<const sockaddr>()->sa_family;
@@ -543,14 +544,14 @@ public:
 	//already documented in fs::File
 	using File::write;
 	virtual int write(
-			SourceBuffer buf,
+			const void * buf,
 			Size nbyte
 			) const;
 
 	//already documented in fs::File
 	using File::read;
 	virtual int read(
-			DestinationBuffer buf,
+			void * buf,
 			Size nbyte
 			) const;
 
@@ -567,13 +568,13 @@ public:
 			);
 
 	int read(
-			DestinationBuffer buf,
+			void * buf,
 			Size nbyte,
 			DestinationSocketAddress address
 			);
 
 	int read(
-			DestinationBuffer buf,
+			void * buf,
 			Size nbyte,
 			struct sockaddr * ai_addr,
 			socklen_t * ai_addrlen
@@ -592,17 +593,17 @@ public:
 			SourceSocketAddress address
 			){
 		return write(
-					SourceBuffer(data.to_const_void()),
+					data.to_const_void(),
 					Size(data.size()),
 					address);
 	}
 	int write(
-			SourceBuffer buf,
+			const void * buf,
 			Size nbyte,
 			const struct sockaddr * ai_addr,
 			socklen_t ai_addrlen) const;
 	int write(
-			SourceBuffer buf,
+			const void * buf,
 			Size nbyte,
 			SourceSocketAddress socket_address
 			) const {

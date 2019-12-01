@@ -7,6 +7,7 @@
 #include <cstdio>
 
 #include "sys/Trace.hpp"
+#include "var/Data.hpp"
 
 #if !defined __link
 #include <reent.h>
@@ -31,6 +32,22 @@ const int Reference::m_zero_value MCU_ALIGN(4) = 0;
 
 Reference::Reference(){
 	set_size_internally(0);
+}
+
+Reference::Reference(const Data & data){
+	set_reference(
+				ReadOnlyBuffer(data.read_data()),
+				ReadWriteBuffer(nullptr),
+				Size(data.size())
+				);
+}
+
+Reference::Reference(Data & data){
+	set_reference(
+				ReadOnlyBuffer(data.read_data()),
+				ReadWriteBuffer(data.write_data()),
+				Size(data.size())
+				);
 }
 
 void Reference::set_reference(
@@ -121,7 +138,7 @@ Reference::Reference(
 	refer_to(buffer, size);
 }
 
-void Reference::refer_to(
+Reference & Reference::refer_to(
 		ReadOnlyBuffer read_only_data,
 		Size size
 		){
@@ -129,9 +146,10 @@ void Reference::refer_to(
 				read_only_data,
 				ReadWriteBuffer(nullptr),
 				size);
+	return *this;
 }
 
-void Reference::refer_to(
+Reference & Reference::refer_to(
 		ReadWriteBuffer data,
 		Size size
 		){
@@ -139,6 +157,8 @@ void Reference::refer_to(
 				ReadOnlyBuffer(data.argument()),
 				data,
 				size);
+	return *this;
+
 }
 
 

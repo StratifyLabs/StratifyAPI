@@ -19,6 +19,9 @@
 
 namespace var {
 
+
+class Data;
+
 /*! \brief Reference Class
  * \details The Reference class
  * is for referring to data. The data has a
@@ -101,6 +104,17 @@ public:
 	 */
 	Reference();
 
+	Reference(const char * cstring){
+		set_reference(
+					ReadOnlyBuffer(cstring),
+					ReadWriteBuffer(nullptr),
+					Size(var::String(cstring).length())
+					);
+	}
+
+	Reference(const Data & data);
+	Reference(Data & data);
+
 	Reference(const String & str){
 		set_reference(
 					ReadOnlyBuffer(str.cstring()),
@@ -135,6 +149,12 @@ public:
 					Size(vector.size())
 					);
 	}
+
+	template<typename T> Reference(T & item){
+		//catch all
+		refer_to(item);
+	}
+
 
 
 	/*! \details Constructs a read-only
@@ -195,37 +215,6 @@ public:
 			Size size
 			);
 
-	/*! \details Constructs a read-write
-	 * data reference to some other item.
-	 * The target item can be of any type. The size
-	 * will be figured out.
-	 *
-	 * If the item is a `const` item, the
-	 * data reference will be read only.
-	 *
-	 *
-	 * ```
-	 * //md2code:include
-	 * #include <sos/dev/pio.h>
-	 * ```
-	 *
-	 * ```
-	 * //md2code:main
-	 * pio_attr_t pio_attributes;
-	 *
-	 * Reference data_structure(pio_attributes);
-	 * data_structure.fill<u8>(0);
-	 *
-	 * if( data_structure.to_void() == (void*)&pio_attributes ){
-	 *   printf("this will print\n");
-	 * }
-	 * ```
-	 *
-	 */
-	template<typename T> Reference(T & item){
-		refer_to(item);
-	}
-
 	/*! \details Returns true if the data reference
 	 * is valid.
 	 *
@@ -275,7 +264,13 @@ public:
 	 * ```
 	 *
 	 */
-	template<typename T> void refer_to(T & item){
+	template<typename T> Reference & refer_to(T & item){
+
+		static_assert(
+					std::is_trivial<T>::value &&
+					std::is_standard_layout<T>::value,
+					"Cannot construct reference from non-trivial non-standard-layout types"
+					);
 
 		if( std::is_const<T>::value == false ){
 			set_reference(
@@ -286,10 +281,13 @@ public:
 		} else {
 			set_reference(
 						ReadOnlyBuffer(&item),
-						ReadWriteBuffer(0), //read only data
+						ReadWriteBuffer(nullptr), //read only data
 						Size(sizeof(T))
 						);
 		}
+
+		return *this;
+
 	}
 
 
@@ -316,8 +314,8 @@ public:
 	 * ```
 	 *
 	 */
-	void refer_to(
-			const ReadOnlyBuffer read_only_data,
+	Reference & refer_to(
+			ReadOnlyBuffer read_only_data,
 			Size size
 			);
 
@@ -344,7 +342,7 @@ public:
 	 * ```
 	 *
 	 */
-	void refer_to(
+	Reference & refer_to(
 			ReadWriteBuffer data,
 			Size size
 			);
@@ -365,16 +363,17 @@ public:
 	 * ```
 	 *
 	 */
-	template<typename T> void fill(
+	template<typename T> Reference& fill(
 			const T & value,
 			Count count = Count(0)
 			){
 		if( count.argument() == 0 ){
-			count.argument() = size()/ sizeof(T);
+			count.argument() = size() / sizeof(T);
 		}
 		for(u32 i=0; i < count.argument(); i++){
 			to<T>()[i] = value;
 		}
+		return *this;
 	}
 
 	/*! \details Fill the data with zeros.
@@ -458,7 +457,7 @@ public:
 	 *
 	 *
 	 */
-	virtual u32 size() const { return m_size; }
+	u32 size() const { return m_size; }
 
 
 	static void memory_copy(

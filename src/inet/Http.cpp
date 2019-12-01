@@ -251,7 +251,7 @@ int HttpClient::query(
 int HttpClient::send_string(const var::String & str){
 	if( !str.is_empty() ){
 		return socket().write(
-					Socket::SourceBuffer(str.cstring()),
+					str.cstring(),
 					Socket::Size(str.length())
 					);
 	}
@@ -302,7 +302,10 @@ int HttpClient::connect_to_server(
 		return 0;
 	}
 
-	m_header.format("failed to find address with result (%d)", address_info.error_number());
+	m_header.format(
+				"failed to find address with result (%d)",
+				address_info.error_number()
+				);
 
 	set_error_number(FAILED_TO_FIND_ADDRESS);
 	return -1;
@@ -359,7 +362,7 @@ int HttpClient::send_header(
 
 #if SHOW_HEADERS
 	printf(">> %s", m_header.cstring());
-	printf("Sending %d data bytes\n", file ? file->argument().size() : 0);
+	printf("Sending %d data bytes\n", file ? file->size() : 0);
 #endif
 
 	if( socket().write(m_header) != (int)m_header.length() ){
@@ -478,6 +481,7 @@ int HttpClient::listen_for_data(
 	} else {
 		//read the response from the socket
 		if( m_content_length != 0 ){
+
 			int result = destination.write(
 						socket(),
 						fs::File::PageSize(m_transfer_size),

@@ -46,15 +46,32 @@ int String::vformat(
 		const char * fmt,
 		va_list list
 		){
-	int result;
-	if( capacity() == 0 ){
+
+	va_list list_copy;
+	va_copy(list_copy, list);
+
+	if( capacity() < var::Data::minimum_capacity() ){
 		resize(var::Data::minimum_capacity());
 	}
-	result = vsnprintf(to_char(), capacity()-1, fmt, list);
+
+	int result;
+	result = vsnprintf(
+				to_char(),
+				capacity()-1,
+				fmt,
+				list
+				);
+
 	if( result >= (int)capacity()-1 ){ //if the data did not fit, make the buffer bigger
-		resize(result+1);
-		vsnprintf(to_char(), capacity()-1, fmt, list);
+		resize(result+2);
+		result = vsnprintf(
+					to_char(),
+					capacity()-1,
+					fmt,
+					list_copy
+					);
 	}
+
 	return result;
 }
 

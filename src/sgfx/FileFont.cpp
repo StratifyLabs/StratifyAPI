@@ -136,7 +136,7 @@ void FileFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, con
 		//need to read the character row by row
 		if( m_file.read(
 				 fs::File::Location(m_offset + canvas_offset),
-				 var::Reference(m_canvas).to_void(),
+				 m_canvas.to_void(),
 				 fs::File::Size(m_canvas_size)
 				 ) != (int)m_canvas_size ){
 			return;

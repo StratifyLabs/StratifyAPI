@@ -10,6 +10,7 @@ using namespace inet;
 SecureSocketApi SecureSocket::m_api;
 
 SecureSocket::SecureSocket(){
+	m_context = nullptr;
 	m_ticket_lifetime = 0; //don't generate a ticket
 }
 
@@ -29,7 +30,9 @@ int SecureSocket::create(const SocketAddress & address){
 				address.type(),
 				address.protocol()
 				);
-	m_fd = api()->fileno(&m_context);
+	if( result >= 0 ){
+		m_fd = api()->fileno(&m_context);
+	}
 	return set_error_number_if_error(result);
 }
 
@@ -93,6 +96,7 @@ int SecureSocket::write(
 		const void * buf,
 		Size nbyte
 		) const {
+
 	int bytes_written = 0;
 	int result;
 	do {
@@ -112,8 +116,10 @@ int SecureSocket::write(
 }
 
 int SecureSocket::read(
-		void * buf, Size nbyte
+		void * buf,
+		Size nbyte
 		) const {
+
 	return set_error_number_if_error(
 				api()->read(
 					m_context,
@@ -125,7 +131,8 @@ int SecureSocket::read(
 
 int SecureSocket::close(){
 	int result = 0;
-	if( m_fd != -1 ){
+	if( m_fd != -1 && m_context ){
+		fflush(stdout);
 		result = set_error_number_if_error( api()->close(&m_context) );
 		m_fd = -1;
 	}

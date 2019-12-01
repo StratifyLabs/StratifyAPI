@@ -260,13 +260,14 @@ int File::open(
 	}
 
 	return set_error_number_if_error(
-				link_open(
-					driver(),
-					path.cstring(),
-					flags.o_flags(),
-					permissions.permissions()
-					)
-				);
+				m_fd =
+			link_open(
+				driver(),
+				path.cstring(),
+				flags.o_flags(),
+				permissions.permissions()
+				)
+			);
 }
 
 int File::create(
@@ -283,7 +284,8 @@ int File::create(
 	return open(
 				path,
 				flags,
-				perms);
+				perms
+				);
 }
 
 u32 File::size() const {
@@ -635,7 +637,10 @@ int File::write(
 
 		result = source_file.read(buffer);
 		if( result > 0 ){
-			result = write(buffer);
+			result = write(
+						buffer.to_const_void(),
+						Size(result)
+						);
 			if( result > 0 ){
 				size_processed += result;
 			}
@@ -660,9 +665,10 @@ int File::write(
 }
 
 
-int DataFile::read(void * buf,
-						 Size nbyte
-						 ) const {
+int DataFile::read(
+		void * buf,
+		Size nbyte
+		) const {
 
 	if( flags().is_write_only() ){
 		return set_error_number_if_error(-1);
@@ -678,7 +684,7 @@ int DataFile::read(void * buf,
 	}
 
 	var::Reference::memory_copy(
-				SourceBuffer(var::Reference(m_data).to_const_u8() + m_location),
+				SourceBuffer(m_data.to_const_u8() + m_location),
 				DestinationBuffer(buf),
 				Size(size_ready)
 				);
@@ -687,9 +693,10 @@ int DataFile::read(void * buf,
 	return set_error_number_if_error(size_ready);
 }
 
-int DataFile::write(const void * buf,
-						  Size nbyte
-						  ) const {
+int DataFile::write(
+		const void * buf,
+		Size nbyte
+		) const {
 
 	if( flags().is_read_only() ){
 		return set_error_number_if_error(-1);
@@ -718,7 +725,7 @@ int DataFile::write(const void * buf,
 
 	var::Reference::memory_copy(
 				SourceBuffer(buf),
-				DestinationBuffer(var::Reference(data()).to_u8() + m_location),
+				DestinationBuffer(data().to_u8() + m_location),
 				Size(size_ready)
 				);
 

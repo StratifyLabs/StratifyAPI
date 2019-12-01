@@ -247,6 +247,36 @@ public:
 	 */
 	Data();
 
+	Data(const Data & a) : m_data(a.m_data){
+		update_reference();
+	}
+
+	Data(Data && a) : m_data(a.m_data){
+		update_reference();
+	}
+
+	Data(std::initializer_list<u8> il) : m_data(il){
+		update_reference();
+	}
+
+	Data & operator=(const Data & a){
+		m_data = a.m_data;
+		update_reference();
+		return *this;
+	}
+
+	Data & operator=(Data && a){
+		m_data = a.m_data;
+		update_reference();
+		return *this;
+	}
+
+	Data & operator= (std::initializer_list<u8> il){
+		m_data = il;
+		update_reference();
+		return *this;
+	}
+
 	/*! \details Constructs data with dynamically allocated memory with \a size bytes (resizeable)
 	 *
 	 *  @param size The number of bytes to allocate
@@ -505,7 +535,7 @@ protected:
 
 private:
 
-	void zero();
+	void update_reference();
 
 	std::vector<u8> m_data;
 
