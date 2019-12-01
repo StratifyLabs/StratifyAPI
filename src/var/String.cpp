@@ -72,6 +72,12 @@ int String::vformat(
 					);
 	}
 
+	if( result > 0 ){
+		resize(result);
+	} else {
+		clear();
+	}
+
 	return result;
 }
 

@@ -392,12 +392,12 @@ public:
 	}
 
 	String & append(
-			ToAppend string_to_append,
+			const String & string_to_append,
 			SubPosition sub_position,
 			SubLength sub_length
 			){
 		m_string.append(
-					string_to_append.argument().string(),
+					string_to_append.string(),
 					sub_position.argument(),
 					sub_length.argument()
 					);
@@ -406,7 +406,7 @@ public:
 
 	/*! \details Appends \a c to this String.  */
 	String & append(char c){
-		m_string.append(&c, 1);
+		m_string.append(1, c);
 		return *this;
 	}
 
