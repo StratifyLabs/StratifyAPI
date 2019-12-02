@@ -83,9 +83,7 @@ int TaskManager::get_next(TaskInfo & info){
 #if !defined __link
 TaskInfo TaskManager::get_info(){
 	TaskManager manager;
-	return manager.get_info(
-				arg::DeviceThreadId( Thread::self()	)
-				);
+	return manager.get_info(Thread::self());
 }
 #endif
 
@@ -110,7 +108,7 @@ bool TaskManager::is_pid_running(Sched::ProcessId pid){
 
 	TaskInfo info;
 	while( get_next(info) > 0 ){
-		if( (pid.argument() == (int)info.pid()) && info.is_enabled() ){
+		if( (pid.argument() == info.pid()) && info.is_enabled() ){
 			set_id( tmp_id );
 			return true;
 		}

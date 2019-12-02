@@ -15,11 +15,13 @@ namespace hal {
  * found at, for example, "/dev/display0" can
  * be drawn on.
  */
-class DisplayDevice : public Display, public Device {
+class DisplayDevice :
+      public virtual Display,
+      public virtual Device {
 public:
 	DisplayDevice();
 
-	int initialize(const arg::SourceFilePath & name);
+	int initialize(const var::String & name);
 
 	/*! \details Refreshes the display.
 	 *

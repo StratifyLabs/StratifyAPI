@@ -23,7 +23,7 @@ public:
 	using IgnoreBetween = arg::Argument<const var::String &, struct TokenizerIgnoreBetweenTag>;
 
 	using IsCountEmpty = arg::Argument<bool, struct TokenizerIsCountEmptyTag>;
-	using MaximumCount = arg::Argument<bool, struct TokenizerMaximumCountTag>;
+	using MaximumCount = arg::Argument<u32, struct TokenizerMaximumCountTag>;
 
 	/*! \details Constructs and parses a new Token.
 	  *

@@ -59,18 +59,18 @@ native_type SignalType::max(u32 & idx) const {
 }
 
 SignalType SignalType::abs() const {
-	SignalType ret = SignalType(arg::Count(count()));
+	SignalType result = SignalType(count());
 	arm_dsp_api_function()->abs(
 				(native_type *)to_const_void(),
-				ret.to<native_type>(),
+				result.data(),
 				count());
-	return ret;
+	return result;
 }
 
 void SignalType::abs(SignalType & output) const {
 	arm_dsp_api_function()->abs(
 				(native_type *)to_const_void(),
-				output.to<native_type>(),
+				output.data(),
 				count());
 }
 
@@ -78,39 +78,39 @@ big_type SignalType::dot_product(const SignalType & a) const {
 	big_type result;
 	arm_dsp_api_function()->dot_prod(
 				(native_type*)to_const_void(),
-				a.to<native_type>(),
+				(native_type*)a.data(),
 				count(),
 				&result);
 	return result;
 }
 
 SignalType SignalType::negate() const {
-	SignalType ret = SignalType(arg::Count(count()));
+	SignalType ret = SignalType((count()));
 	arm_dsp_api_function()->negate(
 				(native_type*)to_const_void(),
-				ret.to<native_type>(),
+				ret.data(),
 				count()
 				);
 	return ret;
 }
 
 void SignalType::negate(SignalType & output) const {
-	arm_dsp_api_function()->negate((native_type*)to_const_void(), output.to<native_type>(), count());
+	arm_dsp_api_function()->negate((native_type*)to_const_void(), output.data(), count());
 }
 
 
 SignalType SignalType::convolve(const SignalType & a) const {
-	SignalType ret(arg::Count(count() + a.count() - 1));
+	SignalType ret((count() + a.count() - 1));
 #if IS_FLOAT == 0
 	arm_dsp_api_function()->conv_fast(
 				(native_type*)to_const_void(),
 				count(),
 				(native_type*)a.to_const_void(),
 				a.count(),
-				ret.to<native_type>()
+				ret.data()
 				);
 #else
-	arm_dsp_api_function()->conv((native_type*)to_const_void(), count(), (native_type*)a.to_const_void(), a.count(), ret.to<native_type>());
+	arm_dsp_api_function()->conv((native_type*)to_const_void(), count(), (native_type*)a.to_const_void(), a.count(), ret.data());
 #endif
 	return ret;
 }
@@ -118,35 +118,35 @@ SignalType SignalType::convolve(const SignalType & a) const {
 void SignalType::convolve(SignalType & output, const SignalType & a) const {
 	//check output length?
 #if IS_FLOAT == 0
-	arm_dsp_api_function()->conv_fast((native_type*)to_const_void(), count(), (native_type*)a.to_const_void(), a.count(), output.to<native_type>());
+	arm_dsp_api_function()->conv_fast((native_type*)to_const_void(), count(), (native_type*)a.to_const_void(), a.count(), output.data());
 #else
-	arm_dsp_api_function()->conv((native_type*)to_const_void(), count(), (native_type*)a.to_const_void(), a.count(), output.to<native_type>());
+	arm_dsp_api_function()->conv((native_type*)to_const_void(), count(), (native_type*)a.to_const_void(), a.count(), output.data());
 #endif
 }
 
 #if IS_FLOAT == 0
 void SignalType::shift(SignalType & output, s8 value) const {
-	arm_dsp_api_function()->shift((native_type*)to_const_void(), value, output.to<native_type>(), count());
+	arm_dsp_api_function()->shift((native_type*)to_const_void(), value, output.data(), count());
 }
 
 SignalType SignalType::shift(s8 value) const {
-	SignalType ret = SignalType(arg::Count(count()));
-	arm_dsp_api_function()->shift((native_type*)to_const_void(), value, ret.to<native_type>(), count());
+	SignalType ret = SignalType((count()));
+	arm_dsp_api_function()->shift((native_type*)to_const_void(), value, ret.data(), count());
 	return ret;
 }
 
 SignalType & SignalType::shift_assign(s8 value){
-	arm_dsp_api_function()->shift((native_type*)to_const_void(), value, to<native_type>(), count());
+	arm_dsp_api_function()->shift((native_type*)to_const_void(), value, data(), count());
 	return *this;
 }
 #endif
 
 SignalType SignalType::scale(native_type scale_fraction, s8 shift) const {
-	SignalType ret = SignalType(arg::Count(count()));
+	SignalType ret = SignalType((count()));
 #if IS_FLOAT == 0
-	arm_dsp_api_function()->scale((native_type*)to_const_void(), scale_fraction, shift, ret.to<native_type>(), count());
+	arm_dsp_api_function()->scale((native_type*)to_const_void(), scale_fraction, shift, ret.data(), count());
 #else
-	arm_dsp_api_function()->scale((native_type*)to_const_void(), scale_fraction, ret.to<native_type>(), count());
+	arm_dsp_api_function()->scale((native_type*)to_const_void(), scale_fraction, ret.data(), count());
 #endif
 
 	return ret;
@@ -154,38 +154,37 @@ SignalType SignalType::scale(native_type scale_fraction, s8 shift) const {
 
 void SignalType::scale(SignalType & output, native_type scale_fraction, s8 shift) const {
 #if IS_FLOAT == 0
-	arm_dsp_api_function()->scale((native_type*)to_const_void(), scale_fraction, shift, output.to<native_type>(), count());
+	arm_dsp_api_function()->scale((native_type*)to_const_void(), scale_fraction, shift, output.data(), count());
 #else
-	arm_dsp_api_function()->scale((native_type*)to_const_void(), scale_fraction, output.to<native_type>(), count());
+	arm_dsp_api_function()->scale((native_type*)to_const_void(), scale_fraction, output.data(), count());
 #endif
 }
 
 
 SignalType SignalType::add(native_type offset_value) const {
-	SignalType ret = SignalType(arg::Count(count()));
-	arm_dsp_api_function()->offset((native_type*)to_const_void(), offset_value, ret.to<native_type>(), count());
+	SignalType ret = SignalType((count()));
+	arm_dsp_api_function()->offset((native_type*)to_const_void(), offset_value, ret.data(), count());
 
 	return ret;
 }
 
 SignalType & SignalType::add_assign(native_type offset_value){
-	arm_dsp_api_function()->offset((native_type*)to_const_void(), offset_value, to<native_type>(), count());
+	arm_dsp_api_function()->offset((native_type*)to_const_void(), offset_value, data(), count());
 	return *this;
 }
 
 SignalType SignalType::add(const SignalType & a) const {
-	SignalType ret = SignalType(arg::Count(count()));
+	SignalType ret = SignalType((count()));
 	if( ret.count() != count() ){
-		printf("Failed to alloc for count\n");
 		return ret;
 	}
-	arm_dsp_api_function()->add((native_type*)to_const_void(), (native_type*)a.to_const_void(), ret.to<native_type>(), count());
+	arm_dsp_api_function()->add((native_type*)to_const_void(), (native_type*)a.to_const_void(), ret.data(), count());
 	return ret;
 }
 
 
 SignalType & SignalType::add_assign(const SignalType & a){
-	arm_dsp_api_function()->add((native_type*)to_const_void(), (native_type*)a.to_const_void(), to<native_type>(), count());
+	arm_dsp_api_function()->add((native_type*)to_const_void(), (native_type*)a.to_const_void(), data(), count());
 	return *this;
 }
 
@@ -199,36 +198,36 @@ SignalType & SignalType::multiply_assign(native_type value){
 }
 
 SignalType SignalType::multiply(const SignalType & a) const {
-	SignalType ret = SignalType(arg::Count(count()));
-	arm_dsp_api_function()->mult((native_type*)to_const_void(), (native_type*)a.to_const_void(), ret.to<native_type>(), count());
+	SignalType ret = SignalType((count()));
+	arm_dsp_api_function()->mult((native_type*)to_const_void(), (native_type*)a.to_const_void(), ret.data(), count());
 
 	return ret;
 }
 
 SignalType & SignalType::multiply_assign(const SignalType & a){
-	arm_dsp_api_function()->mult((native_type*)to_const_void(), (native_type*)a.to_const_void(), to<native_type>(), count());
+	arm_dsp_api_function()->mult((native_type*)to_const_void(), (native_type*)a.to_const_void(), data(), count());
 	return *this;
 }
 
 //subtract
 SignalType SignalType::subtract(const SignalType & a) const{
-	SignalType ret = SignalType(arg::Count(count()));
-	arm_dsp_api_function()->sub((native_type*)to_const_void(), (native_type*)a.to_const_void(), ret.to<native_type>(), count());
+	SignalType ret = SignalType((count()));
+	arm_dsp_api_function()->sub((native_type*)to_const_void(), (native_type*)a.to_const_void(), ret.data(), count());
 
 	return ret;
 }
 
 SignalType & SignalType::subtract_assign(const SignalType & a){
-	arm_dsp_api_function()->sub((native_type*)to_const_void(), (native_type*)a.to_const_void(), to<native_type>(), count());
+	arm_dsp_api_function()->sub((native_type*)to_const_void(), (native_type*)a.to_const_void(), data(), count());
 	return *this;
 }
 
 SignalType SignalType::filter(const BiquadFilterType & filter) const {
-	SignalType ret = SignalType(arg::Count(count()));
+	SignalType ret = SignalType((count()));
 #if IS_FLOAT == 0
-	arm_dsp_api_function()->biquad_cascade_df1_fast(filter.instance(), (native_type*)to_const_void(), ret.to<native_type>(), count());
+	arm_dsp_api_function()->biquad_cascade_df1_fast(filter.instance(), (native_type*)to_const_void(), ret.data(), count());
 #else
-	arm_dsp_api_function()->biquad_cascade_df1(filter.instance(), (native_type*)to_const_void(), ret.to<native_type>(), count());
+	arm_dsp_api_function()->biquad_cascade_df1(filter.instance(), (native_type*)to_const_void(), ret.data(), count());
 #endif
 
 	return ret;
@@ -236,18 +235,18 @@ SignalType SignalType::filter(const BiquadFilterType & filter) const {
 
 void SignalType::filter(SignalType & output, const BiquadFilterType & filter) const {
 #if IS_FLOAT == 0
-	arm_dsp_api_function()->biquad_cascade_df1_fast(filter.instance(), (native_type*)to_const_void(), output.to<native_type>(), count());
+	arm_dsp_api_function()->biquad_cascade_df1_fast(filter.instance(), (native_type*)to_const_void(), output.data(), count());
 #else
-	arm_dsp_api_function()->biquad_cascade_df1(filter.instance(), (native_type*)to_const_void(), output.to<native_type>(), count());
+	arm_dsp_api_function()->biquad_cascade_df1(filter.instance(), (native_type*)to_const_void(), output.data(), count());
 #endif
 }
 
 SignalType SignalType::filter(const FirFilterType & filter) const {
-	SignalType ret = SignalType(arg::Count(count()));
+	SignalType ret = SignalType((count()));
 #if IS_FLOAT == 0
-	arm_dsp_api_function()->fir_fast(filter.instance(), (native_type*)to_const_void(), ret.to<native_type>(), count());
+	arm_dsp_api_function()->fir_fast(filter.instance(), (native_type*)to_const_void(), ret.data(), count());
 #else
-	arm_dsp_api_function()->fir(filter.instance(), (native_type*)to_const_void(), ret.to<native_type>(), count());
+	arm_dsp_api_function()->fir(filter.instance(), (native_type*)to_const_void(), ret.data(), count());
 #endif
 
 	return ret;
@@ -255,9 +254,9 @@ SignalType SignalType::filter(const FirFilterType & filter) const {
 
 void SignalType::filter(SignalType & output, const FirFilterType & filter) const {
 #if IS_FLOAT == 0
-	arm_dsp_api_function()->fir_fast(filter.instance(), (native_type*)to_const_void(), output.to<native_type>(), count());
+	arm_dsp_api_function()->fir_fast(filter.instance(), (native_type*)to_const_void(), output.data(), count());
 #else
-	arm_dsp_api_function()->fir(filter.instance(), (native_type*)to_const_void(), output.to<native_type>(), count());
+	arm_dsp_api_function()->fir(filter.instance(), (native_type*)to_const_void(), output.data(), count());
 #endif
 }
 
@@ -266,7 +265,7 @@ SignalType SignalType::create_sin_wave(native_type wave_frequency, native_type s
 #else
 SignalType SignalType::create_sin_wave(u32 wave_frequency, u32 sampling_frequency, u32 nsamples, native_type phase){
 #endif
-	SignalType ret = SignalType(arg::Count(nsamples));
+	SignalType ret = SignalType((nsamples));
 	u32 i;
 #if IS_FLOAT == 1
 	native_type theta = phase; //theta 0 to max is 0 to 2*pi
@@ -279,7 +278,7 @@ SignalType SignalType::create_sin_wave(u32 wave_frequency, u32 sampling_frequenc
 	//fsamp = 16K and fmax = 8k - theta step is pi or (1/2)
 	//theta step is f / fsamp
 	for(i=0; i < nsamples; i++){
-		ret[i] = arm_dsp_api_function()->sin(theta);
+		ret.at(i) = arm_dsp_api_function()->sin(theta);
 		theta += theta_step;
 #if IS_FLOAT == 0
 		if( theta > LOCAL_INT_MAX ){
@@ -294,28 +293,58 @@ SignalType SignalType::create_sin_wave(u32 wave_frequency, u32 sampling_frequenc
 
 
 
-void SignalComplexType::transform(FftComplexType & fft, bool is_inverse, bool is_bit_reversal){
-	arm_dsp_api_function()->cfft(fft.instance(), to<native_type>(), is_inverse, is_bit_reversal);
+void SignalComplexType::transform(
+		FftComplexType & fft,
+		bool is_inverse,
+		bool is_bit_reversal
+		){
+	arm_dsp_api_function()->cfft(
+				fft.instance(),
+				data(),
+				is_inverse,
+				is_bit_reversal
+				);
 }
 
-void SignalComplexType::transform(SignalComplexType & output, FftRealType & fft, bool is_inverse){
+void SignalComplexType::transform(
+		SignalComplexType & output,
+		FftRealType & fft,
+		bool is_inverse
+		){
 #if IS_FLOAT == 0
 	fft.instance()->ifftFlagR = is_inverse;
-	arm_dsp_api_function()->rfft(fft.instance(), to<native_type>(), output.to<native_type>());
+	arm_dsp_api_function()->rfft(
+				fft.instance(),
+				(q31_t*)data(),
+				(q31_t*)output.data()
+				);
 #else
-	arm_dsp_api_function()->rfft_fast(fft.instance(), to<native_type>(), output.to<native_type>(), is_inverse);
+	arm_dsp_api_function()->rfft_fast(
+				fft.instance(),
+				data(),
+				output.data(),
+				is_inverse
+				);
 #endif
 }
 
 SignalComplexType SignalComplexType::transform(FftRealType & fft, bool is_inverse){
 	int samples = count();
 	if( !is_inverse ){ samples *= 2; }
-	SignalComplexType ret = SignalComplexType(arg::Count(samples));
+	SignalComplexType ret = SignalComplexType((samples));
 #if IS_FLOAT == 0
 	fft.instance()->ifftFlagR = is_inverse;
-	arm_dsp_api_function()->rfft(fft.instance(), to<native_type>(), ret.to<native_type>());
+	arm_dsp_api_function()->rfft(
+				fft.instance(),
+				data(),
+				ret.data()
+				);
 #else
-	arm_dsp_api_function()->rfft_fast(fft.instance(), to<native_type>(), ret.to<native_type>(), is_inverse);
+	arm_dsp_api_function()->rfft_fast(
+				fft.instance(),
+				data(),
+				ret.data(),
+				is_inverse);
 #endif
 
 	return ret;

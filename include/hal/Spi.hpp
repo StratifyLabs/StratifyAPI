@@ -99,6 +99,9 @@ private:
 class Spi : public Periph<spi_info_t, spi_attr_t, SpiAttributes, 's'>, public SpiFlags {
 public:
 
+	using SourceBuffer = var::Reference::SourceBuffer;
+	using DestinationBuffer = var::Reference::DestinationBuffer;
+
 	/*! \details Constructs a SPI object using \a port. */
 	Spi(port_t port);
 
@@ -133,9 +136,9 @@ public:
 
 #if !defined __link
 	int transfer(
-			const arg::SourceBuffer write_data,
-			arg::DestinationBuffer read_data,
-			arg::Size nbytes
+			SourceBuffer write_data,
+			DestinationBuffer read_data,
+			Size nbytes
 			);
 #endif
 

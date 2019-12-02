@@ -110,7 +110,7 @@ typedef I2CAttributes I2CAttr;
 /*! \brief I2C Peripheral Class
  * \details This class implements I2C device peripherals.
  *
- * An I2C ptr/data transfer (I2C::FLAG_PREPARE_PTR_DATA) updates the register
+ * An I2C ptr/data transfer (I2C::PREPARE_PTR_DATA) updates the register
  * pointer and then either reads or writes data.  For example:
  * \code
  * #include <sapi/hal.hpp>
@@ -140,7 +140,7 @@ typedef I2CAttributes I2CAttr;
  * 	pin_assignment->sda = mcu_pin(0,10);
  * 	pin_assignment->scl = mcu_pin(0,11);
  *
- * 	i2c.init(I2C::FLAG_SET_MASTER, 400000, pin_assignment);
+ * 	i2c.init(I2C::SET_MASTER, 400000, pin_assignment);
  * 	i2c.prepare(0x4C, FLAG_PREPARE_DATA); //prepare for data only transactions
  * 	i2c.write(&data, sizeof(u16)); //write two bytes
  * 	i2c.read(&data, sizeof(u16)); //read two bytes

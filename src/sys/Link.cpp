@@ -59,22 +59,26 @@ void Link::reset_progress(){
 
 var::Vector<var::String> Link::get_port_list(){
 	var::Vector<var::String> result;
-	var::String device_name;
+	var::Data device_name(256);
 	var::String last_device;
 
-	last_device.resize(256);
-	device_name.resize(256);
-
-	last_device.clear();
-	device_name.clear();
 
 	while( driver()->getname(
 				 device_name.to_char(),
 				 last_device.cstring(),
 				 device_name.capacity()
 				 ) == 0 ){
-		result.push_back( device_name ); //this will make a copy of device name and put it on the list
-		last_device = device_name;
+		var::String device_string(
+					device_name.to_const_char(),
+					var::String::Length(
+						strnlen(
+							device_name.to_const_char(),
+							device_name.size()
+							)
+						)
+					);
+		result.push_back( device_string ); //this will make a copy of device name and put it on the list
+		last_device = device_string;
 	}
 
 	return result;
@@ -1280,10 +1284,10 @@ int Link::erase_os(
 }
 
 int Link::install_os(const fs::File & image,
-		IsVerify is_verify,
-		HardwareId image_id,
-		Printer & progress_printer
-		){
+							IsVerify is_verify,
+							HardwareId image_id,
+							Printer & progress_printer
+							){
 
 	//must be connected to the bootloader with an erased OS
 	int err;
@@ -1520,8 +1524,8 @@ int Link::update_os(
 			 )
 		 ){
 		progress_printer.error("failed to erase os '%s'",
-													 error_message().cstring()
-													 );
+									  error_message().cstring()
+									  );
 		progress_printer.progress_key() = progress_key;
 		return -1;
 	}
@@ -1533,8 +1537,8 @@ int Link::update_os(
 			 progress_printer
 			 ) < 0 ){
 		progress_printer.error("failed to install os '%s'",
-													 error_message().cstring()
-													 );
+									  error_message().cstring()
+									  );
 		progress_printer.progress_key() = progress_key;
 		return -1;
 	}
@@ -1761,10 +1765,10 @@ int Link::update_binary_install_options(
 }
 
 int Link::install_app(const fs::File & application_image,
-		Path path,
-		ApplicationName name,
-		const ProgressCallback * progress_callback
-		){
+							 Path path,
+							 ApplicationName name,
+							 const ProgressCallback * progress_callback
+							 ){
 	int bytes_read;
 	int fd;
 	appfs_installattr_t attr;

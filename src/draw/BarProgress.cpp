@@ -23,13 +23,9 @@ void BarProgress::draw_to_scale(const DrawingScaledAttr & attr){
 	attr.bitmap() << attr.bitmap().pen().set_color( color() );
 	attr.bitmap().draw_rectangle(
 				attr.point() +
-				Point(
-					arg::XValue(thickness),
-					arg::YValue(thickness)
-					),
-				Area(
-					arg::Width(progress_width * value() / maximum()),
-					arg::Height(attr.area().height() - thickness*2))
+				Point(thickness, thickness),
+				Area(progress_width * value() / maximum(),
+					  attr.area().height() - thickness*2)
 				);
 
 }

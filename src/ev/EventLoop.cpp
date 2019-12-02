@@ -112,8 +112,8 @@ void EventLoop::check_loop_for_hibernate(){
 		request.update_period_milliseconds = update_period().milliseconds();
 		request.loop_period_milliseconds = period().milliseconds();
 		if( Sys::request(
-				 arg::KernelRequest(SAPI_REQUEST_HIBERNATE),
-				 arg::DestinationBuffer(&request)
+				 Sys::KernelRequest(SAPI_REQUEST_HIBERNATE),
+				 Sys::KernelArgument(&request)
 				 ) < 0 ){
 			Sys::hibernate(
 						chrono::Milliseconds((update_period().milliseconds() + 500)/ 1000)

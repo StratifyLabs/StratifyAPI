@@ -9,7 +9,11 @@
 
 using namespace ui;
 
-ListItem::ListItem(const var::ConstString & label, LinkedElement * parent, LinkedElement * child) : LinkedElement(parent, child){
+ListItem::ListItem(
+		const var::String & label,
+		LinkedElement * parent,
+		LinkedElement * child
+		) : LinkedElement(parent, child){
 	m_text_attr.string() = label;
 	set_animation_type(AnimationAttr::PUSH_LEFT);
 }
@@ -152,9 +156,10 @@ ListItemCheck::ListItemCheck(const char * label, List * parent) :
 }
 
 
-DirList::DirList(const arg::SourceDirectoryPath & path,
-					  LinkedElement * parent,
-					  LinkedElement * child) :
+DirList::DirList(
+		const var::String & path,
+		LinkedElement * parent,
+		LinkedElement * child) :
 	List(parent),
 	m_item("TBD", this, child) {
 	set_path(path);
@@ -193,8 +198,8 @@ LinkedElement & DirList::at(list_attr_size_t i){
 }
 
 
-void DirList::set_path(const arg::SourceDirectoryPath & path){
-	m_path = path.argument();
+void DirList::set_path(const var::String & path){
+	m_path = path;
 	m_dir.close();
 	if( m_dir.open(
 			 path

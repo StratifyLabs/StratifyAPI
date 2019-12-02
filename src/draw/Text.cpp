@@ -7,7 +7,7 @@
 using namespace draw;
 
 
-Text::Text(const var::ConstString & text){
+Text::Text(const var::String & text){
 	m_string = text;
 	m_font = 0;
 	m_font_point_size = 0;
@@ -16,8 +16,8 @@ Text::Text(const var::ConstString & text){
 
 const Font * Text::resolve_font(sg_size_t h) const{
 	const FontInfo * info = sys::Assets::find_font(
-				arg::FontPointSize(h),
-				arg::FontStyle(m_font_style)
+				sgfx::Font::PointSize(h),
+				sgfx::Font::Style(m_font_style)
 				);
 	if( info ){ return info->font(); }
 	return 0;

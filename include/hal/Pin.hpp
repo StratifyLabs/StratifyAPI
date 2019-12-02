@@ -50,6 +50,9 @@ namespace hal {
 class Pin : public Pio {
 public:
 
+	using Number = Device::PinNumber;
+	using IsActiveHigh = arg::Argument<u8, struct PinIsActiveHighTag>;
+
 	static mcu_pin_t from_string(const var::String & port_pin){
 		var::Tokenizer tokens(
 					var::Tokenizer::EncodedString(port_pin),
@@ -68,7 +71,7 @@ public:
 	/*! \details Constructs the object with a port/pin combination. */
 	Pin(
 			Port port,
-			PinNumber pin,
+			Number pin,
 			IsMcuPinMask is_mask = IsMcuPinMask(false)
 			) : Pio(port.argument()){
 		if( is_mask.argument() ){

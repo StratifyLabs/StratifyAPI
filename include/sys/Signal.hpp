@@ -179,6 +179,10 @@ private:
 class Signal : public api::WorkObject {
 public:
 
+	using ProcessId = Sched::ProcessId;
+	using ValueInteger = arg::Argument<int, struct SignalValueTag>;
+	using ValuePointer = arg::Argument<void *, struct SignalValueTag>;
+
 	enum signal_number {
 		ABRT /*! Abort signal, default action is to abort */ = SIGABRT,
 		FPE /*! FPE signal, default action is to abort */ = SIGFPE,
@@ -225,10 +229,10 @@ public:
 	 */
 	Signal(
 			enum signal_number signo,
-			int signal_value = (0)
+			ValueInteger signal_value = ValueInteger(0)
 			){
 		m_signo = signo;
-		m_sigvalue.sival_int = signal_value;
+		m_sigvalue.sival_int = signal_value.argument();
 	}
 
 	/*! \details Constructs an event based on a signal number.
@@ -280,7 +284,7 @@ public:
 	  *
 	 */
 	int queue(
-			const arg::Pid pid
+			ProcessId pid
 			) const {
 		return ::sigqueue(pid.argument(), m_signo, m_sigvalue);
 	}

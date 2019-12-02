@@ -12,7 +12,11 @@ using namespace var;
 
 //static const char * white_space = "\r\n\t ";
 
-Xml::Xml(const arg::DestinationFilePath & path, const fs::OpenFlags & flags, const fs::Permissions & permissions){
+Xml::Xml(
+		const String & path,
+		const fs::OpenFlags & flags,
+		const fs::Permissions & permissions
+		){
 	//init all values to zero
 	file_size = 0;
 	init(path, flags, permissions);
@@ -24,7 +28,11 @@ Xml::Xml(){
 }
 
 
-int Xml::init(const arg::DestinationFilePath & path, const fs::OpenFlags & flags, const fs::Permissions & permissions){
+int Xml::init(
+		const String & path,
+		const fs::OpenFlags & flags,
+		const fs::Permissions & permissions
+		){
 	indent = 0;
 
 	//close if already open
@@ -35,14 +43,14 @@ int Xml::init(const arg::DestinationFilePath & path, const fs::OpenFlags & flags
 	if( flags.is_write_only() ){
 		if( create(
 				 path,
-				 arg::IsOverwrite(true),
+				 File::IsOverwrite(true),
 				 permissions
 				 ) < 0 ){
 			return -1;
 		}
 	} else {
 		if( open(
-				 arg::FilePath(path.argument()),
+				 path,
 				 flags
 				 ) < 0 ){
 			return -1;
@@ -57,11 +65,17 @@ int Xml::init(const arg::DestinationFilePath & path, const fs::OpenFlags & flags
 
 
 //this doesn't modify the context -- just grabs the values
-int Xml::get_value(String & dest, const var::ConstString & key) const {
+int Xml::get_value(
+		String & dest,
+		const var::String & key
+		) const {
 	return set_get_value(dest, key, false);
 }
 
-int Xml::set_get_value(String & dest, const var::ConstString & key, bool set) const {
+int Xml::set_get_value(
+		String & dest,
+		const var::String & key,
+		bool set) const {
 	String s0;
 	String s1; //str stripped of attr
 	String s2; //attr
@@ -78,17 +92,16 @@ int Xml::set_get_value(String & dest, const var::ConstString & key, bool set) co
 	s1 = key;
 	s2.clear();
 
-	start_attr = s1.find(arg::CharacterToFind('('));
+	start_attr = s1.find('(');
 	if( start_attr > -1 ){
 		end_attr = s1.find(
-					arg::CharacterToFind(')'),
-					arg::Position(start_attr+1)
+					')',
+					String::Position(start_attr+1)
 					);
 		if( end_attr > -1 ){
-			s2.copy_contents(
-						arg::SourceData(s1),
-						arg::Position(start_attr+1),
-						arg::Size(end_attr-start_attr-1)
+			s2 = s1.create_sub_string(
+						String::Position(start_attr+1),
+						String::Length(end_attr-start_attr-1)
 						);
 			s1.to_char()[start_attr] = 0;
 		} else {
@@ -117,26 +130,26 @@ int Xml::set_get_value(String & dest, const var::ConstString & key, bool set) co
 			tmp_content.size = tmp_content.size - tmp_content.start_tag_size - tmp_content.end_tag_size;
 			//pad s0 with spaces to the content size
 
-			for(i=s0.size(); i < tmp_content.size; i++){
+			for(i=s0.length(); i < tmp_content.size; i++){
 				s0.append(" ");
 			}
 
 			if( write(
-					 arg::Location(tmp_content.offset + tmp_content.start_tag_size),
-					 arg::SourceBuffer(s0.cstring()),
-					 arg::Size(tmp_content.size)
+					 File::Location(tmp_content.offset + tmp_content.start_tag_size),
+					 s0.cstring(),
+					 File::Size(tmp_content.size)
 					 ) < 0 ){
 				return -1;
 			}
 		} else {
 			read(
-						arg::Location(tmp_content.offset),
-						arg::DestinationBuffer(s0.to_void()),
-						arg::Size(tmp_content.size)
+						File::Location(tmp_content.offset),
+						s0.to_char(),
+						File::Size(tmp_content.size)
 						);
-			dest = s0.substr(
-						arg::Position(tmp_content.start_tag_size),
-						arg::Length(s0.size() - tmp_content.start_tag_size - tmp_content.end_tag_size)
+			dest = s0.create_sub_string(
+						String::Position(tmp_content.start_tag_size),
+						String::Length(s0.length() - tmp_content.start_tag_size - tmp_content.end_tag_size)
 						);
 		}
 	}
@@ -144,13 +157,16 @@ int Xml::set_get_value(String & dest, const var::ConstString & key, bool set) co
 	return 0;
 }
 
-int Xml::set_value(const String * src, const var::ConstString & key) const {
+int Xml::set_value(
+		const String * src,
+		const var::String & key
+		) const {
 	return set_get_value((String&)*src, key, true);
 }
 
 
 //this will define the current context from str
-int Xml::find(const var::ConstString & str){
+int Xml::find(const var::String & str){
 	int ret;
 	context_t tmp;
 
@@ -165,7 +181,7 @@ int Xml::find(const var::ConstString & str){
 	return 0;
 }
 
-int Xml::find_next(const var::ConstString & str){
+int Xml::find_next(const var::String & str){
 	int ret;
 	context_t tmp;
 
@@ -206,43 +222,43 @@ int Xml::sibling(String & dest, String * value){
 	context_t tmp;
 
 	seek(
-				arg::Location(content.offset + content.size)
+				File::Location(content.offset + content.size)
 				);
 	nbytes = 0;
 	do {
 		if( read(
-				 arg::DestinationBuffer(str.to_char()),
-				 arg::Size(str.size())
+				 str.to_char(),
+				 File::Size(str.length())
 				 ) < 0 ){
 			return -1;
 		}
-		loc = str.find(arg::CharacterToFind('<'));
+		loc = str.find('<');
 		if( loc < 0 ){
 			nbytes += str.capacity();
 		}
 	} while( loc < 0 );
 
-	seek(
-				arg::Location(content.offset + content.size + nbytes + loc + 1)
-				);
+	seek(File::Location(
+			  content.offset + content.size + nbytes + loc + 1
+			  ));
 
 	if( read(
-			 arg::DestinationBuffer(str.to_char()),
-			 arg::Size(str.size())
+			 str.to_char(),
+			 File::Size(str.length())
 			 ) < 0 ){
 		return -1;
 	}
 
-	end = str.find(arg::CharacterToFind('>'));
-	space = str.find(arg::CharacterToFind(' '));
+	end = str.find('>');
+	space = str.find(' ');
 
 	if( end > space ){
 		end = space;
 	}
 
-	dest = str.substr(
-				arg::Position(0),
-				arg::Length(end)
+	dest = str.create_sub_string(
+				String::Position(0),
+				String::Length(end)
 				);
 
 	if( dest.at(0) == '/' ){
@@ -294,7 +310,7 @@ int Xml::attr(String & name, String * value){
 	return 0;
 }
 
-int Xml::write_start_tag(const var::ConstString & name, const var::ConstString & attrs){
+int Xml::write_start_tag(const var::String & name, const var::String & attrs){
 	String str;
 	int i;
 	for(i=0; i < indent; i++){
@@ -311,7 +327,7 @@ int Xml::write_start_tag(const var::ConstString & name, const var::ConstString &
 	return write(str);
 }
 
-int Xml::write_cdata(const var::ConstString & str){
+int Xml::write_cdata(const var::String & str){
 	String s;
 	int i;
 	for(i=0; i < indent; i++){
@@ -323,7 +339,7 @@ int Xml::write_cdata(const var::ConstString & str){
 	return write(s);
 }
 
-int Xml::write_end_tag(const var::ConstString & name){
+int Xml::write_end_tag(const var::String & name){
 	String str;
 	int i;
 	if( indent ){
@@ -337,7 +353,7 @@ int Xml::write_end_tag(const var::ConstString & name){
 	str.append(">\n");
 	return write(str);
 }
-int Xml::write_empty_element_tag(const var::ConstString & name, const var::ConstString & attrs){
+int Xml::write_empty_element_tag(const var::String & name, const var::String & attrs){
 	String str;
 	int i;
 	for(i=0; i < indent; i++){
@@ -351,7 +367,7 @@ int Xml::write_empty_element_tag(const var::ConstString & name, const var::Const
 	return write(str);
 }
 
-int Xml::write_element(const var::ConstString & name, const var::ConstString & data, const var::ConstString & attrs){
+int Xml::write_element(const var::String & name, const var::String & data, const var::String & attrs){
 	String str;
 	int i;
 	for(i=0; i < indent; i++){
@@ -366,7 +382,7 @@ int Xml::write_element(const var::ConstString & name, const var::ConstString & d
 	}
 	str.append(">");
 
-	if(  write(str) != (int)str.size() ){
+	if(  write(str) != (int)str.length() ){
 		return -1;
 	}
 
@@ -379,21 +395,21 @@ int Xml::write_element(const var::ConstString & name, const var::ConstString & d
 	str.append(name);
 	str.append(">\n");
 
-	if(  write(str) != (int)str.size() ){
+	if(  write(str) != (int)str.length() ){
 		return -1;
 	}
 	return 0;
 }
 
 //find str in the current context and define a target context that defines str
-int Xml::find_context(const var::ConstString & str, const context_t & current, context_t & target) const{
+int Xml::find_context(const var::String & str, const context_t & current, context_t & target) const{
 	Tokenizer tokens(
-				arg::TokenEncodedString(str),
-				arg::TokenDelimeters(".")
+				Tokenizer::EncodedString(str),
+				Tokenizer::Delimeters(".")
 				);
 	//String s0;
 	String s1;
-	seek(arg::Location(current.offset));
+	seek(File::Location(current.offset));
 	int i, j;
 	context_t tmp;
 
@@ -440,7 +456,7 @@ int Xml::find_context(const var::ConstString & str, const context_t & current, c
 }
 
 //private workhorse functions
-int Xml::parse_ref_array(String & name, const ConstString & str){
+int Xml::parse_ref_array(String & name, const String & str){
 	String s0;
 	int ret;
 	ret = parse_ref(name, s0, str, "[]");
@@ -450,7 +466,7 @@ int Xml::parse_ref_array(String & name, const ConstString & str){
 	return ret;
 }
 
-int Xml::parse_ref_attr(String & name, String & attr_name, const ConstString & str){
+int Xml::parse_ref_attr(String & name, String & attr_name, const String & str){
 	String s0;
 	int ret;
 	ret = parse_ref(name, attr_name, str, "()");
@@ -460,28 +476,27 @@ int Xml::parse_ref_attr(String & name, String & attr_name, const ConstString & s
 	return 0;
 }
 
-int Xml::parse_ref(String & name, String & value, const ConstString & str, const ConstString & enclosing){
+int Xml::parse_ref(String & name, String & value, const String & str, const String & enclosing){
 	String s0;
 	int open_bracket;
 	int close_bracket;
 
 	s0 = str;
 
-	open_bracket = s0.find(arg::CharacterToFind(enclosing[0]));
+	open_bracket = s0.find(enclosing.at(0));
 	if( open_bracket > 0 ){
 		close_bracket = s0.find(
-					arg::CharacterToFind(enclosing[1]),
-				arg::Position(open_bracket+1)
+					enclosing.at(1),
+				String::Position(open_bracket+1)
 				);
 		if( close_bracket > 0 ){
-			value.copy_contents(
-						arg::SourceData(s0),
-						arg::Position(open_bracket+1),
-						arg::Size(close_bracket-open_bracket-1)
+			value = s0.create_sub_string(
+						String::Position(open_bracket+1),
+						String::Length(close_bracket-open_bracket-1)
 						);
-			name.copy_contents(
-						arg::SourceData(s0),
-						arg::Size(open_bracket)
+			name = s0.create_sub_string(
+						String::Position(0),
+						String::Length(open_bracket)
 						);
 			return 1;
 		} else {
@@ -520,9 +535,9 @@ int Xml::find_target_tag(String & name, context_t & context, context_t & target)
 		if( name.is_empty() ){
 			load_start_tag(str, target);
 			Tokenizer t0(
-						arg::TokenEncodedString(str),
-						arg::TokenDelimeters("\t\r\n <>/"),
-						arg::IgnoreTokensBetween("\"'")
+						Tokenizer::EncodedString(str),
+						Tokenizer::Delimeters("\t\r\n <>/"),
+						Tokenizer::IgnoreBetween("\"'")
 						);
 			if( t0.size() ){
 				name = t0.at(0);
@@ -547,11 +562,9 @@ int Xml::find_target_tag(String & name, context_t & context, context_t & target)
 bool Xml::is_empty_element_tag(context_t & target) const{
 	char c;
 	c = 0;
-	read(
-				arg::Location(target.offset + target.start_tag_size - 2),
-				arg::DestinationBuffer(&c),
-				arg::Size(1)
-				);
+	read(File::Location(
+			  target.offset + target.start_tag_size - 2
+			  ), c);
 	if( c == '/' ){
 		return true;
 	}
@@ -577,9 +590,9 @@ int Xml::next_tag_name(
 	}
 
 	Tokenizer t0(
-				arg::TokenEncodedString(s0),
-				arg::TokenDelimeters("\t\r\n <>/"),
-				arg::IgnoreTokensBetween("\"'")
+				Tokenizer::EncodedString(s0),
+				Tokenizer::Delimeters("\t\r\n <>/"),
+				Tokenizer::IgnoreBetween("\"'")
 				);
 
 	//the name is t0.at(0)
@@ -594,13 +607,13 @@ int Xml::next_tag_name(
 
 int Xml::check_string_for_open_bracket(String * src, String * cmp) const {
 	int loc;
-	int cmp_size = cmp->size();
+	int cmp_size = cmp->length();
 	char term;
 	loc = 0;
 	do {
 		loc = src->find(
-					arg::StringToFind(*cmp),
-					arg::Position(loc)
+					*cmp,
+					String::Position(loc)
 					);
 		term = src->at(loc + cmp_size);
 		if( loc > 0 ){
@@ -616,9 +629,9 @@ int Xml::check_string_for_open_bracket(String * src, String * cmp) const {
 }
 
 
-int Xml::find_tag(const var::ConstString & name,
+int Xml::find_tag(const var::String & name,
 						const context_t & context,
-						const var::ConstString & tag_style,
+						const var::String & tag_style,
 						s32 & tag_size) const {
 	int ret;
 	int loc;
@@ -653,15 +666,15 @@ int Xml::find_tag(const var::ConstString & name,
 		}
 
 		ret = read(
-					arg::Location(offset),
-					arg::DestinationBuffer(str.to_void()),
-					arg::Size(page_size)
+					File::Location(offset),
+					str.to_char(),
+					File::Size(page_size)
 					);
 
 		loc = 0;
 		if( ret > 0 ){
 			//we don't want to cut off the starting char so we need to go back to the last >
-			tmp = str.rfind(arg::StringToFind(">"));
+			tmp = str.rfind(">");
 			if( tmp > 0 ){
 				ret = tmp;
 				str.to_char()[tmp+1] = 0;
@@ -675,7 +688,7 @@ int Xml::find_tag(const var::ConstString & name,
 
 						state = FIND_STATE_CLOSEBRACKET;
 						start_loc = offset + loc;
-						loc += str_cmp.size();
+						loc += str_cmp.length();
 					} else {
 						break;
 					}
@@ -690,8 +703,8 @@ int Xml::find_tag(const var::ConstString & name,
 
 
 					if( (loc = str.find(
-							  arg::CharacterToFind('>'),
-							  arg::Position(loc)
+							  '>',
+							  String::Position(loc)
 							  )) > -1 ){
 						//found the end
 						end_loc = offset + loc;
@@ -743,11 +756,11 @@ void Xml::show_context(context_t & context){
 			page_size = str.capacity();
 		}
 
-		memset(str.to_void(), 0, str.size());
+		memset(str.to_char(), 0, str.length());
 		if( read(
-				 arg::Location(offset),
-				 arg::DestinationBuffer(str.to_void()),
-				 arg::Size(page_size)
+				 File::Location(offset),
+				 str.to_char(),
+				 File::Size(page_size)
 				 ) > 0 ){
 			printf("%s", str.cstring());
 		} else {
@@ -772,9 +785,8 @@ int Xml::read_context(int offset, String & str, context_t & target) const {
 		page_size = str.capacity();
 	}
 	return read(
-				arg::Location(target.offset + target.cursor + offset),
-				arg::DestinationBuffer(str.to_void()),
-				arg::Size(str.capacity())
+				File::Location(target.offset + target.cursor + offset),
+				str
 				);
 }
 
@@ -784,9 +796,9 @@ int Xml::load_start_tag(String & tag, const context_t & target) const {
 	}
 
 	return read(
-				arg::Location(target.offset),
-				arg::DestinationBuffer(tag.to_void()),
-				arg::Size(target.start_tag_size)
+				File::Location(target.offset),
+				tag.to_char(),
+				File::Size(target.start_tag_size)
 				);
 
 }
@@ -802,14 +814,14 @@ int Xml::find_attribute(String & key, String & value, context_t & target) const{
 
 
 	Tokenizer t0(
-				arg::TokenEncodedString(s0),
-				arg::TokenDelimeters("\t\r\n <>/"),
-				arg::IgnoreTokensBetween("\"'")
+				Tokenizer::EncodedString(s0),
+				Tokenizer::Delimeters("\t\r\n <>/"),
+				Tokenizer::IgnoreBetween("\"'")
 				);
 	for(i=0; i < t0.size(); i++){
 		Tokenizer t1(
-					arg::TokenEncodedString(t0.at(i)),
-					arg::TokenDelimeters("=")
+					Tokenizer::EncodedString(t0.at(i)),
+					Tokenizer::Delimeters("=")
 					);
 		if( key == t1.at(0) ){
 			value = t1.at(1);

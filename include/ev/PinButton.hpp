@@ -29,9 +29,9 @@ public:
 	 *
 	 */
 	PinButton(
-			const arg::PortNumber port,
-			const arg::PinNumber pin,
-			const arg::IsPinActiveHigh is_active_high = arg::IsPinActiveHigh(true)
+			Port port,
+			Number pin,
+			IsActiveHigh is_active_high = IsActiveHigh(true)
 			);
 
 	/*! \details Accesses how long the user must hold the

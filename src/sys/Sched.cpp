@@ -19,7 +19,7 @@ int Sched::get_priority_min(enum policy value){
 	return sched_get_priority_min(value);
 }
 
-int Sched::get_priority(const arg::Pid pid){
+int Sched::get_priority(ProcessId pid){
 	struct sched_param param;
 	if( sched_getparam(pid.argument(), &param) < 0 ){
 		return -1;
@@ -27,7 +27,7 @@ int Sched::get_priority(const arg::Pid pid){
 	return param.sched_priority;
 }
 
-int Sched::get_rr_interval(const arg::Pid pid){
+int Sched::get_rr_interval(ProcessId pid){
 	struct timespec t;
 	memset(&t, 0, sizeof(t));
 	sched_rr_get_interval(pid.argument(), &t);
@@ -35,9 +35,9 @@ int Sched::get_rr_interval(const arg::Pid pid){
 }
 
 int Sched::set_scheduler(
-		const arg::Pid pid,
+		ProcessId pid,
 		enum policy value,
-		const arg::SchedulerPriority priority
+		Priority priority
 		){
 	struct sched_param param;
 	param.sched_priority = priority.argument();

@@ -6,7 +6,7 @@
 
 #include <unistd.h>
 #include "../var/String.hpp"
-#include "../var/ConstString.hpp"
+#include "../var/String.hpp"
 #include "../api/FmtObject.hpp"
 
 /*! \cond */
@@ -60,11 +60,15 @@ public:
 	 * @param perms File permissions if creating a new file (WRONLY)
 	 *
 	 */
-	Xml(const arg::DestinationFilePath & path, const fs::OpenFlags & flags, const fs::Permissions & permissions = fs::Permissions(0666));
+	Xml(const var::String & path,
+		 const fs::OpenFlags & flags,
+		 const fs::Permissions & permissions = fs::Permissions(0666));
 
 	Xml();
 
-	int init(const arg::DestinationFilePath & path, const fs::OpenFlags & flags, const fs::Permissions & perms = fs::Permissions(0666));
+	int init(const var::String & path,
+				const fs::OpenFlags & flags,
+				const fs::Permissions & perms = fs::Permissions(0666));
 
 	inline int close(){
 		file_size = 0;
@@ -96,8 +100,8 @@ public:
 	 *
 	 *  \return Zero if \a key is successfully fetched
 	 */
-	int get_value(var::String & dest, const var::String & key = 0) const;
-	inline int get_value(var::String * dest, const char * key = 0) const {
+	int get_value(var::String & dest, const var::String & key = "") const;
+	inline int get_value(var::String * dest, const char * key = "") const {
 		return get_value(*dest, key);
 	}
 

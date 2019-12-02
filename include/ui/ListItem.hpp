@@ -22,7 +22,7 @@ namespace ui {
 class ListItem : public LinkedElement {
 public:
 	/*! \details Construct a new list item */
-	ListItem(const var::String & label, LinkedElement * parent = 0, LinkedElement * child = 0);
+	ListItem(const var::String & label, LinkedElement * parent = nullptr, LinkedElement * child = nullptr);
 
 	void draw_to_scale(const draw::DrawingScaledAttr & attr);
 
@@ -141,11 +141,11 @@ public:
 	typedef void (*list_dir_callback_t)(DirList * list);
 
 	/*! \details Contruct a new list */
-	DirList(const arg::SourceDirectoryPath & path, LinkedElement * parent = 0, LinkedElement * child = 0);
+	DirList(const var::String & path, LinkedElement * parent = 0, LinkedElement * child = 0);
 	~DirList();
 
 	/*! \details Set the path for the directory */
-	void set_path(const arg::SourceDirectoryPath & path);
+	void set_path(const var::String & path);
 	/*! \details Access the path */
 	const var::String & path() const { return m_path; }
 

@@ -3,7 +3,7 @@
 
 #include <sos/dev/button.h>
 #include "Button.hpp"
-#include "../sys/MicroTime.hpp"
+#include "../chrono/MicroTime.hpp"
 #include "../hal/Device.hpp"
 
 namespace ev {
@@ -21,8 +21,12 @@ namespace ev {
  * much more portable.
  *
  */
-class DeviceButton : public Button, public hal::Device {
+class DeviceButton : public virtual Button, public hal::Device {
 public:
+
+	using HeldThreshold = arg::Argument<const chrono::MicroTime &, struct DeviceButtonHeldThresholdTag>;
+	using ActuatedThreshold = arg::Argument<const chrono::MicroTime &, struct DeviceButtonActuatedThresholdTag>;
+
 	DeviceButton();
 
 	/*! \details Returns the number of buttons available.
@@ -79,10 +83,10 @@ public:
 	  *
 	  */
 	int set_attributes(
-			const arg::Location location,
+			Location location,
 			enum ev::Event::button_id id,
-			const arg::ButtonHeldThreshold held_threshold = arg::ButtonHeldThreshold(chrono::MicroTime::invalid()),
-			const arg::ButtonActuatedThreshold actuated_threshold = arg::ButtonActuatedThreshold(chrono::MicroTime::invalid())
+			HeldThreshold held_threshold = HeldThreshold(chrono::MicroTime::invalid()),
+			ActuatedThreshold actuated_threshold = ActuatedThreshold(chrono::MicroTime::invalid())
 			);
 
 	chrono::MicroTime get_duration();

@@ -9,34 +9,29 @@ namespace hal {
 DisplayDevice::DisplayDevice(){}
 
 /*! \brief Pure virtual function to initialize the LCD */
-int DisplayDevice::initialize(const arg::SourceFilePath & name){
+int DisplayDevice::initialize(const var::String & name){
 	//open and populate attr
 
-	if( name.argument().is_empty() == false ){
+	if( name.is_empty() == false ){
 
 		//only open the device if it isn't already open
 		if ( Device::open(
-				  arg::FilePath(name.argument()),
+				  name,
 				  fs::OpenFlags::read_write()) < 0 ){
 			return -1;
 		}
 
 		display_info_t info;
 		if( ioctl(
-				 arg::IoRequest(I_DISPLAY_GETINFO),
-				 arg::IoArgument(&info)
+				 IoRequest(I_DISPLAY_GETINFO),
+				 IoArgument(&info)
 				 ) < 0 ){
 			return -1;
 		}
 
 		set_bits_per_pixel(info.bits_per_pixel);
 
-		allocate(
-					sgfx::Area(
-						arg::Width(info.width),
-						arg::Height(info.height)
-						)
-					);
+		allocate(sgfx::Area(info.width, info.height));
 
 		set_margin_left(info.margin_left);
 		set_margin_right(info.margin_right);
@@ -46,8 +41,8 @@ int DisplayDevice::initialize(const arg::SourceFilePath & name){
 		display_attr_t attr;
 		attr.o_flags = DISPLAY_FLAG_INIT;
 		if( ioctl(
-				 arg::IoRequest(I_DISPLAY_SETATTR),
-				 arg::IoArgument(&attr)
+				 IoRequest(I_DISPLAY_SETATTR),
+				 IoArgument(&attr)
 				 ) < 0 ){
 			return -1;
 		}
@@ -60,8 +55,8 @@ int DisplayDevice::initialize(const arg::SourceFilePath & name){
 DisplayInfo DisplayDevice::get_info() const {
 	display_info_t info;
 	if( ioctl(
-			 arg::IoRequest(I_DISPLAY_GETINFO),
-			 arg::IoArgument(&info)
+			 IoRequest(I_DISPLAY_GETINFO),
+			 IoArgument(&info)
 			 ) < 0 ){
 		return DisplayInfo();
 	}
@@ -71,8 +66,8 @@ DisplayInfo DisplayDevice::get_info() const {
 DisplayPalette DisplayDevice::get_palette() const {
 	display_palette_t palette;
 	if( ioctl(
-			 arg::IoRequest(I_DISPLAY_GETPALETTE),
-			 arg::IoArgument(&palette)
+			 IoRequest(I_DISPLAY_GETPALETTE),
+			 IoArgument(&palette)
 			 ) < 0 ){
 		return DisplayPalette();
 	}
@@ -88,8 +83,8 @@ int DisplayDevice::set_window(const sgfx::Region & region){
 	attr.window_width = region.area().width();
 	attr.window_height = region.area().height();
 	return ioctl(
-				arg::IoRequest(I_DISPLAY_SETATTR),
-				arg::IoArgument(&attr)
+				IoRequest(I_DISPLAY_SETATTR),
+				IoArgument(&attr)
 				);
 }
 
@@ -102,8 +97,8 @@ int DisplayDevice::set_mode(enum mode value){
 		attr.o_flags |= DISPLAY_FLAG_IS_MODE_RAW;
 	}
 	return ioctl(
-				arg::IoRequest(I_DISPLAY_SETATTR),
-				arg::IoArgument(&attr)
+				IoRequest(I_DISPLAY_SETATTR),
+				IoArgument(&attr)
 				);
 }
 
@@ -111,15 +106,15 @@ void DisplayDevice::refresh() const {
 
 	//write the bitmap to the display
 
-	ioctl(arg::IoRequest(I_DISPLAY_REFRESH));
+	ioctl(IoRequest(I_DISPLAY_REFRESH));
 }
 
 int DisplayDevice::enable() const {
 	display_attr_t attr;
 	attr.o_flags = DISPLAY_FLAG_ENABLE;
 	return ioctl(
-				arg::IoRequest(I_DISPLAY_SETATTR),
-				arg::IoArgument(&attr)
+				IoRequest(I_DISPLAY_SETATTR),
+				IoArgument(&attr)
 				);
 }
 
@@ -127,8 +122,8 @@ void DisplayDevice::clear(){
 	display_attr_t attributes;
 	attributes.o_flags = DISPLAY_FLAG_CLEAR;
 	if( ioctl(
-			 arg::IoRequest(I_DISPLAY_CLEAR),
-			 arg::IoArgument(&attributes)
+			 IoRequest(I_DISPLAY_CLEAR),
+			 IoArgument(&attributes)
 			 ) < 0 ){
 		Data::clear();
 	}
@@ -138,8 +133,8 @@ int DisplayDevice::disable() const {
 	display_attr_t attr;
 	attr.o_flags = DISPLAY_FLAG_DISABLE;
 	return ioctl(
-				arg::IoRequest(I_DISPLAY_SETATTR),
-				arg::IoArgument(&attr)
+				IoRequest(I_DISPLAY_SETATTR),
+				IoArgument(&attr)
 				);
 }
 
@@ -153,7 +148,7 @@ void DisplayDevice::wait(const chrono::MicroTime & resolution) const{
 }
 
 bool DisplayDevice::is_busy() const {
-	return ioctl(arg::IoRequest(I_DISPLAY_ISBUSY)) == 1;
+	return ioctl(IoRequest(I_DISPLAY_ISBUSY)) == 1;
 }
 
 } /* namespace hal */

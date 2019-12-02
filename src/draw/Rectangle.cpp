@@ -50,73 +50,40 @@ void RoundedRectangle::draw_to_scale(const DrawingScaledAttributes & attr){
 	//top left
 	attr.bitmap().draw_quadratic_bezier(
 				attr.point() +
-				sgfx::Point(
-					arg::XValue(0),
-					arg::YValue(pixel_radius)
-					),
+				sgfx::Point(0, pixel_radius),
 				attr.point(),
 				attr.point() +
-				sgfx::Point(
-					arg::XValue(pixel_radius),
-					arg::YValue(0)
-					)
+				sgfx::Point(pixel_radius, 0)
 				);
 
 	//top right
 	attr.bitmap().draw_quadratic_bezier(
 				attr.point() +
-				sgfx::Point(
-					arg::XValue(attr.area().width() - pixel_radius),
-					arg::YValue(0)
-					),
+				sgfx::Point(attr.area().width() - pixel_radius, 0),
 				attr.point() +
-				sgfx::Point(
-					arg::XValue(attr.area().width()),
-					arg::YValue(0)
-					),
+				sgfx::Point(attr.area().width(), 0),
 				attr.point() +
-				sgfx::Point(
-					arg::XValue(attr.area().width()),
-					arg::YValue(pixel_radius)
-					)
+				sgfx::Point(attr.area().width(), pixel_radius)
 				);
 
 	//bottom right
 	attr.bitmap().draw_quadratic_bezier(
 				attr.point() +
-				sgfx::Point(
-					arg::XValue(attr.area().width()),
-					arg::YValue(attr.area().height() - pixel_radius)
-					),
+				sgfx::Point(attr.area().width(), attr.area().height() - pixel_radius),
 				attr.point() +
-				sgfx::Point(
-					arg::XValue(attr.area().width()),
-					arg::YValue(attr.area().height())
-					),
+				sgfx::Point(attr.area().width(), attr.area().height()),
 				attr.point() +
-				sgfx::Point(
-					arg::XValue(attr.area().width() - pixel_radius),
-					arg::YValue(attr.area().height())
-					)
+				sgfx::Point(attr.area().width() - pixel_radius, attr.area().height())
 				);
 
 	//bottom left
 	attr.bitmap().draw_quadratic_bezier(
 				attr.point() +
-				sgfx::Point(
-					arg::XValue(pixel_radius),
-					arg::YValue(attr.area().height())
-					),
+				sgfx::Point(pixel_radius, attr.area().height()),
 				attr.point() +
-				sgfx::Point(
-					arg::XValue(0),
-					arg::YValue(attr.area().height())
-					),
+				sgfx::Point(0, attr.area().height()),
 				attr.point() +
-				sgfx::Point(
-					arg::XValue(0),
-					arg::YValue(attr.area().height()-pixel_radius)
-					)
+				sgfx::Point(0, attr.area().height()-pixel_radius)
 				);
 
 	//now fill corners

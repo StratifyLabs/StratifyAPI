@@ -9,8 +9,7 @@
 #include <cstring>
 #include <errno.h>
 #include <aio.h>
-#include "../var/Data.hpp"
-#include "../api/FsObject.hpp"
+#include "File.hpp"
 
 namespace hal {
 class Device;
@@ -61,57 +60,52 @@ class Aio : public api::FsWorkObject {
 	friend class hal::Device;
 public:
 
+	using Location = File::Location;
+	using Size = File::Size;
+
 	/*! \details Constructs an empy AIO object. */
 	Aio(){ memset(&m_aio_var, 0, sizeof(struct aiocb)); }
 
-	/*! \details Constructs a new Aio object.
-	 *
-	 * @param buf The buffer for data transactions
-	 * @param nbytes The number of bytes to transfer on transactions
-	 * @param offset The file/device offset location
-	 *
-	 */
 	Aio(
-			const arg::SourceBuffer buf,
-			const arg::Size nbytes,
-			const arg::Location offset = arg::Location(0)
+			const var::Reference & reference
 			){
-		m_aio_var.aio_buf = (volatile void*)buf.argument();
-		m_aio_var.aio_nbytes = nbytes.argument();
-		m_aio_var.aio_offset = offset.argument();
+		m_aio_var.aio_buf = reference.to_void();
+		m_aio_var.aio_nbytes = reference.size();
+		m_aio_var.aio_offset = 0;
 		m_aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
 	}
 
 	Aio(
-			arg::DestinationBuffer buf,
-			const arg::Size nbytes,
-			const arg::Location offset = arg::Location(0)){
-		m_aio_var.aio_buf = (volatile void*)buf.argument();
-		m_aio_var.aio_nbytes = nbytes.argument();
-		m_aio_var.aio_offset = offset.argument();
+			Location location,
+			const var::Reference & reference
+			){
+		m_aio_var.aio_buf = reference.to_void();
+		m_aio_var.aio_nbytes = reference.size();
+		m_aio_var.aio_offset = location.argument();
 		m_aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
 	}
 
-	template<typename T> static Aio create_reference(
-			T & value,
-			const arg::Location offset = arg::Location(0)
+	Aio(
+			Location location,
+			void * buf,
+			Size nbytes
 			){
-		return Aio(arg::DestinationBuffer(&value),
-					  arg::Size(sizeof(T)),
-					  offset
-					  );
+		m_aio_var.aio_buf = (volatile void*)buf;
+		m_aio_var.aio_nbytes = nbytes.argument();
+		m_aio_var.aio_offset = location.argument();
+		m_aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
 	}
 
-	template<typename T> static Aio create_reference(
-			const T & value,
-			const arg::Location offset = arg::Location(0)
+	Aio(
+			void * buf,
+			Size nbytes
 			){
-		return Aio(
-					arg::SourceBuffer(&value),
-					arg::Size(sizeof(T)),
-					offset
-					);
+		m_aio_var.aio_buf = (volatile void*)buf;
+		m_aio_var.aio_nbytes = nbytes.argument();
+		m_aio_var.aio_offset = 0;
+		m_aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
 	}
+
 
 
 	/*! \details Blocks until all transfers in list have completed or timeout is reached.
@@ -154,46 +148,17 @@ public:
 	 *
 	 */
 	Aio & refer_to(
-			const arg::DestinationBuffer & buf,
-			const arg::Size & nbytes){
-		m_aio_var.aio_buf = (volatile void*)buf.argument();
-		m_aio_var.aio_nbytes = nbytes.argument();
+			void * buf,
+			Size size){
+		m_aio_var.aio_buf = (volatile void*)buf;
+		m_aio_var.aio_nbytes = size.argument();
 		return *this;
 	}
 
-	Aio & refer_to(
-			const arg::SourceBuffer & buf,
-			const arg::Size & nbytes){
-		m_aio_var.aio_buf = (volatile void*)buf.argument();
-		m_aio_var.aio_nbytes = nbytes.argument();
+	Aio & refer_to(const var::Reference & reference){
+		m_aio_var.aio_buf = (volatile void*)reference.to_void();
+		m_aio_var.aio_nbytes = reference.size();
 		return *this;
-	}
-
-	/*! \details Sets the buffer using a var::Data object.
-	  *
-	  * @param data The data object
-	  *
-	  * The data object must not change the buffer
-	  * allocation after calling this method. If it
-	  * does, it will need to set the buffer again.
-	  *
-	  */
-	Aio & refer_to(arg::DestinationData data){
-		return refer_to(
-					arg::DestinationBuffer(data.argument().to_void()),
-					arg::Size(data.argument().size())
-					);
-	}
-
-	Aio & refer_to(const arg::SourceData data){
-		return refer_to(
-					arg::SourceBuffer(data.argument().to_const_void()),
-					arg::Size(data.argument().size())
-					);
-	}
-
-	Aio & operator << (var::Data & data){
-		return refer_to(arg::DestinationData(data));
 	}
 
 
@@ -254,6 +219,11 @@ public:
 
 	Aio & set_signal_value(int value){
 		m_aio_var.aio_sigevent.sigev_value.sival_int = value;
+		return *this;
+	}
+
+	Aio & set_location(int location){
+		m_aio_var.aio_offset = location;
 		return *this;
 	}
 

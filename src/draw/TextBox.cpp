@@ -15,8 +15,8 @@ int TextBox::count_lines(sg_size_t w){
 
 int TextBox::count_lines(const Font * font, sg_size_t w, const TextAttr & text_attr){
 	Tokenizer tokens(
-				arg::TokenEncodedString(text_attr.string()),
-				arg::TokenDelimeters(" ")
+				Tokenizer::EncodedString(text_attr.string()),
+				Tokenizer::Delimeters(" ")
 				);
 	u32 i;
 	String line;
@@ -40,8 +40,8 @@ int TextBox::count_lines(const Font * font, sg_size_t w, const TextAttr & text_a
 
 void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 	Tokenizer tokens(
-				arg::TokenEncodedString(string()),
-				arg::TokenDelimeters(" ")
+				Tokenizer::EncodedString(string()),
+				Tokenizer::Delimeters(" ")
 				);
 	String line;
 	u32 i;

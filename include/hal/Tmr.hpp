@@ -87,7 +87,8 @@ public:
 			Device::Location position,
 			Device::Port port,
 			Device::PinNumber pin){
-		if( position.argument() < sizeof(tmr_pin_assignment_t)/sizeof(mcu_pin_t) ){
+		if( position.argument() <
+			 (int)(sizeof(tmr_pin_assignment_t)/sizeof(mcu_pin_t)) ){
 			m_attr.pin_assignment.channel[position.argument()] =
 					mcu_pin(port.argument(), pin.argument());
 		}
@@ -196,8 +197,8 @@ typedef TmrAttributes TmrAttr;
  *				)
  *			.assign_pin( //assign PD15 to use as a channel
  *				arg::Position(0), //use slot zero to assign this pin
- *				arg::PortNumber(3), //PORTA -> 0 ... PORTD -> 3
- *				arg::PinNumber(15) //Pin 15
+ *				Pin::Port(3), //PORTA -> 0 ... PORTD -> 3
+ *				Pin::Number(15) //Pin 15
  *				);
  *
  *

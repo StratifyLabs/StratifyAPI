@@ -37,9 +37,16 @@ namespace hal {
 class Device : public fs::File {
 public:
 
-	using Channel = arg::Argument<u32, struct DeviceChannelTag>;
-	using Events = arg::Argument<u32, struct DeviceChannelTag>;
+#if defined __link
+	using Events = arg::Argument<u32, struct DeviceEventsTag>;
 	using InterruptPriority = arg::Argument<s8, struct DeviceInterruptPriorityTag>;
+	using Channel = arg::Argument<u32, struct DeviceChannelTag>;
+#else
+	using Events = hal::DeviceSignal::Events;
+	using InterruptPriority = hal::DeviceSignal::InterruptPriority;
+	using Channel = hal::DeviceSignal::Channel;
+#endif
+
 	using McuCallback = arg::Argument<mcu_callback_t, struct DeviceMcuCallbackTag>;
 	using Context = arg::Argument<void*, struct DeviceMcuContextTag>;
 	using Port = arg::Argument<u8, struct DevicePortTag>;

@@ -715,8 +715,9 @@ private:
 
 };
 
+}
+
 #endif
 
-}
 
 #endif // SAPI_SYS_LINK_HPP_

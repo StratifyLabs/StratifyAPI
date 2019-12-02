@@ -167,6 +167,10 @@ private:
  */
 class Sys : public fs::File {
 public:
+
+	using KernelRequest = arg::Argument<int, struct SysKernelRequest>;
+	using KernelArgument = arg::Argument<void*, struct SysKernelArgument>;
+
 	Sys(
 			SAPI_LINK_DRIVER_NULLPTR
 			);
@@ -297,8 +301,10 @@ public:
 	 * @param version The destination string for the version
 	 * @return Zero on success
 	 */
-	static int get_version(var::String & version);
 	static var::String get_version();
+	/*! \cond */
+	static int get_version(var::String & version);
+	/*! \endcond */
 
 	/*! \details Gets the version (kernel version).
 	 *
@@ -337,8 +343,8 @@ public:
 	 * be defined and implemented by the board support package.
 	 */
 	static int request(
-			const arg::KernelRequest req,
-			arg::DestinationBuffer arg = arg::DestinationBuffer(0)
+			KernelRequest req,
+			KernelArgument argument = KernelArgument(nullptr)
 			);
 
 	/*! \details Request a kernel install library's API.
@@ -441,7 +447,7 @@ public:
 	 *
 	 *
 	 */
-	static void redirect_stdout(const arg::FileDescriptor fd){
+	static void redirect_stdout(fs::File::Descriptor fd){
 		_impure_ptr->_stdout->_file = fd.argument();
 	}
 
@@ -452,7 +458,7 @@ public:
 	 * See Sys::redirect_stdout() for an example.
 	 *
 	 */
-	static void redirect_stdin(const arg::FileDescriptor fd){
+	static void redirect_stdin(fs::File::Descriptor fd){
 		_impure_ptr->_stdin->_file = fd.argument();
 	}
 
@@ -463,7 +469,7 @@ public:
 	 * See Sys::redirect_stdout() for an example.
 	 *
 	 */
-	static void redirect_stderr(const arg::FileDescriptor fd){
+	static void redirect_stderr(fs::File::Descriptor fd){
 		_impure_ptr->_stderr->_file = fd.argument();
 	}
 #endif

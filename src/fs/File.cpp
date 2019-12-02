@@ -13,7 +13,7 @@ using namespace fs;
 using namespace arg;
 
 #if !defined __link
-#define link_open(w,x,y,z) ::rename(x,y,z)
+#define link_open(w,x,y,z) ::open(x,y,z)
 #define link_rename(x,y,z) ::rename(y,z)
 #define link_unlink(x,y) ::remove(y)
 #define link_lseek(w,x,y,z) ::lseek(x,y,z)
@@ -319,7 +319,7 @@ int File::fstat(
 
 #if !defined __link
 u32 File::size(
-		const arg::SourceFilePath & name
+		const var::String & name
 		){
 	struct stat st;
 	if( stat(name, st) < 0 ){
@@ -540,11 +540,14 @@ const var::String File::name(
 		const var::String & path
 		){
 	size_t pos = path.rfind('/');
+
 	if( pos == var::String::npos ){
 		return path;
 	}
 
-	return path.cstring() + pos + 1;
+	return path.create_sub_string(
+				var::String::Position(pos+1)
+				);
 }
 
 var::String File::parent_directory(
@@ -560,11 +563,11 @@ var::String File::parent_directory(
 }
 
 #if !defined __link
-int File::access(const SourceFilePath path,
+int File::access(const var::String & path,
 					  const Access & access
 					  ){
 	return ::access(
-				path.argument().cstring(),
+				path.cstring(),
 				access.o_access()
 				);
 
@@ -572,7 +575,7 @@ int File::access(const SourceFilePath path,
 #endif
 
 
-const char * File::suffix(
+const var::String File::suffix(
 		const var::String & path
 		){
 	size_t pos = path.rfind('.');

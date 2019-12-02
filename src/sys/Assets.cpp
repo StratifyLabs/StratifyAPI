@@ -38,47 +38,35 @@ int Assets::initialize(){
 	return 0;
 }
 
-void Assets::find_fonts_in_directory(const var::ConstString & path){
+void Assets::find_fonts_in_directory(const var::String & path){
 	var::Vector<var::String> file_list;
 
-	file_list = fs::Dir::read_list(
-				arg::SourceDirectoryPath(path)
-				);
+	file_list = fs::Dir::read_list(path);
 
 	for(u32 i=0; i < file_list.count(); i++){
-		if( fs::File::suffix(
-				 arg::FilePath(file_list.at(i))
-				 ) == "sbf" ){
+		if( fs::File::suffix(file_list.at(i)) == "sbf" ){
 
 			var::String font_path = path;
 			font_path << "/" << file_list.at(i);
 
-			FontInfo info = FontInfo(
-						arg::SourceFilePath(font_path)
-						);
+			FontInfo info = FontInfo(font_path);
 
 			m_font_info_list.push_back(info);
 		}
 	}
 }
 
-void Assets::find_icons_in_directory(const var::ConstString & path){
+void Assets::find_icons_in_directory(const var::String & path){
 	var::Vector<var::String> file_list;
-	file_list = fs::Dir::read_list(
-				arg::SourceDirectoryPath(path)
-				);
+	file_list = fs::Dir::read_list(path);
 
 	for(u32 i=0; i < file_list.count(); i++){
-		if( fs::File::suffix(
-				 arg::FilePath(file_list.at(i))
-				 ) == "svic" ){
+		if( fs::File::suffix(file_list.at(i)) == "svic" ){
 			//format is name-weight-size.sbf
 			var::String icon_path = path;
 			icon_path << "/" << file_list.at(i);
 
-			fmt::Svic svic = fmt::Svic(
-						arg::SourceFilePath(icon_path)
-						);
+			fmt::Svic svic = fmt::Svic(icon_path);
 			svic.set_keep_open();
 
 			m_vector_path_list << svic;
@@ -86,7 +74,7 @@ void Assets::find_icons_in_directory(const var::ConstString & path){
 	}
 }
 
-sgfx::VectorPath Assets::find_vector_path(const var::ConstString & name){
+sgfx::VectorPath Assets::find_vector_path(const var::String & name){
 	initialize();
 	for(u32 i=0; i < m_vector_path_list.count(); i++){
 		for(u32 j=0; j < m_vector_path_list.at(i).count(); j++){
@@ -102,7 +90,7 @@ const sgfx::FontInfo * Assets::find_font(
 		const sgfx::FontInfo::PointSize point_size,
 		const sgfx::FontInfo::Style style,
 		const sgfx::FontInfo::Name name,
-		const arg::IsExactMatch is_exact_match
+		const sgfx::FontInfo::IsExactMatch is_exact_match
 		){
 
 	initialize();
@@ -131,9 +119,7 @@ const sgfx::FontInfo * Assets::find_font(
 				 (info.name() == name.argument() || name.argument().is_empty()) ){
 				//exact match
 				if( info.font() == 0 ){
-					info.set_font(new FileFont(
-										  arg::SourceFilePath(info.path())
-										  ));
+					info.set_font(new FileFont(info.path()));
 				}
 				return &info;
 			}
@@ -155,9 +141,7 @@ const sgfx::FontInfo * Assets::find_font(
 			  (info.style() != FontInfo::ICONS)) ){
 			if( (info.point_size() == closest_point_size) && (info.style() == closest_style) ){
 				if( info.font() == 0 ){
-					info.set_font(new FileFont(
-										  arg::SourceFilePath(info.path())
-										  ));
+					info.set_font(new FileFont(info.path()));
 				}
 				return &info;
 			}

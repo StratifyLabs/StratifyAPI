@@ -130,11 +130,11 @@ int Appfs::create(
 		const ProgressCallback * progress_callback
 		SAPI_LINK_DRIVER_LAST
 		){
-	fs::File file(
+	fs::File file
 			#if defined __link
-				link_driver
+				(link_driver)
 			#endif
-				);
+				;
 	char buffer[LINK_PATH_MAX];
 	int tmp;
 	appfs_createattr_t attr;
@@ -185,7 +185,6 @@ int Appfs::create(
 	attr.nbyte += sizeof(f);
 	loc = 0;
 	bw = 0;
-	printf("%s():%d\n", __FUNCTION__, __LINE__);
 	do {
 		if( loc != 0 ){ //when loc is 0 -- header is copied in
 			if( (f.exec.code_size - bw) > APPFS_PAGE_SIZE ){
@@ -212,14 +211,12 @@ int Appfs::create(
 		bw += attr.nbyte;
 		loc += attr.nbyte;
 
-		printf("%s():%d\n", __FUNCTION__, __LINE__);
 		if( progress_callback ){
 			progress_callback->update(bw, f.exec.code_size);
 		}
 
 	} while( bw < f.exec.code_size);
 
-	printf("%s():%d\n", __FUNCTION__, __LINE__);
 	return f.exec.code_size;
 }
 
@@ -227,16 +224,18 @@ AppfsInfo Appfs::get_info(
 		const var::String & path
 		SAPI_LINK_DRIVER_LAST
 		){
-	fs::File f(
+	fs::File f
 			#if defined __link
-				link_driver
+				(link_driver)
 			#endif
-				);
+				;
+
 	var::String app_name;
 	var::String path_name;
 	appfs_file_t appfs_file_header;
 	appfs_info_t info;
-	int ret;
+	int result;
+
 	if( f.open(
 			 path,
 			 fs::OpenFlags::read_only()
@@ -244,13 +243,11 @@ AppfsInfo Appfs::get_info(
 		return AppfsInfo();
 	}
 
-	ret = f.read(
-				&appfs_file_header,
-				fs::File::Size(sizeof(appfs_file_header))
-				);
+	result = f.read(appfs_file_header);
+
 	f.close();
 
-	if( ret == sizeof(appfs_file_header) ){
+	if( result == sizeof(appfs_file_header) ){
 		//first check to see if the name matches -- otherwise it isn't an app file
 		path_name = fs::File::name(path);
 
@@ -267,10 +264,11 @@ AppfsInfo Appfs::get_info(
 		}
 
 		app_name = appfs_file_header.hdr.name;
+
 		memset(&info, 0, sizeof(info));
 		if( path_name == app_name
 	 #if defined __link
-			 || (path_name.find(app_name) ==0)
+			 || (path_name.find(app_name) == 0 )
 	 #endif
 
 			 ){
@@ -332,9 +330,7 @@ int Appfs::cleanup(bool data){
 	char buffer[LINK_PATH_MAX];
 	const char * name;
 
-	if( dir.open(
-			 arg::SourceDirectoryPath("/app/ram")
-			 ) < 0 ){
+	if( dir.open("/app/ram") < 0 ){
 		return -1;
 	}
 

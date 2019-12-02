@@ -101,8 +101,8 @@ public:
 		PIXEL_FORMAT_RGB888 = DISPLAY_PALETTE_PIXEL_FORMAT_RGB888
 	};
 
-	int save(const arg::DestinationFilePath & path) const;
-	int load(const arg::SourceFilePath & path);
+	int save(const var::String & path) const;
+	int load(const var::String & path);
 
 	int set_monochrome();
 
@@ -168,7 +168,7 @@ public:
 	 *
 	 */
 	Display(
-			arg::ReadWriteBuffer buffer,
+			ReadWriteBuffer buffer,
 			const sgfx::Area & area
 			) : sgfx::Bitmap(buffer,area){
 	}
@@ -183,7 +183,7 @@ public:
 
 	/*! \details Initializes the display. */
 	virtual int initialize(
-			const arg::SourceFilePath & name = arg::SourceFilePath("")
+			const var::String & path = var::String()
 			) = 0;
 
 	/*! \details Turns the display on. */

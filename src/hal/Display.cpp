@@ -111,13 +111,13 @@ void DisplayPalette::set_colors(
 
 	if( readonly ){
 		m_colors.refer_to(
-					arg::ReadOnlyBuffer(v),
-					arg::Size(size)
+					var::Reference::ReadOnlyBuffer(v),
+					var::Reference::Size(size)
 					);
 	} else {
 		m_colors.refer_to(
-					arg::ReadWriteBuffer(v),
-					arg::Size(size)
+					var::Reference::ReadWriteBuffer(v),
+					var::Reference::Size(size)
 					);
 	}
 
@@ -125,9 +125,7 @@ void DisplayPalette::set_colors(
 
 int DisplayPalette::allocate_colors(int count, int pixel_format){
 	m_palette.pixel_format = pixel_format;
-	if( m_colors.allocate(
-			 arg::Size((count * bits_per_pixel()+7)/8)
-			 ) < 0 ){
+	if( m_colors.allocate((count * bits_per_pixel()+7)/8) < 0 ){
 		m_palette.count = 0;
 		m_palette.colors = 0;
 		return -1;
@@ -138,15 +136,15 @@ int DisplayPalette::allocate_colors(int count, int pixel_format){
 	return 0;
 }
 
-int DisplayPalette::save(const arg::DestinationFilePath & path) const{
+int DisplayPalette::save(const var::String & path) const{
 	fs::File f;
 	display_palette_t palette;
 
 	if( f.create(
 			 path,
-			 arg::IsOverwrite(true)
+			 fs::File::IsOverwrite(true)
 			 ) < 0 ){ return -1; }
-	f << var::DataReference(palette) << colors();
+	f << palette << colors();
 
 	if( f.error_number() != 0 ){
 		return -1;
@@ -164,25 +162,20 @@ int DisplayPalette::set_monochrome(){
 }
 
 int DisplayPalette::load(
-		const arg::SourceFilePath & path
+		const var::String & path
 		){
 	fs::File f;
 
 	if( f.open(
-			 arg::FilePath(path.argument()),
+			 path,
 			 fs::OpenFlags::read_only()
 			 ) < 0 ){ return -1; }
 
-	if( f.read(
-			 arg::DestinationBuffer(&m_palette),
-			 arg::Size(sizeof(m_palette))
-			 ) != sizeof(m_palette) ){
+	if( f.read(m_palette) != sizeof(m_palette) ){
 		return -1;
 	}
 
-	if( m_colors.allocate(
-			 arg::Size(m_palette.count * bits_per_pixel()/8)
-			 ) < 0 ){
+	if( m_colors.allocate(m_palette.count * bits_per_pixel()/8) < 0 ){
 		return -1;
 	}
 

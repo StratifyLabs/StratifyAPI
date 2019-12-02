@@ -187,9 +187,7 @@ public:
 		m_table_count = 0;
 		m_state = 0;
 		if( count ){
-			if( m_state_table.allocate(
-					 arg::Size(count * sizeof(state_method_t))
-					 ) < 0 ){
+			if( m_state_table.allocate(count * sizeof(state_method_t)) < 0 ){
 				//failed to alloc table
 			} else {
 				m_table_count = count;

@@ -9,6 +9,7 @@
 #include <sos/fs/devfs.h>
 #include "../sys/Thread.hpp"
 #include "../sys/Signal.hpp"
+#include "Device.hpp"
 
 namespace hal {
 
@@ -55,6 +56,11 @@ namespace hal {
 class DeviceSignal: public sys::Signal {
 public:
 
+	using Channel = arg::Argument<u32, struct DeviceChannelTag>;
+	using Events = arg::Argument<u32, struct DeviceChannelTag>;
+	using InterruptPriority = arg::Argument<s8, struct DeviceInterruptPriorityTag>;
+	using IsPersistent = arg::Argument<bool, struct DeviceSignalIsPersistent>;
+
 	/*! \details Constructs a signal event based on a hardware device action.
 	 *
 	 * @param persistent If false, the signal will be sent only on the first hardware event
@@ -63,17 +69,17 @@ public:
 	 * @param sigvalue The signal value
 	 */
 	DeviceSignal(
-			const arg::IsPersistent persistent,
+			IsPersistent persistent,
 			enum sys::Signal::signal_number signo,
-			const arg::SignalValueInteger sigvalue = arg::SignalValueInteger(0),
-			const arg::SignalCode sigcode = arg::SignalCode(0)) :
+			ValueInteger sigvalue = ValueInteger(0)
+			) :
 		Signal(
 			signo,
 			sigvalue
 			){
 		m_context.tid = sys::Thread::self();
 		m_context.si_signo = signo;
-		m_context.si_sigcode = sigcode.argument();
+		m_context.si_sigcode = LINK_SI_USER;
 		m_context.sig_value = sigvalue.argument();
 		m_context.keep = persistent.argument();
 	}
@@ -86,17 +92,16 @@ public:
 	 * @param sigptr The signal value as a pointer
 	 */
 	DeviceSignal(
-			const arg::IsPersistent persistent,
+			IsPersistent persistent,
 			enum sys::Signal::signal_number signo,
-			const arg::SignalValuePointer sigvalue = arg::SignalValuePointer(0),
-			const arg::SignalCode sigcode = arg::SignalCode(0)) :
+			ValuePointer sigvalue = ValuePointer(0) ) :
 		Signal(
 			signo,
-			sigvalue
+			sigvalue.argument()
 			){
 		m_context.tid = pthread_self();
 		m_context.si_signo = signo;
-		m_context.si_sigcode = sigcode.argument();
+		m_context.si_sigcode = LINK_SI_USER;
 		m_context.sig_ptr = sigvalue.argument();
 		m_context.keep = persistent.argument();
 	}
@@ -110,7 +115,7 @@ public:
 			const devfs_signal_callback_t & context
 			) : Signal(
 					 (enum sys::Signal::signal_number)context.si_signo,
-					 arg::SignalValueInteger(context.sig_value)
+					 ValueInteger(context.sig_value)
 					 ){
 		this->m_context = context;
 	}
@@ -124,9 +129,9 @@ public:
 	 *
 	 */
 	mcu_action_t create_action(
-			const arg::Events event,
-			const arg::Channel channel = arg::Channel(0),
-			const arg::InterruptPriority prio = arg::InterruptPriority(0)
+			Events event,
+			Channel channel = Channel(0),
+			InterruptPriority prio = InterruptPriority(0)
 			) const {
 		mcu_action_t a;
 		a.handler.callback = devfs_signal_callback;

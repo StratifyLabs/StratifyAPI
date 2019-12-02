@@ -232,7 +232,7 @@ public:
 	  *
 	  */
 	static int access(
-			const arg::SourceFilePath path,
+			const var::String & path,
 			const Access & o_access
 			);
 #endif
@@ -254,7 +254,7 @@ public:
 	 * \endcode
 	 *
 	 */
-	static const char * suffix(
+	static const var::String suffix(
 			const var::String & path
 			);
 

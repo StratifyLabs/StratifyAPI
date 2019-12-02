@@ -22,13 +22,14 @@ int Spi::swap(int byte) const {
 
 #if !defined __link
 int Spi::transfer(
-		const arg::SourceBuffer write_data,
-		arg::DestinationBuffer read_data,
-		arg::Size nbytes
+		SourceBuffer write_data,
+		DestinationBuffer read_data,
+		Size nbytes
 		){
 
-	fs::Aio aio = fs::Aio(
-				read_data,
+	fs::Aio aio(
+				Location(0),
+				read_data.argument(),
 				nbytes
 				);
 
@@ -40,7 +41,7 @@ int Spi::transfer(
 	}
 
 	result = write(
-				write_data,
+				write_data.argument(),
 				nbytes
 				);
 

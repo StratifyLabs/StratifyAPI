@@ -10,10 +10,11 @@ Mq::Mq(){
 	m_msg_prio = 0;
 }
 
-int Mq::open(const var::ConstString & name,
-				 int oflag,
-				 const fs::Permissions & permissions,
-				 const struct mq_attr * attr){
+int Mq::open(
+		const var::String & name,
+		int oflag,
+		const fs::Permissions & permissions,
+		const struct mq_attr * attr){
 	m_handle = mq_open(
 				name.cstring(),
 				oflag,
@@ -22,12 +23,13 @@ int Mq::open(const var::ConstString & name,
 	return m_handle;
 }
 
-int Mq::create(const var::ConstString & name,
-					int oflag,
-					const fs::Permissions & permissions,
-					long flags,
-					long maxmsg,
-					long msgsize){
+int Mq::create(
+		const var::String & name,
+		int oflag,
+		const fs::Permissions & permissions,
+		long flags,
+		long maxmsg,
+		long msgsize){
 	struct mq_attr attr;
 	attr.mq_flags = flags;
 	attr.mq_maxmsg = maxmsg;
@@ -64,7 +66,7 @@ MqAttributes Mq::get_attributes(){
 }
 
 int Mq::set_attributes(const struct mq_attr * mqstat,
-					  struct mq_attr * omqstat){
+							  struct mq_attr * omqstat){
 	return mq_setattr(m_handle, mqstat, omqstat);
 }
 

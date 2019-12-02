@@ -116,13 +116,22 @@ public:
 					 ){
 	}
 
-	String(const char * s) : m_string(s){}
+	String(const char * s){
+		if( s != nullptr ){ m_string = s; }
+	}
 	String(const String & s) : m_string(s.string()){}
-	String(const char * s, size_t n) : m_string(s,n){}
-	String(size_t n, char c) : m_string(n,c){}
+	String(const char * s, Length length) : m_string(s,length.argument()){}
+	String(Length length, char c) : m_string(length.argument(),c){}
 	String(String && s) noexcept : m_string(s.m_string){}
 	String (std::initializer_list<char> il) : m_string(il){}
-	String& operator=(const char * s){ m_string = s; return *this; }
+	String& operator=(const char * s){
+		if( s == nullptr ){
+			m_string.clear();
+		} else {
+			m_string = s;
+		}
+		return *this;
+	}
 	String& operator=(const String & s){ m_string = s.string(); return *this; }
 	String& operator=(char c){ m_string = c; return *this; }
 
@@ -356,16 +365,25 @@ public:
 			const char * cstring_to_assign,
 			Length length
 			){
-		m_string.assign(
-					cstring_to_assign,
-					length.argument()
-					);
+		if( cstring_to_assign == nullptr ){
+			m_string.clear();
+		} else {
+			m_string.assign(
+						cstring_to_assign,
+						length.argument()
+
+						);
+		}
 		return *this;
 	}
 
 	/*! \details Assigns \a a to this String.  */
 	String & assign(const char * cstring_to_assign){
-		m_string.assign(cstring_to_assign);
+		if( cstring_to_assign == nullptr ){
+			m_string.clear();
+		} else {
+			m_string.assign(cstring_to_assign);
+		}
 		return *this;
 	}
 
@@ -519,7 +537,7 @@ public:
 	/*! \details Finds a string within the string searching from right to left. */
 	size_t rfind(
 			const String & string_to_find,
-			Position position = Position(0)
+			Position position = Position(npos)
 			) const {
 		return m_string.rfind(
 					string_to_find.string(),
@@ -530,7 +548,7 @@ public:
 	/*! \details Finds a character within the string searching from right to left. */
 	size_t rfind(
 			char c,
-			Position position = Position(0)
+			Position position = Position(npos)
 			) const {
 		return m_string.rfind(
 					c,

@@ -21,6 +21,7 @@ public:
 	using Style = arg::Argument< u8, struct FontStyleTag >;
 	using Name = arg::Argument< const var::String &, struct FontNameTag >;
 	using FileLocation = fs::File::Location;
+	using IsExactMatch = arg::Argument<bool, struct FontIsExactMatch>;
 
 	/*! \details Lists the font styles that are available.
 	 *

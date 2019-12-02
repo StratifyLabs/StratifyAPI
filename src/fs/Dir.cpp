@@ -33,11 +33,11 @@ int Dir::remove(
 		){
 	int ret = 0;
 	if( recursive.argument() ){
-		Dir d(
+		Dir d
 			#if defined __link
-					link_driver
+					(link_driver)
 			#endif
-					);
+					;
 
 		if( d.open(path) == 0 ){
 			var::String entry;
@@ -88,9 +88,7 @@ int Dir::remove(
 						);
 		}
 #else
-		ret = File::remove(
-					SourcePath(path.argument())
-					);
+		ret = File::remove(path);
 #endif
 	}
 
@@ -202,7 +200,7 @@ int Dir::create(
 	}
 #else
 	result = mkdir(
-				path.argument().cstring(),
+				path.cstring(),
 				permissions.permissions()
 				);
 #endif
@@ -255,11 +253,13 @@ bool Dir::exists(
 		const var::String & path
 		SAPI_LINK_DRIVER_LAST
 		){
-	Dir d(
+	Dir d
 			#if defined __link
+			(
 				link_driver
+				)
 			#endif
-				);
+				;
 	if( d.open(path) < 0 ){ return false; }
 	d.close();
 	return true;
@@ -284,7 +284,7 @@ int Dir::open(const var::String & path){
 		return 0;
 	}
 #else
-	m_dirp = opendir(name.argument().cstring());
+	m_dirp = opendir(path.cstring());
 #endif
 
 	if( m_dirp == 0 ){
@@ -323,7 +323,7 @@ int Dir::count(){
 		count++;
 	}
 
-	seek(arg::Location(loc));
+	seek(Location(loc));
 
 	return count;
 
@@ -337,11 +337,11 @@ var::Vector<var::String> Dir::read_list(
 		IsRecursive is_recursive
 		SAPI_LINK_DRIVER_LAST
 		){
-	Dir directory(
+	Dir directory
 			#if defined __link
-				link_driver
+				(link_driver)
 			#endif
-				);
+				;
 	var::Vector<var::String> result;
 	if( directory.open(path) < 0 ){ return result; }
 	result = directory.read_list(is_recursive);
@@ -359,6 +359,7 @@ var::Vector<var::String> Dir::read_list(
 	do {
 		entry.clear();
 		entry = read();
+
 		if( !entry.is_empty() &&
 			 (entry != ".") &&
 			 (entry != "..") ){
@@ -408,12 +409,20 @@ const char * Dir::read(){
 	if( driver() ){
 		struct link_dirent * result;
 		memset(&m_entry, 0, sizeof(m_entry));
-		if( link_readdir_r(driver(), m_dirp, &m_entry, &result) < 0 ){
+		if( link_readdir_r(
+				 driver(),
+				 m_dirp,
+				 &m_entry,
+				 &result
+				 ) < 0 ){
 			return 0;
 		}
 	} else {
 		struct dirent * result_local;
-		if( (readdir_r(m_dirp_local, &m_entry_local, &result_local) < 0) || (result_local == 0) ){
+		if( (readdir_r(
+				  m_dirp_local,
+				  &m_entry_local,
+				  &result_local) < 0) || (result_local == 0) ){
 			return 0;
 		}
 		return m_entry_local.d_name;

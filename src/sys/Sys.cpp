@@ -57,8 +57,8 @@ SysInfo SysInfo::get(){
 	Sys sys;
 	if( sys.open() < 0 ){ return result; }
 	sys.ioctl(
-				IoRequest(I_SYS_GETINFO),
-				IoArgument(&result.m_info)
+				fs::File::IoRequest(I_SYS_GETINFO),
+				fs::File::IoArgument(&result.m_info)
 				);
 	sys.close();
 #endif
@@ -214,7 +214,7 @@ int Sys::reclaim_ram(const var::String & path
 	ret = link_ioctl(link_driver.argument(), fd, I_APPFS_RECLAIM_RAM);
 	link_close(link_driver.argument(), fd);
 #else
-	if( (fd = ::open(path, O_RDONLY)) < 0 ){
+	if( (fd = ::open(path.cstring(), O_RDONLY)) < 0 ){
 		return -1;
 	}
 	ret = ::ioctl(fd, I_APPFS_RECLAIM_RAM);
@@ -231,7 +231,7 @@ int Sys::get_version(var::String & version){
 	Device sys;
 	int ret;
 	if( sys.open(
-			 arg::FilePath("/dev/sys"),
+			 "/dev/sys",
 			 fs::OpenFlags::read_write()
 			 ) < 0 ){
 		return -1;
@@ -261,7 +261,7 @@ var::String Sys::get_kernel_version(){
 	Device sys;
 	int ret;
 	if( sys.open(
-			 arg::FilePath("/dev/sys"),
+			 "/dev/sys",
 			 fs::OpenFlags::read_write()
 			 ) < 0 ){
 		return var::String();
@@ -289,8 +289,8 @@ int Sys::hibernate(const chrono::Milliseconds & milliseconds){
 }
 
 int Sys::request(
-		const arg::KernelRequest request,
-		arg::DestinationBuffer arg
+		KernelRequest request,
+		KernelArgument arg
 		){
 	return kernel_request(request.argument(), arg.argument());
 }

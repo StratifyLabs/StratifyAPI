@@ -49,6 +49,7 @@ public:
 	using DestinationPath = File::DestinationPath;
 	using IsRecursive = arg::Argument<bool, struct IsRecursiveTag>;
 	using IsOverwrite = File::IsOverwrite;
+	using Location = File::Location;
 
 #if defined __link
 	using LinkDriver = File::LinkDriver;
@@ -202,7 +203,7 @@ public:
 	 *
 	 *
 	 */
-	void seek(arg::Location location){
+	void seek(Location location){
 		if( m_dirp ) {
 			seekdir(m_dirp, location.argument());
 		}

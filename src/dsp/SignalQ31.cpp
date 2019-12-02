@@ -21,11 +21,11 @@ using namespace dsp;
 #include "SignalDataGeneric.h"
 
 SignalQ31 SignalQ31::filter(const FirDecimateFilterQ31 & filter){
-	SignalQ31 ret = SignalQ31(arg::Count(count()));
+	SignalQ31 ret = SignalQ31((count()));
 	api_q31()->fir_decimate_fast(
 				(arm_fir_decimate_instance_q31*)filter.instance(),
 				(q31_t*)to_const_void(),
-				ret.to<q31_t>(),
+				ret.data(),
 				count()
 				);
 
@@ -36,7 +36,7 @@ void SignalQ31::filter(SignalQ31 & output, const FirDecimateFilterQ31 & filter){
 	api_q31()->fir_decimate_fast(
 				(arm_fir_decimate_instance_q31*)filter.instance(),
 				(q31_t*)to_const_void(),
-				output.to<q31_t>(),
+				output.data(),
 				count()
 				);
 }

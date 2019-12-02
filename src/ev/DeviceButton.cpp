@@ -15,17 +15,17 @@ int DeviceButton::init(){
 	memset(&attr, 0, sizeof(attr));
 	attr.o_flags = BUTTON_FLAG_INITIALIZE;
 	return ioctl(
-				arg::IoRequest(I_BUTTON_SETATTR),
-				arg::IoArgument(&attr)
+				IoRequest(I_BUTTON_SETATTR),
+				IoArgument(&attr)
 				);
 }
 
 
 int DeviceButton::set_attributes(
-		const arg::Location location,
+		Location location,
 		enum ev::Event::button_id id,
-		const arg::ButtonHeldThreshold held_threshold,
-		const arg::ButtonActuatedThreshold actuated_threshold
+		HeldThreshold held_threshold,
+		ActuatedThreshold actuated_threshold
 		){
 	button_attr_t attr;
 	int ret;
@@ -40,8 +40,8 @@ int DeviceButton::set_attributes(
 	}
 
 	ret = ioctl(
-				arg::IoRequest(I_BUTTON_SETATTR),
-				arg::IoArgument(&attr)
+				IoRequest(I_BUTTON_SETATTR),
+				IoArgument(&attr)
 				);
 
 	if( (ret >= 0 ) &&
@@ -49,8 +49,8 @@ int DeviceButton::set_attributes(
 		attr.o_flags = BUTTON_FLAG_SET_ACTUATED_THRESHOLD;
 		attr.threshold_msec = actuated_threshold.argument().milliseconds();
 		ret = ioctl(
-					arg::IoRequest(I_BUTTON_SETATTR),
-					arg::IoArgument(&attr)
+					IoRequest(I_BUTTON_SETATTR),
+					IoArgument(&attr)
 					);
 	}
 
@@ -103,25 +103,19 @@ bool DeviceButton::is_active() const {
 void DeviceButton::update(){
 	u32 o_flags = m_status.o_flags;
 	if( (seek(
-				 arg::Location(m_location*sizeof(m_status))
-				 ) >= 0) && (read(
-											 arg::DestinationBuffer(&m_status),
-											 arg::Size(sizeof(m_status))
-											 ) == sizeof(m_status)) ){
+				 Location(m_location*sizeof(m_status))
+				 ) >= 0) && (read(m_status) == sizeof(m_status)) ){
 		//keep track of the flags because the driver will clear the flags before the EventLoop does
 		m_status.o_flags |= o_flags;
 	} else {
-		set_error_number(EIO);
+		Device::set_error_number(EIO);
 		memset(&m_status, 0, sizeof(m_status));
 	}
 }
 
 void DeviceButton::reset(){
-	seek(arg::Location(0));
-	while( read(
-					 arg::DestinationBuffer(&m_status),
-					 arg::Size(sizeof(m_status))
-					 ) == sizeof(m_status) ){
+	seek(Location(0));
+	while( read(m_status) == sizeof(m_status) ){
 		;
 	}
 	memset(&m_status, 0, sizeof(m_status));

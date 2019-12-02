@@ -60,7 +60,8 @@ public:
 			const sgfx::FontInfo::PointSize point_size,
 			const sgfx::FontInfo::Style style = sgfx::FontInfo::Style(sgfx::FontInfo::REGULAR),
 			const sgfx::FontInfo::Name name = sgfx::FontInfo::Name(""),
-			const arg::IsExactMatch is_exact_match = arg::IsExactMatch(false));
+			const sgfx::FontInfo::IsExactMatch is_exact_match = sgfx::FontInfo::IsExactMatch(false)
+			);
 
 	/*! \details Returns a read-only reference to the vector path list.
 	 *

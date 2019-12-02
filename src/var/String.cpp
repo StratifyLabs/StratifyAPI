@@ -47,6 +47,8 @@ int String::vformat(
 		va_list list
 		){
 
+	if( fmt == nullptr ){ return -1; }
+
 	va_list list_copy;
 	va_copy(list_copy, list);
 
