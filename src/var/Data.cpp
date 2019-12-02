@@ -37,6 +37,7 @@ u32 Data::block_size(){
 
 int Data::free(){
 	m_data.clear();
+	update_reference();
 	return 0;
 }
 
@@ -129,6 +130,7 @@ Data & Data::append(const Reference & reference){
 	for(u32 i=0; i < reference.size(); i++){
 		m_data.push_back(reference.to_const_u8()[i]);
 	}
+	update_reference();
 
 	return *this;
 }

@@ -63,7 +63,7 @@ public:
 	  *
 	  */
 	Function(
-			const arg::Name test_name,
+			const var::String & test_name,
 			return_type (*function)(args...),
 			Test * parent = 0) :
 		Test(test_name, parent){

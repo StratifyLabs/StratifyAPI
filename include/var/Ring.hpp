@@ -57,8 +57,8 @@ public:
 	  * @param size The number of bytes to allocate for the new buffer.
 	  *
 	  */
-	Ring(Count count) : Data(count.argument() * sizeof(T)){
-		m_count = count.argument();
+	Ring(size_t count) : Data(count * sizeof(T)){
+		m_count = count;
 		m_head = 0;
 		m_tail = 0;
 		m_is_overflow_allowed = true;
