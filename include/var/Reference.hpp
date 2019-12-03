@@ -368,12 +368,41 @@ public:
 			Count count = Count(0)
 			){
 		if( count.argument() == 0 ){
-			count.argument() = size() / sizeof(T);
+			count.argument() = this->count<T>();
 		}
 		for(u32 i=0; i < count.argument(); i++){
 			to<T>()[i] = value;
 		}
 		return *this;
+	}
+
+	template<typename T> Reference & populate(
+			const T & (* populate_function)(
+				u32 position,
+				Reference::Count count
+			)
+			){
+
+	}
+
+	template<typename T> Reference & populate(
+				T (*calculate_value)(
+				Position position,
+				Count count
+				),
+				Reference::Count count = Reference::Count(0)
+				){
+			if( count.argument() == 0 ){
+				count.argument() = this->count<T>();
+			}
+			for(u32 i=0; i < count.argument(); i++){
+				to<T>()[i] = calculate_value(Position(i), count);
+			}
+			return *this;
+		}
+
+	template<typename T> size_t count() const {
+		return size() / sizeof(T);
 	}
 
 	/*! \details Fill the data with zeros.
@@ -457,7 +486,7 @@ public:
 	 *
 	 *
 	 */
-	u32 size() const { return m_size; }
+	size_t size() const { return m_size; }
 
 
 	static void memory_copy(
