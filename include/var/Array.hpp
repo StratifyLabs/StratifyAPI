@@ -42,11 +42,34 @@ namespace var {
  * and popping them from the back.
  *
  */
-template <typename T, u32 size_value> class Array : public api::InfoObject, public std::array<T, size_value> {
+template <typename T, size_t size_value> class Array : public api::InfoObject {
 public:
 
 	Array(){}
 
+	typename std::array<T, size_value>::const_iterator begin() const noexcept { return m_array.begin(); }
+	typename std::array<T, size_value>::iterator begin() noexcept { return m_array.begin(); }
+
+	typename std::array<T, size_value>::const_iterator end() const noexcept { return m_array.end(); }
+	typename std::array<T, size_value>::iterator end() noexcept { return m_array.end(); }
+
+	typename std::array<T, size_value>::const_iterator cbegin() const noexcept { return m_array.cbegin(); }
+	typename std::array<T, size_value>::const_iterator cend() const noexcept { return m_array.cend(); }
+
+	typename std::array<T, size_value>::const_reverse_iterator rbegin() const noexcept { return m_array.rbegin(); }
+	typename std::array<T, size_value>::reverse_iterator rbegin() noexcept { return m_array.rbegin(); }
+
+	typename std::array<T, size_value>::const_reverse_iterator rend() const noexcept { return m_array.rend(); }
+	typename std::array<T, size_value>::reverse_iterator rend() noexcept { return m_array.rend(); }
+
+	typename std::array<T, size_value>::const_reverse_iterator crbegin() const noexcept { return m_array.crbegin(); }
+	typename std::array<T, size_value>::const_reverse_iterator crend() const noexcept { return m_array.crend(); }
+
+	T & at(size_t position){ return m_array.at(position); }
+	const T & at(size_t position) const { return m_array.at(position); }
+
+	T & operator[](size_t position){ return m_array[position]; }
+	const T & operator[](size_t position) const { return m_array[position]; }
 
 
 	/*! \details Returns the number of objects in the array.
@@ -61,20 +84,28 @@ public:
 	  *
 	  *
 	  */
-	u32 count() const { return this->size(); }
+	size_t count() const { return m_array.size(); }
 
-	bool is_empty() const { return this->empty(); }
+	bool is_empty() const { return m_array.empty(); }
+
+	std::array<T, size_value> & array(){ return m_array; }
+	const std::array<T, size_value> & array() const { return m_array; }
+
+	const T * data() const { return m_array.data(); }
+	T * data(){ return m_array.data(); }
+
+	void * to_void(){ return (void*)m_array.data(); }
+	const void * to_const_void() const { return (const void*)m_array.data(); }
 
 
 private:
 
+	std::array<T, size_value> m_array;
 };
 
 template <typename T> class Pair : public Array<T, 2> {
 public:
-
 	Pair(){}
-
 	Pair(const T & k, const T & v){
 		key() = k;
 		value() = v;

@@ -11,6 +11,7 @@
 
 #include "String.hpp"
 #include "Vector.hpp"
+#include "Array.hpp"
 
 #if !defined __link
 #include <malloc.h>
@@ -138,7 +139,7 @@ public:
 		set_reference(
 					ReadOnlyBuffer(vector.to_const_void()),
 					ReadWriteBuffer(nullptr),
-					Size(vector.size())
+					Size(vector.count()*sizeof(T))
 					);
 	}
 
@@ -146,9 +147,26 @@ public:
 		set_reference(
 					ReadOnlyBuffer(vector.to_const_void()),
 					ReadWriteBuffer(vector.to_void()),
-					Size(vector.size())
+					Size(vector.count()*sizeof(T))
 					);
 	}
+
+	template<typename T, size_t size_value> Reference(const Array<T, size_value> & array){
+		set_reference(
+					ReadOnlyBuffer(array.to_const_void()),
+					ReadWriteBuffer(nullptr),
+					Size(size_value * sizeof(T))
+					);
+	}
+
+	template<typename T, size_t size_value> Reference(Array<T, size_value> & array){
+		set_reference(
+					ReadOnlyBuffer(array.to_const_void()),
+					ReadWriteBuffer(array.to_void()),
+					Size(size_value * sizeof(T))
+					);
+	}
+
 
 	template<typename T> Reference(T & item){
 		//catch all
@@ -374,15 +392,6 @@ public:
 			to<T>()[i] = value;
 		}
 		return *this;
-	}
-
-	template<typename T> Reference & populate(
-			const T & (* populate_function)(
-				u32 position,
-				Reference::Count count
-			)
-			){
-
 	}
 
 	template<typename T> Reference & populate(

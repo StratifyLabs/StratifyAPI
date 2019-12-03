@@ -52,9 +52,8 @@ int String::vformat(
 	va_list list_copy;
 	va_copy(list_copy, list);
 
-	if( capacity() < var::Data::minimum_capacity() ){
-		resize(var::Data::minimum_capacity());
-	}
+	m_string.clear();
+	resize(var::Data::minimum_capacity());
 
 	int result;
 	result = vsnprintf(
@@ -64,8 +63,9 @@ int String::vformat(
 				list
 				);
 
+
 	if( result >= (int)capacity()-1 ){ //if the data did not fit, make the buffer bigger
-		resize(result+2);
+		resize(result+1);
 		result = vsnprintf(
 					to_char(),
 					capacity()-1,

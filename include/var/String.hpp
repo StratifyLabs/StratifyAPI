@@ -73,26 +73,38 @@ public:
 	using Source = arg::Argument<const String&, struct StringSourceTag >;
 	using Destination = arg::Argument<String&, struct StringDestinationTag >;
 
-	using Position = arg::Argument<size_t, struct PositionTag >;
-	using SubPosition = arg::Argument<size_t, struct SubPositionTag >;
-	using SubLength = arg::Argument<size_t, struct SubLengthTag >;
-	using Length = arg::Argument<size_t, struct LengthTag >;
-	using MatchLength = arg::Argument<size_t, struct MatchLengthTag >;
-	using Size = arg::Argument<size_t, struct SizeTag >;
+	using Position = arg::Argument<size_t, struct StringPositionTag >;
+	using SubPosition = arg::Argument<size_t, struct StringSubPositionTag >;
+	using SubLength = arg::Argument<size_t, struct StringSubLengthTag >;
+	using Length = arg::Argument<size_t, struct StringLengthTag >;
+	using MatchLength = arg::Argument<size_t, struct StringMatchLengthTag >;
 
-	using ToInsert = arg::Argument< const var::String &, struct ToInsertTag >;
-	using ToErase = arg::Argument< const var::String &, struct ToEraseTag >;
-	using ToCompare = arg::Argument< const var::String &, struct ToCompareTag >;
-	using ToAppend = arg::Argument< const var::String &, struct ToAppendTag >;
-	using ToAssign = arg::Argument< const var::String &, struct ToAssignTag >;
-	using CharacterToAssign = arg::Argument<char, struct CharacterToAssignTag >;
-	using CharacterToFind = arg::Argument<char, struct CharacterToFindTag >;
+	using ToInsert = arg::Argument< const var::String &, struct StringToInsertTag >;
+	using ToErase = arg::Argument< const var::String &, struct StringToEraseTag >;
 
 	enum number_base {
 		BASE_8 = 8,
 		BASE_10 = 10,
 		BASE_16 = 16
 	};
+
+	typename std::string::const_iterator begin() const noexcept { return m_string.begin(); }
+	typename std::string::iterator begin() noexcept { return m_string.begin(); }
+
+	typename std::string::const_iterator end() const noexcept { return m_string.end(); }
+	typename std::string::iterator end() noexcept { return m_string.end(); }
+
+	typename std::string::const_iterator cbegin() const noexcept { return m_string.cbegin(); }
+	typename std::string::const_iterator cend() const noexcept { return m_string.cend(); }
+
+	typename std::string::const_reverse_iterator rbegin() const noexcept { return m_string.rbegin(); }
+	typename std::string::reverse_iterator rbegin() noexcept { return m_string.rbegin(); }
+
+	typename std::string::const_reverse_iterator rend() const noexcept { return m_string.rend(); }
+	typename std::string::reverse_iterator rend() noexcept { return m_string.rend(); }
+
+	typename std::string::const_reverse_iterator crbegin() const noexcept { return m_string.crbegin(); }
+	typename std::string::const_reverse_iterator crend() const noexcept { return m_string.crend(); }
 
 	/*! \details Constructs an empty string.
 	  *
@@ -483,7 +495,7 @@ public:
 					);
 	}
 
-	/*! \details Finds a var::ConstString within the object.
+	/*! \details Finds a var::String within the object.
 	  *
 	  * @param string_to_find The String to find
 	  * @param position The position to start searching (default is beginning)

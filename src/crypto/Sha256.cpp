@@ -29,7 +29,7 @@ int Sha256::initialize(){
 var::String Sha256::to_string(){
 	var::String result;
 	const var::Array<u8, 32> & out = output();
-	for(u32 i=0; i < out.size(); i++){
+	for(u32 i=0; i < out.count(); i++){
 		result << var::String().format("%02x", out.at(i));
 	}
 	return result;
@@ -113,7 +113,7 @@ int Sha256::finish(){
 					sha256_api()->finish(
 						m_context,
 						(unsigned char*)m_output.data(),
-						m_output.size()
+						m_output.count()
 						)
 					);
 	}

@@ -236,6 +236,9 @@ public:
 		m_vector.clear();
 	}
 
+	bool is_empty() const { return m_vector.empty(); }
+
+
 	std::vector<T> & vector(){ return m_vector; }
 	const std::vector<T> & vector() const { return m_vector; }
 
