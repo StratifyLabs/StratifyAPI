@@ -564,13 +564,13 @@ public:
 	  * */
 	int read(
 			var::Reference & data,
-			DestinationSocketAddress address
+			const SocketAddress & address
 			);
 
 	int read(
 			void * buf,
 			Size nbyte,
-			DestinationSocketAddress address
+			const SocketAddress & address
 			);
 
 	int read(
@@ -590,12 +590,12 @@ public:
 	  */
 	int write(
 			const var::Reference & data,
-			SourceSocketAddress address
+			const SocketAddress & socket_address
 			){
 		return write(
 					data.to_const_void(),
 					Size(data.size()),
-					address);
+					socket_address);
 	}
 	int write(
 			const void * buf,
@@ -605,13 +605,13 @@ public:
 	int write(
 			const void * buf,
 			Size nbyte,
-			SourceSocketAddress socket_address
+			const SocketAddress & socket_address
 			) const {
 		return write(
 					buf,
 					nbyte,
-					socket_address.argument().to_sockaddr(),
-					socket_address.argument().length()
+					socket_address.to_sockaddr(),
+					socket_address.length()
 					);
 	}
 
