@@ -101,16 +101,16 @@ String& String::erase(
 }
 
 String& String::replace(
-		ToErase old_string,
+		const String & old_string,
 		ToInsert new_string,
 		Position position,
 		Length length
 		){
 	size_t pos = position.argument();
-	size_t old_length = old_string.argument().length();
+	size_t old_length = old_string.length();
 	size_t new_length = new_string.argument().length();
 	size_t replaced_count = 0;
-	while( ((pos = find(old_string.argument(), Position(pos))) != String::npos) &&
+	while( ((pos = find(old_string, Position(pos))) != String::npos) &&
 			 (length.argument() ? replaced_count < length.argument() : 1) ){
 		erase(Position(pos), Length(old_length));
 		insert(Position(pos), new_string.argument());

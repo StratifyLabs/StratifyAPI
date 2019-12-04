@@ -22,12 +22,14 @@
 #define SAPI_LINK_DRIVER
 #define SAPI_LINK_DRIVER_LAST
 #define SAPI_LINK_STAT stat
+#define SAPI_LINK_DEFAULT_PAGE_SIZE 512
 #else
 #define SAPI_LINK_STAT link_stat
 #define SAPI_LINK_DRIVER_NULLPTR fs::File::LinkDriver link_driver = fs::File::LinkDriver(nullptr)
 #define SAPI_LINK_DRIVER_NULLPTR_LAST , fs::File::LinkDriver link_driver = fs::File::LinkDriver(nullptr)
 #define SAPI_LINK_DRIVER fs::File::LinkDriver link_driver
 #define SAPI_LINK_DRIVER_LAST , fs::File::LinkDriver link_driver
+#define SAPI_LINK_DEFAULT_PAGE_SIZE 4096
 #endif
 
 
@@ -460,14 +462,14 @@ public:
 
 	int write(
 			const File & source_file,
-			PageSize page_size,
+			PageSize page_size = PageSize(SAPI_LINK_DEFAULT_PAGE_SIZE),
 			Size size = Size(size_t(-1))
 			) const;
 
 	int write(
 			Location location,
 			const File & source_file,
-			PageSize page_size,
+			PageSize page_size = PageSize(SAPI_LINK_DEFAULT_PAGE_SIZE),
 			Size size = Size(size_t(-1))
 			) const {
 		seek(location);
@@ -725,9 +727,18 @@ public:
 	DataFile(
 			const OpenFlags & flags = OpenFlags::read_write()
 			){
+		m_fd = 0;
 		m_location = 0;
 		m_open_flags = flags;
 	}
+
+	DataFile(
+			fs::File::Path file_path
+			);
+
+	DataFile(
+			const fs::File & file_to_load
+			);
 
 	/*! \details Reimplements fs::File::open() to have no
 	 * functionality.
@@ -915,7 +926,9 @@ class NullFile : public File {
 public:
 
 	/*! \details Constructs a null file. */
-	NullFile(){}
+	NullFile(){
+		m_fd = 0;
+	}
 
 	/*! \details Reimplements fs::File::open() to have no
 	 * functionality.

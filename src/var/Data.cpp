@@ -41,7 +41,9 @@ int Data::free(){
 	return 0;
 }
 
-Data::Data(){}
+Data::Data(){
+	//var::Refernence sets size to zero
+}
 
 Data::Data(size_t size){
 	allocate(size);

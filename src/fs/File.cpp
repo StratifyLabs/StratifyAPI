@@ -182,8 +182,7 @@ int File::copy(
 	}
 
 	return dest.argument().write(
-				source.argument(),
-				PageSize(256)
+				source.argument()
 				);
 }
 
@@ -665,6 +664,39 @@ int File::write(
 		return result;
 	}
 	return set_error_number_if_error(size_processed);
+}
+
+DataFile::DataFile(
+		fs::File::Path file_path
+		){
+	//read the contents of file_path into this object
+	FileInfo info = File::get_info(file_path.argument());
+	m_open_flags = OpenFlags::append_write_only();
+	m_fd = 0;
+	m_location = 0;
+	if( info.is_valid() && info.is_file() ){
+		File f;
+		if( f.open(
+					file_path.argument(),
+					OpenFlags::read_only()
+				 ) >= 0 ){
+			write(f);
+			f.close();
+		}
+	}
+	m_location = 0;
+	m_open_flags = OpenFlags::read_write();
+}
+
+DataFile::DataFile(
+		const fs::File & file_to_load
+		){
+	m_fd = 0;
+	m_location = 0;
+	m_open_flags = OpenFlags::append_read_write();
+	write(file_to_load);
+	seek(Location(0), SET);
+	m_open_flags = OpenFlags::read_write();
 }
 
 

@@ -147,6 +147,7 @@ public:
 	String& operator=(const String & s){ m_string = s.string(); return *this; }
 	String& operator=(char c){ m_string = c; return *this; }
 
+	explicit String(const std::string & a) : m_string(a){}
 	explicit String(const Reference & reference);
 
 	/*! \details Appends a character to this string. */
@@ -159,6 +160,17 @@ public:
 		append(a);
 		return *this;
 	}
+
+	String& operator+=(std::initializer_list<char> il){
+		string() += il;
+		return *this;
+	}
+
+	String operator+ (const String& rhs) const { return String(string() + rhs.string()); }
+	String operator+ (String&& rhs) const { return String(string() + rhs.string()); }
+	String operator+ (const char* rhs) const { return String(string() + rhs); }
+	String operator+ (char rhs) const { return String(string() + rhs); }
+
 
 	/*! \details Appends a c style string go the string.
 	  *
@@ -195,15 +207,6 @@ public:
 	/*! \details Appends a character to the string. */
 	String& operator<<(char c){ append(c); return *this; }
 
-	//String& operator << (const SourceData & data);
-
-
-	/*! \details Appends a string to this string and returns a new string. */
-	String operator + (const String & a){
-		String result = *this;
-		result.append(a);
-		return result;
-	}
 
 	~String(){}
 
@@ -302,12 +305,22 @@ public:
 	 * @return A reference to this string
 	 *
 	 */
+
 	String& replace(
-			ToErase old_string,
-			ToInsert new_string,
+			const var::String & old_string,
+			ToInsert new_string = ToInsert(""),
 			Position position = Position(0),
 			Length length = Length(0)
 			);
+
+	String& replace(
+			ToErase old_string,
+			ToInsert new_string = ToInsert(""),
+			Position position = Position(0),
+			Length length = Length(0)
+			){
+		return replace(old_string.argument(), new_string, position, length);
+	}
 
 
 	size_t length() const { return m_string.length(); }
@@ -728,7 +741,6 @@ private:
 	std::string m_string;
 
 };
-
 
 }
 

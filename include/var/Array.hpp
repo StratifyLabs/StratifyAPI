@@ -88,6 +88,13 @@ public:
 
 	bool is_empty() const { return m_array.empty(); }
 
+	Array & fill(const T& value){
+		for(auto & element: *this){
+			element= value;
+		}
+		return *this;
+	}
+
 	std::array<T, size_value> & array(){ return m_array; }
 	const std::array<T, size_value> & array() const { return m_array; }
 

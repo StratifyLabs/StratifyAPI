@@ -27,6 +27,10 @@ public:
 		m_vector.resize(count);
 	}
 
+	Vector (std::initializer_list<T> il) : m_vector(il){}
+	Vector& operator=(std::initializer_list<T> il){ m_vector = il; }
+
+
 	~Vector(){}
 
 	Vector<T> & operator << (const T & a){
@@ -78,7 +82,7 @@ public:
 	  * @return The index of the object or count() it if wasn't found
 	  *
 	  */
-	u32 find(const T & a){
+	u32 find(const T & a) const {
 		for(u32 i=0; i < count(); i++){
 			if( this->at(i) == a ){
 				return i;
