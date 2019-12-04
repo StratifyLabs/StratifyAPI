@@ -26,6 +26,9 @@ public:
 	};
 };
 
+HAL_DEVICE_OR_FLAGS_OPERATOR(FifoFlags)
+
+
 /*! \brief Fifo Attributes Class
  *
  */

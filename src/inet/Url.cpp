@@ -16,7 +16,7 @@ int Url::set(const var::String & url){
 	if( url_string.is_empty() == false ){
 
 		var::Tokenizer url_tokens(
-					var::Tokenizer::EncodedString(url),
+					url,
 					var::Tokenizer::Delimeters("/")
 					);
 
@@ -35,7 +35,7 @@ int Url::set(const var::String & url){
 		}
 
 		var::Tokenizer domain_name(
-					var::Tokenizer::EncodedString(url_tokens.at(1)),
+					url_tokens.at(1),
 					var::Tokenizer::Delimeters(":")
 					);
 

@@ -25,7 +25,10 @@ public:
 		IS_FULL_DUPLEX /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */ = SPI_FLAG_IS_FULL_DUPLEX,
 		IS_HALF_DUPLEX /*! See \ref SPI_FLAG_IS_HALF_DUPLEX */ = SPI_FLAG_IS_HALF_DUPLEX,
 	};
+
 };
+
+HAL_DEVICE_OR_FLAGS_OPERATOR(SpiFlags)
 
 
 /*! \brief SPI Pin Assignment
@@ -50,7 +53,7 @@ public:
 	SpiAttributes & set_cs(const mcu_pin_t & pin){ m_attr.pin_assignment.cs = pin; return *this; }
 	SpiAttributes & set_width(u8 value){ m_attr.width = value; return *this; }
 	SpiAttributes & set_frequency(u32 value){ PeriphAttributes::set_frequency(value); return *this; }
-	SpiAttributes & set_flags(u32 value){ PeriphAttributes::set_flags(value); return *this; }
+	SpiAttributes & set_flags(enum flags value){ PeriphAttributes::set_flags(value); return *this; }
 
 	mcu_pin_t miso() const { return m_attr.pin_assignment.miso; }
 	mcu_pin_t mosi() const { return m_attr.pin_assignment.mosi; }

@@ -13,14 +13,17 @@ Tokenizer::Tokenizer(){
 }
 
 Tokenizer::Tokenizer(
-		EncodedString src,
+		const var::String & input,
 		Delimeters delim,
 		IgnoreBetween ignore,
 		IsCountEmpty is_count_empty,
-		MaximumCount maximum_delimeter_count) : String(src.argument()){
+		MaximumCount maximum_delimeter_count){
+
+
 	init_members();
 	m_is_count_empty_tokens = is_count_empty.argument();
-	parse(delim,
+	parse(input,
+			delim,
 			ignore,
 			maximum_delimeter_count);
 }
@@ -47,6 +50,7 @@ void Tokenizer::init_members(){
 
 
 void Tokenizer::parse(
+		const var::String & input,
 		Delimeters delim,
 		IgnoreBetween ignore,
 		MaximumCount max_delim){
@@ -55,12 +59,17 @@ void Tokenizer::parse(
 	unsigned int len0, len1;
 	bool on_token = false;
 	char end_match;
+
+	m_data.copy_contents(input);
+	char c = 0;
+	m_data.append(c);
+
 	m_num_tokens = 0;
 	len0 = delim.argument().length();
 	len1 = ignore.argument().length();
 
-	p = to_char();
-	m_string_size = String::length();
+	p = m_data.to_char();
+	m_string_size = m_data.size();
 	end = p + m_string_size;
 	if( m_is_count_empty_tokens == true ){
 		m_num_tokens++;
@@ -124,7 +133,7 @@ const String Tokenizer::at(u32 n) const {
 	unsigned int i;
 	bool on_token = false;
 	unsigned int token = 0;
-	p = cstring();
+	p = m_data.to_const_char();
 
 	if( n >= size() ){
 		return String();
@@ -187,9 +196,9 @@ void Tokenizer::sort(enum sort_options sort_option){
 	tmp = *this; //make a copy of the current object
 	u8 used[tmp.size()];
 
-	clear();
+	m_data.clear();
 	memset(used, 0, tmp.size());
-	next = to_char();
+	next = m_data.to_char();
 
 	for(j=0; j < tmp.size(); j++){
 		a = sort_init;
@@ -219,21 +228,6 @@ void Tokenizer::sort(enum sort_options sort_option){
 		next += string_to_copy.length() + 1;
 		used[current] = 1;
 	}
-}
-
-Tokenizer & Tokenizer::operator=(const Tokenizer & token){
-	resize(token.capacity());
-
-	var::Reference::memory_copy(
-				var::Reference::SourceBuffer(token.cstring()),
-				var::Reference::DestinationBuffer(to_char()),
-				var::Reference::Size(token.capacity())
-				);
-
-	m_num_tokens = token.m_num_tokens;
-	m_string_size = token.m_string_size;
-	m_is_count_empty_tokens = token.m_is_count_empty_tokens;
-	return *this;
 }
 
 

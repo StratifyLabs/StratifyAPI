@@ -129,7 +129,7 @@ bool Cli::is_option_equivalent_to_argument_with_equality(
 	}
 
 	Tokenizer tokens(
-				var::Tokenizer::EncodedString(argument),
+				argument,
 				var::Tokenizer::Delimeters("="),
 				var::Tokenizer::IgnoreBetween(""),
 				var::Tokenizer::IsCountEmpty(false),
@@ -233,9 +233,8 @@ int Cli::get_option_hex_value(const char * option) const {
 
 mcu_pin_t Cli::get_option_pin(const char * option) const {
 	mcu_pin_t pio;
-	Tokenizer arg;
-	arg.assign(get_option_argument(option));
-	arg.parse(
+	Tokenizer arg(
+				option,
 				var::Tokenizer::Delimeters(".")
 				);
 
@@ -252,10 +251,8 @@ mcu_pin_t Cli::get_option_pin(const char * option) const {
 
 mcu_pin_t Cli::pin_at(u16 value) const {
 	mcu_pin_t pio;
-	Tokenizer arg;
-
-	arg.assign( at(value) );
-	arg.parse(
+	Tokenizer arg(
+				at(value),
 				var::Tokenizer::Delimeters(".")
 				);
 
@@ -276,7 +273,7 @@ int Cli::value_at(u16 value) const {
 
 bool Cli::handle_uart(hal::UartAttributes & attr) const {
 	if( is_option("-uart") ){
-		u32 o_flags = hal::Uart::SET_LINE_CODING;
+		enum hal::Uart::flags o_flags = hal::Uart::SET_LINE_CODING;
 		attr.set_port(get_option_value("-uart"));
 
 		if( is_option("-freq") ){
@@ -319,7 +316,7 @@ bool Cli::handle_uart(hal::UartAttributes & attr) const {
 
 bool Cli::handle_i2c(hal::I2CAttr & attr) const {
 	if( is_option("-i2c") ){
-		u32 o_flags = hal::I2C::SET_MASTER;
+		enum hal::I2C::flags o_flags = hal::I2C::SET_MASTER;
 		attr.set_port(get_option_value("-i2c"));
 
 		if( is_option("-freq") ){

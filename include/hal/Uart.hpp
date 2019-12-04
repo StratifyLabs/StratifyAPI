@@ -26,6 +26,9 @@ public:
 	};
 };
 
+HAL_DEVICE_OR_FLAGS_OPERATOR(UartFlags)
+
+
 /*! \brief UART Pin Assignment
  * \details This class allows simple manipulation of the uart_pin_assignment_t.
  *
@@ -78,7 +81,7 @@ public:
 	 *
 	 */
 	UartAttributes(){
-		set_flags(UART_FLAG_SET_LINE_CODING_DEFAULT);
+		set_flags(SET_LINE_CODING_DEFAULT);
 		set_freq(115200);
 		set_width(8);
 	}
@@ -131,7 +134,7 @@ public:
 	UartAttributes & set_width(u8 bits){ m_attr.width = bits; return *this; }
 
 	UartAttributes & set_frequency(u32 value){ PeriphAttributes::set_frequency(value); return *this; }
-	UartAttributes & set_flags(u32 value){ PeriphAttributes::set_flags(value); return *this; }
+	UartAttributes & set_flags(enum flags value){ PeriphAttributes::set_flags(value); return *this; }
 
 };
 

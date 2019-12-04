@@ -224,7 +224,7 @@ int Dir::create(
 					);
 	}
 	var::Tokenizer path_tokens(
-				var::Tokenizer::EncodedString(path),
+				path,
 				var::Tokenizer::Delimeters("/")
 				);
 	var::String base_path;

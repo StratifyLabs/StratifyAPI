@@ -33,10 +33,12 @@ public:
 	};
 };
 
+HAL_DEVICE_OR_FLAGS_OPERATOR(PioFlags)
+
 
 class PioAttributes : public PeriphAttributes<pio_attr_t>, public PioFlags {
 public:
-	PioAttributes(u32 o_flags, u32 o_pinmask){
+	PioAttributes(enum flags o_flags, u32 o_pinmask){
 		set_flags(o_flags);
 		set_pinmask(o_pinmask);
 	}
@@ -44,8 +46,8 @@ public:
 	u32 o_flags() const { return m_attr.o_flags; }
 	u32 o_pinmask() const { return m_attr.o_pinmask; }
 
-	void set_flags(u32 value){ m_attr.o_flags = value; }
-	void set_pinmask(u32 value){ m_attr.o_pinmask = value; }
+	PioAttributes & set_flags(enum flags value){ m_attr.o_flags = value; return *this; }
+	PioAttributes & set_pinmask(u32 value){ m_attr.o_pinmask = value; return *this; }
 
 };
 

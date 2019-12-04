@@ -23,7 +23,7 @@ VersionString & VersionString::operator << (u32 value){
 
 u32 VersionString::to_bcd() const {
 	Tokenizer tokens(
-				var::Tokenizer::EncodedString(m_version),
+				m_version,
 				var::Tokenizer::Delimeters(".")
 				);
 	u32 result = 0;
@@ -36,11 +36,11 @@ u32 VersionString::to_bcd() const {
 
 int VersionString::compare(const VersionString & a, const VersionString & b){
 	Tokenizer a_tokens(
-				var::Tokenizer::EncodedString(a.m_version),
+				a.m_version,
 				var::Tokenizer::Delimeters(".")
 				);
 	Tokenizer b_tokens(
-				var::Tokenizer::EncodedString(b.m_version),
+				b.m_version,
 				var::Tokenizer::Delimeters(".")
 				);
 

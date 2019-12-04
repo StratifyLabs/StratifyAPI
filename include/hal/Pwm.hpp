@@ -22,6 +22,9 @@ public:
 	};
 };
 
+HAL_DEVICE_OR_FLAGS_OPERATOR(PwmFlags)
+
+
 /*! \brief PWM Attributes Class
  * \details This class is for containing PWM attributes.
  *
@@ -41,8 +44,8 @@ public:
 	 *
 	 */
 	PwmAttributes(){
-		m_attr.o_flags = PWM_FLAG_SET_TIMER;
-		m_attr.freq	= 1000000;
+		set_flags(SET_TIMER);
+		set_frequency(1000000);
 		m_attr.channel = mcu_channel(-1, -1);
 		m_attr.period = 1000;
 	}
@@ -51,7 +54,7 @@ public:
 	u32 period() const { return m_attr.period; }
 
 	PwmAttributes & set_frequency(u32 value){ m_attr.freq = value; return *this; }
-	PwmAttributes & set_flags(u32 value){ m_attr.o_flags = value; return *this; }
+	PwmAttributes & set_flags(enum flags value){ m_attr.o_flags = value; return *this; }
 
 
 	/*! \details Sets the PWM period. */

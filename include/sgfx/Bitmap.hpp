@@ -60,7 +60,7 @@ private:
  * \details This class implements a bitmap and is
  * powered by the sgfx library.
  */
-class Bitmap : virtual public var::Data, public api::SgfxObject {
+class Bitmap : public var::Data, public api::SgfxObject {
 public:
 
 	using ReadOnlyBuffer = var::Reference::ReadOnlyBuffer;

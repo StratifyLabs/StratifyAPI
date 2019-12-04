@@ -75,7 +75,8 @@ class Test : public api::WorkObject {
 public:
 
 	using Name = arg::Argument<const var::String &, struct TestNameTag>;
-	using VersionEncodedString = arg::Argument<const var::String &, struct TestVersionEncodedStringTag>;
+	using Version = arg::Argument<const var::String &, struct TestVersionTag>;
+	using VersionEncodedString = Version;
 	using GitHash = arg::Argument<const var::String &, struct TestGitHashTag>;
 
 	/*! \details Initializes the test report.
@@ -86,7 +87,7 @@ public:
 	  */
 	static void initialize(
 			Name name,
-			VersionEncodedString version,
+			Version version,
 			GitHash git_hash = GitHash("")
 			);
 

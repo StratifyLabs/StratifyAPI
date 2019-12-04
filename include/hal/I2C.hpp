@@ -46,6 +46,9 @@ public:
 	};
 };
 
+HAL_DEVICE_OR_FLAGS_OPERATOR(I2CFlags)
+
+
 /*! \brief I2C Pin Assignment
  * \details This class allows simple manipulation of the i2c_pin_assignment_t.
  *
@@ -64,7 +67,10 @@ class I2CPinAssignment : public PinAssignment<i2c_pin_assignment_t>{};
  * \sa hal::I2C
  *
  */
-class I2CAttributes : public PinAssignmentPeriphAttributes<i2c_attr_t, i2c_pin_assignment_t>, public I2CFlags {
+class I2CAttributes :
+      public PinAssignmentPeriphAttributes<i2c_attr_t, i2c_pin_assignment_t>,
+      public I2CFlags
+{
 public:
 
 	I2CAttributes(){
@@ -84,7 +90,7 @@ public:
 	u8 slave_addr16() const { return m_attr.slave_addr[0].addr16; }
 
 
-	I2CAttributes & set_flags(u32 value){ m_attr.o_flags = value; return *this; }
+	I2CAttributes & set_flags(enum flags value){ m_attr.o_flags = value; return *this; }
 	I2CAttributes & set_frequency(u32 value){ m_attr.freq = value; return *this; }
 
 	/*! \details Sets the 7-bit slave address value. */

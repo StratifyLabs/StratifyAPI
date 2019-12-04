@@ -155,9 +155,8 @@ void Test::vprint_case_message(const var::String & key, const char * fmt, va_lis
 	printf("\",\n");
 }
 
-void Test::initialize(
-		Name name,
-		VersionEncodedString version,
+void Test::initialize(Name name,
+		Version version,
 		GitHash git_hash
 		){
 	m_is_initialized = true;

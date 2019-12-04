@@ -55,7 +55,7 @@ public:
 
 	static mcu_pin_t from_string(const var::String & port_pin){
 		var::Tokenizer tokens(
-					var::Tokenizer::EncodedString(port_pin),
+					port_pin,
 					var::Tokenizer::Delimeters(".")
 					);
 		mcu_pin_t result;
@@ -114,7 +114,7 @@ public:
 	 *
 	 */
 	int initialize(u32 o_flags){
-		return initialize( PioAttributes(o_flags, m_pinmask) );
+		return initialize( PioAttributes((enum flags)o_flags, m_pinmask) );
 	}
 
 	/*! \details Initializes the pin as an input.
@@ -142,7 +142,7 @@ public:
 	 *
 	 */
 	int set_attributes(u32 o_flags) const {
-		return set_attributes(PioAttributes(o_flags, m_pinmask));
+		return set_attributes(PioAttributes((enum flags)o_flags, m_pinmask));
 	}
 
 	/*! \details Assigns a boolean to the pin (true is high, false is low). */

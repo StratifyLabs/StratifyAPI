@@ -410,7 +410,7 @@ int HttpClient::listen_for_header(){
 
 			if( title.find("HTTP/") == 0 ){
 				Tokenizer tokens(
-							var::Tokenizer::EncodedString(title),
+							title,
 							var::Tokenizer::Delimeters(" ")
 							);
 				is_first_line = false;
@@ -429,7 +429,7 @@ int HttpClient::listen_for_header(){
 			if( title == "CONTENT-TYPE" ){
 				//check for evnt streams
 				Tokenizer tokens(
-							var::Tokenizer::EncodedString(pair.value()),
+							pair.value(),
 							var::Tokenizer::Delimeters(" ;")
 							);
 				if( String(tokens.at(0)) == "text/event-stream" ){

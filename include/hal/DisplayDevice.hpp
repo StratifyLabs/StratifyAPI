@@ -16,8 +16,8 @@ namespace hal {
  * be drawn on.
  */
 class DisplayDevice :
-      public virtual Display,
-      public virtual Device {
+      public Display,
+      public Device {
 public:
 	DisplayDevice();
 

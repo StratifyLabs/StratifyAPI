@@ -95,7 +95,7 @@ namespace fs {
  * ```
  *
  */
-class File : public api::WorkObject {
+class File : public virtual api::WorkObject {
 public:
 
 	using Source = arg::Argument<const File &, struct FileSourceTag>;

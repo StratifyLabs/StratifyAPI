@@ -5,6 +5,7 @@
 
 #include "../arg/Argument.hpp"
 #include "String.hpp"
+#include "Data.hpp"
 
 namespace var {
 
@@ -13,10 +14,9 @@ namespace var {
  * class is similar to STDC strtok().
  *
  */
-class Tokenizer : public var::String {
+class Tokenizer : public api::WorkObject {
 public:
 	Tokenizer();
-
 
 	using EncodedString = arg::Argument<const var::String &, struct TokenizerEncodedStringTag>;
 	using Delimeters = arg::Argument<const var::String &, struct TokenizerDelimetersTag>;
@@ -36,7 +36,7 @@ public:
 	  * \sa parse()
 	  */
 	Tokenizer(
-			EncodedString src,
+			const var::String & input,
 			Delimeters delim,
 			IgnoreBetween ignore = IgnoreBetween(""),
 			IsCountEmpty is_count_empty = IsCountEmpty(false),
@@ -69,6 +69,7 @@ public:
 	  *
 	  */
 	void parse(
+			const var::String & input,
 			Delimeters delim,
 			IgnoreBetween ignore = IgnoreBetween(""),
 			MaximumCount = MaximumCount(0)
@@ -103,9 +104,6 @@ public:
 	/*! \details Sets whether or not parse() should include empty tokens. */
 	void set_count_empty_tokens(bool v = true){ m_is_count_empty_tokens = v; }
 
-
-	Tokenizer & operator=(const Tokenizer & token);
-
 protected:
 
 private:
@@ -113,6 +111,7 @@ private:
 	unsigned int m_num_tokens;
 	unsigned int m_string_size;
 	bool m_is_count_empty_tokens;
+	var::Data m_data;
 
 
 };

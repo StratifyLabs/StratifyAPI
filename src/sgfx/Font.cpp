@@ -21,9 +21,7 @@ FontInfo::FontInfo(const var::String & path){
 	m_path = path;
 
 	var::Tokenizer tokens(
-				var::Tokenizer::EncodedString(
-					fs::File::name(path)
-					),
+				fs::File::name(path),
 				var::Tokenizer::Delimeters("-.")
 				);
 

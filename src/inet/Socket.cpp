@@ -189,7 +189,7 @@ var::String SocketAddress::address_to_string() const {
 
 int SocketAddressIpv4::set_address(const var::String & addr){
 	Tokenizer tokens(
-				var::Tokenizer::EncodedString(addr),
+				addr,
 				var::Tokenizer::Delimeters(".")
 				);
 	if( tokens.count() != 4 ){
