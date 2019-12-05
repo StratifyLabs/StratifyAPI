@@ -37,24 +37,57 @@ public:
 		return push_back(a);
 	}
 
-	typename std::vector<T>::const_iterator begin() const noexcept { return m_vector.begin(); }
-	typename std::vector<T>::iterator begin() noexcept { return m_vector.begin(); }
+	using iterator = typename std::vector<T>::iterator;
+	using const_iterator = typename std::vector<T>::const_iterator;
+	using reverse_iterator = typename std::vector<T>::reverse_iterator;
+	using const_reverse_iterator = typename std::vector<T>::const_reverse_iterator;
 
-	typename std::vector<T>::const_iterator end() const noexcept { return m_vector.end(); }
-	typename std::vector<T>::iterator end() noexcept { return m_vector.end(); }
+	const_iterator begin() const noexcept { return m_vector.begin(); }
+	iterator begin() noexcept { return m_vector.begin(); }
 
-	typename std::vector<T>::const_iterator cbegin() const noexcept { return m_vector.cbegin(); }
-	typename std::vector<T>::const_iterator cend() const noexcept { return m_vector.cend(); }
+	const_iterator end() const noexcept { return m_vector.end(); }
+	iterator end() noexcept { return m_vector.end(); }
 
-	typename std::vector<T>::const_reverse_iterator rbegin() const noexcept { return m_vector.rbegin(); }
-	typename std::vector<T>::reverse_iterator rbegin() noexcept { return m_vector.rbegin(); }
+	const_iterator cbegin() const noexcept { return m_vector.cbegin(); }
+	const_iterator cend() const noexcept { return m_vector.cend(); }
 
-	typename std::vector<T>::const_reverse_iterator rend() const noexcept { return m_vector.rend(); }
-	typename std::vector<T>::reverse_iterator rend() noexcept { return m_vector.rend(); }
+	const_reverse_iterator rbegin() const noexcept { return m_vector.rbegin(); }
+	reverse_iterator rbegin() noexcept { return m_vector.rbegin(); }
 
-	typename std::vector<T>::const_reverse_iterator crbegin() const noexcept { return m_vector.crbegin(); }
-	typename std::vector<T>::const_reverse_iterator crend() const noexcept { return m_vector.crend(); }
+	const_reverse_iterator rend() const noexcept { return m_vector.rend(); }
+	reverse_iterator rend() noexcept { return m_vector.rend(); }
 
+	const_reverse_iterator crbegin() const noexcept { return m_vector.crbegin(); }
+	const_reverse_iterator crend() const noexcept { return m_vector.crend(); }
+
+	iterator insert(
+			const_iterator position,
+			const T & value
+			){
+		return m_vector.insert(position, value);
+	}
+
+	iterator insert(
+			const_iterator position,
+			size_t n,
+			const T & value
+			){
+		return m_vector.insert(position, n, value);
+	}
+
+	iterator insert(
+			const_iterator position,
+			T && value
+			){
+		return m_vector(position, value);
+	}
+
+	iterator insert(
+			const_iterator position,
+			std::initializer_list<T> il
+			){
+		return m_vector.insert(position, il);
+	}
 
 	Vector<T> & operator << (const Vector<T> & a){
 		for(u32 i=0; i < a.count(); i++){

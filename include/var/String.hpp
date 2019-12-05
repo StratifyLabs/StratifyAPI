@@ -88,23 +88,29 @@ public:
 		BASE_16 = 16
 	};
 
-	typename std::string::const_iterator begin() const noexcept { return m_string.begin(); }
-	typename std::string::iterator begin() noexcept { return m_string.begin(); }
+	using iterator = typename std::string::iterator;
+	using const_iterator = typename std::string::const_iterator;
+	using reverse_iterator = typename std::string::reverse_iterator;
+	using const_reverse_iterator = typename std::string::const_reverse_iterator;
 
-	typename std::string::const_iterator end() const noexcept { return m_string.end(); }
-	typename std::string::iterator end() noexcept { return m_string.end(); }
 
-	typename std::string::const_iterator cbegin() const noexcept { return m_string.cbegin(); }
-	typename std::string::const_iterator cend() const noexcept { return m_string.cend(); }
+	const_iterator begin() const noexcept { return m_string.begin(); }
+	iterator begin() noexcept { return m_string.begin(); }
 
-	typename std::string::const_reverse_iterator rbegin() const noexcept { return m_string.rbegin(); }
-	typename std::string::reverse_iterator rbegin() noexcept { return m_string.rbegin(); }
+	const_iterator end() const noexcept { return m_string.end(); }
+	iterator end() noexcept { return m_string.end(); }
 
-	typename std::string::const_reverse_iterator rend() const noexcept { return m_string.rend(); }
-	typename std::string::reverse_iterator rend() noexcept { return m_string.rend(); }
+	const_iterator cbegin() const noexcept { return m_string.cbegin(); }
+	const_iterator cend() const noexcept { return m_string.cend(); }
 
-	typename std::string::const_reverse_iterator crbegin() const noexcept { return m_string.crbegin(); }
-	typename std::string::const_reverse_iterator crend() const noexcept { return m_string.crend(); }
+	const_reverse_iterator rbegin() const noexcept { return m_string.rbegin(); }
+	reverse_iterator rbegin() noexcept { return m_string.rbegin(); }
+
+	const_reverse_iterator rend() const noexcept { return m_string.rend(); }
+	reverse_iterator rend() noexcept { return m_string.rend(); }
+
+	const_reverse_iterator crbegin() const noexcept { return m_string.crbegin(); }
+	const_reverse_iterator crend() const noexcept { return m_string.crend(); }
 
 	/*! \details Constructs an empty string.
 	  *
