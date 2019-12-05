@@ -11,6 +11,17 @@
 
 namespace test {
 
+#define TEST_EXPECT(a, T, b, c) a.expect<T>(__FUNCTION__, __LINE__, b, c)
+#define TEST_EXPECT_NOT(a, T, b, c) a.expect_not<T>(__FUNCTION__, __LINE__, b, c)
+#define TEST_ASSERT(a, T, b, c) do { if( a.expect<T>(__FUNCTION__, __LINE__, b, c) == false ){ return case_result(); } } while(0)
+#define TEST_ASSERT_NOT(a, T, b, c) do { if( a.expect_not<T>(__FUNCTION__, __LINE__, b, c) == false ){ return case_result(); } } while(0)
+
+#define TEST_THIS_EXPECT(T, b, c) this->expect<T>(__FUNCTION__, __LINE__, b, c)
+#define TEST_THIS_EXPECT_NOT(T, b, c) this->expect_not<T>(__FUNCTION__, __LINE__, b, c)
+#define TEST_THIS_ASSERT(T, b, c) do { if( this->expect<T>(__FUNCTION__, __LINE__, b, c) == false ){ return case_result(); } } while(0)
+#define TEST_THIS_ASSERT_NOT(T, b, c) do { if( this->expect_not<T>(__FUNCTION__, __LINE__, b, c) == false ){ return case_result(); } } while(0)
+
+
 /*! \brief Test Class
  * \details The Test class is designed to
  * be inherited to implement the following
@@ -309,6 +320,32 @@ public:
 	  *
 	  */
 	void close_case();
+
+	template<typename T> bool expect(
+			const char * function,
+			unsigned int line,
+			const T & a,
+			const T & b
+			){
+		if( a == b ){
+			return true;
+		}
+		print_case_failed("%s : %d valued not expected", function, line);
+		return false;
+	}
+
+	template<typename T> bool expect_not(
+			const char * function,
+			unsigned int line,
+			const T & a,
+			const T & b
+			){
+		if( !(a == b) ){
+			return true;
+		}
+		print_case_failed("%s : %d valued not expected not", function, line);
+		return false;
+	}
 
 protected:
 

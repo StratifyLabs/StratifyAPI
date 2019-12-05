@@ -108,8 +108,22 @@ public:
 		return_value = m_function(arguments...);
 		case_timer().stop();
 
+		if( expected_value < 0 ){
+			if( return_value < 0 ){
+				//good
+			} else {
+				//bad
+			}
+		} else {
+			if( return_value == expected_value ){
+				//good
+			} else {
+				//bad
+			}
+		}
 
-		if( return_value != expected_value ){
+
+		if( (return_value >= 0) && return_value != expected_value ){
 			result = false;
 			print_case_message("expected return %d != actual return %d", expected_value, return_value);
 		} else {
@@ -129,16 +143,36 @@ public:
 		return return_value;
 	}
 
-	return_type execute_case(
-			ExpectedReturn expected_value,
-			ExpectedError expected_errno,
+	return_type expect_result(
+			return_type expected_result,
 			args... arguments
 			){
-		return execute_case_with_expected_return(
-					"",
-					expected_value.argument(),
-					expected_errno.argument(),
-					arguments...);
+		return_type return_result;
+		bool result = true;
+		errno = 0;
+
+		m_case_name = name();
+		m_case_name += "(";
+		int dummy[sizeof...(arguments)] = { (build_argument(arguments), 0)... };
+		m_case_name.erase(
+					var::String::Position(m_case_name.length()-1)
+					);
+		m_case_name << ")";
+
+		errno = 0;
+		open_case(m_case_name);
+		case_timer().start();
+		return_result = m_function(arguments...);
+		case_timer().stop();
+
+		if( return_result != expected_result ){
+			print_case_failed(
+						"result is not equal to expected result"
+						);
+		}
+
+		close_case(result);
+		return return_result;
 	}
 
 	return_type execute_case_with_less_than_zero_on_error(const char * case_name, int expected_errno, args... arguments){
@@ -188,15 +222,38 @@ public:
 		return return_value;
 	}
 
-	return_type execute_case(
-			const char * case_name,
-			ExpectedError expected_errno,
+	return_type expect_error(
+			int expected_errno,
 			args... arguments
 			){
-		return execute_case_with_less_than_zero_on_error(
-					case_name,
-					expected_errno.argument(),
-					arguments...);
+		return_type return_value;
+		bool result = true;
+		errno = 0;
+
+		m_case_name = name();
+		m_case_name += "(";
+		int dummy[sizeof...(arguments)] = { (build_argument(arguments), 0)... };
+		m_case_name.erase(
+					var::String::Position(m_case_name.length()-1)
+					);
+		m_case_name << ")";
+
+		errno = 0;
+		open_case(m_case_name);
+		case_timer().start();
+		return_value = m_function(arguments...);
+		case_timer().stop();
+
+		if( errno != expected_errno ){
+			print_case_failed(
+						"expected errno %d != actual errno %d",
+						expected_errno,
+						errno
+						);
+		}
+
+		close_case(result);
+		return return_value;
 
 	}
 
@@ -209,15 +266,15 @@ private:
 			argument.format("%d,", t);
 		} else
 
-		if( std::is_pointer<T>::value == true ){
-			argument.format("%s,", t);
-		} else
+			if( std::is_pointer<T>::value == true ){
+				argument.format("%s,", t);
+			} else
 
-		if( std::is_floating_point<T>::value == true ){
-			argument.format("%f,", t);
-		} else {
-			argument = "?,";
-		}
+				if( std::is_floating_point<T>::value == true ){
+					argument.format("%f,", t);
+				} else {
+					argument = "?,";
+				}
 
 		m_case_name.append(argument);
 
