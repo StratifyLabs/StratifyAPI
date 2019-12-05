@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstring>
 #include <limits.h>
+#include <type_traits>
 
 #include "Test.hpp"
 #include "../var/ConstString.hpp"
@@ -55,6 +56,10 @@ namespace test {
 template<typename return_type, typename...args> class Function : public Test {
 public:
 
+	using ExpectedError = arg::Argument<int, struct FunctionExpectedErrorTag>;
+	using ExpectedReturn = arg::Argument<return_type, struct FunctionExpectedErrorTag>;
+
+
 	/*! \details Constructs a new function test object.
 	  *
 	  * @param test_name The name of the test
@@ -86,7 +91,18 @@ public:
 		bool result = true;
 		errno = 0;
 
-		open_case(case_name);
+
+		m_case_name = name();
+		m_case_name += "(";
+		int dummy[sizeof...(arguments)] = { (build_argument(arguments), 0)... };
+		m_case_name.erase(
+					var::String::Position(m_case_name.length()-1)
+					);
+		m_case_name << ")";
+
+		open_case(m_case_name);
+
+
 
 		case_timer().start();
 		return_value = m_function(arguments...);
@@ -113,13 +129,32 @@ public:
 		return return_value;
 	}
 
+	return_type execute_case(
+			ExpectedReturn expected_value,
+			ExpectedError expected_errno,
+			args... arguments
+			){
+		return execute_case_with_expected_return(
+					"",
+					expected_value.argument(),
+					expected_errno.argument(),
+					arguments...);
+	}
+
 	return_type execute_case_with_less_than_zero_on_error(const char * case_name, int expected_errno, args... arguments){
 		return_type return_value;
 		bool result = true;
 		errno = 0;
 
-		open_case(case_name);
+		m_case_name = name();
+		m_case_name += "(";
+		int dummy[sizeof...(arguments)] = { (build_argument(arguments), 0)... };
+		m_case_name.erase(
+					var::String::Position(m_case_name.length()-1)
+					);
+		m_case_name << ")";
 
+		open_case(m_case_name);
 		case_timer().start();
 		return_value = m_function(arguments...);
 		case_timer().stop();
@@ -153,9 +188,45 @@ public:
 		return return_value;
 	}
 
+	return_type execute_case(
+			const char * case_name,
+			ExpectedError expected_errno,
+			args... arguments
+			){
+		return execute_case_with_less_than_zero_on_error(
+					case_name,
+					expected_errno.argument(),
+					arguments...);
+
+	}
+
 
 private:
+
+	template<typename T> int build_argument(const T & t){
+		var::String argument;
+		if( std::is_integral<T>::value == true ){
+			argument.format("%d,", t);
+		} else
+
+		if( std::is_pointer<T>::value == true ){
+			argument.format("%s,", t);
+		} else
+
+		if( std::is_floating_point<T>::value == true ){
+			argument.format("%f,", t);
+		} else {
+			argument = "?,";
+		}
+
+		m_case_name.append(argument);
+
+		return 0;
+	}
+
 	return_type (*m_function)(args...);
+
+	var::String m_case_name;
 };
 
 }

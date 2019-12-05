@@ -365,9 +365,23 @@ protected:
 
 	int indent() const { return m_indent_count; }
 
+	const var::String & name() const {
+		return m_name;
+	}
 
 private:
 
+	bool m_test_result;
+	bool m_case_result;
+	chrono::Timer m_case_timer;
+	u32 m_test_duration_microseconds;
+	u32 m_case_message_number;
+	u32 m_indent_count;
+	var::String m_name;
+	Test * m_parent;
+	static bool m_is_initialized;
+	static bool m_all_test_result;
+	static u32 m_all_test_duration_microseconds;
 
 	void vprint_case_message(const var::String & key, const char * fmt, va_list args);
 
@@ -388,17 +402,6 @@ private:
 			m_indent_count--;
 		}
 	}
-
-	bool m_test_result;
-	bool m_case_result;
-	chrono::Timer m_case_timer;
-	u32 m_test_duration_microseconds;
-	u32 m_case_message_number;
-	u32 m_indent_count;
-	Test * m_parent;
-	static bool m_is_initialized;
-	static bool m_all_test_result;
-	static u32 m_all_test_duration_microseconds;
 };
 
 }

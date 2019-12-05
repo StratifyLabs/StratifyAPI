@@ -15,6 +15,7 @@ u32 Test::m_all_test_duration_microseconds = 0;
 Test::Test(const var::String & name, Test * parent){
 	//start a JSON object
 
+	m_name = name;
 
 	if( !m_is_initialized ){
 		initialize(
