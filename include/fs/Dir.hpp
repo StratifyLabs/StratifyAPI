@@ -86,6 +86,13 @@ public:
 			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
 
+	static var::Vector<var::String> read_list(
+			const var::String & path,
+			const var::String (*filter)(const var::String & entry),
+			IsRecursive is_recursive = IsRecursive(false)
+			SAPI_LINK_DRIVER_NULLPTR_LAST
+			);
+
 	static int copy(
 			SourcePath source_path,
 			DestinationPath destination_path
@@ -168,6 +175,12 @@ public:
 	var::Vector<var::String> read_list(
 			IsRecursive is_recursive = IsRecursive(false)
 			);
+
+	var::Vector<var::String> read_list(
+			const var::String (*filter)(const var::String & entry),
+			IsRecursive is_recursive = IsRecursive(false)
+			);
+
 
 
 	/*! \details Returns a pointer (const) to the name of the most recently read entry. */

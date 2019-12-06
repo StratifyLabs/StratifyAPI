@@ -331,9 +331,9 @@ int Dir::count(){
 
 #endif
 
-
 var::Vector<var::String> Dir::read_list(
 		const var::String & path,
+		const var::String (*filter)(const var::String & entry),
 		IsRecursive is_recursive
 		SAPI_LINK_DRIVER_LAST
 		){
@@ -344,14 +344,31 @@ var::Vector<var::String> Dir::read_list(
 				;
 	var::Vector<var::String> result;
 	if( directory.open(path) < 0 ){ return result; }
-	result = directory.read_list(is_recursive);
+	result = directory.read_list(filter, is_recursive);
 	directory.close();
 	return result;
 }
 
 
 var::Vector<var::String> Dir::read_list(
-		const IsRecursive is_recursive
+		const var::String & path,
+		IsRecursive is_recursive
+		SAPI_LINK_DRIVER_LAST
+		){
+	return read_list(
+				path,
+				nullptr,
+				is_recursive
+			#if defined __link
+				, link_driver
+			#endif
+				);
+}
+
+
+var::Vector<var::String> Dir::read_list(
+		const var::String (*filter)(const var::String & entry),
+		IsRecursive is_recursive
 		){
 	var::Vector<var::String> result;
 	var::String entry;
@@ -379,6 +396,7 @@ var::Vector<var::String> Dir::read_list(
 					var::Vector<var::String> intermediate_result =
 							Dir::read_list(
 								entry_path,
+								filter,
 								is_recursive
 			#if defined __link
 								, LinkDriver(driver())
@@ -389,7 +407,10 @@ var::Vector<var::String> Dir::read_list(
 					for(auto intermediate_entry: intermediate_result.vector()){
 						var::String push_entry;
 						push_entry << entry << "/" << intermediate_entry;
-						result.push_back(push_entry);
+						if( filter != nullptr ){ push_entry = filter(push_entry); }
+						if( push_entry.is_empty() == false ){
+							result.push_back(push_entry);
+						}
 					}
 				} else {
 					result.push_back(entry);
@@ -401,6 +422,12 @@ var::Vector<var::String> Dir::read_list(
 	} while( entry.is_empty() == false );
 
 	return result;
+}
+
+var::Vector<var::String> Dir::read_list(
+		const IsRecursive is_recursive
+		){
+	return read_list(nullptr, is_recursive);
 }
 
 const char * Dir::read(){
