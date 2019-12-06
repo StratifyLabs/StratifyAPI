@@ -22,7 +22,7 @@ public:
 	};
 };
 
-HAL_DEVICE_OR_FLAGS_OPERATOR(PwmFlags)
+API_OR_FLAGS_OPERATOR(PwmFlags)
 
 
 /*! \brief PWM Attributes Class

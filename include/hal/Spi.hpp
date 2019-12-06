@@ -28,7 +28,7 @@ public:
 
 };
 
-HAL_DEVICE_OR_FLAGS_OPERATOR(SpiFlags)
+API_OR_FLAGS_OPERATOR(SpiFlags)
 
 
 /*! \brief SPI Pin Assignment

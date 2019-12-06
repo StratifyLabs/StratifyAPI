@@ -44,13 +44,11 @@ namespace sgfx {
 class Pen : public api::SgfxInfoObject {
 public:
 
-	Pen();
-	Pen(sg_color_t color);
-	Pen(sg_color_t color, u8 thickness, bool fill);
-	Pen(sg_color_t color, u16 o_flags);
-	Pen(const sg_pen_t & pen){ m_pen = pen; }
+	using Color = arg::Argument<sg_color_t, struct PenColorTag>;
+	using Thickness = arg::Argument<u8, struct PenThicknessTag>;
+	using IsFill = arg::Argument<bool, struct PenIsFillTag>;
 
-	enum {
+	enum flags {
 		IS_SOLID /*! Draw solid */ = SG_PEN_FLAG_IS_SOLID,
 		IS_INVERT /*! Draw Invert (XOR) */ = SG_PEN_FLAG_IS_INVERT,
 		IS_BLEND /*! Draw Blend (OR) */ = SG_PEN_FLAG_IS_BLEND,
@@ -58,6 +56,7 @@ public:
 		IS_FILL /*! Draw Icon with fill points */ = SG_PEN_FLAG_IS_FILL
 	};
 
+	Pen();
 
 	/*! \details Accesses the pen thickness. */
 	u8 thickness() const { return m_pen.thickness; }
@@ -88,9 +87,9 @@ public:
 	/*! \details Sets the pen to a blending mode (OR). */
 	Pen & set_blend(){ set_solid(); m_pen.o_flags |= SG_PEN_FLAG_IS_INVERT; return *this; }
 
-	u16 o_flags() const { return m_pen.o_flags; }
-	u16 flags() const { return m_pen.o_flags; }
-	Pen & set_flags(u16 flags){	m_pen.o_flags = flags; return *this; }
+	enum flags o_flags() const { return static_cast<enum flags>(m_pen.o_flags); }
+	enum flags flags() const { return o_flags(); }
+	Pen & set_flags(enum flags flags){	m_pen.o_flags = flags; return *this; }
 
 	/*! \details Sets the pen color.
 	 *
@@ -119,7 +118,11 @@ public:
 private:
 	sg_pen_t m_pen;
 
+
 };
+
+API_OR_FLAGS_OPERATOR(Pen)
+
 
 } /* namespace sgfx */
 

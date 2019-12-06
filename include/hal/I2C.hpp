@@ -46,7 +46,7 @@ public:
 	};
 };
 
-HAL_DEVICE_OR_FLAGS_OPERATOR(I2CFlags)
+API_OR_FLAGS_OPERATOR(I2CFlags)
 
 
 /*! \brief I2C Pin Assignment

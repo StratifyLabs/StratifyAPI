@@ -9,7 +9,7 @@ Rectangle::Rectangle(){
 }
 
 void Rectangle::draw_to_scale(const DrawingScaledAttributes & attr){
-	attr.bitmap().set_pen( attr.bitmap().pen().set_color( color()) );
+	attr.bitmap().pen().set_color(color());
 	attr.bitmap().draw_rectangle(attr.point(), attr.area());
 }
 
@@ -19,7 +19,7 @@ RoundedRectangle::RoundedRectangle(){
 
 void RoundedRectangle::draw_to_scale(const DrawingScaledAttributes & attr){
 
-	attr.bitmap().set_pen( attr.bitmap().pen().set_color( color()) );
+	attr.bitmap().pen().set_color(color());
 
 	sg_size_t smallest_dimension =
 			attr.area().width() > attr.area().height() ?

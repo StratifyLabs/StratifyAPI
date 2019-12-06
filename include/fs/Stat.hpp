@@ -264,6 +264,16 @@ public:
 	/*! \details Returns the file mode value. */
 	Permissions permissions() const { return Permissions(m_stat.st_mode); }
 
+
+	/*! \details Returns the file suffix ('txt' for '/home/test.txt'). */
+	static const var::String suffix(const var::String & path);
+	/*! \details Returns the file name ('test.txt' for '/home/test.txt'). */
+	static const var::String name(const var::String & path);
+	/*! \details Returns the path to a file ('/home' for '/home/test.txt'). */
+	static const var::String parent_directory(const var::String & path);
+	/*! \details Returns the path to a file ('test' for '/home/test.txt'). */
+	static const var::String base_name(const var::String & path);
+
 private:
 
 #ifdef __link

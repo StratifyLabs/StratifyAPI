@@ -83,4 +83,63 @@ bool Stat::is_executable() const {
 	return false;
 }
 
+const var::String Stat::suffix(
+		const var::String & path
+		){
+	size_t pos = path.rfind('/');
+
+	if( pos == var::String::npos ){
+		return path;
+	}
+
+	return path.create_sub_string(
+				var::String::Position(pos+1)
+				);
+}
+
+const var::String Stat::name(
+		const var::String & path
+		){
+	size_t pos = path.rfind('/');
+
+	if( pos == var::String::npos ){
+		return path;
+	}
+
+	return path.create_sub_string(
+				var::String::Position(pos+1)
+				);
+}
+
+const var::String Stat::parent_directory(
+		const var::String & path
+		){
+	size_t pos = path.find('/');
+
+	if( pos == var::String::npos ){
+		return var::String();
+	}
+
+	return path.create_sub_string(
+				var::String::Position(0),
+				var::String::Length(pos)
+				);
+}
+
+const var::String Stat::base_name(
+		const var::String & path
+		){
+	var::String result = name(path);
+	size_t pos = result.rfind('.');
+	if( pos == var::String::npos ){
+		return result;
+	}
+
+	return result.create_sub_string(
+				var::String::Position(0),
+				var::String::Length(pos)
+				);
+}
+
+
 

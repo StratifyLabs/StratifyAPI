@@ -145,22 +145,8 @@ public:
 	}
 
 	/*! \details Returns a copy of the bitmap's pen. */
-	Pen pen() const { return m_bmap.pen; }
-
-	/*! \details Sets the bitmap's pen by making a copy of the \a pen parameter.
-	 *
-	 * The current pen can be modified using this method:
-	 *
-	 * ```
-	 * Bitmap b;
-	 * b.set_pen( b.pen().set_color(5).set_solid() );
-	 * ```
-	 *
-	 * Any methods available from sgfx::Pen can be used to update the pen.
-	 *
-	 *
-	 */
-	void set_pen(const Pen & pen){ m_bmap.pen = pen; }
+	const Pen & pen() const { return m_pen; }
+	Pen & pen(){ return m_pen; }
 
 
 	Region get_viewable_region() const;
@@ -281,7 +267,10 @@ public:
 	 *
 	 * \sa set_pen_color()
 	 */
-	void draw_pixel(const Point & p) const { api()->draw_pixel(bmap(), p); }
+	void draw_pixel(const Point & p) const {
+		sync_pen();
+		api()->draw_pixel(bmap(), p);
+	}
 
 	/*! \details Draws a line on the bitmap.
 	 *
@@ -291,13 +280,30 @@ public:
 	 * The bitmap's pen will determine the color, thickness, and drawing mode.
 	 *
 	 */
-	void draw_line(const Point & p1, const Point & p2) const { api()->draw_line(bmap(), p1, p2); }
-	void draw_quadratic_bezier(const Point & p1, const Point & p2, const Point & p3, sg_point_t * corners = 0) const { api()->draw_quadratic_bezier(bmap(), p1, p2, p3, corners); }
-	void draw_cubic_bezier(const Point & p1, const Point & p2, const Point & p3, const Point & p4, sg_point_t * corners = 0) const { api()->draw_cubic_bezier(bmap(), p1, p2, p3, p4, corners); }
+	void draw_line(const Point & p1, const Point & p2) const {
+		sync_pen();
+		api()->draw_line(bmap(), p1, p2);
+	}
+
+	void draw_quadratic_bezier(const Point & p1, const Point & p2, const Point & p3, sg_point_t * corners = 0) const {
+		sync_pen();
+		api()->draw_quadratic_bezier(bmap(), p1, p2, p3, corners);
+	}
+
+	void draw_cubic_bezier(const Point & p1, const Point & p2, const Point & p3, const Point & p4, sg_point_t * corners = 0) const {
+		sync_pen();
+		api()->draw_cubic_bezier(bmap(), p1, p2, p3, p4, corners);
+	}
+
 	void draw_arc(const Region & region, s16 start, s16 end, s16 rotation = 0, sg_point_t * corners = 0) const {
+		sync_pen();
 		api()->draw_arc(bmap(), &region.region(), start, end, rotation, corners);
 	}
-	void draw_arc(const Point & p, const Area & d, s16 start, s16 end, s16 rotation = 0) const { draw_arc(Region(p,d), start, end, rotation); }
+
+	void draw_arc(const Point & p, const Area & d, s16 start, s16 end, s16 rotation = 0) const {
+		sync_pen();
+		draw_arc(Region(p,d), start, end, rotation);
+	}
 
 	/*! \details Draws a rectangle on the bitmap.
 	 *
@@ -306,8 +312,18 @@ public:
 	 * The bitmap's pen color and drawing mode will affect how the rectangle is drawn. This method
 	 * affects every pixel in the rectangle not just the border.
 	 */
-	void draw_rectangle(const Region & region) const { api()->draw_rectangle(bmap(), &region.region()); }
-	void draw_rectangle(const Point & p, const Area & d) const { draw_rectangle(Region(p,d)); }
+	void draw_rectangle(const Region & region) const {
+		sync_pen();
+		printf("Draw rectangle %d,%d %dx%d %ld-%d-%d\n",
+				 region.x(), region.y(), region.width(), region.height(),
+				 bmap()->pen.color, bmap()->pen.thickness, bmap()->pen.o_flags
+				 );
+		api()->draw_rectangle(bmap(), &region.region());
+	}
+
+	void draw_rectangle(const Point & p, const Area & d) const {
+		draw_rectangle(Region(p,d));
+	}
 
 	/*! \details Pours an area on the bitmap.
 	 *
@@ -317,7 +333,10 @@ public:
 	 * The pour will seek boundaries going outward until it hits
 	 * a non-zero color or hits the bounding box.
 	 */
-	void draw_pour(const Point & point, const Region & bounds) const { api()->draw_pour(bmap(), point, &bounds.region()); }
+	void draw_pour(const Point & point, const Region & bounds) const {
+		sync_pen();
+		api()->draw_pour(bmap(), point, &bounds.region());
+	}
 
 	/*! \details This function sets the pixels in a bitmap
 	 * based on the pixels of the source bitmap
@@ -327,6 +346,7 @@ public:
 	 * @return Zero on success
 	 */
 	void draw_bitmap(const Point & p_dest, const Bitmap & src) const {
+		sync_pen();
 		api()->draw_bitmap(bmap(), p_dest, src.bmap());
 	}
 
@@ -347,6 +367,7 @@ public:
 	 * @param pattern_height The pixel height of alternating pixels
 	 */
 	void draw_pattern(const Region & region, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height) const {
+		sync_pen();
 		api()->draw_pattern(bmap(), &region.region(), odd_pattern, even_pattern, pattern_height);
 	}
 	void draw_pattern(const Point & p, const Area & d, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height) const {
@@ -366,6 +387,7 @@ public:
 			const Bitmap & source_bitmap,
 			const Region & source_region
 			) const {
+		sync_pen();
 		api()->draw_sub_bitmap(
 					bmap(),
 					destination_point,
@@ -381,7 +403,6 @@ public:
 			const Point & source_point,
 			const Area & source_area
 			) const {
-
 		draw_sub_bitmap(
 					destination_point,
 					source_bitmap,
@@ -395,21 +416,15 @@ public:
 	//these are deprecated and shouldn't be documented?
 	void invert(){ invert_rectangle(sg_point(0,0), area()); }
 	void invert_rectangle(const Point & p, const Area & d){
-		u16 o_flags;
 		sg_region_t region = sg_region(p,d);
-		o_flags = m_bmap.pen.o_flags;
 		m_bmap.pen.o_flags = SG_PEN_FLAG_IS_INVERT;
 		api()->draw_rectangle(bmap(), &region);
-		m_bmap.pen.o_flags = o_flags;
 	}
 
 	void clear_rectangle(const Point & p, const Area & d){
-		u16 o_flags;
 		sg_region_t region = sg_region(p,d);
-		o_flags = m_bmap.pen.o_flags;
 		m_bmap.pen.o_flags = SG_PEN_FLAG_IS_ERASE;
 		api()->draw_rectangle(bmap(), &region);
-		m_bmap.pen.o_flags = o_flags;
 	}
 
 
@@ -483,8 +498,13 @@ protected:
 private:
 
 	sg_color_t calculate_color_sum();
-	sg_bmap_t m_bmap;
+	mutable sg_bmap_t m_bmap;
 
+	void sync_pen() const {
+		m_bmap.pen = m_pen.pen();
+	}
+
+	Pen m_pen;
 	void initialize_members();
 	void calculate_members(const Area & dim);
 

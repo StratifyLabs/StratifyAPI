@@ -135,13 +135,19 @@ int Font::draw(
 		Bitmap & bitmap,
 		const Point & point
 		) const {
-	char c;
 	sg_size_t w;
 
 	//draw characters on the bitmap
-	Point p(point);
-	u32 i = 0;
-	while( (c = const_string.at(i++)) != 0){
+	Point p(point); //copy that can be advanced
+
+	for(u32 i=0; i < const_string.length(); i++){
+		char c = const_string.at(i);
+		char d;
+		if( i < const_string.length() - 1 ){
+			d = const_string.at(i+1);
+		} else {
+			d = 0;
+		}
 		if( c == ' ' ){
 			w = space_size();
 		} else {
@@ -150,8 +156,8 @@ int Font::draw(
 		}
 
 		//apply kerning
-		if( is_kerning_enabled() ){
-			w -= load_kerning(c, const_string.at(i));
+		if( is_kerning_enabled() && d != 0 ){
+			w -= load_kerning(c, d);
 			if( w < 0 ){
 				return -1;
 			}
@@ -160,6 +166,7 @@ int Font::draw(
 		p += Point::X(w);
 
 	}
+
 	return 0;
 }
 

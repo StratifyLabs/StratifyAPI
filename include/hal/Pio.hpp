@@ -33,7 +33,7 @@ public:
 	};
 };
 
-HAL_DEVICE_OR_FLAGS_OPERATOR(PioFlags)
+API_OR_FLAGS_OPERATOR(PioFlags)
 
 
 class PioAttributes : public PeriphAttributes<pio_attr_t>, public PioFlags {

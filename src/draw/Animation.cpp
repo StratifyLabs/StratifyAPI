@@ -115,7 +115,7 @@ bool Animation::exec(void (*draw)(void *, int, int), void * obj){
 
 int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
 	int ret = 0;
-	u16 o_flags;
+	enum sgfx::Pen::flags o_flags;
 
 	if( draw ){
 		draw(obj, data()->path.step, data()->path.step_total);

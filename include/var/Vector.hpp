@@ -99,6 +99,12 @@ public:
 	T & at(u32 position){ return m_vector.at(position); }
 	const T & at(u32 position) const { return m_vector.at(position); }
 
+	T & back(){ return m_vector.back(); }
+	const T & back() const { return m_vector.back(); }
+
+	T & front(){ return m_vector.front(); }
+	const T & front() const { return m_vector.front(); }
+
 	Vector<T> & push_back(const T & a ){
 		m_vector.push_back(a);
 		return *this;

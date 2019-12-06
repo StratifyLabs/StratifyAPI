@@ -26,7 +26,7 @@ public:
 	};
 };
 
-HAL_DEVICE_OR_FLAGS_OPERATOR(UartFlags)
+API_OR_FLAGS_OPERATOR(UartFlags)
 
 
 /*! \brief UART Pin Assignment

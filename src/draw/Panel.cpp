@@ -8,7 +8,10 @@ using namespace draw;
 
 Panel::Panel(){
 	m_radius = 250;
-	m_pen = Pen(1,1,true);
+	m_pen =
+			Pen().set_color(1)
+			.set_thickness(1)
+			.set_fill(true);
 }
 
 

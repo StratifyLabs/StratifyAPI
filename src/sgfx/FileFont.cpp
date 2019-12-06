@@ -149,5 +149,8 @@ void FileFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, con
 				Area(ch.width, ch.height)
 				);
 
+	//what are the pen settings -- what to do when bpp differ between font and bitmap -- how to map??
+	dest.pen().set_solid();
+
 	dest.draw_sub_bitmap(point, m_canvas, region);
 }
