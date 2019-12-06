@@ -13,14 +13,14 @@ void BarProgress::draw_to_scale(const DrawingScaledAttr & attr){
 
 	//draw bar
 	if( background_color() != color_transparent() ){
-		attr.bitmap() << attr.bitmap().pen().set_color( background_color() );
+		attr.bitmap() << Pen().set_color( background_color() );
 		attr.bitmap().draw_rectangle(attr.region());
 	}
 
 	//draw progress
 	sg_size_t progress_width = attr.area().width() - thickness*2;
 
-	attr.bitmap() << attr.bitmap().pen().set_color( color() );
+	attr.bitmap() << Pen().set_color( color() );
 	attr.bitmap().draw_rectangle(
 				attr.point() +
 				Point(thickness, thickness),

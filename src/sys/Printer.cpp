@@ -708,6 +708,14 @@ Printer & Printer::operator << (const sgfx::Area & a){
 }
 
 Printer & Printer::operator << (const sgfx::Pen & a){
+	key("color", "%d", a.color());
+	key("thickness", "%d", a.color());
+	key("o_flags", "0x%x", a.o_flags());
+	key("solid", "%d", a.is_solid());
+	key("invert", "%d", a.is_invert());
+	key("erase", "%d", a.is_erase());
+	key("blend", "%d", a.is_blend());
+	key("fill", "%d", a.is_fill());
 	return *this;
 }
 

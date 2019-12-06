@@ -1,6 +1,6 @@
 //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
-
+#include "sys/Printer.hpp"
 #include "sgfx/FileFont.hpp"
 using namespace sgfx;
 using namespace sys;
@@ -144,13 +144,14 @@ void FileFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, con
 		m_current_canvas = ch.canvas_idx;
 	}
 
-	Region region(
-				Point(ch.canvas_x ,ch.canvas_y),
-				Area(ch.width, ch.height)
-				);
-
 	//what are the pen settings -- what to do when bpp differ between font and bitmap -- how to map??
-	dest.pen().set_solid();
 
-	dest.draw_sub_bitmap(point, m_canvas, region);
+	dest.draw_sub_bitmap(
+				point,
+				m_canvas,
+				Region(
+					Point(ch.canvas_x ,ch.canvas_y),
+					Area(ch.width, ch.height)
+					)
+				);
 }

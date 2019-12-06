@@ -123,13 +123,13 @@ int Animation::animate_frame(void (*draw)(void*,int,int), void * obj){
 
 	o_flags = m_drawing_attr->bitmap().pen().o_flags();
 
-	m_drawing_attr->bitmap() << m_drawing_attr->bitmap().pen().set_flags(sgfx::Pen::IS_SOLID);
+	m_drawing_attr->bitmap() << sgfx::Pen().set_flags(sgfx::Pen::IS_SOLID);
 
 	ret = api()->animate(m_drawing_attr->bitmap().bmap(),
 									m_drawing_attr->scratch()->bmap(),
 									data());
 
-	m_drawing_attr->bitmap() << m_drawing_attr->bitmap().pen().set_flags(o_flags);
+	m_drawing_attr->bitmap() << sgfx::Pen().set_flags(o_flags);
 	m_drawing_attr->bitmap().refresh();
 	chrono::wait(Milliseconds(frame_delay()));
 

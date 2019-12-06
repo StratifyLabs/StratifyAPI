@@ -57,6 +57,7 @@ public:
 	};
 
 	Pen();
+	Pen(const sg_pen_t & pen){ m_pen = pen; }
 
 	/*! \details Accesses the pen thickness. */
 	u8 thickness() const { return m_pen.thickness; }

@@ -246,17 +246,7 @@ void Drawing::set_flag(u32 flag, bool v){
 }
 
 void Drawing::draw_rectangle(const DrawingAttributes & attr, const Pen & pen){
-	attr.bitmap().pen() = pen;
-	printf("attr Pen %ld %d 0x%X\n",
-			 attr.bitmap().pen().color(),
-			 attr.bitmap().pen().thickness(),
-			 attr.bitmap().pen().o_flags()
-			 );
-	printf("Pen %ld %d 0x%X\n",
-			 pen.color(),
-			 pen.thickness(),
-			 pen.o_flags()
-			 );
+	attr.bitmap() << pen;
 	attr.bitmap().draw_rectangle(
 				attr.calc_point_on_bitmap(),
 				attr.calc_dim_on_bitmap()
@@ -292,9 +282,10 @@ void Drawing::set(const DrawingAttributes & attr, sg_color_t color){
 	draw_rectangle(attr, Pen().set_color(color));
 }
 
-void Drawing::clear(const DrawingAttributes & attr, sg_bmap_data_t v){
+void Drawing::clear(const DrawingAttributes & attr){
 	draw_rectangle(attr, Pen().set_color(0));
 }
+
 void Drawing::invert(const DrawingAttributes & attr, sg_bmap_data_t v){
 	draw_rectangle(attr, Pen().set_color(0xffff).set_invert());
 }

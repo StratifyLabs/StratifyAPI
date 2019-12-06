@@ -592,7 +592,7 @@ public:
 	 * @param attr Specifies the bitmap and area
 	 * @param v Specifies the fill pattern
 	 */
-	static void clear(const DrawingAttributes & attr, sg_bmap_data_t v = 0xFF);
+	static void clear(const DrawingAttributes & attr);
 
 	/*! \details This method will invert the pixels in the area of the bitmap
 	 * specified.

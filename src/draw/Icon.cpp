@@ -29,7 +29,7 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	if( vector_path.is_valid() ){
 		Bitmap bitmap(attr.area(), attr.bitmap().bits_per_pixel());
 		bitmap.clear();
-		bitmap.pen() = attr.bitmap().pen();
+		bitmap << attr.bitmap().pen();
 
 		VectorMap map(bitmap, rotation());
 		sgfx::Vector::draw(bitmap, vector_path, map);
