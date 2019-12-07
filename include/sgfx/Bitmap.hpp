@@ -19,41 +19,45 @@ namespace sgfx {
 class Palette : public api::SgfxObject {
 public:
 
-	enum color_count {
-		COUNT_1BPP = 2,
-		COUNT_2BPP = 4,
-		COUNT_4BPP = 8,
-		COUNT_8BPP = 256
-	};
+	using Position = var::Reference::Position;
+	using IsAscending = arg::Argument<bool, struct PaletteIsAscendingTag>;
 
-	void set_count(enum color_count count){
-		//must be 2,4,16,256
-		m_colors.resize(count);
-		m_palette.mask = (count-1);
-		m_palette.colors = static_cast<sg_bmap_data_t*>(m_colors.data());
+	bool is_valid() const {
+		return colors().count() > 0;
 	}
 
-	void set_color(u32 idx, sg_color_t color){
-		m_colors.at(idx & m_palette.mask) = color;
+	Palette & set_bits_per_pixel(u8 bits_per_pixel);
+
+	Palette & set_color(
+			Position position,
+			sg_color_t color
+			){
+		m_colors.at(
+					position.argument() & m_palette.mask) = color;
+		return *this;
 	}
 
-	void fill_gradient_argb8888(sg_color_t color);
-	void fill_gradient_gray(bool is_ascending);
+	u8 bits_per_pixel() const {
+		if( colors().count() == 2 ){ return 1; }
+		if( colors().count() == 4 ){ return 2; }
+		if( colors().count() == 16 ){ return 4; }
+		if( colors().count() == 256 ){ return 8; }
+		return 1;
+	}
 
-	const var::Vector<sg_color_t> & colors() const { return m_colors; }
+	Palette & fill_gradient_argb8888(sg_color_t color);
+	Palette & fill_gradient_gray(
+			IsAscending is_ascending = IsAscending(true)
+			);
+
+	const var::Vector<sg_color_t> & colors() const {
+		return m_colors;
+	}
 
 private:
 	friend class Bitmap;
 	sg_palette_t m_palette;
 	var::Vector<sg_color_t> m_colors;
-};
-
-class BitmapObject : public api::SgfxObject {
-public:
-
-
-private:
-
 };
 
 /*! \brief Bitmap Class

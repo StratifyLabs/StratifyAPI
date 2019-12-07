@@ -7,6 +7,7 @@
 #include <mcu/types.h>
 #include "../fs/File.hpp"
 #include "../api/FmtObject.hpp"
+#include "../sgfx/Bitmap.hpp"
 
 namespace fmt {
 
@@ -25,6 +26,12 @@ public:
 	/*! \details Constructs an empty bitmap object. */
 	Bmp();
 
+	static int save(
+			const var::String & path,
+			const sgfx::Bitmap & bitmap,
+			const sgfx::Palette & pallete
+			);
+
 	/*! \details Returns the bitmap width (after bitmap has been opened). */
 	s32 width() const { return m_dib.width; }
 	/*! \details Returns the bitmap height (after bitmap has been opened). */
@@ -35,7 +42,8 @@ public:
 	u16 planes() const { return m_dib.planes; }
 
 	/*! \details Calculates the bytes needed to store one row of data (after bitmap has been opened). */
-	unsigned int calc_row_size() const;
+	unsigned int calculate_row_size() const;
+	unsigned int calc_row_size() const { return calculate_row_size(); }
 
 	/*! \details Opens the specified bitmap as readonly. */
 	int open_readonly(const var::String & name);
@@ -51,11 +59,12 @@ public:
 
 	/*! \details Creates a new bitmap using the specified parameters. */
 	int create(
-			const var::String & name,
+			const var::String & path,
 			Width width,
 			Height height,
 			PlaneCount planes,
-			BitsPerPixel bits_per_pixel);
+			BitsPerPixel bits_per_pixel
+			);
 
 	/*! \details Creates a new bitmap and save it to the /app filesystem (flash memory). */
 	static int create_appfs(const var::String & name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, u32 nbyte);

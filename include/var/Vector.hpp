@@ -143,7 +143,13 @@ public:
 	}
 
 	T * search(const T & a){
-		return (T*)bsearch(&a, std::vector<T>::data(), count(), sizeof(T), ascending);
+		return (T*)bsearch(
+					&a,
+					std::vector<T>::data(),
+					count(),
+					sizeof(T),
+					ascending
+					);
 	}
 
 	T * search(
@@ -180,7 +186,10 @@ public:
 		return 0;
 	}
 
-	static int ascending(const void * a, const void * b){
+	static int ascending(
+			const void * a,
+			const void * b
+			){
 		const T * object_a = (const T*)a;
 		const T * object_b = (const T*)b;
 		if( *object_a < *object_b ){ return -1; }
@@ -196,7 +205,7 @@ public:
 		return 0;
 	}
 
-	typedef int (*sort_compartor_t)(const void*, const void *);
+	typedef int (*sort_compartor_t)(const void * a, const void * b);
 
 	void sort(sort_compartor_t compare_function){
 		qsort(m_vector.data(),

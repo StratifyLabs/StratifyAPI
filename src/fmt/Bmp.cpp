@@ -72,17 +72,18 @@ int Bmp::open(
 	return 0;
 }
 
-int Bmp::create(const var::String & name,
-					 Width width,
-					 Height height,
-					 PlaneCount planes,
-					 BitsPerPixel bits_per_pixel
-					 ){
+int Bmp::create(
+		const var::String & path,
+		Width width,
+		Height height,
+		PlaneCount planes,
+		BitsPerPixel bits_per_pixel
+		){
 
 	bmp_header_t hdr;
 
 	if( File::create(
-			 name,
+			 path,
 			 IsOverwrite(true)
 			 ) < 0 ){
 		return -1;
@@ -164,7 +165,7 @@ int Bmp::create_appfs(
 	return 0;
 }
 
-unsigned int Bmp::calc_row_size() const{
+unsigned int Bmp::calculate_row_size() const{
 	return (((m_dib.bits_per_pixel/8)*m_dib.width + 3) / 4) * 4;
 }
 
@@ -202,6 +203,43 @@ int Bmp::read_pixel(uint8_t * pixel, u32 pixel_size, bool mono, uint8_t thres){
 			return 0;
 		}
 	}
+
+	return 0;
+}
+
+int Bmp::save(
+		const var::String & path,
+		const sgfx::Bitmap & bitmap,
+		const sgfx::Palette & pallete
+		){
+
+	Bmp bmp;
+	if( bmp.create(
+				path,
+				Width(bitmap.width()),
+				Height(bitmap.height()),
+				PlaneCount(1),
+				BitsPerPixel(24)
+			 ) < 0 ){
+		return -1;
+	}
+
+	for(sg_int_t y = bitmap.height()-1; y >= 0; y--){
+		var::Vector<u8> row(bmp.calculate_row_size());
+		for(sg_int_t x = 0; x < bitmap.width(); x++){
+			sg_color_t color = bitmap.get_pixel(sgfx::Point(x,y));
+			sg_color_t color_rgb = pallete.colors().at(color);
+
+			row.at(x*3) = color_rgb & 0xff;
+			row.at(x*3+1) = color_rgb >> 8;
+			row.at(x*3+2) = color_rgb >> 16;
+		}
+
+		if( bmp.write(row) < 0 ){
+			return -1;
+		}
+	}
+	bmp.close();
 
 	return 0;
 }

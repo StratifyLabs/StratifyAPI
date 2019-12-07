@@ -515,6 +515,7 @@ public:
 	 *
 	 */
 	static char get_bitmap_pixel_character(u32 color, u8 bits_per_pixel);
+	static u32 get_bitmap_pixel_color(char c, u8 bits_per_pixel);
 
 #if defined __link
 	bool is_bash() const { return m_is_bash; }

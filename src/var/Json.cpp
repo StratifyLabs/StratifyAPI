@@ -426,6 +426,7 @@ JsonValue JsonDocument::load(
 	return value;
 }
 
+#if defined __link
 JsonValue JsonDocument::load(
 		XmlString xml
 		){
@@ -445,6 +446,7 @@ JsonValue JsonDocument::load(
 	String xml_string = String( data_file.data() );
 	return load(XmlString(xml_string));
 }
+#endif
 
 JsonValue JsonDocument::load(
 		const var::String & json

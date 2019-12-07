@@ -82,7 +82,6 @@ int Svic::append(
 		const var::Vector<sg_vector_path_description_t> & list
 		){
 	sg_vector_icon_header_t header;
-	var::Reference list_data;
 	memset(&header, 0, sizeof(header));
 	strncpy(header.name, name.cstring(), 23);
 	header.count = list.count();
@@ -98,9 +97,7 @@ int Svic::append(
 		return -1;
 	}
 
-	list_data = list;
-
-	if( write(list_data) != (int)list.size()
+	if( write(list) != (int)list.size()
 		 ){
 		set_error_number( error_number() );
 		return -1;

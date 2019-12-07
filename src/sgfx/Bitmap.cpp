@@ -12,38 +12,54 @@ using namespace sgfx;
 using namespace sys;
 using namespace calc;
 
-void Palette::fill_gradient_argb8888(sg_color_t color){
+Palette & Palette::set_bits_per_pixel(u8 bits_per_pixel){
+	u32 count = 1 << bits_per_pixel;
+	if( count > 256 ){
+		m_colors.clear();
+		return *this;
+	}
+	m_colors.resize(count);
+	m_palette.mask = (count-1);
+	m_palette.colors = static_cast<sg_bmap_data_t*>(m_colors.data());
+	return *this;
+}
+
+Palette & Palette::fill_gradient_argb8888(sg_color_t color){
 	sg_color_t gradient_color;
 	u16 alpha;
-	set_color(0, 0);
+	set_color(Position(0), 0);
 	for(u32 i=1; i < m_colors.count() - 1; i++){
 		alpha = i * 255 / m_colors.count();
 		gradient_color = (alpha << 24) | color;
-		set_color(i, gradient_color);
+		set_color(Position(i), gradient_color);
 	}
-	set_color(m_colors.count() - 1, 0xff000000 | color);
+	set_color(Position(m_colors.count() - 1), 0xff000000 | color);
+	return *this;
 }
 
-void Palette::fill_gradient_gray(bool is_ascending){
+Palette & Palette::fill_gradient_gray(
+		IsAscending is_ascending
+		){
 	sg_color_t gradient_color;
 	u8 component;
-	if( is_ascending ){
-		set_color(0, 0xff000000);
+	if( is_ascending.argument() ){
+		set_color(Position(0), 0xff000000);
 		for(u32 i=1; i < m_colors.count() - 1; i++){
 			component = i * 255 / m_colors.count();
 			gradient_color = (0xff << 24) | (component << 16) | (component << 8) | (component);
-			set_color(i, gradient_color);
+			set_color(Position(i), gradient_color);
 		}
-		set_color(m_colors.count() - 1, 0xffffffff);
+		set_color(Position(m_colors.count() - 1), 0xffffffff);
 	} else {
-		set_color(0, 0xffffffff);
+		set_color(Position(0), 0xffffffff);
 		for(u32 i=1; i < m_colors.count() - 1; i++){
 			component = 255 - (i * 255 / m_colors.count());
 			gradient_color = (0xff << 24) | (component << 16) | (component << 8) | (component);
-			set_color(i, gradient_color);
+			set_color(Position(i), gradient_color);
 		}
-		set_color(m_colors.count() - 1, 0xff000000);
+		set_color(Position(m_colors.count() - 1), 0xff000000);
 	}
+	return *this;
 }
 
 

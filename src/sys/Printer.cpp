@@ -658,6 +658,48 @@ char Printer::get_bitmap_pixel_character(u32 color, u8 bits_per_pixel){
 	return '?';
 }
 
+u32 Printer::get_bitmap_pixel_color(char c, u8 bits_per_pixel){
+
+	if( bits_per_pixel == 1 ){
+		if( c == ' ' ){ return 0; }
+		return 1;
+	}
+
+	if( bits_per_pixel == 2 ){
+		switch(c){
+			case ' ': return 0;
+			case '.': return 1;
+			case ',': return 2;
+			case '-':
+			default: return 3;
+		}
+	}
+
+	if( bits_per_pixel == 4 ){
+		switch(c){
+			case ' ': return 0;
+			case '.': return 1;
+			case ',': return 2;
+			case '-': return 3;
+			case '+': return 4;
+			case '=': return 5;
+			case '^': return 6;
+			case 'x': return 7;
+			case 'o': return 8;
+			case '*': return 9;
+			case '#': return 10;
+			case '%': return 11;
+			case '$': return 12;
+			case 'O': return 13;
+			case 'X': return 14;
+			case '@':
+			default: return 15;
+		}
+	}
+
+	return 255;
+}
+
 void Printer::print_bitmap_pixel(u32 color, u8 bits_per_pixel){
 	print("%c", get_bitmap_pixel_character(color, bits_per_pixel));
 }
@@ -1016,7 +1058,7 @@ Printer & Printer::error(
 				result.return_value(),
 				result.error_number(),
 				line_number
-			);
+				);
 	return *this;
 }
 
