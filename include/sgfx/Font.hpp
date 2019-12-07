@@ -223,6 +223,10 @@ public:
 	/*! \details Returns true if kerning is enabled. */
 	bool is_kerning_enabled() const { return m_is_kerning_enabled; }
 
+	sg_font_kerning_pair_t kerning_pair(u32 offset){ return load_kerning(offset); }
+	sg_font_char_t character(u32 offset);
+	Bitmap character_bitmap(u32 offset);
+
 protected:
 
 	/*! \cond */
@@ -238,6 +242,7 @@ protected:
 
 	virtual void draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, const Point & point) const = 0;
 	virtual int load_char(sg_font_char_t & ch, char c, bool ascii) const = 0;
+	virtual sg_font_kerning_pair_t load_kerning(u32 offset) const { return {0}; }
 	virtual int load_kerning(u16 first, u16 second) const { return 0; }
 	/*! \endcond */
 

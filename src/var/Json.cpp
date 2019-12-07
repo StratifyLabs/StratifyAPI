@@ -5,6 +5,7 @@
 #include "sys/requests.h"
 
 #if defined __link
+#include "xml2json.hpp"
 #define atoff atof
 #endif
 
@@ -413,7 +414,8 @@ JsonFalse::JsonFalse(){
 	m_value = create();
 }
 
-JsonValue JsonDocument::load(const fs::File::Path path
+JsonValue JsonDocument::load(
+		fs::File::Path path
 		){
 	JsonValue value;
 	value.m_value = JsonValue::api()->load_file(
@@ -422,6 +424,26 @@ JsonValue JsonDocument::load(const fs::File::Path path
 				&m_error.m_value
 				);
 	return value;
+}
+
+JsonValue JsonDocument::load(
+		XmlString xml
+		){
+	std::string json_string
+			= xml2json(
+				xml.argument().cstring()
+				);
+	return load(String(json_string.c_str()));
+}
+
+JsonValue JsonDocument::load(
+		XmlFilePath path
+		){
+	fs::DataFile data_file(
+				fs::File::Path(path.argument())
+				);
+	String xml_string = String( data_file.data() );
+	return load(XmlString(xml_string));
 }
 
 JsonValue JsonDocument::load(
@@ -449,7 +471,7 @@ size_t JsonDocument::load_file_data(
 }
 
 JsonValue JsonDocument::load(const fs::File::Source file
-		){
+									  ){
 	JsonValue value;
 	value.m_value = JsonValue::api()->load_callback(load_file_data, (void*)&(file.argument()), flags(), &m_error.m_value);
 	return value;

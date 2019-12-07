@@ -29,7 +29,7 @@ AuthToken::AuthToken(const var::String & token){
 		hex[0] = token.at(i*2);
 		hex[1] = token.at(i*2+1);
 		m_auth_token.data[i] =
-				var::String(hex).to_unsigned_long(var::String::BASE_16);
+				var::String(hex).to_unsigned_long(var::String::base_16);
 	}
 
 }

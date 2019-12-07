@@ -86,10 +86,10 @@ bool Stat::is_executable() const {
 const var::String Stat::suffix(
 		const var::String & path
 		){
-	size_t pos = path.rfind('/');
+	size_t pos = path.rfind('.');
 
 	if( pos == var::String::npos ){
-		return path;
+		return var::String();
 	}
 
 	return path.create_sub_string(
@@ -136,6 +136,19 @@ const var::String Stat::base_name(
 	}
 
 	return result.create_sub_string(
+				var::String::Position(0),
+				var::String::Length(pos)
+				);
+}
+
+const var::String FileInfo::no_suffix(const var::String & path){
+	size_t pos = path.rfind('.');
+
+	if( pos == var::String::npos ){
+		return var::String();
+	}
+
+	return path.create_sub_string(
 				var::String::Position(0),
 				var::String::Length(pos)
 				);

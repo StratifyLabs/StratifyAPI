@@ -36,6 +36,7 @@ protected:
 	void draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, const Point & point) const;
 	int load_char(sg_font_char_t & ch, char c, bool ascii) const;
 	int load_kerning(u16 first, u16 second) const;
+	sg_font_kerning_pair_t load_kerning(u32 offset) const;
 
 private:
 	mutable fs::File m_file;

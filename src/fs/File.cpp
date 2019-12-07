@@ -436,13 +436,13 @@ int File::write(
 }
 
 int File::seek(
-		Location location,
+		int location,
 		enum whence whence) const {
 	return set_error_number_if_error(
 				link_lseek(
 					driver(),
 					m_fd,
-					location.argument(),
+					location,
 					whence)
 				);
 
@@ -695,7 +695,7 @@ DataFile::DataFile(
 	m_location = 0;
 	m_open_flags = OpenFlags::append_read_write();
 	write(file_to_load);
-	seek(Location(0), SET);
+	seek(0, SET);
 	m_open_flags = OpenFlags::read_write();
 }
 
@@ -769,17 +769,17 @@ int DataFile::write(
 }
 
 int DataFile::seek(
-		Location location,
+		int location,
 		enum whence whence) const {
 	switch(whence){
 		case CURRENT:
-			m_location += location.argument();
+			m_location += location;
 			break;
 		case END:
 			m_location = m_data.size();
 			break;
 		case SET:
-			m_location = location.argument();
+			m_location = location;
 			break;
 	}
 
@@ -856,19 +856,18 @@ int ReferenceFile::write(
 	return set_error_number_if_error(size_ready);
 }
 
-int ReferenceFile::seek(
-		Location location,
+int ReferenceFile::seek(int location,
 		enum whence whence
 		) const {
 	switch(whence){
 		case CURRENT:
-			m_location += location.argument();
+			m_location += location;
 			break;
 		case END:
 			m_location = reference().size();
 			break;
 		case SET:
-			m_location = location.argument();
+			m_location = location;
 			break;
 	}
 
@@ -907,8 +906,7 @@ int NullFile::write(
 	return nbyte.argument();
 }
 
-int NullFile::seek(
-		Location location,
+int NullFile::seek(int location,
 		enum whence whence
 		) const {
 	MCU_UNUSED_ARGUMENT(location);

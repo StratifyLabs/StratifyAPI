@@ -93,6 +93,7 @@ public:
 	using Destination = arg::Argument<Reference&, struct ReferenceDestinationTag >;
 
 	using Position = arg::Argument<size_t, struct ReferencePositionTag >;
+	using IsOverwrite = arg::Argument<bool, struct ReferenceIsOverwritenTag >;
 
 
 	/*! \details Constructs an empty
@@ -395,20 +396,20 @@ public:
 	}
 
 	template<typename T> Reference & populate(
-				T (*calculate_value)(
+			T (*calculate_value)(
 				Position position,
 				Count count
 				),
-				Reference::Count count = Reference::Count(0)
-				){
-			if( count.argument() == 0 ){
-				count.argument() = this->count<T>();
-			}
-			for(u32 i=0; i < count.argument(); i++){
-				to<T>()[i] = calculate_value(Position(i), count);
-			}
-			return *this;
+			Reference::Count count = Reference::Count(0)
+			){
+		if( count.argument() == 0 ){
+			count.argument() = this->count<T>();
 		}
+		for(u32 i=0; i < count.argument(); i++){
+			to<T>()[i] = calculate_value(Position(i), count);
+		}
+		return *this;
+	}
 
 	template<typename T> size_t count() const {
 		return size() / sizeof(T);
@@ -579,6 +580,15 @@ public:
 	const float * to_const_float() const { return to<const float>(); }
 	float * to_float() const { return to<float>(); }
 
+	/*! \details Saves the data that is reference
+	 * to a file specified by *file_path*.
+	 *
+	 */
+	int save(
+			const var::String file_path,
+			IsOverwrite is_overwrite = IsOverwrite(false)
+			) const;
+
 protected:
 
 	/*! \cond */
@@ -604,6 +614,7 @@ protected:
 			);
 
 	void set_size_internally(u32 size);
+
 
 private:
 	const void * m_data_read;

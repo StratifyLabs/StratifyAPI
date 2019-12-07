@@ -437,6 +437,8 @@ private:
 class JsonDocument : public api::WorkObject {
 public:
 
+
+
 	/*! \details Constructs a Json object from a JsonValue.
 	 *
 	 * @param value JsonValue in memory that this class will refer to.
@@ -456,7 +458,7 @@ public:
 	  * \return Zero on success
 	  */
 	JsonValue load(
-			const fs::File::Path path
+			fs::File::Path path
 			);
 
 	/*!
@@ -467,6 +469,25 @@ public:
 	JsonValue load(
 			const String & json
 			);
+
+#if defined __link
+	using XmlString = arg::Argument<const String &, struct JsonDocumentXmlStringTag>;
+	using XmlFilePath = arg::Argument<const String &, struct JsonDocumentXmlFilePathTag>;
+
+	/*!
+	  * \details Loads a JSON value from a data object
+	  * \param data A reference to the data object containing the JSON
+	  * \return
+	  */
+	JsonValue load(
+			XmlString xml
+			);
+
+	JsonValue load(
+			XmlFilePath path
+			);
+#endif
+
 
 	/*!
 	  * \details Loads a JSON value from an already open file

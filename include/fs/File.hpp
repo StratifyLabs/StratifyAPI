@@ -106,7 +106,7 @@ public:
 	using Path = arg::Argument<const var::String &, struct FilePathTag>;
 	using SourcePath = arg::Argument<const var::String &, struct FileSourcePathTag>;
 	using DestinationPath = arg::Argument<const var::String &, struct FileDestinationPathTag>;
-	using IsOverwrite = arg::Argument<bool, struct FileIsOverwriteTag>;
+	using IsOverwrite = var::Reference::IsOverwrite;
 
 	using SourceReference = var::Reference::Source;
 	using DestinationReference = var::Reference::Destination;
@@ -128,6 +128,12 @@ public:
 	using Location = arg::Argument<int, struct FileLocationTag>;
 	using OwnerId = arg::Argument<int, struct FileOwnerIdTag>;
 	using GroupId = arg::Argument<int, struct FileGroupIdTag>;
+
+	enum whence {
+		SET /*! Set the location of the file descriptor */ = LINK_SEEK_SET,
+		CURRENT /*! Set the location relative to the current location */ = LINK_SEEK_CUR,
+		END /*! Set the location relative to the end of the file or device */ = LINK_SEEK_END
+	};
 
 #if defined __link
 	using LinkDriver = arg::Argument<link_transport_mdriver_t*, struct FileLinkDriverTag >;
@@ -155,13 +161,6 @@ public:
 
 	~File();
 
-
-	/*! \details List of options for \a whence argument of seek() */
-	enum whence {
-		SET /*! Set the location of the file descriptor */ = LINK_SEEK_SET,
-		CURRENT /*! Set the location relative to the current location */ = LINK_SEEK_CUR,
-		END /*! Set the location relative to the end of the file or device */ = LINK_SEEK_END
-	};
 
 	Stat get_info() const {
 		return get_info(Descriptor(fileno()));
@@ -514,10 +513,17 @@ public:
 	}
 
 	/*! \details Seeks to a location in the file or on the device. */
-	virtual int seek(
-			Location location,
+	virtual int seek(int location,
 			enum whence whence = SET
 			) const;
+
+	int seek(
+			Location location,
+			enum whence whence = SET
+			) const {
+			return seek(location.argument(), whence);
+		}
+
 
 	/*! \details Reads a line in to the var::String until end-of-file or \a term is reached. */
 	var::String gets(char term = '\n') const;
@@ -779,13 +785,20 @@ public:
 			Size nbyte
 			) const;
 
+	/*! \details List of options for \a whence argument of seek() */
+	enum whence {
+		SET /*! Set the location of the file descriptor */ = LINK_SEEK_SET,
+		CURRENT /*! Set the location relative to the current location */ = LINK_SEEK_CUR,
+		END /*! Set the location relative to the end of the file or device */ = LINK_SEEK_END,
+	};
+
 	/*! \details Seeks to the specified location in the file.
 	 *
 	 * @return Zero on success
 	 *
 	 */
 	int seek(
-			Location location,
+			int location,
 			enum whence whence = SET
 			) const;
 
@@ -810,6 +823,7 @@ public:
 
 	using File::read;
 	using File::write;
+	using File::seek;
 
 	OpenFlags & flags(){ return m_open_flags; }
 	const OpenFlags & flags() const { return m_open_flags; }
@@ -882,7 +896,7 @@ public:
 	 *
 	 */
 	int seek(
-			Location location,
+			int location,
 			enum whence whence = SET
 			) const;
 
@@ -907,6 +921,7 @@ public:
 
 	using File::read;
 	using File::write;
+	using File::seek;
 
 	OpenFlags & flags(){ return m_open_flags; }
 	const OpenFlags & flags() const { return m_open_flags; }
@@ -977,9 +992,10 @@ public:
 	 *
 	 */
 	int seek(
-			Location location,
+			int location,
 			enum whence whence = SET
 			) const;
+
 
 	/*! \details Reimplements fs::File::ioctl() to have
 	 * no functionality.
@@ -1001,6 +1017,7 @@ public:
 
 	using File::read;
 	using File::write;
+	using File::seek;
 
 	OpenFlags & flags(){ return m_open_flags; }
 	const OpenFlags & flags() const { return m_open_flags; }

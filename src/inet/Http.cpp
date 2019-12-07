@@ -462,7 +462,7 @@ int HttpClient::listen_for_data(
 		do {
 			String line = socket().gets();
 			//convert line from hex
-			bytes_incoming = line.to_unsigned_long(String::BASE_16);
+			bytes_incoming = line.to_unsigned_long(String::base_16);
 
 			//read bytes_incoming from the socket and write it to the output file
 			if( destination.write(

@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cstdio>
 
+#include "fs/File.hpp"
 #include "sys/Trace.hpp"
 #include "var/Data.hpp"
 
@@ -172,6 +173,24 @@ var::String Reference::to_string() const {
 	return result;
 }
 
+
+int Reference::save(
+		const var::String file_path,
+		IsOverwrite is_overwrite
+		) const {
+	fs::File f;
+	if( f.create(
+			 file_path,
+			 is_overwrite
+			 ) < 0 ){
+		return -1;
+	}
+
+	if( f.write(*this) != size() ){
+		return -1;
+	}
+	return 0;
+}
 
 
 

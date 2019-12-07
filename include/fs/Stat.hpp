@@ -271,8 +271,10 @@ public:
 	static const var::String name(const var::String & path);
 	/*! \details Returns the path to a file ('/home' for '/home/test.txt'). */
 	static const var::String parent_directory(const var::String & path);
-	/*! \details Returns the path to a file ('test' for '/home/test.txt'). */
+	/*! \details Returns the base name of a file path('test' for '/home/test.txt'). */
 	static const var::String base_name(const var::String & path);
+	/*! \details Returns the path without the suffix ('/home/test' for '/home/test.txt). */
+	static const var::String no_suffix(const var::String & path);
 
 private:
 

@@ -34,10 +34,10 @@ int Dir::remove(
 	int ret = 0;
 	if( recursive.argument() ){
 		Dir d
-			#if defined __link
-					(link_driver)
-			#endif
-					;
+		#if defined __link
+				(link_driver)
+		#endif
+				;
 
 		if( d.open(path) == 0 ){
 			var::String entry;
@@ -254,12 +254,12 @@ bool Dir::exists(
 		SAPI_LINK_DRIVER_LAST
 		){
 	Dir d
-			#if defined __link
+		#if defined __link
 			(
 				link_driver
 				)
-			#endif
-				;
+		#endif
+			;
 	if( d.open(path) < 0 ){ return false; }
 	d.close();
 	return true;
@@ -338,10 +338,10 @@ var::Vector<var::String> Dir::read_list(
 		SAPI_LINK_DRIVER_LAST
 		){
 	Dir directory
-			#if defined __link
-				(link_driver)
-			#endif
-				;
+		#if defined __link
+			(link_driver)
+		#endif
+			;
 	var::Vector<var::String> result;
 	if( directory.open(path) < 0 ){ return result; }
 	result = directory.read_list(filter, is_recursive);
@@ -372,11 +372,15 @@ var::Vector<var::String> Dir::read_list(
 		){
 	var::Vector<var::String> result;
 	var::String entry;
+	bool is_the_end = false;
 
 	do {
 		entry.clear();
 		entry = read();
-
+		if( entry.is_empty() ){ is_the_end = true; }
+		if( filter != nullptr ){
+			entry = filter(entry);
+		}
 		if( !entry.is_empty() &&
 			 (entry != ".") &&
 			 (entry != "..") ){
@@ -403,14 +407,10 @@ var::Vector<var::String> Dir::read_list(
 			#endif
 								);
 
-
-					for(auto intermediate_entry: intermediate_result.vector()){
+					for(auto intermediate_entry: intermediate_result){
 						var::String push_entry;
 						push_entry << entry << "/" << intermediate_entry;
-						if( filter != nullptr ){ push_entry = filter(push_entry); }
-						if( push_entry.is_empty() == false ){
-							result.push_back(push_entry);
-						}
+						result.push_back(push_entry);
 					}
 				} else {
 					result.push_back(entry);
@@ -419,7 +419,8 @@ var::Vector<var::String> Dir::read_list(
 				result.push_back(entry);
 			}
 		}
-	} while( entry.is_empty() == false );
+
+	} while( !is_the_end );
 
 	return result;
 }

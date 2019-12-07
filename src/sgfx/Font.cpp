@@ -130,6 +130,27 @@ int Font::draw(char c, Bitmap & dest, const Point & point) const {
 	return m_char.advance_x;
 }
 
+
+sg_font_char_t Font::character(u32 offset){
+	sg_font_char_t result = {0};
+	load_char(result, offset, false);
+	return result;
+}
+
+Bitmap Font::character_bitmap(u32 offset){
+	sg_font_char_t character = this->character(offset);
+
+	Bitmap result(
+				Area(
+					character.width,
+					character.height
+					)
+				);
+
+	draw_char_on_bitmap(character, result, Point(0,0));
+	return result;
+}
+
 int Font::draw(
 		const var::String & const_string,
 		Bitmap & bitmap,

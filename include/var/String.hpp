@@ -83,9 +83,9 @@ public:
 	using ToErase = arg::Argument< const var::String &, struct StringToEraseTag >;
 
 	enum number_base {
-		BASE_8 = 8,
-		BASE_10 = 10,
-		BASE_16 = 16
+		base_8 = 8,
+		base_10 = 10,
+		base_16 = 16,
 	};
 
 	using iterator = typename std::string::iterator;
@@ -711,7 +711,7 @@ public:
 		 *
 		 */
 	int to_long(
-			enum number_base base = BASE_10
+			enum number_base base = base_10
 			){
 		return ::strtol(cstring(), 0, base);
 	}
@@ -730,7 +730,7 @@ public:
 		 *
 		 */
 	int to_unsigned_long(
-			enum number_base base = BASE_10
+			enum number_base base = base_10
 			){
 		return ::strtoul(cstring(), 0, base);
 	}

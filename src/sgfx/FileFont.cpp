@@ -128,6 +128,13 @@ int FileFont::load_kerning(u16 first, u16 second) const {
 	return 0;
 }
 
+sg_font_kerning_pair_t FileFont::load_kerning(u32 offset) const {
+	if( offset < m_header.kerning_pair_count ){
+		return m_kerning_pairs[offset];
+	}
+	return {0};
+}
+
 void FileFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, const Point & point) const {
 	u32 canvas_offset;
 	if( ch.canvas_idx != m_current_canvas ){
