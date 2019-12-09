@@ -443,7 +443,7 @@ const char * Dir::read(){
 				 &m_entry,
 				 &result
 				 ) < 0 ){
-			return 0;
+			return nullptr;
 		}
 	} else {
 		struct dirent * result_local;
@@ -451,7 +451,7 @@ const char * Dir::read(){
 				  m_dirp_local,
 				  &m_entry_local,
 				  &result_local) < 0) || (result_local == 0) ){
-			return 0;
+			return nullptr;
 		}
 		return m_entry_local.d_name;
 	}

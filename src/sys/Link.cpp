@@ -241,9 +241,7 @@ int Link::open(
 
 int Link::close(int fd){
 	int err;
-	if ( m_is_bootloader ){
-		return -1;
-	}
+	if ( m_is_bootloader ){ return -1; }
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_close(m_driver, fd);
@@ -344,6 +342,7 @@ int Link::get_is_executing(
 				"/dev/sys",
 				fs::OpenFlags::read_write()
 				);
+
 	if( fd < 0 ){
 		this->m_error_message = "Failed to Open /dev/sys";
 		return -1;
@@ -370,9 +369,11 @@ int Link::get_is_executing(
 			}
 		}
 		id++;
-	} while( err != -1 );
+	} while( err >= 0 );
 
-	close(fd);
+	if( close(fd) < 0 ){
+		return -1;
+	}
 
 	return -1;
 
@@ -443,7 +444,7 @@ int Link::ioctl(
 	}
 
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to ioctl", link_errno);
+		m_error_message.format("Failed to ioctl", link_errno);
 	}
 
 	return check_error(err);
@@ -1764,11 +1765,12 @@ int Link::update_binary_install_options(
 	return attributes.apply(file);
 }
 
-int Link::install_app(const fs::File & application_image,
-							 Path path,
-							 ApplicationName name,
-							 const ProgressCallback * progress_callback
-							 ){
+int Link::install_app(
+		const fs::File & application_image,
+		Path path,
+		ApplicationName name,
+		const ProgressCallback * progress_callback
+		){
 	int bytes_read;
 	int fd;
 	appfs_installattr_t attr;
@@ -1782,10 +1784,10 @@ int Link::install_app(const fs::File & application_image,
 					"/app/.install",
 					fs::OpenFlags::write_only()
 					);
+
 		if( fd < 0 ){
 			m_error_message.format(
-						"Failed to open destination: %s (%d, %d)",
-						path.argument().cstring(),
+						"Failed to open destination /app/.install (%d, %d)",
 						link_errno,
 						fd);
 			return -1;
@@ -1824,6 +1826,7 @@ int Link::install_app(const fs::File & application_image,
 						  fs::File::IoArgument(&attr)
 						  )) < 0 ){
 
+					printf("\n loc_err is %d %d\n", loc_err, link_errno);
 					if( link_errno == 5 ){ //EIO
 						if( loc_err < -1 ){
 							m_error_message.format(
@@ -1831,7 +1834,8 @@ int Link::install_app(const fs::File & application_image,
 										-1*(loc_err+1)
 										);
 						} else {
-							m_error_message = "Failed to install because of unknown symbol error";
+							m_error_message
+									= "Failed to install because of unknown symbol error";
 						}
 					} else if( link_errno == 8 ){ //ENOEXEC
 						m_error_message = "Failed to install because of symbol table signature mismatch";
@@ -1845,13 +1849,18 @@ int Link::install_app(const fs::File & application_image,
 					close(fd);
 					return -1;
 				}
-				if( progress_callback ){ progress_callback->update(bytes_cumm,bytes_total); }
+				if( progress_callback ){
+					progress_callback->update(bytes_cumm,bytes_total);
+				}
 				attr.loc += APPFS_PAGE_SIZE;
 			}
 		} while( bytes_read == APPFS_PAGE_SIZE );
 
 		if( close(fd) < 0 ){
-			m_error_message.sprintf("Failed to close file on device", link_errno);
+			m_error_message.format(
+						"Failed to close file on device (%d)",
+						link_errno
+						);
 			return -1;
 		}
 

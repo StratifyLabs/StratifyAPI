@@ -432,7 +432,11 @@ bool Bitmap::is_empty(const Region & region) const {
 	return true;
 }
 
-void Bitmap::downsample_bitmap(const Bitmap & source, const Area & factor){
+void Bitmap::downsample_bitmap(
+		const Bitmap & source,
+		const Area & factor
+		){
+
 	Cursor cursor_x, cursor_y;
 
 	if( factor.width() == 0 ){ return; }
@@ -446,21 +450,27 @@ void Bitmap::downsample_bitmap(const Bitmap & source, const Area & factor){
 
 	cursor_y.set(*this, Point());
 
-	for(sg_int_t y = 0; y <= source.height() - factor.height()/2; y+=factor.height()){
+	for(sg_int_t y = 0;
+		 y <= source.height() - factor.height()/2;
+		 y += factor.height()){
 
 		cursor_x = cursor_y;
 
-		for(sg_int_t x = 0; x <= source.width() - factor.width()/2; x+=factor.width()){
+		for(sg_int_t x = 0;
+			 x <= source.width() - factor.width()/2;
+			 x+=factor.width()){
+
 			Region region(
 						Point(x, y),
 						factor
 						);
+
 			sample.clear();
 			sample.draw_sub_bitmap(Point(), source, region);
 
 			u32 color = sample.calculate_color_sum();
 			if( color >= factor.calculate_area()/2 ){
-				bmap()->pen.color = 1;
+				bmap()->pen.color = (u32)-1;
 			} else {
 				bmap()->pen.color = 0;
 			}
