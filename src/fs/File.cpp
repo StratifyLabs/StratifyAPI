@@ -350,7 +350,7 @@ int File::read(
 		Location location,
 		void * buf,
 		Size size) const {
-	int result = seek(location);
+	int result = seek(location, SET);
 	if( result < 0 ){ return result; }
 	return read(buf, size);
 }
@@ -359,7 +359,7 @@ int File::write(Location location,
 					 const void * buf,
 					 Size size
 					 ) const {
-	int result = seek(location);
+	int result = seek(location, SET);
 	if( result < 0 ){ return result; }
 	return write(
 				buf,
@@ -618,6 +618,10 @@ int File::write(
 		const sys::ProgressCallback * progress_callback
 		) const {
 	u32 size_processed = 0;
+	u32 file_size = size.argument();
+	if( file_size == (u32)-1 ){
+		file_size = source_file.size();
+	}
 	u32 page_size_value = page_size.argument();
 
 	var::Data buffer(page_size_value);
@@ -628,8 +632,8 @@ int File::write(
 
 	int result;
 	do {
-		if( size.argument() - size_processed < page_size_value ){
-			page_size_value = size.argument() - size_processed;
+		if( file_size - size_processed < page_size_value ){
+			page_size_value = file_size - size_processed;
 		}
 
 		buffer.resize(page_size_value);
@@ -650,13 +654,13 @@ int File::write(
 
 		if( progress_callback ){
 			//abort the transaction
-			if( progress_callback->update(size_processed, size.argument()) == true ){
+			if( progress_callback->update(size_processed, file_size) == true ){
 				progress_callback->update(0,0);
 				return size_processed;
 			}
 		}
 
-	} while( (result > 0) && (size.argument() > size_processed) );
+	} while( (result > 0) && (file_size > size_processed) );
 
 	//this will terminate the progress operation
 	if( progress_callback ){ progress_callback->update(0,0); }
@@ -695,7 +699,7 @@ DataFile::DataFile(
 	m_location = 0;
 	m_open_flags = OpenFlags::append_read_write();
 	write(file_to_load);
-	seek(0, SET);
+	seek(0);
 	m_open_flags = OpenFlags::read_write();
 }
 
@@ -770,7 +774,8 @@ int DataFile::write(
 
 int DataFile::seek(
 		int location,
-		enum whence whence) const {
+		enum whence whence
+		) const {
 	switch(whence){
 		case CURRENT:
 			m_location += location;

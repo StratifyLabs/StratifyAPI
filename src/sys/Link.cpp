@@ -1798,7 +1798,7 @@ int Link::install_app(
 		bytes_total = application_image.size();
 		bytes_cumm = 0;
 		//make sure to instal from the beginning -- file is already open
-		application_image.seek( File::Location(0) );
+		application_image.seek( File::Location(0), File::SET );
 
 		do {
 			memset(attr.buffer, 0xFF, APPFS_PAGE_SIZE);

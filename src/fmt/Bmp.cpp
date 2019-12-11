@@ -60,7 +60,7 @@ int Bmp::open(
 		return -1;
 	}
 
-	if( seek(Location(hdr.offset)) != (int)hdr.offset ){
+	if( seek(Location(hdr.offset), SET) != (int)hdr.offset ){
 		m_dib.width = -1;
 		m_dib.height = -1;
 		m_dib.bits_per_pixel = 0;
@@ -173,11 +173,11 @@ int Bmp::seek_row(s32 y) const {
 	if( m_dib.height > 0 ){
 		//image is upside down -- seek to beginning of row
 		return seek(
-					Location(m_offset + calc_row_size() * (m_dib.height - (y + 1)))
+					Location(m_offset + calc_row_size() * (m_dib.height - (y + 1))), SET
 					);
 	}
 
-	return seek(Location(m_offset + calc_row_size() * y));
+	return seek(Location(m_offset + calc_row_size() * y), SET);
 }
 
 int Bmp::read_pixel(uint8_t * pixel, u32 pixel_size, bool mono, uint8_t thres){

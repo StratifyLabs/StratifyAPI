@@ -471,7 +471,7 @@ public:
 			PageSize page_size = PageSize(SAPI_LINK_DEFAULT_PAGE_SIZE),
 			Size size = Size(size_t(-1))
 			) const {
-		seek(location);
+		seek(location, SET);
 		return write(source_file, page_size, size);
 	}
 
@@ -489,7 +489,7 @@ public:
 			Size size,
 			const sys::ProgressCallback * progress_callback
 			) const {
-		seek(location);
+		seek(location, SET);
 		return write(source_file, page_size, size, progress_callback);
 	}
 
@@ -513,13 +513,14 @@ public:
 	}
 
 	/*! \details Seeks to a location in the file or on the device. */
-	virtual int seek(int location,
+	virtual int seek(
+			int location,
 			enum whence whence = SET
 			) const;
 
 	int seek(
 			Location location,
-			enum whence whence = SET
+			enum whence whence
 			) const {
 			return seek(location.argument(), whence);
 		}
@@ -785,18 +786,6 @@ public:
 			Size nbyte
 			) const;
 
-	/*! \details List of options for \a whence argument of seek() */
-	enum whence {
-		SET /*! Set the location of the file descriptor */ = LINK_SEEK_SET,
-		CURRENT /*! Set the location relative to the current location */ = LINK_SEEK_CUR,
-		END /*! Set the location relative to the end of the file or device */ = LINK_SEEK_END,
-	};
-
-	/*! \details Seeks to the specified location in the file.
-	 *
-	 * @return Zero on success
-	 *
-	 */
 	int seek(
 			int location,
 			enum whence whence = SET

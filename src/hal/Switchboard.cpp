@@ -48,7 +48,7 @@ int Switchboard::get_connection(SwitchboardConnection & connection) const {
 }
 
 int Switchboard::get_available_connection() const {
-	int ret = seek(Location(0));
+	int ret = seek(Location(0), SET);
 	if( ret < 0 ){
 		return ret;
 	}
@@ -76,7 +76,7 @@ int Switchboard::get_available_connection() const {
 }
 
 int Switchboard::get_active_connection_count() const {
-	int ret = seek(Location(0));
+	int ret = seek(Location(0), SET);
 	if( ret < 0 ){
 		return ret;
 	}
@@ -98,7 +98,7 @@ int Switchboard::get_active_connection_count() const {
 }
 
 void Switchboard::print_connections() const {
-	int ret = seek(Location(0));
+	int ret = seek(Location(0), SET);
 	if( ret < 0 ){
 		return;
 	}

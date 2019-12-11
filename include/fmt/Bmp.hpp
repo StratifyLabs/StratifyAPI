@@ -70,7 +70,7 @@ public:
 	static int create_appfs(const var::String & name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, u32 nbyte);
 
 	/*! \details Moves file pointer to the start of the bitmap data. */
-	void rewind(){ seek(Location(m_offset)); }
+	void rewind(){ seek(Location(m_offset), SET); }
 
 	/*! \details Seeks the file to the data at the specified row. */
 	int seek_row(s32 y) const;

@@ -13,10 +13,6 @@ namespace fmt {}
 #include "fmt/Son.hpp"
 #include "fmt/Svic.hpp"
 
-#if !defined __link
-#include "fmt/Xml.hpp"
-#endif
-
 using namespace fmt;
 
 #endif /* SAPI_FMT_HPP_ */
