@@ -40,6 +40,37 @@ public:
 	Area & set_width(sg_size_t w){ m_value.width = w; return *this; }
 	Area & set_height(sg_size_t h){ m_value.height = h; return *this; }
 
+
+	bool operator == (const Area & a) const {
+		return m_value.area == a.m_value.area;
+	}
+
+	bool operator != (const Area & a) const {
+		return m_value.area != a.m_value.area;
+	}
+
+	bool operator > (const Area & a) const {
+		return m_value.width*m_value.height >
+				a.m_value.width*a.m_value.height;
+	}
+
+	bool operator < (const Area & a) const {
+		return m_value.width*m_value.height <
+				a.m_value.width*a.m_value.height;
+	}
+
+
+	bool operator >= (const Area & a) const {
+		return m_value.width*m_value.height >=
+				a.m_value.width*a.m_value.height;
+	}
+
+	bool operator <= (const Area & a) const {
+		return m_value.width*m_value.height <=
+				a.m_value.width*a.m_value.height;
+	}
+
+
 	Area operator * (float a) const {
 		Area d;
 		d.m_value.width = m_value.width * a;

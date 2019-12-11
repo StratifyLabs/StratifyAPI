@@ -50,7 +50,7 @@ namespace calc {
  * \endcode
  *
  */
-class Base64 : public api::InfoObject {
+class Base64 {
 public:
 
 	using SourceReference = var::Reference::Source;

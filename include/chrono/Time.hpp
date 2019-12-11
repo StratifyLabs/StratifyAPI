@@ -11,7 +11,7 @@ namespace chrono {
 
 class Microseconds;
 
-class Hours : public api::InfoObject {
+class Hours {
 public:
 	explicit Hours(s32 value){ m_value = value; }
 	u32 hours() const { return m_value; }
@@ -20,7 +20,7 @@ private:
 	u32 m_value;
 };
 
-class Minutes : public api::InfoObject {
+class Minutes {
 public:
 	explicit Minutes(s32 value){ m_value = value; }
 	u32 minutes() const { return m_value; }
@@ -30,7 +30,7 @@ private:
 };
 
 
-class Seconds : public api::InfoObject {
+class Seconds {
 public:
 	explicit Seconds(s32 value){ m_value = value; }
 	u32 seconds() const { return m_value; }
@@ -39,7 +39,7 @@ private:
 	u32 m_value;
 };
 
-class Milliseconds : public api::InfoObject {
+class Milliseconds {
 public:
 	explicit Milliseconds(s32 value){ m_value = value; }
 	u32 milliseconds() const { return m_value; }
@@ -48,7 +48,7 @@ private:
 	u32 m_value;
 };
 
-class Nanoseconds : public api::InfoObject {
+class Nanoseconds {
 public:
 	explicit Nanoseconds(s32 value){ m_value = value; }
 	u32 nanoseconds() const { return m_value; }
@@ -87,7 +87,7 @@ typedef u32 micro_time_t;
  * ```
  *
  */
-class Microseconds : public api::InfoObject {
+class Microseconds {
 public:
 
 	/*! \details Constructs a Microseconds object using a u32 microsecond value.

@@ -44,7 +44,6 @@ public:
  *
  */
 class AppfsInfo :
-      public api::InfoObject,
       public AppfsFlags {
 public:
 

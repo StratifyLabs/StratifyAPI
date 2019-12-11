@@ -70,7 +70,7 @@ private:
 
 typedef SpiAttributes SpiAttr;
 
-class SpiInfo : public api::InfoObject {
+class SpiInfo {
 public:
 	SpiInfo(){ memset(&m_info, 0, sizeof(spi_info_t)); }
 	SpiInfo(const spi_info_t & info){ m_info = info; }

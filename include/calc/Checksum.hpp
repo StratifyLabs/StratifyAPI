@@ -12,7 +12,7 @@ namespace  calc {
  * \details The Checksum class is purely static and provides methods
  * for calculating and verifying checksums on data structures.
  */
-class Checksum : public api::InfoObject {
+class Checksum {
 public:
 
 

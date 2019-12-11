@@ -5,6 +5,7 @@
 
 #include <sapi/sg.h>
 #include "../api/SgfxObject.hpp"
+#include "Area.hpp"
 
 namespace sgfx {
 
@@ -66,6 +67,13 @@ public:
 	static sg_size_t map_pixel_size(const sg_vector_map_t & m){ return sg_point_map_pixel_size(&m); }
 
 	Point & operator=(const Point & a){ m_value = a; return *this; }
+	bool operator==(const Point & a) const { return m_value.point == a.m_value.point; }
+	bool operator!=(const Point & a) const { return m_value.point != a.m_value.point; }
+	bool operator>(const Point & a) const { return m_value.point > a.m_value.point; }
+	bool operator>=(const Point & a)const { return m_value.point >= a.m_value.point; }
+	bool operator<=(const Point & a) const { return m_value.point <= a.m_value.point; }
+	bool operator<(const Point & a) const { return m_value.point < a.m_value.point; }
+
 	Point & operator+=(const Point & a){ api()->point_shift(&m_value, a); return *this; }
 	Point & operator+=(const X x);
 	Point & operator+=(const Y y);

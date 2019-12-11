@@ -448,7 +448,7 @@ public:
 		set_flags(o_flags);
 	}
 
-	void set_flags(u32 flags){ m_flags = flags; }
+	JsonDocument & set_flags(u32 flags){ m_flags = flags; return *this; }
 	u32 flags() const { return m_flags; }
 
 	//load a JSON object or array from a file?

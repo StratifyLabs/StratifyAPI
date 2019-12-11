@@ -385,11 +385,15 @@ Region Bitmap::calculate_active_region() const {
 	top_left.y = height();
 	bottom_right.x = 0;
 	bottom_right.y = 0;
+	bool is_blank = true;
 
 	for(point.y = 0; point.y < height(); point.y++){
+		bool is_row_blank = true;
 		for(point.x = 0; point.x < width(); point.x++){
 
 			if( get_pixel(point) ){
+				is_blank = false;
+				is_row_blank = false;
 
 				if( point.x < top_left.x ){
 					top_left.x = point.x;
@@ -398,16 +402,25 @@ Region Bitmap::calculate_active_region() const {
 				if( point.x > bottom_right.x ){
 					bottom_right.x = point.x;
 				}
-
-				if( point.y < top_left.y ){
-					top_left.y = point.y;
-				}
-
-				if( point.y > bottom_right.y ){
-					bottom_right.y = point.y;
-				}
 			}
 		}
+
+		if( !is_row_blank ){
+			if( point.y < top_left.y ){
+				top_left.y = point.y;
+			}
+
+			if( point.y > bottom_right.y ){
+				bottom_right.y = point.y;
+			}
+		}
+	}
+
+	if( is_blank ){
+		top_left.x = width()/2;
+		top_left.y = width()/2;
+		bottom_right.x = width()/2;
+		bottom_right.y = width()/2;
 	}
 
 	result.set_region(top_left, bottom_right);
@@ -417,8 +430,7 @@ Region Bitmap::calculate_active_region() const {
 
 bool Bitmap::is_empty(const Region & region) const {
 	Cursor x_cursor;
-	Cursor y_cursor;
-	y_cursor.set(*this, region.point());
+	Cursor y_cursor(*this, region.point());
 	for(u32 h = 0; h < region.area().height(); h++){
 		x_cursor = y_cursor;
 		for(u32 w = 0; w < region.area().width(); w++){
@@ -448,7 +460,7 @@ void Bitmap::downsample_bitmap(
 
 	Bitmap sample(factor);
 
-	cursor_y.set(*this, Point());
+	cursor_y.set_bitmap(*this);
 
 	for(sg_int_t y = 0;
 		 y <= source.height() - factor.height()/2;
@@ -486,7 +498,7 @@ void Bitmap::downsample_bitmap(
 sg_color_t Bitmap::calculate_color_sum(){
 	sg_color_t color = 0;
 	Cursor cursor_y, cursor_x;
-	cursor_y.set(*this, Point());
+	cursor_y.set_bitmap(*this);
 	for(sg_size_t y = 0; y < height(); y++){
 		cursor_x = cursor_y;
 		for(sg_size_t x = 0; x < width(); x++){

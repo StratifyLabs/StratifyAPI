@@ -130,6 +130,7 @@ public:
 
 	void shift(Point point);
 	void scale(float value);
+	void scale(float x_scale, float y_scale);
 
 	VectorPath & operator += (Point point){
 		shift(point);

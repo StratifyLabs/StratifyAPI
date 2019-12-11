@@ -43,6 +43,20 @@ public:
 					);
 	}
 
+	Point center_point() const {
+		return Point(
+					Point::X(m_region.point.x + m_region.area.width/2),
+					Point::Y(m_region.point.y + m_region.area.height/2)
+					);
+	}
+
+	Point end_point() const {
+		return Point(
+					Point::X(m_region.point.x + m_region.area.width),
+					Point::Y(m_region.point.y + m_region.area.height)
+					);
+	}
+
 	void set_region(const Point & top_left, const Point & bottom_right){
 		m_region.point = top_left;
 		m_region.area.width = bottom_right.x() - top_left.x() + 1;

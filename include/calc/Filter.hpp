@@ -8,7 +8,7 @@
 
 namespace calc {
 
-template<typename T, typename C> class SimpleFilter: public api::InfoObject {
+template<typename T, typename C> class SimpleFilter {
 public:
 	SimpleFilter(){}
 

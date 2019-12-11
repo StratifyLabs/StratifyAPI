@@ -186,7 +186,7 @@ int Reference::save(
 		return -1;
 	}
 
-	if( f.write(*this) != size() ){
+	if( f.write(*this) != (int)size() ){
 		return -1;
 	}
 	return 0;

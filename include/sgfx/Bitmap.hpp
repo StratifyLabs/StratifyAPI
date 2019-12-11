@@ -470,6 +470,10 @@ public:
 		return m_bmap.area;
 	}
 
+	Region region() const {
+		return Region(Point(), m_bmap.area);
+	}
+
 	inline sg_size_t columns() const { return m_bmap.columns; }
 
 	inline sg_size_t margin_left() const { return m_bmap.margin_top_left.width; }

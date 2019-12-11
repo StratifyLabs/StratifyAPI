@@ -3,6 +3,8 @@
 #ifndef SAPI_FS_DIR_HPP_
 #define SAPI_FS_DIR_HPP_
 
+#include <functional>
+
 #ifdef __link
 #include <sos/link.h>
 
@@ -88,7 +90,7 @@ public:
 
 	static var::Vector<var::String> read_list(
 			const var::String & path,
-			const var::String (*filter)(const var::String & entry),
+			std::function<const var::String(const var::String & entry)> filter,
 			IsRecursive is_recursive = IsRecursive(false)
 			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
@@ -177,7 +179,7 @@ public:
 			);
 
 	var::Vector<var::String> read_list(
-			const var::String (*filter)(const var::String & entry),
+			std::function<const var::String(const var::String & entry)> filter,
 			IsRecursive is_recursive = IsRecursive(false)
 			);
 

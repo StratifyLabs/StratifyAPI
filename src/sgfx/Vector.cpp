@@ -76,6 +76,43 @@ void VectorPath::shift(Point shift){
 	}
 }
 
+void VectorPath::scale(float x_scale, float y_scale){
+	for(u32 i=0; i < m_path.icon.count; i++){
+		sg_vector_path_description_t * description = (sg_vector_path_description_t *)m_path.icon.list + i;
+		switch(description->type){
+			case SG_VECTOR_PATH_MOVE:
+				description->move.point.x = description->move.point.x * x_scale;
+				description->move.point.y = description->move.point.y * y_scale;
+				break;
+			case SG_VECTOR_PATH_LINE:
+				description->line.point.x = description->line.point.x * x_scale;
+				description->line.point.y = description->line.point.y * y_scale;
+				break;
+			case SG_VECTOR_PATH_POUR:
+				description->pour.point.x = description->pour.point.x * x_scale;
+				description->pour.point.y = description->pour.point.y * y_scale;
+				break;
+			case SG_VECTOR_PATH_QUADRATIC_BEZIER:
+				description->quadratic_bezier.control.x = description->quadratic_bezier.control.x * x_scale;
+				description->quadratic_bezier.point.x = description->quadratic_bezier.point.x * x_scale;
+				description->quadratic_bezier.control.y = description->quadratic_bezier.control.y * y_scale;
+				description->quadratic_bezier.point.y = description->quadratic_bezier.point.y * y_scale;
+				break;
+			case SG_VECTOR_PATH_CUBIC_BEZIER:
+				description->cubic_bezier.control[0].x = description->cubic_bezier.control[0].x * x_scale;
+				description->cubic_bezier.control[1].x = description->cubic_bezier.control[1].x * x_scale;
+				description->cubic_bezier.point.x = description->cubic_bezier.point.x * x_scale;
+				description->cubic_bezier.control[0].y = description->cubic_bezier.control[0].y * y_scale;
+				description->cubic_bezier.control[1].y = description->cubic_bezier.control[1].y * y_scale;
+				description->cubic_bezier.point.y = description->cubic_bezier.point.y * y_scale;
+				break;
+			case SG_VECTOR_PATH_CLOSE:
+				break;
+		}
+	}
+}
+
+
 void VectorPath::scale(float scale){
 	u32 i;
 	for(i=0; i < m_path.icon.count; i++){

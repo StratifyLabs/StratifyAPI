@@ -333,7 +333,7 @@ int Dir::count(){
 
 var::Vector<var::String> Dir::read_list(
 		const var::String & path,
-		const var::String (*filter)(const var::String & entry),
+		std::function<const var::String(const var::String & entry)> filter,
 		IsRecursive is_recursive
 		SAPI_LINK_DRIVER_LAST
 		){
@@ -367,7 +367,7 @@ var::Vector<var::String> Dir::read_list(
 
 
 var::Vector<var::String> Dir::read_list(
-		const var::String (*filter)(const var::String & entry),
+		std::function<const var::String(const var::String & entry)> filter,
 		IsRecursive is_recursive
 		){
 	var::Vector<var::String> result;
@@ -428,7 +428,7 @@ var::Vector<var::String> Dir::read_list(
 var::Vector<var::String> Dir::read_list(
 		const IsRecursive is_recursive
 		){
-	return read_list(nullptr, is_recursive);
+	return read_list(std::function<const var::String(const var::String & entry)>(nullptr), is_recursive);
 }
 
 const char * Dir::read(){
