@@ -80,13 +80,13 @@ public:
 	Pen & set_solid(){ m_pen.o_flags &= ~SG_PEN_FLAG_NOT_SOLID_MASK; return *this; }
 
 	/*! \details Sets the pen to inverting color mode (XOR). */
-	Pen & set_invert(){ set_solid(); m_pen.o_flags |= SG_PEN_FLAG_IS_INVERT; return *this; }
+	Pen & set_invert(){ set_solid(); m_pen.o_flags |= IS_INVERT; return *this; }
 
 	/*! \details Sets the pen to a clearing mode (AND). */
-	Pen & set_erase(){ set_solid(); m_pen.o_flags |= SG_PEN_FLAG_IS_ERASE; return *this; }
+	Pen & set_erase(){ set_solid(); m_pen.o_flags |= IS_ERASE; return *this; }
 
 	/*! \details Sets the pen to a blending mode (OR). */
-	Pen & set_blend(){ set_solid(); m_pen.o_flags |= SG_PEN_FLAG_IS_INVERT; return *this; }
+	Pen & set_blend(){ set_solid(); m_pen.o_flags |= IS_INVERT; return *this; }
 
 	enum flags o_flags() const { return static_cast<enum flags>(m_pen.o_flags); }
 	enum flags flags() const { return o_flags(); }
@@ -104,9 +104,9 @@ public:
 	/*! \details Sets the pen to fill when drawing vector icons. */
 	Pen & set_fill(bool v = true){
 		if( v ){
-			m_pen.o_flags |= SG_PEN_FLAG_IS_FILL;
+			m_pen.o_flags |= IS_FILL;
 		} else {
-			m_pen.o_flags &= ~SG_PEN_FLAG_IS_FILL;
+			m_pen.o_flags &= ~IS_FILL;
 		}
 		return *this;
 	}

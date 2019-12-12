@@ -9,7 +9,7 @@ Rectangle::Rectangle(){
 }
 
 void Rectangle::draw_to_scale(const DrawingScaledAttributes & attr){
-	attr.bitmap().set_pen( sgfx::Pen().set_color(color()) );
+	attr.bitmap() << sgfx::Pen().set_color(color());
 	attr.bitmap().draw_rectangle(attr.point(), attr.area());
 }
 

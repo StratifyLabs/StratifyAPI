@@ -42,9 +42,7 @@ int Svic::parse_icons(){
 
 var::String Svic::name_at(u32 i) const {
 	if(i < count() ){
-		return var::String(
-					m_icons.at(i).name
-					);
+		return m_icons.at(i).name;
 	}
 	return var::String();
 }

@@ -6,9 +6,9 @@
 namespace sgfx {
 
 Pen::Pen(){
+	m_pen.o_flags = 0;
 	set_color((sg_color_t)-1);
 	set_thickness(1);
-	set_fill(false);
 }
 
 
