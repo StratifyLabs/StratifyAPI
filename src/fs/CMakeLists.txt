@@ -1,8 +1,8 @@
 
 set(SOURCELIST
-	${SOURCES_PREFIX}/Dir.cpp
-	${SOURCES_PREFIX}/File.cpp
-	${SOURCES_PREFIX}/Stat.cpp)
+	Dir.cpp
+	File.cpp
+	Stat.cpp)
 
 if( ${SOS_BUILD_CONFIG} STREQUAL arm )
 

@@ -1,8 +1,8 @@
 
 set(SOURCES
-  ${SOURCES_PREFIX}/Base64.cpp
-	${SOURCES_PREFIX}/Filter.cpp
-	${SOURCES_PREFIX}/Pid.cpp
-	${SOURCES_PREFIX}/Rle.cpp
-	${SOURCES_PREFIX}/Checksum.cpp
+  Base64.cpp
+	Filter.cpp
+	Pid.cpp
+	Rle.cpp
+	Checksum.cpp
 	PARENT_SCOPE)

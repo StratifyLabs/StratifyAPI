@@ -2,9 +2,9 @@
 set(SOURCELIST "")
 
 set(SOURCELIST
-	${SOURCES_PREFIX}/Sha256.cpp
-	${SOURCES_PREFIX}/Aes.cpp
-	${SOURCES_PREFIX}/Random.cpp
+	Sha256.cpp
+	Aes.cpp
+	Random.cpp
 )
 
 set(SOURCES ${SOURCELIST} PARENT_SCOPE)  

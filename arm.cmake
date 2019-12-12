@@ -1,8 +1,10 @@
 
+include(${SOS_TOOLCHAIN_CMAKE_PATH}/sos-sdk.cmake)
 
 #Add sources to the project
-set(SOURCES_PREFIX ${CMAKE_SOURCE_DIR}/src)
-add_subdirectory(src)
+sos_sdk_add_subdirectory(SOS_SOURCELIST ${CMAKE_SOURCE_DIR}/src)
+
+#add headers
 file(GLOB_RECURSE HEADER_SOURCES ${CMAKE_SOURCE_DIR}/include/*)
 list(APPEND SOS_SOURCELIST ${SOURCES} ${HEADER_SOURCES} doxyfile)
 

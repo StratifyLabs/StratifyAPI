@@ -1,22 +1,28 @@
 
 
-set(SRC_SOURCES_PREFIX ${SOURCES_PREFIX})
+set(SOURCES_PREFIX "")
 
 if( ${SOS_BUILD_CONFIG} STREQUAL arm )
-  set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/draw)
-  add_subdirectory(draw)
-  list(APPEND SOURCELIST ${SOURCES})
-
-	set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/dsp)
-	add_subdirectory(dsp)
-	list(APPEND SOURCELIST ${SOURCES})
-
-  set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/ui)
-  add_subdirectory(ui)
-  list(APPEND SOURCELIST ${SOURCES})
-
+	sos_sdk_add_subdirectory(SOURCELIST draw)
+	sos_sdk_add_subdirectory(SOURCELIST dsp)
+	sos_sdk_add_subdirectory(SOURCELIST ui)
 endif()
 
+sos_sdk_add_subdirectory(SOURCELIST api)
+sos_sdk_add_subdirectory(SOURCELIST calc)
+sos_sdk_add_subdirectory(SOURCELIST chrono)
+sos_sdk_add_subdirectory(SOURCELIST ev)
+sos_sdk_add_subdirectory(SOURCELIST fmt)
+sos_sdk_add_subdirectory(SOURCELIST fs)
+sos_sdk_add_subdirectory(SOURCELIST hal)
+sos_sdk_add_subdirectory(SOURCELIST inet)
+sos_sdk_add_subdirectory(SOURCELIST sgfx)
+sos_sdk_add_subdirectory(SOURCELIST sm)
+sos_sdk_add_subdirectory(SOURCELIST sys)
+sos_sdk_add_subdirectory(SOURCELIST test)
+sos_sdk_add_subdirectory(SOURCELIST var)
+
+#[[
 
 set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/api)
 add_subdirectory(api)
@@ -73,5 +79,7 @@ list(APPEND SOURCELIST ${SOURCES})
 set(SOURCES_PREFIX ${SRC_SOURCES_PREFIX}/var)
 add_subdirectory(var)
 list(APPEND SOURCELIST ${SOURCES})
+
+#]]
 
 set(SOURCES ${SOURCELIST} PARENT_SCOPE)

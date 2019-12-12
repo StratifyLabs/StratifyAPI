@@ -1,11 +1,9 @@
 
 
-set(SOURCELIST
-	${SOURCES_PREFIX}/ApiObject.cpp
-	${SOURCES_PREFIX}/WorkObject.cpp
-	${SOURCES_PREFIX}/SgfxObject.cpp
-	${SOURCES_PREFIX}/DspObject.cpp
-	${SOURCES_PREFIX}/CryptoObject.cpp
+set(SOURCES
+	ApiObject.cpp
+	WorkObject.cpp
+	SgfxObject.cpp
+	DspObject.cpp
+	CryptoObject.cpp
 	PARENT_SCOPE)
-
-set(SOURCES ${SOURCELIST} PARENT_SCOPE)

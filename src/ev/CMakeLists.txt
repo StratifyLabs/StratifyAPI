@@ -4,12 +4,12 @@ set(SOURCELIST "")
 if( ${SOS_BUILD_CONFIG} STREQUAL arm )
 
 	set(SOURCELIST
-		${SOURCES_PREFIX}/Button.cpp
-		${SOURCES_PREFIX}/PinButton.cpp
-		${SOURCES_PREFIX}/DeviceButton.cpp
-		${SOURCES_PREFIX}/Event.cpp
-		${SOURCES_PREFIX}/EventLoop.cpp
-		${SOURCES_PREFIX}/EventHandler.cpp)
+		Button.cpp
+		PinButton.cpp
+		DeviceButton.cpp
+		Event.cpp
+		EventLoop.cpp
+		EventHandler.cpp)
 
 endif()
 

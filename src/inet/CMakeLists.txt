@@ -1,10 +1,10 @@
 
 
 set(SOURCELIST
-	${SOURCES_PREFIX}/Socket.cpp
-	${SOURCES_PREFIX}/Url.cpp
-	${SOURCES_PREFIX}/Http.cpp
-	${SOURCES_PREFIX}/SecureSocket.cpp)
+	Socket.cpp
+	Url.cpp
+	Http.cpp
+	SecureSocket.cpp)
 
 
 set(SOURCES ${SOURCELIST} PARENT_SCOPE)  

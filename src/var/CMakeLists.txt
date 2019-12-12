@@ -1,20 +1,20 @@
 
 set(SOURCES
-	${SOURCES_PREFIX}/Data.cpp
-	${SOURCES_PREFIX}/Reference.cpp
-	${SOURCES_PREFIX}/Array.cpp
-	${SOURCES_PREFIX}/Vector.cpp
-	${SOURCES_PREFIX}/Flags.cpp
-  ${SOURCES_PREFIX}/Item.cpp
-	${SOURCES_PREFIX}/LinkedList.cpp
-	${SOURCES_PREFIX}/List.cpp
-	${SOURCES_PREFIX}/Json.cpp
-	${SOURCES_PREFIX}/xml2json.hpp
-	${SOURCES_PREFIX}/Datum.cpp
-	${SOURCES_PREFIX}/Queue.cpp
-	${SOURCES_PREFIX}/Ring.cpp
-	${SOURCES_PREFIX}/ConstString.cpp
-	${SOURCES_PREFIX}/VersionString.cpp
-	${SOURCES_PREFIX}/String.cpp
-	${SOURCES_PREFIX}/Tokenizer.cpp
+	Data.cpp
+	Reference.cpp
+	Array.cpp
+	Vector.cpp
+	Flags.cpp
+  Item.cpp
+	LinkedList.cpp
+	List.cpp
+	Json.cpp
+	xml2json.hpp
+	Datum.cpp
+	Queue.cpp
+	Ring.cpp
+	ConstString.cpp
+	VersionString.cpp
+	String.cpp
+	Tokenizer.cpp
 	PARENT_SCOPE)
