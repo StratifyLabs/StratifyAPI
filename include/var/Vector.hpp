@@ -2,6 +2,9 @@
 #define SAPI_VAR_VECTOR_HPP_
 
 #include <vector>
+#include <algorithm>
+#include <functional>
+
 #include "../arg/Argument.hpp"
 
 namespace var {
@@ -121,18 +124,13 @@ public:
 	  * @return The index of the object or count() it if wasn't found
 	  *
 	  */
-	u32 find(const T & a) const {
-		for(u32 i=0; i < count(); i++){
-			if( this->at(i) == a ){
-				return i;
-			}
-		}
-		return count();
+	size_t find(const T & a) const {
+		return std::find(begin(), end(), a) - begin();
 	}
 
-	u32 find(
+	size_t find(
 			const T & a,
-			bool (*compare)(const T & a, const T & b)
+			std::function<bool(const T & a, const T & b)> compare
 			){
 		for(u32 i=0; i < count(); i++){
 			if( compare(this->at(i), a) ){

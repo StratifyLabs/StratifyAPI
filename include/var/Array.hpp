@@ -42,10 +42,11 @@ namespace var {
  * and popping them from the back.
  *
  */
-template <typename T, size_t size_value> class Array : public api::InfoObject {
+template <typename T, size_t size_value> class Array {
 public:
 
 	Array(){}
+	Array(std::initializer_list<T> il) : m_array(il){}
 
 	typename std::array<T, size_value>::const_iterator begin() const noexcept { return m_array.begin(); }
 	typename std::array<T, size_value>::iterator begin() noexcept { return m_array.begin(); }

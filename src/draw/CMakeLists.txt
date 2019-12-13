@@ -6,6 +6,8 @@ set(
 	Icon.cpp
 	Image.cpp
 	Panel.cpp
+	Graph.cpp
+	LineGraph.cpp
 	ArcProgress.cpp
 	BarProgress.cpp
 	CircleProgress.cpp
