@@ -78,12 +78,12 @@ int Thread::set_detachstate(detach_state value){
 }
 
 int Thread::set_priority(
-		Sched::Priority prio,
+		int prio,
 		enum Sched::policy policy
 		){
 	struct sched_param param;
 	if( is_valid() ){
-		param.sched_priority = prio.argument();
+		param.sched_priority = prio;
 		return set_error_number_if_error(pthread_setschedparam(m_id, policy, &param));
 	}
 

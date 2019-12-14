@@ -54,19 +54,36 @@ public:
 	}
 
 	/*! \details Resets the value of the clock to zero. */
-	void reset(){
+	ClockTime& reset(){
 		m_value.tv_sec = 0; m_value.tv_nsec = 0;
+		return *this;
 	}
 
 	/*! \details Sets the value of the clock time.
 	  *
 	  *
 	  */
-	void set(
+	ClockTime& set(
 			const Seconds & seconds,
 			const Nanoseconds & nanoseconds
 			){
-		m_value.tv_sec = seconds.seconds(); m_value.tv_nsec = nanoseconds.nanoseconds();
+		m_value.tv_sec = seconds.seconds();
+		m_value.tv_nsec = nanoseconds.nanoseconds();
+		return *this;
+	}
+
+	ClockTime& set_seconds(
+			u32 seconds
+			){
+		m_value.tv_sec = seconds;
+		return *this;
+	}
+
+	ClockTime& set_nanoseconds(
+			u32 value
+			){
+		m_value.tv_nsec = value;
+		return *this;
 	}
 
 	ClockTime & operator << (const Seconds & seconds){

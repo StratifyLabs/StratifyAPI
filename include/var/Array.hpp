@@ -72,6 +72,11 @@ public:
 	T & operator[](size_t position){ return m_array[position]; }
 	const T & operator[](size_t position) const { return m_array[position]; }
 
+	T & front(){ return m_array.front(); }
+	T & back(){ return m_array.back(); }
+	const T & front() const { return m_array.front(); }
+	const T & back() const { return m_array.back(); }
+
 
 	/*! \details Returns the number of objects in the array.
 	  *

@@ -11,6 +11,7 @@
 #include <sos/link.h>
 #include "../fs/File.hpp"
 #include "../var/ConstString.hpp"
+#include "Appfs.hpp"
 
 namespace sys {
 
@@ -26,46 +27,46 @@ class Sys;
  *
  */
 class SerialNumber : public api::InfoObject {
-public:
+                               public:
 
-	/*! \details Constructs an empty serial number. */
-	SerialNumber();
+                               /*! \details Constructs an empty serial number. */
+                               SerialNumber();
 
-	/*! \details Constructs a serial number for an array of u32 values. */
-	SerialNumber(const u32 serial_number[4]){ memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4); }
+/*! \details Constructs a serial number for an array of u32 values. */
+SerialNumber(const u32 serial_number[4]){ memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4); }
 
-	/*! \details Constructs a serial number from an mcu_sn_t. */
-	SerialNumber(const mcu_sn_t serial_number){ m_serial_number = serial_number; }
+/*! \details Constructs a serial number from an mcu_sn_t. */
+SerialNumber(const mcu_sn_t serial_number){ m_serial_number = serial_number; }
 
-	/*! \details Constructs this serial number from \a str. */
-	SerialNumber(const var::String & str);
+/*! \details Constructs this serial number from \a str. */
+SerialNumber(const var::String & str);
 
-	/*! \details Returns true if a valid serial number is held. */
-	bool is_valid() const {
-		return at(0) + at(1) + at(2) + at(3) != 0;
+/*! \details Returns true if a valid serial number is held. */
+bool is_valid() const {
+	return at(0) + at(1) + at(2) + at(3) != 0;
+}
+
+/*! \details Returns a serial number object from a string type. */
+static SerialNumber from_string(const var::String & str);
+
+/*! \details Returns the u32 section of the serial number specified by *idx*. */
+u32 at(u32 idx) const {
+	if( idx >= 4 ){
+		idx = 3;
 	}
-
-	/*! \details Returns a serial number object from a string type. */
-	static SerialNumber from_string(const var::String & str);
-
-	/*! \details Returns the u32 section of the serial number specified by *idx*. */
-	u32 at(u32 idx) const {
-		if( idx >= 4 ){
-			idx = 3;
-		}
-		return m_serial_number.sn[idx];
-	}
+	return m_serial_number.sn[idx];
+}
 
 
 
-	/*! \details Compares this strig to \a serial_number. */
-	bool operator == (const SerialNumber & serial_number);
+/*! \details Compares this strig to \a serial_number. */
+bool operator == (const SerialNumber & serial_number);
 
-	/*! \details Converts the serial number to a string. */
-	var::String to_string() const;
+/*! \details Converts the serial number to a string. */
+var::String to_string() const;
 
 private:
-	mcu_sn_t m_serial_number;
+mcu_sn_t m_serial_number;
 };
 
 /*! \brief System Information Class
@@ -80,7 +81,7 @@ private:
  * \endcode
  *
  */
-class SysInfo : public api::InfoObject {
+class SysInfo {
    friend class Sys;
 public:
 
@@ -168,6 +169,9 @@ private:
 class Sys : public fs::File {
 public:
 
+	using Arguments = arg::Argument<const var::String &, struct SysArgumentsTag>;
+	using Environment = arg::Argument<const var::String &, struct SysEnvironmentTag>;
+	using DestinationPath = arg::Argument<var::String &, struct SysEnvironmentTag>;
 	using KernelRequest = arg::Argument<int, struct SysKernelRequest>;
 	using KernelArgument = arg::Argument<void*, struct SysKernelArgument>;
 
@@ -175,17 +179,7 @@ public:
 			SAPI_LINK_DRIVER_NULLPTR
 			);
 
-	/*! \details Options for launching applications. */
-	enum {
-		LAUNCH_OPTIONS_FLASH /*! Install in flash memory */ = APPFS_FLAG_IS_FLASH,
-		LAUNCH_OPTIONS_RAM /*! Install in ram memory (default behavior) */ = 0,
-		LAUNCH_OPTIONS_STARTUP /*! Run at startup (must be in flash) */ = APPFS_FLAG_IS_STARTUP,
-		LAUNCH_OPTIONS_ROOT /*! Run as root (if applicable) */ = APPFS_FLAG_IS_ROOT,
-		LAUNCH_OPTIONS_REPLACE /*! Delete if application exists and install in the same location */ = APPFS_FLAG_IS_REPLACE,
-		LAUNCH_OPTIONS_ORPHAN /*! If this option is not set, the calling process MUST call wait() or waitpid() to finalize the process. */ = APPFS_FLAG_IS_ORPHAN,
-		LAUNCH_OPTIONS_UNIQUE_NAMES /*! Create a unique name on install */ = APPFS_FLAG_IS_UNIQUE,
-		LAUNCH_RAM_SIZE_DEFAULT = 0
-	};
+
 
 	/*! \details Launches a new application.
 	 *
@@ -197,10 +191,11 @@ public:
 	 *
 	 * This method must be called locally in an app. It can't be executed over the link protocol.
 	 */
-	static int launch(const var::String & path,
-							const var::String & args,
-							int options = 0, //run in RAM, discard on exit
-							int ram_size = LAUNCH_RAM_SIZE_DEFAULT
+	static int launch(
+			const var::String & path,
+			Arguments args,
+			enum Appfs::flags options = Appfs::is_default, //run in RAM, discard on exit
+			int ram_size = 0
 			);
 
 	/*! \details Launches a new application.
@@ -215,13 +210,14 @@ public:
 	 * @return The process ID of the new app if successful
 	 *
 	 */
-	static int launch(const var::String & path,
-							const var::String & args,
-							var::String & exec_destination,
-							int options, //run in RAM, discard on exit
-							int ram_size,
-							const sys::ProgressCallback * progress_callback,
-							const var::String & envp = ""
+	static int launch(
+			const var::String & path,
+			Arguments args,
+			DestinationPath exec_destination,
+			enum Appfs::flags options, //run in RAM, discard on exit
+			int ram_size,
+			const sys::ProgressCallback * progress_callback,
+			Environment envp = Environment("")
 			);
 
 	/*!
@@ -232,11 +228,12 @@ public:
 	 * \param options The installation flag options
 	 * \param ram_size The number of bytes to allow for the application's data section
 	 *
-	 * \return Zero on success or less than zero with errno set.
+	 * \return The full path of the install location.
 	 */
-	static var::String install(const var::String & path,
-										int options = 0, //run in RAM, discard on exit
-										int ram_size = LAUNCH_RAM_SIZE_DEFAULT
+	static var::String install(
+			const var::String & path,
+			enum Appfs::flags options = Appfs::is_default, //run in RAM, discard on exit
+			int ram_size = 0
 			);
 
 	/*!
@@ -249,11 +246,12 @@ public:
 	 * \param progress_callback A pointer to a callback to indicate the installation progress.
 	 * \return
 	 */
-	static var::String install(const var::String & path,
-										int options, //run in RAM, discard on exit
-										int ram_size,
-										const sys::ProgressCallback * progress_callback
-										);
+	static var::String install(
+			const var::String & path,
+			enum Appfs::flags options, //run in RAM, discard on exit
+			int ram_size,
+			const sys::ProgressCallback * progress_callback
+			);
 
 
 
@@ -270,7 +268,8 @@ public:
 	 *
 	 * \sa reclaim_ram()
 	 */
-	static int free_ram(const var::String & path
+	static int free_ram(
+			const var::String & path
 						  #if defined __link
 							  SAPI_LINK_DRIVER_NULLPTR_LAST
 						  #endif
@@ -288,11 +287,6 @@ public:
 			const var::String & path
 			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
-
-
-	static void assign_zero_sum32(void * data, int size);
-	static int verify_zero_sum32(void * data, int size);
-
 
 #if !defined __link
 

@@ -9,8 +9,96 @@
 #include "Sched.hpp"
 #include "Thread.hpp"
 
+#if defined __link
+typedef void (*signal_function_callback_t)(int);
+#if defined __win32
+typedef void (*signal_action_callback_t)(int, void*, void*);
+#define SIGNAL_SIGINFO_FLAG 0
+#else
+typedef void (*signal_action_callback_t)(int, siginfo_t*, void*);
+typedef signal_function_callback_t _sig_func_ptr;
+#define SIGNAL_SIGINFO_FLAG SA_SIGINFO
+#endif
+#endif
+
+
+#if defined __StratifyOS__
+typedef void (*signal_function_callback_t)(int);
+typedef void (*signal_action_callback_t)(int, siginfo_t*, void*);
+#define SIGNAL_SIGINFO_FLAG (1<<SA_SIGINFO)
+#endif
+
+#if defined __win32
+#define sapi_signal_posix_kill raise
+typedef u32 sigset_t;
+struct sigaction {
+	signal_function_callback_t sa_handler;
+	signal_action_callback_t sa_sigaction;
+	u32 sa_flags;
+	u32 sa_mask;
+};
+union sigval {
+	int sival_int;
+	void * sival_ptr;
+};
+#else
+#define sapi_signal_posix_kill kill
+#endif
+
 
 namespace sys {
+
+class SignalFlags {
+public:
+	using Function = arg::Argument<signal_function_callback_t, struct SignalFlagsFunctionTag>;
+	using ActionFunction = arg::Argument<signal_action_callback_t, struct SignalFlagsActionFunctionTag>;
+	using Flags = arg::Argument<u32, struct SignalFlagsFlagsTag>;
+	using Mask = arg::Argument<u32, struct SignalFlagsMaskTag>;
+
+	using ProcessId = Sched::ProcessId;
+	using ValueInteger = arg::Argument<int, struct SignalFlagsValueIntegerTag>;
+	using ValuePointer = arg::Argument<void *, struct SignalFlagsValuePointerTag>;
+
+
+	enum number {
+		ABRT /*! Abort signal, default action is to abort */ = SIGABRT,
+		FPE /*! FPE signal, default action is to abort */ = SIGFPE,
+		INT /*! Interrupt signal, default action is to terminate */ = SIGINT,
+		ILL /*! Illegal signal, default action is to abort */ = SIGILL,
+		SEGV /*! Segmentation signal, default action is to abort */ = SIGSEGV,
+		TERM /*! Terminal signal, default action is to terminate */ = SIGTERM,
+#if !defined __win32
+		ALRM /*! Alarm signal, default action is to terminate */ = SIGALRM,
+		BUS /*! Bus signal, default action is to abort */ = SIGBUS,
+		CHLD /*! Child signal, default action is to ignore */ = SIGCHLD,
+		CONT /*! Continue signal, default action is to continue */ = SIGCONT,
+		HUP /*! Hangup signal, default action is to terminate */ = SIGHUP,
+		KILL /*! Kill signal, default action is to terminate (cannot be caught or ignored) */ = SIGKILL,
+		PIPE /*! Pipe signal, default action is to terminate */ = SIGPIPE,
+		QUIT /*! Quit signal, default action is to abort */ = SIGQUIT,
+		STOP /*! Stop signal, default action is to stop (cannot be caught or ignored) */ = SIGSTOP,
+		TSTP /*! TSTP signal, default action is to stop */ = SIGTSTP,
+		TTIN /*! TTIN signal, default action is to stop */ = SIGTTIN,
+		TTOU /*! TTOU signal, default action is to stop */ = SIGTTOU,
+		USR1 /*! User signal, default action is to terminate */ = SIGUSR1,
+		USR2 /*! User signal, default action is to terminate */ = SIGUSR2,
+		PROF /*! PROF signal, default action is to terminate */ = SIGPROF,
+		SYS /*! System signal, default action is to abort */ = SIGSYS,
+		TRAP /*! Trap signal, default action is to abort */ = SIGTRAP,
+		URG /*! URG signal, default action is to ignore */ = SIGURG,
+		TALRM /*! TALRM signal, default action is to terminate */ = SIGVTALRM,
+		XCPU /*! XCPU signal, default action is to abort */ = SIGXCPU,
+		XFSZ /*! XFSZ signal, default action is to abort */ = SIGXFSZ,
+#endif
+#if !defined __link
+		POLL /*! Poll signal, default action is to terminate */ = SIGPOLL,
+		RTMIN /*! Real time signal, default action is to ignore */ = SIGRTMIN,
+		RT /*! Real time signal, default action is to ignore */ = SIGRTMIN + 1,
+		RTMAX /*! Real time signal, default action is to ignore */ = SIGRTMAX
+#endif
+	};
+
+};
 
 /*! \brief Signal Handler Class
  * \details This class is used for handling signal events.
@@ -52,20 +140,15 @@ namespace sys {
  *
  * \endcode
  */
-class SignalHandler : public api::InfoObject {
+class SignalHandler : public SignalFlags {
 public:
-
-	using SignalFunction = arg::Argument<signal_function_callback_t, struct SignalHandlerSignalFunctionTag>;
-	using SignalActionFunction = arg::Argument<signal_action_callback_t, struct SignalHandlerSignalFunctionTag>;
-	using SignalFlags = arg::Argument<u32, struct SignalHandlerSignalFlagsTag>;
-	using SignalMask = arg::Argument<u32, struct SignalHandlerSignalMaskTag>;
 
 	/*! \details Constructs a signal handler.
 	 *
 	 * @param handler The function to execute with an associated signal
 	 */
 	SignalHandler(
-			SignalFunction signal_function
+			Function signal_function
 			){
 #if defined __win32
 		m_sig_action.sa_handler = signal_function.argument();
@@ -97,9 +180,9 @@ public:
 	 *
 	 */
 	SignalHandler(
-			SignalActionFunction signal_action_function,
-			SignalFlags flags = SignalFlags(0),
-			SignalMask mask = SignalMask(0)
+			ActionFunction signal_action_function,
+			Flags flags = Flags(0),
+			Mask mask = Mask(0)
 			){
 		m_sig_action.sa_sigaction = signal_action_function.argument();
 		m_sig_action.sa_flags = flags.argument() | SIGNAL_SIGINFO_FLAG;
@@ -176,50 +259,8 @@ private:
  * when a hardware event happens (such as a when a GPIO interrupt happens).
  *
  */
-class Signal : public api::WorkObject {
+class Signal : public api::WorkObject, public SignalFlags {
 public:
-
-	using ProcessId = Sched::ProcessId;
-	using ValueInteger = arg::Argument<int, struct SignalValueTag>;
-	using ValuePointer = arg::Argument<void *, struct SignalValueTag>;
-
-	enum signal_number {
-		ABRT /*! Abort signal, default action is to abort */ = SIGABRT,
-		FPE /*! FPE signal, default action is to abort */ = SIGFPE,
-		INT /*! Interrupt signal, default action is to terminate */ = SIGINT,
-		ILL /*! Illegal signal, default action is to abort */ = SIGILL,
-		SEGV /*! Segmentation signal, default action is to abort */ = SIGSEGV,
-		TERM /*! Terminal signal, default action is to terminate */ = SIGTERM,
-#if !defined __win32
-		ALRM /*! Alarm signal, default action is to terminate */ = SIGALRM,
-		BUS /*! Bus signal, default action is to abort */ = SIGBUS,
-		CHLD /*! Child signal, default action is to ignore */ = SIGCHLD,
-		CONT /*! Continue signal, default action is to continue */ = SIGCONT,
-		HUP /*! Hangup signal, default action is to terminate */ = SIGHUP,
-		KILL /*! Kill signal, default action is to terminate (cannot be caught or ignored) */ = SIGKILL,
-		PIPE /*! Pipe signal, default action is to terminate */ = SIGPIPE,
-		QUIT /*! Quit signal, default action is to abort */ = SIGQUIT,
-		STOP /*! Stop signal, default action is to stop (cannot be caught or ignored) */ = SIGSTOP,
-		TSTP /*! TSTP signal, default action is to stop */ = SIGTSTP,
-		TTIN /*! TTIN signal, default action is to stop */ = SIGTTIN,
-		TTOU /*! TTOU signal, default action is to stop */ = SIGTTOU,
-		USR1 /*! User signal, default action is to terminate */ = SIGUSR1,
-		USR2 /*! User signal, default action is to terminate */ = SIGUSR2,
-		PROF /*! PROF signal, default action is to terminate */ = SIGPROF,
-		SYS /*! System signal, default action is to abort */ = SIGSYS,
-		TRAP /*! Trap signal, default action is to abort */ = SIGTRAP,
-		URG /*! URG signal, default action is to ignore */ = SIGURG,
-		TALRM /*! TALRM signal, default action is to terminate */ = SIGVTALRM,
-		XCPU /*! XCPU signal, default action is to abort */ = SIGXCPU,
-		XFSZ /*! XFSZ signal, default action is to abort */ = SIGXFSZ,
-#endif
-#if !defined __link
-		POLL /*! Poll signal, default action is to terminate */ = SIGPOLL,
-		RTMIN /*! Real time signal, default action is to ignore */ = SIGRTMIN,
-		RT /*! Real time signal, default action is to ignore */ = SIGRTMIN + 1,
-		RTMAX /*! Real time signal, default action is to ignore */ = SIGRTMAX
-#endif
-	};
 
 	/*! \details Constructs an event based on a signal number.
 	 *
@@ -228,7 +269,7 @@ public:
 	 *
 	 */
 	Signal(
-			enum signal_number signo,
+			enum number signo,
 			ValueInteger signal_value = ValueInteger(0)
 			){
 		m_signo = signo;
@@ -242,7 +283,7 @@ public:
 	  *
 	  */
 	Signal(
-			enum signal_number signo,
+			enum number signo,
 			void * signal_pointer
 			){
 		m_signo = signo;
@@ -284,9 +325,15 @@ public:
 	  *
 	 */
 	int queue(
+			pid_t pid
+			) const {
+		return ::sigqueue(pid, m_signo, m_sigvalue);
+	}
+
+	int queue(
 			ProcessId pid
 			) const {
-		return ::sigqueue(pid.argument(), m_signo, m_sigvalue);
+		return queue(pid.argument());
 	}
 #endif
 
@@ -296,9 +343,9 @@ public:
 	 * @return Zero on success
 	 */
 	int send(
-			Thread::Id t
+			pthread_t t
 			) const {
-		return ::pthread_kill(t.argument(), m_signo);
+		return ::pthread_kill(t, m_signo);
 	}
 
 	/*! \details Triggers the event on the current thread. */

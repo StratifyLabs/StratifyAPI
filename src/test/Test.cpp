@@ -157,9 +157,9 @@ void Test::vprint_case_message(const var::String & key, const char * fmt, va_lis
 }
 
 void Test::initialize(Name name,
-		Version version,
-		GitHash git_hash
-		){
+							 Version version,
+							 GitHash git_hash
+							 ){
 	m_is_initialized = true;
 	m_all_test_duration_microseconds = 0;
 
@@ -274,16 +274,80 @@ void Test::vprint_indent(int indent, const char * fmt, va_list args){
 	vprintf(fmt, args);
 }
 
-u32 Test::parse_options(const sys::Cli & cli){
+u32 Test::parse_execution_flags(const sys::Cli & cli){
 	u32 o_execute_flags = 0;
 
-	if( cli.is_option("-execute_all") ){ return Test::EXECUTE_ALL; }
-	if( cli.is_option("-api") ){ o_execute_flags |= Test::EXECUTE_API; }
-	if( cli.is_option("-performance") ){ o_execute_flags |= Test::EXECUTE_PERFORMANCE; }
-	if( cli.is_option("-stress") ){ o_execute_flags |= Test::EXECUTE_STRESS; }
-	if( cli.is_option("-additional") ){ o_execute_flags |= Test::EXECUTE_ADDITIONAL; }
+	bool is_all = false;
+
+	if( cli.get_option(
+			 "all",
+			 Cli::Description("execute all tests and types (if no type (api|stress|performance|additional) is specified")
+			 ) == "true" ){
+		is_all = true;
+	}
+
+	if( cli.get_option(
+			 "allTypes",
+			 Cli::Description("execute all test types (api|stress|performance|additional)")
+			 ) == "true" ){
+		o_execute_flags |= Test::execute_all_types;
+	}
+
+	if( cli.get_option(
+			 "api",
+			 Cli::Description("execute api tests")
+			 ) == "true" ){
+		o_execute_flags |= Test::execute_api;
+	}
+
+	if( cli.get_option(
+			 "performance",
+			 Cli::Description("execute performance tests")
+			 ) == "true" ){
+		o_execute_flags |= Test::execute_performance;
+	}
+
+	if( cli.get_option(
+			 "stress",
+			 Cli::Description("execute stress test")
+			 ) == "true" ){
+		o_execute_flags |= Test::execute_stress;
+	}
+
+	if( cli.get_option(
+			 "additional",
+			 Cli::Description("execute additional test")
+			 ) == "true" ){
+		o_execute_flags |= Test::execute_additional;
+	}
+
+	if( is_all ){
+		if( o_execute_flags == 0 ){
+			o_execute_flags = Test::execute_all;
+		} else {
+			o_execute_flags |= ~(Test::execute_all_types);
+		}
+	}
 
 	return o_execute_flags;
+}
+
+u32 Test::parse_test(
+		const sys::Cli & cli,
+		const var::String & name,
+		u32 test_flag
+		){
+
+	if( cli.get_option(
+			 name,
+			 Cli::Description(
+				 var::String("Execute the ") + name + " test suite"
+				 )
+			 ) == "true" ){
+		return test_flag;
+	}
+
+	return 0;
 }
 
 

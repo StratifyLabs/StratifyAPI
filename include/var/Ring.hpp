@@ -45,8 +45,9 @@ public:
 	 * @param buf A pointer to the data
 	 * @param size The number of bytes in the new ring buffer
 	 */
-	Ring(T * buf, Count count) : Data(buf, count.argument()*sizeof(T)){
-		m_count = count.argument();
+	Ring(const Reference & reference){
+		refer_to(reference);
+		m_count = reference.size() / sizeof(T);
 		m_head = 0;
 		m_tail = 0;
 		m_is_overflow_allowed = true;
@@ -106,8 +107,9 @@ public:
 	 * until the buffer is full and will then return an error.
 	 *
 	 */
-	void set_overflow_allowed(bool value = true){
+	Ring<T>& set_overflow_allowed(bool value = true){
 		m_is_overflow_allowed = value;
+		return *this;
 	}
 
 	/*! \details Returns true if overflow is allowed. */

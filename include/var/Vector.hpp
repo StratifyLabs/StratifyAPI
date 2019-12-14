@@ -19,6 +19,7 @@ template<typename T> class Vector:
       public api::WorkObject {
 public:
 
+	using Position = arg::Argument<size_t, struct VectorPositionTag>;
 
 	/*! \details Constructs an empty object.
 	  *
@@ -70,6 +71,11 @@ public:
 		return m_vector.insert(position, value);
 	}
 
+	Vector<T>& insert(Position position, const T & value){
+		insert(begin() + position.argument(), value);
+		return *this;
+	}
+
 	iterator insert(
 			const_iterator position,
 			size_t n,
@@ -83,6 +89,11 @@ public:
 			T && value
 			){
 		return m_vector(position, value);
+	}
+
+	Vector<T>& insert(Position position, T && value){
+		insert(begin() + position.argument(), value);
+		return *this;
 	}
 
 	iterator insert(
@@ -117,6 +128,14 @@ public:
 		m_vector.pop_back();
 		return *this;
 	}
+
+	Vector& shrink_to_fit(){
+		m_vector.shrink_to_fit();
+		return *this;
+	}
+
+	const T & operator[](size_t offset) const { return m_vector[offset]; }
+	T & operator[](size_t offset){ return m_vector[offset]; }
 
 	/*! \details Finds an object in the array.
 	  *

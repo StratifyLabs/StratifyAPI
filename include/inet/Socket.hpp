@@ -34,7 +34,59 @@ class SocketAddress;
 
 class SocketFlags {
 public:
-   using Size = fs::File::Size;
+   using Node = arg::Argument< const var::String &, struct SocketFlagsNodeTag >;
+   using Server = arg::Argument< const var::String &, struct SocketFlagsServerTag >;
+   using SourceSocketAddress = arg::Argument< const inet::SocketAddress&, struct SocketFlagsSourceSocketAddressTag >;
+   using DestinationSocketAddress = arg::Argument< inet::SocketAddress&, struct SocketFlagsDestinationSocketAddressTag >;
+   using ListenBacklogCount = arg::Argument< int, struct SocketFlagsListenBacklogCountTag >;
+
+
+	/*! \details Enumerates the socket address family options. */
+	enum family {
+		/*! \cond */
+		FAMILY_NONE,
+		FAMILY_INET /*! IPV4 */ = AF_INET,
+		FAMILY_INET6 /*! IPV6 */ = AF_INET6,
+		/*! \endcond */
+		family_none = 0,
+		family_inet /*! IPV4 */ = AF_INET,
+		family_inet6 /*! IPV6 */ = AF_INET6
+	};
+
+	/*! \details Enumerates the socket address type options. */
+	enum type {
+		/*! \cond */
+		TYPE_NONE,
+		TYPE_RAW /*! Raw socket data */ = SOCK_RAW,
+		TYPE_STREAM /*! Streaming socket data */ = SOCK_STREAM,
+		TYPE_DGRAM /*! Datagram socket data */ = SOCK_DGRAM,
+		/*! \endcond */
+		type_none = 0,
+		type_raw /*! Raw socket data */ = SOCK_RAW,
+		type_stream /*! Streaming socket data */ = SOCK_STREAM,
+		type_dgram /*! Datagram socket data */ = SOCK_DGRAM
+	};
+
+	/*! \details Enumerates the socket address protocol options. */
+	enum protocol {
+		/*! \cond */
+		PROTOCOL_RAW /*! Raw protocol */ = IPPROTO_RAW,
+		PROTOCOL_TCP /*! TCP Protocol */ = IPPROTO_TCP,
+		PROTOCOL_UDP /*! UDP Procotol */ = IPPROTO_UDP,
+		PROTOCOL_ICMP /*! ICMP Procotol */ = IPPROTO_ICMP,
+		PROTOCOL_ICMP6 = IPPROTO_ICMPV6,
+		PROTOCOL_ICMPV6 /*! ICMPv6 Protocol */ = IPPROTO_ICMPV6,
+		PROTOCOL_IP /*! IP Protocol */ = IPPROTO_IP,
+		/*! \endcond */
+		protocol_raw /*! Raw protocol */ = IPPROTO_RAW,
+		protocol_tcp /*! TCP Protocol */ = IPPROTO_TCP,
+		protocol_udp /*! UDP Procotol */ = IPPROTO_UDP,
+		protocol_icmp /*! ICMP Procotol */ = IPPROTO_ICMP,
+		protocol_icmp6 = IPPROTO_ICMPV6,
+		protocol_icmpv6 /*! ICMPv6 Protocol */ = IPPROTO_ICMPV6,
+		protocol_ip /*! IP Protocol */ = IPPROTO_IP
+	};
+
 };
 
 /*! \brief Socket Address Info
@@ -75,37 +127,10 @@ public:
  *
  *
  */
-class SocketAddressInfo : public api::WorkObject {
+class SocketAddressInfo : public api::WorkObject, public SocketFlags {
 public:
 
-   using NodeToFetch = arg::Argument< const var::String &, struct SocketFlagsNodeToFetchTag >;
-   using ServiceToFetch = arg::Argument< const var::String &, struct SocketFlagsServiceToFetchTag >;
 
-	/*! \details Enumerates the socket address family options. */
-	enum family {
-		FAMILY_NONE,
-		FAMILY_INET /*! IPV4 */ = AF_INET,
-		FAMILY_INET6 /*! IPV6 */ = AF_INET6
-	};
-
-	/*! \details Enumerates the socket address type options. */
-	enum type {
-		TYPE_NONE,
-		TYPE_RAW /*! Raw socket data */ = SOCK_RAW,
-		TYPE_STREAM /*! Streaming socket data */ = SOCK_STREAM,
-		TYPE_DGRAM /*! Datagram socket data */ = SOCK_DGRAM
-	};
-
-	/*! \details Enumerates the socket address protocol options. */
-	enum protocol {
-		PROTOCOL_RAW /*! Raw protocol */ = IPPROTO_RAW,
-		PROTOCOL_TCP /*! TCP Protocol */ = IPPROTO_TCP,
-		PROTOCOL_UDP /*! UDP Procotol */ = IPPROTO_UDP,
-		PROTOCOL_ICMP /*! ICMP Procotol */ = IPPROTO_ICMP,
-		PROTOCOL_ICMP6 = IPPROTO_ICMPV6,
-		PROTOCOL_ICMPV6 /*! ICMPv6 Protocol */ = IPPROTO_ICMPV6,
-		PROTOCOL_IP /*! IP Protocol */ = IPPROTO_IP
-	};
 
 	/*! \details Constructs a new socket address infomation object.
 	 *
@@ -159,21 +184,21 @@ public:
 			const var::String & node
 			){
 		return fetch(
-					NodeToFetch(node),
-					ServiceToFetch("")
+					Node(node),
+					Server("")
 					);
 	}
 
 	var::Vector<SocketAddressInfo> fetch_service(const var::String & service){
 		return fetch(
-					NodeToFetch(""),
-					ServiceToFetch(service)
+					Node(""),
+					Server(service)
 					);
 	}
 
 	var::Vector<SocketAddressInfo> fetch(
-			const NodeToFetch node,
-			const ServiceToFetch service);
+			const Node node,
+			const Server service);
 
 private:
 	friend class SocketAddress;
@@ -217,7 +242,7 @@ private:
 	int m_type;
 };
 
-class SocketAddress : public api::InfoObject {
+class SocketAddress : public SocketFlags {
 public:
 
 	/*!
@@ -308,7 +333,7 @@ protected:
 
 };
 
-class SocketOption : public api::InfoObject {
+class SocketOption : public SocketFlags {
 public:
 
 	enum {
@@ -474,13 +499,8 @@ private:
  *
  *
  */
-class Socket : public fs::File {
+class Socket : public fs::File, public SocketFlags {
 public:
-
-
-   using SourceSocketAddress = arg::Argument< const inet::SocketAddress&, struct SourceSocketAddressTag >;
-   using DestinationSocketAddress = arg::Argument< inet::SocketAddress&, struct DestinationSocketAddressTag >;
-   using ListenBacklogCount = arg::Argument< int, struct ListenBacklogCountTag >;
 
 	Socket();
 	~Socket();

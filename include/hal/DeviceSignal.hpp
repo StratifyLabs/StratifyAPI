@@ -70,7 +70,7 @@ public:
 	 */
 	DeviceSignal(
 			IsPersistent persistent,
-			enum sys::Signal::signal_number signo,
+			enum sys::Signal::number signo,
 			ValueInteger sigvalue = ValueInteger(0)
 			) :
 		Signal(
@@ -93,7 +93,7 @@ public:
 	 */
 	DeviceSignal(
 			IsPersistent persistent,
-			enum sys::Signal::signal_number signo,
+			enum sys::Signal::number signo,
 			ValuePointer sigvalue = ValuePointer(0) ) :
 		Signal(
 			signo,
@@ -114,7 +114,7 @@ public:
 	DeviceSignal(
 			const devfs_signal_callback_t & context
 			) : Signal(
-					 (enum sys::Signal::signal_number)context.si_signo,
+					 (enum sys::Signal::number)context.si_signo,
 					 ValueInteger(context.sig_value)
 					 ){
 		this->m_context = context;

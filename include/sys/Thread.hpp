@@ -62,6 +62,7 @@ public:
 	using FunctionArgument = arg::Argument<void*, struct ThreadFunctionArgumentTag>;
 	using Return = arg::Argument<void**, struct ThreadReturnTag>;
 	using DelayInterval = arg::Argument<const chrono::MicroTime&, struct ThreadDelayIntervalTag>;
+	using Priority = Sched::Priority;
 
 	/*! \details Defines the function call type that is
 	 * used to create() a new thread.
@@ -134,8 +135,14 @@ public:
 	  *
 	  */
 	int set_priority(
-			Sched::Priority prio,
+			int prio,
 			enum Sched::policy policy = Sched::RR);
+
+	int set_priority(
+			Priority prio,
+			enum Sched::policy policy = Sched::RR){
+		return set_priority(prio.argument(), policy);
+	}
 
 	/*! \details Gets the thread priority.
 	  *
@@ -191,7 +198,7 @@ public:
 	int create(
 			Function func,
 			FunctionArgument args = FunctionArgument(nullptr),
-			Sched::Priority prio = Sched::Priority(0),
+			Priority prio = Priority(0),
 			enum Sched::policy policy = Sched::OTHER
 			);
 

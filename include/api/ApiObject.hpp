@@ -167,6 +167,21 @@ namespace api {
 	return a = a | b;\
 }
 
+#define API_OR_NAMED_FLAGS_OPERATOR(TYPE, FLAG_NAME) \
+	inline enum TYPE::FLAG_NAME operator |( \
+	const enum TYPE::FLAG_NAME a, \
+	const enum TYPE::FLAG_NAME b){ \
+	return static_cast<enum TYPE::FLAG_NAME>( \
+	static_cast<u32>(a) | \
+	static_cast<u32>(b) \
+	); \
+} \
+	inline enum TYPE::FLAG_NAME & operator |=( \
+	enum TYPE::FLAG_NAME & a, \
+	const enum TYPE::FLAG_NAME b){ \
+	return a = a | b;\
+}
+
 /*! \brief Application Programming Interface Object
  * \details The API Object class is the parent of all
  * other classes. The API namespace contains

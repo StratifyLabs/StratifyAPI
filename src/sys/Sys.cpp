@@ -80,15 +80,15 @@ Sys::Sys(
 
 
 int Sys::launch(const var::String & path,
-					 const var::String & args,
-					 int options,
+					 Arguments args,
+					 enum Appfs::flags options,
 					 int ram_size){
 #if defined __link
 	return -1;
 #else
 	return ::launch(path.cstring(),
 						 0,
-						 args.cstring(),
+						 args.argument().cstring(),
 						 options,
 						 ram_size,
 						 0, 0,
@@ -97,41 +97,44 @@ int Sys::launch(const var::String & path,
 }
 
 int Sys::launch(const var::String & path,
-					 const var::String & args,
-					 var::String & exec_destination,
-					 int options, //run in RAM, discard on exit
-					 int ram_size,
-					 const sys::ProgressCallback * progress_callback,
-					 const var::String & envp
-					 ){
+		Arguments args,
+		DestinationPath exec_destination,
+		enum Appfs::flags options, //run in RAM, discard on exit
+		int ram_size,
+		const sys::ProgressCallback * progress_callback,
+		Environment envp
+		){
 #if defined __link
 	return -1;
 #else
-	exec_destination.resize(PATH_MAX);
-	return ::launch(path.cstring(),
-						 exec_destination.to_char(),
-						 args.cstring(),
-						 options,
-						 ram_size,
-						 sys::ProgressCallback::update_function,
-						 (void*)progress_callback,
-						 0);
+	exec_destination.argument().resize(PATH_MAX);
+	return ::launch(
+				path.cstring(),
+				exec_destination.argument().to_char(),
+				args.argument().cstring(),
+				options,
+				ram_size,
+				sys::ProgressCallback::update_function,
+				(void*)progress_callback,
+				nullptr);
 #endif
 }
 
-var::String Sys::install(const var::String & path,
-								 int options, //run in RAM, discard on exit
-								 int ram_size
-								 ){
+var::String Sys::install(
+		const var::String & path,
+		enum Appfs::flags options, //run in RAM, discard on exit
+		int ram_size
+		){
 	return install(path, options, ram_size, 0);
 }
 
 
-var::String Sys::install(const var::String & path,
-								 int options, //run in RAM, discard on exit
-								 int ram_size,
-								 const sys::ProgressCallback * progress_callback
-								 ){
+var::String Sys::install(
+		const var::String & path,
+		enum Appfs::flags options, //run in RAM, discard on exit
+		int ram_size,
+		const sys::ProgressCallback * progress_callback
+		){
 #if defined __link
 	return var::String();
 #else
@@ -152,7 +155,7 @@ var::String Sys::install(const var::String & path,
 int Sys::free_ram(
 		const var::String & path
 		SAPI_LINK_DRIVER_LAST
-						){
+		){
 	int fd;
 	int ret;
 #if defined __link
@@ -174,32 +177,6 @@ int Sys::free_ram(
 	::close(fd);
 #endif
 	return ret;
-}
-
-void Sys::assign_zero_sum32(void * data, int size){
-	u32 sum = 0;
-	u32 * ptr = (u32*)data;
-	int i;
-	int count;
-	if( size & 0x03 ){ return; }
-	count = size / sizeof(u32);
-	for(i=0; i < count-1; i++){
-		sum += ptr[i];
-	}
-	ptr[i] = (u32)(0 - sum);
-}
-
-int Sys::verify_zero_sum32(void * data, int size){
-	u32 sum = 0;
-	u32 * ptr = (u32*)data;
-	int i;
-	int count;
-	if( size & 0x03 ){ return 1; }
-	count = size / sizeof(u32);
-	for(i=0; i < count; i++){
-		sum += ptr[i];
-	}
-	return sum == 0;
 }
 
 int Sys::reclaim_ram(const var::String & path

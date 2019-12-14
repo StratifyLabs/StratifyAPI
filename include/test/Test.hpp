@@ -2,6 +2,10 @@
 #define SAPI_TEST_TEST_HPP_
 
 #include <cstdarg>
+#if defined __link
+#include <sos/link.h>
+#include <errno.h>
+#endif
 
 #include "../api/TestObject.hpp"
 #include "../chrono/MicroTime.hpp"
@@ -11,15 +15,17 @@
 
 namespace test {
 
-#define TEST_EXPECT(a, T, b, c) a.expect<T>(__FUNCTION__, __LINE__, b, c)
-#define TEST_EXPECT_NOT(a, T, b, c) a.expect_not<T>(__FUNCTION__, __LINE__, b, c)
-#define TEST_ASSERT(a, T, b, c) do { if( a.expect<T>(__FUNCTION__, __LINE__, b, c) == false ){ return case_result(); } } while(0)
-#define TEST_ASSERT_NOT(a, T, b, c) do { if( a.expect_not<T>(__FUNCTION__, __LINE__, b, c) == false ){ return case_result(); } } while(0)
+#define TEST_EXPECT(a, T, b, c) a.expect<T>(__PRETTY_FUNCTION__, __LINE__, b, c)
+#define TEST_EXPECT_NOT(a, T, b, c) a.expect_not<T>(__PRETTY_FUNCTION__, __LINE__, b, c)
+#define TEST_ASSERT(a, T, b, c) do { if( a.expect<T>(__PRETTY_FUNCTION__, __LINE__, b, c) == false ){ return case_result(); } } while(0)
+#define TEST_ASSERT_NOT(a, T, b, c) do { if( a.expect_not<T>(__PRETTY_FUNCTION__, __LINE__, b, c) == false ){ return case_result(); } } while(0)
 
-#define TEST_THIS_EXPECT(T, b, c) this->expect<T>(__FUNCTION__, __LINE__, b, c)
-#define TEST_THIS_EXPECT_NOT(T, b, c) this->expect_not<T>(__FUNCTION__, __LINE__, b, c)
-#define TEST_THIS_ASSERT(T, b, c) do { if( this->expect<T>(__FUNCTION__, __LINE__, b, c) == false ){ return case_result(); } } while(0)
-#define TEST_THIS_ASSERT_NOT(T, b, c) do { if( this->expect_not<T>(__FUNCTION__, __LINE__, b, c) == false ){ return case_result(); } } while(0)
+#define TEST_THIS_EXPECT(T, b, c) this->expect<T>(__PRETTY_FUNCTION__, __LINE__, b, c)
+#define TEST_THIS_EXPECT_NOT(T, b, c) this->expect_not<T>(__PRETTY_FUNCTION__, __LINE__, b, c)
+#define TEST_THIS_EXPECT_ERROR(b,c) this->expect_error(__PRETTY_FUNCTION__, __LINE__, b, c)
+#define TEST_THIS_EXPECT_ERROR_NULL(b,c) this->expect_error_null(__PRETTY_FUNCTION__, __LINE__, b, c)
+#define TEST_THIS_ASSERT(T, b, c) do { if( this->expect<T>(__PRETTY_FUNCTION__, __LINE__, b, c) == false ){ return case_result(); } } while(0)
+#define TEST_THIS_ASSERT_NOT(T, b, c) do { if( this->expect_not<T>(__PRETTY_FUNCTION__, __LINE__, b, c) == false ){ return case_result(); } } while(0)
 
 
 /*! \brief Test Class
@@ -145,7 +151,8 @@ public:
 	  * \endcode
 	  *
 	  */
-	static u32 parse_options(const sys::Cli & cli);
+	static u32 parse_execution_flags(const sys::Cli & cli);
+	static u32 parse_test(const sys::Cli & cli, const var::String & name, u32 test_flag);
 
 
 	/*! \details Constructs a new test object.
@@ -196,12 +203,18 @@ public:
 	~Test();
 
 
-	enum {
-		EXECUTE_API /*! API Test Execution flag */ = (1<<0),
-		EXECUTE_STRESS /*! Stress Test Execution flag */ = (1<<1),
-		EXECUTE_PERFORMANCE /*! Performance Test Execution flag */ = (1<<2),
-		EXECUTE_ADDITIONAL /*! Additional Test Execution flag */ = (1<<3),
-		EXECUTE_ALL /*! API Execution flag */ = (int)-1
+	enum test_flags {
+		EXECUTE_API  = (1<<0),
+		EXECUTE_STRESS = (1<<1),
+		EXECUTE_PERFORMANCE = (1<<2),
+		EXECUTE_ADDITIONAL = (1<<3),
+		EXECUTE_ALL = (u32)-1,
+		execute_api /*! API Test Execution flag */ = (1<<0),
+		execute_stress /*! Stress Test Execution flag */ = (1<<1),
+		execute_performance /*! Performance Test Execution flag */ = (1<<2),
+		execute_additional /*! Additional Test Execution flag */ = (1<<3),
+		execute_all_types = execute_api | execute_stress | execute_performance | execute_additional,
+		execute_all /*! Execute all test */ = (u32)-1
 	};
 
 	void execute(const sys::Cli & cli);
@@ -330,7 +343,7 @@ public:
 		if( a == b ){
 			return true;
 		}
-		print_case_failed("%s : %d valued not expected", function, line);
+		print_case_failed("%s:%d: valued not expected", function, line);
 		return false;
 	}
 
@@ -343,9 +356,58 @@ public:
 		if( !(a == b) ){
 			return true;
 		}
-		print_case_failed("%s : %d valued not expected not", function, line);
+		print_case_failed("%s:%d: valued not expected not", function, line);
 		return false;
 	}
+
+	bool expect_error(
+			const char * function,
+			unsigned int line,
+			int result,
+			int expected_error
+			){
+		if( result < 0 ){
+			if( expected_error == errno ){
+				return true;
+			}
+			print_case_failed("%s : %d expected errno %d, got %d",
+									function,
+									line,
+									expected_error,
+									errno);
+		} else {
+			print_case_failed("%s : %d expected result < 0, got %d",
+									function,
+									line,
+									result);
+		}
+		return false;
+	}
+
+	bool expect_error_null(
+			const char * function,
+			unsigned int line,
+			void * result,
+			int expected_error
+			){
+		if( result == nullptr ){
+			if( expected_error == errno ){
+				return true;
+			}
+			print_case_failed("%s : %d expected errno %d, got %d",
+									function,
+									line,
+									expected_error,
+									errno);
+		} else {
+			print_case_failed("%s : %d expected result null result, got %p",
+									function,
+									line,
+									result);
+		}
+		return false;
+	}
+
 
 protected:
 

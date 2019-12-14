@@ -24,7 +24,7 @@ HttpClient::HttpClient(Socket & socket) : Http(socket){
 	m_transfer_encoding = "";
 }
 
-int HttpClient::get(UrlEncodedString url,
+int HttpClient::get(const var::String & url,
 						  ResponseFile response,
 						  const sys::ProgressCallback * progress_callback
 						  ){
@@ -37,13 +37,14 @@ int HttpClient::get(UrlEncodedString url,
 				);
 }
 
-int HttpClient::post(UrlEncodedString url,
-							const var::String & request,
-							ResponseFile response,
-							const sys::ProgressCallback * progress_callback
-							){
+int HttpClient::post(
+		const var::String & url,
+		RequestString request,
+		ResponseFile response,
+		const sys::ProgressCallback * progress_callback
+		){
 	DataFile request_file;
-	request_file.data().copy_contents(request);
+	request_file.data().copy_contents(request.argument());
 	return post(
 				url,
 				RequestFile(request_file),
@@ -52,8 +53,7 @@ int HttpClient::post(UrlEncodedString url,
 				);
 }
 
-int HttpClient::post(
-		UrlEncodedString url,
+int HttpClient::post(const var::String & url,
 							RequestFile request,
 							ResponseFile response,
 							const sys::ProgressCallback * progress_callback
@@ -67,13 +67,13 @@ int HttpClient::post(
 				);
 }
 
-int HttpClient::put(UrlEncodedString url,
-						  const var::String & request,
+int HttpClient::put(const var::String & url,
+						  RequestString request,
 						  ResponseFile response,
 						  const sys::ProgressCallback * progress_callback){
 	DataFile request_file;
 
-	request_file.data().copy_contents(request);
+	request_file.data().copy_contents(request.argument());
 
 	return put(
 				url,
@@ -83,7 +83,7 @@ int HttpClient::put(UrlEncodedString url,
 				);
 }
 
-int HttpClient::put(UrlEncodedString url,
+int HttpClient::put(const var::String & url,
 						  RequestFile request,
 						  ResponseFile response,
 						  const sys::ProgressCallback * progress_callback
@@ -97,12 +97,12 @@ int HttpClient::put(UrlEncodedString url,
 				);
 }
 
-int HttpClient::patch(UrlEncodedString url,
-							 const var::String & request,
+int HttpClient::patch(const var::String & url,
+							 RequestString request,
 							 ResponseFile response,
 							 const sys::ProgressCallback * progress_callback){
 	DataFile request_file;
-	request_file.data().copy_contents(request);
+	request_file.data().copy_contents(request.argument());
 	return patch(
 				url,
 				RequestFile(request_file),
@@ -110,7 +110,7 @@ int HttpClient::patch(UrlEncodedString url,
 				progress_callback);
 }
 
-int HttpClient::patch(UrlEncodedString url, RequestFile data, ResponseFile response, const sys::ProgressCallback * progress_callback){
+int HttpClient::patch(const var::String & url, RequestFile data, ResponseFile response, const sys::ProgressCallback * progress_callback){
 	return query(
 				"PATCH",
 				url,
@@ -132,17 +132,16 @@ int HttpClient::remove(
 }
 
 
-int HttpClient::query(
-		const var::String & command,
-		UrlEncodedString url,
-		SendFile send_file,
-		GetFile get_file,
-		const sys::ProgressCallback * progress_callback
-		){
+int HttpClient::query(const var::String & command,
+							 const var::String & url,
+							 SendFile send_file,
+							 GetFile get_file,
+							 const sys::ProgressCallback * progress_callback
+							 ){
 	m_status_code = -1;
 	m_content_length = 0;
 	int result;
-	Url u(url.argument());
+	Url u(url);
 
 	u32 get_file_pos;
 	if( get_file.argument() ){
@@ -227,9 +226,7 @@ int HttpClient::query(
 			if( key == "location" ){
 				return query(
 							command,
-							UrlEncodedString(
-								header_response_pairs().at(i).value()
-								),
+							header_response_pairs().at(i).value(),
 							send_file,
 							get_file,
 							progress_callback

@@ -11,28 +11,41 @@
 
 namespace sys {
 
+class MutexFlags {
+public:
+
+	/*! \details Mutex Types */
+	enum type {
+		/*! \cond */
+		NORMAL /*! Normal Mutex Type */ = PTHREAD_MUTEX_NORMAL,
+		RECURSIVE /*! Recursive Mutex tyep */ = PTHREAD_MUTEX_RECURSIVE,
+		/*! \endcond */
+		normal /*! Normal Mutex Type */ = PTHREAD_MUTEX_NORMAL,
+		recursive /*! Recursive Mutex tyep */ = PTHREAD_MUTEX_RECURSIVE
+	};
+
+	/*! \details Mutex Protocol values */
+	enum protocol {
+		/*! \cond */
+		PRIO_NONE_PROTOCOL = PTHREAD_PRIO_NONE,
+		PRIO_INHERIT_PROTOCOL = PTHREAD_PRIO_INHERIT,
+		PRIO_PROTECT_PROTOCOL = PTHREAD_PRIO_PROTECT,
+		/*! \endcond */
+		prio_none_protocol = PTHREAD_PRIO_NONE,
+		prio_inherit_protocol = PTHREAD_PRIO_INHERIT,
+		prio_protect_protocol = PTHREAD_PRIO_PROTECT,
+	};
+
+};
+
 /*! \brief Mutex Attibutes
  * \details The MutexAttr class manages
  * a pthread_mutexattr_t object.
  *
  *
  */
-class MutexAttributes : public api::InfoObject {
+class MutexAttributes : public MutexFlags {
 public:
-
-	/*! \details Mutex Types */
-	enum type {
-		NORMAL /*! Normal Mutex Type */ = PTHREAD_MUTEX_NORMAL,
-		RECURSIVE /*! Recursive Mutex tyep */ = PTHREAD_MUTEX_RECURSIVE
-	};
-
-	/*! \details Mutex Protocol values */
-	enum protocol {
-		PRIO_NONE_PROTOCOL = PTHREAD_PRIO_NONE,
-		PRIO_INHERIT_PROTOCOL = PTHREAD_PRIO_INHERIT,
-		PRIO_PROTECT_PROTOCOL = PTHREAD_PRIO_PROTECT,
-	};
-
 
 	/*! \details Constructs a Mutex attributes object with default values. */
 	MutexAttributes();
@@ -66,7 +79,7 @@ public:
 	/*! \details Sets whether this is shared between processes. */
 	MutexAttributes & set_pshared(bool value = true);
 
-	/*! \details Set the mutex type (NORMAL_TYPE or RECURSIVE_TYPE) */
+	/*! \details Set the mutex type. */
 	MutexAttributes & set_type(enum type value);
 
 	/*! \details Returns the priority ceiling. */
@@ -111,7 +124,7 @@ typedef MutexAttributes MutexAttr;
  * multi-threaded applications.
  *
  */
-class Mutex : public api::WorkObject {
+class Mutex : public api::WorkObject, public MutexFlags {
 public:
 	/*! \details Constructs a Mutex with the default settings. */
 	Mutex();

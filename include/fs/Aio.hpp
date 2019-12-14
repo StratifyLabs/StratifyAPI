@@ -61,7 +61,7 @@ class Aio : public api::FsWorkObject {
 public:
 
 	using Location = File::Location;
-	using Size = File::Size;
+	using Size = var::Reference::Size;
 
 	/*! \details Constructs an empy AIO object. */
 	Aio(){ memset(&m_aio_var, 0, sizeof(struct aiocb)); }

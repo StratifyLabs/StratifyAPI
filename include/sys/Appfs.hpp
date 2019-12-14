@@ -21,7 +21,8 @@ public:
 	using LinkDriver = fs::File::LinkDriver;
 #endif
 
-	enum {
+	enum flags {
+		/*! \cond */
 		IS_FLASH = APPFS_FLAG_IS_FLASH,
 		IS_STARTUP = APPFS_FLAG_IS_STARTUP,
 		IS_ROOT = APPFS_FLAG_IS_ROOT,
@@ -31,10 +32,24 @@ public:
 		IS_CODE_EXTERNAL = APPFS_FLAG_IS_CODE_EXTERNAL,
 		IS_DATA_EXTERNAL = APPFS_FLAG_IS_DATA_EXTERNAL,
 		IS_CODE_TIGHTLY_COUPLED = APPFS_FLAG_IS_CODE_TIGHTLY_COUPLED,
-		IS_DATA_TIGHTLY_COUPLED = APPFS_FLAG_IS_DATA_TIGHTLY_COUPLED
+		IS_DATA_TIGHTLY_COUPLED = APPFS_FLAG_IS_DATA_TIGHTLY_COUPLED,
+		/*! \endcond */
+		is_default = 0,
+		is_flash = APPFS_FLAG_IS_FLASH,
+		is_startup = APPFS_FLAG_IS_STARTUP,
+		is_root = APPFS_FLAG_IS_ROOT,
+		is_replace = APPFS_FLAG_IS_REPLACE,
+		is_orphan = APPFS_FLAG_IS_ORPHAN,
+		is_unique = APPFS_FLAG_IS_UNIQUE,
+		is_code_external = APPFS_FLAG_IS_CODE_EXTERNAL,
+		is_data_external = APPFS_FLAG_IS_DATA_EXTERNAL,
+		is_code_tightly_coupled = APPFS_FLAG_IS_CODE_TIGHTLY_COUPLED,
+		is_data_tightly_coupled = APPFS_FLAG_IS_DATA_TIGHTLY_COUPLED
 	};
 
 };
+
+API_OR_FLAGS_OPERATOR(AppfsFlags)
 
 /*! \brief AppfsInfo Class
  * \details The AppfsInfo class is for

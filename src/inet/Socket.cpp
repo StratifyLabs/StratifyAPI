@@ -49,8 +49,8 @@ SocketAddressInfo::SocketAddressInfo(int family, int type, int protocol, int fla
 }
 
 var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(
-		NodeToFetch node,
-		ServiceToFetch server){
+		Node node,
+		Server server){
 	var::Vector<SocketAddressInfo> result;
 	int result_int;
 

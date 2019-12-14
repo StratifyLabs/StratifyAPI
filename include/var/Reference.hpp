@@ -267,6 +267,21 @@ public:
 	 */
 	bool is_null() const { return size() == 0; }
 
+
+	Reference & refer_to(const Reference & reference){
+		m_data_write = nullptr;
+		m_data_read = reference.m_data_read;
+		m_size = reference.m_size;
+		return *this;
+	}
+
+	Reference & refer_to(Reference & reference){
+		m_data_write = reference.m_data_write;
+		m_data_read = reference.m_data_read;
+		m_size = reference.m_size;
+		return *this;
+	}
+
 	/*! \details Refers to an item.
 	 *
 	 * ```

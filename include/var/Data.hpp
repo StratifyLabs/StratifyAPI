@@ -516,6 +516,8 @@ public:
 	static void reclaim_heap_space(){
 		::free((void*)1);
 	}
+#else
+	static void reclaim_heap_space(){}
 #endif
 
 	void * data(){

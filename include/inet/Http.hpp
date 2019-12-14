@@ -14,9 +14,10 @@ namespace inet {
 class Http : public api::WorkObject {
 public:
 
-	using RequestFile = arg::Argument<const fs::File &, struct HttpClientSendRequestTag>;
-	using ResponseFile = arg::Argument<const fs::File &, struct HttpClientGetResponseTag>;
-	using UrlEncodedString = arg::Argument<const var::String &, struct HttpClientGetResponseUrlEncodedStringTag>;
+	using RequestFile = arg::Argument<const fs::File &, struct HttpSendRequestTag>;
+	using ResponseFile = arg::Argument<const fs::File &, struct HttpGetResponseTag>;
+	using UrlEncodedString = arg::Argument<const var::String &, struct HttpGetResponseUrlEncodedStringTag>;
+	using RequestString = arg::Argument<const var::String &, struct HttpRequestStringTag>;
 
 	Http(Socket & socket);
 
@@ -122,20 +123,69 @@ public:
 	 *
 	 */
 	int get(
+			const var::String & url,
+			ResponseFile response,
+			const sys::ProgressCallback * progress_callback = 0
+			);
+
+	int get(
 			UrlEncodedString url,
+			ResponseFile response,
+			const sys::ProgressCallback * progress_callback = 0
+			){
+		return get(url.argument(), response, progress_callback);
+	}
+
+	int post(
+			const var::String& url,
+			RequestString request,
 			ResponseFile response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int post(
 			UrlEncodedString url,
-			const var::String & request,
+			RequestString request,
+			ResponseFile response,
+			const sys::ProgressCallback * progress_callback = 0
+			){
+		return post(url.argument(), request, response, progress_callback);
+	}
+
+	int post(
+			const var::String & url,
+			RequestFile request,
 			ResponseFile response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
 	int post(
 			UrlEncodedString url,
+			RequestFile request,
+			ResponseFile response,
+			const sys::ProgressCallback * progress_callback = 0
+			){
+		return post(url.argument(), request, response, progress_callback);
+	}
+
+	int put(
+			const var::String& url,
+			RequestString request,
+			ResponseFile response,
+			const sys::ProgressCallback * progress_callback = 0
+			);
+
+	int put(
+			UrlEncodedString url,
+			RequestString request,
+			ResponseFile response,
+			const sys::ProgressCallback * progress_callback = 0
+			){
+		return put(url.argument(), request, response, progress_callback);
+	}
+
+	int put(
+			const var::String& url,
 			RequestFile request,
 			ResponseFile response,
 			const sys::ProgressCallback * progress_callback = 0
@@ -143,13 +193,31 @@ public:
 
 	int put(
 			UrlEncodedString url,
-			const var::String & request,
+			RequestFile request,
+			ResponseFile response,
+			const sys::ProgressCallback * progress_callback = 0
+			){
+		return put(url.argument(), request, response, progress_callback);
+	}
+
+	int patch(
+			const var::String& url,
+			RequestString request,
 			ResponseFile response,
 			const sys::ProgressCallback * progress_callback = 0
 			);
 
-	int put(
+	int patch(
 			UrlEncodedString url,
+			RequestString request,
+			ResponseFile response,
+			const sys::ProgressCallback * progress_callback = 0
+			){
+		return patch(url.argument(), request, response, progress_callback);
+	}
+
+	int patch(
+			const var::String& url,
 			RequestFile request,
 			ResponseFile response,
 			const sys::ProgressCallback * progress_callback = 0
@@ -157,17 +225,12 @@ public:
 
 	int patch(
 			UrlEncodedString url,
-			const var::String & request,
-			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
-			);
-
-	int patch(
-			UrlEncodedString url,
 			RequestFile request,
 			ResponseFile response,
 			const sys::ProgressCallback * progress_callback = 0
-			);
+			){
+		return patch(url.argument(), request, response, progress_callback);
+	}
 
 	//http delete
 	/*! \cond */
@@ -274,7 +337,7 @@ private:
 
 	int query(
 			const var::String & command,
-			UrlEncodedString url,
+			const var::String & url,
 			SendFile send_file,
 			GetFile get_file,
 			const sys::ProgressCallback * progress_callback

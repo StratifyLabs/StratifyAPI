@@ -19,7 +19,7 @@ namespace sys {
 class Mq;
 
 /*! \brief Message Queue Attribute Class */
-class MqAttributes : public api::InfoObject {
+class MqAttributes {
 	friend class Mq;
 public:
 	MqAttributes(){ memset(&m_attr, 0, sizeof(m_attr)); }
@@ -84,7 +84,7 @@ public:
 	int open(
 			const var::String & name,
 			int oflag,
-			const fs::Permissions & permissions,
+			const fs::Permissions & permissions = fs::Permissions(0666),
 			const struct mq_attr * attr = 0
 			);
 
