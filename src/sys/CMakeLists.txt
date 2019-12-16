@@ -10,7 +10,10 @@ set(SOURCELIST
 	JsonPrinter.cpp
 	Signal.cpp
 	ProgressCallback.cpp
-	Printer.cpp)
+	Printer.cpp
+	MarkdownPrinter.cpp
+	YamlPrinter.cpp
+	)
 
 
 if( ${SOS_BUILD_CONFIG} STREQUAL arm )

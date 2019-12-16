@@ -31,6 +31,8 @@ namespace sys {}
 #include "sys/TaskManager.hpp"
 #include "sys/Cli.hpp"
 #include "sys/Printer.hpp"
+#include "sys/YamlPrinter.hpp"
+#include "sys/MarkdownPrinter.hpp"
 #include "sys/Sys.hpp"
 #include "sys/Appfs.hpp"
 

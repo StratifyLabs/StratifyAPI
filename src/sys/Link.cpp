@@ -1896,6 +1896,7 @@ int Link::install_app(
 		if( f.close() < 0 ){
 			return -1;
 		}
+		if( progress_callback ){ progress_callback->update(0,0); }
 
 	}
 

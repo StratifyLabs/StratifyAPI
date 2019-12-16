@@ -11,6 +11,11 @@ Thread::Thread(StackSize stacksize, IsDetached detached) {
 
 Thread::~Thread(){
 	//what if thread is still running?
+	if( is_running() ){
+		//must be stopped or assert
+
+	}
+
 	if( !is_id_error() ){
 		pthread_attr_destroy(&m_pthread_attr);
 	}

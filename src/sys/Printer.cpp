@@ -37,9 +37,7 @@ Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this
 	m_indent = 0;
 	m_progress_width = 50;
 	m_progress_state = 0;
-	m_key_count = 0;
 	m_verbose_level = INFO;
-	m_container.push_back(CONTAINER_ARRAY);
 	m_progress_key = "progress";
 #if defined __win32
 	if( m_default_color == (unsigned int)-1 ){
@@ -58,7 +56,7 @@ Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this
 void Printer::set_format_code(u32 code){
 #if defined __link
 	if( api::ApiInfo::is_macosx() || is_bash() ){
-		print("\033[1;%dm", code);
+		print_final("\033[1;%dm", code);
 	}
 #endif
 }
@@ -66,7 +64,7 @@ void Printer::set_format_code(u32 code){
 void Printer::clear_format_code(u32 code){
 #if defined __link
 	if( api::ApiInfo::is_macosx() || is_bash() ){
-		print("\033[1;2%dm", code);
+		print_final("\033[1;2%dm", code);
 	}
 #endif
 }
@@ -75,7 +73,7 @@ void Printer::set_color_code(u32 code){
 
 #if defined __link
 	if( api::ApiInfo::is_macosx() || is_bash() ){
-		print("\033[1;%dm", code);
+		print_final("\033[1;%dm", code);
 	}
 #endif
 
@@ -100,6 +98,48 @@ void Printer::set_color_code(u32 code){
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 #endif
 
+}
+
+void Printer::print(
+		enum verbose_level verbose_level,
+		const char * key,
+		const char * value
+		){
+	//default flat printer behavior
+	if( verbose_level <= this->verbose_level() ){
+		for(u32 indent=0; indent < m_indent; indent++){
+			print_final("   ");
+		}
+		if( key == nullptr ){
+			print_final("%s\n", value);
+		} else if( value == nullptr ){
+			print_final("%s: ", key);
+		} else {
+			print_final("%s: %s\n", key, value);
+		}
+	}
+}
+
+void Printer::print_final(const char * fmt, ...){
+	va_list list;
+	va_start(list, fmt);
+	vprintf(fmt, list);
+	va_end(list);
+	fflush(stdout);
+}
+
+void Printer::print_open_object(
+		enum verbose_level verbose_level,
+		const char * key
+		){
+	print(verbose_level, key, "");
+	m_indent++;
+}
+
+void Printer::print_close_object(){
+	if( m_indent ){
+		m_indent--;
+	}
 }
 
 void Printer::clear_color_code(){
@@ -133,66 +173,13 @@ u32 Printer::color_code(const var::String & color){
 }
 
 
-Printer::~Printer(){
-	print("\n");
-}
+Printer::~Printer(){}
 
-void Printer::print_indentation(){
-	s32 indent_count = m_container.count() - 1;
-	if( indent_count < 0 ){
-		indent_count = 0;
-	}
-	for(u16 i = 0; i < indent_count; i++){
-		print("   ");
-	}
-}
-
-void Printer::vprint_indented(
-		const var::String & key,
-		const char * fmt,
-		va_list list
-		){
-	print("\n");
-	print_indentation();
-
-	u8 container = current_container();
-
-	if( container == CONTAINER_ARRAY ){
-		print("- ");
-	}
-
-	if( !key.is_empty() ){
-		if( m_o_flags & PRINT_BOLD_KEYS ){ set_format_code(FORMAT_BOLD); }
-		if( m_o_flags & PRINT_CYAN_KEYS ){ set_color_code(COLOR_CODE_CYAN); }
-		if( m_o_flags & PRINT_YELLOW_KEYS ){ set_color_code(COLOR_CODE_YELLOW); }
-		if( m_o_flags & PRINT_MAGENTA_KEYS ){ set_color_code(COLOR_CODE_MAGENTA); }
-		print("%s: ", key.cstring());
-		if( m_o_flags & PRINT_BOLD_KEYS ){ clear_format_code(FORMAT_BOLD); }
-		if( m_o_flags & (PRINT_CYAN_KEYS | PRINT_YELLOW_KEYS | PRINT_MAGENTA_KEYS) ){ clear_color_code(); }
-	}
-
-	if( m_o_flags & PRINT_BOLD_VALUES ){ set_format_code(FORMAT_BOLD); }
-	if( m_o_flags & PRINT_GREEN_VALUES){ set_color_code(COLOR_CODE_GREEN); }
-	if( m_o_flags & PRINT_YELLOW_VALUES){ set_color_code(COLOR_CODE_YELLOW); }
-	if( m_o_flags & PRINT_RED_VALUES){ set_color_code(COLOR_CODE_RED); }
-	vprint(fmt, list);
-	if( m_o_flags & (PRINT_GREEN_VALUES | PRINT_YELLOW_VALUES | PRINT_RED_VALUES) ){ clear_color_code(); }
-	if( m_o_flags & PRINT_BOLD_VALUES ){ clear_format_code(FORMAT_BOLD); }
-
-}
-
-void Printer::print_indented(const var::String & key, const char * fmt, ...){
-	va_list list;
-	va_start(list, fmt);
-	vprint_indented(key, fmt, list);
-	va_end(list);
-}
-
+#if 0
 void Printer::vprint(const char * fmt, va_list list){
 	vprintf(fmt, list);
 	fflush(stdout);
 }
-
 
 void Printer::print(const char * fmt, ...){
 	va_list list;
@@ -200,19 +187,23 @@ void Printer::print(const char * fmt, ...){
 	vprint(fmt, list);
 	va_end(list);
 }
+#endif
 
 Printer & Printer::operator << (const Cli & a){
-	open_object(a.name(), current_level());
+	print_open_object(
+				verbose_level(),
+				a.name().cstring()
+				);
 	{
 		key("publisher", "%s", a.publisher().cstring());
-		open_object("arguments", current_level());
+		print_open_object(verbose_level(), "arguments");
 		{
 			for(u32 i = 0; i < a.count(); i++){
 				key(0, "%s", a.at(i).cstring());
 			}
-			close_object();
+			print_close_object();
 		}
-		close_object();
+		print_close_object();
 	}
 
 	return *this;
@@ -244,9 +235,6 @@ Printer & Printer::operator << (const var::Reference & a){
 	const u16 * ptru16 = a.to_const_u16();
 	const u32 * ptru32 = a.to_const_u32();
 
-	if( verbose_level() < current_level() ){
-		return *this;
-	}
 
 	int s;
 	if( o_flags & PRINT_32 ){
@@ -261,20 +249,19 @@ Printer & Printer::operator << (const var::Reference & a){
 
 	int i;
 	u32 bytes_printed = 0;
+	var::String data_string;
+
 	for(i=0; i < s; i++){
-		print("\n");
-		print_indentation();
-		print("[%04d]=", i);
 		if( o_flags & PRINT_HEX ){
 			if( o_flags & PRINT_32 ){
-				print(F32X, ptru32[i]);
+				data_string << var::String().format(F32X, ptru32[i]);
 			} else if( o_flags & PRINT_16 ){
-				print("%X", ptru16[i]);
+				data_string << var::String().format("%X", ptru16[i]);
 			} else if( o_flags & PRINT_BLOB ){
 				for(u32 j=0; j < 16; j++){
-					print("%02X", ptru8[i*16+j]);
+					data_string << var::String().format("%02X", ptru8[i*16+j]);
 					if( j < 15 ){
-						print(" ");
+						data_string << " ";
 					}
 					bytes_printed++;
 					if( bytes_printed == a.size() ){
@@ -282,55 +269,60 @@ Printer & Printer::operator << (const var::Reference & a){
 					}
 				}
 			} else {
-				print("%X", ptru8[i]);
+				data_string << var::String().format("%X", ptru8[i]);
 			}
-			print(" ");
+			data_string << " ";
 		}
 		if( o_flags & PRINT_UNSIGNED ){
 			if( o_flags & PRINT_32 ){
-				print(F32U, ptru32[i]);
+				data_string << var::String().format(F32U, ptru32[i]);
 			} else if( o_flags & PRINT_16 ){
-				print("%u", ptru16[i]);
+				data_string << var::String().format("%u", ptru16[i]);
 			} else if( o_flags & PRINT_BLOB ){
 				for(u32 j=0; j < 16; j++){
-					print("%u", ptru8[i*16+j]);
+					data_string << var::String().format("%u", ptru8[i*16+j]);
 					if( j < 15 ){
-						print(" ");
+						data_string << " ";
 					}
 				}
 			} else {
-				print("%u", ptru8[i]);
+				data_string << var::String().format("%u", ptru8[i]);
 			}
-			print(" ");
+			data_string << " ";
 		}
 		if( o_flags & PRINT_SIGNED ){
 			if( o_flags & PRINT_32 ){
-				print(F32D, ptrs32[i]);
+				data_string << var::String().format(F32D, ptrs32[i]);
 			} else if( o_flags & PRINT_16 ){
-				print("%d", ptrs16[i]);
+				data_string << var::String().format("%d", ptrs16[i]);
 			} else if( o_flags & PRINT_BLOB ){
 				for(u32 j=0; j < 16; j++){
-					print("%d", ptru8[i*16+j]);
+					data_string << var::String().format("%d", ptru8[i*16+j]);
 					if( j < 15 ){
-						print(" ");
+						data_string << " ";
 					}
 				}
 			} else {
-				print("%d", ptrs8[i]);
+				data_string << var::String().format("%d", ptrs8[i]);
 			}
-			print(" ");
+			data_string << " ";
 		}
 		if( o_flags & PRINT_CHAR ){
 			if( ptru8[i] == '\n' ){
-				print(" \\n");
+				data_string << (" \\n");
 			} else if( ptru8[i] == '\r' ){
-				print(" \\r");
+				data_string << (" \\r");
 			} else if( ptru8[i] == 0 ){
-				print(" null");
+				data_string << (" null");
 			} else if( ptru8[i] < 128){
-				print(" %c", ptru8[i]);
+				data_string << var::String().format(" %c", ptru8[i]);
 			}
 		}
+
+		print(verbose_level(),
+				var::String().format("[%04d]", i).cstring(),
+				data_string.cstring()
+				);
 	}
 
 	return *this;
@@ -342,42 +334,41 @@ Printer & Printer::operator << (const var::Datum & a){
 }
 
 Printer & Printer::operator << (const var::String & a){
-	return key("", a);
+	return key(nullptr, a);
 }
 
 Printer & Printer::operator << (const char * a){
-	return key("", a);
+	return key(nullptr, a);
 }
 
 Printer & Printer::operator << (const var::Tokenizer & a){
+	print_open_object(verbose_level(), "tokens");
 	for(u32 i=0; i < a.count(); i++){
-		print("\n");
-		print_indentation();
-		print("[%04d]=", i);
-		print("%s", a.at(i).cstring());
+		print(verbose_level(),
+				var::String().format("[%04d]", i).cstring(),
+				a.at(i).cstring()
+				);
 	}
+	print_close_object();
 	return *this;
 }
 
 Printer & Printer::operator << (const var::JsonObject & a){
-
 	var::Vector<var::String> keys = a.keys();
 	for(u32 i=0; i < keys.count(); i++){
 		var::JsonValue entry = a.at(keys.at(i));
 		if( entry.is_object() ){
-			open_object(keys.at(i), current_level());
+			print_open_object(verbose_level(), keys.at(i).cstring());
 			*this << entry.to_object();
-			close_object();
+			print_close_object();
 		} else if( entry.is_array() ){
-			open_object(keys.at(i), current_level());
+			print_open_object(verbose_level(), keys.at(i).cstring());
 			*this << entry.to_array();
-			close_object();
+			print_close_object();
 		} else {
 			key(keys.at(i), entry.to_string().cstring());
 		}
-
 	}
-
 
 	return *this;
 }
@@ -387,15 +378,15 @@ Printer & Printer::operator << (const var::JsonArray & a){
 	for(u32 i=0; i < a.count(); i++){
 		var::JsonValue entry = a.at(i);
 		var::String key;
-		key.format("[%d]", i);
+		key.format("[%04d]", i);
 		if( entry.is_object() ){
-			open_object(key, current_level());
+			print_open_object(verbose_level(), key.cstring());
 			*this << entry.to_object();
-			close_object();
+			print_close_object();
 		} else if( entry.is_array() ){
-			open_array(key, current_level());
+			print_open_object(verbose_level(), key.cstring());
 			*this << entry.to_array();
-			close_array();
+			print_close_object();
 		} else {
 			this->key(key, entry.to_string().cstring());
 		}
@@ -403,30 +394,35 @@ Printer & Printer::operator << (const var::JsonArray & a){
 	return *this;
 }
 
-Printer & Printer::key(const var::String & key, const var::JsonValue & a){
+Printer & Printer::key(
+		const var::String & key,
+		const var::JsonValue & a
+		){
 
 	if(a.is_object()){
-		open_object(key, current_level() );
+		print_open_object(verbose_level(), key.cstring());
 		*this << a.to_object();
-		close_object();
+		print_close_object();
 	} else if( a.is_array() ){
-		open_object(key, current_level() );
+		print_open_object(verbose_level(), key.cstring());
 		*this << a.to_array();
-		close_object();
+		print_close_object();
 	} else {
 		this->key(key, a.to_string());
 	}
 	return *this;
 }
 
-int Printer::set_verbose_level(const var::String & level){
-	if( level == "debug" ){ set_verbose_level(DEBUG); return 0; }
-	if( level == "info" ){ set_verbose_level(Printer::INFO); return 0; }
-	if( level == "message" ){ set_verbose_level(Printer::MESSAGE); return 0; }
-	if( level == "warning" ){ set_verbose_level(Printer::WARNING); return 0; }
-	if( level == "error" ){ set_verbose_level(Printer::ERROR); return 0; }
-	if( level == "fatal" ){ set_verbose_level(Printer::FATAL); return 0; }
-	return -1;
+Printer& Printer::set_verbose_level(
+		const var::String & level
+		){
+	if( level == "debug" ){ set_verbose_level(DEBUG); }
+	else if( level == "info" ){ set_verbose_level(Printer::INFO); }
+	else if( level == "message" ){ set_verbose_level(Printer::MESSAGE); }
+	else if( level == "warning" ){ set_verbose_level(Printer::WARNING); }
+	else if( level == "error" ){ set_verbose_level(Printer::ERROR); }
+	else if( level == "fatal" ){ set_verbose_level(Printer::FATAL); }
+	return *this;
 }
 
 
@@ -577,48 +573,55 @@ Printer & Printer::operator << (const sgfx::Bitmap & a){
 	sg_cursor_t y_cursor;
 	sg_cursor_t x_cursor;
 
-	if( verbose_level() < current_level() ){
+	if( verbose_level() < verbose_level() ){
 		return *this;
 	}
 
 
 	sgfx::Bitmap::api()->cursor_set(&y_cursor, a.bmap(), sg_point(0,0));
 
-	key(var::String().format("lines    "), "");
-	print(" ");
+	var::String line;
+	line << " ";
 	for(j=0; j < a.bmap()->area.width; j++){
 		if( j % 10 ){
-			print("%d", j % 10);
+			line << var::String().format("%d", j % 10);
 		} else {
-			print(" ");
+			line << (" ");
 		}
 	}
 
-	key(var::String().format("start    "), "");
+	key(var::String().format("lines    "), line);
+
+	line.clear();
 	for(j=0; j < a.bmap()->area.width; j++){
-		print("-");
+		line.append("-");
 	}
-	print("--");
+	line.append("--");
+	key(var::String().format("start    "), line);
+
 	for(i=0; i < a.bmap()->area.height; i++){
 		sg_cursor_copy(&x_cursor, &y_cursor);
 
-		key(var::String().format("line-%04d", i), "");
-		print("|");
+		line.clear();
+		line.append("|");
 		for(j=0; j < a.bmap()->area.width; j++){
 			color = sgfx::Bitmap::api()->cursor_get_pixel(&x_cursor);
-			print_bitmap_pixel(color, a.bmap()->bits_per_pixel);
+			line << var::String().format("%c", get_bitmap_pixel_character(color, a.bmap()->bits_per_pixel));
 			if( (j < a.bmap()->area.width - 1) && (a.bmap()->bits_per_pixel > 4)){
-				print(" ");
+				line.append(" ");
 			}
 		}
-		print("|");
+		line.append("|");
+		key(var::String().format("line-%04d", i), line);
+
 		sgfx::Bitmap::api()->cursor_inc_y(&y_cursor);
 	}
-	key(var::String().format("lines end", i), "");
+	line.clear();
 	for(j=0; j < a.bmap()->area.width; j++){
-		print("-");
+		line.append("-");
 	}
-	print("--");
+	line.append("--");
+	key(var::String().format("lines end", i), "");
 
 	return *this;
 }
@@ -700,11 +703,6 @@ u32 Printer::get_bitmap_pixel_color(char c, u8 bits_per_pixel){
 	return 255;
 }
 
-void Printer::print_bitmap_pixel(u32 color, u8 bits_per_pixel){
-	print("%c", get_bitmap_pixel_character(color, bits_per_pixel));
-}
-
-
 Printer & Printer::operator << (const sgfx::Cursor & a){
 	return *this;
 }
@@ -767,10 +765,10 @@ Printer & Printer::operator << (const sgfx::Vector & a){
 
 Printer & Printer::operator << (const sgfx::VectorPath & a){
 	for(u32 i=0; i < a.icon_count(); i++){
-		open_array(var::String().format("[%d]", i), current_level());
+		print_open_object(verbose_level(), var::String().format("[%d]", i).cstring());
 		{
 			*this << sgfx::VectorPathDescription(a.icon_list()[i]);
-			close_object();
+			print_close_object();
 		}
 	}
 	return *this;
@@ -784,51 +782,51 @@ Printer & Printer::operator << (const sgfx::VectorPathDescription & a){
 			break;
 		case sgfx::VectorPathDescription::MOVE:
 			key("type", "move");
-			open_object("point", current_level());
+			print_open_object(verbose_level(), "point");
 			{
 				*this << a.to_move().point;
-				close_object();
+				print_close_object();
 			}
 			break;
 		case sgfx::VectorPathDescription::LINE:
 			key("type", "line");
-			open_object("point", current_level());
+			print_open_object(verbose_level(), "point");
 			{
 				*this << a.to_line().point;
-				close_object();
+				print_close_object();
 			}
 			break;
 		case sgfx::VectorPathDescription::QUADRATIC_BEZIER:
 			key("type", "quadratic bezier");
-			open_object("point", current_level());
+			print_open_object(verbose_level(), "point");
 			{
 				*this << a.to_quadratic_bezier().point;
-				close_object();
+				print_close_object();
 			}
 
-			open_object("control", current_level());
+			print_open_object(verbose_level(), "control");
 			{
 				*this << a.to_quadratic_bezier().control;
-				close_object();
+				print_close_object();
 			}
 			break;
 		case sgfx::VectorPathDescription::CUBIC_BEZIER:
 			key("type", "cubic bezier");
-			open_object("point", current_level());
+			print_open_object(verbose_level(), "point");
 			{
 				*this << a.to_cubic_bezier().point;
-				close_object();
+				print_close_object();
 			}
 
-			open_object("control0", current_level());
+			print_open_object( verbose_level(), "control0");
 			{
 				*this << sgfx::Point(a.to_cubic_bezier().control[0]);
-				close_object();
+				print_close_object();
 			}
-			open_object("control1", current_level());
+			print_open_object(verbose_level(), "control1");
 			{
 				*this << sgfx::Point(a.to_cubic_bezier().control[1]);
-				close_object();
+				print_close_object();
 			}
 			break;
 		case sgfx::VectorPathDescription::CLOSE:
@@ -836,10 +834,10 @@ Printer & Printer::operator << (const sgfx::VectorPathDescription & a){
 			break;
 		case sgfx::VectorPathDescription::POUR:
 			key("type", "pour");
-			open_object("point", current_level());
+			print_open_object(verbose_level(), "point");
 			{
 				*this << a.to_pour().point;
-				close_object();
+				print_close_object();
 			}
 			break;
 	}
@@ -907,14 +905,14 @@ bool Printer::update_progress(int progress, int total){
 		if( (m_progress_state == 0) && total ){
 
 			//only print the key once with total == -1
-			key(m_progress_key, "");
+			print(Printer::INFO, m_progress_key.cstring(), nullptr);
 			if( total != -1 ){
 				if( (m_o_flags & PRINT_SIMPLE_PROGRESS) == 0 ){
 					for(u32 i=0; i < width; i++){
-						print(".");
+						print_final(".");
 					}
 					for(u32 i = 0; i < width; i++){
-						print("\b"); //backspace
+						print_final("\b"); //backspace
 					}
 				}
 			}
@@ -926,20 +924,28 @@ bool Printer::update_progress(int progress, int total){
 
 			if( total == ProgressCallback::indeterminate_progress_total() ){
 				var::String output;
+				var::String animation = "-/|\\";
+				m_progress_state++;
 				if( (m_o_flags & PRINT_SIMPLE_PROGRESS) == 0 ){
-					output.format("?" F32U, progress);
-					print(output.cstring());
+					output.format(
+							"%c" F32U,
+							animation.at(m_progress_state % animation.length()),
+							progress
+							);
+					print_final(output.cstring());
 					for(u32 i = 0; i < output.length(); i++){
-						print("\b"); //backspace
+						print_final("\b"); //backspace
 					}
 				} else {
-					print("?");
+					print_final("?");
 				}
 
 			} else {
 
-				while( (total != 0) && (m_progress_state <= (progress*width+total/2)/total) ){
-					print("#");
+				while( (total != 0) &&
+						 (m_progress_state <= (progress*width+total/2)/total)
+						 ){
+					print_final("#");
 					m_progress_state++;
 					fflush(stdout);
 				}
@@ -949,31 +955,12 @@ bool Printer::update_progress(int progress, int total){
 				}
 			}
 		}
+		if( total == 0 ){
+			print_final("\n");
+		}
 	}
 
 	return false;
-}
-
-Printer & Printer::open_object(const var::String & key, enum verbose_level level){
-	if( verbose_level() >= level ){
-		if( m_o_flags & PRINT_BOLD_OBJECTS ){ set_format_code(FORMAT_BOLD); }
-		print_indented(key, "");
-		if( m_o_flags & PRINT_BOLD_OBJECTS ){ clear_format_code(FORMAT_BOLD); }
-	}
-	m_container.push_back(CONTAINER_OBJECT | (level << 8));
-	m_indent++;
-	return *this;
-}
-
-Printer & Printer::open_array(const var::String & key, enum verbose_level level){
-	if( verbose_level() >= level ){
-		if( m_o_flags & PRINT_BOLD_ARRAYS ){ set_format_code(FORMAT_BOLD); }
-		print_indented(key, "");
-		if( m_o_flags & PRINT_BOLD_ARRAYS ){ clear_format_code(FORMAT_BOLD); }
-	}
-	m_container.push_back(CONTAINER_ARRAY | (level << 8));
-	m_indent++;
-	return *this;
 }
 
 Printer & Printer::key(const var::String & key, const var::String & a){
@@ -982,70 +969,55 @@ Printer & Printer::key(const var::String & key, const var::String & a){
 }
 
 Printer & Printer::key(const var::String & key, const char * fmt, ...){
-	if( verbose_level() >= current_level() ){
-		va_list list;
-		va_start(list, fmt);
-		vprint_indented(key, fmt, list);
-		va_end(list);
-	}
+	va_list list;
+	va_start(list, fmt);
+	print(level_info, key.is_empty() ? nullptr : key.cstring(), var::String().vformat(fmt, list).cstring());
+	va_end(list);
 	return *this;
 }
 
 Printer & Printer::debug(const char * fmt, ...){
-	if( verbose_level() == DEBUG ){
-		va_list list;
-		va_start(list, fmt);
-		vprint_indented("debug", fmt, list);
-		va_end(list);
-	}
+	va_list list;
+	va_start(list, fmt);
+	print(level_debug, "debug", var::String().vformat(fmt, list).cstring());
+	va_end(list);
 	return *this;
-
 }
 
 Printer & Printer::info(const char * fmt, ...){
-	if( verbose_level() >= INFO ){
-		va_list list;
-		va_start(list, fmt);
-		vprint_indented("info", fmt, list);
-		va_end(list);
-	}
+	va_list list;
+	va_start(list, fmt);
+	print(level_info, "info", var::String().vformat(fmt, list).cstring());
+	va_end(list);
 	return *this;
 }
 
 
 Printer & Printer::message(const char * fmt, ...){
-	if( verbose_level() >= MESSAGE ){
-		va_list list;
-		va_start(list, fmt);
-		vprint_indented("message", fmt, list);
-		va_end(list);
-	}
+	va_list list;
+	va_start(list, fmt);
+	print(level_message, "message", var::String().vformat(fmt, list).cstring());
+	va_end(list);
 	return *this;
 }
 
 Printer & Printer::warning(const char * fmt, ...){
-	if( verbose_level() >= WARNING ){
-		va_list list;
-		if( flags() & PRINT_YELLOW_WARNINGS ){ set_color_code(COLOR_CODE_YELLOW); }
-		print_indented("warning", "");
-		if( flags() & PRINT_YELLOW_WARNINGS ){ clear_color_code(); }
-		va_start(list, fmt);
-		vprint(fmt, list);
-		va_end(list);
-	}
+	va_list list;
+	if( flags() & PRINT_YELLOW_WARNINGS ){ set_color_code(COLOR_CODE_YELLOW); }
+	va_start(list, fmt);
+	print(level_warning, "warning", var::String().vformat(fmt, list).cstring());
+	va_end(list);
+	if( flags() & PRINT_YELLOW_WARNINGS ){ clear_color_code(); }
 	return *this;
 }
 
 Printer & Printer::error(const char * fmt, ...){
-	if( verbose_level() >= ERROR ){
-		va_list list;
-		if( flags() & PRINT_RED_ERRORS ){ set_color_code(COLOR_CODE_RED); }
-		print_indented("error", "");
-		if( flags() & PRINT_RED_ERRORS ){ clear_color_code(); }
-		va_start(list, fmt);
-		vprint(fmt, list);
-		va_end(list);
-	}
+	va_list list;
+	if( flags() & PRINT_RED_ERRORS ){ set_color_code(COLOR_CODE_RED); }
+	va_start(list, fmt);
+	print(level_error, "error", var::String().vformat(fmt, list).cstring());
+	va_end(list);
+	if( flags() & PRINT_RED_ERRORS ){ clear_color_code(); }
 	return *this;
 }
 
@@ -1053,19 +1025,20 @@ Printer & Printer::error(
 		const api::Result result,
 		u32 line_number
 		){
-	error(
-				"returned %d with error number %d at line %d",
-				result.return_value(),
-				result.error_number(),
-				line_number
-				);
+	error("returned %d with error number %d at line %d",
+			result.return_value(),
+			result.error_number(),
+			line_number);
 	return *this;
 }
 
 Printer & Printer::fatal(const char * fmt, ...){
 	va_list list;
 	va_start(list, fmt);
-	vprint_indented("fatal", fmt, list);
+	print(level_fatal, "fatal", var::String().vformat(fmt, list).cstring());
 	va_end(list);
 	return *this;
 }
+
+
+

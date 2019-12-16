@@ -335,6 +335,13 @@ public:
 	char & at (size_t pos){ return m_string.at(pos); }
 	const char & at (size_t pos) const { return m_string.at(pos); }
 
+	char & front (){ return m_string.front(); }
+	const char & front () const { return m_string.front(); }
+
+	char & back (){ return m_string.back(); }
+	const char & back () const { return m_string.back(); }
+
+
 	void resize(size_t size){
 		m_string.resize(size);
 	}
@@ -365,7 +372,7 @@ public:
 	  *
 	  */
 	String& format(const char * format, ...);
-	int vformat(const char * fmt, va_list list);
+	String & vformat(const char * fmt, va_list list);
 
 	//deprecated
 	int sprintf(const char * format, ...);
@@ -566,6 +573,16 @@ public:
 	}
 
 	/*! \details Finds a string within the string searching from right to left. */
+	size_t reverse_find(
+			const String & string_to_find,
+			Position position = Position(npos)
+			) const {
+		return m_string.rfind(
+					string_to_find.string(),
+					position.argument()
+					);
+	}
+
 	size_t rfind(
 			const String & string_to_find,
 			Position position = Position(npos)
@@ -577,6 +594,16 @@ public:
 	}
 
 	/*! \details Finds a character within the string searching from right to left. */
+	size_t reverse_find(
+			char c,
+			Position position = Position(npos)
+			) const {
+		return m_string.rfind(
+					c,
+					position.argument()
+					);
+	}
+
 	size_t rfind(
 			char c,
 			Position position = Position(npos)
@@ -588,6 +615,18 @@ public:
 	}
 
 	/*! \details Finds a string within the string searching from right to left. */
+	size_t reverse_find(
+			const String & string_to_find,
+			Position position,
+			Length length
+			) const {
+		return m_string.rfind(
+					string_to_find.cstring(),
+					position.argument(),
+					length.argument()
+					);
+	}
+
 	size_t rfind(
 			const String & string_to_find,
 			Position position,

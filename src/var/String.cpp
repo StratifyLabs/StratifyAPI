@@ -34,20 +34,19 @@ String & String::format(const char * format, ...){
 
 
 int String::sprintf(const char * format, ...){
-	int result;
 	va_list args;
 	va_start(args, format);
-	result = vformat(format, args);
+	vformat(format, args);
 	va_end (args);
-	return result;
+	return 0;
 }
 
-int String::vformat(
+String& String::vformat(
 		const char * fmt,
 		va_list list
 		){
 
-	if( fmt == nullptr ){ return -1; }
+	if( fmt == nullptr ){ return *this; }
 
 	va_list list_copy;
 	va_copy(list_copy, list);
@@ -80,7 +79,7 @@ int String::vformat(
 		clear();
 	}
 
-	return result;
+	return *this;
 }
 
 

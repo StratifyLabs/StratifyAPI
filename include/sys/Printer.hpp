@@ -74,6 +74,125 @@ class Cli;
 class Info;
 class AppfsInfo;
 
+struct PrinterFlags {
+	/*! \details Number printing flags. */
+	enum {
+		PRINT_HEX /*! Print hex data */ = (1<<0),
+		PRINT_UNSIGNED /*! Print unsigned integers */ = (1<<1),
+		PRINT_SIGNED /*! Printd signed integers */ = (1<<2),
+		PRINT_CHAR /*! Print Characters */ = (1<<3),
+		PRINT_8 /*! Print as 8 bit values (default) */ = 0,
+		PRINT_16 /*! Print as 16 bit values */ = (1<<4),
+		PRINT_32 /*! Print as 32 bit values */ = (1<<5),
+		PRINT_SIMPLE_PROGRESS /*! Just print # for progress */ = (1<<6),
+		PRINT_BOLD_KEYS /*! Print keys in bold if supported */ = (1<<7),
+		PRINT_BOLD_VALUES /*! Print keys in bold if supported */ = (1<<8),
+		PRINT_BOLD_OBJECTS /*! Print keys in bold if supported */ = (1<<9),
+		PRINT_BOLD_ARRAYS /*! Print keys in bold if supported */ = (1<<10),
+		PRINT_GREEN_VALUES = (1<<11),
+		PRINT_RED_VALUES = (1<<12),
+		PRINT_YELLOW_VALUES = (1<<13),
+		PRINT_RED_ERRORS = (1<<14),
+		PRINT_YELLOW_WARNINGS = (1<<15),
+		PRINT_CYAN_KEYS = (1<<16),
+		PRINT_YELLOW_KEYS = (1<<17),
+		PRINT_MAGENTA_KEYS = (1<<18),
+		PRINT_BLOB /*! Print Data as a blob */ = (1<<19),
+		print_hex /*! Print hex data */ = (1<<0),
+		print_unsigned /*! Print unsigned integers */ = (1<<1),
+		print_signed /*! Printd signed integers */ = (1<<2),
+		print_char /*! Print Characters */ = (1<<3),
+		print_8 /*! Print as 8 bit values (default) */ = 0,
+		print_16 /*! Print as 16 bit values */ = (1<<4),
+		print_32 /*! Print as 32 bit values */ = (1<<5),
+		print_simple_progress /*! Just print # for progress */ = (1<<6),
+		print_bold_keys /*! Print keys in bold if supported */ = (1<<7),
+		print_bold_values /*! Print keys in bold if supported */ = (1<<8),
+		print_bold_objects /*! Print keys in bold if supported */ = (1<<9),
+		print_bold_arrays /*! Print keys in bold if supported */ = (1<<10),
+		print_green_values = (1<<11),
+		print_red_values = (1<<12),
+		print_yellow_values = (1<<13),
+		print_red_errors = (1<<14),
+		print_yellow_warnings = (1<<15),
+		print_cyan_keys = (1<<16),
+		print_yellow_keys = (1<<17),
+		print_magenta_keys = (1<<18),
+		print_blob /*! Print Data as a blob */ = (1<<19)
+	};
+
+	enum format_type {
+		/*! \cond */
+		FORMAT_NORMAL = 0,
+		FORMAT_BOLD = 1,
+		FORMAT_DIM = 2,
+		FORMAT_UNDERLINE = 4,
+		FORMAT_BLINK = 5,
+		FORMAT_INVERTED = 7,
+		FORMAT_HIDDEN = 8,
+		/*! \endcond */
+		format_normal = 0,
+		format_bold = 1,
+		format_dim = 2,
+		format_underline = 4,
+		format_blink = 5,
+		format_inverted = 7,
+		format_hidden = 8,
+	};
+
+	enum color_code {
+		/*! \cond */
+		COLOR_CODE_DEFAULT = 39,
+		COLOR_CODE_BLACK = 30,
+		COLOR_CODE_RED = 31, //RED
+		COLOR_CODE_GREEN = 32, //GREEN
+		COLOR_CODE_YELLOW = 33,
+		COLOR_CODE_BLUE = 34, //BLUE
+		COLOR_CODE_MAGENTA = 35,
+		COLOR_CODE_CYAN = 36, //BLUE | GREEN
+		COLOR_CODE_LIGHT_GRAY = 37,
+		COLOR_CODE_DARK_GRAY = 90,
+		COLOR_CODE_LIGHT_RED = 91,
+		COLOR_CODE_LIGHT_GREEN = 92,
+		COLOR_CODE_LIGHT_YELLOW = 93,
+		COLOR_CODE_LIGHT_BLUE = 94,
+		/*! \endcond */
+		color_code_default = 39,
+		color_code_black = 30,
+		color_code_red = 31, //RED
+		color_code_green = 32, //GREEN
+		color_code_yellow = 33,
+		color_code_blue = 34, //BLUE
+		color_code_magenta = 35,
+		color_code_cyan = 36, //BLUE | GREEN
+		color_code_light_gray = 37,
+		color_code_dark_gray = 90,
+		color_code_light_red = 91,
+		color_code_light_green = 92,
+		color_code_light_yellow = 93,
+		color_code_light_blue = 94
+	};
+
+	/*! \details Filtering levels. */
+	enum verbose_level {
+		/*! \cond */
+		FATAL /*! Prints fatal errors. */,
+		ERROR /*! Prints fatal and error messages. */,
+		WARNING /*! Printers warnings and worse. */,
+		INFO /*! Prints basic info (default setting) plus warning and errors. */,
+		MESSAGE /*! Prints additional messages. */,
+		DEBUG /*! Prints everything. */,
+		/*! \endcond */
+		level_fatal /*! Prints fatal errors. */ = FATAL,
+		level_error /*! Prints fatal and error messages. */,
+		level_warning /*! Printers warnings and worse. */,
+		level_info /*! Prints basic info (default setting) plus warning and errors. */,
+		level_message /*! Prints additional messages. */,
+		level_debug /*! Prints everything. */,
+	};
+
+};
+
 
 #define PRINTER_TRACE(printer) (printer.print("\n%s():%d", __FUNCTION__, __LINE__))
 #define PRINTER_TRACE_ERROR(printer, x) int printer_result = x; if( printer_result < 0 ) printer.print("\nError: %s():%d (%d)", __FUNCTION__, __LINE__, x, y)
@@ -111,37 +230,11 @@ private:
  * ```
  *
  */
-class Printer : public api::WorkObject {
+class Printer : public api::WorkObject, public PrinterFlags {
 public:
 	Printer();
 	~Printer();
 
-	enum {
-		COLOR_CODE_DEFAULT = 39,
-		COLOR_CODE_BLACK = 30,
-		COLOR_CODE_RED = 31, //RED
-		COLOR_CODE_GREEN = 32, //GREEN
-		COLOR_CODE_YELLOW = 33,
-		COLOR_CODE_BLUE = 34, //BLUE
-		COLOR_CODE_MAGENTA = 35,
-		COLOR_CODE_CYAN = 36, //BLUE | GREEN
-		COLOR_CODE_LIGHT_GRAY = 37,
-		COLOR_CODE_DARK_GRAY = 90,
-		COLOR_CODE_LIGHT_RED = 91,
-		COLOR_CODE_LIGHT_GREEN = 92,
-		COLOR_CODE_LIGHT_YELLOW = 93,
-		COLOR_CODE_LIGHT_BLUE = 94
-	};
-
-	enum {
-		FORMAT_NORMAL = 0,
-		FORMAT_BOLD = 1,
-		FORMAT_DIM = 2,
-		FORMAT_UNDERLINE = 4,
-		FORMAT_BLINK = 5,
-		FORMAT_INVERTED = 7,
-		FORMAT_HIDDEN = 8
-	};
 
 	static u32 color_code(const var::String & color);
 
@@ -154,124 +247,61 @@ public:
 	static unsigned int m_default_color;
 #endif
 
-	Printer & operator << (const api::Result & a);
-
-	/*! \details Prints a var::DataReference object. */
-	Printer & operator << (const var::Reference & a);
-	/*! \details Prints a var::Datum object. */
-	Printer & operator << (const var::Datum & a);
-
 #if !defined __link
-	/*! \details Prints a var::DataInfo object. */
 	Printer & operator << (const var::DataInfo & a);
 #endif
-
-	/*! \details Prints a var::String object. */
+	Printer & operator << (const api::Result & a);
+	Printer & operator << (const var::Reference & a);
+	Printer & operator << (const var::Datum & a);
 	Printer & operator << (const var::String & a);
-	/*! \details Prints a var::Tokenizer object. */
 	Printer & operator << (const var::Tokenizer & a);
-	/*! \details Prints a var::JsonObject object. */
 	Printer & operator << (const var::JsonObject & a);
-	/*! \details Prints a var::JsonArray object. */
 	Printer & operator << (const var::JsonArray & a);
-	/*! \details Prints a string list object. */
 	Printer & operator << (const var::Vector<var::String> & a);
-	/*! \details Prints a var::Ring<u32> object. */
 	Printer & operator << (const var::Ring<u32> & a);
-	/*! \details Prints a var::Ring<s32> object. */
 	Printer & operator << (const var::Ring<s32> & a);
-	/*! \details Prints a var::Ring<u16> object. */
 	Printer & operator << (const var::Ring<u16> & a);
-	/*! \details Prints a var::Ring<s16> object. */
 	Printer & operator << (const var::Ring<s16> & a);
-	/*! \details Prints a var::Ring<u8> object. */
 	Printer & operator << (const var::Ring<u8> & a);
-	/*! \details Prints a var::Ring<s8> object. */
 	Printer & operator << (const var::Ring<s8> & a);
-
-	/*! \details Prints a sys::Cli object. */
 	Printer & operator << (const Cli & a);
-	/*! \details Prints a sys::appfs_file_t object. */
 	Printer & operator << (const appfs_file_t & a);
-	/*! \details Prints a sys::AppfsFileAttributes object. */
 	Printer & operator << (const AppfsFileAttributes & a);
-	/*! \details Prints a sys::TraceEvent object. */
 	Printer & operator << (const TraceEvent & a);
-
-	/*! \details Prints a sys::SysInfo object. */
 	Printer & operator << (const sys::SysInfo & a);
-	/*! \details Prints a sys::AppfsInfo object. */
 	Printer & operator << (const sys::AppfsInfo & a);
-	/*! \details Prints a sys::TaskInfo object. */
 	Printer & operator << (const sys::TaskInfo & a);
-	/*! \details Prints a file::Info object. */
 	Printer & operator << (const fs::Stat & a);
-
-	/*! \details Prints a sgfx::Bitmap object. */
 	Printer & operator << (const sgfx::Bitmap & a);
-	/*! \details Prints a sgfx::Cursor object. */
 	Printer & operator << (const sgfx::Cursor & a);
-	/*! \details Prints a sgfx::Point object. */
 	Printer & operator << (const sgfx::Point & a);
-	/*! \details Prints a sgfx::Region object. */
 	Printer & operator << (const sgfx::Region & a);
-	/*! \details Prints a sgfx::Area object. */
 	Printer & operator << (const sgfx::Area & a);
-	/*! \details Prints a sgfx::Pen object. */
 	Printer & operator << (const sgfx::Pen & a);
-	/*! \details Prints a sgfx::Vector object. */
 	Printer & operator << (const sgfx::Vector & a);
-	/*! \details Prints a sgfx::VectorPath object. */
 	Printer & operator << (const sgfx::VectorPath & a);
-	/*! \details Prints a sgfx::VectorPathDescription object. */
 	Printer & operator << (const sgfx::VectorPathDescription & a);
-
-
-	/*! \details Prints a chrono::ClockTime object. */
 	Printer & operator << (const chrono::ClockTime & a);
-	/*! \details Prints a chrono::MicroTime object. */
 	Printer & operator << (const chrono::MicroTime & a);
-	/*! \details Prints a chrono::Time object. */
 	Printer & operator << (const chrono::Time & a);
-
-	/*! \details Prints a basic s32 type (see set_flags() for details). */
 	Printer & operator << (s32 a);
-	/*! \details Prints a basic u32 type (see set_flags() for details). */
 	Printer & operator << (u32 a);
-	/*! \details Prints a basic s16 type (see set_flags() for details). */
 	Printer & operator << (s16 a);
-	/*! \details Prints a basic u16 type (see set_flags() for details). */
 	Printer & operator << (u16 a);
-	/*! \details Prints a basic s8 type (see set_flags() for details). */
 	Printer & operator << (s8 a);
-	/*! \details Prints a basic u8 type (see set_flags() for details). */
 	Printer & operator << (u8 a);
-	/*! \details Prints a pointer. */
 	Printer & operator << (void * a);
-	/*! \details Prints a c-style string. */
 	Printer & operator << (const char * a);
-	/*! \details Prints a float type. */
 	Printer & operator << (float a);
-
 	Printer & operator << (const hal::DriveInfo & a);
-
 	Printer & operator << (const draw::DrawingPoint & a);
 	Printer & operator << (const draw::DrawingArea & a);
 	Printer & operator << (const draw::DrawingRegion & a);
 
-	/*! \details Filtering levels. */
-	enum verbose_level {
-		FATAL /*! Prints fatal errors. */,
-		ERROR /*! Prints fatal and error messages. */,
-		WARNING /*! Printers warnings and worse. */,
-		INFO /*! Prints basic info (default setting) plus warning and errors. */,
-		MESSAGE /*! Prints additional messages. */,
-		DEBUG /*! Prints everything. */
-	};
-
 	/*! \details Assign an effective verbose level to this object. */
-	void set_verbose_level(enum verbose_level level){
+	Printer& set_verbose_level(enum verbose_level level){
 		m_verbose_level = level;
+		return *this;
 	}
 
 	/*! \details Assign a verbose level.
@@ -279,23 +309,19 @@ public:
 	 * @param level The level as 'fatal', 'error', 'warning', 'info', 'message', or 'debug'
 	 * @return Zero on success
 	 */
-	int set_verbose_level(const var::String & level);
+	Printer& set_verbose_level(const var::String & level);
 
 	/*! \details Returns the current verbose level. */
 	enum verbose_level verbose_level() const { return m_verbose_level; }
 
-	/*! \details Prints a debug message if the verbose level is set to debug. */
+	/*! \cond */
 	virtual Printer & debug(const char * fmt, ...);
-	/*! \details Prints a message (filtered according to verbose_level()). */
 	virtual Printer & message(const char * fmt, ...);
-	/*! \details Prints information (filtered according to verbose_level()). */
 	virtual Printer & info(const char * fmt, ...);
-	/*! \details Prints a warning (filtered according to verbose_level()). */
 	virtual Printer & warning(const char * fmt, ...);
-	/*! \details Prints an error (filtered according to verbose_level()). */
 	virtual Printer & error(const char * fmt, ...);
-	/*! \details Prints a fatal error message. */
 	virtual Printer & fatal(const char * fmt, ...);
+	/*! \endcond */
 
 	/*! \details Prints a debug message if the verbose level is set to debug. */
 	Printer & debug(const var::String & a){ return debug(a.cstring()); }
@@ -310,150 +336,17 @@ public:
 	/*! \details Prints a fatal error message. */
 	Printer & fatal(const var::String & a){ return fatal(a.cstring()); }
 
-
 	Printer & error(const api::Result result, u32 line_number);
 
-	/*! \details Prints a key value pair. */
-	virtual Printer & key(const var::String & key, const char * fmt, ...);
-	/*! \details Prints a key value pair. */
-	virtual Printer & key(const var::String & key, const var::String & a);
-	/*! \details Prints a key value pair. */
-	virtual Printer & key(const var::String & key, const var::JsonValue & a);
-
-	void print(const char * fmt, ...);
-
-
-	/*! \details Number printing flags. */
-	enum {
-		PRINT_HEX /*! Print hex data */ = (1<<0),
-		PRINT_UNSIGNED /*! Print unsigned integers */ = (1<<1),
-		PRINT_SIGNED /*! Printd signed integers */ = (1<<2),
-		PRINT_CHAR /*! Print Characters */ = (1<<3),
-		PRINT_8 /*! Print as 8 bit values (default) */ = 0,
-		PRINT_16 /*! Print as 16 bit values */ = (1<<4),
-		PRINT_32 /*! Print as 32 bit values */ = (1<<5),
-		PRINT_SIMPLE_PROGRESS /*! Just print # for progress */ = (1<<6),
-		PRINT_BOLD_KEYS /*! Print keys in bold if supported */ = (1<<7),
-		PRINT_BOLD_VALUES /*! Print keys in bold if supported */ = (1<<8),
-		PRINT_BOLD_OBJECTS /*! Print keys in bold if supported */ = (1<<9),
-		PRINT_BOLD_ARRAYS /*! Print keys in bold if supported */ = (1<<10),
-		PRINT_GREEN_VALUES = (1<<11),
-		PRINT_RED_VALUES = (1<<12),
-		PRINT_YELLOW_VALUES = (1<<13),
-		PRINT_RED_ERRORS = (1<<14),
-		PRINT_YELLOW_WARNINGS = (1<<15),
-		PRINT_CYAN_KEYS = (1<<16),
-		PRINT_YELLOW_KEYS = (1<<17),
-		PRINT_MAGENTA_KEYS = (1<<18),
-		PRINT_BLOB /*! Print Data as a blob */ = (1<<19)
-	};
-
 	/*! \details Sets the flags that modify how numbers and some messages are printed. */
-	void set_flags(u32 value){ m_o_flags = value; }
+	Printer& set_flags(u32 value){ m_o_flags = value; return *this; }
 
-	void enable_flags(u32 value){ m_o_flags |= value; }
-	void disable_flags(u32 value){ m_o_flags &= ~value; }
+	Printer& enable_flags(u32 value){ m_o_flags |= value; return *this; }
+	Printer& disable_flags(u32 value){ m_o_flags &= ~value; return *this; }
 
 	u32 flags() const { return m_o_flags; }
 
-	/*! \details Opens a YAML object.
-	 *
-	 * @param key The key to be used for the object
-	 * @param level The filter level for child keys
-	 *
-	 * YAML object values are not preceded by '-' while arrays are.
-	 * Objects should have unique keys in order to have properly
-	 * formatted YAML. The debug(), info(), warning(), error(),
-	 * and fatal() methods can be used at most once inside of an object
-	 * without having a duplicate key. The key() method can be used to assign
-	 * unique keys to each object.
-	 *
-	 * ```
-	 * //md2code:main
-	 * Printer p;
-	 * //whole object only prints with debug verbose level
-	 * p.open_object("keys", Printer::DEBUG);
-	 * p.key("key0", "value0");
-	 * p.key("key1", "value1");
-	 * p.key("key2", "value2");
-	 * p.close_object();
-	 * ```
-	 *
-	 */
-	Printer & open_object(
-			const var::String & key,
-			enum verbose_level level = FATAL);
-	void close_object(){
-		m_container.pop_back();
-		if( m_indent ){
-			m_indent--;
-		}
-	}
 
-	/*! \details Opens a YAML array.
-	 *
-	 * @param key The key to be used for the object
-	 * @param level The filter level for child keys
-	 *
-	 * YAML object values are not preceded by '-' while arrays are.
-	 * Objects should have unique keys in order to have properly
-	 * formatted YAML. The debug(), info(), warning(), error(),
-	 * and fatal() methods can be used multple times inside of
-	 * an array and are indexed when parsed.
-	 *
-	 *
-	 *
-	 * ```
-	 * //md2code:main
-	 * Printer p;
-	 * //whole object only prints with debug verbose level
-	 * p.open_array("keys", Printer::MESSAGE);
-	 * p.info("Hello");
-	 * p.info("Hello");
-	 * p.info("Hello");
-	 * p.warning("Hello");
-	 * p.message("Hello");
-	 * p.message("Hello");
-	 * p.warning("Hello");
-	 * p.close_array(); //close_array() and close_object() are interchangeable
-	 * ```
-	 *
-	 *
-	 * By default the Printer starts with an open array.  The following
-	 * code can change the top level type to an object.
-	 *
-	 * ```
-	 * //md2code:main
-	 * Printer p; //printer is now an array
-	 * p.close_array();
-	 * p.open_object(""); //top level type is an object
-	 * ```
-	 *
-	 */
-	Printer & open_array(const var::String & key, enum verbose_level level = FATAL);
-	void close_array(){
-		close_object();
-	}
-
-	/*! \details Returns a printer termination object for closing
-	 * an array or object with the `<<` operator.
-	 *
-	 * ```
-	 * //md2code:main
-	 * Printer p;
-	 * p.open_object("empty object") << p.close();
-	 * p.open_array("messages", Printer::MESSAGE) << "hello" << p.close();
-	 * ```
-	 *
-	 */
-	static PrinterTermination close(){
-		return PrinterTermination();
-	}
-
-	Printer & operator << (const PrinterTermination & printer_termination){
-		close_object();
-		return *this;
-	}
 
 	/*! \details Returns a pointer to the sys::ProgressCallback member.
 	 *
@@ -504,7 +397,7 @@ public:
 	/*! \details Access (read-only) to the key to print during progress updates. */
 	const var::String & progress_key() const { return m_progress_key; }
 
-	 /*! \details Returns a character that will be printed.
+	/*! \details Returns a character that will be printed.
 	 *
 	 * @param color The color of the pixel
 	 * @param bits_per_pixel The number of bits per pixel in the color
@@ -522,54 +415,36 @@ public:
 	void set_bash(bool value = true){ m_is_bash = value; }
 #endif
 
+	u32 o_flags() const {
+		return m_o_flags;
+	}
+
+	Printer & key(const var::String & key, const char * fmt, ...);
+	Printer & key(const var::String & key, const var::String & a);
+	Printer & key(const var::String & key, const var::JsonValue & a);
+
+
+	const char * terminal_color_code(enum color_code code);
+
 protected:
 
-	/*! \details Prints the YAML indentation. */
-	void print_indentation();
-
-	/*! \details Prints an indented key (can be re-implemented). */
-	virtual void print_indented(const var::String & key, const char * fmt, ...);
-	/*! \details Prints an indented key (can be re-implemented). */
-	virtual void vprint_indented(const var::String & key, const char * fmt, va_list list);
-	/*! \details Prints all characters.
-	 *
-	 * This is the only method that needs to be re-implemented
-	 * to re-direct the Printer from the standard output to
-	 * another file or output.
-	 *
-	 */
-	virtual void vprint(const char * fmt, va_list list);
+	virtual void print_open_object(
+			enum verbose_level verbose_level,
+			const char * key
+			);
+	virtual void print_close_object();
+	virtual void print(enum verbose_level level, const char * key, const char * value);
+	virtual void print_final(const char * fmt, ...);
 
 private:
 
-	enum {
-		CONTAINER_OBJECT,
-		CONTAINER_ARRAY
-	};
-
-	u8 current_container(){
-		if( m_container.count() ){
-			return m_container.at( m_container.count() - 1 ) & 0xff;
-		}
-		return CONTAINER_OBJECT;
-	}
-
-	enum verbose_level current_level(){
-		if( m_container.count() ){
-			return (enum verbose_level)(m_container.at( m_container.count() - 1 ) >> 8);
-		}
-		return FATAL;
-	}
-
-	var::Vector<u16> m_container;
 	ProgressCallback m_progress_callback;
 	u16 m_progress_width;
 	u16 m_progress_state;
+
 	u16 m_indent;
-	u32 m_key_count;
-	bool m_is_json;
 	u32 m_o_flags;
-	void print_bitmap_pixel(u32 color, u8 bits_per_pixel);
+
 	var::String m_progress_key;
 
 	enum verbose_level m_verbose_level;
@@ -582,11 +457,42 @@ private:
 
 class NullPrinter : public Printer {
 protected:
-	void vprint(const char * fmt, va_list list){
-		MCU_UNUSED_ARGUMENT(fmt);
-		MCU_UNUSED_ARGUMENT(list);
+	void print(const char * key, const char * value){
+		MCU_UNUSED_ARGUMENT(key);
+		MCU_UNUSED_ARGUMENT(value);
+	}
+};
+
+template <typename T> class PrinterContainer: public PrinterFlags {
+public:
+	PrinterContainer(
+			enum verbose_level verbose_level,
+			T type
+			){
+		m_verbose_level = verbose_level;
+		m_type = type;
+		m_count = 1;
 	}
 
+	enum verbose_level verbose_level() const {
+		return m_verbose_level;
+	}
+
+	void set_verbose_level(enum verbose_level level){
+		m_verbose_level = level;
+	}
+
+	const u32 & count() const { return m_count; }
+	u32 & count(){ return m_count; }
+
+	T type() const {
+		return m_type;
+	}
+
+private:
+	enum verbose_level m_verbose_level;
+	u32 m_count;
+	T m_type;
 };
 
 
