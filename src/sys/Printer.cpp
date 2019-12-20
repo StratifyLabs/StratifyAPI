@@ -100,24 +100,54 @@ void Printer::set_color_code(u32 code){
 
 }
 
+void Printer::print_final_color(enum color_code code, const char * snippet){
+	set_color_code(code);
+	print_final(snippet);
+	clear_color_code();
+}
+
 void Printer::print(
 		enum verbose_level verbose_level,
 		const char * key,
-		const char * value
+		const char * value,
+		bool is_newline
 		){
 	//default flat printer behavior
-	if( verbose_level <= this->verbose_level() ){
-		for(u32 indent=0; indent < m_indent; indent++){
-			print_final("   ");
-		}
-		if( key == nullptr ){
-			print_final("%s\n", value);
-		} else if( value == nullptr ){
-			print_final("%s: ", key);
-		} else {
-			print_final("%s: %s\n", key, value);
-		}
+	if( verbose_level > this->verbose_level() ){
+		return;
 	}
+
+	for(u32 indent=0; indent < m_indent; indent++){
+		print_final("   ");
+	}
+
+	if( key != nullptr ){
+		if( m_o_flags & print_bold_keys ){ set_format_code(format_bold); }
+		if( m_o_flags & print_cyan_keys ){ set_color_code(color_code_cyan); }
+		if( m_o_flags & print_yellow_keys ){ set_color_code(color_code_yellow); }
+		if( m_o_flags & print_magenta_keys ){ set_color_code(color_code_magenta); }
+		if( m_o_flags & print_red_keys ){ set_color_code(color_code_red); }
+		print_final("%s: ", key);
+		if( m_o_flags & print_bold_keys ){ clear_format_code(format_bold); }
+		if( m_o_flags & (print_cyan_keys | print_yellow_keys | print_magenta_keys | print_red_keys) ){ clear_color_code(); }
+	}
+
+	if( value != nullptr ){
+		if( m_o_flags & print_bold_values ){ set_format_code(format_bold); }
+		if( m_o_flags & print_green_values){ set_color_code(color_code_green); }
+		if( m_o_flags & print_yellow_values){ set_color_code(color_code_yellow); }
+		if( m_o_flags & print_red_values){ set_color_code(color_code_red); }
+		if( m_o_flags & print_cyan_values){ set_color_code(color_code_cyan); }
+		print_final(value);
+		if( m_o_flags & (print_green_values | print_yellow_values | print_red_values | print_cyan_values) ){ clear_color_code(); }
+		if( m_o_flags & print_bold_values ){ clear_format_code(format_bold); }
+	}
+
+	if( is_newline ){
+		print_final("\n");
+	}
+
+
 }
 
 void Printer::print_final(const char * fmt, ...){
@@ -416,12 +446,13 @@ Printer & Printer::key(
 Printer& Printer::set_verbose_level(
 		const var::String & level
 		){
-	if( level == "debug" ){ set_verbose_level(DEBUG); }
-	else if( level == "info" ){ set_verbose_level(Printer::INFO); }
-	else if( level == "message" ){ set_verbose_level(Printer::MESSAGE); }
-	else if( level == "warning" ){ set_verbose_level(Printer::WARNING); }
-	else if( level == "error" ){ set_verbose_level(Printer::ERROR); }
-	else if( level == "fatal" ){ set_verbose_level(Printer::FATAL); }
+	if( level == "debug" ){ set_verbose_level(level_debug); }
+	else if( level == "info" ){ set_verbose_level(level_info); }
+	else if( level == "message" ){ set_verbose_level(level_message); }
+	else if( level == "warning" ){ set_verbose_level(level_warning); }
+	else if( level == "error" ){ set_verbose_level(level_error); }
+	else if( level == "fatal" ){ set_verbose_level(level_fatal); }
+	else if( level == "trace" ){ set_verbose_level(level_trace); }
 	return *this;
 }
 
@@ -924,14 +955,14 @@ bool Printer::update_progress(int progress, int total){
 
 			if( total == ProgressCallback::indeterminate_progress_total() ){
 				var::String output;
-				var::String animation = "-/|\\";
+				var::String animation = "-\\|/";
 				m_progress_state++;
 				if( (m_o_flags & PRINT_SIMPLE_PROGRESS) == 0 ){
 					output.format(
-							"%c" F32U,
-							animation.at(m_progress_state % animation.length()),
-							progress
-							);
+								"%c" F32U,
+								animation.at(m_progress_state % animation.length()),
+								progress
+								);
 					print_final(output.cstring());
 					for(u32 i = 0; i < output.length(); i++){
 						print_final("\b"); //backspace
@@ -1013,11 +1044,9 @@ Printer & Printer::warning(const char * fmt, ...){
 
 Printer & Printer::error(const char * fmt, ...){
 	va_list list;
-	if( flags() & PRINT_RED_ERRORS ){ set_color_code(COLOR_CODE_RED); }
 	va_start(list, fmt);
 	print(level_error, "error", var::String().vformat(fmt, list).cstring());
 	va_end(list);
-	if( flags() & PRINT_RED_ERRORS ){ clear_color_code(); }
 	return *this;
 }
 
@@ -1039,6 +1068,19 @@ Printer & Printer::fatal(const char * fmt, ...){
 	va_end(list);
 	return *this;
 }
+
+Printer & Printer::trace(const char * function, int line, const var::String & message){
+
+	if( verbose_level() == level_trace ){
+	print_final(">> trace %s:%d %s\n",
+					function,
+					line,
+					message.cstring()
+					);
+	}
+	return *this;
+}
+
 
 
 

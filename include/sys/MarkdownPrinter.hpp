@@ -104,6 +104,21 @@ public:
 	MarkdownPrinter & append_table_row(const var::Vector<var::String> & row);
 	MarkdownPrinter & close_table();
 
+	MarkdownPrinter & open_pretty_table(
+			const var::Vector<var::String> & header
+			);
+
+	MarkdownPrinter & append_pretty_table_row(const var::Vector<var::String> & row);
+	MarkdownPrinter & close_pretty_table(enum verbose_level level = level_info);
+
+	bool is_pretty_table_valid() const {
+		return m_pretty_table.count() && m_pretty_table.front().count();
+	}
+
+	const var::Vector<var::Vector<var::String>> & pretty_table() const {
+		return m_pretty_table;
+	}
+
 #if 0
 	using Printer::debug;
 	using Printer::message;
@@ -135,6 +150,7 @@ private:
 	var::Vector<Container> m_container_list;
 	bool m_is_last_close;
 	enum directive m_directive;
+	var::Vector<var::Vector<var::String>> m_pretty_table;
 
 
 	var::Vector<Container> & container_list(){ return m_container_list; }
@@ -143,7 +159,12 @@ private:
 	//re-implemented virtual functions from Printer
 	void print_open_object(enum verbose_level level, const char * key);
 	void print_close_object();
-	void print(enum verbose_level level, const char * key, const char * value);
+	void print(
+			enum verbose_level level,
+			const char * key,
+			const char * value,
+			bool is_newline = true
+			);
 
 
 	Container & container(){

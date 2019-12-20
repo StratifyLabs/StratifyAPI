@@ -24,7 +24,8 @@ void MarkdownPrinter::print_close_object(){
 void MarkdownPrinter::print(
 		enum verbose_level level,
 		const char * key,
-		const char * value
+		const char * value,
+		bool is_newline
 		){
 
 	if( level > verbose_level() ){
@@ -47,15 +48,14 @@ void MarkdownPrinter::print(
 	}
 
 	var::String prefix;
-	var::String suffix;
 	var::String marker;
 
-	var::String newline_suffix;
+	bool is_suppress_newline = false;
+	bool is_print_newline = false;
+
 	if( (m_directive == suppress_newline) || (value == nullptr) ){
-		newline_suffix = "";
 		m_directive = no_directive;
-	} else {
-		newline_suffix = "\n";
+		is_suppress_newline = true;
 	}
 
 	bool is_first_list = true;
@@ -69,23 +69,21 @@ void MarkdownPrinter::print(
 				break;
 			case container_paragraph:
 				prefix = "";
-				suffix = "";
 				marker = "";
 				break;
 			case container_header:
 				prefix = "";
 				marker = "";
-				suffix = newline_suffix;
+				is_print_newline = true;
 				break;
 			case container_blockquote:
 				prefix += ">";
 				marker = " ";
-				suffix = newline_suffix;
+				is_print_newline = true;
 				break;
 			case container_code:
 				prefix += "";
 				marker = "";
-				suffix = "";
 				break;
 			case container_ordered_list:
 				if( is_first_list ){
@@ -94,7 +92,7 @@ void MarkdownPrinter::print(
 					prefix += "   ";
 				}
 				marker = var::String().format("%d. ", container().count()++);
-				suffix = newline_suffix;
+				is_print_newline = true;
 				break;
 			case container_unordered_list:
 				if( is_first_list ){
@@ -103,12 +101,10 @@ void MarkdownPrinter::print(
 					prefix += "   ";
 				}
 				marker = "- ";
-				suffix = newline_suffix;
+				is_print_newline = true;
 				break;
 		}
 	}
-
-	content << suffix;
 
 #if 0
 	//check for line wrapping
@@ -146,29 +142,11 @@ void MarkdownPrinter::print(
 		}
 	}
 
-#if 0
-	if( !key.is_empty() ){
-		if( m_o_flags & PRINT_BOLD_KEYS ){ set_format_code(FORMAT_BOLD); }
-		if( m_o_flags & PRINT_CYAN_KEYS ){ set_color_code(COLOR_CODE_CYAN); }
-		if( m_o_flags & PRINT_YELLOW_KEYS ){ set_color_code(COLOR_CODE_YELLOW); }
-		if( m_o_flags & PRINT_MAGENTA_KEYS ){ set_color_code(COLOR_CODE_MAGENTA); }
-		print("%s: ", key.cstring());
-		if( m_o_flags & PRINT_BOLD_KEYS ){ clear_format_code(FORMAT_BOLD); }
-		if( m_o_flags & (PRINT_CYAN_KEYS | PRINT_YELLOW_KEYS | PRINT_MAGENTA_KEYS) ){ clear_color_code(); }
-	}
-
-	if( m_o_flags & PRINT_BOLD_VALUES ){ set_format_code(FORMAT_BOLD); }
-	if( m_o_flags & PRINT_GREEN_VALUES){ set_color_code(COLOR_CODE_GREEN); }
-	if( m_o_flags & PRINT_YELLOW_VALUES){ set_color_code(COLOR_CODE_YELLOW); }
-	if( m_o_flags & PRINT_RED_VALUES){ set_color_code(COLOR_CODE_RED); }
-#endif
+	//print the decoration
 	print_final((prefix + marker).cstring());
-	print_final(content.cstring());
 
-#if 0
-	if( m_o_flags & (PRINT_GREEN_VALUES | PRINT_YELLOW_VALUES | PRINT_RED_VALUES) ){ clear_color_code(); }
-	if( m_o_flags & PRINT_BOLD_VALUES ){ clear_format_code(FORMAT_BOLD); }
-#endif
+	//print the key/value pair
+	Printer::print(level, key, value, is_print_newline && !is_suppress_newline);
 
 }
 
@@ -255,7 +233,7 @@ MarkdownPrinter & MarkdownPrinter::open_code(
 				Container(level,container_code)
 				);
 	print(level, nullptr, (
-				var::String() + "```" + language + "\n").cstring()
+				var::String() + "```" + language).cstring()
 			);
 	return *this;
 }
@@ -345,6 +323,80 @@ MarkdownPrinter&  MarkdownPrinter::operator << (enum directive directive){
       m_directive = directive;
    }
    return *this;
+}
+
+MarkdownPrinter & MarkdownPrinter::open_pretty_table(
+		const var::Vector<var::String> & header
+		){
+	m_pretty_table.clear();
+	if( header.count() == 0 ){
+		return *this;
+	}
+	m_pretty_table.push_back(header);
+	return *this;
+}
+
+MarkdownPrinter & MarkdownPrinter::append_pretty_table_row(
+		const var::Vector<var::String> & row){
+	if( m_pretty_table.count() == 0 ){
+		return *this;
+	}
+
+	m_pretty_table.push_back(row);
+
+	//ensure the new row is the same size as the first row
+	if( m_pretty_table.count() > 1 ){
+		if( row.count() != m_pretty_table.front().count() ){
+			m_pretty_table.back().resize( m_pretty_table.front().count() );
+		}
+	}
+	return *this;
+}
+
+MarkdownPrinter & MarkdownPrinter::close_pretty_table(
+		enum verbose_level level
+		){
+	//markdown table
+	var::Vector<u32> column_widths;
+	for(const auto & row: m_pretty_table){
+		if( column_widths.count() < row.count() ){
+			column_widths.resize(row.count());
+		}
+		for(u32 i = 0; i < row.count(); i++){
+			if( row.at(i).length() > column_widths.at(i) ){
+				column_widths.at(i) = row.at(i).length();
+			}
+		}
+	}
+
+	open_paragraph(level);
+	for(u32 row = 0; row < m_pretty_table.count(); row++){
+		if( row == 1 ){
+			*this << MarkdownPrinter::suppress_newline;
+			*this << "|";
+			for(auto const & value: column_widths){
+				*this << MarkdownPrinter::suppress_newline;
+				*this << (var::String(var::String::Length(value+2), '-') + "|");
+			}
+			*this << MarkdownPrinter::insert_newline;
+		}
+
+		*this << MarkdownPrinter::suppress_newline;
+		*this << "|";
+		for(u32 column = 0; column < m_pretty_table.at(row).count(); column++){
+			const var::String & cell = m_pretty_table.at(row).at(column);
+			u32 value = column_widths.at(column);
+			*this << MarkdownPrinter::suppress_newline;
+			*this
+					<< var::String(" ")  + cell + var::String(
+							var::String::Length(
+								value+1 - cell.length()), ' '
+							) + "|";
+		}
+		*this << MarkdownPrinter::insert_newline;
+	}
+	close_paragraph();
+	return *this;
 }
 
 #if 0

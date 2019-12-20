@@ -5,6 +5,7 @@
 
 #include "../arg/Argument.hpp"
 #include "String.hpp"
+#include "Vector.hpp"
 #include "Data.hpp"
 
 namespace var {
@@ -103,6 +104,8 @@ public:
 
 	/*! \details Sets whether or not parse() should include empty tokens. */
 	void set_count_empty_tokens(bool v = true){ m_is_count_empty_tokens = v; }
+
+	var::Vector<var::String> to_list() const;
 
 protected:
 

@@ -97,7 +97,8 @@ public:
 
 	static int copy(
 			SourcePath source_path,
-			DestinationPath destination_path
+			DestinationPath destination_path,
+			const sys::ProgressCallback * progress_callback
 		#if defined __link
 			, SourceLinkDriver source_driver = SourceLinkDriver(nullptr),
 			DestinationLinkDriver destination_driver = DestinationLinkDriver(nullptr)

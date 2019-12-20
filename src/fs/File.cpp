@@ -69,7 +69,8 @@ int File::remove(
 
 int File::copy(
 		SourcePath source_path,
-		DestinationPath dest_path
+		DestinationPath dest_path,
+		const sys::ProgressCallback * progress_callback
 		#if defined __link
 		, SourceLinkDriver source_driver,
 		DestinationLinkDriver destination_driver
@@ -92,14 +93,16 @@ int File::copy(
 				Source(source),
 				Destination(dest),
 				source_path,
-				dest_path
+				dest_path,
+				progress_callback
 				);
 }
 
 int File::copy(
 		SourcePath source_path,
 		DestinationPath dest_path,
-		IsOverwrite is_overwrite
+		IsOverwrite is_overwrite,
+		const sys::ProgressCallback * progress_callback
 		#if defined __link
 		, SourceLinkDriver source_driver,
 		DestinationLinkDriver destination_driver
@@ -123,7 +126,8 @@ int File::copy(
 				Destination(dest),
 				source_path,
 				dest_path,
-				is_overwrite);
+				is_overwrite,
+				progress_callback);
 }
 
 
@@ -151,7 +155,8 @@ int File::copy(
 		Destination dest,
 		SourcePath source_path,
 		DestinationPath dest_path,
-		IsOverwrite is_overwrite
+		IsOverwrite is_overwrite,
+		const sys::ProgressCallback * progress_callback
 		){
 
 	struct SAPI_LINK_STAT st;
@@ -182,7 +187,10 @@ int File::copy(
 	}
 
 	return dest.argument().write(
-				source.argument()
+				source.argument(),
+				PageSize(SAPI_LINK_DEFAULT_PAGE_SIZE),
+				Size(size_t(-1)),
+				progress_callback
 				);
 }
 
@@ -191,13 +199,16 @@ int File::copy(
 		Source source,
 		Destination dest,
 		SourcePath source_path,
-		DestinationPath dest_path){
+		DestinationPath dest_path,
+		const sys::ProgressCallback * progress_callback
+		){
 	return copy(
 				source,
 				dest,
 				source_path,
 				dest_path,
-				IsOverwrite(true)
+				IsOverwrite(true),
+				progress_callback
 				);
 }
 

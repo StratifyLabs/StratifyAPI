@@ -127,7 +127,7 @@ private:
 	//re-implemented virtual functions from Printer
 	void print_open_object(enum verbose_level level, const char * key);
 	void print_close_object();
-	void print(enum verbose_level level, const char * key, const char * value);
+	void print(enum verbose_level level, const char * key, const char * value, bool is_newline = true);
 
 
 	Container & container(){

@@ -627,7 +627,8 @@ public:
 	  */
 	static int copy(
 			SourcePath source_path,
-			DestinationPath dest_path
+			DestinationPath dest_path,
+			const sys::ProgressCallback * progress_callback = nullptr
 		#if defined __link
 			, SourceLinkDriver source_driver = SourceLinkDriver(nullptr),
 			DestinationLinkDriver destination_driver = DestinationLinkDriver(nullptr)
@@ -643,7 +644,8 @@ public:
 	static int copy(
 			SourcePath source_path,
 			DestinationPath dest_path,
-			IsOverwrite overwrite
+			IsOverwrite overwrite,
+			const sys::ProgressCallback * progress_callback = nullptr
 		#if defined __link
 			, SourceLinkDriver source_driver = SourceLinkDriver(nullptr),
 			DestinationLinkDriver destination_driver = DestinationLinkDriver(nullptr)
@@ -703,14 +705,16 @@ private:
 			Source source,
 			Destination dest,
 			SourcePath source_path,
-			DestinationPath dest_path
+			DestinationPath dest_path,
+			const sys::ProgressCallback * progress_callback
 			);
 	static int copy(
 			Source source,
 			Destination dest,
 			SourcePath source_path,
 			DestinationPath dest_path,
-			IsOverwrite is_overwrite
+			IsOverwrite is_overwrite,
+			const sys::ProgressCallback * progress_callback
 			);
 	bool m_is_keep_open;
 

@@ -230,6 +230,14 @@ void Tokenizer::sort(enum sort_options sort_option){
 	}
 }
 
+var::Vector<var::String> Tokenizer::to_list() const {
+	var::Vector<var::String> result;
+	for(u32 i=0; i < count(); i++){
+		result << at(i);
+	}
+	return result;
+}
+
 
 
 

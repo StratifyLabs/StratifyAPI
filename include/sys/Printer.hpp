@@ -118,7 +118,9 @@ struct PrinterFlags {
 		print_cyan_keys = (1<<16),
 		print_yellow_keys = (1<<17),
 		print_magenta_keys = (1<<18),
-		print_blob /*! Print Data as a blob */ = (1<<19)
+		print_blob /*! Print Data as a blob */ = (1<<19),
+		print_cyan_values = (1<<20),
+		print_red_keys = (1<<21)
 	};
 
 	enum format_type {
@@ -188,13 +190,14 @@ struct PrinterFlags {
 		level_warning /*! Printers warnings and worse. */,
 		level_info /*! Prints basic info (default setting) plus warning and errors. */,
 		level_message /*! Prints additional messages. */,
-		level_debug /*! Prints everything. */,
+		level_debug /*! Prints debugging information. */,
+		level_trace /*! Prints line-by-line tracing (useful only for development). */,
 	};
 
 };
 
 
-#define PRINTER_TRACE(printer) (printer.print("\n%s():%d", __FUNCTION__, __LINE__))
+#define PRINTER_TRACE(printer, msg) (printer.trace(__PRETTY_FUNCTION__, __LINE__, msg))
 #define PRINTER_TRACE_ERROR(printer, x) int printer_result = x; if( printer_result < 0 ) printer.print("\nError: %s():%d (%d)", __FUNCTION__, __LINE__, x, y)
 
 class PrinterTermination {
@@ -323,6 +326,7 @@ public:
 	virtual Printer & fatal(const char * fmt, ...);
 	/*! \endcond */
 
+	Printer & trace(const char * function, int line, const var::String & message);
 	/*! \details Prints a debug message if the verbose level is set to debug. */
 	Printer & debug(const var::String & a){ return debug(a.cstring()); }
 	/*! \details Prints a message (filtered according to verbose_level()). */
@@ -424,7 +428,7 @@ public:
 	Printer & key(const var::String & key, const var::JsonValue & a);
 
 
-	const char * terminal_color_code(enum color_code code);
+	const var::String terminal_color_code(enum color_code code);
 
 protected:
 
@@ -433,7 +437,13 @@ protected:
 			const char * key
 			);
 	virtual void print_close_object();
-	virtual void print(enum verbose_level level, const char * key, const char * value);
+	virtual void print(
+			enum verbose_level level,
+			const char * key,
+			const char * value,
+			bool is_newline = true
+			);
+	void print_final_color(enum color_code code, const char * snippet);
 	virtual void print_final(const char * fmt, ...);
 
 private:

@@ -97,7 +97,8 @@ int Dir::remove(
 
 int Dir::copy(
 		SourcePath source_path,
-		DestinationPath destination_path
+		DestinationPath destination_path,
+		const sys::ProgressCallback * progress_callback
 		#if defined __link
 		, SourceLinkDriver source_driver,
 		DestinationLinkDriver destination_driver
@@ -149,7 +150,8 @@ int Dir::copy(
 			}
 
 			copy(SourcePath(entry_path),
-				  DestinationPath(destination_entry_path)
+				  DestinationPath(destination_entry_path),
+				  progress_callback
 	  #if defined __link
 				  , source_driver,
 				  destination_driver
@@ -160,7 +162,8 @@ int Dir::copy(
 			if( File::copy(
 					 SourcePath(entry_path),
 					 DestinationPath(destination_entry_path),
-					 IsOverwrite(true)
+					 IsOverwrite(true),
+					 progress_callback
 		 #if defined __link
 					 , source_driver,
 					 destination_driver

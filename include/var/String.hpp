@@ -787,6 +787,15 @@ private:
 
 };
 
+static String operator+ (const char*   lhs, const String& rhs){
+	return String(lhs) + rhs;
 }
+
+static String operator+ (const char*   lhs, String&& rhs){
+	return String(lhs) + rhs;
+}
+
+}
+
 
 #endif /* SAPI_VAR_STRING_HPP_ */

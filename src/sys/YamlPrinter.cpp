@@ -24,7 +24,9 @@ void YamlPrinter::print_close_object(){
 void YamlPrinter::print(
 		enum verbose_level level,
 		const char * key,
-		const char * value){
+		const char * value,
+		bool is_newline
+		){
 
 	if(level > verbose_level()){
 		return;
@@ -44,29 +46,8 @@ void YamlPrinter::print(
 		print_final("- ");
 	}
 
-	if( key != nullptr ){
-		if( o_flags() & PRINT_BOLD_KEYS ){ set_format_code(FORMAT_BOLD); }
-		if( o_flags() & PRINT_CYAN_KEYS ){ set_color_code(COLOR_CODE_CYAN); }
-		if( o_flags() & PRINT_YELLOW_KEYS ){ set_color_code(COLOR_CODE_YELLOW); }
-		if( o_flags() & PRINT_MAGENTA_KEYS ){ set_color_code(COLOR_CODE_MAGENTA); }
-		print_final("%s: ", key);
-		if( o_flags() & PRINT_BOLD_KEYS ){ clear_format_code(FORMAT_BOLD); }
-		if( o_flags() & (PRINT_CYAN_KEYS | PRINT_YELLOW_KEYS | PRINT_MAGENTA_KEYS) ){ clear_color_code(); }
-	}
 
-	if( value != nullptr ){
-		if( o_flags() & PRINT_BOLD_VALUES ){ set_format_code(FORMAT_BOLD); }
-		if( o_flags() & PRINT_GREEN_VALUES){ set_color_code(COLOR_CODE_GREEN); }
-		if( o_flags() & PRINT_YELLOW_VALUES){ set_color_code(COLOR_CODE_YELLOW); }
-		if( o_flags() & PRINT_RED_VALUES){ set_color_code(COLOR_CODE_RED); }
-
-		print_final(value);
-
-		if( o_flags() & (PRINT_GREEN_VALUES | PRINT_YELLOW_VALUES | PRINT_RED_VALUES) ){ clear_color_code(); }
-		if( o_flags() & PRINT_BOLD_VALUES ){ clear_format_code(FORMAT_BOLD); }
-		print_final("\n");
-	}
-
+	Printer::print(level, key, value, value != nullptr);
 }
 
 YamlPrinter & YamlPrinter::open_object(
