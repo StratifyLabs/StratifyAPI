@@ -12,6 +12,14 @@
 
 using namespace var;
 
+String var::operator+ (const char*   lhs, const String& rhs){
+	return String(lhs) + rhs;
+}
+
+String var::operator+ (const char*   lhs, String&& rhs){
+	return String(lhs) + rhs;
+}
+
 String::String(){
 	//creates an empty string -- Data class and ConstString class will point to a zero value variable
 }
@@ -52,7 +60,7 @@ String& String::vformat(
 	va_copy(list_copy, list);
 
 	m_string.clear();
-	resize(var::Data::minimum_capacity());
+	m_string.resize(var::Data::minimum_capacity(), '\0');
 
 	int result;
 	result = vsnprintf(

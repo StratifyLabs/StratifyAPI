@@ -30,31 +30,6 @@ int I2C::get_error() const {
 	return info.err;
 }
 
-
-int I2C::read(Location location, u8 & reg){
-	int ret;
-	ret = read(
-				location,
-				&reg,
-				Size(1)
-				);
-	return ret;
-}
-
-int I2C::write(
-		Location location,
-		u8 reg
-		){
-	int ret;
-	ret = write(
-				location,
-				&reg,
-				Size(1)
-				);
-	return ret;
-}
-
-
 int I2C::set(
 		Location location,
 		int bit,

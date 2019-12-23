@@ -310,6 +310,15 @@ public:
 	var::Vector<HttpHeaderPair> & header_response_pairs(){ return m_header_response_pairs; }
 	const var::Vector<HttpHeaderPair> & header_response_pairs() const { return m_header_response_pairs; }
 
+	const var::String & traffic(){
+#if defined __link
+		return m_traffic;
+#else
+		return var::String();
+#endif
+	}
+
+
 private:
 
 	/*! \cond */
@@ -329,6 +338,9 @@ private:
 	bool m_is_follow_redirects;
 	bool m_is_chunked_transfer_encoding;
 	u32 m_transfer_size;
+#if defined __link
+	var::String m_traffic;
+#endif
 
 	int connect_to_server(
 			const var::String & domain_name,
@@ -347,17 +359,17 @@ private:
 	int send_string(const var::String & str);
 
 	int build_header(const var::String & method,
-			const var::String & host,
-			const var::String & path,
-			u32 length
-			);
+						  const var::String & host,
+						  const var::String & path,
+						  u32 length
+						  );
 
 	int send_header(const var::String & method,
-			const var::String & host,
-			const var::String & path,
-			const fs::File * file,
-			const sys::ProgressCallback * progress_callback
-			);
+						 const var::String & host,
+						 const var::String & path,
+						 const fs::File * file,
+						 const sys::ProgressCallback * progress_callback
+						 );
 
 	int listen_for_header();
 	int listen_for_data(

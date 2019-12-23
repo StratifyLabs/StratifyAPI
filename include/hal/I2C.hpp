@@ -248,10 +248,6 @@ public:
 	using Periph::read;
 	using Periph::write;
 
-	/*! \details Reads the value of a register on an I2C device */
-	int read(Location location, u8 & reg);
-	/*! \details Writes the value of a register on an I2C device */
-	int write(Location location, u8 reg);
 
 	/*! \details Sets (or clears) a specific bit in a a register
 	 * on an I2C device.

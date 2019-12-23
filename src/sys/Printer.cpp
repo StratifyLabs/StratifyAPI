@@ -510,13 +510,13 @@ Printer & Printer::operator << (const var::Ring<s8> & a){
 
 Printer & Printer::operator << (const sys::TaskInfo & a){
 	key("name", "%s", a.name().cstring());
-	key("id", "%ld", a.id());
-	key("pid", "%ld", a.pid());
-	key("memorySize", "%ld", a.memory_size());
+	key("id", F32U, a.id());
+	key("pid", F32U, a.pid());
+	key("memorySize", F32U, a.memory_size());
 	key("stack", "0x%lX", a.stack());
-	key("stackSize", "%ld", a.stack_size());
-	key("priority", "%ld", a.priority());
-	key("priorityCeiling", "%ld", a.priority_ceiling());
+	key("stackSize", F32U, a.stack_size());
+	key("priority", F32U, a.priority());
+	key("priorityCeiling", F32U, a.priority_ceiling());
 	key("isThread", a.is_thread() ? "true" : "false");
 	if( a.is_thread() == false ){
 		key("heap", "0x%lX", a.heap());
@@ -1034,11 +1034,11 @@ Printer & Printer::message(const char * fmt, ...){
 
 Printer & Printer::warning(const char * fmt, ...){
 	va_list list;
-	if( flags() & PRINT_YELLOW_WARNINGS ){ set_color_code(COLOR_CODE_YELLOW); }
+	if( flags() & print_yellow_warnings ){ set_color_code(color_code_yellow); }
 	va_start(list, fmt);
 	print(level_warning, "warning", var::String().vformat(fmt, list).cstring());
 	va_end(list);
-	if( flags() & PRINT_YELLOW_WARNINGS ){ clear_color_code(); }
+	if( flags() & print_yellow_warnings ){ clear_color_code(); }
 	return *this;
 }
 

@@ -7,6 +7,11 @@
 #include "inet/Url.hpp"
 
 #define SHOW_HEADERS 0
+#if defined __link
+#define AGGREGATE_TRAFFIC(msg) (m_traffic << msg)
+#else
+#define AGGREGATE_TRAFFIC(msg)
+#endif
 
 using namespace inet;
 
@@ -357,6 +362,7 @@ int HttpClient::send_header(
 
 	build_header(method, host, path, data_length);
 
+	AGGREGATE_TRAFFIC(String(">> ") + m_header);
 #if SHOW_HEADERS
 	printf(">> %s", m_header.cstring());
 	printf("Sending %d data bytes\n", file ? file->size() : 0);
@@ -395,6 +401,7 @@ int HttpClient::listen_for_header(){
 		if( line.length() > 2 ){
 
 			m_header << line;
+			AGGREGATE_TRAFFIC(String("> ") + line);
 #if SHOW_HEADERS
 			printf("> %s", line.cstring());
 #endif

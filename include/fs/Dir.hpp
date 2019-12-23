@@ -82,6 +82,13 @@ public:
 			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
 
+	static const var::String filter_hidden(const var::String & entry){
+		if( !entry.is_empty() && entry.front() == '.' ){
+			return var::String();
+		}
+		return entry;
+	}
+
 	static var::Vector<var::String> read_list(
 			const var::String & path,
 			IsRecursive is_recursive = IsRecursive(false)

@@ -117,7 +117,8 @@ int File::copy(
 
 	if( source.open(
 			 source_path.argument(),
-			 OpenFlags::read_only()) < 0 ){
+			 OpenFlags::read_only()
+			 ) < 0 ){
 		return -1;
 	}
 
@@ -161,22 +162,13 @@ int File::copy(
 
 	struct SAPI_LINK_STAT st;
 
-	if( File::stat(
-			 source_path.argument(),
-			 st
-			 ) < 0 ){
-		return -1;
-	}
-
-#if 0
-	if( source.argument().open(
-			 source_path.argument(),
-			 fs::OpenFlags::read_only()
-			 ) < 0 ){
+	if( source.argument().fstat(&st) < 0 ){
 		return -2;
 	}
-#endif
 
+	if( (st.st_mode & 0666) == 0 ){
+		st.st_mode = 0666;
+	}
 
 	if( dest.argument().create(
 			 dest_path.argument(),
@@ -186,12 +178,16 @@ int File::copy(
 		return -3;
 	}
 
-	return dest.argument().write(
+	int result = dest.argument().write(
 				source.argument(),
 				PageSize(SAPI_LINK_DEFAULT_PAGE_SIZE),
 				Size(size_t(-1)),
 				progress_callback
 				);
+	if( result < 0 ){
+		return -4;
+	}
+	return result;
 }
 
 
@@ -291,6 +287,7 @@ int File::create(
 	} else {
 		flags.set_exclusive();
 	}
+
 	return open(
 				path,
 				flags,
