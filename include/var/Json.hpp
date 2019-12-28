@@ -229,11 +229,8 @@ public:
 protected:
 	int create_if_not_valid();
 	virtual json_t * create(){
-		printf("create JSON Value -- 0\n");
 		return 0;
 	}
-
-
 
 
 private:

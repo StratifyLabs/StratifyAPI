@@ -310,13 +310,15 @@ public:
 	var::Vector<HttpHeaderPair> & header_response_pairs(){ return m_header_response_pairs; }
 	const var::Vector<HttpHeaderPair> & header_response_pairs() const { return m_header_response_pairs; }
 
-	const var::String & traffic(){
 #if defined __link
+	const var::String & traffic(){
 		return m_traffic;
-#else
-		return var::String();
-#endif
 	}
+#else
+	const var::String traffic(){
+		return var::String();
+	}
+#endif
 
 
 private:

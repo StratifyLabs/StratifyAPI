@@ -1826,7 +1826,6 @@ int Link::install_app(
 						  fs::File::IoArgument(&attr)
 						  )) < 0 ){
 
-					printf("\n loc_err is %d %d\n", loc_err, link_errno);
 					if( link_errno == 5 ){ //EIO
 						if( loc_err < -1 ){
 							m_error_message.format(
