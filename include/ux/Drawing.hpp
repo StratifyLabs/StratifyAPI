@@ -1,14 +1,14 @@
-//Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
+//Copyright 2011-2020 Tyler Gilbert; All Rights Reserved
 
-#ifndef SAPI_DRAW_DRAWING_HPP_
-#define SAPI_DRAW_DRAWING_HPP_
+#ifndef SAPI_UX_DRAWING_HPP_
+#define SAPI_UX_DRAWING_HPP_
 
 #include <mcu/types.h>
 #include "../sgfx/Bitmap.hpp"
 #include "../sgfx/Pen.hpp"
 #include "../api/DrawObject.hpp"
 
-namespace draw {
+namespace ux {
 
 /*! \details Drawing size (unsigned) */
 typedef u16 drawing_size_t;
@@ -48,15 +48,14 @@ sg_color_t color_transparent();
 typedef struct MCU_PACK {
 	sgfx::Bitmap * bitmap /*! A pointer to the target bitmap */;
 	drawing_region_t region /*! The region on the bitmap where draw::Drawing will be drawn */;
-	sgfx::Bitmap * scratch /*! A pointer to the scratch bitmap used for animations (0 if not available) */;
-	drawing_point_t offset /*! An offset that applies a shift to any objects drawn on the bitmap */;
 } drawing_attr_t;
 
 
 /*! \brief Attributes for drawing directly on a bitmap using bitmap coordinates */
 typedef struct MCU_PACK {
-	sgfx::Bitmap * bitmap /*! The target bitmap */;
+	sgfx::Bitmap * bitmap /*! The local bitmap */;
 	sg_region_t region /*! The region on the bitmap where draw::DrawingScaled will be drawn */;
+	sg_region_t window /*! The window on the display where the drawing will be drawn */;
 } drawing_scaled_attr_t;
 
 
@@ -279,43 +278,23 @@ public:
 	/*! \details Construct an object from a drawing_attr_t */
 	DrawingAttributes(const drawing_attr_t & attr);
 
-	/*! \details Return the underlying drawing_attr_t */
-	operator drawing_attr_t & (){ return m_attr; }
-	operator const drawing_attr_t & () const { return m_attr; }
-
 	/*! \details Access the underlying attr object */
 	drawing_attr_t & attributes(){ return m_attr; }
 	const drawing_attr_t & attributes() const { return m_attr; }
-	drawing_attr_t & attr(){ return m_attr; }
 
 	DrawingAttributes(sgfx::Bitmap & bitmap);
 	DrawingAttributes(sgfx::Bitmap & bitmap, const DrawingRegion & region);
 
-	DrawingAttributes & operator << (sgfx::Bitmap & bitmap);
-	DrawingAttributes & operator << (const DrawingRegion & region);
-	DrawingAttributes & operator << (const DrawingPoint & point);
-	DrawingAttributes & operator << (const DrawingArea & area);
-
 	bool is_valid() const { return m_attr.bitmap != 0; }
-
-
-	/*! \details Assign the bitmap point and dimensions */
-	void set(sgfx::Bitmap & b, drawing_point_t p, drawing_area_t d, sgfx::Bitmap * scratch = 0);
 
 	/*! \details Set the bitmap */
 	DrawingAttributes & set_bitmap(sgfx::Bitmap & b){ m_attr.bitmap = &b; return *this; }
-
-	/*! \details Set the scratch bitmap */
-	DrawingAttributes & set_scratch(sgfx::Bitmap * b){ m_attr.scratch = b; return *this; }
 
 	/*! \details Set the dimensions.  Both width and height are from 0 to 1000. */
 	DrawingAttributes & set_area(const DrawingArea & value){ m_attr.region.area = value; return *this; }
 
 	/*! \details Set the location.  Both x and y are from 0 to 1000. */
 	DrawingAttributes & set_point(const DrawingPoint & p){ m_attr.region.point = p; return *this; }
-
-	/*! \details Set the location.  Both x and y are from 0 to 1000. */
-	//void set_point(drawing_int_t x, drawing_int_t y){ m_attr.region.point.x = x; m_attr.region.point.y = y; }
 
 	/*! \details Return the width */
 	drawing_size_t width() const { return m_attr.region.area.width; }
@@ -332,9 +311,6 @@ public:
 	/*! \details Access the bitmap */
 	sgfx::Bitmap & bitmap() const { return *(m_attr.bitmap); }
 
-	/*! \details Access the scratch bitmap */
-	sgfx::Bitmap * scratch() const { return (m_attr.scratch); }
-
 
 	/*! \details Returns a copy of the region. */
 	DrawingRegion region() const { return m_attr.region; }
@@ -342,8 +318,6 @@ public:
 	DrawingPoint point() const { return m_attr.region.point; }
 	/*! \details Returns a copy of the dimensions. */
 	DrawingArea area() const { return m_attr.region.area; }
-
-
 
 	/*! \details Calculate the scaled height relative to the height of the DrawingAttributes object.
 	 *
@@ -459,52 +433,12 @@ private:
 };
 
 
-typedef DrawingAttributes DrawingAttr;
-
-class DrawingWindow {
-public:
-
-   DrawingWindow(){}
-
-
-   DrawingWindow(
-         const DrawingAttributes & parent_attributes,
-         const DrawingRegion & window_region
-         );
-
-   DrawingWindow& update(
-         const DrawingAttributes & parent_attributes,
-         const DrawingRegion & window_region
-         );
-
-   /*! \details Returns a reference to the
-    * newly created drawing attributes.
-    *
-    * The bitmap contained in the attributes
-    * should be copied or drawn on the master
-    * bitmap in the window defined by region().
-    *
-    */
-   DrawingAttributes & attributes();
-
-   /*! \details Returns the region where
-    * the window maps to the master bitmap.
-    */
-   sgfx::Region & region();
-
-private:
-   DrawingAttributes m_attributes;
-   sgfx::Region m_region;
-   sgfx::Bitmap m_bitmap;
-
-};
-
 
 /*! \brief Scaled Drawing Attributes
  * \details This is similar to draw::DrawingAttributes but the point
  * and area have been scaled to fit in the target bitmap.
  */
-class DrawingScaledAttributes : public api::InfoObject {
+class DrawingScaledAttributes {
 public:
 
 	DrawingScaledAttributes(){}
@@ -595,13 +529,9 @@ class Drawing : public virtual api::WorkObject {
 public:
 	Drawing();
 
-
-
 	static sg_size_t width(sg_size_t scale, sg_area_t d);
 	static sg_size_t height(sg_size_t scale, sg_area_t d);
 
-	static sg_size_t w(sg_size_t scale, sg_area_t d){ return width(scale, d); }
-	static sg_size_t h(sg_size_t scale, sg_area_t d){ return height(scale, d); }
 
 	/*! \details This method draws the object using the specified drawing attributes.
 	 *
@@ -662,13 +592,13 @@ public:
 	void set_color(sg_color_t value){ m_color = value; }
 
 	/*! \brief Returns true if element is visible */
-	bool is_visible() const { return flag(FLAG_VISIBLE); }
-	void set_visible(bool v = true){ set_flag(FLAG_VISIBLE, v); }
+	bool is_visible() const { return flag(flag_visible); }
+	void set_visible(bool v = true){ set_flag(flag_visible, v); }
 
-	bool is_align_left() const { return flag(FLAG_ALIGN_LEFT); }
-	void set_align_left(bool v = true){ set_flag(FLAG_ALIGN_LEFT, v); }
-	bool is_align_right() const { return flag(FLAG_ALIGN_RIGHT); }
-	void set_align_right(bool v = true){ set_flag(FLAG_ALIGN_RIGHT, v); }
+	bool is_align_left() const { return flag(flag_align_left); }
+	void set_align_left(bool v = true){ set_flag(flag_align_left, v); }
+	bool is_align_right() const { return flag(flag_align_right); }
+	void set_align_right(bool v = true){ set_flag(flag_align_right, v); }
 	void set_align_center(bool v = true){
 		if( v ){
 			set_align_right(false);
@@ -676,26 +606,26 @@ public:
 		}
 	}
 
-	bool is_align_center() const { return flag(FLAG_ALIGN_LEFT|FLAG_ALIGN_RIGHT) == 0; }
+	bool is_align_center() const { return flag(flag_align_left|flag_align_right) == 0; }
 
-	bool is_align_top() const { return flag(FLAG_ALIGN_TOP); }
-	void set_align_top(bool v = true){ set_flag(FLAG_ALIGN_TOP, v); }
-	bool is_align_bottom() const { return flag(FLAG_ALIGN_BOTTOM); }
-	void set_align_bottom(bool v = true){ set_flag(FLAG_ALIGN_BOTTOM, v); }
+	bool is_align_top() const { return flag(flag_align_top); }
+	void set_align_top(bool v = true){ set_flag(flag_align_top, v); }
+	bool is_align_bottom() const { return flag(flag_align_bottom); }
+	void set_align_bottom(bool v = true){ set_flag(flag_align_bottom, v); }
 	void set_align_middle(bool v = true){
 		if( v ){
 			set_align_top(false);
 			set_align_bottom(false);
 		}
 	}
-	bool is_align_middle() const { return flag(FLAG_ALIGN_TOP|FLAG_ALIGN_BOTTOM) == 0; }
+	bool is_align_middle() const { return flag(flag_align_top|flag_align_bottom) == 0; }
 
 
-	bool dark() const { return flag(FLAG_DARK); }
-	void set_dark(bool v = true){ set_flag(FLAG_DARK, v); }
+	bool dark() const { return flag(flag_dark); }
+	void set_dark(bool v = true){ set_flag(flag_dark, v); }
 
-	bool invert() const { return flag(FLAG_INVERT); }
-	void set_invert(bool v = true){ set_flag(FLAG_INVERT, v); }
+	bool invert() const { return flag(flag_invert); }
+	void set_invert(bool v = true){ set_flag(flag_invert, v); }
 
 protected:
 
@@ -704,21 +634,20 @@ protected:
 	sg_point_t point_on_bitmap(sgfx::Bitmap & b, drawing_size_t x, drawing_size_t y, sg_area_t d);
 	sg_area_t dim_on_bitmap(sgfx::Bitmap & b) const;
 
-	enum {
-		FLAG_VISIBLE,
-		FLAG_ENABLED,
-		FLAG_DRAW_CLEAR,
-		FLAG_EXCLUSIVE_CHECKLIST,
-		FLAG_SCROLL_VISIBLE,
-		FLAG_ALIGN_LEFT,
-		FLAG_ALIGN_RIGHT,
-		FLAG_ALIGN_TOP,
-		FLAG_ALIGN_BOTTOM,
-		FLAG_BUSY,
-		FLAG_CANCELLED,
-		FLAG_DARK,
-		FLAG_INVERT,
-		FLAG_DRAWING_TOTAL
+	enum flags {
+		flag_visible,
+		flag_enabled,
+		flag_draw_clear,
+		flag_exclusive_checklist,
+		flag_scroll_visible,
+		flag_align_left,
+		flag_align_right,
+		flag_align_top,
+		flag_align_bottom,
+		flag_busy,
+		flag_cancelled,
+		flag_dark,
+		flag_invert
 	};
 
 
@@ -730,7 +659,6 @@ private:
 	static drawing_size_t m_scale;
 	static sg_color_t m_default_color;
 	u32 m_flags;
-
 	sg_color_t m_color;
 
 

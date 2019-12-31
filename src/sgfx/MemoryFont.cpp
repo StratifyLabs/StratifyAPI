@@ -100,7 +100,8 @@ void MemoryFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, c
 				sgfx::Area(
 					Area::Width(m_header.canvas_width),
 					Area::Height(m_header.canvas_height)
-					)
+					),
+				sgfx::Bitmap::BitsPerPixel(bits_per_pixel())
 				);
 
 	Region region(

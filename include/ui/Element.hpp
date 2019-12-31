@@ -77,7 +77,7 @@ public:
 	 * 			lcd.refresh(); //copy the bitmap to the hardware device -- redraw
 	 * 			element.set_redraw_pending(false); //clear the redraw flag
 	 * 		}
-	 *		Timer::wait_milliseconds(100);  //update loop once every ten seconds
+	 *		chrono::wait::(chrono::Milliseconds(100));
 	 * 	}
 	 *
 	 * \endcode

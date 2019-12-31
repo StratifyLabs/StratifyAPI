@@ -77,30 +77,38 @@ Region Bitmap::get_viewable_region() const {
 
 void Bitmap::calculate_members(const Area & dim){
 	//we need to grab the read only in case the Data object is read only
-	api()->bmap_set_data(&m_bmap,
-								(sg_bmap_data_t*)((const sg_bmap_data_t*)to<sg_bmap_data_t>()),
-								dim,
-								m_bmap.bits_per_pixel
-								);
+	api()->bmap_set_data(
+				&m_bmap,
+				(sg_bmap_data_t*)((const sg_bmap_data_t*)to<sg_bmap_data_t>()),
+				dim,
+				m_bmap.bits_per_pixel
+				);
 }
 
-int Bitmap::set_bits_per_pixel(u8 bits_per_pixel){
+int Bitmap::set_internal_bits_per_pixel(u8 bpp){
+	//api bpp of zero means the api supports variable bpp values
 	if( api()->bits_per_pixel == 0 ){
-		switch(bits_per_pixel){
+		switch(bpp){
 			case 1:
 			case 2:
 			case 4:
 			case 8:
 			case 16:
 			case 32:
-				m_bmap.bits_per_pixel = bits_per_pixel;
-				allocate(area());
+				m_bmap.bits_per_pixel = bpp;
 				return 0;
 		}
+	} else {
+		//bpp is fixed by the sgfx library build
+		m_bmap.bits_per_pixel = api()->bits_per_pixel;
 	}
 	return -1;
 }
 
+
+int Bitmap::set_bits_per_pixel(u8 bits_per_pixel){
+	return allocate(area(), BitsPerPixel(bits_per_pixel));
+}
 
 void Bitmap::initialize_members(){
 
@@ -123,8 +131,11 @@ void Bitmap::initialize_members(){
 
 void Bitmap::refer_to(
 		ReadOnlyBuffer buffer,
-		const Area & area
+		const Area & area,
+		BitsPerPixel bpp
 		){
+	set_internal_bits_per_pixel(bpp.argument());
+
 	Data::refer_to(
 				buffer,
 				Size(calculate_size(area))
@@ -135,14 +146,15 @@ void Bitmap::refer_to(
 
 void Bitmap::refer_to(
 		ReadWriteBuffer buffer,
-		const Area & area
-		){
+		const Area & area,
+		BitsPerPixel bpp){
+	set_internal_bits_per_pixel(bpp.argument());
 	Data::refer_to(
 				buffer,
 				Size(calculate_size(area))
 				);
-
 	calculate_members(area);
+
 }
 
 void Bitmap::refer_to(
@@ -156,17 +168,23 @@ void Bitmap::refer_to(
 	if( is_read_only.argument() ){
 		refer_to(
 					ReadOnlyBuffer(ptr),
-					Area(hdr->width, hdr->height)
+					Area(hdr->width, hdr->height),
+					BitsPerPixel(hdr->bits_per_pixel)
 					);
 	} else {
 		refer_to(
 					ReadWriteBuffer(ptr),
-					Area(hdr->width ,hdr->height)
+					Area(hdr->width ,hdr->height),
+					BitsPerPixel(hdr->bits_per_pixel)
 					);
 	}
 }
 
-int Bitmap::allocate(const Area & dim){
+int Bitmap::allocate(
+		const Area & dim,
+		BitsPerPixel bpp
+		){
+	set_internal_bits_per_pixel(bpp.argument());
 	if( Data::allocate(calculate_size(dim) ) < 0 ){
 		calculate_members(Area());
 		return -1;
@@ -185,28 +203,26 @@ int Bitmap::free(){
 
 Bitmap::Bitmap(){
 	initialize_members();
+	set_internal_bits_per_pixel(1);
 	calculate_members(Area());
 }
 
-
-Bitmap::Bitmap(sg_area_t d){
-	initialize_members();
-	allocate(d);
-}
-
-
 Bitmap::Bitmap(
 		ReadOnlyBuffer buffer,
-		const Area & area){
+		const Area & area,
+		BitsPerPixel bpp
+		){
 	initialize_members();
-	refer_to(buffer,area);
+	refer_to(buffer,area,bpp);
 }
 
 Bitmap::Bitmap(
 		ReadWriteBuffer buffer,
-		const Area & area){
+		const Area & area,
+		BitsPerPixel bpp
+		){
 	initialize_members();
-	refer_to(buffer,area);
+	refer_to(buffer,area,bpp);
 }
 
 
@@ -218,17 +234,17 @@ Bitmap::Bitmap(
 	refer_to(hdr, is_read_only);
 }
 
-Bitmap::Bitmap(const Area & area, u8 bits_per_pixel){
+Bitmap::Bitmap(const Area & area, BitsPerPixel bits_per_pixel){
 	initialize_members();
 	if( api()->bits_per_pixel == 0 ){
-		switch(bits_per_pixel){
+		switch(bits_per_pixel.argument()){
 			case 1:
 			case 2:
 			case 4:
 			case 8:
 			case 16:
 			case 32:
-				m_bmap.bits_per_pixel = bits_per_pixel;
+				m_bmap.bits_per_pixel = bits_per_pixel.argument();
 		}
 	}
 	allocate(area);
@@ -458,7 +474,10 @@ void Bitmap::downsample_bitmap(
 	if( factor.height() > source.height() ){ return; }
 
 
-	Bitmap sample(factor);
+	Bitmap sample(
+				factor,
+				BitsPerPixel(bits_per_pixel())
+				);
 
 	cursor_y.set_bitmap(*this);
 

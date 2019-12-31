@@ -6,6 +6,7 @@ if( ${SOS_BUILD_CONFIG} STREQUAL arm )
 	sos_sdk_add_subdirectory(SOURCELIST draw)
 	sos_sdk_add_subdirectory(SOURCELIST dsp)
 	sos_sdk_add_subdirectory(SOURCELIST ui)
+	sos_sdk_add_subdirectory(SOURCELIST ux)
 endif()
 
 sos_sdk_add_subdirectory(SOURCELIST api)

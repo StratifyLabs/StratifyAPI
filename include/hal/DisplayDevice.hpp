@@ -21,7 +21,10 @@ class DisplayDevice :
 public:
 	DisplayDevice();
 
-	int initialize(const var::String & name);
+	int initialize(
+			const var::String & name,
+			IsAllocate is_allocate = IsAllocate(true)
+			);
 
 	/*! \details Refreshes the display.
 	 *

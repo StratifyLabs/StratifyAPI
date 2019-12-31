@@ -9,7 +9,10 @@ namespace hal {
 DisplayDevice::DisplayDevice(){}
 
 /*! \brief Pure virtual function to initialize the LCD */
-int DisplayDevice::initialize(const var::String & name){
+int DisplayDevice::initialize(
+		const var::String & name,
+		IsAllocate is_allocate
+		){
 	//open and populate attr
 
 	if( name.is_empty() == false ){
@@ -29,9 +32,18 @@ int DisplayDevice::initialize(const var::String & name){
 			return -1;
 		}
 
-		set_bits_per_pixel(info.bits_per_pixel);
-
-		allocate(sgfx::Area(info.width, info.height));
+		if( is_allocate.argument() ){
+			allocate(
+						sgfx::Area(info.width, info.height),
+						BitsPerPixel(info.bits_per_pixel)
+						);
+		} else {
+			refer_to(
+						ReadOnlyBuffer(nullptr),
+						sgfx::Area(info.width, info.height),
+						BitsPerPixel(info.bits_per_pixel)
+						);
+		}
 
 		set_margin_left(info.margin_left);
 		set_margin_right(info.margin_right);

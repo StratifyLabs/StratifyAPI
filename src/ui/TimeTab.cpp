@@ -20,6 +20,6 @@ void TimeTab::draw(const DrawingAttributes & attr){
 	time_string.format("%ld:%02ld", hour, t.minute());
 	Text()
 			.set_string(time_string)
-			.set_font_point_size(attr.calc_height_on_bitmap() * 800 / 1000)
+			.set_font_point_size(attr.calculate_height_on_bitmap() * 800 / 1000)
 			.draw(attr);
 }

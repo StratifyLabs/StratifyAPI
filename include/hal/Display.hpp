@@ -161,6 +161,9 @@ private:
 class Display : public sgfx::Bitmap {
 public:
 
+	using IsAllocate = arg::Argument<bool, struct DisplayDeviceIsAllocateTag>;
+	using BitsPerPixel = sgfx::Bitmap::BitsPerPixel;
+
 	/*! \details Constructs a new object with no video memory. */
 	Display(){}
 
@@ -179,11 +182,15 @@ public:
 	 * @param w The width of the display
 	 * @param h The height of the display
 	 */
-	Display(const sgfx::Area & area) : sgfx::Bitmap(area){}
+	Display(
+			const sgfx::Area & area,
+			BitsPerPixel bpp = BitsPerPixel(1)
+			) : sgfx::Bitmap(area, bpp){}
 
 	/*! \details Initializes the display. */
 	virtual int initialize(
-			const var::String & path = var::String()
+			const var::String & path = var::String(),
+			IsAllocate is_allocate = IsAllocate(true)
 			) = 0;
 
 	/*! \details Turns the display on. */

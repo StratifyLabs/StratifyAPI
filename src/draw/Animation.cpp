@@ -54,8 +54,8 @@ void Animation::reinit(){
 
 	if( m_drawing_attr ){
 
-		p = m_drawing_attr->calc_point_on_bitmap();
-		d = m_drawing_attr->calc_dim_on_bitmap();
+		p = m_drawing_attr->calculate_point_on_bitmap();
+		d = m_drawing_attr->calculate_area_on_bitmap();
 
 		//convert motion total
 		switch(type()){

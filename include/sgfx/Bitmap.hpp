@@ -67,6 +67,7 @@ private:
 class Bitmap : public var::Data, public api::SgfxObject {
 public:
 
+	using BitsPerPixel = arg::Argument<u8, struct BitmapBitsPerPixel>;
 	using ReadOnlyBuffer = var::Reference::ReadOnlyBuffer;
 	using ReadWriteBuffer = var::Reference::ReadWriteBuffer;
 
@@ -93,11 +94,15 @@ public:
 			); //read/write bitmap
 
 	/*! \details Constructs a bitmap using an existing
-	 * read-only memory buffer.
+	 * read-only memory buffer. The button can be
+	 * nullptr in which case, the Bitmap will just
+	 * be an area reference that cannot be drawn on.
+	 *
 	 */
 	Bitmap(
 			ReadOnlyBuffer buffer,
-			const Area & area
+			const Area & area,
+			BitsPerPixel bpp = BitsPerPixel(1)
 			);
 
 	/*! \details Constructs a bitmap using an existing
@@ -105,7 +110,8 @@ public:
 	 */
 	Bitmap(
 			ReadWriteBuffer buffer,
-			const Area & area
+			const Area & area,
+			BitsPerPixel bpp = BitsPerPixel(1)
 			);
 
 	/*! \details Constructs a new bitmap (dynamic memory allocation).
@@ -113,13 +119,10 @@ public:
 	 * @param area Dimensions of the bitmap
 	 * @param bits_per_pixel Number of bits per pixel (if not fixed by the library)
 	 */
-	Bitmap(const Area & area, u8 bits_per_pixel);
-
-	/*! \details Constructs a new bitmap (dynamic memory allocation).
-	 *
-	 * @param d Area of the bitmap
-	 */
-	Bitmap(sg_area_t d);
+	Bitmap(
+			const Area & area,
+			BitsPerPixel bits_per_pixel
+			);
 
 	Bitmap(const Bitmap & bitmap) : var::Data(bitmap){
 		m_bmap = bitmap.m_bmap;
@@ -179,7 +182,8 @@ public:
 	 */
 	void refer_to(
 			ReadOnlyBuffer buffer,
-			const Area & area
+			const Area & area,
+			BitsPerPixel bpp
 			);
 
 	/*! \details Sets the data pointer based on the
@@ -188,7 +192,8 @@ public:
 	 */
 	void refer_to(
 			ReadWriteBuffer buffer,
-			const Area & area
+			const Area & area,
+			BitsPerPixel bpp
 			);
 
 	/*! \details Changes effective size without free/allocate sequence */
@@ -239,7 +244,12 @@ public:
 	 * width and height.  If the bitmap already has a memory associated
 	 * with it, it will be freed before the new memory is assigned.
 	 */
-	int allocate(const Area & d);
+	int allocate(
+			const Area & d,
+			BitsPerPixel bpp = BitsPerPixel(1)
+			);
+
+
 
 
 	/*! \details Free memory associated with bitmap (auto freed on ~Bitmap) */
@@ -505,6 +515,7 @@ private:
 	sg_color_t calculate_color_sum();
 	sg_bmap_t m_bmap;
 
+	int set_internal_bits_per_pixel(u8 bpp);
 
 	void initialize_members();
 	void calculate_members(const Area & dim);

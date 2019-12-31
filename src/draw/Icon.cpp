@@ -27,7 +27,10 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 	VectorPath vector_path = sys::Assets::find_vector_path(name());
 
 	if( vector_path.is_valid() ){
-		Bitmap bitmap(attr.area(), attr.bitmap().bits_per_pixel());
+		Bitmap bitmap(
+					attr.area(),
+					Bitmap::BitsPerPixel(attr.bitmap().bits_per_pixel())
+					);
 		bitmap.clear();
 		bitmap << attr.bitmap().pen();
 

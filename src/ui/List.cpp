@@ -45,7 +45,7 @@ void List::draw_to_scale(const DrawingScaledAttr & attr){
 	//list item height
 	list_item_height = (d.height() / visible_items());
 	remainder = (d.height() % visible_items());
-	x_offset = attr.calc_width(25) + p.x;
+	x_offset = attr.calculate_width(25) + p.x;
 
 	index_offset = calc_visible_offset();
 	display_items = calc_display_items();

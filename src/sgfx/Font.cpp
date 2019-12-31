@@ -144,7 +144,8 @@ Bitmap Font::character_bitmap(u32 offset){
 				Area(
 					character.width,
 					character.height
-					)
+					),
+				Bitmap::BitsPerPixel(bits_per_pixel())
 				);
 
 	draw_char_on_bitmap(character, result, Point(0,0));
