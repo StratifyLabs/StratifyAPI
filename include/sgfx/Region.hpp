@@ -87,6 +87,14 @@ public:
 
 	operator	const sg_region_t & () const { return m_region; }
 
+	bool contains(const Point & point){
+		if( point.x() < x() ){ return false; }
+		if( point.y() < y() ){ return false; }
+		if( point.x() > x() + width()-1){ return false; }
+		if( point.y() > y() + height()-1){ return false; }
+		return true;
+	}
+
 private:
 	sg_region_t m_region;
 };

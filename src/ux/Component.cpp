@@ -34,8 +34,6 @@ Component & Component::disable(){
 }
 
 void Component::refresh_drawing(){
-
-
    if( m_display ){
       //use the palette if it is available
       if( m_display->set_window(

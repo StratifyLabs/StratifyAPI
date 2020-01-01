@@ -52,8 +52,14 @@ void Scene::handle_event(const Event & event){
 
 }
 
+void Scene::trigger_event(const Event & event){
+   //send the event to the scene collection
+   handle_event(event);
+}
 
-Component * Scene::find_component(
+
+
+Component * Scene::find_generic_component(
       const var::String & name
       ){
    for(auto component_pointer: m_component_list){
@@ -80,4 +86,9 @@ Scene * SceneCollection::find_scene(const var::String & name){
    }
    return nullptr;
 }
+
+void SceneCollection::trigger_event(const Event & event){
+   //allow the application to catch the event
+}
+
 

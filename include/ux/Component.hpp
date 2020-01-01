@@ -14,16 +14,11 @@ class Scene;
 class Component : public Drawing {
 public:
 
-   using EventHandlerFunction = std::function<void(void * context, const Event & event)>;
+   using EventHandlerFunction = std::function<void(Component * object, const Event & event)>;
    virtual ~Component(){}
 
    Component & set_event_handler(EventHandlerFunction event_handler){
       m_event_handler = event_handler;
-      return *this;
-   }
-
-   Component & set_context(void * context){
-      m_context = context;
       return *this;
    }
 
@@ -50,13 +45,31 @@ public:
 
    virtual void handle_event(const ux::Event & event){
       if( m_event_handler ){
-         m_event_handler(m_context, event);
+         m_event_handler(this, event);
       }
    }
 
    const var::String & name() const {
       return m_name;
    }
+
+   void redraw(){
+      draw(drawing_attributes());
+      refresh_drawing();
+   }
+
+   sgfx::Region region() const {
+      return m_reference_drawing_attributes.calculate_region_on_bitmap();
+   }
+
+   bool contains(const sgfx::Point & point){
+      return sgfx::Region(
+               m_reference_drawing_attributes.calculate_region_on_bitmap()
+               ).contains(point);
+   }
+
+   Scene * scene(){ return m_scene; }
+   const Scene * scene() const { return m_scene; }
 
 protected:
    void refresh_drawing();
@@ -68,7 +81,6 @@ protected:
 private:
 
    var::String m_name;
-   void * m_context = nullptr;
    u32 m_type_id;
    //needs to know where on the display it is drawn
    DrawingAttributes m_reference_drawing_attributes;

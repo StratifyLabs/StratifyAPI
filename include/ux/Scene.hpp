@@ -30,7 +30,10 @@ public:
       return *this;
    }
 
-   Component * find_component(const var::String & name);
+   template <typename T> T * find_component(const var::String & name){
+      return static_cast<T*>(find_generic_component(name));
+   }
+
 
    Scene& enable();
    Scene& disable();
@@ -44,6 +47,9 @@ public:
    }
 
    virtual void handle_event(const Event & event);
+   void trigger_event(const Event & event);
+
+   void process_event(const Event & event);
 
    chrono::MicroTime & update_period(){
       return m_update_period;
@@ -59,6 +65,9 @@ private:
    chrono::MicroTime m_update_period = chrono::Milliseconds(30);
    SceneCollection * m_scene_collection = nullptr;
    var::Vector<Component*> m_component_list;
+
+   Component * find_generic_component(const var::String & name);
+
 
 };
 
@@ -80,6 +89,8 @@ public:
    }
 
    Scene * find_scene(const var::String & name);
+   void trigger_event(const Event & event);
+
 
    bool set_current_scene(const var::String & name){
       if( name.is_empty() ){
