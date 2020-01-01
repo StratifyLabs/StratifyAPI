@@ -14,26 +14,7 @@ class Signal;
 
 namespace ux {
 
-
-class EventType {
-public:
-   EventType(){}
-
-   EventType(const char type[4]){
-      m_type = (type[0] << 0);
-      m_type |= (type[1] << 8);
-      m_type |= (type[2] << 16);
-      m_type |= (type[3] << 24);
-   }
-
-   u32 type() const {
-      return m_type;
-   }
-
-
-private:
-   u32 m_type;
-};
+#define EVENT_TYPE(a,b,c,d) ((a << 24) | (b << 16) | (c << 8) | (d))
 
 /*! \brief Event Class
  * \details This class defines action-able events (such as
@@ -50,43 +31,67 @@ class Event {
 public:
 
 	Event();
-	Event(const EventType & type, u32 id);
-	Event(const EventType & type, u32 id, void * context);
+	Event(u32 type, u32 id, void * context = 0);
 
-	Event & set_type(const EventType & type){
+	Event & set_type(const char type[4]){
+		m_type = (type[0] << 0);
+		m_type |= (type[1] << 8);
+		m_type |= (type[2] << 16);
+		m_type |= (type[3] << 24);
+		return *this;
+	}
+
+	Event & set_type(u32 type){
 		m_type = type;
 		return *this;
 	}
 
-	const EventType & type() const { return m_type; }
+	u32 type() const {
+		return m_type;
+	}
 
 	u32 id() const {
 		return m_id;
 	}
 
+	bool operator == (const Event & event) const {
+		return (event.type() == type() && event.id() == id());
+	}
+
+	bool operator != (const Event & event) const {
+		return !(*this == event);
+	}
+
 
 private:
-	EventType m_type;
+	u32 m_type;
 	u32 m_id;
 	void * m_context;
 };
 
-
-class SystemEvent : public Event {
+template <u32 T> class EventObject : public Event {
 public:
-	SystemEvent(u32 id) : Event("_sys", id){}
+	EventObject(u32 id) : Event(T, id){}
 
+	static u32 event_type(){
+		return T;
+	}
+};
+
+
+class SystemEvent : public EventObject<EVENT_TYPE('_','s','y','s')> {
+public:
+	SystemEvent(u32 id) : EventObject(id){}
 	enum id {
 		id_enter,
 		id_exit,
 		id_update
 	};
-
 };
 
-class TouchEvent : public Event {
+class TouchEvent : public EventObject<EVENT_TYPE('_','t','c','h')> {
 public:
-	TouchEvent(u32 id) : Event("touc", id){}
+	TouchEvent(u32 id) : EventObject(id){}
 
 	enum id {
 		id_none,
@@ -94,9 +99,8 @@ public:
 		id_released,
 	};
 
-
-
 private:
+
 
 
 };

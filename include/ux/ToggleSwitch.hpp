@@ -8,7 +8,6 @@ namespace ux {
 
 class ToggleSwitch : public Component {
 public:
-   ToggleSwitch();
 
    bool state() const {
       return m_state;
@@ -20,13 +19,23 @@ public:
    }
 
 
+   ToggleSwitch& set_primary_color(sg_color_t value){
+      m_primary_color = value;
+      return *this;
+   }
 
+   ToggleSwitch& set_secondary_color(sg_color_t value){
+      m_secondary_color = value;
+      return *this;
+   }
 
-   void draw_to_scale(const DrawingScaledAttributes & attributes);
+   void draw(const DrawingAttributes & attributes);
    void handle_event(const ux::Event & event);
 
 private:
    bool m_state;
+   sg_color_t m_primary_color = 1;
+   sg_color_t m_secondary_color = 0;
 
 
 };

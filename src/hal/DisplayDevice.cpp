@@ -87,7 +87,7 @@ DisplayPalette DisplayDevice::get_palette() const {
 }
 
 
-int DisplayDevice::set_window(const sgfx::Region & region){
+int DisplayDevice::set_window(const sgfx::Region & region) const {
 	display_attr_t attr;
 	attr.o_flags = DISPLAY_FLAG_SET_WINDOW;
 	attr.window_x = region.point().x();
@@ -100,10 +100,16 @@ int DisplayDevice::set_window(const sgfx::Region & region){
 				);
 }
 
+int DisplayDevice::write(const sgfx::Bitmap & bitmap) const {
+	return write(
+				*bitmap.bmap()
+				);
+}
+
 int DisplayDevice::set_mode(enum mode value){
 	display_attr_t attr;
 	attr.o_flags = DISPLAY_FLAG_SET_MODE;
-	if( value == PALETTE ){
+	if( value == mode_palette ){
 		attr.o_flags |= DISPLAY_FLAG_IS_MODE_PALETTE;
 	} else {
 		attr.o_flags |= DISPLAY_FLAG_IS_MODE_RAW;

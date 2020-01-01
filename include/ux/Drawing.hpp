@@ -6,7 +6,6 @@
 #include <mcu/types.h>
 #include "../sgfx/Bitmap.hpp"
 #include "../sgfx/Pen.hpp"
-#include "../api/DrawObject.hpp"
 
 namespace ux {
 
@@ -500,8 +499,52 @@ private:
 	drawing_scaled_attr_t m_attr;
 };
 
-typedef DrawingScaledAttributes DrawingScaledAttr;
 
+template <typename T> class DrawingAlignment {
+public:
+	bool is_align_left() const { return m_flags & flag_align_left; }
+	bool is_align_right() const { return m_flags & (flag_align_right); }
+	bool is_align_center() const { return (m_flags & (flag_align_left|flag_align_right)) == 0; }
+	bool is_align_top() const { return m_flags & (flag_align_top); }
+	bool is_align_bottom() const { return m_flags & (flag_align_bottom); }
+	bool is_align_middle() const { return (m_flags & (flag_align_top|flag_align_bottom)) == 0; }
+
+	T& set_align_left(bool v = true){ v ? m_flags |= flag_align_left : 0; return derived_this(); }
+	T& set_align_right(bool v = true){ v ? m_flags |= flag_align_right : 0; return derived_this(); }
+	T& set_align_center(bool v = true){
+		if( v ){
+			set_align_right(false);
+			set_align_left(false);
+		}
+		return derived_this();
+	}
+
+	T& set_align_top(bool v = true){ v ? m_flags |= flag_align_top : 0; return derived_this(); }
+	T& set_align_bottom(bool v = true){ v ? m_flags |= flag_align_bottom : 0; return derived_this(); }
+	T& set_align_middle(bool v = true){
+		if( v ){
+			set_align_top(false);
+			set_align_bottom(false);
+		}
+		return derived_this();
+	}
+
+private:
+
+	T& derived_this(){
+		return static_cast<T&>(*this);
+	}
+
+	enum flags {
+		flag_align_left = 1<<0,
+		flag_align_right = 1<<1,
+		flag_align_top = 1<<2,
+		flag_align_bottom = 1<<3
+	};
+
+	u32 m_flags;
+
+};
 
 
 /*! \brief Drawing Class
@@ -532,7 +575,6 @@ public:
 	static sg_size_t width(sg_size_t scale, sg_area_t d);
 	static sg_size_t height(sg_size_t scale, sg_area_t d);
 
-
 	/*! \details This method draws the object using the specified drawing attributes.
 	 *
 	 * The attributes specify which bitmap to draw on, what size to draw, and where to draw.
@@ -545,19 +587,7 @@ public:
 		draw(attr + point + area);
 	}
 
-	virtual void draw_scratch(const DrawingAttributes & attr);
 	void draw(sgfx::Bitmap & b, drawing_int_t x, drawing_int_t y, drawing_size_t w, drawing_size_t h);
-
-	/*! \details This method will set the pixels in the area of the bitmap
-	 * specified.
-	 *
-	 * @param attr Specifies the bitmap and area
-	 * @param color Specifies the fill pattern
-	 */
-	static void set(const DrawingAttributes & attr, sg_color_t color = 0xffff);
-
-	static void draw_pattern(const DrawingAttributes & attr, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height);
-	static void draw_checkerboard(const DrawingAttributes & attr, sg_size_t pattern_height = 1);
 
 	/*! \details This method will clear the pixels in the area of the bitmap
 	 * specified.
@@ -567,14 +597,6 @@ public:
 	 */
 	static void clear(const DrawingAttributes & attr);
 
-	/*! \details This method will invert the pixels in the area of the bitmap
-	 * specified.
-	 *
-	 * @param attr Specifies the bitmap and area
-	 * @param v Specifies the fill pattern
-	 */
-	static void invert(const DrawingAttributes & attr, sg_bmap_data_t v = 0xFF);
-
 	/*! \brief Sets the scale value (see Element::scale() for details). */
 	static void set_scale(drawing_size_t s){ m_scale = s; }
 
@@ -582,50 +604,8 @@ public:
 	 *
 	 * @param attr Specifies the bitmap, point and area to draw the drawing
 	 */
-	virtual void draw_to_scale(const DrawingScaledAttr & attr);
+	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
 	void draw_to_scale(sgfx::Bitmap & b, sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h);
-
-	sg_color_t default_color(){ return m_default_color; }
-	void set_default_color(sg_color_t value){ m_default_color = value; }
-
-	sg_color_t color(){ return m_color; }
-	void set_color(sg_color_t value){ m_color = value; }
-
-	/*! \brief Returns true if element is visible */
-	bool is_visible() const { return flag(flag_visible); }
-	void set_visible(bool v = true){ set_flag(flag_visible, v); }
-
-	bool is_align_left() const { return flag(flag_align_left); }
-	void set_align_left(bool v = true){ set_flag(flag_align_left, v); }
-	bool is_align_right() const { return flag(flag_align_right); }
-	void set_align_right(bool v = true){ set_flag(flag_align_right, v); }
-	void set_align_center(bool v = true){
-		if( v ){
-			set_align_right(false);
-			set_align_left(false);
-		}
-	}
-
-	bool is_align_center() const { return flag(flag_align_left|flag_align_right) == 0; }
-
-	bool is_align_top() const { return flag(flag_align_top); }
-	void set_align_top(bool v = true){ set_flag(flag_align_top, v); }
-	bool is_align_bottom() const { return flag(flag_align_bottom); }
-	void set_align_bottom(bool v = true){ set_flag(flag_align_bottom, v); }
-	void set_align_middle(bool v = true){
-		if( v ){
-			set_align_top(false);
-			set_align_bottom(false);
-		}
-	}
-	bool is_align_middle() const { return flag(flag_align_top|flag_align_bottom) == 0; }
-
-
-	bool dark() const { return flag(flag_dark); }
-	void set_dark(bool v = true){ set_flag(flag_dark, v); }
-
-	bool invert() const { return flag(flag_invert); }
-	void set_invert(bool v = true){ set_flag(flag_invert, v); }
 
 protected:
 
@@ -634,33 +614,9 @@ protected:
 	sg_point_t point_on_bitmap(sgfx::Bitmap & b, drawing_size_t x, drawing_size_t y, sg_area_t d);
 	sg_area_t dim_on_bitmap(sgfx::Bitmap & b) const;
 
-	enum flags {
-		flag_visible,
-		flag_enabled,
-		flag_draw_clear,
-		flag_exclusive_checklist,
-		flag_scroll_visible,
-		flag_align_left,
-		flag_align_right,
-		flag_align_top,
-		flag_align_bottom,
-		flag_busy,
-		flag_cancelled,
-		flag_dark,
-		flag_invert
-	};
-
-
-	bool flag(u32 flag) const;
-	void set_flag(u32 flag, bool v = true);
 
 private:
-
 	static drawing_size_t m_scale;
-	static sg_color_t m_default_color;
-	u32 m_flags;
-	sg_color_t m_color;
-
 
 	static void draw_rectangle(const DrawingAttributes & attr, const sgfx::Pen & pen);
 	/*! \endcond */

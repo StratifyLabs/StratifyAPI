@@ -13,7 +13,7 @@
 
 namespace hal {
 
-class DisplayInfo : public api::InfoObject {
+class DisplayInfo {
 public:
 	DisplayInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 	DisplayInfo(const display_info_t & info){
@@ -87,7 +87,7 @@ private:
  * a color on the display.
  *
  */
-class DisplayPalette : public api::InfoObject {
+class DisplayPalette {
 public:
 
 	DisplayPalette();
@@ -209,6 +209,14 @@ public:
 
 	virtual DisplayPalette get_palette() const {
 		return DisplayPalette();
+	}
+
+	virtual int set_window(const sgfx::Region & region) const {
+		return 0;
+	}
+
+	virtual int write(const sgfx::Bitmap & bitmap) const {
+		return 0;
 	}
 };
 

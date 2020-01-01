@@ -14,15 +14,15 @@ void ProgressBar::draw_to_scale(const DrawingScaledAttributes & attributes){
 			(attributes.area().height() / 2) / 100;
 
 	//draw bar
-	if( background_color() != color_transparent() ){
-		attributes.bitmap() << Pen().set_color( background_color() );
+	if( primary_color() != color_transparent() ){
+		attributes.bitmap() << Pen().set_color( primary_color() );
 		attributes.bitmap().draw_rectangle(attributes.region());
 	}
 
 	//draw progress
 	sg_size_t progress_width = attributes.area().width() - thickness*2;
 
-	attributes.bitmap() << Pen().set_color( color() );
+	attributes.bitmap() << Pen().set_color( secondary_color() );
 	attributes.bitmap().draw_rectangle(
 				attributes.point() + Point(thickness, thickness),
 				Area(progress_width * value() / maximum(), attributes.area().height() - thickness*2)

@@ -2,7 +2,7 @@
 #define SAPI_UX_COMPONENT_HPP
 
 #include "../api/WorkObject.hpp"
-#include "../sgfx/Bitmap.hpp"
+#include "../hal/Display.hpp"
 #include "../var/String.hpp"
 #include "Drawing.hpp"
 #include "Event.hpp"
@@ -15,8 +15,7 @@ class Component : public Drawing {
 public:
 
    using EventHandlerFunction = std::function<void(void * context, const Event & event)>;
-   Component();
-   ~Component(){}
+   virtual ~Component(){}
 
    Component & set_event_handler(EventHandlerFunction event_handler){
       m_event_handler = event_handler;
@@ -28,23 +27,24 @@ public:
       return *this;
    }
 
-   Component & set_name(const var::String & name){
-      m_name = name;
-      return *this;
-   }
-
    Component & set_drawing_area(const DrawingArea & drawing_area){
-      m_drawing_attributes.set_area(drawing_area);
+      m_reference_drawing_attributes.set_area(drawing_area);
       return *this;
    }
 
    Component & set_drawing_point(const DrawingPoint & drawing_point){
-      m_drawing_attributes.set_point(drawing_point);
+      m_reference_drawing_attributes.set_point(drawing_point);
       return *this;
    }
 
-   Component & enable();
+   Component & enable(
+         hal::Display & display
+         );
    Component & disable();
+
+   bool is_enabled() const {
+      return (m_local_bitmap.to_const_void() != nullptr);
+   }
 
    //update the location of the component (allow animations)
 
@@ -54,24 +54,36 @@ public:
       }
    }
 
+   const var::String & name() const {
+      return m_name;
+   }
+
 protected:
    void refresh_drawing();
    friend class Scene;
-
+   const DrawingAttributes & drawing_attributes() const {
+      return m_local_drawing_attributes;
+   }
 
 private:
 
    var::String m_name;
-   void * m_context;
+   void * m_context = nullptr;
    u32 m_type_id;
    //needs to know where on the display it is drawn
-   DrawingAttributes m_drawing_attributes;
-   sgfx::Bitmap m_bitmap;
+   DrawingAttributes m_reference_drawing_attributes;
+   DrawingAttributes m_local_drawing_attributes;
+   sgfx::Bitmap m_local_bitmap;
+   hal::Display * m_display = nullptr;
 
    //needs a palette to use while drawing
-   sgfx::Palette * m_palette;
-   Scene * m_scene;
+   sgfx::Palette * m_palette = nullptr;
+   Scene * m_scene = nullptr;
    EventHandlerFunction m_event_handler;
+
+   void set_name(const var::String & name){
+      m_name = name;
+   }
 
    void set_scene(Scene * scene){
       m_scene = scene;

@@ -1,32 +1,50 @@
 #include "ux/Component.hpp"
+#include "sys/Printer.hpp"
 
 using namespace ux;
 
-Component::Component(){
 
-}
+Component & Component::enable(
+      hal::Display & display
+      ){
 
-Component & Component::enable(){
-   m_bitmap.allocate(
-            m_drawing_attributes.calculate_area_on_bitmap(),
-            sgfx::Bitmap::BitsPerPixel(m_drawing_attributes.bitmap().bits_per_pixel())
+   m_reference_drawing_attributes.set_bitmap(display);
+   m_display = &display;
+
+   //local bitmap is a small section of the reference bitmap
+   m_local_bitmap.allocate(
+            m_reference_drawing_attributes.calculate_area_on_bitmap(),
+            sgfx::Bitmap::BitsPerPixel(
+               m_reference_drawing_attributes.bitmap().bits_per_pixel()
+               )
             );
 
-   m_drawing_attributes.set_bitmap(m_bitmap);
+   //local attributes fill local bitmap
+   m_local_drawing_attributes
+         .set_area(DrawingArea(1000,1000))
+         .set_bitmap(m_local_bitmap);
+
    return *this;
 }
 
 
 Component & Component::disable(){
-   m_bitmap.free();
+   m_local_bitmap.free();
    return *this;
 }
 
 void Component::refresh_drawing(){
 
 
-   //use the palette if it is available
+   if( m_display ){
+      //use the palette if it is available
+      if( m_display->set_window(
+               m_reference_drawing_attributes.calculate_region_on_bitmap()
+               ) < 0 ){
 
-   //using the attributes and bitmap to write the display device
+      }
+      //using the attributes and bitmap to write the display device
+      m_display->write(m_local_bitmap);
 
+   }
 }

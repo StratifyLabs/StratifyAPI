@@ -35,11 +35,14 @@ public:
 
 	void clear();
 
-	int set_window(const sgfx::Region & region);
+	int set_window(const sgfx::Region & region) const;
+
+	using Device::write;
+	int write(const sgfx::Bitmap & bitmap) const;
 
 	enum mode {
-		PALETTE,
-		RAW
+		mode_palette,
+		mode_raw
 	};
 
 	DisplayInfo get_info() const;

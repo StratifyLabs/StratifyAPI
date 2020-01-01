@@ -6,7 +6,6 @@
 using namespace ux;
 
 drawing_size_t Drawing::m_scale = 1000;
-sg_color_t Drawing::m_default_color = 1;
 
 sg_color_t ux::color_transparent(){
 	return (sg_color_t)-1;
@@ -168,52 +167,37 @@ drawing_area_t DrawingAttributes::calculate_square_height(drawing_size_t v) cons
 	return area;
 }
 
-void DrawingScaledAttr::set(Bitmap & b, sg_point_t p, sg_area_t d){
+void DrawingScaledAttributes::set(Bitmap & b, sg_point_t p, sg_area_t d){
 	set_bitmap(b);
 	set_point(p);
 	set_area(d);
 }
 
-DrawingScaledAttr DrawingScaledAttr::operator+ (sg_point_t p) const {
-	DrawingScaledAttr attr;
+DrawingScaledAttributes DrawingScaledAttributes::operator+ (sg_point_t p) const {
+	DrawingScaledAttributes attr;
 	attr = *this;
 	attr.attr().region.point.x += calculate_width(p.x);
 	attr.attr().region.point.y += calculate_height(p.y);
 	return attr;
 }
 
-DrawingScaledAttr DrawingScaledAttr::operator+ (sg_area_t d) const {
-	DrawingScaledAttr attr;
+DrawingScaledAttributes DrawingScaledAttributes::operator+ (sg_area_t d) const {
+	DrawingScaledAttributes attr;
 	attr = *this;
 	attr.attr().region.area.width = calculate_width(d.width);
 	attr.attr().region.area.height = calculate_height(d.height);
 	return attr;
 }
 
-sg_size_t DrawingScaledAttr::calculate_width(drawing_size_t v) const {
+sg_size_t DrawingScaledAttributes::calculate_width(drawing_size_t v) const {
 	return m_attr.region.area.width * v / DrawingAttributes::scale();
 }
 
-sg_size_t DrawingScaledAttr::calculate_height(drawing_size_t v) const {
+sg_size_t DrawingScaledAttributes::calculate_height(drawing_size_t v) const {
 	return m_attr.region.area.height * v / DrawingAttributes::scale();
 }
 
-Drawing::Drawing(){
-	m_flags = 0;
-	set_color( default_color() );
-}
-
-bool Drawing::flag(u32 flag) const{
-	return (m_flags & (1<<flag) ) != 0;
-}
-
-void Drawing::set_flag(u32 flag, bool v){
-	if( v ){
-		m_flags |= (1<<flag);
-	} else {
-		m_flags &= ~(1<<flag);
-	}
-}
+Drawing::Drawing(){}
 
 void Drawing::draw_rectangle(const DrawingAttributes & attr, const Pen & pen){
 	attr.bitmap() << pen;
@@ -223,47 +207,8 @@ void Drawing::draw_rectangle(const DrawingAttributes & attr, const Pen & pen){
 				);
 }
 
-void Drawing::draw_checkerboard(const DrawingAttributes & attr, sg_size_t pattern_height){
-	sg_bmap_data_t odd = 0xAAAAAAAA;
-	sg_bmap_data_t even = 0x55555555;
-	switch(pattern_height){
-		case 2:
-			odd = 0xCCCCCCCC;
-			even = 0x33333333;
-			break;
-		case 4:
-			odd = 0xF0F0F0F0;
-			even = 0x0F0F0F0F;
-			break;
-		case 8:
-			odd = 0xFF00FF00;
-			even = 0x00FF00FF;
-			break;
-	}
-	draw_pattern(attr, odd, even, pattern_height);
-}
-
-void Drawing::draw_pattern(const DrawingAttributes & attr, sg_bmap_data_t odd_pattern, sg_bmap_data_t even_pattern, sg_size_t pattern_height){
-	attr.bitmap().draw_pattern(
-				attr.calculate_point_on_bitmap(),
-				attr.calculate_area_on_bitmap(),
-				odd_pattern,
-				even_pattern,
-				pattern_height
-				);
-}
-
-
-void Drawing::set(const DrawingAttributes & attr, sg_color_t color){
-	draw_rectangle(attr, Pen().set_color(color));
-}
-
 void Drawing::clear(const DrawingAttributes & attr){
 	draw_rectangle(attr, Pen().set_color(0));
-}
-
-void Drawing::invert(const DrawingAttributes & attr, sg_bmap_data_t v){
-	draw_rectangle(attr, Pen().set_color(0xffff).set_invert());
 }
 
 sg_size_t Drawing::width(sg_size_t scaled, sg_area_t d){
@@ -286,17 +231,13 @@ void Drawing::draw(const DrawingAttributes & attr){
 	draw_to_scale(attr_scaled);
 }
 
-void Drawing::draw_scratch(const DrawingAttributes & attr){
-
-}
-
 void Drawing::draw_to_scale(Bitmap & b, sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h){
-	DrawingScaledAttr attr_scaled;
+	DrawingScaledAttributes attr_scaled;
 	attr_scaled.set(b, sg_point(x,y), sg_dim(w,h));
 	draw_to_scale(attr_scaled);
 }
 
 
-void Drawing::draw_to_scale(const DrawingScaledAttr & attr){}
+void Drawing::draw_to_scale(const DrawingScaledAttributes & attr){}
 
 

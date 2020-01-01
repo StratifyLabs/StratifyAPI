@@ -10,9 +10,9 @@ class EventLoop {
 public:
    EventLoop();
 
-   int start(Scene & start_scene);
-   int loop();
-
+   int loop(
+         SceneCollection & scene_collection
+         );
 
    const chrono::Timer & timer(){
       return m_timer;
@@ -28,7 +28,12 @@ public:
 
 private:
    chrono::Timer m_timer;
-   Scene * m_active_scene;
+   chrono::Timer m_update_timer;
+   SceneCollection * m_scene_collection;
+   Scene * m_current_scene;
+
+   void check_for_scene_change();
+   void process_update_event();
 
 };
 

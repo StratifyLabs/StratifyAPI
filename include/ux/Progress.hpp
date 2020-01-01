@@ -23,19 +23,29 @@ public:
       return *this;
    }
 
-   Progress& set_background_color(sg_color_t value){
-      m_background_color = value;
+   Progress& set_primary_color(sg_color_t value){
+      m_primary_color = value;
       return *this;
    }
 
-   sg_color_t background_color() const {
-      return m_background_color;
+   Progress& set_secondary_color(sg_color_t value){
+      m_secondary_color = value;
+      return *this;
+   }
+
+   sg_color_t primary_color() const {
+      return m_primary_color;
+   }
+
+   sg_color_t secondary_color() const {
+      return m_secondary_color;
    }
 
 private:
    u16 m_value;
    u16 m_maximum;
-   sg_color_t m_background_color;
+   sg_color_t m_primary_color;
+   sg_color_t m_secondary_color;
 
 };
 

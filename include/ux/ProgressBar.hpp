@@ -12,7 +12,6 @@ public:
 
    ProgressBar & set_thickness(drawing_size_t thickness);
 
-
    Progress& set_border_thickness(drawing_size_t value){
       m_border_thickness = value;
       return *this;

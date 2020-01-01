@@ -8,4 +8,12 @@ set(SOURCES
 	ProgressBar.cpp
 	Scene.cpp
 	ToggleSwitch.cpp
+
+	#Drawing primitives
+	Icon.cpp
+	Image.cpp
+	Text.cpp
+	TextBox.cpp
+	Rectangle.cpp
+
 	PARENT_SCOPE)
