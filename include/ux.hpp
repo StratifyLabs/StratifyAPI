@@ -7,6 +7,7 @@ namespace ux {}
 #include "ux/Drawing.hpp"
 #include "ux/Event.hpp"
 #include "ux/EventLoop.hpp"
+#include "ux/Icon.hpp"
 #include "ux/Image.hpp"
 #include "ux/Progress.hpp"
 #include "ux/ProgressBar.hpp"

@@ -9,6 +9,7 @@ set(SOURCES
 	SvgFont.cpp
 	SvgMemoryFont.cpp
   Pen.cpp
+	Theme.cpp
   Point.cpp
   Vector.cpp
   PARENT_SCOPE)

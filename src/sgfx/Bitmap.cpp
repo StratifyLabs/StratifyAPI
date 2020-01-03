@@ -14,7 +14,7 @@ using namespace calc;
 
 Palette & Palette::set_bits_per_pixel(u8 bits_per_pixel){
 	u32 count = 1 << bits_per_pixel;
-	if( count > 256 ){
+	if( count > 32 ){
 		m_colors.clear();
 		return *this;
 	}

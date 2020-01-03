@@ -1,19 +1,26 @@
 
 set(SOURCES
+
+	# Utility and Interface
 	Component.cpp
-	Drawing.cpp
 	Event.cpp
 	EventLoop.cpp
+	Scene.cpp
+
+	# Components
+	Button.cpp
 	Progress.cpp
 	ProgressBar.cpp
-	Scene.cpp
 	ToggleSwitch.cpp
 
 	#Drawing primitives
+	Drawing.cpp
 	Icon.cpp
 	Image.cpp
 	Text.cpp
 	TextBox.cpp
 	Rectangle.cpp
 
-	PARENT_SCOPE)
+	PARENT_SCOPE
+
+	)

@@ -20,8 +20,6 @@ namespace ux {
  */
 class Text : public Drawing, public DrawingAlignment<Text> {
 public:
-	/*! \details Construct a label with text */
-	Text(const var::String & text = "");
 
 	/*! \details Draw the scaled text as specified by \a attr */
 	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
@@ -73,9 +71,9 @@ protected:
 	const var::String & string() const { return m_string; }
 	bool resolve_font(sg_size_t h);
 	var::String m_string;
-	sgfx::Font * m_font;
-	sg_size_t m_font_point_size;
-	enum sgfx::Font::style m_font_style;
+	sgfx::Font * m_font = nullptr;
+	sg_size_t m_font_point_size = 0;
+	enum sgfx::Font::style m_font_style = sgfx::Font::style_regular;
 	sg_color_t m_color;
 	/*! \endcond */
 

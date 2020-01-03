@@ -1,8 +1,6 @@
 #include "ux/Scene.hpp"
 
-
 using namespace ux;
-
 
 Scene::~Scene(){
    for(auto component_pointer: m_component_list){
@@ -49,7 +47,6 @@ void Scene::handle_event(const Event & event){
          }
       }
    }
-
 }
 
 void Scene::trigger_event(const Event & event){

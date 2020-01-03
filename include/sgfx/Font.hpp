@@ -27,24 +27,46 @@ public:
 	 *
 	 */
 	enum style {
-		ANY,
-		THIN /*! Thin font (t) */,
-		THIN_ITALIC /*! Thin italic (ti) */,
-		EXTRA_LIGHT /*! Extra light (el) */,
-		EXTRA_LIGHT_ITALIC /*! Extra light italic (eli) */,
-		LIGHT /*! Light (l) */,
-		LIGHT_ITALIC /*! Light italic (li) */,
-		REGULAR /*! Regular (r) */,
-		REGULAR_ITALIC /*! Regular Italic (ri) */,
-		MEDIUM /*! Medium (m) */,
-		MEDIUM_ITALIC /*! Medium italic (m) */,
-		SEMI_BOLD /*! Semi bold (sb) */,
-		SEMI_BOLD_ITALIC /*! Semi bold italic (sbi) */,
-		BOLD /*! Bold (b) */,
-		BOLD_ITALIC /*! Bold italic (bi) */,
-		EXTRA_BOLD /*! Extra bold (eb) */,
-		EXTRA_BOLD_ITALIC /*! Extra bold italic (ebi) */,
-		ICONS /*! Font is a collection of bitmap icons (ico) */
+
+		style_any,
+		style_thin /*! Thin font (t) */,
+		style_thin_italic /*! Thin italic (ti) */,
+		style_extra_light /*! Extra light (el) */,
+		style_extra_light_italic /*! Extra light italic (eli) */,
+		style_light /*! Light (l) */,
+		style_light_italic /*! Light italic (li) */,
+		style_regular /*! Regular (r) */,
+		style_regular_italic /*! Regular Italic (ri) */,
+		style_medium /*! Medium (m) */,
+		style_medium_italic /*! Medium italic (m) */,
+		style_semi_bold /*! Semi bold (sb) */,
+		style_semi_bold_italic /*! Semi bold italic (sbi) */,
+		style_bold /*! Bold (b) */,
+		style_bold_italic /*! Bold italic (bi) */,
+		style_extra_bold /*! Extra bold (eb) */,
+		style_extra_bold_italic /*! Extra bold italic (ebi) */,
+		style_icons /*! Font is a collection of bitmap icons (ico) */,
+
+		/*! \cond */
+		ANY = style_any,
+		THIN = style_thin,
+		THIN_ITALIC	= style_thin_italic,
+		EXTRA_LIGHT	= style_extra_light,
+		EXTRA_LIGHT_ITALIC = style_extra_light_italic,
+		LIGHT = style_light,
+		LIGHT_ITALIC = style_light_italic,
+		REGULAR = style_regular,
+		REGULAR_ITALIC = style_regular_italic,
+		MEDIUM = style_medium,
+		MEDIUM_ITALIC = style_medium_italic,
+		SEMI_BOLD = style_semi_bold,
+		SEMI_BOLD_ITALIC = style_semi_bold_italic,
+		BOLD = style_bold,
+		BOLD_ITALIC = style_bold_italic,
+		EXTRA_BOLD = style_extra_bold,
+		EXTRA_BOLD_ITALIC = style_extra_bold_italic,
+		ICONS = style_icons
+		/*! \endcond */
 	};
 
 };
@@ -73,7 +95,7 @@ public:
  *
  *
  */
-class FontInfo : public api::SgfxInfoObject, public FontFlags {
+class FontInfo : public FontFlags {
 public:
 
 	FontInfo(

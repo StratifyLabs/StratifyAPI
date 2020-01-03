@@ -135,7 +135,12 @@ sg_font_kerning_pair_t FileFont::load_kerning(u32 offset) const {
 	return {0};
 }
 
-void FileFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, const Point & point) const {
+void FileFont::draw_char_on_bitmap(
+		const sg_font_char_t & ch,
+		Bitmap & dest,
+		const Point & point
+		) const {
+
 	u32 canvas_offset;
 	if( ch.canvas_idx != m_current_canvas ){
 		canvas_offset = m_canvas_start + ch.canvas_idx*m_canvas_size;
@@ -150,8 +155,6 @@ void FileFont::draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, con
 		}
 		m_current_canvas = ch.canvas_idx;
 	}
-
-	//what are the pen settings -- what to do when bpp differ between font and bitmap -- how to map??
 
 	dest.draw_sub_bitmap(
 				point,

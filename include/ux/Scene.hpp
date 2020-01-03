@@ -4,6 +4,7 @@
 #include "../api/WorkObject.hpp"
 #include "../var/Vector.hpp"
 #include "../hal/Display.hpp"
+#include "../sgfx/Theme.hpp"
 
 #include "Component.hpp"
 
@@ -34,7 +35,6 @@ public:
       return static_cast<T*>(find_generic_component(name));
    }
 
-
    Scene& enable();
    Scene& disable();
 
@@ -43,6 +43,10 @@ public:
    }
 
    SceneCollection * scene_collection(){
+      return m_scene_collection;
+   }
+
+   const SceneCollection * scene_collection() const {
       return m_scene_collection;
    }
 
@@ -65,7 +69,6 @@ private:
    chrono::MicroTime m_update_period = chrono::Milliseconds(30);
    SceneCollection * m_scene_collection = nullptr;
    var::Vector<Component*> m_component_list;
-
    Component * find_generic_component(const var::String & name);
 
 
@@ -92,6 +95,15 @@ public:
    void trigger_event(const Event & event);
 
 
+   SceneCollection& set_theme(const sgfx::Theme & theme){
+      m_theme = &theme;
+      return *this;
+   }
+
+   const sgfx::Theme & theme() const {
+      return (*m_theme);
+   }
+
    bool set_current_scene(const var::String & name){
       if( name.is_empty() ){
          m_current_scene = nullptr;
@@ -117,7 +129,8 @@ public:
 private:
    hal::Display & m_display;
    var::Vector<Scene*> m_scene_list;
-   Scene * m_current_scene;
+   Scene * m_current_scene = nullptr;
+   const sgfx::Theme * m_theme = nullptr;
 
 };
 

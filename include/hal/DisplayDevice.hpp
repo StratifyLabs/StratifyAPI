@@ -48,6 +48,8 @@ public:
 	DisplayInfo get_info() const;
 	DisplayPalette get_palette() const;
 
+	int set_palette(const display_palette_t & display_palette) const;
+
 	int set_mode(enum mode value);
 
 	/*! \details Returns true if the display is

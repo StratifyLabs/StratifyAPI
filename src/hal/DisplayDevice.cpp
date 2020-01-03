@@ -86,6 +86,16 @@ DisplayPalette DisplayDevice::get_palette() const {
 	return DisplayPalette(palette);
 }
 
+int DisplayDevice::set_palette(
+		const display_palette_t & display_palette
+		) const {
+	return ioctl(
+				Device::IoRequest(I_DISPLAY_SETPALETTE),
+				Device::IoConstArgument(&display_palette)
+				);
+}
+
+
 
 int DisplayDevice::set_window(const sgfx::Region & region) const {
 	display_attr_t attr;

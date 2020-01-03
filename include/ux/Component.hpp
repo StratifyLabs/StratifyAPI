@@ -4,6 +4,7 @@
 #include "../api/WorkObject.hpp"
 #include "../hal/Display.hpp"
 #include "../var/String.hpp"
+#include "../sgfx/Theme.hpp"
 #include "Drawing.hpp"
 #include "Event.hpp"
 
@@ -29,6 +30,16 @@ public:
 
    Component & set_drawing_point(const DrawingPoint & drawing_point){
       m_reference_drawing_attributes.set_point(drawing_point);
+      return *this;
+   }
+
+   Component & set_theme_style(enum sgfx::Theme::style value){
+      m_theme_style = value;
+      return *this;
+   }
+
+   Component & set_theme_state(enum sgfx::Theme::state value){
+      m_theme_state = value;
       return *this;
    }
 
@@ -78,6 +89,13 @@ protected:
       return m_local_drawing_attributes;
    }
 
+   enum colors {
+      color_background = 0,
+      color_border = 5,
+      color_default = 10,
+      color_text = 15
+   };
+
 private:
 
    var::String m_name;
@@ -87,6 +105,9 @@ private:
    DrawingAttributes m_local_drawing_attributes;
    sgfx::Bitmap m_local_bitmap;
    hal::Display * m_display = nullptr;
+   enum sgfx::Theme::style m_theme_style = sgfx::Theme::style_brand_primary;
+   enum sgfx::Theme::state m_theme_state = sgfx::Theme::state_default;
+
 
    //needs a palette to use while drawing
    sgfx::Palette * m_palette = nullptr;

@@ -16,7 +16,7 @@
 
 namespace sgfx {
 
-class Palette : public api::SgfxObject {
+class Palette {
 public:
 
 	using Position = var::Reference::Position;

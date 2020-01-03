@@ -12,7 +12,6 @@ Icon::Icon(){
 	m_rotation = rotation_right;
 }
 
-
 void Icon::draw_to_scale(const DrawingScaledAttributes & attr){
 	sg_point_t p = attr.point();
 

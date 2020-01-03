@@ -5,9 +5,7 @@
 
 #include <sos/link.h>
 
-
 #include "../api/SysObject.hpp"
-#include "../var/ConstString.hpp"
 #include "../chrono/MicroTime.hpp"
 #include "Stat.hpp"
 #include "../arg/Argument.hpp"

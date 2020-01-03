@@ -1,35 +1,33 @@
-#include "ux/ToggleSwitch.hpp"
+#include "ux/Button.hpp"
 #include "ux/Rectangle.hpp"
+#include "ux/Text.hpp"
 #include "ux/Scene.hpp"
 
 using namespace ux;
 
-void ToggleSwitch::draw(const DrawingAttributes & attributes){
+void Button::draw(const DrawingAttributes & attributes){
 
+   clear(attributes);
 
    //draw the background
    RoundedRectangle()
-         .set_color( color_default )
+         .set_color(color_default)
          .set_radius(50)
          .draw(attributes, DrawingPoint(0,0), DrawingArea(1000,1000));
 
-   RoundedRectangle()
-         .set_color( color_text )
-         .set_radius(50)
-         .draw(attributes, DrawingPoint(100,100), DrawingArea(800,800));
+   //if the icon is available, draw it
 
-   DrawingPoint toggle_point = DrawingPoint(150,150);
-   if( state() == true ){
-      toggle_point.set_x(400);
+   //if the label is available, draw it
+   if( m_label.is_empty() == false ){
+      Text().set_string(m_label)
+            .set_color(color_text)
+            .set_align_center()
+            .set_align_middle()
+            .draw(attributes, DrawingPoint(0,0), DrawingArea(1000,1000));
    }
-
-   RoundedRectangle()
-         .set_color( color_default )
-         .set_radius(60)
-         .draw(attributes, toggle_point, DrawingArea(450,700));
 }
 
-void ToggleSwitch::handle_event(const ux::Event & event){
+void Button::handle_event(const ux::Event & event){
    //change the state when an event happens in the component
    if( event == SystemEvent(SystemEvent::id_enter) ){
       redraw();
@@ -43,7 +41,7 @@ void ToggleSwitch::handle_event(const ux::Event & event){
 
          if( scene() ){
             scene()->trigger_event(
-                     ToggleSwitchEvent(name(), state())
+                     ButtonEvent(name(), state())
                      );
          }
 

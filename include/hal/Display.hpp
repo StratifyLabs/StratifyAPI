@@ -211,6 +211,11 @@ public:
 		return DisplayPalette();
 	}
 
+	virtual int set_palette(const display_palette_t & display_palette) const {
+		MCU_UNUSED_ARGUMENT(display_palette);
+		return -1;
+	}
+
 	virtual int set_window(const sgfx::Region & region) const {
 		return 0;
 	}

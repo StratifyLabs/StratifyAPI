@@ -1,5 +1,6 @@
 #include "ux/Component.hpp"
 #include "sys/Printer.hpp"
+#include "ux/Scene.hpp"
 
 using namespace ux;
 
@@ -36,6 +37,17 @@ Component & Component::disable(){
 void Component::refresh_drawing(){
    if( m_display ){
       //use the palette if it is available
+
+      printf("load theme style, state %d, %d\n", m_theme_style, m_theme_state);
+
+      if( scene()->scene_collection()->theme().set_display_palette(
+               *m_display,
+               m_theme_style,
+               m_theme_state
+               ) < 0 ){
+         printf("--failed to set display palette\n");
+      }
+
       if( m_display->set_window(
                m_reference_drawing_attributes.calculate_region_on_bitmap()
                ) < 0 ){

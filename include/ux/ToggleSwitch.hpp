@@ -50,24 +50,11 @@ public:
       return *this;
    }
 
-   ToggleSwitch& set_primary_color(sg_color_t value){
-      m_primary_color = value;
-      return *this;
-   }
-
-   ToggleSwitch& set_secondary_color(sg_color_t value){
-      m_secondary_color = value;
-      return *this;
-   }
-
    void draw(const DrawingAttributes & attributes);
    void handle_event(const ux::Event & event);
 
 private:
    bool m_state;
-   sg_color_t m_primary_color = 1;
-   sg_color_t m_secondary_color = 0;
-
 
 };
 

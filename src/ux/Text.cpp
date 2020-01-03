@@ -6,13 +6,6 @@
 
 using namespace ux;
 
-Text::Text(const var::String & text){
-	m_string = text;
-	m_font = 0;
-	m_font_point_size = 0;
-	m_font_style = FontInfo::REGULAR;
-}
-
 bool Text::resolve_font(sg_size_t h){
 	if( this->font() == nullptr ){
 		const FontInfo * info =
@@ -75,7 +68,8 @@ void Text::draw_to_scale(const DrawingScaledAttributes & attr){
 
 		font->draw(
 					string(),
-					attr.bitmap() << Pen().set_color( m_color ),
-					top_left);
+					attr.bitmap() << Pen().set_color( m_color ).set_zero_transparent(),
+					top_left
+					);
 	}
 }

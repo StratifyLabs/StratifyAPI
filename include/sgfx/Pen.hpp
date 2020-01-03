@@ -49,11 +49,21 @@ public:
 	using IsFill = arg::Argument<bool, struct PenIsFillTag>;
 
 	enum flags {
+
+		/*! \cond */
 		IS_SOLID /*! Draw solid */ = SG_PEN_FLAG_IS_SOLID,
 		IS_INVERT /*! Draw Invert (XOR) */ = SG_PEN_FLAG_IS_INVERT,
 		IS_BLEND /*! Draw Blend (OR) */ = SG_PEN_FLAG_IS_BLEND,
 		IS_ERASE /*! Draw Erase (NOT AND) */ = SG_PEN_FLAG_IS_ERASE,
-		IS_FILL /*! Draw Icon with fill points */ = SG_PEN_FLAG_IS_FILL
+		IS_FILL /*! Draw Icon with fill points */ = SG_PEN_FLAG_IS_FILL,
+		/*! \endcond */
+
+		flag_is_solid /*! Draw solid */ = SG_PEN_FLAG_IS_SOLID,
+		flag_is_invert /*! Draw Invert (XOR) */ = SG_PEN_FLAG_IS_INVERT,
+		flag_is_blend /*! Draw Blend (OR) */ = SG_PEN_FLAG_IS_BLEND,
+		flag_is_erase /*! Draw Erase (NOT AND) */ = SG_PEN_FLAG_IS_ERASE,
+		flag_is_fill /*! Draw Icon with fill points */ = SG_PEN_FLAG_IS_FILL,
+		flag_is_zero_transparent /*! Ignore zero's when copying bitmaps */ = SG_PEN_FLAG_IS_ZERO_TRANSPARENT
 	};
 
 	Pen();
@@ -80,13 +90,16 @@ public:
 	Pen & set_solid(){ m_pen.o_flags &= ~SG_PEN_FLAG_NOT_SOLID_MASK; return *this; }
 
 	/*! \details Sets the pen to inverting color mode (XOR). */
-	Pen & set_invert(){ set_solid(); m_pen.o_flags |= IS_INVERT; return *this; }
+	Pen & set_invert(){ set_solid(); m_pen.o_flags |= flag_is_invert; return *this; }
 
 	/*! \details Sets the pen to a clearing mode (AND). */
-	Pen & set_erase(){ set_solid(); m_pen.o_flags |= IS_ERASE; return *this; }
+	Pen & set_erase(){ set_solid(); m_pen.o_flags |= flag_is_erase; return *this; }
 
 	/*! \details Sets the pen to a blending mode (OR). */
-	Pen & set_blend(){ set_solid(); m_pen.o_flags |= IS_INVERT; return *this; }
+	Pen & set_blend(){ set_solid(); m_pen.o_flags |= flag_is_invert; return *this; }
+
+	/*! \details Causes drawing to ignore zeros when copying bitmaps. */
+	Pen & set_zero_transparent(){ m_pen.o_flags |= flag_is_zero_transparent; return *this; }
 
 	enum flags o_flags() const { return static_cast<enum flags>(m_pen.o_flags); }
 	enum flags flags() const { return o_flags(); }
@@ -104,9 +117,9 @@ public:
 	/*! \details Sets the pen to fill when drawing vector icons. */
 	Pen & set_fill(bool v = true){
 		if( v ){
-			m_pen.o_flags |= IS_FILL;
+			m_pen.o_flags |= flag_is_fill;
 		} else {
-			m_pen.o_flags &= ~IS_FILL;
+			m_pen.o_flags &= ~flag_is_fill;
 		}
 		return *this;
 	}

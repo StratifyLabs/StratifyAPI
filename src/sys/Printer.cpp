@@ -353,6 +353,7 @@ Printer & Printer::operator << (const var::Reference & a){
 				var::String().format("[%04d]", i).cstring(),
 				data_string.cstring()
 				);
+		data_string.clear();
 	}
 
 	return *this;
