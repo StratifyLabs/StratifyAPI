@@ -25,6 +25,9 @@ void Button::draw(const DrawingAttributes & attributes){
             .set_align_middle()
             .draw(attributes, DrawingPoint(0,0), DrawingArea(1000,1000));
    }
+
+   apply_antialias_filter(attributes);
+
 }
 
 void Button::handle_event(const ux::Event & event){

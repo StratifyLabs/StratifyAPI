@@ -60,6 +60,20 @@ private:
 	var::Vector<sg_color_t> m_colors;
 };
 
+class AntiAliasFilter {
+public:
+   int initialize(
+         var::Array<u8, 8> contrast_map
+         );
+
+   const sg_antialias_filter_t * filter() const {
+      return &m_filter;
+   }
+
+private:
+   sg_antialias_filter_t m_filter;
+};
+
 /*! \brief Bitmap Class
  * \details This class implements a bitmap and is
  * powered by the sgfx library.
@@ -361,6 +375,14 @@ public:
 	 */
 	void draw_bitmap(const Point & p_dest, const Bitmap & src) const {
 		api()->draw_bitmap(bmap(), p_dest, src.bmap());
+	}
+
+	void apply_antialias_filter(const AntiAliasFilter & filter, const Region & bounds){
+		api()->antialias_filter_apply(
+					bmap(),
+					filter.filter(),
+					bounds
+					);
 	}
 
 	/*!

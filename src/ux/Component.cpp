@@ -38,7 +38,6 @@ void Component::refresh_drawing(){
    if( m_display ){
       //use the palette if it is available
 
-      printf("load theme style, state %d, %d\n", m_theme_style, m_theme_state);
 
       if( scene()->scene_collection()->theme().set_display_palette(
                *m_display,
@@ -56,5 +55,18 @@ void Component::refresh_drawing(){
       //using the attributes and bitmap to write the display device
       m_display->write(m_local_bitmap);
 
+   }
+}
+
+const sgfx::Theme & Component::theme() const {
+   return scene()->scene_collection()->theme();
+}
+
+void Component::apply_antialias_filter(const DrawingAttributes & attributes){
+   if( is_antialias() ){
+      attributes.bitmap().apply_antialias_filter(
+               theme().antialias_filter(),
+               attributes.bitmap().region()
+               );
    }
 }

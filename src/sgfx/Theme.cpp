@@ -8,6 +8,8 @@
 using namespace sgfx;
 using namespace hal;
 
+Theme::Theme(fs::File & color_file) : m_color_file(color_file){
+}
 
 size_t Theme::calculate_color_offset(enum style style, enum state state) const {
    return (style * m_color_count * (last_state + 1) + (state * m_color_count))*2 + sizeof(header_t);
@@ -41,7 +43,6 @@ var::Vector<u16> Theme::read_palette(
    var::Vector<u16> result(m_color_count);
 
    int offset = calculate_color_offset(style,state);
-   printf("read palette at offset %d\n", offset);
    if( m_color_file.read(
             fs::File::Location(offset),
             result

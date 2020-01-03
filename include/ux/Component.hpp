@@ -43,6 +43,15 @@ public:
       return *this;
    }
 
+   bool is_antialias() const {
+      return m_is_antialias;
+   }
+
+   Component & set_antialias(bool value = true){
+      m_is_antialias = value;
+      return *this;
+   }
+
    Component & enable(
          hal::Display & display
          );
@@ -51,6 +60,8 @@ public:
    bool is_enabled() const {
       return (m_local_bitmap.to_const_void() != nullptr);
    }
+
+   const sgfx::Theme & theme() const;
 
    //update the location of the component (allow animations)
 
@@ -63,6 +74,8 @@ public:
    const var::String & name() const {
       return m_name;
    }
+
+   void apply_antialias_filter(const DrawingAttributes & attributes);
 
    void redraw(){
       draw(drawing_attributes());
@@ -81,6 +94,8 @@ public:
 
    Scene * scene(){ return m_scene; }
    const Scene * scene() const { return m_scene; }
+
+
 
 protected:
    void refresh_drawing();
@@ -107,7 +122,7 @@ private:
    hal::Display * m_display = nullptr;
    enum sgfx::Theme::style m_theme_style = sgfx::Theme::style_brand_primary;
    enum sgfx::Theme::state m_theme_state = sgfx::Theme::state_default;
-
+   bool m_is_antialias = true;
 
    //needs a palette to use while drawing
    sgfx::Palette * m_palette = nullptr;

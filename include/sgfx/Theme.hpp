@@ -12,7 +12,7 @@ public:
    using BitsPerPixel = Bitmap::BitsPerPixel;
    using PixelFormat = arg::Argument<u8, struct ThemePixelFormatTag>;
 
-   Theme(fs::File & color_file) : m_color_file(color_file){}
+   Theme(fs::File & color_file);
 
    enum style {
       style_dark,
@@ -73,6 +73,15 @@ public:
          enum state state
          ) const;
 
+   AntiAliasFilter & antialias_filter(){
+      return m_antialias_filter;
+   }
+
+
+   const AntiAliasFilter & antialias_filter() const {
+      return m_antialias_filter;
+   }
+
 private:
    typedef struct MCU_PACK {
       u16 version;
@@ -83,6 +92,7 @@ private:
    //holds the RGB values for all styles and states
 
    fs::File & m_color_file;
+   AntiAliasFilter m_antialias_filter;
 
    header_t m_header;
    u16 m_color_count = 0;

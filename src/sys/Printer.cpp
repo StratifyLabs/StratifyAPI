@@ -653,7 +653,7 @@ Printer & Printer::operator << (const sgfx::Bitmap & a){
 		line.append("-");
 	}
 	line.append("--");
-	key(var::String().format("lines end", i), "");
+	key("lines end", line);
 
 	return *this;
 }

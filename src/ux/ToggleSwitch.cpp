@@ -27,6 +27,9 @@ void ToggleSwitch::draw(const DrawingAttributes & attributes){
          .set_color( color_default )
          .set_radius(60)
          .draw(attributes, toggle_point, DrawingArea(450,700));
+
+   apply_antialias_filter(attributes);
+
 }
 
 void ToggleSwitch::handle_event(const ux::Event & event){

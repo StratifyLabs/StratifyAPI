@@ -12,6 +12,15 @@ using namespace sgfx;
 using namespace sys;
 using namespace calc;
 
+int AntiAliasFilter::initialize(
+      var::Array<u8, 8> contrast_map
+      ){
+   return Bitmap::api()->antialias_filter_init(
+            &m_filter,
+            contrast_map.data()
+            );
+}
+
 Palette & Palette::set_bits_per_pixel(u8 bits_per_pixel){
 	u32 count = 1 << bits_per_pixel;
 	if( count > 32 ){
@@ -234,20 +243,12 @@ Bitmap::Bitmap(
 	refer_to(hdr, is_read_only);
 }
 
-Bitmap::Bitmap(const Area & area, BitsPerPixel bits_per_pixel){
+Bitmap::Bitmap(
+		const Area & area,
+		BitsPerPixel bits_per_pixel
+		){
 	initialize_members();
-	if( api()->bits_per_pixel == 0 ){
-		switch(bits_per_pixel.argument()){
-			case 1:
-			case 2:
-			case 4:
-			case 8:
-			case 16:
-			case 32:
-				m_bmap.bits_per_pixel = bits_per_pixel.argument();
-		}
-	}
-	allocate(area);
+	allocate(area, bits_per_pixel);
 }
 
 Bitmap::~Bitmap(){
