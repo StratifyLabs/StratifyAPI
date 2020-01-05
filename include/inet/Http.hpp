@@ -125,13 +125,13 @@ public:
 	int get(
 			const var::String & url,
 			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
+			const sys::ProgressCallback * progress_callback = nullptr
 			);
 
 	int get(
 			UrlEncodedString url,
 			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
+			const sys::ProgressCallback * progress_callback = nullptr
 			){
 		return get(url.argument(), response, progress_callback);
 	}
@@ -140,14 +140,14 @@ public:
 			const var::String& url,
 			RequestString request,
 			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
+			const sys::ProgressCallback * progress_callback = nullptr
 			);
 
 	int post(
 			UrlEncodedString url,
 			RequestString request,
 			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
+			const sys::ProgressCallback * progress_callback = nullptr
 			){
 		return post(url.argument(), request, response, progress_callback);
 	}
@@ -156,14 +156,14 @@ public:
 			const var::String & url,
 			RequestFile request,
 			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
+			const sys::ProgressCallback * progress_callback = nullptr
 			);
 
 	int post(
 			UrlEncodedString url,
 			RequestFile request,
 			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
+			const sys::ProgressCallback * progress_callback = nullptr
 			){
 		return post(url.argument(), request, response, progress_callback);
 	}
@@ -172,14 +172,14 @@ public:
 			const var::String& url,
 			RequestString request,
 			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
+			const sys::ProgressCallback * progress_callback = nullptr
 			);
 
 	int put(
 			UrlEncodedString url,
 			RequestString request,
 			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
+			const sys::ProgressCallback * progress_callback = nullptr
 			){
 		return put(url.argument(), request, response, progress_callback);
 	}
@@ -188,14 +188,14 @@ public:
 			const var::String& url,
 			RequestFile request,
 			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
+			const sys::ProgressCallback * progress_callback = nullptr
 			);
 
 	int put(
 			UrlEncodedString url,
 			RequestFile request,
 			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
+			const sys::ProgressCallback * progress_callback = nullptr
 			){
 		return put(url.argument(), request, response, progress_callback);
 	}
@@ -204,14 +204,14 @@ public:
 			const var::String& url,
 			RequestString request,
 			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
+			const sys::ProgressCallback * progress_callback = nullptr
 			);
 
 	int patch(
 			UrlEncodedString url,
 			RequestString request,
 			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
+			const sys::ProgressCallback * progress_callback = nullptr
 			){
 		return patch(url.argument(), request, response, progress_callback);
 	}
@@ -220,14 +220,14 @@ public:
 			const var::String& url,
 			RequestFile request,
 			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
+			const sys::ProgressCallback * progress_callback = nullptr
 			);
 
 	int patch(
 			UrlEncodedString url,
 			RequestFile request,
 			ResponseFile response,
-			const sys::ProgressCallback * progress_callback = 0
+			const sys::ProgressCallback * progress_callback = nullptr
 			){
 		return patch(url.argument(), request, response, progress_callback);
 	}
@@ -242,16 +242,16 @@ public:
 
 	/*! \details List of values for error_number() when using the HttpClient class. */
 	enum error {
-		NONE /*! No Errors */,
-		FAILED_TO_CREATE_SOCKET /*! Failed to create a socket (1) */,
-		FAILED_TO_CONNECT_TO_SOCKET /*! Failed to connect to socket (2) */,
-		FAILED_TO_WRITE_HEADER /*! Failed to write request header (3) */,
-		FAILED_TO_WRITE_DATA /*! Failed to write data (4) */,
-		FAILED_TO_WRITE_INCOMING_DATA_TO_FILE /*! Failed  write incoming data to file provided (5) */,
-		FAILED_TO_FIND_ADDRESS /*! Failed to find IP address of URL (6) */,
-		FAILED_TO_GET_STATUS_CODE /*! Failed to get a status code in the HTTP response (7) */,
-		FAILED_TO_GET_HEADER /*! Failed to receive the header (8) */,
-		FAILED_WRONG_DOMAIN
+		error_none /*! No Errors */,
+		error_failed_to_create_socket /*! Failed to create a socket (1) */,
+		error_failed_to_connect_to_socket /*! Failed to connect to socket (2) */,
+		error_failed_to_write_header /*! Failed to write request header (3) */,
+		error_failed_to_write_data /*! Failed to write data (4) */,
+		error_failed_to_write_incoming_data_to_file /*! Failed  write incoming data to file provided (5) */,
+		error_failed_to_find_address /*! Failed to find IP address of URL (6) */,
+		error_failed_to_get_status_code /*! Failed to get a status code in the HTTP response (7) */,
+		error_failed_to_get_header /*! Failed to receive the header (8) */,
+		error_failed_wrong_domain
 	};
 
 	/*! \details Returns a reference to the header that is returned
@@ -311,11 +311,11 @@ public:
 	const var::Vector<HttpHeaderPair> & header_response_pairs() const { return m_header_response_pairs; }
 
 #if defined __link
-	const var::String & traffic(){
+	const var::String & traffic() const {
 		return m_traffic;
 	}
 #else
-	const var::String traffic(){
+	const var::String traffic() const {
 		return var::String();
 	}
 #endif

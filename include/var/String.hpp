@@ -749,10 +749,10 @@ public:
 		 * ```
 		 *
 		 */
-	int to_long(
+	long to_long(
 			enum number_base base = base_10
 			){
-		return ::strtol(cstring(), 0, base);
+		return ::strtol(cstring(), nullptr, base);
 	}
 
 	/*! \details Converts the string to a long integer
@@ -768,10 +768,10 @@ public:
 		 * ```
 		 *
 		 */
-	int to_unsigned_long(
+	unsigned long to_unsigned_long(
 			enum number_base base = base_10
 			){
-		return ::strtoul(cstring(), 0, base);
+		return ::strtoul(cstring(), nullptr, base);
 	}
 
 	std::string & string(){ return m_string; }

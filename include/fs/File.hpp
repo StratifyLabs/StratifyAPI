@@ -740,6 +740,9 @@ public:
 		m_location = 0;
 		m_open_flags = flags;
 	}
+	virtual ~DataFile(){
+		m_fd = -1;
+	}
 
 	DataFile(
 			fs::File::Path file_path
@@ -766,7 +769,10 @@ public:
 	 * functionality.
 	 *
 	 */
-	int close(){ return 0; }
+	int close(){
+		printf("close data file with fileno %d\n", fileno());
+		return 0;
+	}
 
 	/*! \details Reimplements fs::File::read() to simply
 	 * read from the var::Data object contained herein
@@ -839,6 +845,9 @@ public:
 			){
 		m_location = 0;
 		m_open_flags = flags;
+	}
+	virtual ~ReferenceFile(){
+		m_fd = -1;
 	}
 
 	/*! \details Reimplements fs::File::open() to have no

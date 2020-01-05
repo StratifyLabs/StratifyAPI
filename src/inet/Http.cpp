@@ -148,10 +148,12 @@ int HttpClient::query(const var::String & command,
 	int result;
 	Url u(url);
 
-	u32 get_file_pos;
+	u32 get_file_pos = 0;
 	if( get_file.argument() ){
-		get_file_pos = get_file.argument()->seek(
-					fs::File::Location(0), File::CURRENT
+		get_file_pos = static_cast<u32>(
+					get_file.argument()->seek(
+						fs::File::Location(0), File::CURRENT
+						)
 					);
 	}
 
@@ -179,7 +181,7 @@ int HttpClient::query(const var::String & command,
 #endif
 
 	if( listen_for_header() < 0 ){
-		set_error_number(FAILED_TO_GET_HEADER);
+		set_error_number(error_failed_to_get_header);
 		return -1;
 	}
 	bool is_redirected = false;
@@ -195,23 +197,28 @@ int HttpClient::query(const var::String & command,
 		is_redirected = true;
 	}
 
-	const sys::ProgressCallback * callback = 0;
+	const sys::ProgressCallback * callback = nullptr;
 	//don't show the progress on the response if a file was transmitted
-	if( send_file.argument() == 0 ){
+	if( send_file.argument() == nullptr ){
 		callback = progress_callback;
 	}
 
 	if( get_file.argument() && (is_redirected == false)){
-		listen_for_data(
+		result = listen_for_data(
 					*(get_file.argument()),
 					callback
 					);
 	} else {
 		NullFile null_file;
-		listen_for_data(
+		result = listen_for_data(
 					null_file,
 					callback
 					);
+	}
+
+
+	if( result < 0 ){
+		return -1;
 	}
 
 	if( is_redirected ){
@@ -219,7 +226,9 @@ int HttpClient::query(const var::String & command,
 
 		if( get_file.argument() ){
 			get_file.argument()->seek(
-						fs::File::Location(get_file_pos),
+						fs::File::Location(
+							static_cast<int>(get_file_pos)
+							),
 						File::SET
 						);
 		}
@@ -278,7 +287,7 @@ int HttpClient::connect_to_server(
 			return 0;
 		} else {
 			m_header.format("socket is 0x%X, domain is %s", socket().fileno(), m_alive_domain.cstring());
-			set_error_number(FAILED_WRONG_DOMAIN);
+			set_error_number(error_failed_wrong_domain);
 			return -1;
 		}
 	}
@@ -291,12 +300,12 @@ int HttpClient::connect_to_server(
 		m_address.set_port(port);
 
 		if( socket().create(m_address)  < 0 ){
-			set_error_number(FAILED_TO_CREATE_SOCKET);
+			set_error_number(error_failed_to_create_socket);
 			return -1;
 		}
 
 		if( socket().connect(m_address) < 0 ){
-			set_error_number(FAILED_TO_CONNECT_TO_SOCKET);
+			set_error_number(error_failed_to_connect_to_socket);
 			socket().close();
 			return -1;
 		}
@@ -309,7 +318,7 @@ int HttpClient::connect_to_server(
 				address_info.error_number()
 				);
 
-	set_error_number(FAILED_TO_FIND_ADDRESS);
+	set_error_number(error_failed_to_find_address);
 	return -1;
 }
 
@@ -368,8 +377,8 @@ int HttpClient::send_header(
 	printf("Sending %d data bytes\n", file ? file->size() : 0);
 #endif
 
-	if( socket().write(m_header) != (int)m_header.length() ){
-		set_error_number(FAILED_TO_WRITE_HEADER);
+	if( socket().write(m_header) != static_cast<int>(m_header.length()) ){
+		set_error_number(error_failed_to_write_header);
 		return -1;
 	}
 
@@ -380,7 +389,7 @@ int HttpClient::send_header(
 				 fs::File::Size(file->size()),
 				 progress_callback
 				 ) < 0 ){
-			set_error_number(FAILED_TO_WRITE_DATA);
+			set_error_number(error_failed_to_write_data);
 			return -1;
 		}
 	}
@@ -419,7 +428,7 @@ int HttpClient::listen_for_header(){
 							);
 				is_first_line = false;
 				if( tokens.size() < 2 ){
-					set_error_number(FAILED_TO_GET_STATUS_CODE);
+					set_error_number(error_failed_to_get_status_code);
 					m_status_code = -1;
 					return -1;
 				}
@@ -427,7 +436,7 @@ int HttpClient::listen_for_header(){
 			}
 
 			if( title == "CONTENT-LENGTH" ){
-				m_content_length = pair.value().to_integer();
+				m_content_length = static_cast<unsigned int>(pair.value().to_integer());
 			}
 
 			if( title == "CONTENT-TYPE" ){
@@ -437,7 +446,7 @@ int HttpClient::listen_for_header(){
 							var::Tokenizer::Delimeters(" ;")
 							);
 				if( String(tokens.at(0)) == "text/event-stream" ){
-					m_content_length = (u32)-1; //accept data until the operation is cancelled
+					m_content_length = static_cast<u32>(-1); //accept data until the operation is cancelled
 				}
 			}
 
@@ -473,8 +482,8 @@ int HttpClient::listen_for_data(
 					 socket(),
 					 fs::File::PageSize(bytes_incoming),
 					 fs::File::Size(bytes_incoming)
-					 ) != (int)bytes_incoming ){
-				set_error_number(FAILED_TO_WRITE_INCOMING_DATA_TO_FILE);
+					 ) != static_cast<int>(bytes_incoming) ){
+				set_error_number(error_failed_to_write_incoming_data_to_file);
 				return -1;
 			}
 
@@ -485,14 +494,13 @@ int HttpClient::listen_for_data(
 	} else {
 		//read the response from the socket
 		if( m_content_length != 0 ){
-
 			int result = destination.write(
 						socket(),
 						fs::File::PageSize(m_transfer_size),
 						fs::File::Size(m_content_length),
 						progress_callback
 						);
-			if( result != (int)m_content_length ){
+			if( result != static_cast<int>(m_content_length) ){
 				return -1;
 			}
 		}

@@ -137,7 +137,7 @@ int File::rename(SourcePath old_path,
 					  SAPI_LINK_DRIVER_LAST
 					  ){
 #if defined __link
-	if( link_driver.argument() == 0 ){
+	if( link_driver.argument() == nullptr ){
 		return ::rename(
 					old_path.argument().cstring(),
 					new_path.argument().cstring()
@@ -160,6 +160,7 @@ int File::copy(
 		const sys::ProgressCallback * progress_callback
 		){
 
+	MCU_UNUSED_ARGUMENT(source_path);
 	struct SAPI_LINK_STAT st;
 
 	if( source.argument().fstat(&st) < 0 ){
@@ -296,8 +297,8 @@ int File::create(
 }
 
 u32 File::size() const {
-	u32 loc = seek(Location(0), CURRENT); //get current cursor
-	u32 size = seek(Location(0), END); //seek to the end
+	int loc = seek(Location(0), CURRENT); //get current cursor
+	u32 size = static_cast<u32>(seek(Location(0), END)); //seek to the end
 	seek(Location(loc), SET); //restore the cursor
 	return size;
 }
@@ -347,7 +348,7 @@ u32 File::size(
 			 , link_driver
 		 #endif
 			 ) < 0 ){
-		return (s32)-1;
+		return static_cast<u32>(-1);
 	}
 	return st.st_size;
 }
@@ -426,7 +427,7 @@ int File::read(void * buf, Size size) const {
 					driver(),
 					m_fd,
 					buf,
-					size.argument())
+					static_cast<int>(size.argument()))
 				);
 }
 
@@ -439,7 +440,8 @@ int File::write(
 					driver(),
 					m_fd,
 					buf,
-					size.argument())
+					static_cast<int>(size.argument())
+					)
 				);
 }
 
@@ -482,7 +484,7 @@ char * File::gets(char * s, int n, char term) const {
 	char buffer[GETS_BUFFER_SIZE];
 
 	if( n < 1 ){
-		return 0;
+		return nullptr;
 	}
 
 	s[0] = 0;
@@ -506,7 +508,7 @@ char * File::gets(char * s, int n, char term) const {
 	} while( (t < (n-1)) && (s[t] != term) && (ret > 0) );
 
 	if( t == 0 ){
-		return 0;
+		return nullptr;
 	}
 
 	if( ret > 0 ){
@@ -535,7 +537,7 @@ const char * File::gets(var::String & s, char term) const {
 		if( ret > 0 ){
 			s.append(c);
 		} else {
-			return 0;
+			return nullptr;
 		}
 	} while(c != term);
 
@@ -627,10 +629,14 @@ int File::write(
 		) const {
 	u32 size_processed = 0;
 	u32 file_size = size.argument();
-	if( file_size == (u32)-1 ){
+	if( file_size == static_cast<u32>(-1) ){
 		file_size = source_file.size();
 	}
+
 	u32 page_size_value = page_size.argument();
+	if(page_size_value == 0 ){
+		page_size_value = SAPI_LINK_DEFAULT_PAGE_SIZE;
+	}
 
 	var::Data buffer(page_size_value);
 
@@ -653,18 +659,23 @@ int File::write(
 		if( result > 0 ){
 			result = write(
 						buffer.to_const_void(),
-						Size(result)
+						Size(static_cast<size_t>(result))
 						);
 			if( result > 0 ){
-				size_processed += result;
+				size_processed += static_cast<u32>(result);
+			} else if( result < 0 ){
+				return set_error_number_if_error(result);
 			}
 		}
 
 		if( progress_callback ){
 			//abort the transaction
-			if( progress_callback->update(size_processed, file_size) == true ){
+			if( progress_callback->update(
+					 static_cast<int>(size_processed),
+					 static_cast<int>(file_size)
+					 ) == true ){
 				progress_callback->update(0,0);
-				return size_processed;
+				return static_cast<int>(size_processed);
 			}
 		}
 
@@ -673,9 +684,9 @@ int File::write(
 	//this will terminate the progress operation
 	if( progress_callback ){ progress_callback->update(0,0); }
 	if( (result < 0) && (size_processed == 0) ){
-		return result;
+		return set_error_number_if_error(result);
 	}
-	return set_error_number_if_error(size_processed);
+	return set_error_number_if_error(static_cast<int>(size_processed));
 }
 
 DataFile::DataFile(
@@ -721,9 +732,9 @@ int DataFile::read(
 		return set_error_number_if_error(-1);
 	}
 
-	int size_ready = m_data.size() - m_location;
-	if( size_ready > (int)nbyte.argument() ){
-		size_ready = nbyte.argument();
+	int size_ready = static_cast<int>(m_data.size()) - m_location;
+	if( size_ready > static_cast<int>(nbyte.argument()) ){
+		size_ready = static_cast<int>(nbyte.argument());
 	}
 
 	if( size_ready < 0 ){
@@ -733,7 +744,7 @@ int DataFile::read(
 	var::Reference::memory_copy(
 				SourceBuffer(m_data.to_const_u8() + m_location),
 				DestinationBuffer(buf),
-				Size(size_ready)
+				Size(static_cast<size_t>(size_ready))
 				);
 
 	m_location += size_ready;
@@ -749,10 +760,10 @@ int DataFile::write(
 		return set_error_number_if_error(-1);
 	}
 
-	int size_ready = 0;
+	u32 size_ready = 0;
 	if( flags().is_append() ){
 		//make room in the m_data object for more bytes
-		m_location = m_data.size();
+		m_location = static_cast<int>(m_data.size());
 		if( m_data.resize(m_data.size() + nbyte.argument()) < 0 ){
 			set_error_number_to_errno();
 			return set_error_number_if_error(-1);
@@ -760,15 +771,16 @@ int DataFile::write(
 		size_ready = nbyte.argument();
 	} else {
 		//limit writes to the current size of the data
-		size_ready = m_data.size() - m_location;
-		if( size_ready > (int)nbyte.argument() ){
-			size_ready = nbyte.argument();
+		if( static_cast<int>(m_data.size()) > m_location ){
+			size_ready = m_data.size() - static_cast<u32>(m_location);
+			if( size_ready > nbyte.argument() ){
+				size_ready = nbyte.argument();
+			}
+		} else {
+			return set_error_number_if_error(-1);
 		}
 	}
 
-	if( size_ready < 0 ){
-		return set_error_number_if_error(-1);
-	}
 
 	var::Reference::memory_copy(
 				SourceBuffer(buf),
@@ -777,7 +789,7 @@ int DataFile::write(
 				);
 
 	m_location += size_ready;
-	return set_error_number_if_error(size_ready);
+	return set_error_number_if_error(static_cast<int>(size_ready));
 }
 
 int DataFile::seek(
@@ -789,15 +801,15 @@ int DataFile::seek(
 			m_location += location;
 			break;
 		case END:
-			m_location = m_data.size();
+			m_location = static_cast<int>(m_data.size());
 			break;
 		case SET:
 			m_location = location;
 			break;
 	}
 
-	if( m_location > (int)size() ){
-		m_location = m_data.size();
+	if( m_location > static_cast<int>(size()) ){
+		m_location = static_cast<int>(m_data.size());
 	} else if ( m_location < 0 ){
 		m_location = 0;
 	}
