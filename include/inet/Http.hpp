@@ -310,16 +310,9 @@ public:
 	var::Vector<HttpHeaderPair> & header_response_pairs(){ return m_header_response_pairs; }
 	const var::Vector<HttpHeaderPair> & header_response_pairs() const { return m_header_response_pairs; }
 
-#if defined __link
 	const var::String & traffic() const {
 		return m_traffic;
 	}
-#else
-	const var::String traffic() const {
-		return var::String();
-	}
-#endif
-
 
 private:
 
@@ -340,9 +333,7 @@ private:
 	bool m_is_follow_redirects;
 	bool m_is_chunked_transfer_encoding;
 	u32 m_transfer_size;
-#if defined __link
 	var::String m_traffic;
-#endif
 
 	int connect_to_server(
 			const var::String & domain_name,
