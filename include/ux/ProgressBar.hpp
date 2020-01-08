@@ -8,10 +8,7 @@ namespace ux {
 
 class ProgressBar : public Progress {
 public:
-   ProgressBar();
-
    ProgressBar & set_thickness(drawing_size_t thickness);
-
    Progress& set_border_thickness(drawing_size_t value){
       m_border_thickness = value;
       return *this;
@@ -21,11 +18,10 @@ public:
       return m_border_thickness;
    }
 
-   void draw_to_scale(const DrawingScaledAttributes & attributes);
-
+   void draw(const DrawingAttributes & attributes);
 
 private:
-   drawing_size_t m_border_thickness;
+   drawing_size_t m_border_thickness = 100;
 
 };
 

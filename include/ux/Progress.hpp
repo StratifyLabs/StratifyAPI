@@ -24,6 +24,9 @@ public:
    }
 
 
+   void handle_event(const ux::Event & event);
+
+
 private:
    u16 m_value;
    u16 m_maximum;

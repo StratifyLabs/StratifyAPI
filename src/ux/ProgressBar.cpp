@@ -1,33 +1,29 @@
 #include "ux/ProgressBar.hpp"
+#include "ux/Rectangle.hpp"
 
 
 using namespace sgfx;
 using namespace ux;
 
-ProgressBar::ProgressBar(){}
 
+void ProgressBar::draw(const DrawingAttributes & attributes){
 
-void ProgressBar::draw_to_scale(const DrawingScaledAttributes & attributes){
-	//draw the progress bar on the bitmap with x, y at the top left corner
-	sg_size_t thickness;
-	thickness = (border_thickness() > 100 ? 100 : border_thickness()) *
-			(attributes.area().height() / 2) / 100;
+   DrawingArea active_area(
+            value() * (1000 - m_border_thickness*2) / maximum(),
+            1000 - m_border_thickness*2
+            );
 
-	//draw bar
-	if( color_default != color_transparent() ){
-		attributes.bitmap() << Pen().set_color( color_default );
-		attributes.bitmap().draw_rectangle(
-					attributes.region()
-					);
-	}
+   Rectangle()
+         .set_color(color_border)
+         .draw(attributes, DrawingPoint(0,0), DrawingArea(1000,1000));
 
-	//draw progress
-	sg_size_t progress_width = attributes.area().width() - thickness*2;
-
-	attributes.bitmap() << Pen().set_color( color_text );
-	attributes.bitmap().draw_rectangle(
-				attributes.point() + Point(thickness, thickness),
-				Area(progress_width * value() / maximum(), attributes.area().height() - thickness*2)
-				);
-
+   printf("Draw progress active area %d\n", active_area.width());
+   Rectangle()
+         .set_color(color_text)
+         .draw(
+            attributes,
+            DrawingPoint(m_border_thickness,m_border_thickness),
+            active_area
+            );
 }
+
