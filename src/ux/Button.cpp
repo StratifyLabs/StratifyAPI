@@ -8,11 +8,16 @@ using namespace ux;
 
 void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
 
-   const sg_size_t border_size = attributes.width() / 100 ? attributes.width()/100 : 1;
+   sg_size_t border_size = attributes.height()/2 * m_border_size / 100;
+   if( m_border_size && !border_size ){
+      border_size = 1; //at least 1 pixel if non-zero
+   }
+
    const Area icon_area = Area(
             attributes.height() *3/4,
             attributes.height() *3/4
             );
+
    const Point icon_padding(
             attributes.width()/2 - icon_area.width()/2,
             attributes.height()/2 - icon_area.height()/2
@@ -40,10 +45,8 @@ void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
             .draw_to_scale(
                attributes + icon_padding + icon_area
                );
-   }
-
-   //if the label is available, draw it
-   if( m_label.is_empty() == false ){
+   } else if( m_label.is_empty() == false ){
+      //if the label is available, draw it
       Text().set_string(m_label)
             .set_color(color_text)
             .set_align_center()

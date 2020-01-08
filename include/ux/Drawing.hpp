@@ -144,6 +144,18 @@ public:
 		return DrawingPoint(0,0);
 	}
 
+	DrawingPoint operator + (const Y & y) const {
+		DrawingPoint result(*this);
+		result.m_point.y += y.argument();
+		return result;
+	}
+
+	DrawingPoint operator + (const X & x) const {
+		DrawingPoint result(*this);
+		result.m_point.x += x.argument();
+		return result;
+	}
+
 	drawing_int_t x() const { return m_point.x; }
 	void set_x(drawing_int_t value){ m_point.x = value; }
 

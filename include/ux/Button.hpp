@@ -40,6 +40,11 @@ public:
       return m_state;
    }
 
+   Button& set_border_size(u8 value){
+      m_border_size = value;
+      return *this;
+   }
+
    Button& set_state(bool value){
       m_state = value;
       return *this;
@@ -71,7 +76,8 @@ public:
 private:
    var::String m_label;
    var::String m_icon_name;
-   s16 m_icon_rotation;
+   s16 m_icon_rotation = 0;
+   u8 m_border_size = 1;
    bool m_state;
 
 

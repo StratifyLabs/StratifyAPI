@@ -15,13 +15,6 @@ Icon::Icon(){
 void Icon::draw_to_scale(const DrawingScaledAttributes & attr){
 	sg_point_t p = attr.point();
 
-#if defined LEGACY_ICON
-	if( &(this->icon()) == 0 ){
-		return;
-	}
-#endif
-
-
 	VectorPath vector_path = sys::Assets::find_vector_path(icon());
 
 	if( vector_path.is_valid() ){
@@ -41,10 +34,6 @@ void Icon::draw_to_scale(const DrawingScaledAttributes & attr){
 					.calculate_for_region(attr.region())
 					);
 
-		sys::Printer printer;
-
-		printer << bitmap;
-
 		//check for alignment values left/right/top/bottom
 		if( is_align_top() ){
 			p.y -= m_bounds.point.y;
@@ -59,9 +48,6 @@ void Icon::draw_to_scale(const DrawingScaledAttributes & attr){
 		}
 
 		//now draw on the bitmap
-		printf("Draw icon on bitmap\n");
 		attr.bitmap().draw_bitmap(p, bitmap);
-	} else {
-		printf("vector path is not valid\n");
 	}
 }
