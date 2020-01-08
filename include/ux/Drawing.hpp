@@ -470,7 +470,8 @@ public:
 	sgfx::Region region() const { return m_attr.region; }
 	sgfx::Point point() const { return m_attr.region.point; }
 	sgfx::Area area() const { return m_attr.region.area; }
-	drawing_scaled_attr_t & attr(){ return m_attr; }
+	drawing_scaled_attr_t & attributes(){ return m_attr; }
+	const drawing_scaled_attr_t & attributes() const { return m_attr; }
 
 	/*! \details Return the width */
 	sg_size_t width() const { return m_attr.region.area.width; }
@@ -482,9 +483,9 @@ public:
 	sg_int_t y() const { return m_attr.region.point.y; }
 
 	/*! \details Add an sg_point_t */
-	DrawingScaledAttributes operator+ (sg_point_t d) const;
+	DrawingScaledAttributes operator+ (const sgfx::Point & p) const;
 	/*! \details Add an sg_area_t */
-	DrawingScaledAttributes operator+ (sg_area_t d) const;
+	DrawingScaledAttributes operator+ (const sgfx::Area & a) const;
 
 	/*! \details Calculate a width value
 	 *

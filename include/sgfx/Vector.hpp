@@ -24,16 +24,6 @@ public:
 	/*! \details Constructs an empty vector map. */
 	VectorMap(){}
 
-	/*! \details Constructs a vector map that is centered in \a bitmap.
-	 *
-	 * @param bitmap Bitmap used to center map
-	 * @param rotation Rotation mapping
-	 *
-	 * This uses method calculate_for_bitmap().
-	 */
-	VectorMap(const Bitmap & bitmap, s16 rotation = 0);
-
-
 	/*! \details Sets the map to be centered and fully occupy \a bitmap.
 	 *
 	 * @param bitmap The bitmap to occupy
@@ -44,13 +34,13 @@ public:
 	 * rotated, parts of the vector may not fit in the bitmap.
 	 *
 	 */
-	void calculate_for_bitmap(const Bitmap & bitmap, s16 rotation = 0);
-
-
-	void calculate_for_region(const sg_region_t & region, s16 rotation = 0);
-
-	void set_region(const Region & region);
-	void set_rotation(s16 value){ m_value.rotation = value; }
+	VectorMap& calculate_for_bitmap(const Bitmap & bitmap);
+	VectorMap& calculate_for_region(const Region & region);
+	VectorMap& set_region(const Region & region);
+	VectorMap& set_rotation(s16 value){
+		m_value.rotation = value;
+		return *this;
+	}
 
 	VectorMap & operator << (const Region & a){
 		set_region(a);

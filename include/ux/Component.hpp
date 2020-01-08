@@ -43,6 +43,14 @@ public:
       return *this;
    }
 
+   enum sgfx::Theme::style theme_style() const {
+      return m_theme_style;
+   }
+
+   enum sgfx::Theme::state theme_state() const {
+      return m_theme_state;
+   }
+
    bool is_antialias() const {
       return m_is_antialias;
    }

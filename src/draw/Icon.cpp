@@ -34,8 +34,12 @@ void Icon::draw_to_scale(const DrawingScaledAttr & attr){
 		bitmap.clear();
 		bitmap << attr.bitmap().pen();
 
-		VectorMap map(bitmap, rotation());
-		sgfx::Vector::draw(bitmap, vector_path, map);
+		sgfx::Vector::draw(
+					bitmap,
+					vector_path,
+								 VectorMap().set_rotation(rotation())
+								 .calculate_for_bitmap(bitmap)
+					);
 
 		//check for alignment values left/right/top/bottom
 		if( is_align_top() ){

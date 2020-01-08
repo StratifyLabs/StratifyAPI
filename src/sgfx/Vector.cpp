@@ -6,45 +6,28 @@
 using namespace sgfx;
 
 
-void VectorMap::set_region(const Region & region){
+VectorMap& VectorMap::set_region(const Region & region){
 	m_value.region = region;
+	return *this;
 }
 
-VectorMap::VectorMap(const Bitmap & bitmap, s16 rotation){
-	calculate_for_bitmap(bitmap, rotation);
+VectorMap& VectorMap::calculate_for_bitmap(const Bitmap & bitmap){
+	return calculate_for_region(bitmap.region());
 }
 
-void VectorMap::calculate_for_bitmap(const Bitmap & bitmap, s16 rotation){
-	u8 thickness = bitmap.pen().thickness();
+VectorMap& VectorMap::calculate_for_region(const Region & region){
 	u32 max_width;
 	u32 max_height;
 	s32 tmp;
-
-	//this is multiplied by a scaling factor that represents sqrt(2) which allows for full rotation without losing data
-	max_width = (bitmap.width() - bitmap.margin_left() - bitmap.margin_right()) * 1414UL / 1000UL ;
-	max_height = (bitmap.height() - bitmap.margin_top() - bitmap.margin_bottom()) * 1414UL / 1000UL;
-	m_value.region.area.width = max_width - 2*thickness;
-	m_value.region.area.height = max_height - 2*thickness;
-	tmp = bitmap.width() - max_width + 1;
-	m_value.region.point.x = tmp/2;
-	tmp = bitmap.height() - max_height + 1;
-	m_value.region.point.y = tmp/2;
-	m_value.rotation = rotation;
-}
-
-void VectorMap::calculate_for_region(const sg_region_t & region, s16 rotation){
-	u32 max_width;
-	u32 max_height;
-	s32 tmp;
-	max_width = (region.area.width) * 1414UL / 1000UL ;
-	max_height = (region.area.height) * 1414UL / 1000UL;
+	max_width = (region.width()) * 1414UL / 1000UL ;
+	max_height = (region.height()) * 1414UL / 1000UL;
 	m_value.region.area.width = max_width;
 	m_value.region.area.height = max_height;
-	tmp = region.area.width - max_width + 1;
-	m_value.region.point.x = region.point.x + tmp/2;
-	tmp = region.area.height - max_height + 1;
-	m_value.region.point.y = region.point.y + tmp/2;
-	m_value.rotation = rotation;
+	tmp = region.width() - max_width + 1;
+	m_value.region.point.x = region.x() + tmp/2;
+	tmp = region.height() - max_height + 1;
+	m_value.region.point.y = region.y() + tmp/2;
+	return *this;
 }
 
 void VectorPath::shift(Point shift){

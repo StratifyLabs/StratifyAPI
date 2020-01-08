@@ -173,20 +173,20 @@ void DrawingScaledAttributes::set(Bitmap & b, sg_point_t p, sg_area_t d){
 	set_area(d);
 }
 
-DrawingScaledAttributes DrawingScaledAttributes::operator+ (sg_point_t p) const {
-	DrawingScaledAttributes attr;
-	attr = *this;
-	attr.attr().region.point.x += calculate_width(p.x);
-	attr.attr().region.point.y += calculate_height(p.y);
-	return attr;
+DrawingScaledAttributes DrawingScaledAttributes::operator+ (const sgfx::Point & p) const {
+	DrawingScaledAttributes result;
+	result = *this;
+	result.attributes().region.point.x += p.x();
+	result.attributes().region.point.y += p.y();
+	return result;
 }
 
-DrawingScaledAttributes DrawingScaledAttributes::operator+ (sg_area_t d) const {
-	DrawingScaledAttributes attr;
-	attr = *this;
-	attr.attr().region.area.width = calculate_width(d.width);
-	attr.attr().region.area.height = calculate_height(d.height);
-	return attr;
+DrawingScaledAttributes DrawingScaledAttributes::operator+ (const sgfx::Area & a) const {
+	DrawingScaledAttributes result;
+	result = *this;
+	result.attributes().region.area.width = a.width();
+	result.attributes().region.area.height = a.height();
+	return result;
 }
 
 sg_size_t DrawingScaledAttributes::calculate_width(drawing_size_t v) const {

@@ -25,6 +25,8 @@ void Icon::draw_to_scale(const DrawingScaledAttributes & attr){
 	VectorPath vector_path = sys::Assets::find_vector_path(icon());
 
 	if( vector_path.is_valid() ){
+		attr.bitmap() << Pen().set_color( m_color );
+
 		Bitmap bitmap(
 					attr.area(),
 					Bitmap::BitsPerPixel(attr.bitmap().bits_per_pixel())
@@ -32,8 +34,16 @@ void Icon::draw_to_scale(const DrawingScaledAttributes & attr){
 		bitmap.clear();
 		bitmap << attr.bitmap().pen();
 
-		VectorMap map(bitmap, rotation());
-		sgfx::Vector::draw(bitmap, vector_path, map);
+		sgfx::Vector::draw(
+					attr.bitmap(),
+					vector_path,
+					VectorMap().set_rotation(m_rotation)
+					.calculate_for_region(attr.region())
+					);
+
+		sys::Printer printer;
+
+		printer << bitmap;
 
 		//check for alignment values left/right/top/bottom
 		if( is_align_top() ){
@@ -49,7 +59,9 @@ void Icon::draw_to_scale(const DrawingScaledAttributes & attr){
 		}
 
 		//now draw on the bitmap
-		attr.bitmap() << Pen().set_color( m_color );
+		printf("Draw icon on bitmap\n");
 		attr.bitmap().draw_bitmap(p, bitmap);
+	} else {
+		printf("vector path is not valid\n");
 	}
 }
