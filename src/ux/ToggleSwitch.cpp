@@ -3,31 +3,58 @@
 #include "ux/Scene.hpp"
 
 using namespace ux;
+using namespace sgfx;
 
-void ToggleSwitch::draw(const DrawingAttributes & attributes){
+void ToggleSwitch::draw_to_scale(const DrawingScaledAttributes & attributes){
 
+   const sg_size_t border_offset = attributes.height() / 100 ? attributes.height()/100 : 1;
+   const sg_size_t active_area_offset = attributes.height() / 10;
+   const sg_size_t toggle_area_offset = active_area_offset + attributes.height()/10;
+   const sg_size_t toggle_area_total_width = attributes.width() - toggle_area_offset*2;
+   const sg_size_t toggle_area_active_width = toggle_area_total_width * 60 / 100;
+   const sg_size_t toggle_travel = toggle_area_total_width - toggle_area_active_width;
 
-   //draw the background
-   Rectangle()
-         .set_color( color_border )
-         .draw(attributes, DrawingPoint(0,0), DrawingArea(1000,1000));
+   const Area toggle_area(
+            toggle_area_active_width,
+            attributes.height() - toggle_area_offset*2
+            );
 
-   Rectangle()
-         .set_color( color_default )
-         .draw(attributes, DrawingPoint(0,0), DrawingArea(950,950));
+   //border
+   attributes.bitmap() << Pen().set_color(color_border);
+   attributes.bitmap().draw_rectangle(
+            attributes.region()
+            );
 
-   Rectangle()
-         .set_color( color_text )
-         .draw(attributes, DrawingPoint(100,100), DrawingArea(800,800));
+   //default
+   attributes.bitmap() << Pen().set_color(color_default);
+   attributes.bitmap().draw_rectangle(
+            attributes.point() + Point(border_offset, border_offset),
+            attributes.area() - Area(border_offset*2, border_offset*2)
+            );
 
-   DrawingPoint toggle_point = DrawingPoint(150,150);
+   //active background
    if( state() == true ){
-      toggle_point.set_x(400);
+      attributes.bitmap() << Pen().set_color(color_text);
+   } else {
+      attributes.bitmap() << Pen().set_color(color_border);
+   }
+   attributes.bitmap().draw_rectangle(
+            attributes.point() + Point(active_area_offset, active_area_offset),
+            attributes.area() - Area(active_area_offset*2, active_area_offset*2)
+            );
+
+
+   sg_size_t toggle_point_location = 0;
+   if( state() == true ){
+      toggle_point_location = toggle_travel;
    }
 
-   Rectangle()
-         .set_color( color_default )
-         .draw(attributes, toggle_point, DrawingArea(450,700));
+   //default
+   attributes.bitmap() << Pen().set_color(color_default);
+   attributes.bitmap().draw_rectangle(
+            attributes.point() + Point(toggle_area_offset + toggle_point_location, toggle_area_offset),
+            toggle_area
+            );
 
    apply_antialias_filter(attributes);
 

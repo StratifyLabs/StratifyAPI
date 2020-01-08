@@ -65,7 +65,7 @@ public:
       return *this;
    }
 
-   void draw(const DrawingAttributes & attributes);
+   void draw_to_scale(const DrawingScaledAttributes & attributes);
    void handle_event(const ux::Event & event);
 
 private:

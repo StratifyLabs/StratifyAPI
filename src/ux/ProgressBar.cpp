@@ -6,24 +6,32 @@ using namespace sgfx;
 using namespace ux;
 
 
-void ProgressBar::draw(const DrawingAttributes & attributes){
+void ProgressBar::draw_to_scale(const DrawingScaledAttributes & attributes){
 
-   DrawingArea active_area(
-            value() * (1000 - m_border_thickness*2) / maximum(),
-            1000 - m_border_thickness*2
+   sg_size_t border = 0;
+   border = m_border_thickness * attributes.height() / 200;
+
+   sg_size_t progress_size =
+         value() * (attributes.area().width() - border * 2) / maximum();
+
+
+   attributes.bitmap() << Pen().set_color(color_border);
+
+   attributes.bitmap().draw_rectangle(
+            attributes.point(),
+            attributes.area()
             );
 
-   Rectangle()
-         .set_color(color_border)
-         .draw(attributes, DrawingPoint(0,0), DrawingArea(1000,1000));
-
-   printf("Draw progress active area %d\n", active_area.width());
-   Rectangle()
-         .set_color(color_text)
-         .draw(
-            attributes,
-            DrawingPoint(m_border_thickness,m_border_thickness),
-            active_area
+   attributes.bitmap() << Pen().set_color(color_text);
+   attributes.bitmap().draw_rectangle(
+            attributes.point() + Point(border, border),
+            Area(
+               progress_size,
+               attributes.area().height() - border*2
+               )
             );
+
+   apply_antialias_filter(attributes);
+
 }
 

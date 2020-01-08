@@ -18,7 +18,7 @@ public:
       return m_border_thickness;
    }
 
-   void draw(const DrawingAttributes & attributes);
+   void draw_to_scale(const DrawingScaledAttributes & attributes);
 
 private:
    drawing_size_t m_border_thickness = 100;

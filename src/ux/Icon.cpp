@@ -22,7 +22,7 @@ void Icon::draw_to_scale(const DrawingScaledAttributes & attr){
 #endif
 
 
-	VectorPath vector_path = sys::Assets::find_vector_path(name());
+	VectorPath vector_path = sys::Assets::find_vector_path(icon());
 
 	if( vector_path.is_valid() ){
 		Bitmap bitmap(
@@ -49,6 +49,7 @@ void Icon::draw_to_scale(const DrawingScaledAttributes & attr){
 		}
 
 		//now draw on the bitmap
+		attr.bitmap() << Pen().set_color( m_color );
 		attr.bitmap().draw_bitmap(p, bitmap);
 	}
 }

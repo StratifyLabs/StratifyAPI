@@ -39,9 +39,9 @@ public:
 		rotation_eighth_counter_clockwise /*! \brief Add/subtract to/from RIGHT, DOWN, etc */  = -SG_TRIG_POINTS/8,
 	};
 
-	const var::String & name() const { return m_name; }
-	Icon & set_name(const var::String & name){
-		m_name = name;
+	const var::String & icon() const { return m_icon; }
+	Icon & set_icon(const var::String & value){
+		m_icon = value;
 		return *this;
 	}
 
@@ -69,7 +69,7 @@ public:
 private:
 	/*! \cond */
 	sg_region_t m_bounds;
-	var::String m_name;
+	var::String m_icon;
 	s16 m_rotation;
 	sg_color_t m_color;
 	/*! \endcond */

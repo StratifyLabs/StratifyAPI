@@ -76,6 +76,7 @@ public:
    }
 
    void apply_antialias_filter(const DrawingAttributes & attributes);
+   void apply_antialias_filter(const DrawingScaledAttributes & attributes);
 
    void redraw(){
       draw(drawing_attributes());

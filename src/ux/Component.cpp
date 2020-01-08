@@ -86,3 +86,12 @@ void Component::apply_antialias_filter(const DrawingAttributes & attributes){
                );
    }
 }
+
+void Component::apply_antialias_filter(const DrawingScaledAttributes & attributes){
+   if( is_antialias() ){
+      attributes.bitmap().apply_antialias_filter(
+               theme().antialias_filter(),
+               attributes.bitmap().region()
+               );
+   }
+}

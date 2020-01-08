@@ -98,6 +98,20 @@ public:
 		return *this;
 	}
 
+	Area operator + (const Area & a){
+		return Area(
+					width() + a.width(),
+					height() + a.height()
+					);
+	}
+
+	Area operator - (const Area & a){
+		return Area(
+					width() - a.width(),
+					height() - a.height()
+					);
+	}
+
 	u32 calculate_area() const { return m_value.width * m_value.height; }
 
 	sg_size_t width() const { return m_value.width; }
