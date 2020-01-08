@@ -34,10 +34,26 @@ Component & Component::disable(){
    return *this;
 }
 
+DrawingPoint Component::translate_point(const sgfx::Point & point){
+   if( contains(point) == false ){
+      return DrawingPoint(0,0);
+   }
+
+   sgfx::Point relative_point = point -
+         m_reference_drawing_attributes.calculate_point_on_bitmap();
+
+   sgfx::Area area = m_reference_drawing_attributes.calculate_area_on_bitmap();
+   //now scale for width
+   return DrawingPoint(
+            1000 * relative_point.x() / area.width(),
+            1000 * relative_point.y() / area.height()
+            );
+}
+
+
 void Component::refresh_drawing(){
    if( m_display ){
       //use the palette if it is available
-
 
       if( scene()->scene_collection()->theme().set_display_palette(
                *m_display,

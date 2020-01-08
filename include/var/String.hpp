@@ -266,6 +266,8 @@ public:
 		return *this;
 	}
 
+
+
 	String& insert(
 			Position position,
 			const String & string_to_insert,
@@ -304,6 +306,17 @@ public:
 					  Length length = Length(npos)
 			);
 
+	String & reverse_erase(
+			Position position,
+			Length length
+			){
+		m_string.erase(
+					this->length() - position.argument(),
+					length.argument()
+					);
+		return *this;
+	}
+
 	/*! \details Replaces one or more instances of a string with another string
 	 *
 	 * @param old_string The string to search for and replace
@@ -331,6 +344,16 @@ public:
 
 	size_t length() const { return m_string.length(); }
 	void clear(){ m_string.clear(); }
+
+	String & push_back(char a){
+		m_string.push_back(a);
+		return *this;
+	}
+
+	String & pop_back(){
+		m_string.pop_back();
+		return *this;
+	}
 
 	char & at (size_t pos){ return m_string.at(pos); }
 	const char & at (size_t pos) const { return m_string.at(pos); }

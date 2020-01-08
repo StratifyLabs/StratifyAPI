@@ -7,13 +7,18 @@ using namespace ux;
 
 void Button::draw(const DrawingAttributes & attributes){
 
-   clear(attributes);
+   const drawing_size_t border_size = 50; //need to compensate aspect ratio
+   const drawing_size_t button_dimension = 1000 - border_size*2;
 
-   //draw the background
-   RoundedRectangle()
-         .set_color(color_default)
-         .set_radius(50)
+   //draw the Border
+   Rectangle()
+         .set_color(color_border)
          .draw(attributes, DrawingPoint(0,0), DrawingArea(1000,1000));
+
+   //draw the button
+   Rectangle()
+         .set_color(color_default)
+         .draw(attributes, DrawingPoint(border_size,border_size), DrawingArea(button_dimension,button_dimension));
 
    //if the icon is available, draw it
 

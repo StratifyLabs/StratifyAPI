@@ -92,6 +92,8 @@ public:
                ).contains(point);
    }
 
+   DrawingPoint translate_point(const sgfx::Point & point);
+
    Scene * scene(){ return m_scene; }
    const Scene * scene() const { return m_scene; }
 

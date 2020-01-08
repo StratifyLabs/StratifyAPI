@@ -13,6 +13,7 @@ namespace ux {}
 #include "ux/ProgressBar.hpp"
 #include "ux/Rectangle.hpp"
 #include "ux/Scene.hpp"
+#include "ux/Slider.hpp"
 #include "ux/Text.hpp"
 #include "ux/TextBox.hpp"
 #include "ux/ToggleSwitch.hpp"

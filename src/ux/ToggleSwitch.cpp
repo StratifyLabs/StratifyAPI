@@ -8,14 +8,16 @@ void ToggleSwitch::draw(const DrawingAttributes & attributes){
 
 
    //draw the background
-   RoundedRectangle()
-         .set_color( color_default )
-         .set_radius(50)
+   Rectangle()
+         .set_color( color_border )
          .draw(attributes, DrawingPoint(0,0), DrawingArea(1000,1000));
 
-   RoundedRectangle()
+   Rectangle()
+         .set_color( color_default )
+         .draw(attributes, DrawingPoint(0,0), DrawingArea(950,950));
+
+   Rectangle()
          .set_color( color_text )
-         .set_radius(50)
          .draw(attributes, DrawingPoint(100,100), DrawingArea(800,800));
 
    DrawingPoint toggle_point = DrawingPoint(150,150);
@@ -23,9 +25,8 @@ void ToggleSwitch::draw(const DrawingAttributes & attributes){
       toggle_point.set_x(400);
    }
 
-   RoundedRectangle()
+   Rectangle()
          .set_color( color_default )
-         .set_radius(60)
          .draw(attributes, toggle_point, DrawingArea(450,700));
 
    apply_antialias_filter(attributes);

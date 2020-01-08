@@ -118,7 +118,7 @@ void Printer::print(
 	}
 
 	for(u32 indent=0; indent < m_indent; indent++){
-		print_final("   ");
+		print_final("  ");
 	}
 
 	if( key != nullptr ){
@@ -156,6 +156,18 @@ void Printer::print_final(const char * fmt, ...){
 	vprintf(fmt, list);
 	va_end(list);
 	fflush(stdout);
+}
+
+Printer & Printer::open_object(
+		const var::String & key,
+		enum verbose_level level){
+	print_open_object(level, key.cstring());
+	return *this;
+}
+
+Printer & Printer::close_object(){
+	print_close_object();
+	return *this;
 }
 
 void Printer::print_open_object(

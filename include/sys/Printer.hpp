@@ -427,6 +427,12 @@ public:
 	Printer & key(const var::String & key, const var::String & a);
 	Printer & key(const var::String & key, const var::JsonValue & a);
 
+	Printer & open_object(
+			const var::String & key,
+			enum verbose_level level = level_fatal);
+
+	Printer & close_object();
+
 
 	const var::String terminal_color_code(enum color_code code);
 

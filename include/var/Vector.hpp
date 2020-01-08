@@ -317,6 +317,27 @@ public:
 	void * to_void(){ return (void*)m_vector.data(); }
 	const void * to_const_void() const { return (const void*)m_vector.data(); }
 
+	T sum() const {
+		T result;
+		for(const auto & value: *this){
+			result += value;
+		}
+		return result;
+	}
+
+	T mean() const {
+		return sum() / count();
+	}
+
+	T variance() const {
+		T mean = this->mean();
+		T result;
+		for(const auto & value: *this){
+			result += (value - mean)*(value - mean);
+		}
+		return result / count();
+	}
+
 protected:
 
 

@@ -103,15 +103,11 @@ int Theme::set_display_palette(const Display & display,
    var::Vector<u16> colors = read_palette(style, state);
    display_palette_t display_palette;
 
-   sys::Printer p;
-
-   p << colors;
-
+   printf("Border: 0x%04X Default: 0x%04X\n", colors.at(5), colors.at(10));
 
    display_palette.pixel_format = m_header.pixel_format;
    display_palette.colors = static_cast<void*>(colors.data());
    display_palette.count = colors.count();
-
    return display.set_palette(display_palette);
 }
 
