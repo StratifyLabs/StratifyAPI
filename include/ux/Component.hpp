@@ -106,6 +106,12 @@ public:
    Scene * scene(){ return m_scene; }
    const Scene * scene() const { return m_scene; }
 
+   enum colors {
+      color_background = 0,
+      color_border = 5,
+      color_default = 10,
+      color_text = 15
+   };
 
 
 protected:
@@ -122,13 +128,6 @@ protected:
    const DrawingAttributes & drawing_attributes() const {
       return m_local_drawing_attributes;
    }
-
-   enum colors {
-      color_background = 0,
-      color_border = 5,
-      color_default = 10,
-      color_text = 15
-   };
 
 private:
 

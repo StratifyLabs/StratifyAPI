@@ -2,7 +2,6 @@
 #define SAPI_UX_LIST_HPP
 
 #include "Component.hpp"
-#include "Icon.hpp"
 
 namespace ux {
 
@@ -26,10 +25,11 @@ private:
 
 };
 
+class List;
+
 class ListItem : public Drawing {
 public:
 
-   ListItem(List * list);
 
    enum type {
       type_icon, //just an icon
@@ -63,22 +63,44 @@ public:
 
    void draw_to_scale(const DrawingScaledAttributes & attributes);
 
-   List * list() const;
+   const List * list() const {
+      return m_list;
+   }
 
 private:
+   friend class List;
    var::String m_key;
    var::String m_value;
    var::String m_icon;
    enum type m_type;
+   const List * m_list = nullptr;
+
 };
 
 class List : public Component {
 public:
 
+   List& set_item_height(drawing_size_t value){
+      m_item_height = value;
+      return *this;
+   }
+
+   List& append(const ListItem & list_item){
+      m_items.push_back(list_item);
+      return *this;
+   }
+
    void draw_to_scale(const DrawingScaledAttributes & attributes);
    void handle_event(const ux::Event & event);
 
+   u8 border_size() const {
+      return m_border_size;
+   }
+
 private:
+   u8 m_border_size = 1;
+   drawing_size_t m_item_height = 25;
+   var::Vector<ListItem> m_items;
 
 
 };

@@ -1,19 +1,15 @@
 #include "ux/List.hpp"
 #include "ux/Rectangle.hpp"
 #include "ux/Text.hpp"
+#include "ux/Icon.hpp"
 
 using namespace sgfx;
 using namespace ux;
 
-ListItem::ListItem(List * list) : m_list(list){
-
-}
-
-
 void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
 
    //draw the key on the left
-   sg_size_t border_size = attributes.height() * m_border_size / 100;
+   sg_size_t border_size = attributes.height() * list()->border_size() / 100;
    const sg_size_t padding = attributes.height() / 10;
    const sg_size_t effective_height = attributes.height() - padding*2;
    const Point icon_point(
@@ -27,10 +23,14 @@ void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
             );
 
    Rectangle().set_color(Component::color_border)
-         .draw(attributes);
+         .draw_to_scale(attributes);
 
-   Rectangle().set_color(Component::color_border)
-         .draw(attributes);
+   Rectangle().set_color(Component::color_default)
+         .draw_to_scale(
+            attributes +
+            Point(border_size, border_size) +
+            (attributes.area() - Area(border_size*2, border_size*2))
+            );
 
    Text().set_string(key())
          .set_color(Component::color_text)
@@ -55,12 +55,54 @@ void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
    }
 }
 
-
-
 void List::draw_to_scale(const DrawingScaledAttributes & attributes){
+   //draw each list item in the list
+   sg_size_t item_height = m_item_height * attributes.height() / 100;
 
+   Area list_item_area(
+            attributes.width(),
+            item_height
+            );
+
+   for(size_t i = 0; i < m_items.count(); i++){
+      m_items.at(i).draw_to_scale(
+               attributes +
+               Point(0,i*item_height) +
+               list_item_area
+               );
+   }
+
+   apply_antialias_filter(attributes);
 }
 
 void List::handle_event(const ux::Event & event){
+   //change the state when an event happens in the component
+   if( event == SystemEvent(SystemEvent::id_enter) ){
+      for(auto & item: m_items){
+         item.m_list = this;
+      }
+      redraw();
+   } else if( event.type() == ux::TouchEvent::event_type() ){
+      const ux::TouchEvent & touch_event
+            = event.reinterpret<ux::TouchEvent>();
 
+      if( (touch_event.id() == ux::TouchEvent::id_released) &&
+          (contains(touch_event.point()) || theme_state() == Theme::state_highlighted) ){
+
+
+         set_theme_state(Theme::state_default);
+         set_refresh_drawing_pending();
+      }
+
+      if( (touch_event.id() == ux::TouchEvent::id_pressed) &&
+          contains(touch_event.point()) ){
+
+
+
+         set_theme_state(Theme::state_highlighted);
+         refresh_drawing();
+      }
+   }
+
+   Component::handle_event(event);
 }

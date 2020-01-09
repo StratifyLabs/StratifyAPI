@@ -1,6 +1,8 @@
 #ifndef SAPI_UX_HPP
 #define SAPI_UX_HPP
 
+#include "sgfx.hpp"
+
 namespace ux {}
 
 #include "ux/Component.hpp"
@@ -9,6 +11,7 @@ namespace ux {}
 #include "ux/Event.hpp"
 #include "ux/EventLoop.hpp"
 #include "ux/Icon.hpp"
+#include "ux/List.hpp"
 #include "ux/Image.hpp"
 #include "ux/Progress.hpp"
 #include "ux/ProgressBar.hpp"
