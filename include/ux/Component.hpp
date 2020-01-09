@@ -88,7 +88,7 @@ public:
 
    void redraw(){
       draw(drawing_attributes());
-      refresh_drawing();
+      set_refresh_drawing_pending();
    }
 
    sgfx::Region region() const {
@@ -109,6 +109,14 @@ public:
 
 
 protected:
+   void set_refresh_drawing_pending(){
+      m_is_refresh_drawing_pending = true;
+   }
+
+   bool is_refresh_drawing_pending() const {
+      return m_is_refresh_drawing_pending;
+   }
+
    void refresh_drawing();
    friend class Scene;
    const DrawingAttributes & drawing_attributes() const {
@@ -134,6 +142,7 @@ private:
    enum sgfx::Theme::style m_theme_style = sgfx::Theme::style_brand_primary;
    enum sgfx::Theme::state m_theme_state = sgfx::Theme::state_default;
    bool m_is_antialias = true;
+   bool m_is_refresh_drawing_pending;
 
    //needs a palette to use while drawing
    sgfx::Palette * m_palette = nullptr;

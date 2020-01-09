@@ -13,6 +13,7 @@ set(SOURCES
 	ProgressBar.cpp
 	ToggleSwitch.cpp
 	Slider.cpp
+	List.cpp
 
 	#Drawing primitives
 	Drawing.cpp

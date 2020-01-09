@@ -4,6 +4,7 @@
 namespace ux {}
 
 #include "ux/Component.hpp"
+#include "ux/Button.hpp"
 #include "ux/Drawing.hpp"
 #include "ux/Event.hpp"
 #include "ux/EventLoop.hpp"
@@ -18,6 +19,7 @@ namespace ux {}
 #include "ux/TextBox.hpp"
 #include "ux/ToggleSwitch.hpp"
 
+using namespace sgfx;
 using namespace ux;
 
 #endif // SAPI_UX_HPP

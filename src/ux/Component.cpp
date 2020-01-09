@@ -43,6 +43,7 @@ DrawingPoint Component::translate_point(const sgfx::Point & point){
          m_reference_drawing_attributes.calculate_point_on_bitmap();
 
    sgfx::Area area = m_reference_drawing_attributes.calculate_area_on_bitmap();
+
    //now scale for width
    return DrawingPoint(
             1000 * relative_point.x() / area.width(),
@@ -71,6 +72,7 @@ void Component::refresh_drawing(){
       //using the attributes and bitmap to write the display device
       m_display->write(m_local_bitmap);
 
+      m_is_refresh_drawing_pending = false;
    }
 }
 
@@ -85,6 +87,7 @@ void Component::apply_antialias_filter(const DrawingAttributes & attributes){
                attributes.bitmap().region()
                );
    }
+   set_refresh_drawing_pending();
 }
 
 void Component::apply_antialias_filter(const DrawingScaledAttributes & attributes){

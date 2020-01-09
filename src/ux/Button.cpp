@@ -7,7 +7,6 @@ using namespace sgfx;
 using namespace ux;
 
 void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
-
    sg_size_t border_size = attributes.height()/2 * m_border_size / 100;
    if( m_border_size && !border_size ){
       border_size = 1; //at least 1 pixel if non-zero
@@ -35,6 +34,7 @@ void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
             attributes.point() + Point(border_size, border_size),
             attributes.area() - Area(border_size*2, border_size*2)
             );
+
 
    //if the icon is available, draw it
    if( m_icon_name.is_empty() == false ){
@@ -79,7 +79,7 @@ void Button::handle_event(const ux::Event & event){
          }
 
          set_theme_state(Theme::state_default);
-         refresh_drawing();
+         set_refresh_drawing_pending();
       }
 
       if( (touch_event.id() == ux::TouchEvent::id_pressed) &&

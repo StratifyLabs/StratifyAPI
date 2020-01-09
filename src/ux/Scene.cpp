@@ -1,6 +1,8 @@
 #include "ux/Scene.hpp"
+#include "ux/Rectangle.hpp"
 
 using namespace ux;
+using namespace sgfx;
 
 Scene::~Scene(){
    for(auto component_pointer: m_component_list){
@@ -23,10 +25,37 @@ Scene& Scene::disable(){
    return *this;
 }
 
+void Scene::draw_background(const DrawingPoint & point, const DrawingArea & area){
+   hal::Display & display = scene_collection()->display();
+   scene_collection()->theme().set_display_palette(
+            display,
+            Theme::style_brand_primary,
+            Theme::state_default
+            );
+   display.clear();
+
+   for(auto component_pointer: m_background_component_list){
+      component_pointer->enable(scene_collection()->display());
+      component_pointer->redraw();
+   }
+
+   for(auto component_pointer: m_background_component_list){
+      if( component_pointer->is_refresh_drawing_pending() ){
+         component_pointer->refresh_drawing();
+      }
+   }
+
+   for(auto component_pointer: m_background_component_list){
+      component_pointer->disable();
+   }
+
+}
+
 void Scene::handle_event(const Event & event){
 
    if( event.type() == SystemEvent::event_type() ){
       if( event.id() == SystemEvent::id_enter ){
+         draw_background();
          for(auto component_pointer: m_component_list){
             component_pointer->enable(scene_collection()->display());
          }
@@ -47,6 +76,13 @@ void Scene::handle_event(const Event & event){
          }
       }
    }
+
+   for(auto component_pointer: m_component_list){
+      if( component_pointer->is_refresh_drawing_pending() ){
+         component_pointer->refresh_drawing();
+      }
+   }
+
 }
 
 void Scene::trigger_event(const Event & event){
