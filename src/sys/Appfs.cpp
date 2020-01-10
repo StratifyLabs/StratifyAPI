@@ -216,6 +216,7 @@ int Appfs::create(
 		}
 
 	} while( bw < f.exec.code_size);
+	if( progress_callback ){ progress_callback->update(0,0); }
 
 	return f.exec.code_size;
 }
