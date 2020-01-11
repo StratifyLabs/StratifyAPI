@@ -67,6 +67,14 @@ public:
       return m_list;
    }
 
+   const sgfx::Region region() const {
+      return m_region;
+   }
+
+   sgfx::Region region(){
+      return m_region;
+   }
+
 private:
    friend class List;
    var::String m_key;
@@ -74,6 +82,7 @@ private:
    var::String m_icon;
    enum type m_type;
    const List * m_list = nullptr;
+   sgfx::Region m_region;
 
 };
 

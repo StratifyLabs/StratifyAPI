@@ -119,6 +119,14 @@ protected:
       m_is_refresh_drawing_pending = true;
    }
 
+   void set_refresh_window(const sgfx::Region & region){
+      if( region.width() * region.height() == 0 ){
+         m_refresh_window = m_reference_drawing_attributes.calculate_region_on_bitmap();
+      } else {
+         m_refresh_window = region;
+      }
+   }
+
    bool is_refresh_drawing_pending() const {
       return m_is_refresh_drawing_pending;
    }
@@ -142,6 +150,7 @@ private:
    enum sgfx::Theme::state m_theme_state = sgfx::Theme::state_default;
    bool m_is_antialias = true;
    bool m_is_refresh_drawing_pending;
+   sgfx::Region m_refresh_window;
 
    //needs a palette to use while drawing
    sgfx::Palette * m_palette = nullptr;

@@ -25,6 +25,8 @@ Component & Component::enable(
          .set_area(DrawingArea(1000,1000))
          .set_bitmap(m_local_bitmap);
 
+   m_refresh_window = m_reference_drawing_attributes.calculate_region_on_bitmap();
+
    return *this;
 }
 
@@ -64,11 +66,10 @@ void Component::refresh_drawing(){
          printf("--failed to set display palette\n");
       }
 
-      if( m_display->set_window(
-               m_reference_drawing_attributes.calculate_region_on_bitmap()
-               ) < 0 ){
+      if( m_display->set_window(m_refresh_window) < 0 ){
 
       }
+
       //using the attributes and bitmap to write the display device
       m_display->write(m_local_bitmap);
 
