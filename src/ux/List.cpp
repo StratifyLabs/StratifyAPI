@@ -2,7 +2,7 @@
 #include "ux/Rectangle.hpp"
 #include "ux/Text.hpp"
 #include "ux/Icon.hpp"
-#include "sys/Printer.hpp"
+#include "ux/Scene.hpp"
 
 using namespace sgfx;
 using namespace ux;
@@ -59,7 +59,6 @@ void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
    }
 
    if( m_value.is_empty() == false ){
-      printf("Draw value %s\n", value().cstring());
       Text().set_string(value())
             .set_color(Component::color_text)
             .set_align_right()
@@ -81,23 +80,11 @@ void List::draw_to_scale(const DrawingScaledAttributes & attributes){
             item_height
             );
 
-   sys::Printer p;
-
-   p.info("Draw list item height %d and %d -> %d", m_item_height, item_height);
-   p.open_object("attributes");
-   p << attributes.point();
-   p << attributes.area();
-   p.close_object();
-
    for(size_t i = 0; i < m_items.count(); i++){
       DrawingScaledAttributes item_attributes =
             attributes +
             Point(0,i*item_height) +
             list_item_area;
-      p.open_object("item attributes");
-      p << item_attributes.point();
-      p << item_attributes.area();
-      p.close_object();
       m_items.at(i).draw_to_scale(
                item_attributes
                );
@@ -119,8 +106,20 @@ void List::handle_event(const ux::Event & event){
 
 
       if( touch_event.id() == ux::TouchEvent::id_released ){
+
+         for(const auto & item: m_items){
+            if( item.region().contains(
+                   touch_event.point()
+                   ) ){
+               scene()->trigger_event(
+                        ListEvent(item)
+                        );
+               break;
+            }
+         }
+
          set_theme_state(Theme::state_default);
-         set_refresh_window(sgfx::Region());
+         set_refresh_region(sgfx::Region());
          set_refresh_drawing_pending();
       }
 
@@ -130,16 +129,12 @@ void List::handle_event(const ux::Event & event){
             if( item.region().contains(
                    touch_event.point()
                    ) ){
-               set_refresh_window( item.region() );
+               set_refresh_region( item.region() );
                set_theme_state(Theme::state_highlighted);
                set_refresh_drawing_pending();
                break;
             }
          }
-
-
-         set_theme_state(Theme::state_highlighted);
-         refresh_drawing();
       }
    }
 

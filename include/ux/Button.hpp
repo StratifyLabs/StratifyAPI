@@ -10,26 +10,32 @@ namespace ux {
 class ButtonEvent : public EventObject<EVENT_TYPE('_','b','t','n')> {
 public:
 
+
+   enum event_id {
+      event_id_pressed,
+      event_id_released
+   };
+
    ButtonEvent(
             const var::String name,
-            bool state) :
-      EventObject<EVENT_TYPE('_','b','t','n')>(0),
-      m_name(name),
-      m_state(state){
-
+            u32 id) :
+      EventObject<EVENT_TYPE('_','b','t','n')>(id),
+      m_name(name){
    }
+
+	enum button_id {
+		id_none,
+		id_active,
+		id_pressed,
+		id_released
+	};
 
    const var::String & name() const {
       return m_name;
    }
 
-   const bool state() const {
-      return m_state;
-   }
-
 private:
    const var::String & m_name;
-   bool m_state;
 
 };
 

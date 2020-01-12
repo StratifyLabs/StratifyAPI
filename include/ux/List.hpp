@@ -5,27 +5,29 @@
 
 namespace ux {
 
+class ListItem;
+class List;
+
 class ListEvent : public EventObject<EVENT_TYPE('_','l','s','t')> {
 public:
 
    ListEvent(
-            const var::String & item_name
+            const ListItem & item
             ) :
       EventObject<EVENT_TYPE('_','l','s','t')>(0),
-      m_item_name(item_name){
+      m_list_item(item){
 
    }
 
-   const var::String & item_name() const {
-      return m_item_name;
+   const ListItem & item() const {
+      return m_list_item;
    }
 
 private:
-   const var::String & m_item_name;
+   const ListItem & m_list_item;
 
 };
 
-class List;
 
 class ListItem : public Drawing {
 public:

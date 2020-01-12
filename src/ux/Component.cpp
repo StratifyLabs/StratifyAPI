@@ -2,6 +2,7 @@
 #include "sys/Printer.hpp"
 #include "ux/Scene.hpp"
 
+using namespace sgfx;
 using namespace ux;
 
 
@@ -20,12 +21,13 @@ Component & Component::enable(
                )
             );
 
+
    //local attributes fill local bitmap
    m_local_drawing_attributes
          .set_area(DrawingArea(1000,1000))
          .set_bitmap(m_local_bitmap);
 
-   m_refresh_window = m_reference_drawing_attributes.calculate_region_on_bitmap();
+   set_refresh_region(sgfx::Region());
 
    return *this;
 }
@@ -66,12 +68,18 @@ void Component::refresh_drawing(){
          printf("--failed to set display palette\n");
       }
 
-      if( m_display->set_window(m_refresh_window) < 0 ){
+      if( m_display->set_window(
+             Region(
+                Point(m_reference_drawing_attributes.calculate_point_on_bitmap()) + m_refresh_region.point(),
+                m_refresh_region.area()
+                )
+             ) < 0 ){
 
       }
 
-      //using the attributes and bitmap to write the display device
-      m_display->write(m_local_bitmap);
+      m_display->write(
+               m_local_bitmap.create_reference(m_refresh_region)
+               );
 
       m_is_refresh_drawing_pending = false;
    }

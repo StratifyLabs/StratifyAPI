@@ -189,6 +189,27 @@ void Bitmap::refer_to(
 	}
 }
 
+Bitmap Bitmap::create_reference(
+		const Region & region
+		){
+	Bitmap result;
+	result.m_bmap.bits_per_pixel = bits_per_pixel();
+
+	if( is_read_only() ){
+		result.Data::refer_to(
+					Reference::ReadOnlyBuffer(bmap_data(region.point())),
+					Size(result.calculate_size(region.area()))
+					);
+	} else {
+		result.Data::refer_to(
+					Reference::ReadWriteBuffer(bmap_data(region.point())),
+					Size(result.calculate_size(region.area()))
+					);
+	}
+	result.calculate_members(region.area());
+	return result;
+}
+
 int Bitmap::allocate(
 		const Area & dim,
 		BitsPerPixel bpp

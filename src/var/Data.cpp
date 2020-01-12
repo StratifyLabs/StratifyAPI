@@ -72,7 +72,9 @@ int Data::allocate(
 
 	m_data.resize(s);
 	update_reference();
-
+	if( m_data.size() < s ){
+		return -1;
+	}
 	return 0;
 }
 

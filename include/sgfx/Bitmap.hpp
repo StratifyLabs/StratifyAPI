@@ -161,6 +161,11 @@ public:
 		return *this;
 	}
 
+	Bitmap create_reference(
+			const Region & region
+			);
+
+
 	Bitmap(Bitmap && bitmap): var::Data(bitmap){
 		m_bmap = bitmap.m_bmap;
 	}

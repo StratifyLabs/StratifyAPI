@@ -22,7 +22,6 @@ void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
             attributes.height()/2 - icon_area.height()/2
             );
 
-
    //draw the Border
    attributes.bitmap() << Pen().set_color(color_border);
    attributes.bitmap().draw_rectangle(
@@ -68,18 +67,21 @@ void Button::handle_event(const ux::Event & event){
       const ux::TouchEvent & touch_event
             = event.reinterpret<ux::TouchEvent>();
 
-      if( (touch_event.id() == ux::TouchEvent::id_released) &&
-          (contains(touch_event.point()) || theme_state() == Theme::state_highlighted) ){
-         toggle();
+      if( touch_event.id() == ux::TouchEvent::id_released ){
 
-         if( scene() ){
-            scene()->trigger_event(
-                     ButtonEvent(name(), state())
-                     );
+         if( contains(touch_event.point()) ){
+            toggle();
+            if( scene() ){
+               scene()->trigger_event(
+                        ButtonEvent(name(), ButtonEvent::id_released)
+                        );
+            }
          }
 
-         set_theme_state(Theme::state_default);
-         set_refresh_drawing_pending();
+         if( theme_state() == Theme::state_highlighted ){
+            set_theme_state(Theme::state_default);
+            set_refresh_drawing_pending();
+         }
       }
 
       if( (touch_event.id() == ux::TouchEvent::id_pressed) &&
@@ -88,7 +90,7 @@ void Button::handle_event(const ux::Event & event){
 
          if( scene() ){
             scene()->trigger_event(
-                     ButtonEvent(name(), state())
+                     ButtonEvent(name(), ButtonEvent::id_pressed)
                      );
          }
 
