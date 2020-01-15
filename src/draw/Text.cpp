@@ -3,13 +3,14 @@
 #include "sgfx.hpp"
 #include "draw/Text.hpp"
 #include "sys/Assets.hpp"
+#include "sys/Printer.hpp"
 
 using namespace draw;
 
 
 Text::Text(const var::String & text){
 	m_string = text;
-	m_font = 0;
+	m_font = nullptr;
 	m_font_point_size = 0;
 	m_font_style = FontInfo::REGULAR;
 }
@@ -34,13 +35,17 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 
 	if( !string().is_empty() ){
 
-		if( this->font() == 0 ){
+		if( this->font() == nullptr ){
 			font = resolve_font(m_font_point_size == 0 ? d.height() : m_font_point_size);
 			if( font == 0 ){
 				return;
 			}
 		} else {
 			font = this->font();
+		}
+
+		if( font == nullptr ){
+			return;
 		}
 
 		h = font->get_height();

@@ -70,9 +70,8 @@ String& String::vformat(
 				list
 				);
 
-
 	if( result >= (int)capacity()-1 ){ //if the data did not fit, make the buffer bigger
-		resize(result+1);
+		m_string.resize(result+1, '\0');
 		result = vsnprintf(
 					to_char(),
 					capacity()-1,
@@ -80,6 +79,7 @@ String& String::vformat(
 					list_copy
 					);
 	}
+	va_end(list_copy);
 
 	if( result > 0 ){
 		resize(result);

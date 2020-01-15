@@ -23,14 +23,26 @@ int Aes::finalize(){
 	return 0;
 }
 
-Aes & Aes::set_key(
-		const var::Data & key
+Aes & Aes::set_initialization_vector(
+		const var::Reference & value
+		){
+	m_initialization_vector.resize(value.size());
+	var::Reference::memory_copy(
+				var::Reference::SourceBuffer(value.to_const_void()),
+				var::Reference::DestinationBuffer(m_initialization_vector.to_void()),
+				var::Reference::Size(m_initialization_vector.size())
+				);
+	return *this;
+}
+
+Aes & Aes::set_key(const var::Reference & key
 		){
 	set_error_number_if_error(
 				aes_api()->set_key(
 					m_context,
 					key.to_const_u8(),
-					key.size() * 8
+					key.size() * 8,
+					8
 					)
 				);
 	return *this;
@@ -38,8 +50,8 @@ Aes & Aes::set_key(
 
 
 int Aes::encrypt_ecb(
-		SourceReference source_data,
-		DestinationReference destination_data
+		SourcePlainData source_data,
+		DestinationCipherData destination_data
 		){
 	if( source_data.argument().size() !=
 		 destination_data.argument().size() ){
@@ -68,8 +80,8 @@ int Aes::encrypt_ecb(
 }
 
 int Aes::decrypt_ecb(
-		SourceReference source_data,
-		DestinationReference destination_data
+		SourceCipherData source_data,
+		DestinationPlainData destination_data
 		){
 
 	if( source_data.argument().size() !=
@@ -94,8 +106,8 @@ int Aes::decrypt_ecb(
 }
 
 int Aes::encrypt_cbc(
-		SourceReference source_data,
-		DestinationReference destination_data
+		SourcePlainData source_data,
+		DestinationCipherData destination_data
 		){
 
 	if( source_data.argument().size() !=
@@ -122,8 +134,8 @@ int Aes::encrypt_cbc(
 }
 
 int Aes::decrypt_cbc(
-		SourceReference source_data,
-		DestinationReference destination_data
+		SourceCipherData source_data,
+		DestinationPlainData destination_data
 		){
 
 	if( source_data.argument().size() !=
@@ -150,15 +162,15 @@ int Aes::decrypt_cbc(
 }
 
 int Aes::encrypt_ctr(
-		SourceReference source_data,
-		DestinationReference destination_data
+		SourcePlainData source_data,
+		DestinationCipherData destination_data
 		){
 	return -1;
 }
 
 int Aes::decrypt_ctr(
-		SourceReference source_data,
-		DestinationReference destination_data
+		SourceCipherData source_data,
+		DestinationPlainData destination_data
 		){
 	return -1;
 }

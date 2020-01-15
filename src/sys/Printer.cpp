@@ -621,7 +621,6 @@ Printer & Printer::operator << (const sgfx::Bitmap & a){
 		return *this;
 	}
 
-
 	sgfx::Bitmap::api()->cursor_set(&y_cursor, a.bmap(), sg_point(0,0));
 
 	var::String line;
@@ -634,14 +633,14 @@ Printer & Printer::operator << (const sgfx::Bitmap & a){
 		}
 	}
 
-	key(var::String().format("lines    "), line);
+	key("lines    ", line);
 
 	line.clear();
 	for(j=0; j < a.bmap()->area.width; j++){
 		line.append("-");
 	}
 	line.append("--");
-	key(var::String().format("start    "), line);
+	key("start    ", line);
 
 	for(i=0; i < a.bmap()->area.height; i++){
 		sg_cursor_copy(&x_cursor, &y_cursor);
@@ -650,14 +649,13 @@ Printer & Printer::operator << (const sgfx::Bitmap & a){
 		line.append("|");
 		for(j=0; j < a.bmap()->area.width; j++){
 			color = sgfx::Bitmap::api()->cursor_get_pixel(&x_cursor);
-			line << var::String().format("%c", get_bitmap_pixel_character(color, a.bmap()->bits_per_pixel));
+			line << get_bitmap_pixel_character(color, a.bmap()->bits_per_pixel);
 			if( (j < a.bmap()->area.width - 1) && (a.bmap()->bits_per_pixel > 4)){
 				line.append(" ");
 			}
 		}
 		line.append("|");
 		key(var::String().format("line-%04d", i), line);
-
 		sgfx::Bitmap::api()->cursor_inc_y(&y_cursor);
 	}
 	line.clear();
@@ -1008,14 +1006,20 @@ bool Printer::update_progress(int progress, int total){
 }
 
 Printer & Printer::key(const var::String & key, const var::String & a){
-	this->key(key, "%s", a.cstring());
+	print(level_info,
+			key.is_empty() ? nullptr : key.cstring(),
+			a.is_empty() ? nullptr : a.cstring()
+			);
 	return *this;
 }
 
 Printer & Printer::key(const var::String & key, const char * fmt, ...){
 	va_list list;
 	va_start(list, fmt);
-	print(level_info, key.is_empty() ? nullptr : key.cstring(), var::String().vformat(fmt, list).cstring());
+	print(level_info,
+			key.is_empty() ? nullptr : key.cstring(),
+			var::String().vformat(fmt, list).cstring()
+			);
 	va_end(list);
 	return *this;
 }
@@ -1085,11 +1089,11 @@ Printer & Printer::fatal(const char * fmt, ...){
 Printer & Printer::trace(const char * function, int line, const var::String & message){
 
 	if( verbose_level() == level_trace ){
-	print_final(">> trace %s:%d %s\n",
-					function,
-					line,
-					message.cstring()
-					);
+		print_final(">> trace %s:%d %s\n",
+						function,
+						line,
+						message.cstring()
+						);
 	}
 	return *this;
 }

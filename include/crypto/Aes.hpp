@@ -14,6 +14,11 @@ public:
 	using SourceReference = var::Reference::Source;
 	using DestinationReference = var::Reference::Destination;
 
+	using SourceCipherData = arg::Argument<const var::Reference&, struct AesSourceCipherDataTag >;
+	using DestinationCipherData = arg::Argument<var::Reference&, struct AesDestinationCipherDataTag >;
+
+	using SourcePlainData = arg::Argument<const var::Reference&, struct AesSourcePlainDataTag >;
+	using DestinationPlainData = arg::Argument<var::Reference&, struct AesDestinationPlainDataTag >;
 
 	Aes();
 	~Aes();
@@ -22,49 +27,46 @@ public:
 	int finalize();
 
 	Aes & set_key(
-			const var::Data & key
+			const var::Reference & key
 			);
 
 	Aes & set_initialization_vector(
-			const var::Data & value
-			){
-		m_initialization_vector	= value;
-		return *this;
-	}
+			const var::Reference & value
+			);
 
 	const var::Data & initialization_vector() const {
 		return m_initialization_vector;
 	}
 
 	int encrypt_ecb(
-			SourceReference source_data,
-			DestinationReference destination_data
+			SourcePlainData source_data,
+			DestinationCipherData destination_data
 			);
 
 	int decrypt_ecb(
-			SourceReference source_data,
-			DestinationReference destination_data
+			SourceCipherData source_data,
+			DestinationPlainData destination_data
 			);
 
 	int encrypt_cbc(
-			SourceReference source_data,
-			DestinationReference destination_data
+			SourcePlainData source_data,
+			DestinationCipherData destination_data
 			);
 
 	int decrypt_cbc(
-			SourceReference source_data,
-			DestinationReference destination_data
+			SourceCipherData source_data,
+			DestinationPlainData destination_data
 			);
 
 
 	int encrypt_ctr(
-			SourceReference source_data,
-			DestinationReference destination_data
+			SourcePlainData source_data,
+			DestinationCipherData destination_data
 			);
 
 	int decrypt_ctr(
-			SourceReference source_data,
-			DestinationReference destination_data
+			SourceCipherData source_data,
+			DestinationPlainData destination_data
 			);
 
 private:

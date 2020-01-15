@@ -367,7 +367,6 @@ JsonString::JsonString(){
 	m_value = create();
 }
 
-
 JsonString::JsonString(const var::String & str){
 	m_value = api()->create_string(str.cstring());
 }
