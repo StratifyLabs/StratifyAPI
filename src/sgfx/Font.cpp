@@ -170,7 +170,7 @@ int Font::draw(
 			w = space_size();
 		} else {
 			draw(c, bitmap, p);
-			w = m_char.advance_x + 1;
+			w = m_char.advance_x;
 		}
 
 		//apply kerning
