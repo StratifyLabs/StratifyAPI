@@ -101,8 +101,8 @@ const sgfx::FontInfo * Assets::find_font(
 
 			if( font_name.is_empty() || (font_name == info.name()) ){
 				if( info.point_size() <= point_size.argument() ){
-					closest_point_size = info.point_size();
-					if( info.style() <= style.argument() ){
+					if( info.point_size() >= closest_point_size ){
+						closest_point_size = info.point_size();
 						closest_style = info.style();
 					}
 				}

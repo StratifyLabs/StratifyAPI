@@ -26,6 +26,11 @@ public:
       return *this;
    }
 
+   Label& set_padding(u8 value){
+      m_padding = value;
+      return *this;
+   }
+
    Label& set_icon_name(const var::String & value){
       m_icon_name = value;
       return *this;
@@ -43,6 +48,7 @@ private:
    var::String m_icon_name;
    s16 m_icon_rotation = 0;
    u8 m_border_size = 1;
+   u8 m_padding = 10;
    var::String m_font_name;
 
 };

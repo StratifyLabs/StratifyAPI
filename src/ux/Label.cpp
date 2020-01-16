@@ -12,6 +12,8 @@ void Label::draw_to_scale(const DrawingScaledAttributes & attributes){
       border_size = 1; //at least 1 pixel if non-zero
    }
 
+   sg_size_t padding = attributes.height()/2 * m_padding / 100;
+
    const Area icon_area = Area(
             attributes.height() *3/4,
             attributes.height() *3/4
@@ -21,6 +23,18 @@ void Label::draw_to_scale(const DrawingScaledAttributes & attributes){
             attributes.width()/2 - icon_area.width()/2,
             attributes.height()/2 - icon_area.height()/2
             );
+
+   const Area text_area = Area(
+            attributes.width() - padding*2,
+            attributes.height() - padding*2
+            );
+
+   const Point text_point(
+            padding,
+            padding
+            );
+
+
 
    //draw the Border
    attributes.bitmap() << Pen().set_color(color_border);
@@ -53,7 +67,7 @@ void Label::draw_to_scale(const DrawingScaledAttributes & attributes){
             .set_align_center()
             .set_align_middle()
             .draw_to_scale(
-               attributes
+               attributes + text_point + text_area
                );
    }
 
