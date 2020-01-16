@@ -58,24 +58,20 @@ FontInfo::FontInfo(const var::String & path){
 
 
 int FontInfo::ascending_point_size(
-		const void * a,
-		const void * b
+		const FontInfo & a,
+		const FontInfo & b
 		){
-	const FontInfo * info_a = (const FontInfo *)a;
-	const FontInfo * info_b = (const FontInfo *)b;
-	if( info_a->point_size() < info_b->point_size() ){ return -1; }
-	if( info_b->point_size() < info_a->point_size() ){ return 1; }
+	if( a.point_size() < b.point_size() ){ return -1; }
+	if( b.point_size() < a.point_size() ){ return 1; }
 	return 0;
 }
 
 int FontInfo::ascending_style(
-		const void * a,
-		const void * b
+		const FontInfo & a,
+		const FontInfo & b
 		){
-	const FontInfo * info_a = (const FontInfo *)a;
-	const FontInfo * info_b = (const FontInfo *)b;
-	if( info_a->style() < info_b->style() ){ return -1; }
-	if( info_b->style() < info_a->style() ){ return 1; }
+	if( a.style() < b.style() ){ return -1; }
+	if( b.style() < a.style() ){ return 1; }
 	return 0;
 }
 
@@ -174,7 +170,7 @@ int Font::draw(
 			w = space_size();
 		} else {
 			draw(c, bitmap, p);
-			w = m_char.advance_x;
+			w = m_char.advance_x + 1;
 		}
 
 		//apply kerning

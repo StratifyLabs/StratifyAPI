@@ -8,6 +8,7 @@ set(SOURCES
 	Scene.cpp
 
 	# Components
+	Label.cpp
 	Button.cpp
 	Progress.cpp
 	ProgressBar.cpp

@@ -44,7 +44,12 @@ public:
 	 * zero, the text will get a font that most close matches the height
 	 * of the container without exceeding the container height.
 	 */
-	Text & set_font(sgfx::Font * font){	m_font = font; return *this; }
+	Text & set_font(const sgfx::Font * font){	m_font = font; return *this; }
+
+	Text & set_font_name(const var::String & value){
+		m_font_name = value; return *this;
+	}
+
 
 	/*! \details Set the font size */
 	Text & set_font_point_size(sg_size_t v){ m_font_point_size = v; return *this; }
@@ -71,7 +76,8 @@ protected:
 	const var::String & string() const { return m_string; }
 	bool resolve_font(sg_size_t h);
 	var::String m_string;
-	sgfx::Font * m_font = nullptr;
+	var::String m_font_name;
+	const sgfx::Font * m_font = nullptr;
 	sg_size_t m_font_point_size = 0;
 	enum sgfx::Font::style m_font_style = sgfx::Font::style_regular;
 	sg_color_t m_color;

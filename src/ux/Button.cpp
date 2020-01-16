@@ -13,13 +13,13 @@ void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
    }
 
    const Area icon_area = Area(
-            attributes.height() *3/4,
-            attributes.height() *3/4
+            attributes.height()*60/100,
+            attributes.height()*60/100
             );
 
    const Point icon_padding(
-            attributes.width()/2 - icon_area.width()/2,
-            attributes.height()/2 - icon_area.height()/2
+            (attributes.width()/2 - icon_area.width()/2),
+            (attributes.height()/2 - icon_area.height()/2)
             );
 
    //draw the Border

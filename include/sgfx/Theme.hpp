@@ -23,7 +23,15 @@ public:
       style_success,
       style_warning,
       style_danger,
-      last_style = style_danger
+      style_outline_dark,
+      style_outline_light,
+      style_outline_brand_primary,
+      style_outline_brand_secondary,
+      style_outline_info,
+      style_outline_success,
+      style_outline_warning,
+      style_outline_danger,
+      last_style = style_outline_danger
    };
 
    enum state {

@@ -11,6 +11,7 @@ namespace ux {}
 #include "ux/Event.hpp"
 #include "ux/EventLoop.hpp"
 #include "ux/Icon.hpp"
+#include "ux/Label.hpp"
 #include "ux/List.hpp"
 #include "ux/Image.hpp"
 #include "ux/Progress.hpp"

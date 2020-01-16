@@ -14,7 +14,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
    if( !border_size && list()->border_size() ){
       border_size = 1;
    }
-   const sg_size_t padding = attributes.height() / 10;
+   const sg_size_t padding = attributes.height() / 5;
    const sg_size_t effective_height = attributes.height() - padding*2;
    const Point icon_point(
             attributes.width() - effective_height - padding*2,

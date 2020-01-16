@@ -204,32 +204,24 @@ public:
 	}
 
 	static int ascending(
-			const void * a,
-			const void * b
+			const T & a,
+			const T & b
 			){
-		const T * object_a = (const T*)a;
-		const T * object_b = (const T*)b;
-		if( *object_a < *object_b ){ return -1; }
-		if( *object_a > *object_b ){ return 1; }
+		if( a < b ){ return -1; }
+		if( a > b ){ return 1; }
 		return 0;
 	}
 
-	static int descending(const void * a, const void * b){
-		const T * object_a = (const T*)a;
-		const T * object_b = (const T*)b;
-		if( *object_a < *object_b ){ return 1; }
-		if( *object_a > *object_b ){ return -1; }
+	static int descending(const T & a, const T & b){
+		if( a < b ){ return 1; }
+		if( a > b ){ return -1; }
 		return 0;
 	}
 
-	typedef int (*sort_compartor_t)(const void * a, const void * b);
+	typedef int (*sort_compartor_t)(const T & a, const T & b);
 
 	void sort(sort_compartor_t compare_function){
-		qsort(m_vector.data(),
-				count(),
-				sizeof(T),
-				compare_function
-				);
+		std::sort(begin(), end(), compare_function);
 	}
 
 	size_t size() const {

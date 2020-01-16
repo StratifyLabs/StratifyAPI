@@ -55,9 +55,6 @@ void Scene::handle_event(const Event & event){
 
    if( event.type() == SystemEvent::event_type() ){
       if( event.id() == SystemEvent::id_enter ){
-         printf("Enter scene %s\n", name().cstring());
-
-         printf("Draw background\n");
          draw_background();
          for(auto component_pointer: m_component_list){
             component_pointer->enable(scene_collection()->display());

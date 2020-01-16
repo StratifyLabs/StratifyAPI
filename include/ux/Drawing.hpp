@@ -542,6 +542,15 @@ public:
 		return derived_this();
 	}
 
+	u32 alignment() const {
+		return m_flags;
+	}
+
+	T& set_alignment(u32 value){
+		m_flags = value;
+		return derived_this();
+	}
+
 private:
 
 	T& derived_this(){
