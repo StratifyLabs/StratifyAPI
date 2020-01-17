@@ -15,7 +15,6 @@ public:
       return *this;
    }
 
-
    Label & set_font_name(const var::String & value){
       m_font_name = value;
       return *this;
@@ -42,6 +41,7 @@ public:
    }
 
    void draw_to_scale(const DrawingScaledAttributes & attributes);
+	 void handle_event(const ux::Event & event);
 
 private:
    var::String m_label;

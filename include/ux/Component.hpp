@@ -11,6 +11,8 @@
 namespace ux {
 
 class Scene;
+class SceneCollection;
+class CompoundComponent;
 
 class Component : public Drawing {
 public:
@@ -87,7 +89,7 @@ public:
    void apply_antialias_filter(const DrawingScaledAttributes & attributes);
 
    void redraw(){
-      draw(drawing_attributes());
+			draw(local_drawing_attributes());
       set_refresh_drawing_pending();
    }
 
@@ -105,6 +107,9 @@ public:
 
    Scene * scene(){ return m_scene; }
    const Scene * scene() const { return m_scene; }
+
+	 SceneCollection * scene_collection();
+	 const SceneCollection * scene_collection() const;
 
    enum colors {
       color_background = 0,
@@ -133,9 +138,18 @@ protected:
 
    void refresh_drawing();
    friend class Scene;
-   const DrawingAttributes & drawing_attributes() const {
+	 friend class CompoundComponent;
+	 const DrawingAttributes & local_drawing_attributes() const {
       return m_local_drawing_attributes;
    }
+
+	 const DrawingAttributes& reference_drawing_attributes() const {
+			return m_reference_drawing_attributes;
+	 }
+
+	DrawingAttributes& reference_drawing_attributes(){
+			return m_reference_drawing_attributes;
+	 }
 
 private:
 

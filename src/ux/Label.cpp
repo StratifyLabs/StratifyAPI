@@ -74,3 +74,11 @@ void Label::draw_to_scale(const DrawingScaledAttributes & attributes){
    apply_antialias_filter(attributes);
 
 }
+
+void Label::handle_event(const ux::Event & event){
+	 //change the state when an event happens in the component
+	 if( event == SystemEvent(SystemEvent::id_enter) ){
+			redraw();
+	 }
+	 Component::handle_event(event);
+}

@@ -6,6 +6,7 @@
 #include "Drawing.hpp"
 #include "../sgfx/Font.hpp"
 #include "Text.hpp"
+#include "../var/Tokenizer.hpp"
 
 namespace ux {
 

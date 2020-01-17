@@ -71,7 +71,6 @@ void Scene::handle_event(const Event & event){
 
    if( event.type() == SystemEvent::event_type() ){
       if( event.id() == SystemEvent::id_exit ){
-         printf("Exit scene %s\n", name().cstring());
          for(auto component_pointer: m_component_list){
             component_pointer->disable();
          }

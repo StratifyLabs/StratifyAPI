@@ -18,18 +18,18 @@ public:
 
    Scene& add_component(
          const var::String & name,
-         Component* component
+				 Component& component
          ){
-      component->set_scene(this);
-      component->set_name(name);
-      m_component_list.push_back(component);
+			component.set_scene(this);
+			component.set_name(name);
+			m_component_list.push_back(&component);
       return *this;
    }
 
-   Scene& add_background_component(Component* component){
-      component->set_scene(this);
-      component->set_name("");
-      m_background_component_list.push_back(component);
+	 Scene& add_background_component(Component& component){
+			component.set_scene(this);
+			component.set_name("");
+			m_background_component_list.push_back(&component);
       return *this;
    }
 

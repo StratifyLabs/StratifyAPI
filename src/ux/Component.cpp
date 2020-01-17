@@ -5,6 +5,13 @@
 using namespace sgfx;
 using namespace ux;
 
+SceneCollection * Component::scene_collection(){
+	return scene()->scene_collection();
+}
+
+const SceneCollection * Component::scene_collection() const {
+	return scene()->scene_collection();
+}
 
 Component & Component::enable(
       hal::Display & display
