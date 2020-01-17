@@ -13,7 +13,7 @@ const SceneCollection * Component::scene_collection() const {
 	return scene()->scene_collection();
 }
 
-Component & Component::enable(
+void Component::enable(
       hal::Display & display
       ){
 
@@ -35,14 +35,11 @@ Component & Component::enable(
          .set_bitmap(m_local_bitmap);
 
    set_refresh_region(sgfx::Region());
-
-   return *this;
 }
 
 
-Component & Component::disable(){
+void Component::disable(){
    m_local_bitmap.free();
-   return *this;
 }
 
 DrawingPoint Component::translate_point(const sgfx::Point & point){

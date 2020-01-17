@@ -23,6 +23,7 @@ protected:
 private:
 	var::Vector<Component*> m_sub_component_list;
 	bool m_is_initialized = false;
+	void initialize();
 
 };
 

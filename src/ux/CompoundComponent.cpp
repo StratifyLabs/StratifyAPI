@@ -4,28 +4,38 @@
 using namespace sgfx;
 using namespace ux;
 
+void CompoundComponent::initialize(){
+	if( m_is_initialized == false ){
+		for(auto component_pointer: m_sub_component_list){
+			//reference attributes are the location within the compound component
+			//translate reference attributes based on compound component attributes
+			component_pointer->reference_drawing_attributes() =
+					reference_drawing_attributes() +
+					component_pointer->reference_drawing_attributes().point() +
+					component_pointer->reference_drawing_attributes().area();
+
+			//add the parent scene
+			component_pointer->set_scene( scene() );
+			component_pointer->enable( scene()->scene_collection()->display() );
+		}
+	}
+	m_is_initialized = true;
+}
+
+
+
+
 
 
 void CompoundComponent::handle_event(const ux::Event & event){
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_enter ){
+			initialize();
 			for(auto component_pointer: m_sub_component_list){
-				//reference attributes are the location within the compound component
-				//translate reference attributes based on compound component attributes
-
-
-				if( m_is_initialized == false ){
-					component_pointer->reference_drawing_attributes() =
-							reference_drawing_attributes() +
-							component_pointer->reference_drawing_attributes().point() +
-							component_pointer->reference_drawing_attributes().area();
-				}
-
 				//add the parent scene
 				component_pointer->set_scene( scene() );
 				component_pointer->enable( scene()->scene_collection()->display() );
 			}
-			m_is_initialized = true;
 		}
 	}
 

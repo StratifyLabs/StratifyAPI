@@ -96,7 +96,8 @@ int Sys::launch(const var::String & path,
 #endif
 }
 
-int Sys::launch(const var::String & path,
+int Sys::launch(
+		const var::String & path,
 		Arguments args,
 		DestinationPath exec_destination,
 		enum Appfs::flags options, //run in RAM, discard on exit

@@ -62,10 +62,11 @@ public:
       return *this;
    }
 
-   Component & enable(
+	 void enable(
          hal::Display & display
-         );
-   Component & disable();
+				 );
+
+	 void disable();
 
    bool is_enabled() const {
       return (m_local_bitmap.to_const_void() != nullptr);

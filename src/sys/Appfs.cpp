@@ -53,6 +53,8 @@ int AppfsFileAttributes::apply(const fs::File & file) const {
 
 	int result;
 
+	int location = file.seek(0, fs::File::whence_current);
+
 	if( (result = file.read(
 			  fs::File::Location(0),
 			  appfs_file_reference
@@ -68,6 +70,8 @@ int AppfsFileAttributes::apply(const fs::File & file) const {
 			  )) != (int)appfs_file_reference.size() ){
 		return -1;
 	}
+
+	file.seek(location, fs::File::whence_set);
 
 	return 0;
 }
@@ -253,15 +257,17 @@ AppfsInfo Appfs::get_info(
 		path_name = fs::File::name(path);
 
 		if( path_name.find(".sys") == 0 ){
+			errno = EINVAL;
 			return AppfsInfo();
 		}
 
 		if( path_name.find(".free") == 0 ){
+			errno = EINVAL;
 			return AppfsInfo();
 		}
 
 		if( (appfs_file_header.hdr.mode & 0111) == 0 ){
-			return AppfsInfo();
+			//return AppfsInfo();
 		}
 
 		app_name = appfs_file_header.hdr.name;

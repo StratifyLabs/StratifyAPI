@@ -64,10 +64,10 @@ var::Vector<var::String> Link::get_port_list(){
 
 
 	while( driver()->getname(
-				 device_name.to_char(),
-				 last_device.cstring(),
-				 device_name.capacity()
-				 ) == 0 ){
+					 device_name.to_char(),
+					 last_device.cstring(),
+					 device_name.capacity()
+					 ) == 0 ){
 		var::String device_string(
 					device_name.to_const_char(),
 					var::String::Length(
@@ -94,8 +94,8 @@ var::Vector<LinkInfo> Link::get_info_list(){
 	for(u32 i = 0; i < port_list.count(); i++){
 		//ping and grab the info
 		if( connect(
-				 port_list.at(i)
-				 ) < 0 ){
+					port_list.at(i)
+					) < 0 ){
 			//couldn't connect
 		} else {
 			result.push_back(LinkInfo(port_list.at(i), sys_info()));
@@ -782,8 +782,8 @@ int Link::symlink(
 
 	if ( err < 0 ){
 		m_error_message.sprintf("Failed to create symlink %s (%d)",
-										new_path.argument().cstring(),
-										link_errno);
+														new_path.argument().cstring(),
+														link_errno);
 	}
 	return check_error(err);
 }
@@ -837,9 +837,9 @@ int Link::copy(
 
 		//Open the host file
 		if( host_file.open(
-				 src.argument(),
-				 OpenFlags::read_only()
-				 ) < 0 ){
+					src.argument(),
+					OpenFlags::read_only()
+					) < 0 ){
 			m_error_message.sprintf("Could not find file %s on host", src.argument().cstring());
 			return -1;
 		}
@@ -854,9 +854,9 @@ int Link::copy(
 
 		var::String dest_file = dest.argument();
 		if( dest_file.create_sub_string(
-				 var::String::Position(0),
-				 var::String::Length(4)
-				 ) == "/app" ){
+					var::String::Position(0),
+					var::String::Length(4)
+					) == "/app" ){
 			int result;
 			var::String dest_name = File::name(dest.argument());
 
@@ -877,9 +877,9 @@ int Link::copy(
 			//Create the device file
 
 			if( device_file.create(
-					 dest.argument(),
-					 fs::File::IsOverwrite(true),
-					 permissions) < 0 ){
+						dest.argument(),
+						fs::File::IsOverwrite(true),
+						permissions) < 0 ){
 				m_error_message.sprintf("Failed to create file %s on device", dest.argument().cstring(), link_errno);
 
 				return -1;
@@ -918,10 +918,10 @@ int Link::copy(
 		m_progress_max = 0;
 		//Copy the source file from the device to the host
 		if( host_file.create(
-				 dest.argument(),
-				 fs::File::IsOverwrite(true),
-				 permissions
-				 ) < 0 ){
+					dest.argument(),
+					fs::File::IsOverwrite(true),
+					permissions
+					) < 0 ){
 			m_error_message.sprintf("Failed to open file %s on host", dest.argument().cstring());
 			return -1;
 		}
@@ -929,9 +929,9 @@ int Link::copy(
 
 		//Open the device file
 		if( device_file.open(
-				 src.argument(),
-				 fs::OpenFlags::read_only()
-				 ) < 0 ){
+					src.argument(),
+					fs::OpenFlags::read_only()
+					) < 0 ){
 			m_error_message.format(
 						"Failed to open file %s on device (%d)",
 						src.argument().cstring(),
@@ -948,11 +948,11 @@ int Link::copy(
 		}
 
 		if( host_file.write(
-				 device_file,
-				 fs::File::PageSize(copy_page_size),
-				 fs::File::Size(device_file.size()),
-				 progress_callback
-				 ) < 0 ){
+					device_file,
+					fs::File::PageSize(copy_page_size),
+					fs::File::Size(device_file.size()),
+					progress_callback
+					) < 0 ){
 			m_error_message.format(
 						"failed to write to host file"
 						);
@@ -1187,17 +1187,17 @@ u32 Link::validate_os_image_id_with_connected_bootloader(
 	m_progress = 0;
 
 	if( source_image.seek(
-			 fs::File::Location(BOOTLOADER_HARDWARE_ID_OFFSET),
-			 File::SET
-			 ) < 0 ){
+				fs::File::Location(BOOTLOADER_HARDWARE_ID_OFFSET),
+				File::SET
+				) < 0 ){
 		m_error_message = "Failed to seek to bootloader image hardware ID value";
 		return 0;
 	}
 
 	if( source_image.read(
-			 &image_id,
-			 fs::File::Size(sizeof(u32))
-			 ) != sizeof(u32) ){
+				&image_id,
+				fs::File::Size(sizeof(u32))
+				) != sizeof(u32) ){
 		m_error_message = "Failed to read bootloader image id";
 		return 0;
 	}
@@ -1212,8 +1212,8 @@ u32 Link::validate_os_image_id_with_connected_bootloader(
 	if( (image_id & ~0x01) != (m_bootloader_attributes.hardware_id & ~0x01) ){
 		err = -1;
 		m_error_message.format("Kernel Image ID (0x%X) does not match Bootloader ID (0x%X)",
-									  image_id,
-									  m_bootloader_attributes.hardware_id);
+													 image_id,
+													 m_bootloader_attributes.hardware_id);
 		return 0;
 	}
 
@@ -1262,9 +1262,9 @@ int Link::erase_os(
 						);
 		}
 	} while (
-				(err < 0) &&
-				(retry++ < bootloader_retry_total.argument())
-				);
+					 (err < 0) &&
+					 (retry++ < bootloader_retry_total.argument())
+					 );
 
 	chrono::wait(chrono::Milliseconds(250));
 
@@ -1277,7 +1277,7 @@ int Link::erase_os(
 	if( err < 0 ){
 		var::String error = m_error_message;
 		m_error_message.format("Failed to ping bootloader after erase -> %s",
-									  error.cstring());
+													 error.cstring());
 		return err;
 	}
 
@@ -1285,10 +1285,10 @@ int Link::erase_os(
 }
 
 int Link::install_os(const fs::File & image,
-							IsVerify is_verify,
-							HardwareId image_id,
-							Printer & progress_printer
-							){
+										 IsVerify is_verify,
+										 HardwareId image_id,
+										 Printer & progress_printer
+										 ){
 
 	//must be connected to the bootloader with an erased OS
 	int err;
@@ -1332,8 +1332,8 @@ int Link::install_os(const fs::File & image,
 	}
 
 	while(
-			(bytes_read = image.read(buffer) ) > 0
-			){
+				(bytes_read = image.read(buffer) ) > 0
+				){
 
 		if( loc == start_address ){
 			//we want to write the first 256 bytes last because the bootloader checks this for a valid image
@@ -1354,16 +1354,16 @@ int Link::install_os(const fs::File & image,
 		}
 
 		if ( (err = link_writeflash(
-					m_driver,
-					loc,
-					buffer.to_const_void(),
-					bytes_read
-					)
-				) != bytes_read ){
+						m_driver,
+						loc,
+						buffer.to_const_void(),
+						bytes_read
+						)
+					) != bytes_read ){
 			m_error_message.format("Failed to write to link flash at 0x%x (%d, %d) -> try the operation again",
-										  loc,
-										  err, link_errno
-										  );
+														 loc,
+														 err, link_errno
+														 );
 			if ( err < 0 ){
 				err = -1;
 			}
@@ -1390,15 +1390,15 @@ int Link::install_os(const fs::File & image,
 			progress_printer.progress_key() = "verifying";
 
 			while(
-					(bytes_read = image.read(buffer)) > 0
-					){
+						(bytes_read = image.read(buffer)) > 0
+						){
 
 				if ( (err = link_readflash(
-							m_driver,
-							loc,
-							compare_buffer.to_void(),
-							bytes_read)
-						) != bytes_read ){
+								m_driver,
+								loc,
+								compare_buffer.to_void(),
+								bytes_read)
+							) != bytes_read ){
 					m_error_message.sprintf("Failed to read flash memory", link_errno);
 					if ( err > 0 ){
 						err = -1;
@@ -1445,11 +1445,11 @@ int Link::install_os(const fs::File & image,
 
 		//write the start block
 		if( (err = link_writeflash(
-				  m_driver,
-				  start_address,
-				  start_address_buffer.to_const_void(),
-				  start_address_buffer.size())
-			  ) != start_address_buffer.size() ){
+					 m_driver,
+					 start_address,
+					 start_address_buffer.to_const_void(),
+					 start_address_buffer.size())
+				 ) != start_address_buffer.size() ){
 
 			if( progress_callback ){
 				progress_callback->update(0,0);
@@ -1473,11 +1473,11 @@ int Link::install_os(const fs::File & image,
 			//verify the stack address
 			buffer.resize( start_address_buffer.size() );
 			if( (err = link_readflash(
-					  m_driver,
-					  start_address,
-					  buffer.to_void(),
-					  start_address_buffer.size())
-				  ) != start_address_buffer.size() ){
+						 m_driver,
+						 start_address,
+						 buffer.to_void(),
+						 start_address_buffer.size())
+					 ) != start_address_buffer.size() ){
 				m_error_message.format("Failed to write stack addr %d", err);
 				if( progress_callback ){ progress_callback->update(0,0); }
 
@@ -1520,26 +1520,26 @@ int Link::update_os(
 	var::String progress_key = progress_printer.progress_key();
 
 	if( erase_os(
-			 progress_printer,
-			 bootloader_retry_total
-			 )
-		 ){
+				progress_printer,
+				bootloader_retry_total
+				)
+			){
 		progress_printer.error("failed to erase os '%s'",
-									  error_message().cstring()
-									  );
+													 error_message().cstring()
+													 );
 		progress_printer.progress_key() = progress_key;
 		return -1;
 	}
 
 	if( install_os(
-			 image,
-			 is_verify,
-			 HardwareId(image_id),
-			 progress_printer
-			 ) < 0 ){
+				image,
+				is_verify,
+				HardwareId(image_id),
+				progress_printer
+				) < 0 ){
 		progress_printer.error("failed to install os '%s'",
-									  error_message().cstring()
-									  );
+													 error_message().cstring()
+													 );
 		progress_printer.progress_key() = progress_key;
 		return -1;
 	}
@@ -1575,17 +1575,17 @@ int Link::update_os(
 	m_progress = 0;
 
 	if( image.seek(
-			 File::Location(BOOTLOADER_HARDWARE_ID_OFFSET),
-			 File::SET
-			 ) < 0 ){
+				File::Location(BOOTLOADER_HARDWARE_ID_OFFSET),
+				File::SET
+				) < 0 ){
 		m_error_message = "Failed to seek to bootloader image hardware ID value";
 		return -1;
 	}
 
 	if( image.read(
-			 &image_id,
-			 File::Size(sizeof(u32))
-			 ) != sizeof(u32) ){
+				&image_id,
+				File::Size(sizeof(u32))
+				) != sizeof(u32) ){
 		m_error_message = "Failed to read bootloader image id";
 		return -1;
 	}
@@ -1610,8 +1610,8 @@ int Link::update_os(
 	if( (image_id & ~0x01) != (m_bootloader_attributes.hardware_id & ~0x01) ){
 		err = -1;
 		m_error_message.format("Kernel Image ID (0x%X) does not match Bootloader ID (0x%X)",
-									  image_id,
-									  m_bootloader_attributes.hardware_id);
+													 image_id,
+													 m_bootloader_attributes.hardware_id);
 		return check_error(err);
 	}
 
@@ -1639,9 +1639,9 @@ int Link::update_os(
 	m_error_message = "";
 
 	while( (bytesRead = image.read(
-				  buffer,
-				  File::Size(buffer_size)
-				  )) > 0 ){
+						buffer,
+						File::Size(buffer_size)
+						)) > 0 ){
 
 		if( loc == startAddr ){
 			//we want to write the first 256 bytes last because the bootloader checks this for a valid image
@@ -1676,9 +1676,9 @@ int Link::update_os(
 			m_progress = 0;
 
 			while( (bytesRead = image.read(
-						  buffer,
-						  File::Size(buffer_size)
-						  )) > 0 ){
+								buffer,
+								File::Size(buffer_size)
+								)) > 0 ){
 
 				if ( (err = link_readflash(m_driver, loc, cmpBuffer, bytesRead)) != bytesRead ){
 					m_error_message.sprintf("Failed to read flash memory", link_errno);
@@ -1821,10 +1821,10 @@ int Link::install_app(
 				attr.nbyte = bytes_read;
 				bytes_cumm += attr.nbyte;
 				if( (loc_err = ioctl(
-						  FileDescriptor(fd),
-						  fs::File::IoRequest(I_APPFS_INSTALL),
-						  fs::File::IoArgument(&attr)
-						  )) < 0 ){
+							 FileDescriptor(fd),
+							 fs::File::IoRequest(I_APPFS_INSTALL),
+							 fs::File::IoArgument(&attr)
+							 )) < 0 ){
 
 					if( link_errno == 5 ){ //EIO
 						if( loc_err < -1 ){
@@ -1869,13 +1869,13 @@ int Link::install_app(
 		File f = File(fs::File::LinkDriver(driver()));
 
 		//copy the file to the destination directory
-		var::String dest_str;
-		dest_str << path.argument() << "/" << name.argument();
+		var::String dest_str = path.argument() + "/" + name.argument();
 
 		if( f.create(
-				 dest_str,
-				 File::IsOverwrite(true)
-				 ) < 0 ){
+					dest_str,
+					File::IsOverwrite(true),
+					Permissions(0555)
+					) < 0 ){
 			m_error_message.format(
 						"failed to create %s on target",
 						dest_str.cstring()
@@ -1884,11 +1884,11 @@ int Link::install_app(
 		}
 
 		if( f.write(
-				 application_image,
-				 File::PageSize(APPFS_PAGE_SIZE),
-				 File::Size(application_image.size()),
-				 progress_callback
-				 ) < 0 ){
+					application_image,
+					File::PageSize(APPFS_PAGE_SIZE),
+					File::Size(application_image.size()),
+					progress_callback
+					) < 0 ){
 			return -1;
 		}
 
@@ -1896,7 +1896,6 @@ int Link::install_app(
 			return -1;
 		}
 		if( progress_callback ){ progress_callback->update(0,0); }
-
 	}
 
 	return 0;

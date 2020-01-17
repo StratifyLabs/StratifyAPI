@@ -130,7 +130,10 @@ public:
 	enum whence {
 		SET /*! Set the location of the file descriptor */ = LINK_SEEK_SET,
 		CURRENT /*! Set the location relative to the current location */ = LINK_SEEK_CUR,
-		END /*! Set the location relative to the end of the file or device */ = LINK_SEEK_END
+		END /*! Set the location relative to the end of the file or device */ = LINK_SEEK_END,
+		whence_set = LINK_SEEK_SET,
+		whence_current = LINK_SEEK_CUR,
+		whence_end = LINK_SEEK_END
 	};
 
 #if defined __link
