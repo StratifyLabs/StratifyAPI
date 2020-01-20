@@ -114,7 +114,7 @@ const var::String Stat::name(
 const var::String Stat::parent_directory(
 		const var::String & path
 		){
-	size_t pos = path.find('/');
+	size_t pos = path.rfind('/');
 
 	if( pos == var::String::npos ){
 		return var::String();
