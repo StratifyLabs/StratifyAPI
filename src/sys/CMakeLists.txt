@@ -12,6 +12,7 @@ set(SOURCELIST
 	ProgressCallback.cpp
 	Printer.cpp
 	MarkdownPrinter.cpp
+	JsonPrinter.cpp
 	YamlPrinter.cpp
 	)
 

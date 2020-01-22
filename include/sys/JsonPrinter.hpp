@@ -1,53 +1,55 @@
-/*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
+#ifndef SAPI_SYS_JSONPRINTER_HPP
+#define SAPI_SYS_JSONPRINTER_HPP
 
 
-#ifndef SAPI_SYS_JSON_PRINTER_HPP_
-#define SAPI_SYS_JSON_PRINTER_HPP_
-
-#include "../var/String.hpp"
+#include "Printer.hpp"
 
 namespace sys {
 
-class JsonPrinter : public var::String {
+class JsonPrinter : public Printer {
 public:
-	JsonPrinter(bool is_object = true);
+	JsonPrinter();
 
+	JsonPrinter & open_object(
+			const var::String & key,
+			enum verbose_level level = level_fatal);
 
-	void end();
-	void end_object();
-	void end_array();
+	JsonPrinter & close_object();
 
-	void append_object(const var::String & key);
-	void append_array(const var::String & key);
-
-
-	void append_string(const var::String & key, const String & value);
-	void append_number(const var::String & key, int number);
-	void append_float(const var::String & key, float number);
-	void append_true(const var::String & key);
-	void append_false(const var::String & key);
-	void append_null(const var::String & key);
-
-
-	//appending in arrays
-	void append_object();
-	void append_array();
-
-	void append_string(const var::String & value);
-	void append_number(int number);
-	void append_float(float number);
-	void append_true();
-	void append_false();
-	void append_null();
+	JsonPrinter & open_array(const var::String & key, enum verbose_level level = level_fatal);
+	JsonPrinter & close_array(){
+		return close_object();
+	}
 
 private:
+	enum container_type {
+		container_array,
+		container_object
+	};
 
-	void append_separator();
-	bool m_is_first;
-	bool m_is_object;
+	using Container = PrinterContainer<enum container_type>;
+	var::Vector<Container> m_container_list;
+	var::Vector<Container> & container_list(){ return m_container_list; }
+	const var::Vector<Container> & container_list() const { return m_container_list; }
+
+	//re-implemented virtual functions from Printer
+	void print_open_object(enum verbose_level level, const char * key);
+	void print_close_object();
+	void print(enum verbose_level level, const char * key, const char * value, bool is_newline = true);
+
+
+	Container & container(){
+		return m_container_list.back();
+	}
+
+	const Container & container() const {
+		return m_container_list.back();
+	}
+
+	void insert_comma();
 
 };
 
-} /* namespace var */
+}
 
-#endif /* SAPI_SYS_JSON_PRINTER_HPP_ */
+#endif // SAPI_SYS_JSONPRINTER_HPP

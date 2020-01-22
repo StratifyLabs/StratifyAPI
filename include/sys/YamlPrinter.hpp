@@ -81,8 +81,8 @@ public:
 	 *
 	 */
 	YamlPrinter & open_array(const var::String & key, enum verbose_level level = level_fatal);
-	void close_array(){
-		close_object();
+	YamlPrinter & close_array(){
+		return close_object();
 	}
 
 	/*! \details Returns a printer termination object for closing

@@ -120,7 +120,10 @@ struct PrinterFlags {
 		print_magenta_keys = (1<<18),
 		print_blob /*! Print Data as a blob */ = (1<<19),
 		print_cyan_values = (1<<20),
-		print_red_keys = (1<<21)
+		print_red_keys = (1<<21),
+		print_no_progress_newline = (1<<22),
+		print_key_quotes = (1<<23),
+		print_value_quotes = (1<<24),
 	};
 
 	enum format_type {

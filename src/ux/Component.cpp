@@ -95,19 +95,23 @@ const sgfx::Theme & Component::theme() const {
 
 void Component::apply_antialias_filter(const DrawingAttributes & attributes){
    if( is_antialias() ){
+#if 0
       attributes.bitmap().apply_antialias_filter(
                theme().antialias_filter(),
                attributes.bitmap().region()
                );
+#endif
    }
    set_refresh_drawing_pending();
 }
 
 void Component::apply_antialias_filter(const DrawingScaledAttributes & attributes){
    if( is_antialias() ){
+#if 0
       attributes.bitmap().apply_antialias_filter(
                theme().antialias_filter(),
                attributes.bitmap().region()
                );
+#endif
    }
 }

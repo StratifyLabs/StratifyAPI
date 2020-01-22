@@ -1,158 +1,108 @@
-/*! \file */ //Copyright 2011-2017 Tyler Gilbert; All Rights Reserved
-
-
 #include "sys/JsonPrinter.hpp"
 
-using namespace var;
+using namespace sys;
 
-namespace sys {
+JsonPrinter::JsonPrinter(){
+	container_list().push_back(
+				Container(level_fatal, container_array)
+				);
+	set_flags(print_no_progress_newline | print_key_quotes | print_value_quotes);
+}
 
-JsonPrinter::JsonPrinter(bool is_object) {
-	// TODO Auto-generated constructor stub
+void JsonPrinter::print_open_object(
+		enum verbose_level level,
+		const char * key
+		){
+	open_object(key, level);
+}
 
-	m_is_first = true;
-	m_is_object = is_object;
+void JsonPrinter::print_close_object(){
+	close_object();
+}
 
-	if( is_object ){
-		append("\n{");
-	} else {
-		append("\n[");
+void JsonPrinter::print(
+		enum verbose_level level,
+		const char * key,
+		const char * value,
+		bool is_newline
+		){
+
+	if(level > verbose_level()){
+		return;
 	}
 
-}
-
-void JsonPrinter::end(){
-	if( m_is_object ){
-		append("}\n");
-	} else {
-		append("]\n");
+	for(auto const & c: container_list() ){
+		if(c.verbose_level() > verbose_level()){
+			return;
+		}
 	}
-}
 
-void JsonPrinter::append_separator(){
-	if( m_is_first ){
-		m_is_first = false;
-	} else {
-		append(",");
+	insert_comma();
+
+	if( container().type() == container_array ){
+		key = nullptr;
 	}
+
+	Printer::print(level, key, value, false);
 }
 
-void JsonPrinter::append_object(const String & key){
-	String str;
-	str.format("\"%s\": {", key.cstring());
-	append_separator();
-	append(str.cstring());
-	m_is_first = true;
+JsonPrinter & JsonPrinter::open_object(
+		const var::String & key,
+		enum verbose_level level
+		){
+
+	if( verbose_level() >= level ){
+		insert_comma();
+		if( container().type() == container_object ){
+			print_final("\"%s\":{", key.cstring());
+		} else {
+			print_final("{", key.cstring());
+		}
+	}
+
+	container_list().push_back(
+				Container(level, container_object)
+				);
+	return *this;
 }
 
-void JsonPrinter::append_array(const String & key){
-	String str;
-	str.format("\"%s\": [", key.cstring());
-	append_separator();
-	append(str.cstring());
-	m_is_first = true;
+JsonPrinter & JsonPrinter::open_array(
+		const var::String & key,
+		enum verbose_level level
+		){
+	if( verbose_level() >= level ){
+		insert_comma();
+		if( container().type() == container_object ){
+			print_final("\"%s\":[", key.cstring());
+		} else {
+			print_final("[", key.cstring());
+		}
+	}
+	container_list().push_back(
+				Container(level, container_array)
+				);
+	return *this;
 }
 
-void JsonPrinter::end_object(){
-	append("}");
+JsonPrinter & JsonPrinter::close_object(){
+	if( container_list().count() > 1 ){
+		if( verbose_level() >= container().verbose_level() ){
+			if( container().type() == container_array ){
+				print_final("]");
+			} else if( container().type() == container_object ){
+				print_final("}");
+			}
+		}
+		container_list().pop_back();
+	}
+	return *this;
 }
 
-void JsonPrinter::end_array(){
-	append("]");
-}
-
-void JsonPrinter::append_string(const String & key, const String & value){
-	String str;
-	str.sprintf("\"%s\": \"%s\"", key.cstring(), value.cstring());
-	append_separator();
-	append(str.cstring());
-}
-
-void JsonPrinter::append_number(const String & key, int number){
-	String str;
-	str.sprintf("\"%s\": \"%d\"", key.cstring(), number);
-	append_separator();
-	append(str.cstring());
-}
-
-void JsonPrinter::append_float(const String & key, float number){
-	String str;
-	str.sprintf("\"%s\": \"%f\"", key.cstring(), number);
-	append_separator();
-	append(str.cstring());
-}
-
-
-void JsonPrinter::append_true(const String & key){
-	String str;
-	str.sprintf("\"%s\":true", key.cstring());
-	append_separator();
-	append(str.cstring());
-}
-
-void JsonPrinter::append_false(const String & key){
-	String str;
-	str.sprintf("\"%s\":false", key.cstring());
-	append_separator();
-	append(str.cstring());
-}
-
-void JsonPrinter::append_null(const String & key){
-	String str;
-	str.sprintf("\"%s\": null", key.cstring());
-	append_separator();
-	append(str.cstring());
-}
-
-void JsonPrinter::append_object(){
-	append_separator();
-	append("{");
-	m_is_first = true;
-}
-
-void JsonPrinter::append_array(){
-	append_separator();
-	append("[");
-	m_is_first = true;
-}
-
-void JsonPrinter::append_string(const String & value){
-	append_separator();
-	append("\"");
-	append(value);
-	append("\"");
-}
-
-void JsonPrinter::append_number(int number){
-	String str;
-	str.sprintf("\"%d\"", number);
-	append_separator();
-	append(str.cstring());
-}
-
-void JsonPrinter::append_float(float number){
-	String str;
-	str.sprintf("\"%f\"", number);
-	append_separator();
-	append(str.cstring());
+void JsonPrinter::insert_comma(){
+	if( container().count() > 1 ){
+		print_final(",");
+	}
+	container().count() = container().count() + 1;
 }
 
 
-void JsonPrinter::append_true(){
-	append_separator();
-	append("true");
-}
-
-void JsonPrinter::append_false(){
-	append_separator();
-	append(", false");
-
-}
-
-void JsonPrinter::append_null(){
-	append_separator();
-	append(", null");
-}
-
-
-} /* namespace var */

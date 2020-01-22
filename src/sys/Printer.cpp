@@ -127,7 +127,11 @@ void Printer::print(
 		if( m_o_flags & print_yellow_keys ){ set_color_code(color_code_yellow); }
 		if( m_o_flags & print_magenta_keys ){ set_color_code(color_code_magenta); }
 		if( m_o_flags & print_red_keys ){ set_color_code(color_code_red); }
-		print_final("%s: ", key);
+		if( m_o_flags & print_key_quotes ){
+			print_final("\"%s\": ", key);
+		} else {
+			print_final("%s: ", key);
+		}
 		if( m_o_flags & print_bold_keys ){ clear_format_code(format_bold); }
 		if( m_o_flags & (print_cyan_keys | print_yellow_keys | print_magenta_keys | print_red_keys) ){ clear_color_code(); }
 	}
@@ -138,7 +142,11 @@ void Printer::print(
 		if( m_o_flags & print_yellow_values){ set_color_code(color_code_yellow); }
 		if( m_o_flags & print_red_values){ set_color_code(color_code_red); }
 		if( m_o_flags & print_cyan_values){ set_color_code(color_code_cyan); }
-		print_final(value);
+		if( m_o_flags & print_value_quotes ){
+			print_final("\"%s\"", value);
+		} else {
+			print_final("%s", value);
+		}
 		if( m_o_flags & (print_green_values | print_yellow_values | print_red_values | print_cyan_values) ){ clear_color_code(); }
 		if( m_o_flags & print_bold_values ){ clear_format_code(format_bold); }
 	}
@@ -949,7 +957,10 @@ bool Printer::update_progress(int progress, int total){
 			//only print the key once with total == -1
 			print(Printer::INFO, m_progress_key.cstring(), nullptr);
 			if( total != -1 ){
-				if( (m_o_flags & PRINT_SIMPLE_PROGRESS) == 0 ){
+				if( m_o_flags & print_value_quotes ){
+					print_final("\"");
+				}
+				if( (m_o_flags & print_simple_progress) == 0 ){
 					for(u32 i=0; i < width; i++){
 						print_final(".");
 					}
@@ -967,8 +978,12 @@ bool Printer::update_progress(int progress, int total){
 			if( total == ProgressCallback::indeterminate_progress_total() ){
 				var::String output;
 				var::String animation = "-\\|/";
+				if( (m_o_flags & print_value_quotes) && (m_progress_state == 1) ){
+					print_final("\"");
+				}
 				m_progress_state++;
-				if( (m_o_flags & PRINT_SIMPLE_PROGRESS) == 0 ){
+
+				if( (m_o_flags & print_simple_progress) == 0 ){
 					output.format(
 								"%c" F32U,
 								animation.at(m_progress_state % animation.length()),
@@ -979,7 +994,7 @@ bool Printer::update_progress(int progress, int total){
 						print_final("\b"); //backspace
 					}
 				} else {
-					print_final("?");
+					print_final(F32U, m_progress_state-1);
 				}
 
 			} else {
@@ -998,7 +1013,12 @@ bool Printer::update_progress(int progress, int total){
 			}
 		}
 		if( total == 0 ){
-			print_final("\n");
+			if( (m_o_flags & print_no_progress_newline) == 0 ){
+				print_final("\n");
+			}
+			if( m_o_flags & print_value_quotes ){
+				print_final("\"");
+			}
 		}
 	}
 
