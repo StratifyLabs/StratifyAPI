@@ -66,7 +66,7 @@ var::Vector<var::String> Link::get_port_list(){
 	while( driver()->getname(
 					 device_name.to_char(),
 					 last_device.cstring(),
-					 device_name.capacity()
+					 static_cast<int>(device_name.capacity())
 					 ) == 0 ){
 		var::String device_string(
 					device_name.to_const_char(),
@@ -99,7 +99,7 @@ var::Vector<LinkInfo> Link::get_info_list(){
 			//couldn't connect
 		} else {
 			result.push_back(LinkInfo(port_list.at(i), sys_info()));
-			disconnect();
+			//disconnect();
 		}
 	}
 
@@ -110,9 +110,10 @@ int Link::connect(
 		const var::String & path,
 		IsLegacy is_legacy
 		){
-	int err;
+	int err = -1;
 
 	reset_progress();
+
 
 	if ( m_driver->phy_driver.handle == LINK_PHY_OPEN_ERROR ){
 
@@ -163,7 +164,7 @@ int Link::connect(
 
 	m_link_info.set_port(path).set_info(sys_info);
 
-	if( File::default_driver() == 0 ){
+	if( File::default_driver() == nullptr ){
 		File::set_default_driver( File::LinkDriver(driver()) );
 	}
 
@@ -213,7 +214,7 @@ int Link::open(
 		const OpenFlags & flags,
 		const Permissions & permissions
 		){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -240,7 +241,7 @@ int Link::open(
 }
 
 int Link::close(int fd){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){ return -1; }
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
@@ -260,7 +261,7 @@ int Link::read(
 		void * buf,
 		File::Size nbyte
 		){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -270,7 +271,7 @@ int Link::read(
 					m_driver,
 					fd.argument(),
 					buf,
-					nbyte.argument()
+					static_cast<int>(nbyte.argument())
 					);
 		if(err != LINK_PROT_ERROR) break;
 	}
@@ -285,7 +286,7 @@ int Link::write(
 		FileDescriptor fd,
 		const void * buf,
 		fs::File::Size nbyte){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -295,7 +296,7 @@ int Link::write(
 					m_driver,
 					fd.argument(),
 					buf,
-					nbyte.argument()
+					static_cast<int>(nbyte.argument())
 					);
 		if(err != LINK_PROT_ERROR) break;
 	}
@@ -308,7 +309,7 @@ int Link::write(
 }
 
 int Link::read_flash(int addr, void * buf, int nbyte){
-	int err;
+	int err = -1;
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err =  link_readflash(m_driver, addr, buf, nbyte);
@@ -326,7 +327,7 @@ int Link::get_is_executing(
 		const var::String & name
 		){
 	sys_taskattr_t task;
-	int id;
+	u32 id;
 	int err;
 	int fd;
 
@@ -364,7 +365,7 @@ int Link::get_is_executing(
 			if( task.is_enabled != 0 ){
 				if( var::String(task.name) == name ){
 					close(fd);
-					return task.pid;
+					return static_cast<int>(task.pid);
 				}
 			}
 		}
@@ -380,7 +381,7 @@ int Link::get_is_executing(
 }
 
 int Link::write_flash(int addr, const void * buf, int nbyte){
-	int err;
+	int err = -1;
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err =  link_writeflash(m_driver, addr, buf, nbyte);
@@ -399,7 +400,7 @@ int Link::lseek(
 		fs::File::Location offset,
 		int whence
 		){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -428,7 +429,7 @@ int Link::ioctl(
 		fs::File::IoRequest request,
 		fs::File::IoArgument arg
 		){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -491,7 +492,7 @@ int Link::stat(
 		const var::String & path,
 		struct link_stat & st
 		){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -512,7 +513,7 @@ int Link::stat(
 }
 
 int Link::get_time(struct tm * gt){
-	int err;
+	int err = -1;
 	struct link_tm ltm;
 	if ( m_is_bootloader ){
 		return -1;
@@ -540,7 +541,7 @@ int Link::get_time(struct tm * gt){
 }
 
 int Link::set_time(struct tm * gt){
-	int err;
+	int err = -1;
 	struct link_tm ltm;
 
 	ltm.tm_hour = gt->tm_hour;
@@ -574,7 +575,7 @@ int Link::mkdir(
 		const var::String & path,
 		const Permissions permissions
 		){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -601,7 +602,7 @@ int Link::mkdir(
 int Link::rmdir(
 		const var::String & path
 		){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -706,7 +707,7 @@ var::String Link::convert_permissions(link_mode_t mode){
 
 
 int Link::opendir(const var::String & path){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return 0;
 	}
