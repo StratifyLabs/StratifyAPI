@@ -2,6 +2,7 @@
 #define SAPI_UX_LAYOUT_HPP
 
 #include "Component.hpp"
+#include "TouchGesture.hpp"
 
 namespace ux {
 
@@ -62,9 +63,7 @@ public:
 		return m_columns;
 	}
 
-	void scroll(DrawingPoint value){
-		shift_origin(value);
-	}
+	void scroll(DrawingPoint value);
 
 	virtual void draw(const DrawingAttributes & attributes);
 	virtual void handle_event(const ux::Event & event);
@@ -73,14 +72,17 @@ private:
 	enum flow m_flow;
 	u16 m_columns;
 	DrawingPoint m_origin;
+	DrawingArea m_area;
 	sgfx::Point m_touch_last;
 	bool m_is_drag_active;
+	TouchGesture m_touch_gesture;
 
 	var::Vector<LayoutComponent> m_component_list;
 	bool m_is_initialized = false;
 
 	void enter();
 	void shift_origin(DrawingPoint shift);
+	void handle_vertical_scroll(sg_int_t scroll);
 
 	DrawingPoint calculate_next_point();
 

@@ -1,8 +1,9 @@
-#ifndef PROGRESS_HPP
-#define PROGRESS_HPP
+#ifndef SAPI_UX_PROGRESS_HPP
+#define SAPI_UX_PROGRESS_HPP
 
 
 #include "Component.hpp"
+#include "TouchGesture.hpp"
 
 namespace ux {
 
@@ -35,6 +36,4 @@ private:
 
 }
 
-
-
-#endif // PROGRESS_HPP
+#endif // SAPI_UX_PROGRESS_HPP

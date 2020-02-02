@@ -4,6 +4,7 @@
 
 #include "Event.hpp"
 #include "Component.hpp"
+#include "TouchGesture.hpp"
 
 namespace ux {
 

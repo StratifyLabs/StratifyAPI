@@ -7,7 +7,6 @@
 #include <sos/dev/button.h>
 #include "../var/Data.hpp"
 #include "../var/Array.hpp"
-#include "../sgfx/Point.hpp"
 
 namespace sys {
 class Signal;
@@ -94,32 +93,6 @@ public:
 	};
 };
 
-class TouchEvent : public EventObject<EVENT_TYPE('_','t','c','h')> {
-public:
-	TouchEvent(
-				u32 id,
-				const sgfx::Point & point
-				) :
-		EventObject(id){
-		m_point = point;
-	}
-
-	enum touch_id {
-		id_none,
-		id_active,
-		id_pressed,
-		id_released,
-	};
-
-	const sgfx::Point & point() const {
-		return m_point;
-	}
-
-private:
-	sgfx::Point m_point;
-
-
-};
 
 
 }

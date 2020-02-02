@@ -1,5 +1,6 @@
 #include "ux/Progress.hpp"
 
+
 using namespace ux;
 
 Progress::Progress(){

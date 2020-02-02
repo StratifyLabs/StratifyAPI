@@ -7,6 +7,7 @@ set(SOURCES
 	Event.cpp
 	EventLoop.cpp
 	Scene.cpp
+	TouchGesture.cpp
 
 	# Components
 	Label.cpp

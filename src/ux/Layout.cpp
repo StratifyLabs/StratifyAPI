@@ -1,12 +1,14 @@
 #include "ux/Layout.hpp"
 #include "ux/Scene.hpp"
 
+using namespace sgfx;
 using namespace ux;
 
 Layout::Layout(){
 	m_is_initialized = false;
 	m_flow = flow_vertical;
 	m_origin = DrawingPoint(0,0);
+	m_touch_gesture.set_vertical_drag_enabled();
 }
 
 Layout::~Layout(){
@@ -24,6 +26,12 @@ Layout& Layout::add_component(
 	component.set_drawing_point( calculate_next_point() );
 	m_component_list.push_back(
 				LayoutComponent(&component)
+				);
+
+	//determine scroll ends
+	m_area.set_height(
+				m_area.height() +
+				component.reference_drawing_attributes().area().height()
 				);
 
 	return *this;
@@ -50,49 +58,19 @@ void Layout::shift_origin(DrawingPoint shift){
 
 		sgfx::Region overlap = layout_region.overlap(component_region);
 
-		printf("draw %s ", component_pointer.component()->name().cstring());
-		printf("at %d,%d %dx%d\n",
-					 component_pointer.component()->reference_drawing_attributes().point().x(),
-					 component_pointer.component()->reference_drawing_attributes().point().y(),
-					 component_pointer.component()->reference_drawing_attributes().area().width(),
-					 component_pointer.component()->reference_drawing_attributes().area().height()
-					 );
-
-		printf("original at %d,%d %dx%d\n",
-					 component_pointer.drawing_point().x(),
-					 component_pointer.drawing_point().y(),
-					 component_pointer.drawing_area().width(),
-					 component_pointer.drawing_area().height()
-					 );
-
-		printf("layout region %d,%d %dx%d\n",
-					 layout_region.x(),
-					 layout_region.y(),
-					 layout_region.width(),
-					 layout_region.height()
-					 );
-
-		printf("component region %d,%d %dx%d\n",
-					 component_region.x(),
-					 component_region.y(),
-					 component_region.width(),
-					 component_region.height()
-					 );
-
-		printf("overlap region %d,%d %dx%d\n",
-					 overlap.x(),
-					 overlap.y(),
-					 overlap.width(),
-					 overlap.height()
-					 );
 
 		if( (overlap.width() * overlap.height()) > 0 ){
 			component_pointer.set_visible(true);
 			component_pointer.component()->set_refresh_drawing_pending();
-			component_pointer.component()->enable( scene()->scene_collection()->display() );
+			if( component_pointer.component()->is_enabled() == false ){
+				component_pointer.component()->enable( scene()->scene_collection()->display() );
+				component_pointer.component()->redraw();
+			}
 		} else {
 			component_pointer.set_visible(false);
-			component_pointer.component()->disable();
+			if( component_pointer.component()->is_enabled() == true ){
+				component_pointer.component()->disable();
+			}
 		}
 
 		//this calculates if only part of the element should be refreshed (the mask)
@@ -111,6 +89,9 @@ void Layout::enter(){
 		}
 	}
 	shift_origin(DrawingPoint(0,0));
+	m_touch_gesture.set_region(
+				reference_drawing_attributes().calculate_region_on_bitmap()
+				);
 }
 
 DrawingPoint Layout::calculate_next_point(){
@@ -123,7 +104,13 @@ DrawingPoint Layout::calculate_next_point(){
 			result += DrawingPoint::X(component_pointer.drawing_area().width());
 		}
 	}
+
 	return result;
+}
+
+void Layout::scroll(DrawingPoint value){
+	shift_origin(value);
+
 }
 
 
@@ -141,10 +128,21 @@ void Layout::handle_event(const ux::Event & event){
 		enter();
 	}
 
-	if( event.type() == ux::TouchEvent::event_type() ){
-		const ux::TouchEvent & touch_event
-				= event.reinterpret<ux::TouchEvent>();
 
+	if( event.type() == ux::TouchEvent::event_type() ){
+		//const ux::TouchEvent & touch_event = event.reinterpret<ux::TouchEvent>();
+
+		enum TouchGesture::id event_id = m_touch_gesture.process_event(event);
+		switch(event_id){
+			case TouchGesture::id_none: break;
+			case TouchGesture::id_touched: break;
+			case TouchGesture::id_complete: break;
+			case TouchGesture::id_dragged:
+				handle_vertical_scroll( m_touch_gesture.drag().y() );
+				break;
+		}
+
+		/*
 		if( (touch_event.id() == ux::TouchEvent::id_pressed) &&
 				contains(touch_event.point()) ){
 			//start scrolling with the touch movement
@@ -159,15 +157,39 @@ void Layout::handle_event(const ux::Event & event){
 			m_touch_last = touch_event.point();
 
 			//convert scroll to drawing scale
-			drawing_int_t drawing_scroll = vertical_scroll * 1000 / 240;
+			drawing_int_t drawing_scroll =
+					vertical_scroll * Drawing::scale() / reference_drawing_attributes().calculate_height_on_bitmap();
 
-			scroll(DrawingPoint(0, drawing_scroll));
+			if( drawing_scroll < 0 ){
+
+				drawing_int_t max_scroll = m_area.height() - 1000 + m_origin.y();
+				if( drawing_scroll*-1 > max_scroll ){
+					drawing_scroll = -1*max_scroll;
+				}
+
+				if( m_origin.y() + m_area.height() <= 1000 ){
+					printf("can't scroll %d %d %d\n",
+								 m_origin.y(), m_area.height(), max_scroll);
+					drawing_scroll = 0;
+				}
+
+
+			} else {
+				if( drawing_scroll > m_origin.y()*-1 ){
+					drawing_scroll = m_origin.y()*-1;
+				}
+
+			}
+
+			if( drawing_scroll != 0 ){
+				scroll(DrawingPoint(0, drawing_scroll));
+			}
 
 		} else if( (touch_event.id() == ux::TouchEvent::id_released) &&
 							 m_is_drag_active ){
 			m_is_drag_active = false;
 		}
-
+		*/
 	}
 
 	for(auto component_pointer: m_component_list){
@@ -193,4 +215,35 @@ void Layout::handle_event(const ux::Event & event){
 
 	Component::handle_event(event);
 
+}
+
+void Layout::handle_vertical_scroll(sg_int_t scroll){
+	//convert scroll to drawing scale
+	drawing_int_t drawing_scroll =
+			scroll * Drawing::scale() / reference_drawing_attributes().calculate_height_on_bitmap();
+
+	if( drawing_scroll < 0 ){
+
+		drawing_int_t max_scroll = m_area.height() - 1000 + m_origin.y();
+		if( drawing_scroll*-1 > max_scroll ){
+			drawing_scroll = -1*max_scroll;
+		}
+
+		if( m_origin.y() + m_area.height() <= 1000 ){
+			printf("can't scroll %d %d %d\n",
+						 m_origin.y(), m_area.height(), max_scroll);
+			drawing_scroll = 0;
+		}
+
+
+	} else {
+		if( drawing_scroll > m_origin.y()*-1 ){
+			drawing_scroll = m_origin.y()*-1;
+		}
+
+	}
+
+	if( drawing_scroll != 0 ){
+		this->scroll(DrawingPoint(0, drawing_scroll));
+	}
 }

@@ -29,6 +29,14 @@ void Scene::handle_event(const Event & event){
 
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_enter ){
+			scene_collection()->theme().set_display_palette(
+								scene_collection()->display(),
+								Theme::style_brand_primary,
+								Theme::state_default
+								);
+			scene_collection()->display().set_window(
+						scene_collection()->display().region()
+						);
 			scene_collection()->display().clear();
 			for(auto component_pointer: m_component_list){
 				component_pointer->enable(scene_collection()->display());

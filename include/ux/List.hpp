@@ -2,6 +2,7 @@
 #define SAPI_UX_LIST_HPP
 
 #include "Component.hpp"
+#include "TouchGesture.hpp"
 
 namespace ux {
 

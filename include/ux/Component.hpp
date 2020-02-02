@@ -69,7 +69,7 @@ public:
 	void disable();
 
 	bool is_enabled() const {
-		return (m_local_bitmap.to_const_void() != nullptr);
+		return m_is_enabled;
 	}
 
 	const sgfx::Theme & theme() const;
@@ -171,6 +171,7 @@ private:
 	enum sgfx::Theme::state m_theme_state = sgfx::Theme::state_default;
 	bool m_is_antialias = true;
 	bool m_is_refresh_drawing_pending;
+	bool m_is_enabled = false;
 	sgfx::Region m_refresh_region;
 
 	//needs a palette to use while drawing

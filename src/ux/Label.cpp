@@ -58,14 +58,6 @@ void Label::draw_to_scale(const DrawingScaledAttributes & attributes){
 					);
 	} else if( m_label.is_empty() == false ){
 		//if the label is available, draw it
-
-		printf(
-					"draw label %s %dx%d\n",
-					 m_label.cstring(),
-					 attributes.width(),
-					 attributes.height()
-					 );
-
 		Text().set_string(m_label)
 				.set_font_name(m_font_name)
 				.set_alignment(alignment())

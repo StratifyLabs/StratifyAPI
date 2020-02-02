@@ -131,7 +131,7 @@ public:
 				h = 0;
 			} else {
 				result.m_region.point.y = 0;
-				h = x() + height() - region.y();
+				h = y() + height() - region.y();
 				if( h > region.height() ){
 					h = region.height();
 				}

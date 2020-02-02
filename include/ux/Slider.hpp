@@ -2,6 +2,7 @@
 #define SAPI_UX_SLIDER_HPP
 
 #include "Component.hpp"
+#include "TouchGesture.hpp"
 
 namespace ux {
 

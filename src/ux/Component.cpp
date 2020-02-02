@@ -21,13 +21,16 @@ void Component::enable(
 	m_display = &display;
 
 	//local bitmap is a small section of the reference bitmap
-	m_local_bitmap.allocate(
+	if( m_local_bitmap.allocate(
 				m_reference_drawing_attributes.calculate_area_on_bitmap(),
 				sgfx::Bitmap::BitsPerPixel(
 					m_reference_drawing_attributes.bitmap().bits_per_pixel()
 					)
-				);
+				) < 0 ){
+		return;
+	}
 
+	m_is_enabled = true;
 
 	//local attributes fill local bitmap
 	m_local_drawing_attributes
@@ -39,6 +42,7 @@ void Component::enable(
 
 
 void Component::disable(){
+	m_is_enabled = false;
 	m_local_bitmap.free();
 }
 
@@ -96,13 +100,15 @@ const sgfx::Theme & Component::theme() const {
 }
 
 void Component::erase(){
-	m_local_bitmap << Pen().set_color(color_background);
-	m_local_bitmap.draw_rectangle(
-				Point(0,0),
-				m_local_bitmap.area()
+	Region window_region =
+			Region(
+				Point(m_reference_drawing_attributes.calculate_point_on_bitmap())
+				+ m_refresh_region.point(),
+				m_refresh_region.area()
 				);
-	refresh_drawing();
 
+	m_display->set_window(window_region);
+	m_display->clear();
 }
 
 void Component::apply_antialias_filter(const DrawingAttributes & attributes){

@@ -663,6 +663,10 @@ public:
 	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
 	void draw_to_scale(sgfx::Bitmap & b, sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h);
 
+	static drawing_size_t scale(){
+		return m_scale;
+	}
+
 protected:
 
 	/*! \cond */
