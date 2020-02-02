@@ -138,58 +138,25 @@ void Layout::handle_event(const ux::Event & event){
 			case TouchGesture::id_touched: break;
 			case TouchGesture::id_complete: break;
 			case TouchGesture::id_dragged:
-				handle_vertical_scroll( m_touch_gesture.drag().y() );
+				drawing_int_t vertical_drawing_scroll;
+				drawing_int_t horizontal_drawing_scroll;
+				horizontal_drawing_scroll =
+						handle_vertical_scroll( m_touch_gesture.drag().x() );
+
+				vertical_drawing_scroll =
+						handle_vertical_scroll( m_touch_gesture.drag().y() );
+
+				if( vertical_drawing_scroll || horizontal_drawing_scroll ){
+					this->scroll(
+								DrawingPoint(
+									horizontal_drawing_scroll,
+									vertical_drawing_scroll
+									)
+								);
+				}
 				break;
 		}
 
-		/*
-		if( (touch_event.id() == ux::TouchEvent::id_pressed) &&
-				contains(touch_event.point()) ){
-			//start scrolling with the touch movement
-			m_is_drag_active = true;
-			m_touch_last = touch_event.point();
-		} else if( (touch_event.id() == ux::TouchEvent::id_active) &&
-							 m_is_drag_active ){
-
-			sg_int_t vertical_scroll = touch_event.point().y() -
-					m_touch_last.y();
-
-			m_touch_last = touch_event.point();
-
-			//convert scroll to drawing scale
-			drawing_int_t drawing_scroll =
-					vertical_scroll * Drawing::scale() / reference_drawing_attributes().calculate_height_on_bitmap();
-
-			if( drawing_scroll < 0 ){
-
-				drawing_int_t max_scroll = m_area.height() - 1000 + m_origin.y();
-				if( drawing_scroll*-1 > max_scroll ){
-					drawing_scroll = -1*max_scroll;
-				}
-
-				if( m_origin.y() + m_area.height() <= 1000 ){
-					printf("can't scroll %d %d %d\n",
-								 m_origin.y(), m_area.height(), max_scroll);
-					drawing_scroll = 0;
-				}
-
-
-			} else {
-				if( drawing_scroll > m_origin.y()*-1 ){
-					drawing_scroll = m_origin.y()*-1;
-				}
-
-			}
-
-			if( drawing_scroll != 0 ){
-				scroll(DrawingPoint(0, drawing_scroll));
-			}
-
-		} else if( (touch_event.id() == ux::TouchEvent::id_released) &&
-							 m_is_drag_active ){
-			m_is_drag_active = false;
-		}
-		*/
 	}
 
 	for(auto component_pointer: m_component_list){
@@ -217,7 +184,7 @@ void Layout::handle_event(const ux::Event & event){
 
 }
 
-void Layout::handle_vertical_scroll(sg_int_t scroll){
+drawing_int_t Layout::handle_vertical_scroll(sg_int_t scroll){
 	//convert scroll to drawing scale
 	drawing_int_t drawing_scroll =
 			scroll * Drawing::scale() / reference_drawing_attributes().calculate_height_on_bitmap();
@@ -230,11 +197,8 @@ void Layout::handle_vertical_scroll(sg_int_t scroll){
 		}
 
 		if( m_origin.y() + m_area.height() <= 1000 ){
-			printf("can't scroll %d %d %d\n",
-						 m_origin.y(), m_area.height(), max_scroll);
 			drawing_scroll = 0;
 		}
-
 
 	} else {
 		if( drawing_scroll > m_origin.y()*-1 ){
@@ -243,7 +207,9 @@ void Layout::handle_vertical_scroll(sg_int_t scroll){
 
 	}
 
-	if( drawing_scroll != 0 ){
-		this->scroll(DrawingPoint(0, drawing_scroll));
-	}
+	return drawing_scroll;
+}
+
+drawing_int_t Layout::handle_horizontal_scroll(sg_int_t scroll){
+	return 0;
 }

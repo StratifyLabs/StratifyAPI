@@ -82,7 +82,8 @@ private:
 
 	void enter();
 	void shift_origin(DrawingPoint shift);
-	void handle_vertical_scroll(sg_int_t scroll);
+	drawing_int_t handle_vertical_scroll(sg_int_t scroll);
+	drawing_int_t handle_horizontal_scroll(sg_int_t scroll);
 
 	DrawingPoint calculate_next_point();
 
