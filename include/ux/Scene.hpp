@@ -26,13 +26,6 @@ public:
       return *this;
    }
 
-	 Scene& add_background_component(Component& component){
-			component.set_scene(this);
-			component.set_name("");
-			m_background_component_list.push_back(&component);
-      return *this;
-   }
-
    Scene& remove_component(const var::String & name){
       //delete and remove
       return *this;
@@ -44,11 +37,6 @@ public:
 
    Scene& enable();
    Scene& disable();
-
-   virtual void draw_background(
-         const DrawingPoint & point = DrawingPoint(0,0),
-         const DrawingArea & area = DrawingArea(1000,1000)
-         );
 
    const var::String & name(){
       return m_name;
@@ -81,7 +69,6 @@ private:
    chrono::MicroTime m_update_period = chrono::Milliseconds(30);
    SceneCollection * m_scene_collection = nullptr;
    var::Vector<Component*> m_component_list;
-   var::Vector<Component*> m_background_component_list;
    Component * find_generic_component(const var::String & name);
 
 

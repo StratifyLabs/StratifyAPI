@@ -10,7 +10,9 @@ namespace calc {
 
 /*! \brief Lookup Table Template Class
  * \details This class is for implementing lookup tables
- * using linear extrapolation.
+ * using linear extrapolation. The template type
+ * must be signed or overflow errors will cause
+ * problems with the calculations.
  *
  * ```
  * //md2code:include
@@ -58,7 +60,7 @@ public:
 		T output;
 
 		i = 0;
-		while( (x >= m_table[i+2]) && (i < (m_count-2)*2) ){
+		while( (x > m_table[i+2]) && (i < (m_count-2)*2) ){
 			i+=2;
 		}
 
@@ -68,10 +70,11 @@ public:
 		//now calculate the slope between the y values
 		delta_x = m_table[p1] - m_table[p2];
 		if( delta_x == 0 ){
-			return -1;
+			return m_table[p1+1];
 		}
 		delta_y = m_table[p1+1] - m_table[p2+1];
-		output = ((x - m_table[p1]) * delta_y) / delta_x + m_table[p1+1];
+		output = ((x - m_table[p1]) * delta_y + delta_x/2) / delta_x + m_table[p1+1];
+
 
 		return output;
 	}

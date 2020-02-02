@@ -337,6 +337,17 @@ public:
 	static const var::String base_name(const var::String & path);
 	/*! \details Returns the path without the suffix ('/home/test' for '/home/test.txt). */
 	static const var::String no_suffix(const var::String & path);
+	/*! \details Returns true if the first character in any directory or file name
+	 * starts with `.`
+	 *
+	 * Examples:
+	 * - `/home/.DS_Store` returns true
+	 * - `/home/.library/data.txt` returns true
+	 * - `.DS_Store` returns true
+	 *
+	 *
+	 */
+	static bool is_hidden(const var::String & path);
 
 private:
 

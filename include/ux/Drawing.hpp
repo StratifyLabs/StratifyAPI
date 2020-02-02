@@ -150,10 +150,44 @@ public:
 		return result;
 	}
 
+	DrawingPoint & operator += (const Y & y){
+		*this = *this + y;
+		return *this;
+	}
+
 	DrawingPoint operator + (const X & x) const {
 		DrawingPoint result(*this);
 		result.m_point.x += x.argument();
 		return result;
+	}
+
+	DrawingPoint & operator += (const X & x){
+		*this = *this + x;
+		return *this;
+	}
+
+	DrawingPoint operator + (const DrawingPoint & point) const {
+		DrawingPoint result(*this);
+		result.m_point.x += point.x();
+		result.m_point.y += point.y();
+		return result;
+	}
+
+	DrawingPoint & operator += (const DrawingPoint & point){
+		*this = *this + point;
+		return *this;
+	}
+
+	DrawingPoint operator - (const DrawingPoint & point) const {
+		DrawingPoint result(*this);
+		result.m_point.x -= point.x();
+		result.m_point.y -= point.y();
+		return result;
+	}
+
+	DrawingPoint & operator -= (const DrawingPoint & point){
+		*this = *this - point;
+		return *this;
 	}
 
 	drawing_int_t x() const { return m_point.x; }
@@ -340,10 +374,10 @@ public:
 	 * be from 0 to 500 pixels with \a v being from 0 to DrawingAttributes::scale().
 	 *
 	 */
-	drawing_size_t calculate_height(drawing_size_t v) const;
+	drawing_int_t calculate_height(drawing_int_t v) const;
 
 	/*! \details Calculate the scaled width (width of object on the bitmap) */
-	drawing_size_t calculate_width(drawing_size_t v) const;
+	drawing_int_t calculate_width(drawing_int_t v) const;
 
 	/*! \details Add a drawing_point_t offset
 	 *

@@ -16,6 +16,7 @@ set(SOURCES
 	ToggleSwitch.cpp
 	Slider.cpp
 	List.cpp
+	Layout.cpp
 
 	#Drawing primitives
 	Drawing.cpp

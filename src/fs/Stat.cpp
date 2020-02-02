@@ -154,5 +154,19 @@ const var::String FileInfo::no_suffix(const var::String & path){
 				);
 }
 
+bool FileInfo::is_hidden(const var::String & path){
+	if( name(path).find(".") == 0 ){
+		return true;
+	}
+
+	var::String parent = parent_directory(path);
+	if( parent != path ){
+		return is_hidden( parent_directory(path) );
+	}
+
+	return false;
+
+}
+
 
 

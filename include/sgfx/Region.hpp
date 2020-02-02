@@ -95,6 +95,54 @@ public:
 		return true;
 	}
 
+	Region overlap(const Region & region){
+		Region result;
+		{
+			sg_int_t w;
+			if( region.x() < x() ){
+				result.m_region.point.x = x() - region.x();
+				w = region.x() + region.width() - x();
+				if( w < 0 ){
+					w = 0;
+				}
+			} else if( region.x() > x() + width() ){
+				result.m_region.point.x = 0;
+				w = 0;
+			} else {
+				result.m_region.point.x = 0;
+				w = x() + width() - region.x();
+				if( w > region.width() ){
+					w = region.width();
+				}
+			}
+			result.m_region.area.width = w;
+		}
+
+		{
+			sg_int_t h;
+			if( region.y() < y() ){
+				result.m_region.point.y = y() - region.y();
+				h = region.y() + region.height() - y();
+				if( h < 0 ){
+					h = 0;
+				}
+			} else if( region.y() > y() + height() ){
+				result.m_region.point.y = 0;
+				h = 0;
+			} else {
+				result.m_region.point.y = 0;
+				h = x() + height() - region.y();
+				if( h > region.height() ){
+					h = region.height();
+				}
+			}
+			result.m_region.area.height = h;
+		}
+
+
+		return result;
+	}
+
 private:
 	sg_region_t m_region;
 };

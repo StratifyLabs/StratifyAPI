@@ -13,6 +13,7 @@ namespace ux {}
 #include "ux/EventLoop.hpp"
 #include "ux/Icon.hpp"
 #include "ux/Label.hpp"
+#include "ux/Layout.hpp"
 #include "ux/List.hpp"
 #include "ux/Image.hpp"
 #include "ux/Progress.hpp"

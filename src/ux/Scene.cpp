@@ -25,30 +25,11 @@ Scene& Scene::disable(){
 	return *this;
 }
 
-void Scene::draw_background(const DrawingPoint & point, const DrawingArea & area){
-	hal::Display & display = scene_collection()->display();
-	scene_collection()->theme().set_display_palette(
-				display,
-				Theme::style_brand_primary,
-				Theme::state_default
-				);
-	display.clear();
-
-	for(auto component_pointer: m_background_component_list){
-		component_pointer->handle_event(SystemEvent(SystemEvent::id_enter));
-	}
-
-	for(auto component_pointer: m_background_component_list){
-		component_pointer->disable();
-	}
-
-}
-
 void Scene::handle_event(const Event & event){
 
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_enter ){
-			draw_background();
+			scene_collection()->display().clear();
 			for(auto component_pointer: m_component_list){
 				component_pointer->enable(scene_collection()->display());
 			}

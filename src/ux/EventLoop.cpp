@@ -14,6 +14,8 @@ int EventLoop::loop(SceneCollection & scene_collection){
    m_current_scene = nullptr;
    m_update_timer.restart();
 
+	 check_for_scene_change();
+
    while(
          m_scene_collection->current_scene()
          ){

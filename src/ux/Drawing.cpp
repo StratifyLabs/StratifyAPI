@@ -15,7 +15,10 @@ DrawingArea DrawingArea::maximum(){
 	return DrawingArea(DrawingAttributes::scale(), DrawingAttributes::scale());
 }
 
-static sg_int_t scale_to_bitmap(drawing_size_t d, sg_size_t s, drawing_size_t max){
+static sg_int_t scale_to_bitmap(
+		drawing_int_t d,
+		sg_size_t s,
+		drawing_size_t max){
 	int tmp;
 	tmp = (d * s + max/2) / max;
 	return tmp;
@@ -101,11 +104,11 @@ sg_region_t DrawingAttributes::calculate_region_on_bitmap(const DrawingAttribute
 }
 
 
-drawing_size_t DrawingAttributes::calculate_width(drawing_size_t v) const {
+drawing_int_t DrawingAttributes::calculate_width(drawing_int_t v) const {
 	return m_attr.region.area.width * v / DrawingAttributes::scale();
 }
 
-drawing_size_t DrawingAttributes::calculate_height(drawing_size_t v) const {
+drawing_int_t DrawingAttributes::calculate_height(drawing_int_t v) const {
 	return m_attr.region.area.height * v / DrawingAttributes::scale();
 }
 

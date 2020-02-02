@@ -23,10 +23,6 @@ void CompoundComponent::initialize(){
 }
 
 
-
-
-
-
 void CompoundComponent::handle_event(const ux::Event & event){
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_enter ){
@@ -46,17 +42,17 @@ void CompoundComponent::handle_event(const ux::Event & event){
 		}
 	}
 
+	for(auto component_pointer: m_sub_component_list){
+		if( component_pointer->is_refresh_drawing_pending() ){
+			component_pointer->refresh_drawing();
+		}
+	}
+
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_exit ){
 			for(auto component_pointer: m_sub_component_list){
 				component_pointer->disable();
 			}
-		}
-	}
-
-	for(auto component_pointer: m_sub_component_list){
-		if( component_pointer->is_refresh_drawing_pending() ){
-			component_pointer->refresh_drawing();
 		}
 	}
 
