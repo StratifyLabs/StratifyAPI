@@ -99,9 +99,9 @@ DrawingPoint Layout::calculate_next_point(){
 	DrawingPoint result(0,0);
 	for(auto component_pointer: m_component_list){
 		if( m_flow == flow_vertical ){
-			result += DrawingPoint::Y(component_pointer.drawing_area().height());
+			result += DrawingPoint::Y(component_pointer.drawing_area().height()-1);
 		} else if( m_flow == flow_horizontal ){
-			result += DrawingPoint::X(component_pointer.drawing_area().width());
+			result += DrawingPoint::X(component_pointer.drawing_area().width()-1);
 		}
 	}
 
