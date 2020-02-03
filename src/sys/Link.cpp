@@ -99,7 +99,7 @@ var::Vector<LinkInfo> Link::get_info_list(){
 			//couldn't connect
 		} else {
 			result.push_back(LinkInfo(port_list.at(i), sys_info()));
-			//disconnect();
+			disconnect();
 		}
 	}
 
