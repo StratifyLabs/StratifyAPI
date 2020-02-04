@@ -8,6 +8,7 @@
 #include <cstring>
 #include "var/Data.hpp"
 #include "var/String.hpp"
+#include "var/Tokenizer.hpp"
 #include "sys.hpp"
 
 using namespace var;
@@ -171,6 +172,14 @@ float String::to_float() const {
 #endif
 }
 
+
+Vector<String> String::split(const String & delimiter) const {
+	Tokenizer tokens(
+				*this,
+				Tokenizer::Delimeters(delimiter)
+				);
+	return tokens.to_list();
+}
 
 
 

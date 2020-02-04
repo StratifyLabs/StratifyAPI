@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <string>
 #include "../arg/Argument.hpp"
+#include "Vector.hpp"
 
 namespace var {
 
@@ -803,6 +804,8 @@ public:
 
 	u32 capacity() const { return m_string.capacity(); }
 
+
+	Vector<String> split(const String & delimiter) const;
 
 private:
 
