@@ -8,7 +8,8 @@ Layout::Layout(){
 	m_is_initialized = false;
 	m_flow = flow_vertical;
 	m_origin = DrawingPoint(0,0);
-	m_touch_gesture.set_vertical_drag_enabled();
+	set_align_left();
+	set_align_top();
 }
 
 Layout::~Layout(){
@@ -17,13 +18,35 @@ Layout::~Layout(){
 	}
 }
 
+void Layout::enable(
+		hal::Display & display
+		){
+
+	m_reference_drawing_attributes.set_bitmap(display);
+	//m_display = &display;
+
+	for(auto component_pointer: m_component_list){
+		component_pointer.component()->enable(display);
+	}
+	m_is_enabled = true;
+}
+
+void Layout::disable(){
+	for(auto component_pointer: m_component_list){
+		component_pointer.component()->disable();
+	}
+	m_is_enabled = false;
+}
+
 Layout& Layout::add_component(
 		const var::String & name,
 		Component& component
 		){
 
 	component.set_name(name);
-	component.set_drawing_point( calculate_next_point() );
+	component.set_drawing_point(
+				calculate_next_point(component.reference_drawing_attributes().area())
+				);
 	m_component_list.push_back(
 				LayoutComponent(&component)
 				);
@@ -39,6 +62,7 @@ Layout& Layout::add_component(
 
 void Layout::shift_origin(DrawingPoint shift){
 	m_origin += shift;
+
 	for(auto component_pointer: m_component_list){
 
 		component_pointer.component()->set_scene( scene() );
@@ -57,7 +81,6 @@ void Layout::shift_origin(DrawingPoint shift){
 				component_pointer.component()->reference_drawing_attributes().calculate_region_on_bitmap();
 
 		sgfx::Region overlap = layout_region.overlap(component_region);
-
 
 		if( (overlap.width() * overlap.height()) > 0 ){
 			component_pointer.set_visible(true);
@@ -82,19 +105,12 @@ void Layout::shift_origin(DrawingPoint shift){
 
 void Layout::enter(){
 	shift_origin(DrawingPoint(0,0));
-	for(auto component_pointer: m_component_list){
-		//add the parent scene
-		//only enable if the component is visible
-		if( component_pointer.is_visible() ){
-		}
-	}
-	shift_origin(DrawingPoint(0,0));
 	m_touch_gesture.set_region(
 				reference_drawing_attributes().calculate_region_on_bitmap()
 				);
 }
 
-DrawingPoint Layout::calculate_next_point(){
+DrawingPoint Layout::calculate_next_point(const DrawingArea & area){
 	//depending on the layout, calculate the point of the next component
 	DrawingPoint result(0,0);
 	for(auto component_pointer: m_component_list){
@@ -103,6 +119,32 @@ DrawingPoint Layout::calculate_next_point(){
 		} else if( m_flow == flow_horizontal ){
 			result += DrawingPoint::X(component_pointer.drawing_area().width()-1);
 		}
+	}
+
+	switch(m_flow){
+		case flow_grid: break;
+		case flow_vertical:
+			//left,right,center alignment
+			if( is_align_left() ){
+				result.set_x(0);
+			} else if( is_align_right() ){
+				result.set_x(Drawing::scale() - area.width());
+			} else {
+				//center
+				result.set_x((Drawing::scale() - area.width())/2);
+			}
+			break;
+		case flow_horizontal:
+			//top,bottom,middle alignment
+			if( is_align_top() ){
+				result.set_y(0);
+			} else if( is_align_bottom() ){
+				result.set_y(Drawing::scale() - area.height());
+			} else {
+				//middle
+				result.set_y((Drawing::scale() - area.height())/2);
+			}
+			break;
 	}
 
 	return result;
@@ -115,6 +157,7 @@ void Layout::scroll(DrawingPoint value){
 
 
 void Layout::draw(const DrawingAttributes & attributes){
+	printf("draw layout %s\n", name().cstring());
 	for(auto component_pointer: m_component_list){
 		component_pointer.component()->draw(attributes);
 	}
@@ -125,7 +168,22 @@ void Layout::handle_event(const ux::Event & event){
 
 	if( (event.type() == SystemEvent::event_type()) &&
 			(event.id() == SystemEvent::id_enter) ){
-		enter();
+
+		for(auto component_pointer: m_component_list){
+			component_pointer.component()->set_scene( scene() );
+			component_pointer.component()->reference_drawing_attributes() =
+					reference_drawing_attributes() +
+					m_origin +
+					component_pointer.drawing_point() +
+					component_pointer.drawing_area();
+
+			component_pointer.component()->handle_event(event);
+		}
+		set_refresh_drawing_pending();
+
+		m_touch_gesture.set_region(
+					reference_drawing_attributes().calculate_region_on_bitmap()
+					);
 	}
 
 

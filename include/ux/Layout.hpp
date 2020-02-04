@@ -42,7 +42,7 @@ private:
 	bool m_is_visible;
 };
 
-class Layout : public Component {
+class Layout : public Component, public DrawingAlignment<Layout> {
 public:
 
 	enum flow {
@@ -59,6 +59,21 @@ public:
 			Component& component
 			);
 
+	Layout& set_flow(enum flow flow){
+		m_flow = flow;
+		return *this;
+	}
+
+	Layout& set_vertical_scroll_enabled(bool value = true){
+		m_touch_gesture.set_vertical_drag_enabled(value);
+		return *this;
+	}
+
+	Layout& set_horizontal_scroll_enabled(bool value = true){
+		m_touch_gesture.set_horizontal_drag_enabled(value);
+		return *this;
+	}
+
 	u16 columns() const {
 		return m_columns;
 	}
@@ -68,13 +83,18 @@ public:
 	virtual void draw(const DrawingAttributes & attributes);
 	virtual void handle_event(const ux::Event & event);
 
+	void enable(
+			hal::Display & display
+			);
+
+	void disable();
+
 private:
 	enum flow m_flow;
 	u16 m_columns;
 	DrawingPoint m_origin;
 	DrawingArea m_area;
 	sgfx::Point m_touch_last;
-	bool m_is_drag_active;
 	TouchGesture m_touch_gesture;
 
 	var::Vector<LayoutComponent> m_component_list;
@@ -85,7 +105,7 @@ private:
 	drawing_int_t handle_vertical_scroll(sg_int_t scroll);
 	drawing_int_t handle_horizontal_scroll(sg_int_t scroll);
 
-	DrawingPoint calculate_next_point();
+	DrawingPoint calculate_next_point(const DrawingArea& area);
 
 };
 

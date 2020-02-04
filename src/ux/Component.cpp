@@ -83,9 +83,7 @@ void Component::refresh_drawing(){
 					m_refresh_region.area()
 					);
 
-		if( m_display->set_window(window_region) < 0 ){
-
-		}
+		m_display->set_window(window_region);
 
 		m_display->write(
 					m_local_bitmap.create_reference(m_refresh_region)
@@ -107,25 +105,30 @@ void Component::erase(){
 				m_refresh_region.area()
 				);
 
+	printf("erase %p\n", m_display);
 	m_display->set_window(window_region);
 	m_display->clear();
 }
 
 void Component::apply_antialias_filter(const DrawingAttributes & attributes){
 	if( is_antialias() ){
+#if 0
 		attributes.bitmap().apply_antialias_filter(
 					theme().antialias_filter(),
 					attributes.bitmap().region()
 					);
+#endif
 	}
 	set_refresh_drawing_pending();
 }
 
 void Component::apply_antialias_filter(const DrawingScaledAttributes & attributes){
 	if( is_antialias() ){
+#if 0
 		attributes.bitmap().apply_antialias_filter(
 					theme().antialias_filter(),
 					attributes.bitmap().region()
 					);
+#endif
 	}
 }
