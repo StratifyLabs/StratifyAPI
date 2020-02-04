@@ -18,7 +18,7 @@ class Component : public Drawing {
 public:
 
 	using EventHandlerFunction = std::function<void(Component * object, const Event & event)>;
-	virtual ~Component(){}
+	virtual ~Component();
 
 	Component & set_event_handler(EventHandlerFunction event_handler){
 		m_event_handler = event_handler;

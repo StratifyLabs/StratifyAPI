@@ -26,20 +26,12 @@ public:
 		return m_drawing_area;
 	}
 
-	bool is_visible() const {
-		return m_is_visible;
-	}
-
-	void set_visible(bool value = true){
-		m_is_visible = value;
-	}
 
 
 private:
 	Component * m_component;
 	DrawingPoint m_drawing_point;
 	DrawingArea m_drawing_area;
-	bool m_is_visible;
 };
 
 class Layout : public Component, public DrawingAlignment<Layout> {
@@ -100,7 +92,6 @@ private:
 	var::Vector<LayoutComponent> m_component_list;
 	bool m_is_initialized = false;
 
-	void enter();
 	void shift_origin(DrawingPoint shift);
 	drawing_int_t handle_vertical_scroll(sg_int_t scroll);
 	drawing_int_t handle_horizontal_scroll(sg_int_t scroll);

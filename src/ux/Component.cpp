@@ -13,6 +13,10 @@ const SceneCollection * Component::scene_collection() const {
 	return scene()->scene_collection();
 }
 
+Component::~Component(){
+	disable();
+}
+
 void Component::enable(
 		hal::Display & display
 		){
@@ -42,8 +46,10 @@ void Component::enable(
 
 
 void Component::disable(){
-	m_is_enabled = false;
-	m_local_bitmap.free();
+	if( m_is_enabled ){
+		m_is_enabled = false;
+		m_local_bitmap.free();
+	}
 }
 
 DrawingPoint Component::translate_point(const sgfx::Point & point){

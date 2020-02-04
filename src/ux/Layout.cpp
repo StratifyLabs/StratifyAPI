@@ -22,20 +22,29 @@ void Layout::enable(
 		hal::Display & display
 		){
 
+	m_display = &display; //layout never directly draws on display
 	m_reference_drawing_attributes.set_bitmap(display);
-	//m_display = &display;
+
+	m_touch_gesture.set_region(
+				reference_drawing_attributes().calculate_region_on_bitmap()
+				);
 
 	for(auto component_pointer: m_component_list){
-		component_pointer.component()->enable(display);
+		component_pointer.component()->set_scene( scene() );
 	}
+
+	shift_origin(DrawingPoint(0,0));
+
 	m_is_enabled = true;
 }
 
 void Layout::disable(){
-	for(auto component_pointer: m_component_list){
-		component_pointer.component()->disable();
+	if( m_is_enabled ){
+		for(auto component_pointer: m_component_list){
+			component_pointer.component()->disable();
+		}
+		m_is_enabled = false;
 	}
-	m_is_enabled = false;
 }
 
 Layout& Layout::add_component(
@@ -45,8 +54,11 @@ Layout& Layout::add_component(
 
 	component.set_name(name);
 	component.set_drawing_point(
-				calculate_next_point(component.reference_drawing_attributes().area())
+				calculate_next_point(
+					component.reference_drawing_attributes().area()
+					)
 				);
+
 	m_component_list.push_back(
 				LayoutComponent(&component)
 				);
@@ -64,9 +76,6 @@ void Layout::shift_origin(DrawingPoint shift){
 	m_origin += shift;
 
 	for(auto component_pointer: m_component_list){
-
-		component_pointer.component()->set_scene( scene() );
-
 		//reference attributes are the location within the compound component
 		//translate reference attributes based on compound component attributes
 		component_pointer.component()->reference_drawing_attributes() =
@@ -83,14 +92,11 @@ void Layout::shift_origin(DrawingPoint shift){
 		sgfx::Region overlap = layout_region.overlap(component_region);
 
 		if( (overlap.width() * overlap.height()) > 0 ){
-			component_pointer.set_visible(true);
 			component_pointer.component()->set_refresh_drawing_pending();
 			if( component_pointer.component()->is_enabled() == false ){
 				component_pointer.component()->enable( scene()->scene_collection()->display() );
-				component_pointer.component()->redraw();
 			}
 		} else {
-			component_pointer.set_visible(false);
 			if( component_pointer.component()->is_enabled() == true ){
 				component_pointer.component()->disable();
 			}
@@ -103,21 +109,14 @@ void Layout::shift_origin(DrawingPoint shift){
 	}
 }
 
-void Layout::enter(){
-	shift_origin(DrawingPoint(0,0));
-	m_touch_gesture.set_region(
-				reference_drawing_attributes().calculate_region_on_bitmap()
-				);
-}
-
 DrawingPoint Layout::calculate_next_point(const DrawingArea & area){
 	//depending on the layout, calculate the point of the next component
 	DrawingPoint result(0,0);
 	for(auto component_pointer: m_component_list){
 		if( m_flow == flow_vertical ){
-			result += DrawingPoint::Y(component_pointer.drawing_area().height()-1);
+			result += DrawingPoint::Y(component_pointer.drawing_area().height());
 		} else if( m_flow == flow_horizontal ){
-			result += DrawingPoint::X(component_pointer.drawing_area().width()-1);
+			result += DrawingPoint::X(component_pointer.drawing_area().width());
 		}
 	}
 
@@ -157,9 +156,10 @@ void Layout::scroll(DrawingPoint value){
 
 
 void Layout::draw(const DrawingAttributes & attributes){
-	printf("draw layout %s\n", name().cstring());
 	for(auto component_pointer: m_component_list){
-		component_pointer.component()->draw(attributes);
+		if( component_pointer.component()->is_enabled() ){
+			component_pointer.component()->draw(attributes);
+		}
 	}
 }
 
@@ -168,27 +168,13 @@ void Layout::handle_event(const ux::Event & event){
 
 	if( (event.type() == SystemEvent::event_type()) &&
 			(event.id() == SystemEvent::id_enter) ){
-
 		for(auto component_pointer: m_component_list){
-			component_pointer.component()->set_scene( scene() );
-			component_pointer.component()->reference_drawing_attributes() =
-					reference_drawing_attributes() +
-					m_origin +
-					component_pointer.drawing_point() +
-					component_pointer.drawing_area();
-
 			component_pointer.component()->handle_event(event);
 		}
-		set_refresh_drawing_pending();
-
-		m_touch_gesture.set_region(
-					reference_drawing_attributes().calculate_region_on_bitmap()
-					);
 	}
 
 
 	if( event.type() == ux::TouchEvent::event_type() ){
-		//const ux::TouchEvent & touch_event = event.reinterpret<ux::TouchEvent>();
 
 		enum TouchGesture::id event_id = m_touch_gesture.process_event(event);
 		switch(event_id){

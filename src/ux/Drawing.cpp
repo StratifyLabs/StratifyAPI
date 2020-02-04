@@ -87,11 +87,11 @@ sg_size_t DrawingAttributes::calculate_width_on_bitmap(const DrawingAttributes &
 
 sg_point_t DrawingAttributes::calculate_point_on_bitmap(const DrawingAttributes & attr){
 	sg_point_t p1;
-	Bitmap * b = &attr.bitmap();
+	const Bitmap & b = attr.bitmap();
 	drawing_point_t p = attr.point();
 
-	p1.x = scale_to_bitmap(p.x, b->width() - (b->margin_left() + b->margin_right()), scale()) + b->margin_left();
-	p1.y = scale_to_bitmap(p.y, b->height() - (b->margin_bottom() + b->margin_top()), scale()) + b->margin_top();
+	p1.x = scale_to_bitmap(p.x, b.width() - (b.margin_left() + b.margin_right()), scale()) + b.margin_left();
+	p1.y = scale_to_bitmap(p.y, b.height() - (b.margin_bottom() + b.margin_top()), scale()) + b.margin_top();
 
 	return p1;
 }

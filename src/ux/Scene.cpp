@@ -1,5 +1,6 @@
 #include "ux/Scene.hpp"
 #include "ux/Rectangle.hpp"
+#include "var/Data.hpp"
 
 using namespace ux;
 using namespace sgfx;
@@ -29,6 +30,8 @@ void Scene::handle_event(const Event & event){
 
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_enter ){
+
+			//clear the background
 			scene_collection()->theme().set_display_palette(
 								scene_collection()->display(),
 								Theme::style_brand_primary,
@@ -38,6 +41,8 @@ void Scene::handle_event(const Event & event){
 						scene_collection()->display().region()
 						);
 			scene_collection()->display().clear();
+
+			//enable the components
 			for(auto component_pointer: m_component_list){
 				component_pointer->enable(scene_collection()->display());
 			}
@@ -56,6 +61,7 @@ void Scene::handle_event(const Event & event){
 			for(auto component_pointer: m_component_list){
 				component_pointer->disable();
 			}
+			var::Data::reclaim_heap_space();
 		}
 	}
 
