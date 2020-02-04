@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
 #ifndef SAPI_DRAW_TEXT_HPP_
 #define SAPI_DRAW_TEXT_HPP_

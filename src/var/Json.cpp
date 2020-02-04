@@ -1,3 +1,4 @@
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "var/Vector.hpp"
 #include "var/Tokenizer.hpp"
 #include "var/Json.hpp"
