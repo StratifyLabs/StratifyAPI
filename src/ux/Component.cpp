@@ -122,9 +122,16 @@ void Component::erase(){
 				m_refresh_region.area()
 				);
 
-	printf("erase %p\n", m_display);
-	m_display->set_window(window_region);
-	m_display->clear();
+#if 0
+	sys::Printer p;
+	p.open_object("erase " + name());
+	p << window_region;
+	p.close_object();
+#endif
+	if( (window_region.width() * window_region.height()) > 0 ){
+		m_display->set_window(window_region);
+		m_display->clear();
+	}
 }
 
 void Component::apply_antialias_filter(const DrawingAttributes & attributes){

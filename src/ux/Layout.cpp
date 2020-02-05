@@ -29,6 +29,8 @@ void Layout::enable(
 		m_is_enabled = true;
 	}
 
+	set_refresh_region(reference_drawing_attributes().calculate_region_on_bitmap());
+
 	//if a parent layout changes the reference attributes -- this needs to be updated
 	m_touch_gesture.set_region(
 				reference_drawing_attributes().calculate_region_on_bitmap()
@@ -106,6 +108,7 @@ void Layout::shift_origin(DrawingPoint shift){
 					overlap
 					);
 	}
+
 }
 
 DrawingPoint Layout::calculate_next_point(const DrawingArea & area){
