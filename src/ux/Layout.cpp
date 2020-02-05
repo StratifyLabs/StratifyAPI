@@ -26,15 +26,16 @@ void Layout::enable(
 	if( m_is_enabled == false ){
 		m_display = &display; //layout never directly draws on display
 		m_reference_drawing_attributes.set_bitmap(display);
-
-		m_touch_gesture.set_region(
-					reference_drawing_attributes().calculate_region_on_bitmap()
-					);
-
-		for(auto component_pointer: m_component_list){
-			component_pointer.component()->set_scene( scene() );
-		}
 		m_is_enabled = true;
+	}
+
+	//if a parent layout changes the reference attributes -- this needs to be updated
+	m_touch_gesture.set_region(
+				reference_drawing_attributes().calculate_region_on_bitmap()
+				);
+
+	for(auto component_pointer: m_component_list){
+		component_pointer.component()->set_scene( scene() );
 	}
 
 	shift_origin(DrawingPoint(0,0));

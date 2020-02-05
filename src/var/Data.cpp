@@ -37,7 +37,11 @@ u32 Data::block_size(){
 }
 
 int Data::free(){
-	m_data.clear();
+	std::vector<u8> emtpy_vector;
+	//swapping with an empty vector forces the vector to free the memory
+	//other requests to free the memory are non-binding
+	//such as resize(), shrink_to_fit(), clear() and erase()
+	m_data.swap(emtpy_vector);
 	update_reference();
 	return 0;
 }
