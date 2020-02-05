@@ -145,7 +145,7 @@ public:
 	String (std::initializer_list<char> il) : m_string(il){}
 	String& operator=(const char * s){
 		if( s == nullptr ){
-			m_string.clear();
+			m_string = std::string();
 		} else {
 			m_string = s;
 		}
@@ -433,7 +433,6 @@ public:
 			m_string.assign(
 						cstring_to_assign,
 						length.argument()
-
 						);
 		}
 		return *this;
