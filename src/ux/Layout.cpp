@@ -150,7 +150,6 @@ DrawingPoint Layout::calculate_next_point(const DrawingArea & area){
 
 void Layout::scroll(DrawingPoint value){
 	shift_origin(value);
-
 }
 
 
@@ -166,7 +165,6 @@ void Layout::handle_event(const ux::Event & event){
 	//handle scrolling -- pass events to specific components
 
 	if( event.type() == ux::TouchEvent::event_type() ){
-
 		enum TouchGesture::id event_id = m_touch_gesture.process_event(event);
 		switch(event_id){
 			case TouchGesture::id_none: break;
@@ -191,14 +189,11 @@ void Layout::handle_event(const ux::Event & event){
 				}
 				break;
 		}
-
 	}
 
 	for(auto component_pointer: m_component_list){
 		//pass events to each component
-		if( component_pointer.component()->is_enabled() ){
-			component_pointer.component()->handle_event(event);
-		}
+		component_pointer.component()->handle_event(event);
 	}
 
 	for(auto component_pointer: m_component_list){

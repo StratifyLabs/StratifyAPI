@@ -23,6 +23,5 @@ void Icon::draw_to_scale(const DrawingScaledAttributes & attr){
 					VectorMap().set_rotation(m_rotation)
 					.calculate_for_region(attr.region())
 					);
-
 	}
 }

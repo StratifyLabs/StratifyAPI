@@ -48,9 +48,7 @@ void Slider::draw(const DrawingAttributes & attributes){
 
 void Slider::handle_event(const ux::Event & event){
 	//change the state when an event happens in the component
-	if( event == SystemEvent(SystemEvent::id_enter) ){
-		redraw();
-	} else if( event.type() == ux::TouchEvent::event_type() ){
+	if( event.type() == ux::TouchEvent::event_type() ){
 		const ux::TouchEvent & touch_event
 				= event.reinterpret<ux::TouchEvent>();
 

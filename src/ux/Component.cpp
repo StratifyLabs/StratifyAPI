@@ -95,6 +95,13 @@ void Component::refresh_drawing(){
 
 		m_display->set_window(window_region);
 
+#if 0
+		sys::Printer p;
+		p.open_object("draw " + name());
+		p << window_region;
+		p.close_object();
+#endif
+
 		m_display->write(
 					m_local_bitmap.create_reference(m_refresh_region)
 					);
