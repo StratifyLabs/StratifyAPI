@@ -22,27 +22,30 @@ void Component::enable(
 		hal::Display & display
 		){
 
-	m_reference_drawing_attributes.set_bitmap(display);
-	m_display = &display;
+	if( m_is_enabled == false ){
+		m_reference_drawing_attributes.set_bitmap(display);
+		m_display = &display;
 
-	//local bitmap is a small section of the reference bitmap
-	if( m_local_bitmap.allocate(
-				m_reference_drawing_attributes.calculate_area_on_bitmap(),
-				sgfx::Bitmap::BitsPerPixel(
-					m_reference_drawing_attributes.bitmap().bits_per_pixel()
-					)
-				) < 0 ){
-		return;
+		//local bitmap is a small section of the reference bitmap
+		if( m_local_bitmap.allocate(
+					m_reference_drawing_attributes.calculate_area_on_bitmap(),
+					sgfx::Bitmap::BitsPerPixel(
+						m_reference_drawing_attributes.bitmap().bits_per_pixel()
+						)
+					) < 0 ){
+			return;
+		}
+
+		//local attributes fill local bitmap
+		m_local_drawing_attributes
+				.set_area(DrawingArea(1000,1000))
+				.set_bitmap(m_local_bitmap);
+
+		set_refresh_region(sgfx::Region());
+		m_is_enabled = true;
+
+		redraw();
 	}
-
-	m_is_enabled = true;
-
-	//local attributes fill local bitmap
-	m_local_drawing_attributes
-			.set_area(DrawingArea(1000,1000))
-			.set_bitmap(m_local_bitmap);
-
-	set_refresh_region(sgfx::Region());
 }
 
 
