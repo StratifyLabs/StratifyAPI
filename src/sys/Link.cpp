@@ -729,7 +729,7 @@ int Link::opendir(const var::String & path){
 
 int Link::readdir_r(
 		int dirp, struct link_dirent * entry, struct link_dirent ** result){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -747,7 +747,7 @@ int Link::readdir_r(
 }
 
 int Link::closedir(int dirp){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -767,7 +767,7 @@ int Link::symlink(
 		SourcePath old_path,
 		DestinationPath new_path
 		){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -790,7 +790,7 @@ int Link::symlink(
 }
 
 int Link::unlink(const var::String & path){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -845,7 +845,8 @@ int Link::copy(
 			return -1;
 		}
 
-		m_progress_max = host_file.size();
+		m_progress_max =
+				static_cast<int>(host_file.size());
 		if( host_file.size() > 256*50 ){
 			copy_page_size = host_file.size() / 50;
 			copy_page_size -= (copy_page_size % 1024);
@@ -889,7 +890,9 @@ int Link::copy(
 			m_error_message = "";
 			int result = device_file.write(
 						host_file,
-						fs::File::PageSize(copy_page_size),
+						fs::File::PageSize(
+							static_cast<u32>(copy_page_size)
+							),
 						fs::File::Size(host_file.size()),
 						progress_callback
 						);
@@ -981,7 +984,7 @@ int Link::copy(
 }
 
 int Link::run_app(const var::String & path){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -1016,7 +1019,7 @@ int Link::run_app(const var::String & path){
 }
 
 int Link::format(const var::String & path){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -1041,7 +1044,7 @@ int Link::format(const var::String & path){
 }
 
 int Link::kill_pid(int pid, int signo){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -1077,7 +1080,7 @@ int Link::rename(
 		SourcePath old_path,
 		DestinationPath new_path
 		){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -1102,7 +1105,7 @@ int Link::chown(
 		File::OwnerId owner,
 		File::GroupId group
 		){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		return -1;
 	}
@@ -1127,7 +1130,7 @@ int Link::chmod(
 		const var::String & path,
 		const Permissions & permissions
 		){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader ){
 		m_error_message = "target is a bootloader";
 		return -1;
@@ -1153,7 +1156,7 @@ int Link::chmod(
 }
 
 int Link::get_bootloader_attr(bootloader_attr_t & attr){
-	int err;
+	int err = -1;
 	if ( m_is_bootloader == false ){
 		m_error_message = "Target is not a bootloader";
 		return -1;
@@ -1175,7 +1178,7 @@ int Link::get_bootloader_attr(bootloader_attr_t & attr){
 u32 Link::validate_os_image_id_with_connected_bootloader(
 		const File & source_image
 		){
-	int err;
+	int err = -1;
 	u32 image_id;
 
 	if ( m_is_bootloader == false ){
@@ -1208,7 +1211,7 @@ u32 Link::validate_os_image_id_with_connected_bootloader(
 		return 0;
 	}
 
-	m_progress_max = source_image.size();
+	m_progress_max = static_cast<int>(source_image.size());
 
 	if( (image_id & ~0x01) != (m_bootloader_attributes.hardware_id & ~0x01) ){
 		err = -1;
@@ -1292,7 +1295,7 @@ int Link::install_os(const fs::File & image,
 										 ){
 
 	//must be connected to the bootloader with an erased OS
-	int err;
+	int err = -1;
 	int bytes_read;
 	const int buffer_size = 1024;
 
@@ -1596,7 +1599,7 @@ int Link::update_os(
 		return -1;
 	}
 
-	m_progress_max = image.size();
+	m_progress_max = static_cast<int>(image.size());
 
 #if 0
 	err = get_bootloader_attr(attr);
@@ -1608,7 +1611,8 @@ int Link::update_os(
 	startAddr = m_bootloader_attributes.startaddr;
 	loc = startAddr;
 
-	if( (image_id & ~0x01) != (m_bootloader_attributes.hardware_id & ~0x01) ){
+	if( (image_id & ~0x01) !=
+			(m_bootloader_attributes.hardware_id & ~0x01) ){
 		err = -1;
 		m_error_message.format("Kernel Image ID (0x%X) does not match Bootloader ID (0x%X)",
 													 image_id,
