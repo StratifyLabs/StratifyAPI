@@ -1,4 +1,5 @@
-//Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
+//Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc
 
 
 #include <errno.h>
@@ -36,7 +37,10 @@ u32 Data::block_size(){
 }
 
 int Data::free(){
-	m_data.clear();
+	//swapping with an empty vector forces the vector to free the memory
+	//other requests to free the memory are non-binding
+	//such as resize(), shrink_to_fit(), clear() and erase()
+	m_data = std::vector<u8>();
 	update_reference();
 	return 0;
 }

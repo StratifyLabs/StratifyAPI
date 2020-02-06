@@ -1,3 +1,4 @@
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "ux/Layout.hpp"
 #include "ux/Scene.hpp"
 
@@ -22,9 +23,15 @@ void Layout::enable(
 		hal::Display & display
 		){
 
-	m_display = &display; //layout never directly draws on display
-	m_reference_drawing_attributes.set_bitmap(display);
+	if( m_is_enabled == false ){
+		m_display = &display; //layout never directly draws on display
+		m_reference_drawing_attributes.set_bitmap(display);
+		m_is_enabled = true;
+	}
 
+	set_refresh_region(reference_drawing_attributes().calculate_region_on_bitmap());
+
+	//if a parent layout changes the reference attributes -- this needs to be updated
 	m_touch_gesture.set_region(
 				reference_drawing_attributes().calculate_region_on_bitmap()
 				);
@@ -34,8 +41,6 @@ void Layout::enable(
 	}
 
 	shift_origin(DrawingPoint(0,0));
-
-	m_is_enabled = true;
 }
 
 void Layout::disable(){
@@ -93,13 +98,9 @@ void Layout::shift_origin(DrawingPoint shift){
 
 		if( (overlap.width() * overlap.height()) > 0 ){
 			component_pointer.component()->set_refresh_drawing_pending();
-			if( component_pointer.component()->is_enabled() == false ){
-				component_pointer.component()->enable( scene()->scene_collection()->display() );
-			}
+			component_pointer.component()->enable( scene()->scene_collection()->display() );
 		} else {
-			if( component_pointer.component()->is_enabled() == true ){
-				component_pointer.component()->disable();
-			}
+			component_pointer.component()->disable();
 		}
 
 		//this calculates if only part of the element should be refreshed (the mask)
@@ -107,6 +108,7 @@ void Layout::shift_origin(DrawingPoint shift){
 					overlap
 					);
 	}
+
 }
 
 DrawingPoint Layout::calculate_next_point(const DrawingArea & area){
@@ -151,7 +153,6 @@ DrawingPoint Layout::calculate_next_point(const DrawingArea & area){
 
 void Layout::scroll(DrawingPoint value){
 	shift_origin(value);
-
 }
 
 
@@ -166,16 +167,7 @@ void Layout::draw(const DrawingAttributes & attributes){
 void Layout::handle_event(const ux::Event & event){
 	//handle scrolling -- pass events to specific components
 
-	if( (event.type() == SystemEvent::event_type()) &&
-			(event.id() == SystemEvent::id_enter) ){
-		for(auto component_pointer: m_component_list){
-			component_pointer.component()->handle_event(event);
-		}
-	}
-
-
 	if( event.type() == ux::TouchEvent::event_type() ){
-
 		enum TouchGesture::id event_id = m_touch_gesture.process_event(event);
 		switch(event_id){
 			case TouchGesture::id_none: break;
@@ -200,14 +192,11 @@ void Layout::handle_event(const ux::Event & event){
 				}
 				break;
 		}
-
 	}
 
 	for(auto component_pointer: m_component_list){
 		//pass events to each component
-		if( component_pointer.component()->is_enabled() ){
-			component_pointer.component()->handle_event(event);
-		}
+		component_pointer.component()->handle_event(event);
 	}
 
 	for(auto component_pointer: m_component_list){

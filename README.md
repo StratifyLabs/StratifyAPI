@@ -105,7 +105,6 @@ Here are the steps to build and install the API using the Stratify Labs command 
 
 ```
 sl sdk.install # install the SDK (if it isn't already installed)
-sl sdk.update:library=StratifyOS # StratifyAPI needs the latest copy of StratifyOS
-sl sdk.update:library=StratifyAPI
+sl sdk.bootstrap
 sl sdk.update # this will pull, build, and install StratifyOS and StratifyAPI
 ```

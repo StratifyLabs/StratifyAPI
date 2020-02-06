@@ -1,3 +1,4 @@
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "ux/Slider.hpp"
 #include "ux/Rectangle.hpp"
 #include "ux/Scene.hpp"
@@ -47,9 +48,7 @@ void Slider::draw(const DrawingAttributes & attributes){
 
 void Slider::handle_event(const ux::Event & event){
 	//change the state when an event happens in the component
-	if( event == SystemEvent(SystemEvent::id_enter) ){
-		redraw();
-	} else if( event.type() == ux::TouchEvent::event_type() ){
+	if( event.type() == ux::TouchEvent::event_type() ){
 		const ux::TouchEvent & touch_event
 				= event.reinterpret<ux::TouchEvent>();
 

@@ -1,3 +1,4 @@
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #ifndef API_INFO_OBJECT_HPP
 #define API_INFO_OBJECT_HPP
 

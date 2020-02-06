@@ -1,3 +1,4 @@
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #ifndef SAPI_VAR_JSON_HPP_
 #define SAPI_VAR_JSON_HPP_
 
@@ -434,7 +435,7 @@ private:
 class JsonDocument : public api::WorkObject {
 public:
 
-
+	using FilePath = fs::File::Path;
 
 	/*! \details Constructs a Json object from a JsonValue.
 	 *
@@ -454,9 +455,7 @@ public:
 	  * \param path The path to the file
 	  * \return Zero on success
 	  */
-	JsonValue load(
-			fs::File::Path path
-			);
+	JsonValue load(const fs::File::Source file);
 
 	/*!
 	  * \details Loads a JSON value from a data object
@@ -492,7 +491,7 @@ public:
 	  * \return Zero on success
 	  */
 	JsonValue load(
-			const fs::File::Source file
+			FilePath file
 			);
 
 	/*!

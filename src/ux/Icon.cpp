@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
 #include "sgfx.hpp"
 #include "sys/Assets.hpp"
@@ -23,6 +23,5 @@ void Icon::draw_to_scale(const DrawingScaledAttributes & attr){
 					VectorMap().set_rotation(m_rotation)
 					.calculate_for_region(attr.region())
 					);
-
 	}
 }

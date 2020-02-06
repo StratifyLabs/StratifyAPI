@@ -1,4 +1,4 @@
-/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
 #ifndef SAPI_VAR_STRING_HPP_
 #define SAPI_VAR_STRING_HPP_
@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <string>
 #include "../arg/Argument.hpp"
+#include "Vector.hpp"
 
 namespace var {
 
@@ -144,7 +145,7 @@ public:
 	String (std::initializer_list<char> il) : m_string(il){}
 	String& operator=(const char * s){
 		if( s == nullptr ){
-			m_string.clear();
+			m_string = std::string();
 		} else {
 			m_string = s;
 		}
@@ -432,7 +433,6 @@ public:
 			m_string.assign(
 						cstring_to_assign,
 						length.argument()
-
 						);
 		}
 		return *this;
@@ -803,6 +803,8 @@ public:
 
 	u32 capacity() const { return m_string.capacity(); }
 
+
+	Vector<String> split(const String & delimiter) const;
 
 private:
 

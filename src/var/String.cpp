@@ -1,4 +1,5 @@
-//Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
+//Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc
 
 
 #include <errno.h>
@@ -8,6 +9,7 @@
 #include <cstring>
 #include "var/Data.hpp"
 #include "var/String.hpp"
+#include "var/Tokenizer.hpp"
 #include "sys.hpp"
 
 using namespace var;
@@ -171,6 +173,14 @@ float String::to_float() const {
 #endif
 }
 
+
+Vector<String> String::split(const String & delimiter) const {
+	Tokenizer tokens(
+				*this,
+				Tokenizer::Delimeters(delimiter)
+				);
+	return tokens.to_list();
+}
 
 
 

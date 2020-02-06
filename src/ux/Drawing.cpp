@@ -1,3 +1,4 @@
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 //Copyright 2011-2020 Tyler Gilbert; All Rights Reserved
 
 
@@ -58,9 +59,7 @@ DrawingAttributes::DrawingAttributes(sgfx::Bitmap & bitmap, const DrawingRegion 
 }
 
 sg_area_t DrawingAttributes::calculate_area_on_bitmap(const DrawingAttributes & attr){
-	sg_area_t d;
-	d = sg_dim(calculate_width_on_bitmap(attr), calculate_height_on_bitmap(attr));
-	return d;
+	return sg_dim(calculate_width_on_bitmap(attr), calculate_height_on_bitmap(attr));
 }
 
 sg_size_t DrawingAttributes::calculate_height_on_bitmap(const DrawingAttributes & attr, drawing_size_t value){
@@ -105,11 +104,11 @@ sg_region_t DrawingAttributes::calculate_region_on_bitmap(const DrawingAttribute
 
 
 drawing_int_t DrawingAttributes::calculate_width(drawing_int_t v) const {
-	return m_attr.region.area.width * v / DrawingAttributes::scale();
+	return (m_attr.region.area.width * v + DrawingAttributes::scale()/2) / DrawingAttributes::scale();
 }
 
 drawing_int_t DrawingAttributes::calculate_height(drawing_int_t v) const {
-	return m_attr.region.area.height * v / DrawingAttributes::scale();
+	return (m_attr.region.area.height * v + DrawingAttributes::scale()/2) / DrawingAttributes::scale();
 }
 
 DrawingAttributes DrawingAttributes::operator+ (const drawing_point_t & p) const {
