@@ -182,7 +182,7 @@ Printer & Printer::close_object(){
 Printer & Printer::open_array(
 		const var::String & key,
 		enum verbose_level level){
-	print_open_object(level, key.cstring());
+	print_open_array(level, key.cstring());
 	return *this;
 }
 
