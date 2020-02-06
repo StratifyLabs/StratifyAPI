@@ -1,3 +1,4 @@
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #ifndef SAPI_UX_COMPONENT_HPP
 #define SAPI_UX_COMPONENT_HPP
 
@@ -18,7 +19,7 @@ class Component : public Drawing {
 public:
 
 	using EventHandlerFunction = std::function<void(Component * object, const Event & event)>;
-	virtual ~Component(){}
+	virtual ~Component();
 
 	Component & set_event_handler(EventHandlerFunction event_handler){
 		m_event_handler = event_handler;
@@ -62,11 +63,11 @@ public:
 		return *this;
 	}
 
-	void enable(
+	virtual void enable(
 			hal::Display & display
 			);
 
-	void disable();
+	virtual void disable();
 
 	bool is_enabled() const {
 		return m_is_enabled;
@@ -128,6 +129,8 @@ public:
 
 protected:
 
+	bool m_is_enabled = false;
+
 	void set_refresh_region(const sgfx::Region & region){
 		if( region.width() * region.height() == 0 ){
 			m_refresh_region = m_local_bitmap.region();
@@ -171,7 +174,6 @@ private:
 	enum sgfx::Theme::state m_theme_state = sgfx::Theme::state_default;
 	bool m_is_antialias = true;
 	bool m_is_refresh_drawing_pending;
-	bool m_is_enabled = false;
 	sgfx::Region m_refresh_region;
 
 	//needs a palette to use while drawing

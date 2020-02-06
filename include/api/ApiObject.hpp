@@ -1,3 +1,9 @@
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
+
+
+//sl sdk.copyright:message="'Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.'",path=StratifyAPI,prefix='/*! \file */ //',filter=cmake_link?cmake_arm?rapidjson?rapidxml --verbose=message
+
+
 #ifndef SAPI_API_APIOBJECT_HPP_
 #define SAPI_API_APIOBJECT_HPP_
 

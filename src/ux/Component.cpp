@@ -1,3 +1,4 @@
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "ux/Component.hpp"
 #include "sys/Printer.hpp"
 #include "ux/Scene.hpp"
@@ -13,37 +14,46 @@ const SceneCollection * Component::scene_collection() const {
 	return scene()->scene_collection();
 }
 
+Component::~Component(){
+	disable();
+}
+
 void Component::enable(
 		hal::Display & display
 		){
 
-	m_reference_drawing_attributes.set_bitmap(display);
-	m_display = &display;
+	if( m_is_enabled == false ){
+		m_reference_drawing_attributes.set_bitmap(display);
+		m_display = &display;
 
-	//local bitmap is a small section of the reference bitmap
-	if( m_local_bitmap.allocate(
-				m_reference_drawing_attributes.calculate_area_on_bitmap(),
-				sgfx::Bitmap::BitsPerPixel(
-					m_reference_drawing_attributes.bitmap().bits_per_pixel()
-					)
-				) < 0 ){
-		return;
+		//local bitmap is a small section of the reference bitmap
+		if( m_local_bitmap.allocate(
+					m_reference_drawing_attributes.calculate_area_on_bitmap(),
+					sgfx::Bitmap::BitsPerPixel(
+						m_reference_drawing_attributes.bitmap().bits_per_pixel()
+						)
+					) < 0 ){
+			return;
+		}
+
+		//local attributes fill local bitmap
+		m_local_drawing_attributes
+				.set_area(DrawingArea(1000,1000))
+				.set_bitmap(m_local_bitmap);
+
+		set_refresh_region(sgfx::Region());
+		m_is_enabled = true;
+
+		redraw();
 	}
-
-	m_is_enabled = true;
-
-	//local attributes fill local bitmap
-	m_local_drawing_attributes
-			.set_area(DrawingArea(1000,1000))
-			.set_bitmap(m_local_bitmap);
-
-	set_refresh_region(sgfx::Region());
 }
 
 
 void Component::disable(){
-	m_is_enabled = false;
-	m_local_bitmap.free();
+	if( m_is_enabled ){
+		m_is_enabled = false;
+		m_local_bitmap.free();
+	}
 }
 
 DrawingPoint Component::translate_point(const sgfx::Point & point){
@@ -83,9 +93,14 @@ void Component::refresh_drawing(){
 					m_refresh_region.area()
 					);
 
-		if( m_display->set_window(window_region) < 0 ){
+		m_display->set_window(window_region);
 
-		}
+#if 0
+		sys::Printer p;
+		p.open_object("draw " + name());
+		p << window_region;
+		p.close_object();
+#endif
 
 		m_display->write(
 					m_local_bitmap.create_reference(m_refresh_region)
@@ -107,25 +122,37 @@ void Component::erase(){
 				m_refresh_region.area()
 				);
 
-	m_display->set_window(window_region);
-	m_display->clear();
+#if 0
+	sys::Printer p;
+	p.open_object("erase " + name());
+	p << window_region;
+	p.close_object();
+#endif
+	if( (window_region.width() * window_region.height()) > 0 ){
+		m_display->set_window(window_region);
+		m_display->clear();
+	}
 }
 
 void Component::apply_antialias_filter(const DrawingAttributes & attributes){
 	if( is_antialias() ){
+#if 0
 		attributes.bitmap().apply_antialias_filter(
 					theme().antialias_filter(),
 					attributes.bitmap().region()
 					);
+#endif
 	}
 	set_refresh_drawing_pending();
 }
 
 void Component::apply_antialias_filter(const DrawingScaledAttributes & attributes){
 	if( is_antialias() ){
+#if 0
 		attributes.bitmap().apply_antialias_filter(
 					theme().antialias_filter(),
 					attributes.bitmap().region()
 					);
+#endif
 	}
 }

@@ -1,3 +1,4 @@
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #ifndef SAPI_SYS_JSONPRINTER_HPP
 #define SAPI_SYS_JSONPRINTER_HPP
 
@@ -10,18 +11,12 @@ class JsonPrinter : public Printer {
 public:
 	JsonPrinter();
 
-	JsonPrinter & open_object(
-			const var::String & key,
-			enum verbose_level level = level_fatal);
 
-	JsonPrinter & close_object();
-
-	JsonPrinter & open_array(const var::String & key, enum verbose_level level = level_fatal);
-	JsonPrinter & close_array(){
-		return close_object();
-	}
 
 private:
+
+
+
 	enum container_type {
 		container_array,
 		container_object
@@ -35,6 +30,13 @@ private:
 	//re-implemented virtual functions from Printer
 	void print_open_object(enum verbose_level level, const char * key);
 	void print_close_object();
+	void print_open_array(
+			enum verbose_level level,
+			const char * key
+			);
+	void print_close_array(){
+		return print_close_object();
+	}
 	void print(enum verbose_level level, const char * key, const char * value, bool is_newline = true);
 
 

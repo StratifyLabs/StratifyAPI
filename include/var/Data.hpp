@@ -1,4 +1,4 @@
-﻿/*! \file */ //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
 #ifndef SAPI_VAR_DATA_HPP_
 #define SAPI_VAR_DATA_HPP_
@@ -472,6 +472,10 @@ public:
    template<typename T> u32 count() const {
       return size() / sizeof(T);
    }	
+
+	void reserve(size_t size){
+		m_data.reserve(size);
+	}
 
 
 	const char at_const_char(size_t position) const { return at<const char>(position); }

@@ -1,3 +1,4 @@
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #ifndef SAPI_SYS_YAMLPRINTER_HPP
 #define SAPI_SYS_YAMLPRINTER_HPP
 
@@ -33,11 +34,6 @@ public:
 	 * ```
 	 *
 	 */
-	YamlPrinter & open_object(
-			const var::String & key,
-			enum verbose_level level = level_fatal);
-
-	YamlPrinter & close_object();
 
 
 	/*! \details Opens a YAML array.
@@ -80,10 +76,6 @@ public:
 	 * ```
 	 *
 	 */
-	YamlPrinter & open_array(const var::String & key, enum verbose_level level = level_fatal);
-	YamlPrinter & close_array(){
-		return close_object();
-	}
 
 	/*! \details Returns a printer termination object for closing
 	 * an array or object with the `<<` operator.
@@ -127,6 +119,13 @@ private:
 	//re-implemented virtual functions from Printer
 	void print_open_object(enum verbose_level level, const char * key);
 	void print_close_object();
+	void print_open_array(
+			enum verbose_level level,
+			const char * key
+			);
+	void print_close_array(){
+		return print_close_object();
+	}
 	void print(enum verbose_level level, const char * key, const char * value, bool is_newline = true);
 
 

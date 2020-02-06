@@ -1,3 +1,4 @@
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #ifndef SAPI_TEST_TEST_HPP_
 #define SAPI_TEST_TEST_HPP_
 
@@ -343,7 +344,7 @@ public:
 		if( a == b ){
 			return true;
 		}
-		print_case_failed("%s:%d: valued not expected", function, line);
+		print_case_failed("%s:%d: value not expected", function, line);
 		return false;
 	}
 
@@ -356,7 +357,7 @@ public:
 		if( !(a == b) ){
 			return true;
 		}
-		print_case_failed("%s:%d: valued not expected not", function, line);
+		print_case_failed("%s:%d: value not expected not", function, line);
 		return false;
 	}
 

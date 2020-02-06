@@ -1,3 +1,4 @@
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #ifndef SAPI_UX_TOUCHGESTURE_HPP
 #define SAPI_UX_TOUCHGESTURE_HPP
 
@@ -87,6 +88,18 @@ public:
 		return m_drag;
 	}
 
+	bool is_vertical_drag_enabled() const {
+		return m_is_vertical_drag_enabled;
+	}
+
+	bool is_horizontal_drag_enabled() const {
+		return m_is_horizontal_drag_enabled;
+	}
+
+	bool is_multidimensional_drag_enabled() const {
+		return m_is_multidimensional_drag_enabled;
+	}
+
 private:
 	sgfx::Point m_drag;
 	sgfx::Point m_last_point;
@@ -94,7 +107,7 @@ private:
 	chrono::Timer m_timer;
 	s16 m_vertical_drag = 0;
 	s16 m_horizontal_drag = 0;
-	bool m_is_vertical_drag_enabled = true;
+	bool m_is_vertical_drag_enabled = false;
 	bool m_is_horizontal_drag_enabled = false;
 	bool m_is_multidimensional_drag_enabled = false;
 	bool m_is_vertical_drag_active = false;
