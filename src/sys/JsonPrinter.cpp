@@ -10,17 +10,6 @@ JsonPrinter::JsonPrinter(){
 	set_flags(print_no_progress_newline | print_key_quotes | print_value_quotes);
 }
 
-void JsonPrinter::print_open_object(
-		enum verbose_level level,
-		const char * key
-		){
-	open_object(key, level);
-}
-
-void JsonPrinter::print_close_object(){
-	close_object();
-}
-
 void JsonPrinter::print(
 		enum verbose_level level,
 		const char * key,
@@ -47,45 +36,43 @@ void JsonPrinter::print(
 	Printer::print(level, key, value, false);
 }
 
-JsonPrinter & JsonPrinter::open_object(
-		const var::String & key,
-		enum verbose_level level
+void JsonPrinter::print_open_object(
+		enum verbose_level level,
+		const char * key
 		){
 
 	if( verbose_level() >= level ){
 		insert_comma();
 		if( container().type() == container_object ){
-			print_final("\"%s\":{", key.cstring());
+			print_final("\"%s\":{", key);
 		} else {
-			print_final("{", key.cstring());
+			print_final("{", key);
 		}
 	}
 
 	container_list().push_back(
 				Container(level, container_object)
 				);
-	return *this;
 }
 
-JsonPrinter & JsonPrinter::open_array(
-		const var::String & key,
-		enum verbose_level level
+void JsonPrinter::print_open_array(
+		enum verbose_level level,
+		const char * key
 		){
 	if( verbose_level() >= level ){
 		insert_comma();
 		if( container().type() == container_object ){
-			print_final("\"%s\":[", key.cstring());
+			print_final("\"%s\":[", key);
 		} else {
-			print_final("[", key.cstring());
+			print_final("[", key);
 		}
 	}
 	container_list().push_back(
 				Container(level, container_array)
 				);
-	return *this;
 }
 
-JsonPrinter & JsonPrinter::close_object(){
+void JsonPrinter::print_close_object(){
 	if( container_list().count() > 1 ){
 		if( verbose_level() >= container().verbose_level() ){
 			if( container().type() == container_array ){
@@ -96,7 +83,6 @@ JsonPrinter & JsonPrinter::close_object(){
 		}
 		container_list().pop_back();
 	}
-	return *this;
 }
 
 void JsonPrinter::insert_comma(){

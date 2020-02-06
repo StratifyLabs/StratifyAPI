@@ -435,7 +435,7 @@ private:
 class JsonDocument : public api::WorkObject {
 public:
 
-
+	using FilePath = fs::File::Path;
 
 	/*! \details Constructs a Json object from a JsonValue.
 	 *
@@ -455,9 +455,7 @@ public:
 	  * \param path The path to the file
 	  * \return Zero on success
 	  */
-	JsonValue load(
-			fs::File::Path path
-			);
+	JsonValue load(const fs::File::Source file);
 
 	/*!
 	  * \details Loads a JSON value from a data object
@@ -493,7 +491,7 @@ public:
 	  * \return Zero on success
 	  */
 	JsonValue load(
-			const fs::File::Source file
+			FilePath file
 			);
 
 	/*!

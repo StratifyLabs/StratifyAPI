@@ -179,6 +179,18 @@ Printer & Printer::close_object(){
 	return *this;
 }
 
+Printer & Printer::open_array(
+		const var::String & key,
+		enum verbose_level level){
+	print_open_object(level, key.cstring());
+	return *this;
+}
+
+Printer & Printer::close_array(){
+	print_close_array();
+	return *this;
+}
+
 void Printer::print_open_object(
 		enum verbose_level verbose_level,
 		const char * key
@@ -188,6 +200,20 @@ void Printer::print_open_object(
 }
 
 void Printer::print_close_object(){
+	if( m_indent ){
+		m_indent--;
+	}
+}
+
+void Printer::print_open_array(
+		enum verbose_level verbose_level,
+		const char * key
+		){
+	print(verbose_level, key, "");
+	m_indent++;
+}
+
+void Printer::print_close_array(){
 	if( m_indent ){
 		m_indent--;
 	}

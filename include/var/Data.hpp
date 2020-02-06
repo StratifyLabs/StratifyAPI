@@ -473,6 +473,10 @@ public:
       return size() / sizeof(T);
    }	
 
+	void reserve(size_t size){
+		m_data.reserve(size);
+	}
+
 
 	const char at_const_char(size_t position) const { return at<const char>(position); }
 	char & at_char(size_t position) { return at<char>(position); }

@@ -437,6 +437,12 @@ public:
 
 	Printer & close_object();
 
+	Printer & open_array(
+			const var::String & key,
+			enum verbose_level level = level_fatal);
+
+	Printer & close_array();
+
 
 	const var::String terminal_color_code(enum color_code code);
 
@@ -447,6 +453,13 @@ protected:
 			const char * key
 			);
 	virtual void print_close_object();
+
+	virtual void print_open_array(
+			enum verbose_level verbose_level,
+			const char * key
+			);
+	virtual void print_close_array();
+
 	virtual void print(
 			enum verbose_level level,
 			const char * key,

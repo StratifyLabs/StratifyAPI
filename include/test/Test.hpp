@@ -344,7 +344,7 @@ public:
 		if( a == b ){
 			return true;
 		}
-		print_case_failed("%s:%d: valued not expected", function, line);
+		print_case_failed("%s:%d: value not expected", function, line);
 		return false;
 	}
 
@@ -357,7 +357,7 @@ public:
 		if( !(a == b) ){
 			return true;
 		}
-		print_case_failed("%s:%d: valued not expected not", function, line);
+		print_case_failed("%s:%d: value not expected not", function, line);
 		return false;
 	}
 
