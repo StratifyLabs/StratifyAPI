@@ -1,6 +1,7 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "ux/Layout.hpp"
 #include "ux/Scene.hpp"
+#include "sys/Printer.hpp"
 
 using namespace sgfx;
 using namespace ux;
@@ -30,8 +31,6 @@ void Layout::enable(
 	}
 
 	set_refresh_region(reference_drawing_attributes().calculate_region_on_bitmap());
-
-	//if a parent layout changes the reference attributes -- this needs to be updated
 	m_touch_gesture.set_region(
 				reference_drawing_attributes().calculate_region_on_bitmap()
 				);
@@ -41,6 +40,7 @@ void Layout::enable(
 	}
 
 	shift_origin(DrawingPoint(0,0));
+
 }
 
 void Layout::disable(){
@@ -58,20 +58,8 @@ Layout& Layout::add_component(
 		){
 
 	component.set_name(name);
-	component.set_drawing_point(
-				calculate_next_point(
-					component.reference_drawing_attributes().area()
-					)
-				);
-
 	m_component_list.push_back(
 				LayoutComponent(&component)
-				);
-
-	//determine scroll ends
-	m_area.set_height(
-				m_area.height() +
-				component.reference_drawing_attributes().area().height()
 				);
 
 	return *this;
@@ -79,6 +67,9 @@ Layout& Layout::add_component(
 
 void Layout::shift_origin(DrawingPoint shift){
 	m_origin += shift;
+
+	//determine scroll ends
+	generate_layout_positions();
 
 	for(auto component_pointer: m_component_list){
 		//reference attributes are the location within the compound component
@@ -182,7 +173,10 @@ void Layout::handle_event(const ux::Event & event){
 				vertical_drawing_scroll =
 						handle_vertical_scroll( m_touch_gesture.drag().y() );
 
+
+
 				if( vertical_drawing_scroll || horizontal_drawing_scroll ){
+					printf("vertical scroll is %d for %s\n", vertical_drawing_scroll, name().cstring());
 					this->scroll(
 								DrawingPoint(
 									horizontal_drawing_scroll,
@@ -245,4 +239,60 @@ drawing_int_t Layout::handle_vertical_scroll(sg_int_t scroll){
 
 drawing_int_t Layout::handle_horizontal_scroll(sg_int_t scroll){
 	return 0;
+}
+
+void Layout::generate_layout_positions(){
+	switch(m_flow){
+		default:
+		case flow_vertical: generate_vertical_layout_positions(); return;
+		case flow_horizontal: generate_horizontal_layout_positions(); return;
+	}
+}
+
+void Layout::generate_vertical_layout_positions(){
+	drawing_int_t drawing_cursor = 0;
+	sg_int_t bitmap_cursor = 0;
+
+	for(auto & component: m_component_list){
+		const DrawingPoint point(0, drawing_cursor);
+		const DrawingArea area(1000, component.drawing_area().height());
+		component.set_drawing_point(point);
+
+		DrawingAttributes tmp_attributes = reference_drawing_attributes() + m_origin + point + area;
+		sg_size_t height_on_bitmap = tmp_attributes.calculate_area_on_bitmap().height;
+
+#if 0
+		printf("%d (%d) - %d (%d) -- %d\n",
+					 bitmap_cursor,
+					 height_on_bitmap,
+					 drawing_cursor,
+					 component.drawing_area().height(),
+					 tmp_attributes.calculate_point_on_bitmap().y - 54
+					 );
+#endif
+
+		bitmap_cursor += height_on_bitmap;
+		drawing_cursor = reference_drawing_attributes().calculate_height_on_drawing(bitmap_cursor);
+	}
+
+	m_area.set_height(drawing_cursor);
+}
+
+void Layout::generate_horizontal_layout_positions(){
+	drawing_int_t drawing_cursor = 0;
+	sg_int_t bitmap_cursor = 0;
+
+	for(auto & component: m_component_list){
+		const DrawingPoint point(drawing_cursor, 0);
+		const DrawingArea area(component.drawing_area().width(), 1000);
+		component.set_drawing_point(point);
+
+		DrawingAttributes tmp_attributes = reference_drawing_attributes() + area;
+		sg_size_t width_on_bitmap = tmp_attributes.calculate_area_on_bitmap().width;
+
+		bitmap_cursor += width_on_bitmap;
+		drawing_cursor = reference_drawing_attributes().calculate_width_on_drawing(bitmap_cursor);
+	}
+
+	m_area.set_width(drawing_cursor);
 }

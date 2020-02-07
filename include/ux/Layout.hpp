@@ -28,6 +28,13 @@ public:
 	}
 
 
+	void set_drawing_point(const DrawingPoint & point){
+		m_drawing_point = point;
+	}
+
+	void set_drawing_area(const DrawingArea & area){
+		m_drawing_area = area;
+	}
 
 private:
 	Component * m_component;
@@ -98,6 +105,10 @@ private:
 	drawing_int_t handle_horizontal_scroll(sg_int_t scroll);
 
 	DrawingPoint calculate_next_point(const DrawingArea& area);
+
+	void generate_layout_positions();
+	void generate_vertical_layout_positions();
+	void generate_horizontal_layout_positions();
 
 };
 
