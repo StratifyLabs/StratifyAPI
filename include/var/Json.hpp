@@ -373,6 +373,12 @@ public:
 
 	int remove(size_t position);
 	int clear();
+
+	var::Vector<var::String> string_list();
+	var::Vector<s32> integer_list();
+	var::Vector<float> float_list();
+	var::Vector<bool> bool_list();
+
 private:
 
 	json_t * create();

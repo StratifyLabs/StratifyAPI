@@ -6,6 +6,7 @@
 #include "fmt/Bmp.hpp"
 #include "sys/Appfs.hpp"
 
+using namespace sgfx;
 using namespace fmt;
 using namespace sys;
 using namespace fs;
@@ -46,17 +47,17 @@ int Bmp::open(
 	}
 
 	if( read(
-			 &hdr,
-			 Size(sizeof(hdr))
-			 ) != sizeof(hdr) ){
+				&hdr,
+				Size(sizeof(hdr))
+				) != sizeof(hdr) ){
 		close();
 		return -1;
 	}
 
 	if( read(
-			 &m_dib,
-			 Size(sizeof(m_dib))
-			 ) != sizeof(m_dib) ){
+				&m_dib,
+				Size(sizeof(m_dib))
+				) != sizeof(m_dib) ){
 		close();
 		return -1;
 	}
@@ -84,9 +85,9 @@ int Bmp::create(
 	bmp_header_t hdr;
 
 	if( File::create(
-			 path,
-			 IsOverwrite(true)
-			 ) < 0 ){
+				path,
+				IsOverwrite(true)
+				) < 0 ){
 		return -1;
 	}
 
@@ -99,9 +100,9 @@ int Bmp::create(
 	hdr.resd2 = 0;
 
 	if( write(
-			 &hdr,
-			 Size(sizeof(hdr))
-			 ) < 0 ){
+				&hdr,
+				Size(sizeof(hdr))
+				) < 0 ){
 		return -1;
 	}
 
@@ -112,9 +113,9 @@ int Bmp::create(
 	m_dib.planes = planes.argument();
 
 	if( write(
-			 &m_dib,
-			 Size(sizeof(m_dib))
-			 ) < 0 ){
+				&m_dib,
+				Size(sizeof(m_dib))
+				) < 0 ){
 		return -1;
 	}
 
@@ -186,9 +187,9 @@ int Bmp::read_pixel(uint8_t * pixel, u32 pixel_size, bool mono, uint8_t thres){
 	u32 i;
 
 	if( read(
-			 pixel,
-			 Size(pixel_size)
-			 ) != (int)pixel_size ){
+				pixel,
+				Size(pixel_size)
+				) != (int)pixel_size ){
 		return -1;
 	}
 
@@ -221,7 +222,7 @@ int Bmp::save(
 				Height(bitmap.height()),
 				PlaneCount(1),
 				BitsPerPixel(24)
-			 ) < 0 ){
+				) < 0 ){
 		return -1;
 	}
 
@@ -243,6 +244,41 @@ int Bmp::save(
 	bmp.close();
 
 	return 0;
+}
+
+sgfx::Bitmap Bmp::convert_to_bitmap(
+		sgfx::Bitmap::BitsPerPixel bpp
+		){
+	s32 i, j;
+	int avg;
+	u8 pixel[3];
+
+	sgfx::Bitmap result(
+				Area(width(), height()),
+				bpp
+				);
+
+	result.clear();
+
+	for(j=0; j < height(); j++){
+		seek_row(j);
+
+		for(i=0; i < width(); i++){
+			read(pixel);
+			avg = (pixel[0] + pixel[1] + pixel[2]) / 3;
+
+			sg_color_t bitmap_color;
+			bitmap_color = avg * (result.color_count()-1) / 255;
+			if( (bitmap_color == 0) && (avg > 0) ){
+				bitmap_color = 1;
+			}
+			//where is brightness in index
+			result << Pen().set_color(bitmap_color);
+			result.draw_pixel(Point(i,j));
+		}
+	}
+
+	return result;
 }
 
 

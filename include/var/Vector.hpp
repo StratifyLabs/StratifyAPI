@@ -204,22 +204,18 @@ public:
 		return 0;
 	}
 
-	static int ascending(
+	static bool ascending(
 			const T & a,
 			const T & b
 			){
-		if( a < b ){ return -1; }
-		if( a > b ){ return 1; }
-		return 0;
+		return a < b;
 	}
 
-	static int descending(const T & a, const T & b){
-		if( a < b ){ return 1; }
-		if( a > b ){ return -1; }
-		return 0;
+	static bool descending(const T & a, const T & b){
+		return b < a;
 	}
 
-	typedef int (*sort_compartor_t)(const T & a, const T & b);
+	typedef bool (*sort_compartor_t)(const T & a, const T & b);
 
 	void sort(sort_compartor_t compare_function){
 		std::sort(begin(), end(), compare_function);

@@ -58,22 +58,18 @@ FontInfo::FontInfo(const var::String & path){
 }
 
 
-int FontInfo::ascending_point_size(
+bool FontInfo::ascending_point_size(
 		const FontInfo & a,
 		const FontInfo & b
 		){
-	if( a.point_size() < b.point_size() ){ return -1; }
-	if( b.point_size() < a.point_size() ){ return 1; }
-	return 0;
+	return a.point_size() < b.point_size();
 }
 
-int FontInfo::ascending_style(
+bool FontInfo::ascending_style(
 		const FontInfo & a,
 		const FontInfo & b
 		){
-	if( a.style() < b.style() ){ return -1; }
-	if( b.style() < a.style() ){ return 1; }
-	return 0;
+	return a.style() < b.style();
 }
 
 const var::String Font::m_ascii_character_set = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";

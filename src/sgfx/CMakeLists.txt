@@ -4,6 +4,7 @@ set(SOURCES
 	Bitmap.cpp
 	Cursor.cpp
   Font.cpp
+	IconFont.cpp
 	FileFont.cpp
 	MemoryFont.cpp
 	SvgFont.cpp

@@ -55,9 +55,9 @@ int FileFont::set_file(
 
 
 	m_canvas.free();
-	m_canvas.set_bits_per_pixel(m_header.bits_per_pixel);
 	if( m_canvas.allocate(
-			 Area(m_header.canvas_width, m_header.canvas_height)
+			 Area(m_header.canvas_width, m_header.canvas_height),
+				sgfx::Bitmap::BitsPerPixel(m_header.bits_per_pixel)
 			 ) < 0 ){
 		set_error_number(m_canvas.error_number());
 		return -1;

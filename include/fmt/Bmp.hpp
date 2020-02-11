@@ -32,6 +32,10 @@ public:
 			const sgfx::Palette & pallete
 			);
 
+	sgfx::Bitmap convert_to_bitmap(
+			sgfx::Bitmap::BitsPerPixel bpp
+			);
+
 	/*! \details Returns the bitmap width (after bitmap has been opened). */
 	s32 width() const { return m_dib.width; }
 	/*! \details Returns the bitmap height (after bitmap has been opened). */

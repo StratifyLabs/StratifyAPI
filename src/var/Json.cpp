@@ -364,6 +364,38 @@ int JsonArray::clear(){
 	return api()->array_clear(m_value);
 }
 
+var::Vector<var::String> JsonArray::string_list(){
+	var::Vector<var::String> result;
+	for(u32 i=0; i < count(); i++){
+		result.push_back( at(i).to_string() );
+	}
+	return result;
+}
+
+var::Vector<s32> JsonArray::integer_list(){
+	var::Vector<s32> result;
+	for(u32 i=0; i < count(); i++){
+		result.push_back( at(i).to_integer() );
+	}
+	return result;
+}
+
+var::Vector<float> JsonArray::float_list(){
+	var::Vector<float> result;
+	for(u32 i=0; i < count(); i++){
+		result.push_back( at(i).to_float() );
+	}
+	return result;
+}
+
+var::Vector<bool> JsonArray::bool_list(){
+	var::Vector<bool> result;
+	for(u32 i=0; i < count(); i++){
+		result.push_back( at(i).to_bool() );
+	}
+	return result;
+}
+
 JsonString::JsonString(){
 	m_value = create();
 }

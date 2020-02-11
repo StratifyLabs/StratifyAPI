@@ -14,7 +14,9 @@ MarkdownPrinter::MarkdownPrinter(){
 void MarkdownPrinter::print_open_object(
 		enum verbose_level level,
 		const char *key){
-	this->key(var::String(key), "");
+	if( level <= verbose_level() ){
+		this->key(var::String(key), "");
+	}
 	open_list(list_unordered, level);
 }
 
