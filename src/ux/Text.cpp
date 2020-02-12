@@ -11,9 +11,9 @@ bool Text::resolve_font(sg_size_t h){
 	if( this->font() == nullptr ){
 		const FontInfo * info =
 				sys::Assets::find_font(
+					sgfx::Font::Name(m_font_name),
 					sgfx::Font::PointSize(h),
-					sgfx::Font::Style(m_font_style),
-					sgfx::Font::Name(m_font_name)
+					sgfx::Font::Style(m_font_style)
 					);
 		if( info ){
 			this->m_font = info->font();

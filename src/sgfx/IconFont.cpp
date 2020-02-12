@@ -1,6 +1,39 @@
 #include "sgfx/IconFont.hpp"
+#include "var/Tokenizer.hpp"
 
 using namespace sgfx;
+
+IconFontInfo::IconFontInfo(
+		PointSize point_size,
+		IconFont * icon_font
+		){
+	m_point_size = point_size.argument();
+	m_icon_font = icon_font;
+}
+
+IconFontInfo::IconFontInfo(const var::String & path){
+	m_path = path;
+
+	var::Tokenizer tokens(
+				fs::File::name(path),
+				var::Tokenizer::Delimeters("-.")
+				);
+
+	if( tokens.count() != 4 ){
+		m_point_size = 0;
+	} else {
+		m_icon_font = nullptr;
+		m_name = tokens.at(0);
+		m_point_size = var::String(tokens.at(1)).to_integer();
+	}
+}
+
+bool IconFontInfo::ascending_point_size(
+		const IconFontInfo & a,
+		const IconFontInfo & b
+		){
+	return a.point_size() < b.point_size();
+}
 
 IconFont::IconFont(const fs::File & file) : m_file(file){
 	refresh();
