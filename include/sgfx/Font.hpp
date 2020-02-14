@@ -148,9 +148,9 @@ public:
 	FontInfo & set_font(Font * font){ m_font = font; return *this; }
 
 	/*! \details Enables sorting FontInfo objects by point size. */
-	static int ascending_point_size(const FontInfo & a, const FontInfo & b);
+	static bool ascending_point_size(const FontInfo & a, const FontInfo & b);
 	/*! \details Enables sorting FontInfo objects by style. */
-	static int ascending_style(const FontInfo & a, const FontInfo & b);
+	static bool ascending_style(const FontInfo & a, const FontInfo & b);
 
 private:
 	var::String m_name;

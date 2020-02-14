@@ -111,6 +111,18 @@ drawing_int_t DrawingAttributes::calculate_height(drawing_int_t v) const {
 	return (m_attr.region.area.height * v + DrawingAttributes::scale()/2) / DrawingAttributes::scale();
 }
 
+drawing_size_t DrawingAttributes::calculate_height_on_drawing(sg_size_t height){
+	sg_size_t bitmap_height = calculate_height_on_bitmap();
+	u32 tmp = height * DrawingAttributes::scale() + bitmap_height/2;
+	return tmp / bitmap_height;
+}
+
+drawing_size_t DrawingAttributes::calculate_width_on_drawing(sg_size_t width){
+	sg_size_t bitmap_width = calculate_width_on_bitmap();
+	u32 tmp = width * DrawingAttributes::scale() + bitmap_width/2;
+	return tmp / bitmap_width;
+}
+
 DrawingAttributes DrawingAttributes::operator+ (const drawing_point_t & p) const {
 	DrawingAttributes attr;
 	attr = *this;

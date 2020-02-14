@@ -61,8 +61,8 @@ public:
 		position.argument() =
 				position.argument() % count;
 		if( (std::is_const<T>::value == false) &&
-			 (write_data() == 0)
-			 ){
+				(write_data() == 0)
+				){
 			exit_fatal("DataReference::at() read only");
 		}
 		return to<T>()[position.argument()];
@@ -251,9 +251,12 @@ public:
 		update_reference();
 	}
 
-	Data(Data && a) : m_data(a.m_data){
+	Data(Data && a){
+		m_data = std::move(a.m_data);
+		a.update_reference();
 		update_reference();
 	}
+
 
 	Data(std::initializer_list<u8> il) : m_data(il){
 		update_reference();
@@ -266,7 +269,8 @@ public:
 	}
 
 	Data & operator=(Data && a){
-		m_data = a.m_data;
+		m_data = std::move(a.m_data);
+		a.update_reference();
 		update_reference();
 		return *this;
 	}
@@ -283,6 +287,7 @@ public:
 	 *
 	 */
 	Data(size_t size);
+
 
 	/*! \details Returns the minimum data storage size of any Data object. */
 	static u32 minimum_capacity();
@@ -427,28 +432,28 @@ public:
 	Data & operator << (s64 a);
 
 
-   /*! \details Accesses a value in the data.
-    *
-    *
-    * If the index exceeds the size of the data, the index is set to 0.
-    *
-    * ```
-    * //md2code:main
-    * char buffer[64];
-    * DataReference a(buffer); //a is 64 bytes
-    * a.at<char>(arg::Position(0)) = 'a'; //assign 'a' to the first char location
-    * a.at<u32>(arg::Position(4)) = 0xAAAA5555; //assigns a u32 value assuming a is a u32 array
-    * u32 value = a.at<u32>(arg::Position(4)); //reads a value as if a is a u32 array
-    * printf("value is 0x%lx\n", value);
-    * ```
-    *
-    *
-    */
-   template<typename T> T & at(size_t position){
-      u32 count = size() / sizeof(T);
-      position = position % count;
-      return to<T>()[position];
-   }
+	/*! \details Accesses a value in the data.
+		*
+		*
+		* If the index exceeds the size of the data, the index is set to 0.
+		*
+		* ```
+		* //md2code:main
+		* char buffer[64];
+		* DataReference a(buffer); //a is 64 bytes
+		* a.at<char>(arg::Position(0)) = 'a'; //assign 'a' to the first char location
+		* a.at<u32>(arg::Position(4)) = 0xAAAA5555; //assigns a u32 value assuming a is a u32 array
+		* u32 value = a.at<u32>(arg::Position(4)); //reads a value as if a is a u32 array
+		* printf("value is 0x%lx\n", value);
+		* ```
+		*
+		*
+		*/
+	template<typename T> T & at(size_t position){
+		u32 count = size() / sizeof(T);
+		position = position % count;
+		return to<T>()[position];
+	}
 
 	template<typename T> const T & at(size_t position) const {
 		u32 count = size() / sizeof(T);
@@ -456,22 +461,22 @@ public:
 		return to<T>()[position];
 	}
 
-   /*! \details Returns the number of items that
-    * fit into the data.
-    *
-    * ```
-    * //md2code:main
-    * Data items( arg::Size(64) );
-    *
-    * printf(
-    *   "%ld int's fit in items\n",
-    *   items.count<int>();
-    * );
-    * ```
-    */
-   template<typename T> u32 count() const {
-      return size() / sizeof(T);
-   }	
+	/*! \details Returns the number of items that
+		* fit into the data.
+		*
+		* ```
+		* //md2code:main
+		* Data items( arg::Size(64) );
+		*
+		* printf(
+		*   "%ld int's fit in items\n",
+		*   items.count<int>();
+		* );
+		* ```
+		*/
+	template<typename T> u32 count() const {
+		return size() / sizeof(T);
+	}
 
 	void reserve(size_t size){
 		m_data.reserve(size);

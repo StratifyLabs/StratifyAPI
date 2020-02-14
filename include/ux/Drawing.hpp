@@ -461,6 +461,9 @@ public:
 	sg_point_t calculate_point_on_bitmap() const { return calculate_point_on_bitmap(*this); }
 	sg_region_t calculate_region_on_bitmap() const { return calculate_region_on_bitmap(*this); }
 
+	drawing_size_t calculate_height_on_drawing(sg_size_t height);
+	drawing_size_t calculate_width_on_drawing(sg_size_t width);
+
 
 	/*! \details This value determines how all objects are scaled.
 	 *

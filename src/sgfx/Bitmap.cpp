@@ -24,7 +24,7 @@ int AntiAliasFilter::initialize(
 
 Palette & Palette::set_bits_per_pixel(u8 bits_per_pixel){
 	u32 count = 1 << bits_per_pixel;
-	if( count > 32 ){
+	if( count > 256 ){
 		m_colors.clear();
 		return *this;
 	}
@@ -70,6 +70,11 @@ Palette & Palette::fill_gradient_gray(
 		set_color(Position(m_colors.count() - 1), 0xff000000);
 	}
 	return *this;
+}
+
+
+u32 Bitmap::color_count() const {
+	return 1<<bits_per_pixel();
 }
 
 

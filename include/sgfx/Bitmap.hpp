@@ -150,6 +150,10 @@ public:
 		return *this;
 	}
 
+	Bitmap(Bitmap && bitmap) : var::Data(std::move(bitmap)){
+		std::swap(m_bmap, bitmap.m_bmap);
+	}
+
 
 	Bitmap & operator << (const Palette & palette){
 		m_bmap.palette = &palette.m_palette;
@@ -165,10 +169,6 @@ public:
 			const Region & region
 			);
 
-
-	Bitmap(Bitmap && bitmap): var::Data(bitmap){
-		m_bmap = bitmap.m_bmap;
-	}
 
 	/*! \details Assigns a pen to the bitmap.
 	 *
@@ -503,6 +503,8 @@ public:
 	sg_size_t height() const { return m_bmap.area.height; }
 	sg_size_t width() const { return m_bmap.area.width; }
 
+	u32 color_count() const;
+
 	Area area() const {
 		return m_bmap.area;
 	}
@@ -538,12 +540,10 @@ protected:
 
 
 private:
+	sg_bmap_t m_bmap = {0};
 
 	sg_color_t calculate_color_sum();
-	sg_bmap_t m_bmap;
-
 	int set_internal_bits_per_pixel(u8 bpp);
-
 	void initialize_members();
 	void calculate_members(const Area & dim);
 

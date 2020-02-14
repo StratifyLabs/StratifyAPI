@@ -141,7 +141,7 @@ public:
 	String(const String & s) : m_string(s.string()){}
 	String(const char * s, Length length) : m_string(s,length.argument()){}
 	String(Length length, char c) : m_string(length.argument(),c){}
-	String(String && s) noexcept : m_string(s.m_string){}
+	String(String && s) noexcept : m_string(std::move(s.m_string)){}
 	String (std::initializer_list<char> il) : m_string(il){}
 	String& operator=(const char * s){
 		if( s == nullptr ){
@@ -174,7 +174,7 @@ public:
 	}
 
 	String operator+ (const String& rhs) const { return String(string() + rhs.string()); }
-	String operator+ (String&& rhs) const { return String(string() + rhs.string()); }
+	String operator+ (String&& rhs) const { return String(string() + std::move(rhs.string())); }
 	String operator+ (const char* rhs) const { return String(string() + rhs); }
 	String operator+ (char rhs) const { return String(string() + rhs); }
 

@@ -13,6 +13,7 @@ namespace sgfx {}
 #include "sgfx/Font.hpp"
 #include "sgfx/Cursor.hpp"
 #include "sgfx/FileFont.hpp"
+#include "sgfx/IconFont.hpp"
 #include "sgfx/MemoryFont.hpp"
 #include "sgfx/SvgFont.hpp"
 #include "sgfx/SvgMemoryFont.hpp"

@@ -18,6 +18,7 @@ Text::Text(const var::String & text){
 
 const Font * Text::resolve_font(sg_size_t h) const{
 	const FontInfo * info = sys::Assets::find_font(
+				sgfx::Font::Name(""),
 				sgfx::Font::PointSize(h),
 				sgfx::Font::Style(m_font_style)
 				);

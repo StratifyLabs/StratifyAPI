@@ -19,21 +19,28 @@ enum TouchGesture::id TouchGesture::process_event(
 			m_is_pressed_contained = true;
 			m_last_point = touch_event.point();
 			m_timer.restart();
-		} else if( (touch_event.id() == ux::TouchEvent::id_active) &&
-							 m_is_pressed_contained ){
-			m_drag = process_drag(touch_event);
-			if( m_is_horizontal_drag_active || m_is_vertical_drag_active ){
-				return id_dragged;
-			}
+		} else {
+			if( m_is_pressed_contained ){
 
-		} else if( (touch_event.id() == ux::TouchEvent::id_released) &&
-							 m_is_pressed_contained ){
-			m_timer.stop();
-			if( !m_is_horizontal_drag_active && !m_is_vertical_drag_active ){
-				//this was a touch
-				return id_touched;
+				if( touch_event.id() == ux::TouchEvent::id_active ){
+					m_drag = process_drag(touch_event);
+					if( m_is_horizontal_drag_active || m_is_vertical_drag_active ){
+						return id_dragged;
+					}
+
+				} else if( touch_event.id() == ux::TouchEvent::id_released ){
+
+					m_timer.stop();
+					m_is_pressed_contained = false;
+					if( !m_is_horizontal_drag_active && !m_is_vertical_drag_active ){
+						//this was a touch
+						return id_touched;
+					}
+
+				}
 			}
 		}
+
 	}
 	return id_none;
 }
