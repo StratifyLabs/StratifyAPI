@@ -352,7 +352,7 @@ int HttpClient::build_header(const var::String & method, const var::String & hos
 	if( !is_accept_present ){ m_header << "Accept: */*\r\n"; }
 
 	if( length > 0 ){
-		m_header << "Content-Length: " << String().format(F32U, length) << "\r\n";
+		m_header << "Content-Length: " << String::number(length) << "\r\n";
 	}
 	m_header << "\r\n";
 

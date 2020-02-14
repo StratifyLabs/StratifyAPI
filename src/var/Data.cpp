@@ -20,20 +20,14 @@ using namespace var;
 
 //this value corresponds to the malloc chunk size used in Stratify OS
 //this may be something that could be determined through a system call
-#if defined __link
-#define MIN_CHUNK_SIZE 1024
-#define MALLOC_CHUNK_SIZE 1024
-#else
-#define MIN_CHUNK_SIZE 52
-#define MALLOC_CHUNK_SIZE 64
-#endif
+
 
 u32 Data::minimum_capacity(){
-	return MIN_CHUNK_SIZE;
+	return api::ApiInfo::malloc_start_chunk_size();
 }
 
 u32 Data::block_size(){
-	return MALLOC_CHUNK_SIZE;
+	return api::ApiInfo::malloc_chunk_size();;
 }
 
 int Data::free(){

@@ -22,7 +22,7 @@ using namespace fs;
 
 static var::String gen_error(const var::String & msg, int err_number){
 	var::String s;
-	s.sprintf("%s (%d)", msg.cstring(), err_number);
+	s.format("%s (%d)", msg.cstring(), err_number);
 	return s;
 }
 
@@ -147,7 +147,7 @@ int Link::connect(
 	} else if ( err == 0){
 		m_is_bootloader = false;
 	} else {
-		m_error_message.sprintf("Failed to check for Bootloader status (%d)", link_errno);
+		m_error_message.format("Failed to check for Bootloader status (%d)", link_errno);
 		m_driver->phy_driver.close(&m_driver->phy_driver.handle);
 		return -1;
 	}
@@ -251,7 +251,7 @@ int Link::close(int fd){
 	}
 
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to close file", link_errno);
+		m_error_message.format("Failed to close file", link_errno);
 	}
 	return check_error(err);
 }
@@ -278,7 +278,7 @@ int Link::read(
 	}
 
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to read", link_errno);
+		m_error_message.format("Failed to read", link_errno);
 	}
 	return check_error(err);
 }
@@ -302,7 +302,7 @@ int Link::write(
 		if(err != LINK_PROT_ERROR) break;
 	}
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to write", link_errno);
+		m_error_message.format("Failed to write", link_errno);
 	}
 
 	return check_error(err);
@@ -317,7 +317,7 @@ int Link::read_flash(int addr, void * buf, int nbyte){
 		if(err != LINK_PROT_ERROR) break;
 	}
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to read flash", link_errno);
+		m_error_message.format("Failed to read flash", link_errno);
 	}
 
 	return check_error(err);
@@ -389,7 +389,7 @@ int Link::write_flash(int addr, const void * buf, int nbyte){
 		if(err != LINK_PROT_ERROR) break;
 	}
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to write flash", link_errno);
+		m_error_message.format("Failed to write flash", link_errno);
 	}
 
 	return check_error(err);
@@ -417,7 +417,7 @@ int Link::lseek(
 		if(err != LINK_PROT_ERROR) break;
 	}
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to lseek", link_errno);
+		m_error_message.format("Failed to lseek", link_errno);
 	}
 
 	return check_error(err);
@@ -508,7 +508,7 @@ int Link::stat(
 	}
 
 	if( err < 0 ){
-		m_error_message.sprintf("Failed to Get Stat", link_errno);
+		m_error_message.format("Failed to Get Stat", link_errno);
 	}
 	return check_error(err);
 }
@@ -526,7 +526,7 @@ int Link::get_time(struct tm * gt){
 	}
 
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to Get Time", link_errno);
+		m_error_message.format("Failed to Get Time", link_errno);
 	} else {
 		gt->tm_hour = ltm.tm_hour;
 		gt->tm_isdst = ltm.tm_isdst;
@@ -741,7 +741,7 @@ int Link::readdir_r(
 	}
 
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to read directory", link_errno);
+		m_error_message.format("Failed to read directory", link_errno);
 		return -1;
 	}
 	return check_error(err);
@@ -759,7 +759,7 @@ int Link::closedir(int dirp){
 	}
 
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to close directory (%d)", link_errno);
+		m_error_message.format("Failed to close directory (%d)", link_errno);
 	}
 	return check_error(err);
 }
@@ -783,7 +783,7 @@ int Link::symlink(
 	}
 
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to create symlink %s (%d)",
+		m_error_message.format("Failed to create symlink %s (%d)",
 														new_path.argument().cstring(),
 														link_errno);
 	}
@@ -842,7 +842,7 @@ int Link::copy(
 					src.argument(),
 					OpenFlags::read_only()
 					) < 0 ){
-			m_error_message.sprintf("Could not find file %s on host", src.argument().cstring());
+			m_error_message.format("Could not find file %s on host", src.argument().cstring());
 			return -1;
 		}
 
@@ -883,7 +883,7 @@ int Link::copy(
 						dest.argument(),
 						fs::File::IsOverwrite(true),
 						permissions) < 0 ){
-				m_error_message.sprintf("Failed to create file %s on device", dest.argument().cstring(), link_errno);
+				m_error_message.format("Failed to create file %s on device", dest.argument().cstring(), link_errno);
 
 				return -1;
 			}
@@ -901,7 +901,7 @@ int Link::copy(
 
 			}
 			if( device_file.close() < 0 ){
-				m_error_message.sprintf("Failed to close Link device file (%d)", link_errno);
+				m_error_message.format("Failed to close Link device file (%d)", link_errno);
 
 				return -1;
 			}
@@ -927,7 +927,7 @@ int Link::copy(
 					fs::File::IsOverwrite(true),
 					permissions
 					) < 0 ){
-			m_error_message.sprintf("Failed to open file %s on host", dest.argument().cstring());
+			m_error_message.format("Failed to open file %s on host", dest.argument().cstring());
 			return -1;
 		}
 
@@ -1056,7 +1056,7 @@ int Link::kill_pid(int pid, int signo){
 	}
 
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to kill process %d with device errno %d", pid, link_errno);
+		m_error_message.format("Failed to kill process %d with device errno %d", pid, link_errno);
 	}
 	return check_error(err);
 }
@@ -1096,7 +1096,7 @@ int Link::rename(
 	}
 
 	if( err < 0 ){
-		m_error_message.sprintf("failed to rename file with device errno %d", link_errno);
+		m_error_message.format("failed to rename file with device errno %d", link_errno);
 	}
 	return check_error(err);
 }
@@ -1122,7 +1122,7 @@ int Link::chown(
 	}
 
 	if ( err < 0 ){
-		m_error_message.sprintf("Failed to chown file with device errno %d", link_errno);
+		m_error_message.format("Failed to chown file with device errno %d", link_errno);
 	}
 	return check_error(err);
 }
@@ -1404,7 +1404,7 @@ int Link::install_os(const fs::File & image,
 								compare_buffer.to_void(),
 								bytes_read)
 							) != bytes_read ){
-					m_error_message.sprintf("Failed to read flash memory", link_errno);
+					m_error_message.format("Failed to read flash memory", link_errno);
 					if ( err > 0 ){
 						err = -1;
 					}
@@ -1424,7 +1424,7 @@ int Link::install_os(const fs::File & image,
 
 					if( compare_buffer != buffer ){
 						//if ( memcmp((void*)cmpBuffer, buffer, bytes_read) != 0 ){
-						m_error_message.sprintf("Failed to verify program installation", link_errno);
+						m_error_message.format("Failed to verify program installation", link_errno);
 
 						return -1;
 					}
@@ -1687,7 +1687,7 @@ int Link::update_os(
 								)) > 0 ){
 
 				if ( (err = link_readflash(m_driver, loc, cmpBuffer, bytesRead)) != bytesRead ){
-					m_error_message.sprintf("Failed to read flash memory", link_errno);
+					m_error_message.format("Failed to read flash memory", link_errno);
 					if ( err > 0 ){
 						err = -1;
 					}
@@ -1704,7 +1704,7 @@ int Link::update_os(
 								//printf("0x%X targ:0x%02X actual:0x%02X", loc + i, buffer[i], cmpBuffer[i]);
 							}
 						}
-						m_error_message.sprintf("Failed to verify program installation", link_errno);
+						m_error_message.format("Failed to verify program installation", link_errno);
 
 						return -1;
 					}

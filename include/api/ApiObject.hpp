@@ -330,6 +330,9 @@ public:
 	 *
 	 */
 	static const char * user_data_path();
+
+	static u32 malloc_start_chunk_size();
+	static u32 malloc_chunk_size();
 };
 
 /** \cond */

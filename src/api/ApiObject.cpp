@@ -5,6 +5,14 @@
 
 #include "var/String.hpp"
 
+#if defined __link
+#define API_MINIMUM_CHUNK_SIZE 1024
+#define API_MALLOC_CHUNK_SIZE 1024
+#else
+#define API_MINIMUM_CHUNK_SIZE 52
+#define API_MALLOC_CHUNK_SIZE 64
+#endif
+
 using namespace api;
 
 const char * ApiInfo::git_hash(){
@@ -31,6 +39,10 @@ const char * ApiInfo::operating_system_name(){
 bool ApiInfo::is_windows(){ return strcmp(operating_system_name(), "windows") == 0; }
 bool ApiInfo::is_macosx(){ return strcmp(operating_system_name(), "macosx") == 0; }
 bool ApiInfo::is_stratify_os(){ return strcmp(operating_system_name(), "stratifyos") == 0; }
+
+
+u32 ApiInfo::malloc_start_chunk_size(){ return API_MINIMUM_CHUNK_SIZE; }
+u32 ApiInfo::malloc_chunk_size(){ return API_MALLOC_CHUNK_SIZE; }
 
 
 const char * ApiInfo::user_data_path(){

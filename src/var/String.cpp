@@ -42,15 +42,6 @@ String & String::format(const char * format, ...){
 	return *this;
 }
 
-
-int String::sprintf(const char * format, ...){
-	va_list args;
-	va_start(args, format);
-	vformat(format, args);
-	va_end (args);
-	return 0;
-}
-
 String& String::vformat(
 		const char * fmt,
 		va_list list
@@ -60,34 +51,31 @@ String& String::vformat(
 
 	va_list list_copy;
 	va_copy(list_copy, list);
-
-	m_string.clear();
-	m_string.resize(var::Data::minimum_capacity(), '\0');
-
-	int result;
-	result = vsnprintf(
-				to_char(),
-				capacity()-1,
+	char buffer[64];
+	int size = vsnprintf(
+				buffer,
+				63,
 				fmt,
 				list
 				);
-
-	if( result >= (int)capacity()-1 ){ //if the data did not fit, make the buffer bigger
-		m_string.resize(result+1, '\0');
-		result = vsnprintf(
-					to_char(),
-					capacity()-1,
+	if( size <= 63 ){
+		*this = String(buffer);
+	} else {
+		Data tmp(size+1);
+		size = vsnprintf(
+					tmp.to_char(),
+					tmp.size(),
 					fmt,
 					list_copy
 					);
+
+		if( size > 0 ){
+			*this = tmp.to_string();
+		} else {
+			clear();
+		}
 	}
 	va_end(list_copy);
-
-	if( result > 0 ){
-		resize(result);
-	} else {
-		clear();
-	}
 
 	return *this;
 }
@@ -103,7 +91,7 @@ String& String::erase(
 	size_t count_value = 0;
 	size_t len = string_to_erase.length();
 	while( (count_value++ < length.argument()) &&
-			 ((erase_pos = find(string_to_erase, position, Length(len))) != npos) ){
+				 ((erase_pos = find(string_to_erase, position, Length(len))) != npos) ){
 		erase(Position(erase_pos), Length(len));
 	}
 	return *this;
@@ -120,7 +108,7 @@ String& String::replace(
 	size_t new_length = new_string.argument().length();
 	size_t replaced_count = 0;
 	while( ((pos = find(old_string, Position(pos))) != String::npos) &&
-			 (length.argument() ? replaced_count < length.argument() : 1) ){
+				 (length.argument() ? replaced_count < length.argument() : 1) ){
 		erase(Position(pos), Length(old_length));
 		insert(Position(pos), new_string.argument());
 		pos += new_length;
@@ -151,14 +139,14 @@ String & String::operator << (
 		){
 
 	for(
-		 u32 i=0;
-		 i < reference.size();
-		 i++){
+			u32 i=0;
+			i < reference.size();
+			i++){
 
 		append(String().format(
-					 "%02x", reference.to_const_u8()[i]
-					 )
-				 );
+						 "%02x", reference.to_const_u8()[i]
+						 )
+					 );
 	}
 
 	return *this;

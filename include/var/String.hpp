@@ -114,25 +114,25 @@ public:
 	const_reverse_iterator crend() const noexcept { return m_string.crend(); }
 
 	/*! \details Constructs an empty string.
-	  *
-	  * This constructor does not use any dyncamic memory allocation.
-	  *
-	  * The str() method will return a valid zero-length, null-terminated string.
-	  *
-	  * If the string is modified using methods herein, the memory
-	  * will be automatically allocated as needed.
-	  *
-	  */
+		*
+		* This constructor does not use any dyncamic memory allocation.
+		*
+		* The str() method will return a valid zero-length, null-terminated string.
+		*
+		* If the string is modified using methods herein, the memory
+		* will be automatically allocated as needed.
+		*
+		*/
 	String();
 	String(
 			const var::String & string_to_assign,
 			Position position,
 			Length length = Length(npos)
 			) : m_string(
-					 string_to_assign.string(),
-					 position.argument(),
-					 length.argument()
-					 ){
+						string_to_assign.string(),
+						position.argument(),
+						length.argument()
+						){
 	}
 
 	String(const char * s){
@@ -180,35 +180,35 @@ public:
 
 
 	/*! \details Appends a c style string go the string.
-	  *
-	  * The string will be resized to accept the string if needed.
-	  *
-	  * \code
-	  * #include <sapi/var.hpp>
-	  * String str0;
-	  * String str1;
-	  *
-	  * str0 = "hello";  //str0 is "hello"
-	  * str1 << "hello"; //str1 is "hello"
-	  *
-	  * //combining = and << can create unwanted effects
-	  * str0 = "Hello";
-	  * str1 = str0 << "World"; //str1 == str0 == "HelloWorld"
-	  * //in the above, << operates on str0 then str1 is assiged to str0
-	  *
-	  * //to append numbers (or any printf() compatible formatting)
-	  * str1.clear();
-	  * str1 << "String data is at 0x" << String().format("%p", str1.data());
-	  * size_t value = 0xaa55;
-	  *
-	  * str1.clear();
-	  * str1 << "Value is HEX 0x" << String().format("%08lX", value); //with leading zero, uppercase hex
-	  * str1 << " hex: 0x" << String().format("%lx", value); //no leading zeros, lower-case hex
-	  * str1 << " or decimal: " << String().format("%ld", value); //unsigned value
-	  *
-	  * \endcode
-	  *
-	  */
+		*
+		* The string will be resized to accept the string if needed.
+		*
+		* \code
+		* #include <sapi/var.hpp>
+		* String str0;
+		* String str1;
+		*
+		* str0 = "hello";  //str0 is "hello"
+		* str1 << "hello"; //str1 is "hello"
+		*
+		* //combining = and << can create unwanted effects
+		* str0 = "Hello";
+		* str1 = str0 << "World"; //str1 == str0 == "HelloWorld"
+		* //in the above, << operates on str0 then str1 is assiged to str0
+		*
+		* //to append numbers (or any printf() compatible formatting)
+		* str1.clear();
+		* str1 << "String data is at 0x" << String().format("%p", str1.data());
+		* size_t value = 0xaa55;
+		*
+		* str1.clear();
+		* str1 << "Value is HEX 0x" << String().format("%08lX", value); //with leading zero, uppercase hex
+		* str1 << " hex: 0x" << String().format("%lx", value); //no leading zeros, lower-case hex
+		* str1 << " or decimal: " << String().format("%ld", value); //unsigned value
+		*
+		* \endcode
+		*
+		*/
 	String& operator<<(const String & a){ append(a); return *this; }
 
 	/*! \details Appends a character to the string. */
@@ -231,12 +231,12 @@ public:
 
 
 	/*! \details Gets a sub string of the string.
-	  *
-	  * @param pos Starting position to look for the sub-string
-	  * @param len The number of bytes in the String to search
-	  * @return A new string object containing the sub string specified
-	  *
-	  */
+		*
+		* @param pos Starting position to look for the sub-string
+		* @param len The number of bytes in the String to search
+		* @return A new string object containing the sub string specified
+		*
+		*/
 	String create_sub_string(
 			Position position = Position(0),
 			Length length = Length(npos)
@@ -249,13 +249,13 @@ public:
 	}
 
 	/*! \details Inserts \a s (zero terminated) into string at \a pos.
-	  *
-	  * @param pos Where to insert the string in this object (zero to insert at beginning)
-	  * @param s Zero terminated string to insert
-	  *
-	  * If \a pos is greater than length(), error_number() is set to EINVAL.
-	  *
-	  */
+		*
+		* @param pos Where to insert the string in this object (zero to insert at beginning)
+		* @param s Zero terminated string to insert
+		*
+		* If \a pos is greater than length(), error_number() is set to EINVAL.
+		*
+		*/
 	String& insert(
 			Position position,
 			const String & string_to_insert
@@ -285,12 +285,12 @@ public:
 	}
 
 	/*! \details Erases a portion of the string starting with the character at \a pos.
-	  *
-	  * @param pos The position to start erasing
-	  * @param len The number of characters to erase
-	  * @return A reference to this string.
-	  *
-	  */
+		*
+		* @param pos The position to start erasing
+		* @param len The number of characters to erase
+		* @return A reference to this string.
+		*
+		*/
 	String& erase(
 			Position position,
 			Length length = Length(npos)
@@ -303,8 +303,8 @@ public:
 	}
 
 	String& erase(const String & string_to_erase,
-					  Position position = Position(0),
-					  Length length = Length(npos)
+								Position position = Position(0),
+								Length length = Length(npos)
 			);
 
 	String & reverse_erase(
@@ -370,37 +370,62 @@ public:
 		m_string.resize(size);
 	}
 
+	void reserve(size_t size){
+		m_string.reserve(size);
+	}
+
 	/*! \details Prints a formatted string to this String.
-	  *
-	  * @param format Formatted string (same as printf())
-	  * @return A reference to this String
-	  *
-	  * If the formatted string exceeds the length of the string capacity,
-	  * the string will be resized to accomate the full formatted string.
-	  *
-	  * \code
-	  * #include <sapi/var.hpp>
-	  * String serial_number;
-	  * u32 serial_number_value[2] = { 0xAAAABBBB, 0xCCCCEEEE };
-	  *
-	  * //prints the formatted serial number to the string
-	  * serial_number.format("%08lX%08lX",
-	  *   serial_number_value[1],
-	  *   serial_number_value[0]);
-	  *
-	  * //append to the serial number
-	  * serial_number << " <- hex dec -> " << String().format("%ld, %ld",
-	  *   serial_number_value[1],
-	  *   serial_number_value[0]) << " shown in decimal too."
-	  * \endcode
-	  *
-	  */
+		*
+		* @param format Formatted string (same as printf())
+		* @return A reference to this String
+		*
+		* If the formatted string exceeds the length of the string capacity,
+		* the string will be resized to accomate the full formatted string.
+		*
+		* \code
+		* #include <sapi/var.hpp>
+		* String serial_number;
+		* u32 serial_number_value[2] = { 0xAAAABBBB, 0xCCCCEEEE };
+		*
+		* //prints the formatted serial number to the string
+		* serial_number.format("%08lX%08lX",
+		*   serial_number_value[1],
+		*   serial_number_value[0]);
+		*
+		* //append to the serial number
+		* serial_number << " <- hex dec -> " << String().format("%ld, %ld",
+		*   serial_number_value[1],
+		*   serial_number_value[0]) << " shown in decimal too."
+		* \endcode
+		*
+		*/
 	String& format(const char * format, ...);
 	String & vformat(const char * fmt, va_list list);
 
-	//deprecated
-	int sprintf(const char * format, ...);
+	template<typename T> static String number(
+			T value,
+			const char * fmt = nullptr
+			){
+		static_assert(
+					std::is_arithmetic<T>::value,
+					"Cannot convert non-arithmetic types to string"
+					);
 
+		if( fmt == nullptr ){
+			return String(std::to_string(value).c_str());
+		}
+
+		if( std::is_floating_point<T>::value == true ){
+			if( sizeof(T) > 4 ){
+				//double can't fit in 64 characters
+				return String().format(fmt, value);
+			}
+		}
+
+		char buffer[64];
+		snprintf(buffer, 63, fmt, value);
+		return String(buffer);
+	}
 
 	String & assign(const String & string_to_assign){
 		m_string.assign(string_to_assign.string());
@@ -491,38 +516,38 @@ public:
 
 
 	/*! \details Converts the string to upper case.
-	  *
-	  * This method operates on the current string (rather
-	  * than returning a copy.
-	  *
-	  * \code
-	  * #include <sapi/var.hpp>
-	  *
-	  * String hello("hello");
-	  *
-	  * hello.to_upper(); //hello is now "HELLO"
-	  * hello.to_lower(); //hellos is now "hello"
-	  *
-	  * //making an uppercase copy of a string
-	  *
-	  * String hello_to_upper = hello.to_upper(); //both hello and hello_to_upper are "HELLO"
-	  *
-	  * String world = String(hello).to_upper(); //world is "HELLO", hello is still "hello"
-	  *
-	  * \endcode
-	  *
-	  */
+		*
+		* This method operates on the current string (rather
+		* than returning a copy.
+		*
+		* \code
+		* #include <sapi/var.hpp>
+		*
+		* String hello("hello");
+		*
+		* hello.to_upper(); //hello is now "HELLO"
+		* hello.to_lower(); //hellos is now "hello"
+		*
+		* //making an uppercase copy of a string
+		*
+		* String hello_to_upper = hello.to_upper(); //both hello and hello_to_upper are "HELLO"
+		*
+		* String world = String(hello).to_upper(); //world is "HELLO", hello is still "hello"
+		*
+		* \endcode
+		*
+		*/
 	String & to_upper();
 
 
 	/*! \details Converts the string lower case.
-	  *
-	  * This method functions like to_upper() but converts
-	  * to lower case instead of upper case.
-	  *
-	  * See to_upper() for code examples.
-	  *
-	  */
+		*
+		* This method functions like to_upper() but converts
+		* to lower case instead of upper case.
+		*
+		* See to_upper() for code examples.
+		*
+		*/
 	String & to_lower();
 
 	const char * cstring() const {
@@ -545,11 +570,11 @@ public:
 	}
 
 	/*! \details Finds a var::String within the object.
-	  *
-	  * @param string_to_find The String to find
-	  * @param position The position to start searching (default is beginning)
-	  * @return The position of the string or var::String::npos if the String was not found
-	  */
+		*
+		* @param string_to_find The String to find
+		* @param position The position to start searching (default is beginning)
+		* @return The position of the string or var::String::npos if the String was not found
+		*/
 	size_t find(
 			const String & string_to_find,
 			Position position = Position(0)
@@ -561,15 +586,15 @@ public:
 	}
 
 	/*! \details Finds a string within the object.
-	  *
-	  * @param string_to_find A reference to the string to search for
-	  * @param position Where in this string to start looking
-	  * @param length The number of bytes to match
-	  *
-	  * @return The offset in this string where the match occurred
-	  * or npos if \a a was not found
-	  *
-	  */
+		*
+		* @param string_to_find A reference to the string to search for
+		* @param position Where in this string to start looking
+		* @param length The number of bytes to match
+		*
+		* @return The offset in this string where the match occurred
+		* or npos if \a a was not found
+		*
+		*/
 	size_t find(
 			const String & string_to_find,
 			Position position,
@@ -668,13 +693,13 @@ public:
 	}
 
 	/*! \details Compares the object to \a str.
-	  *
-	  * @param position The position in this object to start the comparison
-	  * @param length The number of characters to compare
-	  * @param string_to_compare A reference to the comparing string
-	  * @return Zero if the strings match
-	  *
-	  */
+		*
+		* @param position The position in this object to start the comparison
+		* @param length The number of characters to compare
+		* @param string_to_compare A reference to the comparing string
+		* @return Zero if the strings match
+		*
+		*/
 	int compare(
 			Position position,
 			Length length,
@@ -688,15 +713,15 @@ public:
 	}
 
 	/*! \details Compares the object to \a str.
-	  *
-	  * @param position The position in this object to start the comparison
-	  * @param length The length of the compared string (this object)
-	  * @param string_to_compare A reference to the comparing string
-	  * @param sub_position The position in the comparing string to start comparing
-	  * @param sub_length The number string characters to compare
-	  * @return Zero if the strings match
-	  *
-	  */
+		*
+		* @param position The position in this object to start the comparison
+		* @param length The length of the compared string (this object)
+		* @param string_to_compare A reference to the comparing string
+		* @param sub_position The position in the comparing string to start comparing
+		* @param sub_length The number string characters to compare
+		* @return Zero if the strings match
+		*
+		*/
 	int compare(
 			Position position,
 			Length length,
@@ -740,13 +765,13 @@ public:
 	bool operator<=(const String & string_to_compare) const { return m_string <= string_to_compare.m_string; }
 
 	/*! \details Converts the string to an integer.
-		  *
-		  * ```
-		  * ConstString x = "10";
-		  * printf("X is %d\n", x.to_integer());
-		  * ```
-		  *
-		  */
+			*
+			* ```
+			* ConstString x = "10";
+			* printf("X is %d\n", x.to_integer());
+			* ```
+			*
+			*/
 	int to_integer() const { return ::atoi(cstring()); }
 
 	/*! \details Converts to a float.
@@ -774,7 +799,7 @@ public:
 		 */
 	long to_long(
 			enum number_base base = base_10
-			){
+			) const {
 		return ::strtol(cstring(), nullptr, base);
 	}
 
@@ -782,7 +807,7 @@ public:
 		 * using the specified number base.
 		 *
 		 * ```
-		 * ConstString number("DEADBEEF");
+		 * String number("DEADBEEF");
 		 * printf("Number is 0x%X\n",
 		 *   number.to_long(
 		 *     NumberBase(16)
@@ -793,7 +818,7 @@ public:
 		 */
 	unsigned long to_unsigned_long(
 			enum number_base base = base_10
-			){
+			) const {
 		return ::strtoul(cstring(), nullptr, base);
 	}
 
