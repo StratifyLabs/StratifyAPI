@@ -51,14 +51,15 @@ String& String::vformat(
 
 	va_list list_copy;
 	va_copy(list_copy, list);
-	char buffer[64];
+	const int buffer_size = 64;
+	char buffer[buffer_size];
 	int size = vsnprintf(
 				buffer,
-				63,
+				buffer_size-1,
 				fmt,
 				list
 				);
-	if( size <= 63 ){
+	if( size <= buffer_size-1 ){
 		*this = String(buffer);
 	} else {
 		Data tmp(size+1);
@@ -70,7 +71,7 @@ String& String::vformat(
 					);
 
 		if( size > 0 ){
-			*this = tmp.to_string();
+			*this = String(tmp.to_const_char());
 		} else {
 			clear();
 		}
