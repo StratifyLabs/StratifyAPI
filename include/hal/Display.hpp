@@ -93,12 +93,13 @@ public:
 	DisplayPalette();
 	DisplayPalette(const display_palette_t & palette, bool readonly = false);
 
-	enum {
-		PIXEL_FORMAT_1BPP = DISPLAY_PALETTE_PIXEL_FORMAT_1BPP,
-		PIXEL_FORMAT_RGB444 = DISPLAY_PALETTE_PIXEL_FORMAT_RGB444,
-		PIXEL_FORMAT_RGB565 = DISPLAY_PALETTE_PIXEL_FORMAT_RGB565,
-		PIXEL_FORMAT_RGB666 = DISPLAY_PALETTE_PIXEL_FORMAT_RGB666,
-		PIXEL_FORMAT_RGB888 = DISPLAY_PALETTE_PIXEL_FORMAT_RGB888
+	enum pixel_format {
+		pixel_format_1bpp = DISPLAY_PALETTE_PIXEL_FORMAT_1BPP,
+		pixel_format_8bpp = DISPLAY_PALETTE_PIXEL_FORMAT_1BPP,
+		pixel_format_rgb444 = DISPLAY_PALETTE_PIXEL_FORMAT_RGB444,
+		pixel_format_rgb565 = DISPLAY_PALETTE_PIXEL_FORMAT_RGB565,
+		pixel_format_rgb666 = DISPLAY_PALETTE_PIXEL_FORMAT_RGB666,
+		pixel_format_rgb888 = DISPLAY_PALETTE_PIXEL_FORMAT_RGB888
 	};
 
 	int save(const var::String & path) const;
@@ -127,7 +128,7 @@ public:
 	 * @param b The blue component
 	 *
 	 * The color format is converted based on the value of pixel_format().
-	 * For example, if pixel_format() returns PIXEL_FORMAT_RGB565, the color
+	 * For example, if pixel_format() returns pixel_format_rgb565, the color
 	 * will be set in the palette to match that format.
 	 *
 	 */

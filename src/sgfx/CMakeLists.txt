@@ -12,5 +12,6 @@ set(SOURCES
   Pen.cpp
 	Theme.cpp
   Point.cpp
+	Palette.cpp
   Vector.cpp
   PARENT_SCOPE)

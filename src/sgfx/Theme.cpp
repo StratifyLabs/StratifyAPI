@@ -16,6 +16,7 @@ size_t Theme::calculate_color_offset(enum style style, enum state state) const {
    return (style * m_color_count * (last_state + 1) + (state * m_color_count))*2 + sizeof(header_t);
 }
 
+
 Theme& Theme::set_bits_per_pixel(u8 bits_per_pixel){
    m_header.bits_per_pixel = bits_per_pixel;
    m_color_count = header_color_count();
@@ -74,7 +75,7 @@ int Theme::create(
       const var::String & path,
       fs::File::IsOverwrite is_overwrite,
       BitsPerPixel bits_per_pixel,
-      PixelFormat pixel_format
+			enum pixel_format pixel_format
       ){
 
    if( m_color_file.create(path, is_overwrite) < 0 ){
@@ -83,7 +84,7 @@ int Theme::create(
 
    m_header.version = VERSION;
    m_header.bits_per_pixel = bits_per_pixel.argument();
-   m_header.pixel_format = pixel_format.argument();
+	 m_header.pixel_format = pixel_format;
    m_color_count = 0;
 
    if( m_color_file.write(m_header) < 0 ){
