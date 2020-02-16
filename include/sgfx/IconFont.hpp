@@ -100,6 +100,14 @@ public:
 					);
 	}
 
+	const sg_size_t width() const {
+		return m_icon.width;
+	}
+
+	const sg_size_t height() const {
+		return m_icon.height;
+	}
+
 private:
 	sg_font_icon_t m_icon;
 

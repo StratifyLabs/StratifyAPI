@@ -4,6 +4,7 @@
 
 
 #include "../hal/Display.hpp"
+#include "../sys/Printer.hpp"
 #include "Bitmap.hpp"
 #include "Palette.hpp"
 
@@ -55,8 +56,17 @@ public:
 		return *this;
 	}
 
+	Theme& set_primary_icon_font_name(const var::String & name){
+		m_primary_icon_font_name = name;
+		return *this;
+	}
+
 	const var::String & primary_font_name() const {
 		return m_primary_font_name;
+	}
+
+	const var::String & primary_icon_font_name() const {
+		return m_primary_icon_font_name;
 	}
 
 	u16 color_count() const {
@@ -123,6 +133,7 @@ private:
 	fs::File & m_color_file;
 	AntiAliasFilter m_antialias_filter;
 	var::String m_primary_font_name;
+	var::String m_primary_icon_font_name;
 
 	header_t m_header;
 	u16 m_color_count = 0;
@@ -131,6 +142,7 @@ private:
 		return 1 << (m_header.bits_per_pixel);
 	}
 };
+
 
 }
 

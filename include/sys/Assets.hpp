@@ -34,7 +34,7 @@ namespace sys {
  *
  *
  */
-class Assets : public api::InfoObject {
+class Assets {
 public:
 
 	/*! \details Initializes system assets.

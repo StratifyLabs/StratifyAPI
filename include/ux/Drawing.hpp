@@ -564,8 +564,7 @@ public:
 	T& set_align_right(bool v = true){ v ? m_flags |= flag_align_right : 0; return derived_this(); }
 	T& set_align_center(bool v = true){
 		if( v ){
-			set_align_right(false);
-			set_align_left(false);
+			m_flags &= (flag_align_left|flag_align_right);
 		}
 		return derived_this();
 	}
@@ -574,8 +573,7 @@ public:
 	T& set_align_bottom(bool v = true){ v ? m_flags |= flag_align_bottom : 0; return derived_this(); }
 	T& set_align_middle(bool v = true){
 		if( v ){
-			set_align_top(false);
-			set_align_bottom(false);
+			m_flags &= (flag_align_top|flag_align_bottom);
 		}
 		return derived_this();
 	}

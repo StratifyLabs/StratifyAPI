@@ -161,3 +161,4 @@ int Theme::set_display_palette(
 	return display.set_palette(palette);
 }
 
+

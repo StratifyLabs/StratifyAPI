@@ -5,7 +5,7 @@
 
 
 #include "Drawing.hpp"
-#include "../sgfx/Vector.hpp"
+#include "../sgfx/IconFont.hpp"
 #include "../var/String.hpp"
 
 namespace ux {
@@ -27,21 +27,14 @@ public:
 	/*! \details Construct an empty graphic */
 	Icon();
 
-	/*! \details Icon rotation orientations */
-	enum rotation {
-		rotation_right /*! \brief Point to the right */ = 0,
-		rotation_down /*! \brief Point down */ = SG_TRIG_POINTS/4,
-		rotation_left /*! \brief Point to the left */ = SG_TRIG_POINTS/2,
-		rotation_up /*! \brief Point up */ = SG_TRIG_POINTS*3/4,
-		rotation_quarter_clockwise /*! \brief Add/subtract to/from RIGHT, DOWN, etc */ = SG_TRIG_POINTS/4,
-		rotation_quarter_counter_clockwise /*! \brief Add/subtract to/from RIGHT, DOWN, etc */ = -SG_TRIG_POINTS/4,
-		rotation_eighth_clockwise /*! \brief Add/subtract to/from RIGHT, DOWN, etc */  = SG_TRIG_POINTS/8,
-		rotation_eighth_counter_clockwise /*! \brief Add/subtract to/from RIGHT, DOWN, etc */  = -SG_TRIG_POINTS/8,
-	};
+	Icon & set_icon_font_name(const var::String & value){
+		m_icon_font_name = value;
+		return *this;
+	}
 
-	const var::String & icon() const { return m_icon; }
-	Icon & set_icon(const var::String & value){
-		m_icon = value;
+	const var::String & name() const { return m_name; }
+	Icon & set_name(const var::String & value){
+		m_name = value;
 		return *this;
 	}
 
@@ -49,12 +42,6 @@ public:
 		m_color = value;
 		return *this;
 	}
-
-	/*! \details Set the rotation */
-	Icon & set_rotation(s16 rotation){ m_rotation = rotation; return *this; }
-
-	/*! \details Returns the rotation */
-	s16 rotation() const { return m_rotation; }
 
 	/*! \details Draws the graphic to scale on the specified bitmap */
 	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
@@ -69,10 +56,17 @@ public:
 private:
 	/*! \cond */
 	sg_region_t m_bounds;
-	var::String m_icon;
-	s16 m_rotation;
+	var::String m_icon_font_name;
+	var::String m_name;
 	sg_color_t m_color;
+	sgfx::IconFont * m_icon_font;
 	/*! \endcond */
+
+	sgfx::IconFont * icon_font(){
+		return m_icon_font;
+	}
+
+	bool resolve_font(sg_size_t h);
 
 };
 

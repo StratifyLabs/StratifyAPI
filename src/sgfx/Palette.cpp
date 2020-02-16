@@ -259,3 +259,9 @@ Palette & Palette::create_gradient(
 	return *this;
 }
 
+
+sys::Printer& operator << (sys::Printer& printer, const sgfx::Palette & palette){
+	for(size_t i=0; i < palette.colors().count(); i++){
+		printer.key(nullptr, palette.palette_color(i).to_hex_code());
+	}
+}

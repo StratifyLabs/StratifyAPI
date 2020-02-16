@@ -4,6 +4,7 @@
 #include <sapi/sg_types.h>
 #include "../var/String.hpp"
 #include "../var/Data.hpp"
+#include "../sys/Printer.hpp"
 
 namespace sgfx {
 
@@ -239,6 +240,9 @@ private:
 	var::Vector<sg_color_t> m_colors;
 };
 
+
 }
+
+sys::Printer& operator << (sys::Printer& printer, const sgfx::Palette & palette);
 
 #endif // SAPI_SGFX_PALETTE_HPP

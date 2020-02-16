@@ -50,7 +50,9 @@ void Label::draw_to_scale(const DrawingScaledAttributes & attributes){
 
 	//if the icon is available, draw it
 	if( m_icon_name.is_empty() == false ){
-		Icon().set_icon(m_icon_name)
+		Icon()
+				.set_icon_font_name(theme().primary_icon_font_name())
+				.set_name(m_icon_name)
 				.set_color(theme().text_color())
 				.set_align_center()
 				.set_align_middle()
