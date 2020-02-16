@@ -22,10 +22,6 @@ bool Icon::resolve_font(sg_size_t h){
 					);
 		if( info ){
 			this->m_icon_font = info->icon_font();
-			printf("resolved icon font to %s-%d\n",
-						 info->name().cstring(),
-						 info->point_size()
-						 );
 			return true;
 		}
 		return false;

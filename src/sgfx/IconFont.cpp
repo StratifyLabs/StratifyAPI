@@ -59,9 +59,7 @@ IconFont::IconFont(const fs::File & file) : m_file(file){
 
 size_t IconFont::find(const var::String name) const {
 	for(size_t i=0; i < m_list.count(); i++){
-		printf("search for icon %s\n", name.cstring());
 		if( this->get_info(i).name() == name ){
-			printf("icon is at %d\n", i);
 			return i;
 		}
 	}
@@ -76,7 +74,6 @@ int IconFont::refresh(){
 		return -1;
 	}
 
-	printf("Refresh icon font with %d entries\n", m_header.icon_count);
 	for(u32 i=0; i < m_header.icon_count; i++){
 		sg_font_icon_t icon;
 		if( m_file.read(icon) != sizeof(icon) ){

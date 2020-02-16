@@ -173,10 +173,7 @@ void Layout::handle_event(const ux::Event & event){
 				vertical_drawing_scroll =
 						handle_vertical_scroll( m_touch_gesture.drag().y() );
 
-
-
 				if( vertical_drawing_scroll || horizontal_drawing_scroll ){
-					printf("vertical scroll is %d for %s\n", vertical_drawing_scroll, name().cstring());
 					this->scroll(
 								DrawingPoint(
 									horizontal_drawing_scroll,
