@@ -16,7 +16,6 @@ public:
 
 	Theme(fs::File & color_file);
 
-
 	enum style {
 		style_dark,
 		style_light,
@@ -34,6 +33,7 @@ public:
 		style_outline_success,
 		style_outline_warning,
 		style_outline_danger,
+		first_style = style_dark,
 		last_style = style_outline_danger
 	};
 
@@ -41,6 +41,7 @@ public:
 		state_default,
 		state_highlighted,
 		state_disabled,
+		first_state = state_default,
 		last_state = state_disabled
 	};
 
@@ -71,10 +72,10 @@ public:
 	int write_palette(
 			enum style style,
 			enum state state,
-			const var::Vector<u16> colors
+			const var::Vector<sg_color_t> colors
 			);
 
-	var::Vector<u16> read_palette(
+	var::Vector<sg_color_t> read_palette(
 			enum style style, enum state state
 			) const;
 
@@ -83,6 +84,19 @@ public:
 			enum style style,
 			enum state state
 			) const;
+
+	Palette palette(
+			enum style style,
+			enum state state
+			);
+
+	static var::String get_state_name(enum state value);
+	static var::String get_style_name(enum style value);
+
+	sg_color_t background_color() const { return 0; }
+	sg_color_t color() const { return 1; }
+	sg_color_t text_color() const;
+	sg_color_t border_color() const;
 
 	AntiAliasFilter & antialias_filter(){
 		return m_antialias_filter;

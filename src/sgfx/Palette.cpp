@@ -16,6 +16,18 @@ enum PaletteFlags::pixel_format
 	return pixel_format_invalid;
 }
 
+u32 PaletteFlags::bits_per_pixel_format(enum pixel_format format){
+	switch(format){
+		case pixel_format_invalid: return 1;
+		case pixel_format_rgb332: return 8;
+		case pixel_format_rgb444: return 12;
+		case pixel_format_rgb565: return 16;
+		case pixel_format_rgb666: return 18;
+		case pixel_format_rgb888: return 24;
+		case pixel_format_rgba8888: return 32;
+	}
+}
+
 void PaletteColor::import_hex_code(
 		const var::String & hex
 		){
@@ -38,7 +50,7 @@ void PaletteColor::import_hex_code(
 }
 
 u8 PaletteColor::multiply_component(u8 value, float a){
-	u32 tmp = value*(1.0f + a);
+	u32 tmp = value*(a);
 	if( tmp > 255 ){ tmp = 255; }
 	if( tmp < 0 ){ tmp = 0; }
 	return tmp;
@@ -178,49 +190,70 @@ enum Palette::color_count Palette::get_color_count(u8 bits_per_pixel){
 	return color_count_invalid;
 }
 
+u8 Palette::get_bits_per_pixel() const {
+	u32 count = colors().count();
+	if( count == 2 ){ return 1; }
+	if( count == 4 ){ return 2; }
+	if( count == 8 ){ return 4; }
+	if( count == 16 ){ return 8; }
+	if( count == 256 ){ return 16; }
+	return 1;
+}
+
+
 Palette& Palette::set_color_count(enum color_count color_count){
+	m_colors = var::Vector<sg_color_t>();
 	m_colors.resize(color_count);
 	return *this;
 }
 
 Palette& Palette::assign_color(u32 v, const PaletteColor & color){
 	if( colors().count() == 0 ){
-		printf("Zero colors\n");
 		return *this;
 	}
 	u32 offset = v % colors().count();
-	sg_color_t c = color.to_pixel_format(pixel_format());
+	sg_color_t c = color.to_pixel_format( pixel_format() );
 	m_colors.at(offset) =  c;
 	return *this;
 }
 
-Palette & Palette::fill_gradient(
+PaletteColor Palette::palette_color(size_t offset) const {
+	if( offset < colors().count() ){
+		sg_color_t color = colors().at(offset);
+		switch(pixel_format()){
+			case pixel_format_invalid: return PaletteColor();
+			case pixel_format_rgb332: return PaletteColor(PaletteColor::Rgb332(color));
+			case pixel_format_rgb444:	return PaletteColor(PaletteColor::Rgb444(color));
+			case pixel_format_rgb565: return PaletteColor(PaletteColor::Rgb565(color));
+			case pixel_format_rgb666: return PaletteColor(PaletteColor::Rgb666(color));
+			case pixel_format_rgb888: return PaletteColor(PaletteColor::Rgb888(color));
+			case pixel_format_rgba8888: return PaletteColor(PaletteColor::Rgba8888(color));
+		}
+	}
+	return PaletteColor();
+}
+
+Palette & Palette::create_gradient(
 		const PaletteColor & color,
 		IsAscending is_ascending
 		){
 
-	if( is_ascending.argument() ){
-		assign_color(0, PaletteColor(0));
-	} else {
-		assign_color(0, color);
+	if( colors().count() == 0 ){
+		return *this;
 	}
 
-	for(u32 i=1; i < color_count() - 1; i++){
+	const float max = colors().count() - 1.0f;
+	for(u32 i=0; i < colors().count(); i++){
 		float scale;
 		if( is_ascending.argument() ){
-			scale = color_count() - 1 / i;
+			scale = i * 1.0f / max;
 		} else {
-			scale = i * 1.0f / (color_count() - 1);
+			scale = (max - i)*1.0f / max;
 		}
+
 		assign_color(i,
 								 color * scale
 								 );
-	}
-
-	if( is_ascending.argument() ){
-		assign_color(color_count() - 1, color);
-	} else {
-		assign_color(color_count() - 1, PaletteColor(0));
 	}
 
 	return *this;

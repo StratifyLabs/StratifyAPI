@@ -39,14 +39,71 @@ public:
 	} palette_color_t;
 
 	static enum pixel_format decode_pixel_format(const var::String & format);
+	static u32 bits_per_pixel_format(enum pixel_format format);
 
 };
 
 class PaletteColor : public PaletteFlags {
 public:
 
+	using Rgb332 = arg::Argument<u16, struct PaletteColorRgb332Tag>;
+	using Rgb444 = arg::Argument<u16, struct PaletteColorRgb444Tag>;
+	using Rgb565 = arg::Argument<u16, struct PaletteColorRgb565Tag>;
+	using Rgb666 = arg::Argument<u16, struct PaletteColorRgb666Tag>;
+	using Rgb888 = arg::Argument<u32, struct PaletteColorRgb888Tag>;
+	using Rgba8888 = arg::Argument<u32, struct PaletteColorRgba8888Tag>;
+
 	PaletteColor(const var::String & hex_code){
 		import_hex_code(hex_code);
+	}
+
+
+	PaletteColor(Rgb332 rgb332){
+		const u16 value = rgb332.argument();
+		m_color.alpha = 0xff;
+		m_color.red = (value >> 5) & 0x07;
+		m_color.green = (value >> 2) & 0x07;
+		m_color.blue = value & 0x03;
+	}
+
+	PaletteColor(Rgb444 rgb444){
+		const u16 value = rgb444.argument();
+		m_color.alpha = 0xff;
+		m_color.red = ((value >> 8) & 0x0f) << 4;
+		m_color.green = ((value >> 4) & 0x0f) << 4;
+		m_color.blue = (value & 0x0f) << 4;
+	}
+
+	PaletteColor(Rgb565 rgb565){
+		const u16 value = rgb565.argument();
+		m_color.alpha = 0xff;
+		m_color.red = ((value >> 11) & 0x1f) << 3;
+		m_color.green = ((value >> 5) & 0x3f) << 2;
+		m_color.blue = (value & 0x1f) << 3;
+	}
+
+	PaletteColor(Rgb666 rgb666){
+		const u16 value = rgb666.argument();
+		m_color.alpha = 0xff;
+		m_color.red = ((value >> 12) & 0x3f) << 2;
+		m_color.green = ((value >> 6) & 0x3f) << 2;
+		m_color.blue = (value & 0x3f) << 2;
+	}
+
+	PaletteColor(Rgb888 rgb888){
+		const u32 value = rgb888.argument();
+		m_color.alpha = 0xff;
+		m_color.red = value >> 16;
+		m_color.green = value >> 8;
+		m_color.blue = value;
+	}
+
+	PaletteColor(Rgba8888 rgba8888){
+		const u32 value = rgba8888.argument();
+		m_color.alpha = value >> 24;
+		m_color.red = value >> 16;
+		m_color.green = value >> 8;
+		m_color.blue = value;
 	}
 
 	PaletteColor(sg_color_t c){
@@ -83,6 +140,7 @@ public:
 
 	PaletteColor operator * (float a) const {
 		PaletteColor result;
+		result.m_color.alpha = m_color.alpha;
 		result.m_color.red = multiply_component(m_color.red, a);
 		result.m_color.green = multiply_component(m_color.green, a);
 		result.m_color.blue = multiply_component(m_color.blue, a);
@@ -152,6 +210,7 @@ public:
 	}
 
 	static enum color_count get_color_count(u8 bits_per_pixel);
+	u8 get_bits_per_pixel() const;
 
 	Palette& set_color_count(enum color_count color_count);
 
@@ -165,13 +224,15 @@ public:
 		return m_pixel_format;
 	}
 
-	Palette & fill_gradient(
+	Palette & create_gradient(
 			const PaletteColor & color,
 			IsAscending is_ascending = IsAscending(true)
 			);
 
 	var::Vector<sg_color_t> & colors(){ return m_colors; }
 	const var::Vector<sg_color_t> & colors() const { return m_colors; }
+
+	PaletteColor palette_color(size_t offset) const;
 
 private:
 	enum pixel_format m_pixel_format;
