@@ -3,6 +3,7 @@
 #include "ux/Rectangle.hpp"
 #include "ux/Text.hpp"
 #include "ux/Scene.hpp"
+#include "sys/Printer.hpp"
 
 using namespace sgfx;
 using namespace ux;
@@ -24,12 +25,12 @@ void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
 				);
 
 	//draw the Border
-	attributes.bitmap() << Pen().set_color(color_border);
+	attributes.bitmap() << Pen().set_color(theme().border_color());
 	attributes.bitmap().draw_rectangle(
 				attributes.region()
 				);
 
-	attributes.bitmap() << Pen().set_color(color_default);
+	attributes.bitmap() << Pen().set_color(theme().color());
 	attributes.bitmap().draw_rectangle(
 				attributes.point() + Point(border_size, border_size),
 				attributes.area() - Area(border_size*2, border_size*2)
@@ -39,7 +40,7 @@ void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
 	//if the icon is available, draw it
 	if( m_icon_name.is_empty() == false ){
 		Icon().set_icon(m_icon_name)
-				.set_color(color_text)
+				.set_color(theme().text_color())
 				.set_align_center()
 				.set_align_middle()
 				.draw_to_scale(
@@ -48,13 +49,19 @@ void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
 	} else if( m_label.is_empty() == false ){
 		//if the label is available, draw it
 		Text().set_string(m_label)
-				.set_color(color_text)
+				.set_font_name(theme().primary_font_name())
+				.set_color(theme().text_color())
 				.set_align_center()
 				.set_align_middle()
 				.draw_to_scale(
 					attributes
 					);
 	}
+
+	sys::Printer p;
+
+	p << attributes.bitmap();
+
 
 	apply_antialias_filter(attributes);
 

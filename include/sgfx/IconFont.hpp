@@ -46,7 +46,7 @@ public:
 		return *this;
 	}
 
-	IconFontInfo & create_font();
+	IconFontInfo & create_icon_font();
 
 
 	const fs::File & icon_font_file() const {

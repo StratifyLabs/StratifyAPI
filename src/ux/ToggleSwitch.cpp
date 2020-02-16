@@ -21,13 +21,13 @@ void ToggleSwitch::draw_to_scale(const DrawingScaledAttributes & attributes){
 				);
 
 	//border
-	attributes.bitmap() << Pen().set_color(color_border);
+	attributes.bitmap() << Pen().set_color(theme().border_color());
 	attributes.bitmap().draw_rectangle(
 				attributes.region()
 				);
 
 	//default
-	attributes.bitmap() << Pen().set_color(color_default);
+	attributes.bitmap() << Pen().set_color(theme().color());
 	attributes.bitmap().draw_rectangle(
 				attributes.point() + Point(border_offset, border_offset),
 				attributes.area() - Area(border_offset*2, border_offset*2)
@@ -35,9 +35,9 @@ void ToggleSwitch::draw_to_scale(const DrawingScaledAttributes & attributes){
 
 	//active background
 	if( state() == true ){
-		attributes.bitmap() << Pen().set_color(color_text);
+		attributes.bitmap() << Pen().set_color(theme().text_color());
 	} else {
-		attributes.bitmap() << Pen().set_color(color_border);
+		attributes.bitmap() << Pen().set_color(theme().border_color());
 	}
 	attributes.bitmap().draw_rectangle(
 				attributes.point() + Point(active_area_offset, active_area_offset),
@@ -51,7 +51,7 @@ void ToggleSwitch::draw_to_scale(const DrawingScaledAttributes & attributes){
 	}
 
 	//default
-	attributes.bitmap() << Pen().set_color(color_default);
+	attributes.bitmap() << Pen().set_color(theme().color());
 	attributes.bitmap().draw_rectangle(
 				attributes.point() + Point(toggle_area_offset + toggle_point_location, toggle_area_offset),
 				toggle_area

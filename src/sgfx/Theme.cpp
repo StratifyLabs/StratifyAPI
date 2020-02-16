@@ -62,33 +62,6 @@ size_t Theme::calculate_color_offset(enum style style, enum state state) const {
 	return (style * m_color_count * (last_state + 1) + (state * m_color_count))*sizeof(sg_color_t) + sizeof(header_t);
 }
 
-Palette Theme::palette(
-		enum style style,
-		enum state state
-		){
-	Palette result;
-
-	const enum Palette::color_count palette_color_count =
-			Palette::get_color_count(m_header.bits_per_pixel);
-
-	result
-			.set_pixel_format(
-				static_cast<enum PaletteFlags::pixel_format>(m_header.pixel_format)
-				)
-			.set_color_count(palette_color_count);
-
-	result.colors() = read_palette(
-				style,
-				state
-				);
-
-	if( result.colors().count() != palette_color_count){
-		return Palette();
-	}
-
-	return result;
-}
-
 
 Theme& Theme::set_bits_per_pixel(u8 bits_per_pixel){
 	m_header.bits_per_pixel = bits_per_pixel;
@@ -96,33 +69,41 @@ Theme& Theme::set_bits_per_pixel(u8 bits_per_pixel){
 	return *this;
 }
 
-int Theme::write_palette(
-		enum style style,
+int Theme::write_palette(enum style style,
 		enum state state,
-		const var::Vector<sg_color_t> colors
+		const Palette& palette
 		){
-	if( colors.count() != m_color_count ){
+	if( palette.colors().count() != m_color_count ){
 		return -1;
 	}
 
 	return m_color_file.write(
 				fs::File::Location(calculate_color_offset(style,state)),
-				colors
+				palette.colors()
 				);
 }
 
-var::Vector<sg_color_t> Theme::read_palette(
+Palette Theme::read_palette(
 		enum style style,
 		enum state state
 		) const {
-	var::Vector<sg_color_t> result(m_color_count);
+
+	Palette result;
+
+	result
+			.set_pixel_format(
+				static_cast<enum Palette::pixel_format>(m_header.pixel_format)
+				)
+			.set_color_count(
+				static_cast<enum Palette::color_count>(m_color_count)
+				);
 
 	int offset = calculate_color_offset(style,state);
 	if( m_color_file.read(
 				fs::File::Location(offset),
-				result
+				result.colors()
 				) < 0 ){
-		return var::Vector<sg_color_t>();
+		return Palette();
 	}
 
 	return result;
@@ -170,17 +151,13 @@ int Theme::create(
 	return 0;
 }
 
-int Theme::set_display_palette(const Display & display,
-															 enum style style,
-															 enum state state
-															 ) const {
+int Theme::set_display_palette(
+		const Display & display,
+		enum style style,
+		enum state state
+		) const {
 
-	var::Vector<sg_color_t> colors = read_palette(style, state);
-	display_palette_t display_palette;
-
-	display_palette.pixel_format = m_header.pixel_format;
-	display_palette.colors = static_cast<void*>(colors.data());
-	display_palette.count = colors.count();
-	return display.set_palette(display_palette);
+	Palette palette = read_palette(style, state);
+	return display.set_palette(palette);
 }
 

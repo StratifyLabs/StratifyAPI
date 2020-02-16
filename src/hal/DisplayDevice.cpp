@@ -76,27 +76,52 @@ DisplayInfo DisplayDevice::get_info() const {
 	return DisplayInfo(info);
 }
 
-DisplayPalette DisplayDevice::get_palette() const {
-	display_palette_t palette;
+sgfx::Palette DisplayDevice::get_palette() const {
+	display_palette_t display_palette;
 	if( ioctl(
 			 IoRequest(I_DISPLAY_GETPALETTE),
-			 IoArgument(&palette)
+			 IoArgument(&display_palette)
 			 ) < 0 ){
-		return DisplayPalette();
+		return sgfx::Palette();
 	}
-	return DisplayPalette(palette);
+
+	//copy colors from display_palette_t
+	sgfx::Palette result;
+	result
+			.set_pixel_format(
+				static_cast<enum sgfx::Palette::pixel_format>(
+					display_palette.pixel_format
+					)
+				)
+			.set_color_count(
+				static_cast<enum sgfx::Palette::color_count>(
+					display_palette.count
+					)
+				);
+
+	const sg_color_t * display_palette_colors =
+			static_cast<const sg_color_t *>(display_palette.colors);
+	for(size_t i=0; i < result.colors().count(); i++){
+		result.colors().at(i) = display_palette_colors[i];
+	}
+
+	return result;
 }
 
 int DisplayDevice::set_palette(
-		const display_palette_t & display_palette
+		const sgfx::Palette & palette
 		) const {
+
+	display_palette_t display_palette;
+	display_palette.pixel_format = palette.pixel_format();
+	display_palette.count = palette.colors().count();
+	display_palette.colors = (void*)palette.colors().to_const_void();
+
 	return ioctl(
 				Device::IoRequest(I_DISPLAY_SETPALETTE),
 				Device::IoConstArgument(&display_palette)
 				);
 }
-
-
 
 int DisplayDevice::set_window(const sgfx::Region & region) const {
 	display_attr_t attr;

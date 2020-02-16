@@ -50,6 +50,15 @@ public:
 		return m_header.bits_per_pixel;
 	}
 
+	Theme& set_primary_font_name(const var::String & name){
+		m_primary_font_name = name;
+		return *this;
+	}
+
+	const var::String & primary_font_name() const {
+		return m_primary_font_name;
+	}
+
 	u16 color_count() const {
 		return m_color_count;
 	}
@@ -72,10 +81,10 @@ public:
 	int write_palette(
 			enum style style,
 			enum state state,
-			const var::Vector<sg_color_t> colors
+			const Palette & palette
 			);
 
-	var::Vector<sg_color_t> read_palette(
+	Palette read_palette(
 			enum style style, enum state state
 			) const;
 
@@ -85,10 +94,6 @@ public:
 			enum state state
 			) const;
 
-	Palette palette(
-			enum style style,
-			enum state state
-			);
 
 	static var::String get_state_name(enum state value);
 	static var::String get_style_name(enum style value);
@@ -101,7 +106,6 @@ public:
 	AntiAliasFilter & antialias_filter(){
 		return m_antialias_filter;
 	}
-
 
 	const AntiAliasFilter & antialias_filter() const {
 		return m_antialias_filter;
@@ -118,6 +122,7 @@ private:
 
 	fs::File & m_color_file;
 	AntiAliasFilter m_antialias_filter;
+	var::String m_primary_font_name;
 
 	header_t m_header;
 	u16 m_color_count = 0;

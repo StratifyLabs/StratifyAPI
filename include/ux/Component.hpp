@@ -113,13 +113,6 @@ public:
 	SceneCollection * scene_collection();
 	const SceneCollection * scene_collection() const;
 
-	enum colors {
-		color_background = 0,
-		color_border = 5,
-		color_default = 10,
-		color_text = 15
-	};
-
 	void erase();
 
 	void set_refresh_drawing_pending(){

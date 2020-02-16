@@ -17,12 +17,12 @@ void Slider::draw(const DrawingAttributes & attributes){
 
 	//draw the background
 	Rectangle()
-			.set_color(color_background)
+			.set_color(theme().background_color())
 			.draw(attributes, DrawingPoint(0,0), DrawingArea(1000,1000));
 
 	//draw the slider bar
 	Rectangle()
-			.set_color(color_border)
+			.set_color(theme().border_color())
 			.draw(attributes, DrawingPoint(
 							50,
 							500 - slider_area.height()/2
@@ -36,7 +36,7 @@ void Slider::draw(const DrawingAttributes & attributes){
 
 	//draw the position indicator
 	Rectangle()
-			.set_color(color_default)
+			.set_color(theme().color())
 			.draw(attributes,
 						DrawingPoint(indicator_position,0),
 						indicator_area

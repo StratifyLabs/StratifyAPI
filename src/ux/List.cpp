@@ -27,6 +27,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
 				effective_height
 				);
 
+#if 0
 	//save the region the item is drawn in
 	m_region = attributes.region();
 
@@ -70,6 +71,8 @@ void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
 					Area(attributes.width() - text_offset - padding*2, effective_height)
 					);
 	}
+
+#endif
 }
 
 void List::draw_to_scale(const DrawingScaledAttributes & attributes){

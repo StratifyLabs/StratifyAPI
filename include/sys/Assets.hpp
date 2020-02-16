@@ -5,7 +5,7 @@
 #define SAPI_SYS_ASSETS_HPP_
 
 #include "../api/WorkObject.hpp"
-#include "../sgfx/FileFont.hpp"
+#include "../sgfx/Font.hpp"
 #include "../sgfx/IconFont.hpp"
 #include "../sgfx/Vector.hpp"
 #include "../fmt/Svic.hpp"
@@ -78,11 +78,22 @@ public:
 
 	static void find_fonts_in_directory(const var::String & path);
 	static void find_icons_in_directory(const var::String & path);
+	static void find_vector_paths_in_directory(const var::String & path);
+
+	static const var::Vector<fmt::Svic> & vector_path_list(){
+		initialize();
+		return m_vector_path_list;
+	}
+
+	static sgfx::VectorPath find_vector_path(
+			const var::String & name
+			);
 
 private:
 	static bool m_is_initialized;
 	static var::Vector<sgfx::FontInfo> m_font_info_list;
 	static var::Vector<sgfx::IconFontInfo> m_icon_font_info_list;
+	static var::Vector<fmt::Svic> m_vector_path_list;
 
 };
 
