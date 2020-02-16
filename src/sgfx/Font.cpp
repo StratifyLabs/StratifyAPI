@@ -25,7 +25,12 @@ FontInfo::~FontInfo(){
 }
 
 FontInfo & FontInfo::create_font(){
-	m_file.open(path(), fs::OpenFlags::read_only());
+	if( m_file.open(path(), fs::OpenFlags::read_only()) < 0 ){
+		return *this;
+	}
+	if( m_font != nullptr ){
+		delete m_font;
+	}
 	m_font = new Font(m_file);
 	return *this;
 }

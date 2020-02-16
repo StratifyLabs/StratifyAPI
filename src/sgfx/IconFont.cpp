@@ -35,7 +35,12 @@ IconFontInfo::IconFontInfo(const var::String & path){
 }
 
 IconFontInfo & IconFontInfo::create_font(){
-	m_file.open(path(), fs::OpenFlags::read_only());
+	if( m_file.open(path(), fs::OpenFlags::read_only()) < 0 ){
+		return *this;
+	}
+	if( m_icon_font != nullptr ){
+		delete m_icon_font;
+	}
 	m_icon_font = new IconFont(m_file);
 	return *this;
 }
