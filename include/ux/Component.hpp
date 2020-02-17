@@ -15,8 +15,6 @@ class EventLoop;
 
 class Component : public Drawing {
 public:
-
-	using EventHandlerFunction = std::function<void(Component * object, const Event & event)>;
 	virtual ~Component();
 
 	enum sgfx::Theme::style theme_style() const {
@@ -51,11 +49,7 @@ public:
 
 	//update the location of the component (allow animations)
 
-	virtual void handle_event(const ux::Event & event){
-		if( m_event_handler ){
-			m_event_handler(this, event);
-		}
-	}
+	virtual void handle_event(const ux::Event & event){}
 
 	const var::String & name() const {
 		return m_name;
@@ -164,10 +158,6 @@ protected:
 		m_event_loop = event_loop;
 	}
 
-	void set_event_handler(EventHandlerFunction event_handler){
-		m_event_handler = event_handler;
-	}
-
 	bool is_ready_to_draw() const {
 		return is_enabled() && is_visible();
 	}
@@ -189,7 +179,6 @@ private:
 
 	//needs a palette to use while drawing
 	EventLoop * m_event_loop = nullptr;
-	EventHandlerFunction m_event_handler;
 
 	void set_name(const var::String & name){
 		m_name = name;
@@ -203,11 +192,6 @@ public:
 
 	T& set_enabled(bool value = true){
 		Component::set_enabled_internal(value);
-		return static_cast<T&>(*this);
-	}
-
-	T& set_event_handler(EventHandlerFunction value){
-		Component::set_event_handler(value);
 		return static_cast<T&>(*this);
 	}
 

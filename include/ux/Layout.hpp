@@ -44,6 +44,7 @@ private:
 
 class Layout : public ComponentAccess<Layout>, public DrawingAlignment<Layout> {
 public:
+	using EventHandlerFunction = std::function<void(Component * object, const Event & event)>;
 
 	enum flow {
 		flow_vertical,
@@ -74,6 +75,29 @@ public:
 		return *this;
 	}
 
+	Layout& set_event_handler(EventHandlerFunction event_handler){
+		m_event_handler = event_handler;
+		return *this;
+	}
+
+	Component * find_component(const var::String & name){
+		for(auto cp: m_component_list){
+			if( cp.component()->name() == name ){
+				return cp.component();
+			}
+		}
+		return nullptr;
+	}
+
+	Layout * find_layout(const var::String & name){
+		for(auto cp: m_component_list){
+			if( cp.component()->name() == name ){
+				return static_cast<Layout*>(cp.component());
+			}
+		}
+		return nullptr;
+	}
+
 	void scroll(DrawingPoint value);
 
 	virtual void draw(const DrawingAttributes & attributes);
@@ -88,6 +112,7 @@ private:
 	sgfx::Point m_touch_last;
 	TouchGesture m_touch_gesture;
 	var::Vector<LayoutComponent> m_component_list;
+	EventHandlerFunction m_event_handler;
 
 	void shift_origin(DrawingPoint shift);
 	drawing_int_t handle_vertical_scroll(sg_int_t scroll);

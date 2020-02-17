@@ -74,7 +74,7 @@ void Button::handle_event(const ux::Event & event){
 
 			if( contains(touch_event.point()) ){
 				toggle();
-				handle_event(
+				event_loop()->handle_event(
 							ButtonEvent(name(), ButtonEvent::id_released)
 							);
 			}
@@ -88,7 +88,7 @@ void Button::handle_event(const ux::Event & event){
 		if( (touch_event.id() == ux::TouchEvent::id_pressed) &&
 				contains(touch_event.point()) ){
 			toggle();
-			handle_event(
+			event_loop()->handle_event(
 						ButtonEvent(name(), ButtonEvent::id_pressed)
 						);
 

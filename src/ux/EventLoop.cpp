@@ -19,7 +19,6 @@ int EventLoop::loop(
 	m_display = &display;
 
 	m_layout->set_visible_internal();
-	m_layout->erase();
 	m_update_timer.restart();
 	while(1){
 		process_events();

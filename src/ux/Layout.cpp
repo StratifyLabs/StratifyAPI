@@ -37,6 +37,9 @@ void Layout::examine_visibility(){
 					);
 
 		shift_origin(DrawingPoint(0,0));
+
+		erase();
+
 	} else {
 		//is layout is enabled and visible -- components are not visible
 		for(auto component_pointer: m_component_list){
@@ -209,8 +212,10 @@ void Layout::handle_event(const ux::Event & event){
 		}
 	}
 
+	if( m_event_handler ){
+		m_event_handler(this, event);
+	}
 	Component::handle_event(event);
-
 }
 
 drawing_int_t Layout::handle_vertical_scroll(sg_int_t scroll){

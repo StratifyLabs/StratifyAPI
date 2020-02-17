@@ -65,7 +65,7 @@ void Slider::handle_event(const ux::Event & event){
 				m_value = (point.x() - 50) * m_maximum / 900;
 			}
 
-			handle_event(
+			event_loop()->handle_event(
 						SliderEvent(name(), m_value, m_maximum)
 						);
 
