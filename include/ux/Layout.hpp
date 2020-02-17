@@ -108,6 +108,10 @@ public:
 		return nullptr;
 	}
 
+	bool transition(
+			const var::String & next_layout_name
+			);
+
 	void scroll(DrawingPoint value);
 
 	virtual void draw(const DrawingAttributes & attributes);

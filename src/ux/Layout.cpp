@@ -20,6 +20,31 @@ Layout::~Layout(){
 	}
 }
 
+bool Layout::transition(
+		const var::String & next_layout_name
+		){
+
+	Component * next = nullptr;
+	for(auto & cp: m_component_list){
+		if( (cp.component()->signature() == whatis_signature()) &&
+				(cp.component()->name() == next_layout_name) ){
+			next = cp.component();
+			break;
+		}
+	}
+
+	if( next ){
+		for(auto & cp: m_component_list){
+			if( cp.component()->signature() == whatis_signature() ){
+				cp.component()->set_enabled_internal(false);
+			}
+		}
+		next->set_enabled_internal(true);
+		return true;
+	}
+	return false;
+}
+
 void Layout::examine_visibility(){
 	if( is_ready_to_draw() ){
 		if( display() == nullptr ){
