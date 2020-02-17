@@ -19,29 +19,46 @@ public:
 	using EventHandlerFunction = std::function<void(Component * object, const Event & event)>;
 	virtual ~Component();
 
-	Component & set_event_handler(EventHandlerFunction event_handler){
+	Component& set_event_handler(EventHandlerFunction event_handler){
 		m_event_handler = event_handler;
 		return *this;
 	}
 
-	Component & set_drawing_area(const DrawingArea & drawing_area){
+	Component& set_drawing_area(const DrawingArea & drawing_area){
 		m_reference_drawing_attributes.set_area(drawing_area);
 		return *this;
 	}
 
-	Component & set_drawing_point(const DrawingPoint & drawing_point){
+	Component& set_drawing_point(const DrawingPoint & drawing_point){
 		m_reference_drawing_attributes.set_point(drawing_point);
 		return *this;
 	}
 
-	Component & set_theme_style(enum sgfx::Theme::style value){
+	Component& set_theme_style(enum sgfx::Theme::style value){
 		m_theme_style = value;
 		return *this;
 	}
 
-	Component & set_theme_state(enum sgfx::Theme::state value){
+	Component& set_theme_state(enum sgfx::Theme::state value){
 		m_theme_state = value;
 		return *this;
+	}
+
+	Component& set_event_loop(EventLoop * event_loop){
+		m_event_loop = event_loop;
+		return *this;
+	}
+
+	virtual Component& set_enabled(bool value = true){
+		m_is_enabled = value;
+		if( value == false ){
+			set_visible(false);
+		}
+		return *this;
+	}
+
+	bool is_enabled() const {
+		return m_is_enabled;
 	}
 
 
@@ -57,7 +74,7 @@ public:
 		return m_is_antialias;
 	}
 
-	Component & set_antialias(bool value = true){
+	Component& set_antialias(bool value = true){
 		m_is_antialias = value;
 		return *this;
 	}
@@ -153,9 +170,6 @@ protected:
 	}
 
 protected:
-	void set_event_loop(EventLoop * event_loop){
-		m_event_loop = event_loop;
-	}
 
 private:
 

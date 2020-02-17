@@ -157,8 +157,9 @@ int Theme::set_display_palette(
 		enum state state
 		) const {
 
-	Palette palette = read_palette(style, state);
-	return display.set_palette(palette);
+	return display.set_palette(
+				read_palette(style, state)
+				);
 }
 
 

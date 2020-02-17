@@ -74,6 +74,17 @@ public:
 		return *this;
 	}
 
+	Component& set_enabled(bool value = true){
+		m_is_enabled = value;
+		if( value == false ){
+			set_visible(false);
+		}
+		for(auto component_pointer: m_component_list){
+			component_pointer.component()->set_enabled(value);
+		}
+		return *this;
+	}
+
 	u16 columns() const {
 		return m_columns;
 	}

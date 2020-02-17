@@ -22,9 +22,7 @@ Layout::~Layout(){
 
 void Layout::set_visible(bool value){
 
-	printf("set layout %s visible %d\n", name().cstring(), value);
-	if( value	== true ){
-		printf("set layout visible %p\n", display());
+	if( value	== true && is_enabled() ){
 		if( (m_is_visible == false) && display() ){
 			m_reference_drawing_attributes.set_bitmap(*display());
 			m_is_visible = true;
@@ -41,7 +39,7 @@ void Layout::set_visible(bool value){
 
 		shift_origin(DrawingPoint(0,0));
 
-	} else {
+	} else if( value == false ){
 		if( m_is_visible ){
 			for(auto component_pointer: m_component_list){
 				component_pointer.component()->set_visible(false);
@@ -56,7 +54,6 @@ Layout& Layout::add_component(
 		Component& component
 		){
 
-	printf("set event loop to %p for %s\n", event_loop(), name.cstring());
 	component.set_event_loop( event_loop() );
 	component.set_name(name);
 	m_component_list.push_back(
