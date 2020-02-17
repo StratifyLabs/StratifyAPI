@@ -42,9 +42,17 @@ private:
 	DrawingArea m_drawing_area;
 };
 
-class Layout : public ComponentAccess<Layout>, public DrawingAlignment<Layout> {
+#define LAYOUT_COMPONENT_SIGNATURE COMPONENT_SIGNATURE('l','y','o','t')
+
+class Layout : public ComponentAccess<
+		Layout, LAYOUT_COMPONENT_SIGNATURE
+		>, public DrawingAlignment<Layout> {
 public:
 	using EventHandlerFunction = std::function<void(Component * object, const Event & event)>;
+
+	static u32 whatis_signature(){
+		return LAYOUT_COMPONENT_SIGNATURE;
+	}
 
 	enum flow {
 		flow_vertical,
@@ -92,7 +100,9 @@ public:
 	Layout * find_layout(const var::String & name){
 		for(auto cp: m_component_list){
 			if( cp.component()->name() == name ){
-				return static_cast<Layout*>(cp.component());
+				if( cp.component()->signature() == whatis_signature()){
+					return static_cast<Layout*>(cp.component());
+				}
 			}
 		}
 		return nullptr;

@@ -41,8 +41,15 @@ private:
 
 };
 
-class Button : public ComponentAccess<Button> {
+class Button : public ComponentAccess<
+		Button,
+		COMPONENT_SIGNATURE('b','u','t','n')
+		> {
 public:
+
+	static u32 whatis_signature(){
+		return COMPONENT_SIGNATURE('b','u','t','n');
+	}
 
    bool state() const {
       return m_state;

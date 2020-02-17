@@ -9,13 +9,22 @@
 #include "Drawing.hpp"
 #include "Event.hpp"
 
+#define COMPONENT_SIGNATURE(a,b,c,d) ((a << 24) | (b << 16) | (c << 8) | (d))
+
 namespace ux {
 
 class EventLoop;
 
 class Component : public Drawing {
 public:
+
+	Component(u32 signature = 0) : m_signature(signature){
+	}
 	virtual ~Component();
+
+	static u32 whatis_signature(){
+		return 0;
+	}
 
 	enum sgfx::Theme::style theme_style() const {
 		return m_theme_style;
@@ -162,11 +171,15 @@ protected:
 		return is_enabled() && is_visible();
 	}
 
+	u32 signature() const {
+		return m_signature;
+	}
+
 
 private:
 
+	const u32 m_signature;
 	var::String m_name;
-	u32 m_type_id;
 	//needs to know where on the display it is drawn
 	DrawingAttributes m_reference_drawing_attributes;
 	DrawingAttributes m_local_drawing_attributes;
@@ -187,8 +200,10 @@ private:
 
 };
 
-template<class T> class ComponentAccess : public Component {
+template<class T, u32 signature_value> class ComponentAccess : public Component {
 public:
+
+	ComponentAccess<T, signature_value>() : Component(signature_value){}
 
 	T& set_enabled(bool value = true){
 		Component::set_enabled_internal(value);
@@ -214,6 +229,9 @@ public:
 		Component::set_theme_state(value);
 		return static_cast<T&>(*this);
 	}
+
+protected:
+
 };
 
 

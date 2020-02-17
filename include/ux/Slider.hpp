@@ -40,7 +40,10 @@ class SliderEvent : public EventObject<EVENT_TYPE('_','s','l','d')> {
 
 };
 
-class Slider : public ComponentAccess<Slider> {
+class Slider : public ComponentAccess<
+		Slider,
+		COMPONENT_SIGNATURE('s','l','d','r')
+> {
 public:
    Slider();
 
