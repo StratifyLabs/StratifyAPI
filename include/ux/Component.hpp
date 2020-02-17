@@ -19,49 +19,6 @@ public:
 	using EventHandlerFunction = std::function<void(Component * object, const Event & event)>;
 	virtual ~Component();
 
-	Component& set_event_handler(EventHandlerFunction event_handler){
-		m_event_handler = event_handler;
-		return *this;
-	}
-
-	Component& set_drawing_area(const DrawingArea & drawing_area){
-		m_reference_drawing_attributes.set_area(drawing_area);
-		return *this;
-	}
-
-	Component& set_drawing_point(const DrawingPoint & drawing_point){
-		m_reference_drawing_attributes.set_point(drawing_point);
-		return *this;
-	}
-
-	Component& set_theme_style(enum sgfx::Theme::style value){
-		m_theme_style = value;
-		return *this;
-	}
-
-	Component& set_theme_state(enum sgfx::Theme::state value){
-		m_theme_state = value;
-		return *this;
-	}
-
-	Component& set_event_loop(EventLoop * event_loop){
-		m_event_loop = event_loop;
-		return *this;
-	}
-
-	virtual Component& set_enabled(bool value = true){
-		m_is_enabled = value;
-		if( value == false ){
-			set_visible(false);
-		}
-		return *this;
-	}
-
-	bool is_enabled() const {
-		return m_is_enabled;
-	}
-
-
 	enum sgfx::Theme::style theme_style() const {
 		return m_theme_style;
 	}
@@ -79,10 +36,12 @@ public:
 		return *this;
 	}
 
-	virtual void set_visible(bool value = true);
-
 	bool is_visible() const {
 		return m_is_visible;
+	}
+
+	bool is_enabled() const {
+		return m_is_enabled;
 	}
 
 
@@ -136,10 +95,28 @@ public:
 		return m_event_loop;
 	}
 
+	void set_drawing_area(const DrawingArea & drawing_area){
+		m_reference_drawing_attributes.set_area(drawing_area);
+	}
+
+	void set_drawing_point(const DrawingPoint & drawing_point){
+		m_reference_drawing_attributes.set_point(drawing_point);
+	}
+
+	void set_theme_style(enum sgfx::Theme::style value){
+		m_theme_style = value;
+	}
+
+	void set_theme_state(enum sgfx::Theme::state value){
+		m_theme_state = value;
+	}
+
 protected:
 
 	bool m_is_visible = false;
-	bool m_is_enabled = false;
+	bool m_is_enabled = true;
+
+	virtual void examine_visibility();
 
 	void set_refresh_region(const sgfx::Region & region){
 		if( region.width() * region.height() == 0 ){
@@ -169,7 +146,32 @@ protected:
 		return m_reference_drawing_attributes;
 	}
 
-protected:
+	virtual void set_enabled_internal(bool value = true){
+		if( m_is_enabled != value ){
+			m_is_enabled = value;
+			examine_visibility();
+		}
+	}
+
+	virtual void set_visible_internal(bool value = true){
+		if( m_is_visible != value ){
+			m_is_visible = value;
+			examine_visibility();
+		}
+	}
+
+	void set_event_loop(EventLoop * event_loop){
+		m_event_loop = event_loop;
+	}
+
+	void set_event_handler(EventHandlerFunction event_handler){
+		m_event_handler = event_handler;
+	}
+
+	bool is_ready_to_draw() const {
+		return is_enabled() && is_visible();
+	}
+
 
 private:
 
@@ -186,7 +188,6 @@ private:
 	sgfx::Region m_refresh_region;
 
 	//needs a palette to use while drawing
-	sgfx::Palette * m_palette = nullptr;
 	EventLoop * m_event_loop = nullptr;
 	EventHandlerFunction m_event_handler;
 
@@ -195,6 +196,40 @@ private:
 	}
 
 
+};
+
+template<class T> class ComponentAccess : public Component {
+public:
+
+	T& set_enabled(bool value = true){
+		Component::set_enabled_internal(value);
+		return static_cast<T&>(*this);
+	}
+
+	T& set_event_handler(EventHandlerFunction value){
+		Component::set_event_handler(value);
+		return static_cast<T&>(*this);
+	}
+
+	T& set_drawing_area(const DrawingArea & value){
+		Component::set_drawing_area(value);
+		return static_cast<T&>(*this);
+	}
+
+	T& set_drawing_point(const DrawingPoint & value){
+		Component::set_drawing_point(value);
+		return static_cast<T&>(*this);
+	}
+
+	T& set_theme_style(enum sgfx::Theme::style value){
+		Component::set_theme_style(value);
+		return static_cast<T&>(*this);
+	}
+
+	T& set_theme_state(enum sgfx::Theme::state value){
+		Component::set_theme_state(value);
+		return static_cast<T&>(*this);
+	}
 };
 
 

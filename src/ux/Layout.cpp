@@ -6,8 +6,8 @@
 using namespace sgfx;
 using namespace ux;
 
-Layout::Layout(){
-	m_is_initialized = false;
+Layout::Layout(EventLoop* event_loop){
+	set_event_loop(event_loop);
 	m_flow = flow_free;
 	m_origin = DrawingPoint(0,0);
 	set_align_left();
@@ -20,31 +20,27 @@ Layout::~Layout(){
 	}
 }
 
-void Layout::set_visible(bool value){
-
-	if( value	== true && is_enabled() ){
-		if( (m_is_visible == false) && display() ){
-			m_reference_drawing_attributes.set_bitmap(*display());
-			m_is_visible = true;
+void Layout::examine_visibility(){
+	if( is_ready_to_draw() ){
+		if( display() == nullptr ){
+			m_is_visible = false;
+			return;
 		}
 
-		set_refresh_region(reference_drawing_attributes().calculate_region_on_bitmap());
+		m_reference_drawing_attributes.set_bitmap(*display());
+		set_refresh_region(
+					reference_drawing_attributes().calculate_region_on_bitmap()
+					);
+
 		m_touch_gesture.set_region(
 					reference_drawing_attributes().calculate_region_on_bitmap()
 					);
 
-		for(auto component_pointer: m_component_list){
-			component_pointer.component()->set_event_loop( event_loop() );
-		}
-
 		shift_origin(DrawingPoint(0,0));
-
-	} else if( value == false ){
-		if( m_is_visible ){
-			for(auto component_pointer: m_component_list){
-				component_pointer.component()->set_visible(false);
-			}
-			m_is_visible = false;
+	} else {
+		//is layout is enabled and visible -- components are not visible
+		for(auto component_pointer: m_component_list){
+			component_pointer.component()->set_visible_internal(false);
 		}
 	}
 }
@@ -87,10 +83,10 @@ void Layout::shift_origin(DrawingPoint shift){
 
 		if( (overlap.width() * overlap.height()) > 0 ){
 			component_pointer.component()->set_refresh_drawing_pending();
-			component_pointer.component()->set_visible(true);
+			component_pointer.component()->set_visible_internal(true);
 		} else {
 			printf("%s is not visible\n", component_pointer.component()->name().cstring());
-			component_pointer.component()->set_visible(false);
+			component_pointer.component()->set_visible_internal(false);
 		}
 
 		//this calculates if only part of the element should be refreshed (the mask)
@@ -147,7 +143,9 @@ DrawingPoint Layout::calculate_next_point(
 }
 
 void Layout::scroll(DrawingPoint value){
-	shift_origin(value);
+	if( is_ready_to_draw() ){
+		shift_origin(value);
+	}
 }
 
 
@@ -191,11 +189,14 @@ void Layout::handle_event(const ux::Event & event){
 
 	for(auto component_pointer: m_component_list){
 		//pass events to each component
-		component_pointer.component()->handle_event(event);
+		if( component_pointer.component()->is_enabled() ){
+			component_pointer.component()->handle_event(event);
+		}
 	}
 
 	for(auto component_pointer: m_component_list){
-		if( component_pointer.component()->is_refresh_drawing_pending() ){
+		if( component_pointer.component()->is_enabled() &&
+				component_pointer.component()->is_refresh_drawing_pending() ){
 			component_pointer.component()->refresh_drawing();
 		}
 	}
@@ -203,7 +204,7 @@ void Layout::handle_event(const ux::Event & event){
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_exit ){
 			for(auto component_pointer: m_component_list){
-				component_pointer.component()->set_visible(false);
+				component_pointer.component()->set_visible_internal(false);
 			}
 		}
 	}

@@ -35,7 +35,7 @@ private:
 
 };
 
-class ToggleSwitch : public Component {
+class ToggleSwitch : public ComponentAccess<ToggleSwitch> {
 public:
 
    bool state() const {

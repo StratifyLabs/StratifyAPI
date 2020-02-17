@@ -40,7 +40,7 @@ class SliderEvent : public EventObject<EVENT_TYPE('_','s','l','d')> {
 
 };
 
-class Slider : public Component {
+class Slider : public ComponentAccess<Slider> {
 public:
    Slider();
 

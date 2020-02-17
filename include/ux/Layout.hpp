@@ -42,7 +42,7 @@ private:
 	DrawingArea m_drawing_area;
 };
 
-class Layout : public Component, public DrawingAlignment<Layout> {
+class Layout : public ComponentAccess<Layout>, public DrawingAlignment<Layout> {
 public:
 
 	enum flow {
@@ -51,7 +51,7 @@ public:
 		flow_free
 	};
 
-	Layout();
+	Layout(EventLoop * event_loop);
 	virtual ~Layout();
 
 	Layout& add_component(
@@ -74,38 +74,20 @@ public:
 		return *this;
 	}
 
-	Component& set_enabled(bool value = true){
-		m_is_enabled = value;
-		if( value == false ){
-			set_visible(false);
-		}
-		for(auto component_pointer: m_component_list){
-			component_pointer.component()->set_enabled(value);
-		}
-		return *this;
-	}
-
-	u16 columns() const {
-		return m_columns;
-	}
-
 	void scroll(DrawingPoint value);
 
 	virtual void draw(const DrawingAttributes & attributes);
 	virtual void handle_event(const ux::Event & event);
 
-	void set_visible(bool value = true);
-
 private:
+
+	friend class EventLoop;
 	enum flow m_flow;
-	u16 m_columns;
 	DrawingPoint m_origin;
 	DrawingArea m_area;
 	sgfx::Point m_touch_last;
 	TouchGesture m_touch_gesture;
-
 	var::Vector<LayoutComponent> m_component_list;
-	bool m_is_initialized = false;
 
 	void shift_origin(DrawingPoint shift);
 	drawing_int_t handle_vertical_scroll(sg_int_t scroll);
@@ -120,6 +102,8 @@ private:
 	void generate_vertical_layout_positions();
 	void generate_horizontal_layout_positions();
 	void generate_free_layout_positions();
+
+	void examine_visibility();
 };
 
 }

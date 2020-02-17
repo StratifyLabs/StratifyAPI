@@ -6,66 +6,67 @@
 using namespace sgfx;
 using namespace ux;
 
+
 Component::~Component(){
-	set_visible(false);
+	set_visible_internal(false);
 }
 
-void Component::set_visible(bool value){
-
-	if( value && is_enabled() ){
-		if( (m_is_visible == false) && display() ){
-
-			m_reference_drawing_attributes.set_bitmap(*display());
-			//local bitmap is a small section of the reference bitmap
-			if( m_local_bitmap.allocate(
-						m_reference_drawing_attributes.calculate_area_on_bitmap(),
-						sgfx::Bitmap::BitsPerPixel(
-							m_reference_drawing_attributes.bitmap().bits_per_pixel()
-							)
-						) < 0 ){
-				return;
-			}
-
-			//local attributes fill local bitmap
-			m_local_drawing_attributes
-					.set_area(DrawingArea(1000,1000))
-					.set_bitmap(m_local_bitmap);
-
-			set_refresh_region(sgfx::Region());
-			m_is_visible = true;
-
-			redraw();
-		}
-
-	} else if( value == false ){
-		if( m_is_visible ){
+void Component::examine_visibility(){
+	if( is_visible() && is_enabled() ){
+		if( display() == nullptr ){
 			m_is_visible = false;
-			m_local_bitmap.free();
+			return;
 		}
+
+		m_reference_drawing_attributes.set_bitmap(*display());
+		//local bitmap is a small section of the reference bitmap
+		m_reference_drawing_attributes.calculate_area_on_bitmap();
+		if( m_local_bitmap.allocate(
+					m_reference_drawing_attributes.calculate_area_on_bitmap(),
+					sgfx::Bitmap::BitsPerPixel(
+						m_reference_drawing_attributes.bitmap().bits_per_pixel()
+						)
+					) < 0 ){
+			return;
+		}
+
+		//local attributes fill local bitmap
+		m_local_drawing_attributes
+				.set_area(DrawingArea(1000,1000))
+				.set_bitmap(m_local_bitmap);
+
+		set_refresh_region(sgfx::Region());
+		redraw();
+	} else {
+		m_local_bitmap.free();
 	}
 }
 
 
 DrawingPoint Component::translate_point(const sgfx::Point & point){
-	if( contains(point) == false ){
-		return DrawingPoint(0,0);
+	if( is_ready_to_draw() ){
+		if( contains(point) == false ){
+			return DrawingPoint(0,0);
+		}
+
+		sgfx::Point relative_point = point -
+				m_reference_drawing_attributes.calculate_point_on_bitmap();
+
+		sgfx::Area area = m_reference_drawing_attributes.calculate_area_on_bitmap();
+
+		//now scale for width
+		return DrawingPoint(
+					1000 * relative_point.x() / area.width(),
+					1000 * relative_point.y() / area.height()
+					);
 	}
 
-	sgfx::Point relative_point = point -
-			m_reference_drawing_attributes.calculate_point_on_bitmap();
-
-	sgfx::Area area = m_reference_drawing_attributes.calculate_area_on_bitmap();
-
-	//now scale for width
-	return DrawingPoint(
-				1000 * relative_point.x() / area.width(),
-				1000 * relative_point.y() / area.height()
-				);
+	return DrawingPoint(0,0);
 }
 
 
 void Component::refresh_drawing(){
-	if( display() && theme() && is_enabled() ){
+	if( is_ready_to_draw() ){
 		//use the palette if it is available
 
 		if( theme()->set_display_palette(
@@ -112,9 +113,8 @@ hal::Display* Component::display(){
 	return event_loop()->display();
 }
 
-
 void Component::erase(){
-	if( is_enabled() ){
+	if( is_ready_to_draw() ){
 		Region window_region =
 				Region(
 					Point(m_reference_drawing_attributes.calculate_point_on_bitmap())
@@ -144,7 +144,7 @@ void Component::erase(){
 }
 
 void Component::apply_antialias_filter(const DrawingAttributes & attributes){
-	if( is_enabled() ){
+	if( is_ready_to_draw() ){
 		if( is_antialias() ){
 #if 0
 			attributes.bitmap().apply_antialias_filter(
@@ -158,7 +158,7 @@ void Component::apply_antialias_filter(const DrawingAttributes & attributes){
 }
 
 void Component::apply_antialias_filter(const DrawingScaledAttributes & attributes){
-	if( is_antialias() ){
+	if( is_ready_to_draw() ){
 #if 0
 		attributes.bitmap().apply_antialias_filter(
 					theme().antialias_filter(),

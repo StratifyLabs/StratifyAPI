@@ -8,7 +8,7 @@
 
 namespace ux {
 
-class Label : public Component, public DrawingAlignment<Label> {
+class Label : public ComponentAccess<Label>, public DrawingAlignment<Label> {
 public:
 
    Label& set_border_size(u8 value){

@@ -18,14 +18,14 @@ int EventLoop::loop(
 	m_theme = &theme;
 	m_display = &display;
 
-	m_layout->set_visible();
+	m_layout->set_visible_internal();
 	m_layout->erase();
 	m_update_timer.restart();
 	while(1){
 		process_events();
 		process_update_event();
-
 	}
+
 	return 0;
 }
 

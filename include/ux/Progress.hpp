@@ -8,7 +8,7 @@
 
 namespace ux {
 
-class Progress : public Component {
+class Progress : public ComponentAccess<Progress> {
 public:
    Progress();
 

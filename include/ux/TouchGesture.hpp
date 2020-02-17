@@ -47,8 +47,7 @@ private:
  * - Drag (press and drag either vertically or horizontally)
  *
  */
-class TouchGesture
-{
+class TouchGesture {
 public:
 
 	enum id {

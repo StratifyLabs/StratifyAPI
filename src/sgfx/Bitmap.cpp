@@ -170,6 +170,7 @@ int Bitmap::allocate(
 		const Area & dim,
 		BitsPerPixel bpp
 		){
+
 	set_internal_bits_per_pixel(bpp.argument());
 	if( Data::allocate(calculate_size(dim) ) < 0 ){
 		calculate_members(Area());

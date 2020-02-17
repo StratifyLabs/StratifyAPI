@@ -41,7 +41,7 @@ private:
 
 };
 
-class Button : public Component {
+class Button : public ComponentAccess<Button> {
 public:
 
    bool state() const {
