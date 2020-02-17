@@ -2,7 +2,7 @@
 #include "ux/Label.hpp"
 #include "ux/Rectangle.hpp"
 #include "ux/Text.hpp"
-#include "ux/Scene.hpp"
+#include "ux/EventLoop.hpp"
 
 using namespace sgfx;
 using namespace ux;
@@ -36,12 +36,12 @@ void Label::draw_to_scale(const DrawingScaledAttributes & attributes){
 				);
 
 	//draw the Border
-	attributes.bitmap() << Pen().set_color(theme().border_color());
+	attributes.bitmap() << Pen().set_color(theme()->border_color());
 	attributes.bitmap().draw_rectangle(
 				attributes.region()
 				);
 
-	attributes.bitmap() << Pen().set_color(theme().color());
+	attributes.bitmap() << Pen().set_color(theme()->color());
 	attributes.bitmap().draw_rectangle(
 				attributes.point() + Point(border_size, border_size),
 				attributes.area() - Area(border_size*2, border_size*2)
@@ -51,9 +51,9 @@ void Label::draw_to_scale(const DrawingScaledAttributes & attributes){
 	//if the icon is available, draw it
 	if( m_icon_name.is_empty() == false ){
 		Icon()
-				.set_icon_font_name(theme().primary_icon_font_name())
+				.set_icon_font_name(theme()->primary_icon_font_name())
 				.set_name(m_icon_name)
-				.set_color(theme().text_color())
+				.set_color(theme()->text_color())
 				.set_align_center()
 				.set_align_middle()
 				.draw_to_scale(
@@ -62,9 +62,9 @@ void Label::draw_to_scale(const DrawingScaledAttributes & attributes){
 	} else if( m_label.is_empty() == false ){
 		//if the label is available, draw it
 		Text().set_string(m_label)
-				.set_font_name(m_font_name)
+				.set_font_name(theme()->primary_font_name())
 				.set_alignment(alignment())
-				.set_color(theme().text_color())
+				.set_color(theme()->text_color())
 				.set_align_center()
 				.set_align_middle()
 				.draw_to_scale(

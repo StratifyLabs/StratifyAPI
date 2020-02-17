@@ -48,7 +48,7 @@ public:
 	enum flow {
 		flow_vertical,
 		flow_horizontal,
-		flow_grid
+		flow_free
 	};
 
 	Layout();
@@ -83,11 +83,7 @@ public:
 	virtual void draw(const DrawingAttributes & attributes);
 	virtual void handle_event(const ux::Event & event);
 
-	void enable(
-			hal::Display & display
-			);
-
-	void disable();
+	void set_visible(bool value = true);
 
 private:
 	enum flow m_flow;
@@ -104,12 +100,15 @@ private:
 	drawing_int_t handle_vertical_scroll(sg_int_t scroll);
 	drawing_int_t handle_horizontal_scroll(sg_int_t scroll);
 
-	DrawingPoint calculate_next_point(const DrawingArea& area);
+	DrawingPoint calculate_next_point(
+			const DrawingPoint& point,
+			const DrawingArea& area
+			);
 
 	void generate_layout_positions();
 	void generate_vertical_layout_positions();
 	void generate_horizontal_layout_positions();
-
+	void generate_free_layout_positions();
 };
 
 }

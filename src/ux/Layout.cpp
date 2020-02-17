@@ -1,6 +1,6 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "ux/Layout.hpp"
-#include "ux/Scene.hpp"
+#include "ux/EventLoop.hpp"
 #include "sys/Printer.hpp"
 
 using namespace sgfx;
@@ -8,7 +8,7 @@ using namespace ux;
 
 Layout::Layout(){
 	m_is_initialized = false;
-	m_flow = flow_vertical;
+	m_flow = flow_free;
 	m_origin = DrawingPoint(0,0);
 	set_align_left();
 	set_align_top();
@@ -20,35 +20,34 @@ Layout::~Layout(){
 	}
 }
 
-void Layout::enable(
-		hal::Display & display
-		){
+void Layout::set_visible(bool value){
 
-	if( m_is_enabled == false ){
-		m_display = &display; //layout never directly draws on display
-		m_reference_drawing_attributes.set_bitmap(display);
-		m_is_enabled = true;
-	}
-
-	set_refresh_region(reference_drawing_attributes().calculate_region_on_bitmap());
-	m_touch_gesture.set_region(
-				reference_drawing_attributes().calculate_region_on_bitmap()
-				);
-
-	for(auto component_pointer: m_component_list){
-		component_pointer.component()->set_scene( scene() );
-	}
-
-	shift_origin(DrawingPoint(0,0));
-
-}
-
-void Layout::disable(){
-	if( m_is_enabled ){
-		for(auto component_pointer: m_component_list){
-			component_pointer.component()->disable();
+	printf("set layout %s visible %d\n", name().cstring(), value);
+	if( value	== true ){
+		printf("set layout visible %p\n", display());
+		if( (m_is_visible == false) && display() ){
+			m_reference_drawing_attributes.set_bitmap(*display());
+			m_is_visible = true;
 		}
-		m_is_enabled = false;
+
+		set_refresh_region(reference_drawing_attributes().calculate_region_on_bitmap());
+		m_touch_gesture.set_region(
+					reference_drawing_attributes().calculate_region_on_bitmap()
+					);
+
+		for(auto component_pointer: m_component_list){
+			component_pointer.component()->set_event_loop( event_loop() );
+		}
+
+		shift_origin(DrawingPoint(0,0));
+
+	} else {
+		if( m_is_visible ){
+			for(auto component_pointer: m_component_list){
+				component_pointer.component()->set_visible(false);
+			}
+			m_is_visible = false;
+		}
 	}
 }
 
@@ -57,6 +56,8 @@ Layout& Layout::add_component(
 		Component& component
 		){
 
+	printf("set event loop to %p for %s\n", event_loop(), name.cstring());
+	component.set_event_loop( event_loop() );
 	component.set_name(name);
 	m_component_list.push_back(
 				LayoutComponent(&component)
@@ -89,9 +90,10 @@ void Layout::shift_origin(DrawingPoint shift){
 
 		if( (overlap.width() * overlap.height()) > 0 ){
 			component_pointer.component()->set_refresh_drawing_pending();
-			component_pointer.component()->enable( scene()->scene_collection()->display() );
+			component_pointer.component()->set_visible(true);
 		} else {
-			component_pointer.component()->disable();
+			printf("%s is not visible\n", component_pointer.component()->name().cstring());
+			component_pointer.component()->set_visible(false);
 		}
 
 		//this calculates if only part of the element should be refreshed (the mask)
@@ -102,7 +104,10 @@ void Layout::shift_origin(DrawingPoint shift){
 
 }
 
-DrawingPoint Layout::calculate_next_point(const DrawingArea & area){
+DrawingPoint Layout::calculate_next_point(
+		const DrawingPoint& point,
+		const DrawingArea & area
+		){
 	//depending on the layout, calculate the point of the next component
 	DrawingPoint result(0,0);
 	for(auto component_pointer: m_component_list){
@@ -114,7 +119,9 @@ DrawingPoint Layout::calculate_next_point(const DrawingArea & area){
 	}
 
 	switch(m_flow){
-		case flow_grid: break;
+		case flow_free:
+			result = point;
+			break;
 		case flow_vertical:
 			//left,right,center alignment
 			if( is_align_left() ){
@@ -149,7 +156,7 @@ void Layout::scroll(DrawingPoint value){
 
 void Layout::draw(const DrawingAttributes & attributes){
 	for(auto component_pointer: m_component_list){
-		if( component_pointer.component()->is_enabled() ){
+		if( component_pointer.component()->is_visible() ){
 			component_pointer.component()->draw(attributes);
 		}
 	}
@@ -199,7 +206,7 @@ void Layout::handle_event(const ux::Event & event){
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_exit ){
 			for(auto component_pointer: m_component_list){
-				component_pointer.component()->disable();
+				component_pointer.component()->set_visible(false);
 			}
 		}
 	}
@@ -241,9 +248,27 @@ drawing_int_t Layout::handle_horizontal_scroll(sg_int_t scroll){
 void Layout::generate_layout_positions(){
 	switch(m_flow){
 		default:
+		case flow_free: generate_free_layout_positions(); return;
 		case flow_vertical: generate_vertical_layout_positions(); return;
 		case flow_horizontal: generate_horizontal_layout_positions(); return;
 	}
+}
+
+void Layout::generate_free_layout_positions(){
+	drawing_int_t x_max = 0;
+	drawing_int_t y_max = 0;
+
+	for(auto & component: m_component_list){
+		if( component.drawing_point().x() + component.drawing_area().width() > x_max ){
+			x_max = component.drawing_point().x() + component.drawing_area().width();
+		}
+
+		if( component.drawing_point().y() + component.drawing_area().height() > y_max ){
+			x_max = component.drawing_point().y() + component.drawing_area().height();
+		}
+	}
+
+	m_area = DrawingArea(x_max, y_max);
 }
 
 void Layout::generate_vertical_layout_positions(){

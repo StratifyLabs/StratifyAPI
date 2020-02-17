@@ -1,60 +1,52 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "ux/Component.hpp"
 #include "sys/Printer.hpp"
-#include "ux/Scene.hpp"
+#include "ux/EventLoop.hpp"
 
 using namespace sgfx;
 using namespace ux;
 
-SceneCollection * Component::scene_collection(){
-	return scene()->scene_collection();
-}
-
-const SceneCollection * Component::scene_collection() const {
-	return scene()->scene_collection();
-}
-
 Component::~Component(){
-	disable();
+	set_visible(false);
 }
 
-void Component::enable(
-		hal::Display & display
-		){
+void Component::set_visible(bool value){
 
-	if( m_is_enabled == false ){
-		m_reference_drawing_attributes.set_bitmap(display);
-		m_display = &display;
+	if( value ){
+		printf("set c %s visible %d\n", name().cstring(), value);
+		if( (m_is_visible == false) && display() ){
+			m_reference_drawing_attributes.set_bitmap(*display());
 
-		//local bitmap is a small section of the reference bitmap
-		if( m_local_bitmap.allocate(
-					m_reference_drawing_attributes.calculate_area_on_bitmap(),
-					sgfx::Bitmap::BitsPerPixel(
-						m_reference_drawing_attributes.bitmap().bits_per_pixel()
-						)
-					) < 0 ){
-			return;
+			//local bitmap is a small section of the reference bitmap
+			if( m_local_bitmap.allocate(
+						m_reference_drawing_attributes.calculate_area_on_bitmap(),
+						sgfx::Bitmap::BitsPerPixel(
+							m_reference_drawing_attributes.bitmap().bits_per_pixel()
+							)
+						) < 0 ){
+				return;
+			}
+
+			//local attributes fill local bitmap
+			m_local_drawing_attributes
+					.set_area(DrawingArea(1000,1000))
+					.set_bitmap(m_local_bitmap);
+
+			set_refresh_region(sgfx::Region());
+			m_is_visible = true;
+
+			printf("redraw %s\n", name().cstring());
+			redraw();
 		}
 
-		//local attributes fill local bitmap
-		m_local_drawing_attributes
-				.set_area(DrawingArea(1000,1000))
-				.set_bitmap(m_local_bitmap);
-
-		set_refresh_region(sgfx::Region());
-		m_is_enabled = true;
-
-		redraw();
+	} else {
+		if( m_is_visible ){
+			m_is_visible = false;
+			m_local_bitmap.free();
+		}
 	}
 }
 
-
-void Component::disable(){
-	if( m_is_enabled ){
-		m_is_enabled = false;
-		m_local_bitmap.free();
-	}
-}
 
 DrawingPoint Component::translate_point(const sgfx::Point & point){
 	if( contains(point) == false ){
@@ -75,11 +67,11 @@ DrawingPoint Component::translate_point(const sgfx::Point & point){
 
 
 void Component::refresh_drawing(){
-	if( m_display ){
+	if( display() && theme() ){
 		//use the palette if it is available
 
-		if( scene()->scene_collection()->theme().set_display_palette(
-					*m_display,
+		if( theme()->set_display_palette(
+					*display(),
 					m_theme_style,
 					m_theme_state
 					) < 0 ){
@@ -93,7 +85,7 @@ void Component::refresh_drawing(){
 					m_refresh_region.area()
 					);
 
-		m_display->set_window(window_region);
+		display()->set_window(window_region);
 
 #if 0
 		sys::Printer p;
@@ -102,7 +94,7 @@ void Component::refresh_drawing(){
 		p.close_object();
 #endif
 
-		m_display->write(
+		display()->write(
 					m_local_bitmap.create_reference(m_refresh_region)
 					);
 
@@ -110,9 +102,18 @@ void Component::refresh_drawing(){
 	}
 }
 
-const sgfx::Theme & Component::theme() const {
-	return scene()->scene_collection()->theme();
+const sgfx::Theme * Component::theme() const {
+	return event_loop()->theme();
 }
+
+const hal::Display* Component::display() const {
+	return event_loop()->display();
+}
+
+hal::Display* Component::display(){
+	return event_loop()->display();
+}
+
 
 void Component::erase(){
 	Region window_region =
@@ -129,8 +130,8 @@ void Component::erase(){
 	p.close_object();
 #endif
 	if( (window_region.width() * window_region.height()) > 0 ){
-		m_display->set_window(window_region);
-		m_display->clear();
+		display()->set_window(window_region);
+		display()->clear();
 	}
 }
 

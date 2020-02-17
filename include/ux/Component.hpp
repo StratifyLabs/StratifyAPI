@@ -11,9 +11,7 @@
 
 namespace ux {
 
-class Scene;
-class SceneCollection;
-class CompoundComponent;
+class EventLoop;
 
 class Component : public Drawing {
 public:
@@ -46,6 +44,7 @@ public:
 		return *this;
 	}
 
+
 	enum sgfx::Theme::style theme_style() const {
 		return m_theme_style;
 	}
@@ -63,17 +62,16 @@ public:
 		return *this;
 	}
 
-	virtual void enable(
-			hal::Display & display
-			);
+	virtual void set_visible(bool value = true);
 
-	virtual void disable();
-
-	bool is_enabled() const {
-		return m_is_enabled;
+	bool is_visible() const {
+		return m_is_visible;
 	}
 
-	const sgfx::Theme & theme() const;
+
+	const sgfx::Theme * theme() const;
+	const hal::Display * display() const;
+	hal::Display * display();
 
 	//update the location of the component (allow animations)
 
@@ -107,21 +105,23 @@ public:
 
 	DrawingPoint translate_point(const sgfx::Point & point);
 
-	Scene * scene(){ return m_scene; }
-	const Scene * scene() const { return m_scene; }
-
-	SceneCollection * scene_collection();
-	const SceneCollection * scene_collection() const;
-
 	void erase();
 
 	void set_refresh_drawing_pending(){
 		m_is_refresh_drawing_pending = true;
 	}
 
+	EventLoop * event_loop(){
+		return m_event_loop;
+	}
+
+	const EventLoop * event_loop() const {
+		return m_event_loop;
+	}
 
 protected:
 
+	bool m_is_visible = false;
 	bool m_is_enabled = false;
 
 	void set_refresh_region(const sgfx::Region & region){
@@ -137,8 +137,6 @@ protected:
 	}
 
 	void refresh_drawing();
-	friend class Scene;
-	friend class CompoundComponent;
 	friend class Layout;
 	friend class LayoutComponent;
 
@@ -154,6 +152,11 @@ protected:
 		return m_reference_drawing_attributes;
 	}
 
+protected:
+	void set_event_loop(EventLoop * event_loop){
+		m_event_loop = event_loop;
+	}
+
 private:
 
 	var::String m_name;
@@ -162,7 +165,6 @@ private:
 	DrawingAttributes m_reference_drawing_attributes;
 	DrawingAttributes m_local_drawing_attributes;
 	sgfx::Bitmap m_local_bitmap;
-	hal::Display * m_display = nullptr;
 	enum sgfx::Theme::style m_theme_style = sgfx::Theme::style_brand_primary;
 	enum sgfx::Theme::state m_theme_state = sgfx::Theme::state_default;
 	bool m_is_antialias = true;
@@ -171,16 +173,14 @@ private:
 
 	//needs a palette to use while drawing
 	sgfx::Palette * m_palette = nullptr;
-	Scene * m_scene = nullptr;
+	EventLoop * m_event_loop = nullptr;
 	EventHandlerFunction m_event_handler;
 
 	void set_name(const var::String & name){
 		m_name = name;
 	}
 
-	void set_scene(Scene * scene){
-		m_scene = scene;
-	}
+
 };
 
 

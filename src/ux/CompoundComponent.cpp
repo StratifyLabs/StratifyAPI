@@ -17,7 +17,7 @@ void CompoundComponent::initialize(){
 
 			//add the parent scene
 			component_pointer->set_scene( scene() );
-			component_pointer->enable( scene()->scene_collection()->display() );
+			component_pointer->set_visible( scene()->scene_collection()->display() );
 		}
 	}
 	m_is_initialized = true;
@@ -31,14 +31,14 @@ void CompoundComponent::handle_event(const ux::Event & event){
 			for(auto component_pointer: m_sub_component_list){
 				//add the parent scene
 				component_pointer->set_scene( scene() );
-				component_pointer->enable( scene()->scene_collection()->display() );
+				component_pointer->set_visible( scene()->scene_collection()->display() );
 			}
 		}
 	}
 
 	for(auto component_pointer: m_sub_component_list){
 		//pass events to each component
-		if( component_pointer->is_enabled() ){
+		if( component_pointer->is_visible() ){
 			component_pointer->handle_event(event);
 		}
 	}
@@ -52,7 +52,7 @@ void CompoundComponent::handle_event(const ux::Event & event){
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_exit ){
 			for(auto component_pointer: m_sub_component_list){
-				component_pointer->disable();
+				component_pointer->set_invisible();
 			}
 		}
 	}

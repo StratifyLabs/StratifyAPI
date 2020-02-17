@@ -3,7 +3,7 @@
 #include "ux/Rectangle.hpp"
 #include "ux/Text.hpp"
 #include "ux/Icon.hpp"
-#include "ux/Scene.hpp"
+#include "ux/EventLoop.hpp"
 
 using namespace sgfx;
 using namespace ux;
@@ -114,7 +114,7 @@ void List::handle_event(const ux::Event & event){
 				if( item.region().contains(
 							touch_event.point()
 							) ){
-					scene()->trigger_event(
+					event_loop()->trigger_event(
 								ListEvent(item)
 								);
 					break;

@@ -111,7 +111,6 @@ Font::Font(const fs::File &file) :
 }
 
 void Font::refresh(){
-	u32 pair_size;
 
 	//close if not already closed
 	if( m_file.read(

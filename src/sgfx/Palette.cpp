@@ -26,6 +26,7 @@ u32 PaletteFlags::bits_per_pixel_format(enum pixel_format format){
 		case pixel_format_rgb888: return 24;
 		case pixel_format_rgba8888: return 32;
 	}
+	return 1;
 }
 
 void PaletteColor::import_hex_code(
@@ -84,6 +85,7 @@ PaletteColor PaletteColor::blend(
 		float ratio
 		) const{
 	palette_color_t color;
+	color.alpha = blend_component(a.alpha(), alpha(), ratio);
 	color.red = blend_component(a.red(), red(), ratio);
 	color.green = blend_component(a.green(), green(), ratio);
 	color.blue = blend_component(a.blue(), blue(), ratio);
@@ -116,6 +118,7 @@ sg_color_t PaletteColor::to_pixel_format(enum pixel_format pixel_format) const {
 		case pixel_format_rgb888: return to_rgb888();
 		case pixel_format_rgba8888: return to_rgba8888();
 	}
+	return 0;
 }
 
 sg_color_t PaletteColor::to_rgb332() const{
@@ -264,4 +267,5 @@ sys::Printer& operator << (sys::Printer& printer, const sgfx::Palette & palette)
 	for(size_t i=0; i < palette.colors().count(); i++){
 		printer.key(nullptr, palette.palette_color(i).to_hex_code());
 	}
+	return printer;
 }
