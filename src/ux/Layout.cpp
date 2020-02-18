@@ -24,6 +24,10 @@ bool Layout::transition(
 		const var::String & next_layout_name
 		){
 
+	if( signature() != whatis_signature() ){
+		return false;
+	}
+
 	Component * next = nullptr;
 	for(auto & cp: m_component_list){
 		if( (cp.component()->signature() == whatis_signature()) &&
@@ -71,6 +75,7 @@ void Layout::examine_visibility(){
 			component_pointer.component()->set_visible_internal(false);
 		}
 	}
+
 }
 
 Layout& Layout::add_component(
@@ -111,9 +116,12 @@ void Layout::shift_origin(DrawingPoint shift){
 
 		if( (overlap.width() * overlap.height()) > 0 ){
 			component_pointer.component()->set_refresh_drawing_pending();
-			component_pointer.component()->set_visible_internal(true);
+			if( component_pointer.component()->is_visible() ){
+				component_pointer.component()->touch_drawing_attributes();
+			} else {
+				component_pointer.component()->set_visible_internal(true);
+			}
 		} else {
-			printf("%s is not visible\n", component_pointer.component()->name().cstring());
 			component_pointer.component()->set_visible_internal(false);
 		}
 
@@ -209,6 +217,10 @@ void Layout::handle_event(const ux::Event & event){
 									horizontal_drawing_scroll,
 									vertical_drawing_scroll
 									)
+								);
+
+					event_loop()->handle_event(
+								TouchEvent(TouchEvent::id_dragged, Point(0,0))
 								);
 				}
 				break;

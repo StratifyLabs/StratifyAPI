@@ -48,6 +48,8 @@ class Layout : public ComponentAccess<
 		Layout, LAYOUT_COMPONENT_SIGNATURE
 		>, public DrawingAlignment<Layout> {
 public:
+
+	using IsRecursive = arg::Argument<bool, struct LayoutIsRecursiveTag>;
 	using EventHandlerFunction = std::function<void(Component * object, const Event & event)>;
 
 	static u32 whatis_signature(){
@@ -108,6 +110,25 @@ public:
 		return nullptr;
 	}
 
+	template<class T> T * find(
+			const var::String & name,
+			IsRecursive is_recursive = IsRecursive(true)){
+		for(auto cp: m_component_list){
+			if( cp.component()->signature() == whatis_signature() ){
+				T * result = static_cast<Layout*>(cp.component())->find<T>(
+							name
+							);
+
+				if( result ){ return result;}
+			}
+
+			if( cp.component()->name() == name ){
+				return static_cast<T*>(cp.component());
+			}
+		}
+		return nullptr;
+	}
+
 	bool transition(
 			const var::String & next_layout_name
 			);
@@ -118,6 +139,10 @@ public:
 	virtual void handle_event(const ux::Event & event);
 
 private:
+
+	void touch_drawing_attributes(){
+		shift_origin(DrawingPoint(0,0));
+	}
 
 	friend class EventLoop;
 	enum flow m_flow;
@@ -143,6 +168,37 @@ private:
 	void generate_free_layout_positions();
 
 	void examine_visibility();
+};
+
+template<class T> class LayoutAccess : public Layout {
+public:
+
+	LayoutAccess<T>(
+			EventLoop * event_loop
+			) : Layout(event_loop){}
+
+
+	T& add_component(
+			const var::String & name,
+			Component& component
+			){
+		return static_cast<T&>(Layout::add_component(name, component));
+	}
+
+	T& set_flow(enum flow value){
+		return static_cast<T&>(Layout::set_flow(value));
+	}
+
+	T& set_vertical_scroll_enabled(bool value = true){
+		return static_cast<T&>(Layout::set_vertical_scroll_enabled(value));
+	}
+
+	T& set_horizontal_scroll_enabled(bool value = true){
+		return static_cast<T&>(Layout::set_horizontal_scroll_enabled(value));
+	}
+
+protected:
+
 };
 
 }

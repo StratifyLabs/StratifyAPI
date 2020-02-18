@@ -22,9 +22,7 @@ String var::operator+ (const char*   lhs, String&& rhs){
 	return String(lhs) + rhs;
 }
 
-String::String(){
-	//creates an empty string -- Data class and ConstString class will point to a zero value variable
-}
+String::String(){}
 
 
 String::String(const Reference & reference){

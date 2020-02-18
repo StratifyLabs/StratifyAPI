@@ -68,8 +68,10 @@ public:
 	void apply_antialias_filter(const DrawingScaledAttributes & attributes);
 
 	void redraw(){
-		draw(local_drawing_attributes());
-		set_refresh_drawing_pending();
+		if( is_ready_to_draw() ){
+			draw(local_drawing_attributes());
+			set_refresh_drawing_pending();
+		}
 	}
 
 	sgfx::Region region() const {
@@ -118,8 +120,10 @@ protected:
 
 	bool m_is_visible = false;
 	bool m_is_enabled = true;
-
 	virtual void examine_visibility();
+
+
+	virtual void touch_drawing_attributes(){}
 
 	void set_refresh_region(const sgfx::Region & region){
 		if( region.width() * region.height() == 0 ){

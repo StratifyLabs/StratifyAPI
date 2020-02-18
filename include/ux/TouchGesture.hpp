@@ -25,6 +25,7 @@ public:
 		id_active,
 		id_pressed,
 		id_released,
+		id_dragged
 	};
 
 	const sgfx::Point & point() const {

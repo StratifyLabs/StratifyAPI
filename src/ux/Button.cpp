@@ -9,33 +9,17 @@ using namespace sgfx;
 using namespace ux;
 
 void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
-	sg_size_t border_size = attributes.height()/2 * m_border_size / 100;
-	if( m_border_size && !border_size ){
-		border_size = 1; //at least 1 pixel if non-zero
-	}
-
-	const Area icon_area = Area(
-				attributes.height()*60/100,
-				attributes.height()*60/100
-				);
-
-	const Point icon_padding(
-				(attributes.width()/2 - icon_area.width()/2),
-				(attributes.height()/2 - icon_area.height()/2)
-				);
 
 	//draw the Border
-	attributes.bitmap() << Pen().set_color(theme()->border_color());
-	attributes.bitmap().draw_rectangle(
-				attributes.region()
+
+	draw_base_properties(
+				attributes.bitmap(),
+				attributes.region(),
+				theme()
 				);
 
-	attributes.bitmap() << Pen().set_color(theme()->color());
-	attributes.bitmap().draw_rectangle(
-				attributes.point() + Point(border_size, border_size),
-				attributes.area() - Area(border_size*2, border_size*2)
-				);
-
+	Region region_inside_padding =
+			calculate_region_inside_padding(attributes.area());
 
 	//if the icon is available, draw it
 	if( m_icon_name.is_empty() == false ){
@@ -46,8 +30,9 @@ void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
 				.set_align_center()
 				.set_align_middle()
 				.draw_to_scale(
-					attributes + icon_padding + icon_area
+					attributes + region_inside_padding.point() + region_inside_padding.area()
 					);
+
 	} else if( m_label.is_empty() == false ){
 		//if the label is available, draw it
 		Text().set_string(m_label)
@@ -56,7 +41,7 @@ void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
 				.set_align_center()
 				.set_align_middle()
 				.draw_to_scale(
-					attributes
+					attributes + region_inside_padding.point() + region_inside_padding.area()
 					);
 	}
 
@@ -70,9 +55,17 @@ void Button::handle_event(const ux::Event & event){
 		const ux::TouchEvent & touch_event
 				= event.reinterpret<ux::TouchEvent>();
 
+		if( touch_event.id() == ux::TouchEvent::id_dragged ){
+			if( theme_state() == Theme::state_highlighted ){
+				set_theme_state(Theme::state_default);
+				set_refresh_drawing_pending();
+			}
+		}
+
 		if( touch_event.id() == ux::TouchEvent::id_released ){
 
-			if( contains(touch_event.point()) ){
+			if( contains(touch_event.point()) &&
+					(theme_state() == Theme::state_highlighted) ){
 				toggle();
 				event_loop()->handle_event(
 							ButtonEvent(name(), ButtonEvent::id_released)
@@ -91,7 +84,6 @@ void Button::handle_event(const ux::Event & event){
 			event_loop()->handle_event(
 						ButtonEvent(name(), ButtonEvent::id_pressed)
 						);
-
 
 			set_theme_state(Theme::state_highlighted);
 			refresh_drawing();

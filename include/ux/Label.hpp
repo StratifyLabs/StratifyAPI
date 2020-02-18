@@ -8,27 +8,18 @@
 
 namespace ux {
 
-class Label : public ComponentAccess<
-		Label, COMPONENT_SIGNATURE('l','a','b','l')
->, public DrawingAlignment<Label> {
+class Label :
+		public ComponentAccess<Label, COMPONENT_SIGNATURE('l','a','b','l')>,
+public DrawingAlignment<Label>,
+public DrawingComponentProperties<Label> {
 	public:
 
 	static u32 whatis_signature(){
 		return COMPONENT_SIGNATURE('l','a','b','l');
 	}
 
-	Label& set_border_size(u8 value){
-		m_border_size = value;
-		return *this;
-	}
-
 	Label& set_label(const var::String & value){
 		m_label = value;
-		return *this;
-	}
-
-	Label& set_padding(u8 value){
-		m_padding = value;
 		return *this;
 	}
 
@@ -38,13 +29,10 @@ class Label : public ComponentAccess<
 	}
 
 	void draw_to_scale(const DrawingScaledAttributes & attributes);
-	void handle_event(const ux::Event & event);
 
 	private:
 	var::String m_label;
 	var::String m_icon_name;
-	u8 m_border_size = 1;
-	u8 m_padding = 10;
 
 };
 
