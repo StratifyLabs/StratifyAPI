@@ -35,6 +35,14 @@ FontInfo & FontInfo::create_font(){
 	return *this;
 }
 
+void FontInfo::destroy_font(){
+	if( m_font != nullptr ){
+		delete m_font;
+		m_file.close();
+		m_font = nullptr;
+	}
+}
+
 FontInfo::FontInfo(const var::String & path){
 	m_path = path;
 

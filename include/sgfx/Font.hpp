@@ -149,6 +149,7 @@ public:
 	FontInfo & set_font(Font * font){ m_font = font; return *this; }
 
 	FontInfo & create_font();
+	void destroy_font();
 
 	const fs::File & font_file() const {
 		return m_file;

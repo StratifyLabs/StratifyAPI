@@ -45,9 +45,6 @@ void Component::examine_visibility(){
 
 DrawingPoint Component::translate_point(const sgfx::Point & point){
 	if( is_ready_to_draw() ){
-		if( contains(point) == false ){
-			return DrawingPoint(0,0);
-		}
 
 		sgfx::Point relative_point = point -
 				m_reference_drawing_attributes.calculate_point_on_bitmap();

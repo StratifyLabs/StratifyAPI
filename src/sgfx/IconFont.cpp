@@ -45,6 +45,14 @@ IconFontInfo & IconFontInfo::create_icon_font(){
 	return *this;
 }
 
+void IconFontInfo::destroy_icon_font(){
+	if( m_icon_font != nullptr ){
+		delete m_icon_font;
+		m_file.close();
+		m_icon_font = nullptr;
+	}
+}
+
 
 bool IconFontInfo::ascending_point_size(
 		const IconFontInfo & a,

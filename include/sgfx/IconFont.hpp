@@ -46,8 +46,12 @@ public:
 		return *this;
 	}
 
-	IconFontInfo & create_icon_font();
+	bool is_valid() const {
+		return m_icon_font != nullptr;
+	}
 
+	IconFontInfo & create_icon_font();
+	void destroy_icon_font();
 
 	const fs::File & icon_font_file() const {
 		return m_file;

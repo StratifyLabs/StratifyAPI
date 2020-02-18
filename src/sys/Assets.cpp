@@ -99,6 +99,21 @@ const sgfx::IconFontInfo * Assets::find_icon_font(
 
 	initialize();
 
+	u32 active_icon_fonts = 0;
+	for(const auto & icon_font_info: m_icon_font_info_list){
+		if( icon_font_info.is_valid() ){
+			active_icon_fonts++;
+		}
+	}
+
+	if( active_icon_fonts > 2 ){
+		for(auto & icon_font_info: m_icon_font_info_list){
+			if( icon_font_info.is_valid() ){
+				icon_font_info.destroy_icon_font();
+			}
+		}
+	}
+
 	const var::String & icon_font_name = name.argument();
 
 	u8 closest_point_size = 0;
@@ -152,6 +167,21 @@ const sgfx::FontInfo * Assets::find_font(
 		){
 
 	initialize();
+
+	u32 active_fonts = 0;
+	for(const auto & font_info: m_font_info_list){
+		if( font_info.is_valid() ){
+			active_fonts++;
+		}
+	}
+
+	if( active_fonts > 1 ){
+		for(auto & font_info: m_font_info_list){
+			if( font_info.is_valid() ){
+				font_info.destroy_font();
+			}
+		}
+	}
 
 	const var::String & font_name = name.argument();
 

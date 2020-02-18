@@ -5,10 +5,6 @@
 
 using namespace ux;
 
-Slider::Slider()
-{
-
-}
 
 void Slider::draw(const DrawingAttributes & attributes){
 
@@ -52,30 +48,55 @@ void Slider::handle_event(const ux::Event & event){
 		const ux::TouchEvent & touch_event
 				= event.reinterpret<ux::TouchEvent>();
 
+
+		if( (touch_event.id() == ux::TouchEvent::id_pressed) &&
+									 contains(touch_event.point()) ){
+					m_is_touched = true;
+					update_touch_point(touch_event.point());
+				}
+
+		if( m_is_touched ){
+			if( touch_event.id() == ux::TouchEvent::id_released ){
+				m_is_touched = false;
+				update_touch_point(touch_event.point());
+			} else if( touch_event.id() == ux::TouchEvent::id_active ){
+			 //need to check for dragging
+				update_touch_point(touch_event.point());
+		 }
+		}
+
 		if( (touch_event.id() == ux::TouchEvent::id_released) &&
-				contains(touch_event.point()) ){
-
-			DrawingPoint point = translate_point(touch_event.point());
-
-			if( point.x() < 50 ){
-				m_value = 0;
-			} else if( point.x() > 950 ){
-				m_value = m_maximum;
-			} else {
-				m_value = (point.x() - 50) * m_maximum / 900;
-			}
-
-			event_loop()->handle_event(
-						SliderEvent(name(), m_value, m_maximum)
-						);
-
-			redraw();
+				m_is_touched ){
+			m_is_touched = false;
+			update_touch_point(touch_event.point());
 		} else if( (touch_event.id() == ux::TouchEvent::id_pressed) &&
 							 contains(touch_event.point()) ){
-			//need to check for dragging
-
-		}
+			m_is_touched = true;
+			update_touch_point(touch_event.point());
+		} else if( (touch_event.id() == ux::TouchEvent::id_active) &&
+							m_is_touched ){
+		 //need to check for dragging
+			update_touch_point(touch_event.point());
+	 }
 	}
 
 	Component::handle_event(event);
+}
+
+void Slider::update_touch_point(const sgfx::Point display_point){
+	DrawingPoint point = translate_point(display_point);
+
+	if( point.x() < 50 ){
+		m_value = 0;
+	} else if( point.x() > 950 ){
+		m_value = m_maximum;
+	} else {
+		m_value = (point.x() - 50) * m_maximum / 900;
+	}
+
+	event_loop()->handle_event(
+				SliderEvent(name(), m_value, m_maximum)
+				);
+
+	redraw();
 }
