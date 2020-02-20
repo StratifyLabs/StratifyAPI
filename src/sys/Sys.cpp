@@ -259,12 +259,12 @@ var::String Sys::get_kernel_version(){
 	return var::String();
 }
 
-void Sys::powerdown(const chrono::Milliseconds & milliseconds){
-	::powerdown(milliseconds.milliseconds());
+void Sys::powerdown(const chrono::MicroTime & duration){
+	::powerdown(duration.seconds());
 }
 
-int Sys::hibernate(const chrono::Milliseconds & milliseconds){
-	return ::hibernate(milliseconds.milliseconds());
+int Sys::hibernate(const chrono::MicroTime & duration){
+	return ::hibernate(duration.seconds());
 }
 
 int Sys::request(

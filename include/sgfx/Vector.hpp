@@ -22,7 +22,9 @@ class VectorMap : public api::SgfxInfoObject {
 public:
 
 	/*! \details Constructs an empty vector map. */
-	VectorMap(){}
+	VectorMap(){
+		m_value = {0};
+	}
 
 	/*! \details Sets the map to be centered and fully occupy \a bitmap.
 	 *

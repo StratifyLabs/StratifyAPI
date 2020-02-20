@@ -22,6 +22,11 @@ public:
 	}
 	virtual ~Component();
 
+	template<typename T> T * reinterpret(){
+		return static_cast<T*>(this);
+	}
+
+
 	static u32 whatis_signature(){
 		return 0;
 	}

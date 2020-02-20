@@ -313,8 +313,7 @@ public:
 	 * device will power on (reset).  If this isn't supported,
 	 * the device will power off until reset by an external signal
 	 */
-	static void powerdown(
-			const chrono::Milliseconds & milliseconds = chrono::Milliseconds(0)
+	static void powerdown(const chrono::MicroTime& duration = chrono::Milliseconds(0)
 			);
 
 	/*! \details Puts the kernel in hibernate mode.
@@ -324,7 +323,7 @@ public:
 	 * the device will stay in hibernation until woken up externally
 	 */
 	static int hibernate(
-			const chrono::Milliseconds & milliseconds = chrono::Milliseconds(0)
+			const chrono::MicroTime& duration = chrono::Milliseconds(0)
 			);
 
 	/*! \details Executes a kernel request.
