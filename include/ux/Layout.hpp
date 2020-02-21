@@ -27,7 +27,6 @@ public:
 		return m_drawing_area;
 	}
 
-
 	void set_drawing_point(const DrawingPoint & point){
 		m_drawing_point = point;
 	}
@@ -97,6 +96,34 @@ public:
 			}
 		}
 		return nullptr;
+	}
+
+	void update_drawing_area(
+			const Component * component,
+			const DrawingArea & area
+			);
+
+	void update_drawing_area(
+			const var::String & name,
+			const DrawingArea & area
+			){
+		update_drawing_area(
+					find_component(name), area
+					);
+	}
+
+	void update_drawing_point(
+			const Component * component,
+			const DrawingPoint & point
+			);
+
+	void update_drawing_point(
+			const var::String & name,
+			const DrawingPoint & point
+			){
+		update_drawing_point(
+					find_component(name), point
+					);
 	}
 
 	Layout * find_layout(const var::String & name){

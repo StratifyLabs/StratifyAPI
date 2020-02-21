@@ -92,43 +92,71 @@ Layout& Layout::add_component(
 	return *this;
 }
 
+void Layout::update_drawing_point(
+		const Component * component,
+		const DrawingPoint & point
+		){
+	for(auto & cp: m_component_list){
+		if( component == cp.component() ){
+			cp.set_drawing_point(point);
+			shift_origin(DrawingPoint(0,0));
+			return;
+		}
+	}
+}
+
+void Layout::update_drawing_area(
+		const Component * component,
+		const DrawingArea & area
+		){
+	for(auto & cp: m_component_list){
+		if( component == cp.component() ){
+			cp.set_drawing_area(area);
+			shift_origin(DrawingPoint(0,0));
+			return;
+		}
+	}
+}
+
 void Layout::shift_origin(DrawingPoint shift){
 	m_origin += shift;
 
-	//determine scroll ends
-	generate_layout_positions();
+	if( is_ready_to_draw() ){
+		//determine scroll ends
+		generate_layout_positions();
 
-	for(auto component_pointer: m_component_list){
-		//reference attributes are the location within the compound component
-		//translate reference attributes based on compound component attributes
-		component_pointer.component()->reference_drawing_attributes() =
-				reference_drawing_attributes() +
-				m_origin +
-				component_pointer.drawing_point() +
-				component_pointer.drawing_area();
+		for(auto component_pointer: m_component_list){
+			//reference attributes are the location within the compound component
+			//translate reference attributes based on compound component attributes
+			component_pointer.component()->reference_drawing_attributes() =
+					reference_drawing_attributes() +
+					m_origin +
+					component_pointer.drawing_point() +
+					component_pointer.drawing_area();
 
-		sgfx::Region layout_region =
-				reference_drawing_attributes().calculate_region_on_bitmap();
-		sgfx::Region component_region =
-				component_pointer.component()->reference_drawing_attributes().calculate_region_on_bitmap();
+			sgfx::Region layout_region =
+					reference_drawing_attributes().calculate_region_on_bitmap();
+			sgfx::Region component_region =
+					component_pointer.component()->reference_drawing_attributes().calculate_region_on_bitmap();
 
-		sgfx::Region overlap = layout_region.overlap(component_region);
+			sgfx::Region overlap = layout_region.overlap(component_region);
 
-		if( (overlap.width() * overlap.height()) > 0 ){
-			component_pointer.component()->set_refresh_drawing_pending();
-			if( component_pointer.component()->is_visible() ){
-				component_pointer.component()->touch_drawing_attributes();
+			if( (overlap.width() * overlap.height()) > 0 ){
+				component_pointer.component()->set_refresh_drawing_pending();
+				if( component_pointer.component()->is_visible() ){
+					component_pointer.component()->touch_drawing_attributes();
+				} else {
+					component_pointer.component()->set_visible_internal(true);
+				}
 			} else {
-				component_pointer.component()->set_visible_internal(true);
+				component_pointer.component()->set_visible_internal(false);
 			}
-		} else {
-			component_pointer.component()->set_visible_internal(false);
-		}
 
-		//this calculates if only part of the element should be refreshed (the mask)
-		component_pointer.component()->set_refresh_region(
-					overlap
-					);
+			//this calculates if only part of the element should be refreshed (the mask)
+			component_pointer.component()->set_refresh_region(
+						overlap
+						);
+		}
 	}
 
 }

@@ -11,7 +11,6 @@
 
 namespace sys {
 
-
 /*!
  * \brief The Task Info Class
  */
@@ -98,6 +97,12 @@ public:
 		if( m_value.is_thread ){ return 0; }
 		return m_value.mem_loc;
 	}
+
+	u8 memory_utilization() const {
+		return ((heap_size() + stack_size()) * 100) / memory_size();
+	}
+
+
 
 private:
 	sys_taskattr_t m_value;

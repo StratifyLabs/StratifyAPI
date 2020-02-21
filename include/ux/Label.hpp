@@ -30,6 +30,14 @@ public DrawingComponentProperties<Label> {
 
 	void draw_to_scale(const DrawingScaledAttributes & attributes);
 
+	const var::String& label() const {
+		return m_label;
+	}
+
+	const var::String& icon_name() const {
+		return m_icon_name;
+	}
+
 	private:
 	var::String m_label;
 	var::String m_icon_name;
