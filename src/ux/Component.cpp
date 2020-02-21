@@ -37,7 +37,9 @@ void Component::examine_visibility(){
 
 		set_refresh_region(sgfx::Region());
 		redraw();
+		handle_event(SystemEvent(SystemEvent::id_enter));
 	} else {
+		handle_event(SystemEvent(SystemEvent::id_exit));
 		m_local_bitmap.free();
 	}
 }

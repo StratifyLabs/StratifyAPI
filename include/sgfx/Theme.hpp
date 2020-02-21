@@ -108,6 +108,10 @@ public:
 	static var::String get_state_name(enum state value);
 	static var::String get_style_name(enum style value);
 
+	const chrono::MicroTime & button_hold_duration() const {
+		return m_button_hold_duration;
+	}
+
 	sg_color_t background_color() const { return 0; }
 	sg_color_t color() const { return 1; }
 	sg_color_t text_color() const;
@@ -134,6 +138,7 @@ private:
 	AntiAliasFilter m_antialias_filter;
 	var::String m_primary_font_name;
 	var::String m_primary_icon_font_name;
+	chrono::MicroTime m_button_hold_duration = chrono::Milliseconds(750);
 
 	header_t m_header;
 	u16 m_color_count = 0;

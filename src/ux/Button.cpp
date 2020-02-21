@@ -59,6 +59,7 @@ void Button::handle_event(const ux::Event & event){
 			if( theme_state() == Theme::state_highlighted ){
 				set_theme_state(Theme::state_default);
 				set_refresh_drawing_pending();
+				m_hold_timer.stop();
 			}
 		}
 
@@ -67,6 +68,7 @@ void Button::handle_event(const ux::Event & event){
 			if( contains(touch_event.point()) &&
 					(theme_state() == Theme::state_highlighted) ){
 				toggle();
+				m_hold_timer.stop();
 				event_loop()->handle_event(
 							ButtonEvent(name(), ButtonEvent::id_released)
 							);
@@ -85,8 +87,24 @@ void Button::handle_event(const ux::Event & event){
 						ButtonEvent(name(), ButtonEvent::id_pressed)
 						);
 
+			m_hold_timer.restart();
+
 			set_theme_state(Theme::state_highlighted);
 			refresh_drawing();
+		}
+	} else if( event.type() == SystemEvent::event_type() ){
+		if( event.id() == SystemEvent::id_exit ){
+			set_theme_state(Theme::state_default);
+			set_refresh_drawing_pending();
+			m_hold_timer.reset();
+		} else if ( event.id() == SystemEvent::id_update ){
+			if( m_hold_timer.is_running() &&
+				 (m_hold_timer > theme()->button_hold_duration()) ){
+				m_hold_timer.stop();
+				event_loop()->handle_event(
+							ButtonEvent(name(), ButtonEvent::id_held)
+							);
+			}
 		}
 	}
 

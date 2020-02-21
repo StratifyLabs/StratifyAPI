@@ -29,7 +29,8 @@ public:
 		id_none,
 		id_active,
 		id_pressed,
-		id_released
+		id_released,
+		id_held
 	};
 
    const var::String & name() const {
@@ -82,6 +83,7 @@ private:
 	 var::String m_label;
 	 var::String m_icon_name;
    bool m_state;
+	 chrono::Timer m_hold_timer;
 
 
 

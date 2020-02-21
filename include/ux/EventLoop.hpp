@@ -54,6 +54,9 @@ public:
 		return m_display;
 	}
 
+	const Layout * layout() const { return m_layout; }
+	Layout * layout(){ return m_layout; }
+
 private:
 	chrono::Timer m_timer;
 	chrono::Timer m_update_timer;

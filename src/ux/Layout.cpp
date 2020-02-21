@@ -68,11 +68,16 @@ void Layout::examine_visibility(){
 		shift_origin(DrawingPoint(0,0));
 
 		erase();
-
+		if( m_event_handler ){
+			m_event_handler(this, SystemEvent(SystemEvent::id_enter));
+		}
 	} else {
 		//is layout is enabled and visible -- components are not visible
 		for(auto component_pointer: m_component_list){
 			component_pointer.component()->set_visible_internal(false);
+		}
+		if( m_event_handler ){
+			m_event_handler(this, SystemEvent(SystemEvent::id_exit));
 		}
 	}
 

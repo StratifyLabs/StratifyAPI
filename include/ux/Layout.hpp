@@ -49,7 +49,7 @@ class Layout : public ComponentAccess<
 public:
 
 	using IsRecursive = arg::Argument<bool, struct LayoutIsRecursiveTag>;
-	using EventHandlerFunction = std::function<void(Component * object, const Event & event)>;
+	using EventHandlerFunction = std::function<void(Layout * layout, const Event & event)>;
 
 	static u32 whatis_signature(){
 		return LAYOUT_COMPONENT_SIGNATURE;
@@ -89,15 +89,6 @@ public:
 		return *this;
 	}
 
-	Component * find_component(const var::String & name){
-		for(auto cp: m_component_list){
-			if( cp.component()->name() == name ){
-				return cp.component();
-			}
-		}
-		return nullptr;
-	}
-
 	void update_drawing_area(
 			const Component * component,
 			const DrawingArea & area
@@ -108,7 +99,7 @@ public:
 			const DrawingArea & area
 			){
 		update_drawing_area(
-					find_component(name), area
+					find<Component>(name), area
 					);
 	}
 
@@ -122,7 +113,7 @@ public:
 			const DrawingPoint & point
 			){
 		update_drawing_point(
-					find_component(name), point
+					find<Component>(name), point
 					);
 	}
 

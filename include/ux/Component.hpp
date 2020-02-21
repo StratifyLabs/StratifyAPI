@@ -61,6 +61,8 @@ public:
 	const hal::Display * display() const;
 	hal::Display * display();
 
+
+
 	//update the location of the component (allow animations)
 
 	virtual void handle_event(const ux::Event & event){}
