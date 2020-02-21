@@ -10,55 +10,12 @@
 #include "../fs/File.hpp"
 #include "Region.hpp"
 #include "Pen.hpp"
+#include "Palette.hpp"
 #include "../api/SgfxObject.hpp"
 #include "../chrono/MicroTime.hpp"
 
 
 namespace sgfx {
-
-class Palette {
-public:
-
-	using Position = var::Reference::Position;
-	using IsAscending = arg::Argument<bool, struct PaletteIsAscendingTag>;
-
-	bool is_valid() const {
-		return colors().count() > 0;
-	}
-
-	Palette & set_bits_per_pixel(u8 bits_per_pixel);
-
-	Palette & set_color(
-			Position position,
-			sg_color_t color
-			){
-		m_colors.at(
-					position.argument() & m_palette.mask) = color;
-		return *this;
-	}
-
-	u8 bits_per_pixel() const {
-		if( colors().count() == 2 ){ return 1; }
-		if( colors().count() == 4 ){ return 2; }
-		if( colors().count() == 16 ){ return 4; }
-		if( colors().count() == 256 ){ return 8; }
-		return 1;
-	}
-
-	Palette & fill_gradient_argb8888(sg_color_t color);
-	Palette & fill_gradient_gray(
-			IsAscending is_ascending = IsAscending(true)
-			);
-
-	const var::Vector<sg_color_t> & colors() const {
-		return m_colors;
-	}
-
-private:
-	friend class Bitmap;
-	sg_palette_t m_palette;
-	var::Vector<sg_color_t> m_colors;
-};
 
 class AntiAliasFilter {
 public:
@@ -152,12 +109,6 @@ public:
 
 	Bitmap(Bitmap && bitmap) : var::Data(std::move(bitmap)){
 		std::swap(m_bmap, bitmap.m_bmap);
-	}
-
-
-	Bitmap & operator << (const Palette & palette){
-		m_bmap.palette = &palette.m_palette;
-		return *this;
 	}
 
 	Bitmap & operator << (const Pen & pen){

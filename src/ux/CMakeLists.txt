@@ -3,10 +3,8 @@ set(SOURCES
 
 	# Utility and Interface
 	Component.cpp
-	CompoundComponent.cpp
 	Event.cpp
 	EventLoop.cpp
-	Scene.cpp
 	TouchGesture.cpp
 
 	# Components

@@ -1,14 +1,14 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "ux/Layout.hpp"
-#include "ux/Scene.hpp"
+#include "ux/EventLoop.hpp"
 #include "sys/Printer.hpp"
 
 using namespace sgfx;
 using namespace ux;
 
-Layout::Layout(){
-	m_is_initialized = false;
-	m_flow = flow_vertical;
+Layout::Layout(EventLoop* event_loop){
+	set_event_loop(event_loop);
+	m_flow = flow_free;
 	m_origin = DrawingPoint(0,0);
 	set_align_left();
 	set_align_top();
@@ -20,36 +20,67 @@ Layout::~Layout(){
 	}
 }
 
-void Layout::enable(
-		hal::Display & display
+bool Layout::transition(
+		const var::String & next_layout_name
 		){
 
-	if( m_is_enabled == false ){
-		m_display = &display; //layout never directly draws on display
-		m_reference_drawing_attributes.set_bitmap(display);
-		m_is_enabled = true;
+	if( signature() != whatis_signature() ){
+		return false;
 	}
 
-	set_refresh_region(reference_drawing_attributes().calculate_region_on_bitmap());
-	m_touch_gesture.set_region(
-				reference_drawing_attributes().calculate_region_on_bitmap()
-				);
-
-	for(auto component_pointer: m_component_list){
-		component_pointer.component()->set_scene( scene() );
+	Component * next = nullptr;
+	for(auto & cp: m_component_list){
+		if( (cp.component()->signature() == whatis_signature()) &&
+				(cp.component()->name() == next_layout_name) ){
+			next = cp.component();
+			break;
+		}
 	}
 
-	shift_origin(DrawingPoint(0,0));
-
+	if( next ){
+		for(auto & cp: m_component_list){
+			if( cp.component()->signature() == whatis_signature() ){
+				cp.component()->set_enabled_internal(false);
+			}
+		}
+		next->set_enabled_internal(true);
+		return true;
+	}
+	return false;
 }
 
-void Layout::disable(){
-	if( m_is_enabled ){
-		for(auto component_pointer: m_component_list){
-			component_pointer.component()->disable();
+void Layout::examine_visibility(){
+	if( is_ready_to_draw() ){
+		if( display() == nullptr ){
+			m_is_visible = false;
+			return;
 		}
-		m_is_enabled = false;
+
+		m_reference_drawing_attributes.set_bitmap(*display());
+		set_refresh_region(
+					reference_drawing_attributes().calculate_region_on_bitmap()
+					);
+
+		m_touch_gesture.set_region(
+					reference_drawing_attributes().calculate_region_on_bitmap()
+					);
+
+		shift_origin(DrawingPoint(0,0));
+
+		erase();
+		if( m_event_handler ){
+			m_event_handler(this, SystemEvent(SystemEvent::id_enter));
+		}
+	} else {
+		//is layout is enabled and visible -- components are not visible
+		for(auto component_pointer: m_component_list){
+			component_pointer.component()->set_visible_internal(false);
+		}
+		if( m_event_handler ){
+			m_event_handler(this, SystemEvent(SystemEvent::id_exit));
+		}
 	}
+
 }
 
 Layout& Layout::add_component(
@@ -57,6 +88,7 @@ Layout& Layout::add_component(
 		Component& component
 		){
 
+	component.set_event_loop( event_loop() );
 	component.set_name(name);
 	m_component_list.push_back(
 				LayoutComponent(&component)
@@ -65,44 +97,79 @@ Layout& Layout::add_component(
 	return *this;
 }
 
+void Layout::update_drawing_point(
+		const Component * component,
+		const DrawingPoint & point
+		){
+	for(auto & cp: m_component_list){
+		if( component == cp.component() ){
+			cp.set_drawing_point(point);
+			shift_origin(DrawingPoint(0,0));
+			return;
+		}
+	}
+}
+
+void Layout::update_drawing_area(
+		const Component * component,
+		const DrawingArea & area
+		){
+	for(auto & cp: m_component_list){
+		if( component == cp.component() ){
+			cp.set_drawing_area(area);
+			shift_origin(DrawingPoint(0,0));
+			return;
+		}
+	}
+}
+
 void Layout::shift_origin(DrawingPoint shift){
 	m_origin += shift;
 
-	//determine scroll ends
-	generate_layout_positions();
+	if( is_ready_to_draw() ){
+		//determine scroll ends
+		generate_layout_positions();
 
-	for(auto component_pointer: m_component_list){
-		//reference attributes are the location within the compound component
-		//translate reference attributes based on compound component attributes
-		component_pointer.component()->reference_drawing_attributes() =
-				reference_drawing_attributes() +
-				m_origin +
-				component_pointer.drawing_point() +
-				component_pointer.drawing_area();
+		for(auto component_pointer: m_component_list){
+			//reference attributes are the location within the compound component
+			//translate reference attributes based on compound component attributes
+			component_pointer.component()->reference_drawing_attributes() =
+					reference_drawing_attributes() +
+					m_origin +
+					component_pointer.drawing_point() +
+					component_pointer.drawing_area();
 
-		sgfx::Region layout_region =
-				reference_drawing_attributes().calculate_region_on_bitmap();
-		sgfx::Region component_region =
-				component_pointer.component()->reference_drawing_attributes().calculate_region_on_bitmap();
+			sgfx::Region layout_region =
+					reference_drawing_attributes().calculate_region_on_bitmap();
+			sgfx::Region component_region =
+					component_pointer.component()->reference_drawing_attributes().calculate_region_on_bitmap();
 
-		sgfx::Region overlap = layout_region.overlap(component_region);
+			sgfx::Region overlap = layout_region.overlap(component_region);
 
-		if( (overlap.width() * overlap.height()) > 0 ){
-			component_pointer.component()->set_refresh_drawing_pending();
-			component_pointer.component()->enable( scene()->scene_collection()->display() );
-		} else {
-			component_pointer.component()->disable();
+			if( (overlap.width() * overlap.height()) > 0 ){
+				component_pointer.component()->set_refresh_drawing_pending();
+				if( component_pointer.component()->is_visible() ){
+					component_pointer.component()->touch_drawing_attributes();
+				} else {
+					component_pointer.component()->set_visible_internal(true);
+				}
+			} else {
+				component_pointer.component()->set_visible_internal(false);
+			}
+
+			//this calculates if only part of the element should be refreshed (the mask)
+			component_pointer.component()->set_refresh_region(
+						overlap
+						);
 		}
-
-		//this calculates if only part of the element should be refreshed (the mask)
-		component_pointer.component()->set_refresh_region(
-					overlap
-					);
 	}
 
 }
 
-DrawingPoint Layout::calculate_next_point(const DrawingArea & area){
+DrawingPoint Layout::calculate_next_point(
+		const DrawingPoint& point,
+		const DrawingArea & area
+		){
 	//depending on the layout, calculate the point of the next component
 	DrawingPoint result(0,0);
 	for(auto component_pointer: m_component_list){
@@ -114,7 +181,9 @@ DrawingPoint Layout::calculate_next_point(const DrawingArea & area){
 	}
 
 	switch(m_flow){
-		case flow_grid: break;
+		case flow_free:
+			result = point;
+			break;
 		case flow_vertical:
 			//left,right,center alignment
 			if( is_align_left() ){
@@ -143,13 +212,15 @@ DrawingPoint Layout::calculate_next_point(const DrawingArea & area){
 }
 
 void Layout::scroll(DrawingPoint value){
-	shift_origin(value);
+	if( is_ready_to_draw() ){
+		shift_origin(value);
+	}
 }
 
 
 void Layout::draw(const DrawingAttributes & attributes){
 	for(auto component_pointer: m_component_list){
-		if( component_pointer.component()->is_enabled() ){
+		if( component_pointer.component()->is_visible() ){
 			component_pointer.component()->draw(attributes);
 		}
 	}
@@ -173,15 +244,16 @@ void Layout::handle_event(const ux::Event & event){
 				vertical_drawing_scroll =
 						handle_vertical_scroll( m_touch_gesture.drag().y() );
 
-
-
 				if( vertical_drawing_scroll || horizontal_drawing_scroll ){
-					printf("vertical scroll is %d for %s\n", vertical_drawing_scroll, name().cstring());
 					this->scroll(
 								DrawingPoint(
 									horizontal_drawing_scroll,
 									vertical_drawing_scroll
 									)
+								);
+
+					event_loop()->handle_event(
+								TouchEvent(TouchEvent::id_dragged, Point(0,0))
 								);
 				}
 				break;
@@ -190,11 +262,14 @@ void Layout::handle_event(const ux::Event & event){
 
 	for(auto component_pointer: m_component_list){
 		//pass events to each component
-		component_pointer.component()->handle_event(event);
+		if( component_pointer.component()->is_enabled() ){
+			component_pointer.component()->handle_event(event);
+		}
 	}
 
 	for(auto component_pointer: m_component_list){
-		if( component_pointer.component()->is_refresh_drawing_pending() ){
+		if( component_pointer.component()->is_enabled() &&
+				component_pointer.component()->is_refresh_drawing_pending() ){
 			component_pointer.component()->refresh_drawing();
 		}
 	}
@@ -202,13 +277,15 @@ void Layout::handle_event(const ux::Event & event){
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_exit ){
 			for(auto component_pointer: m_component_list){
-				component_pointer.component()->disable();
+				component_pointer.component()->set_visible_internal(false);
 			}
 		}
 	}
 
+	if( m_event_handler ){
+		m_event_handler(this, event);
+	}
 	Component::handle_event(event);
-
 }
 
 drawing_int_t Layout::handle_vertical_scroll(sg_int_t scroll){
@@ -244,9 +321,27 @@ drawing_int_t Layout::handle_horizontal_scroll(sg_int_t scroll){
 void Layout::generate_layout_positions(){
 	switch(m_flow){
 		default:
+		case flow_free: generate_free_layout_positions(); return;
 		case flow_vertical: generate_vertical_layout_positions(); return;
 		case flow_horizontal: generate_horizontal_layout_positions(); return;
 	}
+}
+
+void Layout::generate_free_layout_positions(){
+	drawing_int_t x_max = 0;
+	drawing_int_t y_max = 0;
+
+	for(auto & component: m_component_list){
+		if( component.drawing_point().x() + component.drawing_area().width() > x_max ){
+			x_max = component.drawing_point().x() + component.drawing_area().width();
+		}
+
+		if( component.drawing_point().y() + component.drawing_area().height() > y_max ){
+			x_max = component.drawing_point().y() + component.drawing_area().height();
+		}
+	}
+
+	m_area = DrawingArea(x_max, y_max);
 }
 
 void Layout::generate_vertical_layout_positions(){

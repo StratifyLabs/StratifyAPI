@@ -6,6 +6,7 @@
 
 #include <mcu/types.h>
 #include "../sgfx/Bitmap.hpp"
+#include "../sgfx/Theme.hpp"
 #include "../sgfx/Pen.hpp"
 
 namespace ux {
@@ -564,8 +565,7 @@ public:
 	T& set_align_right(bool v = true){ v ? m_flags |= flag_align_right : 0; return derived_this(); }
 	T& set_align_center(bool v = true){
 		if( v ){
-			set_align_right(false);
-			set_align_left(false);
+			m_flags &= ~(flag_align_left|flag_align_right);
 		}
 		return derived_this();
 	}
@@ -574,8 +574,7 @@ public:
 	T& set_align_bottom(bool v = true){ v ? m_flags |= flag_align_bottom : 0; return derived_this(); }
 	T& set_align_middle(bool v = true){
 		if( v ){
-			set_align_top(false);
-			set_align_bottom(false);
+			m_flags &= ~(flag_align_top|flag_align_bottom);
 		}
 		return derived_this();
 	}
@@ -602,8 +601,111 @@ private:
 		flag_align_bottom = 1<<3
 	};
 
-	u32 m_flags;
+	u32 m_flags = 0;
 
+};
+
+template <typename T> class DrawingComponentProperties {
+public:
+
+	T& set_border_size(u8 value){
+		m_border_size = value;
+		return derived_this();
+	}
+
+	T& set_vertical_padding(u8 value){
+		m_vertical_padding = value;
+		return derived_this();
+	}
+
+	T& set_horizontal_padding(u8 value){
+		m_horizontal_padding = value;
+		return derived_this();
+	}
+
+	u8 border_size() const {
+		return m_border_size;
+	}
+
+	u8 vertical_padding() const {
+		return m_vertical_padding;
+	}
+
+	u8 horizontal_padding() const {
+		return m_horizontal_padding;
+	}
+
+protected:
+	sg_size_t calculate_border_size(sg_size_t height){
+		return calculate_pixel_size(border_size(), height);
+	}
+
+	sgfx::Region calculate_region_inside_border(
+			const sgfx::Area & area
+			){
+		sg_size_t border_padding =
+				calculate_border_size(area.height());
+
+		return sgfx::Region(
+					sgfx::Point(border_padding, border_padding),
+					sgfx::Area(
+						area.width() - border_padding*2,
+						area.height() - border_padding*2
+						)
+					);
+
+	}
+
+	sgfx::Region calculate_region_inside_padding(
+			const sgfx::Area & area
+			){
+		sg_size_t effective_horizontal_padding =
+				calculate_pixel_size(horizontal_padding(), area.width());
+		sg_size_t effective_vertical_padding =
+				calculate_pixel_size(vertical_padding(), area.height());
+
+		return sgfx::Region(
+					sgfx::Point(effective_horizontal_padding, effective_vertical_padding),
+					sgfx::Area(
+						area.width() - effective_horizontal_padding*2,
+						area.height() - effective_vertical_padding*2
+						)
+					);
+
+	}
+
+	void draw_base_properties(
+			sgfx::Bitmap & bitmap,
+			const sgfx::Region & region,
+			const sgfx::Theme * theme){
+		bitmap << sgfx::Pen().set_color(theme->border_color());
+		bitmap.draw_rectangle(
+					region
+					);
+
+		bitmap << sgfx::Pen().set_color(theme->color());
+		bitmap.draw_rectangle(
+					calculate_region_inside_border(region.area())
+					);
+
+	}
+
+private:
+	u8 m_border_size = 1;
+	u8 m_vertical_padding = 5;
+	u8 m_horizontal_padding = 5;
+
+	sg_size_t calculate_pixel_size(u8 value, sg_size_t dimension){
+		sg_size_t result = (dimension * value + 100) / 200;
+		if( !result && value ){
+			result = 1;
+		}
+		return result;
+	}
+
+	T& derived_this(){
+		return static_cast<T&>(*this);
+	}
 };
 
 

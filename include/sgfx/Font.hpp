@@ -104,6 +104,7 @@ public:
 			Style style = Style(0),
 			Font * font = nullptr
 			);
+	~FontInfo();
 
 	/*! \details Contsructs an object by parsing the path.
 	 *
@@ -147,6 +148,17 @@ public:
 	 */
 	FontInfo & set_font(Font * font){ m_font = font; return *this; }
 
+	FontInfo & create_font();
+	void destroy_font();
+
+	const fs::File & font_file() const {
+		return m_file;
+	}
+
+	fs::File & font_file(){
+		return m_file;
+	}
+
 	/*! \details Enables sorting FontInfo objects by point size. */
 	static bool ascending_point_size(const FontInfo & a, const FontInfo & b);
 	/*! \details Enables sorting FontInfo objects by style. */
@@ -158,7 +170,7 @@ private:
 	u8 m_style;
 	u8 m_point_size;
 	Font * m_font;
-
+	fs::File m_file;
 };
 
 /*! \brief Font class
@@ -167,17 +179,17 @@ private:
 class Font : public api::SgfxWorkObject, public FontFlags {
 public:
 
-	Font();
+	Font(const fs::File & file);
 
 	/*! \details Returns a string of the available character set */
 	static const var::String & ascii_character_set();
 
 
 	/*! \details Returns the maximum height of any character in the font. */
-	virtual sg_size_t get_height() const = 0;
+	sg_size_t get_height() const;
 
 	/*! \details Returns the maximum width of any character in the font. */
-	virtual sg_size_t get_width() const = 0;
+	sg_size_t get_width() const;
 
 	//Attribute access methods
 	int offset_x() const { return m_char.offset_x; }
@@ -253,20 +265,26 @@ public:
 protected:
 
 	/*! \cond */
-	mutable int m_offset;
 	mutable sg_font_char_t m_char;
 	bool m_is_kerning_enabled;
 	sg_size_t m_letter_spacing;
 	int m_space_size;
 	sg_font_header_t m_header;
+	mutable Bitmap m_canvas;
+	mutable u8 m_current_canvas;
+	u32 m_canvas_start;
+	u32 m_canvas_size;
+	var::Vector<sg_font_kerning_pair_t> m_kerning_pairs;
+	const fs::File & m_file;
 
+	void refresh();
 	static int to_charset(char ascii);
 	static const var::String m_ascii_character_set;
 
-	virtual void draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, const Point & point) const = 0;
-	virtual int load_char(sg_font_char_t & ch, char c, bool ascii) const = 0;
-	virtual sg_font_kerning_pair_t load_kerning(u32 offset) const { return {0}; }
-	virtual int load_kerning(u16 first, u16 second) const { return 0; }
+	void draw_char_on_bitmap(const sg_font_char_t & ch, Bitmap & dest, const Point & point) const;
+	int load_char(sg_font_char_t & ch, char c, bool ascii) const;
+	sg_font_kerning_pair_t load_kerning(u32 offset) const;
+	int load_kerning(u16 first, u16 second) const;
 	/*! \endcond */
 
 private:

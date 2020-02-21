@@ -27,7 +27,6 @@ public:
 		return m_drawing_area;
 	}
 
-
 	void set_drawing_point(const DrawingPoint & point){
 		m_drawing_point = point;
 	}
@@ -42,16 +41,27 @@ private:
 	DrawingArea m_drawing_area;
 };
 
-class Layout : public Component, public DrawingAlignment<Layout> {
+#define LAYOUT_COMPONENT_SIGNATURE COMPONENT_SIGNATURE('l','y','o','t')
+
+class Layout : public ComponentAccess<
+		Layout, LAYOUT_COMPONENT_SIGNATURE
+		>, public DrawingAlignment<Layout> {
 public:
+
+	using IsRecursive = arg::Argument<bool, struct LayoutIsRecursiveTag>;
+	using EventHandlerFunction = std::function<void(Layout * layout, const Event & event)>;
+
+	static u32 whatis_signature(){
+		return LAYOUT_COMPONENT_SIGNATURE;
+	}
 
 	enum flow {
 		flow_vertical,
 		flow_horizontal,
-		flow_grid
+		flow_free
 	};
 
-	Layout();
+	Layout(EventLoop * event_loop);
 	virtual ~Layout();
 
 	Layout& add_component(
@@ -74,41 +84,138 @@ public:
 		return *this;
 	}
 
-	u16 columns() const {
-		return m_columns;
+	Layout& set_event_handler(EventHandlerFunction event_handler){
+		m_event_handler = event_handler;
+		return *this;
 	}
+
+	void update_drawing_area(
+			const Component * component,
+			const DrawingArea & area
+			);
+
+	void update_drawing_area(
+			const var::String & name,
+			const DrawingArea & area
+			){
+		update_drawing_area(
+					find<Component>(name), area
+					);
+	}
+
+	void update_drawing_point(
+			const Component * component,
+			const DrawingPoint & point
+			);
+
+	void update_drawing_point(
+			const var::String & name,
+			const DrawingPoint & point
+			){
+		update_drawing_point(
+					find<Component>(name), point
+					);
+	}
+
+	Layout * find_layout(const var::String & name){
+		for(auto cp: m_component_list){
+			if( cp.component()->name() == name ){
+				if( cp.component()->signature() == whatis_signature()){
+					return static_cast<Layout*>(cp.component());
+				}
+			}
+		}
+		return nullptr;
+	}
+
+	template<class T> T * find(
+			const var::String & name,
+			IsRecursive is_recursive = IsRecursive(true)){
+		for(auto cp: m_component_list){
+			if( cp.component()->signature() == whatis_signature() ){
+				T * result = static_cast<Layout*>(cp.component())->find<T>(
+							name
+							);
+
+				if( result ){ return result;}
+			}
+
+			if( cp.component()->name() == name ){
+				return static_cast<T*>(cp.component());
+			}
+		}
+		return nullptr;
+	}
+
+	bool transition(
+			const var::String & next_layout_name
+			);
 
 	void scroll(DrawingPoint value);
 
 	virtual void draw(const DrawingAttributes & attributes);
 	virtual void handle_event(const ux::Event & event);
 
-	void enable(
-			hal::Display & display
-			);
-
-	void disable();
-
 private:
+
+	void touch_drawing_attributes(){
+		shift_origin(DrawingPoint(0,0));
+	}
+
+	friend class EventLoop;
 	enum flow m_flow;
-	u16 m_columns;
 	DrawingPoint m_origin;
 	DrawingArea m_area;
 	sgfx::Point m_touch_last;
 	TouchGesture m_touch_gesture;
-
 	var::Vector<LayoutComponent> m_component_list;
-	bool m_is_initialized = false;
+	EventHandlerFunction m_event_handler;
 
 	void shift_origin(DrawingPoint shift);
 	drawing_int_t handle_vertical_scroll(sg_int_t scroll);
 	drawing_int_t handle_horizontal_scroll(sg_int_t scroll);
 
-	DrawingPoint calculate_next_point(const DrawingArea& area);
+	DrawingPoint calculate_next_point(
+			const DrawingPoint& point,
+			const DrawingArea& area
+			);
 
 	void generate_layout_positions();
 	void generate_vertical_layout_positions();
 	void generate_horizontal_layout_positions();
+	void generate_free_layout_positions();
+
+	void examine_visibility();
+};
+
+template<class T> class LayoutAccess : public Layout {
+public:
+
+	LayoutAccess<T>(
+			EventLoop * event_loop
+			) : Layout(event_loop){}
+
+
+	T& add_component(
+			const var::String & name,
+			Component& component
+			){
+		return static_cast<T&>(Layout::add_component(name, component));
+	}
+
+	T& set_flow(enum flow value){
+		return static_cast<T&>(Layout::set_flow(value));
+	}
+
+	T& set_vertical_scroll_enabled(bool value = true){
+		return static_cast<T&>(Layout::set_vertical_scroll_enabled(value));
+	}
+
+	T& set_horizontal_scroll_enabled(bool value = true){
+		return static_cast<T&>(Layout::set_horizontal_scroll_enabled(value));
+	}
+
+protected:
 
 };
 

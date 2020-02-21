@@ -1,32 +1,26 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "ux/Component.hpp"
 #include "sys/Printer.hpp"
-#include "ux/Scene.hpp"
+#include "ux/EventLoop.hpp"
 
 using namespace sgfx;
 using namespace ux;
 
-SceneCollection * Component::scene_collection(){
-	return scene()->scene_collection();
-}
-
-const SceneCollection * Component::scene_collection() const {
-	return scene()->scene_collection();
-}
 
 Component::~Component(){
-	disable();
+	set_visible_internal(false);
 }
 
-void Component::enable(
-		hal::Display & display
-		){
+void Component::examine_visibility(){
+	if( is_visible() && is_enabled() ){
+		if( display() == nullptr ){
+			m_is_visible = false;
+			return;
+		}
 
-	if( m_is_enabled == false ){
-		m_reference_drawing_attributes.set_bitmap(display);
-		m_display = &display;
-
+		m_reference_drawing_attributes.set_bitmap(*display());
 		//local bitmap is a small section of the reference bitmap
+		m_reference_drawing_attributes.calculate_area_on_bitmap();
 		if( m_local_bitmap.allocate(
 					m_reference_drawing_attributes.calculate_area_on_bitmap(),
 					sgfx::Bitmap::BitsPerPixel(
@@ -42,44 +36,40 @@ void Component::enable(
 				.set_bitmap(m_local_bitmap);
 
 		set_refresh_region(sgfx::Region());
-		m_is_enabled = true;
-
 		redraw();
-	}
-}
-
-
-void Component::disable(){
-	if( m_is_enabled ){
-		m_is_enabled = false;
+		handle_event(SystemEvent(SystemEvent::id_enter));
+	} else {
+		handle_event(SystemEvent(SystemEvent::id_exit));
 		m_local_bitmap.free();
 	}
 }
 
+
 DrawingPoint Component::translate_point(const sgfx::Point & point){
-	if( contains(point) == false ){
-		return DrawingPoint(0,0);
+	if( is_ready_to_draw() ){
+
+		sgfx::Point relative_point = point -
+				m_reference_drawing_attributes.calculate_point_on_bitmap();
+
+		sgfx::Area area = m_reference_drawing_attributes.calculate_area_on_bitmap();
+
+		//now scale for width
+		return DrawingPoint(
+					1000 * relative_point.x() / area.width(),
+					1000 * relative_point.y() / area.height()
+					);
 	}
 
-	sgfx::Point relative_point = point -
-			m_reference_drawing_attributes.calculate_point_on_bitmap();
-
-	sgfx::Area area = m_reference_drawing_attributes.calculate_area_on_bitmap();
-
-	//now scale for width
-	return DrawingPoint(
-				1000 * relative_point.x() / area.width(),
-				1000 * relative_point.y() / area.height()
-				);
+	return DrawingPoint(0,0);
 }
 
 
 void Component::refresh_drawing(){
-	if( m_display ){
+	if( is_ready_to_draw() ){
 		//use the palette if it is available
 
-		if( scene()->scene_collection()->theme().set_display_palette(
-					*m_display,
+		if( theme()->set_display_palette(
+					*display(),
 					m_theme_style,
 					m_theme_state
 					) < 0 ){
@@ -93,7 +83,7 @@ void Component::refresh_drawing(){
 					m_refresh_region.area()
 					);
 
-		m_display->set_window(window_region);
+		display()->set_window(window_region);
 
 #if 0
 		sys::Printer p;
@@ -102,7 +92,7 @@ void Component::refresh_drawing(){
 		p.close_object();
 #endif
 
-		m_display->write(
+		display()->write(
 					m_local_bitmap.create_reference(m_refresh_region)
 					);
 
@@ -110,44 +100,64 @@ void Component::refresh_drawing(){
 	}
 }
 
-const sgfx::Theme & Component::theme() const {
-	return scene()->scene_collection()->theme();
+const sgfx::Theme * Component::theme() const {
+	return event_loop()->theme();
+}
+
+const hal::Display* Component::display() const {
+	return event_loop()->display();
+}
+
+hal::Display* Component::display(){
+	return event_loop()->display();
 }
 
 void Component::erase(){
-	Region window_region =
-			Region(
-				Point(m_reference_drawing_attributes.calculate_point_on_bitmap())
-				+ m_refresh_region.point(),
-				m_refresh_region.area()
-				);
+	if( is_ready_to_draw() ){
+		Region window_region =
+				Region(
+					Point(m_reference_drawing_attributes.calculate_point_on_bitmap())
+					+ m_refresh_region.point(),
+					m_refresh_region.area()
+					);
+
+		if( theme()->set_display_palette(
+					*display(),
+					m_theme_style,
+					m_theme_state
+					) < 0 ){
+			printf("--failed to set display palette\n");
+		}
 
 #if 0
-	sys::Printer p;
-	p.open_object("erase " + name());
-	p << window_region;
-	p.close_object();
+		sys::Printer p;
+		p.open_object("erase " + name());
+		p << window_region;
+		p.close_object();
 #endif
-	if( (window_region.width() * window_region.height()) > 0 ){
-		m_display->set_window(window_region);
-		m_display->clear();
+		if( (window_region.width() * window_region.height()) > 0 ){
+			display()->set_window(window_region);
+			display()->clear();
+		}
 	}
 }
 
 void Component::apply_antialias_filter(const DrawingAttributes & attributes){
-	if( is_antialias() ){
+	if( is_ready_to_draw() ){
+		if( is_antialias() ){
 #if 0
-		attributes.bitmap().apply_antialias_filter(
-					theme().antialias_filter(),
-					attributes.bitmap().region()
-					);
+			attributes.bitmap().apply_antialias_filter(
+						theme().antialias_filter(),
+						attributes.bitmap().region()
+						);
 #endif
+		}
+		set_refresh_drawing_pending();
 	}
-	set_refresh_drawing_pending();
 }
 
 void Component::apply_antialias_filter(const DrawingScaledAttributes & attributes){
-	if( is_antialias() ){
+	if( is_ready_to_draw() ){
 #if 0
 		attributes.bitmap().apply_antialias_filter(
 					theme().antialias_filter(),

@@ -8,49 +8,39 @@
 
 namespace ux {
 
-class Label : public Component, public DrawingAlignment<Label> {
-public:
+class Label :
+		public ComponentAccess<Label, COMPONENT_SIGNATURE('l','a','b','l')>,
+public DrawingAlignment<Label>,
+public DrawingComponentProperties<Label> {
+	public:
 
-   Label& set_border_size(u8 value){
-      m_border_size = value;
-      return *this;
-   }
+	static u32 whatis_signature(){
+		return COMPONENT_SIGNATURE('l','a','b','l');
+	}
 
-   Label & set_font_name(const var::String & value){
-      m_font_name = value;
-      return *this;
-   }
+	Label& set_label(const var::String & value){
+		m_label = value;
+		return *this;
+	}
 
-   Label& set_label(const var::String & value){
-      m_label = value;
-      return *this;
-   }
+	Label& set_icon_name(const var::String & value){
+		m_icon_name = value;
+		return *this;
+	}
 
-   Label& set_padding(u8 value){
-      m_padding = value;
-      return *this;
-   }
+	void draw_to_scale(const DrawingScaledAttributes & attributes);
 
-   Label& set_icon_name(const var::String & value){
-      m_icon_name = value;
-      return *this;
-   }
+	const var::String& label() const {
+		return m_label;
+	}
 
-   Label& set_icon_rotation(s16 value){
-      m_icon_rotation = value;
-      return *this;
-   }
+	const var::String& icon_name() const {
+		return m_icon_name;
+	}
 
-   void draw_to_scale(const DrawingScaledAttributes & attributes);
-	 void handle_event(const ux::Event & event);
-
-private:
-   var::String m_label;
-   var::String m_icon_name;
-   s16 m_icon_rotation = 0;
-   u8 m_border_size = 1;
-   u8 m_padding = 10;
-   var::String m_font_name;
+	private:
+	var::String m_label;
+	var::String m_icon_name;
 
 };
 

@@ -15,14 +15,14 @@ Scene::~Scene(){
 
 Scene& Scene::enable(){
 	for(auto component: m_component_list){
-		component->enable(scene_collection()->display());
+		component->set_visible(scene_collection()->display());
 	}
 	return *this;
 }
 
 Scene& Scene::disable(){
 	for(auto component: m_component_list){
-		component->disable();
+		component->set_invisible();
 	}
 	return *this;
 }
@@ -45,14 +45,14 @@ void Scene::handle_event(const Event & event){
 
 			//enable the components
 			for(auto component_pointer: m_component_list){
-				component_pointer->enable(scene_collection()->display());
+				component_pointer->set_visible(scene_collection()->display());
 			}
 		}
 	}
 
 	for(auto component_pointer: m_component_list){
 		//pass events to each component
-		if( component_pointer->is_enabled() ){
+		if( component_pointer->is_visible() ){
 			component_pointer->handle_event(event);
 		}
 	}
@@ -60,7 +60,7 @@ void Scene::handle_event(const Event & event){
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_exit ){
 			for(auto component_pointer: m_component_list){
-				component_pointer->disable();
+				component_pointer->set_invisible();
 			}
 			var::Data::reclaim_heap_space();
 		}

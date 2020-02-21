@@ -21,8 +21,8 @@ public:
          const var::String & name,
 				 Component& component
          ){
-			component.set_scene(this);
-			component.set_name(name);
+			//component.set_scene(this);
+			//component.set_name(name);
 			m_component_list.push_back(&component);
       return *this;
    }

@@ -86,7 +86,11 @@ public:
 	 * @param mono true to convert to a mono pixel
 	 * @param thres threshold brightness for a mono pixel to be on
 	 */
-	int read_pixel(u8 * pixel, u32 pixel_size, bool mono = false, u8 thres = 128);
+	int read_pixel(
+			u8 * pixel,
+			u32 pixel_size,
+			bool mono = false,
+			u8 thres = 128);
 
 	/*! \cond */
 	typedef struct MCU_PACK {

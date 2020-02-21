@@ -40,9 +40,11 @@ class SliderEvent : public EventObject<EVENT_TYPE('_','s','l','d')> {
 
 };
 
-class Slider : public Component {
+class Slider : public ComponentAccess<
+		Slider,
+		COMPONENT_SIGNATURE('s','l','d','r')
+> {
 public:
-   Slider();
 
    void draw(const DrawingAttributes & attributes);
    void handle_event(const ux::Event & event);
@@ -63,6 +65,9 @@ public:
 private:
    u16 m_value;
    u16 m_maximum;
+	 bool m_is_touched = false;
+
+	 void update_touch_point(const sgfx::Point display_point);
 
 };
 

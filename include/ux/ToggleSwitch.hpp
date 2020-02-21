@@ -35,7 +35,9 @@ private:
 
 };
 
-class ToggleSwitch : public Component {
+class ToggleSwitch : public ComponentAccess<
+		ToggleSwitch, COMPONENT_SIGNATURE('t','o','g','g')
+		> {
 public:
 
    bool state() const {

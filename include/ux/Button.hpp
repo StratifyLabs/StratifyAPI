@@ -29,7 +29,8 @@ public:
 		id_none,
 		id_active,
 		id_pressed,
-		id_released
+		id_released,
+		id_held
 	};
 
    const var::String & name() const {
@@ -41,16 +42,18 @@ private:
 
 };
 
-class Button : public Component {
+class Button : public ComponentAccess<
+		Button,
+		COMPONENT_SIGNATURE('b','u','t','n')
+		>, public DrawingComponentProperties<Button> {
 public:
+
+	static u32 whatis_signature(){
+		return COMPONENT_SIGNATURE('b','u','t','n');
+	}
 
    bool state() const {
       return m_state;
-   }
-
-   Button& set_border_size(u8 value){
-      m_border_size = value;
-      return *this;
    }
 
    Button& set_state(bool value){
@@ -68,11 +71,6 @@ public:
       return *this;
    }
 
-   Button& set_icon_rotation(s16 value){
-      m_icon_rotation = value;
-      return *this;
-   }
-
    Button& toggle(){
       m_state = !m_state;
       return *this;
@@ -82,11 +80,10 @@ public:
    void handle_event(const ux::Event & event);
 
 private:
-   var::String m_label;
-   var::String m_icon_name;
-   s16 m_icon_rotation = 0;
-   u8 m_border_size = 1;
+	 var::String m_label;
+	 var::String m_icon_name;
    bool m_state;
+	 chrono::Timer m_hold_timer;
 
 
 

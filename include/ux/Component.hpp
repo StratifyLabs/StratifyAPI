@@ -9,41 +9,26 @@
 #include "Drawing.hpp"
 #include "Event.hpp"
 
+#define COMPONENT_SIGNATURE(a,b,c,d) ((a << 24) | (b << 16) | (c << 8) | (d))
+
 namespace ux {
 
-class Scene;
-class SceneCollection;
-class CompoundComponent;
+class EventLoop;
 
 class Component : public Drawing {
 public:
 
-	using EventHandlerFunction = std::function<void(Component * object, const Event & event)>;
+	Component(u32 signature = 0) : m_signature(signature){
+	}
 	virtual ~Component();
 
-	Component & set_event_handler(EventHandlerFunction event_handler){
-		m_event_handler = event_handler;
-		return *this;
+	template<typename T> T * reinterpret(){
+		return static_cast<T*>(this);
 	}
 
-	Component & set_drawing_area(const DrawingArea & drawing_area){
-		m_reference_drawing_attributes.set_area(drawing_area);
-		return *this;
-	}
 
-	Component & set_drawing_point(const DrawingPoint & drawing_point){
-		m_reference_drawing_attributes.set_point(drawing_point);
-		return *this;
-	}
-
-	Component & set_theme_style(enum sgfx::Theme::style value){
-		m_theme_style = value;
-		return *this;
-	}
-
-	Component & set_theme_state(enum sgfx::Theme::state value){
-		m_theme_state = value;
-		return *this;
+	static u32 whatis_signature(){
+		return 0;
 	}
 
 	enum sgfx::Theme::style theme_style() const {
@@ -58,30 +43,29 @@ public:
 		return m_is_antialias;
 	}
 
-	Component & set_antialias(bool value = true){
+	Component& set_antialias(bool value = true){
 		m_is_antialias = value;
 		return *this;
 	}
 
-	virtual void enable(
-			hal::Display & display
-			);
-
-	virtual void disable();
+	bool is_visible() const {
+		return m_is_visible;
+	}
 
 	bool is_enabled() const {
 		return m_is_enabled;
 	}
 
-	const sgfx::Theme & theme() const;
+
+	const sgfx::Theme * theme() const;
+	const hal::Display * display() const;
+	hal::Display * display();
+
+
 
 	//update the location of the component (allow animations)
 
-	virtual void handle_event(const ux::Event & event){
-		if( m_event_handler ){
-			m_event_handler(this, event);
-		}
-	}
+	virtual void handle_event(const ux::Event & event){}
 
 	const var::String & name() const {
 		return m_name;
@@ -91,8 +75,10 @@ public:
 	void apply_antialias_filter(const DrawingScaledAttributes & attributes);
 
 	void redraw(){
-		draw(local_drawing_attributes());
-		set_refresh_drawing_pending();
+		if( is_ready_to_draw() ){
+			draw(local_drawing_attributes());
+			set_refresh_drawing_pending();
+		}
 	}
 
 	sgfx::Region region() const {
@@ -107,29 +93,44 @@ public:
 
 	DrawingPoint translate_point(const sgfx::Point & point);
 
-	Scene * scene(){ return m_scene; }
-	const Scene * scene() const { return m_scene; }
-
-	SceneCollection * scene_collection();
-	const SceneCollection * scene_collection() const;
-
-	enum colors {
-		color_background = 0,
-		color_border = 5,
-		color_default = 10,
-		color_text = 15
-	};
-
 	void erase();
 
 	void set_refresh_drawing_pending(){
 		m_is_refresh_drawing_pending = true;
 	}
 
+	EventLoop * event_loop(){
+		return m_event_loop;
+	}
+
+	const EventLoop * event_loop() const {
+		return m_event_loop;
+	}
+
+	void set_drawing_area(const DrawingArea & drawing_area){
+		m_reference_drawing_attributes.set_area(drawing_area);
+	}
+
+	void set_drawing_point(const DrawingPoint & drawing_point){
+		m_reference_drawing_attributes.set_point(drawing_point);
+	}
+
+	void set_theme_style(enum sgfx::Theme::style value){
+		m_theme_style = value;
+	}
+
+	void set_theme_state(enum sgfx::Theme::state value){
+		m_theme_state = value;
+	}
 
 protected:
 
-	bool m_is_enabled = false;
+	bool m_is_visible = false;
+	bool m_is_enabled = true;
+	virtual void examine_visibility();
+
+
+	virtual void touch_drawing_attributes(){}
 
 	void set_refresh_region(const sgfx::Region & region){
 		if( region.width() * region.height() == 0 ){
@@ -144,8 +145,6 @@ protected:
 	}
 
 	void refresh_drawing();
-	friend class Scene;
-	friend class CompoundComponent;
 	friend class Layout;
 	friend class LayoutComponent;
 
@@ -161,15 +160,41 @@ protected:
 		return m_reference_drawing_attributes;
 	}
 
+	virtual void set_enabled_internal(bool value = true){
+		if( m_is_enabled != value ){
+			m_is_enabled = value;
+			examine_visibility();
+		}
+	}
+
+	virtual void set_visible_internal(bool value = true){
+		if( m_is_visible != value ){
+			m_is_visible = value;
+			examine_visibility();
+		}
+	}
+
+	void set_event_loop(EventLoop * event_loop){
+		m_event_loop = event_loop;
+	}
+
+	bool is_ready_to_draw() const {
+		return is_enabled() && is_visible();
+	}
+
+	u32 signature() const {
+		return m_signature;
+	}
+
+
 private:
 
+	const u32 m_signature;
 	var::String m_name;
-	u32 m_type_id;
 	//needs to know where on the display it is drawn
 	DrawingAttributes m_reference_drawing_attributes;
 	DrawingAttributes m_local_drawing_attributes;
 	sgfx::Bitmap m_local_bitmap;
-	hal::Display * m_display = nullptr;
 	enum sgfx::Theme::style m_theme_style = sgfx::Theme::style_brand_primary;
 	enum sgfx::Theme::state m_theme_state = sgfx::Theme::state_default;
 	bool m_is_antialias = true;
@@ -177,17 +202,47 @@ private:
 	sgfx::Region m_refresh_region;
 
 	//needs a palette to use while drawing
-	sgfx::Palette * m_palette = nullptr;
-	Scene * m_scene = nullptr;
-	EventHandlerFunction m_event_handler;
+	EventLoop * m_event_loop = nullptr;
 
 	void set_name(const var::String & name){
 		m_name = name;
 	}
 
-	void set_scene(Scene * scene){
-		m_scene = scene;
+
+};
+
+template<class T, u32 signature_value> class ComponentAccess : public Component {
+public:
+
+	ComponentAccess<T, signature_value>() : Component(signature_value){}
+
+	T& set_enabled(bool value = true){
+		Component::set_enabled_internal(value);
+		return static_cast<T&>(*this);
 	}
+
+	T& set_drawing_area(const DrawingArea & value){
+		Component::set_drawing_area(value);
+		return static_cast<T&>(*this);
+	}
+
+	T& set_drawing_point(const DrawingPoint & value){
+		Component::set_drawing_point(value);
+		return static_cast<T&>(*this);
+	}
+
+	T& set_theme_style(enum sgfx::Theme::style value){
+		Component::set_theme_style(value);
+		return static_cast<T&>(*this);
+	}
+
+	T& set_theme_state(enum sgfx::Theme::state value){
+		Component::set_theme_state(value);
+		return static_cast<T&>(*this);
+	}
+
+protected:
+
 };
 
 

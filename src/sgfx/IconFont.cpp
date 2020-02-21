@@ -11,6 +11,12 @@ IconFontInfo::IconFontInfo(
 	m_icon_font = icon_font;
 }
 
+IconFontInfo::~IconFontInfo(){
+	if( m_icon_font != nullptr ){
+		delete m_icon_font;
+	}
+}
+
 IconFontInfo::IconFontInfo(const var::String & path){
 	m_path = path;
 
@@ -19,7 +25,7 @@ IconFontInfo::IconFontInfo(const var::String & path){
 				var::Tokenizer::Delimeters("-.")
 				);
 
-	if( tokens.count() != 4 ){
+	if( tokens.count() != 3 ){
 		m_point_size = 0;
 	} else {
 		m_icon_font = nullptr;
@@ -27,6 +33,26 @@ IconFontInfo::IconFontInfo(const var::String & path){
 		m_point_size = var::String(tokens.at(1)).to_integer();
 	}
 }
+
+IconFontInfo & IconFontInfo::create_icon_font(){
+	if( m_file.open(path(), fs::OpenFlags::read_only()) < 0 ){
+		return *this;
+	}
+	if( m_icon_font != nullptr ){
+		delete m_icon_font;
+	}
+	m_icon_font = new IconFont(m_file);
+	return *this;
+}
+
+void IconFontInfo::destroy_icon_font(){
+	if( m_icon_font != nullptr ){
+		delete m_icon_font;
+		m_file.close();
+		m_icon_font = nullptr;
+	}
+}
+
 
 bool IconFontInfo::ascending_point_size(
 		const IconFontInfo & a,

@@ -17,6 +17,8 @@ public:
 			IconFont * icon_font = nullptr
 			);
 
+	~IconFontInfo();
+
 	IconFontInfo(const var::String & path);
 
 	const var::String & name() const {
@@ -43,6 +45,13 @@ public:
 		m_icon_font = icon_font;
 		return *this;
 	}
+
+	bool is_valid() const {
+		return m_icon_font != nullptr;
+	}
+
+	IconFontInfo & create_icon_font();
+	void destroy_icon_font();
 
 	const fs::File & icon_font_file() const {
 		return m_file;
@@ -95,6 +104,14 @@ public:
 					);
 	}
 
+	const sg_size_t width() const {
+		return m_icon.width;
+	}
+
+	const sg_size_t height() const {
+		return m_icon.height;
+	}
+
 private:
 	sg_font_icon_t m_icon;
 
@@ -102,12 +119,23 @@ private:
 
 class IconFont {
 public:
-	IconFont();
 	IconFont(const fs::File & file);
 
 	int refresh();
 
 	sg_size_t point_size() const {
+		return m_header.max_height;
+	}
+
+	u8 bits_per_pixel() const {
+		return m_header.bits_per_pixel;
+	}
+
+	sg_size_t width() const {
+		return m_header.max_width;
+	}
+
+	sg_size_t height() const {
 		return m_header.max_height;
 	}
 

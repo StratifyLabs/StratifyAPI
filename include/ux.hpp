@@ -7,7 +7,6 @@
 namespace ux {}
 
 #include "ux/Component.hpp"
-#include "ux/CompoundComponent.hpp"
 #include "ux/Button.hpp"
 #include "ux/Drawing.hpp"
 #include "ux/Event.hpp"

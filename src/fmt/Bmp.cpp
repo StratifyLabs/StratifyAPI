@@ -182,7 +182,11 @@ int Bmp::seek_row(s32 y) const {
 	return seek(Location(m_offset + calc_row_size() * y), SET);
 }
 
-int Bmp::read_pixel(uint8_t * pixel, u32 pixel_size, bool mono, uint8_t thres){
+int Bmp::read_pixel(
+		u8 * pixel,
+		u32 pixel_size,
+		bool mono,
+		u8 thres){
 	u32 avg;
 	u32 i;
 
@@ -212,7 +216,7 @@ int Bmp::read_pixel(uint8_t * pixel, u32 pixel_size, bool mono, uint8_t thres){
 int Bmp::save(
 		const var::String & path,
 		const sgfx::Bitmap & bitmap,
-		const sgfx::Palette & pallete
+		const sgfx::Palette & palette
 		){
 
 	Bmp bmp;
@@ -230,11 +234,11 @@ int Bmp::save(
 		var::Vector<u8> row(bmp.calculate_row_size());
 		for(sg_int_t x = 0; x < bitmap.width(); x++){
 			sg_color_t color = bitmap.get_pixel(sgfx::Point(x,y));
-			sg_color_t color_rgb = pallete.colors().at(color);
+			PaletteColor palette_color = palette.palette_color(color);
 
-			row.at(x*3) = color_rgb & 0xff;
-			row.at(x*3+1) = color_rgb >> 8;
-			row.at(x*3+2) = color_rgb >> 16;
+			row.at(x*3) = palette_color.blue();
+			row.at(x*3+1) = palette_color.green();
+			row.at(x*3+2) = palette_color.red();
 		}
 
 		if( bmp.write(row) < 0 ){

@@ -16,14 +16,14 @@ void ProgressBar::draw_to_scale(const DrawingScaledAttributes & attributes){
          value() * (attributes.area().width() - border * 2) / maximum();
 
 
-   attributes.bitmap() << Pen().set_color(color_border);
+	 attributes.bitmap() << Pen().set_color(theme()->border_color());
 
    attributes.bitmap().draw_rectangle(
             attributes.point(),
             attributes.area()
             );
 
-   attributes.bitmap() << Pen().set_color(color_text);
+	 attributes.bitmap() << Pen().set_color(theme()->text_color());
    attributes.bitmap().draw_rectangle(
             attributes.point() + Point(border, border),
             Area(
