@@ -46,6 +46,10 @@ class Slider : public ComponentAccess<
 > {
 public:
 
+	Slider(const var::String & name) : ComponentAccess(name){
+
+	}
+
    void draw(const DrawingAttributes & attributes);
    void handle_event(const ux::Event & event);
 

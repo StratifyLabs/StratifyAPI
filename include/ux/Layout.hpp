@@ -9,7 +9,9 @@ namespace ux {
 
 class LayoutComponent {
 public:
-	LayoutComponent(Component * component){
+	LayoutComponent(
+			Component * component
+			){
 		m_component = component;
 		m_drawing_point = component->reference_drawing_attributes().point();
 		m_drawing_area = component->reference_drawing_attributes().area();
@@ -61,11 +63,13 @@ public:
 		flow_free
 	};
 
-	Layout(EventLoop * event_loop);
+	Layout(
+			const var::String & name,
+			EventLoop * event_loop
+			);
 	virtual ~Layout();
 
 	Layout& add_component(
-			const var::String & name,
 			Component& component
 			);
 
@@ -192,15 +196,15 @@ template<class T> class LayoutAccess : public Layout {
 public:
 
 	LayoutAccess<T>(
+			const var::String & name,
 			EventLoop * event_loop
-			) : Layout(event_loop){}
+			) : Layout(name, event_loop){}
 
 
 	T& add_component(
-			const var::String & name,
 			Component& component
 			){
-		return static_cast<T&>(Layout::add_component(name, component));
+		return static_cast<T&>(Layout::add_component(component));
 	}
 
 	T& set_flow(enum flow value){

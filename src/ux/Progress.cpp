@@ -4,7 +4,7 @@
 
 using namespace ux;
 
-Progress::Progress(){
+Progress::Progress(const var::String& name) : ComponentAccess<Progress, COMPONENT_SIGNATURE('p','r','o','g')>(name){
 	m_value = 0;
 	m_maximum = 100;
 }

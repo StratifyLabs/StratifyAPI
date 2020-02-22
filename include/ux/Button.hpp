@@ -48,6 +48,10 @@ class Button : public ComponentAccess<
 		>, public DrawingComponentProperties<Button> {
 public:
 
+	Button(const var::String & name) : ComponentAccess(name){
+
+	}
+
 	static u32 whatis_signature(){
 		return COMPONENT_SIGNATURE('b','u','t','n');
 	}

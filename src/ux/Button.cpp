@@ -69,6 +69,7 @@ void Button::handle_event(const ux::Event & event){
 					(theme_state() == Theme::state_highlighted) ){
 				toggle();
 				m_hold_timer.stop();
+				printf("handle button released %s\n", name().cstring());
 				event_loop()->handle_event(
 							ButtonEvent(name(), ButtonEvent::id_released)
 							);

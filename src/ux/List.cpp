@@ -99,12 +99,11 @@ void ListItem::handle_event(const ux::Event & event){
 }
 
 List& List::add_component(
-		const var::String & name,
 		Component& component
 		){
 	component.set_drawing_area(
 				DrawingArea(1000, m_item_height)
 				);
 	//component.set_theme_style( theme_style() );
-	return LayoutAccess<List>::add_component(name, component);
+	return LayoutAccess<List>::add_component(component);
 }
