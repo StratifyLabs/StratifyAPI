@@ -171,7 +171,7 @@ private:
 	DrawingPoint m_origin;
 	DrawingArea m_area;
 	sgfx::Point m_touch_last;
-	TouchGesture m_touch_gesture;
+	ux::TouchGesture m_touch_gesture;
 	var::Vector<LayoutComponent> m_component_list;
 	EventHandlerFunction m_event_handler;
 
