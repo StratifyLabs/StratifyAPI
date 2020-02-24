@@ -9,6 +9,7 @@ namespace var {
 class VersionString : public api::InfoObject {
 public:
 	VersionString(u8 major = 0, u8 minor = 0, u8 patch = 0);
+	VersionString(u16 major_minor);
 
 	u32 to_bcd() const;
 
@@ -72,6 +73,9 @@ public:
 private:
 
 	String m_version;
+
+	void from(u16 major, u8 minor, u8 patch);
+	void from(u16 major_minor);
 
 };
 
