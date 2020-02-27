@@ -4,7 +4,7 @@
 
 #include "../sgfx/Font.hpp"
 #include "Component.hpp"
-#include "Icon.hpp"
+#include "draw/Icon.hpp"
 
 namespace ux {
 

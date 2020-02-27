@@ -2,9 +2,9 @@
 
 #include "sgfx.hpp"
 #include "sys/Assets.hpp"
-#include "ux/Icon.hpp"
+#include "ux/draw/Icon.hpp"
 
-using namespace ux;
+using namespace ux::draw;
 using namespace sgfx;
 
 Icon::Icon(){

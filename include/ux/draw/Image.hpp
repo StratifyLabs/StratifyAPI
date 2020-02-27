@@ -1,13 +1,13 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
 
-#ifndef SAPI_UX_IMAGE_HPP_
-#define SAPI_UX_IMAGE_HPP_
+#ifndef SAPI_UX_DRAW_IMAGE_HPP_
+#define SAPI_UX_DRAW_IMAGE_HPP_
 
-#include "Drawing.hpp"
+#include "../Drawing.hpp"
 
 
-namespace ux {
+namespace ux::draw {
 
 /*! \brief Image Class
  * \details The Image class draws a bitmap image
@@ -46,4 +46,4 @@ private:
 
 } /* namespace draw */
 
-#endif /* SAPI_DRAW_IMAGE_HPP_ */
+#endif /* SAPI_DRAW_DRAW_IMAGE_HPP_ */

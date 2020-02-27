@@ -1,11 +1,11 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
-#ifndef SAPI_UX_RECTANGLE_HPP_
-#define SAPI_UX_RECTANGLE_HPP_
+#ifndef SAPI_UX_DRAW_RECTANGLE_HPP_
+#define SAPI_UX_DRAW_RECTANGLE_HPP_
 
-#include "Drawing.hpp"
+#include "../Drawing.hpp"
 
-namespace ux {
+namespace ux::draw {
 
 /*! \brief Rectangle Class
  * \details The Rect class draws a rectangle on the display.  It can be used for
@@ -86,4 +86,4 @@ private:
 
 }
 
-#endif /* SAPI_UX_RECTANGLE_HPP_ */
+#endif /* SAPI_UX_DRAW_RECTANGLE_HPP_ */

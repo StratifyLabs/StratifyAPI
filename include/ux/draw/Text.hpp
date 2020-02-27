@@ -1,12 +1,12 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
-#ifndef SAPI_UX_TEXT_HPP_
-#define SAPI_UX_TEXT_HPP_
+#ifndef SAPI_UX_DRAW_TEXT_HPP_
+#define SAPI_UX_DRAW_TEXT_HPP_
 
-#include "../sgfx/Font.hpp"
-#include "Drawing.hpp"
+#include "../../sgfx/Font.hpp"
+#include "../Drawing.hpp"
 
-namespace ux {
+namespace ux::draw {
 
 
 /*! \brief Text Class
@@ -88,4 +88,4 @@ protected:
 
 }
 
-#endif /* SAPI_UX_TEXT_HPP_ */
+#endif /* SAPI_UX_DRAW_TEXT_HPP_ */

@@ -4,8 +4,9 @@
 #include "var.hpp"
 #include "sgfx.hpp"
 #include "sys/Assets.hpp"
-#include "ux/TextBox.hpp"
-using namespace ux;
+#include "ux/draw/TextBox.hpp"
+
+using namespace ux::draw;
 
 TextBox::TextBox(){ m_scroll = 0; m_scroll_max = 0; }
 

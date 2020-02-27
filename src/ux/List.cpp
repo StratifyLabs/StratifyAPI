@@ -1,8 +1,8 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "ux/List.hpp"
-#include "ux/Rectangle.hpp"
-#include "ux/Text.hpp"
-#include "ux/Icon.hpp"
+#include "ux/draw/Rectangle.hpp"
+#include "ux/draw/Text.hpp"
+#include "ux/draw/Icon.hpp"
 #include "ux/EventLoop.hpp"
 
 using namespace sgfx;
@@ -21,7 +21,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
 				);
 
 
-	Text()
+	draw::Text()
 			.set_string(key())
 			.set_font_name(theme()->primary_font_name())
 			.set_color(theme()->text_color())
@@ -32,7 +32,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
 				);
 
 	if( m_icon.is_empty() == false ){
-		Icon()
+		draw::Icon()
 				.set_icon_font_name(theme()->primary_icon_font_name())
 				.set_name(m_icon)
 				.set_color(theme()->text_color())
@@ -43,7 +43,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
 					region_inside_padding.area()
 					);
 	} else  if( m_value.is_empty() == false ){
-		Text()
+		draw::Text()
 				.set_font_name(theme()->primary_font_name())
 				.set_string(value())
 				.set_color(theme()->text_color())

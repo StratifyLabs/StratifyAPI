@@ -1,14 +1,12 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
-#ifndef SAPI_UX_TEXTBOX_HPP_
-#define SAPI_UX_TEXTBOX_HPP_
+#ifndef SAPI_UX_DRAW_TEXTBOX_HPP_
+#define SAPI_UX_DRAW_TEXTBOX_HPP_
 
-#include "Drawing.hpp"
-#include "../sgfx/Font.hpp"
 #include "Text.hpp"
-#include "../var/Tokenizer.hpp"
+#include "../../var/Tokenizer.hpp"
 
-namespace ux {
+namespace ux::draw {
 
 /*! \brief Text Box
  * \details This class is a scrolling text box that can be used to show
@@ -50,4 +48,4 @@ private:
 
 }
 
-#endif /* SAPI_UX_TEXTBOX_HPP_ */
+#endif /* SAPI_UX_DRAW_TEXTBOX_HPP_ */

@@ -19,11 +19,12 @@ set(SOURCES
 
 	#Drawing primitives
 	Drawing.cpp
-	Icon.cpp
-	Image.cpp
-	Text.cpp
-	TextBox.cpp
-	Rectangle.cpp
+	draw/Icon.cpp
+	draw/Image.cpp
+	draw/Text.cpp
+	draw/TextBox.cpp
+	draw/Rectangle.cpp
+	draw/Graph.cpp
 
 	PARENT_SCOPE
 

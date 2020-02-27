@@ -1,7 +1,7 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "ux/Button.hpp"
-#include "ux/Rectangle.hpp"
-#include "ux/Text.hpp"
+#include "ux/draw/Rectangle.hpp"
+#include "ux/draw/Text.hpp"
 #include "ux/EventLoop.hpp"
 #include "sys/Printer.hpp"
 
@@ -23,7 +23,7 @@ void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
 
 	//if the icon is available, draw it
 	if( m_icon_name.is_empty() == false ){
-		Icon()
+		draw::Icon()
 				.set_icon_font_name(theme()->primary_icon_font_name())
 				.set_name(m_icon_name)
 				.set_color(theme()->text_color())
@@ -35,7 +35,7 @@ void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
 
 	} else if( m_label.is_empty() == false ){
 		//if the label is available, draw it
-		Text().set_string(m_label)
+		draw::Text().set_string(m_label)
 				.set_font_name(theme()->primary_font_name())
 				.set_color(theme()->text_color())
 				.set_align_center()

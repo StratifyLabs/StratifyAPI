@@ -1,14 +1,16 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
-#ifndef SAPI_UX_ICON_HPP_
-#define SAPI_UX_ICON_HPP_
+#ifndef SAPI_UX_DRAW_ICON_HPP_
+#define SAPI_UX_DRAW_ICON_HPP_
 
 
-#include "Drawing.hpp"
-#include "../sgfx/IconFont.hpp"
-#include "../var/String.hpp"
+#include "../Drawing.hpp"
+#include "../../sgfx/IconFont.hpp"
+#include "../../var/String.hpp"
 
-namespace ux {
+namespace ux::draw {
+
+
 
 /*! \brief Icon Class
  * \details This class draws icons that can be scaled and rotated on a bitmap.
@@ -73,4 +75,4 @@ private:
 }
 
 
-#endif /* SAPI_UX_ICON_HPP_ */
+#endif /* SAPI_UX_DRAW_ICON_HPP_ */
