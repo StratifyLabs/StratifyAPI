@@ -15,6 +15,7 @@
 #include <sos/link.h>
 #include "../var/String.hpp"
 #include "../var/Vector.hpp"
+#include "../fs/Dir.hpp"
 #include "Appfs.hpp"
 #include "Sys.hpp"
 #include "ProgressCallback.hpp"
@@ -62,6 +63,10 @@ private:
 
 class LinkPath {
 public:
+	LinkPath(){
+		m_driver = nullptr;
+	}
+
 	LinkPath(
 			const var::String & path,
 			link_transport_mdriver_t * driver
@@ -83,6 +88,10 @@ public:
 						var::String::Position(position)
 						);
 		}
+	}
+
+	bool is_valid() const {
+		return !m_path.is_empty();
 	}
 
 	static bool is_device_path(const var::String & path){
@@ -114,11 +123,15 @@ public:
 		return m_driver == nullptr;
 	}
 
-	const var::String & path(){
+	var::String prefix() const {
+		return is_host_path() ? host_prefix() : device_prefix();
+	}
+
+	const var::String & path() const {
 		return m_path;
 	}
 
-	link_transport_mdriver_t * driver(){
+	link_transport_mdriver_t * driver() const {
 		return m_driver;
 	}
 
@@ -146,13 +159,16 @@ public:
 	using Path = fs::File::Path;
 	using SourcePath = fs::File::SourcePath;
 	using DestinationPath = fs::File::DestinationPath;
-	using ApplicationName = arg::Argument<const var::String &, struct ApplicationNameTag>;
+	using SourceLinkPath = arg::Argument<const LinkPath &, struct LinkSourceLinkPathTag>;
+	using DestinationLinkPath = arg::Argument<const LinkPath &, struct LinkDestinationLinkPathPathTag>;
+	using ApplicationName = arg::Argument<const var::String &, struct LinkApplicationNameTag>;
 	using IsLegacy = arg::Argument<bool, struct LinkIsLegacyTag>;
 	using RetryCount = arg::Argument<u32, struct LinkRetryCountTag>;
 	using RetryDelay = arg::Argument<const chrono::MicroTime &, struct LinkRetryDelayTag>;
 	using IsCopyToDevice = arg::Argument<bool, struct LinkIsCopyToDeviceTag>;
 	using FileDescriptor = fs::File::Descriptor;
 	using ImplicitFileDescriptor = fs::File::ImplicitDescriptor;
+	using IsOverwrite = fs::File::IsOverwrite;
 
 	using SourceFile = fs::File::Source;
 	using DestinationFile = fs::File::Destination;
@@ -337,7 +353,7 @@ public:
 			SourcePath src,
 			DestinationPath dest,
 			const fs::Permissions & permissions,
-			const ProgressCallback * progress_callback = 0
+			const ProgressCallback * progress_callback = nullptr
 			){
 		return copy(
 					src,
@@ -347,6 +363,25 @@ public:
 					progress_callback
 					);
 	}
+
+	static int copy_file(
+			const SourceLinkPath & source,
+			const DestinationLinkPath & destination,
+			IsOverwrite is_overwrite,
+			const ProgressCallback * progress_callback = nullptr
+			);
+
+	static fs::FileInfo get_file_info(const LinkPath & link_path){
+		return fs::File::get_info(
+					link_path.path(),
+					fs::File::LinkDriver(link_path.driver())
+					);
+	}
+
+	static bool directory_exists(const LinkPath & link_path){
+		return fs::Dir::exists(link_path.path(), fs::Dir::LinkDriver(link_path.driver()));
+	}
+
 
 	/*!
 		* \details Copes a file from the target device to the host.
