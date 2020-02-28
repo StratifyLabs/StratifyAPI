@@ -1,14 +1,11 @@
-#include "ux/draw/Graph.hpp"
+#include "ux/Graph.hpp"
 
 using namespace sgfx;
-using namespace ux::draw;
-
-Graph::Graph(){
-
-}
+using namespace ux;
 
 
-sgfx::Point LineGraph::tranform_point(
+
+sgfx::Point LineGraph::transform_point(
 		const DrawingScaledAttributes & drawing_attributes,
 		const LineGraphPoint & line_graph_point
 		){
@@ -21,14 +18,19 @@ sgfx::Point LineGraph::tranform_point(
 }
 
 void LineGraph::draw_to_scale(
-		const DrawingScaledAttributes & attr
+		const DrawingScaledAttributes & attributes
 		){
 
-	sgfx::Bitmap & bitmap = attr.bitmap();
+	sgfx::Bitmap & bitmap = attributes.bitmap();
+
+	bitmap << sgfx::Pen().set_color(theme()->background_color());
+	bitmap.draw_rectangle(
+				attributes.region()
+				);
 
 	const sgfx::Area offset_area(
-				attr.calculate_width( axes_area().width() ),
-				attr.calculate_width( axes_area().height() )
+				attributes.calculate_width( axes_area().width() ),
+				attributes.calculate_width( axes_area().height() )
 				);
 
 	//set the axis color
@@ -65,35 +67,43 @@ void LineGraph::draw_to_scale(
 	}
 
 	//draw the lines
-	Point cursor(-32767,-32767);
+	Point cursor;
 
-
+	bool is_first_point = true;
+	sg_color_t color = theme()->color();
 	for(const auto & data: data_set()){
-		for(u32 i=0; i < data.count(); i++){
-
-			//which points are in the visible window
-
-
+		color++;
+		if( color == theme()->color_count() ){
+			color = theme()->color();
 		}
-
+		bitmap << Pen().set_color(
+								color
+								);
 
 		for(const auto & point: data){
 			//map point to a place on the chart and draw it
-			if( cursor.x() == -32767 ){
-				cursor = tranform_point(attr, point);
+			if( is_first_point ){
+				is_first_point = false;
+				cursor = transform_point(
+							attributes,
+							point
+							);
 			} else {
-				Point next_point = tranform_point(attr, point);
+				Point next_point = transform_point(
+							attributes,
+							point
+							);
 				bitmap.draw_line(
 							cursor, next_point
 							);
-				next_point = cursor;
+				cursor = next_point;
 			}
 		}
 	}
 }
 
 void BarGraph::draw_to_scale(
-		const DrawingScaledAttributes & attr
+		const DrawingScaledAttributes & attributes
 		){
 
 }

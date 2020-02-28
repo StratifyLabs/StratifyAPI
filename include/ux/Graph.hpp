@@ -1,10 +1,10 @@
 #ifndef SAPI_UX_DRAW_GRAPH_HPP
 #define SAPI_UX_DRAW_GRAPH_HPP
 
-#include "../../var/Vector.hpp"
-#include "../Drawing.hpp"
+#include "../var/Vector.hpp"
+#include "Component.hpp"
 
-namespace ux::draw {
+namespace ux {
 
 class GraphAxis {
 public:
@@ -53,9 +53,9 @@ private:
 	float m_minor_tick = 0.0f;
 };
 
-class Graph : public Drawing  {
+class GraphAxes  {
 public:
-	Graph();
+	GraphAxes();
 
 	GraphAxis& x_axis(){ return m_x_axis; }
 	const GraphAxis& x_axis() const { return m_x_axis; }
@@ -92,20 +92,25 @@ private:
 	float m_y;
 };
 
-class LineGraph : public Graph {
-public:
+class LineGraph :
+		public GraphAxes,
+		public DrawingComponentProperties<LineGraph>,
+		public ComponentAccess<
+		LineGraph,
+		COMPONENT_SIGNATURE('l','g','p','h')> {
+	public:
 
 	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
 
 	var::Vector<var::Vector<LineGraphPoint>>& data_set(){ return m_data_set; }
 	const var::Vector<var::Vector<LineGraphPoint>>& data_set() const { return m_data_set; }
 
-private:
+	private:
 
-	sgfx::Point tranform_point(
-			const DrawingScaledAttributes & drawing_attributes,
-			const LineGraphPoint & line_graph_point
-			);
+	sgfx::Point transform_point(
+				const DrawingScaledAttributes & drawing_attributes,
+				const LineGraphPoint & line_graph_point
+				);
 
 	var::Vector<var::Vector<LineGraphPoint>> m_data_set;
 
@@ -135,10 +140,15 @@ private:
 	float m_value;
 };
 
-class BarGraph : public Graph {
+class BarGraph :
+		public GraphAxes,
+		public DrawingComponentProperties<BarGraph>,
+		public ComponentAccess<
+		BarGraph,
+		COMPONENT_SIGNATURE('l','g','p','h')>{
 public:
 
-	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
+	virtual void draw_to_scale(const DrawingScaledAttributes & attributes);
 
 
 	var::Vector<var::Vector<BarGraphValue>>& data_set(){ return m_data_set; }

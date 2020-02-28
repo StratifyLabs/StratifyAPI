@@ -228,7 +228,7 @@ private:
 template<class T, u32 signature_value> class ComponentAccess : public Component {
 public:
 
-	ComponentAccess<T, signature_value>(const var::String & name) :
+	ComponentAccess(const var::String & name) :
 		Component(name, signature_value){}
 
 	T& set_enabled(bool value = true){

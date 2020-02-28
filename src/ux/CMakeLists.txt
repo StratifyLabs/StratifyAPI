@@ -16,6 +16,7 @@ set(SOURCES
 	Slider.cpp
 	List.cpp
 	Layout.cpp
+	Graph.cpp
 
 	#Drawing primitives
 	Drawing.cpp
@@ -24,7 +25,6 @@ set(SOURCES
 	draw/Text.cpp
 	draw/TextBox.cpp
 	draw/Rectangle.cpp
-	draw/Graph.cpp
 
 	PARENT_SCOPE
 

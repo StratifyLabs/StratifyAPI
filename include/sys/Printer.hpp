@@ -201,7 +201,7 @@ struct PrinterFlags {
 };
 
 
-#define PRINTER_TRACE(printer, msg) (printer.trace(__PRETTY_FUNCTION__, __LINE__, msg))
+#define PRINTER_TRACE(printer, msg) (printer.trace(__FUNCTION__, __LINE__, msg))
 #define PRINTER_TRACE_ERROR(printer, x) int printer_result = x; if( printer_result < 0 ) printer.print("\nError: %s():%d (%d)", __FUNCTION__, __LINE__, x, y)
 
 class PrinterTermination {
