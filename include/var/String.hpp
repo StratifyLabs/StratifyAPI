@@ -411,6 +411,7 @@ public:
 					"Cannot convert non-arithmetic types to string"
 					);
 
+
 		if( fmt == nullptr ){
 			return String(std::to_string(value).c_str());
 		}

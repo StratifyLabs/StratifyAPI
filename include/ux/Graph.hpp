@@ -55,7 +55,6 @@ private:
 
 class GraphAxes  {
 public:
-	GraphAxes();
 
 	GraphAxis& x_axis(){ return m_x_axis; }
 	const GraphAxis& x_axis() const { return m_x_axis; }
@@ -69,6 +68,10 @@ public:
 	const DrawingArea& axes_area() const { return m_axes_area; }
 	DrawingArea& axes_area(){ return m_axes_area; }
 
+protected:
+	static float calculate_range_order_of_magnitude(float range);
+	static float get_minimum_axis_value(float value, float range);
+	static float get_maximum_axis_value(float value, float range);
 
 private:
 	GraphAxis m_x_axis;
@@ -80,6 +83,11 @@ private:
 
 class LineGraphPoint {
 public:
+	LineGraphPoint(){
+		m_x = 0.0f;
+		m_y = 0.0f;
+	}
+
 	LineGraphPoint(float x, float y) :
 		m_x(x), m_y(y){
 	}
@@ -92,28 +100,39 @@ private:
 	float m_y;
 };
 
+
+using LineGraphData = var::Vector<LineGraphPoint>;
+using LineGraphDataSet = var::Vector<LineGraphData>;
+
 class LineGraph :
 		public GraphAxes,
 		public DrawingComponentProperties<LineGraph>,
-		public ComponentAccess<
-		LineGraph,
-		COMPONENT_SIGNATURE('l','g','p','h')> {
+		public ComponentAccess<LineGraph,COMPONENT_SIGNATURE('l','g','p','h')> {
 	public:
+
+	LineGraph(const var::String & name) : ComponentAccess(name){}
 
 	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
 
-	var::Vector<var::Vector<LineGraphPoint>>& data_set(){ return m_data_set; }
-	const var::Vector<var::Vector<LineGraphPoint>>& data_set() const { return m_data_set; }
+	LineGraph& set_data_set(const LineGraphDataSet * data_set){
+		m_data_set = data_set;
+		return *this;
+	}
+
+	const LineGraphDataSet * data_set() const { return m_data_set; }
+
+	LineGraph& fit_axes_to_data();
+
 
 	private:
+	const LineGraphDataSet * m_data_set = nullptr;
 
+	LineGraphPoint minimum() const;
+	LineGraphPoint maximum() const;
 	sgfx::Point transform_point(
 				const DrawingScaledAttributes & drawing_attributes,
 				const LineGraphPoint & line_graph_point
 				);
-
-	var::Vector<var::Vector<LineGraphPoint>> m_data_set;
-
 
 };
 
@@ -123,7 +142,6 @@ public:
 	BarGraphValue(const var::String & label,
 								float value) :
 		m_label(label), m_value(value){
-
 	}
 
 	const var::String & label() const {
@@ -146,7 +164,7 @@ class BarGraph :
 		public ComponentAccess<
 		BarGraph,
 		COMPONENT_SIGNATURE('l','g','p','h')>{
-public:
+	public:
 
 	virtual void draw_to_scale(const DrawingScaledAttributes & attributes);
 
@@ -154,7 +172,7 @@ public:
 	var::Vector<var::Vector<BarGraphValue>>& data_set(){ return m_data_set; }
 	const var::Vector<var::Vector<BarGraphValue>>& data_set() const { return m_data_set; }
 
-private:
+	private:
 	var::Vector<var::Vector<BarGraphValue>> m_data_set;
 
 };

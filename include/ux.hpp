@@ -19,6 +19,7 @@ namespace ux {}
 #include "ux/Slider.hpp"
 #include "ux/TouchGesture.hpp"
 #include "ux/ToggleSwitch.hpp"
+#include "ux/Graph.hpp"
 
 using namespace sgfx;
 using namespace ux;
