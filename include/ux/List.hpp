@@ -42,6 +42,8 @@ public:
 		type_button //button
 	};
 
+	ListItem(const var::String & name) : ComponentAccess(name){}
+
 	ListItem& set_key(const var::String & value){
 		m_key = value;
 		return *this;

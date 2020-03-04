@@ -219,6 +219,31 @@ public:
 		return static_cast<T&>(Layout::set_horizontal_scroll_enabled(value));
 	}
 
+	T& set_enabled(bool value = true){
+		Component::set_enabled_internal(value);
+		return static_cast<T&>(*this);
+	}
+
+	T& set_drawing_area(const DrawingArea & value){
+		Component::set_drawing_area(value);
+		return static_cast<T&>(*this);
+	}
+
+	T& set_drawing_point(const DrawingPoint & value){
+		Component::set_drawing_point(value);
+		return static_cast<T&>(*this);
+	}
+
+	T& set_theme_style(enum sgfx::Theme::style value){
+		Component::set_theme_style(value);
+		return static_cast<T&>(*this);
+	}
+
+	T& set_theme_state(enum sgfx::Theme::state value){
+		Component::set_theme_state(value);
+		return static_cast<T&>(*this);
+	}
+
 protected:
 
 };

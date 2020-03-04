@@ -842,6 +842,8 @@ private:
 String operator+ (const char*   lhs, const String& rhs);
 String operator+ (const char*   lhs, String&& rhs);
 
+using StringList = Vector<String>;
+
 }
 
 
