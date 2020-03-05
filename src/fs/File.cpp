@@ -645,6 +645,15 @@ int File::write(
 		return set_error_number_if_error(-1);
 	}
 
+	if( file_size == 0 ){
+		if( progress_callback ){
+			progress_callback->update(0,100);
+			progress_callback->update(100,100);
+			progress_callback->update(0,0);
+		}
+		return 0;
+	}
+
 	int result;
 	do {
 		if( file_size - size_processed < page_size_value ){

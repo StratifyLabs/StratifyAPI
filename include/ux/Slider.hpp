@@ -8,35 +8,43 @@
 namespace ux {
 
 class SliderEvent : public EventObject<EVENT_TYPE('_','s','l','d')> {
-   public:
+	public:
 
-   SliderEvent(
-            const var::String name,
-            u16 value,
-            u16 maximum) :
-      EventObject<EVENT_TYPE('_','s','l','d')>(0),
-      m_name(name),
-      m_value(value),
-      m_maximum(maximum){
+	enum id {
+		id_none,
+		id_pressed,
+		id_active,
+		id_released
+	};
 
-   }
+	SliderEvent(
+				const var::String name,
+				enum id id,
+				u16 value,
+				u16 maximum) :
+		EventObject<EVENT_TYPE('_','s','l','d')>(id),
+		m_name(name),
+		m_value(value),
+		m_maximum(maximum){
 
-   const var::String & name() const {
-      return m_name;
-   }
+	}
 
-   const u16 value() const {
-      return m_value;
-   }
+	const var::String & name() const {
+		return m_name;
+	}
 
-   const u16 maximum() const {
-      return m_maximum;
-   }
+	const u16 value() const {
+		return m_value;
+	}
 
-   private:
-   const var::String & m_name;
-   u16 m_value;
-   u16 m_maximum;
+	const u16 maximum() const {
+		return m_maximum;
+	}
+
+	private:
+	const var::String & m_name;
+	u16 m_value;
+	u16 m_maximum;
 
 };
 
@@ -44,30 +52,34 @@ class Slider : public ComponentAccess<
 		Slider,
 		COMPONENT_SIGNATURE('s','l','d','r')
 > {
-public:
+	public:
 
-   void draw(const DrawingAttributes & attributes);
-   void handle_event(const ux::Event & event);
+	Slider(const var::String & name) : ComponentAccess(name){
 
-   u16 value(){ return m_value; }
-   u16 maximum(){ return m_maximum; }
+	}
 
-   Slider & set_value(u16 value){
-      m_value = value;
-      return *this;
-   }
+	void draw(const DrawingAttributes & attributes);
+	void handle_event(const ux::Event & event);
 
-   Slider & set_maximum(u16 value){
-      m_maximum = value;
-      return *this;
-   }
+	u16 value(){ return m_value; }
+	u16 maximum(){ return m_maximum; }
 
-private:
-   u16 m_value;
-   u16 m_maximum;
-	 bool m_is_touched = false;
+	Slider & set_value(u16 value){
+		m_value = value;
+		return *this;
+	}
 
-	 void update_touch_point(const sgfx::Point display_point);
+	Slider & set_maximum(u16 value){
+		m_maximum = value;
+		return *this;
+	}
+
+	private:
+	u16 m_value;
+	u16 m_maximum;
+	bool m_is_touched = false;
+
+	void update_touch_point(const sgfx::Point display_point);
 
 };
 

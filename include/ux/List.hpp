@@ -42,6 +42,8 @@ public:
 		type_button //button
 	};
 
+	ListItem(const var::String & name) : ComponentAccess(name){}
+
 	ListItem& set_key(const var::String & value){
 		m_key = value;
 		return *this;
@@ -79,12 +81,11 @@ private:
 class List : public LayoutAccess<List> {
 public:
 
-	List(EventLoop * event_loop) :LayoutAccess<List>(event_loop){
+	List(const var::String & name, EventLoop * event_loop) : LayoutAccess<List>(name, event_loop){
 		set_flow(flow_vertical);
 	}
 
 	List& add_component(
-			const var::String & name,
 			Component& component
 			);
 

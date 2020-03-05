@@ -1,9 +1,9 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
 
-#include "ux/Image.hpp"
+#include "ux/draw/Image.hpp"
 
-namespace ux {
+using namespace ux::draw;
 
 Image::Image(){
 	m_bitmap = 0;
@@ -41,5 +41,3 @@ void Image::draw_to_scale(const DrawingScaledAttributes & attr){
 	}
 }
 
-
-} /* namespace draw */

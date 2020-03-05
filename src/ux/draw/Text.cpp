@@ -2,10 +2,10 @@
 //Copyright 2011-2018 Tyler Gilbert; All Rights Reserved
 
 #include "sgfx.hpp"
-#include "ux/Text.hpp"
+#include "ux/draw/Text.hpp"
 #include "sys/Assets.hpp"
 
-using namespace ux;
+using namespace ux::draw;
 
 bool Text::resolve_font(sg_size_t h){
 	if( this->font() == nullptr ){

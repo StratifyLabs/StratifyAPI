@@ -6,7 +6,10 @@
 using namespace sgfx;
 using namespace ux;
 
-Layout::Layout(EventLoop* event_loop){
+Layout::Layout(
+		const var::String & name,
+		EventLoop* event_loop
+		) : ComponentAccess(name){
 	set_event_loop(event_loop);
 	m_flow = flow_free;
 	m_origin = DrawingPoint(0,0);
@@ -84,12 +87,10 @@ void Layout::examine_visibility(){
 }
 
 Layout& Layout::add_component(
-		const var::String & name,
 		Component& component
 		){
 
 	component.set_event_loop( event_loop() );
-	component.set_name(name);
 	m_component_list.push_back(
 				LayoutComponent(&component)
 				);

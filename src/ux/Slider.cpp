@@ -1,6 +1,6 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "ux/Slider.hpp"
-#include "ux/Rectangle.hpp"
+#include "ux/draw/Rectangle.hpp"
 #include "ux/EventLoop.hpp"
 
 using namespace ux;
@@ -12,12 +12,12 @@ void Slider::draw(const DrawingAttributes & attributes){
 	const DrawingArea slider_area(900,200);
 
 	//draw the background
-	Rectangle()
+	draw::Rectangle()
 			.set_color(theme()->background_color())
 			.draw(attributes, DrawingPoint(0,0), DrawingArea(1000,1000));
 
 	//draw the slider bar
-	Rectangle()
+	draw::Rectangle()
 			.set_color(theme()->border_color())
 			.draw(attributes, DrawingPoint(
 							50,
@@ -31,7 +31,7 @@ void Slider::draw(const DrawingAttributes & attributes){
 			m_value * indicator_range / m_maximum;
 
 	//draw the position indicator
-	Rectangle()
+	draw::Rectangle()
 			.set_color(theme()->color())
 			.draw(attributes,
 						DrawingPoint(indicator_position,0),
@@ -50,34 +50,35 @@ void Slider::handle_event(const ux::Event & event){
 
 
 		if( (touch_event.id() == ux::TouchEvent::id_pressed) &&
-									 contains(touch_event.point()) ){
-					m_is_touched = true;
-					update_touch_point(touch_event.point());
-				}
+				contains(touch_event.point()) ){
+			m_is_touched = true;
+			update_touch_point(touch_event.point());
+		}
 
 		if( m_is_touched ){
 			if( touch_event.id() == ux::TouchEvent::id_released ){
 				m_is_touched = false;
 				update_touch_point(touch_event.point());
+				event_loop()->handle_event(
+							SliderEvent(name(), SliderEvent::id_released, m_value, m_maximum)
+							);
 			} else if( touch_event.id() == ux::TouchEvent::id_active ){
-			 //need to check for dragging
+				//need to check for dragging
 				update_touch_point(touch_event.point());
-		 }
+				event_loop()->handle_event(
+							SliderEvent(name(), SliderEvent::id_active, m_value, m_maximum)
+							);
+			}
 		}
 
-		if( (touch_event.id() == ux::TouchEvent::id_released) &&
-				m_is_touched ){
-			m_is_touched = false;
-			update_touch_point(touch_event.point());
-		} else if( (touch_event.id() == ux::TouchEvent::id_pressed) &&
+		if( (touch_event.id() == ux::TouchEvent::id_pressed) &&
 							 contains(touch_event.point()) ){
 			m_is_touched = true;
 			update_touch_point(touch_event.point());
-		} else if( (touch_event.id() == ux::TouchEvent::id_active) &&
-							m_is_touched ){
-		 //need to check for dragging
-			update_touch_point(touch_event.point());
-	 }
+			event_loop()->handle_event(
+						SliderEvent(name(), SliderEvent::id_pressed, m_value, m_maximum)
+						);
+		}
 	}
 
 	Component::handle_event(event);
@@ -93,10 +94,6 @@ void Slider::update_touch_point(const sgfx::Point display_point){
 	} else {
 		m_value = (point.x() - 50) * m_maximum / 900;
 	}
-
-	event_loop()->handle_event(
-				SliderEvent(name(), m_value, m_maximum)
-				);
 
 	redraw();
 }

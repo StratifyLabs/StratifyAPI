@@ -12,7 +12,7 @@ class Progress : public ComponentAccess<
 		Progress, COMPONENT_SIGNATURE('p','r','o','g')
 		> {
 public:
-   Progress();
+	 Progress(const var::String & name);
 
    u16 value(){ return m_value; }
    u16 maximum(){ return m_maximum; }

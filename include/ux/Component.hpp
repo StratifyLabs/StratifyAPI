@@ -18,7 +18,10 @@ class EventLoop;
 class Component : public Drawing {
 public:
 
-	Component(u32 signature = 0) : m_signature(signature){
+	Component(
+			const var::String & name,
+			u32 signature = 0) :
+		m_name(name), m_signature(signature){
 	}
 	virtual ~Component();
 
@@ -26,6 +29,17 @@ public:
 		return static_cast<T*>(this);
 	}
 
+
+	template<class T, typename... Args> static T & create(
+			Args... args
+			){
+		T * result = new T(args...);
+		if( result == nullptr ){
+			//assert here
+			printf("failed!!!\n");
+		}
+		return *result;
+	}
 
 	static u32 whatis_signature(){
 		return 0;
@@ -189,8 +203,8 @@ protected:
 
 private:
 
-	const u32 m_signature;
 	var::String m_name;
+	const u32 m_signature;
 	//needs to know where on the display it is drawn
 	DrawingAttributes m_reference_drawing_attributes;
 	DrawingAttributes m_local_drawing_attributes;
@@ -214,7 +228,8 @@ private:
 template<class T, u32 signature_value> class ComponentAccess : public Component {
 public:
 
-	ComponentAccess<T, signature_value>() : Component(signature_value){}
+	ComponentAccess(const var::String & name) :
+		Component(name, signature_value){}
 
 	T& set_enabled(bool value = true){
 		Component::set_enabled_internal(value);

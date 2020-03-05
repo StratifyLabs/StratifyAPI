@@ -4,18 +4,25 @@
 
 #include "../sgfx/Font.hpp"
 #include "Component.hpp"
-#include "Icon.hpp"
+#include "draw/Icon.hpp"
 
 namespace ux {
 
+#define LABEL_SIGNATURE COMPONENT_SIGNATURE('l','a','b','l')
+
 class Label :
-		public ComponentAccess<Label, COMPONENT_SIGNATURE('l','a','b','l')>,
+		public ComponentAccess<Label, LABEL_SIGNATURE>,
 public DrawingAlignment<Label>,
 public DrawingComponentProperties<Label> {
 	public:
 
+
+	Label(const var::String & name) : ComponentAccess(name){
+
+	}
+
 	static u32 whatis_signature(){
-		return COMPONENT_SIGNATURE('l','a','b','l');
+		return LABEL_SIGNATURE;
 	}
 
 	Label& set_label(const var::String & value){

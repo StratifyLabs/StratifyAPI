@@ -678,6 +678,7 @@ protected:
 			sgfx::Bitmap & bitmap,
 			const sgfx::Region & region,
 			const sgfx::Theme * theme){
+
 		bitmap << sgfx::Pen().set_color(theme->border_color());
 		bitmap.draw_rectangle(
 					region

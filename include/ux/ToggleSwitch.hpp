@@ -40,6 +40,10 @@ class ToggleSwitch : public ComponentAccess<
 		> {
 public:
 
+	ToggleSwitch(const var::String & name) : ComponentAccess(name){
+
+	}
+
    bool state() const {
       return m_state;
    }

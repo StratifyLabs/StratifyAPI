@@ -17,8 +17,8 @@ Sha256::~Sha256(){
 
 Sha256 & Sha256::operator << (const var::Reference & a){
 	update(var::Reference::SourceBuffer(a.to_const_char()),
-			 var::Reference::Size(a.size())
-			 );
+				 var::Reference::Size(a.size())
+				 );
 	return *this;
 }
 
@@ -31,7 +31,7 @@ var::String Sha256::to_string(){
 	var::String result;
 	const var::Array<u8, 32> & out = output();
 	for(u32 i=0; i < out.count(); i++){
-		result << var::String().format("%02x", out.at(i));
+		result << var::String::number(out.at(i), "%02x");
 	}
 	return result;
 }
@@ -71,7 +71,8 @@ int Sha256::update(
 
 var::String Sha256::calculate(
 		const fs::File & file,
-		PageSize page_size){
+		PageSize page_size
+		){
 	var::Data page(page_size.argument());
 	Sha256 hash;
 
@@ -83,9 +84,12 @@ var::String Sha256::calculate(
 		return var::String();
 	}
 
-	while( file.read(page) > 0 ){
-		hash.update(page);
-
+	int result;
+	while( (result = file.read(page)) > 0 ){
+		hash.update(
+					var::Reference::SourceBuffer(page.to_const_char()),
+					var::Reference::Size(result)
+					);
 	}
 
 	return hash.to_string();
@@ -98,9 +102,9 @@ var::String Sha256::calculate(
 	fs::File f;
 
 	if( f.open(
-			 file_path,
-			 fs::OpenFlags::read_only()
-			 ) < 0 ){
+				file_path,
+				fs::OpenFlags::read_only()
+				) < 0 ){
 		return var::String();
 	}
 

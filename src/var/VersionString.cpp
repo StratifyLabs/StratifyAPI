@@ -5,19 +5,39 @@
 using namespace var;
 
 VersionString::VersionString(u8 major, u8 minor, u8 patch){
-	m_version.format("%d.%d.%d", major, minor, patch);
+	from(major,minor,patch);
 }
 
+VersionString::VersionString(u16 major_minor){
+	from(major_minor);
+}
+
+void VersionString::from(u16 major, u8 minor, u8 patch){
+	m_version =
+			String::number(major) +
+			"." +
+			String::number(minor) +
+			"." +
+			String::number(patch);
+}
+
+void VersionString::from(u16 major_minor){
+	m_version =
+			String::number(major_minor >> 8) +
+			"." +
+			String::number(major_minor & 0xff);
+}
+
+
 VersionString & VersionString::operator << (u16 value){
-	m_version.format("%d.%d", value >> 8, value & 0xff);
+	from(value);
 	return *this;
 }
 
 VersionString & VersionString::operator << (u32 value){
-	m_version.format("%d.%d.%d",
-						  (value >> 16),
-						  (value >> 8) & 0xff,
-						  value & 0xff);
+	from(value >> 16,
+			 (value >> 8) & 0xff,
+			 value & 0xff);
 	return *this;
 }
 

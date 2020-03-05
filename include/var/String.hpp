@@ -411,6 +411,7 @@ public:
 					"Cannot convert non-arithmetic types to string"
 					);
 
+
 		if( fmt == nullptr ){
 			return String(std::to_string(value).c_str());
 		}
@@ -840,6 +841,8 @@ private:
 
 String operator+ (const char*   lhs, const String& rhs);
 String operator+ (const char*   lhs, String&& rhs);
+
+using StringList = Vector<String>;
 
 }
 

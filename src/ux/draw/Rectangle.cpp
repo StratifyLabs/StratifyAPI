@@ -1,9 +1,9 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
-#include "ux/Rectangle.hpp"
+#include "ux/draw/Rectangle.hpp"
 #include "sgfx/Vector.hpp"
 
-using namespace ux;
+using namespace ux::draw;
 
 Rectangle::Rectangle(){
 }

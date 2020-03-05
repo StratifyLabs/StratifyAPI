@@ -1,6 +1,6 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "ux/ToggleSwitch.hpp"
-#include "ux/Rectangle.hpp"
+#include "ux/draw/Rectangle.hpp"
 #include "ux/EventLoop.hpp"
 
 using namespace ux;

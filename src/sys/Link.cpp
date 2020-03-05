@@ -210,6 +210,22 @@ int Link::reconnect(
 	return -1;
 }
 
+int Link::copy_file(
+		const SourceLinkPath & source,
+		const DestinationLinkPath & destination,
+		IsOverwrite is_overwrite,
+		const ProgressCallback * progress_callback
+		){
+	return File::copy(
+				File::SourcePath(source.argument().path()),
+				File::DestinationPath(destination.argument().path()),
+				is_overwrite,
+				progress_callback,
+				File::SourceLinkDriver(source.argument().driver()),
+				File::DestinationLinkDriver(destination.argument().driver())
+				);
+}
+
 int Link::open(
 		const var::String & path,
 		const OpenFlags & flags,
@@ -784,8 +800,8 @@ int Link::symlink(
 
 	if ( err < 0 ){
 		m_error_message.format("Failed to create symlink %s (%d)",
-														new_path.argument().cstring(),
-														link_errno);
+													 new_path.argument().cstring(),
+													 link_errno);
 	}
 	return check_error(err);
 }

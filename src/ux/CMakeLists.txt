@@ -16,14 +16,15 @@ set(SOURCES
 	Slider.cpp
 	List.cpp
 	Layout.cpp
+	Graph.cpp
 
 	#Drawing primitives
 	Drawing.cpp
-	Icon.cpp
-	Image.cpp
-	Text.cpp
-	TextBox.cpp
-	Rectangle.cpp
+	draw/Icon.cpp
+	draw/Image.cpp
+	draw/Text.cpp
+	draw/TextBox.cpp
+	draw/Rectangle.cpp
 
 	PARENT_SCOPE
 
