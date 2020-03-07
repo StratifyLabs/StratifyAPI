@@ -60,13 +60,13 @@ void Slider::handle_event(const ux::Event & event){
 				m_is_touched = false;
 				update_touch_point(touch_event.point());
 				event_loop()->handle_event(
-							SliderEvent(name(), SliderEvent::id_released, m_value, m_maximum)
+							SliderEvent(SliderEvent::id_released, *this)
 							);
 			} else if( touch_event.id() == ux::TouchEvent::id_active ){
 				//need to check for dragging
 				update_touch_point(touch_event.point());
 				event_loop()->handle_event(
-							SliderEvent(name(), SliderEvent::id_active, m_value, m_maximum)
+							SliderEvent(SliderEvent::id_active, *this)
 							);
 			}
 		}
@@ -76,7 +76,7 @@ void Slider::handle_event(const ux::Event & event){
 			m_is_touched = true;
 			update_touch_point(touch_event.point());
 			event_loop()->handle_event(
-						SliderEvent(name(), SliderEvent::id_pressed, m_value, m_maximum)
+						SliderEvent(SliderEvent::id_pressed, *this)
 						);
 		}
 	}

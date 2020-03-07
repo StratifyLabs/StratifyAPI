@@ -73,7 +73,7 @@ void ToggleSwitch::handle_event(const ux::Event & event){
 
 			if( event_loop() ){
 				event_loop()->trigger_event(
-							ToggleSwitchEvent(name(), state())
+							ToggleSwitchEvent(*this)
 							);
 			}
 

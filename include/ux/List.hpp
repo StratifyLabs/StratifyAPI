@@ -10,23 +10,17 @@ namespace ux {
 class ListItem;
 class List;
 
-class ListEvent : public EventObject<EVENT_TYPE('_','l','s','t')> {
+class ListEvent : public EventObject<ListItem, EVENT_TYPE('_','l','s','t')> {
 	public:
 
 	ListEvent(
-				const ListItem & item
+				ListItem & item
 				) :
-		EventObject<EVENT_TYPE('_','l','s','t')>(0),
-		m_list_item(item){
+		EventObject(0, &item){
 
 	}
 
-	const ListItem & item() const {
-		return m_list_item;
-	}
 
-private:
-	const ListItem & m_list_item;
 
 };
 

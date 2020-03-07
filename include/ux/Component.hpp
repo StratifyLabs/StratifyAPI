@@ -256,6 +256,7 @@ public:
 		return static_cast<T&>(*this);
 	}
 
+
 protected:
 
 };

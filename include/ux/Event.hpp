@@ -15,6 +15,8 @@ class Signal;
 
 namespace ux {
 
+class Component;
+
 #define EVENT_TYPE(a,b,c,d) ((a << 24) | (b << 16) | (c << 8) | (d))
 
 /*! \brief Event Class
@@ -32,7 +34,11 @@ class Event {
 public:
 
 	Event();
-	Event(u32 type, u32 id, void * context = 0);
+	Event(
+			u32 type,
+			u32 id,
+			Component * component = nullptr
+			);
 
 	Event & set_type(const char type[4]){
 		m_type = (type[0] << 0);
@@ -67,26 +73,58 @@ public:
 		return static_cast<const T&>(*this);
 	}
 
+	Component * component() const {
+		return m_component;
+	}
 
 private:
 	u32 m_type;
 	u32 m_id;
-	void * m_context;
+	Component * m_component;
 };
 
-template <u32 T> class EventObject : public Event {
+template <class D, u32 T> class EventObject : public Event {
 public:
-	EventObject(u32 id) : Event(T, id){}
+	EventObject(
+			u32 id,
+			D * component
+			) : Event(T, id, component){}
 
 	static u32 event_type(){
 		return T;
 	}
+
+	static bool is_event(
+			const Event & event,
+			u32 id
+			){
+		return (event.type() == event_type()) && (event.id() == id);
+	}
+
+	static D * component(
+			const Event & event,
+			u32 id){
+		if( is_event(event, id) ){
+			return static_cast<D*>(event.component());
+		}
+		return nullptr;
+	}
+
+	static D * component(
+			const Event & event
+			){
+		if( event.type() == event_type() ){
+			return static_cast<D*>(event.component());
+		}
+		return nullptr;
+	}
+
 };
 
 
-class SystemEvent : public EventObject<EVENT_TYPE('_','s','y','s')> {
-public:
-	SystemEvent(u32 id) : EventObject(id){}
+class SystemEvent : public EventObject<Component, EVENT_TYPE('_','s','y','s')> {
+	public:
+	SystemEvent(u32 id) : EventObject(id, nullptr){}
 	enum system_id {
 		id_enter,
 		id_exit,

@@ -9,29 +9,18 @@
 
 namespace ux {
 
-class ToggleSwitchEvent : public EventObject<EVENT_TYPE('_','t','o','g')> {
+class ToggleSwitch;
+
+class ToggleSwitchEvent :
+		public EventObject<ToggleSwitch, EVENT_TYPE('_','t','o','g')>
+{
 public:
 
-   ToggleSwitchEvent(
-            const var::String name,
-            bool state) :
-      EventObject<EVENT_TYPE('_','t','o','g')>(0),
-      m_name(name),
-      m_state(state){
+	 ToggleSwitchEvent(ToggleSwitch& toggle_switch) :
+			EventObject(0, &toggle_switch){
 
    }
 
-   const var::String & name() const {
-      return m_name;
-   }
-
-   const bool state() const {
-      return m_state;
-   }
-
-private:
-   const var::String & m_name;
-   bool m_state;
 
 };
 

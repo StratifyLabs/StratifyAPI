@@ -73,6 +73,7 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 			top_left.y = p.y + d.height()/2 - h/2;
 		}
 
+
 		font->draw(
 					string(),
 					attr.bitmap() << Pen().set_color(color()),
