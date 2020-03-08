@@ -22,6 +22,8 @@ public:
 			const var::String & name,
 			u32 signature = 0) :
 		m_name(name), m_signature(signature){
+		set_drawing_point(DrawingPoint(0,0));
+		set_drawing_area(DrawingArea(1000,1000));
 	}
 	virtual ~Component();
 
@@ -231,8 +233,18 @@ public:
 		return static_cast<T&>(*this);
 	}
 
+	T& set_drawing_area(drawing_size_t width, drawing_size_t height){
+		Component::set_drawing_area(DrawingArea(width,height));
+		return static_cast<T&>(*this);
+	}
+
 	T& set_drawing_point(const DrawingPoint & value){
 		Component::set_drawing_point(value);
+		return static_cast<T&>(*this);
+	}
+
+	T& set_drawing_point(drawing_int_t x, drawing_int_t y){
+		Component::set_drawing_point(DrawingPoint(x,y));
 		return static_cast<T&>(*this);
 	}
 
