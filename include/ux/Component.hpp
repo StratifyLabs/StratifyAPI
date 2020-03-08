@@ -30,17 +30,6 @@ public:
 	}
 
 
-	template<class T, typename... Args> static T & create(
-			Args... args
-			){
-		T * result = new T(args...);
-		if( result == nullptr ){
-			//assert here
-			printf("failed!!!\n");
-		}
-		return *result;
-	}
-
 	static u32 whatis_signature(){
 		return 0;
 	}
@@ -141,6 +130,7 @@ protected:
 
 	bool m_is_visible = false;
 	bool m_is_enabled = true;
+	bool m_is_created = false;
 	virtual void examine_visibility();
 
 
@@ -254,6 +244,18 @@ public:
 	T& set_theme_state(enum sgfx::Theme::state value){
 		Component::set_theme_state(value);
 		return static_cast<T&>(*this);
+	}
+
+	template<typename... Args> static T & create(
+			Args... args
+			){
+		T * result = new T(args...);
+		if( result == nullptr ){
+			//assert here
+			printf("failed!!!\n");
+		}
+		result->m_is_created = true;
+		return *result;
 	}
 
 

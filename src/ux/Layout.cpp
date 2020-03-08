@@ -54,6 +54,12 @@ bool Layout::transition(
 
 void Layout::examine_visibility(){
 	if( is_ready_to_draw() ){
+
+		if( m_is_created == false ){
+			printf("fatal %s was note created using Component::create()\n", name().cstring());
+			exit(1);
+		}
+
 		if( display() == nullptr ){
 			m_is_visible = false;
 			return;
