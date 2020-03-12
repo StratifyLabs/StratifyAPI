@@ -138,11 +138,10 @@ protected:
 
 	virtual void touch_drawing_attributes(){}
 
-	void set_refresh_region(const sgfx::Region & region){
+	virtual void set_refresh_region(const sgfx::Region & region){
+		m_refresh_region = region;
 		if( region.width() * region.height() == 0 ){
-			m_refresh_region = m_local_bitmap.region();
-		} else {
-			m_refresh_region = region;
+			set_visible_internal(false);
 		}
 	}
 

@@ -162,6 +162,8 @@ public:
 
 private:
 
+	void set_refresh_region(const sgfx::Region & region);
+
 	void touch_drawing_attributes(){
 		shift_origin(DrawingPoint(0,0));
 	}

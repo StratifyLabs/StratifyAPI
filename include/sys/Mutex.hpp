@@ -181,6 +181,19 @@ private:
 };
 
 
+class LockGuard {
+public:
+	LockGuard(Mutex & mutex) : m_mutex(mutex) {
+		mutex.lock();
+	}
+	~LockGuard(){
+		m_mutex.unlock();
+	}
+
+private:
+	Mutex & m_mutex;
+};
+
 }
 
 #endif /* SAPI_SYS_MUTEX_HPP_ */

@@ -2,7 +2,7 @@
 #ifndef SAPI_API_CRYPTO_OBJECT_HPP_
 #define SAPI_API_CRYPTO_OBJECT_HPP_
 
-#include <sos/crypt_api.h>
+#include <sos/api/crypt_api.h>
 
 #include "WorkObject.hpp"
 #include "InfoObject.hpp"

@@ -66,8 +66,10 @@ void Layout::examine_visibility(){
 		}
 
 		m_reference_drawing_attributes.set_bitmap(*display());
-		set_refresh_region(
-					reference_drawing_attributes().calculate_region_on_bitmap()
+		m_refresh_region =
+				Region(
+					Point(0,0),
+					Region(reference_drawing_attributes().calculate_region_on_bitmap()).area()
 					);
 
 		m_touch_gesture.set_region(
@@ -76,12 +78,12 @@ void Layout::examine_visibility(){
 
 		shift_origin(DrawingPoint(0,0));
 
-		erase();
 		if( m_event_handler ){
 			m_event_handler(this, SystemEvent(SystemEvent::id_enter));
 		}
 	} else {
 		//is layout is enabled and visible -- components are not visible
+		erase();
 		for(auto component_pointer: m_component_list){
 			component_pointer.component()->set_visible_internal(false);
 		}
@@ -90,6 +92,38 @@ void Layout::examine_visibility(){
 		}
 	}
 
+}
+
+void Layout::set_refresh_region(const sgfx::Region & region){
+	printf("Layout region %s is %d,%d %dx%d\n",
+				 name().cstring(),
+				 region.x(), region.y(),
+				 region.width(), region.height()
+				 );
+
+	if( is_ready_to_draw() ){
+		sgfx::Region layout_region =
+				reference_drawing_attributes()
+				.calculate_region_on_bitmap();
+
+		layout_region =
+				Region(
+					layout_region.point() + region.point(),
+					region.area()
+					);
+
+		for(auto component_pointer: m_component_list){
+			sgfx::Region component_region =
+					component_pointer.component()->reference_drawing_attributes()
+					.calculate_region_on_bitmap();
+
+			sgfx::Region overlap = layout_region.overlap(component_region);
+			component_pointer.component()->set_refresh_region(
+						overlap
+						);
+		}
+	}
+	m_refresh_region = region;
 }
 
 Layout& Layout::add_component(
@@ -137,6 +171,27 @@ void Layout::shift_origin(DrawingPoint shift){
 		//determine scroll ends
 		generate_layout_positions();
 
+		sgfx::Region layout_region =
+				reference_drawing_attributes()
+				.calculate_region_on_bitmap();
+
+#if 1
+		layout_region =
+				Region(
+					layout_region.point()
+					+ m_refresh_region.point(),
+					m_refresh_region.area()
+					);
+#endif
+
+		printf("Layout region %s is %d,%d %dx%d (refresh: %d,%d %dx%d)\n",
+					 name().cstring(),
+					 layout_region.x(), layout_region.y(),
+					 layout_region.width(), layout_region.height(),
+					 m_refresh_region.x(), m_refresh_region.y(),
+					 m_refresh_region.width(), m_refresh_region.height()
+					 );
+
 		for(auto component_pointer: m_component_list){
 			//reference attributes are the location within the compound component
 			//translate reference attributes based on compound component attributes
@@ -146,28 +201,39 @@ void Layout::shift_origin(DrawingPoint shift){
 					component_pointer.drawing_point() +
 					component_pointer.drawing_area();
 
-			sgfx::Region layout_region =
-					reference_drawing_attributes().calculate_region_on_bitmap();
 			sgfx::Region component_region =
-					component_pointer.component()->reference_drawing_attributes().calculate_region_on_bitmap();
+					component_pointer.component()->reference_drawing_attributes()
+					.calculate_region_on_bitmap();
 
 			sgfx::Region overlap = layout_region.overlap(component_region);
 
 			if( (overlap.width() * overlap.height()) > 0 ){
+				//this calculates if only part of the element should be refreshed (the mask)
+				printf("overlap for %s is %d,%d %dx%d\n",
+							 component_pointer.component()->name().cstring(),
+							 overlap.x(), overlap.y(),
+							 overlap.width(), overlap.height()
+							 );
+
 				component_pointer.component()->set_refresh_drawing_pending();
+
 				if( component_pointer.component()->is_visible() ){
 					component_pointer.component()->touch_drawing_attributes();
 				} else {
 					component_pointer.component()->set_visible_internal(true);
 				}
+
+				component_pointer.component()->set_refresh_region(
+							overlap
+							);
+
 			} else {
+				printf("%s is not visible\n",
+							 component_pointer.component()->name().cstring()
+							 );
 				component_pointer.component()->set_visible_internal(false);
 			}
 
-			//this calculates if only part of the element should be refreshed (the mask)
-			component_pointer.component()->set_refresh_region(
-						overlap
-						);
 		}
 	}
 

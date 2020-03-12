@@ -12,7 +12,7 @@ Component::~Component(){
 }
 
 void Component::examine_visibility(){
-	if( is_visible() && is_enabled() ){
+	if( is_ready_to_draw() ){
 		if( m_is_created == false ){
 			printf("fatal %s was note created using Component::create()\n", name().cstring());
 			exit(1);
@@ -40,7 +40,10 @@ void Component::examine_visibility(){
 				.set_area(DrawingArea(1000,1000))
 				.set_bitmap(m_local_bitmap);
 
-		set_refresh_region(sgfx::Region());
+		set_refresh_region(
+					m_local_bitmap.region()
+					);
+
 		redraw();
 		handle_event(SystemEvent(SystemEvent::id_enter));
 	} else {
@@ -88,18 +91,20 @@ void Component::refresh_drawing(){
 					m_refresh_region.area()
 					);
 
-		display()->set_window(window_region);
+		if( window_region.width() * window_region.height() > 0 ){
+			display()->set_window(window_region);
 
 #if 0
-		sys::Printer p;
-		p.open_object("draw " + name());
-		p << window_region;
-		p.close_object();
+			sys::Printer p;
+			p.open_object("draw " + name());
+			p << window_region;
+			p.close_object();
 #endif
 
-		display()->write(
-					m_local_bitmap.create_reference(m_refresh_region)
-					);
+			display()->write(
+						m_local_bitmap.create_reference(m_refresh_region)
+						);
+		}
 
 		m_is_refresh_drawing_pending = false;
 	}

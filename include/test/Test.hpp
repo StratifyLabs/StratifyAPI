@@ -412,6 +412,7 @@ public:
 
 protected:
 
+	friend class LeakGuard;
 	/*! \details Returns a reference to the case timer.
 	  *
 	  * The case timer is used to time each case. It
