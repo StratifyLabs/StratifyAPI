@@ -17,7 +17,10 @@ int Random::initialize(){
 }
 
 void Random::finalize(){
-	random_api()->deinit(&m_context);
+	if( m_context != nullptr ){
+		random_api()->deinit(&m_context);
+		m_context = nullptr;
+	}
 }
 
 int Random::seed(
