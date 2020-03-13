@@ -10,13 +10,13 @@
 
 namespace ux {
 
-class TouchEvent : public EventObject<EVENT_TYPE('_','t','c','h')> {
+class TouchEvent : public EventObject<Component, EVENT_TYPE('_','t','c','h')> {
 public:
 	TouchEvent(
 				u32 id,
 				const sgfx::Point & point
 				) :
-		EventObject(id){
+		EventObject(id, nullptr){
 		m_point = point;
 	}
 

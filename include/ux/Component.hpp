@@ -22,6 +22,8 @@ public:
 			const var::String & name,
 			u32 signature = 0) :
 		m_name(name), m_signature(signature){
+		set_drawing_point(DrawingPoint(0,0));
+		set_drawing_area(DrawingArea(1000,1000));
 	}
 	virtual ~Component();
 
@@ -29,17 +31,6 @@ public:
 		return static_cast<T*>(this);
 	}
 
-
-	template<class T, typename... Args> static T & create(
-			Args... args
-			){
-		T * result = new T(args...);
-		if( result == nullptr ){
-			//assert here
-			printf("failed!!!\n");
-		}
-		return *result;
-	}
 
 	static u32 whatis_signature(){
 		return 0;
@@ -141,16 +132,16 @@ protected:
 
 	bool m_is_visible = false;
 	bool m_is_enabled = true;
+	bool m_is_created = false;
 	virtual void examine_visibility();
 
 
 	virtual void touch_drawing_attributes(){}
 
-	void set_refresh_region(const sgfx::Region & region){
+	virtual void set_refresh_region(const sgfx::Region & region){
+		m_refresh_region = region;
 		if( region.width() * region.height() == 0 ){
-			m_refresh_region = m_local_bitmap.region();
-		} else {
-			m_refresh_region = region;
+			set_visible_internal(false);
 		}
 	}
 
@@ -241,8 +232,18 @@ public:
 		return static_cast<T&>(*this);
 	}
 
+	T& set_drawing_area(drawing_size_t width, drawing_size_t height){
+		Component::set_drawing_area(DrawingArea(width,height));
+		return static_cast<T&>(*this);
+	}
+
 	T& set_drawing_point(const DrawingPoint & value){
 		Component::set_drawing_point(value);
+		return static_cast<T&>(*this);
+	}
+
+	T& set_drawing_point(drawing_int_t x, drawing_int_t y){
+		Component::set_drawing_point(DrawingPoint(x,y));
 		return static_cast<T&>(*this);
 	}
 
@@ -255,6 +256,19 @@ public:
 		Component::set_theme_state(value);
 		return static_cast<T&>(*this);
 	}
+
+	template<typename... Args> static T & create(
+			Args... args
+			){
+		T * result = new T(args...);
+		if( result == nullptr ){
+			//assert here
+			printf("failed!!!\n");
+		}
+		result->m_is_created = true;
+		return *result;
+	}
+
 
 protected:
 

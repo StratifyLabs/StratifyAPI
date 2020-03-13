@@ -7,11 +7,11 @@ using namespace ux;
 Event::Event() {
    m_type = 0;
    m_id = 0;
-   m_context = nullptr;
+	 m_component = nullptr;
 }
 
-Event::Event(u32 type, u32 id, void * context){
+Event::Event(u32 type, u32 id, Component* component){
    m_type = type;
    m_id = id;
-   m_context = context;
+	 m_component = component;
 }

@@ -19,144 +19,37 @@
 
 namespace var {
 
-#if !defined __link
 class DataInfo : public api::InfoObject {
 public:
 
 	DataInfo(){ refresh(); }
 
-	void refresh(){ m_info = mallinfo(); }
+#if !defined __link
+	void refresh(){
+		m_info = mallinfo();
+	}
 	u32 arena() const { return m_info.arena; }
 	u32 free_block_count() const { return m_info.ordblks; }
 	u32 free_size() const { return m_info.fordblks; }
 	u32 used_size() const { return m_info.uordblks; }
+#else
+	void refresh(){}
+	u32 arena() const { return 0; }
+	u32 free_block_count() const { return 0; }
+	u32 free_size() const { return 0; }
+	u32 used_size() const { return 0; }
+#endif
+
+	bool operator == (const DataInfo & a){
+		return used_size() == a.used_size();
+	}
+
 private:
+#if !defined __link
 	struct mallinfo m_info;
-};
 #endif
-
-#if 0
-class DataCast : public Reference {
-public:
-
-	/*! \details Accesses a value in the data.
-	 *
-	 *
-	 * If the index exceeds the size of the data, the index is set to 0.
-	 *
-	 * ```
-	 * //md2code:main
-	 * char buffer[64];
-	 * DataReference a(buffer); //a is 64 bytes
-	 * a.at<char>(DataReference::Position(0)) = 'a'; //assign 'a' to the first char location
-	 * a.at<u32>(DataReference::Position(4)) = 0xAAAA5555; //assigns a u32 value assuming a is a u32 array
-	 * u32 value = a.at<u32>(DataReference::Position(4)); //reads a value as if a is a u32 array
-	 * printf("value is 0x%lx\n", value);
-	 * ```
-	 *
-	 *
-	 */
-	template<typename T> T & at(size_t position) const {
-		u32 count = size() / sizeof(T);
-		position.argument() =
-				position.argument() % count;
-		if( (std::is_const<T>::value == false) &&
-				(write_data() == 0)
-				){
-			exit_fatal("DataReference::at() read only");
-		}
-		return to<T>()[position.argument()];
-	}
-
-	/*! \details Returns the number of items that
-	 * fit into the data.
-	 *
-	 * ```
-	 * //md2code:main
-	 * Data items( DataReference::Size(64) );
-	 *
-	 * printf(
-	 *   "%ld int's fit in items\n",
-	 *   items.count<int>();
-	 * );
-	 * ```
-	 */
-	template<typename T> u32 count() const {
-		return size() / sizeof(T);
-	}
-
-	const char at_const_char(ImplicitPosition position) const { return at<const char>(position); }
-	char & at_char(ImplicitPosition position) const { return at<char>(position); }
-
-	u8 at_const_u8(ImplicitPosition position) const { return at<const u8>(position); }
-	u8 & at_u8(ImplicitPosition position) const { return at<u8>(position); }
-
-	u16 at_const_u16(ImplicitPosition position) const { return at<const u16>(position); }
-	u16 & at_u16(ImplicitPosition position) const { return at<u16>(position); }
-
-	u32 at_const_u32(ImplicitPosition position) const { return at<const u32>(position); }
-	u32 & at_u32(ImplicitPosition position) const { return at<u32>(position); }
-
-	u64 at_const_u64(ImplicitPosition position) const { return at<const u64>(position); }
-	u64 & at_u64(ImplicitPosition position) const { return at<u64>(position); }
-
-	s8 at_const_s8(ImplicitPosition position) const { return at<const s8>(position); }
-	s8 & at_s8(ImplicitPosition position) const { return at<s8>(position); }
-
-	s16 at_const_s16(ImplicitPosition position) const { return at<const s16>(position); }
-	s16 & at_s16(ImplicitPosition position) const { return at<s16>(position); }
-
-	s32 at_const_s32(ImplicitPosition position) const { return at<const s32>(position); }
-	s32 & at_s32(ImplicitPosition position) const { return at<s32>(position); }
-
-	s64 at_const_s64(ImplicitPosition position) const { return at<const s64>(position); }
-	s64 & at_s64(ImplicitPosition position) const { return at<s64>(position); }
-
-	float at_const_float(ImplicitPosition position) const { return at<const float>(position); }
-	float & at_float(ImplicitPosition position) const { return at<float>(position); }
-
-	/*! \details Fill the data with the specified value.
-	 * This will not attempt to write read-only data.
-	 *
-	 *
-	 * ```
-	 * //md2code:main
-	 * char buffer[16];
-	 *
-	 * DataReference data_reference(buffer);
-	 *
-	 * data_reference.fill<u8>(0xaa);
-	 * data_reference.fill<u32>(0xaabbccdd);
-	 * data_reference.fill((u16)0xaa55);
-	 * ```
-	 *
-	 */
-	template<typename T> void fill(
-			const T & value,
-			Count count = Count(0)
-			){
-		if( count.argument() == 0 ){
-			count.argument() = size()/ sizeof(T);
-		}
-		for(u32 i=0; i < count.argument(); i++){
-			at<T>(i) = value;
-		}
-	}
-
-	template<typename T> void populate(
-			T (*calculate_value)(Position position, Count count),
-			Count count = Count(0)
-			){
-		if( count.argument() == 0 ){
-			count.argument() = this->count<T>();
-		}
-		for(u32 i=0; i < count.argument(); i++){
-			at<T>(i) = calculate_value(Position(i), count);
-		}
-	}
-
 };
-#endif
+
 
 /*! \brief Data storage class
  * \details The Data class inherits

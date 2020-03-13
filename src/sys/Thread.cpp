@@ -2,6 +2,7 @@
 //Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc
 
 #include <errno.h>
+#include <cstdio>
 #include "sys/Thread.hpp"
 #include "chrono.hpp"
 using namespace sys;
@@ -132,11 +133,13 @@ int Thread::create(
 		enum Sched::policy policy
 		){
 	if( reset() < 0 ){
+		printf("Failed to reset\n");
 		set_error_number(EBUSY);
 		return -1;
 	}
 
 	if( !is_id_pending() ){
+		printf("Not pending\n");
 		set_error_number(EBUSY);
 		return -1;
 	}
@@ -208,11 +211,13 @@ int Thread::reset(){
 		bool detached = !is_joinable();
 		u32 stacksize = get_stacksize();
 		if( set_error_number_if_error(pthread_attr_destroy(&m_pthread_attr)) < 0 ){
+			printf("Failed to destroy\n");
 			return -1;
 		}
 		return init(stacksize, detached);
 	}
 
+	printf("Is valid %d, is running %d\n", is_valid(), is_running());
 	return -1;
 }
 

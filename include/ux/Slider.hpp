@@ -7,8 +7,10 @@
 
 namespace ux {
 
-class SliderEvent : public EventObject<EVENT_TYPE('_','s','l','d')> {
-	public:
+class Slider;
+
+class SliderEvent : public EventObject<Slider, EVENT_TYPE('_','s','l','d')> {
+public:
 
 	enum id {
 		id_none,
@@ -18,41 +20,17 @@ class SliderEvent : public EventObject<EVENT_TYPE('_','s','l','d')> {
 	};
 
 	SliderEvent(
-				const var::String name,
 				enum id id,
-				u16 value,
-				u16 maximum) :
-		EventObject<EVENT_TYPE('_','s','l','d')>(id),
-		m_name(name),
-		m_value(value),
-		m_maximum(maximum){
-
-	}
-
-	const var::String & name() const {
-		return m_name;
-	}
-
-	const u16 value() const {
-		return m_value;
-	}
-
-	const u16 maximum() const {
-		return m_maximum;
-	}
-
-	private:
-	const var::String & m_name;
-	u16 m_value;
-	u16 m_maximum;
+				Slider& slider) :
+		EventObject(id, &slider){}
 
 };
 
 class Slider : public ComponentAccess<
 		Slider,
 		COMPONENT_SIGNATURE('s','l','d','r')
-> {
-	public:
+>{
+public:
 
 	Slider(const var::String & name) : ComponentAccess(name){
 

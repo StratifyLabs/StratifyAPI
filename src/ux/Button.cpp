@@ -74,7 +74,7 @@ void Button::handle_event(const ux::Event & event){
 					toggle();
 					m_hold_timer.stop();
 					event_loop()->handle_event(
-								ButtonEvent(name(), ButtonEvent::id_released)
+								ButtonEvent(ButtonEvent::id_released, *this)
 								);
 				}
 
@@ -89,7 +89,7 @@ void Button::handle_event(const ux::Event & event){
 					contains(touch_event.point()) ){
 				toggle();
 				event_loop()->handle_event(
-							ButtonEvent(name(), ButtonEvent::id_pressed)
+							ButtonEvent(ButtonEvent::id_pressed, *this)
 							);
 
 				m_hold_timer.restart();
@@ -109,7 +109,7 @@ void Button::handle_event(const ux::Event & event){
 					(m_hold_timer > theme()->button_hold_duration()) ){
 				m_hold_timer.stop();
 				event_loop()->handle_event(
-							ButtonEvent(name(), ButtonEvent::id_held)
+							ButtonEvent(ButtonEvent::id_held, *this)
 							);
 			}
 		}

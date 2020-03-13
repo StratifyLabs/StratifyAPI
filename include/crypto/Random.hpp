@@ -31,7 +31,7 @@ public:
 
 
 private:
-	void * m_context = 0;
+	void * m_context = nullptr;
 
 };
 

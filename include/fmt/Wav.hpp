@@ -19,7 +19,7 @@ public:
 	using SampleRate = arg::Argument< u16, struct WavSampleRateTag > ;
 	using SampleCount = arg::Argument< u32, struct WavSampleCountTag > ;
 
-	/*! \details Constructs a new WAV object and open the WAV as a read-only file. */
+	/*! \details Constructs a new WAV object and opens the WAV as a read-only file. */
 	Wav(const var::String & path = var::String());
 
 	int create(

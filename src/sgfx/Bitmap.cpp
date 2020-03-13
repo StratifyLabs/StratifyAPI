@@ -282,7 +282,7 @@ int Bitmap::load(const var::String & path){
 		return -1;
 	}
 
-	if( (hdr.version != api()->version) || (hdr.bits_per_pixel != api()->bits_per_pixel) ){
+	if( (hdr.version != api()->sos_api.version) || (hdr.bits_per_pixel != api()->bits_per_pixel) ){
 		return -1;
 	}
 
@@ -321,7 +321,7 @@ Area Bitmap::load_area(
 		return Area();
 	}
 
-	if( (hdr.version != api()->version) || (hdr.bits_per_pixel != api()->bits_per_pixel) ){
+	if( (hdr.version != api()->sos_api.version) || (hdr.bits_per_pixel != api()->bits_per_pixel) ){
 		return Area();
 	}
 
@@ -335,7 +335,7 @@ int Bitmap::save(const var::String & path) const{
 	hdr.height = height();
 	hdr.size = calculate_size();
 	hdr.bits_per_pixel = api()->bits_per_pixel;
-	hdr.version = api()->version;
+	hdr.version = api()->sos_api.version;
 
 	fs::File f;
 	if( f.create(

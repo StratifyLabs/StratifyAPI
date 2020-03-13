@@ -236,7 +236,7 @@ int Font::draw(
 		}
 
 		//apply kerning
-		if( is_kerning_enabled() && d != 0 ){
+		if( is_kerning_enabled() && (d != 0) ){
 			w -= load_kerning(c, d);
 			if( w < 0 ){
 				return -1;

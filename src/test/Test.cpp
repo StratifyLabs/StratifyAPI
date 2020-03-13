@@ -371,17 +371,42 @@ void Test::finalize(){
 
 void Test::execute_api_case(){
 	open_case("api");
-	close_case( execute_class_api_case() );
+	var::DataInfo entry_info;
+	bool result = execute_class_api_case();
+	if( entry_info == var::DataInfo() ){
+		print_case_message("no memory leaks");
+	} else {
+		print_case_failed("memory leak detected");
+		result = false;
+	}
+	close_case( result );
+
 }
 
 void Test::execute_performance_case(){
 	open_case("performance");
-	close_case( execute_class_performance_case() );
+	var::DataInfo entry_info;
+	bool result = execute_class_performance_case();
+	if( entry_info == var::DataInfo() ){
+		print_case_message("no memory leaks");
+	} else {
+		print_case_failed("memory leak detected");
+		result = false;
+	}
+	close_case( result );
 }
 
 void Test::execute_stress_case(){
 	open_case("stress");
-	close_case( execute_class_stress_case() );
+	var::DataInfo entry_info;
+	bool result = execute_class_stress_case();
+	if( entry_info == var::DataInfo() ){
+		print_case_message("no memory leaks");
+	} else {
+		print_case_failed("memory leak detected");
+		result = false;
+	}
+	close_case( result );
 }
 
 void Test::execute_additional_cases(){

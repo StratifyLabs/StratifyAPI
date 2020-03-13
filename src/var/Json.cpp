@@ -162,6 +162,11 @@ int JsonValue::to_integer() const {
 	if( is_string() ){
 		return to_string().to_integer();
 	}
+
+	if( is_true() ){ return 1; }
+	if( is_false() ){ return 0; }
+	if( is_null() ){ return 0; }
+
 	return api()->integer_value(m_value);
 }
 

@@ -9,7 +9,9 @@
 
 namespace ux {
 
-class ButtonEvent : public EventObject<EVENT_TYPE('_','b','t','n')> {
+class Button;
+
+class ButtonEvent : public EventObject<Button, EVENT_TYPE('_','b','t','n')> {
 	public:
 
 	enum button_id {
@@ -21,24 +23,12 @@ class ButtonEvent : public EventObject<EVENT_TYPE('_','b','t','n')> {
 	};
 
 	ButtonEvent(
-				const var::String name,
-				u32 id) :
-		EventObject<EVENT_TYPE('_','b','t','n')>(id),
-		m_name(name){
+				enum button_id id,
+				Button& button
+				) :
+		EventObject(id, &button){
 	}
 
-	static bool is_event(
-				const Event & event,
-				enum button_id id){
-		return (event.type() == event_type()) && (event.id() == id);
-	}
-
-	const var::String & name() const {
-		return m_name;
-	}
-
-	private:
-	const var::String & m_name;
 
 };
 
