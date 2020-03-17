@@ -248,7 +248,7 @@ using MicroTime = Microseconds;
  * \endcode
  *
  */
-class Time : public api::InfoObject {
+class Time {
 public:
 	/*! \details Constructs using current time. */
 	Time();

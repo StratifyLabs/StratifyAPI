@@ -27,13 +27,17 @@ public:
 	 */
 	int return_value() const { return m_return_value; }
 
+	void set_error_number(int error_number, int error_code){
+		m_error_number = (error_number & 0xff) | (error_code << 8);
+	}
 
-	void set_error_number(int error_number){ m_error_number = error_number; }
-	void set_return_value(int return_value){ m_return_value = return_value; }
+	void set_return_value(int return_value){
+		m_return_value = return_value;
+	}
 
 private:
-	int m_error_number;
-	int m_return_value;
+	int m_error_number = 0;
+	int m_return_value = 0;
 };
 
 /*! \brief Work Object
@@ -57,9 +61,6 @@ class WorkObject : public virtual ApiObject {
 public:
 	WorkObject();
 
-	enum {
-		ERROR_NONE /*! No Errors */
-	};
 
 	/*! \details Returns the error number.
 	  *
@@ -72,7 +73,7 @@ public:
 	  *
 	  * If the error number is zero or less, it
 	  * refers to a StratifyAPI defined error like
-	  * ERROR_NONE.
+		* error_none.
 	  *
 	  */
 	int error_number() const { return m_result.error_number(); }
@@ -97,12 +98,14 @@ public:
 	void clear_error_number() const { m_result = Result(); }
 
 protected:
+
+
 	//These methods are used internally to assign the error_number() value
 	int set_error_number_if_error(int result) const;
 	void * set_error_number_if_null(void * ret) const;
 	void set_error_number_to_errno() const;
 	void set_error_number(int value) const {
-		m_result.set_error_number(value);
+		m_result.set_error_number(value, 0);
 	}
 
 private:

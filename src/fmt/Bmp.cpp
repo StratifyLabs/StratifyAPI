@@ -43,7 +43,7 @@ int Bmp::open(
 	m_dib.bits_per_pixel = 0;
 
 	if( File::open(name, flags) < 0 ){
-		return -1;
+		return set_error_number_if_error(api::error_code_fs_failed_to_open);
 	}
 
 	if( read(
@@ -51,7 +51,7 @@ int Bmp::open(
 				Size(sizeof(hdr))
 				) != sizeof(hdr) ){
 		close();
-		return -1;
+		return set_error_number_if_error(api::error_code_fs_failed_to_read);
 	}
 
 	if( read(
@@ -59,7 +59,7 @@ int Bmp::open(
 				Size(sizeof(m_dib))
 				) != sizeof(m_dib) ){
 		close();
-		return -1;
+		return set_error_number_if_error(api::error_code_fs_failed_to_read);
 	}
 
 	if( seek(Location(hdr.offset), SET) != (int)hdr.offset ){
@@ -67,7 +67,7 @@ int Bmp::open(
 		m_dib.height = -1;
 		m_dib.bits_per_pixel = 0;
 		close();
-		return -1;
+		return set_error_number_if_error(api::error_code_fs_failed_to_seek);
 	}
 
 	m_offset = hdr.offset;
@@ -88,7 +88,7 @@ int Bmp::create(
 				path,
 				IsOverwrite(true)
 				) < 0 ){
-		return -1;
+		return set_error_number_if_error(api::error_code_fs_failed_to_create);
 	}
 
 	hdr.size = sizeof(hdr) +
@@ -103,7 +103,7 @@ int Bmp::create(
 				&hdr,
 				Size(sizeof(hdr))
 				) < 0 ){
-		return -1;
+		return set_error_number_if_error(api::error_code_fs_failed_to_write);
 	}
 
 	m_dib.bits_per_pixel = bits_per_pixel.argument();
@@ -116,7 +116,7 @@ int Bmp::create(
 				&m_dib,
 				Size(sizeof(m_dib))
 				) < 0 ){
-		return -1;
+		return set_error_number_if_error(api::error_code_fs_failed_to_write);
 	}
 
 	return 0;
@@ -194,7 +194,7 @@ int Bmp::read_pixel(
 				pixel,
 				Size(pixel_size)
 				) != (int)pixel_size ){
-		return -1;
+		return set_error_number_if_error(api::error_code_fs_failed_to_read);
 	}
 
 	if( mono ){
@@ -227,7 +227,7 @@ int Bmp::save(
 				PlaneCount(1),
 				BitsPerPixel(24)
 				) < 0 ){
-		return -1;
+		return api::error_code_fs_failed_to_create;
 	}
 
 	for(sg_int_t y = bitmap.height()-1; y >= 0; y--){
@@ -242,7 +242,7 @@ int Bmp::save(
 		}
 
 		if( bmp.write(row) < 0 ){
-			return -1;
+			return api::error_code_fs_failed_to_write;
 		}
 	}
 	bmp.close();

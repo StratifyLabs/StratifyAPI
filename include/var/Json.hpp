@@ -16,7 +16,7 @@ namespace var {
 
 class JsonDocument;
 
-class JsonError : public api::InfoObject {
+class JsonError {
 public:
 	JsonError(){
 		memset(&m_value, 0, sizeof(m_value));

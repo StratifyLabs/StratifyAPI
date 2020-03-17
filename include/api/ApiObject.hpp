@@ -195,6 +195,7 @@ namespace api {
 
 #define API_OR_FLAGS_OPERATOR(TYPE) API_OR_NAMED_FLAGS_OPERATOR(TYPE, flags)
 
+
 /*! \brief Application Programming Interface Object
  * \details The API Object class is the parent of all
  * other classes. The API namespace contains
@@ -219,6 +220,7 @@ public:
 
 };
 
+
 /*! \brief ApiInfo Class
  * \details Provides inforamation abou the API library.
  *
@@ -236,16 +238,16 @@ public:
 class ApiInfo : public ApiObject {
 public:
 	/*! \details Returns a pointer to a string
-	  * that shows the API version.
-	  *
+		* that shows the API version.
+		*
 	 * ```
 	 * //md2code:main
 	 *	printf("The Stratify API version is %s\n",
 	 *	  api::ApiInfo::version()
 	 * );
 	 * ```
-	  *
-	  */
+		*
+		*/
 	static const char * version(){ return "3.8.0b"; }
 
 	/*! \details Returns a c-style string pointer
@@ -348,7 +350,7 @@ public:
 
 	bool is_valid(){
 		initialize();
-		return m_api != 0;
+		return m_api != nullptr;
 	}
 
 	Api & operator = (const A * value){
@@ -361,7 +363,7 @@ public:
 
 private:
 	void initialize(){
-		if( m_api == 0 ){
+		if( m_api == nullptr ){
 #if defined __link
 			m_api = initial_value;
 #else
@@ -369,7 +371,7 @@ private:
 #endif
 		}
 	}
-	const A * m_api = 0;
+	const A * m_api = nullptr;
 };
 
 /** \endcond */
@@ -380,6 +382,53 @@ public:
 	T argument() const { return m_argument; }
 private:
 	T m_argument;
+};
+
+enum error_codes {
+	error_code_flag_calc = 0x80000,
+	error_code_flag_chrono = 0x40000,
+	error_code_flag_crypto = 0x20000,
+	error_code_flag_fmt = 0x100000,
+	error_code_flag_fs = 0x08000,
+	error_code_flag_hal = 0x040000,
+	error_code_flag_inet = 0x020000,
+	error_code_flag_sgfx = 0x010000,
+	error_code_flag_sys = 0x008000,
+	error_code_flag_test = 0x004000,
+	error_code_flag_ux = 0x002000,
+	error_code_flag_var = 0x001000,
+
+	error_code_crypto_size_mismatch = -(error_code_flag_crypto|1),
+	error_code_crypto_bad_block_size = -(error_code_flag_crypto|2),
+	error_code_crypto_operation_failed = -(error_code_flag_crypto|3),
+	error_code_crypto_missing_api = -(error_code_flag_crypto|4),
+	error_code_crypto_unsupported_operation = -(error_code_flag_crypto|5),
+
+	error_code_fs_failed_to_open = -(error_code_flag_fs|1),
+	error_code_fs_failed_to_read = -(error_code_flag_fs|2),
+	error_code_fs_failed_to_write = -(error_code_flag_fs|3),
+	error_code_fs_failed_to_seek = -(error_code_flag_fs|4),
+	error_code_fs_failed_to_create = -(error_code_flag_fs|5),
+	error_code_fs_failed_to_stat = -(error_code_flag_fs|6),
+	error_code_fs_unsupported_operation = -(error_code_flag_fs|7),
+	error_code_fs_bad_descriptor = -(error_code_flag_fs|8),
+	error_code_fs_cant_read = -(error_code_flag_fs|9),
+	error_code_fs_cant_write = -(error_code_flag_fs|10),
+	error_code_fs_cant_write_read_only = -(error_code_flag_fs|11),
+	error_code_fs_cant_write_append_only = -(error_code_flag_fs|12),
+	error_code_fs_not_open = -(error_code_flag_fs|13),
+	error_code_fs_failed_to_close = -(error_code_flag_fs|14),
+
+	error_code_inet_failed_to_create_socket /*! Failed to create a socket (1) */ = -(error_code_flag_inet|1),
+	error_code_inet_failed_to_connect_to_socket /*! Failed to connect to socket (2) */ = -(error_code_flag_inet|2),
+	error_code_inet_failed_to_write_header /*! Failed to write request header (3) */ = -(error_code_flag_inet|3),
+	error_code_inet_failed_to_write_data /*! Failed to write data (4) */ = -(error_code_flag_inet|4),
+	error_code_inet_failed_to_write_incoming_data_to_file /*! Failed  write incoming data to file provided (5) */ = -(error_code_flag_inet|5),
+	error_code_inet_failed_to_find_address /*! Failed to find IP address of URL (6) */ = -(error_code_flag_inet|6),
+	error_code_inet_failed_to_get_status_code /*! Failed to get a status code in the HTTP response (7) */ = -(error_code_flag_inet|7),
+	error_code_inet_failed_to_get_header /*! Failed to receive the header (8) */ = -(error_code_flag_inet|8),
+	error_code_inet_failed_wrong_domain = -(error_code_flag_inet|9)
+
 };
 
 }

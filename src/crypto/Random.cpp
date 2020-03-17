@@ -3,17 +3,21 @@
 
 using namespace crypto;
 
-Random::Random(){
-	m_context = 0;
-}
 
 Random::~Random(){
 	finalize();
 }
 
 int Random::initialize(){
+	if( random_api().is_valid() == false ){
+		return set_error_number_if_error(api::error_code_crypto_missing_api);
+	}
 	finalize();
-	return random_api()->init(&m_context);
+	int result = 0;
+	if( random_api()->init(&m_context) < 0 ){
+		result = api::error_code_crypto_operation_failed;
+	}
+	return set_error_number_if_error(result);
 }
 
 void Random::finalize(){
@@ -26,19 +30,27 @@ void Random::finalize(){
 int Random::seed(
 		const var::Reference & source_data
 		){
-	return random_api()->seed(
+	int result;
+	if( (result = random_api()->seed(
 				m_context,
 				source_data.to_const_u8(),
 				source_data.size()
-				);
+				)) < 0 ){
+		result = api::error_code_crypto_operation_failed;
+	}
+	return set_error_number_if_error(result);
 }
 
 int Random::random(
 		const var::Reference & destination_data
 		){
-	return random_api()->random(
+	int result;
+	if( (result = random_api()->random(
 				m_context,
 				destination_data.to_u8(),
-				destination_data.size()
-				);
+				destination_data.size())
+				) < 0 ){
+		result = api::error_code_crypto_operation_failed;
+	}
+	return set_error_number_if_error(result);
 }

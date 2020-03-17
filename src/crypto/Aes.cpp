@@ -5,17 +5,21 @@
 
 using namespace crypto;
 
-Aes::Aes(){
-
-}
-
 Aes::~Aes(){
 	m_initialization_vector.fill(0);
 	finalize();
 }
 
 int Aes::initialize(){
-	return aes_api()->init(&m_context);
+	if( aes_api().is_valid() == false ){
+		return set_error_number_if_error(api::error_code_crypto_missing_api);
+	}
+	finalize();
+	int result = 0;
+	if( aes_api()->init(&m_context) < 0 ){
+		result = api::error_code_crypto_operation_failed;
+	}
+	return set_error_number_if_error(result);
 }
 
 int Aes::finalize(){
@@ -56,13 +60,13 @@ int Aes::encrypt_ecb(
 		SourcePlainData source_data,
 		DestinationCipherData destination_data
 		){
-	if( source_data.argument().size() !=
+	if( source_data.argument().size() >
 			destination_data.argument().size() ){
-		return -1;
+		return set_error_number_if_error(api::error_code_crypto_size_mismatch);
 	}
 
 	if( source_data.argument().size() % 16 != 0 ){
-		return -1;
+		return set_error_number_if_error(api::error_code_crypto_bad_block_size);
 	}
 
 	for(
@@ -87,13 +91,15 @@ int Aes::decrypt_ecb(
 		DestinationPlainData destination_data
 		){
 
-	if( source_data.argument().size() !=
+	if( source_data.argument().size() >
 			destination_data.argument().size() ){
-		return -1;
+		return set_error_number_if_error(api::error_code_crypto_size_mismatch);
 	}
 
 	if( source_data.argument().size() % 16 != 0 ){
-		return -1;
+		return set_error_number_if_error(
+					api::error_code_crypto_bad_block_size
+					);
 	}
 
 	for(u32 i=0; i < source_data.argument().size(); i+=16){
@@ -102,10 +108,15 @@ int Aes::decrypt_ecb(
 					source_data.argument().to_const_u8() + i,
 					destination_data.argument().to_u8() + i
 					) < 0 ){
-			return -1;
+			return set_error_number_if_error(
+						api::error_code_crypto_operation_failed
+						);
 		}
 	}
-	return source_data.argument().size();
+
+	return set_error_number_if_error(
+				source_data.argument().size()
+				);
 }
 
 int Aes::encrypt_cbc(
@@ -113,27 +124,29 @@ int Aes::encrypt_cbc(
 		DestinationCipherData destination_data
 		){
 
-	if( source_data.argument().size() !=
+	if( source_data.argument().size() >
 			destination_data.argument().size() ){
-		set_error_number(EINVAL);
-		return -1;
+		return set_error_number_if_error(api::error_code_crypto_size_mismatch);
 
 	}
 
 	if( source_data.argument().size() % 16 != 0 ){
-		set_error_number(EINVAL);
-		return -1;
+		return set_error_number_if_error(api::error_code_crypto_bad_block_size);
 	}
 
-	return set_error_number_if_error(
-				aes_api()->encrypt_cbc(
-					m_context,
-					source_data.argument().size(),
-					m_initialization_vector.to<unsigned char>(), //init vector
-					source_data.argument().to_const_u8(),
-					destination_data.argument().to_u8()
-					)
-				);
+	int result;
+	if( (result = aes_api()->encrypt_cbc(
+				 m_context,
+				 source_data.argument().size(),
+				 m_initialization_vector.to<unsigned char>(), //init vector
+				 source_data.argument().to_const_u8(),
+				 destination_data.argument().to_u8()
+				 ) < 0)
+			){
+		result = api::error_code_crypto_operation_failed;
+	}
+
+	return set_error_number_if_error(result);
 }
 
 int Aes::decrypt_cbc(
@@ -141,40 +154,44 @@ int Aes::decrypt_cbc(
 		DestinationPlainData destination_data
 		){
 
-	if( source_data.argument().size() !=
+	if( source_data.argument().size() >
 			destination_data.argument().size() ){
-		return -1;
+		return set_error_number_if_error(api::error_code_crypto_size_mismatch);
 	}
 
 	if( source_data.argument().size() % 16 != 0 ){
-		return -1;
+		return set_error_number_if_error(api::error_code_crypto_bad_block_size);
 	}
 
-	if( aes_api()->decrypt_cbc(
-				m_context,
-				source_data.argument().size(),
-				m_initialization_vector.to<unsigned char>(), //init vector
-				source_data.argument().to_const_u8(),
-				destination_data.argument().to_u8()
-				) < 0 ){
-		return -1;
+	int result;
+	if( (result = aes_api()->decrypt_cbc(
+				 m_context,
+				 source_data.argument().size(),
+				 m_initialization_vector.to<unsigned char>(), //init vector
+				 source_data.argument().to_const_u8(),
+				 destination_data.argument().to_u8()
+				 )) < 0 ){
+		result = api::error_code_crypto_operation_failed;
 	}
 
-
-	return 0;
+	return set_error_number_if_error(result);
 }
 
 int Aes::encrypt_ctr(
 		SourcePlainData source_data,
 		DestinationCipherData destination_data
 		){
-	return -1;
+	return set_error_number_if_error(
+				api::error_code_crypto_unsupported_operation
+				);
 }
 
 int Aes::decrypt_ctr(
 		SourceCipherData source_data,
 		DestinationPlainData destination_data
 		){
-	return -1;
+	return set_error_number_if_error(
+				api::error_code_crypto_unsupported_operation
+				);
 }
 

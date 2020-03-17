@@ -12,7 +12,7 @@
 using namespace api;
 
 WorkObject::WorkObject(){
-	set_error_number(ERROR_NONE);
+	set_error_number(0);
 }
 
 
