@@ -4,14 +4,19 @@
 
 /*! \cond */
 
+#include "../var/String.hpp"
 namespace test {
+
+class Test;
 
 class Case
 {
 public:
-	Case();
+	Case(Test * test, const var::String& name);
+	~Case();
 
-
+private:
+	Test * m_test;
 };
 
 }
