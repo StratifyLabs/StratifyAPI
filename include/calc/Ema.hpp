@@ -130,7 +130,7 @@ public:
 
 /*! \brief Exponential Moving Average class (float) */
 /*! \details See \ref Ema for details */
-class Ema_f : public api::WorkObject {
+class Ema_f {
 public:
 	/*! \details Constructs a EMA object for floating point calculations */
 	Ema_f(float start, float alpha){ m_alpha = alpha; m_average = start; }

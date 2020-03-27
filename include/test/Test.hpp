@@ -309,26 +309,6 @@ public:
 	/*! \details Sets the current case result to failed. */
 	void set_case_failed() { m_case_result = false; }
 
-	/*! \details Opens a new test case.
-	  *
-	  * @param case_name The name of the case
-	  *
-	  * This method is only used when re-implementing
-	  * execute_additional_cases().
-	  *
-	  */
-	void open_case(const var::String & case_name);
-
-	/*! \details Closes a test case.
-	  *
-	  * @param result true if the test case passed and false if it failed
-	  *
-	  * This method is only used when re-implementing
-	  * execute_additional_cases().
-	  *
-	  */
-	void close_case(bool result);
-
 	/*! \details Closes the test case using the
 	  * current case_result() value.
 	  *
@@ -503,6 +483,10 @@ private:
 			m_indent_count--;
 		}
 	}
+
+	friend class Case;
+	void open_case(const var::String & case_name);
+	void close_case(bool result);
 };
 
 }

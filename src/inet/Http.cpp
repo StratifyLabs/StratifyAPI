@@ -181,8 +181,7 @@ int HttpClient::query(const var::String & command,
 #endif
 
 	if( listen_for_header() < 0 ){
-		set_error_number(error_failed_to_get_header);
-		return -1;
+		return set_error_number_if_error(api::error_code_inet_failed_to_get_header);
 	}
 	bool is_redirected = false;
 
@@ -287,8 +286,7 @@ int HttpClient::connect_to_server(
 			return 0;
 		} else {
 			m_header.format("socket is 0x%X, domain is %s", socket().fileno(), m_alive_domain.cstring());
-			set_error_number(error_failed_wrong_domain);
-			return -1;
+			return set_error_number_if_error(api::error_code_inet_failed_wrong_domain);
 		}
 	}
 
@@ -300,14 +298,16 @@ int HttpClient::connect_to_server(
 		m_address.set_port(port);
 
 		if( socket().create(m_address)  < 0 ){
-			set_error_number(error_failed_to_create_socket);
-			return -1;
+			return set_error_number_if_error(
+						api::error_code_inet_failed_to_create_socket
+						);
 		}
 
 		if( socket().connect(m_address) < 0 ){
-			set_error_number(error_failed_to_connect_to_socket);
 			socket().close();
-			return -1;
+			return set_error_number_if_error(
+						api::error_code_inet_failed_to_connect_to_socket
+						);
 		}
 		m_alive_domain = domain_name;
 		return 0;
@@ -318,8 +318,9 @@ int HttpClient::connect_to_server(
 				address_info.error_number()
 				);
 
-	set_error_number(error_failed_to_find_address);
-	return -1;
+	return set_error_number_if_error(
+				api::error_code_inet_failed_to_find_address
+				);
 }
 
 int HttpClient::build_header(const var::String & method, const var::String & host, const var::String & path, u32 length){
@@ -378,8 +379,7 @@ int HttpClient::send_header(
 #endif
 
 	if( socket().write(m_header) != static_cast<int>(m_header.length()) ){
-		set_error_number(error_failed_to_write_header);
-		return -1;
+		return set_error_number_if_error(api::error_code_inet_failed_to_write_header);
 	}
 
 	if( file ){
@@ -389,8 +389,7 @@ int HttpClient::send_header(
 				 fs::File::Size(file->size()),
 				 progress_callback
 				 ) < 0 ){
-			set_error_number(error_failed_to_write_data);
-			return -1;
+			return set_error_number_if_error(api::error_code_inet_failed_to_write_data);
 		}
 	}
 
@@ -428,9 +427,8 @@ int HttpClient::listen_for_header(){
 							);
 				is_first_line = false;
 				if( tokens.size() < 2 ){
-					set_error_number(error_failed_to_get_status_code);
 					m_status_code = -1;
-					return -1;
+					return set_error_number_if_error(api::error_code_inet_failed_to_get_status_code);
 				}
 				m_status_code = String(tokens.at(1)).to_integer();
 			}
@@ -483,8 +481,7 @@ int HttpClient::listen_for_data(
 					 fs::File::PageSize(bytes_incoming),
 					 fs::File::Size(bytes_incoming)
 					 ) != static_cast<int>(bytes_incoming) ){
-				set_error_number(error_failed_to_write_incoming_data_to_file);
-				return -1;
+				return set_error_number_if_error(api::error_code_inet_failed_to_write_incoming_data_to_file);
 			}
 
 			//need to call the progress callback -- what is the total?

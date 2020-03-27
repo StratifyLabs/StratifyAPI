@@ -147,7 +147,7 @@ int Dir::copy(
 					 , LinkDriver(destination_driver.argument())
 		 #endif
 					 ) < 0 ){
-				return -1;
+				return api::error_code_fs_failed_to_create;
 			}
 
 			copy(SourcePath(entry_path),
@@ -160,7 +160,8 @@ int Dir::copy(
 				  );
 
 		} else if( info.is_file() ){
-			if( File::copy(
+			int result;
+			if( (result = File::copy(
 					 SourcePath(entry_path),
 					 DestinationPath(destination_entry_path),
 					 IsOverwrite(true),
@@ -169,8 +170,8 @@ int Dir::copy(
 					 , source_driver,
 					 destination_driver
 		 #endif
-					 ) < 0 ){
-				return -1;
+					 )) < 0 ){
+				return result;
 			}
 		}
 	}
@@ -249,7 +250,6 @@ int Dir::create(
 		base_path << "/";
 	}
 
-
 	return 0;
 }
 
@@ -282,7 +282,7 @@ int Dir::open(const var::String & path){
 
 		m_dirp_local = opendir(path.cstring());
 		if( m_dirp_local == 0 ){
-			return -1;
+			return set_error_number_if_error(api::error_code_fs_failed_to_open);
 		}
 		m_path.assign(path);
 		return 0;
@@ -292,8 +292,9 @@ int Dir::open(const var::String & path){
 #endif
 
 	if( m_dirp == 0 ){
-		set_error_number_to_errno();
-		return -1;
+		return set_error_number_if_error(
+					api::error_code_fs_failed_to_open
+					);
 	}
 
 	m_path.assign(path);
@@ -307,7 +308,7 @@ int Dir::count(){
 	int count;
 
 	if( !is_open() ){
-		return -1;
+		return set_error_number_if_error(api::error_code_fs_not_open);
 	}
 
 #if defined __link
@@ -432,7 +433,10 @@ var::Vector<var::String> Dir::read_list(
 var::Vector<var::String> Dir::read_list(
 		const IsRecursive is_recursive
 		){
-	return read_list(std::function<const var::String(const var::String & entry)>(nullptr), is_recursive);
+	return read_list(
+				std::function<const var::String(const var::String & entry)>(nullptr),
+				is_recursive
+				);
 }
 
 const char * Dir::read(){
@@ -463,7 +467,7 @@ const char * Dir::read(){
 	struct dirent * result;
 	if( readdir_r(m_dirp, &m_entry, &result) < 0 ){
 		set_error_number_to_errno();
-		return 0;
+		return nullptr;
 	}
 #endif
 	return m_entry.d_name;
@@ -497,12 +501,13 @@ int Dir::close(){
 		if( driver() ){
 			link_closedir(driver(), m_dirp);
 		}
+		m_dirp = 0;
 #else //__link
 		if( closedir(m_dirp) < 0 ){
 			set_error_number_to_errno();
 		}
+		m_dirp = nullptr;
 #endif
-		m_dirp = 0;
 	}
 
 #if defined __link
@@ -510,9 +515,8 @@ int Dir::close(){
 		DIR * dirp_copy = m_dirp_local;
 		m_dirp_local = 0;
 		if( closedir(dirp_copy) < 0 ){
-			return -1;
+			return set_error_number_if_error(api::error_code_fs_failed_to_close);
 		}
-		return 0;
 	}
 #endif
 	return 0;

@@ -92,14 +92,16 @@ int Svic::append(
 			 &header,
 			 Size(sizeof(header))
 			 ) != sizeof(header) ){
-		set_error_number( error_number() );
-		return -1;
+		return set_error_number_if_error(
+					api::error_code_fs_failed_to_write
+					);
 	}
 
 	if( write(list) != (int)list.size()
 		 ){
-		set_error_number( error_number() );
-		return -1;
+		return set_error_number_if_error(
+					api::error_code_fs_failed_to_write
+					);
 	}
 
 	return 0;

@@ -87,7 +87,7 @@ int File::copy(
 			 source_path.argument(),
 			 OpenFlags::read_only()
 			 ) < 0 ){
-		return -1;
+		return api::error_code_fs_failed_to_open;
 	}
 
 	return copy(
@@ -120,7 +120,7 @@ int File::copy(
 			 source_path.argument(),
 			 OpenFlags::read_only()
 			 ) < 0 ){
-		return -1;
+		return api::error_code_fs_failed_to_open;
 	}
 
 	return copy(
@@ -165,7 +165,7 @@ int File::copy(
 	struct SAPI_LINK_STAT st;
 
 	if( source.argument().fstat(&st) < 0 ){
-		return -2;
+		return api::error_code_fs_failed_to_stat;
 	}
 
 	if( (st.st_mode & 0666) == 0 ){
@@ -177,7 +177,7 @@ int File::copy(
 			 is_overwrite,
 			 Permissions(st.st_mode & 0777)
 			 ) < 0 ){
-		return -3;
+		return api::error_code_fs_failed_to_create;
 	}
 
 	int result = dest.argument().write(
@@ -187,7 +187,7 @@ int File::copy(
 				progress_callback
 				);
 	if( result < 0 ){
-		return -4;
+		return api::error_code_fs_failed_to_write;
 	}
 	return result;
 }
@@ -413,11 +413,10 @@ int File::readline(
 int File::close(){
 	int ret = 0;
 	if( m_fd >= 0 ){
-		ret = link_close(driver(), m_fd);
+		ret = set_error_number_if_error(
+					link_close(driver(), m_fd)
+					);
 		m_fd = -1;
-		if( ret < 0 ){
-			set_error_number_to_errno();
-		}
 	}
 	return ret;
 }
@@ -469,10 +468,12 @@ int File::location() const {
 
 int File::flags() const{
 #if defined __link
-	return -1;
+	return set_error_number_if_error(api::error_code_fs_unsupported_operation);
 #else
 	if( fileno() < 0 ){
-		return -1;
+		return set_error_number_if_error(
+					api::error_code_fs_bad_descriptor
+					);
 	}
 	return _global_impure_ptr->procmem_base->open_file[m_fd].flags;
 #endif
@@ -739,7 +740,7 @@ int DataFile::read(
 		) const {
 
 	if( flags().is_write_only() ){
-		return set_error_number_if_error(-1);
+		return set_error_number_if_error(api::error_code_fs_cant_read);
 	}
 
 	int size_ready = static_cast<int>(m_data.size()) - m_location;
@@ -748,6 +749,7 @@ int DataFile::read(
 	}
 
 	if( size_ready < 0 ){
+		//EOF
 		return set_error_number_if_error(-1);
 	}
 
@@ -767,7 +769,7 @@ int DataFile::write(
 		) const {
 
 	if( flags().is_read_only() ){
-		return set_error_number_if_error(-1);
+		return set_error_number_if_error(api::error_code_fs_cant_write);
 	}
 
 	u32 size_ready = 0;
@@ -832,7 +834,7 @@ int ReferenceFile::read(void * buf,
 								) const {
 
 	if( flags().is_write_only() ){
-		return set_error_number_if_error(-1);
+		return set_error_number_if_error(api::error_code_fs_cant_read);
 	}
 
 	int size_ready = reference().size() - m_location;
@@ -860,16 +862,18 @@ int ReferenceFile::write(
 		) const {
 
 	if( flags().is_read_only() ){
-		return set_error_number_if_error(-1);
+		return set_error_number_if_error(api::error_code_fs_cant_write);
 	}
 
 	if( reference().is_read_only() ){
-		return set_error_number_if_error(-1);
+		return set_error_number_if_error(api::error_code_fs_cant_write_read_only);
 	}
 
 	int size_ready = 0;
 	if( flags().is_append() ){
-		return set_error_number_if_error(-1);
+		return set_error_number_if_error(
+					api::error_code_fs_cant_write_append_only
+					);
 	} else {
 		//limit writes to the current size of the data
 		size_ready = reference().size() - m_location;

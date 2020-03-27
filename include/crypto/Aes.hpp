@@ -21,11 +21,14 @@ public:
 	using SourcePlainData = arg::Argument<const var::Reference&, struct AesSourcePlainDataTag >;
 	using DestinationPlainData = arg::Argument<var::Reference&, struct AesDestinationPlainDataTag >;
 
-	Aes();
 	~Aes();
 
 	int initialize();
 	int finalize();
+
+	bool is_valid() const {
+		return m_context != nullptr;
+	}
 
 	Aes & set_key(
 			const var::Reference & key

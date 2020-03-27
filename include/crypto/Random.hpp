@@ -11,11 +11,6 @@ namespace crypto {
 class Random : public api::CryptoWorkObject {
 public:
 
-	using SourceReference = var::Reference::Source;
-	using DestinationReference = var::Reference::Destination;
-
-
-	Random();
 	~Random();
 
 	int initialize();

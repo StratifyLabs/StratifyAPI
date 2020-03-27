@@ -20,10 +20,10 @@ namespace calc {
  *	#define ENTRIES 4
  *
  * const float lookup_table[ENTRIES*2] = {  //for each entry there are 2 float values
- * 	0.0, 2.0,  //this is an x,y pair where x is 0.0 and y is 2.0, list must have x values in ascending order
- * 	1.0, 4.0,
- * 	2.0, 16.0,
- * 	3.0, 25.0
+ * 	0.0f, 2.0f,  //this is an x,y pair where x is 0.0 and y is 2.0, list must have x values in ascending order
+ * 	1.0f, 4.0f,
+ * 	2.0f, 16.0f,
+ * 	3.0f, 25.0f
  * };
  * ```
  *

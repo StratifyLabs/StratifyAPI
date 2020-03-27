@@ -56,7 +56,7 @@ namespace fs {
  *
  *
  */
-class Aio : public api::FsWorkObject {
+class Aio : public api::WorkObject {
 	friend class hal::Device;
 public:
 
