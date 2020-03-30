@@ -329,8 +329,6 @@ public:
 
 protected:
 
-
-
 	Vector<T> operate(const Vector<T> & a, T (*fn)(const T &, const T &)) const {
 		Vector<T> result;
 		u32 c = a.count() < count() ? a.count() : count();
@@ -354,7 +352,6 @@ protected:
 	static T multiply(const T & a, const T & b){ return a*b; }
 	static T divide(const T & a, const T & b){ return a/b; }
 
-
 	static bool compare(const Vector<T> & a, const Vector<T> & b){
 		u32 i;
 		if( a.count() != b.count() ){
@@ -367,8 +364,6 @@ protected:
 		}
 		return true;
 	}
-
-
 
 private:
 

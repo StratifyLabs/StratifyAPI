@@ -348,6 +348,11 @@ public:
 	JsonArray(const JsonArray & value);
 	JsonArray & operator=(const JsonArray & value);
 
+	explicit JsonArray(const var::Vector<var::String>& list);
+	explicit JsonArray(const var::Vector<float>& list);
+	explicit JsonArray(const var::Vector<u32>& list);
+	explicit JsonArray(const var::Vector<s32>& list);
+
 	/*! \details Returns true if the object is empty. */
 	bool is_empty() const { return count() == 0; }
 

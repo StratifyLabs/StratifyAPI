@@ -202,8 +202,17 @@ public:
 			enum Sched::policy policy = Sched::OTHER
 			);
 
-	/*! \details Checks if the thread is running. */
-	bool is_running() const;
+	/*! \details Checks if the thread is running.
+	 *
+	 * If the thread is no longer running, the thread id
+	 * value is reset to its initial state.
+	 *
+	 * This MUST be called on detached threads after
+	 * the thread has finished and before another
+	 * thread is created.
+	 *
+	 */
+	bool is_running();
 
 	/*! \details Waits for the thread to complete (joins thread if it is not detached).
 	 *
@@ -215,26 +224,10 @@ public:
 	int wait(
 			Return ret = Return(nullptr),
 			DelayInterval interval = DelayInterval(chrono::Milliseconds(1000UL))
-			) const;
+			);
 
 	/*! \details Yields the processor to another thread */
 	static void yield(){ return Sched::yield(); }
-
-	/*! \details Joins the calling thread to the specified thread.
-	 *
-	 * @param ident the ID of the target thread
-	 * @param value_ptr A pointer to the return value of the target thread
-	 * @return Zero on success
-	  *
-	  * This method will block the calling thread until the joined
-	  * thread returns.
-	  *
-	  *
-	 */
-	static int join(
-			Id id_to_join,
-			Return value_ptr = Return(nullptr)
-			);
 
 	/*! \details Joins the calling thread to the specified thread.
 	  *
@@ -247,14 +240,9 @@ public:
 	  *
 	  */
 	static int join(
-			const Thread & thread_to_join,
+			Thread & thread_to_join,
 			Return return_value = Return(nullptr)
-			){
-		return join(
-					Id(thread_to_join.id()),
-					return_value
-					);
-	}
+			);
 
 	/*! \details Returns the thread ID of the calling thread. */
 	static pthread_t self(){ return pthread_self(); }

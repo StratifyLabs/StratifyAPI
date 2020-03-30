@@ -528,6 +528,40 @@ private:
 	T m_type;
 };
 
+class PrinterObject {
+public:
+	PrinterObject(
+			Printer & printer,
+			const var::String & name,
+			enum Printer::verbose_level level = Printer::level_info
+			) : m_printer(printer){
+		printer.open_object(name, level);
+	}
+
+	~PrinterObject(){
+		m_printer.close_object();
+	}
+private:
+	Printer & m_printer;
+};
+
+class PrinterArray {
+public:
+	PrinterArray(
+			Printer & printer,
+			const var::String & name,
+			enum Printer::verbose_level level = Printer::level_info
+			) : m_printer(printer){
+		printer.open_array(name, level);
+	}
+
+	~PrinterArray(){
+		m_printer.close_array();
+	}
+private:
+	Printer & m_printer;
+};
+
 
 }
 

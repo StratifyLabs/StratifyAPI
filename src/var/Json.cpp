@@ -331,6 +331,34 @@ JsonValue JsonArray::at(size_t position) const {
 				);
 }
 
+JsonArray::JsonArray(const var::Vector<var::String>& list){
+	m_value = create();
+	for(const auto & entry: list){
+		append(JsonString(entry));
+	}
+}
+
+JsonArray::JsonArray(const var::Vector<float>& list){
+	m_value = create();
+	for(const auto & entry: list){
+		append(JsonReal(entry));
+	}
+}
+
+JsonArray::JsonArray(const var::Vector<u32>& list){
+	m_value = create();
+	for(const auto & entry: list){
+		append(JsonInteger(entry));
+	}
+}
+
+JsonArray::JsonArray(const var::Vector<s32>& list){
+	m_value = create();
+	for(const auto & entry: list){
+		append(JsonInteger(entry));
+	}
+}
+
 int JsonArray::append(const JsonValue & value){
 	if( create_if_not_valid() < 0 ){ return -1; }
 	return api()->array_append(

@@ -222,7 +222,7 @@ void Printer::print_close_array(){
 void Printer::clear_color_code(){
 #if defined __link
 	if( api::ApiInfo::is_macosx() || is_bash() ){
-		printf("\033[0m");
+		print_final("\033[0m");
 	} else {
 		set_color_code(COLOR_CODE_DEFAULT);
 	}
@@ -643,7 +643,6 @@ Printer & Printer::operator << (const hal::DriveInfo & a){
 	key("writeBlockSize", "%ld", a.write_block_size());
 	return *this;
 }
-
 
 Printer & Printer::operator << (const sgfx::Bitmap & a){
 	sg_size_t i,j;
