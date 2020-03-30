@@ -133,13 +133,11 @@ int Thread::create(
 		enum Sched::policy policy
 		){
 	if( reset() < 0 ){
-		printf("Failed to reset\n");
 		set_error_number(EBUSY);
 		return -1;
 	}
 
 	if( !is_id_pending() ){
-		printf("Not pending\n");
 		set_error_number(EBUSY);
 		return -1;
 	}
@@ -165,18 +163,21 @@ int Thread::create(
 				);
 }
 
-bool Thread::is_running() const {
+bool Thread::is_running(){
 	//check to see if the thread is running
+	if( is_id_pending() || is_id_error() ){ return false; }
 	if( pthread_kill(m_id, 0) == 0 ){
 		return true;
 	}
+
+	reset();
 	return false;
 }
 
 int Thread::wait(
 		Return ret,
 		DelayInterval interval
-		) const {
+		){
 
 	void * dummy;
 
@@ -196,8 +197,6 @@ int Thread::wait(
 			}
 		}
 	}
-
-
 	return 0;
 }
 
@@ -207,23 +206,22 @@ int Thread::reset(){
 		return 0;
 	}
 
-	if( is_valid() && !is_running() ){
+	if( is_valid() && (pthread_kill(m_id, 0) < 0) ){
 		bool detached = !is_joinable();
 		u32 stacksize = get_stacksize();
 		if( set_error_number_if_error(pthread_attr_destroy(&m_pthread_attr)) < 0 ){
-			printf("Failed to destroy\n");
 			return -1;
 		}
 		return init(stacksize, detached);
 	}
 
-	printf("Is valid %d, is running %d\n", is_valid(), is_running());
 	return -1;
 }
 
-int Thread::join(Id id_to_join,
-					  Return value_ptr
-					  ){
+int Thread::join(
+		Thread & thread_to_join,
+		Return value_ptr
+		){
 	void * tmp_ptr;
 	void ** ptr;
 	if( value_ptr.argument() == 0 ){
@@ -231,7 +229,12 @@ int Thread::join(Id id_to_join,
 	} else {
 		ptr = value_ptr.argument();
 	}
-	return pthread_join(id_to_join.argument(), ptr);
+	int result = pthread_join(thread_to_join.id(), ptr);
+	if( result == 0 ){
+		//resets the thread that just completed
+		thread_to_join.is_running();
+	}
+	return result;
 }
 
 bool Thread::is_joinable() const{

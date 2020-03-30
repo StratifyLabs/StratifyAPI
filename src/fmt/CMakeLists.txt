@@ -1,7 +1,9 @@
 
-set(SOURCELIST
+set(SOURCES
+	Csv.cpp
 	Png.cpp
 	Bmp.cpp
 	Wav.cpp
-	Svic.cpp)
-set(SOURCES ${SOURCELIST} PARENT_SCOPE)
+	Svic.cpp
+	PARENT_SCOPE
+	)

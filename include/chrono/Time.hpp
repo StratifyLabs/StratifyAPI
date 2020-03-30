@@ -325,16 +325,20 @@ public:
 	  * calendar time.
 	  *
 	  */
-	void set_time(
+	Time& set_time(
 			const Seconds & sec,
 			const Minutes & min,
 			const Hours & hour
 			);
 
+
 	/*! \details Sets the current value.
 	  *
 	  */
-	void set_time(time_t tm){ m_time = tm; }
+	Time& set_time(time_t tm){
+		m_time = tm;
+		return *this;
+	}
 
 	/*! \details Gets the name of the month. */
 	const char * month_name() const;

@@ -120,6 +120,14 @@ public:
 		return m_pretty_table;
 	}
 
+	MarkdownPrinter & hyperlink(
+			const var::String & text,
+			const var::String & link);
+
+	MarkdownPrinter & image(
+			const var::String & text,
+			const var::String & link);
+
 #if 0
 	using Printer::debug;
 	using Printer::message;
@@ -167,7 +175,6 @@ private:
 			bool is_newline = true
 			);
 
-
 	Container & container(){
 		return m_container_list.back();
 	}
@@ -209,6 +216,94 @@ private:
 	bool close_type(enum container_type type);
 
 
+};
+
+class MarkdownHeader {
+public:
+	MarkdownHeader(
+			MarkdownPrinter & printer,
+			const var::String & header,
+			enum MarkdownPrinter::verbose_level level = MarkdownPrinter::level_info) : m_printer(printer){
+		printer.open_header(header, level);
+	}
+
+	~MarkdownHeader(){
+		m_printer.close_header();
+	}
+
+private:
+	MarkdownPrinter & m_printer;
+};
+
+class MarkdownCode {
+public:
+	MarkdownCode(
+			MarkdownPrinter & printer,
+			const var::String & language,
+			enum MarkdownPrinter::verbose_level level = MarkdownPrinter::level_info)
+		: m_printer(printer){
+		printer.open_code(language, level);
+	}
+
+	~MarkdownCode(){
+		m_printer.close_code();
+	}
+
+private:
+	MarkdownPrinter & m_printer;
+};
+
+class MarkdownBlockQuote {
+public:
+	MarkdownBlockQuote(
+			MarkdownPrinter & printer,
+			enum MarkdownPrinter::verbose_level level = MarkdownPrinter::level_info)
+		: m_printer(printer){
+		m_printer.open_blockquote(level);
+	}
+
+	~MarkdownBlockQuote(){
+		m_printer.close_blockquote();
+	}
+
+private:
+	MarkdownPrinter & m_printer;
+};
+
+class MarkdownList {
+public:
+	MarkdownList(
+			MarkdownPrinter & printer,
+			enum MarkdownPrinter::list_type type,
+			enum MarkdownPrinter::verbose_level level = MarkdownPrinter::level_info)
+		: m_printer(printer){
+		printer.open_list(type, level);
+	}
+
+	~MarkdownList(){
+		m_printer.close_list();
+	}
+
+private:
+	MarkdownPrinter & m_printer;
+};
+
+class MarkdownPrettyTable {
+public:
+	MarkdownPrettyTable(
+			MarkdownPrinter & printer,
+			const var::Vector<var::String> & header,
+			enum MarkdownPrinter::verbose_level level = MarkdownPrinter::level_info)
+		: m_printer(printer){
+		printer.open_pretty_table(header);
+	}
+
+	~MarkdownPrettyTable(){
+		m_printer.close_pretty_table();
+	}
+
+private:
+	MarkdownPrinter & m_printer;
 };
 
 }

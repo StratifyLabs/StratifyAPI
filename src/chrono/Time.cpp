@@ -89,7 +89,7 @@ Time Time::get_time_of_day(){
 	return Time(t);
 }
 
-void Time::set_time(
+Time& Time::set_time(
 		const Seconds & sec,
 		const Minutes & min,
 		const Hours & hour
@@ -97,6 +97,7 @@ void Time::set_time(
 	m_time = sec.seconds() +
 			min.minutes()*60 +
 			hour.hours()*3600;
+	return *this;
 }
 
 u32 Time::second() const {

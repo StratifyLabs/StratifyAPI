@@ -174,6 +174,33 @@ MarkdownPrinter & MarkdownPrinter::horizontal_line(){
 	return *this;
 }
 
+MarkdownPrinter & MarkdownPrinter::hyperlink(
+		const var::String & text,
+		const var::String & link){
+
+	var::String output = "[" + text + "](" + link + ")";
+	print(
+				this->verbose_level(),
+				nullptr,
+				output.cstring(),
+				false
+				);
+	return *this;
+}
+
+MarkdownPrinter & MarkdownPrinter::image(
+		const var::String & text,
+		const var::String & link){
+	var::String output = "![" + text + "](" + link + ")";
+	print(
+				this->verbose_level(),
+				nullptr,
+				output.cstring(),
+				false
+				);
+	return *this;
+}
+
 
 MarkdownPrinter & MarkdownPrinter::open_header(
 		const var::String & header,

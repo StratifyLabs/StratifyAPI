@@ -24,9 +24,9 @@ Tokenizer::Tokenizer(
 	init_members();
 	m_is_count_empty_tokens = is_count_empty.argument();
 	parse(input,
-			delim,
-			ignore,
-			maximum_delimeter_count);
+				delim,
+				ignore,
+				maximum_delimeter_count);
 }
 
 bool Tokenizer::belongs_to(
@@ -54,12 +54,14 @@ void Tokenizer::parse(
 		const var::String & input,
 		Delimeters delim,
 		IgnoreBetween ignore,
-		MaximumCount max_delim){
+		MaximumCount max_delim
+		){
+
 	char * p;
 	char * end;
 	unsigned int len0, len1;
-	bool on_token = false;
 	char end_match;
+	bool is_token_empty;
 
 	m_data.copy_contents(input);
 	char c = 0;
@@ -75,57 +77,40 @@ void Tokenizer::parse(
 	if( m_is_count_empty_tokens == true ){
 		m_num_tokens++;
 	}
-	while( p < end ){
-		if( len1 > 0 ){
-			//this can be used to skip items in quotes "ignore=this" when delim includes = (don't split it)
-			while( belongs_to(*p, ignore.argument(), len1) ){
+	is_token_empty = true;
+
+	while( (p < end) && (*p != 0) ){
+		//check to see if the current character is part of the delimiter string
+		if( belongs_to(*p, delim.argument(), len0) || (*p == 0) ){
+			*p = 0; //set the character to zero
+			if( !is_token_empty || m_is_count_empty_tokens ){
+				m_num_tokens++;
+			}
+			is_token_empty = true;
+			p++;
+		} else {
+			if( (len1 > 0) && belongs_to(*p, ignore.argument(), len1) ){
+				//this can be used to skip items in quotes "ignore=this" when delim includes = (don't split it)
 				end_match = *p;
 				//fast forward to next member of ignore that matches the first
 				p++;
-				while( (*p != end_match) && (*p != 0) ){
-					p++;
-				}
-				if( *p == 0 ){
-					if( (m_is_count_empty_tokens == false) && (on_token == false) ){
-						m_num_tokens++;
+				if( (*p != end_match) && (*p != 0) ){
+					is_token_empty = false;
+					while( (*p != end_match) && (*p != 0) ){
+						p++;
 					}
-					return;
-				}
-				p++; //move past the last token
-				if( *p == 0 ){
-					if( (m_is_count_empty_tokens == false) && (on_token == false) ){
-						m_num_tokens++;
-					}
-					return;
-				}
-
-			}
-		}
-
-		//check to see if the current character is part of the delimiter string
-		if( belongs_to(*p, delim.argument(), len0) ){
-			*p = 0; //set the character to zero
-			if( m_is_count_empty_tokens == true ){
-				m_num_tokens++;
-			}
-		}
-
-		//check for an empty token
-		if( m_is_count_empty_tokens == false ){
-			if( *p != 0 ){
-				if( on_token == false ){
-					m_num_tokens++;
-					on_token = true;
-					if( max_delim.argument() &&
-						 (m_num_tokens == max_delim.argument()+1) ){
-						return;
+					if( *p != 0 ){
+						p++;
 					}
 				}
 			} else {
-				on_token = false;
+				is_token_empty = false;
+				p++;
 			}
 		}
-		p++;
+	}
+	if( !is_token_empty || m_is_count_empty_tokens ){
+		m_num_tokens++;
 	}
 }
 

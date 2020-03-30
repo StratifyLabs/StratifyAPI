@@ -11,6 +11,7 @@ namespace fmt {}
 #include "fmt/Bmp.hpp"
 #include "fmt/Wav.hpp"
 #include "fmt/Svic.hpp"
+#include "fmt/Csv.hpp"
 
 using namespace fmt;
 
