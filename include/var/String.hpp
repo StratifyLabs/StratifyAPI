@@ -832,10 +832,14 @@ public:
 
 	Vector<String> split(const String & delimiter) const;
 
+	static const String& empty_string(){
+		return m_empty_string;
+	}
+
 private:
 
 	std::string m_string;
-
+	static String m_empty_string;
 };
 
 

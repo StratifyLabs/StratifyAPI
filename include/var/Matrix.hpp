@@ -58,11 +58,11 @@ public:
 
 	using var::Vector<var::Vector<T>>::at;
 
-	int row_count() const {
+	u32 row_count() const {
 		return this->count();
 	}
 
-	int column_count() const {
+	u32 column_count() const {
 		if( row_count() ){
 			return at(0).count();
 		}

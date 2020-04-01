@@ -11,9 +11,8 @@ Url::Url(const var::String & url){
 
 int Url::set(const var::String & url){
 
-	var::String url_string(url);
 
-	if( url_string.is_empty() == false ){
+	if( url.is_empty() == false ){
 
 		var::Tokenizer url_tokens(
 					url,
@@ -22,7 +21,7 @@ int Url::set(const var::String & url){
 
 		// https://domain.name:port/path
 
-		if( url_tokens.count() < 2 ){
+		if( url_tokens.count() < 3 ){
 			return -1;
 		}
 
@@ -35,7 +34,7 @@ int Url::set(const var::String & url){
 		}
 
 		var::Tokenizer domain_name(
-					url_tokens.at(1),
+					url_tokens.at(2),
 					var::Tokenizer::Delimeters(":")
 					);
 
@@ -43,14 +42,13 @@ int Url::set(const var::String & url){
 			m_port = var::String(domain_name.at(1)).to_integer();
 			m_domain_name = domain_name.at(0);
 		} else {
-			m_domain_name = url_tokens.at(1);
+			m_domain_name = url_tokens.at(2);
 		}
 
 		m_path.clear();
-		for(u32 i = 2; i < url_tokens.count(); i++){
+		for(u32 i = 3; i < url_tokens.count(); i++){
 			m_path << "/" << url_tokens.at(i);
 		}
-
 	}
 
 	return 0;

@@ -132,7 +132,6 @@ bool Cli::is_option_equivalent_to_argument_with_equality(
 				argument,
 				var::Tokenizer::Delimeters("="),
 				var::Tokenizer::IgnoreBetween(""),
-				var::Tokenizer::IsCountEmpty(false),
 				var::Tokenizer::MaximumCount(1));
 	if( tokens.count() == 2 ){
 		String a = option;
@@ -238,7 +237,7 @@ mcu_pin_t Cli::get_option_pin(const char * option) const {
 				var::Tokenizer::Delimeters(".")
 				);
 
-	if( arg.size() == 2 ){
+	if( arg.count() == 2 ){
 		pio.port = arg.at(0).to_integer();
 		pio.pin = arg.at(1).to_integer();
 	} else {
@@ -256,7 +255,7 @@ mcu_pin_t Cli::pin_at(u16 value) const {
 				var::Tokenizer::Delimeters(".")
 				);
 
-	if( arg.size() == 2 ){
+	if( arg.count() == 2 ){
 		pio.port = arg.at(0).to_integer();
 		pio.pin = arg.at(1).to_integer();
 	} else {

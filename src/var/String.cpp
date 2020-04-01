@@ -14,6 +14,8 @@
 
 using namespace var;
 
+String String::m_empty_string;
+
 String var::operator+ (const char*   lhs, const String& rhs){
 	return String(lhs) + rhs;
 }
@@ -166,7 +168,7 @@ Vector<String> String::split(const String & delimiter) const {
 				*this,
 				Tokenizer::Delimeters(delimiter)
 				);
-	return tokens.to_list();
+	return tokens.list();
 }
 
 

@@ -192,6 +192,7 @@ int SocketAddressIpv4::set_address(const var::String & addr){
 				addr,
 				var::Tokenizer::Delimeters(".")
 				);
+
 	if( tokens.count() != 4 ){
 		return -1;
 	}
