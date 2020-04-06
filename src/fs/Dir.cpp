@@ -140,37 +140,37 @@ int Dir::copy(
 			//copy recursively
 
 			if( Dir::create(
-					 destination_entry_path,
-					 Permissions::all_access(),
-					 IsRecursive(true)
-		 #if defined __link
-					 , LinkDriver(destination_driver.argument())
-		 #endif
-					 ) < 0 ){
+						destination_entry_path,
+						Permissions::all_access(),
+						IsRecursive(true)
+			#if defined __link
+						, LinkDriver(destination_driver.argument())
+			#endif
+						) < 0 ){
 				return api::error_code_fs_failed_to_create;
 			}
 
 			copy(SourcePath(entry_path),
-				  DestinationPath(destination_entry_path),
-				  progress_callback
-	  #if defined __link
-				  , source_driver,
-				  destination_driver
-	  #endif
-				  );
-
-		} else if( info.is_file() ){
-			int result;
-			if( (result = File::copy(
-					 SourcePath(entry_path),
 					 DestinationPath(destination_entry_path),
-					 IsOverwrite(true),
 					 progress_callback
 		 #if defined __link
 					 , source_driver,
 					 destination_driver
 		 #endif
-					 )) < 0 ){
+					 );
+
+		} else if( info.is_file() ){
+			int result;
+			if( (result = File::copy(
+						 SourcePath(entry_path),
+						 DestinationPath(destination_entry_path),
+						 IsOverwrite(true),
+						 progress_callback
+			 #if defined __link
+						 , source_driver,
+						 destination_driver
+			 #endif
+						 )) < 0 ){
 				return result;
 			}
 		}
@@ -238,19 +238,22 @@ int Dir::create(
 		base_path << "/";
 	}
 
+	int result = 0;
 	for(u32 i=0; i < path_tokens.count(); i++){
-		base_path << path_tokens.at(i);
-		create(
-					base_path,
-					permissions
+		if( path_tokens.at(i).is_empty() == false ){
+			base_path << path_tokens.at(i);
+			result = create(
+						base_path,
+						permissions
 			#if defined __link
-					, link_driver
+						, link_driver
 			#endif
-					);
-		base_path << "/";
+						);
+			base_path << "/";
+		}
 	}
 
-	return 0;
+	return result;
 }
 
 bool Dir::exists(
@@ -387,8 +390,8 @@ var::Vector<var::String> Dir::read_list(
 			entry = filter(entry);
 		}
 		if( !entry.is_empty() &&
-			 (entry != ".") &&
-			 (entry != "..") ){
+				(entry != ".") &&
+				(entry != "..") ){
 
 			if( is_recursive.argument() ){
 				var::String entry_path;
@@ -446,19 +449,19 @@ const char * Dir::read(){
 		struct link_dirent * result;
 		memset(&m_entry, 0, sizeof(m_entry));
 		if( link_readdir_r(
-				 driver(),
-				 m_dirp,
-				 &m_entry,
-				 &result
-				 ) < 0 ){
+					driver(),
+					m_dirp,
+					&m_entry,
+					&result
+					) < 0 ){
 			return nullptr;
 		}
 	} else {
 		struct dirent * result_local;
 		if( (readdir_r(
-				  m_dirp_local,
-				  &m_entry_local,
-				  &result_local) < 0) || (result_local == 0) ){
+					 m_dirp_local,
+					 &m_entry_local,
+					 &result_local) < 0) || (result_local == 0) ){
 			return nullptr;
 		}
 		return m_entry_local.d_name;

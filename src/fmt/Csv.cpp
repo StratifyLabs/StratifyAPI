@@ -12,7 +12,7 @@ var::StringList Csv::read_line(bool is_header){
 	var::StringList result;
 
 	var::String line = m_file.gets();
-	for(int i=0; i < line.length(); i++){
+	for(u32 i=0; i < line.length(); i++){
 		if( (u8)line.at(i) > 127 ){
 			line.erase(
 						var::String::Position(i),
@@ -35,14 +35,11 @@ var::StringList Csv::read_line(bool is_header){
 	if( line.length() == 0 ){
 		return result;
 	}
-	var::Tokenizer line_tokens(
+	result = var::Tokenizer(
 				line,
 				var::Tokenizer::Delimeters(m_delimeters),
-				var::Tokenizer::IgnoreBetween("\""),
-				var::Tokenizer::IsCountEmpty(true)
-				);
-
-	result = line_tokens.to_list();
+				var::Tokenizer::IgnoreBetween("\"")
+				).list();
 
 	if( !is_header ){
 		if( (result.count() > 0) && (result.count() != header().count()) ){

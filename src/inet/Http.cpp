@@ -426,7 +426,7 @@ int HttpClient::listen_for_header(){
 							var::Tokenizer::Delimeters(" ")
 							);
 				is_first_line = false;
-				if( tokens.size() < 2 ){
+				if( tokens.count() < 2 ){
 					m_status_code = -1;
 					return set_error_number_if_error(api::error_code_inet_failed_to_get_status_code);
 				}

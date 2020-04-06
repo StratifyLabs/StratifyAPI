@@ -40,16 +40,15 @@ public:
 			const var::String & input,
 			Delimeters delim,
 			IgnoreBetween ignore = IgnoreBetween(""),
-			IsCountEmpty is_count_empty = IsCountEmpty(false),
 			MaximumCount maximum_delimeter_count = MaximumCount(0)
 			);
 
 
 	/*! \details Sorting Options used with sort() */
-	enum sort_options {
-		SORT_NONE /*! Don't sort */,
-		SORT_AZ /*! Sort from A to Z */,
-		SORT_ZA /*! Sort from Z to A */
+	enum sort_option {
+		sort_option_none /*! Don't sort */,
+		sort_option_az /*! Sort from A to Z */,
+		sort_option_za /*! Sort from Z to A */
 	};
 
 
@@ -73,49 +72,33 @@ public:
 			const var::String & input,
 			Delimeters delim,
 			IgnoreBetween ignore = IgnoreBetween(""),
-			MaximumCount = MaximumCount(0)
+			MaximumCount maximum_count = MaximumCount(0)
 			);
 
 
 	/*! \details Sorts the tokens as specified. */
-	void sort(enum sort_options sort_option = SORT_NONE);
+	void sort(enum sort_option sort_option = sort_option_none);
 
-
-	u32 size() const { return m_num_tokens; }
 
 	/*! \details Returns the total number of tokens. */
-	u32 count() const { return m_num_tokens; }
+	u32 count() const { return m_token_list.count(); }
 
 	/*! \details Returns a pointer to the token specified by offset. */
-	const String at(u32 n) const;
+	const String& at(u32 n) const;
 
-	static bool belongs_to(const char c, const String & str, unsigned int len);
-	static bool belongs_to(const char c, const String & str){
-		return belongs_to(
-					c,
-					str,
-					str.length()
-					);
+
+	const var::StringList& list() const {
+		return m_token_list;
 	}
 
-
-	/*! \details Accesses whether or not parse() will count empty tokens. */
-	bool is_count_empty_tokens() const { return m_is_count_empty_tokens; }
-
-	/*! \details Sets whether or not parse() should include empty tokens. */
-	void set_count_empty_tokens(bool v = true){ m_is_count_empty_tokens = v; }
-
-	var::Vector<var::String> to_list() const;
+	var::StringList& list(){
+		return m_token_list;
+	}
 
 protected:
 
 private:
-	void init_members();
-	unsigned int m_num_tokens;
-	unsigned int m_string_size;
-	bool m_is_count_empty_tokens;
-	var::Data m_data;
-
+	var::StringList m_token_list;
 
 };
 

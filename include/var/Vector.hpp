@@ -17,14 +17,14 @@ namespace var {
  *
  */
 template<typename T> class Vector:
-      public api::WorkObject {
+		public api::WorkObject {
 public:
 
 	using Position = arg::Argument<size_t, struct VectorPositionTag>;
 
 	/*! \details Constructs an empty object.
-	  *
-	  */
+		*
+		*/
 	Vector(){}
 
 	/*! \details Constructs a vector with \a count uninitialized items. */
@@ -139,11 +139,11 @@ public:
 	T & operator[](size_t offset){ return m_vector[offset]; }
 
 	/*! \details Finds an object in the array.
-	  *
-	  * @param a The equivalent object to find
-	  * @return The index of the object or count() it if wasn't found
-	  *
-	  */
+		*
+		* @param a The equivalent object to find
+		* @return The index of the object or count() it if wasn't found
+		*
+		*/
 	size_t find(const T & a) const {
 		return std::find(begin(), end(), a) - begin();
 	}
@@ -184,18 +184,24 @@ public:
 	}
 
 	/*!
-	  * \details Fills the vector will the specified value.
-	  * \param value The value to assign to each element of the vector
-	  */
-	void fill(const T & value){
+		* \details Fills the vector will the specified value.
+		* \param value The value to assign to each element of the vector
+		*/
+	Vector<T>& fill(const T & value){
 		for(auto & element: m_vector){
 			element = value;
 		}
+		return *this;
 	}
 
-	int resize(size_t count){
+	Vector<T>& resize(size_t count){
 		m_vector.resize(count);
-		return 0;
+		return *this;
+	}
+
+	Vector<T>& reserve(size_t count){
+		m_vector.reserve(count);
+		return *this;
 	}
 
 
@@ -225,15 +231,17 @@ public:
 		return count() * sizeof(T);
 	}
 
+
+
 	/*! \details Returns the number of elemens in the Vector.
-	  *
-	  * The count includes the number of elements added to the vector
-	  * using push_back() or insert(). If the resize() method is called,
-	  * it will directly set the count() and ensure there is enough
-	  * memory available to hold count() items.
-	  *
-	  *
-	  */
+		*
+		* The count includes the number of elements added to the vector
+		* using push_back() or insert(). If the resize() method is called,
+		* it will directly set the count() and ensure there is enough
+		* memory available to hold count() items.
+		*
+		*
+		*/
 	u32 count() const { return m_vector.size(); }
 
 	Vector<T> operator + (const Vector<T> & a) const {

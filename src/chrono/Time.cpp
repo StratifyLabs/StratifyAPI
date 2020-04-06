@@ -40,6 +40,18 @@ Time::Time(
 	set_time(sec, min, hour);
 }
 
+Time::Time(
+		const var::String & time_string,
+		const var::String & format
+		){
+	struct tm tm = {0};
+	if( strptime(time_string.cstring(), format.cstring(), &tm) != nullptr ){
+		m_time = mktime(&tm);
+	} else {
+		m_time = 0;
+	}
+}
+
 Time& Time::operator+=(const Time & a){
 	m_time += a.time();
 	return *this;
@@ -147,5 +159,7 @@ struct tm Time::get_tm() const{
 #endif
 	return time_struct;
 }
+
+
 
 

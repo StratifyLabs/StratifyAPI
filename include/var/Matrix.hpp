@@ -40,29 +40,30 @@ public:
 		return *this;
 	}
 
+	using var::Vector<var::Vector<T>>::at;
+
 	var::Vector<T> & row(u32 row_offset){
-		return var::Vector<T>::at(row_offset);
+		return at(row_offset);
 	}
 
 	const var::Vector<T> & row(u32 row_offset) const {
-		return var::Vector<T>::at(row_offset);
+		return at(row_offset);
 	}
 
 	T & at(u32 row_offset, u32 column_offset){
-		return var::Vector<T>::at(row_offset).at(column_offset);
+		return at(row_offset).at(column_offset);
 	}
 
 	const T & at(u32 row_offset, u32 column_offset) const {
 		return row(row_offset).at(column_offset);
 	}
 
-	using var::Vector<var::Vector<T>>::at;
 
-	int row_count() const {
+	u32 row_count() const {
 		return this->count();
 	}
 
-	int column_count() const {
+	u32 column_count() const {
 		if( row_count() ){
 			return at(0).count();
 		}

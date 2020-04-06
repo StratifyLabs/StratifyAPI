@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "Test.hpp"
+#include "Case.hpp"
 #include "../var/ConstString.hpp"
 
 namespace test {
@@ -62,12 +63,12 @@ public:
 
 
 	/*! \details Constructs a new function test object.
-	  *
-	  * @param test_name The name of the test
-	  * @param function A function pointer to the function that will be tested
-	  * @param parent The parent test or zero if there is no parent
-	  *
-	  */
+		*
+		* @param test_name The name of the test
+		* @param function A function pointer to the function that will be tested
+		* @param parent The parent test or zero if there is no parent
+		*
+		*/
 	Function(
 			const var::String & test_name,
 			return_type (*function)(args...),
@@ -79,14 +80,14 @@ public:
 	~Function(){}
 
 	/*! \details Executes a test case.
-	  *
-	  * @param case_name The name of the case
-	  * @param expected_value The expected return value
-	  * @param expected_errno The expected error number
-	  * @param arguments The arguments to pass to the test function
-	  * @return The value that the tested function returns
-	  *
-	  */
+		*
+		* @param case_name The name of the case
+		* @param expected_value The expected return value
+		* @param expected_errno The expected error number
+		* @param arguments The arguments to pass to the test function
+		* @return The value that the tested function returns
+		*
+		*/
 	return_type execute_case_with_expected_return(const char * case_name, return_type expected_value, int expected_errno, args... arguments){
 		return_type return_value;
 		bool result = true;
@@ -101,46 +102,46 @@ public:
 					);
 		m_case_name << ")";
 
-		open_case(m_case_name);
+		{
 
+			Case case_guard(m_case_name);
 
+			case_timer().start();
+			return_value = m_function(arguments...);
+			case_timer().stop();
 
-		case_timer().start();
-		return_value = m_function(arguments...);
-		case_timer().stop();
-
-		if( expected_value < 0 ){
-			if( return_value < 0 ){
-				//good
+			if( expected_value < 0 ){
+				if( return_value < 0 ){
+					//good
+				} else {
+					//bad
+				}
 			} else {
-				//bad
+				if( return_value == expected_value ){
+					//good
+				} else {
+					//bad
+				}
 			}
-		} else {
-			if( return_value == expected_value ){
-				//good
-			} else {
-				//bad
-			}
-		}
 
 
-		if( (return_value >= 0) && return_value != expected_value ){
-			result = false;
-			print_case_message("expected return %d != actual return %d", expected_value, return_value);
-		} else {
-			print_case_message("expected value returned");
-		}
-
-		if( expected_errno > 0 ){
-			if( expected_errno != errno ){
+			if( (return_value >= 0) && return_value != expected_value ){
 				result = false;
-				print_case_message("expected errno %d != actual errno %d", expected_errno, errno);
+				print_case_message("expected return %d != actual return %d", expected_value, return_value);
 			} else {
-				print_case_message("expected errno match: %d", errno);
+				print_case_message("expected value returned");
 			}
-		}
 
-		close_case(result);
+			if( expected_errno > 0 ){
+				if( expected_errno != errno ){
+					result = false;
+					print_case_message("expected errno %d != actual errno %d", expected_errno, errno);
+				} else {
+					print_case_message("expected errno match: %d", errno);
+				}
+			}
+
+		}
 		return return_value;
 	}
 
@@ -161,18 +162,19 @@ public:
 		m_case_name << ")";
 
 		errno = 0;
-		open_case(m_case_name);
-		case_timer().start();
-		return_result = m_function(arguments...);
-		case_timer().stop();
+		{
+			Case case_guard(m_case_name);
+			case_timer().start();
+			return_result = m_function(arguments...);
+			case_timer().stop();
 
-		if( return_result != expected_result ){
-			print_case_failed(
-						"result is not equal to expected result"
-						);
+			if( return_result != expected_result ){
+				print_case_failed(
+							"result is not equal to expected result"
+							);
+			}
+
 		}
-
-		close_case(result);
 		return return_result;
 	}
 
@@ -189,37 +191,38 @@ public:
 					);
 		m_case_name << ")";
 
-		open_case(m_case_name);
-		case_timer().start();
-		return_value = m_function(arguments...);
-		case_timer().stop();
+		{
+			Case case_guard(m_case_name);
+			case_timer().start();
+			return_value = m_function(arguments...);
+			case_timer().stop();
 
-		if( expected_errno > 0 ){
+			if( expected_errno > 0 ){
 
-			if( return_value >= 0 ){
-				print_case_message("expected an error but returned: %d", return_value);
-				result = false;
-			}
+				if( return_value >= 0 ){
+					print_case_message("expected an error but returned: %d", return_value);
+					result = false;
+				}
 
-			if( expected_errno != errno ){
-				result = false;
-				print_case_message("expected errno %d != actual errno %d", expected_errno, errno);
+				if( expected_errno != errno ){
+					result = false;
+					print_case_message("expected errno %d != actual errno %d", expected_errno, errno);
+				} else {
+					print_case_message("expected errno match: %d", errno);
+				}
+
 			} else {
-				print_case_message("expected errno match: %d", errno);
-			}
 
-		} else {
+				if( return_value < 0 ){
+					result = false;
+					print_case_message("expected success but ret: %d errno: %d", return_value, errno);
+				} else {
+					print_case_message("returned: %d", return_value);
+				}
 
-			if( return_value < 0 ){
-				result = false;
-				print_case_message("expected success but ret: %d errno: %d", return_value, errno);
-			} else {
-				print_case_message("returned: %d", return_value);
 			}
 
 		}
-
-		close_case(result);
 		return return_value;
 	}
 
@@ -240,20 +243,21 @@ public:
 		m_case_name << ")";
 
 		errno = 0;
-		open_case(m_case_name);
-		case_timer().start();
-		return_value = m_function(arguments...);
-		case_timer().stop();
+		{
+			Case case_guard(m_case_name);
+			case_timer().start();
+			return_value = m_function(arguments...);
+			case_timer().stop();
 
-		if( errno != expected_errno ){
-			print_case_failed(
-						"expected errno %d != actual errno %d",
-						expected_errno,
-						errno
-						);
+			if( errno != expected_errno ){
+				print_case_failed(
+							"expected errno %d != actual errno %d",
+							expected_errno,
+							errno
+							);
+			}
+
 		}
-
-		close_case(result);
 		return return_value;
 
 	}
