@@ -5,6 +5,7 @@
 
 
 #include <ctime>
+#include "../var/String.hpp"
 #include "../api/ChronoObject.hpp"
 
 namespace chrono {
@@ -264,6 +265,8 @@ public:
 
 	Time(const Minutes & minutes){ m_time = minutes.minutes()*60; }
 	Time(const Hours & hours){ m_time = hours.hours()*3600; }
+
+	Time(const var::String & time_string, const var::String& format = "%Y-%m-%d %H:%M:%S");
 
 	bool is_valid(){ return m_time != 0; }
 

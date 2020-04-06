@@ -34,7 +34,7 @@ int TextBox::count_lines(const Font * font, sg_size_t w, const TextAttr & text_a
 		line.clear();
 		build_line(font, i, line, tokens, len, w);
 		num_lines++;
-	} while( i < tokens.size() );
+	} while( i < tokens.count() );
 	return num_lines;
 }
 
@@ -110,14 +110,14 @@ void TextBox::draw_to_scale(const DrawingScaledAttr & attr){
 			line_y += (font_height + line_spacing);
 		}
 		draw_line++;
-	} while( i < tokens.size() );
+	} while( i < tokens.count() );
 }
 
 void TextBox::build_line(const Font * font, u32 & i, String & line, Tokenizer & tokens, int & build_len, sg_size_t w){
 	int len;
 	int line_len;
 	u32 j;
-	u32 count = tokens.size();
+	u32 count = tokens.count();
 	build_len = 0;
 
 	for(j=i; j < count; j++){
