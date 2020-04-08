@@ -84,9 +84,9 @@ int File::copy(
 	LINK_SET_DRIVER(dest, destination_driver.argument());
 
 	if( source.open(
-			 source_path.argument(),
-			 OpenFlags::read_only()
-			 ) < 0 ){
+				source_path.argument(),
+				OpenFlags::read_only()
+				) < 0 ){
 		return api::error_code_fs_failed_to_open;
 	}
 
@@ -117,9 +117,9 @@ int File::copy(
 	LINK_SET_DRIVER(dest, destination_driver.argument());
 
 	if( source.open(
-			 source_path.argument(),
-			 OpenFlags::read_only()
-			 ) < 0 ){
+				source_path.argument(),
+				OpenFlags::read_only()
+				) < 0 ){
 		return api::error_code_fs_failed_to_open;
 	}
 
@@ -132,11 +132,37 @@ int File::copy(
 				progress_callback);
 }
 
+int File::save_copy(
+		const var::String& file_path,
+		IsOverwrite is_overwrite
+		){
+	File copy_file;
+	if(
+		 set_error_number_if_error(
+			 copy_file.create(file_path, IsOverwrite(is_overwrite))
+			 ) < 0 ){
+		return return_value();
+	}
+	return copy_file.write(*this);
+}
+
+int File::touch(const var::String& path){
+	File touch_file;
+	if( touch_file.open(path, OpenFlags::read_write()) < 0 ){
+		return api::error_code_fs_failed_to_open;
+	} else {
+		char c;
+		touch_file.read(c);
+		touch_file.write(File::Location(0), c);
+	}
+	return 0;
+}
+
 
 int File::rename(SourcePath old_path,
-					  DestinationPath new_path
-					  SAPI_LINK_DRIVER_LAST
-					  ){
+								 DestinationPath new_path
+								 SAPI_LINK_DRIVER_LAST
+								 ){
 #if defined __link
 	if( link_driver.argument() == nullptr ){
 		return ::rename(
@@ -173,10 +199,10 @@ int File::copy(
 	}
 
 	if( dest.argument().create(
-			 dest_path.argument(),
-			 is_overwrite,
-			 Permissions(st.st_mode & 0777)
-			 ) < 0 ){
+				dest_path.argument(),
+				is_overwrite,
+				Permissions(st.st_mode & 0777)
+				) < 0 ){
 		return api::error_code_fs_failed_to_create;
 	}
 
@@ -221,9 +247,9 @@ bool File::exists(
 	LINK_SET_DRIVER(f, link_driver.argument());
 
 	if( f.open(
-			 path,
-			 fs::OpenFlags::read_only()
-			 ) < 0 ){ return false; }
+				path,
+				fs::OpenFlags::read_only()
+				) < 0 ){ return false; }
 	f.close();
 	return true;
 }
@@ -343,12 +369,12 @@ u32 File::size(
 		){
 	struct SAPI_LINK_STAT st;
 	if( stat(
-			 name,
-			 st
-		 #if defined __link
-			 , link_driver
-		 #endif
-			 ) < 0 ){
+				name,
+				st
+			#if defined __link
+				, link_driver
+			#endif
+				) < 0 ){
 		return static_cast<u32>(-1);
 	}
 	return st.st_size;
@@ -366,9 +392,9 @@ int File::read(
 }
 
 int File::write(Location location,
-					 const void * buf,
-					 Size size
-					 ) const {
+								const void * buf,
+								Size size
+								) const {
 	int result = seek(location, SET);
 	if( result < 0 ){ return result; }
 	return write(
@@ -390,9 +416,9 @@ int File::readline(
 	bytes_recv = 0;
 	do {
 		if( read(
-				 &c,
-				 Size(1)
-				 ) == 1 ){
+					&c,
+					Size(1)
+					) == 1 ){
 			*buf = c;
 			buf++;
 			bytes_recv++;
@@ -575,8 +601,8 @@ var::String File::parent_directory(
 
 #if !defined __link
 int File::access(const var::String & path,
-					  const Access & access
-					  ){
+								 const Access & access
+								 ){
 	return ::access(
 				path.cstring(),
 				access.o_access()
@@ -682,9 +708,9 @@ int File::write(
 		if( progress_callback ){
 			//abort the transaction
 			if( progress_callback->update(
-					 static_cast<int>(size_processed),
-					 static_cast<int>(file_size)
-					 ) == true ){
+						static_cast<int>(size_processed),
+						static_cast<int>(file_size)
+						) == true ){
 				progress_callback->update(0,0);
 				return static_cast<int>(size_processed);
 			}
@@ -713,7 +739,7 @@ DataFile::DataFile(
 		if( f.open(
 					file_path.argument(),
 					OpenFlags::read_only()
-				 ) >= 0 ){
+					) >= 0 ){
 			write(f);
 			f.close();
 		}
@@ -830,8 +856,8 @@ int DataFile::seek(
 }
 
 int ReferenceFile::read(void * buf,
-								Size nbyte
-								) const {
+												Size nbyte
+												) const {
 
 	if( flags().is_write_only() ){
 		return set_error_number_if_error(api::error_code_fs_cant_read);
@@ -896,8 +922,8 @@ int ReferenceFile::write(
 }
 
 int ReferenceFile::seek(int location,
-		enum whence whence
-		) const {
+												enum whence whence
+												) const {
 	switch(whence){
 		case CURRENT:
 			m_location += location;
@@ -946,8 +972,8 @@ int NullFile::write(
 }
 
 int NullFile::seek(int location,
-		enum whence whence
-		) const {
+									 enum whence whence
+									 ) const {
 	MCU_UNUSED_ARGUMENT(location);
 	MCU_UNUSED_ARGUMENT(whence);
 	return -1;
