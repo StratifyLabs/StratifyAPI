@@ -21,6 +21,8 @@
 #define SAPI_LINK_DRIVER_LAST
 #define SAPI_LINK_STAT stat
 #define SAPI_LINK_DEFAULT_PAGE_SIZE 512
+#define SAPI_LINK_DRIVER_ARGUMENT
+#define SAPI_LINK_SET_DRIVER(x,y)
 #else
 #define SAPI_LINK_STAT link_stat
 #define SAPI_LINK_DRIVER_NULLPTR fs::File::LinkDriver link_driver = fs::File::LinkDriver(nullptr)
@@ -28,7 +30,10 @@
 #define SAPI_LINK_DRIVER fs::File::LinkDriver link_driver
 #define SAPI_LINK_DRIVER_LAST , fs::File::LinkDriver link_driver
 #define SAPI_LINK_DEFAULT_PAGE_SIZE 4096
+#define SAPI_LINK_DRIVER_ARGUMENT link_driver.argument(),
+#define SAPI_LINK_SET_DRIVER(x,y) x.set_driver(y)
 #endif
+
 
 
 namespace fs {
@@ -231,8 +236,8 @@ public:
 
 #if !defined __link
 	/*! \details Returns an error if the access is not allowed.
-	  *
-	  */
+		*
+		*/
 	static int access(
 			const var::String & path,
 			const Access & o_access
@@ -246,8 +251,8 @@ public:
 	 * For example:
 	 *
 	 * \code
-	  * const var::String path = "/home/data.txt";
-	  * printf("Suffix is %s", File::suffix(path).cstring());
+		* const var::String path = "/home/data.txt";
+		* printf("Suffix is %s", File::suffix(path).cstring());
 	 * \endcode
 	 *
 	 * The above code will output:
@@ -380,13 +385,13 @@ public:
 			) const;
 
 	/*! \details Reads the file into a var::Data object.
-	  *
-	  * @param data The destination data object
-	  * @return The number of bytes read
-	  *
-	  * This method will read up to data.size() bytes.
-	  *
-	  */
+		*
+		* @param data The destination data object
+		* @return The number of bytes read
+		*
+		* This method will read up to data.size() bytes.
+		*
+		*/
 	int read(const var::Reference & reference) const {
 		int result = read(
 					reference.to_void(),
@@ -440,7 +445,7 @@ public:
 	 * @param loc Location to write (not application to character devices)
 	 * @param buf Pointer to the source data
 	 * @param nbyte Number of bytes to write
-	  * @return Number of bytes successfully written or less than zero with errno set
+		* @return Number of bytes successfully written or less than zero with errno set
 	 */
 	int write(
 			Location location,
@@ -523,8 +528,8 @@ public:
 			Location location,
 			enum whence whence
 			) const {
-			return seek(location.argument(), whence);
-		}
+		return seek(location.argument(), whence);
+	}
 
 
 	/*! \details Reads a line in to the var::String until end-of-file or \a term is reached. */
@@ -610,22 +615,22 @@ public:
 	void set_fileno(int fd) const { m_fd = fd; }
 
 	/*! \details Sets the file descriptor of this object to the file descriptor of file.
-	  *
-	  *
-	  * The reference \a file must already be opened and have a valid file
-	  * number. This won't bind the file number to file just assign
-	  * it based on the state of file.fileno() when this method is called.
-	  *
-	  *
-	  */
+		*
+		*
+		* The reference \a file must already be opened and have a valid file
+		* number. This won't bind the file number to file just assign
+		* it based on the state of file.fileno() when this method is called.
+		*
+		*
+		*/
 	void set_fileno(const File & file) const { m_fd = file.fileno(); }
 
 	/*! \details Copies a file from the source to the destination.
-	  *
-	  * @return Zero on success
-	  *
-	  *
-	  */
+		*
+		* @return Zero on success
+		*
+		*
+		*/
 	static int copy(
 			SourcePath source_path,
 			DestinationPath dest_path,
@@ -637,11 +642,11 @@ public:
 			);
 
 	/*! \details Copies a file from the source to the destination.
-	  *
-	  * @return Zero on success
-	  *
-	  *
-	  */
+		*
+		* @return Zero on success
+		*
+		*
+		*/
 	static int copy(
 			SourcePath source_path,
 			DestinationPath dest_path,
@@ -653,18 +658,25 @@ public:
 		#endif
 			);
 
+	int save_copy(
+			const var::String& file_path,
+			IsOverwrite is_overwrite
+			);
+
 	/*! \details Renames a file.
-	  *
-	  * \param old_path Current path to the file (will be old path after rename)
-	  * \param new_path New path to the file
-	  * \return Zero on success
-	  *
-	  */
+		*
+		* \param old_path Current path to the file (will be old path after rename)
+		* \param new_path New path to the file
+		* \return Zero on success
+		*
+		*/
 	static int rename(
 			SourcePath old_path,
 			DestinationPath new_path
 			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
+
+	static int touch(const var::String& path);
 
 
 protected:

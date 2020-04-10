@@ -182,6 +182,8 @@ public:
 	Data(size_t size);
 
 
+	static Data from_string(const var::String& value);
+
 	/*! \details Returns the minimum data storage size of any Data object. */
 	static u32 minimum_capacity();
 	/*! \cond */

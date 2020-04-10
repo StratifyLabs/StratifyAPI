@@ -165,14 +165,14 @@ Reference & Reference::refer_to(
 
 
 var::String Reference::to_string() const {
-
 	var::String result;
 	for(u32 i = 0; i < size(); i++){
-		result << String().format("%02X", to_const_char()[i]);
+		result << String::number(to_const_u8()[i], "%02X");
 	}
-
 	return result;
 }
+
+
 
 
 int Reference::save(

@@ -47,6 +47,18 @@ Data::Data(size_t size){
 	allocate(size);
 }
 
+Data Data::from_string(const var::String& value){
+	Data result(value.length()/2);
+	for(u32 i=0; i < value.length()/2; i++){
+		result.to_u8()[i] =
+				value.create_sub_string(
+					String::Position(i*2),
+					String::Length(2))
+				.to_unsigned_long(String::base_16);
+	}
+	return result;
+}
+
 void Data::update_reference(){
 	set_reference(
 				ReadOnlyBuffer(data()),
