@@ -2,6 +2,7 @@
 
 #include <errno.h>
 #include "crypto/Aes.hpp"
+#include "sys/Printer.hpp"
 
 using namespace crypto;
 

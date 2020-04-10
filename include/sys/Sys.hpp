@@ -26,47 +26,47 @@ class Sys;
  * from the chip. This class makes doing so as simply as possible.
  *
  */
-class SerialNumber : public api::InfoObject {
-                               public:
+class SerialNumber {
+public:
 
-                               /*! \details Constructs an empty serial number. */
-                               SerialNumber();
+	/*! \details Constructs an empty serial number. */
+	SerialNumber();
 
-/*! \details Constructs a serial number for an array of u32 values. */
-SerialNumber(const u32 serial_number[4]){ memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4); }
+	/*! \details Constructs a serial number for an array of u32 values. */
+	SerialNumber(const u32 serial_number[4]){ memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4); }
 
-/*! \details Constructs a serial number from an mcu_sn_t. */
-SerialNumber(const mcu_sn_t serial_number){ m_serial_number = serial_number; }
+	/*! \details Constructs a serial number from an mcu_sn_t. */
+	SerialNumber(const mcu_sn_t serial_number){ m_serial_number = serial_number; }
 
-/*! \details Constructs this serial number from \a str. */
-SerialNumber(const var::String & str);
+	/*! \details Constructs this serial number from \a str. */
+	SerialNumber(const var::String & str);
 
-/*! \details Returns true if a valid serial number is held. */
-bool is_valid() const {
-	return at(0) + at(1) + at(2) + at(3) != 0;
-}
-
-/*! \details Returns a serial number object from a string type. */
-static SerialNumber from_string(const var::String & str);
-
-/*! \details Returns the u32 section of the serial number specified by *idx*. */
-u32 at(u32 idx) const {
-	if( idx >= 4 ){
-		idx = 3;
+	/*! \details Returns true if a valid serial number is held. */
+	bool is_valid() const {
+		return at(0) + at(1) + at(2) + at(3) != 0;
 	}
-	return m_serial_number.sn[idx];
-}
+
+	/*! \details Returns a serial number object from a string type. */
+	static SerialNumber from_string(const var::String & str);
+
+	/*! \details Returns the u32 section of the serial number specified by *idx*. */
+	u32 at(u32 idx) const {
+		if( idx >= 4 ){
+			idx = 3;
+		}
+		return m_serial_number.sn[idx];
+	}
 
 
 
-/*! \details Compares this strig to \a serial_number. */
-bool operator == (const SerialNumber & serial_number);
+	/*! \details Compares this strig to \a serial_number. */
+	bool operator == (const SerialNumber & serial_number);
 
-/*! \details Converts the serial number to a string. */
-var::String to_string() const;
+	/*! \details Converts the serial number to a string. */
+	var::String to_string() const;
 
 private:
-mcu_sn_t m_serial_number;
+	mcu_sn_t m_serial_number;
 };
 
 /*! \brief System Information Class
@@ -82,7 +82,7 @@ mcu_sn_t m_serial_number;
  *
  */
 class SysInfo {
-   friend class Sys;
+	friend class Sys;
 public:
 
 	/*! \details Constructs an empty SysInfo object. */
@@ -270,10 +270,10 @@ public:
 	 */
 	static int free_ram(
 			const var::String & path
-						  #if defined __link
-							  SAPI_LINK_DRIVER_NULLPTR_LAST
-						  #endif
-							  );
+		#if defined __link
+			SAPI_LINK_DRIVER_NULLPTR_LAST
+		#endif
+			);
 
 	/*! \details Reclaims RAM that was freed using free_ram().
 	 *
@@ -371,18 +371,32 @@ public:
 	 */
 	int get_board_config(sos_board_config_t & config);
 
+
+#endif
+
 	/*! \details Loads the current system info.
 	 *
 	 *
 	 */
-	static SysInfo get_info();
+	static SysInfo get_info(
+			SAPI_LINK_DRIVER_NULLPTR
+			);
+
+	static bool is_authenticated(
+			SAPI_LINK_DRIVER_NULLPTR
+			);
+
+	static sys_secret_key_t get_secret_key(
+			SAPI_LINK_DRIVER_NULLPTR
+			);
+
+
 
 	static SerialNumber get_serial_number();
-#endif
 
 	/*! \details Opens /dev/sys.
 	 *
-	  * @return Less than zero for an error
+		* @return Less than zero for an error
 	 *
 	 */
 	int open(){

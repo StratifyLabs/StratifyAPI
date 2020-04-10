@@ -51,7 +51,7 @@ void Tokenizer::parse(const var::String & input,
 			//skip the space between specific characters
 			char end = input.at(cursor);
 			cursor++;
-			while( (input.at(cursor) != end) && (cursor < length) ){
+			while( (cursor < length) && (input.at(cursor) != end) ){
 				cursor++;
 			}
 		}

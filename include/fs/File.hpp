@@ -21,6 +21,8 @@
 #define SAPI_LINK_DRIVER_LAST
 #define SAPI_LINK_STAT stat
 #define SAPI_LINK_DEFAULT_PAGE_SIZE 512
+#define SAPI_LINK_DRIVER_ARGUMENT
+#define SAPI_LINK_SET_DRIVER(x,y)
 #else
 #define SAPI_LINK_STAT link_stat
 #define SAPI_LINK_DRIVER_NULLPTR fs::File::LinkDriver link_driver = fs::File::LinkDriver(nullptr)
@@ -28,7 +30,10 @@
 #define SAPI_LINK_DRIVER fs::File::LinkDriver link_driver
 #define SAPI_LINK_DRIVER_LAST , fs::File::LinkDriver link_driver
 #define SAPI_LINK_DEFAULT_PAGE_SIZE 4096
+#define SAPI_LINK_DRIVER_ARGUMENT link_driver.argument(),
+#define SAPI_LINK_SET_DRIVER(x,y) x.set_driver(y)
 #endif
+
 
 
 namespace fs {

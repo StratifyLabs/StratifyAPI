@@ -21,10 +21,10 @@ SerialNumber SerialNumber::from_string(const var::String & str){
 	if( len == 8*4 ){
 #if defined __link
 		sscanf(str.cstring(), "%08X%08X%08X%08X",
-		 #else
+			 #else
 		sscanf(str.cstring(), "%08lX%08lX%08lX%08lX",
-		 #endif
-				 &ret.m_serial_number.sn[3],
+			 #endif
+					 &ret.m_serial_number.sn[3],
 				&ret.m_serial_number.sn[2],
 				&ret.m_serial_number.sn[1],
 				&ret.m_serial_number.sn[0]);
@@ -44,7 +44,7 @@ bool SerialNumber::operator == (const SerialNumber & serial_number){
 var::String SerialNumber::to_string() const {
 	var::String ret;
 	ret.format(F3208X F3208X F3208X F3208X,
-				  m_serial_number.sn[3],
+						 m_serial_number.sn[3],
 			m_serial_number.sn[2],
 			m_serial_number.sn[1],
 			m_serial_number.sn[0]);
@@ -69,10 +69,10 @@ SysInfo SysInfo::get(){
 Sys::Sys(
 		SAPI_LINK_DRIVER
 		) : File(
-				 #if defined __link
-				 link_driver
-				 #endif
-				 ){
+					#if defined __link
+					link_driver
+					#endif
+					){
 
 }
 
@@ -81,19 +81,19 @@ Sys::Sys(
 
 
 int Sys::launch(const var::String & path,
-					 Arguments args,
-					 enum Appfs::flags options,
-					 int ram_size){
+								Arguments args,
+								enum Appfs::flags options,
+								int ram_size){
 #if defined __link
 	return -1;
 #else
 	return ::launch(path.cstring(),
-						 0,
-						 args.argument().cstring(),
-						 options,
-						 ram_size,
-						 0, 0,
-						 0);
+									0,
+									args.argument().cstring(),
+									options,
+									ram_size,
+									0, 0,
+									0);
 #endif
 }
 
@@ -143,11 +143,11 @@ var::String Sys::install(
 	var::String result;
 	result.resize(PATH_MAX);
 	if( ::install(path.cstring(),
-					  result.to_char(),
-					  options,
-					  ram_size,
-					  sys::ProgressCallback::update_function,
-					  progress_callback) < 0){
+								result.to_char(),
+								options,
+								ram_size,
+								sys::ProgressCallback::update_function,
+								progress_callback) < 0){
 		return var::String();
 	}
 	return result;
@@ -162,11 +162,11 @@ int Sys::free_ram(
 	int ret;
 #if defined __link
 	if( (fd = link_open(
-			  link_driver.argument(),
-			  path.cstring(),
-			  O_RDONLY
-			  )
-		  ) < 0 ){
+				 link_driver.argument(),
+				 path.cstring(),
+				 O_RDONLY
+				 )
+			 ) < 0 ){
 		return -1;
 	}
 	ret = link_ioctl(link_driver.argument(), fd, I_APPFS_FREE_RAM);
@@ -182,8 +182,8 @@ int Sys::free_ram(
 }
 
 int Sys::reclaim_ram(const var::String & path
-							SAPI_LINK_DRIVER_LAST
-							){
+										 SAPI_LINK_DRIVER_LAST
+										 ){
 	int fd;
 	int ret;
 #if defined __link
@@ -210,9 +210,9 @@ int Sys::get_version(var::String & version){
 	Device sys;
 	int ret;
 	if( sys.open(
-			 "/dev/sys",
-			 fs::OpenFlags::read_write()
-			 ) < 0 ){
+				"/dev/sys",
+				fs::OpenFlags::read_write()
+				) < 0 ){
 		return -1;
 	}
 
@@ -240,9 +240,9 @@ var::String Sys::get_kernel_version(){
 	Device sys;
 	int ret;
 	if( sys.open(
-			 "/dev/sys",
-			 fs::OpenFlags::read_write()
-			 ) < 0 ){
+				"/dev/sys",
+				fs::OpenFlags::read_write()
+				) < 0 ){
 		return var::String();
 	}
 
@@ -289,19 +289,57 @@ int Sys::get_board_config(sos_board_config_t & config){
 				);
 }
 
-SysInfo Sys::get_info(){
+
+
+#endif
+
+SysInfo Sys::get_info(
+		SAPI_LINK_DRIVER
+		){
 	sys_info_t sys_info;
 	Sys sys;
+	SAPI_LINK_SET_DRIVER(sys, link_driver.argument());
 	sys.set_keep_open(false);
 	if( sys.open() < 0 ){ return SysInfo(); }
 	if( sys.get_info(sys_info) < 0 ){ return SysInfo(); }
 	return SysInfo(sys_info);
 }
 
+
+bool Sys::is_authenticated(
+		SAPI_LINK_DRIVER
+		){
+	Sys sys;
+	SAPI_LINK_SET_DRIVER(sys, link_driver.argument());
+	sys.set_keep_open(false);
+	if( sys.open() < 0 ){ return 0; }
+	return sys.ioctl(
+				IoRequest(I_SYS_ISAUTHENTICATED)
+				);
+}
+
+sys_secret_key_t Sys::get_secret_key(
+		SAPI_LINK_DRIVER
+		){
+	sys_secret_key_t result = {0};
+	Sys sys;
+	SAPI_LINK_SET_DRIVER(sys, link_driver.argument());
+	sys.set_keep_open(false);
+	if( sys.open() < 0 ){
+		return result;
+	}
+	sys.ioctl(
+				IoRequest(I_SYS_GETSECRETKEY),
+				IoArgument(&result)
+				);
+	return result;
+}
+
+
 SerialNumber Sys::get_serial_number(){
 	return get_info().serial_number();
 }
-#endif
+
 
 
 
