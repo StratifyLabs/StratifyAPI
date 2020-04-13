@@ -384,19 +384,19 @@ private:
 	T m_argument;
 };
 
-enum error_codes {
-	error_code_flag_calc = 0x80000,
-	error_code_flag_chrono = 0x40000,
-	error_code_flag_crypto = 0x20000,
-	error_code_flag_fmt = 0x100000,
-	error_code_flag_fs = 0x08000,
-	error_code_flag_hal = 0x040000,
-	error_code_flag_inet = 0x020000,
-	error_code_flag_sgfx = 0x010000,
-	error_code_flag_sys = 0x008000,
-	error_code_flag_test = 0x004000,
-	error_code_flag_ux = 0x002000,
-	error_code_flag_var = 0x001000,
+enum error_codes : s32 {
+	error_code_flag_calc = 0x00001000,
+	error_code_flag_chrono = 0x00002000,
+	error_code_flag_crypto = 0x00004000,
+	error_code_flag_fmt = 0x00008000,
+	error_code_flag_fs = 0x00010000,
+	error_code_flag_hal = 0x00020000,
+	error_code_flag_inet = 0x00040000,
+	error_code_flag_sgfx = 0x00080000,
+	error_code_flag_sys = 0x00100000,
+	error_code_flag_test = 0x00200000,
+	error_code_flag_ux = 0x00400000,
+	error_code_flag_var = 0x00800000,
 
 	error_code_crypto_size_mismatch = -(error_code_flag_crypto|1),
 	error_code_crypto_bad_block_size = -(error_code_flag_crypto|2),
@@ -430,6 +430,8 @@ enum error_codes {
 	error_code_inet_failed_wrong_domain = -(error_code_flag_inet|9)
 
 };
+
+const char * get_error_code_description(s32 ec);
 
 }
 
