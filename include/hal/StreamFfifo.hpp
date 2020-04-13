@@ -45,6 +45,7 @@ public:
 		m_info = info;
 	}
 
+	 operator stream_ffifo_info_t& (){ return m_info; }
 	const stream_ffifo_info_t& info() const { return m_info; }
 
 	bool is_valid() const {
