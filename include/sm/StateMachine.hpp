@@ -25,15 +25,15 @@ public:
 	Object(StateMachine & state_machine);
 
 	virtual const char * name() = 0;
-	typedef enum {
+	enum type {
 		TYPE_OBJECT,
 		TYPE_CONDITION,
 		TYPE_STATE,
 		TYPE_ACTION,
 		TYPE_MACHINE
-	} type_t;
+	};
 
-	virtual const type_t type() const { return TYPE_OBJECT; }
+	virtual const enum type type() const { return TYPE_OBJECT; }
 	StateMachine & state_machine(){ return m_state_machine; }
 
 private:
@@ -48,7 +48,7 @@ public:
 
 	Condition(StateMachine & state_machine) : Object(state_machine){}
 	virtual bool is_true() const = 0;
-	const type_t type() const { return TYPE_CONDITION; }
+	const enum type type() const { return TYPE_CONDITION; }
 
 protected:
 
@@ -62,7 +62,7 @@ private:
 class Action : public Object {
 public:
 	Action(StateMachine & state_machine) : Object(state_machine){}
-	const type_t type() const { return TYPE_ACTION; }
+	const enum type type() const { return TYPE_ACTION; }
 	virtual void execute() = 0;
 
 private:
@@ -78,7 +78,7 @@ public:
 
 	State(StateMachine & state_machine) : Object(state_machine){}
 
-	const type_t type() const { return TYPE_STATE; }
+	const enum type type() const { return TYPE_STATE; }
 
 	/*! \details Adds an exit condition that determines
 	  * when to transition to another state.

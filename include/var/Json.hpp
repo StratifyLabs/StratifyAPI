@@ -53,6 +53,27 @@ public:
 	JsonValue(JsonValue && a);
 	JsonValue& operator=(JsonValue && a);
 
+	operator const JsonObject& () const {
+		return to_object();
+	}
+
+	operator JsonObject&()	{
+		return to_object();
+	}
+
+	operator const JsonArray& () const {
+		return to_array();
+	}
+
+	operator JsonArray&(){
+		return to_array();
+	}
+
+	operator var::String() const {
+		return to_string();
+	}
+
+
 	/*! \details Returns true if the value is valid.
 	  *
 	  * \code
@@ -75,32 +96,32 @@ public:
 	bool is_valid() const{ return m_value != 0; }
 
 	enum type {
-		INVALID = -1,
-		OBJECT = JSON_OBJECT,
-		ARRAY = JSON_ARRAY,
-		STRING = JSON_STRING,
-		REAL = JSON_REAL,
-		INTEGER = JSON_INTEGER,
-		TRUE = JSON_TRUE,
-		FALSE = JSON_FALSE,
-		ZERO = JSON_NULL
+		type_invalid = -1,
+		type_object = JSON_OBJECT,
+		type_array = JSON_ARRAY,
+		type_string = JSON_STRING,
+		type_real = JSON_REAL,
+		type_integer = JSON_INTEGER,
+		type_true = JSON_TRUE,
+		type_false = JSON_FALSE,
+		type_zero = JSON_NULL
 	};
 
 	enum type type() const {
 		if( m_value ){
 			return (enum type)json_typeof(m_value);
 		}
-		return INVALID;
+		return type_invalid;
 	}
 
-	bool is_object() const { return type() == OBJECT; }
-	bool is_array() const { return type() == ARRAY; }
-	bool is_string() const { return type() == STRING; }
-	bool is_real() const { return type() == REAL; }
-	bool is_integer() const { return type() == INTEGER; }
-	bool is_true() const { return type() == TRUE; }
-	bool is_false() const { return type() == FALSE; }
-	bool is_null() const { return type() == ZERO; }
+	bool is_object() const { return type() == type_object; }
+	bool is_array() const { return type() == type_array; }
+	bool is_string() const { return type() == type_string; }
+	bool is_real() const { return type() == type_real; }
+	bool is_integer() const { return type() == type_integer; }
+	bool is_true() const { return type() == type_true; }
+	bool is_false() const { return type() == type_false; }
+	bool is_null() const { return type() == type_zero; }
 	bool is_zero() const { return is_null(); }
 
 	JsonValue & to_value(){ return *this; }

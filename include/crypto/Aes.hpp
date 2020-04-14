@@ -38,7 +38,7 @@ public:
 			const var::Reference & value
 			);
 
-	const var::Data & initialization_vector() const {
+	const var::Array<u8,16> & initialization_vector() const {
 		return m_initialization_vector;
 	}
 
@@ -75,7 +75,7 @@ public:
 
 private:
 	void * m_context = nullptr;
-	var::Data m_initialization_vector;
+	var::Array<u8, 16> m_initialization_vector;
 };
 
 }

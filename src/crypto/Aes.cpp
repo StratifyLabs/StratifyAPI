@@ -33,12 +33,17 @@ int Aes::finalize(){
 Aes & Aes::set_initialization_vector(
 		const var::Reference & value
 		){
-	m_initialization_vector.resize(value.size());
-	var::Reference::memory_copy(
-				var::Reference::SourceBuffer(value.to_const_void()),
-				var::Reference::DestinationBuffer(m_initialization_vector.to_void()),
-				var::Reference::Size(m_initialization_vector.size())
-				);
+
+	if( value.count<u8>() != m_initialization_vector.count() ){
+		errno = EINVAL;
+		set_error_number_if_error(api::error_code_crypto_bad_iv_size);
+		return *this;
+	}
+
+	for(u32 i=0; i < m_initialization_vector.count(); i++){
+		m_initialization_vector.at(i) = value.to_const_u8()[i];
+	}
+
 	return *this;
 }
 
@@ -139,7 +144,7 @@ int Aes::encrypt_cbc(
 	if( (result = aes_api()->encrypt_cbc(
 				 m_context,
 				 source_data.argument().size(),
-				 m_initialization_vector.to<unsigned char>(), //init vector
+				 m_initialization_vector.data(), //init vector
 				 source_data.argument().to_const_u8(),
 				 destination_data.argument().to_u8()
 				 ) < 0)
@@ -168,7 +173,7 @@ int Aes::decrypt_cbc(
 	if( (result = aes_api()->decrypt_cbc(
 				 m_context,
 				 source_data.argument().size(),
-				 m_initialization_vector.to<unsigned char>(), //init vector
+				 m_initialization_vector.data(), //init vector
 				 source_data.argument().to_const_u8(),
 				 destination_data.argument().to_u8()
 				 )) < 0 ){

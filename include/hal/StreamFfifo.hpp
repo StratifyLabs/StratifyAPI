@@ -11,7 +11,7 @@ namespace hal {
 
 class StreamFFifo;
 
-class StreamFFifoChannelInfo : public api::InfoObject {
+class StreamFFifoChannelInfo {
 public:
 
 	StreamFFifoChannelInfo(const stream_ffifo_channel_info_t & info) : m_info(info){}
@@ -29,7 +29,7 @@ private:
 	const stream_ffifo_channel_info_t & m_info;
 };
 
-class StreamFFifoInfo : public api::InfoObject {
+class StreamFFifoInfo {
 public:
 	StreamFFifoInfo() :
 		m_receive(m_info.rx),
@@ -45,10 +45,8 @@ public:
 		m_info = info;
 	}
 
-
-	operator stream_ffifo_info_t & (){ return m_info; }
-	operator const stream_ffifo_info_t & () const { return m_info; }
-
+	 operator stream_ffifo_info_t& (){ return m_info; }
+	const stream_ffifo_info_t& info() const { return m_info; }
 
 	bool is_valid() const {
 		return receive().is_valid() || transmit().is_valid();
@@ -76,7 +74,7 @@ private:
 
 };
 
-class StreamFFifoAttributes : public api::InfoObject {
+class StreamFFifoAttributes {
 public:
 	StreamFFifoAttributes(){
 		memset(&m_attr, 0, sizeof(m_attr));
