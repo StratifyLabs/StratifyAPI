@@ -194,7 +194,7 @@ public:
 	static int launch(
 			const var::String & path,
 			Arguments args,
-			enum Appfs::flags options = Appfs::is_default, //run in RAM, discard on exit
+			enum Appfs::flags options = Appfs::flag_is_default, //run in RAM, discard on exit
 			int ram_size = 0
 			);
 
@@ -232,7 +232,7 @@ public:
 	 */
 	static var::String install(
 			const var::String & path,
-			enum Appfs::flags options = Appfs::is_default, //run in RAM, discard on exit
+			enum Appfs::flags options = Appfs::flag_is_default, //run in RAM, discard on exit
 			int ram_size = 0
 			);
 

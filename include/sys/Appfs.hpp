@@ -22,29 +22,17 @@ public:
 #endif
 
 	enum flags {
-		/*! \cond */
-		IS_FLASH = APPFS_FLAG_IS_FLASH,
-		IS_STARTUP = APPFS_FLAG_IS_STARTUP,
-		IS_ROOT = APPFS_FLAG_IS_ROOT,
-		IS_REPLACE = APPFS_FLAG_IS_REPLACE,
-		IS_ORPHAN = APPFS_FLAG_IS_ORPHAN,
-		IS_UNIQUE = APPFS_FLAG_IS_UNIQUE,
-		IS_CODE_EXTERNAL = APPFS_FLAG_IS_CODE_EXTERNAL,
-		IS_DATA_EXTERNAL = APPFS_FLAG_IS_DATA_EXTERNAL,
-		IS_CODE_TIGHTLY_COUPLED = APPFS_FLAG_IS_CODE_TIGHTLY_COUPLED,
-		IS_DATA_TIGHTLY_COUPLED = APPFS_FLAG_IS_DATA_TIGHTLY_COUPLED,
-		/*! \endcond */
-		is_default = 0,
-		is_flash = APPFS_FLAG_IS_FLASH,
-		is_startup = APPFS_FLAG_IS_STARTUP,
-		is_root = APPFS_FLAG_IS_ROOT,
-		is_replace = APPFS_FLAG_IS_REPLACE,
-		is_orphan = APPFS_FLAG_IS_ORPHAN,
-		is_unique = APPFS_FLAG_IS_UNIQUE,
-		is_code_external = APPFS_FLAG_IS_CODE_EXTERNAL,
-		is_data_external = APPFS_FLAG_IS_DATA_EXTERNAL,
-		is_code_tightly_coupled = APPFS_FLAG_IS_CODE_TIGHTLY_COUPLED,
-		is_data_tightly_coupled = APPFS_FLAG_IS_DATA_TIGHTLY_COUPLED
+		flag_is_default = 0,
+		flag_is_flash = APPFS_FLAG_IS_FLASH,
+		flag_is_startup = APPFS_FLAG_IS_STARTUP,
+		flag_is_authenticated = APPFS_FLAG_IS_AUTHENTICATED,
+		flag_is_replace = APPFS_FLAG_IS_REPLACE,
+		flag_is_orphan = APPFS_FLAG_IS_ORPHAN,
+		flag_is_unique = APPFS_FLAG_IS_UNIQUE,
+		flag_is_code_external = APPFS_FLAG_IS_CODE_EXTERNAL,
+		flag_is_data_external = APPFS_FLAG_IS_DATA_EXTERNAL,
+		flag_is_code_tightly_coupled = APPFS_FLAG_IS_CODE_TIGHTLY_COUPLED,
+		flag_is_data_tightly_coupled = APPFS_FLAG_IS_DATA_TIGHTLY_COUPLED
 	};
 
 };
@@ -114,21 +102,21 @@ public:
    bool is_executable() const { return m_info.mode & 0111; }
 
    /*! \details Returns true if the application runs at startup. */
-   bool is_startup() const { return (m_info.o_flags & IS_STARTUP) != 0; }
+	 bool is_startup() const { return (m_info.o_flags & flag_is_startup) != 0; }
    /*! \details Returns true if the application is to be installed in flash. */
-   bool is_flash() const { return (m_info.o_flags & IS_FLASH) != 0; }
+	 bool is_flash() const { return (m_info.o_flags & flag_is_flash) != 0; }
    /*! \details Returns true if the application code is to be installed in external memory. */
-   bool is_code_external() const { return (m_info.o_flags & IS_CODE_EXTERNAL) != 0; }
+	 bool is_code_external() const { return (m_info.o_flags & flag_is_code_external) != 0; }
    /*! \details Returns true if the application data is to be installed in external memory. */
-   bool is_data_external() const { return (m_info.o_flags & IS_DATA_EXTERNAL) != 0; }
+	 bool is_data_external() const { return (m_info.o_flags & flag_is_data_external) != 0; }
    /*! \details Returns true if the application code is to be installed in tightly coupled memory. */
-   bool is_code_tightly_coupled() const { return (m_info.o_flags & IS_CODE_TIGHTLY_COUPLED) != 0; }
+	 bool is_code_tightly_coupled() const { return (m_info.o_flags & flag_is_code_tightly_coupled) != 0; }
    /*! \details Returns true if the application data is to be installed in tightly coupled memory. */
-   bool is_data_tightly_coupled() const { return (m_info.o_flags & IS_DATA_TIGHTLY_COUPLED) != 0; }
+	 bool is_data_tightly_coupled() const { return (m_info.o_flags & flag_is_data_tightly_coupled) != 0; }
    /*! \details Returns true if the application should run as an orphan. */
-   bool is_orphan() const { return (m_info.o_flags & IS_ORPHAN) != 0; }
+	 bool is_orphan() const { return (m_info.o_flags & flag_is_orphan) != 0; }
    /*! \details Returns true if the application should run as root. */
-   bool is_root() const { return (m_info.o_flags & IS_ROOT) != 0; }
+	 bool is_authenticated() const { return (m_info.o_flags & flag_is_authenticated) != 0; }
    /*! \details Returns true if the application should create a unique instance.
     *
     * If unique is false, the system will not allow a second copy of
@@ -138,7 +126,7 @@ public:
     * name when it is installed in RAM or flash.
     *
     */
-   bool is_unique() const { return (m_info.o_flags & IS_UNIQUE) != 0; }
+	 bool is_unique() const { return (m_info.o_flags & flag_is_unique) != 0; }
 
    const appfs_info_t & info() const { return m_info; }
    appfs_info_t & info(){ return m_info; }
@@ -172,7 +160,7 @@ public:
 	AppfsFileAttributes(){
 		m_version = 0;
 		m_ram_size = 0;
-		m_o_flags = IS_FLASH;
+		m_o_flags = flag_is_flash;
 		m_access_mode = 0777;
 	}
 
@@ -196,73 +184,83 @@ public:
 	AppfsFileAttributes & set_access_mode(u32 value){ m_access_mode = value; return *this; }
 	u16 access_mode() const { return m_access_mode; }
 
-	bool is_flash() const { return m_o_flags & IS_FLASH; }
-	bool is_code_external() const { return m_o_flags & IS_CODE_EXTERNAL; }
-	bool is_data_external() const { return m_o_flags & IS_DATA_EXTERNAL; }
-	bool is_code_tightly_coupled() const { return m_o_flags & IS_CODE_TIGHTLY_COUPLED; }
-	bool is_data_tightly_coupled() const { return m_o_flags & IS_DATA_TIGHTLY_COUPLED; }
-	bool is_startup() const { return m_o_flags & IS_STARTUP; }
-	bool is_unique() const { return m_o_flags & IS_UNIQUE; }
+	bool is_flash() const { return m_o_flags & flag_is_flash; }
+	bool is_code_external() const { return m_o_flags & flag_is_code_external; }
+	bool is_data_external() const { return m_o_flags & flag_is_data_external; }
+	bool is_code_tightly_coupled() const { return m_o_flags & flag_is_code_tightly_coupled; }
+	bool is_data_tightly_coupled() const { return m_o_flags & flag_is_data_tightly_coupled; }
+	bool is_startup() const { return m_o_flags & flag_is_startup; }
+	bool is_unique() const { return m_o_flags & flag_is_unique; }
+	bool is_authenticated() const { return m_o_flags & flag_is_authenticated; }
 
 	AppfsFileAttributes & set_startup(bool value = true){
 		if( value ){
-			m_o_flags |= IS_STARTUP;
+			m_o_flags |= flag_is_startup;
 		} else {
-			m_o_flags &= ~IS_STARTUP;
+			m_o_flags &= ~flag_is_startup;
 		}
 		return *this;
 	}
 
 	AppfsFileAttributes & set_flash(bool value = true){
 		if( value ){
-			m_o_flags |= IS_FLASH;
+			m_o_flags |= flag_is_flash;
 		} else {
-			m_o_flags &= ~IS_FLASH;
+			m_o_flags &= ~flag_is_flash;
 		}
 		return *this;
 	}
 
 	AppfsFileAttributes & set_code_external(bool value = true){
 		if( value ){
-			m_o_flags |= IS_CODE_EXTERNAL;
+			m_o_flags |= flag_is_code_external;
 		} else {
-			m_o_flags &= ~IS_CODE_EXTERNAL;
+			m_o_flags &= ~flag_is_code_external;
 		}
 		return *this;
 	}
 
 	AppfsFileAttributes & set_data_external(bool value = true){
 		if( value ){
-			m_o_flags |= IS_DATA_EXTERNAL;
+			m_o_flags |= flag_is_data_external;
 		} else {
-			m_o_flags &= ~IS_DATA_EXTERNAL;
+			m_o_flags &= ~flag_is_data_external;
 		}
 		return *this;
 	}
 
 	AppfsFileAttributes & set_code_tightly_coupled(bool value = true){
 		if( value ){
-			m_o_flags |= IS_CODE_TIGHTLY_COUPLED;
+			m_o_flags |= flag_is_code_tightly_coupled;
 		} else {
-			m_o_flags &= ~IS_CODE_TIGHTLY_COUPLED;
+			m_o_flags &= ~flag_is_code_tightly_coupled;
 		}
 		return *this;
 	}
 
 	AppfsFileAttributes & set_data_tightly_coupled(bool value = true){
 		if( value ){
-			m_o_flags |= IS_DATA_TIGHTLY_COUPLED;
+			m_o_flags |= flag_is_data_tightly_coupled;
 		} else {
-			m_o_flags &= ~IS_DATA_TIGHTLY_COUPLED;
+			m_o_flags &= ~flag_is_data_tightly_coupled;
 		}
 		return *this;
 	}
 
 	AppfsFileAttributes & set_unique(bool value = true){
 		if( value ){
-			m_o_flags |= IS_UNIQUE;
+			m_o_flags |= flag_is_unique;
 		} else {
-			m_o_flags &= ~IS_UNIQUE;
+			m_o_flags &= ~flag_is_unique;
+		}
+		return *this;
+	}
+
+	AppfsFileAttributes & set_authenticated(bool value = true){
+		if( value ){
+			m_o_flags |= flag_is_authenticated;
+		} else {
+			m_o_flags &= ~flag_is_authenticated;
 		}
 		return *this;
 	}

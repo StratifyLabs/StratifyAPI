@@ -403,6 +403,7 @@ enum error_codes : s32 {
 	error_code_crypto_operation_failed = -(error_code_flag_crypto|3),
 	error_code_crypto_missing_api = -(error_code_flag_crypto|4),
 	error_code_crypto_unsupported_operation = -(error_code_flag_crypto|5),
+	error_code_crypto_bad_iv_size = -(error_code_flag_crypto|6),
 
 	error_code_fs_failed_to_open = -(error_code_flag_fs|1),
 	error_code_fs_failed_to_read = -(error_code_flag_fs|2),

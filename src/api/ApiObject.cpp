@@ -89,6 +89,7 @@ const char * api::get_error_code_description(s32 ec){
 		case error_code_crypto_operation_failed: return "error_code_crypto_operation_failed";
 		case error_code_crypto_missing_api: return "error_code_crypto_missing_api";
 		case error_code_crypto_unsupported_operation: return "error_code_crypto_unsupported_operation";
+		case error_code_crypto_bad_iv_size: return "error_code_crypto_bad_iv_size";
 
 		case error_code_fs_failed_to_open: return "error_code_fs_failed_to_open";
 		case error_code_fs_failed_to_read: return "error_code_fs_failed_to_read";
