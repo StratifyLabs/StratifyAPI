@@ -31,9 +31,9 @@ int Base64::encode(
 			size_processed += result;
 			int len = encode(output_buffer, input_buffer, result);
 			if( destination.argument().write(
-					 output_buffer,
-					 fs::File::Size(len)
-					 ) != len ){
+						output_buffer,
+						fs::File::Size(len)
+						) != len ){
 				result = 0;
 			}
 		}
@@ -64,11 +64,11 @@ int Base64::decode(
 		if( result > 0 ){
 			size_processed += result;
 			int len = calc_decoded_size(result);
-			decode(output_buffer, input_buffer, result);
+			len -= decode(output_buffer, input_buffer, result);
 			if( output.argument().write(
-					 output_buffer,
-					 fs::File::Size(len)
-					 ) != len ){
+						output_buffer,
+						fs::File::Size(len)
+						) != len ){
 				result = 0;
 			}
 
@@ -88,8 +88,8 @@ var::String Base64::encode(
 				);
 
 	encode(result.to_char(),
-			 input.to_const_void(),
-			 input.size());
+				 input.to_const_void(),
+				 input.size());
 
 	return result;
 }
@@ -98,16 +98,18 @@ var::Data Base64::decode(
 		const var::String & input
 		){
 	var::Data result;
-	if( result.allocate(
-			 calc_decoded_size(input.length())
-			 ) < 0 ){
+	int len	= calc_decoded_size(input.length());
+	if( result.allocate(len) < 0 ){
 		return var::Data();
 	}
 
-	decode(result.to_void(),
-			 input.cstring(),
-			 input.length());
+	len -= decode(
+				result.to_void(),
+				input.cstring(),
+				input.length()
+				);
 
+	result.resize(len);
 	return result;
 }
 
@@ -165,7 +167,7 @@ int Base64::decode(void * dest, const char * src, int nbyte){
 	int i;
 	int j;
 
-	uint8_t eight_bits[4];
+	u8 eight_bits[4] = {0};
 
 	for(i=0,j=0; j < nbyte; i+=3,j+=4){
 		eight_bits[0] = decode_eigth(src[j]);
@@ -177,16 +179,26 @@ int Base64::decode(void * dest, const char * src, int nbyte){
 		data[i+2] = (eight_bits[2] << 6) | (eight_bits[3]);
 	}
 
-	return 0;
+	int padding = 0;
+	if( j >= 4 ){
+		if( src[j-4+2] == '=' ){
+			padding = 2;
+		} else if( src[j-4+3] == '=' ){
+			padding = 1;
+		}
+	}
+
+	return padding;
 }
 
 int Base64::calc_decoded_size(int nbyte){
+	//doesn't account for padding
 	return (nbyte*3+3)/4;
 }
 
 //This is a helper function to convert a six-bit value to base64
-char Base64::encode_six(uint8_t six_bit_value){
-	uint8_t x;
+char Base64::encode_six(u8 six_bit_value){
+	u8 x;
 	char c = -1;
 	x = six_bit_value & ~0xC0; //remove top two bits (should be zero anyway)
 	if( x < 26 ){
@@ -203,8 +215,8 @@ char Base64::encode_six(uint8_t six_bit_value){
 	return c;
 }
 
-char Base64::decode_eigth(uint8_t eight_bit_value){
-	uint8_t x;
+char Base64::decode_eigth(u8 eight_bit_value){
+	u8 x;
 	x = eight_bit_value;
 	if( (x >= 'A') && (x <= 'Z') ){
 		return x - 'A';
