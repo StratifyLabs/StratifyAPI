@@ -169,8 +169,8 @@ private:
 	static int decode(void * dest, const char * src, int nbyte);
 	static int calc_decoded_size(int nbyte);
 	static int calc_encoded_size(int nbyte);
-	static char encode_six(uint8_t six_bit_value);
-	static char decode_eigth(uint8_t eight_bit_value);
+	static char encode_six(u8 six_bit_value);
+	static char decode_eigth(u8 eight_bit_value);
 
 
 };

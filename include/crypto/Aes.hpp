@@ -9,11 +9,11 @@
 
 namespace crypto {
 
+using InitializationVector = var::Array<u8,16>;
+using Iv = InitializationVector;
+
 class Aes : public api::CryptoWorkObject {
 public:
-
-	using SourceReference = var::Reference::Source;
-	using DestinationReference = var::Reference::Destination;
 
 	using SourceCipherData = arg::Argument<const var::Reference&, struct AesSourceCipherDataTag >;
 	using DestinationCipherData = arg::Argument<var::Reference&, struct AesDestinationCipherDataTag >;
@@ -22,6 +22,7 @@ public:
 	using DestinationPlainData = arg::Argument<var::Reference&, struct AesDestinationPlainDataTag >;
 
 	~Aes();
+
 
 	int initialize();
 	int finalize();
@@ -38,7 +39,7 @@ public:
 			const var::Reference & value
 			);
 
-	const var::Array<u8,16> & initialization_vector() const {
+	const InitializationVector & initialization_vector() const {
 		return m_initialization_vector;
 	}
 
@@ -75,7 +76,7 @@ public:
 
 private:
 	void * m_context = nullptr;
-	var::Array<u8, 16> m_initialization_vector;
+	InitializationVector m_initialization_vector;
 };
 
 }
