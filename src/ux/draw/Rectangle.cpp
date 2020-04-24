@@ -8,14 +8,14 @@ using namespace ux::draw;
 Rectangle::Rectangle(){
 }
 
-void Rectangle::draw_to_scale(const DrawingScaledAttributes & attr){
+void Rectangle::draw(const DrawingScaledAttributes & attr){
 	attr.bitmap() << sgfx::Pen().set_color( m_color );
 	attr.bitmap().draw_rectangle(attr.point(), attr.area());
 }
 
 RoundedRectangle::RoundedRectangle(){}
 
-void RoundedRectangle::draw_to_scale(const DrawingScaledAttributes & attr){
+void RoundedRectangle::draw(const DrawingScaledAttributes & attr){
 
 	attr.bitmap().set_pen( sgfx::Pen().set_color( m_color ) );
 

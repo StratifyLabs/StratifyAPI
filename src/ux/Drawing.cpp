@@ -233,25 +233,14 @@ sg_size_t Drawing::height(sg_size_t scaled, sg_area_t d){
 	return scaled * d.height / DrawingAttributes::scale();
 }
 
-void Drawing::draw(Bitmap & b, sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h){
-	DrawingAttributes attr;
-	//attr.set(b, drawing_point(x,y), drawing_dim(w,h));
-	draw(attr);
-}
-
 
 void Drawing::draw(const DrawingAttributes & attr){
 	DrawingScaledAttributes attr_scaled(attr);
-	draw_to_scale(attr_scaled);
-}
-
-void Drawing::draw_to_scale(Bitmap & b, sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h){
-	DrawingScaledAttributes attr_scaled;
-	attr_scaled.set(b, sg_point(x,y), sg_dim(w,h));
-	draw_to_scale(attr_scaled);
+	draw(attr_scaled);
 }
 
 
-void Drawing::draw_to_scale(const DrawingScaledAttributes & attr){}
+
+void Drawing::draw(const DrawingScaledAttributes & attr){}
 
 

@@ -11,9 +11,7 @@ namespace ux {
 #define LABEL_SIGNATURE COMPONENT_SIGNATURE('l','a','b','l')
 
 class Label :
-		public ComponentAccess<Label, LABEL_SIGNATURE>,
-public DrawingAlignment<Label>,
-public DrawingComponentProperties<Label> {
+		public ComponentAccess<Label, LABEL_SIGNATURE> {
 	public:
 
 
@@ -35,7 +33,7 @@ public DrawingComponentProperties<Label> {
 		return *this;
 	}
 
-	void draw_to_scale(const DrawingScaledAttributes & attributes);
+	void draw(const DrawingScaledAttributes & attributes);
 
 	const var::String& label() const {
 		return m_label;

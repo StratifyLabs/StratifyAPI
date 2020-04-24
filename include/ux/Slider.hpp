@@ -36,7 +36,7 @@ public:
 
 	}
 
-	void draw(const DrawingAttributes & attributes);
+	void draw(const DrawingScaledAttributes & attributes);
 	void handle_event(const ux::Event & event);
 
 	u16 value(){ return m_value; }

@@ -47,7 +47,7 @@ public:
       return *this;
    }
 
-   void draw_to_scale(const DrawingScaledAttributes & attributes);
+   void draw(const DrawingScaledAttributes & attributes);
    void handle_event(const ux::Event & event);
 
 private:

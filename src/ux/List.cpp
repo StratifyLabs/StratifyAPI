@@ -8,7 +8,7 @@
 using namespace sgfx;
 using namespace ux;
 
-void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
+void ListItem::draw(const DrawingScaledAttributes & attributes){
 
 	draw_base_properties(
 				attributes.bitmap(),
@@ -17,7 +17,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
 				);
 
 	Region region_inside_padding = calculate_region_inside_padding(
-				attributes.area()
+				attributes.region()
 				);
 
 
@@ -27,7 +27,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
 			.set_color(theme()->text_color())
 			.set_align_left()
 			.set_align_middle()
-			.draw_to_scale(
+			.draw(
 				attributes + region_inside_padding.point() + region_inside_padding.area()
 				);
 
@@ -37,7 +37,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
 				.set_name(m_icon)
 				.set_color(theme()->text_color())
 				.set_align_right()
-				.draw_to_scale(
+				.draw(
 					attributes +
 					region_inside_padding.point() +
 					region_inside_padding.area()
@@ -49,7 +49,7 @@ void ListItem::draw_to_scale(const DrawingScaledAttributes & attributes){
 				.set_color(theme()->text_color())
 				.set_align_right()
 				.set_align_middle()
-				.draw_to_scale(
+				.draw(
 					attributes +
 					region_inside_padding.point() +
 					region_inside_padding.area()

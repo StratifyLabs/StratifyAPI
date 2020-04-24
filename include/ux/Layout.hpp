@@ -47,7 +47,7 @@ private:
 
 class Layout : public ComponentAccess<
 		Layout, LAYOUT_COMPONENT_SIGNATURE
-		>, public DrawingAlignment<Layout> {
+		> {
 public:
 
 	using IsRecursive = arg::Argument<bool, struct LayoutIsRecursiveTag>;
@@ -72,6 +72,13 @@ public:
 	Layout& add_component(
 			Component& component
 			);
+
+	Layout& add_empty_region(
+			DrawingRegion& region
+			){
+		m_empty_region_list.push_back(region);
+		return *this;
+	}
 
 	Layout& set_flow(enum flow flow){
 		m_flow = flow;
@@ -161,13 +168,6 @@ public:
 	virtual void handle_event(const ux::Event & event);
 
 private:
-
-	void set_refresh_region(const sgfx::Region & region);
-
-	void touch_drawing_attributes(){
-		shift_origin(DrawingPoint(0,0));
-	}
-
 	friend class EventLoop;
 	enum flow m_flow;
 	DrawingPoint m_origin;
@@ -175,6 +175,8 @@ private:
 	sgfx::Point m_touch_last;
 	ux::TouchGesture m_touch_gesture;
 	var::Vector<LayoutComponent> m_component_list;
+	var::Vector<DrawingRegion> m_empty_region_list;
+	var::Vector<sgfx::Region> m_erase_region_list;
 	EventHandlerFunction m_event_handler;
 
 	void shift_origin(DrawingPoint shift);
@@ -192,6 +194,16 @@ private:
 	void generate_free_layout_positions();
 
 	void examine_visibility();
+
+	void update_empty_space_list();
+	DrawingPoint find_left_edge(const DrawingPoint& start);
+	DrawingPoint find_right_edge(const DrawingPoint& start);
+	DrawingRegion find_empty_region(const DrawingPoint& start);
+
+	void set_refresh_region(const sgfx::Region & region);
+	void touch_drawing_attributes(){
+		shift_origin(DrawingPoint(0,0));
+	}
 };
 
 template<class T> class LayoutAccess : public Layout {
@@ -207,6 +219,12 @@ public:
 			Component& component
 			){
 		return static_cast<T&>(Layout::add_component(component));
+	}
+
+	T& add_empty_region(
+			DrawingRegion& region
+			){
+		return static_cast<T&>(Layout::add_empty_region(region));
 	}
 
 	T& set_flow(enum flow value){

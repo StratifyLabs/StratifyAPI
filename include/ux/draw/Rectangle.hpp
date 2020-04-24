@@ -28,7 +28,7 @@ namespace ux::draw {
 class Rectangle : public Drawing {
 public:
 	Rectangle();
-	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
+	virtual void draw(const DrawingScaledAttributes & attr);
 
 	Rectangle & set_color(sg_color_t value){
 		m_color = value;
@@ -47,7 +47,7 @@ private:
 class RoundedRectangle : public Drawing {
 public:
 	RoundedRectangle();
-	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
+	virtual void draw(const DrawingScaledAttributes & attr);
 
 	enum corners {
 		TOP_LEFT_ROUNDED = 0,

@@ -6,7 +6,7 @@
 using namespace ux;
 using namespace sgfx;
 
-void ToggleSwitch::draw_to_scale(const DrawingScaledAttributes & attributes){
+void ToggleSwitch::draw(const DrawingScaledAttributes & attributes){
 
 	const sg_size_t border_offset = attributes.height() / 100 ? attributes.height()/100 : 1;
 	const sg_size_t active_area_offset = attributes.height() / 10;

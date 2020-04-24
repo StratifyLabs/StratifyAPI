@@ -4,39 +4,70 @@
 #include "ux/EventLoop.hpp"
 
 using namespace ux;
+using namespace sgfx;
 
 
-void Slider::draw(const DrawingAttributes & attributes){
+void Slider::draw(const DrawingScaledAttributes & attributes){
 
-	const DrawingArea indicator_area(100,1000);
-	const DrawingArea slider_area(900,200);
+	draw_base_properties(
+				attributes.bitmap(),
+				attributes.region(),
+				theme()
+				);
 
 	//draw the background
-	draw::Rectangle()
-			.set_color(theme()->background_color())
-			.draw(attributes, DrawingPoint(0,0), DrawingArea(1000,1000));
+	attributes.bitmap() << sgfx::Pen().set_color(theme()->background_color());
+	attributes.bitmap().draw_rectangle(
+				attributes.region()
+				);
+
+	Region region_inside_margin =
+			calculate_region_inside_margin(attributes.region());
+
+	sys::Printer p;
+
+	{
+		sys::PrinterObject pg(p, "region");
+		p << attributes.region();
+	}
+
+	{
+		sys::PrinterObject pg(p, "region inside margin");
+		p << region_inside_margin;
+	}
+
+
+	Area slider_area(
+				region_inside_margin.width()* 900 / 1000,
+				region_inside_margin.height()* 200 / 1000
+				);
+
+	Region slider_region =
+			calculate_region_inside(
+				region_inside_margin,
+	{80, 5, 80, 5}
+				);
+
+	Area indicator_area(
+				region_inside_margin.width()* 100 / 1000,
+				region_inside_margin.height()
+				);
 
 	//draw the slider bar
-	draw::Rectangle()
-			.set_color(theme()->border_color())
-			.draw(attributes, DrawingPoint(
-							50,
-							500 - slider_area.height()/2
-							),
-						slider_area);
+	attributes.bitmap() << Pen().set_color( theme()->border_color() );
+	attributes.bitmap().draw_rectangle(slider_region);
 
-	u16 indicator_range = 1000 - indicator_area.width();
+	u16 indicator_range = region_inside_margin.width() - indicator_area.width();
 
-	drawing_int_t indicator_position =
+	sg_int_t indicator_position =
 			m_value * indicator_range / m_maximum;
 
 	//draw the position indicator
-	draw::Rectangle()
-			.set_color(theme()->color())
-			.draw(attributes,
-						DrawingPoint(indicator_position,0),
-						indicator_area
-						);
+	attributes.bitmap() << Pen().set_color( theme()->color() );
+	attributes.bitmap().draw_rectangle(
+				region_inside_margin.point() + Point::X(indicator_position),
+				indicator_area
+				);
 
 	apply_antialias_filter(attributes);
 
@@ -72,7 +103,7 @@ void Slider::handle_event(const ux::Event & event){
 		}
 
 		if( (touch_event.id() == ux::TouchEvent::id_pressed) &&
-							 contains(touch_event.point()) ){
+				contains(touch_event.point()) ){
 			m_is_touched = true;
 			update_touch_point(touch_event.point());
 			event_loop()->handle_event(

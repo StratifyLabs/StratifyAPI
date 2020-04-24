@@ -26,8 +26,7 @@ class ListEvent : public EventObject<ListItem, EVENT_TYPE('_','l','s','t')> {
 
 
 class ListItem :
-		public ComponentAccess<ListItem, COMPONENT_SIGNATURE('l','s','t','i')>,
-		public DrawingComponentProperties<ListItem> {
+		public ComponentAccess<ListItem, COMPONENT_SIGNATURE('l','s','t','i')>{
 public:
 	enum type {
 		type_icon, //just an icon
@@ -61,7 +60,7 @@ public:
 	const var::String & key() const { return m_key; }
 	const var::String & value() const { return m_value; }
 
-	void draw_to_scale(const DrawingScaledAttributes & attributes);
+	void draw(const DrawingScaledAttributes & attributes);
 	void handle_event(const ux::Event & event);
 
 private:
