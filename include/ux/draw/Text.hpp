@@ -18,11 +18,11 @@ namespace ux::draw {
  * be invoked so that the application is aware of the system fonts.
  *
  */
-class Text : public Drawing, public DrawingAlignment<Text> {
+class Text : public Drawing, public DrawingComponentProperties<Text> {
 public:
 
 	/*! \details Draw the scaled text as specified by \a attr */
-	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
+	virtual void draw(const DrawingScaledAttributes & attr);
 
 	Text & set_string(const var::String & value){
 		m_string = value;

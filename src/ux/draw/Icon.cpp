@@ -29,7 +29,7 @@ bool Icon::resolve_font(sg_size_t h){
 	return true;
 }
 
-void Icon::draw_to_scale(const DrawingScaledAttributes & attr){
+void Icon::draw(const DrawingScaledAttributes & attr){
 	sg_point_t top_left;
 	int w;
 	int h;

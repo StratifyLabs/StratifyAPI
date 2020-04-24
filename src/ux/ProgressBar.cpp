@@ -7,7 +7,7 @@ using namespace sgfx;
 using namespace ux;
 
 
-void ProgressBar::draw_to_scale(const DrawingScaledAttributes & attributes){
+void ProgressBar::draw(const DrawingScaledAttributes & attributes){
 
    sg_size_t border = 0;
    border = m_border_thickness * attributes.height() / 200;

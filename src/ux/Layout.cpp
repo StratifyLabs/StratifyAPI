@@ -82,8 +82,8 @@ void Layout::examine_visibility(){
 			m_event_handler(this, SystemEvent(SystemEvent::id_enter));
 		}
 	} else {
-		//is layout is enabled and visible -- components are not visible
-		erase();
+		//if layout is enabled and visible -- components are not visible
+		//erase();
 		for(auto component_pointer: m_component_list){
 			component_pointer.component()->set_visible_internal(false);
 		}
@@ -95,12 +95,6 @@ void Layout::examine_visibility(){
 }
 
 void Layout::set_refresh_region(const sgfx::Region & region){
-	printf("Layout region %s is %d,%d %dx%d\n",
-				 name().cstring(),
-				 region.x(), region.y(),
-				 region.width(), region.height()
-				 );
-
 	if( is_ready_to_draw() ){
 		sgfx::Region layout_region =
 				reference_drawing_attributes()
@@ -175,24 +169,31 @@ void Layout::shift_origin(DrawingPoint shift){
 				reference_drawing_attributes()
 				.calculate_region_on_bitmap();
 
-#if 1
 		layout_region =
 				Region(
 					layout_region.point()
 					+ m_refresh_region.point(),
 					m_refresh_region.area()
 					);
-#endif
 
-		printf("Layout region %s is %d,%d %dx%d (refresh: %d,%d %dx%d)\n",
-					 name().cstring(),
-					 layout_region.x(), layout_region.y(),
-					 layout_region.width(), layout_region.height(),
-					 m_refresh_region.x(), m_refresh_region.y(),
-					 m_refresh_region.width(), m_refresh_region.height()
-					 );
+		for(const DrawingRegion & empty_drawing_region: m_empty_region_list){
 
-		for(auto component_pointer: m_component_list){
+			DrawingAttributes attributes(
+						display(),
+						empty_drawing_region
+						);
+
+			sgfx::Region empty_region =
+				attributes.calculate_region_on_bitmap();
+
+			sgfx::Region overlap = layout_region.overlap(empty_region);
+
+			if( (overlap.width() * overlap.height()) > 0 ){
+				m_erase_region_list.push_back(overlap);
+			}
+		}
+
+		for(LayoutComponent& component_pointer: m_component_list){
 			//reference attributes are the location within the compound component
 			//translate reference attributes based on compound component attributes
 			component_pointer.component()->reference_drawing_attributes() =
@@ -209,11 +210,6 @@ void Layout::shift_origin(DrawingPoint shift){
 
 			if( (overlap.width() * overlap.height()) > 0 ){
 				//this calculates if only part of the element should be refreshed (the mask)
-				printf("overlap for %s is %d,%d %dx%d\n",
-							 component_pointer.component()->name().cstring(),
-							 overlap.x(), overlap.y(),
-							 overlap.width(), overlap.height()
-							 );
 
 				component_pointer.component()->set_refresh_drawing_pending();
 
@@ -228,9 +224,6 @@ void Layout::shift_origin(DrawingPoint shift){
 							);
 
 			} else {
-				printf("%s is not visible\n",
-							 component_pointer.component()->name().cstring()
-							 );
 				component_pointer.component()->set_visible_internal(false);
 			}
 
@@ -292,11 +285,13 @@ void Layout::scroll(DrawingPoint value){
 
 
 void Layout::draw(const DrawingAttributes & attributes){
-	for(auto component_pointer: m_component_list){
+	for(const auto& component_pointer: m_component_list){
 		if( component_pointer.component()->is_visible() ){
 			component_pointer.component()->draw(attributes);
 		}
 	}
+
+
 }
 
 void Layout::handle_event(const ux::Event & event){

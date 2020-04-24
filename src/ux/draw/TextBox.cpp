@@ -50,7 +50,7 @@ int TextBox::count_lines(
 }
 
 
-void TextBox::draw_to_scale(
+void TextBox::draw(
 		const DrawingScaledAttributes & attr
 		){
 	Tokenizer tokens(

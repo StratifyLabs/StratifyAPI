@@ -14,7 +14,7 @@ Image::Image(const sgfx::Bitmap & bitmap){
 }
 
 
-void Image::draw_to_scale(const DrawingScaledAttributes & attr){
+void Image::draw(const DrawingScaledAttributes & attr){
 
 	sg_point_t top_left;
 

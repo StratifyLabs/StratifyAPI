@@ -106,13 +106,12 @@ using LineGraphDataSet = var::Vector<LineGraphData>;
 
 class LineGraph :
 		public GraphAxes,
-		public DrawingComponentProperties<LineGraph>,
 		public ComponentAccess<LineGraph,COMPONENT_SIGNATURE('l','g','p','h')> {
 	public:
 
 	LineGraph(const var::String & name) : ComponentAccess(name){}
 
-	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
+	virtual void draw(const DrawingScaledAttributes & attr);
 
 	LineGraph& set_data_set(const LineGraphDataSet * data_set){
 		m_data_set = data_set;
@@ -160,13 +159,12 @@ private:
 
 class BarGraph :
 		public GraphAxes,
-		public DrawingComponentProperties<BarGraph>,
 		public ComponentAccess<
 		BarGraph,
 		COMPONENT_SIGNATURE('l','g','p','h')>{
 	public:
 
-	virtual void draw_to_scale(const DrawingScaledAttributes & attributes);
+	virtual void draw(const DrawingScaledAttributes & attributes);
 
 
 	var::Vector<var::Vector<BarGraphValue>>& data_set(){ return m_data_set; }

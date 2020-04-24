@@ -24,7 +24,7 @@ namespace ux::draw {
  *
  */
 
-class Icon : public Drawing, public DrawingAlignment<Icon> {
+class Icon : public Drawing, public DrawingComponentProperties<Icon> {
 public:
 	/*! \details Construct an empty graphic */
 	Icon();
@@ -46,7 +46,7 @@ public:
 	}
 
 	/*! \details Draws the graphic to scale on the specified bitmap */
-	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
+	virtual void draw(const DrawingScaledAttributes & attr);
 
 	/*! \details This returns the bounds of the icon.  It is only valid after
 	 * the icon has been drawn on a bitmap.

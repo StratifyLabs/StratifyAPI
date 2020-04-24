@@ -41,7 +41,7 @@ sgfx::Point LineGraph::transform_point(
 				);
 }
 
-void LineGraph::draw_to_scale(
+void LineGraph::draw(
 		const DrawingScaledAttributes & attributes
 		){
 
@@ -235,7 +235,7 @@ LineGraph& LineGraph::fit_axes_to_data(){
 	return *this;
 }
 
-void BarGraph::draw_to_scale(
+void BarGraph::draw(
 		const DrawingScaledAttributes & attributes
 		){
 

@@ -8,7 +8,7 @@
 using namespace sgfx;
 using namespace ux;
 
-void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
+void Button::draw(const DrawingScaledAttributes & attributes){
 
 	//draw the Border
 
@@ -19,7 +19,7 @@ void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
 				);
 
 	Region region_inside_padding =
-			calculate_region_inside_padding(attributes.area());
+			calculate_region_inside_padding(attributes.region());
 
 	//if the icon is available, draw it
 	if( m_icon_name.is_empty() == false ){
@@ -29,7 +29,7 @@ void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
 				.set_color(theme()->text_color())
 				.set_align_center()
 				.set_align_middle()
-				.draw_to_scale(
+				.draw(
 					attributes + region_inside_padding.point() + region_inside_padding.area()
 					);
 
@@ -40,7 +40,7 @@ void Button::draw_to_scale(const DrawingScaledAttributes & attributes){
 				.set_color(theme()->text_color())
 				.set_align_center()
 				.set_align_middle()
-				.draw_to_scale(
+				.draw(
 					attributes + region_inside_padding.point() + region_inside_padding.area()
 					);
 	}

@@ -19,7 +19,7 @@ namespace ux::draw {
  *
  *
  */
-class Image : public Drawing, public DrawingAlignment<Image> {
+class Image : public Drawing, public DrawingComponentProperties<Image> {
 public:
 	Image();
 	Image(const sgfx::Bitmap & bitmap);
@@ -34,7 +34,7 @@ public:
 		return *this;
 	}
 
-	void draw_to_scale(const DrawingScaledAttributes & attr);
+	void draw(const DrawingScaledAttributes & attr);
 
 
 private:

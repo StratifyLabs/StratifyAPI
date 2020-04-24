@@ -34,8 +34,7 @@ class ButtonEvent : public EventObject<Button, EVENT_TYPE('_','b','t','n')> {
 
 class Button : public ComponentAccess<
 		Button,
-		COMPONENT_SIGNATURE('b','u','t','n')
->, public DrawingComponentProperties<Button> {
+		COMPONENT_SIGNATURE('b','u','t','n')> {
 	public:
 
 	Button(const var::String & name) : ComponentAccess(name){
@@ -70,7 +69,7 @@ class Button : public ComponentAccess<
 		return *this;
 	}
 
-	void draw_to_scale(const DrawingScaledAttributes & attributes);
+	void draw(const DrawingScaledAttributes & attributes);
 	void handle_event(const ux::Event & event);
 
 	private:

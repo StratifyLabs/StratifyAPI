@@ -34,7 +34,7 @@ public:
 	void increment_scroll(){ m_scroll++; }
 	void decrement_scroll(){ if( m_scroll ){ m_scroll--; } }
 
-	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
+	virtual void draw(const DrawingScaledAttributes & attr);
 
 
 private:

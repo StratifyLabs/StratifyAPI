@@ -7,7 +7,7 @@
 using namespace sgfx;
 using namespace ux;
 
-void Label::draw_to_scale(const DrawingScaledAttributes & attributes){
+void Label::draw(const DrawingScaledAttributes & attributes){
 
 	draw_base_properties(
 				attributes.bitmap(),
@@ -16,7 +16,7 @@ void Label::draw_to_scale(const DrawingScaledAttributes & attributes){
 				);
 
 	Region region_inside_padding =
-			calculate_region_inside_padding(attributes.area());
+			calculate_region_inside_padding(attributes.region());
 
 	//if the icon is available, draw it
 	if( m_icon_name.is_empty() == false ){
@@ -25,7 +25,7 @@ void Label::draw_to_scale(const DrawingScaledAttributes & attributes){
 				.set_name(m_icon_name)
 				.set_color(theme()->text_color())
 				.set_alignment(alignment())
-				.draw_to_scale(
+				.draw(
 					attributes + region_inside_padding.point() + region_inside_padding.area()
 					);
 
@@ -35,7 +35,7 @@ void Label::draw_to_scale(const DrawingScaledAttributes & attributes){
 				.set_font_name(theme()->primary_font_name())
 				.set_color(theme()->text_color())
 				.set_alignment(alignment())
-				.draw_to_scale(
+				.draw(
 					attributes + region_inside_padding.point() + region_inside_padding.area()
 					);
 	}

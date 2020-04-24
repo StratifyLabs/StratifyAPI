@@ -239,7 +239,7 @@ public:
 	DrawingArea area() const { return m_region.area; }
 	DrawingPoint point() const { return m_region.point; }
 
-	operator	const drawing_region_t & () const { return m_region; }
+	operator const drawing_region_t & () const { return m_region; }
 
 private:
 	drawing_region_t m_region;
@@ -324,6 +324,14 @@ public:
 
 	/*! \details Construct an object from a drawing_attr_t */
 	DrawingAttributes(const drawing_attr_t & attr);
+
+	DrawingAttributes(
+			sgfx::Bitmap * bitmap,
+			const DrawingRegion& region
+			){
+		m_attr.bitmap = bitmap;
+		m_attr.region = region;
+	}
 
 	/*! \details Access the underlying attr object */
 	drawing_attr_t & attributes(){ return m_attr; }
@@ -551,9 +559,9 @@ private:
 	drawing_scaled_attr_t m_attr;
 };
 
-
-template <typename T> class DrawingAlignment {
+template<typename T> class DrawingComponentProperties {
 public:
+
 	bool is_align_left() const { return m_flags & flag_align_left; }
 	bool is_align_right() const { return m_flags & (flag_align_right); }
 	bool is_align_center() const { return (m_flags & (flag_align_left|flag_align_right)) == 0; }
@@ -588,11 +596,167 @@ public:
 		return derived_this();
 	}
 
-private:
-
-	T& derived_this(){
-		return static_cast<T&>(*this);
+	T& set_border_size(u8 value){
+		m_border.top = value;
+		m_border.bottom = value;
+		m_border.left = value;
+		m_border.right = value;
+		return derived_this();
 	}
+
+	T& set_top_border(u8 value){
+		m_border.top = value;
+		return derived_this();
+	}
+
+	T& set_bottom_border(u8 value){
+		m_border.bottom = value;
+		return derived_this();
+	}
+
+	T& set_left_border(u8 value){
+		m_border.left = value;
+		return derived_this();
+	}
+
+	T& set_right_border(u8 value){
+		m_border.right = value;
+		return derived_this();
+	}
+
+	T& set_vertical_padding(u8 value){
+		m_padding.top = value;
+		m_padding.bottom = value;
+		return derived_this();
+	}
+
+	T& set_top_padding(u8 value){
+		m_padding.top = value;
+		return derived_this();
+	}
+
+	T& set_bottom_padding(u8 value){
+		m_padding.bottom = value;
+		return derived_this();
+	}
+
+	T& set_horizontal_padding(u8 value){
+		m_padding.left = value;
+		m_padding.right = value;
+		return derived_this();
+	}
+
+	T& set_left_padding(u8 value){
+		m_padding.left = value;
+		return derived_this();
+	}
+
+	T& set_right_padding(u8 value){
+		m_padding.right = value;
+		return derived_this();
+	}
+
+	T& set_vertical_margin(u8 value){
+		m_margin.top = value;
+		m_margin.bottom = value;
+		return derived_this();
+	}
+
+	T& set_top_margin(u8 value){
+		m_margin.top = value;
+		return derived_this();
+	}
+
+	T& set_bottom_margin(u8 value){
+		m_margin.bottom = value;
+		return derived_this();
+	}
+
+	T& set_horizontal_margin(u8 value){
+		m_margin.left = value;
+		m_margin.right = value;
+		return derived_this();
+	}
+
+	T& set_left_margin(u8 value){
+		m_margin.left = value;
+		return derived_this();
+	}
+
+	T& set_right_margin(u8 value){
+		m_margin.right = value;
+		return derived_this();
+	}
+
+	u8 border_size() const {
+		return (m_border.top + m_border.bottom + m_border.left + m_border.right)/4;
+	}
+
+	u8 left_border() const {
+		return m_border.left;
+	}
+
+	u8 right_border() const {
+		return m_border.right;
+	}
+
+	u8 top_border() const {
+		return m_border.top;
+	}
+
+	u8 bottom_border() const {
+		return m_border.bottom;
+	}
+
+	u8 vertical_padding() const {
+		return m_padding.top + m_padding.bottom;
+	}
+
+	u8 horizontal_padding() const {
+		return m_padding.left	+ m_padding.right;
+	}
+
+	u8 left_padding() const {
+		return m_padding.left;
+	}
+
+	u8 right_padding() const {
+		return m_padding.right;
+	}
+
+	u8 top_padding() const {
+		return m_padding.top;
+	}
+
+	u8 bottom_padding() const {
+		return m_padding.bottom;
+	}
+
+	u8 vertical_margin() const {
+		return m_margin.top + m_margin.bottom;
+	}
+
+	u8 horizontal_margin() const {
+		return m_margin.left + m_margin.right;
+	}
+
+	u8 left_margin() const {
+		return m_margin.left;
+	}
+
+	u8 right_margin() const {
+		return m_margin.right;
+	}
+
+	u8 top_margin() const {
+		return m_margin.top;
+	}
+
+	u8 bottom_margin() const {
+		return m_margin.bottom;
+	}
+
+protected:
 
 	enum flags {
 		flag_align_left = 1<<0,
@@ -601,102 +765,111 @@ private:
 		flag_align_bottom = 1<<3
 	};
 
-	u32 m_flags = 0;
+	typedef struct {
+		u8 top;
+		u8 right;
+		u8 bottom;
+		u8 left;
+	} dimension_t;
 
-};
-
-template <typename T> class DrawingComponentProperties {
-public:
-
-	T& set_border_size(u8 value){
-		m_border_size = value;
-		return derived_this();
-	}
-
-	T& set_vertical_padding(u8 value){
-		m_vertical_padding = value;
-		return derived_this();
-	}
-
-	T& set_horizontal_padding(u8 value){
-		m_horizontal_padding = value;
-		return derived_this();
-	}
-
-	u8 border_size() const {
-		return m_border_size;
-	}
-
-	u8 vertical_padding() const {
-		return m_vertical_padding;
-	}
-
-	u8 horizontal_padding() const {
-		return m_horizontal_padding;
-	}
-
-protected:
 	sg_size_t calculate_border_size(sg_size_t height){
 		return calculate_pixel_size(border_size(), height);
 	}
 
-	sgfx::Region calculate_region_inside_border(
-			const sgfx::Area & area
-			){
-		sg_size_t border_padding =
-				calculate_border_size(area.height());
+	sgfx::Region calculate_region_inside(
+			const sgfx::Region & region,
+			const dimension_t& dimension
+			) const {
+
+		dimension_t effective;
+		effective.left =
+				calculate_pixel_size(dimension.left, region.width());
+
+		effective.right =
+				calculate_pixel_size(dimension.right, region.width());
+
+		effective.top =
+				calculate_pixel_size(dimension.top, region.height());
+
+		effective.bottom =
+				calculate_pixel_size(dimension.bottom, region.height());
 
 		return sgfx::Region(
-					sgfx::Point(border_padding, border_padding),
+					sgfx::Point(
+						region.x() + effective.left,
+						region.y() + effective.top
+						),
 					sgfx::Area(
-						area.width() - border_padding*2,
-						area.height() - border_padding*2
+						region.width() - (effective.left + effective.right),
+						region.height() - (effective.top + effective.bottom)
 						)
 					);
 
+	}
+
+	sgfx::Region calculate_region_inside_margin(
+			const sgfx::Region & region
+			) const {
+		return calculate_region_inside(region, m_margin);
+	}
+
+	sgfx::Region calculate_region_inside_border(
+			const sgfx::Region & region
+			) const {
+
+		return
+				calculate_region_inside(
+					calculate_region_inside(region, m_margin),
+					m_border
+					);
 	}
 
 	sgfx::Region calculate_region_inside_padding(
-			const sgfx::Area & area
-			){
-		sg_size_t effective_horizontal_padding =
-				calculate_pixel_size(horizontal_padding(), area.width());
-		sg_size_t effective_vertical_padding =
-				calculate_pixel_size(vertical_padding(), area.height());
-
-		return sgfx::Region(
-					sgfx::Point(effective_horizontal_padding, effective_vertical_padding),
-					sgfx::Area(
-						area.width() - effective_horizontal_padding*2,
-						area.height() - effective_vertical_padding*2
-						)
+			const sgfx::Region & region
+			) const {
+		return
+				calculate_region_inside(
+					calculate_region_inside_border(region),
+					m_padding
 					);
-
 	}
+
+
 
 	void draw_base_properties(
 			sgfx::Bitmap & bitmap,
 			const sgfx::Region & region,
-			const sgfx::Theme * theme){
+			const sgfx::Theme * theme
+			) const {
 
-		bitmap << sgfx::Pen().set_color(theme->border_color());
+		bitmap << sgfx::Pen().set_color(theme->background_color());
 		bitmap.draw_rectangle(
 					region
 					);
 
+		sgfx::Region inside_margin = calculate_region_inside_margin(region);
+
+		bitmap << sgfx::Pen().set_color(theme->border_color());
+		bitmap.draw_rectangle(
+					inside_margin
+					);
+
 		bitmap << sgfx::Pen().set_color(theme->color());
 		bitmap.draw_rectangle(
-					calculate_region_inside_border(region.area())
+					calculate_region_inside_border(region)
 					);
 
 	}
 
 private:
-	u8 m_border_size = 1;
-	u8 m_vertical_padding = 5;
-	u8 m_horizontal_padding = 5;
 
-	sg_size_t calculate_pixel_size(u8 value, sg_size_t dimension){
+	dimension_t m_padding = {5,5,5,5};
+	dimension_t m_margin = {0};
+	dimension_t m_border = {1,1,1,1};
+
+	u32 m_flags = 0; //default is middle/center
+
+	static sg_size_t calculate_pixel_size(u8 value, sg_size_t dimension){
 		sg_size_t result = (dimension * value + 100) / 200;
 		if( !result && value ){
 			result = 1;
@@ -707,6 +880,7 @@ private:
 	T& derived_this(){
 		return static_cast<T&>(*this);
 	}
+
 };
 
 
@@ -750,8 +924,6 @@ public:
 		draw(attr + point + area);
 	}
 
-	void draw(sgfx::Bitmap & b, drawing_int_t x, drawing_int_t y, drawing_size_t w, drawing_size_t h);
-
 	/*! \details This method will clear the pixels in the area of the bitmap
 	 * specified.
 	 *
@@ -767,8 +939,7 @@ public:
 	 *
 	 * @param attr Specifies the bitmap, point and area to draw the drawing
 	 */
-	virtual void draw_to_scale(const DrawingScaledAttributes & attr);
-	void draw_to_scale(sgfx::Bitmap & b, sg_int_t x, sg_int_t y, sg_size_t w, sg_size_t h);
+	virtual void draw(const DrawingScaledAttributes & attr);
 
 	static drawing_size_t scale(){
 		return m_scale;

@@ -66,8 +66,6 @@ public:
 	const hal::Display * display() const;
 	hal::Display * display();
 
-
-
 	//update the location of the component (allow animations)
 
 	virtual void handle_event(const ux::Event & event){}
@@ -216,7 +214,9 @@ private:
 
 };
 
-template<class T, u32 signature_value> class ComponentAccess : public Component {
+template<class T, u32 signature_value> class ComponentAccess :
+		public Component,
+		public DrawingComponentProperties<T> {
 public:
 
 	ComponentAccess(const var::String & name) :
