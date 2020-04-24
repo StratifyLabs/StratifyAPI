@@ -37,6 +37,8 @@ public:
 	int seek(Location location, PeriphObject::whence whence) const;
 	int fileno() const;
 
+	int open(const var::String & name, const fs::OpenFlags & flags);
+
 	int read(
 			void * buf,
 			Size size
@@ -60,7 +62,6 @@ public:
 protected:
 	u16 m_periph_port;
 
-	int open(const var::String & name, const fs::OpenFlags & flags);
 	using Device::open;
 
 	void update_fileno() const;
