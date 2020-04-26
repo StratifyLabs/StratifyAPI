@@ -21,7 +21,7 @@ public:
 	TextAttributes() {
 		set_font_size(0);
 		m_font = 0;
-		set_font_style(sgfx::FontInfo::REGULAR);
+		set_font_style(sgfx::FontInfo::style_regular);
 	}
 
 	/*! \details Gets a reference to the text string. */

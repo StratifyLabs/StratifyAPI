@@ -13,19 +13,19 @@ namespace hal {
 class SpiFlags {
 public:
 	enum flags {
-		IS_FORMAT_SPI/*! See \ref SPI_FLAG_IS_FORMAT_SPI */ = SPI_FLAG_IS_FORMAT_SPI,
-		IS_FORMAT_TI /*! See \ref SPI_FLAG_IS_FORMAT_TI */ = SPI_FLAG_IS_FORMAT_TI,
-		IS_FORMAT_MICROWIRE /*! See \ref SPI_FLAG_IS_FORMAT_MICROWIRE */ = SPI_FLAG_IS_FORMAT_MICROWIRE,
-		IS_MODE0 /*! See \ref SPI_FLAG_IS_MODE0 */ = SPI_FLAG_IS_MODE0,
-		IS_MODE1 /*! See \ref SPI_FLAG_IS_MODE1 */ = SPI_FLAG_IS_MODE1,
-		IS_MODE2 /*! See \ref SPI_FLAG_IS_MODE2 */ = SPI_FLAG_IS_MODE2,
-		IS_MODE3 /*! See \ref SPI_FLAG_IS_MODE3 */ = SPI_FLAG_IS_MODE3,
-		SET_MASTER /*! See \ref SPI_FLAG_SET_MASTER */ = SPI_FLAG_SET_MASTER,
-		SET_SLAVE /*! See \ref SPI_FLAG_SET_SLAVE */ = SPI_FLAG_SET_SLAVE,
-		IS_FULL_DUPLEX /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */ = SPI_FLAG_IS_FULL_DUPLEX,
-		SET_FULL_DUPLEX /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */ = SPI_FLAG_SET_FULL_DUPLEX,
-		IS_HALF_DUPLEX /*! See \ref SPI_FLAG_IS_HALF_DUPLEX */ = SPI_FLAG_IS_HALF_DUPLEX,
-		SET_HALF_DUPLEX /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */ = SPI_FLAG_SET_HALF_DUPLEX,
+		flag_is_format_spi/*! See \ref SPI_FLAG_IS_FORMAT_SPI */ = SPI_FLAG_IS_FORMAT_SPI,
+		flag_is_format_ti /*! See \ref SPI_FLAG_IS_FORMAT_TI */ = SPI_FLAG_IS_FORMAT_TI,
+		flag_is_format_microwire /*! See \ref SPI_FLAG_IS_FORMAT_MICROWIRE */ = SPI_FLAG_IS_FORMAT_MICROWIRE,
+		flag_is_mode0 /*! See \ref SPI_FLAG_IS_MODE0 */ = SPI_FLAG_IS_MODE0,
+		flag_is_mode1 /*! See \ref SPI_FLAG_IS_MODE1 */ = SPI_FLAG_IS_MODE1,
+		flag_is_mode2 /*! See \ref SPI_FLAG_IS_MODE2 */ = SPI_FLAG_IS_MODE2,
+		flag_is_mode3 /*! See \ref SPI_FLAG_IS_MODE3 */ = SPI_FLAG_IS_MODE3,
+		flag_set_master /*! See \ref SPI_FLAG_SET_MASTER */ = SPI_FLAG_SET_MASTER,
+		flag_set_slave /*! See \ref SPI_FLAG_SET_SLAVE */ = SPI_FLAG_SET_SLAVE,
+		flag_is_full_duplex /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */ = SPI_FLAG_IS_FULL_DUPLEX,
+		flag_set_full_duplex /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */ = SPI_FLAG_SET_FULL_DUPLEX,
+		flag_is_half_duplex /*! See \ref SPI_FLAG_IS_HALF_DUPLEX */ = SPI_FLAG_IS_HALF_DUPLEX,
+		flag_set_half_duplex /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */ = SPI_FLAG_SET_HALF_DUPLEX,
 	};
 
 };
@@ -44,7 +44,12 @@ class SpiAttributes : public PinAssignmentPeriphAttributes<spi_attr_t, spi_pin_a
 public:
 
 	SpiAttributes(){
-		set_flags(SET_MASTER | IS_FORMAT_SPI | IS_MODE0 | IS_HALF_DUPLEX);
+		set_flags(
+					flag_set_master |
+					flag_is_format_spi |
+					flag_is_mode0 |
+					flag_is_half_duplex
+					);
 		set_frequency(1000000);
 		set_width(8);
 	}

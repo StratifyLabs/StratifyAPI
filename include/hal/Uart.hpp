@@ -14,15 +14,15 @@ namespace hal {
 class UartFlags {
 public:
 	enum flags {
-		SET_LINE_CODING_DEFAULT /*! See \ref UART_FLAG_SET_LINE_CODING_DEFAULT */ = UART_FLAG_SET_LINE_CODING_DEFAULT,
-		SET_LINE_CODING /*! See \ref UART_FLAG_SET_LINE_CODING */ = UART_FLAG_SET_LINE_CODING,
-		IS_STOP1 /*! See \ref UART_FLAG_IS_STOP1 */ = UART_FLAG_IS_STOP1,
-		IS_STOP2 /*! See \ref UART_FLAG_IS_STOP2 */ = UART_FLAG_IS_STOP2,
-		IS_STOP0_5 /*! See \ref UART_FLAG_IS_STOP0_5 */ = UART_FLAG_IS_STOP0_5,
-		IS_STOP1_5 /*! See \ref UART_FLAG_IS_STOP1_5 */ = UART_FLAG_IS_STOP1_5,
-		IS_PARITY_NONE /*! See \ref UART_FLAG_IS_PARITY_NONE */ = UART_FLAG_IS_PARITY_NONE,
-		IS_PARITY_ODD /*! See \ref UART_FLAG_IS_PARITY_ODD */ = UART_FLAG_IS_PARITY_ODD,
-		IS_PARITY_EVEN /*! See \ref UART_FLAG_IS_PARITY_EVEN */ = UART_FLAG_IS_PARITY_EVEN,
+		flag_set_line_coding_default /*! See \ref UART_FLAG_SET_LINE_CODING_DEFAULT */ = UART_FLAG_SET_LINE_CODING_DEFAULT,
+		flag_set_line_coding /*! See \ref UART_FLAG_SET_LINE_CODING */ = UART_FLAG_SET_LINE_CODING,
+		flag_is_stop1 /*! See \ref UART_FLAG_IS_STOP1 */ = UART_FLAG_IS_STOP1,
+		flag_is_stop2 /*! See \ref UART_FLAG_IS_STOP2 */ = UART_FLAG_IS_STOP2,
+		flag_is_stop0_5 /*! See \ref UART_FLAG_IS_STOP0_5 */ = UART_FLAG_IS_STOP0_5,
+		flag_is_stop1_5 /*! See \ref UART_FLAG_IS_STOP1_5 */ = UART_FLAG_IS_STOP1_5,
+		flag_is_parity_none /*! See \ref UART_FLAG_IS_PARITY_NONE */ = UART_FLAG_IS_PARITY_NONE,
+		flag_is_parity_odd /*! See \ref UART_FLAG_IS_PARITY_ODD */ = UART_FLAG_IS_PARITY_ODD,
+		flag_is_parity_even /*! See \ref UART_FLAG_IS_PARITY_EVEN */ = UART_FLAG_IS_PARITY_EVEN,
 	};
 };
 
@@ -81,7 +81,7 @@ public:
 	 *
 	 */
 	UartAttributes(){
-		set_flags(SET_LINE_CODING_DEFAULT);
+		set_flags(flag_set_line_coding_default);
 		set_freq(115200);
 		set_width(8);
 	}

@@ -129,7 +129,7 @@ class LineGraph :
 	LineGraphPoint minimum() const;
 	LineGraphPoint maximum() const;
 	sgfx::Point transform_point(
-				const DrawingScaledAttributes & drawing_attributes,
+				const sgfx::Region & plot_region,
 				const LineGraphPoint & line_graph_point
 				);
 

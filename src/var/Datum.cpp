@@ -51,7 +51,7 @@ void Datum::refresh_timestamp(){
 
 String Datum::stringify() const {
 	JsonDocument document;
-	document.set_flags(JsonDocument::COMPACT);
+	document.set_flags(JsonDocument::option_compact);
 	//compact object on one line
 	return document.to_string(to_json()) << "\n";
 }

@@ -152,7 +152,7 @@ int HttpClient::query(const var::String & command,
 	if( get_file.argument() ){
 		get_file_pos = static_cast<u32>(
 					get_file.argument()->seek(
-						fs::File::Location(0), File::CURRENT
+						fs::File::Location(0), File::whence_current
 						)
 					);
 	}
@@ -228,7 +228,7 @@ int HttpClient::query(const var::String & command,
 						fs::File::Location(
 							static_cast<int>(get_file_pos)
 							),
-						File::SET
+						File::whence_set
 						);
 		}
 

@@ -21,6 +21,7 @@ template<typename T> class Vector:
 public:
 
 	using Position = arg::Argument<size_t, struct VectorPositionTag>;
+	using Count = arg::Argument<size_t, struct VectorCountTag>;
 
 	/*! \details Constructs an empty object.
 		*
@@ -132,6 +133,16 @@ public:
 
 	Vector& shrink_to_fit(){
 		m_vector.shrink_to_fit();
+		return *this;
+	}
+
+	Vector& erase(
+			Position position,
+			Count count){
+		m_vector.erase(
+					m_vector.begin() + position.argument(),
+					m_vector.begin() + count.argument()
+					);
 		return *this;
 	}
 

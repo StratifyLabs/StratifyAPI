@@ -34,11 +34,11 @@ unsigned int sys::Printer::m_default_color = (unsigned int)-1;
 using namespace sys;
 
 Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this){
-	m_o_flags = PRINT_8 | PRINT_HEX;
+	m_o_flags = print_8 | print_hex;
 	m_indent = 0;
 	m_progress_width = 50;
 	m_progress_state = 0;
-	m_verbose_level = INFO;
+	m_verbose_level = level_info;
 	m_progress_key = "progress";
 #if defined __win32
 	if( m_default_color == (unsigned int)-1 ){
@@ -224,7 +224,7 @@ void Printer::clear_color_code(){
 	if( api::ApiInfo::is_macosx() || is_bash() ){
 		print_final("\033[0m");
 	} else {
-		set_color_code(COLOR_CODE_DEFAULT);
+		set_color_code(color_code_default);
 	}
 #endif
 }
@@ -232,21 +232,21 @@ void Printer::clear_color_code(){
 u32 Printer::color_code(const var::String & color){
 	var::String color_upper(color);
 	color_upper.to_upper();
-	if( color_upper == "BLACK" ){ return COLOR_CODE_BLACK; }
-	if( color_upper == "RED" ){ return COLOR_CODE_RED; }
-	if( color_upper == "GREEN" ){ return COLOR_CODE_GREEN; }
-	if( color_upper == "YELLOW" ){ return COLOR_CODE_YELLOW; }
-	if( color_upper == "BLUE" ){ return COLOR_CODE_BLUE; }
-	if( color_upper == "MAGENTA" ){ return COLOR_CODE_MAGENTA; }
-	if( color_upper == "CYAN" ){ return COLOR_CODE_CYAN; }
-	if( color_upper == "LIGHT GRAY" ){ return COLOR_CODE_LIGHT_GRAY; }
-	if( color_upper == "DARK GRAY" ){ return COLOR_CODE_DARK_GRAY; }
-	if( color_upper == "LIGHT RED" ){ return COLOR_CODE_LIGHT_RED; }
-	if( color_upper == "LIGHT GREEN" ){ return COLOR_CODE_LIGHT_GREEN; }
-	if( color_upper == "LIGHT YELLOW" ){ return COLOR_CODE_LIGHT_YELLOW; }
-	if( color_upper == "LIGHT BLUE" ){ return COLOR_CODE_LIGHT_BLUE; }
+	if( color_upper == "BLACK" ){ return color_code_black; }
+	if( color_upper == "RED" ){ return color_code_red; }
+	if( color_upper == "GREEN" ){ return color_code_green; }
+	if( color_upper == "YELLOW" ){ return color_code_yellow; }
+	if( color_upper == "BLUE" ){ return color_code_blue; }
+	if( color_upper == "MAGENTA" ){ return color_code_magenta; }
+	if( color_upper == "CYAN" ){ return color_code_cyan; }
+	if( color_upper == "LIGHT GRAY" ){ return color_code_light_gray; }
+	if( color_upper == "DARK GRAY" ){ return color_code_dark_gray; }
+	if( color_upper == "LIGHT RED" ){ return color_code_light_red; }
+	if( color_upper == "LIGHT GREEN" ){ return color_code_light_green; }
+	if( color_upper == "LIGHT YELLOW" ){ return color_code_light_yellow; }
+	if( color_upper == "LIGHT BLUE" ){ return color_code_light_blue; }
 
-	return COLOR_CODE_DEFAULT;
+	return color_code_default;
 }
 
 
@@ -314,11 +314,11 @@ Printer & Printer::operator << (const var::Reference & a){
 
 
 	int s;
-	if( o_flags & PRINT_32 ){
+	if( o_flags & print_32 ){
 		s = a.size() / 4;
-	} else if( o_flags & PRINT_16 ){
+	} else if( o_flags & print_16 ){
 		s = a.size() / 2;
-	} else if( o_flags & PRINT_BLOB ){
+	} else if( o_flags & print_blob ){
 		s = (a.size()+15) / 16;
 	} else {
 		s = a.size();
@@ -329,12 +329,12 @@ Printer & Printer::operator << (const var::Reference & a){
 	var::String data_string;
 
 	for(i=0; i < s; i++){
-		if( o_flags & PRINT_HEX ){
-			if( o_flags & PRINT_32 ){
+		if( o_flags & print_hex ){
+			if( o_flags & print_32 ){
 				data_string << var::String().format(F32X, ptru32[i]);
-			} else if( o_flags & PRINT_16 ){
+			} else if( o_flags & print_16 ){
 				data_string << var::String().format("%X", ptru16[i]);
-			} else if( o_flags & PRINT_BLOB ){
+			} else if( o_flags & print_blob ){
 				for(u32 j=0; j < 16; j++){
 					data_string << var::String().format("%02X", ptru8[i*16+j]);
 					if( j < 15 ){
@@ -350,12 +350,12 @@ Printer & Printer::operator << (const var::Reference & a){
 			}
 			data_string << " ";
 		}
-		if( o_flags & PRINT_UNSIGNED ){
-			if( o_flags & PRINT_32 ){
+		if( o_flags & print_unsigned ){
+			if( o_flags & print_32 ){
 				data_string << var::String().format(F32U, ptru32[i]);
-			} else if( o_flags & PRINT_16 ){
+			} else if( o_flags & print_16 ){
 				data_string << var::String().format("%u", ptru16[i]);
-			} else if( o_flags & PRINT_BLOB ){
+			} else if( o_flags & print_blob ){
 				for(u32 j=0; j < 16; j++){
 					data_string << var::String().format("%u", ptru8[i*16+j]);
 					if( j < 15 ){
@@ -367,12 +367,12 @@ Printer & Printer::operator << (const var::Reference & a){
 			}
 			data_string << " ";
 		}
-		if( o_flags & PRINT_SIGNED ){
-			if( o_flags & PRINT_32 ){
+		if( o_flags & print_signed ){
+			if( o_flags & print_32 ){
 				data_string << var::String().format(F32D, ptrs32[i]);
-			} else if( o_flags & PRINT_16 ){
+			} else if( o_flags & print_16 ){
 				data_string << var::String().format("%d", ptrs16[i]);
-			} else if( o_flags & PRINT_BLOB ){
+			} else if( o_flags & print_blob ){
 				for(u32 j=0; j < 16; j++){
 					data_string << var::String().format("%d", ptru8[i*16+j]);
 					if( j < 15 ){
@@ -384,7 +384,7 @@ Printer & Printer::operator << (const var::Reference & a){
 			}
 			data_string << " ";
 		}
-		if( o_flags & PRINT_CHAR ){
+		if( o_flags & print_char ){
 			if( ptru8[i] == '\n' ){
 				data_string << (" \\n");
 			} else if( ptru8[i] == '\r' ){
@@ -853,10 +853,10 @@ Printer & Printer::operator << (const sgfx::VectorPath & a){
 Printer & Printer::operator << (const sgfx::VectorPathDescription & a){
 
 	switch( a.type() ){
-		case sgfx::VectorPathDescription::NONE:
+		case sgfx::VectorPathDescription::type_none:
 			key("type", "none");
 			break;
-		case sgfx::VectorPathDescription::MOVE:
+		case sgfx::VectorPathDescription::type_move:
 			key("type", "move");
 			print_open_object(verbose_level(), "point");
 			{
@@ -864,7 +864,7 @@ Printer & Printer::operator << (const sgfx::VectorPathDescription & a){
 				print_close_object();
 			}
 			break;
-		case sgfx::VectorPathDescription::LINE:
+		case sgfx::VectorPathDescription::type_line:
 			key("type", "line");
 			print_open_object(verbose_level(), "point");
 			{
@@ -872,7 +872,7 @@ Printer & Printer::operator << (const sgfx::VectorPathDescription & a){
 				print_close_object();
 			}
 			break;
-		case sgfx::VectorPathDescription::QUADRATIC_BEZIER:
+		case sgfx::VectorPathDescription::type_quadratic_bezier:
 			key("type", "quadratic bezier");
 			print_open_object(verbose_level(), "point");
 			{
@@ -886,7 +886,7 @@ Printer & Printer::operator << (const sgfx::VectorPathDescription & a){
 				print_close_object();
 			}
 			break;
-		case sgfx::VectorPathDescription::CUBIC_BEZIER:
+		case sgfx::VectorPathDescription::type_cubic_bezier:
 			key("type", "cubic bezier");
 			print_open_object(verbose_level(), "point");
 			{
@@ -905,10 +905,10 @@ Printer & Printer::operator << (const sgfx::VectorPathDescription & a){
 				print_close_object();
 			}
 			break;
-		case sgfx::VectorPathDescription::CLOSE:
+		case sgfx::VectorPathDescription::type_close:
 			key("type", "close");
 			break;
-		case sgfx::VectorPathDescription::POUR:
+		case sgfx::VectorPathDescription::type_pour:
 			key("type", "pour");
 			print_open_object(verbose_level(), "point");
 			{
@@ -976,12 +976,12 @@ Printer & Printer::operator << (const AppfsFileAttributes & a){
 bool Printer::update_progress(int progress, int total){
 	const u32 width = m_progress_width;
 
-	if( verbose_level() >= Printer::INFO ){
+	if( verbose_level() >= Printer::level_info ){
 
 		if( (m_progress_state == 0) && total ){
 
 			//only print the key once with total == -1
-			print(Printer::INFO, m_progress_key.cstring(), nullptr);
+			print(Printer::level_info, m_progress_key.cstring(), nullptr);
 			if( total != -1 ){
 				if( m_o_flags & print_value_quotes ){
 					print_final("\"");

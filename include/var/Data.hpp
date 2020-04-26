@@ -326,6 +326,16 @@ public:
 	Data & operator << (u64 a);
 	Data & operator << (s64 a);
 
+	Data& erase(
+			Position position,
+			Size size){
+		m_data.erase(
+					m_data.begin() + position.argument(),
+					m_data.begin() + size.argument()
+					);
+		return *this;
+	}
+
 
 	/*! \details Accesses a value in the data.
 		*

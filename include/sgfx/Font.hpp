@@ -47,27 +47,6 @@ public:
 		style_extra_bold /*! Extra bold (eb) */,
 		style_extra_bold_italic /*! Extra bold italic (ebi) */,
 		style_icons /*! Font is a collection of bitmap icons (ico) */,
-
-		/*! \cond */
-		ANY = style_any,
-		THIN = style_thin,
-		THIN_ITALIC	= style_thin_italic,
-		EXTRA_LIGHT	= style_extra_light,
-		EXTRA_LIGHT_ITALIC = style_extra_light_italic,
-		LIGHT = style_light,
-		LIGHT_ITALIC = style_light_italic,
-		REGULAR = style_regular,
-		REGULAR_ITALIC = style_regular_italic,
-		MEDIUM = style_medium,
-		MEDIUM_ITALIC = style_medium_italic,
-		SEMI_BOLD = style_semi_bold,
-		SEMI_BOLD_ITALIC = style_semi_bold_italic,
-		BOLD = style_bold,
-		BOLD_ITALIC = style_bold_italic,
-		EXTRA_BOLD = style_extra_bold,
-		EXTRA_BOLD_ITALIC = style_extra_bold_italic,
-		ICONS = style_icons
-		/*! \endcond */
 	};
 
 };

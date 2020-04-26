@@ -21,7 +21,7 @@ int I2C::prepare(u8 slave_addr, u32 o_flags) const {
 
 int I2C::reset() const {
 	i2c_attr_t attr;
-	attr.o_flags = I2C::RESET;
+	attr.o_flags = I2C::flag_reset;
 	return set_attributes(attr);
 }
 

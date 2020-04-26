@@ -101,9 +101,9 @@ public:
 	StreamFFifo();
 
 	enum stream_ffifo_flags {
-		START = STREAM_FFIFO_FLAG_START,
-		STOP = STREAM_FFIFO_FLAG_STOP,
-		FLUSH = STREAM_FFIFO_FLAG_FLUSH
+		flag_start = STREAM_FFIFO_FLAG_START,
+		flag_stop = STREAM_FFIFO_FLAG_STOP,
+		flag_flush = STREAM_FFIFO_FLAG_FLUSH
 	};
 
 	int set_attributes(const StreamFFifoAttributes & attributes){

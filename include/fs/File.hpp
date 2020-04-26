@@ -133,12 +133,9 @@ public:
 	using GroupId = arg::Argument<int, struct FileGroupIdTag>;
 
 	enum whence {
-		SET /*! Set the location of the file descriptor */ = LINK_SEEK_SET,
-		CURRENT /*! Set the location relative to the current location */ = LINK_SEEK_CUR,
-		END /*! Set the location relative to the end of the file or device */ = LINK_SEEK_END,
-		whence_set = LINK_SEEK_SET,
-		whence_current = LINK_SEEK_CUR,
-		whence_end = LINK_SEEK_END
+		whence_set /*! Set the location of the file descriptor */ = LINK_SEEK_SET,
+		whence_current /*! Set the location relative to the current location */ = LINK_SEEK_CUR,
+		whence_end /*! Set the location relative to the end of the file or device */ = LINK_SEEK_END
 	};
 
 #if defined __link
@@ -477,7 +474,7 @@ public:
 			PageSize page_size = PageSize(SAPI_LINK_DEFAULT_PAGE_SIZE),
 			Size size = Size(size_t(-1))
 			) const {
-		seek(location, SET);
+		seek(location, whence_set);
 		return write(source_file, page_size, size);
 	}
 
@@ -495,7 +492,7 @@ public:
 			Size size,
 			const sys::ProgressCallback * progress_callback
 			) const {
-		seek(location, SET);
+		seek(location, whence_set);
 		return write(source_file, page_size, size, progress_callback);
 	}
 
@@ -521,7 +518,7 @@ public:
 	/*! \details Seeks to a location in the file or on the device. */
 	virtual int seek(
 			int location,
-			enum whence whence = SET
+			enum whence whence = whence_set
 			) const;
 
 	int seek(
@@ -811,7 +808,7 @@ public:
 
 	int seek(
 			int location,
-			enum whence whence = SET
+			enum whence whence = whence_set
 			) const;
 
 	/*! \details Reimplements fs::File::ioctl() to have
@@ -912,7 +909,7 @@ public:
 	 */
 	int seek(
 			int location,
-			enum whence whence = SET
+			enum whence whence = whence_set
 			) const;
 
 	/*! \details Reimplements fs::File::ioctl() to have
@@ -1008,7 +1005,7 @@ public:
 	 */
 	int seek(
 			int location,
-			enum whence whence = SET
+			enum whence whence = whence_set
 			) const;
 
 

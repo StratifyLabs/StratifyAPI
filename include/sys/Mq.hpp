@@ -31,12 +31,11 @@ public:
 	}
 
 	/*! \details Message queue attribute flags */
-	enum flags {
-		NONBLOCK /*! \brief Non-blocking queue */ = LINK_O_NONBLOCK,
-		RDWR /*! \brief Read/write queue */ = LINK_O_RDWR,
-		READWRITE /*! \brief Read/write queue */ = LINK_O_RDWR,
-		RDONLY /*! \brief Read only queue */ = LINK_O_RDONLY,
-		READONLY /*! \brief Read only queue */ = LINK_O_RDONLY
+	enum open_flags {
+		open_nonblock /*! \brief Non-blocking queue */ = LINK_O_NONBLOCK,
+		open_read_write /*! \brief Read/write queue */ = LINK_O_RDWR,
+		open_read_only /*! \brief Read only queue */ = LINK_O_RDONLY,
+		open_write_only /*! \brief Write only queue */ = LINK_O_WRONLY
 	};
 
 	long flags() const { return m_attr.mq_flags; }

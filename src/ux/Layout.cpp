@@ -111,9 +111,8 @@ void Layout::set_refresh_region(const sgfx::Region & region){
 					component_pointer.component()->reference_drawing_attributes()
 					.calculate_region_on_bitmap();
 
-			sgfx::Region overlap = layout_region.overlap(component_region);
 			component_pointer.component()->set_refresh_region(
-						overlap
+						layout_region.overlap(component_region)
 						);
 		}
 	}
@@ -175,23 +174,6 @@ void Layout::shift_origin(DrawingPoint shift){
 					+ m_refresh_region.point(),
 					m_refresh_region.area()
 					);
-
-		for(const DrawingRegion & empty_drawing_region: m_empty_region_list){
-
-			DrawingAttributes attributes(
-						display(),
-						empty_drawing_region
-						);
-
-			sgfx::Region empty_region =
-				attributes.calculate_region_on_bitmap();
-
-			sgfx::Region overlap = layout_region.overlap(empty_region);
-
-			if( (overlap.width() * overlap.height()) > 0 ){
-				m_erase_region_list.push_back(overlap);
-			}
-		}
 
 		for(LayoutComponent& component_pointer: m_component_list){
 			//reference attributes are the location within the compound component
@@ -434,7 +416,7 @@ void Layout::generate_vertical_layout_positions(){
 					 );
 #endif
 
-		bitmap_cursor += height_on_bitmap;
+		bitmap_cursor += height_on_bitmap-1;
 		drawing_cursor = reference_drawing_attributes().calculate_height_on_drawing(bitmap_cursor);
 	}
 
@@ -453,7 +435,7 @@ void Layout::generate_horizontal_layout_positions(){
 		DrawingAttributes tmp_attributes = reference_drawing_attributes() + area;
 		sg_size_t width_on_bitmap = tmp_attributes.calculate_area_on_bitmap().width;
 
-		bitmap_cursor += width_on_bitmap;
+		bitmap_cursor += width_on_bitmap-1;
 		drawing_cursor = reference_drawing_attributes().calculate_width_on_drawing(bitmap_cursor);
 	}
 

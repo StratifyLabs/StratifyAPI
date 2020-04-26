@@ -324,9 +324,9 @@ int File::create(
 }
 
 u32 File::size() const {
-	int loc = seek(Location(0), CURRENT); //get current cursor
-	u32 size = static_cast<u32>(seek(Location(0), END)); //seek to the end
-	seek(Location(loc), SET); //restore the cursor
+	int loc = seek(Location(0), whence_current); //get current cursor
+	u32 size = static_cast<u32>(seek(Location(0), whence_end)); //seek to the end
+	seek(Location(loc), whence_set); //restore the cursor
 	return size;
 }
 
@@ -386,7 +386,7 @@ int File::read(
 		Location location,
 		void * buf,
 		Size size) const {
-	int result = seek(location, SET);
+	int result = seek(location, whence_set);
 	if( result < 0 ){ return result; }
 	return read(buf, size);
 }
@@ -395,7 +395,7 @@ int File::write(Location location,
 								const void * buf,
 								Size size
 								) const {
-	int result = seek(location, SET);
+	int result = seek(location, whence_set);
 	if( result < 0 ){ return result; }
 	return write(
 				buf,
@@ -489,7 +489,7 @@ int File::fileno() const {
 }
 
 int File::location() const {
-	return seek(Location(0), CURRENT);
+	return seek(Location(0), whence_current);
 }
 
 int File::flags() const{
@@ -540,7 +540,7 @@ char * File::gets(char * s, int n, char term) const {
 	}
 
 	if( ret > 0 ){
-		seek(Location(i - ret + 1), CURRENT);
+		seek(Location(i - ret + 1), whence_current);
 	}
 
 	return s;
@@ -835,13 +835,13 @@ int DataFile::seek(
 		enum whence whence
 		) const {
 	switch(whence){
-		case CURRENT:
+		case whence_current:
 			m_location += location;
 			break;
-		case END:
+		case whence_end:
 			m_location = static_cast<int>(m_data.size());
 			break;
-		case SET:
+		case whence_set:
 			m_location = location;
 			break;
 	}
@@ -925,13 +925,13 @@ int ReferenceFile::seek(int location,
 												enum whence whence
 												) const {
 	switch(whence){
-		case CURRENT:
+		case whence_current:
 			m_location += location;
 			break;
-		case END:
+		case whence_end:
 			m_location = reference().size();
 			break;
-		case SET:
+		case whence_set:
 			m_location = location;
 			break;
 	}

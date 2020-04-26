@@ -13,7 +13,7 @@ Text::Text(const var::String & text){
 	m_string = text;
 	m_font = nullptr;
 	m_font_point_size = 0;
-	m_font_style = FontInfo::REGULAR;
+	m_font_style = FontInfo::style_regular;
 }
 
 const Font * Text::resolve_font(sg_size_t h) const{

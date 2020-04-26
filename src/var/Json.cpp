@@ -1,4 +1,7 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
+
+#include <type_traits>
+
 #include "var/Vector.hpp"
 #include "var/Tokenizer.hpp"
 #include "var/Json.hpp"
@@ -538,10 +541,15 @@ size_t JsonDocument::load_file_data(
 }
 
 JsonValue JsonDocument::load(
-		const fs::File::Source file
+		fs::File& file
 		){
 	JsonValue value;
-	value.m_value = JsonValue::api()->load_callback(load_file_data, (void*)&(file.argument()), flags(), &m_error.m_value);
+	value.m_value = JsonValue::api()->load_callback(
+				load_file_data,
+				static_cast<void*>(&file),
+				flags(),
+				&m_error.m_value
+				);
 	return value;
 }
 

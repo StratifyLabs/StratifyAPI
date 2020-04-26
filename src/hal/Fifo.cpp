@@ -25,9 +25,9 @@ int Fifo::initialize() const { return ioctl(IoRequest(I_FIFO_INIT)); }
 int Fifo::finalize() const { return ioctl(IoRequest(I_FIFO_EXIT)); }
 int Fifo::set_writeblock(bool value) const {
 	fifo_attr_t attr;
-	attr.o_flags = SET_WRITEBLOCK;
+	attr.o_flags = flag_set_writeblock;
 	if( value == false ){
-		attr.o_flags |= IS_OVERFLOW;
+		attr.o_flags |= flag_is_overflow;
 	}
 	return ioctl(
 				IoRequest(I_FIFO_SETATTR),

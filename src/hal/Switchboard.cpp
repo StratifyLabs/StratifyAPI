@@ -49,7 +49,7 @@ int Switchboard::get_connection(SwitchboardConnection & connection) const {
 }
 
 int Switchboard::get_available_connection() const {
-	int ret = seek(Location(0), SET);
+	int ret = seek(Location(0), whence_set);
 	if( ret < 0 ){
 		return ret;
 	}
@@ -77,7 +77,7 @@ int Switchboard::get_available_connection() const {
 }
 
 int Switchboard::get_active_connection_count() const {
-	int ret = seek(Location(0), SET);
+	int ret = seek(Location(0), whence_set);
 	if( ret < 0 ){
 		return ret;
 	}
@@ -99,7 +99,7 @@ int Switchboard::get_active_connection_count() const {
 }
 
 void Switchboard::print_connections() const {
-	int ret = seek(Location(0), SET);
+	int ret = seek(Location(0), whence_set);
 	if( ret < 0 ){
 		return;
 	}
@@ -156,7 +156,7 @@ int Switchboard::create_persistent_connection(
 
 	switchboard_attr_t attr;
 	attr.id = id;
-	attr.o_flags = CONNECT | IS_PERSISTENT | o_flags;
+	attr.o_flags = flag_connect | flag_is_persistent | o_flags;
 	attr.input = input.m_terminal;
 	attr.output = output.m_terminal;
 	attr.nbyte = nbyte; //max packet size
@@ -182,7 +182,7 @@ int Switchboard::create_fixed_size_connection(
 
 	switchboard_attr_t attr;
 	attr.id = id;
-	attr.o_flags = CONNECT | IS_FIXED_SIZE;
+	attr.o_flags = flag_connect | flag_is_fixed_size;
 	attr.input = input.m_terminal;
 	attr.output = output.m_terminal;
 	attr.nbyte  = nbyte; //max packet size
@@ -196,7 +196,7 @@ int Switchboard::create_fixed_size_connection(
 int Switchboard::destroy_connection(u16 id) const {
 	switchboard_attr_t attr;
 	attr.id = id;
-	attr.o_flags = DISCONNECT;
+	attr.o_flags = flag_disconnect;
 	return set_attr(attr);
 }
 

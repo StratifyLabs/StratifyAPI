@@ -13,12 +13,12 @@ namespace hal {
 class PwmFlags {
 public:
 	enum flags {
-		SET_TIMER /*! See \ref PWM_FLAG_SET_TIMER */ = PWM_FLAG_SET_TIMER,
-		IS_ACTIVE_HIGH /*! See \ref PWM_FLAG_IS_ACTIVE_HIGH */ = PWM_FLAG_IS_ACTIVE_HIGH,
-		IS_ACTIVE_LOW /*! See \ref PWM_FLAG_IS_ACTIVE_LOW */ = PWM_FLAG_IS_ACTIVE_LOW,
-		SET_CHANNELS /*! See \ref PWM_FLAG_SET_CHANNELS */ = PWM_FLAG_SET_CHANNELS,
-		CLEAR_CHANNELS /*! See \ref PWM_FLAG_CLEAR_CHANNELS */ = PWM_FLAG_CLEAR_CHANNELS,
-		IS_ENABLED /*! See \ref PWM_FLAG_IS_ENABLED */ = PWM_FLAG_IS_ENABLED
+		flag_set_timer /*! See \ref PWM_FLAG_SET_TIMER */ = PWM_FLAG_SET_TIMER,
+		flag_is_active_high /*! See \ref PWM_FLAG_IS_ACTIVE_HIGH */ = PWM_FLAG_IS_ACTIVE_HIGH,
+		flag_is_active_low /*! See \ref PWM_FLAG_IS_ACTIVE_LOW */ = PWM_FLAG_IS_ACTIVE_LOW,
+		flag_set_channels /*! See \ref PWM_FLAG_SET_CHANNELS */ = PWM_FLAG_SET_CHANNELS,
+		flag_clear_channels /*! See \ref PWM_FLAG_CLEAR_CHANNELS */ = PWM_FLAG_CLEAR_CHANNELS,
+		flag_is_enabled /*! See \ref PWM_FLAG_IS_ENABLED */ = PWM_FLAG_IS_ENABLED
 	};
 };
 
@@ -44,7 +44,7 @@ public:
 	 *
 	 */
 	PwmAttributes(){
-		set_flags(SET_TIMER);
+		set_flags(flag_set_timer);
 		set_frequency(1000000);
 		m_attr.channel = mcu_channel(-1, -1);
 		m_attr.period = 1000;
@@ -171,7 +171,7 @@ public:
 	 */
 	int set_channels(const pwm_pin_assignment_t * pin_assignment){
 		PwmAttributes attributes;
-		attributes.set_flags(SET_CHANNELS);
+		attributes.set_flags(flag_set_channels);
 		if( pin_assignment ){
 			attributes << *pin_assignment;
 		}

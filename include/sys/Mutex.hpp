@@ -17,21 +17,12 @@ public:
 
 	/*! \details Mutex Types */
 	enum type {
-		/*! \cond */
-		NORMAL /*! Normal Mutex Type */ = PTHREAD_MUTEX_NORMAL,
-		RECURSIVE /*! Recursive Mutex tyep */ = PTHREAD_MUTEX_RECURSIVE,
-		/*! \endcond */
 		normal /*! Normal Mutex Type */ = PTHREAD_MUTEX_NORMAL,
 		recursive /*! Recursive Mutex tyep */ = PTHREAD_MUTEX_RECURSIVE
 	};
 
 	/*! \details Mutex Protocol values */
 	enum protocol {
-		/*! \cond */
-		PRIO_NONE_PROTOCOL = PTHREAD_PRIO_NONE,
-		PRIO_INHERIT_PROTOCOL = PTHREAD_PRIO_INHERIT,
-		PRIO_PROTECT_PROTOCOL = PTHREAD_PRIO_PROTECT,
-		/*! \endcond */
 		prio_none_protocol = PTHREAD_PRIO_NONE,
 		prio_inherit_protocol = PTHREAD_PRIO_INHERIT,
 		prio_protect_protocol = PTHREAD_PRIO_PROTECT,

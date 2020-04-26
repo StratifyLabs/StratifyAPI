@@ -88,11 +88,13 @@ public:
 		return m_reference_drawing_attributes.calculate_region_on_bitmap();
 	}
 
+#if 0
 	bool contains(const sgfx::Point & point){
 		return sgfx::Region(
 					m_reference_drawing_attributes.calculate_region_on_bitmap()
 					).contains(point);
 	}
+#endif
 
 	DrawingPoint translate_point(const sgfx::Point & point);
 
@@ -255,6 +257,12 @@ public:
 	T& set_theme_state(enum sgfx::Theme::state value){
 		Component::set_theme_state(value);
 		return static_cast<T&>(*this);
+	}
+
+	bool contains(const sgfx::Point & point){
+		return DrawingComponentProperties<T>::calculate_region_inside_margin(
+					reference_drawing_attributes().calculate_region_on_bitmap()
+					).contains(point);
 	}
 
 	template<typename... Args> static T & create(

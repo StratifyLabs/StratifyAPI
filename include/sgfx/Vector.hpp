@@ -74,14 +74,14 @@ public:
 	VectorPathDescription(const sg_vector_path_description_t & value){ m_value = value; }
 	operator const sg_vector_path_description_t & () const { return m_value; }
 
-	enum {
-		NONE = SG_VECTOR_PATH_NONE,
-		MOVE = SG_VECTOR_PATH_MOVE,
-		LINE = SG_VECTOR_PATH_LINE,
-		QUADRATIC_BEZIER = SG_VECTOR_PATH_QUADRATIC_BEZIER,
-		CUBIC_BEZIER = SG_VECTOR_PATH_CUBIC_BEZIER,
-		CLOSE = SG_VECTOR_PATH_CLOSE,
-		POUR = SG_VECTOR_PATH_POUR,
+	enum type {
+		type_none = SG_VECTOR_PATH_NONE,
+		type_move = SG_VECTOR_PATH_MOVE,
+		type_line = SG_VECTOR_PATH_LINE,
+		type_quadratic_bezier = SG_VECTOR_PATH_QUADRATIC_BEZIER,
+		type_cubic_bezier = SG_VECTOR_PATH_CUBIC_BEZIER,
+		type_close = SG_VECTOR_PATH_CLOSE,
+		type_pour = SG_VECTOR_PATH_POUR,
 	};
 
 	u16 type() const { return m_value.type; }

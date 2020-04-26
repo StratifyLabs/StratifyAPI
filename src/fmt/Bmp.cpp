@@ -62,7 +62,7 @@ int Bmp::open(
 		return set_error_number_if_error(api::error_code_fs_failed_to_read);
 	}
 
-	if( seek(Location(hdr.offset), SET) != (int)hdr.offset ){
+	if( seek(Location(hdr.offset), whence_set) != (int)hdr.offset ){
 		m_dib.width = -1;
 		m_dib.height = -1;
 		m_dib.bits_per_pixel = 0;
@@ -95,7 +95,7 @@ int Bmp::create(
 			sizeof(m_dib) +
 			(width.argument()*height.argument()*bits_per_pixel.argument() + 7) / 8;
 	hdr.offset = sizeof(hdr) + sizeof(m_dib);
-	hdr.signature = SIGNATURE;
+	hdr.signature = misc_signature;
 	hdr.resd1 = 0;
 	hdr.resd2 = 0;
 
@@ -136,7 +136,7 @@ int Bmp::create_appfs(
 
 	hdr.size = sizeof(hdr) + sizeof(dib) + (width*height*bits_per_pixel + 7) / 8;
 	hdr.offset = sizeof(hdr) + sizeof(dib);
-	hdr.signature = SIGNATURE;
+	hdr.signature = misc_signature;
 	hdr.resd1 = 0;
 	hdr.resd2 = 0;
 
@@ -175,11 +175,11 @@ int Bmp::seek_row(s32 y) const {
 	if( m_dib.height > 0 ){
 		//image is upside down -- seek to beginning of row
 		return seek(
-					Location(m_offset + calc_row_size() * (m_dib.height - (y + 1))), SET
+					Location(m_offset + calc_row_size() * (m_dib.height - (y + 1))), whence_set
 					);
 	}
 
-	return seek(Location(m_offset + calc_row_size() * y), SET);
+	return seek(Location(m_offset + calc_row_size() * y), whence_set);
 }
 
 int Bmp::read_pixel(

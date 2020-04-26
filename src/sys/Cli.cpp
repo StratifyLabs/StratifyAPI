@@ -272,7 +272,7 @@ int Cli::value_at(u16 value) const {
 
 bool Cli::handle_uart(hal::UartAttributes & attr) const {
 	if( is_option("-uart") ){
-		enum hal::Uart::flags o_flags = hal::Uart::SET_LINE_CODING;
+		enum hal::Uart::flags o_flags = hal::Uart::flag_set_line_coding;
 		attr.set_port(get_option_value("-uart"));
 
 		if( is_option("-freq") ){
@@ -282,17 +282,17 @@ bool Cli::handle_uart(hal::UartAttributes & attr) const {
 		}
 
 		if( is_option("-even") ){
-			o_flags |= hal::Uart::IS_PARITY_EVEN;
+			o_flags |= hal::Uart::flag_is_parity_even;
 		} else if( is_option("-odd") ){
-			o_flags |= hal::Uart::IS_PARITY_ODD;
+			o_flags |= hal::Uart::flag_is_parity_odd;
 		}
 
 		if( is_option("-stop1") ){
-			o_flags |= hal::Uart::IS_STOP1;
+			o_flags |= hal::Uart::flag_is_stop1;
 		} else if( is_option("-stop2") ){
-			o_flags |= hal::Uart::IS_STOP2;
+			o_flags |= hal::Uart::flag_is_stop2;
 		} else {
-			o_flags |= hal::Uart::IS_STOP1;
+			o_flags |= hal::Uart::flag_is_stop1;
 		}
 
 		if( is_option("-tx") ){ attr.set_tx(get_option_pin("-tx")); }
@@ -315,7 +315,7 @@ bool Cli::handle_uart(hal::UartAttributes & attr) const {
 
 bool Cli::handle_i2c(hal::I2CAttr & attr) const {
 	if( is_option("-i2c") ){
-		enum hal::I2C::flags o_flags = hal::I2C::SET_MASTER;
+		enum hal::I2C::flags o_flags = hal::I2C::flag_set_master;
 		attr.set_port(get_option_value("-i2c"));
 
 		if( is_option("-freq") ){
@@ -325,7 +325,7 @@ bool Cli::handle_i2c(hal::I2CAttr & attr) const {
 		}
 
 		if( is_option("-slave") ){ attr.set_slave_addr(get_option_hex_value("-slave")); }
-		if( is_option("-pu") ){ o_flags |= hal::I2C::IS_PULLUP; }
+		if( is_option("-pu") ){ o_flags |= hal::I2C::flag_is_pullup; }
 
 
 		if( is_option("-sda") ){ attr.set_sda(get_option_pin("-sda")); }

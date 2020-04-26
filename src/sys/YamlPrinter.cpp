@@ -44,9 +44,9 @@ void YamlPrinter::print_open_object(
 		){
 
 	if( verbose_level() >= level ){
-		if( o_flags() & PRINT_BOLD_OBJECTS ){ set_format_code(FORMAT_BOLD); }
+		if( o_flags() & print_bold_objects ){ set_format_code(format_bold); }
 		print(level, key, " ");
-		if( o_flags() & PRINT_BOLD_OBJECTS ){ clear_format_code(FORMAT_BOLD); }
+		if( o_flags() & print_bold_objects ){ clear_format_code(format_bold); }
 	}
 
 	container_list().push_back(
@@ -59,9 +59,9 @@ void YamlPrinter::print_open_array(
 		const char * key
 		){
 	if( verbose_level() >= level ){
-		if( o_flags() & PRINT_BOLD_OBJECTS ){ set_format_code(FORMAT_BOLD); }
+		if( o_flags() & print_bold_objects ){ set_format_code(format_bold); }
 		print(level, key, " ");
-		if( o_flags() & PRINT_BOLD_OBJECTS ){ clear_format_code(FORMAT_BOLD); }
+		if( o_flags() & print_bold_objects ){ clear_format_code(format_bold); }
 	}
 	container_list().push_back(
 				Container(level, container_array)

@@ -77,28 +77,7 @@ class AppfsInfo;
 
 struct PrinterFlags {
 	/*! \details Number printing flags. */
-	enum {
-		PRINT_HEX /*! Print hex data */ = (1<<0),
-		PRINT_UNSIGNED /*! Print unsigned integers */ = (1<<1),
-		PRINT_SIGNED /*! Printd signed integers */ = (1<<2),
-		PRINT_CHAR /*! Print Characters */ = (1<<3),
-		PRINT_8 /*! Print as 8 bit values (default) */ = 0,
-		PRINT_16 /*! Print as 16 bit values */ = (1<<4),
-		PRINT_32 /*! Print as 32 bit values */ = (1<<5),
-		PRINT_SIMPLE_PROGRESS /*! Just print # for progress */ = (1<<6),
-		PRINT_BOLD_KEYS /*! Print keys in bold if supported */ = (1<<7),
-		PRINT_BOLD_VALUES /*! Print keys in bold if supported */ = (1<<8),
-		PRINT_BOLD_OBJECTS /*! Print keys in bold if supported */ = (1<<9),
-		PRINT_BOLD_ARRAYS /*! Print keys in bold if supported */ = (1<<10),
-		PRINT_GREEN_VALUES = (1<<11),
-		PRINT_RED_VALUES = (1<<12),
-		PRINT_YELLOW_VALUES = (1<<13),
-		PRINT_RED_ERRORS = (1<<14),
-		PRINT_YELLOW_WARNINGS = (1<<15),
-		PRINT_CYAN_KEYS = (1<<16),
-		PRINT_YELLOW_KEYS = (1<<17),
-		PRINT_MAGENTA_KEYS = (1<<18),
-		PRINT_BLOB /*! Print Data as a blob */ = (1<<19),
+	enum print_flags {
 		print_hex /*! Print hex data */ = (1<<0),
 		print_unsigned /*! Print unsigned integers */ = (1<<1),
 		print_signed /*! Printd signed integers */ = (1<<2),
@@ -128,15 +107,6 @@ struct PrinterFlags {
 	};
 
 	enum format_type {
-		/*! \cond */
-		FORMAT_NORMAL = 0,
-		FORMAT_BOLD = 1,
-		FORMAT_DIM = 2,
-		FORMAT_UNDERLINE = 4,
-		FORMAT_BLINK = 5,
-		FORMAT_INVERTED = 7,
-		FORMAT_HIDDEN = 8,
-		/*! \endcond */
 		format_normal = 0,
 		format_bold = 1,
 		format_dim = 2,
@@ -147,22 +117,6 @@ struct PrinterFlags {
 	};
 
 	enum color_code {
-		/*! \cond */
-		COLOR_CODE_DEFAULT = 39,
-		COLOR_CODE_BLACK = 30,
-		COLOR_CODE_RED = 31, //RED
-		COLOR_CODE_GREEN = 32, //GREEN
-		COLOR_CODE_YELLOW = 33,
-		COLOR_CODE_BLUE = 34, //BLUE
-		COLOR_CODE_MAGENTA = 35,
-		COLOR_CODE_CYAN = 36, //BLUE | GREEN
-		COLOR_CODE_LIGHT_GRAY = 37,
-		COLOR_CODE_DARK_GRAY = 90,
-		COLOR_CODE_LIGHT_RED = 91,
-		COLOR_CODE_LIGHT_GREEN = 92,
-		COLOR_CODE_LIGHT_YELLOW = 93,
-		COLOR_CODE_LIGHT_BLUE = 94,
-		/*! \endcond */
 		color_code_default = 39,
 		color_code_black = 30,
 		color_code_red = 31, //RED
@@ -181,15 +135,7 @@ struct PrinterFlags {
 
 	/*! \details Filtering levels. */
 	enum verbose_level {
-		/*! \cond */
-		FATAL /*! Prints fatal errors. */,
-		ERROR /*! Prints fatal and error messages. */,
-		WARNING /*! Printers warnings and worse. */,
-		INFO /*! Prints basic info (default setting) plus warning and errors. */,
-		MESSAGE /*! Prints additional messages. */,
-		DEBUG /*! Prints everything. */,
-		/*! \endcond */
-		level_fatal /*! Prints fatal errors. */ = FATAL,
+		level_fatal /*! Prints fatal errors. */,
 		level_error /*! Prints fatal and error messages. */,
 		level_warning /*! Printers warnings and worse. */,
 		level_info /*! Prints basic info (default setting) plus warning and errors. */,

@@ -98,7 +98,7 @@ int RleFile::write(const void * buf, int nbyte){
 	const char * p = (const char *)buf;
 	bw = 0;
 	do {
-		dest_size = BUF_SIZE;
+		dest_size = misc_buffer_size;
 		ret = encode(this->buf, dest_size, p, nbyte);
 		if( ret > 0 ){
 			p += ret;

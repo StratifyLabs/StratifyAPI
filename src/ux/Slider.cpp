@@ -24,24 +24,6 @@ void Slider::draw(const DrawingScaledAttributes & attributes){
 	Region region_inside_margin =
 			calculate_region_inside_margin(attributes.region());
 
-	sys::Printer p;
-
-	{
-		sys::PrinterObject pg(p, "region");
-		p << attributes.region();
-	}
-
-	{
-		sys::PrinterObject pg(p, "region inside margin");
-		p << region_inside_margin;
-	}
-
-
-	Area slider_area(
-				region_inside_margin.width()* 900 / 1000,
-				region_inside_margin.height()* 200 / 1000
-				);
-
 	Region slider_region =
 			calculate_region_inside(
 				region_inside_margin,

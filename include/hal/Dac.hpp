@@ -12,9 +12,9 @@ namespace hal {
 class DacFlags {
 public:
 	enum flags {
-		SET_CONVERTER /*! Set to configure the converter */ = DAC_FLAG_SET_CONVERTER,
-		LEFT_JUSTIFIED /*! Set to left justify the data */ = DAC_FLAG_IS_LEFT_JUSTIFIED,
-		RIGHT_JUSTIFIED /*! Set to right justify the data */ = DAC_FLAG_IS_RIGHT_JUSTIFIED
+		flag_set_converter /*! Set to configure the converter */ = DAC_FLAG_SET_CONVERTER,
+		flag_is_left_justified /*! Set to left justify the data */ = DAC_FLAG_IS_LEFT_JUSTIFIED,
+		flag_is_right_justified /*! Set to right justify the data */ = DAC_FLAG_IS_RIGHT_JUSTIFIED
 	};
 
 };

@@ -61,24 +61,24 @@ FontInfo::FontInfo(const var::String & path){
 		var::String style = tokens.at(1);
 		style.to_lower();
 
-		m_style = ANY;
-		if( style == "t" ){ m_style = THIN; }
-		if( style == "ti" ){ m_style = THIN_ITALIC; }
-		if( style == "el" ){ m_style = EXTRA_LIGHT; }
-		if( style == "eli" ){ m_style = EXTRA_LIGHT_ITALIC; }
-		if( style == "l" ){ m_style = LIGHT; }
-		if( style == "li" ){ m_style = LIGHT_ITALIC; }
-		if( style == "r" ){ m_style = REGULAR; }
-		if( style == "ri" ){ m_style = REGULAR_ITALIC; }
-		if( style == "m" ){ m_style = MEDIUM; }
-		if( style == "mi" ){ m_style = MEDIUM_ITALIC; }
-		if( style == "sb" ){ m_style = SEMI_BOLD; }
-		if( style == "sbi" ){ m_style = SEMI_BOLD_ITALIC; }
-		if( style == "b" ){ m_style = BOLD; }
-		if( style == "bi" ){ m_style = BOLD_ITALIC; }
-		if( style == "eb" ){ m_style = EXTRA_BOLD; }
-		if( style == "ebi" ){ m_style = EXTRA_BOLD_ITALIC; }
-		if( style == "ico" ){ m_style = ICONS; }
+		m_style = style_any;
+		if( style == "t" ){ m_style = style_thin; }
+		if( style == "ti" ){ m_style = style_thin_italic; }
+		if( style == "el" ){ m_style = style_extra_light; }
+		if( style == "eli" ){ m_style = style_extra_light_italic; }
+		if( style == "l" ){ m_style = style_light; }
+		if( style == "li" ){ m_style = style_light_italic; }
+		if( style == "r" ){ m_style = style_regular; }
+		if( style == "ri" ){ m_style = style_regular_italic; }
+		if( style == "m" ){ m_style = style_medium; }
+		if( style == "mi" ){ m_style = style_medium_italic; }
+		if( style == "sb" ){ m_style = style_semi_bold; }
+		if( style == "sbi" ){ m_style = style_semi_bold_italic; }
+		if( style == "b" ){ m_style = style_bold; }
+		if( style == "bi" ){ m_style = style_bold_italic; }
+		if( style == "eb" ){ m_style = style_extra_bold; }
+		if( style == "ebi" ){ m_style = style_extra_bold_italic; }
+		if( style == "ico" ){ m_style = style_icons; }
 	}
 }
 

@@ -27,10 +27,10 @@ int Url::set(const var::String & url){
 
 		if( var::String(url_tokens.at(0)) == "https:"){
 			m_port = 443;
-			m_protocol = PROTOCOL_HTTPS;
+			m_protocol = protocol_https;
 		} else if( var::String(url_tokens.at(0)) == "http:"){
 			m_port = 80;
-			m_protocol = PROTOCOL_HTTP;
+			m_protocol = protocol_http;
 		}
 
 		var::Tokenizer domain_name(
@@ -57,7 +57,7 @@ int Url::set(const var::String & url){
 var::String Url::to_string() const {
 	var::String result;
 	var::String p;
-	if( m_protocol == PROTOCOL_HTTPS ){
+	if( m_protocol == protocol_https ){
 		p = "https";
 	} else {
 		p = "http";

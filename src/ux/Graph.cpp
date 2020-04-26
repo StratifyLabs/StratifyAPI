@@ -21,19 +21,19 @@ float GraphAxes::get_maximum_axis_value(float value, float range){
 }
 
 sgfx::Point LineGraph::transform_point(
-		const DrawingScaledAttributes & drawing_attributes,
+		const Region & plot_region,
 		const LineGraphPoint & line_graph_point
 		){
 
-	const sg_size_t height = drawing_attributes.region().height() - 1;
-	const sg_size_t width = drawing_attributes.region().width() - 1;
+	const sg_size_t height = plot_region.height() - 1;
+	const sg_size_t width = plot_region.width() - 1;
 
 
 	return Point(
-				drawing_attributes.point().x() +
+				plot_region.point().x() +
 				(line_graph_point.x() - x_axis().minimum()) *
 				width / x_axis().range(),
-				drawing_attributes.point().y() +
+				plot_region.point().y() +
 				(height -
 				 (line_graph_point.y() - y_axis().minimum()) *
 				 height / y_axis().range()
@@ -48,46 +48,44 @@ void LineGraph::draw(
 	sgfx::Bitmap & bitmap = attributes.bitmap();
 
 	bitmap << sgfx::Pen().set_color(theme()->background_color());
-	bitmap.draw_rectangle(
+	bitmap.draw_rectangle(attributes.region());
+
+	const sgfx::Region region_inside_margin = calculate_region_inside_margin(
 				attributes.region()
 				);
 
-	const sgfx::Area offset_area(
+	const sgfx::Area effective_axes_area = sgfx::Area(
 				attributes.calculate_width( axes_area().width() ),
 				attributes.calculate_width( axes_area().height() )
 				);
 
+	const sgfx::Region plot_region =
+			calculate_region_inside(
+				region_inside_margin,
+	{ 0,
+		0,
+		x_axis().is_valid() ? static_cast<u8>(effective_axes_area.height()) : static_cast<u8>(0),
+		y_axis().is_valid() ? static_cast<u8>(effective_axes_area.width()) : static_cast<u8>(0) }
+				);
+
 	//set the axis color
 	if( y_axis().is_valid() ){
-		//draw the axis lines
-		const sg_int_t x_value = offset_area.width();
-		const Point start(x_value, 0);
-		Point end;
-		if( x_axis().is_valid() ){
-			end = Point(x_value, bitmap.height() - offset_area.height() );
-		} else {
-			end = Point(x_value, 0);
-		}
-		bitmap.draw_line(start, end);
+		//draw the y axis
+		bitmap.draw_line(
+					plot_region.point(),
+					plot_region.point() + Point::Y(plot_region.height())
+					);
 	}
 
 	if( x_axis().is_valid() ){
-		Point start;
-		Point end;
-		const sg_int_t y_value = bitmap.height() - offset_area.height();
-		if( y_axis().is_valid() ){
-			start = Point(offset_area.width(), y_value);
-		} else {
-			start = Point(0, y_value);
-		}
 
-		if( y2_axis().is_valid() ){
-			end = Point(bitmap.width() - offset_area.width(), y_value);
-		} else {
-			end = Point(bitmap.width(), y_value);
-		}
-
-		bitmap.draw_line(start, end);
+		bitmap.draw_line(
+					plot_region.point() + Point::Y(plot_region.height()),
+					plot_region.point() + Point(
+						plot_region.width(),
+						plot_region.height()
+						)
+					);
 	}
 
 	if( data_set() == nullptr ){
@@ -113,12 +111,12 @@ void LineGraph::draw(
 			if( is_first_point ){
 				is_first_point = false;
 				cursor = transform_point(
-							attributes,
+							plot_region,
 							point
 							);
 			} else {
 				Point next_point = transform_point(
-							attributes,
+							plot_region,
 							point
 							);
 

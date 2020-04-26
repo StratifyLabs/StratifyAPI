@@ -205,11 +205,6 @@ public:
 
 
 	enum test_flags {
-		EXECUTE_API  = (1<<0),
-		EXECUTE_STRESS = (1<<1),
-		EXECUTE_PERFORMANCE = (1<<2),
-		EXECUTE_ADDITIONAL = (1<<3),
-		EXECUTE_ALL = (u32)-1,
 		execute_api /*! API Test Execution flag */ = (1<<0),
 		execute_stress /*! Stress Test Execution flag */ = (1<<1),
 		execute_performance /*! Performance Test Execution flag */ = (1<<2),
@@ -225,11 +220,11 @@ public:
 	  * @param o_flags Bitmask of the tests to execute (e.g., Test::EXECUTE_API)
 	  *
 	  */
-	virtual void execute(int o_flags = EXECUTE_ALL){
-		if( o_flags & EXECUTE_API ){ execute_api_case(); }
-		if( o_flags & EXECUTE_STRESS ){ execute_stress_case(); }
-		if( o_flags & EXECUTE_PERFORMANCE ){ execute_performance_case(); }
-		if( o_flags & EXECUTE_ADDITIONAL ){ execute_additional_cases(); }
+	virtual void execute(int o_flags = execute_all){
+		if( o_flags & execute_api ){ execute_api_case(); }
+		if( o_flags & execute_stress ){ execute_stress_case(); }
+		if( o_flags & execute_performance ){ execute_performance_case(); }
+		if( o_flags & execute_additional ){ execute_additional_cases(); }
 	}
 
 	/*! \details Executes the API test case. */

@@ -102,9 +102,9 @@ int CFifo::exit(int channel) const {
 
 int CFifo::set_writeblock(int channel, bool value) const {
 	fifo_attr_t attr;
-	attr.o_flags = FifoFlags::SET_WRITEBLOCK;
+	attr.o_flags = FifoFlags::flag_set_writeblock;
 	if( value == false ){
-		attr.o_flags |= FifoFlags::IS_OVERFLOW;
+		attr.o_flags |= FifoFlags::flag_is_overflow;
 	}
 	return set_attributes(channel, attr);
 }

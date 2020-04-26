@@ -68,22 +68,22 @@ public:
 	I2S(port_t port);
 
 	enum i2s_flags {
-		IS_WIDTH_8 /*! I2S Word Width 8 bits */ = I2S_FLAG_IS_WIDTH_8,
-		IS_WIDTH_16 /*! I2S Word Width 16 bits */ = I2S_FLAG_IS_WIDTH_16,
-		IS_WIDTH_24 /*! I2S Word Width 24 bits */ = I2S_FLAG_IS_WIDTH_24,
-		IS_WIDTH_32 /*! I2S Word Width 32 bits */ = I2S_FLAG_IS_WIDTH_32,
-		IS_MONO /*! I2S Mono mode */ = I2S_FLAG_IS_MONO,
-		IS_STEREO /*! I2S Stereo mode (default behavoir) */ = I2S_FLAG_IS_STEREO,
-		SET_MASTER /*! Set the I2S as a master */ = I2S_FLAG_SET_MASTER,
-		SET_SLAVE /*! Set the I2S as a slave */ = I2S_FLAG_SET_SLAVE,
-		IS_TRANSMITTER /*! Set the I2S transmitter (master or slave) */ = I2S_FLAG_IS_TRANSMITTER,
-		IS_RECEIVER /*! Set the I2S receiver (master or slave) */ = I2S_FLAG_IS_RECEIVER,
-		IS_FORMAT_MSB /*! Set this bit for MSB format */ = I2S_FLAG_IS_FORMAT_MSB,
-		IS_FORMAT_LSB /*! Set this bit for LSB format */ = I2S_FLAG_IS_FORMAT_LSB,
-		IS_MCK_ENABLED /*! Set this bit to enable the mclk output */ = I2S_FLAG_IS_MCK_ENABLED,
-		IS_FORMAT_PCM_SHORT /*! Set this bit for PCM Short format*/ = I2S_FLAG_IS_FORMAT_PCM_SHORT,
-		IS_FORMAT_PCM_LONG /*! Set this bit for PCM Long format*/ = I2S_FLAG_IS_FORMAT_PCM_LONG,
-		IS_WIDTH_16_EXTENDED /*! I2S has 16-bits of data in 32-bit blocks */ = I2S_FLAG_IS_WIDTH_16_EXTENDED
+		flag_is_width_8 /*! I2S Word Width 8 bits */ = I2S_FLAG_IS_WIDTH_8,
+		flag_is_width_16 /*! I2S Word Width 16 bits */ = I2S_FLAG_IS_WIDTH_16,
+		is_width_24 /*! I2S Word Width 24 bits */ = I2S_FLAG_IS_WIDTH_24,
+		flag_is_width_32 /*! I2S Word Width 32 bits */ = I2S_FLAG_IS_WIDTH_32,
+		flag_is_mono /*! I2S Mono mode */ = I2S_FLAG_IS_MONO,
+		flag_is_stereo /*! I2S Stereo mode (default behavoir) */ = I2S_FLAG_IS_STEREO,
+		flag_set_master /*! Set the I2S as a master */ = I2S_FLAG_SET_MASTER,
+		flag_set_slave /*! Set the I2S as a slave */ = I2S_FLAG_SET_SLAVE,
+		flag_is_transmitter /*! Set the I2S transmitter (master or slave) */ = I2S_FLAG_IS_TRANSMITTER,
+		flag_is_receiver /*! Set the I2S receiver (master or slave) */ = I2S_FLAG_IS_RECEIVER,
+		flag_is_format_msb /*! Set this bit for MSB format */ = I2S_FLAG_IS_FORMAT_MSB,
+		flag_is_format_lsb /*! Set this bit for LSB format */ = I2S_FLAG_IS_FORMAT_LSB,
+		flag_is_mck_enabled /*! Set this bit to enable the mclk output */ = I2S_FLAG_IS_MCK_ENABLED,
+		flag_is_format_pcm_short /*! Set this bit for PCM Short format*/ = I2S_FLAG_IS_FORMAT_PCM_SHORT,
+		flag_is_format_pcm_long /*! Set this bit for PCM Long format*/ = I2S_FLAG_IS_FORMAT_PCM_LONG,
+		flag_is_width_16_extended /*! I2S has 16-bits of data in 32-bit blocks */ = I2S_FLAG_IS_WIDTH_16_EXTENDED
 	};
 
 private:
