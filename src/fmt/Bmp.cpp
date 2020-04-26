@@ -268,7 +268,7 @@ sgfx::Bitmap Bmp::convert_to_bitmap(
 		seek_row(j);
 
 		for(i=0; i < width(); i++){
-			read(pixel);
+			read(var::Reference(pixel));
 			avg = (pixel[0] + pixel[1] + pixel[2]) / 3;
 
 			sg_color_t bitmap_color;

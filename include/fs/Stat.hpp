@@ -305,6 +305,11 @@ private:
 
 typedef Stat FileInfo;
 
-} /* namespace sys */
+} /* namespace fs */
+
+namespace sys {
+class Printer;
+sys::Printer& operator << (sys::Printer& printer, const fs::Stat & a);
+}
 
 #endif /* SAPI_SYS_FILEINFO_HPP_ */

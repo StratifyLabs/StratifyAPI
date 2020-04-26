@@ -10,8 +10,56 @@
 #include "sys/Appfs.hpp"
 #include "fs/Dir.hpp"
 #include "fs/File.hpp"
+#include "sys/Printer.hpp"
 
 using namespace sys;
+
+Printer& sys::operator << (Printer& printer, const appfs_file_t & a){
+	printer.key("name", "%s", a.hdr.name);
+	printer.key("id", "%s", a.hdr.id);
+	printer.key("mode", "0%o", a.hdr.mode);
+	printer.key("version", "%d.%d", a.hdr.version >> 8, a.hdr.version & 0xff);
+	printer.key("startup", "%p", a.exec.startup);
+	printer.key("codeStart", "%p", a.exec.code_start);
+	printer.key("codeSize", "%p", a.exec.code_size);
+	printer.key("ramStart", "%p", a.exec.ram_start);
+	printer.key("ramSize", "%ld", a.exec.ram_size);
+	printer.key("dataSize", "%ld", a.exec.data_size);
+	printer.key("oFlags", "0x%lX", a.exec.o_flags);
+	printer.key("signature", "0x%lX", a.exec.signature);
+	return printer;
+}
+
+Printer& sys::operator << (Printer& printer, const AppfsFileAttributes & a){
+	printer.key("name", a.name());
+	printer.key("id", a.id());
+	printer.key("version", "%d.%d", a.version() >> 8, a.version() & 0xff);
+	printer.key("flash", a.is_flash());
+	printer.key("codeExternal", a.is_code_external());
+	printer.key("dataExternal", a.is_data_external());
+	printer.key("codeTightlyCoupled", a.is_code_tightly_coupled());
+	printer.key("dataTightlyCoupled", a.is_data_tightly_coupled());
+	printer.key("startup", a.is_startup());
+	printer.key("unique", a.is_unique());
+	printer.key("ramSize", "%ld", a.ram_size());
+	return printer;
+}
+
+Printer& sys::operator << (Printer& printer, const sys::AppfsInfo & a){
+	printer.key("name", a.name());
+	printer.key("mode", "0%o", a.mode());
+	if( a.is_executable() ){
+		printer.key("id", a.id());
+		printer.key("version", "%d.%d", a.version() >> 8, a.version() & 0xff);
+		printer.key("signature", F3208X, a.signature());
+		printer.key("ram", F32U, a.ram_size());
+		printer.key("orphan", a.is_orphan());
+		printer.key("flash", a.is_flash());
+		printer.key("startup", a.is_startup());
+		printer.key("unique", a.is_unique());
+	}
+	return printer;
+}
 
 AppfsFileAttributes::AppfsFileAttributes(const appfs_file_t & appfs_file){
 	m_name = appfs_file.hdr.name;
@@ -249,7 +297,7 @@ AppfsInfo Appfs::get_info(
 		return AppfsInfo();
 	}
 
-	result = f.read(appfs_file_header);
+	result = f.read(var::Reference(appfs_file_header));
 
 	f.close();
 

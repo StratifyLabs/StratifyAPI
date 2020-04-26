@@ -460,6 +460,14 @@ private:
 
 }
 
+namespace sys {
+class Printer;
+#if !defined __link
+	Printer & operator << (sys::Printer& printer, const var::DataInfo & a);
+#endif
+
+}
+
 
 
 

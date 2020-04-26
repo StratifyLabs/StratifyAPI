@@ -116,7 +116,7 @@ int Theme::load(const var::String & path){
 		return -1;
 	}
 
-	if( m_color_file.read(m_header) < 0 ){
+	if( m_color_file.read(var::Reference(m_header)) < 0 ){
 		return -1;
 	}
 
@@ -141,7 +141,7 @@ int Theme::create(
 	m_header.pixel_format = pixel_format;
 	m_color_count = 0;
 
-	if( m_color_file.write(m_header) < 0 ){
+	if( m_color_file.write(var::Reference(m_header)) < 0 ){
 		return -1;
 	}
 

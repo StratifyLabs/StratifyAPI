@@ -106,5 +106,10 @@ typedef Tokenizer Token;
 
 }
 
+namespace sys {
+class Printer;
+Printer& operator << (Printer& printer, const var::Tokenizer & a);
+}
+
 
 #endif /* SAPI_VAR_TOKENIZER_HPP_ */

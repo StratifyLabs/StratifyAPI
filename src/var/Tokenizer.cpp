@@ -6,7 +6,21 @@
 #include <cstring>
 #include "var/Reference.hpp"
 #include "var/Tokenizer.hpp"
+#include "sys/Printer.hpp"
+
 using namespace var;
+
+sys::Printer& operator << (sys::Printer& printer, const var::Tokenizer & a){
+	printer.print_open_object(printer.verbose_level(), "tokens");
+	for(u32 i=0; i < a.count(); i++){
+		printer.print(printer.verbose_level(),
+				var::String().format("[%04d]", i).cstring(),
+				a.at(i).cstring()
+				);
+	}
+	printer.print_close_object();
+	return printer;
+}
 
 Tokenizer::Tokenizer(){}
 

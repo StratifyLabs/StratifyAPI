@@ -123,6 +123,7 @@ private:
 
 };
 
+
 }
 
 #endif /* SAPI_SYS_TRACE_HPP_ */

@@ -486,6 +486,10 @@ private:
 
 };
 
+class Printer;
+Printer & operator << (Printer& printer, const sys::SysInfo & a);
+class TraceEvent;
+Printer & operator << (Printer& printer, const TraceEvent & a);
 }
 
 #endif /* SAPI_SYS_SYS_HPP_ */

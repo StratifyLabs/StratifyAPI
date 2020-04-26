@@ -745,4 +745,11 @@ private:
 
 }
 
+namespace sys {
+class Printer;
+Printer& operator << (Printer& printer, const draw::DrawingPoint& a);
+Printer& operator << (Printer& printer, const draw::DrawingArea& a);
+Printer& operator << (Printer& printer, const draw::DrawingRegion& a);
+}
+
 #endif /* SAPI_DRAW_DRAWING_HPP_ */

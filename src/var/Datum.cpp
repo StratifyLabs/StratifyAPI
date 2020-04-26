@@ -2,8 +2,14 @@
 #include "var/Datum.hpp"
 #include "chrono/Clock.hpp"
 #include "chrono/Time.hpp"
+#include "sys/Printer.hpp"
 
 using namespace var;
+
+sys::Printer& sys::operator << (sys::Printer& printer, const var::Datum & a){
+	printer << a.to_json();
+	return printer;
+}
 
 Datum::Datum(){
 	//grab a valid timestamp

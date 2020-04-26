@@ -38,7 +38,7 @@ int I2C::set(
 		){
 	int ret;
 	u8 tmp;
-	ret = read(location, tmp);
+	ret = read(location, var::Reference(tmp));
 	if( ret < 0 ){
 		return ret;
 	}
@@ -47,5 +47,5 @@ int I2C::set(
 	} else {
 		tmp &= ~(1<<bit);
 	}
-	return write(location, tmp);
+	return write(location, var::Reference(tmp));
 }

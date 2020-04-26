@@ -285,6 +285,9 @@ private:
 
 };
 
+Printer & operator << (Printer& printer, const Cli & a);
+
+
 } /* namespace sys */
 
 #endif /* SAPI_SYS_CLI_HPP_ */

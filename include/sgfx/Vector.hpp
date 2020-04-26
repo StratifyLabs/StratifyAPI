@@ -187,4 +187,11 @@ private:
 
 }
 
+namespace sys {
+class Printer;
+Printer & operator << (Printer& printer, const sgfx::Vector & a);
+Printer & operator << (Printer& printer, const sgfx::VectorPath & a);
+Printer & operator << (Printer& printer, const sgfx::VectorPathDescription & a);
+}
+
 #endif /* SAPI_SGFX_VECTOR_HPP_ */

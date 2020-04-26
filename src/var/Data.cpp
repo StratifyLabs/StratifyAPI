@@ -9,13 +9,22 @@
 
 #include "sys/Trace.hpp"
 #include "var/Reference.hpp"
+#include "var/Data.hpp"
+#include "sys/Printer.hpp"
 
 #if !defined __link
 #include <reent.h>
 #include <mcu/arch.h>
+
+sys::Printer& operator << (sys::Printer& printer, const var::DataInfo & a){
+	printer.key("arena", F32U, a.arena());
+	printer.key("freeBlockCount", F32U, a.free_block_count());
+	printer.key("freeSize", F32U, a.free_size());
+	printer.key("usedSize", F32U, a.used_size());
+	return printer;
+}
 #endif
 
-#include "var/Data.hpp"
 using namespace var;
 
 //this value corresponds to the malloc chunk size used in Stratify OS

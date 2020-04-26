@@ -3,10 +3,31 @@
 #include "fs/File.hpp"
 #include "sys/Appfs.hpp"
 #include "sys/Cli.hpp"
+#include "sys/Printer.hpp"
 
 using namespace var;
+using namespace sys;
 
-namespace sys {
+Printer& sys::operator << (Printer& printer, const Cli & a){
+	printer.print_open_object(
+				printer.verbose_level(),
+				a.name().cstring()
+				);
+	{
+		printer.key("publisher", a.publisher());
+		printer.print_open_object(printer.verbose_level(), "arguments");
+		{
+			for(u32 i = 0; i < a.count(); i++){
+				printer.key(0, "%s", a.at(i).cstring());
+			}
+			printer.print_close_object();
+		}
+		printer.print_close_object();
+	}
+
+	return printer;
+}
+
 
 Cli::Cli(
 		int argc,
@@ -347,7 +368,3 @@ void Cli::show_options() const {
 }
 
 
-
-
-
-} /* namespace sys */

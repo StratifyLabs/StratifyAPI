@@ -850,5 +850,12 @@ using StringList = Vector<String>;
 
 }
 
+namespace sys {
+class Printer;
+Printer & operator << (Printer& printer, const var::String & a);
+Printer & operator << (Printer& printer, const var::StringList & a);
+
+}
+
 
 #endif /* SAPI_VAR_STRING_HPP_ */

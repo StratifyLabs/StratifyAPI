@@ -244,7 +244,7 @@ public:
 	}
 
 	SocketAddress(const SocketAddressIpv4 & ipv4){
-		m_sockaddr.copy_contents(ipv4.m_sockaddr_in);
+		m_sockaddr.copy_contents(var::Reference(ipv4.m_sockaddr_in));
 		m_protocol = ipv4.m_protocol;
 		m_type = ipv4.m_type;
 	}
@@ -262,13 +262,13 @@ public:
 			int protocol = SocketAddressInfo::protocol_tcp,
 			int type = SocketAddressInfo::type_stream
 			){
-		m_sockaddr.copy_contents(ipv4);
+		m_sockaddr.copy_contents(var::Reference(ipv4));
 		m_protocol = protocol;
 		m_type = type;
 	}
 
 	SocketAddress(const sockaddr_in6 & ipv6){
-		m_sockaddr.copy_contents(ipv6);
+		m_sockaddr.copy_contents(var::Reference(ipv6));
 	}
 
 	void set_port(u16 port);

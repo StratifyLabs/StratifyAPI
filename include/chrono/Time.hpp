@@ -379,6 +379,13 @@ private:
 
 }
 
+namespace sys {
+class Printer;
+Printer & operator << (Printer& printer, const chrono::MicroTime & a);
+Printer & operator << (Printer& printer, const chrono::Time & a);
+}
+
+
 
 
 #endif /* SAPI_CHRONO_TIME_HPP_ */

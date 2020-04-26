@@ -3,12 +3,8 @@
 #define SAPI_SYS_PRINTER_HPP_
 
 #include <cstdarg>
-#include "../api/SysObject.hpp"
-#include "../var/ConstString.hpp"
-#include "../sys/Appfs.hpp"
-#include "../sys/Trace.hpp"
 #include "../sys/ProgressCallback.hpp"
-#include "../var/Vector.hpp"
+#include "../var/String.hpp"
 
 #if defined __win32
 #undef ERROR
@@ -18,62 +14,7 @@ namespace api {
 class Result;
 }
 
-namespace var {
-class DataInfo;
-class Data;
-class Datum;
-class String;
-class Tokenizer;
-class JsonObject;
-class JsonArray;
-class JsonValue;
-template<typename T> class Vector;
-template<typename T> class Ring;
-}
-
-namespace chrono{
-class ClockTime;
-class Microseconds;
-class Time;
-}
-
-namespace sgfx{
-class Point;
-class Area;
-class Region;
-class Bitmap;
-class Pen;
-class Vector;
-class Cursor;
-class VectorPath;
-class VectorPathDescription;
-}
-
-namespace draw {
-class DrawingPoint;
-class DrawingArea;
-class DrawingRegion;
-class DrawingAttributes;
-}
-
-
-namespace hal{
-class I2CAttributes;
-class UartAttributes;
-class DriveInfo;
-}
-
-namespace fs {
-class Stat;
-}
-
 namespace sys {
-
-class TaskInfo;
-class SysInfo;
-class Cli;
-class Info;
-class AppfsInfo;
 
 struct PrinterFlags {
 	/*! \details Number printing flags. */
@@ -196,47 +137,8 @@ public:
 
 	void set_color_code(u32 code);
 	void clear_color_code();
-#if defined __win32
-	static unsigned int m_default_color;
-#endif
 
-#if !defined __link
-	Printer & operator << (const var::DataInfo & a);
-#endif
 	Printer & operator << (const api::Result & a);
-	Printer & operator << (const var::Reference & a);
-	Printer & operator << (const var::Datum & a);
-	Printer & operator << (const var::String & a);
-	Printer & operator << (const var::Tokenizer & a);
-	Printer & operator << (const var::JsonObject & a);
-	Printer & operator << (const var::JsonArray & a);
-	Printer & operator << (const var::Vector<var::String> & a);
-	Printer & operator << (const var::Ring<u32> & a);
-	Printer & operator << (const var::Ring<s32> & a);
-	Printer & operator << (const var::Ring<u16> & a);
-	Printer & operator << (const var::Ring<s16> & a);
-	Printer & operator << (const var::Ring<u8> & a);
-	Printer & operator << (const var::Ring<s8> & a);
-	Printer & operator << (const Cli & a);
-	Printer & operator << (const appfs_file_t & a);
-	Printer & operator << (const AppfsFileAttributes & a);
-	Printer & operator << (const TraceEvent & a);
-	Printer & operator << (const sys::SysInfo & a);
-	Printer & operator << (const sys::AppfsInfo & a);
-	Printer & operator << (const sys::TaskInfo & a);
-	Printer & operator << (const fs::Stat & a);
-	Printer & operator << (const sgfx::Bitmap & a);
-	Printer & operator << (const sgfx::Cursor & a);
-	Printer & operator << (const sgfx::Point & a);
-	Printer & operator << (const sgfx::Region & a);
-	Printer & operator << (const sgfx::Area & a);
-	Printer & operator << (const sgfx::Pen & a);
-	Printer & operator << (const sgfx::Vector & a);
-	Printer & operator << (const sgfx::VectorPath & a);
-	Printer & operator << (const sgfx::VectorPathDescription & a);
-	Printer & operator << (const chrono::ClockTime & a);
-	Printer & operator << (const chrono::MicroTime & a);
-	Printer & operator << (const chrono::Time & a);
 	Printer & operator << (s32 a);
 	Printer & operator << (u32 a);
 	Printer & operator << (s16 a);
@@ -246,10 +148,7 @@ public:
 	Printer & operator << (void * a);
 	Printer & operator << (const char * a);
 	Printer & operator << (float a);
-	Printer & operator << (const hal::DriveInfo & a);
-	Printer & operator << (const draw::DrawingPoint & a);
-	Printer & operator << (const draw::DrawingArea & a);
-	Printer & operator << (const draw::DrawingRegion & a);
+
 
 	/*! \details Assign an effective verbose level to this object. */
 	Printer& set_verbose_level(enum verbose_level level){
@@ -373,9 +272,19 @@ public:
 		return m_o_flags;
 	}
 
+	Printer & key(const var::String & key, bool value);
 	Printer & key(const var::String & key, const char * fmt, ...);
 	Printer & key(const var::String & key, const var::String & a);
-	Printer & key(const var::String & key, const var::JsonValue & a);
+	template<class T> Printer& object(
+			const var::String & key,
+			const T& value,
+			enum verbose_level level = level_fatal
+			){
+		print_open_object(level, key.cstring());
+		*this << value;
+		print_close_object();
+		return *this;
+	}
 
 	Printer & open_object(
 			const var::String & key,
@@ -392,7 +301,6 @@ public:
 
 	const var::String terminal_color_code(enum color_code code);
 
-protected:
 
 	virtual void print_open_object(
 			enum verbose_level verbose_level,
@@ -412,10 +320,16 @@ protected:
 			const char * value,
 			bool is_newline = true
 			);
+
+protected:
 	void print_final_color(enum color_code code, const char * snippet);
 	virtual void print_final(const char * fmt, ...);
 
 private:
+
+#if defined __win32
+	static unsigned int m_default_color;
+#endif
 
 	ProgressCallback m_progress_callback;
 	u16 m_progress_width;

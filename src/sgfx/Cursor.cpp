@@ -2,8 +2,16 @@
 
 
 #include "sgfx/Cursor.hpp"
+#include "sys/Printer.hpp"
 
-namespace sgfx {
+
+sys::Printer& sys::operator << (sys::Printer& printer, const sgfx::Cursor & a){
+	return printer;
+}
+
+using namespace sgfx;
+
+
 
 Cursor::Cursor() {
    m_cursor = {0};
@@ -59,4 +67,3 @@ void EdgeDetector::draw_edges(
 
 
 
-} /* namespace sgfx */

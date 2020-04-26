@@ -10,6 +10,7 @@
 #include "fs/File.hpp"
 #include "sys/Trace.hpp"
 #include "var/Data.hpp"
+#include "sys/Printer.hpp"
 
 #if !defined __link
 #include <reent.h>
@@ -193,6 +194,107 @@ int Reference::save(
 	return 0;
 }
 
+sys::Printer& sys::operator << (sys::Printer& printer, const var::Reference & a){
+	u32 o_flags = printer.o_flags();
+	const s8 * ptrs8 = a.to_const_s8();
+	const s16 * ptrs16 = a.to_const_s16();
+	const s32 * ptrs32 = a.to_const_s32();
+	const u8 * ptru8 = a.to_const_u8();
+	const u16 * ptru16 = a.to_const_u16();
+	const u32 * ptru32 = a.to_const_u32();
+
+	int s;
+	if( o_flags & sys::Printer::print_32 ){
+		s = a.size() / 4;
+	} else if( o_flags & sys::Printer::print_16 ){
+		s = a.size() / 2;
+	} else if( o_flags & sys::Printer::print_blob ){
+		s = (a.size()+15) / 16;
+	} else {
+		s = a.size();
+	}
+
+	int i;
+	u32 bytes_printed = 0;
+	var::String data_string;
+
+	for(i=0; i < s; i++){
+		if( o_flags & sys::Printer::print_hex ){
+			if( o_flags & sys::Printer::print_32 ){
+				data_string << var::String().format(F32X, ptru32[i]);
+			} else if( o_flags & sys::Printer::print_16 ){
+				data_string << var::String().format("%X", ptru16[i]);
+			} else if( o_flags & sys::Printer::print_blob ){
+				for(u32 j=0; j < 16; j++){
+					data_string << var::String().format("%02X", ptru8[i*16+j]);
+					if( j < 15 ){
+						data_string << " ";
+					}
+					bytes_printed++;
+					if( bytes_printed == a.size() ){
+						break;
+					}
+				}
+			} else {
+				data_string << var::String().format("%X", ptru8[i]);
+			}
+			data_string << " ";
+		}
+		if( o_flags & sys::Printer::print_unsigned ){
+			if( o_flags & sys::Printer::print_32 ){
+				data_string << var::String().format(F32U, ptru32[i]);
+			} else if( o_flags & sys::Printer::print_16 ){
+				data_string << var::String().format("%u", ptru16[i]);
+			} else if( o_flags & sys::Printer::print_blob ){
+				for(u32 j=0; j < 16; j++){
+					data_string << var::String().format("%u", ptru8[i*16+j]);
+					if( j < 15 ){
+						data_string << " ";
+					}
+				}
+			} else {
+				data_string << var::String().format("%u", ptru8[i]);
+			}
+			data_string << " ";
+		}
+		if( o_flags & sys::Printer::print_signed ){
+			if( o_flags & sys::Printer::print_32 ){
+				data_string << var::String().format(F32D, ptrs32[i]);
+			} else if( o_flags & sys::Printer::print_16 ){
+				data_string << var::String().format("%d", ptrs16[i]);
+			} else if( o_flags & sys::Printer::print_blob ){
+				for(u32 j=0; j < 16; j++){
+					data_string << var::String().format("%d", ptru8[i*16+j]);
+					if( j < 15 ){
+						data_string << " ";
+					}
+				}
+			} else {
+				data_string << var::String().format("%d", ptrs8[i]);
+			}
+			data_string << " ";
+		}
+		if( o_flags & sys::Printer::print_char ){
+			if( ptru8[i] == '\n' ){
+				data_string << (" \\n");
+			} else if( ptru8[i] == '\r' ){
+				data_string << (" \\r");
+			} else if( ptru8[i] == 0 ){
+				data_string << (" null");
+			} else if( ptru8[i] < 128){
+				data_string << var::String().format(" %c", ptru8[i]);
+			}
+		}
+
+		printer.print(printer.verbose_level(),
+				var::String().format("[%04d]", i).cstring(),
+				data_string.cstring()
+				);
+		data_string.clear();
+	}
+
+	return printer;
+}
 
 
 

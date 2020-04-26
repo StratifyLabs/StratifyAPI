@@ -47,7 +47,7 @@ public:
 
 	JsonValue(json_t * value);
 	JsonValue(const JsonValue & value);
-	JsonValue & operator=(const JsonValue & value);
+	JsonValue& operator=(const JsonValue & value);
 	~JsonValue();
 
 	JsonValue(JsonValue && a);
@@ -68,11 +68,6 @@ public:
 	operator JsonArray&(){
 		return to_array();
 	}
-
-	operator var::String() const {
-		return to_string();
-	}
-
 
 	/*! \details Returns true if the value is valid.
 	  *
@@ -605,5 +600,12 @@ private:
 };
 
 }
+
+namespace sys {
+class Printer;
+Printer & operator << (Printer& printer, const var::JsonValue & a);
+Printer & print_value(Printer& printer, const var::JsonValue & a, const var::String& key);
+}
+
 
 #endif // SAPI_VAR_JSON_HPP_

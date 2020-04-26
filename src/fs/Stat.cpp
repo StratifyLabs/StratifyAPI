@@ -5,8 +5,28 @@
 #endif
 
 #include "fs/Stat.hpp"
+#include "sys/Printer.hpp"
 
 using namespace fs;
+
+
+sys::Printer& operator << (sys::Printer& printer, const fs::Stat & a){
+	var::String type;
+	if( a.is_directory() ){ type = "directory"; }
+	if( a.is_file() ){ type = "file"; }
+	if( a.is_device() ){ type = "device"; }
+	if( a.is_block_device() ){ type = "block device"; }
+	if( a.is_character_device() ){ type = "character device"; }
+	if( a.is_socket() ){ type = "socket"; }
+	printer.key("type", type);
+	if( a.is_file() ){
+		printer.key("size", "%ld", a.size());
+	}
+	printer.key("mode", "0%o", a.permissions().permissions() & 0777);
+
+	return printer;
+}
+
 #if defined __link
 Stat::Stat(bool is_local) {
 	memset(&m_stat, 0, sizeof(m_stat));

@@ -237,6 +237,10 @@ private:
 };
 
 
+class Printer;
+Printer& operator << (Printer& printer, const sys::TaskInfo & a);
+
 }
+
 
 #endif // SAPI_SYS_TASK_HPP
