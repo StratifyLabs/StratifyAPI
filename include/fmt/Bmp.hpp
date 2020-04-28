@@ -74,7 +74,7 @@ public:
 	static int create_appfs(const var::String & name, s32 width, s32 height, u16 planes, u16 bits_per_pixel, char * img, u32 nbyte);
 
 	/*! \details Moves file pointer to the start of the bitmap data. */
-	void rewind(){ seek(Location(m_offset), SET); }
+	void rewind(){ seek(Location(m_offset), whence_set); }
 
 	/*! \details Seeks the file to the data at the specified row. */
 	int seek_row(s32 y) const;
@@ -109,8 +109,8 @@ public:
 		u16 bits_per_pixel;
 	} bmp_dib_t;
 
-	enum {
-		SIGNATURE = 0x4D42
+	enum misc {
+		misc_signature = 0x4D42
 	};
 	/*! \endcond */
 

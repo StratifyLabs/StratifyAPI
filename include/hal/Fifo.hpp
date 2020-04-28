@@ -16,13 +16,13 @@ class Fifo;
 class FifoFlags {
 public:
 	enum flags {
-		SET_WRITEBLOCK = FIFO_FLAG_SET_WRITEBLOCK,
-		IS_OVERFLOW = FIFO_FLAG_IS_OVERFLOW,
-		IS_NOTIFY_WRITE = FIFO_FLAG_NOTIFY_WRITE,
-		IS_NOTIFY_READ = FIFO_FLAG_NOTIFY_READ,
-		INIT = FIFO_FLAG_INIT,
-		EXIT = FIFO_FLAG_EXIT,
-		FLUSH = FIFO_FLAG_FLUSH
+		flag_set_writeblock = FIFO_FLAG_SET_WRITEBLOCK,
+		flag_is_overflow = FIFO_FLAG_IS_OVERFLOW,
+		flag_is_notify_write = FIFO_FLAG_NOTIFY_WRITE,
+		flag_is_notify_read = FIFO_FLAG_NOTIFY_READ,
+		flag_initialize = FIFO_FLAG_INIT,
+		flag_exit = FIFO_FLAG_EXIT,
+		flag_flush = FIFO_FLAG_FLUSH
 	};
 };
 

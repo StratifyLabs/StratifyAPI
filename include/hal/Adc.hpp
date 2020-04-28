@@ -13,19 +13,19 @@ class AdcFlags {
 public:
 
 	enum flags {
-		SET_CONVERTER /*! See ADC_FLAG_SET_CONVERTER */ = ADC_FLAG_SET_CONVERTER,
-		IS_LEFT_JUSTIFIED /*! See ADC_FLAG_IS_LEFT_JUSTIFIED */ = ADC_FLAG_IS_LEFT_JUSTIFIED,
-		IS_RIGHT_JUSTIFIED /*! Set to specify right justified data */ = ADC_FLAG_IS_RIGHT_JUSTIFIED,
-		SET_MASTER = ADC_FLAG_SET_MASTER /*! Used with MCUs that have more than one ADC that can operate in master/slave mode */,
-		SET_SLAVE = ADC_FLAG_SET_SLAVE /*! Used with MCUs that have more than one ADC that can operate in master/slave mode */,
-		IS_TRIGGER_TMR = ADC_FLAG_IS_TRIGGER_TMR /*! Used to trigger the ADC read on a timer event */,
-		IS_TRIGGER_EINT = ADC_FLAG_IS_TRIGGER_EINT /*! Used to trigger the ADC read on a external interrupt */,
-		SET_CHANNELS = ADC_FLAG_SET_CHANNELS /*! Configure the channels withouth changing ADC settings */,
-		IS_SCAN_MODE = ADC_FLAG_IS_SCAN_MODE /*! ADC will read every enabled channel when reading rather than the channel based on the location value */,
-		IS_TRIGGER_EINT_EDGE_RISING /*! Trigger the sample on the rising edge */ = ADC_FLAG_IS_TRIGGER_EINT_EDGE_RISING,
-		IS_TRIGGER_EINT_EDGE_FALLING /*! Trigger the sample on the falling edge */ = ADC_FLAG_IS_TRIGGER_EINT_EDGE_FALLING,
-		IS_GROUP /*! Set channel as part of a group */ = ADC_FLAG_IS_GROUP,
-		IS_CONTINOUS_CONVERSION /*! Start the next conversion as soon as the previous conversion completes */ = ADC_FLAG_IS_CONTINOUS_CONVERSION
+		flag_set_converter /*! See ADC_FLAG_SET_CONVERTER */ = ADC_FLAG_SET_CONVERTER,
+		flag_is_left_justified /*! See ADC_FLAG_IS_LEFT_JUSTIFIED */ = ADC_FLAG_IS_LEFT_JUSTIFIED,
+		flag_is_right_justified /*! Set to specify right justified data */ = ADC_FLAG_IS_RIGHT_JUSTIFIED,
+		flag_set_master = ADC_FLAG_SET_MASTER /*! Used with MCUs that have more than one ADC that can operate in master/slave mode */,
+		flag_set_slave = ADC_FLAG_SET_SLAVE /*! Used with MCUs that have more than one ADC that can operate in master/slave mode */,
+		flag_is_trigger_tmr = ADC_FLAG_IS_TRIGGER_TMR /*! Used to trigger the ADC read on a timer event */,
+		flag_is_trigger_eint = ADC_FLAG_IS_TRIGGER_EINT /*! Used to trigger the ADC read on a external interrupt */,
+		flag_set_channels = ADC_FLAG_SET_CHANNELS /*! Configure the channels withouth changing ADC settings */,
+		flag_is_scan_mode = ADC_FLAG_IS_SCAN_MODE /*! ADC will read every enabled channel when reading rather than the channel based on the location value */,
+		flag_is_trigger_eint_edge_rising /*! Trigger the sample on the rising edge */ = ADC_FLAG_IS_TRIGGER_EINT_EDGE_RISING,
+		flag_is_trigger_eint_edge_falling /*! Trigger the sample on the falling edge */ = ADC_FLAG_IS_TRIGGER_EINT_EDGE_FALLING,
+		flag_is_group /*! Set channel as part of a group */ = ADC_FLAG_IS_GROUP,
+		flag_is_continous_conversion /*! Start the next conversion as soon as the previous conversion completes */ = ADC_FLAG_IS_CONTINOUS_CONVERSION
 
 	};
 };

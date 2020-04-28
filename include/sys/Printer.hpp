@@ -3,12 +3,8 @@
 #define SAPI_SYS_PRINTER_HPP_
 
 #include <cstdarg>
-#include "../api/SysObject.hpp"
-#include "../var/ConstString.hpp"
-#include "../sys/Appfs.hpp"
-#include "../sys/Trace.hpp"
 #include "../sys/ProgressCallback.hpp"
-#include "../var/Vector.hpp"
+#include "../var/String.hpp"
 
 #if defined __win32
 #undef ERROR
@@ -18,87 +14,11 @@ namespace api {
 class Result;
 }
 
-namespace var {
-class DataInfo;
-class Data;
-class Datum;
-class String;
-class Tokenizer;
-class JsonObject;
-class JsonArray;
-class JsonValue;
-template<typename T> class Vector;
-template<typename T> class Ring;
-}
-
-namespace chrono{
-class ClockTime;
-class Microseconds;
-class Time;
-}
-
-namespace sgfx{
-class Point;
-class Area;
-class Region;
-class Bitmap;
-class Pen;
-class Vector;
-class Cursor;
-class VectorPath;
-class VectorPathDescription;
-}
-
-namespace draw {
-class DrawingPoint;
-class DrawingArea;
-class DrawingRegion;
-class DrawingAttributes;
-}
-
-
-namespace hal{
-class I2CAttributes;
-class UartAttributes;
-class DriveInfo;
-}
-
-namespace fs {
-class Stat;
-}
-
 namespace sys {
-
-class TaskInfo;
-class SysInfo;
-class Cli;
-class Info;
-class AppfsInfo;
 
 struct PrinterFlags {
 	/*! \details Number printing flags. */
-	enum {
-		PRINT_HEX /*! Print hex data */ = (1<<0),
-		PRINT_UNSIGNED /*! Print unsigned integers */ = (1<<1),
-		PRINT_SIGNED /*! Printd signed integers */ = (1<<2),
-		PRINT_CHAR /*! Print Characters */ = (1<<3),
-		PRINT_8 /*! Print as 8 bit values (default) */ = 0,
-		PRINT_16 /*! Print as 16 bit values */ = (1<<4),
-		PRINT_32 /*! Print as 32 bit values */ = (1<<5),
-		PRINT_SIMPLE_PROGRESS /*! Just print # for progress */ = (1<<6),
-		PRINT_BOLD_KEYS /*! Print keys in bold if supported */ = (1<<7),
-		PRINT_BOLD_VALUES /*! Print keys in bold if supported */ = (1<<8),
-		PRINT_BOLD_OBJECTS /*! Print keys in bold if supported */ = (1<<9),
-		PRINT_BOLD_ARRAYS /*! Print keys in bold if supported */ = (1<<10),
-		PRINT_GREEN_VALUES = (1<<11),
-		PRINT_RED_VALUES = (1<<12),
-		PRINT_YELLOW_VALUES = (1<<13),
-		PRINT_RED_ERRORS = (1<<14),
-		PRINT_YELLOW_WARNINGS = (1<<15),
-		PRINT_CYAN_KEYS = (1<<16),
-		PRINT_YELLOW_KEYS = (1<<17),
-		PRINT_MAGENTA_KEYS = (1<<18),
-		PRINT_BLOB /*! Print Data as a blob */ = (1<<19),
+	enum print_flags {
 		print_hex /*! Print hex data */ = (1<<0),
 		print_unsigned /*! Print unsigned integers */ = (1<<1),
 		print_signed /*! Printd signed integers */ = (1<<2),
@@ -128,15 +48,6 @@ struct PrinterFlags {
 	};
 
 	enum format_type {
-		/*! \cond */
-		FORMAT_NORMAL = 0,
-		FORMAT_BOLD = 1,
-		FORMAT_DIM = 2,
-		FORMAT_UNDERLINE = 4,
-		FORMAT_BLINK = 5,
-		FORMAT_INVERTED = 7,
-		FORMAT_HIDDEN = 8,
-		/*! \endcond */
 		format_normal = 0,
 		format_bold = 1,
 		format_dim = 2,
@@ -147,22 +58,6 @@ struct PrinterFlags {
 	};
 
 	enum color_code {
-		/*! \cond */
-		COLOR_CODE_DEFAULT = 39,
-		COLOR_CODE_BLACK = 30,
-		COLOR_CODE_RED = 31, //RED
-		COLOR_CODE_GREEN = 32, //GREEN
-		COLOR_CODE_YELLOW = 33,
-		COLOR_CODE_BLUE = 34, //BLUE
-		COLOR_CODE_MAGENTA = 35,
-		COLOR_CODE_CYAN = 36, //BLUE | GREEN
-		COLOR_CODE_LIGHT_GRAY = 37,
-		COLOR_CODE_DARK_GRAY = 90,
-		COLOR_CODE_LIGHT_RED = 91,
-		COLOR_CODE_LIGHT_GREEN = 92,
-		COLOR_CODE_LIGHT_YELLOW = 93,
-		COLOR_CODE_LIGHT_BLUE = 94,
-		/*! \endcond */
 		color_code_default = 39,
 		color_code_black = 30,
 		color_code_red = 31, //RED
@@ -181,15 +76,7 @@ struct PrinterFlags {
 
 	/*! \details Filtering levels. */
 	enum verbose_level {
-		/*! \cond */
-		FATAL /*! Prints fatal errors. */,
-		ERROR /*! Prints fatal and error messages. */,
-		WARNING /*! Printers warnings and worse. */,
-		INFO /*! Prints basic info (default setting) plus warning and errors. */,
-		MESSAGE /*! Prints additional messages. */,
-		DEBUG /*! Prints everything. */,
-		/*! \endcond */
-		level_fatal /*! Prints fatal errors. */ = FATAL,
+		level_fatal /*! Prints fatal errors. */,
 		level_error /*! Prints fatal and error messages. */,
 		level_warning /*! Printers warnings and worse. */,
 		level_info /*! Prints basic info (default setting) plus warning and errors. */,
@@ -250,47 +137,8 @@ public:
 
 	void set_color_code(u32 code);
 	void clear_color_code();
-#if defined __win32
-	static unsigned int m_default_color;
-#endif
 
-#if !defined __link
-	Printer & operator << (const var::DataInfo & a);
-#endif
 	Printer & operator << (const api::Result & a);
-	Printer & operator << (const var::Reference & a);
-	Printer & operator << (const var::Datum & a);
-	Printer & operator << (const var::String & a);
-	Printer & operator << (const var::Tokenizer & a);
-	Printer & operator << (const var::JsonObject & a);
-	Printer & operator << (const var::JsonArray & a);
-	Printer & operator << (const var::Vector<var::String> & a);
-	Printer & operator << (const var::Ring<u32> & a);
-	Printer & operator << (const var::Ring<s32> & a);
-	Printer & operator << (const var::Ring<u16> & a);
-	Printer & operator << (const var::Ring<s16> & a);
-	Printer & operator << (const var::Ring<u8> & a);
-	Printer & operator << (const var::Ring<s8> & a);
-	Printer & operator << (const Cli & a);
-	Printer & operator << (const appfs_file_t & a);
-	Printer & operator << (const AppfsFileAttributes & a);
-	Printer & operator << (const TraceEvent & a);
-	Printer & operator << (const sys::SysInfo & a);
-	Printer & operator << (const sys::AppfsInfo & a);
-	Printer & operator << (const sys::TaskInfo & a);
-	Printer & operator << (const fs::Stat & a);
-	Printer & operator << (const sgfx::Bitmap & a);
-	Printer & operator << (const sgfx::Cursor & a);
-	Printer & operator << (const sgfx::Point & a);
-	Printer & operator << (const sgfx::Region & a);
-	Printer & operator << (const sgfx::Area & a);
-	Printer & operator << (const sgfx::Pen & a);
-	Printer & operator << (const sgfx::Vector & a);
-	Printer & operator << (const sgfx::VectorPath & a);
-	Printer & operator << (const sgfx::VectorPathDescription & a);
-	Printer & operator << (const chrono::ClockTime & a);
-	Printer & operator << (const chrono::MicroTime & a);
-	Printer & operator << (const chrono::Time & a);
 	Printer & operator << (s32 a);
 	Printer & operator << (u32 a);
 	Printer & operator << (s16 a);
@@ -300,10 +148,7 @@ public:
 	Printer & operator << (void * a);
 	Printer & operator << (const char * a);
 	Printer & operator << (float a);
-	Printer & operator << (const hal::DriveInfo & a);
-	Printer & operator << (const draw::DrawingPoint & a);
-	Printer & operator << (const draw::DrawingArea & a);
-	Printer & operator << (const draw::DrawingRegion & a);
+
 
 	/*! \details Assign an effective verbose level to this object. */
 	Printer& set_verbose_level(enum verbose_level level){
@@ -427,9 +272,19 @@ public:
 		return m_o_flags;
 	}
 
+	Printer & key(const var::String & key, bool value);
 	Printer & key(const var::String & key, const char * fmt, ...);
 	Printer & key(const var::String & key, const var::String & a);
-	Printer & key(const var::String & key, const var::JsonValue & a);
+	template<class T> Printer& object(
+			const var::String & key,
+			const T& value,
+			enum verbose_level level = level_fatal
+			){
+		print_open_object(level, key.cstring());
+		*this << value;
+		print_close_object();
+		return *this;
+	}
 
 	Printer & open_object(
 			const var::String & key,
@@ -446,7 +301,6 @@ public:
 
 	const var::String terminal_color_code(enum color_code code);
 
-protected:
 
 	virtual void print_open_object(
 			enum verbose_level verbose_level,
@@ -466,10 +320,16 @@ protected:
 			const char * value,
 			bool is_newline = true
 			);
+
+protected:
 	void print_final_color(enum color_code code, const char * snippet);
 	virtual void print_final(const char * fmt, ...);
 
 private:
+
+#if defined __win32
+	static unsigned int m_default_color;
+#endif
 
 	ProgressCallback m_progress_callback;
 	u16 m_progress_width;

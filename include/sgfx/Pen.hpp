@@ -50,15 +50,6 @@ public:
 	using IsFill = arg::Argument<bool, struct PenIsFillTag>;
 
 	enum flags {
-
-		/*! \cond */
-		IS_SOLID /*! Draw solid */ = SG_PEN_FLAG_IS_SOLID,
-		IS_INVERT /*! Draw Invert (XOR) */ = SG_PEN_FLAG_IS_INVERT,
-		IS_BLEND /*! Draw Blend (OR) */ = SG_PEN_FLAG_IS_BLEND,
-		IS_ERASE /*! Draw Erase (NOT AND) */ = SG_PEN_FLAG_IS_ERASE,
-		IS_FILL /*! Draw Icon with fill points */ = SG_PEN_FLAG_IS_FILL,
-		/*! \endcond */
-
 		flag_is_solid /*! Draw solid */ = SG_PEN_FLAG_IS_SOLID,
 		flag_is_invert /*! Draw Invert (XOR) */ = SG_PEN_FLAG_IS_INVERT,
 		flag_is_blend /*! Draw Blend (OR) */ = SG_PEN_FLAG_IS_BLEND,

@@ -1209,7 +1209,7 @@ u32 Link::validate_os_image_id_with_connected_bootloader(
 
 	if( source_image.seek(
 				fs::File::Location(BOOTLOADER_HARDWARE_ID_OFFSET),
-				File::SET
+				File::whence_set
 				) < 0 ){
 		m_error_message = "Failed to seek to bootloader image hardware ID value";
 		return 0;
@@ -1223,7 +1223,7 @@ u32 Link::validate_os_image_id_with_connected_bootloader(
 		return 0;
 	}
 
-	if( source_image.seek(fs::File::Location(0), File::SET) < 0 ){
+	if( source_image.seek(fs::File::Location(0), File::whence_set) < 0 ){
 		m_error_message = "Failed to seek bootloader image start";
 		return 0;
 	}
@@ -1330,7 +1330,7 @@ int Link::install_os(const fs::File & image,
 	}
 
 
-	if( image.seek(File::Location(0), File::SET) < 0 ){
+	if( image.seek(File::Location(0), File::whence_set) < 0 ){
 		m_error_message = "Failed to seek bootloader image start";
 		return -1;
 	}
@@ -1404,7 +1404,7 @@ int Link::install_os(const fs::File & image,
 
 		if ( is_verify.argument() == true ){
 
-			image.seek(File::Location(0), File::SET);
+			image.seek(File::Location(0), File::whence_set);
 			loc = start_address;
 			m_progress = 0;
 
@@ -1597,7 +1597,7 @@ int Link::update_os(
 
 	if( image.seek(
 				File::Location(BOOTLOADER_HARDWARE_ID_OFFSET),
-				File::SET
+				File::whence_set
 				) < 0 ){
 		m_error_message = "Failed to seek to bootloader image hardware ID value";
 		return -1;
@@ -1611,7 +1611,7 @@ int Link::update_os(
 		return -1;
 	}
 
-	if( image.seek(File::Location(0), File::SET) < 0 ){
+	if( image.seek(File::Location(0), File::whence_set) < 0 ){
 		m_error_message = "Failed to seek bootloader image start";
 		return -1;
 	}
@@ -1693,7 +1693,7 @@ int Link::update_os(
 
 		if ( is_verify.argument() == true ){
 
-			image.seek(File::Location(0), File::SET);
+			image.seek(File::Location(0), File::whence_set);
 			loc = startAddr;
 			m_progress = 0;
 
@@ -1820,7 +1820,7 @@ int Link::install_app(
 		bytes_total = application_image.size();
 		bytes_cumm = 0;
 		//make sure to instal from the beginning -- file is already open
-		application_image.seek( File::Location(0), File::SET );
+		application_image.seek( File::Location(0), File::whence_set );
 
 		do {
 			memset(attr.buffer, 0xFF, APPFS_PAGE_SIZE);

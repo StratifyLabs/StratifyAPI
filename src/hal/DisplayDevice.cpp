@@ -138,7 +138,7 @@ int DisplayDevice::set_window(const sgfx::Region & region) const {
 
 int DisplayDevice::write(const sgfx::Bitmap & bitmap) const {
 	return write(
-				*bitmap.bmap()
+				var::Reference(*bitmap.bmap())
 				);
 }
 

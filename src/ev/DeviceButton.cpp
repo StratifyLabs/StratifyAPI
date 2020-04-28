@@ -105,7 +105,7 @@ void DeviceButton::update(){
 	u32 o_flags = m_status.o_flags;
 	if( (seek(
 			  m_location*sizeof(m_status)
-			  ) >= 0) && (read(m_status) == sizeof(m_status)) ){
+				) >= 0) && (read(var::Reference(m_status)) == sizeof(m_status)) ){
 		//keep track of the flags because the driver will clear the flags before the EventLoop does
 		m_status.o_flags |= o_flags;
 	} else {
@@ -116,7 +116,7 @@ void DeviceButton::update(){
 
 void DeviceButton::reset(){
 	seek(0);
-	while( read(m_status) == sizeof(m_status) ){
+	while( read(var::Reference(m_status)) == sizeof(m_status) ){
 		;
 	}
 	memset(&m_status, 0, sizeof(m_status));

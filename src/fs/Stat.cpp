@@ -5,8 +5,28 @@
 #endif
 
 #include "fs/Stat.hpp"
+#include "sys/Printer.hpp"
 
 using namespace fs;
+
+
+sys::Printer& operator << (sys::Printer& printer, const fs::Stat & a){
+	var::String type;
+	if( a.is_directory() ){ type = "directory"; }
+	if( a.is_file() ){ type = "file"; }
+	if( a.is_device() ){ type = "device"; }
+	if( a.is_block_device() ){ type = "block device"; }
+	if( a.is_character_device() ){ type = "character device"; }
+	if( a.is_socket() ){ type = "socket"; }
+	printer.key("type", type);
+	if( a.is_file() ){
+		printer.key("size", "%ld", a.size());
+	}
+	printer.key("mode", "0%o", a.permissions().permissions() & 0777);
+
+	return printer;
+}
+
 #if defined __link
 Stat::Stat(bool is_local) {
 	memset(&m_stat, 0, sizeof(m_stat));
@@ -26,7 +46,7 @@ bool Stat::is_directory() const {
 		return (m_stat.st_mode & S_IFMT) == S_IFDIR;
 	}
 #endif
-	return (m_stat.st_mode & Stat::FORMAT) == Stat::DIRECTORY;
+	return (m_stat.st_mode & Stat::mode_format) == Stat::mode_directory;
 }
 
 bool Stat::is_file() const {
@@ -35,7 +55,7 @@ bool Stat::is_file() const {
 		return (m_stat.st_mode & S_IFMT) == S_IFREG;
 	}
 #endif
-	return (m_stat.st_mode & Stat::FORMAT) == Stat::REGULAR;
+	return (m_stat.st_mode & Stat::mode_format) == Stat::mode_regular;
 }
 
 bool Stat::is_device() const {
@@ -49,7 +69,7 @@ bool Stat::is_block_device() const {
 		return (m_stat.st_mode & S_IFMT) == S_IFBLK;
 	}
 #endif
-	return (m_stat.st_mode & (Stat::FORMAT)) == Stat::BLOCK;
+	return (m_stat.st_mode & (Stat::mode_format)) == Stat::mode_block;
 }
 
 bool Stat::is_character_device() const {
@@ -58,7 +78,7 @@ bool Stat::is_character_device() const {
 		return (m_stat.st_mode & S_IFMT) == S_IFCHR;
 	}
 #endif
-	return (m_stat.st_mode & (Stat::FORMAT)) == Stat::CHARACTER;
+	return (m_stat.st_mode & (Stat::mode_format)) == Stat::mode_character;
 }
 
 bool Stat::is_socket() const {
@@ -71,7 +91,7 @@ bool Stat::is_socket() const {
 #endif
 	}
 #endif
-	return (m_stat.st_mode & Stat::FORMAT) == Stat::FILE_SOCKET;
+	return (m_stat.st_mode & Stat::mode_format) == Stat::mode_file_socket;
 }
 
 

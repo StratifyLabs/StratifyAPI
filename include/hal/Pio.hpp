@@ -11,25 +11,25 @@ namespace hal {
 class PioFlags {
 public:
 	enum flags {
-		SET_INPUT /*! Sets the pinmask as input */ = PIO_FLAG_SET_INPUT,
-		SET_OUTPUT /*! Sets the pinmask as output */ = PIO_FLAG_SET_OUTPUT,
-		IS_PULLUP /*! When setting as input, enables the pullup */ = PIO_FLAG_IS_PULLUP,
-		IS_PULLDOWN /*! When setting as input, enables the pulldown */ = PIO_FLAG_IS_PULLDOWN,
-		IS_REPEATER /*! When setting as input, enables repeater mode (if available) */ = PIO_FLAG_IS_REPEATER,
-		IS_FLOAT /*! When setting as input, enables floating mode (no pullup or pulldown) */ = PIO_FLAG_IS_FLOAT,
-		IS_SPEED_LOW /*! When setting as output, enables low speed mode */ = PIO_FLAG_IS_SPEED_LOW,
-		IS_SPEED_MEDIUM /*! When setting as output, enables medium speed mode */ = PIO_FLAG_IS_SPEED_MEDIUM,
-		IS_SPEED_HIGH /*! When setting as output, enables high speed mode */ = PIO_FLAG_IS_SPEED_HIGH,
-		IS_SPEED_BLAZING /*! When setting as output, enables blazing speed mode */ = PIO_FLAG_IS_SPEED_BLAZING,
-		IS_OPENDRAIN /*! When setting as output, enables open drain mode */ = PIO_FLAG_IS_OPENDRAIN,
-		IS_HYSTERESIS /*! When setting as input, enables hysteresis */ = PIO_FLAG_IS_HYSTERESIS,
-		IS_DIRONLY /*! When set, only affects the direction withouth setting other attributes */ = PIO_FLAG_IS_DIRONLY,
-		IS_ANALOG /*! When setting as input, sets pin as analog mode */ = PIO_FLAG_IS_ANALOG,
-		IS_INVERT /*! See \ref PIO_FLAG_IS_INVERT */ = PIO_FLAG_IS_INVERT,
-		IS_FILTER /*! See \ref PIO_FLAG_IS_FILTER */ = PIO_FLAG_IS_FILTER,
-		SET /*! Assigns the value of the port to one if the corresponding bit in the pin mask is set. */ = PIO_FLAG_SET,
-		CLEAR /*! Assigns the value of the port to zero if the corresponding bit in the pin mask is set. */ = PIO_FLAG_CLEAR,
-		ASSIGN /*! Assigns the value of the port to the value of the pin mask. */ = PIO_FLAG_ASSIGN
+		flag_set_input /*! Sets the pinmask as input */ = PIO_FLAG_SET_INPUT,
+		flag_set_output /*! Sets the pinmask as output */ = PIO_FLAG_SET_OUTPUT,
+		flag_is_pullup /*! When setting as input, enables the pullup */ = PIO_FLAG_IS_PULLUP,
+		flag_is_pulldown /*! When setting as input, enables the pulldown */ = PIO_FLAG_IS_PULLDOWN,
+		flag_is_repeater /*! When setting as input, enables repeater mode (if available) */ = PIO_FLAG_IS_REPEATER,
+		flag_is_float /*! When setting as input, enables floating mode (no pullup or pulldown) */ = PIO_FLAG_IS_FLOAT,
+		flag_is_speed_low /*! When setting as output, enables low speed mode */ = PIO_FLAG_IS_SPEED_LOW,
+		flag_is_speed_medium /*! When setting as output, enables medium speed mode */ = PIO_FLAG_IS_SPEED_MEDIUM,
+		flag_is_speed_high /*! When setting as output, enables high speed mode */ = PIO_FLAG_IS_SPEED_HIGH,
+		flag_is_speed_blazing /*! When setting as output, enables blazing speed mode */ = PIO_FLAG_IS_SPEED_BLAZING,
+		flag_is_opendrain /*! When setting as output, enables open drain mode */ = PIO_FLAG_IS_OPENDRAIN,
+		flag_is_hysteresis /*! When setting as input, enables hysteresis */ = PIO_FLAG_IS_HYSTERESIS,
+		flag_is_direction_only /*! When set, only affects the direction withouth setting other attributes */ = PIO_FLAG_IS_DIRONLY,
+		flag_is_analog /*! When setting as input, sets pin as analog mode */ = PIO_FLAG_IS_ANALOG,
+		flag_is_invert /*! See \ref PIO_FLAG_IS_INVERT */ = PIO_FLAG_IS_INVERT,
+		flag_is_filter /*! See \ref PIO_FLAG_IS_FILTER */ = PIO_FLAG_IS_FILTER,
+		flag_set /*! Assigns the value of the port to one if the corresponding bit in the pin mask is set. */ = PIO_FLAG_SET,
+		flag_clear /*! Assigns the value of the port to zero if the corresponding bit in the pin mask is set. */ = PIO_FLAG_CLEAR,
+		flag_assign /*! Assigns the value of the port to the value of the pin mask. */ = PIO_FLAG_ASSIGN
 	};
 };
 

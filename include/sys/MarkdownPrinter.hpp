@@ -98,18 +98,18 @@ public:
 	MarkdownPrinter & close_blockquote();
 
 	MarkdownPrinter & open_table(
-			const var::Vector<var::String> & header,
+			const var::StringList & header,
 			enum verbose_level level = level_info
 			);
 
-	MarkdownPrinter & append_table_row(const var::Vector<var::String> & row);
+	MarkdownPrinter & append_table_row(const var::StringList& row);
 	MarkdownPrinter & close_table();
 
 	MarkdownPrinter & open_pretty_table(
-			const var::Vector<var::String> & header
+			const var::StringList & header
 			);
 
-	MarkdownPrinter & append_pretty_table_row(const var::Vector<var::String> & row);
+	MarkdownPrinter & append_pretty_table_row(const var::StringList & row);
 	MarkdownPrinter & close_pretty_table(enum verbose_level level = level_info);
 
 	bool is_pretty_table_valid() const {

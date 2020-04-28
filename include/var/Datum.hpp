@@ -10,21 +10,11 @@
 #include "../chrono/Time.hpp"
 
 namespace var {
-class Datum : public api::InfoObject
-{
+class Datum {
 public:
 	Datum();
 	Datum(const var::String & type, const var::String & key, const var::String & value);
-	Datum(const JsonObject & json_object);
-
-	String & type(){ return m_type; }
-	const String & type() const { return m_type; }
-
-	String & key(){ return m_key; }
-	const String & key() const { return m_key; }
-
-	String & value(){ return m_value; }
-	const String & value() const { return m_value; }
+	explicit Datum(const JsonObject & json_object);
 
 	JsonObject & metadata(){ return m_metadata; }
 	const JsonObject & metadata() const { return m_metadata; }
@@ -42,9 +32,10 @@ public:
 	int save(const fs::File & f) const;
 
 private:
-	String m_type;
-	String m_key;
-	String m_value;
+	API_ACCESS_COMPOUND(Datum, String, type);
+	API_ACCESS_COMPOUND(Datum, String, key);
+	API_ACCESS_COMPOUND(Datum, String, value);
+
 	JsonObject m_metadata;
 	chrono::ClockTime m_clocktime;
 	chrono::Time m_time;
@@ -55,6 +46,11 @@ private:
 
 
 
+}
+
+namespace sys {
+class Printer;
+Printer& operator << (Printer& printer, const var::Datum & a);
 }
 
 

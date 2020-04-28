@@ -3,6 +3,7 @@
 
 
 #include "hal.hpp"
+#include "sys/Printer.hpp"
 #include "chrono/Time.hpp"
 #include "chrono/Timer.hpp"
 #if defined __StratifyOS__
@@ -35,7 +36,20 @@ static char* strptime(
 
 #endif
 
+sys::Printer& sys::operator << (sys::Printer& printer, const chrono::MicroTime & a){
+	printer.key("duration", var::String::number(a.microseconds(), F32U "us"));
+	return printer;
+}
+
+sys::Printer& sys::operator << (sys::Printer& printer, const chrono::Time & a){
+	printer.key("time", F32U, a.time());
+	return printer;
+}
+
 using namespace chrono;
+
+
+
 
 Microseconds::Microseconds(const Timer & timer){
 	m_value_microseconds = timer.microseconds();

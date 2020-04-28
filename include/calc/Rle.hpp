@@ -93,10 +93,10 @@ public:
 	int read(void * buf, int nbyte);
 
 private:
-	enum {
-		BUF_SIZE = 256
+	enum misc {
+		misc_buffer_size = 256
 	};
-	char buf[BUF_SIZE];
+	char buf[misc_buffer_size];
 };
 
 class RleAppfs : public Rle, public sys::Appfs {

@@ -502,4 +502,13 @@ private:
 
 }
 
+namespace sys {
+class Printer;
+Printer & operator << (Printer& printer, const sgfx::Bitmap & a);
+Printer & operator << (Printer& printer, const sgfx::Point & a);
+Printer & operator << (Printer& printer, const sgfx::Region & a);
+Printer & operator << (Printer& printer, const sgfx::Area & a);
+Printer & operator << (Printer& printer, const sgfx::Pen & a);
+}
+
 #endif /* SAPI_SGFX_BITMAP_HPP_ */

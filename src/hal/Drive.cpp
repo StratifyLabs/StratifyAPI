@@ -1,5 +1,21 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "hal/Drive.hpp"
+#include "sys/Printer.hpp"
+
+sys::Printer& sys::operator << (sys::Printer& printer, const hal::DriveInfo & a){
+	printer.key("addressableSize", "%ld", a.addressable_size());
+	printer.key("eraseBlockSize", "%ld", a.erase_block_size());
+	printer.key("eraseBlockTime", "%ldus", a.erase_block_time().microseconds());
+	printer.key("eraseDeviceTime", "%ldms", a.erase_device_time().milliseconds());
+	printer.key("frequency", "%ld", a.frequency());
+	printer.key("events", "0x%lX", a.o_events());
+	printer.key("flags", "0x%lX", a.o_flags());
+	printer.key("pageProgramSize", "%ld", a.page_program_size());
+	printer.key("writeBlockCount", "%ld", a.write_block_count());
+	printer.key("writeBlockSize", "%ld", a.write_block_size());
+	return printer;
+}
+
 
 using namespace hal;
 
@@ -110,5 +126,6 @@ int Drive::set_attributes(const drive_attr_t & attributes) const {
 				IoConstArgument(&attributes)
 				);
 }
+
 
 

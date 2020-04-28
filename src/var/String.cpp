@@ -14,6 +14,17 @@
 
 using namespace var;
 
+sys::Printer& sys::operator << (sys::Printer& printer, const var::String & a){
+	return printer.key(nullptr, a.cstring());
+}
+
+Printer& sys::operator << (Printer& printer, const var::StringList & a){
+	for(u32 i=0; i < a.count(); i++){
+		printer.key(nullptr, a.at(i).cstring());
+	}
+	return printer;
+}
+
 String String::m_empty_string;
 
 String var::operator+ (const char*   lhs, const String& rhs){

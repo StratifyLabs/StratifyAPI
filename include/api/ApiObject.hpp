@@ -159,6 +159,32 @@
 namespace api {
 
 
+#define API_ACCESS_FUNDAMENTAL(c, t, v, iv) \
+	public: \
+	t v() const { return m_##v; } \
+	c& set_##v(t value){ m_##v = value; return *this; } \
+	private: \
+	t m_##v = iv
+
+#define API_READ_ACCESS_FUNDAMENTAL(c, t, v, iv) \
+	public: \
+	t v() const { return m_##v; } \
+	private: \
+	t m_##v = iv
+
+#define API_ACCESS_COMPOUND(c, t, v) \
+	public: \
+	const t& v() const { return m_##v; } \
+	t& v(){ return m_##v; } \
+	private: \
+	t m_##v
+
+#define API_READ_ACCESS_COMPOUND(c, t, v) \
+	public: \
+	const t& v() const { return m_##v; } \
+	private: \
+	t m_##v
+
 #define API_OR_NAMED_FLAGS_OPERATOR(TYPE, FLAG_NAME) \
 	inline enum TYPE::FLAG_NAME operator |( \
 	const enum TYPE::FLAG_NAME a, \
@@ -248,7 +274,7 @@ public:
 	 * ```
 		*
 		*/
-	static const char * version(){ return "3.14.0"; }
+	static const char * version(){ return "3.15.0"; }
 
 	/*! \details Returns a c-style string pointer
 	 * to the git hash used to build the Stratify API.

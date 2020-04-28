@@ -18,7 +18,7 @@ int Svic::parse_icons(){
 
 	if( fileno() >= 0 ){
 
-		int cursor = seek(Location(0), fs::File::CURRENT);
+		int cursor = seek(Location(0), fs::File::whence_current);
 
 		sg_vector_icon_header_t header;
 		while( read(
@@ -31,11 +31,11 @@ int Svic::parse_icons(){
 			seek(Location(
 					  header.count * sizeof(sg_vector_path_description_t)
 					  ),
-				  fs::File::CURRENT);
+					fs::File::whence_current);
 		}
 
 		seek(Location(cursor),
-			  fs::File::SET);
+				fs::File::whence_set);
 	}
 
 	return 0;
@@ -86,7 +86,7 @@ int Svic::append(
 	header.count = list.count();
 	header.list_offset = seek(
 				Location(0),
-				fs::File::CURRENT
+				fs::File::whence_current
 				) + sizeof(header);
 	if( write(
 			 &header,

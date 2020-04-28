@@ -193,6 +193,13 @@ private:
 
 };
 
+
 }
+
+namespace sys {
+class Printer;
+Printer& operator << (Printer& printer, const hal::DriveInfo & a);
+}
+
 
 #endif // SAPI_HAL_DRIVE_HPP_

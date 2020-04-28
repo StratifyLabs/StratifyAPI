@@ -34,20 +34,15 @@ class SocketAddress;
 
 class SocketFlags {
 public:
-   using Node = arg::Argument< const var::String &, struct SocketFlagsNodeTag >;
-   using Server = arg::Argument< const var::String &, struct SocketFlagsServerTag >;
-   using SourceSocketAddress = arg::Argument< const inet::SocketAddress&, struct SocketFlagsSourceSocketAddressTag >;
-   using DestinationSocketAddress = arg::Argument< inet::SocketAddress&, struct SocketFlagsDestinationSocketAddressTag >;
-   using ListenBacklogCount = arg::Argument< int, struct SocketFlagsListenBacklogCountTag >;
+	using Node = arg::Argument< const var::String &, struct SocketFlagsNodeTag >;
+	using Server = arg::Argument< const var::String &, struct SocketFlagsServerTag >;
+	using SourceSocketAddress = arg::Argument< const inet::SocketAddress&, struct SocketFlagsSourceSocketAddressTag >;
+	using DestinationSocketAddress = arg::Argument< inet::SocketAddress&, struct SocketFlagsDestinationSocketAddressTag >;
+	using ListenBacklogCount = arg::Argument< int, struct SocketFlagsListenBacklogCountTag >;
 
 
 	/*! \details Enumerates the socket address family options. */
 	enum family {
-		/*! \cond */
-		FAMILY_NONE,
-		FAMILY_INET /*! IPV4 */ = AF_INET,
-		FAMILY_INET6 /*! IPV6 */ = AF_INET6,
-		/*! \endcond */
 		family_none = 0,
 		family_inet /*! IPV4 */ = AF_INET,
 		family_inet6 /*! IPV6 */ = AF_INET6
@@ -55,12 +50,6 @@ public:
 
 	/*! \details Enumerates the socket address type options. */
 	enum type {
-		/*! \cond */
-		TYPE_NONE,
-		TYPE_RAW /*! Raw socket data */ = SOCK_RAW,
-		TYPE_STREAM /*! Streaming socket data */ = SOCK_STREAM,
-		TYPE_DGRAM /*! Datagram socket data */ = SOCK_DGRAM,
-		/*! \endcond */
 		type_none = 0,
 		type_raw /*! Raw socket data */ = SOCK_RAW,
 		type_stream /*! Streaming socket data */ = SOCK_STREAM,
@@ -69,22 +58,12 @@ public:
 
 	/*! \details Enumerates the socket address protocol options. */
 	enum protocol {
-		/*! \cond */
-		PROTOCOL_RAW /*! Raw protocol */ = IPPROTO_RAW,
-		PROTOCOL_TCP /*! TCP Protocol */ = IPPROTO_TCP,
-		PROTOCOL_UDP /*! UDP Procotol */ = IPPROTO_UDP,
-		PROTOCOL_ICMP /*! ICMP Procotol */ = IPPROTO_ICMP,
-		PROTOCOL_ICMP6 = IPPROTO_ICMPV6,
-		PROTOCOL_ICMPV6 /*! ICMPv6 Protocol */ = IPPROTO_ICMPV6,
-		PROTOCOL_IP /*! IP Protocol */ = IPPROTO_IP,
-		/*! \endcond */
 		protocol_raw /*! Raw protocol */ = IPPROTO_RAW,
 		protocol_tcp /*! TCP Protocol */ = IPPROTO_TCP,
 		protocol_udp /*! UDP Procotol */ = IPPROTO_UDP,
 		protocol_icmp /*! ICMP Procotol */ = IPPROTO_ICMP,
-		protocol_icmp6 = IPPROTO_ICMPV6,
-		protocol_icmpv6 /*! ICMPv6 Protocol */ = IPPROTO_ICMPV6,
-		protocol_ip /*! IP Protocol */ = IPPROTO_IP
+		protocol_icmpv6 = IPPROTO_ICMPV6,
+		protocol_ip /*! IP Protocol */ = IPPROTO_IP,
 	};
 
 };
@@ -140,7 +119,12 @@ public:
 	 * @param flags Socket flags (default is none)
 	 *
 	 */
-	SocketAddressInfo(int family = FAMILY_INET, int type = TYPE_STREAM, int protocol = PROTOCOL_TCP, int flags = 0);
+	SocketAddressInfo(
+			int family = family_inet,
+			int type = type_stream,
+			int protocol = protocol_tcp,
+			int flags = 0
+			);
 
 	bool is_valid(){
 		return m_sockaddr.size() > 0;
@@ -214,10 +198,12 @@ public:
 		return a<<24 | b<<16 | c<<8 | d;
 	}
 
-	SocketAddressIpv4(in_addr_t address,
-							u16 port,
-							int protocol = SocketAddressInfo::PROTOCOL_TCP,
-							int type = SocketAddressInfo::TYPE_STREAM){
+	SocketAddressIpv4(
+			in_addr_t address,
+			u16 port,
+			int protocol = SocketAddressInfo::protocol_tcp,
+			int type = SocketAddressInfo::type_stream
+			){
 		m_sockaddr_in.sin_family = AF_INET;
 #if !defined __win32
 		m_sockaddr_in.sin_len = sizeof(struct sockaddr_in);
@@ -246,8 +232,8 @@ class SocketAddress : public SocketFlags {
 public:
 
 	/*!
-	  * \details Constructor to set the sockaddr structure to 0.
-	  */
+		* \details Constructor to set the sockaddr structure to 0.
+		*/
 	SocketAddress(){
 		m_protocol = 0;
 		m_type = 0;
@@ -258,7 +244,7 @@ public:
 	}
 
 	SocketAddress(const SocketAddressIpv4 & ipv4){
-		m_sockaddr.copy_contents(ipv4.m_sockaddr_in);
+		m_sockaddr.copy_contents(var::Reference(ipv4.m_sockaddr_in));
 		m_protocol = ipv4.m_protocol;
 		m_type = ipv4.m_type;
 	}
@@ -271,16 +257,18 @@ public:
 		set_port(port);
 	}
 
-	SocketAddress(const sockaddr_in & ipv4,
-					  int protocol = SocketAddressInfo::PROTOCOL_TCP,
-					  int type = SocketAddressInfo::TYPE_STREAM){
-		m_sockaddr.copy_contents(ipv4);
+	SocketAddress(
+			const sockaddr_in & ipv4,
+			int protocol = SocketAddressInfo::protocol_tcp,
+			int type = SocketAddressInfo::type_stream
+			){
+		m_sockaddr.copy_contents(var::Reference(ipv4));
 		m_protocol = protocol;
 		m_type = type;
 	}
 
 	SocketAddress(const sockaddr_in6 & ipv6){
-		m_sockaddr.copy_contents(ipv6);
+		m_sockaddr.copy_contents(var::Reference(ipv6));
 	}
 
 	void set_port(u16 port);
@@ -305,11 +293,11 @@ public:
 	}
 
 	bool is_ipv4() const {
-		return family() == SocketAddressInfo::FAMILY_INET;
+		return family() == SocketAddressInfo::family_inet;
 	}
 
 	bool is_ipv6() const {
-		return family() == SocketAddressInfo::FAMILY_INET6;
+		return family() == SocketAddressInfo::family_inet6;
 	}
 
 	u16 port() const;
@@ -506,41 +494,41 @@ public:
 	~Socket();
 
 	/*!
-	  * \details Creates a new socket.
-	  *
-	  * @params attributes The Socket Attributes
-	  *
-	  * @return Zero on success
-	  */
+		* \details Creates a new socket.
+		*
+		* @params attributes The Socket Attributes
+		*
+		* @return Zero on success
+		*/
 	virtual int create(const SocketAddress & address);
 
 	/*!
-	  * \details Connects to the server using the SocketAddress
-	  * object passed to create() method.
-	  * @return Less than zero on error or zero on success
-	  */
+		* \details Connects to the server using the SocketAddress
+		* object passed to create() method.
+		* @return Less than zero on error or zero on success
+		*/
 	virtual int connect(const SocketAddress & address);
 
 
 	/*!
-	  * \details Binds and listens to the port for which the socket was created.
-	  * @return Less than zero on error and zero on success
-	  *
-	  * This method will always bind but it will only listen
-	  * when using TCP sockets where listen is applicable.
-	  *
-	  */
+		* \details Binds and listens to the port for which the socket was created.
+		* @return Less than zero on error and zero on success
+		*
+		* This method will always bind but it will only listen
+		* when using TCP sockets where listen is applicable.
+		*
+		*/
 	virtual int bind_and_listen(const SocketAddress & address,
-			ListenBacklogCount backlog = ListenBacklogCount(4)) const;
+															ListenBacklogCount backlog = ListenBacklogCount(4)) const;
 
 
 	virtual int bind(const SocketAddress & address) const;
 
 	/*!
-	  * \details Accepts a socket connection on a socket that is listening.
-	  *
-	  * @return A valid Socket if the operation is successful.
-	  */
+		* \details Accepts a socket connection on a socket that is listening.
+		*
+		* @return A valid Socket if the operation is successful.
+		*/
 	Socket accept(SocketAddress & address) const;
 
 	/*! \details Shuts down the socket.
@@ -577,11 +565,11 @@ public:
 
 
 	/*@brief use for get ip address from recved data in socket
-	  * necceserly set ai_addrlen before use "recvfrom"
-	  * getaddrinfo(use self port)->socket->bind-> read_from
-	  * @param ai_addr - will address info accept
-	  * @param ai_addrlen - write address ip len (IPv4 or IPv6) before use!!!
-	  * */
+		* necceserly set ai_addrlen before use "recvfrom"
+		* getaddrinfo(use self port)->socket->bind-> read_from
+		* @param ai_addr - will address info accept
+		* @param ai_addrlen - write address ip len (IPv4 or IPv6) before use!!!
+		* */
 	int read(
 			var::Reference & data,
 			const SocketAddress & address
@@ -601,13 +589,13 @@ public:
 			) const;
 
 	/*! \brief Writes to the address specified.
-	  *
-	  * @param data The data to write
-	  * @param address The address to write to.
-	  *
-	  * This method implements the socket call sendto().
-	  *
-	  */
+		*
+		* @param data The data to write
+		* @param address The address to write to.
+		*
+		* This method implements the socket call sendto().
+		*
+		*/
 	int write(
 			const var::Reference & data,
 			const SocketAddress & socket_address

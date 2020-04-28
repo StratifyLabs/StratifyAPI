@@ -60,7 +60,7 @@ public:
 	static const sgfx::FontInfo * find_font(
 			const sgfx::FontInfo::Name name,
 			const sgfx::FontInfo::PointSize point_size,
-			const sgfx::FontInfo::Style style = sgfx::FontInfo::Style(sgfx::FontInfo::REGULAR),
+			const sgfx::FontInfo::Style style = sgfx::FontInfo::Style(sgfx::FontInfo::style_regular),
 			const sgfx::FontInfo::IsExactMatch is_exact_match = sgfx::FontInfo::IsExactMatch(false)
 			);
 

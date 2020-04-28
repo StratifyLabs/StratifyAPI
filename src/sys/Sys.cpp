@@ -9,7 +9,54 @@
 
 #include "hal.hpp"
 #include "sys/Sys.hpp"
+#include "sys/Trace.hpp"
+#include "sys/Printer.hpp"
+
 using namespace sys;
+
+Printer& sys::operator << (Printer& printer, const TraceEvent & a){
+	var::String id;
+	chrono::ClockTime clock_time;
+	clock_time = a.timestamp();
+	switch(a.id()){
+		case LINK_POSIX_TRACE_FATAL: id = "fatal"; break;
+		case LINK_POSIX_TRACE_CRITICAL: id = "critical"; break;
+		case LINK_POSIX_TRACE_WARNING: id = "warning"; break;
+		case LINK_POSIX_TRACE_MESSAGE: id = "message"; break;
+		case LINK_POSIX_TRACE_ERROR: id = "error"; break;
+		default: id = "other"; break;
+	}
+	printer.key("timestamp", F32U ".%06ld", clock_time.seconds(), clock_time.nanoseconds()/1000UL);
+	printer.key("id", id);
+	printer.key("thread", "%d", a.thread_id());
+	printer.key("pid", "%d", a.pid());
+	printer.key("programAddress", "0x%lX", a.program_address());
+	printer.key("message", a.message());
+	return printer;
+}
+
+Printer & sys::operator << (Printer& printer, const sys::SysInfo & a){
+	printer.key("name", a.name());
+	printer.key("serialNumber", a.serial_number().to_string());
+	printer.key("hardwareId",  F3208X, a.hardware_id());
+	if( a.name() != "bootloader" ){
+		printer.key("projectId", a.id());
+		if( a.team_id().is_empty() == false ){
+			printer.key("teamId", a.team_id());
+		}
+		printer.key("bspVersion",	a.bsp_version());
+		printer.key("sosVersion",	a.sos_version());
+		printer.key("cpuArchitecture", a.cpu_architecture());
+		printer.key("cpuFrequency", F32D, a.cpu_frequency());
+		printer.key("applicationSignature", F32X, a.application_signature());
+
+		printer.key("bspGitHash",	a.bsp_git_hash());
+		printer.key("sosGitHash",	a.sos_git_hash());
+		printer.key("mcuGitHash",	a.mcu_git_hash());
+	}
+	return printer;
+}
+
 
 SerialNumber::SerialNumber(){
 	memset(&m_serial_number, 0, sizeof(mcu_sn_t));

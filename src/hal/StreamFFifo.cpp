@@ -31,18 +31,18 @@ StreamFFifoInfo StreamFFifo::get_info(){
 
 int StreamFFifo::start(){
 	StreamFFifoAttributes attributes;
-	attributes.set_flags(START);
+	attributes.set_flags(flag_start);
 	return set_attributes(attributes);
 }
 
 int StreamFFifo::stop(){
 	StreamFFifoAttributes attributes;
-	attributes.set_flags(STOP);
+	attributes.set_flags(flag_stop);
 	return set_attributes(attributes);
 }
 
 int StreamFFifo::flush(){
 	StreamFFifoAttributes attributes;
-	attributes.set_flags(FLUSH);
+	attributes.set_flags(flag_flush);
 	return set_attributes(attributes);
 }

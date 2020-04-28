@@ -305,4 +305,13 @@ private:
 
 } /* namespace var */
 
+namespace sys {
+Printer & operator << (Printer& printer, const var::Ring<u32> & a);
+Printer & operator << (Printer& printer, const var::Ring<s32> & a);
+Printer & operator << (Printer& printer, const var::Ring<u16> & a);
+Printer & operator << (Printer& printer, const var::Ring<s16> & a);
+Printer & operator << (Printer& printer, const var::Ring<u8> & a);
+Printer & operator << (Printer& printer, const var::Ring<s8> & a);
+}
+
 #endif /* SAPI_VAR_RING_HPP_ */

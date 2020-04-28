@@ -27,10 +27,10 @@ public:
 
 	using Description = arg::Argument<const var::String &, struct CliDescriptionTag>;
 
-	enum {
-		FORMAT_TEXT,
-		FORMAT_JSON,
-		FORMAT_TOTAL
+	enum format {
+		format_text,
+		format_json,
+		format_total
 	};
 
 	/*! \details Constructs a new object to parse and handle command line interface arguments.
@@ -284,6 +284,9 @@ private:
 
 
 };
+
+Printer & operator << (Printer& printer, const Cli & a);
+
 
 } /* namespace sys */
 

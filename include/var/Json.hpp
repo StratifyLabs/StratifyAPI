@@ -47,7 +47,7 @@ public:
 
 	JsonValue(json_t * value);
 	JsonValue(const JsonValue & value);
-	JsonValue & operator=(const JsonValue & value);
+	JsonValue& operator=(const JsonValue & value);
 	~JsonValue();
 
 	JsonValue(JsonValue && a);
@@ -68,11 +68,6 @@ public:
 	operator JsonArray&(){
 		return to_array();
 	}
-
-	operator var::String() const {
-		return to_string();
-	}
-
 
 	/*! \details Returns true if the value is valid.
 	  *
@@ -374,6 +369,15 @@ public:
 	explicit JsonArray(const var::Vector<u32>& list);
 	explicit JsonArray(const var::Vector<s32>& list);
 
+	template<class T> var::Vector<T> construct_list() const {
+		var::Vector<T> result;
+		result.reserve(count());
+		for(u32 i=0; i < count(); i++){
+			result.push_back(at(i).to_object());
+		}
+		return result;
+	}
+
 	/*! \details Returns true if the object is empty. */
 	bool is_empty() const { return count() == 0; }
 
@@ -474,7 +478,7 @@ public:
 	 * @param value JsonValue in memory that this class will refer to.
 	 *
 	 */
-	JsonDocument(u32 o_flags = INDENT_3){
+	JsonDocument(u32 o_flags = option_indent3){
 		set_flags(o_flags);
 	}
 
@@ -487,7 +491,7 @@ public:
 	  * \param path The path to the file
 	  * \return Zero on success
 	  */
-	JsonValue load(const fs::File::Source file);
+	JsonValue load(fs::File& file);
 
 	/*!
 	  * \details Loads a JSON value from a data object
@@ -562,26 +566,26 @@ public:
 			void * context
 			) const;
 
-	enum flags {
-		REJECT_DUPLICATES = JSON_REJECT_DUPLICATES,
-		DISABLE_EOF_CHECK = JSON_DISABLE_EOF_CHECK,
-		DECODE_ANY = JSON_DECODE_ANY,
-		DECODE_INT_AS_REAL = JSON_DECODE_INT_AS_REAL,
-		ALLOW_NULL = JSON_ALLOW_NUL,
-		INDENT_1 = JSON_INDENT(1),
-		INDENT_2 = JSON_INDENT(2),
-		INDENT_3 = JSON_INDENT(3),
-		INDENT_4 = JSON_INDENT(4),
-		INDENT_5 = JSON_INDENT(5),
-		INDENT_6 = JSON_INDENT(6),
-		INDENT_7 = JSON_INDENT(7),
-		INDENT_8 = JSON_INDENT(8),
-		COMPACT = JSON_COMPACT,
-		ENSURE_ASCII = JSON_ENSURE_ASCII,
-		ENCODE_ANY = JSON_ENCODE_ANY,
-		PRESERVE_ORDER = JSON_PRESERVE_ORDER,
-		ESCAPE_SLASH = JSON_ESCAPE_SLASH,
-		EMBED = JSON_EMBED
+	enum options {
+		option_reject_duplicates = JSON_REJECT_DUPLICATES,
+		option_disable_eof_check = JSON_DISABLE_EOF_CHECK,
+		option_decode_any = JSON_DECODE_ANY,
+		option_decode_int_as_real = JSON_DECODE_INT_AS_REAL,
+		option_allow_null = JSON_ALLOW_NUL,
+		option_indent1 = JSON_INDENT(1),
+		option_indent2 = JSON_INDENT(2),
+		option_indent3 = JSON_INDENT(3),
+		option_indent4 = JSON_INDENT(4),
+		option_indent5 = JSON_INDENT(5),
+		option_indent6 = JSON_INDENT(6),
+		option_indent7 = JSON_INDENT(7),
+		option_indent8 = JSON_INDENT(8),
+		option_compact = JSON_COMPACT,
+		option_ensure_ascii = JSON_ENSURE_ASCII,
+		option_encode_any = JSON_ENCODE_ANY,
+		option_preserve_order = JSON_PRESERVE_ORDER,
+		option_escape_slash = JSON_ESCAPE_SLASH,
+		option_embed = JSON_EMBED
 	};
 
 	const JsonError & error() const { return m_error; }
@@ -596,5 +600,12 @@ private:
 };
 
 }
+
+namespace sys {
+class Printer;
+Printer & operator << (Printer& printer, const var::JsonValue & a);
+Printer & print_value(Printer& printer, const var::JsonValue & a, const var::String& key);
+}
+
 
 #endif // SAPI_VAR_JSON_HPP_

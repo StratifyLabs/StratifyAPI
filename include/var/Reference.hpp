@@ -169,7 +169,7 @@ public:
 	}
 
 
-	template<typename T> Reference(T & item){
+	template<typename T> explicit Reference(T & item){
 		//catch all
 		refer_to(item);
 	}
@@ -646,6 +646,11 @@ private:
 
 }
 
+
+namespace sys {
+class Printer;
+Printer & operator << (Printer& printer, const var::Reference & a);
+}
 
 
 

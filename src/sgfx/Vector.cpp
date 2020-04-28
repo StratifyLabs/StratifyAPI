@@ -2,9 +2,95 @@
 //Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc
 
 #include "sgfx/Vector.hpp"
+#include "sys/Printer.hpp"
 #include <cstdio>
 
 using namespace sgfx;
+
+sys::Printer& sys::operator << (sys::Printer& printer, const sgfx::Vector & a){
+	return printer;
+}
+
+sys::Printer& sys::operator << (sys::Printer& printer, const sgfx::VectorPath & a){
+	for(u32 i=0; i < a.icon_count(); i++){
+		printer.print_open_object(printer.verbose_level(), var::String().format("[%d]", i).cstring());
+		{
+			printer << sgfx::VectorPathDescription(a.icon_list()[i]);
+			printer.print_close_object();
+		}
+	}
+	return printer;
+}
+
+sys::Printer& sys::operator << (sys::Printer& printer, const sgfx::VectorPathDescription & a){
+	switch( a.type() ){
+		case sgfx::VectorPathDescription::type_none:
+			printer.key("type", "none");
+			break;
+		case sgfx::VectorPathDescription::type_move:
+			printer.key("type", "move");
+			printer.print_open_object(printer.verbose_level(), "point");
+		{
+			printer << a.to_move().point;
+			printer.print_close_object();
+		}
+			break;
+		case sgfx::VectorPathDescription::type_line:
+			printer.key("type", "line");
+			printer.print_open_object(printer.verbose_level(), "point");
+		{
+			printer << a.to_line().point;
+			printer.print_close_object();
+		}
+			break;
+		case sgfx::VectorPathDescription::type_quadratic_bezier:
+			printer.key("type", "quadratic bezier");
+			printer.print_open_object(printer.verbose_level(), "point");
+		{
+			printer << a.to_quadratic_bezier().point;
+			printer.print_close_object();
+		}
+
+			printer.print_open_object(printer.verbose_level(), "control");
+		{
+			printer << a.to_quadratic_bezier().control;
+			printer.print_close_object();
+		}
+			break;
+		case sgfx::VectorPathDescription::type_cubic_bezier:
+			printer.key("type", "cubic bezier");
+			printer.print_open_object(printer.verbose_level(), "point");
+		{
+			printer << a.to_cubic_bezier().point;
+			printer.print_close_object();
+		}
+
+			printer.print_open_object( printer.verbose_level(), "control0");
+		{
+			printer << sgfx::Point(a.to_cubic_bezier().control[0]);
+			printer.print_close_object();
+		}
+			printer.print_open_object(printer.verbose_level(), "control1");
+		{
+			printer << sgfx::Point(a.to_cubic_bezier().control[1]);
+			printer.print_close_object();
+		}
+			break;
+		case sgfx::VectorPathDescription::type_close:
+			printer.key("type", "close");
+			break;
+		case sgfx::VectorPathDescription::type_pour:
+			printer.key("type", "pour");
+			printer.print_open_object(printer.verbose_level(), "point");
+		{
+			printer << a.to_pour().point;
+			printer.print_close_object();
+		}
+			break;
+	}
+
+	return printer;
+}
 
 
 VectorMap& VectorMap::set_region(const Region & region){

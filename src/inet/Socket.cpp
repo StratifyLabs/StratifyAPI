@@ -23,7 +23,7 @@ SocketAddressInfo::SocketAddressInfo(int family, int type, int protocol, int fla
 	set_family(family);
 	set_type(type);
 	set_protocol(protocol);
-	if( family == FAMILY_INET ){
+	if( family == family_inet ){
 		m_sockaddr.allocate(sizeof(struct sockaddr_in));
 #if !defined __win32
 		m_sockaddr.to<struct sockaddr_in>()->sin_len = m_sockaddr.size();
@@ -126,9 +126,9 @@ int Ipv4Address::set_address(const var::String & address) {
 #endif
 
 u16 SocketAddress::port() const {
-	if( family() == SocketAddressInfo::FAMILY_INET ){
+	if( family() == SocketAddressInfo::family_inet ){
 		return ntohs(m_sockaddr.to<const sockaddr_in>()->sin_port);
-	} else if( family() == SocketAddressInfo::FAMILY_INET6 ){
+	} else if( family() == SocketAddressInfo::family_inet6 ){
 		return ntohs(m_sockaddr.to<const sockaddr_in6>()->sin6_port);
 	}
 	return 0;
@@ -312,7 +312,7 @@ int Socket::bind_and_listen(
 		return result;
 	}
 
-	if( addr.protocol() == SocketAddressInfo::PROTOCOL_TCP ){
+	if( addr.protocol() == SocketAddressInfo::protocol_tcp ){
 		result =  decode_socket_return(
 					::listen(m_socket,
 								backlog.argument()

@@ -18,17 +18,10 @@ public:
 	Led();
 
 	enum led_flags {
-		/*! \cond */
-		FLAG_IS_HIGH_IMPEDANCE = LED_FLAG_IS_HIGH_IMPEDANCE,
-		FLAG_IS_DUTY_CYCLE = LED_FLAG_IS_DUTY_CYCLE,
-		FLAG_ENABLE = LED_FLAG_ENABLE,
-		FLAG_DISABLE = LED_FLAG_DISABLE,
-		/*! \endcond */
-
-		IS_HIGH_IMPEDANCE /*! See \ref LED_FLAG_IS_HIGH_IMPEDANCE */ = LED_FLAG_IS_HIGH_IMPEDANCE,
-		IS_DUTY_CYCLE /*! See \ref LED_FLAG_IS_DUTY_CYCLE */ = LED_FLAG_IS_DUTY_CYCLE,
-		ENABLE /*! See \ref LED_FLAG_ENABLE */ = LED_FLAG_ENABLE,
-		DISABLE /*! See \ref LED_FLAG_DISABLE */ = LED_FLAG_DISABLE,
+		flag_is_high_impedance /*! See \ref LED_FLAG_IS_HIGH_IMPEDANCE */  = LED_FLAG_IS_HIGH_IMPEDANCE,
+		flag_is_duty_cycle /*! See \ref LED_FLAG_IS_DUTY_CYCLE */ = LED_FLAG_IS_DUTY_CYCLE,
+		flag_enable /*! See \ref LED_FLAG_ENABLE */ = LED_FLAG_ENABLE,
+		flag_disable /*! See \ref LED_FLAG_DISABLE */ = LED_FLAG_DISABLE
 	};
 
 	/*! \details Gets the info for the LED.

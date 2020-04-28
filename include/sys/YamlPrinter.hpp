@@ -26,7 +26,7 @@ public:
 	 * //md2code:main
 	 * Printer p;
 	 * //whole object only prints with debug verbose level
-	 * p.open_object("keys", Printer::DEBUG);
+	 * p.open_object("keys", Printer::level_debug);
 	 * p.key("key0", "value0");
 	 * p.key("key1", "value1");
 	 * p.key("key2", "value2");
@@ -53,7 +53,7 @@ public:
 	 * //md2code:main
 	 * Printer p;
 	 * //whole object only prints with debug verbose level
-	 * p.open_array("keys", Printer::MESSAGE);
+	 * p.open_array("keys", Printer::level_message);
 	 * p.info("Hello");
 	 * p.info("Hello");
 	 * p.info("Hello");
@@ -84,7 +84,7 @@ public:
 	 * //md2code:main
 	 * Printer p;
 	 * p.open_object("empty object") << p.close();
-	 * p.open_array("messages", Printer::MESSAGE) << "hello" << p.close();
+	 * p.open_array("messages", Printer::level_message) << "hello" << p.close();
 	 * ```
 	 *
 	 */

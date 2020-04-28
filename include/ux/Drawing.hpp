@@ -596,12 +596,16 @@ public:
 		return derived_this();
 	}
 
-	T& set_border_size(u8 value){
+	T& set_border(u8 value){
 		m_border.top = value;
 		m_border.bottom = value;
 		m_border.left = value;
 		m_border.right = value;
 		return derived_this();
+	}
+
+	T& set_border_size(u8 value){
+		return set_border(value);
 	}
 
 	T& set_top_border(u8 value){
@@ -621,6 +625,14 @@ public:
 
 	T& set_right_border(u8 value){
 		m_border.right = value;
+		return derived_this();
+	}
+
+	T& set_padding(u8 value){
+		m_padding.top = value;
+		m_padding.bottom = value;
+		m_padding.left = value;
+		m_padding.right = value;
 		return derived_this();
 	}
 
@@ -653,6 +665,14 @@ public:
 
 	T& set_right_padding(u8 value){
 		m_padding.right = value;
+		return derived_this();
+	}
+
+	T& set_margin(u8 value){
+		m_margin.top = value;
+		m_margin.bottom = value;
+		m_margin.left = value;
+		m_margin.right = value;
 		return derived_this();
 	}
 
@@ -816,10 +836,9 @@ protected:
 	sgfx::Region calculate_region_inside_border(
 			const sgfx::Region & region
 			) const {
-
 		return
 				calculate_region_inside(
-					calculate_region_inside(region, m_margin),
+					calculate_region_inside_margin(region),
 					m_border
 					);
 	}

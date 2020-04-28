@@ -190,4 +190,10 @@ private:
 
 }
 
+namespace sys {
+class Printer;
+}
+
+sys::Printer & operator << (sys::Printer& printer, const chrono::ClockTime & a);
+
 #endif /* SAPI_CHRONO_CLOCK_TIME_HPP_ */

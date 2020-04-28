@@ -26,7 +26,7 @@ int Pio::clear_mask(u32 mask) const {
 int Pio::assign(u32 value) const {
 	pio_attr_t attr;
 	attr.o_pinmask = value;
-	attr.o_flags = ASSIGN;
+	attr.o_flags = flag_assign;
 	return ioctl(
 				IoRequest(I_PIO_SETATTR),
 				IoArgument(&attr)

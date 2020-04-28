@@ -21,7 +21,7 @@ int I2C::prepare(u8 slave_addr, u32 o_flags) const {
 
 int I2C::reset() const {
 	i2c_attr_t attr;
-	attr.o_flags = I2C::RESET;
+	attr.o_flags = I2C::flag_reset;
 	return set_attributes(attr);
 }
 
@@ -38,7 +38,7 @@ int I2C::set(
 		){
 	int ret;
 	u8 tmp;
-	ret = read(location, tmp);
+	ret = read(location, var::Reference(tmp));
 	if( ret < 0 ){
 		return ret;
 	}
@@ -47,5 +47,5 @@ int I2C::set(
 	} else {
 		tmp &= ~(1<<bit);
 	}
-	return write(location, tmp);
+	return write(location, var::Reference(tmp));
 }

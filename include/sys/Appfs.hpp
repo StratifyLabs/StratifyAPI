@@ -424,6 +424,10 @@ private:
 
 };
 
+class Printer;
+Printer & operator << (Printer& printer, const sys::AppfsInfo & a);
+Printer & operator << (Printer& printer, const AppfsFileAttributes & a);
+Printer & operator << (Printer& printer, const appfs_file_t & a);
 }
 
 #endif /* SAPI_SYS_APPFS_HPP_ */

@@ -10,9 +10,9 @@ namespace inet {
 
 class Url : public api::InfoObject {
 public:
-	enum {
-		PROTOCOL_HTTPS,
-		PROTOCOL_HTTP
+	enum protocol {
+		protocol_https,
+		protocol_http
 	};
 
 	Url(const var::String & url = "");

@@ -1,10 +1,4 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
-/*
- * Cursor.hpp
- *
- *  Created on: Jun 8, 2017
- *      Author: tgil
- */
 
 #ifndef SAPI_SGFX_CURSOR_HPP_
 #define SAPI_SGFX_CURSOR_HPP_
@@ -101,5 +95,10 @@ private:
 };
 
 } /* namespace sgfx */
+
+namespace sys {
+class Printer;
+Printer & operator << (Printer& printer, const sgfx::Cursor & a);
+}
 
 #endif /* SAPI_SGFX_CURSOR_HPP_ */

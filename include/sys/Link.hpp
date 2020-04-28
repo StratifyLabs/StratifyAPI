@@ -515,12 +515,6 @@ public:
 			fs::File::IoArgument arg = fs::File::IoArgument(nullptr)
 			);
 
-	enum {
-		SET /*! Whence value for lseek */ = LINK_SEEK_SET,
-		CURRENT /*! Whence value for lseek */ = LINK_SEEK_CUR,
-		END /*! Whence value for lseek */ = LINK_SEEK_END
-	};
-
 	/*! \details Performs an lseek \a fd.
 		*
 		* \param fd File descriptor from open()

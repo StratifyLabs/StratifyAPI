@@ -1,8 +1,25 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "sys/TaskManager.hpp"
-
+#include "sys/Printer.hpp"
 
 using namespace sys;
+
+Printer& sys::operator << (Printer& printer, const sys::TaskInfo & a){
+	printer.key("name", a.name());
+	printer.key("id", F32U, a.id());
+	printer.key("pid", F32U, a.pid());
+	printer.key("memorySize", F32U, a.memory_size());
+	printer.key("stack", "0x%lX", a.stack());
+	printer.key("stackSize", F32U, a.stack_size());
+	printer.key("priority", F32U, a.priority());
+	printer.key("priorityCeiling", F32U, a.priority_ceiling());
+	printer.key("isThread", a.is_thread());
+	if( a.is_thread() == false ){
+		printer.key("heap", "0x%lX", a.heap());
+		printer.key("heapSize", "%ld", a.heap_size());
+	}
+	return printer;
+}
 
 TaskManager::TaskManager(
 		SAPI_LINK_DRIVER

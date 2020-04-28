@@ -1,8 +1,12 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
+
+#include <type_traits>
+
 #include "var/Vector.hpp"
 #include "var/Tokenizer.hpp"
 #include "var/Json.hpp"
 #include "sys/Sys.hpp"
+#include "sys/Printer.hpp"
 #include "sys/requests.h"
 
 #if defined __link
@@ -10,8 +14,49 @@
 #define atoff atof
 #endif
 
+sys::Printer& sys::operator << (sys::Printer& printer, const var::JsonValue & a){
+	return print_value(printer, a, "");
+}
+
+sys::Printer& sys::print_value(Printer& printer, const var::JsonValue & a, const var::String& key){
+	if(a.is_object()){
+		var::StringList key_list = a.to_object().keys();
+		if( !key.is_empty() ){
+			printer.print_open_object(printer.verbose_level(), key.cstring());
+		}
+		for(const auto & subkey: key_list){
+			const var::JsonValue& entry = a.to_object().at(subkey);
+			print_value(printer, entry, subkey);
+		}
+		if( !key.is_empty() ){
+			printer.print_close_object();
+		}
+	} else if( a.is_array() ){
+		if( !key.is_empty() ){
+			printer.print_open_array(printer.verbose_level(), key.cstring());
+		}
+		for(u32 i=0; i < a.to_array().count(); i++){
+			const var::JsonValue& entry = a.to_array().at(i);
+			var::String subkey;
+			subkey.format("[%04d]", i);
+			print_value(printer, entry, subkey);
+		}
+		if( !key.is_empty() ){
+			printer.print_close_array();
+		}
+	} else {
+		if( key.is_empty() ){
+			printer.key(nullptr, a.to_string().cstring());
+		} else {
+			printer.key(key, a.to_string());
+		}
+
+	}
+	return printer;
+}
 
 using namespace var;
+
 
 JsonApi JsonValue::m_api;
 
@@ -294,8 +339,8 @@ var::Vector<var::String> JsonObject::keys() const {
 	var::Vector<var::String> result;
 
 	for(key = api()->object_iter_key(api()->object_iter(m_value));
-		 key && (value = api()->object_iter_value(api()->object_key_to_iter(key)));
-		 key = api()->object_iter_key(api()->object_iter_next(m_value, api()->object_key_to_iter(key)))){
+			key && (value = api()->object_iter_value(api()->object_key_to_iter(key)));
+			key = api()->object_iter_key(api()->object_iter_next(m_value, api()->object_key_to_iter(key)))){
 		result.push_back(var::String(key));
 	}
 
@@ -538,10 +583,15 @@ size_t JsonDocument::load_file_data(
 }
 
 JsonValue JsonDocument::load(
-		const fs::File::Source file
+		fs::File& file
 		){
 	JsonValue value;
-	value.m_value = JsonValue::api()->load_callback(load_file_data, (void*)&(file.argument()), flags(), &m_error.m_value);
+	value.m_value = JsonValue::api()->load_callback(
+				load_file_data,
+				static_cast<void*>(&file),
+				flags(),
+				&m_error.m_value
+				);
 	return value;
 }
 
@@ -569,9 +619,9 @@ int JsonDocument::save(
 				);
 #else
 	if( f.create(
-			 path.argument(),
-			 fs::File::IsOverwrite(true)
-			 ) < 0 ){
+				path.argument(),
+				fs::File::IsOverwrite(true)
+				) < 0 ){
 		set_error_number(f.error_number());
 		return -1;
 	}
@@ -607,11 +657,11 @@ var::String JsonDocument::to_string(
 	result.resize(size);
 
 	if( JsonValue::api()->dumpb(
-			 value.m_value,
-			 result.to_char(),
-			 result.capacity(),
-			 flags()
-			 ) == 0 ){
+				value.m_value,
+				result.to_char(),
+				result.capacity(),
+				flags()
+				) == 0 ){
 		return var::String();
 	}
 	return result;

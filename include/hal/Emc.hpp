@@ -87,23 +87,23 @@ class Emc: public Periph<emc_info_t, emc_attr_t, EmcAttributes, EMC_IOC_IDENT_CH
 public:
     Emc(port_t port);
     enum {
-        FLAG_DISABLE = EMC_FLAG_DISABLE,
-        FLAG_ENABLE = EMC_FLAG_ENABLE,
-        FLAG_IS_SDRAM  = EMC_FLAG_IS_SDRAM,
-        FLAG_IS_PSRAM = EMC_FLAG_IS_PSRAM,
-        FLAG_IS_SRAM = EMC_FLAG_IS_SRAM,
-        FLAG_IS_NOR = EMC_FLAG_IS_NOR,
-        FLAG_IS_NAND = EMC_FLAG_IS_NAND,
-        FLAG_IS_8B_ACCESS = EMC_FLAG_IS_8B_ACCESS,
-        FLAG_IS_16B_ACCESS = EMC_FLAG_IS_16B_ACCESS,
-        FLAG_IS_32B_ACCESS = EMC_FLAG_IS_32B_ACCESS ,
-        FLAG_IS_AHB = EMC_FLAG_IS_AHB ,	/*!< use only data bus without address*/
-        FLAG_IS_PSRAM_BANK1 = EMC_FLAG_IS_PSRAM_BANK1 ,	/*!< use subbank BANK1 - cs0*/
-        FLAG_IS_PSRAM_BANK2 = EMC_FLAG_IS_PSRAM_BANK2 ,	/*!< use subbank BANK2 - cs1*/
-        FLAG_IS_PSRAM_BANK3 = EMC_FLAG_IS_PSRAM_BANK3 ,	/*!< use subbank BANK3 - cs2*/
-        FLAG_IS_PSRAM_BANK4 = EMC_FLAG_IS_PSRAM_BANK4,	/*!< use subbank BANK4 - cs3*/
-        FLAG_AHB_WRITE_DATA = EMC_FLAG_AHB_WRITE_DATA,	/*!< write data throuth ahb */
-        FLAG_AHB_WRITE_REG = EMC_FLAG_AHB_WRITE_REG,	/*!< write reg  throuth ahb*/
+				flag_disable = EMC_FLAG_DISABLE,
+				flag_enable = EMC_FLAG_ENABLE,
+				flag_is_sdram  = EMC_FLAG_IS_SDRAM,
+				flag_is_psram = EMC_FLAG_IS_PSRAM,
+				flag_is_sram = EMC_FLAG_IS_SRAM,
+				flag_is_nor = EMC_FLAG_IS_NOR,
+				flag_is_nand = EMC_FLAG_IS_NAND,
+				flag_is_8b_access = EMC_FLAG_IS_8B_ACCESS,
+				flag_is_16b_access = EMC_FLAG_IS_16B_ACCESS,
+				flag_is_32b_access = EMC_FLAG_IS_32B_ACCESS ,
+				flag_is_ahb = EMC_FLAG_IS_AHB ,	/*!< use only data bus without address*/
+				flag_is_psram_bank1 = EMC_FLAG_IS_PSRAM_BANK1 ,	/*!< use subbank BANK1 - cs0*/
+				flag_is_psram_bank2 = EMC_FLAG_IS_PSRAM_BANK2 ,	/*!< use subbank BANK2 - cs1*/
+				flag_is_psram_bank3 = EMC_FLAG_IS_PSRAM_BANK3 ,	/*!< use subbank BANK3 - cs2*/
+				flag_is_psram_bank4 = EMC_FLAG_IS_PSRAM_BANK4,	/*!< use subbank BANK4 - cs3*/
+				flag_ahb_write_data = EMC_FLAG_AHB_WRITE_DATA,	/*!< write data throuth ahb */
+				flag_ahb_write_reg = EMC_FLAG_AHB_WRITE_REG,	/*!< write reg  throuth ahb*/
     };
     /**
      * @brief set_attr

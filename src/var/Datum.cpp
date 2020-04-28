@@ -2,8 +2,14 @@
 #include "var/Datum.hpp"
 #include "chrono/Clock.hpp"
 #include "chrono/Time.hpp"
+#include "sys/Printer.hpp"
 
 using namespace var;
+
+sys::Printer& sys::operator << (sys::Printer& printer, const var::Datum & a){
+	printer << a.to_json();
+	return printer;
+}
 
 Datum::Datum(){
 	//grab a valid timestamp
@@ -51,7 +57,7 @@ void Datum::refresh_timestamp(){
 
 String Datum::stringify() const {
 	JsonDocument document;
-	document.set_flags(JsonDocument::COMPACT);
+	document.set_flags(JsonDocument::option_compact);
 	//compact object on one line
 	return document.to_string(to_json()) << "\n";
 }

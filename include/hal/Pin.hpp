@@ -123,7 +123,7 @@ public:
 	 * @return Zero on success
 	 */
 	int set_input(u32 o_flags = 0){
-		return initialize(SET_INPUT | o_flags);
+		return initialize(flag_set_input | o_flags);
 	}
 
 	/*! \details Initializes the pin as an input.
@@ -132,7 +132,7 @@ public:
 	 * @return Zero on success
 	 */
 	int set_output(u32 o_flags = 0){
-		return initialize(SET_OUTPUT | o_flags);
+		return initialize(flag_set_output | o_flags);
 	}
 
 	/*! \details Sets the pin attributes.
@@ -211,24 +211,24 @@ public:
 	/*! \details Accesses the pin's associated Pio pinmask. */
 	u32 pinmask() const { return m_pinmask; }
 
-	bool is_floating(u32 o_restore_flags = Pin::IS_FLOAT) const {
+	bool is_floating(u32 o_restore_flags = Pin::flag_is_float) const {
 		bool result;
-		set_attributes(Pin::SET_INPUT | Pin::IS_PULLUP);
+		set_attributes(Pin::flag_set_input | Pin::flag_is_pullup);
 		if( get_value() == false ){
-			set_attributes(Pin::SET_INPUT | o_restore_flags);
+			set_attributes(Pin::flag_set_input | o_restore_flags);
 			return false;
 		}
-		set_attributes(Pin::SET_INPUT | Pin::IS_FLOAT);
+		set_attributes(Pin::flag_set_input | Pin::flag_is_float);
 		result = get_value();
-		set_attributes(Pin::SET_INPUT | o_restore_flags);
+		set_attributes(Pin::flag_set_input | o_restore_flags);
 		return result != true;
 	}
 
 	static bool is_floating(mcu_pin_t pin){
 		Pin p(pin);
-		p.set_input(Pin::IS_PULLUP);
+		p.set_input(Pin::flag_is_pullup);
 		if( p == false ){ return false; }
-		p.set_attributes(Pin::IS_PULLDOWN);
+		p.set_attributes(Pin::flag_is_pulldown);
 		if( p == true ){ return false; }
 		return true;
 	}

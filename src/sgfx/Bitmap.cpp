@@ -8,10 +8,97 @@
 #include "fs/File.hpp"
 #include "sgfx/Bitmap.hpp"
 #include "sgfx/Cursor.hpp"
+#include "sys/Printer.hpp"
 
 using namespace sgfx;
 using namespace sys;
 using namespace calc;
+
+Printer& sys::operator << (Printer& printer, const sgfx::Bitmap & a){
+	sg_size_t i,j;
+
+	sg_color_t color;
+	sg_cursor_t y_cursor;
+	sg_cursor_t x_cursor;
+
+
+	sgfx::Bitmap::api()->cursor_set(&y_cursor, a.bmap(), sg_point(0,0));
+
+	var::String line;
+	line << " ";
+	for(j=0; j < a.bmap()->area.width; j++){
+		if( j % 10 ){
+			line << var::String().format("%d", j % 10);
+		} else {
+			line << (" ");
+		}
+	}
+
+	printer.key("lines    ", line);
+	line.clear();
+	for(j=0; j < a.bmap()->area.width; j++){
+		line.append("-");
+	}
+	line.append("--");
+	printer.key("start    ", line);
+
+	for(i=0; i < a.bmap()->area.height; i++){
+		sg_cursor_copy(&x_cursor, &y_cursor);
+
+		line.clear();
+		line.append("|");
+		for(j=0; j < a.bmap()->area.width; j++){
+			color = sgfx::Bitmap::api()->cursor_get_pixel(&x_cursor);
+			line << Printer::get_bitmap_pixel_character(color, a.bmap()->bits_per_pixel);
+			if( (j < a.bmap()->area.width - 1) && (a.bmap()->bits_per_pixel > 4)){
+				line.append(" ");
+			}
+		}
+		line.append("|");
+		printer.key(var::String().format("line-%04d", i), line);
+		sgfx::Bitmap::api()->cursor_inc_y(&y_cursor);
+	}
+	line.clear();
+	for(j=0; j < a.bmap()->area.width; j++){
+		line.append("-");
+	}
+	line.append("--");
+	printer.key("lines end", line);
+
+	return printer;
+}
+
+Printer& sys::operator << (Printer& printer, const sgfx::Point & a){
+	printer.key("x", "%d", a.x());
+	printer.key("y", "%d", a.y());
+	return printer;
+}
+
+Printer& sys::operator << (Printer& printer, const sgfx::Region & a){
+	printer.key("x", "%d", a.point().x());
+	printer.key("y", "%d", a.point().y());
+	printer.key("width", "%d", a.area().width());
+	printer.key("height", "%d", a.area().height());
+	return printer;
+}
+
+Printer& sys::operator << (Printer& printer, const sgfx::Area & a){
+	printer.key("width", "%d", a.width());
+	printer.key("height", "%d", a.height());
+	return printer;
+}
+
+Printer& sys::operator << (Printer& printer, const sgfx::Pen & a){
+	printer.key("color", "%d", a.color());
+	printer.key("thickness", "%d", a.color());
+	printer.key("o_flags", "0x%x", a.o_flags());
+	printer.key("solid", "%d", a.is_solid());
+	printer.key("invert", "%d", a.is_invert());
+	printer.key("erase", "%d", a.is_erase());
+	printer.key("blend", "%d", a.is_blend());
+	printer.key("fill", "%d", a.is_fill());
+	return printer;
+}
 
 int AntiAliasFilter::initialize(
       var::Array<u8, 8> contrast_map

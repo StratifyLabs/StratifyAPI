@@ -21,7 +21,7 @@ class Clock {
 public:
 
 	enum clock_id {
-		REALTIME /*! Realtime clock ID used with get_time() and get_resolution() */ = CLOCK_REALTIME
+		clock_id_realtime /*! Realtime clock ID used with get_time() and get_resolution() */ = CLOCK_REALTIME
 	};
 
 	/*! \details Returns the present value of the specified clock.
@@ -38,10 +38,10 @@ public:
 	 *
 	 *
 	 */
-	static ClockTime get_time(enum clock_id clock_id = REALTIME);
+	static ClockTime get_time(enum clock_id clock_id = clock_id_realtime);
 
 	/*! \details Gets the resolution of the specified clock. */
-	static ClockTime get_resolution(enum clock_id clock_id = REALTIME);
+	static ClockTime get_resolution(enum clock_id clock_id = clock_id_realtime);
 };
 
 }

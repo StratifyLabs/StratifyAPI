@@ -78,13 +78,13 @@ int IconFont::refresh(){
 	m_list.clear();
 	m_list.shrink_to_fit();
 	m_file.seek(0);
-	if( m_file.read(m_header) != sizeof(m_header) ){
+	if( m_file.read(var::Reference(m_header)) != sizeof(m_header) ){
 		return -1;
 	}
 
 	for(u32 i=0; i < m_header.icon_count; i++){
 		sg_font_icon_t icon;
-		if( m_file.read(icon) != sizeof(icon) ){
+		if( m_file.read(var::Reference(icon)) != sizeof(icon) ){
 			m_list.clear();
 			m_list.shrink_to_fit();
 			return -1;

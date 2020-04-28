@@ -329,14 +329,14 @@ MarkdownPrinter & MarkdownPrinter::close_paragraph(){
 }
 
 MarkdownPrinter & MarkdownPrinter::open_table(
-		const var::Vector<var::String> & header,
+		const var::StringList& header,
 		enum verbose_level level){
 	m_is_last_close = false;
 	return *this;
 }
 
 MarkdownPrinter & MarkdownPrinter::append_table_row(
-		const var::Vector<var::String> & row){
+		const var::StringList & row){
 	return *this;
 }
 
@@ -355,8 +355,7 @@ MarkdownPrinter&  MarkdownPrinter::operator << (enum directive directive){
    return *this;
 }
 
-MarkdownPrinter & MarkdownPrinter::open_pretty_table(
-		const var::Vector<var::String> & header
+MarkdownPrinter & MarkdownPrinter::open_pretty_table(const var::StringList& header
 		){
 	m_pretty_table.clear();
 	if( header.count() == 0 ){
@@ -366,8 +365,7 @@ MarkdownPrinter & MarkdownPrinter::open_pretty_table(
 	return *this;
 }
 
-MarkdownPrinter & MarkdownPrinter::append_pretty_table_row(
-		const var::Vector<var::String> & row){
+MarkdownPrinter & MarkdownPrinter::append_pretty_table_row(const var::StringList& row){
 	if( m_pretty_table.count() == 0 ){
 		return *this;
 	}

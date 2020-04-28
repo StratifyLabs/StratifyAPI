@@ -4,7 +4,30 @@
 
 #include "sgfx.hpp"
 #include "draw/Drawing.hpp"
+#include "sys/Printer.hpp"
+
 using namespace draw;
+
+
+sys::Printer& operator << (sys::Printer& printer, const draw::DrawingPoint& a){
+	printer.key("x", "%d", a.x());
+	printer.key("y", "%d", a.y());
+	return printer;
+}
+
+sys::Printer& operator << (sys::Printer& printer, const draw::DrawingArea& a){
+	printer.key("width", "%d", a.width());
+	printer.key("height", "%d", a.height());
+	return printer;
+}
+
+sys::Printer& operator << (sys::Printer& printer, const draw::DrawingRegion& a){
+	printer.key("x", "%d", a.point().x());
+	printer.key("y", "%d", a.point().y());
+	printer.key("width", "%d", a.area().width());
+	printer.key("height", "%d", a.area().height());
+	return printer;
+}
 
 drawing_size_t Drawing::m_scale = 1000;
 sg_color_t Drawing::m_default_color = 1;

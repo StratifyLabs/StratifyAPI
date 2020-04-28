@@ -15,62 +15,62 @@ class CoreFlags {
 public:
 
 	enum flags {
-		IS_RESET_SOFTWARE = CORE_FLAG_IS_RESET_SOFTWARE /*! Software Reset (default if hardware reset cannot be determined) */,
-		IS_RESET_POR = CORE_FLAG_IS_RESET_POR /*! Power on Reset */,
-		IS_RESET_EXTERNAL = CORE_FLAG_IS_RESET_EXTERNAL /*! External Reset signal */,
-		IS_RESET_WDT = CORE_FLAG_IS_RESET_WDT /*! Watchdog Timer Reset */,
-		IS_RESET_BOR = CORE_FLAG_IS_RESET_BOR /*! Brown Out Reset */,
-		IS_RESET_SYSTEM = CORE_FLAG_IS_RESET_SYSTEM /*! Software System Reset */,
-		SET_CLKOUT = CORE_FLAG_SET_CLKOUT /*! Use the CPU Clock */,
-		IS_CLKOUT_CPU = CORE_FLAG_IS_CLKOUT_CPU /*! Use the CPU Clock */,
-		IS_CLKOUT_MAIN_OSC = CORE_FLAG_IS_CLKOUT_MAIN_OSC /*! Use the Main Oscillator */,
-		IS_CLKOUT_INTERNAL_OSC = CORE_FLAG_IS_CLKOUT_INTERNAL_OSC /*! Use the Internal Oscillator */,
-		IS_CLKOUT_USB = CORE_FLAG_IS_CLKOUT_USB /*! Use the USB Clock */,
-		IS_CLKOUT_RTC = CORE_FLAG_IS_CLKOUT_RTC /*! Use the RTC Clock */,
-		EXEC_SLEEP = CORE_FLAG_EXEC_SLEEP /*! Sleep */,
-		EXEC_DEEPSLEEP = CORE_FLAG_EXEC_DEEPSLEEP /*! Deep sleep (preserve SRAM) */,
-		EXEC_DEEPSLEEP_STOP = CORE_FLAG_EXEC_DEEPSLEEP_STOP /*! Deep sleep (preserve SRAM, stop clocks) */,
-		EXEC_DEEPSLEEP_STANDBY = CORE_FLAG_EXEC_DEEPSLEEP_STANDBY /*! Turn the device off (lose SRAM) */,
-		EXEC_RESET = CORE_FLAG_EXEC_RESET /*! Set this flag with I_CORE_SETATTR to reset the device */,
-		EXEC_INVOKE_BOOTLOADER = CORE_FLAG_EXEC_INVOKE_BOOTLOADER /*! Set this flag with I_CORE_SETATTR to reset the device and start the bootloader */
+		flag_is_reset_software = CORE_FLAG_IS_RESET_SOFTWARE /*! Software Reset (default if hardware reset cannot be determined) */,
+		flag_is_reset_power_on = CORE_FLAG_IS_RESET_POR /*! Power on Reset */,
+		flag_is_reset_external = CORE_FLAG_IS_RESET_EXTERNAL /*! External Reset signal */,
+		flag_is_reset_watchdog = CORE_FLAG_IS_RESET_WDT /*! Watchdog Timer Reset */,
+		flag_is_reset_brown_out = CORE_FLAG_IS_RESET_BOR /*! Brown Out Reset */,
+		flag_is_reset_system = CORE_FLAG_IS_RESET_SYSTEM /*! Software System Reset */,
+		flag_set_clockout = CORE_FLAG_SET_CLKOUT /*! Use the CPU Clock */,
+		flag_is_clockout_cpu = CORE_FLAG_IS_CLKOUT_CPU /*! Use the CPU Clock */,
+		flag_is_clockout_main_oscillator = CORE_FLAG_IS_CLKOUT_MAIN_OSC /*! Use the Main Oscillator */,
+		flag_is_clockout_internal_oscillator = CORE_FLAG_IS_CLKOUT_INTERNAL_OSC /*! Use the Internal Oscillator */,
+		flag_is_clockout_usb = CORE_FLAG_IS_CLKOUT_USB /*! Use the USB Clock */,
+		flag_is_clockout_rtc = CORE_FLAG_IS_CLKOUT_RTC /*! Use the RTC Clock */,
+		flag_execute_sleep = CORE_FLAG_EXEC_SLEEP /*! Sleep */,
+		flag_execute_deepsleep = CORE_FLAG_EXEC_DEEPSLEEP /*! Deep sleep (preserve SRAM) */,
+		flag_execute_deepsleep_stop = CORE_FLAG_EXEC_DEEPSLEEP_STOP /*! Deep sleep (preserve SRAM, stop clocks) */,
+		flag_execute_deepsleep_standby = CORE_FLAG_EXEC_DEEPSLEEP_STANDBY /*! Turn the device off (lose SRAM) */,
+		flag_execute_reset = CORE_FLAG_EXEC_RESET /*! Set this flag with I_CORE_SETATTR to reset the device */,
+		flag_invoke_bootloader = CORE_FLAG_EXEC_INVOKE_BOOTLOADER /*! Set this flag with I_CORE_SETATTR to reset the device and start the bootloader */
 	};
 
 	/*! \details Core functional types */
 	enum func {
-		CORE /*! Core Functionality */ = CORE_PERIPH_CORE,
-		ADC /*! Analog to Digital Converter */ = CORE_PERIPH_ADC,
-		DAC /*! Digital to Analog Converter */ = CORE_PERIPH_DAC,
-		UART /*! UART */ = CORE_PERIPH_UART,
-		SPI /*! SPI */ = CORE_PERIPH_SPI,
-		USB /*! USB */ = CORE_PERIPH_USB,
-		CAN /*! CAN */ = CORE_PERIPH_CAN,
-		ENET /*! ENET */ = CORE_PERIPH_ENET,
-		I2C /*! I2C */ = CORE_PERIPH_I2C,
-		I2S /*! I2S */ = CORE_PERIPH_I2S,
-		MEM /*! External memory interface */ = CORE_PERIPH_MEM,
-		RTC /*! RTC */ = CORE_PERIPH_RTC,
-		CEC /*! Consumer Electronic Control (Part of HDMI) */ = CORE_PERIPH_CEC,
-		QEI /*! Quadrature Encoder Interface */ = CORE_PERIPH_QEI,
-		PWM /*! PWM */ = CORE_PERIPH_PWM,
-		PIO /*! GPIO */ = CORE_PERIPH_PIO,
-		TMR /*! Timer (output compare and input capture) */ = CORE_PERIPH_TMR,
-		EINT /*! External interrupts */ = CORE_PERIPH_EINT,
-		WDT /*! Watch dog timer */ = CORE_PERIPH_WDT,
-		BOD /*! Brown out detection */ = CORE_PERIPH_BOD,
-		DMA /*! Direct Memory Access */ = CORE_PERIPH_DMA,
-		JTAG /*! JTAG */ = CORE_PERIPH_JTAG,
-		RESET /*! Reset */ = CORE_PERIPH_RESET,
-		CLKOUT /*! Clockout */ = CORE_PERIPH_CLKOUT,
-		LCD /*! LCD */ = CORE_PERIPH_LCD,
-		LCD1 /*! LCD */ = CORE_PERIPH_LCD1,
-		LCD2 /*! LCD */ = CORE_PERIPH_LCD2,
-		LCD3 /*! LCD */ = CORE_PERIPH_LCD3,
-		EMC /*! External Memory Controller */ = CORE_PERIPH_EMC,
-		MCI /*! Multimedia Card Interface */ = CORE_PERIPH_MCI,
-		SSP /*! SSP */ = CORE_PERIPH_SSP,
-		MCPWM /*! Motor Control PWM */ = CORE_PERIPH_MCPWM,
-		NMI /*! Non-maskable Interrupt */ = CORE_PERIPH_NMI,
-		TRACE /*! Trace data */ = CORE_PERIPH_TRACE,
+		function_core /*! Core Functionality */ = CORE_PERIPH_CORE,
+		function_adc /*! Analog to Digital Converter */ = CORE_PERIPH_ADC,
+		function_dac /*! Digital to Analog Converter */ = CORE_PERIPH_DAC,
+		function_uart /*! UART */ = CORE_PERIPH_UART,
+		function_spi /*! SPI */ = CORE_PERIPH_SPI,
+		function_usb /*! USB */ = CORE_PERIPH_USB,
+		function_can /*! CAN */ = CORE_PERIPH_CAN,
+		function_enet /*! ENET */ = CORE_PERIPH_ENET,
+		function_i2c /*! I2C */ = CORE_PERIPH_I2C,
+		function_i2s /*! I2S */ = CORE_PERIPH_I2S,
+		function_mem /*! External memory interface */ = CORE_PERIPH_MEM,
+		function_rtc /*! RTC */ = CORE_PERIPH_RTC,
+		function_cec /*! Consumer Electronic Control (Part of HDMI) */ = CORE_PERIPH_CEC,
+		function_qei /*! Quadrature Encoder Interface */ = CORE_PERIPH_QEI,
+		function_pwm /*! PWM */ = CORE_PERIPH_PWM,
+		function_pio /*! GPIO */ = CORE_PERIPH_PIO,
+		function_tmr /*! Timer (output compare and input capture) */ = CORE_PERIPH_TMR,
+		function_eint /*! External interrupts */ = CORE_PERIPH_EINT,
+		function_wdt /*! Watch dog timer */ = CORE_PERIPH_WDT,
+		function_bod /*! Brown out detection */ = CORE_PERIPH_BOD,
+		function_dma /*! Direct Memory Access */ = CORE_PERIPH_DMA,
+		function_jtag /*! JTAG */ = CORE_PERIPH_JTAG,
+		function_reset /*! Reset */ = CORE_PERIPH_RESET,
+		function_clkout /*! Clockout */ = CORE_PERIPH_CLKOUT,
+		function_lcd /*! LCD */ = CORE_PERIPH_LCD,
+		function_lcd1 /*! LCD */ = CORE_PERIPH_LCD1,
+		function_lcd2 /*! LCD */ = CORE_PERIPH_LCD2,
+		function_lcd3 /*! LCD */ = CORE_PERIPH_LCD3,
+		function_emc /*! External Memory Controller */ = CORE_PERIPH_EMC,
+		function_mci /*! Multimedia Card Interface */ = CORE_PERIPH_MCI,
+		function_ssp /*! SSP */ = CORE_PERIPH_SSP,
+		function_mcpwm /*! Motor Control PWM */ = CORE_PERIPH_MCPWM,
+		function_nmi /*! Non-maskable Interrupt */ = CORE_PERIPH_NMI,
+		function_trace /*! Trace data */ = CORE_PERIPH_TRACE,
 	};
 };
 
@@ -93,23 +93,23 @@ public:
 	u32 o_flags() const { return m_info.o_flags; }
 
 	bool is_software_reset() const {
-		return (o_flags() & (IS_RESET_SOFTWARE|IS_RESET_SYSTEM)) != 0;
+		return (o_flags() & (flag_is_reset_software|flag_is_reset_system)) != 0;
 	}
 
 	bool is_power_on_reset() const {
-		return (o_flags() & IS_RESET_POR) != 0;
+		return (o_flags() & flag_is_reset_power_on) != 0;
 	}
 
 	bool is_external_reset() const {
-		return (o_flags() & IS_RESET_EXTERNAL) != 0;
+		return (o_flags() & flag_is_reset_external) != 0;
 	}
 
 	bool is_watchdog_timer_reset() const {
-		return (o_flags() & IS_RESET_WDT) != 0;
+		return (o_flags() & flag_is_reset_watchdog) != 0;
 	}
 
 	bool is_brown_out_reset() const {
-		return (o_flags() & IS_RESET_BOR) != 0;
+		return (o_flags() & flag_is_reset_brown_out) != 0;
 	}
 
 	/*! \details Returns the serial number of the MCU. */
