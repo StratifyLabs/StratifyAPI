@@ -999,7 +999,7 @@ public:
 	/*! \details Returns an error.
 	 *
 	 * @param loc The location to seek to
-	 * @param whence The location to seek from (e.g. fs::File::SET)
+	 * @param whence The location to seek from (e.g. fs::File::whence_set)
 	 * @return -1 because seeking is not valid
 	 *
 	 */

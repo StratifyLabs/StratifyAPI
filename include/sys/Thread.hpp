@@ -211,6 +211,8 @@ public:
 	 * the thread has finished and before another
 	 * thread is created.
 	 *
+	 * This is also called by `wait()`. So that works too.
+	 *
 	 */
 	bool is_running();
 

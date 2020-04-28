@@ -274,7 +274,7 @@ public:
 	 * ```
 		*
 		*/
-	static const char * version(){ return "3.14.0"; }
+	static const char * version(){ return "3.15.0"; }
 
 	/*! \details Returns a c-style string pointer
 	 * to the git hash used to build the Stratify API.
