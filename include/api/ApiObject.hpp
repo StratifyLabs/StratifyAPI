@@ -159,6 +159,13 @@
 namespace api {
 
 
+#define API_ACCESS_BOOL(c, v, iv) \
+	public: \
+	bool is_##v() const { return m_##v; } \
+	c& set_##v(bool value = true){ m_##v = value; return *this; } \
+	private: \
+	bool m_##v = iv
+
 #define API_ACCESS_FUNDAMENTAL(c, t, v, iv) \
 	public: \
 	t v() const { return m_##v; } \

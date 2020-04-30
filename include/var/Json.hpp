@@ -297,6 +297,11 @@ public:
 			const JsonValue & value
 			);
 
+	int insert(
+			const var::String & key,
+			bool value
+			);
+
 	enum update_flags {
 		UPDATE_NONE = 0x00,
 		UPDATE_EXISTING = 0x01,
@@ -603,8 +608,9 @@ private:
 
 namespace sys {
 class Printer;
-Printer & operator << (Printer& printer, const var::JsonValue & a);
-Printer & print_value(Printer& printer, const var::JsonValue & a, const var::String& key);
+Printer& operator << (Printer& printer, const var::JsonValue & a);
+Printer& operator << (Printer& printer, const var::JsonError & a);
+Printer& print_value(Printer& printer, const var::JsonValue & a, const var::String& key);
 }
 
 
