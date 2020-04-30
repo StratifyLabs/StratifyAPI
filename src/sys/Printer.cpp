@@ -27,7 +27,7 @@
 #include "draw/Drawing.hpp"
 
 #if defined __win32
-unsigned int sys::Printer::m_default_color = (unsigned int)-1;
+unsigned int sys::Printer::m_default_color = static_cast<unsigned int>(-1);
 #endif
 
 
@@ -41,7 +41,7 @@ Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this
 	m_verbose_level = level_info;
 	m_progress_key = "progress";
 #if defined __win32
-	if( m_default_color == (unsigned int)-1 ){
+	if( m_default_color == static_cast<unsigned int>(-1) ){
 		CONSOLE_SCREEN_BUFFER_INFO info;
 		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
 		m_default_color = info.wAttributes;
@@ -79,22 +79,22 @@ void Printer::set_color_code(u32 code){
 #endif
 
 #if defined __link && defined __win32
-	WORD color;
+	WORD color = static_cast<WORD>(m_default_color);
 	switch(code){
-		case COLOR_CODE_DEFAULT: color = m_default_color; break;
-		case COLOR_CODE_BLACK: color = 0; break;
-		case COLOR_CODE_RED: color = FOREGROUND_RED; break;
-		case COLOR_CODE_GREEN: color = FOREGROUND_GREEN; break;
-		case COLOR_CODE_YELLOW: color = FOREGROUND_RED | FOREGROUND_GREEN; break;
-		case COLOR_CODE_BLUE: color = FOREGROUND_BLUE; break;
-		case COLOR_CODE_MAGENTA: color = FOREGROUND_BLUE | FOREGROUND_RED; break;
-		case COLOR_CODE_CYAN: color = FOREGROUND_BLUE | FOREGROUND_GREEN; break;
-		case COLOR_CODE_LIGHT_GRAY: color = FOREGROUND_INTENSITY; break;
-		case COLOR_CODE_DARK_GRAY: color = 0; break;
-		case COLOR_CODE_LIGHT_RED: color = FOREGROUND_RED | FOREGROUND_INTENSITY; break;
-		case COLOR_CODE_LIGHT_GREEN: color = FOREGROUND_GREEN | FOREGROUND_INTENSITY; break;
-		case COLOR_CODE_LIGHT_YELLOW: color = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY; break;
-		case COLOR_CODE_LIGHT_BLUE: color = FOREGROUND_BLUE | FOREGROUND_INTENSITY; break;
+		case color_code_default: color = static_cast<WORD>(m_default_color); break;
+		case color_code_black: color = 0; break;
+		case color_code_red: color = FOREGROUND_RED; break;
+		case color_code_green: color = FOREGROUND_GREEN; break;
+		case color_code_yellow: color = FOREGROUND_RED | FOREGROUND_GREEN; break;
+		case color_code_blue: color = FOREGROUND_BLUE; break;
+		case color_code_magenta: color = FOREGROUND_BLUE | FOREGROUND_RED; break;
+		case color_code_cyan: color = FOREGROUND_BLUE | FOREGROUND_GREEN; break;
+		case color_code_light_gray: color = FOREGROUND_INTENSITY; break;
+		case color_code_dark_gray: color = 0; break;
+		case color_code_light_red: color = FOREGROUND_RED | FOREGROUND_INTENSITY; break;
+		case color_code_light_green: color = FOREGROUND_GREEN | FOREGROUND_INTENSITY; break;
+		case color_code_light_yellow: color = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY; break;
+		case color_code_light_blue: color = FOREGROUND_BLUE | FOREGROUND_INTENSITY; break;
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 #endif
