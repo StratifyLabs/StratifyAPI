@@ -18,6 +18,15 @@ sys::Printer& sys::operator << (sys::Printer& printer, const var::JsonValue & a)
 	return print_value(printer, a, "");
 }
 
+sys::Printer& sys::operator << (Printer& printer, const var::JsonError & a){
+	printer.key("text", a.text());
+	printer.key("line", var::String::number(a.line()));
+	printer.key("column", var::String::number(a.column()));
+	printer.key("position", var::String::number(a.position()));
+	printer.key("source", a.source());
+	return printer;
+}
+
 sys::Printer& sys::print_value(Printer& printer, const var::JsonValue & a, const var::String& key){
 	if(a.is_object()){
 		var::StringList key_list = a.to_object().keys();
@@ -199,6 +208,8 @@ var::String JsonValue::to_string() const {
 float JsonValue::to_float() const {
 	if( is_string() ){
 		return to_string().to_float();
+	} else if( is_integer() ){
+		return to_integer() * 1.0f;
 	}
 	return api()->real_value(m_value);
 }
@@ -206,6 +217,8 @@ float JsonValue::to_float() const {
 int JsonValue::to_integer() const {
 	if( is_string() ){
 		return to_string().to_integer();
+	} else if( is_real() ){
+		return to_float();
 	}
 
 	if( is_true() ){ return 1; }
@@ -279,6 +292,16 @@ json_t * JsonNull::create(){
 	return api()->create_null();
 }
 
+int JsonObject::insert(
+		const var::String & key,
+		bool value
+		){
+	if( value ){
+		return insert(key, JsonTrue());
+	}
+
+	return insert(key, JsonFalse());
+}
 
 int JsonObject::insert(
 		const var::String & key,
