@@ -374,6 +374,13 @@ public:
 	explicit JsonArray(const var::Vector<u32>& list);
 	explicit JsonArray(const var::Vector<s32>& list);
 
+	template<class T> explicit JsonArray(const var::Vector<T>& list){
+		m_value = create();
+		for(const auto & item: list){
+			append(item.to_object());
+		}
+	}
+
 	template<class T> var::Vector<T> construct_list() const {
 		var::Vector<T> result;
 		result.reserve(count());

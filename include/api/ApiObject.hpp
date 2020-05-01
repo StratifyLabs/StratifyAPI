@@ -183,6 +183,7 @@ namespace api {
 	public: \
 	const t& v() const { return m_##v; } \
 	t& v(){ return m_##v; } \
+	c& set_##v(const t& value){ m_##v = value; return *this; } \
 	private: \
 	t m_##v
 
