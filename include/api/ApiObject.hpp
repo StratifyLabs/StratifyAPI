@@ -313,6 +313,7 @@ public:
 	 *
 	 * - `macosx`
 	 * - `windows`
+	 * - `linux`
 	 * - `stratifyos`
 	 *
 	 *
@@ -344,6 +345,9 @@ public:
 	 *
 	 */
 	static bool is_macosx();
+
+	static bool is_linux();
+
 
 	/*! \details Returns true if the application
 	 * is running on a Stratify OS system.
