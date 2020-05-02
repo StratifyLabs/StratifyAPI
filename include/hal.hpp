@@ -38,7 +38,7 @@ namespace hal {}
 #include "hal/I2C.hpp"
 #include "hal/I2S.hpp"
 #include "hal/PinAssignment.hpp"
-#include "hal/StreamFfifo.hpp"
+#include "hal/StreamFFifo.hpp"
 #include "hal/Pin.hpp"
 #include "hal/Pwm.hpp"
 #include "hal/Rtc.hpp"
