@@ -25,7 +25,7 @@ SocketAddressInfo::SocketAddressInfo(int family, int type, int protocol, int fla
 	set_protocol(protocol);
 	if( family == family_inet ){
 		m_sockaddr.allocate(sizeof(struct sockaddr_in));
-#if !defined __win32
+#if !defined __win32 && !defined __linux
 		m_sockaddr.to<struct sockaddr_in>()->sin_len = m_sockaddr.size();
 #else
 
@@ -35,7 +35,7 @@ SocketAddressInfo::SocketAddressInfo(int family, int type, int protocol, int fla
 		memset(m_sockaddr.to<struct sockaddr_in>()->sin_zero, 0, sizeof(m_sockaddr.to<struct sockaddr_in>()->sin_zero));
 	} else {
 		m_sockaddr.allocate(sizeof(struct sockaddr_in6));
-#if !defined __win32
+#if !defined __win32 && !defined __linux
 		m_sockaddr.to<struct sockaddr_in6>()->sin6_len = m_sockaddr.size();
 #else
 

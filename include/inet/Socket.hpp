@@ -205,7 +205,7 @@ public:
 			int type = SocketAddressInfo::type_stream
 			){
 		m_sockaddr_in.sin_family = AF_INET;
-#if !defined __win32
+#if !defined __win32 && !defined __linux
 		m_sockaddr_in.sin_len = sizeof(struct sockaddr_in);
 #endif
 		m_sockaddr_in.sin_addr.s_addr = htonl(address);
