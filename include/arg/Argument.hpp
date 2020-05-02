@@ -6,7 +6,7 @@
 #include <pthread.h>
 #include <signal.h>
 
-#if !defined __link || defined __macosx
+#if !defined __link || defined __macosx || defined __linux
 #include <unistd.h>
 #include <sched.h>
 #endif
