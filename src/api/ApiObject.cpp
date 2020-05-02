@@ -30,6 +30,8 @@ const char * ApiInfo::operating_system_name(){
 #endif
 #if defined __linux
 	return "linux";
+#endif
+
 #else
 	return "stratifyos";
 #endif

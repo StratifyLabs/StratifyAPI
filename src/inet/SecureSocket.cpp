@@ -58,10 +58,16 @@ int SecureSocket::connect(const SocketAddress & address){
 		m_ticket.resize(2619);
 		do {
 			result = api()->write_ticket(m_context, m_ticket.to_void(), m_ticket.size(), m_ticket_lifetime);
+#if 0
 			if( result == MBEDTLS_ERR_SSL_BUFFER_TOO_SMALL ){
 				m_ticket.resize(m_ticket.size() + 64);
 			}
-		} while( (result == MBEDTLS_ERR_SSL_BUFFER_TOO_SMALL) && (m_ticket.size() < 4096) );
+#endif
+		} while(
+				#if 0
+						(result == MBEDTLS_ERR_SSL_BUFFER_TOO_SMALL) &&
+				#endif
+						(m_ticket.size() < 4096) );
 
 		if( result > 0 ){
 			m_ticket.resize(result);
