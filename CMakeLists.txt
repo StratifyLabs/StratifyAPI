@@ -4,6 +4,8 @@ if( ${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Darwin" )
 	set(SOS_TOOLCHAIN_CMAKE_PATH /Applications/StratifyLabs-SDK/Tools/gcc/arm-none-eabi/cmake)
 elseif( ${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows" )
 	set(SOS_TOOLCHAIN_CMAKE_PATH C:/StratifyLabs-SDK/Tools/gcc/arm-none-eabi/cmake)
+elseif( ${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Linux" )
+	set(SOS_TOOLCHAIN_CMAKE_PATH /StratifyLabs-SDK/Tools/gcc/arm-none-eabi/cmake)
 endif()
 
 include(${SOS_TOOLCHAIN_CMAKE_PATH}/sos-variables.cmake)
