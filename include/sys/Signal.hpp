@@ -53,7 +53,7 @@ public:
 	using Function = arg::Argument<signal_function_callback_t, struct SignalFlagsFunctionTag>;
 	using ActionFunction = arg::Argument<signal_action_callback_t, struct SignalFlagsActionFunctionTag>;
 	using Flags = arg::Argument<u32, struct SignalFlagsFlagsTag>;
-	using Mask = arg::Argument<u32, struct SignalFlagsMaskTag>;
+	using Mask = arg::Argument<sigset_t, struct SignalFlagsMaskTag>;
 
 	using ProcessId = Sched::ProcessId;
 	using ValueInteger = arg::Argument<int, struct SignalFlagsValueIntegerTag>;
@@ -156,7 +156,7 @@ public:
 		m_sig_action.sa_handler = (_sig_func_ptr)signal_function.argument();
 #endif
 		m_sig_action.sa_flags = 0;
-		m_sig_action.sa_mask = 0;
+		m_sig_action.sa_mask = {0};
 	}
 
 	/*! \details Constructs a sigaction handler.
@@ -182,7 +182,7 @@ public:
 	SignalHandler(
 			ActionFunction signal_action_function,
 			Flags flags = Flags(0),
-			Mask mask = Mask(0)
+			Mask mask = Mask({0})
 			){
 		m_sig_action.sa_sigaction = signal_action_function.argument();
 		m_sig_action.sa_flags = flags.argument() | SIGNAL_SIGINFO_FLAG;

@@ -158,7 +158,7 @@ var::String SocketAddress::address_to_string() const {
 	if( is_ipv6() ){
 		const struct sockaddr_in6 * addr = m_sockaddr.to<struct sockaddr_in6>();
 #if defined __link
-#if defined __macosx || defined __linux
+#if defined __macosx
 		result.format("%04X:%04X:%04X:%04X:%04X:%04X:%04X:%04X",
 						  ((u16)addr->sin6_addr.__u6_addr.__u6_addr8[0]) << 8 | addr->sin6_addr.__u6_addr.__u6_addr8[1],
 				((u16)addr->sin6_addr.__u6_addr.__u6_addr8[2]) << 8 | addr->sin6_addr.__u6_addr.__u6_addr8[3],
