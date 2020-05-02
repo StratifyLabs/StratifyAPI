@@ -66,6 +66,11 @@ const char * ApiInfo::user_data_path(){
 		result << path << "/Library/Application Support";
 	}
 
+	if( is_linux() ){
+		path = getenv("HOME");
+		result << path << "/.sl";
+	}
+
 	return result.cstring();
 #else
 	return "/home";
