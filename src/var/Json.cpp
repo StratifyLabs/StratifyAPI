@@ -356,10 +356,10 @@ u32 JsonObject::count() const {
 
 int JsonObject::clear(){ return json_object_clear(m_value); }
 
-var::Vector<var::String> JsonObject::keys() const {
+var::StringList JsonObject::key_list() const {
 	const char *key;
 	json_t *value;
-	var::Vector<var::String> result;
+	var::StringList result;
 
 	for(key = api()->object_iter_key(api()->object_iter(m_value));
 			key && (value = api()->object_iter_value(api()->object_key_to_iter(key)));

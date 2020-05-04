@@ -71,24 +71,24 @@ public:
 	}
 
 	/*! \details Returns true if the value is valid.
-	  *
-	  * \code
-	  * JsonObject object;
-	  * object.is_valid(); //true - a valid (though empty) object
-	  * object.insert("foo", "bar");
-	  * object.at("foo").is_valid(); //true
-	  * object.at("bar").is_valid(); //false
-	  *
-	  * JsonValue value;
-	  * value.is_valid(); //false
-	  *
-	  * JsonValue object_observer(object);
-	  *
-	  * object_observer.is_valid(); //true
-	  *
-	  * \endcode
-	  *
-	  */
+		*
+		* \code
+		* JsonObject object;
+		* object.is_valid(); //true - a valid (though empty) object
+		* object.insert("foo", "bar");
+		* object.at("foo").is_valid(); //true
+		* object.at("bar").is_valid(); //false
+		*
+		* JsonValue value;
+		* value.is_valid(); //false
+		*
+		* JsonValue object_observer(object);
+		*
+		* object_observer.is_valid(); //true
+		*
+		* \endcode
+		*
+		*/
 	bool is_valid() const{ return m_value != 0; }
 
 	enum types {
@@ -194,45 +194,45 @@ public:
 
 	//how to handle object creation -- explicitly or implicity so memory isn't leaked
 	/*
-	  * For object creation, create objects on demand. When
-	  *
-	  * JsonObject object; //not valid yet
-	  *
-	  * object.insert("foo", "bar"); // object is created upon insert
-	  *
-	  * object.load("/path/to/json"); //object is now valid
-	  *
-	  * object.load("/path/to/other/json"); //previous object is freed before new one loaded
-	  *
-	  * //here other_object is not created but is just observing - if it was previously created - it is decremented
-	  * JsonObject other_object = object.at("object").to_object();
-	  *
-	  *
-	  */
+		* For object creation, create objects on demand. When
+		*
+		* JsonObject object; //not valid yet
+		*
+		* object.insert("foo", "bar"); // object is created upon insert
+		*
+		* object.load("/path/to/json"); //object is now valid
+		*
+		* object.load("/path/to/other/json"); //previous object is freed before new one loaded
+		*
+		* //here other_object is not created but is just observing - if it was previously created - it is decremented
+		* JsonObject other_object = object.at("object").to_object();
+		*
+		*
+		*/
 
 	/*! \details Assigns a string to the current JSON value.
-	  *
-	  * @param value The string to assign
-	  *
-	  * This method will not change the underlying JSON type. If a
-	  * string value is assigned to a real type, the string
-	  * will be converted to a real. Consider the following
-	  * code snippet.
-	  *
-	  * \code
-	  * JsonReal real_value(100.0f);
-	  * real_value.assign("200.0"); //"200.0" is converted to 200.0f
-	  * real_value.assign("Hello World"); //"Hello World" is converted to 0.0f
-	  *
-	  * JsonInteger integer_value(1);
-	  *
-	  * bool_value.assign("2"); //assigns 2
-	  * bool_value.assign("3"); /assign 3
-	  * bool_value.assign("Hello World"); //assigns 0
-	  * \endcode
-	  *
-	  *
-	  */
+		*
+		* @param value The string to assign
+		*
+		* This method will not change the underlying JSON type. If a
+		* string value is assigned to a real type, the string
+		* will be converted to a real. Consider the following
+		* code snippet.
+		*
+		* \code
+		* JsonReal real_value(100.0f);
+		* real_value.assign("200.0"); //"200.0" is converted to 200.0f
+		* real_value.assign("Hello World"); //"Hello World" is converted to 0.0f
+		*
+		* JsonInteger integer_value(1);
+		*
+		* bool_value.assign("2"); //assigns 2
+		* bool_value.assign("3"); /assign 3
+		* bool_value.assign("Hello World"); //assigns 0
+		* \endcode
+		*
+		*
+		*/
 	int assign(const var::String & value);
 
 
@@ -279,21 +279,37 @@ public:
 	JsonObject(const JsonObject & value);
 	JsonObject & operator=(const JsonObject & value);
 
+	template<class T> var::Vector<T> construct_key_list(){
+		var::StringList list = key_list();
+		var::Vector<T> result;
+		for(const auto& key: list){
+			result.push_back(T(key, at(key)));
+		}
+		return result;
+	}
+
+	template<class T> explicit JsonObject(const var::Vector<T>& list){
+		m_value = create();
+		for(const auto & item: list){
+			insert(item.key(), item.value());
+		}
+	}
+
 	/*! \details Returns true if the object is empty. */
 	bool is_empty() const { return count() == 0; }
 
 	/*!
-	  * \details Inserts the key value pair into the object.
-	  *
-	  * \param key The UTF-8 key
-	  * \param value The value of the key
-	  * \return Zero on success
-	  *
-	  * If \a key already exists in the object, it is
-	  * updated to the new value. If \a key does not
-	  * exist in the object, it is created.
-	  *
-	  */
+		* \details Inserts the key value pair into the object.
+		*
+		* \param key The UTF-8 key
+		* \param value The value of the key
+		* \return Zero on success
+		*
+		* If \a key already exists in the object, it is
+		* updated to the new value. If \a key does not
+		* exist in the object, it is created.
+		*
+		*/
 	int insert(
 			const var::String & key,
 			const JsonValue & value
@@ -317,48 +333,51 @@ public:
 			);
 
 	/*!
-	  * \details Removes the specified key from the object.
-	  * \param key The key to remove
-	  * \return Zero on success (-1 is key was not found)
-	  *
-	  */
+		* \details Removes the specified key from the object.
+		* \param key The key to remove
+		* \return Zero on success (-1 is key was not found)
+		*
+		*/
 	int remove(const var::String & key);
 
 	/*!
-	  * \details Returns the number of key/value pairs in the object
-	  * \return The number of pairs
-	  */
+		* \details Returns the number of key/value pairs in the object
+		* \return The number of pairs
+		*/
 	u32 count() const;
 
 	/*!
-	  * \details Removes all key/value pairs from the object.
-	  * \return Zero on success
-	  */
+		* \details Removes all key/value pairs from the object.
+		* \return Zero on success
+		*/
 	int clear();
 
 	/*!
-	  * \details Returns a JsonValue (as a reference) to the specified key.
-	  * \param key The key to access
-	  * \return A JsonValue (referenced to the key)
-	  *
-	  * If the key does not exist, an invalid JsonValue is returned.
-	  *
-	  * \code
-	  * JsonObject json_object;
-	  * json_object.insert("name", "john");
-	  * json_object.at("name").is_valid(); //this is true
-	  * json_object.at("john").is_valid(); //this is false
-	  * \endcode
-	  *
-	  * Becaues the JsonValue is referenced (see JsonValue::is_observer())
-	  * the life of the object is not affected when the returned
-	  * JsonValue is destroyed.
-	  *
-	  */
+		* \details Returns a JsonValue (as a reference) to the specified key.
+		* \param key The key to access
+		* \return A JsonValue (referenced to the key)
+		*
+		* If the key does not exist, an invalid JsonValue is returned.
+		*
+		* \code
+		* JsonObject json_object;
+		* json_object.insert("name", "john");
+		* json_object.at("name").is_valid(); //this is true
+		* json_object.at("john").is_valid(); //this is false
+		* \endcode
+		*
+		* Becaues the JsonValue is referenced (see JsonValue::is_observer())
+		* the life of the object is not affected when the returned
+		* JsonValue is destroyed.
+		*
+		*/
 	JsonValue at(const var::String & key) const;
 
 
-	var::Vector<var::String> keys() const;
+	var::StringList key_list() const;
+	var::StringList keys() const {
+		return key_list();
+	}
 
 private:
 	json_t * create();
@@ -398,12 +417,12 @@ public:
 	u32 count() const;
 
 	/*! \details Returns a JsonValue as a reference at
-	  * the specified index.
-	  *
-	  * @param idx The index of the value to access
-	  * @return A JsonValue as a reference (see JsonValue::is_observer())
-	  *
-	  */
+		* the specified index.
+		*
+		* @param idx The index of the value to access
+		* @return A JsonValue as a reference (see JsonValue::is_observer())
+		*
+		*/
 	JsonValue at(size_t position) const;
 
 	int append(const JsonValue & value);
@@ -501,17 +520,17 @@ public:
 
 	//load a JSON object or array from a file?
 	/*!
-	  * \details Loads a JSON value from a file
-	  * \param path The path to the file
-	  * \return Zero on success
-	  */
+		* \details Loads a JSON value from a file
+		* \param path The path to the file
+		* \return Zero on success
+		*/
 	JsonValue load(fs::File& file);
 
 	/*!
-	  * \details Loads a JSON value from a data object
-	  * \param data A reference to the data object containing the JSON
-	  * \return
-	  */
+		* \details Loads a JSON value from a data object
+		* \param data A reference to the data object containing the JSON
+		* \return
+		*/
 	JsonValue load(
 			const String & json
 			);
@@ -521,10 +540,10 @@ public:
 	using XmlFilePath = arg::Argument<const String &, struct JsonDocumentXmlFilePathTag>;
 
 	/*!
-	  * \details Loads a JSON value from a data object
-	  * \param data A reference to the data object containing the JSON
-	  * \return
-	  */
+		* \details Loads a JSON value from a data object
+		* \param data A reference to the data object containing the JSON
+		* \return
+		*/
 	JsonValue load(
 			XmlString xml
 			);
@@ -536,28 +555,28 @@ public:
 
 
 	/*!
-	  * \details Loads a JSON value from an already open file
-	  * \param file A reference to the file containing JSON
-	  * \return Zero on success
-	  */
+		* \details Loads a JSON value from an already open file
+		* \param file A reference to the file containing JSON
+		* \return Zero on success
+		*/
 	JsonValue load(
 			FilePath file
 			);
 
 	/*!
-	  * \details Loads a JSON value from streaming data
-	  * \param callback The function to call when more data is available
-	  * \param context This is passed to \a callback but not used internally
-	  * \return Zero on success
-	  */
+		* \details Loads a JSON value from streaming data
+		* \param callback The function to call when more data is available
+		* \param context This is passed to \a callback but not used internally
+		* \return Zero on success
+		*/
 	JsonValue load(
 			json_load_callback_t callback,
 			void * context
 			);
 
 	int save(const var::JsonValue & value,
-				fs::File::Path path
-				) const;
+					 fs::File::Path path
+					 ) const;
 
 	var::String to_string(
 			const JsonValue & value
@@ -660,6 +679,17 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 	T v() const { return T(to_object().at(MCU_STRINGIFY(k))); } \
 	void json_access_object_with_key_never_used_##v()
 
+#define JSON_ACCESS_OBJECT_LIST(c, T, v) \
+	var::Vector<T> v() const { return to_object().at(MCU_STRINGIFY(v)).to_object().construct_key_list<T>(); } \
+	c& set_##v(const var::Vector<T>& a){ to_object().insert(MCU_STRINGIFY(v), var::JsonObject(a)); return *this; } \
+	void json_access_object_list_never_used_##v()
+
+#define JSON_ACCESS_OBJECT_LIST_WITH_KEY(c, T, k, v) \
+	var::Vector<T> v() const { return to_object().at(MCU_STRINGIFY(k)).to_object().construct_key_list<T>(); } \
+	c& set_##v(const var::Vector<T>& a){ to_object().insert(MCU_STRINGIFY(k), var::JsonObject(a)); return *this; } \
+	void json_access_object_list_never_used_##v()
+
+
 #define JSON_ACCESS_ARRAY(c, T, v) \
 	var::Vector<T> v() const { return to_object().at(MCU_STRINGIFY(v)).to_array().construct_list<T>(); } \
 	c& set_##v(const var::Vector<T>& a){ to_object().insert(MCU_STRINGIFY(v), var::JsonArray(a)); return *this; } \
@@ -681,6 +711,41 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 	void json_access_array_with_key_never_used_##v()
 
 
+#define JSON_ACCESS_KEY_VALUE_PAIR_STRING(c,k,v) \
+	c(const var::String& key, const var::JsonValue& value){ \
+	set_##k(key); \
+	set_##v(value.to_string()); \
+	} \
+	const var::String& key() const { return k(); } \
+	var::JsonValue value() const { return var::JsonString(v()); } \
+	void json_access_key_value_pair_string_never_used_##v()
+
+#define JSON_ACCESS_KEY_VALUE_PAIR_REAL(c,k,v) \
+	c(const var::String& key, const var::JsonValue& value){ \
+	set_##k(key); \
+	set_##v(value.to_real()); \
+	} \
+	const var::String& key() const { return k(); } \
+	var::JsonValue value() const { return var::JsonReal(v()); } \
+	void json_access_key_value_pair_real_never_used_##v()
+
+#define JSON_ACCESS_KEY_VALUE_PAIR_BOOL(c,k,v) \
+	c(const var::String& key, const var::JsonValue& value){ \
+	set_##k(key); \
+	set_##v(value.to_bool()); \
+	} \
+	const var::String& key() const { return k(); } \
+	var::JsonValue value() const { return v() ? var::JsonTrue() : var::JsonFalse(); } \
+	void json_access_key_value_pair_bool_never_used_##v()
+
+#define JSON_ACCESS_KEY_VALUE_PAIR_ARRAY(c,T,k,v) \
+	c(const var::String& key, const var::JsonValue& value){ \
+	set_##k(key); \
+	set_##v(value.to_array().construct_list<T>()); \
+	} \
+	const var::String& key() const { return k(); } \
+	var::JsonValue value() const { return var::JsonArray(v()); } \
+	void json_access_key_value_pair_bool_never_used_##v()
 
 
 
