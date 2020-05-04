@@ -141,10 +141,16 @@ public:
 			Count count){
 		m_vector.erase(
 					m_vector.begin() + position.argument(),
-					m_vector.begin() + count.argument()
+					m_vector.begin() + position.argument() + count.argument()
 					);
 		return *this;
 	}
+
+	Vector& remove(u32 pos){
+		return erase(Position(pos), Count(1));
+	}
+
+
 
 	const T & operator[](size_t offset) const { return m_vector[offset]; }
 	T & operator[](size_t offset){ return m_vector[offset]; }

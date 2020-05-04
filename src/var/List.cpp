@@ -3,3 +3,4 @@
 
 using namespace var;
 
+u32 sapi_list_unused;

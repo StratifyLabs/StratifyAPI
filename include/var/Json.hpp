@@ -14,6 +14,7 @@ namespace var {
 #undef TRUE
 #undef FALSE
 
+class Container;
 class JsonDocument;
 
 class JsonError {
@@ -90,7 +91,7 @@ public:
 	  */
 	bool is_valid() const{ return m_value != 0; }
 
-	enum type {
+	enum types {
 		type_invalid = -1,
 		type_object = JSON_OBJECT,
 		type_array = JSON_ARRAY,
@@ -99,12 +100,13 @@ public:
 		type_integer = JSON_INTEGER,
 		type_true = JSON_TRUE,
 		type_false = JSON_FALSE,
+		type_null = JSON_NULL,
 		type_zero = JSON_NULL
 	};
 
-	enum type type() const {
+	enum types type() const {
 		if( m_value ){
-			return (enum type)json_typeof(m_value);
+			return (enum types)json_typeof(m_value);
 		}
 		return type_invalid;
 	}
@@ -619,6 +621,68 @@ Printer& operator << (Printer& printer, const var::JsonValue & a);
 Printer& operator << (Printer& printer, const var::JsonError & a);
 Printer& print_value(Printer& printer, const var::JsonValue & a, const var::String& key);
 }
+
+#define JSON_ACCESS_STRING(c, v) \
+	var::String v() const { return to_object().at(MCU_STRINGIFY(v)).to_string(); } \
+	c& set_##v(const var::String& value){ to_object().insert(MCU_STRINGIFY(v), var::JsonString(value)); return *this; } \
+	void json_access_string_never_used_##v()
+
+#define JSON_ACCESS_STRING_WITH_KEY(c, k, v) \
+	var::String v() const { return to_object().at(MCU_STRINGIFY(k)).to_string(); } \
+	c& set_##v(const var::String& value){ to_object().insert(MCU_STRINGIFY(k), var::JsonString(value)); return *this; } \
+	void json_access_string_with_key_never_used_##v()
+
+#define JSON_ACCESS_BOOL(c, v) \
+	bool is_##v() const { return to_object().at(MCU_STRINGIFY(v)).to_bool(); } \
+	c& set_is_##v(bool value = true){ to_object().insert(MCU_STRINGIFY(v), value); return *this; } \
+	void json_access_bool_never_used_##v()
+
+#define JSON_ACCESS_BOOL_WITH_KEY(c, k, v) \
+	bool is_##v() const { return to_object().at(MCU_STRINGIFY(k)).to_bool(); } \
+	c& set_is_##v(bool value = true){ to_object().insert(MCU_STRINGIFY(k), value); return *this; } \
+	void json_access_bool_with_key_never_used_##v()
+
+#define JSON_ACCESS_INTEGER(c, v) \
+	s32 v() const { return to_object().at(MCU_STRINGIFY(v)).to_integer(); } \
+	c& set_##v(bool value){ to_object().insert(MCU_STRINGIFY(v), var::JsonInteger(value)); return *this; } \
+	void json_access_integer_never_used_##v()
+
+#define JSON_ACCESS_INTEGER_WITH_KEY(c, k, v) \
+	s32 v() const { return to_object().at(MCU_STRINGIFY(k)).to_integer(); } \
+	c& set_##v(bool value){ to_object().insert(MCU_STRINGIFY(k), var::JsonInteger(value)); return *this; } \
+	void json_access_integer_with_key_never_used_##v()
+
+#define JSON_ACCESS_OBJECT(c, T, v) \
+	T v() const { return T(to_object().at(MCU_STRINGIFY(v))); } \
+	void json_access_object_never_used_##v()
+
+#define JSON_ACCESS_OBJECT_WITH_KEY(c, T, k, v) \
+	T v() const { return T(to_object().at(MCU_STRINGIFY(k))); } \
+	void json_access_object_with_key_never_used_##v()
+
+#define JSON_ACCESS_ARRAY(c, T, v) \
+	var::Vector<T> v() const { return to_object().at(MCU_STRINGIFY(v)).to_array().construct_list<T>(); } \
+	c& set_##v(const var::Vector<T>& a){ to_object().insert(MCU_STRINGIFY(v), var::JsonArray(a)); return *this; } \
+	void json_access_array_never_used_##v()
+
+#define JSON_ACCESS_ARRAY_WITH_KEY(c, T, k, v) \
+	var::Vector<T> v() const { return to_object().at(MCU_STRINGIFY(k)).to_array().construct_list<T>(); } \
+	c& set_##v(const var::Vector<T>& a){ to_object().insert(MCU_STRINGIFY(k), var::JsonArray(a)); return *this; } \
+	void json_access_array_with_key_never_used_##v()
+
+#define JSON_ACCESS_STRING_ARRAY(c, v) \
+	var::Vector<var::String> v() const { return to_object().at(MCU_STRINGIFY(v)).to_array().string_list(); } \
+	c& set_##v(const var::Vector<var::String>& a){ to_object().insert(MCU_STRINGIFY(v), var::JsonArray(a)); return *this; } \
+	void json_access_array_never_used_##v()
+
+#define JSON_ACCESS_STRING_ARRAY_WITH_KEY(c, k, v) \
+	var::Vector<var::String> v() const { return to_object().at(MCU_STRINGIFY(k)).to_array().string_list(); } \
+	c& set_##v(const var::Vector<var::String>& a){ to_object().insert(MCU_STRINGIFY(k), var::JsonArray(a)); return *this; } \
+	void json_access_array_with_key_never_used_##v()
+
+
+
+
 
 
 #endif // SAPI_VAR_JSON_HPP_

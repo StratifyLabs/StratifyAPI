@@ -33,8 +33,7 @@ Link::Link(){
 	m_lock = 0;
 	m_is_bootloader = false;
 	m_error_message = "";
-	m_driver = &m_driver_instance;
-	link_load_default_driver(m_driver);
+	link_load_default_driver( driver() );
 }
 
 Link::~Link(){}
@@ -58,17 +57,17 @@ void Link::reset_progress(){
 	m_progress_max = 0;
 }
 
-var::Vector<var::String> Link::get_port_list(){
+var::Vector<var::String> Link::get_path_list(){
 	var::Vector<var::String> result;
 	var::Data device_name(256);
 	var::String last_device;
-
 
 	while( driver()->getname(
 					 device_name.to_char(),
 					 last_device.cstring(),
 					 static_cast<int>(device_name.capacity())
 					 ) == 0 ){
+
 		var::String device_string(
 					device_name.to_const_char(),
 					var::String::Length(
@@ -87,7 +86,7 @@ var::Vector<var::String> Link::get_port_list(){
 
 var::Vector<LinkInfo> Link::get_info_list(){
 	var::Vector<LinkInfo> result;
-	var::Vector<var::String> port_list = get_port_list();
+	var::Vector<var::String> port_list = get_path_list();
 
 	//disconnect if already connected
 	disconnect();
@@ -116,15 +115,15 @@ int Link::connect(
 	reset_progress();
 
 
-	if ( m_driver->phy_driver.handle == LINK_PHY_OPEN_ERROR ){
+	if ( driver()->phy_driver.handle == LINK_PHY_OPEN_ERROR ){
 
-		m_driver->transport_version = 0;
-		m_driver->phy_driver.handle =
-				m_driver->phy_driver.open(
+		driver()->transport_version = 0;
+		driver()->phy_driver.handle =
+				driver()->phy_driver.open(
 					path.cstring(),
-					m_driver->options
+					driver()->options
 					);
-		if( m_driver->phy_driver.handle == LINK_PHY_OPEN_ERROR ){
+		if( driver()->phy_driver.handle == LINK_PHY_OPEN_ERROR ){
 			m_error_message = "Failed to Connect to Device";
 			return -1;
 		}
@@ -137,9 +136,9 @@ int Link::connect(
 	m_is_legacy = is_legacy.argument();
 
 	if( m_is_legacy ){
-		err = link_isbootloader_legacy(m_driver);
+		err = link_isbootloader_legacy(driver());
 	} else {
-		err = link_isbootloader(m_driver);
+		err = link_isbootloader(driver());
 	}
 
 	if ( err > 0 ){
@@ -148,7 +147,7 @@ int Link::connect(
 		m_is_bootloader = false;
 	} else {
 		m_error_message.format("Failed to check for Bootloader status (%d)", link_errno);
-		m_driver->phy_driver.close(&m_driver->phy_driver.handle);
+		driver()->phy_driver.close(&driver()->phy_driver.handle);
 		return -1;
 	}
 
@@ -188,7 +187,7 @@ int Link::reconnect(
 			disconnect();
 		}
 
-		var::Vector<var::String> port_list = get_port_list();
+		var::Vector<var::String> port_list = get_path_list();
 		for(u32 j=0; j < port_list.count(); j++){
 			result = connect(port_list.at(j));
 			if( result < 0 ){
@@ -239,7 +238,7 @@ int Link::open(
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 
 		err = link_open(
-					m_driver,
+					driver(),
 					path.cstring(),
 					flags.o_flags(),
 					permissions.permissions()
@@ -262,7 +261,7 @@ int Link::close(int fd){
 	if ( m_is_bootloader ){ return -1; }
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
-		err = link_close(m_driver, fd);
+		err = link_close(driver(), fd);
 		if(err != LINK_PROT_ERROR) break;
 	}
 
@@ -285,7 +284,7 @@ int Link::read(
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err =  link_read(
-					m_driver,
+					driver(),
 					fd.argument(),
 					buf,
 					static_cast<int>(nbyte.argument())
@@ -310,7 +309,7 @@ int Link::write(
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err =  link_write(
-					m_driver,
+					driver(),
 					fd.argument(),
 					buf,
 					static_cast<int>(nbyte.argument())
@@ -329,7 +328,7 @@ int Link::read_flash(int addr, void * buf, int nbyte){
 	int err = -1;
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
-		err =  link_readflash(m_driver, addr, buf, nbyte);
+		err =  link_readflash(driver(), addr, buf, nbyte);
 		if(err != LINK_PROT_ERROR) break;
 	}
 	if ( err < 0 ){
@@ -401,7 +400,7 @@ int Link::write_flash(int addr, const void * buf, int nbyte){
 	int err = -1;
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
-		err =  link_writeflash(m_driver, addr, buf, nbyte);
+		err =  link_writeflash(driver(), addr, buf, nbyte);
 		if(err != LINK_PROT_ERROR) break;
 	}
 	if ( err < 0 ){
@@ -425,7 +424,7 @@ int Link::lseek(
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_lseek(
-					m_driver,
+					driver(),
 					fd.argument(),
 					offset.argument(),
 					whence
@@ -453,7 +452,7 @@ int Link::ioctl(
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_ioctl(
-					m_driver,
+					driver(),
 					fd.argument(),
 					request.argument(),
 					arg.argument()
@@ -471,10 +470,10 @@ int Link::ioctl(
 
 int Link::disconnect(){
 
-	if ( m_driver->phy_driver.handle != LINK_PHY_OPEN_ERROR ){
-		link_disconnect(m_driver);
+	if ( driver()->phy_driver.handle != LINK_PHY_OPEN_ERROR ){
+		link_disconnect(driver());
 
-		if ( m_driver->phy_driver.handle != LINK_PHY_OPEN_ERROR ){
+		if ( driver()->phy_driver.handle != LINK_PHY_OPEN_ERROR ){
 			//can't unlock the device if it has been destroyed
 		}
 	}
@@ -492,12 +491,12 @@ int Link::disconnect(){
 }
 
 void Link::set_disconnected(){
-	m_driver->transport_version = 0;
-	m_driver->phy_driver.handle = LINK_PHY_OPEN_ERROR;
+	driver()->transport_version = 0;
+	driver()->phy_driver.handle = LINK_PHY_OPEN_ERROR;
 }
 
 bool Link::is_connected() const {
-	if( m_driver->phy_driver.handle == LINK_PHY_OPEN_ERROR ){
+	if( driver()->phy_driver.handle == LINK_PHY_OPEN_ERROR ){
 		return false;
 	}
 
@@ -516,7 +515,7 @@ int Link::stat(
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_stat(
-					m_driver,
+					driver(),
 					path.cstring(),
 					&st
 					);
@@ -537,7 +536,7 @@ int Link::get_time(struct tm * gt){
 	}
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
-		err = link_gettime(m_driver, &ltm);
+		err = link_gettime(driver(), &ltm);
 		if(err != LINK_PROT_ERROR) break;
 	}
 
@@ -577,7 +576,7 @@ int Link::set_time(struct tm * gt){
 	}
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
-		err = link_settime(m_driver, &ltm);
+		err = link_settime(driver(), &ltm);
 		if(err != LINK_PROT_ERROR) break;
 	}
 
@@ -599,7 +598,7 @@ int Link::mkdir(
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_mkdir(
-					m_driver,
+					driver(),
 					path.cstring(),
 					permissions.permissions()
 					);
@@ -625,7 +624,7 @@ int Link::rmdir(
 	}
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
-		err = link_rmdir(m_driver, path.cstring());
+		err = link_rmdir(driver(), path.cstring());
 		if(err != LINK_PROT_ERROR) break;
 	}
 
@@ -730,7 +729,7 @@ int Link::opendir(const var::String & path){
 	}
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
-		err = link_opendir(m_driver, path.cstring());
+		err = link_opendir(driver(), path.cstring());
 		if(err != LINK_PROT_ERROR) break;
 	}
 
@@ -752,7 +751,7 @@ int Link::readdir_r(
 	}
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
-		err = link_readdir_r(m_driver, dirp, entry, result);
+		err = link_readdir_r(driver(), dirp, entry, result);
 		if(err != LINK_PROT_ERROR) break;
 	}
 
@@ -770,7 +769,7 @@ int Link::closedir(int dirp){
 	}
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
-		err = link_closedir(m_driver, dirp);
+		err = link_closedir(driver(), dirp);
 		if(err != LINK_PROT_ERROR) break;
 	}
 
@@ -791,7 +790,7 @@ int Link::symlink(
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_symlink(
-					m_driver,
+					driver(),
 					old_path.argument().cstring(),
 					new_path.argument().cstring()
 					);
@@ -813,7 +812,7 @@ int Link::unlink(const var::String & path){
 	}
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
-		err = link_unlink(m_driver, path.cstring());
+		err = link_unlink(driver(), path.cstring());
 		if(err != LINK_PROT_ERROR) break;
 	}
 
@@ -930,7 +929,7 @@ int Link::copy(
 	} else {
 
 
-		if ( link_stat(m_driver, src.argument().cstring(), &st) < 0 ){
+		if ( link_stat(driver(), src.argument().cstring(), &st) < 0 ){
 			m_error_message = "Failed to get target file size";
 			return -1;
 		}
@@ -1013,7 +1012,7 @@ int Link::run_app(const var::String & path){
 
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
-		err = link_exec(m_driver, path.cstring());
+		err = link_exec(driver(), path.cstring());
 		if(err != LINK_PROT_ERROR) break;
 	}
 
@@ -1045,7 +1044,7 @@ int Link::format(const var::String & path){
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_mkfs(
-					m_driver,
+					driver(),
 					path.cstring()
 					);
 		if(err != LINK_PROT_ERROR) break;
@@ -1067,7 +1066,7 @@ int Link::kill_pid(int pid, int signo){
 	}
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
-		err = link_kill_pid(m_driver, pid, signo);
+		err = link_kill_pid(driver(), pid, signo);
 		if(err != LINK_PROT_ERROR) break;
 	}
 
@@ -1078,18 +1077,18 @@ int Link::kill_pid(int pid, int signo){
 }
 
 int Link::reset(){
-	link_reset(m_driver);
-	m_driver->transport_version = 0;
-	m_driver->phy_driver.handle = LINK_PHY_OPEN_ERROR;
+	link_reset(driver());
+	driver()->transport_version = 0;
+	driver()->phy_driver.handle = LINK_PHY_OPEN_ERROR;
 	return 0;
 }
 
 int Link::reset_bootloader(){
 
-	link_resetbootloader(m_driver);
+	link_resetbootloader(driver());
 
-	m_driver->transport_version = 0;
-	m_driver->phy_driver.handle = LINK_PHY_OPEN_ERROR;
+	driver()->transport_version = 0;
+	driver()->phy_driver.handle = LINK_PHY_OPEN_ERROR;
 	return 0;
 }
 
@@ -1104,7 +1103,7 @@ int Link::rename(
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_rename(
-					m_driver,
+					driver(),
 					old_path.argument().cstring(),
 					new_path.argument().cstring()
 					);
@@ -1129,7 +1128,7 @@ int Link::chown(
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_chown(
-					m_driver,
+					driver(),
 					path.cstring(),
 					owner.argument(),
 					group.argument()
@@ -1155,7 +1154,7 @@ int Link::chmod(
 
 	for(int tries = 0; tries < MAX_TRIES; tries++){
 		err = link_chmod(
-					m_driver,
+					driver(),
 					path.cstring(),
 					permissions.permissions()
 					);
@@ -1180,9 +1179,9 @@ int Link::get_bootloader_attr(bootloader_attr_t & attr){
 	}
 
 	if( m_is_legacy ){
-		err = link_bootloader_attr_legacy(m_driver, &attr, 0);
+		err = link_bootloader_attr_legacy(driver(), &attr, 0);
 	} else {
-		err = link_bootloader_attr(m_driver, &attr, 0);
+		err = link_bootloader_attr(driver(), &attr, 0);
 	}
 	if( err < 0 ){
 		m_error_message = "Failed to read attributes";
@@ -1262,7 +1261,7 @@ int Link::erase_os(
 		progress_callback->update(0, ProgressCallback::indeterminate_progress_total());
 	}
 	//first erase the flash
-	err = link_eraseflash(m_driver);
+	err = link_eraseflash(driver());
 
 	if ( err < 0 ){
 		if( progress_callback ){ progress_callback->update(0, 0); }
@@ -1375,7 +1374,7 @@ int Link::install_os(const fs::File & image,
 		}
 
 		if ( (err = link_writeflash(
-						m_driver,
+						driver(),
 						loc,
 						buffer.to_const_void(),
 						bytes_read
@@ -1415,7 +1414,7 @@ int Link::install_os(const fs::File & image,
 						){
 
 				if ( (err = link_readflash(
-								m_driver,
+								driver(),
 								loc,
 								compare_buffer.to_void(),
 								bytes_read)
@@ -1466,7 +1465,7 @@ int Link::install_os(const fs::File & image,
 
 		//write the start block
 		if( (err = link_writeflash(
-					 m_driver,
+					 driver(),
 					 start_address,
 					 start_address_buffer.to_const_void(),
 					 start_address_buffer.size())
@@ -1485,7 +1484,7 @@ int Link::install_os(const fs::File & image,
 						SYSFS_GET_RETURN_ERRNO(err)
 						);
 
-			link_eraseflash(m_driver);
+			link_eraseflash(driver());
 			return -1;
 		}
 
@@ -1494,7 +1493,7 @@ int Link::install_os(const fs::File & image,
 			//verify the stack address
 			buffer.resize( start_address_buffer.size() );
 			if( (err = link_readflash(
-						 m_driver,
+						 driver(),
 						 start_address,
 						 buffer.to_void(),
 						 start_address_buffer.size())
@@ -1508,7 +1507,7 @@ int Link::install_os(const fs::File & image,
 			if( buffer != start_address_buffer ){
 				m_error_message = "Failed to verify stack address block";
 				if( progress_callback ){ progress_callback->update(0,0); }
-				link_eraseflash(m_driver);
+				link_eraseflash(driver());
 				return -1;
 			}
 		}
@@ -1639,7 +1638,7 @@ int Link::update_os(
 
 	if( progress_callback ){ progress_callback->update(0, 100); }
 	//first erase the flash
-	err = link_eraseflash(m_driver);
+	err = link_eraseflash(driver());
 
 	if ( err < 0 ){
 
@@ -1673,7 +1672,7 @@ int Link::update_os(
 			memset(buffer, 0xFF, 256);
 		}
 
-		if ( (err = link_writeflash(m_driver, loc, buffer, bytesRead)) != bytesRead ){
+		if ( (err = link_writeflash(driver(), loc, buffer, bytesRead)) != bytesRead ){
 			m_error_message.format("Failed to write to link flash (%d) -> try the operation again", link_errno);
 			if ( err < 0 ){
 				err = -1;
@@ -1702,7 +1701,7 @@ int Link::update_os(
 								File::Size(buffer_size)
 								)) > 0 ){
 
-				if ( (err = link_readflash(m_driver, loc, cmpBuffer, bytesRead)) != bytesRead ){
+				if ( (err = link_readflash(driver(), loc, cmpBuffer, bytesRead)) != bytesRead ){
 					m_error_message.format("Failed to read flash memory", link_errno);
 					if ( err > 0 ){
 						err = -1;
@@ -1741,7 +1740,7 @@ int Link::update_os(
 		}
 
 		//write the stack address
-		if( (err = link_writeflash(m_driver, startAddr, stackaddr, 256)) != 256 ){
+		if( (err = link_writeflash(driver(), startAddr, stackaddr, 256)) != 256 ){
 			if( progress_callback ){ progress_callback->update(0,0); }
 			m_error_message.format("Failed to write stack addr %d", err);
 			return -1;
@@ -1750,7 +1749,7 @@ int Link::update_os(
 
 		if( is_verify.argument() == true ){
 			//verify the stack address
-			if( (err = link_readflash(m_driver, startAddr, buffer, 256)) != 256 ){
+			if( (err = link_readflash(driver(), startAddr, buffer, 256)) != 256 ){
 				m_error_message.format("Failed to write stack addr %d", err);
 				if( progress_callback ){ progress_callback->update(0,0); }
 
@@ -1758,7 +1757,7 @@ int Link::update_os(
 			}
 
 			if( memcmp(buffer, stackaddr, 256) != 0 ){
-				link_eraseflash(m_driver);
+				link_eraseflash(driver());
 				m_error_message = "Failed to verify stack address";
 				if( progress_callback ){ progress_callback->update(0,0); }
 
@@ -1772,7 +1771,7 @@ int Link::update_os(
 
 
 	if( err < 0 ){
-		link_eraseflash(m_driver);
+		link_eraseflash(driver());
 	}
 
 	if( progress_callback ){ progress_callback->update(0,0); }
@@ -1923,6 +1922,14 @@ int Link::install_app(
 	return 0;
 }
 
+var::String LinkDriverPath::lookup_serial_port_path_from_usb_details(){
+
+#if defined __win32
+
+
+#endif
+	return var::String();
+}
 
 
 

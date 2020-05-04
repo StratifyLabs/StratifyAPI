@@ -27,20 +27,20 @@ class LinkInfo {
 public:
 
 	LinkInfo(){}
-	LinkInfo(const var::String & port,
+	LinkInfo(const var::String & path,
 					 const sys::SysInfo & sys_info){
-		set_port(port);
+		set_path(path);
 		set_info(sys_info);
 	}
 
 	void clear(){
 		m_serial_number.clear();
-		m_port.clear();
+		m_path.clear();
 		m_sys_info.clear();
 	}
 
 	LinkInfo & set_port(const var::String & port){
-		m_port = port;
+		m_path = port;
 		return *this;
 	}
 
@@ -50,14 +50,12 @@ public:
 		return *this;
 	}
 
-	const var::String & port() const { return m_port; }
-	const sys::SysInfo & sys_info() const { return m_sys_info; }
-	const var::String & serial_number() const { return m_serial_number; }
+	const var::String & port() const { return m_path; }
 
 private:
-	var::String m_port;
-	sys::SysInfo m_sys_info;
-	var::String m_serial_number;
+	API_ACCESS_COMPOUND(LinkInfo, var::String, path);
+	API_READ_ACCESS_COMPOUND(LinkInfo, sys::SysInfo, sys_info);
+	API_READ_ACCESS_COMPOUND(LinkInfo, var::String, serial_number);
 
 };
 
@@ -140,6 +138,57 @@ private:
 	var::String m_path;
 };
 
+class LinkDriverPath {
+public:
+
+	LinkDriverPath(){}
+	LinkDriverPath(const var::String& driver_path){
+		path() = driver_path;
+		var::StringList driver_details = m_path.split("@");
+		var::String details_string;
+		if( driver_details.count() == 1 ){
+			driver_name() = "serial";
+			path() = "serial@" + driver_path;
+			details_string = driver_path;
+		} else if( driver_details.count() == 2 ){
+			m_driver_name = driver_details.at(0);
+			details_string = driver_details.at(1);
+		}
+
+		if( details_string.is_empty() ){
+			return;
+		}
+
+		var::StringList detail_list = details_string.split("/");
+
+		if( detail_list.count() == 1 ){
+			device_path() = detail_list.at(0);
+		}	else if( detail_list.count() == 3 ){
+			vendor_id()	= detail_list.at(0);
+			product_id()	= detail_list.at(1);
+			interface()	= detail_list.at(2);
+		} else if( detail_list.count() == 4 ){
+			vendor_id()	= detail_list.at(0);
+			product_id()	= detail_list.at(1);
+			interface()	= detail_list.at(2);
+			serial_number()	= detail_list.at(3);
+		}
+	}
+
+
+private:
+	API_ACCESS_COMPOUND(LinkDriverPath, var::String, path);
+	API_ACCESS_COMPOUND(LinkDriverPath, var::String, device_path);
+	API_ACCESS_COMPOUND(LinkDriverPath, var::String, serial_number);
+	API_ACCESS_COMPOUND(LinkDriverPath, var::String, interface);
+	API_ACCESS_COMPOUND(LinkDriverPath, var::String, vendor_id);
+	API_ACCESS_COMPOUND(LinkDriverPath, var::String, product_id);
+	API_ACCESS_COMPOUND(LinkDriverPath, var::String, driver_name);
+
+	var::String lookup_serial_port_path_from_usb_details();
+
+};
+
 /*! \brief Link for Controlling Stratify OS remotely
  * \details This class is used to access devices
  * running Stratify OS from a remote platform (desktop/mobile/web).
@@ -181,7 +230,10 @@ public:
 	~Link();
 
 
-	var::Vector<var::String> get_port_list();
+	var::Vector<var::String> get_path_list();
+	var::Vector<var::String> get_port_list(){
+		return get_path_list();
+	}
 
 	/*! \cond */
 	typedef struct {
@@ -688,17 +740,15 @@ public:
 		* \endcode
 		*
 		*/
-	link_transport_mdriver_t * driver() const { return m_driver; }
+	const link_transport_mdriver_t * driver() const { return &m_driver_instance; }
+	link_transport_mdriver_t * driver(){ return &m_driver_instance; }
 
 	/*! \details Assigns the driver options to the link driver.
 	 *
 	 */
-	void set_driver_options(const void * options){
-		if( m_driver ){
-			m_driver->options = options;
-		} else {
-			m_error_message = "driver is null";
-		}
+	Link& set_driver_options(const void * options){
+		m_driver_instance.options = options;
+		return *this;
 	}
 
 	/*! \details Sets the driver used by this object.
@@ -706,12 +756,18 @@ public:
 		* If no driver is set, the default driver (serial port) is used.
 		*
 		*/
-	void set_driver(fs::File::LinkDriver driver){
-		m_driver = driver.argument();
+	Link& set_driver(link_transport_mdriver_t* driver){
+		m_driver_instance = *driver;
+		return *this;
 	}
 
-	void set_progress(int p){ m_progress = p; }
-	void set_progress_max(int p){ m_progress_max = p; }
+	Link& set_driver(fs::File::LinkDriver driver){
+		m_driver_instance = *driver.argument();
+		return *this;
+	}
+
+	Link& set_progress(int p){ m_progress = p; return *this; }
+	Link& set_progress_max(int p){ m_progress_max = p; return *this; }
 
 
 	/*! details Updates a binary app with the specified settings.
@@ -789,7 +845,6 @@ private:
 	bootloader_attr_t m_bootloader_attributes;
 
 	link_transport_mdriver_t m_driver_instance;
-	link_transport_mdriver_t * m_driver;
 
 
 	u32 validate_os_image_id_with_connected_bootloader(

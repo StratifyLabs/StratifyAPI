@@ -13,6 +13,7 @@ set(SOURCES
 	Datum.cpp
 	Queue.cpp
 	Ring.cpp
+	Container.cpp
 	ConstString.cpp
 	VersionString.cpp
 	String.cpp

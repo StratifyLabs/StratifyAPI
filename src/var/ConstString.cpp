@@ -4,6 +4,7 @@
 
 using namespace var;
 
+u32 sapi_const_string_unused;
 
 
 
