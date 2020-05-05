@@ -166,11 +166,11 @@ public:
 		}	else if( detail_list.count() == 3 ){
 			vendor_id()	= detail_list.at(0);
 			product_id()	= detail_list.at(1);
-			interface()	= detail_list.at(2);
+			interface_number()	= detail_list.at(2);
 		} else if( detail_list.count() == 4 ){
 			vendor_id()	= detail_list.at(0);
 			product_id()	= detail_list.at(1);
-			interface()	= detail_list.at(2);
+			interface_number()	= detail_list.at(2);
 			serial_number()	= detail_list.at(3);
 		}
 	}
@@ -180,7 +180,7 @@ private:
 	API_ACCESS_COMPOUND(LinkDriverPath, var::String, path);
 	API_ACCESS_COMPOUND(LinkDriverPath, var::String, device_path);
 	API_ACCESS_COMPOUND(LinkDriverPath, var::String, serial_number);
-	API_ACCESS_COMPOUND(LinkDriverPath, var::String, interface);
+	API_ACCESS_COMPOUND(LinkDriverPath, var::String, interface_number);
 	API_ACCESS_COMPOUND(LinkDriverPath, var::String, vendor_id);
 	API_ACCESS_COMPOUND(LinkDriverPath, var::String, product_id);
 	API_ACCESS_COMPOUND(LinkDriverPath, var::String, driver_name);
@@ -387,7 +387,7 @@ public:
 			DestinationPath dest /*! The path to the destination file */,
 			const fs::Permissions & permissions /*! The access permissions if copying to the device */,
 			IsCopyToDevice to_device = IsCopyToDevice(true) /*! When true, copy is from host to device */,
-			const ProgressCallback * progress_callback = 0
+			const ProgressCallback * progress_callback = nullptr
 			);
 
 
@@ -449,7 +449,7 @@ public:
 			SourcePath src,
 			DestinationPath dest,
 			const fs::Permissions & permissions,
-			const ProgressCallback * progress_callback = 0
+			const ProgressCallback * progress_callback = nullptr
 			){
 		return copy(
 					src,
@@ -802,7 +802,7 @@ public:
 			const fs::File & application_image,
 			Path path,
 			ApplicationName name,
-			const ProgressCallback * progress_callback = 0
+			const ProgressCallback * progress_callback = nullptr
 			);
 
 	/*! \details Returns the serial number of the last device
