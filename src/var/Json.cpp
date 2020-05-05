@@ -162,38 +162,41 @@ JsonArray & JsonValue::to_array(){
 int JsonValue::create_if_not_valid(){
 	if( is_valid() ){ return 0; }
 	m_value = create();
-	if( m_value == 0 ){ return -1; }
+	if( m_value == 0 ){
+		set_translated_error_number_if_error( json_error_out_of_memory );
+		return -1;
+	}
 	return 0;
 }
 
-int JsonValue::assign(const var::String & value){
+JsonValue& JsonValue::assign(const var::String & value){
 	if( is_string() ){
-		return api()->string_set(m_value, value.cstring());
+		set_translated_error_number_if_error( api()->string_set(m_value, value.cstring()) );
 	} else if( is_real() ){
-		return api()->real_set(m_value, ::atoff(value.cstring()));
+		set_translated_error_number_if_error( api()->real_set(m_value, ::atoff(value.cstring())) );
 	} else if( is_integer() ){
-		return api()->integer_set(m_value, ::atoi(value.cstring()));
-	} else if ( is_true() ){
-		if( value == "false" ){
-
+		set_translated_error_number_if_error( api()->integer_set(m_value, ::atoi(value.cstring())) );
+	} else if ( is_true() || is_false() ){
+		if( value == "true" ){
+			*this = JsonTrue();
+		} else {
+			*this = JsonFalse();
 		}
 	}
 
-	//can't assign string to object, array, bool, or null
-
-	return -1;
+	return *this;
 }
 
-int JsonValue::assign(float value){
-	return 0;
+JsonValue& JsonValue::assign(float value){
+	return *this;
 }
 
-int JsonValue::assign(int value){
-	return 0;
+JsonValue& JsonValue::assign(int value){
+	return *this;
 }
 
-int JsonValue::assign(bool value){
-	return 0;
+JsonValue& JsonValue::assign(bool value){
+	return *this;
 }
 
 
@@ -337,7 +340,7 @@ JsonObject& JsonObject::insert(
 		return *this;
 	}
 
-	set_error_number_if_error(
+	set_translated_error_number_if_error(
 				api()->object_set(
 					m_value,
 					key.cstring(),
@@ -352,7 +355,7 @@ JsonObject& JsonObject::update(
 		enum updates o_flags
 		){
 	if( o_flags & update_existing ){
-		set_error_number_if_error(
+		set_translated_error_number_if_error(
 					api()->object_update_existing(
 						m_value,
 						value.m_value
@@ -362,7 +365,7 @@ JsonObject& JsonObject::update(
 	}
 
 	if( o_flags & update_missing ){
-		set_error_number_if_error(
+		set_translated_error_number_if_error(
 					api()->object_update_missing(
 						m_value,
 						value.m_value
@@ -371,7 +374,7 @@ JsonObject& JsonObject::update(
 		return *this;
 	}
 
-	set_error_number_if_error(
+	set_translated_error_number_if_error(
 				api()->object_update(
 					m_value,
 					value.m_value
@@ -381,7 +384,7 @@ JsonObject& JsonObject::update(
 }
 
 JsonObject& JsonObject::remove(const var::String & key){
-	set_error_number_if_error( api()->object_del(m_value, key.cstring()) );
+	set_translated_error_number_if_error( api()->object_del(m_value, key.cstring()) );
 	return *this;
 }
 
@@ -390,7 +393,7 @@ u32 JsonObject::count() const {
 }
 
 JsonObject& JsonObject::clear(){
-	set_error_number_if_error( api()->object_clear(m_value) );
+	set_translated_error_number_if_error( api()->object_clear(m_value) );
 	return *this;
 }
 
@@ -465,42 +468,57 @@ JsonArray::JsonArray(const var::Vector<s32>& list){
 	}
 }
 
-int JsonArray::append(const JsonValue & value){
-	if( create_if_not_valid() < 0 ){ return -1; }
-	return api()->array_append(
-				m_value,
-				value.m_value
+JsonArray& JsonArray::append(const JsonValue & value){
+	if( create_if_not_valid() < 0 ){ return *this; }
+	set_translated_error_number_if_error(
+				api()->array_append(
+					m_value,
+					value.m_value
+					)
 				);
+	return *this;
 }
 
-int JsonArray::append(const JsonArray & array){
-	if( create_if_not_valid() < 0 ){ return -1; }
-	return api()->array_extend(m_value, array.m_value);
+JsonArray& JsonArray::append(const JsonArray & array){
+	if( create_if_not_valid() < 0 ){ return *this; }
+	set_translated_error_number_if_error(
+				api()->array_extend(m_value, array.m_value)
+				);
+	return *this;
 }
 
-int JsonArray::insert(
+JsonArray& JsonArray::insert(
 		size_t position,
 		const JsonValue & value
 		){
-	if( create_if_not_valid() < 0 ){ return -1; }
-	return api()->array_insert(
-				m_value,
-				position,
-				value.m_value
+	if( create_if_not_valid() < 0 ){ return *this; }
+	set_translated_error_number_if_error(
+				api()->array_insert(
+					m_value,
+					position,
+					value.m_value
+					)
 				);
+	return *this;
 }
 
-int JsonArray::remove(
+JsonArray& JsonArray::remove(
 		size_t position
 		){
-	return api()->array_remove(
-				m_value,
-				position
+	set_translated_error_number_if_error(
+				api()->array_remove(
+					m_value,
+					position
+					)
 				);
+	return *this;
 }
 
-int JsonArray::clear(){
-	return api()->array_clear(m_value);
+JsonArray& JsonArray::clear(){
+	set_translated_error_number_if_error(
+				api()->array_clear(m_value)
+				);
+	return *this;
 }
 
 var::Vector<var::String> JsonArray::string_list(){
@@ -551,7 +569,7 @@ JsonReal::JsonReal(float value){
 	m_value = api()->create_real(value);
 }
 
-JsonReal & JsonReal::operator=(float a){
+JsonReal& JsonReal::operator=(float a){
 	if( create_if_not_valid() == 0 ){
 		api()->real_set(m_value, a);
 	}
@@ -566,7 +584,7 @@ JsonInteger::JsonInteger(int value){
 	m_value = api()->create_integer(value);
 }
 
-JsonInteger & JsonInteger::operator=(int a){
+JsonInteger& JsonInteger::operator=(int a){
 	if( create_if_not_valid() == 0 ){
 		api()->integer_set(m_value, a);
 	}

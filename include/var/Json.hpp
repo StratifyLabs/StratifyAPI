@@ -236,12 +236,12 @@ public:
 		*
 		*
 		*/
-	int assign(const var::String & value);
+	JsonValue& assign(const var::String & value);
 
 
-	int assign(float value);
-	int assign(int value);
-	int assign(bool value);
+	JsonValue& assign(float value);
+	JsonValue& assign(int value);
+	JsonValue& assign(bool value);
 
 	JsonValue& copy(
 			const JsonValue & value,
@@ -450,17 +450,17 @@ public:
 		*/
 	JsonValue at(size_t position) const;
 
-	int append(const JsonValue & value);
+	JsonArray& append(const JsonValue & value);
 
-	int append(const JsonArray & array);
+	JsonArray& append(const JsonArray & array);
 
-	int insert(
+	JsonArray& insert(
 			size_t position,
 			const JsonValue & value
 			);
 
-	int remove(size_t position);
-	int clear();
+	JsonArray& remove(size_t position);
+	JsonArray& clear();
 
 	var::Vector<var::String> string_list();
 	var::Vector<s32> integer_list();
