@@ -294,6 +294,15 @@ public:
 		return result;
 	}
 
+	template<class T> var::Vector<T> construct_key_list_copy(){
+		var::StringList list = key_list();
+		var::Vector<T> result;
+		for(const auto& key: list){
+			result.push_back(T(key, JsonValue().copy(at(key))));
+		}
+		return result;
+	}
+
 	template<class T> explicit JsonObject(const var::Vector<T>& list){
 		m_value = create();
 		for(const auto & item: list){
@@ -413,6 +422,15 @@ public:
 		result.reserve(count());
 		for(u32 i=0; i < count(); i++){
 			result.push_back(at(i).to_object());
+		}
+		return result;
+	}
+
+	template<class T> var::Vector<T> construct_list_copy() const {
+		var::Vector<T> result;
+		result.reserve(count());
+		for(u32 i=0; i < count(); i++){
+			result.push_back(JsonObject().copy(at(i)));
 		}
 		return result;
 	}
@@ -693,27 +711,31 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 	T v() const { return T(to_object().at(MCU_STRINGIFY(k))); } \
 	void json_access_object_with_key_never_used_##v()
 
-//constructs a copy of a list that refers to original values
+//constructs a copy of a list that refers to original values (or full copy with get)
 #define JSON_ACCESS_OBJECT_LIST(c, T, v) \
-	var::Vector<T> get_##v() const { return to_object().at(MCU_STRINGIFY(v)).to_object().construct_key_list<T>(); } \
+	var::Vector<T> get_##v() const { return to_object().at(MCU_STRINGIFY(v)).to_object().construct_key_list_copy<T>(); } \
+	var::Vector<T> v() const { return to_object().at(MCU_STRINGIFY(v)).to_object().construct_key_list<T>(); } \
 	c& set_##v(const var::Vector<T>& a){ to_object().insert(MCU_STRINGIFY(v), var::JsonObject(a)); return *this; } \
 	void json_access_object_list_never_used_##v()
 
-//constructs a copy of a list that refers to original values
+//constructs a copy of a list that refers to original values (or full copy with get)
 #define JSON_ACCESS_OBJECT_LIST_WITH_KEY(c, T, k, v) \
-	var::Vector<T> get_##v() const { return to_object().at(MCU_STRINGIFY(k)).to_object().construct_key_list<T>(); } \
+	var::Vector<T> get_##v() const { return to_object().at(MCU_STRINGIFY(k)).to_object().construct_key_list_copy<T>(); } \
+	var::Vector<T> v() const { return to_object().at(MCU_STRINGIFY(k)).to_object().construct_key_list<T>(); } \
 	c& set_##v(const var::Vector<T>& a){ to_object().insert(MCU_STRINGIFY(k), var::JsonObject(a)); return *this; } \
 	void json_access_object_list_never_used_##v()
 
-//constructs a copy of a list that refers to original values
+//constructs a copy of a list that refers to original values (or full copy with get)
 #define JSON_ACCESS_ARRAY(c, T, v) \
-	var::Vector<T> get_##v() const { return to_object().at(MCU_STRINGIFY(v)).to_array().construct_list<T>(); } \
+	var::Vector<T> get_##v() const { return to_object().at(MCU_STRINGIFY(v)).to_array().construct_list_copy<T>(); } \
+	var::Vector<T> v() const { return to_object().at(MCU_STRINGIFY(v)).to_array().construct_list<T>(); } \
 	c& set_##v(const var::Vector<T>& a){ to_object().insert(MCU_STRINGIFY(v), var::JsonArray(a)); return *this; } \
 	void json_access_array_never_used_##v()
 
-//constructs a copy of a list that refers to original values
+//constructs a copy of a list that refers to original values (or full copy with get)
 #define JSON_ACCESS_ARRAY_WITH_KEY(c, T, k, v) \
-	var::Vector<T> get_##v() const { return to_object().at(MCU_STRINGIFY(k)).to_array().construct_list<T>(); } \
+	var::Vector<T> get_##v() const { return to_object().at(MCU_STRINGIFY(k)).to_array().construct_list_copy<T>(); } \
+	var::Vector<T> v() const { return to_object().at(MCU_STRINGIFY(k)).to_array().construct_list<T>(); } \
 	c& set_##v(const var::Vector<T>& a){ to_object().insert(MCU_STRINGIFY(k), var::JsonArray(a)); return *this; } \
 	void json_access_array_with_key_never_used_##v()
 
@@ -729,7 +751,7 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 	c& set_##v(const var::Vector<var::String>& a){ to_object().insert(MCU_STRINGIFY(k), var::JsonArray(a)); return *this; } \
 	void json_access_array_with_key_never_used_##v()
 
-
+//helps for constructing non JSON objects from JSON
 #define JSON_ACCESS_KEY_VALUE_PAIR_STRING(c,k,v) \
 	c(const var::String& key, const var::JsonValue& value){ \
 	set_##k(key); \
@@ -739,6 +761,7 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 	var::JsonValue value() const { return var::JsonString(v()); } \
 	void json_access_key_value_pair_string_never_used_##v()
 
+//helps for constructing non JSON objects from JSON
 #define JSON_ACCESS_KEY_VALUE_PAIR_REAL(c,k,v) \
 	c(const var::String& key, const var::JsonValue& value){ \
 	set_##k(key); \
@@ -748,6 +771,7 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 	var::JsonValue value() const { return var::JsonReal(v()); } \
 	void json_access_key_value_pair_real_never_used_##v()
 
+//helps for constructing non JSON objects from JSON
 #define JSON_ACCESS_KEY_VALUE_PAIR_BOOL(c,k,v) \
 	c(const var::String& key, const var::JsonValue& value){ \
 	set_##k(key); \
@@ -757,6 +781,7 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 	var::JsonValue value() const { return v() ? var::JsonTrue() : var::JsonFalse(); } \
 	void json_access_key_value_pair_bool_never_used_##v()
 
+//helps for constructing non JSON objects from JSON
 #define JSON_ACCESS_KEY_VALUE_PAIR_ARRAY(c,T,k,v) \
 	c(const var::String& key, const var::JsonValue& value){ \
 	set_##k(key); \
