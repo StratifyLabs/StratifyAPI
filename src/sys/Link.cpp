@@ -1304,11 +1304,12 @@ int Link::erase_os(
 	return 0;
 }
 
-int Link::install_os(const fs::File & image,
-										 IsVerify is_verify,
-										 HardwareId image_id,
-										 Printer & progress_printer
-										 ){
+int Link::install_os(
+		const fs::File & image,
+		IsVerify is_verify,
+		HardwareId image_id,
+		Printer & progress_printer
+		){
 
 	//must be connected to the bootloader with an erased OS
 	int err = -1;
@@ -1336,7 +1337,6 @@ int Link::install_os(const fs::File & image,
 
 	u32 start_address = m_bootloader_attributes.startaddr;
 	u32 loc = start_address;
-
 
 	progress_printer.progress_key() = "installing";
 	m_error_message = "";

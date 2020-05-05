@@ -663,12 +663,12 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 
 #define JSON_ACCESS_INTEGER(c, v) \
 	s32 v() const { return to_object().at(MCU_STRINGIFY(v)).to_integer(); } \
-	c& set_##v(bool value){ to_object().insert(MCU_STRINGIFY(v), var::JsonInteger(value)); return *this; } \
+	c& set_##v(s32 value){ to_object().insert(MCU_STRINGIFY(v), var::JsonInteger(value)); return *this; } \
 	void json_access_integer_never_used_##v()
 
 #define JSON_ACCESS_INTEGER_WITH_KEY(c, k, v) \
 	s32 v() const { return to_object().at(MCU_STRINGIFY(k)).to_integer(); } \
-	c& set_##v(bool value){ to_object().insert(MCU_STRINGIFY(k), var::JsonInteger(value)); return *this; } \
+	c& set_##v(s32 value){ to_object().insert(MCU_STRINGIFY(k), var::JsonInteger(value)); return *this; } \
 	void json_access_integer_with_key_never_used_##v()
 
 #define JSON_ACCESS_OBJECT(c, T, v) \

@@ -3,6 +3,7 @@
 #define SAPI_SYS_PRINTER_HPP_
 
 #include <cstdarg>
+#include "../chrono/Timer.hpp"
 #include "../sys/ProgressCallback.hpp"
 #include "../var/String.hpp"
 
@@ -421,6 +422,26 @@ public:
 private:
 	Printer & m_printer;
 };
+
+class PerformancePrinter {
+public:
+	PerformancePrinter(Printer & printer, const char * function, u32 line)
+		: m_printer(printer), m_function(function), m_line(line)
+	{
+		m_timer.start();
+		m_printer.trace(m_function, m_line, var::String("------------------>start performance timer"));
+	}
+	~PerformancePrinter(){
+		m_timer.stop();
+		m_printer.trace(m_function, m_line, var::String("<------------------elapsed " + var::String::number(m_timer.microseconds()) + "us"));
+	}
+private:
+	chrono::Timer m_timer;
+	const char * m_function;
+	u32 m_line;
+	Printer & m_printer;
+};
+
 
 
 }
