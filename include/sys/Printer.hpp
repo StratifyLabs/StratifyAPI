@@ -437,9 +437,9 @@ public:
 	}
 private:
 	chrono::Timer m_timer;
+	Printer & m_printer;
 	const char * m_function;
 	u32 m_line;
-	Printer & m_printer;
 };
 
 
