@@ -13,6 +13,9 @@
 #define API_MALLOC_CHUNK_SIZE 64
 #endif
 
+#define ERROR_CODE_CASE(c) \
+	case c: return MCU_STRINGIFY(c)
+
 using namespace api;
 
 const char * ApiInfo::git_hash(){
@@ -80,50 +83,71 @@ const char * ApiInfo::user_data_path(){
 
 const char * api::get_error_code_description(s32 ec){
 	switch(ec){
-		case error_code_flag_calc: return "error_code_flag_calc";
-		case error_code_flag_chrono: return "error_code_flag_chrono";
-		case error_code_flag_crypto: return "error_code_flag_crypto";
-		case error_code_flag_fmt: return "error_code_flag_fmt";
-		case error_code_flag_fs: return "error_code_flag_fs";
-		case error_code_flag_hal: return "error_code_flag_hal";
-		case error_code_flag_inet: return "error_code_flag_inet";
-		case error_code_flag_sgfx: return "error_code_flag_sgfx";
-		case error_code_flag_sys: return "error_code_flag_sys";
-		case error_code_flag_test: return "error_code_flag_test";
-		case error_code_flag_ux: return "error_code_flag_ux";
-		case error_code_flag_var: return "error_code_flag_var";
+		ERROR_CODE_CASE(error_code_flag_calc);
+		ERROR_CODE_CASE(error_code_flag_chrono);
+		ERROR_CODE_CASE(error_code_flag_crypto);
+		ERROR_CODE_CASE(error_code_flag_fmt);
+		ERROR_CODE_CASE(error_code_flag_fs);
+		ERROR_CODE_CASE(error_code_flag_hal);
+		ERROR_CODE_CASE(error_code_flag_inet);
+		ERROR_CODE_CASE(error_code_flag_sgfx);
+		ERROR_CODE_CASE(error_code_flag_sys);
+		ERROR_CODE_CASE(error_code_flag_test);
+		ERROR_CODE_CASE(error_code_flag_ux);
+		ERROR_CODE_CASE(error_code_flag_var);
 
-		case error_code_crypto_size_mismatch: return "error_code_crypto_size_mismatch";
-		case error_code_crypto_bad_block_size: return "error_code_crypto_bad_block_size";
-		case error_code_crypto_operation_failed: return "error_code_crypto_operation_failed";
-		case error_code_crypto_missing_api: return "error_code_crypto_missing_api";
-		case error_code_crypto_unsupported_operation: return "error_code_crypto_unsupported_operation";
-		case error_code_crypto_bad_iv_size: return "error_code_crypto_bad_iv_size";
+		ERROR_CODE_CASE(error_code_crypto_size_mismatch);
+		ERROR_CODE_CASE(error_code_crypto_bad_block_size);
+		ERROR_CODE_CASE(error_code_crypto_operation_failed);
+		ERROR_CODE_CASE(error_code_crypto_missing_api);
+		ERROR_CODE_CASE(error_code_crypto_unsupported_operation);
+		ERROR_CODE_CASE(error_code_crypto_bad_iv_size);
 
-		case error_code_fs_failed_to_open: return "error_code_fs_failed_to_open";
-		case error_code_fs_failed_to_read: return "error_code_fs_failed_to_read";
-		case error_code_fs_failed_to_write: return "error_code_fs_failed_to_write";
-		case error_code_fs_failed_to_seek: return "error_code_fs_failed_to_seek";
-		case error_code_fs_failed_to_create: return "error_code_fs_failed_to_create";
-		case error_code_fs_failed_to_stat: return "error_code_fs_failed_to_stat";
-		case error_code_fs_unsupported_operation: return "error_code_fs_unsupported_operation";
-		case error_code_fs_bad_descriptor: return "error_code_fs_bad_descriptor";
-		case error_code_fs_cant_read: return "error_code_fs_cant_read";
-		case error_code_fs_cant_write: return "error_code_fs_cant_write";
-		case error_code_fs_cant_write_read_only: return "error_code_fs_cant_write_read_only";
-		case error_code_fs_cant_write_append_only: return "error_code_fs_cant_write_append_only";
-		case error_code_fs_not_open: return "error_code_fs_not_open";
-		case error_code_fs_failed_to_close: return "error_code_fs_failed_to_close";
 
-		case error_code_inet_failed_to_create_socket: return "error_code_inet_failed_to_create_socket";
-		case error_code_inet_failed_to_connect_to_socket: return "error_code_inet_failed_to_connect_to_socket";
-		case error_code_inet_failed_to_write_header: return "error_code_inet_failed_to_write_header";
-		case error_code_inet_failed_to_write_data: return "error_code_inet_failed_to_write_data";
-		case error_code_inet_failed_to_write_incoming_data_to_file: return "error_code_inet_failed_to_write_incoming_data_to_file";
-		case error_code_inet_failed_to_find_address: return "error_code_inet_failed_to_find_address";
-		case error_code_inet_failed_to_get_status_code: return "error_code_inet_failed_to_get_status_code";
-		case error_code_inet_failed_to_get_header: return "error_code_inet_failed_to_get_header";
-		case error_code_inet_failed_wrong_domain: return "error_code_inet_failed_wrong_domain";
+		ERROR_CODE_CASE(error_code_fs_failed_to_open);
+		ERROR_CODE_CASE(error_code_fs_failed_to_read);
+		ERROR_CODE_CASE(error_code_fs_failed_to_write);
+		ERROR_CODE_CASE(error_code_fs_failed_to_seek);
+		ERROR_CODE_CASE(error_code_fs_failed_to_create);
+		ERROR_CODE_CASE(error_code_fs_failed_to_stat);
+		ERROR_CODE_CASE(error_code_fs_unsupported_operation);
+		ERROR_CODE_CASE(error_code_fs_bad_descriptor);
+		ERROR_CODE_CASE(error_code_fs_cant_read);
+		ERROR_CODE_CASE(error_code_fs_cant_write);
+		ERROR_CODE_CASE(error_code_fs_cant_write_read_only);
+		ERROR_CODE_CASE(error_code_fs_cant_write_append_only);
+		ERROR_CODE_CASE(error_code_fs_not_open);
+		ERROR_CODE_CASE(error_code_fs_failed_to_close);
+
+		ERROR_CODE_CASE(error_code_inet_failed_to_create_socket);
+		ERROR_CODE_CASE(error_code_inet_failed_to_connect_to_socket);
+		ERROR_CODE_CASE(error_code_inet_failed_to_write_header);
+		ERROR_CODE_CASE(error_code_inet_failed_to_write_data);
+		ERROR_CODE_CASE(error_code_inet_failed_to_write_incoming_data_to_file);
+		ERROR_CODE_CASE(error_code_inet_failed_to_find_address);
+		ERROR_CODE_CASE(error_code_inet_failed_to_get_status_code);
+		ERROR_CODE_CASE(error_code_inet_failed_to_get_header);
+		ERROR_CODE_CASE(error_code_inet_failed_wrong_domain);
+
+		ERROR_CODE_CASE(error_code_var_json_unknown);
+		ERROR_CODE_CASE(error_code_var_json_out_of_memory);
+		ERROR_CODE_CASE(error_code_var_json_stack_overflow);
+		ERROR_CODE_CASE(error_code_var_json_cannot_open_file);
+		ERROR_CODE_CASE(error_code_var_json_invalid_argument);
+		ERROR_CODE_CASE(error_code_var_json_invalid_utf8);
+		ERROR_CODE_CASE(error_code_var_json_premature_end_of_input);
+		ERROR_CODE_CASE(error_code_var_json_end_of_input_expected);
+		ERROR_CODE_CASE(error_code_var_json_invalid_syntax);
+		ERROR_CODE_CASE(error_code_var_json_invalid_format);
+		ERROR_CODE_CASE(error_code_var_json_wrong_type);
+		ERROR_CODE_CASE(error_code_var_json_null_character);
+		ERROR_CODE_CASE(error_code_var_json_null_value);
+		ERROR_CODE_CASE(error_code_var_json_null_byte_in_key);
+		ERROR_CODE_CASE(error_code_var_json_duplicate_key);
+		ERROR_CODE_CASE(error_code_var_json_numeric_overflow);
+		ERROR_CODE_CASE(error_code_var_json_item_not_found);
+		ERROR_CODE_CASE(error_code_var_json_index_out_of_range);
+
 	}
 	return "unknown error code";
 }

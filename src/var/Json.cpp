@@ -69,6 +69,32 @@ using namespace var;
 
 JsonApi JsonValue::m_api;
 
+int JsonValue::set_translated_error_number_if_error(int e) const {
+	int error_code = 0;
+	switch(e){
+		case json_error_unknown: error_code = api::error_code_var_json_unknown; break;
+		case json_error_out_of_memory: error_code = api::error_code_var_json_out_of_memory; break;
+		case json_error_stack_overflow: error_code = api::error_code_var_json_stack_overflow; break;
+		case json_error_cannot_open_file: error_code = api::error_code_var_json_cannot_open_file; break;
+		case json_error_invalid_argument: error_code = api::error_code_var_json_invalid_argument; break;
+		case json_error_invalid_utf8: error_code = api::error_code_var_json_invalid_utf8; break;
+		case json_error_premature_end_of_input: error_code = api::error_code_var_json_premature_end_of_input; break;
+		case json_error_end_of_input_expected: error_code = api::error_code_var_json_end_of_input_expected; break;
+		case json_error_invalid_syntax: error_code = api::error_code_var_json_invalid_syntax; break;
+		case json_error_invalid_format: error_code = api::error_code_var_json_invalid_format; break;
+		case json_error_wrong_type: error_code = api::error_code_var_json_wrong_type; break;
+		case json_error_null_character: error_code = api::error_code_var_json_null_character; break;
+		case json_error_null_value: error_code = api::error_code_var_json_null_value; break;
+		case json_error_null_byte_in_key: error_code = api::error_code_var_json_null_byte_in_key; break;
+		case json_error_duplicate_key: error_code = api::error_code_var_json_duplicate_key; break;
+		case json_error_numeric_overflow: error_code = api::error_code_var_json_numeric_overflow; break;
+		case json_error_item_not_found: error_code = api::error_code_var_json_item_not_found; break;
+		case json_error_index_out_of_range: error_code = api::error_code_var_json_index_out_of_range; break;
+	}
+	return set_error_number_if_error( error_code );
+}
+
+
 JsonValue::JsonValue(){
 	if( api().is_valid() == false ){ exit_fatal("json api missing"); }
 	m_value = 0; //create() method from children are not available in the constructor
@@ -171,14 +197,14 @@ int JsonValue::assign(bool value){
 }
 
 
-int JsonValue::copy(const JsonValue & value, IsDeep is_deep){
+JsonValue& JsonValue::copy(const JsonValue& value, IsDeep is_deep){
 	api()->decref(m_value);
 	if( is_deep.argument() ){
 		m_value = api()->deep_copy(value.m_value);
 	} else {
 		m_value = api()->copy(value.m_value);
 	}
-	return 0;
+	return *this;
 }
 
 var::String JsonValue::to_string() const {
@@ -292,7 +318,7 @@ json_t * JsonNull::create(){
 	return api()->create_null();
 }
 
-int JsonObject::insert(
+JsonObject& JsonObject::insert(
 		const var::String & key,
 		bool value
 		){
@@ -303,58 +329,70 @@ int JsonObject::insert(
 	return insert(key, JsonFalse());
 }
 
-int JsonObject::insert(
+JsonObject& JsonObject::insert(
 		const var::String & key,
 		const JsonValue & value
 		){
 	if( create_if_not_valid() < 0 ){
-		return -1;
+		return *this;
 	}
 
-	int result = api()->object_set(
-				m_value,
-				key.cstring(),
-				value.m_value
+	set_error_number_if_error(
+				api()->object_set(
+					m_value,
+					key.cstring(),
+					value.m_value
+					)
 				);
-	if( result < 0 ){
-		//printf("Failed to set JSON key %s to %s %p\n", key.cstring(), value.to_string().cstring(), m_value);
-	}
-	return result;
+	return *this;
 }
 
-int JsonObject::update(
+JsonObject& JsonObject::update(
 		const JsonValue & value,
-		enum update_flags o_flags
+		enum updates o_flags
 		){
-	if( o_flags & UPDATE_EXISTING ){
-		return api()->object_update_existing(
-					m_value,
-					value.m_value
+	if( o_flags & update_existing ){
+		set_error_number_if_error(
+					api()->object_update_existing(
+						m_value,
+						value.m_value
+						)
 					);
+		return *this;
 	}
 
-	if( o_flags & UPDATE_MISSING ){
-		return api()->object_update_missing(
-					m_value,
-					value.m_value
+	if( o_flags & update_missing ){
+		set_error_number_if_error(
+					api()->object_update_missing(
+						m_value,
+						value.m_value
+						)
 					);
+		return *this;
 	}
 
-	return api()->object_update(
-				m_value,
-				value.m_value
+	set_error_number_if_error(
+				api()->object_update(
+					m_value,
+					value.m_value
+					)
 				);
+	return *this;
 }
 
-int JsonObject::remove(const var::String & key){
-	return api()->object_del(m_value, key.cstring());
+JsonObject& JsonObject::remove(const var::String & key){
+	set_error_number_if_error( api()->object_del(m_value, key.cstring()) );
+	return *this;
 }
 
 u32 JsonObject::count() const {
 	return api()->object_size(m_value);
 }
 
-int JsonObject::clear(){ return json_object_clear(m_value); }
+JsonObject& JsonObject::clear(){
+	set_error_number_if_error( api()->object_clear(m_value) );
+	return *this;
+}
 
 var::StringList JsonObject::key_list() const {
 	const char *key;
@@ -707,7 +745,3 @@ int JsonDocument::save(
 		) const {
 	return JsonValue::api()->dump_callback(value.m_value, callback, context, flags());
 }
-
-
-
-

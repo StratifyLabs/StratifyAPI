@@ -243,7 +243,7 @@ public:
 	int assign(int value);
 	int assign(bool value);
 
-	int copy(
+	JsonValue& copy(
 			const JsonValue & value,
 			IsDeep is_deep = IsDeep(true)
 			);
@@ -257,6 +257,7 @@ protected:
 		return 0;
 	}
 
+	int set_translated_error_number_if_error(int e) const;
 
 private:
 	friend class JsonDocument;
@@ -325,26 +326,26 @@ public:
 		* exist in the object, it is created.
 		*
 		*/
-	int insert(
+	JsonObject& insert(
 			const var::String & key,
 			const JsonValue & value
 			);
 
-	int insert(
+	JsonObject& insert(
 			const var::String & key,
 			bool value
 			);
 
-	enum update_flags {
-		UPDATE_NONE = 0x00,
-		UPDATE_EXISTING = 0x01,
-		UPDATE_MISSING = 0x02,
-		UPDATE_MISSING_AND_EXISTING = 0x03
+	enum updates {
+		update_none = 0x00,
+		update_existing = 0x01,
+		update_missing = 0x02,
+		update_missing_and_existing = 0x03
 	};
 
-	int update(
+	JsonObject& update(
 			const JsonValue & value,
-			enum update_flags o_flags = UPDATE_NONE
+			enum updates o_flags = update_none
 			);
 
 	/*!
@@ -353,7 +354,7 @@ public:
 		* \return Zero on success (-1 is key was not found)
 		*
 		*/
-	int remove(const var::String & key);
+	JsonObject& remove(const var::String & key);
 
 	/*!
 		* \details Returns the number of key/value pairs in the object
@@ -365,7 +366,7 @@ public:
 		* \details Removes all key/value pairs from the object.
 		* \return Zero on success
 		*/
-	int clear();
+	JsonObject& clear();
 
 	/*!
 		* \details Returns a JsonValue (as a reference) to the specified key.
@@ -421,7 +422,7 @@ public:
 		var::Vector<T> result;
 		result.reserve(count());
 		for(u32 i=0; i < count(); i++){
-			result.push_back(at(i).to_object());
+			result.push_back(T(at(i).to_object()));
 		}
 		return result;
 	}
@@ -430,7 +431,7 @@ public:
 		var::Vector<T> result;
 		result.reserve(count());
 		for(u32 i=0; i < count(); i++){
-			result.push_back(JsonObject().copy(at(i)));
+			result.push_back(T(JsonValue().copy(at(i))));
 		}
 		return result;
 	}

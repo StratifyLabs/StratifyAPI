@@ -477,7 +477,26 @@ enum error_codes : s32 {
 	error_code_inet_failed_to_find_address /*! Failed to find IP address of URL (6) */ = -(error_code_flag_inet|6),
 	error_code_inet_failed_to_get_status_code /*! Failed to get a status code in the HTTP response (7) */ = -(error_code_flag_inet|7),
 	error_code_inet_failed_to_get_header /*! Failed to receive the header (8) */ = -(error_code_flag_inet|8),
-	error_code_inet_failed_wrong_domain = -(error_code_flag_inet|9)
+	error_code_inet_failed_wrong_domain = -(error_code_flag_inet|9),
+
+	error_code_var_json_unknown = -(error_code_flag_var|1),
+	error_code_var_json_out_of_memory = -(error_code_flag_var|2),
+	error_code_var_json_stack_overflow = -(error_code_flag_var|3),
+	error_code_var_json_cannot_open_file = -(error_code_flag_var|4),
+	error_code_var_json_invalid_argument = -(error_code_flag_var|5),
+	error_code_var_json_invalid_utf8 = -(error_code_flag_var|6),
+	error_code_var_json_premature_end_of_input = -(error_code_flag_var|7),
+	error_code_var_json_end_of_input_expected = -(error_code_flag_var|8),
+	error_code_var_json_invalid_syntax = -(error_code_flag_var|9),
+	error_code_var_json_invalid_format = -(error_code_flag_var|10),
+	error_code_var_json_wrong_type = -(error_code_flag_var|11),
+	error_code_var_json_null_character = -(error_code_flag_var|12),
+	error_code_var_json_null_value = -(error_code_flag_var|13),
+	error_code_var_json_null_byte_in_key = -(error_code_flag_var|14),
+	error_code_var_json_duplicate_key = -(error_code_flag_var|15),
+	error_code_var_json_numeric_overflow = -(error_code_flag_var|16),
+	error_code_var_json_item_not_found = -(error_code_flag_var|17),
+	error_code_var_json_index_out_of_range = -(error_code_flag_var|18)
 
 };
 
