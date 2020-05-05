@@ -567,7 +567,7 @@ void Bitmap::downsample_bitmap(
 
 			u32 color = sample.calculate_color_sum();
 			if( color >= factor.calculate_area()/2 ){
-				bmap()->pen.color = (u32)-1;
+				bmap()->pen.color = static_cast<u32>(-1);
 			} else {
 				bmap()->pen.color = 0;
 			}

@@ -210,7 +210,7 @@ public:
 		execute_performance /*! Performance Test Execution flag */ = (1<<2),
 		execute_additional /*! Additional Test Execution flag */ = (1<<3),
 		execute_all_types = execute_api | execute_stress | execute_performance | execute_additional,
-		execute_all /*! Execute all test */ = (u32)-1
+		execute_all /*! Execute all test */ = static_cast<u32>(-1)
 	};
 
 	void execute(const sys::Cli & cli);

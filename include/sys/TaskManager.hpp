@@ -29,7 +29,7 @@ public:
 	static TaskInfo invalid(){ return TaskInfo(-1); }
 
 	bool is_valid() const {
-		return m_value.tid != (u32)-1;
+		return m_value.tid != static_cast<u32>(-1);
 	}
 
 	/*! \details Returns that process ID of the task.

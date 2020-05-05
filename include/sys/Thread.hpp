@@ -72,7 +72,7 @@ public:
 
 	enum thread_flags {
 		ID_ERROR /*! ID is an error */ = (u32)-2,
-		ID_PENDING /*! ID is ready to be created (not valid yet) */ = (u32)-1,
+		ID_PENDING /*! ID is ready to be created (not valid yet) */ = static_cast<u32>(-1),
 	};
 
 	enum detach_state {
