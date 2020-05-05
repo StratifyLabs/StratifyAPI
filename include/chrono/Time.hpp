@@ -16,7 +16,7 @@ class Hours {
 public:
 	explicit Hours(s32 value){ m_value = value; }
 	u32 hours() const { return m_value; }
-	static Hours invalid(){ return Hours((u32)-1); }
+	static Hours invalid(){ return Hours(static_cast<u32>(-1)); }
 private:
 	u32 m_value;
 };
@@ -25,7 +25,7 @@ class Minutes {
 public:
 	explicit Minutes(s32 value){ m_value = value; }
 	u32 minutes() const { return m_value; }
-	static Minutes invalid(){ return Minutes((u32)-1); }
+	static Minutes invalid(){ return Minutes(static_cast<u32>(-1)); }
 private:
 	u32 m_value;
 };
@@ -35,7 +35,7 @@ class Seconds {
 public:
 	explicit Seconds(s32 value){ m_value = value; }
 	u32 seconds() const { return m_value; }
-	static Seconds invalid(){ return Seconds((u32)-1); }
+	static Seconds invalid(){ return Seconds(static_cast<u32>(-1)); }
 private:
 	u32 m_value;
 };
@@ -44,7 +44,7 @@ class Milliseconds {
 public:
 	explicit Milliseconds(s32 value){ m_value = value; }
 	u32 milliseconds() const { return m_value; }
-	static Milliseconds invalid(){ return Milliseconds((u32)-1); }
+	static Milliseconds invalid(){ return Milliseconds(static_cast<u32>(-1)); }
 private:
 	u32 m_value;
 };
@@ -53,7 +53,7 @@ class Nanoseconds {
 public:
 	explicit Nanoseconds(s32 value){ m_value = value; }
 	u32 nanoseconds() const { return m_value; }
-	static Nanoseconds invalid(){ return Nanoseconds((u32)-1); }
+	static Nanoseconds invalid(){ return Nanoseconds(static_cast<u32>(-1)); }
 private:
 	u32 m_value;
 };
@@ -159,11 +159,11 @@ public:
 	  *
 	  */
 	bool is_valid() const {
-		return m_value_microseconds != (u32)-1;
+		return m_value_microseconds != static_cast<u32>(-1);
 	}
 
 	/*! \details Returns a MicroTime object set to the invalid time value. */
-	static Microseconds invalid(){ return Microseconds((u32)-1); }
+	static Microseconds invalid(){ return Microseconds(static_cast<u32>(-1)); }
 
 
 	/*! \details Assignment addition to another MicroTime object. */

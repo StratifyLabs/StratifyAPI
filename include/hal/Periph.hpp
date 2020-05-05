@@ -383,7 +383,7 @@ protected:
 				 request,
 				 IoArgument(&channel)
 				 ) < 0 ){
-			return (u32)-1;
+			return static_cast<u32>(-1);
 		}
 		return channel.value;
 	}

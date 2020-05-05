@@ -107,7 +107,7 @@ public:
 	/*! \details Gets the current value of the DAC channel.
 	 *
 	 * @param loc The DAC channel to get
-	 * @return The current value of the channel or (u32)-1 if ther is an error
+	 * @return The current value of the channel or static_cast<u32>(-1) if ther is an error
 	 */
 	u32 get_channel(u32 loc) const {
 		return Periph::get_channel(loc, IoRequest(I_DAC_GET));

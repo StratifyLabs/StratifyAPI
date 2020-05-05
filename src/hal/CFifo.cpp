@@ -23,7 +23,7 @@ int CFifo::get_owner(int channel, int & owner) const {
 	mcu_channel_t c;
 	int ret;
 	c.loc = channel;
-	c.value = (u32)-1;
+	c.value = static_cast<u32>(-1);
 	ret = ioctl(
 				IoRequest(I_CFIFO_GETOWNER),
 				IoArgument(&c)

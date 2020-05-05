@@ -10,7 +10,7 @@ Svic::Svic(const var::String & path){
 		parse_icons();
 	}
 
-	m_current_icon_at = (u32)-1;
+	m_current_icon_at = static_cast<u32>(-1);
 }
 
 

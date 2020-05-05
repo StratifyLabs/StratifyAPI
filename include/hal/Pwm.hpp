@@ -129,7 +129,7 @@ public:
 	/*! \details Gets the channel value.
 	 *
 	 * @param loc Channel location
-	 * @return The value of the channel or (u32)-1 for an error
+	 * @return The value of the channel or static_cast<u32>(-1) for an error
 	 */
 	int get_channel(u32 loc){
 		return Periph::get_channel(loc, IoRequest(I_PWM_GETCHANNEL));

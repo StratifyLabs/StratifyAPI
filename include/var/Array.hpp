@@ -28,7 +28,7 @@ namespace var {
  * printf("C array has %ld items\n", sizeof(c_array)/sizeof(u32));
  * printf("Array has %ld items\n", array.count());
  *
- * printf("C array back is %ld\n", c_array[sizeof(c_array)/sizeof(u32)-1]);
+ * printf("C array back is %ld\n", c_array[sizeof(c_array)/sizeofstatic_cast<u32>(-1)]);
  * printf("Array back is %ld\n", array.back());
  * \endcode
  *
