@@ -171,9 +171,9 @@ int JsonValue::assign(bool value){
 }
 
 
-int JsonValue::copy(const JsonValue & value, bool is_deep){
+int JsonValue::copy(const JsonValue & value, IsDeep is_deep){
 	api()->decref(m_value);
-	if( is_deep ){
+	if( is_deep.argument() ){
 		m_value = api()->deep_copy(value.m_value);
 	} else {
 		m_value = api()->copy(value.m_value);
