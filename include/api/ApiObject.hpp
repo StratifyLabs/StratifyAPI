@@ -282,7 +282,7 @@ public:
 	 * ```
 		*
 		*/
-	static const char * version(){ return "3.15.0"; }
+	static const char * version(){ return "3.16.0"; }
 
 	/*! \details Returns a c-style string pointer
 	 * to the git hash used to build the Stratify API.
@@ -346,6 +346,17 @@ public:
 	 */
 	static bool is_macosx();
 
+	/*! \details Returns true if the application
+	 * is running on a mac os x system.
+	 *
+	 * ```
+	 * //md2code:main
+	 * if( api::ApiInfo::is_linux() ){
+	 *   printf("Running on linux\n");
+	 * }
+	 * ```
+	 *
+	 */
 	static bool is_linux();
 
 

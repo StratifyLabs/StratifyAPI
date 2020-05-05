@@ -13,3 +13,4 @@ DspF32Api DspWorkObject::m_api_f32;
 DspConversionApi DspWorkObject::m_api_conversion;
 #endif
 
+u32 sapi_dsp_object_unused;
