@@ -97,7 +97,11 @@ int JsonValue::set_translated_error_number_if_error(int e) const {
 
 JsonValue::JsonValue(){
 	if( api().is_valid() == false ){ exit_fatal("json api missing"); }
-	m_value = 0; //create() method from children are not available in the constructor
+	m_value = nullptr; //create() method from children are not available in the constructor
+}
+
+JsonValue::JsonValue(fs::File::Path path){
+	*this	= JsonDocument().load(path);
 }
 
 JsonValue::JsonValue(json_t * value){
