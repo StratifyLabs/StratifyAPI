@@ -566,6 +566,28 @@ private:
 class JsonDocument : public api::WorkObject {
 public:
 
+	enum options {
+		option_reject_duplicates = JSON_REJECT_DUPLICATES,
+		option_disable_eof_check = JSON_DISABLE_EOF_CHECK,
+		option_decode_any = JSON_DECODE_ANY,
+		option_decode_int_as_real = JSON_DECODE_INT_AS_REAL,
+		option_allow_null = JSON_ALLOW_NUL,
+		option_indent1 = JSON_INDENT(1),
+		option_indent2 = JSON_INDENT(2),
+		option_indent3 = JSON_INDENT(3),
+		option_indent4 = JSON_INDENT(4),
+		option_indent5 = JSON_INDENT(5),
+		option_indent6 = JSON_INDENT(6),
+		option_indent7 = JSON_INDENT(7),
+		option_indent8 = JSON_INDENT(8),
+		option_compact = JSON_COMPACT,
+		option_ensure_ascii = JSON_ENSURE_ASCII,
+		option_encode_any = JSON_ENCODE_ANY,
+		option_preserve_order = JSON_PRESERVE_ORDER,
+		option_escape_slash = JSON_ESCAPE_SLASH,
+		option_embed = JSON_EMBED
+	};
+
 	using FilePath = fs::File::Path;
 
 	/*! \details Constructs a Json object from a JsonValue.
@@ -576,6 +598,9 @@ public:
 	JsonDocument(u32 o_flags = option_indent3){
 		set_flags(o_flags);
 	}
+
+	JsonDocument & set_options(u32 o_option){ m_flags = o_option; return *this; }
+	u32 options() const { return m_flags; }
 
 	JsonDocument & set_flags(u32 flags){ m_flags = flags; return *this; }
 	u32 flags() const { return m_flags; }
@@ -661,28 +686,6 @@ public:
 			void * context
 			) const;
 
-	enum options {
-		option_reject_duplicates = JSON_REJECT_DUPLICATES,
-		option_disable_eof_check = JSON_DISABLE_EOF_CHECK,
-		option_decode_any = JSON_DECODE_ANY,
-		option_decode_int_as_real = JSON_DECODE_INT_AS_REAL,
-		option_allow_null = JSON_ALLOW_NUL,
-		option_indent1 = JSON_INDENT(1),
-		option_indent2 = JSON_INDENT(2),
-		option_indent3 = JSON_INDENT(3),
-		option_indent4 = JSON_INDENT(4),
-		option_indent5 = JSON_INDENT(5),
-		option_indent6 = JSON_INDENT(6),
-		option_indent7 = JSON_INDENT(7),
-		option_indent8 = JSON_INDENT(8),
-		option_compact = JSON_COMPACT,
-		option_ensure_ascii = JSON_ENSURE_ASCII,
-		option_encode_any = JSON_ENCODE_ANY,
-		option_preserve_order = JSON_PRESERVE_ORDER,
-		option_escape_slash = JSON_ESCAPE_SLASH,
-		option_embed = JSON_EMBED
-	};
-
 	const JsonError & error() const { return m_error; }
 
 private:
@@ -695,6 +698,7 @@ private:
 };
 
 }
+
 
 namespace sys {
 class Printer;
@@ -762,6 +766,15 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 	void json_access_array_with_key_never_used_##v()
 
 #define JSON_ACCESS_ARRAY(c, T, v) JSON_ACCESS_ARRAY_WITH_KEY(c,T,v,v)
+
+//gets a copy that refers to the original JSON values
+#define JSON_ACCESS_VALUE_WITH_KEY(c, k, v) \
+	const var::JsonValue& v() const { return to_object().at(MCU_STRINGIFY(k)); } \
+	var::JsonValue get_##v() const { return var::JsonValue().copy(to_object().at(MCU_STRINGIFY(k))); } \
+	c& set_##v(const var::JsonValue& a){ to_object().insert(MCU_STRINGIFY(k), a); return *this; } \
+	void json_access_value_with_key_never_used_##v()
+
+#define JSON_ACCESS_VALUE(c, v) JSON_ACCESS_VALUE_WITH_KEY(c,v,v)
 
 //full copy, no reference to original
 #define JSON_ACCESS_STRING_ARRAY_WITH_KEY(c, k, v) \
