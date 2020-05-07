@@ -159,6 +159,7 @@
 namespace api {
 
 
+
 #define API_ACCESS_BOOL(c, v, iv) \
 	public: \
 	bool is_##v() const { return m_##v; } \

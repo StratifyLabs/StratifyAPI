@@ -364,6 +364,10 @@ public:
 			const JsonValue & value
 			);
 
+	JsonObject& insert(const var::JsonKeyValue& key_value){
+		return insert(key_value.key(), key_value.value());
+	}
+
 	JsonObject& insert(
 			const var::String & key,
 			bool value
@@ -439,7 +443,7 @@ public:
 	JsonArray(const JsonArray & value);
 	JsonArray & operator=(const JsonArray & value);
 
-	explicit JsonArray(const var::Vector<var::String>& list);
+	explicit JsonArray(const var::StringList& list);
 	explicit JsonArray(const var::Vector<float>& list);
 	explicit JsonArray(const var::Vector<u32>& list);
 	explicit JsonArray(const var::Vector<s32>& list);
@@ -495,7 +499,7 @@ public:
 	JsonArray& remove(size_t position);
 	JsonArray& clear();
 
-	var::Vector<var::String> string_list();
+	var::StringList string_list();
 	var::Vector<s32> integer_list();
 	var::Vector<float> float_list();
 	var::Vector<bool> bool_list();
@@ -700,25 +704,13 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 }
 
 //full copy, no reference to original
-#define JSON_ACCESS_STRING(c, v) \
-	var::String get_##v() const { return to_object().at(MCU_STRINGIFY(v)).to_string(); } \
-	c& set_##v(const var::String& value){ to_object().insert(MCU_STRINGIFY(v), var::JsonString(value)); return *this; } \
-	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(v)); return *this; } \
-	void json_access_string_never_used_##v()
-
-//full copy, no reference to original
 #define JSON_ACCESS_STRING_WITH_KEY(c, k, v) \
 	var::String get_##v() const { return to_object().at(MCU_STRINGIFY(k)).to_string(); } \
 	c& set_##v(const var::String& value){ to_object().insert(MCU_STRINGIFY(k), var::JsonString(value)); return *this; } \
 	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(k)); return *this; } \
 	void json_access_string_with_key_never_used_##v()
 
-//full copy, no reference to original
-#define JSON_ACCESS_BOOL(c, v) \
-	bool is_##v() const { return to_object().at(MCU_STRINGIFY(v)).to_bool(); } \
-	c& set_##v(bool value = true){ to_object().insert(MCU_STRINGIFY(v), value); return *this; } \
-	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(v)); return *this; } \
-	void json_access_bool_never_used_##v()
+#define JSON_ACCESS_STRING(c, v) JSON_ACCESS_STRING_WITH_KEY(c,v,v)
 
 //full copy, no reference to original
 #define JSON_ACCESS_BOOL_WITH_KEY(c, k, v) \
@@ -727,12 +719,8 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(k)); return *this; } \
 	void json_access_bool_with_key_never_used_##v()
 
-//full copy, no reference to original
-#define JSON_ACCESS_INTEGER(c, v) \
-	s32 get_##v() const { return to_object().at(MCU_STRINGIFY(v)).to_integer(); } \
-	c& set_##v(s32 value){ to_object().insert(MCU_STRINGIFY(v), var::JsonInteger(value)); return *this; } \
-	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(v)); return *this; } \
-	void json_access_integer_never_used_##v()
+#define JSON_ACCESS_BOOL(c, v) JSON_ACCESS_BOOL_WITH_KEY(c,v,v)
+
 
 //full copy, no reference to original
 #define JSON_ACCESS_INTEGER_WITH_KEY(c, k, v) \
@@ -740,64 +728,49 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 	c& set_##v(s32 value){ to_object().insert(MCU_STRINGIFY(k), var::JsonInteger(value)); return *this; } \
 	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(k)); return *this; } \
 	void json_access_integer_with_key_never_used_##v()
-
-//gets a copy that refers to the original JSON values
-#define JSON_ACCESS_OBJECT(c, T, v) \
-	T v() const { return T(to_object().at(MCU_STRINGIFY(v))); } \
-	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(v)); return *this; } \
-	void json_access_object_never_used_##v()
+#define JSON_ACCESS_INTEGER(c, v) JSON_ACCESS_INTEGER_WITH_KEY(c, v, v)
 
 //gets a copy that refers to the original JSON values
 #define JSON_ACCESS_OBJECT_WITH_KEY(c, T, k, v) \
 	T v() const { return T(to_object().at(MCU_STRINGIFY(k))); } \
+	T get_##v() const { return T(var::JsonObject().copy(to_object().at(MCU_STRINGIFY(k)))); } \
+	c& set_##v(const T& a){ to_object().at(MCU_STRINGIFY(k)) = a.to_object(); return *this; } \
 	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(k)); return *this; } \
 	void json_access_object_with_key_never_used_##v()
 
-//constructs a copy of a list that refers to original values (or full copy with get) T should have JsonKeyValue as a base
-#define JSON_ACCESS_OBJECT_LIST(c, T, v) \
-	var::JsonKeyValueList<T> get_##v() const { return to_object().at(MCU_STRINGIFY(v)).to_object().construct_key_list_copy<T>(); } \
-	var::JsonKeyValueList<T> v() const { return to_object().at(MCU_STRINGIFY(v)).to_object().construct_key_list<T>(); } \
-	c& set_##v(const var::JsonKeyValueList<T>& a){ to_object().insert(MCU_STRINGIFY(v), var::JsonObject(a)); return *this; } \
-	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(v)); return *this; } \
-	void json_access_object_list_never_used_##v()
+#define JSON_ACCESS_OBJECT(c, T, v) JSON_ACCESS_OBJECT_WITH_KEY(c,T,v,v)
 
 //constructs a copy of a list that refers to original values (or full copy with get) T should have JsonKeyValue as a base
 #define JSON_ACCESS_OBJECT_LIST_WITH_KEY(c, T, k, v) \
+	var::JsonObject v##_to_object() const { return to_object().at(MCU_STRINGIFY(k)); } \
 	var::JsonKeyValueList<T> get_##v() const { return to_object().at(MCU_STRINGIFY(k)).to_object().construct_key_list_copy<T>(); } \
 	var::JsonKeyValueList<T> v() const { return to_object().at(MCU_STRINGIFY(k)).to_object().construct_key_list<T>(); } \
 	c& set_##v(const var::JsonKeyValueList<T>& a){ to_object().insert(MCU_STRINGIFY(k), var::JsonObject(a)); return *this; } \
 	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(k)); return *this; } \
 	void json_access_object_list_never_used_##v()
 
-//constructs a copy of a list that refers to original values (or full copy with get)
-#define JSON_ACCESS_ARRAY(c, T, v) \
-	var::Vector<T> get_##v() const { return to_object().at(MCU_STRINGIFY(v)).to_array().construct_list_copy<T>(); } \
-	var::Vector<T> v() const { return to_object().at(MCU_STRINGIFY(v)).to_array().construct_list<T>(); } \
-	c& set_##v(const var::Vector<T>& a){ to_object().insert(MCU_STRINGIFY(v), var::JsonArray(a)); return *this; } \
-	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(v)); return *this; } \
-	void json_access_array_never_used_##v()
+#define JSON_ACCESS_OBJECT_LIST(c, T, v) JSON_ACCESS_OBJECT_LIST_WITH_KEY(c, T, v, v)
+
 
 //constructs a copy of a list that refers to original values (or full copy with get)
 #define JSON_ACCESS_ARRAY_WITH_KEY(c, T, k, v) \
+	var::JsonArray v##_to_array() const { return to_object().at(MCU_STRINGIFY(k)); } \
 	var::Vector<T> get_##v() const { return to_object().at(MCU_STRINGIFY(k)).to_array().construct_list_copy<T>(); } \
 	var::Vector<T> v() const { return to_object().at(MCU_STRINGIFY(k)).to_array().construct_list<T>(); } \
 	c& set_##v(const var::Vector<T>& a){ to_object().insert(MCU_STRINGIFY(k), var::JsonArray(a)); return *this; } \
 	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(k)); return *this; } \
 	void json_access_array_with_key_never_used_##v()
 
-//full copy, no reference to original
-#define JSON_ACCESS_STRING_ARRAY(c, v) \
-	var::Vector<var::String> get_##v() const { return to_object().at(MCU_STRINGIFY(v)).to_array().string_list(); } \
-	c& set_##v(const var::Vector<var::String>& a){ to_object().insert(MCU_STRINGIFY(v), var::JsonArray(a)); return *this; } \
-	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(v)); return *this; } \
-	void json_access_array_never_used_##v()
+#define JSON_ACCESS_ARRAY(c, T, v) JSON_ACCESS_ARRAY_WITH_KEY(c,T,v,v)
 
 //full copy, no reference to original
 #define JSON_ACCESS_STRING_ARRAY_WITH_KEY(c, k, v) \
-	var::Vector<var::String> get_##v() const { return to_object().at(MCU_STRINGIFY(k)).to_array().string_list(); } \
-	c& set_##v(const var::Vector<var::String>& a){ to_object().insert(MCU_STRINGIFY(k), var::JsonArray(a)); return *this; } \
+	var::StringList get_##v() const { return to_object().at(MCU_STRINGIFY(k)).to_array().string_list(); } \
+	c& set_##v(const var::StringList& a){ to_object().insert(MCU_STRINGIFY(k), var::JsonArray(a)); return *this; } \
 	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(k)); return *this; } \
 	void json_access_array_with_key_never_used_##v()
+
+#define JSON_ACCESS_STRING_ARRAY(c, v) JSON_ACCESS_STRING_ARRAY_WITH_KEY(c,v,v)
 
 //access functions for working with JsonKeyValue objects
 #define JSON_ACCESS_KEY_VALUE_PAIR_STRING(c,k,v) \

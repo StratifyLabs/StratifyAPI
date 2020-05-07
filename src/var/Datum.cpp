@@ -7,7 +7,7 @@
 using namespace var;
 
 sys::Printer& sys::operator << (sys::Printer& printer, const var::Datum & a){
-	printer << a.to_json();
+	printer << a.to_object();
 	return printer;
 }
 
@@ -59,10 +59,10 @@ String Datum::stringify() const {
 	JsonDocument document;
 	document.set_flags(JsonDocument::option_compact);
 	//compact object on one line
-	return document.to_string(to_json()) << "\n";
+	return document.to_string(to_object()) << "\n";
 }
 
-var::JsonObject Datum::to_json() const {
+var::JsonObject Datum::to_object() const {
 	JsonObject result;
 	result.insert("type", JsonString( type() ));
 	result.insert("key", JsonString( key() ));
