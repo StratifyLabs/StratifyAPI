@@ -25,7 +25,7 @@ public:
 
 	void refresh_timestamp();
 
-	var::JsonObject to_json() const;
+	var::JsonObject to_object() const;
 
 	String stringify() const;
 

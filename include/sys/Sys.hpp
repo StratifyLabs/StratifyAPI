@@ -157,6 +157,8 @@ public:
 		memset(&m_info, 0, sizeof(m_info));
 	}
 
+
+
 private:
 	sys_info_t m_info;
 

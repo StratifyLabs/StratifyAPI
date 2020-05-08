@@ -161,9 +161,7 @@ Reference & Reference::refer_to(
 				data,
 				size);
 	return *this;
-
 }
-
 
 var::String Reference::to_string() const {
 	var::String result;
@@ -172,8 +170,6 @@ var::String Reference::to_string() const {
 	}
 	return result;
 }
-
-
 
 
 int Reference::save(

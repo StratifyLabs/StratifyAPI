@@ -241,7 +241,9 @@ public:
 			Position position = Position(0),
 			Length length = Length(npos)
 			) const {
-
+		if( position.argument() >= m_string.length() ){
+			return String();
+		}
 		return m_string.substr(
 					position.argument(),
 					length.argument()

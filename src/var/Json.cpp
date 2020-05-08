@@ -97,7 +97,11 @@ int JsonValue::set_translated_error_number_if_error(int e) const {
 
 JsonValue::JsonValue(){
 	if( api().is_valid() == false ){ exit_fatal("json api missing"); }
-	m_value = 0; //create() method from children are not available in the constructor
+	m_value = nullptr; //create() method from children are not available in the constructor
+}
+
+JsonValue::JsonValue(fs::File::Path path){
+	*this	= JsonDocument().load(path);
 }
 
 JsonValue::JsonValue(json_t * value){
@@ -640,6 +644,48 @@ JsonValue JsonDocument::load(
 JsonValue JsonDocument::load(
 		const var::String & json
 		){
+	if( json.length() > 0 ){
+		char start_char = json.at(0);
+		if( start_char == '"' ){
+			return JsonString(
+						json.create_sub_string(
+							String::Position(1),
+							String::Length(json.length()-2)
+							)
+						);
+		}
+	}
+
+	if( json == "true" ){
+		return JsonTrue();
+	} else if( json == "false" ){
+		return JsonFalse();
+	} else if( json == "null" ){
+		return JsonNull();
+	} else {
+
+		bool is_number;
+
+		if( (is_number = (json.is_empty() == false)) ){
+			for(const auto& c: json){
+				if( !isdigit(c) &&
+						(c != 'f') &&
+						(c != '.') &&
+						(c !=  '-') ){
+					is_number	= false;
+					break;
+				}
+			}
+		}
+
+		if( is_number ){
+			if( json.find(".") == String::npos ){
+				return JsonInteger(json.to_integer());
+			}
+			return JsonReal(json.to_float());
+		}
+	}
+
 	JsonValue value;
 	value.m_value = JsonValue::api()->loadb(
 				json.cstring(),
