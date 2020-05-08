@@ -94,7 +94,7 @@ public:
 		* \endcode
 		*
 		*/
-	bool is_valid() const{ return m_value != 0; }
+	bool is_valid() const{ return m_value != nullptr; }
 
 	enum types {
 		type_invalid = -1,
@@ -784,6 +784,12 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 	void json_access_array_with_key_never_used_##v()
 
 #define JSON_ACCESS_STRING_ARRAY(c, v) JSON_ACCESS_STRING_ARRAY_WITH_KEY(c,v,v)
+
+
+#define JSON_ACCESS_CONSTRUCT_OBJECT(c) \
+	c() : var::JsonValue(var::JsonObject()){} \
+	c(const var::JsonObject object) : var::JsonValue(object){} \
+	void json_access_construct_object_never_used_##v()
 
 //access functions for working with JsonKeyValue objects
 #define JSON_ACCESS_KEY_VALUE_PAIR_STRING(c,k,v) \
