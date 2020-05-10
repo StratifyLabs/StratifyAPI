@@ -15,6 +15,7 @@ Layout::Layout(
 	m_origin = DrawingPoint(0,0);
 	set_align_left();
 	set_align_top();
+	set_layout();
 }
 
 Layout::~Layout(){
@@ -27,13 +28,13 @@ bool Layout::transition(
 		const var::String & next_layout_name
 		){
 
-	if( signature() != whatis_signature() ){
+	if( is_layout() == false ){
 		return false;
 	}
 
 	Component * next = nullptr;
 	for(auto & cp: m_component_list){
-		if( (cp.component()->signature() == whatis_signature()) &&
+		if( (cp.component()->is_layout() ) &&
 				(cp.component()->name() == next_layout_name) ){
 			next = cp.component();
 			break;
@@ -42,7 +43,7 @@ bool Layout::transition(
 
 	if( next ){
 		for(auto & cp: m_component_list){
-			if( cp.component()->signature() == whatis_signature() ){
+			if( cp.component()->is_layout() ){
 				cp.component()->set_enabled_internal(false);
 			}
 		}

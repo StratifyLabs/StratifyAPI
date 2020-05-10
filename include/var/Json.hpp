@@ -309,6 +309,15 @@ public:
 		}
 		return Derived("", JsonValue());
 	}
+
+	StringList get_key_list() const {
+		StringList result;
+		for(const auto & item: *this){
+			result.push_back(item.key());
+		}
+		return result;
+	}
+
 };
 
 class JsonObject : public JsonValue {

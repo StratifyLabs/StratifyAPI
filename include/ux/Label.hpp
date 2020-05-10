@@ -8,19 +8,13 @@
 
 namespace ux {
 
-#define LABEL_SIGNATURE COMPONENT_SIGNATURE('l','a','b','l')
-
 class Label :
-		public ComponentAccess<Label, LABEL_SIGNATURE> {
+		public ComponentAccess<Label> {
 	public:
 
 
 	Label(const var::String & name) : ComponentAccess(name){
-
-	}
-
-	static u32 whatis_signature(){
-		return LABEL_SIGNATURE;
+		set_label(name);
 	}
 
 	Label& set_label(const var::String & value){

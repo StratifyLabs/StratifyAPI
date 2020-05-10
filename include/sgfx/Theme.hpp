@@ -17,7 +17,7 @@ public:
 
 	Theme(fs::File & color_file);
 
-	enum style {
+	enum styles {
 		style_dark,
 		style_light,
 		style_brand_primary,
@@ -38,7 +38,7 @@ public:
 		last_style = style_outline_danger
 	};
 
-	enum state {
+	enum states {
 		state_default,
 		state_highlighted,
 		state_disabled,
@@ -83,30 +83,30 @@ public:
 
 
 	size_t calculate_color_offset(
-			enum style style,
-			enum state state
+			enum styles style,
+			enum states state
 			) const;
 
 
 	int write_palette(
-			enum style style,
-			enum state state,
+			enum styles style,
+			enum states state,
 			const Palette & palette
 			);
 
 	Palette read_palette(
-			enum style style, enum state state
+			enum styles style, enum states state
 			) const;
 
 	int set_display_palette(
 			const hal::Display & display,
-			enum style style,
-			enum state state
+			enum styles style,
+			enum states state
 			) const;
 
 
-	static var::String get_state_name(enum state value);
-	static var::String get_style_name(enum style value);
+	static var::String get_state_name(enum states value);
+	static var::String get_style_name(enum styles value);
 
 	const chrono::MicroTime & button_hold_duration() const {
 		return m_button_hold_duration;

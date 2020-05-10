@@ -106,7 +106,7 @@ using LineGraphDataSet = var::Vector<LineGraphData>;
 
 class LineGraph :
 		public GraphAxes,
-		public ComponentAccess<LineGraph,COMPONENT_SIGNATURE('l','g','p','h')> {
+		public ComponentAccess<LineGraph> {
 	public:
 
 	LineGraph(const var::String & name) : ComponentAccess(name){}
@@ -159,9 +159,7 @@ private:
 
 class BarGraph :
 		public GraphAxes,
-		public ComponentAccess<
-		BarGraph,
-		COMPONENT_SIGNATURE('l','g','p','h')>{
+		public ComponentAccess<BarGraph>{
 	public:
 
 	virtual void draw(const DrawingScaledAttributes & attributes);

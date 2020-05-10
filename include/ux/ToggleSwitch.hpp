@@ -24,9 +24,7 @@ public:
 
 };
 
-class ToggleSwitch : public ComponentAccess<
-		ToggleSwitch, COMPONENT_SIGNATURE('t','o','g','g')
-		> {
+class ToggleSwitch : public ComponentAccess<ToggleSwitch> {
 public:
 
 	ToggleSwitch(const var::String & name) : ComponentAccess(name){

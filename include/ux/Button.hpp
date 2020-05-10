@@ -32,17 +32,11 @@ class ButtonEvent : public EventObject<Button, EVENT_TYPE('_','b','t','n')> {
 
 };
 
-class Button : public ComponentAccess<
-		Button,
-		COMPONENT_SIGNATURE('b','u','t','n')> {
+class Button : public ComponentAccess<Button> {
 	public:
 
 	Button(const var::String & name) : ComponentAccess(name){
-
-	}
-
-	static u32 whatis_signature(){
-		return COMPONENT_SIGNATURE('b','u','t','n');
+		set_label(name);
 	}
 
 	bool state() const {

@@ -194,6 +194,24 @@ namespace api {
 	private: \
 	t m_##v
 
+#define API_ACCESS_DERIVED_COMPOUND(c,d,t,v) \
+	d& set_##v(const t& value){ \
+	c::set_##v(value); \
+	return static_cast<d&>(*this); \
+	}
+
+#define API_ACCESS_DERIVED_FUNDAMETAL(c,d,t,v) \
+	d& set_##v(t value){ \
+	c::set_##v(value); \
+	return static_cast<d&>(*this); \
+	}
+
+#define API_ACCESS_DERIVED_BOOL(c,d,v) \
+	d& set_##v(bool value = true){ \
+	c::set_##v(value); \
+	return static_cast<d&>(*this); \
+	}
+
 #define API_OR_NAMED_FLAGS_OPERATOR(TYPE, FLAG_NAME) \
 	inline enum TYPE::FLAG_NAME operator |( \
 	const enum TYPE::FLAG_NAME a, \
@@ -230,6 +248,10 @@ namespace api {
 
 #define API_OR_FLAGS_OPERATOR(TYPE) API_OR_NAMED_FLAGS_OPERATOR(TYPE, flags)
 
+#define API_ENUM_LOOP_OPERATOR(TYPE) \
+	TYPE& operator ++ (TYPE& a){ \
+	a =	TYPE(static_cast<std::underlying_type<TYPE>::type>(a) + 1); \
+	return a; }
 
 /*! \brief Application Programming Interface Object
  * \details The API Object class is the parent of all

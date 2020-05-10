@@ -11,7 +11,6 @@
 namespace ux::draw {
 
 
-
 /*! \brief Icon Class
  * \details This class draws icons that can be scaled and rotated on a bitmap.
  *
@@ -29,21 +28,17 @@ public:
 	/*! \details Construct an empty graphic */
 	Icon();
 
-	Icon & set_icon_font_name(const var::String & value){
-		m_icon_font_name = value;
-		return *this;
-	}
-
-	const var::String & name() const { return m_name; }
 	Icon & set_name(const var::String & value){
-		m_name = value;
+		if( value.find("icon@") == 0 ){
+			m_name = value.create_sub_string(
+						var::String::Position(5)
+						);
+		} else {
+			m_name = value;
+		}
 		return *this;
 	}
 
-	Icon & set_color(sg_color_t value){
-		m_color = value;
-		return *this;
-	}
 
 	/*! \details Draws the graphic to scale on the specified bitmap */
 	virtual void draw(const DrawingScaledAttributes & attr);
@@ -56,11 +51,12 @@ public:
 	sgfx::Region bounds() const { return m_bounds; }
 
 private:
+
+	API_ACCESS_COMPOUND(Icon,var::String,icon_font_name);
+	API_READ_ACCESS_COMPOUND(Icon,var::String,name);
+	API_ACCESS_FUNDAMENTAL(Icon,sg_color_t,color,0);
 	/*! \cond */
 	sg_region_t m_bounds;
-	var::String m_icon_font_name;
-	var::String m_name;
-	sg_color_t m_color;
 	sgfx::IconFont * m_icon_font;
 	/*! \endcond */
 
