@@ -27,9 +27,29 @@ public:
 	void handle_event(const ux::Event & event);
 
 private:
-	API_ACCESS_FUNDAMENTAL(ListItem,Layout*,target_layout,nullptr);
 	API_ACCESS_COMPOUND(ListItem,var::String,key);
 	API_ACCESS_COMPOUND(ListItem,var::String,value);
+};
+
+template<class T> class ListItemAccess: public ListItem {
+public:
+	ListItemAccess(const var::String&name) : ListItem(name){}
+
+	API_ACCESS_DERIVED_COMPOUND(ListItem,T,var::String,key)
+	API_ACCESS_DERIVED_COMPOUND(ListItem,T,var::String,value)
+
+	template<typename... Args> static T & create(
+			Args... args
+			){
+		T * result = new T(args...);
+		if( result == nullptr ){
+			//assert here
+			printf("failed!!!\n");
+		}
+		result->m_is_created = true;
+		return *result;
+	}
+
 };
 
 

@@ -29,11 +29,14 @@ bool Layout::transition(
 		){
 
 	if( is_layout() == false ){
+		printf("not a layout\n");
 		return false;
 	}
 
 	Component * next = nullptr;
 	for(auto & cp: m_component_list){
+		printf("looking for %s in %s\n", next_layout_name.cstring(),
+					 cp.component()->name().cstring());
 		if( (cp.component()->is_layout() ) &&
 				(cp.component()->name() == next_layout_name) ){
 			next = cp.component();
@@ -50,6 +53,7 @@ bool Layout::transition(
 		next->set_enabled_internal(true);
 		return true;
 	}
+	printf("not found\n");
 	return false;
 }
 

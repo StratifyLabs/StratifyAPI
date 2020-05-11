@@ -159,7 +159,7 @@ private:
 	DrawingArea m_area;
 	sgfx::Point m_touch_last;
 	ux::TouchGesture m_touch_gesture;
-	var::Vector<LayoutComponent> m_component_list;
+	API_ACCESS_COMPOUND(Layout,var::Vector<LayoutComponent>,component_list);
 	EventHandlerFunction m_event_handler;
 	
 	void shift_origin(DrawingPoint shift);

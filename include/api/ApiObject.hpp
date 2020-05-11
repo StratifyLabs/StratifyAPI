@@ -167,6 +167,12 @@ namespace api {
 	private: \
 	bool m_##v = iv
 
+#define API_READ_ACCESS_BOOL(c, v, iv) \
+	public: \
+	bool is_##v() const { return m_##v; } \
+	private: \
+	bool m_##v = iv
+
 #define API_ACCESS_FUNDAMENTAL(c, t, v, iv) \
 	public: \
 	t v() const { return m_##v; } \
