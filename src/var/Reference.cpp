@@ -25,13 +25,6 @@ const int Reference::m_zero_value MCU_ALIGN(4) = 0;
 
 //this value corresponds to the malloc chunk size used in Stratify OS
 //this may be something that could be determined through a system call
-#if defined __link
-#define MIN_CHUNK_SIZE 1024
-#define MALLOC_CHUNK_SIZE 1024
-#else
-#define MIN_CHUNK_SIZE 52
-#define MALLOC_CHUNK_SIZE 64
-#endif
 
 Reference::Reference(){
 	set_size_internally(0);

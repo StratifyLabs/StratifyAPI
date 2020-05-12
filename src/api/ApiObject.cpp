@@ -2,15 +2,15 @@
 #include <cstring>
 #include <mcu/types.h>
 #include "api/ApiObject.hpp"
-
 #include "var/String.hpp"
 
 #if defined __link
 #define API_MINIMUM_CHUNK_SIZE 1024
 #define API_MALLOC_CHUNK_SIZE 1024
 #else
-#define API_MINIMUM_CHUNK_SIZE 52
-#define API_MALLOC_CHUNK_SIZE 64
+#include <mcu/arch.h>
+#define API_MALLOC_CHUNK_SIZE MALLOC_CHUNK_SIZE
+#define API_MINIMUM_CHUNK_SIZE (MALLOC_CHUNK_SIZE-12)
 #endif
 
 #define ERROR_CODE_CASE(c) \

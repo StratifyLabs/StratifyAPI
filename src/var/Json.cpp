@@ -141,9 +141,9 @@ JsonValue& JsonValue::operator=(JsonValue && a){
 }
 
 JsonValue::~JsonValue(){
-	//only decref if object was create (not just a reference)
+	//only decref if object was created (not just a reference)
 	api()->decref(m_value);
-	m_value = 0;
+	m_value = nullptr;
 }
 
 
@@ -166,7 +166,7 @@ JsonArray & JsonValue::to_array(){
 int JsonValue::create_if_not_valid(){
 	if( is_valid() ){ return 0; }
 	m_value = create();
-	if( m_value == 0 ){
+	if( m_value == nullptr ){
 		set_translated_error_number_if_error( json_error_out_of_memory );
 		return -1;
 	}

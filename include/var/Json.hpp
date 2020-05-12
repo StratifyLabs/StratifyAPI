@@ -747,7 +747,7 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 #define JSON_ACCESS_OBJECT_WITH_KEY(c, T, k, v) \
 	T v() const { return T(to_object().at(MCU_STRINGIFY(k))); } \
 	T get_##v() const { return T(var::JsonObject().copy(to_object().at(MCU_STRINGIFY(k)))); } \
-	c& set_##v(const T& a){ to_object().at(MCU_STRINGIFY(k)) = a.to_object(); return *this; } \
+	c& set_##v(const T& a){ to_object().insert(MCU_STRINGIFY(k), a); return *this; } \
 	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(k)); return *this; } \
 	void json_access_object_with_key_never_used_##v()
 
