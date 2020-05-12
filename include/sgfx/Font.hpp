@@ -27,8 +27,7 @@ public:
 	/*! \details Lists the font styles that are available.
 	 *
 	 */
-	enum style {
-
+	enum styles {
 		style_any,
 		style_thin /*! Thin font (t) */,
 		style_thin_italic /*! Thin italic (ti) */,

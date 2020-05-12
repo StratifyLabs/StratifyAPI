@@ -12,7 +12,7 @@ using namespace hal;
 Theme::Theme(fs::File & color_file) : m_color_file(color_file){
 }
 
-var::String Theme::get_style_name(enum style value){
+var::String Theme::get_style_name(enum styles value){
 	switch(value){
 		case style_dark: return "dark";
 		case style_light: return "light";
@@ -49,7 +49,7 @@ sg_color_t Theme::border_color() const {
 	return (1<<bits_per_pixel()) - 1;
 }
 
-var::String Theme::get_state_name(enum state value){
+var::String Theme::get_state_name(enum states value){
 	switch(value){
 		case state_default: return "default";
 		case state_disabled: return "disabled";
@@ -58,7 +58,7 @@ var::String Theme::get_state_name(enum state value){
 	return "";
 }
 
-size_t Theme::calculate_color_offset(enum style style, enum state state) const {
+size_t Theme::calculate_color_offset(enum styles style, enum states state) const {
 	return (style * m_color_count * (last_state + 1) + (state * m_color_count))*sizeof(sg_color_t) + sizeof(header_t);
 }
 
@@ -69,8 +69,9 @@ Theme& Theme::set_bits_per_pixel(u8 bits_per_pixel){
 	return *this;
 }
 
-int Theme::write_palette(enum style style,
-		enum state state,
+int Theme::write_palette(
+		enum styles style,
+		enum states state,
 		const Palette& palette
 		){
 	if( palette.colors().count() != m_color_count ){
@@ -84,8 +85,8 @@ int Theme::write_palette(enum style style,
 }
 
 Palette Theme::read_palette(
-		enum style style,
-		enum state state
+		styles style,
+		enum states state
 		) const {
 
 	Palette result;
@@ -153,8 +154,8 @@ int Theme::create(
 
 int Theme::set_display_palette(
 		const Display & display,
-		enum style style,
-		enum state state
+		enum styles style,
+		enum states state
 		) const {
 
 	return display.set_palette(

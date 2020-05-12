@@ -63,7 +63,7 @@ public:
 	 *
 	 *
 	 */
-	Text & set_font_style(enum sgfx::Font::style style){
+	Text & set_font_style(enum sgfx::Font::styles style){
 		m_font_style = style;
 		return *this;
 	}
@@ -79,7 +79,7 @@ protected:
 	var::String m_font_name;
 	const sgfx::Font * m_font = nullptr;
 	sg_size_t m_font_point_size = 0;
-	enum sgfx::Font::style m_font_style = sgfx::Font::style_regular;
+	enum sgfx::Font::styles m_font_style = sgfx::Font::style_regular;
 	sg_color_t m_color;
 	/*! \endcond */
 

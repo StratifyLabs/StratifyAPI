@@ -16,7 +16,7 @@
 #include <reent.h>
 #include <mcu/arch.h>
 
-sys::Printer& operator << (sys::Printer& printer, const var::DataInfo & a){
+sys::Printer& sys::operator << (sys::Printer& printer, const var::DataInfo & a){
 	printer.key("arena", F32U, a.arena());
 	printer.key("freeBlockCount", F32U, a.free_block_count());
 	printer.key("freeSize", F32U, a.free_size());

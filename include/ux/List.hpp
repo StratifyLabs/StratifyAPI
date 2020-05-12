@@ -5,10 +5,11 @@
 #include "Layout.hpp"
 #include "TouchGesture.hpp"
 
+
+
 namespace ux {
 
 class ListItem;
-class List;
 
 class ListEvent : public EventObject<ListItem, EVENT_TYPE('_','l','s','t')> {
 	public:
@@ -16,86 +17,55 @@ class ListEvent : public EventObject<ListItem, EVENT_TYPE('_','l','s','t')> {
 	ListEvent(
 				ListItem & item
 				) :
-		EventObject(0, &item){
-
-	}
-
-
-
+		EventObject(0, &item){}
 };
 
-
-class ListItem :
-		public ComponentAccess<ListItem, COMPONENT_SIGNATURE('l','s','t','i')>{
+class ListItem : public ComponentAccess<ListItem>{
 public:
-	enum type {
-		type_icon, //just an icon
-		type_value, //text value
-		type_toggle, //toggle switch
-		type_button //button
-	};
-
 	ListItem(const var::String & name) : ComponentAccess(name){}
-
-	ListItem& set_key(const var::String & value){
-		m_key = value;
-		return *this;
-	}
-
-	ListItem& set_value(const var::String & value){
-		m_value = value;
-		return *this;
-	}
-
-	ListItem& set_icon(const var::String & value){
-		m_icon = value;
-		return *this;
-	}
-
-	ListItem& set_type(enum type value){
-		m_type = value;
-		return *this;
-	}
-
-	const var::String & key() const { return m_key; }
-	const var::String & value() const { return m_value; }
-
 	void draw(const DrawingScaledAttributes & attributes);
 	void handle_event(const ux::Event & event);
 
 private:
-	enum type m_type;
-	var::String m_key;
-	var::String m_value;
-	var::String m_icon;
+	API_ACCESS_COMPOUND(ListItem,var::String,key);
+	API_ACCESS_COMPOUND(ListItem,var::String,value);
+};
+
+template<class T> class ListItemAccess: public ListItem {
+public:
+	ListItemAccess(const var::String&name) : ListItem(name){}
+
+	API_ACCESS_DERIVED_COMPOUND(ListItem,T,var::String,key)
+	API_ACCESS_DERIVED_COMPOUND(ListItem,T,var::String,value)
+
+	template<typename... Args> static T & create(
+			Args... args
+			){
+		T * result = new T(args...);
+		if( result == nullptr ){
+			//assert here
+			printf("failed!!!\n");
+		}
+		result->m_is_created = true;
+		return *result;
+	}
 
 };
+
 
 class List : public LayoutAccess<List> {
 public:
 
-	List(const var::String & name, EventLoop * event_loop) : LayoutAccess<List>(name, event_loop){
+	List(const var::String & name, EventLoop * event_loop) :
+		LayoutAccess(name, event_loop){
 		set_flow(flow_vertical);
 	}
 
-	List& add_component(
-			Component& component
-			);
-
-	List& set_item_height(drawing_size_t value){
-		m_item_height = value;
-		return *this;
-	}
-
-	u8 border_size() const {
-		return m_border_size;
-	}
+	List& add_component(Component& component);
 
 private:
-	drawing_size_t m_item_height;
-	u8 m_border_size = 1;
-
-
+	API_ACCESS_FUNDAMENTAL(List,drawing_size_t,item_height,250);
+	API_ACCESS_FUNDAMENTAL(List,u8,border_size,1);
 
 };
 

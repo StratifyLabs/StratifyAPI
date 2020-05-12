@@ -19,7 +19,7 @@
 
 namespace var {
 
-class DataInfo : public api::InfoObject {
+class DataInfo {
 public:
 
 	DataInfo(){ refresh(); }

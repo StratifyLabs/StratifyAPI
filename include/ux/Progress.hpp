@@ -8,9 +8,7 @@
 
 namespace ux {
 
-class Progress : public ComponentAccess<
-		Progress, COMPONENT_SIGNATURE('p','r','o','g')
-		> {
+class Progress : public ComponentAccess<Progress> {
 public:
 	 Progress(const var::String & name);
 

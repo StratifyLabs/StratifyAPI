@@ -9,8 +9,6 @@
 #include "Drawing.hpp"
 #include "Event.hpp"
 
-#define COMPONENT_SIGNATURE(a,b,c,d) ((a << 24) | (b << 16) | (c << 8) | (d))
-
 namespace ux {
 
 class EventLoop;
@@ -19,9 +17,8 @@ class Component : public Drawing {
 public:
 
 	Component(
-			const var::String & name,
-			u32 signature = 0) :
-		m_name(name), m_signature(signature){
+			const var::String & name) :
+		m_name(name){
 		set_drawing_point(DrawingPoint(0,0));
 		set_drawing_area(DrawingArea(1000,1000));
 	}
@@ -36,11 +33,11 @@ public:
 		return 0;
 	}
 
-	enum sgfx::Theme::style theme_style() const {
+	enum sgfx::Theme::styles theme_style() const {
 		return m_theme_style;
 	}
 
-	enum sgfx::Theme::state theme_state() const {
+	enum sgfx::Theme::states theme_state() const {
 		return m_theme_state;
 	}
 
@@ -120,11 +117,11 @@ public:
 		m_reference_drawing_attributes.set_point(drawing_point);
 	}
 
-	void set_theme_style(enum sgfx::Theme::style value){
+	void set_theme_style(enum sgfx::Theme::styles value){
 		m_theme_style = value;
 	}
 
-	void set_theme_state(enum sgfx::Theme::state value){
+	void set_theme_state(enum sgfx::Theme::states value){
 		m_theme_state = value;
 	}
 
@@ -187,21 +184,17 @@ protected:
 		return is_enabled() && is_visible();
 	}
 
-	u32 signature() const {
-		return m_signature;
-	}
-
 
 private:
 
+	API_ACCESS_BOOL(Component,layout,false);
 	var::String m_name;
-	const u32 m_signature;
 	//needs to know where on the display it is drawn
 	DrawingAttributes m_reference_drawing_attributes;
 	DrawingAttributes m_local_drawing_attributes;
 	sgfx::Bitmap m_local_bitmap;
-	enum sgfx::Theme::style m_theme_style = sgfx::Theme::style_brand_primary;
-	enum sgfx::Theme::state m_theme_state = sgfx::Theme::state_default;
+	enum sgfx::Theme::styles m_theme_style = sgfx::Theme::style_brand_primary;
+	enum sgfx::Theme::states m_theme_state = sgfx::Theme::state_default;
 	bool m_is_antialias = true;
 	bool m_is_refresh_drawing_pending;
 	sgfx::Region m_refresh_region;
@@ -216,46 +209,33 @@ private:
 
 };
 
-template<class T, u32 signature_value> class ComponentAccess :
+template<class T> class ComponentAccess :
 		public Component,
 		public DrawingComponentProperties<T> {
 public:
 
 	ComponentAccess(const var::String & name) :
-		Component(name, signature_value){}
+		Component(name){}
+
 
 	T& set_enabled(bool value = true){
 		Component::set_enabled_internal(value);
 		return static_cast<T&>(*this);
 	}
 
-	T& set_drawing_area(const DrawingArea & value){
-		Component::set_drawing_area(value);
-		return static_cast<T&>(*this);
-	}
+	API_ACCESS_DERIVED_COMPOUND(Component,T,DrawingArea,drawing_area)
+	API_ACCESS_DERIVED_COMPOUND(Component,T,DrawingPoint,drawing_point)
+	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,enum sgfx::Theme::styles,theme_style)
+	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,enum sgfx::Theme::states,theme_state)
+
 
 	T& set_drawing_area(drawing_size_t width, drawing_size_t height){
 		Component::set_drawing_area(DrawingArea(width,height));
 		return static_cast<T&>(*this);
 	}
 
-	T& set_drawing_point(const DrawingPoint & value){
-		Component::set_drawing_point(value);
-		return static_cast<T&>(*this);
-	}
-
 	T& set_drawing_point(drawing_int_t x, drawing_int_t y){
 		Component::set_drawing_point(DrawingPoint(x,y));
-		return static_cast<T&>(*this);
-	}
-
-	T& set_theme_style(enum sgfx::Theme::style value){
-		Component::set_theme_style(value);
-		return static_cast<T&>(*this);
-	}
-
-	T& set_theme_state(enum sgfx::Theme::state value){
-		Component::set_theme_state(value);
 		return static_cast<T&>(*this);
 	}
 

@@ -167,6 +167,12 @@ namespace api {
 	private: \
 	bool m_##v = iv
 
+#define API_READ_ACCESS_BOOL(c, v, iv) \
+	public: \
+	bool is_##v() const { return m_##v; } \
+	private: \
+	bool m_##v = iv
+
 #define API_ACCESS_FUNDAMENTAL(c, t, v, iv) \
 	public: \
 	t v() const { return m_##v; } \
@@ -193,6 +199,24 @@ namespace api {
 	const t& v() const { return m_##v; } \
 	private: \
 	t m_##v
+
+#define API_ACCESS_DERIVED_COMPOUND(c,d,t,v) \
+	d& set_##v(const t& value){ \
+	c::set_##v(value); \
+	return static_cast<d&>(*this); \
+	}
+
+#define API_ACCESS_DERIVED_FUNDAMETAL(c,d,t,v) \
+	d& set_##v(t value){ \
+	c::set_##v(value); \
+	return static_cast<d&>(*this); \
+	}
+
+#define API_ACCESS_DERIVED_BOOL(c,d,v) \
+	d& set_##v(bool value = true){ \
+	c::set_##v(value); \
+	return static_cast<d&>(*this); \
+	}
 
 #define API_OR_NAMED_FLAGS_OPERATOR(TYPE, FLAG_NAME) \
 	inline enum TYPE::FLAG_NAME operator |( \
@@ -230,6 +254,10 @@ namespace api {
 
 #define API_OR_FLAGS_OPERATOR(TYPE) API_OR_NAMED_FLAGS_OPERATOR(TYPE, flags)
 
+#define API_ENUM_LOOP_OPERATOR(TYPE) \
+	TYPE& operator ++ (TYPE& a){ \
+	a =	TYPE(static_cast<std::underlying_type<TYPE>::type>(a) + 1); \
+	return a; }
 
 /*! \brief Application Programming Interface Object
  * \details The API Object class is the parent of all
@@ -283,7 +311,7 @@ public:
 	 * ```
 		*
 		*/
-	static const char * version(){ return "3.17.0"; }
+	static const char * version(){ return "3.18.0"; }
 
 	/*! \details Returns a c-style string pointer
 	 * to the git hash used to build the Stratify API.

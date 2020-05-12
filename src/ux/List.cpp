@@ -31,10 +31,10 @@ void ListItem::draw(const DrawingScaledAttributes & attributes){
 				attributes + region_inside_padding.point() + region_inside_padding.area()
 				);
 
-	if( m_icon.is_empty() == false ){
+	if( m_value.find("icon@") == 0 ){
 		draw::Icon()
 				.set_icon_font_name(theme()->primary_icon_font_name())
-				.set_name(m_icon)
+				.set_name(m_value)
 				.set_color(theme()->text_color())
 				.set_align_right()
 				.draw(

@@ -115,8 +115,10 @@ JsonValue::JsonValue(const JsonValue & value){
 }
 
 JsonValue & JsonValue::operator=(const JsonValue & value){
-	api()->decref(m_value);
-	add_reference(value.m_value);
+	if( this != &value ){
+		api()->decref(m_value);
+		add_reference(value.m_value);
+	}
 	return *this;
 }
 
@@ -128,22 +130,22 @@ void JsonValue::add_reference(json_t * value){
 JsonValue::JsonValue(JsonValue && a){
 	if( this != &a ){
 		m_value = a.m_value;
-		a.m_value = 0;
+		a.m_value = nullptr;
 	}
 }
 
 JsonValue& JsonValue::operator=(JsonValue && a){
 	if( this != &a ){
 		m_value = a.m_value;
-		a.m_value = 0;
+		a.m_value = nullptr;
 	}
 	return *this;
 }
 
 JsonValue::~JsonValue(){
-	//only decref if object was create (not just a reference)
+	//only decref if object was created (not just a reference)
 	api()->decref(m_value);
-	m_value = 0;
+	m_value = nullptr;
 }
 
 
@@ -166,7 +168,7 @@ JsonArray & JsonValue::to_array(){
 int JsonValue::create_if_not_valid(){
 	if( is_valid() ){ return 0; }
 	m_value = create();
-	if( m_value == 0 ){
+	if( m_value == nullptr ){
 		set_translated_error_number_if_error( json_error_out_of_memory );
 		return -1;
 	}
@@ -329,6 +331,7 @@ JsonObject& JsonObject::insert(
 		const var::String & key,
 		bool value
 		){
+
 	if( value ){
 		return insert(key, JsonTrue());
 	}
