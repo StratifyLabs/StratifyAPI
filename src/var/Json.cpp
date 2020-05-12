@@ -115,8 +115,10 @@ JsonValue::JsonValue(const JsonValue & value){
 }
 
 JsonValue & JsonValue::operator=(const JsonValue & value){
-	api()->decref(m_value);
-	add_reference(value.m_value);
+	if( this != &value ){
+		api()->decref(m_value);
+		add_reference(value.m_value);
+	}
 	return *this;
 }
 
@@ -128,14 +130,14 @@ void JsonValue::add_reference(json_t * value){
 JsonValue::JsonValue(JsonValue && a){
 	if( this != &a ){
 		m_value = a.m_value;
-		a.m_value = 0;
+		a.m_value = nullptr;
 	}
 }
 
 JsonValue& JsonValue::operator=(JsonValue && a){
 	if( this != &a ){
 		m_value = a.m_value;
-		a.m_value = 0;
+		a.m_value = nullptr;
 	}
 	return *this;
 }
@@ -329,6 +331,7 @@ JsonObject& JsonObject::insert(
 		const var::String & key,
 		bool value
 		){
+
 	if( value ){
 		return insert(key, JsonTrue());
 	}
