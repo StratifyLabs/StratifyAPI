@@ -12,6 +12,7 @@
 namespace ux {
 
 class EventLoop;
+class Layout;
 
 class Component : public Drawing {
 public:
@@ -109,6 +110,14 @@ public:
 		return m_event_loop;
 	}
 
+	Layout * parent(){
+		return m_parent;
+	}
+
+	const Layout * parent() const {
+		return m_parent;
+	}
+
 	void set_drawing_area(const DrawingArea & drawing_area){
 		m_reference_drawing_attributes.set_area(drawing_area);
 	}
@@ -176,8 +185,12 @@ protected:
 		}
 	}
 
-	void set_event_loop(EventLoop * event_loop){
-		m_event_loop = event_loop;
+	void set_event_loop(EventLoop * value){
+		m_event_loop = value;
+	}
+
+	void set_parent(Layout * value){
+		m_parent = value;
 	}
 
 	bool is_ready_to_draw() const {
@@ -186,7 +199,6 @@ protected:
 
 
 private:
-
 	API_ACCESS_BOOL(Component,layout,false);
 	var::String m_name;
 	//needs to know where on the display it is drawn
@@ -198,6 +210,7 @@ private:
 	bool m_is_antialias = true;
 	bool m_is_refresh_drawing_pending;
 	sgfx::Region m_refresh_region;
+	Layout * m_parent;
 
 	//needs a palette to use while drawing
 	EventLoop * m_event_loop = nullptr;
@@ -227,6 +240,7 @@ public:
 	API_ACCESS_DERIVED_COMPOUND(Component,T,DrawingPoint,drawing_point)
 	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,enum sgfx::Theme::styles,theme_style)
 	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,enum sgfx::Theme::states,theme_state)
+	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,Component*,parent)
 
 
 	T& set_drawing_area(drawing_size_t width, drawing_size_t height){

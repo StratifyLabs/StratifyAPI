@@ -146,6 +146,10 @@ public:
 	bool transition(
 			const var::String & next_layout_name
 			);
+
+	bool transition(
+			Layout * next_layout
+			);
 	
 	void scroll(DrawingPoint value);
 	

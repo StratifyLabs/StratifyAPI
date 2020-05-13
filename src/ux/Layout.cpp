@@ -44,13 +44,19 @@ bool Layout::transition(
 		}
 	}
 
-	if( next ){
+	return transition(next->reinterpret<Layout>());
+}
+
+bool Layout::transition(
+		Layout * next_layout
+		){
+	if( next_layout ){
 		for(auto & cp: m_component_list){
 			if( cp.component()->is_layout() ){
 				cp.component()->set_enabled_internal(false);
 			}
 		}
-		next->set_enabled_internal(true);
+		next_layout->set_enabled_internal(true);
 		return true;
 	}
 	printf("not found\n");
@@ -129,10 +135,10 @@ Layout& Layout::add_component(
 		){
 
 	component.set_event_loop( event_loop() );
+	component.set_parent(this);
 	m_component_list.push_back(
 				LayoutComponent(&component)
 				);
-
 	return *this;
 }
 

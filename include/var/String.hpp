@@ -346,6 +346,7 @@ public:
 
 
 	size_t length() const { return m_string.length(); }
+	ssize_t length_signed() const { return static_cast<ssize_t>(m_string.length()); }
 	void clear(){ m_string.clear(); }
 
 	String & push_back(char a){
