@@ -496,7 +496,9 @@ enum error_codes : s32 {
 	error_code_fs_cant_write_read_only = -(error_code_flag_fs|11),
 	error_code_fs_cant_write_append_only = -(error_code_flag_fs|12),
 	error_code_fs_not_open = -(error_code_flag_fs|13),
-	error_code_fs_failed_to_close = -(error_code_flag_fs|14),
+  error_code_fs_failed_to_close = -(error_code_flag_fs|14),
+  error_code_fs_failed_to_unlink = -(error_code_flag_fs|15),
+  error_code_fs_failed_to_rmdir = -(error_code_flag_fs|16),
 
 	error_code_inet_failed_to_create_socket /*! Failed to create a socket (1) */ = -(error_code_flag_inet|1),
 	error_code_inet_failed_to_connect_to_socket /*! Failed to connect to socket (2) */ = -(error_code_flag_inet|2),

@@ -87,6 +87,9 @@ int Dir::remove(
 			ret = ::rmdir(
 						path.cstring()
 						);
+			if( ret < 0 ){
+				ret = api::error_code_fs_failed_to_rmdir;
+			}
 		}
 #else
 		ret = File::remove(path);
