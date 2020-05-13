@@ -162,17 +162,47 @@ public:
 		var::StringList detail_list = details_string.split("/");
 
 		if( detail_list.count() == 1 ){
-			device_path() = detail_list.at(0);
-		}	else if( detail_list.count() == 3 ){
-			vendor_id()	= detail_list.at(0);
-			product_id()	= detail_list.at(1);
-			interface_number()	= detail_list.at(2);
-		} else if( detail_list.count() == 4 ){
-			vendor_id()	= detail_list.at(0);
-			product_id()	= detail_list.at(1);
-			interface_number()	= detail_list.at(2);
-			serial_number()	= detail_list.at(3);
+			set_device_path(detail_list.at(0));
+		}	else if( detail_list.count() > 3 ){
+			set_vendor_id(detail_list.at(0));
+			set_product_id(detail_list.at(1));
+			set_interface_number(detail_list.at(2));
+			if( detail_list.count() > 4 ){
+				set_serial_number(detail_list.at(3));
+			}
+			if( detail_list.count() > 5 ){
+				set_device_path(detail_list.at(4));
+			}
 		}
+	}
+
+	LinkDriverPath& construct_path(){
+		set_path(
+					driver_name() +
+					"@/" +
+					vendor_id() +
+					"/" +
+					product_id() +
+					"/" +
+					interface_number() +
+					"/" +
+					serial_number() +
+					"/" +
+					device_path()
+					);
+
+		return *this;
+	}
+
+	bool operator == (const LinkDriverPath& a) const {
+		//if both values are provided and they are not the same -- they are not the same
+		if( !vendor_id().is_empty() && !a.vendor_id().is_empty() && (vendor_id() != a.vendor_id())){ return false; }
+		if( !product_id().is_empty() && !a.product_id().is_empty() && (product_id() != a.product_id())){ return false; }
+		if( !interface_number().is_empty() && !a.interface_number().is_empty() && (interface_number() != a.interface_number())){ return false; }
+		if( !serial_number().is_empty() && !a.serial_number().is_empty() && (serial_number() != a.serial_number())){ return false; }
+		if( !driver_name().is_empty() && !a.driver_name().is_empty() && (driver_name() != a.driver_name())){ return false; }
+		if( !device_path().is_empty() && !a.device_path().is_empty() && (device_path() != a.device_path())){ return false; }
+		return true;
 	}
 
 
