@@ -62,10 +62,13 @@ int File::remove(
 		const var::String & path
 		SAPI_LINK_DRIVER_LAST
 		){
-	return link_unlink(
+	if( link_unlink(
 				link_driver.argument(),
 				path.cstring()
-				);
+				) < 0 ){
+		return api::error_code_fs_failed_to_unlink;
+	}
+	return 0;
 }
 
 int File::copy(

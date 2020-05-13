@@ -118,6 +118,8 @@ const char * api::get_error_code_description(s32 ec){
 		ERROR_CODE_CASE(error_code_fs_cant_write_append_only);
 		ERROR_CODE_CASE(error_code_fs_not_open);
 		ERROR_CODE_CASE(error_code_fs_failed_to_close);
+		ERROR_CODE_CASE(error_code_fs_failed_to_unlink);
+		ERROR_CODE_CASE(error_code_fs_failed_to_rmdir);
 
 		ERROR_CODE_CASE(error_code_inet_failed_to_create_socket);
 		ERROR_CODE_CASE(error_code_inet_failed_to_connect_to_socket);
