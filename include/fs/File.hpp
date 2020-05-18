@@ -782,7 +782,6 @@ public:
 	 *
 	 */
 	int close(){
-		printf("close data file with fileno %d\n", fileno());
 		return 0;
 	}
 

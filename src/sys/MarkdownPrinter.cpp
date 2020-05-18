@@ -12,7 +12,7 @@ MarkdownPrinter::MarkdownPrinter(){
 }
 
 void MarkdownPrinter::print_open_object(
-		enum verbose_level level,
+		enum levels level,
 		const char *key){
 	if( level <= verbose_level() ){
 		this->key(var::String(key), "");
@@ -25,7 +25,7 @@ void MarkdownPrinter::print_close_object(){
 }
 
 void MarkdownPrinter::print(
-		enum verbose_level level,
+		enum levels level,
 		const char * key,
 		const char * value,
 		bool is_newline
@@ -157,7 +157,7 @@ bool MarkdownPrinter::close_type(
 		enum container_type type
 		){
 	if( container().type() == type ){
-		enum verbose_level level = container().verbose_level();
+		enum levels level = container().verbose_level();
 		container_list().pop_back();
 		if( !m_is_last_close && (level <= verbose_level()) ){
 			m_is_last_close = true;
@@ -204,7 +204,7 @@ MarkdownPrinter & MarkdownPrinter::image(
 
 MarkdownPrinter & MarkdownPrinter::open_header(
 		const var::String & header,
-		enum verbose_level level
+		enum levels level
 		){
 	m_is_last_close = false;
 	container_list().push_back(
@@ -229,7 +229,7 @@ MarkdownPrinter & MarkdownPrinter::close_header(){
 //increase list level -- can be nested
 MarkdownPrinter & MarkdownPrinter::open_list(
 		enum list_type type,
-		enum verbose_level level
+		enum levels level
 		){
 	enum container_type c_type;
 	m_is_last_close = false;
@@ -256,7 +256,7 @@ MarkdownPrinter & MarkdownPrinter::close_list(){
 MarkdownPrinter & MarkdownPrinter::open_code(
 		const var::String & language,
 		//unique id value
-		enum verbose_level level
+		enum levels level
 		){
 	m_is_last_close = false;
 	container_list().push_back(
@@ -269,7 +269,7 @@ MarkdownPrinter & MarkdownPrinter::open_code(
 }
 MarkdownPrinter & MarkdownPrinter::close_code(){
 	if( container().type() == container_code ){
-		enum verbose_level level = container().verbose_level();
+		enum levels level = container().verbose_level();
 		container_list().pop_back();
 
 		for(auto const & c: container_list() ){
@@ -286,7 +286,7 @@ MarkdownPrinter & MarkdownPrinter::close_code(){
 }
 
 MarkdownPrinter & MarkdownPrinter::open_blockquote(
-		enum verbose_level level){
+		enum levels level){
 	container_list().push_back(
 				Container(level,container_blockquote)
 				);
@@ -312,7 +312,7 @@ MarkdownPrinter & MarkdownPrinter::close_blockquote(){
 }
 
 MarkdownPrinter & MarkdownPrinter::open_paragraph(
-		enum verbose_level level
+		enum levels level
 		){
 	m_is_last_close = false;
 	container_list().push_back(
@@ -330,7 +330,7 @@ MarkdownPrinter & MarkdownPrinter::close_paragraph(){
 
 MarkdownPrinter & MarkdownPrinter::open_table(
 		const var::StringList& header,
-		enum verbose_level level){
+		enum levels level){
 	m_is_last_close = false;
 	return *this;
 }
@@ -382,7 +382,7 @@ MarkdownPrinter & MarkdownPrinter::append_pretty_table_row(const var::StringList
 }
 
 MarkdownPrinter & MarkdownPrinter::close_pretty_table(
-		enum verbose_level level
+		enum levels level
 		){
 	//markdown table
 	var::Vector<u32> column_widths;

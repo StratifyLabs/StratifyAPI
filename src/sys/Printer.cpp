@@ -101,14 +101,14 @@ void Printer::set_color_code(u32 code){
 
 }
 
-void Printer::print_final_color(enum color_code code, const char * snippet){
+void Printer::print_final_color(enum color_codes code, const char * snippet){
 	set_color_code(code);
 	print_final(snippet);
 	clear_color_code();
 }
 
 void Printer::print(
-		enum verbose_level verbose_level,
+		enum levels verbose_level,
 		const char * key,
 		const char * value,
 		bool is_newline
@@ -169,7 +169,7 @@ void Printer::print_final(const char * fmt, ...){
 
 Printer & Printer::open_object(
 		const var::String & key,
-		enum verbose_level level){
+		enum levels level){
 	print_open_object(level, key.cstring());
 	return *this;
 }
@@ -181,7 +181,7 @@ Printer & Printer::close_object(){
 
 Printer & Printer::open_array(
 		const var::String & key,
-		enum verbose_level level){
+		enum levels level){
 	print_open_array(level, key.cstring());
 	return *this;
 }
@@ -192,7 +192,7 @@ Printer & Printer::close_array(){
 }
 
 void Printer::print_open_object(
-		enum verbose_level verbose_level,
+		enum levels verbose_level,
 		const char * key
 		){
 	print(verbose_level, key, "");
@@ -206,7 +206,7 @@ void Printer::print_close_object(){
 }
 
 void Printer::print_open_array(
-		enum verbose_level verbose_level,
+		enum levels verbose_level,
 		const char * key
 		){
 	print(verbose_level, key, "");

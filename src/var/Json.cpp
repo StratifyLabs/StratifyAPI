@@ -69,32 +69,6 @@ using namespace var;
 
 JsonApi JsonValue::m_api;
 
-int JsonValue::set_translated_error_number_if_error(int e) const {
-	int error_code = 0;
-	switch(e){
-		case json_error_unknown: error_code = api::error_code_var_json_unknown; break;
-		case json_error_out_of_memory: error_code = api::error_code_var_json_out_of_memory; break;
-		case json_error_stack_overflow: error_code = api::error_code_var_json_stack_overflow; break;
-		case json_error_cannot_open_file: error_code = api::error_code_var_json_cannot_open_file; break;
-		case json_error_invalid_argument: error_code = api::error_code_var_json_invalid_argument; break;
-		case json_error_invalid_utf8: error_code = api::error_code_var_json_invalid_utf8; break;
-		case json_error_premature_end_of_input: error_code = api::error_code_var_json_premature_end_of_input; break;
-		case json_error_end_of_input_expected: error_code = api::error_code_var_json_end_of_input_expected; break;
-		case json_error_invalid_syntax: error_code = api::error_code_var_json_invalid_syntax; break;
-		case json_error_invalid_format: error_code = api::error_code_var_json_invalid_format; break;
-		case json_error_wrong_type: error_code = api::error_code_var_json_wrong_type; break;
-		case json_error_null_character: error_code = api::error_code_var_json_null_character; break;
-		case json_error_null_value: error_code = api::error_code_var_json_null_value; break;
-		case json_error_null_byte_in_key: error_code = api::error_code_var_json_null_byte_in_key; break;
-		case json_error_duplicate_key: error_code = api::error_code_var_json_duplicate_key; break;
-		case json_error_numeric_overflow: error_code = api::error_code_var_json_numeric_overflow; break;
-		case json_error_item_not_found: error_code = api::error_code_var_json_item_not_found; break;
-		case json_error_index_out_of_range: error_code = api::error_code_var_json_index_out_of_range; break;
-	}
-	return set_error_number_if_error( error_code );
-}
-
-
 JsonValue::JsonValue(){
 	if( api().is_valid() == false ){ exit_fatal("json api missing"); }
 	m_value = nullptr; //create() method from children are not available in the constructor
@@ -169,7 +143,7 @@ int JsonValue::create_if_not_valid(){
 	if( is_valid() ){ return 0; }
 	m_value = create();
 	if( m_value == nullptr ){
-		set_translated_error_number_if_error( json_error_out_of_memory );
+		set_error_number_if_error( json_error_out_of_memory );
 		return -1;
 	}
 	return 0;
@@ -177,11 +151,11 @@ int JsonValue::create_if_not_valid(){
 
 JsonValue& JsonValue::assign(const var::String & value){
 	if( is_string() ){
-		set_translated_error_number_if_error( api()->string_set(m_value, value.cstring()) );
+		set_error_number_if_error( api()->string_set(m_value, value.cstring()) );
 	} else if( is_real() ){
-		set_translated_error_number_if_error( api()->real_set(m_value, ::atoff(value.cstring())) );
+		set_error_number_if_error( api()->real_set(m_value, ::atoff(value.cstring())) );
 	} else if( is_integer() ){
-		set_translated_error_number_if_error( api()->integer_set(m_value, ::atoi(value.cstring())) );
+		set_error_number_if_error( api()->integer_set(m_value, ::atoi(value.cstring())) );
 	} else if ( is_true() || is_false() ){
 		if( value == "true" ){
 			*this = JsonTrue();
@@ -347,7 +321,7 @@ JsonObject& JsonObject::insert(
 		return *this;
 	}
 
-	set_translated_error_number_if_error(
+	set_error_number_if_error(
 				api()->object_set(
 					m_value,
 					key.cstring(),
@@ -362,7 +336,7 @@ JsonObject& JsonObject::update(
 		enum updates o_flags
 		){
 	if( o_flags & update_existing ){
-		set_translated_error_number_if_error(
+		set_error_number_if_error(
 					api()->object_update_existing(
 						m_value,
 						value.m_value
@@ -372,7 +346,7 @@ JsonObject& JsonObject::update(
 	}
 
 	if( o_flags & update_missing ){
-		set_translated_error_number_if_error(
+		set_error_number_if_error(
 					api()->object_update_missing(
 						m_value,
 						value.m_value
@@ -381,7 +355,7 @@ JsonObject& JsonObject::update(
 		return *this;
 	}
 
-	set_translated_error_number_if_error(
+	set_error_number_if_error(
 				api()->object_update(
 					m_value,
 					value.m_value
@@ -391,7 +365,7 @@ JsonObject& JsonObject::update(
 }
 
 JsonObject& JsonObject::remove(const var::String & key){
-	set_translated_error_number_if_error( api()->object_del(m_value, key.cstring()) );
+	set_error_number_if_error( api()->object_del(m_value, key.cstring()) );
 	return *this;
 }
 
@@ -400,7 +374,7 @@ u32 JsonObject::count() const {
 }
 
 JsonObject& JsonObject::clear(){
-	set_translated_error_number_if_error( api()->object_clear(m_value) );
+	set_error_number_if_error( api()->object_clear(m_value) );
 	return *this;
 }
 
@@ -477,7 +451,7 @@ JsonArray::JsonArray(const var::Vector<s32>& list){
 
 JsonArray& JsonArray::append(const JsonValue & value){
 	if( create_if_not_valid() < 0 ){ return *this; }
-	set_translated_error_number_if_error(
+	set_error_number_if_error(
 				api()->array_append(
 					m_value,
 					value.m_value
@@ -488,7 +462,7 @@ JsonArray& JsonArray::append(const JsonValue & value){
 
 JsonArray& JsonArray::append(const JsonArray & array){
 	if( create_if_not_valid() < 0 ){ return *this; }
-	set_translated_error_number_if_error(
+	set_error_number_if_error(
 				api()->array_extend(m_value, array.m_value)
 				);
 	return *this;
@@ -499,7 +473,7 @@ JsonArray& JsonArray::insert(
 		const JsonValue & value
 		){
 	if( create_if_not_valid() < 0 ){ return *this; }
-	set_translated_error_number_if_error(
+	set_error_number_if_error(
 				api()->array_insert(
 					m_value,
 					position,
@@ -512,7 +486,7 @@ JsonArray& JsonArray::insert(
 JsonArray& JsonArray::remove(
 		size_t position
 		){
-	set_translated_error_number_if_error(
+	set_error_number_if_error(
 				api()->array_remove(
 					m_value,
 					position
@@ -522,7 +496,7 @@ JsonArray& JsonArray::remove(
 }
 
 JsonArray& JsonArray::clear(){
-	set_translated_error_number_if_error(
+	set_error_number_if_error(
 				api()->array_clear(m_value)
 				);
 	return *this;
@@ -812,3 +786,4 @@ int JsonDocument::save(
 		) const {
 	return JsonValue::api()->dump_callback(value.m_value, callback, context, flags());
 }
+

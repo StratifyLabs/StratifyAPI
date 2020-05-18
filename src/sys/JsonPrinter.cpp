@@ -11,7 +11,7 @@ JsonPrinter::JsonPrinter(){
 }
 
 void JsonPrinter::print(
-		enum verbose_level level,
+		enum levels level,
 		const char * key,
 		const char * value,
 		bool is_newline
@@ -37,7 +37,7 @@ void JsonPrinter::print(
 }
 
 void JsonPrinter::print_open_object(
-		enum verbose_level level,
+		enum levels level,
 		const char * key
 		){
 
@@ -56,7 +56,7 @@ void JsonPrinter::print_open_object(
 }
 
 void JsonPrinter::print_open_array(
-		enum verbose_level level,
+		enum levels level,
 		const char * key
 		){
 	if( verbose_level() >= level ){

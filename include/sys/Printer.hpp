@@ -45,10 +45,10 @@ struct PrinterFlags {
 		print_red_keys = (1<<21),
 		print_no_progress_newline = (1<<22),
 		print_key_quotes = (1<<23),
-		print_value_quotes = (1<<24),
+		print_value_quotes = (1<<24)
 	};
 
-	enum format_type {
+	enum format_types {
 		format_normal = 0,
 		format_bold = 1,
 		format_dim = 2,
@@ -58,7 +58,7 @@ struct PrinterFlags {
 		format_hidden = 8,
 	};
 
-	enum color_code {
+	enum color_codes {
 		color_code_default = 39,
 		color_code_black = 30,
 		color_code_red = 31, //RED
@@ -76,7 +76,7 @@ struct PrinterFlags {
 	};
 
 	/*! \details Filtering levels. */
-	enum verbose_level {
+	enum levels {
 		level_fatal /*! Prints fatal errors. */,
 		level_error /*! Prints fatal and error messages. */,
 		level_warning /*! Printers warnings and worse. */,
@@ -152,7 +152,7 @@ public:
 
 
 	/*! \details Assign an effective verbose level to this object. */
-	Printer& set_verbose_level(enum verbose_level level){
+	Printer& set_verbose_level(enum levels level){
 		m_verbose_level = level;
 		return *this;
 	}
@@ -165,7 +165,7 @@ public:
 	Printer& set_verbose_level(const var::String & level);
 
 	/*! \details Returns the current verbose level. */
-	enum verbose_level verbose_level() const { return m_verbose_level; }
+	enum levels verbose_level() const { return m_verbose_level; }
 
 	/*! \cond */
 	virtual Printer & debug(const char * fmt, ...);
@@ -279,7 +279,7 @@ public:
 	template<class T> Printer& object(
 			const var::String & key,
 			const T& value,
-			enum verbose_level level = level_fatal
+			enum levels level = level_fatal
 			){
 		print_open_object(level, key.cstring());
 		*this << value;
@@ -289,41 +289,41 @@ public:
 
 	Printer & open_object(
 			const var::String & key,
-			enum verbose_level level = level_fatal);
+			enum levels level = level_fatal);
 
 	Printer & close_object();
 
 	Printer & open_array(
 			const var::String & key,
-			enum verbose_level level = level_fatal);
+			enum levels level = level_fatal);
 
 	Printer & close_array();
 
 
-	const var::String terminal_color_code(enum color_code code);
+	const var::String terminal_color_code(enum color_codes code);
 
 
 	virtual void print_open_object(
-			enum verbose_level verbose_level,
+			enum levels verbose_level,
 			const char * key
 			);
 	virtual void print_close_object();
 
 	virtual void print_open_array(
-			enum verbose_level verbose_level,
+			enum levels verbose_level,
 			const char * key
 			);
 	virtual void print_close_array();
 
 	virtual void print(
-			enum verbose_level level,
+			enum levels level,
 			const char * key,
 			const char * value,
 			bool is_newline = true
 			);
 
 protected:
-	void print_final_color(enum color_code code, const char * snippet);
+	void print_final_color(enum color_codes code, const char * snippet);
 	virtual void print_final(const char * fmt, ...);
 
 private:
@@ -341,7 +341,7 @@ private:
 
 	var::String m_progress_key;
 
-	enum verbose_level m_verbose_level;
+	enum levels m_verbose_level;
 
 #if defined __link
 	bool m_is_bash;
@@ -360,7 +360,7 @@ protected:
 template <typename T> class PrinterContainer: public PrinterFlags {
 public:
 	PrinterContainer(
-			enum verbose_level verbose_level,
+			enum levels verbose_level,
 			T type
 			){
 		m_verbose_level = verbose_level;
@@ -368,11 +368,11 @@ public:
 		m_count = 1;
 	}
 
-	enum verbose_level verbose_level() const {
+	enum levels verbose_level() const {
 		return m_verbose_level;
 	}
 
-	void set_verbose_level(enum verbose_level level){
+	void set_verbose_level(enum levels level){
 		m_verbose_level = level;
 	}
 
@@ -384,7 +384,7 @@ public:
 	}
 
 private:
-	enum verbose_level m_verbose_level;
+	enum levels m_verbose_level;
 	u32 m_count;
 	T m_type;
 };
@@ -394,7 +394,7 @@ public:
 	PrinterObject(
 			Printer & printer,
 			const var::String & name,
-			enum Printer::verbose_level level = Printer::level_info
+			enum Printer::levels level = Printer::level_info
 			) : m_printer(printer){
 		printer.open_object(name, level);
 	}
@@ -411,7 +411,7 @@ public:
 	PrinterArray(
 			Printer & printer,
 			const var::String & name,
-			enum Printer::verbose_level level = Printer::level_info
+			enum Printer::levels level = Printer::level_info
 			) : m_printer(printer){
 		printer.open_array(name, level);
 	}

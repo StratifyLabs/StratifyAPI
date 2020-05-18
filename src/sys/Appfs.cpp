@@ -83,7 +83,9 @@ void AppfsFileAttributes::apply(appfs_file_t * appfs_file) const {
 		appfs_file->hdr.version = m_version;
 	}
 
-	appfs_file->hdr.mode = m_access_mode;
+	if( m_access_mode != 0 ){
+		appfs_file->hdr.mode = m_access_mode;
+	}
 
 	if( m_ram_size >= 4096 ){
 		appfs_file->exec.ram_size = m_ram_size;

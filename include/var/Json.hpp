@@ -259,8 +259,6 @@ protected:
 		return 0;
 	}
 
-	int set_translated_error_number_if_error(int e) const;
-
 private:
 	friend class JsonDocument;
 	friend class JsonObject;

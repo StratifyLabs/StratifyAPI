@@ -57,6 +57,14 @@ void ListItem::draw(const DrawingScaledAttributes & attributes){
 	}
 }
 
+void ListFiller::draw(const DrawingScaledAttributes & attributes){
+	draw_base_properties(
+				attributes.bitmap(),
+				attributes.region(),
+				theme()
+				);
+}
+
 
 void ListItem::handle_event(const ux::Event & event){
 	//change the state when an event happens in the component
@@ -106,4 +114,25 @@ List& List::add_component(
 				);
 	//component.set_theme_style( theme_style() );
 	return LayoutAccess<List>::add_component(component);
+}
+
+List& List::add_filler(enum sgfx::Theme::styles style){
+
+	drawing_size_t height = 0;
+	if( component_list().count() ){
+		height = component_list().back().component()->reference_drawing_attributes().point().y() +
+				component_list().back().component()->reference_drawing_attributes().area().height();
+	}
+	if( height < 1010 ){
+		ListFiller * list_filler =
+				&(ListFiller::create(name() + "Filler")
+					.set_drawing_area(1000, 1010 - height)
+					.set_theme_style(style)
+					);
+		set_vertical_scroll_enabled(false);
+		return LayoutAccess<List>::add_component(*list_filler);
+	}
+
+	return *this;
+
 }

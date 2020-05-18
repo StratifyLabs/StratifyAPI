@@ -52,6 +52,12 @@ public:
 
 };
 
+class ListFiller : public ComponentAccess<ListFiller>{
+public:
+	ListFiller(const var::String & name) : ComponentAccess(name){}
+	void draw(const DrawingScaledAttributes & attributes);
+};
+
 
 class List : public LayoutAccess<List> {
 public:
@@ -62,6 +68,10 @@ public:
 	}
 
 	List& add_component(Component& component);
+
+	List& add_filler(
+			enum sgfx::Theme::styles style = sgfx::Theme::style_outline_dark
+			);
 
 private:
 	API_ACCESS_FUNDAMENTAL(List,drawing_size_t,item_height,250);
