@@ -10,7 +10,7 @@ YamlPrinter::YamlPrinter(){
 }
 
 void YamlPrinter::print(
-		enum verbose_level level,
+		enum levels level,
 		const char * key,
 		const char * value,
 		bool is_newline
@@ -39,7 +39,7 @@ void YamlPrinter::print(
 }
 
 void YamlPrinter::print_open_object(
-		enum verbose_level level,
+		enum levels level,
 		const char * key
 		){
 
@@ -55,7 +55,7 @@ void YamlPrinter::print_open_object(
 }
 
 void YamlPrinter::print_open_array(
-		enum verbose_level level,
+		enum levels level,
 		const char * key
 		){
 	if( verbose_level() >= level ){

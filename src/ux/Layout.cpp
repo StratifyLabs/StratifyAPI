@@ -35,8 +35,6 @@ bool Layout::transition(
 
 	Component * next = nullptr;
 	for(auto & cp: m_component_list){
-		printf("looking for %s in %s\n", next_layout_name.cstring(),
-					 cp.component()->name().cstring());
 		if( (cp.component()->is_layout() ) &&
 				(cp.component()->name() == next_layout_name) ){
 			next = cp.component();

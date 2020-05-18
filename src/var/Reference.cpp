@@ -171,9 +171,9 @@ int Reference::save(
 		) const {
 	fs::File f;
 	if( f.create(
-			 file_path,
-			 is_overwrite
-			 ) < 0 ){
+				file_path,
+				is_overwrite
+				) < 0 ){
 		return -1;
 	}
 
@@ -207,6 +207,8 @@ sys::Printer& sys::operator << (sys::Printer& printer, const var::Reference & a)
 	u32 bytes_printed = 0;
 	var::String data_string;
 
+
+
 	for(i=0; i < s; i++){
 		if( o_flags & sys::Printer::print_hex ){
 			if( o_flags & sys::Printer::print_32 ){
@@ -215,7 +217,7 @@ sys::Printer& sys::operator << (sys::Printer& printer, const var::Reference & a)
 				data_string << var::String().format("%X", ptru16[i]);
 			} else if( o_flags & sys::Printer::print_blob ){
 				for(u32 j=0; j < 16; j++){
-					data_string << var::String().format("%02X", ptru8[i*16+j]);
+					data_string << var::String().format("%02X ", ptru8[i*16+j]);
 					if( j < 15 ){
 						data_string << " ";
 					}
@@ -275,10 +277,11 @@ sys::Printer& sys::operator << (sys::Printer& printer, const var::Reference & a)
 			}
 		}
 
-		printer.print(printer.verbose_level(),
-				var::String().format("[%04d]", i).cstring(),
-				data_string.cstring()
-				);
+		printer.print(
+					printer.verbose_level(),
+					var::String().format("[%04d]", i).cstring(),
+					data_string.cstring()
+					);
 		data_string.clear();
 	}
 

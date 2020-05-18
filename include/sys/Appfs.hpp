@@ -157,32 +157,12 @@ class AppfsFileAttributes :
       public AppfsFlags{
 public:
 
-	AppfsFileAttributes(){
-		m_version = 0;
-		m_ram_size = 0;
-		m_o_flags = flag_is_flash;
-		m_access_mode = 0777;
-	}
+	AppfsFileAttributes(){}
 
 	AppfsFileAttributes(const appfs_file_t & appfs_file);
 
 	void apply(appfs_file_t * appfs_file) const;
 	int apply(const fs::File & file) const;
-
-	AppfsFileAttributes & set_name(const var::String & value){
-		m_name = value; return *this;
-	}
-	const var::String & name() const { return m_name; }
-	AppfsFileAttributes & set_id(const var::String & value){ m_id = value; return *this; }
-	const var::String & id() const { return m_id; }
-	AppfsFileAttributes & set_version(u16 value){ m_version = value; return *this; }
-	u16 version() const { return m_version; }
-	AppfsFileAttributes & set_flags(u32 o_value){ m_o_flags = o_value; return *this; }
-	u16 o_flags() const { return m_o_flags; }
-	AppfsFileAttributes & set_ram_size(u32 value){ m_ram_size = value; return *this; }
-	u16 ram_size() const { return m_ram_size; }
-	AppfsFileAttributes & set_access_mode(u32 value){ m_access_mode = value; return *this; }
-	u16 access_mode() const { return m_access_mode; }
 
 	bool is_flash() const { return m_o_flags & flag_is_flash; }
 	bool is_code_external() const { return m_o_flags & flag_is_code_external; }
@@ -267,12 +247,12 @@ public:
 
 
 private:
-	var::String m_name;
-	var::String m_id;
-	u32 m_ram_size;
-	u32 m_o_flags;
-	u16 m_version;
-	u16 m_access_mode;
+	API_ACCESS_COMPOUND(AppfsFileAttributes,var::String,name);
+	API_ACCESS_COMPOUND(AppfsFileAttributes,var::String,id);
+	API_ACCESS_FUNDAMENTAL(AppfsFileAttributes,u32,ram_size,0);
+	API_ACCESS_FUNDAMENTAL(AppfsFileAttributes,u32,o_flags,flag_is_flash);
+	API_ACCESS_FUNDAMENTAL(AppfsFileAttributes,u16,version,0);
+	API_ACCESS_FUNDAMENTAL(AppfsFileAttributes,u16,access_mode,0555);
 };
 
 /*! \brief Application File System Class

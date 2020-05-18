@@ -34,7 +34,7 @@ public:
 
 	MarkdownPrinter & open_object(
 			const var::String & key,
-			enum verbose_level level = level_fatal){
+			enum levels level = level_fatal){
 		open_header(key, level);
 		return open_list(list_unordered, level);
 	}
@@ -51,7 +51,7 @@ public:
 
 	MarkdownPrinter & open_array(
 			const var::String & key,
-			enum verbose_level level = level_fatal){
+			enum levels level = level_fatal){
 		open_header(key, level);
 		return open_list(list_ordered, level);
 	}
@@ -64,13 +64,13 @@ public:
 	//increase header level -- can be nested
 	MarkdownPrinter & open_header(
 			const var::String & key,
-			enum verbose_level level = level_info
+			enum levels level = level_info
 			);
 	MarkdownPrinter & close_header();
 
 
 	MarkdownPrinter & open_paragraph(
-			enum verbose_level level = level_info
+			enum levels level = level_info
 			);
 
 	MarkdownPrinter & close_paragraph();
@@ -78,7 +78,7 @@ public:
 	//increase list level -- can be nested
 	MarkdownPrinter & open_list(
 			enum list_type type = list_unordered,
-			enum verbose_level level = level_info
+			enum levels level = level_info
 			);
 
 	MarkdownPrinter & close_list();
@@ -87,19 +87,19 @@ public:
 	MarkdownPrinter & open_code(
 			const var::String & language = "",
 			//unique id value
-			enum verbose_level level = level_info
+			enum levels level = level_info
 			);
 	MarkdownPrinter & close_code();
 
 	MarkdownPrinter & open_blockquote(
-			enum verbose_level level = level_info
+			enum levels level = level_info
 			);
 
 	MarkdownPrinter & close_blockquote();
 
 	MarkdownPrinter & open_table(
 			const var::StringList & header,
-			enum verbose_level level = level_info
+			enum levels level = level_info
 			);
 
 	MarkdownPrinter & append_table_row(const var::StringList& row);
@@ -110,7 +110,7 @@ public:
 			);
 
 	MarkdownPrinter & append_pretty_table_row(const var::StringList & row);
-	MarkdownPrinter & close_pretty_table(enum verbose_level level = level_info);
+	MarkdownPrinter & close_pretty_table(enum levels level = level_info);
 
 	bool is_pretty_table_valid() const {
 		return m_pretty_table.count() && m_pretty_table.front().count();
@@ -166,10 +166,10 @@ private:
 	const var::Vector<Container> & container_list() const { return m_container_list; }
 
 	//re-implemented virtual functions from Printer
-	void print_open_object(enum verbose_level level, const char * key);
+	void print_open_object(enum levels level, const char * key);
 	void print_close_object();
 	void print(
-			enum verbose_level level,
+			enum levels level,
 			const char * key,
 			const char * value,
 			bool is_newline = true
@@ -223,7 +223,7 @@ public:
 	MarkdownHeader(
 			MarkdownPrinter & printer,
 			const var::String & header,
-			enum MarkdownPrinter::verbose_level level = MarkdownPrinter::level_info) : m_printer(printer){
+			enum MarkdownPrinter::levels level = MarkdownPrinter::level_info) : m_printer(printer){
 		printer.open_header(header, level);
 	}
 
@@ -240,7 +240,7 @@ public:
 	MarkdownCode(
 			MarkdownPrinter & printer,
 			const var::String & language,
-			enum MarkdownPrinter::verbose_level level = MarkdownPrinter::level_info)
+			enum MarkdownPrinter::levels level = MarkdownPrinter::level_info)
 		: m_printer(printer){
 		printer.open_code(language, level);
 	}
@@ -257,7 +257,7 @@ class MarkdownBlockQuote {
 public:
 	MarkdownBlockQuote(
 			MarkdownPrinter & printer,
-			enum MarkdownPrinter::verbose_level level = MarkdownPrinter::level_info)
+			enum MarkdownPrinter::levels level = MarkdownPrinter::level_info)
 		: m_printer(printer){
 		m_printer.open_blockquote(level);
 	}
@@ -270,12 +270,29 @@ private:
 	MarkdownPrinter & m_printer;
 };
 
+class MarkdownParagraph {
+public:
+	MarkdownParagraph(
+			MarkdownPrinter & printer,
+			enum MarkdownPrinter::levels level = MarkdownPrinter::level_info)
+		: m_printer(printer){
+		m_printer.open_paragraph(level);
+	}
+
+	~MarkdownParagraph(){
+		m_printer.close_paragraph();
+	}
+
+private:
+	MarkdownPrinter & m_printer;
+};
+
 class MarkdownList {
 public:
 	MarkdownList(
 			MarkdownPrinter & printer,
 			enum MarkdownPrinter::list_type type,
-			enum MarkdownPrinter::verbose_level level = MarkdownPrinter::level_info)
+			enum MarkdownPrinter::levels level = MarkdownPrinter::level_info)
 		: m_printer(printer){
 		printer.open_list(type, level);
 	}
@@ -293,7 +310,7 @@ public:
 	MarkdownPrettyTable(
 			MarkdownPrinter & printer,
 			const var::Vector<var::String> & header,
-			enum MarkdownPrinter::verbose_level level = MarkdownPrinter::level_info)
+			enum MarkdownPrinter::levels level = MarkdownPrinter::level_info)
 		: m_printer(printer){
 		printer.open_pretty_table(header);
 	}

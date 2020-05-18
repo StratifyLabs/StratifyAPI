@@ -89,6 +89,9 @@ public:
 
 	const var::Array<u8, 32> & output();
 	var::String to_string();
+	static u32 length(){
+		return 32;
+	}
 
 private:
 	var::Array<u8,32> m_output;

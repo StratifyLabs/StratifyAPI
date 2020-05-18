@@ -134,6 +134,15 @@ public:
 		m_theme_state = value;
 	}
 
+	const DrawingAttributes& reference_drawing_attributes() const {
+		return m_reference_drawing_attributes;
+	}
+
+
+	DrawingAttributes& reference_drawing_attributes(){
+		return m_reference_drawing_attributes;
+	}
+
 protected:
 
 	bool m_is_visible = false;
@@ -161,14 +170,6 @@ protected:
 
 	const DrawingAttributes & local_drawing_attributes() const {
 		return m_local_drawing_attributes;
-	}
-
-	const DrawingAttributes& reference_drawing_attributes() const {
-		return m_reference_drawing_attributes;
-	}
-
-	DrawingAttributes& reference_drawing_attributes(){
-		return m_reference_drawing_attributes;
 	}
 
 	virtual void set_enabled_internal(bool value = true){
