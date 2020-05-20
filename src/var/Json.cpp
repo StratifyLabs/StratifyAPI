@@ -9,8 +9,10 @@
 #include "sys/Printer.hpp"
 #include "sys/requests.h"
 
-#if defined __link && !defined __android
+#if defined __link
+#if !defined __android
 #include "xml2json.hpp"
+#endif
 #define atoff atof
 #endif
 
