@@ -10,6 +10,10 @@
 #include <pthread.h>
 #include <mcu/types.h>
 
+#if defined __android
+#define PTHREAD_PRIO_PROTECT PTHREAD_PRIO_NONE
+#endif
+
 namespace sys {
 
 class MutexFlags {
