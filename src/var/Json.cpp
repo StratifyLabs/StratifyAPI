@@ -606,8 +606,10 @@ JsonValue JsonDocument::load(
 			= xml2json(
 				xml.argument().cstring()
 				);
-#endif
 	return load(String(json_string.c_str()));
+#else
+	return JsonValue();
+#endif
 }
 
 JsonValue JsonDocument::load(
