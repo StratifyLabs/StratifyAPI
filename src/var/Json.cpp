@@ -9,7 +9,7 @@
 #include "sys/Printer.hpp"
 #include "sys/requests.h"
 
-#if defined __link
+#if defined __link && !defined __android
 #include "xml2json.hpp"
 #define atoff atof
 #endif
@@ -599,10 +599,12 @@ JsonValue JsonDocument::load(
 JsonValue JsonDocument::load(
 		XmlString xml
 		){
+#if !defined __android
 	std::string json_string
 			= xml2json(
 				xml.argument().cstring()
 				);
+#endif
 	return load(String(json_string.c_str()));
 }
 
