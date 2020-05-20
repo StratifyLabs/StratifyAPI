@@ -9,7 +9,7 @@
 #include "sys/Printer.hpp"
 #include "sys/requests.h"
 
-#if defined __link
+#if defined __link && !defined __android
 #include "xml2json.hpp"
 #define atoff atof
 #endif
@@ -380,11 +380,10 @@ JsonObject& JsonObject::clear(){
 
 var::StringList JsonObject::key_list() const {
 	const char *key;
-	json_t *value;
 	var::StringList result;
 
 	for(key = api()->object_iter_key(api()->object_iter(m_value));
-			key && (value = api()->object_iter_value(api()->object_key_to_iter(key)));
+			key;
 			key = api()->object_iter_key(api()->object_iter_next(m_value, api()->object_key_to_iter(key)))){
 		result.push_back(var::String(key));
 	}
@@ -600,10 +599,12 @@ JsonValue JsonDocument::load(
 JsonValue JsonDocument::load(
 		XmlString xml
 		){
+#if !defined __android
 	std::string json_string
 			= xml2json(
 				xml.argument().cstring()
 				);
+#endif
 	return load(String(json_string.c_str()));
 }
 
