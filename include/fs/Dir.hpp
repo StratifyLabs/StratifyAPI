@@ -55,7 +55,6 @@ public:
 
 #if defined __link
 	using LinkDriver = File::LinkDriver;
-	using ImplicitLinkDriver = File::ImplicitLinkDriver;
 	using SourceLinkDriver = File::SourceLinkDriver;
 	using DestinationLinkDriver = File::DestinationLinkDriver;
 #endif
@@ -243,7 +242,7 @@ public:
 		return 0;
 	}
 #else
-	Dir & set_driver(ImplicitLinkDriver link_driver){
+	Dir & set_driver(LinkDriver link_driver){
 		m_driver = link_driver.argument();
 		return *this;
 	}

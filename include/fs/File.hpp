@@ -139,10 +139,10 @@ public:
 	};
 
 #if defined __link
-	using LinkDriver = arg::Argument<link_transport_mdriver_t*, struct FileLinkDriverTag >;
+	using ExplicitLinkDriver = arg::Argument<link_transport_mdriver_t*, struct FileLinkDriverTag >;
 	using SourceLinkDriver = arg::Argument<link_transport_mdriver_t*, struct FileSourceLinkDriverTag >;
 	using DestinationLinkDriver = arg::Argument<link_transport_mdriver_t*, struct FileDestinationLinkDriverTag >;
-	using ImplicitLinkDriver = arg::ImplicitArgument<link_transport_mdriver_t*, struct FileImplicitLinkDriverTag, LinkDriver >;
+	using LinkDriver = arg::ImplicitArgument<link_transport_mdriver_t*, struct FileImplicitLinkDriverTag, ExplicitLinkDriver >;
 #endif
 
 	File(
