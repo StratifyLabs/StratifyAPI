@@ -1,4 +1,5 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
+#include "var/Data.hpp"
 #include "crypto/Random.hpp"
 
 using namespace crypto;
@@ -17,6 +18,7 @@ int Random::initialize(){
 	if( random_api()->init(&m_context) < 0 ){
 		result = api::error_code_crypto_operation_failed;
 	}
+	seed(var::Data());
 	return set_error_number_if_error(result);
 }
 
@@ -41,8 +43,8 @@ int Random::seed(
 	return set_error_number_if_error(result);
 }
 
-int Random::random(
-		const var::Reference & destination_data
+int Random::randomize(
+		var::Reference & destination_data
 		){
 	int result;
 	if( (result = random_api()->random(

@@ -658,7 +658,7 @@ public:
 	int save_copy(
 			const var::String& file_path,
 			IsOverwrite is_overwrite
-			);
+			) const;
 
 	/*! \details Renames a file.
 		*

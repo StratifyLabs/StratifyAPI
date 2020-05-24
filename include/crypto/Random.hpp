@@ -16,13 +16,8 @@ public:
 	int initialize();
 	void finalize();
 
-	int seed(
-			const var::Reference & source_data
-			);
-
-	int random(
-			const var::Reference & destination_data
-			);
+	int seed(const var::Reference & source_data);
+	int randomize(var::Reference& destination_data);
 
 
 private:
