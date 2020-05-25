@@ -2,6 +2,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "crypto/Random.hpp"
+#include "crypto/Sha256.hpp"
 #include "sys/Auth.hpp"
 
 #if defined __link
@@ -17,22 +19,17 @@
 using namespace sys;
 
 AuthToken::AuthToken(const var::String & token){
+	populate(var::Data::from_string(token));
+}
+
+AuthToken::AuthToken(const var::Reference & token){
+	populate(token);
+}
+
+void AuthToken::populate(const var::Reference& data){
 	memset(&m_auth_token, 0, sizeof(m_auth_token));
-
-	if( token.length() != 2*sizeof(m_auth_token) ){
-		return;
-	}
-
-	char hex[3];
-	hex[2] = 0;
-
-	for(u32 i=0; i < sizeof(m_auth_token); i++){
-		hex[0] = token.at(i*2);
-		hex[1] = token.at(i*2+1);
-		m_auth_token.data[i] =
-				var::String(hex).to_unsigned_long(var::String::base_16);
-	}
-
+	u32 size = data.size() > sizeof(m_auth_token) ? sizeof(m_auth_token) : data.size();
+	memcpy(&m_auth_token, data.to_const_void(), size);
 }
 
 #if defined __link
@@ -69,6 +66,50 @@ void Auth::close(){
 	CLOSE();
 }
 
+
+bool Auth::authenticate(const var::Reference & key){
+	crypto::Random random;
+	crypto::Sha256 hash;
+	if( hash.initialize() < 0 ){
+		return false;
+	}
+
+	if( random.initialize() < 0 ){
+		return false;
+	}
+
+
+	var::Data random_data(AuthToken::size());
+	random.randomize(random_data);
+
+	AuthToken token = start(AuthToken(random_data));
+
+	auth_key_token_t key_token;
+	auth_key_token_t reverse_key_token;
+
+	key_token.key = AuthToken(key).auth_token();
+	key_token.token = token.auth_token();
+	reverse_key_token.key = key_token.token;
+	reverse_key_token.token = key_token.key;
+
+	//do SHA256 calcs
+	hash.start();
+	hash << var::Reference(key_token);
+	hash.finish();
+
+	AuthToken validation_token = finish(AuthToken(hash.output()));
+
+	hash.start();
+	hash << var::Reference(reverse_key_token);
+	hash.finish();
+
+	//hash output should match validation token
+	if( var::Reference(hash.output()) == var::Reference(validation_token.auth_token()) ){
+		return true;
+	}
+
+	return false;
+}
 
 AuthToken Auth::start(const AuthToken & token){
 	auth_token_t result;

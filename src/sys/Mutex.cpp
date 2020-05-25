@@ -21,16 +21,20 @@ MutexAttributes::~MutexAttributes(){
 }
 
 MutexAttributes & MutexAttributes::set_prio_ceiling(int value){
+#if !defined __android
 	if( pthread_mutexattr_setprioceiling(&m_item, value) < 0 ){
 		invalidate();
 	}
+#endif
 	return *this;
 }
 
 MutexAttributes & MutexAttributes::set_protocol(enum protocol value){
+#if !defined __android
 	if( pthread_mutexattr_setprotocol(&m_item, value) < 0 ){
 		invalidate();
 	}
+#endif
 	return *this;
 }
 
@@ -49,14 +53,18 @@ MutexAttributes & MutexAttributes::set_type(enum type value){
 }
 
 int MutexAttributes::get_prio_ceiling() const {
-	int ret;
+	int ret = 0;
+#if !defined __android
 	pthread_mutexattr_getprioceiling(&m_item, &ret);
+#endif
 	return ret;
 }
 
 int MutexAttributes::get_protocol() const {
-	int ret;
+	int ret = 0;
+#if !defined __android
 	pthread_mutexattr_getprotocol(&m_item, &ret);
+#endif
 	return ret;
 }
 

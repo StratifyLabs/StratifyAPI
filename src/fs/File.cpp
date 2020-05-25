@@ -138,7 +138,7 @@ int File::copy(
 int File::save_copy(
 		const var::String& file_path,
 		IsOverwrite is_overwrite
-		){
+		) const {
 	File copy_file;
 	if(
 		 set_error_number_if_error(

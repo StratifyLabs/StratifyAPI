@@ -11,7 +11,7 @@
 namespace sys {
 
 
-class AuthToken : public api::InfoObject {
+class AuthToken {
 public:
 	AuthToken(){ memset(&m_auth_token, 0, sizeof(auth_token_t)); }
 	AuthToken(const auth_token_t & auth_token){
@@ -19,6 +19,7 @@ public:
 	}
 
 	AuthToken(const var::String & token);
+	AuthToken(const var::Reference & token);
 
 	bool is_valid() const {
 		for(u8 i=0; i < sizeof(auth_token_t); i++){
@@ -41,7 +42,13 @@ public:
 
 	const auth_token_t & auth_token() const { return m_auth_token; }
 
+	static u32 size() {
+		return sizeof(auth_token_t);
+	}
+
 private:
+
+	void populate(const var::Reference& data);
 	auth_token_t m_auth_token;
 
 };
@@ -70,6 +77,8 @@ public:
 			);
 
 	~Auth();
+
+	bool authenticate(const var::Reference& key);
 
 	AuthToken start(const AuthToken & token);
 	AuthToken finish(const AuthToken & token);
