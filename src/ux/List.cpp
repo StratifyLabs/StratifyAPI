@@ -118,11 +118,10 @@ List& List::add_component(
 
 List& List::add_filler(enum sgfx::Theme::styles style){
 
-	drawing_size_t height = 0;
-	if( component_list().count() ){
-		height = component_list().back().component()->reference_drawing_attributes().point().y() +
-				component_list().back().component()->reference_drawing_attributes().area().height();
-	}
+	drawing_size_t height =
+			component_list().count() *
+			component_list().back().component()->reference_drawing_attributes().area().height();
+
 	if( height < 1010 ){
 		ListFiller * list_filler =
 				&(ListFiller::create(name() + "Filler")
