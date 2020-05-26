@@ -38,17 +38,7 @@ public:
 	API_ACCESS_DERIVED_COMPOUND(ListItem,T,var::String,key)
 	API_ACCESS_DERIVED_COMPOUND(ListItem,T,var::String,value)
 
-	template<typename... Args> static T & create(
-			Args... args
-			){
-		T * result = new T(args...);
-		if( result == nullptr ){
-			//assert here
-			printf("failed!!!\n");
-		}
-		result->m_is_created = true;
-		return *result;
-	}
+	COMPONENT_ACCESS_CREATE()
 
 };
 

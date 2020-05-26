@@ -14,6 +14,16 @@ namespace ux {
 class EventLoop;
 class Layout;
 
+#define COMPONENT_ACCESS_CREATE() \
+	template<typename... Args> static T & create(Args... args){ \
+		T * result = new T(args...); \
+		if( result == nullptr ){ \
+			printf("failed!!!\n"); \
+		} \
+		result->m_is_created = true; \
+		return *result; \
+	} \
+
 class Component : public Drawing {
 public:
 
@@ -58,7 +68,6 @@ public:
 	bool is_enabled() const {
 		return m_is_enabled;
 	}
-
 
 	const sgfx::Theme * theme() const;
 	const hal::Display * display() const;
@@ -137,7 +146,6 @@ public:
 	const DrawingAttributes& reference_drawing_attributes() const {
 		return m_reference_drawing_attributes;
 	}
-
 
 	DrawingAttributes& reference_drawing_attributes(){
 		return m_reference_drawing_attributes;
@@ -260,17 +268,7 @@ public:
 					).contains(point);
 	}
 
-	template<typename... Args> static T & create(
-			Args... args
-			){
-		T * result = new T(args...);
-		if( result == nullptr ){
-			//assert here
-			printf("failed!!!\n");
-		}
-		result->m_is_created = true;
-		return *result;
-	}
+	COMPONENT_ACCESS_CREATE()
 
 
 protected:
