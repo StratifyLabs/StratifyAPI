@@ -138,6 +138,23 @@ private:
 	var::String m_path;
 };
 
+/*!
+ * \brief The LinkDriverPath class
+ * \details The LinkDriverPath class
+ * creates parses the details of a link driver path. The path
+ * takes one of the following forms
+ *
+ * ```
+ * <serial device path>
+ * serial@<serial device path>
+ * <driver>@<vendor id>/<product id>/<interface number>
+ * <driver>@<vendor id>/<product id>/<interface number>/<serial number>
+ * <driver>@<vendor id>/<product id>/<interface number>/<serial number>/<device path>
+ * ```
+ *
+ * - `<driver>` can be `serial` or `usb`
+ *
+ */
 class LinkDriverPath {
 public:
 
@@ -163,7 +180,8 @@ public:
 
 		if( detail_list.count() == 1 ){
 			set_device_path(detail_list.at(0));
-		}	else if( detail_list.count() > 3 ){
+		}	else if( detail_list.count() > 2 ){
+			//<driver>@/<vendor id>/<product id>/<interface number>/<serial number>/<device path>
 			set_vendor_id(detail_list.at(0));
 			set_product_id(detail_list.at(1));
 			set_interface_number(detail_list.at(2));
