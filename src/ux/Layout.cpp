@@ -29,7 +29,6 @@ bool Layout::transition(
 		){
 
 	if( is_layout() == false ){
-		printf("not a layout\n");
 		return false;
 	}
 
@@ -50,6 +49,7 @@ bool Layout::transition(
 		){
 	if( next_layout ){
 		for(auto & cp: m_component_list){
+			//disable all other layouts
 			if( cp.component()->is_layout() ){
 				cp.component()->set_enabled_internal(false);
 			}
