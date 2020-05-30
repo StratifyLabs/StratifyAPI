@@ -22,13 +22,17 @@ class ListEvent : public EventObject<ListItem, EVENT_TYPE('_','l','s','t')> {
 
 class ListItem : public ComponentAccess<ListItem>{
 public:
-	ListItem(const var::String & name) : ComponentAccess(name){}
+	ListItem(const var::String & name) : ComponentAccess(name){
+		set_left_padding(5);
+		set_right_padding(5);
+	}
 	void draw(const DrawingScaledAttributes & attributes);
 	void handle_event(const ux::Event & event);
 
 private:
 	API_ACCESS_COMPOUND(ListItem,var::String,key);
 	API_ACCESS_COMPOUND(ListItem,var::String,value);
+	API_ACCESS_BOOL(ListItem,interactive,true);
 };
 
 template<class T> class ListItemAccess: public ListItem {
@@ -37,6 +41,7 @@ public:
 
 	API_ACCESS_DERIVED_COMPOUND(ListItem,T,var::String,key)
 	API_ACCESS_DERIVED_COMPOUND(ListItem,T,var::String,value)
+	API_ACCESS_DERIVED_BOOL(ListItem,T,interactive)
 
 	COMPONENT_ACCESS_CREATE()
 

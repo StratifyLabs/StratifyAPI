@@ -10,36 +10,16 @@ namespace ux {
 
 class Label :
 		public ComponentAccess<Label> {
-	public:
-
+public:
 
 	Label(const var::String & name) : ComponentAccess(name){
-		set_label(name);
-	}
-
-	Label& set_label(const var::String & value){
-		m_label = value;
-		return *this;
-	}
-
-	Label& set_icon_name(const var::String & value){
-		m_icon_name = value;
-		return *this;
+		set_value(name);
 	}
 
 	void draw(const DrawingScaledAttributes & attributes);
 
-	const var::String& label() const {
-		return m_label;
-	}
-
-	const var::String& icon_name() const {
-		return m_icon_name;
-	}
-
-	private:
-	var::String m_label;
-	var::String m_icon_name;
+private:
+	API_ACCESS_COMPOUND(Label,var::String,value);
 
 };
 

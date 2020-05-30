@@ -3,7 +3,7 @@
 #ifndef SAPI_HAL_PIN_HPP_
 #define SAPI_HAL_PIN_HPP_
 
-#include "../var/Tokenizer.hpp"
+#include "../var/String.hpp"
 #include "Pio.hpp"
 
 namespace hal {
@@ -54,16 +54,13 @@ public:
 	using IsActiveHigh = arg::Argument<u8, struct PinIsActiveHighTag>;
 
 	static mcu_pin_t from_string(const var::String & port_pin){
-		var::Tokenizer tokens(
-					port_pin,
-					var::Tokenizer::Delimeters(".")
-					);
+		var::StringList token_list = port_pin.split(".");
 		mcu_pin_t result;
 		result.port = 0xff;
 		result.pin = 0xff;
-		if( tokens.count() == 2 ){
-			result.port = var::String(tokens.at(0)).to_integer();
-			result.pin = var::String(tokens.at(1)).to_integer();
+		if( token_list.count() == 2 ){
+			result.port = var::String(token_list.at(0)).to_integer();
+			result.pin = var::String(token_list.at(1)).to_integer();
 		}
 		return result;
 	}

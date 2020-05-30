@@ -115,10 +115,9 @@ public:
 	}
 	
 	Layout * find_layout(const var::String & name){
-		for(auto cp: m_component_list){
-			if( cp.component()->name() == name ){
+		for(LayoutComponent& cp: m_component_list){
+			if( (cp.component()->name() == name) && cp.component()->is_layout() ){
 				return static_cast<Layout*>(cp.component());
-
 			}
 		}
 		return nullptr;
@@ -127,12 +126,9 @@ public:
 	template<class T> T * find(
 			const var::String & name,
 			IsRecursive is_recursive = IsRecursive(true)){
-		for(auto cp: m_component_list){
-			if( cp.component()->is_layout() ){
-				T * result = static_cast<Layout*>(cp.component())->find<T>(
-							name
-							);
-				
+		for(LayoutComponent& cp: m_component_list){
+			if( is_recursive.argument() && cp.component()->is_layout() ){
+				T * result = static_cast<Layout*>(cp.component())->find<T>(name);
 				if( result ){ return result;}
 			}
 			
@@ -218,8 +214,8 @@ public:
 	
 	COMPONENT_ACCESS_CREATE()
 	
-protected:
-	
+	protected:
+
 };
 
 }

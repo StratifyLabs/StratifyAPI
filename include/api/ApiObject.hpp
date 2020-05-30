@@ -180,6 +180,23 @@ namespace api {
 	private: \
 	t m_##v = iv
 
+#define API_ACCESS_MEMBER_FUNDAMENTAL(c, t, p, v) \
+	public: \
+	t v() const { return m_##p.v; } \
+	c& set_##v(t value){ m_##p.v = value; return *this; } \
+
+#define API_ACCESS_MEMBER_FUNDAMENTAL_WITH_ALIAS(c, t, p, a, v) \
+	public: \
+	t a() const { return m_##p.v; } \
+	c& set_##a(t value){ m_##p.v = value; return *this; } \
+
+
+#define API_ACCESS_MEMBER_COMPOUND(c, t, p, v) \
+	public: \
+	const t& v() const { return m_##p.v; } \
+	c& set_##v(const t& value){ m_##p.v = value; return *this; } \
+
+
 #define API_READ_ACCESS_FUNDAMENTAL(c, t, v, iv) \
 	public: \
 	t v() const { return m_##v; } \

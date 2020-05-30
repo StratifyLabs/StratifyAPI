@@ -37,11 +37,10 @@ void Icon::draw(const DrawingScaledAttributes & attr){
 	sg_point_t p = attr.point();
 	const IconFont * f;
 
-
 	if( resolve_font(
 				d.height()
 				) == false ){
-		printf("faild to resolve icon font\n");
+		printf("failed to resolve icon font\n");
 		return;
 	}
 

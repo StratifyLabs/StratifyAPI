@@ -173,6 +173,21 @@ public:
 		return *this;
 	}
 
+	String& operator *= (u32 a){
+		for(u32 i=0; i < a; i++){
+			append(*this);
+		}
+		return *this;
+	}
+
+	String operator *(u32 a) const {
+		String result;
+		for(u32 i=0; i < a; i++){
+			result.append(*this);
+		}
+		return result;
+	}
+
 	String operator+ (const String& rhs) const { return String(string() + rhs.string()); }
 	String operator+ (String&& rhs) const { return String(string() + std::move(rhs.string())); }
 	String operator+ (const char* rhs) const { return String(string() + rhs); }

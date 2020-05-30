@@ -23,6 +23,7 @@ set(SOURCES
 	draw/Icon.cpp
 	draw/Image.cpp
 	draw/Text.cpp
+	draw/RichText.cpp
 	draw/TextBox.cpp
 	draw/Rectangle.cpp
 

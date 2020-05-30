@@ -25,10 +25,7 @@ int TextBox::count_lines(
 		sg_size_t w
 		){
 
-	Tokenizer tokens(
-				string,
-				Tokenizer::Delimeters(" ")
-				);
+	StringList tokens = string.split(" ");
 	u32 i;
 	String line;
 	int len;
@@ -53,11 +50,7 @@ int TextBox::count_lines(
 void TextBox::draw(
 		const DrawingScaledAttributes & attr
 		){
-	Tokenizer tokens(
-				string(),
-				Tokenizer::Delimeters(" ")
-				);
-	String line;
+
 	u32 i;
 	sg_size_t w;
 	sg_point_t p = attr.point();
@@ -75,10 +68,10 @@ void TextBox::draw(
 
 	//draw the message and wrap the text
 	if( resolve_font(
-			 m_font_point_size == 0 ?
-			 d.height :
-			 m_font_point_size
-			 ) == false ){
+				m_font_point_size == 0 ?
+				d.height :
+				m_font_point_size
+				) == false ){
 		return;
 	}
 
@@ -111,29 +104,43 @@ void TextBox::draw(
 	}
 
 
-	draw_line = 0;
-	i = 0;
-	do {
-		line.clear();
-		build_line(font, i, line, tokens, len, w);
-		if( (draw_line >= m_scroll) && (draw_line - m_scroll < visible_lines) ){
+	StringList line_list = string().split("\n");
+	for(const String& input_line: line_list){
+		StringList tokens = input_line.split(" ");
+		String line;
+		draw_line = 0;
+		i = 0;
+		do {
+			line.clear();
+			build_line(font, i, line, tokens, len, w);
+			if( (draw_line >= m_scroll) && (draw_line - m_scroll < visible_lines) ){
 
-			start.y = p.y + line_y;
-			if( is_align_left() ){
-				start.x  = p.x;
-			} else if( is_align_right() ){
-				start.x  = p.x + w - len;
-			} else {
-				start.x = p.x + (w - len)/2;
+				start.y = p.y + line_y;
+				if( is_align_left() ){
+					start.x  = p.x;
+				} else if( is_align_right() ){
+					start.x  = p.x + w - len;
+				} else {
+					start.x = p.x + (w - len)/2;
+				}
+				font->draw(line, attr.bitmap(), start);
+				line_y += (font_height + line_spacing);
 			}
-			font->draw(line.cstring(), attr.bitmap(), start);
-			line_y += (font_height + line_spacing);
-		}
-		draw_line++;
-	} while( i < tokens.count() );
+			draw_line++;
+		} while( i < tokens.count() );
+
+	}
+
 }
 
-void TextBox::build_line(const Font * font, u32 & i, String & line, Tokenizer & tokens, int & build_len, sg_size_t w){
+void TextBox::build_line(
+		const Font * font,
+		u32 & i,
+		String & line,
+		const StringList & tokens,
+		int & build_len,
+		sg_size_t w
+		){
 	int len;
 	int line_len;
 	u32 j;
@@ -156,13 +163,15 @@ void TextBox::build_line(const Font * font, u32 & i, String & line, Tokenizer & 
 		}
 
 		if( (line_len + len + font->space_size() <= w) && (j < (count-1)) ){
+			//there is room for another word -- add a space
 			line.append(" ");
 		} else {
 			break;
 		}
+
 	}
 
-	build_len = font->calculate_length(line.cstring());
+	build_len = font->get_width(line);
 
 }
 

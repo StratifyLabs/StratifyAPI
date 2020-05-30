@@ -57,7 +57,6 @@ bool Layout::transition(
 		next_layout->set_enabled_internal(true);
 		return true;
 	}
-	printf("not found\n");
 	return false;
 }
 
@@ -92,7 +91,6 @@ void Layout::examine_visibility(){
 		}
 	} else {
 		//if layout is enabled and visible -- components are not visible
-		//erase();
 		for(auto component_pointer: m_component_list){
 			component_pointer.component()->set_visible_internal(false);
 		}

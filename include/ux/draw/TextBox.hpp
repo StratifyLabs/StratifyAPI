@@ -41,7 +41,14 @@ private:
 	/*! \cond */
 	sg_size_t m_scroll;
 	sg_size_t m_scroll_max;
-	static void build_line(const sgfx::Font * font, u32 & i, var::String & line, var::Tokenizer & tokens, int & build_len, sg_size_t w);
+	static void build_line(
+			const sgfx::Font * font,
+			u32 & i,
+			var::String & line,
+			const var::StringList& tokens,
+			int & build_len,
+			sg_size_t w
+			);
 	/*! \endcond */
 
 };
