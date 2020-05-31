@@ -127,18 +127,37 @@ public:
 		return nullptr;
 	}
 	
-	template<class T> T * find(
-			const var::String & name,
-			IsRecursive is_recursive = IsRecursive(true)){
+	template<class T, bool is_fatal = true> T * search(
+			const var::String & name
+			){
 		for(LayoutComponent& cp: m_component_list){
-			if( is_recursive.argument() && cp.component()->is_layout() ){
-				T * result = static_cast<Layout*>(cp.component())->find<T>(name);
-				if( result ){ return result;}
+			if( cp.component()->is_layout() ){
+				T * result = static_cast<Layout*>(cp.component())->search<T, false>(name);
+				if( result ){ return result; }
 			}
 			
 			if( cp.component()->name() == name ){
 				return static_cast<T*>(cp.component());
 			}
+		}
+		if( is_fatal ){
+			printf("Failed to search %s\n", name.cstring());
+			abort();
+		}
+		return nullptr;
+	}
+
+	template<class T, bool is_fatal = true> T * find(
+			const var::String & name
+			){
+		for(LayoutComponent& cp: m_component_list){
+			if( cp.component()->name() == name ){
+				return static_cast<T*>(cp.component());
+			}
+		}
+		if( is_fatal ){
+			printf("Failed to find %s\n", name.cstring());
+			abort();
 		}
 		return nullptr;
 	}
