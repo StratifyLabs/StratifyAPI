@@ -9,7 +9,19 @@ using namespace ux;
 Layout::Layout(
 		const var::String & name,
 		EventLoop* event_loop
-		) : ComponentAccess(name){
+		) : ComponentAccess(prefix() + name){
+	set_event_loop(event_loop);
+	m_flow = flow_free;
+	m_origin = DrawingPoint(0,0);
+	set_align_left();
+	set_align_top();
+	set_layout();
+}
+
+Layout::Layout(
+		const var::String& prefix, const var::String & name,
+		EventLoop * event_loop
+		) : ComponentAccess(prefix + name){
 	set_event_loop(event_loop);
 	m_flow = flow_free;
 	m_origin = DrawingPoint(0,0);

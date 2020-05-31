@@ -22,12 +22,25 @@ class ListEvent : public EventObject<ListItem, EVENT_TYPE('_','l','s','t')> {
 
 class ListItem : public ComponentAccess<ListItem>{
 public:
-	ListItem(const var::String & name) : ComponentAccess(name){
+	COMPONENT_PREFIX(ListItem)
+
+	ListItem(const var::String & name) :
+		ComponentAccess(prefix() + name)
+	{
 		set_left_padding(5);
 		set_right_padding(5);
 	}
+
+
 	void draw(const DrawingScaledAttributes & attributes);
 	void handle_event(const ux::Event & event);
+
+protected:
+	ListItem(const var::String& prefix, const var::String& name) :
+		ComponentAccess(prefix + name){
+		set_left_padding(5);
+		set_right_padding(5);
+	}
 
 private:
 	API_ACCESS_COMPOUND(ListItem,var::String,key);
@@ -37,7 +50,10 @@ private:
 
 template<class T> class ListItemAccess: public ListItem {
 public:
-	ListItemAccess(const var::String&name) : ListItem(name){}
+	ListItemAccess(const var::String&name)
+		: ListItem("", name){
+
+	}
 
 	API_ACCESS_DERIVED_COMPOUND(ListItem,T,var::String,key)
 	API_ACCESS_DERIVED_COMPOUND(ListItem,T,var::String,value)
@@ -47,18 +63,14 @@ public:
 
 };
 
-class ListFiller : public ComponentAccess<ListFiller>{
-public:
-	ListFiller(const var::String & name) : ComponentAccess(name){}
-	void draw(const DrawingScaledAttributes & attributes);
-};
-
 
 class List : public LayoutAccess<List> {
 public:
 
+	COMPONENT_PREFIX(List)
+
 	List(const var::String & name, EventLoop * event_loop) :
-		LayoutAccess(name, event_loop){
+		LayoutAccess(prefix() + name, event_loop){
 		set_flow(flow_vertical);
 	}
 

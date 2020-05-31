@@ -35,9 +35,13 @@ class ButtonEvent : public EventObject<Button, EVENT_TYPE('_','b','t','n')> {
 class Button : public ComponentAccess<Button> {
 public:
 
-	Button(const var::String & name) : ComponentAccess(name){
+	COMPONENT_PREFIX(Button)
+
+	Button(const var::String & name) :
+		ComponentAccess(prefix() + name){
 		set_value(name);
 	}
+
 
 	Button& toggle(){
 		m_is_state = !m_is_state;

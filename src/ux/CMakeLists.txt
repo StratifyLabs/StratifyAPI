@@ -17,6 +17,7 @@ set(SOURCES
 	List.cpp
 	Layout.cpp
 	Graph.cpp
+	Separator.cpp
 
 	#Drawing primitives
 	Drawing.cpp

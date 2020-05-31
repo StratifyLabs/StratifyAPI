@@ -29,7 +29,12 @@ public:
 class Slider : public ComponentAccess<Slider>{
 public:
 
-	Slider(const var::String & name) : ComponentAccess(name){}
+	COMPONENT_PREFIX(Slider)
+
+	Slider(const var::String & name) :
+		ComponentAccess(
+			prefix() + name
+			){}
 
 	void draw(const DrawingScaledAttributes & attributes);
 	void handle_event(const ux::Event & event);

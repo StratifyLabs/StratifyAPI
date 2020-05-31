@@ -27,7 +27,12 @@ public:
 class ToggleSwitch : public ComponentAccess<ToggleSwitch> {
 public:
 
-	ToggleSwitch(const var::String & name) : ComponentAccess(name){
+	COMPONENT_PREFIX(ToggleSwitch)
+
+	ToggleSwitch(const var::String & name)
+		: ComponentAccess(
+				prefix() + name
+				){
 
 	}
 
@@ -49,7 +54,7 @@ public:
    void handle_event(const ux::Event & event);
 
 private:
-   bool m_state;
+	 bool m_state;
 
 };
 

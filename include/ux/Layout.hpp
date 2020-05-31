@@ -16,6 +16,9 @@ public:
 		m_drawing_point = component->reference_drawing_attributes().point();
 		m_drawing_area = component->reference_drawing_attributes().area();
 	}
+
+	COMPONENT_PREFIX(Layout)
+
 	
 	Component * component() const {
 		return m_component;
@@ -60,6 +63,7 @@ public:
 			const var::String & name,
 			EventLoop * event_loop
 			);
+
 	virtual ~Layout();
 	
 	Layout& add_component(
@@ -152,6 +156,12 @@ public:
 	virtual void draw(const DrawingAttributes & attributes);
 	virtual void handle_event(const ux::Event & event);
 	
+protected:
+	Layout(
+			const var::String& prefix, const var::String & name,
+			EventLoop * event_loop
+			);
+
 private:
 	friend class EventLoop;
 	enum flow m_flow;
@@ -161,6 +171,7 @@ private:
 	ux::TouchGesture m_touch_gesture;
 	API_ACCESS_COMPOUND(Layout,var::Vector<LayoutComponent>,component_list);
 	EventHandlerFunction m_event_handler;
+
 	
 	void shift_origin(DrawingPoint shift);
 	drawing_int_t handle_vertical_scroll(sg_int_t scroll);
@@ -190,7 +201,7 @@ public:
 	LayoutAccess<T>(
 			const var::String & name,
 			EventLoop * event_loop
-			) : Layout(name, event_loop){}
+			) : Layout("", name, event_loop){}
 	
 	
 	T& add_component(

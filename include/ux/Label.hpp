@@ -12,9 +12,14 @@ class Label :
 		public ComponentAccess<Label> {
 public:
 
-	Label(const var::String & name) : ComponentAccess(name){
+	COMPONENT_PREFIX(Label)
+
+	Label(const var::String & name) :
+		ComponentAccess(prefix() + name){
 		set_value(name);
 	}
+
+
 
 	void draw(const DrawingScaledAttributes & attributes);
 
