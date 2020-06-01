@@ -247,6 +247,13 @@ private:
 
 };
 
+#define COMPONENT_ACCESS_DERIVED(T) \
+	API_ACCESS_DERIVED_COMPOUND(Component,T,DrawingArea,drawing_area) \
+	API_ACCESS_DERIVED_COMPOUND(Component,T,DrawingPoint,drawing_point) \
+	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,enum sgfx::Theme::styles,theme_style) \
+	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,enum sgfx::Theme::states,theme_state) \
+	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,Component*,parent)
+
 template<class T> class ComponentAccess :
 		public Component,
 		public DrawingComponentProperties<T> {
@@ -261,11 +268,7 @@ public:
 		return static_cast<T&>(*this);
 	}
 
-	API_ACCESS_DERIVED_COMPOUND(Component,T,DrawingArea,drawing_area)
-	API_ACCESS_DERIVED_COMPOUND(Component,T,DrawingPoint,drawing_point)
-	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,enum sgfx::Theme::styles,theme_style)
-	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,enum sgfx::Theme::states,theme_state)
-	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,Component*,parent)
+	COMPONENT_ACCESS_DERIVED(T)
 
 
 	T& set_drawing_area(drawing_size_t width, drawing_size_t height){

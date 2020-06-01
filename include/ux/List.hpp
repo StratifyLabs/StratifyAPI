@@ -59,6 +59,8 @@ public:
 	API_ACCESS_DERIVED_COMPOUND(ListItem,T,var::String,value)
 	API_ACCESS_DERIVED_BOOL(ListItem,T,interactive)
 
+
+	COMPONENT_ACCESS_DERIVED(T)
 	COMPONENT_ACCESS_CREATE()
 
 };

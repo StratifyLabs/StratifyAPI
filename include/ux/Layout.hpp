@@ -16,9 +16,6 @@ public:
 		m_drawing_point = component->reference_drawing_attributes().point();
 		m_drawing_area = component->reference_drawing_attributes().area();
 	}
-
-	COMPONENT_PREFIX(Layout)
-
 	
 	Component * component() const {
 		return m_component;
@@ -59,6 +56,8 @@ public:
 		flow_free
 	};
 	
+	COMPONENT_PREFIX(Layout)
+
 	Layout(
 			const var::String & name,
 			EventLoop * event_loop
@@ -116,6 +115,24 @@ public:
 		update_drawing_point(
 					find<Component>(name), point
 					);
+	}
+
+	bool is_owner(const Component * component){
+		if( component == nullptr ){
+			return false;
+		}
+
+		for(LayoutComponent& cp: m_component_list){
+			if( cp.component() == component ){
+				return true;
+			}
+			if( cp.component()->is_layout() ){
+				if( static_cast<Layout*>(cp.component())->is_owner(component) ){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	Layout * find_layout(const var::String & name){

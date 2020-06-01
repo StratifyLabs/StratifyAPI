@@ -291,8 +291,6 @@ void Layout::draw(const DrawingAttributes & attributes){
 			component_pointer.component()->draw(attributes);
 		}
 	}
-
-
 }
 
 void Layout::handle_event(const ux::Event & event){
@@ -345,6 +343,7 @@ void Layout::handle_event(const ux::Event & event){
 
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_exit ){
+			printf("exiting %s\n", name().cstring());
 			for(auto component_pointer: m_component_list){
 				component_pointer.component()->set_visible_internal(false);
 			}

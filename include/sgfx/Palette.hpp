@@ -175,6 +175,10 @@ public:
 	u8 alpha() const { return m_color.alpha; }
 	sg_color_t color() const { return to_rgba8888(); }
 
+	u8 get_brightness() const {
+		return ((u32)m_color.red + m_color.green + m_color.blue)/3;
+	}
+
 	static var::Vector<PaletteColor> calculate_gradient(
 			const PaletteColor & start,
 			const PaletteColor & end,
