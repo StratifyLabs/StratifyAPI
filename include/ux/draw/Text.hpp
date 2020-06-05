@@ -71,6 +71,8 @@ public:
 	/*! \details Returns the font style. */
 	int font_style() const { return m_font_style; }
 
+	sg_size_t get_width(const var::String& sample, sg_size_t height);
+
 protected:
 	/*! \cond */
 	const var::String & string() const { return m_string; }

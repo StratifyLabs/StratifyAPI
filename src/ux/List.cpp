@@ -1,9 +1,9 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "ux/List.hpp"
 #include "ux/draw/Rectangle.hpp"
-#include "ux/draw/Text.hpp"
-#include "ux/draw/Icon.hpp"
+#include "ux/draw/RichText.hpp"
 #include "ux/EventLoop.hpp"
+#include "ux/Separator.hpp"
 
 using namespace sgfx;
 using namespace ux;
@@ -20,10 +20,10 @@ void ListItem::draw(const DrawingScaledAttributes & attributes){
 				attributes.region()
 				);
 
-
-	draw::Text()
-			.set_string(key())
-			.set_font_name(theme()->primary_font_name())
+	draw::RichText()
+			.set_icon_font_name(theme()->primary_icon_font_name())
+			.set_text_font_name(theme()->primary_font_name())
+			.set_value(key())
 			.set_color(theme()->text_color())
 			.set_align_left()
 			.set_align_middle()
@@ -31,37 +31,15 @@ void ListItem::draw(const DrawingScaledAttributes & attributes){
 				attributes + region_inside_padding.point() + region_inside_padding.area()
 				);
 
-	if( m_value.find("icon@") == 0 ){
-		draw::Icon()
-				.set_icon_font_name(theme()->primary_icon_font_name())
-				.set_name(m_value)
-				.set_color(theme()->text_color())
-				.set_align_right()
-				.draw(
-					attributes +
-					region_inside_padding.point() +
-					region_inside_padding.area()
-					);
-	} else  if( m_value.is_empty() == false ){
-		draw::Text()
-				.set_font_name(theme()->primary_font_name())
-				.set_string(value())
-				.set_color(theme()->text_color())
-				.set_align_right()
-				.set_align_middle()
-				.draw(
-					attributes +
-					region_inside_padding.point() +
-					region_inside_padding.area()
-					);
-	}
-}
-
-void ListFiller::draw(const DrawingScaledAttributes & attributes){
-	draw_base_properties(
-				attributes.bitmap(),
-				attributes.region(),
-				theme()
+	draw::RichText()
+			.set_icon_font_name(theme()->primary_icon_font_name())
+			.set_text_font_name(theme()->primary_font_name())
+			.set_value(value())
+			.set_color(theme()->text_color())
+			.set_align_right()
+			.set_align_middle()
+			.draw(
+				attributes + region_inside_padding.point() + region_inside_padding.area()
 				);
 }
 
@@ -79,27 +57,28 @@ void ListItem::handle_event(const ux::Event & event){
 			}
 		}
 
-		if( touch_event.id() == ux::TouchEvent::id_released ){
-			if( theme_state() == Theme::state_highlighted ){
+		if( is_interactive() ){
+			if( touch_event.id() == ux::TouchEvent::id_released ){
+				if( theme_state() == Theme::state_highlighted ){
+					if( contains(
+								touch_event.point()
+								) ){
+						event_loop()->trigger_event(
+									ListEvent(*this)
+									);
+					}
+					set_theme_state(Theme::state_default);
+					set_refresh_drawing_pending();
+				}
+			}
+
+			if( touch_event.id() == ux::TouchEvent::id_pressed ){
 				if( contains(
 							touch_event.point()
 							) ){
-					event_loop()->trigger_event(
-								ListEvent(*this)
-								);
+					set_theme_state(Theme::state_highlighted);
+					set_refresh_drawing_pending();
 				}
-				set_theme_state(Theme::state_default);
-				set_refresh_drawing_pending();
-			}
-		}
-
-		if( touch_event.id() == ux::TouchEvent::id_pressed ){
-
-			if( contains(
-						touch_event.point()
-						) ){
-				set_theme_state(Theme::state_highlighted);
-				set_refresh_drawing_pending();
 			}
 		}
 	}
@@ -123,10 +102,12 @@ List& List::add_filler(enum sgfx::Theme::styles style){
 			component_list().back().component()->reference_drawing_attributes().area().height();
 
 	if( height < 1010 ){
-		ListFiller * list_filler =
-				&(ListFiller::create(name() + "Filler")
+		Separator * list_filler =
+				&(Separator::create(name() + "Filler")
 					.set_drawing_area(1000, 1010 - height)
 					.set_theme_style(style)
+					.set_left_border(0)
+					.set_right_border(0)
 					);
 		set_vertical_scroll_enabled(false);
 		return LayoutAccess<List>::add_component(*list_filler);

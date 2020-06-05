@@ -6,7 +6,6 @@
 using namespace ux;
 using namespace sgfx;
 
-
 void Slider::draw(const DrawingScaledAttributes & attributes){
 
 	draw_base_properties(

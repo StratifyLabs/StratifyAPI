@@ -9,7 +9,19 @@ using namespace ux;
 Layout::Layout(
 		const var::String & name,
 		EventLoop* event_loop
-		) : ComponentAccess(name){
+		) : ComponentAccess(prefix() + name){
+	set_event_loop(event_loop);
+	m_flow = flow_free;
+	m_origin = DrawingPoint(0,0);
+	set_align_left();
+	set_align_top();
+	set_layout();
+}
+
+Layout::Layout(
+		const var::String& prefix, const var::String & name,
+		EventLoop * event_loop
+		) : ComponentAccess(prefix + name){
 	set_event_loop(event_loop);
 	m_flow = flow_free;
 	m_origin = DrawingPoint(0,0);
@@ -57,7 +69,6 @@ bool Layout::transition(
 		next_layout->set_enabled_internal(true);
 		return true;
 	}
-	printf("not found\n");
 	return false;
 }
 
@@ -92,7 +103,6 @@ void Layout::examine_visibility(){
 		}
 	} else {
 		//if layout is enabled and visible -- components are not visible
-		//erase();
 		for(auto component_pointer: m_component_list){
 			component_pointer.component()->set_visible_internal(false);
 		}
@@ -281,8 +291,6 @@ void Layout::draw(const DrawingAttributes & attributes){
 			component_pointer.component()->draw(attributes);
 		}
 	}
-
-
 }
 
 void Layout::handle_event(const ux::Event & event){
@@ -335,6 +343,7 @@ void Layout::handle_event(const ux::Event & event){
 
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_exit ){
+			printf("exiting %s\n", name().cstring());
 			for(auto component_pointer: m_component_list){
 				component_pointer.component()->set_visible_internal(false);
 			}

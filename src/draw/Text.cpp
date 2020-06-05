@@ -51,7 +51,7 @@ void Text::draw_to_scale(const DrawingScaledAttr & attr){
 		}
 
 		h = font->get_height();
-		len = font->calculate_length(string());
+		len = font->get_width(string());
 		top_left.y = p.y;
 		if( is_align_left() ){
 			top_left.x = p.x;

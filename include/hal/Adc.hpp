@@ -34,7 +34,7 @@ public:
  *
  *
  */
-class AdcInfo : public api::InfoObject {
+class AdcInfo {
 public:
 	AdcInfo(){ memset(&m_adc_info, 0, sizeof(m_adc_info)); }
 	AdcInfo(const adc_info_t & info){

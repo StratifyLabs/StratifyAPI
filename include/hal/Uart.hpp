@@ -86,55 +86,16 @@ public:
 		set_width(8);
 	}
 
-	/*! \details Accesses the tx pin assignment value. */
-	mcu_pin_t tx() const { return m_attr.pin_assignment.tx; }
-	/*! \details Accesses the rx pin assignment value. */
-	mcu_pin_t rx() const { return m_attr.pin_assignment.rx; }
-	/*! \details Accesses the cts pin assignment value. */
-	mcu_pin_t cts() const { return m_attr.pin_assignment.cts; }
-	/*! \details Accesses the rts pin assignment value. */
-	mcu_pin_t rts() const { return m_attr.pin_assignment.rts; }
-	/*! \details Accesses the width in bits (usually 8). */
-	u8 width() const { return m_attr.width; }
+	API_ACCESS_MEMBER_COMPOUND(UartAttributes,mcu_pin_t,attr.pin_assignment,tx)
+	API_ACCESS_MEMBER_COMPOUND(UartAttributes,mcu_pin_t,attr.pin_assignment,rx)
+	API_ACCESS_MEMBER_COMPOUND(UartAttributes,mcu_pin_t,attr.pin_assignment,cts)
+	API_ACCESS_MEMBER_COMPOUND(UartAttributes,mcu_pin_t,attr.pin_assignment,rts)
+	API_ACCESS_MEMBER_FUNDAMENTAL(UartAttributes,u32,attr,width)
+	API_ACCESS_MEMBER_FUNDAMENTAL_WITH_ALIAS(UartAttributes,u32,attr,frequency,freq)
 
-
-	/*! \details Sets the tx pin assignment value.
-	 *
-	 * @param pin The tx pin
-	 *
-	 */
-	UartAttributes & set_tx(const mcu_pin_t & pin){ m_attr.pin_assignment.tx = pin; return *this; }
-
-	/*! \details Sets the rx pin assignment value.
-	 *
-	 * @param pin The rx pin
-	 *
-	 */
-	UartAttributes & set_rx(const mcu_pin_t & pin){ m_attr.pin_assignment.rx = pin; return *this; }
-
-	/*! \details Sets the cts pin assignment value.
-	 *
-	 * @param pin The cts pin
-	 *
-	 */
-	UartAttributes & set_cts(const mcu_pin_t & pin){ m_attr.pin_assignment.cts = pin; return *this; }
-
-	/*! \details Sets the rts pin assignment value.
-	 *
-	 * @param pin The rts pin
-	 *
-	 */
-	UartAttributes & set_rts(const mcu_pin_t & pin){ m_attr.pin_assignment.rts = pin; return *this; }
-
-	/*! \details Sets the width in bits.
-	 *
-	 * @param bits The number of bits to use
-	 *
-	 */
-	UartAttributes & set_width(u8 bits){ m_attr.width = bits; return *this; }
-
-	UartAttributes & set_frequency(u32 value){ PeriphAttributes::set_frequency(value); return *this; }
-	UartAttributes & set_flags(enum flags value){ PeriphAttributes::set_flags(value); return *this; }
+	UartAttributes & set_flags(u32 value){
+		PeriphAttributes::set_flags(value); return *this;
+	}
 
 };
 

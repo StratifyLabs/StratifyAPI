@@ -33,6 +33,8 @@ void Text::draw(const DrawingScaledAttributes & attr){
 	sg_point_t p = attr.point();
 	const Font * font;
 
+	//search input for an icon :<icon>:
+
 	if( !string().is_empty() ){
 
 		if( resolve_font(
@@ -46,7 +48,7 @@ void Text::draw(const DrawingScaledAttributes & attr){
 		font = this->font();
 
 		h = font->get_height();
-		len = font->calculate_length(string());
+		len = font->get_width(string());
 		top_left.y = p.y;
 		if( is_align_left() ){
 			top_left.x = p.x;
@@ -74,4 +76,17 @@ void Text::draw(const DrawingScaledAttributes & attr){
 					top_left
 					);
 	}
+}
+
+sg_size_t Text::get_width(const var::String& sample, sg_size_t height){
+	const Font * font;
+	if( resolve_font(
+			 m_font_point_size == 0 ?
+				 height :
+				 m_font_point_size
+			 ) == false ){
+		return 0;
+	}
+	font = this->font();
+	return font->get_width(sample);
 }

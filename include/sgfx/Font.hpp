@@ -174,9 +174,9 @@ public:
 	int offset_y() const { return m_char.offset_y; }
 
 	/*! \details Calculates the length (pixels on x-axis) of the specified string. */
-	int calculate_length(const var::String & str) const;
+	int get_width(const var::String & str) const;
 	/*! \cond */
-	int calc_len(const var::String & str) const { return calculate_length(str); }
+	int calc_len(const var::String & str) const { return get_width(str); }
 	/*! \endcond */
 
 

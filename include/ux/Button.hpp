@@ -33,43 +33,27 @@ class ButtonEvent : public EventObject<Button, EVENT_TYPE('_','b','t','n')> {
 };
 
 class Button : public ComponentAccess<Button> {
-	public:
+public:
 
-	Button(const var::String & name) : ComponentAccess(name){
-		set_label(name);
+	COMPONENT_PREFIX(Button)
+
+	Button(const var::String & name) :
+		ComponentAccess(prefix() + name){
+		set_value(name);
 	}
 
-	bool state() const {
-		return m_state;
-	}
-
-	Button& set_state(bool value){
-		m_state = value;
-		return *this;
-	}
-
-	Button& set_label(const var::String & value){
-		m_label = value;
-		return *this;
-	}
-
-	Button& set_icon_name(const var::String & value){
-		m_icon_name = value;
-		return *this;
-	}
 
 	Button& toggle(){
-		m_state = !m_state;
+		m_is_state = !m_is_state;
 		return *this;
 	}
 
 	void draw(const DrawingScaledAttributes & attributes);
 	void handle_event(const ux::Event & event);
 
-	private:
-	var::String m_label;
-	var::String m_icon_name;
-	bool m_state;
+private:
+	API_ACCESS_COMPOUND(Button,var::String,value);
+	API_ACCESS_BOOL(Button,state,false);
 	chrono::Timer m_hold_timer;
 
 

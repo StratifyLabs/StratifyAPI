@@ -56,10 +56,13 @@ public:
 		flow_free
 	};
 	
+	COMPONENT_PREFIX(Layout)
+
 	Layout(
 			const var::String & name,
 			EventLoop * event_loop
 			);
+
 	virtual ~Layout();
 	
 	Layout& add_component(
@@ -113,32 +116,65 @@ public:
 					find<Component>(name), point
 					);
 	}
+
+	bool is_owner(const Component * component){
+		if( component == nullptr ){
+			return false;
+		}
+
+		for(LayoutComponent& cp: m_component_list){
+			if( cp.component() == component ){
+				return true;
+			}
+			if( cp.component()->is_layout() ){
+				if( static_cast<Layout*>(cp.component())->is_owner(component) ){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
 	Layout * find_layout(const var::String & name){
-		for(auto cp: m_component_list){
-			if( cp.component()->name() == name ){
+		for(LayoutComponent& cp: m_component_list){
+			if( (cp.component()->name() == name) && cp.component()->is_layout() ){
 				return static_cast<Layout*>(cp.component());
-
 			}
 		}
 		return nullptr;
 	}
 	
-	template<class T> T * find(
-			const var::String & name,
-			IsRecursive is_recursive = IsRecursive(true)){
-		for(auto cp: m_component_list){
+	template<class T, bool is_fatal = true> T * search(
+			const var::String & name
+			){
+		for(LayoutComponent& cp: m_component_list){
 			if( cp.component()->is_layout() ){
-				T * result = static_cast<Layout*>(cp.component())->find<T>(
-							name
-							);
-				
-				if( result ){ return result;}
+				T * result = static_cast<Layout*>(cp.component())->search<T, false>(name);
+				if( result ){ return result; }
 			}
 			
 			if( cp.component()->name() == name ){
 				return static_cast<T*>(cp.component());
 			}
+		}
+		if( is_fatal ){
+			printf("Failed to search %s\n", name.cstring());
+			abort();
+		}
+		return nullptr;
+	}
+
+	template<class T, bool is_fatal = true> T * find(
+			const var::String & name
+			){
+		for(LayoutComponent& cp: m_component_list){
+			if( cp.component()->name() == name ){
+				return static_cast<T*>(cp.component());
+			}
+		}
+		if( is_fatal ){
+			printf("Failed to find %s\n", name.cstring());
+			abort();
 		}
 		return nullptr;
 	}
@@ -156,6 +192,12 @@ public:
 	virtual void draw(const DrawingAttributes & attributes);
 	virtual void handle_event(const ux::Event & event);
 	
+protected:
+	Layout(
+			const var::String& prefix, const var::String & name,
+			EventLoop * event_loop
+			);
+
 private:
 	friend class EventLoop;
 	enum flow m_flow;
@@ -165,6 +207,7 @@ private:
 	ux::TouchGesture m_touch_gesture;
 	API_ACCESS_COMPOUND(Layout,var::Vector<LayoutComponent>,component_list);
 	EventHandlerFunction m_event_handler;
+
 	
 	void shift_origin(DrawingPoint shift);
 	drawing_int_t handle_vertical_scroll(sg_int_t scroll);
@@ -194,7 +237,7 @@ public:
 	LayoutAccess<T>(
 			const var::String & name,
 			EventLoop * event_loop
-			) : Layout(name, event_loop){}
+			) : Layout("", name, event_loop){}
 	
 	
 	T& add_component(
@@ -218,8 +261,8 @@ public:
 	
 	COMPONENT_ACCESS_CREATE()
 	
-protected:
-	
+	protected:
+
 };
 
 }

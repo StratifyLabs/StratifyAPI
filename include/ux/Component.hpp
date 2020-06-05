@@ -6,6 +6,7 @@
 #include "../hal/Display.hpp"
 #include "../var/String.hpp"
 #include "../sgfx/Theme.hpp"
+#include "../fs/Stat.hpp"
 #include "Drawing.hpp"
 #include "Event.hpp"
 
@@ -16,19 +17,25 @@ class Layout;
 
 #define COMPONENT_ACCESS_CREATE() \
 	template<typename... Args> static T & create(Args... args){ \
-		T * result = new T(args...); \
-		if( result == nullptr ){ \
-			printf("failed!!!\n"); \
-		} \
-		result->m_is_created = true; \
-		return *result; \
-	} \
+	T * result = new T(args...); \
+	if( result == nullptr ){ \
+	printf("failed!!!\n"); \
+} \
+	result->m_is_created = true; \
+	return *result; \
+} \
+
+#define COMPONENT_PREFIX(a) \
+	static const char * prefix(){ return MCU_STRINGIFY(a)"/"; } \
+	static var::String get_name(const var::String& value){ return MCU_STRINGIFY(a)"/" + value; }
+
 
 class Component : public Drawing {
 public:
 
 	Component(
-			const var::String & name) :
+			const var::String & name
+			) :
 		m_name(name){
 		set_drawing_point(DrawingPoint(0,0));
 		set_drawing_area(DrawingArea(1000,1000));
@@ -39,6 +46,7 @@ public:
 		return static_cast<T*>(this);
 	}
 
+	COMPONENT_PREFIX(Component)
 
 	static u32 whatis_signature(){
 		return 0;
@@ -151,6 +159,14 @@ public:
 		return m_reference_drawing_attributes;
 	}
 
+	var::String get_class_name() const {
+		return fs::FileInfo::parent_directory(name());
+	}
+
+	var::String get_instance_name() const {
+		return fs::FileInfo::name(name());
+	}
+
 protected:
 
 	bool m_is_visible = false;
@@ -231,6 +247,13 @@ private:
 
 };
 
+#define COMPONENT_ACCESS_DERIVED(T) \
+	API_ACCESS_DERIVED_COMPOUND(Component,T,DrawingArea,drawing_area) \
+	API_ACCESS_DERIVED_COMPOUND(Component,T,DrawingPoint,drawing_point) \
+	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,enum sgfx::Theme::styles,theme_style) \
+	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,enum sgfx::Theme::states,theme_state) \
+	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,Component*,parent)
+
 template<class T> class ComponentAccess :
 		public Component,
 		public DrawingComponentProperties<T> {
@@ -245,11 +268,7 @@ public:
 		return static_cast<T&>(*this);
 	}
 
-	API_ACCESS_DERIVED_COMPOUND(Component,T,DrawingArea,drawing_area)
-	API_ACCESS_DERIVED_COMPOUND(Component,T,DrawingPoint,drawing_point)
-	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,enum sgfx::Theme::styles,theme_style)
-	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,enum sgfx::Theme::states,theme_state)
-	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,Component*,parent)
+	COMPONENT_ACCESS_DERIVED(T)
 
 
 	T& set_drawing_area(drawing_size_t width, drawing_size_t height){
@@ -271,7 +290,7 @@ public:
 	COMPONENT_ACCESS_CREATE()
 
 
-protected:
+	protected:
 
 };
 

@@ -109,6 +109,8 @@ class LineGraph :
 		public ComponentAccess<LineGraph> {
 	public:
 
+	COMPONENT_PREFIX(LineGraph)
+
 	LineGraph(const var::String & name) : ComponentAccess(name){}
 
 	virtual void draw(const DrawingScaledAttributes & attr);
@@ -161,6 +163,8 @@ class BarGraph :
 		public GraphAxes,
 		public ComponentAccess<BarGraph>{
 	public:
+
+	COMPONENT_PREFIX(BarGraph)
 
 	virtual void draw(const DrawingScaledAttributes & attributes);
 

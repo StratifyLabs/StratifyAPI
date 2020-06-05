@@ -158,7 +158,7 @@ void Font::refresh(){
 	return;
 }
 
-int Font::calculate_length(const var::String & str) const {
+int Font::get_width(const var::String & str) const {
 	u32 length = 0;
 	const char * s = str.cstring();
 	while( *s != 0 ){
