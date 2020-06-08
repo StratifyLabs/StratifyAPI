@@ -153,7 +153,10 @@ public:
 				if( result ){ return result; }
 			}
 			
-			if( cp.component()->name() == name ){
+			if(
+				 (cp.component()->name() == name)
+				 || (cp.component()->name() == T::get_name(name))
+				 ){
 				return static_cast<T*>(cp.component());
 			}
 		}
@@ -168,7 +171,10 @@ public:
 			const var::String & name
 			){
 		for(LayoutComponent& cp: m_component_list){
-			if( cp.component()->name() == name ){
+			if(
+				 (cp.component()->name() == name)
+				 || (cp.component()->name() == T::get_name(name))
+				 ){
 				return static_cast<T*>(cp.component());
 			}
 		}
