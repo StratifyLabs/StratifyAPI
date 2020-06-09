@@ -86,6 +86,10 @@ public:
 		set_width(8);
 	}
 
+	bool is_valid() const {
+		return frequency() != 0;
+	}
+
 	API_ACCESS_MEMBER_COMPOUND(UartAttributes,mcu_pin_t,attr.pin_assignment,tx)
 	API_ACCESS_MEMBER_COMPOUND(UartAttributes,mcu_pin_t,attr.pin_assignment,rx)
 	API_ACCESS_MEMBER_COMPOUND(UartAttributes,mcu_pin_t,attr.pin_assignment,cts)

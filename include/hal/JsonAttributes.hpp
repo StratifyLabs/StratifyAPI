@@ -40,9 +40,9 @@ public:
 
 	UartAttributes get_attributes() const {
 		UartAttributes result;
-		result.set_frequency(
-					get_baudrate()
-					);
+
+		result.set_port( get_port() );
+		result.set_frequency(get_baudrate());
 		result.set_flags( Uart::flag_set_line_coding );
 		{
 			var::String stop_bits = get_stop_bits();
