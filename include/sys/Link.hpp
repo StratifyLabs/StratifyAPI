@@ -165,7 +165,7 @@ public:
 		var::String details_string;
 		if( driver_details.count() == 1 ){
 			driver_name() = "serial";
-			path() = "serial@" + driver_path;
+			set_path( "serial@" + driver_path );
 			details_string = driver_path;
 		} else if( driver_details.count() == 2 ){
 			m_driver_name = driver_details.at(0);
@@ -173,6 +173,11 @@ public:
 		}
 
 		if( details_string.is_empty() ){
+			return;
+		}
+
+		if( details_string.find("/dev") == 0 ){
+			set_device_path( details_string );
 			return;
 		}
 
