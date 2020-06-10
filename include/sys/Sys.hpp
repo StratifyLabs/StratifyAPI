@@ -456,8 +456,8 @@ public:
 	 *
 	 *
 	 */
-	static void redirect_stdout(fs::File::Descriptor fd){
-		_impure_ptr->_stdout->_file = fd.argument();
+	static void redirect_stdout(int fd){
+		_impure_ptr->_stdout->_file = fd;
 	}
 
 	/*! \details Redirects the standard input from the specified file descriptor.
@@ -467,8 +467,8 @@ public:
 	 * See Sys::redirect_stdout() for an example.
 	 *
 	 */
-	static void redirect_stdin(fs::File::Descriptor fd){
-		_impure_ptr->_stdin->_file = fd.argument();
+	static void redirect_stdin(int fd){
+		_impure_ptr->_stdin->_file = fd;
 	}
 
 	/*! \details Redirects the standard error from the specified file descriptor.
@@ -478,8 +478,8 @@ public:
 	 * See Sys::redirect_stdout() for an example.
 	 *
 	 */
-	static void redirect_stderr(fs::File::Descriptor fd){
-		_impure_ptr->_stderr->_file = fd.argument();
+	static void redirect_stderr(int fd){
+		_impure_ptr->_stderr->_file = fd;
 	}
 #endif
 
