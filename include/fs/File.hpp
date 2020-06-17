@@ -354,6 +354,7 @@ public:
 
 	/*! \details Closes the file or device. */
 	virtual int close();
+	virtual int fsync();
 
 	/*! \details Reads the file.
 	 *

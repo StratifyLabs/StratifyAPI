@@ -450,6 +450,23 @@ int File::close(){
 	return ret;
 }
 
+int File::fsync(){
+	int ret = 0;
+
+#if defined __link
+	if( driver() ){
+		return 0;
+	}
+#endif
+	if( m_fd >= 0 ){
+		ret = set_error_number_if_error(
+					::fsync(m_fd)
+					);
+		m_fd = -1;
+	}
+	return ret;
+}
+
 int File::read(void * buf, Size size) const {
 	return set_error_number_if_error(
 				link_read(
