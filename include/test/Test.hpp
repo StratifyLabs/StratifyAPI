@@ -425,7 +425,7 @@ protected:
 									line, result.return_value(), result.error_number());
 		} else {
 			print_case_failed("failed with return value %d and errno %d",
-									line, result.return_value(), result.error_number());
+									result.return_value(), result.error_number());
 		}
 	}
 
