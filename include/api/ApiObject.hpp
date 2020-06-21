@@ -183,7 +183,12 @@ namespace api {
 #define API_ACCESS_MEMBER_FUNDAMENTAL(c, t, p, v) \
 	public: \
 	t v() const { return m_##p.v; } \
-	c& set_##v(t value){ m_##p.v = value; return *this; } \
+	c& set_##v(t value){ m_##p.v = value; return *this; }
+
+#define API_READ_ACCESS_MEMBER_FUNDAMENTAL(c, t, p, v) \
+	public: \
+	t v() const { return m_##p.v; }
+
 
 #define API_ACCESS_MEMBER_FUNDAMENTAL_WITH_ALIAS(c, t, p, a, v) \
 	public: \
