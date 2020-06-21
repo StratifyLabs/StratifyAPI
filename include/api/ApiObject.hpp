@@ -531,6 +531,7 @@ enum error_codes : s32 {
 	error_code_inet_failed_to_get_status_code /*! Failed to get a status code in the HTTP response (7) */ = -(error_code_flag_inet|7),
 	error_code_inet_failed_to_get_header /*! Failed to receive the header (8) */ = -(error_code_flag_inet|8),
 	error_code_inet_failed_wrong_domain = -(error_code_flag_inet|9),
+	error_code_inet_wifi_api_missing = -(error_code_flag_inet|10),
 
 	error_code_var_json_unknown = -(error_code_flag_var|1),
 	error_code_var_json_out_of_memory = -(error_code_flag_var|2),

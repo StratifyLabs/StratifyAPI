@@ -130,6 +130,7 @@ const char * api::get_error_code_description(s32 ec){
 		ERROR_CODE_CASE(error_code_inet_failed_to_get_status_code);
 		ERROR_CODE_CASE(error_code_inet_failed_to_get_header);
 		ERROR_CODE_CASE(error_code_inet_failed_wrong_domain);
+		ERROR_CODE_CASE(error_code_inet_wifi_api_missing);
 
 		ERROR_CODE_CASE(error_code_var_json_unknown);
 		ERROR_CODE_CASE(error_code_var_json_out_of_memory);

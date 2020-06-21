@@ -82,6 +82,17 @@ public:
 		m_attributes = {0};
 	}
 
+	static WifiScanAttributes get_default(){
+		return WifiScanAttributes()
+				.set_region(scan_region_north_america)
+				.set_passive(false)
+				.set_channel(0xff)
+				.set_slot_count(5)
+				.set_slot_time(chrono::Milliseconds(100))
+				.set_probe_count(2)
+				.set_rssi_threshold(-90);
+	}
+
 	WifiScanAttributes(const wifi_scan_attributes_t & attributes){
 		m_attributes = attributes;
 	}
@@ -156,7 +167,10 @@ public:
 	}
 
 	int initialize(){
-		return api()->init(&m_context);
+		if( api().is_valid() == false ){
+			return set_error_number_if_error(api::error_code_inet_wifi_api_missing);
+		}
+		return set_error_number_if_error( api()->init(&m_context) );
 	}
 
 	void finalize(){
@@ -164,39 +178,62 @@ public:
 	}
 
 	int connect(const WifiSsidInfo & ssid_info, const WifiAuthInfo & auth){
-		return api()->connect(
-					m_context,
-					&ssid_info.info(),
-					&auth.auth()
+		return set_error_number_if_error(
+					api()->connect(
+						m_context,
+						&ssid_info.info(),
+						&auth.auth()
+						)
 					);
 	}
 
 	int disconnect(){
-		return api()->disconnect(m_context);
+		return set_error_number_if_error(
+					api()->disconnect(m_context)
+					);
 	}
 
-	int scan(
-			void * context,
+	var::Vector<WifiSsidInfo> scan(
+			const WifiScanAttributes & attributes = WifiScanAttributes::get_default(),
+			const chrono::MicroTime & timeout = chrono::Seconds(20)
+			);
+
+
+	int start_scan(
 			const WifiScanAttributes & attributes
 			){
-		return api()->scan(
-					m_context,
-					&attributes.attributes()
+		return set_error_number_if_error(
+					api()->start_scan(
+						m_context,
+						&attributes.attributes()
+						)
 					);
+	}
+
+
+	bool is_scan_busy() const {
+		int result
+				= api()->get_scan_count(m_context);
+		return result < 0;
 	}
 
 	WifiInfo get_info(){
 		wifi_info_t info;
-		if( api()->get_info(
-					m_context,
-					&info
+		if( set_error_number_if_error(
+					api()->get_info(
+						m_context,
+						&info
+						)
 					) < 0 ){
 			return WifiInfo();
 		}
 		return WifiInfo(info);
 	}
 
-	int get_ssid_info(u8 idx, wifi_ssid_info_t * dest);
+
+	var::Vector<WifiSsidInfo> get_ssid_info_list();
+
+
 	int set_mode();
 	int set_mac_address(u8 mac_address[6]);
 	int get_mac_address(u8 mac_address[6]);
