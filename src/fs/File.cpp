@@ -462,7 +462,6 @@ int File::fsync(){
 		ret = set_error_number_if_error(
 					::fsync(m_fd)
 					);
-		m_fd = -1;
 	}
 	return ret;
 }

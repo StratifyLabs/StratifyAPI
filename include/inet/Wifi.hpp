@@ -30,12 +30,22 @@ public:
 		return var::String(m_info.ssid);
 	}
 
+	WifiSsidInfo& set_name(const var::String & value){
+		strncpy(m_info.ssid, value.cstring(), sizeof(m_info.ssid));
+		return *this;
+	}
+
+
 	API_ACCESS_MEMBER_FUNDAMENTAL(WifiSsidInfo,u8,info,channel)
 	API_ACCESS_MEMBER_FUNDAMENTAL(WifiSsidInfo,u8,info,security)
 	API_ACCESS_MEMBER_FUNDAMENTAL(WifiSsidInfo,s8,info,rssi)
 
 	const wifi_ssid_info_t & info() const {
 		return m_info;
+	}
+
+	bool operator == (const WifiSsidInfo & a) const {
+		return a.get_name() == get_name();
 	}
 
 private:
@@ -54,11 +64,11 @@ public:
 	}
 
 	WifiAuthInfo(const var::String& passphrase){
-		u32 len = passphrase.length();
-		if( len > sizeof(m_auth.password) ){
-			len = sizeof(m_auth.password);
-		}
-		memcpy(m_auth.password, passphrase.cstring(), len);
+		strncpy(
+					(char*)(m_auth.password),
+					passphrase.cstring(),
+					sizeof(m_auth.password)
+					);
 	}
 
 
@@ -138,6 +148,35 @@ private:
 	wifi_scan_attributes_t m_attributes;
 };
 
+class WifiIpInfo {
+public:
+	WifiIpInfo(){ m_info = {0}; }
+	WifiIpInfo(const wifi_ip_info_t & info){ m_info = info; }
+
+	bool is_valid() const {
+		return m_info.ip_address != 0;
+	}
+
+
+	WifiIpInfo& set_lease_time(const chrono::MicroTime & value){
+		m_info.lease_time_s = value.seconds();
+		return *this;
+	}
+
+	chrono::MicroTime lease_time() const {
+		return chrono::Seconds(m_info.lease_time_s);
+	}
+
+	API_ACCESS_MEMBER_FUNDAMENTAL(WifiIpInfo,u32,info,ip_address)
+	API_ACCESS_MEMBER_FUNDAMENTAL(WifiIpInfo,u32,info,dns_address)
+	API_ACCESS_MEMBER_FUNDAMENTAL(WifiIpInfo,u32,info,subnet_mask)
+	API_ACCESS_MEMBER_FUNDAMENTAL(WifiIpInfo,u32,info,gateway_address)
+
+
+private:
+	wifi_ip_info_t m_info;
+};
+
 class WifiInfo {
 public:
 	WifiInfo(){ m_info = {0}; }
@@ -145,6 +184,10 @@ public:
 
 	bool is_valid() const {
 		return m_info.security;
+	}
+
+	WifiIpInfo get_ip_info() const{
+		return WifiIpInfo(m_info.ip);
 	}
 
 	API_ACCESS_MEMBER_FUNDAMENTAL(WifiInfo,u8,info,security)
@@ -177,14 +220,29 @@ public:
 		api()->deinit(&m_context);
 	}
 
-	int connect(const WifiSsidInfo & ssid_info, const WifiAuthInfo & auth){
-		return set_error_number_if_error(
+	WifiIpInfo connect(
+			const WifiSsidInfo & ssid_info,
+			const WifiAuthInfo & auth,
+			const chrono::MicroTime & timeout = chrono::Seconds(10)
+			){
+		int result
+				= set_error_number_if_error(
 					api()->connect(
 						m_context,
 						&ssid_info.info(),
 						&auth.auth()
 						)
 					);
+
+		if( result < 0 ){ return WifiIpInfo(); }
+
+		chrono::Timer t;
+		t.start();
+		while((t < timeout) && !get_info().is_valid() ){
+			chrono::wait(chrono::Milliseconds(50));
+		}
+
+		return get_info().get_ip_info();
 	}
 
 	int disconnect(){
@@ -239,7 +297,7 @@ public:
 	int get_mac_address(u8 mac_address[6]);
 	int get_factory_mac_address(u8 mac_address[6]);
 	int set_ip_address(
-			const wifi_static_ip_info_t * static_ip_address
+			const wifi_ip_info_t * static_ip_address
 			);
 
 	int set_sleep_mode(void * context);

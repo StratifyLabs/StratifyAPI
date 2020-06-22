@@ -191,7 +191,7 @@ private:
 	var::String m_canon_name;
 };
 
-class SocketAddressIpv4 : public api::InfoObject {
+class SocketAddressIpv4 {
 public:
 
 	static in_addr_t address(u8 a, u8 b, u8 c, u8 d){

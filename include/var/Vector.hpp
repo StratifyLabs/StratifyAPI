@@ -165,6 +165,24 @@ public:
 		return std::find(begin(), end(), a) - begin();
 	}
 
+	const T& match(const T & a) const {
+		static T empty = T();
+		u32 idx = find(a);
+		if( idx == count() ){
+			return empty;
+		}
+		return at(idx);
+	}
+
+	T& match(const T & a){
+		static T empty = T();
+		u32 idx = find(a);
+		if( idx == count() ){
+			return empty;
+		}
+		return at(idx);
+	}
+
 	size_t find(
 			const T & a,
 			std::function<bool(const T & a, const T & b)> compare
