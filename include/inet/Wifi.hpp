@@ -7,7 +7,9 @@
 
 #include "../api/InetObject.hpp"
 #include "../chrono/MicroTime.hpp"
+#include "../chrono/Timer.hpp"
 #include "../var/String.hpp"
+#include "IpAddress.hpp"
 
 namespace inet {
 
@@ -172,6 +174,22 @@ public:
 	API_ACCESS_MEMBER_FUNDAMENTAL(WifiIpInfo,u32,info,subnet_mask)
 	API_ACCESS_MEMBER_FUNDAMENTAL(WifiIpInfo,u32,info,gateway_address)
 
+	Ipv4Address get_ip_address() const {
+		return Ipv4Address(ip_address());
+	}
+
+	Ipv4Address get_dns_address() const {
+		return Ipv4Address(dns_address());
+	}
+
+	Ipv4Address get_gateway_address() const {
+		return Ipv4Address(gateway_address());
+	}
+
+	Ipv4Address get_subnet_mask() const {
+		return Ipv4Address(subnet_mask());
+	}
+
 
 private:
 	wifi_ip_info_t m_info;
@@ -183,7 +201,7 @@ public:
 	WifiInfo(const wifi_info_t & info){ m_info = info; }
 
 	bool is_valid() const {
-		return m_info.security;
+		return m_info.resd0 == WIFI_API_INFO_RESD;
 	}
 
 	WifiIpInfo get_ip_info() const{
@@ -192,6 +210,10 @@ public:
 
 	API_ACCESS_MEMBER_FUNDAMENTAL(WifiInfo,u8,info,security)
 	API_ACCESS_MEMBER_FUNDAMENTAL(WifiInfo,u8,info,rssi)
+
+	bool is_connected() const {
+		return m_info.is_connected;
+	}
 
 	const wifi_info_t & info() const {
 		return m_info;
@@ -224,26 +246,7 @@ public:
 			const WifiSsidInfo & ssid_info,
 			const WifiAuthInfo & auth,
 			const chrono::MicroTime & timeout = chrono::Seconds(10)
-			){
-		int result
-				= set_error_number_if_error(
-					api()->connect(
-						m_context,
-						&ssid_info.info(),
-						&auth.auth()
-						)
-					);
-
-		if( result < 0 ){ return WifiIpInfo(); }
-
-		chrono::Timer t;
-		t.start();
-		while((t < timeout) && !get_info().is_valid() ){
-			chrono::wait(chrono::Milliseconds(50));
-		}
-
-		return get_info().get_ip_info();
-	}
+			);
 
 	int disconnect(){
 		return set_error_number_if_error(
@@ -288,9 +291,7 @@ public:
 		return WifiInfo(info);
 	}
 
-
 	var::Vector<WifiSsidInfo> get_ssid_info_list();
-
 
 	int set_mode();
 	int set_mac_address(u8 mac_address[6]);

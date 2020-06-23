@@ -55,5 +55,42 @@ var::Vector<WifiSsidInfo> Wifi::get_ssid_info_list(){
 	return result;
 }
 
+WifiIpInfo Wifi::connect(
+		const WifiSsidInfo & ssid_info,
+		const WifiAuthInfo & auth,
+		const chrono::MicroTime & timeout
+		){
+	int result
+			= set_error_number_if_error(
+				api()->connect(
+					m_context,
+					&ssid_info.info(),
+					&auth.auth()
+					)
+				);
+
+	if( result < 0 ){
+		return WifiIpInfo();
+	}
+
+	chrono::Timer t;
+	t.start();
+	WifiInfo info;
+	do {
+		chrono::wait(chrono::Milliseconds(50));
+		info = get_info();
+	} while(
+					(t < timeout)
+					|| !info.is_connected()
+					|| !info.get_ip_info().is_valid()
+					);
+
+	if( info.is_connected() && info.get_ip_info().is_valid() ){
+		return info.get_ip_info();
+	}
+
+	return WifiIpInfo();
+}
+
 
 #endif
