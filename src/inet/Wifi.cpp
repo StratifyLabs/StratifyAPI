@@ -81,8 +81,8 @@ WifiIpInfo Wifi::connect(
 		info = get_info();
 	} while(
 					(t < timeout)
-					|| !info.is_connected()
-					|| !info.get_ip_info().is_valid()
+					&& (!info.is_connected()
+					|| !info.get_ip_info().is_valid())
 					);
 
 	if( info.is_connected() && info.get_ip_info().is_valid() ){
