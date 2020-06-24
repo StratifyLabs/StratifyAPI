@@ -269,7 +269,7 @@ public:
 	 *
 	 *
 	 */
-	int copy_contents(
+	Data& copy_contents(
 			const Reference & a,
 			Size size
 			);
@@ -282,7 +282,7 @@ public:
 	 * \details Copies the contents of another data object.
 	 *
 	 */
-	int copy_contents(
+	Data& copy_contents(
 			const Reference & reference
 			);
 
@@ -293,7 +293,7 @@ public:
 	 * \param size The number of bytes to copy
 	 * \return Zero on success or less than zero if memory could not be allocated
 	 */
-	int copy_contents(
+	Data& copy_contents(
 			const Reference & a,
 			Position destination_position,
 			Size source_size

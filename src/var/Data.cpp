@@ -97,7 +97,7 @@ int Data::allocate(
 	return 0;
 }
 
-int Data::copy_contents(
+Data& Data::copy_contents(
 		const Reference & reference
 		){
 	return copy_contents(
@@ -108,7 +108,7 @@ int Data::copy_contents(
 }
 
 
-int Data::copy_contents(
+Data& Data::copy_contents(
 		const Reference & a,
 		Size size
 		){
@@ -119,7 +119,7 @@ int Data::copy_contents(
 				);
 }
 
-int Data::copy_contents(
+Data& Data::copy_contents(
 		const Reference & a,
 		Position destination_position,
 		Size size
@@ -132,7 +132,7 @@ int Data::copy_contents(
 	u32 bytes_needed = bytes_to_copy + destination_position.argument();
 
 	if( resize(bytes_needed) < 0 ){
-		return -1;
+		return *this;
 	}
 
 	memory_copy(
@@ -141,7 +141,7 @@ int Data::copy_contents(
 				Size(bytes_to_copy)
 				);
 
-	return 0;
+	return *this;
 }
 
 

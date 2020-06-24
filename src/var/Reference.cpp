@@ -134,6 +134,13 @@ Reference::Reference(
 	refer_to(buffer, size);
 }
 
+Reference::Reference(
+		void * buffer,
+		Size size
+		){
+	refer_to(buffer, size);
+}
+
 Reference & Reference::refer_to(
 		ReadOnlyBuffer read_only_data,
 		Size size
@@ -146,15 +153,16 @@ Reference & Reference::refer_to(
 }
 
 Reference & Reference::refer_to(
-		ReadWriteBuffer data,
+		void * data,
 		Size size
 		){
 	set_reference(
-				ReadOnlyBuffer(data.argument()),
-				data,
+				ReadOnlyBuffer(data),
+				ReadWriteBuffer(data),
 				size);
 	return *this;
 }
+
 
 var::String Reference::to_string() const {
 	var::String result;

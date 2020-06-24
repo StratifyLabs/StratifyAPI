@@ -230,6 +230,11 @@ public:
 	 *
 	 */
 	Reference(
+			void * buffer,
+			Size size
+			);
+
+	Reference(
 			ReadWriteBuffer buffer,
 			Size size
 			);
@@ -377,9 +382,16 @@ public:
 	 *
 	 */
 	Reference & refer_to(
-			ReadWriteBuffer data,
+			void * data,
 			Size size
 			);
+
+	Reference & refer_to(
+			ReadWriteBuffer data,
+			Size size
+			){
+		return refer_to(data.argument(), size);
+	}
 
 	/*! \details Fill the data with the specified value.
 	 * This will not attempt to write read-only data.
@@ -643,6 +655,8 @@ private:
 	/*! \endcond */
 
 };
+
+using Blob = Reference;
 
 }
 
