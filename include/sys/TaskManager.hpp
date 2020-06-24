@@ -224,7 +224,11 @@ public:
 
 	int get_pid(const var::String & name);
 
-	bool is_pid_running(Sched::ProcessId pid);
+	bool is_pid_running(pid_t pid);
+
+	bool is_pid_running(Sched::ProcessId pid){
+		return is_pid_running(pid.argument());
+	}
 
 	void initialize();
 	void finalize();

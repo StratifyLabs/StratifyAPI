@@ -104,7 +104,7 @@ public:
 
 		{
 
-			Case case_guard(m_case_name);
+			Case case_guard(this, m_case_name);
 
 			case_timer().start();
 			return_value = m_function(arguments...);
@@ -163,7 +163,7 @@ public:
 
 		errno = 0;
 		{
-			Case case_guard(m_case_name);
+			Case case_guard(this, m_case_name);
 			case_timer().start();
 			return_result = m_function(arguments...);
 			case_timer().stop();
@@ -192,7 +192,7 @@ public:
 		m_case_name << ")";
 
 		{
-			Case case_guard(m_case_name);
+			Case case_guard(this, m_case_name);
 			case_timer().start();
 			return_value = m_function(arguments...);
 			case_timer().stop();
@@ -244,7 +244,7 @@ public:
 
 		errno = 0;
 		{
-			Case case_guard(m_case_name);
+			Case case_guard(this, m_case_name);
 			case_timer().start();
 			return_value = m_function(arguments...);
 			case_timer().stop();

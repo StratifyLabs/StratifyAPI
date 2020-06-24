@@ -66,9 +66,8 @@ public:
 
 	/*! \details Bitwise flags for open() */
 	enum flags {
-		CREATE /*! \brief Create a new message queue */ = O_CREAT,
-		EXCL /*! \brief Create exclusively */ = O_EXCL,
-		EXCLUSIVE /*! \brief Create exclusively */ = O_EXCL
+		flag_create /*! \brief Create a new message queue */ = O_CREAT,
+		flag_exclusive /*! \brief Create exclusively */ = O_EXCL
 	};
 
 

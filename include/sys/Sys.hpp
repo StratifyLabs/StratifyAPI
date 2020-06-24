@@ -165,6 +165,14 @@ private:
 
 };
 
+class LaunchOptions {
+	API_ACCESS_COMPOUND(LaunchOptions,var::String,path);
+	API_ACCESS_COMPOUND(LaunchOptions,var::String,arguments);
+	API_ACCESS_COMPOUND(LaunchOptions,var::String,environment);
+	API_ACCESS_FUNDAMENTAL(LaunchOptions,enum Appfs::flags,application_flags,Appfs::flag_is_default);
+	API_ACCESS_FUNDAMENTAL(LaunchOptions,int,ram_size,0);
+};
+
 /*! \brief Sys Class
  * \details This class allows access to system attributes and functions.
  */
@@ -220,6 +228,11 @@ public:
 			int ram_size,
 			const sys::ProgressCallback * progress_callback,
 			Environment envp = Environment("")
+			);
+
+	static var::String launch(
+			const LaunchOptions & options,
+			const sys::ProgressCallback * progress_callback
 			);
 
 	/*!

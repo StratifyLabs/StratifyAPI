@@ -120,13 +120,13 @@ TaskInfo TaskManager::get_info(u32 id){
 	return TaskInfo(attr);
 }
 
-bool TaskManager::is_pid_running(Sched::ProcessId pid){
+bool TaskManager::is_pid_running(pid_t pid){
 	int tmp_id = id();
 	set_id( 1 );
 
 	TaskInfo info;
 	while( get_next(info) > 0 ){
-		if( (pid.argument() == info.pid()) && info.is_enabled() ){
+		if( (pid == info.pid()) && info.is_enabled() ){
 			set_id( tmp_id );
 			return true;
 		}
