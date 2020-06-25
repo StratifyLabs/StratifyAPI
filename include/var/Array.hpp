@@ -96,9 +96,7 @@ public:
 	bool is_empty() const { return m_array.empty(); }
 
 	Array & fill(const T& value){
-		for(auto & element: *this){
-			element= value;
-		}
+		std::fill(begin(), end(), value);
 		return *this;
 	}
 

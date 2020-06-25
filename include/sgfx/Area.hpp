@@ -31,7 +31,7 @@ public:
 		m_value.height = height.argument();
 	}
 
-	Area(const sg_area_t & d){ m_value = d; }
+	Area(const sg_area_t & d) : m_value(d) {}
 
 	bool is_valid() const {
 		return (m_value.width && m_value.height);

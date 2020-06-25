@@ -525,6 +525,10 @@ public:
 	 */
 	size_t size() const { return m_size; }
 
+	ssize_t size_signed() const {
+		return static_cast<ssize_t>(m_size);
+	}
+
 
 	static void memory_copy(
 			SourceBuffer read_data,
@@ -612,7 +616,7 @@ public:
 	 *
 	 */
 	int save(
-			const var::String file_path,
+			const var::String & file_path,
 			IsOverwrite is_overwrite = IsOverwrite(false)
 			) const;
 

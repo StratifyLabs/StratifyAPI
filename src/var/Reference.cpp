@@ -174,7 +174,7 @@ var::String Reference::to_string() const {
 
 
 int Reference::save(
-		const var::String file_path,
+		const String& file_path,
 		IsOverwrite is_overwrite
 		) const {
 	fs::File f;

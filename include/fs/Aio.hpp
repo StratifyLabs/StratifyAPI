@@ -66,7 +66,7 @@ public:
 	/*! \details Constructs an empy AIO object. */
 	Aio(){ memset(&m_aio_var, 0, sizeof(struct aiocb)); }
 
-	Aio(
+	explicit Aio(
 			const var::Reference & reference
 			){
 		m_aio_var.aio_buf = reference.to_void();

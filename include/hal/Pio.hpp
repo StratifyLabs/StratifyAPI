@@ -90,7 +90,7 @@ public:
  */
 class Pio : public Periph<pio_info_t, pio_attr_t, PioAttributes, 'p'>, public PioFlags {
 public:
-	Pio(port_t port);
+	explicit Pio(port_t port);
 
 	/*! \details Sets the specified pin mask */
 	int set_mask(u32 mask) const;

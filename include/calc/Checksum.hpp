@@ -78,7 +78,6 @@ public:
 		int i;
 		T sum = 0;
 		int count = data.size()/sizeof(T);
-		const T * p = (const T*)data.to_const_void();
 		for(i=0; i < count; i++){
 			sum += data.to<const T>()[i];
 		}

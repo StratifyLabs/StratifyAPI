@@ -59,7 +59,7 @@ public:
 	 * @param start Initial value
 	 * @param alpha Averaging value
 	 */
-	Ema(intmedium start, intsmall alpha){ m_average = start;  this->m_alpha = alpha; }
+	Ema(intmedium start, intsmall alpha) : m_average(start), m_alpha(alpha){}
 	static intmedium small_max(){ return 1<<(8*sizeof(intsmall)); }
 
 	/*! \details Calculates the next average using an input value.
@@ -137,7 +137,6 @@ public:
 	static float small_max(){ return 1.0f; }
 	/*! \details Calculates the next value based on the given input */
 	float calculate(float in){
-		float tmp;
 		m_average = in * (m_alpha) + m_average * (1.0f - m_alpha);
 		return m_average;
 	}

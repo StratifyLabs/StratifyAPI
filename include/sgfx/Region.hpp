@@ -27,8 +27,8 @@ public:
 	}
 
 
-	Region(const sg_region_t & region){
-		m_region = region;
+	Region(const sg_region_t & region)
+		: m_region(region) {
 	}
 
 	Region(const Point & point, const Area & area){

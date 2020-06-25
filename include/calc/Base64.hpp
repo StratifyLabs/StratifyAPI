@@ -9,6 +9,11 @@
 
 namespace calc {
 
+class Base64Options {
+	API_ACCESS_COMPOUND(Base64Options,var::String,input);
+	API_ACCESS_COMPOUND(Base64Options,var::String,output);
+};
+
 /*! \brief Base64 Encode/Decode Class
  * \details This class includes methods to encode and decode data
  * using the base64 algorithm.  Base64 is useful for representing binary
@@ -77,7 +82,7 @@ public:
 	 *
 	 */
 	static var::String encode(
-			const var::Reference input
+			const var::Reference & input
 			);
 
 	static int encode(

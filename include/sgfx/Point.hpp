@@ -23,8 +23,8 @@ public:
 	using ImplicitY = arg::ImplicitArgument<sg_int_t, struct PointImplicitYTag, Y>;
 
 
-	Point(){ m_value.x = 0; m_value.y = 0; }
-	Point(const sg_point_t & p){ m_value = p; }
+	Point(){ m_value.point = 0; }
+	Point(const sg_point_t & p) : m_value(p) {}
 	Point(
 			const ImplicitX x,
 			const ImplicitY y

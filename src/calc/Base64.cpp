@@ -78,8 +78,7 @@ int Base64::decode(
 	return size_processed;
 }
 
-var::String Base64::encode(
-		const var::Reference input
+var::String Base64::encode(const var::Reference& input
 		){
 	var::String result;
 

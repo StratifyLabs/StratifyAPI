@@ -140,7 +140,7 @@ public:
 	int o_flags() const { return m_flags; }
 
 private:
-	OpenFlags(int flags){ m_flags = flags; }
+	explicit OpenFlags(int flags){ m_flags = flags; }
 
 	void clear_access(){ m_flags &= ~LINK_O_ACCMODE; }
 
@@ -205,10 +205,8 @@ public:
 
 #if defined __link
 	Stat(bool is_local = false);
-	Stat(const struct link_stat & st, bool is_local = false){
-		m_is_local = is_local;
-		m_stat = st;
-	}
+	Stat(const struct link_stat & st, bool is_local = false)
+		: m_stat(st), m_is_local(is_local) {}
 #else
 	/*! \details Constructs a new object.
 	 *
@@ -222,9 +220,8 @@ public:
 	 * from the struct stat data provided.
 	 *
 	 */
-	Stat(const struct stat & st){
-		m_stat = st;
-	}
+	Stat(const struct stat & st)
+		: m_stat(st){}
 #endif
 
 	/*! \details Returns true if the object is valid. */

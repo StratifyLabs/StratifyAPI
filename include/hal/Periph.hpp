@@ -33,27 +33,27 @@ public:
 	 * and write without opening again.
 	 */
 	int open(const fs::OpenFlags & flags = fs::OpenFlags::read_write());
-	int ioctl(IoRequest request, IoArgument argument) const;
-	int seek(Location location, PeriphObject::whence whence) const;
+	int ioctl(IoRequest request, IoArgument argument) const override;
+	int seek(int location, PeriphObject::whence whence) const override;
 	int fileno() const;
 
-	int open(const var::String & name, const fs::OpenFlags & flags);
+	int open(const var::String & name, const fs::OpenFlags & flags) override;
 
 	int read(
 			void * buf,
 			Size size
-			) const;
+			) const override;
 
 	int write(
 			const void * buf,
 			Size size
-			) const;
+			) const override;
 
 #ifndef __link
-	int read(fs::Aio & aio) const;
-	int write(fs::Aio & aio) const;
+	int read(fs::Aio & aio) const override;
+	int write(fs::Aio & aio) const override;
 #endif
-	int close();
+	int close() override;
 
 	using File::ioctl;
 	using File::read;

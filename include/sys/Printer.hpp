@@ -239,8 +239,7 @@ public:
 
 	/*! \details Used by progres_callback(). */
 	static bool update_progress_callback(void * context, int progress, int total){
-		Printer * printer = (Printer*)context;
-		return printer->update_progress(progress, total);
+		return static_cast<Printer*>(context)->update_progress(progress, total);
 	}
 
 	/*! \details Used by progres_callback(). */
@@ -362,11 +361,10 @@ public:
 	PrinterContainer(
 			enum levels verbose_level,
 			T type
-			){
-		m_verbose_level = verbose_level;
-		m_type = type;
-		m_count = 1;
-	}
+			)
+		: m_type(type),
+	m_count(1),
+	m_verbose_level(verbose_level) {}
 
 	enum levels verbose_level() const {
 		return m_verbose_level;

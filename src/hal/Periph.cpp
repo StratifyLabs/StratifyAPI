@@ -168,8 +168,7 @@ int PeriphObject::ioctl(
 	return Device::ioctl(request, argument);
 }
 
-int PeriphObject::seek(
-		Location location,
+int PeriphObject::seek(int location,
 		enum whence whence
 		) const {
 	update_fileno();

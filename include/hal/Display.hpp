@@ -16,9 +16,7 @@ namespace hal {
 class DisplayInfo {
 public:
 	DisplayInfo(){ memset(&m_info, 0, sizeof(m_info)); }
-	DisplayInfo(const display_info_t & info){
-		m_info = info;
-	}
+	DisplayInfo(const display_info_t & info) : m_info(info){}
 
 	/*! \details Returns true if this object is valid.
 	 *
