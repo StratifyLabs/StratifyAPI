@@ -162,7 +162,7 @@ int Link::connect(
 		memcpy(&sys_info.serial, m_bootloader_attributes.serialno, sizeof(mcu_sn_t));
 	}
 
-	m_link_info.set_port(path).set_info(sys_info);
+	m_link_info.set_port(path).set_info(SysInfo(sys_info));
 
 	if( File::default_driver() == nullptr ){
 		File::set_default_driver( File::LinkDriver(driver()) );

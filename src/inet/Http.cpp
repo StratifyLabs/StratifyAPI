@@ -294,7 +294,7 @@ int HttpClient::connect_to_server(
 
 	var::Vector<SocketAddressInfo> address_list = address_info.fetch_node(domain_name);
 	if( address_list.count() > 0 ){
-		m_address = address_list.at(0);
+		m_address = SocketAddress(address_list.at(0));
 		m_address.set_port(port);
 
 		if( socket().create(m_address)  < 0 ){

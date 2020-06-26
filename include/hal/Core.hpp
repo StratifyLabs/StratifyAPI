@@ -83,9 +83,7 @@ public:
 	CoreInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 
 	/*! \details Constructs a Core Info object from a core_info_t data structure. */
-	CoreInfo(const core_info_t & info){
-		m_info = info;
-	}
+	explicit CoreInfo(const core_info_t & info) : m_info(info) {}
 
 	/*! \details Returns the events that are supported by the core. */
 	u32 o_events() const { return m_info.o_events; }
@@ -161,7 +159,7 @@ public:
 	 *
 	 * @param port The core port (zero for all single core devices)
 	 */
-	Core(port_t port);
+	explicit Core(port_t port);
 
 	/*! \details Changes pin functionality using a core_pinfunc_t structure. */
 	int set_pin_function(const core_pinfunc_t & req);

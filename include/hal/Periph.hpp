@@ -75,9 +75,8 @@ private:
 template<typename attr_t> class PeriphAttributes {
 public:
 
-	PeriphAttributes(){
-		m_port = 0;
-		memset(&m_attr, 0, sizeof(m_attr));
+	PeriphAttributes() : m_port(0){
+		m_attr = {0};
 	}
 
 	/*! \details Accesses the value of the port. */

@@ -56,7 +56,7 @@ public:
    AppfsInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 
    /*! \details Constructs an object from a *appfs_info_t* object. */
-   AppfsInfo(const appfs_info_t & info){
+	 explicit AppfsInfo(const appfs_info_t & info){
       memcpy(&m_info, &info, sizeof(appfs_info_t));
    }
 
@@ -159,7 +159,7 @@ public:
 
 	AppfsFileAttributes(){}
 
-	AppfsFileAttributes(const appfs_file_t & appfs_file);
+	explicit AppfsFileAttributes(const appfs_file_t & appfs_file);
 
 	void apply(appfs_file_t * appfs_file) const;
 	int apply(const fs::File & file) const;

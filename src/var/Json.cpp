@@ -394,7 +394,7 @@ var::StringList JsonObject::key_list() const {
 }
 
 JsonValue JsonObject::at(const var::String & key) const {
-	return api()->object_get(m_value, key.cstring());
+	return JsonValue(api()->object_get(m_value, key.cstring()));
 }
 
 JsonArray::JsonArray(){
@@ -416,9 +416,11 @@ u32 JsonArray::count() const {
 }
 
 JsonValue JsonArray::at(size_t position) const {
-	return api()->array_get(
-				m_value,
-				position
+	return JsonValue(
+				api()->array_get(
+					m_value,
+					position
+					)
 				);
 }
 

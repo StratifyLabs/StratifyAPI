@@ -34,7 +34,7 @@ public:
 		m_vector.resize(count);
 	}
 
-	explicit Vector (std::initializer_list<T> il) : m_vector(il){}
+	Vector (std::initializer_list<T> il) : m_vector(il){}
 	Vector& operator=(std::initializer_list<T> il){
 		m_vector = il;
 		return *this;

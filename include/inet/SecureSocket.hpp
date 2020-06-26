@@ -14,20 +14,20 @@ typedef api::Api<mbedtls_api_t, MBEDTLS_API_REQUEST> SecureSocketApi;
 class SecureSocket : public Socket {
 public:
 	SecureSocket();
-	SecureSocket(u32 ticket_lifetime);
+	explicit SecureSocket(u32 ticket_lifetime);
 	~SecureSocket();
 
 	//already documented in inet::Socket
-	virtual int create(const SocketAddress & address);
+	virtual int create(const SocketAddress & address) override;
 
 	//already documented in inet::Socket
-	virtual int connect(const SocketAddress & address);
+	virtual int connect(const SocketAddress & address) override;
 
 	//already documented in inet::Socket
 	virtual int bind_and_listen(
 			const SocketAddress & address,
 			ListenBacklogCount backlog = ListenBacklogCount(4)
-			) const;
+			) const override;
 
 
 	/*! \details
@@ -42,15 +42,15 @@ public:
 	virtual int write(
 			const void * buf,
 			Size nbyte
-			) const;
+			) const override;
 
 	using File::read;
 	virtual int read(
 			void * buf,
 			Size nbyte
-			) const;
+			) const override;
 
-	virtual int close();
+	virtual int close() override;
 
 	const var::Data & ticket() const { return m_ticket; }
 	var::Data & ticket(){ return m_ticket; }

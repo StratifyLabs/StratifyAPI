@@ -19,7 +19,7 @@ public:
 	using UrlEncodedString = arg::Argument<const var::String &, struct HttpGetResponseUrlEncodedStringTag>;
 	using RequestString = arg::Argument<const var::String &, struct HttpRequestStringTag>;
 
-	Http(Socket & socket);
+	explicit Http(Socket & socket);
 
 protected:
 	Socket & socket(){ return m_socket; }
@@ -80,7 +80,7 @@ public:
 	 * SecureSocket to work correctly.
 	 *
 	 */
-	HttpClient(Socket & socket);
+	explicit HttpClient(Socket & socket);
 
 	/*! \details Keeps the connection alive between requests.
 	 *

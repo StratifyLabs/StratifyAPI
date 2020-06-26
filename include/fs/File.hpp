@@ -869,7 +869,7 @@ public:
 	int open(
 			const var::String & path,
 			const OpenFlags & flags
-			){
+			) override {
 		MCU_UNUSED_ARGUMENT(path);
 		this->flags() = flags;
 		if( flags.is_append() ){ return -1; }
@@ -880,7 +880,7 @@ public:
 	 * functionality.
 	 *
 	 */
-	int close(){ return 0; }
+	int close() override { return 0; }
 
 	/*! \details Reimplements fs::File::read() to simply
 	 * read from the var::Data object contained herein
@@ -889,7 +889,7 @@ public:
 	int read(
 			void * buf,
 			Size nbyte
-			) const;
+			) const override;
 
 	/*! \details Reimplements fs::File::write() to simply
 	 * write to the var::Data object contained herein
@@ -900,7 +900,7 @@ public:
 	int write(
 			const void * buf,
 			Size nbyte
-			) const;
+			) const override;
 
 	/*! \details Seeks to the specified location in the file.
 	 *
@@ -910,7 +910,7 @@ public:
 	int seek(
 			int location,
 			enum whence whence = whence_set
-			) const;
+			) const override;
 
 	/*! \details Reimplements fs::File::ioctl() to have
 	 * no functionality.
@@ -919,7 +919,7 @@ public:
 	int ioctl(
 			IoRequest request,
 			IoArgument argument
-			) const {
+			) const	override {
 		MCU_UNUSED_ARGUMENT(request);
 		MCU_UNUSED_ARGUMENT(argument);
 		return 0;
@@ -929,7 +929,7 @@ public:
 	 * file (size of the data).
 	 *
 	 */
-	u32 size() const { return reference().size(); }
+	u32 size() const override { return reference().size(); }
 
 	using File::read;
 	using File::write;

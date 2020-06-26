@@ -13,13 +13,10 @@ namespace sys {
 
 class AuthToken {
 public:
-	AuthToken(){ memset(&m_auth_token, 0, sizeof(auth_token_t)); }
-	AuthToken(const auth_token_t & auth_token){
-		m_auth_token = auth_token;
-	}
-
-	AuthToken(const var::String & token);
-	AuthToken(const var::Reference & token);
+	AuthToken(){ m_auth_token = {0}; }
+	explicit AuthToken(const auth_token_t & auth_token) : m_auth_token(auth_token){}
+	explicit AuthToken(const var::String & token);
+	explicit AuthToken(const var::Reference & token);
 
 	bool is_valid() const {
 		for(u8 i=0; i < sizeof(auth_token_t); i++){

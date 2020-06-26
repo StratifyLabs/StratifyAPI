@@ -556,6 +556,9 @@ enum error_codes : s32 {
 
 const char * get_error_code_description(s32 ec);
 
+#define API_ASSERT(a) api::api_assert(a,__PRETTY_FUNCTION__,__LINE__);
+void api_assert(bool value, const char * function, int line);
+
 }
 
 #endif // SAPI_API_APIOBJECT_HPP_

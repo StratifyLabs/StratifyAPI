@@ -20,9 +20,7 @@ public:
 	WifiSsidInfo(){
 		m_info = {0};
 	}
-	WifiSsidInfo(const wifi_ssid_info_t & info){
-		m_info = info;
-	}
+	explicit WifiSsidInfo(const wifi_ssid_info_t & info) : m_info(info) {}
 
 	bool is_valid() const {
 		return m_info.ssid[0] != 0;
@@ -61,11 +59,9 @@ public:
 		m_auth ={0};
 	}
 
-	WifiAuthInfo(const wifi_auth_info_t & auth){
-		m_auth = auth;
-	}
+	explicit WifiAuthInfo(const wifi_auth_info_t & auth) : m_auth(auth) {}
 
-	WifiAuthInfo(const var::String& passphrase){
+	explicit WifiAuthInfo(const var::String& passphrase){
 		strncpy(
 					(char*)(m_auth.password),
 					passphrase.cstring(),
@@ -105,9 +101,7 @@ public:
 				.set_rssi_threshold(-90);
 	}
 
-	WifiScanAttributes(const wifi_scan_attributes_t & attributes){
-		m_attributes = attributes;
-	}
+	explicit WifiScanAttributes(const wifi_scan_attributes_t & attributes) : m_attributes(attributes){}
 
 	bool is_valid() const {
 		return m_attributes.slot_count != 0;
@@ -153,7 +147,7 @@ private:
 class WifiIpInfo {
 public:
 	WifiIpInfo(){ m_info = {0}; }
-	WifiIpInfo(const wifi_ip_info_t & info){ m_info = info; }
+	explicit WifiIpInfo(const wifi_ip_info_t & info) : m_info(info){}
 
 	bool is_valid() const {
 		return m_info.ip_address != 0;

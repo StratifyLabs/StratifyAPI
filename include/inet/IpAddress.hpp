@@ -11,11 +11,9 @@ public:
 
 	Ipv4Address(){}
 
-	Ipv4Address(u32 value){
-		m_value = value;
-	}
+	explicit Ipv4Address(u32 value) : m_value(value){}
 
-	Ipv4Address(const var::String & value){
+	explicit Ipv4Address(const var::String & value){
 		var::StringList value_list = value.split(".");
 		if( value_list.count() != 4 ){
 			return;

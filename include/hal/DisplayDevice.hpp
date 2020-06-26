@@ -31,24 +31,24 @@ public:
 	 * This method will cause the driver to write the
 	 * current video memory to the display.
 	 */
-	void refresh() const;
+	void refresh() const override;
 
-	void clear();
+	void clear() override;
 
-	int set_window(const sgfx::Region & region) const;
+	int set_window(const sgfx::Region & region) const override;
 
 	using Device::write;
-	int write(const sgfx::Bitmap & bitmap) const;
+	int write(const sgfx::Bitmap & bitmap) const override;
 
 	enum mode {
 		mode_palette,
 		mode_raw
 	};
 
-	DisplayInfo get_info() const;
-	sgfx::Palette get_palette() const;
+	DisplayInfo get_info() const override;
+	sgfx::Palette get_palette() const override;
 
-	int set_palette(const sgfx::Palette & display_palette) const;
+	int set_palette(const sgfx::Palette & display_palette) const override;
 
 	int set_mode(enum mode value);
 
@@ -57,13 +57,13 @@ public:
 	 *
 	 * @return True if the LCD is busy
 	 */
-	bool is_busy() const;
+	bool is_busy() const override;
 
 	/*! \details Blocks until the display is not busy anymore. */
-	void wait(const chrono::MicroTime & resolution) const;
+	void wait(const chrono::MicroTime & resolution) const override;
 
-	int enable() const;
-	int disable() const;
+	int enable() const override;
+	int disable() const override;
 
 	using Data::size;
 };

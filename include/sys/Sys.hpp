@@ -33,13 +33,13 @@ public:
 	SerialNumber();
 
 	/*! \details Constructs a serial number for an array of u32 values. */
-	SerialNumber(const u32 serial_number[4]){ memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4); }
+	explicit SerialNumber(const u32 serial_number[4]){ memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4); }
 
 	/*! \details Constructs a serial number from an mcu_sn_t. */
-	SerialNumber(const mcu_sn_t serial_number){ m_serial_number = serial_number; }
+	explicit SerialNumber(const mcu_sn_t serial_number) : m_serial_number(serial_number){}
 
 	/*! \details Constructs this serial number from \a str. */
-	SerialNumber(const var::String & str);
+	explicit SerialNumber(const var::String & str);
 
 	/*! \details Returns true if a valid serial number is held. */
 	bool is_valid() const {
@@ -89,9 +89,7 @@ public:
 	SysInfo(){ clear(); }
 
 	/*! \details Constructs an object from *info*. */
-	SysInfo(const sys_info_t & info ){
-		m_info = info;
-	}
+	explicit SysInfo(const sys_info_t & info ) : m_info(info) {}
 
 	operator const sys_info_t & () const { return m_info; }
 

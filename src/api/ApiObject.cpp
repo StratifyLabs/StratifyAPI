@@ -7,6 +7,9 @@
 #if defined __link
 #define API_MINIMUM_CHUNK_SIZE 1024
 #define API_MALLOC_CHUNK_SIZE 1024
+#if !defined __win32
+#include <execinfo.h>
+#endif
 #else
 #include <mcu/arch.h>
 #define API_MALLOC_CHUNK_SIZE MALLOC_CHUNK_SIZE
@@ -80,6 +83,21 @@ const char * ApiInfo::user_data_path(){
 #endif
 }
 
+void api::api_assert(
+		bool value,
+		const char * function,
+		int line){
+	if( !value ){
+		printf("assertion %s():%d\n", function, line);
+#if defined __link && !defined __win32
+		void *array[200];
+		size_t size;
+		size = backtrace(array,100);
+		backtrace_symbols_fd(array, size, STDERR_FILENO);
+#endif
+		::abort();
+	}
+}
 
 const char * api::get_error_code_description(s32 ec){
 	switch(ec){

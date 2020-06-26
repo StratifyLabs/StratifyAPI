@@ -76,6 +76,10 @@ private:
 
 class RleFile : public Rle, public fs::File {
 public:
+
+	RleFile(){
+		memset(buf, 0, misc_buffer_size);
+	}
 	/*! \details Encodes using run length encoding and writes the data to a file.
 	 *
 	 * @param buf The source data
