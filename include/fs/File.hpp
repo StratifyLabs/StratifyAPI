@@ -38,6 +38,8 @@
 
 namespace fs {
 
+class File;
+
 
 /*! \brief File Class
  * \details This class is used to access files (and devices).  It uses the POSIX functions open(), read(), write(), close(), etc.  You
@@ -478,6 +480,19 @@ public:
 		seek(location, whence_set);
 		return write(source_file, page_size, size);
 	}
+
+	class WriteOptions {
+	public:
+		API_ACCESS_FUNDAMENTAL(WriteOptions,u32,location,static_cast<u32>(-1));
+		API_ACCESS_FUNDAMENTAL(WriteOptions,u32,page_size,SAPI_LINK_DEFAULT_PAGE_SIZE);
+		API_ACCESS_FUNDAMENTAL(WriteOptions,size_t,size,static_cast<size_t>(-1));
+		API_ACCESS_FUNDAMENTAL(WriteOptions,const sys::ProgressCallback*,progress_callback,nullptr);
+	};
+
+	int write(
+			const File& source_file,
+			const WriteOptions & options
+			);
 
 	int write(
 			const File & source_file,

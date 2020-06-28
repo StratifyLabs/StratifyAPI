@@ -667,6 +667,22 @@ int File::write(
 	return write(source_file, page_size, size, nullptr);
 }
 
+int File::write(
+		const File& source_file,
+		const WriteOptions & options
+		){
+
+	if( options.location() != static_cast<u32>(-1) ){
+		seek(options.location(), whence_set);
+	}
+	return write(
+				source_file,
+				PageSize(options.page_size()),
+				Size(options.size()),
+				options.progress_callback()
+				);
+}
+
 
 int File::write(
 		const File & source_file,

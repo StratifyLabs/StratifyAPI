@@ -181,6 +181,9 @@ public:
 			return;
 		}
 
+		if( details_string.length() && details_string.front() == '/' ){
+			details_string.pop_front();
+		}
 		var::StringList detail_list = details_string.split("/");
 
 		if( detail_list.count() == 1 ){
@@ -190,10 +193,10 @@ public:
 			set_vendor_id(detail_list.at(0));
 			set_product_id(detail_list.at(1));
 			set_interface_number(detail_list.at(2));
-			if( detail_list.count() > 4 ){
+			if( detail_list.count() > 3 ){
 				set_serial_number(detail_list.at(3));
 			}
-			if( detail_list.count() > 5 ){
+			if( detail_list.count() > 4 ){
 				set_device_path(detail_list.at(4));
 			}
 		}

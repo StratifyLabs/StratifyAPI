@@ -49,8 +49,8 @@ public:
 
 	JsonValue();
 
-	explicit JsonValue(json_t * value);
-	explicit JsonValue(const JsonValue & value);
+	JsonValue(json_t * value);
+	JsonValue(const JsonValue & value);
 	explicit JsonValue(fs::File::Path path);
 
 	JsonValue& operator=(const JsonValue & value);
@@ -271,12 +271,9 @@ private:
 	friend class JsonNull;
 	friend class JsonKeyValue;
 	json_t * m_value;
-
-	void add_reference(json_t * value);
-
 	static JsonApi m_api;
 
-
+	void add_reference(json_t * value);
 };
 
 class JsonKeyValue : public JsonValue {

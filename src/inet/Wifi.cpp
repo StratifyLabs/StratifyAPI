@@ -22,7 +22,7 @@ var::Vector<WifiSsidInfo> Wifi::scan(
 		const chrono::MicroTime & timeout
 		){
 	if( start_scan(attributes) < 0 ){
-		return return_value();
+		return var::Vector<WifiSsidInfo>();
 	}
 
 	Timer t;
@@ -49,7 +49,7 @@ var::Vector<WifiSsidInfo> Wifi::get_ssid_info_list(){
 			return result;
 		}
 
-		result.push_back(info);
+		result.push_back(WifiSsidInfo(info));
 	}
 
 	return result;

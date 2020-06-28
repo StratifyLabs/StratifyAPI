@@ -48,6 +48,7 @@ public:
 		return m_initialization_vector;
 	}
 
+
 	int encrypt_ecb(
 			SourcePlainData source_data,
 			DestinationCipherData destination_data

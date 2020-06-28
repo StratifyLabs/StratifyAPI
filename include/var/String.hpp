@@ -265,6 +265,33 @@ public:
 					).c_str();
 	}
 
+	class InsertOptions {
+		API_ACCESS_FUNDAMENTAL(InsertOptions,size_t,position,0);
+		API_ACCESS_FUNDAMENTAL(InsertOptions,size_t,length,0);
+		API_ACCESS_FUNDAMENTAL(InsertOptions,size_t,sub_position,String::npos);
+		API_ACCESS_FUNDAMENTAL(InsertOptions,size_t,sub_length,String::npos);
+	};
+
+	String& insert(
+			const String& string_to_insert,
+			const InsertOptions& options
+			){
+		if( options.sub_position() == String::npos ){
+			m_string.insert(
+						options.position(),
+						string_to_insert.string()
+						);
+		} else {
+			m_string.insert(
+						options.position(),
+						string_to_insert.string(),
+						options.sub_position(),
+						options.sub_length()
+						);
+		}
+		return *this;
+	}
+
 	/*! \details Inserts \a s (zero terminated) into string at \a pos.
 		*
 		* @param pos Where to insert the string in this object (zero to insert at beginning)
@@ -374,6 +401,11 @@ public:
 		return *this;
 	}
 
+	String & pop_front(){
+		m_string.erase(0, 1);
+		return *this;
+	}
+
 	char & at (size_t pos){ return m_string.at(pos); }
 	const char & at (size_t pos) const { return m_string.at(pos); }
 
@@ -425,9 +457,9 @@ public:
 			const char * fmt = nullptr
 			){
 		static_assert(
-					std::is_arithmetic<T>::value,
-					"Cannot convert non-arithmetic types to string"
-					);
+		std::is_arithmetic<T>::value,
+				"Cannot convert non-arithmetic types to string"
+				);
 
 
 		if( fmt == nullptr ){

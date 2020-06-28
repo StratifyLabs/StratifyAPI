@@ -369,7 +369,7 @@ public:
 					begin(),
 					end(),
 					T(),
-					[](T a, T b){
+					[local_mean](T a, T b){
 			return a + (b - local_mean)*(b - local_mean);
 		});
 		return result / count();

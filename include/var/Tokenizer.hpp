@@ -10,6 +10,7 @@
 
 namespace var {
 
+
 /*! \brief Tokenize a String
  * \details The Token Class can convert any String into a list of tokens.  The
  * class is similar to STDC strtok().
@@ -17,6 +18,14 @@ namespace var {
  */
 class Tokenizer : public api::WorkObject {
 public:
+
+	class ParseOptions {
+		API_ACCESS_COMPOUND(ParseOptions,var::String,delimeters);
+		API_ACCESS_COMPOUND(ParseOptions,var::String,ignore_between);
+		API_ACCESS_BOOL(ParseOptions,count_empty_tokens,false);
+		API_ACCESS_FUNDAMENTAL(ParseOptions,u32,maximum_token_count,0);
+	};
+
 	Tokenizer();
 
 	using EncodedString = arg::Argument<const var::String &, struct TokenizerEncodedStringTag>;
@@ -41,6 +50,11 @@ public:
 			Delimeters delim,
 			IgnoreBetween ignore = IgnoreBetween(""),
 			MaximumCount maximum_delimeter_count = MaximumCount(0)
+			);
+
+	Tokenizer(
+			const var::String & input,
+			const ParseOptions& options
 			);
 
 
@@ -73,6 +87,11 @@ public:
 			Delimeters delim,
 			IgnoreBetween ignore = IgnoreBetween(""),
 			MaximumCount maximum_count = MaximumCount(0)
+			);
+
+	void parse(
+			const var::String & input,
+			const ParseOptions & options
 			);
 
 

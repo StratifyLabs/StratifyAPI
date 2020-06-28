@@ -177,6 +177,20 @@ bool Appfs::is_ram_available(
 }
 
 
+int Appfs::create(
+		const AppfsCreateOptions& options
+		SAPI_LINK_DRIVER_LAST
+		){
+	return create(
+				Name(options.name()),
+				options.source(),
+				MountPath(options.mount()),
+				options.progress_callback()
+			#if defined __link
+				,link_driver
+			#endif
+				);
+}
 
 int Appfs::create(
 		Name name,
