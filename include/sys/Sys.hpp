@@ -33,13 +33,13 @@ public:
 	SerialNumber();
 
 	/*! \details Constructs a serial number for an array of u32 values. */
-	SerialNumber(const u32 serial_number[4]){ memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4); }
+	explicit SerialNumber(const u32 serial_number[4]){ memcpy(m_serial_number.sn, serial_number, sizeof(u32)*4); }
 
 	/*! \details Constructs a serial number from an mcu_sn_t. */
-	SerialNumber(const mcu_sn_t serial_number){ m_serial_number = serial_number; }
+	explicit SerialNumber(const mcu_sn_t serial_number) : m_serial_number(serial_number){}
 
 	/*! \details Constructs this serial number from \a str. */
-	SerialNumber(const var::String & str);
+	explicit SerialNumber(const var::String & str);
 
 	/*! \details Returns true if a valid serial number is held. */
 	bool is_valid() const {
@@ -89,9 +89,7 @@ public:
 	SysInfo(){ clear(); }
 
 	/*! \details Constructs an object from *info*. */
-	SysInfo(const sys_info_t & info ){
-		m_info = info;
-	}
+	explicit SysInfo(const sys_info_t & info ) : m_info(info) {}
 
 	operator const sys_info_t & () const { return m_info; }
 
@@ -165,6 +163,14 @@ private:
 
 };
 
+class LaunchOptions {
+	API_ACCESS_COMPOUND(LaunchOptions,var::String,path);
+	API_ACCESS_COMPOUND(LaunchOptions,var::String,arguments);
+	API_ACCESS_COMPOUND(LaunchOptions,var::String,environment);
+	API_ACCESS_FUNDAMENTAL(LaunchOptions,enum Appfs::flags,application_flags,Appfs::flag_is_default);
+	API_ACCESS_FUNDAMENTAL(LaunchOptions,int,ram_size,0);
+};
+
 /*! \brief Sys Class
  * \details This class allows access to system attributes and functions.
  */
@@ -220,6 +226,11 @@ public:
 			int ram_size,
 			const sys::ProgressCallback * progress_callback,
 			Environment envp = Environment("")
+			);
+
+	static var::String launch(
+			const LaunchOptions & options,
+			const sys::ProgressCallback * progress_callback
 			);
 
 	/*!
@@ -456,8 +467,8 @@ public:
 	 *
 	 *
 	 */
-	static void redirect_stdout(fs::File::Descriptor fd){
-		_impure_ptr->_stdout->_file = fd.argument();
+	static void redirect_stdout(int fd){
+		_impure_ptr->_stdout->_file = fd;
 	}
 
 	/*! \details Redirects the standard input from the specified file descriptor.
@@ -467,8 +478,8 @@ public:
 	 * See Sys::redirect_stdout() for an example.
 	 *
 	 */
-	static void redirect_stdin(fs::File::Descriptor fd){
-		_impure_ptr->_stdin->_file = fd.argument();
+	static void redirect_stdin(int fd){
+		_impure_ptr->_stdin->_file = fd;
 	}
 
 	/*! \details Redirects the standard error from the specified file descriptor.
@@ -478,8 +489,8 @@ public:
 	 * See Sys::redirect_stdout() for an example.
 	 *
 	 */
-	static void redirect_stderr(fs::File::Descriptor fd){
-		_impure_ptr->_stderr->_file = fd.argument();
+	static void redirect_stderr(int fd){
+		_impure_ptr->_stderr->_file = fd;
 	}
 #endif
 

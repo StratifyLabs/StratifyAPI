@@ -169,6 +169,31 @@ int Sys::launch(
 #endif
 }
 
+var::String Sys::launch(
+			const LaunchOptions & options,
+		const sys::ProgressCallback * progress_callback
+		){
+#if defined __link
+	return var::String();
+#else
+	var::String result;
+	result.resize(PATH_MAX);
+	if( ::launch(
+				options.path().cstring(),
+				result.to_char(),
+				options.arguments().cstring(),
+				options.application_flags(),
+				options.ram_size(),
+				sys::ProgressCallback::update_function,
+				(void*)(progress_callback), //pointer to the object
+				nullptr //environment not implemented
+				) < 0 ){
+		return var::String();
+	}
+	return result;
+#endif
+}
+
 var::String Sys::install(
 		const var::String & path,
 		enum Appfs::flags options, //run in RAM, discard on exit

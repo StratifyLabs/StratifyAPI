@@ -21,7 +21,7 @@ public:
 	using PlaneCount = arg::Argument< u16, struct BmpPlaneCountTag >;
 
 	/*! \details Constructs a new bitmap object and opens the bitmap as a read-only file. */
-	Bmp(const var::String & name);
+	explicit Bmp(const var::String & name);
 
 	/*! \details Constructs an empty bitmap object. */
 	Bmp();

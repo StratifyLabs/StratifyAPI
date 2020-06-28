@@ -39,7 +39,7 @@ public:
 			);
 
 
-	u32 size() const { return m_header.size; }
+	u32 size() const override { return m_header.size; }
 	u32 wav_size() const { return m_header.format_size; }
 	u32 wav_format() const { return m_header.wav_format; }
 	/*! \cond */

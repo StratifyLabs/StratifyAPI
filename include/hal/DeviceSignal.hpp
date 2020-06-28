@@ -111,7 +111,7 @@ public:
 	 *
 	 * @param context A copy of the signal_callback_t data to use to handle the event.
 	 */
-	DeviceSignal(
+	explicit DeviceSignal(
 			const devfs_signal_callback_t & context
 			) : Signal(
 					 (enum sys::Signal::number)context.si_signo,

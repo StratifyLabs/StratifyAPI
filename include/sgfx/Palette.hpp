@@ -118,8 +118,8 @@ public:
 		m_color = {0};
 	}
 
-	PaletteColor(const palette_color_t & color){
-		m_color = color;
+	PaletteColor(const palette_color_t & color)
+		: m_color(color) {
 	}
 
 	PaletteColor lighter(float a) const;

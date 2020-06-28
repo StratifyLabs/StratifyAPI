@@ -89,7 +89,7 @@ class Dac :
 		public DacFlags{
 public:
 
-	Dac(port_t port);
+	explicit Dac(port_t port);
 
 	/*! \details Sets the value of the DAC channel.
 	 *

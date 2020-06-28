@@ -255,7 +255,7 @@ private:
 
 class MarkdownBlockQuote {
 public:
-	MarkdownBlockQuote(
+	explicit MarkdownBlockQuote(
 			MarkdownPrinter & printer,
 			enum MarkdownPrinter::levels level = MarkdownPrinter::level_info)
 		: m_printer(printer){
@@ -272,7 +272,7 @@ private:
 
 class MarkdownParagraph {
 public:
-	MarkdownParagraph(
+	explicit MarkdownParagraph(
 			MarkdownPrinter & printer,
 			enum MarkdownPrinter::levels level = MarkdownPrinter::level_info)
 		: m_printer(printer){

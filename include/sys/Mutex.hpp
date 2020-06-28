@@ -47,9 +47,7 @@ public:
 	MutexAttributes();
 
 	/*! \details Constructs a Mutex attributes object using the specified attributes. */
-	MutexAttributes(const pthread_mutexattr_t & mutexattr){
-		m_item = mutexattr;
-	}
+	explicit MutexAttributes(const pthread_mutexattr_t & mutexattr) : m_item(mutexattr) {}
 
 	~MutexAttributes();
 
@@ -178,7 +176,7 @@ private:
 
 class LockGuard {
 public:
-	LockGuard(Mutex & mutex) : m_mutex(mutex) {
+	explicit LockGuard(Mutex & mutex) : m_mutex(mutex) {
 		mutex.lock();
 	}
 	~LockGuard(){

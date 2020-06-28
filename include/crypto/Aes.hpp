@@ -12,6 +12,11 @@ namespace crypto {
 using InitializationVector = var::Array<u8,16>;
 using Iv = InitializationVector;
 
+class AesOptions {
+	API_ACCESS_COMPOUND(AesOptions,var::Reference,plain_data);
+	API_ACCESS_COMPOUND(AesOptions,var::Reference,cipher_data);
+};
+
 class Aes : public api::CryptoWorkObject {
 public:
 
@@ -42,6 +47,7 @@ public:
 	const InitializationVector & initialization_vector() const {
 		return m_initialization_vector;
 	}
+
 
 	int encrypt_ecb(
 			SourcePlainData source_data,

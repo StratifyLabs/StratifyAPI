@@ -1,0 +1,12 @@
+language: cpp
+
+compiler:
+  - gcc
+
+before_script:
+  - mkdir cmake_link
+  - cd cmake_link
+  - cmake ..
+
+script:
+  - make

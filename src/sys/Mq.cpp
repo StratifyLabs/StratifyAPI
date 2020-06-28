@@ -38,7 +38,7 @@ int Mq::create(
 	attr.mq_curmsgs = 0;
 	m_handle = mq_open(
 				name.cstring(),
-				CREATE | oflag,
+				flag_create | oflag,
 				permissions.permissions(),
 				&attr
 				);

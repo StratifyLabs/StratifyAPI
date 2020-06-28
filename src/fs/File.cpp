@@ -450,6 +450,22 @@ int File::close(){
 	return ret;
 }
 
+int File::fsync(){
+	int ret = 0;
+
+#if defined __link
+	if( driver() ){
+		return 0;
+	}
+#endif
+	if( m_fd >= 0 ){
+		ret = set_error_number_if_error(
+					::fsync(m_fd)
+					);
+	}
+	return ret;
+}
+
 int File::read(void * buf, Size size) const {
 	return set_error_number_if_error(
 				link_read(
@@ -649,6 +665,22 @@ int File::write(
 		Size size
 		) const {
 	return write(source_file, page_size, size, nullptr);
+}
+
+int File::write(
+		const File& source_file,
+		const WriteOptions & options
+		){
+
+	if( options.location() != static_cast<u32>(-1) ){
+		seek(options.location(), whence_set);
+	}
+	return write(
+				source_file,
+				PageSize(options.page_size()),
+				Size(options.size()),
+				options.progress_callback()
+				);
 }
 
 

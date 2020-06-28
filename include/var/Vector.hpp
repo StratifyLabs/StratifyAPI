@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <numeric>
 #include <functional>
 
 #include "../arg/Argument.hpp"
@@ -29,12 +30,15 @@ public:
 	Vector(){}
 
 	/*! \details Constructs a vector with \a count uninitialized items. */
-	Vector(size_t count){
+	explicit Vector(size_t count){
 		m_vector.resize(count);
 	}
 
 	Vector (std::initializer_list<T> il) : m_vector(il){}
-	Vector& operator=(std::initializer_list<T> il){ m_vector = il; }
+	Vector& operator=(std::initializer_list<T> il){
+		m_vector = il;
+		return *this;
+	}
 
 
 	~Vector(){}
@@ -165,6 +169,24 @@ public:
 		return std::find(begin(), end(), a) - begin();
 	}
 
+	const T& match(const T & a) const {
+		u32 idx = find(a);
+		if( idx == count() ){
+			static T empty = T();
+			return empty;
+		}
+		return at(idx);
+	}
+
+	T& match(const T & a){
+		u32 idx = find(a);
+		if( idx == count() ){
+			static T empty = T();
+			return empty;
+		}
+		return at(idx);
+	}
+
 	size_t find(
 			const T & a,
 			std::function<bool(const T & a, const T & b)> compare
@@ -178,12 +200,14 @@ public:
 	}
 
 	T * search(const T & a){
-		return (T*)bsearch(
-					&a,
-					std::vector<T>::data(),
-					count(),
-					sizeof(T),
-					ascending
+		return reinterpret_cast<T*>(
+					bsearch(
+						&a,
+						std::vector<T>::data(),
+						count(),
+						sizeof(T),
+						ascending
+						)
 					);
 	}
 
@@ -191,12 +215,14 @@ public:
 			const T & a,
 			int (*compare)(const void *, const void *)
 			){
-		return (T*)bsearch(
-					&a,
-					std::vector<T>::data(),
-					count(),
-					sizeof(T),
-					compare
+		return reinterpret_cast<T*>(
+					bsearch(
+						&a,
+						std::vector<T>::data(),
+						count(),
+						sizeof(T),
+						compare
+						)
 					);
 	}
 
@@ -205,9 +231,7 @@ public:
 		* \param value The value to assign to each element of the vector
 		*/
 	Vector<T>& fill(const T & value){
-		for(auto & element: m_vector){
-			element = value;
-		}
+		std::fill(begin(), end(), value);
 		return *this;
 	}
 
@@ -332,11 +356,7 @@ public:
 	const void * to_const_void() const { return (const void*)m_vector.data(); }
 
 	T sum() const {
-		T result;
-		for(const auto & value: *this){
-			result += value;
-		}
-		return result;
+		return std::accumulate(begin(), end(), T());
 	}
 
 	T mean() const {
@@ -344,11 +364,14 @@ public:
 	}
 
 	T variance() const {
-		T mean = this->mean();
-		T result;
-		for(const auto & value: *this){
-			result += (value - mean)*(value - mean);
-		}
+		T local_mean = this->mean();
+		T result = std::accumulate(
+					begin(),
+					end(),
+					T(),
+					[local_mean](T a, T b){
+			return a + (b - local_mean)*(b - local_mean);
+		});
 		return result / count();
 	}
 

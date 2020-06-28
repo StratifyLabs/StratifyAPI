@@ -147,7 +147,7 @@ public:
 	 *
 	 * @param handler The function to execute with an associated signal
 	 */
-	SignalHandler(
+	explicit SignalHandler(
 			Function signal_function
 			){
 #if defined __win32
@@ -179,7 +179,7 @@ public:
 	 * \endcode
 	 *
 	 */
-	SignalHandler(
+	explicit SignalHandler(
 			ActionFunction signal_action_function,
 			Flags flags = Flags(0),
 			Mask mask = Mask({0})
@@ -268,7 +268,7 @@ public:
 	 * @param sigvalue The signal value
 	 *
 	 */
-	Signal(
+	explicit Signal(
 			enum number signo,
 			ValueInteger signal_value = ValueInteger(0)
 			){

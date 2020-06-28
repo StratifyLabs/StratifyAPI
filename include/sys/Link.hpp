@@ -165,7 +165,7 @@ public:
 		var::String details_string;
 		if( driver_details.count() == 1 ){
 			driver_name() = "serial";
-			path() = "serial@" + driver_path;
+			set_path( "serial@" + driver_path );
 			details_string = driver_path;
 		} else if( driver_details.count() == 2 ){
 			m_driver_name = driver_details.at(0);
@@ -176,6 +176,14 @@ public:
 			return;
 		}
 
+		if( details_string.find("/dev") == 0 ){
+			set_device_path( details_string );
+			return;
+		}
+
+		if( details_string.length() && details_string.front() == '/' ){
+			details_string.pop_front();
+		}
 		var::StringList detail_list = details_string.split("/");
 
 		if( detail_list.count() == 1 ){
@@ -185,10 +193,10 @@ public:
 			set_vendor_id(detail_list.at(0));
 			set_product_id(detail_list.at(1));
 			set_interface_number(detail_list.at(2));
-			if( detail_list.count() > 4 ){
+			if( detail_list.count() > 3 ){
 				set_serial_number(detail_list.at(3));
 			}
-			if( detail_list.count() > 5 ){
+			if( detail_list.count() > 4 ){
 				set_device_path(detail_list.at(4));
 			}
 		}

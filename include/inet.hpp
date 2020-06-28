@@ -15,6 +15,7 @@ namespace inet {}
 #include "inet/SecureSocket.hpp"
 #include "inet/Http.hpp"
 #include "inet/Url.hpp"
+#include "inet/Wifi.hpp"
 
 using namespace inet;
 

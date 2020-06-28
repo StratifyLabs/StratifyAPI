@@ -191,7 +191,7 @@ private:
 	var::String m_canon_name;
 };
 
-class SocketAddressIpv4 : public api::InfoObject {
+class SocketAddressIpv4 {
 public:
 
 	static in_addr_t address(u8 a, u8 b, u8 c, u8 d){
@@ -243,13 +243,13 @@ public:
 		return m_sockaddr.size() > 0;
 	}
 
-	SocketAddress(const SocketAddressIpv4 & ipv4){
+	explicit SocketAddress(const SocketAddressIpv4 & ipv4){
 		m_sockaddr.copy_contents(var::Reference(ipv4.m_sockaddr_in));
 		m_protocol = ipv4.m_protocol;
 		m_type = ipv4.m_type;
 	}
 
-	SocketAddress(const SocketAddressInfo & info, u16 port = 0){
+	explicit SocketAddress(const SocketAddressInfo & info, u16 port = 0){
 		m_sockaddr = info.m_sockaddr;
 		m_protocol = info.m_addrinfo.ai_protocol;
 		m_canon_name = info.m_canon_name;
@@ -257,7 +257,7 @@ public:
 		set_port(port);
 	}
 
-	SocketAddress(
+	explicit SocketAddress(
 			const sockaddr_in & ipv4,
 			int protocol = SocketAddressInfo::protocol_tcp,
 			int type = SocketAddressInfo::type_stream
@@ -267,7 +267,7 @@ public:
 		m_type = type;
 	}
 
-	SocketAddress(const sockaddr_in6 & ipv6){
+	explicit SocketAddress(const sockaddr_in6 & ipv6){
 		m_sockaddr.copy_contents(var::Reference(ipv6));
 	}
 
@@ -324,16 +324,20 @@ protected:
 class SocketOption : public SocketFlags {
 public:
 
-	enum {
+	enum levels {
+		//uppercase is deprecated
 		LEVEL_SOCKET = SOL_SOCKET,
 		LEVEL_IP = IPPROTO_IP,
 		LEVEL_IPV6 = IPPROTO_IPV6,
-		LEVEL_TCP = IPPROTO_TCP
+		LEVEL_TCP = IPPROTO_TCP,
+
+		level_socket = SOL_SOCKET,
+		level_ip = IPPROTO_IP,
+		level_ipv6 = IPPROTO_IPV6,
+		level_tcp = IPPROTO_TCP
 	};
 
-	SocketOption(int level = LEVEL_SOCKET){
-		m_level = level;
-	}
+	explicit SocketOption(int level = level_socket) : m_level(level){}
 
 	enum {
 		SOCKET_DEBUG = SO_DEBUG,
@@ -375,18 +379,18 @@ public:
 	};
 
 	SocketOption & socket_broadcast(bool value = true){
-		m_level = LEVEL_SOCKET;
+		m_level = level_socket;
 		return set_integer_value(SOCKET_BROADCAST, value);
 	}
 
 	SocketOption & socket_reuse_address(bool value = true){
-		m_level = LEVEL_SOCKET;
+		m_level = level_socket;
 		return set_integer_value(SOCKET_REUSE_ADDRESS, value);
 	}
 
 	SocketOption & socket_reuse_port(bool value = true){
 #if !defined __win32
-		m_level = LEVEL_SOCKET;
+		m_level = level_socket;
 		return set_integer_value(SOCKET_REUSE_PORT, value);
 #else
 		//windows doesn't support this -- ignore it
@@ -395,52 +399,52 @@ public:
 	}
 
 	SocketOption & socket_dont_route(bool value = true){
-		m_level = LEVEL_SOCKET;
+		m_level = level_socket;
 		return set_integer_value(SOCKET_DONT_ROUTE, value);
 	}
 
 	SocketOption & socket_keep_alive(bool value = true){
-		m_level = LEVEL_SOCKET;
+		m_level = level_socket;
 		return set_integer_value(SOCKET_KEEP_ALIVE, value);
 	}
 
 	SocketOption & socket_send_size(int value){
-		m_level = LEVEL_SOCKET;
+		m_level = level_socket;
 		return set_integer_value(SOCKET_SET_SEND_SIZE, value);
 	}
 
 	SocketOption & socket_send_minimum_size(int value){
-		m_level = LEVEL_SOCKET;
+		m_level = level_socket;
 		return set_integer_value(SOCKET_SET_SEND_MINIMUM_SIZE, value);
 	}
 
 	SocketOption & socket_receive_size(int value){
-		m_level = LEVEL_SOCKET;
+		m_level = level_socket;
 		return set_integer_value(SOCKET_SET_RECEIVE_SIZE, value);
 	}
 
 	SocketOption & socket_receive_minimum_size(int value){
-		m_level = LEVEL_SOCKET;
+		m_level = level_socket;
 		return set_integer_value(SOCKET_SET_RECEIVE_MINIMUM_SIZE, value);
 	}
 
 	SocketOption & socket_send_timeout(const chrono::ClockTime & timeout){
-		m_level = LEVEL_SOCKET;
+		m_level = level_socket;
 		return set_timeout(SOCKET_SEND_TIMEOUT, timeout);
 	}
 
 	SocketOption & socket_receive_timeout(const chrono::ClockTime & timeout){
-		m_level = LEVEL_SOCKET;
+		m_level = level_socket;
 		return set_timeout(SOCKET_RECEIVE_TIMEOUT, timeout);
 	}
 
 	SocketOption & ip_type_of_service(int service){
-		m_level = LEVEL_IP;
+		m_level = level_ip;
 		return set_integer_value(IP_TYPE_OF_SERVICE, service);
 	}
 
 	SocketOption & ip_time_to_live(int ttl){
-		m_level = LEVEL_IP;
+		m_level = level_ip;
 		return set_integer_value(IP_TIME_TO_LIVE, ttl);
 	}
 

@@ -40,17 +40,17 @@ public:
 
 	UartAttributes get_attributes() const {
 		UartAttributes result;
-		result.set_frequency(
-					get_baudrate()
-					);
+
+		result.set_port( get_port() );
+		result.set_frequency(get_baudrate());
 		result.set_flags( Uart::flag_set_line_coding );
 		{
 			var::String stop_bits = get_stop_bits();
 			if( stop_bits == "0.5" ){
 				result.set_flags( result.o_flags() | Uart::flag_is_stop0_5);
-			} else if( stop_bits == "1" ){
+			} else if( stop_bits == "1.5" ){
 				result.set_flags( result.o_flags() | Uart::flag_is_stop1_5);
-			} else if( stop_bits == "1" ){
+			} else if( stop_bits == "2" ){
 				result.set_flags( result.o_flags() | Uart::flag_is_stop2);
 			} else {
 				result.set_flags( result.o_flags() | Uart::flag_is_stop1);

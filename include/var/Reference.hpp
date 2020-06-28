@@ -230,6 +230,11 @@ public:
 	 *
 	 */
 	Reference(
+			void * buffer,
+			Size size
+			);
+
+	Reference(
 			ReadWriteBuffer buffer,
 			Size size
 			);
@@ -377,9 +382,16 @@ public:
 	 *
 	 */
 	Reference & refer_to(
-			ReadWriteBuffer data,
+			void * data,
 			Size size
 			);
+
+	Reference & refer_to(
+			ReadWriteBuffer data,
+			Size size
+			){
+		return refer_to(data.argument(), size);
+	}
 
 	/*! \details Fill the data with the specified value.
 	 * This will not attempt to write read-only data.
@@ -513,6 +525,10 @@ public:
 	 */
 	size_t size() const { return m_size; }
 
+	ssize_t size_signed() const {
+		return static_cast<ssize_t>(m_size);
+	}
+
 
 	static void memory_copy(
 			SourceBuffer read_data,
@@ -600,7 +616,7 @@ public:
 	 *
 	 */
 	int save(
-			const var::String file_path,
+			const var::String & file_path,
 			IsOverwrite is_overwrite = IsOverwrite(false)
 			) const;
 
@@ -643,6 +659,8 @@ private:
 	/*! \endcond */
 
 };
+
+using Blob = Reference;
 
 }
 

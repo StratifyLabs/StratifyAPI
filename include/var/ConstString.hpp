@@ -20,7 +20,7 @@ public:
       m_string = nullptr;
    }
 
-   ConstString(const char * s){
+	 explicit ConstString(const char * s){
       m_string = s;
    }
 

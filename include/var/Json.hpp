@@ -51,7 +51,7 @@ public:
 
 	JsonValue(json_t * value);
 	JsonValue(const JsonValue & value);
-	JsonValue(fs::File::Path path);
+	explicit JsonValue(fs::File::Path path);
 
 	JsonValue& operator=(const JsonValue & value);
 	~JsonValue();
@@ -271,26 +271,21 @@ private:
 	friend class JsonNull;
 	friend class JsonKeyValue;
 	json_t * m_value;
-
-	void add_reference(json_t * value);
-
 	static JsonApi m_api;
 
-
+	void add_reference(json_t * value);
 };
 
 class JsonKeyValue : public JsonValue {
 public:
-	JsonKeyValue(const var::String& key, const JsonValue& value) : JsonValue(value) {
-		m_key = key;
-	}
+	JsonKeyValue(const var::String& key, const JsonValue& value) : JsonValue(value), m_key(key){}
 
 	JsonKeyValue& set_value(const JsonValue& a){
 		add_reference(a.m_value);
 		return *this;
 	}
 	const JsonValue& value() const { return *this; }
-	JsonValue get_value() const { return *this; }
+	JsonValue get_value() const { return JsonValue(*this); }
 
 
 private:
@@ -440,7 +435,7 @@ public:
 	}
 
 private:
-	json_t * create();
+	json_t * create() override;
 
 };
 
@@ -513,40 +508,40 @@ public:
 
 private:
 
-	json_t * create();
+	json_t * create() override;
 };
 
 class JsonString : public JsonValue {
 public:
 	JsonString();
-	JsonString(const var::String & str);
+	explicit JsonString(const var::String & str);
 private:
-	json_t * create();
+	json_t * create() override;
 };
 
 class JsonReal : public JsonValue {
 public:
 	JsonReal();
-	JsonReal(float value);
+	explicit JsonReal(float value);
 	JsonReal & operator=(float a);
 private:
-	json_t * create();
+	json_t * create() override;
 };
 
 class JsonInteger : public JsonValue {
 public:
 	JsonInteger();
-	JsonInteger(int value);
+	explicit JsonInteger(int value);
 	JsonInteger & operator=(int a);
 private:
-	json_t * create();
+	json_t * create() override;
 };
 
 class JsonNull : public JsonValue {
 public:
 	JsonNull();
 private:
-	json_t * create();
+	json_t * create() override;
 };
 
 
@@ -554,14 +549,14 @@ class JsonTrue : public JsonValue {
 public:
 	JsonTrue();
 private:
-	json_t * create();
+	json_t * create() override;
 };
 
 class JsonFalse : public JsonValue {
 public:
 	JsonFalse();
 private:
-	json_t * create();
+	json_t * create() override;
 };
 
 /*! \brief Json Class
@@ -740,6 +735,13 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(k)); return *this; } \
 	void json_access_integer_with_key_never_used_##v()
 #define JSON_ACCESS_INTEGER(c, v) JSON_ACCESS_INTEGER_WITH_KEY(c, v, v)
+
+#define JSON_ACCESS_REAL_WITH_KEY(c, k, v) \
+	s32 get_##v() const { return to_object().at(MCU_STRINGIFY(k)).to_float(); } \
+	c& set_##v(s32 value){ to_object().insert(MCU_STRINGIFY(k), var::JsonReal(value)); return *this; } \
+	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(k)); return *this; } \
+	void json_access_real_with_key_never_used_##v()
+#define JSON_ACCESS_REAL(c, v) JSON_ACCESS_REAL_WITH_KEY(c, v, v)
 
 //gets a copy that refers to the original JSON values
 #define JSON_ACCESS_OBJECT_WITH_KEY(c, T, k, v) \

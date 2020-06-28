@@ -51,7 +51,7 @@ private:
 
 class BiquadCoefficientsQ15 : public SignalQ15 {
 public:
-	BiquadCoefficientsQ15(u8 n_stages) : SignalQ15(n_stages*6){}
+	explicit BiquadCoefficientsQ15(u8 n_stages) : SignalQ15(n_stages*6){}
 
 	u8 stages() const { return count() / 6; }
 

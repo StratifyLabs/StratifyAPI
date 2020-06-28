@@ -25,13 +25,8 @@ namespace sys {
  */
 class TraceEvent : public api::InfoObject {
 public:
-	TraceEvent(){
-		memset(&m_event, 0, sizeof(m_event));
-	}
-
-	TraceEvent(const link_trace_event_t & event){
-		m_event = event;
-	}
+	TraceEvent(){ m_event = {0}; }
+	TraceEvent(const link_trace_event_t & event) : m_event(event){}
 
 	/*! \details Returns the trace id. */
 	u16 id() const{ return m_event.posix_trace_event.posix_event_id; }

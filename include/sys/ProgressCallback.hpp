@@ -52,9 +52,9 @@ public:
 	 * @param context The context (first argument passed to callback)
 	 *
 	 */
-	ProgressCallback(
+	explicit ProgressCallback(
 			callback_t callback,
-			void * context = 0
+			void * context = nullptr
 			);
 
 	static int indeterminate_progress_total(){

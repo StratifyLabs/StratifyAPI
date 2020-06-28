@@ -38,29 +38,29 @@ class FifoInfo :
 public:
 
 	/*! \details Constructs an object with all zeros. */
-	FifoInfo(){ memset(&m_info, 0, sizeof(m_info)); }
+	FifoInfo(){ m_info = {0}; }
 
 	/*! \details Constructs an object from a fifo_info_t reference. */
-	FifoInfo(const fifo_info_t & info){ m_info = info; }
+	FifoInfo(const fifo_info_t & info) : m_info(info){}
 
 	/*! \details Returns true if the FIFO info object is valid. */
 	bool is_valid() const { return m_info.size > 0; }
 
 	/*! \details The number of bytes in the FIFO that are currently used (ie available
-	 * for reading.
-	 *
-	 * @return The number of bytes available for reading.
-	 */
+							* for reading.
+							*
+							* @return The number of bytes available for reading.
+							*/
 	u32 size_ready() const { return m_info.size_ready; }
 
 	/*! \details This method accesses the maximum number of bytes allocated for the FIFO.
-	 *
-	 */
+							*
+							*/
 	u32 size() const { return m_info.size; }
 
 	/*! \details This method accesses whether or not the FIFO has overflowed
-	 * since the last time the FIFO attributes have been read.
-	 */
+							* since the last time the FIFO attributes have been read.
+							*/
 	bool is_overflow() const { return m_info.overflow != 0; }
 	bool overflow() const { return m_info.overflow != 0; }
 private:

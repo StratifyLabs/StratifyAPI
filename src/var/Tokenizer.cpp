@@ -14,9 +14,9 @@ sys::Printer& operator << (sys::Printer& printer, const var::Tokenizer & a){
 	printer.print_open_object(printer.verbose_level(), "tokens");
 	for(u32 i=0; i < a.count(); i++){
 		printer.print(printer.verbose_level(),
-				var::String().format("[%04d]", i).cstring(),
-				a.at(i).cstring()
-				);
+									var::String().format("[%04d]", i).cstring(),
+									a.at(i).cstring()
+									);
 	}
 	printer.print_close_object();
 	return printer;
@@ -35,9 +35,28 @@ Tokenizer::Tokenizer(
 				maximum_delimeter_count);
 }
 
+Tokenizer::Tokenizer(
+		const var::String & input,
+		const ParseOptions& options
+		){
+	parse(input, options);
+}
 
 
-void Tokenizer::parse(const var::String & input,
+void Tokenizer::parse(
+		const var::String & input,
+		const ParseOptions & options
+		){
+	parse(
+				input,
+				Delimeters(options.delimeters()),
+				IgnoreBetween(options.ignore_between()),
+				MaximumCount(options.maximum_token_count())
+				);
+}
+
+void Tokenizer::parse(
+		const var::String & input,
 		Delimeters delim,
 		IgnoreBetween ignore,
 		MaximumCount maximum_count

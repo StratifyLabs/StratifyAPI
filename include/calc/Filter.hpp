@@ -10,7 +10,7 @@ namespace calc {
 
 template<typename T, typename C> class SimpleFilter {
 public:
-	SimpleFilter(){}
+	SimpleFilter() : m_present_value() {}
 
 	/*! \details Calculates the next value
 	 * and returns a reference to this object.
@@ -111,7 +111,7 @@ public:
 	 * @param start Initial value
 	 * @param alpha Averaging value
 	 */
-	LowPassFilter(intmedium start, intsmall alpha){ m_average = start;  this->m_alpha = alpha; }
+	LowPassFilter(intmedium start, intsmall alpha) : m_average(start), m_alpha(alpha) {}
 	static intmedium small_max(){ return 1<<(8*sizeof(intsmall)); }
 
 	/*! \details Calculates the next average using an input value.
@@ -119,7 +119,7 @@ public:
 	 * @param in Input value
 	 * @return The updated average (same as average())
 	 */
-	intmedium calculate(intmedium in){
+	intmedium calculate(intmedium in) override {
 		intlarge tmp0;
 		tmp0 = (intlarge)in * (m_alpha) + (intlarge)m_average * (small_max() - m_alpha);
 		m_average = (intmedium)(((intlarge)tmp0 + (intlarge)small_max()) >> (sizeof(intsmall)*8));
@@ -205,7 +205,7 @@ public:
 	float calculate_alpha(float sampling_frequency, float magnitude = 0.5f);
 
 	void reset(float start);
-	float calculate(float in);
+	float calculate(float in) override;
 
 private:
 	float m_alpha;
@@ -249,7 +249,7 @@ public:
 		m_last_input = value;
 	}
 
-	float calculate(float input);
+	float calculate(float input) override;
 
 private:
 	float m_last_input;

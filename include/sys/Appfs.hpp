@@ -56,7 +56,7 @@ public:
    AppfsInfo(){ memset(&m_info, 0, sizeof(m_info)); }
 
    /*! \details Constructs an object from a *appfs_info_t* object. */
-   AppfsInfo(const appfs_info_t & info){
+	 explicit AppfsInfo(const appfs_info_t & info){
       memcpy(&m_info, &info, sizeof(appfs_info_t));
    }
 
@@ -159,7 +159,7 @@ public:
 
 	AppfsFileAttributes(){}
 
-	AppfsFileAttributes(const appfs_file_t & appfs_file);
+	explicit AppfsFileAttributes(const appfs_file_t & appfs_file);
 
 	void apply(appfs_file_t * appfs_file) const;
 	int apply(const fs::File & file) const;
@@ -255,6 +255,23 @@ private:
 	API_ACCESS_FUNDAMENTAL(AppfsFileAttributes,u16,access_mode,0555);
 };
 
+class AppfsCreateOptions {
+public:
+	AppfsCreateOptions(const fs::File & source)
+		: m_mount("/app"), m_source(source){}
+
+	const fs::File source() const {
+		return m_source;
+	}
+
+private:
+	API_ACCESS_COMPOUND(AppfsCreateOptions,var::String,name);
+	API_ACCESS_COMPOUND(AppfsCreateOptions,var::String,mount);
+	API_ACCESS_FUNDAMENTAL(AppfsCreateOptions,const ProgressCallback*,progress_callback,nullptr);
+	const fs::File & m_source;
+
+};
+
 /*! \brief Application File System Class
  * \details This class provides an interface for creating data files in flash
  * memory.
@@ -320,6 +337,11 @@ public:
 			const fs::File & source,
 			MountPath mount = MountPath("/app"),
 			const ProgressCallback * progress_callback = 0
+			SAPI_LINK_DRIVER_NULLPTR_LAST
+			);
+
+	static int create(
+			const AppfsCreateOptions& options
 			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
 

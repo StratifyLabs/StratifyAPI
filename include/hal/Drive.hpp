@@ -20,10 +20,8 @@ namespace hal {
  */
 class DriveInfo : public api::InfoObject {
 public:
-	DriveInfo(){ memset(&m_info, 0, sizeof(m_info)); }
-	DriveInfo(const drive_info_t & info){
-		m_info = info;
-	}
+	DriveInfo(){ m_info = {0}; }
+	explicit DriveInfo(const drive_info_t & info) : m_info(info) {}
 
 	/*! \details Returns true if the Info is valid.
 	 *

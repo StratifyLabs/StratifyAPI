@@ -183,7 +183,12 @@ namespace api {
 #define API_ACCESS_MEMBER_FUNDAMENTAL(c, t, p, v) \
 	public: \
 	t v() const { return m_##p.v; } \
-	c& set_##v(t value){ m_##p.v = value; return *this; } \
+	c& set_##v(t value){ m_##p.v = value; return *this; }
+
+#define API_READ_ACCESS_MEMBER_FUNDAMENTAL(c, t, p, v) \
+	public: \
+	t v() const { return m_##p.v; }
+
 
 #define API_ACCESS_MEMBER_FUNDAMENTAL_WITH_ALIAS(c, t, p, a, v) \
 	public: \
@@ -526,6 +531,7 @@ enum error_codes : s32 {
 	error_code_inet_failed_to_get_status_code /*! Failed to get a status code in the HTTP response (7) */ = -(error_code_flag_inet|7),
 	error_code_inet_failed_to_get_header /*! Failed to receive the header (8) */ = -(error_code_flag_inet|8),
 	error_code_inet_failed_wrong_domain = -(error_code_flag_inet|9),
+	error_code_inet_wifi_api_missing = -(error_code_flag_inet|10),
 
 	error_code_var_json_unknown = -(error_code_flag_var|1),
 	error_code_var_json_out_of_memory = -(error_code_flag_var|2),
@@ -549,6 +555,9 @@ enum error_codes : s32 {
 };
 
 const char * get_error_code_description(s32 ec);
+
+#define API_ASSERT(a) api::api_assert(a,__PRETTY_FUNCTION__,__LINE__);
+void api_assert(bool value, const char * function, int line);
 
 }
 

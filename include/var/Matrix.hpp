@@ -27,8 +27,8 @@ public:
 
 	Matrix& resize(u32 row_count, u32 column_count){
 		var::Vector<T>::resize(row_count);
-		for(auto & row: *this){
-			row.resize(column_count);
+		for(auto & local_row: *this){
+			local_row.resize(column_count);
 		}
 		return *this;
 	}
