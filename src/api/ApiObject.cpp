@@ -30,19 +30,18 @@ const char * ApiInfo::operating_system_name(){
 
 #if defined __macosx
 	return "macosx";
-#endif
-#if defined __win32
+#elif defined __win32
 	return "windows";
-#endif
-#if defined __linux
+#elif defined __linux
 	return "linux";
+#else
+	return "unknown";
 #endif
 
 #else
 	return "stratifyos";
 #endif
 
-	return "unknown";
 }
 
 bool ApiInfo::is_windows(){ return strcmp(operating_system_name(), "windows") == 0; }

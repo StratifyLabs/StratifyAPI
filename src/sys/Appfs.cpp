@@ -210,12 +210,12 @@ int Appfs::create(
 	int loc;
 	unsigned int bw; //bytes written
 	appfs_file_t f;
-	strcpy(buffer, mount_path.argument().cstring());
-	strcat(buffer, "/flash/");
-	strcat(buffer, name.argument().cstring());
+	strncpy(buffer, mount_path.argument().cstring(), LINK_PATH_MAX-1);
+	strncat(buffer, "/flash/", LINK_PATH_MAX-1);
+	strncat(buffer, name.argument().cstring(), LINK_PATH_MAX-1);
 
 	//delete the settings if they exist
-	strncpy(f.hdr.name, name.argument().cstring(), LINK_NAME_MAX);
+	strncpy(f.hdr.name, name.argument().cstring(), LINK_NAME_MAX-1);
 	f.hdr.mode = 0666;
 	f.exec.code_size = source.size() + sizeof(f); //total number of bytes in file
 	f.exec.signature = APPFS_CREATE_SIGNATURE;

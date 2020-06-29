@@ -4,13 +4,13 @@
 using namespace fmt;
 
 Svic::Svic(const var::String & path){
+	m_current_icon_at = static_cast<u32>(-1);
 	if( path.is_empty() == false ){
-		open(path, fs::OpenFlags::read_only());
-
+		if( open(path, fs::OpenFlags::read_only()) < 0 ){
+			return;
+		}
 		parse_icons();
 	}
-
-	m_current_icon_at = static_cast<u32>(-1);
 }
 
 

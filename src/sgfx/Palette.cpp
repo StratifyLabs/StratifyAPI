@@ -51,7 +51,7 @@ void PaletteColor::import_hex_code(
 }
 
 u8 PaletteColor::multiply_component(u8 value, float a){
-	u32 tmp = value*(a);
+	s32 tmp = value*(a);
 	if( tmp > 255 ){ tmp = 255; }
 	if( tmp < 0 ){ tmp = 0; }
 	return tmp;

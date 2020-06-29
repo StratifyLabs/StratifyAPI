@@ -27,12 +27,6 @@ static var::String gen_error(const var::String & msg, int err_number){
 }
 
 Link::Link(){
-	//check to see if the device is connected -- if it is not connected, connect to it
-	m_stdout_fd = -1;
-	m_stdin_fd = -1;
-	m_lock = 0;
-	m_is_bootloader = false;
-	m_error_message = "";
 	link_load_default_driver( driver() );
 }
 

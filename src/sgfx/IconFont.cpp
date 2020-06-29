@@ -11,6 +11,11 @@ IconFontInfo::IconFontInfo(
 	m_icon_font = icon_font;
 }
 
+IconFontInfo::IconFontInfo(const Options& options){
+	m_point_size = options.point_size();
+	m_icon_font = options.icon_font();
+}
+
 IconFontInfo::~IconFontInfo(){
 	if( m_icon_font != nullptr ){
 		delete m_icon_font;

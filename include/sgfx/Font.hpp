@@ -77,11 +77,19 @@ public:
 class FontInfo : public FontFlags {
 public:
 
+	class Options {
+		API_ACCESS_FUNDAMENTAL(Options,u8,point_size,0);
+		API_ACCESS_FUNDAMENTAL(Options,u8,style,0);
+		API_ACCESS_FUNDAMENTAL(Options,Font*,font,nullptr);
+	};
+
 	FontInfo(
 			PointSize point_size = PointSize(0),
 			Style style = Style(0),
 			Font * font = nullptr
 			);
+	FontInfo(const Options & options);
+
 	~FontInfo();
 
 	/*! \details Contsructs an object by parsing the path.
@@ -145,9 +153,9 @@ public:
 private:
 	var::String m_name;
 	var::String m_path;
-	u8 m_style;
-	u8 m_point_size;
-	Font * m_font;
+	u8 m_style = style_any;
+	u8 m_point_size = 0;
+	Font * m_font = nullptr;
 	fs::File m_file;
 };
 
@@ -242,16 +250,16 @@ public:
 
 protected:
 
-	/*! \cond */
-	mutable sg_font_char_t m_char;
-	bool m_is_kerning_enabled;
-	sg_size_t m_letter_spacing;
-	int m_space_size;
-	sg_font_header_t m_header;
+	/*! \cond */	
+	mutable sg_font_char_t m_char = {0};
+	bool m_is_kerning_enabled = true;
+	sg_size_t m_letter_spacing = 1;
+	int m_space_size = 8;
+	sg_font_header_t m_header = {0};
 	mutable Bitmap m_canvas;
-	mutable u8 m_current_canvas;
-	u32 m_canvas_start;
-	u32 m_canvas_size;
+	mutable u8 m_current_canvas = 0;
+	u32 m_canvas_start = 0;
+	u32 m_canvas_size = 0;
 	var::Vector<sg_font_kerning_pair_t> m_kerning_pairs;
 	const fs::File & m_file;
 

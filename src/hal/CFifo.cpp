@@ -92,7 +92,7 @@ int CFifo::flush(int channel) const {
 }
 
 int CFifo::exit(int channel) const {
-	cfifo_fiforequest_t request;
+	cfifo_fiforequest_t request = {0};
 	request.channel = channel;
 	return ioctl(
 				IoRequest(I_CFIFO_FIFOEXIT),
@@ -101,7 +101,7 @@ int CFifo::exit(int channel) const {
 }
 
 int CFifo::set_writeblock(int channel, bool value) const {
-	fifo_attr_t attr;
+	fifo_attr_t attr = {0};
 	attr.o_flags = FifoFlags::flag_set_writeblock;
 	if( value == false ){
 		attr.o_flags |= FifoFlags::flag_is_overflow;

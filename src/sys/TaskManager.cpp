@@ -35,8 +35,9 @@ TaskManager::~TaskManager(){
 }
 
 void TaskManager::initialize(){
-	if( m_sys_device.fileno() < 0 ){
-		m_sys_device.open("/dev/sys");
+	if( (m_sys_device.fileno() < 0)
+			&& (m_sys_device.open("/dev/sys")) ){
+		m_id = -1;
 	}
 }
 

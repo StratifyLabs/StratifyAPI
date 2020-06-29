@@ -28,11 +28,8 @@ Test::Test(const var::String & name, Test * parent){
 	m_parent = parent;
 	if( m_parent ){
 		m_indent_count = parent->indent();
-
-
 	} else {
 		m_indent_count = 1;
-
 	}
 
 	m_test_result = true;

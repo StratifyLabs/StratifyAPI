@@ -326,13 +326,13 @@ private:
 	var::Vector<HttpHeaderPair> m_header_request_pairs;
 	var::Vector<HttpHeaderPair> m_header_response_pairs;
 	var::String m_header;
-	int m_status_code;
-	u32 m_content_length;
-	bool m_is_keep_alive;
 	var::String m_alive_domain;
-	bool m_is_follow_redirects;
-	bool m_is_chunked_transfer_encoding;
-	u32 m_transfer_size;
+	int m_status_code = 0;
+	u32 m_content_length = 0;
+	bool m_is_keep_alive = false;
+	bool m_is_follow_redirects = true;
+	bool m_is_chunked_transfer_encoding = false;
+	u32 m_transfer_size = 1024;
 	var::String m_traffic;
 
 	int connect_to_server(

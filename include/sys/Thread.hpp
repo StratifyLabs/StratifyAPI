@@ -13,6 +13,7 @@
 
 namespace sys {
 
+
 /*! \brief Thread Class
  * \details This class creates and manages new threads using POSIX calls.
  *
@@ -54,6 +55,26 @@ namespace sys {
 class Thread : public api::WorkObject {
 public:
 
+	enum detach_states {
+		JOINABLE  = PTHREAD_CREATE_JOINABLE,
+		DETACHED  = PTHREAD_CREATE_DETACHED,
+
+		detach_state_joinable /*! Joinable thread */ = PTHREAD_CREATE_JOINABLE,
+		detach_state_detached /*! Detacthed thread */ = PTHREAD_CREATE_DETACHED
+	};
+
+
+	class Options {
+		API_ACCESS_FUNDAMENTAL(Options,u32,stack_size,4096);
+		API_ACCESS_FUNDAMENTAL(Options,enum detach_states,detach_state,detach_state_detached);
+	};
+
+	typedef void *(*function_t)(void*);
+
+	class CreateOptions {
+		API_ACCESS_FUNDAMENTAL(CreateOptions,function_t,function,nullptr);
+		API_ACCESS_FUNDAMENTAL(CreateOptions,void*,argument,nullptr);
+	};
 
 	using Id = arg::Argument<pthread_t, struct ThreadIdTag>;
 	using StackSize = arg::Argument<u32, struct ThreadStackSizeTag>;
@@ -71,14 +92,10 @@ public:
 	typedef void * (*handler_function_t)(void *);
 
 	enum thread_flags {
-		ID_ERROR /*! ID is an error */ = (u32)-2,
-		ID_PENDING /*! ID is ready to be created (not valid yet) */ = static_cast<u32>(-1),
+		id_error /*! ID is an error */ = static_cast<u32>(-2),
+		id_pending /*! ID is ready to be created (not valid yet) */ = static_cast<u32>(-1),
 	};
 
-	enum detach_state {
-		JOINABLE /*! Joinable thread */ = PTHREAD_CREATE_JOINABLE,
-		DETACHED /*! Detacthed thread */ = PTHREAD_CREATE_DETACHED
-	};
 
 	/*! \details Constructs a new thread object.
 	 *
@@ -90,6 +107,8 @@ public:
 			StackSize stacksize = StackSize(4096),
 			IsDetached detached = IsDetached(true)
 			);
+
+	Thread(const Options & options);
 
 	~Thread();
 
@@ -120,7 +139,7 @@ public:
 	  *
 	  *
 	  */
-	int set_detachstate(enum detach_state value);
+	int set_detachstate(enum detach_states value);
 
 	/*! \details Gets the detach state (Thread::JOINABLE or Thread::DETACHED). */
 	int get_detachstate() const;
@@ -243,8 +262,15 @@ public:
 	  */
 	static int join(
 			Thread & thread_to_join,
-			Return return_value = Return(nullptr)
+			void ** result = nullptr
 			);
+
+	static int join(
+			Thread & thread_to_join,
+			Return return_value = Return(nullptr)
+			){
+		return join(thread_to_join, return_value.argument());
+	}
 
 	/*! \details Returns the thread ID of the calling thread. */
 	static pthread_t self(){ return pthread_self(); }
@@ -293,49 +319,56 @@ public:
 	  * This method will block the calling thread until the thread function
 	  * returns.
 	 */
-	int join(Return value_ptr = Return(nullptr)) const;
+	int join(void ** result);
+	int join(Return value_ptr = Return(nullptr)){
+		return join(value_ptr.argument());
+	}
 
 	/*! \details Allows read only access to the thread attributes. */
 	const pthread_attr_t & attr() const { return m_pthread_attr; }
 
 private:
 	pthread_attr_t m_pthread_attr;
-	pthread_t m_id;
+
+#if defined __link
+	u32 m_status;
+	pthread_t m_id = {0};
+#else
+	pthread_t m_id = 0;
+#endif
 
 	int init(int stack_size, bool detached);
 	int reset();
 
-#if defined __link
-	u32 m_status;
-#endif
+
 
 	void set_id_pending(){
 #if defined __link
-		m_status = ID_PENDING;
+		m_status = id_pending;
 #else
 		m_id = ID_PENDING;
 #endif
 	}
 	void set_id_error(){
 #if defined __link
-		m_status = ID_ERROR;
+		m_status = id_error;
 #else
-		m_id = ID_ERROR;
+		m_id = id_error;
 #endif
 	}
 
 	bool is_id_pending() const {
 #if defined __link
-		return m_status == ID_PENDING;
+		return m_status == id_pending;
 #else
 		return m_id == ID_PENDING;
 #endif
 	}
 	bool is_id_error() const {
 #if defined __link
-		return m_status == ID_ERROR;
+		return m_status == id_error;
 #else
-		return m_id == ID_ERROR;
+		return m_id == id_error;
 #endif
 	}
 };

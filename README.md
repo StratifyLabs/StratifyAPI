@@ -1,5 +1,7 @@
 # Stratify API
 
+[![Coverity](https://scan.coverity.com/projects/10992/badge.svg)](https://scan.coverity.com/projects/stratifylabs-stratifyapi)
+
 ## Overview
 
 - API Documentation
@@ -14,7 +16,7 @@ If you want to write programs using the Stratify API, you should read through th
 
 ## API Documenation
 
-If you want to write applications using the Stratify API, please see the [API documentation](https://docs.stratifylabs.co/StratifyAPI/).
+If you want to write applications using the Stratify API, please see the [API documentation](https://docs.stratifylabs.co/reference/StratifyAPI/api/).
 
 ## Naming Conventions
 
@@ -51,55 +53,56 @@ Methods and functions follow traditional C and C++ naming styles with lowercase 
 ```c++
 Class Object {
 public:
-  int amount() const { return m_amount; } //this just returns the amount (no calculating no fetching)
+  int amount() const { return m_amount; } //this just returns the amount (no calculating, no fetching)
   int set_amount(int v){ m_amount = v; } //this sets the value of amount
-  int calc_amount() const; //this is an action that does something- "calc" is commonly used to denote a calculation
+  int calculate_amount() const; //this is an action that does something
   int get_amount() const; //since this starts with a verb it needs to do something--like load amount from a file
 private:
   int m_amount; //member variables have an m_ prefix
 }
 ```
 
-The above code uses set_* and get_* but not perhaps in the traditional way.  If get_ is used, it implies the value is not immediately available and must be loaded from somewhere.  The convention used by the method amount() (no action word) is used if the value is immediately ready or ready with a trivial calculation such as
+The above code uses `set_*` and `get_*` but not perhaps in the traditional way.  If `get_` is used, it implies the value is not immediately available and must be loaded from somewhere.  The convention used by the method `amount()` (no action word) is used if the value is immediately ready or ready with a trivial calculation such as
 
-    area(){ return m_width*m_height; }
+```c++
+area(){ return m_width*m_height; }
+```
 
 #### References and Pointers
 
-Parameters passed to methods and functions should be passed as references unless a pointer is more appropriate.  For example, if the item is a member of an array then a pointer would be appropriate. 
-However, if the item will be operated on as a stand alone entity, a reference is preferred.  Also if the object uses only read-only methods, a const reference is best.
+Parameters passed to methods and functions should be passed as references unless a pointer is more appropriate.  For example, if the item is a member of an array then a pointer would be appropriate. However, if the item will be operated on as a stand alone entity, a reference is preferred.  Also if the object uses only read-only methods, a const reference is best.
 
-	void copy_mem(const char * src, char * dest, int nbytes); //a pointer here is best because src points to the data
-	void print_string(const String & str); //this is better as a reference because we are just reading str
+```c++
+void copy_memory(const char * src, char * dest, int nbytes); //a pointer here is best because src points to the data
+void print_string(const String & str); //this is better as a reference because we are just reading str
+```
 	
-Pointers are also appropriate if 0 is a valid value even if there is only one item.
+Pointers are also appropriate if `nullptr` is a valid value even if there is only one item.
 
 ### Variables and Member Variables
 
-Variables are named the same way functions are except they don't start with an action verb.  Member variables have m_ prefixed to the description variable name.  See the amount() and m_amount example above.
+Variables are named the same way functions are except they don't start with an action verb.  Member variables have `m_` prefixed to the description variable name.  See the `amount()` and `m_amount` example above.
 
 ### Type Definitions
 
-To maintain compatibility and interoperability with C (i.e. Stratify OS), type definitions are declared in .h files and follow C naming conventions.  Whenever typedef is used, _t should be appended to the type name like size_t or pthread_t.
+To maintain compatibility and interoperability with C (i.e. Stratify OS), type definitions are declared in `.h` files and follow C naming conventions.  Whenever typedef is used, `_t` should be appended to the type name like `size_t` or `pthread_t`.
 
 ### Enums and Macros
 
-Both enums and macros are written in all caps with words separated by underscores. Enums are preferred to macros when defining constants because this allows them to auto-populate when using code completion software.  Here is an example from the hal::Device class:
-```c+
-enum {
-    RDONLY /*! Open as read-only */ = LINK_O_RDONLY,
-    READONLY /*! Open as read-only */ = LINK_O_RDONLY,
-    WRONLY /*! Open as write-only */ = LINK_O_WRONLY,
-    WRITEONLY /*! Open as write-only */ = LINK_O_WRONLY,
-    CREATE /*! Create when opening (files) */ = LINK_O_CREAT,
-    CREAT /*! Create when opening (files) */ = LINK_O_CREAT,
-    TRUNCATE /*! Truncate when opening (files) */ = LINK_O_TRUNC
+Macros are written in all caps with words separated by underscores. Enums are written in all lower case separated by underscores and prefixed the the singular of the enum name (enum names should be the plural version). Enums are preferred to macros when defining constants because this allows them to auto-populate when using code completion software.  Here is an example from the `fs::File` class:
+
+```c++
+enum flags {
+    flag_read_only /*! Open as read-only */ = LINK_O_RDONLY,
+    flag_write_only /*! Open as write-only */ = LINK_O_WRONLY,
+    flag_create /*! Create when opening (files) */ = LINK_O_CREAT,
+    flag_truncate /*! Truncate when opening (files) */ = LINK_O_TRUNC
 };
 ```
 
 ## Building the Stratify API
 
-The latest API is built and distributed with the [Stratify Labs SDK](https://app.stratifylabs.co/). You only need to build and install the source code if you want to debug, contribute new features, or equip your local SDK with a previous version.
+The latest API is built and distributed with the [Stratify Labs SDK](https://app.stratifylabs.co/). You only need to build and install the source code if you want to debug, contribute new features, or equip your local SDK with a previous or customized version.
 
 Here are the steps to build and install the API using the Stratify Labs command line tool `sl`.
 

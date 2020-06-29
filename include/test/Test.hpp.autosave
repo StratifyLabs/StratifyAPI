@@ -451,10 +451,10 @@ private:
 	bool m_case_result = true;
 	chrono::Timer m_case_timer;
 	u32 m_test_duration_microseconds;
-	u32 m_case_message_number;
+	u32 m_case_message_number = 0;
 	u32 m_indent_count = 1;
 	var::String m_name;
-	Test * m_parent = nullpt;
+	Test * m_parent = nullptr;
 	static bool m_is_initialized;
 	static bool m_all_test_result;
 	static u32 m_all_test_duration_microseconds;
