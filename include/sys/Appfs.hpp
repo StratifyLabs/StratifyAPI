@@ -255,23 +255,6 @@ private:
 	API_ACCESS_FUNDAMENTAL(AppfsFileAttributes,u16,access_mode,0555);
 };
 
-class AppfsCreateOptions {
-public:
-	AppfsCreateOptions(const fs::File & source)
-		: m_mount("/app"), m_source(source){}
-
-	const fs::File source() const {
-		return m_source;
-	}
-
-private:
-	API_ACCESS_COMPOUND(AppfsCreateOptions,var::String,name);
-	API_ACCESS_COMPOUND(AppfsCreateOptions,var::String,mount);
-	API_ACCESS_FUNDAMENTAL(AppfsCreateOptions,const ProgressCallback*,progress_callback,nullptr);
-	const fs::File & m_source;
-
-};
-
 /*! \brief Application File System Class
  * \details This class provides an interface for creating data files in flash
  * memory.
@@ -312,6 +295,23 @@ class Appfs :
       public AppfsFlags {
 public:
 
+	class CreateOptions {
+	public:
+		explicit CreateOptions(const fs::File & source)
+			: m_mount("/app"), m_source(source){}
+
+		const fs::File source() const {
+			return m_source;
+		}
+
+	private:
+		API_ACCESS_COMPOUND(CreateOptions,var::String,name);
+		API_ACCESS_COMPOUND(CreateOptions,var::String,mount);
+		API_ACCESS_FUNDAMENTAL(CreateOptions,const ProgressCallback*,progress_callback,nullptr);
+		const fs::File & m_source;
+
+	};
+
 	using Name = arg::Argument<const var::String &, struct AppfsNameTag>;
 	using MountPath = arg::Argument<const var::String &, struct AppfsMountPathTag>;
 
@@ -341,7 +341,7 @@ public:
 			);
 
 	static int create(
-			const AppfsCreateOptions& options
+			const CreateOptions& options
 			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
 

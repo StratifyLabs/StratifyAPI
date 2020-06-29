@@ -144,14 +144,15 @@ public:
 		update_reference();
 	}
 
-	Data(Data && a){
-		m_data = std::move(a.m_data);
+	Data(Data && a)
+		: m_data(std::move(a.m_data)){
+		//m_data = std::move(a.m_data);
 		a.update_reference();
 		update_reference();
 	}
 
 
-	Data(std::initializer_list<u8> il) : m_data(il){
+	explicit Data(std::initializer_list<u8> il) : m_data(il){
 		update_reference();
 	}
 
@@ -179,7 +180,7 @@ public:
 	 *  @param size The number of bytes to allocate
 	 *
 	 */
-	Data(size_t size);
+	explicit Data(size_t size);
 
 
 	static Data from_string(const var::String& value);
@@ -355,8 +356,8 @@ public:
 		*
 		*/
 	template<typename T> T & at(size_t position){
-		u32 count = size() / sizeof(T);
-		position = position % count;
+		u32 local_count = size() / sizeof(T);
+		position = position % local_count;
 		return to<T>()[position];
 	}
 

@@ -34,7 +34,7 @@ public:
 		m_vector.resize(count);
 	}
 
-	Vector (std::initializer_list<T> il) : m_vector(il){}
+	explicit Vector (std::initializer_list<T> il) : m_vector(il){}
 	Vector& operator=(std::initializer_list<T> il){
 		m_vector = il;
 		return *this;
@@ -369,7 +369,7 @@ public:
 					begin(),
 					end(),
 					T(),
-					[local_mean](T a, T b){
+					[local_mean](const T & a, const T & b){
 			return a + (b - local_mean)*(b - local_mean);
 		});
 		return result / count();

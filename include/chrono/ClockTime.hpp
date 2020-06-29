@@ -35,12 +35,11 @@ public:
 	/*! \details Constructs a clock time object based on the timespec. */
 	ClockTime(
 			const struct timespec & nano_time
-			){
-		m_value = nano_time;
-	}
+			)
+		: m_value(nano_time){}
 
 	/*! \details Contructs an object from a micro time object. */
-	ClockTime(
+	explicit ClockTime(
 			const MicroTime & micro_time
 			);
 

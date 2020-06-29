@@ -178,7 +178,7 @@ bool Appfs::is_ram_available(
 
 
 int Appfs::create(
-		const AppfsCreateOptions& options
+		const CreateOptions& options
 		SAPI_LINK_DRIVER_LAST
 		){
 	return create(
