@@ -261,6 +261,10 @@ public:
 					);
 	}
 
+	int set_channel(const ChannelOptions & options){
+		return Periph::set_channel(options, I_TMR_SETCHANNEL);
+	}
+
 	/*! \details Gets the value of the specified channel.
 	 *
 	 * @param loc The channel number

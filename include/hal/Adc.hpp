@@ -36,7 +36,7 @@ public:
  */
 class AdcInfo {
 public:
-	AdcInfo(){ memset(&m_adc_info, 0, sizeof(m_adc_info)); }
+	AdcInfo(){ m_adc_info = {0}; }
 	AdcInfo(const adc_info_t & info) : m_adc_info(info) {}
 
 	bool is_valid() const { return m_adc_info.bytes_per_sample; }
@@ -71,6 +71,14 @@ class AdcAttributes :
 		public AdcFlags {
 public:
 
+
+	enum pin_assignments {
+		pin_assignment_channel_0,
+		pin_assignment_channel_1,
+		pin_assignment_channel_2,
+		pin_assignment_channel_3,
+	};
+
 	AdcAttributes(){}
 
 	AdcAttributes(u32 o_flags, u32 freq){
@@ -81,6 +89,11 @@ public:
 	AdcAttributes & set_channel(u16 channel){ m_attr.channel = channel; return *this; }
 	AdcAttributes & set_rank(u32 rank){ m_attr.rank = rank; return *this; }
 	AdcAttributes & set_sampling_time(u32 sampling_time){ m_attr.sampling_time = sampling_time; return *this; }
+
+	AdcAttributes & set_pin_assignment(enum pin_assignments channel, mcu_pin_t pin){
+		m_attr.pin_assignment.channel[channel] = pin;
+		return *this;
+	}
 
 	/*! \details Configures a channel in a group for sampling.
 	 *
@@ -98,8 +111,11 @@ public:
 	 * \endcode
 	 *
 	 */
-	AdcAttributes & configure_group_channel(u16 channel, u32 rank, u32 sampling_time = 15){
-		set_flags(ADC_FLAG_SET_CHANNELS | ADC_FLAG_IS_GROUP);
+	AdcAttributes & configure_group_channel(
+			u16 channel,
+			u32 rank,
+			u32 sampling_time = 15){
+		set_flags(flag_set_channels | flag_is_group);
 		set_channel(channel);
 		set_rank(rank);
 		set_sampling_time(sampling_time);

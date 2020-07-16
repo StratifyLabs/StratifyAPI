@@ -50,14 +50,14 @@ public:
 			) const override;
 
 #ifndef __link
-	int read(fs::Aio & aio) const override;
-	int write(fs::Aio & aio) const override;
+	int read(fs::Aio & aio) const;
+	int write(fs::Aio & aio) const;
 #endif
 	int close() override;
 
-	using File::ioctl;
-	using File::read;
-	using File::write;
+	using Device::ioctl;
+	using Device::read;
+	using Device::write;
 
 protected:
 	u16 m_periph_port;
@@ -357,7 +357,6 @@ public:
 
 protected:
 
-
 	int set_channel(const mcu_channel_t & channel, int request) const {
 		return ioctl(
 					IoRequest(_IOCTLR(ident_char, request, mcu_channel_t)),
@@ -373,6 +372,14 @@ protected:
 		channel.loc = loc;
 		channel.value = value;
 		return ioctl(request, IoArgument(&channel));
+	}
+
+	int set_channel(const ChannelOptions & options, int request){
+		return set_channel(
+					options.location(),
+					options.value(),
+					IoRequest(request)
+					);
 	}
 
 	u32 get_channel(u32 loc, const IoRequest request) const {

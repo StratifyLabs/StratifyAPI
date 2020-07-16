@@ -382,9 +382,9 @@ public:
 	}
 
 private:
-	enum levels m_verbose_level;
-	u32 m_count;
 	T m_type;
+	u32 m_count;
+	enum levels m_verbose_level;
 };
 
 class PrinterObject {

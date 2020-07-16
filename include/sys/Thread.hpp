@@ -74,6 +74,8 @@ public:
 	class CreateOptions {
 		API_ACCESS_FUNDAMENTAL(CreateOptions,function_t,function,nullptr);
 		API_ACCESS_FUNDAMENTAL(CreateOptions,void*,argument,nullptr);
+		API_ACCESS_FUNDAMENTAL(CreateOptions,enum Sched::policy,policy,Sched::policy_other);
+		API_ACCESS_FUNDAMENTAL(CreateOptions,int,priority,0);
 	};
 
 	using Id = arg::Argument<pthread_t, struct ThreadIdTag>;
@@ -214,12 +216,37 @@ public:
 	  *
 	 *
 	 */
+	int create(const CreateOptions & options);
+
 	int create(
 			Function func,
 			FunctionArgument args = FunctionArgument(nullptr),
 			Priority prio = Priority(0),
 			enum Sched::policy policy = Sched::OTHER
-			);
+			){
+		return create(CreateOptions()
+									.set_function(func.argument())
+									.set_argument(args.argument())
+									.set_policy(policy)
+									.set_priority(prio.argument())
+									);
+	}
+
+	enum cancel_types {
+		cancel_type_deferred = PTHREAD_CANCEL_DEFERRED,
+		cancel_type_asynchronous = PTHREAD_CANCEL_ASYNCHRONOUS
+	};
+
+	static int set_cancel_type(enum cancel_types cancel_type);
+
+	enum cancel_states {
+		cancel_state_enable = PTHREAD_CANCEL_ENABLE,
+		cancel_state_disable = PTHREAD_CANCEL_DISABLE
+	};
+
+	static int set_cancel_state(enum cancel_states cancel_state);
+
+	int cancel() const;
 
 	/*! \details Checks if the thread is running.
 	 *
@@ -346,7 +373,7 @@ private:
 #if defined __link
 		m_status = id_pending;
 #else
-		m_id = ID_PENDING;
+		m_id = id_pending;
 #endif
 	}
 	void set_id_error(){
@@ -361,7 +388,7 @@ private:
 #if defined __link
 		return m_status == id_pending;
 #else
-		return m_id == ID_PENDING;
+		return m_id == id_pending;
 #endif
 	}
 	bool is_id_error() const {

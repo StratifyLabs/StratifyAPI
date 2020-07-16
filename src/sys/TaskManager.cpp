@@ -127,7 +127,8 @@ bool TaskManager::is_pid_running(pid_t pid){
 
 	TaskInfo info;
 	while( get_next(info) > 0 ){
-		if( (pid == info.pid()) && info.is_enabled() ){
+		if( (static_cast<u32>(pid) == info.pid())
+				&& info.is_enabled() ){
 			set_id( tmp_id );
 			return true;
 		}

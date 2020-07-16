@@ -61,9 +61,12 @@ public:
 #if defined __win32
 		RR, FIFO, OTHER
 #else
-		RR /*! Round Robin style (task yields periodically) */ = SCHED_RR,
-		FIFO /*! First in, first out (task won't yield until it calls Sched::yield(), sleeps or uses Sync IO) */ = SCHED_FIFO,
-		OTHER /*! Default scheduling: round robin with no priority) */ = SCHED_OTHER
+		RR  = SCHED_RR,
+		FIFO  = SCHED_FIFO,
+		OTHER  = SCHED_OTHER,
+		policy_round_robin /*! Round Robin style (task yields periodically) */ = SCHED_RR,
+		policy_fifo  /*! First in, first out (task won't yield until it calls Sched::yield(), sleeps or uses Sync IO) */ = SCHED_FIFO,
+		policy_other /*! Default scheduling: round robin with no priority) */ = SCHED_OTHER
 #endif
 	};
 

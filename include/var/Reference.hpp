@@ -525,6 +525,7 @@ public:
 	 */
 	size_t size() const { return m_size; }
 
+
 	ssize_t size_signed() const {
 		return static_cast<ssize_t>(m_size);
 	}

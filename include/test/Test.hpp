@@ -97,6 +97,12 @@ public:
 	using VersionEncodedString = Version;
 	using GitHash = arg::Argument<const var::String &, struct TestGitHashTag>;
 
+	class Options {
+		API_ACCESS_COMPOUND(Options,var::String,name);
+		API_ACCESS_COMPOUND(Options,var::String,version);
+		API_ACCESS_COMPOUND(Options,var::String,git_hash);
+	};
+
 	/*! \details Initializes the test report.
 	  *
 	  * This must be called before any tests are even
@@ -104,10 +110,21 @@ public:
 	  *
 	  */
 	static void initialize(
+			const Options & options
+			);
+
+	static void initialize(
 			Name name,
 			Version version,
 			GitHash git_hash = GitHash("")
-			);
+			){
+		initialize(
+					Options()
+					.set_name(name.argument())
+					.set_version(version.argument())
+					.set_git_hash(git_hash.argument())
+					);
+	}
 
 	/*! \details Finalizes the test report.
 	  *

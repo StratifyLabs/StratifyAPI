@@ -102,6 +102,29 @@ int File::copy(
 				);
 }
 
+int File::copy(const CopyOptions & options){
+	File source;
+	File dest;
+
+	LINK_SET_DRIVER(source, options.source_driver());
+	LINK_SET_DRIVER(dest, options.destination_driver());
+
+	if( source.open(
+				options.source_path(),
+				OpenFlags::read_only()
+				) < 0 ){
+		return api::error_code_fs_failed_to_open;
+	}
+
+	return copy(
+				Source(source),
+				Destination(dest),
+				SourcePath(options.source_path()),
+				DestinationPath(options.destination_path()),
+				options.progress_callback()
+				);
+}
+
 int File::copy(
 		SourcePath source_path,
 		DestinationPath dest_path,

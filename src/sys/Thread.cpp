@@ -12,7 +12,7 @@ Thread::Thread(StackSize stacksize, IsDetached detached){
 }
 
 Thread::Thread(const Options & options){
-	init(options.stack_size(), options.detach_state());
+	init(options.stack_size(), options.detach_state() == detach_state_detached);
 }
 
 Thread::~Thread(){
@@ -116,6 +116,19 @@ int Thread::get_priority() const {
 	return param.sched_priority;
 }
 
+int Thread::cancel() const {
+	return set_error_number_if_error( pthread_cancel(id()) );
+}
+
+int Thread::set_cancel_type(enum cancel_types cancel_type){
+	return pthread_setcanceltype(cancel_type, nullptr);
+}
+
+
+int Thread::set_cancel_state(enum cancel_states cancel_state){
+	return pthread_setcancelstate(cancel_state, nullptr);
+}
+
 int Thread::get_policy() const {
 	struct sched_param param;
 	int policy;
@@ -131,10 +144,7 @@ int Thread::get_policy() const {
 }
 
 int Thread::create(
-		Function func,
-		FunctionArgument args,
-		Sched::Priority prio,
-		enum Sched::policy policy
+		const CreateOptions & options
 		){
 	if( reset() < 0 ){
 		set_error_number(EBUSY);
@@ -146,12 +156,12 @@ int Thread::create(
 		return -1;
 	}
 
-	if( set_error_number_if_error(pthread_attr_setschedpolicy(&m_pthread_attr, policy)) < 0 ){
+	if( set_error_number_if_error(pthread_attr_setschedpolicy(&m_pthread_attr, options.policy())) < 0 ){
 		return -1;
 	}
 
 	struct sched_param param = {0};
-	param.sched_priority = prio.argument();
+	param.sched_priority = options.priority();
 	if( set_error_number_if_error(pthread_attr_setschedparam(&m_pthread_attr, &param)) < 0 ){
 		return -1;
 	}
@@ -161,8 +171,8 @@ int Thread::create(
 				pthread_create(
 					&m_id,
 					&m_pthread_attr,
-					func.argument(),
-					args.argument()
+					options.function(),
+					options.argument()
 					)
 				);
 }
