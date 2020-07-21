@@ -100,7 +100,7 @@ public:
 	}
 
 	bool is_valid() const {
-		return m_area.width * m_area.height;
+		return m_area.width && m_area.height;
 	}
 
 	static DrawingArea maximum();
