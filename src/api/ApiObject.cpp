@@ -44,11 +44,29 @@ const char * ApiInfo::operating_system_name(){
 
 }
 
+const char * ApiInfo::system_processor(){
+#if defined __processor_i386
+	return "i386";
+#elif defined __processor_x86_64
+	return "x86_64";
+#elif defined __processor_arm
+	return "arm32";
+#elif defined __processor_aarch64
+	return "arm64";
+#else
+	return "unknown";
+#endif
+}
+
 bool ApiInfo::is_windows(){ return strcmp(operating_system_name(), "windows") == 0; }
 bool ApiInfo::is_macosx(){ return strcmp(operating_system_name(), "macosx") == 0; }
 bool ApiInfo::is_linux(){ return strcmp(operating_system_name(), "linux") == 0; }
 bool ApiInfo::is_stratify_os(){ return strcmp(operating_system_name(), "stratifyos") == 0; }
 
+bool ApiInfo::is_processor_i386(){ return strcmp(system_processor(), "i386") == 0; }
+bool ApiInfo::is_processor_x86_64(){ return strcmp(system_processor(), "x86_64") == 0; }
+bool ApiInfo::is_processor_arm32(){ return strcmp(system_processor(), "arm32") == 0; }
+bool ApiInfo::is_processor_arm64(){ return strcmp(system_processor(), "arm64") == 0; }
 
 u32 ApiInfo::malloc_start_chunk_size(){ return API_MINIMUM_CHUNK_SIZE; }
 u32 ApiInfo::malloc_chunk_size(){ return API_MALLOC_CHUNK_SIZE; }

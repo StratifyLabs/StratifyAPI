@@ -394,6 +394,13 @@ public:
 	 */
 	static const char * operating_system_name();
 
+	static const char * system_processor();
+
+	static bool is_processor_i386();
+	static bool is_processor_x86_64();
+	static bool is_processor_arm32();
+	static bool is_processor_arm64();
+
 	/*! \details Returns true if the application
 	 * is running on a windows system.
 	 *
