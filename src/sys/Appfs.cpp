@@ -317,7 +317,7 @@ int Appfs::create_asynchronous(const CreateOptions& options){
 	fs::File::remove(
 				path
 			#if defined __link
-				, link_driver
+				, m_file.driver()
 			#endif
 				);
 
