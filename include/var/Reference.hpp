@@ -530,6 +530,15 @@ public:
 		return static_cast<ssize_t>(m_size);
 	}
 
+	class CopyOptions {
+		API_AF(CopyOptions,const void*,source,nullptr);
+		API_AF(CopyOptions,void*,destination,nullptr);
+		API_AF(CopyOptions,size_t,size,0);
+	};
+
+	static void copy_memory(const CopyOptions & options){
+		::memcpy(options.destination(), options.source(), options.size());
+	}
 
 	static void memory_copy(
 			SourceBuffer read_data,

@@ -580,7 +580,10 @@ enum error_codes : s32 {
 	error_code_var_json_duplicate_key = -(error_code_flag_var|15),
 	error_code_var_json_numeric_overflow = -(error_code_flag_var|16),
 	error_code_var_json_item_not_found = -(error_code_flag_var|17),
-	error_code_var_json_index_out_of_range = -(error_code_flag_var|18)
+	error_code_var_json_index_out_of_range = -(error_code_flag_var|18),
+
+	error_code_flag_sys_appfs_create_failed = -(error_code_flag_sys|1),
+	error_code_flag_sys_appfs_append_failed = -(error_code_flag_sys|2),
 
 };
 

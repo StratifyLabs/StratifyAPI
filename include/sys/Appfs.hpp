@@ -307,6 +307,7 @@ public:
 	private:
 		API_ACCESS_COMPOUND(CreateOptions,var::String,name);
 		API_ACCESS_COMPOUND(CreateOptions,var::String,mount);
+		API_ACCESS_FUNDAMENTAL(CreateOptions,u32,size,0);
 		API_ACCESS_FUNDAMENTAL(CreateOptions,const ProgressCallback*,progress_callback,nullptr);
 		const fs::File & m_source;
 
@@ -317,8 +318,30 @@ public:
 
 
 	Appfs(
-			SAPI_LINK_DRIVER_NULLPTR
+			const CreateOptions& options
+			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
+
+	Appfs & append(const var::Blob & blob);
+	bool is_ready() const {
+		return m_bytes_written < m_data_size;
+	}
+
+	bool is_valid() const {
+		return m_data_size != 0;
+	}
+
+	u32 size() const {
+		return m_data_size - sizeof(appfs_file_t);
+	}
+
+	u32 bytes_written() const {
+		return m_bytes_written;
+	}
+
+	u32 bytes_available() const {
+		return m_data_size - m_bytes_written;
+	}
 
 	/*! \details Creates a file in flash memory consisting
 	 * of the data specified.
@@ -345,10 +368,6 @@ public:
 			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
 
-	/*! \cond */
-	Appfs & operator << (const var::Data & data);
-	int close();
-	/*! \endcond */
 
 	/*! \details Returns true if the application
 	 * filesystem includes flash memory.
@@ -423,6 +442,12 @@ public:
 
 private:
 	fs::File m_file;
+	appfs_createattr_t m_create_attributes = {0};
+	u32 m_bytes_written = 0;
+	u32 m_data_size = 0;
+
+	int create_asynchronous(const CreateOptions& options);
+
 
 };
 

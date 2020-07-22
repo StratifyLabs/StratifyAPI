@@ -186,6 +186,9 @@ const char * api::get_error_code_description(s32 ec){
 		ERROR_CODE_CASE(error_code_var_json_item_not_found);
 		ERROR_CODE_CASE(error_code_var_json_index_out_of_range);
 
+		ERROR_CODE_CASE(error_code_flag_sys_appfs_create_failed);
+		ERROR_CODE_CASE(error_code_flag_sys_appfs_append_failed);
+
 	}
 	return "unknown error code";
 }
