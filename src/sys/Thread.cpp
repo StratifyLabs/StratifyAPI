@@ -7,8 +7,12 @@
 #include "chrono.hpp"
 using namespace sys;
 
-Thread::Thread(StackSize stacksize, IsDetached detached) {
+Thread::Thread(StackSize stacksize, IsDetached detached){
 	init(stacksize.argument(), detached.argument());
+}
+
+Thread::Thread(const Options & options){
+	init(options.stack_size(), options.detach_state() == detach_state_detached);
 }
 
 Thread::~Thread(){
@@ -74,7 +78,7 @@ int Thread::get_detachstate() const {
 	return value;
 }
 
-int Thread::set_detachstate(detach_state value){
+int Thread::set_detachstate(enum detach_states value){
 
 	if( is_running() ){
 		set_error_number(EBUSY);
@@ -88,8 +92,8 @@ int Thread::set_priority(
 		int prio,
 		enum Sched::policy policy
 		){
-	struct sched_param param;
 	if( is_valid() ){
+		struct sched_param param = {0};
 		param.sched_priority = prio;
 		return set_error_number_if_error(pthread_setschedparam(m_id, policy, &param));
 	}
@@ -112,6 +116,19 @@ int Thread::get_priority() const {
 	return param.sched_priority;
 }
 
+int Thread::cancel() const {
+	return set_error_number_if_error( pthread_cancel(id()) );
+}
+
+int Thread::set_cancel_type(enum cancel_types cancel_type){
+	return pthread_setcanceltype(cancel_type, nullptr);
+}
+
+
+int Thread::set_cancel_state(enum cancel_states cancel_state){
+	return pthread_setcancelstate(cancel_state, nullptr);
+}
+
 int Thread::get_policy() const {
 	struct sched_param param;
 	int policy;
@@ -127,10 +144,7 @@ int Thread::get_policy() const {
 }
 
 int Thread::create(
-		Function func,
-		FunctionArgument args,
-		Sched::Priority prio,
-		enum Sched::policy policy
+		const CreateOptions & options
 		){
 	if( reset() < 0 ){
 		set_error_number(EBUSY);
@@ -142,12 +156,12 @@ int Thread::create(
 		return -1;
 	}
 
-	if( set_error_number_if_error(pthread_attr_setschedpolicy(&m_pthread_attr, policy)) < 0 ){
+	if( set_error_number_if_error(pthread_attr_setschedpolicy(&m_pthread_attr, options.policy())) < 0 ){
 		return -1;
 	}
 
-	struct sched_param param;
-	param.sched_priority = prio.argument();
+	struct sched_param param = {0};
+	param.sched_priority = options.priority();
 	if( set_error_number_if_error(pthread_attr_setschedparam(&m_pthread_attr, &param)) < 0 ){
 		return -1;
 	}
@@ -157,8 +171,8 @@ int Thread::create(
 				pthread_create(
 					&m_id,
 					&m_pthread_attr,
-					func.argument(),
-					args.argument()
+					options.function(),
+					options.argument()
 					)
 				);
 }
@@ -220,41 +234,31 @@ int Thread::reset(){
 
 int Thread::join(
 		Thread & thread_to_join,
-		Return value_ptr
+		void ** result
 		){
 	void * tmp_ptr;
 	void ** ptr;
-	if( value_ptr.argument() == 0 ){
+	if( result == nullptr ){
 		ptr = &tmp_ptr;
 	} else {
-		ptr = value_ptr.argument();
+		ptr = result;
 	}
-	int result = pthread_join(thread_to_join.id(), ptr);
-	if( result == 0 ){
+	int local_result = pthread_join(thread_to_join.id(), ptr);
+	if( local_result == 0 ){
 		//resets the thread that just completed
 		thread_to_join.is_running();
 	}
-	return result;
+	return local_result;
+}
+
+int Thread::join(void ** result){
+	return join(*this, result);
 }
 
 bool Thread::is_joinable() const{
 	int detach_state = get_detachstate();
-	return detach_state == JOINABLE;
+	return detach_state == detach_state_joinable;
 }
 
-int Thread::join(Return value_ptr) const {
-	void * tmp_ptr;
-	void ** ptr;
-	if( value_ptr.argument() == 0 ){
-		ptr = &tmp_ptr;
-	} else {
-		ptr = value_ptr.argument();
-	}
-	return set_error_number_if_error(
-				pthread_join(
-					id(),
-					ptr
-					)
-				);
-}
+
 

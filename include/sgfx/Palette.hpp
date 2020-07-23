@@ -54,12 +54,12 @@ public:
 	using Rgb888 = arg::Argument<u32, struct PaletteColorRgb888Tag>;
 	using Rgba8888 = arg::Argument<u32, struct PaletteColorRgba8888Tag>;
 
-	PaletteColor(const var::String & hex_code){
+	explicit PaletteColor(const var::String & hex_code){
 		import_hex_code(hex_code);
 	}
 
 
-	PaletteColor(Rgb332 rgb332){
+	explicit PaletteColor(Rgb332 rgb332){
 		const u16 value = rgb332.argument();
 		m_color.alpha = 0xff;
 		m_color.red = (value >> 5) & 0x07;
@@ -67,7 +67,7 @@ public:
 		m_color.blue = value & 0x03;
 	}
 
-	PaletteColor(Rgb444 rgb444){
+	explicit PaletteColor(Rgb444 rgb444){
 		const u16 value = rgb444.argument();
 		m_color.alpha = 0xff;
 		m_color.red = ((value >> 8) & 0x0f) << 4;
@@ -75,7 +75,7 @@ public:
 		m_color.blue = (value & 0x0f) << 4;
 	}
 
-	PaletteColor(Rgb565 rgb565){
+	explicit PaletteColor(Rgb565 rgb565){
 		const u16 value = rgb565.argument();
 		m_color.alpha = 0xff;
 		m_color.red = ((value >> 11) & 0x1f) << 3;
@@ -83,7 +83,7 @@ public:
 		m_color.blue = (value & 0x1f) << 3;
 	}
 
-	PaletteColor(Rgb666 rgb666){
+	explicit PaletteColor(Rgb666 rgb666){
 		const u16 value = rgb666.argument();
 		m_color.alpha = 0xff;
 		m_color.red = ((value >> 12) & 0x3f) << 2;
@@ -91,7 +91,7 @@ public:
 		m_color.blue = (value & 0x3f) << 2;
 	}
 
-	PaletteColor(Rgb888 rgb888){
+	explicit PaletteColor(Rgb888 rgb888){
 		const u32 value = rgb888.argument();
 		m_color.alpha = 0xff;
 		m_color.red = value >> 16;
@@ -99,7 +99,7 @@ public:
 		m_color.blue = value;
 	}
 
-	PaletteColor(Rgba8888 rgba8888){
+	explicit PaletteColor(Rgba8888 rgba8888){
 		const u32 value = rgba8888.argument();
 		m_color.alpha = value >> 24;
 		m_color.red = value >> 16;
@@ -107,16 +107,14 @@ public:
 		m_color.blue = value;
 	}
 
-	PaletteColor(sg_color_t c){
+	explicit PaletteColor(sg_color_t c){
 		m_color.alpha = c>>24;
 		m_color.red = c>>16;
 		m_color.green = c>>8;
 		m_color.blue = c;
 	}
 
-	PaletteColor(){
-		m_color = {0};
-	}
+	PaletteColor() : m_color({0}) {}
 
 	PaletteColor(const palette_color_t & color)
 		: m_color(color) {

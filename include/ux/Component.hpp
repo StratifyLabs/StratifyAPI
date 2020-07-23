@@ -252,7 +252,7 @@ private:
 	API_ACCESS_DERIVED_COMPOUND(Component,T,DrawingPoint,drawing_point) \
 	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,enum sgfx::Theme::styles,theme_style) \
 	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,enum sgfx::Theme::states,theme_state) \
-	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,Component*,parent)
+	API_ACCESS_DERIVED_FUNDAMETAL(Component,T,Layout*,parent)
 
 template<class T> class ComponentAccess :
 		public Component,

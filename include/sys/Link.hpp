@@ -889,18 +889,18 @@ public:
 private:
 	var::String m_notify_path;
 	var::String m_error_message;
-	int m_stdout_fd;
-	int m_stdin_fd;
-	volatile int m_progress;
-	volatile int m_progress_max;
-	volatile int m_lock;
-	bool m_is_bootloader;
-	bool m_is_legacy;
+	int m_stdout_fd = -1;
+	int m_stdin_fd = -1;
+	volatile int m_progress = 0;
+	volatile int m_progress_max = 0;
+	volatile int m_lock = 0;
+	bool m_is_bootloader = false;
+	bool m_is_legacy = false;
 
 	LinkInfo m_link_info;
-	bootloader_attr_t m_bootloader_attributes;
+	bootloader_attr_t m_bootloader_attributes = {0};
 
-	link_transport_mdriver_t m_driver_instance;
+	link_transport_mdriver_t m_driver_instance = {0};
 
 
 	u32 validate_os_image_id_with_connected_bootloader(

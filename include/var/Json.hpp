@@ -737,8 +737,8 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 #define JSON_ACCESS_INTEGER(c, v) JSON_ACCESS_INTEGER_WITH_KEY(c, v, v)
 
 #define JSON_ACCESS_REAL_WITH_KEY(c, k, v) \
-	s32 get_##v() const { return to_object().at(MCU_STRINGIFY(k)).to_float(); } \
-	c& set_##v(s32 value){ to_object().insert(MCU_STRINGIFY(k), var::JsonReal(value)); return *this; } \
+	float get_##v() const { return to_object().at(MCU_STRINGIFY(k)).to_float(); } \
+	c& set_##v(float value){ to_object().insert(MCU_STRINGIFY(k), var::JsonReal(value)); return *this; } \
 	c& remove_##v(){ to_object().remove(MCU_STRINGIFY(k)); return *this; } \
 	void json_access_real_with_key_never_used_##v()
 #define JSON_ACCESS_REAL(c, v) JSON_ACCESS_REAL_WITH_KEY(c, v, v)

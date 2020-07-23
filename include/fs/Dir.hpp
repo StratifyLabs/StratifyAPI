@@ -249,21 +249,21 @@ public:
 #endif
 
 private:
+	var::String m_path;
+
 #ifdef __link
-	int m_dirp;
-	struct link_dirent m_entry;
-	link_transport_mdriver_t * m_driver;
+	int m_dirp = 0;
+	struct link_dirent m_entry = {0};
+	link_transport_mdriver_t * m_driver = nullptr;
+	DIR * m_dirp_local = nullptr;
+	struct dirent m_entry_local = {0};
+
 	link_transport_mdriver_t * driver(){ return m_driver; }
-
-	DIR * m_dirp_local;
-	struct dirent m_entry_local;
-
 #else
 	DIR * m_dirp;
-	struct dirent m_entry;
+	struct dirent m_entry = {0};
 #endif
 
-	var::String m_path;
 
 
 };

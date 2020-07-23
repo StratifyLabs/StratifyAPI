@@ -236,7 +236,7 @@ public:
 
 private:
 	hal::Device m_sys_device;
-	int m_id;
+	int m_id = -1;
 
 };
 

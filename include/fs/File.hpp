@@ -572,6 +572,11 @@ public:
 
 #endif
 
+	class IoctlOptions {
+		API_ACCESS_FUNDAMENTAL(IoctlOptions,int,request,0);
+		API_ACCESS_FUNDAMENTAL(IoctlOptions,void*,argument,nullptr);
+	};
+
 	/*! \details Executes an IO control request.
 	 *
 	 *
@@ -583,6 +588,19 @@ public:
 			IoRequest request,
 			IoArgument arg
 			) const;
+
+	int ioctl(int request) const {
+		return ioctl(IoRequest(request), IoArgument(nullptr));
+	}
+
+	int ioctl(
+			const IoctlOptions & options
+			) const {
+		return ioctl(
+					IoRequest(options.request()),
+					IoArgument(options.argument())
+					);
+	}
 
 	/*! \details Executes an ioctl() with request and const arg pointer.
 	 *
@@ -637,6 +655,19 @@ public:
 		*
 		*/
 	void set_fileno(const File & file) const { m_fd = file.fileno(); }
+
+	class CopyOptions {
+		API_ACCESS_COMPOUND(CopyOptions,var::String,source_path);
+		API_ACCESS_COMPOUND(CopyOptions,var::String,destination_path);
+		API_ACCESS_FUNDAMENTAL(CopyOptions,const sys::ProgressCallback *,progress_callback,nullptr);
+#if defined __link
+		API_ACCESS_FUNDAMENTAL(CopyOptions,link_transport_mdriver_t*,source_driver,nullptr);
+		API_ACCESS_FUNDAMENTAL(CopyOptions,link_transport_mdriver_t*,destination_driver,nullptr);
+
+#endif
+	};
+
+	static int copy(const CopyOptions & options);
 
 	/*! \details Copies a file from the source to the destination.
 		*
@@ -727,6 +758,8 @@ protected:
 
 
 private:
+
+
 	static int copy(
 			Source source,
 			Destination dest,

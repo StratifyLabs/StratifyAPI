@@ -54,6 +54,11 @@ public:
 	using IsMcuPinMask = arg::Argument<bool, struct DeviceIsMcuPinMaskTag>;
 	using ThreadId = arg::Argument<u32, struct DeviceThreadIdTag>;
 
+	class ChannelOptions {
+		API_ACCESS_FUNDAMENTAL(ChannelOptions,u32,location,0);
+		API_ACCESS_FUNDAMENTAL(ChannelOptions,u32,value,0);
+	};
+
 	/*! \details Constructs a Device.
 	 *
 	 * Unlike fs::File, upon creation the
@@ -100,7 +105,7 @@ public:
 	 *
 	 * \sa fs::Aio
 	 */
-	virtual int read(fs::Aio & aio) const;
+	int read(fs::Aio & aio) const;
 
 	/*! \details Writes the device asynchronously.
 	 *
@@ -108,21 +113,15 @@ public:
 	 *
 	 * \sa fs::Aio
 	 */
-	virtual int write(fs::Aio & aio) const;
+	int write(fs::Aio & aio) const;
 
 
 	using fs::File::read;
 	using fs::File::write;
 
-
 	int cancel_read(int channel = 0);
 	int cancel_write(int channel = 0);
 	int cancel(int channel, int o_events);
-
-	virtual const Device & operator << (const chrono::MicroTime & t) const {
-		t.wait();
-		return *this;
-	}
 
 #endif
 

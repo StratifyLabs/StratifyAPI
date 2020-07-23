@@ -8,6 +8,7 @@
 
 #include "../api/ChronoObject.hpp"
 #include "Time.hpp"
+#include "../var/String.hpp"
 
 namespace chrono {
 
@@ -35,12 +36,11 @@ public:
 	/*! \details Constructs a clock time object based on the timespec. */
 	ClockTime(
 			const struct timespec & nano_time
-			){
-		m_value = nano_time;
-	}
+			)
+		: m_value(nano_time){}
 
 	/*! \details Contructs an object from a micro time object. */
-	ClockTime(
+	explicit ClockTime(
 			const MicroTime & micro_time
 			);
 
@@ -173,6 +173,10 @@ public:
 	s32 seconds() const { return m_value.tv_sec; }
 	/*! \details Returns the nanoseconds component. */
 	s32 nanoseconds() const { return m_value.tv_nsec; }
+
+	var::String get_unique_string() const {
+		return var::String().format("%ld%09ld", seconds(), nanoseconds());
+	}
 
 	/*! \details Returns a pointer to a strut timespec. */
 	struct timespec * timespec(){ return &m_value; }

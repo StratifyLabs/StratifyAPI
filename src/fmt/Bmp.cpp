@@ -13,6 +13,7 @@ using namespace fs;
 
 
 Bmp::Bmp(){
+	m_dib = {0};
 	m_offset = 0;
 }
 
@@ -268,7 +269,9 @@ sgfx::Bitmap Bmp::convert_to_bitmap(
 		seek_row(j);
 
 		for(i=0; i < width(); i++){
-			read(var::Reference(pixel));
+			if( read(var::Reference(pixel)) < 0 ){
+				return sgfx::Bitmap();
+			}
 			avg = (pixel[0] + pixel[1] + pixel[2]) / 3;
 
 			sg_color_t bitmap_color;

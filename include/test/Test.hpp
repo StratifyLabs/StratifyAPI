@@ -97,6 +97,12 @@ public:
 	using VersionEncodedString = Version;
 	using GitHash = arg::Argument<const var::String &, struct TestGitHashTag>;
 
+	class Options {
+		API_ACCESS_COMPOUND(Options,var::String,name);
+		API_ACCESS_COMPOUND(Options,var::String,version);
+		API_ACCESS_COMPOUND(Options,var::String,git_hash);
+	};
+
 	/*! \details Initializes the test report.
 	  *
 	  * This must be called before any tests are even
@@ -104,10 +110,21 @@ public:
 	  *
 	  */
 	static void initialize(
+			const Options & options
+			);
+
+	static void initialize(
 			Name name,
 			Version version,
 			GitHash git_hash = GitHash("")
-			);
+			){
+		initialize(
+					Options()
+					.set_name(name.argument())
+					.set_version(version.argument())
+					.set_git_hash(git_hash.argument())
+					);
+	}
 
 	/*! \details Finalizes the test report.
 	  *
@@ -447,14 +464,14 @@ protected:
 
 private:
 
-	bool m_test_result;
-	bool m_case_result;
+	bool m_test_result = true;
+	bool m_case_result = true;
 	chrono::Timer m_case_timer;
 	u32 m_test_duration_microseconds;
-	u32 m_case_message_number;
-	u32 m_indent_count;
+	u32 m_case_message_number = 0;
+	u32 m_indent_count = 1;
 	var::String m_name;
-	Test * m_parent;
+	Test * m_parent = nullptr;
 	static bool m_is_initialized;
 	static bool m_all_test_result;
 	static u32 m_all_test_duration_microseconds;

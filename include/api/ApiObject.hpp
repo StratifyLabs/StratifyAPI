@@ -167,11 +167,15 @@ namespace api {
 	private: \
 	bool m_is_##v = iv
 
+#define API_AB(c, v, iv) API_ACCESS_BOOL(c, v, iv)
+
 #define API_READ_ACCESS_BOOL(c, v, iv) \
 	public: \
 	bool is_##v() const { return m_is_##v; } \
 	private: \
 	bool m_is_##v = iv
+
+#define API_RAB(c, v, iv) API_READ_ACCESS_BOOL(c, v, iv)
 
 #define API_ACCESS_FUNDAMENTAL(c, t, v, iv) \
 	public: \
@@ -180,33 +184,42 @@ namespace api {
 	private: \
 	t m_##v = iv
 
+#define API_AF(c, t, v, iv) API_ACCESS_FUNDAMENTAL(c, t, v, iv)
+
 #define API_ACCESS_MEMBER_FUNDAMENTAL(c, t, p, v) \
 	public: \
 	t v() const { return m_##p.v; } \
 	c& set_##v(t value){ m_##p.v = value; return *this; }
 
+#define API_AMF(c, t, p, v) API_ACCESS_MEMBER_FUNDAMENTAL(c, t, p, v)
+
 #define API_READ_ACCESS_MEMBER_FUNDAMENTAL(c, t, p, v) \
 	public: \
 	t v() const { return m_##p.v; }
 
+#define API_RAMF(c, t, p, v) API_READ_ACCESS_MEMBER_FUNDAMENTAL(c, t, p, v)
 
 #define API_ACCESS_MEMBER_FUNDAMENTAL_WITH_ALIAS(c, t, p, a, v) \
 	public: \
 	t a() const { return m_##p.v; } \
 	c& set_##a(t value){ m_##p.v = value; return *this; } \
 
+#define API_AMFWA(c, t, p, a, v) API_ACCESS_MEMBER_FUNDAMENTAL_WITH_ALIAS(c, t, p, a, v)
 
 #define API_ACCESS_MEMBER_COMPOUND(c, t, p, v) \
 	public: \
 	const t& v() const { return m_##p.v; } \
 	c& set_##v(const t& value){ m_##p.v = value; return *this; } \
 
+#define API_AMC(c, t, p, v) API_ACCESS_MEMBER_COMPOUND(c, t, p, v)
 
 #define API_READ_ACCESS_FUNDAMENTAL(c, t, v, iv) \
 	public: \
 	t v() const { return m_##v; } \
 	private: \
 	t m_##v = iv
+
+#define API_RAF(c, t, v, iv) API_READ_ACCESS_FUNDAMENTAL(c, t, v, iv)
 
 #define API_ACCESS_COMPOUND(c, t, v) \
 	public: \
@@ -216,11 +229,15 @@ namespace api {
 	private: \
 	t m_##v
 
+#define API_AC(c, t, v) API_ACCESS_COMPOUND(c, t, v)
+
 #define API_READ_ACCESS_COMPOUND(c, t, v) \
 	public: \
 	const t& v() const { return m_##v; } \
 	private: \
 	t m_##v
+
+#define API_RAC(c, t, v) API_READ_ACCESS_COMPOUND(c, t, v)
 
 #define API_ACCESS_DERIVED_COMPOUND(c,d,t,v) \
 	d& set_##v(const t& value){ \
@@ -228,17 +245,23 @@ namespace api {
 	return static_cast<d&>(*this); \
 	}
 
+#define API_ADC(c,d,t,v) API_ACCESS_DERIVED_COMPOUND(c,d,t,v)
+
 #define API_ACCESS_DERIVED_FUNDAMETAL(c,d,t,v) \
 	d& set_##v(t value){ \
 	c::set_##v(value); \
 	return static_cast<d&>(*this); \
 	}
 
+#define API_ADF(c,d,t,v) API_ACCESS_DERIVED_FUNDAMETAL(c,d,t,v)
+
 #define API_ACCESS_DERIVED_BOOL(c,d,v) \
 	d& set_##v(bool value = true){ \
 	c::set_##v(value); \
 	return static_cast<d&>(*this); \
 	}
+
+#define API_ADB(c,d,v) API_ACCESS_DERIVED_BOOL(c,d,v)
 
 #define API_OR_NAMED_FLAGS_OPERATOR(TYPE, FLAG_NAME) \
 	inline enum TYPE::FLAG_NAME operator |( \
@@ -333,7 +356,7 @@ public:
 	 * ```
 		*
 		*/
-	static const char * version(){ return "3.20.0"; }
+	static const char * version(){ return "3.20.3"; }
 
 	/*! \details Returns a c-style string pointer
 	 * to the git hash used to build the Stratify API.
@@ -370,6 +393,13 @@ public:
 	 *
 	 */
 	static const char * operating_system_name();
+
+	static const char * system_processor();
+
+	static bool is_processor_i386();
+	static bool is_processor_x86_64();
+	static bool is_processor_arm32();
+	static bool is_processor_arm64();
 
 	/*! \details Returns true if the application
 	 * is running on a windows system.
@@ -550,7 +580,10 @@ enum error_codes : s32 {
 	error_code_var_json_duplicate_key = -(error_code_flag_var|15),
 	error_code_var_json_numeric_overflow = -(error_code_flag_var|16),
 	error_code_var_json_item_not_found = -(error_code_flag_var|17),
-	error_code_var_json_index_out_of_range = -(error_code_flag_var|18)
+	error_code_var_json_index_out_of_range = -(error_code_flag_var|18),
+
+	error_code_flag_sys_appfs_create_failed = -(error_code_flag_sys|1),
+	error_code_flag_sys_appfs_append_failed = -(error_code_flag_sys|2),
 
 };
 

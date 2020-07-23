@@ -28,7 +28,7 @@ public:
    }
 
 private:
-   sg_antialias_filter_t m_filter;
+	 sg_antialias_filter_t m_filter = {0};
 };
 
 /*! \brief Bitmap Class

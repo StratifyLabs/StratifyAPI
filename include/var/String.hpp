@@ -135,14 +135,15 @@ public:
 						){
 	}
 
-	String(const char * s){
+	String(const char * s){ //cppcheck-suppress[noExplicitConstructor]
 		if( s != nullptr ){ m_string = s; }
 	}
 	String(const String & s) : m_string(s.string()){}
 	String(const char * s, Length length) : m_string(s,length.argument()){}
 	String(Length length, char c) : m_string(length.argument(),c){}
 	String(String && s) noexcept : m_string(std::move(s.m_string)){}
-	String (std::initializer_list<char> il) : m_string(il){}
+	String (std::initializer_list<char> il)  //cppcheck-suppress[noExplicitConstructor]
+		: m_string(il){}
 	String& operator=(const char * s){
 		if( s == nullptr ){
 			m_string = std::string();
@@ -536,7 +537,7 @@ public:
 	}
 
 	String & assign(String && string_to_move){
-		m_string.assign(string_to_move.m_string);
+		m_string.assign(std::move(string_to_move.m_string));
 		return *this;
 	}
 

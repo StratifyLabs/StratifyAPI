@@ -12,10 +12,18 @@ class IconFont;
 
 class IconFontInfo : public FontFlags {
 public:
+
+	class Options {
+		API_ACCESS_FUNDAMENTAL(Options,u8,point_size,0);
+		API_ACCESS_FUNDAMENTAL(Options,IconFont*,icon_font,nullptr);
+	};
+
 	IconFontInfo(
 			PointSize point_size = PointSize(0),
 			IconFont * icon_font = nullptr
 			);
+
+	IconFontInfo(const Options& options);
 
 	~IconFontInfo();
 
@@ -69,8 +77,8 @@ public:
 private:
 	var::String m_name;
 	var::String m_path;
-	u8 m_point_size;
-	IconFont * m_icon_font;
+	u8 m_point_size = 0;
+	IconFont * m_icon_font = nullptr;
 	fs::File m_file;
 };
 
@@ -82,9 +90,8 @@ private:
  */
 class IconInfo {
 public:
-	IconInfo(const sg_font_icon_t & icon){
-		m_icon = icon;
-	}
+	IconInfo(const sg_font_icon_t & icon)
+		: m_icon(icon) {}
 
 	Area area() const {
 		return Area(m_icon.width, m_icon.height);
@@ -113,13 +120,13 @@ public:
 	}
 
 private:
-	sg_font_icon_t m_icon;
+	sg_font_icon_t m_icon = {0};
 
 };
 
 class IconFont {
 public:
-	IconFont(const fs::File & file);
+	explicit IconFont(const fs::File & file);
 
 	int refresh();
 
@@ -167,8 +174,8 @@ public:
 
 private:
 	mutable s32 m_master_canvas_idx = -1;
+	sg_font_icon_header_t m_header = {0};
 	Bitmap m_master_canvas;
-	sg_font_icon_header_t m_header;
 	var::Vector<sg_font_icon_t> m_list;
 	const fs::File & m_file;
 };

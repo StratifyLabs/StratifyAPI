@@ -32,12 +32,13 @@ public:
 	sgfx::VectorPath at(u32 i) const;
 
 private:
-	int parse_icons();
 	var::Vector<sg_vector_icon_header_t> m_icons;
 
 	//these track internal state used for caching
 	mutable u32 m_current_icon_at;
 	mutable var::Vector<sg_vector_path_description_t> m_current_icon;
+
+	int parse_icons();
 
 };
 

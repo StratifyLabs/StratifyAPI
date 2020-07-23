@@ -255,23 +255,6 @@ private:
 	API_ACCESS_FUNDAMENTAL(AppfsFileAttributes,u16,access_mode,0555);
 };
 
-class AppfsCreateOptions {
-public:
-	AppfsCreateOptions(const fs::File & source)
-		: m_mount("/app"), m_source(source){}
-
-	const fs::File source() const {
-		return m_source;
-	}
-
-private:
-	API_ACCESS_COMPOUND(AppfsCreateOptions,var::String,name);
-	API_ACCESS_COMPOUND(AppfsCreateOptions,var::String,mount);
-	API_ACCESS_FUNDAMENTAL(AppfsCreateOptions,const ProgressCallback*,progress_callback,nullptr);
-	const fs::File & m_source;
-
-};
-
 /*! \brief Application File System Class
  * \details This class provides an interface for creating data files in flash
  * memory.
@@ -312,13 +295,53 @@ class Appfs :
       public AppfsFlags {
 public:
 
+	class CreateOptions {
+	public:
+		explicit CreateOptions(const fs::File & source)
+			: m_mount("/app"), m_source(source){}
+
+		const fs::File source() const {
+			return m_source;
+		}
+
+	private:
+		API_ACCESS_COMPOUND(CreateOptions,var::String,name);
+		API_ACCESS_COMPOUND(CreateOptions,var::String,mount);
+		API_ACCESS_FUNDAMENTAL(CreateOptions,u32,size,0);
+		API_ACCESS_FUNDAMENTAL(CreateOptions,const ProgressCallback*,progress_callback,nullptr);
+		const fs::File & m_source;
+
+	};
+
 	using Name = arg::Argument<const var::String &, struct AppfsNameTag>;
 	using MountPath = arg::Argument<const var::String &, struct AppfsMountPathTag>;
 
 
 	Appfs(
-			SAPI_LINK_DRIVER_NULLPTR
+			const CreateOptions& options
+			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
+
+	Appfs & append(const var::Blob & blob);
+	bool is_ready() const {
+		return m_bytes_written < m_data_size;
+	}
+
+	bool is_valid() const {
+		return m_data_size != 0;
+	}
+
+	u32 size() const {
+		return m_data_size - sizeof(appfs_file_t);
+	}
+
+	u32 bytes_written() const {
+		return m_bytes_written;
+	}
+
+	u32 bytes_available() const {
+		return m_data_size - m_bytes_written;
+	}
 
 	/*! \details Creates a file in flash memory consisting
 	 * of the data specified.
@@ -341,14 +364,10 @@ public:
 			);
 
 	static int create(
-			const AppfsCreateOptions& options
+			const CreateOptions& options
 			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
 
-	/*! \cond */
-	Appfs & operator << (const var::Data & data);
-	int close();
-	/*! \endcond */
 
 	/*! \details Returns true if the application
 	 * filesystem includes flash memory.
@@ -423,6 +442,12 @@ public:
 
 private:
 	fs::File m_file;
+	appfs_createattr_t m_create_attributes = {0};
+	u32 m_bytes_written = 0;
+	u32 m_data_size = 0;
+
+	int create_asynchronous(const CreateOptions& options);
+
 
 };
 

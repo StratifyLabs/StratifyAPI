@@ -28,11 +28,8 @@ Test::Test(const var::String & name, Test * parent){
 	m_parent = parent;
 	if( m_parent ){
 		m_indent_count = parent->indent();
-
-
 	} else {
 		m_indent_count = 1;
-
 	}
 
 	m_test_result = true;
@@ -161,10 +158,9 @@ void Test::vprint_case_message(const var::String & key, const char * fmt, va_lis
 	printf("\",\n");
 }
 
-void Test::initialize(Name name,
-							 Version version,
-							 GitHash git_hash
-							 ){
+void Test::initialize(
+		const Options & options
+		){
 	m_is_initialized = true;
 	m_all_test_duration_microseconds = 0;
 
@@ -200,20 +196,20 @@ void Test::initialize(Name name,
 
 	AppfsInfo appfs_info;
 	var::String path;
-	path << "/app/flash/" << name.argument();
+	path << "/app/flash/" << options.name();
 	appfs_info = Appfs::get_info(path);
 	if( appfs_info.is_valid() == false ){
 		path.assign("/app/ram/");
-		path << name.argument();
+		path << options.name();
 		appfs_info = Appfs::get_info(path);
 	}
 #endif
 
 
 	print_indent(1, "\"test\": {\n");
-	print_indent(2, "\"name\": \"%s\",\n", name.argument().cstring());
+	print_indent(2, "\"name\": \"%s\",\n", options.name().cstring() );
 	//need to add the amount of RAM the program has to output
-	print_indent(2, "\"version\": \"%s\",\n", version.argument().cstring());
+	print_indent(2, "\"version\": \"%s\",\n", options.version().cstring());
 #if !defined __link
 	if( appfs_info.is_valid() ){
 		print_indent(2, "\"ramSize\": \"%ld\",\n", appfs_info.ram_size());
@@ -250,7 +246,7 @@ void Test::initialize(Name name,
 		print_indent(2, "\"applicationSignature\": \"%X\",\n", appfs_info.signature());
 	}
 #endif
-	print_indent(2, "\"gitHash\": \"%s\",\n", git_hash.argument().cstring());
+	print_indent(2, "\"gitHash\": \"%s\",\n", options.git_hash().cstring());
 	print_indent(2, "\"apiVersion\": \"%s\",\n", api::ApiInfo::version());
 	print_indent(2, "\"apiGitHash\": \"%s\"\n", api::ApiInfo::git_hash());
 	print_indent(1, "},\n");
@@ -285,44 +281,44 @@ u32 Test::parse_execution_flags(const sys::Cli & cli){
 	bool is_all = false;
 
 	if( cli.get_option(
-			 "all",
-			 Cli::Description("execute all tests and types (if no type (api|stress|performance|additional) is specified")
-			 ) == "true" ){
+				"all",
+				Cli::Description("execute all tests and types (if no type (api|stress|performance|additional) is specified")
+				) == "true" ){
 		is_all = true;
 	}
 
 	if( cli.get_option(
-			 "allTypes",
-			 Cli::Description("execute all test types (api|stress|performance|additional)")
-			 ) == "true" ){
+				"allTypes",
+				Cli::Description("execute all test types (api|stress|performance|additional)")
+				) == "true" ){
 		o_execute_flags |= Test::execute_all_types;
 	}
 
 	if( cli.get_option(
-			 "api",
-			 Cli::Description("execute api tests")
-			 ) == "true" ){
+				"api",
+				Cli::Description("execute api tests")
+				) == "true" ){
 		o_execute_flags |= Test::execute_api;
 	}
 
 	if( cli.get_option(
-			 "performance",
-			 Cli::Description("execute performance tests")
-			 ) == "true" ){
+				"performance",
+				Cli::Description("execute performance tests")
+				) == "true" ){
 		o_execute_flags |= Test::execute_performance;
 	}
 
 	if( cli.get_option(
-			 "stress",
-			 Cli::Description("execute stress test")
-			 ) == "true" ){
+				"stress",
+				Cli::Description("execute stress test")
+				) == "true" ){
 		o_execute_flags |= Test::execute_stress;
 	}
 
 	if( cli.get_option(
-			 "additional",
-			 Cli::Description("execute additional test")
-			 ) == "true" ){
+				"additional",
+				Cli::Description("execute additional test")
+				) == "true" ){
 		o_execute_flags |= Test::execute_additional;
 	}
 
@@ -344,11 +340,11 @@ u32 Test::parse_test(
 		){
 
 	if( cli.get_option(
-			 name,
-			 Cli::Description(
-				 var::String("Execute the ") + name + " test suite"
-				 )
-			 ) == "true" ){
+				name,
+				Cli::Description(
+					var::String("Execute the ") + name + " test suite"
+					)
+				) == "true" ){
 		return test_flag;
 	}
 

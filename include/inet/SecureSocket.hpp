@@ -60,8 +60,8 @@ private:
 
 	/*! \cond */
 	static SecureSocketApi m_api;
-	void * m_context;
-	u32 m_ticket_lifetime;
+	void * m_context = nullptr;
+	u32 m_ticket_lifetime = 0;
 	var::Data m_ticket;
 	/*! \endcond */
 

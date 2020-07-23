@@ -18,6 +18,12 @@ FontInfo::FontInfo(
 	m_font = font;
 }
 
+FontInfo::FontInfo(const Options & options){
+	m_point_size = options.point_size();
+	m_style = options.style();
+	m_font = options.font();
+}
+
 FontInfo::~FontInfo(){
 	if( m_font != nullptr ){
 		delete m_font;
@@ -215,7 +221,7 @@ int Font::draw(
 		Bitmap & bitmap,
 		const Point & point
 		) const {
-	sg_size_t w;
+	sg_int_t w;
 
 	//draw characters on the bitmap
 	Point p(point); //copy that can be advanced
@@ -238,9 +244,6 @@ int Font::draw(
 		//apply kerning
 		if( is_kerning_enabled() && (d != 0) ){
 			w -= load_kerning(c, d);
-			if( w < 0 ){
-				return -1;
-			}
 		}
 
 		p += Point::X(w);

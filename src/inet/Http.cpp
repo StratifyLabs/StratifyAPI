@@ -18,16 +18,7 @@ using namespace inet;
 Http::Http(Socket & socket) : m_socket(socket){
 }
 
-HttpClient::HttpClient(Socket & socket) : Http(socket){
-#if defined __link
-	m_transfer_size = 1024;
-#else
-	m_transfer_size = 1024;
-#endif
-	m_is_chunked_transfer_encoding = false;
-	m_is_keep_alive = false;
-	m_transfer_encoding = "";
-}
+HttpClient::HttpClient(Socket & socket) : Http(socket){}
 
 int HttpClient::get(const var::String & url,
 						  ResponseFile response,

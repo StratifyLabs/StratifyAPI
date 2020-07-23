@@ -9,10 +9,7 @@ using namespace inet;
 
 SecureSocketApi SecureSocket::m_api;
 
-SecureSocket::SecureSocket(){
-	m_context = nullptr;
-	m_ticket_lifetime = 0; //don't generate a ticket
-}
+SecureSocket::SecureSocket(){}
 
 SecureSocket::SecureSocket(u32 ticket_lifetime){
 	m_ticket_lifetime = ticket_lifetime;

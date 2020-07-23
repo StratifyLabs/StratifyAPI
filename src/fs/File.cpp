@@ -102,6 +102,29 @@ int File::copy(
 				);
 }
 
+int File::copy(const CopyOptions & options){
+	File source;
+	File dest;
+
+	LINK_SET_DRIVER(source, options.source_driver());
+	LINK_SET_DRIVER(dest, options.destination_driver());
+
+	if( source.open(
+				options.source_path(),
+				OpenFlags::read_only()
+				) < 0 ){
+		return api::error_code_fs_failed_to_open;
+	}
+
+	return copy(
+				Source(source),
+				Destination(dest),
+				SourcePath(options.source_path()),
+				DestinationPath(options.destination_path()),
+				options.progress_callback()
+				);
+}
+
 int File::copy(
 		SourcePath source_path,
 		DestinationPath dest_path,
@@ -155,8 +178,12 @@ int File::touch(const var::String& path){
 		return api::error_code_fs_failed_to_open;
 	} else {
 		char c;
-		touch_file.read(var::Reference(c));
-		touch_file.write(File::Location(0), var::Reference(c));
+		if( touch_file.read(var::Reference(c)) != 1 ){
+			return api::error_code_fs_failed_to_read;
+		}
+		if( touch_file.write(File::Location(0), var::Reference(c)) != 1 ){
+			return api::error_code_fs_failed_to_write;
+		}
 	}
 	return 0;
 }

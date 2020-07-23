@@ -205,7 +205,7 @@ public:
 
 #if defined __link
 	Stat(bool is_local = false);
-	Stat(const struct link_stat & st, bool is_local = false)
+	Stat(const struct link_stat & st, bool is_local = false) //cppcheck-suppress[noExplicitConstructor]
 		: m_stat(st), m_is_local(is_local) {}
 #else
 	/*! \details Constructs a new object.
@@ -220,7 +220,7 @@ public:
 	 * from the struct stat data provided.
 	 *
 	 */
-	Stat(const struct stat & st)
+	Stat(const struct stat & st) //cppcheck-suppress[noExplicitConstructor]
 		: m_stat(st){}
 #endif
 

@@ -140,7 +140,7 @@ private:
 	var::String m_primary_icon_font_name;
 	chrono::MicroTime m_button_hold_duration = chrono::Milliseconds(750);
 
-	header_t m_header;
+	header_t m_header = {0};
 	u16 m_color_count = 0;
 
 	size_t header_color_count() const {
