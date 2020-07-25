@@ -128,7 +128,7 @@ int AppfsFileAttributes::apply(const fs::File & file) const {
 }
 
 Appfs::Appfs(
-		const CreateOptions& options
+		const ConstructOptions& options
 		SAPI_LINK_DRIVER_LAST
 		) :
 	m_file(
@@ -184,7 +184,11 @@ int Appfs::create(
 		SAPI_LINK_DRIVER_LAST
 		){
 
-	Appfs appfs(options);
+	Appfs appfs(ConstructOptions()
+							.set_mount(options.mount())
+							.set_name(options.name())
+							.set_size(options.source().size())
+							);
 
 	if( !appfs.is_valid() ){
 		return api::error_code_flag_sys_appfs_create_failed;
@@ -304,15 +308,15 @@ int Appfs::create(
 	return f.exec.code_size;
 }
 
-int Appfs::create_asynchronous(const CreateOptions& options){
-	appfs_file_t f;
+int Appfs::create_asynchronous(const ConstructOptions& options){
+	appfs_file_t * f = reinterpret_cast<appfs_file_t*>(m_create_attributes.buffer);
 	var::String path = options.mount() + "/flash/" + options.name();
 
 	//delete the settings if they exist
-	strncpy(f.hdr.name, options.name().cstring(), LINK_NAME_MAX-1);
-	f.hdr.mode = 0666;
-	f.exec.code_size = options.size() + sizeof(f); //total number of bytes in file
-	f.exec.signature = APPFS_CREATE_SIGNATURE;
+	strncpy(f->hdr.name, options.name().cstring(), LINK_NAME_MAX-1);
+	f->hdr.mode = 0666;
+	f->exec.code_size = options.size() + overhead(); //total number of bytes in file
+	f->exec.signature = APPFS_CREATE_SIGNATURE;
 
 	fs::File::remove(
 				path
@@ -328,14 +332,9 @@ int Appfs::create_asynchronous(const CreateOptions& options){
 		return -1;
 	}
 
-	var::Blob::copy_memory(
-				var::Blob::CopyOptions()
-				.set_source(&f)
-				.set_destination(m_create_attributes.buffer)
-				.set_size(sizeof(f))
-				);
-	m_bytes_written = sizeof(f);
-	m_data_size = f.exec.code_size;
+	//f holds bytes in the buffer
+	m_bytes_written = overhead();
+	m_data_size = f->exec.code_size;
 
 	return 0;
 }
@@ -359,8 +358,6 @@ Appfs& Appfs::append(const var::Blob & blob){
 			page_size = page_size_available;
 		}
 
-		var::Blob(m_create_attributes.buffer).fill<u8>(0xff);
-
 		var::Blob::copy_memory(
 					var::Blob::CopyOptions()
 					.set_source(blob.to_const_u8() + bytes_written)
@@ -373,15 +370,20 @@ Appfs& Appfs::append(const var::Blob & blob){
 
 		if( ((m_bytes_written % APPFS_PAGE_SIZE) == 0) //at page boundary
 				|| (m_bytes_written == m_data_size) ){ //or to the end
-			m_create_attributes.nbyte = page_size;
 
+			page_size =	m_bytes_written % APPFS_PAGE_SIZE;
+			if( page_size == 0 ){
+				m_create_attributes.nbyte = APPFS_PAGE_SIZE;
+			} else {
+				m_create_attributes.nbyte = page_size;
+			}
 			if( set_error_number_if_error( m_file.ioctl(fs::File::IoctlOptions()
-											 .set_request(I_APPFS_CREATE)
-											 .set_argument(&m_create_attributes))) < 0 ){
+																									.set_request(I_APPFS_CREATE)
+																									.set_argument(&m_create_attributes))) < 0 ){
 				return *this;
 			}
 
-			m_create_attributes.loc += page_size;
+			m_create_attributes.loc += m_create_attributes.nbyte;
 		}
 	}
 

@@ -310,15 +310,24 @@ public:
 		API_ACCESS_FUNDAMENTAL(CreateOptions,u32,size,0);
 		API_ACCESS_FUNDAMENTAL(CreateOptions,const ProgressCallback*,progress_callback,nullptr);
 		const fs::File & m_source;
-
 	};
 
 	using Name = arg::Argument<const var::String &, struct AppfsNameTag>;
 	using MountPath = arg::Argument<const var::String &, struct AppfsMountPathTag>;
 
+	class ConstructOptions {
+	public:
+		explicit ConstructOptions()
+			: m_mount("/app"){}
+
+	private:
+		API_ACCESS_COMPOUND(ConstructOptions,var::String,name);
+		API_ACCESS_COMPOUND(ConstructOptions,var::String,mount);
+		API_ACCESS_FUNDAMENTAL(ConstructOptions,u32,size,0);
+	};
 
 	Appfs(
-			const CreateOptions& options
+			const ConstructOptions& options
 			SAPI_LINK_DRIVER_NULLPTR_LAST
 			);
 
@@ -386,6 +395,9 @@ public:
 
 	/*! \details Returns the page size for writing data. */
 	static int page_size(){ return APPFS_PAGE_SIZE; }
+	static u32 overhead(){
+		return sizeof(appfs_file_t);
+	}
 
 	/*! \details Gets the info associated with an executable file.
 	 *
@@ -446,7 +458,7 @@ private:
 	u32 m_bytes_written = 0;
 	u32 m_data_size = 0;
 
-	int create_asynchronous(const CreateOptions& options);
+	int create_asynchronous(const ConstructOptions& options);
 
 
 };
