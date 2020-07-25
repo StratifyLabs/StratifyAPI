@@ -48,6 +48,9 @@ public:
 	u32 frequency() const { return m_adc_info.freq; }
 	u32 maximum_value() const { return m_adc_info.maximum; }
 	u32 reference_millivolts() const { return m_adc_info.reference_mv; }
+	u8 vref_internal_channel() const { return m_adc_info.internal_vref_channel; }
+	u8 temperature_internal_channel() const { return m_adc_info.internal_temperature_channel; }
+	u8 vbat_internal_channel() const { return m_adc_info.internal_vbat_channel; }
 
 
 	u32 calculate_millivolts(u32 sample_value) const {
