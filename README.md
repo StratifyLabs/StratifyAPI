@@ -1,6 +1,6 @@
 # Stratify API
 
-[![Coverity](https://scan.coverity.com/projects/10992/badge.svg)](https://scan.coverity.com/projects/stratifylabs-stratifyapi)
+![Build](https://github.com/StratifyLabs/StratifyAPI/workflows/Build/badge.svg) [![Coverity](https://scan.coverity.com/projects/10992/badge.svg)](https://scan.coverity.com/projects/stratifylabs-stratifyapi) 
 
 ## Overview
 
