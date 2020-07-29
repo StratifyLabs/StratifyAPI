@@ -3,11 +3,8 @@
 #ifndef SAPI_FS_DIR_HPP_
 #define SAPI_FS_DIR_HPP_
 
-#include <functional>
 
 #ifdef __link
-#include <sos/link.h>
-
 #if defined __win32
 #include <winsock2.h>
 #include <windows.h>
@@ -23,10 +20,12 @@
 #include <dirent.h>
 #endif
 
+#include <sos/link.h>
 
 #else
 #include <dirent.h>
 #endif
+#include <functional>
 
 #include "../api/FsObject.hpp"
 #include "../var/Vector.hpp"

@@ -59,7 +59,7 @@ public:
 
 	enum policy {
 #if defined __win32
-		RR, FIFO, OTHER
+		RR, FIFO, OTHER, policy_round_robin, policy_fifo, policy_other
 #else
 		RR  = SCHED_RR,
 		FIFO  = SCHED_FIFO,

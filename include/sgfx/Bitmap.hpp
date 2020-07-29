@@ -28,7 +28,13 @@ public:
    }
 
 private:
-	 sg_antialias_filter_t m_filter = {0};
+	 sg_antialias_filter_t m_filter
+#if defined __win32
+
+#else
+		= {0}
+#endif
+	 ;
 };
 
 /*! \brief Bitmap Class

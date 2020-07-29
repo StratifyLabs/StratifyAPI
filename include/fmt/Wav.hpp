@@ -77,7 +77,7 @@ private:
 	} header_t;
 
 	u32 m_sample_count = 0;
-	header_t m_header = {0};
+	header_t m_header;
 	/*! \endcond */
 
 };

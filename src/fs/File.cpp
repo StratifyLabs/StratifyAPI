@@ -486,9 +486,13 @@ int File::fsync(){
 	}
 #endif
 	if( m_fd >= 0 ){
+#if !defined __win32
 		ret = set_error_number_if_error(
 					::fsync(m_fd)
 					);
+#else
+		ret = 0;
+#endif
 	}
 	return ret;
 }
