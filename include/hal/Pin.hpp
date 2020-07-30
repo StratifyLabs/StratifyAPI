@@ -207,16 +207,20 @@ public:
 	u32 pinmask() const { return m_pinmask; }
 
 	bool is_floating(u32 o_restore_flags = Pin::flag_is_float) const {
-		bool result;
+		bool result = true;
 		set_attributes(Pin::flag_set_input | Pin::flag_is_pullup);
 		if( get_value() == false ){
-			set_attributes(Pin::flag_set_input | o_restore_flags);
-			return false;
+			result = false; //pulled high but driven low
 		}
-		set_attributes(Pin::flag_set_input | Pin::flag_is_float);
-		result = get_value();
+
+		if( result ){
+			set_attributes(Pin::flag_set_input | Pin::flag_is_pulldown);
+			if( get_value() == true ){
+				result = false; //pulled low but driven high
+			}
+		}
 		set_attributes(Pin::flag_set_input | o_restore_flags);
-		return result != true;
+		return result;
 	}
 
 	static bool is_floating(mcu_pin_t pin){
