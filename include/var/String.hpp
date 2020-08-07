@@ -388,6 +388,7 @@ public:
 	}
 
 
+	size_t count(const var::String & to_count) const;
 	size_t length() const { return m_string.length(); }
 	ssize_t length_signed() const { return static_cast<ssize_t>(m_string.length()); }
 	void clear(){ m_string.clear(); }
