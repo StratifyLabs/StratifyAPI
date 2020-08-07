@@ -183,4 +183,17 @@ Vector<String> String::split(const String & delimiter) const {
 }
 
 
+size_t String::count(const var::String & occurance) const {
+	u32 pos = 0;
+	u32 item_count = 0;
+	while( pos < length() && pos != String::npos){
+		pos = find(occurance, String::Position(pos));
+		if( pos != String::npos ){
+			item_count++;
+			pos++;
+		}
+	}
+	return item_count;
+}
+
 

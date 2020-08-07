@@ -45,11 +45,11 @@ const char * ApiInfo::operating_system_name(){
 }
 
 const char * ApiInfo::system_processor(){
-#if defined __processor_i386
+#if defined __processor_i386 || defined __processor_x86
 	return "i386";
-#elif defined __processor_x86_64
+#elif defined __processor_x86_64 || defined __processor_AMD64
 	return "x86_64";
-#elif defined __processor_arm
+#elif defined __processor_arm || defined __processor_armv7l
 	return "arm32";
 #elif defined __processor_aarch64
 	return "arm64";
