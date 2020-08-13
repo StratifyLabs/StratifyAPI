@@ -240,19 +240,7 @@ public:
 	int connect(const var::String & url);
 	/*! \endcond */
 
-	/*! \details List of values for error_number() when using the HttpClient class. */
-	enum error {
-		error_none /*! No Errors */,
-		error_failed_to_create_socket /*! Failed to create a socket (1) */,
-		error_failed_to_connect_to_socket /*! Failed to connect to socket (2) */,
-		error_failed_to_write_header /*! Failed to write request header (3) */,
-		error_failed_to_write_data /*! Failed to write data (4) */,
-		error_failed_to_write_incoming_data_to_file /*! Failed  write incoming data to file provided (5) */,
-		error_failed_to_find_address /*! Failed to find IP address of URL (6) */,
-		error_failed_to_get_status_code /*! Failed to get a status code in the HTTP response (7) */,
-		error_failed_to_get_header /*! Failed to receive the header (8) */,
-		error_failed_wrong_domain
-	};
+
 
 	/*! \details Returns a reference to the header that is returned
 	  * by the request.

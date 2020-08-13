@@ -36,8 +36,8 @@ TaskManager::~TaskManager(){
 
 void TaskManager::initialize(){
 	if( (m_sys_device.fileno() < 0)
-			&& (m_sys_device.open("/dev/sys")) ){
-		m_id = -1;
+			&& (m_sys_device.open("/dev/sys")) >=0  ){
+		m_id = 0;
 	}
 }
 
@@ -77,12 +77,8 @@ int TaskManager::count_free(){
 int TaskManager::get_next(TaskInfo & info){
 	sys_taskattr_t task_attr;
 	int ret;
-
-	task_attr.tid = m_id;
-	m_id++;
-
 	initialize();
-
+	task_attr.tid = m_id;
 	ret = set_error_number_if_error(
 				m_sys_device.ioctl(
 					fs::File::IoRequest(I_SYS_GETTASK),
@@ -92,10 +88,10 @@ int TaskManager::get_next(TaskInfo & info){
 
 	if( ret < 0 ){
 		info = TaskInfo::invalid();
-		return ret;
+	} else {
+		info = task_attr;
 	}
-
-	info = task_attr;
+	m_id++;
 	return ret;
 }
 

@@ -42,7 +42,7 @@ Printer & sys::operator << (Printer& printer, const sys::SysInfo & a){
 	if( a.name() != "bootloader" ){
 		printer.key("projectId", a.id());
 		if( a.team_id().is_empty() == false ){
-			printer.key("teamId", a.team_id());
+			printer.key("team", a.team_id());
 		}
 		printer.key("bspVersion",	a.bsp_version());
 		printer.key("sosVersion",	a.sos_version());
