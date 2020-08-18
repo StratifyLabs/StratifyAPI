@@ -178,6 +178,10 @@ public:
 		return var::String().format("%ld%09ld", seconds(), nanoseconds());
 	}
 
+	var::String get_string() const {
+		return var::String().format("%ld.%09ld", seconds(), nanoseconds());
+	}
+
 	/*! \details Returns a pointer to a strut timespec. */
 	struct timespec * timespec(){ return &m_value; }
 	/*! \details Returns a pointer to a strut timespec (read-only). */
