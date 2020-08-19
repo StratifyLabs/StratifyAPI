@@ -23,7 +23,7 @@ public:
 		API_ACCESS_COMPOUND(ParseOptions,var::String,delimeters);
 		API_ACCESS_COMPOUND(ParseOptions,var::String,ignore_between);
 		API_ACCESS_BOOL(ParseOptions,count_empty_tokens,false);
-		API_ACCESS_FUNDAMENTAL(ParseOptions,u32,maximum_token_count,0);
+		API_ACCESS_FUNDAMENTAL(ParseOptions,u32,maximum_delimeter_count,0);
 	};
 
 	Tokenizer();

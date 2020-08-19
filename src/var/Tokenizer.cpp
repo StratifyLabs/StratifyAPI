@@ -51,7 +51,7 @@ void Tokenizer::parse(
 				input,
 				Delimeters(options.delimeters()),
 				IgnoreBetween(options.ignore_between()),
-				MaximumCount(options.maximum_token_count())
+				MaximumCount(options.maximum_delimeter_count())
 				);
 }
 
