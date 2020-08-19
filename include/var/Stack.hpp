@@ -1,6 +1,6 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
-#ifndef SAPI_VAR_QUEUE_HPP_
-#define SAPI_VAR_QUEUE_HPP_
+#ifndef SAPI_VAR_STACK_HPP_
+#define SAPI_VAR_STACK_HPP_
 
 #include <new>
 #include <cstdio>
@@ -17,68 +17,48 @@ namespace var {
  * std::queue container class.
  *
  */
-template<typename T> class Queue : public api::WorkObject {
+template<typename T> class Stack : public api::WorkObject {
 public:
 
 	/*! \details Constructs a new Queue. */
-	Queue(){}
+	Stack(){}
 
-	~Queue(){
+	~Stack(){
 	}
 
 	/*! \details Returns a reference to the back item.
-	  *
-	  * The back item is the one that has most recently
-	  * been pushed using push().
-	  *
-	  */
-	T & back(){
+		*
+		* The back item is the one that has most recently
+		* been pushed using push().
+		*
+		*/
+	T & top(){
 		return m_deque.back();
 	}
 
 	/*! \details Returns a read-only reference to the back item.
-	  *
-	  * The back item is the one that has most recently
-	  * been pushed using push().
-	  *
-	  */
-	const T & back() const {
+		*
+		* The back item is the one that has most recently
+		* been pushed using push().
+		*
+		*/
+	const T & top() const {
 		return m_deque.back();
 	}
 
-	/*! \details Returns a read-only reference to the front item.
-	  *
-	  * The front item is the one that has been in
-	  * the queue the longest. It will be popped
-	  * on the next call to pop().
-	  */
-	const T & front() const {
-		return m_deque.front();
-	}
-
-	/*! \details Returns a reference to the front item.
-	  *
-	  * The front item is the one that has been in
-	  * the queue the longest. It will be popped
-	  * on the next call to pop().
-	  */
-	T & front(){
-		return m_deque.front();
-	}
-
 	/*! \details Pushes an item on the queue.
-	  *
-	  * @param value The item to push
-	  *
-	  */
-	Queue& push(const T & value){
+		*
+		* @param value The item to push
+		*
+		*/
+	Stack& push(const T & value){
 		m_deque.push_back(value);
 		return *this;
 	}
 
 	/*! \details Pops an item from the front of the queue. */
-	Queue& pop(){
-		m_deque.pop_front();
+	Stack& pop(){
+		m_deque.pop_back();
 		return *this;
 	}
 
@@ -92,12 +72,12 @@ public:
 	}
 
 	/*! \details Clears the contents of the queue.
-	  *
-	  * This will empty the queue and free all the
-	  * resources associated with it.
-	  *
-	  */
-	Queue& clear(){
+		*
+		* This will empty the queue and free all the
+		* resources associated with it.
+		*
+		*/
+	Stack& clear(){
 		//deconstruct objects in the list using pop
 		m_deque.clear();
 		return *this;
@@ -106,10 +86,8 @@ public:
 
 private:
 	std::deque<T> m_deque;
-
-
 };
 
 
 }
-#endif // SAPI_VAR_QUEUE_HPP_
+#endif // SAPI_VAR_STACK_HPP_
