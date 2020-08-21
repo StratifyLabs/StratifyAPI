@@ -816,6 +816,14 @@ Printer& print_value(Printer& printer, const var::JsonValue & a, const var::Stri
 	void json_access_key_value_pair_real_never_used_##v()
 
 //access functions for working with JsonKeyValue objects
+#define JSON_ACCESS_KEY_VALUE_PAIR_INTEGER(c,k,v) \
+	const var::String& k() const { return key(); } \
+	s32 v() const { return to_integer(); } \
+	s32 get_##v() const { return to_integer(); } \
+	c& set_##v(s32 a){ set_value( var::JsonInteger(a) ); return *this; } \
+	void json_access_key_value_pair_integer_never_used_##v()
+
+//access functions for working with JsonKeyValue objects
 #define JSON_ACCESS_KEY_VALUE_PAIR_BOOL(c,k,v) \
 	const var::String& k() const { return key(); } \
 	bool is_##v() const { return to_bool(); } \
