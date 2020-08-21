@@ -16,8 +16,15 @@ namespace sys {
 class TaskInfo : public api::InfoObject {
 public:
 
+	TaskInfo(){
+		m_value = {0};
+		m_value.tid = static_cast<u32>(-1);
+		m_value.pid = static_cast<u32>(-1);
+	}
+
+
 	/*! \details Constructs a new object with the give task ID. */
-	TaskInfo(int tid = 0){
+	TaskInfo(int tid){
 		m_value = {0};
 		m_value.tid = tid;
 	}
@@ -26,7 +33,7 @@ public:
 		memcpy(&m_value, &attr, sizeof(m_value));
 	}
 
-	static TaskInfo invalid(){ return TaskInfo(-1); }
+	static TaskInfo invalid(){ return TaskInfo(); }
 
 	bool is_valid() const {
 		return m_value.tid != static_cast<u32>(-1);
@@ -104,7 +111,9 @@ public:
 	}
 
 	bool operator == (const TaskInfo & a) const {
-		return a.pid() == pid() && a.thread_id() == thread_id();
+		return a.pid() == pid()
+				&& a.thread_id() == thread_id()
+				&& a.name() == name();
 	}
 
 
