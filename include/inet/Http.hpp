@@ -316,7 +316,7 @@ private:
 	var::String m_header;
 	var::String m_alive_domain;
 	int m_status_code = 0;
-	u32 m_content_length = 0;
+	int m_content_length = 0;
 	bool m_is_keep_alive = false;
 	bool m_is_follow_redirects = true;
 	bool m_is_chunked_transfer_encoding = false;
