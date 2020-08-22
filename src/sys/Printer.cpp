@@ -33,7 +33,8 @@ unsigned int sys::Printer::m_default_color = static_cast<unsigned int>(-1);
 
 using namespace sys;
 
-Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this){
+Printer::Printer() {
+	m_progress_callback.set_callback(Printer::update_progress_callback).set_context(this);
 	m_o_flags = print_8 | print_hex;
 	m_indent = 0;
 	m_progress_width = 50;

@@ -472,7 +472,7 @@ int HttpClient::listen_for_data(
 					 fs::File::PageSize(bytes_incoming),
 					 fs::File::Size(bytes_incoming)
 					 ) != static_cast<int>(bytes_incoming) ){
-				return set_error_number_if_error(api::error_code_inet_failed_to_write_incoming_data_to_file);
+				return set_error_number_if_error(api::error_code_inet_failed_to_write_incoming_chunked_data_to_file);
 			}
 
 			//need to call the progress callback -- what is the total?
@@ -481,7 +481,7 @@ int HttpClient::listen_for_data(
 
 	} else {
 		//read the response from the socket
-		if( m_content_length != 0 ){
+		if( m_content_length > 0 ){
 			int result = destination.write(
 						socket(),
 						fs::File::PageSize(m_transfer_size),
@@ -489,7 +489,7 @@ int HttpClient::listen_for_data(
 						progress_callback
 						);
 			if( result != static_cast<int>(m_content_length) ){
-				return -1;
+				return set_error_number_if_error(api::error_code_inet_failed_to_write_incoming_data_to_file);
 			}
 		}
 	}
