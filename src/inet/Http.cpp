@@ -122,9 +122,13 @@ int HttpClient::head(UrlEncodedString url){
 
 int HttpClient::remove(
 		const var::String & url,
-		const var::String & data){
-
-	return 0;
+		ResponseFile response_file){
+	return query(
+				"DELETE",
+				url,
+				SendFile(nullptr),
+				GetFile(&response_file.argument()),
+				nullptr);
 }
 
 

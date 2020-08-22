@@ -232,9 +232,10 @@ public:
 		return patch(url.argument(), request, response, progress_callback);
 	}
 
+	int remove(const var::String & url,	ResponseFile response);
+
 	//http delete
 	/*! \cond */
-	int remove(const var::String & url, const var::String & data);
 	int options(const var::String & url);
 	int trace(const var::String & url);
 	int connect(const var::String & url);
