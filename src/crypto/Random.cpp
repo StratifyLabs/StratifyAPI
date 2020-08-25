@@ -31,9 +31,9 @@ void Random::finalize(){
 }
 
 int Random::seed(){
-	var::Vector<u32> list(8);
+	var::Array<u32, 64> list;
 	for(u32 & item: list){
-		item = chrono::Clock::get_time().nanoseconds();
+		item = ~chrono::Clock::get_time().nanoseconds();
 		chrono::wait(chrono::Microseconds(item % 1000));
 	}
 
