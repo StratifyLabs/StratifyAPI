@@ -59,6 +59,7 @@ Cli::Cli(
 	}
 }
 
+
 void Cli::handle_version() const {
 #if !defined __link
 	if( is_option("--version") || is_option("-v") ){

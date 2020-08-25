@@ -46,29 +46,9 @@ public:
 	/*! \details Constructs an empty object. */
 	ProgressCallback();
 
-	/*! \details Constructs a fully initialized callback.
-	 *
-	 * @param callback The function to execute
-	 * @param context The context (first argument passed to callback)
-	 *
-	 */
-	explicit ProgressCallback(
-			callback_t callback,
-			void * context = nullptr
-			);
-
 	static int indeterminate_progress_total(){
 		return -1;
 	}
-
-
-	/*! \details Assigns a callback. */
-	void set_callback(bool (*callback)(void*,int,int)){
-		m_update = callback;
-	}
-
-	/*! \details Assigns a context. */
-	void set_context(void * context){ m_context = context; }
 
 	/*! \details Executes the callback if it is valid.
 	 *
@@ -85,8 +65,8 @@ public:
 	static int update_function(const void * context, int value, int total);
 
 private:
-	bool (*m_update)(void*, int, int);
-	void * m_context;
+	API_AF(ProgressCallback,callback_t,callback,nullptr);
+	API_AF(ProgressCallback,void*,context,nullptr);
 
 };
 

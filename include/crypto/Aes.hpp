@@ -80,6 +80,14 @@ public:
 			DestinationPlainData destination_data
 			);
 
+	class CbcCipherData {
+		API_AC(CbcCipherData,var::Data,data);
+		API_AC(CbcCipherData,InitializationVector,initialization_vector);
+	};
+
+	static CbcCipherData get_cbc_cipher_data(const var::Blob & key, const var::Blob & source);
+	static var::Data get_plain_data(const var::Blob & key, const CbcCipherData & source);
+
 private:
 	void * m_context = nullptr;
 	InitializationVector m_initialization_vector;

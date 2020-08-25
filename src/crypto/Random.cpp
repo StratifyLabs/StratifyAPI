@@ -1,6 +1,7 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "var/Data.hpp"
 #include "crypto/Random.hpp"
+#include "chrono/Clock.hpp"
 
 using namespace crypto;
 
@@ -29,6 +30,16 @@ void Random::finalize(){
 	}
 }
 
+int Random::seed(){
+	var::Vector<u32> list(8);
+	for(u32 & item: list){
+		item = chrono::Clock::get_time().nanoseconds();
+		chrono::wait(chrono::Microseconds(item % 1000));
+	}
+
+	return seed(list);
+}
+
 int Random::seed(
 		const var::Reference & source_data
 		){
@@ -55,4 +66,17 @@ int Random::randomize(
 		result = api::error_code_crypto_operation_failed;
 	}
 	return set_error_number_if_error(result);
+}
+
+var::String Random::get_string(var::String::Length length){
+	return get_data(length.argument()/2).to_string();
+}
+
+var::Data Random::get_data(u32 size){
+	Random r;
+	r.initialize();
+	r.seed();
+	var::Data result(size);
+	r.randomize(result);
+	return result;
 }

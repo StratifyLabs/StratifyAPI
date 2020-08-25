@@ -356,7 +356,7 @@ public:
 	 * ```
 		*
 		*/
-	static const char * version(){ return "3.21.1"; }
+	static const char * version(){ return "3.22.1"; }
 
 	/*! \details Returns a c-style string pointer
 	 * to the git hash used to build the Stratify API.
@@ -562,6 +562,8 @@ enum error_codes : s32 {
 	error_code_inet_failed_to_get_header /*! Failed to receive the header (8) */ = -(error_code_flag_inet|8),
 	error_code_inet_failed_wrong_domain = -(error_code_flag_inet|9),
 	error_code_inet_wifi_api_missing = -(error_code_flag_inet|10),
+	error_code_inet_failed_to_write_incoming_chunked_data_to_file /*! Failed  write incoming data to file provided (5) */ = -(error_code_flag_inet|11),
+
 
 	error_code_var_json_unknown = -(error_code_flag_var|1),
 	error_code_var_json_out_of_memory = -(error_code_flag_var|2),

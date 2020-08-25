@@ -5,6 +5,7 @@
 #include "../api/CryptoObject.hpp"
 #include "../arg/Argument.hpp"
 #include "../var/Reference.hpp"
+#include "../var/String.hpp"
 
 namespace crypto {
 
@@ -16,8 +17,13 @@ public:
 	int initialize();
 	void finalize();
 
+	int seed();
 	int seed(const var::Reference & source_data);
 	int randomize(var::Reference& destination_data);
+
+	static var::String get_string(var::String::Length length);
+	static var::Data get_data(u32 size);
+
 
 
 private:

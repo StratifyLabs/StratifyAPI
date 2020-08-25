@@ -232,9 +232,10 @@ public:
 		return patch(url.argument(), request, response, progress_callback);
 	}
 
+	int remove(const var::String & url,	ResponseFile response);
+
 	//http delete
 	/*! \cond */
-	int remove(const var::String & url, const var::String & data);
 	int options(const var::String & url);
 	int trace(const var::String & url);
 	int connect(const var::String & url);
@@ -316,7 +317,7 @@ private:
 	var::String m_header;
 	var::String m_alive_domain;
 	int m_status_code = 0;
-	u32 m_content_length = 0;
+	int m_content_length = 0;
 	bool m_is_keep_alive = false;
 	bool m_is_follow_redirects = true;
 	bool m_is_chunked_transfer_encoding = false;

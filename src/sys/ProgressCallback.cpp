@@ -3,28 +3,19 @@
 
 using namespace sys;
 
-ProgressCallback::ProgressCallback(){
-	m_update = 0;
-	m_context = 0;
-}
-
-ProgressCallback::ProgressCallback(callback_t callback, void * context){
-	m_update = callback;
-	m_context = context;
-}
+ProgressCallback::ProgressCallback(){}
 
 bool ProgressCallback::update(int value, int total) const {
-	if( m_update ){
-		return m_update(m_context, value, total);
+	if( m_callback ){
+		return m_callback(context(), value, total);
 	}
 	//do not abort the operation
 	return false;
 }
 
 int ProgressCallback::update_function(const void * context, int value, int total){
-	const ProgressCallback * progress_callback = (const ProgressCallback*)context;
-	if( progress_callback ){
-		return progress_callback->update(value, total);
+	if( context == nullptr ){
+		return 0;
 	}
-	return 0;
+	return ((ProgressCallback*)context)->update(value,total);
 }

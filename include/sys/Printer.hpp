@@ -59,6 +59,7 @@ struct PrinterFlags {
 	};
 
 	enum color_codes {
+		color_code_none = 0,
 		color_code_default = 39,
 		color_code_black = 30,
 		color_code_red = 31, //RED
@@ -322,7 +323,6 @@ public:
 			);
 
 protected:
-	void print_final_color(enum color_codes code, const char * snippet);
 	virtual void print_final(const char * fmt, ...);
 
 private:

@@ -33,7 +33,8 @@ unsigned int sys::Printer::m_default_color = static_cast<unsigned int>(-1);
 
 using namespace sys;
 
-Printer::Printer() : m_progress_callback(Printer::update_progress_callback, this){
+Printer::Printer() {
+	m_progress_callback.set_callback(Printer::update_progress_callback).set_context(this);
 	m_o_flags = print_8 | print_hex;
 	m_indent = 0;
 	m_progress_width = 50;
@@ -101,11 +102,6 @@ void Printer::set_color_code(u32 code){
 
 }
 
-void Printer::print_final_color(enum color_codes code, const char * snippet){
-	set_color_code(code);
-	print_final(snippet);
-	clear_color_code();
-}
 
 void Printer::print(
 		enum levels verbose_level,
@@ -134,7 +130,9 @@ void Printer::print(
 			print_final("%s: ", key);
 		}
 		if( m_o_flags & print_bold_keys ){ clear_format_code(format_bold); }
-		if( m_o_flags & (print_cyan_keys | print_yellow_keys | print_magenta_keys | print_red_keys) ){ clear_color_code(); }
+		if( m_o_flags & (print_cyan_keys | print_yellow_keys | print_magenta_keys | print_red_keys) ){
+			clear_color_code();
+		}
 	}
 
 	if( value != nullptr ){
@@ -148,8 +146,10 @@ void Printer::print(
 		} else {
 			print_final("%s", value);
 		}
-		if( m_o_flags & (print_green_values | print_yellow_values | print_red_values | print_cyan_values) ){ clear_color_code(); }
 		if( m_o_flags & print_bold_values ){ clear_format_code(format_bold); }
+		if( m_o_flags & (print_green_values | print_yellow_values | print_red_values | print_cyan_values) ){
+			clear_color_code();
+		}
 	}
 
 	if( is_newline ){
