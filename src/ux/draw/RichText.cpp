@@ -50,6 +50,8 @@ void RichText::draw(const DrawingScaledAttributes & attr){
 	StringList raw_token_list = value().split(" ");
 	var::Vector<RichToken> rich_token_list;
 
+	rich_token_list.reserve( raw_token_list.count() );
+
 	for(const String& raw_token: raw_token_list){
 		RichToken entry;
 		if( (raw_token.length() > 2) &&

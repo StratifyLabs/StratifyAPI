@@ -68,6 +68,10 @@ public:
 	Layout& add_component(
 			Component& component
 			);
+
+	Layout& replace_component(
+					const var::String & component_name,
+					Component& component);
 	
 	Layout& set_flow(enum flow flow){
 		m_flow = flow;
@@ -250,6 +254,12 @@ public:
 			Component& component
 			){
 		return static_cast<T&>(Layout::add_component(component));
+	}
+
+	T& replace_component(
+			const var::String & component_name,
+			Component& component){
+		return static_cast<T&>(Layout::replace_component(component_name, component));
 	}
 
 	API_ACCESS_DERIVED_FUNDAMETAL(Layout,T,enum flow,flow)

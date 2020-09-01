@@ -14,7 +14,7 @@ Component::~Component(){
 void Component::examine_visibility(){
 	if( is_ready_to_draw() ){
 		if( m_is_created == false ){
-			printf("fatal %s was note created using Component::create()\n", name().cstring());
+			printf("fatal %s was not created using Component::create()\n", name().cstring());
 			exit(1);
 		}
 

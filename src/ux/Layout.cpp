@@ -53,6 +53,10 @@ bool Layout::transition(
 		}
 	}
 
+	if( next == nullptr ){
+		return false;
+	}
+
 	return transition(next->reinterpret<Layout>());
 }
 
@@ -69,12 +73,12 @@ bool Layout::transition(
 		next_layout->set_enabled_internal(true);
 		return true;
 	}
+
 	return false;
 }
 
 void Layout::examine_visibility(){
 	if( is_ready_to_draw() ){
-
 		if( m_is_created == false ){
 			printf("fatal %s was note created using Component::create()\n", name().cstring());
 			exit(1);
@@ -148,6 +152,25 @@ Layout& Layout::add_component(
 				LayoutComponent(&component)
 				);
 	return *this;
+}
+
+Layout& Layout::replace_component(
+				const var::String & component_name,
+		Component& component){
+	Component * current_component = nullptr;
+
+	for(LayoutComponent& cp: m_component_list){
+		if( cp.component()->name() == component_name ){
+			current_component = cp.component();
+			break;
+		}
+	}
+
+	if( current_component ){
+		delete current_component;
+	}
+
+	return add_component(component);
 }
 
 void Layout::update_drawing_point(
@@ -343,7 +366,6 @@ void Layout::handle_event(const ux::Event & event){
 
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_exit ){
-			printf("exiting %s\n", name().cstring());
 			for(auto component_pointer: m_component_list){
 				component_pointer.component()->set_visible_internal(false);
 			}
