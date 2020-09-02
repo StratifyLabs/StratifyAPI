@@ -60,15 +60,6 @@ public:
 		return m_theme_state;
 	}
 
-	bool is_antialias() const {
-		return m_is_antialias;
-	}
-
-	Component& set_antialias(bool value = true){
-		m_is_antialias = value;
-		return *this;
-	}
-
 	bool is_visible() const {
 		return m_is_visible;
 	}
@@ -172,6 +163,7 @@ protected:
 	bool m_is_visible = false;
 	bool m_is_enabled = true;
 	bool m_is_created = false;
+	bool m_is_busy = false;
 	virtual void examine_visibility();
 
 
@@ -225,6 +217,7 @@ protected:
 
 private:
 	API_ACCESS_BOOL(Component,layout,false);
+	API_ACCESS_BOOL(Component,antialias,true);
 	var::String m_name;
 	//needs to know where on the display it is drawn
 	DrawingAttributes m_reference_drawing_attributes;
@@ -232,7 +225,6 @@ private:
 	sgfx::Bitmap m_local_bitmap;
 	enum sgfx::Theme::styles m_theme_style = sgfx::Theme::style_brand_primary;
 	enum sgfx::Theme::states m_theme_state = sgfx::Theme::state_default;
-	bool m_is_antialias = true;
 	bool m_is_refresh_drawing_pending;
 	sgfx::Region m_refresh_region;
 	Layout * m_parent;

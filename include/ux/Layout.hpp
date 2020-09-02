@@ -2,6 +2,8 @@
 #ifndef SAPI_UX_LAYOUT_HPP
 #define SAPI_UX_LAYOUT_HPP
 
+#include <functional>
+
 #include "Component.hpp"
 #include "TouchGesture.hpp"
 
@@ -36,9 +38,13 @@ public:
 	void set_drawing_area(const DrawingArea & area){
 		m_drawing_area = area;
 	}
-	
+
+	void set_component(Component * component){
+		m_component = component;
+	}
+
 private:
-	Component * m_component;
+	Component * m_component = nullptr;
 	DrawingPoint m_drawing_point;
 	DrawingArea m_drawing_area;
 };
@@ -50,7 +56,7 @@ public:
 	using IsRecursive = arg::Argument<bool, struct LayoutIsRecursiveTag>;
 	using EventHandlerFunction = std::function<void(Layout * layout, const Event & event)>;
 	
-	enum flow {
+	enum flows {
 		flow_vertical,
 		flow_horizontal,
 		flow_free
@@ -69,14 +75,9 @@ public:
 			Component& component
 			);
 
-	Layout& replace_component(
-					const var::String & component_name,
-					Component& component);
-	
-	Layout& set_flow(enum flow flow){
-		m_flow = flow;
-		return *this;
-	}
+	Layout& delete_component(
+					const var::String & component_name);
+
 	
 	Layout& set_vertical_scroll_enabled(bool value = true){
 		m_touch_gesture.set_vertical_drag_enabled(value);
@@ -85,11 +86,6 @@ public:
 	
 	Layout& set_horizontal_scroll_enabled(bool value = true){
 		m_touch_gesture.set_horizontal_drag_enabled(value);
-		return *this;
-	}
-	
-	Layout& set_event_handler(EventHandlerFunction event_handler){
-		m_event_handler = event_handler;
 		return *this;
 	}
 	
@@ -210,15 +206,14 @@ protected:
 
 private:
 	friend class EventLoop;
-	enum flow m_flow;
+	API_AF(Layout,enum flows,flow,flow_free);
+	API_ACCESS_COMPOUND(Layout,var::Vector<LayoutComponent>,component_list);
+	API_ACCESS_COMPOUND(Layout,EventHandlerFunction,event_handler);
 	DrawingPoint m_origin;
 	DrawingArea m_area;
 	sgfx::Point m_touch_last;
 	ux::TouchGesture m_touch_gesture;
-	API_ACCESS_COMPOUND(Layout,var::Vector<LayoutComponent>,component_list);
-	EventHandlerFunction m_event_handler;
 
-	
 	void shift_origin(DrawingPoint shift);
 	drawing_int_t handle_vertical_scroll(sg_int_t scroll);
 	drawing_int_t handle_horizontal_scroll(sg_int_t scroll);
@@ -256,16 +251,16 @@ public:
 		return static_cast<T&>(Layout::add_component(component));
 	}
 
-	T& replace_component(
-			const var::String & component_name,
-			Component& component){
-		return static_cast<T&>(Layout::replace_component(component_name, component));
+	T& delete_component(
+			const var::String & component_name){
+		return static_cast<T&>(Layout::delete_component(component_name));
 	}
 
-	API_ACCESS_DERIVED_FUNDAMETAL(Layout,T,enum flow,flow)
+	API_ACCESS_DERIVED_FUNDAMETAL(Layout,T,enum flows,flow)
 	API_ACCESS_DERIVED_BOOL(Layout,T,vertical_scroll_enabled)
 	API_ACCESS_DERIVED_BOOL(Layout,T,horizontal_scroll_enabled)
 	API_ACCESS_DERIVED_COMPOUND(Layout,T,DrawingArea,drawing_area)
+	API_ACCESS_DERIVED_COMPOUND(Layout,T,EventHandlerFunction,event_handler)
 	API_ACCESS_DERIVED_COMPOUND(Layout,T,DrawingPoint,drawing_point)
 	API_ACCESS_DERIVED_FUNDAMETAL(Layout,T,enum sgfx::Theme::styles,theme_style)
 	API_ACCESS_DERIVED_FUNDAMETAL(Layout,T,enum sgfx::Theme::states,theme_state)

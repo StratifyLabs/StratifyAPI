@@ -11,7 +11,6 @@ Layout::Layout(
 		EventLoop* event_loop
 		) : ComponentAccess(prefix() + name){
 	set_event_loop(event_loop);
-	m_flow = flow_free;
 	m_origin = DrawingPoint(0,0);
 	set_align_left();
 	set_align_top();
@@ -23,7 +22,6 @@ Layout::Layout(
 		EventLoop * event_loop
 		) : ComponentAccess(prefix + name){
 	set_event_loop(event_loop);
-	m_flow = flow_free;
 	m_origin = DrawingPoint(0,0);
 	set_align_left();
 	set_align_top();
@@ -31,8 +29,10 @@ Layout::Layout(
 }
 
 Layout::~Layout(){
-	for(auto component_pointer: m_component_list){
-		delete component_pointer.component();
+	for(LayoutComponent& component_pointer: m_component_list){
+		if( component_pointer.component()->m_is_created ){
+			delete component_pointer.component();
+		}
 	}
 }
 
@@ -45,7 +45,7 @@ bool Layout::transition(
 	}
 
 	Component * next = nullptr;
-	for(auto & cp: m_component_list){
+	for(LayoutComponent & cp: m_component_list){
 		if( (cp.component()->is_layout() ) &&
 				(cp.component()->name() == next_layout_name) ){
 			next = cp.component();
@@ -64,7 +64,7 @@ bool Layout::transition(
 		Layout * next_layout
 		){
 	if( next_layout ){
-		for(auto & cp: m_component_list){
+		for(LayoutComponent& cp: m_component_list){
 			//disable all other layouts
 			if( cp.component()->is_layout() ){
 				cp.component()->set_enabled_internal(false);
@@ -107,7 +107,7 @@ void Layout::examine_visibility(){
 		}
 	} else {
 		//if layout is enabled and visible -- components are not visible
-		for(auto component_pointer: m_component_list){
+		for(LayoutComponent& component_pointer: m_component_list){
 			component_pointer.component()->set_visible_internal(false);
 		}
 		if( m_event_handler ){
@@ -129,7 +129,7 @@ void Layout::set_refresh_region(const sgfx::Region & region){
 					region.area()
 					);
 
-		for(auto component_pointer: m_component_list){
+		for(LayoutComponent& component_pointer: m_component_list){
 			sgfx::Region component_region =
 					component_pointer.component()->reference_drawing_attributes()
 					.calculate_region_on_bitmap();
@@ -148,36 +148,44 @@ Layout& Layout::add_component(
 
 	component.set_event_loop( event_loop() );
 	component.set_parent(this);
+
+	//check to see if a cp has been deleting -- insert the new component there
+	for(LayoutComponent & cp: m_component_list){
+		if( cp.component() == nullptr ){
+			printf("Add component in slot %p\n", &component);
+			cp.set_component(&component);
+			return *this;
+		}
+	}
+
+
 	m_component_list.push_back(
 				LayoutComponent(&component)
 				);
 	return *this;
 }
 
-Layout& Layout::replace_component(
-				const var::String & component_name,
-		Component& component){
-	Component * current_component = nullptr;
+Layout& Layout::delete_component(
+		const var::String & component_name){
 
 	for(LayoutComponent& cp: m_component_list){
 		if( cp.component()->name() == component_name ){
-			current_component = cp.component();
+			cp.component()->set_enabled_internal(false);
+			API_ASSERT(cp.component()->m_is_busy == false);
+			delete cp.component();
+			cp.set_component(nullptr);
 			break;
 		}
 	}
 
-	if( current_component ){
-		delete current_component;
-	}
-
-	return add_component(component);
+	return *this;
 }
 
 void Layout::update_drawing_point(
 		const Component * component,
 		const DrawingPoint & point
 		){
-	for(auto & cp: m_component_list){
+	for(LayoutComponent& cp: m_component_list){
 		if( component == cp.component() ){
 			cp.set_drawing_point(point);
 			shift_origin(DrawingPoint(0,0));
@@ -190,7 +198,7 @@ void Layout::update_drawing_area(
 		const Component * component,
 		const DrawingArea & area
 		){
-	for(auto & cp: m_component_list){
+	for(LayoutComponent& cp: m_component_list){
 		if( component == cp.component() ){
 			cp.set_drawing_area(area);
 			shift_origin(DrawingPoint(0,0));
@@ -262,7 +270,7 @@ DrawingPoint Layout::calculate_next_point(
 		){
 	//depending on the layout, calculate the point of the next component
 	DrawingPoint result(0,0);
-	for(auto component_pointer: m_component_list){
+	for(LayoutComponent& component_pointer: m_component_list){
 		if( m_flow == flow_vertical ){
 			result += DrawingPoint::Y(component_pointer.drawing_area().height());
 		} else if( m_flow == flow_horizontal ){
@@ -309,7 +317,7 @@ void Layout::scroll(DrawingPoint value){
 
 
 void Layout::draw(const DrawingAttributes & attributes){
-	for(const auto& component_pointer: m_component_list){
+	for(const LayoutComponent& component_pointer: m_component_list){
 		if( component_pointer.component()->is_visible() ){
 			component_pointer.component()->draw(attributes);
 		}
@@ -318,7 +326,11 @@ void Layout::draw(const DrawingAttributes & attributes){
 
 void Layout::handle_event(const ux::Event & event){
 	//handle scrolling -- pass events to specific components
-
+	m_is_busy = true;
+	static int tab = 0;
+	tab++;
+	var::String tabs = var::String(" ") * tab;
+	//printf("%sEnter %s\n", tabs.cstring(), name().cstring());
 	if( event.type() == ux::TouchEvent::event_type() ){
 		enum TouchGesture::id event_id = m_touch_gesture.process_event(event);
 		switch(event_id){
@@ -350,24 +362,29 @@ void Layout::handle_event(const ux::Event & event){
 		}
 	}
 
-	for(auto component_pointer: m_component_list){
+	for(LayoutComponent& component_pointer: m_component_list){
 		//pass events to each component
-		if( component_pointer.component()->is_enabled() ){
+		//printf("%schild event %s\n", tabs.cstring(), component_pointer.component()->name().cstring());
+		if( component_pointer.component() && component_pointer.component()->is_enabled() ){
 			component_pointer.component()->handle_event(event);
 		}
 	}
 
-	for(auto component_pointer: m_component_list){
-		if( component_pointer.component()->is_enabled() &&
-				component_pointer.component()->is_refresh_drawing_pending() ){
+	for(LayoutComponent& component_pointer: m_component_list){
+		//printf("%schild refresh %s\n", tabs.cstring(), component_pointer.component()->name().cstring());
+		if( component_pointer.component()
+				&& component_pointer.component()->is_enabled()
+				&& component_pointer.component()->is_refresh_drawing_pending() ){
 			component_pointer.component()->refresh_drawing();
 		}
 	}
 
 	if( event.type() == SystemEvent::event_type() ){
 		if( event.id() == SystemEvent::id_exit ){
-			for(auto component_pointer: m_component_list){
-				component_pointer.component()->set_visible_internal(false);
+			for(LayoutComponent& component_pointer: m_component_list){
+				if( component_pointer.component() ){
+					component_pointer.component()->set_visible_internal(false);
+				}
 			}
 		}
 	}
@@ -375,7 +392,12 @@ void Layout::handle_event(const ux::Event & event){
 	if( m_event_handler ){
 		m_event_handler(this, event);
 	}
-	Component::handle_event(event);
+
+	m_is_busy = false;
+
+	//printf("%sdone\n", tabs.cstring());
+	tab--;
+
 }
 
 drawing_int_t Layout::handle_vertical_scroll(sg_int_t scroll){
@@ -421,7 +443,7 @@ void Layout::generate_free_layout_positions(){
 	drawing_int_t x_max = 0;
 	drawing_int_t y_max = 0;
 
-	for(auto & component: m_component_list){
+	for(LayoutComponent& component: m_component_list){
 		if( component.drawing_point().x() + component.drawing_area().width() > x_max ){
 			x_max = component.drawing_point().x() + component.drawing_area().width();
 		}
@@ -438,7 +460,7 @@ void Layout::generate_vertical_layout_positions(){
 	drawing_int_t drawing_cursor = 0;
 	sg_int_t bitmap_cursor = 0;
 
-	for(auto & component: m_component_list){
+	for(LayoutComponent& component: m_component_list){
 		const DrawingPoint point(0, drawing_cursor);
 		const DrawingArea area(1000, component.drawing_area().height());
 		component.set_drawing_point(point);
@@ -467,7 +489,7 @@ void Layout::generate_horizontal_layout_positions(){
 	drawing_int_t drawing_cursor = 0;
 	sg_int_t bitmap_cursor = 0;
 
-	for(auto & component: m_component_list){
+	for(LayoutComponent& component: m_component_list){
 		const DrawingPoint point(drawing_cursor, 0);
 		const DrawingArea area(component.drawing_area().width(), 1000);
 		component.set_drawing_point(point);
