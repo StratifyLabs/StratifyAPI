@@ -162,7 +162,7 @@ Layout &Layout::add_component(Component &component) {
 Layout &Layout::delete_component(const var::String &component_name) {
 
   for (LayoutComponent &cp : m_component_list) {
-    if (cp.component()->name() == component_name) {
+    if (cp.component() && cp.component()->name() == component_name) {
       cp.component()->set_enabled_internal(false);
       API_ASSERT(cp.component()->m_is_busy == false);
       delete cp.component();
