@@ -18,6 +18,7 @@ set(SOURCES
 	Layout.cpp
 	Graph.cpp
 	Separator.cpp
+	TextArea.cpp
 
 	#Drawing primitives
 	Drawing.cpp

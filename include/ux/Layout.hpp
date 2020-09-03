@@ -1,4 +1,5 @@
-/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
+             // LICENSE.md for rights.
 #ifndef SAPI_UX_LAYOUT_HPP
 #define SAPI_UX_LAYOUT_HPP
 
@@ -11,271 +12,230 @@ namespace ux {
 
 class LayoutComponent {
 public:
-	LayoutComponent(
-			Component * component
-			){
-		m_component = component;
-		m_drawing_point = component->reference_drawing_attributes().point();
-		m_drawing_area = component->reference_drawing_attributes().area();
-	}
-	
-	Component * component() const {
-		return m_component;
-	}
-	
-	const DrawingPoint & drawing_point() const {
-		return m_drawing_point;
-	}
-	
-	const DrawingArea & drawing_area() const {
-		return m_drawing_area;
-	}
-	
-	void set_drawing_point(const DrawingPoint & point){
-		m_drawing_point = point;
-	}
-	
-	void set_drawing_area(const DrawingArea & area){
-		m_drawing_area = area;
-	}
+  LayoutComponent(Component *component) {
+    m_component = component;
+    m_drawing_point = component->reference_drawing_attributes().point();
+    m_drawing_area = component->reference_drawing_attributes().area();
+  }
 
-	void set_component(Component * component){
-		m_component = component;
-	}
+  Component *component() const { return m_component; }
+
+  const DrawingPoint &drawing_point() const { return m_drawing_point; }
+
+  const DrawingArea &drawing_area() const { return m_drawing_area; }
+
+  void set_drawing_point(const DrawingPoint &point) { m_drawing_point = point; }
+
+  void set_drawing_area(const DrawingArea &area) { m_drawing_area = area; }
+
+  void set_component(Component *component) { m_component = component; }
 
 private:
-	Component * m_component = nullptr;
-	DrawingPoint m_drawing_point;
-	DrawingArea m_drawing_area;
+  Component *m_component = nullptr;
+  DrawingPoint m_drawing_point;
+  DrawingArea m_drawing_area;
 };
 
-
-class Layout : public ComponentAccess<Layout>{
+class Layout : public ComponentAccess<Layout> {
 public:
-	
-	using IsRecursive = arg::Argument<bool, struct LayoutIsRecursiveTag>;
-	using EventHandlerFunction = std::function<void(Layout * layout, const Event & event)>;
-	
-	enum flows {
-		flow_vertical,
-		flow_horizontal,
-		flow_free
-	};
-	
-	COMPONENT_PREFIX(Layout)
+  using IsRecursive = arg::Argument<bool, struct LayoutIsRecursiveTag>;
+  using EventHandlerFunction
+    = std::function<void(Layout *layout, const Event &event)>;
 
-	Layout(
-			const var::String & name,
-			EventLoop * event_loop
-			);
+  enum flows { flow_vertical, flow_horizontal, flow_free };
 
-	virtual ~Layout();
-	
-	Layout& add_component(
-			Component& component
-			);
+  COMPONENT_PREFIX(Layout)
 
-	Layout& delete_component(
-					const var::String & component_name);
+  Layout(const var::String &name, EventLoop *event_loop);
 
-	
-	Layout& set_vertical_scroll_enabled(bool value = true){
-		m_touch_gesture.set_vertical_drag_enabled(value);
-		return *this;
-	}
-	
-	Layout& set_horizontal_scroll_enabled(bool value = true){
-		m_touch_gesture.set_horizontal_drag_enabled(value);
-		return *this;
-	}
-	
-	void update_drawing_area(
-			const Component * component,
-			const DrawingArea & area
-			);
-	
-	void update_drawing_area(
-			const var::String & name,
-			const DrawingArea & area
-			){
-		update_drawing_area(
-					find<Component>(name), area
-					);
-	}
-	
-	void update_drawing_point(
-			const Component * component,
-			const DrawingPoint & point
-			);
-	
-	void update_drawing_point(
-			const var::String & name,
-			const DrawingPoint & point
-			){
-		update_drawing_point(
-					find<Component>(name), point
-					);
-	}
+  virtual ~Layout();
 
-	bool is_owner(const Component * component){
-		if( component == nullptr ){
-			return false;
-		}
+  Layout &add_component(Component &component);
 
-		for(LayoutComponent& cp: m_component_list){
-			if( cp.component() == component ){
-				return true;
-			}
-			if( cp.component()->is_layout() ){
-				if( static_cast<Layout*>(cp.component())->is_owner(component) ){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	Layout * find_layout(const var::String & name){
-		for(LayoutComponent& cp: m_component_list){
-			if( (cp.component()->name() == name) && cp.component()->is_layout() ){
-				return static_cast<Layout*>(cp.component());
-			}
-		}
-		return nullptr;
-	}
-	
-	template<class T, bool is_fatal = true> T * search(
-			const var::String & name
-			){
-		for(LayoutComponent& cp: m_component_list){
-			if( cp.component()->is_layout() ){
-				T * result = static_cast<Layout*>(cp.component())->search<T, false>(name);
-				if( result ){ return result; }
-			}
-			
-			if(
-				 (cp.component()->name() == name)
-				 || (cp.component()->name() == T::get_name(name))
-				 ){
-				return static_cast<T*>(cp.component());
-			}
-		}
-		if( is_fatal ){
-			printf("Failed to search %s\n", name.cstring());
-			abort();
-		}
-		return nullptr;
-	}
+  Layout &delete_component(const var::String &component_name);
 
-	template<class T, bool is_fatal = true> T * find(
-			const var::String & name
-			){
-		for(LayoutComponent& cp: m_component_list){
-			if(
-				 (cp.component()->name() == name)
-				 || (cp.component()->name() == T::get_name(name))
-				 ){
-				return static_cast<T*>(cp.component());
-			}
-		}
-		if( is_fatal ){
-			printf("Failed to find %s\n", name.cstring());
-			abort();
-		}
-		return nullptr;
-	}
-	
-	bool transition(
-			const var::String & next_layout_name
-			);
+  Layout &set_vertical_scroll_enabled(bool value = true) {
+    m_touch_gesture.set_vertical_drag_enabled(value);
+    return *this;
+  }
 
-	bool transition(
-			Layout * next_layout
-			);
-	
-	void scroll(DrawingPoint value);
-	
-	virtual void draw(const DrawingAttributes & attributes);
-	virtual void handle_event(const ux::Event & event);
-	
+  Layout &set_horizontal_scroll_enabled(bool value = true) {
+    m_touch_gesture.set_horizontal_drag_enabled(value);
+    return *this;
+  }
+
+  void update_drawing_area(const Component *component, const DrawingArea &area);
+
+  void update_drawing_area(const var::String &name, const DrawingArea &area) {
+    update_drawing_area(find<Component>(name), area);
+  }
+
+  void
+  update_drawing_point(const Component *component, const DrawingPoint &point);
+
+  void
+  update_drawing_point(const var::String &name, const DrawingPoint &point) {
+    update_drawing_point(find<Component>(name), point);
+  }
+
+  bool is_owner(const Component *component) {
+    if (component == nullptr) {
+      return false;
+    }
+
+    for (LayoutComponent &cp : m_component_list) {
+      if (cp.component() == component) {
+        return true;
+      }
+      if (cp.component()->is_layout()) {
+        if (static_cast<Layout *>(cp.component())->is_owner(component)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  Layout *find_layout(const var::String &name) {
+    for (LayoutComponent &cp : m_component_list) {
+      if ((cp.component()->name() == name) && cp.component()->is_layout()) {
+        return static_cast<Layout *>(cp.component());
+      }
+    }
+    return nullptr;
+  }
+
+  template <class T, bool is_fatal = true> T *search(const var::String &name) {
+    for (LayoutComponent &cp : m_component_list) {
+      if (cp.component()->is_layout()) {
+        T *result
+          = static_cast<Layout *>(cp.component())->search<T, false>(name);
+        if (result) {
+          return result;
+        }
+      }
+
+      if (
+        (cp.component()->name() == name)
+        || (cp.component()->name() == T::get_name(name))) {
+        return static_cast<T *>(cp.component());
+      }
+    }
+    if (is_fatal) {
+      printf("Failed to search %s\n", name.cstring());
+      abort();
+    }
+    return nullptr;
+  }
+
+  template <class T, bool is_fatal = true> T *find(const var::String &name) {
+    for (LayoutComponent &cp : m_component_list) {
+      if (
+        (cp.component()->name() == name)
+        || (cp.component()->name() == T::get_name(name))) {
+        return static_cast<T *>(cp.component());
+      }
+    }
+    if (is_fatal) {
+      printf("Failed to find %s\n", name.cstring());
+      abort();
+    }
+    return nullptr;
+  }
+
+  bool transition(const var::String &next_layout_name);
+
+  bool transition(Layout *next_layout);
+
+  void scroll(DrawingPoint value);
+
+  virtual void draw(const DrawingAttributes &attributes);
+  virtual void handle_event(const ux::Event &event);
+
 protected:
-	Layout(
-			const var::String& prefix, const var::String & name,
-			EventLoop * event_loop
-			);
+  Layout(
+    const var::String &prefix,
+    const var::String &name,
+    EventLoop *event_loop);
 
 private:
-	friend class EventLoop;
-	API_AF(Layout,enum flows,flow,flow_free);
-	API_ACCESS_COMPOUND(Layout,var::Vector<LayoutComponent>,component_list);
-	API_ACCESS_COMPOUND(Layout,EventHandlerFunction,event_handler);
-	DrawingPoint m_origin;
-	DrawingArea m_area;
-	sgfx::Point m_touch_last;
-	ux::TouchGesture m_touch_gesture;
+  friend class EventLoop;
+  API_AF(Layout, enum flows, flow, flow_free);
+  API_ACCESS_COMPOUND(Layout, var::Vector<LayoutComponent>, component_list);
+  API_ACCESS_COMPOUND(Layout, EventHandlerFunction, event_handler);
+  DrawingPoint m_origin;
+  DrawingArea m_area;
+  sgfx::Point m_touch_last;
+  ux::TouchGesture m_touch_gesture;
 
-	void shift_origin(DrawingPoint shift);
-	drawing_int_t handle_vertical_scroll(sg_int_t scroll);
-	drawing_int_t handle_horizontal_scroll(sg_int_t scroll);
-	
-	DrawingPoint calculate_next_point(
-			const DrawingPoint& point,
-			const DrawingArea& area
-			);
-	
-	void generate_layout_positions();
-	void generate_vertical_layout_positions();
-	void generate_horizontal_layout_positions();
-	void generate_free_layout_positions();
-	
-	void examine_visibility();
-	
-	void set_refresh_region(const sgfx::Region & region);
-	void touch_drawing_attributes(){
-		shift_origin(DrawingPoint(0,0));
-	}
+  void shift_origin(DrawingPoint shift);
+  drawing_int_t handle_vertical_scroll(sg_int_t scroll);
+  drawing_int_t handle_horizontal_scroll(sg_int_t scroll);
+
+  DrawingPoint
+  calculate_next_point(const DrawingPoint &point, const DrawingArea &area);
+
+  void generate_layout_positions();
+  void generate_vertical_layout_positions();
+  void generate_horizontal_layout_positions();
+  void generate_free_layout_positions();
+
+  void examine_visibility();
+
+  void set_refresh_region(const sgfx::Region &region);
+  void touch_drawing_attributes() { shift_origin(DrawingPoint(0, 0)); }
 };
 
-template<class T> class LayoutAccess : public Layout {
+template <class T> class LayoutAccess : public Layout {
 public:
-	
-	LayoutAccess<T>(
-			const var::String & name,
-			EventLoop * event_loop
-			) : Layout("", name, event_loop){}
-	
-	
-	T& add_component(
-			Component& component
-			){
-		return static_cast<T&>(Layout::add_component(component));
-	}
+  LayoutAccess<T>(const var::String &name, EventLoop *event_loop)
+    : Layout("", name, event_loop) {}
 
-	T& delete_component(
-			const var::String & component_name){
-		return static_cast<T&>(Layout::delete_component(component_name));
-	}
+  T &add_component(Component &component) {
+    return static_cast<T &>(Layout::add_component(component));
+  }
 
-	API_ACCESS_DERIVED_FUNDAMETAL(Layout,T,enum flows,flow)
-	API_ACCESS_DERIVED_BOOL(Layout,T,vertical_scroll_enabled)
-	API_ACCESS_DERIVED_BOOL(Layout,T,horizontal_scroll_enabled)
-	API_ACCESS_DERIVED_COMPOUND(Layout,T,DrawingArea,drawing_area)
-	API_ACCESS_DERIVED_COMPOUND(Layout,T,EventHandlerFunction,event_handler)
-	API_ACCESS_DERIVED_COMPOUND(Layout,T,DrawingPoint,drawing_point)
-	API_ACCESS_DERIVED_FUNDAMETAL(Layout,T,enum sgfx::Theme::styles,theme_style)
-	API_ACCESS_DERIVED_FUNDAMETAL(Layout,T,enum sgfx::Theme::states,theme_state)
-	
-	T& set_enabled(bool value = true){
-		Component::set_enabled_internal(value);
-		return static_cast<T&>(*this);
-	}
-	
-	COMPONENT_ACCESS_CREATE()
-	
-	protected:
+  T &delete_component(const var::String &component_name) {
+    return static_cast<T &>(Layout::delete_component(component_name));
+  }
 
+  API_ACCESS_DERIVED_FUNDAMETAL(Layout, T, enum flows, flow)
+  API_ACCESS_DERIVED_BOOL(Layout, T, vertical_scroll_enabled)
+  API_ACCESS_DERIVED_BOOL(Layout, T, horizontal_scroll_enabled)
+  API_ACCESS_DERIVED_COMPOUND(Layout, T, DrawingArea, drawing_area)
+  API_ACCESS_DERIVED_COMPOUND(Layout, T, EventHandlerFunction, event_handler)
+  API_ACCESS_DERIVED_COMPOUND(Layout, T, DrawingPoint, drawing_point)
+  API_ACCESS_DERIVED_FUNDAMETAL(
+    Layout,
+    T,
+    enum sgfx::Theme::styles,
+    theme_style)
+  API_ACCESS_DERIVED_FUNDAMETAL(
+    Layout,
+    T,
+    enum sgfx::Theme::states,
+    theme_state)
+
+  T &set_enabled(bool value = true) {
+    Component::set_enabled_internal(value);
+    return static_cast<T &>(*this);
+  }
+
+  T &set_drawing_area(drawing_size_t width, drawing_size_t height) {
+    Layout::set_drawing_area(DrawingArea(width, height));
+    return static_cast<T &>(*this);
+  }
+
+  T &set_drawing_point(drawing_int_t x, drawing_int_t y) {
+    Layout::set_drawing_point(DrawingPoint(x, y));
+    return static_cast<T &>(*this);
+  }
+
+  COMPONENT_ACCESS_CREATE()
+
+protected:
 };
 
-}
+} // namespace ux
 
 #endif // SAPI_UX_LAYOUT_HPP

@@ -18,6 +18,7 @@ namespace ux {}
 #include "ux/Scene.hpp"
 #include "ux/Slider.hpp"
 #include "ux/TouchGesture.hpp"
+#include "ux/TextArea.hpp"
 #include "ux/ToggleSwitch.hpp"
 #include "ux/Separator.hpp"
 #include "ux/Graph.hpp"
