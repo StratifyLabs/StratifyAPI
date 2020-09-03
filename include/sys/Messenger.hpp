@@ -103,8 +103,8 @@ private:
 	u16 m_max_message_size;
 	u16 m_timeout_ms;
 	File m_device;
-	sys::Mutex m_mutex;
-	var::Data m_message_data;
+        Mutex m_mutex;
+        var::Data m_message_data;
 };
 
 }

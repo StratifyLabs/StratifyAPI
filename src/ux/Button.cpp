@@ -54,7 +54,7 @@ void Button::handle_event(const ux::Event &event) {
           && (theme_state() == Theme::state_highlighted)) {
           toggle();
           m_hold_timer.stop();
-          event_loop()->handle_event(
+          event_loop()->trigger_event(
             ButtonEvent(ButtonEvent::id_released, *this));
         }
 
@@ -69,7 +69,8 @@ void Button::handle_event(const ux::Event &event) {
         (touch_event.id() == ux::TouchEvent::id_pressed)
         && contains(touch_event.point())) {
         toggle();
-        event_loop()->handle_event(ButtonEvent(ButtonEvent::id_pressed, *this));
+        event_loop()->trigger_event(
+          ButtonEvent(ButtonEvent::id_pressed, *this));
 
         m_hold_timer.restart();
 
@@ -87,10 +88,8 @@ void Button::handle_event(const ux::Event &event) {
         m_hold_timer.is_running()
         && (m_hold_timer > theme()->button_hold_duration())) {
         m_hold_timer.stop();
-        event_loop()->handle_event(ButtonEvent(ButtonEvent::id_held, *this));
+        event_loop()->trigger_event(ButtonEvent(ButtonEvent::id_held, *this));
       }
     }
   }
-
-  Component::handle_event(event);
 }

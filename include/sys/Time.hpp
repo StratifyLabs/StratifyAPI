@@ -1,8 +1,8 @@
-/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
+             // LICENSE.md for rights.
 
 #ifndef SAPI_SYS_TIME_
 #define SAPI_SYS_TIME_
-
 
 #include "../chrono/Time.hpp"
 
@@ -11,7 +11,5 @@ namespace sys {
 typedef chrono::Time Time;
 }
 /*! \endcond */
-
-
 
 #endif /* SAPI_SYS_TIME_ */

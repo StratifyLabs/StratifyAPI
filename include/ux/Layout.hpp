@@ -144,7 +144,6 @@ public:
   }
 
   bool transition(const var::String &next_layout_name);
-
   bool transition(Layout *next_layout);
 
   void scroll(DrawingPoint value);
@@ -167,6 +166,7 @@ private:
   DrawingArea m_area;
   sgfx::Point m_touch_last;
   ux::TouchGesture m_touch_gesture;
+  Layout *m_transition_layout = nullptr;
 
   void shift_origin(DrawingPoint shift);
   drawing_int_t handle_vertical_scroll(sg_int_t scroll);
@@ -184,6 +184,8 @@ private:
 
   void set_refresh_region(const sgfx::Region &region);
   void touch_drawing_attributes() { shift_origin(DrawingPoint(0, 0)); }
+
+  void execute_transition();
 };
 
 template <class T> class LayoutAccess : public Layout {

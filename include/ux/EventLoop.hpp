@@ -1,73 +1,57 @@
-/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
+             // LICENSE.md for rights.
 #ifndef SAPI_UX_EVENTLOOP_HPP
 #define SAPI_UX_EVENTLOOP_HPP
 
-#include "Layout.hpp"
-#include "../hal/Display.hpp"
 #include "../chrono/Timer.hpp"
+#include "../hal/Display.hpp"
 #include "../sgfx/Theme.hpp"
+#include "Layout.hpp"
 
 namespace ux {
 
 class EventLoop {
 public:
-	EventLoop();
+  EventLoop();
 
-	int loop(
-			Layout & layout,
-			const sgfx::Theme & theme,
-			hal::Display & display
-			);
+  int loop(Layout &layout, const sgfx::Theme &theme, hal::Display &display);
 
-	const chrono::Timer & timer(){
-		return m_timer;
-	}
+  const chrono::Timer &timer() { return m_timer; }
 
-	void handle_event(const Event & event);
-	/*! \details Process events should be implemented
-		* to call handle_event() for each
-		* event in the system that happens.
-		*
-		*/
-	virtual void process_events() = 0;
+  void handle_event(const Event &event);
+  /*! \details Process events should be implemented
+   * to call handle_event() for each
+   * event in the system that happens.
+   *
+   */
+  virtual void process_events() = 0;
 
-	void trigger_event(const Event & event){
-		handle_event(event);
-	}
+  void trigger_event(const Event &event) { handle_event(event); }
 
+  void set_update_period(const chrono::MicroTime &duration) {
+    m_update_period = duration;
+  }
 
-	void set_update_period(
-			const chrono::MicroTime & duration
-			){
-		m_update_period = duration;
-	}
+  const sgfx::Theme *theme() const { return m_theme; }
 
-	const sgfx::Theme * theme() const {
-		return m_theme;
-	}
+  hal::Display *display() { return m_display; }
 
-	hal::Display * display(){
-		return m_display;
-	}
+  const hal::Display *display() const { return m_display; }
 
-	const hal::Display * display() const {
-		return m_display;
-	}
-
-	const Layout * layout() const { return m_layout; }
-	Layout * layout(){ return m_layout; }
+  const Layout *layout() const { return m_layout; }
+  Layout *layout() { return m_layout; }
 
 private:
-	chrono::Timer m_timer;
-	chrono::Timer m_update_timer;
-	chrono::MicroTime m_update_period;
-	Layout * m_layout;
-	hal::Display * m_display;
-	const sgfx::Theme * m_theme;
+  chrono::Timer m_timer;
+  chrono::Timer m_update_timer;
+  chrono::MicroTime m_update_period;
+  Layout *m_layout;
+  hal::Display *m_display;
+  const sgfx::Theme *m_theme;
 
-	void process_update_event();
+  void process_update_event();
 };
 
-}
+} // namespace ux
 
 #endif // SAPI_UX_EVENTLOOP_HPP

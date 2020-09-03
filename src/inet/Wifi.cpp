@@ -1,96 +1,116 @@
-#include "chrono.hpp"
 
 #include "inet/Wifi.hpp"
-
+#include "chrono.hpp"
+#include "sys/Printer.hpp"
 
 #if defined __link
 
 int wifi_no_warning = 0;
 
 #else
+
+namespace sys {
+
+Printer &operator<<(Printer &printer, const inet::WifiSsidInfo &a) {
+  printer.key("name", a.get_name());
+  printer.key("channel", var::String::number(a.channel()));
+  printer.key("rssi", var::String::number(a.rssi()));
+  printer.key("security", var::String::number(a.security()));
+  return printer;
+}
+Printer &operator<<(Printer &printer, const inet::WifiIpInfo &a) {
+  printer.key("ip", a.get_ip_address().to_string());
+  printer.key("dns", a.get_dns_address().to_string());
+  printer.key("subnet", a.get_subnet_mask().to_string());
+  printer.key("gateway", a.get_gateway_address().to_string());
+  return printer;
+}
+
+Printer &operator<<(Printer &printer, const inet::WifiInfo &a) {
+  printer.key("valid", a.is_valid());
+  printer.key("connected", a.is_connected());
+  printer.key("rssi", var::String::number(a.rssi()));
+  printer.open_object("ip");
+  printer << a.get_ip_info();
+  printer.close_object();
+  return printer;
+}
+
+} // namespace sys
+
 using namespace inet;
 
 WifiApi Wifi::m_api;
 
-Wifi::Wifi(){
-
-}
-
+Wifi::Wifi() {}
 
 var::Vector<WifiSsidInfo> Wifi::scan(
-		const WifiScanAttributes & attributes,
-		const chrono::MicroTime & timeout
-		){
-	if( start_scan(attributes) < 0 ){
-		return var::Vector<WifiSsidInfo>();
-	}
+  const WifiScanAttributes &attributes,
+  const chrono::MicroTime &timeout) {
+  if (start_scan(attributes) < 0) {
+    return var::Vector<WifiSsidInfo>();
+  }
 
-	Timer t;
-	t.start();
+  chrono::Timer t;
+  t.start();
 
-	while((t < timeout) && is_scan_busy() ){
-		wait(Milliseconds(50));
-	}
+  while ((t < timeout) && is_scan_busy()) {
+    wait(Milliseconds(50));
+  }
 
-	return get_ssid_info_list();
+  return get_ssid_info_list();
 }
 
+var::Vector<WifiSsidInfo> Wifi::get_ssid_info_list() {
+  var::Vector<WifiSsidInfo> result;
 
-var::Vector<WifiSsidInfo> Wifi::get_ssid_info_list(){
-	var::Vector<WifiSsidInfo> result;
+  int count = api()->get_scan_count(m_context);
+  for (int i = 0; i < count; i++) {
+    wifi_ssid_info_t info;
+    if (
+      set_error_number_if_error(api()->get_ssid_info(m_context, i, &info))
+      < 0) {
+      return result;
+    }
 
-	int count = api()->get_scan_count(m_context);
-	for(int i=0; i < count; i++){
-		wifi_ssid_info_t info;
-		if(
-			 set_error_number_if_error(
-				 api()->get_ssid_info(m_context, i, &info)
-				 ) < 0 ){
-			return result;
-		}
+    result.push_back(WifiSsidInfo(info));
+  }
 
-		result.push_back(WifiSsidInfo(info));
-	}
+  return result;
+}
 
-	return result;
+int Wifi::start_connect(
+  const WifiSsidInfo &ssid_info,
+  const WifiAuthInfo &auth) {
+  return set_error_number_if_error(
+    api()->connect(m_context, &ssid_info.info(), &auth.auth()));
 }
 
 WifiIpInfo Wifi::connect(
-		const WifiSsidInfo & ssid_info,
-		const WifiAuthInfo & auth,
-		const chrono::MicroTime & timeout
-		){
-	int result
-			= set_error_number_if_error(
-				api()->connect(
-					m_context,
-					&ssid_info.info(),
-					&auth.auth()
-					)
-				);
+  const WifiSsidInfo &ssid_info,
+  const WifiAuthInfo &auth,
+  const chrono::MicroTime &timeout) {
+  int result = set_error_number_if_error(
+    api()->connect(m_context, &ssid_info.info(), &auth.auth()));
 
-	if( result < 0 ){
-		return WifiIpInfo();
-	}
+  if (result < 0) {
+    return WifiIpInfo();
+  }
 
-	chrono::Timer t;
-	t.start();
-	WifiInfo info;
-	do {
-		chrono::wait(chrono::Milliseconds(50));
-		info = get_info();
-	} while(
-					(t < timeout)
-					&& (!info.is_connected()
-					|| !info.get_ip_info().is_valid())
-					);
+  chrono::Timer t;
+  t.start();
+  WifiInfo info;
+  do {
+    chrono::wait(chrono::Milliseconds(50));
+    info = get_info();
+  } while ((t < timeout)
+           && (!info.is_connected() || !info.get_ip_info().is_valid()));
 
-	if( info.is_connected() && info.get_ip_info().is_valid() ){
-		return info.get_ip_info();
-	}
+  if (info.is_connected() && info.get_ip_info().is_valid()) {
+    return info.get_ip_info();
+  }
 
-	return WifiIpInfo();
+  return WifiIpInfo();
 }
-
 
 #endif

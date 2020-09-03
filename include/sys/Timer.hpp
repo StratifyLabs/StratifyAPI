@@ -5,7 +5,6 @@
 
 #include "../chrono/Timer.hpp"
 
-
 namespace sys {
 typedef chrono::Timer Timer;
 }
