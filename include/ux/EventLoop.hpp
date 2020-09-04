@@ -6,7 +6,7 @@
 #include "../chrono/Timer.hpp"
 #include "../hal/Display.hpp"
 #include "../sgfx/Theme.hpp"
-#include "Layout.hpp"
+#include "Controller.hpp"
 
 namespace ux {
 
@@ -14,11 +14,13 @@ class EventLoop {
 public:
   EventLoop();
 
-  int loop(Layout &layout, const sgfx::Theme &theme, hal::Display &display);
+  int loop(
+    Controller &controller,
+    const sgfx::Theme &theme,
+    hal::Display &display);
 
   const chrono::Timer &timer() { return m_timer; }
 
-  void handle_event(const Event &event);
   /*! \details Process events should be implemented
    * to call handle_event() for each
    * event in the system that happens.
@@ -26,7 +28,12 @@ public:
    */
   virtual void process_events() = 0;
 
-  void trigger_event(const Event &event) { handle_event(event); }
+  void trigger_event(const Event &event);
+  void forward_event(bool is_forward, const Event &event) {
+    if (is_forward) {
+      trigger_event(event);
+    }
+  }
 
   void set_update_period(const chrono::MicroTime &duration) {
     m_update_period = duration;
@@ -38,14 +45,14 @@ public:
 
   const hal::Display *display() const { return m_display; }
 
-  const Layout *layout() const { return m_layout; }
-  Layout *layout() { return m_layout; }
+  const Controller *controller() const { return m_controller; }
+  Controller *controller() { return m_controller; }
 
 private:
   chrono::Timer m_timer;
   chrono::Timer m_update_timer;
   chrono::MicroTime m_update_period;
-  Layout *m_layout;
+  Controller *m_controller;
   hal::Display *m_display;
   const sgfx::Theme *m_theme;
 

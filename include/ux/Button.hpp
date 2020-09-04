@@ -9,17 +9,15 @@
 
 namespace ux {
 
-class Button;
-
-class ButtonEvent : public EventObject<Button, EVENT_TYPE('_', 'b', 't', 'n')> {
-public:
-  enum button_id { id_none, id_active, id_pressed, id_released, id_held };
-
-  ButtonEvent(enum button_id id, Button &button) : EventObject(id, &button) {}
-};
-
 class Button : public ComponentAccess<Button> {
 public:
+  class Event : public EventObject<Button, EVENT_TYPE('_', 'b', 't', 'n')> {
+  public:
+    enum button_id { id_none, id_active, id_pressed, id_released, id_held };
+
+    Event(enum button_id id, Button &button) : EventObject(id, &button) {}
+  };
+
   COMPONENT_PREFIX(Button)
 
   Button(const var::String &name) : ComponentAccess(prefix() + name) {

@@ -61,11 +61,12 @@ void ToggleSwitch::draw(const DrawingScaledAttributes &attributes) {
 
 void ToggleSwitch::handle_event(const ux::Event &event) {
   // change the state when an event happens in the component
-  if (event.type() == ux::TouchEvent::event_type()) {
-    const ux::TouchEvent &touch_event = event.reinterpret<ux::TouchEvent>();
+  if (event.type() == TouchGesture::Event::event_type()) {
+    const TouchGesture::Event &touch_event
+      = event.reinterpret<ux::TouchGesture::Event>();
 
     if (
-      (touch_event.id() == ux::TouchEvent::id_released)
+      (touch_event.id() == TouchGesture::Event::id_released)
       && contains(touch_event.point())) {
       toggle();
 

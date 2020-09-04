@@ -10,37 +10,37 @@
 
 namespace ux {
 
-class LayoutComponent {
-public:
-  LayoutComponent(Component *component) {
-    m_component = component;
-    m_drawing_point = component->reference_drawing_attributes().point();
-    m_drawing_area = component->reference_drawing_attributes().area();
-  }
-
-  Component *component() const { return m_component; }
-
-  const DrawingPoint &drawing_point() const { return m_drawing_point; }
-
-  const DrawingArea &drawing_area() const { return m_drawing_area; }
-
-  void set_drawing_point(const DrawingPoint &point) { m_drawing_point = point; }
-
-  void set_drawing_area(const DrawingArea &area) { m_drawing_area = area; }
-
-  void set_component(Component *component) { m_component = component; }
-
-private:
-  Component *m_component = nullptr;
-  DrawingPoint m_drawing_point;
-  DrawingArea m_drawing_area;
-};
-
 class Layout : public ComponentAccess<Layout> {
 public:
   using IsRecursive = arg::Argument<bool, struct LayoutIsRecursiveTag>;
-  using EventHandlerFunction
-    = std::function<void(Layout *layout, const Event &event)>;
+
+  class Item {
+  public:
+    Item(Component *component) {
+      m_component = component;
+      m_drawing_point = component->reference_drawing_attributes().point();
+      m_drawing_area = component->reference_drawing_attributes().area();
+    }
+
+    Component *component() const { return m_component; }
+
+    const DrawingPoint &drawing_point() const { return m_drawing_point; }
+
+    const DrawingArea &drawing_area() const { return m_drawing_area; }
+
+    void set_drawing_point(const DrawingPoint &point) {
+      m_drawing_point = point;
+    }
+
+    void set_drawing_area(const DrawingArea &area) { m_drawing_area = area; }
+
+    void set_component(Component *component) { m_component = component; }
+
+  private:
+    Component *m_component = nullptr;
+    DrawingPoint m_drawing_point;
+    DrawingArea m_drawing_area;
+  };
 
   enum flows { flow_vertical, flow_horizontal, flow_free };
 
@@ -51,7 +51,6 @@ public:
   virtual ~Layout();
 
   Layout &add_component(Component &component);
-
   Layout &delete_component(const var::String &component_name);
 
   Layout &set_vertical_scroll_enabled(bool value = true) {
@@ -83,11 +82,11 @@ public:
       return false;
     }
 
-    for (LayoutComponent &cp : m_component_list) {
+    for (Item &cp : m_component_list) {
       if (cp.component() == component) {
         return true;
       }
-      if (cp.component()->is_layout()) {
+      if (cp.component() && cp.component()->is_layout()) {
         if (static_cast<Layout *>(cp.component())->is_owner(component)) {
           return true;
         }
@@ -97,8 +96,10 @@ public:
   }
 
   Layout *find_layout(const var::String &name) {
-    for (LayoutComponent &cp : m_component_list) {
-      if ((cp.component()->name() == name) && cp.component()->is_layout()) {
+    for (Item &cp : m_component_list) {
+      if (
+        cp.component() && (name == cp.component()->name())
+        && cp.component()->is_layout()) {
         return static_cast<Layout *>(cp.component());
       }
     }
@@ -106,8 +107,8 @@ public:
   }
 
   template <class T, bool is_fatal = true> T *search(const var::String &name) {
-    for (LayoutComponent &cp : m_component_list) {
-      if (cp.component()->is_layout()) {
+    for (Item &cp : m_component_list) {
+      if (cp.component() && cp.component()->is_layout()) {
         T *result
           = static_cast<Layout *>(cp.component())->search<T, false>(name);
         if (result) {
@@ -116,7 +117,7 @@ public:
       }
 
       if (
-        (cp.component()->name() == name)
+        (name == cp.component()->name())
         || (cp.component()->name() == T::get_name(name))) {
         return static_cast<T *>(cp.component());
       }
@@ -129,27 +130,25 @@ public:
   }
 
   template <class T, bool is_fatal = true> T *find(const var::String &name) {
-    for (LayoutComponent &cp : m_component_list) {
+    for (Item &cp : m_component_list) {
       if (
-        (cp.component()->name() == name)
-        || (cp.component()->name() == T::get_name(name))) {
+        cp.component()
+        && ((name == cp.component()->name()) || (cp.component()->name() == T::get_name(name)))) {
         return static_cast<T *>(cp.component());
       }
     }
     if (is_fatal) {
-      printf("Failed to find %s\n", name.cstring());
+      printf("%s Failed to find %s\n", this->name().cstring(), name.cstring());
       abort();
     }
     return nullptr;
   }
 
-  bool transition(const var::String &next_layout_name);
-  bool transition(Layout *next_layout);
-
   void scroll(DrawingPoint value);
 
   virtual void draw(const DrawingAttributes &attributes);
-  virtual void handle_event(const ux::Event &event);
+
+  void distribute_event(const ux::Event &event);
 
 protected:
   Layout(
@@ -158,15 +157,14 @@ protected:
     EventLoop *event_loop);
 
 private:
+  friend class Controller;
   friend class EventLoop;
   API_AF(Layout, enum flows, flow, flow_free);
-  API_ACCESS_COMPOUND(Layout, var::Vector<LayoutComponent>, component_list);
-  API_ACCESS_COMPOUND(Layout, EventHandlerFunction, event_handler);
+  API_ACCESS_COMPOUND(Layout, var::Vector<Item>, component_list);
   DrawingPoint m_origin;
   DrawingArea m_area;
   sgfx::Point m_touch_last;
   ux::TouchGesture m_touch_gesture;
-  Layout *m_transition_layout = nullptr;
 
   void shift_origin(DrawingPoint shift);
   drawing_int_t handle_vertical_scroll(sg_int_t scroll);
@@ -185,7 +183,6 @@ private:
   void set_refresh_region(const sgfx::Region &region);
   void touch_drawing_attributes() { shift_origin(DrawingPoint(0, 0)); }
 
-  void execute_transition();
 };
 
 template <class T> class LayoutAccess : public Layout {
@@ -205,7 +202,6 @@ public:
   API_ACCESS_DERIVED_BOOL(Layout, T, vertical_scroll_enabled)
   API_ACCESS_DERIVED_BOOL(Layout, T, horizontal_scroll_enabled)
   API_ACCESS_DERIVED_COMPOUND(Layout, T, DrawingArea, drawing_area)
-  API_ACCESS_DERIVED_COMPOUND(Layout, T, EventHandlerFunction, event_handler)
   API_ACCESS_DERIVED_COMPOUND(Layout, T, DrawingPoint, drawing_point)
   API_ACCESS_DERIVED_FUNDAMETAL(
     Layout,
@@ -219,7 +215,7 @@ public:
     theme_state)
 
   T &set_enabled(bool value = true) {
-    Component::set_enabled_internal(value);
+    Component::set_enabled_examine(value);
     return static_cast<T &>(*this);
   }
 

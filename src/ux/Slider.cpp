@@ -44,35 +44,35 @@ void Slider::draw(const DrawingScaledAttributes &attributes) {
 
 void Slider::handle_event(const ux::Event &event) {
   // change the state when an event happens in the component
-  if (event.type() == ux::TouchEvent::event_type()) {
-    const ux::TouchEvent &touch_event = event.reinterpret<ux::TouchEvent>();
+  if (event.type() == TouchGesture::Event::event_type()) {
+    const TouchGesture::Event &touch_event
+      = event.reinterpret<TouchGesture::Event>();
 
     if (
-      (touch_event.id() == ux::TouchEvent::id_pressed)
+      (touch_event.id() == TouchGesture::Event::id_pressed)
       && contains(touch_event.point())) {
       m_is_touched = true;
       update_touch_point(touch_event.point());
     }
 
     if (m_is_touched) {
-      if (touch_event.id() == ux::TouchEvent::id_released) {
+      if (touch_event.id() == TouchGesture::Event::id_released) {
         m_is_touched = false;
         update_touch_point(touch_event.point());
-        event_loop()->trigger_event(
-          SliderEvent(SliderEvent::id_released, *this));
-      } else if (touch_event.id() == ux::TouchEvent::id_active) {
+        event_loop()->trigger_event(Event(Event::id_released, *this));
+      } else if (touch_event.id() == TouchGesture::Event::id_active) {
         // need to check for dragging
         update_touch_point(touch_event.point());
-        event_loop()->trigger_event(SliderEvent(SliderEvent::id_active, *this));
+        event_loop()->trigger_event(Event(Event::id_active, *this));
       }
     }
 
     if (
-      (touch_event.id() == ux::TouchEvent::id_pressed)
+      (touch_event.id() == TouchGesture::Event::id_pressed)
       && contains(touch_event.point())) {
       m_is_touched = true;
       update_touch_point(touch_event.point());
-      event_loop()->handle_event(SliderEvent(SliderEvent::id_pressed, *this));
+      event_loop()->trigger_event(Event(Event::id_pressed, *this));
     }
   }
 

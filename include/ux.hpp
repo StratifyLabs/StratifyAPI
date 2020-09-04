@@ -6,22 +6,24 @@
 
 namespace ux {}
 
-#include "ux/Component.hpp"
 #include "ux/Button.hpp"
+#include "ux/Component.hpp"
+#include "ux/Controller.hpp"
 #include "ux/Event.hpp"
 #include "ux/EventLoop.hpp"
+#include "ux/Graph.hpp"
 #include "ux/Label.hpp"
 #include "ux/Layout.hpp"
 #include "ux/List.hpp"
+#include "ux/Model.hpp"
 #include "ux/Progress.hpp"
 #include "ux/ProgressBar.hpp"
 #include "ux/Scene.hpp"
+#include "ux/Separator.hpp"
 #include "ux/Slider.hpp"
-#include "ux/TouchGesture.hpp"
 #include "ux/TextArea.hpp"
 #include "ux/ToggleSwitch.hpp"
-#include "ux/Separator.hpp"
-#include "ux/Graph.hpp"
+#include "ux/TouchGesture.hpp"
 
 using namespace sgfx;
 using namespace ux;

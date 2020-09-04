@@ -33,13 +33,14 @@ void Button::draw(const DrawingScaledAttributes &attributes) {
 
 void Button::handle_event(const ux::Event &event) {
   // change the state when an event happens in the component
-  if (event.type() == ux::TouchEvent::event_type()) {
+  if (event.type() == TouchGesture::Event::event_type()) {
 
     if (theme_state() != Theme::state_disabled) {
 
-      const ux::TouchEvent &touch_event = event.reinterpret<ux::TouchEvent>();
+      const TouchGesture::Event &touch_event
+        = event.reinterpret<TouchGesture::Event>();
 
-      if (touch_event.id() == ux::TouchEvent::id_dragged) {
+      if (touch_event.id() == TouchGesture::Event::id_dragged) {
         if (theme_state() == Theme::state_highlighted) {
           set_theme_state(Theme::state_default);
           set_refresh_drawing_pending();
@@ -47,15 +48,14 @@ void Button::handle_event(const ux::Event &event) {
         }
       }
 
-      if (touch_event.id() == ux::TouchEvent::id_released) {
+      if (touch_event.id() == TouchGesture::Event::id_released) {
 
         if (
           contains(touch_event.point())
           && (theme_state() == Theme::state_highlighted)) {
           toggle();
           m_hold_timer.stop();
-          event_loop()->trigger_event(
-            ButtonEvent(ButtonEvent::id_released, *this));
+          event_loop()->trigger_event(Event(Event::id_released, *this));
         }
 
         if (theme_state() == Theme::state_highlighted) {
@@ -66,11 +66,10 @@ void Button::handle_event(const ux::Event &event) {
       }
 
       if (
-        (touch_event.id() == ux::TouchEvent::id_pressed)
+        (touch_event.id() == TouchGesture::Event::id_pressed)
         && contains(touch_event.point())) {
         toggle();
-        event_loop()->trigger_event(
-          ButtonEvent(ButtonEvent::id_pressed, *this));
+        event_loop()->trigger_event(Event(Event::id_pressed, *this));
 
         m_hold_timer.restart();
 
@@ -88,7 +87,7 @@ void Button::handle_event(const ux::Event &event) {
         m_hold_timer.is_running()
         && (m_hold_timer > theme()->button_hold_duration())) {
         m_hold_timer.stop();
-        event_loop()->trigger_event(ButtonEvent(ButtonEvent::id_held, *this));
+        event_loop()->trigger_event(Event(Event::id_held, *this));
       }
     }
   }

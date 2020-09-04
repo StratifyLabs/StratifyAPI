@@ -10,21 +10,6 @@
 
 namespace ux {
 
-class TouchEvent
-  : public EventObject<Component, EVENT_TYPE('_', 't', 'c', 'h')> {
-public:
-  TouchEvent(u32 id, const sgfx::Point &point) : EventObject(id, nullptr) {
-    m_point = point;
-  }
-
-  enum touch_id { id_none, id_active, id_pressed, id_released, id_dragged };
-
-  const sgfx::Point &point() const { return m_point; }
-
-private:
-  sgfx::Point m_point;
-};
-
 /*! \brief TouchGesture Class
  * \details The TouchGesture class
  * processes touch events to determine
@@ -37,6 +22,20 @@ private:
  */
 class TouchGesture {
 public:
+  class Event : public EventObject<Component, EVENT_TYPE('_', 't', 'c', 'h')> {
+  public:
+    Event(u32 id, const sgfx::Point &point) : EventObject(id, nullptr) {
+      m_point = point;
+    }
+
+    enum touch_id { id_none, id_active, id_pressed, id_released, id_dragged };
+
+    const sgfx::Point &point() const { return m_point; }
+
+  private:
+    sgfx::Point m_point;
+  };
+
   enum id { id_none, id_touched, id_dragged, id_complete };
 
   TouchGesture &set_vertical_drag_enabled(bool value = true) {
@@ -59,7 +58,7 @@ public:
     return *this;
   }
 
-  enum id process_event(const Event &event);
+  enum id process_event(const ux::Event &event);
 
   const chrono::Timer &timer() const { return m_timer; }
 
@@ -90,7 +89,7 @@ private:
   bool m_is_pressed_contained = false;
   static const sg_int_t m_drag_theshold = 1;
 
-  sgfx::Point process_drag(const TouchEvent &event);
+  sgfx::Point process_drag(const Event &event);
 };
 
 } // namespace ux

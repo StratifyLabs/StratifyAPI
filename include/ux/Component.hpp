@@ -22,7 +22,7 @@ class Layout;
     if (result == nullptr) {                                                   \
       printf("failed!!!\n");                                                   \
     }                                                                          \
-    result->m_is_created = true;                                               \
+    result->set_created();                                                     \
     return *result;                                                            \
   }
 
@@ -33,14 +33,29 @@ class Layout;
   }
 
 class Component : public Drawing {
+  enum flags {
+    flag_visible = (1 << 0),
+    flag_enabled = (1 << 1),
+    flag_created = (1 << 2),
+    flag_busy = (1 << 3),
+    flag_layout = (1 << 4),
+    flag_refresh_drawing_pending = (1 << 5),
+    flag_antialias = (1 << 6)
+  };
+
 public:
-  Component(const var::String &name) : m_name(name) {
+  Component(const var::String &name) {
+    set_name(name);
     set_drawing_point(DrawingPoint(0, 0));
     set_drawing_area(DrawingArea(1000, 1000));
+    m_flags = (flag_enabled);
   }
   virtual ~Component();
 
   template <typename T> T *reinterpret() { return static_cast<T *>(this); }
+  template <typename T> const T *reinterpret_const() const {
+    return static_cast<const T *>(this);
+  }
 
   COMPONENT_PREFIX(Component)
 
@@ -50,9 +65,15 @@ public:
 
   enum sgfx::Theme::states theme_state() const { return m_theme_state; }
 
-  bool is_visible() const { return m_is_visible; }
-
-  bool is_enabled() const { return m_is_enabled; }
+  bool is_visible() const { return m_flags & (flag_visible); }
+  bool is_created() const { return m_flags & (flag_created); }
+  bool is_busy() const { return m_flags & (flag_busy); }
+  bool is_enabled() const { return m_flags & (flag_enabled); }
+  bool is_layout() const { return m_flags & (flag_layout); }
+  bool is_antialias() const { return m_flags & (flag_antialias); }
+  bool is_refresh_drawing_pending() const {
+    return m_flags & (flag_refresh_drawing_pending);
+  }
 
   const sgfx::Theme *theme() const;
   const hal::Display *display() const;
@@ -61,6 +82,7 @@ public:
   // update the location of the component (allow animations)
 
   virtual void handle_event(const ux::Event &event) {}
+  virtual var::String get_model_value() { return var::String(); }
 
   const var::String &name() const { return m_name; }
 
@@ -90,7 +112,9 @@ public:
 
   void erase();
 
-  void set_refresh_drawing_pending() { m_is_refresh_drawing_pending = true; }
+  void set_refresh_drawing_pending() {
+    m_flags |= (flag_refresh_drawing_pending);
+  }
 
   EventLoop *event_loop() { return m_event_loop; }
 
@@ -131,10 +155,27 @@ public:
   var::String get_instance_name() const { return fs::FileInfo::name(name()); }
 
 protected:
-  bool m_is_visible = false;
-  bool m_is_enabled = true;
-  bool m_is_created = false;
-  bool m_is_busy = false;
+  void set_visible(bool value = true) {
+    value ? m_flags |= (flag_visible) : m_flags &= ~(flag_visible);
+  }
+  void set_busy(bool value = true) {
+    value ? m_flags |= (flag_busy) : m_flags &= ~(flag_busy);
+  }
+  void set_created(bool value = true) {
+    value ? m_flags |= (flag_created) : m_flags &= ~(flag_created);
+  }
+
+  void set_layout(bool value = true) {
+    value ? m_flags |= (flag_layout) : m_flags &= ~(flag_layout);
+  }
+  void set_antialias(bool value = true) {
+    value ? m_flags |= (flag_antialias) : m_flags &= ~(flag_antialias);
+  }
+
+  void clear_refresh_drawing_pending() {
+    m_flags &= ~(flag_refresh_drawing_pending);
+  }
+
   virtual void examine_visibility();
 
   virtual void touch_drawing_attributes() {}
@@ -142,34 +183,39 @@ protected:
   virtual void set_refresh_region(const sgfx::Region &region) {
     m_refresh_region = region;
     if (region.width() * region.height() == 0) {
-      set_visible_internal(false);
+      set_visible_examine(false);
     }
   }
 
-  bool is_refresh_drawing_pending() const {
-    return m_is_refresh_drawing_pending;
+  virtual void set_enabled_examine(bool value = true) {
+    if (is_enabled() != value) {
+      if (value) {
+        m_flags |= (flag_enabled);
+      } else {
+        m_flags &= ~(flag_enabled);
+      }
+      examine_visibility();
+    }
+  }
+
+  virtual void set_visible_examine(bool value = true) {
+    if (is_visible() != value) {
+      if (value) {
+        m_flags |= (flag_visible);
+      } else {
+        m_flags &= ~(flag_visible);
+      }
+      examine_visibility();
+    }
   }
 
   void refresh_drawing();
+  friend class Controller;
   friend class Layout;
   friend class LayoutComponent;
 
   const DrawingAttributes &local_drawing_attributes() const {
     return m_local_drawing_attributes;
-  }
-
-  virtual void set_enabled_internal(bool value = true) {
-    if (m_is_enabled != value) {
-      m_is_enabled = value;
-      examine_visibility();
-    }
-  }
-
-  virtual void set_visible_internal(bool value = true) {
-    if (m_is_visible != value) {
-      m_is_visible = value;
-      examine_visibility();
-    }
   }
 
   void set_event_loop(EventLoop *value) { m_event_loop = value; }
@@ -179,8 +225,6 @@ protected:
   bool is_ready_to_draw() const { return is_enabled() && is_visible(); }
 
 private:
-  API_ACCESS_BOOL(Component, layout, false);
-  API_ACCESS_BOOL(Component, antialias, true);
   var::String m_name;
   // needs to know where on the display it is drawn
   DrawingAttributes m_reference_drawing_attributes;
@@ -188,9 +232,9 @@ private:
   sgfx::Bitmap m_local_bitmap;
   enum sgfx::Theme::styles m_theme_style = sgfx::Theme::style_brand_primary;
   enum sgfx::Theme::states m_theme_state = sgfx::Theme::state_default;
-  bool m_is_refresh_drawing_pending;
   sgfx::Region m_refresh_region;
   Layout *m_parent;
+  u32 m_flags;
 
   // needs a palette to use while drawing
   EventLoop *m_event_loop = nullptr;
@@ -219,7 +263,7 @@ public:
   ComponentAccess(const var::String &name) : Component(name) {}
 
   T &set_enabled(bool value = true) {
-    Component::set_enabled_internal(value);
+    Component::set_enabled_examine(value);
     return static_cast<T &>(*this);
   }
 

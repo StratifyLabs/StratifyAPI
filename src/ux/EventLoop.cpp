@@ -8,14 +8,14 @@ using namespace ux;
 EventLoop::EventLoop() {}
 
 int EventLoop::loop(
-  Layout &layout,
+  Controller &controller,
   const sgfx::Theme &theme,
   hal::Display &display) {
-  m_layout = &layout;
+  m_controller = &controller;
   m_theme = &theme;
   m_display = &display;
 
-  m_layout->set_visible_internal();
+  m_controller->distribute_event(SystemEvent(SystemEvent::id_enter));
   m_update_timer.restart();
   while (1) {
     process_events();
@@ -26,14 +26,14 @@ int EventLoop::loop(
 }
 
 void EventLoop::process_update_event() {
-  if (m_layout == nullptr) {
+  if (m_controller == nullptr) {
     return;
   }
 
   MicroTime elapsed = Milliseconds(m_update_timer.milliseconds());
 
   if (elapsed > m_update_period) {
-    this->handle_event(SystemEvent(SystemEvent::id_update));
+    m_controller->distribute_event(SystemEvent(SystemEvent::id_update));
     m_update_timer.restart();
   } else {
     u32 remaining_milliseconds
@@ -43,8 +43,7 @@ void EventLoop::process_update_event() {
   }
 }
 
-void EventLoop::handle_event(const Event &event) {
-  if (m_layout) {
-    m_layout->handle_event(event);
-  }
+void EventLoop::trigger_event(const Event &event) {
+  API_ASSERT(event.type() != SystemEvent::event_type());
+  m_controller->distribute_event(event);
 }

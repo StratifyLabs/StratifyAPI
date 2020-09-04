@@ -81,14 +81,14 @@ public:
     return (event.type() == event_type()) && (event.id() == id);
   }
 
-  static D *component(const Event &event, u32 id) {
+  static D *match_component(const Event &event, u32 id) {
     if (is_event(event, id)) {
       return static_cast<D *>(event.component());
     }
     return nullptr;
   }
 
-  static D *component(const Event &event) {
+  static D *match_component(const Event &event) {
     if (event.type() == event_type()) {
       return static_cast<D *>(event.component());
     }
@@ -99,8 +99,16 @@ public:
 class SystemEvent
   : public EventObject<Component, EVENT_TYPE('_', 's', 'y', 's')> {
 public:
+  SystemEvent() : EventObject(id_none, nullptr) {}
   SystemEvent(u32 id) : EventObject(id, nullptr) {}
-  enum system_id { id_enter, id_exit, id_update };
+  enum system_id { id_none, id_enter, id_exit, id_update };
+
+  static enum system_id get_system_id(const Event &event) {
+    if (event.type() == SystemEvent::event_type()) {
+      return static_cast<enum system_id>(event.id());
+    }
+    return id_none;
+  }
 };
 
 } // namespace ux
