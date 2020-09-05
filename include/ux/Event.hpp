@@ -19,6 +19,8 @@ namespace ux {
 class Component;
 
 #define EVENT_TYPE(a, b, c, d) ((a << 24) | (b << 16) | (c << 8) | (d))
+#define EVENT_LITERAL(literal_value)                                           \
+  static constexpr const char literal_value[5] = MCU_STRINGIFY(literal_value)
 
 /*! \brief Event Class
  * \details This class defines action-able events (such as
@@ -51,6 +53,9 @@ public:
 
   u32 type() const { return m_type; }
 
+  var::String type_to_string() const;
+  static var::String type_to_string(u32 type);
+
   u32 id() const { return m_id; }
 
   bool operator==(const Event &event) const {
@@ -65,15 +70,47 @@ public:
 
   Component *component() const { return m_component; }
 
+  EVENT_LITERAL(_sys);
+
 private:
   u32 m_type;
   u32 m_id;
   Component *m_component;
 };
 
-template <class D, u32 T> class EventObject : public Event {
+template <class D, const char literal_id[5]> class EventAccess : public Event {
 public:
-  EventObject(u32 id, D *component) : Event(T, id, component) {}
+  EventAccess(u32 id, D *component) : Event(event_type(), id, component) {}
+
+  static u32 event_type() {
+    return literal_id[0] | literal_id[1] << 8 | literal_id[2] << 16
+           | literal_id[3] << 24;
+  }
+
+  static bool is_event(const Event &event, u32 id) {
+    return (event.type() == event_type()) && (event.id() == id);
+  }
+
+  static D *match_component(const Event &event, u32 id) {
+    if (is_event(event, id)) {
+      return static_cast<D *>(event.component());
+    }
+    return nullptr;
+  }
+
+  static D *match_component(const Event &event) {
+    if (event.type() == event_type()) {
+      return static_cast<D *>(event.component());
+    }
+    return nullptr;
+  }
+};
+
+#if 0
+template <class D, u32 T>
+class EventAccess : public Event {
+public:
+  EventAccess(u32 id, D *component) : Event(T, id, component) {}
 
   static u32 event_type() { return T; }
 
@@ -95,12 +132,12 @@ public:
     return nullptr;
   }
 };
+#endif
 
-class SystemEvent
-  : public EventObject<Component, EVENT_TYPE('_', 's', 'y', 's')> {
+class SystemEvent : public EventAccess<Component, Event::_sys> {
 public:
-  SystemEvent() : EventObject(id_none, nullptr) {}
-  SystemEvent(u32 id) : EventObject(id, nullptr) {}
+  SystemEvent() : EventAccess(id_none, nullptr) {}
+  SystemEvent(u32 id) : EventAccess(id, nullptr) {}
   enum system_id { id_none, id_enter, id_exit, id_update };
 
   static enum system_id get_system_id(const Event &event) {

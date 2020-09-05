@@ -4,12 +4,18 @@
 #define SAPI_UX_PROGRESS_HPP
 
 #include "Component.hpp"
+#include "Model.hpp"
 #include "TouchGesture.hpp"
 
 namespace ux {
 
 class Progress {
 public:
+  enum model_values { model_value_progress, model_value_maximum };
+  var::String get_model_value() const {
+    return Model::from_list<u16>({value(), maximum()});
+  }
+
 private:
   API_AF(Progress, u16, value, 0);
   API_AF(Progress, u16, maximum, 100);
@@ -18,9 +24,16 @@ private:
 
 class ProgressBar : public ComponentAccess<ProgressBar> {
 public:
-  COMPONENT_PREFIX(ProgressBar)
+  EVENT_LITERAL(pbar);
 
-  ProgressBar(const var::String &name) : ComponentAccess(prefix() + name) {
+  class Event : public EventAccess<ProgressBar, pbar> {
+  public:
+    enum id { id_none, id_changed };
+
+    Event(enum id id, ProgressBar &value) : EventAccess(id, &value) {}
+  };
+
+  ProgressBar(const var::String &name) : ComponentAccess(name) {
     set_horizontal_padding(10);
     set_vertical_padding(10);
   }
@@ -32,11 +45,13 @@ public:
 
   ProgressBar &set_value(u16 value) {
     progress().set_value(value);
+    update_model(progress().get_model_value());
     return *this;
   }
 
   ProgressBar &set_maximum(u16 value) {
     progress().set_maximum(value);
+    update_model(progress().get_model_value());
     return *this;
   }
 

@@ -22,9 +22,11 @@ namespace ux {
  */
 class TouchGesture {
 public:
-  class Event : public EventObject<Component, EVENT_TYPE('_', 't', 'c', 'h')> {
+  EVENT_LITERAL(_tch);
+
+  class Event : public EventAccess<Component, _tch> {
   public:
-    Event(u32 id, const sgfx::Point &point) : EventObject(id, nullptr) {
+    Event(u32 id, const sgfx::Point &point) : EventAccess(id, nullptr) {
       m_point = point;
     }
 

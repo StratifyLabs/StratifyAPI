@@ -11,18 +11,15 @@ namespace ux {
 
 class Button : public ComponentAccess<Button> {
 public:
-  class Event : public EventObject<Button, EVENT_TYPE('_', 'b', 't', 'n')> {
+  EVENT_LITERAL(_btn);
+  class Event : public EventAccess<Button, _btn> {
   public:
     enum button_id { id_none, id_active, id_pressed, id_released, id_held };
 
-    Event(enum button_id id, Button &button) : EventObject(id, &button) {}
+    Event(enum button_id id, Button &button) : EventAccess(id, &button) {}
   };
 
-  COMPONENT_PREFIX(Button)
-
-  Button(const var::String &name) : ComponentAccess(prefix() + name) {
-    set_value(name);
-  }
+  Button(const var::String &name) : ComponentAccess(name) { set_value(name); }
 
   Button &toggle() {
     m_is_state = !m_is_state;

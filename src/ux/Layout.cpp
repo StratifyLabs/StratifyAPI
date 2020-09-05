@@ -8,7 +8,7 @@ using namespace sgfx;
 using namespace ux;
 
 Layout::Layout(const var::String &name, EventLoop *event_loop)
-  : ComponentAccess(prefix() + name) {
+  : ComponentAccess(name) {
   set_event_loop(event_loop);
   m_origin = DrawingPoint(0, 0);
   set_align_left();
@@ -73,7 +73,6 @@ void Layout::examine_visibility() {
         component_pointer.component()->set_visible_examine(false);
       }
     }
-    printf("exiting %s\n", name().cstring());
 
     handle_event(SystemEvent(SystemEvent::id_exit));
   }

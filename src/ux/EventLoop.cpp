@@ -2,6 +2,7 @@
              // LICENSE.md for rights.
 #include "ux/EventLoop.hpp"
 #include "chrono.hpp"
+#include "ux/Controller.hpp"
 
 using namespace ux;
 

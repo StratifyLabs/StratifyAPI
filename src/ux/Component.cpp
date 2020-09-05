@@ -3,6 +3,7 @@
 #include "ux/Component.hpp"
 #include "sys/Printer.hpp"
 #include "ux/EventLoop.hpp"
+#include "ux/Model.hpp"
 
 using namespace sgfx;
 using namespace ux;
@@ -151,4 +152,26 @@ void Component::apply_antialias_filter(
 					);
 #endif
   }
+}
+
+const var::String &Component::lookup_model_value() {
+  return lookup_model_value(name());
+}
+
+const var::String &Component::lookup_model_value(const var::String &key) {
+  if (event_loop()->model()) {
+    return event_loop()->model()->lookup(key);
+  }
+
+  return var::String::empty_string();
+}
+
+void Component::update_model(const Model::Entry &entry) {
+  if (event_loop()->model()) {
+    event_loop()->model()->update(entry);
+  }
+}
+
+void Component::update_model(const var::String &value) {
+  update_model(Model::Entry().set_key(name()).set_value(value));
 }

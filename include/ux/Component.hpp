@@ -10,6 +10,7 @@
 #include "../var/String.hpp"
 #include "Drawing.hpp"
 #include "Event.hpp"
+#include "Model.hpp"
 
 namespace ux {
 
@@ -24,12 +25,6 @@ class Layout;
     }                                                                          \
     result->set_created();                                                     \
     return *result;                                                            \
-  }
-
-#define COMPONENT_PREFIX(a)                                                    \
-  static const char *prefix() { return MCU_STRINGIFY(a) "/"; }                 \
-  static var::String get_name(const var::String &value) {                      \
-    return MCU_STRINGIFY(a) "/" + value;                                       \
   }
 
 class Component : public Drawing {
@@ -57,8 +52,6 @@ public:
     return static_cast<const T *>(this);
   }
 
-  COMPONENT_PREFIX(Component)
-
   static u32 whatis_signature() { return 0; }
 
   enum sgfx::Theme::styles theme_style() const { return m_theme_style; }
@@ -82,7 +75,6 @@ public:
   // update the location of the component (allow animations)
 
   virtual void handle_event(const ux::Event &event) {}
-  virtual var::String get_model_value() { return var::String(); }
 
   const var::String &name() const { return m_name; }
 
@@ -100,14 +92,6 @@ public:
     return m_reference_drawing_attributes.calculate_region_on_bitmap();
   }
 
-#if 0
-	bool contains(const sgfx::Point & point){
-		return sgfx::Region(
-					m_reference_drawing_attributes.calculate_region_on_bitmap()
-					).contains(point);
-	}
-#endif
-
   DrawingPoint translate_point(const sgfx::Point &point);
 
   void erase();
@@ -123,6 +107,12 @@ public:
   Layout *parent() { return m_parent; }
 
   const Layout *parent() const { return m_parent; }
+
+  const var::String &lookup_model_value();
+  const var::String &lookup_model_value(const var::String &key);
+
+  void update_model(const var::String &value);
+  void update_model(const Model::Entry &entry);
 
   void set_drawing_area(const DrawingArea &drawing_area) {
     m_reference_drawing_attributes.set_area(drawing_area);
@@ -236,7 +226,6 @@ private:
   Layout *m_parent;
   u32 m_flags;
 
-  // needs a palette to use while drawing
   EventLoop *m_event_loop = nullptr;
 
   void set_name(const var::String &name) { m_name = name; }

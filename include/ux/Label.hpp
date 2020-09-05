@@ -11,11 +11,7 @@ namespace ux {
 
 class Label : public ComponentAccess<Label> {
 public:
-  COMPONENT_PREFIX(Label)
-
-  Label(const var::String &name) : ComponentAccess(prefix() + name) {
-    set_value(name);
-  }
+  Label(const var::String &name) : ComponentAccess(name) { set_value(name); }
 
   void draw(const DrawingScaledAttributes &attributes);
 

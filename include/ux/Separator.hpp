@@ -9,12 +9,8 @@ namespace	ux {
 
 class Separator : public ComponentAccess<Separator>{
 public:
-	COMPONENT_PREFIX(Separator)
-	Separator(const var::String & name)
-		: ComponentAccess(
-				prefix() + name
-				){}
-	void draw(const DrawingScaledAttributes & attributes);
+  Separator(const var::String &name) : ComponentAccess(name) {}
+  void draw(const DrawingScaledAttributes &attributes);
 };
 
 }

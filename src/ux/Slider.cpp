@@ -2,10 +2,17 @@
              // LICENSE.md for rights.
 #include "ux/Slider.hpp"
 #include "ux/EventLoop.hpp"
+#include "ux/TouchGesture.hpp"
 #include "ux/draw/Rectangle.hpp"
 
 using namespace ux;
 using namespace sgfx;
+
+Slider::Slider(const var::String &name) : ComponentAccess(name) {
+  var::StringList list = Model::to_list(lookup_model_value());
+  set_value(list.count() ? list.at(0).to_integer() : 0);
+  set_maximum(list.count() > 1 ? list.at(1).to_integer() : 100);
+}
 
 void Slider::draw(const DrawingScaledAttributes &attributes) {
 
@@ -90,5 +97,6 @@ void Slider::update_touch_point(const sgfx::Point display_point) {
     m_value = (point.x() - 50) * m_maximum / 900;
   }
 
+  update_model(Model::from_list<u16>({value(), maximum()}));
   redraw();
 }

@@ -10,16 +10,15 @@ namespace ux {
 
 class ListItem : public ComponentAccess<ListItem> {
 public:
-  class Event : public EventObject<ListItem, EVENT_TYPE('_', 'l', 's', 't')> {
+  EVENT_LITERAL(_lst);
+  class Event : public EventAccess<ListItem, _lst> {
   public:
     enum ids { id_none, id_select };
 
-    explicit Event(ListItem &value) : EventObject(id_select, &value) {}
+    explicit Event(ListItem &value) : EventAccess(id_select, &value) {}
   };
 
-  COMPONENT_PREFIX(ListItem)
-
-  ListItem(const var::String &name) : ComponentAccess(prefix() + name) {
+  ListItem(const var::String &name) : ComponentAccess(name) {
     set_left_padding(5);
     set_right_padding(5);
   }
@@ -33,8 +32,6 @@ protected:
     set_left_padding(5);
     set_right_padding(5);
   }
-
-  virtual var::String get_model_data() const { return value(); }
 
 private:
   API_ACCESS_COMPOUND(ListItem, var::String, key);
@@ -56,10 +53,8 @@ public:
 
 class List : public LayoutAccess<List> {
 public:
-  COMPONENT_PREFIX(List)
-
   List(const var::String &name, EventLoop *event_loop)
-    : LayoutAccess(prefix() + name, event_loop) {
+    : LayoutAccess(name, event_loop) {
     set_flow(flow_vertical);
   }
 

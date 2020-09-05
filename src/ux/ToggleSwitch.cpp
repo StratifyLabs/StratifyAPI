@@ -71,7 +71,7 @@ void ToggleSwitch::handle_event(const ux::Event &event) {
       toggle();
 
       if (event_loop()) {
-        event_loop()->trigger_event(ToggleSwitchEvent(*this));
+        event_loop()->trigger_event(Event(*this));
       }
 
       redraw();

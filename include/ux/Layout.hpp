@@ -44,8 +44,6 @@ public:
 
   enum flows { flow_vertical, flow_horizontal, flow_free };
 
-  COMPONENT_PREFIX(Layout)
-
   Layout(const var::String &name, EventLoop *event_loop);
 
   virtual ~Layout();
@@ -76,6 +74,8 @@ public:
   update_drawing_point(const var::String &name, const DrawingPoint &point) {
     update_drawing_point(find<Component>(name), point);
   }
+
+  bool is_owner(const Event &event) { return is_owner(event.component()); }
 
   bool is_owner(const Component *component) {
     if (component == nullptr) {
@@ -117,8 +117,7 @@ public:
       }
 
       if (
-        (name == cp.component()->name())
-        || (cp.component()->name() == T::get_name(name))) {
+        (name == cp.component()->name()) || (cp.component()->name() == name)) {
         return static_cast<T *>(cp.component());
       }
     }
@@ -131,9 +130,7 @@ public:
 
   template <class T, bool is_fatal = true> T *find(const var::String &name) {
     for (Item &cp : m_component_list) {
-      if (
-        cp.component()
-        && ((name == cp.component()->name()) || (cp.component()->name() == T::get_name(name)))) {
+      if (cp.component() && (name == cp.component()->name())) {
         return static_cast<T *>(cp.component());
       }
     }
