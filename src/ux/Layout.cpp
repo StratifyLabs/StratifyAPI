@@ -179,7 +179,6 @@ void Layout::shift_origin(DrawingPoint shift) {
         item.component()->reference_drawing_attributes()
           = reference_drawing_attributes() + m_origin + item.drawing_point()
             + item.drawing_area();
-
         sgfx::Region component_region = item.component()
                                           ->reference_drawing_attributes()
                                           .calculate_region_on_bitmap();
@@ -342,6 +341,7 @@ void Layout::distribute_event(const ux::Event &event) {
 
 drawing_int_t Layout::handle_vertical_scroll(sg_int_t scroll) {
   // convert scroll to drawing scale
+
   drawing_int_t drawing_scroll
     = scroll * Drawing::scale()
       / reference_drawing_attributes().calculate_height_on_bitmap();
@@ -408,18 +408,20 @@ void Layout::generate_vertical_layout_positions() {
   drawing_int_t drawing_cursor = 0;
   sg_int_t bitmap_cursor = 0;
 
-  for (Item &component : m_component_list) {
-    if (component.component()) {
+  for (Item &item : m_component_list) {
+    if (item.component()) {
       const DrawingPoint point(0, drawing_cursor);
-      const DrawingArea area(1000, component.drawing_area().height());
-      component.set_drawing_point(point);
+      const DrawingArea area(1000, item.drawing_area().height());
+      item.set_drawing_point(point);
 
       DrawingAttributes tmp_attributes
         = reference_drawing_attributes() + m_origin + point + area;
+
       sg_size_t height_on_bitmap
         = tmp_attributes.calculate_area_on_bitmap().height;
 
       bitmap_cursor += height_on_bitmap - 1;
+
       drawing_cursor
         = reference_drawing_attributes().calculate_height_on_drawing(
           bitmap_cursor);

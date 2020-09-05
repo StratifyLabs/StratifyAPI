@@ -75,7 +75,10 @@ void ListItem::handle_event(const ux::Event &event) {
 }
 
 List &List::add_component(Component &component) {
-  component.set_drawing_area(DrawingArea(1000, m_item_height));
+
+  // to ensure items overlap a tiny bit, we add a little fudge factor
+  component.set_drawing_area(
+    DrawingArea(1000, m_item_height + m_item_height / 25));
   // component.set_theme_style( theme_style() );
   return LayoutAccess<List>::add_component(component);
 }
@@ -96,6 +99,7 @@ List &List::add_filler(enum sgfx::Theme::styles style) {
                                  .set_theme_style(style)
                                  .set_left_border(0)
                                  .set_right_border(0));
+    // not scrolling -- we don't fill the whole screen
     set_vertical_scroll_enabled(false);
     return LayoutAccess<List>::add_component(*list_filler);
   }
