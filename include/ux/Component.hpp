@@ -113,6 +113,7 @@ public:
 
   void update_model(const var::String &value);
   void update_model(const Model::Entry &entry);
+  void update_model(bool value);
 
   void set_drawing_area(const DrawingArea &drawing_area) {
     m_reference_drawing_attributes.set_area(drawing_area);
@@ -243,18 +244,7 @@ private:
   API_ACCESS_DERIVED_FUNDAMETAL(B, T, enum sgfx::Theme::styles, theme_style)   \
   API_ACCESS_DERIVED_FUNDAMETAL(B, T, enum sgfx::Theme::states, theme_state)   \
   API_ACCESS_DERIVED_FUNDAMETAL(B, T, Layout *, parent)                        \
-  static T *match_component(const Event &event) {                              \
-    if (event.type() == event_type()) {                                        \
-      return reinterpret_cast<T *>(event.context());                           \
-    }                                                                          \
-    return nullptr;                                                            \
-  }                                                                            \
-  static T *match_component(const Event &event, u32 id) {                      \
-    if ((event.type() == event_type()) && event.id() == id) {                  \
-      return reinterpret_cast<T *>(event.context());                           \
-    }                                                                          \
-    return nullptr;                                                            \
-  }                                                                            \
+  EVENT_DECLARE_TYPE()                                                         \
   T &set_enabled(bool value = true) {                                          \
     B::set_enabled_examine(value);                                             \
     return static_cast<T &>(*this);                                            \
@@ -267,9 +257,8 @@ private:
     B::set_drawing_point(DrawingPoint(x, y));                                  \
     return static_cast<T &>(*this);                                            \
   }                                                                            \
-  static u32 event_type() { return reinterpret_cast<u32>(event_type); }        \
   T &trigger_event(u32 id) {                                                   \
-    B::trigger_event(event_type(), id);                                        \
+    B::trigger_event(this->event_type(), id);                                  \
     return static_cast<T &>(*this);                                            \
   }                                                                            \
   T &forward_event(bool is_forward, u32 id) {                                  \
@@ -280,7 +269,8 @@ private:
   }
 
 template <class T>
-class ComponentAccess : public Component, public DrawingComponentProperties<T> {
+class ComponentAccess : public Component,
+                        public DrawingComponentProperties<T> {
 public:
   ComponentAccess(const var::String &name) : Component(name) {
   }

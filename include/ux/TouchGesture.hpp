@@ -22,22 +22,7 @@ public:
     event_id_completed
   };
 
-  static u32 event_type() { return reinterpret_cast<u32>(event_type); }
-
-  static TouchContext *match_component(const Event &event) {
-    if (event.type() == event_type()) {
-      return reinterpret_cast<TouchContext *>(event.context());
-    }
-    return nullptr;
-  }
-  static TouchContext *match_component(const Event &event, u32 id) {
-    if ((event.type() == event_type()) && event.id() == id) {
-      return reinterpret_cast<TouchContext *>(event.context());
-    }
-    return nullptr;
-  }
-
-  Event event(enum event_ids id) { return Event(event_type(), id, this); }
+  EVENT_DECLARE_TYPE()
 
 private:
   API_AC(TouchContext, sgfx::Point, point);
@@ -89,21 +74,6 @@ public:
 
   bool is_multidimensional_drag_enabled() const {
     return m_is_multidimensional_drag_enabled;
-  }
-
-  static u32 event_type() { return reinterpret_cast<u32>(event_type); }
-
-  static TouchGesture *match_component(const Event &event) {
-    if (event.type() == event_type()) {
-      // return event.reinterpret<TouchGesture>();
-    }
-    return nullptr;
-  }
-  static TouchGesture *match_component(const Event &event, u32 id) {
-    if ((event.type() == event_type()) && event.id() == id) {
-      // return event.reinterpret<TouchGesture>();
-    }
-    return nullptr;
   }
 
 private:

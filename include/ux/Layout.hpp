@@ -154,11 +154,6 @@ public:
   }
 
 protected:
-  Layout(
-    const var::String &prefix,
-    const var::String &name,
-    EventLoop *event_loop);
-
 private:
   friend class Controller;
   friend class EventLoop;
@@ -190,8 +185,7 @@ private:
 template <class T> class LayoutAccess : public Layout {
 public:
   LayoutAccess<T>(const var::String &name, EventLoop *event_loop)
-    : Layout("", name, event_loop) {
-  }
+    : Layout(name, event_loop) {}
 
   T &add_component(Component &component) {
     return static_cast<T &>(Layout::add_component(component));

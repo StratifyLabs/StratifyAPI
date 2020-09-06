@@ -41,7 +41,7 @@ void ListItem::draw(const DrawingScaledAttributes &attributes) {
 
 void ListItem::handle_event(const ux::Event &event) {
   // change the state when an event happens in the component
-  TouchContext *touch_context = TouchContext::match_component(event);
+  TouchContext *touch_context = event.is_trigger<TouchContext>();
   if (touch_context) {
 
     if (event.id() == TouchContext::event_id_dragged) {

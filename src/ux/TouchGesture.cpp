@@ -7,7 +7,7 @@ using namespace ux;
 
 enum TouchContext::event_ids TouchGesture::process(const Event &event) {
 
-  TouchContext *touch_context = TouchContext::match_component(event);
+  TouchContext *touch_context = event.is_trigger<TouchContext>();
   if (touch_context) {
     if (
       (event.id() == TouchContext::event_id_pressed)

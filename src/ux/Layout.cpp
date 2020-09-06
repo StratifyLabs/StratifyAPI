@@ -16,18 +16,6 @@ Layout::Layout(const var::String &name, EventLoop *event_loop)
   set_layout();
 }
 
-Layout::Layout(
-  const var::String &prefix,
-  const var::String &name,
-  EventLoop *event_loop)
-  : ComponentAccess(prefix + name) {
-  set_event_loop(event_loop);
-  m_origin = DrawingPoint(0, 0);
-  set_align_left();
-  set_align_top();
-  set_layout();
-}
-
 Layout::~Layout() {
   for (Item &component_pointer : m_component_list) {
     if (
@@ -63,7 +51,7 @@ void Layout::examine_visibility() {
 
     shift_origin(DrawingPoint(0, 0));
 
-    handle_event(SystemEvent(SystemEvent::event_id_entered));
+    handle_event(SystemEvent(SystemEvent::event_id_enter));
 
   } else {
 
@@ -74,7 +62,7 @@ void Layout::examine_visibility() {
       }
     }
 
-    handle_event(SystemEvent(SystemEvent::event_id_exiteded));
+    handle_event(SystemEvent(SystemEvent::event_id_exit));
   }
 }
 
@@ -273,7 +261,6 @@ Layout &Layout::set_focus(bool value) {
   set_focus_internal(value);
   for (const Item &item : m_component_list) {
     if (item.component()) {
-      printf("set %s focus to %d\n", item.component()->name().cstring(), value);
       if (item.component()->is_layout()) {
         item.component()->reinterpret<Layout>()->set_focus(value);
       } else {
@@ -287,34 +274,35 @@ Layout &Layout::set_focus(bool value) {
 void Layout::distribute_event(const ux::Event &event) {
   // handle scrolling -- pass events to specific components
   set_busy();
-  TouchContext *touch_context = TouchContext::match_component(event);
-  if (touch_context) {
-    enum TouchContext::event_ids touch_context_event_id
-      = m_touch_gesture.process(event);
-    switch (touch_context_event_id) {
-    default:
-      break;
-    case TouchContext::event_id_dragged:
-      drawing_int_t vertical_drawing_scroll;
-      drawing_int_t horizontal_drawing_scroll;
-      horizontal_drawing_scroll
-        = handle_vertical_scroll(m_touch_gesture.drag().x());
-
-      vertical_drawing_scroll
-        = handle_vertical_scroll(m_touch_gesture.drag().y());
-
-      if (vertical_drawing_scroll || horizontal_drawing_scroll) {
-        this->scroll(
-          DrawingPoint(horizontal_drawing_scroll, vertical_drawing_scroll));
-
-        event_loop()->trigger_event(
-          touch_context->event(TouchContext::event_id_dragged));
-      }
-      break;
-    }
-  }
-
   if (is_focus()) {
+
+    TouchContext *touch_context = event.is_trigger<TouchContext>();
+    if (touch_context) {
+      enum TouchContext::event_ids touch_context_event_id
+        = m_touch_gesture.process(event);
+      switch (touch_context_event_id) {
+      default:
+        break;
+      case TouchContext::event_id_dragged:
+        drawing_int_t vertical_drawing_scroll;
+        drawing_int_t horizontal_drawing_scroll;
+        horizontal_drawing_scroll
+          = handle_vertical_scroll(m_touch_gesture.drag().x());
+
+        vertical_drawing_scroll
+          = handle_vertical_scroll(m_touch_gesture.drag().y());
+
+        if (vertical_drawing_scroll || horizontal_drawing_scroll) {
+          this->scroll(
+            DrawingPoint(horizontal_drawing_scroll, vertical_drawing_scroll));
+
+          event_loop()->trigger_event(
+            Event::get_event(TouchContext::event_id_dragged, touch_context));
+        }
+        break;
+      }
+    }
+
     handle_event(event);
     for (Item &item : m_component_list) {
       if (
@@ -329,7 +317,7 @@ void Layout::distribute_event(const ux::Event &event) {
     }
   }
 
-  if (event == SystemEvent(SystemEvent::event_id_exiteded)) {
+  if (event == SystemEvent(SystemEvent::event_id_exit)) {
     for (Item &component_pointer : m_component_list) {
       if (component_pointer.component()) {
         component_pointer.component()->set_visible_examine(false);

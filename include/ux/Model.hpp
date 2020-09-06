@@ -18,6 +18,15 @@ public:
   public:
     Entry() {}
 
+    Entry &set_value(bool value) {
+      if (value) {
+        set_value(var::String("true"));
+      } else {
+        set_value(var::String("false"));
+      }
+      return *this;
+    }
+
     bool operator==(const Entry &a) const;
   };
 

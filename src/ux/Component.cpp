@@ -39,9 +39,9 @@ void Component::examine_visibility() {
     set_refresh_region(m_local_bitmap.region());
 
     redraw();
-    handle_event(SystemEvent(SystemEvent::event_id_entered));
+    handle_event(SystemEvent(SystemEvent::event_id_enter));
   } else {
-    handle_event(SystemEvent(SystemEvent::event_id_exiteded));
+    handle_event(SystemEvent(SystemEvent::event_id_exit));
     m_local_bitmap.free();
   }
 }
@@ -167,23 +167,22 @@ const var::String &Component::lookup_model_value() {
 }
 
 const var::String &Component::lookup_model_value(const var::String &key) {
-  if (event_loop()->model()) {
-    return event_loop()->model()->lookup(key);
-  }
-
-  return var::String::empty_string();
+  return event_loop()->model().lookup(key);
 }
 
 void Component::update_model(const Model::Entry &entry) {
-  if (event_loop()->model()) {
-    event_loop()->model()->update(entry);
-  }
+  event_loop()->model().update(entry);
 }
 
 void Component::trigger_event(u32 event_type, u32 event_id) {
-  event_loop()->trigger_event(Event(event_type, event_id, this));
+  event_loop()->trigger_event(
+    Event().set_type(event_type).set_id(event_id).set_context(this));
 }
 
 void Component::update_model(const var::String &value) {
+  update_model(Model::Entry().set_key(name()).set_value(value));
+}
+
+void Component::update_model(bool value) {
   update_model(Model::Entry().set_key(name()).set_value(value));
 }

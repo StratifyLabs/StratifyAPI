@@ -17,12 +17,13 @@ class Event;
 
 class EventLoop {
 public:
-  EventLoop();
-
-  int loop(
+  EventLoop(
     Controller &controller,
-    const sgfx::Theme &theme,
-    hal::Display &display);
+    Model &model,
+    hal::Display &display,
+    const sgfx::Theme &theme);
+
+  int loop();
 
   const chrono::Timer &timer() { return m_timer; }
 
@@ -45,22 +46,22 @@ public:
 
   const hal::Display *display() const { return m_display; }
 
-  const Controller *controller() const { return m_controller; }
-  Controller *controller() { return m_controller; }
+  const Controller &controller() const { return m_controller; }
+  Controller &controller() { return m_controller; }
 
-  const Model *model() const { return m_model; }
-  Model *model() { return m_model; }
-
-  void set_model(Model *value) { m_model = value; }
+  const Model &model() const { return m_model; }
+  Model &model() { return m_model; }
 
 private:
+  Controller &m_controller;
+  Model &m_model;
+  hal::Display *m_display = nullptr;
+  const sgfx::Theme *m_theme = nullptr;
+
   chrono::Timer m_timer;
   chrono::Timer m_update_timer;
   chrono::MicroTime m_update_period;
-  Controller *m_controller = nullptr;
-  Model *m_model = nullptr;
-  hal::Display *m_display = nullptr;
-  const sgfx::Theme *m_theme = nullptr;
+
   var::Stack<Event> m_event_stack;
   var::Stack<Event> m_temporary_event_stack;
 

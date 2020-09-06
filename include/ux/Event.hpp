@@ -6,7 +6,7 @@
 #ifndef SAPI_UX_EVENT_HPP_
 #define SAPI_UX_EVENT_HPP_
 
-#include <mcu/types.h>
+#include "../api/ApiObject.hpp"
 
 namespace ux {
 
@@ -26,16 +26,6 @@ class Component;
 class Event {
 public:
   Event();
-  Event(u32 type, u32 id, void *context = nullptr);
-
-  Event &set_type(u32 type) {
-    m_type = type;
-    return *this;
-  }
-
-  u32 type() const { return m_type; }
-
-  u32 id() const { return m_id; }
 
   bool operator==(const Event &event) const {
     return (event.type() == type() && event.id() == id());
@@ -47,25 +37,49 @@ public:
     return reinterpret_cast<Component *>(m_context);
   }
 
-  void *context() const { return m_context; }
+  template <class T> T *is_trigger() const {
+    if (type() == T::event_type()) {
+      return reinterpret_cast<T *>(context());
+    }
+    return nullptr;
+  }
+  template <class T> T *is_trigger(u32 id) const {
+    if ((type() == T::event_type()) && (this->id() == id)) {
+      return reinterpret_cast<T *>(context());
+    }
+    return nullptr;
+  }
+
+  template <class T> static Event get_event(u32 id, T *context) {
+    return Event().set_type(T::event_type()).set_id(id).set_context(context);
+  }
 
 private:
-  u32 m_type;
-  u32 m_id;
-  void *m_context;
+  API_AF(Event, u32, type, 0);
+  API_AF(Event, u32, id, 0);
+  API_AF(Event, void *, context, nullptr);
 };
+
+#define EVENT_DECLARE_TYPE()                                                   \
+  static u32 event_type() { return reinterpret_cast<u32>(event_type); }
 
 class SystemEvent : public Event {
 public:
-  static u32 event_type() { return reinterpret_cast<u32>(event_type); }
+  EVENT_DECLARE_TYPE()
 
-  SystemEvent() : Event(event_type(), event_id_none, nullptr) {}
-  SystemEvent(u32 id) : Event(event_type(), id, nullptr) {}
+  SystemEvent() {
+    set_type(event_type());
+    set_id(event_id_none);
+  }
+  SystemEvent(u32 id) {
+    set_type(event_type());
+    set_id(id);
+  }
   enum event_ids {
     event_id_none,
-    event_id_entered,
-    event_id_exiteded,
-    event_id_updated
+    event_id_enter,
+    event_id_exit,
+    event_id_periodic
   };
 };
 

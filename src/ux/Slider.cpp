@@ -51,7 +51,7 @@ void Slider::draw(const DrawingScaledAttributes &attributes) {
 
 void Slider::handle_event(const ux::Event &event) {
   // change the state when an event happens in the component
-  TouchContext *touch_context = TouchContext::match_component(event);
+  TouchContext *touch_context = event.is_trigger<TouchContext>();
   if (touch_context) {
 
     if (

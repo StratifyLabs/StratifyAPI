@@ -32,7 +32,7 @@ void Button::draw(const DrawingScaledAttributes &attributes) {
 
 void Button::handle_event(const ux::Event &event) {
   // change the state when an event happens in the component
-  TouchContext *touch_context = TouchContext::match_component(event);
+  TouchContext *touch_context = event.is_trigger<TouchContext>();
   if (touch_context) {
 
     if (theme_state() != Theme::state_disabled) {
@@ -74,11 +74,11 @@ void Button::handle_event(const ux::Event &event) {
       }
     }
   } else if (event.type() == SystemEvent::event_type()) {
-    if (event.id() == SystemEvent::event_id_exiteded) {
+    if (event.id() == SystemEvent::event_id_exit) {
       set_theme_state(Theme::state_default);
       set_refresh_drawing_pending();
       m_hold_timer.reset();
-    } else if (event.id() == SystemEvent::event_id_updated) {
+    } else if (event.id() == SystemEvent::event_id_periodic) {
       if (
         m_hold_timer.is_running()
         && (m_hold_timer > theme()->button_hold_duration())) {

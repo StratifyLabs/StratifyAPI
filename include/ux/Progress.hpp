@@ -38,13 +38,11 @@ public:
 
   ProgressBar &set_value(u16 value) {
     progress().set_value(value);
-    // update_model(progress().get_model_value());
     return *this;
   }
 
   ProgressBar &set_maximum(u16 value) {
     progress().set_maximum(value);
-    // update_model(progress().get_model_value());
     return *this;
   }
 
