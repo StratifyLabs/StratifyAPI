@@ -1,6 +1,12 @@
+#include "ux/EventLoop.hpp"
+#include "ux/Model.hpp"
+
 #include "ux/Controller.hpp"
 
 using namespace ux;
+
+Model &Controller::model() { return m_event_loop.model(); }
+const Model &Controller::model() const { return m_event_loop.model(); }
 
 void Controller::transition(Layout &next_component) {
   m_next_layout = &next_component;

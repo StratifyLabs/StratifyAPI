@@ -19,7 +19,7 @@ void ListItem::draw(const DrawingScaledAttributes &attributes) {
   draw::RichText()
     .set_icon_font_name(theme()->primary_icon_font_name())
     .set_text_font_name(theme()->primary_font_name())
-    .set_value(key())
+    .set_value(label())
     .set_color(theme()->text_color())
     .set_align_left()
     .set_align_middle()

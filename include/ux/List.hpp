@@ -21,24 +21,17 @@ public:
   void draw(const DrawingScaledAttributes &attributes);
   void handle_event(const ux::Event &event);
 
-protected:
-  ListItem(const var::String &prefix, const var::String &name)
-    : ComponentAccess(prefix + name) {
-    set_left_padding(5);
-    set_right_padding(5);
-  }
-
 private:
-  API_ACCESS_COMPOUND(ListItem, var::String, key);
+  API_ACCESS_COMPOUND(ListItem, var::String, label);
   API_ACCESS_COMPOUND(ListItem, var::String, value);
   API_ACCESS_BOOL(ListItem, interactive, true);
 };
 
 template <class T> class ListItemAccess : public ListItem {
 public:
-  ListItemAccess(const var::String &name) : ListItem("", name) {}
+  ListItemAccess(const var::String &name) : ListItem(name) {}
 
-  API_ACCESS_DERIVED_COMPOUND(ListItem, T, var::String, key)
+  API_ACCESS_DERIVED_COMPOUND(ListItem, T, var::String, label)
   API_ACCESS_DERIVED_COMPOUND(ListItem, T, var::String, value)
   API_ACCESS_DERIVED_BOOL(ListItem, T, interactive)
 
