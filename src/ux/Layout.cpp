@@ -1,5 +1,5 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
-             // LICENSE.md for rights.
+// LICENSE.md for rights.
 #include "ux/Layout.hpp"
 #include "sys/Printer.hpp"
 #include "ux/EventLoop.hpp"
@@ -63,7 +63,7 @@ void Layout::examine_visibility() {
 
     shift_origin(DrawingPoint(0, 0));
 
-    handle_event(SystemEvent(SystemEvent::id_enter));
+    handle_event(SystemEvent(SystemEvent::event_id_entered));
 
   } else {
 
@@ -74,7 +74,7 @@ void Layout::examine_visibility() {
       }
     }
 
-    handle_event(SystemEvent(SystemEvent::id_exit));
+    handle_event(SystemEvent(SystemEvent::event_id_exiteded));
   }
 }
 
@@ -260,28 +260,41 @@ void Layout::scroll(DrawingPoint value) {
 }
 
 void Layout::draw(const DrawingAttributes &attributes) {
-  for (const Item &component_pointer : m_component_list) {
-    if (
-      component_pointer.component()
-      && component_pointer.component()->is_visible()) {
-      component_pointer.component()->draw(attributes);
+  MCU_UNUSED_ARGUMENT(attributes);
+  printf("draw layout %s\n", name().cstring());
+  for (const Item &item : m_component_list) {
+    if (item.component() && item.component()->is_focus()) {
+      item.component()->redraw();
     }
   }
+}
+
+Layout &Layout::set_focus(bool value) {
+  set_focus_internal(value);
+  for (const Item &item : m_component_list) {
+    if (item.component()) {
+      printf("set %s focus to %d\n", item.component()->name().cstring(), value);
+      if (item.component()->is_layout()) {
+        item.component()->reinterpret<Layout>()->set_focus(value);
+      } else {
+        item.component()->set_focus_internal(value);
+      }
+    }
+  }
+  return *this;
 }
 
 void Layout::distribute_event(const ux::Event &event) {
   // handle scrolling -- pass events to specific components
   set_busy();
-  if (event.type() == TouchGesture::Event::event_type()) {
-    enum TouchGesture::id event_id = m_touch_gesture.process_event(event);
-    switch (event_id) {
-    case TouchGesture::id_none:
+  TouchContext *touch_context = TouchContext::match_component(event);
+  if (touch_context) {
+    enum TouchContext::event_ids touch_context_event_id
+      = m_touch_gesture.process(event);
+    switch (touch_context_event_id) {
+    default:
       break;
-    case TouchGesture::id_touched:
-      break;
-    case TouchGesture::id_complete:
-      break;
-    case TouchGesture::id_dragged:
+    case TouchContext::event_id_dragged:
       drawing_int_t vertical_drawing_scroll;
       drawing_int_t horizontal_drawing_scroll;
       horizontal_drawing_scroll
@@ -295,46 +308,49 @@ void Layout::distribute_event(const ux::Event &event) {
           DrawingPoint(horizontal_drawing_scroll, vertical_drawing_scroll));
 
         event_loop()->trigger_event(
-          TouchGesture::Event(TouchGesture::Event::id_dragged, Point(0, 0)));
+          touch_context->event(TouchContext::event_id_dragged));
       }
       break;
     }
   }
 
-  for (Item &component_pointer : m_component_list) {
-    if (
-      component_pointer.component()
-      && component_pointer.component()->is_enabled()) {
+  if (is_focus()) {
+    handle_event(event);
 
-      if (component_pointer.component()->is_layout()) {
-        component_pointer.component()->reinterpret<Layout>()->distribute_event(
-          event);
-      } else {
-        component_pointer.component()->handle_event(event);
-      }
-    }
-  }
+    for (Item &item : m_component_list) {
+      if (
+        item.component() && item.component()->is_enabled()
+        && item.component()->is_focus()) {
+        if (item.component()->is_layout()) {
+          item.component()->reinterpret<Layout>()->distribute_event(event);
+        } else {
+          item.component()->handle_event(event);
 
-  for (Item &component_pointer : m_component_list) {
-    if (
-      component_pointer.component()
-      && component_pointer.component()->is_enabled()
-      && component_pointer.component()->is_refresh_drawing_pending()) {
-      component_pointer.component()->refresh_drawing();
-    }
-  }
-
-  if (event.type() == SystemEvent::event_type()) {
-    if (event.id() == SystemEvent::id_exit) {
-      for (Item &component_pointer : m_component_list) {
-        if (component_pointer.component()) {
-          component_pointer.component()->set_visible_examine(false);
+          if (item.component()->is_refresh_drawing_pending()) {
+            item.component()->refresh_drawing();
+          }
         }
       }
     }
   }
 
-  handle_event(event);
+#if 0
+  for (Item &item : m_component_list) {
+    if (
+      item.component() && item.component()->is_enabled()
+      && item.component()->is_refresh_drawing_pending()) {
+
+    }
+  }
+#endif
+
+  if (event == SystemEvent(SystemEvent::event_id_exiteded)) {
+    for (Item &component_pointer : m_component_list) {
+      if (component_pointer.component()) {
+        component_pointer.component()->set_visible_examine(false);
+      }
+    }
+  }
 
   set_busy(false);
 }

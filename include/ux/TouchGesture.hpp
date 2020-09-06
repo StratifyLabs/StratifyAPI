@@ -10,6 +10,39 @@
 
 namespace ux {
 
+class TouchContext {
+public:
+  enum event_ids {
+    event_id_none,
+    event_id_active,
+    event_id_pressed,
+    event_id_released,
+    event_id_dragged,
+    event_id_touched,
+    event_id_completed
+  };
+
+  static u32 event_type() { return reinterpret_cast<u32>(event_type); }
+
+  static TouchContext *match_component(const Event &event) {
+    if (event.type() == event_type()) {
+      return reinterpret_cast<TouchContext *>(event.context());
+    }
+    return nullptr;
+  }
+  static TouchContext *match_component(const Event &event, u32 id) {
+    if ((event.type() == event_type()) && event.id() == id) {
+      return reinterpret_cast<TouchContext *>(event.context());
+    }
+    return nullptr;
+  }
+
+  Event event(enum event_ids id) { return Event(event_type(), id, this); }
+
+private:
+  API_AC(TouchContext, sgfx::Point, point);
+};
+
 /*! \brief TouchGesture Class
  * \details The TouchGesture class
  * processes touch events to determine
@@ -22,24 +55,6 @@ namespace ux {
  */
 class TouchGesture {
 public:
-  EVENT_LITERAL(_tch);
-
-  class Event : public EventAccess<Component, _tch> {
-  public:
-    Event(u32 id, const sgfx::Point &point) : EventAccess(id, nullptr) {
-      m_point = point;
-    }
-
-    enum touch_id { id_none, id_active, id_pressed, id_released, id_dragged };
-
-    const sgfx::Point &point() const { return m_point; }
-
-  private:
-    sgfx::Point m_point;
-  };
-
-  enum id { id_none, id_touched, id_dragged, id_complete };
-
   TouchGesture &set_vertical_drag_enabled(bool value = true) {
     m_is_vertical_drag_enabled = value;
     return *this;
@@ -60,7 +75,7 @@ public:
     return *this;
   }
 
-  enum id process_event(const ux::Event &event);
+  enum TouchContext::event_ids process(const Event &event);
 
   const chrono::Timer &timer() const { return m_timer; }
 
@@ -74,6 +89,21 @@ public:
 
   bool is_multidimensional_drag_enabled() const {
     return m_is_multidimensional_drag_enabled;
+  }
+
+  static u32 event_type() { return reinterpret_cast<u32>(event_type); }
+
+  static TouchGesture *match_component(const Event &event) {
+    if (event.type() == event_type()) {
+      // return event.reinterpret<TouchGesture>();
+    }
+    return nullptr;
+  }
+  static TouchGesture *match_component(const Event &event, u32 id) {
+    if ((event.type() == event_type()) && event.id() == id) {
+      // return event.reinterpret<TouchGesture>();
+    }
+    return nullptr;
   }
 
 private:
@@ -91,7 +121,7 @@ private:
   bool m_is_pressed_contained = false;
   static const sg_int_t m_drag_theshold = 1;
 
-  sgfx::Point process_drag(const Event &event);
+  sgfx::Point process_drag(const sgfx::Point &point);
 };
 
 } // namespace ux

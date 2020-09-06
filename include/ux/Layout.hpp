@@ -147,6 +147,12 @@ public:
 
   void distribute_event(const ux::Event &event);
 
+  Layout &set_focus(bool value = true);
+
+  void trigger_event(u32 event_type, u32 event_id) {
+    Component::trigger_event(event_type, event_id);
+  }
+
 protected:
   Layout(
     const var::String &prefix,
@@ -179,13 +185,13 @@ private:
 
   void set_refresh_region(const sgfx::Region &region);
   void touch_drawing_attributes() { shift_origin(DrawingPoint(0, 0)); }
-
 };
 
 template <class T> class LayoutAccess : public Layout {
 public:
   LayoutAccess<T>(const var::String &name, EventLoop *event_loop)
-    : Layout("", name, event_loop) {}
+    : Layout("", name, event_loop) {
+  }
 
   T &add_component(Component &component) {
     return static_cast<T &>(Layout::add_component(component));
@@ -198,35 +204,14 @@ public:
   API_ACCESS_DERIVED_FUNDAMETAL(Layout, T, enum flows, flow)
   API_ACCESS_DERIVED_BOOL(Layout, T, vertical_scroll_enabled)
   API_ACCESS_DERIVED_BOOL(Layout, T, horizontal_scroll_enabled)
-  API_ACCESS_DERIVED_COMPOUND(Layout, T, DrawingArea, drawing_area)
-  API_ACCESS_DERIVED_COMPOUND(Layout, T, DrawingPoint, drawing_point)
-  API_ACCESS_DERIVED_FUNDAMETAL(
-    Layout,
-    T,
-    enum sgfx::Theme::styles,
-    theme_style)
-  API_ACCESS_DERIVED_FUNDAMETAL(
-    Layout,
-    T,
-    enum sgfx::Theme::states,
-    theme_state)
 
-  T &set_enabled(bool value = true) {
-    Component::set_enabled_examine(value);
-    return static_cast<T &>(*this);
-  }
-
-  T &set_drawing_area(drawing_size_t width, drawing_size_t height) {
-    Layout::set_drawing_area(DrawingArea(width, height));
-    return static_cast<T &>(*this);
-  }
-
-  T &set_drawing_point(drawing_int_t x, drawing_int_t y) {
-    Layout::set_drawing_point(DrawingPoint(x, y));
+  T &set_focus(bool value = true) {
+    Layout::set_focus(value);
     return static_cast<T &>(*this);
   }
 
   COMPONENT_ACCESS_CREATE()
+  COMPONENT_ACCESS_DERIVED(Layout, T)
 
 protected:
 };

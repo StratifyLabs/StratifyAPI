@@ -3,16 +3,13 @@
 
 #include "Component.hpp"
 
-namespace	ux {
+namespace ux {
 
-
-
-class Separator : public ComponentAccess<Separator>{
+class Separator : public ComponentAccess<Separator> {
 public:
   Separator(const var::String &name) : ComponentAccess(name) {}
   void draw(const DrawingScaledAttributes &attributes);
 };
-
-}
+} // namespace ux
 
 #endif // SEPARATOR_HPP

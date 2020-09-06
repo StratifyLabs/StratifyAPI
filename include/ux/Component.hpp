@@ -21,7 +21,7 @@ class Layout;
   template <typename... Args> static T &create(Args... args) {                 \
     T *result = new T(args...);                                                \
     if (result == nullptr) {                                                   \
-      printf("failed!!!\n");                                                   \
+      printf("fatal: create failed!!!\n");                                     \
     }                                                                          \
     result->set_created();                                                     \
     return *result;                                                            \
@@ -35,7 +35,8 @@ class Component : public Drawing {
     flag_busy = (1 << 3),
     flag_layout = (1 << 4),
     flag_refresh_drawing_pending = (1 << 5),
-    flag_antialias = (1 << 6)
+    flag_antialias = (1 << 6),
+    flag_focus = (1 << 7)
   };
 
 public:
@@ -43,7 +44,7 @@ public:
     set_name(name);
     set_drawing_point(DrawingPoint(0, 0));
     set_drawing_area(DrawingArea(1000, 1000));
-    m_flags = (flag_enabled);
+    m_flags = (flag_enabled | flag_focus);
   }
   virtual ~Component();
 
@@ -62,6 +63,7 @@ public:
   bool is_created() const { return m_flags & (flag_created); }
   bool is_busy() const { return m_flags & (flag_busy); }
   bool is_enabled() const { return m_flags & (flag_enabled); }
+  bool is_focus() const { return m_flags & (flag_focus); }
   bool is_layout() const { return m_flags & (flag_layout); }
   bool is_antialias() const { return m_flags & (flag_antialias); }
   bool is_refresh_drawing_pending() const {
@@ -162,6 +164,10 @@ protected:
     value ? m_flags |= (flag_antialias) : m_flags &= ~(flag_antialias);
   }
 
+  void set_focus_internal(bool value = true) {
+    value ? m_flags |= (flag_focus) : m_flags &= ~(flag_focus);
+  }
+
   void clear_refresh_drawing_pending() {
     m_flags &= ~(flag_refresh_drawing_pending);
   }
@@ -212,6 +218,8 @@ protected:
 
   void set_parent(Layout *value) { m_parent = value; }
 
+  void trigger_event(u32 event_type, u32 event_id);
+
   bool is_ready_to_draw() const { return is_enabled() && is_visible(); }
 
 private:
@@ -231,42 +239,55 @@ private:
   void set_name(const var::String &name) { m_name = name; }
 };
 
-#define COMPONENT_ACCESS_DERIVED(T)                                            \
-  API_ACCESS_DERIVED_COMPOUND(Component, T, DrawingArea, drawing_area)         \
-  API_ACCESS_DERIVED_COMPOUND(Component, T, DrawingPoint, drawing_point)       \
-  API_ACCESS_DERIVED_FUNDAMETAL(                                               \
-    Component,                                                                 \
-    T,                                                                         \
-    enum sgfx::Theme::styles,                                                  \
-    theme_style)                                                               \
-  API_ACCESS_DERIVED_FUNDAMETAL(                                               \
-    Component,                                                                 \
-    T,                                                                         \
-    enum sgfx::Theme::states,                                                  \
-    theme_state)                                                               \
-  API_ACCESS_DERIVED_FUNDAMETAL(Component, T, Layout *, parent)
+#define COMPONENT_ACCESS_DERIVED(B, T)                                         \
+  API_ACCESS_DERIVED_COMPOUND(B, T, DrawingArea, drawing_area)                 \
+  API_ACCESS_DERIVED_COMPOUND(B, T, DrawingPoint, drawing_point)               \
+  API_ACCESS_DERIVED_FUNDAMETAL(B, T, enum sgfx::Theme::styles, theme_style)   \
+  API_ACCESS_DERIVED_FUNDAMETAL(B, T, enum sgfx::Theme::states, theme_state)   \
+  API_ACCESS_DERIVED_FUNDAMETAL(B, T, Layout *, parent)                        \
+  static T *match_component(const Event &event) {                              \
+    if (event.type() == event_type()) {                                        \
+      return reinterpret_cast<T *>(event.context());                           \
+    }                                                                          \
+    return nullptr;                                                            \
+  }                                                                            \
+  static T *match_component(const Event &event, u32 id) {                      \
+    if ((event.type() == event_type()) && event.id() == id) {                  \
+      return reinterpret_cast<T *>(event.context());                           \
+    }                                                                          \
+    return nullptr;                                                            \
+  }                                                                            \
+  T &set_enabled(bool value = true) {                                          \
+    B::set_enabled_examine(value);                                             \
+    return static_cast<T &>(*this);                                            \
+  }                                                                            \
+  T &set_drawing_area(drawing_size_t width, drawing_size_t height) {           \
+    B::set_drawing_area(DrawingArea(width, height));                           \
+    return static_cast<T &>(*this);                                            \
+  }                                                                            \
+  T &set_drawing_point(drawing_int_t x, drawing_int_t y) {                     \
+    B::set_drawing_point(DrawingPoint(x, y));                                  \
+    return static_cast<T &>(*this);                                            \
+  }                                                                            \
+  static u32 event_type() { return reinterpret_cast<u32>(event_type); }        \
+  T &trigger_event(u32 id) {                                                   \
+    B::trigger_event(event_type(), id);                                        \
+    return static_cast<T &>(*this);                                            \
+  }                                                                            \
+  T &forward_event(bool is_forward, u32 id) {                                  \
+    if (is_forward) {                                                          \
+      return trigger_event(id);                                                \
+    }                                                                          \
+    return static_cast<T &>(*this);                                            \
+  }
 
 template <class T>
 class ComponentAccess : public Component, public DrawingComponentProperties<T> {
 public:
-  ComponentAccess(const var::String &name) : Component(name) {}
-
-  T &set_enabled(bool value = true) {
-    Component::set_enabled_examine(value);
-    return static_cast<T &>(*this);
+  ComponentAccess(const var::String &name) : Component(name) {
   }
 
-  COMPONENT_ACCESS_DERIVED(T)
-
-  T &set_drawing_area(drawing_size_t width, drawing_size_t height) {
-    Component::set_drawing_area(DrawingArea(width, height));
-    return static_cast<T &>(*this);
-  }
-
-  T &set_drawing_point(drawing_int_t x, drawing_int_t y) {
-    Component::set_drawing_point(DrawingPoint(x, y));
-    return static_cast<T &>(*this);
-  }
+  COMPONENT_ACCESS_DERIVED(Component, T)
 
   bool contains(const sgfx::Point &point) {
     return DrawingComponentProperties<T>::calculate_region_inside_margin(

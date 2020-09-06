@@ -11,12 +11,12 @@ namespace ux {
 
 class Button : public ComponentAccess<Button> {
 public:
-  EVENT_LITERAL(_btn);
-  class Event : public EventAccess<Button, _btn> {
-  public:
-    enum button_id { id_none, id_active, id_pressed, id_released, id_held };
-
-    Event(enum button_id id, Button &button) : EventAccess(id, &button) {}
+  enum event_ids {
+    event_id_none,
+    event_id_active,
+    event_id_pressed,
+    event_id_released,
+    event_id_held
   };
 
   Button(const var::String &name) : ComponentAccess(name) { set_value(name); }

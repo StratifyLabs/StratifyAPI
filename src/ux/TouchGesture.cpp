@@ -5,47 +5,48 @@
 using namespace sgfx;
 using namespace ux;
 
-enum TouchGesture::id TouchGesture::process_event(const ux::Event &event) {
-  if (event.type() == Event::event_type()) {
-    const Event &touch_event = event.reinterpret<Event>();
+enum TouchContext::event_ids TouchGesture::process(const Event &event) {
 
+  TouchContext *touch_context = TouchContext::match_component(event);
+  if (touch_context) {
     if (
-      (touch_event.id() == Event::id_pressed)
-      && m_region.contains(touch_event.point())) {
+      (event.id() == TouchContext::event_id_pressed)
+      && m_region.contains(touch_context->point())) {
       // start scrolling with the touch movement
       m_is_vertical_drag_active = false;
       m_is_horizontal_drag_active = false;
       m_is_pressed_contained = true;
-      m_last_point = touch_event.point();
+      m_last_point = touch_context->point();
       m_timer.restart();
     } else {
       if (m_is_pressed_contained) {
 
-        if (touch_event.id() == Event::id_active) {
-          m_drag = process_drag(touch_event);
+        if (event.id() == TouchContext::event_id_active) {
+          m_drag = process_drag(touch_context->point());
           if (m_is_horizontal_drag_active || m_is_vertical_drag_active) {
-            return id_dragged;
+            return TouchContext::event_id_dragged;
           }
 
-        } else if (touch_event.id() == Event::id_released) {
+        } else if (event.id() == TouchContext::event_id_released) {
 
           m_timer.stop();
           m_is_pressed_contained = false;
           if (!m_is_horizontal_drag_active && !m_is_vertical_drag_active) {
             // this was a touch
-            return id_touched;
+            return TouchContext::event_id_touched;
           }
         }
       }
     }
   }
-  return id_none;
+
+  return TouchContext::event_id_none;
 }
 
-sgfx::Point TouchGesture::process_drag(const Event &event) {
+sgfx::Point TouchGesture::process_drag(const sgfx::Point &point) {
   sgfx::Point result;
-  sgfx::Point diff = event.point() - m_last_point;
-  m_last_point = event.point();
+  sgfx::Point diff = point - m_last_point;
+  m_last_point = point;
   sg_int_t x = diff.x() > 0 ? diff.x() : -1 * diff.x();
   sg_int_t y = diff.y() > 0 ? diff.y() : -1 * diff.y();
 

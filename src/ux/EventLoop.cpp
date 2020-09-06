@@ -16,7 +16,7 @@ int EventLoop::loop(
   m_theme = &theme;
   m_display = &display;
 
-  m_controller->distribute_event(SystemEvent(SystemEvent::id_enter));
+  m_controller->distribute_event(SystemEvent(SystemEvent::event_id_entered));
   m_update_timer.restart();
   while (1) {
     process_events();
@@ -34,7 +34,7 @@ void EventLoop::process_update_event() {
   MicroTime elapsed = Milliseconds(m_update_timer.milliseconds());
 
   if (elapsed > m_update_period) {
-    m_controller->distribute_event(SystemEvent(SystemEvent::id_update));
+    m_controller->distribute_event(SystemEvent(SystemEvent::event_id_updated));
     m_update_timer.restart();
   } else {
     u32 remaining_milliseconds

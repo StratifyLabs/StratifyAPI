@@ -24,18 +24,11 @@ private:
 
 class ProgressBar : public ComponentAccess<ProgressBar> {
 public:
-  EVENT_LITERAL(pbar);
-
-  class Event : public EventAccess<ProgressBar, pbar> {
-  public:
-    enum id { id_none, id_changed };
-
-    Event(enum id id, ProgressBar &value) : EventAccess(id, &value) {}
-  };
+  enum event_ids { event_id_none, event_id_changed };
 
   ProgressBar(const var::String &name) : ComponentAccess(name) {
-    set_horizontal_padding(10);
-    set_vertical_padding(10);
+    // set_horizontal_padding(10);
+    // set_vertical_padding(10);
   }
 
   ProgressBar &set_progress_width(u16 value) {
@@ -45,13 +38,13 @@ public:
 
   ProgressBar &set_value(u16 value) {
     progress().set_value(value);
-    update_model(progress().get_model_value());
+    // update_model(progress().get_model_value());
     return *this;
   }
 
   ProgressBar &set_maximum(u16 value) {
     progress().set_maximum(value);
-    update_model(progress().get_model_value());
+    // update_model(progress().get_model_value());
     return *this;
   }
 

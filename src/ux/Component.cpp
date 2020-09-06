@@ -38,9 +38,9 @@ void Component::examine_visibility() {
     set_refresh_region(m_local_bitmap.region());
 
     redraw();
-    handle_event(SystemEvent(SystemEvent::id_enter));
+    handle_event(SystemEvent(SystemEvent::event_id_entered));
   } else {
-    handle_event(SystemEvent(SystemEvent::id_exit));
+    handle_event(SystemEvent(SystemEvent::event_id_exiteded));
     m_local_bitmap.free();
   }
 }
@@ -170,6 +170,10 @@ void Component::update_model(const Model::Entry &entry) {
   if (event_loop()->model()) {
     event_loop()->model()->update(entry);
   }
+}
+
+void Component::trigger_event(u32 event_type, u32 event_id) {
+  event_loop()->trigger_event(Event(event_type, event_id, this));
 }
 
 void Component::update_model(const var::String &value) {

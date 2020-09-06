@@ -32,11 +32,6 @@ public:
   virtual void process_events() = 0;
 
   void trigger_event(const Event &event);
-  void forward_event(bool is_forward, const Event &event) {
-    if (is_forward) {
-      trigger_event(event);
-    }
-  }
 
   void set_update_period(const chrono::MicroTime &duration) {
     m_update_period = duration;

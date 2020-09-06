@@ -51,35 +51,34 @@ void Slider::draw(const DrawingScaledAttributes &attributes) {
 
 void Slider::handle_event(const ux::Event &event) {
   // change the state when an event happens in the component
-  if (event.type() == TouchGesture::Event::event_type()) {
-    const TouchGesture::Event &touch_event
-      = event.reinterpret<TouchGesture::Event>();
+  TouchContext *touch_context = TouchContext::match_component(event);
+  if (touch_context) {
 
     if (
-      (touch_event.id() == TouchGesture::Event::id_pressed)
-      && contains(touch_event.point())) {
+      (event.id() == TouchContext::event_id_pressed)
+      && contains(touch_context->point())) {
       m_is_touched = true;
-      update_touch_point(touch_event.point());
+      update_touch_point(touch_context->point());
     }
 
     if (m_is_touched) {
-      if (touch_event.id() == TouchGesture::Event::id_released) {
+      if (event.id() == TouchContext::event_id_released) {
         m_is_touched = false;
-        update_touch_point(touch_event.point());
-        event_loop()->trigger_event(Event(Event::id_released, *this));
-      } else if (touch_event.id() == TouchGesture::Event::id_active) {
+        update_touch_point(touch_context->point());
+        trigger_event(event_id_released);
+      } else if (event.id() == TouchContext::event_id_active) {
         // need to check for dragging
-        update_touch_point(touch_event.point());
-        event_loop()->trigger_event(Event(Event::id_active, *this));
+        update_touch_point(touch_context->point());
+        trigger_event(event_id_active);
       }
     }
 
     if (
-      (touch_event.id() == TouchGesture::Event::id_pressed)
-      && contains(touch_event.point())) {
+      (event.id() == TouchContext::event_id_pressed)
+      && contains(touch_context->point())) {
       m_is_touched = true;
-      update_touch_point(touch_event.point());
-      event_loop()->trigger_event(Event(Event::id_pressed, *this));
+      update_touch_point(touch_context->point());
+      trigger_event(event_id_pressed);
     }
   }
 

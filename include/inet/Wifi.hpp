@@ -18,6 +18,14 @@ typedef api::Api<wifi_api_t, WIFI_API_REQUEST> WifiApi;
 
 class WifiSsidInfo {
 public:
+  enum securities {
+    security_invalid = WIFI_SECURITY_INVALID,
+    security_open = WIFI_SECURITY_OPEN,
+    security_wep = WIFI_SECURITY_WEP,
+    security_wpa_psk = WIFI_SECURITY_WPA_PSK,
+    security_802_1x = WIFI_SECURITY_802_1X
+  };
+
   WifiSsidInfo() { m_info = {0}; }
   explicit WifiSsidInfo(const wifi_ssid_info_t &info) : m_info(info) {}
 

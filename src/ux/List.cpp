@@ -41,11 +41,10 @@ void ListItem::draw(const DrawingScaledAttributes &attributes) {
 
 void ListItem::handle_event(const ux::Event &event) {
   // change the state when an event happens in the component
-  if (event.type() == TouchGesture::Event::event_type()) {
-    const TouchGesture::Event &touch_event
-      = event.reinterpret<TouchGesture::Event>();
+  TouchContext *touch_context = TouchContext::match_component(event);
+  if (touch_context) {
 
-    if (touch_event.id() == TouchGesture::Event::id_dragged) {
+    if (event.id() == TouchContext::event_id_dragged) {
       if (theme_state() == Theme::state_highlighted) {
         set_theme_state(Theme::state_default);
         set_refresh_drawing_pending();
@@ -53,25 +52,24 @@ void ListItem::handle_event(const ux::Event &event) {
     }
 
     if (is_interactive()) {
-      if (touch_event.id() == TouchGesture::Event::id_released) {
+      if (event.id() == TouchContext::event_id_released) {
         if (theme_state() == Theme::state_highlighted) {
-          if (contains(touch_event.point())) {
-            event_loop()->trigger_event(ListItem::Event(*this));
+          if (contains(touch_context->point())) {
+            trigger_event(event_id_selected);
           }
           set_theme_state(Theme::state_default);
           set_refresh_drawing_pending();
         }
       }
 
-      if (touch_event.id() == TouchGesture::Event::id_pressed) {
-        if (contains(touch_event.point())) {
+      if (event.id() == TouchContext::event_id_pressed) {
+        if (contains(touch_context->point())) {
           set_theme_state(Theme::state_highlighted);
           set_refresh_drawing_pending();
         }
       }
     }
   }
-  Component::handle_event(event);
 }
 
 List &List::add_component(Component &component) {

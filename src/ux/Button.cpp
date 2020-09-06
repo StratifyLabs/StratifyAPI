@@ -12,7 +12,6 @@ using namespace ux;
 void Button::draw(const DrawingScaledAttributes &attributes) {
 
   // draw the Border
-
   draw_base_properties(attributes.bitmap(), attributes.region(), theme());
 
   Region region_inside_padding
@@ -33,14 +32,12 @@ void Button::draw(const DrawingScaledAttributes &attributes) {
 
 void Button::handle_event(const ux::Event &event) {
   // change the state when an event happens in the component
-  if (event.type() == TouchGesture::Event::event_type()) {
+  TouchContext *touch_context = TouchContext::match_component(event);
+  if (touch_context) {
 
     if (theme_state() != Theme::state_disabled) {
 
-      const TouchGesture::Event &touch_event
-        = event.reinterpret<TouchGesture::Event>();
-
-      if (touch_event.id() == TouchGesture::Event::id_dragged) {
+      if (event.id() == TouchContext::event_id_dragged) {
         if (theme_state() == Theme::state_highlighted) {
           set_theme_state(Theme::state_default);
           set_refresh_drawing_pending();
@@ -48,14 +45,14 @@ void Button::handle_event(const ux::Event &event) {
         }
       }
 
-      if (touch_event.id() == TouchGesture::Event::id_released) {
+      if (event.id() == TouchContext::event_id_released) {
 
         if (
-          contains(touch_event.point())
+          contains(touch_context->point())
           && (theme_state() == Theme::state_highlighted)) {
           toggle();
           m_hold_timer.stop();
-          event_loop()->trigger_event(Event(Event::id_released, *this));
+          trigger_event(event_id_released);
         }
 
         if (theme_state() == Theme::state_highlighted) {
@@ -66,11 +63,10 @@ void Button::handle_event(const ux::Event &event) {
       }
 
       if (
-        (touch_event.id() == TouchGesture::Event::id_pressed)
-        && contains(touch_event.point())) {
+        (event.id() == TouchContext::event_id_pressed)
+        && contains(touch_context->point())) {
         toggle();
-        event_loop()->trigger_event(Event(Event::id_pressed, *this));
-
+        trigger_event(event_id_pressed);
         m_hold_timer.restart();
 
         set_theme_state(Theme::state_highlighted);
@@ -78,16 +74,16 @@ void Button::handle_event(const ux::Event &event) {
       }
     }
   } else if (event.type() == SystemEvent::event_type()) {
-    if (event.id() == SystemEvent::id_exit) {
+    if (event.id() == SystemEvent::event_id_exiteded) {
       set_theme_state(Theme::state_default);
       set_refresh_drawing_pending();
       m_hold_timer.reset();
-    } else if (event.id() == SystemEvent::id_update) {
+    } else if (event.id() == SystemEvent::event_id_updated) {
       if (
         m_hold_timer.is_running()
         && (m_hold_timer > theme()->button_hold_duration())) {
         m_hold_timer.stop();
-        event_loop()->trigger_event(Event(Event::id_held, *this));
+        trigger_event(event_id_held);
       }
     }
   }

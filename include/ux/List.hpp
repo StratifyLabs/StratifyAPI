@@ -10,17 +10,12 @@ namespace ux {
 
 class ListItem : public ComponentAccess<ListItem> {
 public:
-  EVENT_LITERAL(_lst);
-  class Event : public EventAccess<ListItem, _lst> {
-  public:
-    enum ids { id_none, id_select };
-
-    explicit Event(ListItem &value) : EventAccess(id_select, &value) {}
-  };
+  enum event_ids { event_id_none, event_id_selected };
 
   ListItem(const var::String &name) : ComponentAccess(name) {
     set_left_padding(5);
     set_right_padding(5);
+    set_value(lookup_model_value(name));
   }
 
   void draw(const DrawingScaledAttributes &attributes);
@@ -47,7 +42,8 @@ public:
   API_ACCESS_DERIVED_COMPOUND(ListItem, T, var::String, value)
   API_ACCESS_DERIVED_BOOL(ListItem, T, interactive)
 
-  COMPONENT_ACCESS_DERIVED(T)
+  COMPONENT_ACCESS_DERIVED(Component, T)
+
   COMPONENT_ACCESS_CREATE()
 };
 
