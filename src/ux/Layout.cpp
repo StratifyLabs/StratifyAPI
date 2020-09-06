@@ -316,7 +316,6 @@ void Layout::distribute_event(const ux::Event &event) {
 
   if (is_focus()) {
     handle_event(event);
-
     for (Item &item : m_component_list) {
       if (
         item.component() && item.component()->is_enabled()
@@ -325,24 +324,10 @@ void Layout::distribute_event(const ux::Event &event) {
           item.component()->reinterpret<Layout>()->distribute_event(event);
         } else {
           item.component()->handle_event(event);
-
-          if (item.component()->is_refresh_drawing_pending()) {
-            item.component()->refresh_drawing();
-          }
         }
       }
     }
   }
-
-#if 0
-  for (Item &item : m_component_list) {
-    if (
-      item.component() && item.component()->is_enabled()
-      && item.component()->is_refresh_drawing_pending()) {
-
-    }
-  }
-#endif
 
   if (event == SystemEvent(SystemEvent::event_id_exiteded)) {
     for (Item &component_pointer : m_component_list) {

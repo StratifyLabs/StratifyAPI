@@ -6,12 +6,7 @@
 #ifndef SAPI_UX_EVENT_HPP_
 #define SAPI_UX_EVENT_HPP_
 
-#include "../var/Array.hpp"
-#include "../var/Data.hpp"
-
-namespace sys {
-class Signal;
-}
+#include <mcu/types.h>
 
 namespace ux {
 
@@ -58,36 +53,6 @@ private:
   u32 m_type;
   u32 m_id;
   void *m_context;
-};
-
-template <class D, const char literal_id[5]> class EventAccess : public Event {
-public:
-  EventAccess(u32 id, D *component) : Event(event_type(), id, component) {
-    static_assert(sizeof(EventAccess<D, literal_id>) == sizeof(Event));
-  }
-
-  static u32 event_type() {
-    return literal_id[0] | literal_id[1] << 8 | literal_id[2] << 16
-           | literal_id[3] << 24;
-  }
-
-  static bool is_event(const Event &event, u32 id) {
-    return (event.type() == event_type()) && (event.id() == id);
-  }
-
-  static D *match_component(const Event &event, u32 id) {
-    if (is_event(event, id)) {
-      return static_cast<D *>(event.component());
-    }
-    return nullptr;
-  }
-
-  static D *match_component(const Event &event) {
-    if (event.type() == event_type()) {
-      return static_cast<D *>(event.component());
-    }
-    return nullptr;
-  }
 };
 
 class SystemEvent : public Event {

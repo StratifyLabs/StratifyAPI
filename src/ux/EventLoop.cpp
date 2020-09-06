@@ -42,9 +42,17 @@ void EventLoop::process_update_event() {
     // this should be an estimate until the next update event
     wait(Milliseconds(remaining_milliseconds));
   }
+
+  std::swap(m_temporary_event_stack, m_event_stack);
+
+  while (m_temporary_event_stack.count() > 0) {
+    m_controller->distribute_event(m_temporary_event_stack.top());
+    m_temporary_event_stack.pop();
+  }
 }
 
 void EventLoop::trigger_event(const Event &event) {
   API_ASSERT(event.type() != SystemEvent::event_type());
-  m_controller->distribute_event(event);
+  // m_controller->distribute_event(event);
+  m_event_stack.push(event);
 }

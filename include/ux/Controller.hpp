@@ -22,6 +22,8 @@ private:
   Layout *m_current_layout = nullptr;
   Layout *m_next_layout = nullptr;
   EventLoop *m_event_loop = nullptr;
+
+  void refresh_drawing(Layout *m_current_layout);
 };
 
 } // namespace ux

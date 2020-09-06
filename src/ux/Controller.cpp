@@ -11,6 +11,7 @@ void Controller::distribute_event(const ux::Event &event) {
 
   if (m_current_layout) {
     m_current_layout->distribute_event(event);
+    refresh_drawing(m_current_layout);
   }
 
   if (m_next_layout && (event.type() == SystemEvent::event_type())) {
@@ -27,5 +28,30 @@ void Controller::distribute_event(const ux::Event &event) {
     m_next_layout = nullptr;
     m_current_layout->set_enabled_examine(true);
     m_current_layout->set_visible_examine(true);
+  }
+}
+
+void Controller::refresh_drawing(Layout *layout) {
+  // draw components
+  for (Layout::Item &item : layout->component_list()) {
+    if (
+      item.component() && item.component()->is_enabled()
+      && item.component()->is_refresh_drawing_pending()) {
+      if (item.component()->is_layout() == false) {
+        item.component()->refresh_drawing();
+      }
+    }
+  }
+
+  // draw layouts
+  for (Layout::Item &item : layout->component_list()) {
+    if (
+      item.component() && item.component()->is_enabled()
+      && item.component()->is_refresh_drawing_pending()) {
+
+      if (item.component()->is_layout()) {
+        this->refresh_drawing(item.component()->reinterpret<Layout>());
+      }
+    }
   }
 }

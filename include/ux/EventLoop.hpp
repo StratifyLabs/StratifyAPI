@@ -6,6 +6,8 @@
 #include "../chrono/Timer.hpp"
 #include "../hal/Display.hpp"
 #include "../sgfx/Theme.hpp"
+#include "../var/Stack.hpp"
+#include "Event.hpp"
 
 namespace ux {
 
@@ -59,6 +61,8 @@ private:
   Model *m_model = nullptr;
   hal::Display *m_display = nullptr;
   const sgfx::Theme *m_theme = nullptr;
+  var::Stack<Event> m_event_stack;
+  var::Stack<Event> m_temporary_event_stack;
 
   void process_update_event();
 };
