@@ -98,9 +98,7 @@ public:
 
   void erase();
 
-  void set_refresh_drawing_pending() {
-    m_flags |= (flag_refresh_drawing_pending);
-  }
+  void set_refresh_drawing_pending();
 
   EventLoop *event_loop() { return m_event_loop; }
 
@@ -231,7 +229,7 @@ private:
   enum sgfx::Theme::styles m_theme_style = sgfx::Theme::style_brand_primary;
   enum sgfx::Theme::states m_theme_state = sgfx::Theme::state_default;
   sgfx::Region m_refresh_region;
-  Layout *m_parent;
+  Layout *m_parent = nullptr;
   u32 m_flags;
 
   EventLoop *m_event_loop = nullptr;

@@ -51,6 +51,7 @@ void Controller::refresh_drawing(Layout *layout) {
 
       if (item.component()->is_layout()) {
         this->refresh_drawing(item.component()->reinterpret<Layout>());
+        item.component()->clear_refresh_drawing_pending();
       }
     }
   }

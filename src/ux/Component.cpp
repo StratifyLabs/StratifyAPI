@@ -3,6 +3,7 @@
 #include "ux/Component.hpp"
 #include "sys/Printer.hpp"
 #include "ux/EventLoop.hpp"
+#include "ux/Layout.hpp"
 #include "ux/Model.hpp"
 
 using namespace sgfx;
@@ -42,6 +43,13 @@ void Component::examine_visibility() {
   } else {
     handle_event(SystemEvent(SystemEvent::event_id_exiteded));
     m_local_bitmap.free();
+  }
+}
+
+void Component::set_refresh_drawing_pending() {
+  m_flags |= (flag_refresh_drawing_pending);
+  if (parent()) {
+    parent()->set_refresh_drawing_pending();
   }
 }
 
