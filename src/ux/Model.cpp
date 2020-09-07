@@ -4,7 +4,7 @@
 
 sys::Printer &operator<<(sys::Printer &printer, const ux::Model &a) {
   for (const ux::Model::Entry &entry : a.entry_list()) {
-    printer.key(entry.key(), entry.value());
+    printer.key(entry.name(), entry.value());
   }
   return printer;
 }
@@ -14,7 +14,7 @@ using namespace ux;
 Model::Model() {}
 
 bool Model::Entry::operator==(const Entry &a) const {
-  return (a.key() == key());
+  return (a.name() == name());
 }
 
 void Model::update(const Entry &value) {
@@ -22,7 +22,7 @@ void Model::update(const Entry &value) {
     if (entry == value) {
       printf(
         "update model:%s -> %s\n",
-        value.key().cstring(),
+        value.name().cstring(),
         value.value().cstring());
       entry.set_value(value.value());
       return;
@@ -31,14 +31,14 @@ void Model::update(const Entry &value) {
 
   printf(
     "add model:%s -> %s\n",
-    value.key().cstring(),
+    value.name().cstring(),
     value.value().cstring());
   entry_list().push_back(value);
 }
 
-const var::String &Model::lookup(const var::String &key) const {
+const var::String &Model::lookup(const var::String &name) const {
   for (const Entry &entry : entry_list()) {
-    if (key == entry.key()) {
+    if (name == entry.name()) {
       return entry.value();
     }
   }

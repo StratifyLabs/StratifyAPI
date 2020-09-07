@@ -7,9 +7,7 @@
 using namespace sgfx;
 using namespace ux;
 
-Layout::Layout(const var::String &name, EventLoop *event_loop)
-  : ComponentAccess(name) {
-  set_event_loop(event_loop);
+Layout::Layout(const var::String &name) : ComponentAccess(name) {
   m_origin = DrawingPoint(0, 0);
   set_align_left();
   set_align_top();
@@ -90,7 +88,6 @@ void Layout::set_refresh_region(const sgfx::Region &region) {
 
 Layout &Layout::add_component(Component &component) {
 
-  component.set_event_loop(event_loop());
   component.set_parent(this);
 
   // check to see if a cp has been deleting -- insert the new component there

@@ -44,7 +44,7 @@ public:
 
   enum flows { flow_vertical, flow_horizontal, flow_free };
 
-  Layout(const var::String &name, EventLoop *event_loop);
+  Layout(const var::String &name);
 
   virtual ~Layout();
 
@@ -184,8 +184,7 @@ private:
 
 template <class T> class LayoutAccess : public Layout {
 public:
-  LayoutAccess<T>(const var::String &name, EventLoop *event_loop)
-    : Layout(name, event_loop) {}
+  LayoutAccess<T>(const var::String &name) : Layout(name) {}
 
   T &add_component(Component &component) {
     return static_cast<T &>(Layout::add_component(component));

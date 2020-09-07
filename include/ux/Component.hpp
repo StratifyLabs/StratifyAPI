@@ -100,9 +100,7 @@ public:
 
   void set_refresh_drawing_pending();
 
-  EventLoop *event_loop() { return m_event_loop; }
-
-  const EventLoop *event_loop() const { return m_event_loop; }
+  static EventLoop *event_loop() { return m_event_loop; }
 
   Layout *parent() { return m_parent; }
 
@@ -144,6 +142,11 @@ public:
   }
 
   var::String get_instance_name() const { return fs::FileInfo::name(name()); }
+
+  static void set_event_loop(EventLoop &value) {
+    API_ASSERT(m_event_loop == nullptr);
+    m_event_loop = &value;
+  }
 
 protected:
   void set_visible(bool value = true) {
@@ -213,8 +216,6 @@ protected:
     return m_local_drawing_attributes;
   }
 
-  void set_event_loop(EventLoop *value) { m_event_loop = value; }
-
   void set_parent(Layout *value) { m_parent = value; }
 
   void trigger_event(u32 event_type, u32 event_id);
@@ -233,7 +234,7 @@ private:
   Layout *m_parent = nullptr;
   u32 m_flags;
 
-  EventLoop *m_event_loop = nullptr;
+  static EventLoop *m_event_loop;
 
   void set_name(const var::String &name) { m_name = name; }
 };

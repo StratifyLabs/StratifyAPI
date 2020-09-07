@@ -12,7 +12,7 @@ public:
   Model();
 
   class Entry {
-    API_AC(Entry, var::String, key);
+    API_AC(Entry, var::String, name);
     API_AC(Entry, var::String, value);
 
   public:

@@ -9,6 +9,8 @@
 using namespace sgfx;
 using namespace ux;
 
+EventLoop *Component::m_event_loop = nullptr;
+
 Component::~Component() { set_visible_examine(false); }
 
 void Component::examine_visibility() {
@@ -180,9 +182,9 @@ void Component::trigger_event(u32 event_type, u32 event_id) {
 }
 
 void Component::update_model(const var::String &value) {
-  update_model(Model::Entry().set_key(name()).set_value(value));
+  update_model(Model::Entry().set_name(name()).set_value(value));
 }
 
 void Component::update_model(bool value) {
-  update_model(Model::Entry().set_key(name()).set_value(value));
+  update_model(Model::Entry().set_name(name()).set_value(value));
 }
