@@ -44,9 +44,6 @@ void Layout::examine_visibility() {
       Region(reference_drawing_attributes().calculate_region_on_bitmap())
         .area());
 
-    m_touch_gesture.set_region(
-      reference_drawing_attributes().calculate_region_on_bitmap());
-
     shift_origin(DrawingPoint(0, 0));
 
     handle_event(SystemEvent(SystemEvent::event_id_enter));
@@ -273,29 +270,23 @@ void Layout::distribute_event(const ux::Event &event) {
   if (is_focus()) {
 
     TouchContext *touch_context = event.is_trigger<TouchContext>();
-    if (touch_context) {
-      enum TouchContext::event_ids touch_context_event_id
-        = m_touch_gesture.process(event);
-      switch (touch_context_event_id) {
-      default:
-        break;
-      case TouchContext::event_id_dragged:
-        drawing_int_t vertical_drawing_scroll;
-        drawing_int_t horizontal_drawing_scroll;
-        horizontal_drawing_scroll
-          = handle_vertical_scroll(m_touch_gesture.drag().x());
+    if (touch_context && event.id() == TouchContext::event_id_dragged_point) {
 
-        vertical_drawing_scroll
-          = handle_vertical_scroll(m_touch_gesture.drag().y());
+      drawing_int_t vertical_drawing_scroll;
+      drawing_int_t horizontal_drawing_scroll;
+      horizontal_drawing_scroll
+        = handle_vertical_scroll(touch_context->drag().x());
 
-        if (vertical_drawing_scroll || horizontal_drawing_scroll) {
-          this->scroll(
-            DrawingPoint(horizontal_drawing_scroll, vertical_drawing_scroll));
+      vertical_drawing_scroll
+        = handle_vertical_scroll(touch_context->drag().y());
 
-          event_loop()->trigger_event(
-            Event::get_event(TouchContext::event_id_dragged, touch_context));
-        }
-        break;
+      if (vertical_drawing_scroll || horizontal_drawing_scroll) {
+
+        touch_context->set_point(
+          Point(vertical_drawing_scroll, horizontal_drawing_scroll));
+
+        this->scroll(
+          DrawingPoint(horizontal_drawing_scroll, vertical_drawing_scroll));
       }
     }
 

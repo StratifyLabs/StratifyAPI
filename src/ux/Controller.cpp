@@ -22,6 +22,8 @@ void Controller::distribute_event(const ux::Event &event) {
 
   if (m_next_layout && (event.type() == SystemEvent::event_type())) {
 
+    sys::Printer p;
+
     if (m_current_layout) {
       // option to do transition animations here
       m_current_layout->set_enabled(false);
@@ -29,6 +31,7 @@ void Controller::distribute_event(const ux::Event &event) {
         delete m_current_layout;
       }
     }
+
 
     m_current_layout = m_next_layout;
     m_next_layout = nullptr;

@@ -36,7 +36,9 @@ class Component : public Drawing {
     flag_layout = (1 << 4),
     flag_refresh_drawing_pending = (1 << 5),
     flag_antialias = (1 << 6),
-    flag_focus = (1 << 7)
+    flag_focus = (1 << 7),
+    flag_horizontal_scroll_enabled = (1 << 8),
+    flag_vertical_scroll_enabled = (1 << 9)
   };
 
 public:
@@ -66,6 +68,12 @@ public:
   bool is_focus() const { return m_flags & (flag_focus); }
   bool is_layout() const { return m_flags & (flag_layout); }
   bool is_antialias() const { return m_flags & (flag_antialias); }
+  bool is_vertical_scroll_enabled() const {
+    return m_flags & (flag_vertical_scroll_enabled);
+  }
+  bool is_horizontal_scroll_enabled() const {
+    return m_flags & (flag_horizontal_scroll_enabled);
+  }
   bool is_refresh_drawing_pending() const {
     return m_flags & (flag_refresh_drawing_pending);
   }
@@ -164,6 +172,16 @@ protected:
   }
   void set_antialias(bool value = true) {
     value ? m_flags |= (flag_antialias) : m_flags &= ~(flag_antialias);
+  }
+
+  void set_vertical_scroll_enabled_internal(bool value = true) {
+    value ? m_flags |= (flag_vertical_scroll_enabled)
+          : m_flags &= ~(flag_vertical_scroll_enabled);
+  }
+
+  void set_horizontal_scroll_enabled_internal(bool value = true) {
+    value ? m_flags |= (flag_horizontal_scroll_enabled)
+          : m_flags &= ~(flag_horizontal_scroll_enabled);
   }
 
   void set_focus_internal(bool value = true) {

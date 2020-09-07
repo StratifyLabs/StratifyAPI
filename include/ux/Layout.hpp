@@ -52,12 +52,12 @@ public:
   Layout &delete_component(const var::String &component_name);
 
   Layout &set_vertical_scroll_enabled(bool value = true) {
-    m_touch_gesture.set_vertical_drag_enabled(value);
+    set_vertical_scroll_enabled_internal(true);
     return *this;
   }
 
   Layout &set_horizontal_scroll_enabled(bool value = true) {
-    m_touch_gesture.set_horizontal_drag_enabled(value);
+    set_horizontal_scroll_enabled_internal(true);
     return *this;
   }
 
@@ -162,7 +162,6 @@ private:
   DrawingPoint m_origin;
   DrawingArea m_area;
   sgfx::Point m_touch_last;
-  ux::TouchGesture m_touch_gesture;
 
   void shift_origin(DrawingPoint shift);
   drawing_int_t handle_vertical_scroll(sg_int_t scroll);

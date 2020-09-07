@@ -24,7 +24,7 @@ enum TouchContext::event_ids TouchGesture::process(const Event &event) {
         if (event.id() == TouchContext::event_id_active) {
           m_drag = process_drag(touch_context->point());
           if (m_is_horizontal_drag_active || m_is_vertical_drag_active) {
-            return TouchContext::event_id_dragged;
+            return TouchContext::event_id_dragged_point;
           }
 
         } else if (event.id() == TouchContext::event_id_released) {

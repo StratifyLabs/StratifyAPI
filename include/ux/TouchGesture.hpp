@@ -6,6 +6,7 @@
 #include "../chrono/Timer.hpp"
 #include "../sgfx/Point.hpp"
 #include "../sgfx/Region.hpp"
+#include "Drawing.hpp"
 #include "Event.hpp"
 
 namespace ux {
@@ -17,7 +18,7 @@ public:
     event_id_active,
     event_id_pressed,
     event_id_released,
-    event_id_dragged,
+    event_id_dragged_point,
     event_id_touched,
     event_id_completed
   };
@@ -26,6 +27,7 @@ public:
 
 private:
   API_AC(TouchContext, sgfx::Point, point);
+  API_AC(TouchContext, sgfx::Point, drag);
 };
 
 /*! \brief TouchGesture Class
@@ -89,7 +91,7 @@ private:
   bool m_is_vertical_drag_active = false;
   bool m_is_horizontal_drag_active = false;
   bool m_is_pressed_contained = false;
-  static const sg_int_t m_drag_theshold = 1;
+  static constexpr sg_int_t m_drag_theshold = 1;
 
   sgfx::Point process_drag(const sgfx::Point &point);
 };

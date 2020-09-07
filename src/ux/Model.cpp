@@ -11,7 +11,7 @@ sys::Printer &operator<<(sys::Printer &printer, const ux::Model &a) {
 
 using namespace ux;
 
-Model::Model() {}
+Model::Model() { m_entry_list.reserve(64); }
 
 bool Model::Entry::operator==(const Entry &a) const {
   return (a.name() == name());

@@ -37,7 +37,7 @@ void Button::handle_event(const ux::Event &event) {
 
     if (theme_state() != Theme::state_disabled) {
 
-      if (event.id() == TouchContext::event_id_dragged) {
+      if (event.id() == TouchContext::event_id_dragged_point) {
         if (theme_state() == Theme::state_highlighted) {
           set_theme_state(Theme::state_default);
           set_refresh_drawing_pending();

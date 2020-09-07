@@ -1,10 +1,11 @@
-/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
+             // LICENSE.md for rights.
 
 #ifndef SAPI_UX_DRAW_TEXTBOX_HPP_
 #define SAPI_UX_DRAW_TEXTBOX_HPP_
 
-#include "Text.hpp"
 #include "../../var/Tokenizer.hpp"
+#include "Text.hpp"
 
 namespace ux::draw {
 
@@ -15,44 +16,44 @@ namespace ux::draw {
  */
 class TextBox : public Text {
 public:
-	/*! \details Construct a new text box */
-	TextBox();
+  /*! \details Construct a new text box */
+  TextBox();
 
-	/*! \details Access the scroll value */
-	sg_size_t scroll() const { return m_scroll; }
-	/*! \details Access the max scroll value */
-	sg_size_t scroll_max() const { return m_scroll_max; }
+  static int
+  count_lines(const sgfx::Font *font, const var::String &string, sg_size_t w);
 
-	int count_lines(sg_size_t w);
+  virtual void draw(const DrawingScaledAttributes &attr);
 
-	static int count_lines(
-			const sgfx::Font * font,
-			const var::String & string,
-			sg_size_t w
-			);
+  static constexpr sg_size_t maximum_scroll() { return 65535; }
 
-	void increment_scroll(){ m_scroll++; }
-	void decrement_scroll(){ if( m_scroll ){ m_scroll--; } }
+  TextBox &decrement_scroll() {
+    if (m_scroll) {
+      m_scroll--;
+    }
+    return *this;
+  }
 
-	virtual void draw(const DrawingScaledAttributes & attr);
-
+  TextBox &increment_scroll() {
+    if (m_scroll < 65535) {
+      m_scroll++;
+    }
+    return *this;
+  }
 
 private:
-	/*! \cond */
-	sg_size_t m_scroll;
-	sg_size_t m_scroll_max;
-	static void build_line(
-			const sgfx::Font * font,
-			u32 & i,
-			var::String & line,
-			const var::StringList& tokens,
-			int & build_len,
-			sg_size_t w
-			);
-	/*! \endcond */
-
+  API_AF(TextBox, sg_size_t, scroll, 0);
+  /*! \cond */
+  int count_lines(sg_size_t w);
+  static void build_line(
+    const sgfx::Font *font,
+    u32 &i,
+    var::String &line,
+    const var::StringList &tokens,
+    int &build_len,
+    sg_size_t w);
+  /*! \endcond */
 };
 
-}
+} // namespace ux::draw
 
 #endif /* SAPI_UX_DRAW_TEXTBOX_HPP_ */
