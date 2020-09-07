@@ -20,19 +20,11 @@ bool Model::Entry::operator==(const Entry &a) const {
 void Model::update(const Entry &value) {
   for (Entry &entry : entry_list()) {
     if (entry == value) {
-      printf(
-        "update model:%s -> %s\n",
-        value.name().cstring(),
-        value.value().cstring());
       entry.set_value(value.value());
       return;
     }
   }
 
-  printf(
-    "add model:%s -> %s\n",
-    value.name().cstring(),
-    value.value().cstring());
   entry_list().push_back(value);
 }
 

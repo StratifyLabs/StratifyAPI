@@ -11,10 +11,6 @@ namespace ux {
 
 class Progress {
 public:
-  enum model_values { model_value_progress, model_value_maximum };
-  var::String get_model_value() const {
-    return Model::from_list<u16>({value(), maximum()});
-  }
 
 private:
   API_AF(Progress, u16, value, 0);
@@ -24,7 +20,6 @@ private:
 
 class ProgressBar : public ComponentAccess<ProgressBar> {
 public:
-  enum event_ids { event_id_none, event_id_changed };
 
   ProgressBar(const var::String &name) : ComponentAccess(name) {
     // set_horizontal_padding(10);
@@ -38,13 +33,12 @@ public:
 
   ProgressBar &set_value(u16 value) {
     progress().set_value(value);
-    update_model(progress().get_model_value());
+    update_model(var::String::number(value));
     return *this;
   }
 
   ProgressBar &set_maximum(u16 value) {
     progress().set_maximum(value);
-    update_model(progress().get_model_value());
     return *this;
   }
 

@@ -246,7 +246,6 @@ void Layout::scroll(DrawingPoint value) {
 
 void Layout::draw(const DrawingAttributes &attributes) {
   MCU_UNUSED_ARGUMENT(attributes);
-  printf("draw layout %s\n", name().cstring());
   for (const Item &item : m_component_list) {
     if (item.component() && item.component()->is_focus()) {
       item.component()->redraw();

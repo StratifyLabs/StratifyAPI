@@ -13,7 +13,6 @@ class Slider;
 
 class Slider : public ComponentAccess<Slider> {
 public:
-  enum model_values { model_value_progress, model_value_maximum };
   enum event_ids {
     event_id_none,
     event_id_pressed,
@@ -33,14 +32,12 @@ public:
   Slider &set_value(u16 value) {
     m_value = value;
     trigger_event(event_id_changed);
-    update_model(get_model_value());
+    update_model(var::String::number(value));
     return *this;
   }
 
   Slider &set_maximum(u16 value) {
     m_maximum = value;
-    trigger_event(event_id_changed);
-    update_model(get_model_value());
     return *this;
   }
 
