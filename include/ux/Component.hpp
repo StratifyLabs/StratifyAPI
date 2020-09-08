@@ -114,8 +114,8 @@ public:
 
   const Layout *parent() const { return m_parent; }
 
-  const var::String &lookup_model_value();
-  const var::String &lookup_model_value(const var::String &key);
+  const var::String &lookup_model_value() const;
+  const var::String &lookup_model_value(const var::String &key) const;
 
   void update_model(const var::String &value);
   void update_model(const Model::Entry &entry);

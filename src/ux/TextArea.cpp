@@ -14,6 +14,8 @@ void TextArea::draw(const DrawingScaledAttributes &attributes) {
   Region region_inside_padding
     = calculate_region_inside_padding(attributes.region());
 
+  update_model(value());
+
   // calculate the font point size scaled from drawing size to sgfx size
   m_line_height = text_height() * region_inside_padding.height() * 9 / 10000;
 
@@ -30,6 +32,18 @@ void TextArea::draw(const DrawingScaledAttributes &attributes) {
       + region_inside_padding.area());
 
   apply_antialias_filter(attributes);
+}
+
+TextArea &TextArea::set_value(const var::String &value) {
+
+  // if the value is too big --truncate it
+  if (value.length() > max_length()) {
+    update_model(value.create_sub_string(
+      var::String::Position(value.length() - max_length())));
+  } else {
+    update_model(value);
+  }
+  return *this;
 }
 
 var::String TextArea::get_display_text() {

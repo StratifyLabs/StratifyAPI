@@ -164,11 +164,11 @@ void Component::apply_antialias_filter(
   }
 }
 
-const var::String &Component::lookup_model_value() {
+const var::String &Component::lookup_model_value() const {
   return lookup_model_value(name());
 }
 
-const var::String &Component::lookup_model_value(const var::String &key) {
+const var::String &Component::lookup_model_value(const var::String &key) const {
   return event_loop()->model().lookup(key);
 }
 

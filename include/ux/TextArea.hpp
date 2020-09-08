@@ -15,12 +15,25 @@ public:
   void handle_event(const ux::Event &event);
 
   TextArea &append(const var::String &input) {
-    m_value += input;
+    return set_value(value() + input);
+  }
+
+  TextArea &scroll_top() {
+    m_text_box.set_scroll(0);
     return *this;
   }
 
+  TextArea &scroll_bottom() {
+    m_text_box.set_scroll(draw::TextBox::maximum_scroll());
+    return *this;
+  }
+
+  TextArea &set_value(const var::String &value);
+
+  const var::String &value() const { return lookup_model_value(); }
+
 private:
-  API_ACCESS_COMPOUND(TextArea, var::String, value);
+  API_ACCESS_FUNDAMENTAL(TextArea, size_t, max_length, 256);
   API_ACCESS_FUNDAMENTAL(TextArea, drawing_size_t, text_height, 0);
   API_ACCESS_FUNDAMENTAL(TextArea, drawing_size_t, offset, 0);
 
