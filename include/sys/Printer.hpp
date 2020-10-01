@@ -407,11 +407,11 @@ class PerformancePrinter {
 public:
   PerformancePrinter(Printer &printer, const char *function, int line)
     : m_printer(printer), m_function(function), m_line(line) {
-    m_timer.start();
     m_printer.trace(
       m_function,
       m_line,
       var::String("------------------>start performance timer"));
+    m_timer.start();
   }
   ~PerformancePrinter() {
     m_timer.stop();

@@ -524,19 +524,20 @@ JsonValue JsonDocument::load(FilePath path) {
 }
 
 #if defined __link
-JsonValue JsonDocument::load(XmlString xml) {
+JsonValue JsonDocument::load(XmlString xml, XmlIsFlat is_flat) {
 #if !defined __android
-  std::string json_string = xml2json(xml.argument().cstring());
+  std::string json_string
+    = xml2json(xml.argument().cstring(), is_flat.argument() == false);
   return load(String(json_string.c_str()));
 #else
   return JsonValue();
 #endif
 }
 
-JsonValue JsonDocument::load(XmlFilePath path) {
+JsonValue JsonDocument::load(XmlFilePath path, XmlIsFlat is_flat) {
   fs::DataFile data_file(fs::File::Path(path.argument()));
   String xml_string = String(data_file.data());
-  return load(XmlString(xml_string));
+  return load(XmlString(xml_string), is_flat);
 }
 #endif
 
