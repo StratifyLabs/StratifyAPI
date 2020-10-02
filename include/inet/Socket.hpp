@@ -251,6 +251,10 @@ public:
     set_port(port);
   }
 
+  static SocketAddress any(u16 port) {
+    return SocketAddress(SocketAddressIpv4(INADDR_ANY, port));
+  }
+
   explicit SocketAddress(
     const sockaddr_in &ipv4,
     int protocol = SocketAddressInfo::protocol_tcp,
@@ -264,7 +268,7 @@ public:
     m_sockaddr.copy_contents(var::Reference(ipv6));
   }
 
-  void set_port(u16 port);
+  SocketAddress &set_port(u16 port);
 
   u32 length() const { return m_sockaddr.size(); }
 

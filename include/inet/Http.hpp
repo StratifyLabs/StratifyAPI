@@ -25,26 +25,110 @@ public:
 
   explicit Http(Socket &socket);
 
+  enum class Status {
+    Continue = 100,
+    switching_protocols = 101,
+    processing = 102,
+    early_hints = 103,
+    ok = 200,
+    created = 201,
+    accepted = 202,
+    non_authoritative_information = 203,
+    no_content = 204,
+    reset_content = 205,
+    partial_content = 206,
+    multi_status = 207,
+    already_reported = 208,
+    im_used = 226,
+    multiple_choices = 300,
+    moved_permanently = 301,
+    found = 302,
+    see_other = 303,
+    not_modified = 304,
+    use_proxy = 305,
+    switch_proxy = 306,
+    temporary_redirect = 307,
+    permanent_redirect = 308,
+    bad_request = 400,
+    unauthorized = 401,
+    payment_required = 402,
+    forbidden = 403,
+    not_found = 404,
+    method_not_allowed = 405,
+    not_acceptable = 406,
+    proxy_authentication_required = 407,
+    request_timeout = 408,
+    conflict = 409,
+    gone = 410,
+    length_required = 411,
+    precondition_failed = 412,
+    payload_too_large = 413,
+    uri_too_long = 414,
+    unsupported_media_type = 415,
+    range_not_satisfiable = 416,
+    expectation_failed = 417,
+    misdirected_request = 421,
+    unprocessable_entity = 422,
+    locked = 423,
+    failed_dependency = 424,
+    too_early = 425,
+    upgrade_required = 426,
+    precondition_required = 428,
+    too_many_requests = 429,
+    request_header_fields_too_large = 431,
+    unavailable_for_legal_reasons = 451,
+    internal_server_error = 500,
+    not_implemented = 501,
+    bad_gateway = 502,
+    service_unavailable = 503,
+    gateway_timeout = 504,
+    http_version_not_supported = 505,
+    variant_also_negociates = 506,
+    insufficient_storage = 507,
+    loop_detected = 508,
+    not_extended = 510,
+    network_authentication_required = 511
+  };
+
+  enum class Method { invalid, get, post, put, head, Delete, patch, options };
+
+  static var::String to_string(Status status);
+  static var::String to_string(Method method);
+  static Method method_from_string(const var::String &string);
+
+  class HeaderPair : public var::Pair<var::String> {
+  public:
+    HeaderPair() {}
+    HeaderPair(const var::String &key, const var::String &value)
+      : var::Pair<var::String>(key, value) {}
+
+    static HeaderPair from_string(const var::String &string);
+
+    var::String to_string() const { return key() + ": " + value(); }
+  };
+
+  var::Vector<HeaderPair> &header_request_pairs() {
+    return m_header_request_pairs;
+  }
+  const var::Vector<HeaderPair> &header_request_pairs() const {
+    return m_header_request_pairs;
+  }
+
+  var::Vector<HeaderPair> &header_response_pairs() {
+    return m_header_response_pairs;
+  }
+  const var::Vector<HeaderPair> &header_response_pairs() const {
+    return m_header_response_pairs;
+  }
+
 protected:
   Socket &socket() { return m_socket; }
 
 private:
-  /*! \cond */
   Socket &m_socket;
-  /*! \endcond */
-};
 
-class HttpHeaderPair : public var::Pair<var::String> {
-public:
-  HttpHeaderPair() {}
-  HttpHeaderPair(const var::String &key, const var::String &value)
-    : var::Pair<var::String>(key, value) {}
-
-  static HttpHeaderPair from_string(const var::String &string);
-
-  var::String to_string() const {
-    return var::String() << key() << ": " << value();
-  }
+  var::Vector<HeaderPair> m_header_request_pairs;
+  var::Vector<HeaderPair> m_header_response_pairs;
 };
 
 /*!
@@ -280,20 +364,6 @@ public:
    */
   int close_connection();
 
-  var::Vector<HttpHeaderPair> &header_request_pairs() {
-    return m_header_request_pairs;
-  }
-  const var::Vector<HttpHeaderPair> &header_request_pairs() const {
-    return m_header_request_pairs;
-  }
-
-  var::Vector<HttpHeaderPair> &header_response_pairs() {
-    return m_header_response_pairs;
-  }
-  const var::Vector<HttpHeaderPair> &header_response_pairs() const {
-    return m_header_response_pairs;
-  }
-
   const var::String &traffic() const { return m_traffic; }
 
 private:
@@ -304,8 +374,6 @@ private:
 
   SocketAddress m_address;
   var::String m_transfer_encoding;
-  var::Vector<HttpHeaderPair> m_header_request_pairs;
-  var::Vector<HttpHeaderPair> m_header_response_pairs;
   var::String m_header;
   var::String m_alive_domain;
   int m_status_code = 0;
@@ -350,13 +418,25 @@ private:
 /*! \cond */
 class HttpServer : public Http {
 public:
-  HttpServer();
+  // socket should already have accepted a new connection
+  HttpServer(const var::String version, Socket &socket) : Http(socket) {
+    m_version = "HTTP/" + version + " ";
+  }
+
+  int run();
+  virtual int respond(Method method, const var::String &url) = 0;
+
+protected:
+  int send_header(Status status);
+  int send_chunk(const var::Blob &chunk);
+  int send(const var::Blob &chunk);
 
 private:
-  // path to filesystem
-  // callback for dynamic content
+  API_AB(HttpServer, running, true);
+  var::Data m_incoming;
+  var::String m_version;
 
-  // design to be easily used in a thread
+  void send_bad_request();
 };
 /*! \endcond */
 

@@ -144,12 +144,13 @@ u16 SocketAddress::port() const {
   return 0;
 }
 
-void SocketAddress::set_port(u16 port) {
+SocketAddress &SocketAddress::set_port(u16 port) {
   if (is_ipv4()) {
     m_sockaddr.to<struct sockaddr_in>()->sin_port = htons(port);
   } else if (is_ipv6()) {
     m_sockaddr.to<struct sockaddr_in6>()->sin6_port = htons(port);
   }
+  return *this;
 }
 
 var::String SocketAddress::to_string() const {
