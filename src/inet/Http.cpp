@@ -615,7 +615,7 @@ int HttpServer::run() {
           send_bad_request();
         } else {
           u32 content_length = 0;
-          bool is_chunked_encoding = false;
+          set_transfer_encoding_chunked(false);
           var::String header;
           do {
             header = socket().gets();
@@ -629,17 +629,13 @@ int HttpServer::run() {
               } else if (
                 pair.key() == "TRANSFER-ENCODING"
                 && String(pair.value()).to_upper() == "CHUNKED") {
-                is_chunked_encoding = true;
+                set_transfer_encoding_chunked();
               }
             }
           } while (header.length() > 2);
 
-          if (method == Method::put || method == Method::post) {
-            // more data is coming - content-length
-            // receive some data
-          }
-
-          respond(method, tokens.at(1));
+          printf("response with %d bytes incoming\n", content_length);
+          respond(method, tokens.at(1), content_length);
         }
       }
 
@@ -683,4 +679,42 @@ int HttpServer::send_chunk(const var::Blob &chunk) {
   return chunk.size();
 }
 
+int HttpServer::get_chunk_size() {
+  String line = socket().gets();
+  return line.to_integer();
+}
+
 int HttpServer::send(const var::Blob &chunk) { return socket().write(chunk); }
+
+int HttpServer::receive(fs::File &file, int content_length) {
+  if (is_transfer_encoding_chunked()) {
+    // read chunk by chunk
+    int bytes_received = 0;
+    while (bytes_received < content_length) {
+      int chunk_size = get_chunk_size();
+
+      if (chunk_size <= 0) {
+        return bytes_received;
+      }
+
+      file.write(
+        socket(),
+        fs::File::WriteOptions()
+          .set_location(bytes_received)
+          .set_page_size(512)
+          .set_size(chunk_size));
+
+      bytes_received += chunk_size;
+
+      socket().gets(); // read the \r\n at the end
+    }
+
+    return bytes_received;
+  }
+
+  // write the bytes to the file
+  return file.write(
+    socket(),
+    fs::File::WriteOptions().set_location(0).set_page_size(512).set_size(
+      content_length));
+}

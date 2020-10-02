@@ -424,17 +424,21 @@ public:
   }
 
   int run();
-  virtual int respond(Method method, const var::String &url) = 0;
+  virtual int respond(Method method, const var::String &url, int bytes_incoming)
+    = 0;
 
 protected:
   int send_header(Status status);
   int send_chunk(const var::Blob &chunk);
+  int receive(fs::File &file, int content_length);
   int send(const var::Blob &chunk);
 
 private:
   API_AB(HttpServer, running, true);
+  API_AB(HttpServer, transfer_encoding_chunked, true);
   var::Data m_incoming;
   var::String m_version;
+  int get_chunk_size();
 
   void send_bad_request();
 };
