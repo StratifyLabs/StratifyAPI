@@ -80,7 +80,7 @@ File &File::open(
 }
 
 File &File::create(
-  const var::String &path,
+  const var::StringView &path,
   Overwrite is_overwrite,
   const Permissions &perms) {
   fs::OpenFlags flags = fs::OpenFlags::create();
@@ -427,9 +427,9 @@ int File::write(
   return set_error_number_if_error(static_cast<int>(size_processed));
 }
 
-DataFile::DataFile(fs::File::Path file_path) {
+DataFile::DataFile(const Path &file_path) {
   // read the contents of file_path into this object
-  FileInfo info = File::get_info(file_path.argument());
+  FileInfo info = File::get_info(file_path.path());
   m_open_flags = OpenFlags::append_write_only();
   m_fd = 0;
   m_location = 0;
@@ -444,7 +444,7 @@ DataFile::DataFile(fs::File::Path file_path) {
   m_open_flags = OpenFlags::read_write();
 }
 
-DataFile::DataFile(const fs::File &file_to_load) {
+DataFile::DataFile(fs::File &file_to_load) {
   m_fd = 0;
   m_location = 0;
   m_open_flags = OpenFlags::append_read_write();

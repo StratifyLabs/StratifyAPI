@@ -5,23 +5,34 @@ using namespace fs;
 FileSystem::FileSystem(SAPI_LINK_DRIVER) { SAPI_LINK_CONSTRUCT_DRIVER(); }
 
 FileSystem &FileSystem::remove(const var::StringView &path) {
-  if (link_unlink(link_driver.argument(), path.cstring()) < 0) {
-    return api::error_code_fs_failed_to_unlink;
-  }
-  return 0;
+  API_ASSIGN_ERROR_CODE(
+    api::ErrorCode::io_error,
+    link_unlink(link_driver.argument(), path.cstring()));
+  return *this;
 }
 
-FileSystem &copy(const CopyOptions &options) {}
+FileSystem &copy(const CopyOptions &options) {
+  File source;
+  File dest;
 
-FileSystem &copy(const PrivateCopyOptions &options) {
-  MCU_UNUSED_ARGUMENT(source_path);
-  struct SAPI_LINK_STAT st;
+  LINK_SET_DRIVER(source, options.source_driver());
+  LINK_SET_DRIVER(dest, options.destination_driver());
 
   if (
     API_ASSIGN_ERROR_CODE(
       api::ErrorCode::io_error,
-      options.source()->fstat(&st))
+      source.open(options.source_path(), OpenFlags::read_only()))
     < 0) {
+    return *this;
+  }
+
+  return copy(source, dest, options);
+}
+
+FileSystem &copy(File &source, File &destination, const CopyOptions &options) {
+  struct SAPI_LINK_STAT st;
+
+  if (API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, source.fstat(&st)) < 0) {
     return *this;
   }
 
@@ -30,23 +41,23 @@ FileSystem &copy(const PrivateCopyOptions &options) {
   }
 
   if (
-    options.destination()->create(
-      dest_path.argument(),
-      is_overwrite,
-      Permissions(st.st_mode & 0777))
+    API_ASSIGN_ERROR_CODE(
+      api::ErrorCode::io_error,
+      destination.create(
+        options.destination_path(),
+        options.overwrite(),
+        Permissions(st.st_mode & 0777)))
     < 0) {
-    return api::error_code_fs_failed_to_create;
+    return *this;
   }
 
-  int result = dest.argument().write(
-    source.argument(),
-    PageSize(SAPI_LINK_DEFAULT_PAGE_SIZE),
-    Size(size_t(-1)),
-    progress_callback);
-  if (result < 0) {
-    return api::error_code_fs_failed_to_write;
-  }
-  return result;
+  API_ASSIGN_ERROR_CODE(
+    api::ErrorCode::io_error,
+    destination.write(
+      source,
+      File::WriteOptions().set_progress_callback(options.progress_callback())));
+
+  return *this;
 }
 
 int FileSystem::copy(

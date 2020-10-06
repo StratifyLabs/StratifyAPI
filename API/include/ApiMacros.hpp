@@ -156,29 +156,29 @@ private:                                                                       \
 #define API_ADB(c, d, v) API_ACCESS_DERIVED_BOOL(c, d, v)
 
 #define API_OR_NAMED_FLAGS_OPERATOR(TYPE, FLAG_NAME)                           \
-  inline enum TYPE::FLAG_NAME operator|(                                       \
-    const enum TYPE::FLAG_NAME a,                                              \
-    const enum TYPE::FLAG_NAME b) {                                            \
-    return static_cast<enum TYPE::FLAG_NAME>(                                  \
+  inline TYPE::FLAG_NAME operator|(                                            \
+    const TYPE::FLAG_NAME a,                                                   \
+    const TYPE::FLAG_NAME b) {                                                 \
+    return static_cast<TYPE::FLAG_NAME>(                                       \
       static_cast<u32>(a) | static_cast<u32>(b));                              \
   }                                                                            \
-  inline enum TYPE::FLAG_NAME operator&(                                       \
-    const enum TYPE::FLAG_NAME a,                                              \
-    const enum TYPE::FLAG_NAME b) {                                            \
-    return static_cast<enum TYPE::FLAG_NAME>(                                  \
+  inline TYPE::FLAG_NAME operator&(                                            \
+    const TYPE::FLAG_NAME a,                                                   \
+    const TYPE::FLAG_NAME b) {                                                 \
+    return static_cast<TYPE::FLAG_NAME>(                                       \
       static_cast<u32>(a) & static_cast<u32>(b));                              \
   }                                                                            \
-  inline enum TYPE::FLAG_NAME operator~(const enum TYPE::FLAG_NAME a) {        \
-    return static_cast<enum TYPE::FLAG_NAME>(~(static_cast<u32>(a)));          \
+  inline TYPE::FLAG_NAME operator~(const TYPE::FLAG_NAME a) {                  \
+    return static_cast<TYPE::FLAG_NAME>(~(static_cast<u32>(a)));               \
   }                                                                            \
-  inline enum TYPE::FLAG_NAME &operator|=(                                     \
-    enum TYPE::FLAG_NAME &a,                                                   \
-    const enum TYPE::FLAG_NAME b) {                                            \
+  inline TYPE::FLAG_NAME &operator|=(                                          \
+    TYPE::FLAG_NAME &a,                                                        \
+    const TYPE::FLAG_NAME b) {                                                 \
     return a = a | b;                                                          \
   }                                                                            \
-  inline enum TYPE::FLAG_NAME &operator&=(                                     \
-    enum TYPE::FLAG_NAME &a,                                                   \
-    const enum TYPE::FLAG_NAME b) {                                            \
+  inline TYPE::FLAG_NAME &operator&=(                                          \
+    TYPE::FLAG_NAME &a,                                                        \
+    const TYPE::FLAG_NAME b) {                                                 \
     return a = a & b;                                                          \
   }
 

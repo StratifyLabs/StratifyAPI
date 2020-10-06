@@ -10,6 +10,7 @@
 
 #include "ChronoAPI/Time.hpp"
 #include "FileInfo.hpp"
+#include "Path.hpp"
 
 #include "VarAPI/Data.hpp"
 #include "VarAPI/String.hpp"
@@ -125,7 +126,7 @@ class File;
  * ```
  *
  */
-class File : public virtual api::WorkObject {
+class File : public virtual api::Result {
 public:
 
   enum class Overwrite { no, yes };
@@ -214,7 +215,7 @@ public:
    * @return Zero on success
    */
   File &open(
-    const var::String &name,
+    const var::StringView &name,
     const OpenFlags &flags = OpenFlags::read_write());
 
   /*! \details Creates a new file (using the open() method).
@@ -225,7 +226,7 @@ public:
    * @param perms The permissions to assign to the newly created file
    */
   File &create(
-    const var::String &path,
+    const var::StringView &path,
     Overwrite is_overwrite,
     const Permissions &perms = Permissions(0666));
 
@@ -252,8 +253,7 @@ public:
    *
    */
   File &read(const var::Item &item) {
-    int result = read(item.to_void(), reference.size());
-    return result;
+    return read(item.to_void(), item.size());
   }
 
   /*! \details Write the file.
@@ -263,7 +263,7 @@ public:
   File &write(const void *buf, size_t size);
 
   /*! \details Writes the file using a var::Data object. */
-  File &write(const var::Item &item) const {
+  File &write(const var::Item &item) {
     return write(item.to_const_void(), item.size());
   }
 
@@ -278,7 +278,7 @@ public:
     API_ACCESS_FUNDAMENTAL(WriteOptions, size_t, size, static_cast<size_t>(-1));
     API_ACCESS_FUNDAMENTAL(
       WriteOptions,
-      const sys::ProgressCallback *,
+      const api::ProgressCallback *,
       progress_callback,
       nullptr);
   };
@@ -428,7 +428,7 @@ public:
     return static_cast<Derived &>(File::write(buf, size));
   }
 
-  Derived &write(const var::Item &item) const {
+  Derived &write(const var::Item &item) {
     return static_cast<Derived &>(File::write(item));
   }
 
@@ -476,8 +476,8 @@ public:
   }
   virtual ~DataFile() { m_fd = -1; }
 
-  explicit DataFile(fs::File::Path file_path);
-  explicit DataFile(const fs::File &file_to_load);
+  explicit DataFile(const Path &file_path);
+  explicit DataFile(File &file_to_load);
 
   /*! \details Returns the size of the
    * file (size of the data).
@@ -504,11 +504,14 @@ private:
 
   int open(const char *path, int flags, int mode) override {
     MCU_UNUSED_ARGUMENT(path);
-    this->flags() = flags;
+    this->flags() = OpenFlags(flags);
     return 0;
   }
+
+  friend class File;
+  friend class FileAccess<DataFile>;
   int close(int fd) override { return 0; }
-  int read(int fd, void *buf, size_t nbyte) override;
+  int read(int fd, void *buf, int nbyte) override;
   int write(int fd, const void *buf, int nbyte) override;
   int lseek(int fd, int offset, int whence) override;
   int ioctl(int fd, int request, void *argument) override {
@@ -533,7 +536,7 @@ public:
    * file (size of the data).
    *
    */
-  u32 size() const override { return reference().size(); }
+  u32 size() override { return item().size(); }
 
   using File::read;
   using File::seek;
@@ -554,7 +557,7 @@ private:
 
   int open(const char *path, int flags, int mode) override {
     MCU_UNUSED_ARGUMENT(path);
-    this->flags() = flags;
+    this->flags() = OpenFlags(flags);
     if (flags.is_append()) {
       return -1;
     }

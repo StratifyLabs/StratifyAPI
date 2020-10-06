@@ -4,5 +4,6 @@ set(SOURCES
 	File.cpp
 	FileInfo.cpp
 	FileSystem.cpp
+	Path.cpp
 	PARENT_SCOPE
 )

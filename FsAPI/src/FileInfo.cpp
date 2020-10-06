@@ -7,8 +7,9 @@
 
 #include "FsAPI/FileInfo.hpp"
 #include "PrinterAPI/Printer.hpp"
+#include "VarAPI/String.hpp"
 
-printer::Printer &operator<<(sys::Printer &printer, const fs::FileInfo &a) {
+printer::Printer &operator<<(printer::Printer &printer, const fs::FileInfo &a) {
   var::String type;
   if (a.is_directory()) {
     type = "directory";
@@ -55,7 +56,8 @@ bool FileInfo::is_directory() const {
     return (m_stat.st_mode & S_IFMT) == S_IFDIR;
   }
 #endif
-  return (m_stat.st_mode & FileInfo::mode_format) == FileInfo::mode_directory;
+  return (static_cast<TypeFlags>(m_stat.st_mode) & TypeFlags::mask)
+         == TypeFlags::directory;
 }
 
 bool FileInfo::is_file() const {
@@ -64,7 +66,8 @@ bool FileInfo::is_file() const {
     return (m_stat.st_mode & S_IFMT) == S_IFREG;
   }
 #endif
-  return (m_stat.st_mode & FileInfo::mode_format) == FileInfo::mode_regular;
+  return (static_cast<TypeFlags>(m_stat.st_mode) & TypeFlags::mask)
+         == TypeFlags::regular;
 }
 
 bool FileInfo::is_device() const {
@@ -77,7 +80,8 @@ bool FileInfo::is_block_device() const {
     return (m_stat.st_mode & S_IFMT) == S_IFBLK;
   }
 #endif
-  return (m_stat.st_mode & (FileInfo::mode_format)) == FileInfo::mode_block;
+  return (static_cast<TypeFlags>(m_stat.st_mode) & (TypeFlags::mask))
+         == TypeFlags::block;
 }
 
 bool FileInfo::is_character_device() const {
@@ -86,7 +90,8 @@ bool FileInfo::is_character_device() const {
     return (m_stat.st_mode & S_IFMT) == S_IFCHR;
   }
 #endif
-  return (m_stat.st_mode & (FileInfo::mode_format)) == FileInfo::mode_character;
+  return (static_cast<TypeFlags>(m_stat.st_mode) & (TypeFlags::mask))
+         == TypeFlags::character;
 }
 
 bool FileInfo::is_socket() const {
@@ -99,78 +104,10 @@ bool FileInfo::is_socket() const {
 #endif
   }
 #endif
-  return (m_stat.st_mode & FileInfo::mode_format) == FileInfo::mode_file_socket;
+  return (static_cast<TypeFlags>(m_stat.st_mode) & TypeFlags::mask)
+         == TypeFlags::file_socket;
 }
 
 u32 FileInfo::size() const { return m_stat.st_size; }
 
 bool FileInfo::is_executable() const { return false; }
-
-const var::String FileInfo::suffix(const var::String &path) {
-  size_t pos = path.rfind('.');
-
-  if (pos == var::String::npos) {
-    return var::String();
-  }
-
-  return path.create_sub_string(var::String::Position(pos + 1));
-}
-
-const var::String FileInfo::name(const var::String &path) {
-  size_t pos = path.rfind('/');
-
-  if (pos == var::String::npos) {
-    return path;
-  }
-
-  return path.create_sub_string(var::String::Position(pos + 1));
-}
-
-const var::String FileInfo::parent_directory(const var::String &path) {
-  size_t pos = path.rfind('/');
-
-  if (pos == var::String::npos) {
-    return var::String();
-  }
-
-  return path.create_sub_string(
-    var::String::Position(0),
-    var::String::Length(pos));
-}
-
-const var::String FileInfo::base_name(const var::String &path) {
-  var::String result = name(path);
-  size_t pos = result.rfind('.');
-  if (pos == var::String::npos) {
-    return result;
-  }
-
-  return result.create_sub_string(
-    var::String::Position(0),
-    var::String::Length(pos));
-}
-
-const var::String FileInfo::no_suffix(const var::String &path) {
-  size_t pos = path.rfind('.');
-
-  if (pos == var::String::npos) {
-    return var::String();
-  }
-
-  return path.create_sub_string(
-    var::String::Position(0),
-    var::String::Length(pos));
-}
-
-bool FileInfo::is_hidden(const var::String &path) {
-  if (name(path).find(".") == 0) {
-    return true;
-  }
-
-  var::String parent = parent_directory(path);
-  if (parent != path) {
-    return is_hidden(parent_directory(path));
-  }
-
-  return false;
-}

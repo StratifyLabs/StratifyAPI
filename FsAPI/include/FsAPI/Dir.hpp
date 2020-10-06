@@ -31,7 +31,7 @@
 #include "VarAPI/Vector.hpp"
 
 #include "File.hpp"
-#include "Stat.hpp"
+#include "FileInfo.hpp"
 
 namespace fs {
 

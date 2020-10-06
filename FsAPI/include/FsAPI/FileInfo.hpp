@@ -22,16 +22,16 @@ namespace fs {
 
 class FileFlags {
 public:
-  enum o_permission_flags {
-    permission_public_execute = 0001,
-    permission_public_write = 0002,
-    permission_public_read = 0004,
-    permission_group_execute = 0010,
-    permission_group_write = 0020,
-    permission_group_read = 0040,
-    permission_owner_execute = 0100,
-    permission_owner_write = 0200,
-    permission_owner_read = 0400,
+  enum PermissionFlags {
+    public_execute = 0001,
+    public_write = 0002,
+    public_read = 0004,
+    group_execute = 0010,
+    group_write = 0020,
+    group_read = 0040,
+    owner_execute = 0100,
+    owner_write = 0200,
+    owner_read = 0400,
   };
 
   enum o_open_flags {
@@ -47,24 +47,27 @@ public:
     open_access_mode /*! Access mode mask */ = LINK_O_ACCMODE
   };
 
-  enum o_access_flags {
-    access_read_ok /*! Check if read access is allowed */ = LINK_R_OK,
-    access_write_ok /*! Check if write access is allowed */ = LINK_W_OK,
-    access_execute_ok /*! Check if execute access is allowed */ = LINK_X_OK,
-    access_file_ok /*! Check if file exists */ = LINK_F_OK,
+  enum class AccessFlags {
+    read_ok /*! Check if read access is allowed */ = LINK_R_OK,
+    write_ok /*! Check if write access is allowed */ = LINK_W_OK,
+    execute_ok /*! Check if execute access is allowed */ = LINK_X_OK,
+    file_ok /*! Check if file exists */ = LINK_F_OK
   };
 
-  enum mode {
-    mode_format /*! Mode format mask */ = LINK_S_IFMT,
-    mode_file_socket /*! Mode Socket mask */ = LINK_S_IFSOCK,
-    mode_regular /*! Mode regular file value */ = LINK_S_IFREG,
-    mode_block /*! Mode block device value */ = LINK_S_IFBLK,
-    mode_character /*! Mode character device value */ = LINK_S_IFCHR,
-    mode_directory /*! Mode directory value */ = LINK_S_IFDIR,
-    mode_fifo /*! Mode FIFO value */ = LINK_S_IFDIR,
-    mode_symbolic_link /*! Mode symbolic link value */ = LINK_S_IFLNK
+  enum class TypeFlags {
+    mask /*! Mode format mask */ = LINK_S_IFMT,
+    file_socket /*! Mode Socket mask */ = LINK_S_IFSOCK,
+    regular /*! Mode regular file value */ = LINK_S_IFREG,
+    block /*! Mode block device value */ = LINK_S_IFBLK,
+    character /*! Mode character device value */ = LINK_S_IFCHR,
+    directory /*! Mode directory value */ = LINK_S_IFDIR,
+    fifo /*! Mode FIFO value */ = LINK_S_IFDIR,
+    symbolic_link /*! Mode symbolic link value */ = LINK_S_IFLNK
   };
 };
+
+API_OR_NAMED_FLAGS_OPERATOR(FileFlags, AccessFlags)
+API_OR_NAMED_FLAGS_OPERATOR(FileFlags, TypeFlags)
 
 class Permissions : public FileFlags {
 public:
@@ -74,42 +77,48 @@ public:
   static Permissions read_only() { return Permissions(0444); }
   static Permissions write_only() { return Permissions(0222); }
 
-  bool is_owner_read() const { return m_permissions & permission_owner_read; }
-  bool is_owner_write() const { return m_permissions & permission_owner_write; }
-  bool is_owner_execute() const {
-    return m_permissions & permission_owner_execute;
+  bool is_owner_read() const {
+    return m_permissions & PermissionFlags::owner_read;
   }
-  bool is_public_read() const { return m_permissions & permission_public_read; }
+  bool is_owner_write() const {
+    return m_permissions & PermissionFlags::owner_write;
+  }
+  bool is_owner_execute() const {
+    return m_permissions & PermissionFlags::owner_execute;
+  }
+  bool is_public_read() const {
+    return m_permissions & PermissionFlags::public_read;
+  }
   bool is_public_write() const {
-    return m_permissions & permission_public_write;
+    return m_permissions & PermissionFlags::public_write;
   }
   bool is_public_execute() const {
-    return m_permissions & permission_public_execute;
+    return m_permissions & PermissionFlags::public_execute;
   }
 
   Permissions &set_owner_read() {
-    m_permissions |= permission_owner_read;
+    m_permissions |= PermissionFlags::owner_read;
     return *this;
   }
   Permissions &set_owner_write() {
-    m_permissions |= permission_owner_write;
+    m_permissions |= PermissionFlags::owner_write;
     return *this;
   }
   Permissions &set_owner_execute() {
-    m_permissions |= permission_owner_execute;
+    m_permissions |= PermissionFlags::owner_execute;
     return *this;
   }
 
   Permissions &set_public_read() {
-    m_permissions |= permission_public_read;
+    m_permissions |= PermissionFlags::public_read;
     return *this;
   }
   Permissions &set_public_write() {
-    m_permissions |= permission_public_write;
+    m_permissions |= PermissionFlags::public_write;
     return *this;
   }
   Permissions &set_public_execute() {
-    m_permissions |= permission_public_execute;
+    m_permissions |= PermissionFlags::public_execute;
     return *this;
   }
 
@@ -125,7 +134,8 @@ private:
 
 class OpenFlags : public FileFlags {
 public:
-  explicit OpenFlags() { m_flags = 0; }
+  OpenFlags() { m_flags = 0; }
+  explicit OpenFlags(int flags) { m_flags = flags; }
 
   static OpenFlags create() { return OpenFlags(open_create | open_read_write); }
   static OpenFlags create_append_write_only() {
@@ -195,7 +205,6 @@ public:
   int o_flags() const { return m_flags; }
 
 private:
-  explicit OpenFlags(int flags) { m_flags = flags; }
 
   void clear_access() { m_flags &= ~LINK_O_ACCMODE; }
 
@@ -205,37 +214,45 @@ private:
 class Access : public FileFlags {
 public:
   explicit Access(
-    enum o_access_flags access
-    = access_read_ok | access_write_ok | access_file_ok | access_execute_ok) {
+    AccessFlags access = AccessFlags::read_ok | AccessFlags::write_ok
+                         | AccessFlags::file_ok | AccessFlags::execute_ok) {
     m_access = access;
   }
 
-  bool is_read_ok() const { return m_access & access_read_ok; }
-  bool is_write_ok() const { return m_access & access_write_ok; }
-  bool is_file_ok() const { return m_access & access_file_ok; }
-  bool is_execute_ok() const { return m_access & access_execute_ok; }
+  bool is_read_ok() const {
+    return (m_access & AccessFlags::read_ok) == AccessFlags::read_ok;
+  }
+  bool is_write_ok() const {
+    return (m_access & AccessFlags::write_ok) == AccessFlags::write_ok;
+  }
+  bool is_file_ok() const {
+    return (m_access & AccessFlags::file_ok) == AccessFlags::file_ok;
+  }
+  bool is_execute_ok() const {
+    return (m_access & AccessFlags::execute_ok) == AccessFlags::execute_ok;
+  }
 
   Access &set_read_ok() {
-    m_access |= access_read_ok;
+    m_access |= AccessFlags::read_ok;
     return *this;
   }
   Access &set_write_ok() {
-    m_access |= access_write_ok;
+    m_access |= AccessFlags::write_ok;
     return *this;
   }
   Access &set_file_ok() {
-    m_access |= access_file_ok;
+    m_access |= AccessFlags::file_ok;
     return *this;
   }
   Access &set_execute_ok() {
-    m_access |= access_execute_ok;
+    m_access |= AccessFlags::execute_ok;
     return *this;
   }
 
-  enum o_access_flags o_access() const { return m_access; }
+  AccessFlags o_access() const { return m_access; }
 
 private:
-  enum o_access_flags m_access;
+  AccessFlags m_access;
 };
 
 /*! \brief Stat Class
@@ -283,13 +300,13 @@ public:
    * is_valid() returns false.
    *
    */
-  Stat();
+  FileInfo();
 
   /*! \details Constructs a new object
    * from the struct stat data provided.
    *
    */
-  Stat(const struct stat &st) // cppcheck-suppress[noExplicitConstructor]
+  FileInfo(const struct stat &st) // cppcheck-suppress[noExplicitConstructor]
     : m_stat(st) {}
 #endif
 
@@ -332,30 +349,6 @@ public:
 
   int owner() const { return m_stat.st_uid; }
   int group() const { return m_stat.st_gid; }
-
-  /*! \details Returns the file suffix ('txt' for '/home/test.txt'). */
-  static const var::String suffix(const var::String &path);
-  /*! \details Returns the file name ('test.txt' for '/home/test.txt'). */
-  static const var::String name(const var::String &path);
-  /*! \details Returns the path to a file ('/home' for '/home/test.txt'). */
-  static const var::String parent_directory(const var::String &path);
-  /*! \details Returns the base name of a file path('test' for
-   * '/home/test.txt'). */
-  static const var::String base_name(const var::String &path);
-  /*! \details Returns the path without the suffix ('/home/test' for
-   * '/home/test.txt). */
-  static const var::String no_suffix(const var::String &path);
-  /*! \details Returns true if the first character in any directory or file name
-   * starts with `.`
-   *
-   * Examples:
-   * - `/home/.DS_Store` returns true
-   * - `/home/.library/data.txt` returns true
-   * - `.DS_Store` returns true
-   *
-   *
-   */
-  static bool is_hidden(const var::String &path);
 
 private:
 #if defined __link

@@ -7,7 +7,7 @@ namespace fs {
 
 class FileSystem : public api::Object {
 public:
-  enum class Overwrite { no, yes };
+  using Overwrite = File::Overwrite;
 
   FileSystem(SAPI_LINK_DRIVER_NULLPTR);
 
@@ -33,7 +33,7 @@ public:
    * @return The number of bytes in the file or less than zero for an error
    *
    */
-  u32 size(const var::String &path SAPI_LINK_DRIVER_NULLPTR_LAST);
+  u32 size(const var::String &path);
 
   class CopyOptions {
     API_ACCESS_COMPOUND(CopyOptions, var::StringView, source_path);
@@ -106,31 +106,7 @@ private:
   link_transport_mdriver_t *m_driver = nullptr;
 #endif
 
-  class PrivateCopyOptions {
-    API_AF(PrivateCopyOptions, File *, source, nullptr);
-    API_AF(PrivateCopyOptions, File *, destination, nullptr);
-    API_AF(PrivateCopyOptions, var::StringView, source_path, nullptr);
-    API_AF(PrivateCopyOptions, var::StringView, destination_path, nullptr);
-    API_ACCESS_FUNDAMENTAL(
-      CopyOptions,
-      const api::ProgressCallback *,
-      progress_callback,
-      nullptr);
-#if defined __link
-    API_ACCESS_FUNDAMENTAL(
-      CopyOptions,
-      link_transport_mdriver_t *,
-      source_driver,
-      nullptr);
-    API_ACCESS_FUNDAMENTAL(
-      CopyOptions,
-      link_transport_mdriver_t *,
-      destination_driver,
-      nullptr);
-#endif
-  };
-
-  FileSystem &copy(const PrivateCopyOptions);
+  FileSystem &copy(File &source, File &destination, const CopyOptions &options);
 
   int copy(
     SourcePath source_path,
