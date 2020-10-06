@@ -14,26 +14,6 @@
 using namespace fs;
 using namespace arg;
 
-#if !defined __link
-#define link_open(w, x, y, z) ::open(x, y, z)
-#define link_ioctl(w, x, y, z) ::ioctl(x, y, z)
-#define link_rename(x, y, z) ::rename(y, z)
-#define link_unlink(x, y) ::remove(y)
-#define link_lseek(w, x, y, z) ::lseek(x, y, z)
-#define link_write(w, x, y, z) ::write(x, y, z)
-#define link_read(w, x, y, z) ::read(x, y, z)
-#define link_close(x, y) ::close(y)
-#define link_stat(x, y, z) ::stat(y, z)
-#define link_fstat(x, y, z) ::fstat(y, z)
-#define LINK_DRIVER_ARGUMENT
-#define LINK_SET_DRIVER(x, y)
-
-#else
-link_transport_mdriver_t *File::m_default_driver = 0;
-#define LINK_DRIVER_ARGUMENT link_driver.argument(),
-#define LINK_SET_DRIVER(x, y) x.set_driver(y)
-#endif
-
 File::File(SAPI_LINK_DRIVER) {
   m_fd = -1; // The file is not open
   set_keep_open(false);

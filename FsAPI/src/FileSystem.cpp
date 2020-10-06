@@ -1,17 +1,55 @@
-#include "FsAPI/Filesystem.hpp"
+#include "FsAPI/FileSystem.hpp"
 
 using namespace fs;
 
-Filesystem::Filesystem() {}
+FileSystem::FileSystem(SAPI_LINK_DRIVER) { SAPI_LINK_CONSTRUCT_DRIVER(); }
 
-int Filesystem::remove(const var::String &path SAPI_LINK_DRIVER_LAST) {
+FileSystem &FileSystem::remove(const var::StringView &path) {
   if (link_unlink(link_driver.argument(), path.cstring()) < 0) {
     return api::error_code_fs_failed_to_unlink;
   }
   return 0;
 }
 
-int Filesystem::copy(
+FileSystem &copy(const CopyOptions &options) {}
+
+FileSystem &copy(const PrivateCopyOptions &options) {
+  MCU_UNUSED_ARGUMENT(source_path);
+  struct SAPI_LINK_STAT st;
+
+  if (
+    API_ASSIGN_ERROR_CODE(
+      api::ErrorCode::io_error,
+      options.source()->fstat(&st))
+    < 0) {
+    return *this;
+  }
+
+  if ((st.st_mode & 0666) == 0) {
+    st.st_mode = 0666;
+  }
+
+  if (
+    options.destination()->create(
+      dest_path.argument(),
+      is_overwrite,
+      Permissions(st.st_mode & 0777))
+    < 0) {
+    return api::error_code_fs_failed_to_create;
+  }
+
+  int result = dest.argument().write(
+    source.argument(),
+    PageSize(SAPI_LINK_DEFAULT_PAGE_SIZE),
+    Size(size_t(-1)),
+    progress_callback);
+  if (result < 0) {
+    return api::error_code_fs_failed_to_write;
+  }
+  return result;
+}
+
+int FileSystem::copy(
   SourcePath source_path,
   DestinationPath dest_path,
   const sys::ProgressCallback *progress_callback
@@ -39,7 +77,7 @@ int Filesystem::copy(
     progress_callback);
 }
 
-int Filesystem::copy(const CopyOptions &options) {
+int FileSystem::copy(const CopyOptions &options) {
   File source;
   File dest;
 
@@ -58,7 +96,7 @@ int Filesystem::copy(const CopyOptions &options) {
     options.progress_callback());
 }
 
-int Filesystem::copy(
+int FileSystem::copy(
   SourcePath source_path,
   DestinationPath dest_path,
   IsOverwrite is_overwrite,
@@ -89,8 +127,9 @@ int Filesystem::copy(
     progress_callback);
 }
 
-int Filesystem::save_copy(const var::String &file_path, Overwrite is_overwrite)
-  const {
+FileSystem &FileSystem::save_copy(
+  const var::String &file_path,
+  Overwrite is_overwrite) const {
   File copy_file;
   if (
     set_error_number_if_error(copy_file.create(file_path, is_overwrite)) < 0) {
@@ -99,7 +138,7 @@ int Filesystem::save_copy(const var::String &file_path, Overwrite is_overwrite)
   return copy_file.write(*this);
 }
 
-int Filesystem::touch(const var::String &path) {
+FileSystem &FileSystem::touch(const var::String &path) {
   File touch_file;
   if (touch_file.open(path, OpenFlags::read_write()) < 0) {
     return api::error_code_fs_failed_to_open;
@@ -108,14 +147,14 @@ int Filesystem::touch(const var::String &path) {
     if (touch_file.read(var::Reference(c)) != 1) {
       return api::error_code_fs_failed_to_read;
     }
-    if (touch_file.write(Filesystem::Location(0), var::Reference(c)) != 1) {
+    if (touch_file.write(FileSystem::Location(0), var::Reference(c)) != 1) {
       return api::error_code_fs_failed_to_write;
     }
   }
   return 0;
 }
 
-int Filesystem::rename(const RenameOptions &options) {
+int FileSystem::rename(const RenameOptions &options) {
 #if defined __link
   if (options.driver() == nullptr) {
     return ::rename(
@@ -129,7 +168,7 @@ int Filesystem::rename(const RenameOptions &options) {
     options.destination().cstring());
 }
 
-int Filesystem::copy(
+int FileSystem::copy(
   Source source,
   Destination dest,
   SourcePath source_path,
@@ -168,7 +207,7 @@ int Filesystem::copy(
   return result;
 }
 
-bool Filesystem::exists(const var::String &path SAPI_LINK_DRIVER_LAST) {
+bool FileSystem::exists(const var::String &path SAPI_LINK_DRIVER_LAST) {
 
   File f;
 
@@ -182,10 +221,10 @@ bool Filesystem::exists(const var::String &path SAPI_LINK_DRIVER_LAST) {
   return f.result().is_error() == false;
 }
 
-FileInfo Filesystem::get_info(const var::String &path SAPI_LINK_DRIVER_LAST) {
+FileInfo FileSystem::get_info(const var::String &path SAPI_LINK_DRIVER_LAST) {
   struct SAPI_LINK_STAT stat;
   memset(&stat, 0, sizeof(stat));
-  Filesystem::stat(
+  FileSystem::stat(
     path,
     stat
 #if defined __link
@@ -196,7 +235,7 @@ FileInfo Filesystem::get_info(const var::String &path SAPI_LINK_DRIVER_LAST) {
   return Stat(stat);
 }
 
-Stat Filesystem::get_info(Descriptor fd SAPI_LINK_DRIVER_LAST) {
+Stat FileSystem::get_info(Descriptor fd SAPI_LINK_DRIVER_LAST) {
   struct SAPI_LINK_STAT stat;
   memset(&stat, 0, sizeof(stat));
   link_fstat(link_driver.argument(), fd.argument(), &stat);

@@ -5,11 +5,11 @@
 
 namespace fs {
 
-class Filesystem : public api::Object {
+class FileSystem : public api::Object {
 public:
   enum class Overwrite { no, yes };
 
-  Filesystem(SAPI_LINK_DRIVER_NULLPTR);
+  FileSystem(SAPI_LINK_DRIVER_NULLPTR);
 
 #if !defined __link
   /*! \details Returns an error if the access is not allowed.
@@ -18,14 +18,14 @@ public:
   static int access(const var::String &path, const Access &o_access);
 #endif
 
-  bool exists(const var::String &path SAPI_LINK_DRIVER_NULLPTR_LAST);
+  bool exists(const var::StringView &path);
 
   /*! \details Deletes a file.
    *
    * @return Zero on success
    *
    */
-  Filesystem &remove(const var::StringView &path SAPI_LINK_DRIVER_NULLPTR_LAST);
+  FileSystem &remove(const var::StringView &path);
 
   /*! \details Gets the size of the file.
    *
@@ -36,8 +36,8 @@ public:
   u32 size(const var::String &path SAPI_LINK_DRIVER_NULLPTR_LAST);
 
   class CopyOptions {
-    API_ACCESS_COMPOUND(CopyOptions, var::String, source);
-    API_ACCESS_COMPOUND(CopyOptions, var::String, destination);
+    API_ACCESS_COMPOUND(CopyOptions, var::StringView, source_path);
+    API_ACCESS_COMPOUND(CopyOptions, var::StringView, destination_path);
     API_ACCESS_FUNDAMENTAL(CopyOptions, Overwrite, overwrite, Overwrite::no);
     API_ACCESS_FUNDAMENTAL(
       CopyOptions,
@@ -59,7 +59,7 @@ public:
 #endif
   };
 
-  Filesystem &copy(const CopyOptions &options);
+  FileSystem &copy(const CopyOptions &options);
 
   /*! \details Copies a file from the source to the destination.
    *
@@ -79,19 +79,12 @@ public:
 #endif
   );
 
-  Filesystem &
+  FileSystem &
   save_copy(const var::String &file_path, Overwrite is_overwrite) const;
 
   class RenameOptions {
     API_AC(RenameOptions, var::String, source);
     API_AC(RenameOptions, var::String, destination);
-#if defined __link
-    API_ACCESS_FUNDAMENTAL(
-      RenameOptions,
-      link_transport_mdriver_t *,
-      driver,
-      nullptr);
-#endif
   };
 
   /*! \details Renames a file.
@@ -101,22 +94,45 @@ public:
    * \return Zero on success
    *
    */
-  Filesystem &rename(const RenameOptions &options);
+  FileSystem &rename(const RenameOptions &options);
 
-  Filesystem &touch(const var::String &path);
+  FileSystem &touch(const var::String &path);
 
-  static FileInfo
-  get_info(const var::String &path SAPI_LINK_DRIVER_NULLPTR_LAST);
-  static FileInfo get_info(int fd SAPI_LINK_DRIVER_NULLPTR_LAST);
+  static FileInfo get_info(const var::String &path);
+  static FileInfo get_info(int fd);
 
 private:
-  /*! \details Copies a file from the source to the destination.
-   *
-   * @return Zero on success
-   *
-   *
-   */
-  static int copy(
+#ifdef __link
+  link_transport_mdriver_t *m_driver = nullptr;
+#endif
+
+  class PrivateCopyOptions {
+    API_AF(PrivateCopyOptions, File *, source, nullptr);
+    API_AF(PrivateCopyOptions, File *, destination, nullptr);
+    API_AF(PrivateCopyOptions, var::StringView, source_path, nullptr);
+    API_AF(PrivateCopyOptions, var::StringView, destination_path, nullptr);
+    API_ACCESS_FUNDAMENTAL(
+      CopyOptions,
+      const api::ProgressCallback *,
+      progress_callback,
+      nullptr);
+#if defined __link
+    API_ACCESS_FUNDAMENTAL(
+      CopyOptions,
+      link_transport_mdriver_t *,
+      source_driver,
+      nullptr);
+    API_ACCESS_FUNDAMENTAL(
+      CopyOptions,
+      link_transport_mdriver_t *,
+      destination_driver,
+      nullptr);
+#endif
+  };
+
+  FileSystem &copy(const PrivateCopyOptions);
+
+  int copy(
     SourcePath source_path,
     DestinationPath dest_path,
     const sys::ProgressCallback *progress_callback = nullptr
@@ -127,14 +143,14 @@ private:
 #endif
   );
 
-  static int copy(
+  int copy(
     Source source,
     Destination dest,
     SourcePath source_path,
     DestinationPath dest_path,
     const sys::ProgressCallback *progress_callback);
 
-  static int copy(
+  int copy(
     Source source,
     Destination dest,
     SourcePath source_path,

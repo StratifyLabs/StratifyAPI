@@ -23,17 +23,39 @@
 #define SAPI_LINK_DEFAULT_PAGE_SIZE 512
 #define SAPI_LINK_DRIVER_ARGUMENT
 #define SAPI_LINK_SET_DRIVER(x, y)
+#define SAPI_LINK_CONSTRUCT_DRIVER
 #else
 #define SAPI_LINK_STAT link_stat
-#define SAPI_LINK_DRIVER_NULLPTR                                               \
-  fs::File::LinkDriver link_driver = fs::File::LinkDriver(nullptr)
+#define SAPI_LINK_DRIVER_NULLPTR link_transport_mdriver_t *link_driver = nullptr
 #define SAPI_LINK_DRIVER_NULLPTR_LAST                                          \
-  , fs::File::LinkDriver link_driver = fs::File::LinkDriver(nullptr)
-#define SAPI_LINK_DRIVER fs::File::LinkDriver link_driver
-#define SAPI_LINK_DRIVER_LAST , fs::File::LinkDriver link_driver
+  , link_transport_mdriver_t *link_driver = nullptr
+#define SAPI_LINK_DRIVER link_transport_mdriver_t *link_driver
+#define SAPI_LINK_DRIVER_LAST , link_transport_mdriver_t *link_driver
 #define SAPI_LINK_DEFAULT_PAGE_SIZE 4096
-#define SAPI_LINK_DRIVER_ARGUMENT link_driver.argument(),
+#define SAPI_LINK_DRIVER_ARGUMENT link_driver,
 #define SAPI_LINK_SET_DRIVER(x, y) x.set_driver(y)
+#define SAPI_LINK_CONSTRUCT_DRIVER() m_driver = link_driver
+
+#endif
+
+#if !defined __link
+#define link_open(w, x, y, z) ::open(x, y, z)
+#define link_ioctl(w, x, y, z) ::ioctl(x, y, z)
+#define link_rename(x, y, z) ::rename(y, z)
+#define link_unlink(x, y) ::remove(y)
+#define link_lseek(w, x, y, z) ::lseek(x, y, z)
+#define link_write(w, x, y, z) ::write(x, y, z)
+#define link_read(w, x, y, z) ::read(x, y, z)
+#define link_close(x, y) ::close(y)
+#define link_stat(x, y, z) ::stat(y, z)
+#define link_fstat(x, y, z) ::fstat(y, z)
+#define LINK_DRIVER_ARGUMENT
+#define LINK_SET_DRIVER(x, y)
+
+#else
+link_transport_mdriver_t *File::m_default_driver = 0;
+#define LINK_DRIVER_ARGUMENT link_driver,
+#define LINK_SET_DRIVER(x, y) x.set_driver(y)
 #endif
 
 namespace fs {

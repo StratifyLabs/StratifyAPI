@@ -40,56 +40,56 @@ printer::Printer &operator<<(sys::Printer &printer, const fs::FileInfo &a) {
 using namespace fs;
 
 #if defined __link
-Stat::Stat(bool is_local) {
+FileInfo::Stat(bool is_local) {
   memset(&m_stat, 0, sizeof(m_stat));
   m_is_local = is_local;
 }
 #else
 
-Stat::Stat() { memset(&m_stat, 0, sizeof(m_stat)); }
+FileInfo::FileInfo() { memset(&m_stat, 0, sizeof(m_stat)); }
 #endif
 
-bool Stat::is_directory() const {
+bool FileInfo::is_directory() const {
 #if defined __link
   if (m_is_local) {
     return (m_stat.st_mode & S_IFMT) == S_IFDIR;
   }
 #endif
-  return (m_stat.st_mode & Stat::mode_format) == Stat::mode_directory;
+  return (m_stat.st_mode & FileInfo::mode_format) == FileInfo::mode_directory;
 }
 
-bool Stat::is_file() const {
+bool FileInfo::is_file() const {
 #if defined __link
   if (m_is_local) {
     return (m_stat.st_mode & S_IFMT) == S_IFREG;
   }
 #endif
-  return (m_stat.st_mode & Stat::mode_format) == Stat::mode_regular;
+  return (m_stat.st_mode & FileInfo::mode_format) == FileInfo::mode_regular;
 }
 
-bool Stat::is_device() const {
+bool FileInfo::is_device() const {
   return is_block_device() || is_character_device();
 }
 
-bool Stat::is_block_device() const {
+bool FileInfo::is_block_device() const {
 #if defined __link
   if (m_is_local) {
     return (m_stat.st_mode & S_IFMT) == S_IFBLK;
   }
 #endif
-  return (m_stat.st_mode & (Stat::mode_format)) == Stat::mode_block;
+  return (m_stat.st_mode & (FileInfo::mode_format)) == FileInfo::mode_block;
 }
 
-bool Stat::is_character_device() const {
+bool FileInfo::is_character_device() const {
 #if defined __link
   if (m_is_local) {
     return (m_stat.st_mode & S_IFMT) == S_IFCHR;
   }
 #endif
-  return (m_stat.st_mode & (Stat::mode_format)) == Stat::mode_character;
+  return (m_stat.st_mode & (FileInfo::mode_format)) == FileInfo::mode_character;
 }
 
-bool Stat::is_socket() const {
+bool FileInfo::is_socket() const {
 #if defined __link
   if (m_is_local) {
 #if !defined __win32
@@ -99,14 +99,14 @@ bool Stat::is_socket() const {
 #endif
   }
 #endif
-  return (m_stat.st_mode & Stat::mode_format) == Stat::mode_file_socket;
+  return (m_stat.st_mode & FileInfo::mode_format) == FileInfo::mode_file_socket;
 }
 
-u32 Stat::size() const { return m_stat.st_size; }
+u32 FileInfo::size() const { return m_stat.st_size; }
 
-bool Stat::is_executable() const { return false; }
+bool FileInfo::is_executable() const { return false; }
 
-const var::String Stat::suffix(const var::String &path) {
+const var::String FileInfo::suffix(const var::String &path) {
   size_t pos = path.rfind('.');
 
   if (pos == var::String::npos) {
@@ -116,7 +116,7 @@ const var::String Stat::suffix(const var::String &path) {
   return path.create_sub_string(var::String::Position(pos + 1));
 }
 
-const var::String Stat::name(const var::String &path) {
+const var::String FileInfo::name(const var::String &path) {
   size_t pos = path.rfind('/');
 
   if (pos == var::String::npos) {
@@ -126,7 +126,7 @@ const var::String Stat::name(const var::String &path) {
   return path.create_sub_string(var::String::Position(pos + 1));
 }
 
-const var::String Stat::parent_directory(const var::String &path) {
+const var::String FileInfo::parent_directory(const var::String &path) {
   size_t pos = path.rfind('/');
 
   if (pos == var::String::npos) {
@@ -138,7 +138,7 @@ const var::String Stat::parent_directory(const var::String &path) {
     var::String::Length(pos));
 }
 
-const var::String Stat::base_name(const var::String &path) {
+const var::String FileInfo::base_name(const var::String &path) {
   var::String result = name(path);
   size_t pos = result.rfind('.');
   if (pos == var::String::npos) {

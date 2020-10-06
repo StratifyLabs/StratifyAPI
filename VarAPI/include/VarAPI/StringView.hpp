@@ -15,9 +15,8 @@ class StringView {
 public:
   constexpr static size_t npos = std::string_view::npos;
 
-  StringView() {}
+  StringView() : m_string_view("") {}
   StringView(const char *value) : m_string_view(value) {}
-  StringView(const char *value, size_t length) : m_string_view(value, length) {}
   StringView(const String &value);
 
   char at(size_t value) const { return m_string_view.at(value); }
@@ -28,11 +27,6 @@ public:
   bool is_empty() const { return m_string_view.empty(); }
   StringView &pop_front() {
     m_string_view.remove_prefix(1);
-    return *this;
-  }
-
-  StringView &pop_back() {
-    m_string_view.remove_suffix(1);
     return *this;
   }
 
