@@ -279,6 +279,8 @@ public:
 
   void *data() { return static_cast<void *>(m_data.data()); }
   const void *data() const { return static_cast<const void *>(m_data.data()); }
+  u8 *data_u8() { return (m_data.data()); }
+  const u8 *data_u8() const { return (m_data.data()); }
 
   size_t size() const { return m_data.size(); }
 
@@ -288,9 +290,6 @@ protected:
 
 private:
   std::vector<u8> m_data;
-
-  u8 *data_u8() { return (m_data.data()); }
-  const u8 *data_u8() const { return (m_data.data()); }
 };
 
 } // namespace var

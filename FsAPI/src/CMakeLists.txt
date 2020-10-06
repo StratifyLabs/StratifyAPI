@@ -2,6 +2,7 @@
 set(SOURCES
 	Dir.cpp
 	File.cpp
-	Stat.cpp
+	FileInfo.cpp
+	FileSystem.cpp
 	PARENT_SCOPE
 )

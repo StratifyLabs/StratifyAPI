@@ -9,7 +9,7 @@ set(DIRECTORIES
 	${CMAKE_SOURCE_DIR}/ChronoAPI/include
 	)
 
-api_target(ThreadAPI "${DIRECTORIES}")
+api_target(FsAPI "${DIRECTORIES}")
 
 
 target_link_libraries(${RELEASE_TARGET} PUBLIC API)
