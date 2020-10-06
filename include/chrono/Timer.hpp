@@ -1,6 +1,6 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
-#ifndef SAPI_CHRONO_TIMER_HPP_
-#define SAPI_CHRONO_TIMER_HPP_
+#ifndef CHRONO_API_CHRONO_TIMER_HPP_
+#define CHRONO_API_CHRONO_TIMER_HPP_
 
 #include "ClockTime.hpp"
 #include "MicroTime.hpp"
@@ -248,4 +248,4 @@ private:
 
 }
 
-#endif // SAPI_CHRONO_TIMER_HPP_
+#endif // CHRONO_API_CHRONO_TIMER_HPP_

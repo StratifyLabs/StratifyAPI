@@ -1,6 +1,6 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
-#ifndef SAPI_VAR_CONSTSTRING_HPP
-#define SAPI_VAR_CONSTSTRING_HPP
+#ifndef VAR_API_CONSTSTRING_HPP
+#define VAR_API_CONSTSTRING_HPP
 
 #include <cstdlib>
 #include <cstdio>
@@ -38,4 +38,4 @@ private:
 
 }
 
-#endif // SAPI_VAR_CONSTSTRING_HPP
+#endif // VAR_API_CONSTSTRING_HPP

@@ -1,6 +1,6 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
-#ifndef SAPI_VAR_DATUM_HPP_
-#define SAPI_VAR_DATUM_HPP_
+#ifndef VAR_API_DATUM_HPP_
+#define VAR_API_DATUM_HPP_
 
 
 #include "String.hpp"
@@ -55,4 +55,4 @@ Printer& operator << (Printer& printer, const var::Datum & a);
 
 
 
-#endif // SAPI_VAR_DATUM_HPP_
+#endif // VAR_API_DATUM_HPP_

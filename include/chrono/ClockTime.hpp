@@ -1,7 +1,7 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
-#ifndef SAPI_CHRONO_CLOCK_TIME_HPP_
-#define SAPI_CHRONO_CLOCK_TIME_HPP_
+#ifndef CHRONO_API_CHRONO_CLOCK_TIME_HPP_
+#define CHRONO_API_CHRONO_CLOCK_TIME_HPP_
 
 #include <mcu/types.h>
 #include <time.h>
@@ -204,4 +204,4 @@ class Printer;
 
 sys::Printer & operator << (sys::Printer& printer, const chrono::ClockTime & a);
 
-#endif /* SAPI_CHRONO_CLOCK_TIME_HPP_ */
+#endif /* CHRONO_API_CHRONO_CLOCK_TIME_HPP_ */

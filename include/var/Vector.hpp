@@ -1,7 +1,7 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
              // LICENSE.md for rights.
-#ifndef SAPI_VAR_VECTOR_HPP_
-#define SAPI_VAR_VECTOR_HPP_
+#ifndef VAR_API_VECTOR_HPP_
+#define VAR_API_VECTOR_HPP_
 
 #include <algorithm>
 #include <functional>
@@ -338,4 +338,4 @@ private:
 
 } // namespace var
 
-#endif // SAPI_VAR_VECTOR_HPP_
+#endif // VAR_API_VECTOR_HPP_

@@ -8,22 +8,11 @@ set(CMAKE_MODULE_PATH ${SOS_SDK_PATH}/Tools/gcc/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/sos-toolchain.cmake)
 include(sos-sdk)
 
-
 set(SOS_NAME api)
 project(StratifyAPI CXX C)
 
-include(CheckIncludeFiles)
-check_include_files("mbedtls_api.h" HAVE_MBEDTLS_H)
-
-install(DIRECTORY include/ DESTINATION include/sapi)
-set(SOS_INCLUDE_DIRECTORIES include)
-
-include( ${CMAKE_SOURCE_DIR}/${SOS_BUILD_CONFIG}.cmake )
-
-add_custom_target(
-	format
-	COMMAND /usr/local/bin/clang-format
-	-i
-	--verbose
-	${FORMAT_LIST}
-	)
+add_subdirectory(API api)
+add_subdirectory(VarAPI var)
+add_subdirectory(PrinterAPI printer)
+add_subdirectory(ChronoAPI chrono)
+add_subdirectory(ThreadAPI thread)

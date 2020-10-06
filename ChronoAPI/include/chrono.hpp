@@ -1,7 +1,7 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
-#ifndef SAPI_CHRONO_HPP_
-#define SAPI_CHRONO_HPP_
+#ifndef CHRONO_API_CHRONO_HPP_
+#define CHRONO_API_CHRONO_HPP_
 
 /*! \brief Chrono (managing time, timers and clocks)
  *
@@ -40,14 +40,12 @@
  */
 namespace chrono {}
 
-#include "chrono/ClockTime.hpp"
-#include "chrono/MicroTime.hpp"
-#include "chrono/Timer.hpp"
-#include "chrono/Time.hpp"
-#include "chrono/Clock.hpp"
-#include "chrono/MicroTimer.hpp"
+#include "ChronoAPI/Clock.hpp"
+#include "ChronoAPI/ClockTime.hpp"
+#include "ChronoAPI/Time.hpp"
+#include "ChronoAPI/Timer.hpp"
 
 using namespace chrono;
 
 
-#endif /* SAPI_CHRONO_HPP_ */
+#endif /* CHRONO_API_CHRONO_HPP_ */

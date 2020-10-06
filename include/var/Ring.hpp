@@ -6,8 +6,8 @@
  *      Author: tgil
  */
 
-#ifndef SAPI_VAR_RING_HPP_
-#define SAPI_VAR_RING_HPP_
+#ifndef VAR_API_RING_HPP_
+#define VAR_API_RING_HPP_
 
 #include <new>
 #include <sos/dev/fifo.h>
@@ -314,4 +314,4 @@ Printer & operator << (Printer& printer, const var::Ring<u8> & a);
 Printer & operator << (Printer& printer, const var::Ring<s8> & a);
 }
 
-#endif /* SAPI_VAR_RING_HPP_ */
+#endif /* VAR_API_RING_HPP_ */

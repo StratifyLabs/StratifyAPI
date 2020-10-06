@@ -1,7 +1,7 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
-#ifndef SAPI_VAR_STRING_HPP_
-#define SAPI_VAR_STRING_HPP_
+#ifndef VAR_API_STRING_HPP_
+#define VAR_API_STRING_HPP_
 
 
 #include <sos/link.h>
@@ -910,4 +910,4 @@ Printer & operator << (Printer& printer, const var::StringList & a);
 }
 
 
-#endif /* SAPI_VAR_STRING_HPP_ */
+#endif /* VAR_API_STRING_HPP_ */

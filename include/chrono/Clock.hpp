@@ -1,7 +1,7 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
-#ifndef SAPI_CHRONO_CLOCK_HPP_
-#define SAPI_CHRONO_CLOCK_HPP_
+#ifndef CHRONO_API_CHRONO_CLOCK_HPP_
+#define CHRONO_API_CHRONO_CLOCK_HPP_
 
 #include "../api/ChronoObject.hpp"
 #include "ClockTime.hpp"
@@ -46,4 +46,4 @@ public:
 
 }
 
-#endif // SAPI_CHRONO_CLOCK_HPP_
+#endif // CHRONO_API_CHRONO_CLOCK_HPP_

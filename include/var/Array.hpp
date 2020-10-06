@@ -1,6 +1,6 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
-#ifndef SAPI_VAR_ARRAY_HPP_
-#define SAPI_VAR_ARRAY_HPP_
+#ifndef VAR_API_ARRAY_HPP_
+#define VAR_API_ARRAY_HPP_
 
 #include <iterator>
 #include <array>
@@ -133,4 +133,4 @@ public:
 
 }
 
-#endif // SAPI_VAR_ARRAY_HPP_
+#endif // VAR_API_ARRAY_HPP_

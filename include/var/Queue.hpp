@@ -1,6 +1,6 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
-#ifndef SAPI_VAR_QUEUE_HPP_
-#define SAPI_VAR_QUEUE_HPP_
+#ifndef VAR_API_QUEUE_HPP_
+#define VAR_API_QUEUE_HPP_
 
 #include <new>
 #include <cstdio>
@@ -112,4 +112,4 @@ private:
 
 
 }
-#endif // SAPI_VAR_QUEUE_HPP_
+#endif // VAR_API_QUEUE_HPP_

@@ -1,7 +1,7 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 
-#ifndef SAPI_VAR_DATA_HPP_
-#define SAPI_VAR_DATA_HPP_
+#ifndef VAR_API_DATA_HPP_
+#define VAR_API_DATA_HPP_
 
 #include <type_traits>
 #include <cstring>
@@ -472,4 +472,4 @@ class Printer;
 
 
 
-#endif /* SAPI_VAR_DATA_HPP_ */
+#endif /* VAR_API_DATA_HPP_ */

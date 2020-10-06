@@ -1,5 +1,5 @@
-#ifndef SAPI_VAR_MATRIX_HPP_
-#define SAPI_VAR_MATRIX_HPP_
+#ifndef VAR_API_MATRIX_HPP_
+#define VAR_API_MATRIX_HPP_
 
 #include "../sys/Printer.hpp"
 #include "Vector.hpp"
@@ -95,4 +95,4 @@ template<typename T> sys::Printer& operator << (sys::Printer & printer, const Ma
 
 
 
-#endif // SAPI_VAR_MATRIX_HPP_
+#endif // VAR_API_MATRIX_HPP_

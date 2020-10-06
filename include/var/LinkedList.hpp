@@ -1,6 +1,6 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
-#ifndef SAPI_VAR_LINKEDLIST_HPP_
-#define SAPI_VAR_LINKEDLIST_HPP_
+#ifndef VAR_API_LINKEDLIST_HPP_
+#define VAR_API_LINKEDLIST_HPP_
 
 #include <cstdlib>
 #include "../api/VarObject.hpp"
@@ -180,4 +180,4 @@ private:
 
 }
 
-#endif // SAPI_VAR_LINKEDLIST_HPP_
+#endif // VAR_API_LINKEDLIST_HPP_

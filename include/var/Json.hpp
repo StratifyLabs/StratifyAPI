@@ -1,7 +1,7 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
              // LICENSE.md for rights.
-#ifndef SAPI_VAR_JSON_HPP_
-#define SAPI_VAR_JSON_HPP_
+#ifndef VAR_API_JSON_HPP_
+#define VAR_API_JSON_HPP_
 
 #include "../api/VarObject.hpp"
 #include "../fs/File.hpp"
@@ -929,4 +929,4 @@ print_value(Printer &printer, const var::JsonValue &a, const var::String &key);
   }                                                                            \
   void json_access_key_value_pair_integer_array_never_used_##v()
 
-#endif // SAPI_VAR_JSON_HPP_
+#endif // VAR_API_JSON_HPP_
