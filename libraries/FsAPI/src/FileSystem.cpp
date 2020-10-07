@@ -21,7 +21,7 @@ FileSystem &FileSystem::remove(var::StringView path) {
 FileSystem &FileSystem::copy(const CopyOptions &options) {
   File source(
     options.source_path(),
-    FileFlags::read_only()
+    OpenMode::read_only()
 #if defined __link
       ,
     options.source_driver()
@@ -30,7 +30,7 @@ FileSystem &FileSystem::copy(const CopyOptions &options) {
 
   File dest(
     options.destination_path(),
-    FileFlags::read_only()
+    OpenMode::read_only()
 #if defined __link
       ,
     options.destination_driver()
@@ -99,7 +99,7 @@ FileSystem &FileSystem::touch(var::StringView path) {
   char c;
   API_ASSIGN_ERROR_CODE(
     api::ErrorCode::no_entity,
-    File(path, FileFlags::read_write() FSAPI_LINK_MEMBER_DRIVER_LAST)
+    File(path, OpenMode::read_write() FSAPI_LINK_MEMBER_DRIVER_LAST)
       .read(var::View(c))
       .seek(0)
       .write(var::View(c))
@@ -126,7 +126,7 @@ FileSystem &FileSystem::rename(const RenameOptions &options) {
 }
 
 bool FileSystem::exists(var::StringView path) {
-  return File(path, FileFlags::read_only() FSAPI_LINK_MEMBER_DRIVER_LAST)
+  return File(path, OpenMode::read_only() FSAPI_LINK_MEMBER_DRIVER_LAST)
     .status()
     .is_success();
 }
@@ -342,7 +342,7 @@ DataFile FileSystem::load_data_file(var::StringView file_path) {
   // read the contents of file_path into this object
   FileInfo info = get_info(file_path);
 
-  DataFile result(FileFlags::append_write_only());
+  DataFile result(OpenMode::append_write_only());
 
   if (result.data().resize(info.size()).status().is_error()) {
     return DataFile();
@@ -350,13 +350,13 @@ DataFile FileSystem::load_data_file(var::StringView file_path) {
 
   File source_file(
     file_path,
-    FileFlags::read_only() FSAPI_LINK_MEMBER_DRIVER_LAST);
+    OpenMode::read_only() FSAPI_LINK_MEMBER_DRIVER_LAST);
 
   API_ASSIGN_ERROR_CODE(
     api::ErrorCode::io_error,
     result.write(source_file, File::WriteOptions())
       .seek(0)
-      .set_flags(FileFlags::read_write())
+      .set_flags(OpenMode::read_write())
       .status()
       .value());
 

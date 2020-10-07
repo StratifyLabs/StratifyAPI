@@ -131,8 +131,8 @@ public:
   File(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
   File(
     var::StringView name,
-    FileFlags flags
-    = FileFlags::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
+    OpenMode flags
+    = OpenMode::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
   ~File();
 
@@ -328,7 +328,7 @@ protected:
    */
   File &open(
     var::StringView name,
-    FileFlags flags = FileFlags::read_write(),
+    OpenMode flags = OpenMode::read_write(),
     Permissions perms = Permissions(0666));
 
 #ifdef __link
@@ -360,8 +360,8 @@ template <class Derived> class FileAccess : public File {
 public:
   FileAccess<Derived>(
     var::StringView name,
-    const FileFlags &flags
-    = FileFlags::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST)
+    const OpenMode &flags
+    = OpenMode::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST)
     : File(name, flags FSAPI_LINK_INHERIT_DRIVER_LAST) {}
 
   Derived &set_keep_open(bool value = true) {
@@ -369,7 +369,7 @@ public:
   }
 
   Derived &
-  open(var::StringView path, const FileFlags &flags = FileFlags::read_write()) {
+  open(var::StringView path, const OpenMode &flags = OpenMode::read_write()) {
     return static_cast<Derived &>(File::open(path, flags));
   }
 
@@ -438,18 +438,18 @@ private:
 class DataFile : public FileAccess<DataFile> {
 public:
   /*! \details Constructs a data file. */
-  DataFile(const FileFlags &flags = FileFlags::read_write())
+  DataFile(const OpenMode &flags = OpenMode::read_write())
     : FileAccess(""), m_open_flags(flags) {
     m_location = 0;
   }
 
   explicit DataFile(File &file_to_load);
 
-  DataFile &set_flags(FileFlags open_flags) {
+  DataFile &set_flags(OpenMode open_flags) {
     m_open_flags = open_flags;
     return *this;
   }
-  const FileFlags &flags() const { return m_open_flags; }
+  const OpenMode &flags() const { return m_open_flags; }
 
   /*! \details Accesses (read-only) the member data object. */
   const var::Data &data() const { return m_data; }
@@ -458,13 +458,13 @@ public:
 
 private:
   mutable int m_location; // offset location for seeking/reading/writing
-  mutable FileFlags m_open_flags;
+  mutable OpenMode m_open_flags;
   mutable var::Data m_data;
 
   int interface_open(const char *path, int flags, int mode) const override {
     MCU_UNUSED_ARGUMENT(path);
     MCU_UNUSED_ARGUMENT(mode);
-    m_open_flags = FileFlags(flags);
+    m_open_flags = OpenMode(flags);
     return 0;
   }
 
@@ -483,17 +483,17 @@ private:
 class ItemFile : public FileAccess<ItemFile> {
 public:
   /*! \details Constructs a data file. */
-  ItemFile(const FileFlags &flags = FileFlags::read_write())
+  ItemFile(const OpenMode &flags = OpenMode::read_write())
     : FileAccess(""), m_open_flags(flags) {
     m_location = 0;
   }
 
-  ItemFile &set_flags(const FileFlags &open_flags) {
+  ItemFile &set_flags(const OpenMode &open_flags) {
     m_open_flags = open_flags;
     return *this;
   }
 
-  const FileFlags &flags() const { return m_open_flags; }
+  const OpenMode &flags() const { return m_open_flags; }
 
   /*! \details Accesses (read-only) the member data object. */
   const var::View &item() const { return m_reference; }
@@ -502,13 +502,13 @@ public:
 
 private:
   mutable int m_location; // offset location for seeking/reading/writing
-  mutable FileFlags m_open_flags;
+  mutable OpenMode m_open_flags;
   var::View m_reference;
 
   int interface_open(const char *path, int flags, int mode) const override {
     MCU_UNUSED_ARGUMENT(path);
     MCU_UNUSED_ARGUMENT(mode);
-    m_open_flags = FileFlags(flags);
+    m_open_flags = OpenMode(flags);
     if (this->flags().is_append()) {
       return -1;
     }

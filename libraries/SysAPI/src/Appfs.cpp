@@ -135,7 +135,7 @@ int AppfsFileAttributes::apply(fs::File &file) const {
 Appfs::Appfs(const Options &options FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST)
   : m_file(
     "/app/.install",
-    fs::FileFlags::write_only() FSAPI_LINK_INHERIT_DRIVER) {
+    fs::OpenMode::write_only() FSAPI_LINK_INHERIT_DRIVER) {
   create_asynchronous(options);
 }
 
@@ -404,7 +404,7 @@ AppfsInfo Appfs::get_info(var::StringView path) {
 
   API_ASSIGN_ERROR_CODE(
     api::ErrorCode::io_error,
-    fs::File(path, fs::FileFlags::read_only() FSAPI_LINK_MEMBER_DRIVER_LAST)
+    fs::File(path, fs::OpenMode::read_only() FSAPI_LINK_MEMBER_DRIVER_LAST)
       .read(var::View(appfs_file_header))
       .status()
       .value());

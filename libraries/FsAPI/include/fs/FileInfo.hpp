@@ -140,34 +140,34 @@ private:
   PermissionFlags m_permissions;
 };
 
-class FileFlags : public FileInfoFlags {
+class OpenMode : public FileInfoFlags {
 public:
-  FileFlags() { m_flags = OpenFlags::null; }
-  explicit FileFlags(OpenFlags flags) { m_flags = flags; }
-  explicit FileFlags(int flags) { m_flags = static_cast<OpenFlags>(flags); }
+  OpenMode() { m_flags = OpenFlags::null; }
+  explicit OpenMode(OpenFlags flags) { m_flags = flags; }
+  explicit OpenMode(int flags) { m_flags = static_cast<OpenFlags>(flags); }
 
-  static FileFlags create() {
-    return FileFlags(OpenFlags::create | OpenFlags::read_write);
+  static OpenMode create() {
+    return OpenMode(OpenFlags::create | OpenFlags::read_write);
   }
-  static FileFlags create_append_write_only() {
-    return FileFlags(
+  static OpenMode create_append_write_only() {
+    return OpenMode(
       OpenFlags::create | OpenFlags::write_only | OpenFlags::append);
   }
-  static FileFlags create_truncate() {
-    return FileFlags(
+  static OpenMode create_truncate() {
+    return OpenMode(
       OpenFlags::create | OpenFlags::read_write | OpenFlags::truncate);
   }
-  static FileFlags append() {
-    return FileFlags(OpenFlags::read_write | OpenFlags::append);
+  static OpenMode append() {
+    return OpenMode(OpenFlags::read_write | OpenFlags::append);
   }
-  static FileFlags append_read_write() {
-    return FileFlags(OpenFlags::read_write | OpenFlags::append);
+  static OpenMode append_read_write() {
+    return OpenMode(OpenFlags::read_write | OpenFlags::append);
   }
-  static FileFlags read_write() { return FileFlags(OpenFlags::read_write); }
-  static FileFlags read_only() { return FileFlags(OpenFlags::read_only); }
-  static FileFlags write_only() { return FileFlags(OpenFlags::write_only); }
-  static FileFlags append_write_only() {
-    return FileFlags(OpenFlags::write_only | OpenFlags::append);
+  static OpenMode read_write() { return OpenMode(OpenFlags::read_write); }
+  static OpenMode read_only() { return OpenMode(OpenFlags::read_only); }
+  static OpenMode write_only() { return OpenMode(OpenFlags::write_only); }
+  static OpenMode append_write_only() {
+    return OpenMode(OpenFlags::write_only | OpenFlags::append);
   }
 
   bool is_read_only() const { return access() == OpenFlags::read_only; }
@@ -184,38 +184,38 @@ public:
   bool is_append() const { return m_flags & OpenFlags::append; }
   bool is_non_blocking() const { return m_flags & OpenFlags::non_block; }
 
-  FileFlags &set_read_only() {
+  OpenMode &set_read_only() {
     clear_access();
     m_flags |= OpenFlags::read_only;
     return *this;
   }
-  FileFlags &set_write_only() {
+  OpenMode &set_write_only() {
     clear_access();
     m_flags |= OpenFlags::write_only;
     return *this;
   }
-  FileFlags &set_read_write() {
+  OpenMode &set_read_write() {
     clear_access();
     m_flags |= OpenFlags::read_write;
     return *this;
   }
-  FileFlags &set_create() {
+  OpenMode &set_create() {
     m_flags |= OpenFlags::create;
     return *this;
   }
-  FileFlags &set_truncate() {
+  OpenMode &set_truncate() {
     m_flags |= OpenFlags::truncate;
     return *this;
   }
-  FileFlags &set_append() {
+  OpenMode &set_append() {
     m_flags |= OpenFlags::append;
     return *this;
   }
-  FileFlags &set_exclusive() {
+  OpenMode &set_exclusive() {
     m_flags |= OpenFlags::exclusive;
     return *this;
   }
-  FileFlags &set_non_blocking() {
+  OpenMode &set_non_blocking() {
     m_flags |= OpenFlags::non_block;
     return *this;
   }
@@ -294,7 +294,7 @@ private:
  * ```
  *
  */
-class FileInfo : public FileFlags {
+class FileInfo : public OpenMode {
 public:
 #if defined __link
   FileInfo(bool is_local = false);

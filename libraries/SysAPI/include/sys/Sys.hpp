@@ -319,7 +319,7 @@ public:
    *
    */
   Sys &open() {
-    fs::File::open("/dev/sys", fs::FileFlags::read_write());
+    fs::File::open("/dev/sys", fs::OpenMode::read_write());
     return *this;
   }
 

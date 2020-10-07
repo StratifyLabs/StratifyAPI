@@ -125,7 +125,7 @@ var::String SerialNumber::to_string() const {
 Sys::Sys(FSAPI_LINK_DECLARE_DRIVER)
   : FileAccess<Sys>(
     "/dev/sys",
-    fs::FileFlags::read_write() FSAPI_LINK_INHERIT_DRIVER) {}
+    fs::OpenMode::read_write() FSAPI_LINK_INHERIT_DRIVER) {}
 
 var::String Sys::launch(
   const LaunchOptions &options,
