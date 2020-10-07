@@ -20,11 +20,11 @@ typedef uint32_t in_addr_t;
 
 #include <mcu/types.h>
 
-#include "../api/InetObject.hpp"
-#include "../chrono/MicroTime.hpp"
-#include "../fs/File.hpp"
-#include "../var/String.hpp"
-#include "../var/Vector.hpp"
+#include "chrono/ClockTime.hpp"
+#include "chrono/Time.hpp"
+#include "fs/File.hpp"
+#include "var/String.hpp"
+#include "var/Vector.hpp"
 
 namespace inet {
 
@@ -33,18 +33,6 @@ class SocketAddress;
 
 class SocketFlags {
 public:
-  using Node = arg::Argument<const var::String &, struct SocketFlagsNodeTag>;
-  using Server
-    = arg::Argument<const var::String &, struct SocketFlagsServerTag>;
-  using SourceSocketAddress = arg::Argument<
-    const inet::SocketAddress &,
-    struct SocketFlagsSourceSocketAddressTag>;
-  using DestinationSocketAddress = arg::Argument<
-    inet::SocketAddress &,
-    struct SocketFlagsDestinationSocketAddressTag>;
-  using ListenBacklogCount
-    = arg::Argument<int, struct SocketFlagsListenBacklogCountTag>;
-
   /*! \details Enumerates the socket address family options. */
   enum family {
     family_none = 0,
@@ -111,7 +99,7 @@ public:
  *
  *
  */
-class SocketAddressInfo : public api::WorkObject, public SocketFlags {
+class SocketAddressInfo : public api::Object, public SocketFlags {
 public:
   /*! \details Constructs a new socket address infomation object.
    *
@@ -164,15 +152,13 @@ public:
    * IP address and other info for stratifylabs.co
    * ```
    */
-  var::Vector<SocketAddressInfo> fetch_node(const var::String &node) {
-    return fetch(Node(node), Server(""));
-  }
 
-  var::Vector<SocketAddressInfo> fetch_service(const var::String &service) {
-    return fetch(Node(""), Server(service));
-  }
+  class FetchOptions {
+    API_AC(FetchOptions, var::StringView, node);
+    API_AC(FetchOptions, var::StringView, service);
+  };
 
-  var::Vector<SocketAddressInfo> fetch(const Node node, const Server service);
+  var::Vector<SocketAddressInfo> fetch(const FetchOptions &options);
 
 private:
   friend class SocketAddress;
@@ -209,14 +195,14 @@ public:
     m_type = type;
   }
 
-  static SocketAddressIpv4 from_string(const var::String &value);
+  static SocketAddressIpv4 from_string(var::StringView value);
 
   SocketAddressIpv4 &set_address(u8 a, u8 b, u8 c, u8 d) {
     m_sockaddr_in.sin_addr.s_addr = address(a, b, c, d);
     return *this;
   }
 
-  SocketAddressIpv4 &set_address(const var::String &addr);
+  SocketAddressIpv4 &set_address(var::StringView addr);
 
 private:
   friend class SocketAddress;
@@ -285,7 +271,9 @@ public:
     return *this;
   }
 
-  u16 family() const { return m_sockaddr.to<const sockaddr>()->sa_family; }
+  u16 family() const {
+    return var::View(m_sockaddr).to<const sockaddr>()->sa_family;
+  }
 
   bool is_ipv4() const { return family() == SocketAddressInfo::family_inet; }
 
@@ -294,7 +282,7 @@ public:
   u16 port() const;
 
   in_addr_t address_ipv4() const {
-    return m_sockaddr.to<const sockaddr_in>()->sin_addr.s_addr;
+    return var::View(m_sockaddr).to<const sockaddr_in>()->sin_addr.s_addr;
   }
 
   var::String to_string() const;
@@ -303,7 +291,7 @@ public:
   // sockaddr_in6>()->sin6_addr.un; }
 
   const struct sockaddr *to_sockaddr() const {
-    return m_sockaddr.to<struct sockaddr>();
+    return var::View(m_sockaddr).to<struct sockaddr>();
   }
 
   const var::String &canon_name() const { return m_canon_name; }
@@ -446,16 +434,16 @@ private:
   friend class Socket;
   SocketOption &set_integer_value(int name, int value) {
     m_name = name;
-    m_option_value.allocate(sizeof(int));
-    *m_option_value.to<int>() = value;
+    m_option_value.resize(sizeof(int));
+    var::View(m_option_value).to<int>()[0] = value;
     return *this;
   }
 
   SocketOption &set_timeout(int name, const chrono::ClockTime &timeout) {
     m_name = name;
-    m_option_value.allocate(sizeof(struct timeval));
-    m_option_value.to<struct timeval>()->tv_sec = timeout.seconds();
-    m_option_value.to<struct timeval>()->tv_usec
+    m_option_value.resize(sizeof(struct timeval));
+    var::View(m_option_value).to<struct timeval>()->tv_sec = timeout.seconds();
+    var::View(m_option_value).to<struct timeval>()->tv_usec
       = timeout.nanoseconds() / 1000UL;
     return *this;
   }
@@ -483,7 +471,7 @@ private:
  *
  *
  */
-class Socket : public fs::File, public SocketFlags {
+class Socket : public fs::FileAccess<Socket>, public SocketFlags {
 public:
   Socket();
   ~Socket();
@@ -512,9 +500,8 @@ public:
    * when using TCP sockets where listen is applicable.
    *
    */
-  virtual int bind_and_listen(
-    const SocketAddress &address,
-    ListenBacklogCount backlog = ListenBacklogCount(4)) const;
+  virtual int
+  bind_and_listen(const SocketAddress &address, int backlog = 4) const;
 
   virtual int bind(const SocketAddress &address) const;
 
@@ -541,31 +528,20 @@ public:
    * @return Zero on success
    */
   virtual int
-  shutdown(const fs::OpenFlags how = fs::OpenFlags::read_write()) const;
+  shutdown(const fs::OpenMode how = fs::OpenMode::read_write()) const;
 
-  // already documented in fs::File
-  using File::write;
-  virtual int write(const void *buf, Size nbyte) const;
-
-  // already documented in fs::File
   using File::read;
-  virtual int read(void *buf, Size nbyte) const;
-
   /*@brief use for get ip address from recved data in socket
    * necceserly set ai_addrlen before use "recvfrom"
    * getaddrinfo(use self port)->socket->bind-> read_from
    * @param ai_addr - will address info accept
    * @param ai_addrlen - write address ip len (IPv4 or IPv6) before use!!!
    * */
-  int read(var::View &data, const SocketAddress &address);
+  int receive_from(const SocketAddress &address, var::View data) {
+    return receive_from(address, data.to_void(), data.size());
+  }
 
-  int read(void *buf, Size nbyte, const SocketAddress &address);
-
-  int read(
-    void *buf,
-    Size nbyte,
-    struct sockaddr *ai_addr,
-    socklen_t *ai_addrlen) const;
+  int receive_from(const SocketAddress &address, void *buf, int nbyte);
 
   /*! \brief Writes to the address specified.
    *
@@ -575,25 +551,11 @@ public:
    * This method implements the socket call sendto().
    *
    */
-  int write(const var::View &data, const SocketAddress &socket_address) {
-    return write(data.to_const_void(), Size(data.size()), socket_address);
-  }
-  int write(
-    const void *buf,
-    Size nbyte,
-    const struct sockaddr *ai_addr,
-    socklen_t ai_addrlen) const;
-  int write(const void *buf, Size nbyte, const SocketAddress &socket_address)
-    const {
-    return write(
-      buf,
-      nbyte,
-      socket_address.to_sockaddr(),
-      socket_address.length());
+  int send_to(const SocketAddress &socket_address, var::View data) {
+    return send_to(socket_address, data.to_const_void(), data.size());
   }
 
-  // already documented in fs::File
-  virtual int close();
+  int send_to(const SocketAddress &socket_address, const void *buf, int nbyte);
 
   bool is_valid() const;
 
@@ -618,17 +580,35 @@ public:
   static int deinitialize();
 
 protected:
-  /*! \cond */
-  int decode_socket_return(int value) const;
-
 #if defined __win32
-  ::SOCKET m_socket;
+  mutable ::SOCKET m_socket;
   enum {SOCKET_INVALID = INVALID_SOCKET};
 #else
   enum { SOCKET_INVALID = -1 };
   // socket on all other platforms is a file handler
-  int m_socket;
+  mutable int m_socket;
 #endif
+
+  int interface_open(const char *path, int flags, int mode)
+    const override final {
+    return 0;
+  }
+  int interface_lseek(int fd, int location, int whence) const override final {
+    return 0;
+  }
+  int interface_fsync(int fd) const override final { return 0; }
+  int interface_ioctl(int fd, int request, void *argument)
+    const override final {
+    return 0;
+  }
+
+  virtual int interface_close(int fd) const override;
+  virtual int interface_read(int fd, void *buf, int nbyte) const override;
+  virtual int
+  interface_write(int fd, const void *buf, int nbyte) const override;
+
+  /*! \cond */
+  int decode_socket_return(int value) const;
 
 private:
   static int m_is_initialized;

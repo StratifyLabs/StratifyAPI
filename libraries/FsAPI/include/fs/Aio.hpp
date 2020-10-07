@@ -84,7 +84,7 @@ public:
     m_aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
   }
 
-  using AiocbList = var::Vector<struct aiocb *const>;
+  using AiocbList = var::Vector<struct aiocb *>;
 
   /*! \details Blocks until all transfers in list have completed or timeout is
    * reached.
@@ -99,13 +99,13 @@ public:
   static int suspend(
     const AiocbList &list,
     const chrono::Microseconds &timeout = chrono::Microseconds(0)) {
-    struct timespec timeout;
-    timeout.tv_sec = timeout_usec / 1000000;
-    timeout.tv_nsec = (timeout_usec % 1000000) * 1000;
-    if (timeout_usec == 0) {
-      return aio_suspend(list.data(), list.count(), 0);
+    struct timespec ts;
+    ts.tv_sec = timeout.microseconds() / 1000000;
+    ts.tv_nsec = (timeout.microseconds() % 1000000) * 1000;
+    if (timeout.microseconds() == 0) {
+      return aio_suspend(list.data(), list.count(), nullptr);
     } else {
-      return aio_suspend(list.data(), list.count(), &timeout);
+      return aio_suspend(list.data(), list.count(), &ts);
     }
   }
 
@@ -116,10 +116,10 @@ public:
    *
    */
   Aio &suspend(const chrono::Microseconds &timeout = chrono::Microseconds(0)) {
-    struct aiocb *const list[1] = {&m_aio_var};
-    API_ASSIGN_RESULT(
+
+    API_ASSIGN_ERROR_CODE(
       api::ErrorCode::io_error,
-      suspend(list, 1, timeout.microseconds()));
+      suspend(AiocbList().push_back(&m_aio_var), timeout));
     return *this;
   }
 

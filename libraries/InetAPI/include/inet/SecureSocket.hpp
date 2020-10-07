@@ -4,9 +4,11 @@
 #ifndef SAPI_INET_SECURESOCKET_HPP_
 #define SAPI_INET_SECURESOCKET_HPP_
 
-#include "../sys/requests.h"
-#include "Socket.hpp"
 #include <mbedtls_api.h>
+
+#include "api/api.hpp"
+
+#include "Socket.hpp"
 
 namespace inet {
 
@@ -25,9 +27,8 @@ public:
   virtual int connect(const SocketAddress &address) override;
 
   // already documented in inet::Socket
-  virtual int bind_and_listen(
-    const SocketAddress &address,
-    ListenBacklogCount backlog = ListenBacklogCount(4)) const override;
+  virtual int
+  bind_and_listen(const SocketAddress &address, int backlog = 4) const override;
 
   /*! \details
    *
@@ -37,25 +38,19 @@ public:
   // already documented in inet::Socket
   virtual int shutdown(int how = 0) const;
 
-  using File::write;
-  virtual int write(const void *buf, Size nbyte) const override;
-
-  using File::read;
-  virtual int read(void *buf, Size nbyte) const override;
-
-  virtual int close() override;
-
   const var::Data &ticket() const { return m_ticket; }
   var::Data &ticket() { return m_ticket; }
   static SecureSocketApi api() { return m_api; }
 
 private:
-  /*! \cond */
   static SecureSocketApi m_api;
-  void *m_context = nullptr;
+  mutable void *m_context = nullptr;
   u32 m_ticket_lifetime = 0;
   var::Data m_ticket;
-  /*! \endcond */
+
+  int interface_close(int fd) const override final;
+  int interface_read(int fd, void *buf, int nbyte) const override final;
+  int interface_write(int fd, const void *buf, int nbyte) const override final;
 };
 
 } // namespace inet

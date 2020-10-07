@@ -29,41 +29,33 @@ SocketAddressInfo::SocketAddressInfo(
   set_type(type);
   set_protocol(protocol);
   if (family == family_inet) {
-    m_sockaddr.allocate(sizeof(struct sockaddr_in));
+    m_sockaddr.resize(sizeof(struct sockaddr_in));
 #if !defined __win32 && !defined __linux
-    m_sockaddr.to<struct sockaddr_in>()->sin_len = m_sockaddr.size();
+    var::View(m_sockaddr).to<struct sockaddr_in>()->sin_len = m_sockaddr.size();
 #else
 
 #endif
-    m_sockaddr.to<struct sockaddr_in>()->sin_family = family;
-    memset(
-      &(m_sockaddr.to<struct sockaddr_in>()->sin_addr),
-      0,
-      sizeof(struct in_addr));
-    memset(
-      m_sockaddr.to<struct sockaddr_in>()->sin_zero,
-      0,
-      sizeof(m_sockaddr.to<struct sockaddr_in>()->sin_zero));
+    var::View(m_sockaddr).to<struct sockaddr_in>()->sin_family = family;
+    var::View(m_sockaddr).to<struct sockaddr_in>()->sin_addr = {0};
+    // var::View(m_sockaddr).to<struct sockaddr_in>()->sin_zero = {0};
   } else {
-    m_sockaddr.allocate(sizeof(struct sockaddr_in6));
+    m_sockaddr.resize(sizeof(struct sockaddr_in6));
 #if !defined __win32 && !defined __linux
-    m_sockaddr.to<struct sockaddr_in6>()->sin6_len = m_sockaddr.size();
+    var::View(m_sockaddr).to<struct sockaddr_in6>()->sin6_len
+      = m_sockaddr.size();
 #else
 
 #endif
-    m_sockaddr.to<struct sockaddr_in6>()->sin6_family = family;
-    m_sockaddr.to<struct sockaddr_in6>()->sin6_flowinfo = 0;
-    m_sockaddr.to<struct sockaddr_in6>()->sin6_scope_id = 0;
-    m_sockaddr.to<struct sockaddr_in6>()->sin6_port = 0;
-    memset(
-      &(m_sockaddr.to<struct sockaddr_in6>()->sin6_addr),
-      0,
-      sizeof(struct in6_addr));
+    var::View(m_sockaddr).to<struct sockaddr_in6>()->sin6_family = family;
+    var::View(m_sockaddr).to<struct sockaddr_in6>()->sin6_flowinfo = 0;
+    var::View(m_sockaddr).to<struct sockaddr_in6>()->sin6_scope_id = 0;
+    var::View(m_sockaddr).to<struct sockaddr_in6>()->sin6_port = 0;
+    var::View(m_sockaddr).to<struct sockaddr_in6>()->sin6_addr = {0};
   }
 }
 
 var::Vector<SocketAddressInfo>
-SocketAddressInfo::fetch(Node node, Server server) {
+SocketAddressInfo::fetch(const FetchOptions &options) {
   var::Vector<SocketAddressInfo> result;
   int result_int;
 
@@ -74,10 +66,9 @@ SocketAddressInfo::fetch(Node node, Server server) {
   const char *node_cstring;
 
   server_cstring
-    = server.argument().is_empty() ? nullptr : server.argument().cstring();
+    = options.service().is_empty() ? nullptr : options.service().cstring();
 
-  node_cstring
-    = node.argument().is_empty() ? nullptr : node.argument().cstring();
+  node_cstring = options.node().is_empty() ? nullptr : options.node().cstring();
 
   Socket::initialize();
 
@@ -86,7 +77,6 @@ SocketAddressInfo::fetch(Node node, Server server) {
   if (
     (result_int = getaddrinfo(node_cstring, server_cstring, &m_addrinfo, &info))
     != 0) {
-    set_error_number(result_int);
     return result;
   }
 
@@ -96,9 +86,7 @@ SocketAddressInfo::fetch(Node node, Server server) {
     value.m_addrinfo = *info;
     if (info->ai_addr) {
 
-      Reference address(
-        Reference::ReadOnlyBuffer(info->ai_addr),
-        Reference::Size(info->ai_addrlen));
+      View address(info->ai_addr, info->ai_addrlen);
 
       value.m_sockaddr.copy_contents(address);
     }
@@ -137,18 +125,18 @@ int Ipv4Address::set_address(const var::String & address) {
 
 u16 SocketAddress::port() const {
   if (family() == SocketAddressInfo::family_inet) {
-    return ntohs(m_sockaddr.to<const sockaddr_in>()->sin_port);
+    return ntohs(var::View(m_sockaddr).to<const sockaddr_in>()->sin_port);
   } else if (family() == SocketAddressInfo::family_inet6) {
-    return ntohs(m_sockaddr.to<const sockaddr_in6>()->sin6_port);
+    return ntohs(var::View(m_sockaddr).to<const sockaddr_in6>()->sin6_port);
   }
   return 0;
 }
 
 SocketAddress &SocketAddress::set_port(u16 port) {
   if (is_ipv4()) {
-    m_sockaddr.to<struct sockaddr_in>()->sin_port = htons(port);
+    var::View(m_sockaddr).to<struct sockaddr_in>()->sin_port = htons(port);
   } else if (is_ipv6()) {
-    m_sockaddr.to<struct sockaddr_in6>()->sin6_port = htons(port);
+    var::View(m_sockaddr).to<struct sockaddr_in6>()->sin6_port = htons(port);
   }
   return *this;
 }
@@ -166,7 +154,8 @@ var::String SocketAddress::to_string() const {
   }
 
   if (is_ipv6()) {
-    const struct sockaddr_in6 *addr = m_sockaddr.to<struct sockaddr_in6>();
+    const struct sockaddr_in6 *addr
+      = var::View(m_sockaddr).to<struct sockaddr_in6>();
 #if defined __link
 #if defined __macosx
     result.format(
@@ -210,8 +199,10 @@ var::String SocketAddress::to_string() const {
   return result;
 }
 
-SocketAddressIpv4 SocketAddressIpv4::from_string(const var::String &value) {
-  Tokenizer tokens(value, var::Tokenizer::Delimeters(".:"));
+SocketAddressIpv4 SocketAddressIpv4::from_string(var::StringView value) {
+  Tokenizer tokens = Tokenizer().parse(
+    value,
+    var::Tokenizer::ParseOptions().set_delimeters(".:"));
 
   if (tokens.count() < 4) {
     return SocketAddressIpv4();
@@ -226,8 +217,10 @@ SocketAddressIpv4 SocketAddressIpv4::from_string(const var::String &value) {
     tokens.count() > 4 ? tokens.at(4).to_integer() : 0);
 }
 
-SocketAddressIpv4 &SocketAddressIpv4::set_address(const var::String &addr) {
-  Tokenizer tokens(addr, var::Tokenizer::Delimeters("."));
+SocketAddressIpv4 &SocketAddressIpv4::set_address(var::StringView addr) {
+  Tokenizer tokens = Tokenizer().parse(
+    addr,
+    var::Tokenizer::ParseOptions().set_delimeters("."));
 
   if (tokens.count() != 4) {
     return *this;
@@ -242,7 +235,7 @@ SocketAddressIpv4 &SocketAddressIpv4::set_address(const var::String &addr) {
   return *this;
 }
 
-Socket::Socket() {
+Socket::Socket() : FileAccess("", fs::OpenMode::read_write()) {
   m_socket = SOCKET_INVALID;
   initialize();
 }
@@ -262,7 +255,7 @@ int Socket::decode_socket_return(int value) const {
     return value;
   }
 #else
-  return set_error_number_if_error(value);
+  return value;
 #endif
 }
 
@@ -323,16 +316,14 @@ int Socket::bind(const SocketAddress &addr) const {
     ::bind(m_socket, addr.to_sockaddr(), static_cast<int>(addr.length())));
 }
 
-int Socket::bind_and_listen(
-  const SocketAddress &addr,
-  ListenBacklogCount backlog) const {
+int Socket::bind_and_listen(const SocketAddress &addr, int backlog) const {
   int result = bind(addr);
   if (result < 0) {
     return result;
   }
 
   if (addr.protocol() == SocketAddressInfo::protocol_tcp) {
-    result = decode_socket_return(::listen(m_socket, backlog.argument()));
+    result = decode_socket_return(::listen(m_socket, backlog));
   }
 
   return result;
@@ -341,9 +332,11 @@ int Socket::bind_and_listen(
 Socket Socket::accept(SocketAddress &address) const {
   Socket result;
   socklen_t len = sizeof(struct sockaddr_in6);
-  address.m_sockaddr.allocate(len);
-  result.m_socket = decode_socket_return(
-    ::accept(m_socket, address.m_sockaddr.to<struct sockaddr>(), &len));
+  address.m_sockaddr.resize(len);
+  result.m_socket = decode_socket_return(::accept(
+    m_socket,
+    var::View(address.m_sockaddr).to<struct sockaddr>(),
+    &len));
   address.m_sockaddr.resize(len);
   return result;
 }
@@ -364,81 +357,8 @@ int Socket::connect(const SocketAddress &address) {
     static_cast<int>(address.length())));
 }
 
-int Socket::write(const void *buf, Size nbyte) const {
-  return decode_socket_return(
-    ::send(m_socket, (const char *)buf, static_cast<int>(nbyte.argument()), 0));
-}
-
-int Socket::write(
-  const void *buf,
-  Size nbyte,
-  const struct sockaddr *ai_addr,
-  socklen_t ai_addrlen) const {
-  return decode_socket_return(::sendto(
-    m_socket,
-    (const char *)buf,
-    static_cast<int>(nbyte.argument()),
-    0,
-    ai_addr,
-    ai_addrlen));
-}
-
-int Socket::read(void *buf, Size nbyte) const {
-  return decode_socket_return(
-    ::recv(m_socket, (char *)buf, nbyte.argument(), 0));
-}
-
-int Socket::read(var::Reference &data, const SocketAddress &address) {
-  socklen_t address_len = address.m_sockaddr.size();
-  return decode_socket_return(::recvfrom(
-    m_socket,
-#if defined __win32
-    data.to_char(),
-#else
-    data.to_void(),
-#endif
-    data.size(),
-    0,
-    address.m_sockaddr.to<struct sockaddr>(),
-    &address_len));
-}
-
-int Socket::read(void *buf, Size nbyte, const SocketAddress &address) {
-  socklen_t address_len = address.m_sockaddr.size();
-  return decode_socket_return(::recvfrom(
-    m_socket,
-    (char *)buf,
-    static_cast<int>(nbyte.argument()),
-    0,
-    address.m_sockaddr.to<struct sockaddr>(),
-    &address_len));
-}
-
-int Socket::read(
-  void *buf,
-  Size nbyte,
-  struct sockaddr *ai_addr,
-  socklen_t *ai_addrlen) const {
-  return decode_socket_return(::recvfrom(
-    m_socket,
-    (char *)buf,
-    static_cast<int>(nbyte.argument()),
-    0,
-    ai_addr,
-    ai_addrlen));
-}
-
-int Socket::shutdown(const fs::OpenFlags how) const {
-  int socket_how = SHUT_RDWR;
-  if (how.is_read_only()) {
-    socket_how = SHUT_RD;
-  } else if (how.is_write_only()) {
-    socket_how = SHUT_WR;
-  }
-  return decode_socket_return(::shutdown(m_socket, socket_how));
-}
-
-int Socket::close() {
+int Socket::interface_close(int fd) const {
+  MCU_UNUSED_ARGUMENT(fd);
   int result = 0;
   if (m_socket != SOCKET_INVALID) {
 #if defined __win32
@@ -451,15 +371,59 @@ int Socket::close() {
   return result;
 }
 
+int Socket::interface_read(int fd, void *buf, int nbyte) const {
+  MCU_UNUSED_ARGUMENT(fd);
+  return decode_socket_return(::recv(m_socket, buf, nbyte, 0));
+}
+
+int Socket::interface_write(int fd, const void *buf, int nbyte) const {
+  MCU_UNUSED_ARGUMENT(fd);
+  return decode_socket_return(::send(m_socket, buf, nbyte, 0));
+}
+
+int Socket::send_to(
+  const SocketAddress &socket_address,
+  const void *buf,
+  int nbyte) {
+  return decode_socket_return(::sendto(
+    m_socket,
+    (const char *)buf,
+    nbyte,
+    0,
+    var::View(socket_address.m_sockaddr).to<struct sockaddr>(),
+    socket_address.length()));
+}
+
+int Socket::receive_from(const SocketAddress &address, void *buf, int nbyte) {
+  socklen_t address_len = address.m_sockaddr.size();
+  return decode_socket_return(::recvfrom(
+    m_socket,
+    (char *)buf,
+    nbyte,
+    0,
+    var::View(address.m_sockaddr).to<struct sockaddr>(),
+    &address_len));
+}
+
+int Socket::shutdown(const fs::OpenMode how) const {
+  int socket_how = SHUT_RDWR;
+  if (how.is_read_only()) {
+    socket_how = SHUT_RD;
+  } else if (how.is_write_only()) {
+    socket_how = SHUT_WR;
+  }
+  return decode_socket_return(::shutdown(m_socket, socket_how));
+}
+
 Socket &Socket::operator<<(const SocketOption &option) {
   decode_socket_return(::setsockopt(
     m_socket,
     option.m_level,
     option.m_name,
 #if defined __win32
-    option.m_option_value.to_const_char(),
+    var::View(option.m_option_value).to_const_char(),
 #else
-    option.m_option_value.to_const_void(),
+    var::View(option.m_option_value).to_const_void(),
 #endif
     option.m_option_value.size()));
   return *this;

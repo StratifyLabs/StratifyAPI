@@ -1,8 +1,7 @@
 #ifndef SAPI_INET_IPADDRESS_HPP
 #define SAPI_INET_IPADDRESS_HPP
 
-#include "../api/InetObject.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 
 namespace inet {
 

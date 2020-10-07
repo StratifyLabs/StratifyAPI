@@ -39,11 +39,16 @@ target_include_directories(${RELEASE_TARGET}
 	PRIVATE
 	${CMAKE_SOURCE_DIR}/libraries/API/include
 	${CMAKE_SOURCE_DIR}/libraries/VarAPI/include
+	${CMAKE_SOURCE_DIR}/libraries/ChronoAPI/include
+	${CMAKE_SOURCE_DIR}/libraries/FsAPI/include
+	${CMAKE_SOURCE_DIR}/libraries/CryptoAPI/include
 	)
 
 target_link_libraries(${RELEASE_TARGET}
 	PRIVATE
 	VarAPI_release_v7m
+	CryptoAPI_release_v7m
+	FsAPI_release_v7m
 	API_release_v7m
 	stdc++
 	supc++

@@ -14,9 +14,9 @@ namespace fs {}
 #include "fs/Aio.hpp"
 #endif
 
-#include "fs/Stat.hpp"
 #include "fs/Dir.hpp"
 #include "fs/File.hpp"
+#include "fs/FileInfo.hpp"
 
 using namespace fs;
 

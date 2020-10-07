@@ -5,10 +5,11 @@
 
 #include <sos/api/wifi_api.h>
 
-#include "../api/InetObject.hpp"
-#include "../chrono/MicroTime.hpp"
-#include "../chrono/Timer.hpp"
-#include "../var/String.hpp"
+#include "api/api.hpp"
+
+#include "chrono/Time.hpp"
+#include "chrono/Timer.hpp"
+#include "var/String.hpp"
 
 #include "IpAddress.hpp"
 
@@ -192,16 +193,16 @@ private:
   wifi_info_t m_info;
 };
 
-class Wifi : public api::WorkObject, public WifiApi {
+class Wifi : public api::Object, public WifiApi {
 public:
   Wifi();
   ~Wifi() { finalize(); }
 
   int initialize() {
     if (api().is_valid() == false) {
-      return set_error_number_if_error(api::error_code_inet_wifi_api_missing);
+      return -1;
     }
-    return set_error_number_if_error(api()->init(&m_context));
+    return api()->init(&m_context);
   }
 
   void finalize() { api()->deinit(&m_context); }
@@ -213,17 +214,14 @@ public:
     const WifiAuthInfo &auth,
     const chrono::MicroTime &timeout = chrono::Seconds(10));
 
-  int disconnect() {
-    return set_error_number_if_error(api()->disconnect(m_context));
-  }
+  int disconnect() { return api()->disconnect(m_context); }
 
   var::Vector<WifiSsidInfo> scan(
     const WifiScanAttributes &attributes = WifiScanAttributes::get_default(),
     const chrono::MicroTime &timeout = chrono::Seconds(20));
 
   int start_scan(const WifiScanAttributes &attributes) {
-    return set_error_number_if_error(
-      api()->start_scan(m_context, &attributes.attributes()));
+    return api()->start_scan(m_context, &attributes.attributes());
   }
 
   bool is_scan_busy() const {
@@ -233,7 +231,7 @@ public:
 
   WifiInfo get_info() {
     wifi_info_t info;
-    if (set_error_number_if_error(api()->get_info(m_context, &info)) < 0) {
+    if (api()->get_info(m_context, &info) < 0) {
       return WifiInfo();
     }
     return WifiInfo(info);

@@ -20,6 +20,7 @@ add_subdirectory(libraries/ThreadAPI thread)
 add_subdirectory(libraries/CryptoAPI crypto)
 add_subdirectory(libraries/SysAPI sys)
 add_subdirectory(libraries/TestAPI test)
+add_subdirectory(libraries/InetAPI inet)
 
 
 

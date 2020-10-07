@@ -1,7 +1,7 @@
 
 #include "inet/Wifi.hpp"
 #include "chrono.hpp"
-#include "sys/Printer.hpp"
+#include "printer/Printer.hpp"
 
 #if defined __link
 
@@ -9,7 +9,7 @@ int wifi_no_warning = 0;
 
 #else
 
-namespace sys {
+namespace printer {
 
 Printer &operator<<(Printer &printer, const inet::WifiSsidInfo &a) {
   printer.key("name", a.get_name());
@@ -36,7 +36,7 @@ Printer &operator<<(Printer &printer, const inet::WifiInfo &a) {
   return printer;
 }
 
-} // namespace sys
+} // namespace printer
 
 using namespace inet;
 
@@ -67,9 +67,7 @@ var::Vector<WifiSsidInfo> Wifi::get_ssid_info_list() {
   int count = api()->get_scan_count(m_context);
   for (int i = 0; i < count; i++) {
     wifi_ssid_info_t info;
-    if (
-      set_error_number_if_error(api()->get_ssid_info(m_context, i, &info))
-      < 0) {
+    if (api()->get_ssid_info(m_context, i, &info) < 0) {
       return result;
     }
 
@@ -82,16 +80,14 @@ var::Vector<WifiSsidInfo> Wifi::get_ssid_info_list() {
 int Wifi::start_connect(
   const WifiSsidInfo &ssid_info,
   const WifiAuthInfo &auth) {
-  return set_error_number_if_error(
-    api()->connect(m_context, &ssid_info.info(), &auth.auth()));
+  return api()->connect(m_context, &ssid_info.info(), &auth.auth());
 }
 
 WifiIpInfo Wifi::connect(
   const WifiSsidInfo &ssid_info,
   const WifiAuthInfo &auth,
   const chrono::MicroTime &timeout) {
-  int result = set_error_number_if_error(
-    api()->connect(m_context, &ssid_info.info(), &auth.auth()));
+  int result = api()->connect(m_context, &ssid_info.info(), &auth.auth());
 
   if (result < 0) {
     return WifiIpInfo();

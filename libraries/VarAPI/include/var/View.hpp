@@ -94,21 +94,25 @@ public:
   View();
   View(const Options &options);
 
-  View(const char *cstring) {}
-
   View(const Data &data);
   View(Data &data);
+
+  View(const char *str) {
+    set_view(Options().set_read_buffer(str).set_size(strlen(str)));
+  }
+
+  View(StringView str) {
+    set_view(Options().set_read_buffer(str.cstring()).set_size(str.length()));
+  }
 
   View(const String &str) {
     set_view(Options()
                .set_read_buffer(str.cstring())
-               .set_write_buffer(nullptr)
                .set_size(str.length()));
   }
 
   View(String &str) {
     set_view(Options()
-               .set_read_buffer(str.cstring())
                .set_write_buffer(str.to_char())
                .set_size(str.length()));
   }

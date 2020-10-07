@@ -4,18 +4,16 @@
 #ifndef SAPI_INET_URL_HPP_
 #define SAPI_INET_URL_HPP_
 
-#include "../api/InetObject.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 
 namespace inet {
 
-class Url : public api::InfoObject {
+class Url : public api::Object {
 public:
   enum protocol { protocol_https, protocol_http };
 
-  Url(const var::String &url = "");
+  Url(var::StringView url = "");
 
-  int set(const var::String &url);
   var::String to_string() const;
 
   u16 port() const { return m_port; }

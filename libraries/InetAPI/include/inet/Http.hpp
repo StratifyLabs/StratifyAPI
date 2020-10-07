@@ -4,24 +4,17 @@
 #ifndef SAPI_INET_HTTP_HPP_
 #define SAPI_INET_HTTP_HPP_
 
-#include "../api/InetObject.hpp"
-#include "../sys/ProgressCallback.hpp"
-#include "../var/Array.hpp"
-#include "../var/String.hpp"
+#include "api/api.hpp"
+
 #include "Socket.hpp"
+#include "fs/File.hpp"
+#include "var/Array.hpp"
+#include "var/String.hpp"
 
 namespace inet {
 
-class Http : public api::WorkObject {
+class Http : public api::Object {
 public:
-  using RequestFile
-    = arg::Argument<const fs::File &, struct HttpSendRequestTag>;
-  using ResponseFile
-    = arg::Argument<const fs::File &, struct HttpGetResponseTag>;
-  using UrlEncodedString = arg::
-    Argument<const var::String &, struct HttpGetResponseUrlEncodedStringTag>;
-  using RequestString
-    = arg::Argument<const var::String &, struct HttpRequestStringTag>;
 
   explicit Http(Socket &socket);
 
@@ -90,7 +83,17 @@ public:
     network_authentication_required = 511
   };
 
-  enum class Method { invalid, get, post, put, head, Delete, patch, options };
+  enum class Method {
+    invalid,
+    get,
+    post,
+    put,
+    head,
+    Delete,
+    patch,
+    options,
+    trace
+  };
 
   static var::String to_string(Status status);
   static var::String to_string(Method method);
@@ -188,7 +191,19 @@ public:
    *
    * @param url target URL for request.
    */
-  int head(UrlEncodedString url);
+  int head(var::StringView url);
+
+  class MethodOptions {
+    API_AF(MethodOptions, fs::File *, response, nullptr);
+    API_AF(MethodOptions, fs::File *, request, nullptr);
+    API_AF(MethodOptions, api::ProgressCallback *, progress_callback, nullptr);
+  };
+
+  using GetOptions = MethodOptions;
+  using PutOptions = MethodOptions;
+  using PatchOptions = MethodOptions;
+  using PostOptions = MethodOptions;
+  using RemoveOptions = MethodOptions;
 
   /*! \details Executes an HTTP GET request.
    *
@@ -211,109 +226,37 @@ public:
    * ```
    *
    */
-  int get(
-    const var::String &url,
-    ResponseFile response,
-    const sys::ProgressCallback *progress_callback = nullptr);
-
-  int get(
-    UrlEncodedString url,
-    ResponseFile response,
-    const sys::ProgressCallback *progress_callback = nullptr) {
-    return get(url.argument(), response, progress_callback);
+  HttpClient &get(var::StringView url, const GetOptions &options) {
+    return query(Method::get, url, options);
   }
 
-  int post(
-    const var::String &url,
-    RequestString request,
-    ResponseFile response,
-    const sys::ProgressCallback *progress_callback = nullptr);
-
-  int post(
-    UrlEncodedString url,
-    RequestString request,
-    ResponseFile response,
-    const sys::ProgressCallback *progress_callback = nullptr) {
-    return post(url.argument(), request, response, progress_callback);
+  HttpClient &post(var::StringView url, const PostOptions &options) {
+    return query(Method::post, url, options);
+  }
+  HttpClient &put(var::StringView url, const PutOptions &options) {
+    return query(Method::put, url, options);
   }
 
-  int post(
-    const var::String &url,
-    RequestFile request,
-    ResponseFile response,
-    const sys::ProgressCallback *progress_callback = nullptr);
-
-  int post(
-    UrlEncodedString url,
-    RequestFile request,
-    ResponseFile response,
-    const sys::ProgressCallback *progress_callback = nullptr) {
-    return post(url.argument(), request, response, progress_callback);
+  HttpClient &patch(var::StringView url, const PatchOptions &options) {
+    return query(Method::patch, url, options);
   }
-
-  int put(
-    const var::String &url,
-    RequestString request,
-    ResponseFile response,
-    const sys::ProgressCallback *progress_callback = nullptr);
-
-  int put(
-    UrlEncodedString url,
-    RequestString request,
-    ResponseFile response,
-    const sys::ProgressCallback *progress_callback = nullptr) {
-    return put(url.argument(), request, response, progress_callback);
-  }
-
-  int put(
-    const var::String &url,
-    RequestFile request,
-    ResponseFile response,
-    const sys::ProgressCallback *progress_callback = nullptr);
-
-  int put(
-    UrlEncodedString url,
-    RequestFile request,
-    ResponseFile response,
-    const sys::ProgressCallback *progress_callback = nullptr) {
-    return put(url.argument(), request, response, progress_callback);
-  }
-
-  int patch(
-    const var::String &url,
-    RequestString request,
-    ResponseFile response,
-    const sys::ProgressCallback *progress_callback = nullptr);
-
-  int patch(
-    UrlEncodedString url,
-    RequestString request,
-    ResponseFile response,
-    const sys::ProgressCallback *progress_callback = nullptr) {
-    return patch(url.argument(), request, response, progress_callback);
-  }
-
-  int patch(
-    const var::String &url,
-    RequestFile request,
-    ResponseFile response,
-    const sys::ProgressCallback *progress_callback = nullptr);
-
-  int patch(
-    UrlEncodedString url,
-    RequestFile request,
-    ResponseFile response,
-    const sys::ProgressCallback *progress_callback = nullptr) {
-    return patch(url.argument(), request, response, progress_callback);
-  }
-
-  int remove(const var::String &url, ResponseFile response);
 
   // http delete
+  HttpClient &remove(var::StringView url, const RemoveOptions &options) {
+    return query(Method::Delete, url, options);
+  }
+
   /*! \cond */
-  int options(const var::String &url);
-  int trace(const var::String &url);
-  int connect(const var::String &url);
+  HttpClient &options(var::StringView url) {
+    return query(Method::options, url, MethodOptions());
+  }
+  HttpClient &trace(var::StringView url) {
+    return query(Method::trace, url, MethodOptions());
+  }
+  HttpClient &connect(var::StringView url) {
+    // return query(Method::connect, url, MethodOptions());
+    return *this;
+  }
   /*! \endcond */
 
   /*! \details Returns a reference to the header that is returned
@@ -369,9 +312,6 @@ public:
 private:
   /*! \cond */
 
-  using SendFile = arg::Argument<const fs::File *, struct HttpClientSendFile>;
-  using GetFile = arg::Argument<const fs::File *, struct HttpClientSendFile>;
-
   SocketAddress m_address;
   var::String m_transfer_encoding;
   var::String m_header;
@@ -384,34 +324,36 @@ private:
   u32 m_transfer_size = 1024;
   var::String m_traffic;
 
-  int connect_to_server(const var::String &domain_name, u16 port);
+  int connect_to_server(var::StringView domain_name, u16 port);
 
-  int query(
-    const var::String &command,
-    const var::String &url,
-    SendFile send_file,
-    GetFile get_file,
-    const sys::ProgressCallback *progress_callback);
+  HttpClient &
+  query(Method method, var::StringView url, const MethodOptions &options);
 
-  int send_string(const var::String &str);
+  int send_string(var::StringView str);
 
-  int build_header(
-    const var::String &method,
-    const var::String &host,
-    const var::String &path,
+  class Header {
+    API_AC(Header, var::String, method);
+    API_AC(Header, var::String, host);
+    API_AC(Header, var::String, path);
+  };
+
+  void build_header(
+    var::StringView method,
+    var::StringView host,
+    var::StringView path,
     u32 length);
 
   int send_header(
-    const var::String &method,
-    const var::String &host,
-    const var::String &path,
-    const fs::File *file,
-    const sys::ProgressCallback *progress_callback);
+    var::StringView method,
+    var::StringView host,
+    var::StringView path,
+    fs::File *file,
+    const api::ProgressCallback *progress_callback);
 
   int listen_for_header();
   int listen_for_data(
-    const fs::File &data,
-    const sys::ProgressCallback *progress_callback);
+    fs::File *data,
+    const api::ProgressCallback *progress_callback);
   /*! \endcond */
 };
 
@@ -419,7 +361,7 @@ private:
 class HttpServer : public Http {
 public:
   // socket should already have accepted a new connection
-  HttpServer(const var::String version, Socket &socket) : Http(socket) {
+  HttpServer(var::StringView version, Socket &socket) : Http(socket) {
     m_version = "HTTP/" + version + " ";
   }
 
@@ -429,9 +371,9 @@ public:
 
 protected:
   int send_header(Status status);
-  int send_chunk(const var::Blob &chunk);
+  int send_chunk(var::View chunk);
   int receive(fs::File &file, int content_length);
-  int send(const var::Blob &chunk);
+  int send(var::View chunk);
 
 private:
   API_AB(HttpServer, running, true);
