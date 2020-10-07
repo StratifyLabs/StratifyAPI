@@ -200,7 +200,7 @@ protected:
   const chrono::Timer &case_timer() const { return m_case_timer; }
   chrono::Timer &case_timer() { return m_case_timer; }
 
-  u32 get_score() const;
+  static u32 get_score(u32 microseconds);
 
   var::StringView name() const { return m_name; }
 
