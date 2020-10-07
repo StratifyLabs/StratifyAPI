@@ -4,19 +4,43 @@
 #ifndef FSAPI_FILEINFO_HPP_
 #define FSAPI_FILEINFO_HPP_
 
+#include <fcntl.h>
+#include <unistd.h>
+
 #include <sos/link/types.h>
 
 #include "var/StringView.hpp"
 
 #if !defined __link
-#include <unistd.h>
 #define MCU_INT_CAST(var) ((void *)(u32)var)
-#include <fcntl.h>
+
+#define FSAPI_LINK_DECLARE_DRIVER_NULLPTR
+#define FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
+#define FSAPI_LINK_DECLARE_DRIVER
+#define FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST
+#define FSAPI_LINK_STAT_STRUCT stat
+#define FSAPI_LINK_DEFAULT_PAGE_SIZE 512
+#define FSAPI_LINK_INHERIT_DRIVER
+#define FSAPI_LINK_INHERIT_DRIVER_LAST
+#define FSAPI_LINK_MEMBER_DRIVER
+#define FSAPI_LINK_MEMBER_DRIVER_LAST
 #else
+#define FSAPI_LINK_STAT_STRUCT link_stat
+#define FSAPI_LINK_DECLARE_DRIVER_NULLPTR                                      \
+  link_transport_mdriver_t *link_driver = nullptr
+#define FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST                                 \
+  , link_transport_mdriver_t *link_driver = nullptr
+#define FSAPI_LINK_DECLARE_DRIVER link_transport_mdriver_t *link_driver
+#define FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST                                 \
+  , link_transport_mdriver_t *link_driver
+#define FSAPI_LINK_DEFAULT_PAGE_SIZE 4096
+#define FSAPI_LINK_INHERIT_DRIVER link_driver
+#define FSAPI_LINK_MEMBER_DRIVER driver()
+#define FSAPI_LINK_INHERIT_DRIVER_LAST , link_driver
+#define FSAPI_LINK_MEMBER_DRIVER_LAST , driver()
 #undef fileno
 #define MCU_INT_CAST(var) ((void *)(u64)var)
 #endif
-
 
 namespace fs {
 
@@ -299,7 +323,7 @@ public:
 #if defined __link
   FileInfo(bool is_local = false);
   FileInfo(
-    const struct FSAPI_LINK_STAT &st,
+    const struct FSAPI_LINK_STAT_STRUCT &st,
     bool is_local = false) // cppcheck-suppress[noExplicitConstructor]
     : m_stat(st), m_is_local(is_local) {}
 #else
@@ -361,7 +385,7 @@ public:
 
 private:
 #if defined __link
-  struct FSAPI_LINK_STAT m_stat;
+  struct FSAPI_LINK_STAT_STRUCT m_stat;
   bool m_is_local;
 #else
   struct stat m_stat;

@@ -43,7 +43,7 @@ Printer::Printer() {
 void Printer::set_format_code(u32 code) {
 #if defined __link
   if (api::ApiInfo::is_macosx() || is_bash()) {
-    print_final("\033[1;%dm", code);
+    print_final(var::String::number(code, "\033[1;%dm"));
   }
 #endif
 }
@@ -197,7 +197,7 @@ void Printer::print(
 
 void Printer::print_final(var::StringView view) {
 #if defined __link
-  fwrite(view.to_const_void(), view.size(), 1, stdout);
+  fwrite(view.cstring(), view.length(), 1, stdout);
 #else
   ::write(stdout->_file, view.cstring(), view.length());
 #endif
@@ -254,7 +254,7 @@ void Printer::clear_color_code() {
   if (api::ApiInfo::is_macosx() || is_bash()) {
     print_final("\033[0m");
   } else {
-    set_color_code(ColorCode::default);
+    set_color_code(ColorCode::normal);
   }
 #endif
 }

@@ -11,22 +11,24 @@
 
 #if defined __link
 
-#include "../fs/Dir.hpp"
-#include "../var/String.hpp"
-#include "../var/Vector.hpp"
-#include "Appfs.hpp"
-#include "Printer.hpp"
-#include "ProgressCallback.hpp"
-#include "Sys.hpp"
 #include <mcu/types.h>
 #include <sos/link.h>
 
-namespace sys {
+#include "api/api.hpp"
+
+#include "Sys.hpp"
+#include "fs/Dir.hpp"
+#include "printer/Printer.hpp"
+#include "sys/Appfs.hpp"
+#include "var/String.hpp"
+#include "var/Vector.hpp"
+
+namespace link {
 
 class LinkInfo {
 public:
   LinkInfo() {}
-  LinkInfo(const var::String &path, const sys::SysInfo &sys_info) {
+  LinkInfo(const var::String &path, const sys::Sys::Info &sys_info) {
     set_path(path);
     set_info(sys_info);
   }
@@ -871,7 +873,7 @@ private:
   void reset_progress();
 };
 
-} // namespace sys
+} // namespace link
 
 #endif
 

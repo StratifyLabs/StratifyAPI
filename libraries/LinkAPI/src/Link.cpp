@@ -12,13 +12,14 @@
 
 #define MAX_TRIES 3
 
-#include "fs/File.hpp"
-#include "sys/Link.hpp"
-#include "sys/Appfs.hpp"
 #include "chrono/Timer.hpp"
+#include "fs/File.hpp"
+#include "link/Link.hpp"
+#include "sys/Appfs.hpp"
 
 using namespace sys;
 using namespace fs;
+using namespace link;
 
 static var::String gen_error(const var::String & msg, int err_number){
 	var::String s;

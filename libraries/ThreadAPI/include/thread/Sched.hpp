@@ -6,9 +6,12 @@
 
 #include <pthread.h>
 #include <sched.h>
+#include <unistd.h>
 
 #if defined __win32
 typedef int pid_t;
+#else
+#include <sys/types.h>
 #endif
 
 #include "api/api.hpp"

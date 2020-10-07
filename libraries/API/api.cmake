@@ -8,7 +8,13 @@ macro(api_target NAME DIRECTORIES)
 
 	install(DIRECTORY include/ DESTINATION include/${API_NAME})
 
-	set(ARCH v7m)
+	string(COMPARE EQUAL ${SOS_BUILD_CONFIG} link IS_LINK)
+
+	if(IS_LINK)
+		set(ARCH link)
+	else()
+		set(ARCH v7m)
+	endif()
 
 	sos_sdk_add_subdirectory(PRIVATE_SOURCES src)
 	sos_sdk_add_subdirectory(PUBLIC_SOURCES ${CMAKE_SOURCE_DIR}/libraries/${API_NAME}/include)
@@ -31,6 +37,13 @@ macro(api_target NAME DIRECTORIES)
 		PUBLIC
 		-Os
 		)
+
+	if(IS_LINK)
+		target_include_directories(${RELEASE_TARGET}
+			PUBLIC
+			${SOS_SDK_PATH}/Tools/gcc/include
+			)
+	endif()
 
 	target_include_directories(${RELEASE_TARGET}
 		PUBLIC

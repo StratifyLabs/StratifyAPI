@@ -6,6 +6,7 @@
 #include <cstring>
 
 #if defined __link
+#include <string>
 #define API_MINIMUM_CHUNK_SIZE 1024
 #define API_MALLOC_CHUNK_SIZE 1024
 #if !defined __win32
@@ -89,26 +90,28 @@ u32 ApiInfo::malloc_chunk_size() { return API_MALLOC_CHUNK_SIZE; }
 const char *ApiInfo::user_data_path() {
 
 #if defined __link
-  static var::String result;
-  result.clear();
-  char *path;
+
+  static std::string result;
+  result = std::string();
+
+  std::string path;
   if (is_windows()) {
     path = getenv("LocalAppData");
-    result << path;
+    result += path;
   }
 
   if (is_macosx()) {
     // read env home variable
     path = getenv("HOME");
-    result << path << "/Library/Application Support";
+    result += path + "/Library/Application Support";
   }
 
   if (is_linux()) {
     path = getenv("HOME");
-    result << path << "/.sl";
+    result += path + "/.sl";
   }
 
-  return result.cstring();
+  return result.c_str();
 #else
   return "/home";
 #endif
@@ -121,7 +124,7 @@ void api::api_assert(bool value, const char *function, int line) {
     void *array[200];
     size_t size;
     size = backtrace(array, 100);
-    backtrace_symbols_fd(array, size, STDERR_FILENO);
+    backtrace_symbols_fd(array, size, stderr->_file);
 #endif
     ::abort();
   }

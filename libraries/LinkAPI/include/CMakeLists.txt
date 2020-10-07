@@ -1,5 +1,6 @@
 
 set(SOURCES
-	Link.cpp
+	link/Link.hpp
+	link.hpp
 	PARENT_SCOPE
 	)

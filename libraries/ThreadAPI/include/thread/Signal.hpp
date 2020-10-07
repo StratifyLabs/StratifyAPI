@@ -4,8 +4,9 @@
 #ifndef SAPI_SYS_SIGNAL_HPP_
 #define SAPI_SYS_SIGNAL_HPP_
 
-#include "api/api.hpp"
+#include <signal.h>
 
+#include "api/api.hpp"
 #include "Sched.hpp"
 #include "Thread.hpp"
 
