@@ -22,7 +22,7 @@ File::File(FSAPI_LINK_DECLARE_DRIVER) {
 
 File::File(
   var::StringView name,
-  const OpenFlags &flags FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST) {
+  FileFlags flags FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST) {
   open(name, flags);
 }
 
@@ -37,7 +37,7 @@ File::~File() {
 File File::create(
   var::StringView path,
   Overwrite is_overwrite,
-  const Permissions &perms FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST) {
+  Permissions perms FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST) {
   return File(FSAPI_LINK_DECLARE_DRIVER).internal_create(path, is_overwrite, perms);
 }
 
@@ -73,10 +73,8 @@ int File::interface_lseek(int fd, int offset, int whence) const {
   return FSAPI_LINK_LSEEK(driver, fd, offset, whence);
 }
 
-File &File::open(
-  var::StringView path,
-  const fs::OpenFlags &flags,
-  const Permissions &permissions) {
+File &
+File::open(var::StringView path, FileFlags flags, Permissions permissions) {
   if (m_fd != -1) {
     close(); // close first so the fileno can be changed
   }
@@ -94,7 +92,7 @@ File &File::internal_create(
   var::StringView path,
   Overwrite is_overwrite,
   const Permissions &perms) {
-  fs::OpenFlags flags = fs::OpenFlags::create();
+  FileFlags flags = FileFlags::create();
   if (is_overwrite == Overwrite::yes) {
     flags.set_truncate();
   } else {
@@ -313,10 +311,10 @@ File &File::write(File &source_file, const WriteOptions &options) {
 
 DataFile::DataFile(fs::File &file_to_load) : FileAccess("") {
   m_location = 0;
-  m_open_flags = OpenFlags::append_read_write();
+  m_open_flags = FileFlags::append_read_write();
   write(file_to_load, WriteOptions());
   seek(0);
-  m_open_flags = OpenFlags::read_write();
+  m_open_flags = FileFlags::read_write();
 }
 
 int DataFile::interface_read(int fd, void *buf, int nbyte) const {

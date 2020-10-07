@@ -1,6 +1,7 @@
 
 set(SOURCES
 	Data.cpp
+	Base64.cpp
 	Array.cpp
 	Vector.cpp
 	Flags.cpp

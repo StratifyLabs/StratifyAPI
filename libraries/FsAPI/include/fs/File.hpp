@@ -115,7 +115,7 @@ class File;
  * ```
  *
  */
-class File : public virtual api::Object {
+class File : public virtual api::Object, public FileInfoFlags {
 public:
 
   enum class Overwrite { no, yes };
@@ -131,15 +131,15 @@ public:
   File(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
   File(
     var::StringView name,
-    const OpenFlags &flags
-    = OpenFlags::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
+    FileFlags flags
+    = FileFlags::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
   ~File();
 
   static File create(
     var::StringView path,
     Overwrite is_overwrite,
-    const Permissions &perms
+    Permissions perms
     = Permissions(0666) FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
   FileInfo get_info() const;
@@ -193,20 +193,6 @@ public:
     m_is_keep_open = value;
     return *this;
   }
-
-  /*! \details Opens a file.
-   *
-   * @param name The path to the file
-   * @param flags The flags used to open the flag (e.g. File::READONLY)
-   * @return Zero on success
-   */
-  File &open(
-    var::StringView name,
-    const OpenFlags &flags = OpenFlags::read_write(),
-    const Permissions &perms = Permissions(0666));
-
-  /*! \details Closes the file or device. */
-  File &close();
 
   /*! \details Excute system fsync() on the file. */
   File &sync();
@@ -330,28 +316,23 @@ public:
     return *this;
   }
 
+  /*! \details Closes the file or device. */
+  File &close();
+
 protected:
+  /*! \details Opens a file.
+   *
+   * @param name The path to the file
+   * @param flags The flags used to open the flag (e.g. File::READONLY)
+   * @return Zero on success
+   */
+  File &open(
+    var::StringView name,
+    FileFlags flags = FileFlags::read_write(),
+    Permissions perms = Permissions(0666));
+
 #ifdef __link
-  mutable link_transport_mdriver_t *m_driver;
-  static link_transport_mdriver_t *m_default_driver;
-  int check_driver() const {
-    if (m_driver == 0) {
-      m_driver = m_default_driver;
-      if (m_driver == 0) {
-        set_error_number(2);
-        return -1;
-      }
-    }
-    return 0;
-  }
-
-  static link_transport_mdriver_t *check_driver(LinkDriver driver) {
-    if (driver.argument() == 0) {
-      return m_default_driver;
-    }
-    return driver.argument();
-  }
-
+  API_AF(File, link_transport_mdriver_t, driver, nullptr);
 #endif
 
   virtual int interface_open(const char *path, int flags, int mode) const;
@@ -379,17 +360,16 @@ template <class Derived> class FileAccess : public File {
 public:
   FileAccess<Derived>(
     var::StringView name,
-    const OpenFlags &flags
-    = OpenFlags::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST)
+    const FileFlags &flags
+    = FileFlags::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST)
     : File(name, flags FSAPI_LINK_INHERIT_DRIVER_LAST) {}
 
   Derived &set_keep_open(bool value = true) {
     return static_cast<Derived &>(File::set_keep_open(value));
   }
 
-  Derived &open(
-    var::StringView path,
-    const OpenFlags &flags = OpenFlags::read_write()) {
+  Derived &
+  open(var::StringView path, const FileFlags &flags = FileFlags::read_write()) {
     return static_cast<Derived &>(File::open(path, flags));
   }
 
@@ -458,18 +438,18 @@ private:
 class DataFile : public FileAccess<DataFile> {
 public:
   /*! \details Constructs a data file. */
-  DataFile(const OpenFlags &flags = OpenFlags::read_write())
+  DataFile(const FileFlags &flags = FileFlags::read_write())
     : FileAccess(""), m_open_flags(flags) {
     m_location = 0;
   }
 
   explicit DataFile(File &file_to_load);
 
-  DataFile &set_flags(const OpenFlags &open_flags) {
+  DataFile &set_flags(FileFlags open_flags) {
     m_open_flags = open_flags;
     return *this;
   }
-  const OpenFlags &flags() const { return m_open_flags; }
+  const FileFlags &flags() const { return m_open_flags; }
 
   /*! \details Accesses (read-only) the member data object. */
   const var::Data &data() const { return m_data; }
@@ -478,13 +458,13 @@ public:
 
 private:
   mutable int m_location; // offset location for seeking/reading/writing
-  mutable OpenFlags m_open_flags;
+  mutable FileFlags m_open_flags;
   mutable var::Data m_data;
 
   int interface_open(const char *path, int flags, int mode) const override {
     MCU_UNUSED_ARGUMENT(path);
     MCU_UNUSED_ARGUMENT(mode);
-    m_open_flags = OpenFlags(flags);
+    m_open_flags = FileFlags(flags);
     return 0;
   }
 
@@ -503,21 +483,17 @@ private:
 class ItemFile : public FileAccess<ItemFile> {
 public:
   /*! \details Constructs a data file. */
-  ItemFile(const OpenFlags &flags = OpenFlags::read_write())
+  ItemFile(const FileFlags &flags = FileFlags::read_write())
     : FileAccess(""), m_open_flags(flags) {
     m_location = 0;
   }
 
-  using File::read;
-  using File::seek;
-  using File::write;
-
-  ItemFile &set_flags(const OpenFlags &open_flags) {
+  ItemFile &set_flags(const FileFlags &open_flags) {
     m_open_flags = open_flags;
     return *this;
   }
 
-  const OpenFlags &flags() const { return m_open_flags; }
+  const FileFlags &flags() const { return m_open_flags; }
 
   /*! \details Accesses (read-only) the member data object. */
   const var::View &item() const { return m_reference; }
@@ -526,13 +502,13 @@ public:
 
 private:
   mutable int m_location; // offset location for seeking/reading/writing
-  mutable OpenFlags m_open_flags;
+  mutable FileFlags m_open_flags;
   var::View m_reference;
 
   int interface_open(const char *path, int flags, int mode) const override {
     MCU_UNUSED_ARGUMENT(path);
     MCU_UNUSED_ARGUMENT(mode);
-    m_open_flags = OpenFlags(flags);
+    m_open_flags = FileFlags(flags);
     if (this->flags().is_append()) {
       return -1;
     }
@@ -554,7 +530,6 @@ public:
   NullFile() : FileAccess("") {}
 
 private:
-  API_AC(NullFile, OpenFlags, open_flags);
 
   int interface_open(const char *path, int flags, int mode) const override {
     return 0;

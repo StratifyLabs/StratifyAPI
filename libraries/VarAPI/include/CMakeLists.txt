@@ -2,6 +2,7 @@
 set(SOURCES
 	var/Data.hpp
 	var/Array.hpp
+	var/Base64.hpp
 	var/Vector.hpp
 	var/Flags.hpp
 	var/View.hpp

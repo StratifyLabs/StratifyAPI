@@ -20,9 +20,10 @@
 
 namespace fs {
 
-class FileFlags {
+class FileInfoFlags {
 public:
-  enum PermissionFlags {
+  enum class PermissionFlags {
+    none = 0,
     public_execute = 0001,
     public_write = 0002,
     public_read = 0004,
@@ -34,20 +35,22 @@ public:
     owner_read = 0400,
   };
 
-  enum o_open_flags {
-    open_read_only /*! Open as read-only */ = LINK_O_RDONLY,
-    open_write_only /*! Open as write-only */ = LINK_O_WRONLY,
-    open_create /*! Create when opening (files) */ = LINK_O_CREAT,
-    open_truncate /*! Truncate when opening (files) */ = LINK_O_TRUNC,
-    open_append /*! Append when opening (files)*/ = LINK_O_APPEND,
-    open_exclusive /*! Create exclusively (files) */ = LINK_O_EXCL,
-    open_read_write /*! Open as read-write */ = LINK_O_RDWR,
-    open_non_block /*! Open as non-blocking */ = LINK_O_NONBLOCK,
-    open_no_delay /*! Open as non-blocking */ = LINK_O_NONBLOCK,
-    open_access_mode /*! Access mode mask */ = LINK_O_ACCMODE
+  enum OpenFlags {
+    null = 0,
+    read_only /*! Open as read-only */ = LINK_O_RDONLY,
+    write_only /*! Open as write-only */ = LINK_O_WRONLY,
+    create /*! Create when opening (files) */ = LINK_O_CREAT,
+    truncate /*! Truncate when opening (files) */ = LINK_O_TRUNC,
+    append /*! Append when opening (files)*/ = LINK_O_APPEND,
+    exclusive /*! Create exclusively (files) */ = LINK_O_EXCL,
+    read_write /*! Open as read-write */ = LINK_O_RDWR,
+    non_block /*! Open as non-blocking */ = LINK_O_NONBLOCK,
+    no_delay /*! Open as non-blocking */ = LINK_O_NONBLOCK,
+    access_mode /*! Access mode mask */ = LINK_O_ACCMODE
   };
 
   enum class AccessFlags {
+    null = 0,
     read_ok /*! Check if read access is allowed */ = LINK_R_OK,
     write_ok /*! Check if write access is allowed */ = LINK_W_OK,
     execute_ok /*! Check if execute access is allowed */ = LINK_X_OK,
@@ -55,6 +58,7 @@ public:
   };
 
   enum class TypeFlags {
+    null = 0,
     mask /*! Mode format mask */ = LINK_S_IFMT,
     file_socket /*! Mode Socket mask */ = LINK_S_IFSOCK,
     regular /*! Mode regular file value */ = LINK_S_IFREG,
@@ -66,12 +70,16 @@ public:
   };
 };
 
-API_OR_NAMED_FLAGS_OPERATOR(FileFlags, AccessFlags)
-API_OR_NAMED_FLAGS_OPERATOR(FileFlags, TypeFlags)
+API_OR_NAMED_FLAGS_OPERATOR(FileInfoFlags, OpenFlags)
+API_OR_NAMED_FLAGS_OPERATOR(FileInfoFlags, PermissionFlags)
+API_OR_NAMED_FLAGS_OPERATOR(FileInfoFlags, AccessFlags)
+API_OR_NAMED_FLAGS_OPERATOR(FileInfoFlags, TypeFlags)
 
-class Permissions : public FileFlags {
+class Permissions : public FileInfoFlags {
 public:
-  explicit Permissions(int mode = 0666) { m_permissions = mode; }
+  explicit Permissions(int mode = 0666) {
+    m_permissions = static_cast<PermissionFlags>(mode);
+  }
 
   static Permissions all_access() { return Permissions(0777); }
   static Permissions read_only() { return Permissions(0444); }
@@ -126,92 +134,101 @@ public:
     return a.m_permissions == m_permissions;
   }
 
-  int permissions() const { return m_permissions; }
+  int permissions() const { return static_cast<int>(m_permissions); }
 
 private:
-  int m_permissions;
+  PermissionFlags m_permissions;
 };
 
-class OpenFlags : public FileFlags {
+class FileFlags : public FileInfoFlags {
 public:
-  OpenFlags() { m_flags = 0; }
-  explicit OpenFlags(int flags) { m_flags = flags; }
+  FileFlags() { m_flags = OpenFlags::null; }
+  explicit FileFlags(OpenFlags flags) { m_flags = flags; }
+  explicit FileFlags(int flags) { m_flags = static_cast<OpenFlags>(flags); }
 
-  static OpenFlags create() { return OpenFlags(open_create | open_read_write); }
-  static OpenFlags create_append_write_only() {
-    return OpenFlags(open_create | open_write_only | open_append);
+  static FileFlags create() {
+    return FileFlags(OpenFlags::create | OpenFlags::read_write);
   }
-  static OpenFlags create_truncate() {
-    return OpenFlags(open_create | open_read_write | open_truncate);
+  static FileFlags create_append_write_only() {
+    return FileFlags(
+      OpenFlags::create | OpenFlags::write_only | OpenFlags::append);
   }
-  static OpenFlags append() { return OpenFlags(open_read_write | open_append); }
-  static OpenFlags append_read_write() {
-    return OpenFlags(open_read_write | open_append);
+  static FileFlags create_truncate() {
+    return FileFlags(
+      OpenFlags::create | OpenFlags::read_write | OpenFlags::truncate);
   }
-  static OpenFlags read_write() { return OpenFlags(open_read_write); }
-  static OpenFlags read_only() { return OpenFlags(open_read_only); }
-  static OpenFlags write_only() { return OpenFlags(open_write_only); }
-  static OpenFlags append_write_only() {
-    return OpenFlags(open_write_only | open_append);
+  static FileFlags append() {
+    return FileFlags(OpenFlags::read_write | OpenFlags::append);
+  }
+  static FileFlags append_read_write() {
+    return FileFlags(OpenFlags::read_write | OpenFlags::append);
+  }
+  static FileFlags read_write() { return FileFlags(OpenFlags::read_write); }
+  static FileFlags read_only() { return FileFlags(OpenFlags::read_only); }
+  static FileFlags write_only() { return FileFlags(OpenFlags::write_only); }
+  static FileFlags append_write_only() {
+    return FileFlags(OpenFlags::write_only | OpenFlags::append);
   }
 
-  bool is_read_only() const { return access() == open_read_only; }
-  bool is_write_only() const { return access() == open_write_only; }
-  bool is_read_write() const { return access() == open_read_write; }
-  int access() const { return m_flags & open_access_mode; }
+  bool is_read_only() const { return access() == OpenFlags::read_only; }
+  bool is_write_only() const { return access() == OpenFlags::write_only; }
+  bool is_read_write() const { return access() == OpenFlags::read_write; }
+  OpenFlags access() const {
+    OpenFlags result = m_flags;
+    return result &= OpenFlags::access_mode;
+  }
 
-  bool is_create() const { return m_flags & open_create; }
-  bool is_exclusive() const { return m_flags & open_exclusive; }
-  bool is_truncate() const { return m_flags & open_truncate; }
-  bool is_append() const { return m_flags & open_append; }
-  bool is_non_blocking() const { return m_flags & open_non_block; }
+  bool is_create() const { return m_flags & OpenFlags::create; }
+  bool is_exclusive() const { return m_flags & OpenFlags::exclusive; }
+  bool is_truncate() const { return m_flags & OpenFlags::truncate; }
+  bool is_append() const { return m_flags & OpenFlags::append; }
+  bool is_non_blocking() const { return m_flags & OpenFlags::non_block; }
 
-  OpenFlags &set_read_only() {
+  FileFlags &set_read_only() {
     clear_access();
-    m_flags |= open_read_only;
+    m_flags |= OpenFlags::read_only;
     return *this;
   }
-  OpenFlags &set_write_only() {
+  FileFlags &set_write_only() {
     clear_access();
-    m_flags |= open_write_only;
+    m_flags |= OpenFlags::write_only;
     return *this;
   }
-  OpenFlags &set_read_write() {
+  FileFlags &set_read_write() {
     clear_access();
-    m_flags |= open_read_write;
+    m_flags |= OpenFlags::read_write;
     return *this;
   }
-  OpenFlags &set_create() {
-    m_flags |= open_create;
+  FileFlags &set_create() {
+    m_flags |= OpenFlags::create;
     return *this;
   }
-  OpenFlags &set_truncate() {
-    m_flags |= open_truncate;
+  FileFlags &set_truncate() {
+    m_flags |= OpenFlags::truncate;
     return *this;
   }
-  OpenFlags &set_append() {
-    m_flags |= open_append;
+  FileFlags &set_append() {
+    m_flags |= OpenFlags::append;
     return *this;
   }
-  OpenFlags &set_exclusive() {
-    m_flags |= open_exclusive;
+  FileFlags &set_exclusive() {
+    m_flags |= OpenFlags::exclusive;
     return *this;
   }
-  OpenFlags &set_non_blocking() {
-    m_flags |= open_non_block;
+  FileFlags &set_non_blocking() {
+    m_flags |= OpenFlags::non_block;
     return *this;
   }
 
   int o_flags() const { return m_flags; }
 
 private:
+  void clear_access() { m_flags &= ~OpenFlags::access_mode; }
 
-  void clear_access() { m_flags &= ~LINK_O_ACCMODE; }
-
-  int m_flags;
+  OpenFlags m_flags = OpenFlags::null;
 };
 
-class Access : public FileFlags {
+class Access : public FileInfoFlags {
 public:
   explicit Access(
     AccessFlags access = AccessFlags::read_ok | AccessFlags::write_ok

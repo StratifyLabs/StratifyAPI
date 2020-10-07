@@ -27,7 +27,7 @@ using namespace sys;
 TaskManager::TaskManager(FSAPI_LINK_DECLARE_DRIVER)
   : m_sys_device(
     "/dev/sys",
-    fs::OpenFlags::read_write() FSAPI_LINK_INHERIT_DRIVER_LAST) {
+    fs::FileFlags::read_write() FSAPI_LINK_INHERIT_DRIVER_LAST) {
   m_id = 0;
 }
 

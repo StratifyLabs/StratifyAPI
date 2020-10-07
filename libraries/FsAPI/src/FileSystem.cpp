@@ -19,18 +19,32 @@ FileSystem &FileSystem::remove(var::StringView path) {
 }
 
 FileSystem &FileSystem::copy(const CopyOptions &options) {
-  File source;
-  File dest;
+  File source(
+    options.source_path(),
+    FileFlags::read_only()
+#if defined __link
+      ,
+    options.source_driver()
+#endif
+  );
 
-  LINK_SET_DRIVER(source, options.source_driver());
-  LINK_SET_DRIVER(dest, options.destination_driver());
+  File dest(
+    options.destination_path(),
+    FileFlags::read_only()
+#if defined __link
+      ,
+    options.destination_driver()
+#endif
+  );
 
   if (
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
-      source.open(options.source_path(), OpenFlags::read_only())
-        .status()
-        .value())
+    API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, source.status().value())
+    < 0) {
+    return *this;
+  }
+
+  if (
+    API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, dest.status().value())
     < 0) {
     return *this;
   }
@@ -85,8 +99,7 @@ FileSystem &FileSystem::touch(var::StringView path) {
   char c;
   API_ASSIGN_ERROR_CODE(
     api::ErrorCode::no_entity,
-    File(LINK_DRIVER_ONLY)
-      .open(path, OpenFlags::read_write())
+    File(path, FileFlags::read_write() FSAPI_LINK_MEMBER_DRIVER_LAST)
       .read(var::View(c))
       .seek(0)
       .write(var::View(c))
@@ -113,9 +126,7 @@ FileSystem &FileSystem::rename(const RenameOptions &options) {
 }
 
 bool FileSystem::exists(var::StringView path) {
-
-  return File(LINK_DRIVER_ONLY)
-    .open(path, fs::OpenFlags::read_only())
+  return File(path, FileFlags::read_only() FSAPI_LINK_MEMBER_DRIVER_LAST)
     .status()
     .is_success();
 }
@@ -331,14 +342,23 @@ DataFile FileSystem::load_data_file(var::StringView file_path) {
   // read the contents of file_path into this object
   FileInfo info = get_info(file_path);
 
-  DataFile result(OpenFlags::append_write_only());
+  DataFile result(FileFlags::append_write_only());
 
   if (result.data().resize(info.size()).status().is_error()) {
     return DataFile();
   }
 
-  return result
-    .write(File().open(file_path, OpenFlags::read_only()), File::WriteOptions())
-    .seek(0)
-    .set_flags(OpenFlags::read_write());
+  File source_file(
+    file_path,
+    FileFlags::read_only() FSAPI_LINK_MEMBER_DRIVER_LAST);
+
+  API_ASSIGN_ERROR_CODE(
+    api::ErrorCode::io_error,
+    result.write(source_file, File::WriteOptions())
+      .seek(0)
+      .set_flags(FileFlags::read_write())
+      .status()
+      .value());
+
+  return result;
 }
