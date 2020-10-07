@@ -165,10 +165,71 @@ public:
 
   Sys(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
 
+#if !defined __link
+
+  /*! \details Gets the version (system/board version).
+   *
+   * @param version The destination string for the version
+   * @return Zero on success
+   */
+  var::String get_version();
+
+  /*! \details Gets the version (kernel version).
+   *
+   * @param version The destination string for the version
+   * @return Zero on success
+   */
+  var::String get_kernel_version();
+
+  /*! \details Loads the board configuration provided as
+   * part of the board support package.
+   *
+   * @param config A reference to the destination object
+   * @return Zero on success
+   *
+   * The object must be opened before calling this method.
+   *
+   * \sa open()
+   */
+  int get_board_config(sos_board_config_t &config);
+
+#endif
+
+  /*! \details Loads the current system info.
+   *
+   *
+   */
+  Info get_info();
+
+  bool is_authenticated();
+
+  sys_secret_key_t get_secret_key();
+
+  SerialNumber get_serial_number();
+
+  /*! \details Loads the cloud kernel ID.
+   *
+   * @param id A reference to the destination data
+   * @return Less than zero if the operation failed
+   *
+   * The object must be opened before calling this method.
+   *
+   */
+  sys_id_t get_id();
+
+private:
+};
+
+#if !defined __link
+class Sos : public api::Object {
+public:
+  /*! \details Resets the device. */
+  void reset();
+
   class LaunchOptions {
-    API_ACCESS_COMPOUND(LaunchOptions, var::StringView , path);
-    API_ACCESS_COMPOUND(LaunchOptions, var::StringView , arguments);
-    API_ACCESS_COMPOUND(LaunchOptions, var::StringView , environment);
+    API_ACCESS_COMPOUND(LaunchOptions, var::StringView, path);
+    API_ACCESS_COMPOUND(LaunchOptions, var::StringView, arguments);
+    API_ACCESS_COMPOUND(LaunchOptions, var::StringView, environment);
     API_ACCESS_FUNDAMENTAL(
       LaunchOptions,
       enum Appfs::flags,
@@ -214,48 +275,6 @@ public:
     int ram_size,
     const api::ProgressCallback *progress_callback);
 
-  /*! \details Frees the RAM associated with the app without deleting the code
-   * from flash (should not be called when the app is currently running).
-   *
-   * @param path The path to the app (use \a exec_dest from launch())
-   * @param driver Used with link protocol only
-   * @return Zero on success
-   *
-   * This method can causes problems if not used correctly. The RAM associated
-   * with the app will be free and available for other applications. Any
-   * applications that are using the RAM must quit before the RAM can be
-   * reclaimed using reclaim_ram().
-   *
-   * \sa reclaim_ram()
-   */
-  int free_ram(var::StringView path);
-
-  /*! \details Reclaims RAM that was freed using free_ram().
-   *
-   * @param path The path to the app
-   * @param driver Used with link protocol only
-   * @return Zero on success
-   *
-   * \sa free_ram()
-   */
-  int reclaim_ram(var::StringView path);
-
-#if !defined __link
-
-  /*! \details Gets the version (system/board version).
-   *
-   * @param version The destination string for the version
-   * @return Zero on success
-   */
-  var::String get_version();
-
-  /*! \details Gets the version (kernel version).
-   *
-   * @param version The destination string for the version
-   * @return Zero on success
-   */
-  var::String get_kernel_version();
-
   /*! \details Puts the kernel in powerdown mode.
    *
    * @param timeout_msec The number of milliseconds before the
@@ -284,56 +303,6 @@ public:
    */
   int request(int req, void *argument = nullptr);
 
-  /*! \details Forces a reset of the device. */
-  void reset();
-
-  /*! \details Loads the board configuration provided as
-   * part of the board support package.
-   *
-   * @param config A reference to the destination object
-   * @return Zero on success
-   *
-   * The object must be opened before calling this method.
-   *
-   * \sa open()
-   */
-  int get_board_config(sos_board_config_t &config);
-
-#endif
-
-  /*! \details Loads the current system info.
-   *
-   *
-   */
-  Info get_info();
-
-  bool is_authenticated();
-
-  sys_secret_key_t get_secret_key();
-
-  SerialNumber get_serial_number();
-
-  /*! \details Opens /dev/sys.
-   *
-   * @return Less than zero for an error
-   *
-   */
-  Sys &open() {
-    fs::File::open("/dev/sys", fs::OpenMode::read_write());
-    return *this;
-  }
-
-  /*! \details Loads the cloud kernel ID.
-   *
-   * @param id A reference to the destination data
-   * @return Less than zero if the operation failed
-   *
-   * The object must be opened before calling this method.
-   *
-   */
-  sys_id_t get_id();
-
-#if !defined __link
   /*! \details Redirects the standard output to the file specified.
    *
    * @param fd The file descriptor where the standard output should be directed.
@@ -372,10 +341,8 @@ public:
    *
    */
   static void redirect_stderr(int fd) { _impure_ptr->_stderr->_file = fd; }
-#endif
-
-private:
 };
+#endif
 
 } // namespace sys
 

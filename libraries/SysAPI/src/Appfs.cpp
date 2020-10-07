@@ -493,7 +493,7 @@ Appfs::get_id(const var::String &path FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST) {
 
 #ifndef __link
 
-int Appfs::cleanup(bool data) {
+Appfs &Appfs::cleanup(CleanData clean_data) {
   struct stat st;
   char buffer[LINK_PATH_MAX];
   const char *name;
@@ -501,26 +501,44 @@ int Appfs::cleanup(bool data) {
   fs::Dir dir("/app/ram");
 
   if (dir.status().is_error()) {
-    return -1;
+    API_COPY_ERROR_CODE(dir.status());
+    return *this;
   }
 
   while ((name = dir.read()) != 0) {
     strcpy(buffer, "/app/ram/");
     strcat(buffer, name);
     if (stat(buffer, &st) < 0) {
-      perror("Failed to stat");
+      API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, -1);
+      return *this;
     }
 
     if (
-      ((st.st_mode & (LINK_S_IXUSR | LINK_S_IXGRP | LINK_S_IXOTH)) || data)
+      ((st.st_mode & (LINK_S_IXUSR | LINK_S_IXGRP | LINK_S_IXOTH))
+       || (clean_data == CleanData::yes))
       && (name[0] != '.')) {
       if (unlink(buffer) < 0) {
-        dir.close();
-        return -1;
+        API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, -1);
+        return *this;
       }
     }
   }
 
-  return 0;
+  return *this;
 }
+
+Appfs &Appfs::free_ram(var::StringView path) {
+  API_COPY_ERROR_CODE(fs::File(path, fs::OpenMode::read_only())
+                        .ioctl(I_APPFS_FREE_RAM, nullptr)
+                        .status());
+  return *this;
+}
+
+Appfs &Appfs::reclaim_ram(var::StringView path) {
+  API_COPY_ERROR_CODE(fs::File(path, fs::OpenMode::read_only())
+                        .ioctl(I_APPFS_RECLAIM_RAM, nullptr)
+                        .status());
+  return *this;
+}
+
 #endif

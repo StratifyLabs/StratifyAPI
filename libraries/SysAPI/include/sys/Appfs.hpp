@@ -404,7 +404,37 @@ public:
   var::String get_id(const var::String &path);
 
 #if !defined __link
-  int cleanup(bool data = false);
+
+  enum class CleanData { no, yes };
+
+  Appfs &cleanup(CleanData clean_data);
+
+  /*! \details Frees the RAM associated with the app without deleting the code
+   * from flash (should not be called when the app is currently running).
+   *
+   * @param path The path to the app (use \a exec_dest from launch())
+   * @param driver Used with link protocol only
+   * @return Zero on success
+   *
+   * This method can causes problems if not used correctly. The RAM associated
+   * with the app will be free and available for other applications. Any
+   * applications that are using the RAM must quit before the RAM can be
+   * reclaimed using reclaim_ram().
+   *
+   * \sa reclaim_ram()
+   */
+  Appfs &free_ram(var::StringView path);
+
+  /*! \details Reclaims RAM that was freed using free_ram().
+   *
+   * @param path The path to the app
+   * @param driver Used with link protocol only
+   * @return Zero on success
+   *
+   * \sa free_ram()
+   */
+  Appfs &reclaim_ram(var::StringView path);
+
 #endif
 
 private:

@@ -127,138 +127,6 @@ Sys::Sys(FSAPI_LINK_DECLARE_DRIVER)
     "/dev/sys",
     fs::OpenMode::read_write() FSAPI_LINK_INHERIT_DRIVER) {}
 
-var::String Sys::launch(
-  const LaunchOptions &options,
-  const api::ProgressCallback *progress_callback) {
-#if defined __link
-  return var::String();
-#else
-  var::String result;
-  result.resize(PATH_MAX);
-  if (
-    ::launch(
-      options.path().cstring(),
-      result.to_char(),
-      options.arguments().cstring(),
-      options.application_flags(),
-      options.ram_size(),
-      api::ProgressCallback::update_function,
-      (void *)(progress_callback), // pointer to the object
-      nullptr                      // environment not implemented
-      )
-    < 0) {
-    return var::String();
-  }
-  return result;
-#endif
-}
-
-var::String Sys::install(
-  var::StringView path,
-  enum Appfs::flags options, // run in RAM, discard on exit
-  int ram_size) {
-  return install(path, options, ram_size, nullptr);
-}
-
-var::String Sys::install(
-  var::StringView path,
-  enum Appfs::flags options, // run in RAM, discard on exit
-  int ram_size,
-  const api::ProgressCallback *progress_callback) {
-#if defined __link
-  return var::String();
-#else
-  var::String result;
-  result.resize(PATH_MAX);
-  if (
-    ::install(
-      path.cstring(),
-      result.to_char(),
-      options,
-      ram_size,
-      api::ProgressCallback::update_function,
-      progress_callback)
-    < 0) {
-    return var::String();
-  }
-  return result;
-#endif
-}
-
-int Sys::free_ram(var::StringView path) {
-  int fd;
-  int ret;
-#if defined __link
-  if ((fd = link_open(link_driver.argument(), path.cstring(), O_RDONLY)) < 0) {
-    return -1;
-  }
-  ret = link_ioctl(link_driver.argument(), fd, I_APPFS_FREE_RAM);
-  link_close(link_driver.argument(), fd);
-#else
-  if ((fd = ::open(path.cstring(), O_RDONLY)) < 0) {
-    return -1;
-  }
-  ret = ::ioctl(fd, I_APPFS_FREE_RAM);
-  ::close(fd);
-#endif
-  return ret;
-}
-
-int Sys::reclaim_ram(var::StringView path) {
-  int fd;
-  int ret;
-#if defined __link
-  if ((fd = link_open(link_driver.argument(), path.cstring(), O_RDONLY)) < 0) {
-    return -1;
-  }
-  ret = link_ioctl(link_driver.argument(), fd, I_APPFS_RECLAIM_RAM);
-  link_close(link_driver.argument(), fd);
-#else
-  if ((fd = ::open(path.cstring(), O_RDONLY)) < 0) {
-    return -1;
-  }
-  ret = ::ioctl(fd, I_APPFS_RECLAIM_RAM);
-  ::close(fd);
-#endif
-  return ret;
-}
-
-#if !defined __link
-
-var::String Sys::get_version() {
-  return var::String(get_info().system_version());
-}
-
-var::String Sys::get_kernel_version() {
-  return var::String(get_info().kernel_version());
-}
-
-void Sys::powerdown(const chrono::MicroTime &duration) {
-  ::powerdown(duration.seconds());
-}
-
-int Sys::hibernate(const chrono::MicroTime &duration) {
-  return ::hibernate(duration.seconds());
-}
-
-int Sys::request(int request, void *arg) {
-  return kernel_request(request, arg);
-}
-
-void Sys::reset() {
-  int fd = ::open("/dev/core", O_RDWR);
-  core_attr_t attr;
-  attr.o_flags = CORE_FLAG_EXEC_RESET;
-  ::ioctl(fd, I_CORE_SETATTR, &attr);
-  ::close(fd); // incase reset fails
-}
-
-int Sys::get_board_config(sos_board_config_t &config) {
-  return ioctl(I_SYS_GETBOARDCONFIG, &config).status().value();
-}
-
-#endif
-
 Sys::Info Sys::get_info() {
   sys_info_t sys_info;
   ioctl(I_SYS_GETINFO, &sys_info);
@@ -286,3 +154,89 @@ sys_id_t Sys::get_id() {
   ioctl(I_SYS_GETID, &result);
   return result;
 }
+
+var::String Sys::get_version() {
+  return var::String(get_info().system_version());
+}
+
+var::String Sys::get_kernel_version() {
+  return var::String(get_info().kernel_version());
+}
+
+int Sys::get_board_config(sos_board_config_t &config) {
+  return ioctl(I_SYS_GETBOARDCONFIG, &config).status().value();
+}
+
+#if !defined __link
+
+void Sos::powerdown(const chrono::MicroTime &duration) {
+  ::powerdown(duration.seconds());
+}
+
+int Sos::hibernate(const chrono::MicroTime &duration) {
+  return ::hibernate(duration.seconds());
+}
+
+int Sos::request(int request, void *arg) {
+  return kernel_request(request, arg);
+}
+
+void Sos::reset() {
+  int fd = ::open("/dev/core", O_RDWR);
+  core_attr_t attr;
+  attr.o_flags = CORE_FLAG_EXEC_RESET;
+  ::ioctl(fd, I_CORE_SETATTR, &attr);
+  ::close(fd); // incase reset fails
+}
+
+var::String Sos::launch(
+  const LaunchOptions &options,
+  const api::ProgressCallback *progress_callback) {
+  var::String result;
+  result.resize(PATH_MAX);
+  if (
+    ::launch(
+      options.path().cstring(),
+      result.to_char(),
+      options.arguments().cstring(),
+      options.application_flags(),
+      options.ram_size(),
+      api::ProgressCallback::update_function,
+      (void *)(progress_callback), // pointer to the object
+      nullptr                      // environment not implemented
+      )
+    < 0) {
+    return var::String();
+  }
+  return result;
+}
+
+var::String Sos::install(
+  var::StringView path,
+  enum Appfs::flags options, // run in RAM, discard on exit
+  int ram_size) {
+  return install(path, options, ram_size, nullptr);
+}
+
+var::String Sos::install(
+  var::StringView path,
+  enum Appfs::flags options, // run in RAM, discard on exit
+  int ram_size,
+  const api::ProgressCallback *progress_callback) {
+  var::String result;
+  result.resize(PATH_MAX);
+  if (
+    ::install(
+      path.cstring(),
+      result.to_char(),
+      options,
+      ram_size,
+      api::ProgressCallback::update_function,
+      progress_callback)
+    < 0) {
+    return var::String();
+  }
+  return result;
+}
+
+#endif

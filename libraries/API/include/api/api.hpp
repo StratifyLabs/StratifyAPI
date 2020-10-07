@@ -248,6 +248,8 @@ enum class ErrorCode {
 #define API_ASSIGN_ERROR_CODE(error_code_value, result_value)                  \
   status().assign(__LINE__, error_code_value, result_value)
 
+#define API_COPY_ERROR_CODE(status_value) set_status(status_value)
+
 class Status {
 public:
   ErrorCode error_code() const {
@@ -289,7 +291,7 @@ private:
 
 class Object {
 public:
-  Status &status() { return m_status; }
+  void set_status(Status status) { m_status = status; }
   Status status() const { return m_status; }
   static void exit_fatal(const char *message);
   static const char *error_code_description(ErrorCode error_code);
