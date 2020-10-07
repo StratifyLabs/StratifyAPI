@@ -13,18 +13,18 @@ using InitializationVector = var::Array<u8,16>;
 using Iv = InitializationVector;
 
 class AesOptions {
-	API_ACCESS_COMPOUND(AesOptions,var::Reference,plain_data);
-	API_ACCESS_COMPOUND(AesOptions,var::Reference,cipher_data);
+	API_ACCESS_COMPOUND(AesOptions,var::View,plain_data);
+	API_ACCESS_COMPOUND(AesOptions,var::View,cipher_data);
 };
 
 class Aes : public api::CryptoWorkObject {
 public:
 
-	using SourceCipherData = arg::Argument<const var::Reference&, struct AesSourceCipherDataTag >;
-	using DestinationCipherData = arg::Argument<var::Reference&, struct AesDestinationCipherDataTag >;
+	using SourceCipherData = arg::Argument<const var::View&, struct AesSourceCipherDataTag >;
+	using DestinationCipherData = arg::Argument<var::View&, struct AesDestinationCipherDataTag >;
 
-	using SourcePlainData = arg::Argument<const var::Reference&, struct AesSourcePlainDataTag >;
-	using DestinationPlainData = arg::Argument<var::Reference&, struct AesDestinationPlainDataTag >;
+	using SourcePlainData = arg::Argument<const var::View&, struct AesSourcePlainDataTag >;
+	using DestinationPlainData = arg::Argument<var::View&, struct AesDestinationPlainDataTag >;
 
 	~Aes();
 
@@ -37,11 +37,11 @@ public:
 	}
 
 	Aes & set_key(
-			const var::Reference & key
+			var::View key
 			);
 
 	Aes & set_initialization_vector(
-			const var::Reference & value
+			var::View value
 			);
 
 	const InitializationVector & initialization_vector() const {

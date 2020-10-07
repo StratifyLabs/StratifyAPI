@@ -677,7 +677,7 @@ using Blob = Reference;
 
 namespace sys {
 class Printer;
-Printer & operator << (Printer& printer, const var::Reference & a);
+Printer & operator << (Printer& printer, var::View a);
 }
 
 

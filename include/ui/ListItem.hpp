@@ -16,7 +16,7 @@
 
 namespace ui {
 
-/*! \brief List Item Class
+/*! \brief List View Class
  * \details A ListItem represents an item in a List.
  *
  */
@@ -50,7 +50,7 @@ private:
 
 };
 
-/*! \brief Toggle Item
+/*! \brief Toggle View
  * \ingroup list
  * \details The ListItemToggle object is for storing editing a boolean
  * value in the application settings.  The value can be changed directly in the
@@ -82,7 +82,7 @@ private:
 };
 
 
-/*! \brief List Item Check (for use in a checklist)
+/*! \brief List View Check (for use in a checklist)
  * \ingroup list
  */
 class ListItemCheck : public ListItem {

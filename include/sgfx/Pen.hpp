@@ -6,7 +6,7 @@
 
 #include <sapi/sg_types.h>
 #include "../api/SgfxObject.hpp"
-#include "../var/Item.hpp"
+#include "../var/View.hpp"
 
 namespace sgfx {
 

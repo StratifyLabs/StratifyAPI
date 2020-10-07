@@ -14,7 +14,7 @@
 
 namespace ui {
 
-/*! \brief List Item Info Class
+/*! \brief List View Info Class
  * \details This class is a list item with a label and a value.  Both
  * are display on the same line in a list.
  */

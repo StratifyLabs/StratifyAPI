@@ -13,7 +13,7 @@ namespace var {}
 
 #include "var/Data.hpp"
 #include "var/Flags.hpp"
-#include "var/Item.hpp"
+#include "var/View.hpp"
 #include "var/Ring.hpp"
 #include "var/LinkedList.hpp"
 #include "var/Deque.hpp"

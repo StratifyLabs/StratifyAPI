@@ -3,7 +3,7 @@
 #ifndef SAPI_SGFX_CURSOR_HPP_
 #define SAPI_SGFX_CURSOR_HPP_
 
-#include "../var/Item.hpp"
+#include "../var/View.hpp"
 #include "Bitmap.hpp"
 #include "../api/SgfxObject.hpp"
 

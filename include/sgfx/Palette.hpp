@@ -11,7 +11,7 @@ namespace sgfx {
 class PaletteFlags {
 public:
 
-	using Position = var::Reference::Position;
+	using Position = var::View::Position;
 	using IsAscending = arg::Argument<bool, struct PaletteIsAscendingTag>;
 
 	enum color_count {

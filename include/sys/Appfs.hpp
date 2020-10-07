@@ -333,7 +333,7 @@ public:
     API_ACCESS_FUNDAMENTAL(ConstructOptions, u32, size, 0);
   };
 
-  Appfs(const ConstructOptions &options SAPI_LINK_DRIVER_NULLPTR_LAST);
+  Appfs(const ConstructOptions &options FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
   Appfs &append(const var::Blob &blob);
   bool is_ready() const { return m_bytes_written < m_data_size; }
@@ -363,20 +363,20 @@ public:
     const fs::File &source,
     MountPath mount = MountPath("/app"),
     const ProgressCallback *progress_callback
-    = 0 SAPI_LINK_DRIVER_NULLPTR_LAST);
+    = 0 FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
-  static int create(const CreateOptions &options SAPI_LINK_DRIVER_NULLPTR_LAST);
+  static int create(const CreateOptions &options FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
   /*! \details Returns true if the application
    * filesystem includes flash memory.
    *
    */
-  static bool is_flash_available(SAPI_LINK_DRIVER);
+  static bool is_flash_available(FSAPI_LINK_DECLARE_DRIVER);
 
   /*! \details Returns true if the application
    * filesystem includes RAM.
    */
-  static bool is_ram_available(SAPI_LINK_DRIVER);
+  static bool is_ram_available(FSAPI_LINK_DECLARE_DRIVER);
 
   /*! \details Returns the page size for writing data. */
   static int page_size() { return APPFS_PAGE_SIZE; }
@@ -399,7 +399,7 @@ public:
    *
    */
   static AppfsInfo
-  get_info(const var::String &path SAPI_LINK_DRIVER_NULLPTR_LAST);
+  get_info(const var::String &path FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
   /*! \details Gets the application version.
    *
@@ -409,7 +409,7 @@ public:
    * For example, the BCD representation of version "1.1" is 0x0101.
    *
    */
-  static u16 get_version(const var::String &path SAPI_LINK_DRIVER_NULLPTR_LAST);
+  static u16 get_version(const var::String &path FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
   /*! \details Gets the application ID value.
    *
@@ -421,7 +421,7 @@ public:
    *
    */
   static var::String
-  get_id(const var::String &path SAPI_LINK_DRIVER_NULLPTR_LAST);
+  get_id(const var::String &path FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
 #if !defined __link
   static int cleanup(bool data = false);

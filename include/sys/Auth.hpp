@@ -16,7 +16,7 @@ public:
 	AuthToken(){ m_auth_token = {0}; }
 	explicit AuthToken(const auth_token_t & auth_token) : m_auth_token(auth_token){}
 	explicit AuthToken(const var::String & token);
-	explicit AuthToken(const var::Reference & token);
+	explicit AuthToken(var::View token);
 
 	bool is_valid() const {
 		for(u8 i=0; i < sizeof(auth_token_t); i++){
@@ -45,7 +45,7 @@ public:
 
 private:
 
-	void populate(const var::Reference& data);
+	void populate(const var::View& data);
 	auth_token_t m_auth_token;
 
 };
@@ -70,12 +70,12 @@ private:
 class Auth : public api::WorkObject {
 public:
 	Auth(
-			SAPI_LINK_DRIVER_NULLPTR
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR
 			);
 
 	~Auth();
 
-	bool authenticate(const var::Reference& key);
+	bool authenticate(const var::View& key);
 
 	AuthToken start(const AuthToken & token);
 	AuthToken finish(const AuthToken & token);

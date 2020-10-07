@@ -60,24 +60,24 @@ public:
 
 	/*! \details Constructs a Dir object. */
 	Dir(
-			SAPI_LINK_DRIVER_NULLPTR
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR
 			);
 	static int create(
 			const var::String & path,
 			const Permissions & permissions = Permissions(0777)
-			SAPI_LINK_DRIVER_NULLPTR_LAST
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
 			);
 
 	static int create(
 			const var::String & path,
 			const Permissions & permissions,
 			IsRecursive is_recursive
-			SAPI_LINK_DRIVER_NULLPTR_LAST
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
 			);
 
 	static bool exists(
 			const var::String & path
-			SAPI_LINK_DRIVER_NULLPTR_LAST
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
 			);
 
 	static const var::String filter_hidden(const var::String & entry){
@@ -90,14 +90,14 @@ public:
 	static var::Vector<var::String> read_list(
 			const var::String & path,
 			IsRecursive is_recursive = IsRecursive(false)
-			SAPI_LINK_DRIVER_NULLPTR_LAST
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
 			);
 
 	static var::Vector<var::String> read_list(
 			const var::String & path,
 			std::function<const var::String(const var::String & entry)> filter,
 			IsRecursive is_recursive = IsRecursive(false)
-			SAPI_LINK_DRIVER_NULLPTR_LAST
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
 			);
 
 	static int copy(
@@ -144,7 +144,7 @@ public:
 	static int remove(
 			const var::String & path,
 			IsRecursive recursive
-			SAPI_LINK_DRIVER_NULLPTR_LAST
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
 			);
 
 	/*! \details Gets the next entry and writes the full path of the entry to the given string.

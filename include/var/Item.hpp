@@ -13,7 +13,7 @@
 
 namespace var {
 
-/*! \brief Abstract Item for storing binary data */
+/*! \brief Abstract View for storing binary data */
 class ItemObject {
 public:
 	/*! \details Saves the item to a file.
@@ -42,16 +42,16 @@ protected:
 
 };
 
-/*! \brief Item Class for storing and accessing binary data */
-template<typename data_type> class Item: public ItemObject {
+/*! \brief View Class for storing and accessing binary data */
+template<typename data_type> class View: public ItemObject {
 public:
 
 	/*! \details Create an empty item (all zeros) */
-	Item(){ clear(); }
-	/*! \details Create an Item by making a copy of \a item */
-	Item(const data_type & item){ set(item); }
-	/*! \details Create an Item by making a copy of \a item */
-	Item(const data_type * item){ set(item); }
+	View(){ clear(); }
+	/*! \details Create an View by making a copy of \a item */
+	View(const data_type & item){ set(item); }
+	/*! \details Create an View by making a copy of \a item */
+	View(const data_type * item){ set(item); }
 
 	/*! \details This operator will return a reference of underlying binary data type. */
 	operator const data_type & () const { return m_item; }

@@ -1,0 +1,17 @@
+
+set(SOURCES
+	var/Data.hpp
+	var/Array.hpp
+	var/Vector.hpp
+	var/Flags.hpp
+	var/View.hpp
+	var/List.hpp
+	var/Json.hpp
+	var/Queue.hpp
+	var/Ring.hpp
+	var/StringView.hpp
+	var/VersionString.hpp
+	var/String.hpp
+	var/Tokenizer.hpp
+	var.hpp
+	PARENT_SCOPE)

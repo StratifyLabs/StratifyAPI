@@ -15,22 +15,20 @@
 #include "../sys/ProgressCallback.hpp"
 
 #if !defined __link
-#define SAPI_LINK_DRIVER_NULLPTR
-#define SAPI_LINK_DRIVER_NULLPTR_LAST
-#define SAPI_LINK_DRIVER
-#define SAPI_LINK_DRIVER_LAST
-#define SAPI_LINK_STAT stat
-#define SAPI_LINK_DEFAULT_PAGE_SIZE 512
-#define SAPI_LINK_DRIVER_ARGUMENT
+#define FSAPI_LINK_DECLARE_DRIVER_NULLPTR
+#define FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
+#define FSAPI_LINK_DECLARE_DRIVER
+#define FSAPI_LINK_STAT stat
+#define FSAPI_LINK_DEFAULT_PAGE_SIZE 512
+#define FSAPI_LINK_DECLARE_DRIVER_ARGUMENT
 #define SAPI_LINK_SET_DRIVER(x,y)
 #else
-#define SAPI_LINK_STAT link_stat
-#define SAPI_LINK_DRIVER_NULLPTR fs::File::LinkDriver link_driver = fs::File::LinkDriver(nullptr)
-#define SAPI_LINK_DRIVER_NULLPTR_LAST , fs::File::LinkDriver link_driver = fs::File::LinkDriver(nullptr)
-#define SAPI_LINK_DRIVER fs::File::LinkDriver link_driver
-#define SAPI_LINK_DRIVER_LAST , fs::File::LinkDriver link_driver
-#define SAPI_LINK_DEFAULT_PAGE_SIZE 4096
-#define SAPI_LINK_DRIVER_ARGUMENT link_driver.argument(),
+#define FSAPI_LINK_STAT FSAPI_LINK_STAT
+#define FSAPI_LINK_DECLARE_DRIVER_NULLPTR fs::File::LinkDriver link_driver = fs::File::LinkDriver(nullptr)
+#define FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST , fs::File::LinkDriver link_driver = fs::File::LinkDriver(nullptr)
+#define FSAPI_LINK_DECLARE_DRIVER fs::File::LinkDriver link_driver
+#define FSAPI_LINK_DEFAULT_PAGE_SIZE 4096
+#define FSAPI_LINK_DECLARE_DRIVER_ARGUMENT link_driver.argument(),
 #define SAPI_LINK_SET_DRIVER(x,y) x.set_driver(y)
 #endif
 
@@ -111,16 +109,16 @@ public:
 	using Path = arg::Argument<const var::String &, struct FilePathTag>;
 	using SourcePath = arg::Argument<const var::String &, struct FileSourcePathTag>;
 	using DestinationPath = arg::Argument<const var::String &, struct FileDestinationPathTag>;
-	using IsOverwrite = var::Reference::IsOverwrite;
+	using IsOverwrite = var::View::IsOverwrite;
 
-	using SourceReference = var::Reference::Source;
-	using DestinationReference = var::Reference::Destination;
+	using SourceReference = var::View::Source;
+	using DestinationReference = var::View::Destination;
 
-	using SourceBuffer = var::Reference::SourceBuffer;
-	using DestinationBuffer = var::Reference::DestinationBuffer;
+	using SourceBuffer = var::View::SourceBuffer;
+	using DestinationBuffer = var::View::DestinationBuffer;
 
-	using Size = var::Reference::Size;
-	using PageSize = var::Reference::PageSize;
+	using Size = var::View::Size;
+	using PageSize = var::View::PageSize;
 
 	using Descriptor = arg::Argument<int, struct FileDescriptorTag>;
 	using ImplicitDescriptor = arg::ImplicitArgument<int, struct FileImplicitDescriptorTag, Descriptor>;
@@ -136,8 +134,8 @@ public:
 
 	enum whence {
 		whence_set /*! Set the location of the file descriptor */ = LINK_SEEK_SET,
-		whence_current /*! Set the location relative to the current location */ = LINK_SEEK_CUR,
-		whence_end /*! Set the location relative to the end of the file or device */ = LINK_SEEK_END
+		Whence::current /*! Set the location relative to the current location */ = LINK_SEEK_CUR,
+		Whence::end /*! Set the location relative to the end of the file or device */ = LINK_SEEK_END
 	};
 
 #if defined __link
@@ -148,19 +146,19 @@ public:
 #endif
 
 	File(
-			SAPI_LINK_DRIVER_NULLPTR
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR
 			);
 	static bool exists(
 			const var::String & path
-			SAPI_LINK_DRIVER_NULLPTR_LAST
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
 			);
 	static Stat get_info(
 			const var::String & path
-			SAPI_LINK_DRIVER_NULLPTR_LAST
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
 			);
 	static Stat get_info(
 			Descriptor fd
-			SAPI_LINK_DRIVER_NULLPTR_LAST
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
 			);
 
 
@@ -271,7 +269,7 @@ public:
 	 */
 	static int remove(
 			const var::String & path
-			SAPI_LINK_DRIVER_NULLPTR_LAST
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
 			);
 
 	/*! \details Gets file stat data.
@@ -281,13 +279,13 @@ public:
 	 */
 	static int stat(
 			const var::String & path,
-			struct SAPI_LINK_STAT & st
-			SAPI_LINK_DRIVER_NULLPTR_LAST
+			struct FSAPI_LINK_STAT & st
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
 			);
 
 
 	int fstat(
-			struct SAPI_LINK_STAT * st
+			struct FSAPI_LINK_STAT * st
 			) const;
 
 	/*! \details Gets the size of the file.
@@ -298,7 +296,7 @@ public:
 	 */
 	static u32 size(
 			const var::String & path
-			SAPI_LINK_DRIVER_NULLPTR_LAST
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
 			);
 
 
@@ -392,7 +390,7 @@ public:
 		* This method will read up to data.size() bytes.
 		*
 		*/
-	int read(const var::Reference & reference) const {
+	int read(var::View reference) const {
 		int result = read(
 					reference.to_void(),
 					Size(reference.size())
@@ -410,7 +408,7 @@ public:
 			) const;
 
 	/*! \details Writes the file using a var::Data object. */
-	int write(const var::Reference & reference) const {
+	int write(var::View reference) const {
 		return write(
 					reference.to_const_void(),
 					Size(reference.size())
@@ -430,7 +428,7 @@ public:
 	/*! \details Reads the file using a var::Data object. */
 	int read(
 			Location location,
-			const var::Reference & reference
+			var::View reference
 			) const {
 		int result = read(
 					location,
@@ -456,7 +454,7 @@ public:
 	/*! \details Writes the file using a var::Data object at the location specified. */
 	int write(
 			Location location,
-			const var::Reference & reference
+			var::View reference
 			) const {
 		return write(
 					location,
@@ -467,14 +465,14 @@ public:
 
 	int write(
 			const File & source_file,
-			PageSize page_size = PageSize(SAPI_LINK_DEFAULT_PAGE_SIZE),
+			PageSize page_size = PageSize(FSAPI_LINK_DEFAULT_PAGE_SIZE),
 			Size size = Size(size_t(-1))
 			) const;
 
 	int write(
 			Location location,
 			const File & source_file,
-			PageSize page_size = PageSize(SAPI_LINK_DEFAULT_PAGE_SIZE),
+			PageSize page_size = PageSize(FSAPI_LINK_DEFAULT_PAGE_SIZE),
 			Size size = Size(size_t(-1))
 			) const {
 		seek(location, whence_set);
@@ -484,7 +482,7 @@ public:
 	class WriteOptions {
 	public:
 		API_ACCESS_FUNDAMENTAL(WriteOptions,u32,location,static_cast<u32>(-1));
-		API_ACCESS_FUNDAMENTAL(WriteOptions,u32,page_size,SAPI_LINK_DEFAULT_PAGE_SIZE);
+		API_ACCESS_FUNDAMENTAL(WriteOptions,u32,page_size,FSAPI_LINK_DEFAULT_PAGE_SIZE);
 		API_ACCESS_FUNDAMENTAL(WriteOptions,size_t,size,static_cast<size_t>(-1));
 		API_ACCESS_FUNDAMENTAL(WriteOptions,const sys::ProgressCallback*,progress_callback,nullptr);
 	};
@@ -522,11 +520,11 @@ public:
 	 */
 	int readline(char * buf, int nbyte, int timeout_msec, char terminator = '\n') const;
 
-	const File& operator<<(const var::Reference & a) const {
+	const File& operator<<(var::View a) const {
 		write(a); return *this;
 	}
 
-	const File& operator>>(var::Reference & a) const {
+	const File& operator>>(var::View & a) const {
 		read(a);
 		return *this;
 	}
@@ -717,7 +715,7 @@ public:
 	static int rename(
 			SourcePath old_path,
 			DestinationPath new_path
-			SAPI_LINK_DRIVER_NULLPTR_LAST
+			FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
 			);
 
 	static int touch(const var::String& path);
@@ -987,14 +985,14 @@ public:
 	const OpenFlags & flags() const { return m_open_flags; }
 
 	/*! \details Accesses (read-only) the member data object. */
-	const var::Reference & reference() const { return m_reference; }
+	var::View reference() const { return m_reference; }
 	/*! \details Accesses the member data object. */
-	var::Reference & reference(){ return m_reference; }
+	var::View & reference(){ return m_reference; }
 
 private:
 	mutable int m_location; //offset location for seeking/reading/writing
 	OpenFlags m_open_flags;
-	mutable var::Reference m_reference;
+	mutable var::View m_reference;
 };
 
 class NullFile : public File {
@@ -1047,7 +1045,7 @@ public:
 	/*! \details Returns an error.
 	 *
 	 * @param loc The location to seek to
-	 * @param whence The location to seek from (e.g. fs::File::whence_set)
+	 * @param whence The location to seek from (e.g. fs::File::Whence::set)
 	 * @return -1 because seeking is not valid
 	 *
 	 */

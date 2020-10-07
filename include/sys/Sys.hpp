@@ -182,7 +182,7 @@ public:
   using KernelRequest = arg::Argument<int, struct SysKernelRequest>;
   using KernelArgument = arg::Argument<void *, struct SysKernelArgument>;
 
-  Sys(SAPI_LINK_DRIVER_NULLPTR);
+  Sys(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
 
   /*! \details Launches a new application.
    *
@@ -279,7 +279,7 @@ public:
    */
   static int free_ram(const var::String &path
 #if defined __link
-                        SAPI_LINK_DRIVER_NULLPTR_LAST
+                        FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST
 #endif
   );
 
@@ -291,7 +291,7 @@ public:
    *
    * \sa free_ram()
    */
-  static int reclaim_ram(const var::String &path SAPI_LINK_DRIVER_NULLPTR_LAST);
+  static int reclaim_ram(const var::String &path FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
 #if !defined __link
 
@@ -380,11 +380,11 @@ public:
    *
    *
    */
-  static SysInfo get_info(SAPI_LINK_DRIVER_NULLPTR);
+  static SysInfo get_info(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
 
-  static bool is_authenticated(SAPI_LINK_DRIVER_NULLPTR);
+  static bool is_authenticated(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
 
-  static sys_secret_key_t get_secret_key(SAPI_LINK_DRIVER_NULLPTR);
+  static sys_secret_key_t get_secret_key(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
 
   static SerialNumber get_serial_number();
 

@@ -644,7 +644,7 @@ public:
 		*/
 	int stat(
 			const var::String & path /*! The path to the target device file */,
-			struct link_stat & st /*! A pointer to the destination structure */
+			struct FSAPI_LINK_STAT & st /*! A pointer to the destination structure */
 			);
 
 	/*!

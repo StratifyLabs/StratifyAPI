@@ -58,13 +58,13 @@ class Base64Options {
  */
 class Base64 {
 public:
-  using SourceReference = var::Reference::Source;
-  using DestinationReference = var::Reference::Destination;
+  using SourceReference = var::View::Source;
+  using DestinationReference = var::View::Destination;
 
   using SourceString = var::String::Source;
   using DestinationString = var::String::Destination;
 
-  using Size = var::Reference::Size;
+  using Size = var::View::Size;
   using SourceFile = fs::File::Source;
   using DestinationFile = fs::File::Destination;
 
@@ -81,7 +81,7 @@ public:
    * ```
    *
    */
-  static var::String encode(const var::Reference &input);
+  static var::String encode(const var::View &input);
 
   static int encode(SourceFile source, DestinationFile destination, Size size);
 
@@ -120,7 +120,7 @@ public:
    *
    */
   static int encode(
-    const var::Reference &source,
+    const var::View &source,
     var::String &destination,
     const Size size = Size(0));
 

@@ -146,7 +146,7 @@ typedef TaskInfo TaskAttributes;
  */
 class TaskManager : public api::WorkObject {
 public:
-  TaskManager(SAPI_LINK_DRIVER_NULLPTR);
+  TaskManager(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
 
   ~TaskManager();
 

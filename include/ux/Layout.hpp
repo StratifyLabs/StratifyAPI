@@ -14,9 +14,9 @@ class Layout : public ComponentAccess<Layout> {
 public:
   using IsRecursive = arg::Argument<bool, struct LayoutIsRecursiveTag>;
 
-  class Item {
+  class View {
   public:
-    Item(Component *component) {
+    View(Component *component) {
       m_component = component;
       m_drawing_point = component->reference_drawing_attributes().point();
       m_drawing_area = component->reference_drawing_attributes().area();
@@ -82,7 +82,7 @@ public:
       return false;
     }
 
-    for (Item &cp : m_component_list) {
+    for (View &cp : m_component_list) {
       if (cp.component() == component) {
         return true;
       }
@@ -96,7 +96,7 @@ public:
   }
 
   Layout *find_layout(const var::String &name) {
-    for (Item &cp : m_component_list) {
+    for (View &cp : m_component_list) {
       if (
         cp.component() && (name == cp.component()->name())
         && cp.component()->is_layout()) {
@@ -107,7 +107,7 @@ public:
   }
 
   template <class T, bool is_fatal = true> T *search(const var::String &name) {
-    for (Item &cp : m_component_list) {
+    for (View &cp : m_component_list) {
       if (cp.component() && cp.component()->is_layout()) {
         T *result
           = static_cast<Layout *>(cp.component())->search<T, false>(name);
@@ -129,7 +129,7 @@ public:
   }
 
   template <class T, bool is_fatal = true> T *find(const var::String &name) {
-    for (Item &cp : m_component_list) {
+    for (View &cp : m_component_list) {
       if (cp.component() && (name == cp.component()->name())) {
         return static_cast<T *>(cp.component());
       }
@@ -158,7 +158,7 @@ private:
   friend class Controller;
   friend class EventLoop;
   API_AF(Layout, enum flows, flow, flow_free);
-  API_ACCESS_COMPOUND(Layout, var::Vector<Item>, component_list);
+  API_ACCESS_COMPOUND(Layout, var::Vector<View>, component_list);
   DrawingPoint m_origin;
   DrawingArea m_area;
   sgfx::Point m_touch_last;

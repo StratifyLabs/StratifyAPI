@@ -9,7 +9,7 @@
 #include "Region.hpp"
 #include "Bitmap.hpp"
 #include "Pen.hpp"
-#include "../var/Item.hpp"
+#include "../var/View.hpp"
 #include "../var/Vector.hpp"
 #include "../api/SgfxObject.hpp"
 

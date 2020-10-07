@@ -61,13 +61,13 @@ class Aio : public api::WorkObject {
 public:
 
 	using Location = File::Location;
-	using Size = var::Reference::Size;
+	using Size = var::View::Size;
 
 	/*! \details Constructs an empy AIO object. */
 	Aio(){ memset(&m_aio_var, 0, sizeof(struct aiocb)); }
 
 	explicit Aio(
-			const var::Reference & reference
+			var::View reference
 			){
 		m_aio_var.aio_buf = reference.to_void();
 		m_aio_var.aio_nbytes = reference.size();
@@ -77,7 +77,7 @@ public:
 
 	Aio(
 			Location location,
-			const var::Reference & reference
+			var::View reference
 			){
 		m_aio_var.aio_buf = reference.to_void();
 		m_aio_var.aio_nbytes = reference.size();
@@ -155,7 +155,7 @@ public:
 		return *this;
 	}
 
-	Aio & refer_to(const var::Reference & reference){
+	Aio & refer_to(var::View reference){
 		m_aio_var.aio_buf = (volatile void*)reference.to_void();
 		m_aio_var.aio_nbytes = reference.size();
 		return *this;

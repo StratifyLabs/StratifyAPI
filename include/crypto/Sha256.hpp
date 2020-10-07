@@ -45,8 +45,8 @@ namespace crypto {
 class Sha256 : public api::CryptoWorkObject {
 public:
 
-	using SourceBuffer = var::Reference::SourceBuffer;
-	using Size = var::Reference::Size;
+	using SourceBuffer = var::View::SourceBuffer;
+	using Size = var::View::Size;
 	using SourceFile = fs::File::Source;
 	using PageSize = fs::File::PageSize;
 
@@ -64,7 +64,7 @@ public:
 			);
 
 	int update(
-			const var::Reference & data
+			var::View data
 			){
 
 		return update(
@@ -85,7 +85,7 @@ public:
 			PageSize page_size = PageSize(CRYPTO_SHA256_DEFAULT_PAGE_SIZE)
 			);
 
-	Sha256 & operator << (const var::Reference & a);
+	Sha256 & operator << (var::View a);
 
 	const var::Array<u8, 32> & output();
 	var::String to_string();

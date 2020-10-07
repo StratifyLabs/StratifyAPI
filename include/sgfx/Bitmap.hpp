@@ -40,8 +40,8 @@ private:
 class Bitmap : public var::Data, public api::SgfxObject {
 public:
   using BitsPerPixel = arg::Argument<u8, struct BitmapBitsPerPixel>;
-  using ReadOnlyBuffer = var::Reference::ReadOnlyBuffer;
-  using ReadWriteBuffer = var::Reference::ReadWriteBuffer;
+  using ReadOnlyBuffer = var::View::ReadOnlyBuffer;
+  using ReadWriteBuffer = var::View::ReadWriteBuffer;
 
   using IsReadOnly = arg::Argument<bool, struct BitmapIsReadOnlyTag>;
 

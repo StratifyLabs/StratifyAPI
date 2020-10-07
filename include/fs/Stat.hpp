@@ -205,7 +205,7 @@ public:
 
 #if defined __link
 	Stat(bool is_local = false);
-	Stat(const struct link_stat & st, bool is_local = false) //cppcheck-suppress[noExplicitConstructor]
+	Stat(const struct FSAPI_LINK_STAT & st, bool is_local = false) //cppcheck-suppress[noExplicitConstructor]
 		: m_stat(st), m_is_local(is_local) {}
 #else
 	/*! \details Constructs a new object.
@@ -292,7 +292,7 @@ public:
 private:
 
 #ifdef __link
-	struct link_stat m_stat;
+	struct FSAPI_LINK_STAT m_stat;
 	bool m_is_local;
 #else
 	struct stat m_stat;

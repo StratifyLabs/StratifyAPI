@@ -11,9 +11,16 @@ include(sos-sdk)
 set(SOS_NAME api)
 project(StratifyAPI CXX C)
 
-add_subdirectory(API api)
-add_subdirectory(VarAPI var)
-add_subdirectory(PrinterAPI printer)
-add_subdirectory(ChronoAPI chrono)
-add_subdirectory(ThreadAPI thread)
-add_subdirectory(FsAPI fs)
+add_subdirectory(libraries/API api)
+add_subdirectory(libraries/VarAPI var)
+add_subdirectory(libraries/PrinterAPI printer)
+add_subdirectory(libraries/ChronoAPI chrono)
+add_subdirectory(libraries/FsAPI fs)
+add_subdirectory(libraries/ThreadAPI thread)
+add_subdirectory(libraries/CryptoAPI crypto)
+add_subdirectory(libraries/SysAPI sys)
+add_subdirectory(libraries/TestAPI test)
+
+
+
+add_subdirectory(tests tests)
