@@ -11,121 +11,42 @@
 
 #include "chrono/Time.hpp"
 #include "chrono/Timer.hpp"
+#include "printer/Printer.hpp"
 #include "sys/Cli.hpp"
+#include "var/Data.hpp"
 #include "var/StringView.hpp"
 
 namespace test {
 
-#define TEST_EXPECT(a, T, b, c) a.expect<T>(__PRETTY_FUNCTION__, __LINE__, b, c)
-#define TEST_EXPECT_NOT(a, T, b, c)                                            \
-  a.expect_not<T>(__PRETTY_FUNCTION__, __LINE__, b, c)
-#define TEST_ASSERT(a, T, b, c)                                                \
-  do {                                                                         \
-    if (a.expect<T>(__PRETTY_FUNCTION__, __LINE__, b, c) == false) {           \
-      return case_result();                                                    \
-    }                                                                          \
-  } while (0)
-#define TEST_ASSERT_NOT(a, T, b, c)                                            \
-  do {                                                                         \
-    if (a.expect_not<T>(__PRETTY_FUNCTION__, __LINE__, b, c) == false) {       \
-      return case_result();                                                    \
-    }                                                                          \
-  } while (0)
-
-#define TEST_THIS_EXPECT(T, b, c)                                              \
+#define TEST_EXPECT(T, b, c)                                                   \
   this->expect<T>(__PRETTY_FUNCTION__, __LINE__, b, c)
-#define TEST_THIS_EXPECT_NOT(T, b, c)                                          \
-  this->expect_not<T>(__PRETTY_FUNCTION__, __LINE__, b, c)
-#define TEST_THIS_EXPECT_ERROR(b, c)                                           \
-  this->expect_error(__PRETTY_FUNCTION__, __LINE__, b, c)
-#define TEST_THIS_EXPECT_ERROR_NULL(b, c)                                      \
-  this->expect_error_null(__PRETTY_FUNCTION__, __LINE__, b, c)
-#define TEST_THIS_ASSERT(T, b, c)                                              \
+#define TEST_ASSERT(T, b, c)                                                   \
   do {                                                                         \
     if (this->expect<T>(__PRETTY_FUNCTION__, __LINE__, b, c) == false) {       \
       return case_result();                                                    \
     }                                                                          \
   } while (0)
-#define TEST_THIS_ASSERT_NOT(T, b, c)                                          \
-  do {                                                                         \
-    if (this->expect_not<T>(__PRETTY_FUNCTION__, __LINE__, b, c) == false) {   \
-      return case_result();                                                    \
-    }                                                                          \
-  } while (0)
 
-/*! \brief Test Class
- * \details The Test class is designed to
- * be inherited to implement the following
- * tests:
- *
- * - API Tests: Should be designed to ensure the API is documented correctly and
- * works as expected
- * - Performance Tests: Should be designed to run the same set of operations
- * over and over
- * - Stress Tests: Should be designed to stress the system and check for
- * unexpected behavior
- * - Additional Tests: Used as needed by inheriting classes to run additional
- * tests
- *
- * \code
- *
- * #include <sapi/test.hpp>
- *
- * u32 o_execute_flags = Test::EXECUTE_ALL;
- * Test::initialize(cli.name(), cli.version());
- * if( o_flags & DATA_TEST_FLAG ){
- *   Test test("generic test");  //Must be constructed after Test::inialize()
- *   test.execute(o_execute_flags);
- *   //At this point test will be deconstructed -- must happen before
- * Test::finalize()
- * }
- * Test::finalize();
- * \endcode
- *
- * See the [sostest](https://github.com/StratifyLabs/sostest) suite of
- * applications for examples (like
- * [DataTest](https://github.com/StratifyLabs/sostest/blob/master/api-var-test/src/DataTest.cpp)).
- *
- * Here is an example report in JSON format:
- *
- * \code
- * {
- *   "system": {
- *     "name": "Stratify Alpha",
- *     "arch": "v7em_f4sh",
- *     "sys version": "1.5",
- *     "kernel version": "3.5.0",
- *     "memory size": "16384",
- *     "id": "-KZKdVwMXIj6vTVsbX56",
- *     "serial": "F5001942555D5A3EAEAE24601801F01A"
- *   },
- *   "test": {
- *    "name": "api-var-test",
- *    "version": "0.1"
- *   },
- *   "var::Data": {
- *     "api": {
- *       "msg-0": "fill test complete",
- *       "msg-1": "alloc test complete",
- *       "result": true,
- *       "microseconds": 10900.0
- *     },
- *     "result": true,
- *     "microseconds": 11172.0
- *   }
- * }
- *
- * \endcode
- *
- *
- */
-class Test : public api::Object {
+struct TestFlags {
+  enum class ExecuteFlags : u32 {
+    none = 0,
+    api /*! API Test Execution flag */ = (1 << 0),
+    stress /*! Stress Test Execution flag */ = (1 << 1),
+    performance /*! Performance Test Execution flag */ = (1 << 2),
+    all_types = 0x7,
+    all /*! Execute all test */ = static_cast<u32>(-1)
+  };
+};
+
+API_OR_NAMED_FLAGS_OPERATOR(TestFlags, ExecuteFlags)
+
+class Test : public api::Object, public TestFlags {
 public:
-
   class Options {
-    API_ACCESS_COMPOUND(Options, var::String, name);
-    API_ACCESS_COMPOUND(Options, var::String, version);
-    API_ACCESS_COMPOUND(Options, var::String, git_hash);
+    API_AC(Options, var::String, name);
+    API_AC(Options, var::String, version);
+    API_AC(Options, var::String, git_hash);
+    API_AF(Options, printer::Printer *, printer, nullptr);
   };
 
   /*! \details Initializes the test report.
@@ -178,64 +99,12 @@ public:
    * \endcode
    *
    */
-  static u32 parse_execution_flags(const sys::Cli &cli);
+  static ExecuteFlags parse_execution_flags(const sys::Cli &cli);
   static u32
-  parse_test(const sys::Cli &cli, const var::String &name, u32 test_flag);
+  parse_test(const sys::Cli &cli, var::StringView name, u32 test_flag);
 
-  /*! \details Constructs a new test object.
-   *
-   * @param name The name of the test
-   * @param parent The parent test or zero
-   *
-   * <b>The test must be constructed after Test::initialize().</b>
-   *
-   * \code
-   *
-   * //the WRONG way
-   * int main(int argc, char * argv[]){
-   *   Test my_test("my empty test"); //DON'T CONSTRUCT BEFORE
-   * Test::initialize() Test::initialize(); my_test.execute(); Test::finalize();
-   *
-   *   return 0; //my_test is deconstructed after Test::finalize() -- WRONG!
-   * }
-   *
-   * //the RIGHT way
-   * int main(int argc, char * argv[]){
-   *   bool is_run_test = true;
-   *   Test::initialize();
-   *   if(is_run_test){
-   *     Test my_test("my empty test"); //DON'T CONSTRUCT BEFORE
-   * Test::initialize() my_test.execute();
-   *     //my_test will deconstruct here BEFORE Test::finalize() --RIGHT
-   *   }
-   *   Test::finalize();
-   *   return 0;
-   * }
-   *
-   * \endcode
-   *
-   * If a Test is constructed inside the case of another test, "this" should
-   * be used as the value of the parent.
-   *
-   */
-  Test(const var::String &name, Test *parent = 0);
-
-  /*! \details Deconstructs the test object.
-   *
-   * The object must be deconstructed before Test::finalize() is
-   * executed.
-   */
+  Test(var::StringView name);
   ~Test();
-
-  enum test_flags {
-    execute_api /*! API Test Execution flag */ = (1 << 0),
-    execute_stress /*! Stress Test Execution flag */ = (1 << 1),
-    execute_performance /*! Performance Test Execution flag */ = (1 << 2),
-    execute_additional /*! Additional Test Execution flag */ = (1 << 3),
-    execute_all_types
-    = execute_api | execute_stress | execute_performance | execute_additional,
-    execute_all /*! Execute all test */ = static_cast<u32>(-1)
-  };
 
   void execute(const sys::Cli &cli);
 
@@ -244,18 +113,15 @@ public:
    * @param o_flags Bitmask of the tests to execute (e.g., Test::EXECUTE_API)
    *
    */
-  virtual void execute(int o_flags = execute_all) {
-    if (o_flags & execute_api) {
+  void execute(ExecuteFlags execute_flags = ExecuteFlags::all) {
+    if (execute_flags & ExecuteFlags::api) {
       execute_api_case();
     }
-    if (o_flags & execute_stress) {
+    if (execute_flags & ExecuteFlags::stress) {
       execute_stress_case();
     }
-    if (o_flags & execute_performance) {
+    if (execute_flags & ExecuteFlags::performance) {
       execute_performance_case();
-    }
-    if (o_flags & execute_additional) {
-      execute_additional_cases();
     }
   }
 
@@ -265,27 +131,6 @@ public:
   void execute_performance_case();
   /*! \details Executes the stress test case. */
   void execute_stress_case();
-  /*! \details Executes additional test cases.
-   *
-   * By default there are not additional cases. The
-   * inheriting class should reimplement
-   * this method it additional test cases are used.
-   *
-   * \code
-   * void MyClassTest::execute_additional_cases(){
-   *   open_case("first test case");
-   *   set_case_message("message", "test case message");
-   *   close_case(true); //case passed
-   *
-   *   open_case("second test case");
-   *   set_case_message("message", "test case message");
-   *   close_case(false); //case failed
-   * }
-   *
-   * \endcode
-   *
-   */
-  virtual void execute_additional_cases();
 
   /*! \details Executes the class api test.
    *
@@ -333,164 +178,52 @@ public:
   bool case_result() const { return m_case_result; }
 
   /*! \details Sets the current case result to failed. */
-  void set_case_failed() { m_case_result = false; }
-
-  /*! \details Closes the test case using the
-   * current case_result() value.
-   *
-   */
-  void close_case();
+  void set_case_failed() {
+    m_case_result = false;
+    m_test_result = false;
+    m_final_result = false;
+  }
 
   template <typename T>
   bool expect(const char *function, unsigned int line, const T &a, const T &b) {
     if (a == b) {
       return true;
     }
-    print_case_failed("%s:%d: value not expected", function, line);
-    return false;
-  }
-
-  template <typename T>
-  bool
-  expect_not(const char *function, unsigned int line, const T &a, const T &b) {
-    if (!(a == b)) {
-      return true;
-    }
-    print_case_failed("%s:%d: value not expected not", function, line);
-    return false;
-  }
-
-  bool expect_error(
-    const char *function,
-    unsigned int line,
-    int result,
-    int expected_error) {
-    if (result < 0) {
-      if (expected_error == errno) {
-        return true;
-      }
-      print_case_failed(
-        "%s : %d expected errno %d, got %d",
-        function,
-        line,
-        expected_error,
-        errno);
-    } else {
-      print_case_failed(
-        "%s : %d expected result < 0, got %d",
-        function,
-        line,
-        result);
-    }
-    return false;
-  }
-
-  bool expect_error_null(
-    const char *function,
-    unsigned int line,
-    void *result,
-    int expected_error) {
-    if (result == nullptr) {
-      if (expected_error == errno) {
-        return true;
-      }
-      print_case_failed(
-        "%s : %d expected errno %d, got %d",
-        function,
-        line,
-        expected_error,
-        errno);
-    } else {
-      print_case_failed(
-        "%s : %d expected result null result, got %p",
-        function,
-        line,
-        result);
-    }
+    printer().error(
+      "failed",
+      var::String().format("%s:%d: value not expected", function, line));
+    set_case_failed();
     return false;
   }
 
 protected:
-  friend class LeakGuard;
-  /*! \details Returns a reference to the case timer.
-   *
-   * The case timer is used to time each case. It
-   * is started and stopped automatically.
-   *
-   * Test methods can access the value of the case timer
-   * while the test is running.
-   *
-   */
   const chrono::Timer &case_timer() const { return m_case_timer; }
   chrono::Timer &case_timer() { return m_case_timer; }
 
-  u32 score() const;
+  u32 get_score() const;
 
-  /*! \details Prints a message to the test report.
-   *
-   * @param fmt Formatted string with variable arguments.
-   *
-   * The key to the message is assigned automatically as
-   * - msg-0
-   * - msg-1
-   * - msg-2
-   * - msg-...
-   *
-   */
-  void print_case_message(const char *fmt, ...);
+  var::StringView name() const { return m_name; }
 
-  void print_case_score();
-
-  void print_case_failed(const char *fmt, ...);
-  void print_case_failed(const api::Status &status, int line = 0) {}
-
-  /*! \details Prints a message to the test report.
-   *
-   * @param key The key value for the saved message
-   * @param fmt Formatted string with variable arguments.
-   *
-   *
-   */
-  void
-  print_case_message_with_key(const var::String &key, const char *fmt, ...);
-
-  int indent() const { return m_indent_count; }
-
-  const var::String &name() const { return m_name; }
+  static printer::Printer &printer() { return *m_printer; }
 
 private:
   bool m_test_result = true;
   bool m_case_result = true;
+  var::DataInfo m_case_data_info;
+  var::DataInfo m_test_data_info;
   chrono::Timer m_case_timer;
   u32 m_test_duration_microseconds;
-  u32 m_case_message_number = 0;
-  u32 m_indent_count = 1;
   var::String m_name;
   Test *m_parent = nullptr;
-  static bool m_is_initialized;
-  static bool m_all_test_result;
-  static u32 m_all_test_duration_microseconds;
 
-  void
-  vprint_case_message(const var::String &key, const char *fmt, va_list args);
-
-  void print(const char *fmt, ...);
-  static void print_indent(int indent, const char *fmt, ...);
-  static void vprint_indent(int indent, const char *fmt, va_list args);
-
-  void reset_indent() { m_indent_count = 0; }
-
-  void increment_indent() { m_indent_count++; }
-
-  void decrement_indent() {
-    if (m_indent_count) {
-      m_indent_count--;
-    }
-  }
+  static var::DataInfo m_final_data_info;
+  static bool m_final_result;
+  static u32 m_final_duration_microseconds;
+  static printer::Printer *m_printer;
 
   friend class Case;
   void open_case(var::StringView case_name);
-  void close_case(bool result);
+  void close_case();
 };
 
 } // namespace test

@@ -162,11 +162,8 @@ private:                                                                       \
     return static_cast<TYPE::FLAG_NAME>(                                       \
       static_cast<u32>(a) | static_cast<u32>(b));                              \
   }                                                                            \
-  inline TYPE::FLAG_NAME operator&(                                            \
-    const TYPE::FLAG_NAME a,                                                   \
-    const TYPE::FLAG_NAME b) {                                                 \
-    return static_cast<TYPE::FLAG_NAME>(                                       \
-      static_cast<u32>(a) & static_cast<u32>(b));                              \
+  inline bool operator&(const TYPE::FLAG_NAME a, const TYPE::FLAG_NAME b) {    \
+    return (static_cast<u32>(a) & static_cast<u32>(b)) != 0;                   \
   }                                                                            \
   inline TYPE::FLAG_NAME operator~(const TYPE::FLAG_NAME a) {                  \
     return static_cast<TYPE::FLAG_NAME>(~(static_cast<u32>(a)));               \
@@ -179,7 +176,8 @@ private:                                                                       \
   inline TYPE::FLAG_NAME &operator&=(                                          \
     TYPE::FLAG_NAME &a,                                                        \
     const TYPE::FLAG_NAME b) {                                                 \
-    return a = a & b;                                                          \
+    return a = static_cast<TYPE::FLAG_NAME>(                                   \
+             static_cast<u32>(a) & static_cast<u32>(b));                       \
   }
 
 #define API_OR_FLAGS_OPERATOR(TYPE) API_OR_NAMED_FLAGS_OPERATOR(TYPE, flags)

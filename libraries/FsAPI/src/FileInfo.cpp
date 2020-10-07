@@ -56,8 +56,9 @@ bool FileInfo::is_directory() const {
     return (m_stat.st_mode & S_IFMT) == S_IFDIR;
   }
 #endif
-  return (static_cast<TypeFlags>(m_stat.st_mode) & TypeFlags::mask)
-         == TypeFlags::directory;
+  TypeFlags masked = static_cast<TypeFlags>(m_stat.st_mode);
+  masked &= TypeFlags::mask;
+  return masked == TypeFlags::directory;
 }
 
 bool FileInfo::is_file() const {
@@ -66,8 +67,9 @@ bool FileInfo::is_file() const {
     return (m_stat.st_mode & S_IFMT) == S_IFREG;
   }
 #endif
-  return (static_cast<TypeFlags>(m_stat.st_mode) & TypeFlags::mask)
-         == TypeFlags::regular;
+  TypeFlags masked = static_cast<TypeFlags>(m_stat.st_mode);
+  masked &= TypeFlags::mask;
+  return masked == TypeFlags::regular;
 }
 
 bool FileInfo::is_device() const {
@@ -80,8 +82,9 @@ bool FileInfo::is_block_device() const {
     return (m_stat.st_mode & S_IFMT) == S_IFBLK;
   }
 #endif
-  return (static_cast<TypeFlags>(m_stat.st_mode) & (TypeFlags::mask))
-         == TypeFlags::block;
+  TypeFlags masked = static_cast<TypeFlags>(m_stat.st_mode);
+  masked &= TypeFlags::mask;
+  return masked == TypeFlags::block;
 }
 
 bool FileInfo::is_character_device() const {
@@ -90,8 +93,10 @@ bool FileInfo::is_character_device() const {
     return (m_stat.st_mode & S_IFMT) == S_IFCHR;
   }
 #endif
-  return (static_cast<TypeFlags>(m_stat.st_mode) & (TypeFlags::mask))
-         == TypeFlags::character;
+
+  TypeFlags masked = static_cast<TypeFlags>(m_stat.st_mode);
+  masked &= TypeFlags::mask;
+  return masked == TypeFlags::character;
 }
 
 bool FileInfo::is_socket() const {
@@ -104,8 +109,9 @@ bool FileInfo::is_socket() const {
 #endif
   }
 #endif
-  return (static_cast<TypeFlags>(m_stat.st_mode) & TypeFlags::mask)
-         == TypeFlags::file_socket;
+  TypeFlags masked = static_cast<TypeFlags>(m_stat.st_mode);
+  masked &= TypeFlags::mask;
+  return masked == TypeFlags::file_socket;
 }
 
 u32 FileInfo::size() const { return m_stat.st_size; }

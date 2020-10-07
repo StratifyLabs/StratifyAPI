@@ -219,18 +219,10 @@ public:
     m_access = access;
   }
 
-  bool is_read_ok() const {
-    return (m_access & AccessFlags::read_ok) == AccessFlags::read_ok;
-  }
-  bool is_write_ok() const {
-    return (m_access & AccessFlags::write_ok) == AccessFlags::write_ok;
-  }
-  bool is_file_ok() const {
-    return (m_access & AccessFlags::file_ok) == AccessFlags::file_ok;
-  }
-  bool is_execute_ok() const {
-    return (m_access & AccessFlags::execute_ok) == AccessFlags::execute_ok;
-  }
+  bool is_read_ok() const { return (m_access & AccessFlags::read_ok); }
+  bool is_write_ok() const { return (m_access & AccessFlags::write_ok); }
+  bool is_file_ok() const { return (m_access & AccessFlags::file_ok); }
+  bool is_execute_ok() const { return (m_access & AccessFlags::execute_ok); }
 
   Access &set_read_ok() {
     m_access |= AccessFlags::read_ok;
