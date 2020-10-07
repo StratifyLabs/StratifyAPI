@@ -39,13 +39,16 @@ printer::operator<<(printer::Printer &printer, const sys::TraceEvent &a) {
   }
   printer.key(
     "timestamp",
-    F32U ".%06ld",
-    clock_time.seconds(),
-    clock_time.nanoseconds() / 1000UL);
+    var::String().format(
+      F32U ".%06ld",
+      clock_time.seconds(),
+      clock_time.nanoseconds() / 1000UL));
   printer.key("id", id);
-  printer.key("thread", "%d", a.thread_id());
-  printer.key("pid", "%d", a.pid());
-  printer.key("programAddress", "0x%lX", a.program_address());
+  printer.key("thread", var::String::number(a.thread_id()));
+  printer.key("pid", var::String::number(a.pid()));
+  printer.key(
+    "programAddress",
+    var::String::number(a.program_address(), "0x%lX"));
   printer.key("message", a.message());
   return printer;
 }
@@ -54,7 +57,7 @@ printer::Printer &
 printer::operator<<(printer::Printer &printer, const sys::Sys::Info &a) {
   printer.key("name", a.name());
   printer.key("serialNumber", a.serial_number().to_string());
-  printer.key("hardwareId", F3208X, a.hardware_id());
+  printer.key("hardwareId", var::String::number(a.hardware_id(), F3208X));
   if (a.name() != "bootloader") {
     printer.key("projectId", a.id());
     if (a.team_id().is_empty() == false) {
@@ -63,8 +66,10 @@ printer::operator<<(printer::Printer &printer, const sys::Sys::Info &a) {
     printer.key("bspVersion", a.bsp_version());
     printer.key("sosVersion", a.sos_version());
     printer.key("cpuArchitecture", a.cpu_architecture());
-    printer.key("cpuFrequency", F32D, a.cpu_frequency());
-    printer.key("applicationSignature", F32X, a.application_signature());
+    printer.key("cpuFrequency", var::String::number(a.cpu_frequency()));
+    printer.key(
+      "applicationSignature",
+      var::String::number(a.application_signature(), F32X));
 
     printer.key("bspGitHash", a.bsp_git_hash());
     printer.key("sosGitHash", a.sos_git_hash());

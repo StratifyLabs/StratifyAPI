@@ -6,13 +6,15 @@ using namespace printer;
 
 JsonPrinter::JsonPrinter() {
   container_list().push_back(Container(Level::fatal, ContainerType::array));
-  set_flags(print_no_progress_newline | print_key_quotes | print_value_quotes);
+  enable_flags(
+    PrintFlags::no_progress_newline | PrintFlags::key_quotes
+    | PrintFlags::value_quotes);
 }
 
 void JsonPrinter::print(
   Level level,
-  const char *key,
-  const char *value,
+  var::StringView key,
+  var::StringView value,
   Newline is_newline) {
 
   if (level > verbose_level()) {
@@ -39,9 +41,9 @@ void JsonPrinter::print_open_object(Level level, var::StringView key) {
   if (verbose_level() >= level) {
     insert_comma();
     if (container().type() == ContainerType::object) {
-      print_final("\"%s\":{", key);
+      print_final(var::String("\"") + key + "\":{");
     } else {
-      print_final("{", key);
+      print_final(var::String("{") + key);
     }
   }
 
@@ -52,9 +54,9 @@ void JsonPrinter::print_open_array(Level level, var::StringView key) {
   if (verbose_level() >= level) {
     insert_comma();
     if (container().type() == ContainerType::object) {
-      print_final("\"%s\":[", key);
+      print_final(var::String("\"") + key + "\":[");
     } else {
-      print_final("[", key);
+      print_final(var::String("[") + key);
     }
   }
   container_list().push_back(Container(level, ContainerType::array));

@@ -42,11 +42,11 @@ void YamlPrinter::print(
 void YamlPrinter::print_open_object(Level level, var::StringView key) {
 
   if (verbose_level() >= level) {
-    if (o_flags() & print_bold_objects) {
+    if (o_flags() & PrintFlags::bold_objects) {
       set_format_code(FormatType::bold);
     }
     print(level, key.cstring(), " ");
-    if (o_flags() & print_bold_objects) {
+    if (o_flags() & PrintFlags::bold_objects) {
       clear_format_code(FormatType::bold);
     }
   }
@@ -56,11 +56,11 @@ void YamlPrinter::print_open_object(Level level, var::StringView key) {
 
 void YamlPrinter::print_open_array(Level level, var::StringView key) {
   if (verbose_level() >= level) {
-    if (o_flags() & print_bold_objects) {
+    if (o_flags() & PrintFlags::bold_objects) {
       set_format_code(FormatType::bold);
     }
     print(level, key.cstring(), " ");
-    if (o_flags() & print_bold_objects) {
+    if (o_flags() & PrintFlags::bold_objects) {
       clear_format_code(FormatType::bold);
     }
   }

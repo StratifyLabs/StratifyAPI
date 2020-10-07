@@ -43,7 +43,7 @@ printer::operator<<(printer::Printer &printer, const chrono::MicroTime &a) {
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const chrono::Time &a) {
-  printer.key("time", F32U, a.time());
+  printer.key("time", var::String::number(a.time()));
   return printer;
 }
 

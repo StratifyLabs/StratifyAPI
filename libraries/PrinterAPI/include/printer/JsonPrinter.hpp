@@ -30,8 +30,8 @@ private:
   void print_close_array() override { return print_close_object(); }
   void print(
     Level level,
-    const char *key,
-    const char *value,
+    var::StringView key,
+    var::StringView value,
     Newline is_newline = Newline::yes) override;
 
   Container &container() { return m_container_list.back(); }

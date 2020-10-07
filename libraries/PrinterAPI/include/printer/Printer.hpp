@@ -6,7 +6,9 @@
 #include <mcu/types.h>
 #include <cstdarg>
 
+#include "var/String.hpp"
 #include "var/StringView.hpp"
+#include "var/View.hpp"
 
 #if defined __win32
 #undef ERROR
@@ -20,33 +22,34 @@ namespace printer {
 
 struct PrinterFlags {
   /*! \details Number printing flags. */
-  enum print_flags {
-    print_hex /*! Print hex data */ = (1 << 0),
-    print_unsigned /*! Print unsigned integers */ = (1 << 1),
-    print_signed /*! Printd signed integers */ = (1 << 2),
-    print_char /*! Print Characters */ = (1 << 3),
-    print_8 /*! Print as 8 bit values (default) */ = 0,
-    print_16 /*! Print as 16 bit values */ = (1 << 4),
-    print_32 /*! Print as 32 bit values */ = (1 << 5),
-    print_simple_progress /*! Just print # for progress */ = (1 << 6),
-    print_bold_keys /*! Print keys in bold if supported */ = (1 << 7),
-    print_bold_values /*! Print keys in bold if supported */ = (1 << 8),
-    print_bold_objects /*! Print keys in bold if supported */ = (1 << 9),
-    print_bold_arrays /*! Print keys in bold if supported */ = (1 << 10),
-    print_green_values = (1 << 11),
-    print_red_values = (1 << 12),
-    print_yellow_values = (1 << 13),
-    print_red_errors = (1 << 14),
-    print_yellow_warnings = (1 << 15),
-    print_cyan_keys = (1 << 16),
-    print_yellow_keys = (1 << 17),
-    print_magenta_keys = (1 << 18),
-    print_blob /*! Print Data as a blob */ = (1 << 19),
-    print_cyan_values = (1 << 20),
-    print_red_keys = (1 << 21),
-    print_no_progress_newline = (1 << 22),
-    print_key_quotes = (1 << 23),
-    print_value_quotes = (1 << 24)
+  enum class PrintFlags {
+    null = 0,
+    hex /*! Print hex data */ = (1 << 0),
+    type_unsigned /*! Print unsigned integers */ = (1 << 1),
+    type_signed /*! Printd signed integers */ = (1 << 2),
+    type_char /*! Print Characters */ = (1 << 3),
+    width_8 /*! Print as 8 bit values (default) */ = 0,
+    width_16 /*! Print as 16 bit values */ = (1 << 4),
+    width_32 /*! Print as 32 bit values */ = (1 << 5),
+    simple_progress /*! Just print # for progress */ = (1 << 6),
+    bold_keys /*! Print keys in bold if supported */ = (1 << 7),
+    bold_values /*! Print keys in bold if supported */ = (1 << 8),
+    bold_objects /*! Print keys in bold if supported */ = (1 << 9),
+    bold_arrays /*! Print keys in bold if supported */ = (1 << 10),
+    green_values = (1 << 11),
+    red_values = (1 << 12),
+    yellow_values = (1 << 13),
+    red_errors = (1 << 14),
+    yellow_warnings = (1 << 15),
+    cyan_keys = (1 << 16),
+    yellow_keys = (1 << 17),
+    magenta_keys = (1 << 18),
+    blob /*! Print Data as a blob */ = (1 << 19),
+    cyan_values = (1 << 20),
+    red_keys = (1 << 21),
+    no_progress_newline = (1 << 22),
+    key_quotes = (1 << 23),
+    value_quotes = (1 << 24)
   };
 
   enum class FormatType {
@@ -88,6 +91,8 @@ struct PrinterFlags {
     trace /*! Prints line-by-line tracing (useful only for development). */
   };
 };
+
+API_OR_NAMED_FLAGS_OPERATOR(PrinterFlags, PrintFlags)
 
 #define PRINTER_TRACE(printer, msg) (printer.trace(__FUNCTION__, __LINE__, msg))
 #define PRINTER_TRACE_ERROR(printer, x)                                        \
@@ -157,9 +162,10 @@ public:
   Printer &operator<<(u16 a);
   Printer &operator<<(s8 a);
   Printer &operator<<(u8 a);
+  Printer &operator<<(float a);
   Printer &operator<<(void *a);
   Printer &operator<<(var::StringView a);
-  Printer &operator<<(float a);
+  Printer &operator<<(var::View a);
 
   /*! \details Assign an effective verbose level to this object. */
   Printer &set_verbose_level(Level level) {
@@ -178,49 +184,33 @@ public:
   /*! \details Returns the current verbose level. */
   Level verbose_level() const { return m_verbose_level; }
 
-  /*! \cond */
-  virtual Printer &debug(const char *fmt, ...);
-  virtual Printer &message(const char *fmt, ...);
-  virtual Printer &info(const char *fmt, ...);
-  virtual Printer &warning(const char *fmt, ...);
-  virtual Printer &error(const char *fmt, ...);
-  virtual Printer &fatal(const char *fmt, ...);
-  /*! \endcond */
-
   Printer &
   trace(const char *function, int line, var::StringView message);
   /*! \details Prints a debug message if the verbose level is set to debug. */
-  Printer &debug(var::StringView a) { return debug(a.cstring()); }
+  Printer &debug(var::StringView a);
   /*! \details Prints a message (filtered according to verbose_level()). */
-  Printer &message(var::StringView a) { return message(a.cstring()); }
+  Printer &message(var::StringView a);
   /*! \details Prints information (filtered according to verbose_level()). */
-  Printer &info(var::StringView a) { return info(a.cstring()); }
+  Printer &info(var::StringView a);
   /*! \details Prints a warning (filtered according to verbose_level()). */
-  Printer &warning(var::StringView a) { return warning(a.cstring()); }
+  Printer &warning(var::StringView a);
   /*! \details Prints an error (filtered according to verbose_level()). */
-  Printer &error(var::StringView a) { return error(a.cstring()); }
+  Printer &error(var::StringView a);
   /*! \details Prints a fatal error message. */
-  Printer &fatal(var::StringView a) { return fatal(a.cstring()); }
+  Printer &fatal(var::StringView a);
 
   Printer &error(const api::Status result, u32 line_number);
 
-  /*! \details Sets the flags that modify how numbers and some messages are
-   * printed. */
-  Printer &set_flags(u32 value) {
-    m_o_flags = value;
+  Printer &enable_flags(PrintFlags value) {
+    m_print_flags |= value;
+    return *this;
+  }
+  Printer &disable_flags(PrintFlags value) {
+    m_print_flags &= ~value;
     return *this;
   }
 
-  Printer &enable_flags(u32 value) {
-    m_o_flags |= value;
-    return *this;
-  }
-  Printer &disable_flags(u32 value) {
-    m_o_flags &= ~value;
-    return *this;
-  }
-
-  u32 flags() const { return m_o_flags; }
+  PrintFlags flags() const { return m_print_flags; }
 
   /*! \details Returns a pointer to the sys::ProgressCallback member.
    *
@@ -289,17 +279,16 @@ public:
   void set_bash(bool value = true) { m_is_bash = value; }
 #endif
 
-  u32 o_flags() const { return m_o_flags; }
+  PrintFlags o_flags() const { return m_print_flags; }
 
   Printer &key(var::StringView key, bool value);
-  Printer &key(var::StringView key, const char *fmt, ...);
   Printer &key(var::StringView key, var::StringView a);
   template <class T>
   Printer &object(
     var::StringView key,
     const T &value,
     Level level = Level::fatal) {
-    print_open_object(level, key.cstring());
+    print_open_object(level, key);
     *this << value;
     print_close_object();
     return *this;
@@ -327,12 +316,12 @@ public:
 
   virtual void print(
     Level level,
-    const char *key,
-    const char *value,
+    var::StringView key,
+    var::StringView value,
     Newline is_newline = Newline::no);
 
 protected:
-  virtual void print_final(const char *fmt, ...);
+  virtual void print_final(var::StringView view);
 
 private:
 #if defined __win32
@@ -344,7 +333,7 @@ private:
   u16 m_progress_state;
 
   u16 m_indent;
-  u32 m_o_flags;
+  PrintFlags m_print_flags = PrintFlags::null;
 
   var::StringView  m_progress_key;
 

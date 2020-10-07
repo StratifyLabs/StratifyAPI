@@ -357,22 +357,23 @@ MarkdownPrinter &MarkdownPrinter::close_pretty_table(Level level) {
   for (u32 row = 0; row < m_pretty_table.count(); row++) {
     if (row == 1) {
       *this << MarkdownPrinter::Directive::suppress_newline;
-      *this << "|";
+      *this << var::StringView("|");
       for (auto const &value : column_widths) {
         *this << MarkdownPrinter::Directive::suppress_newline;
-        *this << ((var::String("-") * (value + 2)) + "|");
+        *this << var::StringView((var::String("-") * (value + 2)) + "|");
       }
       *this << MarkdownPrinter::Directive::insert_newline;
     }
 
     *this << MarkdownPrinter::Directive::suppress_newline;
-    *this << "|";
+    *this << var::StringView("|");
     for (u32 column = 0; column < m_pretty_table.at(row).count(); column++) {
       var::StringView cell = m_pretty_table.at(row).at(column);
       u32 value = column_widths.at(column);
       *this << MarkdownPrinter::Directive::suppress_newline;
-      *this << var::String(" ") + cell
-                 + (var::String(" ") * (value + 1 - cell.length())) + "|";
+      *this << var::StringView(
+        var::String(" ") + cell
+        + (var::String(" ") * (value + 1 - cell.length())) + "|");
     }
     *this << MarkdownPrinter::Directive::insert_newline;
   }

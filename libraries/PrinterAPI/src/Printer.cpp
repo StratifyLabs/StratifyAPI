@@ -6,6 +6,8 @@
 #include <windows.h>
 #endif
 
+#include <unistd.h>
+
 #include "var/String.hpp"
 
 #include "printer/Printer.hpp"
@@ -19,7 +21,7 @@ using namespace printer;
 Printer::Printer() {
   m_progress_callback.set_callback(Printer::update_progress_callback)
     .set_context(this);
-  m_o_flags = print_8 | print_hex;
+  m_print_flags = PrintFlags::width_8 | PrintFlags::hex;
   m_indent = 0;
   m_progress_width = 50;
   m_progress_state = 0;
@@ -49,7 +51,7 @@ void Printer::set_format_code(u32 code) {
 void Printer::clear_format_code(u32 code) {
 #if defined __link
   if (api::ApiInfo::is_macosx() || is_bash()) {
-    print_final("\033[1;2%dm", code);
+    print_final(var::String::number(code, "\033[1;2%dm"));
   }
 #endif
 }
@@ -58,7 +60,7 @@ void Printer::set_color_code(u32 code) {
 
 #if defined __link
   if (api::ApiInfo::is_macosx() || is_bash()) {
-    print_final("\033[1;%dm", code);
+    print_final(var::String::number(code, "\033[1;%dm"));
   }
 #endif
 
@@ -114,8 +116,8 @@ void Printer::set_color_code(u32 code) {
 
 void Printer::print(
   Level verbose_level,
-  const char *key,
-  const char *value,
+  var::StringView key,
+  var::StringView value,
   Newline is_newline) {
   // default flat printer behavior
   if (verbose_level > this->verbose_level()) {
@@ -127,63 +129,63 @@ void Printer::print(
   }
 
   if (key != nullptr) {
-    if (m_o_flags & print_bold_keys) {
+    if (m_print_flags & PrintFlags::bold_keys) {
       set_format_code(FormatType::bold);
     }
-    if (m_o_flags & print_cyan_keys) {
+    if (m_print_flags & PrintFlags::cyan_keys) {
       set_color_code(static_cast<int>(ColorCode::cyan));
     }
-    if (m_o_flags & print_yellow_keys) {
+    if (m_print_flags & PrintFlags::yellow_keys) {
       set_color_code(static_cast<int>(ColorCode::yellow));
     }
-    if (m_o_flags & print_magenta_keys) {
+    if (m_print_flags & PrintFlags::magenta_keys) {
       set_color_code(static_cast<int>(ColorCode::magenta));
     }
-    if (m_o_flags & print_red_keys) {
+    if (m_print_flags & PrintFlags::red_keys) {
       set_color_code(static_cast<int>(ColorCode::red));
     }
-    if (m_o_flags & print_key_quotes) {
-      print_final("\"%s\": ", key);
+    if (m_print_flags & PrintFlags::key_quotes) {
+      print_final(var::String("\"") + key + "\"");
     } else {
-      print_final("%s: ", key);
+      print_final(var::String(key) + ": ");
     }
-    if (m_o_flags & print_bold_keys) {
+    if (m_print_flags & PrintFlags::bold_keys) {
       clear_format_code(static_cast<int>(FormatType::bold));
     }
     if (
-      m_o_flags
-      & (print_cyan_keys | print_yellow_keys | print_magenta_keys | print_red_keys)) {
+      m_print_flags
+      & (PrintFlags::cyan_keys | PrintFlags::yellow_keys | PrintFlags::magenta_keys | PrintFlags::red_keys)) {
       clear_color_code();
     }
   }
 
   if (value != nullptr) {
-    if (m_o_flags & print_bold_values) {
+    if (m_print_flags & PrintFlags::bold_values) {
       set_format_code(static_cast<int>(FormatType::bold));
     }
-    if (m_o_flags & print_green_values) {
+    if (m_print_flags & PrintFlags::green_values) {
       set_color_code(static_cast<int>(ColorCode::green));
     }
-    if (m_o_flags & print_yellow_values) {
+    if (m_print_flags & PrintFlags::yellow_values) {
       set_color_code(static_cast<int>(ColorCode::yellow));
     }
-    if (m_o_flags & print_red_values) {
+    if (m_print_flags & PrintFlags::red_values) {
       set_color_code(static_cast<int>(ColorCode::red));
     }
-    if (m_o_flags & print_cyan_values) {
+    if (m_print_flags & PrintFlags::cyan_values) {
       set_color_code(static_cast<int>(ColorCode::cyan));
     }
-    if (m_o_flags & print_value_quotes) {
-      print_final("\"%s\"", value);
+    if (m_print_flags & PrintFlags::value_quotes) {
+      print_final(var::String("\"") + value + "\"");
     } else {
-      print_final("%s", value);
+      print_final(value);
     }
-    if (m_o_flags & print_bold_values) {
+    if (m_print_flags & PrintFlags::bold_values) {
       clear_format_code(static_cast<int>(FormatType::bold));
     }
     if (
-      m_o_flags
-      & (print_green_values | print_yellow_values | print_red_values | print_cyan_values)) {
+      m_print_flags
+      & (PrintFlags::green_values | PrintFlags::yellow_values | PrintFlags::red_values | PrintFlags::cyan_values)) {
       clear_color_code();
     }
   }
@@ -193,12 +195,12 @@ void Printer::print(
   }
 }
 
-void Printer::print_final(const char *fmt, ...) {
-  va_list list;
-  va_start(list, fmt);
-  vprintf(fmt, list);
-  va_end(list);
-  fflush(stdout);
+void Printer::print_final(var::StringView view) {
+#if defined __link
+  fwrite(view.to_const_void(), view.size(), 1, stdout);
+#else
+  ::write(stdout->_file, view.cstring(), view.length());
+#endif
 }
 
 Printer &Printer::open_object(var::StringView key, Level level) {
@@ -320,8 +322,8 @@ void Printer::print(const char * fmt, ...){
 #endif
 
 Printer &Printer::operator<<(const api::Status &a) {
-  key("lineNumber", "%d", a.line_number());
-  key("error", "%s", a.error_code_description());
+  key("lineNumber", var::String::number(a.line_number(), "%d"));
+  key("error", var::StringView(a.error_code_description()));
   return *this;
 }
 
@@ -475,10 +477,10 @@ bool Printer::update_progress(int progress, int total) {
       // only print the key once with total == -1
       print(Level::info, m_progress_key.cstring(), nullptr);
       if (total != -1) {
-        if (m_o_flags & print_value_quotes) {
+        if (m_print_flags & PrintFlags::value_quotes) {
           print_final("\"");
         }
-        if ((m_o_flags & print_simple_progress) == 0) {
+        if ((m_print_flags & PrintFlags::simple_progress) == 0) {
           for (u32 i = 0; i < width; i++) {
             print_final(".");
           }
@@ -496,12 +498,12 @@ bool Printer::update_progress(int progress, int total) {
       if (total == api::ProgressCallback::indeterminate_progress_total()) {
         var::String output;
         var::StringView  animation = "-\\|/";
-        if ((m_o_flags & print_value_quotes) && (m_progress_state == 1)) {
+        if ((m_print_flags & PrintFlags::value_quotes) && (m_progress_state == 1)) {
           print_final("\"");
         }
         m_progress_state++;
 
-        if ((m_o_flags & print_simple_progress) == 0) {
+        if ((m_print_flags & PrintFlags::simple_progress) == 0) {
           output.format(
             "%c" F32U,
             animation.at(m_progress_state % animation.length()),
@@ -511,7 +513,7 @@ bool Printer::update_progress(int progress, int total) {
             print_final("\b"); // backspace
           }
         } else {
-          print_final(F32U, m_progress_state - 1);
+          print_final(var::String::number(m_progress_state - 1));
         }
 
       } else {
@@ -530,10 +532,10 @@ bool Printer::update_progress(int progress, int total) {
       }
     }
     if (total == 0) {
-      if ((m_o_flags & print_no_progress_newline) == 0) {
+      if ((m_print_flags & PrintFlags::no_progress_newline) == 0) {
         print_final("\n");
       }
-      if (m_o_flags & print_value_quotes) {
+      if (m_print_flags & PrintFlags::value_quotes) {
         print_final("\"");
       }
     }
@@ -548,82 +550,55 @@ Printer &Printer::key(var::StringView key, bool value) {
 }
 
 Printer &Printer::key(var::StringView key, var::StringView a) {
-  print(Level::info, key.cstring(), a.cstring());
+  print(Level::info, key, a);
   return *this;
 }
 
-Printer &Printer::key(var::StringView key, const char *fmt, ...) {
-  va_list list;
-  va_start(list, fmt);
-  var::String formatted;
-  formatted.vformat(fmt, list);
-  print(
-    Level::info,
-    key.is_empty() ? nullptr : key.cstring(),
-    formatted.is_empty() ? nullptr : formatted.cstring());
-  va_end(list);
+Printer &Printer::debug(var::StringView a) {
+  print(Level::debug, "debug", a);
   return *this;
 }
 
-Printer &Printer::debug(const char *fmt, ...) {
-  va_list list;
-  va_start(list, fmt);
-  print(Level::debug, "debug", var::String().vformat(fmt, list).cstring());
-  va_end(list);
+Printer &Printer::info(var::StringView a) {
+  print(Level::info, "info", a);
   return *this;
 }
 
-Printer &Printer::info(const char *fmt, ...) {
-  va_list list;
-  va_start(list, fmt);
-  print(Level::info, "info", var::String().vformat(fmt, list).cstring());
-  va_end(list);
+Printer &Printer::message(var::StringView a) {
+  print(Level::message, "message", a);
   return *this;
 }
 
-Printer &Printer::message(const char *fmt, ...) {
-  va_list list;
-  va_start(list, fmt);
-  print(Level::message, "message", var::String().vformat(fmt, list).cstring());
-  va_end(list);
-  return *this;
-}
-
-Printer &Printer::warning(const char *fmt, ...) {
-  va_list list;
-  if (flags() & print_yellow_warnings) {
+Printer &Printer::warning(var::StringView a) {
+  if (flags() & PrintFlags::yellow_warnings) {
     set_color_code(ColorCode::yellow);
   }
-  va_start(list, fmt);
-  print(Level::warning, "warning", var::String().vformat(fmt, list).cstring());
-  va_end(list);
-  if (flags() & print_yellow_warnings) {
+  print(Level::warning, "warning", a);
+  if (flags() & PrintFlags::yellow_warnings) {
     clear_color_code();
   }
   return *this;
 }
 
-Printer &Printer::error(const char *fmt, ...) {
-  va_list list;
-  va_start(list, fmt);
-  print(Level::error, "error", var::String().vformat(fmt, list).cstring());
-  va_end(list);
+Printer &Printer::error(var::StringView a) {
+  if (flags() & PrintFlags::red_errors) {
+    set_color_code(ColorCode::red);
+  }
+  print(Level::error, "error", a);
+  if (flags() & PrintFlags::red_errors) {
+    clear_color_code();
+  }
   return *this;
 }
 
-Printer &Printer::error(const api::Status result, u32 line_number) {
-  error(
-    "error number %s at line %d",
-    result.error_code_description(),
-    result.line_number());
-  return *this;
-}
-
-Printer &Printer::fatal(const char *fmt, ...) {
-  va_list list;
-  va_start(list, fmt);
-  print(Level::fatal, "fatal", var::String().vformat(fmt, list).cstring());
-  va_end(list);
+Printer &Printer::fatal(var::StringView a) {
+  if (flags() & PrintFlags::red_errors) {
+    set_color_code(ColorCode::red);
+  }
+  print(Level::fatal, "fatal", a);
+  if (flags() & PrintFlags::red_errors) {
+    clear_color_code();
+  }
   return *this;
 }
 
@@ -631,7 +606,9 @@ Printer &
 Printer::trace(const char *function, int line, var::StringView message) {
 
   if (verbose_level() == Level::trace) {
-    print_final(">> trace %s:%d %s\n", function, line, message.cstring());
+    print_final(
+      var::String()
+        .format(">> trace %s:%d %s\n", function, line, message.cstring()));
   }
   return *this;
 }

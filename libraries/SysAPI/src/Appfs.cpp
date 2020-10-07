@@ -17,18 +17,20 @@
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const appfs_file_t &a) {
-  printer.key("name", "%s", a.hdr.name);
-  printer.key("id", "%s", a.hdr.id);
-  printer.key("mode", "0%o", a.hdr.mode);
-  printer.key("version", "%d.%d", a.hdr.version >> 8, a.hdr.version & 0xff);
-  printer.key("startup", "%p", a.exec.startup);
-  printer.key("codeStart", "%p", a.exec.code_start);
-  printer.key("codeSize", "%p", a.exec.code_size);
-  printer.key("ramStart", "%p", a.exec.ram_start);
-  printer.key("ramSize", "%ld", a.exec.ram_size);
-  printer.key("dataSize", "%ld", a.exec.data_size);
-  printer.key("oFlags", "0x%lX", a.exec.o_flags);
-  printer.key("signature", "0x%lX", a.exec.signature);
+  printer.key("name", a.hdr.name);
+  printer.key("id", a.hdr.id);
+  printer.key("mode", var::String::number(a.hdr.mode, "0%o"));
+  printer.key(
+    "version",
+    var::String().format("%d.%d", a.hdr.version >> 8, a.hdr.version & 0xff));
+  printer.key("startup", var::String::number(a.exec.startup, "%p"));
+  printer.key("codeStart", var::String::number(a.exec.code_start, "%p"));
+  printer.key("codeSize", var::String::number(a.exec.code_size));
+  printer.key("ramStart", var::String::number(a.exec.ram_start, "%p"));
+  printer.key("ramSize", var::String::number(a.exec.ram_size));
+  printer.key("dataSize", var::String::number(a.exec.data_size));
+  printer.key("oFlags", var::String::number(a.exec.o_flags, "0x%lX"));
+  printer.key("signature", var::String::number(a.exec.signature, "0x%08lx"));
   return printer;
 }
 
@@ -37,7 +39,10 @@ printer::Printer &printer::operator<<(
   const sys::AppfsFileAttributes &a) {
   printer.key("name", a.name());
   printer.key("id", a.id());
-  printer.key("version", "%d.%d", a.version() >> 8, a.version() & 0xff);
+  printer.key(
+    "version",
+    var::String().format("%d.%d", a.version() >> 8, a.version() & 0xff));
+
   printer.key("flash", a.is_flash());
   printer.key("codeExternal", a.is_code_external());
   printer.key("dataExternal", a.is_data_external());
@@ -45,19 +50,22 @@ printer::Printer &printer::operator<<(
   printer.key("dataTightlyCoupled", a.is_data_tightly_coupled());
   printer.key("startup", a.is_startup());
   printer.key("unique", a.is_unique());
-  printer.key("ramSize", "%ld", a.ram_size());
+  printer.key("ramSize", var::String::number(a.ram_size()));
   return printer;
 }
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const sys::AppfsInfo &a) {
   printer.key("name", a.name());
-  printer.key("mode", "0%o", a.mode());
+  printer.key("mode", var::String::number(a.mode(), "0%o"));
   if (a.is_executable()) {
     printer.key("id", a.id());
-    printer.key("version", "%d.%d", a.version() >> 8, a.version() & 0xff);
-    printer.key("signature", F3208X, a.signature());
-    printer.key("ram", F32U, a.ram_size());
+    printer.key(
+      "version",
+      var::String().format("%d.%d", a.version() >> 8, a.version() & 0xff));
+
+    printer.key("signature", var::String::number(a.signature(), F3208X));
+    printer.key("ram", var::String::number(a.ram_size()));
     printer.key("orphan", a.is_orphan());
     printer.key("flash", a.is_flash());
     printer.key("startup", a.is_startup());

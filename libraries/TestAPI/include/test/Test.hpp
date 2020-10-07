@@ -190,7 +190,6 @@ public:
       return true;
     }
     printer().error(
-      "failed",
       var::String().format("%s:%d: value not expected", function, line));
     set_case_failed();
     return false;
