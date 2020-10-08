@@ -7,8 +7,8 @@ namespace fs {
 
 class FileSystem : public api::Object {
 public:
-  using Overwrite = File::Overwrite;
-  using Recursive = Dir::Recursive;
+  using Overwrite = File::IsOverwrite;
+  using Recursive = Dir::IsRecursive;
 
   FileSystem(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
 

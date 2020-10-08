@@ -82,10 +82,9 @@ class File;
  * ```
  *
  */
-class File : public virtual api::Object, public FileInfoFlags {
+class File : public api::Object, public FileInfoFlags {
 public:
-
-  enum class Overwrite { no, yes };
+  enum class IsOverwrite { no, yes };
 
   enum class Whence {
     set /*! Set the location of the file descriptor */ = LINK_SEEK_SET,
@@ -105,7 +104,7 @@ public:
 
   static File create(
     var::StringView path,
-    Overwrite is_overwrite,
+    IsOverwrite is_overwrite,
     Permissions perms
     = Permissions(0666) FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
@@ -245,6 +244,7 @@ public:
    *
    */
   File &ioctl(int request, void *arg);
+  File &ioctl(int request) { return ioctl(request, nullptr); }
 
   File &ioctl(const IoctlOptions &options) {
     ioctl(options.request(), options.argument());
@@ -308,7 +308,7 @@ private:
 
   File &internal_create(
     var::StringView path,
-    Overwrite is_overwrite,
+    IsOverwrite is_overwrite,
     const Permissions &perms = Permissions(0666));
 };
 
@@ -331,7 +331,7 @@ public:
 
   Derived &create(
     var::StringView path,
-    Overwrite is_overwrite,
+    IsOverwrite is_overwrite,
     const Permissions &perms = Permissions(0666)) {
     return static_cast<Derived &>(File::create(path, is_overwrite, perms));
   }

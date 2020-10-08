@@ -4,9 +4,10 @@
 #ifndef SAPI_HAL_UART_HPP_
 #define SAPI_HAL_UART_HPP_
 
-#include "Periph.hpp"
-#include "PinAssignment.hpp"
 #include <sos/dev/uart.h>
+
+#include "Device.hpp"
+#include "printer/Printer.hpp"
 
 namespace hal {
 
@@ -47,21 +48,37 @@ public:
      */
     Attributes() {
       set_flags(Flags::set_line_coding_default);
-      set_freq(115200);
+      set_frequency(115200);
       set_width(8);
     }
 
     bool is_valid() const { return frequency() != 0; }
 
-    API_ACCESS_MEMBER_COMPOUND(Attributes, mcu_pin_t, attr.pin_assignment, tx)
-    API_ACCESS_MEMBER_COMPOUND(Attributes, mcu_pin_t, attr.pin_assignment, rx)
-    API_ACCESS_MEMBER_COMPOUND(Attributes, mcu_pin_t, attr.pin_assignment, cts)
-    API_ACCESS_MEMBER_COMPOUND(Attributes, mcu_pin_t, attr.pin_assignment, rts)
-    API_ACCESS_MEMBER_FUNDAMENTAL(Attributes, u32, attr, width)
+    API_ACCESS_MEMBER_FUNDAMENTAL(
+      Attributes,
+      mcu_pin_t,
+      attributes.pin_assignment,
+      tx)
+    API_ACCESS_MEMBER_FUNDAMENTAL(
+      Attributes,
+      mcu_pin_t,
+      attributes.pin_assignment,
+      rx)
+    API_ACCESS_MEMBER_FUNDAMENTAL(
+      Attributes,
+      mcu_pin_t,
+      attributes.pin_assignment,
+      cts)
+    API_ACCESS_MEMBER_FUNDAMENTAL(
+      Attributes,
+      mcu_pin_t,
+      attributes.pin_assignment,
+      rts)
+    API_ACCESS_MEMBER_FUNDAMENTAL(Attributes, u32, attributes, width)
     API_ACCESS_MEMBER_FUNDAMENTAL_WITH_ALIAS(
       Attributes,
       u32,
-      attr,
+      attributes,
       frequency,
       freq)
 
@@ -96,12 +113,12 @@ public:
     return device.ioctl(I_UART_GETVERSION, nullptr).status().value();
   }
 
-  static Device::Ioctl put(char c) {
-    return Device::Ioctl().set_request(I_UART_PUT).set_argument(&c);
+  static Device::IoctlOptions put(char c) {
+    return Device::IoctlOptions().set_request(I_UART_PUT).set_argument(&c);
   }
 
-  static Device::Ioctl flush(char c) {
-    return Device::Ioctl().set_request(I_UART_FLUSH);
+  static Device::IoctlOptions flush() {
+    return Device::IoctlOptions().set_request(I_UART_FLUSH);
   }
 
   static char get(Device &device) {
@@ -110,8 +127,8 @@ public:
     return c;
   }
 
-  static Device::Ioctl get_info(Info &info) {
-    return Device::Ioctl()
+  static Device::IoctlOptions get_info(Info &info) {
+    return Device::IoctlOptions()
       .set_request(I_UART_GETINFO)
       .set_argument(&info.m_info);
   }
@@ -128,7 +145,8 @@ private:
 } // namespace hal
 
 namespace printer {
-Printer &operator<<(Printer &printer, const hal::UartAttributes &a);
-}
+Printer &operator<<(Printer &printer, const hal::Uart::Attributes &a);
+Printer &operator<<(Printer &printer, const hal::Uart::Info &a);
+} // namespace printer
 
 #endif /* SAPI_HAL_UART_HPP_ */

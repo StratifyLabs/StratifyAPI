@@ -387,11 +387,11 @@ public:
    */
   int set_time(struct tm *gt);
 
-  enum class Verify { no, yes };
+  enum class IsVerify { no, yes };
 
   class UpdateOsOptions {
     API_AF(UpdateOsOptions, fs::File *, image, nullptr);
-    API_AF(UpdateOsOptions, Verify, verify, Verify::no);
+    API_AF(UpdateOsOptions, IsVerify, verify, IsVerify::no);
     API_AF(
       UpdateOsOptions,
       const api::ProgressCallback *,

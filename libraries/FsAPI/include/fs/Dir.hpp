@@ -43,8 +43,7 @@ namespace fs {
  */
 class Dir : public api::Object {
 public:
-
-  enum class Recursive { no, yes };
+  enum class IsRecursive { no, yes };
 
   /*! \details Constructs a Dir object. */
   Dir(var::StringView path FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
@@ -132,11 +131,11 @@ public:
    *
    *
    */
-  var::StringList read_list(Recursive is_recursive = Recursive::no);
+  var::StringList read_list(IsRecursive is_recursive = IsRecursive::no);
 
   var::StringList read_list(
     std::function<const var::String(const var::String &entry)> filter,
-    Recursive is_recursive = Recursive::no);
+    IsRecursive is_recursive = IsRecursive::no);
 
   /*! \details Returns a pointer (const) to the name of the most recently read
    * entry. */

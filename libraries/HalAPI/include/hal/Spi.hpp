@@ -117,18 +117,22 @@ public:
     mutable spi_attr_t m_attributes;
   };
 
-  static Device::Ioctl set_attributes(const Attributes &attributes) {
-    return Device::Ioctl()
+  static int get_version(Device &device) {
+    return device.ioctl(I_SPI_GETVERSION, nullptr).status().value();
+  }
+
+  static Device::IoctlOptions set_attributes(const Attributes &attributes) {
+    return Device::IoctlOptions()
       .set_request(I_SPI_SETATTR)
       .set_argument(&attributes.m_attributes);
   }
 
-  static Device::Ioctl set_attributes() {
-    return Device::Ioctl().set_request(I_SPI_SETATTR);
+  static Device::IoctlOptions set_attributes() {
+    return Device::IoctlOptions().set_request(I_SPI_SETATTR);
   }
 
-  static Device::Ioctl get_info(Info &info) {
-    return Device::Ioctl()
+  static Device::IoctlOptions get_info(Info &info) {
+    return Device::IoctlOptions()
       .set_request(I_SPI_GETINFO)
       .set_argument(&info.m_info);
   }

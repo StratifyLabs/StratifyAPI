@@ -40,20 +40,8 @@ public:
     API_ACCESS_FUNDAMENTAL(ChannelOptions, u32, value, 0);
   };
 
-  class Ioctl {
-    API_AF(Ioctl, int, request, 0);
-    API_AF(Ioctl, void *, argument, nullptr);
-  };
-
   using fs::FileAccess<Device>::ioctl;
 
-  template <int Request> get_version() {
-    return ioctl(Request).status().value();
-  }
-
-  Device &ioctl(const Ioctl &request) {
-    return ioctl(request.request(), request.argument());
-  }
   /*! \details Constructs a Device.
    *
    * Unlike fs::File, upon creation the

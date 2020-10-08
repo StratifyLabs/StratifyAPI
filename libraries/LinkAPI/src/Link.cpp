@@ -644,7 +644,7 @@ int Link::install_os(u32 image_id, const UpdateOsOptions &options) {
 
   if (err == 0) {
 
-    if (options.verify() == Verify::yes) {
+    if (options.verify() == IsVerify::yes) {
 
       options.image()->seek(0);
       loc = start_address;
@@ -725,7 +725,7 @@ int Link::install_os(u32 image_id, const UpdateOsOptions &options) {
       return -1;
     }
 
-    if (options.verify() == Verify::yes) {
+    if (options.verify() == IsVerify::yes) {
       // verify the stack address
       buffer.resize(start_address_buffer.size());
       if (

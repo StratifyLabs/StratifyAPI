@@ -88,7 +88,7 @@ int Dir::count() {
 
 var::StringList Dir::read_list(
   std::function<const var::String(const var::String &entry)> filter,
-  Recursive is_recursive) {
+  IsRecursive is_recursive) {
   var::Vector<var::String> result;
   var::String entry;
   bool is_the_end = false;
@@ -104,7 +104,7 @@ var::StringList Dir::read_list(
     }
     if (!entry.is_empty() && (entry != ".") && (entry != "..")) {
 
-      if (is_recursive == Recursive::yes) {
+      if (is_recursive == IsRecursive::yes) {
         var::String entry_path;
         entry_path = m_path + "/" + entry;
         FileInfo info = FileSystem(LINK_DRIVER_ONLY)
@@ -133,7 +133,7 @@ var::StringList Dir::read_list(
   return result;
 }
 
-var::Vector<var::String> Dir::read_list(Recursive is_recursive) {
+var::Vector<var::String> Dir::read_list(IsRecursive is_recursive) {
   return read_list(
     std::function<const var::String(const var::String &entry)>(nullptr),
     is_recursive);

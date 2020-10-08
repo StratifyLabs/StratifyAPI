@@ -36,7 +36,7 @@ File::~File() {
 
 File File::create(
   var::StringView path,
-  Overwrite is_overwrite,
+  IsOverwrite is_overwrite,
   Permissions perms FSAPI_LINK_DECLARE_DRIVER_LAST) {
   return File(FSAPI_LINK_INHERIT_DRIVER)
     .internal_create(path, is_overwrite, perms);
@@ -91,10 +91,10 @@ File::open(var::StringView path, OpenMode flags, Permissions permissions) {
 
 File &File::internal_create(
   var::StringView path,
-  Overwrite is_overwrite,
+  IsOverwrite is_overwrite,
   const Permissions &perms) {
   OpenMode flags = OpenMode::create();
-  if (is_overwrite == Overwrite::yes) {
+  if (is_overwrite == IsOverwrite::yes) {
     flags.set_truncate();
   } else {
     flags.set_exclusive();
