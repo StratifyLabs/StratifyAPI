@@ -52,8 +52,8 @@ Data Data::from_string(StringView value) {
   for (u32 i = 0; i < value.length() / 2; i++) {
     View(result).to_u8()[i]
       = value
-          .create_sub_string(
-            String::SubStringOptions().set_position(i * 2).set_length(2))
+          .get_substring(
+            String::GetSubstring().set_position(i * 2).set_length(2))
           .to_unsigned_long(String::Base::hexidecimal);
   }
   return result;
@@ -69,14 +69,14 @@ Data &Data::resize(size_t s) {
 }
 
 Data &Data::copy_contents(const View &item) {
-  return copy_contents(item, CopyContentsOptions().set_size(item.size()));
+  return copy_contents(item, CopyContents().set_size(item.size()));
 }
 
 Data &Data::copy_contents(const View &item, size_t size) {
-  return copy_contents(item, CopyContentsOptions().set_size(size));
+  return copy_contents(item, CopyContents().set_size(size));
 }
 
-Data &Data::copy_contents(const View &a, const CopyContentsOptions &options) {
+Data &Data::copy_contents(const View &a, const CopyContents &options) {
   // Position destination_position,
   // Size size) {
 

@@ -9,7 +9,7 @@
 #include <errno.h>
 using namespace thread;
 
-Thread::Thread(const Options &options) {
+Thread::Thread(const Construct &options) {
   init(options.stack_size(), options.detach_state() == DetachState::detached);
 }
 
@@ -178,7 +178,7 @@ int Thread::get_policy() {
   return policy;
 }
 
-Thread &Thread::create(const CreateOptions &options) {
+Thread &Thread::create(const Create &options) {
   reset();
 
   if (status().is_error()) {

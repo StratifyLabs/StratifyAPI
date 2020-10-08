@@ -35,10 +35,10 @@ public:
    */
   Cli(int argc, char *argv[]);
 
-  class HandleVersionOptions {
-    API_AC(HandleVersionOptions, var::StringView, version);
-    API_AC(HandleVersionOptions, var::StringView, publisher);
-    API_AC(HandleVersionOptions, var::StringView, githash);
+  class HandleVersion {
+    API_AC(HandleVersion, var::StringView, version);
+    API_AC(HandleVersion, var::StringView, publisher);
+    API_AC(HandleVersion, var::StringView, githash);
   };
 
   /*! \details Handles the --version and -v options to show the version.
@@ -46,7 +46,7 @@ public:
    * \sa print_version()
    *
    */
-  void handle_version(const HandleVersionOptions &options) const;
+  void handle_version(const HandleVersion &options) const;
 
   /*! \details Sets whether the arguments are case sensitive. */
   Cli &set_case_sensitive(bool value = true) {
@@ -100,13 +100,13 @@ public:
   var::String get_name() const;
   var::String get_path() const;
 
-  class ShowHelpOptions {
-    API_AF(ShowHelpOptions, var::StringView , publisher, "");
-    API_AF(ShowHelpOptions, var::StringView , version, "");
+  class ShowHelp {
+    API_AF(ShowHelp, var::StringView, publisher, "");
+    API_AF(ShowHelp, var::StringView, version, "");
   };
 
-  Cli &show_help(const ShowHelpOptions &options);
-  Cli &show_version(const ShowHelpOptions &options);
+  Cli &show_help(const ShowHelp &options);
+  Cli &show_version(const ShowHelp &options);
 
 private:
   bool is_option_equivalent_to_argument(

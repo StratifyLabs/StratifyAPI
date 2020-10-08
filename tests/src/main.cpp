@@ -14,8 +14,10 @@ int main(int argc, char *argv[]) {
 
   Device spi("/dev/spi0");
 
-  spi.ioctl(Spi::set_attributes(
-    Spi::Attributes().set_flags(Spi::Flags::set_master).set_width(8)));
+  Spi::Attributes attributes = Spi::Attributes().set_flags(
+    Spi::Flags::set_master | Spi::Flags::is_format_spi | Spi::Flags::is_mode0);
+
+  spi.ioctl(Spi::set_attributes(attributes)).ioctl(Spi::swap(32));
 
   int swapped = Spi::swap(spi, 32);
 

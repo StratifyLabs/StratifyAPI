@@ -58,10 +58,10 @@ public:
     detached /*! Detacthed thread */ = PTHREAD_CREATE_DETACHED
   };
 
-  class Options {
-    API_ACCESS_FUNDAMENTAL(Options, u32, stack_size, 4096);
+  class Construct {
+    API_ACCESS_FUNDAMENTAL(Construct, u32, stack_size, 4096);
     API_ACCESS_FUNDAMENTAL(
-      Options,
+      Construct,
       DetachState,
       detach_state,
       DetachState::detached);
@@ -71,11 +71,11 @@ public:
 
   using Policy = Sched::Policy;
 
-  class CreateOptions {
-    API_ACCESS_FUNDAMENTAL(CreateOptions, function_t, function, nullptr);
-    API_ACCESS_FUNDAMENTAL(CreateOptions, void *, argument, nullptr);
-    API_ACCESS_FUNDAMENTAL(CreateOptions, Policy, policy, Policy::other);
-    API_ACCESS_FUNDAMENTAL(CreateOptions, int, priority, 0);
+  class Create {
+    API_ACCESS_FUNDAMENTAL(Create, function_t, function, nullptr);
+    API_ACCESS_FUNDAMENTAL(Create, void *, argument, nullptr);
+    API_ACCESS_FUNDAMENTAL(Create, Policy, policy, Policy::other);
+    API_ACCESS_FUNDAMENTAL(Create, int, priority, 0);
   };
 
   /*! \details Defines the function call type that is
@@ -90,7 +90,7 @@ public:
       u32>(-1),
   };
 
-  Thread(const Options &options);
+  Thread(const Construct &options);
 
   ~Thread();
 
@@ -188,7 +188,7 @@ public:
    *
    *
    */
-  Thread &create(const CreateOptions &options);
+  Thread &create(const Create &options);
 
   enum class CancelType {
     deferred = PTHREAD_CANCEL_DEFERRED,

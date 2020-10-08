@@ -77,10 +77,10 @@ class Data;
  */
 class View : public api::Object {
 public:
-  class Options {
-    API_AF(Options, const void *, read_buffer, nullptr);
-    API_AF(Options, void *, write_buffer, nullptr);
-    API_AF(Options, size_t, size, 0);
+  class Construct {
+    API_AF(Construct, const void *, read_buffer, nullptr);
+    API_AF(Construct, void *, write_buffer, nullptr);
+    API_AF(Construct, size_t, size, 0);
   };
 
   /*! \details Constructs an empty
@@ -92,50 +92,47 @@ public:
    *
    */
   View();
-  View(const Options &options);
+  View(const Construct &options);
 
   View(const Data &data);
   View(Data &data);
 
   View(const char *str) {
-    set_view(Options().set_read_buffer(str).set_size(strlen(str)));
+    set_view(Construct().set_read_buffer(str).set_size(strlen(str)));
   }
 
   View(StringView str) {
-    set_view(Options().set_read_buffer(str.cstring()).set_size(str.length()));
+    set_view(Construct().set_read_buffer(str.cstring()).set_size(str.length()));
   }
 
   View(const String &str) {
-    set_view(Options()
-               .set_read_buffer(str.cstring())
-               .set_size(str.length()));
+    set_view(Construct().set_read_buffer(str.cstring()).set_size(str.length()));
   }
 
   View(String &str) {
-    set_view(Options()
-               .set_write_buffer(str.to_char())
-               .set_size(str.length()));
+    set_view(
+      Construct().set_write_buffer(str.to_char()).set_size(str.length()));
   }
 
   View(const void *buffer, size_t size) {
-    set_view(Options().set_read_buffer(buffer).set_size(size));
+    set_view(Construct().set_read_buffer(buffer).set_size(size));
   }
 
   View(void *buffer, size_t size) {
-    set_view(Options().set_write_buffer(buffer).set_size(size));
+    set_view(Construct().set_write_buffer(buffer).set_size(size));
   }
 
   var::String to_string() const;
 
   template <typename T> View(const Vector<T> &vector) {
-    set_view(Options()
+    set_view(Construct()
                .set_read_buffer(vector.to_const_void())
                .set_write_buffer(nullptr)
                .set_size(vector.count() * sizeof(T)));
   }
 
   template <typename T> View(Vector<T> &vector) {
-    set_view(Options()
+    set_view(Construct()
                .set_read_buffer(vector.to_const_void())
                .set_write_buffer(vector.to_void())
                .set_size(vector.count() * sizeof(T)));
@@ -143,14 +140,14 @@ public:
 
   template <typename T, size_t size_value>
   View(const Array<T, size_value> &array) {
-    set_view(Options()
+    set_view(Construct()
                .set_read_buffer(array.to_const_void())
                .set_write_buffer(nullptr)
                .set_size(size_value * sizeof(T)));
   }
 
   template <typename T, size_t size_value> View(Array<T, size_value> &array) {
-    set_view(Options()
+    set_view(Construct()
                .set_read_buffer(array.to_const_void())
                .set_write_buffer(array.to_void())
                .set_size(size_value * sizeof(T)));
@@ -227,13 +224,13 @@ public:
       "types");
 
     if (std::is_const<T>::value == false) {
-      set_view(Options()
+      set_view(Construct()
                  .set_read_buffer(&item)
                  .set_write_buffer((void *)&item)
                  .set_size(sizeof(T)));
     } else {
       set_view(
-        Options().set_read_buffer(&item).set_write_buffer(nullptr).set_size(
+        Construct().set_read_buffer(&item).set_write_buffer(nullptr).set_size(
           sizeof(T)));
     }
 
@@ -263,7 +260,7 @@ public:
    * ```
    *
    */
-  View &refer_to(const Options &options) {
+  View &refer_to(const Construct &options) {
     set_view(options);
     return *this;
   }
@@ -524,7 +521,7 @@ public:
   float &at_float(size_t position) { return at<float>(position); }
 
 protected:
-  void set_view(const Options &options);
+  void set_view(const Construct &options);
 
 private:
   const void *read_data() const { return m_data; }

@@ -20,7 +20,7 @@ FileSystem &FileSystem::remove(var::StringView path) {
   return *this;
 }
 
-FileSystem &FileSystem::copy(const CopyOptions &options) {
+FileSystem &FileSystem::copy(const Copy &options) {
   File source(
     options.source_path(),
     OpenMode::read_only()
@@ -55,7 +55,7 @@ FileSystem &FileSystem::copy(const CopyOptions &options) {
 }
 
 FileSystem &
-FileSystem::copy(File &source, File &destination, const CopyOptions &options) {
+FileSystem::copy(File &source, File &destination, const Copy &options) {
   u32 mode = 0;
 
   FileInfo source_info = source.get_info();
@@ -110,7 +110,7 @@ FileSystem &FileSystem::touch(var::StringView path) {
   return *this;
 }
 
-FileSystem &FileSystem::rename(const RenameOptions &options) {
+FileSystem &FileSystem::rename(const Rename &options) {
 #if defined __link
   if (driver() == nullptr) {
     API_ASSIGN_ERROR_CODE(
@@ -150,7 +150,7 @@ FileInfo FileSystem::get_info(int fd) {
   return FileInfo(stat);
 }
 
-FileSystem &FileSystem::copy_directory(const CopyOptions &options) {
+FileSystem &FileSystem::copy_directory(const Copy &options) {
 
   var::Vector<var::String> source_contents
     = read_directory(options.source_path(), Recursive::no);
@@ -186,7 +186,7 @@ FileSystem &FileSystem::copy_directory(const CopyOptions &options) {
         return *this;
       }
 
-      copy_directory(CopyOptions()
+      copy_directory(Copy()
                        .set_source_path(entry_path)
                        .set_destination_path(destination_entry_path)
                        .set_progress_callback(options.progress_callback())
@@ -199,7 +199,7 @@ FileSystem &FileSystem::copy_directory(const CopyOptions &options) {
       // check result for errors
 
     } else if (info.is_file()) {
-      copy(CopyOptions()
+      copy(Copy()
              .set_source_path(entry_path)
              .set_destination_path(destination_entry_path)
              .set_overwrite(options.overwrite())
@@ -312,7 +312,7 @@ FileSystem &FileSystem::create_directory(
   }
   var::Tokenizer path_tokens = var::Tokenizer().parse(
     path,
-    var::Tokenizer::ParseOptions().set_delimeters("/"));
+    var::Tokenizer::Parse().set_delimeters("/"));
   var::String base_path;
 
   if (path.find("/") == 0) {

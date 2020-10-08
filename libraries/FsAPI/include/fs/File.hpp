@@ -225,9 +225,9 @@ public:
    * is reached. */
   var::String gets(char term = '\n');
 
-  class IoctlOptions {
-    API_ACCESS_FUNDAMENTAL(IoctlOptions, int, request, 0);
-    API_ACCESS_FUNDAMENTAL(IoctlOptions, void *, argument, nullptr);
+  class Ioctl {
+    API_ACCESS_FUNDAMENTAL(Ioctl, int, request, 0);
+    API_ACCESS_FUNDAMENTAL(Ioctl, void *, argument, nullptr);
   };
 
   /*! \details Executes an IO control request.
@@ -240,7 +240,7 @@ public:
   File &ioctl(int request, void *arg);
   File &ioctl(int request) { return ioctl(request, nullptr); }
 
-  File &ioctl(const IoctlOptions &options) {
+  File &ioctl(const Ioctl &options) {
     ioctl(options.request(), options.argument());
     return *this;
   }
@@ -360,7 +360,7 @@ public:
   Derived &ioctl(int request, void *arg) {
     return static_cast<Derived &>(File::ioctl(request, arg));
   }
-  Derived &ioctl(const IoctlOptions &options) {
+  Derived &ioctl(const Ioctl &options) {
     return static_cast<Derived &>(File::ioctl(options));
   }
 

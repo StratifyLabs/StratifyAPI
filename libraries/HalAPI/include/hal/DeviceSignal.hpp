@@ -113,10 +113,10 @@ public:
     this->m_context = context;
   }
 
-  class CreateActionOptions {
-    API_AF(CreateActionOptions, u32, o_events, 0);
-    API_AF(CreateActionOptions, u8, channel, 0);
-    API_AF(CreateActionOptions, u32, priority, 0);
+  class CreateAction {
+    API_AF(CreateAction, u32, o_events, 0);
+    API_AF(CreateAction, u8, channel, 0);
+    API_AF(CreateAction, u32, priority, 0);
   };
 
   /*! \details This returns a mcu_action_t data structure that can
@@ -127,7 +127,7 @@ public:
    * @return a copy of a mcu_action_t data structure
    *
    */
-  mcu_action_t create_action(const CreateActionOptions &options) const {
+  mcu_action_t create_action(const CreateAction &options) const {
     mcu_action_t a;
     a.handler.callback = devfs_signal_callback;
     a.handler.context = (void *)&m_context;

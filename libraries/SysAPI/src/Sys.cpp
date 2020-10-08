@@ -186,9 +186,7 @@ void Sos::reset() {
   ::close(fd); // incase reset fails
 }
 
-var::String Sos::launch(
-  const LaunchOptions &options,
-  const api::ProgressCallback *progress_callback) {
+var::String Sos::launch(const Launch &options) {
   var::String result;
   result.resize(PATH_MAX);
   if (
@@ -199,8 +197,8 @@ var::String Sos::launch(
       options.application_flags(),
       options.ram_size(),
       api::ProgressCallback::update_function,
-      (void *)(progress_callback), // pointer to the object
-      nullptr                      // environment not implemented
+      (void *)(options.progress_callback()), // pointer to the object
+      nullptr                                // environment not implemented
       )
     < 0) {
     return var::String();

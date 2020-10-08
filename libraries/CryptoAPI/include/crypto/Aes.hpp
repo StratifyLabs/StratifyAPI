@@ -39,15 +39,21 @@ public:
     API_AF(Crypt, fs::File *, cipher, nullptr);
   };
 
-  Aes &encrypt_ecb(const Crypt &options);
-  Aes &decrypt_ecb(const Crypt &options);
+  using EncryptEcb = Crypt;
+  using DecryptEcb = Crypt;
 
-  Aes &encrypt_cbc(const Crypt &options);
-  Aes &decrypt_cbc(const Crypt &options);
+  Aes &encrypt_ecb(const EncryptEcb &options);
+  Aes &decrypt_ecb(const DecryptEcb &options);
+
+  using EncryptCbc = Crypt;
+  using DecryptCbc = Crypt;
+
+  Aes &encrypt_cbc(const EncryptCbc &options);
+  Aes &decrypt_cbc(const DecryptCbc &options);
 
 #if 0 // not yet implemented
-  Aes &encrypt_ctr(const CryptOptions &options);
-  Aes &decrypt_ctr(const CryptOptions &options);
+  Aes &encrypt_ctr(const Crypt &options);
+  Aes &decrypt_ctr(const Crypt &options);
 #endif
 
 private:

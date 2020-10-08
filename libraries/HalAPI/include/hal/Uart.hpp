@@ -113,12 +113,12 @@ public:
     return device.ioctl(I_UART_GETVERSION, nullptr).status().value();
   }
 
-  static Device::IoctlOptions put(char c) {
-    return Device::IoctlOptions().set_request(I_UART_PUT).set_argument(&c);
+  static Device::Ioctl put(char c) {
+    return Device::Ioctl().set_request(I_UART_PUT).set_argument(&c);
   }
 
-  static Device::IoctlOptions flush() {
-    return Device::IoctlOptions().set_request(I_UART_FLUSH);
+  static Device::Ioctl flush() {
+    return Device::Ioctl().set_request(I_UART_FLUSH);
   }
 
   static char get(Device &device) {
@@ -127,8 +127,8 @@ public:
     return c;
   }
 
-  static Device::IoctlOptions get_info(Info &info) {
-    return Device::IoctlOptions()
+  static Device::Ioctl get_info(Info &info) {
+    return Device::Ioctl()
       .set_request(I_UART_GETINFO)
       .set_argument(&info.m_info);
   }

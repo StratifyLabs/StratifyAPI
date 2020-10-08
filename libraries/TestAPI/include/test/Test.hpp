@@ -42,11 +42,11 @@ API_OR_NAMED_FLAGS_OPERATOR(TestFlags, ExecuteFlags)
 
 class Test : public api::Object, public TestFlags {
 public:
-  class Options {
-    API_AC(Options, var::String, name);
-    API_AC(Options, var::String, version);
-    API_AC(Options, var::String, git_hash);
-    API_AF(Options, printer::Printer *, printer, nullptr);
+  class Construct {
+    API_AC(Construct, var::String, name);
+    API_AC(Construct, var::String, version);
+    API_AC(Construct, var::String, git_hash);
+    API_AF(Construct, printer::Printer *, printer, nullptr);
   };
 
   /*! \details Initializes the test report.
@@ -55,7 +55,7 @@ public:
    * constructed.
    *
    */
-  static void initialize(const Options &options);
+  static void initialize(const Construct &options);
 
   /*! \details Finalizes the test report.
    *

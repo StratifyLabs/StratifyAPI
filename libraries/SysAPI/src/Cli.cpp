@@ -36,7 +36,7 @@ Cli::Cli(int argc, char *argv[]) {
   m_argv = argv;
 }
 
-void Cli::handle_version(const HandleVersionOptions &options) const {
+void Cli::handle_version(const HandleVersion &options) const {
 #if !defined __link
   if (get_option("--version").is_empty() == false) {
     printf(
@@ -95,7 +95,7 @@ bool Cli::compare_with_prefix(var::StringView option, var::StringView argument)
   }
   if (
     with_prefix.get_substring(
-      String::SubStringOptions().set_position(1))
+      String::GetSubstring().set_position(1))
     == argument) {
     return true;
   }
@@ -113,7 +113,7 @@ bool Cli::is_option_equivalent_to_argument_with_equality(
 
   Tokenizer tokens = Tokenizer().parse(
     argument,
-    Tokenizer::ParseOptions()
+    Tokenizer::Parse()
       .set_delimeters("=")
       .set_ignore_between("")
       .set_maximum_delimeter_count(1));
@@ -165,7 +165,7 @@ var::String Cli::get_option(StringView name, StringView help) const {
   return String();
 }
 
-Cli &Cli::show_help(const ShowHelpOptions &options) {
+Cli &Cli::show_help(const ShowHelp &options) {
   printf("%s options:\n", get_name().cstring());
   for (u32 i = 0; i < m_help_list.count(); i++) {
     printf("- %s\n", m_help_list.at(i).cstring());

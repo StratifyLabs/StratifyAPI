@@ -17,11 +17,11 @@ namespace var {
  */
 class Tokenizer : public api::Object {
 public:
-  class ParseOptions {
-    API_ACCESS_COMPOUND(ParseOptions, var::StringView , delimeters);
-    API_ACCESS_COMPOUND(ParseOptions, var::StringView , ignore_between);
-    API_ACCESS_BOOL(ParseOptions, count_empty_tokens, false);
-    API_ACCESS_FUNDAMENTAL(ParseOptions, u32, maximum_delimeter_count, 0);
+  class Parse {
+    API_ACCESS_COMPOUND(Parse, var::StringView, delimeters);
+    API_ACCESS_COMPOUND(Parse, var::StringView, ignore_between);
+    API_ACCESS_BOOL(Parse, count_empty_tokens, false);
+    API_ACCESS_FUNDAMENTAL(Parse, u32, maximum_delimeter_count, 0);
   };
 
   Tokenizer();
@@ -52,7 +52,7 @@ public:
    *
    *
    */
-  Tokenizer &parse(StringView input, const ParseOptions &options);
+  Tokenizer &parse(StringView input, const Parse &options);
 
   /*! \details Sorts the tokens as specified. */
   Tokenizer &sort(SortBy sort_option);

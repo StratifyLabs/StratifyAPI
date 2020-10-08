@@ -46,7 +46,7 @@ Device &Device::cancel(int channel, int o_events) {
   return ioctl(I_MCU_SETACTION, &action);
 }
 
-Device &Device::transfer(const TransferOptions &options) {
+Device &Device::transfer(const Transfer &options) {
   fs::Aio aio(options.destination());
   read(aio).write(options.source());
   while (aio.is_busy() && status().is_success()) {

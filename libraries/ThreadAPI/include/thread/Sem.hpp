@@ -65,10 +65,10 @@ public:
    */
   Sem &finalize();
 
-  class OpenOptions {
-    API_AF(OpenOptions, int, o_flags, 0);
-    API_AF(OpenOptions, int, mode, 0);
-    API_AF(OpenOptions, int, value, 0);
+  class Open {
+    API_AF(Open, int, o_flags, 0);
+    API_AF(Open, int, mode, 0);
+    API_AF(Open, int, value, 0);
   };
 
   /*! \details Opens a named semaphore
@@ -81,7 +81,7 @@ public:
    *
    * \sa close()
    */
-  Sem &open(var::StringView name, const OpenOptions &options);
+  Sem &open(var::StringView name, const Open &options);
 
   enum class Exclusive { no, yes };
 

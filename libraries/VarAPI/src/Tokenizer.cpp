@@ -29,7 +29,7 @@ using namespace var;
 Tokenizer::Tokenizer() {}
 
 Tokenizer &
-Tokenizer::parse(var::StringView input, const ParseOptions &options) {
+Tokenizer::parse(var::StringView input, const Parse &options) {
 
   const u32 max_delimeter_count = options.maximum_delimeter_count();
   const u32 length = input.length();
@@ -40,7 +40,7 @@ Tokenizer::parse(var::StringView input, const ParseOptions &options) {
   while (cursor < length) {
     if (options.delimeters().find(input.at(cursor)) != String::npos) {
       m_token_list.push_back(
-        String(input).get_substring(String::SubStringOptions()
+        String(input).get_substring(String::GetSubstring()
                                           .set_position(sub_position)
                                           .set_length(cursor - sub_position)));
 
@@ -64,7 +64,7 @@ Tokenizer::parse(var::StringView input, const ParseOptions &options) {
 
   // push the last token
   m_token_list.push_back(
-    String(input).get_substring(String::SubStringOptions()
+    String(input).get_substring(String::GetSubstring()
                                       .set_position(sub_position)
                                       .set_length(cursor - sub_position)));
 

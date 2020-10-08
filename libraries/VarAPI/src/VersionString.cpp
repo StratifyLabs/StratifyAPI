@@ -32,9 +32,8 @@ VersionString &VersionString::operator<<(u32 value) {
 }
 
 u32 VersionString::to_bcd() const {
-  Tokenizer tokens = Tokenizer().parse(
-    m_version,
-    Tokenizer::ParseOptions().set_delimeters("."));
+  Tokenizer tokens
+    = Tokenizer().parse(m_version, Tokenizer::Parse().set_delimeters("."));
   u32 result = 0;
   u32 token_max = tokens.count() < 3 ? tokens.count() : 3;
   for (u32 i = 0; i < token_max; i++) {
@@ -44,12 +43,10 @@ u32 VersionString::to_bcd() const {
 }
 
 int VersionString::compare(const VersionString &a, const VersionString &b) {
-  Tokenizer a_tokens = Tokenizer().parse(
-    a.m_version,
-    Tokenizer::ParseOptions().set_delimeters("."));
-  Tokenizer b_tokens = Tokenizer().parse(
-    b.m_version,
-    Tokenizer::ParseOptions().set_delimeters("."));
+  Tokenizer a_tokens
+    = Tokenizer().parse(a.m_version, Tokenizer::Parse().set_delimeters("."));
+  Tokenizer b_tokens
+    = Tokenizer().parse(b.m_version, Tokenizer::Parse().set_delimeters("."));
 
   if (a_tokens.count() > b_tokens.count()) {
     return 1;

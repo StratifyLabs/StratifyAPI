@@ -100,13 +100,13 @@ String &String::erase(StringView string_to_erase, size_t position) {
   size_t erase_pos;
   const size_t len = string_to_erase.length();
   while ((erase_pos = find(string_to_erase, position)) != npos) {
-    erase(EraseOptions().set_position(erase_pos).set_length(len));
+    erase(Erase().set_position(erase_pos).set_length(len));
     position = erase_pos;
   }
   return *this;
 }
 
-String &String::replace(const ReplaceOptions &options) {
+String &String::replace(const Replace &options) {
   size_t pos = options.position();
   const size_t old_length = options.old_string().length();
   const size_t new_length = options.new_string().length();
@@ -114,7 +114,7 @@ String &String::replace(const ReplaceOptions &options) {
   while (((pos = find(options.old_string(), pos)) != String::npos)
          && (options.count() ? replaced_count < options.count() : 1)) {
 
-    erase(EraseOptions().set_position(pos).set_length(old_length));
+    erase(Erase().set_position(pos).set_length(old_length));
 
     m_string.insert(pos, options.new_string().string_view());
     // insert(pos, options.new_string());
@@ -169,7 +169,7 @@ float String::to_float() const {
 Vector<String> String::split(StringView delimiter) const {
   Tokenizer tokens = Tokenizer().parse(
     *this,
-    Tokenizer::ParseOptions().set_delimeters(delimiter));
+    Tokenizer::Parse().set_delimeters(delimiter));
   return tokens.list();
 }
 

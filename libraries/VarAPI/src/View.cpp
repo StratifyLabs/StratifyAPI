@@ -30,10 +30,10 @@ const int View::m_zero_value MCU_ALIGN(4) = 0;
 View::View() {}
 
 View::View(const Data &data) {
-  set_view(Options().set_read_buffer(data.data()).set_size(data.size()));
+  set_view(Construct().set_read_buffer(data.data()).set_size(data.size()));
 }
 
-void View::set_view(const Options &options) {
+void View::set_view(const Construct &options) {
   if (options.size()) {
     if (options.write_buffer()) {
       m_data = options.write_buffer();
@@ -48,7 +48,7 @@ void View::set_view(const Options &options) {
 }
 
 View::View(Data &data) {
-  set_view(Options().set_write_buffer(data.data()).set_size(data.size()));
+  set_view(Construct().set_write_buffer(data.data()).set_size(data.size()));
 }
 
 View &View::swap_byte_order(SwapBy swap) {

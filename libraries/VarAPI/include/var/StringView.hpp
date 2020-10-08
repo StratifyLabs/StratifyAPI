@@ -7,6 +7,8 @@
 
 #include "api/api.hpp"
 
+#include "Vector.hpp"
+
 namespace var {
 
 class String;
@@ -30,12 +32,17 @@ public:
     return *this;
   }
 
-  class CreateSubStringOptions {
-    API_AF(CreateSubStringOptions, size_t, position, 0);
-    API_AF(CreateSubStringOptions, size_t, length, npos);
+  class GetSubstring {
+    API_AF(GetSubstring, size_t, position, 0);
+    API_AF(GetSubstring, size_t, length, npos);
   };
 
-  String create_sub_string(const CreateSubStringOptions &options) const;
+  String get_substring(const GetSubstring &options) const;
+
+  String get_substring_at_position(size_t position) const;
+
+  String get_substring_with_length(size_t length) const;
+  var::Vector<String> split(StringView delimeters) const;
 
   using iterator = typename std::string_view::iterator;
   using const_iterator = typename std::string_view::const_iterator;

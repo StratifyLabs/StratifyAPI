@@ -109,10 +109,10 @@ public:
    */
   static int get_rr_interval(pid_t pid);
 
-  class SetSchedulerOptions {
-    API_AF(SetSchedulerOptions, Policy, policy, Policy::round_robin);
-    API_AF(SetSchedulerOptions, u8, priority, 0);
-    API_AF(SetSchedulerOptions, int, pid, 0);
+  class SetScheduler {
+    API_AF(SetScheduler, Policy, policy, Policy::round_robin);
+    API_AF(SetScheduler, u8, priority, 0);
+    API_AF(SetScheduler, int, pid, 0);
   };
 
   /*! \details Sets the scheduler with the given parameters.
@@ -123,7 +123,7 @@ public:
    * @return Zero on success of -1 with errno set
    */
 
-  Sched &set_scheduler(const SetSchedulerOptions &options);
+  Sched &set_scheduler(const SetScheduler &options);
 };
 
 } // namespace thread

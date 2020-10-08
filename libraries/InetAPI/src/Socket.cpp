@@ -54,8 +54,7 @@ SocketAddressInfo::SocketAddressInfo(
   }
 }
 
-var::Vector<SocketAddressInfo>
-SocketAddressInfo::fetch(const FetchOptions &options) {
+var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(const Fetch &options) {
   var::Vector<SocketAddressInfo> result;
   int result_int;
 
@@ -202,7 +201,7 @@ var::String SocketAddress::to_string() const {
 SocketAddressIpv4 SocketAddressIpv4::from_string(var::StringView value) {
   Tokenizer tokens = Tokenizer().parse(
     value,
-    var::Tokenizer::ParseOptions().set_delimeters(".:"));
+    var::Tokenizer::Parse().set_delimeters(".:"));
 
   if (tokens.count() < 4) {
     return SocketAddressIpv4();
@@ -220,7 +219,7 @@ SocketAddressIpv4 SocketAddressIpv4::from_string(var::StringView value) {
 SocketAddressIpv4 &SocketAddressIpv4::set_address(var::StringView addr) {
   Tokenizer tokens = Tokenizer().parse(
     addr,
-    var::Tokenizer::ParseOptions().set_delimeters("."));
+    var::Tokenizer::Parse().set_delimeters("."));
 
   if (tokens.count() != 4) {
     return *this;

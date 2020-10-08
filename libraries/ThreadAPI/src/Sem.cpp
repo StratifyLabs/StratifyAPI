@@ -37,7 +37,7 @@ Sem &Sem::initialize(sem_t *sem, int pshared, unsigned int value) {
   return *this;
 }
 
-Sem &Sem::open(var::StringView name, const OpenOptions &options) {
+Sem &Sem::open(var::StringView name, const Open &options) {
   m_handle = sem_open(
     name.cstring(),
     options.o_flags(),
@@ -56,7 +56,7 @@ Sem &Sem::create(var::StringView name, int value, Exclusive exclusive) {
   }
   return open(
     name,
-    OpenOptions().set_o_flags(o_flags).set_mode(0666).set_value(value));
+    Open().set_o_flags(o_flags).set_mode(0666).set_value(value));
 }
 
 Sem &Sem::post() {

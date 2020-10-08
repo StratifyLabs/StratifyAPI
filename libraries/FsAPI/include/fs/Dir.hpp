@@ -55,16 +55,12 @@ public:
     return entry;
   }
 
-  class CopyOptions {
-    API_AC(CopyOptions, var::StringView , source_path);
-    API_AC(CopyOptions, var::StringView , destination_path);
+  class Copy {
+    API_AC(Copy, var::StringView, source_path);
+    API_AC(Copy, var::StringView, destination_path);
 #if defined __link
-    API_AF(CopyOptions, link_transport_mdriver_t *, source_driver, nullptr);
-    API_AF(
-      CopyOptions,
-      link_transport_mdriver_t *,
-      destination_driver,
-      nullptr);
+    API_AF(Copy, link_transport_mdriver_t *, source_driver, nullptr);
+    API_AF(Copy, link_transport_mdriver_t *, destination_driver, nullptr);
 
 #endif
   };

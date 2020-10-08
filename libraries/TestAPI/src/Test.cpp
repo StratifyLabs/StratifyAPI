@@ -86,7 +86,7 @@ void Test::close_case() {
   m_case_result = true;
 }
 
-void Test::initialize(const Options &options) {
+void Test::initialize(const Construct &options) {
   API_ASSERT(options.printer() != nullptr);
   m_printer = options.printer();
   m_final_duration_microseconds = 0;

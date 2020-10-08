@@ -120,19 +120,19 @@ public:
     return *this;
   }
 
-  class EraseOptions {
-    API_AF(EraseOptions, size_t, position, 0);
-    API_AF(EraseOptions, size_t, count, 1);
+  class Erase {
+    API_AF(Erase, size_t, position, 0);
+    API_AF(Erase, size_t, count, 1);
   };
 
-  Vector &erase(const EraseOptions &options) {
+  Vector &erase(const Erase &options) {
     m_vector.erase(
       m_vector.begin() + options.position(),
       m_vector.begin() + options.position() + options.count());
     return *this;
   }
 
-  Vector &remove(u32 pos) { return erase(EraseOptions().set_position(pos)); }
+  Vector &remove(u32 pos) { return erase(Erase().set_position(pos)); }
 
   const T &operator[](size_t offset) const { return m_vector[offset]; }
   T &operator[](size_t offset) { return m_vector[offset]; }

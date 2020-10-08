@@ -215,9 +215,9 @@ public:
    */
   Data &copy_contents(const View &reference);
 
-  class CopyContentsOptions {
-    API_AF(CopyContentsOptions, size_t, destination_position, 0);
-    API_AF(CopyContentsOptions, size_t, size, 0);
+  class CopyContents {
+    API_AF(CopyContents, size_t, destination_position, 0);
+    API_AF(CopyContents, size_t, size, 0);
   };
   /*!
    * \details Copies the contents of another data object to this object.
@@ -226,7 +226,7 @@ public:
    * \param size The number of bytes to copy
    * \return Zero on success or less than zero if memory could not be allocated
    */
-  Data &copy_contents(const View &a, const CopyContentsOptions &options);
+  Data &copy_contents(const View &a, const CopyContents &options);
 
   /*! \details Appends the contents of another
    * data object to this object.
@@ -246,12 +246,12 @@ public:
   Data &append(const View &reference);
   Data &operator<<(const View &reference);
 
-  class EraseOptions {
-    API_AF(EraseOptions, size_t, position, 0);
-    API_AF(EraseOptions, size_t, size, 0);
+  class Erase {
+    API_AF(Erase, size_t, position, 0);
+    API_AF(Erase, size_t, size, 0);
   };
 
-  Data &erase(const EraseOptions &options) {
+  Data &erase(const Erase &options) {
     m_data.erase(
       m_data.begin() + options.position(),
       m_data.begin() + options.size());

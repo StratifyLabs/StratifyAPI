@@ -134,14 +134,14 @@ public:
  */
 class SignalHandler : public api::Object, public SignalFlags {
 public:
-  class Options {
-    API_AF(Options, signal_function_callback_t, signal_function, nullptr);
-    API_AF(Options, signal_action_callback_t, signal_action, nullptr);
-    API_AF(Options, u32, flags, 0);
-    API_AF(Options, sigset_t, mask, 0);
+  class Construct {
+    API_AF(Construct, signal_function_callback_t, signal_function, nullptr);
+    API_AF(Construct, signal_action_callback_t, signal_action, nullptr);
+    API_AF(Construct, u32, flags, 0);
+    API_AF(Construct, sigset_t, mask, 0);
   };
 
-  explicit SignalHandler(const Options &options) {
+  explicit SignalHandler(const Construct &options) {
     if (options.signal_function()) {
 #if defined __win32
       m_sig_action.sa_handler = options.signal_function();

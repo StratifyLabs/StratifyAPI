@@ -11,7 +11,7 @@ var::String Path::suffix() {
   }
 
   return String(path()).get_substring(
-    String::SubStringOptions().set_position(pos + 1));
+    String::GetSubstring().set_position(pos + 1));
 }
 
 var::String Path::name() {
@@ -22,7 +22,7 @@ var::String Path::name() {
   }
 
   return String(path()).get_substring(
-    String::SubStringOptions().set_position(pos + 1));
+    String::GetSubstring().set_position(pos + 1));
 }
 
 var::String Path::parent_directory() {
@@ -33,7 +33,7 @@ var::String Path::parent_directory() {
   }
 
   return String(path()).get_substring(
-    String::SubStringOptions().set_position(0).set_length(pos));
+    String::GetSubstring().set_position(0).set_length(pos));
 }
 
 var::String Path::base_name() {
@@ -44,7 +44,7 @@ var::String Path::base_name() {
   }
 
   return result.get_substring(
-    String::SubStringOptions().set_position(0).set_length(pos));
+    String::GetSubstring().set_position(0).set_length(pos));
 }
 
 var::String Path::no_suffix() {
@@ -55,7 +55,7 @@ var::String Path::no_suffix() {
   }
 
   return String(path()).get_substring(
-    String::SubStringOptions().set_position(0).set_length(pos));
+    String::GetSubstring().set_position(0).set_length(pos));
 }
 
 bool Path::is_hidden() {

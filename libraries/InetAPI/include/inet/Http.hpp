@@ -193,17 +193,17 @@ public:
    */
   int head(var::StringView url);
 
-  class MethodOptions {
-    API_AF(MethodOptions, fs::File *, response, nullptr);
-    API_AF(MethodOptions, fs::File *, request, nullptr);
-    API_AF(MethodOptions, api::ProgressCallback *, progress_callback, nullptr);
+  class ExecuteMethod {
+    API_AF(ExecuteMethod, fs::File *, response, nullptr);
+    API_AF(ExecuteMethod, fs::File *, request, nullptr);
+    API_AF(ExecuteMethod, api::ProgressCallback *, progress_callback, nullptr);
   };
 
-  using GetOptions = MethodOptions;
-  using PutOptions = MethodOptions;
-  using PatchOptions = MethodOptions;
-  using PostOptions = MethodOptions;
-  using RemoveOptions = MethodOptions;
+  using Get = ExecuteMethod;
+  using Put = ExecuteMethod;
+  using Patch = ExecuteMethod;
+  using Post = ExecuteMethod;
+  using Remove = ExecuteMethod;
 
   /*! \details Executes an HTTP GET request.
    *
@@ -226,32 +226,32 @@ public:
    * ```
    *
    */
-  HttpClient &get(var::StringView url, const GetOptions &options) {
-    return query(Method::get, url, options);
+  HttpClient &get(var::StringView url, const Get &options) {
+    return execute_method(Method::get, url, options);
   }
 
-  HttpClient &post(var::StringView url, const PostOptions &options) {
-    return query(Method::post, url, options);
+  HttpClient &post(var::StringView url, const Post &options) {
+    return execute_method(Method::post, url, options);
   }
-  HttpClient &put(var::StringView url, const PutOptions &options) {
-    return query(Method::put, url, options);
+  HttpClient &put(var::StringView url, const Put &options) {
+    return execute_method(Method::put, url, options);
   }
 
-  HttpClient &patch(var::StringView url, const PatchOptions &options) {
-    return query(Method::patch, url, options);
+  HttpClient &patch(var::StringView url, const Patch &options) {
+    return execute_method(Method::patch, url, options);
   }
 
   // http delete
-  HttpClient &remove(var::StringView url, const RemoveOptions &options) {
-    return query(Method::Delete, url, options);
+  HttpClient &remove(var::StringView url, const Remove &options) {
+    return execute_method(Method::Delete, url, options);
   }
 
   /*! \cond */
   HttpClient &options(var::StringView url) {
-    return query(Method::options, url, MethodOptions());
+    return execute_method(Method::options, url, ExecuteMethod());
   }
   HttpClient &trace(var::StringView url) {
-    return query(Method::trace, url, MethodOptions());
+    return execute_method(Method::trace, url, ExecuteMethod());
   }
   HttpClient &connect(var::StringView url) {
     // return query(Method::connect, url, MethodOptions());
@@ -326,8 +326,10 @@ private:
 
   int connect_to_server(var::StringView domain_name, u16 port);
 
-  HttpClient &
-  query(Method method, var::StringView url, const MethodOptions &options);
+  HttpClient &execute_method(
+    Method method,
+    var::StringView url,
+    const ExecuteMethod &options);
 
   int send_string(var::StringView str);
 

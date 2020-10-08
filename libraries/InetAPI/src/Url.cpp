@@ -12,7 +12,7 @@ Url::Url(var::StringView url) {
 
     var::Tokenizer url_tokens = var::Tokenizer().parse(
       url,
-      var::Tokenizer::ParseOptions().set_delimeters("/"));
+      var::Tokenizer::Parse().set_delimeters("/"));
 
     // https://domain.name:port/path
 
@@ -30,7 +30,7 @@ Url::Url(var::StringView url) {
 
     var::Tokenizer domain_name = var::Tokenizer().parse(
       url_tokens.at(2),
-      var::Tokenizer::ParseOptions().set_delimeters(":"));
+      var::Tokenizer::Parse().set_delimeters(":"));
 
     if (domain_name.count() > 1) {
       m_port = var::String(domain_name.at(1)).to_integer();

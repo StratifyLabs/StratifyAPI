@@ -153,12 +153,12 @@ public:
    * ```
    */
 
-  class FetchOptions {
-    API_AC(FetchOptions, var::StringView, node);
-    API_AC(FetchOptions, var::StringView, service);
+  class Fetch {
+    API_AC(Fetch, var::StringView, node);
+    API_AC(Fetch, var::StringView, service);
   };
 
-  var::Vector<SocketAddressInfo> fetch(const FetchOptions &options);
+  var::Vector<SocketAddressInfo> fetch(const Fetch &options);
 
 private:
   friend class SocketAddress;

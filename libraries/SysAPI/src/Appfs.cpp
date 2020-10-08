@@ -140,7 +140,7 @@ int AppfsFileAttributes::apply(fs::File &file) const {
   return 0;
 }
 
-Appfs::Appfs(const Options &options FSAPI_LINK_DECLARE_DRIVER_LAST)
+Appfs::Appfs(const Construct &options FSAPI_LINK_DECLARE_DRIVER_LAST)
   : m_file(
     "/app/.install",
     fs::OpenMode::write_only() FSAPI_LINK_INHERIT_DRIVER_LAST) {
@@ -159,9 +159,9 @@ bool Appfs::is_ram_available() {
     .is_success();
 }
 
-Appfs &Appfs::create(const CreateOptions &options) {
+Appfs &Appfs::create(const Create &options) {
 
-  Appfs appfs(Options()
+  Appfs appfs(Construct()
                 .set_mount(options.mount())
                 .set_name(options.name())
                 .set_size(options.source()->size()));
@@ -279,7 +279,7 @@ int Appfs::create(
 }
 #endif
 
-int Appfs::create_asynchronous(const Options &options) {
+int Appfs::create_asynchronous(const Construct &options) {
   appfs_file_t *f
     = reinterpret_cast<appfs_file_t *>(m_create_attributes.buffer);
   var::String path = options.mount() + "/flash/" + options.name();

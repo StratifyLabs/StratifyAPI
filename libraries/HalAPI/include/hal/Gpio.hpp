@@ -86,31 +86,31 @@ public:
     pio_attr_t m_attributes;
   };
 
-  static Device::IoctlOptions set_mask(u32 mask) {
-    return Device::IoctlOptions()
+  static Device::Ioctl set_mask(u32 mask) {
+    return Device::Ioctl()
       .set_request(I_PIO_SETMASK)
       .set_argument(MCU_INT_CAST(mask));
   }
 
-  static Device::IoctlOptions clear_mask(u32 mask) {
-    return Device::IoctlOptions()
+  static Device::Ioctl clear_mask(u32 mask) {
+    return Device::Ioctl()
       .set_request(I_PIO_CLRMASK)
       .set_argument(MCU_INT_CAST(mask));
   }
 
-  static Device::IoctlOptions assign(u32 value) {
+  static Device::Ioctl assign(u32 value) {
     Attributes a(Flags::assign, value);
-    return Device::IoctlOptions().set_request(I_PIO_SET).set_argument(
+    return Device::Ioctl().set_request(I_PIO_SET).set_argument(
       &a.m_attributes);
   }
 
-  static Device::IoctlOptions set_value(u32 value) {
-    return Device::IoctlOptions().set_request(I_PIO_SET).set_argument(
+  static Device::Ioctl set_value(u32 value) {
+    return Device::Ioctl().set_request(I_PIO_SET).set_argument(
       MCU_INT_CAST(value));
   }
 
-  static Device::IoctlOptions get_value() {
-    return Device::IoctlOptions().set_request(I_PIO_GET);
+  static Device::Ioctl get_value() {
+    return Device::Ioctl().set_request(I_PIO_GET);
   }
 
   static u32 get_value(Device &device) {

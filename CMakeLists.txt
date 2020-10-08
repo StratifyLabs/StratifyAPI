@@ -25,4 +25,4 @@ add_subdirectory(libraries/InetAPI inet)
 add_subdirectory(libraries/LinkAPI link)
 
 
-add_subdirectory(tests tests)
+#add_subdirectory(tests tests)

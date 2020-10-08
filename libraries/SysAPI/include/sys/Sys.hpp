@@ -226,21 +226,24 @@ public:
   /*! \details Resets the device. */
   void reset();
 
-  class LaunchOptions {
-    API_ACCESS_COMPOUND(LaunchOptions, var::StringView, path);
-    API_ACCESS_COMPOUND(LaunchOptions, var::StringView, arguments);
-    API_ACCESS_COMPOUND(LaunchOptions, var::StringView, environment);
+  class Launch {
+    API_ACCESS_COMPOUND(Launch, var::StringView, path);
+    API_ACCESS_COMPOUND(Launch, var::StringView, arguments);
+    API_ACCESS_COMPOUND(Launch, var::StringView, environment);
     API_ACCESS_FUNDAMENTAL(
-      LaunchOptions,
+      Launch,
       enum Appfs::flags,
       application_flags,
       Appfs::flag_is_default);
-    API_ACCESS_FUNDAMENTAL(LaunchOptions, int, ram_size, 0);
+    API_ACCESS_FUNDAMENTAL(Launch, int, ram_size, 0);
+    API_ACCESS_FUNDAMENTAL(
+      Launch,
+      const api::ProgressCallback *,
+      progress_callback,
+      nullptr);
   };
 
-  var::String launch(
-    const LaunchOptions &options,
-    const api::ProgressCallback *progress_callback);
+  var::String launch(const Launch &options);
 
   /*!
    * \details Installs an application from the data filesystem

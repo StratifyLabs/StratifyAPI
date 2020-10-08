@@ -147,18 +147,18 @@ public:
     i2c_info_t m_info;
   };
 
-  static Device::IoctlOptions
+  static Device::Ioctl
   prepare(u8 slave_addr, Flags o_flags = Flags::prepare_ptr_data) {
     Attributes attributes
       = Attributes().set_flags(o_flags).set_slave_addr(slave_addr);
-    return Device::IoctlOptions()
+    return Device::Ioctl()
       .set_request(I_I2C_SETATTR)
       .set_argument(&attributes.m_attributes);
   }
 
-  static Device::IoctlOptions reset() {
+  static Device::Ioctl reset() {
     Attributes attributes = Attributes().set_flags(Flags::reset);
-    return Device::IoctlOptions()
+    return Device::Ioctl()
       .set_request(I_I2C_SETATTR)
       .set_argument(&attributes.m_attributes);
   }
@@ -166,8 +166,8 @@ public:
   /*! \details Gets the last error. */
   static int get_error(Device &device) { return get_info(device).error(); }
 
-  static Device::IoctlOptions get_info(Info &info) {
-    return Device::IoctlOptions()
+  static Device::Ioctl get_info(Info &info) {
+    return Device::Ioctl()
       .set_request(I_I2C_GETINFO)
       .set_argument(&info.m_info);
   }

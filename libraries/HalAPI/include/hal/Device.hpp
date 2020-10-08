@@ -35,9 +35,9 @@ namespace hal {
  */
 class Device : public fs::FileAccess<Device> {
 public:
-  class ChannelOptions {
-    API_ACCESS_FUNDAMENTAL(ChannelOptions, u32, location, 0);
-    API_ACCESS_FUNDAMENTAL(ChannelOptions, u32, value, 0);
+  class Channel {
+    API_ACCESS_FUNDAMENTAL(Channel, u32, location, 0);
+    API_ACCESS_FUNDAMENTAL(Channel, u32, value, 0);
   };
 
   using fs::FileAccess<Device>::ioctl;
@@ -72,7 +72,7 @@ public:
    */
   Device &set_signal_action(
     const DeviceSignal &signal,
-    const DeviceSignal::CreateActionOptions &options) {
+    const DeviceSignal::CreateAction &options) {
     mcu_action_t action = signal.create_action(options);
     return ioctl(I_MCU_SETACTION, &action);
   }
@@ -100,12 +100,12 @@ public:
   Device &cancel_write(int channel = 0);
   Device &cancel(int channel, int o_events);
 
-  class TransferOptions {
-    API_AC(TransferOptions, var::View, source);
-    API_AC(TransferOptions, var::View, destination);
+  class Transfer {
+    API_AC(Transfer, var::View, source);
+    API_AC(Transfer, var::View, destination);
   };
 
-  Device &transfer(const TransferOptions &options);
+  Device &transfer(const Transfer &options);
 
 #endif
 

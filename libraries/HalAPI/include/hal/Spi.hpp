@@ -117,24 +117,30 @@ public:
     mutable spi_attr_t m_attributes;
   };
 
-  static Device::IoctlOptions set_attributes(const Attributes &attributes) {
-    return Device::IoctlOptions()
+  static Device::Ioctl set_attributes(const Attributes &attributes) {
+    return Device::Ioctl()
       .set_request(I_SPI_SETATTR)
       .set_argument(&attributes.m_attributes);
   }
 
-  static Device::IoctlOptions set_attributes() {
-    return Device::IoctlOptions().set_request(I_SPI_SETATTR);
+  static Device::Ioctl set_attributes() {
+    return Device::Ioctl().set_request(I_SPI_SETATTR);
   }
 
-  static Device::IoctlOptions get_info(Info &info) {
-    return Device::IoctlOptions()
+  static Device::Ioctl get_info(Info &info) {
+    return Device::Ioctl()
       .set_request(I_SPI_GETINFO)
       .set_argument(&info.m_info);
   }
 
-  static int swap(Device &device, int value) {
-    return device.ioctl(I_SPI_SWAP, MCU_INT_CAST(value)).status().value();
+  static Device::Ioctl swap(u32 value) {
+    return Device::Ioctl()
+      .set_request(I_SPI_SWAP)
+      .set_argument(MCU_INT_CAST(value));
+  }
+
+  static int swap(Device &device, u32 value) {
+    return device.ioctl(swap(value)).status().value();
   }
 
   static Info get_info(Device &device) {

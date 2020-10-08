@@ -294,17 +294,17 @@ private:
  */
 class Appfs : public api::Object, public AppfsFlags {
 public:
-  class Options {
+  class Construct {
   public:
-    explicit Options() : m_mount("/app") {}
+    Construct() : m_mount("/app") {}
 
   private:
-    API_ACCESS_COMPOUND(Options, var::StringView, name);
-    API_ACCESS_COMPOUND(Options, var::StringView, mount);
-    API_ACCESS_FUNDAMENTAL(Options, u32, size, 0);
+    API_ACCESS_COMPOUND(Construct, var::StringView, name);
+    API_ACCESS_COMPOUND(Construct, var::StringView, mount);
+    API_ACCESS_FUNDAMENTAL(Construct, u32, size, 0);
   };
 
-  Appfs(const Options &options FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
+  Appfs(const Construct &options FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
   Appfs(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
 
@@ -319,14 +319,14 @@ public:
 
   u32 bytes_available() const { return m_data_size - m_bytes_written; }
 
-  class CreateOptions {
+  class Create {
   private:
-    API_ACCESS_FUNDAMENTAL(CreateOptions, fs::File *, source, nullptr);
-    API_ACCESS_COMPOUND(CreateOptions, var::String, name);
-    API_ACCESS_COMPOUND(CreateOptions, var::String, mount);
-    API_ACCESS_FUNDAMENTAL(CreateOptions, u32, size, 0);
+    API_ACCESS_FUNDAMENTAL(Create, fs::File *, source, nullptr);
+    API_ACCESS_COMPOUND(Create, var::String, name);
+    API_ACCESS_COMPOUND(Create, var::String, mount);
+    API_ACCESS_FUNDAMENTAL(Create, u32, size, 0);
     API_ACCESS_FUNDAMENTAL(
-      CreateOptions,
+      Create,
       const api::ProgressCallback *,
       progress_callback,
       nullptr);
@@ -344,7 +344,7 @@ public:
    * @return Zero on success or -1 with errno set accordingly
    *
    */
-  Appfs &create(const CreateOptions &options);
+  Appfs &create(const Create &options);
 
   /*! \details Returns true if the application
    * filesystem includes flash memory.
@@ -444,7 +444,7 @@ private:
   u32 m_bytes_written = 0;
   u32 m_data_size = 0;
 
-  int create_asynchronous(const Options &options);
+  int create_asynchronous(const Construct &options);
 };
 
 } // namespace sys

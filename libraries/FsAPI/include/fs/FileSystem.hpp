@@ -36,24 +36,24 @@ public:
    */
   u32 size(var::StringView path);
 
-  class CopyOptions {
-    API_ACCESS_COMPOUND(CopyOptions, var::StringView , source_path);
-    API_ACCESS_COMPOUND(CopyOptions, var::StringView , destination_path);
-    API_ACCESS_FUNDAMENTAL(CopyOptions, Overwrite, overwrite, Overwrite::no);
-    API_ACCESS_FUNDAMENTAL(CopyOptions, Recursive, recursive, Recursive::no);
+  class Copy {
+    API_ACCESS_COMPOUND(Copy, var::StringView, source_path);
+    API_ACCESS_COMPOUND(Copy, var::StringView, destination_path);
+    API_ACCESS_FUNDAMENTAL(Copy, Overwrite, overwrite, Overwrite::no);
+    API_ACCESS_FUNDAMENTAL(Copy, Recursive, recursive, Recursive::no);
     API_ACCESS_FUNDAMENTAL(
-      CopyOptions,
+      Copy,
       const api::ProgressCallback *,
       progress_callback,
       nullptr);
 #if defined __link
     API_ACCESS_FUNDAMENTAL(
-      CopyOptions,
+      Copy,
       link_transport_mdriver_t *,
       source_driver,
       nullptr);
     API_ACCESS_FUNDAMENTAL(
-      CopyOptions,
+      Copy,
       link_transport_mdriver_t *,
       destination_driver,
       nullptr);
@@ -61,9 +61,9 @@ public:
 #endif
   };
 
-  FileSystem &copy(const CopyOptions &options);
+  FileSystem &copy(const Copy &options);
 
-  FileSystem &copy_directory(const CopyOptions &options);
+  FileSystem &copy_directory(const Copy &options);
 
   /*! \details Removes a file or directory.
    *
@@ -97,9 +97,9 @@ public:
     std::function<const var::String(const var::String &entry)> filter,
     Recursive is_recursive = Recursive::no);
 
-  class RenameOptions {
-    API_AC(RenameOptions, var::StringView , source);
-    API_AC(RenameOptions, var::StringView , destination);
+  class Rename {
+    API_AC(Rename, var::StringView, source);
+    API_AC(Rename, var::StringView, destination);
   };
 
   /*! \details Renames a file.
@@ -109,7 +109,7 @@ public:
    * \return Zero on success
    *
    */
-  FileSystem &rename(const RenameOptions &options);
+  FileSystem &rename(const Rename &options);
 
   FileSystem &touch(var::StringView path);
 
@@ -127,7 +127,7 @@ private:
   API_AF(FileSystem, link_transport_mdriver_t *, driver, nullptr);
 #endif
 
-  FileSystem &copy(File &source, File &destination, const CopyOptions &options);
+  FileSystem &copy(File &source, File &destination, const Copy &options);
 };
 
 } // namespace fs

@@ -96,24 +96,24 @@ public:
   const_reverse_iterator crbegin() const noexcept { return m_string.crbegin(); }
   const_reverse_iterator crend() const noexcept { return m_string.crend(); }
 
-  class EraseOptions {
-    API_AF(EraseOptions, size_t, position, 0);
-    API_AF(EraseOptions, size_t, length, npos);
+  class Erase {
+    API_AF(Erase, size_t, position, 0);
+    API_AF(Erase, size_t, length, npos);
   };
 
-  using AppendOptions = EraseOptions;
-  using AssignOptions = EraseOptions;
-  using FindOptions = EraseOptions;
-  using SubStringOptions = StringView::CreateSubStringOptions;
+  using Append = Erase;
+  using Assign = Erase;
+  using Find = Erase;
+  using GetSubstring = StringView::GetSubstring;
 
-  class InsertOptions {
-    API_ACCESS_FUNDAMENTAL(InsertOptions, size_t, position, 0);
-    API_ACCESS_FUNDAMENTAL(InsertOptions, size_t, length, 0);
-    API_ACCESS_FUNDAMENTAL(InsertOptions, size_t, sub_position, 0);
-    API_ACCESS_FUNDAMENTAL(InsertOptions, size_t, sub_length, npos);
+  class Insert {
+    API_ACCESS_FUNDAMENTAL(Insert, size_t, position, 0);
+    API_ACCESS_FUNDAMENTAL(Insert, size_t, length, 0);
+    API_ACCESS_FUNDAMENTAL(Insert, size_t, sub_position, 0);
+    API_ACCESS_FUNDAMENTAL(Insert, size_t, sub_length, npos);
   };
 
-  using CompareOptions = InsertOptions;
+  using Compare = Insert;
 
   /*! \details Constructs an empty string.
    *
@@ -265,7 +265,7 @@ public:
    * @return A new string object containing the sub string specified
    *
    */
-  String get_substring(const SubStringOptions &options) const {
+  String get_substring(const GetSubstring &options) const {
     if (options.position() >= m_string.length()) {
       return String();
     }
@@ -280,7 +280,7 @@ public:
     return String(m_string.substr(0, length));
   }
 
-  String &insert(const String &string_to_insert, const InsertOptions &options) {
+  String &insert(const String &string_to_insert, const Insert &options) {
     if (options.sub_position() == npos) {
       m_string.insert(options.position(), string_to_insert.string());
     } else {
@@ -301,18 +301,18 @@ public:
    * @return A reference to this string.
    *
    */
-  String &erase(const EraseOptions &options) {
+  String &erase(const Erase &options) {
     m_string.erase(options.position(), options.length());
     return *this;
   }
 
   String &erase(StringView string_to_erase, size_t position = 0);
 
-  class ReplaceOptions {
-    API_AC(ReplaceOptions, StringView, old_string);
-    API_AC(ReplaceOptions, StringView, new_string);
-    API_AF(ReplaceOptions, size_t, position, 0);
-    API_AF(ReplaceOptions, size_t, count, 0);
+  class Replace {
+    API_AC(Replace, StringView, old_string);
+    API_AC(Replace, StringView, new_string);
+    API_AF(Replace, size_t, position, 0);
+    API_AF(Replace, size_t, count, 0);
   };
 
   /*! \details Replaces one or more instances of a string with another string
@@ -324,7 +324,7 @@ public:
    *
    */
 
-  String &replace(const ReplaceOptions &options);
+  String &replace(const Replace &options);
 
   size_t count(var::StringView to_count) const;
   size_t length() const { return m_string.length(); }
@@ -343,9 +343,7 @@ public:
     return *this;
   }
 
-  String &pop_front() {
-    return erase(EraseOptions().set_position(0).set_length(1));
-  }
+  String &pop_front() { return erase(Erase().set_position(0).set_length(1)); }
 
   char &at(size_t pos) { return m_string.at(pos); }
   const char &at(size_t pos) const { return m_string.at(pos); }
@@ -422,7 +420,7 @@ public:
   }
 
   /*! \details Assigns a substring of \a a to this String. */
-  String &assign(const String &string_to_assign, const AssignOptions &options) {
+  String &assign(const String &string_to_assign, const Assign &options) {
     m_string.assign(
       string_to_assign.string(),
       options.position(),
@@ -471,7 +469,7 @@ public:
     return *this;
   }
 
-  String &append(const String &string_to_append, const AppendOptions &options) {
+  String &append(const String &string_to_append, const Append &options) {
     m_string.append(
       string_to_append.string(),
       options.position(),
@@ -564,8 +562,7 @@ public:
    * @return Zero if the strings match
    *
    */
-  int compare(const String &string_to_compare, const CompareOptions &options)
-    const {
+  int compare(const String &string_to_compare, const Compare &options) const {
     return m_string.compare(
       options.position(),
       options.length(),

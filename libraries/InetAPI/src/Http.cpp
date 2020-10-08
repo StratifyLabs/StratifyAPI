@@ -89,7 +89,7 @@ var::String Http::to_string(Status status) {
   }
 
   result.replace(
-    String::ReplaceOptions().set_old_string("_").set_new_string(" "));
+    String::Replace().set_old_string("_").set_new_string(" "));
 
   return result;
 }
@@ -140,10 +140,10 @@ Http::Http(Socket &socket) : m_socket(socket) {}
 
 HttpClient::HttpClient(Socket &socket) : Http(socket) {}
 
-HttpClient &HttpClient::query(
+HttpClient &HttpClient::execute_method(
   Method method,
   var::StringView url,
-  const MethodOptions &options) {
+  const ExecuteMethod &options) {
   m_status_code = -1;
   m_content_length = 0;
   int result;
@@ -218,7 +218,10 @@ HttpClient &HttpClient::query(
       String key = header_response_pairs().at(i).key();
       key.to_lower();
       if (key == "location") {
-        return query(method, header_response_pairs().at(i).value(), options);
+        return execute_method(
+          method,
+          header_response_pairs().at(i).value(),
+          options);
       }
     }
   }
@@ -258,7 +261,7 @@ int HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
   m_alive_domain.clear();
 
   var::Vector<SocketAddressInfo> address_list = address_info.fetch(
-    SocketAddressInfo::FetchOptions().set_node(domain_name));
+    SocketAddressInfo::Fetch().set_node(domain_name));
   if (address_list.count() > 0) {
     m_address = SocketAddress(address_list.at(0));
     m_address.set_port(port);
@@ -474,17 +477,17 @@ Http::HeaderPair Http::HeaderPair::from_string(const var::String &string) {
 
   const String key = string_copy
                        .get_substring(
-                         String::SubStringOptions().set_length(colon_pos))
+                         String::GetSubstring().set_length(colon_pos))
                        .to_upper();
   String value;
   if (colon_pos != String::npos) {
     value = string_copy.get_substring(
-      String::SubStringOptions().set_position(colon_pos + 1));
+      String::GetSubstring().set_position(colon_pos + 1));
     if (value.at(0) == ' ') {
       value.pop_front();
     }
-    value.replace(String::ReplaceOptions().set_old_string("\r"))
-      .replace(String::ReplaceOptions().set_old_string("\n"));
+    value.replace(String::Replace().set_old_string("\r"))
+      .replace(String::Replace().set_old_string("\n"));
   }
   return Http::HeaderPair(key, value);
 }
