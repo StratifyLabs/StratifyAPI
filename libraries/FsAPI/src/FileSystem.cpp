@@ -90,7 +90,7 @@ FileSystem::copy(File &source, File &destination, const CopyOptions &options) {
     destination
       .write(
         source,
-        File::WriteOptions().set_progress_callback(options.progress_callback()))
+        File::Write().set_progress_callback(options.progress_callback()))
       .status()
       .value());
 
@@ -354,7 +354,7 @@ DataFile FileSystem::load_data_file(var::StringView file_path) {
 
   API_ASSIGN_ERROR_CODE(
     api::ErrorCode::io_error,
-    result.write(source_file, File::WriteOptions())
+    result.write(source_file, File::Write())
       .seek(0)
       .set_flags(OpenMode::read_write())
       .status()

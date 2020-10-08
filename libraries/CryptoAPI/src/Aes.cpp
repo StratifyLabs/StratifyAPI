@@ -55,7 +55,7 @@ Aes &Aes::set_key(const var::View &key) {
   return *this;
 }
 
-Aes &Aes::encrypt_ecb(const CryptOptions &options) {
+Aes &Aes::encrypt_ecb(const Crypt &options) {
 
   for (u32 i = 0; i < options.plain()->size(); i += 16) {
     unsigned char plain[16] = {0};
@@ -81,7 +81,7 @@ Aes &Aes::encrypt_ecb(const CryptOptions &options) {
   return *this;
 }
 
-Aes &Aes::decrypt_ecb(const CryptOptions &options) {
+Aes &Aes::decrypt_ecb(const Crypt &options) {
 
   if (options.cipher()->size() % 16 != 0) {
     API_ASSIGN_ERROR_CODE(api::ErrorCode::invalid_value, -1);
@@ -112,7 +112,7 @@ Aes &Aes::decrypt_ecb(const CryptOptions &options) {
   return *this;
 }
 
-Aes &Aes::encrypt_cbc(const CryptOptions &options) {
+Aes &Aes::encrypt_cbc(const Crypt &options) {
 
   u32 length = options.plain()->size();
   for (u32 i = 0; i < length; i += 16) {
@@ -146,7 +146,7 @@ Aes &Aes::encrypt_cbc(const CryptOptions &options) {
   return *this;
 }
 
-Aes &Aes::decrypt_cbc(const CryptOptions &options) {
+Aes &Aes::decrypt_cbc(const Crypt &options) {
 
   if (options.cipher()->size() % 16 != 0) {
     API_ASSIGN_ERROR_CODE(api::ErrorCode::invalid_value, -1);

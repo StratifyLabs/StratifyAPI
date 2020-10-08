@@ -92,8 +92,8 @@ public:
    */
   Device &write(fs::Aio &aio);
 
-  using fs::File::read;
-  using fs::File::write;
+  using fs::FileAccess<Device>::read;
+  using fs::FileAccess<Device>::write;
 
   Device &cancel_read(int channel = 0);
   Device &cancel_write(int channel = 0);
@@ -109,6 +109,13 @@ public:
 #endif
 
 protected:
+};
+
+template <int VersionRequest> class DeviceType {
+public:
+  static int get_version(Device &device) {
+    return device.ioctl(VersionRequest, nullptr).status().value();
+  }
 };
 
 } // namespace hal

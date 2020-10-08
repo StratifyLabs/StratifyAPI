@@ -34,16 +34,16 @@ public:
     return m_initialization_vector;
   }
 
-  class CryptOptions {
-    API_AF(CryptOptions, fs::File *, plain, nullptr);
-    API_AF(CryptOptions, fs::File *, cipher, nullptr);
+  class Crypt {
+    API_AF(Crypt, fs::File *, plain, nullptr);
+    API_AF(Crypt, fs::File *, cipher, nullptr);
   };
 
-  Aes &encrypt_ecb(const CryptOptions &options);
-  Aes &decrypt_ecb(const CryptOptions &options);
+  Aes &encrypt_ecb(const Crypt &options);
+  Aes &decrypt_ecb(const Crypt &options);
 
-  Aes &encrypt_cbc(const CryptOptions &options);
-  Aes &decrypt_cbc(const CryptOptions &options);
+  Aes &encrypt_cbc(const Crypt &options);
+  Aes &decrypt_cbc(const Crypt &options);
 
 #if 0 // not yet implemented
   Aes &encrypt_ctr(const CryptOptions &options);

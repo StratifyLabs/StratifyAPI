@@ -5,8 +5,8 @@ set(SOURCES
 #	Dac.cpp
 	Device.cpp
 #	Drive.cpp
-#	I2C.cpp
-#	Pio.cpp
+	I2C.cpp
+	Gpio.cpp
 #	Pwm.cpp
 #	Rtc.cpp
 	Spi.cpp

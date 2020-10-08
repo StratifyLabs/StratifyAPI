@@ -5,8 +5,8 @@ set(SOURCES
 #  hal/Dac.hpp
 	hal/Device.hpp
 #  hal/Drive.hpp
-#  hal/I2C.hpp
-#  hal/Pio.hpp
+	hal/I2C.hpp
+	hal/Gpio.hpp
 #  hal/Pwm.hpp
 #  hal/Rtc.hpp
   hal/Spi.hpp

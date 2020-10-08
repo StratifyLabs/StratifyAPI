@@ -55,7 +55,7 @@ API_OR_NAMED_FLAGS_OPERATOR(SpiFlags, Flags)
  * }
  * \endcode
  */
-class Spi : public SpiFlags {
+class Spi : public DeviceType<I_SPI_GETVERSION>, public SpiFlags {
 public:
   class Info {
   public:
@@ -116,10 +116,6 @@ public:
     friend class Spi;
     mutable spi_attr_t m_attributes;
   };
-
-  static int get_version(Device &device) {
-    return device.ioctl(I_SPI_GETVERSION, nullptr).status().value();
-  }
 
   static Device::IoctlOptions set_attributes(const Attributes &attributes) {
     return Device::IoctlOptions()

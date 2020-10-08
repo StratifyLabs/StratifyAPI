@@ -180,9 +180,7 @@ public:
    * This method will read up to data.size() bytes.
    *
    */
-  File &read(const var::View &item) {
-    return read(item.to_void(), item.size());
-  }
+  File &read(var::View view) { return read(view.to_void(), view.size()); }
 
   /*! \details Write the file.
    *
@@ -191,27 +189,23 @@ public:
   File &write(const void *buf, int size);
 
   /*! \details Writes the file using a var::Data object. */
-  File &write(const var::View &item) {
-    return write(item.to_const_void(), item.size());
+  File &write(var::View view) {
+    return write(view.to_const_void(), view.size());
   }
 
-  class WriteOptions {
+  class Write {
   public:
-    API_ACCESS_FUNDAMENTAL(WriteOptions, u32, location, static_cast<u32>(-1));
+    API_ACCESS_FUNDAMENTAL(Write, u32, location, static_cast<u32>(-1));
+    API_ACCESS_FUNDAMENTAL(Write, u32, page_size, FSAPI_LINK_DEFAULT_PAGE_SIZE);
+    API_ACCESS_FUNDAMENTAL(Write, size_t, size, static_cast<size_t>(-1));
     API_ACCESS_FUNDAMENTAL(
-      WriteOptions,
-      u32,
-      page_size,
-      FSAPI_LINK_DEFAULT_PAGE_SIZE);
-    API_ACCESS_FUNDAMENTAL(WriteOptions, size_t, size, static_cast<size_t>(-1));
-    API_ACCESS_FUNDAMENTAL(
-      WriteOptions,
+      Write,
       const api::ProgressCallback *,
       progress_callback,
       nullptr);
   };
 
-  File &write(File &source_file, const WriteOptions &options);
+  File &write(File &source_file, const Write &options);
 
   /*! \details Reads a line from a file.
    *
@@ -343,19 +337,19 @@ public:
     return static_cast<Derived &>(File::read(buf, size));
   }
 
-  Derived &read(const var::View &item) {
-    return static_cast<Derived &>(File::read(item));
+  Derived &read(var::View view) {
+    return static_cast<Derived &>(File::read(view));
   }
 
   Derived &write(const void *buf, size_t size) {
     return static_cast<Derived &>(File::write(buf, size));
   }
 
-  Derived &write(const var::View &item) {
-    return static_cast<Derived &>(File::write(item));
+  Derived &write(var::View view) {
+    return static_cast<Derived &>(File::write(view));
   }
 
-  Derived &write(File &source_file, const WriteOptions &options) {
+  Derived &write(File &source_file, const Write &options) {
     return static_cast<Derived &>(File::write(source_file, options));
   }
 

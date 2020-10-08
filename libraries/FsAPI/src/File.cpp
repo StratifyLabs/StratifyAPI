@@ -225,7 +225,7 @@ File &File::ioctl(int request, void *argument) {
   return *this;
 }
 
-File &File::write(File &source_file, const WriteOptions &options) {
+File &File::write(File &source_file, const Write &options) {
 
   if (options.location() != static_cast<u32>(-1)) {
     seek(options.location(), Whence::set);
@@ -313,7 +313,7 @@ File &File::write(File &source_file, const WriteOptions &options) {
 DataFile::DataFile(fs::File &file_to_load) : FileAccess("") {
   m_location = 0;
   m_open_flags = OpenMode::append_read_write();
-  write(file_to_load, WriteOptions());
+  write(file_to_load, Write());
   seek(0);
   m_open_flags = OpenMode::read_write();
 }

@@ -34,7 +34,7 @@ public:
 
 API_OR_NAMED_FLAGS_OPERATOR(UartFlags, Flags)
 
-class Uart : public UartFlags {
+class Uart : public DeviceType<I_UART_GETVERSION>, public UartFlags {
 public:
   class Attributes {
   public:

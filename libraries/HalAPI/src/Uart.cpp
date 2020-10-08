@@ -20,4 +20,3 @@ printer::operator<<(printer::Printer &printer, const hal::Uart::Info &a) {
   return printer;
 }
 
-using namespace hal;

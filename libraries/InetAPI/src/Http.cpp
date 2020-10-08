@@ -352,7 +352,7 @@ int HttpClient::send_header(
     if (socket()
           .write(
             *file,
-            fs::File::WriteOptions()
+            fs::File::Write()
               .set_page_size(m_transfer_size)
               .set_size(file->size())
               .set_progress_callback(progress_callback))
@@ -441,7 +441,7 @@ int HttpClient::listen_for_data(
       // read bytes_incoming from the socket and write it to the output file
       destination->write(
         socket(),
-        fs::File::WriteOptions()
+        fs::File::Write()
           .set_page_size(bytes_incoming)
           .set_size(bytes_incoming));
 
@@ -455,7 +455,7 @@ int HttpClient::listen_for_data(
 
       destination->write(
         socket(),
-        fs::File::WriteOptions()
+        fs::File::Write()
           .set_page_size(m_transfer_size)
           .set_size(m_content_length)
           .set_progress_callback(progress_callback));
@@ -595,7 +595,7 @@ int HttpServer::receive(fs::File &file, int content_length) {
 
       file.write(
         socket(),
-        fs::File::WriteOptions()
+        fs::File::Write()
           .set_location(bytes_received)
           .set_page_size(512)
           .set_size(chunk_size));
@@ -612,7 +612,7 @@ int HttpServer::receive(fs::File &file, int content_length) {
   return file
     .write(
       socket(),
-      fs::File::WriteOptions().set_location(0).set_page_size(512).set_size(
+      fs::File::Write().set_location(0).set_page_size(512).set_size(
         content_length))
     .status()
     .value();
