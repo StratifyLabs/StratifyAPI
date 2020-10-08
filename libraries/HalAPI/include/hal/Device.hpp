@@ -57,7 +57,8 @@ public:
    */
   Device(
     var::StringView path,
-    fs::OpenMode open_mode FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
+    fs::OpenMode open_mode
+    = fs::OpenMode::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
   Device &set_interrupt_priority(int priority, int request = I_MCU_SETACTION);
 

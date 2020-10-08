@@ -9,6 +9,10 @@ printer::Printer &
 printer::operator<<(printer::Printer &printer, const hal::Uart::Attributes &a) {
   printer.key("frequency", var::String::number(a.frequency()));
   printer.key("width", var::String::number(a.width()));
+  printer.key("rx", var::String().format("%d.%d", a.rx().port, a.rx().pin));
+  printer.key("tx", var::String().format("%d.%d", a.tx().port, a.tx().pin));
+  printer.key("rts", var::String().format("%d.%d", a.rts().port, a.rts().pin));
+  printer.key("cts", var::String().format("%d.%d", a.cts().port, a.cts().pin));
   return printer;
 }
 

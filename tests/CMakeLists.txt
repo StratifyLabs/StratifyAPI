@@ -42,10 +42,13 @@ target_include_directories(${RELEASE_TARGET}
 	${CMAKE_SOURCE_DIR}/libraries/ChronoAPI/include
 	${CMAKE_SOURCE_DIR}/libraries/FsAPI/include
 	${CMAKE_SOURCE_DIR}/libraries/CryptoAPI/include
+	${CMAKE_SOURCE_DIR}/libraries/HalAPI/include
+	${CMAKE_SOURCE_DIR}/libraries/ThreadAPI/include
 	)
 
 target_link_libraries(${RELEASE_TARGET}
 	PRIVATE
+	HalAPI_release_v7m
 	VarAPI_release_v7m
 	CryptoAPI_release_v7m
 	FsAPI_release_v7m

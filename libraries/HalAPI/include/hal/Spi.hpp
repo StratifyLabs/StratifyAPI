@@ -148,4 +148,9 @@ private:
 
 } // namespace hal
 
+namespace printer {
+Printer &operator<<(Printer &printer, const hal::Spi::Attributes &a);
+Printer &operator<<(Printer &printer, const hal::Spi::Info &a);
+} // namespace printer
+
 #endif /* SAPI_HAL_SPI_HPP_ */

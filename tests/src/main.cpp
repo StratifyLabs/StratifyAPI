@@ -5,25 +5,19 @@
 #include "Test.hpp"
 #include "crypto.hpp"
 #include "fs.hpp"
+#include "hal/Spi.hpp"
 #include "var/View.hpp"
+
+using namespace hal;
 
 int main(int argc, char *argv[]) {
 
-  Test t;
+  Device spi("/dev/spi0");
 
-  u32 value = 0x12345678;
+  spi.ioctl(Spi::set_attributes(
+    Spi::Attributes().set_flags(Spi::Flags::set_master).set_width(8)));
 
-  printf("Value is %d\n", value);
-  t.clear_view(View(value));
-  printf("value is %d\n", value);
-
-  File encrypted_file("/home/file.crypto", OpenMode::read_only());
-  DataFile df = DataFile(OpenMode::append_read_write());
-
-  Aes()
-    .set_key(var::View("abcd"))
-    .decrypt_cbc(
-      Aes::CryptOptions().set_cipher(&encrypted_file).set_plain(&df));
+  int swapped = Spi::swap(spi, 32);
 
   return 0;
 }
