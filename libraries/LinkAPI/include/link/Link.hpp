@@ -20,215 +20,6 @@
 
 namespace linkns {
 
-class LinkInfo {
-public:
-  LinkInfo() {}
-  LinkInfo(const var::String &path, const sys::Sys::Info &sys_info) {
-    set_path(path);
-    set_info(sys_info);
-  }
-
-  void clear() {
-    m_serial_number.clear();
-    m_path.clear();
-    m_sys_info.clear();
-  }
-
-  LinkInfo &set_port(var::StringView port) {
-    m_path = var::String(port);
-    return *this;
-  }
-
-  LinkInfo &set_info(const sys::Sys::Info &sys_info) {
-    m_sys_info = sys_info;
-    m_serial_number = sys_info.serial_number().to_string();
-    return *this;
-  }
-
-  const var::String &port() const { return m_path; }
-
-private:
-  API_ACCESS_COMPOUND(LinkInfo, var::String, path);
-  API_READ_ACCESS_COMPOUND(LinkInfo, sys::Sys::Info, sys_info);
-  API_READ_ACCESS_COMPOUND(LinkInfo, var::String, serial_number);
-};
-
-class LinkPath {
-public:
-  LinkPath() { m_driver = nullptr; }
-
-  LinkPath(const var::String &path, link_transport_mdriver_t *driver) {
-    if (path.find(host_prefix()) == 0) {
-      m_driver = nullptr;
-      m_path = path.get_substring_at_position(host_prefix().length());
-    } else {
-      m_driver = driver;
-      size_t position;
-      if (path.find(device_prefix()) == 0) {
-        position = device_prefix().length();
-      } else {
-        position = 0;
-      }
-      m_path = path.get_substring_at_position(position);
-    }
-  }
-
-  bool is_valid() const { return !m_path.is_empty(); }
-
-  static bool is_device_path(const var::String &path) {
-    return path.find(device_prefix()) == 0;
-  }
-
-  static bool is_host_path(const var::String &path) {
-    return path.find(host_prefix()) == 0;
-  }
-
-  static var::String device_prefix() { return var::String("device@"); }
-
-  static var::String host_prefix() { return var::String("host@"); }
-
-  var::String path_description() const {
-    return (m_driver ? var::String("device@") : var::String("host@")) + m_path;
-  }
-
-  bool is_device_path() const { return m_driver != nullptr; }
-
-  bool is_host_path() const { return m_driver == nullptr; }
-
-  var::String prefix() const {
-    return is_host_path() ? host_prefix() : device_prefix();
-  }
-
-  const var::String &path() const { return m_path; }
-
-  link_transport_mdriver_t *driver() const { return m_driver; }
-
-private:
-  link_transport_mdriver_t *m_driver;
-  var::String m_path;
-};
-
-/*!
- * \brief The LinkDriverPath class
- * \details The LinkDriverPath class
- * creates parses the details of a link driver path. The path
- * takes one of the following forms
- *
- * ```
- * <serial device path>
- * serial@<serial device path>
- * <driver>@<vendor id>/<product id>/<interface number>
- * <driver>@<vendor id>/<product id>/<interface number>/<serial number>
- * <driver>@<vendor id>/<product id>/<interface number>/<serial number>/<device
- * path>
- * ```
- *
- * - `<driver>` can be `serial` or `usb`
- *
- */
-class LinkDriverPath {
-public:
-  LinkDriverPath() {}
-  LinkDriverPath(const var::String &driver_path) {
-    path() = driver_path;
-    var::StringList driver_details = m_path.split("@");
-    var::String details_string;
-    if (driver_details.count() == 1) {
-      driver_name() = "serial";
-      set_path(var::String("serial@") + driver_path);
-      details_string = driver_path;
-    } else if (driver_details.count() == 2) {
-      m_driver_name = driver_details.at(0);
-      details_string = driver_details.at(1);
-    }
-
-    if (details_string.is_empty()) {
-      return;
-    }
-
-    if (details_string.find("/dev") == 0) {
-      set_device_path(details_string);
-      return;
-    }
-
-    if (details_string.length() && details_string.front() == '/') {
-      details_string.pop_front();
-    }
-    var::StringList detail_list = details_string.split("/");
-
-    if (detail_list.count() == 1) {
-      set_device_path(detail_list.at(0));
-    } else if (detail_list.count() > 2) {
-      //<driver>@/<vendor id>/<product id>/<interface number>/<serial
-      // number>/<device path>
-      set_vendor_id(detail_list.at(0));
-      set_product_id(detail_list.at(1));
-      set_interface_number(detail_list.at(2));
-      if (detail_list.count() > 3) {
-        set_serial_number(detail_list.at(3));
-      }
-      if (detail_list.count() > 4) {
-        set_device_path(detail_list.at(4));
-      }
-    }
-  }
-
-  LinkDriverPath &construct_path() {
-    set_path(
-      driver_name() + "@/" + vendor_id() + "/" + product_id() + "/"
-      + interface_number() + "/" + serial_number() + "/" + device_path());
-
-    return *this;
-  }
-
-  bool operator==(const LinkDriverPath &a) const {
-    // if both values are provided and they are not the same -- they are not the
-    // same
-    if (
-      !vendor_id().is_empty() && !a.vendor_id().is_empty()
-      && (vendor_id() != a.vendor_id())) {
-      return false;
-    }
-    if (
-      !product_id().is_empty() && !a.product_id().is_empty()
-      && (product_id() != a.product_id())) {
-      return false;
-    }
-    if (
-      !interface_number().is_empty() && !a.interface_number().is_empty()
-      && (interface_number() != a.interface_number())) {
-      return false;
-    }
-    if (
-      !serial_number().is_empty() && !a.serial_number().is_empty()
-      && (serial_number() != a.serial_number())) {
-      return false;
-    }
-    if (
-      !driver_name().is_empty() && !a.driver_name().is_empty()
-      && (driver_name() != a.driver_name())) {
-      return false;
-    }
-    if (
-      !device_path().is_empty() && !a.device_path().is_empty()
-      && (device_path() != a.device_path())) {
-      return false;
-    }
-    return true;
-  }
-
-private:
-  API_ACCESS_COMPOUND(LinkDriverPath, var::String, path);
-  API_ACCESS_COMPOUND(LinkDriverPath, var::String, device_path);
-  API_ACCESS_COMPOUND(LinkDriverPath, var::String, serial_number);
-  API_ACCESS_COMPOUND(LinkDriverPath, var::String, interface_number);
-  API_ACCESS_COMPOUND(LinkDriverPath, var::String, vendor_id);
-  API_ACCESS_COMPOUND(LinkDriverPath, var::String, product_id);
-  API_ACCESS_COMPOUND(LinkDriverPath, var::String, driver_name);
-
-  var::String lookup_serial_port_path_from_usb_details();
-};
-
 /*! \brief Link for Controlling Stratify OS remotely
  * \details This class is used to access devices
  * running Stratify OS from a remote platform (desktop/mobile/web).
@@ -243,6 +34,216 @@ private:
  */
 class Link {
 public:
+  class Info {
+  public:
+    Info() {}
+    Info(const var::String &path, const sys::Sys::Info &sys_info) {
+      set_path(path);
+      set_info(sys_info);
+    }
+
+    void clear() {
+      m_serial_number.clear();
+      m_path.clear();
+      m_sys_info.clear();
+    }
+
+    Info &set_port(var::StringView port) {
+      m_path = var::String(port);
+      return *this;
+    }
+
+    Info &set_info(const sys::Sys::Info &sys_info) {
+      m_sys_info = sys_info;
+      m_serial_number = sys_info.serial_number().to_string();
+      return *this;
+    }
+
+    const var::String &port() const { return m_path; }
+
+  private:
+    API_ACCESS_COMPOUND(Info, var::String, path);
+    API_READ_ACCESS_COMPOUND(Info, sys::Sys::Info, sys_info);
+    API_READ_ACCESS_COMPOUND(Info, var::String, serial_number);
+  };
+
+  class Path {
+  public:
+    Path() { m_driver = nullptr; }
+
+    Path(const var::String &path, link_transport_mdriver_t *driver) {
+      if (path.find(host_prefix()) == 0) {
+        m_driver = nullptr;
+        m_path = path.get_substring_at_position(host_prefix().length());
+      } else {
+        m_driver = driver;
+        size_t position;
+        if (path.find(device_prefix()) == 0) {
+          position = device_prefix().length();
+        } else {
+          position = 0;
+        }
+        m_path = path.get_substring_at_position(position);
+      }
+    }
+
+    bool is_valid() const { return !m_path.is_empty(); }
+
+    static bool is_device_path(const var::String &path) {
+      return path.find(device_prefix()) == 0;
+    }
+
+    static bool is_host_path(const var::String &path) {
+      return path.find(host_prefix()) == 0;
+    }
+
+    static var::String device_prefix() { return var::String("device@"); }
+
+    static var::String host_prefix() { return var::String("host@"); }
+
+    var::String path_description() const {
+      return (m_driver ? var::String("device@") : var::String("host@"))
+             + m_path;
+    }
+
+    bool is_device_path() const { return m_driver != nullptr; }
+
+    bool is_host_path() const { return m_driver == nullptr; }
+
+    var::String prefix() const {
+      return is_host_path() ? host_prefix() : device_prefix();
+    }
+
+    const var::String &path() const { return m_path; }
+
+    link_transport_mdriver_t *driver() const { return m_driver; }
+
+  private:
+    link_transport_mdriver_t *m_driver;
+    var::String m_path;
+  };
+
+  /*!
+   * \brief The LinkDriverPath class
+   * \details The LinkDriverPath class
+   * creates parses the details of a link driver path. The path
+   * takes one of the following forms
+   *
+   * ```
+   * <serial device path>
+   * serial@<serial device path>
+   * <driver>@<vendor id>/<product id>/<interface number>
+   * <driver>@<vendor id>/<product id>/<interface number>/<serial number>
+   * <driver>@<vendor id>/<product id>/<interface number>/<serial
+   * number>/<device path>
+   * ```
+   *
+   * - `<driver>` can be `serial` or `usb`
+   *
+   */
+  class DriverPath {
+  public:
+    DriverPath() {}
+    DriverPath(const var::String &driver_path) {
+      path() = driver_path;
+      var::StringList driver_details = m_path.split("@");
+      var::String details_string;
+      if (driver_details.count() == 1) {
+        driver_name() = "serial";
+        set_path(var::String("serial@") + driver_path);
+        details_string = driver_path;
+      } else if (driver_details.count() == 2) {
+        m_driver_name = driver_details.at(0);
+        details_string = driver_details.at(1);
+      }
+
+      if (details_string.is_empty()) {
+        return;
+      }
+
+      if (details_string.find("/dev") == 0) {
+        set_device_path(details_string);
+        return;
+      }
+
+      if (details_string.length() && details_string.front() == '/') {
+        details_string.pop_front();
+      }
+      var::StringList detail_list = details_string.split("/");
+
+      if (detail_list.count() == 1) {
+        set_device_path(detail_list.at(0));
+      } else if (detail_list.count() > 2) {
+        //<driver>@/<vendor id>/<product id>/<interface number>/<serial
+        // number>/<device path>
+        set_vendor_id(detail_list.at(0));
+        set_product_id(detail_list.at(1));
+        set_interface_number(detail_list.at(2));
+        if (detail_list.count() > 3) {
+          set_serial_number(detail_list.at(3));
+        }
+        if (detail_list.count() > 4) {
+          set_device_path(detail_list.at(4));
+        }
+      }
+    }
+
+    DriverPath &construct_path() {
+      set_path(
+        driver_name() + "@/" + vendor_id() + "/" + product_id() + "/"
+        + interface_number() + "/" + serial_number() + "/" + device_path());
+
+      return *this;
+    }
+
+    bool operator==(const DriverPath &a) const {
+      // if both values are provided and they are not the same -- they are not
+      // the same
+      if (
+        !vendor_id().is_empty() && !a.vendor_id().is_empty()
+        && (vendor_id() != a.vendor_id())) {
+        return false;
+      }
+      if (
+        !product_id().is_empty() && !a.product_id().is_empty()
+        && (product_id() != a.product_id())) {
+        return false;
+      }
+      if (
+        !interface_number().is_empty() && !a.interface_number().is_empty()
+        && (interface_number() != a.interface_number())) {
+        return false;
+      }
+      if (
+        !serial_number().is_empty() && !a.serial_number().is_empty()
+        && (serial_number() != a.serial_number())) {
+        return false;
+      }
+      if (
+        !driver_name().is_empty() && !a.driver_name().is_empty()
+        && (driver_name() != a.driver_name())) {
+        return false;
+      }
+      if (
+        !device_path().is_empty() && !a.device_path().is_empty()
+        && (device_path() != a.device_path())) {
+        return false;
+      }
+      return true;
+    }
+
+  private:
+    API_ACCESS_COMPOUND(DriverPath, var::String, path);
+    API_ACCESS_COMPOUND(DriverPath, var::String, device_path);
+    API_ACCESS_COMPOUND(DriverPath, var::String, serial_number);
+    API_ACCESS_COMPOUND(DriverPath, var::String, interface_number);
+    API_ACCESS_COMPOUND(DriverPath, var::String, vendor_id);
+    API_ACCESS_COMPOUND(DriverPath, var::String, product_id);
+    API_ACCESS_COMPOUND(DriverPath, var::String, driver_name);
+
+    var::String lookup_serial_port_path_from_usb_details();
+  };
+
   Link();
   ~Link();
 
@@ -259,7 +260,7 @@ public:
   } port_device_t;
   /*! \endcond */
 
-  var::Vector<LinkInfo> get_info_list();
+  var::Vector<Info> get_info_list();
 
   /*! \details Gets the error message if an operation fails.
    */
@@ -389,16 +390,12 @@ public:
 
   enum class IsVerify { no, yes };
 
-  class UpdateOsOptions {
-    API_AF(UpdateOsOptions, fs::File *, image, nullptr);
-    API_AF(UpdateOsOptions, IsVerify, verify, IsVerify::no);
-    API_AF(
-      UpdateOsOptions,
-      const api::ProgressCallback *,
-      progress_callback,
-      nullptr);
-    API_AF(UpdateOsOptions, u32, bootloader_retry_count, 20);
-    API_AF(UpdateOsOptions, printer::Printer *, printer, nullptr);
+  class UpdateOs {
+    API_AF(UpdateOs, fs::File *, image, nullptr);
+    API_AF(UpdateOs, IsVerify, verify, IsVerify::no);
+    API_AF(UpdateOs, const api::ProgressCallback *, progress_callback, nullptr);
+    API_AF(UpdateOs, u32, bootloader_retry_count, 20);
+    API_AF(UpdateOs, printer::Printer *, printer, nullptr);
   };
 
   /*!
@@ -414,7 +411,7 @@ public:
    * before calling this method.
    *
    */
-  int update_os(const UpdateOsOptions &options);
+  int update_os(const UpdateOs &options);
 
   /*! \details Returns the driver needed by other API objects.
    *
@@ -488,7 +485,7 @@ public:
    */
   const sys::Sys::Info &sys_info() const { return m_link_info.sys_info(); }
 
-  const LinkInfo &info() const { return m_link_info; }
+  const Info &info() const { return m_link_info; }
 
 private:
   var::String m_notify_path;
@@ -501,16 +498,16 @@ private:
   IsBootloader m_is_bootloader = IsBootloader::no;
   Legacy m_is_legacy = Legacy::no;
 
-  LinkInfo m_link_info;
+  Info m_link_info;
   bootloader_attr_t m_bootloader_attributes = {0};
 
   link_transport_mdriver_t m_driver_instance = {0};
 
   u32 validate_os_image_id_with_connected_bootloader(fs::File *source_image);
 
-  int erase_os(const UpdateOsOptions &options);
+  int erase_os(const UpdateOs &options);
 
-  int install_os(u32 image_id, const UpdateOsOptions &options);
+  int install_os(u32 image_id, const UpdateOs &options);
 
   int check_error(int err);
   void reset_progress();

@@ -381,18 +381,16 @@ public:
     return m_size_read_only & (m_size_read_only_flag);
   }
 
-  class CopyOptions {
-    API_AF(CopyOptions, const void *, source, nullptr);
-    API_AF(CopyOptions, void *, destination, nullptr);
-    API_AF(CopyOptions, size_t, size, 0);
+  class Copy {
+    API_AF(Copy, const void *, source, nullptr);
+    API_AF(Copy, void *, destination, nullptr);
+    API_AF(Copy, size_t, size, 0);
   };
 
   View &copy(const View &source) {
-    if (m_data) {
+    if (!is_read_only()) {
       size_t copy_size = size() > source.size() ? source.size() : size();
       memcpy(m_data, source.to_const_void(), copy_size);
-    } else {
-      // assign error to read only memory
     }
     return *this;
   }

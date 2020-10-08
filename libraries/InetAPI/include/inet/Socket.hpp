@@ -57,6 +57,15 @@ public:
     protocol_icmpv6 = IPPROTO_ICMPV6,
     protocol_ip /*! IP Protocol */ = IPPROTO_IP,
   };
+
+  typedef struct {
+    size_t size;
+    union {
+      struct sockaddr sockaddr;
+      struct sockaddr_in sockaddr_in;
+      struct sockaddr_in6 sockaddr_in6;
+    };
+  } socketaddr_t;
 };
 
 /*! \brief Socket Address Info
@@ -115,7 +124,7 @@ public:
     int protocol = protocol_tcp,
     int flags = 0);
 
-  bool is_valid() { return m_sockaddr.size() > 0; }
+  bool is_valid() { return m_sockaddr.size > 0; }
 
   /*! \details Sets the flags used for getting address info.
    *
@@ -162,8 +171,9 @@ public:
 
 private:
   friend class SocketAddress;
-  struct addrinfo m_addrinfo;
-  var::Data m_sockaddr;
+  struct addrinfo m_addrinfo = {0};
+
+  socketaddr_t m_sockaddr = {0};
   var::String m_canon_name;
 };
 
@@ -221,10 +231,10 @@ public:
     m_type = 0;
   }
 
-  bool is_valid() const { return m_sockaddr.size() > 0; }
+  bool is_valid() const { return m_sockaddr.size > 0; }
 
   explicit SocketAddress(const SocketAddressIpv4 &ipv4) {
-    m_sockaddr.copy_contents(var::View(ipv4.m_sockaddr_in));
+    m_sockaddr.sockaddr_in = ipv4.m_sockaddr_in;
     m_protocol = ipv4.m_protocol;
     m_type = ipv4.m_type;
   }
@@ -245,18 +255,20 @@ public:
     const sockaddr_in &ipv4,
     int protocol = SocketAddressInfo::protocol_tcp,
     int type = SocketAddressInfo::type_stream) {
-    m_sockaddr.copy_contents(var::View(ipv4));
+    m_sockaddr.sockaddr_in = ipv4;
+    m_sockaddr.size = sizeof(ipv4);
     m_protocol = protocol;
     m_type = type;
   }
 
   explicit SocketAddress(const sockaddr_in6 &ipv6) {
-    m_sockaddr.copy_contents(var::View(ipv6));
+    m_sockaddr.sockaddr_in6 = ipv6;
+    m_sockaddr.size = sizeof(ipv6);
   }
 
   SocketAddress &set_port(u16 port);
 
-  u32 length() const { return m_sockaddr.size(); }
+  u32 length() const { return m_sockaddr.size; }
 
   int type() const { return m_type; }
   int protocol() const { return m_protocol; }
@@ -290,15 +302,13 @@ public:
   // struct in_addr6 address_ipv6() const { return m_sockaddr.to<const
   // sockaddr_in6>()->sin6_addr.un; }
 
-  const struct sockaddr *to_sockaddr() const {
-    return var::View(m_sockaddr).to<struct sockaddr>();
-  }
+  const struct sockaddr *to_sockaddr() const { return &m_sockaddr.sockaddr; }
 
   const var::String &canon_name() const { return m_canon_name; }
 
 protected:
   friend class Socket;
-  var::Data m_sockaddr;
+  socketaddr_t m_sockaddr;
   var::String m_canon_name;
   int m_protocol;
   int m_type;

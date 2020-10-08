@@ -29,28 +29,26 @@ SocketAddressInfo::SocketAddressInfo(
   set_type(type);
   set_protocol(protocol);
   if (family == family_inet) {
-    m_sockaddr.resize(sizeof(struct sockaddr_in));
 #if !defined __win32 && !defined __linux
-    var::View(m_sockaddr).to<struct sockaddr_in>()->sin_len = m_sockaddr.size();
+    m_sockaddr.sockaddr_in.sin_len = sizeof(struct sockaddr_in);
 #else
 
 #endif
-    var::View(m_sockaddr).to<struct sockaddr_in>()->sin_family = family;
-    var::View(m_sockaddr).to<struct sockaddr_in>()->sin_addr = {0};
-    // var::View(m_sockaddr).to<struct sockaddr_in>()->sin_zero = {0};
+    m_sockaddr.sockaddr_in.sin_family = family;
+    m_sockaddr.sockaddr_in.sin_addr = {0};
+    // m_sockaddr.sockaddr_in.sin_zero = {0};
   } else {
-    m_sockaddr.resize(sizeof(struct sockaddr_in6));
+    m_sockaddr.size = (sizeof(struct sockaddr_in6));
 #if !defined __win32 && !defined __linux
-    var::View(m_sockaddr).to<struct sockaddr_in6>()->sin6_len
-      = m_sockaddr.size();
+    m_sockaddr.sockaddr_in6.sin6_len = m_sockaddr.size;
 #else
 
 #endif
-    var::View(m_sockaddr).to<struct sockaddr_in6>()->sin6_family = family;
-    var::View(m_sockaddr).to<struct sockaddr_in6>()->sin6_flowinfo = 0;
-    var::View(m_sockaddr).to<struct sockaddr_in6>()->sin6_scope_id = 0;
-    var::View(m_sockaddr).to<struct sockaddr_in6>()->sin6_port = 0;
-    var::View(m_sockaddr).to<struct sockaddr_in6>()->sin6_addr = {0};
+    m_sockaddr.sockaddr_in6.sin6_family = family;
+    m_sockaddr.sockaddr_in6.sin6_flowinfo = 0;
+    m_sockaddr.sockaddr_in6.sin6_scope_id = 0;
+    m_sockaddr.sockaddr_in6.sin6_port = 0;
+    m_sockaddr.sockaddr_in6.sin6_addr = {0};
   }
 }
 
@@ -85,9 +83,7 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(const Fetch &options) {
     value.m_addrinfo = *info;
     if (info->ai_addr) {
 
-      View address(info->ai_addr, info->ai_addrlen);
-
-      value.m_sockaddr.copy_contents(address);
+      View(value.m_sockaddr).copy(View(info->ai_addr, info->ai_addrlen));
     }
 
     if (info->ai_canonname) {
@@ -133,9 +129,9 @@ u16 SocketAddress::port() const {
 
 SocketAddress &SocketAddress::set_port(u16 port) {
   if (is_ipv4()) {
-    var::View(m_sockaddr).to<struct sockaddr_in>()->sin_port = htons(port);
+    m_sockaddr.sockaddr_in.sin_port = htons(port);
   } else if (is_ipv6()) {
-    var::View(m_sockaddr).to<struct sockaddr_in6>()->sin6_port = htons(port);
+    m_sockaddr.sockaddr_in6.sin6_port = htons(port);
   }
   return *this;
 }
@@ -331,12 +327,12 @@ int Socket::bind_and_listen(const SocketAddress &addr, int backlog) const {
 Socket Socket::accept(SocketAddress &address) const {
   Socket result;
   socklen_t len = sizeof(struct sockaddr_in6);
-  address.m_sockaddr.resize(len);
-  result.m_socket = decode_socket_return(::accept(
-    m_socket,
-    var::View(address.m_sockaddr).to<struct sockaddr>(),
-    &len));
-  address.m_sockaddr.resize(len);
+  address.m_sockaddr.size = len;
+
+  result.m_socket = decode_socket_return(
+    ::accept(m_socket, &address.m_sockaddr.sockaddr, &len));
+
+  address.m_sockaddr.size = len;
   return result;
 }
 
@@ -394,7 +390,7 @@ int Socket::send_to(
 }
 
 int Socket::receive_from(const SocketAddress &address, void *buf, int nbyte) {
-  socklen_t address_len = address.m_sockaddr.size();
+  socklen_t address_len = address.m_sockaddr.size;
   return decode_socket_return(::recvfrom(
     m_socket,
     (char *)buf,

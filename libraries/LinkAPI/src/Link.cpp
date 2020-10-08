@@ -70,8 +70,8 @@ var::Vector<var::String> Link::get_path_list() {
   return result;
 }
 
-var::Vector<LinkInfo> Link::get_info_list() {
-  var::Vector<LinkInfo> result;
+var::Vector<Link::Info> Link::get_info_list() {
+  var::Vector<Info> result;
   var::Vector<var::String> port_list = get_path_list();
 
   // disconnect if already connected
@@ -82,7 +82,7 @@ var::Vector<LinkInfo> Link::get_info_list() {
     if (connect(port_list.at(i)) < 0) {
       // couldn't connect
     } else {
-      result.push_back(LinkInfo(port_list.at(i), sys_info()));
+      result.push_back(Info(port_list.at(i), sys_info()));
       disconnect();
     }
   }
@@ -151,7 +151,7 @@ int Link::connect(var::StringView path, Legacy is_legacy) {
 
 int Link::reconnect(int retries, chrono::MicroTime delay) {
   int result;
-  LinkInfo last_info(info());
+  Info last_info(info());
   for (u32 i = 0; i < retries; i++) {
     result = connect(last_info.port());
     if (result >= 0) {
@@ -503,7 +503,7 @@ u32 Link::validate_os_image_id_with_connected_bootloader(File *source_image) {
   return image_id;
 }
 
-int Link::erase_os(const UpdateOsOptions &options) {
+int Link::erase_os(const UpdateOs &options) {
   int err;
 
   if (!is_bootloader()) {
@@ -564,7 +564,7 @@ int Link::erase_os(const UpdateOsOptions &options) {
   return 0;
 }
 
-int Link::install_os(u32 image_id, const UpdateOsOptions &options) {
+int Link::install_os(u32 image_id, const UpdateOs &options) {
 
   // must be connected to the bootloader with an erased OS
   int err = -1;
@@ -761,7 +761,7 @@ int Link::install_os(u32 image_id, const UpdateOsOptions &options) {
   return check_error(err);
 }
 
-int Link::update_os(const UpdateOsOptions &options) {
+int Link::update_os(const UpdateOs &options) {
 
   API_ASSERT(options.image() != nullptr);
   API_ASSERT(options.printer() != nullptr);
@@ -793,7 +793,7 @@ int Link::update_os(const UpdateOsOptions &options) {
   return 0;
 }
 
-var::String LinkDriverPath::lookup_serial_port_path_from_usb_details() {
+var::String Link::DriverPath::lookup_serial_port_path_from_usb_details() {
 
 #if defined __win32
 
