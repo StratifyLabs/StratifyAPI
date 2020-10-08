@@ -8,7 +8,7 @@
 #include "../api/WorkObject.hpp"
 #include "../fs/File.hpp"
 #include "../var/ConstString.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "ProgressCallback.hpp"
 #include <sos/link.h>
 

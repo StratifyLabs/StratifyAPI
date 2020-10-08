@@ -1,94 +1,43 @@
-/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
+             // LICENSE.md for rights.
 
 #ifndef SAPI_HAL_SPI_HPP_
 #define SAPI_HAL_SPI_HPP_
 
 #include <sos/dev/spi.h>
-#include "PinAssignment.hpp"
-#include "Periph.hpp"
 
+#include "Device.hpp"
+#include "PinAssignment.hpp"
 
 namespace hal {
 
-class SpiFlags {
-public:
-	enum flags {
-		flag_is_format_spi/*! See \ref SPI_FLAG_IS_FORMAT_SPI */ = SPI_FLAG_IS_FORMAT_SPI,
-		flag_is_format_ti /*! See \ref SPI_FLAG_IS_FORMAT_TI */ = SPI_FLAG_IS_FORMAT_TI,
-		flag_is_format_microwire /*! See \ref SPI_FLAG_IS_FORMAT_MICROWIRE */ = SPI_FLAG_IS_FORMAT_MICROWIRE,
-		flag_is_mode0 /*! See \ref SPI_FLAG_IS_MODE0 */ = SPI_FLAG_IS_MODE0,
-		flag_is_mode1 /*! See \ref SPI_FLAG_IS_MODE1 */ = SPI_FLAG_IS_MODE1,
-		flag_is_mode2 /*! See \ref SPI_FLAG_IS_MODE2 */ = SPI_FLAG_IS_MODE2,
-		flag_is_mode3 /*! See \ref SPI_FLAG_IS_MODE3 */ = SPI_FLAG_IS_MODE3,
-		flag_set_master /*! See \ref SPI_FLAG_SET_MASTER */ = SPI_FLAG_SET_MASTER,
-		flag_set_slave /*! See \ref SPI_FLAG_SET_SLAVE */ = SPI_FLAG_SET_SLAVE,
-		flag_is_full_duplex /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */ = SPI_FLAG_IS_FULL_DUPLEX,
-		flag_set_full_duplex /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */ = SPI_FLAG_SET_FULL_DUPLEX,
-		flag_is_half_duplex /*! See \ref SPI_FLAG_IS_HALF_DUPLEX */ = SPI_FLAG_IS_HALF_DUPLEX,
-		flag_set_half_duplex /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */ = SPI_FLAG_SET_HALF_DUPLEX,
-	};
-
+struct SpiFlags {
+  enum class Flags {
+    null = 0,
+    is_format_spi /*! See \ref SPI_FLAG_IS_FORMAT_SPI */
+    = SPI_FLAG_IS_FORMAT_SPI,
+    is_format_ti /*! See \ref SPI_FLAG_IS_FORMAT_TI */
+    = SPI_FLAG_IS_FORMAT_TI,
+    is_format_microwire /*! See \ref SPI_FLAG_IS_FORMAT_MICROWIRE */
+    = SPI_FLAG_IS_FORMAT_MICROWIRE,
+    is_mode0 /*! See \ref SPI_FLAG_IS_MODE0 */ = SPI_FLAG_IS_MODE0,
+    is_mode1 /*! See \ref SPI_FLAG_IS_MODE1 */ = SPI_FLAG_IS_MODE1,
+    is_mode2 /*! See \ref SPI_FLAG_IS_MODE2 */ = SPI_FLAG_IS_MODE2,
+    is_mode3 /*! See \ref SPI_FLAG_IS_MODE3 */ = SPI_FLAG_IS_MODE3,
+    set_master /*! See \ref SPI_FLAG_SET_MASTER */ = SPI_FLAG_SET_MASTER,
+    set_slave /*! See \ref SPI_FLAG_SET_SLAVE */ = SPI_FLAG_SET_SLAVE,
+    is_full_duplex /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */
+    = SPI_FLAG_IS_FULL_DUPLEX,
+    set_full_duplex /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */
+    = SPI_FLAG_SET_FULL_DUPLEX,
+    is_half_duplex /*! See \ref SPI_FLAG_IS_HALF_DUPLEX */
+    = SPI_FLAG_IS_HALF_DUPLEX,
+    set_half_duplex /*! See \ref SPI_FLAG_IS_FULL_DUPLEX */
+    = SPI_FLAG_SET_HALF_DUPLEX,
+  };
 };
 
-API_OR_FLAGS_OPERATOR(SpiFlags)
-
-
-/*! \brief SPI Pin Assignment
- * \details This class allows simple manipulation of the spi_pin_assignment_t.
- *
- */
-class SpiPinAssignment : public PinAssignment<spi_pin_assignment_t>{};
-
-
-class SpiAttributes : public PinAssignmentPeriphAttributes<spi_attr_t, spi_pin_assignment_t>, public SpiFlags {
-public:
-
-	SpiAttributes(){
-		set_flags(
-					flag_set_master |
-					flag_is_format_spi |
-					flag_is_mode0 |
-					flag_is_half_duplex
-					);
-		set_frequency(1000000);
-		set_width(8);
-	}
-
-	SpiAttributes & set_miso(const mcu_pin_t & pin){ m_attr.pin_assignment.miso = pin; return *this; }
-	SpiAttributes & set_mosi(const mcu_pin_t & pin){ m_attr.pin_assignment.mosi = pin; return *this; }
-	SpiAttributes & set_sck(const mcu_pin_t & pin){ m_attr.pin_assignment.sck = pin; return *this; }
-	SpiAttributes & set_cs(const mcu_pin_t & pin){ m_attr.pin_assignment.cs = pin; return *this; }
-	SpiAttributes & set_width(u8 value){ m_attr.width = value; return *this; }
-	SpiAttributes & set_frequency(u32 value){ PeriphAttributes::set_frequency(value); return *this; }
-	SpiAttributes & set_flags(enum flags value){ PeriphAttributes::set_flags(value); return *this; }
-
-	mcu_pin_t miso() const { return m_attr.pin_assignment.miso; }
-	mcu_pin_t mosi() const { return m_attr.pin_assignment.mosi; }
-	mcu_pin_t sck() const { return m_attr.pin_assignment.sck; }
-	mcu_pin_t cs() const { return m_attr.pin_assignment.cs; }
-	u8 width() const { return m_attr.width; }
-
-private:
-
-
-};
-
-typedef SpiAttributes SpiAttr;
-
-class SpiInfo {
-public:
-	SpiInfo(){ memset(&m_info, 0, sizeof(spi_info_t)); }
-	SpiInfo(const spi_info_t & info){ m_info = info; }
-
-	bool is_valid() const { return m_info.o_flags != 0; }
-	u32 o_flags() const { return m_info.o_flags; }
-	u32 o_events() const { return m_info.o_events; }
-
-
-private:
-	spi_info_t m_info;
-};
-
+API_OR_NAMED_FLAGS_OPERATOR(SpiFlags, Flags)
 
 /*! \brief SPI Class
  * \details This class gives access to a SPI port.
@@ -106,56 +55,97 @@ private:
  * }
  * \endcode
  */
-class Spi : public Periph<spi_info_t, spi_attr_t, SpiAttributes, 's'>, public SpiFlags {
+class Spi : public SpiFlags {
 public:
+  class Info {
+  public:
+    Info() { m_info = {0}; }
+    Info(const spi_info_t &info) { m_info = info; }
+    bool is_valid() const { return m_info.o_flags != 0; }
+    API_READ_ACCESS_MEMBER_FUNDAMENTAL(Info, u32, info, o_flags)
+    API_READ_ACCESS_MEMBER_FUNDAMENTAL(Info, u32, info, o_events)
+  private:
+    friend class Spi;
+    spi_info_t m_info;
+  };
 
-	using SourceBuffer = var::View::SourceBuffer;
-	using DestinationBuffer = var::View::DestinationBuffer;
+  class Attributes {
+  public:
+    Attributes() {
+      set_flags(
+        Flags::set_master | Flags::is_format_spi | Flags::is_mode0
+        | Flags::is_half_duplex);
+      set_frequency(1000000);
+      set_width(8);
+    }
 
-	/*! \details Constructs a SPI object using \a port. */
-	Spi(port_t port);
+    Attributes &set_flags(Flags flags) {
+      m_attributes.o_flags = static_cast<u32>(flags);
+      return *this;
+    }
 
-	/*! \details swap a byte on the SPI bus */
-	int swap(int byte) const;
+    API_ACCESS_MEMBER_FUNDAMENTAL(Attributes, u8, attributes, width)
+    API_ACCESS_MEMBER_FUNDAMENTAL_WITH_ALIAS(
+      Attributes,
+      u32,
+      attributes,
+      frequency,
+      freq)
+    API_ACCESS_MEMBER_FUNDAMENTAL(
+      Attributes,
+      mcu_pin_t,
+      attributes.pin_assignment,
+      miso)
+    API_ACCESS_MEMBER_FUNDAMENTAL(
+      Attributes,
+      mcu_pin_t,
+      attributes.pin_assignment,
+      mosi)
+    API_ACCESS_MEMBER_FUNDAMENTAL(
+      Attributes,
+      mcu_pin_t,
+      attributes.pin_assignment,
+      sck)
+    API_ACCESS_MEMBER_FUNDAMENTAL(
+      Attributes,
+      mcu_pin_t,
+      attributes.pin_assignment,
+      cs)
 
-	int set_attr(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0) const {
-		spi_attr_t attr;
-		attr.o_flags = o_flags;
-		attr.freq = freq;
-		if( pin_assignment != 0 ){
-			memcpy(&attr.pin_assignment, pin_assignment, sizeof(spi_pin_assignment_t));
-		} else {
-			memset(&attr.pin_assignment, 0xff, sizeof(spi_pin_assignment_t));
-		}
-		attr.width = width;
-		return set_attributes(attr);
-	}
+  private:
+    friend class Spi;
+    mutable spi_attr_t m_attributes;
+  };
 
-	int initialize(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0){
-		if( open() < 0 ){
-			return -1;
-		}
-		return set_attr(o_flags, freq, width, pin_assignment);
-	}
-	int init(u32 o_flags, u32 freq, u32 width = 8, const spi_pin_assignment_t * pin_assignment = 0){ return initialize(o_flags, freq, width, pin_assignment); }
+  static Device::Ioctl set_attributes(const Attributes &attributes) {
+    return Device::Ioctl()
+      .set_request(I_SPI_SETATTR)
+      .set_argument(&attributes.m_attributes);
+  }
 
-	using Periph::initialize;
-	using Periph::get_info;
-	SpiInfo get_info() const;
+  static Device::Ioctl set_attributes() {
+    return Device::Ioctl().set_request(I_SPI_SETATTR);
+  }
 
+  static Device::Ioctl get_info(Info &info) {
+    return Device::Ioctl()
+      .set_request(I_SPI_GETINFO)
+      .set_argument(&info.m_info);
+  }
 
-#if !defined __link
-	int transfer(
-			SourceBuffer write_data,
-			DestinationBuffer read_data,
-			Size nbytes
-			);
-#endif
+  static int swap(Device &device, int value) {
+    return device.ioctl(I_SPI_SWAP, MCU_INT_CAST(value)).status().value();
+  }
+
+  static Info get_info(Device &device) {
+    Info info;
+    device.ioctl(get_info(info));
+    return info;
+  }
 
 private:
-
 };
 
-}
+} // namespace hal
 
 #endif /* SAPI_HAL_SPI_HPP_ */

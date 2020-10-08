@@ -32,30 +32,10 @@ void AuthToken::populate(const var::View &data) {
   memcpy(&m_auth_token, data.to_const_void(), size);
 }
 
-#if defined __link
-Auth::Auth(FSAPI_LINK_DECLARE_DRIVER) {
-  m_driver = link_driver.argument();
-  m_fd = set_error_number_if_error(::link_open(m_driver, "/dev/auth", O_RDWR));
-}
-#else
-Auth::Auth() { m_fd = -1; }
-#endif
-
-Auth::~Auth() { close(); }
-
-int Auth::open() {
-  if (m_fd < 0) {
-    m_fd = OPEN();
-  }
-  return m_fd;
-}
-
-void Auth::close() {
-  if (m_fd < 0) {
-    return;
-  }
-  CLOSE();
-}
+Auth::Auth(FSAPI_LINK_DECLARE_DRIVER)
+  : FileAccess(
+    "/dev/auth",
+    fs::OpenMode::read_write() FSAPI_LINK_INHERIT_DRIVER_LAST) {}
 
 bool Auth::authenticate(const var::View &key) {
   crypto::Random random;
@@ -97,21 +77,16 @@ bool Auth::authenticate(const var::View &key) {
 
 AuthToken Auth::start(const AuthToken &token) {
   auth_token_t result = token.auth_token();
-  if (open() < 0) {
-    return AuthToken();
-  }
-  if (IOCTL(I_AUTH_START, &result) < 0) {
+  if (ioctl(I_AUTH_START, &result).status().is_error()) {
     return AuthToken();
   }
   return AuthToken(result);
 }
 
 AuthToken Auth::finish(const AuthToken &token) {
-  auth_token_t result;
-  memcpy(&result, &token.auth_token(), sizeof(auth_token_t));
-  if (IOCTL(I_AUTH_FINISH, &result) < 0) {
+  auth_token_t result = token.auth_token();
+  if (ioctl(I_AUTH_FINISH, &result).status().is_error()) {
     return AuthToken();
   }
-  close();
   return AuthToken(result);
 }

@@ -10,12 +10,12 @@
 #include "var/String.hpp"
 #include "var/Tokenizer.hpp"
 
-#include "fs/Filesystem.hpp"
+#include "fs/FileSystem.hpp"
 #include "local.h"
 
 using namespace fs;
 
-Dir::Dir(var::StringView path FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST) {
+Dir::Dir(var::StringView path FSAPI_LINK_DECLARE_DRIVER_LAST) {
   m_dirp = 0;
 #if defined __link
   m_dirp_local = 0;
@@ -34,11 +34,12 @@ Dir &Dir::open(var::StringView path) {
     // open a directory on the local system (not over link)
 
     m_dirp_local = opendir(path.cstring());
-    if (m_dirp_local == 0) {
-      return set_error_number_if_error(api::error_code_fs_failed_to_open);
+    if (m_dirp_local == nullptr) {
+      API_ASSIGN_ERROR_CODE(api::ErrorCode::no_entity, -1);
+      return *this;
     }
-    m_path.assign(path);
-    return 0;
+    m_path = var::String(path);
+    return *this;
   }
 #else
   m_dirp = opendir(path.cstring());

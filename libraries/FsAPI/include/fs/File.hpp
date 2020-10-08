@@ -123,6 +123,7 @@ public:
 
   /*! \details Returns the file size. */
   size_t size() const;
+  ssize_t size_signed() const { return static_cast<ssize_t>(size()); }
 
   /*! \details Returns the location of the cursor in the device or file. */
   int location() const;
@@ -231,18 +232,6 @@ public:
    * is reached. */
   var::String gets(char term = '\n');
 
-#ifdef __link
-  static void set_default_driver(LinkDriver driver) {
-    m_default_driver = driver.argument();
-  }
-
-  void set_driver(link_transport_mdriver_t *driver) { m_driver = driver; }
-
-  link_transport_mdriver_t *driver() const { return m_driver; }
-  static link_transport_mdriver_t *default_driver() { return m_default_driver; }
-
-#endif
-
   class IoctlOptions {
     API_ACCESS_FUNDAMENTAL(IoctlOptions, int, request, 0);
     API_ACCESS_FUNDAMENTAL(IoctlOptions, void *, argument, nullptr);
@@ -299,7 +288,7 @@ protected:
     Permissions perms = Permissions(0666));
 
 #ifdef __link
-  API_AF(File, link_transport_mdriver_t, driver, nullptr);
+  API_AF(File, link_transport_mdriver_t *, driver, nullptr);
 #endif
 
   virtual int interface_open(const char *path, int flags, int mode) const;

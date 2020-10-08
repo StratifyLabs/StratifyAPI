@@ -124,8 +124,7 @@ public:
 
 private:
 #ifdef __link
-  link_transport_mdriver_t *m_driver = nullptr;
-  link_transport_mdriver_t *driver() { return m_driver; }
+  API_AF(FileSystem, link_transport_mdriver_t *, driver, nullptr);
 #endif
 
   FileSystem &copy(File &source, File &destination, const CopyOptions &options);

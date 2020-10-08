@@ -7,6 +7,7 @@ set(DIRECTORIES
 	${CMAKE_SOURCE_DIR}/libraries/PrinterAPI/include
 	${CMAKE_SOURCE_DIR}/libraries/VarAPI/include
 	${CMAKE_SOURCE_DIR}/libraries/ChronoAPI/include
+	${CMAKE_SOURCE_DIR}/libraries/SysAPI/include
 	${CMAKE_SOURCE_DIR}/libraries/LinkAPI/include
 	)
 

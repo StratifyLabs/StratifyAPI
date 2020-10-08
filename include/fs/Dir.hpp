@@ -29,7 +29,7 @@
 
 #include "../api/FsObject.hpp"
 #include "../var/Vector.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "../var/ConstString.hpp"
 #include "../arg/Argument.hpp"
 #include "File.hpp"

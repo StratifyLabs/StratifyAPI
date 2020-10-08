@@ -367,6 +367,14 @@ public:
    */
   size_t size() const { return m_size_read_only & ~m_size_read_only_flag; }
 
+  View &reduce_size(size_t reduced_size) {
+    if (reduced_size < size()) {
+      m_size_read_only &= ~m_size_read_only_flag;
+      m_size_read_only |= reduced_size;
+    }
+    return *this;
+  }
+
   ssize_t size_signed() const { return static_cast<ssize_t>(size()); }
 
   /*! \details Returns true if the data object is read only.

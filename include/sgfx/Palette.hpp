@@ -2,7 +2,7 @@
 #define SAPI_SGFX_PALETTE_HPP
 
 #include <sapi/sg_types.h>
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "../var/Data.hpp"
 #include "../sys/Printer.hpp"
 

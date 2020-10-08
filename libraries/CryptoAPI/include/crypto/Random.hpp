@@ -5,6 +5,11 @@
 
 #include <sos/api/crypt_api.h>
 
+#if defined __link && !defined CRYPT_RANDOM_API_REQUEST
+#include <mbedtls_api.h>
+#define CRYPT_RANDOM_API_REQUEST &mbedtls_crypt_random_api
+#endif
+
 #include "api/api.hpp"
 
 #include "var/Data.hpp"

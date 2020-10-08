@@ -268,7 +268,7 @@ public:
 	 */
 	int open(
 			const var::String & name = "/dev/switchboard0",
-			const fs::OpenFlags & flags = fs::OpenFlags::read_write()
+			const fs::OpenMode & flags = fs::OpenMode::read_write()
 			);
 
 	/*! \details Gets the connection specified by id. */

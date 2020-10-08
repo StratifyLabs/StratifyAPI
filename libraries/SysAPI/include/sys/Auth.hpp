@@ -66,26 +66,20 @@ private:
  * ```
  *
  */
-class Auth : public api::Object {
+class Auth : public fs::FileAccess<Auth> {
 public:
   Auth(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
-
-  ~Auth();
 
   bool authenticate(const var::View &key);
 
   AuthToken start(const AuthToken &token);
   AuthToken finish(const AuthToken &token);
 
-  bool is_valid() const { return m_fd >= 0; }
+  bool is_valid() const { return status().is_success(); }
 
 private:
-  int m_fd;
-  int open();
-  void close();
-
 #if defined __link
-  link_transport_mdriver_t *m_driver;
+  API_AF(Auth, link_transport_mdriver_t *, driver, nullptr);
 #endif
 };
 

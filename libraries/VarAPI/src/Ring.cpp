@@ -53,5 +53,6 @@ Printer& sys::operator << (Printer& printer, const var::Ring<s8> & a){
 
 namespace var {
 
+int var_api_var_ring_unused;
 
 } /* namespace var */

@@ -23,7 +23,7 @@ typedef uint32_t in_addr_t;
 #include "../api/InetObject.hpp"
 #include "../chrono/MicroTime.hpp"
 #include "../fs/File.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "../var/Vector.hpp"
 
 namespace inet {
@@ -541,7 +541,7 @@ public:
    * @return Zero on success
    */
   virtual int
-  shutdown(const fs::OpenFlags how = fs::OpenFlags::read_write()) const;
+  shutdown(const fs::OpenMode how = fs::OpenMode::read_write()) const;
 
   // already documented in fs::File
   using File::write;

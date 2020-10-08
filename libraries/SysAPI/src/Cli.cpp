@@ -94,8 +94,8 @@ bool Cli::compare_with_prefix(var::StringView option, var::StringView argument)
     return true;
   }
   if (
-    with_prefix.create_sub_string(
-      String::CreateSubStringOptions().set_position(1))
+    with_prefix.get_substring(
+      String::SubStringOptions().set_position(1))
     == argument) {
     return true;
   }

@@ -5,7 +5,7 @@
 
 #include "../chrono/Timer.hpp"
 #include "../sys/ProgressCallback.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include <cstdarg>
 
 #if defined __win32

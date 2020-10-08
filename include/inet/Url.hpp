@@ -5,7 +5,7 @@
 #define SAPI_INET_URL_HPP_
 
 #include "../api/InetObject.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 
 namespace inet {
 

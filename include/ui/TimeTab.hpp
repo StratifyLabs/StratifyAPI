@@ -7,7 +7,7 @@
 #define SAPI_UI_TIMETAB_HPP_
 
 #include "../draw/Drawing.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "Tab.hpp"
 
 namespace ui {

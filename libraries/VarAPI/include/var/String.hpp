@@ -104,7 +104,7 @@ public:
   using AppendOptions = EraseOptions;
   using AssignOptions = EraseOptions;
   using FindOptions = EraseOptions;
-  using CreateSubStringOptions = StringView::CreateSubStringOptions;
+  using SubStringOptions = StringView::CreateSubStringOptions;
 
   class InsertOptions {
     API_ACCESS_FUNDAMENTAL(InsertOptions, size_t, position, 0);
@@ -159,6 +159,8 @@ public:
   }
 
   explicit String(const std::string &a) : m_string(a) {}
+  explicit String(std::string &&s) : m_string(s) {}
+
   explicit String(const var::View &item);
 
   /*! \details Appends a character to this string. */
@@ -263,16 +265,23 @@ public:
    * @return A new string object containing the sub string specified
    *
    */
-  String create_sub_string(const CreateSubStringOptions &options) const {
+  String get_substring(const SubStringOptions &options) const {
     if (options.position() >= m_string.length()) {
       return String();
     }
-    return String(
-      m_string.substr(options.position(), options.length()).c_str());
+    return String(m_string.substr(options.position(), options.length()));
+  }
+
+  String get_substring_at_position(size_t position) const {
+    return String(m_string.substr(position));
+  }
+
+  String get_substring_with_length(size_t length) const {
+    return String(m_string.substr(0, length));
   }
 
   String &insert(const String &string_to_insert, const InsertOptions &options) {
-    if (options.sub_position() == String::npos) {
+    if (options.sub_position() == npos) {
       m_string.insert(options.position(), string_to_insert.string());
     } else {
       m_string.insert(
@@ -392,7 +401,7 @@ public:
       "Cannot convert non-arithmetic types to string");
 
     if (fmt == nullptr) {
-      return String(std::to_string(value).c_str());
+      return String(std::to_string(value));
     }
 
     if (std::is_floating_point<T>::value == true) {

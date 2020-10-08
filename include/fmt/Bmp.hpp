@@ -58,7 +58,7 @@ public:
 	/*! \details Opens the specified bitmap with the specified access (e.g., Bmp::READONLY). */
 	int open(
 			const var::String & name,
-			const fs::OpenFlags & flags
+			const fs::OpenMode & flags
 			);
 
 	/*! \details Creates a new bitmap using the specified parameters. */

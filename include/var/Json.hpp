@@ -6,7 +6,7 @@
 #include "../api/VarObject.hpp"
 #include "../fs/File.hpp"
 #include "../sys/requests.h"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "../var/Vector.hpp"
 #include <jansson/jansson_api.h>
 

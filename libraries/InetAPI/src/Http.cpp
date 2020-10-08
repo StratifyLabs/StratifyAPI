@@ -110,6 +110,7 @@ var::String Http::to_string(Method status) {
     API_HANDLE_METHOD_CASE(Delete);
     API_HANDLE_METHOD_CASE(patch);
     API_HANDLE_METHOD_CASE(options);
+    API_HANDLE_METHOD_CASE(trace);
   }
 
   return result;
@@ -340,7 +341,7 @@ int HttpClient::send_header(
   AGGREGATE_TRAFFIC(String(">> ") + m_header);
 #if SHOW_HEADERS
   printf(">> %s", m_header.cstring());
-  printf("Sending %d data bytes\n", file ? file->size() : 0);
+  printf("Sending %lu data bytes\n", file ? file->size() : 0);
 #endif
 
   if (socket().write(m_header).status().is_error()) {
@@ -472,13 +473,13 @@ Http::HeaderPair Http::HeaderPair::from_string(const var::String &string) {
   const size_t colon_pos = string_copy.find(":");
 
   const String key = string_copy
-                       .create_sub_string(
-                         String::CreateSubStringOptions().set_length(colon_pos))
+                       .get_substring(
+                         String::SubStringOptions().set_length(colon_pos))
                        .to_upper();
   String value;
   if (colon_pos != String::npos) {
-    value = string_copy.create_sub_string(
-      String::CreateSubStringOptions().set_position(colon_pos + 1));
+    value = string_copy.get_substring(
+      String::SubStringOptions().set_position(colon_pos + 1));
     if (value.at(0) == ' ') {
       value.pop_front();
     }

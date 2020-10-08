@@ -9,11 +9,12 @@
 
 #include "fs/File.hpp"
 
-namespace crypto {
+#if defined __link && !defined CRYPT_AES_API_REQUEST
+#include <mbedtls_api.h>
+#define CRYPT_AES_API_REQUEST &mbedtls_crypt_aes_api
+#endif
 
-typedef api::Api<crypt_hash_api_t, CRYPT_SHA256_API_REQUEST> Sha256Api;
-typedef api::Api<crypt_hash_api_t, CRYPT_SHA512_API_REQUEST> Sha512Api;
-typedef api::Api<crypt_random_api_t, CRYPT_RANDOM_API_REQUEST> RandomApi;
+namespace crypto {
 
 class Aes : public api::Object {
 public:

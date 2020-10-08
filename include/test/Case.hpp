@@ -4,7 +4,7 @@
 
 /*! \cond */
 
-#include "../var/String.hpp"
+#include "var/String.hpp"
 namespace test {
 
 class Test;

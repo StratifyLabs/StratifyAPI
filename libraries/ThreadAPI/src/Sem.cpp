@@ -86,4 +86,6 @@ Sem &Sem::wait() {
   return *this;
 }
 
+#else
+int fs_api_fs_sem_unused;
 #endif

@@ -116,7 +116,7 @@ public:
 	int initialize(
 			const var::String & path,
 			const FFifoAttributes & attributes,
-			const fs::OpenFlags & flags = fs::OpenFlags()
+			const fs::OpenMode & flags = fs::OpenMode()
 			);
 
 	/*! \details Flushes the FIFO.

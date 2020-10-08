@@ -7,7 +7,7 @@
 #include "../api/InetObject.hpp"
 #include "../sys/ProgressCallback.hpp"
 #include "../var/Array.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "Socket.hpp"
 
 namespace inet {

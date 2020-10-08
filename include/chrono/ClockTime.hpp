@@ -8,7 +8,7 @@
 
 #include "../api/ChronoObject.hpp"
 #include "Time.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 
 namespace chrono {
 

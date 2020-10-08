@@ -7,7 +7,7 @@
 #include "../fs/Stat.hpp"
 #include "../hal/Display.hpp"
 #include "../sgfx/Theme.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "Drawing.hpp"
 #include "Event.hpp"
 #include "Model.hpp"

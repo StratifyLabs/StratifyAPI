@@ -1,8 +1,8 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
              // LICENSE.md for rights.
 
-#ifndef SAPI_SYS_APPFS_HPP_
-#define SAPI_SYS_APPFS_HPP_
+#ifndef SYSAPI_SYS_APPFS_HPP_
+#define SYSAPI_SYS_APPFS_HPP_
 
 #include "api/api.hpp"
 
@@ -13,9 +13,6 @@ namespace sys {
 
 class AppfsFlags {
 public:
-#if defined __link
-  using LinkDriver = fs::File::LinkDriver;
-#endif
 
   enum flags {
     flag_is_default = 0,
@@ -347,7 +344,7 @@ public:
    * @return Zero on success or -1 with errno set accordingly
    *
    */
-  int create(const CreateOptions &options);
+  Appfs &create(const CreateOptions &options);
 
   /*! \details Returns true if the application
    * filesystem includes flash memory.
@@ -459,4 +456,4 @@ Printer &operator<<(Printer &printer, const sys::AppfsFileAttributes &a);
 Printer &operator<<(Printer &printer, const appfs_file_t &a);
 } // namespace printer
 
-#endif /* SAPI_SYS_APPFS_HPP_ */
+#endif /* SYSAPI_SYS_APPFS_HPP_ */

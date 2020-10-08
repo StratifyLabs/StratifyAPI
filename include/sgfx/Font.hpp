@@ -9,7 +9,7 @@
 #include "../api/WorkObject.hpp"
 #include "Bitmap.hpp"
 #include "../api/SgfxObject.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "../fs/File.hpp"
 
 namespace sgfx {

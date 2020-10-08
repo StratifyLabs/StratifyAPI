@@ -10,8 +10,8 @@ var::String Path::suffix() {
     return var::String();
   }
 
-  return String(path()).create_sub_string(
-    String::CreateSubStringOptions().set_position(pos + 1));
+  return String(path()).get_substring(
+    String::SubStringOptions().set_position(pos + 1));
 }
 
 var::String Path::name() {
@@ -21,8 +21,8 @@ var::String Path::name() {
     return String(path());
   }
 
-  return String(path()).create_sub_string(
-    String::CreateSubStringOptions().set_position(pos + 1));
+  return String(path()).get_substring(
+    String::SubStringOptions().set_position(pos + 1));
 }
 
 var::String Path::parent_directory() {
@@ -32,8 +32,8 @@ var::String Path::parent_directory() {
     return var::String();
   }
 
-  return String(path()).create_sub_string(
-    String::CreateSubStringOptions().set_position(0).set_length(pos));
+  return String(path()).get_substring(
+    String::SubStringOptions().set_position(0).set_length(pos));
 }
 
 var::String Path::base_name() {
@@ -43,8 +43,8 @@ var::String Path::base_name() {
     return result;
   }
 
-  return result.create_sub_string(
-    String::CreateSubStringOptions().set_position(0).set_length(pos));
+  return result.get_substring(
+    String::SubStringOptions().set_position(0).set_length(pos));
 }
 
 var::String Path::no_suffix() {
@@ -54,8 +54,8 @@ var::String Path::no_suffix() {
     return var::String();
   }
 
-  return String(path()).create_sub_string(
-    String::CreateSubStringOptions().set_position(0).set_length(pos));
+  return String(path()).get_substring(
+    String::SubStringOptions().set_position(0).set_length(pos));
 }
 
 bool Path::is_hidden() {

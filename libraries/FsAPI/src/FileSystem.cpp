@@ -1,4 +1,6 @@
 
+#include <sys/stat.h>
+
 #include "fs/Dir.hpp"
 #include "var/Tokenizer.hpp"
 
@@ -8,13 +10,13 @@
 using namespace fs;
 
 FileSystem::FileSystem(FSAPI_LINK_DECLARE_DRIVER) {
-  LINK_SET_DRIVER(*this, link_driver);
+  LINK_SET_DRIVER((*this), link_driver);
 }
 
 FileSystem &FileSystem::remove(var::StringView path) {
   API_ASSIGN_ERROR_CODE(
     api::ErrorCode::io_error,
-    FSAPI_LINK_UNLINK(link_driver.argument(), path.cstring()));
+    FSAPI_LINK_UNLINK(driver(), path.cstring()));
   return *this;
 }
 
@@ -111,9 +113,10 @@ FileSystem &FileSystem::touch(var::StringView path) {
 FileSystem &FileSystem::rename(const RenameOptions &options) {
 #if defined __link
   if (driver() == nullptr) {
-    return ::rename(
-      options.source().cstring(),
-      options.destination().cstring());
+    API_ASSIGN_ERROR_CODE(
+      api::ErrorCode::io_error,
+      ::rename(options.source().cstring(), options.destination().cstring()));
+    return *this;
   }
 #endif
   API_ASSIGN_ERROR_CODE(
@@ -243,7 +246,7 @@ FileSystem::remove_directory(var::StringView path, Recursive recursive) {
     // this will remove an empty directory or a file
 #if defined __link
     if (driver()) {
-      ret = remove(path);
+      remove(path);
     } else {
       API_ASSIGN_ERROR_CODE(api::ErrorCode::no_entity, ::rmdir(path.cstring()));
     }
@@ -284,16 +287,13 @@ FileSystem &FileSystem::create_directory(
 
 #if defined __link
   if (driver()) {
-    result = link_mkdir(
-      link_driver.argument(),
-      path.cstring(),
-      permissions.permissions());
+    result = link_mkdir(driver(), path.cstring(), permissions.permissions());
   } else {
     // open a directory on the local system (not over link)
 #if defined __win32
     result = mkdir(path.cstring());
 #else
-    mkdir(path.cstring(), permissions.permissions());
+    result = mkdir(path.cstring(), permissions.permissions());
 #endif
   }
 #else

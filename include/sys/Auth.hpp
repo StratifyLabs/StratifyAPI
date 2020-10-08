@@ -5,7 +5,7 @@
 #include <sos/link.h>
 #include <sos/dev/auth.h>
 #include "../api/SysObject.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "../fs/File.hpp"
 
 namespace sys {

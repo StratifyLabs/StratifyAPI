@@ -5,7 +5,7 @@
 #include "../api/CryptoObject.hpp"
 #include "../arg/Argument.hpp"
 #include "../var/Reference.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 
 namespace crypto {
 

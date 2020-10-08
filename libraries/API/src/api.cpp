@@ -143,6 +143,10 @@ const char *Object::error_code_description(ErrorCode error_code) {
     RESULT_ERROR_CODE_CASE(io_error);
     RESULT_ERROR_CODE_CASE(bad_file_number);
     RESULT_ERROR_CODE_CASE(busy);
+    RESULT_ERROR_CODE_CASE(no_memory);
+    RESULT_ERROR_CODE_CASE(aborted);
+    RESULT_ERROR_CODE_CASE(invalid_value);
+    RESULT_ERROR_CODE_CASE(missing_system_api);
   }
   return "unknown";
 }

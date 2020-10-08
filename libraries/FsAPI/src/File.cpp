@@ -9,7 +9,7 @@
 #include "chrono/Timer.hpp"
 #include "fs/File.hpp"
 
-#include "LinkAPI/Link.hpp"
+#include "link/Link.hpp"
 
 #include "local.h"
 
@@ -22,7 +22,7 @@ File::File(FSAPI_LINK_DECLARE_DRIVER) {
 
 File::File(
   var::StringView name,
-  OpenMode flags FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST) {
+  OpenMode flags FSAPI_LINK_DECLARE_DRIVER_LAST) {
   open(name, flags);
 }
 
@@ -37,8 +37,9 @@ File::~File() {
 File File::create(
   var::StringView path,
   Overwrite is_overwrite,
-  Permissions perms FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST) {
-  return File(FSAPI_LINK_DECLARE_DRIVER).internal_create(path, is_overwrite, perms);
+  Permissions perms FSAPI_LINK_DECLARE_DRIVER_LAST) {
+  return File(FSAPI_LINK_INHERIT_DRIVER)
+    .internal_create(path, is_overwrite, perms);
 }
 
 int File::interface_open(const char *path, int flags, int mode) const {
@@ -70,7 +71,7 @@ int File::interface_fsync(int fd) const {
 }
 
 int File::interface_lseek(int fd, int offset, int whence) const {
-  return FSAPI_LINK_LSEEK(driver, fd, offset, whence);
+  return FSAPI_LINK_LSEEK(driver(), fd, offset, whence);
 }
 
 File &
@@ -193,7 +194,7 @@ int File::location() const {
 
 int File::flags() const {
 #if defined __link
-  return set_error_number_if_error(api::error_code_fs_unsupported_operation);
+  return -1;
 #else
   if (fileno() < 0) {
     API_ASSIGN_ERROR_CODE(api::ErrorCode::bad_file_number, -1);

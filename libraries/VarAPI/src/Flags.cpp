@@ -3,3 +3,5 @@
 
 #include "var/Flags.hpp"
 using namespace var;
+
+int var_api_var_flags_unused;

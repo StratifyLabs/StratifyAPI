@@ -11,7 +11,7 @@
 #endif
 
 #include "../api/SysObject.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "../chrono/ClockTime.hpp"
 
 namespace sys {

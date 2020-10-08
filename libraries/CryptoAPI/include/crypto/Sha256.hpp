@@ -6,6 +6,11 @@
 
 #include <sos/api/crypt_api.h>
 
+#if defined __link && !defined CRYPT_SHA256_API_REQUEST
+#include <mbedtls_api.h>
+#define CRYPT_SHA256_API_REQUEST &mbedtls_crypt_sha256_api
+#endif
+
 #include "api/api.hpp"
 #include "fs/File.hpp"
 #include "var/Array.hpp"

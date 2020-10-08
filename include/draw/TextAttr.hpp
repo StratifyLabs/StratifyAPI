@@ -4,7 +4,7 @@
 #define DRAW_TEXTATTR_HPP_
 
 #include "Drawing.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "../var/Flags.hpp"
 #include "../sgfx/Font.hpp"
 

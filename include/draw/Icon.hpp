@@ -6,7 +6,7 @@
 
 #include "Drawing.hpp"
 #include "../sgfx/Vector.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 
 namespace draw {
 

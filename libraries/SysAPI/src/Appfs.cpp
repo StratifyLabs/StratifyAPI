@@ -17,8 +17,8 @@
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const appfs_file_t &a) {
-  printer.key("name", a.hdr.name);
-  printer.key("id", a.hdr.id);
+  printer.key("name", var::StringView(a.hdr.name));
+  printer.key("id", var::StringView(a.hdr.id));
   printer.key("mode", var::String::number(a.hdr.mode, "0%o"));
   printer.key(
     "version",
@@ -140,23 +140,26 @@ int AppfsFileAttributes::apply(fs::File &file) const {
   return 0;
 }
 
-Appfs::Appfs(const Options &options FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST)
+Appfs::Appfs(const Options &options FSAPI_LINK_DECLARE_DRIVER_LAST)
   : m_file(
     "/app/.install",
-    fs::OpenMode::write_only() FSAPI_LINK_INHERIT_DRIVER) {
+    fs::OpenMode::write_only() FSAPI_LINK_INHERIT_DRIVER_LAST) {
   create_asynchronous(options);
 }
 
 bool Appfs::is_flash_available() {
-  return fs::Dir("app/flash" FSAPI_LINK_MEMBER_DRIVER).status().is_success();
+  return fs::Dir("app/flash" FSAPI_LINK_MEMBER_DRIVER_LAST)
+    .status()
+    .is_success();
 }
 
 bool Appfs::is_ram_available() {
-  return fs::Dir("/app/ram" FSAPI_LINK_MEMBER_DRIVER).status().is_success();
+  return fs::Dir("/app/ram" FSAPI_LINK_MEMBER_DRIVER_LAST)
+    .status()
+    .is_success();
 }
 
-int Appfs::create(
-  const CreateOptions &options FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST) {
+Appfs &Appfs::create(const CreateOptions &options) {
 
   Appfs appfs(Options()
                 .set_mount(options.mount())
@@ -164,7 +167,7 @@ int Appfs::create(
                 .set_size(options.source()->size()));
 
   if (!appfs.is_valid()) {
-    return -1;
+    return *this;
   }
 
   u8 buffer[APPFS_PAGE_SIZE];
@@ -179,7 +182,7 @@ int Appfs::create(
     }
   }
 
-  return 0;
+  return *this;
 }
 
 #if 0
@@ -188,7 +191,7 @@ int Appfs::create(
   const fs::File &source,
   MountPath mount_path,
   const ProgressCallback *progress_callback
-    FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST) {
+    FSAPI_LINK_DECLARE_DRIVER_LAST) {
   fs::File file
 #if defined __link
     (link_driver)
@@ -218,7 +221,7 @@ int Appfs::create(
 #endif
   );
 
-  if (file.open("/app/.install", fs::OpenFlags::write_only()) < 0) {
+  if (file.open("/app/.install", fs::OpenMode::write_only()) < 0) {
     return -1;
   }
 
@@ -468,29 +471,15 @@ AppfsInfo Appfs::get_info(var::StringView path) {
   return AppfsInfo(info);
 }
 
-u16 Appfs::get_version(
-  const var::String &path FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST) {
+u16 Appfs::get_version(const var::String &path) {
   AppfsInfo info;
-  info = get_info(
-    path
-#if defined __link
-    ,
-    link_driver
-#endif
-  );
+  info = get_info(path);
   return info.version();
 }
 
-var::String
-Appfs::get_id(const var::String &path FSAPI_LINK_DECLARE_DRIVER_DECLARE_LAST) {
+var::String Appfs::get_id(const var::String &path) {
   AppfsInfo info;
-  info = get_info(
-    path
-#if defined __link
-    ,
-    link_driver
-#endif
-  );
+  info = get_info(path);
 
   if (info.is_valid() == false) {
     return var::String();

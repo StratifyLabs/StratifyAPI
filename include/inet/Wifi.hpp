@@ -8,7 +8,7 @@
 #include "../api/InetObject.hpp"
 #include "../chrono/MicroTime.hpp"
 #include "../chrono/Timer.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 
 #include "IpAddress.hpp"
 

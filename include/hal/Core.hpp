@@ -6,8 +6,8 @@
 #include <mcu/mcu.h>
 #include <sos/dev/core.h>
 #include "Periph.hpp"
-#include "../var/String.hpp"
-#include "../sys/Sys.hpp"
+#include "var/String.hpp"
+#include "sys/Sys.hpp"
 
 namespace hal {
 

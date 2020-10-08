@@ -3,7 +3,7 @@
 #ifndef SAPI_HAL_PIN_HPP_
 #define SAPI_HAL_PIN_HPP_
 
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "Pio.hpp"
 
 namespace hal {

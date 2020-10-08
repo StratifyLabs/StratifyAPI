@@ -43,11 +43,6 @@ namespace fs {
  */
 class Dir : public api::Object {
 public:
-#if defined __link
-  using LinkDriver = File::LinkDriver;
-  using SourceLinkDriver = File::SourceLinkDriver;
-  using DestinationLinkDriver = File::DestinationLinkDriver;
-#endif
 
   enum class Recursive { no, yes };
 
@@ -65,7 +60,12 @@ public:
     API_AC(CopyOptions, var::StringView , source_path);
     API_AC(CopyOptions, var::StringView , destination_path);
 #if defined __link
-    API_AF(CopyOptions, , destination_path);
+    API_AF(CopyOptions, link_transport_mdriver_t *, source_driver, nullptr);
+    API_AF(
+      CopyOptions,
+      link_transport_mdriver_t *,
+      destination_driver,
+      nullptr);
 
 #endif
   };
@@ -181,20 +181,15 @@ public:
     }
     return 0;
   }
-#else
-  Dir &set_driver(LinkDriver link_driver) {
-    m_driver = link_driver.argument();
-    return *this;
-  }
 #endif
 
 private:
   var::String m_path;
 
 #ifdef __link
+  API_AF(Dir, link_transport_mdriver_t *, driver, nullptr);
   int m_dirp = 0;
   struct link_dirent m_entry = {0};
-  link_transport_mdriver_t *m_driver = nullptr;
   DIR *m_dirp_local = nullptr;
   struct dirent m_entry_local = {0};
 

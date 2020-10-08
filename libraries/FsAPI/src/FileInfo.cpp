@@ -43,7 +43,7 @@ printer::Printer &operator<<(printer::Printer &printer, const fs::FileInfo &a) {
 using namespace fs;
 
 #if defined __link
-FileInfo::Stat(bool is_local) {
+FileInfo::FileInfo(bool is_local) {
   memset(&m_stat, 0, sizeof(m_stat));
   m_is_local = is_local;
 }

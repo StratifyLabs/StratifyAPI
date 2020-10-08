@@ -5,7 +5,7 @@
 
 
 #include <ctime>
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "../api/ChronoObject.hpp"
 
 namespace chrono {

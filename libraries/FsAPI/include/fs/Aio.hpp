@@ -68,18 +68,11 @@ class Aio : public api::Object {
 
 public:
   /*! \details Constructs an empy AIO object. */
-  Aio() { memset(&m_aio_var, 0, sizeof(struct aiocb)); }
+  Aio() { m_aio_var = {0}; }
 
-  explicit Aio(const var::View &reference) {
-    m_aio_var.aio_buf = reference.to_void();
-    m_aio_var.aio_nbytes = reference.size();
-    m_aio_var.aio_offset = 0;
-    m_aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
-  }
-
-  Aio(size_t location, const var::View &item) {
-    m_aio_var.aio_buf = item.to_void();
-    m_aio_var.aio_nbytes = item.size();
+  explicit Aio(var::View view, size_t location = 0) {
+    m_aio_var.aio_buf = view.to_void();
+    m_aio_var.aio_nbytes = view.size();
     m_aio_var.aio_offset = location;
     m_aio_var.aio_sigevent.sigev_notify = SIGEV_NONE;
   }

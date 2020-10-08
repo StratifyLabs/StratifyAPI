@@ -10,7 +10,7 @@
 #include "../hal/Adc.hpp"
 #include "../hal/Dac.hpp"
 #include "../var/Vector.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "../var/Token.hpp"
 #include "../var/ConstString.hpp"
 

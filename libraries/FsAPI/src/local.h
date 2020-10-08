@@ -1,11 +1,13 @@
 #ifndef FSAPI_SRC_LOCAL_H
 #define FSAPI_SRC_LOCAL_H
 
+#include <sos/link.h>
+
 #if defined __link
 #define FSAPI_LINK_OPEN(w, x, y, z) link_open(w, x, y, z)
 #define FSAPI_LINK_IOCTL(w, x, y, z) link_ioctl(w, x, y, z)
 #define FSAPI_LINK_RENAME(x, y, z) link_rename(x, y, z)
-#define FSAPI_LINK_UNLINK(x, y) link_remove(x, y)
+#define FSAPI_LINK_UNLINK(x, y) link_unlink(x, y)
 #define FSAPI_LINK_LSEEK(w, x, y, z) link_lseek(w, x, y, z)
 #define FSAPI_LINK_WRITE(w, x, y, z) link_write(w, x, y, z)
 #define FSAPI_LINK_READ(w, x, y, z) link_read(w, x, y, z)

@@ -32,12 +32,12 @@ public:
 	 * configured with set_attr().  After that, other instances of the peripheral can read
 	 * and write without opening again.
 	 */
-	int open(const fs::OpenFlags & flags = fs::OpenFlags::read_write());
+	int open(const fs::OpenMode & flags = fs::OpenMode::read_write());
 	int ioctl(IoRequest request, IoArgument argument) const override;
 	int seek(int location, PeriphObject::whence whence) const override;
 	int fileno() const;
 
-	int open(const var::String & name, const fs::OpenFlags & flags) override;
+	int open(const var::String & name, const fs::OpenMode & flags) override;
 
 	int read(
 			void * buf,

@@ -18,9 +18,11 @@ add_subdirectory(libraries/ChronoAPI chrono)
 add_subdirectory(libraries/FsAPI fs)
 add_subdirectory(libraries/ThreadAPI thread)
 add_subdirectory(libraries/CryptoAPI crypto)
+add_subdirectory(libraries/HalAPI hal)
 add_subdirectory(libraries/SysAPI sys)
 add_subdirectory(libraries/TestAPI test)
 add_subdirectory(libraries/InetAPI inet)
 add_subdirectory(libraries/LinkAPI link)
 
-add_subdirectory(tests tests)
+
+#add_subdirectory(tests tests)

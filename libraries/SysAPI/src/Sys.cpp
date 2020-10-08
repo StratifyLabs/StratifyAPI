@@ -130,7 +130,7 @@ var::String SerialNumber::to_string() const {
 Sys::Sys(FSAPI_LINK_DECLARE_DRIVER)
   : FileAccess<Sys>(
     "/dev/sys",
-    fs::OpenMode::read_write() FSAPI_LINK_INHERIT_DRIVER) {}
+    fs::OpenMode::read_write() FSAPI_LINK_INHERIT_DRIVER_LAST) {}
 
 Sys::Info Sys::get_info() {
   sys_info_t sys_info;
@@ -160,19 +160,11 @@ sys_id_t Sys::get_id() {
   return result;
 }
 
-var::String Sys::get_version() {
-  return var::String(get_info().system_version());
-}
-
-var::String Sys::get_kernel_version() {
-  return var::String(get_info().kernel_version());
-}
+#if !defined __link
 
 int Sys::get_board_config(sos_board_config_t &config) {
   return ioctl(I_SYS_GETBOARDCONFIG, &config).status().value();
 }
-
-#if !defined __link
 
 void Sos::powerdown(const chrono::MicroTime &duration) {
   ::powerdown(duration.seconds());

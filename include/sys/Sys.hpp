@@ -393,7 +393,7 @@ public:
    * @return Less than zero for an error
    *
    */
-  int open() { return fs::File::open("/dev/sys", fs::OpenFlags::read_write()); }
+  int open() { return fs::File::open("/dev/sys", fs::OpenMode::read_write()); }
 
   /*! \details Loads the current system info.
    *

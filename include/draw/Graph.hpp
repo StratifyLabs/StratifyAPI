@@ -4,7 +4,7 @@
 #define SAPI_DRAW_GRAPH_HPP_
 
 #include "Drawing.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "../var/Vector.hpp"
 
 namespace draw {

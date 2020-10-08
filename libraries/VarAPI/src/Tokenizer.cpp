@@ -40,7 +40,7 @@ Tokenizer::parse(var::StringView input, const ParseOptions &options) {
   while (cursor < length) {
     if (options.delimeters().find(input.at(cursor)) != String::npos) {
       m_token_list.push_back(
-        String(input).create_sub_string(String::CreateSubStringOptions()
+        String(input).get_substring(String::SubStringOptions()
                                           .set_position(sub_position)
                                           .set_length(cursor - sub_position)));
 
@@ -64,7 +64,7 @@ Tokenizer::parse(var::StringView input, const ParseOptions &options) {
 
   // push the last token
   m_token_list.push_back(
-    String(input).create_sub_string(String::CreateSubStringOptions()
+    String(input).get_substring(String::SubStringOptions()
                                       .set_position(sub_position)
                                       .set_length(cursor - sub_position)));
 

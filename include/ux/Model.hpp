@@ -2,7 +2,7 @@
 #define SAPI_UX_MODEL_HPP
 
 #include "../sys/Printer.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "Event.hpp"
 
 namespace ux {

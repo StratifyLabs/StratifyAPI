@@ -53,7 +53,7 @@ Data Data::from_string(StringView value) {
     View(result).to_u8()[i]
       = value
           .create_sub_string(
-            String::CreateSubStringOptions().set_position(i * 2).set_length(2))
+            String::SubStringOptions().set_position(i * 2).set_length(2))
           .to_unsigned_long(String::Base::hexidecimal);
   }
   return result;

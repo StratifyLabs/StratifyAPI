@@ -9,5 +9,5 @@ StringView::StringView(const String &value)
 
 String
 StringView::create_sub_string(const CreateSubStringOptions &options) const {
-  return String(*this).create_sub_string(options);
+  return String(*this).get_substring(options);
 }

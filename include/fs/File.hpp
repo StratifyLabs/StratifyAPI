@@ -11,7 +11,7 @@
 #include "../arg/Argument.hpp"
 
 #include "../var/Data.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "../sys/ProgressCallback.hpp"
 
 #if !defined __link

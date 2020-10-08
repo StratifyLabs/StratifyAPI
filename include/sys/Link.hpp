@@ -14,7 +14,7 @@
 #include <mcu/types.h>
 #include <sos/link.h>
 #include "../fs/Dir.hpp"
-#include "../var/String.hpp"
+#include "var/String.hpp"
 #include "../var/Vector.hpp"
 #include "Appfs.hpp"
 #include "Sys.hpp"
@@ -28,7 +28,7 @@ public:
 
 	LinkInfo(){}
 	LinkInfo(const var::String & path,
-					 const sys::SysInfo & sys_info){
+					 const sys::Sys::Info & sys_info){
 		set_path(path);
 		set_info(sys_info);
 	}
@@ -44,7 +44,7 @@ public:
 		return *this;
 	}
 
-	LinkInfo & set_info(const sys::SysInfo & sys_info){
+	LinkInfo & set_info(const sys::Sys::Info & sys_info){
 		m_sys_info = sys_info;
 		m_serial_number = sys_info.serial_number().to_string();
 		return *this;
@@ -54,7 +54,7 @@ public:
 
 private:
 	API_ACCESS_COMPOUND(LinkInfo, var::String, path);
-	API_READ_ACCESS_COMPOUND(LinkInfo, sys::SysInfo, sys_info);
+	API_READ_ACCESS_COMPOUND(LinkInfo, sys::Sys::Info, sys_info);
 	API_READ_ACCESS_COMPOUND(LinkInfo, var::String, serial_number);
 
 };
@@ -294,7 +294,7 @@ public:
 	/*! \cond */
 	typedef struct {
 		var::String port;
-		sys::SysInfo sys_info;
+		sys::Sys::Info sys_info;
 	} port_device_t;
 	/*! \endcond */
 
@@ -564,7 +564,7 @@ public:
 		*/
 	int open(
 			const var::String & path /*! The name of the file to open */,
-			const fs::OpenFlags & flags /*! The access flags such as LINK_O_RDWR */,
+			const fs::OpenMode & flags /*! The access flags such as LINK_O_RDWR */,
 			const fs::Permissions & permissions = fs::Permissions(0) /*! The access permissions when creating a new file */
 			);
 
@@ -881,7 +881,7 @@ public:
 		* is loaded. This object keeps a copy.
 		*
 		*/
-	const sys::SysInfo & sys_info() const { return m_link_info.sys_info(); }
+	const sys::Sys::Info & sys_info() const { return m_link_info.sys_info(); }
 
 	const LinkInfo & info() const { return m_link_info; }
 
