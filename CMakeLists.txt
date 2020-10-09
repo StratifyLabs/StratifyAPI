@@ -8,7 +8,6 @@ set(CMAKE_MODULE_PATH ${SOS_SDK_PATH}/Tools/gcc/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/sos-toolchain.cmake)
 include(sos-sdk)
 
-set(SOS_NAME api)
 project(StratifyAPI CXX C)
 
 add_subdirectory(libraries/API api)
@@ -23,6 +22,5 @@ add_subdirectory(libraries/SysAPI sys)
 add_subdirectory(libraries/TestAPI test)
 add_subdirectory(libraries/InetAPI inet)
 add_subdirectory(libraries/LinkAPI link)
-
 
 #add_subdirectory(tests tests)

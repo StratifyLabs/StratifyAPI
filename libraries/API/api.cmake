@@ -17,7 +17,7 @@ macro(api_target NAME DIRECTORIES)
 	endif()
 
 	sos_sdk_add_subdirectory(PRIVATE_SOURCES src)
-	sos_sdk_add_subdirectory(PUBLIC_SOURCES ${CMAKE_SOURCE_DIR}/libraries/${API_NAME}/include)
+	sos_sdk_add_subdirectory(PUBLIC_SOURCES	${CMAKE_CURRENT_SOURCE_DIR}/include)
 	set(FORMAT_LIST ${PRIVATE_SOURCES} ${PUBLIC_SOURCES})
 
 	sos_sdk_library_target(RELEASE ${API_NAME} "" release ${ARCH})
@@ -27,32 +27,49 @@ macro(api_target NAME DIRECTORIES)
 	set_property(TARGET ${RELEASE_TARGET} PROPERTY CXX_STANDARD 17)
 
 	target_sources(${RELEASE_TARGET}
-		PUBLIC
-		${PUBLIC_SOURCES}
 		PRIVATE
+		${PUBLIC_SOURCES}
 		${PRIVATE_SOURCES}
 		)
 
 	target_compile_options(${RELEASE_TARGET}
-		PUBLIC
+		PRIVATE
 		-Os
 		)
 
 	if(IS_LINK)
 		target_include_directories(${RELEASE_TARGET}
 			PUBLIC
-			${SOS_SDK_PATH}/Tools/gcc/include
+			${CMAKE_INSTALL_PREFIX}/include
 			)
 	endif()
 
+	foreach(DIRECTORY ${DIRECTORIES})
+		target_include_directories(${RELEASE_TARGET}
+			INTERFACE
+			$<INSTALL_INTERFACE:include/${DIRECTORY}>
+			PRIVATE
+			$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libraries/${DIRECTORY}/include>
+			)
+
+		target_link_libraries(${RELEASE_TARGET}
+			PUBLIC
+			${DIRECTORY}_release_${ARCH}
+			)
+	endforeach(DIRECTORY)
+
+	message(STATUS "build include ${BUILD_INCLUDE_DIRECTORIES}")
+	message(STATUS "install include ${INSTALL_INCLUDE_DIRECTORIES}")
+
 	target_include_directories(${RELEASE_TARGET}
 		PUBLIC
-		${CMAKE_SOURCE_DIR}/libraries/API/include
-		${DIRECTORIES}
-		${CMAKE_SOURCE_DIR}/libraries/${API_NAME}/include
+		$<INSTALL_INTERFACE:include/${API_NAME}>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		)
 
 	sos_sdk_library("${RELEASE_OPTIONS}")
+
+	message(STATUS "Adding dependencies ${DEPENDENCIES}")
 
 
 	add_custom_target(

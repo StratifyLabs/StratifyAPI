@@ -71,7 +71,7 @@ class String : public api::Object {
 public:
   constexpr static size_t npos = std::string::npos;
 
-  enum class Base { octal = 8, decimal = 10, hexidecimal = 16 };
+  using Base = StringView::Base;
 
   using iterator = typename std::string::iterator;
   using const_iterator = typename std::string::const_iterator;
@@ -646,7 +646,7 @@ public:
    * ```
    *
    */
-  long to_long(enum Base base = Base::decimal) const {
+  long to_long(Base base = Base::decimal) const {
     return ::strtol(cstring(), nullptr, static_cast<int>(base));
   }
 

@@ -37,7 +37,7 @@ sys::Printer &sys::operator<<(Printer &printer, const var::JsonError &a) {
 sys::Printer &sys::print_value(
   Printer &printer,
   const var::JsonValue &a,
-  const var::String &key) {
+  var::StringView key) {
   if (a.is_object()) {
     var::StringList key_list = a.to_object().keys();
     if (!key.is_empty()) {
@@ -205,7 +205,7 @@ int JsonValue::create_if_not_valid() {
   return 0;
 }
 
-JsonValue &JsonValue::assign(const var::String &value) {
+JsonValue &JsonValue::assign(var::StringView value) {
   if (is_string()) {
     API_ASSIGN_ERROR_CODE(
       api::ErrorCode::no_memory,
@@ -235,9 +235,9 @@ JsonValue &JsonValue::assign(int value) { return *this; }
 
 JsonValue &JsonValue::assign(bool value) { return *this; }
 
-JsonValue &JsonValue::copy(const JsonValue &value, DeepCopy is_deep) {
+JsonValue &JsonValue::copy(const JsonValue &value, IsDeepCopy is_deep) {
   api()->decref(m_value);
-  if (is_deep == DeepCopy::yes) {
+  if (is_deep == IsDeepCopy::yes) {
     m_value = api()->deep_copy(value.m_value);
   } else {
     m_value = api()->copy(value.m_value);
@@ -358,7 +358,7 @@ json_t *JsonString::create() { return api()->create_string(""); }
 
 json_t *JsonNull::create() { return api()->create_null(); }
 
-JsonObject &JsonObject::insert(const var::String &key, bool value) {
+JsonObject &JsonObject::insert(var::StringView key, bool value) {
 
   if (value) {
     return insert(key, JsonTrue());
@@ -367,7 +367,7 @@ JsonObject &JsonObject::insert(const var::String &key, bool value) {
   return insert(key, JsonFalse());
 }
 
-JsonObject &JsonObject::insert(const var::String &key, const JsonValue &value) {
+JsonObject &JsonObject::insert(var::StringView key, const JsonValue &value) {
   if (create_if_not_valid() < 0) {
     return *this;
   }
@@ -399,7 +399,7 @@ JsonObject &JsonObject::update(const JsonValue &value, enum updates o_flags) {
   return *this;
 }
 
-JsonObject &JsonObject::remove(const var::String &key) {
+JsonObject &JsonObject::remove(var::StringView key) {
   API_ASSIGN_ERROR_CODE(
     api::ErrorCode::no_memory,
     api()->object_del(m_value, key.cstring()));
@@ -428,7 +428,7 @@ var::StringList JsonObject::key_list() const {
   return result;
 }
 
-JsonValue JsonObject::at(const var::String &key) const {
+JsonValue JsonObject::at(var::StringView key) const {
   return JsonValue(api()->object_get(m_value, key.cstring()));
 }
 
@@ -552,7 +552,7 @@ var::Vector<bool> JsonArray::bool_list() {
 
 JsonString::JsonString() { m_value = create(); }
 
-JsonString::JsonString(const var::String &str) {
+JsonString::JsonString(var::StringView str) {
   m_value = api()->create_string(str.cstring());
 }
 
@@ -612,7 +612,7 @@ JsonValue JsonDocument::load(XmlFilePath path, XmlIsFlat is_flat) {
 }
 #endif
 
-JsonValue JsonDocument::load(const var::String &json) {
+JsonValue JsonDocument::load(var::StringView json) {
   if (json.length() > 0) {
     char start_char = json.at(0);
     if (start_char == '"') {

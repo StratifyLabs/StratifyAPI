@@ -229,15 +229,16 @@ public:
    *
    *
    */
-  JsonValue &assign(const var::String &value);
+  JsonValue &assign(var::StringView value);
 
   JsonValue &assign(float value);
   JsonValue &assign(int value);
   JsonValue &assign(bool value);
 
-  enum class DeepCopy { no, yes };
+  enum class IsDeepCopy { no, yes };
 
-  JsonValue &copy(const JsonValue &value, DeepCopy deep_copy = DeepCopy::yes);
+  JsonValue &
+  copy(const JsonValue &value, IsDeepCopy deep_copy = IsDeepCopy::yes);
 
   static JsonApi &api() { return m_api; }
 
@@ -259,15 +260,16 @@ private:
   friend class JsonString;
   friend class JsonNull;
   friend class JsonKeyValue;
-  json_t *m_value;
   static JsonApi m_api;
+
+  json_t *m_value;
 
   void add_reference(json_t *value);
 };
 
 class JsonKeyValue : public JsonValue {
 public:
-  JsonKeyValue(const var::String &key, const JsonValue &value)
+  JsonKeyValue(var::StringView key, const JsonValue &value)
     : JsonValue(value), m_key(key) {}
 
   JsonKeyValue &set_value(const JsonValue &a) {
@@ -283,7 +285,7 @@ private:
 
 template <class Derived> class JsonKeyValueList : public var::Vector<Derived> {
 public:
-  Derived at(const var::String &key) {
+  Derived at(var::StringView key) {
     for (const auto &item : *this) {
       if (item.key() == key) {
         return item;
@@ -348,13 +350,13 @@ public:
    * exist in the object, it is created.
    *
    */
-  JsonObject &insert(const var::String &key, const JsonValue &value);
+  JsonObject &insert(var::StringView key, const JsonValue &value);
 
   JsonObject &insert(const var::JsonKeyValue &key_value) {
     return insert(key_value.key(), key_value.value());
   }
 
-  JsonObject &insert(const var::String &key, bool value);
+  JsonObject &insert(StringView key, bool value);
 
   enum updates {
     update_none = 0x00,
@@ -372,7 +374,7 @@ public:
    * \return Zero on success (-1 is key was not found)
    *
    */
-  JsonObject &remove(const var::String &key);
+  JsonObject &remove(var::StringView key);
 
   /*!
    * \details Returns the number of key/value pairs in the object
@@ -405,7 +407,7 @@ public:
    * JsonValue is destroyed.
    *
    */
-  JsonValue at(const var::String &key) const;
+  JsonValue at(var::StringView key) const;
 
   var::StringList key_list() const;
   var::StringList keys() const { return key_list(); }
@@ -485,7 +487,7 @@ private:
 class JsonString : public JsonValue {
 public:
   JsonString();
-  explicit JsonString(const var::String &str);
+  explicit JsonString(var::StringView str);
 
 private:
   json_t *create() override;
@@ -666,7 +668,7 @@ class Printer;
 Printer &operator<<(Printer &printer, const var::JsonValue &a);
 Printer &operator<<(Printer &printer, const var::JsonError &a);
 Printer &
-print_value(Printer &printer, const var::JsonValue &a, const var::String &key);
+print_value(Printer &printer, const var::JsonValue &a, var::StringView key);
 } // namespace sys
 #endif
 
@@ -675,7 +677,7 @@ print_value(Printer &printer, const var::JsonValue &a, const var::String &key);
   var::String get_##v() const {                                                \
     return to_object().at(MCU_STRINGIFY(k)).to_string();                       \
   }                                                                            \
-  c &set_##v(const var::String &value) {                                       \
+  c &set_##v(var::StringView value) {                                          \
     to_object().insert(MCU_STRINGIFY(k), var::JsonString(value));              \
     return *this;                                                              \
   }                                                                            \
@@ -848,9 +850,9 @@ print_value(Printer &printer, const var::JsonValue &a, const var::String &key);
 
 // access functions for working with JsonKeyValue objects
 #define JSON_ACCESS_KEY_VALUE_PAIR_STRING(c, k, v)                             \
-  const var::String &k() const { return key(); }                               \
+  var::StringView k() const { return key(); }                                  \
   var::String get_##v() const { return to_string(); }                          \
-  c &set_##v(const var::String &a) {                                           \
+  c &set_##v(var::StringView a) {                                              \
     set_value(var::JsonString(a));                                             \
     return *this;                                                              \
   }                                                                            \
@@ -858,7 +860,7 @@ print_value(Printer &printer, const var::JsonValue &a, const var::String &key);
 
 // access functions for working with JsonKeyValue objects
 #define JSON_ACCESS_KEY_VALUE_PAIR_REAL(c, k, v)                               \
-  const var::String &k() const { return key(); }                               \
+  var::StringView k() const { return key(); }                                  \
   float v() const { return to_float(); }                                       \
   float get_##v() const { return to_float(); }                                 \
   c &set_##v(float a) {                                                        \
@@ -869,7 +871,7 @@ print_value(Printer &printer, const var::JsonValue &a, const var::String &key);
 
 // access functions for working with JsonKeyValue objects
 #define JSON_ACCESS_KEY_VALUE_PAIR_INTEGER(c, k, v)                            \
-  const var::String &k() const { return key(); }                               \
+  var::StringView k() const { return key(); }                                  \
   s32 v() const { return to_integer(); }                                       \
   s32 get_##v() const { return to_integer(); }                                 \
   c &set_##v(s32 a) {                                                          \
@@ -880,7 +882,7 @@ print_value(Printer &printer, const var::JsonValue &a, const var::String &key);
 
 // access functions for working with JsonKeyValue objects
 #define JSON_ACCESS_KEY_VALUE_PAIR_BOOL(c, k, v)                               \
-  const var::String &k() const { return key(); }                               \
+  var::StringView k() const { return key(); }                                  \
   bool is_##v() const { return to_bool(); }                                    \
   c &set_##v(bool a = true) {                                                  \
     a ? set_value(var::JsonTrue()) : set_value(var::JsonFalse());              \
@@ -890,7 +892,7 @@ print_value(Printer &printer, const var::JsonValue &a, const var::String &key);
 
 // access functions for working with JsonKeyValue objects
 #define JSON_ACCESS_KEY_VALUE_PAIR_ARRAY(c, T, k, v)                           \
-  const var::String &k() const { return key(); }                               \
+  var::StringView k() const { return key(); }                                  \
   var::Vector<T> v() const { return to_array().construct_list<T>(); }          \
   var::Vector<T> get_##v() const {                                             \
     return to_array().construct_list_copy<T>();                                \
@@ -903,7 +905,7 @@ print_value(Printer &printer, const var::JsonValue &a, const var::String &key);
 
 // access functions for working with JsonKeyValue objects
 #define JSON_ACCESS_KEY_VALUE_PAIR_STRING_ARRAY(c, T, k, v)                    \
-  const var::String &k() const { return key(); }                               \
+  var::StringView k() const { return key(); }                                  \
   var::StringList v() const { return to_array().construct_list<T>(); }         \
   var::StringList get_##v() const {                                            \
     return to_array().construct_list_copy<T>();                                \
@@ -916,7 +918,7 @@ print_value(Printer &printer, const var::JsonValue &a, const var::String &key);
 
 // access functions for working with JsonKeyValue objects
 #define JSON_ACCESS_KEY_VALUE_PAIR_INTEGER_ARRAY(c, T, k, v)                   \
-  const var::String &k() const { return key(); }                               \
+  var::StringView k() const { return key(); }                                  \
   var::Vector<s32> get_##v() const { return to_array().construct_list<T>(); }  \
   c &set_##v(const var::Vector<s32> &a) {                                      \
     set_value(var::JsonArray(a));                                              \
@@ -926,7 +928,7 @@ print_value(Printer &printer, const var::JsonValue &a, const var::String &key);
 
 // access functions for working with JsonKeyValue objects
 #define JSON_ACCESS_KEY_VALUE_PAIR_REAL_ARRAY(c, T, k, v)                      \
-  const var::String &k() const { return key(); }                               \
+  var::StringView k() const { return key(); }                                  \
   var::Vector<float> get_##v() const {                                         \
     return to_array().construct_list<T>();                                     \
   }                                                                            \
