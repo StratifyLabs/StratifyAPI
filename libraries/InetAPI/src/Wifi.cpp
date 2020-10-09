@@ -51,7 +51,7 @@ var::Vector<WifiSsidInfo> Wifi::scan(
     return var::Vector<WifiSsidInfo>();
   }
 
-  chrono::Timer t;
+  chrono::ClockTimer t;
   t.start();
 
   while ((t < timeout) && is_scan_busy()) {
@@ -93,7 +93,7 @@ WifiIpInfo Wifi::connect(
     return WifiIpInfo();
   }
 
-  chrono::Timer t;
+  chrono::ClockTimer t;
   t.start();
   WifiInfo info;
   do {

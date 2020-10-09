@@ -7,8 +7,6 @@ set(SOURCES
 	Flags.cpp
 	View.cpp
 	List.cpp
-	Json.cpp
-	xml2json.hpp
 	Queue.cpp
 	Ring.cpp
 	StringView.cpp

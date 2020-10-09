@@ -26,10 +26,11 @@ sys::Printer &operator<<(sys::Printer &printer, const var::Tokenizer &a) {
 
 using namespace var;
 
-Tokenizer::Tokenizer() {}
+Tokenizer::Tokenizer(var::StringView input, const Construct &options) {
+  parse(input, options);
+}
 
-Tokenizer &
-Tokenizer::parse(var::StringView input, const Parse &options) {
+void Tokenizer::parse(var::StringView input, const Construct &options) {
 
   const u32 max_delimeter_count = options.maximum_delimeter_count();
   const u32 length = input.length();
@@ -41,8 +42,8 @@ Tokenizer::parse(var::StringView input, const Parse &options) {
     if (options.delimeters().find(input.at(cursor)) != String::npos) {
       m_token_list.push_back(
         String(input).get_substring(String::GetSubstring()
-                                          .set_position(sub_position)
-                                          .set_length(cursor - sub_position)));
+                                      .set_position(sub_position)
+                                      .set_length(cursor - sub_position)));
 
       sub_position = cursor + 1;
       if (
@@ -65,10 +66,8 @@ Tokenizer::parse(var::StringView input, const Parse &options) {
   // push the last token
   m_token_list.push_back(
     String(input).get_substring(String::GetSubstring()
-                                      .set_position(sub_position)
-                                      .set_length(cursor - sub_position)));
-
-  return *this;
+                                  .set_position(sub_position)
+                                  .set_length(cursor - sub_position)));
 }
 
 const String &Tokenizer::at(u32 n) const {

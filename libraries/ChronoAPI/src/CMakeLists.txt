@@ -1,8 +1,7 @@
 
 set(SOURCES
-	Timer.cpp
-	Clock.cpp
-	ClockTime.cpp
-	Time.cpp
 	MicroTime.cpp
+	ClockTime.cpp
+	DateTime.cpp
+	ClockTimer.cpp
 	PARENT_SCOPE)

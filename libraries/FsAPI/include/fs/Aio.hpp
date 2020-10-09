@@ -10,7 +10,7 @@
 #include <cstring>
 #include <errno.h>
 
-#include "chrono/Time.hpp"
+#include "chrono/MicroTime.hpp"
 #include "var/View.hpp"
 
 #include "File.hpp"
@@ -91,7 +91,7 @@ public:
    */
   static int suspend(
     const AiocbList &list,
-    const chrono::Microseconds &timeout = chrono::Microseconds(0)) {
+    const chrono::MicroTime &timeout = chrono::MicroTime(0)) {
     struct timespec ts;
     ts.tv_sec = timeout.microseconds() / 1000000;
     ts.tv_nsec = (timeout.microseconds() % 1000000) * 1000;
@@ -108,7 +108,7 @@ public:
    *
    *
    */
-  Aio &suspend(const chrono::Microseconds &timeout = chrono::Microseconds(0)) {
+  Aio &suspend(const chrono::MicroTime &timeout = chrono::MicroTime(0)) {
 
     API_ASSIGN_ERROR_CODE(
       api::ErrorCode::io_error,

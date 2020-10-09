@@ -17,6 +17,7 @@ namespace fs {}
 #include "fs/Dir.hpp"
 #include "fs/File.hpp"
 #include "fs/FileInfo.hpp"
+#include "fs/FileSystem.hpp"
 
 using namespace fs;
 

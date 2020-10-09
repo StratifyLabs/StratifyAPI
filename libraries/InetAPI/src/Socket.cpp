@@ -195,9 +195,8 @@ var::String SocketAddress::to_string() const {
 }
 
 SocketAddressIpv4 SocketAddressIpv4::from_string(var::StringView value) {
-  Tokenizer tokens = Tokenizer().parse(
-    value,
-    var::Tokenizer::Parse().set_delimeters(".:"));
+  Tokenizer tokens
+    = Tokenizer(value, var::Tokenizer::Construct().set_delimeters(".:"));
 
   if (tokens.count() < 4) {
     return SocketAddressIpv4();
@@ -213,9 +212,8 @@ SocketAddressIpv4 SocketAddressIpv4::from_string(var::StringView value) {
 }
 
 SocketAddressIpv4 &SocketAddressIpv4::set_address(var::StringView addr) {
-  Tokenizer tokens = Tokenizer().parse(
-    addr,
-    var::Tokenizer::Parse().set_delimeters("."));
+  Tokenizer tokens
+    = Tokenizer(addr, var::Tokenizer::Construct().set_delimeters("."));
 
   if (tokens.count() != 4) {
     return *this;

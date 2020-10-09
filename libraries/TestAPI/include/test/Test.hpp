@@ -9,8 +9,8 @@
 #include <sos/link.h>
 #endif
 
-#include "chrono/Time.hpp"
-#include "chrono/Timer.hpp"
+#include "chrono/ClockTime.hpp"
+#include "chrono/ClockTimer.hpp"
 #include "printer/Printer.hpp"
 #include "sys/Cli.hpp"
 #include "var/Data.hpp"
@@ -196,8 +196,8 @@ public:
   }
 
 protected:
-  const chrono::Timer &case_timer() const { return m_case_timer; }
-  chrono::Timer &case_timer() { return m_case_timer; }
+  const chrono::ClockTimer &case_timer() const { return m_case_timer; }
+  chrono::ClockTimer &case_timer() { return m_case_timer; }
 
   static u32 get_score(u32 microseconds);
 
@@ -210,7 +210,7 @@ private:
   bool m_case_result = true;
   var::DataInfo m_case_data_info;
   var::DataInfo m_test_data_info;
-  chrono::Timer m_case_timer;
+  chrono::ClockTimer m_case_timer;
   u32 m_test_duration_microseconds;
   var::String m_name;
   Test *m_parent = nullptr;

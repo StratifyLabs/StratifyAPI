@@ -8,9 +8,9 @@
 
 #include "api/api.hpp"
 
-#include "chrono/Time.hpp"
 #include "FileInfo.hpp"
 #include "Path.hpp"
+#include "chrono/MicroTime.hpp"
 
 #include "var/Data.hpp"
 #include "var/String.hpp"
@@ -430,15 +430,16 @@ private:
   int interface_fsync(int fd) const override { return 0; }
 };
 
-class ItemFile : public FileAccess<ItemFile> {
+class ViewFile : public FileAccess<ViewFile> {
 public:
   /*! \details Constructs a data file. */
-  ItemFile(const OpenMode &flags = OpenMode::read_write())
-    : FileAccess(""), m_open_flags(flags) {
-    m_location = 0;
-  }
+  ViewFile(var::View view)
+    : FileAccess(""),
+      m_open_flags(
+        view.is_read_only() ? OpenMode::read_only() : OpenMode::read_write()),
+      m_view(view) {}
 
-  ItemFile &set_flags(const OpenMode &open_flags) {
+  ViewFile &set_flags(const OpenMode &open_flags) {
     m_open_flags = open_flags;
     return *this;
   }
@@ -446,14 +447,14 @@ public:
   const OpenMode &flags() const { return m_open_flags; }
 
   /*! \details Accesses (read-only) the member data object. */
-  const var::View &item() const { return m_reference; }
+  const var::View &item() const { return m_view; }
   /*! \details Accesses the member data object. */
-  var::View &item() { return m_reference; }
+  var::View &item() { return m_view; }
 
 private:
-  mutable int m_location; // offset location for seeking/reading/writing
+  mutable int m_location = 0; // offset location for seeking/reading/writing
   mutable OpenMode m_open_flags;
-  var::View m_reference;
+  var::View m_view;
 
   int interface_open(const char *path, int flags, int mode) const override {
     MCU_UNUSED_ARGUMENT(path);

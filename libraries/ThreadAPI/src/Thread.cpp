@@ -235,7 +235,7 @@ bool Thread::is_running() {
   return false;
 }
 
-Thread &Thread::wait(void **ret, const chrono::Microseconds &interval) {
+Thread &Thread::wait(void **ret, const chrono::MicroTime &interval) {
 
   void *dummy;
 
@@ -251,7 +251,7 @@ Thread &Thread::wait(void **ret, const chrono::Microseconds &interval) {
     } else {
       // just keep sampling until the thread completes
       while (is_running()) {
-        interval.wait();
+        chrono::wait(interval);
       }
     }
   }

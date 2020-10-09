@@ -6,8 +6,8 @@
 
 #include <pthread.h>
 
-#include "chrono/Time.hpp"
 #include "Sched.hpp"
+#include "chrono/ClockTime.hpp"
 
 namespace thread {
 
@@ -230,7 +230,7 @@ public:
    */
   Thread &wait(
     void **ret = nullptr,
-    const chrono::Microseconds &interval = chrono::Milliseconds(1000UL));
+    const chrono::MicroTime &interval = chrono::Milliseconds(1000UL));
 
   /*! \details Yields the processor to another thread */
   static void yield() { Sched().yield(); }

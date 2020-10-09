@@ -5,7 +5,6 @@
 #define SAPI_HAL_DEVICE_HPP_
 
 #include "DeviceSignal.hpp"
-#include "chrono/Time.hpp"
 #include "fs/Aio.hpp"
 #include "fs/File.hpp"
 

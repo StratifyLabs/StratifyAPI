@@ -4,10 +4,9 @@
 #include <unistd.h>
 
 #include "chrono/MicroTime.hpp"
-#include "chrono/Timer.hpp"
 
-void chrono::wait(const chrono::Microseconds &duration) {
-  chrono::Microseconds period = duration;
+void chrono::wait(const chrono::MicroTime &duration) {
+  chrono::MicroTime period = duration;
   u32 seconds = period.seconds();
   if (seconds > 0) {
     ::sleep(seconds);

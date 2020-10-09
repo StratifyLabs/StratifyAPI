@@ -18,7 +18,6 @@ namespace var {}
 #include "var/Deque.hpp"
 #include "var/Queue.hpp"
 #include "var/Stack.hpp"
-#include "var/Json.hpp"
 #include "var/String.hpp"
 #include "var/Tokenizer.hpp"
 #include "var/Vector.hpp"

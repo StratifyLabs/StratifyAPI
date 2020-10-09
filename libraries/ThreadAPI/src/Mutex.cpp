@@ -104,8 +104,7 @@ Mutex &Mutex::lock() {
 
 #if !defined __link
 Mutex &Mutex::lock_timed(const chrono::ClockTime &clock_time) {
-  ClockTime calc_time;
-  calc_time = Clock::get_time();
+  ClockTime calc_time = ClockTime::get_system_time();
   calc_time += clock_time;
   API_ASSIGN_ERROR_CODE(
     api::ErrorCode::no_memory,

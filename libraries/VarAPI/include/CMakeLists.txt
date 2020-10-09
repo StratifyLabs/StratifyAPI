@@ -7,7 +7,6 @@ set(SOURCES
 	var/Flags.hpp
 	var/View.hpp
 	var/List.hpp
-	var/Json.hpp
 	var/Queue.hpp
 	var/Ring.hpp
 	var/StringView.hpp

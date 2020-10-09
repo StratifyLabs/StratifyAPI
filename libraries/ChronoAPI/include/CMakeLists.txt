@@ -1,9 +1,8 @@
 
 set(SOURCES
 	chrono.hpp
-	chrono/Timer.hpp
-	chrono/Clock.hpp
+	chrono/ClockTimer.hpp
 	chrono/ClockTime.hpp
-	chrono/Time.hpp
+	chrono/DateTime.hpp
 	chrono/MicroTime.hpp
 	PARENT_SCOPE)

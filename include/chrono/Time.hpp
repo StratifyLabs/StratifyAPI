@@ -58,7 +58,7 @@ private:
 	u32 m_value;
 };
 
-class Timer;
+class ClockTimer;
 class ClockTime;
 
 /*! \details Defines the type for a chrono::MicroTime value. */
@@ -152,7 +152,7 @@ public:
 	}
 
 	/*! \details Constructs a Microseconds object from the current value of a chrono::Timer. */
-	Microseconds(const Timer & timer);
+	Microseconds(const ClockTimer & timer);
 
 
 	/*! \details Returns true if the time is set to a valid value.

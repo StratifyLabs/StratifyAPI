@@ -7,8 +7,8 @@
 
 #include "api/api.hpp"
 
-#include "chrono/Time.hpp"
-#include "chrono/Timer.hpp"
+#include "chrono/ClockTimer.hpp"
+#include "chrono/DateTime.hpp"
 #include "var/String.hpp"
 
 #include "IpAddress.hpp"

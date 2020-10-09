@@ -17,14 +17,14 @@ namespace var {
  */
 class Tokenizer : public api::Object {
 public:
-  class Parse {
-    API_ACCESS_COMPOUND(Parse, var::StringView, delimeters);
-    API_ACCESS_COMPOUND(Parse, var::StringView, ignore_between);
-    API_ACCESS_BOOL(Parse, count_empty_tokens, false);
-    API_ACCESS_FUNDAMENTAL(Parse, u32, maximum_delimeter_count, 0);
+  class Construct {
+    API_ACCESS_COMPOUND(Construct, var::StringView, delimeters);
+    API_ACCESS_COMPOUND(Construct, var::StringView, ignore_between);
+    API_ACCESS_BOOL(Construct, count_empty_tokens, false);
+    API_ACCESS_FUNDAMENTAL(Construct, u32, maximum_delimeter_count, 0);
   };
 
-  Tokenizer();
+  Tokenizer(StringView input, const Construct &options);
 
   /*! \details Sorting Options used with sort() */
   enum class SortBy {
@@ -32,27 +32,6 @@ public:
     ascending /*! Sort from A to Z */,
     descending /*! Sort from Z to A */
   };
-
-  /*! \details Updates the token by parsing a new string.
-   *
-   * @param delim Delimiter string
-   * @param ignore Ignore string
-   * @param max_delim The maximum number of delimiters to parse before giving up
-   * (0 for no limit)
-   *
-   * This method will re-parse the current string.  The \a delim value
-   * contains all separators.  For example, " \t" will create a new token
-   * for each space or tab in the string.  if count_empty() is true, two spaces
-   * will mean two tokens.
-   *
-   * The \a ignore string specifies places not to parse.  For example, "\"" will
-   * not parse text between quotes.  This is useful when dealing with standard
-   * formats that use quotes to indicate raw data rather than a tokenized
-   * format.
-   *
-   *
-   */
-  Tokenizer &parse(StringView input, const Parse &options);
 
   /*! \details Sorts the tokens as specified. */
   Tokenizer &sort(SortBy sort_option);
@@ -70,6 +49,8 @@ public:
 protected:
 private:
   var::StringList m_token_list;
+
+  void parse(StringView input, const Construct &options);
 };
 
 typedef Tokenizer Token;

@@ -7,7 +7,7 @@
 #include <mcu/types.h>
 #include <time.h>
 
-#include "Time.hpp"
+#include "DateTime.hpp"
 
 #include "var/String.hpp"
 
@@ -22,6 +22,13 @@ namespace chrono {
  */
 class ClockTime {
 public:
+  enum class ClockId { realtime = CLOCK_REALTIME };
+
+  static ClockTime get_system_time(ClockId clock_id = ClockId::realtime);
+
+  /*! \details Gets the resolution of the specified clock. */
+  static ClockTime get_system_resolution(ClockId clock_id = ClockId::realtime);
+
   /*! \details Constructs a ClockTime object from seconds and nanoseconds.
    *
    *
@@ -67,16 +74,6 @@ public:
 
   ClockTime &set_nanoseconds(u32 value) {
     m_value.tv_nsec = value;
-    return *this;
-  }
-
-  ClockTime &operator<<(const Seconds &seconds) {
-    m_value.tv_sec = seconds.seconds();
-    return *this;
-  }
-
-  ClockTime &operator<<(const Nanoseconds &nanoseconds) {
-    m_value.tv_nsec = nanoseconds.nanoseconds();
     return *this;
   }
 
@@ -136,7 +133,7 @@ public:
    * ```
    *
    */
-  ClockTime age() const;
+  ClockTime get_age() const;
 
   /*! \details Adds \a to this and assigned to this. */
   ClockTime &operator+=(const ClockTime &a) {
@@ -175,7 +172,6 @@ private:
   void assign(const Seconds &seconds, const Nanoseconds &nanoseconds);
   static ClockTime add(const ClockTime &a, const ClockTime &b);
   static ClockTime subtract(const ClockTime &a, const ClockTime &b);
-
   struct timespec m_value;
 };
 

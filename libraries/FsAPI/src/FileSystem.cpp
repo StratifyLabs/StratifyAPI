@@ -310,9 +310,9 @@ FileSystem &FileSystem::create_directory(
   if (is_recursive == Recursive::no) {
     return create_directory(path, permissions);
   }
-  var::Tokenizer path_tokens = var::Tokenizer().parse(
+  var::Tokenizer path_tokens = var::Tokenizer(
     path,
-    var::Tokenizer::Parse().set_delimeters("/"));
+    var::Tokenizer::Construct().set_delimeters("/"));
   var::String base_path;
 
   if (path.find("/") == 0) {

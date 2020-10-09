@@ -257,6 +257,12 @@ public:
     // return query(Method::connect, url, MethodOptions());
     return *this;
   }
+
+  HttpClient &execute_method(
+    Method method,
+    var::StringView url,
+    const ExecuteMethod &options);
+
   /*! \endcond */
 
   /*! \details Returns a reference to the header that is returned
@@ -325,11 +331,6 @@ private:
   var::String m_traffic;
 
   int connect_to_server(var::StringView domain_name, u16 port);
-
-  HttpClient &execute_method(
-    Method method,
-    var::StringView url,
-    const ExecuteMethod &options);
 
   int send_string(var::StringView str);
 

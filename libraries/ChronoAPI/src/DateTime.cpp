@@ -2,15 +2,16 @@
              // LICENSE.md for rights.
 // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc
 
-#include "printer/Printer.hpp"
-
-#include "chrono/Time.hpp"
-#include "chrono/Timer.hpp"
 #if defined __StratifyOS__
 #include <fcntl.h>
 #include <sos/dev/rtc.h>
 #include <unistd.h>
 #endif
+
+#include "printer/Printer.hpp"
+
+#include "chrono/ClockTimer.hpp"
+#include "chrono/DateTime.hpp"
 
 #if defined __win32
 #include <iomanip>
@@ -42,23 +43,26 @@ printer::operator<<(printer::Printer &printer, const chrono::MicroTime &a) {
 }
 
 printer::Printer &
-printer::operator<<(printer::Printer &printer, const chrono::Time &a) {
+printer::operator<<(printer::Printer &printer, const chrono::DateTime &a) {
   printer.key("time", var::String::number(a.time()));
   return printer;
 }
 
 using namespace chrono;
 
-Microseconds::Microseconds(const Timer &timer) {
+MicroTime::MicroTime(const ClockTimer &timer) {
   m_value_microseconds = timer.microseconds();
 }
 
-Microseconds::Microseconds(const ClockTime &clock_time) {
+MicroTime::MicroTime(const ClockTime &clock_time) {
   m_value_microseconds = clock_time.seconds() * 1000000UL
                          + (clock_time.nanoseconds() + 500) / 1000;
 }
 
-void Microseconds::wait() const { chrono::wait(*this); }
+MicroTime &MicroTime::wait() {
+  chrono::wait(*this);
+  return *this;
+}
 
 constexpr static const char *month_names[] = {
   "January",
@@ -75,14 +79,14 @@ constexpr static const char *month_names[] = {
   "December"};
 
 /*! \brief Construct using current time */
-Time::Time() { m_time = 0; }
+DateTime::DateTime() { m_time = 0; }
 
 /*! \brief Construct using an amount of time */
-Time::Time(const Seconds &sec, const Minutes &min, const Hours &hour) {
+DateTime::DateTime(const Seconds &sec, const Minutes &min, const Hours &hour) {
   set_time(sec, min, hour);
 }
 
-Time::Time(var::StringView time_string, var::StringView format) {
+DateTime::DateTime(var::StringView time_string, var::StringView format) {
   struct tm tm = {0};
   if (strptime(time_string.cstring(), format.cstring(), &tm) != nullptr) {
     m_time = mktime(&tm);
@@ -91,27 +95,27 @@ Time::Time(var::StringView time_string, var::StringView format) {
   }
 }
 
-Time &Time::operator+=(const Time &a) {
+DateTime &DateTime::operator+=(const DateTime &a) {
   m_time += a.time();
   return *this;
 }
 
-Time &Time::operator=(const Time &a) {
+DateTime &DateTime::operator=(const DateTime &a) {
   m_time = a.time();
   return *this;
 }
 
-Time &Time::operator=(u32 a) {
+DateTime &DateTime::operator=(u32 a) {
   m_time = a;
   return *this;
 }
 
-Time &Time::operator-=(const Time &a) {
+DateTime &DateTime::operator-=(const DateTime &a) {
   m_time -= a.time();
   return *this;
 }
 
-int Time::set_time_of_day(const Time &t) {
+int DateTime::set_time_of_day(const DateTime &t) {
 #if defined __StratifyOS__
   int ret;
   int fd = ::open("/dev/rtc", O_RDWR);
@@ -127,35 +131,35 @@ int Time::set_time_of_day(const Time &t) {
 #endif
 }
 
-int Time::set_time_of_day() { return set_time_of_day(*this); }
+int DateTime::set_time_of_day() { return set_time_of_day(*this); }
 
-Time Time::get_time_of_day() {
+DateTime DateTime::get_time_of_day() {
   time_t t = ::time(0);
   if (t < 962668800) {
     t = 962668800;
   }
-  return Time(t);
+  return DateTime(t);
 }
 
-Time &
-Time::set_time(const Seconds &sec, const Minutes &min, const Hours &hour) {
+DateTime &
+DateTime::set_time(const Seconds &sec, const Minutes &min, const Hours &hour) {
   m_time = sec.seconds() + min.minutes() * 60 + hour.hours() * 3600;
   return *this;
 }
 
-u32 Time::second() const { return m_time % 60; }
+u32 DateTime::second() const { return m_time % 60; }
 
-u32 Time::minute() const { return (m_time % 3600) / 60; }
+u32 DateTime::minute() const { return (m_time % 3600) / 60; }
 
-u32 Time::hour() const { return m_time / 3600 % 24; }
+u32 DateTime::hour() const { return m_time / 3600 % 24; }
 
-u32 Time::day() const { return get_tm().tm_mday; }
-u32 Time::weekday() const { return get_tm().tm_wday; }
-u32 Time::yearday() const { return get_tm().tm_yday; }
-u32 Time::month() const { return get_tm().tm_mon + 1; }
-u32 Time::year() const { return get_tm().tm_year + 1900; }
+u32 DateTime::day() const { return get_tm().tm_mday; }
+u32 DateTime::weekday() const { return get_tm().tm_wday; }
+u32 DateTime::yearday() const { return get_tm().tm_yday; }
+u32 DateTime::month() const { return get_tm().tm_mon + 1; }
+u32 DateTime::year() const { return get_tm().tm_year + 1900; }
 
-const char *Time::month_name() const {
+const char *DateTime::month_name() const {
   u32 mon = month();
   if (mon < 12) {
     return month_names[mon];
@@ -163,7 +167,7 @@ const char *Time::month_name() const {
   return "";
 }
 
-struct tm Time::get_tm() const {
+struct tm DateTime::get_tm() const {
   struct tm time_struct;
 #if defined __win32
   struct tm *ptr;

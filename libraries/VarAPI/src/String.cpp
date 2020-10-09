@@ -167,9 +167,8 @@ float String::to_float() const {
 }
 
 Vector<String> String::split(StringView delimiter) const {
-  Tokenizer tokens = Tokenizer().parse(
-    *this,
-    Tokenizer::Parse().set_delimeters(delimiter));
+  Tokenizer tokens
+    = Tokenizer(*this, Tokenizer::Construct().set_delimeters(delimiter));
   return tokens.list();
 }
 

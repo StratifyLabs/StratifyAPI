@@ -1,7 +1,8 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
 // LICENSE.md for rights.
 #include "crypto/Random.hpp"
-#include "chrono/Clock.hpp"
+#include "chrono/ClockTime.hpp"
+#include "chrono/MicroTime.hpp"
 
 using namespace crypto;
 
@@ -35,8 +36,8 @@ void Random::finalize() {
 Random &Random::seed() {
   var::Array<u32, 64> list;
   for (u32 &item : list) {
-    item = ~chrono::Clock::get_time().nanoseconds();
-    chrono::wait(chrono::Microseconds(item % 1000));
+    item = ~chrono::ClockTime::get_system_time().nanoseconds();
+    chrono::wait(chrono::MicroTime(item % 1000));
   }
   return seed(list);
 }

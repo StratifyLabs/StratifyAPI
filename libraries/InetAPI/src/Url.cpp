@@ -10,9 +10,8 @@ Url::Url(var::StringView url) {
 
   if (url.is_empty() == false) {
 
-    var::Tokenizer url_tokens = var::Tokenizer().parse(
-      url,
-      var::Tokenizer::Parse().set_delimeters("/"));
+    var::Tokenizer url_tokens
+      = var::Tokenizer(url, var::Tokenizer::Construct().set_delimeters("/"));
 
     // https://domain.name:port/path
 
@@ -28,9 +27,9 @@ Url::Url(var::StringView url) {
       m_protocol = protocol_http;
     }
 
-    var::Tokenizer domain_name = var::Tokenizer().parse(
+    var::Tokenizer domain_name = var::Tokenizer(
       url_tokens.at(2),
-      var::Tokenizer::Parse().set_delimeters(":"));
+      var::Tokenizer::Construct().set_delimeters(":"));
 
     if (domain_name.count() > 1) {
       m_port = var::String(domain_name.at(1)).to_integer();

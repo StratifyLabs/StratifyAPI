@@ -40,10 +40,10 @@
  */
 namespace chrono {}
 
-#include "chrono/Clock.hpp"
 #include "chrono/ClockTime.hpp"
-#include "chrono/Time.hpp"
-#include "chrono/Timer.hpp"
+#include "chrono/ClockTimer.hpp"
+#include "chrono/DateTime.hpp"
+#include "chrono/MicroTime.hpp"
 
 using namespace chrono;
 

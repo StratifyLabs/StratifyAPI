@@ -111,9 +111,9 @@ bool Cli::is_option_equivalent_to_argument_with_equality(
     return false;
   }
 
-  Tokenizer tokens = Tokenizer().parse(
+  Tokenizer tokens = Tokenizer(
     argument,
-    Tokenizer::Parse()
+    Tokenizer::Construct()
       .set_delimeters("=")
       .set_ignore_between("")
       .set_maximum_delimeter_count(1));

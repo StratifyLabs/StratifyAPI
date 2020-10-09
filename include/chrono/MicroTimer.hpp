@@ -5,7 +5,7 @@
 #include "Timer.hpp"
 
 namespace chrono {
-typedef class Timer MicroTimer;
+typedef class ClockTimer MicroTimer;
 }
 
 #endif // CHRONO_MICRO_TIMER_HPP_

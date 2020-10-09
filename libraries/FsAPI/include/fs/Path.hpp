@@ -10,7 +10,7 @@ class Path {
 public:
   Path(var::StringView  view) : m_path(view) {}
 
-  var::StringView  path() const { return m_path; }
+  var::StringView path() const { return m_path; }
 
   /*! \details Returns the file suffix ('txt' for '/home/test.txt'). */
   var::String suffix();

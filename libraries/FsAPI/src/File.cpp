@@ -6,10 +6,8 @@
 #include <cstring>
 #include <fcntl.h>
 
-#include "chrono/Timer.hpp"
+#include "chrono/ClockTimer.hpp"
 #include "fs/File.hpp"
-
-#include "link/Link.hpp"
 
 #include "local.h"
 
@@ -395,7 +393,7 @@ int DataFile::interface_lseek(int fd, int offset, int whence) const {
   return m_location;
 }
 
-int ItemFile::interface_read(int fd, void *buf, int nbyte) const {
+int ViewFile::interface_read(int fd, void *buf, int nbyte) const {
 
   if (flags().is_write_only()) {
     return -1;
@@ -416,7 +414,7 @@ int ItemFile::interface_read(int fd, void *buf, int nbyte) const {
   return size_ready;
 }
 
-int ItemFile::interface_write(int fd, const void *buf, int nbyte) const {
+int ViewFile::interface_write(int fd, const void *buf, int nbyte) const {
   MCU_UNUSED_ARGUMENT(fd);
 
   if (flags().is_read_only()) {
@@ -448,7 +446,7 @@ int ItemFile::interface_write(int fd, const void *buf, int nbyte) const {
   return size_ready;
 }
 
-int ItemFile::interface_lseek(int fd, int location, int whence) const {
+int ViewFile::interface_lseek(int fd, int location, int whence) const {
   switch (static_cast<Whence>(whence)) {
   case Whence::current:
     m_location += location;

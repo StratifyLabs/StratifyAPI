@@ -3,7 +3,6 @@
 // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc
 
 #include "hal/Device.hpp"
-#include "chrono/Timer.hpp"
 
 using namespace sys;
 using namespace hal;
@@ -51,7 +50,7 @@ Device &Device::transfer(const Transfer &options) {
   read(aio).write(options.source());
   while (aio.is_busy() && status().is_success()) {
     // aio must live until the read completes -- or big problems will happen
-    chrono::wait(chrono::Microseconds(200));
+    chrono::wait(chrono::MicroTime(200));
   }
   return *this;
 }

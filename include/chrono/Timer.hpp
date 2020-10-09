@@ -101,11 +101,11 @@ namespace chrono {
  *
  *
  */
-class Timer : public api::WorkObject {
+class ClockTimer : public api::WorkObject {
 public:
 
 	/*! \details Constructs an empty Timer. */
-	Timer();
+	ClockTimer();
 
 
 	/*! \details Starts the timer.
