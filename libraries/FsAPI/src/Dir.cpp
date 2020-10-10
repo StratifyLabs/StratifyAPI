@@ -16,6 +16,7 @@
 using namespace fs;
 
 Dir::Dir(var::StringView path FSAPI_LINK_DECLARE_DRIVER_LAST) {
+  API_RETURN_IF_ERROR();
   m_dirp = 0;
 #if defined __link
   m_dirp_local = 0;
@@ -27,6 +28,7 @@ Dir::Dir(var::StringView path FSAPI_LINK_DECLARE_DRIVER_LAST) {
 Dir::~Dir() { close(); }
 
 Dir &Dir::open(var::StringView path) {
+  API_RETURN_VALUE_IF_ERROR(*this);
 #if defined __link
   if (driver()) {
     m_dirp = link_opendir(driver(), path.cstring());
@@ -55,6 +57,7 @@ Dir &Dir::open(var::StringView path) {
 
 #if !defined __link
 int Dir::count() {
+  API_RETURN_VALUE_IF_ERROR(-1);
   long loc;
   int count;
 
@@ -87,8 +90,9 @@ int Dir::count() {
 #endif
 
 var::StringList Dir::read_list(
-  std::function<const var::String(const var::String &entry)> filter,
+  var::StringView (*filter)(var::StringView),
   IsRecursive is_recursive) {
+  API_RETURN_VALUE_IF_ERROR(var::StringList());
   var::Vector<var::String> result;
   var::String entry;
   bool is_the_end = false;
@@ -100,7 +104,7 @@ var::StringList Dir::read_list(
       is_the_end = true;
     }
     if (filter != nullptr) {
-      entry = filter(entry);
+      entry = var::String(filter(entry));
     }
     if (!entry.is_empty() && (entry != ".") && (entry != "..")) {
 
@@ -134,9 +138,7 @@ var::StringList Dir::read_list(
 }
 
 var::Vector<var::String> Dir::read_list(IsRecursive is_recursive) {
-  return read_list(
-    std::function<const var::String(const var::String &entry)>(nullptr),
-    is_recursive);
+  return read_list(nullptr, is_recursive);
 }
 
 const char *Dir::read() {

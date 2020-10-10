@@ -53,7 +53,7 @@ var::String Url::to_string() const {
          + "://" + m_domain_name + m_path;
 }
 
-var::String Url::encode(const var::String &input) {
+var::String Url::encode(var::StringView input) {
   var::String result;
   u32 length = input.length();
   for (u32 i = 0; i < length; i++) {
@@ -68,5 +68,3 @@ var::String Url::encode(const var::String &input) {
   }
   return result;
 }
-
-var::String Url::decode(const var::String &input) { return var::String(); }

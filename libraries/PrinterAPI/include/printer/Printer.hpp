@@ -211,6 +211,7 @@ public:
   }
 
   PrintFlags flags() const { return m_print_flags; }
+  PrintFlags print_flags() const { return m_print_flags; }
 
   /*! \details Returns a pointer to the sys::ProgressCallback member.
    *
@@ -256,7 +257,10 @@ public:
   bool update_progress(int progress, int total);
 
   /*! \details Access to the key to print during progress updates. */
-  var::StringView  &progress_key() { return m_progress_key; }
+  Printer &set_progress_key(var::StringView progress_key) {
+    m_progress_key = progress_key;
+    return *this;
+  }
   /*! \details Access (read-only) to the key to print during progress updates.
    */
   var::StringView progress_key() const { return m_progress_key; }

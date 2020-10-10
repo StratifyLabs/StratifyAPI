@@ -260,7 +260,7 @@ FileSystem::remove_directory(var::StringView path, Recursive recursive) {
 
 var::StringList FileSystem::read_directory(
   var::StringView path,
-  std::function<const var::String(const var::String &entry)> filter,
+  var::StringView (*filter)(var::StringView entry),
   Recursive is_recursive) {
   return Dir(path FSAPI_LINK_MEMBER_DRIVER_LAST)
     .read_list(filter, is_recursive);

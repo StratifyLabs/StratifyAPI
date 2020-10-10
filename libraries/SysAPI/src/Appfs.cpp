@@ -497,11 +497,6 @@ Appfs &Appfs::cleanup(CleanData clean_data) {
 
   fs::Dir dir("/app/ram");
 
-  if (dir.status().is_error()) {
-    API_COPY_ERROR_CODE(dir.status());
-    return *this;
-  }
-
   while ((name = dir.read()) != 0) {
     strcpy(buffer, "/app/ram/");
     strcat(buffer, name);
@@ -525,16 +520,12 @@ Appfs &Appfs::cleanup(CleanData clean_data) {
 }
 
 Appfs &Appfs::free_ram(var::StringView path) {
-  API_COPY_ERROR_CODE(fs::File(path, fs::OpenMode::read_only())
-                        .ioctl(I_APPFS_FREE_RAM, nullptr)
-                        .status());
+  fs::File(path, fs::OpenMode::read_only()).ioctl(I_APPFS_FREE_RAM, nullptr);
   return *this;
 }
 
 Appfs &Appfs::reclaim_ram(var::StringView path) {
-  API_COPY_ERROR_CODE(fs::File(path, fs::OpenMode::read_only())
-                        .ioctl(I_APPFS_RECLAIM_RAM, nullptr)
-                        .status());
+  fs::File(path, fs::OpenMode::read_only()).ioctl(I_APPFS_RECLAIM_RAM, nullptr);
   return *this;
 }
 

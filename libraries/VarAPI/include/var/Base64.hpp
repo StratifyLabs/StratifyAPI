@@ -51,16 +51,42 @@ namespace var {
  */
 class Base64 : public api::Object {
 public:
-  var::String encode(var::View input);
-  var::Data decode(var::StringView input);
+  var::String encode(var::View input) const;
+  var::Data decode(var::StringView input) const;
+
+  const Base64 &operation(const var::View view) const {
+    memcpy(view.to_void(), view.to_const_char(), 4);
+    return *this;
+  }
 
 private:
+  friend class Base64Encoder;
+  friend class Base64Decoder;
+
+  static size_t get_decoded_size(size_t nbyte);
+  static size_t get_encoded_size(size_t nbyte);
+
   static int encode(char *dest, const void *src, int nbyte);
   static int decode(void *dest, const char *src, int nbyte);
-  static int calc_decoded_size(int nbyte);
-  static int calc_encoded_size(int nbyte);
+
   static char encode_six(u8 six_bit_value);
-  static char decode_eigth(u8 eight_bit_value);
+  static char decode_eight(u8 eight_bit_value);
+};
+
+class Base64Encoder : public Transformer {
+public:
+  int transform(const Transform &options) const;
+  size_t get_output_size(size_t nbyte) const {
+    return Base64::get_encoded_size(nbyte);
+  }
+};
+
+class Base64Decoder : public Transformer {
+public:
+  int transform(const Transform &options) const;
+  size_t get_output_size(size_t nbyte) const {
+    return Base64::get_decoded_size(nbyte);
+  }
 };
 
 } // namespace var

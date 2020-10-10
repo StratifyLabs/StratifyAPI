@@ -102,11 +102,10 @@ public:
   class HeaderPair : public var::Pair<var::String> {
   public:
     HeaderPair() {}
-    HeaderPair(const var::String &key, const var::String &value)
-      : var::Pair<var::String>(key, value) {}
+    HeaderPair(var::StringView key, var::StringView value)
+      : var::Pair<var::String>(var::String(key), var::String(value)) {}
 
-    static HeaderPair from_string(const var::String &string);
-
+    static HeaderPair from_string(var::StringView string);
     var::String to_string() const { return key() + ": " + value(); }
   };
 
@@ -196,7 +195,11 @@ public:
   class ExecuteMethod {
     API_AF(ExecuteMethod, fs::File *, response, nullptr);
     API_AF(ExecuteMethod, fs::File *, request, nullptr);
-    API_AF(ExecuteMethod, api::ProgressCallback *, progress_callback, nullptr);
+    API_AF(
+      ExecuteMethod,
+      const api::ProgressCallback *,
+      progress_callback,
+      nullptr);
   };
 
   using Get = ExecuteMethod;

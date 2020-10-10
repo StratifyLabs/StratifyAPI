@@ -2,6 +2,9 @@
              // LICENSE.md for rights.
 #include "api/api.hpp"
 // #include "var/String.hpp"
+
+#include <pthread.h>
+
 #include <cstdio>
 #include <cstring>
 
@@ -123,11 +126,32 @@ void api::api_assert(bool value, const char *function, int line) {
 #if defined __link && !defined __win32
     void *array[200];
     size_t size;
-    size = backtrace(array, 100);
+    size = backtrace(array, 200);
     backtrace_symbols_fd(array, size, stderr->_file);
 #endif
     ::abort();
   }
+}
+
+ErrorContext &Status::error_context() {
+  if (&(errno) == m_error_context.m_context) {
+    return m_error_context;
+  }
+
+  if (m_error_context_list == nullptr) {
+    m_error_context_list = new std::vector<ErrorContext>();
+    API_ASSERT(m_error_context_list != nullptr);
+    m_error_context_list->push_back(ErrorContext(&(errno)));
+  }
+
+  for (ErrorContext &error_context : *m_error_context_list) {
+    if (error_context.m_context == &(errno)) {
+      return error_context;
+    }
+  }
+
+  API_ASSERT(true);
+  return m_error_context;
 }
 
 #define RESULT_ERROR_CODE_CASE(c)                                              \

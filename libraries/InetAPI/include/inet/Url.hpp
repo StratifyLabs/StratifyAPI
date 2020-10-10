@@ -21,8 +21,7 @@ public:
   const var::String &domain_name() const { return m_domain_name; }
   const var::String &path() const { return m_path; }
 
-  static var::String encode(const var::String &input);
-  static var::String decode(const var::String &input);
+  static var::String encode(var::StringView input);
 
 private:
   /*! \cond */

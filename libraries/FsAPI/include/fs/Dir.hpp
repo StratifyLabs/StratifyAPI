@@ -130,7 +130,7 @@ public:
   var::StringList read_list(IsRecursive is_recursive = IsRecursive::no);
 
   var::StringList read_list(
-    std::function<const var::String(const var::String &entry)> filter,
+    var::StringView (*filter)(var::StringView entry),
     IsRecursive is_recursive = IsRecursive::no);
 
   /*! \details Returns a pointer (const) to the name of the most recently read

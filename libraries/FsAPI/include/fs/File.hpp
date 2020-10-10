@@ -11,6 +11,7 @@
 #include "FileInfo.hpp"
 #include "Path.hpp"
 #include "chrono/MicroTime.hpp"
+#include "var/Base64.hpp"
 
 #include "var/Data.hpp"
 #include "var/String.hpp"
@@ -195,9 +196,17 @@ public:
 
   class Write {
   public:
-    API_ACCESS_FUNDAMENTAL(Write, u32, location, static_cast<u32>(-1));
+    Write()
+      : m_location(-1), m_page_size(FSAPI_LINK_DEFAULT_PAGE_SIZE),
+        m_size(static_cast<size_t>(-1)) {}
+    API_ACCESS_FUNDAMENTAL(Write, int, location, -1);
     API_ACCESS_FUNDAMENTAL(Write, u32, page_size, FSAPI_LINK_DEFAULT_PAGE_SIZE);
     API_ACCESS_FUNDAMENTAL(Write, size_t, size, static_cast<size_t>(-1));
+    API_ACCESS_FUNDAMENTAL(
+      Write,
+      const var::Transformer *,
+      transformer,
+      nullptr);
     API_ACCESS_FUNDAMENTAL(
       Write,
       const api::ProgressCallback *,
@@ -205,7 +214,14 @@ public:
       nullptr);
   };
 
-  File &write(File &source_file, const Write &options);
+  File &write(File &source_file, const Write &options = Write());
+
+  File &write(
+    File &source_file,
+    const var::Transformer &transformer,
+    const Write &options = Write()) {
+    return write(source_file, Write(options).set_transformer(&transformer));
+  }
 
   /*! \details Reads a line from a file.
    *
@@ -353,6 +369,14 @@ public:
     return static_cast<Derived &>(File::write(source_file, options));
   }
 
+  Derived &write(
+    File &source_file,
+    const var::Transformer &transformer,
+    const Write &options = Write()) {
+    return static_cast<Derived &>(
+      File::write(source_file, transformer, options));
+  }
+
   Derived &seek(int location, Whence whence = Whence::set) {
     return static_cast<Derived &>(File::seek(location, whence));
   }
@@ -388,7 +412,7 @@ private:
 class DataFile : public FileAccess<DataFile> {
 public:
   /*! \details Constructs a data file. */
-  DataFile(const OpenMode &flags = OpenMode::read_write())
+  DataFile(const OpenMode &flags = OpenMode::append_read_write())
     : FileAccess(""), m_open_flags(flags) {
     m_location = 0;
   }

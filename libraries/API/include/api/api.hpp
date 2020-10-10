@@ -8,6 +8,11 @@
 #ifndef API_API_HPP_
 #define API_API_HPP_
 
+#include <cstring>
+#include <errno.h>
+
+#include <vector>
+
 #include "macros.hpp"
 
 /*!
@@ -245,59 +250,154 @@ enum class ErrorCode {
   missing_system_api
 };
 
+#define API_RETURN_VALUE_IF_ERROR(return_value)                                \
+  if (api::Object::status().is_error()) {                                      \
+    return return_value;                                                       \
+  }
+
+#define API_RETURN_IF_ERROR()                                                  \
+  if (api::Object::status().is_error()) {                                      \
+    return;                                                                    \
+  }
+
+#define API_SYSTEM_CALL(message_value, return_value)                           \
+  status().system_call(__LINE__, message_value, return_value);
+
+#define API_SYSTEM_CALL_NULL(message_value, return_value)                      \
+  status().system_call_null(__LINE__, message_value, return_value);
+
+#define API_RETURN_VALUE_ASSIGN_ERROR(                                         \
+  return_value,                                                                \
+  message_value,                                                               \
+  error_number_value)                                                          \
+  do {                                                                         \
+    errno = error_number_value;                                                \
+    status().system_call_null(__LINE__, message_value, nullptr);               \
+    return return_value;                                                       \
+  } while (0)
+
+#define API_RETURN_ASSIGN_ERROR(message_value, error_number_value)             \
+  do {                                                                         \
+    errno = error_number_value;                                                \
+    status().system_call_null(__LINE__, message_value, nullptr);               \
+    return;                                                                    \
+  } while (0)
+
 #define API_ASSIGN_ERROR_CODE(error_code_value, result_value)                  \
-  status().assign(__LINE__, error_code_value, result_value)
+  status().assign(__LINE__, result_value)
 
 #define API_COPY_ERROR_CODE(status_value) set_status(status_value)
+
+class ErrorContext {
+public:
+  const char *message() const { return m_message; }
+  int error_number() const { return m_error_number; }
+  int line_number() const { return m_line_number; }
+
+private:
+  ErrorContext(void *context) : m_context(context) {}
+  friend class Status;
+  static constexpr size_t m_message_size = 31;
+  static constexpr size_t m_backtrace_count = 32;
+  void *m_context;
+  int m_error_number = 0;
+  int m_line_number = 0;
+  char m_message[m_message_size + 1];
+  void *m_backtrace[m_backtrace_count];
+
+  inline void capture_backtrace() {
+#if defined __link
+#if !defined __win32
+    backtrace(m_backtrace, m_backtrace_count);
+#endif
+#else
+    // need to implement backtrace on StratifyOS v4
+#endif
+  }
+};
 
 class Status {
 public:
   ErrorCode error_code() const {
-    if (m_value < 0) {
-      return static_cast<ErrorCode>((m_value * -1) & 0xff);
+    if (value() < 0) {
+      return static_cast<ErrorCode>((value() * -1) & 0xff);
     }
     return ErrorCode::none;
   }
 
-  bool is_error() const { return m_value < 0; }
-  bool is_success() const { return m_value >= 0; }
+  bool is_error() const { return value() < 0; }
+  bool is_success() const { return value() >= 0; }
 
-  int value() const { return m_value; }
+  int value() const { return errno; }
 
   int line_number() const {
-    if (m_value < 0) {
-      return (m_value * -1) >> 24;
+    if (value() < 0) {
+      return (value() * -1) >> 24;
     }
     return 0;
   }
 
   const char *error_code_description() const;
 
-  int assign(int line, ErrorCode error_code, int value) {
+  int assign(int line, int value) const {
     if (value >= 0) {
-      m_value = value;
+      errno = value;
     } else {
-      m_value = -1 * ((line << 8) | static_cast<int>(error_code));
+      errno = -1 * ((line << 8) | errno);
     }
     return value;
   }
 
-  void reset() { m_value = 0; }
+  void *assign_null(int line, void *value) const {
+    if (value == nullptr) {
+      errno = -1 * ((line << 8) | errno);
+    }
+    return value;
+  }
 
-protected:
+  ErrorContext &error_context();
+
+  int system_call(int line, const char *message, int value) {
+    if (value >= 0) {
+      errno = value;
+    } else {
+      update_error_context(line, message);
+      errno = -1 * ((line << 8) | errno);
+    }
+    return value;
+  }
+
+  void *system_call_null(int line, const char *message, void *value) {
+    if (value == nullptr) {
+      update_error_context(line, message);
+      errno = -1 * ((line << 8) | errno);
+    }
+    return value;
+  }
+
+  void reset() { errno = 0; }
+
 private:
-  int m_value;
+  Status() : m_error_context(&(errno)) {}
+  ErrorContext m_error_context;
+  std::vector<ErrorContext> *m_error_context_list = nullptr;
+
+  void update_error_context(int line, const char *message) {
+    strncpy(error_context().m_message, message, ErrorContext::m_message_size);
+    error_context().m_line_number = line;
+    error_context().m_error_number = errno;
+    error_context().capture_backtrace();
+  }
 };
 
 class Object {
 public:
-  void set_status(Status status) { m_status = status; }
-  Status status() const { return m_status; }
+  static Status &status() { return m_status; }
   static void exit_fatal(const char *message);
   static const char *error_code_description(ErrorCode error_code);
 
 private:
-  Status m_status;
+  static Status m_status;
 };
 
 /*! \brief ProgressCallback Class

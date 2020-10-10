@@ -4,9 +4,13 @@
 #ifndef VAR_API_FLAGS_HPP_
 #define VAR_API_FLAGS_HPP_
 
+#include <bitset>
+
+#include <mcu/types.h>
+
 namespace var {
 
-class Flags {
+class Bits {
 public:
 private:
 };

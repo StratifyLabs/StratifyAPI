@@ -94,7 +94,7 @@ public:
 
   var::StringList read_directory(
     var::StringView path,
-    std::function<const var::String(const var::String &entry)> filter,
+    var::StringView (*filter)(var::StringView),
     Recursive is_recursive = Recursive::no);
 
   class Rename {

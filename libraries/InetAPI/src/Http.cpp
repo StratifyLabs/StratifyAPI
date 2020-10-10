@@ -471,8 +471,8 @@ int HttpClient::listen_for_data(
   return 0;
 }
 
-Http::HeaderPair Http::HeaderPair::from_string(const var::String &string) {
-  const String string_copy = string;
+Http::HeaderPair Http::HeaderPair::from_string(var::StringView string) {
+  const String string_copy = var::String(string);
   const size_t colon_pos = string_copy.find(":");
 
   const String key = string_copy

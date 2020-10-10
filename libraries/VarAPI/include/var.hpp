@@ -11,17 +11,18 @@
  */
 namespace var {}
 
+#include "var/Array.hpp"
+#include "var/Base64.hpp"
 #include "var/Data.hpp"
-#include "var/Flags.hpp"
-#include "var/View.hpp"
-#include "var/Ring.hpp"
 #include "var/Deque.hpp"
+#include "var/Flags.hpp"
 #include "var/Queue.hpp"
+#include "var/Ring.hpp"
 #include "var/Stack.hpp"
 #include "var/String.hpp"
 #include "var/Tokenizer.hpp"
 #include "var/Vector.hpp"
-#include "var/Array.hpp"
+#include "var/View.hpp"
 
 using namespace var;
 

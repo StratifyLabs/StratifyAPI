@@ -537,6 +537,19 @@ private:
   static const int m_zero_value;
 };
 
+class Transformer {
+public:
+  class Transform {
+    API_AC(Transform, var::View, input);
+    API_AC(Transform, var::View, output);
+  };
+
+  virtual int transform(const Transform &options) const = 0;
+  virtual size_t get_output_size(size_t nbyte) const { return nbyte; }
+
+protected:
+};
+
 } // namespace var
 
 #if USE_PRINTER

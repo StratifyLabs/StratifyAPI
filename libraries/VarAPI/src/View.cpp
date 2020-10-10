@@ -7,7 +7,6 @@
 #include <cstring>
 #include <errno.h>
 
-
 #include "var/Data.hpp"
 #include "var/String.hpp"
 
@@ -52,35 +51,34 @@ View::View(Data &data) {
 }
 
 View &View::swap_byte_order(SwapBy swap) {
-
+  API_RETURN_VALUE_IF_ERROR(*this);
   if (write_data()) {
     if (swap == SwapBy::word) {
       u32 *p = to_u32();
-      if (p) {
-        u32 i;
-        for (i = 0; i < this->size() / 4; i++) {
+      if (p == nullptr) {
+        API_RETURN_VALUE_ASSIGN_ERROR(*this, "read only data", EINVAL);
+      }
+      u32 i;
+      for (i = 0; i < this->size() / 4; i++) {
 #if !defined __link
-          p[i] = __REV(p[i]);
+        p[i] = __REV(p[i]);
 #else
-          // swap manually
+        // swap manually
+        API_RETURN_VALUE_ASSIGN_ERROR(*this, "swap not supported", ENOTSUP);
 #endif
-        }
-      } else {
-        API_ASSIGN_ERROR_CODE(api::ErrorCode::invalid_value, -1);
       }
     } else {
       u16 *p = to_u16();
-      if (p) {
-        u16 i;
-        for (i = 0; i < this->size() / 2; i++) {
+      if (p == nullptr) {
+        API_RETURN_VALUE_ASSIGN_ERROR(*this, "read only data", EINVAL);
+      }
+      u16 i;
+      for (i = 0; i < this->size() / 2; i++) {
 #if !defined __link
-          p[i] = __REV16(p[i]);
+        p[i] = __REV16(p[i]);
 #else
-          // swap manually
+        // swap manually
 #endif
-        }
-      } else {
-        API_ASSIGN_ERROR_CODE(api::ErrorCode::invalid_value, -1);
       }
     }
   }

@@ -64,9 +64,31 @@ int Base64::decode(SourceFile input, DestinationFile output, Size size) {
 }
 #endif
 
-var::String Base64::encode(var::View input) {
+int Base64Encoder::transform(const Transform &options) const {
+  if (options.output().size() < get_output_size(options.input().size())) {
+    return -1;
+  }
+
+  return Base64::encode(
+    options.output().to_char(),
+    options.input().to_const_void(),
+    options.input().size());
+}
+
+int Base64Decoder::transform(const Transform &options) const {
+  if (options.output().size() < get_output_size(options.input().size())) {
+    return -1;
+  }
+
+  return Base64::decode(
+    options.output().to_void(),
+    options.input().to_const_char(),
+    options.input().size());
+}
+
+var::String Base64::encode(var::View input) const {
   var::String result;
-  result.resize(calc_encoded_size(input.size()));
+  result.resize(get_encoded_size(input.size()));
   if (result.status().is_error()) {
     API_ASSIGN_ERROR_CODE(api::ErrorCode::no_memory, -1);
     return var::String();
@@ -75,9 +97,9 @@ var::String Base64::encode(var::View input) {
   return result;
 }
 
-var::Data Base64::decode(var::StringView input) {
+var::Data Base64::decode(var::StringView input) const {
   var::Data result;
-  int len = calc_decoded_size(input.length());
+  int len = get_decoded_size(input.length());
   if (result.resize(len).status().is_error()) {
     API_ASSIGN_ERROR_CODE(api::ErrorCode::no_memory, -1);
     return var::Data();
@@ -130,7 +152,7 @@ int Base64::encode(char *dest, const void *src, int nbyte) {
   return strlen(dest);
 }
 
-int Base64::calc_encoded_size(int nbyte) {
+size_t Base64::get_encoded_size(size_t nbyte) {
   return ((((nbyte * 4 + 2) / 3) + 3) / 4) * 4;
 }
 
@@ -142,10 +164,10 @@ int Base64::decode(void *dest, const char *src, int nbyte) {
   u8 eight_bits[4] = {0};
 
   for (i = 0, j = 0; j < nbyte; i += 3, j += 4) {
-    eight_bits[0] = decode_eigth(src[j]);
-    eight_bits[1] = decode_eigth(src[j + 1]);
-    eight_bits[2] = decode_eigth(src[j + 2]);
-    eight_bits[3] = decode_eigth(src[j + 3]);
+    eight_bits[0] = decode_eight(src[j]);
+    eight_bits[1] = decode_eight(src[j + 1]);
+    eight_bits[2] = decode_eight(src[j + 2]);
+    eight_bits[3] = decode_eight(src[j + 3]);
     data[i] = (eight_bits[0] << 2) | (eight_bits[1] >> 4);
     data[i + 1] = (eight_bits[1] << 4) | (eight_bits[2] >> 2);
     data[i + 2] = (eight_bits[2] << 6) | (eight_bits[3]);
@@ -163,7 +185,7 @@ int Base64::decode(void *dest, const char *src, int nbyte) {
   return padding;
 }
 
-int Base64::calc_decoded_size(int nbyte) {
+size_t Base64::get_decoded_size(size_t nbyte) {
   // doesn't account for padding
   return (nbyte * 3 + 3) / 4;
 }
@@ -187,7 +209,7 @@ char Base64::encode_six(u8 six_bit_value) {
   return c;
 }
 
-char Base64::decode_eigth(u8 eight_bit_value) {
+char Base64::decode_eight(u8 eight_bit_value) {
   u8 x;
   x = eight_bit_value;
   if ((x >= 'A') && (x <= 'Z')) {

@@ -203,9 +203,9 @@ public:
     return *this;
   }
 
-  int free() {
-    m_vector.clear();
-    return 0;
+  Vector<T> &free() {
+    m_vector = Vector<T>();
+    return *this;
   }
 
   static bool ascending(const T &a, const T &b) { return a < b; }
@@ -214,8 +214,9 @@ public:
 
   typedef bool (*sort_compartor_t)(const T &a, const T &b);
 
-  void sort(sort_compartor_t compare_function) {
+  Vector<T> &sort(sort_compartor_t compare_function) {
     std::sort(begin(), end(), compare_function);
+    return *this;
   }
 
   size_t size() const { return count() * sizeof(T); }
@@ -269,7 +270,10 @@ public:
     return result;
   }
 
-  void clear() { m_vector.clear(); }
+  Vector<T> &clear() {
+    m_vector.clear();
+    return *this;
+  }
 
   bool is_empty() const { return m_vector.empty(); }
 

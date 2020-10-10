@@ -21,6 +21,7 @@ File::File(FSAPI_LINK_DECLARE_DRIVER) {
 File::File(
   var::StringView name,
   OpenMode flags FSAPI_LINK_DECLARE_DRIVER_LAST) {
+  API_RETURN_IF_ERROR();
   open(name, flags);
 }
 
@@ -36,6 +37,9 @@ File File::create(
   var::StringView path,
   IsOverwrite is_overwrite,
   Permissions perms FSAPI_LINK_DECLARE_DRIVER_LAST) {
+  if (api::Object::status().is_error()) {
+    return File();
+  }
   return File(FSAPI_LINK_INHERIT_DRIVER)
     .internal_create(path, is_overwrite, perms);
 }
@@ -115,6 +119,7 @@ int File::fstat(struct FSAPI_LINK_STAT_STRUCT *st) {
 }
 
 File &File::readline(char *buf, int nbyte, int timeout, char term) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   int t;
   int bytes_recv;
   char c;
@@ -140,6 +145,7 @@ File &File::readline(char *buf, int nbyte, int timeout, char term) {
 }
 
 File &File::close() {
+  API_RETURN_VALUE_IF_ERROR(*this);
   if (m_fd >= 0) {
     API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, interface_close(m_fd));
     m_fd = -1;
@@ -148,6 +154,7 @@ File &File::close() {
 }
 
 File &File::sync() {
+  API_RETURN_VALUE_IF_ERROR(*this);
 #if defined __link
   if (driver()) {
     return *this;
@@ -164,6 +171,7 @@ File &File::sync() {
 }
 
 File &File::read(void *buf, int nbyte) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   API_ASSIGN_ERROR_CODE(
     api::ErrorCode::io_error,
     interface_read(m_fd, buf, nbyte));
@@ -171,6 +179,7 @@ File &File::read(void *buf, int nbyte) {
 }
 
 File &File::write(const void *buf, int nbyte) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   API_ASSIGN_ERROR_CODE(
     api::ErrorCode::io_error,
     interface_write(m_fd, buf, nbyte));
@@ -178,6 +187,7 @@ File &File::write(const void *buf, int nbyte) {
 }
 
 File &File::seek(int location, Whence whence) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   API_ASSIGN_ERROR_CODE(
     api::ErrorCode::io_error,
     lseek(m_fd, location, static_cast<int>(whence)));
@@ -187,10 +197,12 @@ File &File::seek(int location, Whence whence) {
 int File::fileno() const { return m_fd; }
 
 int File::location() const {
+  API_RETURN_VALUE_IF_ERROR(-1);
   return lseek(m_fd, 0, static_cast<int>(Whence::current));
 }
 
 int File::flags() const {
+  API_RETURN_VALUE_IF_ERROR(-1);
 #if defined __link
   return -1;
 #else
@@ -203,6 +215,7 @@ int File::flags() const {
 }
 
 var::String File::gets(char term) {
+  API_RETURN_VALUE_IF_ERROR(var::String());
   char c;
   var::String result;
   do {
@@ -217,6 +230,7 @@ var::String File::gets(char term) {
 }
 
 File &File::ioctl(int request, void *argument) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   API_ASSIGN_ERROR_CODE(
     api::ErrorCode::io_error,
     interface_ioctl(m_fd, request, argument));
@@ -224,28 +238,17 @@ File &File::ioctl(int request, void *argument) {
 }
 
 File &File::write(File &source_file, const Write &options) {
+  API_RETURN_VALUE_IF_ERROR(*this);
 
   if (options.location() != static_cast<u32>(-1)) {
     seek(options.location(), Whence::set);
   }
 
   u32 size_processed = 0;
-  u32 file_size = options.size();
-  if (file_size == static_cast<u32>(-1)) {
-    file_size = source_file.size();
-  }
 
-  u32 page_size_value = options.page_size();
-  if (page_size_value == 0) {
-    page_size_value = FSAPI_LINK_DEFAULT_PAGE_SIZE;
-  }
-
-  var::Data buffer(page_size_value);
-
-  if (buffer.size() == 0) {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::no_memory, -1);
-    return *this;
-  }
+  const u32 file_size = options.size() == static_cast<u32>(-1)
+                          ? source_file.size()
+                          : options.size();
 
   if (file_size == 0) {
     if (options.progress_callback()) {
@@ -256,21 +259,33 @@ File &File::write(File &source_file, const Write &options) {
     return *this;
   }
 
-  int bytes_read;
+  const u32 read_buffer_size
+    = options.page_size() ? options.page_size() : FSAPI_LINK_DEFAULT_PAGE_SIZE;
+
+  u8 file_read_buffer[read_buffer_size];
+
   do {
-    if (file_size - size_processed < page_size_value) {
-      page_size_value = file_size - size_processed;
-    }
+    const u32 page_size = (file_size - size_processed < read_buffer_size)
+                            ? file_size - size_processed
+                            : read_buffer_size;
 
-    buffer.resize(page_size_value);
-    if (buffer.size() != page_size_value) {
-      API_ASSIGN_ERROR_CODE(api::ErrorCode::no_memory, -1);
-      return *this;
-    }
+    const int bytes_read
+      = source_file.read(file_read_buffer, page_size).status().value();
 
-    bytes_read = source_file.read(buffer).status().value();
     if (bytes_read > 0) {
-      write(buffer.data(), bytes_read);
+      if (options.transformer()) {
+        const int transform_size
+          = options.transformer()->get_output_size(page_size);
+        u8 file_write_buffer[transform_size];
+        const int bytes_to_write = options.transformer()->transform(
+          var::Transformer::Transform()
+            .set_input(var::View(file_read_buffer, page_size))
+            .set_output(var::View(file_write_buffer, transform_size)));
+        write(file_write_buffer, bytes_to_write);
+      } else {
+        write(file_read_buffer, bytes_read);
+      }
+
       if (status().is_error()) {
         return *this;
       }
@@ -296,21 +311,24 @@ File &File::write(File &source_file, const Write &options) {
       }
     }
 
-  } while ((bytes_read > 0) && (file_size > size_processed));
+  } while ((source_file.status().value() > 0) && (file_size > size_processed));
 
   // this will terminate the progress operation
   if (options.progress_callback()) {
     options.progress_callback()->update(0, 0);
   }
-  if ((bytes_read < 0) && (size_processed == 0)) {
+
+  if ((source_file.status().is_error()) && (size_processed == 0)) {
     API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, -1);
   }
+
   return *this;
 }
 
 DataFile::DataFile(fs::File &file_to_load) : FileAccess("") {
   m_location = 0;
   m_open_flags = OpenMode::append_read_write();
+  API_RETURN_IF_ERROR();
   write(file_to_load, Write());
   seek(0);
   m_open_flags = OpenMode::read_write();
