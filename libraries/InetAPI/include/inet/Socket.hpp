@@ -10,7 +10,11 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 typedef uint32_t in_addr_t;
+
+#define SOCKET_T ::SOCKET
+
 #else
+#define SOCKET_T int
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -33,6 +37,23 @@ class SocketAddress;
 
 class SocketFlags {
 public:
+  enum class Domain { inet = AF_INET, inet6 = AF_INET6 };
+
+  enum class Type {
+    raw /*! Raw socket data */ = SOCK_RAW,
+    stream /*! Streaming socket data */ = SOCK_STREAM,
+    datagram /*! Datagram socket data */ = SOCK_DGRAM
+  };
+
+  enum class Protocol {
+    raw /*! Raw protocol */ = IPPROTO_RAW,
+    tcp /*! TCP Protocol */ = IPPROTO_TCP,
+    udp /*! UDP Procotol */ = IPPROTO_UDP,
+    icmp /*! ICMP Procotol */ = IPPROTO_ICMP,
+    icmpv6 = IPPROTO_ICMPV6,
+    ip /*! IP Protocol */ = IPPROTO_IP,
+  };
+
   /*! \details Enumerates the socket address family options. */
   enum family {
     family_none = 0,
@@ -227,23 +248,18 @@ public:
    * \details Constructor to set the sockaddr structure to 0.
    */
   SocketAddress() {
-    m_protocol = 0;
-    m_type = 0;
+
   }
 
   bool is_valid() const { return m_sockaddr.size > 0; }
 
   explicit SocketAddress(const SocketAddressIpv4 &ipv4) {
     m_sockaddr.sockaddr_in = ipv4.m_sockaddr_in;
-    m_protocol = ipv4.m_protocol;
-    m_type = ipv4.m_type;
   }
 
   explicit SocketAddress(const SocketAddressInfo &info, u16 port = 0) {
     m_sockaddr = info.m_sockaddr;
-    m_protocol = info.m_addrinfo.ai_protocol;
     m_canon_name = info.m_canon_name;
-    m_type = info.m_addrinfo.ai_socktype;
     set_port(port);
   }
 
@@ -251,14 +267,9 @@ public:
     return SocketAddress(SocketAddressIpv4(INADDR_ANY, port));
   }
 
-  explicit SocketAddress(
-    const sockaddr_in &ipv4,
-    int protocol = SocketAddressInfo::protocol_tcp,
-    int type = SocketAddressInfo::type_stream) {
+  explicit SocketAddress(const sockaddr_in &ipv4) {
     m_sockaddr.sockaddr_in = ipv4;
     m_sockaddr.size = sizeof(ipv4);
-    m_protocol = protocol;
-    m_type = type;
   }
 
   explicit SocketAddress(const sockaddr_in6 &ipv6) {
@@ -269,19 +280,6 @@ public:
   SocketAddress &set_port(u16 port);
 
   u32 length() const { return m_sockaddr.size; }
-
-  int type() const { return m_type; }
-  int protocol() const { return m_protocol; }
-
-  SocketAddress &set_protocol(enum SocketAddressInfo::protocol value) {
-    m_protocol = value;
-    return *this;
-  }
-
-  SocketAddress &set_type(enum SocketAddressInfo::type value) {
-    m_type = value;
-    return *this;
-  }
 
   u16 family() const {
     return var::View(m_sockaddr).to<const sockaddr>()->sa_family;
@@ -310,8 +308,6 @@ protected:
   friend class Socket;
   socketaddr_t m_sockaddr;
   var::String m_canon_name;
-  int m_protocol;
-  int m_type;
 };
 
 class SocketOption : public SocketFlags {
@@ -483,17 +479,8 @@ private:
  */
 class Socket : public fs::FileAccess<Socket>, public SocketFlags {
 public:
-  Socket();
+  Socket(Domain domain, Type type, Protocol protocol);
   ~Socket();
-
-  /*!
-   * \details Creates a new socket.
-   *
-   * @params attributes The Socket Attributes
-   *
-   * @return Zero on success
-   */
-  virtual Socket &create(const SocketAddress &address);
 
   /*!
    * \details Connects to the server using the SocketAddress
@@ -510,10 +497,7 @@ public:
    * when using TCP sockets where listen is applicable.
    *
    */
-  virtual int
-  bind_and_listen(const SocketAddress &address, int backlog = 4) const;
-
-  virtual int bind(const SocketAddress &address) const;
+  Socket &bind_and_listen(const SocketAddress &address, int backlog = 4) const;
 
   /*!
    * \details Accepts a socket connection on a socket that is listening.
@@ -597,13 +581,20 @@ public:
 
 protected:
 #if defined __win32
-  mutable ::SOCKET m_socket;
   enum {SOCKET_INVALID = INVALID_SOCKET};
 #else
   enum { SOCKET_INVALID = -1 };
   // socket on all other platforms is a file handler
-  mutable int m_socket;
 #endif
+
+  SOCKET_T m_socket;
+
+  Socket();
+
+  int bind(const SocketAddress &address) const;
+
+  virtual int
+  interface_bind_and_listen(const SocketAddress &address, int backlog) const;
 
   int interface_open(const char *path, int flags, int mode)
     const override final {

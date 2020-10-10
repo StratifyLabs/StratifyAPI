@@ -7,7 +7,17 @@ using namespace inet;
 
 SecureSocketApi SecureSocket::m_api;
 
-SecureSocket::SecureSocket() {}
+SecureSocket::SecureSocket(Domain domain, Type type, Protocol protocol) {
+  API_RETURN_IF_ERROR();
+
+  API_SYSTEM_CALL(
+    "secure socket",
+    api()->socket(
+      &m_context,
+      static_cast<int>(domain),
+      static_cast<int>(type),
+      static_cast<int>(protocol)));
+}
 
 SecureSocket::SecureSocket(u32 ticket_lifetime) {
   m_ticket_lifetime = ticket_lifetime;
@@ -16,17 +26,8 @@ SecureSocket::SecureSocket(u32 ticket_lifetime) {
 
 SecureSocket::~SecureSocket() { close(); }
 
-int SecureSocket::create(const SocketAddress &address) {
-  int result = api()->socket(
-    &m_context,
-    address.family(),
-    address.type(),
-    address.protocol());
-  return result;
-}
-
 // already documented in inet::Socket
-int SecureSocket::connect(const SocketAddress &address) {
+SecureSocket &SecureSocket::connect(const SocketAddress &address) {
   int result;
 
   if (m_ticket.size() > 0) {
@@ -69,8 +70,9 @@ int SecureSocket::connect(const SocketAddress &address) {
 }
 
 // already documented in inet::Socket
-int SecureSocket::bind_and_listen(const SocketAddress &address, int backlog)
-  const {
+int SecureSocket::interface_bind_and_listen(
+  const SocketAddress &address,
+  int backlog) const {
   return -1;
 }
 
@@ -105,7 +107,6 @@ int SecureSocket::interface_read(int fd, void *buf, int nbyte) const {
 int SecureSocket::interface_close(int fd) const {
   int result = 0;
   if (m_context) {
-    fflush(stdout);
     result = api()->close(&m_context);
     m_context = nullptr;
   }

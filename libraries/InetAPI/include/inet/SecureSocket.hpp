@@ -7,6 +7,7 @@
 #include <mbedtls_api.h>
 
 #include "api/api.hpp"
+#include "chrono/ClockTime.hpp"
 
 #include "Socket.hpp"
 
@@ -16,20 +17,13 @@ typedef api::Api<mbedtls_api_t, MBEDTLS_API_REQUEST> SecureSocketApi;
 
 class SecureSocket : public Socket {
 public:
-  SecureSocket();
-  explicit SecureSocket(u32 ticket_lifetime);
+  SecureSocket(Domain domain, Type type, Protocol protocol);
   ~SecureSocket();
 
   // already documented in inet::Socket
-  virtual int create(const SocketAddress &address) override;
+  virtual SecureSocket &connect(const SocketAddress &address) override;
 
-  // already documented in inet::Socket
-  virtual int connect(const SocketAddress &address) override;
-
-  // already documented in inet::Socket
-  virtual int
-  bind_and_listen(const SocketAddress &address, int backlog = 4) const override;
-
+  SecureSocket &set_ticket_lifetime() { return *this; }
   /*! \details
    *
    */
@@ -39,14 +33,23 @@ public:
   virtual int shutdown(int how = 0) const;
 
   const var::Data &ticket() const { return m_ticket; }
+
+  SecureSocket &set_ticket(var::View ticket) {
+    m_ticket = ticket;
+    return *this;
+  }
   var::Data &ticket() { return m_ticket; }
-  static SecureSocketApi api() { return m_api; }
 
 private:
+  static SecureSocketApi api() { return m_api; }
   static SecureSocketApi m_api;
-  mutable void *m_context = nullptr;
+  void *m_context = nullptr;
+  chrono::ClockTime m_ticket_lifetime;
   u32 m_ticket_lifetime = 0;
   var::Data m_ticket;
+
+  int interface_bind_and_listen(const SocketAddress &address, int backlog)
+    const;
 
   int interface_close(int fd) const override final;
   int interface_read(int fd, void *buf, int nbyte) const override final;

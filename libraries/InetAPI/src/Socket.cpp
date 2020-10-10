@@ -228,9 +228,22 @@ SocketAddressIpv4 &SocketAddressIpv4::set_address(var::StringView addr) {
   return *this;
 }
 
-Socket::Socket() : FileAccess("", fs::OpenMode::read_write()) {
+Socket::Socket() {
   m_socket = SOCKET_INVALID;
   initialize();
+}
+
+Socket::Socket(Domain domain, Type type, Protocol protocol)
+  : FileAccess("", fs::OpenMode::read_write()) {
+  initialize();
+  API_RETURN_IF_ERROR();
+
+  m_socket = API_SYSTEM_CALL(
+    "socket",
+    ::socket(
+      static_cast<int>(domain),
+      static_cast<int>(type),
+      static_cast<int>(protocol)));
 }
 
 bool Socket::is_valid() const { return m_socket != SOCKET_INVALID; }
@@ -288,34 +301,28 @@ int Socket::deinitialize() {
 
 Socket::~Socket() { close(); }
 
-Socket &Socket::create(const SocketAddress &address) {
+int Socket::bind(const SocketAddress &addr) const {
+  return decode_socket_return(
+    ::bind(m_socket, addr.to_sockaddr(), static_cast<int>(addr.length())));
+}
+
+Socket &Socket::bind_and_listen(const SocketAddress &addr, int backlog) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-
-  if (m_socket != SOCKET_INVALID) {
-    this->close();
-  }
-
-  m_socket = socket(address.family(), address.type(), address.protocol());
-
+  API_SYSTEM_CALL("", interface_bind_and_listen(addr, backlog));
   return *this;
 }
 
-int Socket::bind(const SocketAddress &addr) const {
-  API_RETURN_VALUE_IF_ERROR(*this);
-  return API_SYSTEM_CALL(
-    "",
-    decode_socket_return(
-      ::bind(m_socket, addr.to_sockaddr(), static_cast<int>(addr.length()))));
-}
-
-int Socket::bind_and_listen(const SocketAddress &addr, int backlog) const {
+int Socket::interface_bind_and_listen(const SocketAddress &address, int backlog)
+  const {
   int result = bind(addr);
   if (result < 0) {
     return result;
   }
 
-  if (addr.protocol() == SocketAddressInfo::protocol_tcp) {
+  if (address.protocol() == SocketAddressInfo::protocol_tcp) {
     result = decode_socket_return(::listen(m_socket, backlog));
+  } else {
+    return -1;
   }
 
   return result;
