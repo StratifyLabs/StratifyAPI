@@ -1,4 +1,4 @@
-/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
+﻿/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
              // LICENSE.md for rights.
 
 #ifndef SAPI_INET_SOCKET_HPP_
@@ -493,14 +493,14 @@ public:
    *
    * @return Zero on success
    */
-  virtual int create(const SocketAddress &address);
+  virtual Socket &create(const SocketAddress &address);
 
   /*!
    * \details Connects to the server using the SocketAddress
    * object passed to create() method.
    * @return Less than zero on error or zero on success
    */
-  virtual int connect(const SocketAddress &address);
+  virtual Socket &connect(const SocketAddress &address);
 
   /*!
    * \details Binds and listens to the port for which the socket was created.
@@ -547,11 +547,13 @@ public:
    * @param ai_addr - will address info accept
    * @param ai_addrlen - write address ip len (IPv4 or IPv6) before use!!!
    * */
-  int receive_from(const SocketAddress &address, var::View data) {
+  const Socket &
+  receive_from(const SocketAddress &address, var::View data) const {
     return receive_from(address, data.to_void(), data.size());
   }
 
-  int receive_from(const SocketAddress &address, void *buf, int nbyte);
+  const Socket &
+  receive_from(const SocketAddress &address, void *buf, int nbyte) const;
 
   /*! \brief Writes to the address specified.
    *
@@ -561,11 +563,15 @@ public:
    * This method implements the socket call sendto().
    *
    */
-  int send_to(const SocketAddress &socket_address, var::View data) {
+  const Socket &
+  send_to(const SocketAddress &socket_address, var::View data) const {
     return send_to(socket_address, data.to_const_void(), data.size());
   }
 
-  int send_to(const SocketAddress &socket_address, const void *buf, int nbyte);
+  const Socket &send_to(
+    const SocketAddress &socket_address,
+    const void *buf,
+    int nbyte) const;
 
   bool is_valid() const;
 
@@ -584,7 +590,7 @@ public:
    * \endcode
    *
    */
-  Socket &operator<<(const SocketOption &option);
+  Socket &set_option(const SocketOption &option);
 
   static int initialize();
   static int deinitialize();

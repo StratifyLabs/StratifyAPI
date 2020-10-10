@@ -95,6 +95,22 @@ public:
     trace
   };
 
+  class ExecuteMethod {
+    API_AF(ExecuteMethod, fs::File *, response, nullptr);
+    API_AF(ExecuteMethod, fs::File *, request, nullptr);
+    API_AF(
+      ExecuteMethod,
+      const api::ProgressCallback *,
+      progress_callback,
+      nullptr);
+  };
+
+  using Get = ExecuteMethod;
+  using Put = ExecuteMethod;
+  using Patch = ExecuteMethod;
+  using Post = ExecuteMethod;
+  using Remove = ExecuteMethod;
+
   static var::String to_string(Status status);
   static var::String to_string(Method method);
   static Method method_from_string(const var::String &string);
@@ -191,22 +207,6 @@ public:
    * @param url target URL for request.
    */
   int head(var::StringView url);
-
-  class ExecuteMethod {
-    API_AF(ExecuteMethod, fs::File *, response, nullptr);
-    API_AF(ExecuteMethod, fs::File *, request, nullptr);
-    API_AF(
-      ExecuteMethod,
-      const api::ProgressCallback *,
-      progress_callback,
-      nullptr);
-  };
-
-  using Get = ExecuteMethod;
-  using Put = ExecuteMethod;
-  using Patch = ExecuteMethod;
-  using Post = ExecuteMethod;
-  using Remove = ExecuteMethod;
 
   /*! \details Executes an HTTP GET request.
    *

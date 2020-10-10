@@ -288,7 +288,8 @@ int Socket::deinitialize() {
 
 Socket::~Socket() { close(); }
 
-int Socket::create(const SocketAddress &address) {
+Socket &Socket::create(const SocketAddress &address) {
+  API_RETURN_VALUE_IF_ERROR(*this);
 
   if (m_socket != SOCKET_INVALID) {
     this->close();
@@ -296,17 +297,15 @@ int Socket::create(const SocketAddress &address) {
 
   m_socket = socket(address.family(), address.type(), address.protocol());
 
-  if (is_valid() == false) {
-    // set_error_number_if_error(??);
-    return -1;
-  }
-
-  return 0;
+  return *this;
 }
 
 int Socket::bind(const SocketAddress &addr) const {
-  return decode_socket_return(
-    ::bind(m_socket, addr.to_sockaddr(), static_cast<int>(addr.length())));
+  API_RETURN_VALUE_IF_ERROR(*this);
+  return API_SYSTEM_CALL(
+    "",
+    decode_socket_return(
+      ::bind(m_socket, addr.to_sockaddr(), static_cast<int>(addr.length()))));
 }
 
 int Socket::bind_and_listen(const SocketAddress &addr, int backlog) const {
@@ -334,8 +333,9 @@ Socket Socket::accept(SocketAddress &address) const {
   return result;
 }
 
-int Socket::connect(const SocketAddress &address) {
+Socket &Socket::connect(const SocketAddress &address) {
   // Connect to server.
+  API_RETURN_VALUE_IF_ERROR(*this);
 
   if (m_socket == SOCKET_INVALID) {
     int result;
@@ -344,10 +344,13 @@ int Socket::connect(const SocketAddress &address) {
     }
   }
 
-  return decode_socket_return(::connect(
-    m_socket,
-    address.to_sockaddr(),
-    static_cast<int>(address.length())));
+  return API_SYSTEM_CALL(
+    "",
+    decode_socket_return(::connect(
+      m_socket,
+      address.to_sockaddr(),
+      static_cast<int>(address.length()))));
+  return *this;
 }
 
 int Socket::interface_close(int fd) const {
@@ -374,28 +377,37 @@ int Socket::interface_write(int fd, const void *buf, int nbyte) const {
   return decode_socket_return(::send(m_socket, buf, nbyte, 0));
 }
 
-int Socket::send_to(
+const Socket &Socket::send_to(
   const SocketAddress &socket_address,
   const void *buf,
-  int nbyte) {
-  return decode_socket_return(::sendto(
-    m_socket,
-    (const char *)buf,
-    nbyte,
-    0,
-    var::View(socket_address.m_sockaddr).to<struct sockaddr>(),
-    socket_address.length()));
+  int nbyte) const {
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL(
+    "",
+    decode_socket_return(::sendto(
+      m_socket,
+      (const char *)buf,
+      nbyte,
+      0,
+      var::View(socket_address.m_sockaddr).to<struct sockaddr>(),
+      socket_address.length())));
+  return *this;
 }
 
-int Socket::receive_from(const SocketAddress &address, void *buf, int nbyte) {
+const Socket &
+Socket::receive_from(const SocketAddress &address, void *buf, int nbyte) const {
+  API_RETURN_VALUE_IF_ERROR(*this);
   socklen_t address_len = address.m_sockaddr.size;
-  return decode_socket_return(::recvfrom(
-    m_socket,
-    (char *)buf,
-    nbyte,
-    0,
-    var::View(address.m_sockaddr).to<struct sockaddr>(),
-    &address_len));
+  API_SYSTEM_CALL(
+    "",
+    decode_socket_return(::recvfrom(
+      m_socket,
+      (char *)buf,
+      nbyte,
+      0,
+      var::View(address.m_sockaddr).to<struct sockaddr>(),
+      &address_len)));
+  return *this;
 }
 
 int Socket::shutdown(const fs::OpenMode how) const {
@@ -408,7 +420,7 @@ int Socket::shutdown(const fs::OpenMode how) const {
   return decode_socket_return(::shutdown(m_socket, socket_how));
 }
 
-Socket &Socket::operator<<(const SocketOption &option) {
+Socket &Socket::set_option(const SocketOption &option) {
   decode_socket_return(::setsockopt(
     m_socket,
     option.m_level,
