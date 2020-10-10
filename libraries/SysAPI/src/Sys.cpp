@@ -208,14 +208,14 @@ var::String Sos::launch(const Launch &options) {
 
 var::String Sos::install(
   var::StringView path,
-  enum Appfs::flags options, // run in RAM, discard on exit
+  Appfs::Flags options, // run in RAM, discard on exit
   int ram_size) {
   return install(path, options, ram_size, nullptr);
 }
 
 var::String Sos::install(
   var::StringView path,
-  enum Appfs::flags options, // run in RAM, discard on exit
+  Appfs::Flags options, // run in RAM, discard on exit
   int ram_size,
   const api::ProgressCallback *progress_callback) {
   var::String result;

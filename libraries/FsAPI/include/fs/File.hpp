@@ -163,7 +163,7 @@ public:
   }
 
   /*! \details Excute system fsync() on the file. */
-  File &sync();
+  const File &sync() const;
 
   /*! \details Reads the file.
    *
@@ -171,7 +171,7 @@ public:
    *
    *
    */
-  File &read(void *buf, int size);
+  const File &read(void *buf, int size) const;
 
   /*! \details Reads the file into a var::Data object.
    *
@@ -181,16 +181,18 @@ public:
    * This method will read up to data.size() bytes.
    *
    */
-  File &read(var::View view) { return read(view.to_void(), view.size()); }
+  const File &read(var::View view) const {
+    return read(view.to_void(), view.size());
+  }
 
   /*! \details Write the file.
    *
    * @return The number of bytes written or less than zero on an error
    */
-  File &write(const void *buf, int size);
+  const File &write(const void *buf, int size) const;
 
   /*! \details Writes the file using a var::Data object. */
-  File &write(var::View view) {
+  const File &write(var::View view) const {
     return write(view.to_const_void(), view.size());
   }
 
@@ -214,12 +216,12 @@ public:
       nullptr);
   };
 
-  File &write(File &source_file, const Write &options = Write());
+  const File &write(File &source_file, const Write &options = Write()) const;
 
-  File &write(
+  const File &write(
     File &source_file,
     const var::Transformer &transformer,
-    const Write &options = Write()) {
+    const Write &options = Write()) const {
     return write(source_file, Write(options).set_transformer(&transformer));
   }
 
@@ -231,15 +233,16 @@ public:
    * @param terminator Terminating character of the line (default is newline)
    * @return Number of bytes received
    */
-  File &
-  readline(char *buf, int nbyte, int timeout_msec, char terminator = '\n');
+  const File &
+  readline(char *buf, int nbyte, int timeout_msec, char terminator = '\n')
+    const;
 
   /*! \details Seeks to a location in the file or on the device. */
-  File &seek(int location, Whence whence = Whence::set);
+  const File &seek(int location, Whence whence = Whence::set) const;
 
   /*! \details Reads a line in to the var::String until end-of-file or \a term
    * is reached. */
-  var::String gets(char term = '\n');
+  var::String gets(char term = '\n') const;
 
   class Ioctl {
     API_ACCESS_FUNDAMENTAL(Ioctl, int, request, 0);
@@ -253,10 +256,10 @@ public:
    * and other special file systems.
    *
    */
-  File &ioctl(int request, void *arg);
-  File &ioctl(int request) { return ioctl(request, nullptr); }
+  const File &ioctl(int request, void *arg) const;
+  const File &ioctl(int request) const { return ioctl(request, nullptr); }
 
-  File &ioctl(const Ioctl &options) {
+  const File &ioctl(const Ioctl &options) const {
     ioctl(options.request(), options.argument());
     return *this;
   }
@@ -347,45 +350,47 @@ public:
   }
 
   Derived &close() { return static_cast<Derived &>(File::close()); }
-  Derived &sync() { return static_cast<Derived &>(File::sync()); }
-
-  Derived &read(void *buf, size_t size) {
-    return static_cast<Derived &>(File::read(buf, size));
+  const Derived &sync() const {
+    return static_cast<const Derived &>(File::sync());
   }
 
-  Derived &read(var::View view) {
-    return static_cast<Derived &>(File::read(view));
+  const Derived &read(void *buf, size_t size) const {
+    return static_cast<const Derived &>(File::read(buf, size));
   }
 
-  Derived &write(const void *buf, size_t size) {
-    return static_cast<Derived &>(File::write(buf, size));
+  const Derived &read(var::View view) const {
+    return static_cast<const Derived &>(File::read(view));
   }
 
-  Derived &write(var::View view) {
-    return static_cast<Derived &>(File::write(view));
+  const Derived &write(const void *buf, size_t size) const {
+    return static_cast<const Derived &>(File::write(buf, size));
   }
 
-  Derived &write(File &source_file, const Write &options) {
-    return static_cast<Derived &>(File::write(source_file, options));
+  const Derived &write(var::View view) const {
+    return static_cast<const Derived &>(File::write(view));
   }
 
-  Derived &write(
+  const Derived &write(File &source_file, const Write &options) const {
+    return static_cast<const Derived &>(File::write(source_file, options));
+  }
+
+  const Derived &write(
     File &source_file,
     const var::Transformer &transformer,
-    const Write &options = Write()) {
-    return static_cast<Derived &>(
+    const Write &options = Write()) const {
+    return static_cast<const Derived &>(
       File::write(source_file, transformer, options));
   }
 
-  Derived &seek(int location, Whence whence = Whence::set) {
-    return static_cast<Derived &>(File::seek(location, whence));
+  const Derived &seek(int location, Whence whence = Whence::set) const {
+    return static_cast<const Derived &>(File::seek(location, whence));
   }
 
-  Derived &ioctl(int request, void *arg) {
-    return static_cast<Derived &>(File::ioctl(request, arg));
+  const Derived &ioctl(int request, void *arg) const {
+    return static_cast<const Derived &>(File::ioctl(request, arg));
   }
-  Derived &ioctl(const Ioctl &options) {
-    return static_cast<Derived &>(File::ioctl(options));
+  const Derived &ioctl(const Ioctl &options) const {
+    return static_cast<const Derived &>(File::ioctl(options));
   }
 
   Derived &set_fileno(int fd) {

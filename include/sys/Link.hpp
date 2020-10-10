@@ -834,7 +834,7 @@ public:
 		*/
 	int update_binary_install_options(
 			const fs::File & file,
-			const AppfsFileAttributes & attributes
+			const Appfs::FileAttributes & attributes
 			);
 
 	/*! \details Installs a binary to the specified location.

@@ -15,29 +15,29 @@ Device::Device(
 }
 
 #ifndef __link
-Device &Device::read(fs::Aio &aio) {
+const Device &Device::read(fs::Aio &aio) const {
+  API_RETURN_VALUE_IF_ERROR(*this);
   aio.m_aio_var.aio_fildes = fileno();
-  API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, ::aio_read(&(aio.m_aio_var)));
+  API_SYSTEM_CALL("", ::aio_read(&(aio.m_aio_var)));
   return *this;
 }
 
-Device &Device::write(fs::Aio &aio) {
+const Device &Device::write(fs::Aio &aio) const {
+  API_RETURN_VALUE_IF_ERROR(*this);
   aio.m_aio_var.aio_fildes = fileno();
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
-    ::aio_write(&(aio.m_aio_var)));
+  API_SYSTEM_CALL("", ::aio_write(&(aio.m_aio_var)));
   return *this;
 }
 
-Device &Device::cancel_read(int channel) {
+const Device &Device::cancel_read(int channel) const {
   return cancel(channel, MCU_EVENT_FLAG_DATA_READY);
 }
 
-Device &Device::cancel_write(int channel) {
+const Device &Device::cancel_write(int channel) const {
   return cancel(channel, MCU_EVENT_FLAG_WRITE_COMPLETE);
 }
 
-Device &Device::cancel(int channel, int o_events) {
+const Device &Device::cancel(int channel, int o_events) const {
   mcu_action_t action;
   memset(&action, 0, sizeof(action));
   action.channel = channel;
@@ -45,7 +45,7 @@ Device &Device::cancel(int channel, int o_events) {
   return ioctl(I_MCU_SETACTION, &action);
 }
 
-Device &Device::transfer(const Transfer &options) {
+const Device &Device::transfer(const Transfer &options) const {
   fs::Aio aio(options.destination());
   read(aio).write(options.source());
   while (aio.is_busy() && status().is_success()) {
@@ -57,7 +57,7 @@ Device &Device::transfer(const Transfer &options) {
 
 #endif
 
-Device &Device::set_interrupt_priority(int priority, int request) {
+const Device &Device::set_interrupt_priority(int priority, int request) const {
   mcu_action_t action;
   memset(&action, 0, sizeof(action));
   action.o_events = MCU_EVENT_FLAG_SET_PRIORITY;

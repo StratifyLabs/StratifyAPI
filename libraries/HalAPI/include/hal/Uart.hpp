@@ -121,7 +121,7 @@ public:
     return Device::Ioctl().set_request(I_UART_FLUSH);
   }
 
-  static char get(Device &device) {
+  static char get(const Device &device) {
     char c;
     device.ioctl(I_UART_GET, &c);
     return c;
@@ -133,7 +133,7 @@ public:
       .set_argument(&info.m_info);
   }
 
-  static Info get_info(Device &device) {
+  static Info get_info(const Device &device) {
     Info info;
     device.ioctl(get_info(info));
     return info;

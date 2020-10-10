@@ -143,8 +143,8 @@ private:
   appfs_info_t m_info;
 };
 
-/*! \brief AppfsFileAttributes Class
- * \details The AppfsFileAttributes class holds the
+/*! \brief Appfs::FileAttributes Class
+ * \details The Appfs::FileAttributes class holds the
  * information that is needed to modify an application
  * binary that has been built with the compiler.
  *
@@ -158,11 +158,11 @@ private:
  *
  *
  */
-class AppfsFileAttributes : public api::InfoObject, public AppfsFlags {
+class Appfs::FileAttributes : public api::InfoObject, public AppfsFlags {
 public:
-  AppfsFileAttributes() {}
+  Appfs::FileAttributes() {}
 
-  explicit AppfsFileAttributes(const appfs_file_t &appfs_file);
+  explicit Appfs::FileAttributes(const appfs_file_t &appfs_file);
 
   void apply(appfs_file_t *appfs_file) const;
   int apply(const fs::File &file) const;
@@ -180,7 +180,7 @@ public:
   bool is_unique() const { return m_o_flags & flag_is_unique; }
   bool is_authenticated() const { return m_o_flags & flag_is_authenticated; }
 
-  AppfsFileAttributes &set_startup(bool value = true) {
+  Appfs::FileAttributes &set_startup(bool value = true) {
     if (value) {
       m_o_flags |= flag_is_startup;
     } else {
@@ -189,7 +189,7 @@ public:
     return *this;
   }
 
-  AppfsFileAttributes &set_flash(bool value = true) {
+  Appfs::FileAttributes &set_flash(bool value = true) {
     if (value) {
       m_o_flags |= flag_is_flash;
     } else {
@@ -198,7 +198,7 @@ public:
     return *this;
   }
 
-  AppfsFileAttributes &set_code_external(bool value = true) {
+  Appfs::FileAttributes &set_code_external(bool value = true) {
     if (value) {
       m_o_flags |= flag_is_code_external;
     } else {
@@ -207,7 +207,7 @@ public:
     return *this;
   }
 
-  AppfsFileAttributes &set_data_external(bool value = true) {
+  Appfs::FileAttributes &set_data_external(bool value = true) {
     if (value) {
       m_o_flags |= flag_is_data_external;
     } else {
@@ -216,7 +216,7 @@ public:
     return *this;
   }
 
-  AppfsFileAttributes &set_code_tightly_coupled(bool value = true) {
+  Appfs::FileAttributes &set_code_tightly_coupled(bool value = true) {
     if (value) {
       m_o_flags |= flag_is_code_tightly_coupled;
     } else {
@@ -225,7 +225,7 @@ public:
     return *this;
   }
 
-  AppfsFileAttributes &set_data_tightly_coupled(bool value = true) {
+  Appfs::FileAttributes &set_data_tightly_coupled(bool value = true) {
     if (value) {
       m_o_flags |= flag_is_data_tightly_coupled;
     } else {
@@ -234,7 +234,7 @@ public:
     return *this;
   }
 
-  AppfsFileAttributes &set_unique(bool value = true) {
+  Appfs::FileAttributes &set_unique(bool value = true) {
     if (value) {
       m_o_flags |= flag_is_unique;
     } else {
@@ -243,7 +243,7 @@ public:
     return *this;
   }
 
-  AppfsFileAttributes &set_authenticated(bool value = true) {
+  Appfs::FileAttributes &set_authenticated(bool value = true) {
     if (value) {
       m_o_flags |= flag_is_authenticated;
     } else {
@@ -253,12 +253,12 @@ public:
   }
 
 private:
-  API_ACCESS_COMPOUND(AppfsFileAttributes, var::String, name);
-  API_ACCESS_COMPOUND(AppfsFileAttributes, var::String, id);
-  API_ACCESS_FUNDAMENTAL(AppfsFileAttributes, u32, ram_size, 0);
-  API_ACCESS_FUNDAMENTAL(AppfsFileAttributes, u32, o_flags, flag_is_flash);
-  API_ACCESS_FUNDAMENTAL(AppfsFileAttributes, u16, version, 0);
-  API_ACCESS_FUNDAMENTAL(AppfsFileAttributes, u16, access_mode, 0555);
+  API_ACCESS_COMPOUND(Appfs::FileAttributes, var::String, name);
+  API_ACCESS_COMPOUND(Appfs::FileAttributes, var::String, id);
+  API_ACCESS_FUNDAMENTAL(Appfs::FileAttributes, u32, ram_size, 0);
+  API_ACCESS_FUNDAMENTAL(Appfs::FileAttributes, u32, o_flags, flag_is_flash);
+  API_ACCESS_FUNDAMENTAL(Appfs::FileAttributes, u16, version, 0);
+  API_ACCESS_FUNDAMENTAL(Appfs::FileAttributes, u16, access_mode, 0555);
 };
 
 /*! \brief Application File System Class
@@ -438,7 +438,7 @@ private:
 
 class Printer;
 Printer &operator<<(Printer &printer, const AppfsInfo &a);
-Printer &operator<<(Printer &printer, const AppfsFileAttributes &a);
+Printer &operator<<(Printer &printer, const Appfs::FileAttributes &a);
 Printer &operator<<(Printer &printer, const appfs_file_t &a);
 } // namespace sys
 

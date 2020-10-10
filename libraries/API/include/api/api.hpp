@@ -261,10 +261,10 @@ enum class ErrorCode {
   }
 
 #define API_SYSTEM_CALL(message_value, return_value)                           \
-  status().system_call(__LINE__, message_value, return_value);
+  status().system_call(__LINE__, message_value, return_value)
 
 #define API_SYSTEM_CALL_NULL(message_value, return_value)                      \
-  status().system_call_null(__LINE__, message_value, return_value);
+  status().system_call_null(__LINE__, message_value, return_value)
 
 #define API_RETURN_VALUE_ASSIGN_ERROR(                                         \
   return_value,                                                                \

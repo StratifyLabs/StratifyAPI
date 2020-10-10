@@ -37,9 +37,6 @@ File File::create(
   var::StringView path,
   IsOverwrite is_overwrite,
   Permissions perms FSAPI_LINK_DECLARE_DRIVER_LAST) {
-  if (api::Object::status().is_error()) {
-    return File();
-  }
   return File(FSAPI_LINK_INHERIT_DRIVER)
     .internal_create(path, is_overwrite, perms);
 }
@@ -78,12 +75,13 @@ int File::interface_lseek(int fd, int offset, int whence) const {
 
 File &
 File::open(var::StringView path, OpenMode flags, Permissions permissions) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   if (m_fd != -1) {
     close(); // close first so the fileno can be changed
   }
 
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    path.cstring(),
     m_fd = interface_open(
       path.cstring(),
       flags.o_flags(),
@@ -107,24 +105,31 @@ File &File::internal_create(
 
 size_t File::size() const {
   // get current cursor
+  API_RETURN_VALUE_IF_ERROR(0);
   int loc = location();
-  lseek(m_fd, 0, static_cast<int>(Whence::end));
+  API_SYSTEM_CALL("", interface_lseek(m_fd, 0, static_cast<int>(Whence::end)));
+  API_RETURN_VALUE_IF_ERROR(0);
   size_t size = static_cast<size_t>(location());
-  lseek(m_fd, loc, static_cast<int>(Whence::set)); // restore the cursor
+  API_SYSTEM_CALL(
+    "",
+    interface_lseek(
+      m_fd,
+      loc,
+      static_cast<int>(Whence::set))); // restore the cursor
+  API_RETURN_VALUE_IF_ERROR(0);
   return size;
 }
 
 int File::fstat(struct FSAPI_LINK_STAT_STRUCT *st) {
-  return FSAPI_LINK_FSTAT(driver(), m_fd, st);
+  API_RETURN_VALUE_IF_ERROR(-1);
+  return API_SYSTEM_CALL("", FSAPI_LINK_FSTAT(driver(), m_fd, st));
 }
 
-File &File::readline(char *buf, int nbyte, int timeout, char term) {
+const File &File::readline(char *buf, int nbyte, int timeout, char term) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  int t;
-  int bytes_recv;
+  int t = 0;
   char c;
-  t = 0;
-  bytes_recv = 0;
+  int bytes_recv = 0;
   do {
     if (read(&c, 1).status().value() == 1) {
       *buf = c;
@@ -153,7 +158,7 @@ File &File::close() {
   return *this;
 }
 
-File &File::sync() {
+const File &File::sync() const {
   API_RETURN_VALUE_IF_ERROR(*this);
 #if defined __link
   if (driver()) {
@@ -162,7 +167,7 @@ File &File::sync() {
 #endif
   if (m_fd >= 0) {
 #if !defined __win32
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, interface_fsync(m_fd));
+    API_SYSTEM_CALL("", interface_fsync(m_fd));
 #else
     ret = 0;
 #endif
@@ -170,27 +175,21 @@ File &File::sync() {
   return *this;
 }
 
-File &File::read(void *buf, int nbyte) {
+const File &File::read(void *buf, int nbyte) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
-    interface_read(m_fd, buf, nbyte));
+  API_SYSTEM_CALL("", interface_read(m_fd, buf, nbyte));
   return *this;
 }
 
-File &File::write(const void *buf, int nbyte) {
+const File &File::write(const void *buf, int nbyte) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
-    interface_write(m_fd, buf, nbyte));
+  API_SYSTEM_CALL("", interface_write(m_fd, buf, nbyte));
   return *this;
 }
 
-File &File::seek(int location, Whence whence) {
+const File &File::seek(int location, Whence whence) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
-    lseek(m_fd, location, static_cast<int>(whence)));
+  API_SYSTEM_CALL("", lseek(m_fd, location, static_cast<int>(whence)));
   return *this;
 }
 
@@ -214,7 +213,7 @@ int File::flags() const {
 #endif
 }
 
-var::String File::gets(char term) {
+var::String File::gets(char term) const {
   API_RETURN_VALUE_IF_ERROR(var::String());
   char c;
   var::String result;
@@ -229,7 +228,7 @@ var::String File::gets(char term) {
   return result;
 }
 
-File &File::ioctl(int request, void *argument) {
+const File &File::ioctl(int request, void *argument) const {
   API_RETURN_VALUE_IF_ERROR(*this);
   API_ASSIGN_ERROR_CODE(
     api::ErrorCode::io_error,
@@ -237,7 +236,7 @@ File &File::ioctl(int request, void *argument) {
   return *this;
 }
 
-File &File::write(File &source_file, const Write &options) {
+const File &File::write(File &source_file, const Write &options) const {
   API_RETURN_VALUE_IF_ERROR(*this);
 
   if (options.location() != static_cast<u32>(-1)) {

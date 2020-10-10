@@ -48,7 +48,7 @@ Dir &Dir::open(var::StringView path) {
 #endif
 
   if (m_dirp == 0) {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::no_entity, -1);
+    API_SYSTEM_CALL_NULL("no entity", static_cast<void *>(m_dirp));
   } else {
     m_path = var::String(path);
   }
@@ -62,7 +62,7 @@ int Dir::count() {
   int count;
 
   if (!is_open()) {
-    return API_ASSIGN_ERROR_CODE(api::ErrorCode::no_entity, -1);
+    API_RETURN_VALUE_ASSIGN_ERROR(-1, "", EBADF);
   }
 
 #if defined __link
@@ -92,7 +92,6 @@ int Dir::count() {
 var::StringList Dir::read_list(
   var::StringView (*filter)(var::StringView),
   IsRecursive is_recursive) {
-  API_RETURN_VALUE_IF_ERROR(var::StringList());
   var::Vector<var::String> result;
   var::String entry;
   bool is_the_end = false;
@@ -142,18 +141,24 @@ var::Vector<var::String> Dir::read_list(IsRecursive is_recursive) {
 }
 
 const char *Dir::read() {
+  API_RETURN_VALUE_IF_ERROR(nullptr);
 
 #if defined __link
   if (driver()) {
     struct link_dirent *result;
     memset(&m_entry, 0, sizeof(m_entry));
-    if (link_readdir_r(driver(), m_dirp, &m_entry, &result) < 0) {
+    if (
+      API_SYSTEM_CALL("", link_readdir_r(driver(), m_dirp, &m_entry, &result))
+      < 0) {
       return nullptr;
     }
   } else {
     struct dirent *result_local;
     if (
-      (readdir_r(m_dirp_local, &m_entry_local, &result_local) < 0)
+      (API_SYSTEM_CALL(
+         "",
+         readdir_r(m_dirp_local, &m_entry_local, &result_local))
+       < 0)
       || (result_local == 0)) {
       return nullptr;
     }
@@ -161,11 +166,7 @@ const char *Dir::read() {
   }
 #else
   struct dirent *result;
-  if (
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
-      readdir_r(m_dirp, &m_entry, &result))
-    < 0) {
+  if (readdir_r(m_dirp, &m_entry, &result) < 0) {
     return nullptr;
   }
 #endif
@@ -185,7 +186,7 @@ var::String Dir::get_entry() {
 }
 
 Dir &Dir::close() {
-  m_path.clear();
+  API_RETURN_VALUE_IF_ERROR(*this);
   if (m_dirp) {
 #if defined __link
     if (driver()) {
@@ -195,7 +196,7 @@ Dir &Dir::close() {
     }
     m_dirp = 0;
 #else //__link
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, closedir(m_dirp));
+    API_SYSTEM_CALL(m_path.cstring(), closedir(m_dirp));
     m_dirp = nullptr;
 #endif
   }
@@ -203,9 +204,10 @@ Dir &Dir::close() {
 #if defined __link
   if (m_dirp_local) {
     DIR *dirp_copy = m_dirp_local;
-    m_dirp_local = 0;
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, closedir(dirp_copy));
+    m_dirp_local = nullptr;
+    API_SYSTEM_CALL(m_path.cstring(), closedir(dirp_copy));
   }
 #endif
+  m_path.clear();
   return *this;
 }

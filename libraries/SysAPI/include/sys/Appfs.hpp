@@ -13,247 +13,22 @@ namespace sys {
 
 class AppfsFlags {
 public:
-
-  enum flags {
-    flag_is_default = 0,
-    flag_is_flash = APPFS_FLAG_IS_FLASH,
-    flag_is_startup = APPFS_FLAG_IS_STARTUP,
-    flag_is_authenticated = APPFS_FLAG_IS_AUTHENTICATED,
-    flag_is_replace = APPFS_FLAG_IS_REPLACE,
-    flag_is_orphan = APPFS_FLAG_IS_ORPHAN,
-    flag_is_unique = APPFS_FLAG_IS_UNIQUE,
-    flag_is_code_external = APPFS_FLAG_IS_CODE_EXTERNAL,
-    flag_is_data_external = APPFS_FLAG_IS_DATA_EXTERNAL,
-    flag_is_code_tightly_coupled = APPFS_FLAG_IS_CODE_TIGHTLY_COUPLED,
-    flag_is_data_tightly_coupled = APPFS_FLAG_IS_DATA_TIGHTLY_COUPLED
+  enum Flags {
+    is_default = 0,
+    is_flash = APPFS_FLAG_IS_FLASH,
+    is_startup = APPFS_FLAG_IS_STARTUP,
+    is_authenticated = APPFS_FLAG_IS_AUTHENTICATED,
+    is_replace = APPFS_FLAG_IS_REPLACE,
+    is_orphan = APPFS_FLAG_IS_ORPHAN,
+    is_unique = APPFS_FLAG_IS_UNIQUE,
+    is_code_external = APPFS_FLAG_IS_CODE_EXTERNAL,
+    is_data_external = APPFS_FLAG_IS_DATA_EXTERNAL,
+    is_code_tightly_coupled = APPFS_FLAG_IS_CODE_TIGHTLY_COUPLED,
+    is_data_tightly_coupled = APPFS_FLAG_IS_DATA_TIGHTLY_COUPLED
   };
 };
 
-API_OR_FLAGS_OPERATOR(AppfsFlags)
-
-/*! \brief AppfsInfo Class
- * \details The AppfsInfo class is for
- * getting information associated with
- * executable files that are either installed
- * in or built for the application filesystem.
- *
- */
-class AppfsInfo : public AppfsFlags {
-public:
-  /*! \details Constructs an empty object. */
-  AppfsInfo() { memset(&m_info, 0, sizeof(m_info)); }
-
-  /*! \details Constructs an object from a *appfs_info_t* object. */
-  explicit AppfsInfo(const appfs_info_t &info) {
-    memcpy(&m_info, &info, sizeof(appfs_info_t));
-  }
-
-  /*! \details Returns true if the object is valid. */
-  bool is_valid() const { return m_info.signature != 0; }
-
-  /*! \details Returns the application ID (cloud id). */
-  const var::String id() const { return var::String((const char *)m_info.id); }
-
-  /*! \details Returns the name of the application. */
-  const var::String name() const {
-    return var::String((const char *)m_info.name);
-  }
-
-  /*! \details Returns the file mode. */
-  u16 mode() const { return m_info.mode; }
-  /*! \details Returns the version. */
-  u16 version() const { return m_info.version; }
-
-  /*! \details Returns the data RAM size used by the application. */
-  u32 ram_size() const { return m_info.ram_size; }
-
-  /*! \details Returns the flags.
-   *
-   * See also: is_executable(), is_startup(), is_flash(), is_orphan(),
-   * is_root(), is_unique().
-   *
-   */
-  u32 o_flags() const { return m_info.o_flags; }
-
-  /*! \details Returns the application signature.
-   *
-   * This value specifies the version of the table that
-   * connects the application to the operating system. Every
-   * OS package has a signature that is associated with
-   * the calls (such as printf(), pthread_create()) that are available to
-   * application installed on the system.
-   *
-   */
-  u32 signature() const { return m_info.signature; }
-
-  /*! \details Returns true if the application is executable. */
-  bool is_executable() const { return m_info.mode & 0111; }
-
-  /*! \details Returns true if the application runs at startup. */
-  bool is_startup() const { return (m_info.o_flags & flag_is_startup) != 0; }
-  /*! \details Returns true if the application is to be installed in flash. */
-  bool is_flash() const { return (m_info.o_flags & flag_is_flash) != 0; }
-  /*! \details Returns true if the application code is to be installed in
-   * external memory. */
-  bool is_code_external() const {
-    return (m_info.o_flags & flag_is_code_external) != 0;
-  }
-  /*! \details Returns true if the application data is to be installed in
-   * external memory. */
-  bool is_data_external() const {
-    return (m_info.o_flags & flag_is_data_external) != 0;
-  }
-  /*! \details Returns true if the application code is to be installed in
-   * tightly coupled memory. */
-  bool is_code_tightly_coupled() const {
-    return (m_info.o_flags & flag_is_code_tightly_coupled) != 0;
-  }
-  /*! \details Returns true if the application data is to be installed in
-   * tightly coupled memory. */
-  bool is_data_tightly_coupled() const {
-    return (m_info.o_flags & flag_is_data_tightly_coupled) != 0;
-  }
-  /*! \details Returns true if the application should run as an orphan. */
-  bool is_orphan() const { return (m_info.o_flags & flag_is_orphan) != 0; }
-  /*! \details Returns true if the application should run as root. */
-  bool is_authenticated() const {
-    return (m_info.o_flags & flag_is_authenticated) != 0;
-  }
-  /*! \details Returns true if the application should create a unique instance.
-   *
-   * If unique is false, the system will not allow a second copy of
-   * the application to be installed on the system.
-   *
-   * If unique is true, the application will be assigned a unique
-   * name when it is installed in RAM or flash.
-   *
-   */
-  bool is_unique() const { return (m_info.o_flags & flag_is_unique) != 0; }
-
-  const appfs_info_t &info() const { return m_info; }
-  appfs_info_t &info() { return m_info; }
-
-private:
-  appfs_info_t m_info;
-};
-
-/*! \brief AppfsFileAttributes Class
- * \details The AppfsFileAttributes class holds the
- * information that is needed to modify an application
- * binary that has been built with the compiler.
- *
- * The compiler is unable to build some information
- * directly into the binary but it allocates space
- * for the information.
- *
- * This class is used for that information and includes
- * things like the application name, project id,
- * and execution flags.
- *
- *
- */
-class AppfsFileAttributes : public AppfsFlags {
-public:
-  AppfsFileAttributes() {}
-
-  explicit AppfsFileAttributes(const appfs_file_t &appfs_file);
-
-  void apply(appfs_file_t *appfs_file) const;
-  int apply(fs::File &file) const;
-
-  bool is_flash() const { return m_o_flags & flag_is_flash; }
-  bool is_code_external() const { return m_o_flags & flag_is_code_external; }
-  bool is_data_external() const { return m_o_flags & flag_is_data_external; }
-  bool is_code_tightly_coupled() const {
-    return m_o_flags & flag_is_code_tightly_coupled;
-  }
-  bool is_data_tightly_coupled() const {
-    return m_o_flags & flag_is_data_tightly_coupled;
-  }
-  bool is_startup() const { return m_o_flags & flag_is_startup; }
-  bool is_unique() const { return m_o_flags & flag_is_unique; }
-  bool is_authenticated() const { return m_o_flags & flag_is_authenticated; }
-
-  AppfsFileAttributes &set_startup(bool value = true) {
-    if (value) {
-      m_o_flags |= flag_is_startup;
-    } else {
-      m_o_flags &= ~flag_is_startup;
-    }
-    return *this;
-  }
-
-  AppfsFileAttributes &set_flash(bool value = true) {
-    if (value) {
-      m_o_flags |= flag_is_flash;
-    } else {
-      m_o_flags &= ~flag_is_flash;
-    }
-    return *this;
-  }
-
-  AppfsFileAttributes &set_code_external(bool value = true) {
-    if (value) {
-      m_o_flags |= flag_is_code_external;
-    } else {
-      m_o_flags &= ~flag_is_code_external;
-    }
-    return *this;
-  }
-
-  AppfsFileAttributes &set_data_external(bool value = true) {
-    if (value) {
-      m_o_flags |= flag_is_data_external;
-    } else {
-      m_o_flags &= ~flag_is_data_external;
-    }
-    return *this;
-  }
-
-  AppfsFileAttributes &set_code_tightly_coupled(bool value = true) {
-    if (value) {
-      m_o_flags |= flag_is_code_tightly_coupled;
-    } else {
-      m_o_flags &= ~flag_is_code_tightly_coupled;
-    }
-    return *this;
-  }
-
-  AppfsFileAttributes &set_data_tightly_coupled(bool value = true) {
-    if (value) {
-      m_o_flags |= flag_is_data_tightly_coupled;
-    } else {
-      m_o_flags &= ~flag_is_data_tightly_coupled;
-    }
-    return *this;
-  }
-
-  AppfsFileAttributes &set_unique(bool value = true) {
-    if (value) {
-      m_o_flags |= flag_is_unique;
-    } else {
-      m_o_flags &= ~flag_is_unique;
-    }
-    return *this;
-  }
-
-  AppfsFileAttributes &set_authenticated(bool value = true) {
-    if (value) {
-      m_o_flags |= flag_is_authenticated;
-    } else {
-      m_o_flags &= ~flag_is_authenticated;
-    }
-    return *this;
-  }
-
-private:
-  API_ACCESS_COMPOUND(AppfsFileAttributes, var::String, name);
-  API_ACCESS_COMPOUND(AppfsFileAttributes, var::String, id);
-  API_ACCESS_FUNDAMENTAL(AppfsFileAttributes, u32, ram_size, 0);
-  API_ACCESS_FUNDAMENTAL(AppfsFileAttributes, u32, o_flags, flag_is_flash);
-  API_ACCESS_FUNDAMENTAL(AppfsFileAttributes, u16, version, 0);
-  API_ACCESS_FUNDAMENTAL(AppfsFileAttributes, u16, access_mode, 0555);
-};
+API_OR_NAMED_FLAGS_OPERATOR(AppfsFlags, Flags)
 
 /*! \brief Application File System Class
  * \details This class provides an interface for creating data files in flash
@@ -294,6 +69,241 @@ private:
  */
 class Appfs : public api::Object, public AppfsFlags {
 public:
+  /*! \brief AppfsInfo Class
+   * \details The AppfsInfo class is for
+   * getting information associated with
+   * executable files that are either installed
+   * in or built for the application filesystem.
+   *
+   */
+  class Info : public AppfsFlags {
+  public:
+    /*! \details Constructs an empty object. */
+    Info() { memset(&m_info, 0, sizeof(m_info)); }
+
+    /*! \details Constructs an object from a *appfs_info_t* object. */
+    explicit Info(const appfs_info_t &info) {
+      memcpy(&m_info, &info, sizeof(appfs_info_t));
+    }
+
+    /*! \details Returns true if the object is valid. */
+    bool is_valid() const { return m_info.signature != 0; }
+
+    /*! \details Returns the application ID (cloud id). */
+    const var::String id() const {
+      return var::String((const char *)m_info.id);
+    }
+
+    /*! \details Returns the name of the application. */
+    const var::String name() const {
+      return var::String((const char *)m_info.name);
+    }
+
+    /*! \details Returns the file mode. */
+    u16 mode() const { return m_info.mode; }
+    /*! \details Returns the version. */
+    u16 version() const { return m_info.version; }
+
+    /*! \details Returns the data RAM size used by the application. */
+    u32 ram_size() const { return m_info.ram_size; }
+
+    /*! \details Returns the flags.
+     *
+     * See also: is_executable(), is_startup(), is_flash(), is_orphan(),
+     * is_root(), is_unique().
+     *
+     */
+    u32 o_flags() const { return m_info.o_flags; }
+
+    /*! \details Returns the application signature.
+     *
+     * This value specifies the version of the table that
+     * connects the application to the operating system. Every
+     * OS package has a signature that is associated with
+     * the calls (such as printf(), pthread_create()) that are available to
+     * application installed on the system.
+     *
+     */
+    u32 signature() const { return m_info.signature; }
+
+    /*! \details Returns true if the application is executable. */
+    bool is_executable() const { return m_info.mode & 0111; }
+
+    /*! \details Returns true if the application runs at startup. */
+    bool is_startup() const {
+      return (m_info.o_flags & Flags::is_startup) != 0;
+    }
+    /*! \details Returns true if the application is to be installed in flash. */
+    bool is_flash() const { return (m_info.o_flags & Flags::is_flash) != 0; }
+    /*! \details Returns true if the application code is to be installed in
+     * external memory. */
+    bool is_code_external() const {
+      return (m_info.o_flags & Flags::is_code_external) != 0;
+    }
+    /*! \details Returns true if the application data is to be installed in
+     * external memory. */
+    bool is_data_external() const {
+      return (m_info.o_flags & Flags::is_data_external) != 0;
+    }
+    /*! \details Returns true if the application code is to be installed in
+     * tightly coupled memory. */
+    bool is_code_tightly_coupled() const {
+      return (m_info.o_flags & Flags::is_code_tightly_coupled) != 0;
+    }
+    /*! \details Returns true if the application data is to be installed in
+     * tightly coupled memory. */
+    bool is_data_tightly_coupled() const {
+      return (m_info.o_flags & Flags::is_data_tightly_coupled) != 0;
+    }
+    /*! \details Returns true if the application should run as an orphan. */
+    bool is_orphan() const { return (m_info.o_flags & Flags::is_orphan) != 0; }
+    /*! \details Returns true if the application should run as root. */
+    bool is_authenticated() const {
+      return (m_info.o_flags & Flags::is_authenticated) != 0;
+    }
+    /*! \details Returns true if the application should create a unique
+     * instance.
+     *
+     * If unique is false, the system will not allow a second copy of
+     * the application to be installed on the system.
+     *
+     * If unique is true, the application will be assigned a unique
+     * name when it is installed in RAM or flash.
+     *
+     */
+    bool is_unique() const { return (m_info.o_flags & Flags::is_unique) != 0; }
+
+    const appfs_info_t &info() const { return m_info; }
+    appfs_info_t &info() { return m_info; }
+
+  private:
+    appfs_info_t m_info;
+  };
+
+  /*! \brief Appfs::FileAttributes Class
+   * \details The Appfs::FileAttributes class holds the
+   * information that is needed to modify an application
+   * binary that has been built with the compiler.
+   *
+   * The compiler is unable to build some information
+   * directly into the binary but it allocates space
+   * for the information.
+   *
+   * This class is used for that information and includes
+   * things like the application name, project id,
+   * and execution flags.
+   *
+   *
+   */
+  class FileAttributes : public AppfsFlags {
+  public:
+    FileAttributes() {}
+
+    explicit FileAttributes(const appfs_file_t &appfs_file);
+
+    void apply(appfs_file_t *appfs_file) const;
+    int apply(fs::File &file) const;
+
+    bool is_flash() const { return m_o_flags & Flags::is_flash; }
+    bool is_code_external() const {
+      return m_o_flags & Flags::is_code_external;
+    }
+    bool is_data_external() const {
+      return m_o_flags & Flags::is_data_external;
+    }
+    bool is_code_tightly_coupled() const {
+      return m_o_flags & Flags::is_code_tightly_coupled;
+    }
+    bool is_data_tightly_coupled() const {
+      return m_o_flags & Flags::is_data_tightly_coupled;
+    }
+    bool is_startup() const { return m_o_flags & Flags::is_startup; }
+    bool is_unique() const { return m_o_flags & Flags::is_unique; }
+    bool is_authenticated() const {
+      return m_o_flags & Flags::is_authenticated;
+    }
+
+    FileAttributes &set_startup(bool value = true) {
+      if (value) {
+        m_o_flags |= Flags::is_startup;
+      } else {
+        m_o_flags &= ~Flags::is_startup;
+      }
+      return *this;
+    }
+
+    FileAttributes &set_flash(bool value = true) {
+      if (value) {
+        m_o_flags |= Flags::is_flash;
+      } else {
+        m_o_flags &= ~Flags::is_flash;
+      }
+      return *this;
+    }
+
+    FileAttributes &set_code_external(bool value = true) {
+      if (value) {
+        m_o_flags |= Flags::is_code_external;
+      } else {
+        m_o_flags &= ~Flags::is_code_external;
+      }
+      return *this;
+    }
+
+    FileAttributes &set_data_external(bool value = true) {
+      if (value) {
+        m_o_flags |= Flags::is_data_external;
+      } else {
+        m_o_flags &= ~Flags::is_data_external;
+      }
+      return *this;
+    }
+
+    FileAttributes &set_code_tightly_coupled(bool value = true) {
+      if (value) {
+        m_o_flags |= Flags::is_code_tightly_coupled;
+      } else {
+        m_o_flags &= ~Flags::is_code_tightly_coupled;
+      }
+      return *this;
+    }
+
+    FileAttributes &set_data_tightly_coupled(bool value = true) {
+      if (value) {
+        m_o_flags |= Flags::is_data_tightly_coupled;
+      } else {
+        m_o_flags &= ~Flags::is_data_tightly_coupled;
+      }
+      return *this;
+    }
+
+    FileAttributes &set_unique(bool value = true) {
+      if (value) {
+        m_o_flags |= Flags::is_unique;
+      } else {
+        m_o_flags &= ~Flags::is_unique;
+      }
+      return *this;
+    }
+
+    FileAttributes &set_authenticated(bool value = true) {
+      if (value) {
+        m_o_flags |= Flags::is_authenticated;
+      } else {
+        m_o_flags &= ~Flags::is_authenticated;
+      }
+      return *this;
+    }
+
+  private:
+    API_ACCESS_COMPOUND(FileAttributes, var::String, name);
+    API_ACCESS_COMPOUND(FileAttributes, var::String, id);
+    API_ACCESS_FUNDAMENTAL(FileAttributes, u32, ram_size, 0);
+    API_ACCESS_FUNDAMENTAL(FileAttributes, u32, o_flags, Flags::is_flash);
+    API_ACCESS_FUNDAMENTAL(FileAttributes, u16, version, 0);
+    API_ACCESS_FUNDAMENTAL(FileAttributes, u16, access_mode, 0555);
+  };
+
   class Construct {
   public:
     Construct() : m_mount("/app") {}
@@ -377,7 +387,7 @@ public:
    * does not exist or is not a recognized executable, respectively.
    *
    */
-  AppfsInfo get_info(var::StringView path);
+  Info get_info(var::StringView path);
 
   /*! \details Gets the application version.
    *
@@ -451,8 +461,8 @@ private:
 
 namespace printer {
 class Printer;
-Printer &operator<<(Printer &printer, const sys::AppfsInfo &a);
-Printer &operator<<(Printer &printer, const sys::AppfsFileAttributes &a);
+Printer &operator<<(Printer &printer, const sys::Appfs::Info &a);
+Printer &operator<<(Printer &printer, const sys::Appfs::FileAttributes &a);
 Printer &operator<<(Printer &printer, const appfs_file_t &a);
 } // namespace printer
 

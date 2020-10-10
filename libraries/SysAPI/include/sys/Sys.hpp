@@ -232,9 +232,9 @@ public:
     API_ACCESS_COMPOUND(Launch, var::StringView, environment);
     API_ACCESS_FUNDAMENTAL(
       Launch,
-      enum Appfs::flags,
+      Appfs::Flags,
       application_flags,
-      Appfs::flag_is_default);
+      Appfs::Flags::is_default);
     API_ACCESS_FUNDAMENTAL(Launch, int, ram_size, 0);
     API_ACCESS_FUNDAMENTAL(
       Launch,
@@ -258,8 +258,8 @@ public:
    */
   var::String install(
     var::StringView path,
-    enum Appfs::flags options
-    = Appfs::flag_is_default, // run in RAM, discard on exit
+    Appfs::Flags options
+    = Appfs::Flags::is_default, // run in RAM, discard on exit
     int ram_size = 0);
 
   /*!
@@ -274,7 +274,7 @@ public:
    */
   var::String install(
     var::StringView path,
-    enum Appfs::flags options, // run in RAM, discard on exit
+    Appfs::Flags options, // run in RAM, discard on exit
     int ram_size,
     const api::ProgressCallback *progress_callback);
 

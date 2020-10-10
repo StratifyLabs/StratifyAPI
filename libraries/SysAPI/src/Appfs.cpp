@@ -36,7 +36,7 @@ printer::operator<<(printer::Printer &printer, const appfs_file_t &a) {
 
 printer::Printer &printer::operator<<(
   printer::Printer &printer,
-  const sys::AppfsFileAttributes &a) {
+  const sys::Appfs::Appfs::FileAttributes &a) {
   printer.key("name", a.name());
   printer.key("id", a.id());
   printer.key(
@@ -55,7 +55,7 @@ printer::Printer &printer::operator<<(
 }
 
 printer::Printer &
-printer::operator<<(printer::Printer &printer, const sys::AppfsInfo &a) {
+printer::operator<<(printer::Printer &printer, const sys::Appfs::Info &a) {
   printer.key("name", a.name());
   printer.key("mode", var::String::number(a.mode(), "0%o"));
   if (a.is_executable()) {
@@ -76,7 +76,7 @@ printer::operator<<(printer::Printer &printer, const sys::AppfsInfo &a) {
 
 using namespace sys;
 
-AppfsFileAttributes::AppfsFileAttributes(const appfs_file_t &appfs_file) {
+Appfs::FileAttributes::FileAttributes(const appfs_file_t &appfs_file) {
   m_name = appfs_file.hdr.name;
   m_id = appfs_file.hdr.id;
   m_ram_size = appfs_file.exec.ram_size;
@@ -84,7 +84,7 @@ AppfsFileAttributes::AppfsFileAttributes(const appfs_file_t &appfs_file) {
   m_version = appfs_file.hdr.version;
 }
 
-void AppfsFileAttributes::apply(appfs_file_t *appfs_file) const {
+void Appfs::FileAttributes::apply(appfs_file_t *appfs_file) const {
 
   if (m_name.is_empty() == false) {
     memcpy(appfs_file->hdr.name, m_name.cstring(), LINK_NAME_MAX);
@@ -113,7 +113,7 @@ void AppfsFileAttributes::apply(appfs_file_t *appfs_file) const {
   appfs_file->exec.o_flags = m_o_flags;
 }
 
-int AppfsFileAttributes::apply(fs::File &file) const {
+int Appfs::FileAttributes::apply(fs::File &file) const {
   appfs_file_t appfs_file;
   var::View appfs_file_reference(appfs_file);
 
@@ -407,7 +407,7 @@ return 0;
 }
 #endif
 
-AppfsInfo Appfs::get_info(var::StringView path) {
+Appfs::Info Appfs::get_info(var::StringView path) {
 
   appfs_file_t appfs_file_header;
   appfs_info_t info;
@@ -421,7 +421,7 @@ AppfsInfo Appfs::get_info(var::StringView path) {
       .value());
 
   if (status().is_error()) {
-    return AppfsInfo();
+    return Info();
   }
 
   if (result == sizeof(appfs_file_header)) {
@@ -431,12 +431,12 @@ AppfsInfo Appfs::get_info(var::StringView path) {
 
     if (path_name.find(".sys") == 0) {
       errno = EINVAL;
-      return AppfsInfo();
+      return Info();
     }
 
     if (path_name.find(".free") == 0) {
       errno = EINVAL;
-      return AppfsInfo();
+      return Info();
     }
 
     if ((appfs_file_header.hdr.mode & 0111) == 0) {
@@ -462,23 +462,23 @@ AppfsInfo Appfs::get_info(var::StringView path) {
       info.signature = appfs_file_header.exec.signature;
     } else {
       errno = ENOEXEC;
-      return AppfsInfo();
+      return Info();
     }
   } else {
     errno = ENOEXEC;
-    return AppfsInfo();
+    return Info();
   }
-  return AppfsInfo(info);
+  return Info(info);
 }
 
 u16 Appfs::get_version(const var::String &path) {
-  AppfsInfo info;
+  Info info;
   info = get_info(path);
   return info.version();
 }
 
 var::String Appfs::get_id(const var::String &path) {
-  AppfsInfo info;
+  Info info;
   info = get_info(path);
 
   if (info.is_valid() == false) {

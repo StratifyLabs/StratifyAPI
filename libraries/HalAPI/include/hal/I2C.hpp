@@ -184,8 +184,8 @@ public:
     API_AF(ModifyRegister, bool, value, false);
   };
 
-  static Device &
-  modify_register(Device &device, const ModifyRegister &options) {
+  static const Device &
+  modify_register(const Device &device, const ModifyRegister &options) {
     u8 value;
     device.seek(options.location()).read(var::View(value));
     if (options.value()) {

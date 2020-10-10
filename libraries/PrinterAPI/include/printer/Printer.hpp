@@ -166,6 +166,7 @@ public:
   Printer &operator<<(void *a);
   Printer &operator<<(var::StringView a);
   Printer &operator<<(var::View a);
+  Printer &operator<<(const api::ErrorContext &error_context);
 
   /*! \details Assign an effective verbose level to this object. */
   Printer &set_verbose_level(Level level) {

@@ -59,7 +59,8 @@ public:
     fs::OpenMode open_mode
     = fs::OpenMode::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
-  Device &set_interrupt_priority(int priority, int request = I_MCU_SETACTION);
+  const Device &
+  set_interrupt_priority(int priority, int request = I_MCU_SETACTION) const;
 
 #if !defined __link
   /*! \details Configures the device to send a signal when an event happens.
@@ -69,7 +70,7 @@ public:
    * @param channel The hardware channel to listen for events on
    *
    */
-  Device &set_signal_action(
+  const Device &set_signal_action(
     const DeviceSignal &signal,
     const DeviceSignal::CreateAction &options) {
     mcu_action_t action = signal.create_action(options);
@@ -82,7 +83,7 @@ public:
    *
    * \sa fs::Aio
    */
-  Device &read(fs::Aio &aio);
+  const Device &read(fs::Aio &aio) const;
 
   /*! \details Writes the device asynchronously.
    *
@@ -90,21 +91,21 @@ public:
    *
    * \sa fs::Aio
    */
-  Device &write(fs::Aio &aio);
+  const Device &write(fs::Aio &aio) const;
 
   using fs::FileAccess<Device>::read;
   using fs::FileAccess<Device>::write;
 
-  Device &cancel_read(int channel = 0);
-  Device &cancel_write(int channel = 0);
-  Device &cancel(int channel, int o_events);
+  const Device &cancel_read(int channel = 0) const;
+  const Device &cancel_write(int channel = 0) const;
+  const Device &cancel(int channel, int o_events) const;
 
   class Transfer {
     API_AC(Transfer, var::View, source);
     API_AC(Transfer, var::View, destination);
   };
 
-  Device &transfer(const Transfer &options);
+  const Device &transfer(const Transfer &options) const;
 
 #endif
 
@@ -113,7 +114,7 @@ protected:
 
 template <int VersionRequest> class DeviceType {
 public:
-  static int get_version(Device &device) {
+  static int get_version(const Device &device) {
     return device.ioctl(VersionRequest, nullptr).status().value();
   }
 };

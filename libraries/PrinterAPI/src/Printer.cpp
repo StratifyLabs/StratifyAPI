@@ -714,3 +714,13 @@ Printer &Printer::operator<<(var::View a) {
 
   return *this;
 }
+
+Printer &Printer::operator<<(const api::ErrorContext &error_context) {
+  key("lineNumber", var::String::number(error_context.line_number()));
+  key("errorNumber", var::String::number(error_context.error_number()));
+  key("message", var::StringView(error_context.message()));
+
+  // get the backtrace symbols if they are available
+
+  return *this;
+}

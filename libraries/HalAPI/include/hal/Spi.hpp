@@ -139,11 +139,11 @@ public:
       .set_argument(MCU_INT_CAST(value));
   }
 
-  static int swap(Device &device, u32 value) {
+  static int swap(const Device &device, u32 value) {
     return device.ioctl(swap(value)).status().value();
   }
 
-  static Info get_info(Device &device) {
+  static Info get_info(const Device &device) {
     Info info;
     device.ioctl(get_info(info));
     return info;

@@ -135,18 +135,17 @@ bool FileSystem::exists(var::StringView path) {
 }
 
 FileInfo FileSystem::get_info(var::StringView path) {
+  API_RETURN_VALUE_IF_ERROR(FileInfo());
+
   struct FSAPI_LINK_STAT_STRUCT stat = {0};
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::no_entity,
-    FSAPI_LINK_STAT(driver(), path.cstring(), &stat));
+  API_SYSTEM_CALL("get stat", FSAPI_LINK_STAT(driver(), path.cstring(), &stat));
   return FileInfo(stat);
 }
 
 FileInfo FileSystem::get_info(int fd) {
+  API_RETURN_VALUE_IF_ERROR(FileInfo());
   struct FSAPI_LINK_STAT_STRUCT stat = {0};
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::bad_file_number,
-    FSAPI_LINK_FSTAT(driver(), fd, &stat));
+  API_SYSTEM_CALL("get info fstat", FSAPI_LINK_FSTAT(driver(), fd, &stat));
   return FileInfo(stat);
 }
 
@@ -266,17 +265,15 @@ var::StringList FileSystem::read_directory(
     .read_list(filter, is_recursive);
 }
 
-var::StringList FileSystem::read_directory(
-  var::StringView path,
-  Recursive is_recursive) {
+var::StringList
+FileSystem::read_directory(var::StringView path, Recursive is_recursive) {
   return read_directory(path, nullptr, is_recursive);
 }
 
-u32 FileSystem::size(var::StringView name) {
-  return get_info(name).size();
-}
+u32 FileSystem::size(var::StringView name) { return get_info(name).size(); }
 
 bool FileSystem::directory_exists(var::StringView path) {
+  API_RETURN_VALUE_IF_ERROR(false);
   return Dir(path FSAPI_LINK_MEMBER_DRIVER_LAST).status().is_success();
 }
 
@@ -310,9 +307,8 @@ FileSystem &FileSystem::create_directory(
   if (is_recursive == Recursive::no) {
     return create_directory(path, permissions);
   }
-  var::Tokenizer path_tokens = var::Tokenizer(
-    path,
-    var::Tokenizer::Construct().set_delimeters("/"));
+  var::Tokenizer path_tokens
+    = var::Tokenizer(path, var::Tokenizer::Construct().set_delimeters("/"));
   var::String base_path;
 
   if (path.find("/") == 0) {
@@ -354,11 +350,7 @@ DataFile FileSystem::load_data_file(var::StringView file_path) {
 
   API_ASSIGN_ERROR_CODE(
     api::ErrorCode::io_error,
-    result.write(source_file, File::Write())
-      .seek(0)
-      .set_flags(OpenMode::read_write())
-      .status()
-      .value());
+    result.write(source_file, File::Write()).seek(0).status().value());
 
-  return result;
+  return result.set_flags(OpenMode::read_write());
 }

@@ -98,7 +98,7 @@ void Test::initialize(const Construct &options) {
 
   printer().object("system", info);
 
-  AppfsInfo appfs_info
+  Appfs::Info appfs_info
     = Appfs().get_info(var::String("/app/flash/") + options.name());
   if (appfs_info.is_valid() == false) {
     appfs_info = Appfs().get_info(var::String("/app/ram/") + options.name());
