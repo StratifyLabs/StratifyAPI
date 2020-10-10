@@ -228,7 +228,7 @@ SocketAddressIpv4 &SocketAddressIpv4::set_address(var::StringView addr) {
   return *this;
 }
 
-Socket::Socket() {
+Socket::Socket() : FileAccess("", fs::OpenMode::read_write()) {
   m_socket = SOCKET_INVALID;
   initialize();
 }
@@ -245,8 +245,6 @@ Socket::Socket(Domain domain, Type type, Protocol protocol)
       static_cast<int>(type),
       static_cast<int>(protocol)));
 }
-
-bool Socket::is_valid() const { return m_socket != SOCKET_INVALID; }
 
 int Socket::decode_socket_return(int value) const {
 #if defined __win32
@@ -306,7 +304,8 @@ int Socket::bind(const SocketAddress &addr) const {
     ::bind(m_socket, addr.to_sockaddr(), static_cast<int>(addr.length())));
 }
 
-Socket &Socket::bind_and_listen(const SocketAddress &addr, int backlog) const {
+const Socket &
+Socket::bind_and_listen(const SocketAddress &addr, int backlog) const {
   API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL("", interface_bind_and_listen(addr, backlog));
   return *this;
@@ -314,18 +313,12 @@ Socket &Socket::bind_and_listen(const SocketAddress &addr, int backlog) const {
 
 int Socket::interface_bind_and_listen(const SocketAddress &address, int backlog)
   const {
-  int result = bind(addr);
+  int result = bind(address);
   if (result < 0) {
     return result;
   }
 
-  if (address.protocol() == SocketAddressInfo::protocol_tcp) {
-    result = decode_socket_return(::listen(m_socket, backlog));
-  } else {
-    return -1;
-  }
-
-  return result;
+  return decode_socket_return(::listen(m_socket, backlog));
 }
 
 Socket Socket::accept(SocketAddress &address) const {
@@ -343,21 +336,15 @@ Socket Socket::accept(SocketAddress &address) const {
 Socket &Socket::connect(const SocketAddress &address) {
   // Connect to server.
   API_RETURN_VALUE_IF_ERROR(*this);
-
-  if (m_socket == SOCKET_INVALID) {
-    int result;
-    if ((result = this->create(address)) < 0) {
-      return result;
-    }
-  }
-
-  return API_SYSTEM_CALL(
-    "",
-    decode_socket_return(::connect(
-      m_socket,
-      address.to_sockaddr(),
-      static_cast<int>(address.length()))));
+  API_SYSTEM_CALL("", interface_connect(address));
   return *this;
+}
+
+int Socket::interface_connect(const SocketAddress &address) const {
+  return decode_socket_return(::connect(
+    m_socket,
+    address.to_sockaddr(),
+    static_cast<int>(address.length())));
 }
 
 int Socket::interface_close(int fd) const {
@@ -369,7 +356,6 @@ int Socket::interface_close(int fd) const {
 #else
     result = decode_socket_return(::close(m_socket));
 #endif
-    m_socket = SOCKET_INVALID;
   }
   return result;
 }
@@ -417,7 +403,13 @@ Socket::receive_from(const SocketAddress &address, void *buf, int nbyte) const {
   return *this;
 }
 
-int Socket::shutdown(const fs::OpenMode how) const {
+const Socket &Socket::shutdown(const fs::OpenMode how) const {
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", interface_shutdown(m_socket, how));
+  return *this;
+}
+
+int Socket::interface_shutdown(SOCKET_T fd, const fs::OpenMode how) const {
   int socket_how = SHUT_RDWR;
   if (how.is_read_only()) {
     socket_how = SHUT_RD;

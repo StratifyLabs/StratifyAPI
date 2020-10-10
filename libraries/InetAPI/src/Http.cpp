@@ -266,14 +266,8 @@ int HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
     m_address = SocketAddress(address_list.at(0));
     m_address.set_port(port);
 
-    if (socket().create(m_address) < 0) {
-      return -1;
-    }
+    socket().connect(m_address);
 
-    if (socket().connect(m_address) < 0) {
-      socket().close();
-      return -1;
-    }
     m_alive_domain = var::String(domain_name);
     return 0;
   }

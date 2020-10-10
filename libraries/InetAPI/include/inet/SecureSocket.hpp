@@ -20,14 +20,10 @@ public:
   SecureSocket(Domain domain, Type type, Protocol protocol);
   ~SecureSocket();
 
-  // already documented in inet::Socket
-  virtual SecureSocket &connect(const SocketAddress &address) override;
-
-  SecureSocket &set_ticket_lifetime() { return *this; }
-  /*! \details
-   *
-   */
-  Socket accept(SocketAddress &address) const;
+  SecureSocket &set_ticket_lifetime(u32 seconds) {
+    m_ticket_lifetime_seconds = seconds;
+    return *this;
+  }
 
   // already documented in inet::Socket
   virtual int shutdown(int how = 0) const;
@@ -35,21 +31,25 @@ public:
   const var::Data &ticket() const { return m_ticket; }
 
   SecureSocket &set_ticket(var::View ticket) {
-    m_ticket = ticket;
+    m_ticket.copy_contents(ticket);
     return *this;
   }
-  var::Data &ticket() { return m_ticket; }
 
 private:
   static SecureSocketApi api() { return m_api; }
   static SecureSocketApi m_api;
-  void *m_context = nullptr;
-  chrono::ClockTime m_ticket_lifetime;
-  u32 m_ticket_lifetime = 0;
-  var::Data m_ticket;
+  u32 m_ticket_lifetime_seconds = 60 * 60 * 24UL; // one day
+
+  mutable var::Data m_ticket;
+  mutable void *m_context = nullptr;
+
+  int interface_connect(const SocketAddress &address) const override final;
 
   int interface_bind_and_listen(const SocketAddress &address, int backlog)
-    const;
+    const override final;
+
+  virtual int
+  interface_shutdown(int fd, const fs::OpenMode how) const override final;
 
   int interface_close(int fd) const override final;
   int interface_read(int fd, void *buf, int nbyte) const override final;

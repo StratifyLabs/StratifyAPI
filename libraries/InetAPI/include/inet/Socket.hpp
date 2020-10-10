@@ -487,7 +487,7 @@ public:
    * object passed to create() method.
    * @return Less than zero on error or zero on success
    */
-  virtual Socket &connect(const SocketAddress &address);
+  Socket &connect(const SocketAddress &address);
 
   /*!
    * \details Binds and listens to the port for which the socket was created.
@@ -497,7 +497,8 @@ public:
    * when using TCP sockets where listen is applicable.
    *
    */
-  Socket &bind_and_listen(const SocketAddress &address, int backlog = 4) const;
+  const Socket &
+  bind_and_listen(const SocketAddress &address, int backlog = 4) const;
 
   /*!
    * \details Accepts a socket connection on a socket that is listening.
@@ -521,16 +522,9 @@ public:
    *
    * @return Zero on success
    */
-  virtual int
+  const Socket &
   shutdown(const fs::OpenMode how = fs::OpenMode::read_write()) const;
 
-  using File::read;
-  /*@brief use for get ip address from recved data in socket
-   * necceserly set ai_addrlen before use "recvfrom"
-   * getaddrinfo(use self port)->socket->bind-> read_from
-   * @param ai_addr - will address info accept
-   * @param ai_addrlen - write address ip len (IPv4 or IPv6) before use!!!
-   * */
   const Socket &
   receive_from(const SocketAddress &address, var::View data) const {
     return receive_from(address, data.to_void(), data.size());
@@ -556,8 +550,6 @@ public:
     const SocketAddress &socket_address,
     const void *buf,
     int nbyte) const;
-
-  bool is_valid() const;
 
   /*! \details Sets options for the socket.
    *
@@ -593,8 +585,12 @@ protected:
 
   int bind(const SocketAddress &address) const;
 
+  virtual int interface_connect(const SocketAddress &address) const;
+
   virtual int
   interface_bind_and_listen(const SocketAddress &address, int backlog) const;
+
+  virtual int interface_shutdown(SOCKET_T fd, const fs::OpenMode how) const;
 
   int interface_open(const char *path, int flags, int mode)
     const override final {
