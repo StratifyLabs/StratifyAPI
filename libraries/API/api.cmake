@@ -52,10 +52,6 @@ macro(api_target NAME DIRECTORIES)
 			$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libraries/${DIRECTORY}/include>
 			)
 
-		target_link_libraries(${RELEASE_TARGET}
-			PUBLIC
-			${DIRECTORY}_release_${ARCH}
-			)
 	endforeach(DIRECTORY)
 
 	message(STATUS "build include ${BUILD_INCLUDE_DIRECTORIES}")
@@ -67,9 +63,8 @@ macro(api_target NAME DIRECTORIES)
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		)
 
-	sos_sdk_library("${RELEASE_OPTIONS}")
-
 	message(STATUS "Adding dependencies ${DEPENDENCIES}")
+	sos_sdk_library_add_arch_targets("${RELEASE_OPTIONS}" ${SOS_ARCH} "${DIRECTORIES}")
 
 
 	add_custom_target(
