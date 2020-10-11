@@ -24,8 +24,6 @@ public:
   Aes();
   ~Aes();
 
-  bool is_valid() const { return m_context != nullptr; }
-
   Aes &set_key(const var::View &key);
 
   Aes &set_initialization_vector(const var::View &value);
@@ -35,21 +33,21 @@ public:
   }
 
   class Crypt {
-    API_AF(Crypt, fs::File *, plain, nullptr);
-    API_AF(Crypt, fs::File *, cipher, nullptr);
+    API_AC(Crypt, var::View, plain);
+    API_AC(Crypt, var::View, cipher);
   };
 
   using EncryptEcb = Crypt;
   using DecryptEcb = Crypt;
 
-  Aes &encrypt_ecb(const EncryptEcb &options);
-  Aes &decrypt_ecb(const DecryptEcb &options);
+  const Aes &encrypt_ecb(const EncryptEcb &options) const;
+  const Aes &decrypt_ecb(const DecryptEcb &options) const;
 
   using EncryptCbc = Crypt;
   using DecryptCbc = Crypt;
 
-  Aes &encrypt_cbc(const EncryptCbc &options);
-  Aes &decrypt_cbc(const DecryptCbc &options);
+  const Aes &encrypt_cbc(const EncryptCbc &options) const;
+  const Aes &decrypt_cbc(const DecryptCbc &options) const;
 
 #if 0 // not yet implemented
   Aes &encrypt_ctr(const Crypt &options);
@@ -61,11 +59,36 @@ private:
   static Api m_api;
 
   void *m_context = nullptr;
-  InitializationVector m_initialization_vector;
+  mutable InitializationVector m_initialization_vector;
 
   static Api &api() { return m_api; }
   int initialize();
   int finalize();
+};
+
+template <class Derived> class AesAccess : public Aes {
+public:
+  Derived &set_key(const var::View &key) {
+    return static_cast<Derived &>(Aes::set_key(key));
+  }
+
+  Derived &set_initialization_vector(const var::View &value) {
+    return static_cast<Derived &>(Aes::set_initialization_vector(value));
+  }
+};
+
+class AesCbcEncrypter : public var::Transformer,
+                        public AesAccess<AesCbcEncrypter> {
+public:
+  int transform(
+    const var::Transformer::Transform &options) const override final;
+};
+
+class AesCbcDecrypter : public var::Transformer,
+                        public AesAccess<AesCbcEncrypter> {
+public:
+  int transform(
+    const var::Transformer::Transform &options) const override final;
 };
 
 } // namespace crypto

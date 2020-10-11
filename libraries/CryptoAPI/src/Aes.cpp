@@ -57,92 +57,40 @@ Aes &Aes::set_key(const var::View &key) {
   return *this;
 }
 
-Aes &Aes::encrypt_ecb(const Crypt &options) {
+const Aes &Aes::encrypt_ecb(const Crypt &options) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  for (u32 i = 0; i < options.plain()->size(); i += 16) {
-    unsigned char plain[16] = {0};
-    unsigned char cipher[16];
-
-    // if read is < 16 bytes -- plain is zero padded
-    if (options.plain()->read(var::View(plain)).status().is_error()) {
-      API_SYSTEM_CALL("", -1);
-      return *this;
-    }
-
-    if (api()->encrypt_ecb(m_context, plain, cipher) < 0) {
-      API_SYSTEM_CALL("", -1);
-      return *this;
-    }
-
-    if (options.cipher()->write(var::View(cipher)).status().is_error()) {
-      API_SYSTEM_CALL("", -1);
-      return *this;
-    }
-  }
-
-  return *this;
-}
-
-Aes &Aes::decrypt_ecb(const Crypt &options) {
-  API_RETURN_VALUE_IF_ERROR(*this);
-
-  if (options.cipher()->size() % 16 != 0) {
-    API_SYSTEM_CALL("", -1);
-    return *this;
-  }
-
-  for (u32 i = 0; i < options.cipher()->size(); i += 16) {
-    unsigned char plain[16];
-    unsigned char cipher[16];
-
-    // if read is < 16 bytes -- plain is zero padded
-    if (options.cipher()->read(var::View(cipher)).status().is_error()) {
-      API_SYSTEM_CALL("", -1);
-      return *this;
-    }
-
-    if (api()->decrypt_ecb(m_context, cipher, plain) < 0) {
-      API_SYSTEM_CALL("", -1);
-      return *this;
-    }
-
-    if (options.plain()->write(var::View(plain)).status().is_error()) {
-      API_SYSTEM_CALL("", -1);
-      return *this;
-    }
-  }
-
-  return *this;
-}
-
-Aes &Aes::encrypt_cbc(const Crypt &options) {
-  API_RETURN_VALUE_IF_ERROR(*this);
-
-  u32 length = options.plain()->size();
-  for (u32 i = 0; i < length; i += 16) {
-    unsigned char plain[16] = {0};
-    unsigned char cipher[16];
-
-    // if read is < 16 bytes -- plain is zero padded
-    if (options.plain()->read(var::View(plain)).status().is_error()) {
-      API_SYSTEM_CALL("", -1);
-      return *this;
-    }
-
+  for (u32 i = 0; i < options.plain().size(); i += 16) {
     if (
-      api()->encrypt_cbc(
+      api()->encrypt_ecb(
         m_context,
-        16,
-        m_initialization_vector.data(), // init vector
-        plain,
-        cipher)
+        options.plain().to_const_u8() + i,
+        options.cipher().to_u8() + i)
       < 0) {
       API_SYSTEM_CALL("", -1);
       return *this;
     }
+  }
 
-    if (options.cipher()->write(var::View(cipher)).status().is_error()) {
-      API_SYSTEM_CALL("", -1);
+  return *this;
+}
+
+const Aes &Aes::decrypt_ecb(const Crypt &options) const {
+  API_RETURN_VALUE_IF_ERROR(*this);
+
+  if (options.cipher().size() % 16 != 0) {
+    API_RETURN_VALUE_ASSIGN_ERROR(*this, "", EINVAL);
+  }
+
+  for (u32 i = 0; i < options.cipher().size(); i += 16) {
+
+    if (
+      API_SYSTEM_CALL(
+        "",
+        api()->decrypt_ecb(
+          m_context,
+          options.cipher().to_const_u8() + i,
+          options.plain().to_u8() + i))
+      < 0) {
       return *this;
     }
   }
@@ -150,41 +98,50 @@ Aes &Aes::encrypt_cbc(const Crypt &options) {
   return *this;
 }
 
-Aes &Aes::decrypt_cbc(const Crypt &options) {
+const Aes &Aes::encrypt_cbc(const Crypt &options) const {
   API_RETURN_VALUE_IF_ERROR(*this);
 
-  if (options.cipher()->size() % 16 != 0) {
-    API_SYSTEM_CALL("", -1);
-    return *this;
-  }
-
-  for (u32 i = 0; i < options.cipher()->size(); i += 16) {
-    unsigned char plain[16];
-    unsigned char cipher[16];
-
-    // if read is < 16 bytes -- plain is zero padded
-    if (options.cipher()->read(var::View(cipher)).status().is_error()) {
-      API_SYSTEM_CALL("", -1);
-      return *this;
-    }
-
-    if (
-      api()->decrypt_cbc(
-        m_context,
-        16,
-        m_initialization_vector.data(), // init vector
-        cipher,
-        plain)
-      < 0) {
-      API_SYSTEM_CALL("", -1);
-      return *this;
-    }
-
-    if (options.plain()->write(var::View(plain)).status().is_error()) {
-      API_SYSTEM_CALL("", -1);
-      return *this;
-    }
-  }
+  API_SYSTEM_CALL(
+    "",
+    api()->encrypt_cbc(
+      m_context,
+      options.plain().size(),
+      m_initialization_vector.data(), // init vector
+      options.plain().to_const_u8(),
+      options.cipher().to_u8()));
 
   return *this;
+}
+
+const Aes &Aes::decrypt_cbc(const Crypt &options) const {
+  API_RETURN_VALUE_IF_ERROR(*this);
+
+  if (options.cipher().size() % 16 != 0) {
+    API_RETURN_VALUE_ASSIGN_ERROR(*this, "", EINVAL);
+  }
+
+  API_SYSTEM_CALL(
+    "",
+    api()->decrypt_cbc(
+      m_context,
+      options.plain().size(),
+      m_initialization_vector.data(), // init vector
+      options.cipher().to_const_u8(),
+      options.plain().to_u8()));
+
+  return *this;
+}
+
+int AesCbcEncrypter::transform(
+  const var::Transformer::Transform &options) const {
+  encrypt_cbc(Crypt().set_plain(options.input()).set_cipher(options.output()));
+  API_RETURN_VALUE_IF_ERROR(-1);
+  return options.input().size();
+}
+
+int AesCbcDecrypter::transform(
+  const var::Transformer::Transform &options) const {
+  decrypt_cbc(Crypt().set_plain(options.input()).set_cipher(options.output()));
+  API_RETURN_VALUE_IF_ERROR(-1);
+  return options.input().size();
 }
