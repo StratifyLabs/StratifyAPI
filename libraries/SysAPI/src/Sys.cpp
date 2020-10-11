@@ -132,7 +132,7 @@ Sys::Sys(FSAPI_LINK_DECLARE_DRIVER)
     "/dev/sys",
     fs::OpenMode::read_write() FSAPI_LINK_INHERIT_DRIVER_LAST) {}
 
-Sys::Info Sys::get_info() {
+Sys::Info Sys::get_info() const {
   sys_info_t sys_info;
   ioctl(I_SYS_GETINFO, &sys_info);
   if (status().is_error()) {
@@ -141,20 +141,21 @@ Sys::Info Sys::get_info() {
   return Sys::Info(sys_info);
 }
 
-bool Sys::is_authenticated() {
+bool Sys::is_authenticated() const {
   return ioctl(I_SYS_ISAUTHENTICATED, nullptr).status().value();
 }
 
-sys_secret_key_t Sys::get_secret_key() {
+sys_secret_key_t Sys::get_secret_key() const {
   sys_secret_key_t result = {0};
   ioctl(I_SYS_GETSECRETKEY, &result);
   return result;
 }
 
-SerialNumber Sys::get_serial_number() { return get_info().serial_number(); }
+SerialNumber Sys::get_serial_number() const {
+  return get_info().serial_number();
+}
 
-
-sys_id_t Sys::get_id() {
+sys_id_t Sys::get_id() const {
   sys_id_t result = {0};
   ioctl(I_SYS_GETID, &result);
   return result;
@@ -164,74 +165,6 @@ sys_id_t Sys::get_id() {
 
 int Sys::get_board_config(sos_board_config_t &config) {
   return ioctl(I_SYS_GETBOARDCONFIG, &config).status().value();
-}
-
-void Sos::powerdown(const chrono::MicroTime &duration) {
-  ::powerdown(duration.seconds());
-}
-
-int Sos::hibernate(const chrono::MicroTime &duration) {
-  return ::hibernate(duration.seconds());
-}
-
-int Sos::request(int request, void *arg) {
-  return kernel_request(request, arg);
-}
-
-void Sos::reset() {
-  int fd = ::open("/dev/core", O_RDWR);
-  core_attr_t attr;
-  attr.o_flags = CORE_FLAG_EXEC_RESET;
-  ::ioctl(fd, I_CORE_SETATTR, &attr);
-  ::close(fd); // incase reset fails
-}
-
-var::String Sos::launch(const Launch &options) {
-  var::String result;
-  result.resize(PATH_MAX);
-  if (
-    ::launch(
-      options.path().cstring(),
-      result.to_char(),
-      options.arguments().cstring(),
-      options.application_flags(),
-      options.ram_size(),
-      api::ProgressCallback::update_function,
-      (void *)(options.progress_callback()), // pointer to the object
-      nullptr                                // environment not implemented
-      )
-    < 0) {
-    return var::String();
-  }
-  return result;
-}
-
-var::String Sos::install(
-  var::StringView path,
-  Appfs::Flags options, // run in RAM, discard on exit
-  int ram_size) {
-  return install(path, options, ram_size, nullptr);
-}
-
-var::String Sos::install(
-  var::StringView path,
-  Appfs::Flags options, // run in RAM, discard on exit
-  int ram_size,
-  const api::ProgressCallback *progress_callback) {
-  var::String result;
-  result.resize(PATH_MAX);
-  if (
-    ::install(
-      path.cstring(),
-      result.to_char(),
-      options,
-      ram_size,
-      api::ProgressCallback::update_function,
-      progress_callback)
-    < 0) {
-    return var::String();
-  }
-  return result;
 }
 
 #endif

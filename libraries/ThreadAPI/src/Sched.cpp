@@ -10,18 +10,19 @@
 namespace thread {
 
 int Sched::get_priority_max(Policy value) {
-  return sched_get_priority_max(static_cast<int>(value));
+  API_RETURN_VALUE_IF_ERROR(-1);
+  return API_SYSTEM_CALL("", sched_get_priority_max(static_cast<int>(value)));
 }
 
 int Sched::get_priority_min(Policy value) {
-  return sched_get_priority_min(static_cast<int>(value));
+  API_RETURN_VALUE_IF_ERROR(-1);
+  return API_SYSTEM_CALL("", sched_get_priority_min(static_cast<int>(value)));
 }
 
 int Sched::get_priority(pid_t pid) {
+  API_RETURN_VALUE_IF_ERROR(-1);
   struct sched_param param;
-  if (sched_getparam(pid, &param) < 0) {
-    return -1;
-  }
+  API_SYSTEM_CALL("", sched_getparam(pid, &param));
   return param.sched_priority;
 }
 
@@ -32,11 +33,12 @@ int Sched::get_rr_interval(pid_t pid) {
   return t.tv_nsec / 1000;
 }
 
-Sched &Sched::set_scheduler(const SetSchedulerOptions &options) {
+const Sched &Sched::set_scheduler(const SetScheduler &options) const {
+  API_RETURN_VALUE_IF_ERROR(*this);
   struct sched_param param;
   param.sched_priority = options.priority();
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     sched_setscheduler(
       options.pid(),
       static_cast<int>(options.policy()),

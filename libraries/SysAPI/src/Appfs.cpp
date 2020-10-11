@@ -413,12 +413,8 @@ Appfs::Info Appfs::get_info(var::StringView path) {
   appfs_info_t info;
   int result;
 
-  API_SYSTEM_CALL(
-    "",
-    fs::File(path, fs::OpenMode::read_only() FSAPI_LINK_MEMBER_DRIVER_LAST)
-      .read(var::View(appfs_file_header))
-      .status()
-      .value());
+  fs::File(path, fs::OpenMode::read_only() FSAPI_LINK_MEMBER_DRIVER_LAST)
+    .read(var::View(appfs_file_header));
 
   if (status().is_error()) {
     return Info();
@@ -430,13 +426,11 @@ Appfs::Info Appfs::get_info(var::StringView path) {
     const var::StringView path_name = fs::Path(path).name();
 
     if (path_name.find(".sys") == 0) {
-      errno = EINVAL;
-      return Info();
+      API_RETURN_VALUE_ASSIGN_ERROR(Info(), "", EINVAL);
     }
 
     if (path_name.find(".free") == 0) {
-      errno = EINVAL;
-      return Info();
+      API_RETURN_VALUE_ASSIGN_ERROR(Info(), "", EINVAL);
     }
 
     if ((appfs_file_header.hdr.mode & 0111) == 0) {
@@ -461,12 +455,10 @@ Appfs::Info Appfs::get_info(var::StringView path) {
       info.o_flags = appfs_file_header.exec.o_flags;
       info.signature = appfs_file_header.exec.signature;
     } else {
-      errno = ENOEXEC;
-      return Info();
+      API_RETURN_VALUE_ASSIGN_ERROR(Info(), "", ENOEXEC);
     }
   } else {
-    errno = ENOEXEC;
-    return Info();
+    API_RETURN_VALUE_ASSIGN_ERROR(Info(), "", ENOEXEC);
   }
   return Info(info);
 }
@@ -500,8 +492,9 @@ Appfs &Appfs::cleanup(CleanData clean_data) {
   while ((name = dir.read()) != 0) {
     strcpy(buffer, "/app/ram/");
     strcat(buffer, name);
-    if (stat(buffer, &st) < 0) {
-      API_SYSTEM_CALL("", -1);
+
+    API_SYSTEM_CALL("", stat(buffer, &st));
+    if (status().is_error()) {
       return *this;
     }
 
@@ -509,8 +502,9 @@ Appfs &Appfs::cleanup(CleanData clean_data) {
       ((st.st_mode & (LINK_S_IXUSR | LINK_S_IXGRP | LINK_S_IXOTH))
        || (clean_data == CleanData::yes))
       && (name[0] != '.')) {
-      if (unlink(buffer) < 0) {
-        API_SYSTEM_CALL("", -1);
+
+      API_SYSTEM_CALL("", unlink(buffer));
+      if (status().is_error()) {
         return *this;
       }
     }
