@@ -258,14 +258,14 @@ void api_assert(bool value, const char *function, int line);
   error_number_value)                                                          \
   do {                                                                         \
     errno = error_number_value;                                                \
-    status().system_call_null(__LINE__, message_value, nullptr);               \
+    status().system_call(__LINE__, message_value, -1);                         \
     return return_value;                                                       \
   } while (0)
 
 #define API_RETURN_ASSIGN_ERROR(message_value, error_number_value)             \
   do {                                                                         \
     errno = error_number_value;                                                \
-    status().system_call_null(__LINE__, message_value, nullptr);               \
+    status().system_call(__LINE__, message_value, -1);                         \
     return;                                                                    \
   } while (0)
 
@@ -304,29 +304,6 @@ public:
 
   int value() const { return errno; }
 
-  int line_number() const {
-    if (value() < 0) {
-      return (value() * -1) >> 24;
-    }
-    return 0;
-  }
-
-  int assign(int line, int value) const {
-    if (value >= 0) {
-      errno = value;
-    } else {
-      errno = -1 * ((line << 8) | errno);
-    }
-    return value;
-  }
-
-  void *assign_null(int line, void *value) const {
-    if (value == nullptr) {
-      errno = -1 * ((line << 8) | errno);
-    }
-    return value;
-  }
-
   ErrorContext &error_context();
 
   int system_call(int line, const char *message, int value) {
@@ -334,15 +311,14 @@ public:
       errno = value;
     } else {
       update_error_context(line, message);
-      errno = -1 * ((line << 8) | errno);
     }
     return value;
   }
 
-  void *system_call_null(int line, const char *message, void *value) {
+  template <typename T>
+  T *system_call_null(int line, const char *message, T *value) {
     if (value == nullptr) {
       update_error_context(line, message);
-      errno = -1 * ((line << 8) | errno);
     }
     return value;
   }
@@ -359,6 +335,7 @@ private:
     error_context().m_line_number = line;
     error_context().m_error_number = errno;
     error_context().capture_backtrace();
+    errno *= -1;
   }
 };
 

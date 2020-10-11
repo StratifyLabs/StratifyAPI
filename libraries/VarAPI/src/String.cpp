@@ -55,6 +55,9 @@ String operator+(const String &lhs, StringView rhs) {
 
 String::String() {}
 
+String::String(const Data &data)
+  : m_string(var::View(data).to_const_char(), data.size()) {}
+
 String::String(const View &item) {
   m_string.assign(item.to_const_char(), item.size());
 }

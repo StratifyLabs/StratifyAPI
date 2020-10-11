@@ -216,10 +216,11 @@ public:
       nullptr);
   };
 
-  const File &write(File &source_file, const Write &options = Write()) const;
+  const File &
+  write(const File &source_file, const Write &options = Write()) const;
 
   const File &write(
-    File &source_file,
+    const File &source_file,
     const var::Transformer &transformer,
     const Write &options = Write()) const {
     return write(source_file, Write(options).set_transformer(&transformer));
@@ -370,12 +371,12 @@ public:
     return static_cast<const Derived &>(File::write(view));
   }
 
-  const Derived &write(File &source_file, const Write &options) const {
+  const Derived &write(const File &source_file, const Write &options) const {
     return static_cast<const Derived &>(File::write(source_file, options));
   }
 
   const Derived &write(
-    File &source_file,
+    const File &source_file,
     const var::Transformer &transformer,
     const Write &options = Write()) const {
     return static_cast<const Derived &>(
@@ -423,6 +424,11 @@ public:
   }
 
   explicit DataFile(File &file_to_load);
+
+  DataFile &reserve(size_t size) {
+    m_data.reserve(size);
+    return *this;
+  }
 
   DataFile &set_flags(OpenMode open_flags) {
     m_open_flags = open_flags;

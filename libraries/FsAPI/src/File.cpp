@@ -236,7 +236,7 @@ const File &File::ioctl(int request, void *argument) const {
   return *this;
 }
 
-const File &File::write(File &source_file, const Write &options) const {
+const File &File::write(const File &source_file, const Write &options) const {
   API_RETURN_VALUE_IF_ERROR(*this);
 
   if (options.location() != static_cast<u32>(-1)) {

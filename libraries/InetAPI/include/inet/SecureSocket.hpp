@@ -17,7 +17,10 @@ typedef api::Api<mbedtls_api_t, MBEDTLS_API_REQUEST> SecureSocketApi;
 
 class SecureSocket : public Socket {
 public:
-  SecureSocket(Domain domain, Type type, Protocol protocol);
+  explicit SecureSocket(
+    Domain domain,
+    Type type = Type::stream,
+    Protocol protocol = Protocol::tcp);
   ~SecureSocket();
 
   SecureSocket &set_ticket_lifetime(u32 seconds) {

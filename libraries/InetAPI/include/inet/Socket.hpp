@@ -479,7 +479,10 @@ private:
  */
 class Socket : public fs::FileAccess<Socket>, public SocketFlags {
 public:
-  Socket(Domain domain, Type type, Protocol protocol);
+  explicit Socket(
+    Domain domain,
+    Type type = Type::stream,
+    Protocol protocol = Protocol::tcp);
   ~Socket();
 
   /*!

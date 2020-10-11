@@ -17,6 +17,7 @@
 namespace var {
 
 class View;
+class Data;
 
 /*! \brief String class
  * \details This is an embedded friendly string class.  It is similar
@@ -132,6 +133,8 @@ public:
       m_string = s;
     }
   }
+
+  explicit String(const Data &data);
 
   explicit String(StringView s) : m_string(s.string_view()) {}
   String(const String &s) : m_string(s.string()) {}

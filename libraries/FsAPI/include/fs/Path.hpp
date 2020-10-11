@@ -8,7 +8,7 @@ namespace fs {
 
 class Path {
 public:
-  Path(var::StringView  view) : m_path(view) {}
+  explicit Path(var::StringView view) : m_path(view) {}
 
   var::StringView path() const { return m_path; }
 

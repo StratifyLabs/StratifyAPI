@@ -12,6 +12,7 @@
 namespace var {
 
 class String;
+class Data;
 
 class StringView {
 public:
