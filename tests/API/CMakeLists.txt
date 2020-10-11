@@ -18,13 +18,8 @@ set(RAM_SIZE 32768)
 include(${CMAKE_SOURCE_DIR}/tests/API/api.cmake)
 
 set(DIRECTORIES
-	VarAPI
-	#FsAPI
-	#ChronoAPI
-	#PrinterAPI
-	#SysAPI
-	#ThreadAPI
-	#TestAPI
+	SysAPI
+	TestAPI
 	)
 
 api_test_executable(API "${DIRECTORIES}")

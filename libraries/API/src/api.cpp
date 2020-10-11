@@ -130,6 +130,8 @@ void api::api_assert(bool value, const char *function, int line) {
   }
 }
 
+Status Object::status;
+
 ErrorContext &Status::error_context() {
   if (&(errno) == m_error_context.m_context) {
     return m_error_context;
