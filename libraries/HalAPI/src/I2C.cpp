@@ -13,7 +13,7 @@ using namespace hal;
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const hal::I2C::Attributes &a) {
-  printer.key("frequency", var::String::number(a.frequency()));
+  printer.key("frequency", var::NumberToString(a.frequency()));
   printer.key("scl", var::String().format("%d.%d", a.scl().port, a.scl().pin));
   printer.key("sda", var::String().format("%d.%d", a.sda().port, a.sda().pin));
   return printer;
@@ -21,7 +21,7 @@ printer::operator<<(printer::Printer &printer, const hal::I2C::Attributes &a) {
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const hal::I2C::Info &a) {
-  printer.key("frequency", var::String::number(a.frequency()));
-  printer.key("error", var::String::number(a.error()));
+  printer.key("frequency", var::NumberToString(a.frequency()));
+  printer.key("error", var::NumberToString(a.error()));
   return printer;
 }

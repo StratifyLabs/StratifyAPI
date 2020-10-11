@@ -6,9 +6,9 @@
 #include "printer/Printer.hpp"
 
 printer::Printer &
-printer::operator<<(printer::Printer &printer, const hal::Uart::Attributes &a) {
-  printer.key("frequency", var::String::number(a.frequency()));
-  printer.key("width", var::String::number(a.width()));
+printer::operator<<(printer::Printer &printer, const hal::Uart::Attributes &a) {  
+  printer.key("frequency", var::NumberToString(a.frequency()));
+  printer.key("width", var::NumberToString(a.width()));
   printer.key("rx", var::String().format("%d.%d", a.rx().port, a.rx().pin));
   printer.key("tx", var::String().format("%d.%d", a.tx().port, a.tx().pin));
   printer.key("rts", var::String().format("%d.%d", a.rts().port, a.rts().pin));
@@ -19,8 +19,8 @@ printer::operator<<(printer::Printer &printer, const hal::Uart::Attributes &a) {
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const hal::Uart::Info &a) {
   printer.key("valid", a.is_valid());
-  printer.key("sizeReady", var::String::number(a.size_ready()));
-  printer.key("size", var::String::number(a.size()));
+  printer.key("sizeReady", var::NumberToString(a.size_ready()));
+  printer.key("size", var::NumberToString(a.size()));
   return printer;
 }
 

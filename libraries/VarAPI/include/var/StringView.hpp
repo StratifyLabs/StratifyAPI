@@ -3,6 +3,8 @@
 #ifndef VAR_API_STRING_VIEW_HPP
 #define VAR_API_STRING_VIEW_HPP
 
+#include <cstring>
+#include <string>
 #include <string_view>
 
 #include "api/api.hpp"
@@ -21,8 +23,17 @@ public:
   enum class Base { octal = 8, decimal = 10, hexidecimal = 16 };
 
   StringView() : m_string_view("") {}
-  StringView(const char *value) : m_string_view(value) {}
-  StringView(const String &value);
+  StringView(const char *value) {
+    API_ASSERT(value != nullptr);
+    m_string_view = std::string_view(value);
+  }
+
+  bool is_null() const { return m_string_view.data() == nullptr; }
+
+  StringView &set_null() {
+    m_string_view = std::string_view(nullptr, 0);
+    return *this;
+  }
 
   char at(size_t value) const { return m_string_view.at(value); }
   char front() const { return m_string_view.front(); }
@@ -30,8 +41,8 @@ public:
   char length() const { return m_string_view.length(); }
 
   bool is_empty() const { return m_string_view.empty(); }
-  StringView &pop_front() {
-    m_string_view.remove_prefix(1);
+  StringView &pop_front(size_t length = 1) {
+    m_string_view.remove_prefix(length);
     return *this;
   }
 
@@ -136,6 +147,52 @@ public:
 private:
   std::string_view m_string_view;
 };
+
+class NumberToString {
+public:
+  template <typename T> NumberToString(T value, const char *fmt = nullptr) {
+
+    // guarantee null termination
+    m_buffer[sizeof(m_buffer) - 1] = 0;
+
+    if (fmt == nullptr) {
+
+      if (std::is_integral<T>::value == true) {
+
+#if defined __link
+        strncpy(m_buffer, std::to_string(value).c_str(), sizeof(m_buffer) - 1);
+#else
+        if (std::is_signed<T>::value == true) {
+          snprintf(m_buffer, sizeof(m_buffer) - 1, F32D, value);
+        } else {
+          snprintf(m_buffer, sizeof(m_buffer) - 1, F32U, value);
+        }
+#endif
+      } else if (std::is_floating_point<T>::value == true) {
+#if 0
+        static_assert(
+          sizeof(T) > 4,
+          "Cannot convert double types to string using NumberToString");
+#endif
+
+        // snprintf(m_buffer, sizeof(m_buffer) - 1, "%f", value);
+      }
+
+      return;
+    }
+
+    snprintf(m_buffer, sizeof(m_buffer) - 1, fmt, value);
+  }
+
+  operator StringView() { return StringView(m_buffer); }
+  const char *cstring() const { return m_buffer; }
+
+private:
+  char m_buffer[64];
+};
+
+using Ntos = NumberToString;
+
 } // namespace var
 
 #endif // VAR_API_STRING_VIEW_HPP

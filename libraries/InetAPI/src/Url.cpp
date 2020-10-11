@@ -28,7 +28,7 @@ Url::Url(var::StringView url) {
     }
 
     var::Tokenizer domain_name = var::Tokenizer(
-      url_tokens.at(2),
+      url_tokens.at(2).cstring(),
       var::Tokenizer::Construct().set_delimeters(":"));
 
     if (domain_name.count() > 1) {
@@ -61,9 +61,9 @@ var::String Url::encode(var::StringView input) {
     if (
       (c < '0') || ((c > '9') && (c < 'A')) || ((c > 'Z') && (c < 'a'))
       || (c > 'z')) {
-      result << var::String().format("%%%X", c);
+      result += var::String().format("%%%X", c);
     } else {
-      result << c;
+      result += c;
     }
   }
   return result;

@@ -24,10 +24,10 @@ int Sha256::initialize() {
 }
 
 var::String Sha256::to_string() {
-  var::String result;
+  var::String result = var::String().reserve(64);
   const var::Array<u8, 32> &out = output();
   for (u32 i = 0; i < out.count(); i++) {
-    result << var::String::number(out.at(i), "%02x");
+    result += var::NumberToString(out.at(i), "%02x");
   }
   return result;
 }

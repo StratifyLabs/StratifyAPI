@@ -142,7 +142,7 @@ void MarkdownPrinter::print(
   }
 
   // print the decoration
-  print_final((prefix + marker).cstring());
+  interface_print_final((prefix + marker).cstring());
 
   // print the key/value pair
   Printer::print(
@@ -247,7 +247,7 @@ MarkdownPrinter &MarkdownPrinter::close_code() {
     }
 
     if (level <= verbose_level()) {
-      print_final("```\n");
+      interface_print_final("```\n");
     }
   }
   return *this;
@@ -284,7 +284,7 @@ MarkdownPrinter &MarkdownPrinter::open_paragraph(Level level) {
 
 MarkdownPrinter &MarkdownPrinter::close_paragraph() {
   if (close_type(ContainerType::paragraph)) {
-    print_final("\n"); // paragraphs need an extra break
+    interface_print_final("\n"); // paragraphs need an extra break
   }
   return *this;
 }
@@ -304,7 +304,7 @@ MarkdownPrinter &MarkdownPrinter::close_table() { return *this; }
 MarkdownPrinter &MarkdownPrinter::operator<<(Directive directive) {
   if (directive == Directive::insert_newline) {
     if (container().verbose_level() <= verbose_level()) {
-      print_final("\n");
+      interface_print_final("\n");
     }
   } else {
     m_directive = directive;
@@ -360,7 +360,7 @@ MarkdownPrinter &MarkdownPrinter::close_pretty_table(Level level) {
       *this << var::StringView("|");
       for (auto const &value : column_widths) {
         *this << MarkdownPrinter::Directive::suppress_newline;
-        *this << var::StringView((var::String("-") * (value + 2)) + "|");
+        *this << (var::String("-") * (value + 2)) + "|";
       }
       *this << MarkdownPrinter::Directive::insert_newline;
     }
@@ -368,12 +368,12 @@ MarkdownPrinter &MarkdownPrinter::close_pretty_table(Level level) {
     *this << MarkdownPrinter::Directive::suppress_newline;
     *this << var::StringView("|");
     for (u32 column = 0; column < m_pretty_table.at(row).count(); column++) {
-      var::StringView cell = m_pretty_table.at(row).at(column);
+      var::StringView cell = m_pretty_table.at(row).at(column).cstring();
       u32 value = column_widths.at(column);
       *this << MarkdownPrinter::Directive::suppress_newline;
-      *this << var::StringView(
-        var::String(" ") + cell
-        + (var::String(" ") * (value + 1 - cell.length())) + "|");
+      *this
+        << (var::String(" ") + cell
+            + (var::String(" ") * (value + 1 - cell.length())) + "|");
     }
     *this << MarkdownPrinter::Directive::insert_newline;
   }

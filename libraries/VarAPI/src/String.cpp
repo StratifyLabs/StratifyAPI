@@ -12,46 +12,25 @@
 #include "var/String.hpp"
 #include "var/Tokenizer.hpp"
 
+var::String var::operator+(var::StringView lhs, const var::String &rhs) {
+  return String(lhs).append(rhs);
+}
+
+var::String var::operator+(var::StringView lhs, var::String &&rhs) {
+  return String(lhs).append(rhs);
+}
+
+var::String var::operator+(var::StringView lhs, var::StringView rhs) {
+  return String(lhs).append(rhs);
+}
+
+var::String var::operator+(const var::String &lhs, var::StringView rhs) {
+  return String(lhs).append(rhs);
+}
+
 using namespace var;
 
-#if USE_PRINTER
-sys::Printer &sys::operator<<(sys::Printer &printer, const var::String &a) {
-  return printer.key(nullptr, a.cstring());
-}
-
-Printer &sys::operator<<(Printer &printer, const var::StringList &a) {
-  for (u32 i = 0; i < a.count(); i++) {
-    printer.key(nullptr, a.at(i).cstring());
-  }
-  return printer;
-}
-#endif
-
 String String::m_empty_string;
-
-String operator+(StringView lhs, const char *rhs) {
-  return String(lhs) + String(rhs);
-}
-
-String operator+(const char *lhs, StringView rhs) {
-  return String(lhs) + String(rhs);
-}
-
-String operator+(StringView lhs, const String &rhs) {
-  return String(lhs) + rhs;
-}
-
-String operator+(StringView lhs, String &&rhs) {
-  return String(lhs) + rhs;
-}
-
-String operator+(StringView lhs, StringView rhs) {
-  return String(lhs) + String(rhs);
-}
-
-String operator+(const String &lhs, StringView rhs) {
-  return lhs + String(rhs);
-}
 
 String::String() {}
 
@@ -73,6 +52,7 @@ String &String::format(const char *format, ...) {
 String &String::vformat(const char *fmt, va_list list) {
 
   if (fmt == nullptr) {
+    printf("Null format\n");
     return *this;
   }
 
@@ -141,26 +121,6 @@ String &String::to_lower() {
   return *this;
 }
 
-#if 0
-String & String::operator << (
-		var::View reference
-		){
-
-	for(
-			u32 i=0;
-			i < reference.size();
-			i++){
-
-		append(String().format(
-						 "%02x", reference.to_const_u8()[i]
-						 )
-					 );
-	}
-
-	return *this;
-}
-#endif
-
 float String::to_float() const {
 #ifndef __link
   return ::atoff(cstring());
@@ -171,7 +131,7 @@ float String::to_float() const {
 
 Vector<String> String::split(StringView delimiter) const {
   Tokenizer tokens
-    = Tokenizer(*this, Tokenizer::Construct().set_delimeters(delimiter));
+    = Tokenizer(cstring(), Tokenizer::Construct().set_delimeters(delimiter));
   return tokens.list();
 }
 

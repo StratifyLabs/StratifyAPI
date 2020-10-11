@@ -166,13 +166,9 @@ public:
 
   explicit String(const var::View &item);
 
-  /*! \details Appends a character to this string. */
   String &operator+=(char a) { return append(a); }
-
   String &operator+=(const String &a) { return append(a); }
-
   String &operator+=(StringView a) { return append(a); }
-  String &operator+=(const char *a) { return append(StringView(a)); }
 
   String &operator+=(std::initializer_list<char> il) {
     string() += il;
@@ -204,48 +200,6 @@ public:
     return String(string() + std::move(rhs.string()));
   }
   String operator+(char rhs) const { return String(string() + rhs); }
-
-  /*! \details Appends a c style string go the string.
-   *
-   * The string will be resized to accept the string if needed.
-   *
-   * \code
-   * #include <sapi/var.hpp>
-   * String str0;
-   * String str1;
-   *
-   * str0 = "hello";  //str0 is "hello"
-   * str1 << "hello"; //str1 is "hello"
-   *
-   * //combining = and << can create unwanted effects
-   * str0 = "Hello";
-   * str1 = str0 << "World"; //str1 == str0 == "HelloWorld"
-   * //in the above, << operates on str0 then str1 is assiged to str0
-   *
-   * //to append numbers (or any printf() compatible formatting)
-   * str1.clear();
-   * str1 << "String data is at 0x" << String().format("%p", str1.data());
-   * size_t value = 0xaa55;
-   *
-   * str1.clear();
-   * str1 << "Value is HEX 0x" << String().format("%08lX", value); //with
-   * leading zero, uppercase hex str1 << " hex: 0x" << String().format("%lx",
-   * value); //no leading zeros, lower-case hex str1 << " or decimal: " <<
-   * String().format("%ld", value); //unsigned value
-   *
-   * \endcode
-   *
-   */
-  String &operator<<(const String &a) {
-    append(a);
-    return *this;
-  }
-
-  /*! \details Appends a character to the string. */
-  String &operator<<(char c) {
-    append(c);
-    return *this;
-  }
 
   ~String() {}
 
@@ -677,6 +631,8 @@ public:
 
   Vector<String> split(StringView delimiter) const;
 
+  operator StringView() const { return StringView(cstring()); }
+
   static const String &empty_string() { return m_empty_string; }
 
 private:
@@ -684,8 +640,6 @@ private:
   static String m_empty_string;
 };
 
-String operator+(StringView lhs, const char *&rhs);
-String operator+(const char *lhs, StringView rhs);
 String operator+(StringView lhs, const String &rhs);
 String operator+(StringView lhs, StringView rhs);
 String operator+(const String &lhs, StringView rhs);
@@ -694,13 +648,5 @@ String operator+(StringView lhs, String &&rhs);
 using StringList = Vector<String>;
 
 } // namespace var
-
-#if USE_PRINTER
-namespace sys {
-class Printer;
-Printer &operator<<(Printer &printer, const var::String &a);
-Printer &operator<<(Printer &printer, const var::StringList &a);
-} // namespace sys
-#endif
 
 #endif /* VAR_API_STRING_HPP_ */

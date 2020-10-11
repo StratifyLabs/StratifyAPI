@@ -9,7 +9,7 @@
 
 #define SHOW_HEADERS 1
 #if defined __link
-#define AGGREGATE_TRAFFIC(msg) (m_traffic << msg)
+#define AGGREGATE_TRAFFIC(msg) (m_traffic += msg)
 #else
 #define AGGREGATE_TRAFFIC(msg)
 #endif
@@ -154,15 +154,15 @@ HttpClient &HttpClient::execute_method(
     get_file_pos = options.response()->location();
   }
 
-  result = connect_to_server(u.domain_name(), u.port());
+  result = connect_to_server(u.domain_name().cstring(), u.port());
   if (result < 0) {
     return *this;
   }
 
   result = send_header(
-    to_string(method),
-    u.domain_name(),
-    u.path(),
+    to_string(method).cstring(),
+    u.domain_name().cstring(),
+    u.path().cstring(),
     options.request(),
     options.progress_callback());
 
@@ -220,7 +220,7 @@ HttpClient &HttpClient::execute_method(
       if (key == "location") {
         return execute_method(
           method,
-          header_response_pairs().at(i).value(),
+          header_response_pairs().at(i).value().cstring(),
           options);
       }
     }
@@ -292,7 +292,7 @@ void HttpClient::build_header(
     String key = header_request_pairs().at(i).key();
     if (key.is_empty() == false) {
       String entry = key + ": " + header_request_pairs().at(i).value() + "\r\n";
-      m_header << entry;
+      m_header += entry;
       key.to_lower();
       if (key == "user-Agent") {
         is_user_agent_present = true;
@@ -374,13 +374,14 @@ int HttpClient::listen_for_header() {
     line = socket().gets('\n');
     if (line.length() > 2) {
 
-      m_header << line;
+      m_header += line;
       AGGREGATE_TRAFFIC(String("> ") + line);
 #if SHOW_HEADERS
       printf("> %s", line.cstring());
 #endif
 
-      header_response_pairs().push_back(Http::HeaderPair::from_string(line));
+      header_response_pairs().push_back(
+        Http::HeaderPair::from_string(line.cstring()));
       const Http::HeaderPair &pair = header_response_pairs().back();
       String title = pair.key();
       title.to_upper();
@@ -483,7 +484,7 @@ Http::HeaderPair Http::HeaderPair::from_string(var::StringView string) {
     value.replace(String::Replace().set_old_string("\r"))
       .replace(String::Replace().set_old_string("\n"));
   }
-  return Http::HeaderPair(key, value);
+  return Http::HeaderPair(key.cstring(), value.cstring());
 }
 
 int HttpServer::run() {
@@ -510,7 +511,7 @@ int HttpServer::run() {
             header = socket().gets();
             if (header.length() > 2) {
               header_request_pairs().push_back(
-                Http::HeaderPair::from_string(header));
+                Http::HeaderPair::from_string(header.cstring()));
 
               const Http::HeaderPair &pair = header_request_pairs().back();
               if (pair.key() == "CONTENT-LENGTH") {

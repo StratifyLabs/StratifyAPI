@@ -40,6 +40,9 @@ Test::~Test() {
 
 u32 Test::get_score(u32 microseconds) {
   constexpr u32 baseline_microseconds = 1000000000UL;
+  if (microseconds == 0) {
+    microseconds = 1;
+  }
   return baseline_microseconds / microseconds;
 }
 
@@ -109,7 +112,6 @@ void Test::initialize(const Initialize &options) {
     PrinterObject pg(printer(), "test");
     printer().key("name", options.name());
     printer().key("version", options.version());
-    printer().key("version", options.version());
 
 #if !defined __link
     if (appfs_info.is_valid()) {
@@ -135,8 +137,8 @@ void Test::initialize(const Initialize &options) {
     }
 #endif
     printer().key("gitHash", options.git_hash());
-    printer().key("apiVersion", api::ApiInfo::version());
-    printer().key("apiGitHash", api::ApiInfo::git_hash());
+    printer().key("apiVersion", var::StringView(api::ApiInfo::version()));
+    printer().key("apiGitHash", var::StringView(api::ApiInfo::git_hash()));
   }
 
   m_final_data_info = var::DataInfo();
@@ -189,9 +191,8 @@ Test::ExecuteFlags Test::parse_execution_flags(const sys::Cli &cli) {
 
 u32 Test::parse_test(const sys::Cli &cli, var::StringView name, u32 test_flag) {
 
-  if (
-    cli.get_option(name, var::String("Execute the ") + name + " test suite")
-    == "true") {
+  const var::String help = "Execute the " + name + " test suite";
+  if (cli.get_option(name, help) == "true") {
     return test_flag;
   }
 
@@ -201,6 +202,10 @@ u32 Test::parse_test(const sys::Cli &cli, var::StringView name, u32 test_flag) {
 void Test::finalize() {
   PrinterObject pg(printer(), "finalResult");
   printer().key("result", m_final_result);
+  printer().key(
+    "finalResult",
+    m_final_result ? StringView("***finalResultPass***")
+                   : StringView("---finalResultFail---"));
   printer().key("microseconds", String::number(m_final_duration_microseconds));
   printer().key("memoryLeak", m_final_data_info == var::DataInfo());
   printer().key(

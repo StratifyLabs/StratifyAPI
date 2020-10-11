@@ -38,13 +38,13 @@ static char *strptime(const char *s, const char *f, struct tm *tm) {
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const chrono::MicroTime &a) {
-  printer.key("duration", var::String::number(a.microseconds(), F32U "us"));
+  printer.key("duration", var::NumberToString(a.microseconds(), F32U "us"));
   return printer;
 }
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const chrono::DateTime &a) {
-  printer.key("time", var::String::number(a.time()));
+  printer.key("time", var::NumberToString(a.time()));
   return printer;
 }
 

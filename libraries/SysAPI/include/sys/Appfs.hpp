@@ -332,8 +332,8 @@ public:
   class Create {
   private:
     API_ACCESS_FUNDAMENTAL(Create, fs::File *, source, nullptr);
-    API_ACCESS_COMPOUND(Create, var::String, name);
-    API_ACCESS_COMPOUND(Create, var::String, mount);
+    API_ACCESS_COMPOUND(Create, var::StringView, name);
+    API_ACCESS_COMPOUND(Create, var::StringView, mount);
     API_ACCESS_FUNDAMENTAL(Create, u32, size, 0);
     API_ACCESS_FUNDAMENTAL(
       Create,

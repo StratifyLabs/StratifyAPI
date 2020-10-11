@@ -130,10 +130,10 @@ void api::api_assert(bool value, const char *function, int line) {
   }
 }
 
-Status Object::status;
+Status Object::m_status;
 
 ErrorContext &Status::error_context() {
-  if (&(errno) == m_error_context.m_context) {
+  if (&(errno) == m_error_context.m_signature) {
     return m_error_context;
   }
 
@@ -144,7 +144,7 @@ ErrorContext &Status::error_context() {
   }
 
   for (ErrorContext &error_context : *m_error_context_list) {
-    if (error_context.m_context == &(errno)) {
+    if (error_context.m_signature == &(errno)) {
       return error_context;
     }
   }

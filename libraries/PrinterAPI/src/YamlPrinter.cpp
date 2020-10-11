@@ -10,8 +10,8 @@ YamlPrinter::YamlPrinter() {
 
 void YamlPrinter::print(
   Level level,
-  const char *key,
-  const char *value,
+  var::StringView key,
+  var::StringView value,
   Newline is_newline) {
 
   if (level > verbose_level()) {
@@ -25,18 +25,18 @@ void YamlPrinter::print(
   }
 
   for (size_t i = 0; i < container_list().count() - 1; i++) {
-    print_final("   ");
+    interface_print_final("   ");
   }
 
   if (container().type() == ContainerType::array) {
-    print_final("- ");
+    interface_print_final("- ");
   }
 
   Printer::print(
     level,
     key,
     value,
-    (value != nullptr) ? Newline::yes : Newline::no);
+    (value.is_null() == false) ? Newline::yes : Newline::no);
 }
 
 void YamlPrinter::print_open_object(Level level, var::StringView key) {

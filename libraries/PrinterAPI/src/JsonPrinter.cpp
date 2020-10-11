@@ -30,7 +30,7 @@ void JsonPrinter::print(
   insert_comma();
 
   if (container().type() == ContainerType::array) {
-    key = nullptr;
+    key = var::StringView().set_null();
   }
 
   Printer::print(level, key, value, Newline::no);
@@ -41,9 +41,11 @@ void JsonPrinter::print_open_object(Level level, var::StringView key) {
   if (verbose_level() >= level) {
     insert_comma();
     if (container().type() == ContainerType::object) {
-      print_final(var::String("\"") + key + "\":{");
+      const var::String string_key = "\"" + key + "\":{";
+      interface_print_final(string_key.cstring());
     } else {
-      print_final(var::String("{") + key);
+      const var::String string_key = "{" + key;
+      interface_print_final(string_key.cstring());
     }
   }
 
@@ -54,9 +56,11 @@ void JsonPrinter::print_open_array(Level level, var::StringView key) {
   if (verbose_level() >= level) {
     insert_comma();
     if (container().type() == ContainerType::object) {
-      print_final(var::String("\"") + key + "\":[");
+      const var::String string_key = "\"" + key + "\":[";
+      interface_print_final(string_key.cstring());
     } else {
-      print_final(var::String("[") + key);
+      const var::String string_key = "[" + key;
+      interface_print_final(string_key.cstring());
     }
   }
   container_list().push_back(Container(level, ContainerType::array));
@@ -66,9 +70,9 @@ void JsonPrinter::print_close_object() {
   if (container_list().count() > 1) {
     if (verbose_level() >= container().verbose_level()) {
       if (container().type() == ContainerType::array) {
-        print_final("]");
+        interface_print_final("]");
       } else if (container().type() == ContainerType::object) {
-        print_final("}");
+        interface_print_final("}");
       }
     }
     container_list().pop_back();
@@ -77,7 +81,7 @@ void JsonPrinter::print_close_object() {
 
 void JsonPrinter::insert_comma() {
   if (container().count() > 1) {
-    print_final(",");
+    interface_print_final(",");
   }
   container().count() = container().count() + 1;
 }

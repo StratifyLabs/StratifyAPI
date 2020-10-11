@@ -19,18 +19,18 @@ printer::Printer &
 printer::operator<<(printer::Printer &printer, const appfs_file_t &a) {
   printer.key("name", var::StringView(a.hdr.name));
   printer.key("id", var::StringView(a.hdr.id));
-  printer.key("mode", var::String::number(a.hdr.mode, "0%o"));
+  printer.key("mode", var::NumberToString(a.hdr.mode, "0%o"));
   printer.key(
     "version",
     var::String().format("%d.%d", a.hdr.version >> 8, a.hdr.version & 0xff));
-  printer.key("startup", var::String::number(a.exec.startup, "%p"));
-  printer.key("codeStart", var::String::number(a.exec.code_start, "%p"));
-  printer.key("codeSize", var::String::number(a.exec.code_size));
-  printer.key("ramStart", var::String::number(a.exec.ram_start, "%p"));
-  printer.key("ramSize", var::String::number(a.exec.ram_size));
-  printer.key("dataSize", var::String::number(a.exec.data_size));
-  printer.key("oFlags", var::String::number(a.exec.o_flags, "0x%lX"));
-  printer.key("signature", var::String::number(a.exec.signature, "0x%08lx"));
+  printer.key("startup", var::NumberToString(a.exec.startup, "%p"));
+  printer.key("codeStart", var::NumberToString(a.exec.code_start, "%p"));
+  printer.key("codeSize", var::NumberToString(a.exec.code_size));
+  printer.key("ramStart", var::NumberToString(a.exec.ram_start, "%p"));
+  printer.key("ramSize", var::NumberToString(a.exec.ram_size));
+  printer.key("dataSize", var::NumberToString(a.exec.data_size));
+  printer.key("oFlags", var::NumberToString(a.exec.o_flags, "0x%lX"));
+  printer.key("signature", var::NumberToString(a.exec.signature, "0x%08lx"));
   return printer;
 }
 
@@ -50,22 +50,22 @@ printer::Printer &printer::operator<<(
   printer.key("dataTightlyCoupled", a.is_data_tightly_coupled());
   printer.key("startup", a.is_startup());
   printer.key("unique", a.is_unique());
-  printer.key("ramSize", var::String::number(a.ram_size()));
+  printer.key("ramSize", var::NumberToString(a.ram_size()));
   return printer;
 }
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const sys::Appfs::Info &a) {
   printer.key("name", a.name());
-  printer.key("mode", var::String::number(a.mode(), "0%o"));
+  printer.key("mode", var::NumberToString(a.mode(), "0%o"));
   if (a.is_executable()) {
     printer.key("id", a.id());
     printer.key(
       "version",
       var::String().format("%d.%d", a.version() >> 8, a.version() & 0xff));
 
-    printer.key("signature", var::String::number(a.signature(), F3208X));
-    printer.key("ram", var::String::number(a.ram_size()));
+    printer.key("signature", var::NumberToString(a.signature(), F3208X));
+    printer.key("ram", var::NumberToString(a.ram_size()));
     printer.key("orphan", a.is_orphan());
     printer.key("flash", a.is_flash());
     printer.key("startup", a.is_startup());
@@ -423,7 +423,7 @@ Appfs::Info Appfs::get_info(var::StringView path) {
   if (result == sizeof(appfs_file_header)) {
     // first check to see if the name matches -- otherwise it isn't an app
     // file
-    const var::StringView path_name = fs::Path(path).name();
+    const var::String path_name = fs::Path(path).name();
 
     if (path_name.find(".sys") == 0) {
       API_RETURN_VALUE_ASSIGN_ERROR(Info(), "", EINVAL);

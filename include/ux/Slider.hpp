@@ -32,7 +32,7 @@ public:
   Slider &set_value(u16 value) {
     m_value = value;
     trigger_event(event_id_changed);
-    update_model(var::String::number(value));
+    update_model(var::NumberToString(value));
     return *this;
   }
 

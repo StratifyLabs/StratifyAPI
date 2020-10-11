@@ -33,7 +33,7 @@ public:
 
   ProgressBar &set_value(u16 value) {
     progress().set_value(value);
-    update_model(var::String::number(value));
+    update_model(var::NumberToString(value));
     return *this;
   }
 

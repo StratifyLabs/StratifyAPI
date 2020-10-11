@@ -7,17 +7,17 @@
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const sys::TaskInfo &a) {
   printer.key("name", a.name());
-  printer.key("id", var::String::number(a.id()));
-  printer.key("pid", var::String::number(a.pid()));
-  printer.key("memorySize", var::String::number(a.memory_size()));
-  printer.key("stack", var::String::number(a.stack(), "0x%lX"));
-  printer.key("stackSize", var::String::number(a.stack_size()));
-  printer.key("priority", var::String::number(a.priority()));
-  printer.key("priorityCeiling", var::String::number(a.priority_ceiling()));
+  printer.key("id", var::NumberToString(a.id()));
+  printer.key("pid", var::NumberToString(a.pid()));
+  printer.key("memorySize", var::NumberToString(a.memory_size()));
+  printer.key("stack", var::NumberToString(a.stack(), "0x%lX"));
+  printer.key("stackSize", var::NumberToString(a.stack_size()));
+  printer.key("priority", var::NumberToString(a.priority()));
+  printer.key("priorityCeiling", var::NumberToString(a.priority_ceiling()));
   printer.key("isThread", a.is_thread());
   if (a.is_thread() == false) {
-    printer.key("heap", var::String::number(a.heap(), "0x%lX"));
-    printer.key("heapSize", var::String::number(a.heap_size()));
+    printer.key("heap", var::NumberToString(a.heap(), "0x%lX"));
+    printer.key("heapSize", var::NumberToString(a.heap_size()));
   }
   return printer;
 }

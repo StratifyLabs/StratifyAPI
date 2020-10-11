@@ -94,7 +94,7 @@ public:
    * ```
    *
    */
-  static const char *version() { return "3.22.1"; }
+  static const char *version() { return "4.0.0-alpha"; }
 
   /*! \details Returns a c-style string pointer
    * to the git hash used to build the Stratify API.
@@ -239,54 +239,20 @@ private:
   const A *m_api = nullptr;
 };
 
-#define API_ASSERT(a) api::api_assert(a, __PRETTY_FUNCTION__, __LINE__);
-void api_assert(bool value, const char *function, int line);
-
-#define API_RETURN_VALUE_IF_ERROR(return_value)                                \
-  if (api::Object::status().is_error()) {                                      \
-    return return_value;                                                       \
-  }
-
-#define API_RETURN_IF_ERROR()                                                  \
-  if (api::Object::status().is_error()) {                                      \
-    return;                                                                    \
-  }
-
-#define API_SYSTEM_CALL(message_value, return_value)                           \
-  status().system_call(__LINE__, message_value, return_value)
-
-#define API_SYSTEM_CALL_NULL(message_value, return_value)                      \
-  status().system_call_null(__LINE__, message_value, return_value)
-
-#define API_RETURN_VALUE_ASSIGN_ERROR(                                         \
-  return_value,                                                                \
-  message_value,                                                               \
-  error_number_value)                                                          \
-  do {                                                                         \
-    errno = error_number_value;                                                \
-    status().system_call(__LINE__, message_value, -1);                         \
-    return return_value;                                                       \
-  } while (0)
-
-#define API_RETURN_ASSIGN_ERROR(message_value, error_number_value)             \
-  do {                                                                         \
-    errno = error_number_value;                                                \
-    status().system_call(__LINE__, message_value, -1);                         \
-    return;                                                                    \
-  } while (0)
-
 class ErrorContext {
 public:
   const char *message() const { return m_message; }
   int error_number() const { return m_error_number; }
   int line_number() const { return m_line_number; }
 
+  void *signature() const { return m_signature; }
+
 private:
-  ErrorContext(void *context) : m_context(context) {}
+  ErrorContext(void *signature) : m_signature(signature) {}
   friend class Status;
   static constexpr size_t m_message_size = 31;
   static constexpr size_t m_backtrace_count = 32;
-  void *m_context;
+  void *m_signature;
   int m_error_number = 0;
   int m_line_number = 0;
   char m_message[m_message_size + 1];
@@ -331,7 +297,15 @@ public:
 
   void reset() { errno = 0; }
 
+  size_t error_context_count() const {
+    if (m_error_context_list) {
+      return m_error_context_list->size() + 1;
+    }
+    return 1;
+  }
+
 private:
+  friend class Object;
   Status() : m_error_context(&(errno)) {}
   ErrorContext m_error_context;
   std::vector<ErrorContext> *m_error_context_list = nullptr;
@@ -341,18 +315,58 @@ private:
     error_context().m_line_number = line;
     error_context().m_error_number = errno;
     error_context().capture_backtrace();
-    errno *= -1;
+    errno = -1;
   }
 };
 
 class Object {
 public:
+  static ErrorContext &error_context() { return m_status.error_context(); }
   static Status &status() { return m_status; }
   static void exit_fatal(const char *message);
+  static void reset_error_context() { m_status.reset(); }
 
 private:
   static Status m_status;
 };
+
+#define API_ASSERT(a) api::api_assert(a, __PRETTY_FUNCTION__, __LINE__);
+void api_assert(bool value, const char *function, int line);
+
+#define API_RETURN_VALUE_IF_ERROR(return_value)                                \
+  if (api::Object::status().is_error()) {                                      \
+    return return_value;                                                       \
+  }
+
+#define API_RETURN_IF_ERROR()                                                  \
+  if (api::Object::status().is_error()) {                                      \
+    return;                                                                    \
+  }
+
+#define API_SYSTEM_CALL(message_value, return_value)                           \
+  api::Object::status().system_call(__LINE__, message_value, return_value)
+
+#define API_SYSTEM_CALL_NULL(message_value, return_value)                      \
+  api::Object::status().system_call_null(__LINE__, message_value, return_value)
+
+#define API_RESET_ERROR() api::Object::status().reset()
+
+#define API_RETURN_VALUE_ASSIGN_ERROR(                                         \
+  return_value,                                                                \
+  message_value,                                                               \
+  error_number_value)                                                          \
+  do {                                                                         \
+    errno = error_number_value;                                                \
+    api::Object::status().system_call(__LINE__, message_value, -1);            \
+    return return_value;                                                       \
+  } while (0)
+
+#define API_RETURN_ASSIGN_ERROR(message_value, error_number_value)             \
+  do {                                                                         \
+    errno = error_number_value;                                                \
+    api::Object::status().system_call(__LINE__, message_value, -1);            \
+    return;                                                                    \
+  } while (0)
 
 /*! \brief ProgressCallback Class
  * \details The ProgressCallback class is used

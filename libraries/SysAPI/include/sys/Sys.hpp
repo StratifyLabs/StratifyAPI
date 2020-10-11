@@ -43,7 +43,7 @@ public:
     : m_serial_number(serial_number) {}
 
   /*! \details Constructs this serial number from \a str. */
-  explicit SerialNumber(const var::String &str);
+  explicit SerialNumber(var::StringView str);
 
   /*! \details Returns true if a valid serial number is held. */
   bool is_valid() const { return at(0) + at(1) + at(2) + at(3) != 0; }

@@ -246,15 +246,15 @@ using Microseconds = MicroTime;
 
 void wait(const MicroTime &duration);
 
-Seconds operator"" _seconds(unsigned long long int value) {
+inline Seconds operator"" _seconds(unsigned long long int value) {
   return Seconds(value);
 }
 
-Milliseconds operator"" _milliseconds(unsigned long long int value) {
+inline Milliseconds operator"" _milliseconds(unsigned long long int value) {
   return Milliseconds(value);
 }
 
-Microseconds operator"" _microseconds(unsigned long long int value) {
+inline Microseconds operator"" _microseconds(unsigned long long int value) {
   return Microseconds(value);
 }
 

@@ -65,7 +65,7 @@ bool Path::is_hidden() {
 
   var::String parent = parent_directory();
   if (parent != path()) {
-    return Path(parent).is_hidden();
+    return Path(parent.cstring()).is_hidden();
   }
 
   return false;

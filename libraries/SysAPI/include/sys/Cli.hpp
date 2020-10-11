@@ -97,8 +97,8 @@ public:
   u32 count() const { return m_argc; }
   u32 size() const { return m_argc; }
 
-  var::String get_name() const;
-  var::String get_path() const;
+  var::StringView get_name() const;
+  var::StringView get_path() const;
 
   class ShowHelp {
     API_AF(ShowHelp, var::StringView, publisher, "");

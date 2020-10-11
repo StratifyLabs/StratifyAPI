@@ -8,8 +8,8 @@ using namespace hal;
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const hal::Spi::Attributes &a) {
-  printer.key("frequency", var::String::number(a.frequency()));
-  printer.key("width", var::String::number(a.width()));
+  printer.key("frequency", var::NumberToString(a.frequency()));
+  printer.key("width", var::NumberToString(a.width()));
   printer.key(
     "miso",
     var::String().format("%d.%d", a.miso().port, a.miso().pin));
@@ -23,7 +23,7 @@ printer::operator<<(printer::Printer &printer, const hal::Spi::Attributes &a) {
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const hal::Spi::Info &a) {
-  printer.key("flags", var::String::number(static_cast<u32>(a.o_flags())));
-  printer.key("events", var::String::number(a.o_events()));
+  printer.key("flags", var::NumberToString(static_cast<u32>(a.o_flags())));
+  printer.key("events", var::NumberToString(a.o_events()));
   return printer;
 }

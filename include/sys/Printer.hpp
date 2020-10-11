@@ -420,7 +420,7 @@ public:
       m_line,
       var::String(
         "<------------------elapsed "
-        + var::String::number(m_timer.microseconds()) + "us"));
+        + var::NumberToString(m_timer.microseconds()) + "us"));
   }
 
 private:

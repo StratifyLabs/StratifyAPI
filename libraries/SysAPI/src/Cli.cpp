@@ -94,8 +94,7 @@ bool Cli::compare_with_prefix(var::StringView option, var::StringView argument)
     return true;
   }
   if (
-    with_prefix.get_substring(
-      String::GetSubstring().set_position(1))
+    with_prefix.get_substring(String::GetSubstring().set_position(1))
     == argument) {
     return true;
   }
@@ -163,6 +162,26 @@ var::String Cli::get_option(StringView name, StringView help) const {
     }
   }
   return String();
+}
+
+var::StringView Cli::get_name() const {
+  if (m_argc > 0) {
+    StringView result = m_argv[0];
+    size_t slash_position = result.reverse_find('/');
+    if (slash_position != StringView::npos) {
+      result.pop_front(slash_position + 1);
+    }
+
+    return result;
+  }
+  return var::StringView();
+}
+
+var::StringView Cli::get_path() const {
+  if (m_argc > 0) {
+    return m_argv[0];
+  }
+  return var::StringView();
 }
 
 Cli &Cli::show_help(const ShowHelp &options) {

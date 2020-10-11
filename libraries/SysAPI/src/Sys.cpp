@@ -44,11 +44,11 @@ printer::operator<<(printer::Printer &printer, const sys::TraceEvent &a) {
       clock_time.seconds(),
       clock_time.nanoseconds() / 1000UL));
   printer.key("id", id);
-  printer.key("thread", var::String::number(a.thread_id()));
-  printer.key("pid", var::String::number(a.pid()));
+  printer.key("thread", var::NumberToString(a.thread_id()));
+  printer.key("pid", var::NumberToString(a.pid()));
   printer.key(
     "programAddress",
-    var::String::number(a.program_address(), "0x%lX"));
+    var::NumberToString(a.program_address(), "0x%lX"));
   printer.key("message", a.message());
   return printer;
 }
@@ -57,7 +57,7 @@ printer::Printer &
 printer::operator<<(printer::Printer &printer, const sys::Sys::Info &a) {
   printer.key("name", a.name());
   printer.key("serialNumber", a.serial_number().to_string());
-  printer.key("hardwareId", var::String::number(a.hardware_id(), F3208X));
+  printer.key("hardwareId", var::NumberToString(a.hardware_id(), F3208X));
   if (a.name() != "bootloader") {
     printer.key("projectId", a.id());
     if (a.team_id().is_empty() == false) {
@@ -66,10 +66,10 @@ printer::operator<<(printer::Printer &printer, const sys::Sys::Info &a) {
     printer.key("bspVersion", a.bsp_version());
     printer.key("sosVersion", a.sos_version());
     printer.key("cpuArchitecture", a.cpu_architecture());
-    printer.key("cpuFrequency", var::String::number(a.cpu_frequency()));
+    printer.key("cpuFrequency", var::NumberToString(a.cpu_frequency()));
     printer.key(
       "applicationSignature",
-      var::String::number(a.application_signature(), F32X));
+      var::NumberToString(a.application_signature(), F32X));
 
     printer.key("bspGitHash", a.bsp_git_hash());
     printer.key("sosGitHash", a.sos_git_hash());
@@ -103,7 +103,7 @@ SerialNumber SerialNumber::from_string(var::StringView str) {
   return ret;
 }
 
-SerialNumber::SerialNumber(const var::String &str) {
+SerialNumber::SerialNumber(var::StringView str) {
   SerialNumber serial_number = from_string(str);
   memcpy(&m_serial_number, &serial_number.m_serial_number, sizeof(mcu_sn_t));
 }

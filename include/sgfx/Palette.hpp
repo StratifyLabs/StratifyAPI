@@ -153,9 +153,9 @@ public:
 
 	var::String to_hex_code() const {
 		var::String result = "#" +
-				var::String::number(red(), "%02x") +
-				var::String::number(green(), "%02x") +
-				var::String::number(blue(), "%02x");
+				var::NumberToString(red(), "%02x") +
+				var::NumberToString(green(), "%02x") +
+				var::NumberToString(blue(), "%02x");
 		return result;
 	}
 

@@ -18,12 +18,13 @@
 
 namespace test {
 
-#define TEST_EXPECT(T, b, c)                                                   \
-  this->expect<T>(__PRETTY_FUNCTION__, __LINE__, b, c)
-#define TEST_ASSERT(T, b, c)                                                   \
+#define TEST_EXPECT(result_value)                                              \
+  this->expect(__PRETTY_FUNCTION__, __LINE__, result_value)
+
+#define TEST_ASSERT(result_value)                                              \
   do {                                                                         \
-    if (this->expect<T>(__PRETTY_FUNCTION__, __LINE__, b, c) == false) {       \
-      return case_result();                                                    \
+    if (this->expect(__PRETTY_FUNCTION__, __LINE__, result_value) == false) {  \
+      return false;                                                            \
     }                                                                          \
   } while (0)
 
@@ -43,9 +44,9 @@ API_OR_NAMED_FLAGS_OPERATOR(TestFlags, ExecuteFlags)
 class Test : public api::Object, public TestFlags {
 public:
   class Initialize {
-    API_AC(Initialize, var::String, name);
-    API_AC(Initialize, var::String, version);
-    API_AC(Initialize, var::String, git_hash);
+    API_AC(Initialize, var::StringView, name);
+    API_AC(Initialize, var::StringView, version);
+    API_AC(Initialize, var::StringView, git_hash);
     API_AF(Initialize, printer::Printer *, printer, nullptr);
   };
 
@@ -184,16 +185,24 @@ public:
     m_final_result = false;
   }
 
-  template <typename T>
-  bool expect(const char *function, unsigned int line, const T &a, const T &b) {
-    if (a == b) {
+  bool expect(const char *function, unsigned int line, bool value) {
+    if (value) {
+      printer().key(
+        var::String().format("expect%d", line),
+        var::String().format("%s passed", function));
       return true;
     }
-    printer().error(
-      var::String().format("%s:%d: value not expected", function, line));
+
+    printer().key(
+      var::String().format("expect%d", line),
+      var::String().format("%s failed", function));
+
+    printer().error(var::String().format("test failed"));
     set_case_failed();
     return false;
   }
+
+  static bool final_result() { return m_final_result; }
 
 protected:
   const chrono::ClockTimer &case_timer() const { return m_case_timer; }
@@ -201,7 +210,7 @@ protected:
 
   static u32 get_score(u32 microseconds);
 
-  var::StringView name() const { return m_name; }
+  var::StringView name() const { return m_name.cstring(); }
 
   static printer::Printer &printer() { return *m_printer; }
 

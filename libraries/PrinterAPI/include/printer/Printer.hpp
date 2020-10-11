@@ -165,6 +165,8 @@ public:
   Printer &operator<<(void *a);
   Printer &operator<<(var::StringView a);
   Printer &operator<<(var::View a);
+  Printer &operator<<(const var::String &a);
+  Printer &operator<<(const var::StringList &a);
   Printer &operator<<(const api::ErrorContext &error_context);
 
   /*! \details Assign an effective verbose level to this object. */
@@ -287,11 +289,10 @@ public:
 
   Printer &key(var::StringView key, bool value);
   Printer &key(var::StringView key, var::StringView a);
+  Printer &key(var::StringView key, const var::String &a);
   template <class T>
-  Printer &object(
-    var::StringView key,
-    const T &value,
-    Level level = Level::fatal) {
+  Printer &
+  object(var::StringView key, const T &value, Level level = Level::fatal) {
     print_open_object(level, key);
     *this << value;
     print_close_object();
@@ -322,10 +323,10 @@ public:
     Level level,
     var::StringView key,
     var::StringView value,
-    Newline is_newline = Newline::no);
+    Newline is_newline = Newline::yes);
 
 protected:
-  virtual void print_final(var::StringView view);
+  virtual void interface_print_final(var::StringView view);
 
 private:
 #if defined __win32

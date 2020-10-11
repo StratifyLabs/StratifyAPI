@@ -4,9 +4,6 @@
 
 using namespace var;
 
-StringView::StringView(const String &value)
-  : m_string_view(value.cstring(), value.length()) {}
-
 String
 StringView::get_substring(const GetSubstring &options) const {
   return String(*this).get_substring(options);

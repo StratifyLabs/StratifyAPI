@@ -165,7 +165,7 @@ FileSystem &FileSystem::copy_directory(const Copy &options) {
                       options.source_driver()
 #endif
                         )
-                      .get_info(entry_path);
+                      .get_info(entry_path.cstring());
 
     if (info.is_directory()) {
       // copy recursively
@@ -176,7 +176,7 @@ FileSystem &FileSystem::copy_directory(const Copy &options) {
 #endif
               )
             .create_directory(
-              destination_entry_path,
+              destination_entry_path.cstring(),
               Permissions::all_access(),
               Recursive::yes)
             .status()
@@ -186,8 +186,8 @@ FileSystem &FileSystem::copy_directory(const Copy &options) {
       }
 
       copy_directory(Copy()
-                       .set_source_path(entry_path)
-                       .set_destination_path(destination_entry_path)
+                       .set_source_path(entry_path.cstring())
+                       .set_destination_path(destination_entry_path.cstring())
                        .set_progress_callback(options.progress_callback())
 #if defined __link
                        .set_source_driver(options.source_driver())
@@ -199,8 +199,8 @@ FileSystem &FileSystem::copy_directory(const Copy &options) {
 
     } else if (info.is_file()) {
       copy(Copy()
-             .set_source_path(entry_path)
-             .set_destination_path(destination_entry_path)
+             .set_source_path(entry_path.cstring())
+             .set_destination_path(destination_entry_path.cstring())
              .set_overwrite(options.overwrite())
              .set_progress_callback(options.progress_callback())
 #if defined __link
@@ -225,15 +225,17 @@ FileSystem::remove_directory(var::StringView path, Recursive recursive) {
       var::String entry;
       while ((entry = d.read()).is_empty() == false) {
         var::String entry_path = path + "/" + entry;
-        FileInfo info = get_info(entry_path);
+        FileInfo info = get_info(entry_path.cstring());
         if (info.is_directory()) {
           if (entry != "." && entry != "..") {
-            if (remove_directory(entry_path, recursive).status().is_error()) {
+            if (remove_directory(entry_path.cstring(), recursive)
+                  .status()
+                  .is_error()) {
               return *this;
             }
           }
         } else {
-          if (remove(entry_path).status().is_error()) {
+          if (remove(entry_path.cstring()).status().is_error()) {
             return *this;
           }
         }
@@ -317,8 +319,10 @@ FileSystem &FileSystem::create_directory(
 
   for (u32 i = 0; i < path_tokens.count(); i++) {
     if (path_tokens.at(i).is_empty() == false) {
-      base_path << path_tokens.at(i);
-      if (create_directory(base_path, permissions).status().is_error()) {
+      base_path += path_tokens.at(i);
+      if (create_directory(base_path.cstring(), permissions)
+            .status()
+            .is_error()) {
         return *this;
       }
       base_path += "/";

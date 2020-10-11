@@ -88,4 +88,6 @@ var::String Sos::install(
   return result;
 }
 
+#else
+u32 sys_api_sos_unused = 0;
 #endif

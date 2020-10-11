@@ -103,21 +103,19 @@ var::StringList Dir::read_list(
       is_the_end = true;
     }
     if (filter != nullptr) {
-      entry = var::String(filter(entry));
+      entry = var::String(filter(entry.cstring()));
     }
     if (!entry.is_empty() && (entry != ".") && (entry != "..")) {
 
       if (is_recursive == IsRecursive::yes) {
         var::String entry_path;
         entry_path = m_path + "/" + entry;
-        FileInfo info = FileSystem(LINK_DRIVER_ONLY)
-                          .get_info(
-                            entry_path
-                          );
+        FileInfo info
+          = FileSystem(LINK_DRIVER_ONLY).get_info(entry_path.cstring());
 
         if (info.is_directory()) {
           var::Vector<var::String> intermediate_result
-            = Dir(entry_path FSAPI_LINK_MEMBER_DRIVER_LAST)
+            = Dir(entry_path.cstring() FSAPI_LINK_MEMBER_DRIVER_LAST)
                 .read_list(filter, is_recursive);
 
           for (const auto &intermediate_entry : intermediate_result) {

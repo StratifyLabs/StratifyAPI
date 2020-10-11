@@ -56,7 +56,7 @@ public:
   static var::String from_list(std::initializer_list<T> il) {
     var::String v;
     for (auto i : il) {
-      v += var::String::number(i) + "`";
+      v += var::NumberToString(i) + "`";
     }
     v.pop_back();
     return v;

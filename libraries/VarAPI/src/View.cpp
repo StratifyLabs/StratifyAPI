@@ -34,11 +34,12 @@ View::View(const Data &data) {
 
 void View::set_view(const Construct &options) {
   if (options.size()) {
+    m_size_read_only = options.size();
     if (options.write_buffer()) {
       m_data = options.write_buffer();
     } else {
       m_data = (void *)options.read_buffer();
-      m_size_read_only = options.size() | m_size_read_only_flag;
+      m_size_read_only |= m_size_read_only_flag;
     }
   } else {
     m_data = nullptr;
@@ -86,9 +87,9 @@ View &View::swap_byte_order(SwapBy swap) {
 }
 
 var::String View::to_string() const {
-  var::String result;
+  var::String result = var::String().reserve(size() * 2);
   for (u32 i = 0; i < size(); i++) {
-    result << String::number(to_const_u8()[i], "%02X");
+    result += Ntos(to_const_u8()[i], "%02X");
   }
   return result;
 }
