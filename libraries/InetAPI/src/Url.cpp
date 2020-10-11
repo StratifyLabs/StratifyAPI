@@ -2,7 +2,7 @@
              // LICENSE.md for rights.
 
 #include "inet/Url.hpp"
-#include "var/Token.hpp"
+#include "var/Tokenizer.hpp"
 
 using namespace inet;
 

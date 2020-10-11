@@ -4,7 +4,6 @@
 
 #include "hal/Device.hpp"
 
-using namespace sys;
 using namespace hal;
 
 Device::Device(

@@ -1,8 +1,8 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
              // LICENSE.md for rights.
 
-#ifndef SAPI_SYS_SCHED_HPP_
-#define SAPI_SYS_SCHED_HPP_
+#ifndef THREADAPI_THREAD_SCHED_HPP_
+#define THREADAPI_THREAD_SCHED_HPP_
 
 #include <pthread.h>
 #include <sched.h>
@@ -92,15 +92,17 @@ public:
     return *this;
   }
 
+  /*! \details Gets the current proccess ID (equivalent to getpid()). */
+  static pid_t get_pid() { return getpid(); }
+
   /*! \details Gets the max priority for the specified policy. */
   static int get_priority_max(Policy value);
   /*! \details Gets the min priority for the specified policy. */
   static int get_priority_min(Policy value);
+
+#if !defined __link
   /*! \details Gets the max priority for the specified policy. */
   static int get_priority(pid_t pid);
-
-  /*! \details Gets the current proccess ID (equivalent to getpid()). */
-  static pid_t get_pid() { return getpid(); }
 
   /*! \details Gets the RR interval for the pid.
    *
@@ -124,8 +126,9 @@ public:
    */
 
   const Sched &set_scheduler(const SetScheduler &options) const;
+#endif
 };
 
 } // namespace thread
 
-#endif /* SAPI_SYS_SCHED_HPP_ */
+#endif /* THREADAPI_THREAD_SCHED_HPP_ */

@@ -371,7 +371,8 @@ public:
     return static_cast<const Derived &>(File::write(view));
   }
 
-  const Derived &write(const File &source_file, const Write &options) const {
+  const Derived &
+  write(const File &source_file, const Write &options = Write()) const {
     return static_cast<const Derived &>(File::write(source_file, options));
   }
 

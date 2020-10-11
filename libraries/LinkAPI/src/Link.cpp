@@ -12,7 +12,7 @@
 
 #define MAX_TRIES 3
 
-#include "chrono/Timer.hpp"
+#include "chrono/ClockTimer.hpp"
 #include "fs/File.hpp"
 #include "link/Link.hpp"
 #include "sys/Appfs.hpp"

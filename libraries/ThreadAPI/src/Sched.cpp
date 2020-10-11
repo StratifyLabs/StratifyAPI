@@ -19,6 +19,7 @@ int Sched::get_priority_min(Policy value) {
   return API_SYSTEM_CALL("", sched_get_priority_min(static_cast<int>(value)));
 }
 
+#if !defined __link
 int Sched::get_priority(pid_t pid) {
   API_RETURN_VALUE_IF_ERROR(-1);
   struct sched_param param;
@@ -27,6 +28,7 @@ int Sched::get_priority(pid_t pid) {
 }
 
 int Sched::get_rr_interval(pid_t pid) {
+  API_RETURN_VALUE_IF_ERROR(-1);
   struct timespec t;
   memset(&t, 0, sizeof(t));
   sched_rr_get_interval(pid, &t);
@@ -45,5 +47,6 @@ const Sched &Sched::set_scheduler(const SetScheduler &options) const {
       &param));
   return *this;
 }
+#endif
 
 } // namespace thread

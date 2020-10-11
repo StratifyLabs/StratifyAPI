@@ -15,6 +15,12 @@
 
 #include "macros.hpp"
 
+#if defined __link
+#if !defined __win32
+#include <execinfo.h>
+#endif
+#endif
+
 /*!
  * \brief Application Programming Interface
  *

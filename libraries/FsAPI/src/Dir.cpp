@@ -48,7 +48,7 @@ Dir &Dir::open(var::StringView path) {
 #endif
 
   if (m_dirp == 0) {
-    API_SYSTEM_CALL_NULL("no entity", static_cast<void *>(m_dirp));
+    API_RETURN_VALUE_ASSIGN_ERROR(*this, "no entity", ENOENT);
   } else {
     m_path = var::String(path);
   }

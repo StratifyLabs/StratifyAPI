@@ -1,8 +1,8 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
              // LICENSE.md for rights.
 
-#ifndef SAPI_SYS_THREAD_HPP
-#define SAPI_SYS_THREAD_HPP
+#ifndef THREADAPI_THREAD_THREAD_HPP
+#define THREADAPI_THREAD_THREAD_HPP
 
 #include <pthread.h>
 
@@ -347,4 +347,4 @@ private:
 
 } // namespace thread
 
-#endif /* SAPI_SYS_THREAD_HPP */
+#endif /* THREADAPI_THREAD_THREAD_HPP */

@@ -1,8 +1,8 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
              // LICENSE.md for rights.
 
-#ifndef SAPI_SYS_SIGNAL_HPP_
-#define SAPI_SYS_SIGNAL_HPP_
+#ifndef THREADAPI_THREAD_SIGNAL_HPP_
+#define THREADAPI_THREAD_SIGNAL_HPP_
 
 #include <signal.h>
 
@@ -322,4 +322,4 @@ private:
 
 } // namespace thread
 
-#endif /* SAPI_SYS_SIGNAL_HPP_ */
+#endif /* THREADAPI_THREAD_SIGNAL_HPP_ */

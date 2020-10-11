@@ -2,8 +2,8 @@
              // LICENSE.md for rights.
 /* Copyright 2016 tgil All Rights Reserved */
 
-#ifndef SAPI_SYS_MUTEX_HPP_
-#define SAPI_SYS_MUTEX_HPP_
+#ifndef THREADAPI_THREAD_MUTEX_HPP_
+#define THREADAPI_THREAD_MUTEX_HPP_
 
 #include "api/api.hpp"
 
@@ -172,4 +172,4 @@ private:
 
 } // namespace thread
 
-#endif /* SAPI_SYS_MUTEX_HPP_ */
+#endif /* THREADAPI_THREAD_MUTEX_HPP_ */

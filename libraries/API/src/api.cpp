@@ -12,9 +12,6 @@
 #include <string>
 #define API_MINIMUM_CHUNK_SIZE 1024
 #define API_MALLOC_CHUNK_SIZE 1024
-#if !defined __win32
-#include <execinfo.h>
-#endif
 #else
 #include <mcu/arch.h>
 #define API_MALLOC_CHUNK_SIZE MALLOC_CHUNK_SIZE
