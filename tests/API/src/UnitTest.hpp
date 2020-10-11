@@ -9,11 +9,10 @@
 #include "thread.hpp"
 #include "var.hpp"
 
-#define VERSION "0.1"
-
-class Test : public test::Test {
+class UnitTest : public test::Test {
 public:
-  Test(var::StringView name) : test::Test(name) {}
+  UnitTest(var::StringView name) : test::Test(name) {}
+
   bool execute_class_api_case() {
 
     TEST_ASSERT(
@@ -69,23 +68,3 @@ public:
 private:
   const void *m_original_context = nullptr;
 };
-
-int main(int argc, char *argv[]) {
-  Cli cli(argc, argv);
-
-  printer::Printer printer;
-
-  test::Test::initialize(Test::Initialize()
-                           .set_name(cli.get_name())
-                           .set_version(VERSION)
-                           .set_git_hash(SOS_GIT_HASH)
-                           .set_printer(&printer));
-
-  { Test(cli.get_name()).execute(cli); }
-
-  test::Test::finalize();
-
-  exit(test::Test::final_result() == false);
-
-  return 0;
-}

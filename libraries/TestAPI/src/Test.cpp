@@ -204,8 +204,8 @@ void Test::finalize() {
   printer().key("result", m_final_result);
   printer().key(
     "finalResult",
-    m_final_result ? StringView("***finalResultPass***")
-                   : StringView("---finalResultFail---"));
+    m_final_result ? StringView("___finalResultPass___")
+                   : StringView("___finalResultFail___"));
   printer().key("microseconds", String::number(m_final_duration_microseconds));
   printer().key("memoryLeak", m_final_data_info == var::DataInfo());
   printer().key(

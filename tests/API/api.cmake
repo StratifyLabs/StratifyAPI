@@ -12,8 +12,9 @@ macro(api_test_executable NAME DIRECTORIES)
 	add_executable(${RELEASE_TARGET})
 	target_sources(${RELEASE_TARGET}
 		PRIVATE
-		${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
-		${CMAKE_CURRENT_LIST_DIR}/src/sl_config.h
+		${CMAKE_SOURCE_DIR}/tests/common/main.cpp
+		${CMAKE_SOURCE_DIR}/tests/${NAME}/src/sl_config.h
+		${CMAKE_SOURCE_DIR}/tests/${NAME}/src/UnitTest.hpp
 		)
 
 	target_compile_options(${RELEASE_TARGET}
@@ -30,6 +31,27 @@ macro(api_test_executable NAME DIRECTORIES)
 			)
 	endforeach(DIRECTORY)
 
+	target_include_directories(${RELEASE_TARGET}
+		PRIVATE
+		${CMAKE_SOURCE_DIR}/tests/${NAME}/src
+		)
+
 	sos_sdk_app_add_arch_targets("${RELEASE_OPTIONS}" "${DIRECTORIES}" ${RAM_SIZE})
+
+	include(CTest)
+
+	if(SOS_IS_LINK)
+	add_test(NAME tests${NAME}
+		COMMAND ../build_release_link/${NAME}_link.elf --api
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tmp
+		)
+
+	set_tests_properties(
+		tests${NAME}
+		PROPERTIES
+		PASS_REGULAR_EXPRESSION "___finalResultPass___"
+		)
+
+	endif()
 
 endmacro()

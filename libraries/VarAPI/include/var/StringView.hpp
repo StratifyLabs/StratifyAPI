@@ -137,6 +137,8 @@ public:
     return ::strtol(cstring(), nullptr, static_cast<int>(base));
   }
 
+  float to_float() const;
+
   unsigned long to_unsigned_long(Base base = Base::decimal) const {
     return ::strtoul(cstring(), nullptr, static_cast<int>(base));
   }

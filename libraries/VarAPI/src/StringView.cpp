@@ -20,3 +20,11 @@ String StringView::get_substring_with_length(size_t length) const {
 var::Vector<String> StringView::split(StringView delimeters) const {
   return String(*this).split(delimeters);
 }
+
+float StringView::to_float() const {
+#ifndef __link
+  return ::atoff(cstring());
+#else
+  return ::atof(cstring());
+#endif
+}

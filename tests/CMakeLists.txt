@@ -9,5 +9,5 @@ set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/sos-toolchain.cmake)
 include(sos-sdk)
 
 add_subdirectory(API testsAPI)
-#add_subdirectory(VarAPI varTest)
+add_subdirectory(VarAPI testsVarAPI)
 

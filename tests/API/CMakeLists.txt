@@ -24,19 +24,4 @@ set(DIRECTORIES
 
 api_test_executable(API "${DIRECTORIES}")
 
-include(CTest)
-
-if(SOS_IS_LINK)
-add_test(NAME testsAPI
-	COMMAND ../build_release_link/API_link.elf --api
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tmp
-	)
-
-set_tests_properties(
-	testsAPI
-	PROPERTIES
-	FAIL_REGULAR_EXPRESSION "\"result\": false"
-	)
-
-endif()
 
