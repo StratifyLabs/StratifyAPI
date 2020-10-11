@@ -11,10 +11,9 @@ Aes::Api Aes::m_api;
 
 Aes::Aes() {
   if (api().is_valid() == false) {
-    API_SYSTEM_CALL("missing api", -1);
-  } else {
-    API_SYSTEM_CALL("", initialize());
+    API_RETURN_ASSIGN_ERROR("missing api", ENOTSUP);
   }
+  initialize();
 }
 
 Aes::~Aes() {
@@ -22,16 +21,16 @@ Aes::~Aes() {
   finalize();
 }
 
-int Aes::initialize() {
+void Aes::initialize() {
   finalize();
-  return api()->init(&m_context);
+  API_RETURN_IF_ERROR();
+  API_SYSTEM_CALL("", api()->init(&m_context));
 }
 
-int Aes::finalize() {
+void Aes::finalize() {
   if (m_context != nullptr) {
     api()->deinit(&m_context);
   }
-  return 0;
 }
 
 Aes &Aes::set_initialization_vector(const var::View &value) {

@@ -62,8 +62,8 @@ private:
   mutable InitializationVector m_initialization_vector;
 
   static Api &api() { return m_api; }
-  int initialize();
-  int finalize();
+  void initialize();
+  void finalize();
 };
 
 template <class Derived> class AesAccess : public Aes {

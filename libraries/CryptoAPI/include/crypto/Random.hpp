@@ -24,17 +24,18 @@ public:
 
   Random &seed();
   Random &seed(const var::View source_data);
-  Random &randomize(const var::View destination_data);
 
-  var::String get_string(size_t length);
-  var::Data get_data(u32 size);
+  const Random &randomize(const var::View destination_data) const;
+
+  var::String get_string(size_t length) const;
+  var::Data get_data(u32 size) const;
 
 private:
   using Api = api::Api<crypt_random_api_t, CRYPT_RANDOM_API_REQUEST>;
   static Api m_api;
 
   static Api &api() { return m_api; }
-  int initialize();
+  void initialize();
   void finalize();
   void *m_context = nullptr;
 };

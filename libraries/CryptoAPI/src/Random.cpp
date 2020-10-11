@@ -9,21 +9,20 @@ using namespace crypto;
 Random::Api Random::m_api;
 
 Random::Random() {
+  API_RETURN_IF_ERROR();
   if (api().is_valid() == false) {
-    API_SYSTEM_CALL("missing api", -1);
+    API_RETURN_ASSIGN_ERROR("missing api", ENOTSUP);
   } else {
-    API_SYSTEM_CALL("", initialize());
+    initialize();
   }
 }
 
 Random::~Random() { finalize(); }
 
-int Random::initialize() {
-  if (api()->init(&m_context) < 0) {
-    return -1;
-  }
+void Random::initialize() {
+  API_RETURN_IF_ERROR();
+  API_SYSTEM_CALL("random", api()->init(&m_context));
   seed(var::View());
-  return 0;
 }
 
 void Random::finalize() {
@@ -43,13 +42,15 @@ Random &Random::seed() {
 }
 
 Random &Random::seed(const var::View source_data) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL(
     "",
     api()->seed(m_context, source_data.to_const_u8(), source_data.size()));
   return *this;
 }
 
-Random &Random::randomize(var::View destination_data) {
+const Random &Random::randomize(var::View destination_data) const {
+  API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL(
     "",
     api()
@@ -57,11 +58,11 @@ Random &Random::randomize(var::View destination_data) {
   return *this;
 }
 
-var::String Random::get_string(size_t length) {
+var::String Random::get_string(size_t length) const {
   return get_data(length / 2).to_string();
 }
 
-var::Data Random::get_data(u32 size) {
+var::Data Random::get_data(u32 size) const {
   var::Data result(size);
   var::View result_view(result);
   randomize(result_view);
