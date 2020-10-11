@@ -3,10 +3,9 @@
 macro(api_target NAME DIRECTORIES)
 	include(sos-sdk)
 
-	set(API_NAME ${NAME})
-	project(${API_NAME} CXX C)
+	project(${NAME} CXX C)
 
-	install(DIRECTORY include/ DESTINATION include/${API_NAME})
+	install(DIRECTORY include/ DESTINATION include/${NAME})
 
 	string(COMPARE EQUAL ${SOS_BUILD_CONFIG} link IS_LINK)
 
@@ -20,7 +19,7 @@ macro(api_target NAME DIRECTORIES)
 	sos_sdk_add_subdirectory(PUBLIC_SOURCES	${CMAKE_CURRENT_SOURCE_DIR}/include)
 	set(FORMAT_LIST ${PRIVATE_SOURCES} ${PUBLIC_SOURCES})
 
-	sos_sdk_library_target(RELEASE ${API_NAME} "" release ${ARCH})
+	sos_sdk_library_target(RELEASE ${NAME} "" release ${ARCH})
 
 	add_library(${RELEASE_TARGET} STATIC)
 
@@ -59,16 +58,15 @@ macro(api_target NAME DIRECTORIES)
 
 	target_include_directories(${RELEASE_TARGET}
 		PUBLIC
-		$<INSTALL_INTERFACE:include/${API_NAME}>
+		$<INSTALL_INTERFACE:include/${NAME}>
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		)
 
-	message(STATUS "Adding dependencies ${DEPENDENCIES}")
+	message(STATUS "Adding dependencies ${DIRECTORIES}")
 	sos_sdk_library_add_arch_targets("${RELEASE_OPTIONS}" ${SOS_ARCH} "${DIRECTORIES}")
 
-
 	add_custom_target(
-		${API_NAME}_format
+		${NAME}_format
 		COMMAND /usr/local/bin/clang-format
 		-i
 		--verbose

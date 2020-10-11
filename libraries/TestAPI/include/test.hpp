@@ -11,7 +11,6 @@
  */
 namespace test{}
 
-#include "test/Function.hpp"
 #include "test/Case.hpp"
 #include "test/Test.hpp"
 
