@@ -321,12 +321,6 @@ void Printer::print(const char * fmt, ...){
 }
 #endif
 
-Printer &Printer::operator<<(const api::Status &a) {
-  key("lineNumber", var::String::number(a.line_number(), "%d"));
-  key("error", var::StringView(a.error_code_description()));
-  return *this;
-}
-
 Printer &Printer::operator<<(var::StringView a) {
   return key(nullptr, a);
 }

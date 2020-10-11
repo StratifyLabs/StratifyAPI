@@ -111,7 +111,7 @@ public:
    * why.
    *
    */
-  int get_stacksize();
+  int get_stacksize() const;
 
   /*! \details Sets the detach state.
    *
@@ -124,7 +124,7 @@ public:
   Thread &set_detachstate(DetachState value);
 
   /*! \details Gets the detach state (Thread::JOINABLE or Thread::DETACHED). */
-  DetachState get_detachstate();
+  DetachState get_detachstate() const;
 
   /*! \details Sets the thread priority.
    *
@@ -145,7 +145,7 @@ public:
    * will return an error.
    *
    */
-  int get_priority();
+  int get_priority() const;
 
   /*! \details Get the thread policy.
    *
@@ -153,7 +153,7 @@ public:
    * will return an error.
    *
    */
-  int get_policy();
+  int get_policy() const;
 
   /*! \details Gets the ID of the thread. */
   pthread_t id() const { return m_id; }
@@ -204,7 +204,7 @@ public:
 
   static int set_cancel_state(CancelState cancel_state);
 
-  Thread &cancel();
+  const Thread &cancel() const;
 
   /*! \details Checks if the thread is running.
    *
@@ -278,15 +278,14 @@ public:
    *
    *
    */
-  Thread &kill(int signal_number) {
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
-      pthread_kill(m_id, signal_number));
+  const Thread &kill(int signal_number) const {
+    API_RETURN_VALUE_IF_ERROR(*this);
+    API_SYSTEM_CALL("", pthread_kill(m_id, signal_number));
     return *this;
   }
 
   /*! \details This method returns true if the thread is joinable */
-  bool is_joinable();
+  bool is_joinable() const;
 
   /*! \details Joins the calling thread to this object's thread.
    *
@@ -300,7 +299,7 @@ public:
   Thread &join(void **value);
 
   /*! \details Allows read only access to the thread attributes. */
-  const pthread_attr_t &attr() const { return m_pthread_attr; }
+  const pthread_attr_t &pthread_attr() const { return m_pthread_attr; }
 
 private:
   pthread_attr_t m_pthread_attr;

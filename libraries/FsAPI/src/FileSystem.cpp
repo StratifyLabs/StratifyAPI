@@ -14,8 +14,8 @@ FileSystem::FileSystem(FSAPI_LINK_DECLARE_DRIVER) {
 }
 
 FileSystem &FileSystem::remove(var::StringView path) {
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     FSAPI_LINK_UNLINK(driver(), path.cstring()));
   return *this;
 }
@@ -40,13 +40,13 @@ FileSystem &FileSystem::copy(const Copy &options) {
   );
 
   if (
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, source.status().value())
+    API_SYSTEM_CALL("", source.status().value())
     < 0) {
     return *this;
   }
 
   if (
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, dest.status().value())
+    API_SYSTEM_CALL("", dest.status().value())
     < 0) {
     return *this;
   }
@@ -59,8 +59,8 @@ FileSystem::copy(File &source, File &destination, const Copy &options) {
   u32 mode = 0;
 
   FileInfo source_info = source.get_info();
-  if (API_ASSIGN_ERROR_CODE(
-        api::ErrorCode::io_error,
+  if (API_SYSTEM_CALL(
+        "",
         source.status().value())) {
     return *this;
   }
@@ -72,8 +72,8 @@ FileSystem::copy(File &source, File &destination, const Copy &options) {
   }
 
   if (
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
+    API_SYSTEM_CALL(
+      "",
       destination
         .create(
           options.destination_path(),
@@ -85,8 +85,8 @@ FileSystem::copy(File &source, File &destination, const Copy &options) {
     return *this;
   }
 
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     destination
       .write(
         source,
@@ -99,8 +99,8 @@ FileSystem::copy(File &source, File &destination, const Copy &options) {
 
 FileSystem &FileSystem::touch(var::StringView path) {
   char c;
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::no_entity,
+  API_SYSTEM_CALL(
+    "",
     File(path, OpenMode::read_write() FSAPI_LINK_MEMBER_DRIVER_LAST)
       .read(var::View(c))
       .seek(0)
@@ -113,14 +113,14 @@ FileSystem &FileSystem::touch(var::StringView path) {
 FileSystem &FileSystem::rename(const Rename &options) {
 #if defined __link
   if (driver() == nullptr) {
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
+    API_SYSTEM_CALL(
+      "",
       ::rename(options.source().cstring(), options.destination().cstring()));
     return *this;
   }
 #endif
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     FSAPI_LINK_RENAME(
       driver(),
       options.source().cstring(),
@@ -247,7 +247,7 @@ FileSystem::remove_directory(var::StringView path, Recursive recursive) {
     if (driver()) {
       remove(path);
     } else {
-      API_ASSIGN_ERROR_CODE(api::ErrorCode::no_entity, ::rmdir(path.cstring()));
+      API_SYSTEM_CALL("", ::rmdir(path.cstring()));
     }
 #else
     remove(path);
@@ -296,7 +296,7 @@ FileSystem &FileSystem::create_directory(
 #else
   result = mkdir(path.cstring(), permissions.permissions());
 #endif
-  API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, result);
+  API_SYSTEM_CALL("", result);
   return *this;
 }
 
@@ -348,8 +348,8 @@ DataFile FileSystem::load_data_file(var::StringView file_path) {
     file_path,
     OpenMode::read_only() FSAPI_LINK_MEMBER_DRIVER_LAST);
 
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     result.write(source_file, File::Write()).seek(0).status().value());
 
   return result.set_flags(OpenMode::read_write());

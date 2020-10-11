@@ -10,12 +10,14 @@ using namespace thread;
 Sem::Sem() { m_handle = nullptr; }
 
 Sem &Sem::close() {
-  API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, sem_close(m_handle));
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", sem_close(m_handle));
   return *this;
 }
 
 Sem &Sem::finalize() {
-  API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, sem_destroy(m_handle));
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", sem_destroy(m_handle));
   return *this;
 }
 
@@ -30,26 +32,27 @@ int Sem::get_value() const {
 }
 
 Sem &Sem::initialize(sem_t *sem, int pshared, unsigned int value) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   m_handle = sem;
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
-    sem_init(m_handle, pshared, value));
+  API_SYSTEM_CALL("", sem_init(m_handle, pshared, value));
   return *this;
 }
 
 Sem &Sem::open(var::StringView name, const Open &options) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   m_handle = sem_open(
     name.cstring(),
     options.o_flags(),
     options.mode(),
     options.value());
   if (m_handle == nullptr) {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, -1);
+    API_SYSTEM_CALL("", -1);
   }
   return *this;
 }
 
 Sem &Sem::create(var::StringView name, int value, Exclusive exclusive) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   int o_flags = O_CREAT;
   if (exclusive == Exclusive::yes) {
     o_flags |= O_EXCL;
@@ -60,29 +63,32 @@ Sem &Sem::create(var::StringView name, int value, Exclusive exclusive) {
 }
 
 Sem &Sem::post() {
-  API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, sem_post(m_handle));
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", sem_post(m_handle));
   return *this;
 }
 
 Sem &Sem::wait_timed(const chrono::ClockTime &timeout) {
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
-    sem_timedwait(m_handle, timeout.timespec()));
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", sem_timedwait(m_handle, timeout.timespec()));
   return *this;
 }
 
 Sem &Sem::try_wait() {
-  API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, sem_trywait(m_handle));
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", sem_trywait(m_handle));
   return *this;
 }
 
 Sem &Sem::unlink(var::StringView name) {
-  API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, sem_unlink(name.cstring()));
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", sem_unlink(name.cstring()));
   return *this;
 }
 
 Sem &Sem::wait() {
-  API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, sem_wait(m_handle));
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", sem_wait(m_handle));
   return *this;
 }
 

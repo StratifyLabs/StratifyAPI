@@ -155,7 +155,6 @@ public:
     set_color_code(static_cast<u32>(code));
   }
 
-  Printer &operator<<(const api::Status &a);
   Printer &operator<<(s32 a);
   Printer &operator<<(u32 a);
   Printer &operator<<(s16 a);

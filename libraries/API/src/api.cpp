@@ -158,27 +158,6 @@ ErrorContext &Status::error_context() {
   case ErrorCode::c:                                                           \
     return MCU_STRINGIFY(c)
 
-const char *Object::error_code_description(ErrorCode error_code) {
-  switch (error_code) {
-    RESULT_ERROR_CODE_CASE(none);
-    RESULT_ERROR_CODE_CASE(permissions);
-    RESULT_ERROR_CODE_CASE(no_entity);
-    RESULT_ERROR_CODE_CASE(no_such_process);
-    RESULT_ERROR_CODE_CASE(io_error);
-    RESULT_ERROR_CODE_CASE(bad_file_number);
-    RESULT_ERROR_CODE_CASE(busy);
-    RESULT_ERROR_CODE_CASE(no_memory);
-    RESULT_ERROR_CODE_CASE(aborted);
-    RESULT_ERROR_CODE_CASE(invalid_value);
-    RESULT_ERROR_CODE_CASE(missing_system_api);
-  }
-  return "unknown";
-}
-
-const char *Status::error_code_description() const {
-  return Object::error_code_description(error_code());
-}
-
 void Object::exit_fatal(const char *message) {
   printf("fatal error: %s\n", message);
   exit(1);

@@ -32,23 +32,25 @@ Mutex::Attributes &Mutex::Attributes::set_prio_ceiling(int value) {
 
 Mutex::Attributes &Mutex::Attributes::set_protocol(Protocol value) {
 #if !defined __android
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_RETURN_VALUE_IF_ERROR(*this);
+
+  API_SYSTEM_CALL(
+    "",
     pthread_mutexattr_setprotocol(&m_item, static_cast<int>(value)));
 #endif
   return *this;
 }
 
 Mutex::Attributes &Mutex::Attributes::set_pshared(bool value) {
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     pthread_mutexattr_setpshared(&m_item, static_cast<int>(value)));
   return *this;
 }
 
 Mutex::Attributes &Mutex::Attributes::set_type(Type value) {
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     pthread_mutexattr_settype(&m_item, static_cast<int>(value)));
   return *this;
 }
@@ -70,6 +72,7 @@ int Mutex::Attributes::get_protocol() const {
 }
 
 int Mutex::Attributes::get_type() const {
+  API_RETURN_VALUE_IF_ERROR(-1);
   int ret;
   pthread_mutexattr_gettype(&m_item, &ret);
   return ret;
@@ -83,46 +86,39 @@ bool Mutex::Attributes::get_pshared() const {
 
 Mutex::Mutex() {
   Mutex::Attributes attr;
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::no_memory,
-    pthread_mutex_init(&m_item, &(attr.m_item)));
+  API_SYSTEM_CALL("", pthread_mutex_init(&m_item, &(attr.m_item)));
 }
 
 Mutex::Mutex(const Mutex::Attributes &attr) { set_attributes(attr); }
 
 Mutex &Mutex::set_attributes(const Attributes &attr) {
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
-    pthread_mutex_init(&m_item, &(attr.m_item)));
+  API_SYSTEM_CALL("", pthread_mutex_init(&m_item, &(attr.m_item)));
   return *this;
 }
 
 Mutex &Mutex::lock() {
-  API_ASSIGN_ERROR_CODE(api::ErrorCode::no_memory, pthread_mutex_lock(&m_item));
+  API_SYSTEM_CALL("", pthread_mutex_lock(&m_item));
   return *this;
 }
 
 #if !defined __link
 Mutex &Mutex::lock_timed(const chrono::ClockTime &clock_time) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   ClockTime calc_time = ClockTime::get_system_time();
   calc_time += clock_time;
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::no_memory,
-    pthread_mutex_timedlock(&m_item, calc_time));
+  API_SYSTEM_CALL("", pthread_mutex_timedlock(&m_item, calc_time));
   return *this;
 }
 #endif
 
 Mutex &Mutex::try_lock() {
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::no_memory,
-    pthread_mutex_trylock(&m_item));
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", pthread_mutex_trylock(&m_item));
   return *this;
 }
 
 Mutex &Mutex::unlock() {
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::no_memory,
-    pthread_mutex_unlock(&m_item));
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", pthread_mutex_unlock(&m_item));
   return *this;
 }

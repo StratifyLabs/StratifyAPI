@@ -46,7 +46,7 @@ int Sha256::finalize() {
 
 Sha256 &Sha256::start() {
   m_is_finished = false;
-  API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, api()->start(m_context));
+  API_SYSTEM_CALL("", api()->start(m_context));
   return *this;
 }
 
@@ -59,8 +59,8 @@ Sha256 &Sha256::update(const var::View &input) {
     start();
   }
 
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     api()->update(m_context, input.to_const_u8(), input.size()));
   return *this;
 }
@@ -86,8 +86,8 @@ var::String Sha256::get_checksum(fs::File &file) {
 Sha256 &Sha256::finish() {
   if (m_is_finished == false) {
     m_is_finished = true;
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
+    API_SYSTEM_CALL(
+      "",
       api()->finish(
         m_context,
         (unsigned char *)m_output.data(),

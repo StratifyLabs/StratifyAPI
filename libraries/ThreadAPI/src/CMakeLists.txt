@@ -8,7 +8,7 @@ set(SOURCES
 	)
 
 
-if( ${SOS_BUILD_CONFIG} STREQUAL arm )
+if(SOS_IS_ARM)
 	list(APPEND ${SOURCES}
 		Sched.cpp
 		PARENT_SCOPE

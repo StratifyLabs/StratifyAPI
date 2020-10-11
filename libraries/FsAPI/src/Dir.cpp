@@ -37,7 +37,7 @@ Dir &Dir::open(var::StringView path) {
 
     m_dirp_local = opendir(path.cstring());
     if (m_dirp_local == nullptr) {
-      API_ASSIGN_ERROR_CODE(api::ErrorCode::no_entity, -1);
+      API_SYSTEM_CALL("", -1);
       return *this;
     }
     m_path = var::String(path);
@@ -190,8 +190,8 @@ Dir &Dir::close() {
   if (m_dirp) {
 #if defined __link
     if (driver()) {
-      API_ASSIGN_ERROR_CODE(
-        api::ErrorCode::io_error,
+      API_SYSTEM_CALL(
+        "",
         link_closedir(driver(), m_dirp));
     }
     m_dirp = 0;

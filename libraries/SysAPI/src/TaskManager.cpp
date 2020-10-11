@@ -61,8 +61,8 @@ int TaskManager::get_next(TaskInfo &info) {
   sys_taskattr_t task_attr;
   int ret;
   task_attr.tid = m_id;
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     m_sys_device.ioctl(I_SYS_GETTASK, &task_attr).status().value());
 
   if (status().is_error()) {
@@ -87,8 +87,8 @@ TaskInfo TaskManager::get_info(u32 id) {
   attr.tid = id;
   initialize();
   if (
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
+    API_SYSTEM_CALL(
+      "",
       m_sys_device.ioctl(I_SYS_GETTASK, &attr).status().value())
     < 0) {
     return TaskInfo::invalid();

@@ -413,8 +413,8 @@ Appfs::Info Appfs::get_info(var::StringView path) {
   appfs_info_t info;
   int result;
 
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     fs::File(path, fs::OpenMode::read_only() FSAPI_LINK_MEMBER_DRIVER_LAST)
       .read(var::View(appfs_file_header))
       .status()
@@ -501,7 +501,7 @@ Appfs &Appfs::cleanup(CleanData clean_data) {
     strcpy(buffer, "/app/ram/");
     strcat(buffer, name);
     if (stat(buffer, &st) < 0) {
-      API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, -1);
+      API_SYSTEM_CALL("", -1);
       return *this;
     }
 
@@ -510,7 +510,7 @@ Appfs &Appfs::cleanup(CleanData clean_data) {
        || (clean_data == CleanData::yes))
       && (name[0] != '.')) {
       if (unlink(buffer) < 0) {
-        API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, -1);
+        API_SYSTEM_CALL("", -1);
         return *this;
       }
     }

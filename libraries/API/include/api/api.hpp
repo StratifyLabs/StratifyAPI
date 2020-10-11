@@ -236,20 +236,6 @@ private:
 #define API_ASSERT(a) api::api_assert(a, __PRETTY_FUNCTION__, __LINE__);
 void api_assert(bool value, const char *function, int line);
 
-enum class ErrorCode {
-  none,
-  permissions,
-  no_entity,
-  no_such_process,
-  io_error,
-  bad_file_number,
-  no_memory,
-  aborted,
-  busy,
-  invalid_value,
-  missing_system_api
-};
-
 #define API_RETURN_VALUE_IF_ERROR(return_value)                                \
   if (api::Object::status().is_error()) {                                      \
     return return_value;                                                       \
@@ -283,11 +269,6 @@ enum class ErrorCode {
     return;                                                                    \
   } while (0)
 
-#define API_ASSIGN_ERROR_CODE(error_code_value, result_value)                  \
-  status().assign(__LINE__, result_value)
-
-#define API_COPY_ERROR_CODE(status_value) set_status(status_value)
-
 class ErrorContext {
 public:
   const char *message() const { return m_message; }
@@ -318,13 +299,6 @@ private:
 
 class Status {
 public:
-  ErrorCode error_code() const {
-    if (value() < 0) {
-      return static_cast<ErrorCode>((value() * -1) & 0xff);
-    }
-    return ErrorCode::none;
-  }
-
   bool is_error() const { return value() < 0; }
   bool is_success() const { return value() >= 0; }
 
@@ -336,8 +310,6 @@ public:
     }
     return 0;
   }
-
-  const char *error_code_description() const;
 
   int assign(int line, int value) const {
     if (value >= 0) {
@@ -394,7 +366,6 @@ class Object {
 public:
   static Status &status() { return m_status; }
   static void exit_fatal(const char *message);
-  static const char *error_code_description(ErrorCode error_code);
 
 private:
   static Status m_status;

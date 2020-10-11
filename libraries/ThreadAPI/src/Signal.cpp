@@ -11,8 +11,8 @@ Signal &Signal::set_handler(const SignalHandler &handler) {
   ::signal(m_signo, ptr);
 #else
   if (handler.sigaction()->sa_flags & SIGNAL_SIGINFO_FLAG) {
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
+    API_SYSTEM_CALL(
+      "",
       ::sigaction(m_signo, handler.sigaction(), 0));
 
   } else {

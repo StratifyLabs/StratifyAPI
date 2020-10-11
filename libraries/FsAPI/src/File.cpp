@@ -152,7 +152,7 @@ const File &File::readline(char *buf, int nbyte, int timeout, char term) const {
 File &File::close() {
   API_RETURN_VALUE_IF_ERROR(*this);
   if (m_fd >= 0) {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, interface_close(m_fd));
+    API_SYSTEM_CALL("", interface_close(m_fd));
     m_fd = -1;
   }
   return *this;
@@ -206,7 +206,7 @@ int File::flags() const {
   return -1;
 #else
   if (fileno() < 0) {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::bad_file_number, -1);
+    API_SYSTEM_CALL("", -1);
     return status().value();
   }
   return _global_impure_ptr->procmem_base->open_file[m_fd].flags;
@@ -230,8 +230,8 @@ var::String File::gets(char term) const {
 
 const File &File::ioctl(int request, void *argument) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     interface_ioctl(m_fd, request, argument));
   return *this;
 }
@@ -292,7 +292,7 @@ const File &File::write(File &source_file, const Write &options) const {
       if (bytes_read > 0) {
         size_processed += static_cast<u32>(bytes_read);
       } else if (bytes_read < 0) {
-        API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, -1);
+        API_SYSTEM_CALL("", -1);
         return *this;
       }
     }
@@ -305,7 +305,7 @@ const File &File::write(File &source_file, const Write &options) const {
           static_cast<int>(file_size))
         == true) {
         options.progress_callback()->update(0, 0);
-        API_ASSIGN_ERROR_CODE(api::ErrorCode::aborted, -1);
+        API_SYSTEM_CALL("aborted", size_processed);
         return *this;
       }
     }
@@ -318,7 +318,7 @@ const File &File::write(File &source_file, const Write &options) const {
   }
 
   if ((source_file.status().is_error()) && (size_processed == 0)) {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, -1);
+    API_SYSTEM_CALL("", -1);
   }
 
   return *this;

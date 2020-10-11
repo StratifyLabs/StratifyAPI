@@ -11,59 +11,6 @@
 
 using namespace var;
 
-#if USE_FILE
-int Base64::encode(SourceFile source, DestinationFile destination, Size size) {
-  u32 chunk_size = 96;
-  const u32 output_buffer_size = calc_encoded_size(chunk_size);
-  char input_buffer[chunk_size];
-  char output_buffer[output_buffer_size];
-  u32 size_processed = 0;
-  int result;
-  do {
-    if (size.argument() - size_processed < chunk_size) {
-      chunk_size = size.argument() - size_processed;
-    }
-    result = source.argument().read(input_buffer, fs::File::Size(chunk_size));
-    if (result > 0) {
-      size_processed += result;
-      int len = encode(output_buffer, input_buffer, result);
-      if (
-        destination.argument().write(output_buffer, fs::File::Size(len))
-        != len) {
-        result = 0;
-      }
-    }
-  } while ((result > 0) && (size.argument() > size_processed));
-  return size_processed;
-}
-
-int Base64::decode(SourceFile input, DestinationFile output, Size size) {
-  u32 chunk_size = 96;
-  const u32 output_buffer_size = calc_decoded_size(chunk_size);
-  char input_buffer[chunk_size];
-  char output_buffer[output_buffer_size];
-  u32 size_processed = 0;
-  int result;
-
-  do {
-    if (size.argument() - size_processed < chunk_size) {
-      chunk_size = size.argument() - size_processed;
-    }
-    result = input.argument().read(input_buffer, fs::File::Size(chunk_size));
-    if (result > 0) {
-      size_processed += result;
-      int len = calc_decoded_size(result);
-      len -= decode(output_buffer, input_buffer, result);
-      if (output.argument().write(output_buffer, fs::File::Size(len)) != len) {
-        result = 0;
-      }
-    }
-  } while ((result > 0) && (size.argument() > size_processed));
-
-  return size_processed;
-}
-#endif
-
 int Base64Encoder::transform(const Transform &options) const {
   if (options.output().size() < get_output_size(options.input().size())) {
     return -1;
@@ -86,23 +33,22 @@ int Base64Decoder::transform(const Transform &options) const {
     options.input().size());
 }
 
-var::String Base64::encode(var::View input) const {
-  var::String result;
+String Base64::encode(View input) const {
+  String result;
   result.resize(get_encoded_size(input.size()));
   if (result.status().is_error()) {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::no_memory, -1);
-    return var::String();
+    API_RETURN_VALUE_ASSIGN_ERROR(String(), "", ENOMEM);
   }
   encode(result.to_char(), input.to_const_void(), input.size());
   return result;
 }
 
-var::Data Base64::decode(var::StringView input) const {
-  var::Data result;
+Data Base64::decode(StringView input) const {
+  Data result;
   int len = get_decoded_size(input.length());
   if (result.resize(len).status().is_error()) {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::no_memory, -1);
-    return var::Data();
+    API_RETURN_VALUE_ASSIGN_ERROR(Data(), "", ENOMEM);
+    return Data();
   }
 
   len -= decode(result.data(), input.cstring(), input.length());

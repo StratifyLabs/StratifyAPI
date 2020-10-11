@@ -110,8 +110,8 @@ public:
    */
   Aio &suspend(const chrono::MicroTime &timeout = chrono::MicroTime(0)) {
 
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
+    API_SYSTEM_CALL(
+      "",
       suspend(AiocbList().push_back(&m_aio_var), timeout));
     return *this;
   }

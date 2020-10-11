@@ -280,9 +280,7 @@ public:
    *
    */
   Signal &queue(pid_t pid) {
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
-      ::sigqueue(pid, m_signo, m_sigvalue));
+    API_SYSTEM_CALL("", ::sigqueue(pid, m_signo, m_sigvalue));
     return *this;
   }
 
@@ -294,7 +292,7 @@ public:
    * @return Zero on success
    */
   Signal &send(pthread_t t) {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, ::pthread_kill(t, m_signo));
+    API_SYSTEM_CALL("", ::pthread_kill(t, m_signo));
     return *this;
   }
 

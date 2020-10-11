@@ -10,9 +10,9 @@ Random::Api Random::m_api;
 
 Random::Random() {
   if (api().is_valid() == false) {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::missing_system_api, -1);
+    API_SYSTEM_CALL("missing api", -1);
   } else {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, initialize());
+    API_SYSTEM_CALL("", initialize());
   }
 }
 
@@ -43,15 +43,15 @@ Random &Random::seed() {
 }
 
 Random &Random::seed(const var::View source_data) {
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     api()->seed(m_context, source_data.to_const_u8(), source_data.size()));
   return *this;
 }
 
 Random &Random::randomize(var::View destination_data) {
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     api()
       ->random(m_context, destination_data.to_u8(), destination_data.size()));
   return *this;

@@ -87,7 +87,7 @@ public:
    * It is the same as calling sched_yield().
    *
    */
-  Sched &yield() {
+  const Sched &yield() const {
     sched_yield();
     return *this;
   }
@@ -123,7 +123,7 @@ public:
    * @return Zero on success of -1 with errno set
    */
 
-  Sched &set_scheduler(const SetScheduler &options);
+  const Sched &set_scheduler(const SetScheduler &options) const;
 };
 
 } // namespace thread

@@ -27,18 +27,19 @@ Thread::~Thread() {
 bool Thread::is_valid() const { return !is_id_pending() && !is_id_error(); }
 
 int Thread::init(int stack_size, bool detached) {
+  API_RETURN_VALUE_IF_ERROR(-1);
   set_id_error();
 
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     pthread_attr_init(&m_pthread_attr));
 
   if (status().is_error()) {
     return -1;
   }
 
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     pthread_attr_setstacksize(&m_pthread_attr, stack_size));
 
   if (status().is_error()) {
@@ -47,8 +48,8 @@ int Thread::init(int stack_size, bool detached) {
 
   if (detached == true) {
 
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
+    API_SYSTEM_CALL(
+      "",
       pthread_attr_setdetachstate(&m_pthread_attr, PTHREAD_CREATE_DETACHED));
 
     if (status().is_error()) {
@@ -56,8 +57,8 @@ int Thread::init(int stack_size, bool detached) {
     }
   } else {
 
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
+    API_SYSTEM_CALL(
+      "",
       pthread_attr_setdetachstate(&m_pthread_attr, PTHREAD_CREATE_JOINABLE));
 
     if (status().is_error()) {
@@ -70,69 +71,75 @@ int Thread::init(int stack_size, bool detached) {
 }
 
 Thread &Thread::set_stacksize(int size) {
+  API_RETURN_VALUE_IF_ERROR(*this);
 
   if (is_running()) {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::busy, -1);
+    API_SYSTEM_CALL("", -1);
     return *this;
   }
 
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     pthread_attr_setstacksize(&m_pthread_attr, size));
 
   return *this;
 }
 
-int Thread::get_stacksize() {
+int Thread::get_stacksize() const {
+  API_RETURN_VALUE_IF_ERROR(-1);
   u32 stacksize = 0;
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     pthread_attr_getstacksize(&m_pthread_attr, (size_t *)&stacksize));
   return stacksize;
 }
 
-Thread::DetachState Thread::get_detachstate() {
+Thread::DetachState Thread::get_detachstate() const {
+  API_RETURN_VALUE_IF_ERROR(DetachState::detached);
   int value = 0;
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     pthread_attr_getdetachstate(&m_pthread_attr, &value));
   return static_cast<DetachState>(value);
 }
 
 Thread &Thread::set_detachstate(DetachState value) {
+  API_RETURN_VALUE_IF_ERROR(*this);
 
   if (is_running()) {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::busy, -1);
+    API_SYSTEM_CALL("", -1);
     return *this;
   }
 
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     pthread_attr_setdetachstate(&m_pthread_attr, static_cast<int>(value)));
 
   return *this;
 }
 
 Thread &Thread::set_priority(int prio, Sched::Policy policy) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   if (is_valid()) {
     struct sched_param param = {0};
     param.sched_priority = prio;
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
+    API_SYSTEM_CALL(
+      "",
       pthread_setschedparam(m_id, static_cast<int>(policy), &param));
   } else {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::busy, -1);
+    API_SYSTEM_CALL("", -1);
   }
   return *this;
 }
 
-int Thread::get_priority() {
+int Thread::get_priority() const {
+  API_RETURN_VALUE_IF_ERROR(-1);
 
   if (is_valid()) {
     struct sched_param param;
     int policy;
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
+    API_SYSTEM_CALL(
+      "",
       pthread_getschedparam(m_id, &policy, &param));
 
     if (status().is_error()) {
@@ -142,43 +149,52 @@ int Thread::get_priority() {
     return param.sched_priority;
   }
 
-  API_ASSIGN_ERROR_CODE(api::ErrorCode::busy, -1);
+  API_SYSTEM_CALL("", -1);
   return -1;
 }
 
-Thread &Thread::cancel() {
-  API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, pthread_cancel(id()));
+const Thread &Thread::cancel() const {
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", pthread_cancel(id()));
   return *this;
 }
 
 int Thread::set_cancel_type(CancelType cancel_type) {
-  return pthread_setcanceltype(static_cast<int>(cancel_type), nullptr);
+  API_RETURN_VALUE_IF_ERROR(-1);
+  return API_SYSTEM_CALL(
+    "",
+    pthread_setcanceltype(static_cast<int>(cancel_type), nullptr));
 }
 
 int Thread::set_cancel_state(CancelState cancel_state) {
-  return pthread_setcancelstate(static_cast<int>(cancel_state), nullptr);
+  API_RETURN_VALUE_IF_ERROR(-1);
+  return API_SYSTEM_CALL(
+    "",
+    pthread_setcancelstate(static_cast<int>(cancel_state), nullptr));
 }
 
-int Thread::get_policy() {
+int Thread::get_policy() const {
+  API_RETURN_VALUE_IF_ERROR(-1);
   struct sched_param param;
   int policy;
   if (is_valid()) {
 
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
+    API_SYSTEM_CALL(
+      "",
       pthread_getschedparam(m_id, &policy, &param));
 
     if (status().is_error()) {
       return -1;
     }
   } else {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::busy, -1);
+    API_SYSTEM_CALL("", -1);
     return -1;
   }
   return policy;
 }
 
 Thread &Thread::create(const Create &options) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   reset();
 
   if (status().is_error()) {
@@ -186,13 +202,13 @@ Thread &Thread::create(const Create &options) {
   }
 
   if (!is_id_pending()) {
-    API_ASSIGN_ERROR_CODE(api::ErrorCode::busy, -1);
+    API_SYSTEM_CALL("", -1);
     return *this;
   }
 
   if (
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
+    API_SYSTEM_CALL(
+      "",
       pthread_attr_setschedpolicy(
         &m_pthread_attr,
         static_cast<int>(options.policy())))
@@ -203,16 +219,16 @@ Thread &Thread::create(const Create &options) {
   struct sched_param param = {0};
   param.sched_priority = options.priority();
   if (
-    API_ASSIGN_ERROR_CODE(
-      api::ErrorCode::io_error,
+    API_SYSTEM_CALL(
+      "",
       pthread_attr_setschedparam(&m_pthread_attr, &param))
     < 0) {
     return *this;
   }
 
   // First create the thread
-  API_ASSIGN_ERROR_CODE(
-    api::ErrorCode::io_error,
+  API_SYSTEM_CALL(
+    "",
     pthread_create(
       &m_id,
       &m_pthread_attr,
@@ -259,6 +275,7 @@ Thread &Thread::wait(void **ret, const chrono::MicroTime &interval) {
 }
 
 Thread &Thread::reset() {
+  API_RETURN_VALUE_IF_ERROR(*this);
 
   if (is_id_pending()) {
     return *this;
@@ -269,8 +286,8 @@ Thread &Thread::reset() {
     u32 stacksize = get_stacksize();
 
     if (
-      API_ASSIGN_ERROR_CODE(
-        api::ErrorCode::io_error,
+      API_SYSTEM_CALL(
+        "",
         pthread_attr_destroy(&m_pthread_attr))
       < 0) {
       return *this;
@@ -280,7 +297,7 @@ Thread &Thread::reset() {
     return *this;
   }
 
-  API_ASSIGN_ERROR_CODE(api::ErrorCode::busy, -1);
+  API_SYSTEM_CALL("", -1);
   return *this;
 }
 
@@ -301,10 +318,11 @@ int Thread::join(Thread &thread_to_join, void **result) {
 }
 
 Thread &Thread::join(void **value) {
-  API_ASSIGN_ERROR_CODE(api::ErrorCode::io_error, join(*this, value));
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", join(*this, value));
   return *this;
 }
 
-bool Thread::is_joinable() {
+bool Thread::is_joinable() const {
   return get_detachstate() == DetachState::joinable;
 }
