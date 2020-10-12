@@ -81,11 +81,6 @@ constexpr static const char *month_names[] = {
 /*! \brief Construct using current time */
 DateTime::DateTime() { m_time = 0; }
 
-/*! \brief Construct using an amount of time */
-DateTime::DateTime(const Seconds &sec, const Minutes &min, const Hours &hour) {
-  set_time(sec, min, hour);
-}
-
 DateTime::DateTime(var::StringView time_string, var::StringView format) {
   struct tm tm = {0};
   if (strptime(time_string.cstring(), format.cstring(), &tm) != nullptr) {
@@ -115,36 +110,12 @@ DateTime &DateTime::operator-=(const DateTime &a) {
   return *this;
 }
 
-int DateTime::set_time_of_day(const DateTime &t) {
-#if defined __StratifyOS__
-  int ret;
-  int fd = ::open("/dev/rtc", O_RDWR);
-  if (fd < 0) {
-    return -1;
-  }
-  struct tm t_data = t.get_tm();
-  ret = ::ioctl(fd, I_RTC_SET, &t_data);
-  close(fd);
-  return ret;
-#else
-  return -1;
-#endif
-}
-
-int DateTime::set_time_of_day() { return set_time_of_day(*this); }
-
-DateTime DateTime::get_time_of_day() {
+DateTime DateTime::get_system_time() {
   time_t t = ::time(0);
   if (t < 962668800) {
     t = 962668800;
   }
   return DateTime(t);
-}
-
-DateTime &
-DateTime::set_time(const Seconds &sec, const Minutes &min, const Hours &hour) {
-  m_time = sec.seconds() + min.minutes() * 60 + hour.hours() * 3600;
-  return *this;
 }
 
 u32 DateTime::second() const { return m_time % 60; }
@@ -153,28 +124,21 @@ u32 DateTime::minute() const { return (m_time % 3600) / 60; }
 
 u32 DateTime::hour() const { return m_time / 3600 % 24; }
 
-u32 DateTime::day() const { return get_tm().tm_mday; }
-u32 DateTime::weekday() const { return get_tm().tm_wday; }
-u32 DateTime::yearday() const { return get_tm().tm_yday; }
-u32 DateTime::month() const { return get_tm().tm_mon + 1; }
-u32 DateTime::year() const { return get_tm().tm_year + 1900; }
+Date::Date(const DateTime &date_time) {
+  time_t ctime = date_time.ctime();
+#if defined __win32
+  struct tm *ptr;
+  ptr = gmtime(&ctime);
+  m_tm = *ptr;
+#else
+  gmtime_r(&ctime, &m_tm);
+#endif
+}
 
-const char *DateTime::month_name() const {
+const char *Date::month_name() const {
   u32 mon = month();
   if (mon < 12) {
     return month_names[mon];
   }
   return "";
-}
-
-struct tm DateTime::get_tm() const {
-  struct tm time_struct;
-#if defined __win32
-  struct tm *ptr;
-  ptr = gmtime(&m_time);
-  time_struct = *ptr;
-#else
-  gmtime_r(&m_time, &time_struct);
-#endif
-  return time_struct;
 }

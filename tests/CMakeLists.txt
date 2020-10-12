@@ -10,4 +10,5 @@ include(sos-sdk)
 
 add_subdirectory(API testsAPI)
 add_subdirectory(VarAPI testsVarAPI)
+add_subdirectory(ChronoAPI testsChronoAPI)
 

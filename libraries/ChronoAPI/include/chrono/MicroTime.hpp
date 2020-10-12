@@ -11,56 +11,6 @@ namespace chrono {
 
 class MicroTime;
 
-class Hours {
-public:
-  explicit Hours(s32 value) { m_value = value; }
-  u32 hours() const { return m_value; }
-  static Hours invalid() { return Hours(static_cast<u32>(-1)); }
-
-private:
-  u32 m_value;
-};
-
-class Minutes {
-public:
-  explicit Minutes(s32 value) { m_value = value; }
-  u32 minutes() const { return m_value; }
-  static Minutes invalid() { return Minutes(static_cast<u32>(-1)); }
-
-private:
-  u32 m_value;
-};
-
-class Seconds {
-public:
-  explicit Seconds(s32 value) { m_value = value; }
-  u32 seconds() const { return m_value; }
-  static Seconds invalid() { return Seconds(static_cast<u32>(-1)); }
-
-private:
-  u32 m_value;
-};
-
-class Milliseconds {
-public:
-  explicit Milliseconds(s32 value) { m_value = value; }
-  u32 milliseconds() const { return m_value; }
-  static Milliseconds invalid() { return Milliseconds(static_cast<u32>(-1)); }
-
-private:
-  u32 m_value;
-};
-
-class Nanoseconds {
-public:
-  explicit Nanoseconds(s32 value) { m_value = value; }
-  u32 nanoseconds() const { return m_value; }
-  static Nanoseconds invalid() { return Nanoseconds(static_cast<u32>(-1)); }
-
-private:
-  u32 m_value;
-};
-
 class ClockTimer;
 class ClockTime;
 
@@ -114,48 +64,6 @@ public:
    */
   MicroTime(const ClockTime &clock_time);
 
-  /*! \details Constructs a Microseconds object from a chrono::Seconds value.
-   *
-   * ```
-   * //md2code:main
-   * Microseconds duration = Seconds(5); //converted to microseconds
-   * printf("Duration is %ld microseconds\n", duration.microseconds());
-   * ```
-   *
-   */
-  MicroTime(const Seconds &seconds) {
-    m_value_microseconds = seconds.seconds() * 1000000UL;
-  }
-
-  /*! \details Constructs a Microseconds object from a chrono::Milliseconds
-   * value.
-   *
-   * ```
-   * //md2code:main
-   * Microseconds duration = Milliseconds(3000); //converted to microseconds
-   * printf("Duration is %ld microseconds\n", duration.microseconds());
-   * ```
-   *
-   */
-  MicroTime(const Milliseconds &milliseconds) {
-    m_value_microseconds = milliseconds.milliseconds() * 1000UL;
-  }
-
-  /*! \details Constructs a Microseconds object from a chrono::Nanoseconds
-   * value.
-   *
-   * ```
-   * //md2code:main
-   * Microseconds duration = Nanoseconds(3000); //converted to microseconds
-   * Microseconds zero = Nanoseconds(999); //converted using truncation -- goes
-   * to zero printf("Duration is %ld microseconds\n", duration.microseconds());
-   * printf("Zero is %ld microseconds\n", zero.microseconds());
-   * ```
-   *
-   */
-  MicroTime(const Nanoseconds &nanoseconds) {
-    m_value_microseconds = nanoseconds.nanoseconds() / 1000;
-  }
 
   /*! \details Constructs a Microseconds object from the current value of a
    * chrono::Timer. */
@@ -219,11 +127,6 @@ public:
     return microseconds() <= a.microseconds();
   }
 
-  MicroTime &operator<<(const Seconds &a) { return (*this) = a; }
-  MicroTime &operator<<(const Milliseconds &a) { return (*this) = a; }
-  MicroTime &operator<<(const MicroTime &a) { return (*this) = a; }
-  MicroTime &operator<<(const Nanoseconds &a) { return (*this) = a; }
-
   /*! \details Returns the value in seconds. */
   u32 seconds() const { return microseconds() / 1000000UL; }
 
@@ -246,18 +149,24 @@ using Microseconds = MicroTime;
 
 void wait(const MicroTime &duration);
 
-inline Seconds operator"" _seconds(unsigned long long int value) {
-  return Seconds(value);
-}
-
-inline Milliseconds operator"" _milliseconds(unsigned long long int value) {
-  return Milliseconds(value);
-}
-
-inline Microseconds operator"" _microseconds(unsigned long long int value) {
-  return Microseconds(value);
-}
-
 } // namespace chrono
+
+inline chrono::MicroTime operator"" _seconds(unsigned long long int value) {
+  return chrono::MicroTime(value * 1000000UL);
+}
+
+inline chrono::MicroTime
+operator"" _milliseconds(unsigned long long int value) {
+  return chrono::MicroTime(value * 1000UL);
+}
+
+inline chrono::MicroTime
+operator"" _microseconds(unsigned long long int value) {
+  return chrono::MicroTime(value);
+}
+
+inline chrono::MicroTime operator"" _nanoseconds(unsigned long long int value) {
+  return chrono::MicroTime(value / 1000UL);
+}
 
 #endif /* CHRONO_API_CHRONO_MICRO_TIME_HPP_ */

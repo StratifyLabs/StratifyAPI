@@ -1,9 +1,17 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
              // LICENSE.md for rights.
 
-#include "chrono/MicroTime.hpp"
+#include "printer/Printer.hpp"
 
+#include "chrono/MicroTime.hpp"
 #include "chrono/ClockTime.hpp"
+
+printer::Printer &
+operator<<(printer::Printer &printer, const chrono::ClockTime &a) {
+  printer.key("seconds", var::Ntos(a.seconds()));
+  printer.key("nanoseconds", var::Ntos(a.nanoseconds()));
+  return printer;
+}
 
 using namespace chrono;
 
@@ -34,7 +42,7 @@ ClockTime ClockTime::get_system_time(ClockId clock_id) {
 ClockTime ClockTime::get_system_resolution(ClockId clock_id) {
 #if defined __macosx
 
-  ClockTime resolution(Seconds(0), Nanoseconds(1000));
+  ClockTime resolution = ClockTime().set_nanoseconds(1000);
 
 #else
   ClockTime resolution;
@@ -50,7 +58,7 @@ ClockTime ClockTime::get_age() const { return get_system_time() - *this; }
 ClockTime::ClockTime(const MicroTime &micro_time) {
   m_value.tv_sec = micro_time.seconds();
   u32 microseconds = micro_time.microseconds() - m_value.tv_sec * 1000000;
-  m_value.tv_nsec = microseconds;
+  m_value.tv_nsec = microseconds * 1000;
 }
 
 bool ClockTime::operator>(const ClockTime &a) const {
@@ -107,9 +115,9 @@ bool ClockTime::operator!=(const ClockTime &a) const {
   return false;
 }
 
-void ClockTime::assign(const Seconds &seconds, const Nanoseconds &nanoseconds) {
-  m_value.tv_sec = seconds.seconds();
-  m_value.tv_nsec = nanoseconds.nanoseconds();
+void ClockTime::assign(u32 seconds, u32 nanoseconds) {
+  m_value.tv_sec = seconds;
+  m_value.tv_nsec = nanoseconds;
   if (m_value.tv_nsec > 1000000000) {
     m_value.tv_sec++;
     m_value.tv_nsec -= 1000000000;

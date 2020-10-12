@@ -38,35 +38,13 @@ public:
 
   explicit DateTime(const time_t &t) { m_time = t; }
 
-  /*! \details Constructs using an amount of time. */
-  DateTime(
-    const Seconds &seconds,
-    const Minutes &minutes = Minutes(0),
-    const Hours &hours = Hours(0));
-
-  DateTime(const Minutes &minutes) { m_time = minutes.minutes() * 60; }
-  DateTime(const Hours &hours) { m_time = hours.hours() * 3600; }
-
   DateTime(
     var::StringView time_string,
     var::StringView format = "%Y-%m-%d %H:%M:%S");
 
   bool is_valid() { return m_time != 0; }
 
-  static DateTime current_time() { return get_time_of_day(); }
-  static DateTime from_seconds(u32 value) { return DateTime(value); }
-  static DateTime from_minutes(u32 value) {
-    return DateTime(Seconds(0), Minutes(value), Hours(0));
-  }
-  static DateTime from_hours(u32 value) {
-    return DateTime(Seconds(0), Minutes(0), Hours(value));
-  }
-  static DateTime from_days(u32 value) {
-    return DateTime(Seconds(0), Minutes(0), Hours(value * 24));
-  }
-  static DateTime from_weeks(u32 value) {
-    return DateTime(Seconds(0), Minutes(0), Hours(value * 24 * 7));
-  }
+  static DateTime current_time() { return get_system_time(); }
 
   DateTime operator+(const DateTime &a) const {
     DateTime result;
@@ -87,7 +65,7 @@ public:
   bool operator>=(const DateTime &a) const { return m_time >= a.m_time; }
   bool operator<=(const DateTime &a) const { return m_time <= a.m_time; }
 
-  DateTime age() const { return DateTime::get_time_of_day() - *this; }
+  DateTime age() const { return DateTime::get_system_time() - *this; }
 
   /*! \details Adds to the current value. */
   DateTime &operator+=(const DateTime &a);
@@ -98,26 +76,10 @@ public:
   /*! \details Subtracts from the current value. */
   DateTime &operator-=(const DateTime &a);
 
-  /*! \details Sets the system time
-   *
-   */
-  static int set_time_of_day(const DateTime &t);
-
-  /*! \details Sets the system time to the time stored in this object. */
-  int set_time_of_day();
-
   /*! \details Assigns the system time of day to the time stored in this object
    * and returns the current system time.
    */
-  static DateTime get_time_of_day();
-
-  /*! \details Sets the value in Time to a number of seconds.
-   *
-   * This Time object will hold a duration of time rather than a
-   * calendar time.
-   *
-   */
-  DateTime &set_time(const Seconds &sec, const Minutes &min, const Hours &hour);
+  static DateTime get_system_time();
 
   /*! \details Sets the current value.
    *
@@ -126,9 +88,6 @@ public:
     m_time = tm;
     return *this;
   }
-
-  /*! \details Gets the name of the month. */
-  const char *month_name() const;
 
   /*! \details Returns the time value (number of seconds since epoch). */
   time_t ctime() const { return m_time; }
@@ -141,25 +100,59 @@ public:
   /*! \details Returns hours (from 0 to 23). */
   u32 hour() const;
 
-  /*! \details Returns the day of month (from 1 to 31). */
-  u32 day() const;
-  /*! \details Returns the day of week (from 1 to 7). */
-  u32 weekday() const;
-  /*! \details Returns the day of the year (1 to 366). */
-  u32 yearday() const;
-  /*! \details Returns the month (from 1 to 12). */
-  u32 month() const;
-  /*! \details Returns the year (e.g. 2014) */
-  u32 year() const;
-
-  /*! \details Converts the time to a struct tm. */
-  struct tm get_tm() const;
-
 private:
   time_t m_time;
 };
 
+class Date {
+public:
+  explicit Date(const DateTime &date_time);
+
+  /*! \details Gets the name of the month. */
+  const char *month_name() const;
+
+  /*! \details Returns seconds (from 0 to 59). */
+  u32 second() const { return m_tm.tm_sec; }
+  /*! \details Returns minutes (from 0 to 59). */
+  u32 minute() const { return m_tm.tm_min; }
+  /*! \details Returns hours (from 0 to 23). */
+  u32 hour() const { return m_tm.tm_hour; }
+
+  /*! \details Returns the day of month (from 1 to 31). */
+  u32 day() const { return m_tm.tm_mday; }
+  /*! \details Returns the day of week (from 1 to 7). */
+  u32 weekday() const { return m_tm.tm_wday; }
+  /*! \details Returns the day of the year (1 to 366). */
+  u32 yearday() const { return m_tm.tm_yday; }
+  /*! \details Returns the month (from 1 to 12). */
+  u32 month() const { return m_tm.tm_mon + 1; }
+  /*! \details Returns the year (e.g. 2014) */
+  u32 year() const { return m_tm.tm_year; }
+
+  /*! \details Converts the time to a struct tm. */
+  const struct tm &get_tm() const { return m_tm; }
+
+private:
+  struct tm m_tm;
+};
+
 } // namespace chrono
+
+inline chrono::DateTime operator"" _weeks(unsigned long long int value) {
+  return chrono::DateTime(value * 7 * 24 * 3600UL);
+}
+
+inline chrono::DateTime operator"" _days(unsigned long long int value) {
+  return chrono::DateTime(value * 24 * 3600UL);
+}
+
+inline chrono::DateTime operator"" _hours(unsigned long long int value) {
+  return chrono::DateTime(value * 3600UL);
+}
+
+inline chrono::DateTime operator"" _minutes(unsigned long long int value) {
+  return chrono::DateTime(value * 60UL);
+}
 
 namespace printer {
 class Printer;

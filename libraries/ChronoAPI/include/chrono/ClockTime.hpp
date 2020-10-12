@@ -29,14 +29,6 @@ public:
   /*! \details Gets the resolution of the specified clock. */
   static ClockTime get_system_resolution(ClockId clock_id = ClockId::realtime);
 
-  /*! \details Constructs a ClockTime object from seconds and nanoseconds.
-   *
-   *
-   */
-  ClockTime(const Seconds &seconds, const Nanoseconds &nanoseconds) {
-    assign(seconds, nanoseconds);
-  }
-
   /*! \details Constructs a clock time object based on the timespec. */
   ClockTime(const struct timespec &nano_time) : m_value(nano_time) {}
 
@@ -47,23 +39,13 @@ public:
   ClockTime() { reset(); }
 
   static ClockTime from_seconds(u32 seconds) {
-    return ClockTime(Seconds(seconds), Nanoseconds(0));
+    return ClockTime().set_seconds(seconds);
   }
 
   /*! \details Resets the value of the clock to zero. */
   ClockTime &reset() {
     m_value.tv_sec = 0;
     m_value.tv_nsec = 0;
-    return *this;
-  }
-
-  /*! \details Sets the value of the clock time.
-   *
-   *
-   */
-  ClockTime &set(const Seconds &seconds, const Nanoseconds &nanoseconds) {
-    m_value.tv_sec = seconds.seconds();
-    m_value.tv_nsec = nanoseconds.nanoseconds();
     return *this;
   }
 
@@ -98,8 +80,9 @@ public:
    */
   bool is_valid() const { return *this != invalid(); }
 
-  /*! \details Returns a MicroTime object set to the invalid time. */
-  static ClockTime invalid() { return ClockTime(Seconds(-1), Nanoseconds(-1)); }
+  static ClockTime invalid() {
+    return ClockTime().set_seconds(-1).set_nanoseconds(-1);
+  }
 
   /*! \details Returns true if this is greater than \a a. */
   bool operator>(const ClockTime &a) const;
@@ -153,12 +136,13 @@ public:
   /*! \details Returns the nanoseconds component. */
   s32 nanoseconds() const { return m_value.tv_nsec; }
 
-  var::String get_unique_string() const {
-    return var::String().format("%ld%09ld", seconds(), nanoseconds());
+  static var::String get_unique_string() {
+    return std::move(ClockTime::get_system_time().get_string());
   }
 
   var::String get_string() const {
-    return var::String().format("%ld.%09ld", seconds(), nanoseconds());
+    return std::move(
+      var::String().format("%ld.%09ld", seconds(), nanoseconds()));
   }
 
   /*! \details Returns a pointer to a strut timespec. */
@@ -169,7 +153,7 @@ public:
   const struct timespec *timespec() const { return &m_value; }
 
 private:
-  void assign(const Seconds &seconds, const Nanoseconds &nanoseconds);
+  void assign(u32 seconds, u32 nanoseconds);
   static ClockTime add(const ClockTime &a, const ClockTime &b);
   static ClockTime subtract(const ClockTime &a, const ClockTime &b);
   struct timespec m_value;
@@ -177,10 +161,10 @@ private:
 
 } // namespace chrono
 
-namespace sys {
+namespace printer {
 class Printer;
-}
-
-sys::Printer &operator<<(sys::Printer &printer, const chrono::ClockTime &a);
+printer::Printer &
+operator<<(printer::Printer &printer, const chrono::ClockTime &a);
+} // namespace printer
 
 #endif /* CHRONO_API_CHRONO_CLOCK_TIME_HPP_ */

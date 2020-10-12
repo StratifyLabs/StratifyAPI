@@ -10,7 +10,7 @@ void chrono::wait(const chrono::MicroTime &duration) {
   u32 seconds = period.seconds();
   if (seconds > 0) {
     ::sleep(seconds);
-    period = period - Seconds(seconds);
+    period = period - MicroTime(period.seconds() * 1000000UL);
   }
   ::usleep(period.microseconds());
 }

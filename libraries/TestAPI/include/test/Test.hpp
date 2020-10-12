@@ -187,9 +187,6 @@ public:
 
   bool expect(const char *function, unsigned int line, bool value) {
     if (value) {
-      printer().key(
-        var::String().format("expect%d", line),
-        var::String().format("%s passed", function));
       return true;
     }
 

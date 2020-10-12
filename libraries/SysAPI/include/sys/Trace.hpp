@@ -38,9 +38,9 @@ public:
   }
   /*! \details Returns the timestamp when the trace was fired. */
   chrono::ClockTime timestamp() const {
-    return chrono::ClockTime(
-      chrono::Seconds(m_event.posix_trace_event.posix_timestamp_tv_sec),
-      chrono::Nanoseconds(m_event.posix_trace_event.posix_timestamp_tv_nsec));
+    return chrono::ClockTime()
+      .set_seconds(m_event.posix_trace_event.posix_timestamp_tv_sec)
+      .set_nanoseconds(m_event.posix_trace_event.posix_timestamp_tv_nsec);
   }
 
   /*! \details Returns the trace's message. */

@@ -230,7 +230,7 @@ public:
    */
   Thread &wait(
     void **ret = nullptr,
-    const chrono::MicroTime &interval = chrono::Milliseconds(1000UL));
+    const chrono::MicroTime &interval = chrono::MicroTime(100000));
 
   /*! \details Yields the processor to another thread */
   static void yield() { Sched().yield(); }

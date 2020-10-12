@@ -290,9 +290,7 @@ public:
   /*! \details Reconnects to the last known path and serial number. */
   int reinit() { return connect(path()); }
 
-  int reconnect(
-    int retries = 5,
-    chrono::MicroTime delay = chrono::Milliseconds(500));
+  int reconnect(int retries = 5, chrono::MicroTime delay = 500_milliseconds);
 
   /*! \details This disconnects from the device.  After calling this,
    * other applications can access the device.

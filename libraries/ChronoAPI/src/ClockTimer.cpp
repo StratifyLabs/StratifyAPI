@@ -23,7 +23,7 @@ ClockTimer &ClockTimer::reset() {
 
 ClockTimer &ClockTimer::restart() {
   m_start = ClockTime::get_system_time();
-  m_stop.set(Seconds::invalid(), Nanoseconds(0));
+  m_stop.set_seconds(-1).set_nanoseconds(0);
   return *this;
 }
 
@@ -47,7 +47,7 @@ ClockTimer &ClockTimer::resume() {
     new_start = m_stop - m_start;
     now = ClockTime::get_system_time();
     m_start = now - new_start;
-    m_stop.set(Seconds::invalid(), Nanoseconds(0));
+    m_stop.set_seconds(-1).set_nanoseconds(0);
   } else {
     // if timer is not running then start it
     restart();

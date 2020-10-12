@@ -535,7 +535,7 @@ int Link::erase_os(const UpdateOs &options) {
   memset(&attr, 0, sizeof(attr));
   int retry = 0;
   do {
-    chrono::wait(chrono::Milliseconds(500));
+    chrono::wait(500_milliseconds);
     err = get_bootloader_attr(attr);
     if (progress_callback) {
       progress_callback->update(
@@ -544,7 +544,7 @@ int Link::erase_os(const UpdateOs &options) {
     }
   } while ((err < 0) && (retry++ < options.bootloader_retry_count()));
 
-  chrono::wait(chrono::Milliseconds(250));
+  chrono::wait(250_milliseconds);
 
   // flush just incase the protocol gets filled with get attr requests
   driver()->phy_driver.flush(driver()->phy_driver.handle);
