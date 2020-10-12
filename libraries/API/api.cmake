@@ -7,9 +7,8 @@ macro(api_target NAME DIRECTORIES)
 
 	install(DIRECTORY include/ DESTINATION include/${NAME})
 
-	string(COMPARE EQUAL ${SOS_BUILD_CONFIG} link IS_LINK)
-
-	if(IS_LINK)
+	if(SOS_IS_LINK)
+		message("STATUS building link")
 		set(ARCH link)
 	else()
 		set(ARCH v7m)
@@ -36,7 +35,7 @@ macro(api_target NAME DIRECTORIES)
 		-Os
 		)
 
-	if(IS_LINK)
+	if(SOS_IS_LINK)
 		target_include_directories(${RELEASE_TARGET}
 			PUBLIC
 			${CMAKE_INSTALL_PREFIX}/include
@@ -53,8 +52,6 @@ macro(api_target NAME DIRECTORIES)
 
 	endforeach(DIRECTORY)
 
-	message(STATUS "build include ${BUILD_INCLUDE_DIRECTORIES}")
-	message(STATUS "install include ${INSTALL_INCLUDE_DIRECTORIES}")
 
 	target_include_directories(${RELEASE_TARGET}
 		PUBLIC

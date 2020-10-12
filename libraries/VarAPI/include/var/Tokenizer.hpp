@@ -20,7 +20,6 @@ public:
   class Construct {
     API_ACCESS_COMPOUND(Construct, var::StringView, delimeters);
     API_ACCESS_COMPOUND(Construct, var::StringView, ignore_between);
-    API_ACCESS_BOOL(Construct, count_empty_tokens, false);
     API_ACCESS_FUNDAMENTAL(Construct, u32, maximum_delimeter_count, 0);
   };
 

@@ -50,7 +50,7 @@ Data::Data(size_t size) { resize(size); }
 Data Data::from_string(StringView value) {
   Data result(value.length() / 2);
   for (u32 i = 0; i < value.length() / 2; i++) {
-    View(result).to_u8()[i]
+    result.data_u8()[i]
       = value
           .get_substring(
             String::GetSubstring().set_position(i * 2).set_length(2))

@@ -38,7 +38,7 @@ public:
   char at(size_t value) const { return m_string_view.at(value); }
   char front() const { return m_string_view.front(); }
   char back() const { return m_string_view.back(); }
-  char length() const { return m_string_view.length(); }
+  size_t length() const { return m_string_view.length(); }
 
   bool is_empty() const { return m_string_view.empty(); }
   StringView &pop_front(size_t length = 1) {

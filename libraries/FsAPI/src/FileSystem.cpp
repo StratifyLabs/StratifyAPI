@@ -356,5 +356,5 @@ DataFile FileSystem::load_data_file(var::StringView file_path) {
     "",
     result.write(source_file, File::Write()).seek(0).status().value());
 
-  return result.set_flags(OpenMode::read_write());
+  return std::move(result.set_flags(OpenMode::read_write()));
 }

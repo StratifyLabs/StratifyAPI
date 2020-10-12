@@ -330,7 +330,8 @@ Socket Socket::accept(SocketAddress &address) const {
     ::accept(m_socket, &address.m_sockaddr.sockaddr, &len));
 
   address.m_sockaddr.size = len;
-  return result;
+  return Socket();
+  // return std::move(result);
 }
 
 Socket &Socket::connect(const SocketAddress &address) {

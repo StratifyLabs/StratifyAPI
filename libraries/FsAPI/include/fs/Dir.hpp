@@ -48,6 +48,11 @@ public:
   /*! \details Constructs a Dir object. */
   Dir(var::StringView path FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
+  Dir(const Dir &dir) = delete;
+  Dir &operator=(const Dir &dir) = delete;
+  Dir(Dir &&dir) = default;
+  Dir &operator=(Dir &&dir) = default;
+
   static const var::String filter_hidden(const var::String &entry) {
     if (!entry.is_empty() && entry.front() == '.') {
       return var::String();

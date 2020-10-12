@@ -10,16 +10,18 @@ namespace var {
 class VersionString {
 public:
   VersionString() {}
-  VersionString(u8 major, u8 minor, u8 patch);
-  VersionString(u16 major_minor);
-  VersionString(const var::String &value) { string() = value; }
 
   u32 to_bcd() const;
 
   u16 to_bcd16() const { return to_bcd() >> 8; }
 
-  VersionString &operator<<(u16 value);
-  VersionString &operator<<(u32 value);
+  VersionString from_triple(u16 major, u8 minor, u8 patch);
+  VersionString from_u16(u16 major_minor);
+
+  VersionString &set_string(StringView value) {
+    m_version = String(value);
+    return *this;
+  }
 
   bool operator==(const VersionString &a) const {
     return compare(*this, a) == 0;
@@ -69,9 +71,6 @@ public:
 
 private:
   String m_version;
-
-  void from(u16 major, u8 minor, u8 patch);
-  void from(u16 major_minor);
 };
 } // namespace var
 

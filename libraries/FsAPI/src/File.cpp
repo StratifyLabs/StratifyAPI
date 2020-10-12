@@ -14,6 +14,7 @@
 using namespace fs;
 
 File::File(FSAPI_LINK_DECLARE_DRIVER) {
+  LINK_SET_DRIVER((*this), driver());
   m_fd = -1; // The file is not open
   set_keep_open(false);
 }
@@ -37,8 +38,8 @@ File File::create(
   var::StringView path,
   IsOverwrite is_overwrite,
   Permissions perms FSAPI_LINK_DECLARE_DRIVER_LAST) {
-  return File(FSAPI_LINK_INHERIT_DRIVER)
-    .internal_create(path, is_overwrite, perms);
+  return std::move(
+    File(FSAPI_LINK_INHERIT_DRIVER).internal_create(path, is_overwrite, perms));
 }
 
 int File::interface_open(const char *path, int flags, int mode) const {

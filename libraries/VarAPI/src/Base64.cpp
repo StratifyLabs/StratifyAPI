@@ -36,25 +36,19 @@ int Base64Decoder::transform(const Transform &options) const {
 String Base64::encode(View input) const {
   String result;
   result.resize(get_encoded_size(input.size()));
-  if (result.status().is_error()) {
-    API_RETURN_VALUE_ASSIGN_ERROR(String(), "", ENOMEM);
-  }
+  API_RETURN_VALUE_IF_ERROR(String());
   encode(result.to_char(), input.to_const_void(), input.size());
-  return result;
+  return std::move(result);
 }
 
 Data Base64::decode(StringView input) const {
   Data result;
-  int len = get_decoded_size(input.length());
-  if (result.resize(len).status().is_error()) {
-    API_RETURN_VALUE_ASSIGN_ERROR(Data(), "", ENOMEM);
-    return Data();
-  }
-
+  size_t len = get_decoded_size(input.length());
+  result.resize(len + 4);
+  API_RETURN_VALUE_IF_ERROR(Data());
   len -= decode(result.data(), input.cstring(), input.length());
-
   result.resize(len);
-  return result;
+  return std::move(result);
 }
 
 int Base64::encode(char *dest, const void *src, int nbyte) {

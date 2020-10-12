@@ -79,6 +79,7 @@ void Test::open_case(var::StringView case_name) {
 
 void Test::close_case() {
   m_case_timer.stop();
+  printer::PrinterObject po(printer(), "caseResult");
   m_test_duration_microseconds += m_case_timer.microseconds();
   printer().key("result", m_case_result);
   printer().key(

@@ -131,11 +131,11 @@ var::StringList Dir::read_list(
 
   } while (!is_the_end);
 
-  return result;
+  return std::move(result);
 }
 
-var::Vector<var::String> Dir::read_list(IsRecursive is_recursive) {
-  return read_list(nullptr, is_recursive);
+var::StringList Dir::read_list(IsRecursive is_recursive) {
+  return std::move(read_list(nullptr, is_recursive));
 }
 
 const char *Dir::read() {

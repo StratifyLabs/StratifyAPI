@@ -226,15 +226,16 @@ public:
     if (options.position() >= m_string.length()) {
       return String();
     }
-    return String(m_string.substr(options.position(), options.length()));
+    return std::move(
+      String(m_string.substr(options.position(), options.length())));
   }
 
   String get_substring_at_position(size_t position) const {
-    return String(m_string.substr(position));
+    return std::move(String(m_string.substr(position)));
   }
 
   String get_substring_with_length(size_t length) const {
-    return String(m_string.substr(0, length));
+    return std::move(String(m_string.substr(0, length)));
   }
 
   String &insert(const String &string_to_insert, const Insert &options) {
@@ -288,7 +289,13 @@ public:
   ssize_t length_signed() const {
     return static_cast<ssize_t>(m_string.length());
   }
-  void clear() { m_string.clear(); }
+
+  String &clear() {
+    m_string.clear();
+    return *this;
+  }
+
+  String &free() { return *this = String(); }
 
   String &push_back(char a) {
     m_string.push_back(a);

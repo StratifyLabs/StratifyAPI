@@ -26,12 +26,6 @@ const int View::m_zero_value MCU_ALIGN(4) = 0;
 // this value corresponds to the malloc chunk size used in Stratify OS
 // this may be something that could be determined through a system call
 
-View::View() {}
-
-View::View(const Data &data) {
-  set_view(Construct().set_read_buffer(data.data()).set_size(data.size()));
-}
-
 void View::set_view(const Construct &options) {
   if (options.size()) {
     m_size_read_only = options.size();
@@ -45,6 +39,10 @@ void View::set_view(const Construct &options) {
     m_data = nullptr;
     m_size_read_only = 0;
   }
+}
+
+View::View(const Data &data) {
+  set_view(Construct().set_read_buffer(data.data()).set_size(data.size()));
 }
 
 View::View(Data &data) {

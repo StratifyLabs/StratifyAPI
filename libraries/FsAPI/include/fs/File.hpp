@@ -101,6 +101,12 @@ public:
     OpenMode flags
     = OpenMode::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
+  File(const File &file) = delete;
+  File &operator=(const File &file) = delete;
+
+  File(File &&file) = default;
+  File &operator=(File &&file) = default;
+
   ~File();
 
   static File create(
@@ -472,8 +478,9 @@ public:
   ViewFile(var::View view)
     : FileAccess(""),
       m_open_flags(
-        view.is_read_only() ? OpenMode::read_only() : OpenMode::read_write()),
-      m_view(view) {}
+        view.is_read_only() ? OpenMode::read_only() : OpenMode::read_write()) {
+    m_view = view;
+  }
 
   ViewFile &set_flags(const OpenMode &open_flags) {
     m_open_flags = open_flags;

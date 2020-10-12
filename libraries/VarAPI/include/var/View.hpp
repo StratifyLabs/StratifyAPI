@@ -83,15 +83,8 @@ public:
     API_AF(Construct, size_t, size, 0);
   };
 
-  /*! \details Constructs an empty
-   * data reference.
-   *
-   * is_valid() will return false until
-   * refer_to() is called.
-   *
-   *
-   */
-  View();
+  View() = default;
+
   View(const Construct &options);
 
   View(const Data &data);
@@ -155,7 +148,21 @@ public:
 
   template <typename T> explicit View(T &item) {
     // catch all
-    refer_to(item);
+    static_assert(
+      std::is_trivial<T>::value && std::is_standard_layout<T>::value,
+      "Cannot construct reference from non-trivial non-standard-layout "
+      "types");
+
+    if (std::is_const<T>::value == false) {
+      set_view(Construct()
+                 .set_read_buffer(&item)
+                 .set_write_buffer((void *)&item)
+                 .set_size(sizeof(T)));
+    } else {
+      set_view(
+        Construct().set_read_buffer(&item).set_write_buffer(nullptr).set_size(
+          sizeof(T)));
+    }
   }
 
   /*! \details Returns true if the data reference
@@ -186,56 +193,7 @@ public:
   /*! \details Returns true if the view is null.
    *
    */
-  bool is_null() const { return size() == 0; }
-
-  View &refer_to(const View &value) {
-    m_data = value.m_data;
-    m_size_read_only = value.m_size_read_only | m_size_read_only_flag;
-    return *this;
-  }
-
-  View &refer_to(View &value) {
-    m_data = value.m_data;
-    m_size_read_only = value.m_size_read_only;
-    return *this;
-  }
-
-  /*! \details Refers to an item.
-   *
-   * ```
-   * //md2code:main
-   * pio_attr_t pio_attributes;
-   *
-   * View data_structure;
-   * data_structure.refer_to(pio_attributes);
-   * data_structure.fill<u8>(0);
-   *
-   * if( data_structure.to_void() == (void*)&pio_attributes ){
-   *   printf("this will print\n");
-   * }
-   * ```
-   *
-   */
-  template <typename T> View &refer_to(T &item) {
-
-    static_assert(
-      std::is_trivial<T>::value && std::is_standard_layout<T>::value,
-      "Cannot construct reference from non-trivial non-standard-layout "
-      "types");
-
-    if (std::is_const<T>::value == false) {
-      set_view(Construct()
-                 .set_read_buffer(&item)
-                 .set_write_buffer((void *)&item)
-                 .set_size(sizeof(T)));
-    } else {
-      set_view(
-        Construct().set_read_buffer(&item).set_write_buffer(nullptr).set_size(
-          sizeof(T)));
-    }
-
-    return *this;
-  }
+  bool is_null() const { return m_data == nullptr; }
 
   /*! \details Refers to a read-write buffer
    * with the specified size.
