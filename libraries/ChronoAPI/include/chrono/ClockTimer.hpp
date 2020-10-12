@@ -132,6 +132,22 @@ public:
    */
   ClockTimer &resume();
 
+  /*! \details Stops the timer from counting.
+   *
+   * Subsequent calls to value() will return the same number.  Once the timer
+   * has been stopped(), a call to resume() will resume counting and a call to
+   * start() or restart() will restart counting from zero.
+   */
+  ClockTimer &stop();
+
+  /*! \details Resets the value of the timer.
+   *
+   *  After calling this method, is_running(), and is_started() will both
+   *  all return false;
+   *
+   */
+  ClockTimer &reset();
+
   /*! \details Returns true if the timer is currently counting meaning
    * it has been started but has not been stopped.
    *
@@ -168,14 +184,6 @@ public:
    */
   bool is_reset() const { return m_stop.seconds() == 0; }
 
-  /*! \details Resets the value of the timer.
-   *
-   *  After calling this method, is_running(), and is_started() will both
-   *  all return false;
-   *
-   */
-  ClockTimer &reset();
-
   /*! \details Calculates the timer value in milliseconds.
    *
    * @return The number of milliseconds that have elapsed since start.  This
@@ -205,37 +213,7 @@ public:
   /*! \details Returns the value of the timer as a ClockTime object. */
   ClockTime clock_time() const;
 
-  /*! \details Stops the timer from counting.
-   *
-   * Subsequent calls to value() will return the same number.  Once the timer
-   * has been stopped(), a call to resume() will resume counting and a call to
-   * start() or restart() will restart counting from zero.
-   */
-  ClockTimer &stop();
-
-  bool operator==(const chrono::MicroTime &a) const {
-    return microseconds() == a.microseconds();
-  }
-
-  bool operator!=(const chrono::MicroTime &a) const {
-    return microseconds() != a.microseconds();
-  }
-
-  bool operator<=(const chrono::MicroTime &a) const {
-    return microseconds() <= a.microseconds();
-  }
-
-  bool operator>=(const chrono::MicroTime &a) const {
-    return microseconds() >= a.microseconds();
-  }
-
-  bool operator>(const chrono::MicroTime &a) const {
-    return microseconds() > a.microseconds();
-  }
-
-  bool operator<(const chrono::MicroTime &a) const {
-    return microseconds() < a.microseconds();
-  }
+  operator MicroTime() const { return MicroTime(microseconds()); }
 
 private:
   MicroTime calc_value() const;

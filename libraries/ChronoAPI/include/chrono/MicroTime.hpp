@@ -62,20 +62,16 @@ public:
 
   /*! \details Constructs a Microseconds object from a chrono::ClockTime value.
    */
-  MicroTime(const ClockTime &clock_time);
-
+  explicit MicroTime(const ClockTime &clock_time);
 
   /*! \details Constructs a Microseconds object from the current value of a
    * chrono::Timer. */
-  MicroTime(const ClockTimer &timer);
-
-  /*! \details Returns true if the time is set to a valid value.
-   *
-   */
-  bool is_valid() const { return m_value_microseconds != static_cast<u32>(-1); }
+  explicit MicroTime(const ClockTimer &timer);
 
   /*! \details Returns a MicroTime object set to the invalid time value. */
   static MicroTime invalid() { return MicroTime(static_cast<u32>(-1)); }
+
+  bool is_valid() const { return m_value_microseconds != invalid(); }
 
   /*! \details Assignment addition to another MicroTime object. */
   MicroTime &operator+=(const MicroTime &a) {
