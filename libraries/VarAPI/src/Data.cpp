@@ -38,7 +38,6 @@ u32 Data::minimum_capacity() { return api::ApiInfo::malloc_start_chunk_size(); }
 
 u32 Data::block_size() {
   return api::ApiInfo::malloc_chunk_size();
-  ;
 }
 
 Data::Data() {

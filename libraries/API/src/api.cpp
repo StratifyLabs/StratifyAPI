@@ -8,114 +8,18 @@
 #include <cstdio>
 #include <cstring>
 
-#if defined __link
-#include <string>
-#define API_MINIMUM_CHUNK_SIZE 1024
-#define API_MALLOC_CHUNK_SIZE 1024
-#else
-#include <mcu/arch.h>
-#define API_MALLOC_CHUNK_SIZE MALLOC_CHUNK_SIZE
-#define API_MINIMUM_CHUNK_SIZE (MALLOC_CHUNK_SIZE - 12)
-#endif
-
 #define ERROR_CODE_CASE(c)                                                     \
   case c:                                                                      \
     return MCU_STRINGIFY(c)
 
 using namespace api;
 
+const char *ApiInfo::version() {
+  return MCU_STRINGIFY(__PROJECT_VERSION_MAJOR) "." MCU_STRINGIFY(
+    __PROJECT_VERSION_MINOR) "." MCU_STRINGIFY(__PROJECT_VERSION_PATCH);
+}
+
 const char *ApiInfo::git_hash() { return SOS_GIT_HASH; }
-
-const char *ApiInfo::operating_system_name() {
-#if defined __link
-
-#if defined __macosx
-  return "macosx";
-#elif defined __win32
-  return "windows";
-#elif defined __linux
-  return "linux";
-#else
-  return "unknown";
-#endif
-
-#else
-  return "stratifyos";
-#endif
-}
-
-const char *ApiInfo::system_processor() {
-#if defined __processor_i386 || defined __processor_x86
-  return "i386";
-#elif defined __processor_x86_64 || defined __processor_AMD64
-  return "x86_64";
-#elif defined __processor_arm || defined __processor_armv7l
-  return "arm32";
-#elif defined __processor_aarch64
-  return "arm64";
-#else
-  return "unknown";
-#endif
-}
-
-bool ApiInfo::is_windows() {
-  return strcmp(operating_system_name(), "windows") == 0;
-}
-bool ApiInfo::is_macosx() {
-  return strcmp(operating_system_name(), "macosx") == 0;
-}
-bool ApiInfo::is_linux() {
-  return strcmp(operating_system_name(), "linux") == 0;
-}
-bool ApiInfo::is_stratify_os() {
-  return strcmp(operating_system_name(), "stratifyos") == 0;
-}
-
-bool ApiInfo::is_processor_i386() {
-  return strcmp(system_processor(), "i386") == 0;
-}
-bool ApiInfo::is_processor_x86_64() {
-  return strcmp(system_processor(), "x86_64") == 0;
-}
-bool ApiInfo::is_processor_arm32() {
-  return strcmp(system_processor(), "arm32") == 0;
-}
-bool ApiInfo::is_processor_arm64() {
-  return strcmp(system_processor(), "arm64") == 0;
-}
-
-u32 ApiInfo::malloc_start_chunk_size() { return API_MINIMUM_CHUNK_SIZE; }
-u32 ApiInfo::malloc_chunk_size() { return API_MALLOC_CHUNK_SIZE; }
-
-const char *ApiInfo::user_data_path() {
-
-#if defined __link
-
-  static std::string result;
-  result = std::string();
-
-  std::string path;
-  if (is_windows()) {
-    path = getenv("LocalAppData");
-    result += path;
-  }
-
-  if (is_macosx()) {
-    // read env home variable
-    path = getenv("HOME");
-    result += path + "/Library/Application Support";
-  }
-
-  if (is_linux()) {
-    path = getenv("HOME");
-    result += path + "/.sl";
-  }
-
-  return result.c_str();
-#else
-  return "/home";
-#endif
-}
 
 void api::api_assert(bool value, const char *function, int line) {
   if (!value) {

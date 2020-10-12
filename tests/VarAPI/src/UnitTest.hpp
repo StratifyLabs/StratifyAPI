@@ -7,7 +7,6 @@
 #include "fs.hpp"
 #include "sys.hpp"
 #include "test/Test.hpp"
-#include "thread.hpp"
 #include "var.hpp"
 
 using S = var::String;

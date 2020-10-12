@@ -1,7 +1,7 @@
 
 include(${CMAKE_CURRENT_LIST_DIR}/api.cmake)
 
-api_target(API "")
+api_target(API "" 4.0.0)
 
 target_sources(${RELEASE_TARGET}
 	PRIVATE

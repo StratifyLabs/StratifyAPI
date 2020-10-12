@@ -3,12 +3,14 @@
 macro(api_target NAME DIRECTORIES)
 	include(sos-sdk)
 
-	project(${NAME} CXX C)
+	project(
+		${NAME}
+		VERSION ${STRATIFYAPI_PROJECT_VERSION}
+		LANGUAGES CXX)
 
 	install(DIRECTORY include/ DESTINATION include/${NAME})
 
 	if(SOS_IS_LINK)
-		message("STATUS building link")
 		set(ARCH link)
 	else()
 		set(ARCH v7m)
@@ -28,6 +30,13 @@ macro(api_target NAME DIRECTORIES)
 		PRIVATE
 		${PUBLIC_SOURCES}
 		${PRIVATE_SOURCES}
+		)
+
+	target_compile_definitions(${RELEASE_TARGET}
+		PRIVATE
+		__PROJECT_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
+		__PROJECT_VERSION_MINOR=${PROJECT_VERSION_MINOR}
+		__PROJECT_VERSION_PATCH=${PROJECT_VERSION_PATCH}
 		)
 
 	target_compile_options(${RELEASE_TARGET}
@@ -59,7 +68,7 @@ macro(api_target NAME DIRECTORIES)
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		)
 
-	message(STATUS "Adding dependencies ${DIRECTORIES}")
+	#message(STATUS "Adding dependencies ${DIRECTORIES}")
 	sos_sdk_library_add_arch_targets("${RELEASE_OPTIONS}" ${SOS_ARCH} "${DIRECTORIES}")
 
 	add_custom_target(

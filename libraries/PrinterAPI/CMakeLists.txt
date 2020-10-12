@@ -8,4 +8,4 @@ set(DIRECTORIES
 	)
 
 
-api_target(PrinterAPI "${DIRECTORIES}")
+api_target(PrinterAPI "${DIRECTORIES}" 4.0.0)

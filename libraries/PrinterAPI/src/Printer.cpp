@@ -42,7 +42,7 @@ Printer::Printer() {
 
 void Printer::set_format_code(u32 code) {
 #if defined __link
-  if (api::ApiInfo::is_macosx() || is_bash()) {
+  if (is_bash()) {
     interface_print_final(var::Ntos(code, "\033[1;%dm"));
   }
 #endif
@@ -50,7 +50,7 @@ void Printer::set_format_code(u32 code) {
 
 void Printer::clear_format_code(u32 code) {
 #if defined __link
-  if (api::ApiInfo::is_macosx() || is_bash()) {
+  if (is_bash()) {
     interface_print_final(var::Ntos(code, "\033[1;2%dm"));
   }
 #endif
@@ -59,7 +59,7 @@ void Printer::clear_format_code(u32 code) {
 void Printer::set_color_code(u32 code) {
 
 #if defined __link
-  if (api::ApiInfo::is_macosx() || is_bash()) {
+  if (is_bash()) {
     interface_print_final(var::NumberToString(code, "\033[1;%dm"));
   }
 #endif
@@ -254,7 +254,7 @@ void Printer::print_close_array() {
 
 void Printer::clear_color_code() {
 #if defined __link
-  if (api::ApiInfo::is_macosx() || is_bash()) {
+  if (is_bash()) {
     interface_print_final("\033[0m");
   } else {
     set_color_code(ColorCode::normal);

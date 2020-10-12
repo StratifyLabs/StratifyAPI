@@ -94,7 +94,7 @@ public:
    * ```
    *
    */
-  static const char *version() { return "4.0.0-alpha"; }
+  static const char *version();
 
   /*! \details Returns a c-style string pointer
    * to the git hash used to build the Stratify API.
@@ -110,98 +110,11 @@ public:
    */
   static const char *git_hash();
 
-  /*! \details Returns a c-style string pointer
-   * of the name of the operating system
-   * the application is running on.
-   *
-   * ```
-   * //md2code:main
-   *	printf("The Stratify API application is running on %s\n",
-   *	  api::ApiInfo::operating_system_name()
-   * );
-   * ```
-   *
-   * The names are:
-   *
-   * - `macosx`
-   * - `windows`
-   * - `linux`
-   * - `stratifyos`
-   *
-   *
-   */
-  static const char *operating_system_name();
+  static constexpr u32 malloc_start_chunk_size() {
+    return API_MINIMUM_CHUNK_SIZE;
+  }
 
-  static const char *system_processor();
-
-  static bool is_processor_i386();
-  static bool is_processor_x86_64();
-  static bool is_processor_arm32();
-  static bool is_processor_arm64();
-
-  /*! \details Returns true if the application
-   * is running on a windows system.
-   *
-   * ```
-   * //md2code:main
-   * if( api::ApiInfo::is_windows() ){
-   *   printf("This is windows baby!\n");
-   * }
-   * ```
-   *
-   */
-  static bool is_windows();
-
-  /*! \details Returns true if the application
-   * is running on a mac os x system.
-   *
-   * ```
-   * //md2code:main
-   * if( api::ApiInfo::is_macosx() ){
-   *   printf("Running on macosx\n");
-   * }
-   * ```
-   *
-   */
-  static bool is_macosx();
-
-  /*! \details Returns true if the application
-   * is running on a mac os x system.
-   *
-   * ```
-   * //md2code:main
-   * if( api::ApiInfo::is_linux() ){
-   *   printf("Running on linux\n");
-   * }
-   * ```
-   *
-   */
-  static bool is_linux();
-
-  /*! \details Returns true if the application
-   * is running on a Stratify OS system.
-   *
-   * ```
-   * //md2code:main
-   * if( api::ApiInfo::is_stratify_os() ){
-   *   printf("Yep!\n");
-   * }
-   * ```
-   *
-   */
-  static bool is_stratify_os();
-
-  /*! \details Returns a directory path
-   * that can be used to store application
-   * data.
-   *
-   * For Stratify OS, this is `/home`.
-   *
-   */
-  static const char *user_data_path();
-
-  static u32 malloc_start_chunk_size();
-  static u32 malloc_chunk_size();
+  static constexpr u32 malloc_chunk_size() { return API_MALLOC_CHUNK_SIZE; }
 };
 
 #if defined __link

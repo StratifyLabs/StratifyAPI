@@ -4,6 +4,7 @@
 #include <cstdio>
 
 #include "printer/Printer.hpp"
+#include "sys/System.hpp"
 #include "test/Case.hpp"
 #include "test/Test.hpp"
 #include "var/String.hpp"
@@ -107,6 +108,12 @@ void Test::initialize(const Initialize &options) {
     appfs_info = Appfs().get_info(var::String("/app/ram/") + options.name());
   }
 #endif
+
+  {
+    PrinterObject pg(printer(), "system");
+    printer().key("operatingSystem", sys::System::operating_system_name());
+    printer().key("processor", sys::System::processor());
+  }
 
   {
     PrinterObject pg(printer(), "test");

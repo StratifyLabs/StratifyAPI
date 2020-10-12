@@ -188,4 +188,14 @@ private:                                                                       \
     return a;                                                                  \
   }
 
+#if defined __link
+#include <string>
+#define API_MINIMUM_CHUNK_SIZE 1024
+#define API_MALLOC_CHUNK_SIZE 1024
+#else
+#include <mcu/arch.h>
+#define API_MALLOC_CHUNK_SIZE MALLOC_CHUNK_SIZE
+#define API_MINIMUM_CHUNK_SIZE (MALLOC_CHUNK_SIZE - 12)
+#endif
+
 #endif // API_API_MACROS_HPP_

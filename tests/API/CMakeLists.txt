@@ -18,6 +18,8 @@ set(RAM_SIZE 32768)
 include(${CMAKE_SOURCE_DIR}/tests/API/api.cmake)
 
 set(DIRECTORIES
+	FsAPI
+	ThreadAPI
 	SysAPI
 	TestAPI
 	)
