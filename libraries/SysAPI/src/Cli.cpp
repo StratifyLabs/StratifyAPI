@@ -2,9 +2,7 @@
              // LICENSE.md for rights.
 
 #include "sys/Cli.hpp"
-#include "fs/File.hpp"
 #include "printer/Printer.hpp"
-#include "sys/Appfs.hpp"
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const sys::Cli &a) {

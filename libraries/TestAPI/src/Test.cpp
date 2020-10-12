@@ -4,7 +4,6 @@
 #include <cstdio>
 
 #include "printer/Printer.hpp"
-#include "sys.hpp"
 #include "test/Case.hpp"
 #include "test/Test.hpp"
 #include "var/String.hpp"

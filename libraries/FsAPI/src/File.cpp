@@ -13,17 +13,26 @@
 
 using namespace fs;
 
+#if 0
 File::File(FSAPI_LINK_DECLARE_DRIVER) {
   LINK_SET_DRIVER((*this), driver());
   m_fd = -1; // The file is not open
   set_keep_open(false);
 }
+#endif
 
 File::File(
   var::StringView name,
   OpenMode flags FSAPI_LINK_DECLARE_DRIVER_LAST) {
-  API_RETURN_IF_ERROR();
   open(name, flags);
+}
+
+File::File(
+  var::StringView path,
+  IsCreateOverwrite is_overwrite,
+  Permissions perms FSAPI_LINK_DECLARE_DRIVER_LAST) {
+  LINK_SET_DRIVER((*this), link_driver);
+  internal_create(path, is_overwrite, perms);
 }
 
 File::~File() {
@@ -32,14 +41,6 @@ File::~File() {
       close();
     }
   }
-}
-
-File File::create(
-  var::StringView path,
-  IsOverwrite is_overwrite,
-  Permissions perms FSAPI_LINK_DECLARE_DRIVER_LAST) {
-  return std::move(
-    File(FSAPI_LINK_INHERIT_DRIVER).internal_create(path, is_overwrite, perms));
 }
 
 int File::interface_open(const char *path, int flags, int mode) const {
@@ -121,7 +122,7 @@ size_t File::size() const {
   return size;
 }
 
-int File::fstat(struct FSAPI_LINK_STAT_STRUCT *st) {
+int File::fstat(struct stat *st) {
   API_RETURN_VALUE_IF_ERROR(-1);
   return API_SYSTEM_CALL("", FSAPI_LINK_FSTAT(driver(), m_fd, st));
 }
@@ -142,7 +143,7 @@ const File &File::readline(char *buf, int nbyte, int timeout, char term) const {
     } else {
       t++;
 #if !defined __link
-      chrono::wait(chrono::Milliseconds(1));
+      chrono::wait(1_milliseconds);
 #endif
     }
   } while ((bytes_recv < nbyte) && (t < timeout));

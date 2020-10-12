@@ -42,33 +42,15 @@ printer::Printer &operator<<(printer::Printer &printer, const fs::FileInfo &a) {
 
 using namespace fs;
 
-#if defined __link
-FileInfo::FileInfo(bool is_local) {
-  memset(&m_stat, 0, sizeof(m_stat));
-  m_is_local = is_local;
-}
-#else
-
-FileInfo::FileInfo() { memset(&m_stat, 0, sizeof(m_stat)); }
-#endif
+FileInfo::FileInfo() { m_stat = {0}; }
 
 bool FileInfo::is_directory() const {
-#if defined __link
-  if (m_is_local) {
-    return (m_stat.st_mode & S_IFMT) == S_IFDIR;
-  }
-#endif
   TypeFlags masked = static_cast<TypeFlags>(m_stat.st_mode);
   masked &= TypeFlags::mask;
   return masked == TypeFlags::directory;
 }
 
 bool FileInfo::is_file() const {
-#if defined __link
-  if (m_is_local) {
-    return (m_stat.st_mode & S_IFMT) == S_IFREG;
-  }
-#endif
   TypeFlags masked = static_cast<TypeFlags>(m_stat.st_mode);
   masked &= TypeFlags::mask;
   return masked == TypeFlags::regular;
@@ -79,38 +61,18 @@ bool FileInfo::is_device() const {
 }
 
 bool FileInfo::is_block_device() const {
-#if defined __link
-  if (m_is_local) {
-    return (m_stat.st_mode & S_IFMT) == S_IFBLK;
-  }
-#endif
   TypeFlags masked = static_cast<TypeFlags>(m_stat.st_mode);
   masked &= TypeFlags::mask;
   return masked == TypeFlags::block;
 }
 
 bool FileInfo::is_character_device() const {
-#if defined __link
-  if (m_is_local) {
-    return (m_stat.st_mode & S_IFMT) == S_IFCHR;
-  }
-#endif
-
   TypeFlags masked = static_cast<TypeFlags>(m_stat.st_mode);
   masked &= TypeFlags::mask;
   return masked == TypeFlags::character;
 }
 
 bool FileInfo::is_socket() const {
-#if defined __link
-  if (m_is_local) {
-#if !defined __win32
-    return (m_stat.st_mode & S_IFMT) == S_IFSOCK;
-#else
-    return false;
-#endif
-  }
-#endif
   TypeFlags masked = static_cast<TypeFlags>(m_stat.st_mode);
   masked &= TypeFlags::mask;
   return masked == TypeFlags::file_socket;

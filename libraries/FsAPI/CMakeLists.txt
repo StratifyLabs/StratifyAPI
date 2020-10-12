@@ -1,20 +1,12 @@
 cmake_minimum_required (VERSION 3.12)
 
 
-if(SOS_IS_LINK)
-include(targets/StratifyOS_release_link)
-endif()
-
 include(${CMAKE_CURRENT_LIST_DIR}/../API/api.cmake)
-
 
 
 set(DIRECTORIES
 	ChronoAPI
 	)
 
-if(SOS_IS_LINK)
-	list(APPEND DIRECTORIES StratifyOS)
-endif()
 
 api_target(FsAPI "${DIRECTORIES}")

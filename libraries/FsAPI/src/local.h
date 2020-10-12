@@ -14,6 +14,13 @@
 #define FSAPI_LINK_CLOSE(x, y) link_close(x, y)
 #define FSAPI_LINK_STAT(x, y, z) link_stat(x, y, z)
 #define FSAPI_LINK_FSTAT(x, y, z) link_fstat(x, y, z)
+#define FSAPI_LINK_OPENDIR(x, y) link_opendir(x, y)
+#define FSAPI_LINK_CLOSEDIR(x, y) link_closedir(x, y)
+#define FSAPI_LINK_READDIR_R(w, x, y, z) link_readdir_r(w, x, y, z)
+#define FSAPI_LINK_TELLDIR(x, y) link_telldir(x, y)
+#define FSAPI_LINK_SEEKDIR(x, y, z) link_seekdir(x, y, z)
+#define FSAPI_LINK_REWINDDIR(x, y) link_rewinddir(x, y)
+
 #define LINK_SET_DRIVER(x, y) x.set_driver(y)
 #define LINK_DRIVER_ONLY driver()
 #else
@@ -27,6 +34,14 @@
 #define FSAPI_LINK_CLOSE(x, y) ::close(y)
 #define FSAPI_LINK_STAT(x, y, z) ::stat(y, z)
 #define FSAPI_LINK_FSTAT(x, y, z) ::fstat(y, z)
+#define FSAPI_LINK_READDIR_R(w, x, y, z) ::readdir_r(x, y, z)
+#define FSAPI_LINK_CLOSEDIR(x, y) ::closedir(y)
+#define FSAPI_LINK_TELLDIR(x, y) ::closedir(y)
+#define FSAPI_LINK_SEEKDIR(x, y, z) ::closedir(y, z)
+#define FSAPI_LINK_REWINDDIR(x, y) ::closedir(y)
+
+#define FSAPI_LINK_OPENDIR(x, y) ::opendir(y)
+
 #define LINK_SET_DRIVER(x, y)
 #define LINK_DRIVER_ONLY
 #endif

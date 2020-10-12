@@ -79,25 +79,13 @@ public:
    */
   ~Dir();
 
-  /*! \details Opens a directory. */
-  Dir &open(var::StringView path);
-
-  /*! \details Closes the directory.
-   *
-   * If this method is not called explicitly before
-   * the object is destroyed, it will be called
-   * during destruction. See ~Dir().
-   *
-   */
-  Dir &close();
-
   /*! \details Returns true if the directory is open. */
   bool is_open() const { return m_dirp != 0; }
 
   /*! \details Returns a pointer to the next entry or 0 if no more entries
    * exist.
    */
-  const char *read();
+  const char *read() const;
 
   /*! \details Gets the next entry and writes the full path of the entry to the
    * given string.
@@ -106,41 +94,11 @@ public:
    * entry.
    * @return True if an entry was read or false for an error or no more entries
    */
-  var::String get_entry();
-
-  /*! \details Returns a list of all
-   * the entries in the directory.
-   *
-   *
-   * ```
-   * #include <sapi/fs.hpp>
-   * #include <sapi/var.hpp>
-   *
-   *
-   * Dir d;
-   *
-   * d.open(arg::SourceDirectoryPath("/home");
-   * Vector<String> list = d.read_list();
-   * d.close();
-   *
-   * for(u32 i=0; i < list.count(); i++){
-   *   printf("Entry is %s\n", list.at(i).cstring());
-   * }
-   *
-   * ```
-   *
-   *
-   *
-   */
-  var::StringList read_list(IsRecursive is_recursive = IsRecursive::no);
-
-  var::StringList read_list(
-    var::StringView (*filter)(var::StringView entry),
-    IsRecursive is_recursive = IsRecursive::no);
+  var::String get_entry() const;
 
   /*! \details Returns a pointer (const) to the name of the most recently read
    * entry. */
-  const char *entry_name() { return m_entry.d_name; }
+  const char *entry_name() const { return m_entry.d_name; }
 
   /*! \details Returns the serial number of the most recently read entry. */
   int ino() { return m_entry.d_ino; }
@@ -183,21 +141,28 @@ public:
   }
 #endif
 
-private:
-  var::String m_path;
+protected:
+  Dir &open(var::StringView path);
+  Dir &close();
 
+  virtual int
+  interface_readdir_r(DIR *dirp, dirent *result, dirent **resultp) const;
+
+  virtual int interface_closedir(DIR *dirp) const;
+  virtual int interface_telldir(DIR *dirp) const;
+  virtual void interface_seekdir(DIR *dirp, size_t location) const;
+  virtual void interface_rewinddir(DIR *dirp) const;
+
+private:
+  API_RAC(Dir, var::String, path);
 #ifdef __link
   API_AF(Dir, link_transport_mdriver_t *, driver, nullptr);
-  int m_dirp = 0;
-  struct link_dirent m_entry = {0};
-  DIR *m_dirp_local = nullptr;
-  struct dirent m_entry_local = {0};
-
-  link_transport_mdriver_t *driver() { return m_driver; }
-#else
-  DIR *m_dirp = nullptr;
-  struct dirent m_entry = {0};
 #endif
+
+  DIR *m_dirp = nullptr;
+  mutable struct dirent m_entry = {0};
+
+  DIR *interface_opendir(const char *path) const;
 };
 
 } // namespace fs

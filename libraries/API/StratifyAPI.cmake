@@ -1,20 +1,11 @@
 
-if(SOS_IS_LINK)
-sos_sdk_include_target(StratifyOS_release)
-endif()
-
 sos_sdk_include_target(API_release)
 sos_sdk_include_target(VarAPI_release)
 sos_sdk_include_target(PrinterAPI_release)
+sos_sdk_include_target(SysAPI_release)
 sos_sdk_include_target(ChronoAPI_release)
 sos_sdk_include_target(FsAPI_release)
 sos_sdk_include_target(ThreadAPI_release)
 sos_sdk_include_target(CryptoAPI_release)
-sos_sdk_include_target(SysAPI_release)
-sos_sdk_include_target(HalAPI_release)
 sos_sdk_include_target(TestAPI_release)
 sos_sdk_include_target(InetAPI_release)
-
-if(SOS_IS_LINK)
-	sos_sdk_include_target(LinkAPI_release)
-endif()

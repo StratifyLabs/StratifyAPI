@@ -5,6 +5,7 @@
 #define FSAPI_FILEINFO_HPP_
 
 #include <fcntl.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include <sos/link/types.h>
@@ -319,13 +320,6 @@ private:
  */
 class FileInfo : public OpenMode {
 public:
-#if defined __link
-  FileInfo(bool is_local = false);
-  FileInfo(
-    const struct FSAPI_LINK_STAT_STRUCT &st,
-    bool is_local = false) // cppcheck-suppress[noExplicitConstructor]
-    : m_stat(st), m_is_local(is_local) {}
-#else
   /*! \details Constructs a new object.
    *
    * For the newly constructed object,
@@ -340,7 +334,6 @@ public:
    */
   FileInfo(const struct stat &st) // cppcheck-suppress[noExplicitConstructor]
     : m_stat(st) {}
-#endif
 
   /*! \details Returns true if the object is valid. */
   bool is_valid() const { return m_stat.st_mode != 0; }
@@ -383,12 +376,7 @@ public:
   int group() const { return m_stat.st_gid; }
 
 private:
-#if defined __link
-  struct FSAPI_LINK_STAT_STRUCT m_stat;
-  bool m_is_local;
-#else
   struct stat m_stat;
-#endif
 };
 
 } /* namespace fs */

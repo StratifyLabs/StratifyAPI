@@ -85,7 +85,8 @@ class File;
  */
 class File : public api::Object, public FileInfoFlags {
 public:
-  enum class IsOverwrite { no, yes };
+  enum class IsCreateOverwrite { no, yes };
+  using IsOverwrite = IsCreateOverwrite;
 
   enum class Whence {
     set /*! Set the location of the file descriptor */ = LINK_SEEK_SET,
@@ -95,11 +96,17 @@ public:
     = LINK_SEEK_END
   };
 
-  File(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
+  File() = delete;
   File(
     var::StringView name,
     OpenMode flags
     = OpenMode::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
+
+  File(
+    var::StringView path,
+    IsCreateOverwrite is_overwrite,
+    Permissions perms
+    = Permissions(0666) FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
   File(const File &file) = delete;
   File &operator=(const File &file) = delete;
@@ -108,12 +115,6 @@ public:
   File &operator=(File &&file) = default;
 
   ~File();
-
-  static File create(
-    var::StringView path,
-    IsOverwrite is_overwrite,
-    Permissions perms
-    = Permissions(0666) FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
   FileInfo get_info() const;
 
@@ -324,7 +325,7 @@ private:
   bool m_is_keep_open;
   int m_fd;
 
-  int fstat(struct FSAPI_LINK_STAT_STRUCT *st);
+  int fstat(struct stat *st);
 
   File &internal_create(
     var::StringView path,
@@ -347,13 +348,6 @@ public:
   Derived &
   open(var::StringView path, const OpenMode &flags = OpenMode::read_write()) {
     return static_cast<Derived &>(File::open(path, flags));
-  }
-
-  Derived &create(
-    var::StringView path,
-    IsOverwrite is_overwrite,
-    const Permissions &perms = Permissions(0666)) {
-    return static_cast<Derived &>(File::create(path, is_overwrite, perms));
   }
 
   Derived &close() { return static_cast<Derived &>(File::close()); }

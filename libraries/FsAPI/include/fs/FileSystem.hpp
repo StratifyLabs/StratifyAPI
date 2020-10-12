@@ -7,8 +7,8 @@ namespace fs {
 
 class FileSystem : public api::Object {
 public:
-  using Overwrite = File::IsOverwrite;
-  using Recursive = Dir::IsRecursive;
+  using IsOverwrite = File::IsOverwrite;
+  using IsRecursive = Dir::IsRecursive;
 
   FileSystem(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
 
@@ -36,48 +36,18 @@ public:
    */
   u32 size(var::StringView path);
 
-  class Copy {
-    API_ACCESS_COMPOUND(Copy, var::StringView, source_path);
-    API_ACCESS_COMPOUND(Copy, var::StringView, destination_path);
-    API_ACCESS_FUNDAMENTAL(Copy, Overwrite, overwrite, Overwrite::no);
-    API_ACCESS_FUNDAMENTAL(Copy, Recursive, recursive, Recursive::no);
-    API_ACCESS_FUNDAMENTAL(
-      Copy,
-      const api::ProgressCallback *,
-      progress_callback,
-      nullptr);
-#if defined __link
-    API_ACCESS_FUNDAMENTAL(
-      Copy,
-      link_transport_mdriver_t *,
-      source_driver,
-      nullptr);
-    API_ACCESS_FUNDAMENTAL(
-      Copy,
-      link_transport_mdriver_t *,
-      destination_driver,
-      nullptr);
-
-#endif
-  };
-
-  FileSystem &copy(const Copy &options);
-
-  FileSystem &copy_directory(const Copy &options);
-
   /*! \details Removes a file or directory.
    *
    * @return Zero on success or -1 for an error
    */
   FileSystem &remove_directory(var::StringView path);
 
-  FileSystem &
-  remove_directory(var::StringView path, Recursive recursive);
+  FileSystem &remove_directory(var::StringView path, IsRecursive recursive);
 
   bool directory_exists(var::StringView path);
 
   FileSystem &
-  save_copy(var::StringView file_path, Overwrite is_overwrite) const;
+  save_copy(var::StringView file_path, IsOverwrite is_overwrite) const;
 
   FileSystem &create_directory(
     var::StringView path,
@@ -86,16 +56,16 @@ public:
   FileSystem &create_directory(
     var::StringView path,
     const Permissions &permissions,
-    Recursive is_recursive);
+    IsRecursive is_recursive);
 
   var::StringList read_directory(
-    var::StringView path,
-    Recursive is_recursive = Recursive::no);
+    const fs::Dir &directory,
+    IsRecursive is_recursive = IsRecursive::no);
 
   var::StringList read_directory(
-    var::StringView path,
+    const fs::Dir &directory,
     var::StringView (*filter)(var::StringView),
-    Recursive is_recursive = Recursive::no);
+    IsRecursive is_recursive = IsRecursive::no);
 
   class Rename {
     API_AC(Rename, var::StringView, source);
@@ -116,18 +86,24 @@ public:
   FileInfo get_info(var::StringView path);
   FileInfo get_info(int fd);
 
-  DataFile load_data_file(var::StringView path);
 
 #if !defined __link
   int access(var::StringView path, const Access &access);
 #endif
 
+protected:
+  virtual int interface_mkdir(const char *path, int mode) const;
+  virtual int interface_rmdir(const char *path) const;
+  virtual int interface_unlink(const char *path) const;
+  virtual int interface_stat(const char *path, struct stat *stat) const;
+  virtual int interface_fstat(int fd, struct stat *stat) const;
+  virtual int
+  interface_rename(const char *old_name, const char *new_name) const;
+
 private:
 #ifdef __link
   API_AF(FileSystem, link_transport_mdriver_t *, driver, nullptr);
 #endif
-
-  FileSystem &copy(File &source, File &destination, const Copy &options);
 };
 
 } // namespace fs

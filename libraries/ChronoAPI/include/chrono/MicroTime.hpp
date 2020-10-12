@@ -71,7 +71,7 @@ public:
   /*! \details Returns a MicroTime object set to the invalid time value. */
   static MicroTime invalid() { return MicroTime(static_cast<u32>(-1)); }
 
-  bool is_valid() const { return m_value_microseconds != invalid(); }
+  bool is_valid() const { return *this != invalid(); }
 
   /*! \details Assignment addition to another MicroTime object. */
   MicroTime &operator+=(const MicroTime &a) {
