@@ -152,6 +152,10 @@ public:
   /*! \details Returns a pointer to a strut timespec (read-only). */
   const struct timespec *timespec() const { return &m_value; }
 
+  operator MicroTime() const {
+    return MicroTime(seconds() * 1000000UL + nanoseconds() / 1000UL);
+  }
+
 private:
   void assign(u32 seconds, u32 nanoseconds);
   static ClockTime add(const ClockTime &a, const ClockTime &b);

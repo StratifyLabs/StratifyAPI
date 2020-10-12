@@ -8,5 +8,9 @@ set(DIRECTORIES
 	ChronoAPI
 	)
 
+if(SOS_IS_LINK)
+	include(targets/StratifyOS_release_link)
+	list(APPEND DIRECTORIES StratifyOS)
+endif()
 
 api_target(FsAPI "${DIRECTORIES}")

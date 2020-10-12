@@ -8,11 +8,7 @@
 #include <time.h>
 
 namespace chrono {
-
-class MicroTime;
-
-class ClockTimer;
-class ClockTime;
+#include "chrono/MicroTime.hpp"
 
 /*! \details Defines the type for a chrono::MicroTime value. */
 typedef u32 micro_time_t;
@@ -59,14 +55,6 @@ public:
   explicit MicroTime(u32 microseconds = 0) {
     m_value_microseconds = microseconds;
   }
-
-  /*! \details Constructs a Microseconds object from a chrono::ClockTime value.
-   */
-  explicit MicroTime(const ClockTime &clock_time);
-
-  /*! \details Constructs a Microseconds object from the current value of a
-   * chrono::Timer. */
-  explicit MicroTime(const ClockTimer &timer);
 
   /*! \details Returns a MicroTime object set to the invalid time value. */
   static MicroTime invalid() { return MicroTime(static_cast<u32>(-1)); }

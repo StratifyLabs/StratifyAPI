@@ -84,8 +84,7 @@ public:
   FileSystem &touch(var::StringView path);
 
   FileInfo get_info(var::StringView path);
-  FileInfo get_info(int fd);
-
+  FileInfo get_info(const File &file);
 
 #if !defined __link
   int access(var::StringView path, const Access &access);

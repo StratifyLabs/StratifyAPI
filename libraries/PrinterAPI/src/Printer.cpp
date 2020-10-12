@@ -727,7 +727,18 @@ Printer &Printer::operator<<(const api::ErrorContext &error_context) {
   key("errorNumber", var::NumberToString(error_context.error_number()));
   key("message", var::StringView(error_context.message()));
 
-  // get the backtrace symbols if they are available
+  api::ErrorContext::Backtrace backtrace(error_context);
+
+  PrinterObject po(*this, "backtrace");
+  const char *symbol;
+  size_t offset = 0;
+  do {
+    symbol = backtrace.at(offset);
+    if (symbol != nullptr) {
+      key(var::Ntos(offset), var::StringView(symbol));
+    }
+    offset++;
+  } while (symbol != nullptr);
 
   return *this;
 }

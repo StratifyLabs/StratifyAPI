@@ -41,7 +41,10 @@ FileSystem &FileSystem::rename(const Rename &options) {
 }
 
 bool FileSystem::exists(var::StringView path) {
-  return File(path, OpenMode::read_only()).status().is_success();
+  API_RETURN_VALUE_IF_ERROR(false);
+  bool result = File(path, OpenMode::read_only()).status().is_success();
+  reset_error_context();
+  return result;
 }
 
 FileInfo FileSystem::get_info(var::StringView path) {
@@ -51,10 +54,10 @@ FileInfo FileSystem::get_info(var::StringView path) {
   return FileInfo(stat);
 }
 
-FileInfo FileSystem::get_info(int fd) {
+FileInfo FileSystem::get_info(const File &file) {
   API_RETURN_VALUE_IF_ERROR(FileInfo());
   struct stat stat = {0};
-  API_SYSTEM_CALL("get info fstat", interface_fstat(fd, &stat));
+  API_SYSTEM_CALL("get info fstat", interface_fstat(file.fileno(), &stat));
   return FileInfo(stat);
 }
 
@@ -88,6 +91,11 @@ FileSystem::remove_directory(var::StringView path, IsRecursive recursive) {
   remove(path);
 
   return *this;
+}
+
+FileSystem &remove_directory(var::StringView path) {
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL(path.cstring(), interface_rmdir(path));
 }
 
 var::StringList FileSystem::read_directory(
@@ -144,7 +152,9 @@ u32 FileSystem::size(var::StringView name) { return get_info(name).size(); }
 
 bool FileSystem::directory_exists(var::StringView path) {
   API_RETURN_VALUE_IF_ERROR(false);
-  return Dir(path).status().is_success();
+  bool result = Dir(path).status().is_success();
+  reset_error_context();
+  return result;
 }
 
 FileSystem &FileSystem::create_directory(

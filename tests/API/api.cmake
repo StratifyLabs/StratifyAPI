@@ -40,6 +40,8 @@ macro(api_test_executable NAME DIRECTORIES)
 
 	include(CTest)
 
+
+	set(CTEST_OUTPUT_ON_FAILURE ON)
 	if(SOS_IS_LINK)
 	add_test(NAME tests${NAME}
 		COMMAND ../build_release_link/${NAME}_link.elf --api

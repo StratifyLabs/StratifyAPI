@@ -154,27 +154,72 @@ private:
 
 class ErrorContext {
 public:
+  class Backtrace {
+  public:
+    Backtrace(const ErrorContext &context) {
+#if defined __link
+#if !defined __win32
+      m_entry_count = context.m_backtrace_count;
+      m_symbol_pointer
+        = backtrace_symbols(context.m_backtrace_buffer, m_entry_count);
+#endif
+#else
+
+#endif
+    }
+
+    const char *at(size_t offset) {
+      if (offset < m_entry_count) {
+        return m_symbol_pointer[offset];
+      }
+      return nullptr;
+    }
+
+    ~Backtrace() {
+      if (m_symbol_pointer != nullptr) {
+        ::free(m_symbol_pointer);
+      }
+    }
+
+  private:
+    char **m_symbol_pointer;
+    API_RAF(Backtrace, size_t, entry_count, 0);
+  };
+
   const char *message() const { return m_message; }
   int error_number() const { return m_error_number; }
   int line_number() const { return m_line_number; }
 
   void *signature() const { return m_signature; }
 
+  constexpr static size_t backtrace_buffer_size() {
+    return m_backtrace_buffer_size;
+  }
+
 private:
   ErrorContext(void *signature) : m_signature(signature) {}
   friend class Status;
+  friend class BacktraceSymbols;
   static constexpr size_t m_message_size = 31;
-  static constexpr size_t m_backtrace_count = 32;
+  static constexpr size_t m_backtrace_buffer_size =
+#if defined __link
+    512
+#else
+    32
+#endif
+    ;
+
   void *m_signature;
   int m_error_number = 0;
   int m_line_number = 0;
   char m_message[m_message_size + 1];
-  void *m_backtrace[m_backtrace_count];
+  void *m_backtrace_buffer[m_backtrace_buffer_size];
+  size_t m_backtrace_count = 0;
 
   inline void capture_backtrace() {
 #if defined __link
 #if !defined __win32
-    backtrace(m_backtrace, m_backtrace_count);
+    m_backtrace_count = backtrace(m_backtrace_buffer, m_backtrace_buffer_size);
 #endif
 #else
     // need to implement backtrace on StratifyOS v4
@@ -237,7 +282,11 @@ public:
   static ErrorContext &error_context() { return m_status.error_context(); }
   static Status &status() { return m_status; }
   static void exit_fatal(const char *message);
-  static void reset_error_context() { m_status.reset(); }
+  static inline void reset_error_context() { m_status.reset(); }
+
+  static inline bool is_error() { return status().is_error(); }
+  static inline bool is_success() { return status().is_success(); }
+  static inline int return_value() { return status().value(); }
 
 private:
   static Status m_status;

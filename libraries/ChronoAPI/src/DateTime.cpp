@@ -50,15 +50,6 @@ printer::operator<<(printer::Printer &printer, const chrono::DateTime &a) {
 
 using namespace chrono;
 
-MicroTime::MicroTime(const ClockTimer &timer) {
-  m_value_microseconds = timer.microseconds();
-}
-
-MicroTime::MicroTime(const ClockTime &clock_time) {
-  m_value_microseconds = clock_time.seconds() * 1000000UL
-                         + (clock_time.nanoseconds() + 500) / 1000;
-}
-
 MicroTime &MicroTime::wait() {
   chrono::wait(*this);
   return *this;

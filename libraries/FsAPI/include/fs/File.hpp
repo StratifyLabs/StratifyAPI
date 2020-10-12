@@ -96,8 +96,7 @@ public:
     = LINK_SEEK_END
   };
 
-  File() = delete;
-  File(
+  explicit File(
     var::StringView name,
     OpenMode flags
     = OpenMode::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
@@ -115,18 +114,6 @@ public:
   File &operator=(File &&file) = default;
 
   ~File();
-
-  FileInfo get_info() const;
-
-  /*! \details Returns whether the file will
-   * be closed upon object destruction.
-   *
-   * The default value on object creation is true.
-   *
-   * \sa set_keep_open()
-   *
-   */
-  bool is_keep_open() const { return m_is_keep_open; }
 
   /*! \details Returns the file size. */
   size_t size() const;
@@ -211,6 +198,13 @@ public:
     API_ACCESS_FUNDAMENTAL(Write, int, location, -1);
     API_ACCESS_FUNDAMENTAL(Write, u32, page_size, FSAPI_LINK_DEFAULT_PAGE_SIZE);
     API_ACCESS_FUNDAMENTAL(Write, size_t, size, static_cast<size_t>(-1));
+    API_ACCESS_FUNDAMENTAL(Write, char, terminator, 0);
+    API_ACCESS_FUNDAMENTAL(Write, chrono::MicroTime, timeout, 0_microseconds);
+    API_ACCESS_FUNDAMENTAL(
+      Write,
+      chrono::MicroTime,
+      retry_delay,
+      10_milliseconds);
     API_ACCESS_FUNDAMENTAL(
       Write,
       const var::Transformer *,
@@ -233,17 +227,11 @@ public:
     return write(source_file, Write(options).set_transformer(&transformer));
   }
 
-  /*! \details Reads a line from a file.
-   *
-   * @param buf Destination buffer
-   * @param nbyte Number of bytes available in buffer
-   * @param timeout_msec Timeout in ms if line does not arrive
-   * @param terminator Terminating character of the line (default is newline)
-   * @return Number of bytes received
-   */
-  const File &
-  readline(char *buf, int nbyte, int timeout_msec, char terminator = '\n')
-    const;
+  class ReadLine {
+    API_AF(ReadLine, char, terminator, '\n');
+    API_AF(ReadLine, chrono::MicroTime, timeout, 1_seconds);
+    API_AF(ReadLine, size_t, max_length, 0);
+  };
 
   /*! \details Seeks to a location in the file or on the device. */
   const File &seek(int location, Whence whence = Whence::set) const;
@@ -297,6 +285,10 @@ public:
   File &close();
 
 protected:
+  File() = default;
+
+  bool is_keep_open() const { return m_is_keep_open; }
+
   /*! \details Opens a file.
    *
    * @param name The path to the file
@@ -322,8 +314,8 @@ protected:
 
 private:
   constexpr static size_t m_gets_buffer_size = 128;
-  bool m_is_keep_open;
-  int m_fd;
+  bool m_is_keep_open = false;
+  int m_fd = -1;
 
   int fstat(struct stat *st);
 
@@ -403,6 +395,9 @@ public:
     return static_cast<Derived &>(File::set_fileno(file));
   }
 
+protected:
+  FileAccess<Derived>() = default;
+
 private:
 };
 
@@ -420,7 +415,7 @@ class DataFile : public FileAccess<DataFile> {
 public:
   /*! \details Constructs a data file. */
   DataFile(const OpenMode &flags = OpenMode::append_read_write())
-    : FileAccess(""), m_open_flags(flags) {
+    : m_open_flags(flags) {
     m_location = 0;
   }
 
@@ -441,6 +436,8 @@ public:
   const var::Data &data() const { return m_data; }
   /*! \details Accesses the member data object. */
   var::Data &data() { return m_data; }
+
+  var::String get_string() const { return var::String(data()); }
 
 private:
   mutable int m_location; // offset location for seeking/reading/writing
@@ -470,9 +467,8 @@ class ViewFile : public FileAccess<ViewFile> {
 public:
   /*! \details Constructs a data file. */
   ViewFile(var::View view)
-    : FileAccess(""),
-      m_open_flags(
-        view.is_read_only() ? OpenMode::read_only() : OpenMode::read_write()) {
+    : m_open_flags(
+      view.is_read_only() ? OpenMode::read_only() : OpenMode::read_write()) {
     m_view = view;
   }
 

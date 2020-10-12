@@ -194,6 +194,10 @@ public:
       var::String().format("expect%d", line),
       var::String().format("%s failed", function));
 
+    if (status().is_error()) {
+      printer().object("errorContext", api::Object::error_context());
+    }
+
     printer().error(var::String().format("test failed"));
     set_case_failed();
     return false;

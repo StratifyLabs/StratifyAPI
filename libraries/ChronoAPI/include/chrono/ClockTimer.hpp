@@ -213,7 +213,7 @@ public:
   /*! \details Returns the value of the timer as a ClockTime object. */
   ClockTime clock_time() const;
 
-  operator MicroTime() const { return MicroTime(microseconds()); }
+  MicroTime micro_time() const { return MicroTime(microseconds()); }
 
 private:
   MicroTime calc_value() const;

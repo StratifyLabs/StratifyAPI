@@ -127,34 +127,14 @@ int File::fstat(struct stat *st) {
   return API_SYSTEM_CALL("", FSAPI_LINK_FSTAT(driver(), m_fd, st));
 }
 
-const File &File::readline(char *buf, int nbyte, int timeout, char term) const {
-  API_RETURN_VALUE_IF_ERROR(*this);
-  int t = 0;
-  char c;
-  int bytes_recv = 0;
-  do {
-    if (read(&c, 1).status().value() == 1) {
-      *buf = c;
-      buf++;
-      bytes_recv++;
-      if (c == term) {
-        return *this;
-      }
-    } else {
-      t++;
-#if !defined __link
-      chrono::wait(1_milliseconds);
-#endif
-    }
-  } while ((bytes_recv < nbyte) && (t < timeout));
-
-  return *this;
-}
-
 File &File::close() {
   API_RETURN_VALUE_IF_ERROR(*this);
   if (m_fd >= 0) {
-    API_SYSTEM_CALL("", interface_close(m_fd));
+    int result = interface_close(m_fd);
+    if (result < 0) {
+      // only assign the error if result < 0 to preserve last R/W value
+      API_SYSTEM_CALL("", result);
+    }
     m_fd = -1;
   }
   return *this;
@@ -232,9 +212,7 @@ var::String File::gets(char term) const {
 
 const File &File::ioctl(int request, void *argument) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL(
-    "",
-    interface_ioctl(m_fd, request, argument));
+  API_SYSTEM_CALL("", interface_ioctl(m_fd, request, argument));
   return *this;
 }
 
@@ -260,11 +238,18 @@ const File &File::write(const File &source_file, const Write &options) const {
     return *this;
   }
 
+  chrono::ClockTimer clock_timer;
+
   const u32 read_buffer_size
-    = options.page_size() ? options.page_size() : FSAPI_LINK_DEFAULT_PAGE_SIZE;
+    = options.terminator() != 0
+        ? 1
+        : (
+          options.page_size() ? options.page_size()
+                              : FSAPI_LINK_DEFAULT_PAGE_SIZE);
 
   u8 file_read_buffer[read_buffer_size];
 
+  clock_timer.start();
   do {
     const u32 page_size = (file_size - size_processed < read_buffer_size)
                             ? file_size - size_processed
@@ -291,11 +276,25 @@ const File &File::write(const File &source_file, const Write &options) const {
         return *this;
       }
 
-      if (bytes_read > 0) {
-        size_processed += static_cast<u32>(bytes_read);
-      } else if (bytes_read < 0) {
-        API_SYSTEM_CALL("", -1);
-        return *this;
+      size_processed += static_cast<u32>(bytes_read);
+      if (
+        options.terminator() != 0
+        && static_cast<char>(file_read_buffer[0]) == options.terminator()) {
+        break;
+      }
+
+    } else {
+      // are we on a timeout?
+      if (options.timeout() > 0_microseconds) {
+        if (clock_timer.micro_time() > options.timeout()) {
+          break;
+        }
+
+        if (bytes_read < 0) {
+          reset_error_context();
+        }
+
+        chrono::wait(options.retry_delay());
       }
     }
 
@@ -321,6 +320,8 @@ const File &File::write(const File &source_file, const Write &options) const {
 
   if ((source_file.status().is_error()) && (size_processed == 0)) {
     API_SYSTEM_CALL("", -1);
+  } else {
+    API_SYSTEM_CALL("", size_processed);
   }
 
   return *this;

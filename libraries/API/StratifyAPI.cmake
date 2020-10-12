@@ -1,4 +1,10 @@
 
+
+
+if(SOS_IS_LINK)
+	sos_sdk_include_target(StratifyOS_release)
+endif()
+
 sos_sdk_include_target(API_release)
 sos_sdk_include_target(VarAPI_release)
 sos_sdk_include_target(PrinterAPI_release)
