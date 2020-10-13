@@ -6,3 +6,5 @@ build_*
 *.user
 *.8-pre1
 .vscode/
+coverage/
+tmp/

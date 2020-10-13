@@ -13,3 +13,7 @@ add_subdirectory(VarAPI testsVarAPI)
 add_subdirectory(ChronoAPI testsChronoAPI)
 add_subdirectory(FsAPI testsFsAPI)
 
+
+add_custom_target(coverage
+	DEPENDS coverage_FsAPI_coverage_link coverage_ChronoAPI_coverage_link coverage_VarAPI_coverage_link
+	)

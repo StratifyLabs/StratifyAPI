@@ -1,14 +1,13 @@
 macro(api_test_executable NAME DIRECTORIES)
 
-	string(COMPARE EQUAL ${SOS_BUILD_CONFIG} link IS_LINK)
-
-	if(IS_LINK)
-		set(ARCH link)
+	if(SOS_IS_LINK)
+		set(CONFIG coverage)
 	else()
-		set(ARCH v7m)
+		set(CONFIG test)
 	endif()
 
-	sos_sdk_app_target(RELEASE ${NAME} "" release ${ARCH})
+
+	sos_sdk_app_target(RELEASE ${NAME} "" ${CONFIG} ${SOS_ARCH})
 	add_executable(${RELEASE_TARGET})
 	target_sources(${RELEASE_TARGET}
 		PRIVATE
@@ -17,10 +16,16 @@ macro(api_test_executable NAME DIRECTORIES)
 		${CMAKE_SOURCE_DIR}/tests/${NAME}/src/UnitTest.hpp
 		)
 
-	target_compile_options(${RELEASE_TARGET}
-		PRIVATE
-		-Os
-		)
+	if(SOS_IS_LINK)
+		set_target_properties(${RELEASE_TARGET}
+			PROPERTIES
+			LINK_FLAGS --coverage)
+	else()
+		target_compile_options(${RELEASE_TARGET}
+			PRIVATE
+			-Os
+			)
+	endif()
 
 	set_property(TARGET ${RELEASE_TARGET} PROPERTY CXX_STANDARD 17)
 
@@ -31,6 +36,7 @@ macro(api_test_executable NAME DIRECTORIES)
 			)
 	endforeach(DIRECTORY)
 
+
 	target_include_directories(${RELEASE_TARGET}
 		PRIVATE
 		${CMAKE_SOURCE_DIR}/tests/${NAME}/src
@@ -38,21 +44,25 @@ macro(api_test_executable NAME DIRECTORIES)
 
 	sos_sdk_app_add_arch_targets("${RELEASE_OPTIONS}" "${DIRECTORIES}" ${RAM_SIZE})
 
-	include(CTest)
+	get_target_property(MY_DIR ${RELEASE_TARGET} BINARY_DIR)
+	message(STATUS "BINARY DIR for ${RELEASE_TARGET} is ${MY_DIR}")
 
+	include(CTest)
 
 	set(CTEST_OUTPUT_ON_FAILURE ON)
 	if(SOS_IS_LINK)
-	add_test(NAME tests${NAME}
-		COMMAND ../build_release_link/${NAME}_link.elf --api
-		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tmp
-		)
 
-	set_tests_properties(
-		tests${NAME}
-		PROPERTIES
-		PASS_REGULAR_EXPRESSION "___finalResultPass___"
-		)
+		add_test(NAME tests${NAME}
+			COMMAND ../build_coverage_link/${NAME}_coverage_link.elf --api
+			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tmp
+			)
+
+
+		set_tests_properties(
+			tests${NAME}
+			PROPERTIES
+			PASS_REGULAR_EXPRESSION "___finalResultPass___"
+			)
 
 	endif()
 

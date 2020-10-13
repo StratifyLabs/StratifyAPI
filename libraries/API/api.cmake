@@ -10,17 +10,11 @@ macro(api_target NAME DIRECTORIES)
 
 	install(DIRECTORY include/ DESTINATION include/${NAME})
 
-	if(SOS_IS_LINK)
-		set(ARCH link)
-	else()
-		set(ARCH v7m)
-	endif()
-
 	sos_sdk_add_subdirectory(PRIVATE_SOURCES src)
 	sos_sdk_add_subdirectory(PUBLIC_SOURCES	${CMAKE_CURRENT_SOURCE_DIR}/include)
 	set(FORMAT_LIST ${PRIVATE_SOURCES} ${PUBLIC_SOURCES})
 
-	sos_sdk_library_target(RELEASE ${NAME} "" release ${ARCH})
+	sos_sdk_library_target(RELEASE ${NAME} "" release ${SOS_ARCH})
 
 	add_library(${RELEASE_TARGET} STATIC)
 
@@ -49,6 +43,7 @@ macro(api_target NAME DIRECTORIES)
 			PUBLIC
 			${CMAKE_INSTALL_PREFIX}/include
 			)
+
 	endif()
 
 	foreach(DIRECTORY ${DIRECTORIES})
@@ -67,6 +62,48 @@ macro(api_target NAME DIRECTORIES)
 		$<INSTALL_INTERFACE:include/${NAME}>
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		)
+
+
+	if(SOS_IS_LINK)
+		sos_sdk_library_target(COVERAGE ${NAME} "" coverage ${SOS_ARCH})
+		add_library(${COVERAGE_TARGET} STATIC)
+		sos_sdk_copy_target(${RELEASE_TARGET} ${COVERAGE_TARGET})
+
+
+
+		target_compile_options(${COVERAGE_TARGET}
+			PUBLIC
+			--coverage
+			)
+
+		sos_sdk_library_add_arch_targets("${COVERAGE_OPTIONS}" ${SOS_ARCH} "${DIRECTORIES}")
+
+		get_target_property(MY_DIR ${COVERAGE_TARGET} BINARY_DIR)
+		message(STATUS "BINARY DIR for ${COVERAGE_TARGET} is ${MY_DIR}")
+
+		get_target_property(SOURCES ${COVERAGE_TARGET} SOURCES)
+
+
+
+		foreach(SOURCE ${SOURCES})
+			get_filename_component(FILE_NAME ${SOURCE} NAME)
+			list(APPEND GCOV_SOURCES ${MY_DIR}/CMakeFiles/${COVERAGE_TARGET}.dir/src/${FILE_NAME}.gcno)
+		endforeach()
+
+		message(STATUS "GCOV SOURCES ${GCOV_SOURCES}")
+
+		add_custom_target(coverage_mkdir_${COVERAGE_TARGET}
+			COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/coverage/${COVERAGE_TARGET}
+			)
+
+		add_custom_target(coverage_${COVERAGE_TARGET}
+			COMMAND gcov ${GCOV_SOURCES}
+			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/coverage/${COVERAGE_TARGET}
+			DEPENDS coverage_mkdir_${COVERAGE_TARGET}
+			)
+
+	endif()
+
 
 	#message(STATUS "Adding dependencies ${DIRECTORIES}")
 	sos_sdk_library_add_arch_targets("${RELEASE_OPTIONS}" ${SOS_ARCH} "${DIRECTORIES}")

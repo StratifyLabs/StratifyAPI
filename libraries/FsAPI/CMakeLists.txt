@@ -10,6 +10,7 @@ set(DIRECTORIES
 
 if(SOS_IS_LINK)
 	include(targets/StratifyOS_release_link)
+	include(targets/StratifyOS_coverage_link)
 	list(APPEND DIRECTORIES StratifyOS)
 endif()
 

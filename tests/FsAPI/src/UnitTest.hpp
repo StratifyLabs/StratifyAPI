@@ -176,8 +176,31 @@ public:
       Permissions permissions = FS().get_info(".").permissions();
       const StringView dir_name = "permdir";
 
+      FS().remove_directory(dir_name);
+      reset_error_context();
+
       TEST_ASSERT(FS().create_directory(dir_name).is_success());
       TEST_ASSERT(FS().get_info(dir_name).permissions() == permissions);
+      TEST_ASSERT(FS().remove_directory(dir_name).is_success());
+    }
+
+    {
+      printer::PrinterObject po(printer(), "utils");
+      const StringView old_name = "old.txt";
+      const StringView new_name = "new.txt";
+
+      F(old_name, F::IsCreateOverwrite::yes).write("Hello");
+
+      TEST_ASSERT(FS().exists(old_name));
+      TEST_ASSERT(
+        FS()
+          .rename(FS::Rename().set_source(old_name).set_destination(new_name))
+          .is_success());
+      TEST_ASSERT(FS().exists(new_name));
+      TEST_ASSERT(!FS().exists(old_name));
+
+      TEST_ASSERT(
+        DF().write(F(new_name, OpenMode::read_only())).get_string() == "Hello");
     }
 
     return true;

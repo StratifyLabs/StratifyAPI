@@ -22,6 +22,7 @@ set(DIRECTORIES
 	ThreadAPI
 	SysAPI
 	TestAPI
+	API
 	)
 
 api_test_executable(API "${DIRECTORIES}")
