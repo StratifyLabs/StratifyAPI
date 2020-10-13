@@ -37,6 +37,57 @@ public:
       return false;
     }
 
+    if (!fileinfo_api_case()) {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool fileinfo_api_case() {
+    printer::PrinterObject po(printer(), "fileinfo");
+    String temp_path;
+    {
+      TemporaryDirectory td(".");
+      TEST_ASSERT(FS().directory_exists(td.path()));
+
+      const StringView new_test_contents = "new test file";
+
+      temp_path = td.path();
+      TEST_ASSERT(
+        F(td.path() + "/test.txt", F::IsCreateOverwrite::yes, Permissions(0664))
+          .write(new_test_contents)
+          .is_success());
+
+      TEST_ASSERT(FS().get_info(td.path()).is_directory());
+      TEST_ASSERT(FS().get_info(td.path()).is_file() == false);
+      TEST_ASSERT(FS().get_info(td.path()).is_device() == false);
+      TEST_ASSERT(FS().get_info(td.path()).is_block_device() == false);
+      TEST_ASSERT(FS().get_info(td.path()).is_character_device() == false);
+      TEST_ASSERT(FS().get_info(td.path()).is_socket() == false);
+      TEST_ASSERT(FS().get_info(td.path()).is_device() == false);
+
+      FileInfo file_info = FS().get_info(td.path() + "/test.txt");
+      TEST_ASSERT(file_info.is_directory() == false);
+      TEST_ASSERT(file_info.permissions().is_owner_execute() == false);
+      TEST_ASSERT(file_info.permissions().is_owner_read() == true);
+      TEST_ASSERT(file_info.permissions().is_owner_write() == true);
+
+      TEST_ASSERT(file_info.permissions().is_public_execute() == false);
+      TEST_ASSERT(file_info.permissions().is_public_read() == true);
+      TEST_ASSERT(file_info.permissions().is_public_write() == false);
+
+      printer().object("file", file_info);
+
+      TEST_ASSERT(
+        FS().get_info(td.path() + "/test.txt").size()
+        == new_test_contents.length());
+    }
+
+    TEST_ASSERT(FS().directory_exists(temp_path) == false);
+
+    TEST_ASSERT(is_success());
+
     return true;
   }
 
@@ -130,6 +181,11 @@ public:
       TEST_ASSERT(list.find(String("test2.txt")) < list.count());
     }
 
+    TEST_ASSERT(FS()
+                  .remove_directory("tmp", FS::IsRecursive::yes)
+                  .remove_directory("tmp2", FS::IsRecursive::yes)
+                  .is_success());
+
     return true;
   }
 
@@ -138,17 +194,18 @@ public:
     TEST_ASSERT(P("data/test.json").path() == "data/test.json");
     TEST_ASSERT(P("flat").name() == "flat");
     TEST_ASSERT(P("flat.json").name() == "flat.json");
+    TEST_ASSERT(P("flat").suffix() == "");
     TEST_ASSERT(P("flat.json").suffix() == "json");
     TEST_ASSERT(P("data/test.json").suffix() == "json");
     TEST_ASSERT(P("data/test.json").name() == "test.json");
     TEST_ASSERT(P("data/test.json").base_name() == "test");
     TEST_ASSERT(P("data/test.json").no_suffix() == "data/test");
+    TEST_ASSERT(P("data/test").no_suffix() == "data/test");
     TEST_ASSERT(P("data/test.json").parent_directory() == "data");
     TEST_ASSERT(P("/Users/data/test.json").parent_directory() == "/Users/data");
     TEST_ASSERT(P("/Users/data/test.json").no_suffix() == "/Users/data/test");
     TEST_ASSERT(P("data/.test.json").is_hidden());
     TEST_ASSERT(P("data/test.json").is_hidden() == false);
-
     return true;
   }
 
@@ -196,6 +253,13 @@ public:
       TEST_EXPECT(FS().size(file_name) == file_name2.length());
 
       TEST_ASSERT(FS().create_directory(dir_name).is_success());
+      TEST_ASSERT(FS().remove_directory(dir_name).is_success());
+
+      TEST_ASSERT(
+        FS().create_directory(dir_name, FS::IsRecursive::no).is_success());
+      TEST_ASSERT(
+        FS().create_directory(dir_name, FS::IsRecursive::no).is_error());
+      reset_error_context();
       TEST_ASSERT(FS().remove_directory(dir_name).is_success());
 
       TEST_EXPECT(FS().create_directory(dir_name_recursive).is_error());

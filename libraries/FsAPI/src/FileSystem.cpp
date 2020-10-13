@@ -1,7 +1,9 @@
 
 #include <sys/stat.h>
 
+#include "chrono/ClockTime.hpp"
 #include "fs/Dir.hpp"
+#include "sys/System.hpp"
 #include "var/Tokenizer.hpp"
 
 #include "fs/FileSystem.hpp"
@@ -190,7 +192,8 @@ const FileSystem &FileSystem::create_directory(
     = var::Tokenizer(path, var::Tokenizer::Construct().set_delimeters("/"));
   var::String base_path;
 
-  if (path.find("/") == 0) {
+  // tokenizer will strip the first / and create an empty token
+  if (path.length() && path.front() == '/') {
     base_path += "/";
   }
 
@@ -236,4 +239,21 @@ int FileSystem::interface_fstat(int fd, struct stat *stat) const {
 int FileSystem::interface_rename(const char *old_name, const char *new_name)
   const {
   return FSAPI_LINK_RENAME(driver(), old_name, new_name);
+}
+
+TemporaryDirectory::TemporaryDirectory(var::StringView parent) {
+  m_path
+    = (parent.is_empty() ? (var::String(sys::System::user_data_path()) + "/")
+                         : var::String(""))
+      + chrono::ClockTime::get_unique_string();
+  FileSystem().create_directory(m_path);
+  if (is_error()) {
+    m_path.clear();
+  }
+}
+
+TemporaryDirectory::~TemporaryDirectory() {
+  if (m_path.is_empty() == false) {
+    FileSystem().remove_directory(m_path, FileSystem::IsRecursive::yes);
+  }
 }

@@ -10,8 +10,8 @@ var::String Path::suffix() {
     return var::String();
   }
 
-  return String(path()).get_substring(
-    String::GetSubstring().set_position(pos + 1));
+  return std::move(
+    String(path()).get_substring(String::GetSubstring().set_position(pos + 1)));
 }
 
 var::String Path::name() {
@@ -21,8 +21,8 @@ var::String Path::name() {
     return String(path());
   }
 
-  return String(path()).get_substring(
-    String::GetSubstring().set_position(pos + 1));
+  return std::move(
+    String(path()).get_substring(String::GetSubstring().set_position(pos + 1)));
 }
 
 var::String Path::parent_directory() {
@@ -32,30 +32,17 @@ var::String Path::parent_directory() {
     return var::String();
   }
 
-  return String(path()).get_substring(
-    String::GetSubstring().set_position(0).set_length(pos));
+  return std::move(String(path()).get_substring(
+    String::GetSubstring().set_position(0).set_length(pos)));
 }
 
-var::String Path::base_name() {
-  var::String result = name();
-  size_t pos = result.reverse_find(".");
-  if (pos == String::npos) {
-    return result;
-  }
-
-  return result.get_substring(
-    String::GetSubstring().set_position(0).set_length(pos));
-}
+var::String Path::base_name() { return std::move(Path(name()).no_suffix()); }
 
 var::String Path::no_suffix() {
   size_t pos = path().reverse_find('.');
 
-  if (pos == var::String::npos) {
-    return var::String();
-  }
-
-  return String(path()).get_substring(
-    String::GetSubstring().set_position(0).set_length(pos));
+  return std::move(String(path()).get_substring(
+    String::GetSubstring().set_position(0).set_length(pos)));
 }
 
 bool Path::is_hidden() {

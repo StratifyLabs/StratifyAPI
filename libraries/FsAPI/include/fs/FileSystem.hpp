@@ -100,6 +100,15 @@ private:
 #endif
 };
 
+class TemporaryDirectory : public api::Object {
+public:
+  explicit TemporaryDirectory(var::StringView parent = "");
+  ~TemporaryDirectory();
+
+private:
+  API_RAC(TemporaryDirectory, var::String, path);
+};
+
 } // namespace fs
 
 #endif // FSAPI_FS_FILESYSTEM_HPP

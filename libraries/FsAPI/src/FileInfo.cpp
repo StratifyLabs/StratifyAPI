@@ -9,7 +9,8 @@
 #include "printer/Printer.hpp"
 #include "var/String.hpp"
 
-printer::Printer &operator<<(printer::Printer &printer, const fs::FileInfo &a) {
+printer::Printer &
+printer::operator<<(printer::Printer &printer, const fs::FileInfo &a) {
   var::String type;
   if (a.is_directory()) {
     type = "directory";
