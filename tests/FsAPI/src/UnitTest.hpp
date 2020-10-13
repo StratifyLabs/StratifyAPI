@@ -82,9 +82,14 @@ public:
       int count = 0;
       String e;
       while ((e = d.get_entry()).is_empty() == false) {
+        printer().key("tell", Ntos(d.tell()));
         printer().key(Ntos(count), e);
         count++;
       }
+      TEST_ASSERT(d.tell() == (count - 1));
+      TEST_ASSERT(d.rewind().is_success());
+      printer().key("tell", Ntos(d.tell()));
+      TEST_ASSERT(d.tell() == 0);
       TEST_ASSERT(count == 5);
     }
 

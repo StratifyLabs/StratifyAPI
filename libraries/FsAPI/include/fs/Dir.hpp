@@ -103,16 +103,13 @@ public:
   /*! \details Returns the serial number of the most recently read entry. */
   int ino() { return m_entry.d_ino; }
 
-#ifndef __link
-  /*! \details Returns the directory handle pointer. */
-  DIR *dirp() { return m_dirp; }
   /*! \details Counts the total number of entries in the directory. */
-  int count();
+  int count() const;
+
   /*! \details Rewinds the directory pointer. */
-  Dir &rewind() {
-    if (m_dirp) {
-      rewinddir(m_dirp);
-    }
+  const Dir &rewind() const {
+    API_RETURN_VALUE_IF_ERROR(*this);
+    interface_rewinddir(m_dirp);
     return *this;
   }
   /*! \details Seeks to a location in the directory.
@@ -122,10 +119,9 @@ public:
    *
    *
    */
-  Dir &seek(size_t location) {
-    if (m_dirp) {
-      seekdir(m_dirp, location);
-    }
+  const Dir &seek(size_t location) const {
+    API_RETURN_VALUE_IF_ERROR(*this);
+    interface_seekdir(m_dirp, location);
     return *this;
   }
 
@@ -134,12 +130,9 @@ public:
    *
    */
   inline long tell() {
-    if (m_dirp) {
-      return telldir(m_dirp);
-    }
-    return 0;
+    API_RETURN_VALUE_IF_ERROR(-1);
+    return interface_telldir(m_dirp);
   }
-#endif
 
 protected:
   Dir &open(var::StringView path);
