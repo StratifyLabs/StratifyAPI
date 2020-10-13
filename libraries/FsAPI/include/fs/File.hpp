@@ -414,6 +414,7 @@ private:
 class DataFile : public FileAccess<DataFile> {
 public:
   /*! \details Constructs a data file. */
+
   DataFile(const OpenMode &flags = OpenMode::append_read_write())
     : m_open_flags(flags) {
     m_location = 0;
@@ -440,7 +441,7 @@ public:
   var::String get_string() const { return var::String(data()); }
 
 private:
-  mutable int m_location; // offset location for seeking/reading/writing
+  mutable int m_location = 0; // offset location for seeking/reading/writing
   mutable OpenMode m_open_flags;
   mutable var::Data m_data;
 

@@ -82,6 +82,8 @@ class AesCbcEncrypter : public var::Transformer,
 public:
   int transform(
     const var::Transformer::Transform &options) const override final;
+
+  size_t page_size_boundary() const override { return 16; }
 };
 
 class AesCbcDecrypter : public var::Transformer,
@@ -89,6 +91,8 @@ class AesCbcDecrypter : public var::Transformer,
 public:
   int transform(
     const var::Transformer::Transform &options) const override final;
+
+  size_t page_size_boundary() const override { return 16; }
 };
 
 } // namespace crypto

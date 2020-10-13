@@ -108,18 +108,12 @@ File &File::internal_create(
 size_t File::size() const {
   // get current cursor
   API_RETURN_VALUE_IF_ERROR(0);
-  int loc = location();
-  API_SYSTEM_CALL("", interface_lseek(m_fd, 0, static_cast<int>(Whence::end)));
+  const int loc = location();
+  seek(0, Whence::end);
+  const size_t seek_size = static_cast<size_t>(location());
+  seek(loc, Whence::set);
   API_RETURN_VALUE_IF_ERROR(0);
-  size_t size = static_cast<size_t>(location());
-  API_SYSTEM_CALL(
-    "",
-    interface_lseek(
-      m_fd,
-      loc,
-      static_cast<int>(Whence::set))); // restore the cursor
-  API_RETURN_VALUE_IF_ERROR(0);
-  return size;
+  return seek_size;
 }
 
 int File::fstat(struct stat *st) {
@@ -171,16 +165,15 @@ const File &File::write(const void *buf, int nbyte) const {
 
 const File &File::seek(int location, Whence whence) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", lseek(m_fd, location, static_cast<int>(whence)));
+  API_SYSTEM_CALL(
+    "",
+    interface_lseek(m_fd, location, static_cast<int>(whence)));
   return *this;
 }
 
 int File::fileno() const { return m_fd; }
 
-int File::location() const {
-  API_RETURN_VALUE_IF_ERROR(-1);
-  return lseek(m_fd, 0, static_cast<int>(Whence::current));
-}
+int File::location() const { return seek(0, Whence::current).return_value(); }
 
 int File::flags() const {
   API_RETURN_VALUE_IF_ERROR(-1);
@@ -223,11 +216,11 @@ const File &File::write(const File &source_file, const Write &options) const {
     seek(options.location(), Whence::set);
   }
 
-  u32 size_processed = 0;
+  size_t size_processed = 0;
 
-  const u32 file_size = options.size() == static_cast<u32>(-1)
-                          ? source_file.size()
-                          : options.size();
+  const size_t file_size = (options.size() == static_cast<size_t>(-1))
+                             ? source_file.size()
+                             : options.size();
 
   if (file_size == 0) {
     if (options.progress_callback()) {
@@ -240,20 +233,26 @@ const File &File::write(const File &source_file, const Write &options) const {
 
   chrono::ClockTimer clock_timer;
 
-  const u32 read_buffer_size
-    = options.terminator() != 0
-        ? 1
+  const size_t effective_page_size
+    = options.page_size() ? options.page_size() : FSAPI_LINK_DEFAULT_PAGE_SIZE;
+
+  const size_t page_size_with_boundary
+    = (options.transformer() == nullptr)
+        ? (effective_page_size)
         : (
-          options.page_size() ? options.page_size()
-                              : FSAPI_LINK_DEFAULT_PAGE_SIZE);
+          (effective_page_size / options.transformer()->page_size_boundary())
+          * options.transformer()->page_size_boundary());
+
+  const size_t read_buffer_size
+    = options.terminator() != '\0' ? 1 : page_size_with_boundary;
 
   u8 file_read_buffer[read_buffer_size];
 
   clock_timer.start();
   do {
-    const u32 page_size = (file_size - size_processed < read_buffer_size)
-                            ? file_size - size_processed
-                            : read_buffer_size;
+    const size_t page_size = ((file_size - size_processed) < read_buffer_size)
+                               ? file_size - size_processed
+                               : read_buffer_size;
 
     const int bytes_read
       = source_file.read(file_read_buffer, page_size).status().value();
@@ -267,6 +266,7 @@ const File &File::write(const File &source_file, const Write &options) const {
           var::Transformer::Transform()
             .set_input(var::View(file_read_buffer, page_size))
             .set_output(var::View(file_write_buffer, transform_size)));
+
         write(file_write_buffer, bytes_to_write);
       } else {
         write(file_read_buffer, bytes_read);
@@ -276,7 +276,7 @@ const File &File::write(const File &source_file, const Write &options) const {
         return *this;
       }
 
-      size_processed += static_cast<u32>(bytes_read);
+      size_processed += static_cast<size_t>(bytes_read);
       if (
         options.terminator() != 0
         && static_cast<char>(file_read_buffer[0]) == options.terminator()) {
@@ -404,7 +404,7 @@ int DataFile::interface_lseek(int fd, int offset, int whence) const {
     break;
   }
 
-  if (m_location > static_cast<int>(size())) {
+  if (m_location > static_cast<int>(m_data.size())) {
     m_location = static_cast<int>(m_data.size());
   } else if (m_location < 0) {
     m_location = 0;
@@ -467,6 +467,7 @@ int ViewFile::interface_write(int fd, const void *buf, int nbyte) const {
 }
 
 int ViewFile::interface_lseek(int fd, int location, int whence) const {
+  MCU_UNUSED_ARGUMENT(fd);
   switch (static_cast<Whence>(whence)) {
   case Whence::current:
     m_location += location;

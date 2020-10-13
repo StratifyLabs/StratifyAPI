@@ -27,10 +27,13 @@ int Base64Decoder::transform(const Transform &options) const {
     return -1;
   }
 
-  return Base64::decode(
-    options.output().to_void(),
-    options.input().to_const_char(),
-    options.input().size());
+  const size_t decoded_size = Base64::get_decoded_size(options.input().size());
+
+  return decoded_size
+         - Base64::decode(
+           options.output().to_void(),
+           options.input().to_const_char(),
+           options.input().size());
 }
 
 String Base64::encode(View input) const {
@@ -44,7 +47,7 @@ String Base64::encode(View input) const {
 Data Base64::decode(StringView input) const {
   Data result;
   size_t len = get_decoded_size(input.length());
-  result.resize(len + 4);
+  result.resize(len);
   API_RETURN_VALUE_IF_ERROR(Data());
   len -= decode(result.data(), input.cstring(), input.length());
   result.resize(len);
@@ -56,20 +59,32 @@ int Base64::encode(char *dest, const void *src, int nbyte) {
   int i;
   int j;
   int k;
-  int len;
-  u8 six_bits[4];
-  len = nbyte;
-  const char *data;
-  data = (const char *)src;
+  const u8 *src_u8 = static_cast<const u8 *>(src);
 
   k = 0;
   // We need to encode three bytes at a time in to four encoded bytes
-  for (i = 0; i < len; i += 3) {
+  for (i = 0; i < nbyte; i += 3) {
     // First the thress bytes are broken down into six-bit sections
-    six_bits[0] = (data[i] >> 2) & 0x3F;
-    six_bits[1] = ((data[i] << 4) & 0x30) + ((data[i + 1] >> 4) & 0x0F);
-    six_bits[2] = ((data[i + 1] << 2) & 0x3C) + ((data[i + 2] >> 6) & 0x03);
-    six_bits[3] = data[i + 2] & 0x3F;
+    u8 data[3];
+    data[0] = src_u8[i];
+    if (i + 1 < nbyte) {
+      data[1] = src_u8[i + 1];
+    } else {
+      data[1] = 0;
+    }
+
+    if (i + 2 < nbyte) {
+      data[2] = src_u8[i + 2];
+    } else {
+      data[2] = 0;
+    }
+
+    u8 six_bits[4];
+    six_bits[0] = (data[0] >> 2) & 0x3F;
+    six_bits[1] = ((data[0] << 4) & 0x30) + ((data[0 + 1] >> 4) & 0x0F);
+    six_bits[2] = ((data[0 + 1] << 2) & 0x3C) + ((data[0 + 2] >> 6) & 0x03);
+    six_bits[3] = data[0 + 2] & 0x3F;
+
     // now we use the helper function to convert from six-bits to base64
     for (j = 0; j < 4; j++) {
       dest[k + j] = encode_six(six_bits[j]);
@@ -78,11 +93,11 @@ int Base64::encode(char *dest, const void *src, int nbyte) {
   }
 
   // at the end, we add = if the input is not divisible by 3
-  if ((len % 3) == 1) {
+  if ((nbyte % 3) == 1) {
     // two equals at end
     dest[k - 2] = '=';
     dest[k - 1] = '=';
-  } else if ((len % 3) == 2) {
+  } else if ((nbyte % 3) == 2) {
     dest[k - 1] = '=';
   }
 
@@ -126,7 +141,7 @@ int Base64::decode(void *dest, const char *src, int nbyte) {
 }
 
 size_t Base64::get_decoded_size(size_t nbyte) {
-  // doesn't account for padding
+  // adds three bytes to padding, actual is returned by decode method
   return (nbyte * 3 + 3) / 4;
 }
 
@@ -146,6 +161,7 @@ char Base64::encode_six(u8 six_bit_value) {
   } else if (x == 63) {
     c = '/';
   }
+
   return c;
 }
 

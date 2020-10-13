@@ -42,12 +42,122 @@ public:
       return false;
     }
 
+    if (!data_api_case()) {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool data_api_case() {
+
+    printer().key("mininumSize", Data::minimum_capacity());
+    printer().key("blockSize", Data::minimum_capacity());
+
+    const Array<u32, 4> value_list(
+      std::array<u32, 4>({0x11223344, 0x22334411, 0x33441122, 0x44332211}));
+
+    Data data_list = Data().copy(View(value_list));
+
+    TEST_ASSERT(View(data_list) == View(value_list));
+    data_list.append(View(value_list));
+
+    TEST_ASSERT(data_list.size() == View(value_list).size() * 2);
+
+    String s = data_list.to_string();
+
+    Data copy_list = Data::from_string(s);
+
+    TEST_ASSERT(copy_list == data_list);
+
+    const char a = 'a';
+    copy_list.append(View(a));
+    TEST_ASSERT(copy_list.size() == data_list.size() + 1);
+    TEST_ASSERT(copy_list != data_list);
+
     return true;
   }
 
   bool view_api_case() {
 
     TEST_EXPECT(V().to_const_char() == nullptr);
+
+    char buffer[32];
+
+    View view_buffer(buffer);
+    TEST_ASSERT(view_buffer.size() == sizeof(buffer));
+    TEST_ASSERT(view_buffer.to_char() == buffer);
+    TEST_ASSERT(view_buffer.is_read_only() == false);
+
+    const char test[] = "test1234567890\n";
+    View view_test(test);
+    printer().key("view test size", Ntos(view_test.size()));
+    printer().key("test size", Ntos(sizeof(test)));
+    TEST_ASSERT(view_test.size() == sizeof(test) - 1);
+    TEST_ASSERT(view_test.to_char() == nullptr);
+    TEST_ASSERT(view_test.to_const_char() == test);
+    TEST_ASSERT(view_test.is_read_only() == true);
+
+    u32 value_u32 = 0x12345678;
+    TEST_ASSERT(View(value_u32).size() == sizeof(value_u32));
+    TEST_ASSERT(View(value_u32).to<u32>() == &value_u32);
+    TEST_ASSERT(View(value_u32).is_read_only() == false);
+
+    printer().key("value", View(value_u32).to_string());
+    TEST_ASSERT(View(value_u32).to_string() == "78563412");
+
+    {
+      struct test_struct {
+        u8 a;
+        u8 b;
+        u8 c;
+        u8 d;
+        u32 x;
+        u32 y;
+      };
+
+      struct test_struct t;
+      struct test_struct t0;
+      View(t).fill<u8>(0xaa);
+      View(t0).fill<u8>(0xbb);
+
+      TEST_ASSERT(t.d == 0xaa);
+      TEST_ASSERT(t.x == 0xaaaaaaaa);
+      TEST_ASSERT(t.y == 0xaaaaaaaa);
+      TEST_ASSERT(t0.y == 0xbbbbbbbb);
+
+      TEST_ASSERT(View(t) != View(t0));
+      View(t0).fill<u8>(0xaa);
+      TEST_ASSERT(View(t) == View(t0));
+    }
+
+    {
+      u32 first = 0x11223344;
+      u32 second = 0;
+      u16 third;
+      TEST_ASSERT(View(second).size() == sizeof(second));
+      View(second).copy(View(first));
+      TEST_ASSERT(first == second);
+      TEST_ASSERT(first == 0x11223344);
+      View(third).copy(View(first));
+      TEST_ASSERT(third == 0x3344);
+    }
+
+    {
+      const Array<u32, 4> value_list(
+        std::array<u32, 4>({0x11223344, 0x22334411, 0x33441122, 0x44332211}));
+
+      u32 buffer[4];
+
+      TEST_ASSERT(View(value_list).size() == value_list.count() * sizeof(u32));
+      TEST_ASSERT(View(value_list).is_read_only());
+      TEST_ASSERT(View(buffer).copy(View(value_list)).is_success());
+      TEST_ASSERT(View(buffer) == View(value_list));
+
+      TEST_ASSERT(View(buffer).pop_front(4).size() == sizeof(u32) * 3);
+      TEST_ASSERT(View(buffer).pop_back(4).size() == sizeof(u32) * 3);
+      TEST_ASSERT(View(buffer).pop_front(4).at<u32>(0) == 0x22334411);
+    }
 
     return true;
   }
@@ -137,8 +247,17 @@ public:
     {
       T token("0,1,4,5,7,2,3", T::Construct().set_delimeters(","));
       TEST_ASSERT(token.count() == 7);
+      TEST_ASSERT(token.at(0) == "0");
+      TEST_ASSERT(token.at(6) == "3");
+      TEST_ASSERT(token.at(7) == "");
+      TEST_ASSERT(token.at(8) == "");
+      TEST_ASSERT(token.at(100) == "");
+
       TEST_ASSERT(
         token.sort(T::SortBy::ascending).join(";") == "0;1;2;3;4;5;7");
+
+      TEST_ASSERT(
+        token.sort(T::SortBy::descending).join(".") == "7.5.4.3.2.1.0");
     }
 
     return true;
@@ -151,7 +270,13 @@ public:
           return (Base64().encode(SV(input)) == S(output));
         };
 
+    printer().key("1", Base64().encode(StringView("1")));
+    printer().key(".", Base64().encode(StringView(".")));
+    printer().key("123.", Base64().encode(StringView("123.")));
+    printer().key("ks).", Base64().encode(StringView("ks).")));
+
     TEST_EXPECT(encode_test("1", "MQ=="));
+    TEST_ASSERT(encode_test(".", "Lg=="));
     TEST_EXPECT(encode_test("ab", "YWI="));
     TEST_EXPECT(encode_test("234", "MjM0"));
     TEST_EXPECT(encode_test("5678", "NTY3OA=="));
@@ -217,19 +342,95 @@ public:
     // TEST_EXPECT(encode_test(test_input, test_output));
     TEST_EXPECT(decode_test(test_input, test_output));
 
-#if RUN_NOT_PASSING
     {
-      // the base64 decode needs to have the entire dataset passed in one call
-      TEST_EXPECT(
-        S(DataFile()
-            .write(
-              ViewFile(V(test_output)),
-              Base64Decoder(),
-              DataFile::Write().set_page_size(sizeof(test_output)))
-            .data())
+
+      TEST_ASSERT(
+        DataFile()
+          .write(
+            ViewFile(V(test_output)),
+            Base64Decoder(),
+            DataFile::Write().set_page_size(32))
+          .get_string()
         == test_input);
+
+      TEST_ASSERT(
+        DataFile()
+          .write(
+            ViewFile(V(test_output)),
+            Base64Decoder(),
+            DataFile::Write().set_page_size(10))
+          .get_string()
+        == test_input);
+
+      TEST_ASSERT(
+        DataFile()
+          .write(
+            ViewFile(V(test_output)),
+            Base64Decoder(),
+            DataFile::Write().set_page_size(20))
+          .get_string()
+        == test_input);
+
+      TEST_ASSERT(
+        DataFile()
+          .write(
+            ViewFile(V(test_output)),
+            Base64Decoder(),
+            DataFile::Write().set_page_size(30))
+          .get_string()
+        == test_input);
+
+      TEST_ASSERT(
+        DataFile()
+          .write(
+            ViewFile(V(test_output)),
+            Base64Decoder(),
+            DataFile::Write().set_page_size(40))
+          .get_string()
+        == test_input);
+
+      DataFile df;
+      df.write(
+        ViewFile(V(test_input)),
+        Base64Encoder(),
+        DataFile::Write().set_page_size(12));
+
+      TEST_ASSERT(
+        DataFile()
+          .write(
+            ViewFile(V(test_input)),
+            Base64Encoder(),
+            DataFile::Write().set_page_size(12))
+          .get_string()
+        == test_output);
+
+      TEST_ASSERT(
+        DataFile()
+          .write(
+            ViewFile(V(test_input)),
+            Base64Encoder(),
+            DataFile::Write().set_page_size(30))
+          .get_string()
+        == test_output);
+
+      TEST_ASSERT(
+        DataFile()
+          .write(
+            ViewFile(V(test_input)),
+            Base64Encoder(),
+            DataFile::Write().set_page_size(50))
+          .get_string()
+        == test_output);
+
+      TEST_ASSERT(
+        DataFile()
+          .write(
+            ViewFile(V(test_input)),
+            Base64Encoder(),
+            DataFile::Write().set_page_size(60))
+          .get_string()
+        == test_output);
     }
-#endif
 
     return true;
   }

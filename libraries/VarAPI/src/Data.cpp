@@ -10,25 +10,6 @@
 #include "var/Data.hpp"
 #include "var/View.hpp"
 
-#if USE_PRINTER
-#include "sys/Printer.hpp"
-#endif
-
-#if !defined __link
-#include <mcu/arch.h>
-#include <reent.h>
-
-#if USE_PRINTER
-sys::Printer &sys::operator<<(sys::Printer &printer, const var::DataInfo &a) {
-  printer.key("arena", F32U, a.arena());
-  printer.key("freeBlockCount", F32U, a.free_block_count());
-  printer.key("freeSize", F32U, a.free_size());
-  printer.key("usedSize", F32U, a.used_size());
-  return printer;
-}
-#endif
-#endif
-
 using namespace var;
 
 // this value corresponds to the malloc chunk size used in Stratify OS
@@ -36,13 +17,7 @@ using namespace var;
 
 u32 Data::minimum_capacity() { return api::ApiInfo::malloc_start_chunk_size(); }
 
-u32 Data::block_size() {
-  return api::ApiInfo::malloc_chunk_size();
-}
-
-Data::Data() {
-  // var::Refernence sets size to zero
-}
+u32 Data::block_size() { return api::ApiInfo::malloc_chunk_size(); }
 
 Data::Data(size_t size) { resize(size); }
 
@@ -59,6 +34,7 @@ Data Data::from_string(StringView value) {
 }
 
 Data &Data::resize(size_t s) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   m_data.resize(s);
   if (m_data.size() < s) {
     // set memory error
@@ -67,24 +43,13 @@ Data &Data::resize(size_t s) {
   return *this;
 }
 
-Data &Data::copy_contents(const View &item) {
-  return copy_contents(item, CopyContents().set_size(item.size()));
-}
+Data &Data::copy(const View a, const Copy &options) {
+  const u32 bytes_to_copy
+    = options.size() < a.size() ? options.size() : a.size();
 
-Data &Data::copy_contents(const View &item, size_t size) {
-  return copy_contents(item, CopyContents().set_size(size));
-}
-
-Data &Data::copy_contents(const View &a, const CopyContents &options) {
-  // Position destination_position,
-  // Size size) {
-
-  u32 bytes_to_copy = options.size() < a.size() ? options.size() : a.size();
-
-  u32 bytes_needed = bytes_to_copy + options.destination_position();
+  const u32 bytes_needed = bytes_to_copy + options.destination_position();
 
   resize(bytes_needed);
-
   if (status().is_error()) {
     return *this;
   }
@@ -97,14 +62,6 @@ Data &Data::copy_contents(const View &a, const CopyContents &options) {
   return *this;
 }
 
-Data &Data::append(const View &item) {
-  m_data.reserve(size() + item.size());
-
-  for (u32 i = 0; i < item.size(); i++) {
-    m_data.push_back(item.to_const_u8()[i]);
-  }
-
-  return *this;
+Data &Data::append(const View item) {
+  return copy(item, Copy().set_destination_position(size()));
 }
-
-Data &Data::operator<<(const View &item) { return append(item); }

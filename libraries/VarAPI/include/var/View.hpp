@@ -153,6 +153,11 @@ public:
       "Cannot construct reference from non-trivial non-standard-layout "
       "types");
 
+    static_assert(
+      !std::is_same<T, const char *>::value,
+      "Cannot view a `const char *`");
+    static_assert(!std::is_same<T, char *>::value, "Cannot view a `char *`");
+
     if (std::is_const<T>::value == false) {
       set_view(Construct()
                  .set_read_buffer(&item)
@@ -165,96 +170,12 @@ public:
     }
   }
 
-  /*! \details Returns true if the data reference
-   * is valid.
-   *
-   * If the read and write pointers are both `nullptr`,
-   * this will return false.
-   *
-   * ```
-   * //md2code:main
-   * pio_attr_t pio_attributes;
-   *
-   * View data_structure;
-   * if( data_structure.is_valid() ){
-   *   printf("this won't print\n");
-   * }
-   *
-   * data_structure.refer_to(pio_attributes);
-   *
-   * if( data_structure.is_valid() ){
-   *   printf("this will print\n");
-   * }
-   * ```
-   *
-   */
   bool is_valid() const { return size() > 0; }
-
-  /*! \details Returns true if the view is null.
-   *
-   */
   bool is_null() const { return m_data == nullptr; }
 
-  /*! \details Refers to a read-write buffer
-   * with the specified size.
-   *
-   * ```
-   * //md2code:main
-   * char buffer[16];
-   *
-   * View data_reference =
-   *   View(
-   *     View::ReadWriteBuffer(buffer),
-   *     View::Size(16)
-   *   );
-   *
-   * if( data_reference.to_void() == nullptr ){
-   *   printf("this won't print\n");
-   * }
-   *
-   * if( data_reference.to_const_void() == nullptr ){
-   *   printf("this won't print\n");
-   * }
-   * ```
-   *
-   */
-  View &refer_to(const Construct &options) {
-    set_view(options);
-    return *this;
-  }
-
-  /*! \details Fill the data with the specified value.
-   * This will not attempt to write read-only data.
-   *
-   *
-   * ```
-   * //md2code:main
-   * char buffer[16];
-   *
-   * DataItem data_reference(buffer);
-   *
-   * data_reference.fill<u8>(0xaa);
-   * data_reference.fill<u32>(0xaabbccdd);
-   * data_reference.fill((u16)0xaa55);
-   * ```
-   *
-   */
   template <typename T> View &fill(const T &value) {
     for (u32 i = 0; i < this->count<T>(); i++) {
       to<T>()[i] = value;
-    }
-    return *this;
-  }
-
-  template <typename T>
-  View &populate(
-    T (*calculate_value)(size_t position, size_t count),
-    size_t count = 0) {
-    if (count == 0) {
-      count = this->count<T>();
-    }
-    for (u32 i = 0; i < count; i++) {
-      to<T>()[i] = calculate_value(i, count);
     }
     return *this;
   }
@@ -322,10 +243,20 @@ public:
    */
   size_t size() const { return m_size_read_only & ~m_size_read_only_flag; }
 
-  View &reduce_size(size_t reduced_size) {
-    if (reduced_size < size()) {
-      m_size_read_only &= ~m_size_read_only_flag;
-      m_size_read_only |= reduced_size;
+  View &pop_back(size_t pop_size = 1) {
+    if (size() > pop_size) {
+      m_size_read_only
+        = (m_size_read_only & m_size_read_only_flag) | (size() - pop_size);
+      m_size_read_only |= (size() - pop_size);
+    }
+    return *this;
+  }
+
+  View &pop_front(size_t pop_size = 1) {
+    if (size() > pop_size) {
+      m_size_read_only
+        = (m_size_read_only & m_size_read_only_flag) | (size() - pop_size);
+      m_data = (static_cast<u8 *>(m_data)) + pop_size;
     }
     return *this;
   }
@@ -339,19 +270,7 @@ public:
     return m_size_read_only & (m_size_read_only_flag);
   }
 
-  class Copy {
-    API_AF(Copy, const void *, source, nullptr);
-    API_AF(Copy, void *, destination, nullptr);
-    API_AF(Copy, size_t, size, 0);
-  };
-
-  View &copy(const View &source) {
-    if (!is_read_only()) {
-      size_t copy_size = size() > source.size() ? source.size() : size();
-      memcpy(m_data, source.to_const_void(), copy_size);
-    }
-    return *this;
-  }
+  View &copy(const View &source);
 
   /*! \details Returns a pointer to the data (read/write)
    * This will return zero if the data is readonly.
@@ -504,6 +423,7 @@ public:
 
   virtual int transform(const Transform &options) const = 0;
   virtual size_t get_output_size(size_t nbyte) const { return nbyte; }
+  virtual size_t page_size_boundary() const = 0;
 
 protected:
 };

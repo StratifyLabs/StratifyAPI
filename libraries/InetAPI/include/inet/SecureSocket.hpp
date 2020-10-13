@@ -34,7 +34,7 @@ public:
   const var::Data &ticket() const { return m_ticket; }
 
   SecureSocket &set_ticket(var::View ticket) {
-    m_ticket.copy_contents(ticket);
+    m_ticket.copy(ticket);
     return *this;
   }
 

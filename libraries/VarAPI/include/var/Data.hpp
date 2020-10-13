@@ -124,7 +124,7 @@ public:
    *
    *
    */
-  Data();
+  Data() = default;
 
   explicit Data(std::initializer_list<u8> il) : m_data(il) {}
 
@@ -136,7 +136,7 @@ public:
    */
   explicit Data(size_t size);
 
-  String to_string() const;
+  String to_string() const { return View(*this).to_string(); }
   static Data from_string(var::StringView value);
 
   /*! \details Returns the minimum data storage size of any Data object. */
@@ -195,29 +195,12 @@ public:
     return *this;
   }
 
-  /*! \details Copies the contents of another data object
-   *  into the memory of this object.
-   *
-   * This object will be resized if there
-   * is not enough room to fit the contents.
-   *
-   * This object's size won't necessarily be
-   * equal to the copied object's size.
-   *
-   *
-   *
-   */
-  Data &copy_contents(const View &a, size_t size);
+  class Copy {
+    API_AF(Copy, size_t, destination_position, 0);
+    API_AF(Copy, size_t, size, -1);
 
-  /*!
-   * \details Copies the contents of another data object.
-   *
-   */
-  Data &copy_contents(const View &reference);
-
-  class CopyContents {
-    API_AF(CopyContents, size_t, destination_position, 0);
-    API_AF(CopyContents, size_t, size, 0);
+  public:
+    Copy() : m_destination_position(0), m_size(static_cast<size_t>(-1)) {}
   };
   /*!
    * \details Copies the contents of another data object to this object.
@@ -226,7 +209,7 @@ public:
    * \param size The number of bytes to copy
    * \return Zero on success or less than zero if memory could not be allocated
    */
-  Data &copy_contents(const View &a, const CopyContents &options);
+  Data &copy(const View a, const Copy &options = Copy());
 
   /*! \details Appends the contents of another
    * data object to this object.
@@ -243,8 +226,7 @@ public:
    * ```
    *
    */
-  Data &append(const View &reference);
-  Data &operator<<(const View &reference);
+  Data &append(const View reference);
 
   class Erase {
     API_AF(Erase, size_t, position, 0);
@@ -276,6 +258,11 @@ public:
     m_data.reserve(size);
     return *this;
   }
+
+  bool operator==(const var::Data &data) const { return data.m_data == m_data; }
+  bool operator!=(const var::Data &data) const { return data.m_data != m_data; }
+  bool operator>(const var::Data &data) const { return data.m_data > m_data; }
+  bool operator<(const var::Data &data) const { return data.m_data < m_data; }
 
   void *data() { return static_cast<void *>(m_data.data()); }
   const void *data() const { return static_cast<const void *>(m_data.data()); }

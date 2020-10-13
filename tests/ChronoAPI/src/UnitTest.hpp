@@ -79,16 +79,16 @@ public:
 
     CT now = CT::get_system_time();
     printer().object("now", now);
-    wait(2_seconds);
+    wait(1_seconds);
     CT then = CT::get_system_time();
-    TEST_EXPECT(now.get_age().seconds() == 1);
+    TEST_EXPECT(now.get_age().seconds() >= 1);
     TEST_EXPECT(now <= CT::get_system_time());
     TEST_EXPECT(now < CT::get_system_time());
     TEST_EXPECT(!(now > CT::get_system_time()));
     TEST_EXPECT(!(now >= CT::get_system_time()));
     TEST_EXPECT(now != CT::get_system_time());
 
-    TEST_EXPECT((then - now).seconds() == 1);
+    TEST_EXPECT((then - now).seconds() >= 1);
     wait(50_milliseconds);
     ClockTime later = CT::get_system_time();
     TEST_EXPECT(later - CT(50_milliseconds) > now);

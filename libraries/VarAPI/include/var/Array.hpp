@@ -44,54 +44,56 @@ namespace var {
  * and popping them from the back.
  *
  */
-template <typename T, size_t size_value> class Array {
+template <typename T, size_t SizeValue> class Array {
 public:
-  Array() {}
+  Array() = default;
+  Array(const std::array<T, SizeValue> &array) : m_array(array) {}
+  Array(std::array<T, SizeValue> &&array) : m_array(std::move(array)) {}
   Array(std::initializer_list<T> il) : m_array{{il}} {}
   // Array &operator=(std::initializer_list<T> il) { m_array = {il}; }
 
-  typename std::array<T, size_value>::const_iterator begin() const noexcept {
+  typename std::array<T, SizeValue>::const_iterator begin() const noexcept {
     return m_array.begin();
   }
-  typename std::array<T, size_value>::iterator begin() noexcept {
+  typename std::array<T, SizeValue>::iterator begin() noexcept {
     return m_array.begin();
   }
 
-  typename std::array<T, size_value>::const_iterator end() const noexcept {
+  typename std::array<T, SizeValue>::const_iterator end() const noexcept {
     return m_array.end();
   }
-  typename std::array<T, size_value>::iterator end() noexcept {
+  typename std::array<T, SizeValue>::iterator end() noexcept {
     return m_array.end();
   }
 
-  typename std::array<T, size_value>::const_iterator cbegin() const noexcept {
+  typename std::array<T, SizeValue>::const_iterator cbegin() const noexcept {
     return m_array.cbegin();
   }
-  typename std::array<T, size_value>::const_iterator cend() const noexcept {
+  typename std::array<T, SizeValue>::const_iterator cend() const noexcept {
     return m_array.cend();
   }
 
-  typename std::array<T, size_value>::const_reverse_iterator
+  typename std::array<T, SizeValue>::const_reverse_iterator
   rbegin() const noexcept {
     return m_array.rbegin();
   }
-  typename std::array<T, size_value>::reverse_iterator rbegin() noexcept {
+  typename std::array<T, SizeValue>::reverse_iterator rbegin() noexcept {
     return m_array.rbegin();
   }
 
-  typename std::array<T, size_value>::const_reverse_iterator
+  typename std::array<T, SizeValue>::const_reverse_iterator
   rend() const noexcept {
     return m_array.rend();
   }
-  typename std::array<T, size_value>::reverse_iterator rend() noexcept {
+  typename std::array<T, SizeValue>::reverse_iterator rend() noexcept {
     return m_array.rend();
   }
 
-  typename std::array<T, size_value>::const_reverse_iterator
+  typename std::array<T, SizeValue>::const_reverse_iterator
   crbegin() const noexcept {
     return m_array.crbegin();
   }
-  typename std::array<T, size_value>::const_reverse_iterator
+  typename std::array<T, SizeValue>::const_reverse_iterator
   crend() const noexcept {
     return m_array.crend();
   }
@@ -130,8 +132,8 @@ public:
     return *this;
   }
 
-  std::array<T, size_value> &array() { return m_array; }
-  const std::array<T, size_value> &array() const { return m_array; }
+  std::array<T, SizeValue> &array() { return m_array; }
+  const std::array<T, SizeValue> &array() const { return m_array; }
 
   const T *data() const { return m_array.data(); }
   T *data() { return m_array.data(); }
@@ -140,7 +142,7 @@ public:
   const void *to_const_void() const { return (const void *)m_array.data(); }
 
 private:
-  std::array<T, size_value> m_array;
+  std::array<T, SizeValue> m_array;
 };
 
 template <typename T> class Pair : public Array<T, 2> {
