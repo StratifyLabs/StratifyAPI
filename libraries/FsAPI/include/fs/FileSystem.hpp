@@ -19,14 +19,14 @@ public:
   static int access(const var::String &path, const Access &o_access);
 #endif
 
-  bool exists(var::StringView path);
+  bool exists(var::StringView path) const;
 
   /*! \details Deletes a file.
    *
    * @return Zero on success
    *
    */
-  FileSystem &remove(var::StringView path);
+  const FileSystem &remove(var::StringView path) const;
 
   /*! \details Gets the size of the file.
    *
@@ -34,38 +34,36 @@ public:
    * @return The number of bytes in the file or less than zero for an error
    *
    */
-  u32 size(var::StringView path);
+  u32 size(var::StringView path) const;
 
   /*! \details Removes a file or directory.
    *
    * @return Zero on success or -1 for an error
    */
-  FileSystem &remove_directory(var::StringView path);
+  const FileSystem &remove_directory(var::StringView path) const;
 
-  FileSystem &remove_directory(var::StringView path, IsRecursive recursive);
+  const FileSystem &
+  remove_directory(var::StringView path, IsRecursive recursive) const;
 
-  bool directory_exists(var::StringView path);
+  bool directory_exists(var::StringView path) const;
 
-  FileSystem &
-  save_copy(var::StringView file_path, IsOverwrite is_overwrite) const;
-
-  FileSystem &create_directory(
+  const FileSystem &create_directory(
     var::StringView path,
-    const Permissions &permissions = Permissions(0777));
+    const Permissions &permissions = Permissions(0)) const;
 
-  FileSystem &create_directory(
+  const FileSystem &create_directory(
     var::StringView path,
-    const Permissions &permissions,
-    IsRecursive is_recursive);
+    IsRecursive is_recursive,
+    const Permissions &permissions = Permissions(0)) const;
 
   var::StringList read_directory(
     const fs::Dir &directory,
-    IsRecursive is_recursive = IsRecursive::no);
+    IsRecursive is_recursive = IsRecursive::no) const;
 
   var::StringList read_directory(
     const fs::Dir &directory,
     var::StringView (*filter)(var::StringView),
-    IsRecursive is_recursive = IsRecursive::no);
+    IsRecursive is_recursive = IsRecursive::no) const;
 
   class Rename {
     API_AC(Rename, var::StringView, source);
@@ -79,25 +77,26 @@ public:
    * \return Zero on success
    *
    */
-  FileSystem &rename(const Rename &options);
+  const FileSystem &rename(const Rename &options) const;
 
-  FileSystem &touch(var::StringView path);
+  const FileSystem &touch(var::StringView path) const;
 
-  FileInfo get_info(var::StringView path);
-  FileInfo get_info(const File &file);
+  FileInfo get_info(var::StringView path) const;
+  FileInfo get_info(const File &file) const;
 
 #if !defined __link
   int access(var::StringView path, const Access &access);
 #endif
 
 protected:
-  virtual int interface_mkdir(const char *path, int mode) const;
-  virtual int interface_rmdir(const char *path) const;
-  virtual int interface_unlink(const char *path) const;
-  virtual int interface_stat(const char *path, struct stat *stat) const;
-  virtual int interface_fstat(int fd, struct stat *stat) const;
-  virtual int
-  interface_rename(const char *old_name, const char *new_name) const;
+  Permissions get_permissions(var::StringView path) const;
+
+  int interface_mkdir(const char *path, int mode) const;
+  int interface_rmdir(const char *path) const;
+  int interface_unlink(const char *path) const;
+  int interface_stat(const char *path, struct stat *stat) const;
+  int interface_fstat(int fd, struct stat *stat) const;
+  int interface_rename(const char *old_name, const char *new_name) const;
 
 private:
 #ifdef __link

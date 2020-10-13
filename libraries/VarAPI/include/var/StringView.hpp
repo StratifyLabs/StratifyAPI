@@ -147,8 +147,12 @@ public:
   bool operator!=(const char *a) const { return StringView(a) != *this; }
 
 private:
+  StringView(const char *s, size_t length) : m_string_view(s, length) {}
+  friend class String;
   std::string_view m_string_view;
 };
+
+inline bool operator==(const char *lhs, StringView rhs) { return rhs == lhs; }
 
 class NumberToString {
 public:

@@ -638,7 +638,7 @@ public:
 
   Vector<String> split(StringView delimiter) const;
 
-  operator StringView() const { return StringView(cstring()); }
+  operator StringView() const { return StringView(cstring(), length()); }
 
   static const String &empty_string() { return m_empty_string; }
 

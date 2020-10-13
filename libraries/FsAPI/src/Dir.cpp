@@ -28,8 +28,8 @@ Dir &Dir::open(var::StringView path) {
   API_RETURN_VALUE_IF_ERROR(*this);
   m_dirp = interface_opendir(path.cstring());
 
-  if (m_dirp == 0) {
-    API_RETURN_VALUE_ASSIGN_ERROR(*this, "no entity", ENOENT);
+  if (m_dirp == nullptr) {
+    API_RETURN_VALUE_ASSIGN_ERROR(*this, path.cstring(), ENOENT);
   } else {
     m_path = var::String(path);
   }
@@ -72,8 +72,10 @@ int Dir::count() {
 
 const char *Dir::read() const {
   API_RETURN_VALUE_IF_ERROR(nullptr);
-  struct dirent *result;
-  if (interface_readdir_r(m_dirp, &m_entry, &result) < 0) {
+  struct dirent *dirent_result = nullptr;
+  int result;
+  result = interface_readdir_r(m_dirp, &m_entry, &dirent_result);
+  if (dirent_result == nullptr) {
     return nullptr;
   }
   return m_entry.d_name;

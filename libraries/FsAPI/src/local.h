@@ -20,6 +20,8 @@
 #define FSAPI_LINK_TELLDIR(x, y) link_telldir(x, y)
 #define FSAPI_LINK_SEEKDIR(x, y, z) link_seekdir(x, y, z)
 #define FSAPI_LINK_REWINDDIR(x, y) link_rewinddir(x, y)
+#define FSAPI_LINK_MKDIR(x, y, z) link_mkdir(x, y, z)
+#define FSAPI_LINK_RMDIR(x, y) link_rmdir(x, y)
 
 #define LINK_SET_DRIVER(x, y) x.set_driver(y)
 #define LINK_DRIVER_ONLY driver()
@@ -41,6 +43,8 @@
 #define FSAPI_LINK_REWINDDIR(x, y) ::closedir(y)
 
 #define FSAPI_LINK_OPENDIR(x, y) ::opendir(y)
+#define FSAPI_LINK_MKDIR(x, y, z) link_mkdir(y, z)
+#define FSAPI_LINK_RMDIR(x, y) ::rmdir(y)
 
 #define LINK_SET_DRIVER(x, y)
 #define LINK_DRIVER_ONLY

@@ -15,7 +15,9 @@ public:
 
   bool execute_class_api_case() {
 
-    TEST_EXPECT(true);
+    if (!path_api_case()) {
+      return false;
+    }
 
     if (!file_api_case()) {
       return false;
@@ -28,36 +30,155 @@ public:
     return true;
   }
 
+  bool path_api_case() {
+    using P = fs::Path;
+    printer::PrinterObject po(printer(), "path");
+
+    TEST_ASSERT(P("data/test.json").path() == "data/test.json");
+    TEST_ASSERT(P("flat").name() == "flat");
+    TEST_ASSERT(P("flat.json").name() == "flat.json");
+    TEST_ASSERT(P("flat.json").suffix() == "json");
+    TEST_ASSERT(P("data/test.json").suffix() == "json");
+    TEST_ASSERT(P("data/test.json").name() == "test.json");
+    TEST_ASSERT(P("data/test.json").base_name() == "test");
+    TEST_ASSERT(P("data/test.json").no_suffix() == "data/test");
+    TEST_ASSERT(P("data/test.json").parent_directory() == "data");
+    TEST_ASSERT(P("/Users/data/test.json").parent_directory() == "/Users/data");
+    TEST_ASSERT(P("/Users/data/test.json").no_suffix() == "/Users/data/test");
+    TEST_ASSERT(P("data/.test.json").is_hidden());
+    TEST_ASSERT(P("data/test.json").is_hidden() == false);
+
+    return true;
+  }
+
   bool file_system_api_case() {
     using FS = fs::FileSystem;
     using F = fs::File;
+    using DF = fs::DataFile;
 
-    constexpr const char *file_name = "filessytem.txt";
-    StringView dir_name = "tmpdir";
-    StringView file_name2 = "filessytem2.txt";
+    printer::PrinterObject po(printer(), "file_system");
 
-    TEST_ASSERT(F(file_name, F::IsCreateOverwrite::yes)
-                  .write("Filesystem file")
-                  .status()
-                  .is_success());
+    {
+      printer::PrinterObject po(printer(), "create/remove directories");
 
-    TEST_EXPECT(FS().exists(file_name));
+      constexpr const char *file_name = "filessytem.txt";
+      const StringView dir_name = "tmpdir";
+      const StringView dir_name_recursive = "tmpdir/tmp/dir";
+      const StringView file_name2 = "filessytem2.txt";
 
-    // not exists should not affect the error context
-    TEST_EXPECT(!FS().exists(file_name2) && status().is_success());
+      // cleanup
+      reset_error_context();
+      FS().remove_directory("tmpdir/tmp/dir", FS::IsRecursive::yes);
+      reset_error_context();
+      FS().remove_directory("tmpdir/tmp", FS::IsRecursive::yes);
+      reset_error_context();
+      FS().remove_directory("tmpdir", FS::IsRecursive::yes);
+      reset_error_context();
 
-    TEST_EXPECT(FS().remove(file_name).status().is_success());
-    TEST_EXPECT(!FS().exists(file_name) && status().is_success());
+      TEST_ASSERT(is_success());
 
-    TEST_ASSERT(F(file_name, F::IsCreateOverwrite::yes)
-                  .write(file_name2)
-                  .status()
-                  .is_success());
+      TEST_ASSERT(F(file_name, F::IsCreateOverwrite::yes)
+                    .write("Filesystem file")
+                    .status()
+                    .is_success());
 
-    TEST_EXPECT(FS().size(file_name) == file_name2.length());
+      TEST_EXPECT(FS().exists(file_name));
 
-    TEST_EXPECT(FS().create_directory(dir_name).is_success());
-    TEST_EXPECT(FS().remove_directory(dir_name).is_success());
+      // not exists should not affect the error context
+      TEST_EXPECT(!FS().exists(file_name2) && status().is_success());
+
+      TEST_EXPECT(FS().remove(file_name).status().is_success());
+      TEST_EXPECT(!FS().exists(file_name) && status().is_success());
+
+      TEST_ASSERT(F(file_name, F::IsCreateOverwrite::yes)
+                    .write(file_name2)
+                    .status()
+                    .is_success());
+
+      TEST_EXPECT(FS().size(file_name) == file_name2.length());
+
+      TEST_ASSERT(FS().create_directory(dir_name).is_success());
+      TEST_ASSERT(FS().remove_directory(dir_name).is_success());
+
+      TEST_EXPECT(FS().create_directory(dir_name_recursive).is_error());
+
+      TEST_EXPECT(dir_name_recursive == error_context().message());
+      TEST_EXPECT(error_context().message() == dir_name_recursive);
+
+      reset_error_context();
+
+      TEST_EXPECT(FS()
+                    .create_directory(dir_name_recursive, FS::IsRecursive::yes)
+                    .is_success());
+
+      TEST_EXPECT(F(dir_name_recursive + "/tmp.txt", F::IsCreateOverwrite::yes)
+                    .write("Hello")
+                    .is_success);
+
+      TEST_ASSERT(
+        DF()
+          .write(F(dir_name_recursive + "/tmp.txt", OpenMode::read_only()))
+          .get_string()
+        == "Hello");
+
+      TEST_EXPECT(F(Path(dir_name_recursive).parent_directory() + "/tmp.txt",
+                    F::IsCreateOverwrite::yes)
+                    .write("Hello2")
+                    .is_success);
+
+      TEST_ASSERT(
+        DF()
+          .write(
+            F(Path(dir_name_recursive).parent_directory() + "/tmp.txt",
+              OpenMode::read_only()))
+          .get_string()
+        == "Hello2");
+
+      TEST_EXPECT(
+        F(Path(Path(dir_name_recursive).parent_directory()).parent_directory()
+            + "/tmp.txt",
+          F::IsCreateOverwrite::yes)
+          .write("Hello3")
+          .is_success);
+
+      TEST_ASSERT(
+        DF()
+          .write(F(
+            Path(Path(dir_name_recursive).parent_directory()).parent_directory()
+              + "/tmp.txt",
+            OpenMode::read_only()))
+          .get_string()
+        == "Hello3");
+
+      TEST_EXPECT(FS().exists(dir_name_recursive) == true);
+
+      TEST_EXPECT(
+        FS().exists(Path(dir_name_recursive).parent_directory()) == true);
+
+      TEST_EXPECT(
+        FS().exists(
+          Path(Path(dir_name_recursive).parent_directory()).parent_directory())
+        == true);
+
+      TEST_EXPECT(
+        FS().remove_directory(dir_name, FS::IsRecursive::yes).is_success());
+
+      TEST_EXPECT(
+        FS().remove_directory(dir_name, FS::IsRecursive::yes).is_error());
+
+      TEST_EXPECT(error_context().message() == dir_name);
+
+      reset_error_context();
+    }
+
+    {
+      printer::PrinterObject po(printer(), "directory permissions");
+      Permissions permissions = FS().get_info(".").permissions();
+      const StringView dir_name = "permdir";
+
+      TEST_ASSERT(FS().create_directory(dir_name).is_success());
+      TEST_ASSERT(FS().get_info(dir_name).permissions() == permissions);
+    }
 
     return true;
   }
@@ -66,6 +187,7 @@ public:
     using F = fs::File;
     using DF = fs::DataFile;
     using FS = fs::FileSystem;
+    printer::PrinterObject po(printer(), "file");
 
     constexpr const char *file_name = "tmp.txt";
 
