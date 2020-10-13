@@ -11,6 +11,12 @@
 
 class UnitTest : public test::Test {
 public:
+  using FS = FileSystem;
+  using F = File;
+  using P = Path;
+  using D = Dir;
+  using DF = fs::DataFile;
+
   UnitTest(var::StringView name) : test::Test(name) {}
 
   bool execute_class_api_case() {
@@ -27,11 +33,65 @@ public:
       return false;
     }
 
+    if (!dir_api_case()) {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool dir_api_case() {
+
+    FS().remove_directory("tmp", FS::IsRecursive::yes);
+    reset_error_context();
+    FS().remove_directory("tmp2", FS::IsRecursive::yes);
+    reset_error_context();
+
+    TEST_ASSERT(FS().create_directory("tmp").is_success());
+    TEST_ASSERT(F("tmp/test0.txt", F::IsCreateOverwrite::yes)
+                  .write("test0\n")
+                  .is_success());
+    TEST_ASSERT(F("tmp/test1.txt", F::IsCreateOverwrite::yes)
+                  .write("test1\n")
+                  .is_success());
+    TEST_ASSERT(F("tmp/test2.txt", F::IsCreateOverwrite::yes)
+                  .write("test2\n")
+                  .is_success());
+    TEST_ASSERT(FS().create_directory("tmp2").is_success());
+    TEST_ASSERT(F("tmp2/test0.txt", F::IsCreateOverwrite::yes)
+                  .write("test0\n")
+                  .is_success());
+    TEST_ASSERT(F("tmp2/test1.txt", F::IsCreateOverwrite::yes)
+                  .write("test1\n")
+                  .is_success());
+    TEST_ASSERT(F("tmp2/test2.txt", F::IsCreateOverwrite::yes)
+                  .write("test2\n")
+                  .is_success());
+
+    TEST_ASSERT(D("tmp").is_success());
+
+    {
+      D d("tmp");
+      StringList dir_list = FS().read_directory(d);
+      printer().object("list", dir_list);
+      TEST_ASSERT(dir_list.count() == 3);
+    }
+
+    {
+      D d("tmp");
+      int count = 0;
+      String e;
+      while ((e = d.get_entry()).is_empty() == false) {
+        printer().key(Ntos(count), e);
+        count++;
+      }
+      TEST_ASSERT(count == 5);
+    }
+
     return true;
   }
 
   bool path_api_case() {
-    using P = fs::Path;
     printer::PrinterObject po(printer(), "path");
 
     TEST_ASSERT(P("data/test.json").path() == "data/test.json");
@@ -52,9 +112,6 @@ public:
   }
 
   bool file_system_api_case() {
-    using FS = fs::FileSystem;
-    using F = fs::File;
-    using DF = fs::DataFile;
 
     printer::PrinterObject po(printer(), "file_system");
 

@@ -750,7 +750,7 @@ Printer &Printer::operator<<(const var::String &a) {
 
 Printer &Printer::operator<<(const var::StringList &a) {
   for (u32 i = 0; i < a.count(); i++) {
-    interface_print_final(a.at(i).cstring());
+    key(var::Ntos(i), a.at(i));
   }
   return *this;
 }

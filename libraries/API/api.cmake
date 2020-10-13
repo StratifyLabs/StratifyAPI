@@ -87,8 +87,10 @@ macro(api_target NAME DIRECTORIES)
 
 		foreach(SOURCE ${SOURCES})
 			get_filename_component(FILE_NAME ${SOURCE} NAME)
-			list(APPEND GCOV_SOURCES ${MY_DIR}/CMakeFiles/${COVERAGE_TARGET}.dir/src/${FILE_NAME}.gcno)
+			list(APPEND GCOV_SOURCES ${MY_DIR}/CMakeFiles/${COVERAGE_TARGET}.dir/src/${FILE_NAME}.gcda)
 		endforeach()
+
+		#list(APPEND GCOV_SCRUB_SOURCES ${GCOV_SOURCES})
 
 		message(STATUS "GCOV SOURCES ${GCOV_SOURCES}")
 
@@ -99,6 +101,11 @@ macro(api_target NAME DIRECTORIES)
 		add_custom_target(coverage_${COVERAGE_TARGET}
 			COMMAND gcov ${GCOV_SOURCES}
 			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/coverage/${COVERAGE_TARGET}
+			DEPENDS coverage_mkdir_${COVERAGE_TARGET}
+			)
+
+		add_custom_target(clean_coverage_${COVERAGE_TARGET}
+			COMMAND rm -f ${GCOV_SOURCES}
 			DEPENDS coverage_mkdir_${COVERAGE_TARGET}
 			)
 

@@ -7,7 +7,7 @@
 #include "chrono/ClockTime.hpp"
 
 printer::Printer &
-operator<<(printer::Printer &printer, const chrono::ClockTime &a) {
+printer::operator<<(printer::Printer &printer, const chrono::ClockTime &a) {
   printer.key("seconds", var::Ntos(a.seconds()));
   printer.key("nanoseconds", var::Ntos(a.nanoseconds()));
   return printer;

@@ -15,5 +15,16 @@ add_subdirectory(FsAPI testsFsAPI)
 
 
 add_custom_target(coverage
-	DEPENDS coverage_FsAPI_coverage_link coverage_ChronoAPI_coverage_link coverage_VarAPI_coverage_link
+	DEPENDS coverage_test coverage_FsAPI_coverage_link coverage_ChronoAPI_coverage_link coverage_VarAPI_coverage_link
 	)
+
+add_custom_target(coverage_test
+	COMMAND ctest -VV
+	DEPENDS clean_coverage
+	)
+
+add_custom_target(clean_coverage
+	DEPENDS	clean_coverage_FsAPI_coverage_link clean_coverage_ChronoAPI_coverage_link clean_coverage_VarAPI_coverage_link
+	)
+
+

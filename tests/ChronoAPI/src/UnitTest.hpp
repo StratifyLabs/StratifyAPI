@@ -23,6 +23,10 @@ public:
       return false;
     }
 
+    if (!execute_clocktimer_api_case()) {
+      return false;
+    }
+
     return true;
   }
 
@@ -48,11 +52,43 @@ public:
     return true;
   }
 
+  bool execute_clocktimer_api_case() {
+    using T = chrono::ClockTimer;
+    using CT = chrono::ClockTime;
+    using MT = chrono::MicroTime;
+
+    T t = T().start();
+    while (t.micro_time() < 10_milliseconds) {
+      wait(100_microseconds);
+    }
+    t.stop();
+    TEST_EXPECT(t.micro_time() > 10_milliseconds);
+    t.resume();
+    wait(10_milliseconds);
+    TEST_EXPECT(t.micro_time() > 20_milliseconds);
+    t.reset();
+    TEST_EXPECT(t.microseconds() == 0);
+    TEST_EXPECT(t.seconds() == 0);
+    TEST_EXPECT(t.milliseconds() == 0);
+
+    return true;
+  }
+
   bool execute_clocktime_api_case() {
     using CT = chrono::ClockTime;
 
     CT now = CT::get_system_time();
+    printer().object("now", now);
+    wait(1_seconds);
+    CT then = CT::get_system_time();
+    TEST_EXPECT(now.get_age().seconds() == 1);
     TEST_EXPECT(now <= CT::get_system_time());
+    TEST_EXPECT(now < CT::get_system_time());
+    TEST_EXPECT(!(now > CT::get_system_time()));
+    TEST_EXPECT(!(now >= CT::get_system_time()));
+    TEST_EXPECT(now != CT::get_system_time());
+
+    TEST_EXPECT((then - now).seconds() == 1);
     wait(50_milliseconds);
     ClockTime later = CT::get_system_time();
     TEST_EXPECT(later - CT(50_milliseconds) > now);
