@@ -6,19 +6,19 @@ using namespace var;
 
 String
 StringView::get_substring(const GetSubstring &options) const {
-  return String(*this).get_substring(options);
+  return std::move(String(*this).get_substring(options));
 }
 
 String StringView::get_substring_at_position(size_t position) const {
-  return String(*this).get_substring_at_position(position);
+  return std::move(String(*this).get_substring_at_position(position));
 }
 
 String StringView::get_substring_with_length(size_t length) const {
-  return String(*this).get_substring_with_length(length);
+  return std::move(String(*this).get_substring_with_length(length));
 }
 
 var::Vector<String> StringView::split(StringView delimeters) const {
-  return String(*this).split(delimeters);
+  return std::move(String(*this).split(delimeters));
 }
 
 float StringView::to_float() const {

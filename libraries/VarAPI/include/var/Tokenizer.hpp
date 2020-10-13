@@ -45,6 +45,8 @@ public:
 
   var::StringList &list() { return m_token_list; }
 
+  var::String join(StringView delimeter) const;
+
 protected:
 private:
   var::StringList m_token_list;
@@ -55,10 +57,5 @@ private:
 typedef Tokenizer Token;
 
 } // namespace var
-
-namespace sys {
-class Printer;
-Printer &operator<<(Printer &printer, const var::Tokenizer &a);
-} // namespace sys
 
 #endif /* VAR_API_TOKENIZER_HPP_ */

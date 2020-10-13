@@ -58,7 +58,7 @@ public:
     using MT = chrono::MicroTime;
 
     T t = T().start();
-    while (t.micro_time() < 10_milliseconds) {
+    while (t.micro_time() < 15_milliseconds) {
       wait(100_microseconds);
     }
     t.stop();
@@ -79,7 +79,7 @@ public:
 
     CT now = CT::get_system_time();
     printer().object("now", now);
-    wait(1_seconds);
+    wait(2_seconds);
     CT then = CT::get_system_time();
     TEST_EXPECT(now.get_age().seconds() == 1);
     TEST_EXPECT(now <= CT::get_system_time());

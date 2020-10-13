@@ -164,24 +164,22 @@ public:
     if (fmt == nullptr) {
 
       if (std::is_integral<T>::value == true) {
-
-#if defined __link
         strncpy(m_buffer, std::to_string(value).c_str(), sizeof(m_buffer) - 1);
-#else
-        if (std::is_signed<T>::value == true) {
-          snprintf(m_buffer, sizeof(m_buffer) - 1, F32D, value);
-        } else {
-          snprintf(m_buffer, sizeof(m_buffer) - 1, F32U, value);
-        }
-#endif
       } else if (std::is_floating_point<T>::value == true) {
-#if 0
-        static_assert(
-          sizeof(T) > 4,
-          "Cannot convert double types to string using NumberToString");
-#endif
 
-        // snprintf(m_buffer, sizeof(m_buffer) - 1, "%f", value);
+        static_assert(
+          !(std::is_same<T, double>::value),
+          "Cannot convert double with NumberToString");
+
+        static_assert(
+          !(std::is_same<T, long double>::value),
+          "Cannot convert long double with NumberToString");
+
+        snprintf(
+          m_buffer,
+          sizeof(m_buffer) - 1,
+          "%f",
+          static_cast<float>(value));
       }
 
       return;

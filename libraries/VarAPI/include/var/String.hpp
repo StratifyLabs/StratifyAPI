@@ -116,17 +116,7 @@ public:
 
   using Compare = Insert;
 
-  /*! \details Constructs an empty string.
-   *
-   * This constructor does not use any dyncamic memory allocation.
-   *
-   * The str() method will return a valid zero-length, null-terminated string.
-   *
-   * If the string is modified using methods herein, the memory
-   * will be automatically allocated as needed.
-   *
-   */
-  String();
+  String() = default;
 
   explicit String(const char *s) { // cppcheck-suppress[noExplicitConstructor]
     if (s != nullptr) {
@@ -201,18 +191,6 @@ public:
   }
   String operator+(char rhs) const { return String(string() + rhs); }
 
-  ~String() {}
-
-  /*! \details Tests if string is empty.
-   *
-   * ```
-   * ConstString x;
-   * if( x.is_empty() ){
-   *   //we arrive here
-   * }
-   * ```
-   *
-   */
   bool is_empty() const { return m_string.empty(); }
 
   /*! \details Gets a sub string of the string.
@@ -231,6 +209,9 @@ public:
   }
 
   String get_substring_at_position(size_t position) const {
+    if (position >= length()) {
+      return String();
+    }
     return std::move(String(m_string.substr(position)));
   }
 

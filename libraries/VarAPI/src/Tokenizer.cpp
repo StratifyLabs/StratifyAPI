@@ -7,23 +7,6 @@
 #include <cstdio>
 #include <cstring>
 
-#if USE_PRINTER
-#include "sys/Printer.hpp"
-
-sys::Printer &operator<<(sys::Printer &printer, const var::Tokenizer &a) {
-  printer.print_open_object(printer.verbose_level(), "tokens");
-  for (u32 i = 0; i < a.count(); i++) {
-    printer.print(
-      printer.verbose_level(),
-      var::String().format("[%04d]", i).cstring(),
-      a.at(i).cstring());
-  }
-  printer.print_close_object();
-  return printer;
-}
-
-#endif
-
 using namespace var;
 
 Tokenizer::Tokenizer(var::StringView input, const Construct &options) {
@@ -90,4 +73,15 @@ Tokenizer &Tokenizer::sort(SortBy sort_option) {
     break;
   }
   return *this;
+}
+
+var::String Tokenizer::join(StringView delimeter) const {
+  var::String result;
+  for (const auto &item : list()) {
+    result += item + delimeter;
+  }
+  for (size_t i = 0; i < delimeter.length(); i++) {
+    result.pop_back();
+  }
+  return std::move(result);
 }

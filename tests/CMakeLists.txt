@@ -9,9 +9,9 @@ set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/sos-toolchain.cmake)
 include(sos-sdk)
 
 add_subdirectory(API testsAPI)
-add_subdirectory(VarAPI testsVarAPI)
 add_subdirectory(ChronoAPI testsChronoAPI)
 add_subdirectory(FsAPI testsFsAPI)
+add_subdirectory(VarAPI testsVarAPI)
 
 
 add_custom_target(coverage
@@ -24,7 +24,6 @@ add_custom_target(coverage_test
 	)
 
 add_custom_target(clean_coverage
-	ALL
 	DEPENDS	clean_coverage_FsAPI_coverage_link clean_coverage_ChronoAPI_coverage_link clean_coverage_VarAPI_coverage_link
 	)
 

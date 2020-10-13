@@ -134,6 +134,13 @@ public:
       TEST_EXPECT(t.at(2) == "2");
     }
 
+    {
+      T token("0,1,4,5,7,2,3", T::Construct().set_delimeters(","));
+      TEST_ASSERT(token.count() == 7);
+      TEST_ASSERT(
+        token.sort(T::SortBy::ascending).join(";") == "0;1;2;3;4;5;7");
+    }
+
     return true;
   }
 
@@ -348,6 +355,33 @@ public:
       TEST_EXPECT(SV().set_null().is_null());
     }
 
+    {
+      SV test("testing");
+      SV test2("testing");
+      SV test3("test");
+      TEST_ASSERT(test == test2);
+      TEST_ASSERT(test != test3);
+      TEST_ASSERT(test.at(0) == 't');
+      TEST_ASSERT(test.at(1) == 'e');
+      TEST_ASSERT(test.at(2) == 's');
+      TEST_ASSERT(test.at(3) == 't');
+    }
+
+    {
+      TEST_ASSERT(StringView(Ntos(10)) == "10");
+      TEST_ASSERT(StringView(Ntos(100)) == "100");
+      TEST_ASSERT(StringView(Ntos(50UL)) == "50");
+      TEST_ASSERT(StringView(Ntos(-50)) == "-50");
+      TEST_ASSERT(StringView(Ntos(1.2f)) == "1.200000");
+      TEST_ASSERT(StringView(Ntos(-1.2f)) == "-1.200000");
+      TEST_ASSERT(StringView(Ntos(-1.2f, "%0.2f")) == "-1.20");
+    }
+
+    {
+      StringList list = StringView("1,2,3,4").split(",");
+      TEST_ASSERT(list.count() == 4);
+    }
+
     return true;
   }
 
@@ -356,6 +390,126 @@ public:
       S s("construct");
       TEST_EXPECT(s == "construct");
     }
+
+    {
+      const String value("3");
+      TEST_EXPECT(SV("1") + String("2") == String("12"));
+      TEST_EXPECT("1" + String("2") == String("12"));
+      TEST_EXPECT(value == "3");
+      TEST_EXPECT(SV("1") + value == String("13"));
+    }
+
+    {
+      char buffer[8];
+      View(buffer).fill('a');
+      TEST_EXPECT(String(View(buffer)) == "aaaaaaaa");
+
+      Data data_buffer(api::ApiInfo::malloc_chunk_size() * 2);
+
+      View(data_buffer).fill('b');
+
+      TEST_EXPECT(var::String().format("%c.%c", buffer[0], buffer[1]) == "a.a");
+      TEST_EXPECT(
+        var::String().format("%s", String(View(data_buffer)).cstring())
+        == String(View(data_buffer)));
+    }
+    {
+      S s("1,2,3,4,5");
+      TEST_ASSERT(s.erase(S::Erase().set_length(1)) == ",2,3,4,5");
+      TEST_ASSERT(
+        s.erase(S::Erase().set_position(1).set_length(1)) == ",,3,4,5");
+    }
+
+    {
+      S s("testing,1,2,3,4");
+      TEST_ASSERT(
+        s.replace(S::Replace().set_old_string(",").set_new_string(";"))
+        == "testing;1;2;3;4");
+    }
+
+    {
+      S s("testing,1,2,3,4");
+      TEST_ASSERT(
+        s.replace(
+          S::Replace().set_old_string(",").set_new_string(";").set_count(1))
+        == "testing;1,2,3,4");
+    }
+
+    {
+      S s("testing,1,2,3,4");
+      TEST_ASSERT(
+        s.replace(
+          S::Replace().set_old_string(",").set_new_string(";").set_position(8))
+        == "testing,1;2;3;4");
+    }
+
+    {
+      S s("testing,1,2,3,4");
+      TEST_ASSERT(
+        s.replace(S::Replace()
+                    .set_old_string(",")
+                    .set_new_string(";")
+                    .set_position(8)
+                    .set_count(2))
+        == "testing,1;2;3,4");
+    }
+
+    {
+      S s("testing,1,2,3,4");
+      TEST_ASSERT(s.erase("testing") == ",1,2,3,4");
+      TEST_ASSERT(s.erase("2,3") == ",1,,4");
+      TEST_ASSERT(s.erase("5") == ",1,,4");
+    }
+
+    {
+      S s("testing");
+      TEST_ASSERT(String(s).to_upper() == "TESTING");
+      TEST_ASSERT(String(s).to_upper().to_lower() == s);
+    }
+
+    {
+      S s("1,2,3,4,5,6,7");
+      TEST_ASSERT(s.count(",") == 6);
+      TEST_ASSERT(s.count("1") == 1);
+      TEST_ASSERT(s.count("1,2") == 1);
+      TEST_ASSERT(s.count("A") == 0);
+    }
+
+    {
+      const String s0("test0");
+      S s = S("test");
+      TEST_ASSERT(s == "test");
+      TEST_ASSERT((s = s0) == "test0");
+    }
+
+    {
+      const String s0("test0");
+      TEST_ASSERT(
+        s0.get_substring(S::GetSubstring().set_position(0).set_length(2))
+        == "te");
+
+      TEST_ASSERT(s0.get_substring_at_position(2) == "st0");
+      TEST_ASSERT(s0.get_substring_at_position(100) == "");
+      TEST_ASSERT(s0.get_substring_with_length(0) == "");
+      TEST_ASSERT(s0.get_substring_with_length(0) == String());
+      TEST_ASSERT(s0.get_substring_with_length(100) == "test0");
+    }
+
+    {
+      const String less("abcd");
+      const String greater("efgh");
+      const String greater_equal("efgh");
+      TEST_ASSERT(less < greater);
+      TEST_ASSERT(less <= greater);
+      TEST_ASSERT(greater > less);
+      TEST_ASSERT(greater >= less);
+      TEST_ASSERT(!(less > greater));
+      TEST_ASSERT(!(greater < less));
+      TEST_ASSERT(greater <= greater_equal);
+      TEST_ASSERT(greater >= greater_equal);
+    }
+
+    TEST_ASSERT(String().is_empty());
 
     return true;
   }

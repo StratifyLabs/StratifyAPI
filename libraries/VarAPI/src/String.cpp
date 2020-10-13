@@ -32,8 +32,6 @@ using namespace var;
 
 String String::m_empty_string;
 
-String::String() {}
-
 String::String(const Data &data)
   : m_string(var::View(data).to_const_char(), data.size()) {}
 
@@ -51,14 +49,11 @@ String &String::format(const char *format, ...) {
 
 String &String::vformat(const char *fmt, va_list list) {
 
-  if (fmt == nullptr) {
-    printf("Null format\n");
-    return *this;
-  }
+  API_ASSERT(fmt != nullptr);
 
   va_list list_copy;
   va_copy(list_copy, list);
-  const int buffer_size = 64;
+  const int buffer_size = api::ApiInfo::malloc_chunk_size();
   char buffer[buffer_size];
   int size = vsnprintf(buffer, buffer_size - 1, fmt, list);
   if (size <= buffer_size - 1) {
