@@ -61,7 +61,7 @@ public:
     TEST_ASSERT(F("tmp2/test0.txt", F::IsCreateOverwrite::yes)
                   .write("test0\n")
                   .is_success());
-    TEST_ASSERT(F("tmp2/test1.txt", F::IsCreateOverwrite::yes)
+    TEST_ASSERT(F("tmp2/filesystem.txt", F::IsCreateOverwrite::yes)
                   .write("test1\n")
                   .is_success());
     TEST_ASSERT(F("tmp2/test2.txt", F::IsCreateOverwrite::yes)
@@ -86,11 +86,48 @@ public:
         printer().key(Ntos(count), e);
         count++;
       }
-      TEST_ASSERT(d.tell() == (count - 1));
-      TEST_ASSERT(d.rewind().is_success());
-      printer().key("tell", Ntos(d.tell()));
-      TEST_ASSERT(d.tell() == 0);
       TEST_ASSERT(count == 5);
+      TEST_ASSERT(d.tell() == (count - 1));
+      TEST_ASSERT(d.seek(0).is_success());
+      TEST_ASSERT(d.rewind().is_success());
+      TEST_ASSERT(d.get_entry() == ("tmp/."));
+
+      TEST_ASSERT(d.rewind().is_success());
+      if (System().is_macosx() == false) {
+        printer().key("tell", Ntos(d.tell()));
+        TEST_ASSERT(d.tell() == 0);
+      }
+    }
+
+    {
+      TEST_ASSERT(FS().directory_exists("tmp"));
+      StringList list = FS().read_directory(D("tmp"), FS::IsRecursive::yes);
+      printer().object("files", list);
+      TEST_ASSERT(list.find(String("tmp/test0.txt")) < list.count());
+      TEST_ASSERT(list.find(String("tmp/test1.txt")) < list.count());
+      TEST_ASSERT(list.find(String("tmp/test2.txt")) < list.count());
+    }
+
+    {
+      TEST_ASSERT(FS().directory_exists("tmp2"));
+      StringList list = FS().read_directory(
+        D("tmp2"),
+        FS::IsRecursive::yes,
+        [](StringView entry) -> bool {
+          return entry.find("filesystem") != StringView::npos;
+        });
+      printer().object("files", list);
+      TEST_ASSERT(list.find(String("tmp2/test0.txt")) < list.count());
+      TEST_ASSERT(list.find(String("tmp2/filesystem.txt")) == list.count());
+      TEST_ASSERT(list.find(String("tmp2/test2.txt")) < list.count());
+    }
+
+    {
+      StringList list = FS().read_directory(D("tmp"), FS::IsRecursive::no);
+      printer().object("files", list);
+      TEST_ASSERT(list.find(String("test0.txt")) < list.count());
+      TEST_ASSERT(list.find(String("test1.txt")) < list.count());
+      TEST_ASSERT(list.find(String("test2.txt")) < list.count());
     }
 
     return true;
@@ -98,7 +135,6 @@ public:
 
   bool path_api_case() {
     printer::PrinterObject po(printer(), "path");
-
     TEST_ASSERT(P("data/test.json").path() == "data/test.json");
     TEST_ASSERT(P("flat").name() == "flat");
     TEST_ASSERT(P("flat.json").name() == "flat.json");

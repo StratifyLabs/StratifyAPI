@@ -102,8 +102,8 @@ const FileSystem &FileSystem::remove_directory(var::StringView path) const {
 
 var::StringList FileSystem::read_directory(
   const fs::Dir &directory,
-  var::StringView (*filter)(var::StringView entry),
-  IsRecursive is_recursive) const {
+  IsRecursive is_recursive,
+  bool (*exclude)(var::StringView entry)) const {
   var::Vector<var::String> result;
   var::String entry;
   bool is_the_end = false;
@@ -114,10 +114,10 @@ var::StringList FileSystem::read_directory(
     if (entry.is_empty()) {
       is_the_end = true;
     }
-    if (filter != nullptr) {
-      entry = var::String(filter(entry.cstring()));
-    }
-    if (!entry.is_empty() && (entry != ".") && (entry != "..")) {
+
+    if (
+      (exclude == nullptr || !exclude(entry)) && !entry.is_empty()
+      && (entry != ".") && (entry != "..")) {
 
       if (is_recursive == IsRecursive::yes) {
         const var::String entry_path = directory.path() + "/" + entry;
@@ -126,29 +126,22 @@ var::StringList FileSystem::read_directory(
         if (info.is_directory()) {
           var::StringList intermediate_result = read_directory(
             Dir(entry_path FSAPI_LINK_MEMBER_DRIVER_LAST),
-            filter,
-            is_recursive);
+            is_recursive,
+            exclude);
 
           for (const auto &intermediate_entry : intermediate_result) {
-            result.push_back(entry + "/" + intermediate_entry);
+            result.push_back(entry_path + "/" + intermediate_entry);
           }
         } else {
-          result.push_back(entry);
+          result.push_back(entry_path);
         }
       } else {
         result.push_back(entry);
       }
     }
-
   } while (!is_the_end);
 
   return std::move(result);
-}
-
-var::StringList FileSystem::read_directory(
-  const fs::Dir &directory,
-  IsRecursive is_recursive) const {
-  return read_directory(directory, nullptr, is_recursive);
 }
 
 u32 FileSystem::size(var::StringView name) const {

@@ -58,12 +58,8 @@ public:
 
   var::StringList read_directory(
     const fs::Dir &directory,
-    IsRecursive is_recursive = IsRecursive::no) const;
-
-  var::StringList read_directory(
-    const fs::Dir &directory,
-    var::StringView (*filter)(var::StringView),
-    IsRecursive is_recursive = IsRecursive::no) const;
+    IsRecursive is_recursive = IsRecursive::no,
+    bool (*exclude)(var::StringView) = nullptr) const;
 
   class Rename {
     API_AC(Rename, var::StringView, source);

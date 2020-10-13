@@ -24,6 +24,7 @@ add_custom_target(coverage_test
 	)
 
 add_custom_target(clean_coverage
+	ALL
 	DEPENDS	clean_coverage_FsAPI_coverage_link clean_coverage_ChronoAPI_coverage_link clean_coverage_VarAPI_coverage_link
 	)
 
