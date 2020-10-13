@@ -619,6 +619,8 @@ public:
       TEST_ASSERT(s.erase(S::Erase().set_length(1)) == ",2,3,4,5");
       TEST_ASSERT(
         s.erase(S::Erase().set_position(1).set_length(1)) == ",,3,4,5");
+      S all("all");
+      TEST_ASSERT(all.erase(S::Erase().set_length(500)).is_empty());
     }
 
     {

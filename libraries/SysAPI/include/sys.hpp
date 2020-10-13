@@ -12,6 +12,7 @@ namespace sys {}
 
 #include "sys/Cli.hpp"
 #include "sys/System.hpp"
+#include "sys/Version.hpp"
 
 using namespace sys;
 

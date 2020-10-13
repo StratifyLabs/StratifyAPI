@@ -52,9 +52,8 @@ public:
    * ```
    *
    */
-  explicit MicroTime(u32 microseconds = 0) {
-    m_value_microseconds = microseconds;
-  }
+  explicit MicroTime(u32 microseconds = 0)
+    : m_value_microseconds(microseconds) {}
 
   /*! \details Returns a MicroTime object set to the invalid time value. */
   static MicroTime invalid() { return MicroTime(static_cast<u32>(-1)); }
@@ -152,5 +151,10 @@ operator"" _microseconds(unsigned long long int value) {
 inline chrono::MicroTime operator"" _nanoseconds(unsigned long long int value) {
   return chrono::MicroTime(value / 1000UL);
 }
+
+namespace printer {
+class Printer;
+Printer &operator<<(Printer &printer, const chrono::MicroTime &a);
+} // namespace printer
 
 #endif /* CHRONO_API_CHRONO_MICRO_TIME_HPP_ */

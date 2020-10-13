@@ -37,23 +37,12 @@ static char *strptime(const char *s, const char *f, struct tm *tm) {
 #endif
 
 printer::Printer &
-printer::operator<<(printer::Printer &printer, const chrono::MicroTime &a) {
-  printer.key("duration", var::NumberToString(a.microseconds(), F32U "us"));
-  return printer;
-}
-
-printer::Printer &
 printer::operator<<(printer::Printer &printer, const chrono::DateTime &a) {
   printer.key("time", var::NumberToString(a.time()));
   return printer;
 }
 
 using namespace chrono;
-
-MicroTime &MicroTime::wait() {
-  chrono::wait(*this);
-  return *this;
-}
 
 constexpr static const char *month_names[] = {
   "January",

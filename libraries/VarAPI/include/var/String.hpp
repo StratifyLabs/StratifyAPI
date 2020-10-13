@@ -283,12 +283,16 @@ public:
     return *this;
   }
 
-  String &pop_back() {
-    m_string.pop_back();
+  String &pop_back(size_t pop_size = 1) {
+    while (length() && pop_size--) {
+      m_string.pop_back();
+    }
     return *this;
   }
 
-  String &pop_front() { return erase(Erase().set_position(0).set_length(1)); }
+  String &pop_front(size_t pop_size = 1) {
+    return erase(Erase().set_position(0).set_length(pop_size));
+  }
 
   char &at(size_t pos) { return m_string.at(pos); }
   const char &at(size_t pos) const { return m_string.at(pos); }
@@ -530,13 +534,9 @@ public:
    *
    */
   bool operator==(const String &a) const { return m_string == a.m_string; }
-  bool operator==(StringView a) const {
-    return m_string == a.string_view();
-  }
+  bool operator==(StringView a) const { return m_string == a.string_view(); }
 
-  bool operator!=(StringView a) const {
-    return m_string != a.string_view();
-  }
+  bool operator!=(StringView a) const { return m_string != a.string_view(); }
 
   bool operator==(const char *a) const { return m_string == a; }
   bool operator!=(const char *a) const { return m_string != a; }

@@ -10,7 +10,6 @@ set(SOURCES
 	var/Queue.hpp
 	var/Ring.hpp
 	var/StringView.hpp
-	var/VersionString.hpp
 	var/String.hpp
 	var/Tokenizer.hpp
 	var.hpp

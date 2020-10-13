@@ -1,25 +1,25 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
              // LICENSE.md for rights.
-#include "var/VersionString.hpp"
+#include "sys/Version.hpp"
 #include "var/Tokenizer.hpp"
 
 using namespace var;
 
-VersionString VersionString::from_triple(u16 major, u8 minor, u8 patch) {
-  VersionString result;
+Version Version::from_triple(u16 major, u8 minor, u8 patch) {
+  Version result;
   return std::move(result.set_string(
     String::number(major) + StringView(".") + String::number(minor)
     + StringView(".") + String::number(patch)));
 }
 
-VersionString VersionString::from_u16(u16 major_minor) {
-  VersionString result;
+Version Version::from_u16(u16 major_minor) {
+  Version result;
   return std::move(result.set_string(
     String::number(major_minor >> 8) + StringView(".")
     + String::number(major_minor & 0xff)));
 }
 
-u32 VersionString::to_bcd() const {
+u32 Version::to_bcd() const {
   StringList tokens = m_version.split(".");
   u32 result = 0;
   u32 token_max = tokens.count() < 3 ? tokens.count() : 3;
@@ -29,7 +29,7 @@ u32 VersionString::to_bcd() const {
   return result;
 }
 
-int VersionString::compare(const VersionString &a, const VersionString &b) {
+int Version::compare(const Version &a, const Version &b) {
   StringList a_tokens = a.m_version.split(".");
   StringList b_tokens = b.m_version.split(".");
 
@@ -44,13 +44,13 @@ int VersionString::compare(const VersionString &a, const VersionString &b) {
   // count is equal -- check the numbers
   for (u32 i = 0; i < a_tokens.count(); i++) {
     if (
-      String(a_tokens.at(i)).to_integer()
-      > String(b_tokens.at(i)).to_integer()) {
+      StringView(a_tokens.at(i)).to_unsigned_long()
+      > StringView(b_tokens.at(i)).to_unsigned_long()) {
       return 1;
     }
     if (
-      String(a_tokens.at(i)).to_integer()
-      < String(b_tokens.at(i)).to_integer()) {
+      StringView(a_tokens.at(i)).to_unsigned_long()
+      < StringView(b_tokens.at(i)).to_unsigned_long()) {
       return -1;
     }
   }

@@ -156,7 +156,6 @@ inline chrono::DateTime operator"" _minutes(unsigned long long int value) {
 
 namespace printer {
 class Printer;
-Printer &operator<<(Printer &printer, const chrono::MicroTime &a);
 Printer &operator<<(Printer &printer, const chrono::DateTime &a);
 } // namespace printer
 

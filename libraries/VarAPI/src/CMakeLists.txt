@@ -10,7 +10,6 @@ set(SOURCES
 	Queue.cpp
 	Ring.cpp
 	StringView.cpp
-	VersionString.cpp
 	String.cpp
 	Tokenizer.cpp
 	PARENT_SCOPE)
