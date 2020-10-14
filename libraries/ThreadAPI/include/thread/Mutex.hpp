@@ -116,9 +116,6 @@ public:
   /*! \details Constructs a Mutex using the specified attributes. */
   Mutex(const Attributes &attr);
 
-  /*! \details Sets the mutex attributes. */
-  Mutex &set_attributes(const Attributes &attr);
-
   /*! \details Attempts to lock the mutex.
    *
    * If the mutex is locked by
@@ -152,13 +149,15 @@ public:
    * is recursive or just return zero and keep the lock if non-recursive.
    *
    */
-  Mutex &try_lock();
+  bool try_lock();
 
   /*! \details Unlocks the mutex. */
   Mutex &unlock();
 
 private:
-  pthread_mutex_t m_item;
+  pthread_mutex_t m_mutex;
+
+  Mutex &set_attributes(const Attributes &attr);
 };
 
 class MutexGuard {

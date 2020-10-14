@@ -86,18 +86,21 @@ bool Mutex::Attributes::get_pshared() const {
 
 Mutex::Mutex() {
   Mutex::Attributes attr;
-  API_SYSTEM_CALL("", pthread_mutex_init(&m_item, &(attr.m_item)));
+  API_RETURN_IF_ERROR();
+  API_SYSTEM_CALL("", pthread_mutex_init(&m_mutex, &(attr.m_item)));
 }
 
 Mutex::Mutex(const Mutex::Attributes &attr) { set_attributes(attr); }
 
 Mutex &Mutex::set_attributes(const Attributes &attr) {
-  API_SYSTEM_CALL("", pthread_mutex_init(&m_item, &(attr.m_item)));
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", pthread_mutex_init(&m_mutex, &(attr.m_item)));
   return *this;
 }
 
 Mutex &Mutex::lock() {
-  API_SYSTEM_CALL("", pthread_mutex_lock(&m_item));
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", pthread_mutex_lock(&m_mutex));
   return *this;
 }
 
@@ -111,14 +114,17 @@ Mutex &Mutex::lock_timed(const chrono::ClockTime &clock_time) {
 }
 #endif
 
-Mutex &Mutex::try_lock() {
-  API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", pthread_mutex_trylock(&m_item));
-  return *this;
+bool Mutex::try_lock() {
+  API_RETURN_VALUE_IF_ERROR(false);
+  if (pthread_mutex_trylock(&m_mutex) == 0) {
+    return true;
+  }
+  API_RESET_ERROR();
+  return false;
 }
 
 Mutex &Mutex::unlock() {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", pthread_mutex_unlock(&m_item));
+  API_SYSTEM_CALL("", pthread_mutex_unlock(&m_mutex));
   return *this;
 }

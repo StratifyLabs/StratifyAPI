@@ -65,18 +65,14 @@ public:
       DetachState,
       detach_state,
       DetachState::detached);
+
+  public:
+    Construct() : m_detach_state(DetachState::detached), m_stack_size(4096) {}
   };
 
   typedef void *(*function_t)(void *);
 
   using Policy = Sched::Policy;
-
-  class Create {
-    API_ACCESS_FUNDAMENTAL(Create, function_t, function, nullptr);
-    API_ACCESS_FUNDAMENTAL(Create, void *, argument, nullptr);
-    API_ACCESS_FUNDAMENTAL(Create, Policy, policy, Policy::other);
-    API_ACCESS_FUNDAMENTAL(Create, int, priority, 0);
-  };
 
   /*! \details Defines the function call type that is
    * used to create() a new thread.
@@ -84,25 +80,9 @@ public:
    */
   typedef void *(*handler_function_t)(void *);
 
-  enum thread_flags {
-    id_error /*! ID is an error */ = static_cast<u32>(-2),
-    id_pending /*! ID is ready to be created (not valid yet) */ = static_cast<
-      u32>(-1),
-  };
-
-  Thread(const Construct &options);
+  Thread(const Construct &options = Construct());
 
   ~Thread();
-
-  /*! \details Sets the stacksize.
-   *
-   * @param size Stack size in bytes
-   *
-   * This method must be called before calling create().
-   *
-   *
-   */
-  Thread &set_stacksize(int size);
 
   /*! \details Gets the stacksize.
    *
@@ -167,27 +147,13 @@ public:
    */
   bool is_valid() const;
 
-  /*! \details Starts the thread.
-   *
-   * @param func The function to execute as a new thread
-   * @param args The arguments to pass to the new thread
-   * @param prio The priority to set for the new thread
-   * @param policy The new thread's scheduling policy
-   * @return Zero on success
-   *
-   * This method creates a new thread. The Thread object only manages one thread
-   * at a time. To create multiple threads, you will need multiple instances of
-   * the Thread object.
-   *
-   *
-   * Use the following methods to change thread attributes:
-   *
-   * - set_stacksize(): must be called before calling this method
-   * - set_detachstate(): must be called before calling this method
-   * - set_priority(): must be called after calling this method
-   *
-   *
-   */
+  class Create {
+    API_ACCESS_FUNDAMENTAL(Create, function_t, function, nullptr);
+    API_ACCESS_FUNDAMENTAL(Create, void *, argument, nullptr);
+    API_ACCESS_FUNDAMENTAL(Create, Policy, policy, Policy::other);
+    API_ACCESS_FUNDAMENTAL(Create, int, priority, 0);
+  };
+
   Thread &create(const Create &options);
 
   enum class CancelType {
@@ -195,16 +161,15 @@ public:
     asynchronous = PTHREAD_CANCEL_ASYNCHRONOUS
   };
 
-  static int set_cancel_type(CancelType cancel_type);
-
+  Thread &set_cancel_type(CancelType cancel_type);
   enum class CancelState {
-    cancel_state_enable = PTHREAD_CANCEL_ENABLE,
-    cancel_state_disable = PTHREAD_CANCEL_DISABLE
+    enable = PTHREAD_CANCEL_ENABLE,
+    disable = PTHREAD_CANCEL_DISABLE
   };
 
-  static int set_cancel_state(CancelState cancel_state);
+  Thread &set_cancel_state(CancelState cancel_state);
 
-  const Thread &cancel() const;
+  Thread &cancel();
 
   /*! \details Checks if the thread is running.
    *
@@ -228,31 +193,11 @@ public:
    * poll is_running() until the thread completes.
    *
    */
-  Thread &wait(
-    void **ret = nullptr,
-    const chrono::MicroTime &interval = chrono::MicroTime(100000));
-
-  /*! \details Yields the processor to another thread */
-  static void yield() { Sched().yield(); }
-
-  /*! \details Joins the calling thread to the specified thread.
-   *
-   * @param thread A reference to the thread to joing
-   * @param value_ptr a pointer to where the return value of \a thread will be
-   * stored
-   * @return Zero on success
-   *
-   * This method will block the calling thread until the joined
-   * thread returns.
-   *
-   */
-  static int join(Thread &thread_to_join, void **result = nullptr);
+  Thread &
+  wait(void **ret = nullptr, chrono::MicroTime interval = 100_milliseconds);
 
   /*! \details Returns the thread ID of the calling thread. */
   static pthread_t self() { return pthread_self(); }
-
-  /*! \details Returns the process ID of the calling thread. */
-  static pid_t get_pid() { return Sched::get_pid(); }
 
   /*! \details Sends a signal to the thread.
    *
@@ -280,7 +225,7 @@ public:
    */
   const Thread &kill(int signal_number) const {
     API_RETURN_VALUE_IF_ERROR(*this);
-    API_SYSTEM_CALL("", pthread_kill(m_id, signal_number));
+    API_SYSTEM_CALL("", pthread_kill(id(), signal_number));
     return *this;
   }
 
@@ -296,12 +241,18 @@ public:
    * This method will block the calling thread until the thread function
    * returns.
    */
-  Thread &join(void **value);
+  Thread &join(void **value = nullptr);
 
   /*! \details Allows read only access to the thread attributes. */
   const pthread_attr_t &pthread_attr() const { return m_pthread_attr; }
 
 private:
+  enum thread_flags {
+    id_error /*! ID is an error */ = static_cast<u32>(-2),
+    id_pending /*! ID is ready to be created (not valid yet) */ = static_cast<
+      u32>(-1),
+  };
+
   pthread_attr_t m_pthread_attr;
 
 #if defined __link

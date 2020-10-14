@@ -14,6 +14,9 @@ class UnitTest : public test::Test {
 public:
   UnitTest(var::StringView name) : test::Test(name) {}
 
+  using DT = chrono::DateTime;
+  using D = chrono::Date;
+
   bool execute_class_api_case() {
     if (!execute_clocktime_api_case()) {
       return false;
@@ -25,6 +28,52 @@ public:
 
     if (!execute_clocktimer_api_case()) {
       return false;
+    }
+
+    if (!execute_datetime_api_case()) {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool execute_datetime_api_case() {
+
+    {
+
+      DT t = DT::get_system_time();
+      DT t_copy = t;
+      TEST_ASSERT(t.ctime() != 0);
+      t += 10_minutes;
+      TEST_ASSERT(t == t_copy + 10_minutes);
+      TEST_ASSERT(t > t_copy);
+      TEST_ASSERT(t_copy < t);
+      TEST_ASSERT(t_copy <= t);
+      TEST_ASSERT(t >= t);
+      TEST_ASSERT(t >= t_copy);
+      TEST_ASSERT(t != t_copy);
+      t -= 10_minutes;
+      TEST_ASSERT(t == t_copy);
+      t = t_copy - 10_seconds;
+      TEST_ASSERT(t_copy - t == 10_seconds);
+    }
+
+    {
+      DT t = DT(DT::Construct().set_time("2020-10-12 03:30:31"));
+      TEST_ASSERT(t.second() == 31);
+      TEST_ASSERT(t.minute() == 30);
+      printer().key("hour", Ntos(t.hour()));
+
+      TEST_ASSERT(t + 60_minutes > t);
+      printer().object("time", t);
+
+      D d(t, D::Construct().set_daylight_savings(false).set_time_zone(-7));
+      printer().key("date", d.get_string());
+
+      TEST_ASSERT(d.year() == 2020);
+      TEST_ASSERT(d.month() == 10);
+      TEST_ASSERT(d.day() == 12);
+      TEST_EXPECT(d.get_string() == "2020-10-12 03:30:31");
     }
 
     return true;

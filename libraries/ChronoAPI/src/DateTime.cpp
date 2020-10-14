@@ -38,55 +38,33 @@ static char *strptime(const char *s, const char *f, struct tm *tm) {
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const chrono::DateTime &a) {
-  printer.key("time", var::NumberToString(a.time()));
+  printer.key("ctime", var::NumberToString(a.ctime()));
   return printer;
 }
 
 using namespace chrono;
 
-constexpr static const char *month_names[] = {
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December"};
-
 /*! \brief Construct using current time */
-DateTime::DateTime() { m_time = 0; }
+DateTime::DateTime() { m_ctime = 0; }
 
-DateTime::DateTime(var::StringView time_string, var::StringView format) {
+DateTime::DateTime(const Construct &options) {
   struct tm tm = {0};
-  if (strptime(time_string.cstring(), format.cstring(), &tm) != nullptr) {
-    m_time = mktime(&tm);
+  if (
+    strptime(options.time().cstring(), options.format().cstring(), &tm)
+    != nullptr) {
+    m_ctime = mktime(&tm);
   } else {
-    m_time = 0;
+    m_ctime = 0;
   }
 }
 
 DateTime &DateTime::operator+=(const DateTime &a) {
-  m_time += a.time();
-  return *this;
-}
-
-DateTime &DateTime::operator=(const DateTime &a) {
-  m_time = a.time();
-  return *this;
-}
-
-DateTime &DateTime::operator=(u32 a) {
-  m_time = a;
+  m_ctime += a.ctime();
   return *this;
 }
 
 DateTime &DateTime::operator-=(const DateTime &a) {
-  m_time -= a.time();
+  m_ctime -= a.ctime();
   return *this;
 }
 
@@ -98,27 +76,33 @@ DateTime DateTime::get_system_time() {
   return DateTime(t);
 }
 
-u32 DateTime::second() const { return m_time % 60; }
+u32 DateTime::second() const { return m_ctime % 60; }
 
-u32 DateTime::minute() const { return (m_time % 3600) / 60; }
+u32 DateTime::minute() const { return (m_ctime % 3600) / 60; }
 
-u32 DateTime::hour() const { return m_time / 3600 % 24; }
+u32 DateTime::hour() const { return m_ctime / 3600 % 24; }
 
-Date::Date(const DateTime &date_time) {
-  time_t ctime = date_time.ctime();
+Date::Date(const DateTime &date_time, const Construct &options) {
+  time_t ctime = date_time.ctime() + options.is_daylight_savings() * 3600
+                 + options.time_zone() * 3600;
 #if defined __win32
   struct tm *ptr;
   ptr = gmtime(&ctime);
   m_tm = *ptr;
 #else
+  // adjust for local time if provided
+
   gmtime_r(&ctime, &m_tm);
 #endif
 }
 
-const char *Date::month_name() const {
-  u32 mon = month();
-  if (mon < 12) {
-    return month_names[mon];
+var::String Date::get_string(var::StringView format) const {
+  API_RETURN_VALUE_IF_ERROR(var::String());
+  char buffer[64] = {0};
+  size_t result = strftime(buffer, 63, format.cstring(), &m_tm);
+  if (result == 0) {
+    API_SYSTEM_CALL("format time", -1);
+    return var::String();
   }
-  return "";
+  return std::move(var::String(buffer));
 }

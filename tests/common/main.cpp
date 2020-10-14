@@ -2,10 +2,10 @@
 #include "UnitTest.hpp"
 
 #define VERSION "0.1"
-#include <sys.hpp>
+#include "sys/Cli.hpp"
 
 int main(int argc, char *argv[]) {
-  Cli cli(argc, argv);
+  sys::Cli cli(argc, argv);
 
   printer::Printer printer;
 

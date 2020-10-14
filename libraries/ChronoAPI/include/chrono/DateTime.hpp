@@ -36,43 +36,46 @@ public:
   /*! \details Constructs using current time. */
   DateTime();
 
-  explicit DateTime(const time_t &t) { m_time = t; }
+  explicit DateTime(time_t t) : m_ctime(t) {}
 
-  DateTime(
-    var::StringView time_string,
-    var::StringView format = "%Y-%m-%d %H:%M:%S");
+  class Construct {
+    API_AC(Construct, var::StringView, time);
+    API_AC(Construct, var::StringView, format);
 
-  bool is_valid() { return m_time != 0; }
+  public:
+    Construct() : m_format("%Y-%m-%d %H:%M:%S") {}
+  };
 
-  static DateTime current_time() { return get_system_time(); }
+  DateTime(const Construct &options);
+
+  DateTime(MicroTime t) : m_ctime(t.seconds()) {}
+
+  bool is_valid() { return m_ctime != 0; }
 
   DateTime operator+(const DateTime &a) const {
     DateTime result;
-    result.m_time = m_time + a.m_time;
+    result.m_ctime = m_ctime + a.m_ctime;
     return result;
   }
 
   DateTime operator-(const DateTime &a) const {
     DateTime result;
-    result.m_time = m_time - a.m_time;
+    result.m_ctime = m_ctime - a.m_ctime;
     return result;
   }
 
-  bool operator==(const DateTime &a) const { return m_time == a.m_time; }
-  bool operator!=(const DateTime &a) const { return m_time != a.m_time; }
-  bool operator>(const DateTime &a) const { return m_time > a.m_time; }
-  bool operator<(const DateTime &a) const { return m_time < a.m_time; }
-  bool operator>=(const DateTime &a) const { return m_time >= a.m_time; }
-  bool operator<=(const DateTime &a) const { return m_time <= a.m_time; }
+  bool operator==(const DateTime &a) const { return m_ctime == a.m_ctime; }
+  bool operator!=(const DateTime &a) const { return m_ctime != a.m_ctime; }
+  bool operator>(const DateTime &a) const { return m_ctime > a.m_ctime; }
+  bool operator<(const DateTime &a) const { return m_ctime < a.m_ctime; }
+  bool operator>=(const DateTime &a) const { return m_ctime >= a.m_ctime; }
+  bool operator<=(const DateTime &a) const { return m_ctime <= a.m_ctime; }
 
   DateTime age() const { return DateTime::get_system_time() - *this; }
 
   /*! \details Adds to the current value. */
   DateTime &operator+=(const DateTime &a);
-  /*! \details Assigns another Time. */
-  DateTime &operator=(const DateTime &a);
-  /*! \details Assigns another time value (time_t). */
-  DateTime &operator=(u32 a);
+
   /*! \details Subtracts from the current value. */
   DateTime &operator-=(const DateTime &a);
 
@@ -85,13 +88,12 @@ public:
    *
    */
   DateTime &set_time(time_t tm) {
-    m_time = tm;
+    m_ctime = tm;
     return *this;
   }
 
   /*! \details Returns the time value (number of seconds since epoch). */
-  time_t ctime() const { return m_time; }
-  time_t time() const { return m_time; }
+  time_t ctime() const { return m_ctime; }
 
   /*! \details Returns seconds (from 0 to 59). */
   u32 second() const;
@@ -101,33 +103,42 @@ public:
   u32 hour() const;
 
 private:
-  time_t m_time;
+  time_t m_ctime;
 };
 
 class Date {
 public:
-  explicit Date(const DateTime &date_time);
+  class Construct {
+    API_AB(Construct, daylight_savings, false);
+    API_AF(Construct, int, time_zone, 0);
 
-  /*! \details Gets the name of the month. */
-  const char *month_name() const;
+  public:
+    Construct() : m_is_daylight_savings(false), m_time_zone(0) {}
+  };
+
+  explicit Date(
+    const DateTime &date_time,
+    const Construct &options = Construct());
+
+  var::String get_string(var::StringView format = "%Y-%m-%d %H:%M:%S") const;
 
   /*! \details Returns seconds (from 0 to 59). */
-  u32 second() const { return m_tm.tm_sec; }
+  int second() const { return m_tm.tm_sec; }
   /*! \details Returns minutes (from 0 to 59). */
-  u32 minute() const { return m_tm.tm_min; }
+  int minute() const { return m_tm.tm_min; }
   /*! \details Returns hours (from 0 to 23). */
-  u32 hour() const { return m_tm.tm_hour; }
+  int hour() const { return m_tm.tm_hour; }
 
   /*! \details Returns the day of month (from 1 to 31). */
-  u32 day() const { return m_tm.tm_mday; }
+  int day() const { return m_tm.tm_mday; }
   /*! \details Returns the day of week (from 1 to 7). */
-  u32 weekday() const { return m_tm.tm_wday; }
+  int weekday() const { return m_tm.tm_wday; }
   /*! \details Returns the day of the year (1 to 366). */
-  u32 yearday() const { return m_tm.tm_yday; }
+  int yearday() const { return m_tm.tm_yday; }
   /*! \details Returns the month (from 1 to 12). */
-  u32 month() const { return m_tm.tm_mon + 1; }
+  int month() const { return m_tm.tm_mon + 1; }
   /*! \details Returns the year (e.g. 2014) */
-  u32 year() const { return m_tm.tm_year; }
+  int year() const { return m_tm.tm_year + 1900; }
 
   /*! \details Converts the time to a struct tm. */
   const struct tm &get_tm() const { return m_tm; }

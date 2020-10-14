@@ -70,21 +70,6 @@ int Thread::init(int stack_size, bool detached) {
   return 0;
 }
 
-Thread &Thread::set_stacksize(int size) {
-  API_RETURN_VALUE_IF_ERROR(*this);
-
-  if (is_running()) {
-    API_SYSTEM_CALL("", -1);
-    return *this;
-  }
-
-  API_SYSTEM_CALL(
-    "",
-    pthread_attr_setstacksize(&m_pthread_attr, size));
-
-  return *this;
-}
-
 int Thread::get_stacksize() const {
   API_RETURN_VALUE_IF_ERROR(-1);
   u32 stacksize = 0;
@@ -153,24 +138,28 @@ int Thread::get_priority() const {
   return -1;
 }
 
-const Thread &Thread::cancel() const {
+Thread &Thread::cancel() {
   API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL("", pthread_cancel(id()));
   return *this;
 }
 
-int Thread::set_cancel_type(CancelType cancel_type) {
-  API_RETURN_VALUE_IF_ERROR(-1);
-  return API_SYSTEM_CALL(
+Thread &Thread::set_cancel_type(CancelType cancel_type) {
+  API_RETURN_VALUE_IF_ERROR(*this);
+  int old = 0;
+  API_SYSTEM_CALL(
     "",
-    pthread_setcanceltype(static_cast<int>(cancel_type), nullptr));
+    pthread_setcanceltype(static_cast<int>(cancel_type), &old));
+  return *this;
 }
 
-int Thread::set_cancel_state(CancelState cancel_state) {
-  API_RETURN_VALUE_IF_ERROR(-1);
-  return API_SYSTEM_CALL(
+Thread &Thread::set_cancel_state(CancelState cancel_state) {
+  API_RETURN_VALUE_IF_ERROR(*this);
+  int old = 0;
+  API_SYSTEM_CALL(
     "",
-    pthread_setcancelstate(static_cast<int>(cancel_state), nullptr));
+    pthread_setcancelstate(static_cast<int>(cancel_state), &old));
+  return *this;
 }
 
 int Thread::get_policy() const {
@@ -251,7 +240,7 @@ bool Thread::is_running() {
   return false;
 }
 
-Thread &Thread::wait(void **ret, const chrono::MicroTime &interval) {
+Thread &Thread::wait(void **ret, chrono::MicroTime interval) {
 
   void *dummy;
 
@@ -301,25 +290,17 @@ Thread &Thread::reset() {
   return *this;
 }
 
-int Thread::join(Thread &thread_to_join, void **result) {
-  void *tmp_ptr;
-  void **ptr;
-  if (result == nullptr) {
-    ptr = &tmp_ptr;
-  } else {
-    ptr = result;
-  }
-  int local_result = pthread_join(thread_to_join.id(), ptr);
-  if (local_result == 0) {
-    // resets the thread that just completed
-    thread_to_join.is_running();
-  }
-  return local_result;
-}
-
 Thread &Thread::join(void **value) {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", join(*this, value));
+
+  void *tmp_ptr;
+  void **ptr = value == nullptr ? &tmp_ptr : value;
+
+  const int local_result = API_SYSTEM_CALL("", pthread_join(id(), ptr));
+  if (local_result == 0) {
+    // resets the thread that just completed
+    is_running();
+  }
   return *this;
 }
 
