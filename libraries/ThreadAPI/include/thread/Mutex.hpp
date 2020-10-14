@@ -33,9 +33,9 @@ public:
 
   /*! \details Mutex Protocol values */
   enum class Protocol {
-    prio_none = PTHREAD_PRIO_NONE,
-    prio_inherit = PTHREAD_PRIO_INHERIT,
-    prio_protect = PTHREAD_PRIO_PROTECT,
+    priority_none = PTHREAD_PRIO_NONE,
+    priority_inherit = PTHREAD_PRIO_INHERIT,
+    priority_protect = PTHREAD_PRIO_PROTECT,
   };
 
   class Attributes : public api::Object {
@@ -64,19 +64,19 @@ public:
      * @return Zero on success
      *
      */
-    Attributes &set_prio_ceiling(int ceiling);
+    Attributes &set_priority_ceiling(int ceiling);
 
     /*! \details Sets the protocol. */
     Attributes &set_protocol(Protocol value);
 
     /*! \details Sets whether this is shared between processes. */
-    Attributes &set_pshared(bool value = true);
+    Attributes &set_process_shared(bool value = true);
 
     /*! \details Set the mutex type. */
     Attributes &set_type(Type value);
 
     /*! \details Returns the priority ceiling. */
-    int get_prio_ceiling() const;
+    int get_priority_ceiling() const;
 
     /*! \details Returns the protocol. */
     int get_protocol() const;
@@ -86,7 +86,7 @@ public:
 
     /*! \details Returns true if the mutex attributes are for process sharing.
      */
-    bool get_pshared() const;
+    bool get_process_shared() const;
 
   private:
     friend class Mutex;
@@ -115,6 +115,7 @@ public:
 
   /*! \details Constructs a Mutex using the specified attributes. */
   Mutex(const Attributes &attr);
+  ~Mutex();
 
   /*! \details Attempts to lock the mutex.
    *

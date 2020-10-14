@@ -59,26 +59,44 @@ public:
   };
   using Policy = Sched::Policy;
 
+  enum class IsInherit { no, yes };
+  enum class ContentionScope { system, process };
+
   typedef void *(*function_t)(void *);
 
-  class Construct {
-    API_ACCESS_FUNDAMENTAL(Construct, u32, stack_size, 4096);
-    API_ACCESS_FUNDAMENTAL(
-      Construct,
-      DetachState,
-      detach_state,
-      DetachState::detached);
-
-    API_ACCESS_FUNDAMENTAL(Construct, function_t, function, nullptr);
-    API_ACCESS_FUNDAMENTAL(Construct, void *, argument, nullptr);
-    API_ACCESS_FUNDAMENTAL(Construct, Policy, policy, Policy::other);
-    API_ACCESS_FUNDAMENTAL(Construct, int, priority, 0);
-
+  class Attributes {
   public:
-    Construct() : m_detach_state(DetachState::detached), m_stack_size(4096) {}
+    Attributes();
+    ~Attributes();
+
+    Attributes &set_stack_size(size_t value);
+    int get_stack_size() const;
+
+    Attributes &set_detach_state(DetachState value);
+    DetachState get_detach_state() const;
+
+    Attributes &set_inherit_sched(IsInherit value);
+    IsInherit get_inherit_sched() const;
+
+    Attributes &set_scope(ContentionScope value);
+    ContentionScope get_scope() const;
+
+    Attributes &set_sched_policy(Sched::Policy value);
+    Attributes &set_sched_priority(int priority);
+    Sched::Policy get_sched_policy() const;
+    int get_priority() const;
+
+  private:
+    friend class Thread;
+    pthread_attr_t m_pthread_attr;
   };
 
-  Thread(const Construct &options = Construct());
+  class Construct {
+    API_ACCESS_FUNDAMENTAL(Construct, function_t, function, nullptr);
+    API_ACCESS_FUNDAMENTAL(Construct, void *, argument, nullptr);
+  };
+
+  Thread(const Construct &options, const Attributes &attributes);
   ~Thread();
 
   /*! \details Gets the ID of the thread. */
@@ -103,6 +121,10 @@ public:
     enable = PTHREAD_CANCEL_ENABLE,
     disable = PTHREAD_CANCEL_DISABLE
   };
+
+  Thread &set_sched_parameters(Sched::Policy policy, int priority);
+  int get_sched_policy() const;
+  int get_sched_priority() const;
 
   Thread &set_cancel_state(CancelState cancel_state);
 
@@ -198,6 +220,7 @@ private:
 
   void destroy();
   void create(const Construct &options);
+  int get_sched_parameters(int &policy, int &priority) const;
 
   void set_id_pending() {
 #if defined __link

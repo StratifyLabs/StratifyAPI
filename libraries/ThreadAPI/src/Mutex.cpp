@@ -21,11 +21,10 @@ Mutex::Attributes::~Attributes() {
   invalidate();
 }
 
-Mutex::Attributes &Mutex::Attributes::set_prio_ceiling(int value) {
+Mutex::Attributes &Mutex::Attributes::set_priority_ceiling(int value) {
 #if !defined __android
-  if (pthread_mutexattr_setprioceiling(&m_item, value) < 0) {
-    invalidate();
-  }
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", pthread_mutexattr_setprioceiling(&m_item, value));
 #endif
   return *this;
 }
@@ -33,7 +32,6 @@ Mutex::Attributes &Mutex::Attributes::set_prio_ceiling(int value) {
 Mutex::Attributes &Mutex::Attributes::set_protocol(Protocol value) {
 #if !defined __android
   API_RETURN_VALUE_IF_ERROR(*this);
-
   API_SYSTEM_CALL(
     "",
     pthread_mutexattr_setprotocol(&m_item, static_cast<int>(value)));
@@ -41,7 +39,8 @@ Mutex::Attributes &Mutex::Attributes::set_protocol(Protocol value) {
   return *this;
 }
 
-Mutex::Attributes &Mutex::Attributes::set_pshared(bool value) {
+Mutex::Attributes &Mutex::Attributes::set_process_shared(bool value) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL(
     "",
     pthread_mutexattr_setpshared(&m_item, static_cast<int>(value)));
@@ -49,16 +48,18 @@ Mutex::Attributes &Mutex::Attributes::set_pshared(bool value) {
 }
 
 Mutex::Attributes &Mutex::Attributes::set_type(Type value) {
+  API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL(
     "",
     pthread_mutexattr_settype(&m_item, static_cast<int>(value)));
   return *this;
 }
 
-int Mutex::Attributes::get_prio_ceiling() const {
+int Mutex::Attributes::get_priority_ceiling() const {
   int ret = 0;
 #if !defined __android
-  pthread_mutexattr_getprioceiling(&m_item, &ret);
+  API_RETURN_VALUE_IF_ERROR(-1);
+  API_SYSTEM_CALL("", pthread_mutexattr_getprioceiling(&m_item, &ret));
 #endif
   return ret;
 }
@@ -66,21 +67,23 @@ int Mutex::Attributes::get_prio_ceiling() const {
 int Mutex::Attributes::get_protocol() const {
   int ret = 0;
 #if !defined __android
-  pthread_mutexattr_getprotocol(&m_item, &ret);
+  API_RETURN_VALUE_IF_ERROR(-1);
+  API_SYSTEM_CALL("", pthread_mutexattr_getprotocol(&m_item, &ret));
 #endif
   return ret;
 }
 
 int Mutex::Attributes::get_type() const {
-  API_RETURN_VALUE_IF_ERROR(-1);
   int ret;
-  pthread_mutexattr_gettype(&m_item, &ret);
+  API_RETURN_VALUE_IF_ERROR(-1);
+  API_SYSTEM_CALL("", pthread_mutexattr_gettype(&m_item, &ret));
   return ret;
 }
 
-bool Mutex::Attributes::get_pshared() const {
-  int ret;
-  pthread_mutexattr_getpshared(&m_item, &ret);
+bool Mutex::Attributes::get_process_shared() const {
+  int ret = 0;
+  API_RETURN_VALUE_IF_ERROR(false);
+  API_SYSTEM_CALL("", pthread_mutexattr_getpshared(&m_item, &ret));
   return ret;
 }
 
@@ -91,6 +94,11 @@ Mutex::Mutex() {
 }
 
 Mutex::Mutex(const Mutex::Attributes &attr) { set_attributes(attr); }
+
+Mutex::~Mutex() {
+  API_RETURN_IF_ERROR();
+  API_SYSTEM_CALL("", pthread_mutex_destroy(&m_mutex));
+}
 
 Mutex &Mutex::set_attributes(const Attributes &attr) {
   API_RETURN_VALUE_IF_ERROR(*this);
