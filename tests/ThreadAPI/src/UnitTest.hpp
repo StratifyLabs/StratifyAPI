@@ -1,6 +1,7 @@
 ﻿
 #include <cstdio>
 #include <mcu/types.h>
+#include <signal.h>
 
 #include "api/api.hpp"
 #include "chrono.hpp"
@@ -14,11 +15,19 @@ using T = thread::Thread;
 using M = thread::Mutex;
 using S = thread::Signal;
 
+void signal_handler(int a) {
+  printf("signal %d\n", a);
+  API_ASSERT(false);
+  exit(1);
+}
+
 class UnitTest : public test::Test {
 public:
   UnitTest(var::StringView name) : test::Test(name) {}
 
   bool execute_class_api_case() {
+
+    signal(11, signal_handler);
     if (!thread_api_case()) {
       return false;
     }
@@ -34,7 +43,6 @@ public:
   bool thread_api_case() {
 
     {
-      printf("this %p\n", this);
       m_did_execute = false;
       T(T::Construct()
           .set_detach_state(T::DetachState::joinable)
@@ -42,12 +50,10 @@ public:
           .set_function([](void *args) -> void * {
             UnitTest *self = reinterpret_cast<UnitTest *>(args);
             self->m_did_execute = true;
-            printf("did exec %d\n", self->m_did_execute);
             return nullptr;
           }))
         .wait();
 
-      printf("did exec? %d\n", m_did_execute);
 
       TEST_ASSERT(is_success());
       TEST_ASSERT(m_did_execute);
@@ -57,7 +63,8 @@ public:
           .set_detach_state(T::DetachState::detached)
           .set_argument(this)
           .set_function([](void *args) -> void * {
-            reinterpret_cast<UnitTest *>(args)->m_did_execute = true;
+            UnitTest *self = reinterpret_cast<UnitTest *>(args);
+            self->m_did_execute = true;
             return nullptr;
           }))
         .wait();
@@ -117,7 +124,7 @@ public:
                   MutexGuard mg(self->m_mutex);
                   MutexGuard t_mg(self->m_thread_mutex);
                   self->printer().info("wait 250ms");
-                  wait(2_seconds);
+                  wait(250_milliseconds);
                   self->m_did_execute = true;
                   return nullptr;
                 }));
