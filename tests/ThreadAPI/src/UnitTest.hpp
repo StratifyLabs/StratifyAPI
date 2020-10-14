@@ -78,6 +78,108 @@ public:
   bool thread_api_case() {
 
     {
+
+      TEST_ASSERT(
+        T::Attributes().set_stack_size(4096).get_stack_size() >= 4096);
+
+      bool (*test_policy)(UnitTest * self, const Sched::Policy policy)
+        = [](UnitTest *self, const Sched::Policy policy) -> bool {
+        const int min_priority = Sched::get_priority_min(policy);
+        const int max_priority = Sched::get_priority_max(policy);
+        TEST_SELF_ASSERT(min_priority <= max_priority);
+        TEST_SELF_ASSERT(is_success());
+
+        TEST_SELF_ASSERT(
+          T::Attributes().set_sched_policy(policy).get_sched_policy()
+          == policy);
+
+        for (int i = min_priority; i <= max_priority; i++) {
+          TEST_SELF_ASSERT(
+            T::Attributes()
+              .set_sched_policy(policy)
+              .set_sched_priority(i)
+              .get_sched_priority()
+            == i);
+        }
+        return true;
+      };
+
+      TEST_ASSERT(test_policy(this, Sched::Policy::round_robin));
+      TEST_ASSERT(test_policy(this, Sched::Policy::fifo));
+      TEST_ASSERT(test_policy(this, Sched::Policy::other));
+    }
+
+    {
+      T::Attributes attributes
+        = T::Attributes().set_scope(T::ContentionScope::process);
+
+      TEST_ASSERT(is_success());
+      printer().key(
+        "scopeProcess",
+        attributes.get_scope() == T::ContentionScope::process);
+      TEST_ASSERT(is_success());
+
+      attributes.set_scope(T::ContentionScope::system);
+      TEST_ASSERT(is_success());
+
+      printer().key(
+        "scopeSystem",
+        attributes.get_scope() == T::ContentionScope::system);
+      TEST_ASSERT(is_success());
+    }
+
+    {
+
+      T::Attributes attributes
+        = T::Attributes().set_inherit_sched(T::IsInherit::yes);
+
+      TEST_ASSERT(is_success());
+      printer().key(
+        "canInherit",
+        attributes.get_inherit_sched() == T::IsInherit::yes);
+
+      TEST_ASSERT(
+        attributes.get_inherit_sched() == T::IsInherit::yes
+        || attributes.get_inherit_sched() == T::IsInherit::no);
+
+      TEST_ASSERT(is_success());
+
+      attributes.set_inherit_sched(T::IsInherit::no);
+
+      printer().key(
+        "explicit",
+        attributes.get_inherit_sched() == T::IsInherit::no);
+
+      TEST_ASSERT(
+        attributes.get_inherit_sched() == T::IsInherit::yes
+        || attributes.get_inherit_sched() == T::IsInherit::no);
+
+      TEST_ASSERT(is_success());
+    }
+    {
+      m_did_execute = false;
+      T t(
+        T::Construct().set_argument(this).set_function(
+          [](void *args) -> void * {
+            UnitTest *self = reinterpret_cast<UnitTest *>(args);
+            self->m_did_execute = true;
+            return nullptr;
+          }),
+        T::Attributes().set_detach_state(T::DetachState::joinable));
+
+      const int priority = Sched::get_priority_min(Sched::Policy::fifo);
+
+      TEST_ASSERT(
+        t.set_sched_parameters(Sched::Policy::fifo, priority)
+          .get_sched_priority()
+        == priority);
+
+      TEST_ASSERT(t.get_sched_policy() == Sched::Policy::fifo);
+
+      TEST_ASSERT(t.join().is_success());
+    }
+
+    {
       m_did_execute = false;
       T(T::Construct().set_argument(this).set_function(
           [](void *args) -> void * {

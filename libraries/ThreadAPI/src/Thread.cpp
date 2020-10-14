@@ -15,6 +15,8 @@ Thread::Attributes::Attributes() {
   set_inherit_sched(IsInherit::yes);
   set_stack_size(4096);
   set_detach_state(DetachState::detached);
+  set_sched_policy(Sched::Policy::other);
+  set_sched_priority(Sched::get_priority_min(Sched::Policy::other));
 }
 
 Thread::Attributes::~Attributes() {
@@ -54,11 +56,9 @@ Thread::DetachState Thread::Attributes::get_detach_state() const {
 
 Thread::Attributes &Thread::Attributes::set_inherit_sched(IsInherit value) {
   API_RETURN_VALUE_IF_ERROR(*this);
-  int sched_value
-    = (value == IsInherit::no) ? PTHREAD_EXPLICIT_SCHED : PTHREAD_INHERIT_SCHED;
   API_SYSTEM_CALL(
     "",
-    pthread_attr_setinheritsched(&m_pthread_attr, sched_value));
+    pthread_attr_setinheritsched(&m_pthread_attr, static_cast<int>(value)));
   return *this;
 }
 Thread::IsInherit Thread::Attributes::get_inherit_sched() const {
@@ -67,8 +67,7 @@ Thread::IsInherit Thread::Attributes::get_inherit_sched() const {
   API_SYSTEM_CALL(
     "",
     pthread_attr_getdetachstate(&m_pthread_attr, &inherit_sched));
-  return (inherit_sched == PTHREAD_EXPLICIT_SCHED) ? IsInherit::no
-                                                   : IsInherit::yes;
+  return static_cast<IsInherit>(inherit_sched);
 }
 
 Thread::Attributes &Thread::Attributes::set_scope(ContentionScope value) {
@@ -109,7 +108,7 @@ Sched::Policy Thread::Attributes::get_sched_policy() const {
   return static_cast<Policy>(value);
 }
 
-int Thread::Attributes::get_priority() const {
+int Thread::Attributes::get_sched_priority() const {
   API_RETURN_VALUE_IF_ERROR(-1);
   struct sched_param param = {0};
   API_SYSTEM_CALL("", pthread_attr_getschedparam(&m_pthread_attr, &param));
@@ -158,11 +157,11 @@ Thread &Thread::set_sched_parameters(Sched::Policy policy, int priority) {
   return *this;
 }
 
-int Thread::get_sched_policy() const {
+Sched::Policy Thread::get_sched_policy() const {
   int policy;
   int priority;
   get_sched_parameters(policy, priority);
-  return policy;
+  return static_cast<Sched::Policy>(policy);
 }
 
 int Thread::get_sched_priority() const {
@@ -174,9 +173,7 @@ int Thread::get_sched_priority() const {
 
 int Thread::get_sched_parameters(int &policy, int &priority) const {
   API_RETURN_VALUE_IF_ERROR(-1);
-  if (is_id_pending() || is_id_error()) {
-    return -1;
-  }
+  API_ASSERT(is_valid());
   struct sched_param param = {0};
   int result
     = API_SYSTEM_CALL("", pthread_getschedparam(id(), &policy, &param));
@@ -229,9 +226,7 @@ bool Thread::is_running() {
 }
 
 Thread &Thread::wait(void **ret, chrono::MicroTime interval) {
-
   if (is_valid()) {
-
     // if thread is joinable, then join it
     if (is_joinable()) {
       join(ret);
@@ -255,6 +250,7 @@ void Thread::destroy() {
 
 Thread &Thread::join(void **value) {
   API_RETURN_VALUE_IF_ERROR(*this);
+  API_ASSERT(is_joinable());
 
   void *tmp_ptr;
   void **ptr = value == nullptr ? &tmp_ptr : value;

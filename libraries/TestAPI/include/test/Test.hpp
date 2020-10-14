@@ -28,6 +28,16 @@ namespace test {
     }                                                                          \
   } while (0)
 
+#define TEST_SELF_EXPECT(result_value)                                         \
+  self->expect(__PRETTY_FUNCTION__, __LINE__, result_value)
+
+#define TEST_SELF_ASSERT(result_value)                                         \
+  do {                                                                         \
+    if (self->expect(__PRETTY_FUNCTION__, __LINE__, result_value) == false) {  \
+      return false;                                                            \
+    }                                                                          \
+  } while (0)
+
 struct TestFlags {
   enum class ExecuteFlags : u32 {
     none = 0,

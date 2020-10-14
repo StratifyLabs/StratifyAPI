@@ -59,8 +59,15 @@ public:
   };
   using Policy = Sched::Policy;
 
-  enum class IsInherit { no, yes };
-  enum class ContentionScope { system, process };
+  enum class IsInherit {
+    no = PTHREAD_EXPLICIT_SCHED,
+    yes = PTHREAD_INHERIT_SCHED
+  };
+  enum class ContentionScope {
+    system = PTHREAD_SCOPE_SYSTEM,
+    process = PTHREAD_SCOPE_PROCESS
+  };
+  using Scope = ContentionScope;
 
   typedef void *(*function_t)(void *);
 
@@ -84,7 +91,7 @@ public:
     Attributes &set_sched_policy(Sched::Policy value);
     Attributes &set_sched_priority(int priority);
     Sched::Policy get_sched_policy() const;
-    int get_priority() const;
+    int get_sched_priority() const;
 
   private:
     friend class Thread;
@@ -95,6 +102,16 @@ public:
     API_ACCESS_FUNDAMENTAL(Construct, function_t, function, nullptr);
     API_ACCESS_FUNDAMENTAL(Construct, void *, argument, nullptr);
   };
+
+  Thread() = default;
+
+  // don't allow making copies
+  Thread(const Thread &thread) = delete;
+  Thread &operator=(const Thread &thread) = delete;
+
+  // allow moving threads
+  Thread &operator=(Thread &&thread) = default;
+  Thread(Thread &&thread) = default;
 
   Thread(const Construct &options, const Attributes &attributes);
   ~Thread();
@@ -123,7 +140,7 @@ public:
   };
 
   Thread &set_sched_parameters(Sched::Policy policy, int priority);
-  int get_sched_policy() const;
+  Sched::Policy get_sched_policy() const;
   int get_sched_priority() const;
 
   Thread &set_cancel_state(CancelState cancel_state);
@@ -199,7 +216,9 @@ public:
    */
   Thread &join(void **value = nullptr);
 
-  bool is_joinable() const { return m_detach_state == DetachState::joinable; }
+  bool is_joinable() const {
+    return is_id_error() ? false : (m_detach_state == DetachState::joinable);
+  }
 
 private:
   enum thread_flags {
