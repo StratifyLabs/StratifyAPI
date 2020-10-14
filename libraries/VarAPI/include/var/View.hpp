@@ -75,7 +75,7 @@ class Data;
  *
  *
  */
-class View : public api::Object {
+class View : public api::ExecutionContext {
 public:
   class Construct {
     API_AF(Construct, const void *, read_buffer, nullptr);

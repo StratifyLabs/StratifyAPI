@@ -18,7 +18,7 @@ namespace var {
  * std::queue container class.
  *
  */
-template <typename T> class Stack : public api::Object {
+template <typename T> class Stack : public api::ExecutionContext {
 public:
   /*! \details Returns a reference to the back item.
    *

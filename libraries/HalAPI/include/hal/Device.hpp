@@ -115,7 +115,7 @@ protected:
 template <int VersionRequest> class DeviceType {
 public:
   static int get_version(const Device &device) {
-    return device.ioctl(VersionRequest, nullptr).status().value();
+    return device.ioctl(VersionRequest, nullptr).return_value();
   }
 };
 

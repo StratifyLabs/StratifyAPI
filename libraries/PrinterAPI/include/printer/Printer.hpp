@@ -15,7 +15,7 @@
 #endif
 
 namespace api {
-class Status;
+class PrivateExecutionContext;
 }
 
 namespace printer {
@@ -131,7 +131,7 @@ private:
  * ```
  *
  */
-class Printer : public api::Object, public PrinterFlags {
+class Printer : public api::ExecutionContext, public PrinterFlags {
 public:
   Printer();
   ~Printer();
@@ -167,7 +167,7 @@ public:
   Printer &operator<<(var::View a);
   Printer &operator<<(const var::String &a);
   Printer &operator<<(const var::StringList &a);
-  Printer &operator<<(const api::ErrorContext &error_context);
+  Printer &operator<<(const api::Error &error_context);
 
   /*! \details Assign an effective verbose level to this object. */
   Printer &set_verbose_level(Level level) {
@@ -201,7 +201,7 @@ public:
   /*! \details Prints a fatal error message. */
   Printer &fatal(var::StringView a);
 
-  Printer &error(const api::Status result, u32 line_number);
+  Printer &error(const api::PrivateExecutionContext result, u32 line_number);
 
   Printer &enable_flags(PrintFlags value) {
     m_print_flags |= value;

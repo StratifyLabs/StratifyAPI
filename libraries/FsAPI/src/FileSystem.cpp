@@ -30,8 +30,7 @@ const FileSystem &FileSystem::touch(var::StringView path) const {
       .read(var::View(c))
       .seek(0)
       .write(var::View(c))
-      .status()
-      .value());
+      .return_value());
   return *this;
 }
 
@@ -47,8 +46,8 @@ const FileSystem &FileSystem::rename(const Rename &options) const {
 
 bool FileSystem::exists(var::StringView path) const {
   API_RETURN_VALUE_IF_ERROR(false);
-  bool result = File(path, OpenMode::read_only()).status().is_success();
-  reset_error_context();
+  bool result = File(path, OpenMode::read_only()).is_success();
+  reset_error();
   return result;
 }
 
@@ -79,13 +78,13 @@ const FileSystem &FileSystem::remove_directory(
       FileInfo info = get_info(entry_path);
       if (info.is_directory()) {
         if (entry != "." && entry != "..") {
-          if (remove_directory(entry_path, recursive).status().is_error()) {
+          if (remove_directory(entry_path, recursive).is_error()) {
             return *this;
           }
         }
 
       } else {
-        if (remove(entry_path).status().is_error()) {
+        if (remove(entry_path).is_error()) {
           return *this;
         }
       }
@@ -152,8 +151,8 @@ u32 FileSystem::size(var::StringView name) const {
 
 bool FileSystem::directory_exists(var::StringView path) const {
   API_RETURN_VALUE_IF_ERROR(false);
-  bool result = Dir(path).status().is_success();
-  reset_error_context();
+  bool result = Dir(path).is_success();
+  reset_error();
   return result;
 }
 
@@ -201,7 +200,6 @@ const FileSystem &FileSystem::create_directory(
     if (path_tokens.at(i).is_empty() == false) {
       base_path += path_tokens.at(i);
       if (create_directory(base_path.cstring(), permissions)
-            .status()
             .is_error()) {
         return *this;
       }

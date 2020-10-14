@@ -8,7 +8,7 @@
 
 namespace inet {
 
-class Url : public api::Object {
+class Url : public api::ExecutionContext {
 public:
   enum protocol { protocol_https, protocol_http };
 

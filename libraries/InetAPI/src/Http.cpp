@@ -235,12 +235,12 @@ HttpClient &HttpClient::execute_method(
 
 int HttpClient::send_string(var::StringView str) {
   if (!str.is_empty()) {
-    return socket().write(var::View(str)).status().value();
+    return socket().write(var::View(str)).return_value();
   }
   return 0;
 }
 
-int HttpClient::close_connection() { return socket().close().status().value(); }
+int HttpClient::close_connection() { return socket().close().return_value(); }
 
 int HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
   SocketAddressInfo address_info;
@@ -341,7 +341,7 @@ int HttpClient::send_header(
   printf("Sending %lu data bytes\n", file ? file->size() : 0);
 #endif
 
-  if (socket().write(m_header).status().is_error()) {
+  if (socket().write(m_header).is_error()) {
     return -1;
   }
 
@@ -353,7 +353,6 @@ int HttpClient::send_header(
               .set_page_size(m_transfer_size)
               .set_size(file->size())
               .set_progress_callback(progress_callback))
-          .status()
           .is_error()) {
       return -1;
     }
@@ -368,7 +367,7 @@ int HttpClient::listen_for_header() {
   header_response_pairs().clear();
   bool is_first_line = true;
   m_transfer_encoding = "";
-  socket().status().reset();
+  socket().reset_error();
 
   do {
     line = socket().gets('\n');
@@ -417,9 +416,9 @@ int HttpClient::listen_for_header() {
 
   } while (
     (line.length() > 2 || is_first_line)
-    && (socket().status().is_success() == 0)); // while reading the header
+    && (socket().is_success() == 0)); // while reading the header
 
-  if (socket().status().is_error()) {
+  if (socket().is_error()) {
     return -1;
   }
 
@@ -445,7 +444,7 @@ int HttpClient::listen_for_data(
 
       // need to call the progress callback -- what is the total?
 
-    } while ((bytes_incoming > 0) && (destination->status().is_success()));
+    } while ((bytes_incoming > 0) && (destination->is_success()));
 
   } else {
     // read the response from the socket
@@ -458,7 +457,7 @@ int HttpClient::listen_for_data(
           .set_size(m_content_length)
           .set_progress_callback(progress_callback));
 
-      if (destination->status().is_error()) {
+      if (destination->is_error()) {
         return -1;
       }
     }
@@ -544,7 +543,6 @@ int HttpServer::send_header(Status status) {
   printf("sending '%s'\n", to_string(status).cstring());
   if (socket()
         .write(m_version + to_string(status) + "\r\n")
-        .status()
         .is_error()) {
     return -1;
   }
@@ -552,12 +550,12 @@ int HttpServer::send_header(Status status) {
   for (const auto &pair : header_response_pairs()) {
     const auto s = pair.to_string();
     printf("Sending response pair %s\n", s.cstring());
-    if (socket().write(s + "\r\n").status().value() != s.length() + 2) {
+    if (socket().write(s + "\r\n").return_value() != s.length() + 2) {
       printf("failed to write pair %s\n", s.cstring());
     }
   }
 
-  if (socket().write("\r\n").status().value() != 2) {
+  if (socket().write("\r\n").return_value() != 2) {
     printf("Failed to write terminator\n");
   }
 
@@ -577,7 +575,7 @@ int HttpServer::get_chunk_size() {
 }
 
 int HttpServer::send(var::View chunk) {
-  return socket().write(chunk).status().value();
+  return socket().write(chunk).return_value();
 }
 
 int HttpServer::receive(fs::File &file, int content_length) {
@@ -612,6 +610,5 @@ int HttpServer::receive(fs::File &file, int content_length) {
       socket(),
       fs::File::Write().set_location(0).set_page_size(512).set_size(
         content_length))
-    .status()
-    .value();
+    .return_value();
 }

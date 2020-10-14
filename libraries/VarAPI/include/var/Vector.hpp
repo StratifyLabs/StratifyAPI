@@ -18,7 +18,7 @@ namespace var {
  *
  *
  */
-template <typename T> class Vector : public api::Object {
+template <typename T> class Vector : public api::ExecutionContext {
 public:
 
   /*! \details Constructs an empty object.

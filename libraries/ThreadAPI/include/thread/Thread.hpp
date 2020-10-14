@@ -51,7 +51,7 @@ namespace thread {
  *
  *
  */
-class Thread : public api::Object {
+class Thread : public api::ExecutionContext {
 public:
   enum class DetachState {
     joinable /*! Joinable thread */ = PTHREAD_CREATE_JOINABLE,
@@ -212,7 +212,7 @@ private:
   DetachState m_detach_state = DetachState::detached;
 
 #if defined __link
-  u32 m_status;
+  u32 m_private_context;
   pthread_t m_id = {0};
 #else
   pthread_t m_id = 0;
@@ -224,14 +224,14 @@ private:
 
   void set_id_pending() {
 #if defined __link
-    m_status = id_pending;
+    m_private_context = id_pending;
 #else
     m_id = id_pending;
 #endif
   }
   void set_id_error() {
 #if defined __link
-    m_status = id_error;
+    m_private_context = id_error;
 #else
     m_id = id_error;
 #endif
@@ -239,14 +239,14 @@ private:
 
   bool is_id_pending() const {
 #if defined __link
-    return m_status == id_pending;
+    return m_private_context == id_pending;
 #else
     return m_id == id_pending;
 #endif
   }
   bool is_id_error() const {
 #if defined __link
-    return m_status == id_error;
+    return m_private_context == id_error;
 #else
     return m_id == id_error;
 #endif

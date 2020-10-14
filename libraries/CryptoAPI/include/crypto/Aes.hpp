@@ -16,7 +16,7 @@
 
 namespace crypto {
 
-class Aes : public api::Object {
+class Aes : public api::ExecutionContext {
 public:
   using InitializationVector = var::Array<u8, 16>;
   using Iv = InitializationVector;

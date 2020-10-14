@@ -15,7 +15,7 @@ namespace var {
  * class is similar to STDC strtok().
  *
  */
-class Tokenizer : public api::Object {
+class Tokenizer : public api::ExecutionContext {
 public:
   class Construct {
     API_ACCESS_COMPOUND(Construct, var::StringView, delimeters);

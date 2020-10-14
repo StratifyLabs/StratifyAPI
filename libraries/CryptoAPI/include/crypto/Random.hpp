@@ -17,7 +17,7 @@
 
 namespace crypto {
 
-class Random : public api::Object {
+class Random : public api::ExecutionContext {
 public:
   Random();
   ~Random();

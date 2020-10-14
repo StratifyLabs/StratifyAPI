@@ -50,7 +50,7 @@ Data &Data::copy(const View a, const Copy &options) {
   const u32 bytes_needed = bytes_to_copy + options.destination_position();
 
   resize(bytes_needed);
-  if (status().is_error()) {
+  if (is_error()) {
     return *this;
   }
 

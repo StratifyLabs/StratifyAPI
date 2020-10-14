@@ -41,7 +41,7 @@ struct TestFlags {
 
 API_OR_NAMED_FLAGS_OPERATOR(TestFlags, ExecuteFlags)
 
-class Test : public api::Object, public TestFlags {
+class Test : public api::ExecutionContext, public TestFlags {
 public:
   class Initialize {
     API_AC(Initialize, var::StringView, name);
@@ -194,8 +194,8 @@ public:
       var::String().format("expect%d", line),
       var::String().format("%s failed", function));
 
-    if (status().is_error()) {
-      printer().object("errorContext", api::Object::error_context());
+    if (is_error()) {
+      printer().object("errorContext", api::ExecutionContext::error());
     }
 
     printer().error(var::String().format("test failed"));

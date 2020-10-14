@@ -94,9 +94,9 @@ public:
   bool dir_api_case() {
 
     FS().remove_directory("tmp", FS::IsRecursive::yes);
-    reset_error_context();
+    reset_error();
     FS().remove_directory("tmp2", FS::IsRecursive::yes);
-    reset_error_context();
+    reset_error();
 
     TEST_ASSERT(FS().create_directory("tmp").is_success());
     TEST_ASSERT(F("tmp/test0.txt", F::IsCreateOverwrite::yes)
@@ -222,13 +222,13 @@ public:
       const StringView file_name2 = "filessytem2.txt";
 
       // cleanup
-      reset_error_context();
+      reset_error();
       FS().remove_directory("tmpdir/tmp/dir", FS::IsRecursive::yes);
-      reset_error_context();
+      reset_error();
       FS().remove_directory("tmpdir/tmp", FS::IsRecursive::yes);
-      reset_error_context();
+      reset_error();
       FS().remove_directory("tmpdir", FS::IsRecursive::yes);
-      reset_error_context();
+      reset_error();
 
       TEST_ASSERT(is_success());
 
@@ -240,10 +240,10 @@ public:
       TEST_EXPECT(FS().exists(file_name));
 
       // not exists should not affect the error context
-      TEST_EXPECT(!FS().exists(file_name2) && status().is_success());
+      TEST_EXPECT(!FS().exists(file_name2) && is_success());
 
-      TEST_EXPECT(FS().remove(file_name).status().is_success());
-      TEST_EXPECT(!FS().exists(file_name) && status().is_success());
+      TEST_EXPECT(FS().remove(file_name).is_success());
+      TEST_EXPECT(!FS().exists(file_name) && is_success());
 
       TEST_ASSERT(F(file_name, F::IsCreateOverwrite::yes)
                     .write(file_name2)
@@ -259,7 +259,7 @@ public:
         FS().create_directory(dir_name, FS::IsRecursive::no).is_success());
       TEST_ASSERT(
         FS().create_directory(dir_name, FS::IsRecursive::no).is_error());
-      reset_error_context();
+      reset_error();
       TEST_ASSERT(FS().remove_directory(dir_name).is_success());
 
       TEST_EXPECT(FS().create_directory(dir_name_recursive).is_error());
@@ -267,7 +267,7 @@ public:
       TEST_EXPECT(dir_name_recursive == error_context().message());
       TEST_EXPECT(error_context().message() == dir_name_recursive);
 
-      reset_error_context();
+      reset_error();
 
       TEST_EXPECT(FS()
                     .create_directory(dir_name_recursive, FS::IsRecursive::yes)
@@ -330,7 +330,7 @@ public:
 
       TEST_EXPECT(error_context().message() == dir_name);
 
-      reset_error_context();
+      reset_error();
     }
 
     {
@@ -339,7 +339,7 @@ public:
       const StringView dir_name = "permdir";
 
       FS().remove_directory(dir_name);
-      reset_error_context();
+      reset_error();
 
       TEST_ASSERT(FS().create_directory(dir_name).is_success());
       TEST_ASSERT(FS().get_info(dir_name).permissions() == permissions);
@@ -383,7 +383,7 @@ public:
       "Testing String 3\n",
       "Testing String 4\n"};
 
-    reset_error_context();
+    reset_error();
 
     TEST_ASSERT(F(file_name, F::IsCreateOverwrite::yes)
                   .write(test_strings.at(0))
@@ -395,7 +395,7 @@ public:
 
     TEST_EXPECT(var::StringView(error_context().message()) == file_name);
 
-    reset_error_context();
+    reset_error();
 
     TEST_EXPECT(
       String(DF().write(F(file_name, OpenMode::read_only())).data())
@@ -412,11 +412,11 @@ public:
                   .status()
                   .is_success());
 
-    TEST_EXPECT(F("tmp1.txt", OpenMode::read_only()).status().is_error());
-    TEST_EXPECT(F(file_name, OpenMode::read_only()).status().is_error());
+    TEST_EXPECT(F("tmp1.txt", OpenMode::read_only()).is_error());
+    TEST_EXPECT(F(file_name, OpenMode::read_only()).is_error());
 
-    reset_error_context();
-    TEST_EXPECT(F(file_name, OpenMode::read_only()).status().is_success());
+    reset_error();
+    TEST_EXPECT(F(file_name, OpenMode::read_only()).is_success());
 
     {
       F tmp(file_name, OpenMode::read_write());

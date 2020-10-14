@@ -132,7 +132,7 @@ public:
  *
  * \endcode
  */
-class SignalHandler : public api::Object, public SignalFlags {
+class SignalHandler : public api::ExecutionContext, public SignalFlags {
 public:
   class Construct {
     API_AF(Construct, signal_function_callback_t, signal_function, nullptr);
@@ -228,7 +228,7 @@ private:
  * when a hardware event happens (such as a when a GPIO interrupt happens).
  *
  */
-class Signal : public api::Object, public SignalFlags {
+class Signal : public api::ExecutionContext, public SignalFlags {
 public:
   /*! \details Constructs an event based on a signal number.
    *

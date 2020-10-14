@@ -110,7 +110,7 @@ public:
   };
 
   static int get_version(Device &device) {
-    return device.ioctl(I_UART_GETVERSION, nullptr).status().value();
+    return device.ioctl(I_UART_GETVERSION, nullptr).return_value();
   }
 
   static Device::Ioctl put(char c) {

@@ -34,34 +34,44 @@ void api::api_assert(bool value, const char *function, int line) {
   }
 }
 
-Status Object::m_status;
+PrivateExecutionContext ExecutionContext::m_private_context;
 
-ErrorContext &Status::error_context() {
-  if (&(errno) == m_error_context.m_signature) {
-    return m_error_context;
+Error &PrivateExecutionContext::get_error() {
+  if (&(errno) == m_error.m_signature) {
+    return m_error;
   }
 
-  if (m_error_context_list == nullptr) {
-    m_error_context_list = new std::vector<ErrorContext>();
-    API_ASSERT(m_error_context_list != nullptr);
-    m_error_context_list->push_back(ErrorContext(&(errno)));
+  if (m_error_list == nullptr) {
+    m_error_list = new std::vector<Error>();
+    API_ASSERT(m_error_list != nullptr);
+    m_error_list->push_back(Error(&(errno)));
   }
 
-  for (ErrorContext &error_context : *m_error_context_list) {
-    if (error_context.m_signature == &(errno)) {
-      return error_context;
+  for (Error &error_context : *m_error_list) {
+    if (m_error.m_signature == &(errno)) {
+      return m_error;
     }
   }
 
   API_ASSERT(true);
-  return m_error_context;
+  return m_error;
+}
+
+void PrivateExecutionContext::update_error_context(
+  int line,
+  const char *message) {
+  strncpy(m_error.m_message, message, Error::m_message_size);
+  m_error.m_line_number = line;
+  m_error.m_error_number = errno;
+  m_error.capture_backtrace();
+  errno = -1;
 }
 
 #define RESULT_ERROR_CODE_CASE(c)                                              \
   case ErrorCode::c:                                                           \
     return MCU_STRINGIFY(c)
 
-void Object::exit_fatal(const char *message) {
+void ExecutionContext::exit_fatal(const char *message) {
   printf("fatal error: %s\n", message);
   exit(1);
 }

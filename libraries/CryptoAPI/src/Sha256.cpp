@@ -68,10 +68,10 @@ Sha256 &Sha256::update(const var::View &input) {
 Sha256 &Sha256::update(fs::File &file) {
   for (u32 i = 0; i < 32; i++) {
     char buffer[32];
-    int bytes_read = file.read(var::View(buffer)).status().value();
+    int bytes_read = file.read(var::View(buffer)).return_value();
     if (bytes_read > 0) {
       update(var::View(buffer, bytes_read));
-      if (status().is_error()) {
+      if (is_error()) {
         return *this;
       }
     }

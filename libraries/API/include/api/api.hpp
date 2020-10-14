@@ -152,11 +152,11 @@ private:
   const A *m_api = nullptr;
 };
 
-class ErrorContext {
+class Error {
 public:
   class Backtrace {
   public:
-    Backtrace(const ErrorContext &context) {
+    Backtrace(const Error &context) {
 #if defined __link
 #if !defined __win32
       m_entry_count = context.m_backtrace_count;
@@ -197,8 +197,8 @@ public:
   }
 
 private:
-  ErrorContext(void *signature) : m_signature(signature) {}
-  friend class Status;
+  Error(void *signature) : m_signature(signature) {}
+  friend class PrivateExecutionContext;
   friend class BacktraceSymbols;
   static constexpr size_t m_message_size = 31;
   static constexpr size_t m_backtrace_buffer_size =
@@ -227,91 +227,84 @@ private:
   }
 };
 
-class Status {
+class PrivateExecutionContext {
+protected:
+  friend class ExecutionContext;
+  inline bool is_error() const { return value() < 0; }
+  inline bool is_success() const { return value() >= 0; }
+  inline int value() const { return errno; }
+
+  size_t context_count() const {
+    if (m_error_list) {
+      return m_error_list->size() + 1;
+    }
+    return 1;
+  }
+
+  Error &get_error();
+
+  void update_error_context(int line, const char *message);
+
+private:
+  PrivateExecutionContext() : m_error(&(errno)) {}
+  Error m_error;
+  std::vector<Error> *m_error_list = nullptr;
+};
+
+class ExecutionContext {
 public:
-  bool is_error() const { return value() < 0; }
-  bool is_success() const { return value() >= 0; }
-
-  int value() const { return errno; }
-
-  ErrorContext &error_context();
-
-  int system_call(int line, const char *message, int value) {
+  static int system_call(int line, const char *message, int value) {
     if (value >= 0) {
       errno = value;
     } else {
-      update_error_context(line, message);
+      m_private_context.update_error_context(line, message);
     }
     return value;
   }
 
   template <typename T>
-  T *system_call_null(int line, const char *message, T *value) {
+  static T *system_call_null(int line, const char *message, T *value) {
     if (value == nullptr) {
-      update_error_context(line, message);
+      m_private_context.update_error_context(line, message);
     }
     return value;
   }
 
-  void reset() { errno = 0; }
-
-  size_t error_context_count() const {
-    if (m_error_context_list) {
-      return m_error_context_list->size() + 1;
-    }
-    return 1;
-  }
-
-private:
-  friend class Object;
-  Status() : m_error_context(&(errno)) {}
-  ErrorContext m_error_context;
-  std::vector<ErrorContext> *m_error_context_list = nullptr;
-
-  void update_error_context(int line, const char *message) {
-    strncpy(error_context().m_message, message, ErrorContext::m_message_size);
-    error_context().m_line_number = line;
-    error_context().m_error_number = errno;
-    error_context().capture_backtrace();
-    errno = -1;
-  }
-};
-
-class Object {
-public:
-  static ErrorContext &error_context() { return m_status.error_context(); }
-  static Status &status() { return m_status; }
+  static Error &error() { return m_private_context.get_error(); }
   static void exit_fatal(const char *message);
-  static inline void reset_error_context() { m_status.reset(); }
 
-  static inline bool is_error() { return status().is_error(); }
-  static inline bool is_success() { return status().is_success(); }
-  static inline int return_value() { return status().value(); }
+  static inline size_t context_count() {
+    return m_private_context.context_count();
+  }
+  static inline void reset_error() { errno = 0; }
+  static inline bool is_error() { return m_private_context.is_error(); }
+  static inline bool is_success() { return m_private_context.is_success(); }
+  static inline int return_value() { return m_private_context.value(); }
 
 private:
-  static Status m_status;
+  static PrivateExecutionContext m_private_context;
 };
 
 #define API_ASSERT(a) api::api_assert(a, __PRETTY_FUNCTION__, __LINE__);
 void api_assert(bool value, const char *function, int line);
 
 #define API_RETURN_VALUE_IF_ERROR(return_value)                                \
-  if (api::Object::status().is_error()) {                                      \
+  if (api::ExecutionContext::is_error()) {                                     \
     return return_value;                                                       \
   }
 
 #define API_RETURN_IF_ERROR()                                                  \
-  if (api::Object::status().is_error()) {                                      \
+  if (api::ExecutionContext::is_error()) {                                     \
     return;                                                                    \
   }
 
 #define API_SYSTEM_CALL(message_value, return_value)                           \
-  api::Object::status().system_call(__LINE__, message_value, return_value)
+  api::ExecutionContext::system_call(__LINE__, message_value, return_value)
 
 #define API_SYSTEM_CALL_NULL(message_value, return_value)                      \
-  api::Object::status().system_call_null(__LINE__, message_value, return_value)
+  api::ExecutionContext::system_call_null(__LINE__, message_value, return_value)
 
-#define API_RESET_ERROR() api::Object::status().reset()
+#define API_RESET_ERROR() api::ExecutionContext::reset_error()
 
 #define API_RETURN_VALUE_ASSIGN_ERROR(                                         \
   return_value,                                                                \
@@ -319,14 +312,14 @@ void api_assert(bool value, const char *function, int line);
   error_number_value)                                                          \
   do {                                                                         \
     errno = error_number_value;                                                \
-    api::Object::status().system_call(__LINE__, message_value, -1);            \
+    api::ExecutionContext::system_call(__LINE__, message_value, -1);           \
     return return_value;                                                       \
   } while (0)
 
 #define API_RETURN_ASSIGN_ERROR(message_value, error_number_value)             \
   do {                                                                         \
     errno = error_number_value;                                                \
-    api::Object::status().system_call(__LINE__, message_value, -1);            \
+    api::ExecutionContext::system_call(__LINE__, message_value, -1);           \
     return;                                                                    \
   } while (0)
 

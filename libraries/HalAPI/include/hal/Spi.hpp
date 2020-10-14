@@ -140,7 +140,7 @@ public:
   }
 
   static int swap(const Device &device, u32 value) {
-    return device.ioctl(swap(value)).status().value();
+    return device.ioctl(swap(value)).return_value();
   }
 
   static Info get_info(const Device &device) {

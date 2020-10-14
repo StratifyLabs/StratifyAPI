@@ -102,7 +102,7 @@ namespace chrono {
  *
  *
  */
-class ClockTimer : public api::Object {
+class ClockTimer : public api::ExecutionContext {
 public:
   /*! \details Constructs an empty Timer. */
   ClockTimer();

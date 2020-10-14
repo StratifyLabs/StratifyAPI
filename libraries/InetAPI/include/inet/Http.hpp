@@ -13,7 +13,7 @@
 
 namespace inet {
 
-class Http : public api::Object {
+class Http : public api::ExecutionContext {
 public:
 
   explicit Http(Socket &socket);

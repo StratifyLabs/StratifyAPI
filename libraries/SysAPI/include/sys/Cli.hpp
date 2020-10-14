@@ -15,7 +15,7 @@ namespace sys {
  * \details This class contains methods to help analyze input from the
  * command line.
  */
-class Cli : public api::Object {
+class Cli : public api::ExecutionContext {
 public:
 
 

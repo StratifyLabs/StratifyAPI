@@ -722,12 +722,12 @@ Printer &Printer::operator<<(var::View a) {
   return *this;
 }
 
-Printer &Printer::operator<<(const api::ErrorContext &error_context) {
+Printer &Printer::operator<<(const api::Error &error_context) {
   key("lineNumber", var::NumberToString(error_context.line_number()));
   key("errorNumber", var::NumberToString(error_context.error_number()));
   key("message", var::StringView(error_context.message()));
 
-  api::ErrorContext::Backtrace backtrace(error_context);
+  api::Error::Backtrace backtrace(error_context);
 
   PrinterObject po(*this, "backtrace");
   const char *symbol;

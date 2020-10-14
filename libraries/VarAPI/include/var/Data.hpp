@@ -104,7 +104,7 @@ private:
  *
  *
  */
-class Data : public api::Object {
+class Data : public api::ExecutionContext {
 public:
   /*! \details Constructs a data object with no data.
    *

@@ -5,7 +5,7 @@
 
 namespace fs {
 
-class FileSystem : public api::Object {
+class FileSystem : public api::ExecutionContext {
 public:
   using IsOverwrite = File::IsOverwrite;
   using IsRecursive = Dir::IsRecursive;
@@ -100,7 +100,7 @@ private:
 #endif
 };
 
-class TemporaryDirectory : public api::Object {
+class TemporaryDirectory : public api::ExecutionContext {
 public:
   explicit TemporaryDirectory(var::StringView parent = "");
   ~TemporaryDirectory();

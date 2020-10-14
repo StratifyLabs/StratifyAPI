@@ -138,16 +138,14 @@ Thread::Thread(const Construct &options, const Attributes &attributes) {
 
 #if defined __link
   if (result == 0) {
-    m_status = 0;
+    m_private_context = 0;
   }
 #endif
 }
 
 Thread::~Thread() {
   // what if thread is still running?
-  if (is_running()) {
-    // must be stopped or assert
-  }
+  API_ASSERT(is_running() == false);
 }
 
 Thread &Thread::set_sched_parameters(Sched::Policy policy, int priority) {
@@ -249,7 +247,7 @@ Thread &Thread::wait(void **ret, chrono::MicroTime interval) {
 
 void Thread::destroy() {
 #if defined __link
-  m_status = id_completed;
+  m_private_context = id_completed;
 #else
   m_id = id_completed;
 #endif

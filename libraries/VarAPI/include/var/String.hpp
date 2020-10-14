@@ -68,7 +68,7 @@ class Data;
  *
  *
  */
-class String : public api::Object {
+class String : public api::ExecutionContext {
 public:
   constexpr static size_t npos = std::string::npos;
 

@@ -129,7 +129,7 @@ public:
  *
  *
  */
-class SocketAddressInfo : public api::Object, public SocketFlags {
+class SocketAddressInfo : public api::ExecutionContext, public SocketFlags {
 public:
   /*! \details Constructs a new socket address infomation object.
    *

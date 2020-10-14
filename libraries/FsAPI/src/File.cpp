@@ -182,7 +182,7 @@ int File::flags() const {
 #else
   if (fileno() < 0) {
     API_SYSTEM_CALL("", -1);
-    return status().value();
+    return return_value();
   }
   return _global_impure_ptr->procmem_base->open_file[m_fd].flags;
 #endif
@@ -193,7 +193,7 @@ var::String File::gets(char term) const {
   char c;
   var::String result;
   do {
-    if (read(var::View(c)).status().value() == 1) {
+    if (read(var::View(c)).return_value() == 1) {
       result.append(c);
     } else {
       return result;
@@ -255,7 +255,7 @@ const File &File::write(const File &source_file, const Write &options) const {
                                : read_buffer_size;
 
     const int bytes_read
-      = source_file.read(file_read_buffer, page_size).status().value();
+      = source_file.read(file_read_buffer, page_size).return_value();
 
     if (bytes_read > 0) {
       if (options.transformer()) {
@@ -272,7 +272,7 @@ const File &File::write(const File &source_file, const Write &options) const {
         write(file_read_buffer, bytes_read);
       }
 
-      if (status().is_error()) {
+      if (is_error()) {
         return *this;
       }
 
@@ -291,7 +291,7 @@ const File &File::write(const File &source_file, const Write &options) const {
         }
 
         if (bytes_read < 0) {
-          reset_error_context();
+          reset_error();
         }
 
         chrono::wait(options.retry_delay());
@@ -311,14 +311,14 @@ const File &File::write(const File &source_file, const Write &options) const {
       }
     }
 
-  } while ((source_file.status().value() > 0) && (file_size > size_processed));
+  } while ((source_file.return_value() > 0) && (file_size > size_processed));
 
   // this will terminate the progress operation
   if (options.progress_callback()) {
     options.progress_callback()->update(0, 0);
   }
 
-  if ((source_file.status().is_error()) && (size_processed == 0)) {
+  if ((source_file.is_error()) && (size_processed == 0)) {
     API_SYSTEM_CALL("", -1);
   } else {
     API_SYSTEM_CALL("", size_processed);
@@ -368,7 +368,7 @@ int DataFile::interface_write(int fd, const void *buf, int nbyte) const {
   if (flags().is_append()) {
     // make room in the m_data object for more bytes
     m_location = static_cast<int>(m_data.size());
-    if (m_data.resize(m_data.size() + nbyte).status().is_error()) {
+    if (m_data.resize(m_data.size() + nbyte).is_error()) {
       return -1;
     }
     size_ready = nbyte;

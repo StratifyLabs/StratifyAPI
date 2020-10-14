@@ -114,7 +114,7 @@ public:
   }
 
   static u32 get_value(Device &device) {
-    return device.ioctl(get_value()).status().value();
+    return device.ioctl(get_value()).return_value();
   }
 
 private:

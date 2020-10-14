@@ -18,7 +18,7 @@ namespace var {
  * std::queue container class.
  *
  */
-template <typename T> class Deque : public api::Object {
+template <typename T> class Deque : public api::ExecutionContext {
 public:
   using iterator = typename std::deque<T>::iterator;
   using const_iterator = typename std::deque<T>::const_iterator;

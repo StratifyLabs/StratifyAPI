@@ -65,7 +65,7 @@ public:
       m.unlock();
       if (is_error()) {
       }
-      reset_error_context();
+      reset_error();
       TEST_ASSERT(m_did_execute);
     }
 

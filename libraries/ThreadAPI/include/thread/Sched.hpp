@@ -64,7 +64,7 @@ namespace thread {
  *
  *
  */
-class Sched : public api::Object {
+class Sched : public api::ExecutionContext {
 public:
   enum class Policy {
 #if defined __win32

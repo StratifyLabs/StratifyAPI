@@ -49,7 +49,7 @@ namespace var {
  * \endcode
  *
  */
-class Base64 : public api::Object {
+class Base64 : public api::ExecutionContext {
 public:
   var::String encode(var::View input) const;
   var::Data decode(var::StringView input) const;

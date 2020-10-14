@@ -23,7 +23,7 @@ namespace thread {
  * multi-threaded applications.
  *
  */
-class Mutex : public api::Object {
+class Mutex : public api::ExecutionContext {
 public:
   /*! \details Mutex Types */
   enum class Type {
@@ -38,7 +38,7 @@ public:
     priority_protect = PTHREAD_PRIO_PROTECT,
   };
 
-  class Attributes : public api::Object {
+  class Attributes : public api::ExecutionContext {
   public:
     /*! \details Constructs a Mutex attributes object with default values. */
     Attributes();

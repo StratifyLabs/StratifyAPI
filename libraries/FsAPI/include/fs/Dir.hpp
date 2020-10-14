@@ -41,7 +41,7 @@ namespace fs {
  *
  *
  */
-class Dir : public api::Object {
+class Dir : public api::ExecutionContext {
 public:
   enum class IsRecursive { no, yes };
 

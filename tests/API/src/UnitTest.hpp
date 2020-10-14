@@ -26,9 +26,9 @@ public:
     TEST_ASSERT(error_context().error_number() == EINVAL);
     TEST_ASSERT(error_context().line_number() == line_error);
     TEST_ASSERT(StringView(status().error_context().message()) == "message");
-    TEST_ASSERT(status().value() < 0);
+    TEST_ASSERT(return_value() < 0);
     API_RESET_ERROR();
-    TEST_ASSERT(status().value() == 0);
+    TEST_ASSERT(return_value() == 0);
 
     TEST_ASSERT(status().error_context_count() == 1);
 

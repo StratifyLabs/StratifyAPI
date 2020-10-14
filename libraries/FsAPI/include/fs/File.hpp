@@ -83,7 +83,7 @@ class File;
  * ```
  *
  */
-class File : public api::Object, public FileInfoFlags {
+class File : public api::ExecutionContext, public FileInfoFlags {
 public:
   enum class IsCreateOverwrite { no, yes };
   using IsOverwrite = IsCreateOverwrite;

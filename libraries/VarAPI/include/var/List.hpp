@@ -12,7 +12,7 @@
 namespace var {
 
 // this shouldn't be documented until it is implemented and tested
-template <class T> class List : public api::Object {
+template <class T> class List : public api::ExecutionContext {
 public:
   List();
 

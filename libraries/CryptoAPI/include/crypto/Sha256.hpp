@@ -43,7 +43,7 @@ namespace crypto {
  *
  *
  */
-class Sha256 : public api::Object {
+class Sha256 : public api::ExecutionContext {
 public:
   Sha256();
   ~Sha256();
