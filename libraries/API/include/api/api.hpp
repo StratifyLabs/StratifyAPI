@@ -253,7 +253,8 @@ private:
 
 class ExecutionContext {
 public:
-  static int system_call(int line, const char *message, int value) {
+  static int
+  handle_system_call_result(int line, const char *message, int value) {
     if (value >= 0) {
       errno = value;
     } else {
@@ -263,7 +264,8 @@ public:
   }
 
   template <typename T>
-  static T *system_call_null(int line, const char *message, T *value) {
+  static T *
+  handle_system_call_null_result(int line, const char *message, T *value) {
     if (value == nullptr) {
       m_private_context.update_error_context(line, message);
     }
@@ -299,10 +301,16 @@ void api_assert(bool value, const char *function, int line);
   }
 
 #define API_SYSTEM_CALL(message_value, return_value)                           \
-  api::ExecutionContext::system_call(__LINE__, message_value, return_value)
+  api::ExecutionContext::handle_system_call_result(                            \
+    __LINE__,                                                                  \
+    message_value,                                                             \
+    return_value)
 
 #define API_SYSTEM_CALL_NULL(message_value, return_value)                      \
-  api::ExecutionContext::system_call_null(__LINE__, message_value, return_value)
+  api::ExecutionContext::handle_system_call_null_result(                       \
+    __LINE__,                                                                  \
+    message_value,                                                             \
+    return_value)
 
 #define API_RESET_ERROR() api::ExecutionContext::reset_error()
 
@@ -312,14 +320,20 @@ void api_assert(bool value, const char *function, int line);
   error_number_value)                                                          \
   do {                                                                         \
     errno = error_number_value;                                                \
-    api::ExecutionContext::system_call(__LINE__, message_value, -1);           \
+    api::ExecutionContext::handle_system_call_result(                          \
+      __LINE__,                                                                \
+      message_value,                                                           \
+      -1);                                                                     \
     return return_value;                                                       \
   } while (0)
 
 #define API_RETURN_ASSIGN_ERROR(message_value, error_number_value)             \
   do {                                                                         \
     errno = error_number_value;                                                \
-    api::ExecutionContext::system_call(__LINE__, message_value, -1);           \
+    api::ExecutionContext::handle_system_call_result(                          \
+      __LINE__,                                                                \
+      message_value,                                                           \
+      -1);                                                                     \
     return;                                                                    \
   } while (0)
 

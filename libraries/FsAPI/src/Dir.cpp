@@ -16,9 +16,7 @@
 using namespace fs;
 
 Dir::Dir(var::StringView path FSAPI_LINK_DECLARE_DRIVER_LAST) {
-  API_RETURN_IF_ERROR();
   LINK_SET_DRIVER((*this), link_driver);
-  m_dirp = nullptr;
   open(path);
 }
 
@@ -26,11 +24,9 @@ Dir::~Dir() { close(); }
 
 Dir &Dir::open(var::StringView path) {
   API_RETURN_VALUE_IF_ERROR(*this);
-  m_dirp = interface_opendir(path.cstring());
-
-  if (m_dirp == nullptr) {
-    API_RETURN_VALUE_ASSIGN_ERROR(*this, path.cstring(), ENOENT);
-  } else {
+  m_dirp
+    = API_SYSTEM_CALL_NULL(path.cstring(), interface_opendir(path.cstring()));
+  if (m_dirp) {
     m_path = var::String(path);
   }
   return *this;

@@ -85,8 +85,7 @@ class File;
  */
 class File : public api::ExecutionContext, public FileInfoFlags {
 public:
-  enum class IsCreateOverwrite { no, yes };
-  using IsOverwrite = IsCreateOverwrite;
+  enum class IsOverwrite { no, yes };
 
   enum class Whence {
     set /*! Set the location of the file descriptor */ = LINK_SEEK_SET,
@@ -102,8 +101,9 @@ public:
     = OpenMode::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
   File(
+    IsOverwrite is_overwrite,
     var::StringView path,
-    IsCreateOverwrite is_overwrite,
+    OpenMode flags = OpenMode::read_write(),
     Permissions perms
     = Permissions(0666) FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
@@ -320,9 +320,10 @@ private:
   int fstat(struct stat *st);
 
   File &internal_create(
-    var::StringView path,
     IsOverwrite is_overwrite,
-    const Permissions &perms = Permissions(0666));
+    var::StringView path,
+    OpenMode open_mode,
+    Permissions perms);
 };
 
 template <class Derived> class FileAccess : public File {

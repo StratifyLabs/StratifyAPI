@@ -24,7 +24,7 @@ using namespace inet;
 var::String Http::to_string(Status status) {
   var::String result;
   switch (status) {
-    API_HANDLE_STATUS_CASE(Continue);
+    API_HANDLE_STATUS_CASE(continue_);
     API_HANDLE_STATUS_CASE(switching_protocols);
     API_HANDLE_STATUS_CASE(processing);
     API_HANDLE_STATUS_CASE(early_hints);
@@ -107,7 +107,7 @@ var::String Http::to_string(Method status) {
     API_HANDLE_METHOD_CASE(post);
     API_HANDLE_METHOD_CASE(put);
     API_HANDLE_METHOD_CASE(head);
-    API_HANDLE_METHOD_CASE(Delete);
+    API_HANDLE_METHOD_CASE(delete_);
     API_HANDLE_METHOD_CASE(patch);
     API_HANDLE_METHOD_CASE(options);
     API_HANDLE_METHOD_CASE(trace);
@@ -127,7 +127,7 @@ Http::Method Http::method_from_string(const var::String &string) {
   } else if (input == "HEAD") {
     return Method::head;
   } else if (input == "DELETE") {
-    return Method::Delete;
+    return Method::delete_;
   } else if (input == "PATCH") {
     return Method::patch;
   } else if (input == "OPTIONS") {

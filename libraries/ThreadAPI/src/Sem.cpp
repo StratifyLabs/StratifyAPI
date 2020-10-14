@@ -1,95 +1,125 @@
 // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for
 // rights.
 
-#if !defined __link
+#if defined __link
 
 #include "thread/Sem.hpp"
 
 using namespace thread;
 
-Sem::Sem() { m_handle = nullptr; }
-
-Sem &Sem::close() {
-  API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", sem_close(m_handle));
-  return *this;
-}
-
-Sem &Sem::finalize() {
-  API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", sem_destroy(m_handle));
-  return *this;
-}
-
-int Sem::get_value() const {
-  int value;
+int SemaphoreObject::get_value() const {
+#if defined __macosx
+  API_RETURN_VALUE_ASSIGN_ERROR(
+    -1,
+    "macosx doesn't supported unnamed semaphores",
+    ENOTSUP);
+#else
+  API_RETURN_VALUE_IF_ERROR(-1);
+  int value = 0;
   int ret;
-  ret = sem_getvalue(m_handle, &value);
-  if (ret < 0) {
-    return ret;
-  }
+  API_SYSTEM_CALL("", sem_getvalue(m_handle, &value));
   return value;
+#endif
 }
 
-Sem &Sem::initialize(sem_t *sem, int pshared, unsigned int value) {
-  API_RETURN_VALUE_IF_ERROR(*this);
-  m_handle = sem;
-  API_SYSTEM_CALL("", sem_init(m_handle, pshared, value));
-  return *this;
-}
-
-Sem &Sem::open(var::StringView name, const Open &options) {
-  API_RETURN_VALUE_IF_ERROR(*this);
-  m_handle = sem_open(
-    name.cstring(),
-    options.o_flags(),
-    options.mode(),
-    options.value());
-  if (m_handle == nullptr) {
-    API_SYSTEM_CALL("", -1);
-  }
-  return *this;
-}
-
-Sem &Sem::create(var::StringView name, int value, Exclusive exclusive) {
-  API_RETURN_VALUE_IF_ERROR(*this);
-  int o_flags = O_CREAT;
-  if (exclusive == Exclusive::yes) {
-    o_flags |= O_EXCL;
-  }
-  return open(
-    name,
-    Open().set_o_flags(o_flags).set_mode(0666).set_value(value));
-}
-
-Sem &Sem::post() {
+SemaphoreObject &SemaphoreObject::post() {
   API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL("", sem_post(m_handle));
   return *this;
 }
 
-Sem &Sem::wait_timed(const chrono::ClockTime &timeout) {
+SemaphoreObject &SemaphoreObject::wait_timed(const chrono::ClockTime &timeout) {
+#if defined __macosx
+  MCU_UNUSED_ARGUMENT(timeout);
+  API_RETURN_VALUE_ASSIGN_ERROR(
+    *this,
+    "macosx doesn't supported timed_wait semaphores",
+    ENOTSUP);
+#else
   API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL("", sem_timedwait(m_handle, timeout.timespec()));
+#endif
   return *this;
 }
 
-Sem &Sem::try_wait() {
+SemaphoreObject &SemaphoreObject::try_wait() {
   API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL("", sem_trywait(m_handle));
   return *this;
 }
 
-Sem &Sem::unlink(var::StringView name) {
+const Semaphore &Semaphore::unlink(var::StringView name) const {
   API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL("", sem_unlink(name.cstring()));
   return *this;
 }
 
-Sem &Sem::wait() {
+SemaphoreObject &SemaphoreObject::wait() {
   API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL("", sem_wait(m_handle));
   return *this;
+}
+
+UnnamedSemaphore::UnnamedSemaphore(
+  ProcessShared process_shared,
+  unsigned int value) {
+#if defined __macosx
+  API_RETURN_ASSIGN_ERROR(
+    "macosx doesn't supported unnamed semaphores",
+    ENOTSUP);
+#else
+  API_RETURN_IF_ERROR();
+  m_handle = &m_sem;
+  API_SYSTEM_CALL(
+    "",
+    sem_init(&m_sem, static_cast<int>(process_shared), value));
+#endif
+}
+
+UnnamedSemaphore::~UnnamedSemaphore() {
+#if !defined __macosx
+  API_RETURN_IF_ERROR();
+  API_SYSTEM_CALL("", sem_destroy(m_handle));
+#endif
+}
+
+Semaphore::Semaphore(int value, var::StringView name) {
+  open(value, name, 0, fs::Permissions(0666));
+}
+
+Semaphore::Semaphore(
+  int value,
+  IsExclusive is_exclusive,
+  var::StringView name,
+  fs::Permissions perms) {
+  API_RETURN_IF_ERROR();
+
+  int o_flags = O_CREAT;
+
+  if (is_exclusive == IsExclusive::yes) {
+    o_flags |= O_EXCL;
+  }
+
+  open(value, name, o_flags, perms);
+}
+
+Semaphore::~Semaphore() {
+  API_RETURN_IF_ERROR();
+  if (m_handle != SEM_FAILED) {
+    API_SYSTEM_CALL("", sem_close(m_handle));
+  }
+}
+
+void Semaphore::open(
+  int value,
+  var::StringView name,
+  int o_flags,
+  fs::Permissions perms) {
+  API_RETURN_IF_ERROR();
+  m_handle = sem_open(name.cstring(), o_flags, perms.permissions(), value);
+  if (m_handle == SEM_FAILED) {
+    API_RETURN_ASSIGN_ERROR(name.cstring(), errno);
+  }
 }
 
 #else

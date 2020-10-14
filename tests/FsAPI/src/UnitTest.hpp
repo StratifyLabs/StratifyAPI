@@ -54,10 +54,12 @@ public:
       const StringView new_test_contents = "new test file";
 
       temp_path = td.path();
-      TEST_ASSERT(
-        F(td.path() + "/test.txt", F::IsCreateOverwrite::yes, Permissions(0664))
-          .write(new_test_contents)
-          .is_success());
+      TEST_ASSERT(F(F::IsOverwrite::yes,
+                    td.path() + "/test.txt",
+                    OpenMode::read_write(),
+                    Permissions(0664))
+                    .write(new_test_contents)
+                    .is_success());
 
       TEST_ASSERT(FS().get_info(td.path()).is_directory());
       TEST_ASSERT(FS().get_info(td.path()).is_file() == false);
@@ -99,25 +101,20 @@ public:
     reset_error();
 
     TEST_ASSERT(FS().create_directory("tmp").is_success());
-    TEST_ASSERT(F("tmp/test0.txt", F::IsCreateOverwrite::yes)
-                  .write("test0\n")
-                  .is_success());
-    TEST_ASSERT(F("tmp/test1.txt", F::IsCreateOverwrite::yes)
-                  .write("test1\n")
-                  .is_success());
-    TEST_ASSERT(F("tmp/test2.txt", F::IsCreateOverwrite::yes)
-                  .write("test2\n")
-                  .is_success());
+    TEST_ASSERT(
+      F(F::IsOverwrite::yes, "tmp/test0.txt").write("test0\n").is_success());
+    TEST_ASSERT(
+      F(F::IsOverwrite::yes, "tmp/test1.txt").write("test1\n").is_success());
+    TEST_ASSERT(
+      F(F::IsOverwrite::yes, "tmp/test2.txt").write("test2\n").is_success());
     TEST_ASSERT(FS().create_directory("tmp2").is_success());
-    TEST_ASSERT(F("tmp2/test0.txt", F::IsCreateOverwrite::yes)
-                  .write("test0\n")
-                  .is_success());
-    TEST_ASSERT(F("tmp2/filesystem.txt", F::IsCreateOverwrite::yes)
+    TEST_ASSERT(
+      F(F::IsOverwrite::yes, "tmp2/test0.txt").write("test0\n").is_success());
+    TEST_ASSERT(F(F::IsOverwrite::yes, "tmp2/filesystem.txt")
                   .write("test1\n")
                   .is_success());
-    TEST_ASSERT(F("tmp2/test2.txt", F::IsCreateOverwrite::yes)
-                  .write("test2\n")
-                  .is_success());
+    TEST_ASSERT(
+      F(F::IsOverwrite::yes, "tmp2/test2.txt").write("test2\n").is_success());
 
     TEST_ASSERT(D("tmp").is_success());
 
@@ -141,6 +138,8 @@ public:
       TEST_ASSERT(d.tell() == (count - 1));
       TEST_ASSERT(d.seek(0).is_success());
       TEST_ASSERT(d.rewind().is_success());
+      // const var::String entry = d.get_entry();
+      // printf("entry is %s\n", entry.cstring());
       TEST_ASSERT(d.get_entry() == ("tmp/."));
 
       TEST_ASSERT(d.rewind().is_success());
@@ -232,9 +231,8 @@ public:
 
       TEST_ASSERT(is_success());
 
-      TEST_ASSERT(F(file_name, F::IsCreateOverwrite::yes)
+      TEST_ASSERT(F(F::IsOverwrite::yes, file_name)
                     .write("Filesystem file")
-                    .status()
                     .is_success());
 
       TEST_EXPECT(FS().exists(file_name));
@@ -245,10 +243,8 @@ public:
       TEST_EXPECT(FS().remove(file_name).is_success());
       TEST_EXPECT(!FS().exists(file_name) && is_success());
 
-      TEST_ASSERT(F(file_name, F::IsCreateOverwrite::yes)
-                    .write(file_name2)
-                    .status()
-                    .is_success());
+      TEST_ASSERT(
+        F(F::IsOverwrite::yes, file_name).write(file_name2).is_success());
 
       TEST_EXPECT(FS().size(file_name) == file_name2.length());
 
@@ -264,8 +260,8 @@ public:
 
       TEST_EXPECT(FS().create_directory(dir_name_recursive).is_error());
 
-      TEST_EXPECT(dir_name_recursive == error_context().message());
-      TEST_EXPECT(error_context().message() == dir_name_recursive);
+      TEST_EXPECT(dir_name_recursive == error().message());
+      TEST_EXPECT(error().message() == dir_name_recursive);
 
       reset_error();
 
@@ -273,7 +269,7 @@ public:
                     .create_directory(dir_name_recursive, FS::IsRecursive::yes)
                     .is_success());
 
-      TEST_EXPECT(F(dir_name_recursive + "/tmp.txt", F::IsCreateOverwrite::yes)
+      TEST_EXPECT(F(F::IsOverwrite::yes, dir_name_recursive + "/tmp.txt")
                     .write("Hello")
                     .is_success);
 
@@ -283,8 +279,8 @@ public:
           .get_string()
         == "Hello");
 
-      TEST_EXPECT(F(Path(dir_name_recursive).parent_directory() + "/tmp.txt",
-                    F::IsCreateOverwrite::yes)
+      TEST_EXPECT(F(F::IsOverwrite::yes,
+                    Path(dir_name_recursive).parent_directory() + "/tmp.txt")
                     .write("Hello2")
                     .is_success);
 
@@ -297,9 +293,9 @@ public:
         == "Hello2");
 
       TEST_EXPECT(
-        F(Path(Path(dir_name_recursive).parent_directory()).parent_directory()
-            + "/tmp.txt",
-          F::IsCreateOverwrite::yes)
+        F(F::IsOverwrite::yes,
+          Path(Path(dir_name_recursive).parent_directory()).parent_directory()
+            + "/tmp.txt")
           .write("Hello3")
           .is_success);
 
@@ -328,7 +324,7 @@ public:
       TEST_EXPECT(
         FS().remove_directory(dir_name, FS::IsRecursive::yes).is_error());
 
-      TEST_EXPECT(error_context().message() == dir_name);
+      TEST_EXPECT(error().message() == dir_name);
 
       reset_error();
     }
@@ -351,7 +347,7 @@ public:
       const StringView old_name = "old.txt";
       const StringView new_name = "new.txt";
 
-      F(old_name, F::IsCreateOverwrite::yes).write("Hello");
+      F(F::IsOverwrite::yes, old_name).write("Hello");
 
       TEST_ASSERT(FS().exists(old_name));
       TEST_ASSERT(
@@ -385,15 +381,13 @@ public:
 
     reset_error();
 
-    TEST_ASSERT(F(file_name, F::IsCreateOverwrite::yes)
-                  .write(test_strings.at(0))
-                  .is_success());
+    TEST_ASSERT(
+      F(F::IsOverwrite::yes, file_name).write(test_strings.at(0)).is_success());
 
-    TEST_EXPECT(F(file_name, F::IsCreateOverwrite::no)
-                  .write(test_strings.at(0))
-                  .is_error());
+    TEST_EXPECT(
+      F(F::IsOverwrite::no, file_name).write(test_strings.at(0)).is_error());
 
-    TEST_EXPECT(var::StringView(error_context().message()) == file_name);
+    TEST_EXPECT(var::StringView(error().message()) == file_name);
 
     reset_error();
 
@@ -403,13 +397,12 @@ public:
 
     TEST_EXPECT(return_value() == StringView(test_strings.at(0)).length());
 
-    TEST_ASSERT(F(file_name, F::IsCreateOverwrite::yes)
+    TEST_ASSERT(F(F::IsOverwrite::yes, file_name)
                   .write(test_strings.at(0))
                   .write(test_strings.at(1))
                   .write(test_strings.at(2))
                   .write(test_strings.at(3))
                   .write(test_strings.at(4))
-                  .status()
                   .is_success());
 
     TEST_EXPECT(F("tmp1.txt", OpenMode::read_only()).is_error());

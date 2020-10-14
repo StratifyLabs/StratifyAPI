@@ -28,11 +28,12 @@ File::File(
 }
 
 File::File(
+  IsOverwrite is_overwrite,
   var::StringView path,
-  IsCreateOverwrite is_overwrite,
+  OpenMode open_mode,
   Permissions perms FSAPI_LINK_DECLARE_DRIVER_LAST) {
   LINK_SET_DRIVER((*this), link_driver);
-  internal_create(path, is_overwrite, perms);
+  internal_create(is_overwrite, path, open_mode, perms);
 }
 
 File::~File() {
@@ -92,10 +93,11 @@ File::open(var::StringView path, OpenMode flags, Permissions permissions) {
 }
 
 File &File::internal_create(
-  var::StringView path,
   IsOverwrite is_overwrite,
-  const Permissions &perms) {
-  OpenMode flags = OpenMode::create();
+  var::StringView path,
+  OpenMode open_mode,
+  Permissions perms) {
+  OpenMode flags = OpenMode(open_mode).set_create();
   if (is_overwrite == IsOverwrite::yes) {
     flags.set_truncate();
   } else {
@@ -189,18 +191,15 @@ int File::flags() const {
 }
 
 var::String File::gets(char term) const {
-  API_RETURN_VALUE_IF_ERROR(var::String());
-  char c;
+  char c = 0;
   var::String result;
-  do {
+  while (c != term && is_success()) {
     if (read(var::View(c)).return_value() == 1) {
       result.append(c);
-    } else {
-      return result;
     }
-  } while (c != term);
+  }
 
-  return result;
+  return std::move(result);
 }
 
 const File &File::ioctl(int request, void *argument) const {

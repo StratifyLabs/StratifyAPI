@@ -38,6 +38,11 @@ public:
     priority_protect = PTHREAD_PRIO_PROTECT,
   };
 
+  enum class ProcessShared {
+    shared = PTHREAD_PROCESS_SHARED,
+    private_ = PTHREAD_PROCESS_PRIVATE
+  };
+
   class Attributes : public api::ExecutionContext {
   public:
     /*! \details Constructs a Mutex attributes object with default values. */
@@ -70,7 +75,7 @@ public:
     Attributes &set_protocol(Protocol value);
 
     /*! \details Sets whether this is shared between processes. */
-    Attributes &set_process_shared(bool value = true);
+    Attributes &set_process_shared(ProcessShared process_shared);
 
     /*! \details Set the mutex type. */
     Attributes &set_type(Type value);
@@ -79,14 +84,14 @@ public:
     int get_priority_ceiling() const;
 
     /*! \details Returns the protocol. */
-    int get_protocol() const;
+    Protocol get_protocol() const;
 
     /*! \details Returns the type. */
-    int get_type() const;
+    Type get_type() const;
 
     /*! \details Returns true if the mutex attributes are for process sharing.
      */
-    bool get_process_shared() const;
+    ProcessShared get_process_shared() const;
 
   private:
     friend class Mutex;

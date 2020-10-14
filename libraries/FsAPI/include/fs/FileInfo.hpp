@@ -167,7 +167,6 @@ private:
 class OpenMode : public FileInfoFlags {
 public:
   OpenMode() { m_flags = OpenFlags::null; }
-  explicit OpenMode(OpenFlags flags) { m_flags = flags; }
   explicit OpenMode(int flags) { m_flags = static_cast<OpenFlags>(flags); }
 
   static OpenMode create() {

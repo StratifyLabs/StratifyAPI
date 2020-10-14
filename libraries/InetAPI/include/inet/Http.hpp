@@ -19,7 +19,7 @@ public:
   explicit Http(Socket &socket);
 
   enum class Status {
-    Continue = 100,
+    continue_ = 100,
     switching_protocols = 101,
     processing = 102,
     early_hints = 103,
@@ -89,7 +89,7 @@ public:
     post,
     put,
     head,
-    Delete,
+    delete_,
     patch,
     options,
     trace
@@ -246,7 +246,7 @@ public:
 
   // http delete
   HttpClient &remove(var::StringView url, const Remove &options) {
-    return execute_method(Method::Delete, url, options);
+    return execute_method(Method::delete_, url, options);
   }
 
   /*! \cond */

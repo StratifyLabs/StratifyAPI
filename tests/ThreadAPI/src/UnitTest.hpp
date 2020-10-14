@@ -14,6 +14,7 @@
 using T = thread::Thread;
 using M = thread::Mutex;
 using S = thread::Signal;
+using Sem = thread::Semaphore;
 
 void signal_handler(int a) {
   printf("signal %d\n", a);
@@ -34,6 +35,35 @@ public:
 
     if (!mutex_api_case()) {
       return false;
+    }
+
+    if (!sem_api_case()) {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool sched_api_case() { return true; }
+  bool signal_api_case() { return true; }
+
+  bool sem_api_case() {
+    printer::PrinterObject po(printer(), "sem_api_case()");
+    {
+
+      TEST_ASSERT(
+        Sem(5, Sem::IsExclusive::no, "sem").wait().post().is_success());
+
+      TEST_ASSERT(Sem(5, Sem::IsExclusive::yes, "sem").is_error());
+      reset_error();
+
+      TEST_ASSERT(Sem(5, Sem::IsExclusive::no, "sem")
+                    .wait()
+                    .wait()
+                    .post()
+                    .post()
+                    .unlink("sem")
+                    .is_success());
     }
 
     return true;
@@ -68,12 +98,59 @@ public:
       reset_error();
       TEST_ASSERT(m_did_execute);
     }
+    {
+
+      printer::PrinterObject po(printer(), "Mutex::Attributes");
+      printer().key(
+        "protocolNoneOk",
+        M::Attributes().set_protocol(M::Protocol::priority_none).get_protocol()
+          == M::Protocol::priority_none);
+
+      printer().key(
+        "protocolInheritOk",
+        M::Attributes()
+            .set_protocol(M::Protocol::priority_inherit)
+            .get_protocol()
+          == M::Protocol::priority_inherit);
+
+      printer().key(
+        "protocolProtectOk",
+        M::Attributes()
+            .set_protocol(M::Protocol::priority_protect)
+            .get_protocol()
+          == M::Protocol::priority_protect);
+
+      printer().key(
+        "processSharedPrivateOk",
+        M::Attributes()
+            .set_process_shared(M::ProcessShared::private_)
+            .get_process_shared()
+          == M::ProcessShared::private_);
+
+      printer().key(
+        "processSharedOk",
+        M::Attributes()
+            .set_process_shared(M::ProcessShared::shared)
+            .get_process_shared()
+          == M::ProcessShared::shared);
+
+      printer().key(
+        "recursiveOk",
+        M::Attributes().set_type(M::Type::recursive).get_type()
+          == M::Type::recursive);
+
+      printer().key(
+        "normalOK",
+        M::Attributes().set_type(M::Type::normal).get_type()
+          == M::Type::normal);
+
+      printer().key(
+        "priority10Ok",
+        M::Attributes().set_priority_ceiling(10).get_priority_ceiling() == 10);
+    }
 
     return true;
   }
-  bool sched_api_case() { return true; }
-  bool sem_api_case() { return true; }
-  bool signal_api_case() { return true; }
 
   bool thread_api_case() {
 
@@ -110,12 +187,13 @@ public:
     }
 
     {
+      printer::PrinterObject po(printer(), "Thread::Attributes");
       T::Attributes attributes
         = T::Attributes().set_scope(T::ContentionScope::process);
 
       TEST_ASSERT(is_success());
       printer().key(
-        "scopeProcess",
+        "scopeProcessOk",
         attributes.get_scope() == T::ContentionScope::process);
       TEST_ASSERT(is_success());
 
@@ -123,19 +201,15 @@ public:
       TEST_ASSERT(is_success());
 
       printer().key(
-        "scopeSystem",
+        "scopeSystemOk",
         attributes.get_scope() == T::ContentionScope::system);
       TEST_ASSERT(is_success());
-    }
 
-    {
-
-      T::Attributes attributes
-        = T::Attributes().set_inherit_sched(T::IsInherit::yes);
+      attributes = T::Attributes().set_inherit_sched(T::IsInherit::yes);
 
       TEST_ASSERT(is_success());
       printer().key(
-        "canInherit",
+        "inheritOk",
         attributes.get_inherit_sched() == T::IsInherit::yes);
 
       TEST_ASSERT(
@@ -147,7 +221,7 @@ public:
       attributes.set_inherit_sched(T::IsInherit::no);
 
       printer().key(
-        "explicit",
+        "explicitOk",
         attributes.get_inherit_sched() == T::IsInherit::no);
 
       TEST_ASSERT(
@@ -156,6 +230,7 @@ public:
 
       TEST_ASSERT(is_success());
     }
+
     {
       m_did_execute = false;
       T t(
@@ -272,10 +347,10 @@ public:
       wait(10_milliseconds);
       TEST_ASSERT(m_mutex.try_lock() == false);
 
-      while (m_thread_mutex.try_lock() == true) {
-        m_thread_mutex.unlock();
+      while (m_thread_mutex.try_lock() == false) {
         wait(10_milliseconds);
       }
+      m_thread_mutex.unlock();
 
       TEST_ASSERT(t.is_joinable());
       TEST_ASSERT(t.join().is_success());
