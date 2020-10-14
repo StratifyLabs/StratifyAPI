@@ -109,18 +109,6 @@ public:
   Cli &show_version(const ShowHelp &options);
 
 private:
-  bool is_option_equivalent_to_argument(
-    var::StringView option,
-    var::StringView argument) const;
-
-  bool is_option_equivalent_to_argument_with_equality(
-    var::StringView option,
-    var::StringView argument,
-    var::StringView value) const;
-
-  bool
-  compare_with_prefix(var::StringView option, var::StringView argument) const;
-
   u16 m_argc;
   char **m_argv;
   bool m_is_case_sensitive;

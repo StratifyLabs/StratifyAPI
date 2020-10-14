@@ -66,97 +66,40 @@ String Cli::at(u16 value) const {
   return arg;
 }
 
-bool Cli::is_option_equivalent_to_argument(
-  StringView option,
-  StringView argument) const {
-  String option_string = String(option);
-  String argument_string = String(argument);
-  if (is_case_senstive() == false) {
-    option_string.to_upper();
-    argument_string.to_upper();
-  }
-
-  return compare_with_prefix(option_string, argument_string);
-}
-
-bool Cli::compare_with_prefix(var::StringView option, var::StringView argument)
-  const {
-  if (argument.at(0) != '-') {
-    return false;
-  }
-  if (option == argument) {
-    return true;
-  }
-  const String with_prefix = "--" + option;
-  if (with_prefix == argument) {
-    return true;
-  }
-  if (
-    with_prefix.get_substring(String::GetSubstring().set_position(1))
-    == argument) {
-    return true;
-  }
-  return false;
-}
-
-bool Cli::is_option_equivalent_to_argument_with_equality(
-  StringView option,
-  StringView argument,
-  StringView value) const {
-
-  if (argument.at(0) != '-') {
-    return false;
-  }
-
-  Tokenizer tokens = Tokenizer(
-    argument,
-    Tokenizer::Construct()
-      .set_delimeters("=")
-      .set_ignore_between("")
-      .set_maximum_delimeter_count(1));
-
-  if (tokens.count() == 2) {
-    String a = String(option);
-    String b = tokens.at(0);
-    if (is_case_senstive() == false) {
-      a.to_upper();
-      b.to_upper();
-    }
-
-    if (compare_with_prefix(a, b)) {
-      value = tokens.at(1);
-      return true;
-    }
-  }
-  return false;
-}
-
 var::String Cli::get_option(StringView name, StringView help) const {
   var::String result;
   u32 args;
 
   if (help.is_empty() == false) {
-    m_help_list.push_back(String(name) + ": " + help);
+    m_help_list.push_back(name + ": " + help);
   }
 
   for (args = 1; args < count(); args++) {
-    if (is_option_equivalent_to_argument(name, at(args))) {
-      if (count() > args + 1) {
-        String value = at(args + 1);
-        if (value.at(0) == '-') {
-          result = "true";
-        } else {
-          result = at(args + 1);
+    StringView arg = m_argv[args];
+
+    if (arg.find("--") == 0 && arg.length() >= 5) {
+      const Tokenizer tokens(
+        arg.pop_front(2),
+        Tokenizer::Construct()
+          .set_delimeters("=")
+          .set_ignore_between("")
+          .set_maximum_delimeter_count(1));
+
+      if (tokens.count() >= 1) {
+        if (is_case_senstive() && tokens.at(0) == name) {
+          if (tokens.count() > 1) {
+            return tokens.at(1);
+          } else {
+            return var::String("true");
+          }
+        } else if (String(name).to_upper() == String(tokens.at(0)).to_upper()) {
+          if (tokens.count() > 1) {
+            return tokens.at(1);
+          } else {
+            return var::String("true");
+          }
         }
-        return result;
-      } else {
-        return String("true");
       }
-    } else if (is_option_equivalent_to_argument_with_equality(
-                 name,
-                 at(args),
-                 result)) {
-      return result;
     }
   }
   return String();

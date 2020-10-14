@@ -330,6 +330,7 @@ Printer &Printer::operator<<(var::StringView a) {
 }
 
 Printer &Printer::set_verbose_level(var::StringView level) {
+  printf("set level to %s\n", level.cstring());
   if (level == "debug") {
     set_verbose_level(Level::debug);
   } else if (level == "info") {

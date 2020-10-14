@@ -87,7 +87,12 @@ class Semaphore : public SemAccess<Semaphore> {
 public:
   enum class IsExclusive { no, yes };
 
-  Semaphore(int value, var::StringView name);
+  Semaphore(const Semaphore &value) = delete;
+  Semaphore &operator=(const Semaphore &value) = delete;
+  Semaphore(Semaphore &&value) = default;
+  Semaphore &operator=(Semaphore &&value) = default;
+
+  Semaphore(var::StringView name);
 
   Semaphore(
     int value,
@@ -102,12 +107,14 @@ public:
    * @param name The name of the semaphore
    *
    */
-  const Semaphore &unlink(var::StringView name) const;
+  const Semaphore &unlink() const;
+  static void unlink(var::StringView name);
 
 private:
+  var::String m_name;
+
   void
   open(int value, var::StringView name, int o_flags, fs::Permissions perms);
-
   void close();
 };
 

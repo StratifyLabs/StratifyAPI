@@ -28,6 +28,12 @@ SemaphoreObject &SemaphoreObject::post() {
   return *this;
 }
 
+SemaphoreObject &SemaphoreObject::wait() {
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", sem_wait(m_handle));
+  return *this;
+}
+
 SemaphoreObject &SemaphoreObject::wait_timed(const chrono::ClockTime &timeout) {
 #if defined __macosx
   MCU_UNUSED_ARGUMENT(timeout);
@@ -48,16 +54,15 @@ SemaphoreObject &SemaphoreObject::try_wait() {
   return *this;
 }
 
-const Semaphore &Semaphore::unlink(var::StringView name) const {
+const Semaphore &Semaphore::unlink() const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", sem_unlink(name.cstring()));
+  API_SYSTEM_CALL("", sem_unlink(m_name.cstring()));
   return *this;
 }
 
-SemaphoreObject &SemaphoreObject::wait() {
-  API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", sem_wait(m_handle));
-  return *this;
+void Semaphore::unlink(var::StringView name) {
+  API_RETURN_IF_ERROR();
+  API_SYSTEM_CALL("", sem_unlink(name.cstring()));
 }
 
 UnnamedSemaphore::UnnamedSemaphore(
@@ -83,8 +88,8 @@ UnnamedSemaphore::~UnnamedSemaphore() {
 #endif
 }
 
-Semaphore::Semaphore(int value, var::StringView name) {
-  open(value, name, 0, fs::Permissions(0666));
+Semaphore::Semaphore(var::StringView name) {
+  open(-1, name, 0, fs::Permissions(0666));
 }
 
 Semaphore::Semaphore(
@@ -116,9 +121,15 @@ void Semaphore::open(
   int o_flags,
   fs::Permissions perms) {
   API_RETURN_IF_ERROR();
-  m_handle = sem_open(name.cstring(), o_flags, perms.permissions(), value);
+  if (value > 0) {
+    m_handle = sem_open(name.cstring(), o_flags, perms.permissions(), value);
+  } else {
+    m_handle = sem_open(name.cstring(), o_flags);
+  }
   if (m_handle == SEM_FAILED) {
     API_RETURN_ASSIGN_ERROR(name.cstring(), errno);
+  } else {
+    m_name = var::String(name);
   }
 }
 

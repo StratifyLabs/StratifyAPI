@@ -22,7 +22,16 @@ void signal_handler(int a) {
   exit(1);
 }
 
+static volatile int m_signal_number_io = 0;
+
 class UnitTest : public test::Test {
+
+  volatile bool m_did_execute;
+  M *m_mutex_pointer;
+  M m_mutex;
+  M m_thread_mutex;
+  Sem *m_sem_pointer;
+
 public:
   UnitTest(var::StringView name) : test::Test(name) {}
 
@@ -37,7 +46,13 @@ public:
       return false;
     }
 
+#if !defined __macosx
     if (!sem_api_case()) {
+      return false;
+    }
+#endif
+
+    if (!signal_api_case()) {
       return false;
     }
 
@@ -45,25 +60,103 @@ public:
   }
 
   bool sched_api_case() { return true; }
-  bool signal_api_case() { return true; }
+  bool signal_api_case() {
+    printer::PrinterObject po(printer(), "signal_api_case()");
+    {
+      m_signal_number_io = 0;
+      SignalHandler handler
+        = SignalHandler(SignalHandler::Construct().set_signal_function(
+          [](int a) { m_signal_number_io = 1; }));
+
+      SignalHandler action_handler
+        = SignalHandler(SignalHandler::Construct().set_signal_action(
+          [](int signo, siginfo_t *sig_info, void *context) {
+            m_signal_number_io = sig_info->si_value.sival_int;
+          }));
+
+      S s = S(S::Number::terminate).set_handler(handler);
+      S sa = S(S::Number::user1, 100).set_handler(action_handler);
+
+      s.send_pid(Sched::get_pid());
+      TEST_ASSERT(m_signal_number_io == 1);
+
+      sa.send_pid(Sched::get_pid());
+      printer().key("sigqueue", m_signal_number_io == 100);
+    }
+
+    return true;
+  }
 
   bool sem_api_case() {
     printer::PrinterObject po(printer(), "sem_api_case()");
     {
 
-      TEST_ASSERT(
-        Sem(5, Sem::IsExclusive::no, "sem").wait().post().is_success());
+      Sem::unlink("sem");
+      reset_error();
 
+      PRINTER_TRACE(printer(), "wait, post");
+      TEST_ASSERT(Sem(5, Sem::IsExclusive::yes, "sem").wait().is_success());
+
+      PRINTER_TRACE(printer(), "exclusive");
       TEST_ASSERT(Sem(5, Sem::IsExclusive::yes, "sem").is_error());
       reset_error();
 
+      PRINTER_TRACE(printer(), "not exclusive");
       TEST_ASSERT(Sem(5, Sem::IsExclusive::no, "sem")
                     .wait()
                     .wait()
+                    .wait()
                     .post()
                     .post()
-                    .unlink("sem")
+                    .post()
+                    .unlink()
                     .is_success());
+    }
+
+    {
+
+      PRINTER_TRACE(printer(), "semT");
+
+      Sem::unlink("semT");
+      reset_error();
+
+      Sem sem = std::move(Sem(3, Sem::IsExclusive::yes, "semT").wait().wait());
+      TEST_ASSERT(is_success());
+
+      m_did_execute = false;
+
+      T t = T(
+        T::Construct().set_argument(this).set_function(
+          [](void *args) -> void * {
+            UnitTest *self = reinterpret_cast<UnitTest *>(args);
+            PRINTER_TRACE(self->printer(), "wait sem in thread");
+            Sem sem = std::move(Sem("semT").wait());
+            self->m_did_execute = true;
+            PRINTER_TRACE(self->printer(), "done");
+            sem.post();
+            printer().key("error", is_error());
+            return nullptr;
+          }),
+        T::Attributes().set_detach_state(T::DetachState::joinable));
+
+      TEST_ASSERT(m_did_execute == false);
+      wait(250_milliseconds);
+      TEST_ASSERT(is_success());
+
+      TEST_ASSERT(sem.post().post().is_success());
+
+      Sched().yield();
+      TEST_ASSERT(is_success());
+
+      TEST_ASSERT(sem.wait().is_success());
+      PRINTER_TRACE(printer(), "check did exec");
+      TEST_ASSERT(m_did_execute == true);
+      TEST_ASSERT(t.join().is_success());
+
+      Sem::unlink("semT");
+      reset_error();
+      Sem::unlink("sem");
+      reset_error();
     }
 
     return true;
@@ -359,10 +452,4 @@ public:
 
     return true;
   }
-
-private:
-  volatile bool m_did_execute;
-  M *m_mutex_pointer;
-  M m_mutex;
-  M m_thread_mutex;
 };

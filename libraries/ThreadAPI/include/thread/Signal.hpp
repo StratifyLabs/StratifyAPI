@@ -50,44 +50,49 @@ namespace thread {
 class SignalFlags {
 public:
   enum class Number {
-    ABRT /*! Abort signal, default action is to abort */ = SIGABRT,
+    abort /*! Abort signal, default action is to abort */ = SIGABRT,
     FPE /*! FPE signal, default action is to abort */ = SIGFPE,
-    INT /*! Interrupt signal, default action is to terminate */ = SIGINT,
-    ILL /*! Illegal signal, default action is to abort */ = SIGILL,
-    SEGV /*! Segmentation signal, default action is to abort */ = SIGSEGV,
-    TERM /*! Terminal signal, default action is to terminate */ = SIGTERM,
+    interrupt /*! Interrupt signal, default action is to terminate */ = SIGINT,
+    illegal /*! Illegal signal, default action is to abort */ = SIGILL,
+    segmentation /*! Segmentation signal, default action is to abort */
+    = SIGSEGV,
+    terminate /*! Terminal signal, default action is to terminate */ = SIGTERM,
 #if !defined __win32
-    ALRM /*! Alarm signal, default action is to terminate */ = SIGALRM,
-    BUS /*! Bus signal, default action is to abort */ = SIGBUS,
-    CHLD /*! Child signal, default action is to ignore */ = SIGCHLD,
-    CONT /*! Continue signal, default action is to continue */ = SIGCONT,
-    HUP /*! Hangup signal, default action is to terminate */ = SIGHUP,
-    KILL /*! Kill signal, default action is to terminate (cannot be caught or
+    alarm /*! Alarm signal, default action is to terminate */ = SIGALRM,
+    bus /*! Bus signal, default action is to abort */ = SIGBUS,
+    child /*! Child signal, default action is to ignore */ = SIGCHLD,
+    continue_ /*! Continue signal, default action is to continue */ = SIGCONT,
+    handup /*! Hangup signal, default action is to terminate */ = SIGHUP,
+    kill /*! Kill signal, default action is to terminate (cannot be caught or
             ignored) */
     = SIGKILL,
-    PIPE /*! Pipe signal, default action is to terminate */ = SIGPIPE,
-    QUIT /*! Quit signal, default action is to abort */ = SIGQUIT,
-    STOP /*! Stop signal, default action is to stop (cannot be caught or
+    pipe /*! Pipe signal, default action is to terminate */ = SIGPIPE,
+    quit /*! Quit signal, default action is to abort */ = SIGQUIT,
+    stop /*! Stop signal, default action is to stop (cannot be caught or
             ignored) */
     = SIGSTOP,
-    TSTP /*! TSTP signal, default action is to stop */ = SIGTSTP,
-    TTIN /*! TTIN signal, default action is to stop */ = SIGTTIN,
-    TTOU /*! TTOU signal, default action is to stop */ = SIGTTOU,
-    USR1 /*! User signal, default action is to terminate */ = SIGUSR1,
-    USR2 /*! User signal, default action is to terminate */ = SIGUSR2,
-    PROF /*! PROF signal, default action is to terminate */ = SIGPROF,
-    SYS /*! System signal, default action is to abort */ = SIGSYS,
-    TRAP /*! Trap signal, default action is to abort */ = SIGTRAP,
-    URG /*! URG signal, default action is to ignore */ = SIGURG,
-    TALRM /*! TALRM signal, default action is to terminate */ = SIGVTALRM,
-    XCPU /*! XCPU signal, default action is to abort */ = SIGXCPU,
-    XFSZ /*! XFSZ signal, default action is to abort */ = SIGXFSZ,
+    terminal_stop /*! TSTP signal, default action is to stop */ = SIGTSTP,
+    terminal_input /*! TTIN signal, default action is to stop */ = SIGTTIN,
+    terminal_output /*! TTOU signal, default action is to stop */ = SIGTTOU,
+    user1 /*! User signal, default action is to terminate */ = SIGUSR1,
+    user2 /*! User signal, default action is to terminate */ = SIGUSR2,
+    profiling_timer /*! PROF signal, default action is to terminate */
+    = SIGPROF,
+    system /*! System signal, default action is to abort */ = SIGSYS,
+    trap /*! Trap signal, default action is to abort */ = SIGTRAP,
+    high_bandwidth /*! URG signal, default action is to ignore */ = SIGURG,
+    virtual_alarm /*! TALRM signal, default action is to terminate */
+    = SIGVTALRM,
+    cpu_time_limit /*! XCPU signal, default action is to abort */ = SIGXCPU,
+    file_size_limit /*! XFSZ signal, default action is to abort */ = SIGXFSZ,
 #endif
 #if !defined __link
-    POLL /*! Poll signal, default action is to terminate */ = SIGPOLL,
-    RTMIN /*! Real time signal, default action is to ignore */ = SIGRTMIN,
-    RT /*! Real time signal, default action is to ignore */ = SIGRTMIN + 1,
-    RTMAX /*! Real time signal, default action is to ignore */ = SIGRTMAX
+    poll /*! Poll signal, default action is to terminate */ = SIGPOLL,
+    realtime_min /*! Real time signal, default action is to ignore */
+    = SIGRTMIN,
+    realtime /*! Real time signal, default action is to ignore */ = SIGRTMIN
+                                                                    + 1,
+    realtime_max /*! Real time signal, default action is to ignore */ = SIGRTMAX
 #endif
   };
 };
@@ -260,15 +265,8 @@ public:
    * This method sends this signal to the specified PID.
    * It uses the POSIX kill() function.
    */
-  int send(pid_t pid) const {
-    return ::THREAD_API_POSIX_KILL(
-#if !defined __win32
-      pid,
-#endif
-      m_signo);
-  }
+  const Signal &send_pid(pid_t pid) const;
 
-#if !defined __link
   /*! \details Sends a signal and associated sigvalue to a process.
    *
    * @param pid The process ID of the receiving signal
@@ -279,25 +277,17 @@ public:
    * will be sent along with signo and sigvalue.
    *
    */
-  Signal &queue(pid_t pid) {
-    API_SYSTEM_CALL("", ::sigqueue(pid, m_signo, m_sigvalue));
-    return *this;
-  }
-
-#endif
+  const Signal &queue(pid_t pid) const;
 
   /*! \details Sends a signal to a thread within a process.
    *
    * @param t The thread ID
    * @return Zero on success
    */
-  Signal &send(pthread_t t) {
-    API_SYSTEM_CALL("", ::pthread_kill(t, m_signo));
-    return *this;
-  }
+  const Signal &send_thread(pthread_t t) const;
 
   /*! \details Triggers the event on the current thread. */
-  Signal &send() { return send(pthread_self()); }
+  const Signal &send_self() const { return send_thread(pthread_self()); }
 
   /*! \details Sets the event handler.
    *
@@ -305,6 +295,7 @@ public:
    * @return Zero on success
    */
   Signal &set_handler(const SignalHandler &handler);
+  Signal &reset_handler();
 
   /*! \details Returns the signal number. */
   int signo() const { return m_signo; }
