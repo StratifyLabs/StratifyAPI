@@ -57,6 +57,9 @@ public:
     joinable /*! Joinable thread */ = PTHREAD_CREATE_JOINABLE,
     detached /*! Detacthed thread */ = PTHREAD_CREATE_DETACHED
   };
+  using Policy = Sched::Policy;
+
+  typedef void *(*function_t)(void *);
 
   class Construct {
     API_ACCESS_FUNDAMENTAL(Construct, u32, stack_size, 4096);
@@ -66,74 +69,17 @@ public:
       detach_state,
       DetachState::detached);
 
+    API_ACCESS_FUNDAMENTAL(Construct, function_t, function, nullptr);
+    API_ACCESS_FUNDAMENTAL(Construct, void *, argument, nullptr);
+    API_ACCESS_FUNDAMENTAL(Construct, Policy, policy, Policy::other);
+    API_ACCESS_FUNDAMENTAL(Construct, int, priority, 0);
+
   public:
     Construct() : m_detach_state(DetachState::detached), m_stack_size(4096) {}
   };
 
-  typedef void *(*function_t)(void *);
-
-  using Policy = Sched::Policy;
-
-  /*! \details Defines the function call type that is
-   * used to create() a new thread.
-   *
-   */
-  typedef void *(*handler_function_t)(void *);
-
   Thread(const Construct &options = Construct());
-
   ~Thread();
-
-  /*! \details Gets the stacksize.
-   *
-   * This method will return zero if the stack size could not be
-   * retrieved. The error_number() method can be used to determine
-   * why.
-   *
-   */
-  int get_stacksize() const;
-
-  /*! \details Sets the detach state.
-   *
-   * @param value Detach state: use JOINABLE or DETACHED
-   *
-   * This method must be called before calling create().
-   *
-   *
-   */
-  Thread &set_detachstate(DetachState value);
-
-  /*! \details Gets the detach state (Thread::JOINABLE or Thread::DETACHED). */
-  DetachState get_detachstate() const;
-
-  /*! \details Sets the thread priority.
-   *
-   * @param prio Thread priority (higher value has higher priority)
-   * @param policy Scheduling policy
-   * @return Zero on success and less than zero for an error
-   *
-   * This method must be called after calling create().
-   *
-   */
-  Thread &
-  set_priority(int prio, Sched::Policy policy = Sched::Policy::round_robin);
-
-  /*! \details Gets the thread priority.
-   *
-   *
-   * Calling this method before the thread is created
-   * will return an error.
-   *
-   */
-  int get_priority() const;
-
-  /*! \details Get the thread policy.
-   *
-   * Calling this method before the thread is created
-   * will return an error.
-   *
-   */
-  int get_policy() const;
 
   /*! \details Gets the ID of the thread. */
   pthread_t id() const { return m_id; }
@@ -146,15 +92,6 @@ public:
    *
    */
   bool is_valid() const;
-
-  class Create {
-    API_ACCESS_FUNDAMENTAL(Create, function_t, function, nullptr);
-    API_ACCESS_FUNDAMENTAL(Create, void *, argument, nullptr);
-    API_ACCESS_FUNDAMENTAL(Create, Policy, policy, Policy::other);
-    API_ACCESS_FUNDAMENTAL(Create, int, priority, 0);
-  };
-
-  Thread &create(const Create &options);
 
   enum class CancelType {
     deferred = PTHREAD_CANCEL_DEFERRED,
@@ -229,9 +166,6 @@ public:
     return *this;
   }
 
-  /*! \details This method returns true if the thread is joinable */
-  bool is_joinable() const;
-
   /*! \details Joins the calling thread to this object's thread.
    *
    * @param value_ptr A pointer to where the return value of the thread function
@@ -243,17 +177,17 @@ public:
    */
   Thread &join(void **value = nullptr);
 
-  /*! \details Allows read only access to the thread attributes. */
-  const pthread_attr_t &pthread_attr() const { return m_pthread_attr; }
+  bool is_joinable() const { return m_detach_state == DetachState::joinable; }
 
 private:
   enum thread_flags {
+    id_completed = static_cast<u32>(-3),
     id_error /*! ID is an error */ = static_cast<u32>(-2),
     id_pending /*! ID is ready to be created (not valid yet) */ = static_cast<
       u32>(-1),
   };
 
-  pthread_attr_t m_pthread_attr;
+  DetachState m_detach_state = DetachState::detached;
 
 #if defined __link
   u32 m_status;
@@ -262,8 +196,8 @@ private:
   pthread_t m_id = 0;
 #endif
 
-  int init(int stack_size, bool detached);
-  Thread &reset();
+  void destroy();
+  void create(const Construct &options);
 
   void set_id_pending() {
 #if defined __link
