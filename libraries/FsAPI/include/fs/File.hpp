@@ -408,6 +408,12 @@ class DataFile : public FileAccess<DataFile> {
 public:
   /*! \details Constructs a data file. */
 
+  DataFile(const DataFile &file) = delete;
+  DataFile &operator=(const DataFile &file) = delete;
+
+  DataFile(DataFile &&file) = default;
+  DataFile &operator=(DataFile &&file) = default;
+
   DataFile(const OpenMode &flags = OpenMode::append_read_write())
     : m_open_flags(flags) {
     m_location = 0;

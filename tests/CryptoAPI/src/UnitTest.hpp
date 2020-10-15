@@ -107,6 +107,30 @@ public:
         Aes().set_initialization_vector(iv).set_key256(key256).decrypt_cbc(
           View(cipher256))
         == plain256);
+
+      {
+        PrinterObject po(printer(), "cbc-file");
+
+        TEST_ASSERT(
+          View(DataFile()
+                 .reserve(16)
+                 .write(
+                   ViewFile(View(plain128)),
+                   AesCbcEncrypter().set_initialization_vector(iv).set_key128(
+                     key128))
+                 .data())
+          == View(cipher128));
+
+        TEST_ASSERT(
+          View(DataFile()
+                 .reserve(32)
+                 .write(
+                   ViewFile(View(plain256)),
+                   AesCbcEncrypter().set_initialization_vector(iv).set_key256(
+                     key256))
+                 .data())
+          == View(cipher256));
+      }
     }
 
     return true;

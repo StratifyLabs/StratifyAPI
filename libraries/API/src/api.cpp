@@ -3,6 +3,10 @@
 #include "api/api.hpp"
 // #include "var/String.hpp"
 
+#if defined __link
+#include <cxxabi.h>
+#endif
+
 #include <pthread.h>
 
 #include <cstdio>
@@ -95,4 +99,24 @@ int ProgressCallback::update_function(
     return 0;
   }
   return ((ProgressCallback *)context)->update(value, total);
+}
+
+Demangler::Demangler() { m_buffer = static_cast<char *>(malloc(m_length)); }
+Demangler::~Demangler() {
+  printf("Free buffer %d\n", 2048);
+  if (m_buffer && length() == 2048) {
+    free(m_buffer);
+  }
+  if (m_last) {
+    free(m_last);
+  }
+}
+
+const char *Demangler::demangle(const char *input) {
+  if (m_last != nullptr) {
+    free(m_last);
+  }
+
+  m_last = abi::__cxa_demangle(input, m_buffer, &m_length, &m_status);
+  return m_last;
 }

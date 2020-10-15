@@ -287,6 +287,26 @@ private:
   static PrivateExecutionContext m_private_context;
 };
 
+class Demangler {
+public:
+  Demangler();
+  ~Demangler();
+
+  Demangler(const Demangler &) = delete;
+  Demangler &operator=(const Demangler &) = delete;
+
+  Demangler(Demangler &&) = default;
+  Demangler &operator=(Demangler &&) = default;
+
+  const char *demangle(const char *input);
+
+private:
+  API_RAF(Demangler, int, status, 0);
+  API_RAF(Demangler, size_t, length, 2048);
+  char *m_buffer = nullptr;
+  char *m_last = nullptr;
+};
+
 #define API_ASSERT(a) api::api_assert(a, __PRETTY_FUNCTION__, __LINE__);
 void api_assert(bool value, const char *function, int line);
 

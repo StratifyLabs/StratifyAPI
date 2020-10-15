@@ -21,6 +21,8 @@ public:
     const int line_error = __LINE__ + 1;
     API_SYSTEM_CALL("message", -1);
 
+    printer().object("error", error());
+
     TEST_ASSERT(error().error_number() == EINVAL);
     TEST_ASSERT(error().line_number() == line_error);
     TEST_ASSERT(StringView(error().message()) == "message");

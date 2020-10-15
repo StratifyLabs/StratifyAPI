@@ -723,6 +723,10 @@ Printer &Printer::operator<<(var::View a) {
   return *this;
 }
 
+// to use the demangler, the symbol needs to parse the line and pull out the
+// mangled symbol
+#define USE_DEMANGLER 0
+
 Printer &Printer::operator<<(const api::Error &error_context) {
   key("lineNumber", var::NumberToString(error_context.line_number()));
   key("errorNumber", var::NumberToString(error_context.error_number()));
@@ -733,11 +737,22 @@ Printer &Printer::operator<<(const api::Error &error_context) {
   PrinterObject po(*this, "backtrace");
   const char *symbol;
   size_t offset = 0;
+#if USE_DEMANGLER
+  api::Demangler demangler;
+#endif
+
   do {
     symbol = backtrace.at(offset);
+#if USE_DEMANGLER
+    symbol = demangler.demangle(symbol);
+#endif
+
     if (symbol != nullptr) {
       key(var::Ntos(offset), var::StringView(symbol));
+    } else {
+      printf("symbol is null after demangle\n");
     }
+
     offset++;
   } while (symbol != nullptr);
 
