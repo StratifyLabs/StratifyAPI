@@ -183,11 +183,10 @@ public:
         T::Attributes().set_detach_state(T::DetachState::joinable));
 
       TEST_ASSERT(m.unlock().unlock().unlock().is_success());
-      TEST_ASSERT(t.wait().is_success());
+      // TEST_ASSERT(t.wait().is_success());
+      wait(100_milliseconds);
 
       m.unlock();
-      if (is_error()) {
-      }
       reset_error();
       TEST_ASSERT(m_did_execute);
     }
@@ -356,7 +355,7 @@ public:
             return nullptr;
           }),
         T::Attributes().set_detach_state(T::DetachState::joinable))
-        .wait();
+        .join();
 
       TEST_ASSERT(is_success());
       TEST_ASSERT(m_did_execute);
@@ -368,9 +367,9 @@ public:
             self->m_did_execute = true;
             return nullptr;
           }),
-        T::Attributes().set_detach_state(T::DetachState::detached))
-        .wait();
+        T::Attributes().set_detach_state(T::DetachState::detached));
 
+      wait(50_milliseconds);
       TEST_ASSERT(is_success());
       TEST_ASSERT(m_did_execute);
     }
@@ -388,12 +387,12 @@ public:
             self->m_did_execute = false;
             return nullptr;
           }),
-        T::Attributes().set_detach_state(T::DetachState::detached));
+        T::Attributes().set_detach_state(T::DetachState::joinable));
 
       TEST_ASSERT(t.set_cancel_state(T::CancelState::enable)
                     .set_cancel_type(T::CancelType::deferred)
                     .cancel()
-                    .wait()
+                    .join()
                     .is_success());
 
       TEST_ASSERT(m_did_execute);
@@ -433,7 +432,6 @@ public:
           }),
         T::Attributes().set_detach_state(T::DetachState::joinable));
 
-      TEST_ASSERT(t.is_running());
 
       // unlock to allow thread to continue
       TEST_ASSERT(m_mutex.unlock().is_success());

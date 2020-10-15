@@ -48,17 +48,29 @@ Error &PrivateExecutionContext::get_error() {
   if (m_error_list == nullptr) {
     m_error_list = new std::vector<Error>();
     API_ASSERT(m_error_list != nullptr);
-    m_error_list->push_back(Error(&(errno)));
   }
 
   for (Error &error : *m_error_list) {
     if (error.m_signature == &(errno)) {
       return error;
     }
+
+    if (error.m_signature == nullptr) {
+      error.m_signature = &(errno);
+      return error;
+    }
   }
 
-  API_ASSERT(false);
-  return m_error;
+  m_error_list->push_back(Error(&(errno)));
+  return m_error_list->back();
+}
+
+void PrivateExecutionContext::free_context() {
+  API_ASSERT(&(errno) != m_error.m_signature);
+  API_ASSERT(m_error_list != nullptr);
+
+  // mark the entry as unused
+  get_error().m_signature = nullptr;
 }
 
 void PrivateExecutionContext::update_error_context(

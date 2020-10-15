@@ -243,6 +243,7 @@ protected:
 
   Error &get_error();
 
+  void free_context();
   void update_error_context(int line, const char *message);
 
 private:
@@ -273,6 +274,7 @@ public:
   }
 
   static Error &error() { return m_private_context.get_error(); }
+  static void free_context() { return m_private_context.free_context(); }
   static void exit_fatal(const char *message);
 
   static inline size_t context_count() {

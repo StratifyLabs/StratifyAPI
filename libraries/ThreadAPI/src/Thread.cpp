@@ -119,32 +119,31 @@ Thread::Thread(const Construct &options, const Attributes &attributes) {
   API_RETURN_IF_ERROR();
   API_ASSERT(options.function() != nullptr);
 
-  set_id_pending();
-
-  m_detach_state = attributes.get_detach_state();
+  DetachState detach_state = attributes.get_detach_state();
 
   // First create the thread
-#if defined __link
-  int result =
-#endif
-    API_SYSTEM_CALL(
-      "",
-      pthread_create(
-        &m_id,
-        &attributes.m_pthread_attr,
-        options.function(),
-        options.argument()));
+  int result = API_SYSTEM_CALL(
+    "",
+    pthread_create(
+      &m_id,
+      &attributes.m_pthread_attr,
+      options.function(),
+      options.argument()));
 
-#if defined __link
-  if (result == 0) {
-    m_private_context = 0;
+  if (result < 0) {
+    set_id_error();
+  } else {
+    if (detach_state == DetachState::detached) {
+      set_id_completed();
+    } else {
+      set_id_ready();
+    }
   }
-#endif
 }
 
 Thread::~Thread() {
   // what if thread is still running?
-  if (is_running() && is_joinable()) {
+  if (is_joinable()) {
     cancel();
     join();
   }
@@ -184,7 +183,7 @@ int Thread::get_sched_parameters(int &policy, int &priority) const {
   return result;
 }
 
-bool Thread::is_valid() const { return !is_id_pending() && !is_id_error(); }
+bool Thread::is_valid() const { return is_id_ready(); }
 
 Thread &Thread::cancel() {
   API_RETURN_VALUE_IF_ERROR(*this);
@@ -210,47 +209,6 @@ Thread &Thread::set_cancel_state(CancelState cancel_state) {
   return *this;
 }
 
-
-bool Thread::is_running() {
-  API_RETURN_VALUE_IF_ERROR(false);
-
-  // check to see if the thread is running
-  if (is_id_pending() || is_id_error()) {
-    return false;
-  }
-
-  if (pthread_kill(m_id, 0) == 0) {
-    return true;
-  }
-  API_RESET_ERROR();
-
-  destroy();
-  return false;
-}
-
-Thread &Thread::wait(void **ret, chrono::MicroTime interval) {
-  if (is_valid()) {
-    // if thread is joinable, then join it
-    if (is_joinable()) {
-      join(ret);
-    } else {
-      // just keep sampling until the thread completes
-      while (is_running()) {
-        chrono::wait(interval);
-      }
-    }
-  }
-  return *this;
-}
-
-void Thread::destroy() {
-#if defined __link
-  m_private_context = id_completed;
-#else
-  m_id = id_completed;
-#endif
-}
-
 Thread &Thread::join(void **value) {
   API_RETURN_VALUE_IF_ERROR(*this);
   API_ASSERT(is_joinable());
@@ -260,9 +218,7 @@ Thread &Thread::join(void **value) {
 
   const int local_result = API_SYSTEM_CALL("", pthread_join(id(), ptr));
   if (local_result == 0) {
-    // resets the thread that just completed
-
-    is_running();
+    set_id_completed();
   }
   return *this;
 }
