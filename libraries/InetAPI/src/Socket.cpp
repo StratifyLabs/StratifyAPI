@@ -43,7 +43,6 @@ int Socket::m_is_initialized = 0;
 
 AddressInfo::AddressInfo(const Construct &options) {
   API_RETURN_IF_ERROR();
-  int result_int;
 
   const char *server_cstring
     = options.service().is_empty() ? nullptr : options.service().cstring();
@@ -69,10 +68,12 @@ AddressInfo::AddressInfo(const Construct &options) {
   info_start = info;
   do {
     m_list.push_back(SocketAddress(
-      info->ai_addr,
-      info->ai_addrlen,
-      info->ai_canonname,
-      options.port()));
+                       info->ai_addr,
+                       info->ai_addrlen,
+                       info->ai_canonname,
+                       options.port())
+                       .set_protocol(static_cast<Protocol>(info->ai_protocol))
+                       .set_type(static_cast<Type>(info->ai_socktype)));
 
     info = info->ai_next;
 
@@ -83,7 +84,6 @@ AddressInfo::AddressInfo(const Construct &options) {
 }
 
 Socket::Socket() {
-  m_socket = SOCKET_INVALID;
   initialize();
 }
 
@@ -96,7 +96,6 @@ Socket::Socket(Domain domain, Type type, Protocol protocol) {
       static_cast<int>(domain),
       static_cast<int>(type),
       static_cast<int>(protocol)));
-  printf("socket is %d\n", m_socket);
 }
 
 int Socket::decode_socket_return(int value) const {
@@ -152,13 +151,6 @@ int Socket::deinitialize() {
 
 Socket::~Socket() { interface_close(0); }
 
-int Socket::bind(const SocketAddress &addr) const {
-  printf("bind to socket %d\n", m_socket);
-
-  return decode_socket_return(
-    ::bind(m_socket, addr.to_sockaddr(), static_cast<int>(addr.length())));
-}
-
 const Socket &
 Socket::bind_and_listen(const SocketAddress &addr, int backlog) const {
   API_RETURN_VALUE_IF_ERROR(*this);
@@ -168,15 +160,14 @@ Socket::bind_and_listen(const SocketAddress &addr, int backlog) const {
 
 int Socket::interface_bind_and_listen(const SocketAddress &address, int backlog)
   const {
-  printf("bind to address\n");
-  int result = bind(address);
+  int result = decode_socket_return(::bind(
+    m_socket,
+    address.to_sockaddr(),
+    static_cast<int>(address.length())));
   if (result < 0) {
-    printf("socket is %d\n", m_socket);
-    perror("bind result");
     return result;
   }
 
-  printf("listen to address\n");
   return decode_socket_return(::listen(m_socket, backlog));
 }
 
@@ -189,8 +180,7 @@ Socket Socket::accept(SocketAddress &address) const {
     ::accept(m_socket, &address.m_sockaddr.sockaddr, &len));
 
   address.m_sockaddr.size = len;
-  return Socket();
-  // return std::move(result);
+  return std::move(result);
 }
 
 Socket &Socket::connect(const SocketAddress &address) {

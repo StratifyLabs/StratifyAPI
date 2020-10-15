@@ -113,8 +113,6 @@ public:
   size_t length() const { return m_sockaddr.size; }
   bool is_valid() const { return m_sockaddr.size > 0; }
 
-  const struct sockaddr *to_sockaddr() const { return &m_sockaddr.sockaddr; }
-
   /*! \details Accesses the family. */
   Family family() const {
     if (m_sockaddr.size == sizeof(struct sockaddr_in)) {
@@ -139,6 +137,8 @@ public:
     return std::move(IpAddress6(m_sockaddr.sockaddr_in6.sin6_addr).to_string());
   }
 
+  const struct sockaddr *to_sockaddr() const { return &m_sockaddr.sockaddr; }
+
 private:
   friend class Socket;
   friend class SocketAddress4;
@@ -146,6 +146,8 @@ private:
   friend class AddressInfo;
   socketaddr_t m_sockaddr = {0};
   var::String m_canon_name;
+  API_AF(SocketAddress, Type, type, Type::raw);
+  API_AF(SocketAddress, Protocol, protocol, Protocol::raw);
 
   explicit SocketAddress(
     const void *addr,
@@ -288,8 +290,11 @@ public:
     Protocol protocol = Protocol::ip);
   virtual ~Socket();
 
-  Socket(Socket &&socket) = default;
-  Socket &operator=(Socket &&socket) = default;
+  Socket(Socket &&socket) { std::swap(m_socket, socket.m_socket); }
+  Socket &operator=(Socket &&socket) {
+    std::swap(m_socket, socket.m_socket);
+    return *this;
+  }
 
   /*!
    * \details Connects to the server using the SocketAddress
@@ -388,11 +393,8 @@ protected:
   // socket on all other platforms is a file handler
 #endif
 
-  mutable SOCKET_T m_socket;
 
   Socket();
-
-  int bind(const SocketAddress &address) const;
 
   virtual int interface_connect(const SocketAddress &address) const;
 
@@ -421,6 +423,7 @@ protected:
   int decode_socket_return(int value) const;
 
 private:
+  mutable SOCKET_T m_socket = SOCKET_INVALID;
   static int m_is_initialized;
   /*! \endcond */
 };

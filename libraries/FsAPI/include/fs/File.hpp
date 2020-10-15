@@ -110,8 +110,11 @@ public:
   File(const File &file) = delete;
   File &operator=(const File &file) = delete;
 
-  File(File &&file) = default;
-  File &operator=(File &&file) = default;
+  File(File &&a) { std::swap(m_fd, a.m_fd); }
+  File &operator=(File &&a) {
+    std::swap(m_fd, a.m_fd);
+    return *this;
+  }
 
   virtual ~File();
 

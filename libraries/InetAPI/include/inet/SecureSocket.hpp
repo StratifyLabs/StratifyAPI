@@ -23,8 +23,11 @@ public:
     Protocol protocol = Protocol::tcp);
   ~SecureSocket();
 
-  SecureSocket(SecureSocket &&socket) = default;
-  SecureSocket &operator=(SecureSocket &&socket) = default;
+  SecureSocket(SecureSocket &&a) { std::swap(m_context, a.m_context); }
+  SecureSocket &operator=(SecureSocket &&a) {
+    std::swap(m_context, a.m_context);
+    return *this;
+  }
 
   SecureSocket &set_ticket_lifetime(u32 seconds) {
     m_ticket_lifetime_seconds = seconds;

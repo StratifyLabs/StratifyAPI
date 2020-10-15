@@ -31,6 +31,7 @@ public:
   bool server_api_case() {
 
     AddressInfo address_info(AddressInfo::Construct()
+                               .set_family(AddressInfo::Family::inet)
                                .set_service("3000")
                                .set_flags(AddressInfo::Flags::passive)
                                .set_port(3000));
@@ -39,8 +40,10 @@ public:
 
     TEST_ASSERT(address_info.list().count() > 0);
 
+    const SocketAddress &server_address = address_info.list().at(0);
+
     Socket server = std::move(
-      Socket(address_info.list().at(0).family())
+      Socket(server_address.family(), server_address.type())
         .set_option(SocketOption(
           S::Level::socket,
           S::NameFlags::socket_reuse_address | S::NameFlags::socket_reuse_port,
@@ -48,11 +51,12 @@ public:
     TEST_ASSERT(is_success());
 
     PRINTER_TRACE(printer(), "");
-    printer().object("serverAddress", server_address);
+    printer().object("serverAddress", address_info.list().at(0));
     PRINTER_TRACE(printer(), "port is " + Ntos(server_address.port()));
     TEST_ASSERT(server.bind_and_listen(server_address).is_success());
     PRINTER_TRACE(printer(), "");
-    Socket incoming = server.accept(server_address);
+    SocketAddress accept_address;
+    Socket incoming = server.accept(accept_address);
     TEST_ASSERT(is_success());
     PRINTER_TRACE(printer(), "");
 
