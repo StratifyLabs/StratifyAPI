@@ -35,8 +35,6 @@ private:
   static Api m_api;
 
   static Api &api() { return m_api; }
-  void initialize();
-  void finalize();
   void *m_context = nullptr;
 };
 

@@ -30,7 +30,7 @@ Data Data::from_string(StringView value) {
             String::GetSubstring().set_position(i * 2).set_length(2))
           .to_unsigned_long(String::Base::hexidecimal);
   }
-  return result;
+  return std::move(result);
 }
 
 Data &Data::resize(size_t s) {

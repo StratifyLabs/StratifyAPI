@@ -76,9 +76,8 @@ int File::interface_lseek(int fd, int offset, int whence) const {
   return FSAPI_LINK_LSEEK(driver(), fd, offset, whence);
 }
 
-File &
-File::open(var::StringView path, OpenMode flags, Permissions permissions) {
-  API_RETURN_VALUE_IF_ERROR(*this);
+void File::open(var::StringView path, OpenMode flags, Permissions permissions) {
+  API_RETURN_IF_ERROR();
   if (m_fd != -1) {
     close(); // close first so the fileno can be changed
   }
@@ -89,10 +88,9 @@ File::open(var::StringView path, OpenMode flags, Permissions permissions) {
       path.cstring(),
       flags.o_flags(),
       permissions.permissions()));
-  return *this;
 }
 
-File &File::internal_create(
+void File::internal_create(
   IsOverwrite is_overwrite,
   var::StringView path,
   OpenMode open_mode,
@@ -104,7 +102,7 @@ File &File::internal_create(
     flags.set_exclusive();
   }
 
-  return open(path, flags, perms);
+  open(path, flags, perms);
 }
 
 size_t File::size() const {
@@ -123,17 +121,11 @@ int File::fstat(struct stat *st) {
   return API_SYSTEM_CALL("", FSAPI_LINK_FSTAT(driver(), m_fd, st));
 }
 
-File &File::close() {
-  API_RETURN_VALUE_IF_ERROR(*this);
+void File::close() {
   if (m_fd >= 0) {
-    int result = interface_close(m_fd);
-    if (result < 0) {
-      // only assign the error if result < 0 to preserve last R/W value
-      API_SYSTEM_CALL("", result);
-    }
+    interface_close(m_fd);
     m_fd = -1;
   }
-  return *this;
 }
 
 const File &File::sync() const {

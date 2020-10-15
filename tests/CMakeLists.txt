@@ -12,7 +12,9 @@ include(sos-sdk)
 #add_subdirectory(ChronoAPI testsChronoAPI)
 #add_subdirectory(FsAPI testsFsAPI)
 #add_subdirectory(VarAPI testsVarAPI)
-add_subdirectory(ThreadAPI testsThreadAPI)
+#add_subdirectory(ThreadAPI testsThreadAPI)
+add_subdirectory(CryptoAPI testsCryptoAPI)
+
 
 add_custom_target(coverage
 	DEPENDS coverage_test

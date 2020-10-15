@@ -47,23 +47,24 @@ Error &PrivateExecutionContext::get_error() {
     m_error_list->push_back(Error(&(errno)));
   }
 
-  for (Error &error_context : *m_error_list) {
-    if (m_error.m_signature == &(errno)) {
-      return m_error;
+  for (Error &error : *m_error_list) {
+    if (error.m_signature == &(errno)) {
+      return error;
     }
   }
 
-  API_ASSERT(true);
+  API_ASSERT(false);
   return m_error;
 }
 
 void PrivateExecutionContext::update_error_context(
   int line,
   const char *message) {
-  strncpy(m_error.m_message, message, Error::m_message_size);
-  m_error.m_line_number = line;
-  m_error.m_error_number = errno;
-  m_error.capture_backtrace();
+  Error &error = get_error();
+  strncpy(error.m_message, message, Error::m_message_size);
+  error.m_line_number = line;
+  error.m_error_number = errno;
+  error.capture_backtrace();
   errno = -1;
 }
 

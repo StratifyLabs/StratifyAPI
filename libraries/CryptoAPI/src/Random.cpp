@@ -13,19 +13,13 @@ Random::Random() {
   if (api().is_valid() == false) {
     API_RETURN_ASSIGN_ERROR("missing api", ENOTSUP);
   } else {
-    initialize();
+    API_RETURN_IF_ERROR();
+    API_SYSTEM_CALL("random", api()->init(&m_context));
+    seed(var::View());
   }
 }
 
-Random::~Random() { finalize(); }
-
-void Random::initialize() {
-  API_RETURN_IF_ERROR();
-  API_SYSTEM_CALL("random", api()->init(&m_context));
-  seed(var::View());
-}
-
-void Random::finalize() {
+Random::~Random() {
   if (m_context != nullptr) {
     api()->deinit(&m_context);
     m_context = nullptr;

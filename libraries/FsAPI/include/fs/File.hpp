@@ -281,24 +281,17 @@ public:
     return *this;
   }
 
-  /*! \details Closes the file or device. */
-  File &close();
-
 protected:
   File() = default;
 
   bool is_keep_open() const { return m_is_keep_open; }
 
-  /*! \details Opens a file.
-   *
-   * @param name The path to the file
-   * @param flags The flags used to open the flag (e.g. File::READONLY)
-   * @return Zero on success
-   */
-  File &open(
+  void open(
     var::StringView name,
     OpenMode flags = OpenMode::read_write(),
     Permissions perms = Permissions(0666));
+
+  void close();
 
 #ifdef __link
   API_AF(File, link_transport_mdriver_t *, driver, nullptr);
@@ -319,7 +312,7 @@ private:
 
   int fstat(struct stat *st);
 
-  File &internal_create(
+  void internal_create(
     IsOverwrite is_overwrite,
     var::StringView path,
     OpenMode open_mode,
@@ -343,7 +336,6 @@ public:
     return static_cast<Derived &>(File::open(path, flags));
   }
 
-  Derived &close() { return static_cast<Derived &>(File::close()); }
   const Derived &sync() const {
     return static_cast<const Derived &>(File::sync());
   }

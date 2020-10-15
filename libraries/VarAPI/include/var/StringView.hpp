@@ -162,7 +162,6 @@ public:
     m_buffer[sizeof(m_buffer) - 1] = 0;
 
     if (fmt == nullptr) {
-
       if (std::is_integral<T>::value == true) {
         strncpy(m_buffer, std::to_string(value).c_str(), sizeof(m_buffer) - 1);
       } else if (std::is_floating_point<T>::value == true) {

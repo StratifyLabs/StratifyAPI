@@ -24,7 +24,14 @@ public:
   Aes();
   ~Aes();
 
-  Aes &set_key(const var::View &key);
+  Aes(const Aes &aes) = delete;
+  Aes &operator=(const Aes &aes) = delete;
+
+  Aes(Aes &&aes) = default;
+  Aes &operator=(Aes &&aes) = default;
+
+  Aes &set_key128(const var::View &key);
+  Aes &set_key256(const var::View &key);
 
   Aes &set_initialization_vector(const var::View &value);
 
@@ -43,11 +50,35 @@ public:
   const Aes &encrypt_ecb(const EncryptEcb &options) const;
   const Aes &decrypt_ecb(const DecryptEcb &options) const;
 
+  var::Data encrypt_ecb(var::View input) const {
+    var::Data result(input.size());
+    encrypt_ecb(Crypt().set_plain(input).set_cipher(var::View(result)));
+    return std::move(result);
+  }
+
+  var::Data decrypt_ecb(var::View input) const {
+    var::Data result(input.size());
+    decrypt_ecb(Crypt().set_cipher(input).set_plain(var::View(result)));
+    return std::move(result);
+  }
+
   using EncryptCbc = Crypt;
   using DecryptCbc = Crypt;
 
   const Aes &encrypt_cbc(const EncryptCbc &options) const;
   const Aes &decrypt_cbc(const DecryptCbc &options) const;
+
+  var::Data encrypt_cbc(var::View input) const {
+    var::Data result(input.size());
+    encrypt_cbc(Crypt().set_plain(input).set_cipher(var::View(result)));
+    return std::move(result);
+  }
+
+  var::Data decrypt_cbc(var::View input) const {
+    var::Data result(input.size());
+    decrypt_cbc(Crypt().set_cipher(input).set_plain(var::View(result)));
+    return std::move(result);
+  }
 
 #if 0 // not yet implemented
   Aes &encrypt_ctr(const Crypt &options);
@@ -62,14 +93,16 @@ private:
   mutable InitializationVector m_initialization_vector;
 
   static Api &api() { return m_api; }
-  void initialize();
-  void finalize();
 };
 
 template <class Derived> class AesAccess : public Aes {
 public:
-  Derived &set_key(const var::View &key) {
-    return static_cast<Derived &>(Aes::set_key(key));
+  Derived &set_key128(const var::View &key) {
+    return static_cast<Derived &>(Aes::set_key128(key));
+  }
+
+  Derived &set_key256(const var::View &key) {
+    return static_cast<Derived &>(Aes::set_key256(key));
   }
 
   Derived &set_initialization_vector(const var::View &value) {

@@ -144,7 +144,10 @@ Thread::Thread(const Construct &options, const Attributes &attributes) {
 
 Thread::~Thread() {
   // what if thread is still running?
-  API_ASSERT(is_running() == false);
+  if (is_running() && is_joinable()) {
+    cancel();
+    join();
+  }
 }
 
 Thread &Thread::set_sched_parameters(Sched::Policy policy, int priority) {

@@ -15,52 +15,51 @@ public:
 
   bool execute_class_api_case() {
 
-    TEST_ASSERT(
-      status().error_context().signature()
-      == static_cast<const void *>(&(errno)));
+    TEST_ASSERT(error().signature() == static_cast<const void *>(&(errno)));
 
     errno = EINVAL;
     const int line_error = __LINE__ + 1;
     API_SYSTEM_CALL("message", -1);
 
-    TEST_ASSERT(error_context().error_number() == EINVAL);
-    TEST_ASSERT(error_context().line_number() == line_error);
-    TEST_ASSERT(StringView(status().error_context().message()) == "message");
+    TEST_ASSERT(error().error_number() == EINVAL);
+    TEST_ASSERT(error().line_number() == line_error);
+    TEST_ASSERT(StringView(error().message()) == "message");
     TEST_ASSERT(return_value() < 0);
     API_RESET_ERROR();
-    TEST_ASSERT(return_value() == 0);
 
-    TEST_ASSERT(status().error_context_count() == 1);
+    TEST_ASSERT(return_value() == 0);
+    TEST_ASSERT(context_count() == 1);
+
+    printer().key("signature", String().format("%p", error().signature()));
 
     void *thread_error_signature;
     // create a thread and make sure it's error context is independent
     Thread t(
-      Thread::Construct().set_detach_state(Thread::DetachState::joinable));
-
-    t
-      .create(Thread::Create().set_argument(this).set_function(
+      Thread::Construct().set_argument(this).set_function(
         [](void *args) -> void * {
           Test *self = reinterpret_cast<Test *>(args);
-
+          self->printer().key(
+            "threadSignature",
+            String().format("%p", error().signature()));
           const int line_error = __LINE__ + 1;
           API_SYSTEM_CALL("threadmessage", -1);
 
-          self->expect(
-            __PRETTY_FUNCTION__,
-            __LINE__,
-            error_context().line_number() == line_error);
-          self->expect(
-            __PRETTY_FUNCTION__,
-            __LINE__,
-            StringView(status().error_context().message()) == "threadmessage");
+          TEST_SELF_EXPECT(error().line_number() == line_error);
+          TEST_SELF_EXPECT(StringView(error().message()) == "threadmessage");
 
-          return error_context().signature();
-        }))
-      .join(&thread_error_signature);
+          return error().signature();
+        }),
+      Thread::Attributes().set_detach_state(Thread::DetachState::joinable));
+    t.join(&thread_error_signature);
 
-    TEST_ASSERT(error_context().signature() != thread_error_signature);
-    TEST_ASSERT(StringView(status().error_context().message()) == "message");
-    TEST_ASSERT(status().error_context_count() == 2);
+    printer().key("signature", String().format("%p", error().signature()));
+    printer().key(
+      "thread signature",
+      String().format("%p", thread_error_signature));
+
+    printer().key("message", StringView(error().message()));
+    TEST_ASSERT(StringView(error().message()) == "message");
+    TEST_ASSERT(context_count() == 2);
 
     return true;
   }

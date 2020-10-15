@@ -308,14 +308,6 @@ public:
     return *this;
   }
 
-  /*! \details Closes the socket.
-   *
-   * The connection is automatically closed unless set_keep_alive()
-   * has been executed.
-   *
-   */
-  int close_connection();
-
   const var::String &traffic() const { return m_traffic; }
 
 private:

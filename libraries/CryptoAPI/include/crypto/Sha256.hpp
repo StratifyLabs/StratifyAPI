@@ -51,11 +51,11 @@ public:
   Sha256 &start();
 
   Sha256 &update(const var::View &data);
-  Sha256 &update(fs::File &file);
+  Sha256 &update(const fs::File &file);
 
   Sha256 &finish();
 
-  var::String get_checksum(fs::File &file);
+  var::String get_checksum(const fs::File &file);
 
   Sha256 &operator<<(const var::View &a);
 
@@ -76,13 +76,10 @@ private:
   static Api m_api;
 
   var::Array<u8, 32> m_output;
-  void *m_context;
-  bool m_is_finished;
+  void *m_context = nullptr;
+  bool m_is_finished = false;
 
   static Api &api() { return m_api; }
-  bool is_initialized() const { return m_context != 0; }
-  int initialize();
-  int finalize();
 };
 
 } // namespace crypto

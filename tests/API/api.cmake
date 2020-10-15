@@ -1,9 +1,15 @@
+
 macro(api_test_executable NAME DIRECTORIES)
 
-	if(SOS_IS_LINK)
+	set(IS_COVERAGE OFF)
+
+	if(SOS_IS_LINK AND IS_COVERAGE)
 		set(CONFIG coverage)
+		set(ELF_NAME_PREFIX ${NAME}_${CONFIG})
 	else()
-		set(CONFIG test)
+		set(CONFIG release)
+		set(ELF_NAME_PREFIX ${NAME})
+
 	endif()
 
 
@@ -16,7 +22,7 @@ macro(api_test_executable NAME DIRECTORIES)
 		${CMAKE_SOURCE_DIR}/tests/${NAME}/src/UnitTest.hpp
 		)
 
-	if(SOS_IS_LINK)
+	if(SOS_IS_LINK AND IS_COVERAGE)
 		set_target_properties(${RELEASE_TARGET}
 			PROPERTIES
 			LINK_FLAGS --coverage)
@@ -36,6 +42,10 @@ macro(api_test_executable NAME DIRECTORIES)
 			)
 	endforeach(DIRECTORY)
 
+	#target_link_libraries(${RELEASE_TARGET}
+	#	PRIVATE
+	#	mbedtls
+	#	)
 
 	target_include_directories(${RELEASE_TARGET}
 		PRIVATE
@@ -53,7 +63,7 @@ macro(api_test_executable NAME DIRECTORIES)
 	if(SOS_IS_LINK)
 
 		add_test(NAME tests${NAME}
-			COMMAND ../build_coverage_link/${NAME}_coverage_link.elf --api
+			COMMAND "../build_${CONFIG}_link/${ELF_NAME_PREFIX}_link.elf" --api
 			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tmp
 			)
 
@@ -65,5 +75,6 @@ macro(api_test_executable NAME DIRECTORIES)
 			)
 
 	endif()
+
 
 endmacro()

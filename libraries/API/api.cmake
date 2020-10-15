@@ -69,8 +69,6 @@ macro(api_target NAME DIRECTORIES)
 		add_library(${COVERAGE_TARGET} STATIC)
 		sos_sdk_copy_target(${RELEASE_TARGET} ${COVERAGE_TARGET})
 
-
-
 		target_compile_options(${COVERAGE_TARGET}
 			PUBLIC
 			--coverage
@@ -82,8 +80,6 @@ macro(api_target NAME DIRECTORIES)
 		message(STATUS "BINARY DIR for ${COVERAGE_TARGET} is ${MY_DIR}")
 
 		get_target_property(SOURCES ${COVERAGE_TARGET} SOURCES)
-
-
 
 		foreach(SOURCE ${SOURCES})
 			get_filename_component(FILE_NAME ${SOURCE} NAME)

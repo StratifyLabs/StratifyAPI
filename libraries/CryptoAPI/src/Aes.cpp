@@ -13,21 +13,12 @@ Aes::Aes() {
   if (api().is_valid() == false) {
     API_RETURN_ASSIGN_ERROR("missing api", ENOTSUP);
   }
-  initialize();
-}
-
-Aes::~Aes() {
-  m_initialization_vector.fill(0);
-  finalize();
-}
-
-void Aes::initialize() {
-  finalize();
   API_RETURN_IF_ERROR();
   API_SYSTEM_CALL("", api()->init(&m_context));
 }
 
-void Aes::finalize() {
+Aes::~Aes() {
+  m_initialization_vector.fill(0);
   if (m_context != nullptr) {
     api()->deinit(&m_context);
   }
@@ -48,7 +39,17 @@ Aes &Aes::set_initialization_vector(const var::View &value) {
   return *this;
 }
 
-Aes &Aes::set_key(const var::View &key) {
+Aes &Aes::set_key128(const var::View &key) {
+  API_ASSERT(key.size() == 16);
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL(
+    "",
+    api()->set_key(m_context, key.to_const_u8(), key.size() * 8, 8));
+  return *this;
+}
+
+Aes &Aes::set_key256(const var::View &key) {
+  API_ASSERT(key.size() == 32);
   API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL(
     "",
@@ -58,6 +59,8 @@ Aes &Aes::set_key(const var::View &key) {
 
 const Aes &Aes::encrypt_ecb(const Crypt &options) const {
   API_RETURN_VALUE_IF_ERROR(*this);
+  API_ASSERT(options.cipher().size() == options.plain().size());
+
   for (u32 i = 0; i < options.plain().size(); i += 16) {
     if (
       api()->encrypt_ecb(
@@ -75,6 +78,7 @@ const Aes &Aes::encrypt_ecb(const Crypt &options) const {
 
 const Aes &Aes::decrypt_ecb(const Crypt &options) const {
   API_RETURN_VALUE_IF_ERROR(*this);
+  API_ASSERT(options.cipher().size() == options.plain().size());
 
   if (options.cipher().size() % 16 != 0) {
     API_RETURN_VALUE_ASSIGN_ERROR(*this, "", EINVAL);
@@ -99,6 +103,7 @@ const Aes &Aes::decrypt_ecb(const Crypt &options) const {
 
 const Aes &Aes::encrypt_cbc(const Crypt &options) const {
   API_RETURN_VALUE_IF_ERROR(*this);
+  API_ASSERT(options.cipher().size() == options.plain().size());
 
   API_SYSTEM_CALL(
     "",
@@ -114,6 +119,7 @@ const Aes &Aes::encrypt_cbc(const Crypt &options) const {
 
 const Aes &Aes::decrypt_cbc(const Crypt &options) const {
   API_RETURN_VALUE_IF_ERROR(*this);
+  API_ASSERT(options.cipher().size() == options.plain().size());
 
   if (options.cipher().size() % 16 != 0) {
     API_RETURN_VALUE_ASSIGN_ERROR(*this, "", EINVAL);

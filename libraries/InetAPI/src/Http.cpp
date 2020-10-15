@@ -207,7 +207,7 @@ HttpClient &HttpClient::execute_method(
   }
 
   if (is_redirected) {
-    close_connection();
+    // close_connection();
 
     if (options.response()) {
       options.response()->seek(get_file_pos, File::Whence::set);
@@ -227,7 +227,7 @@ HttpClient &HttpClient::execute_method(
   }
 
   if (is_keep_alive() == false) {
-    close_connection();
+    // close_connection();
   }
 
   return *this;
@@ -239,8 +239,6 @@ int HttpClient::send_string(var::StringView str) {
   }
   return 0;
 }
-
-int HttpClient::close_connection() { return socket().close().return_value(); }
 
 int HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
   SocketAddressInfo address_info;
