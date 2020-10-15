@@ -10,7 +10,6 @@ int main(int argc, char *argv[]) {
   printer::Printer printer;
 
   printer.set_verbose_level(cli.get_option("verbose"));
-  printf("level is %d\n", static_cast<int>(printer.verbose_level()));
 
   test::Test::initialize(test::Test::Initialize()
                            .set_name(cli.get_name())
