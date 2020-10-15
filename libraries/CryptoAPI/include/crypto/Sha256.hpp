@@ -48,12 +48,14 @@ public:
   Sha256();
   ~Sha256();
 
+  Sha256(const Sha256 &) = delete;
+  Sha256 &operator=(const Sha256 &) = delete;
+  Sha256(Sha256 &&) = default;
+  Sha256 &operator=(Sha256 &&) = default;
+
   const Sha256 &update(const var::View &data) const;
   const var::Array<u8, 32> &output() {
-    if (m_is_finished == false) {
-      finish();
-      m_is_finished = true;
-    }
+    finish();
     return m_output;
   }
 
@@ -63,7 +65,6 @@ public:
     return options.input().size();
   }
 
-  size_t page_size_boundary() const override { return 16; }
 
   static constexpr size_t page_size() {
 #if defined __link
@@ -77,11 +78,11 @@ private:
   using Api = api::Api<crypt_hash_api_t, CRYPT_SHA256_API_REQUEST>;
   static Api m_api;
 
-  var::Array<u8, 32> m_output;
   void *m_context = nullptr;
   bool m_is_finished = false;
-  void finish();
+  var::Array<u8, 32> m_output;
 
+  void finish();
   static Api &api() { return m_api; }
 };
 

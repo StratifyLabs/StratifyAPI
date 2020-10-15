@@ -17,13 +17,18 @@
 
 namespace crypto {
 
-class Random : public api::ExecutionContext {
+class Random : public api::ExecutionContext, public var::Transformer {
 public:
   Random();
   ~Random();
 
   Random &seed();
   Random &seed(const var::View source_data);
+
+  int transform(const Transform &options) const override {
+    randomize(var::View(options.output()));
+    return options.output().size();
+  }
 
   const Random &randomize(const var::View destination_data) const;
 

@@ -58,7 +58,6 @@ var::String Random::get_string(size_t length) const {
 
 var::Data Random::get_data(u32 size) const {
   var::Data result(size);
-  var::View result_view(result);
-  randomize(result_view);
-  return result;
+  randomize(var::View(result));
+  return std::move(result);
 }

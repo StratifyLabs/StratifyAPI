@@ -36,7 +36,24 @@ public:
     return true;
   }
 
-  bool random_api_case() { return true; }
+  bool random_api_case() {
+
+    char buffer[16];
+
+    Random().seed().randomize(View(buffer));
+
+    printer().key("buffer", View(buffer).to_string());
+
+    printer().key(
+      "random",
+      DataFile()
+        .reserve(12)
+        .write(NullFile(12), Random().seed())
+        .data()
+        .to_string());
+
+    return true;
+  }
 
   bool sha256_api_case() {
 

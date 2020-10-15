@@ -35,8 +35,8 @@ const Sha256 &Sha256::update(const var::View &input) const {
 }
 
 void Sha256::finish() {
-  API_RETURN_VALUE_IF_ERROR();
   if (m_is_finished == false) {
+    API_RETURN_VALUE_IF_ERROR();
     m_is_finished = true;
     API_SYSTEM_CALL(
       "",
@@ -44,7 +44,5 @@ void Sha256::finish() {
         m_context,
         (unsigned char *)m_output.data(),
         m_output.count()));
-  } else {
-    API_RETURN_ASSIGN_ERROR("", EINVAL);
   }
 }

@@ -293,10 +293,6 @@ protected:
 
   void close();
 
-#ifdef __link
-  API_AF(File, link_transport_mdriver_t *, driver, nullptr);
-#endif
-
   virtual int interface_open(const char *path, int flags, int mode) const;
   virtual int interface_lseek(int fd, int offset, int whence) const;
   virtual int interface_read(int fd, void *buf, int nbyte) const;
@@ -305,7 +301,13 @@ protected:
   virtual int interface_close(int fd) const;
   virtual int interface_fsync(int fd) const;
 
+  static void
+  fake_seek(int &location, const size_t size, int offset, int whence);
+
 private:
+#ifdef __link
+  API_AF(File, link_transport_mdriver_t *, driver, nullptr);
+#endif
   constexpr static size_t m_gets_buffer_size = 128;
   bool m_is_keep_open = false;
   int m_fd = -1;
@@ -421,6 +423,11 @@ public:
     return *this;
   }
 
+  DataFile &resize(size_t size) {
+    m_data.resize(size);
+    return *this;
+  }
+
   DataFile &set_flags(OpenMode open_flags) {
     m_open_flags = open_flags;
     return *this;
@@ -512,7 +519,7 @@ private:
 
 class NullFile : public FileAccess<NullFile> {
 public:
-  NullFile() = default;
+  NullFile(size_t size = 0) : m_size(size) {}
 
   NullFile(const NullFile &) = delete;
   NullFile &operator=(const NullFile &) = delete;
@@ -520,24 +527,20 @@ public:
   NullFile &operator=(NullFile &&) = default;
 
 private:
+  mutable int m_location = 0;
+  mutable size_t m_size;
 
   int interface_open(const char *path, int flags, int mode) const override {
     return 0;
   }
   int interface_close(int fd) const override { return 0; }
-  int interface_read(int fd, void *buf, int nbyte) const override {
-    errno = ENOTSUP;
-    return -1;
-  }
-  int interface_write(int fd, const void *buf, int nbyte) const override {
-    return nbyte;
-  }
+  int interface_read(int fd, void *buf, int nbyte) const override;
+  int interface_write(int fd, const void *buf, int nbyte) const override;
+  int interface_lseek(int fd, int offset, int whence) const override;
+
   int interface_ioctl(int fd, int request, void *argument) const override {
     errno = ENOTSUP;
     return -1;
-  }
-  int interface_lseek(int fd, int location, int whence) const override {
-    return 0;
   }
   int interface_fsync(int fd) const override { return 0; }
 };

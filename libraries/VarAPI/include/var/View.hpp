@@ -423,7 +423,7 @@ public:
 
   virtual int transform(const Transform &options) const = 0;
   virtual size_t get_output_size(size_t nbyte) const { return nbyte; }
-  virtual size_t page_size_boundary() const = 0;
+  virtual size_t page_size_boundary() const { return 1; }
 
 protected:
 };

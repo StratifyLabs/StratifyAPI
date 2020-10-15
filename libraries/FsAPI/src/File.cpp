@@ -381,26 +381,29 @@ int DataFile::interface_write(int fd, const void *buf, int nbyte) const {
   return size_ready;
 }
 
-int DataFile::interface_lseek(int fd, int offset, int whence) const {
-  MCU_UNUSED_ARGUMENT(fd);
+void File::fake_seek(int &location, const size_t size, int offset, int whence) {
   switch (static_cast<Whence>(whence)) {
   case Whence::current:
-    m_location += offset;
+    location += offset;
     break;
   case Whence::end:
-    m_location = static_cast<int>(m_data.size());
+    location = static_cast<int>(size);
     break;
   case Whence::set:
-    m_location = offset;
+    location = offset;
     break;
   }
 
-  if (m_location > static_cast<int>(m_data.size())) {
-    m_location = static_cast<int>(m_data.size());
-  } else if (m_location < 0) {
-    m_location = 0;
+  if (location > static_cast<int>(size)) {
+    location = static_cast<int>(size);
+  } else if (location < 0) {
+    location = 0;
   }
+}
 
+int DataFile::interface_lseek(int fd, int offset, int whence) const {
+  MCU_UNUSED_ARGUMENT(fd);
+  fake_seek(m_location, m_data.size(), offset, whence);
   return m_location;
 }
 
@@ -432,10 +435,6 @@ int ViewFile::interface_write(int fd, const void *buf, int nbyte) const {
     return -1;
   }
 
-  if (item().is_read_only()) {
-    return -1;
-  }
-
   int size_ready = 0;
   if (flags().is_append()) {
     return -1;
@@ -457,25 +456,36 @@ int ViewFile::interface_write(int fd, const void *buf, int nbyte) const {
   return size_ready;
 }
 
-int ViewFile::interface_lseek(int fd, int location, int whence) const {
+int ViewFile::interface_lseek(int fd, int offset, int whence) const {
   MCU_UNUSED_ARGUMENT(fd);
-  switch (static_cast<Whence>(whence)) {
-  case Whence::current:
-    m_location += location;
-    break;
-  case Whence::end:
-    m_location = item().size_signed();
-    break;
-  case Whence::set:
-    m_location = location;
-    break;
+  fake_seek(m_location, m_view.size(), offset, whence);
+  return m_location;
+}
+
+int NullFile::interface_read(int fd, void *buf, int nbyte) const {
+  MCU_UNUSED_ARGUMENT(fd);
+  MCU_UNUSED_ARGUMENT(buf);
+  int size_ready = m_size - m_location;
+  if (size_ready > nbyte) {
+    size_ready = nbyte;
   }
 
-  if (m_location > item().size_signed()) {
-    m_location = item().size_signed();
-  } else if (m_location < 0) {
-    m_location = 0;
+  if (size_ready < 0) {
+    return -1;
   }
 
+  m_location += size_ready;
+  return size_ready;
+}
+
+int NullFile::interface_write(int fd, const void *buf, int nbyte) const {
+  MCU_UNUSED_ARGUMENT(fd);
+  MCU_UNUSED_ARGUMENT(buf);
+  return nbyte;
+}
+
+int NullFile::interface_lseek(int fd, int offset, int whence) const {
+  MCU_UNUSED_ARGUMENT(fd);
+  fake_seek(m_location, m_size, offset, whence);
   return m_location;
 }
