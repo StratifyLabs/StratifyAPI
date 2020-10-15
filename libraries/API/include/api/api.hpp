@@ -289,6 +289,11 @@ private:
   static PrivateExecutionContext m_private_context;
 };
 
+class ThreadExecutionContext {
+public:
+  ~ThreadExecutionContext() { ExecutionContext::free_context(); }
+};
+
 class Demangler {
 public:
   Demangler();
@@ -308,6 +313,9 @@ private:
   char *m_buffer = nullptr;
   char *m_last = nullptr;
 };
+
+#define API_THREAD_EXECUTION_CONTEXT()                                         \
+  api::ThreadExecutionContext api_thread_execution_context;
 
 #define API_ASSERT(a) api::api_assert(a, __PRETTY_FUNCTION__, __LINE__);
 void api_assert(bool value, const char *function, int line);

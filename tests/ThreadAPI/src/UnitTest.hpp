@@ -128,6 +128,7 @@ public:
       T t = T(
         T::Construct().set_argument(this).set_function(
           [](void *args) -> void * {
+            API_THREAD_EXECUTION_CONTEXT();
             UnitTest *self = reinterpret_cast<UnitTest *>(args);
             PRINTER_TRACE(self->printer(), "wait sem in thread");
             Sem sem = std::move(Sem("semT").wait());
@@ -174,10 +175,13 @@ public:
       T t = T(
         T::Construct().set_argument(this).set_function(
           [](void *args) -> void * {
+            printf("enter thread\n");
+            API_THREAD_EXECUTION_CONTEXT();
             UnitTest *self = reinterpret_cast<UnitTest *>(args);
             self->m_mutex_pointer->lock().lock();
             self->m_did_execute = true;
             self->m_mutex_pointer->unlock().unlock();
+            printf("exit thread\n");
             return nullptr;
           }),
         T::Attributes().set_detach_state(T::DetachState::joinable));
@@ -328,6 +332,7 @@ public:
       T t(
         T::Construct().set_argument(this).set_function(
           [](void *args) -> void * {
+            API_THREAD_EXECUTION_CONTEXT();
             UnitTest *self = reinterpret_cast<UnitTest *>(args);
             self->m_did_execute = true;
             return nullptr;
@@ -350,6 +355,7 @@ public:
       m_did_execute = false;
       T(T::Construct().set_argument(this).set_function(
           [](void *args) -> void * {
+            API_THREAD_EXECUTION_CONTEXT();
             UnitTest *self = reinterpret_cast<UnitTest *>(args);
             self->m_did_execute = true;
             return nullptr;
@@ -363,6 +369,7 @@ public:
       m_did_execute = false;
       T(T::Construct().set_argument(this).set_function(
           [](void *args) -> void * {
+            API_THREAD_EXECUTION_CONTEXT();
             UnitTest *self = reinterpret_cast<UnitTest *>(args);
             self->m_did_execute = true;
             return nullptr;
@@ -380,6 +387,7 @@ public:
       T t = T(
         T::Construct().set_argument(this).set_function(
           [](void *args) -> void * {
+            API_THREAD_EXECUTION_CONTEXT();
             UnitTest *self = reinterpret_cast<UnitTest *>(args);
             while (1) {
               wait(10_milliseconds);
@@ -402,6 +410,7 @@ public:
       m_did_execute = false;
       T(T::Construct().set_argument(this).set_function(
           [](void *args) -> void * {
+            API_THREAD_EXECUTION_CONTEXT();
             reinterpret_cast<UnitTest *>(args)->m_did_execute = true;
             return nullptr;
           }),
@@ -421,6 +430,7 @@ public:
       T t = T(
         T::Construct().set_argument(this).set_function(
           [](void *args) -> void * {
+            API_THREAD_EXECUTION_CONTEXT();
             UnitTest *self = reinterpret_cast<UnitTest *>(args);
             MutexGuard mg(self->m_mutex);
             MutexGuard t_mg(self->m_thread_mutex);
@@ -431,7 +441,6 @@ public:
             return nullptr;
           }),
         T::Attributes().set_detach_state(T::DetachState::joinable));
-
 
       // unlock to allow thread to continue
       TEST_ASSERT(m_mutex.unlock().is_success());

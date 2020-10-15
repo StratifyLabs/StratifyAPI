@@ -67,10 +67,17 @@ Error &PrivateExecutionContext::get_error() {
 
 void PrivateExecutionContext::free_context() {
   API_ASSERT(&(errno) != m_error.m_signature);
-  API_ASSERT(m_error_list != nullptr);
+  if (m_error_list == nullptr) {
+    // context is only created if thread has an error
+    return;
+  }
 
-  // mark the entry as unused
-  get_error().m_signature = nullptr;
+  for (Error &error : *m_error_list) {
+    if (error.m_signature == &(errno)) {
+      error.m_signature = nullptr;
+      return;
+    }
+  }
 }
 
 void PrivateExecutionContext::update_error_context(
