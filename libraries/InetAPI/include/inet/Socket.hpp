@@ -4,26 +4,9 @@
 #ifndef SAPI_INET_SOCKET_HPP_
 #define SAPI_INET_SOCKET_HPP_
 
-#if defined __win32
-#define _BSD_SOURCE
-#include <stdint.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-typedef uint32_t in_addr_t;
-
-#define SOCKET_T ::SOCKET
-
-#else
-#define SOCKET_T int
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#endif
-
 #include <mcu/types.h>
 
+#include "IpAddress.hpp"
 #include "chrono/ClockTime.hpp"
 #include "chrono/DateTime.hpp"
 #include "fs/File.hpp"
@@ -38,6 +21,7 @@ class SocketAddress;
 class SocketFlags {
 public:
   enum class Domain { inet = AF_INET, inet6 = AF_INET6 };
+  using Family = Domain;
 
   enum class Type {
     raw /*! Raw socket data */ = SOCK_RAW,
@@ -54,30 +38,6 @@ public:
     ip /*! IP Protocol */ = IPPROTO_IP,
   };
 
-  /*! \details Enumerates the socket address family options. */
-  enum family {
-    family_none = 0,
-    family_inet /*! IPV4 */ = AF_INET,
-    family_inet6 /*! IPV6 */ = AF_INET6
-  };
-
-  /*! \details Enumerates the socket address type options. */
-  enum type {
-    type_none = 0,
-    type_raw /*! Raw socket data */ = SOCK_RAW,
-    type_stream /*! Streaming socket data */ = SOCK_STREAM,
-    type_dgram /*! Datagram socket data */ = SOCK_DGRAM
-  };
-
-  /*! \details Enumerates the socket address protocol options. */
-  enum protocol {
-    protocol_raw /*! Raw protocol */ = IPPROTO_RAW,
-    protocol_tcp /*! TCP Protocol */ = IPPROTO_TCP,
-    protocol_udp /*! UDP Procotol */ = IPPROTO_UDP,
-    protocol_icmp /*! ICMP Procotol */ = IPPROTO_ICMP,
-    protocol_icmpv6 = IPPROTO_ICMPV6,
-    protocol_ip /*! IP Protocol */ = IPPROTO_IP,
-  };
 
   typedef struct {
     size_t size;
@@ -87,6 +47,96 @@ public:
       struct sockaddr_in6 sockaddr_in6;
     };
   } socketaddr_t;
+};
+
+class SocketAddress : public SocketFlags {
+public:
+  SocketAddress() = default;
+  explicit SocketAddress(
+    const socketaddr_t sockaddr,
+    var::StringView canon_name)
+    : m_sockaddr(sockaddr), m_canon_name(canon_name) {}
+
+  const var::String &canon_name() const { return m_canon_name; }
+  size_t length() const { return m_sockaddr.size; }
+  bool is_valid() const { return m_sockaddr.size > 0; }
+
+  const struct sockaddr *to_sockaddr() const { return &m_sockaddr.sockaddr; }
+
+private:
+  friend class Socket;
+  friend class SocketAddress4;
+  friend class SocketAddress6;
+  socketaddr_t m_sockaddr = {0};
+  var::String m_canon_name;
+};
+
+class SocketAddress4 : public SocketAddress {
+public:
+  /*!
+   * \details Constructor to set the sockaddr structure to 0.
+   */
+  SocketAddress4() { m_sockaddr.size = sizeof(struct sockaddr_in); }
+
+  // length, family, port, address
+
+  /*! \details Sets the family for getting address info. */
+  SocketAddress4 &set_family(Family value) {
+    m_sockaddr.sockaddr_in.sin_family = static_cast<int>(value);
+    return *this;
+  }
+
+  /*! \details Sets the protocol for getting address info. */
+  SocketAddress4 &set_port(u16 port) {
+    m_sockaddr.sockaddr_in.sin_port = htons(port);
+    return *this;
+  }
+
+  SocketAddress4 &set_address(IpAddress4 address) {
+    m_sockaddr.sockaddr_in.sin_addr.s_addr = address.address();
+    return *this;
+  }
+
+  /*! \details Accesses the family. */
+  Family family() const {
+    return static_cast<Family>(m_sockaddr.sockaddr_in.sin_family);
+  }
+
+  u16 port() const { return ntohs(m_sockaddr.sockaddr_in.sin_port); }
+
+protected:
+};
+
+class SocketAddress6 : public SocketAddress {
+public:
+  SocketAddress6() { m_sockaddr.size = sizeof(struct sockaddr_in6); }
+
+  // length, family, port, address
+
+  /*! \details Sets the family for getting address info. */
+  SocketAddress6 &set_family(Family value) {
+    m_sockaddr.sockaddr_in6.sin6_family = static_cast<int>(value);
+    return *this;
+  }
+
+  /*! \details Sets the protocol for getting address info. */
+  SocketAddress6 &set_port(u16 port) {
+    m_sockaddr.sockaddr_in6.sin6_port = htons(port);
+    return *this;
+  }
+
+  SocketAddress6 &set_address(IpAddress6 address) {
+    var::View(m_sockaddr.sockaddr_in6.sin6_addr)
+      .copy(var::View(address.address()));
+    return *this;
+  }
+
+  /*! \details Accesses the family. */
+  Family family() const {
+    return static_cast<Family>(m_sockaddr.sockaddr_in6.sin6_family);
+  }
+
+  u16 port() const { return ntohs(m_sockaddr.sockaddr_in6.sin6_port); }
 };
 
 /*! \brief Socket Address Info
@@ -139,34 +189,44 @@ public:
    * @param flags Socket flags (default is none)
    *
    */
-  SocketAddressInfo(
-    int family = family_inet,
-    int type = type_stream,
-    int protocol = protocol_tcp,
-    int flags = 0);
+  SocketAddressInfo() = default;
 
   bool is_valid() { return m_sockaddr.size > 0; }
 
   /*! \details Sets the flags used for getting address info.
    *
    */
-  void set_flags(int value) { m_addrinfo.ai_flags = value; }
+  SocketAddressInfo &set_flags(int value) {
+    m_addrinfo.ai_flags = value;
+    return *this;
+  }
 
   /*! \details Sets the family for getting address info. */
-  void set_family(int value) { m_addrinfo.ai_family = value; }
+  SocketAddressInfo &set_family(Family value) {
+    m_addrinfo.ai_family = static_cast<int>(value);
+    return *this;
+  }
   /*! \details Sets the type for getting address info. */
-  void set_type(int value) { m_addrinfo.ai_socktype = value; }
+  SocketAddressInfo &set_type(Type value) {
+    m_addrinfo.ai_socktype = static_cast<int>(value);
+    return *this;
+  }
   /*! \details Sets the protocol for getting address info. */
-  void set_protocol(int value) { m_addrinfo.ai_protocol = value; }
+  SocketAddressInfo &set_protocol(Protocol value) {
+    m_addrinfo.ai_protocol = static_cast<int>(value);
+    return *this;
+  }
 
   /*! \details Accesses the flags. */
   int flags() const { return m_addrinfo.ai_flags; }
   /*! \details Accesses the family. */
-  int family() const { return m_addrinfo.ai_family; }
+  Family family() const { return static_cast<Family>(m_addrinfo.ai_family); }
   /*! \details Accesses the type. */
-  int type() const { return m_addrinfo.ai_socktype; }
+  Type type() const { return static_cast<Type>(m_addrinfo.ai_socktype); }
   /*! \details Accesses the protocol. */
-  int protocol() const { return m_addrinfo.ai_protocol; }
+  Protocol protocol() const {
+    return static_cast<Protocol>(m_addrinfo.ai_protocol);
+  }
 
   const var::String &canon_name() const { return m_canon_name; }
 
@@ -186,127 +246,19 @@ public:
   class Fetch {
     API_AC(Fetch, var::StringView, node);
     API_AC(Fetch, var::StringView, service);
+    API_AF(Fetch, u16, port, 0);
   };
 
   var::Vector<SocketAddressInfo> fetch(const Fetch &options);
 
+  SocketAddress get_socket_address() {
+    return std::move(SocketAddress(m_sockaddr, m_canon_name));
+  }
+
 private:
   friend class SocketAddress;
   struct addrinfo m_addrinfo = {0};
-
   socketaddr_t m_sockaddr = {0};
-  var::String m_canon_name;
-};
-
-class SocketAddressIpv4 {
-public:
-  static in_addr_t address(u8 a, u8 b, u8 c, u8 d) {
-    return a << 24 | b << 16 | c << 8 | d;
-  }
-
-  SocketAddressIpv4() {
-    m_sockaddr_in = {0};
-    m_protocol = SocketAddressInfo::protocol_tcp;
-    m_type = SocketAddressInfo::type_stream;
-  }
-
-  SocketAddressIpv4(
-    in_addr_t address,
-    u16 port,
-    int protocol = SocketAddressInfo::protocol_tcp,
-    int type = SocketAddressInfo::type_stream) {
-    m_sockaddr_in.sin_family = AF_INET;
-#if !defined __win32 && !defined __linux
-    m_sockaddr_in.sin_len = sizeof(struct sockaddr_in);
-#endif
-    m_sockaddr_in.sin_addr.s_addr = htonl(address);
-    m_sockaddr_in.sin_port = htons(port);
-    memset(m_sockaddr_in.sin_zero, 0, sizeof(m_sockaddr_in.sin_zero));
-    m_protocol = protocol;
-    m_type = type;
-  }
-
-  static SocketAddressIpv4 from_string(var::StringView value);
-
-  SocketAddressIpv4 &set_address(u8 a, u8 b, u8 c, u8 d) {
-    m_sockaddr_in.sin_addr.s_addr = address(a, b, c, d);
-    return *this;
-  }
-
-  SocketAddressIpv4 &set_address(var::StringView addr);
-
-private:
-  friend class SocketAddress;
-  struct sockaddr_in m_sockaddr_in;
-  int m_protocol;
-  int m_type;
-};
-
-class SocketAddress : public SocketFlags {
-public:
-  /*!
-   * \details Constructor to set the sockaddr structure to 0.
-   */
-  SocketAddress() {
-
-  }
-
-  bool is_valid() const { return m_sockaddr.size > 0; }
-
-  explicit SocketAddress(const SocketAddressIpv4 &ipv4) {
-    m_sockaddr.sockaddr_in = ipv4.m_sockaddr_in;
-  }
-
-  explicit SocketAddress(const SocketAddressInfo &info, u16 port = 0) {
-    m_sockaddr = info.m_sockaddr;
-    m_canon_name = info.m_canon_name;
-    set_port(port);
-  }
-
-  static SocketAddress any(u16 port) {
-    return SocketAddress(SocketAddressIpv4(INADDR_ANY, port));
-  }
-
-  explicit SocketAddress(const sockaddr_in &ipv4) {
-    m_sockaddr.sockaddr_in = ipv4;
-    m_sockaddr.size = sizeof(ipv4);
-  }
-
-  explicit SocketAddress(const sockaddr_in6 &ipv6) {
-    m_sockaddr.sockaddr_in6 = ipv6;
-    m_sockaddr.size = sizeof(ipv6);
-  }
-
-  SocketAddress &set_port(u16 port);
-
-  u32 length() const { return m_sockaddr.size; }
-
-  u16 family() const {
-    return var::View(m_sockaddr).to<const sockaddr>()->sa_family;
-  }
-
-  bool is_ipv4() const { return family() == SocketAddressInfo::family_inet; }
-
-  bool is_ipv6() const { return family() == SocketAddressInfo::family_inet6; }
-
-  u16 port() const;
-
-  in_addr_t address_ipv4() const {
-    return var::View(m_sockaddr).to<const sockaddr_in>()->sin_addr.s_addr;
-  }
-
-  var::String to_string() const;
-  var::String address_to_string() const { return to_string(); }
-  // struct in_addr6 address_ipv6() const { return m_sockaddr.to<const
-  // sockaddr_in6>()->sin6_addr.un; }
-
-  const struct sockaddr *to_sockaddr() const { return &m_sockaddr.sockaddr; }
-
-  const var::String &canon_name() const { return m_canon_name; }
-
-protected:
-  friend class Socket;
-  socketaddr_t m_sockaddr;
   var::String m_canon_name;
 };
 

@@ -18,40 +18,6 @@ using namespace inet;
 
 int Socket::m_is_initialized = 0;
 
-SocketAddressInfo::SocketAddressInfo(
-  int family,
-  int type,
-  int protocol,
-  int flags) {
-  memset(&m_addrinfo, 0, sizeof(m_addrinfo));
-  set_flags(flags);
-  set_family(family);
-  set_type(type);
-  set_protocol(protocol);
-  if (family == family_inet) {
-#if !defined __win32 && !defined __linux
-    m_sockaddr.sockaddr_in.sin_len = sizeof(struct sockaddr_in);
-#else
-
-#endif
-    m_sockaddr.sockaddr_in.sin_family = family;
-    m_sockaddr.sockaddr_in.sin_addr = {0};
-    // m_sockaddr.sockaddr_in.sin_zero = {0};
-  } else {
-    m_sockaddr.size = (sizeof(struct sockaddr_in6));
-#if !defined __win32 && !defined __linux
-    m_sockaddr.sockaddr_in6.sin6_len = m_sockaddr.size;
-#else
-
-#endif
-    m_sockaddr.sockaddr_in6.sin6_family = family;
-    m_sockaddr.sockaddr_in6.sin6_flowinfo = 0;
-    m_sockaddr.sockaddr_in6.sin6_scope_id = 0;
-    m_sockaddr.sockaddr_in6.sin6_port = 0;
-    m_sockaddr.sockaddr_in6.sin6_addr = {0};
-  }
-}
-
 var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(const Fetch &options) {
   var::Vector<SocketAddressInfo> result;
   int result_int;
@@ -82,8 +48,13 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(const Fetch &options) {
     SocketAddressInfo value;
     value.m_addrinfo = *info;
     if (info->ai_addr) {
-
       View(value.m_sockaddr).copy(View(info->ai_addr, info->ai_addrlen));
+      value.m_sockaddr.size = info->ai_addrlen;
+      if (value.m_sockaddr.size == sizeof(struct sockaddr_in)) {
+        value.m_sockaddr.sockaddr_in.sin_port = htons(options.port());
+      } else {
+        value.m_sockaddr.sockaddr_in6.sin6_port = htons(options.port());
+      }
     }
 
     if (info->ai_canonname) {
@@ -100,132 +71,6 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(const Fetch &options) {
   Socket::deinitialize();
 
   return result;
-}
-
-#if 0
-int Ipv4Address::set_address(const var::String & address) {
-	var::Token address_token(address,".");
-	if( address_token.count() != 4 ){
-		return -1;
-	}
-
-	set_address(var::String(address_token.at(0)).atoi(),
-					var::String(address_token.at(0)).atoi(),
-					var::String(address_token.at(0)).atoi(),
-					var::String(address_token.at(0)).atoi());
-
-	return 0;
-}
-#endif
-
-u16 SocketAddress::port() const {
-  if (family() == SocketAddressInfo::family_inet) {
-    return ntohs(var::View(m_sockaddr).to<const sockaddr_in>()->sin_port);
-  } else if (family() == SocketAddressInfo::family_inet6) {
-    return ntohs(var::View(m_sockaddr).to<const sockaddr_in6>()->sin6_port);
-  }
-  return 0;
-}
-
-SocketAddress &SocketAddress::set_port(u16 port) {
-  if (is_ipv4()) {
-    m_sockaddr.sockaddr_in.sin_port = htons(port);
-  } else if (is_ipv6()) {
-    m_sockaddr.sockaddr_in6.sin6_port = htons(port);
-  }
-  return *this;
-}
-
-var::String SocketAddress::to_string() const {
-  var::String result;
-  if (is_ipv4()) {
-    u32 address = address_ipv4();
-    result.format(
-      "%d.%d.%d.%d",
-      (address >> 0) & 0xff,
-      (address >> 8) & 0xff,
-      (address >> 16) & 0xff,
-      (address >> 24) & 0xff);
-  }
-
-  if (is_ipv6()) {
-    const struct sockaddr_in6 *addr
-      = var::View(m_sockaddr).to<struct sockaddr_in6>();
-#if defined __link
-#if defined __macosx
-    result.format(
-      "%04X:%04X:%04X:%04X:%04X:%04X:%04X:%04X",
-      ((u16)addr->sin6_addr.__u6_addr.__u6_addr8[0]) << 8
-        | addr->sin6_addr.__u6_addr.__u6_addr8[1],
-      ((u16)addr->sin6_addr.__u6_addr.__u6_addr8[2]) << 8
-        | addr->sin6_addr.__u6_addr.__u6_addr8[3],
-      ((u16)addr->sin6_addr.__u6_addr.__u6_addr8[4]) << 8
-        | addr->sin6_addr.__u6_addr.__u6_addr8[5],
-      ((u16)addr->sin6_addr.__u6_addr.__u6_addr8[6]) << 8
-        | addr->sin6_addr.__u6_addr.__u6_addr8[7],
-      ((u16)addr->sin6_addr.__u6_addr.__u6_addr8[8]) << 8
-        | addr->sin6_addr.__u6_addr.__u6_addr8[9],
-      ((u16)addr->sin6_addr.__u6_addr.__u6_addr8[10]) << 8
-        | addr->sin6_addr.__u6_addr.__u6_addr8[11],
-      ((u16)addr->sin6_addr.__u6_addr.__u6_addr8[12]) << 8
-        | addr->sin6_addr.__u6_addr.__u6_addr8[13],
-      ((u16)addr->sin6_addr.__u6_addr.__u6_addr8[14]) << 8
-        | addr->sin6_addr.__u6_addr.__u6_addr8[15]);
-#else
-
-#endif
-#else
-    result.format(
-      "%04X:%04X:%04X:%04X:%04X:%04X:%04X:%04X",
-      ((u16)addr->sin6_addr.un.u8_addr[0]) << 8 | addr->sin6_addr.un.u8_addr[1],
-      ((u16)addr->sin6_addr.un.u8_addr[2]) << 8 | addr->sin6_addr.un.u8_addr[3],
-      ((u16)addr->sin6_addr.un.u8_addr[4]) << 8 | addr->sin6_addr.un.u8_addr[5],
-      ((u16)addr->sin6_addr.un.u8_addr[6]) << 8 | addr->sin6_addr.un.u8_addr[7],
-      ((u16)addr->sin6_addr.un.u8_addr[8]) << 8 | addr->sin6_addr.un.u8_addr[9],
-      ((u16)addr->sin6_addr.un.u8_addr[10]) << 8
-        | addr->sin6_addr.un.u8_addr[11],
-      ((u16)addr->sin6_addr.un.u8_addr[12]) << 8
-        | addr->sin6_addr.un.u8_addr[13],
-      ((u16)addr->sin6_addr.un.u8_addr[14]) << 8
-        | addr->sin6_addr.un.u8_addr[15]);
-#endif
-  }
-
-  return result;
-}
-
-SocketAddressIpv4 SocketAddressIpv4::from_string(var::StringView value) {
-  Tokenizer tokens
-    = Tokenizer(value, var::Tokenizer::Construct().set_delimeters(".:"));
-
-  if (tokens.count() < 4) {
-    return SocketAddressIpv4();
-  }
-
-  return SocketAddressIpv4(
-    SocketAddressIpv4::address(
-      tokens.at(0).to_integer(),
-      tokens.at(1).to_integer(),
-      tokens.at(2).to_integer(),
-      tokens.at(3).to_integer()),
-    tokens.count() > 4 ? tokens.at(4).to_integer() : 0);
-}
-
-SocketAddressIpv4 &SocketAddressIpv4::set_address(var::StringView addr) {
-  Tokenizer tokens
-    = Tokenizer(addr, var::Tokenizer::Construct().set_delimeters("."));
-
-  if (tokens.count() != 4) {
-    return *this;
-  }
-
-  set_address(
-    String(tokens.at(0)).to_integer(),
-    String(tokens.at(1)).to_integer(),
-    String(tokens.at(2)).to_integer(),
-    String(tokens.at(3)).to_integer());
-
-  return *this;
 }
 
 Socket::Socket() {

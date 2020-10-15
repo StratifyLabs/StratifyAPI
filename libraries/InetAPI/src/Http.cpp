@@ -259,10 +259,10 @@ int HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
   m_alive_domain.clear();
 
   var::Vector<SocketAddressInfo> address_list = address_info.fetch(
-    SocketAddressInfo::Fetch().set_node(domain_name));
+    SocketAddressInfo::Fetch().set_node(domain_name).set_port(port));
   if (address_list.count() > 0) {
-    m_address = SocketAddress(address_list.at(0));
-    m_address.set_port(port);
+
+    m_address = address_list.at(0).get_socket_address();
 
     socket().connect(m_address);
 

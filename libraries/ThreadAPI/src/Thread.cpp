@@ -151,7 +151,6 @@ Thread::Thread(const Construct &options, const Attributes &attributes) {
 }
 
 Thread::~Thread() {
-  // what if thread is still running?
   if (is_joinable()) {
     cancel();
     join();

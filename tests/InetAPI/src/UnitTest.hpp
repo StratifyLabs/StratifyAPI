@@ -6,6 +6,7 @@
 #include "chrono.hpp"
 #include "crypto.hpp"
 #include "fs.hpp"
+#include "inet.hpp"
 #include "printer.hpp"
 #include "sys.hpp"
 #include "test/Test.hpp"
