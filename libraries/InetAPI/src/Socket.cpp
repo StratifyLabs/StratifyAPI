@@ -87,6 +87,17 @@ Socket::Socket() {
   initialize();
 }
 
+Socket::Socket(const SocketAddress &socket_address) {
+  initialize();
+  API_RETURN_IF_ERROR();
+  m_socket = API_SYSTEM_CALL(
+    "socket",
+    ::socket(
+      static_cast<int>(socket_address.family()),
+      static_cast<int>(socket_address.type()),
+      static_cast<int>(socket_address.protocol())));
+}
+
 Socket::Socket(Domain domain, Type type, Protocol protocol) {
   initialize();
   API_RETURN_IF_ERROR();

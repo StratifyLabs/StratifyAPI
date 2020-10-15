@@ -206,6 +206,16 @@ Thread &Thread::cancel() {
   return *this;
 }
 
+bool Thread::is_running() const {
+  API_RETURN_VALUE_IF_ERROR(false);
+  int result = API_SYSTEM_CALL("", pthread_kill(id(), 0));
+  if (result == 0) {
+    return true;
+  }
+  API_RESET_ERROR();
+  return false;
+}
+
 Thread &Thread::set_cancel_type(CancelType cancel_type) {
   API_RETURN_VALUE_IF_ERROR(*this);
   int old = 0;

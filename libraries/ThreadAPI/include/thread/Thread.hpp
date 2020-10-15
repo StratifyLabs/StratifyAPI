@@ -110,8 +110,11 @@ public:
   Thread &operator=(const Thread &thread) = delete;
 
   // allow moving threads
-  Thread &operator=(Thread &&thread) = default;
-  Thread(Thread &&thread) = default;
+  Thread &operator=(Thread &&a) {
+    swap(std::move(a));
+    return *this;
+  }
+  Thread(Thread &&a) { swap(std::move(a)); }
 
   Thread(const Construct &options, const Attributes &attributes = Attributes());
   ~Thread();
@@ -147,6 +150,7 @@ public:
 
   Thread &cancel();
 
+  bool is_running() const;
 
   /*! \details Returns the thread ID of the calling thread. */
   static pthread_t self() { return pthread_self(); }
@@ -185,6 +189,13 @@ private:
   pthread_t m_id = 0;
 #define THREADAPI_STATUS_ID m_id
 #endif
+
+  void swap(Thread &&a) {
+    std::swap(m_id, a.m_id);
+#if defined __link
+    std::swap(m_private_context, a.m_private_context);
+#endif
+  }
 
   int get_sched_parameters(int &policy, int &priority) const;
 

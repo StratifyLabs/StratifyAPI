@@ -196,6 +196,9 @@ public:
     return m_backtrace_buffer_size;
   }
 
+  bool is_error() const { return line_number() > 0; }
+  void reset() { m_line_number = 0; }
+
 private:
   Error(void *signature) : m_signature(signature) {}
   friend class PrivateExecutionContext;
@@ -280,7 +283,10 @@ public:
   static inline size_t context_count() {
     return m_private_context.context_count();
   }
-  static inline void reset_error() { errno = 0; }
+  static inline void reset_error() {
+    errno = 0;
+    error().reset();
+  }
   static inline bool is_error() { return m_private_context.is_error(); }
   static inline bool is_success() { return m_private_context.is_success(); }
   static inline int return_value() { return m_private_context.value(); }

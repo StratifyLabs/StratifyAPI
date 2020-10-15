@@ -243,11 +243,18 @@ public:
    */
   size_t size() const { return m_size_read_only & ~m_size_read_only_flag; }
 
+  View &truncate(size_t new_size) {
+    if (size() > new_size) {
+      m_size_read_only
+        = (m_size_read_only & m_size_read_only_flag) | (new_size);
+    }
+    return *this;
+  }
+
   View &pop_back(size_t pop_size = 1) {
     if (size() > pop_size) {
       m_size_read_only
         = (m_size_read_only & m_size_read_only_flag) | (size() - pop_size);
-      m_size_read_only |= (size() - pop_size);
     }
     return *this;
   }

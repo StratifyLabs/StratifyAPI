@@ -288,6 +288,9 @@ public:
     Domain domain,
     Type type = Type::stream,
     Protocol protocol = Protocol::ip);
+
+  explicit Socket(const SocketAddress &socket_address);
+
   virtual ~Socket();
 
   Socket(Socket &&socket) { std::swap(m_socket, socket.m_socket); }
