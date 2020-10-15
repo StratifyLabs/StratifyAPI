@@ -36,6 +36,30 @@ public:
     return true;
   }
 
+  bool random_api_case() { return true; }
+
+  bool sha256_api_case() {
+
+    const StringView input
+      = "With the newest hardware (CPU and GPU) improvements it is become "
+        "possible to decrypt SHA256 algorithm back. So it is no longer "
+        "recommended to use it for password protection or other similar use "
+        "cases. Some years ago you would protect your passwords from hackers "
+        "by storing SHA256 encrypted password in the your data base. This is "
+        "no longer a case.";
+
+    const Data output = Data::from_string(
+      "81bb7b29be293aeab191404e671a8a8c7687756b632cbd6a29ee65f909b30bcf");
+
+    {
+      Sha256 sha256;
+      TEST_ASSERT(NullFile().write(ViewFile(View(input)), sha256).is_success());
+      TEST_ASSERT(View(sha256.output()) == View(output));
+    }
+
+    return true;
+  }
+
   bool aes_api_case() {
 
     PrinterObject po(printer(), "aes_api_case()");
@@ -135,10 +159,6 @@ public:
 
     return true;
   }
-
-  bool random_api_case() { return true; }
-
-  bool sha256_api_case() { return true; }
 
 private:
 };

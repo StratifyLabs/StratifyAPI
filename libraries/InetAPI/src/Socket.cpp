@@ -228,13 +228,12 @@ SocketAddressIpv4 &SocketAddressIpv4::set_address(var::StringView addr) {
   return *this;
 }
 
-Socket::Socket() : FileAccess("", fs::OpenMode::read_write()) {
+Socket::Socket() {
   m_socket = SOCKET_INVALID;
   initialize();
 }
 
-Socket::Socket(Domain domain, Type type, Protocol protocol)
-  : FileAccess("", fs::OpenMode::read_write()) {
+Socket::Socket(Domain domain, Type type, Protocol protocol){
   initialize();
   API_RETURN_IF_ERROR();
 

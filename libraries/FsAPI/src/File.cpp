@@ -318,7 +318,7 @@ const File &File::write(const File &source_file, const Write &options) const {
   return *this;
 }
 
-DataFile::DataFile(fs::File &file_to_load) : FileAccess("") {
+DataFile::DataFile(fs::File &file_to_load) {
   m_location = 0;
   m_open_flags = OpenMode::append_read_write();
   API_RETURN_IF_ERROR();

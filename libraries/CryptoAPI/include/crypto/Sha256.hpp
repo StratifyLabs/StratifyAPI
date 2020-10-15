@@ -43,26 +43,28 @@ namespace crypto {
  *
  *
  */
-class Sha256 : public api::ExecutionContext {
+class Sha256 : public api::ExecutionContext, public var::Transformer {
 public:
   Sha256();
   ~Sha256();
 
-  Sha256 &start();
+  const Sha256 &update(const var::View &data) const;
+  const var::Array<u8, 32> &output() {
+    if (m_is_finished == false) {
+      finish();
+      m_is_finished = true;
+    }
+    return m_output;
+  }
 
-  Sha256 &update(const var::View &data);
-  Sha256 &update(const fs::File &file);
+  int transform(const Transform &options) const override {
+    update(options.input());
+    var::View(options.output()).copy(options.input());
+    return options.input().size();
+  }
 
-  Sha256 &finish();
+  size_t page_size_boundary() const override { return 16; }
 
-  var::String get_checksum(const fs::File &file);
-
-  Sha256 &operator<<(const var::View &a);
-
-  const var::Array<u8, 32> &output();
-  var::String to_string();
-
-  static constexpr u32 length() { return 32; }
   static constexpr size_t page_size() {
 #if defined __link
     return 4096;
@@ -78,6 +80,7 @@ private:
   var::Array<u8, 32> m_output;
   void *m_context = nullptr;
   bool m_is_finished = false;
+  void finish();
 
   static Api &api() { return m_api; }
 };

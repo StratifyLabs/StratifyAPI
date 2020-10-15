@@ -749,8 +749,6 @@ Printer &Printer::operator<<(const api::Error &error_context) {
 
     if (symbol != nullptr) {
       key(var::Ntos(offset), var::StringView(symbol));
-    } else {
-      printf("symbol is null after demangle\n");
     }
 
     offset++;

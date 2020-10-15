@@ -321,11 +321,6 @@ private:
 
 template <class Derived> class FileAccess : public File {
 public:
-  FileAccess<Derived>(
-    var::StringView name,
-    const OpenMode &flags
-    = OpenMode::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST)
-    : File(name, flags FSAPI_LINK_INHERIT_DRIVER_LAST) {}
 
   Derived &set_keep_open(bool value = true) {
     return static_cast<Derived &>(File::set_keep_open(value));
@@ -466,6 +461,12 @@ private:
 class ViewFile : public FileAccess<ViewFile> {
 public:
   /*! \details Constructs a data file. */
+
+  // ViewFile(const ViewFile &view_file) = delete;
+  // ViewFile &operator=(const ViewFile &view_file) = delete;
+  // ViewFile(ViewFile &&view_file) = default;
+  // ViewFile &operator=(ViewFile &&view_file) = default;
+
   ViewFile(var::View view)
     : m_open_flags(
       view.is_read_only() ? OpenMode::read_only() : OpenMode::read_write()) {
@@ -511,7 +512,12 @@ private:
 
 class NullFile : public FileAccess<NullFile> {
 public:
-  NullFile() : FileAccess("") {}
+  NullFile() = default;
+
+  NullFile(const NullFile &) = delete;
+  NullFile &operator=(const NullFile &) = delete;
+  NullFile(NullFile &&) = default;
+  NullFile &operator=(NullFile &&) = default;
 
 private:
 
@@ -519,10 +525,20 @@ private:
     return 0;
   }
   int interface_close(int fd) const override { return 0; }
-  int interface_read(int fd, void *buf, int nbyte) const override;
-  int interface_write(int fd, const void *buf, int nbyte) const override;
-  int interface_ioctl(int fd, int request, void *argument) const override;
-  int interface_lseek(int fd, int location, int whence) const override;
+  int interface_read(int fd, void *buf, int nbyte) const override {
+    errno = ENOTSUP;
+    return -1;
+  }
+  int interface_write(int fd, const void *buf, int nbyte) const override {
+    return nbyte;
+  }
+  int interface_ioctl(int fd, int request, void *argument) const override {
+    errno = ENOTSUP;
+    return -1;
+  }
+  int interface_lseek(int fd, int location, int whence) const override {
+    return 0;
+  }
   int interface_fsync(int fd) const override { return 0; }
 };
 
