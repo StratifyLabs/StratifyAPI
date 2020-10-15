@@ -34,7 +34,7 @@ const Sha256 &Sha256::update(const var::View &input) const {
   return *this;
 }
 
-void Sha256::finish() {
+void Sha256::finish() const {
   if (m_is_finished == false) {
     API_RETURN_VALUE_IF_ERROR();
     m_is_finished = true;

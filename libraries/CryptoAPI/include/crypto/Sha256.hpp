@@ -54,7 +54,7 @@ public:
   Sha256 &operator=(Sha256 &&) = default;
 
   const Sha256 &update(const var::View &data) const;
-  const var::Array<u8, 32> &output() {
+  const var::Array<u8, 32> &output() const {
     finish();
     return m_output;
   }
@@ -79,10 +79,10 @@ private:
   static Api m_api;
 
   void *m_context = nullptr;
-  bool m_is_finished = false;
+  mutable bool m_is_finished = false;
   var::Array<u8, 32> m_output;
 
-  void finish();
+  void finish() const;
   static Api &api() { return m_api; }
 };
 

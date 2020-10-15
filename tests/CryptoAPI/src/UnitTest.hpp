@@ -72,6 +72,7 @@ public:
       Sha256 sha256;
       TEST_ASSERT(NullFile().write(ViewFile(View(input)), sha256).is_success());
       TEST_ASSERT(View(sha256.output()) == View(output));
+      TEST_ASSERT(View(Sha256().update(View(input)).output()) == View(output));
     }
 
     return true;
