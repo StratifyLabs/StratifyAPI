@@ -115,20 +115,29 @@ int Thread::Attributes::get_sched_priority() const {
   return param.sched_priority;
 }
 
+void *Thread::handle_thread(void *args) {
+  Thread *self = reinterpret_cast<Thread *>(args);
+  function_t function = self->m_function;
+  void *argument = self->m_argument;
+  self->m_function = nullptr;
+  void *result = function(argument);
+  free_context();
+  return result;
+}
+
 Thread::Thread(const Construct &options, const Attributes &attributes) {
   API_RETURN_IF_ERROR();
   API_ASSERT(options.function() != nullptr);
 
   DetachState detach_state = attributes.get_detach_state();
 
+  m_function = options.function();
+  m_argument = options.argument();
+
   // First create the thread
   int result = API_SYSTEM_CALL(
     "",
-    pthread_create(
-      &m_id,
-      &attributes.m_pthread_attr,
-      options.function(),
-      options.argument()));
+    pthread_create(&m_id, &attributes.m_pthread_attr, handle_thread, this));
 
   if (result < 0) {
     set_id_error();
@@ -146,6 +155,12 @@ Thread::~Thread() {
   if (is_joinable()) {
     cancel();
     join();
+  } else {
+    // for detached threads, the function must be allowed to start before
+    // destroying the object
+    while (m_function != nullptr) {
+      Sched().yield();
+    }
   }
 }
 

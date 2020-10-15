@@ -190,6 +190,10 @@ private:
   bool is_id_ready() const { return THREADAPI_STATUS_ID > 0; }
   bool is_id_error() const { return THREADAPI_STATUS_ID == id_error; }
   bool is_id_completed() const { return THREADAPI_STATUS_ID == id_completed; }
+
+  static void *handle_thread(void *args);
+  volatile function_t m_function;
+  void *m_argument;
 };
 
 } // namespace thread
