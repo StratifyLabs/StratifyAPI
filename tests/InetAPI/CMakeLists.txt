@@ -21,6 +21,7 @@ include(${CMAKE_SOURCE_DIR}/tests/API/api.cmake)
 
 set(DIRECTORIES
 	CryptoAPI
+	ThreadAPI
 	InetAPI
 	FsAPI
 	SysAPI

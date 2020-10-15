@@ -113,7 +113,7 @@ public:
   Thread &operator=(Thread &&thread) = default;
   Thread(Thread &&thread) = default;
 
-  Thread(const Construct &options, const Attributes &attributes);
+  Thread(const Construct &options, const Attributes &attributes = Attributes());
   ~Thread();
 
   /*! \details Gets the ID of the thread. */
@@ -161,12 +161,21 @@ public:
 
   bool is_joinable() const { return is_valid(); }
 
+  const api::Error *execution_context_error() const {
+    return m_execution_context_error;
+  }
+
 private:
   enum thread_flags {
     id_completed = static_cast<u32>(-3),
     id_error /*! ID is an error */ = static_cast<u32>(-2),
     id_ready = 1
   };
+
+  static void *handle_thread(void *args);
+  volatile function_t m_function;
+  void *m_argument;
+  const api::Error *m_execution_context_error = nullptr;
 
 #if defined __link
   u32 m_private_context;
@@ -190,10 +199,6 @@ private:
   bool is_id_ready() const { return THREADAPI_STATUS_ID > 0; }
   bool is_id_error() const { return THREADAPI_STATUS_ID == id_error; }
   bool is_id_completed() const { return THREADAPI_STATUS_ID == id_completed; }
-
-  static void *handle_thread(void *args);
-  volatile function_t m_function;
-  void *m_argument;
 };
 
 } // namespace thread

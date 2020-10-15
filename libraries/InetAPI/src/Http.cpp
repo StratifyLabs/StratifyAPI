@@ -241,7 +241,6 @@ int HttpClient::send_string(var::StringView str) {
 }
 
 int HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
-  SocketAddressInfo address_info;
 
   if ((socket().fileno() >= 0) && is_keep_alive()) {
     // already connected
@@ -258,14 +257,12 @@ int HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
 
   m_alive_domain.clear();
 
-  var::Vector<SocketAddressInfo> address_list = address_info.fetch(
-    SocketAddressInfo::Fetch().set_node(domain_name).set_port(port));
-  if (address_list.count() > 0) {
+  AddressInfo address_info(
+    AddressInfo::Construct().set_node(domain_name).set_port(port));
 
-    m_address = address_list.at(0).get_socket_address();
-
+  if (address_info.list().count() > 0) {
+    m_address = address_info.list().at(0);
     socket().connect(m_address);
-
     m_alive_domain = var::String(domain_name);
     return 0;
   }

@@ -23,6 +23,9 @@ public:
     Protocol protocol = Protocol::tcp);
   ~SecureSocket();
 
+  SecureSocket(SecureSocket &&socket) = default;
+  SecureSocket &operator=(SecureSocket &&socket) = default;
+
   SecureSocket &set_ticket_lifetime(u32 seconds) {
     m_ticket_lifetime_seconds = seconds;
     return *this;
@@ -54,7 +57,8 @@ private:
   virtual int
   interface_shutdown(int fd, const fs::OpenMode how) const override final;
 
-  int interface_close(int fd) const override final;
+  int interface_close(int fd) const;
+
   int interface_read(int fd, void *buf, int nbyte) const override final;
   int interface_write(int fd, const void *buf, int nbyte) const override final;
 };

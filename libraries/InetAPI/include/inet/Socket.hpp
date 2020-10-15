@@ -20,7 +20,11 @@ class SocketAddress;
 
 class SocketFlags {
 public:
-  enum class Domain { inet = AF_INET, inet6 = AF_INET6 };
+  enum class Domain {
+    unspecified = AF_UNSPEC,
+    inet = AF_INET,
+    inet6 = AF_INET6
+  };
   using Family = Domain;
 
   enum class Type {
@@ -38,6 +42,51 @@ public:
     ip /*! IP Protocol */ = IPPROTO_IP,
   };
 
+  enum class Level {
+    socket = SOL_SOCKET,
+    ip = IPPROTO_IP,
+    ipv6 = IPPROTO_IPV6,
+    tcp = IPPROTO_TCP
+  };
+
+  enum class AddressInfoFlags {
+    null = 0,
+    passive = AI_PASSIVE,
+    canon_name = AI_CANONNAME,
+    numeric_host = AI_NUMERICHOST,
+    numeric_service = AI_NUMERICSERV
+  };
+
+  enum class NameFlags {
+    socket_debug = SO_DEBUG,
+    socket_broadcast = SO_BROADCAST,
+    socket_reuse_address = SO_REUSEADDR,
+#if !defined __win32
+    socket_reuse_port = SO_REUSEPORT,
+#endif
+    socket_set_send_size = SO_SNDBUF,
+    socket_set_receive_size = SO_RCVBUF,
+    socket_dont_route = SO_DONTROUTE,
+    socket_keep_alive = SO_KEEPALIVE,
+    socket_linger = SO_LINGER,
+    socket_oobinline = SO_OOBINLINE,
+    socket_set_receive_minimum_size = SO_RCVLOWAT,
+    socket_receive_timeout = SO_RCVTIMEO,
+    socket_set_send_minimum_size = SO_SNDLOWAT,
+    socket_send_timeout = SO_SNDTIMEO,
+
+    ip_type_of_service = IP_TOS,
+    ip_time_to_live = IP_TTL,
+    ip_packet_info = IP_PKTINFO,
+
+#if !defined __link
+    tcp_no_delay = TCP_NODELAY,
+    tcp_keep_alive = TCP_KEEPALIVE,
+    tcp_keep_idle = TCP_KEEPIDLE,
+    tcp_keep_interval = TCP_KEEPINTVL,
+    tcp_keep_count = TCP_KEEPCNT
+#endif
+  };
 
   typedef struct {
     size_t size;
@@ -49,13 +98,16 @@ public:
   } socketaddr_t;
 };
 
+API_OR_NAMED_FLAGS_OPERATOR(SocketFlags, NameFlags)
+API_OR_NAMED_FLAGS_OPERATOR(SocketFlags, AddressInfoFlags)
+
 class SocketAddress : public SocketFlags {
 public:
   SocketAddress() = default;
-  explicit SocketAddress(
-    const socketaddr_t sockaddr,
-    var::StringView canon_name)
-    : m_sockaddr(sockaddr), m_canon_name(canon_name) {}
+  // explicit SocketAddress(
+  //  const socketaddr_t sockaddr,
+  //  var::StringView canon_name)
+  //  : m_sockaddr(sockaddr), m_canon_name(canon_name) {}
 
   const var::String &canon_name() const { return m_canon_name; }
   size_t length() const { return m_sockaddr.size; }
@@ -63,12 +115,54 @@ public:
 
   const struct sockaddr *to_sockaddr() const { return &m_sockaddr.sockaddr; }
 
+  /*! \details Accesses the family. */
+  Family family() const {
+    if (m_sockaddr.size == sizeof(struct sockaddr_in)) {
+      return Family::inet;
+    }
+
+    return Family::inet6;
+  }
+
+  u16 port() const {
+    if (m_sockaddr.size == sizeof(struct sockaddr_in)) {
+      return ntohs(m_sockaddr.sockaddr_in.sin_port);
+    }
+    return ntohs(m_sockaddr.sockaddr_in6.sin6_port);
+  }
+
+  var::String get_address_string() const {
+    if (m_sockaddr.size == sizeof(struct sockaddr_in)) {
+      return std::move(
+        IpAddress4(m_sockaddr.sockaddr_in.sin_addr.s_addr).to_string());
+    }
+    return std::move(IpAddress6(m_sockaddr.sockaddr_in6.sin6_addr).to_string());
+  }
+
 private:
   friend class Socket;
   friend class SocketAddress4;
   friend class SocketAddress6;
+  friend class AddressInfo;
   socketaddr_t m_sockaddr = {0};
   var::String m_canon_name;
+
+  explicit SocketAddress(
+    const void *addr,
+    size_t length,
+    const char *canon_name,
+    u16 port) {
+    memcpy(&m_sockaddr.sockaddr, addr, length);
+    m_sockaddr.size = length;
+    if (canon_name != nullptr) {
+      m_canon_name = canon_name;
+    }
+    if (m_sockaddr.size == sizeof(struct sockaddr_in)) {
+      m_sockaddr.sockaddr_in.sin_port = htons(port);
+    } else {
+      m_sockaddr.sockaddr_in6.sin6_port = htons(port);
+    }
+  }
 };
 
 class SocketAddress4 : public SocketAddress {
@@ -76,15 +170,12 @@ public:
   /*!
    * \details Constructor to set the sockaddr structure to 0.
    */
-  SocketAddress4() { m_sockaddr.size = sizeof(struct sockaddr_in); }
+  SocketAddress4() {
+    m_sockaddr.size = sizeof(struct sockaddr_in);
+    m_sockaddr.sockaddr_in.sin_family = AF_INET;
+  }
 
   // length, family, port, address
-
-  /*! \details Sets the family for getting address info. */
-  SocketAddress4 &set_family(Family value) {
-    m_sockaddr.sockaddr_in.sin_family = static_cast<int>(value);
-    return *this;
-  }
 
   /*! \details Sets the protocol for getting address info. */
   SocketAddress4 &set_port(u16 port) {
@@ -96,13 +187,6 @@ public:
     m_sockaddr.sockaddr_in.sin_addr.s_addr = address.address();
     return *this;
   }
-
-  /*! \details Accesses the family. */
-  Family family() const {
-    return static_cast<Family>(m_sockaddr.sockaddr_in.sin_family);
-  }
-
-  u16 port() const { return ntohs(m_sockaddr.sockaddr_in.sin_port); }
 
 protected:
 };
@@ -130,276 +214,46 @@ public:
       .copy(var::View(address.address()));
     return *this;
   }
-
-  /*! \details Accesses the family. */
-  Family family() const {
-    return static_cast<Family>(m_sockaddr.sockaddr_in6.sin6_family);
-  }
-
-  u16 port() const { return ntohs(m_sockaddr.sockaddr_in6.sin6_port); }
 };
 
-/*! \brief Socket Address Info
- * \details The Socket Address Info class is used
- * to get socket address information for a given
- * node and service.
- *
- * For example, if you have a web URL this class
- * can be used to converto that to information that can be
- * used to open a socket.
- *
- * The following is an example of how to use
- * this class for connected to a server.
- *
- * ```
- * #include <sapi/inet.hpp>
- * #include <sapi/var.hpp>
- *
- * SocketAddressInfo socket_address_info; //construct with defaults
- * Vector<SocketAddressInfo> result =
- *socket_address_info.fetch_node("stratifylabs.co");
- *
- * if( result.count() > 0 ){
- *	 SocketAddress socket_address(result.at(0));
- *  Socket socket;
- *  socket.create(socket_address); //create a socket that can connect to
- *stratifylabs.co
- *
- *  socket.connect(socket_address); //connect to stratifylabs.co
- *
- *  String request = "...";
- *  socket.write(request);
- *  //then read the response
- *
- *  socket.close();
- * }
- *
- * ```
- *
- *
- *
- */
-class SocketAddressInfo : public api::ExecutionContext, public SocketFlags {
+class AddressInfo : public api::ExecutionContext, public SocketFlags {
 public:
-  /*! \details Constructs a new socket address infomation object.
-   *
-   * @param family Socket family (defautl is FAMILY_INET)
-   * @param type Socket type (default is TYPE_STREAM)
-   * @param protocol Socket protocol (default is PROTOCOL_TCP)
-   * @param flags Socket flags (default is none)
-   *
-   */
-  SocketAddressInfo() = default;
+  using Flags = AddressInfoFlags;
 
-  bool is_valid() { return m_sockaddr.size > 0; }
-
-  /*! \details Sets the flags used for getting address info.
-   *
-   */
-  SocketAddressInfo &set_flags(int value) {
-    m_addrinfo.ai_flags = value;
-    return *this;
-  }
-
-  /*! \details Sets the family for getting address info. */
-  SocketAddressInfo &set_family(Family value) {
-    m_addrinfo.ai_family = static_cast<int>(value);
-    return *this;
-  }
-  /*! \details Sets the type for getting address info. */
-  SocketAddressInfo &set_type(Type value) {
-    m_addrinfo.ai_socktype = static_cast<int>(value);
-    return *this;
-  }
-  /*! \details Sets the protocol for getting address info. */
-  SocketAddressInfo &set_protocol(Protocol value) {
-    m_addrinfo.ai_protocol = static_cast<int>(value);
-    return *this;
-  }
-
-  /*! \details Accesses the flags. */
-  int flags() const { return m_addrinfo.ai_flags; }
-  /*! \details Accesses the family. */
-  Family family() const { return static_cast<Family>(m_addrinfo.ai_family); }
-  /*! \details Accesses the type. */
-  Type type() const { return static_cast<Type>(m_addrinfo.ai_socktype); }
-  /*! \details Accesses the protocol. */
-  Protocol protocol() const {
-    return static_cast<Protocol>(m_addrinfo.ai_protocol);
-  }
-
-  const var::String &canon_name() const { return m_canon_name; }
-
-  /*! \details Fetches the socket address information from
-   * DNS servers based on the node and service specified.
-   *
-   * ```
-   * #include <sapi/var.hpp>
-   * #include <sapi/inet.hpp>
-   *
-   * SocketAddressInfo address_info;
-   * Vector<SocketAddressInfo> address_info.fetch_node("stratifylabs.co"); //get
-   * IP address and other info for stratifylabs.co
-   * ```
-   */
-
-  class Fetch {
-    API_AC(Fetch, var::StringView, node);
-    API_AC(Fetch, var::StringView, service);
-    API_AF(Fetch, u16, port, 0);
+  class Construct {
+    API_AC(Construct, var::StringView, node);
+    API_AC(Construct, var::StringView, service);
+    API_AF(Construct, Family, family, Family::unspecified);
+    API_AF(Construct, Type, type, Type::stream);
+    API_AF(Construct, Flags, flags, Flags::null);
+    API_AF(Construct, u16, port, 0);
   };
 
-  var::Vector<SocketAddressInfo> fetch(const Fetch &options);
-
-  SocketAddress get_socket_address() {
-    return std::move(SocketAddress(m_sockaddr, m_canon_name));
-  }
+  AddressInfo(const Construct &options);
 
 private:
-  friend class SocketAddress;
-  struct addrinfo m_addrinfo = {0};
-  socketaddr_t m_sockaddr = {0};
-  var::String m_canon_name;
+  API_RAC(AddressInfo, var::Vector<SocketAddress>, list);
 };
 
 class SocketOption : public SocketFlags {
 public:
-  enum class Level {
-    socket = SOL_SOCKET,
-    ip = IPPROTO_IP,
-    ipv6 = IPPROTO_IPV6,
-    tcp = IPPROTO_TCP
-  };
-
-  explicit SocketOption(Level level) : m_level(level) {}
-
-  enum class Name {
-    SOCKET_DEBUG = SO_DEBUG,
-    SOCKET_BROADCAST = SO_BROADCAST,
-    SOCKET_REUSE_ADDRESS = SO_REUSEADDR,
-    SOCKET_REUSEADDR = SO_REUSEADDR,
-#if !defined __win32
-    SOCKET_REUSEPORT = SO_REUSEPORT,
-    SOCKET_REUSE_PORT = SO_REUSEPORT,
-#endif
-    SOCKET_SET_SEND_SIZE = SO_SNDBUF,
-    SOCKET_SNDBUF = SO_SNDBUF,
-    SOCKET_SET_RECEIVE_SIZE = SO_RCVBUF,
-    SOCKET_RCVBUF = SO_RCVBUF,
-    SOCKET_DONT_ROUTE = SO_DONTROUTE,
-    SOCKET_KEEP_ALIVE = SO_KEEPALIVE,
-    SOCKET_LINGER = SO_LINGER,
-    SOCKET_OOBINLINE = SO_OOBINLINE,
-    SOCKET_RCVLOWAT = SO_RCVLOWAT,
-    SOCKET_SET_RECEIVE_MINIMUM_SIZE = SO_RCVLOWAT,
-    SOCKET_RECEIVE_TIMEOUT = SO_RCVTIMEO,
-    SOCKET_RCVTIMEO = SO_RCVTIMEO,
-    SOCKET_SNDLOWAT = SO_SNDLOWAT,
-    SOCKET_SET_SEND_MINIMUM_SIZE = SO_SNDLOWAT,
-    SOCKET_SEND_TIMEOUT = SO_SNDTIMEO,
-    SOCKET_SNDTIMEO = SO_SNDTIMEO,
-
-    IP_TYPE_OF_SERVICE = IP_TOS,
-    IP_TIME_TO_LIVE = IP_TTL,
-    IP_PACKET_INFO = IP_PKTINFO,
-
-#if !defined __link
-    TCP_NO_DELAY = TCP_NODELAY,
-    TCP_KEEP_ALIVE = TCP_KEEPALIVE,
-    TCP_KEEP_IDLE = TCP_KEEPIDLE,
-    TCP_KEEP_INTERVAL = TCP_KEEPINTVL,
-    TCP_KEEP_COUNT = TCP_KEEPCNT
-#endif
-  };
-
-  SocketOption &socket_broadcast(bool value = true) {
-    m_level = Level::socket;
-    return set_integer_value(Name::SOCKET_BROADCAST, value);
+  SocketOption(Level level, NameFlags name, int value = 0)
+    : m_level(level), m_name(name) {
+    m_size = sizeof(value);
   }
 
-  SocketOption &socket_reuse_address(bool value = true) {
-    m_level = Level::socket;
-    return set_integer_value(Name::SOCKET_REUSE_ADDRESS, value);
-  }
-
-  SocketOption &socket_reuse_port(bool value = true) {
-#if !defined __win32
-    m_level = Level::socket;
-    return set_integer_value(Name::SOCKET_REUSE_PORT, value);
-#else
-    // windows doesn't support this -- ignore it
-    return *this;
-#endif
-  }
-
-  SocketOption &socket_dont_route(bool value = true) {
-    m_level = Level::socket;
-    return set_integer_value(Name::SOCKET_DONT_ROUTE, value);
-  }
-
-  SocketOption &socket_keep_alive(bool value = true) {
-    m_level = Level::socket;
-    return set_integer_value(Name::SOCKET_KEEP_ALIVE, value);
-  }
-
-  SocketOption &socket_send_size(int value) {
-    m_level = Level::socket;
-    return set_integer_value(Name::SOCKET_SET_SEND_SIZE, value);
-  }
-
-  SocketOption &socket_send_minimum_size(int value) {
-    m_level = Level::socket;
-    return set_integer_value(Name::SOCKET_SET_SEND_MINIMUM_SIZE, value);
-  }
-
-  SocketOption &socket_receive_size(int value) {
-    m_level = Level::socket;
-    return set_integer_value(Name::SOCKET_SET_RECEIVE_SIZE, value);
-  }
-
-  SocketOption &socket_receive_minimum_size(int value) {
-    m_level = Level::socket;
-    return set_integer_value(Name::SOCKET_SET_RECEIVE_MINIMUM_SIZE, value);
-  }
-
-  SocketOption &socket_send_timeout(const chrono::ClockTime &timeout) {
-    m_level = Level::socket;
-    return set_timeout(Name::SOCKET_SEND_TIMEOUT, timeout);
-  }
-
-  SocketOption &socket_receive_timeout(const chrono::ClockTime &timeout) {
-    m_level = Level::socket;
-    return set_timeout(Name::SOCKET_RECEIVE_TIMEOUT, timeout);
-  }
-
-  SocketOption &ip_type_of_service(int service) {
-    m_level = Level::ip;
-    return set_integer_value(Name::IP_TYPE_OF_SERVICE, service);
-  }
-
-  SocketOption &ip_time_to_live(int ttl) {
-    m_level = Level::ip;
-    return set_integer_value(Name::IP_TIME_TO_LIVE, ttl);
-  }
-
-private:
-  friend class Socket;
-  SocketOption &set_integer_value(Name name, int value) {
-    m_name = name;
-    m_value.integer = value;
-    return *this;
-  }
-
-  SocketOption &set_timeout(Name name, const chrono::ClockTime &timeout) {
-    m_name = name;
+  SocketOption &set_value(const chrono::ClockTime &timeout) {
     m_value.timeval.tv_sec = timeout.seconds();
     m_value.timeval.tv_usec = timeout.nanoseconds() / 1000UL;
     m_size = sizeof(struct timeval);
     return *this;
   }
 
+private:
+  friend class Socket;
+
   Level m_level;
-  Name m_name;
+  NameFlags m_name;
   union {
     struct timeval timeval;
     int integer;
@@ -431,8 +285,11 @@ public:
   explicit Socket(
     Domain domain,
     Type type = Type::stream,
-    Protocol protocol = Protocol::tcp);
-  ~Socket();
+    Protocol protocol = Protocol::ip);
+  virtual ~Socket();
+
+  Socket(Socket &&socket) = default;
+  Socket &operator=(Socket &&socket) = default;
 
   /*!
    * \details Connects to the server using the SocketAddress
@@ -531,7 +388,7 @@ protected:
   // socket on all other platforms is a file handler
 #endif
 
-  SOCKET_T m_socket;
+  mutable SOCKET_T m_socket;
 
   Socket();
 
@@ -544,10 +401,9 @@ protected:
 
   virtual int interface_shutdown(SOCKET_T fd, const fs::OpenMode how) const;
 
-  int interface_open(const char *path, int flags, int mode)
-    const override final {
-    return 0;
-  }
+  int interface_open(const char *path, int flags, int mode) const { return 0; }
+  int interface_close(int fd) const;
+
   int interface_lseek(int fd, int location, int whence) const override final {
     return 0;
   }
@@ -557,7 +413,6 @@ protected:
     return 0;
   }
 
-  virtual int interface_close(int fd) const override;
   virtual int interface_read(int fd, void *buf, int nbyte) const override;
   virtual int
   interface_write(int fd, const void *buf, int nbyte) const override;
@@ -571,5 +426,12 @@ private:
 };
 
 } // namespace inet
+
+namespace printer {
+class Printer;
+Printer &operator<<(Printer &printer, const inet::SocketAddress &a);
+class Printer;
+Printer &operator<<(Printer &printer, const inet::AddressInfo &a);
+} // namespace printer
 
 #endif // SAPISAPI_INET_SOCKET_HPP__SOCKET_HPP

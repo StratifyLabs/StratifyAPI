@@ -117,6 +117,7 @@ int Thread::Attributes::get_sched_priority() const {
 
 void *Thread::handle_thread(void *args) {
   Thread *self = reinterpret_cast<Thread *>(args);
+  self->m_execution_context_error = &error();
   function_t function = self->m_function;
   void *argument = self->m_argument;
   self->m_function = nullptr;

@@ -19,7 +19,7 @@ SecureSocket::SecureSocket(Domain domain, Type type, Protocol protocol) {
       static_cast<int>(protocol)));
 }
 
-SecureSocket::~SecureSocket() { close(); }
+SecureSocket::~SecureSocket() { interface_close(0); }
 
 int SecureSocket::interface_connect(const SocketAddress &address) const {
   int result;

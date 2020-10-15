@@ -1,4 +1,4 @@
-#ifndef INETAPI_INET_IPADDRESS_HPP
+﻿#ifndef INETAPI_INET_IPADDRESS_HPP
 #define INETAPI_INET_IPADDRESS_HPP
 
 #if defined __win32
@@ -32,6 +32,8 @@ private:
 class IpAddress4 {
 public:
   IpAddress4() {}
+
+  static IpAddress4 broadcast() { return IpAddress4(INADDR_BROADCAST); }
 
   explicit IpAddress4(in_addr_t value) : m_address(value) {}
 
@@ -77,11 +79,13 @@ public:
   const in_addr_t &address() const { return m_address; }
 
 private:
-  in_addr_t m_address = 0;
+  in_addr_t m_address = INADDR_ANY;
 };
 
 class IpAddress6 {
 public:
+  IpAddress6(const struct in6_addr &address) : m_address(address) {}
+
   IpAddress6(const var::Array<u16, 8> address) {
     var::View(m_address).copy(var::View(address));
   }

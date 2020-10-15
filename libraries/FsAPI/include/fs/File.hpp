@@ -113,7 +113,7 @@ public:
   File(File &&file) = default;
   File &operator=(File &&file) = default;
 
-  ~File();
+  virtual ~File();
 
   /*! \details Returns the file size. */
   size_t size() const;
@@ -286,19 +286,10 @@ protected:
 
   bool is_keep_open() const { return m_is_keep_open; }
 
-  void open(
-    var::StringView name,
-    OpenMode flags = OpenMode::read_write(),
-    Permissions perms = Permissions(0666));
-
-  void close();
-
-  virtual int interface_open(const char *path, int flags, int mode) const;
   virtual int interface_lseek(int fd, int offset, int whence) const;
   virtual int interface_read(int fd, void *buf, int nbyte) const;
   virtual int interface_write(int fd, const void *buf, int nbyte) const;
   virtual int interface_ioctl(int fd, int request, void *argument) const;
-  virtual int interface_close(int fd) const;
   virtual int interface_fsync(int fd) const;
 
   static void
@@ -319,6 +310,16 @@ private:
     var::StringView path,
     OpenMode open_mode,
     Permissions perms);
+
+  void open(
+    var::StringView name,
+    OpenMode flags = OpenMode::read_write(),
+    Permissions perms = Permissions(0666));
+
+  // open/close are part of construction/deconstruction and can't be virtual
+  void close();
+  int interface_close(int fd) const;
+  int interface_open(const char *path, int flags, int mode) const;
 };
 
 template <class Derived> class FileAccess : public File {
@@ -326,11 +327,6 @@ public:
 
   Derived &set_keep_open(bool value = true) {
     return static_cast<Derived &>(File::set_keep_open(value));
-  }
-
-  Derived &
-  open(var::StringView path, const OpenMode &flags = OpenMode::read_write()) {
-    return static_cast<Derived &>(File::open(path, flags));
   }
 
   const Derived &sync() const {
@@ -405,9 +401,6 @@ class DataFile : public FileAccess<DataFile> {
 public:
   /*! \details Constructs a data file. */
 
-  DataFile(const DataFile &file) = delete;
-  DataFile &operator=(const DataFile &file) = delete;
-
   DataFile(DataFile &&file) = default;
   DataFile &operator=(DataFile &&file) = default;
 
@@ -446,14 +439,14 @@ private:
   mutable OpenMode m_open_flags;
   mutable var::Data m_data;
 
-  int interface_open(const char *path, int flags, int mode) const override {
+  int interface_open(const char *path, int flags, int mode) const {
     MCU_UNUSED_ARGUMENT(path);
     MCU_UNUSED_ARGUMENT(mode);
     m_open_flags = OpenMode(flags);
     return 0;
   }
 
-  int interface_close(int fd) const override { return 0; }
+  int interface_close(int fd) const { return 0; }
   int interface_read(int fd, void *buf, int nbyte) const override;
   int interface_write(int fd, const void *buf, int nbyte) const override;
   int interface_lseek(int fd, int offset, int whence) const override;
@@ -469,10 +462,8 @@ class ViewFile : public FileAccess<ViewFile> {
 public:
   /*! \details Constructs a data file. */
 
-  // ViewFile(const ViewFile &view_file) = delete;
-  // ViewFile &operator=(const ViewFile &view_file) = delete;
-  // ViewFile(ViewFile &&view_file) = default;
-  // ViewFile &operator=(ViewFile &&view_file) = default;
+  ViewFile(ViewFile &&view_file) = default;
+  ViewFile &operator=(ViewFile &&view_file) = default;
 
   ViewFile(var::View view)
     : m_open_flags(
@@ -497,7 +488,7 @@ private:
   mutable OpenMode m_open_flags;
   var::View m_view;
 
-  int interface_open(const char *path, int flags, int mode) const override {
+  int interface_open(const char *path, int flags, int mode) const {
     MCU_UNUSED_ARGUMENT(path);
     MCU_UNUSED_ARGUMENT(mode);
     m_open_flags = OpenMode(flags);
@@ -506,7 +497,8 @@ private:
     }
     return 0;
   }
-  int interface_close(int fd) const override { return 0; }
+  int interface_close(int fd) const { return 0; }
+
   int interface_fsync(int fd) const override { return 0; }
   int interface_ioctl(int fd, int request, void *argument) const override {
     return -1;
@@ -530,10 +522,9 @@ private:
   mutable int m_location = 0;
   mutable size_t m_size;
 
-  int interface_open(const char *path, int flags, int mode) const override {
-    return 0;
-  }
-  int interface_close(int fd) const override { return 0; }
+  int interface_open(const char *path, int flags, int mode) const { return 0; }
+  int interface_close(int fd) const { return 0; }
+
   int interface_read(int fd, void *buf, int nbyte) const override;
   int interface_write(int fd, const void *buf, int nbyte) const override;
   int interface_lseek(int fd, int offset, int whence) const override;

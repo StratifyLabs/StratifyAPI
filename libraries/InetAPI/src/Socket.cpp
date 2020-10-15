@@ -1,6 +1,8 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
              // LICENSE.md for rights.
 
+#include "printer/Printer.hpp"
+
 #include "inet/Socket.hpp"
 #include "var.hpp"
 
@@ -14,54 +16,63 @@
 #define INVALID_SOCKET -1
 #endif
 
+printer::Printer &
+printer::operator<<(printer::Printer &printer, const inet::SocketAddress &a) {
+  printer.key(
+    "family",
+    (a.family() == inet::Socket::Family::inet) ? StringView("inet")
+                                               : StringView("inet6"));
+  printer.key("port", Ntos(a.port()));
+  printer.key("address", a.get_address_string());
+  printer.key("canonName", a.canon_name());
+  return printer;
+}
+
+printer::Printer &
+printer::operator<<(printer::Printer &printer, const inet::AddressInfo &a) {
+  u32 i = 0;
+  for (const auto &entry : a.list()) {
+    printer.object(Ntos(i++), entry);
+  }
+  return printer;
+}
+
 using namespace inet;
 
 int Socket::m_is_initialized = 0;
 
-var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(const Fetch &options) {
-  var::Vector<SocketAddressInfo> result;
+AddressInfo::AddressInfo(const Construct &options) {
+  API_RETURN_IF_ERROR();
   int result_int;
 
-  struct addrinfo *info_start;
-  struct addrinfo *info;
-
-  const char *server_cstring;
-  const char *node_cstring;
-
-  server_cstring
+  const char *server_cstring
     = options.service().is_empty() ? nullptr : options.service().cstring();
 
-  node_cstring = options.node().is_empty() ? nullptr : options.node().cstring();
+  const char *node_cstring
+    = options.node().is_empty() ? nullptr : options.node().cstring();
 
   Socket::initialize();
 
-  m_addrinfo.ai_flags |= AI_CANONNAME;
+  struct addrinfo address_info = {0};
+  address_info.ai_family = static_cast<int>(options.family());
+  address_info.ai_socktype = static_cast<int>(options.type());
+  address_info.ai_flags = static_cast<int>(options.flags());
 
-  if (
-    (result_int = getaddrinfo(node_cstring, server_cstring, &m_addrinfo, &info))
-    != 0) {
-    return result;
-  }
+  struct addrinfo *info;
+  API_SYSTEM_CALL(
+    "",
+    getaddrinfo(node_cstring, server_cstring, &address_info, &info));
 
+  API_RETURN_IF_ERROR();
+
+  struct addrinfo *info_start;
   info_start = info;
   do {
-    SocketAddressInfo value;
-    value.m_addrinfo = *info;
-    if (info->ai_addr) {
-      View(value.m_sockaddr).copy(View(info->ai_addr, info->ai_addrlen));
-      value.m_sockaddr.size = info->ai_addrlen;
-      if (value.m_sockaddr.size == sizeof(struct sockaddr_in)) {
-        value.m_sockaddr.sockaddr_in.sin_port = htons(options.port());
-      } else {
-        value.m_sockaddr.sockaddr_in6.sin6_port = htons(options.port());
-      }
-    }
-
-    if (info->ai_canonname) {
-      value.m_canon_name = info->ai_canonname;
-    }
-
-    result.push_back(value);
+    m_list.push_back(SocketAddress(
+      info->ai_addr,
+      info->ai_addrlen,
+      info->ai_canonname,
+      options.port()));
 
     info = info->ai_next;
 
@@ -69,8 +80,6 @@ var::Vector<SocketAddressInfo> SocketAddressInfo::fetch(const Fetch &options) {
 
   freeaddrinfo(info_start);
   Socket::deinitialize();
-
-  return result;
 }
 
 Socket::Socket() {
@@ -78,16 +87,16 @@ Socket::Socket() {
   initialize();
 }
 
-Socket::Socket(Domain domain, Type type, Protocol protocol){
+Socket::Socket(Domain domain, Type type, Protocol protocol) {
   initialize();
   API_RETURN_IF_ERROR();
-
   m_socket = API_SYSTEM_CALL(
     "socket",
     ::socket(
       static_cast<int>(domain),
       static_cast<int>(type),
       static_cast<int>(protocol)));
+  printf("socket is %d\n", m_socket);
 }
 
 int Socket::decode_socket_return(int value) const {
@@ -141,9 +150,11 @@ int Socket::deinitialize() {
   return 0;
 }
 
-Socket::~Socket() { close(); }
+Socket::~Socket() { interface_close(0); }
 
 int Socket::bind(const SocketAddress &addr) const {
+  printf("bind to socket %d\n", m_socket);
+
   return decode_socket_return(
     ::bind(m_socket, addr.to_sockaddr(), static_cast<int>(addr.length())));
 }
@@ -157,11 +168,15 @@ Socket::bind_and_listen(const SocketAddress &addr, int backlog) const {
 
 int Socket::interface_bind_and_listen(const SocketAddress &address, int backlog)
   const {
+  printf("bind to address\n");
   int result = bind(address);
   if (result < 0) {
+    printf("socket is %d\n", m_socket);
+    perror("bind result");
     return result;
   }
 
+  printf("listen to address\n");
   return decode_socket_return(::listen(m_socket, backlog));
 }
 
@@ -201,6 +216,7 @@ int Socket::interface_close(int fd) const {
 #else
     result = decode_socket_return(::close(m_socket));
 #endif
+    m_socket = SOCKET_INVALID;
   }
   return result;
 }
@@ -251,6 +267,7 @@ Socket::receive_from(const SocketAddress &address, void *buf, int nbyte) const {
 const Socket &Socket::shutdown(const fs::OpenMode how) const {
   API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL("", interface_shutdown(m_socket, how));
+  m_socket = SOCKET_INVALID;
   return *this;
 }
 
