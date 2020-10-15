@@ -264,22 +264,16 @@ private:
 
 class SocketOption : public SocketFlags {
 public:
-  enum levels {
-    // uppercase is deprecated
-    LEVEL_SOCKET = SOL_SOCKET,
-    LEVEL_IP = IPPROTO_IP,
-    LEVEL_IPV6 = IPPROTO_IPV6,
-    LEVEL_TCP = IPPROTO_TCP,
-
-    level_socket = SOL_SOCKET,
-    level_ip = IPPROTO_IP,
-    level_ipv6 = IPPROTO_IPV6,
-    level_tcp = IPPROTO_TCP
+  enum class Level {
+    socket = SOL_SOCKET,
+    ip = IPPROTO_IP,
+    ipv6 = IPPROTO_IPV6,
+    tcp = IPPROTO_TCP
   };
 
-  explicit SocketOption(int level = level_socket) : m_level(level) {}
+  explicit SocketOption(Level level) : m_level(level) {}
 
-  enum {
+  enum class Name {
     SOCKET_DEBUG = SO_DEBUG,
     SOCKET_BROADCAST = SO_BROADCAST,
     SOCKET_REUSE_ADDRESS = SO_REUSEADDR,
@@ -319,19 +313,19 @@ public:
   };
 
   SocketOption &socket_broadcast(bool value = true) {
-    m_level = level_socket;
-    return set_integer_value(SOCKET_BROADCAST, value);
+    m_level = Level::socket;
+    return set_integer_value(Name::SOCKET_BROADCAST, value);
   }
 
   SocketOption &socket_reuse_address(bool value = true) {
-    m_level = level_socket;
-    return set_integer_value(SOCKET_REUSE_ADDRESS, value);
+    m_level = Level::socket;
+    return set_integer_value(Name::SOCKET_REUSE_ADDRESS, value);
   }
 
   SocketOption &socket_reuse_port(bool value = true) {
 #if !defined __win32
-    m_level = level_socket;
-    return set_integer_value(SOCKET_REUSE_PORT, value);
+    m_level = Level::socket;
+    return set_integer_value(Name::SOCKET_REUSE_PORT, value);
 #else
     // windows doesn't support this -- ignore it
     return *this;
@@ -339,76 +333,79 @@ public:
   }
 
   SocketOption &socket_dont_route(bool value = true) {
-    m_level = level_socket;
-    return set_integer_value(SOCKET_DONT_ROUTE, value);
+    m_level = Level::socket;
+    return set_integer_value(Name::SOCKET_DONT_ROUTE, value);
   }
 
   SocketOption &socket_keep_alive(bool value = true) {
-    m_level = level_socket;
-    return set_integer_value(SOCKET_KEEP_ALIVE, value);
+    m_level = Level::socket;
+    return set_integer_value(Name::SOCKET_KEEP_ALIVE, value);
   }
 
   SocketOption &socket_send_size(int value) {
-    m_level = level_socket;
-    return set_integer_value(SOCKET_SET_SEND_SIZE, value);
+    m_level = Level::socket;
+    return set_integer_value(Name::SOCKET_SET_SEND_SIZE, value);
   }
 
   SocketOption &socket_send_minimum_size(int value) {
-    m_level = level_socket;
-    return set_integer_value(SOCKET_SET_SEND_MINIMUM_SIZE, value);
+    m_level = Level::socket;
+    return set_integer_value(Name::SOCKET_SET_SEND_MINIMUM_SIZE, value);
   }
 
   SocketOption &socket_receive_size(int value) {
-    m_level = level_socket;
-    return set_integer_value(SOCKET_SET_RECEIVE_SIZE, value);
+    m_level = Level::socket;
+    return set_integer_value(Name::SOCKET_SET_RECEIVE_SIZE, value);
   }
 
   SocketOption &socket_receive_minimum_size(int value) {
-    m_level = level_socket;
-    return set_integer_value(SOCKET_SET_RECEIVE_MINIMUM_SIZE, value);
+    m_level = Level::socket;
+    return set_integer_value(Name::SOCKET_SET_RECEIVE_MINIMUM_SIZE, value);
   }
 
   SocketOption &socket_send_timeout(const chrono::ClockTime &timeout) {
-    m_level = level_socket;
-    return set_timeout(SOCKET_SEND_TIMEOUT, timeout);
+    m_level = Level::socket;
+    return set_timeout(Name::SOCKET_SEND_TIMEOUT, timeout);
   }
 
   SocketOption &socket_receive_timeout(const chrono::ClockTime &timeout) {
-    m_level = level_socket;
-    return set_timeout(SOCKET_RECEIVE_TIMEOUT, timeout);
+    m_level = Level::socket;
+    return set_timeout(Name::SOCKET_RECEIVE_TIMEOUT, timeout);
   }
 
   SocketOption &ip_type_of_service(int service) {
-    m_level = level_ip;
-    return set_integer_value(IP_TYPE_OF_SERVICE, service);
+    m_level = Level::ip;
+    return set_integer_value(Name::IP_TYPE_OF_SERVICE, service);
   }
 
   SocketOption &ip_time_to_live(int ttl) {
-    m_level = level_ip;
-    return set_integer_value(IP_TIME_TO_LIVE, ttl);
+    m_level = Level::ip;
+    return set_integer_value(Name::IP_TIME_TO_LIVE, ttl);
   }
 
 private:
   friend class Socket;
-  SocketOption &set_integer_value(int name, int value) {
+  SocketOption &set_integer_value(Name name, int value) {
     m_name = name;
-    m_option_value.resize(sizeof(int));
-    var::View(m_option_value).to<int>()[0] = value;
+    m_value.integer = value;
     return *this;
   }
 
-  SocketOption &set_timeout(int name, const chrono::ClockTime &timeout) {
+  SocketOption &set_timeout(Name name, const chrono::ClockTime &timeout) {
     m_name = name;
-    m_option_value.resize(sizeof(struct timeval));
-    var::View(m_option_value).to<struct timeval>()->tv_sec = timeout.seconds();
-    var::View(m_option_value).to<struct timeval>()->tv_usec
-      = timeout.nanoseconds() / 1000UL;
+    m_value.timeval.tv_sec = timeout.seconds();
+    m_value.timeval.tv_usec = timeout.nanoseconds() / 1000UL;
+    m_size = sizeof(struct timeval);
     return *this;
   }
 
-  int m_level;
-  int m_name;
-  var::Data m_option_value;
+  Level m_level;
+  Name m_name;
+  union {
+    struct timeval timeval;
+    int integer;
+  } m_value;
+
+  size_t m_size;
 };
 
 /*! \brief Socket Class

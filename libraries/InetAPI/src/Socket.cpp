@@ -267,13 +267,9 @@ int Socket::interface_shutdown(SOCKET_T fd, const fs::OpenMode how) const {
 Socket &Socket::set_option(const SocketOption &option) {
   decode_socket_return(::setsockopt(
     m_socket,
-    option.m_level,
-    option.m_name,
-#if defined __win32
-    var::View(option.m_option_value).to_const_char(),
-#else
-    var::View(option.m_option_value).to_const_void(),
-#endif
-    option.m_option_value.size()));
+    static_cast<int>(option.m_level),
+    static_cast<int>(option.m_name),
+    &option.m_value,
+    option.m_size));
   return *this;
 }
