@@ -28,15 +28,30 @@ public:
     return true;
   }
 
-  static bool socket_server(UnitTest *self) {
+  bool socket_api_case() {
+
+    if (!socket_tcp_reflection_case(S::Family::inet)) {
+      return false;
+    }
+    // TEST_ASSERT(socket_reflection_case(S::Family::inet6));
+    // TEST_ASSERT(socket_reflection_case(S::Family::unspecified));
+    if (!socket_udp_reflection_case(S::Family::inet)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  static bool socket_tcp_server(UnitTest *self) {
 
     AddressInfo address_info(AddressInfo::Construct()
-                               .set_family(AddressInfo::Family::inet)
-                               .set_node("localhost")
-                               .set_flags(AddressInfo::Flags::passive)
-                               .set_port(self->m_server_port));
+                               .set_family(self->m_family)
+                               .set_node("")
+                               .set_service(Ntos(self->m_server_port))
+                               .set_type(Socket::Type::stream)
+                               .set_flags(AddressInfo::Flags::passive));
 
-    self->printer().object("addressInfo", address_info);
+    self->printer().object("tcpAddress", address_info);
 
     TEST_SELF_ASSERT(address_info.list().count() > 0);
 
@@ -67,40 +82,23 @@ public:
     return true;
   }
 
-  bool socket_api_case() {
+  bool socket_tcp_reflection_case(Socket::Family family) {
 
     Random().seed().randomize(View(m_server_port));
 
     m_server_port = (m_server_port % (65535 - 49152)) + 49152;
+    m_family = family;
 
-    m_is_listening = false;
-    Thread server_thread
-      = Thread(Thread::Construct().set_argument(this).set_function(
-        [](void *args) -> void * {
-          socket_server(reinterpret_cast<UnitTest *>(args));
-          return nullptr;
-        }));
-
-    PRINTER_TRACE(printer(), "wait listening");
-    while (!m_is_listening && server_thread.is_running()) {
-      wait(25_milliseconds);
-    }
-
-    {
-      bool is_server_error = server_thread.error().error_number() > 0;
-      TEST_EXPECT(!is_server_error);
-      if (is_server_error) {
-        server_thread.join();
-        return false;
-      }
-    }
+    Thread server_thread = start_server(socket_tcp_server);
+    TEST_ASSERT(server_thread.is_running());
 
     PRINTER_TRACE(printer(), "get address info");
     AddressInfo address_info(AddressInfo::Construct()
                                .set_family(AddressInfo::Family::inet)
                                .set_node("localhost")
-                               .set_flags(AddressInfo::Flags::passive)
-                               .set_port(m_server_port));
+                               .set_service(Ntos(m_server_port))
+                               .set_type(Socket::Type::stream)
+                               .set_flags(AddressInfo::Flags::passive));
 
     TEST_ASSERT(address_info.list().count() > 0);
     Socket socket(address_info.list().at(0));
@@ -119,7 +117,122 @@ public:
     return true;
   }
 
+  static bool socket_udp_server(UnitTest *self) {
+
+    auto bind_socket = [self]() {
+      AddressInfo address_info(AddressInfo::Construct()
+                                 .set_family(self->m_family)
+                                 .set_node("")
+                                 .set_service(Ntos(self->m_server_port))
+                                 .set_type(Socket::Type::datagram)
+                                 .set_flags(AddressInfo::Flags::passive));
+
+      self->printer().object("udpAddressInfo", address_info);
+
+      for (const auto &a : address_info.list()) {
+        Socket socket = std::move(Socket(a).bind(a));
+        if (is_success()) {
+          return std::move(socket);
+        }
+
+        API_RESET_ERROR();
+      }
+
+      API_RETURN_VALUE_ASSIGN_ERROR(
+        std::move(Socket(self->m_family)),
+        "",
+        EINVAL);
+    };
+
+    Socket server_socket = bind_socket();
+
+    SocketAddress server_address = server_socket.get_sock_name();
+
+    self->printer().object("udpServerAddress", server_address);
+
+    TEST_SELF_ASSERT(is_success());
+
+    // data for incoming header
+    var::Data incoming_data(64);
+
+    PRINTER_TRACE(self->printer(), "udp server receive data");
+    self->m_is_listening = true;
+    // echo incoming data
+    SocketAddress client_address = server_socket.receive_from(incoming_data);
+    if (is_success()) {
+      self->printer().object("clientAddress", client_address);
+      server_socket.send_to(
+        client_address,
+        View(incoming_data).truncate(return_value()));
+    }
+
+    PRINTER_TRACE(self->printer(), "data received");
+
+    return true;
+  }
+
+  bool socket_udp_reflection_case(Socket::Family family) {
+
+    Random().seed().randomize(View(m_server_port));
+
+    m_server_port = (m_server_port % (65535 - 49152)) + 49152;
+    m_family = family;
+    m_is_listening = false;
+
+    Thread server_thread = start_server(socket_udp_server);
+    TEST_ASSERT(server_thread.is_running());
+
+    PRINTER_TRACE(printer(), "get address info");
+    AddressInfo address_info(AddressInfo::Construct()
+                               .set_family(AddressInfo::Family::inet)
+                               .set_node("localhost")
+                               .set_service(Ntos(m_server_port))
+                               .set_type(Socket::Type::datagram)
+                               .set_flags(AddressInfo::Flags::passive));
+
+    TEST_ASSERT(address_info.list().count() > 0);
+    Socket socket(address_info.list().at(0));
+    const SocketAddress &address = address_info.list().at(0);
+
+    const StringView outgoing = "hello";
+    Data incoming_data(64);
+    printer().object("udpSendToAddress", address);
+
+    printer().key("udpProtocol", address.protocol() == S::Protocol::udp);
+
+    SocketAddress server_address
+      = socket.send_to(address, View(outgoing)).receive_from(incoming_data);
+
+    TEST_ASSERT(is_success());
+    PRINTER_TRACE(
+      printer(),
+      "incoming " + String(View(incoming_data).truncate(return_value())));
+    TEST_ASSERT(View(incoming_data).truncate(return_value()) == View(outgoing));
+    PRINTER_TRACE(printer(), "done");
+    return true;
+  }
+
 private:
+  Socket::Family m_family;
   u16 m_server_port;
   volatile bool m_is_listening;
+  bool (*m_server_function)(UnitTest *);
+
+  Thread start_server(bool (*server_function)(UnitTest *self)) {
+    m_server_function = server_function;
+    m_is_listening = false;
+    Thread server_thread
+      = Thread(Thread::Construct().set_argument(this).set_function(
+        [](void *args) -> void * {
+          UnitTest *self = reinterpret_cast<UnitTest *>(args);
+          self->m_server_function(self);
+          return nullptr;
+        }));
+
+    PRINTER_TRACE(printer(), "wait listening");
+    while (!m_is_listening && server_thread.is_running()) {
+      wait(25_milliseconds);
+    }
+    return std::move(server_thread);
+  }
 };

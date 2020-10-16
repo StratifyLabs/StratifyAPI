@@ -95,7 +95,7 @@ public:
       struct sockaddr_in sockaddr_in;
       struct sockaddr_in6 sockaddr_in6;
     };
-  } socketaddr_t;
+  } socket_address_union_t;
 };
 
 API_OR_NAMED_FLAGS_OPERATOR(SocketFlags, NameFlags)
@@ -104,10 +104,10 @@ API_OR_NAMED_FLAGS_OPERATOR(SocketFlags, AddressInfoFlags)
 class SocketAddress : public SocketFlags {
 public:
   SocketAddress() = default;
-  // explicit SocketAddress(
-  //  const socketaddr_t sockaddr,
-  //  var::StringView canon_name)
-  //  : m_sockaddr(sockaddr), m_canon_name(canon_name) {}
+  explicit SocketAddress(
+    const socket_address_union_t sockaddr,
+    var::StringView canon_name = "")
+    : m_sockaddr(sockaddr), m_canon_name(canon_name) {}
 
   const var::String &canon_name() const { return m_canon_name; }
   size_t length() const { return m_sockaddr.size; }
@@ -144,7 +144,7 @@ private:
   friend class SocketAddress4;
   friend class SocketAddress6;
   friend class AddressInfo;
-  socketaddr_t m_sockaddr = {0};
+  socket_address_union_t m_sockaddr = {0};
   var::String m_canon_name;
   API_AF(SocketAddress, Type, type, Type::raw);
   API_AF(SocketAddress, Protocol, protocol, Protocol::raw);
@@ -152,17 +152,11 @@ private:
   explicit SocketAddress(
     const void *addr,
     size_t length,
-    const char *canon_name,
-    u16 port) {
+    const char *canon_name) {
     memcpy(&m_sockaddr.sockaddr, addr, length);
     m_sockaddr.size = length;
     if (canon_name != nullptr) {
       m_canon_name = canon_name;
-    }
-    if (m_sockaddr.size == sizeof(struct sockaddr_in)) {
-      m_sockaddr.sockaddr_in.sin_port = htons(port);
-    } else {
-      m_sockaddr.sockaddr_in6.sin6_port = htons(port);
     }
   }
 };
@@ -228,7 +222,6 @@ public:
     API_AF(Construct, Family, family, Family::unspecified);
     API_AF(Construct, Type, type, Type::stream);
     API_AF(Construct, Flags, flags, Flags::null);
-    API_AF(Construct, u16, port, 0);
   };
 
   AddressInfo(const Construct &options);
@@ -291,13 +284,13 @@ public:
 
   explicit Socket(const SocketAddress &socket_address);
 
-  virtual ~Socket();
-
   Socket(Socket &&socket) { std::swap(m_socket, socket.m_socket); }
   Socket &operator=(Socket &&socket) {
     std::swap(m_socket, socket.m_socket);
     return *this;
   }
+
+  virtual ~Socket();
 
   /*!
    * \details Connects to the server using the SocketAddress
@@ -316,6 +309,12 @@ public:
    */
   const Socket &
   bind_and_listen(const SocketAddress &address, int backlog = 4) const;
+
+  const Socket &bind(const SocketAddress &address) const;
+  Socket &bind(const SocketAddress &address) {
+    return const_cast<Socket &>(
+      const_cast<const Socket *>(this)->bind(address));
+  }
 
   /*!
    * \details Accepts a socket connection on a socket that is listening.
@@ -342,13 +341,11 @@ public:
   const Socket &
   shutdown(const fs::OpenMode how = fs::OpenMode::read_write()) const;
 
-  const Socket &
-  receive_from(const SocketAddress &address, var::View data) const {
-    return receive_from(address, data.to_void(), data.size());
+  SocketAddress receive_from(var::View data) const {
+    return receive_from(data.to_void(), data.size());
   }
 
-  const Socket &
-  receive_from(const SocketAddress &address, void *buf, int nbyte) const;
+  SocketAddress receive_from(void *buf, int nbyte) const;
 
   /*! \brief Writes to the address specified.
    *
@@ -384,6 +381,8 @@ public:
    *
    */
   Socket &set_option(const SocketOption &option);
+
+  SocketAddress get_sock_name() const;
 
   static int initialize();
   static int deinitialize();

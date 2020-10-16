@@ -59,27 +59,29 @@ AddressInfo::AddressInfo(const Construct &options) {
   address_info.ai_socktype = static_cast<int>(options.type());
   address_info.ai_flags = static_cast<int>(options.flags());
 
-  struct addrinfo *info;
+  struct addrinfo *info_start;
   API_SYSTEM_CALL(
     "",
-    getaddrinfo(node_cstring, server_cstring, &address_info, &info));
+    getaddrinfo(node_cstring, server_cstring, &address_info, &info_start));
 
   API_RETURN_IF_ERROR();
-
-  struct addrinfo *info_start;
-  info_start = info;
-  do {
-    m_list.push_back(SocketAddress(
-                       info->ai_addr,
-                       info->ai_addrlen,
-                       info->ai_canonname,
-                       options.port())
-                       .set_protocol(static_cast<Protocol>(info->ai_protocol))
-                       .set_type(static_cast<Type>(info->ai_socktype)));
-
-    info = info->ai_next;
-
-  } while (info);
+  for (struct addrinfo *info = info_start; info != nullptr;
+       info = info->ai_next) {
+    if (info->ai_addrlen == sizeof(struct sockaddr_in)) {
+      printf(
+        "port is %d\n",
+        ntohs(reinterpret_cast<struct sockaddr_in *>(info->ai_addr)->sin_port));
+    } else {
+      printf(
+        "port6 is %d\n",
+        ntohs(
+          reinterpret_cast<struct sockaddr_in6 *>(info->ai_addr)->sin6_port));
+    }
+    m_list.push_back(
+      SocketAddress(info->ai_addr, info->ai_addrlen, info->ai_canonname)
+        .set_protocol(static_cast<Protocol>(info->ai_protocol))
+        .set_type(static_cast<Type>(info->ai_socktype)));
+  }
 
   freeaddrinfo(info_start);
   Socket::deinitialize();
@@ -164,22 +166,37 @@ int Socket::deinitialize() {
 
 Socket::~Socket() { interface_close(0); }
 
-const Socket &
-Socket::bind_and_listen(const SocketAddress &addr, int backlog) const {
+const Socket &Socket::bind(const SocketAddress &address) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", interface_bind_and_listen(addr, backlog));
+  API_SYSTEM_CALL(
+    "",
+    decode_socket_return(::bind(
+      m_socket,
+      address.to_sockaddr(),
+      static_cast<int>(address.length()))));
+  return *this;
+}
+
+SocketAddress Socket::get_sock_name() const {
+  API_RETURN_VALUE_IF_ERROR(SocketAddress());
+  socket_address_union_t s = {0};
+  socklen_t length = sizeof(s.sockaddr_in6);
+  API_SYSTEM_CALL("", ::getsockname(m_socket, &s.sockaddr, &length));
+  s.size = length;
+  return std::move(SocketAddress(s));
+}
+
+const Socket &
+Socket::bind_and_listen(const SocketAddress &address, int backlog) const {
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL("", interface_bind_and_listen(address, backlog));
   return *this;
 }
 
 int Socket::interface_bind_and_listen(const SocketAddress &address, int backlog)
   const {
-  int result = decode_socket_return(::bind(
-    m_socket,
-    address.to_sockaddr(),
-    static_cast<int>(address.length())));
-  if (result < 0) {
-    return result;
-  }
+  bind(address);
+  API_RETURN_VALUE_IF_ERROR(-1);
 
   return decode_socket_return(::listen(m_socket, backlog));
 }
@@ -251,10 +268,11 @@ const Socket &Socket::send_to(
   return *this;
 }
 
-const Socket &
-Socket::receive_from(const SocketAddress &address, void *buf, int nbyte) const {
-  API_RETURN_VALUE_IF_ERROR(*this);
-  socklen_t address_len = address.m_sockaddr.size;
+SocketAddress Socket::receive_from(void *buf, int nbyte) const {
+  API_RETURN_VALUE_IF_ERROR(SocketAddress());
+  socket_address_union_t sockaddr;
+  socklen_t length = sizeof(sockaddr.sockaddr_in6);
+
   API_SYSTEM_CALL(
     "",
     decode_socket_return(::recvfrom(
@@ -262,9 +280,11 @@ Socket::receive_from(const SocketAddress &address, void *buf, int nbyte) const {
       (char *)buf,
       nbyte,
       0,
-      var::View(address.m_sockaddr).to<struct sockaddr>(),
-      &address_len)));
-  return *this;
+      &sockaddr.sockaddr,
+      &length)));
+  sockaddr.size = length;
+
+  return std::move(SocketAddress(sockaddr));
 }
 
 const Socket &Socket::shutdown(const fs::OpenMode how) const {

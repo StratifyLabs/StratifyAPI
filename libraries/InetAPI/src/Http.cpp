@@ -258,7 +258,7 @@ int HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
   m_alive_domain.clear();
 
   AddressInfo address_info(
-    AddressInfo::Construct().set_node(domain_name).set_port(port));
+    AddressInfo::Construct().set_node(domain_name).set_service(Ntos(port)));
 
   if (address_info.list().count() > 0) {
     m_address = address_info.list().at(0);
