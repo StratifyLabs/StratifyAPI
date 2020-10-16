@@ -44,6 +44,8 @@ int Socket::m_is_initialized = 0;
 AddressInfo::AddressInfo(const Construct &options) {
   API_RETURN_IF_ERROR();
 
+  API_ASSERT(!options.service().is_empty() || !options.node().is_empty());
+
   const char *server_cstring
     = options.service().is_empty() ? nullptr : options.service().cstring();
 

@@ -32,9 +32,9 @@ public:
 
     AddressInfo address_info(AddressInfo::Construct()
                                .set_family(AddressInfo::Family::inet)
-                               .set_service("3000")
+                               .set_node("localhost")
                                .set_flags(AddressInfo::Flags::passive)
-                               .set_port(3000));
+                               .set_port(self->m_server_port));
 
     self->printer().object("addressInfo", address_info);
 
@@ -61,13 +61,17 @@ public:
     var::Data incoming_data(64);
 
     // echo incoming data
-    incoming.read(View(incoming_data))
+    incoming.read(incoming_data)
       .write(View(incoming_data).truncate(return_value()));
 
     return true;
   }
 
   bool socket_api_case() {
+
+    Random().seed().randomize(View(m_server_port));
+
+    m_server_port = (m_server_port % (65535 - 49152)) + 49152;
 
     m_is_listening = false;
     Thread server_thread
@@ -94,9 +98,9 @@ public:
     PRINTER_TRACE(printer(), "get address info");
     AddressInfo address_info(AddressInfo::Construct()
                                .set_family(AddressInfo::Family::inet)
-                               .set_service("3000")
+                               .set_node("localhost")
                                .set_flags(AddressInfo::Flags::passive)
-                               .set_port(3000));
+                               .set_port(m_server_port));
 
     TEST_ASSERT(address_info.list().count() > 0);
     Socket socket(address_info.list().at(0));
@@ -104,14 +108,18 @@ public:
     PRINTER_TRACE(printer(), "connect");
     TEST_ASSERT(socket.connect(address_info.list().at(0)).is_success());
 
-    const StringView outgoing = "hello\n";
+    const StringView outgoing = "hello";
     Data incoming_data(64);
     TEST_ASSERT(socket.write(View(outgoing)).read(incoming_data).is_success());
+    PRINTER_TRACE(
+      printer(),
+      "incoming " + String(View(incoming_data).truncate(return_value())));
     TEST_ASSERT(View(incoming_data).truncate(return_value()) == View(outgoing));
     PRINTER_TRACE(printer(), "done");
     return true;
   }
 
 private:
+  u16 m_server_port;
   volatile bool m_is_listening;
 };
