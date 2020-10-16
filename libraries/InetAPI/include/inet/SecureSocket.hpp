@@ -21,6 +21,8 @@ public:
     Domain domain,
     Type type = Type::stream,
     Protocol protocol = Protocol::tcp);
+
+  explicit SecureSocket(const SocketAddress &address);
   ~SecureSocket();
 
   SecureSocket(SecureSocket &&a) { std::swap(m_context, a.m_context); }

@@ -21,21 +21,122 @@ public:
 
   bool execute_class_api_case() {
 
-    if (!socket_api_case()) {
+    if (!socket_case()) {
+      return false;
+    }
+
+    if (!socket_address_case()) {
+      return false;
+    }
+
+    if (!http_client_case()) {
       return false;
     }
 
     return true;
   }
 
-  bool socket_api_case() {
+  bool http_client_case() {
+
+    {}
+
+    return true;
+  }
+
+  bool socket_address_case() {
+
+    printer::PrinterObject po(printer(), "socketAddress");
+    TEST_ASSERT(SocketAddress4().family() == S::Family::inet);
+    TEST_ASSERT(SocketAddress6().family() == S::Family::inet6);
+
+    TEST_ASSERT(
+      SocketAddress4().set_protocol(S::Protocol::raw).protocol()
+      == S::Protocol::raw);
+
+    TEST_ASSERT(
+      SocketAddress4().set_protocol(S::Protocol::ip).protocol()
+      == S::Protocol::ip);
+
+    TEST_ASSERT(
+      SocketAddress4().set_protocol(S::Protocol::udp).protocol()
+      == S::Protocol::udp);
+
+    TEST_ASSERT(
+      SocketAddress4().set_protocol(S::Protocol::tcp).protocol()
+      == S::Protocol::tcp);
+
+    TEST_ASSERT(
+      SocketAddress4().set_address(IpAddress4("1.0.0.127")).get_address_string()
+      == "1.0.0.127");
+
+    TEST_ASSERT(
+      SocketAddress4().set_address(IpAddress4(0)).get_address_string()
+      == "0.0.0.0");
+    printer().key(
+      "address",
+      SocketAddress4()
+        .set_address(IpAddress4(0x12345678))
+        .get_address_string());
+    TEST_ASSERT(
+      SocketAddress4().set_address(IpAddress4(0x12345678)).get_address_string()
+      == "18.52.86.120");
+
+    TEST_ASSERT(SocketAddress4().set_port(3000).port() == 3000);
+    TEST_ASSERT(SocketAddress6().set_port(3000).port() == 3000);
+
+    TEST_ASSERT(
+      SocketAddress6().set_protocol(S::Protocol::raw).protocol()
+      == S::Protocol::raw);
+
+    TEST_ASSERT(
+      SocketAddress6().set_protocol(S::Protocol::ip).protocol()
+      == S::Protocol::ip);
+
+    TEST_ASSERT(
+      SocketAddress6().set_protocol(S::Protocol::udp).protocol()
+      == S::Protocol::udp);
+
+    TEST_ASSERT(
+      SocketAddress6().set_protocol(S::Protocol::tcp).protocol()
+      == S::Protocol::tcp);
+
+    printer().key(
+      "address6",
+      SocketAddress6()
+        .set_address(IpAddress6("12:34:56:78:ab:cd:ef:01"))
+        .get_address_string());
+    TEST_ASSERT(
+      SocketAddress6()
+        .set_address(IpAddress6("12:34:56:78:ab:cd:ef:01"))
+        .get_address_string()
+      == "0012:0034:0056:0078:00ab:00cd:00ef:0001");
+
+    return true;
+  }
+
+  bool socket_case() {
 
     if (!socket_tcp_reflection_case(S::Family::inet)) {
       return false;
     }
-    // TEST_ASSERT(socket_reflection_case(S::Family::inet6));
-    // TEST_ASSERT(socket_reflection_case(S::Family::unspecified));
+
+    if (!socket_tcp_reflection_case(S::Family::inet6)) {
+      return false;
+    }
+
+    if (!socket_tcp_reflection_case(S::Family::unspecified)) {
+      return false;
+    }
+
     if (!socket_udp_reflection_case(S::Family::inet)) {
+      return false;
+    }
+
+    if (!socket_udp_reflection_case(S::Family::inet6)) {
+      return false;
+    }
+
+    if (!socket_udp_reflection_case(S::Family::unspecified)) {
       return false;
     }
 

@@ -24,6 +24,7 @@ using namespace inet;
 var::String Http::to_string(Status status) {
   var::String result;
   switch (status) {
+    API_HANDLE_STATUS_CASE(null);
     API_HANDLE_STATUS_CASE(continue_);
     API_HANDLE_STATUS_CASE(switching_protocols);
     API_HANDLE_STATUS_CASE(processing);
@@ -99,10 +100,10 @@ var::String Http::to_string(Status status) {
     result = String(MCU_STRINGIFY(c)).to_upper();                              \
     break
 
-var::String Http::to_string(Method status) {
+var::String Http::to_string(Method method) {
   var::String result;
-  switch (status) {
-    API_HANDLE_METHOD_CASE(invalid);
+  switch (method) {
+    API_HANDLE_METHOD_CASE(null);
     API_HANDLE_METHOD_CASE(get);
     API_HANDLE_METHOD_CASE(post);
     API_HANDLE_METHOD_CASE(put);
@@ -133,14 +134,93 @@ Http::Method Http::method_from_string(const var::String &string) {
   } else if (input == "OPTIONS") {
     return Method::options;
   }
-  return Method::invalid;
+  return Method::null;
 }
 
 Http::Http(Socket &socket) : m_socket(socket) {}
 
-HttpClient::HttpClient(Socket &socket) : Http(socket) {}
+void Http::send(const Response &response) {
+  socket().write(response.to_string() + "\r\n");
+  for (const auto &pair : m_header_response_pairs) {
+    socket().write(pair.to_string() + "\r\n");
+  }
+  socket().write("\r\n");
+}
 
-HttpClient &HttpClient::execute_method(
+void Http::send(const Request &request) {
+  socket().write(request.to_string() + "\r\n");
+  for (const auto &pair : m_header_request_pairs) {
+    socket().write(pair.to_string() + "\r\n");
+  }
+  socket().write("\r\n");
+}
+
+void Http::send_chunk(var::View chunk) const {
+  socket()
+    .write(var::String().format("%d\r\n", chunk.size()))
+    .write(chunk)
+    .write("\r\n");
+}
+
+void Http::listen_for_header_pairs(var::Vector<HeaderPair> &pair_list) {
+
+  var::String line;
+  pair_list.clear();
+  bool is_first_line = true;
+  m_transfer_encoding = "";
+  socket().reset_error();
+
+  do {
+    line = socket().gets('\n');
+    if (line.length() > 2) {
+
+      m_header += line;
+      AGGREGATE_TRAFFIC(String("> ") + line);
+#if SHOW_HEADERS
+      printf("> %s", line.cstring());
+#endif
+
+      pair_list.push_back(Http::HeaderPair::from_string(line.cstring()));
+      const Http::HeaderPair &pair = pair_list.back();
+      String title = pair.key();
+      title.to_upper();
+
+      if (title.find("HTTP/") == 0) {
+        StringList tokens = title.split(" ");
+        is_first_line = false;
+        if (tokens.count() < 2) {
+          API_RETURN_ASSIGN_ERROR("", EINVAL);
+          return;
+        }
+        m_status_code = String(tokens.at(1)).to_integer();
+      }
+
+      if (title == "CONTENT-LENGTH") {
+        m_content_length = static_cast<unsigned int>(pair.value().to_integer());
+      }
+
+      if (title == "CONTENT-TYPE") {
+        // check for evnt streams
+        StringList tokens = pair.value().split(" ;");
+        if (String(tokens.at(0)) == "text/event-stream") {
+          m_content_length = static_cast<u32>(
+            -1); // accept data until the operation is cancelled
+        }
+      }
+
+      if (title == "TRANSFER-ENCODING") {
+        m_transfer_encoding = pair.value();
+        m_transfer_encoding.to_upper();
+      }
+    }
+
+  } while ((line.length() > 2 || is_first_line)
+           && (socket().is_success())); // while reading the header
+}
+
+HttpClientObject::HttpClientObject(Socket &socket) : Http(socket) {}
+
+HttpClientObject &HttpClientObject::execute_method(
   Method method,
   var::StringView url,
   const ExecuteMethod &options) {
@@ -177,9 +257,10 @@ HttpClient &HttpClient::execute_method(
 	}
 #endif
 
-  if (listen_for_header() < 0) {
-    return *this;
-  }
+  m_request = Request(socket().gets());
+  listen_for_header_pairs(m_header_response_pairs);
+  API_RETURN_VALUE_IF_ERROR(*this);
+
   bool is_redirected = false;
 
   if (
@@ -233,14 +314,14 @@ HttpClient &HttpClient::execute_method(
   return *this;
 }
 
-int HttpClient::send_string(var::StringView str) {
+int HttpClientObject::send_string(var::StringView str) {
   if (!str.is_empty()) {
     return socket().write(var::View(str)).return_value();
   }
   return 0;
 }
 
-int HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
+int HttpClientObject::connect_to_server(var::StringView domain_name, u16 port) {
 
   if ((socket().fileno() >= 0) && is_keep_alive()) {
     // already connected
@@ -270,7 +351,7 @@ int HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
   return -1;
 }
 
-void HttpClient::build_header(
+void HttpClientObject::build_header(
   var::StringView method,
   var::StringView host,
   var::StringView path,
@@ -319,7 +400,7 @@ void HttpClient::build_header(
   m_header += "\r\n";
 }
 
-int HttpClient::send_header(
+int HttpClientObject::send_header(
   var::StringView method,
   var::StringView host,
   var::StringView path,
@@ -356,71 +437,7 @@ int HttpClient::send_header(
   return 0;
 }
 
-int HttpClient::listen_for_header() {
-
-  var::String line;
-  header_response_pairs().clear();
-  bool is_first_line = true;
-  m_transfer_encoding = "";
-  socket().reset_error();
-
-  do {
-    line = socket().gets('\n');
-    if (line.length() > 2) {
-
-      m_header += line;
-      AGGREGATE_TRAFFIC(String("> ") + line);
-#if SHOW_HEADERS
-      printf("> %s", line.cstring());
-#endif
-
-      header_response_pairs().push_back(
-        Http::HeaderPair::from_string(line.cstring()));
-      const Http::HeaderPair &pair = header_response_pairs().back();
-      String title = pair.key();
-      title.to_upper();
-
-      if (title.find("HTTP/") == 0) {
-        StringList tokens = title.split(" ");
-        is_first_line = false;
-        if (tokens.count() < 2) {
-          m_status_code = -1;
-          return -1;
-        }
-        m_status_code = String(tokens.at(1)).to_integer();
-      }
-
-      if (title == "CONTENT-LENGTH") {
-        m_content_length = static_cast<unsigned int>(pair.value().to_integer());
-      }
-
-      if (title == "CONTENT-TYPE") {
-        // check for evnt streams
-        StringList tokens = pair.value().split(" ;");
-        if (String(tokens.at(0)) == "text/event-stream") {
-          m_content_length = static_cast<u32>(
-            -1); // accept data until the operation is cancelled
-        }
-      }
-
-      if (title == "TRANSFER-ENCODING") {
-        m_transfer_encoding = pair.value();
-        m_transfer_encoding.to_upper();
-      }
-    }
-
-  } while (
-    (line.length() > 2 || is_first_line)
-    && (socket().is_success() == 0)); // while reading the header
-
-  if (socket().is_error()) {
-    return -1;
-  }
-
-  return 0;
-}
-
-int HttpClient::listen_for_data(
+int HttpClientObject::listen_for_data(
   fs::File *destination,
   const api::ProgressCallback *progress_callback) {
   if (m_transfer_encoding == "CHUNKED") {
@@ -481,99 +498,40 @@ Http::HeaderPair Http::HeaderPair::from_string(var::StringView string) {
   return Http::HeaderPair(key.cstring(), value.cstring());
 }
 
-int HttpServer::run() {
+void HttpServerObject::listen(
+  void (
+    *respond)(void *context, const Http::Request &request, int bytes_incoming),
+  void *context) {
 
   // read socket data
 
   while (is_running()) {
     const var::String line = socket().gets();
-
     if (line.length() > 0) {
-      StringList tokens = line.split(" ");
-      if (tokens.count() < 3) {
-        // bad request
-        send_bad_request();
-      } else {
-        const Method method = method_from_string(tokens.at(0));
-        if (method == Method::invalid) {
-          send_bad_request();
-        } else {
-          u32 content_length = 0;
-          set_transfer_encoding_chunked(false);
-          var::String header;
-          do {
-            header = socket().gets();
-            if (header.length() > 2) {
-              header_request_pairs().push_back(
-                Http::HeaderPair::from_string(header.cstring()));
-
-              const Http::HeaderPair &pair = header_request_pairs().back();
-              if (pair.key() == "CONTENT-LENGTH") {
-                content_length = pair.value().to_integer();
-              } else if (
-                pair.key() == "TRANSFER-ENCODING"
-                && String(pair.value()).to_upper() == "CHUNKED") {
-                set_transfer_encoding_chunked();
-              }
-            }
-          } while (header.length() > 2);
-
-          printf("response with %d bytes incoming\n", content_length);
-          respond(method, tokens.at(1), content_length);
-        }
-      }
-
+      m_request = Request(line);
+      listen_for_header_pairs(m_header_request_pairs);
       // execute the method
+      if (respond) {
+        respond(context, m_request, m_content_length);
+      }
     }
   }
-  return 0;
 }
 
-void HttpServer::send_bad_request() {
+void HttpServerObject::send_bad_request() const {
   socket().write(m_version + to_string(Status::bad_request) + "\r\n");
 }
 
-int HttpServer::send_header(Status status) {
-
-  printf("sending '%s'\n", to_string(status).cstring());
-  if (socket()
-        .write(m_version + to_string(status) + "\r\n")
-        .is_error()) {
-    return -1;
-  }
-
-  for (const auto &pair : header_response_pairs()) {
-    const auto s = pair.to_string();
-    printf("Sending response pair %s\n", s.cstring());
-    if (socket().write(s + "\r\n").return_value() != s.length() + 2) {
-      printf("failed to write pair %s\n", s.cstring());
-    }
-  }
-
-  if (socket().write("\r\n").return_value() != 2) {
-    printf("Failed to write terminator\n");
-  }
-
-  return 0;
-}
-
-int HttpServer::send_chunk(var::View chunk) {
-  socket().write(var::String().format("%d\r\n", chunk.size()));
-  socket().write(chunk);
-  socket().write("\r\n");
-  return chunk.size();
-}
-
-int HttpServer::get_chunk_size() {
+int HttpServerObject::get_chunk_size() const {
   String line = socket().gets();
   return line.to_integer();
 }
 
-int HttpServer::send(var::View chunk) {
+int HttpServerObject::send(var::View chunk) const {
   return socket().write(chunk).return_value();
 }
 
-int HttpServer::receive(fs::File &file, int content_length) {
+int HttpServerObject::receive(const fs::File &file, int content_length) const {
   if (is_transfer_encoding_chunked()) {
     // read chunk by chunk
     int bytes_received = 0;

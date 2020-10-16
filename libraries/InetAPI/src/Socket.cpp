@@ -81,7 +81,8 @@ Socket::Socket() {
   initialize();
 }
 
-Socket::Socket(const SocketAddress &socket_address) {
+Socket::Socket(const SocketAddress &socket_address)
+  : m_family(socket_address.family()) {
   initialize();
   API_RETURN_IF_ERROR();
   m_socket = API_SYSTEM_CALL(
@@ -92,7 +93,7 @@ Socket::Socket(const SocketAddress &socket_address) {
       static_cast<int>(socket_address.protocol())));
 }
 
-Socket::Socket(Domain domain, Type type, Protocol protocol) {
+Socket::Socket(Domain domain, Type type, Protocol protocol) : m_family(domain) {
   initialize();
   API_RETURN_IF_ERROR();
   m_socket = API_SYSTEM_CALL(

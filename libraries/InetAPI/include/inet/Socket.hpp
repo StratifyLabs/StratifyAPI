@@ -332,6 +332,7 @@ public:
   bind_and_listen(const SocketAddress &address, int backlog = 4) const;
 
   const Socket &bind(const SocketAddress &address) const;
+
   Socket &bind(const SocketAddress &address) {
     return const_cast<Socket &>(
       const_cast<const Socket *>(this)->bind(address));
@@ -343,6 +344,9 @@ public:
    * @return A valid Socket if the operation is successful.
    */
   Socket accept(SocketAddress &address) const;
+  Socket accept(SocketAddress &address) {
+    return const_cast<const Socket *>(this)->accept(address);
+  }
 
   /*! \details Shuts down the socket.
    *
@@ -404,6 +408,9 @@ public:
   Socket &set_option(const SocketOption &option);
 
   SocketAddress get_sock_name() const;
+  SocketAddress get_sock_name() {
+    return const_cast<const Socket *>(this)->get_sock_name();
+  }
 
   static int initialize();
   static int deinitialize();
@@ -449,6 +456,7 @@ private:
   mutable SOCKET_T m_socket = SOCKET_INVALID;
   static int m_is_initialized;
   API_AF(Socket, MessageFlags, message_flags, MessageFlags::null);
+  API_AF(Socket, Family, family, Family::unspecified);
   /*! \endcond */
 };
 

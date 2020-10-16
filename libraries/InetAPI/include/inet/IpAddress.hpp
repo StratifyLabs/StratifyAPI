@@ -37,7 +37,7 @@ public:
 
   explicit IpAddress4(in_addr_t value) : m_address(value) {}
 
-  explicit IpAddress4(const var::String &value) {
+  explicit IpAddress4(var::StringView value) {
     var::StringList value_list = value.split(".");
     if (value_list.count() != 4) {
       return;
@@ -85,6 +85,17 @@ private:
 class IpAddress6 {
 public:
   IpAddress6(const struct in6_addr &address) : m_address(address) {}
+
+  IpAddress6(var::StringView value) {
+    var::StringList value_list = value.split(":");
+    API_ASSERT(value_list.count() == 8);
+    var::View view(m_address);
+    size_t i = 0;
+    for (const auto &value : value_list) {
+      view.to_u16()[i++]
+        = value.to_unsigned_long(var::String::Base::hexidecimal);
+    }
+  }
 
   IpAddress6(const var::Array<u16, 8> address) {
     var::View(m_address).copy(var::View(address));
