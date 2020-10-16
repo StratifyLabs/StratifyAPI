@@ -57,6 +57,26 @@ public:
     numeric_service = AI_NUMERICSERV
   };
 
+  enum class MessageFlags {
+    null = 0,
+    peek = MSG_PEEK,
+    out_of_band = MSG_OOB,
+    end_of_record = MSG_EOR,
+    truncated = MSG_TRUNC,
+    control_truncatd = MSG_CTRUNC,
+    wait_all = MSG_WAITALL,
+    dont_wait = MSG_DONTWAIT,
+    dont_route = MSG_DONTROUTE,
+    end_of_file = MSG_EOF,
+    wait_stream = MSG_WAITSTREAM,
+    flush = MSG_FLUSH,
+    hold = MSG_HOLD,
+    send = MSG_SEND,
+    have_more = MSG_HAVEMORE,
+    receive_more = MSG_RCVMORE,
+    need_socket_address = MSG_NEEDSA
+  };
+
   enum class NameFlags {
     socket_debug = SO_DEBUG,
     socket_broadcast = SO_BROADCAST,
@@ -100,6 +120,7 @@ public:
 
 API_OR_NAMED_FLAGS_OPERATOR(SocketFlags, NameFlags)
 API_OR_NAMED_FLAGS_OPERATOR(SocketFlags, AddressInfoFlags)
+API_OR_NAMED_FLAGS_OPERATOR(SocketFlags, MessageFlags)
 
 class SocketAddress : public SocketFlags {
 public:
@@ -427,6 +448,7 @@ protected:
 private:
   mutable SOCKET_T m_socket = SOCKET_INVALID;
   static int m_is_initialized;
+  API_AF(Socket, MessageFlags, message_flags, MessageFlags::null);
   /*! \endcond */
 };
 

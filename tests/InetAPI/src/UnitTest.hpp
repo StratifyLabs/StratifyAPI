@@ -145,7 +145,6 @@ public:
     };
 
     Socket server_socket = bind_socket();
-
     SocketAddress server_address = server_socket.get_sock_name();
 
     self->printer().object("udpServerAddress", server_address);
@@ -191,7 +190,12 @@ public:
                                .set_flags(AddressInfo::Flags::passive));
 
     TEST_ASSERT(address_info.list().count() > 0);
-    Socket socket(address_info.list().at(0));
+    Socket socket = std::move(Socket(address_info.list().at(0))
+                                .set_option(SocketOption(
+                                  S::Level::socket,
+                                  S::NameFlags::socket_reuse_address,
+                                  true)));
+
     const SocketAddress &address = address_info.list().at(0);
 
     const StringView outgoing = "hello";
@@ -204,6 +208,7 @@ public:
       = socket.send_to(address, View(outgoing)).receive_from(incoming_data);
 
     TEST_ASSERT(is_success());
+    printer().object("serverAddress", server_address);
     PRINTER_TRACE(
       printer(),
       "incoming " + String(View(incoming_data).truncate(return_value())));

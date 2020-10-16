@@ -67,16 +67,6 @@ AddressInfo::AddressInfo(const Construct &options) {
   API_RETURN_IF_ERROR();
   for (struct addrinfo *info = info_start; info != nullptr;
        info = info->ai_next) {
-    if (info->ai_addrlen == sizeof(struct sockaddr_in)) {
-      printf(
-        "port is %d\n",
-        ntohs(reinterpret_cast<struct sockaddr_in *>(info->ai_addr)->sin_port));
-    } else {
-      printf(
-        "port6 is %d\n",
-        ntohs(
-          reinterpret_cast<struct sockaddr_in6 *>(info->ai_addr)->sin6_port));
-    }
     m_list.push_back(
       SocketAddress(info->ai_addr, info->ai_addrlen, info->ai_canonname)
         .set_protocol(static_cast<Protocol>(info->ai_protocol))
@@ -243,12 +233,14 @@ int Socket::interface_close(int fd) const {
 
 int Socket::interface_read(int fd, void *buf, int nbyte) const {
   MCU_UNUSED_ARGUMENT(fd);
-  return decode_socket_return(::recv(m_socket, buf, nbyte, 0));
+  return decode_socket_return(
+    ::recv(m_socket, buf, nbyte, static_cast<int>(message_flags())));
 }
 
 int Socket::interface_write(int fd, const void *buf, int nbyte) const {
   MCU_UNUSED_ARGUMENT(fd);
-  return decode_socket_return(::send(m_socket, buf, nbyte, 0));
+  return decode_socket_return(
+    ::send(m_socket, buf, nbyte, static_cast<int>(message_flags())));
 }
 
 const Socket &Socket::send_to(
@@ -263,7 +255,7 @@ const Socket &Socket::send_to(
       (const char *)buf,
       nbyte,
       0,
-      var::View(socket_address.m_sockaddr).to<struct sockaddr>(),
+      socket_address.to_sockaddr(),
       socket_address.length())));
   return *this;
 }
