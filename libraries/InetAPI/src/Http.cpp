@@ -140,23 +140,55 @@ Http::Http(var::StringView http_version) : m_http_version(http_version) {
   API_ASSERT(http_version.find("HTTP/") == 0);
 }
 
-void Http::add_request_header_field(
-  var::StringView key,
-  var::StringView value) {
-  m_request_header_fields += key + ": " + value + "\r\n";
+void Http::add_header_field(var::StringView key, var::StringView value) {
+  if (m_is_header_dirty) {
+    m_header_fields.clear();
+    m_is_header_dirty = false;
+  }
+
+  m_header_fields
+    += String(key).to_upper() + ": " + String(value).to_upper() + "\r\n";
 }
 
-void Http::add_response_header_field(
-  var::StringView key,
-  var::StringView value) {
-  m_response_header_fields += key + ": " + value + "\r\n";
+void Http::add_header_fields(var::StringView fields) {
+  if (m_is_header_dirty) {
+    m_header_fields.clear();
+    m_is_header_dirty = false;
+  }
+  m_header_fields += fields;
+}
+
+var::String Http::get_header_field(var::StringView key) const {
+
+  const size_t key_position = header_fields().find(String(key).to_upper());
+  if (key_position == String::npos) {
+    return var::String();
+  }
+
+  const size_t value_position = header_fields().find(":", key_position);
+  if (value_position == String::npos) {
+    return var::String();
+  }
+
+  const size_t end_position = header_fields().find("\r", value_position);
+  if (end_position == String::npos) {
+    return var::String();
+  }
+
+  const size_t adjusted_value_position = (key.at(value_position + 1) == ' ')
+                                           ? value_position + 2
+                                           : value_position + 1;
+
+  return key.get_substring(
+    StringView::GetSubstring()
+      .set_position(adjusted_value_position)
+      .set_length(end_position - adjusted_value_position));
 }
 
 void Http::send(const Response &response) const {
-
   socket().write(
-    response.to_string() + "\r\n" + response_header_fields() + "\r\n"
-    + (response_header_fields().is_empty() ? "\r\n" : ""));
+    response.to_string() + "\r\n" + header_fields() + "\r\n"
+    + (header_fields().is_empty() ? "\r\n" : ""));
 }
 
 void Http::send(
@@ -187,8 +219,7 @@ void Http::send(
 }
 
 void Http::send(const Request &request) const {
-  socket().write(
-    request.to_string() + "\r\n" + request_header_fields() + "\r\n");
+  socket().write(request.to_string() + "\r\n" + header_fields() + "\r\n");
 }
 
 int Http::get_chunk_size() const {
@@ -198,13 +229,13 @@ int Http::get_chunk_size() const {
 
 var::String Http::receive_header_fields() {
   var::String result;
-  var::String line;
 
   result.clear();
   socket().reset_error();
 
+  var::String line;
   do {
-    line = socket().gets('\n');
+    line = std::move(socket().gets('\n'));
 
     AGGREGATE_TRAFFIC(String("> ") + line);
 #if SHOW_HEADERS
@@ -238,6 +269,7 @@ var::String Http::receive_header_fields() {
   } while (line.length() > 2
            && (socket().is_success())); // while reading the header
 
+  m_is_header_dirty = true;
   return std::move(result);
 }
 
@@ -298,7 +330,10 @@ HttpClient &HttpClient::execute_method(
     get_file_pos = options.response()->location();
   }
 
-  add_request_header_field("Host", m_host);
+  add_header_field("Host", m_host);
+  if (options.request()) {
+    add_header_field("content-length", Ntos(options.request()->size()));
+  }
 
   send(Request(method, path, http_version()));
 
@@ -307,7 +342,7 @@ HttpClient &HttpClient::execute_method(
   }
 
   m_response = Response(socket().gets());
-  set_response_header_fields(receive_header_fields());
+  set_header_fields(receive_header_fields());
   API_RETURN_VALUE_IF_ERROR(*this);
 
   const bool is_redirected = m_is_follow_redirects && m_response.is_redirect();
@@ -329,15 +364,13 @@ HttpClient &HttpClient::execute_method(
       options.response()->seek(get_file_pos, File::Whence::set);
     }
 
-    const StringList attribute_list = response_header_fields().split("\r\n");
-    for (const String &attribute_string : attribute_list) {
-      const HeaderField attribute = HeaderField::from_string(attribute_string);
-      if (attribute.key() == "LOCATION") {
+    var::String location = get_header_field("LOCATION");
+    if (location.is_empty() == false) {
 
-        // need to close the socket and connect to a different server
+      printf("redirect not implemented yet\n");
+      API_ASSERT(false);
 
-        return execute_method(method, attribute.value(), options);
-      }
+      return execute_method(method, location, options);
     }
   }
 
@@ -397,7 +430,7 @@ HttpServer &HttpServer::listen(
   bool is_stop = false;
   while (is_stop == false) {
     m_request = Request(socket().gets());
-    set_request_header_fields(receive_header_fields());
+    set_header_fields(receive_header_fields());
     // execute the method
     if (respond) {
       if (respond(this, context, m_request) == IsStop::yes) {

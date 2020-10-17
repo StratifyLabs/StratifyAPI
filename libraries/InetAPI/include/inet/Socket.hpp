@@ -278,24 +278,6 @@ private:
   size_t m_size;
 };
 
-/*! \brief Socket Class
- * \details The Socket class is for accessing
- * websockets that run on the TCP/IP stack.
- *
- *
- * For a client, the typical exchange looks like this:
- *
- * ```msc
- * Note left of Client: Create Socket
- * Client->Server: connect()
- * Note right of Server: accept() and bind()
- * Client->Server: write()
- * Server->Client: read()
- * Client->Server: close()
- * ```
- *
- *
- */
 class Socket : public fs::FileAccess<Socket>, public SocketFlags {
 public:
   Socket();
@@ -315,21 +297,8 @@ public:
 
   virtual ~Socket();
 
-  /*!
-   * \details Connects to the server using the SocketAddress
-   * object passed to create() method.
-   * @return Less than zero on error or zero on success
-   */
   const Socket &connect(const SocketAddress &address) const;
 
-  /*!
-   * \details Binds and listens to the port for which the socket was created.
-   * @return Less than zero on error and zero on success
-   *
-   * This method will always bind but it will only listen
-   * when using TCP sockets where listen is applicable.
-   *
-   */
   const Socket &
   bind_and_listen(const SocketAddress &address, int backlog = 4) const;
   Socket &bind_and_listen(const SocketAddress &address, int backlog = 4) {
@@ -340,35 +309,14 @@ public:
   const Socket &bind(const SocketAddress &address) const;
 
   Socket &bind(const SocketAddress &address) {
-    return const_cast<Socket &>(
-      const_cast<const Socket *>(this)->bind(address));
+    return API_CONST_CAST_SELF(Socket, bind, address);
   }
 
-  /*!
-   * \details Accepts a socket connection on a socket that is listening.
-   *
-   * @return A valid Socket if the operation is successful.
-   */
   Socket accept(SocketAddress &address) const;
   Socket accept(SocketAddress &address) {
-    return const_cast<const Socket *>(this)->accept(address);
+    return API_CONST_CAST(Socket, accept, address);
   }
 
-  /*! \details Shuts down the socket.
-   *
-   * @param how Use READWRITE, READONLY, or WRITEONLY to disable the specified
-   * operations
-   *
-   * \code
-   * Socket s;
-   * s.shutdown(); //disables further send/receive operations
-   * s.shutdown(Socket::READWRITE); //disables further send/receive operations
-   * s.shutdown(Socket::WRITEONLY); //disables further send operations
-   * s.shutdown(Socket::READONLY); //disables further receive operations
-   * \endcode
-   *
-   * @return Zero on success
-   */
   const Socket &
   shutdown(const fs::OpenMode how = fs::OpenMode::read_write()) const;
 

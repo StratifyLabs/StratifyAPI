@@ -223,6 +223,10 @@ public:
   const File &
   write(const File &source_file, const Write &options = Write()) const;
 
+  File &write(const File &source_file, const Write &options = Write()) {
+    return API_CONST_CAST_SELF(File, write, source_file, options);
+  }
+
   const File &write(
     const File &source_file,
     const var::Transformer &transformer,
@@ -238,6 +242,9 @@ public:
 
   /*! \details Seeks to a location in the file or on the device. */
   const File &seek(int location, Whence whence = Whence::set) const;
+  File &seek(int location, Whence whence = Whence::set) {
+    return API_CONST_CAST_SELF(File, seek, location, whence);
+  }
 
   /*! \details Reads a line in to the var::String until end-of-file or \a term
    * is reached. */
@@ -256,11 +263,19 @@ public:
    *
    */
   const File &ioctl(int request, void *arg) const;
+  File &ioctl(int request, void *arg) {
+    return API_CONST_CAST_SELF(File, ioctl, request, arg);
+  }
+
   const File &ioctl(int request) const { return ioctl(request, nullptr); }
+  File &ioctl(int request) { return ioctl(request, nullptr); }
 
   const File &ioctl(const Ioctl &options) const {
-    ioctl(options.request(), options.argument());
-    return *this;
+    return ioctl(options.request(), options.argument());
+  }
+
+  File &ioctl(const Ioctl &options) {
+    return ioctl(options.request(), options.argument());
   }
 
   /*! \details Sets the file descriptor for this object. */
@@ -369,11 +384,24 @@ public:
     return static_cast<const Derived &>(File::seek(location, whence));
   }
 
+  Derived &seek(int location, Whence whence = Whence::set) {
+    return static_cast<Derived &>(File::seek(location, whence));
+  }
+
   const Derived &ioctl(int request, void *arg) const {
     return static_cast<const Derived &>(File::ioctl(request, arg));
   }
+
+  Derived &ioctl(int request, void *arg) {
+    return static_cast<Derived &>(File::ioctl(request, arg));
+  }
+
   const Derived &ioctl(const Ioctl &options) const {
     return static_cast<const Derived &>(File::ioctl(options));
+  }
+
+  Derived &ioctl(const Ioctl &options) {
+    return static_cast<Derived &>(File::ioctl(options));
   }
 
   Derived &set_fileno(int fd) {

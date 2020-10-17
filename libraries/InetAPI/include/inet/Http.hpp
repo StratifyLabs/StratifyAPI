@@ -190,9 +190,12 @@ public:
    */
   const var::String &traffic() const { return m_traffic; }
 
+  var::String get_header_field(var::StringView key) const;
+
 protected:
   var::String m_traffic;
   int m_content_length = 0;
+  bool m_is_header_dirty = false;
 
   Request m_request;
   Response m_response;
@@ -201,8 +204,8 @@ protected:
   void send(const Response &response) const;
   void send(const Request &request) const;
   var::String receive_header_fields();
-  void add_request_header_field(var::StringView key, var::StringView value);
-  void add_response_header_field(var::StringView key, var::StringView value);
+  void add_header_field(var::StringView key, var::StringView value);
+  void add_header_fields(var::StringView fields);
 
   void send(
     const fs::File &file,
@@ -217,8 +220,7 @@ protected:
 private:
   API_AB(Http, transfer_encoding_chunked, false);
   API_AC(Http, var::String, http_version);
-  API_AC(Http, var::String, request_header_fields);
-  API_AC(Http, var::String, response_header_fields);
+  API_AC(Http, var::String, header_fields);
 
   API_AF(Http, size_t, transfer_size, 1024);
 
@@ -270,6 +272,11 @@ public:
     var::StringView path,
     const ExecuteMethod &options);
 
+  HttpClient &add_header_field(var::StringView key, var::StringView value) {
+    Http::add_header_field(key, value);
+    return *this;
+  }
+
 private:
   SocketAddress m_address;
   var::String m_host;
@@ -302,7 +309,10 @@ public:
       void *context,
       const Http::Request &request));
 
-  void send_header(Status status) const;
+  HttpServer &add_header_field(var::StringView key, var::StringView value) {
+    Http::add_header_field(key, value);
+    return *this;
+  }
 
   const HttpServer &send(const Response &response) const {
     Http::send(response);
@@ -319,6 +329,13 @@ public:
   const HttpServer &receive(
     const fs::File &file,
     const api::ProgressCallback *progress_callback = nullptr) const {
+    Http::receive(file, progress_callback);
+    return *this;
+  }
+
+  HttpServer &receive(
+    const fs::File &file,
+    const api::ProgressCallback *progress_callback = nullptr) {
     Http::receive(file, progress_callback);
     return *this;
   }

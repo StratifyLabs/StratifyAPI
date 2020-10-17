@@ -72,11 +72,61 @@ public:
             "requestMethod",
             Http::to_string(request.method()));
 
-          server->receive(NullFile())
-            .send(Http::Response(
-              server->http_version(),
-              Http::Status::bad_request));
-          return Http::IsStop::yes;
+          const StringView hello_world = "Hello World";
+          DataFile incoming;
+
+          const bool is_connection_close
+            = server->get_header_field("CONNECTION") == "CLOSE";
+
+          switch (request.method()) {
+          case Http::Method::null:
+            server->receive(NullFile())
+              .send(Http::Response(
+                server->http_version(),
+                Http::Status::bad_request));
+            break;
+
+          case Http::Method::get:
+            server->receive(NullFile())
+              .add_header_field("content-length", Ntos(hello_world.length()))
+              .send(Http::Response(server->http_version(), Http::Status::ok))
+              .send(ViewFile(View(hello_world)));
+
+            break;
+
+          case Http::Method::post:
+            server->receive(incoming)
+              .add_header_field("content-length", Ntos(incoming.size()))
+              .send(Http::Response(server->http_version(), Http::Status::ok))
+              .send(incoming.seek(0));
+
+            break;
+
+          case Http::Method::put:
+            server->receive(incoming)
+              .add_header_field("content-length", Ntos(incoming.size()))
+              .send(Http::Response(server->http_version(), Http::Status::ok))
+              .send(incoming.seek(0));
+            break;
+
+          case Http::Method::patch:
+            server->receive(incoming)
+              .add_header_field("content-length", Ntos(incoming.size()))
+              .send(Http::Response(server->http_version(), Http::Status::ok))
+              .send(incoming.seek(0));
+            break;
+
+          case Http::Method::delete_:
+            break;
+          case Http::Method::head:
+            break;
+          case Http::Method::options:
+            break;
+          case Http::Method::trace:
+            break;
+          }
+
+          return is_connection_close ? Http::IsStop::yes : Http::IsStop::no;
         });
 
     return true;
@@ -93,9 +143,37 @@ public:
       TEST_ASSERT(is_success());
 
       PRINTER_TRACE(printer(), "httpGet");
-      NullFile response;
-      HttpClient("localhost", m_server_port)
-        .get("index.html", Http::Get().set_response(&response));
+      HttpClient http_client("localhost", m_server_port);
+
+      {
+        DataFile response;
+        TEST_ASSERT(
+          http_client.get("index.html", Http::Get().set_response(&response))
+            .is_success());
+
+        printer().key("serverResponse", response.data().null_terminate());
+        TEST_ASSERT(response.data().null_terminate() == "Hello World");
+      }
+
+      {
+
+        DataFile response;
+        DataFile request;
+        request.data().copy(View(StringView("Special Request")));
+
+        TEST_ASSERT(
+          http_client
+            .post(
+              "index.html",
+              Http::Post().set_request(&request).set_response(&response))
+            .is_success());
+
+        printer().key("request", request.data().to_string());
+        printer().key("response", response.data().to_string());
+
+        TEST_ASSERT(request.data() == response.data());
+      }
+
       PRINTER_TRACE(printer(), "httpGot");
 
       TEST_ASSERT(is_success());

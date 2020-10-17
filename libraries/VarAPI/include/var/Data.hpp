@@ -138,58 +138,13 @@ public:
 
   String to_string() const { return View(*this).to_string(); }
   static Data from_string(var::StringView value);
-
-  /*! \details Returns the minimum data storage size of any Data object. */
   static u32 minimum_capacity();
-  /*! \cond */
   static u32 block_size();
-  /*! \endcond */
 
-  /*! \details Returns the current capacity of the data storage object.
-   *
-   *
-   * The capacity of the object will always be greater than
-   * or equal to size(). When data is allocated, it is
-   * allocated in minimum_capacity() blocks. The capacity
-   * represents the actual amount of allocatd data
-   * in bytes. The size() dictates how many of those
-   * allocated bytes are effective.
-   *
-   * ```
-   * //md2code:main
-   * Data small_block(arg::Size(1));
-   * printf(
-   *   "Size is %ld, Capacity is %ld\n",
-   *   small_block.size(),
-   *   small_block.capacity()
-   *   );
-   *
-   * //size will be one, capacity will be minimum_capacity()
-   *
-   * //this will just reassign size without using malloc/free
-   * small_block.allocate(arg::Size(2));
-   * ```
-   *
-   *
-   */
+  StringView null_terminate();
+
   u32 capacity() const { return m_data.capacity(); }
-
-  /*! \details Resizes the data (equivalent to allocate()).
-   *
-   * @param size The number of new bytes
-   * @return Zero on success or -1 with errno set
-   *
-   * This is the same as allocate() with \a resize set to true
-   *
-   */
   Data &resize(size_t size);
-
-  /*! \details Free the memory associated with this object.
-   * This will only perform any operations if the memory was
-   * dynamically allocatißng using this object.
-   *
-   * @return Zero on success
-   */
   Data &free() {
     m_data = std::vector<u8>();
     return *this;
@@ -226,7 +181,7 @@ public:
    * ```
    *
    */
-  Data &append(const View reference);
+  Data &append(const View view);
 
   class Erase {
     API_AF(Erase, size_t, position, 0);

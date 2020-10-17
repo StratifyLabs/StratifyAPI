@@ -198,4 +198,11 @@ private:                                                                       \
 #define API_MINIMUM_CHUNK_SIZE (MALLOC_CHUNK_SIZE - 12)
 #endif
 
+#define API_CONST_CAST_SELF(type_value, function_value, ...)                   \
+  const_cast<type_value &>(                                                    \
+    const_cast<const type_value *>(this)->function_value(__VA_ARGS__))
+
+#define API_CONST_CAST(type_value, function_value, ...)                        \
+  const_cast<const type_value *>(this)->function_value(__VA_ARGS__);
+
 #endif // API_API_MACROS_HPP_

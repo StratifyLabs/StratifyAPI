@@ -43,6 +43,14 @@ Data &Data::resize(size_t s) {
   return *this;
 }
 
+StringView Data::null_terminate() {
+  if (data_u8()[size() - 1] != 0) {
+    char c = 0;
+    append(View(c));
+  }
+  return StringView(reinterpret_cast<const char *>(data_u8()));
+}
+
 Data &Data::copy(const View a, const Copy &options) {
   const u32 bytes_to_copy
     = options.size() < a.size() ? options.size() : a.size();
@@ -62,6 +70,6 @@ Data &Data::copy(const View a, const Copy &options) {
   return *this;
 }
 
-Data &Data::append(const View item) {
-  return copy(item, Copy().set_destination_position(size()));
+Data &Data::append(const View view) {
+  return copy(view, Copy().set_destination_position(size()));
 }
