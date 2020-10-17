@@ -78,6 +78,8 @@ public:
           const bool is_connection_close
             = server->get_header_field("CONNECTION") == "CLOSE";
 
+          printer().key("CONNECTION", server->get_header_field("CONNECTION"));
+
           switch (request.method()) {
           case Http::Method::null:
             server->receive(NullFile())
@@ -126,9 +128,11 @@ public:
             break;
           }
 
+          self->printer().key("close", is_connection_close);
           return is_connection_close ? Http::IsStop::yes : Http::IsStop::no;
         });
 
+    self->printer().key("connection", StringView("--close--"));
     return true;
   }
 
@@ -136,7 +140,6 @@ public:
     randomize_server_port();
 
     {
-
       m_is_listening = false;
       PrinterObject po(printer(), "httpClient/Server");
       Thread server_thread = start_server(http_server);
@@ -174,9 +177,38 @@ public:
         TEST_ASSERT(request.data() == response.data());
       }
 
-      PRINTER_TRACE(printer(), "httpGot");
+      {
+
+        DataFile response;
+        DataFile request;
+        request.data().copy(View(StringView("Special Request Post")));
+
+        TEST_ASSERT(
+          http_client.add_header_field("connection", "close")
+            .post(
+              "index.html",
+              Http::Post().set_request(&request).set_response(&response))
+            .is_success());
+
+        printer().key("request", request.data().to_string());
+        printer().key("response", response.data().to_string());
+
+        TEST_ASSERT(request.data() == response.data());
+      }
+
+      wait(500_milliseconds);
 
       TEST_ASSERT(is_success());
+    }
+
+    {
+      HttpClient http_client("httpbin.org", 80);
+
+      DataFile response;
+      TEST_EXPECT(http_client.get("/get", Http::Get().set_response(&response))
+                    .is_success());
+
+      printer().key("response", response.data().null_terminate());
     }
 
     return true;

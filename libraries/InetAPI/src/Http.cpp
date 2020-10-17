@@ -175,11 +175,11 @@ var::String Http::get_header_field(var::StringView key) const {
     return var::String();
   }
 
-  const size_t adjusted_value_position = (key.at(value_position + 1) == ' ')
-                                           ? value_position + 2
-                                           : value_position + 1;
+  const size_t adjusted_value_position
+    = (header_fields().at(value_position + 1) == ' ') ? value_position + 2
+                                                      : value_position + 1;
 
-  return key.get_substring(
+  return header_fields().get_substring(
     StringView::GetSubstring()
       .set_position(adjusted_value_position)
       .set_length(end_position - adjusted_value_position));
@@ -378,15 +378,17 @@ HttpClient &HttpClient::execute_method(
 }
 
 void HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
-
-  AddressInfo address_info(AddressInfo::Construct()
-                             .set_node(domain_name)
-                             .set_service(Ntos(port))
-                             .set_family(Socket::Family::inet));
+  AddressInfo address_info(
+    AddressInfo::Construct()
+      .set_node(domain_name)
+      .set_service((port != 0xffff) ? Ntos(port).cstring() : StringView(""))
+      .set_family(Socket::Family::inet));
 
   renew_socket();
 
   for (const SocketAddress &address : address_info.list()) {
+    printer::Printer printer;
+    printer << address;
     socket().connect(address);
     if (is_success()) {
       m_is_connected = true;

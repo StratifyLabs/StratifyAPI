@@ -232,7 +232,7 @@ class HttpClient : public Http {
 public:
   HttpClient(
     var::StringView host,
-    u16 port,
+    u16 port = 0xffff,
     var::StringView http_version = "HTTP/1.1");
 
   HttpClient &get(var::StringView path, const Get &options) {
