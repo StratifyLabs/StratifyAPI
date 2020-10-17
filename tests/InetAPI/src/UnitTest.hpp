@@ -204,11 +204,23 @@ public:
     {
       HttpClient http_client("httpbin.org", 80);
 
-      DataFile response;
-      TEST_EXPECT(http_client.get("/get", Http::Get().set_response(&response))
-                    .is_success());
+      {
+        DataFile response;
+        TEST_EXPECT(
+          http_client.get("/get", Http::ExecuteMethod().set_response(&response))
+            .is_success());
+        printer().key("response", response.data().null_terminate());
+      }
 
-      printer().key("response", response.data().null_terminate());
+      {
+        DataFile request;
+        request.data().copy(View(StringView("HelloWorld")));
+        DataFile response;
+        TEST_EXPECT(
+          http_client.put("/put", Http::ExecuteMethod().set_response(&response))
+            .is_success());
+        printer().key("response", response.data().null_terminate());
+      }
     }
 
     return true;
