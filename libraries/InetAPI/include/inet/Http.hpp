@@ -230,10 +230,7 @@ private:
 
 class HttpClient : public Http {
 public:
-  HttpClient(
-    var::StringView host,
-    u16 port = 0xffff,
-    var::StringView http_version = "HTTP/1.1");
+  HttpClient(var::StringView http_version = "HTTP/1.1");
 
   HttpClient &get(var::StringView path, const Get &options) {
     return execute_method(Method::get, path, options);
@@ -262,10 +259,6 @@ public:
   HttpClient &trace(var::StringView path) {
     return execute_method(Method::trace, path, ExecuteMethod());
   }
-  HttpClient &connect(var::StringView path) {
-    // return query(Method::connect, path, MethodOptions());
-    return *this;
-  }
 
   HttpClient &execute_method(
     Method method,
@@ -276,6 +269,8 @@ public:
     Http::add_header_field(key, value);
     return *this;
   }
+
+  HttpClient &connect(var::StringView domain_name, u16 port = 80);
 
 private:
   SocketAddress m_address;
@@ -292,10 +287,71 @@ private:
   bool m_is_follow_redirects = true;
   bool m_is_connected = false;
 
-  void connect_to_server(var::StringView domain_name, u16 port);
 };
 
-/*! \cond */
+class HttpSecureClient : public HttpClient {
+public:
+  HttpSecureClient(var::StringView http_version = "HTTP/1.1")
+    : HttpClient(http_version) {}
+
+  HttpSecureClient &get(var::StringView path, const Get &options) {
+    return execute_method(Method::get, path, options);
+  }
+
+  HttpSecureClient &post(var::StringView path, const Post &options) {
+    return execute_method(Method::post, path, options);
+  }
+  HttpSecureClient &put(var::StringView path, const Put &options) {
+    return execute_method(Method::put, path, options);
+  }
+
+  HttpSecureClient &patch(var::StringView path, const Patch &options) {
+    return execute_method(Method::patch, path, options);
+  }
+
+  // http delete
+  HttpSecureClient &remove(var::StringView path, const Remove &options) {
+    return execute_method(Method::delete_, path, options);
+  }
+
+  HttpSecureClient &options(var::StringView path) {
+    return execute_method(Method::options, path, ExecuteMethod());
+  }
+
+  HttpSecureClient &trace(var::StringView path) {
+    return execute_method(Method::trace, path, ExecuteMethod());
+  }
+
+  HttpSecureClient &execute_method(
+    Method method,
+    var::StringView path,
+    const ExecuteMethod &options) {
+    HttpClient::execute_method(method, path, ExecuteMethod());
+    return *this;
+  }
+
+  HttpSecureClient &
+  add_header_field(var::StringView key, var::StringView value) {
+    Http::add_header_field(key, value);
+    return *this;
+  }
+
+  HttpSecureClient &connect(var::StringView domain_name, u16 port = 443) {
+    HttpClient::connect(domain_name, port);
+    return *this;
+  }
+
+private:
+  SecureSocket m_socket;
+
+  Socket &socket() override { return m_socket; }
+  const Socket &socket() const override { return m_socket; }
+  void renew_socket() override final {
+    m_socket
+      = std::move(SecureSocket(Socket::Family::inet, Socket::Type::stream));
+  }
+};
+
 class HttpServer : public Http {
 public:
   // socket should already have accepted a new connection
@@ -350,7 +406,6 @@ private:
   virtual const Socket &socket() const override { return m_socket; }
 };
 
-/*! \endcond */
 
 } // namespace inet
 

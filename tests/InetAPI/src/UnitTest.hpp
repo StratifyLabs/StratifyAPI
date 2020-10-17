@@ -51,8 +51,7 @@ public:
       = std::move(Socket(server_listen_address)
                     .set_option(SocketOption(
                       Socket::Level::socket,
-                      Socket::NameFlags::socket_reuse_address
-                        | Socket::NameFlags::socket_reuse_port))
+                      Socket::NameFlags::socket_reuse_address))
                     .bind_and_listen(server_listen_address));
 
     SocketAddress accept_address;
@@ -146,7 +145,8 @@ public:
       TEST_ASSERT(is_success());
 
       PRINTER_TRACE(printer(), "httpGet");
-      HttpClient http_client("localhost", m_server_port);
+      HttpClient http_client;
+      http_client.connect("localhost", m_server_port);
 
       {
         DataFile response;
@@ -202,7 +202,11 @@ public:
     }
 
     {
-      HttpClient http_client("httpbin.org", 80);
+
+      PrinterObject po(printer(), "http://httpbin.org");
+      HttpClient http_client;
+
+      TEST_ASSERT(http_client.connect("httpbin.org").is_success());
 
       {
         DataFile response;
@@ -218,6 +222,21 @@ public:
         DataFile response;
         TEST_EXPECT(
           http_client.put("/put", Http::ExecuteMethod().set_response(&response))
+            .is_success());
+        printer().key("response", response.data().null_terminate());
+      }
+    }
+
+    {
+      PrinterObject po(printer(), "https://httpbin.org");
+      HttpSecureClient http_client;
+
+      TEST_ASSERT(http_client.connect("httpbin.org").is_success());
+
+      {
+        DataFile response;
+        TEST_EXPECT(
+          http_client.get("/get", Http::ExecuteMethod().set_response(&response))
             .is_success());
         printer().key("response", response.data().null_terminate());
       }
@@ -340,12 +359,13 @@ public:
     TEST_SELF_ASSERT(address_info.list().count() > 0);
 
     const SocketAddress &server_address = address_info.list().at(0);
-    Socket server = std::move(
-      Socket(server_address.family(), server_address.type())
-        .set_option(SocketOption(
-          S::Level::socket,
-          S::NameFlags::socket_reuse_address | S::NameFlags::socket_reuse_port,
-          true)));
+    Socket server
+      = std::move(Socket(server_address.family(), server_address.type())
+                    .set_option(SocketOption(
+                      S::Level::socket,
+                      S::NameFlags::socket_reuse_address,
+                      true)));
+    // api::ExecutionContext::reset_error();
     TEST_SELF_ASSERT(is_success());
 
     self->printer().object("serverAddress", address_info.list().at(0));

@@ -304,16 +304,7 @@ void Http::receive(
     fs::File::Write().set_page_size(512).set_size(m_content_length));
 }
 
-HttpClient::HttpClient(
-  var::StringView host,
-  u16 port,
-  var::StringView http_version)
-  : Http(http_version) {
-  if (host.is_empty() == false) {
-    m_is_connected = false;
-    connect_to_server(host, port);
-  }
-}
+HttpClient::HttpClient(var::StringView http_version) : Http(http_version) {}
 
 HttpClient &HttpClient::execute_method(
   Method method,
@@ -377,7 +368,7 @@ HttpClient &HttpClient::execute_method(
   return *this;
 }
 
-void HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
+HttpClient &HttpClient::connect(var::StringView domain_name, u16 port) {
   AddressInfo address_info(
     AddressInfo::Construct()
       .set_node(domain_name)
@@ -387,18 +378,16 @@ void HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
   renew_socket();
 
   for (const SocketAddress &address : address_info.list()) {
-    printer::Printer printer;
-    printer << address;
     socket().connect(address);
     if (is_success()) {
       m_is_connected = true;
       m_host = String(domain_name);
-      return;
+      return (*this);
     }
     API_RESET_ERROR();
   }
 
-  API_RETURN_ASSIGN_ERROR(domain_name.cstring(), ECONNREFUSED);
+  API_RETURN_VALUE_ASSIGN_ERROR(*this, domain_name.cstring(), ECONNREFUSED);
 }
 
 Http::HeaderField Http::HeaderField::from_string(var::StringView string) {

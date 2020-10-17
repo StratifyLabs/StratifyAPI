@@ -7,6 +7,8 @@ using namespace inet;
 
 SecureSocketApi SecureSocket::m_api;
 
+SecureSocket::SecureSocket() { initialize(); }
+
 SecureSocket::SecureSocket(Domain domain, Type type, Protocol protocol) {
   API_RETURN_IF_ERROR();
   set_family(domain);
@@ -33,7 +35,10 @@ SecureSocket::SecureSocket(const SocketAddress &address) {
       static_cast<int>(address.protocol())));
 }
 
-SecureSocket::~SecureSocket() { interface_close(0); }
+SecureSocket::~SecureSocket() {
+  internal_close();
+  finalize();
+}
 
 int SecureSocket::interface_connect(const SocketAddress &address) const {
   int result;
@@ -87,9 +92,9 @@ int SecureSocket::interface_bind_and_listen(
   return -1;
 }
 
-int SecureSocket::interface_shutdown(int fd, const fs::OpenMode how) const {
+int SecureSocket::interface_shutdown(const fs::OpenMode how) const {
   MCU_UNUSED_ARGUMENT(how);
-  return interface_close(fd);
+  return internal_close();
 }
 
 int SecureSocket::interface_write(const void *buf, int nbyte) const {
@@ -114,8 +119,7 @@ int SecureSocket::interface_read(void *buf, int nbyte) const {
   return api()->read(m_context, buf, nbyte);
 }
 
-int SecureSocket::interface_close(int fd) const {
-  MCU_UNUSED_ARGUMENT(fd);
+int SecureSocket::internal_close() const {
   int result = 0;
   if (m_context) {
     result = api()->close(&m_context);

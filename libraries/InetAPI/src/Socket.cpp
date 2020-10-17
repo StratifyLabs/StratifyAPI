@@ -74,7 +74,7 @@ AddressInfo::AddressInfo(const Construct &options) {
   }
 
   freeaddrinfo(info_start);
-  Socket::deinitialize();
+  Socket::finalize();
 }
 
 Socket::Socket() {
@@ -143,7 +143,7 @@ int Socket::initialize() {
   return 0;
 }
 
-int Socket::deinitialize() {
+int Socket::finalize() {
   if (m_is_initialized > 0) {
     m_is_initialized--;
     if (m_is_initialized == 0) {
@@ -212,6 +212,7 @@ const Socket &Socket::connect(const SocketAddress &address) const {
 }
 
 int Socket::interface_connect(const SocketAddress &address) const {
+
   return decode_socket_return(::connect(
     m_socket,
     address.to_sockaddr(),
@@ -280,27 +281,31 @@ SocketAddress Socket::receive_from(void *buf, int nbyte) const {
 
 const Socket &Socket::shutdown(const fs::OpenMode how) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", interface_shutdown(m_socket, how));
-  m_socket = SOCKET_INVALID;
+  API_SYSTEM_CALL("", interface_shutdown(how));
   return *this;
 }
 
-int Socket::interface_shutdown(SOCKET_T fd, const fs::OpenMode how) const {
+int Socket::interface_shutdown(const fs::OpenMode how) const {
   int socket_how = SHUT_RDWR;
   if (how.is_read_only()) {
     socket_how = SHUT_RD;
   } else if (how.is_write_only()) {
     socket_how = SHUT_WR;
   }
-  return decode_socket_return(::shutdown(m_socket, socket_how));
+  int result = decode_socket_return(::shutdown(m_socket, socket_how));
+  m_socket = SOCKET_INVALID;
+  return result;
 }
 
-Socket &Socket::set_option(const SocketOption &option) {
-  decode_socket_return(::setsockopt(
-    m_socket,
-    static_cast<int>(option.m_level),
-    static_cast<int>(option.m_name),
-    &option.m_value,
-    option.m_size));
+const Socket &Socket::set_option(const SocketOption &option) const {
+  API_RETURN_VALUE_IF_ERROR(*this);
+  API_SYSTEM_CALL(
+    "",
+    decode_socket_return(::setsockopt(
+      m_socket,
+      static_cast<int>(option.m_level),
+      static_cast<int>(option.m_name),
+      &option.m_value,
+      option.m_size)));
   return *this;
 }

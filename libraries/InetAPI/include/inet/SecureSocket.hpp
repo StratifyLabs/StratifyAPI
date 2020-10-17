@@ -17,6 +17,8 @@ typedef api::Api<mbedtls_api_t, MBEDTLS_API_REQUEST> SecureSocketApi;
 
 class SecureSocket : public Socket {
 public:
+  SecureSocket();
+
   explicit SecureSocket(
     Domain domain,
     Type type = Type::stream,
@@ -36,9 +38,6 @@ public:
     return *this;
   }
 
-  // already documented in inet::Socket
-  virtual int shutdown(int how = 0) const;
-
   const var::Data &ticket() const { return m_ticket; }
 
   SecureSocket &set_ticket(var::View ticket) {
@@ -54,16 +53,13 @@ private:
   mutable var::Data m_ticket;
   mutable void *m_context = nullptr;
 
-  int interface_connect(const SocketAddress &address) const override final;
+  int internal_close() const;
 
+  int interface_connect(const SocketAddress &address) const override final;
   int interface_bind_and_listen(const SocketAddress &address, int backlog)
     const override final;
 
-  virtual int
-  interface_shutdown(int fd, const fs::OpenMode how) const override final;
-
-  int interface_close(int fd) const;
-
+  int interface_shutdown(const fs::OpenMode how) const final;
   int interface_read(void *buf, int nbyte) const override final;
   int interface_write(const void *buf, int nbyte) const override final;
 };

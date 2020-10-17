@@ -15,8 +15,6 @@
 
 namespace inet {
 
-class Socket;
-class SocketAddress;
 
 class SocketFlags {
 public:
@@ -184,17 +182,11 @@ private:
 
 class SocketAddress4 : public SocketAddress {
 public:
-  /*!
-   * \details Constructor to set the sockaddr structure to 0.
-   */
   SocketAddress4() {
     m_sockaddr.size = sizeof(struct sockaddr_in);
     m_sockaddr.sockaddr_in.sin_family = AF_INET;
   }
 
-  // length, family, port, address
-
-  /*! \details Sets the protocol for getting address info. */
   SocketAddress4 &set_port(u16 port) {
     m_sockaddr.sockaddr_in.sin_port = htons(port);
     return *this;
@@ -212,15 +204,12 @@ class SocketAddress6 : public SocketAddress {
 public:
   SocketAddress6() { m_sockaddr.size = sizeof(struct sockaddr_in6); }
 
-  // length, family, port, address
 
-  /*! \details Sets the family for getting address info. */
   SocketAddress6 &set_family(Family value) {
     m_sockaddr.sockaddr_in6.sin6_family = static_cast<int>(value);
     return *this;
   }
 
-  /*! \details Sets the protocol for getting address info. */
   SocketAddress6 &set_port(u16 port) {
     m_sockaddr.sockaddr_in6.sin6_port = htons(port);
     return *this;
@@ -298,16 +287,17 @@ public:
   virtual ~Socket();
 
   const Socket &connect(const SocketAddress &address) const;
+  Socket &connect(const SocketAddress &address) {
+    return API_CONST_CAST_SELF(Socket, connect, address);
+  }
 
   const Socket &
   bind_and_listen(const SocketAddress &address, int backlog = 4) const;
   Socket &bind_and_listen(const SocketAddress &address, int backlog = 4) {
-    return const_cast<Socket &>(
-      const_cast<const Socket *>(this)->bind_and_listen(address, backlog));
+    return API_CONST_CAST_SELF(Socket, bind_and_listen, address, backlog);
   }
 
   const Socket &bind(const SocketAddress &address) const;
-
   Socket &bind(const SocketAddress &address) {
     return API_CONST_CAST_SELF(Socket, bind, address);
   }
@@ -321,8 +311,7 @@ public:
   shutdown(const fs::OpenMode how = fs::OpenMode::read_write()) const;
 
   Socket &shutdown(const fs::OpenMode how = fs::OpenMode::read_write()) {
-    return const_cast<Socket &>(
-      const_cast<const Socket *>(this)->shutdown(how));
+    return API_CONST_CAST_SELF(Socket, shutdown, how);
   }
 
   SocketAddress receive_from(var::View data) const {
@@ -331,48 +320,34 @@ public:
 
   SocketAddress receive_from(void *buf, int nbyte) const;
 
-  /*! \brief Writes to the address specified.
-   *
-   * @param data The data to write
-   * @param address The address to write to.
-   *
-   * This method implements the socket call sendto().
-   *
-   */
-  const Socket &
-  send_to(const SocketAddress &socket_address, var::View data) const {
-    return send_to(socket_address, data.to_const_void(), data.size());
-  }
-
   const Socket &send_to(
     const SocketAddress &socket_address,
     const void *buf,
     int nbyte) const;
 
-  /*! \details Sets options for the socket.
-   *
-   * @param option The option to set for the socket
-   *
-   * \code
-   *
-   * SocketAddressIpv4 address(0, 8080);
-   * Socket socket;
-   * socket.create(address);
-   * socket << SocketOption().set_reuse_address() <<
-   * SocketOption().set_reuse_port(); socket.bind(address);
-   *
-   * \endcode
-   *
-   */
-  Socket &set_option(const SocketOption &option);
-
-  SocketAddress get_sock_name() const;
-  SocketAddress get_sock_name() {
-    return const_cast<const Socket *>(this)->get_sock_name();
+  Socket &
+  send_to(const SocketAddress &socket_address, const void *buf, int nbyte) {
+    return API_CONST_CAST_SELF(Socket, send_to, socket_address, buf, nbyte);
   }
 
+  const Socket &
+  send_to(const SocketAddress &socket_address, var::View data) const {
+    return send_to(socket_address, data.to_const_void(), data.size());
+  }
+
+  Socket &send_to(const SocketAddress &socket_address, var::View data) {
+    return send_to(socket_address, data.to_const_void(), data.size());
+  }
+
+  const Socket &set_option(const SocketOption &option) const;
+  Socket &set_option(const SocketOption &option) {
+    return API_CONST_CAST_SELF(Socket, set_option, option);
+  }
+
+  SocketAddress get_sock_name() const;
+
   static int initialize();
-  static int deinitialize();
+  static int finalize();
 
 protected:
 #if defined __win32
@@ -383,13 +358,12 @@ protected:
 #endif
 
 
-
   virtual int interface_connect(const SocketAddress &address) const;
 
   virtual int
   interface_bind_and_listen(const SocketAddress &address, int backlog) const;
 
-  virtual int interface_shutdown(SOCKET_T fd, const fs::OpenMode how) const;
+  virtual int interface_shutdown(const fs::OpenMode how) const;
 
   int interface_open(const char *path, int flags, int mode) const { return 0; }
   int interface_close(int fd) const;
@@ -398,16 +372,14 @@ protected:
     return 0;
   }
 
-  int interface_ioctl(int request, void *argument)
-    const override final {
-    return 0;
+  int interface_ioctl(int request, void *argument) const override final {
+    return fake_ioctl(request, argument);
   }
 
   virtual int interface_read(void *buf, int nbyte) const override;
   virtual int
   interface_write(const void *buf, int nbyte) const override;
 
-  /*! \cond */
   int decode_socket_return(int value) const;
 
 private:
@@ -415,7 +387,6 @@ private:
   static int m_is_initialized;
   API_AF(Socket, MessageFlags, message_flags, MessageFlags::null);
   API_AF(Socket, Family, family, Family::unspecified);
-  /*! \endcond */
 };
 
 } // namespace inet
