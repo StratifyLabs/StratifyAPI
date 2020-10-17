@@ -56,6 +56,7 @@ AddressInfo::AddressInfo(const Construct &options) {
 
   struct addrinfo address_info = {0};
   address_info.ai_family = static_cast<int>(options.family());
+  address_info.ai_protocol = static_cast<int>(options.protocol());
   address_info.ai_socktype = static_cast<int>(options.type());
   address_info.ai_flags = static_cast<int>(options.flags());
 

@@ -59,6 +59,7 @@ int SecureSocket::interface_connect(const SocketAddress &address) const {
     address.length(),
     address.canon_name().cstring());
 
+#if 0
   if (m_ticket_lifetime_seconds && result == 0) {
     m_ticket.resize(2619);
     do {
@@ -82,6 +83,7 @@ int SecureSocket::interface_connect(const SocketAddress &address) const {
       m_ticket.resize(result);
     }
   }
+#endif
   return result;
 }
 

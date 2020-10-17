@@ -231,6 +231,7 @@ public:
     API_AC(Construct, var::StringView, service);
     API_AF(Construct, Family, family, Family::unspecified);
     API_AF(Construct, Type, type, Type::stream);
+    API_AF(Construct, Protocol, protocol, Protocol::ip);
     API_AF(Construct, Flags, flags, Flags::null);
   };
 

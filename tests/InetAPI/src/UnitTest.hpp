@@ -21,6 +21,14 @@ public:
 
   bool execute_class_api_case() {
 
+    DataFile response;
+    TEST_ASSERT(HttpSecureClient()
+                  .connect("httpbin.org")
+                  .get("/get", Http::Get().set_response(&response))
+                  .is_success());
+
+    return true;
+
     if (!socket_case()) {
       return false;
     }
@@ -225,6 +233,22 @@ public:
             .is_success());
         printer().key("response", response.data().null_terminate());
       }
+    }
+
+    if (0) {
+      PrinterObject po(printer(), "ip.jsontest.com");
+
+      DataFile response;
+      TEST_ASSERT(HttpClient()
+                    .connect("ip.jsontest.com")
+                    .get("/", Http::ExecuteMethod().set_response(&response))
+                    .is_success());
+
+      TEST_ASSERT(
+        HttpSecureClient()
+          .connect("ip.jsontest.com")
+          .get("/", Http::ExecuteMethod().set_response(&(response.seek(0))))
+          .is_success());
     }
 
     {

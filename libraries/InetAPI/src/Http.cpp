@@ -219,7 +219,9 @@ void Http::send(
 }
 
 void Http::send(const Request &request) const {
+  printf("write request\n");
   socket().write(request.to_string() + "\r\n" + header_fields() + "\r\n");
+  printf("wrote\n");
 }
 
 int Http::get_chunk_size() const {
@@ -233,6 +235,7 @@ var::String Http::receive_header_fields() {
   result.clear();
   socket().reset_error();
 
+  printf("receive header fields\n");
   var::String line;
   do {
     line = std::move(socket().gets('\n'));
@@ -322,6 +325,15 @@ HttpClient &HttpClient::execute_method(
   }
 
   add_header_field("Host", m_host);
+
+  if (get_header_field("accept").is_empty()) {
+    add_header_field("Accept", "*/*");
+  }
+
+  if (get_header_field("user-agent").is_empty()) {
+    add_header_field("User-Agent", "StratifyAPI");
+  }
+
   if (options.request()) {
     add_header_field("content-length", Ntos(options.request()->size()));
   }
@@ -372,14 +384,18 @@ HttpClient &HttpClient::connect(var::StringView domain_name, u16 port) {
   AddressInfo address_info(
     AddressInfo::Construct()
       .set_node(domain_name)
-      .set_service((port != 0xffff) ? Ntos(port).cstring() : StringView(""))
-      .set_family(Socket::Family::inet));
-
-  renew_socket();
+      .set_service(port != 0xffff ? StringView(Ntos(port)) : StringView(""))
+      .set_family(Socket::Family::inet)
+      .set_flags(AddressInfo::Flags::canon_name));
 
   for (const SocketAddress &address : address_info.list()) {
+    renew_socket();
+    Printer p;
+    p.object("address", address);
     socket().connect(address);
+    printf("connected %d\n", is_success());
     if (is_success()) {
+      printf("connected\n");
       m_is_connected = true;
       m_host = String(domain_name);
       return (*this);
