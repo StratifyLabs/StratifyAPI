@@ -298,6 +298,8 @@ private:
  */
 class Socket : public fs::FileAccess<Socket>, public SocketFlags {
 public:
+  Socket();
+
   explicit Socket(
     Domain domain,
     Type type = Type::stream,
@@ -433,7 +435,6 @@ protected:
 #endif
 
 
-  Socket();
 
   virtual int interface_connect(const SocketAddress &address) const;
 

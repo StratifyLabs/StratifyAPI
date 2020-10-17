@@ -17,8 +17,6 @@ namespace inet {
 
 class Http : public api::ExecutionContext {
 public:
-  explicit Http(const Socket &socket);
-
   enum class IsStop { no, yes };
 
   enum class Status {
@@ -119,29 +117,17 @@ public:
   static var::String to_string(Method method);
   static Method method_from_string(const var::String &string);
 
-  class Attribute : public var::Pair<var::String> {
+  class HeaderField : public var::Pair<var::String> {
   public:
-    Attribute() {}
-    Attribute(var::StringView key, var::StringView value)
-      : var::Pair<var::String>(var::String(key), var::String(value)) {}
+    HeaderField() {}
+    HeaderField(var::StringView key, var::StringView value)
+      : var::Pair<var::String>(
+        var::String(key).to_upper(),
+        var::String(value).to_upper()) {}
 
-    static Attribute from_string(var::StringView string);
+    static HeaderField from_string(var::StringView string);
     var::String to_string() const { return key() + ": " + value(); }
   };
-
-  var::Vector<Attribute> &header_request_pairs() {
-    return m_request_attribute_list;
-  }
-  const var::Vector<Attribute> &header_request_pairs() const {
-    return m_request_attribute_list;
-  }
-
-  var::Vector<Attribute> &header_response_pairs() {
-    return m_response_attribute_list;
-  }
-  const var::Vector<Attribute> &header_response_pairs() const {
-    return m_response_attribute_list;
-  }
 
   class Request {
   public:
@@ -150,8 +136,8 @@ public:
       : m_method(method), m_path(path), m_version(version) {}
 
     explicit Request(var::StringView plain_test) {
-      var::StringList list = plain_test.split(" \r");
-      if (list.count() != 3) {
+      var::StringList list = plain_test.split(" \r\n");
+      if (list.count() < 3) {
         API_RETURN_ASSIGN_ERROR("", EINVAL);
       }
       m_method = method_from_string(list.at(0));
@@ -196,30 +182,27 @@ public:
     API_RAC(Response, var::String, version);
   };
 
+  Http(var::StringView http_version);
+
   /*! \details Returns a reference to the header that is returned
    * by the request.
    *
    */
-  const var::String &header() const { return m_header; }
   const var::String &traffic() const { return m_traffic; }
 
 protected:
-  var::String m_header;
   var::String m_traffic;
   int m_content_length = 0;
 
   Request m_request;
   Response m_response;
 
-  var::String m_header_request;
 
-  var::Vector<Attribute> m_request_attribute_list;
-  var::Vector<Attribute> m_response_attribute_list;
-
-  const Socket &socket() const { return m_socket; }
   void send(const Response &response) const;
   void send(const Request &request) const;
-  void receive_attributes(var::Vector<Attribute> &pair_list);
+  var::String receive_header_fields();
+  void add_request_header_field(var::StringView key, var::StringView value);
+  void add_response_header_field(var::StringView key, var::StringView value);
 
   void send(
     const fs::File &file,
@@ -228,49 +211,27 @@ protected:
     const fs::File &file,
     const api::ProgressCallback *progress_callback = nullptr) const;
 
+  virtual Socket &socket() = 0;
+  virtual const Socket &socket() const = 0;
+
 private:
   API_AB(Http, transfer_encoding_chunked, false);
-  API_AC(Http, var::String, version);
+  API_AC(Http, var::String, http_version);
+  API_AC(Http, var::String, request_header_fields);
+  API_AC(Http, var::String, response_header_fields);
+
   API_AF(Http, size_t, transfer_size, 1024);
-  const Socket &m_socket;
 
   int get_chunk_size() const;
   void send_chunk(var::View chunk) const;
 };
 
-template <class Derived> class HttpAccess : public Http {
-public:
-  HttpAccess(const Socket &socket) : Http(socket) {}
-};
-
-/*!
- * \brief The HTTP Client class
- * \details The HTTP client class
- * can be used to execute HTTP requests
- * to HTTP servers.
- *
- *
- *	This first example will download a file from
- * the internet.
- *
- * ```
- * #include <sapi/inet.hpp>
- * #include <sapi/sys.hpp>
- *
- * SecureSocket socket; //or just use Socket for http
- * HttpClient http_client(socket);
- * File response;
- * response.create("/home/response.html");
- * http.get("https://stratifylabs.co", response);
- * response.close();
- * ```
- *
- *
- */
 class HttpClient : public Http {
 public:
-  HttpClient(Socket &socket) : Http(socket) {}
-  HttpClient(Socket &socket, var::StringView host, u16 port);
+  HttpClient(
+    var::StringView host,
+    u16 port,
+    var::StringView http_version = "HTTP/1.1");
 
   HttpClient &get(var::StringView path, const Get &options) {
     return execute_method(Method::get, path, options);
@@ -311,7 +272,15 @@ public:
 
 private:
   SocketAddress m_address;
-  var::String m_alive_domain;
+  var::String m_host;
+  Socket m_socket;
+
+  virtual Socket &socket() override { return m_socket; }
+  virtual const Socket &socket() const override { return m_socket; }
+  virtual void renew_socket() {
+    m_socket = std::move(Socket(Socket::Family::inet, Socket::Type::stream));
+  }
+
   bool m_is_keep_alive = false;
   bool m_is_follow_redirects = true;
   bool m_is_connected = false;
@@ -323,10 +292,8 @@ private:
 class HttpServer : public Http {
 public:
   // socket should already have accepted a new connection
-  HttpServer(var::StringView version, const Socket &socket)
-    : Http(socket), m_version(version) {
-    API_ASSERT(version.find("HTTP/") == 0);
-  }
+  HttpServer(Socket &&socket, var::StringView http_version = "HTTP/1.1")
+    : Http(http_version), m_socket(std::move(socket)) {}
 
   HttpServer &listen(
     void *context,
@@ -359,9 +326,11 @@ public:
 protected:
 private:
   API_AB(HttpServer, running, true);
-  API_AC(HttpServer, var::String, version);
-
   var::Data m_incoming;
+  Socket m_socket;
+
+  virtual Socket &socket() override { return m_socket; }
+  virtual const Socket &socket() const override { return m_socket; }
 };
 
 /*! \endcond */

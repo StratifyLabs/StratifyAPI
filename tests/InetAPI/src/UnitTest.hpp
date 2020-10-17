@@ -57,9 +57,10 @@ public:
 
     SocketAddress accept_address;
 
-    HttpServer(
-      "HTTP/1.1",
-      std::move(server_listen_socket.accept(accept_address)))
+    self->printer().object("listening", server_listen_address);
+    self->m_is_listening = true;
+
+    HttpServer(server_listen_socket.accept(accept_address))
       .listen(
         self,
         [](HttpServer *server, void *context, const Http::Request &request)
@@ -72,8 +73,9 @@ public:
             Http::to_string(request.method()));
 
           server->receive(NullFile())
-            .send(Http::Response(server->version(), Http::Status::bad_request));
-
+            .send(Http::Response(
+              server->http_version(),
+              Http::Status::bad_request));
           return Http::IsStop::yes;
         });
 
@@ -85,7 +87,16 @@ public:
 
     {
 
+      m_is_listening = false;
+      PrinterObject po(printer(), "httpClient/Server");
       Thread server_thread = start_server(http_server);
+      TEST_ASSERT(is_success());
+
+      PRINTER_TRACE(printer(), "httpGet");
+      NullFile response;
+      HttpClient("localhost", m_server_port)
+        .get("index.html", Http::Get().set_response(&response));
+      PRINTER_TRACE(printer(), "httpGot");
 
       TEST_ASSERT(is_success());
     }

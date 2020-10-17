@@ -89,8 +89,7 @@ var::String Http::to_string(Status status) {
     API_HANDLE_STATUS_CASE(network_authentication_required);
   }
 
-  result.replace(
-    String::Replace().set_old_string("_").set_new_string(" "));
+  result.replace(String::Replace().set_old_string("_").set_new_string(" "));
 
   return result;
 }
@@ -137,14 +136,27 @@ Http::Method Http::method_from_string(const var::String &string) {
   return Method::null;
 }
 
-Http::Http(const Socket &socket) : m_socket(socket) {}
+Http::Http(var::StringView http_version) : m_http_version(http_version) {
+  API_ASSERT(http_version.find("HTTP/") == 0);
+}
+
+void Http::add_request_header_field(
+  var::StringView key,
+  var::StringView value) {
+  m_request_header_fields += key + ": " + value + "\r\n";
+}
+
+void Http::add_response_header_field(
+  var::StringView key,
+  var::StringView value) {
+  m_response_header_fields += key + ": " + value + "\r\n";
+}
 
 void Http::send(const Response &response) const {
-  socket().write(response.to_string() + "\r\n");
-  for (const auto &pair : m_response_attribute_list) {
-    socket().write(pair.to_string() + "\r\n");
-  }
-  socket().write("\r\n");
+
+  socket().write(
+    response.to_string() + "\r\n" + response_header_fields() + "\r\n"
+    + (response_header_fields().is_empty() ? "\r\n" : ""));
 }
 
 void Http::send(
@@ -175,11 +187,8 @@ void Http::send(
 }
 
 void Http::send(const Request &request) const {
-  socket().write(request.to_string() + "\r\n");
-  for (const auto &pair : m_request_attribute_list) {
-    socket().write(pair.to_string() + "\r\n");
-  }
-  socket().write("\r\n");
+  socket().write(
+    request.to_string() + "\r\n" + request_header_fields() + "\r\n");
 }
 
 int Http::get_chunk_size() const {
@@ -187,34 +196,32 @@ int Http::get_chunk_size() const {
   return line.to_integer();
 }
 
-void Http::receive_attributes(var::Vector<Attribute> &pair_list) {
-
+var::String Http::receive_header_fields() {
+  var::String result;
   var::String line;
-  pair_list.clear();
-  bool is_first_line = true;
+
+  result.clear();
   socket().reset_error();
 
   do {
     line = socket().gets('\n');
-    if (line.length() > 2) {
 
-      m_header += line;
-      AGGREGATE_TRAFFIC(String("> ") + line);
+    AGGREGATE_TRAFFIC(String("> ") + line);
 #if SHOW_HEADERS
-      printf("> %s", line.cstring());
+    printf("> %s", line.cstring());
 #endif
+    if (line.length() > 2) {
+      result += line;
+      const Http::HeaderField attribute = HeaderField::from_string(line);
 
-      pair_list.push_back(Http::Attribute::from_string(line));
-      const Http::Attribute &pair = pair_list.back();
-      const String title = std::move(String(pair.key()).to_upper());
-
-      if (title == "CONTENT-LENGTH") {
-        m_content_length = static_cast<unsigned int>(pair.value().to_integer());
+      if (attribute.key() == "CONTENT-LENGTH") {
+        m_content_length
+          = static_cast<unsigned int>(attribute.value().to_integer());
       }
 
-      if (title == "CONTENT-TYPE") {
+      if (attribute.key() == "CONTENT-TYPE") {
         // check for evnt streams
-        StringList tokens = pair.value().split(" ;");
+        StringList tokens = attribute.value().split(" ;");
         if (String(tokens.at(0)).to_upper() == "TEXT/EVENT-STREAM") {
           // accept data until the operation is cancelled
           m_content_length = static_cast<u32>(-1);
@@ -222,14 +229,16 @@ void Http::receive_attributes(var::Vector<Attribute> &pair_list) {
       }
 
       if (
-        title == "TRANSFER-ENCODING"
-        && (String(pair.value()).to_upper() == "CHUNKED")) {
+        attribute.key() == "TRANSFER-ENCODING"
+        && (attribute.value() == "CHUNKED")) {
         m_is_transfer_encoding_chunked = true;
       }
     }
 
-  } while ((line.length() > 2 || is_first_line)
+  } while (line.length() > 2
            && (socket().is_success())); // while reading the header
+
+  return std::move(result);
 }
 
 void Http::receive(
@@ -263,9 +272,13 @@ void Http::receive(
     fs::File::Write().set_page_size(512).set_size(m_content_length));
 }
 
-HttpClient::HttpClient(Socket &socket, var::StringView host, u16 port)
-  : Http(socket) {
+HttpClient::HttpClient(
+  var::StringView host,
+  u16 port,
+  var::StringView http_version)
+  : Http(http_version) {
   if (host.is_empty() == false) {
+    m_is_connected = false;
     connect_to_server(host, port);
   }
 }
@@ -285,22 +298,26 @@ HttpClient &HttpClient::execute_method(
     get_file_pos = options.response()->location();
   }
 
-  send(Request(method, path, version()));
+  add_request_header_field("Host", m_host);
+
+  send(Request(method, path, http_version()));
 
   if (options.request()) {
     send(*options.request(), options.progress_callback());
   }
 
   m_response = Response(socket().gets());
-  receive_attributes(m_response_attribute_list);
+  set_response_header_fields(receive_header_fields());
   API_RETURN_VALUE_IF_ERROR(*this);
 
   const bool is_redirected = m_is_follow_redirects && m_response.is_redirect();
 
-  if (options.response() && (is_redirected == false)) {
-    receive(*options.response(), options.progress_callback());
-  } else {
-    receive(NullFile(), options.progress_callback());
+  if (m_content_length) {
+    if (options.response() && (is_redirected == false)) {
+      receive(*options.response(), options.progress_callback());
+    } else {
+      receive(NullFile(), options.progress_callback());
+    }
   }
 
   API_RETURN_VALUE_IF_ERROR(*this);
@@ -312,15 +329,14 @@ HttpClient &HttpClient::execute_method(
       options.response()->seek(get_file_pos, File::Whence::set);
     }
 
-    for (u32 i = 0; i < header_response_pairs().count(); i++) {
+    const StringList attribute_list = response_header_fields().split("\r\n");
+    for (const String &attribute_string : attribute_list) {
+      const HeaderField attribute = HeaderField::from_string(attribute_string);
+      if (attribute.key() == "LOCATION") {
 
-      String key = header_response_pairs().at(i).key();
-      key.to_upper();
-      if (key == "LOCATION") {
-        return execute_method(
-          method,
-          header_response_pairs().at(i).value(),
-          options);
+        // need to close the socket and connect to a different server
+
+        return execute_method(method, attribute.value(), options);
       }
     }
   }
@@ -329,16 +345,19 @@ HttpClient &HttpClient::execute_method(
 }
 
 void HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
-  API_ASSERT(m_is_connected == false);
 
-  m_is_connected = true;
+  AddressInfo address_info(AddressInfo::Construct()
+                             .set_node(domain_name)
+                             .set_service(Ntos(port))
+                             .set_family(Socket::Family::inet));
 
-  AddressInfo address_info(
-    AddressInfo::Construct().set_node(domain_name).set_service(Ntos(port)));
+  renew_socket();
 
   for (const SocketAddress &address : address_info.list()) {
     socket().connect(address);
     if (is_success()) {
+      m_is_connected = true;
+      m_host = String(domain_name);
       return;
     }
     API_RESET_ERROR();
@@ -347,7 +366,7 @@ void HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
   API_RETURN_ASSIGN_ERROR(domain_name.cstring(), ECONNREFUSED);
 }
 
-Http::Attribute Http::Attribute::from_string(var::StringView string) {
+Http::HeaderField Http::HeaderField::from_string(var::StringView string) {
   const size_t colon_pos = string.find(":");
 
   const String key = string.get_substring_with_length(colon_pos).to_upper();
@@ -360,9 +379,10 @@ Http::Attribute Http::Attribute::from_string(var::StringView string) {
     }
 
     value.replace(String::Replace().set_old_string("\r"))
-      .replace(String::Replace().set_old_string("\n"));
+      .replace(String::Replace().set_old_string("\n"))
+      .to_upper();
   }
-  return std::move(Http::Attribute(key.cstring(), value.cstring()));
+  return std::move(Http::HeaderField(key, value));
 }
 
 HttpServer &HttpServer::listen(
@@ -375,16 +395,13 @@ HttpServer &HttpServer::listen(
   // read socket data
 
   bool is_stop = false;
-  while (is_stop) {
-    const var::String line = socket().gets();
-    if (line.length() > 0) {
-      m_request = Request(line);
-      receive_attributes(m_request_attribute_list);
-      // execute the method
-      if (respond) {
-        if (respond(this, context, m_request) == IsStop::yes) {
-          is_stop = true;
-        }
+  while (is_stop == false) {
+    m_request = Request(socket().gets());
+    set_request_header_fields(receive_header_fields());
+    // execute the method
+    if (respond) {
+      if (respond(this, context, m_request) == IsStop::yes) {
+        is_stop = true;
       }
     }
   }
