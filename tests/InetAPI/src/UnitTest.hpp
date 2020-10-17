@@ -36,9 +36,59 @@ public:
     return true;
   }
 
-  bool http_client_case() {
+  static bool http_server(UnitTest *self) {
 
-    {}
+    AddressInfo address_info(AddressInfo::Construct()
+                               .set_family(S::Family::inet)
+                               .set_service(Ntos(self->m_server_port))
+                               .set_type(Socket::Type::stream)
+                               .set_flags(AddressInfo::Flags::passive));
+
+    TEST_SELF_ASSERT(address_info.list().count() > 0);
+
+    const SocketAddress &server_listen_address = address_info.list().at(0);
+    Socket server_listen_socket
+      = std::move(Socket(server_listen_address)
+                    .set_option(SocketOption(
+                      Socket::Level::socket,
+                      Socket::NameFlags::socket_reuse_address
+                        | Socket::NameFlags::socket_reuse_port))
+                    .bind_and_listen(server_listen_address));
+
+    SocketAddress accept_address;
+
+    HttpServer(
+      "HTTP/1.1",
+      std::move(server_listen_socket.accept(accept_address)))
+      .listen(
+        self,
+        [](HttpServer *server, void *context, const Http::Request &request)
+          -> Http::IsStop {
+          // handle the request
+          UnitTest *self = reinterpret_cast<UnitTest *>(context);
+
+          self->printer().key(
+            "requestMethod",
+            Http::to_string(request.method()));
+
+          server->receive(NullFile())
+            .send(Http::Response(server->version(), Http::Status::bad_request));
+
+          return Http::IsStop::yes;
+        });
+
+    return true;
+  }
+
+  bool http_client_case() {
+    randomize_server_port();
+
+    {
+
+      Thread server_thread = start_server(http_server);
+
+      TEST_ASSERT(is_success());
+    }
 
     return true;
   }
@@ -185,9 +235,8 @@ public:
 
   bool socket_tcp_reflection_case(Socket::Family family) {
 
-    Random().seed().randomize(View(m_server_port));
+    randomize_server_port();
 
-    m_server_port = (m_server_port % (65535 - 49152)) + 49152;
     m_family = family;
 
     Thread server_thread = start_server(socket_tcp_server);
@@ -340,5 +389,10 @@ private:
       wait(25_milliseconds);
     }
     return std::move(server_thread);
+  }
+
+  void randomize_server_port() {
+    Random().seed().randomize(View(m_server_port));
+    m_server_port = (m_server_port % (65535 - 49152)) + 49152;
   }
 };

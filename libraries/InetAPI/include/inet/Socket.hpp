@@ -318,7 +318,7 @@ public:
    * object passed to create() method.
    * @return Less than zero on error or zero on success
    */
-  Socket &connect(const SocketAddress &address);
+  const Socket &connect(const SocketAddress &address) const;
 
   /*!
    * \details Binds and listens to the port for which the socket was created.
@@ -330,6 +330,10 @@ public:
    */
   const Socket &
   bind_and_listen(const SocketAddress &address, int backlog = 4) const;
+  Socket &bind_and_listen(const SocketAddress &address, int backlog = 4) {
+    return const_cast<Socket &>(
+      const_cast<const Socket *>(this)->bind_and_listen(address, backlog));
+  }
 
   const Socket &bind(const SocketAddress &address) const;
 
@@ -365,6 +369,11 @@ public:
    */
   const Socket &
   shutdown(const fs::OpenMode how = fs::OpenMode::read_write()) const;
+
+  Socket &shutdown(const fs::OpenMode how = fs::OpenMode::read_write()) {
+    return const_cast<Socket &>(
+      const_cast<const Socket *>(this)->shutdown(how));
+  }
 
   SocketAddress receive_from(var::View data) const {
     return receive_from(data.to_void(), data.size());

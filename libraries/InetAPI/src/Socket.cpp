@@ -204,7 +204,7 @@ Socket Socket::accept(SocketAddress &address) const {
   return std::move(result);
 }
 
-Socket &Socket::connect(const SocketAddress &address) {
+const Socket &Socket::connect(const SocketAddress &address) const {
   // Connect to server.
   API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL("", interface_connect(address));

@@ -137,37 +137,61 @@ Http::Method Http::method_from_string(const var::String &string) {
   return Method::null;
 }
 
-Http::Http(Socket &socket) : m_socket(socket) {}
+Http::Http(const Socket &socket) : m_socket(socket) {}
 
-void Http::send(const Response &response) {
+void Http::send(const Response &response) const {
   socket().write(response.to_string() + "\r\n");
-  for (const auto &pair : m_header_response_pairs) {
+  for (const auto &pair : m_response_attribute_list) {
     socket().write(pair.to_string() + "\r\n");
   }
   socket().write("\r\n");
 }
 
-void Http::send(const Request &request) {
+void Http::send(
+  const fs::File &file,
+  const api::ProgressCallback *progress_callback) const {
+  if (is_transfer_encoding_chunked()) {
+    const size_t size = file.size();
+    for (size_t i = 0; i < size; i++) {
+      const size_t page_size
+        = transfer_size() > (size - i) ? size - i : transfer_size();
+      socket()
+        .write(var::String().format("%d\r\n", page_size))
+        .write(
+          file,
+          Socket::Write().set_page_size(page_size).set_size(page_size))
+        .write("\r\n");
+      i += transfer_size();
+      API_RETURN_IF_ERROR();
+    }
+    return;
+  }
+
+  socket().write(
+    file,
+    Socket::Write()
+      .set_page_size(transfer_size())
+      .set_progress_callback(progress_callback));
+}
+
+void Http::send(const Request &request) const {
   socket().write(request.to_string() + "\r\n");
-  for (const auto &pair : m_header_request_pairs) {
+  for (const auto &pair : m_request_attribute_list) {
     socket().write(pair.to_string() + "\r\n");
   }
   socket().write("\r\n");
 }
 
-void Http::send_chunk(var::View chunk) const {
-  socket()
-    .write(var::String().format("%d\r\n", chunk.size()))
-    .write(chunk)
-    .write("\r\n");
+int Http::get_chunk_size() const {
+  String line = socket().gets();
+  return line.to_integer();
 }
 
-void Http::listen_for_header_pairs(var::Vector<HeaderPair> &pair_list) {
+void Http::receive_attributes(var::Vector<Attribute> &pair_list) {
 
   var::String line;
   pair_list.clear();
   bool is_first_line = true;
-  m_transfer_encoding = "";
   socket().reset_error();
 
   do {
@@ -180,20 +204,9 @@ void Http::listen_for_header_pairs(var::Vector<HeaderPair> &pair_list) {
       printf("> %s", line.cstring());
 #endif
 
-      pair_list.push_back(Http::HeaderPair::from_string(line.cstring()));
-      const Http::HeaderPair &pair = pair_list.back();
-      String title = pair.key();
-      title.to_upper();
-
-      if (title.find("HTTP/") == 0) {
-        StringList tokens = title.split(" ");
-        is_first_line = false;
-        if (tokens.count() < 2) {
-          API_RETURN_ASSIGN_ERROR("", EINVAL);
-          return;
-        }
-        m_status_code = String(tokens.at(1)).to_integer();
-      }
+      pair_list.push_back(Http::Attribute::from_string(line));
+      const Http::Attribute &pair = pair_list.back();
+      const String title = std::move(String(pair.key()).to_upper());
 
       if (title == "CONTENT-LENGTH") {
         m_content_length = static_cast<unsigned int>(pair.value().to_integer());
@@ -202,15 +215,16 @@ void Http::listen_for_header_pairs(var::Vector<HeaderPair> &pair_list) {
       if (title == "CONTENT-TYPE") {
         // check for evnt streams
         StringList tokens = pair.value().split(" ;");
-        if (String(tokens.at(0)) == "text/event-stream") {
-          m_content_length = static_cast<u32>(
-            -1); // accept data until the operation is cancelled
+        if (String(tokens.at(0)).to_upper() == "TEXT/EVENT-STREAM") {
+          // accept data until the operation is cancelled
+          m_content_length = static_cast<u32>(-1);
         }
       }
 
-      if (title == "TRANSFER-ENCODING") {
-        m_transfer_encoding = pair.value();
-        m_transfer_encoding.to_upper();
+      if (
+        title == "TRANSFER-ENCODING"
+        && (String(pair.value()).to_upper() == "CHUNKED")) {
+        m_is_transfer_encoding_chunked = true;
       }
     }
 
@@ -218,74 +232,78 @@ void Http::listen_for_header_pairs(var::Vector<HeaderPair> &pair_list) {
            && (socket().is_success())); // while reading the header
 }
 
-HttpClientObject::HttpClientObject(Socket &socket) : Http(socket) {}
+void Http::receive(
+  const fs::File &file,
+  const api::ProgressCallback *progress_callback) const {
 
-HttpClientObject &HttpClientObject::execute_method(
+  if (is_transfer_encoding_chunked()) {
+    // read chunk by chunk
+    int bytes_received = 0;
+    while (bytes_received < m_content_length) {
+      int chunk_size = get_chunk_size();
+      API_RETURN_IF_ERROR();
+      file.write(
+        socket(),
+        fs::File::Write()
+          .set_progress_callback(progress_callback)
+          .set_location(bytes_received)
+          .set_page_size(transfer_size())
+          .set_size(chunk_size));
+
+      bytes_received += chunk_size;
+      socket().gets(); // read the \r\n at the end
+    }
+
+    return;
+  }
+
+  // write the bytes to the file
+  file.write(
+    socket(),
+    fs::File::Write().set_page_size(512).set_size(m_content_length));
+}
+
+HttpClient::HttpClient(Socket &socket, var::StringView host, u16 port)
+  : Http(socket) {
+  if (host.is_empty() == false) {
+    connect_to_server(host, port);
+  }
+}
+
+HttpClient &HttpClient::execute_method(
   Method method,
-  var::StringView url,
+  var::StringView path,
   const ExecuteMethod &options) {
-  m_status_code = -1;
-  m_content_length = 0;
-  int result;
-  Url u(url);
 
-  u32 get_file_pos = 0;
+  if (m_is_connected == false) {
+    return *this;
+  }
+
+  m_content_length = 0;
+  int get_file_pos = 0;
   if (options.response()) {
     get_file_pos = options.response()->location();
   }
 
-  result = connect_to_server(u.domain_name().cstring(), u.port());
-  if (result < 0) {
-    return *this;
+  send(Request(method, path, version()));
+
+  if (options.request()) {
+    send(*options.request(), options.progress_callback());
   }
 
-  result = send_header(
-    to_string(method).cstring(),
-    u.domain_name().cstring(),
-    u.path().cstring(),
-    options.request(),
-    options.progress_callback());
-
-  if (result < 0) {
-    return *this;
-  }
-
-#if 0
-	if( send_file ){
-		//send the file on the socket
-		socket().write(*send_file, m_transfer_size, send_file->size(), progress_callback);
-	}
-#endif
-
-  m_request = Request(socket().gets());
-  listen_for_header_pairs(m_header_response_pairs);
+  m_response = Response(socket().gets());
+  receive_attributes(m_response_attribute_list);
   API_RETURN_VALUE_IF_ERROR(*this);
 
-  bool is_redirected = false;
-
-  if (
-    is_follow_redirects()
-    && ((status_code() == 301) || (status_code() == 302) || (status_code() == 303) || (status_code() == 307) || (status_code() == 308))) {
-    is_redirected = true;
-  }
-
-  const api::ProgressCallback *callback = nullptr;
-  // don't show the progress on the response if a file was transmitted
-  if (options.progress_callback() == nullptr) {
-    callback = options.progress_callback();
-  }
+  const bool is_redirected = m_is_follow_redirects && m_response.is_redirect();
 
   if (options.response() && (is_redirected == false)) {
-    result = listen_for_data(options.response(), callback);
+    receive(*options.response(), options.progress_callback());
   } else {
-    NullFile null_file;
-    result = listen_for_data(&null_file, callback);
+    receive(NullFile(), options.progress_callback());
   }
 
-  if (result < 0) {
-
-    return *this;
-  }
+  API_RETURN_VALUE_IF_ERROR(*this);
 
   if (is_redirected) {
     // close_connection();
@@ -297,271 +315,79 @@ HttpClientObject &HttpClientObject::execute_method(
     for (u32 i = 0; i < header_response_pairs().count(); i++) {
 
       String key = header_response_pairs().at(i).key();
-      key.to_lower();
-      if (key == "location") {
+      key.to_upper();
+      if (key == "LOCATION") {
         return execute_method(
           method,
-          header_response_pairs().at(i).value().cstring(),
+          header_response_pairs().at(i).value(),
           options);
       }
     }
   }
 
-  if (is_keep_alive() == false) {
-    // close_connection();
-  }
-
   return *this;
 }
 
-int HttpClientObject::send_string(var::StringView str) {
-  if (!str.is_empty()) {
-    return socket().write(var::View(str)).return_value();
-  }
-  return 0;
-}
+void HttpClient::connect_to_server(var::StringView domain_name, u16 port) {
+  API_ASSERT(m_is_connected == false);
 
-int HttpClientObject::connect_to_server(var::StringView domain_name, u16 port) {
-
-  if ((socket().fileno() >= 0) && is_keep_alive()) {
-    // already connected
-    if (m_alive_domain == domain_name) {
-      return 0;
-    } else {
-      m_header.format(
-        "socket is 0x%X, domain is %s",
-        socket().fileno(),
-        m_alive_domain.cstring());
-      return -1;
-    }
-  }
-
-  m_alive_domain.clear();
+  m_is_connected = true;
 
   AddressInfo address_info(
     AddressInfo::Construct().set_node(domain_name).set_service(Ntos(port)));
 
-  if (address_info.list().count() > 0) {
-    m_address = address_info.list().at(0);
-    socket().connect(m_address);
-    m_alive_domain = var::String(domain_name);
-    return 0;
+  for (const SocketAddress &address : address_info.list()) {
+    socket().connect(address);
+    if (is_success()) {
+      return;
+    }
+    API_RESET_ERROR();
   }
 
-  return -1;
+  API_RETURN_ASSIGN_ERROR(domain_name.cstring(), ECONNREFUSED);
 }
 
-void HttpClientObject::build_header(
-  var::StringView method,
-  var::StringView host,
-  var::StringView path,
-  u32 length) {
+Http::Attribute Http::Attribute::from_string(var::StringView string) {
+  const size_t colon_pos = string.find(":");
 
-  bool is_user_agent_present = false;
-  bool is_accept_present = false;
-  bool is_keep_alive_present = false;
-  m_header.clear();
-  m_header += method + " " + path + " HTTP/1.1\r\n";
-  m_header += String("Host: ") + host + "\r\n";
+  const String key = string.get_substring_with_length(colon_pos).to_upper();
 
-  for (u32 i = 0; i < header_request_pairs().count(); i++) {
-    String key = header_request_pairs().at(i).key();
-    if (key.is_empty() == false) {
-      String entry = key + ": " + header_request_pairs().at(i).value() + "\r\n";
-      m_header += entry;
-      key.to_lower();
-      if (key == "user-Agent") {
-        is_user_agent_present = true;
-      }
-      if (key == "accept") {
-        is_accept_present = true;
-      }
-      if (key == "connection") {
-        is_keep_alive_present = true;
-      }
-    }
-  }
-
-  if (!is_keep_alive_present) {
-    if (is_keep_alive()) {
-      m_header += "Connection: keep-alive\r\n";
-    }
-  }
-  if (!is_user_agent_present) {
-    m_header += "User-Agent: StratifyOS\r\n";
-  }
-  if (!is_accept_present) {
-    m_header += "Accept: */*\r\n";
-  }
-
-  if (length > 0) {
-    m_header += String("Content-Length: ") + String::number(length) + "\r\n";
-  }
-  m_header += "\r\n";
-}
-
-int HttpClientObject::send_header(
-  var::StringView method,
-  var::StringView host,
-  var::StringView path,
-  fs::File *file,
-  const api::ProgressCallback *progress_callback) {
-
-  u32 data_length = file ? file->size() : 0;
-
-  build_header(method, host, path, data_length);
-
-  AGGREGATE_TRAFFIC(String(">> ") + m_header);
-#if SHOW_HEADERS
-  printf(">> %s", m_header.cstring());
-  printf("Sending %lu data bytes\n", file ? file->size() : 0);
-#endif
-
-  if (socket().write(m_header).is_error()) {
-    return -1;
-  }
-
-  if (file) {
-    if (socket()
-          .write(
-            *file,
-            fs::File::Write()
-              .set_page_size(m_transfer_size)
-              .set_size(file->size())
-              .set_progress_callback(progress_callback))
-          .is_error()) {
-      return -1;
-    }
-  }
-
-  return 0;
-}
-
-int HttpClientObject::listen_for_data(
-  fs::File *destination,
-  const api::ProgressCallback *progress_callback) {
-  if (m_transfer_encoding == "CHUNKED") {
-    u32 bytes_incoming = 0;
-    do {
-      String line = socket().gets();
-      // convert line from hex
-      bytes_incoming = line.to_unsigned_long(String::Base::hexidecimal);
-
-      // read bytes_incoming from the socket and write it to the output file
-      destination->write(
-        socket(),
-        fs::File::Write()
-          .set_page_size(bytes_incoming)
-          .set_size(bytes_incoming));
-
-      // need to call the progress callback -- what is the total?
-
-    } while ((bytes_incoming > 0) && (destination->is_success()));
-
-  } else {
-    // read the response from the socket
-    if (m_content_length > 0) {
-
-      destination->write(
-        socket(),
-        fs::File::Write()
-          .set_page_size(m_transfer_size)
-          .set_size(m_content_length)
-          .set_progress_callback(progress_callback));
-
-      if (destination->is_error()) {
-        return -1;
-      }
-    }
-  }
-  return 0;
-}
-
-Http::HeaderPair Http::HeaderPair::from_string(var::StringView string) {
-  const String string_copy = var::String(string);
-  const size_t colon_pos = string_copy.find(":");
-
-  const String key = string_copy
-                       .get_substring(
-                         String::GetSubstring().set_length(colon_pos))
-                       .to_upper();
   String value;
   if (colon_pos != String::npos) {
-    value = string_copy.get_substring(
-      String::GetSubstring().set_position(colon_pos + 1));
+    value = string.get_substring_at_position(colon_pos + 1);
     if (value.at(0) == ' ') {
       value.pop_front();
     }
+
     value.replace(String::Replace().set_old_string("\r"))
       .replace(String::Replace().set_old_string("\n"));
   }
-  return Http::HeaderPair(key.cstring(), value.cstring());
+  return std::move(Http::Attribute(key.cstring(), value.cstring()));
 }
 
-void HttpServerObject::listen(
-  void (
-    *respond)(void *context, const Http::Request &request, int bytes_incoming),
-  void *context) {
+HttpServer &HttpServer::listen(
+  void *context,
+  IsStop (*respond)(
+    HttpServer *server_self,
+    void *context,
+    const Http::Request &request)) {
 
   // read socket data
 
-  while (is_running()) {
+  bool is_stop = false;
+  while (is_stop) {
     const var::String line = socket().gets();
     if (line.length() > 0) {
       m_request = Request(line);
-      listen_for_header_pairs(m_header_request_pairs);
+      receive_attributes(m_request_attribute_list);
       // execute the method
       if (respond) {
-        respond(context, m_request, m_content_length);
+        if (respond(this, context, m_request) == IsStop::yes) {
+          is_stop = true;
+        }
       }
     }
   }
-}
 
-void HttpServerObject::send_bad_request() const {
-  socket().write(m_version + to_string(Status::bad_request) + "\r\n");
-}
-
-int HttpServerObject::get_chunk_size() const {
-  String line = socket().gets();
-  return line.to_integer();
-}
-
-int HttpServerObject::send(var::View chunk) const {
-  return socket().write(chunk).return_value();
-}
-
-int HttpServerObject::receive(const fs::File &file, int content_length) const {
-  if (is_transfer_encoding_chunked()) {
-    // read chunk by chunk
-    int bytes_received = 0;
-    while (bytes_received < content_length) {
-      int chunk_size = get_chunk_size();
-
-      if (chunk_size <= 0) {
-        return bytes_received;
-      }
-
-      file.write(
-        socket(),
-        fs::File::Write()
-          .set_location(bytes_received)
-          .set_page_size(512)
-          .set_size(chunk_size));
-
-      bytes_received += chunk_size;
-
-      socket().gets(); // read the \r\n at the end
-    }
-
-    return bytes_received;
-  }
-
-  // write the bytes to the file
-  return file
-    .write(
-      socket(),
-      fs::File::Write().set_location(0).set_page_size(512).set_size(
-        content_length))
-    .return_value();
+  return *this;
 }
