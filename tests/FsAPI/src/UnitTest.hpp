@@ -276,7 +276,8 @@ public:
       TEST_ASSERT(
         DF()
           .write(F(dir_name_recursive + "/tmp.txt", OpenMode::read_only()))
-          .get_string()
+          .data()
+          .null_terminate()
         == "Hello");
 
       TEST_EXPECT(F(F::IsOverwrite::yes,
@@ -289,7 +290,8 @@ public:
           .write(
             F(Path(dir_name_recursive).parent_directory() + "/tmp.txt",
               OpenMode::read_only()))
-          .get_string()
+          .data()
+          .null_terminate()
         == "Hello2");
 
       TEST_EXPECT(
@@ -305,7 +307,8 @@ public:
             Path(Path(dir_name_recursive).parent_directory()).parent_directory()
               + "/tmp.txt",
             OpenMode::read_only()))
-          .get_string()
+          .data()
+          .null_terminate()
         == "Hello3");
 
       TEST_EXPECT(FS().exists(dir_name_recursive) == true);
@@ -358,7 +361,8 @@ public:
       TEST_ASSERT(!FS().exists(old_name));
 
       TEST_ASSERT(
-        DF().write(F(new_name, OpenMode::read_only())).get_string() == "Hello");
+        DF().write(F(new_name, OpenMode::read_only())).data().null_terminate()
+        == "Hello");
     }
 
     return true;
@@ -420,35 +424,40 @@ public:
         DataFile()
           .reserve(256)
           .write(tmp, F::Write().set_terminator('\n'))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_strings.at(0));
 
       TEST_EXPECT(
         DataFile()
           .reserve(256)
           .write(tmp, F::Write().set_terminator('\n'))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_strings.at(1));
 
       TEST_EXPECT(
         DataFile()
           .reserve(256)
           .write(tmp, F::Write().set_terminator('\n'))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_strings.at(2));
 
       TEST_EXPECT(
         DataFile()
           .reserve(256)
           .write(tmp, F::Write().set_terminator('\n'))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_strings.at(3));
 
       TEST_EXPECT(
         DataFile()
           .reserve(256)
           .write(tmp, F::Write().set_terminator('\n'))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_strings.at(4));
 
       TEST_EXPECT(
@@ -457,7 +466,8 @@ public:
           .write(
             tmp.seek(var::StringView(test_strings.at(0)).length()),
             F::Write().set_terminator('\n'))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_strings.at(1));
     }
 

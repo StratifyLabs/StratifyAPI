@@ -44,23 +44,23 @@ File::~File() {
   }
 }
 
-int File::interface_open(const char *path, int flags, int mode) const {
+int File::internal_open(const char *path, int flags, int mode) const {
   return FSAPI_LINK_OPEN(driver(), path, flags, mode);
 }
 
-int File::interface_read(int fd, void *buf, int nbyte) const {
-  return FSAPI_LINK_READ(driver(), fd, buf, nbyte);
+int File::interface_read(void *buf, int nbyte) const {
+  return FSAPI_LINK_READ(driver(), m_fd, buf, nbyte);
 }
 
-int File::interface_write(int fd, const void *buf, int nbyte) const {
-  return FSAPI_LINK_WRITE(driver(), fd, buf, nbyte);
+int File::interface_write(const void *buf, int nbyte) const {
+  return FSAPI_LINK_WRITE(driver(), m_fd, buf, nbyte);
 }
 
-int File::interface_ioctl(int fd, int request, void *argument) const {
-  return FSAPI_LINK_IOCTL(driver(), fd, request, argument);
+int File::interface_ioctl(int request, void *argument) const {
+  return FSAPI_LINK_IOCTL(driver(), m_fd, request, argument);
 }
 
-int File::interface_close(int fd) const {
+int File::internal_close(int fd) const {
   return FSAPI_LINK_CLOSE(driver(), fd);
 }
 
@@ -72,8 +72,8 @@ int File::interface_fsync(int fd) const {
 #endif
 }
 
-int File::interface_lseek(int fd, int offset, int whence) const {
-  return FSAPI_LINK_LSEEK(driver(), fd, offset, whence);
+int File::interface_lseek(int offset, int whence) const {
+  return FSAPI_LINK_LSEEK(driver(), m_fd, offset, whence);
 }
 
 void File::open(var::StringView path, OpenMode flags, Permissions permissions) {
@@ -84,7 +84,7 @@ void File::open(var::StringView path, OpenMode flags, Permissions permissions) {
 
   API_SYSTEM_CALL(
     path.cstring(),
-    m_fd = interface_open(
+    m_fd = internal_open(
       path.cstring(),
       flags.o_flags(),
       permissions.permissions()));
@@ -123,7 +123,7 @@ int File::fstat(struct stat *st) {
 
 void File::close() {
   if (m_fd >= 0) {
-    interface_close(m_fd);
+    internal_close(m_fd);
     m_fd = -1;
   }
 }
@@ -147,21 +147,19 @@ const File &File::sync() const {
 
 const File &File::read(void *buf, int nbyte) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", interface_read(m_fd, buf, nbyte));
+  API_SYSTEM_CALL("", interface_read(buf, nbyte));
   return *this;
 }
 
 const File &File::write(const void *buf, int nbyte) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", interface_write(m_fd, buf, nbyte));
+  API_SYSTEM_CALL("", interface_write(buf, nbyte));
   return *this;
 }
 
 const File &File::seek(int location, Whence whence) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL(
-    "",
-    interface_lseek(m_fd, location, static_cast<int>(whence)));
+  API_SYSTEM_CALL("", interface_lseek(location, static_cast<int>(whence)));
   return *this;
 }
 
@@ -196,7 +194,7 @@ var::String File::gets(char term) const {
 
 const File &File::ioctl(int request, void *argument) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", interface_ioctl(m_fd, request, argument));
+  API_SYSTEM_CALL("", interface_ioctl(request, argument));
   return *this;
 }
 
@@ -327,7 +325,7 @@ DataFile::DataFile(fs::File &file_to_load) {
   m_open_flags = OpenMode::read_write();
 }
 
-int DataFile::interface_read(int fd, void *buf, int nbyte) const {
+int DataFile::interface_read(void *buf, int nbyte) const {
 
   if (flags().is_write_only()) {
     return -1;
@@ -349,7 +347,7 @@ int DataFile::interface_read(int fd, void *buf, int nbyte) const {
   return size_ready;
 }
 
-int DataFile::interface_write(int fd, const void *buf, int nbyte) const {
+int DataFile::interface_write(const void *buf, int nbyte) const {
 
   if (flags().is_read_only()) {
     return -1;
@@ -401,13 +399,12 @@ void File::fake_seek(int &location, const size_t size, int offset, int whence) {
   }
 }
 
-int DataFile::interface_lseek(int fd, int offset, int whence) const {
-  MCU_UNUSED_ARGUMENT(fd);
+int DataFile::interface_lseek(int offset, int whence) const {
   fake_seek(m_location, m_data.size(), offset, whence);
   return m_location;
 }
 
-int ViewFile::interface_read(int fd, void *buf, int nbyte) const {
+int ViewFile::interface_read(void *buf, int nbyte) const {
 
   if (flags().is_write_only()) {
     return -1;
@@ -428,8 +425,7 @@ int ViewFile::interface_read(int fd, void *buf, int nbyte) const {
   return size_ready;
 }
 
-int ViewFile::interface_write(int fd, const void *buf, int nbyte) const {
-  MCU_UNUSED_ARGUMENT(fd);
+int ViewFile::interface_write(const void *buf, int nbyte) const {
 
   if (flags().is_read_only()) {
     return -1;
@@ -456,14 +452,12 @@ int ViewFile::interface_write(int fd, const void *buf, int nbyte) const {
   return size_ready;
 }
 
-int ViewFile::interface_lseek(int fd, int offset, int whence) const {
-  MCU_UNUSED_ARGUMENT(fd);
+int ViewFile::interface_lseek(int offset, int whence) const {
   fake_seek(m_location, m_view.size(), offset, whence);
   return m_location;
 }
 
-int NullFile::interface_read(int fd, void *buf, int nbyte) const {
-  MCU_UNUSED_ARGUMENT(fd);
+int NullFile::interface_read(void *buf, int nbyte) const {
   MCU_UNUSED_ARGUMENT(buf);
   int size_ready = m_size - m_location;
   if (size_ready > nbyte) {
@@ -478,14 +472,12 @@ int NullFile::interface_read(int fd, void *buf, int nbyte) const {
   return size_ready;
 }
 
-int NullFile::interface_write(int fd, const void *buf, int nbyte) const {
-  MCU_UNUSED_ARGUMENT(fd);
+int NullFile::interface_write(const void *buf, int nbyte) const {
   MCU_UNUSED_ARGUMENT(buf);
   return nbyte;
 }
 
-int NullFile::interface_lseek(int fd, int offset, int whence) const {
-  MCU_UNUSED_ARGUMENT(fd);
+int NullFile::interface_lseek(int offset, int whence) const {
   fake_seek(m_location, m_size, offset, whence);
   return m_location;
 }

@@ -92,8 +92,7 @@ int SecureSocket::interface_shutdown(int fd, const fs::OpenMode how) const {
   return interface_close(fd);
 }
 
-int SecureSocket::interface_write(int fd, const void *buf, int nbyte) const {
-  MCU_UNUSED_ARGUMENT(fd);
+int SecureSocket::interface_write(const void *buf, int nbyte) const {
   int bytes_written = 0;
   int result;
   do {
@@ -111,8 +110,7 @@ int SecureSocket::interface_write(int fd, const void *buf, int nbyte) const {
   return bytes_written;
 }
 
-int SecureSocket::interface_read(int fd, void *buf, int nbyte) const {
-  MCU_UNUSED_ARGUMENT(fd);
+int SecureSocket::interface_read(void *buf, int nbyte) const {
   return api()->read(m_context, buf, nbyte);
 }
 

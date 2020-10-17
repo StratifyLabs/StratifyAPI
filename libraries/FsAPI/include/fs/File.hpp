@@ -20,69 +20,6 @@ namespace fs {
 
 class File;
 
-/*! \brief File Class
- * \details This class is used to access files (and devices).  It uses the POSIX
- *functions open(), read(), write(), close(), etc.  You can always call these
- *functions directly or use the standard C library to access files (fopen(),
- *fread(), fwrite()-- these use more memory than this class or the POSIX
- *functions).
- *
- * Here is an example of using this class:
- *
- * ```
- * //md2code:include
- * #include <sapi/fs.hpp>
- * #include <sapi/var.hpp>
- * ```
- *
- * ```
- * //md2code:main
- * File f;
- * String str;
- *
- *	//create a new file and write a string to it
- *	f.create(
- *    File::DestinationPath("/home/myfile.txt"),
- *    File::IsOverwrite(true)
- *    );
- *	str = "Hello New File!\n";
- *	f.write(str);
- *	f.close();
- *
- *  //Now open the file we just closed
- *	f.open(
- *   arg::FilePath("/home/myfile.txt"),
- *	  OpenFlags::read_only()
- *	  );
- *	str = "";
- *	str = f.gets(); //reads a line from the file
- *	f.close();
- *
- * //This is what was read from the file
- *	printf("The String is %s\n", str.cstring());
- *
- *	File::remove(
- *   arg::SourceFilePath("/home/myfile.txt")
- *  ); //delete the file
- *
- *	int fd;
- *	if(1){
- *	  File file;
- *   file.open(
- *     arg::FilePath("/home/file.txt"),
- *     OpenFlags::read_only()
- *   );
- *   fd = file.fileno();
- *	  file.set_keep_open(); //will keep the file open after ~File()
- *	  //~File() is called here
- *	 }
- *
- *	char buffer[16];
- *	read(fd, buffer, 16); //OK because file.set_keep_open() was used
- *	 return 0;
- * ```
- *
- */
 class File : public api::ExecutionContext, public FileInfoFlags {
 public:
   enum class IsOverwrite { no, yes };
@@ -131,29 +68,6 @@ public:
   /*! \details Return the file number for accessing the file or device. */
   int fileno() const;
 
-  /*! \details Sets the file to stay open even
-   * after the destructor has been called.
-   *
-   * The default value on object creation is true.
-   *
-   * \code
-   * #include <sapi/sys.hpp>
-   *
-   * int fd;
-   * if(1){
-   *   File f;
-   *   f.open("/home/data.txt");
-   *   fd = f.fileno();
-   *   f.set_keep_open();
-   *   //~File() will be called here
-   * }
-   *
-   * //fd is still open because set_keep_open() was called
-   * char buffer[16];
-   * read(fd, buffer, 16);
-   * \endcode
-   *
-   */
   File &set_keep_open(bool value = true) {
     m_is_keep_open = value;
     return *this;
@@ -169,6 +83,9 @@ public:
    *
    */
   const File &read(void *buf, int size) const;
+  File &read(void *buf, int size) {
+    return API_CONST_CAST_SELF(File, read, buf, size);
+  }
 
   /*! \details Reads the file into a var::Data object.
    *
@@ -182,14 +99,23 @@ public:
     return read(view.to_void(), view.size());
   }
 
+  File &read(var::View view) { return read(view.to_void(), view.size()); }
+
   /*! \details Write the file.
    *
    * @return The number of bytes written or less than zero on an error
    */
   const File &write(const void *buf, int size) const;
+  File &write(const void *buf, int size) {
+    return API_CONST_CAST_SELF(File, write, buf, size);
+  }
 
   /*! \details Writes the file using a var::Data object. */
   const File &write(var::View view) const {
+    return write(view.to_const_void(), view.size());
+  }
+
+  File &write(var::View view) {
     return write(view.to_const_void(), view.size());
   }
 
@@ -234,11 +160,12 @@ public:
     return write(source_file, Write(options).set_transformer(&transformer));
   }
 
-  class ReadLine {
-    API_AF(ReadLine, char, terminator, '\n');
-    API_AF(ReadLine, chrono::MicroTime, timeout, 1_seconds);
-    API_AF(ReadLine, size_t, max_length, 0);
-  };
+  File &write(
+    const File &source_file,
+    const var::Transformer &transformer,
+    const Write &options = Write()) {
+    return API_CONST_CAST_SELF(File, write, source_file, transformer, options);
+  }
 
   /*! \details Seeks to a location in the file or on the device. */
   const File &seek(int location, Whence whence = Whence::set) const;
@@ -304,14 +231,22 @@ protected:
 
   bool is_keep_open() const { return m_is_keep_open; }
 
-  virtual int interface_lseek(int fd, int offset, int whence) const;
-  virtual int interface_read(int fd, void *buf, int nbyte) const;
-  virtual int interface_write(int fd, const void *buf, int nbyte) const;
-  virtual int interface_ioctl(int fd, int request, void *argument) const;
-  virtual int interface_fsync(int fd) const;
+  virtual int interface_lseek(int offset, int whence) const;
+  virtual int interface_read(void *buf, int nbyte) const;
+  virtual int interface_write(const void *buf, int nbyte) const;
+  virtual int interface_ioctl(int request, void *argument) const;
+
+  int interface_fsync(int fd) const;
 
   static void
   fake_seek(int &location, const size_t size, int offset, int whence);
+
+  static int fake_ioctl(int request, void *argument) {
+    MCU_UNUSED_ARGUMENT(request);
+    MCU_UNUSED_ARGUMENT(argument);
+    errno = ENOTSUP;
+    return -1;
+  }
 
 private:
 #ifdef __link
@@ -336,8 +271,8 @@ private:
 
   // open/close are part of construction/deconstruction and can't be virtual
   void close();
-  int interface_close(int fd) const;
-  int interface_open(const char *path, int flags, int mode) const;
+  int internal_close(int fd) const;
+  int internal_open(const char *path, int flags, int mode) const;
 };
 
 template <class Derived> class FileAccess : public File {
@@ -355,16 +290,32 @@ public:
     return static_cast<const Derived &>(File::read(buf, size));
   }
 
+  Derived &read(void *buf, size_t size) {
+    return static_cast<Derived &>(File::read(buf, size));
+  }
+
   const Derived &read(var::View view) const {
     return static_cast<const Derived &>(File::read(view));
+  }
+
+  Derived &read(var::View view) {
+    return static_cast<Derived &>(File::read(view));
   }
 
   const Derived &write(const void *buf, size_t size) const {
     return static_cast<const Derived &>(File::write(buf, size));
   }
 
+  Derived &write(const void *buf, size_t size) {
+    return static_cast<Derived &>(File::write(buf, size));
+  }
+
   const Derived &write(var::View view) const {
     return static_cast<const Derived &>(File::write(view));
+  }
+
+  Derived &write(var::View view) {
+    return static_cast<Derived &>(File::write(view));
   }
 
   const Derived &
@@ -372,11 +323,23 @@ public:
     return static_cast<const Derived &>(File::write(source_file, options));
   }
 
+  Derived &write(const File &source_file, const Write &options = Write()) {
+    return static_cast<Derived &>(File::write(source_file, options));
+  }
+
   const Derived &write(
     const File &source_file,
     const var::Transformer &transformer,
     const Write &options = Write()) const {
     return static_cast<const Derived &>(
+      File::write(source_file, transformer, options));
+  }
+
+  Derived &write(
+    const File &source_file,
+    const var::Transformer &transformer,
+    const Write &options = Write()) {
+    return static_cast<Derived &>(
       File::write(source_file, transformer, options));
   }
 
@@ -452,6 +415,11 @@ public:
     return *this;
   }
 
+  DataFile &copy(var::View view) {
+    m_data.copy(view);
+    return *this;
+  }
+
   DataFile &set_flags(OpenMode open_flags) {
     m_open_flags = open_flags;
     return *this;
@@ -463,30 +431,17 @@ public:
   /*! \details Accesses the member data object. */
   var::Data &data() { return m_data; }
 
-  var::String get_string() const { return var::String(data()); }
-
 private:
   mutable int m_location = 0; // offset location for seeking/reading/writing
   mutable OpenMode m_open_flags;
   mutable var::Data m_data;
 
-  int interface_open(const char *path, int flags, int mode) const {
-    MCU_UNUSED_ARGUMENT(path);
-    MCU_UNUSED_ARGUMENT(mode);
-    m_open_flags = OpenMode(flags);
-    return 0;
+  int interface_read(void *buf, int nbyte) const override;
+  int interface_write(const void *buf, int nbyte) const override;
+  int interface_lseek(int offset, int whence) const override;
+  int interface_ioctl(int request, void *argument) const override {
+    return fake_ioctl(request, argument);
   }
-
-  int interface_close(int fd) const { return 0; }
-  int interface_read(int fd, void *buf, int nbyte) const override;
-  int interface_write(int fd, const void *buf, int nbyte) const override;
-  int interface_lseek(int fd, int offset, int whence) const override;
-  int interface_ioctl(int fd, int request, void *argument) const override {
-    MCU_UNUSED_ARGUMENT(request);
-    MCU_UNUSED_ARGUMENT(argument);
-    return 0;
-  }
-  int interface_fsync(int fd) const override { return 0; }
 };
 
 class ViewFile : public FileAccess<ViewFile> {
@@ -519,25 +474,12 @@ private:
   mutable OpenMode m_open_flags;
   var::View m_view;
 
-  int interface_open(const char *path, int flags, int mode) const {
-    MCU_UNUSED_ARGUMENT(path);
-    MCU_UNUSED_ARGUMENT(mode);
-    m_open_flags = OpenMode(flags);
-    if (this->flags().is_append()) {
-      return -1;
-    }
-    return 0;
+  int interface_ioctl(int request, void *argument) const override {
+    return fake_ioctl(request, argument);
   }
-  int interface_close(int fd) const { return 0; }
-
-  int interface_fsync(int fd) const override { return 0; }
-  int interface_ioctl(int fd, int request, void *argument) const override {
-    return -1;
-  }
-
-  int interface_lseek(int fd, int offset, int whence) const override;
-  int interface_read(int fd, void *buf, int nbyte) const override;
-  int interface_write(int fd, const void *buf, int nbyte) const override;
+  int interface_lseek(int offset, int whence) const override;
+  int interface_read(void *buf, int nbyte) const override;
+  int interface_write(const void *buf, int nbyte) const override;
 };
 
 class NullFile : public FileAccess<NullFile> {
@@ -553,18 +495,13 @@ private:
   mutable int m_location = 0;
   mutable size_t m_size;
 
-  int interface_open(const char *path, int flags, int mode) const { return 0; }
-  int interface_close(int fd) const { return 0; }
+  int interface_read(void *buf, int nbyte) const override;
+  int interface_write(const void *buf, int nbyte) const override;
+  int interface_lseek(int offset, int whence) const override;
 
-  int interface_read(int fd, void *buf, int nbyte) const override;
-  int interface_write(int fd, const void *buf, int nbyte) const override;
-  int interface_lseek(int fd, int offset, int whence) const override;
-
-  int interface_ioctl(int fd, int request, void *argument) const override {
-    errno = ENOTSUP;
-    return -1;
+  int interface_ioctl(int request, void *argument) const override {
+    return fake_ioctl(request, argument);
   }
-  int interface_fsync(int fd) const override { return 0; }
 };
 
 } // namespace fs

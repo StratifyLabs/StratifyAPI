@@ -394,18 +394,18 @@ protected:
   int interface_open(const char *path, int flags, int mode) const { return 0; }
   int interface_close(int fd) const;
 
-  int interface_lseek(int fd, int location, int whence) const override final {
+  int interface_lseek(int location, int whence) const override final {
     return 0;
   }
-  int interface_fsync(int fd) const override final { return 0; }
-  int interface_ioctl(int fd, int request, void *argument)
+
+  int interface_ioctl(int request, void *argument)
     const override final {
     return 0;
   }
 
-  virtual int interface_read(int fd, void *buf, int nbyte) const override;
+  virtual int interface_read(void *buf, int nbyte) const override;
   virtual int
-  interface_write(int fd, const void *buf, int nbyte) const override;
+  interface_write(const void *buf, int nbyte) const override;
 
   /*! \cond */
   int decode_socket_return(int value) const;

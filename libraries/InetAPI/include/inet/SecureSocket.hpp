@@ -64,8 +64,8 @@ private:
 
   int interface_close(int fd) const;
 
-  int interface_read(int fd, void *buf, int nbyte) const override final;
-  int interface_write(int fd, const void *buf, int nbyte) const override final;
+  int interface_read(void *buf, int nbyte) const override final;
+  int interface_write(const void *buf, int nbyte) const override final;
 };
 
 } // namespace inet
