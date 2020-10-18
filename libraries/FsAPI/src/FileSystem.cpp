@@ -108,11 +108,10 @@ FileSystem::PathList FileSystem::read_directory(
   IsRecursive is_recursive,
   bool (*exclude)(var::StringView entry)) const {
   PathList result;
-  Path entry;
   bool is_the_end = false;
 
   do {
-    entry = Path(var::StringView(directory.read()));
+    const Path entry = Path(var::StringView(directory.read()));
     if (entry.path().is_empty()) {
       is_the_end = true;
     }
@@ -128,7 +127,7 @@ FileSystem::PathList FileSystem::read_directory(
         FileInfo info = get_info(entry_path.cstring());
 
         if (info.is_directory()) {
-          var::Vector<Path> intermediate_result = read_directory(
+          PathList intermediate_result = read_directory(
             Dir(entry_path.cstring() FSAPI_LINK_MEMBER_DRIVER_LAST),
             is_recursive,
             exclude);
