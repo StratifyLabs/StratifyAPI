@@ -3,11 +3,22 @@
 
 #include "chrono/ClockTime.hpp"
 #include "fs/Dir.hpp"
+#include "printer/Printer.hpp"
 #include "sys/System.hpp"
 #include "var/Tokenizer.hpp"
 
 #include "fs/FileSystem.hpp"
 #include "local.h"
+
+printer::Printer &printer::operator<<(
+  printer::Printer &printer,
+  const fs::FileSystem::PathList &a) {
+  size_t i = 0;
+  for (const auto &item : a) {
+    printer.key(var::Ntos(i++), item.path());
+  }
+  return printer;
+}
 
 using namespace fs;
 
@@ -111,8 +122,10 @@ FileSystem::PathList FileSystem::read_directory(
   bool is_the_end = false;
 
   do {
-    const Path entry = Path(var::StringView(directory.read()));
-    if (entry.path().is_empty()) {
+    const char *entry_result = directory.read();
+    const Path entry = (entry_result != nullptr) ? Path(entry_result) : Path();
+
+    if (entry.is_empty()) {
       is_the_end = true;
     }
 
@@ -133,9 +146,12 @@ FileSystem::PathList FileSystem::read_directory(
             exclude);
 
           for (const auto &intermediate_entry : intermediate_result) {
-            result.push_back(Path(entry_path)
-                               .append("/")
-                               .append(intermediate_entry.cstring()));
+            const Path intermediate_path
+              = Path(entry_path)
+                  .append("/")
+                  .append(intermediate_entry.cstring());
+
+            result.push_back(intermediate_path);
           }
         } else {
           result.push_back(entry_path);

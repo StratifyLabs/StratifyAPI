@@ -1,4 +1,5 @@
 #include "fs/Path.hpp"
+#include "printer/Printer.hpp"
 
 using namespace fs;
 using namespace var;
@@ -17,7 +18,7 @@ var::StringView Path::name() const {
   size_t pos = path().reverse_find('/');
 
   if (pos == var::String::npos) {
-    return String(path());
+    return path();
   }
 
   return StringView(cstring() + pos + 1);
@@ -27,7 +28,7 @@ var::StringView Path::parent_directory() const {
   size_t pos = path().reverse_find('/');
 
   if (pos == var::String::npos) {
-    return var::String();
+    return var::StringView();
   }
 
   return StringView(cstring(), pos);

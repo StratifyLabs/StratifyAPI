@@ -152,7 +152,7 @@ public:
 
     TEST_EXPECT(CT(12345678_microseconds).get_string() == "12.345678000");
 
-    var::StackString32 unique = CT::get_unique_string();
+    CT::UniqueString unique = CT::get_unique_string();
     wait(1_milliseconds);
     TEST_EXPECT(unique != CT::get_unique_string().cstring());
 

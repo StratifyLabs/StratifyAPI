@@ -4,9 +4,12 @@
 #define VERSION "0.1"
 #include "sys/Cli.hpp"
 
+void segfault(int a) { API_ASSERT(false); }
+
 int main(int argc, char *argv[]) {
   sys::Cli cli(argc, argv);
 
+  signal(11, segfault);
   printer::Printer printer;
 
   printer.set_verbose_level(cli.get_option("verbose"));

@@ -112,4 +112,9 @@ private:
 
 } // namespace fs
 
+namespace printer {
+class Printer;
+Printer &operator<<(Printer &printer, const fs::FileSystem::PathList &a);
+} // namespace printer
+
 #endif // FSAPI_FS_FILESYSTEM_HPP
