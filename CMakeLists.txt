@@ -9,6 +9,8 @@ set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/sos-toolchain.cmake)
 include(sos-sdk)
 
 
+include(targets/StratifyOS)
+
 set(STRATIFYAPI_PROJECT_VERSION 4.0.0 CACHE INTERNAL "Stratify API version")
 
 project(StratifyAPI
@@ -27,6 +29,5 @@ add_subdirectory(libraries/CryptoAPI CryptoAPI)
 add_subdirectory(libraries/SysAPI SysAPI)
 add_subdirectory(libraries/TestAPI TestAPI)
 add_subdirectory(libraries/InetAPI InetAPI)
-
 
 add_subdirectory(tests tests)

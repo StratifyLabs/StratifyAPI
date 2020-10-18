@@ -1,7 +1,6 @@
 
 
 macro(api_target NAME DIRECTORIES)
-	include(sos-sdk)
 
 	project(
 		${NAME}
@@ -39,8 +38,11 @@ macro(api_target NAME DIRECTORIES)
 
 	if(SOS_IS_LINK)
 		target_include_directories(${RELEASE_TARGET}
-			PUBLIC
-			${CMAKE_INSTALL_PREFIX}/include
+			INTERFACE
+			$<INSTALL_INTERFACE:include/${NAME}>
+			$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libraries/${NAME}/include>
+			PRIVATE
+			${CMAKE_INSTALL_PREFIX}/include/StratifyOS
 			)
 
 	endif()
@@ -49,19 +51,28 @@ macro(api_target NAME DIRECTORIES)
 		target_include_directories(${RELEASE_TARGET}
 			INTERFACE
 			$<INSTALL_INTERFACE:include/${DIRECTORY}>
-			PRIVATE
 			$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libraries/${DIRECTORY}/include>
 			)
-
 	endforeach(DIRECTORY)
 
+	string(COMPARE EQUAL ${NAME} API IS_API)
+	set(LOCAL_DIRECTORIES ${DIRECTORIES})
+	#if(IS_API)
+		# this doesn't need to be added as a directory, just a dependency
+		list(APPEND LOCAL_DIRECTORIES StratifyOS)
+		message(STATUS "DIRS ${LOCAL_DIRECTORIES}")
+	#endif()
 
 	target_include_directories(${RELEASE_TARGET}
 		PUBLIC
 		$<INSTALL_INTERFACE:include/${NAME}>
+		PRIVATE
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		)
 
+	sos_sdk_library_target(DEBUG ${NAME} "" debug ${SOS_ARCH})
+	add_library(${DEBUG_TARGET} STATIC)
+	sos_sdk_copy_target(${RELEASE_TARGET} ${DEBUG_TARGET})
 
 	if(SOS_IS_LINK)
 		sos_sdk_library_target(COVERAGE ${NAME} "" coverage ${SOS_ARCH})
@@ -73,10 +84,9 @@ macro(api_target NAME DIRECTORIES)
 			--coverage
 			)
 
-		sos_sdk_library_add_arch_targets("${COVERAGE_OPTIONS}" ${SOS_ARCH} "${DIRECTORIES}")
+		sos_sdk_library_add_arch_targets("${COVERAGE_OPTIONS}" ${SOS_ARCH} "${LOCAL_DIRECTORIES}")
 
 		get_target_property(MY_DIR ${COVERAGE_TARGET} BINARY_DIR)
-		message(STATUS "BINARY DIR for ${COVERAGE_TARGET} is ${MY_DIR}")
 
 		get_target_property(SOURCES ${COVERAGE_TARGET} SOURCES)
 
@@ -84,10 +94,6 @@ macro(api_target NAME DIRECTORIES)
 			get_filename_component(FILE_NAME ${SOURCE} NAME)
 			list(APPEND GCOV_SOURCES ${MY_DIR}/CMakeFiles/${COVERAGE_TARGET}.dir/src/${FILE_NAME}.gcda)
 		endforeach()
-
-		#list(APPEND GCOV_SCRUB_SOURCES ${GCOV_SOURCES})
-
-		message(STATUS "GCOV SOURCES ${GCOV_SOURCES}")
 
 		add_custom_target(coverage_mkdir_${COVERAGE_TARGET}
 			COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/coverage/${COVERAGE_TARGET}
@@ -104,16 +110,19 @@ macro(api_target NAME DIRECTORIES)
 			DEPENDS coverage_mkdir_${COVERAGE_TARGET}
 			)
 
-	else()
-
 	endif()
 
-	sos_sdk_library_target(DEBUG ${NAME} "" debug ${SOS_ARCH})
-	add_library(${DEBUG_TARGET} STATIC)
-	sos_sdk_copy_target(${RELEASE_TARGET} ${DEBUG_TARGET})
+	sos_sdk_library_add_arch_targets("${RELEASE_OPTIONS}" ${SOS_ARCH} "${LOCAL_DIRECTORIES}")
+	sos_sdk_library_add_arch_targets("${DEBUG_OPTIONS}" ${SOS_ARCH} "${LOCAL_DIRECTORIES}")
 
-	sos_sdk_library_add_arch_targets("${RELEASE_OPTIONS}" ${SOS_ARCH} "${DIRECTORIES}")
-	sos_sdk_library_add_arch_targets("${DEBUG_OPTIONS}" ${SOS_ARCH} "${DIRECTORIES}")
+	if(IS_API)
+		get_target_property(RELEASE_LINK_LIBS ${RELEASE_TARGET} INTERFACE_LINK_LIBRARIES)
+		get_target_property(DEBUG_LINK_LIBS ${DEBUG_TARGET} INTERFACE_LINK_LIBRARIES)
+
+		message("RELEASE LIBS ${RELEASE_LINK_LIBS}")
+		message("DEBUG LIBS ${DEBUG_LINK_LIBS}")
+
+	endif()
 
 	add_custom_target(
 		${NAME}_format

@@ -43,12 +43,12 @@ Data &Data::resize(size_t s) {
   return *this;
 }
 
-StringView Data::null_terminate() {
+const char *Data::add_null_terminator() {
   if (data_u8()[size() - 1] != 0) {
     char c = 0;
     append(View(c));
   }
-  return StringView(reinterpret_cast<const char *>(data_u8()));
+  return reinterpret_cast<const char *>(data_u8());
 }
 
 Data &Data::copy(const View a, const Copy &options) {

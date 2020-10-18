@@ -1,18 +1,11 @@
 cmake_minimum_required (VERSION 3.12)
 
-
 include(${CMAKE_CURRENT_LIST_DIR}/../API/api.cmake)
-
 
 set(DIRECTORIES
 	SysAPI
 	ChronoAPI
+	PrinterAPI
 	)
-
-if(SOS_IS_LINK)
-	include(targets/StratifyOS_release_link)
-	include(targets/StratifyOS_coverage_link)
-	list(APPEND DIRECTORIES StratifyOS)
-endif()
 
 api_target(FsAPI "${DIRECTORIES}")

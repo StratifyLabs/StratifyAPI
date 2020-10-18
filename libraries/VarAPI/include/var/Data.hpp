@@ -141,7 +141,7 @@ public:
   static u32 minimum_capacity();
   static u32 block_size();
 
-  StringView null_terminate();
+  const char *add_null_terminator();
 
   u32 capacity() const { return m_data.capacity(); }
   Data &resize(size_t size);
