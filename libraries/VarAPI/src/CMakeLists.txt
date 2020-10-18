@@ -11,5 +11,6 @@ set(SOURCES
 	Ring.cpp
 	StringView.cpp
 	String.cpp
+	StackString.cpp
 	Tokenizer.cpp
 	PARENT_SCOPE)

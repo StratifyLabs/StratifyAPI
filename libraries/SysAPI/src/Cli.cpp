@@ -1,8 +1,10 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
              // LICENSE.md for rights.
 
-#include "sys/Cli.hpp"
+#include "var/StackString.hpp"
+
 #include "printer/Printer.hpp"
+#include "sys/Cli.hpp"
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const sys::Cli &a) {
@@ -126,7 +128,7 @@ var::StringView Cli::get_path() const {
 }
 
 Cli &Cli::show_help(const ShowHelp &options) {
-  printf("%s options:\n", get_name().cstring());
+  printf("%s options:\n", var::String(get_name()).cstring());
   for (u32 i = 0; i < m_help_list.count(); i++) {
     printf("- %s\n", m_help_list.at(i).cstring());
   }

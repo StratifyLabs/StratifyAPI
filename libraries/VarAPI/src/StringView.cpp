@@ -1,5 +1,6 @@
 /*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
 #include "var/StringView.hpp"
+#include "var/StackString.hpp"
 #include "var/String.hpp"
 
 using namespace var;
@@ -25,6 +26,20 @@ float StringView::to_float() const {
 #ifndef __link
   return ::atoff(cstring());
 #else
-  return ::atof(cstring());
+  return ::atof(StackString64(*this).cstring());
 #endif
+}
+
+long StringView::to_long(Base base) const {
+  return ::strtol(
+    StackString64(*this).cstring(),
+    nullptr,
+    static_cast<int>(base));
+}
+
+unsigned long StringView::to_unsigned_long(Base base) const {
+  return ::strtoul(
+    StackString64(*this).cstring(),
+    nullptr,
+    static_cast<int>(base));
 }

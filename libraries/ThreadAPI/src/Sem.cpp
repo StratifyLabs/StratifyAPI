@@ -62,7 +62,7 @@ const Semaphore &Semaphore::unlink() const {
 
 void Semaphore::unlink(var::StringView name) {
   API_RETURN_IF_ERROR();
-  API_SYSTEM_CALL("", sem_unlink(name.cstring()));
+  API_SYSTEM_CALL("", sem_unlink(fs::Path(name).cstring()));
 }
 
 UnnamedSemaphore::UnnamedSemaphore(
@@ -122,14 +122,15 @@ void Semaphore::open(
   fs::Permissions perms) {
   API_RETURN_IF_ERROR();
   if (value > 0) {
-    m_handle = sem_open(name.cstring(), o_flags, perms.permissions(), value);
+    m_handle
+      = sem_open(fs::Path(name).cstring(), o_flags, perms.permissions(), value);
   } else {
-    m_handle = sem_open(name.cstring(), o_flags);
+    m_handle = sem_open(fs::Path(name).cstring(), o_flags);
   }
   if (m_handle == SEM_FAILED) {
-    API_RETURN_ASSIGN_ERROR(name.cstring(), errno);
+    API_RETURN_ASSIGN_ERROR(fs::Path(name).cstring(), errno);
   } else {
-    m_name = var::String(name);
+    m_name = fs::Path(name);
   }
 }
 

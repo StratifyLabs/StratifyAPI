@@ -8,6 +8,7 @@
 
 #include "chrono/ClockTimer.hpp"
 #include "fs/File.hpp"
+#include "var/StackString.hpp"
 
 #include "local.h"
 
@@ -83,9 +84,9 @@ void File::open(var::StringView path, OpenMode flags, Permissions permissions) {
   }
 
   API_SYSTEM_CALL(
-    path.cstring(),
+    Path(path).cstring(),
     m_fd = internal_open(
-      path.cstring(),
+      Path(path).cstring(),
       flags.o_flags(),
       permissions.permissions()));
 }

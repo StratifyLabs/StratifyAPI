@@ -56,7 +56,9 @@ public:
     IsRecursive is_recursive,
     const Permissions &permissions = Permissions(0)) const;
 
-  var::StringList read_directory(
+  using PathList = var::Vector<Path>;
+
+  PathList read_directory(
     const fs::Dir &directory,
     IsRecursive is_recursive = IsRecursive::no,
     bool (*exclude)(var::StringView) = nullptr) const;

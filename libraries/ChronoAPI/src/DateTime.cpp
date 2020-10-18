@@ -8,6 +8,8 @@
 #include <unistd.h>
 #endif
 
+#include "var/StackString.hpp"
+
 #include "printer/Printer.hpp"
 
 #include "chrono/ClockTimer.hpp"
@@ -50,7 +52,10 @@ DateTime::DateTime() { m_ctime = 0; }
 DateTime::DateTime(const Construct &options) {
   struct tm tm = {0};
   if (
-    strptime(options.time().cstring(), options.format().cstring(), &tm)
+    strptime(
+      var::StackString64(options.time()).cstring(),
+      var::StackString64(options.format()).cstring(),
+      &tm)
     != nullptr) {
     m_ctime = mktime(&tm);
   } else {
@@ -99,7 +104,8 @@ Date::Date(const DateTime &date_time, const Construct &options) {
 var::String Date::get_string(var::StringView format) const {
   API_RETURN_VALUE_IF_ERROR(var::String());
   char buffer[64] = {0};
-  size_t result = strftime(buffer, 63, format.cstring(), &m_tm);
+  size_t result
+    = strftime(buffer, 63, var::StackString64(format).cstring(), &m_tm);
   if (result == 0) {
     API_SYSTEM_CALL("format time", -1);
     return var::String();

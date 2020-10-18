@@ -200,14 +200,14 @@ void Printer::print(
 
 void Printer::interface_print_final(var::StringView view) {
 #if defined __link
-  fwrite(view.cstring(), view.length(), 1, stdout);
+  fwrite(view.data(), view.length(), 1, stdout);
 #else
   ::write(stdout->_file, view.cstring(), view.length());
 #endif
 }
 
 Printer &Printer::open_object(var::StringView key, Level level) {
-  print_open_object(level, key.cstring());
+  print_open_object(level, key);
   return *this;
 }
 
@@ -217,7 +217,7 @@ Printer &Printer::close_object() {
 }
 
 Printer &Printer::open_array(var::StringView key, Level level) {
-  print_open_array(level, key.cstring());
+  print_open_array(level, key);
   return *this;
 }
 
@@ -229,7 +229,7 @@ Printer &Printer::close_array() {
 void Printer::print_open_object(
   Level verbose_level,
   var::StringView key) {
-  print(verbose_level, key.cstring(), "");
+  print(verbose_level, key, "");
   m_indent++;
 }
 
@@ -242,7 +242,7 @@ void Printer::print_close_object() {
 void Printer::print_open_array(
   Level verbose_level,
   var::StringView key) {
-  print(verbose_level, key.cstring(), "");
+  print(verbose_level, key, "");
   m_indent++;
 }
 
@@ -330,7 +330,6 @@ Printer &Printer::operator<<(var::StringView a) {
 }
 
 Printer &Printer::set_verbose_level(var::StringView level) {
-  printf("set level to %s\n", level.cstring());
   if (level == "debug") {
     set_verbose_level(Level::debug);
   } else if (level == "info") {
@@ -474,7 +473,7 @@ bool Printer::update_progress(int progress, int total) {
     if ((m_progress_state == 0) && total) {
 
       // only print the key once with total == -1
-      print(Level::info, m_progress_key.cstring(), nullptr);
+      print(Level::info, m_progress_key, nullptr);
       if (total != -1) {
         if (m_print_flags & PrintFlags::value_quotes) {
           interface_print_final("\"");
@@ -615,8 +614,8 @@ Printer::trace(const char *function, int line, var::StringView message) {
       ">> trace %s:%d %s\n",
       function,
       line,
-      message.cstring());
-    interface_print_final(s.cstring());
+      var::String(message).cstring());
+    interface_print_final(s);
   }
   return *this;
 }

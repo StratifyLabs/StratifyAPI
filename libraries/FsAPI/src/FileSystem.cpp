@@ -17,7 +17,7 @@ FileSystem::FileSystem(FSAPI_LINK_DECLARE_DRIVER) {
 
 const FileSystem &FileSystem::remove(var::StringView path) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", interface_unlink(path.cstring()));
+  API_SYSTEM_CALL("", interface_unlink(Path(path).cstring()));
   return *this;
 }
 
@@ -37,10 +37,10 @@ const FileSystem &FileSystem::touch(var::StringView path) const {
 const FileSystem &FileSystem::rename(const Rename &options) const {
   API_RETURN_VALUE_IF_ERROR(*this);
   API_SYSTEM_CALL(
-    options.source().cstring(),
+    Path(options.source()).cstring(),
     interface_rename(
-      options.source().cstring(),
-      options.destination().cstring()));
+      Path(options.source()).cstring(),
+      Path(options.destination()).cstring()));
   return *this;
 }
 
@@ -54,7 +54,9 @@ bool FileSystem::exists(var::StringView path) const {
 FileInfo FileSystem::get_info(var::StringView path) const {
   API_RETURN_VALUE_IF_ERROR(FileInfo());
   struct stat stat = {0};
-  API_SYSTEM_CALL(path.cstring(), interface_stat(path.cstring(), &stat));
+  API_SYSTEM_CALL(
+    Path(path).cstring(),
+    interface_stat(Path(path).cstring(), &stat));
   return FileInfo(stat);
 }
 
@@ -97,41 +99,44 @@ const FileSystem &FileSystem::remove_directory(
 
 const FileSystem &FileSystem::remove_directory(var::StringView path) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL(path.cstring(), interface_rmdir(path.cstring()));
+  API_SYSTEM_CALL(Path(path).cstring(), interface_rmdir(Path(path).cstring()));
   return *this;
 }
 
-var::StringList FileSystem::read_directory(
+FileSystem::PathList FileSystem::read_directory(
   const fs::Dir &directory,
   IsRecursive is_recursive,
   bool (*exclude)(var::StringView entry)) const {
-  var::Vector<var::String> result;
-  var::String entry;
+  PathList result;
+  Path entry;
   bool is_the_end = false;
 
   do {
-    entry.clear();
-    entry = directory.read();
-    if (entry.is_empty()) {
+    entry = Path(var::StringView(directory.read()));
+    if (entry.path().is_empty()) {
       is_the_end = true;
     }
 
     if (
-      (exclude == nullptr || !exclude(entry)) && !entry.is_empty()
-      && (entry != ".") && (entry != "..")) {
+      (exclude == nullptr || !exclude(entry.path())) && !entry.path().is_empty()
+      && (entry.path() != ".") && (entry.path() != "..")) {
 
       if (is_recursive == IsRecursive::yes) {
-        const var::String entry_path = directory.path() + "/" + entry;
-        FileInfo info = get_info(entry_path);
+
+        const Path entry_path
+          = Path(directory.path()).append("/").append(entry.path());
+        FileInfo info = get_info(entry_path.cstring());
 
         if (info.is_directory()) {
-          var::StringList intermediate_result = read_directory(
-            Dir(entry_path FSAPI_LINK_MEMBER_DRIVER_LAST),
+          var::Vector<Path> intermediate_result = read_directory(
+            Dir(entry_path.cstring() FSAPI_LINK_MEMBER_DRIVER_LAST),
             is_recursive,
             exclude);
 
           for (const auto &intermediate_entry : intermediate_result) {
-            result.push_back(entry_path + "/" + intermediate_entry);
+            result.push_back(Path(entry_path)
+                               .append("/")
+                               .append(intermediate_entry.cstring()));
           }
         } else {
           result.push_back(entry_path);
@@ -157,7 +162,7 @@ bool FileSystem::directory_exists(var::StringView path) const {
 }
 
 Permissions FileSystem::get_permissions(var::StringView path) const {
-  const var::String parent = Path(path).parent_directory();
+  const var::StringView parent = Path(path).parent_directory();
   if (parent.is_empty()) {
     return get_info(".").permissions();
   }
@@ -173,8 +178,8 @@ const FileSystem &FileSystem::create_directory(
     = permissions.permissions() == 0 ? get_permissions(path) : permissions;
 
   API_SYSTEM_CALL(
-    path.cstring(),
-    interface_mkdir(path.cstring(), use_permissions.permissions()));
+    Path(path).cstring(),
+    interface_mkdir(Path(path).cstring(), use_permissions.permissions()));
   return *this;
 }
 

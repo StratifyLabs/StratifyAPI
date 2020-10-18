@@ -46,11 +46,14 @@ AddressInfo::AddressInfo(const Construct &options) {
 
   API_ASSERT(!options.service().is_empty() || !options.node().is_empty());
 
-  const char *server_cstring
-    = options.service().is_empty() ? nullptr : options.service().cstring();
+  var::StackString256 node_string(options.node());
+  var::StackString32 service_string(options.service());
+
+  const char *service_cstring
+    = service_string.is_empty() ? nullptr : service_string.cstring();
 
   const char *node_cstring
-    = options.node().is_empty() ? nullptr : options.node().cstring();
+    = node_string.is_empty() ? nullptr : node_string.cstring();
 
   Socket::initialize();
 
@@ -63,7 +66,7 @@ AddressInfo::AddressInfo(const Construct &options) {
   struct addrinfo *info_start;
   API_SYSTEM_CALL(
     "",
-    getaddrinfo(node_cstring, server_cstring, &address_info, &info_start));
+    getaddrinfo(node_cstring, service_cstring, &address_info, &info_start));
 
   API_RETURN_IF_ERROR();
   for (struct addrinfo *info = info_start; info != nullptr;

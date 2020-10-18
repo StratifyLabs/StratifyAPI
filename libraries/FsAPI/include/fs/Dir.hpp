@@ -27,6 +27,7 @@
 #endif
 #include <functional>
 
+#include "Path.hpp"
 #include "var/String.hpp"
 #include "var/Vector.hpp"
 
@@ -94,7 +95,7 @@ public:
    * entry.
    * @return True if an entry was read or false for an error or no more entries
    */
-  var::String get_entry() const;
+  Path get_entry() const;
 
   /*! \details Returns a pointer (const) to the name of the most recently read
    * entry. */
@@ -147,7 +148,7 @@ protected:
   virtual void interface_rewinddir(DIR *dirp) const;
 
 private:
-  API_RAC(Dir, var::String, path);
+  API_RAC(Dir, Path, path);
 #ifdef __link
   API_AF(Dir, link_transport_mdriver_t *, driver, nullptr);
 #endif

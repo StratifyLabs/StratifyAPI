@@ -326,7 +326,7 @@ public:
     Method method,
     var::StringView path,
     const ExecuteMethod &options) {
-    HttpClient::execute_method(method, path, ExecuteMethod());
+    HttpClient::execute_method(method, path, options);
     return *this;
   }
 

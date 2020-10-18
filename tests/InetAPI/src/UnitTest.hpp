@@ -21,14 +21,6 @@ public:
 
   bool execute_class_api_case() {
 
-    DataFile response;
-    TEST_ASSERT(HttpSecureClient()
-                  .connect("httpbin.org")
-                  .get("/get", Http::Get().set_response(&response))
-                  .is_success());
-
-    return true;
-
     if (!socket_case()) {
       return false;
     }
@@ -235,7 +227,7 @@ public:
       }
     }
 
-    if (0) {
+    if (1) {
       PrinterObject po(printer(), "ip.jsontest.com");
 
       DataFile response;
@@ -244,11 +236,13 @@ public:
                     .get("/", Http::ExecuteMethod().set_response(&response))
                     .is_success());
 
+#if 0
       TEST_ASSERT(
         HttpSecureClient()
           .connect("ip.jsontest.com")
           .get("/", Http::ExecuteMethod().set_response(&(response.seek(0))))
           .is_success());
+#endif
     }
 
     {
@@ -259,10 +253,51 @@ public:
 
       {
         DataFile response;
-        TEST_EXPECT(
+        TEST_ASSERT(
           http_client.get("/get", Http::ExecuteMethod().set_response(&response))
             .is_success());
-        printer().key("response", response.data().null_terminate());
+        if (response.size()) {
+          printer().key("response", response.data().null_terminate());
+        }
+      }
+    }
+
+    {
+      PrinterObject po(printer(), "https://httpbin.org/redirect");
+
+      HttpClient http_client;
+      TEST_ASSERT(http_client.connect("httpbin.org").is_success());
+      {
+        DataFile response;
+        TEST_ASSERT(http_client
+                      .get(
+                        "/redirect-to?url=httpbin.org%2Fget&status_code=200",
+                        Http::ExecuteMethod().set_response(&response))
+                      .is_success());
+        if (response.size()) {
+          printer().key("response", response.data().null_terminate());
+        }
+      }
+      return true;
+    }
+
+    {
+      // https://github.com/StratifyLabs/StratifyAPI/blob/master/src/inet/Socket.cpp
+
+      PrinterObject po(printer(), "https://github.com");
+      HttpSecureClient http_client;
+
+      TEST_ASSERT(http_client.connect("github.com").is_success());
+
+      {
+        DataFile response;
+        TEST_ASSERT(
+          http_client
+            .get(
+              "/StratifyLabs/StratifyAPI/blob/master/src/inet/Socket.cpp",
+              Http::ExecuteMethod().set_response(&response))
+            .is_success());
+        TEST_ASSERT(response.size() > 0);
       }
     }
 
@@ -376,6 +411,7 @@ public:
                                .set_node("")
                                .set_service(Ntos(self->m_server_port))
                                .set_type(Socket::Type::stream)
+                               .set_protocol(Socket::Protocol::tcp)
                                .set_flags(AddressInfo::Flags::passive));
 
     self->printer().object("tcpAddress", address_info);

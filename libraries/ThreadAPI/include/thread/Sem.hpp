@@ -11,6 +11,7 @@
 
 #include "chrono/ClockTime.hpp"
 #include "fs/FileInfo.hpp"
+#include "fs/Path.hpp"
 
 namespace thread {
 
@@ -111,7 +112,7 @@ public:
   static void unlink(var::StringView name);
 
 private:
-  var::String m_name;
+  fs::Path m_name;
 
   void
   open(int value, var::StringView name, int o_flags, fs::Permissions perms);

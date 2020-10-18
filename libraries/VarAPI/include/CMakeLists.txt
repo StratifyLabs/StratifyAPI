@@ -12,6 +12,7 @@ set(SOURCES
 	var/Queue.hpp
 	var/Ring.hpp
 	var/StringView.hpp
+	var/StackString.hpp
 	var/String.hpp
 	var/Tokenizer.hpp
 	var.hpp

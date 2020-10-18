@@ -24,10 +24,11 @@ Dir::~Dir() { close(); }
 
 Dir &Dir::open(var::StringView path) {
   API_RETURN_VALUE_IF_ERROR(*this);
-  m_dirp
-    = API_SYSTEM_CALL_NULL(path.cstring(), interface_opendir(path.cstring()));
+  m_dirp = API_SYSTEM_CALL_NULL(
+    Path(path).cstring(),
+    interface_opendir(Path(path).cstring()));
   if (m_dirp) {
-    m_path = var::String(path);
+    m_path = Path(path);
   }
   return *this;
 }
@@ -77,16 +78,17 @@ const char *Dir::read() const {
   return m_entry.d_name;
 }
 
-var::String Dir::get_entry() const {
+Path Dir::get_entry() const {
   const char *entry = read();
 
   if (entry == nullptr) {
-    return var::String();
+    return Path();
   }
 
-  return m_path
-         + ((m_path.is_empty() == false) ? var::String("/") : var::String())
-         + var::StringView (entry);
+  return Path()
+    .append(m_path.cstring())
+    .append((m_path.is_empty() == false) ? "/" : "")
+    .append(entry);
 }
 
 Dir &Dir::close() {

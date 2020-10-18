@@ -219,9 +219,7 @@ void Http::send(
 }
 
 void Http::send(const Request &request) const {
-  printf("write request\n");
   socket().write(request.to_string() + "\r\n" + header_fields() + "\r\n");
-  printf("wrote\n");
 }
 
 int Http::get_chunk_size() const {
@@ -235,7 +233,6 @@ var::String Http::receive_header_fields() {
   result.clear();
   socket().reset_error();
 
-  printf("receive header fields\n");
   var::String line;
   do {
     line = std::move(socket().gets('\n'));
@@ -282,10 +279,10 @@ void Http::receive(
 
   if (is_transfer_encoding_chunked()) {
     // read chunk by chunk
-    int bytes_received = 0;
-    while (bytes_received < m_content_length) {
-      int chunk_size = get_chunk_size();
-      API_RETURN_IF_ERROR();
+    int chunk_size = 0;
+    do {
+      chunk_size = get_chunk_size();
+      int bytes_received = 0;
       file.write(
         socket(),
         fs::File::Write()
@@ -296,7 +293,8 @@ void Http::receive(
 
       bytes_received += chunk_size;
       socket().gets(); // read the \r\n at the end
-    }
+      API_RETURN_IF_ERROR();
+    } while (chunk_size);
 
     return;
   }
@@ -334,6 +332,10 @@ HttpClient &HttpClient::execute_method(
     add_header_field("User-Agent", "StratifyAPI");
   }
 
+  if (get_header_field("connection").is_empty()) {
+    add_header_field("connection", "keep-alive");
+  }
+
   if (options.request()) {
     add_header_field("content-length", Ntos(options.request()->size()));
   }
@@ -348,9 +350,10 @@ HttpClient &HttpClient::execute_method(
   set_header_fields(receive_header_fields());
   API_RETURN_VALUE_IF_ERROR(*this);
 
+  printf("response is %s\n", to_string(m_response.status()).cstring());
   const bool is_redirected = m_is_follow_redirects && m_response.is_redirect();
 
-  if (m_content_length) {
+  if (m_content_length || is_transfer_encoding_chunked()) {
     if (options.response() && (is_redirected == false)) {
       receive(*options.response(), options.progress_callback());
     } else {
@@ -370,8 +373,9 @@ HttpClient &HttpClient::execute_method(
     var::String location = get_header_field("LOCATION");
     if (location.is_empty() == false) {
 
-      printf("redirect not implemented yet\n");
-      API_ASSERT(false);
+      if (location.find("/") != 0) {
+        // connect to another server
+      }
 
       return execute_method(method, location, options);
     }
@@ -393,9 +397,7 @@ HttpClient &HttpClient::connect(var::StringView domain_name, u16 port) {
     Printer p;
     p.object("address", address);
     socket().connect(address);
-    printf("connected %d\n", is_success());
     if (is_success()) {
-      printf("connected\n");
       m_is_connected = true;
       m_host = String(domain_name);
       return (*this);
@@ -403,7 +405,10 @@ HttpClient &HttpClient::connect(var::StringView domain_name, u16 port) {
     API_RESET_ERROR();
   }
 
-  API_RETURN_VALUE_ASSIGN_ERROR(*this, domain_name.cstring(), ECONNREFUSED);
+  API_RETURN_VALUE_ASSIGN_ERROR(
+    *this,
+    var::StackString256(domain_name).cstring(),
+    ECONNREFUSED);
 }
 
 Http::HeaderField Http::HeaderField::from_string(var::StringView string) {

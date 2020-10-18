@@ -3,46 +3,46 @@
 using namespace fs;
 using namespace var;
 
-var::String Path::suffix() {
+var::StringView Path::suffix() {
   size_t pos = path().reverse_find(".");
 
   if (pos == var::String::npos) {
     return var::String();
   }
 
-  return std::move(
-    String(path()).get_substring(String::GetSubstring().set_position(pos + 1)));
+  return StringView(cstring() + pos + 1);
 }
 
-var::String Path::name() {
+var::StringView Path::name() {
   size_t pos = path().reverse_find('/');
 
   if (pos == var::String::npos) {
     return String(path());
   }
 
-  return std::move(
-    String(path()).get_substring(String::GetSubstring().set_position(pos + 1)));
+  return StringView(cstring() + pos + 1);
 }
 
-var::String Path::parent_directory() {
+var::StringView Path::parent_directory() {
   size_t pos = path().reverse_find('/');
 
   if (pos == var::String::npos) {
     return var::String();
   }
 
-  return std::move(String(path()).get_substring(
-    String::GetSubstring().set_position(0).set_length(pos)));
+  return StringView(cstring(), pos);
 }
 
-var::String Path::base_name() { return std::move(Path(name()).no_suffix()); }
+var::StringView Path::base_name() { return Path(name()).no_suffix(); }
 
-var::String Path::no_suffix() {
+var::StringView Path::no_suffix() {
   size_t pos = path().reverse_find('.');
 
-  return std::move(String(path()).get_substring(
-    String::GetSubstring().set_position(0).set_length(pos)));
+  if (pos == StringView::npos) {
+    return StringView(cstring());
+  }
+
+  return StringView(cstring(), pos);
 }
 
 bool Path::is_hidden() {
@@ -50,9 +50,9 @@ bool Path::is_hidden() {
     return true;
   }
 
-  var::String parent = parent_directory();
+  var::StringView parent = parent_directory();
   if (parent != path()) {
-    return Path(parent.cstring()).is_hidden();
+    return Path(parent).is_hidden();
   }
 
   return false;

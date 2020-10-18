@@ -30,6 +30,10 @@ public:
       return false;
     }
 
+    if (!stack_string_api_case()) {
+      return false;
+    }
+
     if (!base64_api_case()) {
       return false;
     }
@@ -44,6 +48,25 @@ public:
 
     if (!data_api_case()) {
       return false;
+    }
+
+    return true;
+  }
+
+  bool stack_string_api_case() {
+
+    {
+      StackString32 s("012345678901234567890123456789123456789");
+      TEST_ASSERT(strlen(s.cstring()) == 31);
+      TEST_ASSERT(
+        strlen(
+          StackString32("012345678901234567890123456789123456789").cstring())
+        == 31);
+
+      TEST_ASSERT(StackString32("test") == "test");
+      TEST_ASSERT(StackString64("test") == "test");
+      TEST_ASSERT(StackString128("test") == "test");
+      TEST_ASSERT(StackString256("test") == "test");
     }
 
     return true;
@@ -350,7 +373,8 @@ public:
             ViewFile(V(test_output)),
             Base64Decoder(),
             DataFile::Write().set_page_size(32))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_input);
 
       TEST_ASSERT(
@@ -359,7 +383,8 @@ public:
             ViewFile(V(test_output)),
             Base64Decoder(),
             DataFile::Write().set_page_size(10))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_input);
 
       TEST_ASSERT(
@@ -368,7 +393,8 @@ public:
             ViewFile(V(test_output)),
             Base64Decoder(),
             DataFile::Write().set_page_size(20))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_input);
 
       TEST_ASSERT(
@@ -377,7 +403,8 @@ public:
             ViewFile(V(test_output)),
             Base64Decoder(),
             DataFile::Write().set_page_size(30))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_input);
 
       TEST_ASSERT(
@@ -386,7 +413,8 @@ public:
             ViewFile(V(test_output)),
             Base64Decoder(),
             DataFile::Write().set_page_size(40))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_input);
 
       DataFile df;
@@ -401,7 +429,8 @@ public:
             ViewFile(V(test_input)),
             Base64Encoder(),
             DataFile::Write().set_page_size(12))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_output);
 
       TEST_ASSERT(
@@ -410,7 +439,8 @@ public:
             ViewFile(V(test_input)),
             Base64Encoder(),
             DataFile::Write().set_page_size(30))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_output);
 
       TEST_ASSERT(
@@ -419,7 +449,8 @@ public:
             ViewFile(V(test_input)),
             Base64Encoder(),
             DataFile::Write().set_page_size(50))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_output);
 
       TEST_ASSERT(
@@ -428,7 +459,8 @@ public:
             ViewFile(V(test_input)),
             Base64Encoder(),
             DataFile::Write().set_page_size(60))
-          .get_string()
+          .data()
+          .null_terminate()
         == test_output);
     }
 
@@ -440,23 +472,22 @@ public:
       SV sv;
       TEST_EXPECT(sv.is_empty());
       TEST_EXPECT(!sv.is_null());
-      TEST_EXPECT(sv.cstring() != nullptr);
+      TEST_EXPECT(sv.data() != nullptr);
     }
 
     {
       SV sv("");
       TEST_EXPECT(sv.is_empty());
       TEST_EXPECT(!sv.is_null());
-      TEST_EXPECT(sv.cstring() != nullptr);
+      TEST_EXPECT(sv.data() != nullptr);
     }
 
     {
       SV sv("testing");
       TEST_EXPECT(!sv.is_empty());
       TEST_EXPECT(!sv.is_null());
-      TEST_EXPECT(sv.cstring() != nullptr);
-      TEST_EXPECT(sv.cstring()[1] == 'e');
-      TEST_EXPECT(sv.cstring()[sv.length()] == 0);
+      TEST_EXPECT(sv.data() != nullptr);
+      TEST_EXPECT(sv.data()[1] == 'e');
       TEST_EXPECT(sv == "testing");
       TEST_EXPECT(!(sv != "testing"));
       TEST_EXPECT(sv.front() == 't');

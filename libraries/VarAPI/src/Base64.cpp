@@ -49,7 +49,7 @@ Data Base64::decode(StringView input) const {
   size_t len = get_decoded_size(input.length());
   result.resize(len);
   API_RETURN_VALUE_IF_ERROR(Data());
-  len -= decode(result.data(), input.cstring(), input.length());
+  len -= decode(result.data(), input.data(), input.length());
   result.resize(len);
   return std::move(result);
 }

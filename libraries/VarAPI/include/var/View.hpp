@@ -95,7 +95,7 @@ public:
   }
 
   View(StringView str) {
-    set_view(Construct().set_read_buffer(str.cstring()).set_size(str.length()));
+    set_view(Construct().set_read_buffer(str.data()).set_size(str.length()));
   }
 
   View(const String &str) {

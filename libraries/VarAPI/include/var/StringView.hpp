@@ -23,9 +23,10 @@ public:
   enum class Base { octal = 8, decimal = 10, hexidecimal = 16 };
 
   StringView() : m_string_view("") {}
-  StringView(const char *value) {
-    API_ASSERT(value != nullptr);
-    m_string_view = std::string_view(value);
+  StringView(const char *value) { m_string_view = std::string_view(value); }
+
+  StringView(const char *value, size_t length) {
+    m_string_view = std::string_view(value, length);
   }
 
   bool is_null() const { return m_string_view.data() == nullptr; }
@@ -88,8 +89,6 @@ public:
     return m_string_view.crend();
   }
 
-  const char *cstring() const { return m_string_view.data(); }
-
   size_t find(StringView a, size_t position = 0) const {
     return m_string_view.find(a.string_view(), position);
   }
@@ -133,21 +132,17 @@ public:
     return a.string_view() != string_view();
   }
 
-  long to_long(Base base = Base::decimal) const {
-    return ::strtol(cstring(), nullptr, static_cast<int>(base));
-  }
-
+  long to_long(Base base = Base::decimal) const;
   float to_float() const;
+  unsigned long to_unsigned_long(Base base = Base::decimal) const;
 
-  unsigned long to_unsigned_long(Base base = Base::decimal) const {
-    return ::strtoul(cstring(), nullptr, static_cast<int>(base));
-  }
+  // const char *cstring() const { return m_string_view.data(); }
+  const char *data() const { return m_string_view.data(); }
 
   bool operator==(const char *a) const { return StringView(a) == *this; }
   bool operator!=(const char *a) const { return StringView(a) != *this; }
 
 private:
-  StringView(const char *s, size_t length) : m_string_view(s, length) {}
   friend class String;
   std::string_view m_string_view;
 };
@@ -197,5 +192,7 @@ private:
 using Ntos = NumberToString;
 
 } // namespace var
+
+#include "StackString.hpp"
 
 #endif // VAR_API_STRING_VIEW_HPP

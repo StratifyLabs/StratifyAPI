@@ -6,24 +6,35 @@
 
 namespace fs {
 
-class Path {
+class Path : public var::StackStringObject<Path, PATH_MAX> {
 public:
-  explicit Path(var::StringView view) : m_path(view) {}
+  Path() {}
+  explicit Path(var::StringView view)
+    : var::StackStringObject<Path, PATH_MAX>(view) {}
+  explicit Path(const char *a) : var::StackStringObject<Path, PATH_MAX>(a) {}
 
-  var::StringView path() const { return m_path; }
+  bool operator==(const Path &a) const {
+    return strncmp(cstring(), a.cstring(), PATH_MAX) == 0;
+  }
+
+  bool operator!=(const Path &a) const {
+    return strncmp(cstring(), a.cstring(), PATH_MAX) != 0;
+  }
+
+  var::StringView path() { return cstring(); }
 
   /*! \details Returns the file suffix ('txt' for '/home/test.txt'). */
-  var::String suffix();
+  var::StringView suffix();
   /*! \details Returns the file name ('test.txt' for '/home/test.txt'). */
-  var::String name();
+  var::StringView name();
   /*! \details Returns the path to a file ('/home' for '/home/test.txt'). */
-  var::String parent_directory();
+  var::StringView parent_directory();
   /*! \details Returns the base name of a file path('test' for
    * '/home/test.txt'). */
-  var::String base_name();
+  var::StringView base_name();
   /*! \details Returns the path without the suffix ('/home/test' for
    * '/home/test.txt). */
-  var::String no_suffix();
+  var::StringView no_suffix();
 
   /*! \details Returns true if the first character in any directory or file name
    * starts with `.`
@@ -38,7 +49,6 @@ public:
   bool is_hidden();
 
 private:
-  var::StringView m_path;
 };
 } // namespace fs
 
