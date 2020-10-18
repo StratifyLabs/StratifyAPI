@@ -191,9 +191,7 @@ public:
   bool path_api_case() {
     printer::PrinterObject po(printer(), "path");
     TEST_ASSERT(P("data/test.json").path() == "data/test.json");
-    P name("flat");
-    TEST_EXPECT(name.path() == "flat");
-    TEST_ASSERT("flat" == name.name());
+    TEST_ASSERT(P("flat").name() == "flat");
     TEST_ASSERT(P("flat.json").name() == "flat.json");
     TEST_ASSERT(P("flat").suffix() == "");
     TEST_ASSERT(P("flat.json").suffix() == "json");
