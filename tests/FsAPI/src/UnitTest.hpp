@@ -53,7 +53,7 @@ public:
 
       const StringView new_test_contents = "new test file";
 
-      temp_path = td.path();
+      temp_path = String(td.path());
       TEST_ASSERT(F(F::IsOverwrite::yes,
                     td.path() + "/test.txt",
                     OpenMode::read_write(),

@@ -235,27 +235,31 @@ int FileSystem::interface_unlink(const char *path) const {
 int FileSystem::interface_stat(const char *path, struct stat *stat) const {
   return ::stat(path, stat);
 }
+
 int FileSystem::interface_fstat(int fd, struct stat *stat) const {
   return ::fstat(fd, stat);
 }
+
 int FileSystem::interface_rename(const char *old_name, const char *new_name)
   const {
   return FSAPI_LINK_RENAME(driver(), old_name, new_name);
 }
 
-TemporaryDirectory::TemporaryDirectory(var::StringView parent) {
-  m_path
-    = (parent.is_empty() ? (var::String(sys::System::user_data_path()) + "/")
-                         : var::String(""))
-      + chrono::ClockTime::get_unique_string();
-  FileSystem().create_directory(m_path);
+TemporaryDirectory::TemporaryDirectory(var::StringView parent)
+  : Path(Path()
+           .append(
+             parent.is_empty()
+               ? (Path(sys::System::user_data_path()).append("/").cstring())
+               : "")
+           .append(chrono::ClockTime::get_unique_string().cstring())) {
+  FileSystem().create_directory(path());
   if (is_error()) {
-    m_path.clear();
+    clear();
   }
 }
 
 TemporaryDirectory::~TemporaryDirectory() {
-  if (m_path.is_empty() == false) {
-    FileSystem().remove_directory(m_path, FileSystem::IsRecursive::yes);
+  if (is_empty() == false) {
+    FileSystem().remove_directory(path(), FileSystem::IsRecursive::yes);
   }
 }

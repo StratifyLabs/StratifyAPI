@@ -149,48 +149,6 @@ private:
 
 inline bool operator==(const char *lhs, StringView rhs) { return rhs == lhs; }
 
-class NumberToString {
-public:
-  template <typename T> NumberToString(T value, const char *fmt = nullptr) {
-
-    // guarantee null termination
-    m_buffer[sizeof(m_buffer) - 1] = 0;
-
-    if (fmt == nullptr) {
-      if (std::is_integral<T>::value == true) {
-        strncpy(m_buffer, std::to_string(value).c_str(), sizeof(m_buffer) - 1);
-      } else if (std::is_floating_point<T>::value == true) {
-
-        static_assert(
-          !(std::is_same<T, double>::value),
-          "Cannot convert double with NumberToString");
-
-        static_assert(
-          !(std::is_same<T, long double>::value),
-          "Cannot convert long double with NumberToString");
-
-        snprintf(
-          m_buffer,
-          sizeof(m_buffer) - 1,
-          "%f",
-          static_cast<float>(value));
-      }
-
-      return;
-    }
-
-    snprintf(m_buffer, sizeof(m_buffer) - 1, fmt, value);
-  }
-
-  operator StringView() { return StringView(m_buffer); }
-  const char *cstring() const { return m_buffer; }
-
-private:
-  char m_buffer[64];
-};
-
-using Ntos = NumberToString;
-
 } // namespace var
 
 #include "StackString.hpp"

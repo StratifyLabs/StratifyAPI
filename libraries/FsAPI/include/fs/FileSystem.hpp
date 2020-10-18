@@ -102,13 +102,12 @@ private:
 #endif
 };
 
-class TemporaryDirectory : public api::ExecutionContext {
+class TemporaryDirectory : public api::ExecutionContext, public Path {
 public:
   explicit TemporaryDirectory(var::StringView parent = "");
   ~TemporaryDirectory();
 
 private:
-  API_RAC(TemporaryDirectory, var::String, path);
 };
 
 } // namespace fs
