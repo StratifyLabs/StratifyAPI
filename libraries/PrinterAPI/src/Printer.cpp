@@ -202,7 +202,7 @@ void Printer::interface_print_final(var::StringView view) {
 #if defined __link
   fwrite(view.data(), view.length(), 1, stdout);
 #else
-  ::write(stdout->_file, view.cstring(), view.length());
+  ::write(stdout->_file, view.data(), view.length());
 #endif
 }
 

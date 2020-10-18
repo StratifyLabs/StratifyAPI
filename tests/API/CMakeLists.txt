@@ -19,9 +19,12 @@ include(${CMAKE_SOURCE_DIR}/tests/API/api.cmake)
 
 set(DIRECTORIES
 	FsAPI
+	ChronoAPI
+	VarAPI
 	ThreadAPI
 	SysAPI
 	TestAPI
+	PrinterAPI
 	API
 	)
 

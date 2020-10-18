@@ -39,11 +39,14 @@ Cli::Cli(int argc, char *argv[]) {
 void Cli::handle_version(const HandleVersion &options) const {
 #if !defined __link
   if (get_option("--version").is_empty() == false) {
-    printf(
-      "%s version: %s by %s \n",
-      get_name().cstring(),
-      options.version().cstring(),
-      options.publisher().cstring());
+    var::StackString256 output = var::StackString256()
+                                   .append(get_name())
+                                   .append("version: ")
+                                   .append(options.version())
+                                   .append(" by ")
+                                   .append(options.publisher());
+
+    printf("%s\n", output.cstring());
     exit(0);
   }
 #endif

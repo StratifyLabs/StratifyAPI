@@ -232,7 +232,7 @@ const FileSystem &FileSystem::create_directory(
 
 #if !defined __link
 int FileSystem::access(var::StringView path, const Access &access) {
-  return ::access(path.cstring(), static_cast<int>(access.o_access()));
+  return ::access(Path(path).cstring(), static_cast<int>(access.o_access()));
 }
 #endif
 

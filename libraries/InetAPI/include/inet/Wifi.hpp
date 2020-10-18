@@ -87,7 +87,7 @@ public:
       .set_passive(false)
       .set_channel(0xff)
       .set_slot_count(5)
-      .set_slot_time(chrono::Milliseconds(100))
+      .set_slot_time(100_milliseconds)
       .set_probe_count(2)
       .set_rssi_threshold(-90);
   }
@@ -113,7 +113,7 @@ public:
   }
 
   chrono::MicroTime slot_time() const {
-    return chrono::Milliseconds(m_attributes.slot_time_ms);
+    return chrono::MicroTime(m_attributes.slot_time_ms * 1000UL);
   }
 
   API_ACCESS_MEMBER_FUNDAMENTAL(WifiScanAttributes, u8, attributes, channel)
@@ -151,7 +151,7 @@ public:
   }
 
   chrono::MicroTime lease_time() const {
-    return chrono::Seconds(m_info.lease_time_s);
+    return chrono::MicroTime(m_info.lease_time_s * 1_seconds);
   }
 
   API_ACCESS_MEMBER_FUNDAMENTAL(WifiIpInfo, u32, info, ip_address)
@@ -159,15 +159,15 @@ public:
   API_ACCESS_MEMBER_FUNDAMENTAL(WifiIpInfo, u32, info, subnet_mask)
   API_ACCESS_MEMBER_FUNDAMENTAL(WifiIpInfo, u32, info, gateway_address)
 
-  Ipv4Address get_ip_address() const { return Ipv4Address(ip_address()); }
+  IpAddress4 get_ip_address() const { return IpAddress4(ip_address()); }
 
-  Ipv4Address get_dns_address() const { return Ipv4Address(dns_address()); }
+  IpAddress4 get_dns_address() const { return IpAddress4(dns_address()); }
 
-  Ipv4Address get_gateway_address() const {
-    return Ipv4Address(gateway_address());
+  IpAddress4 get_gateway_address() const {
+    return IpAddress4(gateway_address());
   }
 
-  Ipv4Address get_subnet_mask() const { return Ipv4Address(subnet_mask()); }
+  IpAddress4 get_subnet_mask() const { return IpAddress4(subnet_mask()); }
 
 private:
   wifi_ip_info_t m_info;
@@ -193,7 +193,7 @@ private:
   wifi_info_t m_info;
 };
 
-class Wifi : public api::Object, public WifiApi {
+class Wifi : public api::ExecutionContext, public WifiApi {
 public:
   Wifi();
   ~Wifi() { finalize(); }
@@ -212,13 +212,13 @@ public:
   WifiIpInfo connect(
     const WifiSsidInfo &ssid_info,
     const WifiAuthInfo &auth,
-    const chrono::MicroTime &timeout = chrono::Seconds(10));
+    const chrono::MicroTime &timeout = 10_seconds);
 
   int disconnect() { return api()->disconnect(m_context); }
 
   var::Vector<WifiSsidInfo> scan(
     const WifiScanAttributes &attributes = WifiScanAttributes::get_default(),
-    const chrono::MicroTime &timeout = chrono::Seconds(20));
+    const chrono::MicroTime &timeout = 20_seconds);
 
   int start_scan(const WifiScanAttributes &attributes) {
     return api()->start_scan(m_context, &attributes.attributes());

@@ -38,12 +38,12 @@
 #define FSAPI_LINK_FSTAT(x, y, z) ::fstat(y, z)
 #define FSAPI_LINK_READDIR_R(w, x, y, z) ::readdir_r(x, y, z)
 #define FSAPI_LINK_CLOSEDIR(x, y) ::closedir(y)
-#define FSAPI_LINK_TELLDIR(x, y) ::closedir(y)
-#define FSAPI_LINK_SEEKDIR(x, y, z) ::closedir(y, z)
-#define FSAPI_LINK_REWINDDIR(x, y) ::closedir(y)
+#define FSAPI_LINK_TELLDIR(x, y) ::telldir(y)
+#define FSAPI_LINK_SEEKDIR(x, y, z) ::seekdir(y, z)
+#define FSAPI_LINK_REWINDDIR(x, y) ::rewinddir(y)
 
 #define FSAPI_LINK_OPENDIR(x, y) ::opendir(y)
-#define FSAPI_LINK_MKDIR(x, y, z) link_mkdir(y, z)
+#define FSAPI_LINK_MKDIR(x, y, z) ::mkdir(y, z)
 #define FSAPI_LINK_RMDIR(x, y) ::rmdir(y)
 
 #define LINK_SET_DRIVER(x, y)

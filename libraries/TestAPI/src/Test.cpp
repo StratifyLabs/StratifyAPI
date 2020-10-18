@@ -13,6 +13,8 @@ using namespace var;
 using namespace test;
 using namespace printer;
 
+var::DataInfo Test::m_final_data_info;
+
 printer::Printer *Test::m_printer = nullptr;
 
 bool Test::m_final_result = true;
@@ -95,20 +97,6 @@ void Test::initialize(const Initialize &options) {
   m_printer = options.printer();
   m_final_duration_microseconds = 0;
 
-#if !defined __link
-  Sys::Info info = Sys().get_info();
-
-  API_ASSERT(info.is_valid());
-
-  printer().object("system", info);
-
-  Appfs::Info appfs_info
-    = Appfs().get_info(var::String("/app/flash/") + options.name());
-  if (appfs_info.is_valid() == false) {
-    appfs_info = Appfs().get_info(var::String("/app/ram/") + options.name());
-  }
-#endif
-
   {
     PrinterObject pg(printer(), "system");
     printer().key("operatingSystem", sys::System::operating_system_name());
@@ -119,30 +107,6 @@ void Test::initialize(const Initialize &options) {
     PrinterObject pg(printer(), "test");
     printer().key("name", options.name());
     printer().key("version", options.version());
-
-#if !defined __link
-    if (appfs_info.is_valid()) {
-      printer().key("ramSize", String::number(appfs_info.ram_size()));
-
-      printer().key("isFlash", appfs_info.is_flash());
-
-      printer().key("isCodeExternal", appfs_info.is_code_external());
-
-      printer().key("isDataExternal", appfs_info.is_data_external());
-
-      printer().key(
-        "isCodeTightlyCoupled",
-        appfs_info.is_code_tightly_coupled());
-
-      printer().key(
-        "isDataTightlyCoupled",
-        appfs_info.is_data_tightly_coupled());
-
-      printer().key(
-        "applicationSignature",
-        String::number(appfs_info.signature(), "%x"));
-    }
-#endif
     printer().key("gitHash", options.git_hash());
     printer().key("apiVersion", var::StringView(api::ApiInfo::version()));
     printer().key("apiGitHash", var::StringView(api::ApiInfo::git_hash()));

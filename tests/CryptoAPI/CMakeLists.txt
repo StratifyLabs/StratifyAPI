@@ -25,6 +25,7 @@ set(DIRECTORIES
 	SysAPI
 	TestAPI
 	mbedtls
+	API
 	)
 
 api_test_executable(CryptoAPI "${DIRECTORIES}")

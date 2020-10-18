@@ -63,7 +63,7 @@ namespace fs {
  *
  *
  */
-class Aio : public api::Object {
+class Aio : public api::ExecutionContext {
   friend class hal::Device;
 
 public:

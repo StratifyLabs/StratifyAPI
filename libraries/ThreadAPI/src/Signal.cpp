@@ -27,7 +27,7 @@ Signal &Signal::set_handler(const SignalHandler &handler) {
 
 Signal &Signal::reset_handler() {
   API_RETURN_VALUE_IF_ERROR(*this);
-  void (*result)(int) = ::signal(m_signo, SIG_DFL);
+  auto result = ::signal(m_signo, SIG_DFL);
   if (result == SIG_ERR) {
     API_RETURN_VALUE_ASSIGN_ERROR(*this, "", errno);
   }

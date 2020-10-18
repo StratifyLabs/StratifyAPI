@@ -130,7 +130,7 @@ public:
    *
    *
    */
-  inline long tell() {
+  inline long tell() const {
     API_RETURN_VALUE_IF_ERROR(-1);
     return interface_telldir(m_dirp);
   }

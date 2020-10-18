@@ -15,7 +15,6 @@ macro(api_target NAME DIRECTORIES)
 	set(FORMAT_LIST ${PRIVATE_SOURCES} ${PUBLIC_SOURCES})
 
 	sos_sdk_library_target(RELEASE ${NAME} "" release ${SOS_ARCH})
-
 	add_library(${RELEASE_TARGET} STATIC)
 
 	set_property(TARGET ${RELEASE_TARGET} PROPERTY CXX_STANDARD 17)
@@ -105,11 +104,16 @@ macro(api_target NAME DIRECTORIES)
 			DEPENDS coverage_mkdir_${COVERAGE_TARGET}
 			)
 
+	else()
+
 	endif()
 
+	sos_sdk_library_target(DEBUG ${NAME} "" debug ${SOS_ARCH})
+	add_library(${DEBUG_TARGET} STATIC)
+	sos_sdk_copy_target(${RELEASE_TARGET} ${DEBUG_TARGET})
 
-	#message(STATUS "Adding dependencies ${DIRECTORIES}")
 	sos_sdk_library_add_arch_targets("${RELEASE_OPTIONS}" ${SOS_ARCH} "${DIRECTORIES}")
+	sos_sdk_library_add_arch_targets("${DEBUG_OPTIONS}" ${SOS_ARCH} "${DIRECTORIES}")
 
 	add_custom_target(
 		${NAME}_format

@@ -76,6 +76,12 @@ public:
     return MicroTime(microseconds() + a.microseconds());
   }
 
+  MicroTime operator*(const MicroTime &a) const {
+    return MicroTime(microseconds() * a.microseconds());
+  }
+
+  MicroTime operator*(u32 a) const { return MicroTime(microseconds() * a); }
+
   MicroTime operator-(const MicroTime &a) const {
     return MicroTime(microseconds() - a.microseconds());
   }
@@ -131,6 +137,10 @@ private:
 using Microseconds = MicroTime;
 
 void wait(const MicroTime &duration);
+
+inline MicroTime operator*(u32 lhs, MicroTime rhs) {
+  return MicroTime(rhs.microseconds() * lhs);
+}
 
 } // namespace chrono
 

@@ -24,7 +24,7 @@ var::Vector<String> StringView::split(StringView delimeters) const {
 
 float StringView::to_float() const {
 #ifndef __link
-  return ::atoff(cstring());
+  return ::atoff(StackString64(*this).cstring());
 #else
   return ::atof(StackString64(*this).cstring());
 #endif

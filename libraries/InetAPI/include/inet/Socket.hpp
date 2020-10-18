@@ -59,11 +59,14 @@ public:
     null = 0,
     peek = MSG_PEEK,
     out_of_band = MSG_OOB,
+#if defined MSG_EOR
     end_of_record = MSG_EOR,
+#endif
     truncated = MSG_TRUNC,
     control_truncatd = MSG_CTRUNC,
     wait_all = MSG_WAITALL,
     dont_wait = MSG_DONTWAIT,
+#if defined MSG_DONTROUTE
     dont_route = MSG_DONTROUTE,
     end_of_file = MSG_EOF,
     wait_stream = MSG_WAITSTREAM,
@@ -73,6 +76,8 @@ public:
     have_more = MSG_HAVEMORE,
     receive_more = MSG_RCVMORE,
     need_socket_address = MSG_NEEDSA
+#endif
+
   };
 
   enum class NameFlags {

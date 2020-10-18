@@ -34,7 +34,7 @@ Dir &Dir::open(var::StringView path) {
 }
 
 #if !defined __link
-int Dir::count() {
+int Dir::count() const {
   API_RETURN_VALUE_IF_ERROR(-1);
   long loc;
   int count;

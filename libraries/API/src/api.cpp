@@ -136,6 +136,8 @@ const char *Demangler::demangle(const char *input) {
     free(m_last);
   }
 
+#if defined __link
   m_last = abi::__cxa_demangle(input, m_buffer, &m_length, &m_status);
+#endif
   return m_last;
 }

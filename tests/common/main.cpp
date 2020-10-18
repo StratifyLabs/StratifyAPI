@@ -9,7 +9,10 @@ void segfault(int a) { API_ASSERT(false); }
 int main(int argc, char *argv[]) {
   sys::Cli cli(argc, argv);
 
+#if defined __link
   signal(11, segfault);
+#endif
+
   printer::Printer printer;
 
   printer.set_verbose_level(cli.get_option("verbose"));

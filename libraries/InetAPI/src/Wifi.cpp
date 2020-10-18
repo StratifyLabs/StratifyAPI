@@ -54,8 +54,8 @@ var::Vector<WifiSsidInfo> Wifi::scan(
   chrono::ClockTimer t;
   t.start();
 
-  while ((t < timeout) && is_scan_busy()) {
-    wait(Milliseconds(50));
+  while ((t.micro_time() < timeout) && is_scan_busy()) {
+    wait(50_milliseconds);
   }
 
   return get_ssid_info_list();
@@ -97,9 +97,9 @@ WifiIpInfo Wifi::connect(
   t.start();
   WifiInfo info;
   do {
-    chrono::wait(chrono::Milliseconds(50));
+    chrono::wait(50_milliseconds);
     info = get_info();
-  } while ((t < timeout)
+  } while ((t.micro_time() < timeout)
            && (!info.is_connected() || !info.get_ip_info().is_valid()));
 
   if (info.is_connected() && info.get_ip_info().is_valid()) {

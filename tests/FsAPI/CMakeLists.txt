@@ -21,6 +21,7 @@ set(DIRECTORIES
 	FsAPI
 	SysAPI
 	TestAPI
+	API
 	)
 
 api_test_executable(FsAPI "${DIRECTORIES}")
