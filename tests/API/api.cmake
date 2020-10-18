@@ -1,19 +1,8 @@
 
 macro(api_test_executable NAME DIRECTORIES)
 
-	set(IS_COVERAGE OFF)
 
-	if(SOS_IS_LINK AND IS_COVERAGE)
-		set(CONFIG coverage)
-		set(ELF_NAME_PREFIX ${NAME}_${CONFIG})
-	else()
-		set(CONFIG release)
-		set(ELF_NAME_PREFIX ${NAME})
-
-	endif()
-
-
-	sos_sdk_app_target(RELEASE ${NAME} "" ${CONFIG} ${SOS_ARCH})
+	sos_sdk_app_target(RELEASE ${NAME} "" release ${SOS_ARCH})
 	add_executable(${RELEASE_TARGET})
 	target_sources(${RELEASE_TARGET}
 		PRIVATE
@@ -22,16 +11,10 @@ macro(api_test_executable NAME DIRECTORIES)
 		${CMAKE_SOURCE_DIR}/tests/${NAME}/src/UnitTest.hpp
 		)
 
-	if(SOS_IS_LINK AND IS_COVERAGE)
-		set_target_properties(${RELEASE_TARGET}
-			PROPERTIES
-			LINK_FLAGS --coverage)
-	else()
 		target_compile_options(${RELEASE_TARGET}
 			PRIVATE
 			-Os
 			)
-	endif()
 
 	set_property(TARGET ${RELEASE_TARGET} PROPERTY CXX_STANDARD 17)
 
@@ -52,7 +35,6 @@ macro(api_test_executable NAME DIRECTORIES)
 		${CMAKE_SOURCE_DIR}/tests/${NAME}/src
 		)
 
-	sos_sdk_app_add_arch_targets("${RELEASE_OPTIONS}" "${DIRECTORIES}" ${RAM_SIZE})
 
 	get_target_property(MY_DIR ${RELEASE_TARGET} BINARY_DIR)
 	message(STATUS "BINARY DIR for ${RELEASE_TARGET} is ${MY_DIR}")
@@ -63,7 +45,12 @@ macro(api_test_executable NAME DIRECTORIES)
 	if(SOS_IS_LINK)
 
 		add_test(NAME tests${NAME}
-			COMMAND "../build_${CONFIG}_link/${ELF_NAME_PREFIX}_link.elf" --api
+			COMMAND "../build_release_link/${NAME}_link.elf" --api
+			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tmp
+			)
+
+		add_test(NAME tests_coverage_${NAME}
+			COMMAND "../build_coverage_link/${NAME}_coverage_link.elf" --api
 			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tmp
 			)
 
@@ -74,7 +61,30 @@ macro(api_test_executable NAME DIRECTORIES)
 			PASS_REGULAR_EXPRESSION "___finalResultPass___"
 			)
 
+		set_tests_properties(
+			tests_coverage_${NAME}
+			PROPERTIES
+			PASS_REGULAR_EXPRESSION "___finalResultPass___"
+			)
+
+		sos_sdk_app_target(COVERAGE ${NAME} "" coverage ${SOS_ARCH})
+		add_executable(${COVERAGE_TARGET})
+		sos_sdk_copy_target(${RELEASE_TARGET} ${COVERAGE_TARGET})
+
+		set_target_properties(${COVERAGE_TARGET}
+			PROPERTIES
+			LINK_FLAGS --coverage)
+
 	endif()
 
+	sos_sdk_app_add_arch_targets("${RELEASE_OPTIONS}" "${DIRECTORIES}" ${RAM_SIZE})
+	if(SOS_IS_LINK)
+		sos_sdk_app_add_arch_targets("${COVERAGE_OPTIONS}" "${DIRECTORIES}" ${RAM_SIZE})
+	endif()
+
+	target_compile_options(${RELEASE_TARGET}
+		PRIVATE
+		-Os
+		)
 
 endmacro()

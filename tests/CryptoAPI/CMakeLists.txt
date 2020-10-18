@@ -9,7 +9,8 @@ set(CMAKE_MODULE_PATH ${SOS_SDK_PATH}/Tools/gcc/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/sos-toolchain.cmake)
 include(sos-sdk)
 
-include(targets/mbedtls_release_link)
+set(INET_CONFIG_OPTIONS release coverage debug)
+sos_sdk_include_target(mbedtls "${INET_CONFIG_OPTIONS}")
 
 get_filename_component(SOS_NAME ${CMAKE_CURRENT_LIST_DIR} NAME)
 project(${SOS_NAME} CXX C)
@@ -25,7 +26,6 @@ set(DIRECTORIES
 	SysAPI
 	TestAPI
 	mbedtls
-	API
 	)
 
 api_test_executable(CryptoAPI "${DIRECTORIES}")

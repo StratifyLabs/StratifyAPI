@@ -1,6 +1,5 @@
 
 #include <cstdio>
-#include <mcu/types.h>
 
 #include "api/api.hpp"
 #include "chrono.hpp"
@@ -154,8 +153,11 @@ public:
           http_client.get("index.html", Http::Get().set_response(&response))
             .is_success());
 
-        printer().key("serverResponse", response.data().null_terminate());
-        TEST_ASSERT(response.data().null_terminate() == "Hello World");
+        printer().key(
+          "serverResponse",
+          StringView(response.data().add_null_terminator()));
+        TEST_ASSERT(
+          StringView(response.data().add_null_terminator()) == "Hello World");
       }
 
       {
@@ -213,7 +215,7 @@ public:
         TEST_EXPECT(
           http_client.get("/get", Http::ExecuteMethod().set_response(&response))
             .is_success());
-        printer().key("response", response.data().null_terminate());
+        printer().key("response", response.data().add_null_terminator());
       }
 
       {
@@ -223,7 +225,7 @@ public:
         TEST_EXPECT(
           http_client.put("/put", Http::ExecuteMethod().set_response(&response))
             .is_success());
-        printer().key("response", response.data().null_terminate());
+        printer().key("response", response.data().add_null_terminator());
       }
     }
 
@@ -257,7 +259,7 @@ public:
           http_client.get("/get", Http::ExecuteMethod().set_response(&response))
             .is_success());
         if (response.size()) {
-          printer().key("response", response.data().null_terminate());
+          printer().key("response", response.data().add_null_terminator());
         }
       }
     }
@@ -275,7 +277,7 @@ public:
                         Http::ExecuteMethod().set_response(&response))
                       .is_success());
         if (response.size()) {
-          printer().key("response", response.data().null_terminate());
+          printer().key("response", response.data().add_null_terminator());
         }
       }
       return true;

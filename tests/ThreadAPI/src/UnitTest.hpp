@@ -1,6 +1,5 @@
 ﻿
 #include <cstdio>
-#include <mcu/types.h>
 #include <signal.h>
 
 #include "api/api.hpp"

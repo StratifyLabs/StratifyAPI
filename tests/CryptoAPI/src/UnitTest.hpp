@@ -1,6 +1,5 @@
 ﻿
 #include <cstdio>
-#include <mcu/types.h>
 
 #include "api/api.hpp"
 #include "chrono.hpp"

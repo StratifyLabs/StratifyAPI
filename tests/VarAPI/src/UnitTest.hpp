@@ -1,6 +1,5 @@
 ﻿
 #include <cstdio>
-#include <mcu/types.h>
 
 #include "api/api.hpp"
 #include "chrono.hpp"
@@ -374,7 +373,7 @@ public:
             Base64Decoder(),
             DataFile::Write().set_page_size(32))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_input);
 
       TEST_ASSERT(
@@ -384,7 +383,7 @@ public:
             Base64Decoder(),
             DataFile::Write().set_page_size(10))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_input);
 
       TEST_ASSERT(
@@ -394,7 +393,7 @@ public:
             Base64Decoder(),
             DataFile::Write().set_page_size(20))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_input);
 
       TEST_ASSERT(
@@ -404,7 +403,7 @@ public:
             Base64Decoder(),
             DataFile::Write().set_page_size(30))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_input);
 
       TEST_ASSERT(
@@ -414,7 +413,7 @@ public:
             Base64Decoder(),
             DataFile::Write().set_page_size(40))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_input);
 
       DataFile df;
@@ -430,7 +429,7 @@ public:
             Base64Encoder(),
             DataFile::Write().set_page_size(12))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_output);
 
       TEST_ASSERT(
@@ -440,7 +439,7 @@ public:
             Base64Encoder(),
             DataFile::Write().set_page_size(30))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_output);
 
       TEST_ASSERT(
@@ -450,7 +449,7 @@ public:
             Base64Encoder(),
             DataFile::Write().set_page_size(50))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_output);
 
       TEST_ASSERT(
@@ -460,7 +459,7 @@ public:
             Base64Encoder(),
             DataFile::Write().set_page_size(60))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_output);
     }
 

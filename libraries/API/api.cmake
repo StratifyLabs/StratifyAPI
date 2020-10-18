@@ -41,8 +41,6 @@ macro(api_target NAME DIRECTORIES)
 			INTERFACE
 			$<INSTALL_INTERFACE:include/${NAME}>
 			$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libraries/${NAME}/include>
-			PRIVATE
-			${CMAKE_INSTALL_PREFIX}/include/StratifyOS
 			)
 
 	endif()
@@ -57,11 +55,11 @@ macro(api_target NAME DIRECTORIES)
 
 	string(COMPARE EQUAL ${NAME} API IS_API)
 	set(LOCAL_DIRECTORIES ${DIRECTORIES})
-	#if(IS_API)
+	if(IS_API)
 		# this doesn't need to be added as a directory, just a dependency
 		list(APPEND LOCAL_DIRECTORIES StratifyOS)
 		message(STATUS "DIRS ${LOCAL_DIRECTORIES}")
-	#endif()
+	endif()
 
 	target_include_directories(${RELEASE_TARGET}
 		PUBLIC
@@ -118,10 +116,6 @@ macro(api_target NAME DIRECTORIES)
 	if(IS_API)
 		get_target_property(RELEASE_LINK_LIBS ${RELEASE_TARGET} INTERFACE_LINK_LIBRARIES)
 		get_target_property(DEBUG_LINK_LIBS ${DEBUG_TARGET} INTERFACE_LINK_LIBRARIES)
-
-		message("RELEASE LIBS ${RELEASE_LINK_LIBS}")
-		message("DEBUG LIBS ${DEBUG_LINK_LIBS}")
-
 	endif()
 
 	add_custom_target(

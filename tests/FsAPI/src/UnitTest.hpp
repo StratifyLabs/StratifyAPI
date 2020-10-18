@@ -1,6 +1,5 @@
 ﻿
 #include <cstdio>
-#include <mcu/types.h>
 
 #include "api/api.hpp"
 #include "chrono.hpp"
@@ -277,7 +276,7 @@ public:
         DF()
           .write(F(dir_name_recursive + "/tmp.txt", OpenMode::read_only()))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == "Hello");
 
       TEST_EXPECT(F(F::IsOverwrite::yes,
@@ -291,7 +290,7 @@ public:
             F(Path(dir_name_recursive).parent_directory() + "/tmp.txt",
               OpenMode::read_only()))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == "Hello2");
 
       TEST_EXPECT(
@@ -308,7 +307,7 @@ public:
               + "/tmp.txt",
             OpenMode::read_only()))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == "Hello3");
 
       TEST_EXPECT(FS().exists(dir_name_recursive) == true);
@@ -361,7 +360,10 @@ public:
       TEST_ASSERT(!FS().exists(old_name));
 
       TEST_ASSERT(
-        DF().write(F(new_name, OpenMode::read_only())).data().null_terminate()
+        DF()
+          .write(F(new_name, OpenMode::read_only()))
+          .data()
+          .add_null_terminator()
         == "Hello");
     }
 
@@ -425,7 +427,7 @@ public:
           .reserve(256)
           .write(tmp, F::Write().set_terminator('\n'))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_strings.at(0));
 
       TEST_EXPECT(
@@ -433,7 +435,7 @@ public:
           .reserve(256)
           .write(tmp, F::Write().set_terminator('\n'))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_strings.at(1));
 
       TEST_EXPECT(
@@ -441,7 +443,7 @@ public:
           .reserve(256)
           .write(tmp, F::Write().set_terminator('\n'))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_strings.at(2));
 
       TEST_EXPECT(
@@ -449,7 +451,7 @@ public:
           .reserve(256)
           .write(tmp, F::Write().set_terminator('\n'))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_strings.at(3));
 
       TEST_EXPECT(
@@ -457,7 +459,7 @@ public:
           .reserve(256)
           .write(tmp, F::Write().set_terminator('\n'))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_strings.at(4));
 
       TEST_EXPECT(
@@ -467,7 +469,7 @@ public:
             tmp.seek(var::StringView(test_strings.at(0)).length()),
             F::Write().set_terminator('\n'))
           .data()
-          .null_terminate()
+          .add_null_terminator()
         == test_strings.at(1));
     }
 
