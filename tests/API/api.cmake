@@ -39,7 +39,6 @@ macro(api_test_executable NAME DIRECTORIES)
 	get_target_property(MY_DIR ${RELEASE_TARGET} BINARY_DIR)
 	message(STATUS "BINARY DIR for ${RELEASE_TARGET} is ${MY_DIR}")
 
-	include(CTest)
 	if(SOS_IS_LINK)
 
 		sos_sdk_add_test(${NAME} release)

@@ -137,24 +137,17 @@ public:
   const T &operator[](size_t offset) const { return m_vector[offset]; }
   T &operator[](size_t offset) { return m_vector[offset]; }
 
-  const T &find(const T &a, const T &not_found = T()) const {
+  size_t find_offset(const T &a) const {
     size_t offset = std::find(begin(), end(), a) - begin();
+    return offset;
+  }
+
+  const T &find(const T &a, const T &not_found = T()) const {
+    size_t offset = find_offset(a);
     if (offset == count()) {
       return not_found;
     }
     return at(offset);
-  }
-
-  const T &find(
-    const T &a,
-    bool (*compare)(const T &a, const T &b),
-    const T &not_found = T()) const {
-    for (u32 i = 0; i < count(); i++) {
-      if (compare(this->at(i), a)) {
-        return this->at(i);
-      }
-    }
-    return not_found;
   }
 
   T *search(const T &a) {
