@@ -42,6 +42,7 @@ public:
   size_t length() const { return m_string_view.length(); }
 
   bool is_empty() const { return m_string_view.empty(); }
+
   StringView &pop_front(size_t length = 1) {
     m_string_view.remove_prefix(length);
     return *this;
@@ -158,6 +159,34 @@ private:
 inline bool operator==(const char *lhs, StringView rhs) { return rhs == lhs; }
 
 using StringViewList = Vector<StringView>;
+
+class CString {
+public:
+  explicit CString(const char *value) : m_value(value) {}
+
+  const char *cstring() const { return m_value; }
+  operator const char *() const { return m_value; }
+  operator StringView() const { return StringView(m_value); }
+
+  bool operator==(CString a) const {
+    return StringView(m_value) == StringView(a.m_value);
+  }
+
+  bool operator!=(CString a) const {
+    return StringView(m_value) != StringView(a.m_value);
+  }
+
+  bool operator>(CString a) const {
+    return StringView(m_value) > StringView(a.m_value);
+  }
+
+  bool operator<(CString a) const {
+    return StringView(m_value) < StringView(a.m_value);
+  }
+
+private:
+  const char *m_value;
+};
 
 } // namespace var
 
