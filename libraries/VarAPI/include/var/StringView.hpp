@@ -22,7 +22,7 @@ public:
 
   enum class Base { octal = 8, decimal = 10, hexidecimal = 16 };
 
-  StringView() {}
+  StringView() : m_string_view("") {}
   StringView(const char *value) { m_string_view = std::string_view(value); }
 
   StringView(const char *value, size_t length) {

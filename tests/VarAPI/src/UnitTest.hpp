@@ -4,6 +4,7 @@
 #include "api/api.hpp"
 #include "chrono.hpp"
 #include "fs.hpp"
+#include "printer.hpp"
 #include "sys.hpp"
 #include "test/Test.hpp"
 #include "var.hpp"
@@ -485,6 +486,7 @@ public:
   }
 
   bool string_view_api_case() {
+    PrinterObject po(printer(), "StringView");
     {
       SV sv;
       TEST_EXPECT(sv.is_empty());

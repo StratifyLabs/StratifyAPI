@@ -16,7 +16,11 @@ StringView StringView::get_substring(const GetSubstring &options) const {
 }
 
 StringView StringView::get_substring_at_position(size_t position) const {
-  return StringView(m_string_view.substr(position));
+  if (position < length()) {
+    return StringView(m_string_view.substr(position));
+  }
+
+  return StringView();
 }
 
 StringView StringView::get_substring_with_length(size_t length) const {

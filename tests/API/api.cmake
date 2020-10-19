@@ -40,32 +40,10 @@ macro(api_test_executable NAME DIRECTORIES)
 	message(STATUS "BINARY DIR for ${RELEASE_TARGET} is ${MY_DIR}")
 
 	include(CTest)
-
-	set(CTEST_OUTPUT_ON_FAILURE ON)
 	if(SOS_IS_LINK)
 
-		add_test(NAME tests${NAME}
-			COMMAND "../build_release_link/${NAME}_link.elf" --api
-			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tmp
-			)
-
-		add_test(NAME tests_coverage_${NAME}
-			COMMAND "../build_coverage_link/${NAME}_coverage_link.elf" --api
-			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tmp
-			)
-
-
-		set_tests_properties(
-			tests${NAME}
-			PROPERTIES
-			PASS_REGULAR_EXPRESSION "___finalResultPass___"
-			)
-
-		set_tests_properties(
-			tests_coverage_${NAME}
-			PROPERTIES
-			PASS_REGULAR_EXPRESSION "___finalResultPass___"
-			)
+		sos_sdk_add_test(${NAME} release)
+		sos_sdk_add_test(${NAME} coverage)
 
 		sos_sdk_app_target(COVERAGE ${NAME} "" coverage ${SOS_ARCH})
 		add_executable(${COVERAGE_TARGET})

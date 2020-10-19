@@ -19,20 +19,24 @@
 namespace test {
 
 #define TEST_EXPECT(result_value)                                              \
+  PRINTER_TRACE(this->printer(), "");                                          \
   this->expect(__PRETTY_FUNCTION__, __LINE__, result_value)
 
 #define TEST_ASSERT(result_value)                                              \
   do {                                                                         \
+    PRINTER_TRACE(this->printer(), "");                                        \
     if (this->expect(__PRETTY_FUNCTION__, __LINE__, result_value) == false) {  \
       return false;                                                            \
     }                                                                          \
   } while (0)
 
 #define TEST_SELF_EXPECT(result_value)                                         \
+  PRINTER_TRACE(self->printer(), "");                                          \
   self->expect(__PRETTY_FUNCTION__, __LINE__, result_value)
 
 #define TEST_SELF_ASSERT(result_value)                                         \
   do {                                                                         \
+    PRINTER_TRACE(self->printer(), "");                                        \
     if (self->expect(__PRETTY_FUNCTION__, __LINE__, result_value) == false) {  \
       return false;                                                            \
     }                                                                          \

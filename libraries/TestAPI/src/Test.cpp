@@ -93,17 +93,12 @@ void Test::initialize(const Initialize &options) {
   m_printer = options.printer();
   m_final_duration_microseconds = 0;
 
-  printf("%s():%d\n", __FUNCTION__, __LINE__);
   {
-    printf("%s():%d\n", __FUNCTION__, __LINE__);
     PrinterObject pg(printer(), "system");
-    printf("%s():%d\n", __FUNCTION__, __LINE__);
     printer().key("operatingSystem", sys::System::operating_system_name());
-    printf("%s():%d\n", __FUNCTION__, __LINE__);
     printer().key("processor", sys::System::processor());
   }
 
-  printf("%s():%d\n", __FUNCTION__, __LINE__);
   {
     PrinterObject pg(printer(), "test");
     printer().key("name", options.name());
@@ -113,7 +108,6 @@ void Test::initialize(const Initialize &options) {
     printer().key("apiGitHash", var::StringView(api::ApiInfo::git_hash()));
   }
 
-  printf("%s():%d\n", __FUNCTION__, __LINE__);
   m_final_data_info = var::DataInfo();
 }
 
