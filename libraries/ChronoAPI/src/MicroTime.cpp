@@ -8,7 +8,7 @@
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const chrono::MicroTime &a) {
-  printer.key("duration", var::NumberToString(a.microseconds(), F32U "us"));
+  printer.key("duration", var::NumberString(a.microseconds(), F32U "us"));
   return printer;
 }
 

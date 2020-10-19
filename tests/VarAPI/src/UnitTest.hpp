@@ -307,8 +307,8 @@ public:
     TEST_EXPECT(encode_test("KLMNOPQ", "S0xNTk9QUQ=="));
     TEST_EXPECT(encode_test("rstuvwxy", "cnN0dXZ3eHk="));
 
-    bool (*decode_test)(const char *, const char *)
-      = [](const char *output, const char *input) {
+    bool (*decode_test)(StringView, StringView)
+      = [](StringView output, StringView input) {
           return (V(Base64().decode(input)) == V(output));
         };
 
@@ -321,7 +321,7 @@ public:
     TEST_EXPECT(decode_test("KLMNOPQ", "S0xNTk9QUQ=="));
     TEST_EXPECT(decode_test("rstuvwxy", "cnN0dXZ3eHk="));
 
-    const char test_input[]
+    const StringView test_input
       = "In computer science, Base64 is a group of binary-to-text encoding "
         "schemes that represent binary data in an ASCII string format by "
         "translating it into a radix-64 representation. The term Base64 "
@@ -339,7 +339,7 @@ public:
         "encoding causes an overhead of 33–36% (33% by the encoding itself, up "
         "to 3% more by the inserted line breaks).";
 
-    const char test_output[]
+    const StringView test_output
       = "SW4gY29tcHV0ZXIgc2NpZW5jZSwgQmFzZTY0IGlzIGEgZ3JvdXAgb2YgYmluYXJ5LXRvLX"
         "RleHQgZW5jb2Rpbmcgc2NoZW1lcyB0aGF0IHJlcHJlc2VudCBiaW5hcnkgZGF0YSBpbiBh"
         "biBBU0NJSSBzdHJpbmcgZm9ybWF0IGJ5IHRyYW5zbGF0aW5nIGl0IGludG8gYSByYWRpeC"
@@ -609,7 +609,7 @@ public:
     }
 
     {
-      StringList list = StringView("1,2,3,4").split(",");
+      StringViewList list = StringView("1,2,3,4").split(",");
       TEST_ASSERT(list.count() == 4);
     }
 

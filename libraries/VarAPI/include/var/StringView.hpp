@@ -52,12 +52,16 @@ public:
     API_AF(GetSubstring, size_t, length, npos);
   };
 
-  String get_substring(const GetSubstring &options) const;
+  StringView get_substring(const GetSubstring &options) const;
+  inline StringView operator()(const GetSubstring &options) const {
+    return get_substring(options);
+  }
 
-  String get_substring_at_position(size_t position) const;
+  StringView get_substring_at_position(size_t position) const;
 
-  String get_substring_with_length(size_t length) const;
-  var::Vector<String> split(StringView delimeters) const;
+  StringView get_substring_with_length(size_t length) const;
+
+  var::Vector<StringView> split(StringView delimeters) const;
 
   using iterator = typename std::string_view::iterator;
   using const_iterator = typename std::string_view::const_iterator;
@@ -122,7 +126,6 @@ public:
   }
 
   const std::string_view &string_view() const { return m_string_view; }
-  std::string_view &string_view() { return m_string_view; }
 
   bool operator==(StringView a) const {
     return a.string_view() == string_view();
@@ -131,6 +134,10 @@ public:
   bool operator!=(StringView a) const {
     return a.string_view() != string_view();
   }
+
+  bool operator>(StringView a) const { return string_view() > a.string_view(); }
+
+  bool operator<(StringView a) const { return string_view() < a.string_view(); }
 
   long to_long(Base base = Base::decimal) const;
   float to_float() const;
@@ -145,9 +152,13 @@ public:
 private:
   friend class String;
   std::string_view m_string_view;
+
+  StringView(const std::string_view string_view) : m_string_view(string_view) {}
 };
 
 inline bool operator==(const char *lhs, StringView rhs) { return rhs == lhs; }
+
+using StringViewList = Vector<StringView>;
 
 } // namespace var
 

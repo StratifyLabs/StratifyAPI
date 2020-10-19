@@ -102,9 +102,21 @@ public:
     API_AF(Erase, size_t, length, npos);
   };
 
-  using Append = Erase;
-  using Assign = Erase;
-  using Find = Erase;
+  class Append {
+    API_AF(Append, size_t, position, 0);
+    API_AF(Append, size_t, length, npos);
+  };
+
+  class Assign {
+    API_AF(Assign, size_t, position, 0);
+    API_AF(Assign, size_t, length, npos);
+  };
+
+  class Find {
+    API_AF(Find, size_t, position, 0);
+    API_AF(Find, size_t, length, npos);
+  };
+
   using GetSubstring = StringView::GetSubstring;
 
   class Insert {
@@ -114,7 +126,12 @@ public:
     API_ACCESS_FUNDAMENTAL(Insert, size_t, sub_length, npos);
   };
 
-  using Compare = Insert;
+  class Compare {
+    API_ACCESS_FUNDAMENTAL(Compare, size_t, position, 0);
+    API_ACCESS_FUNDAMENTAL(Compare, size_t, length, 0);
+    API_ACCESS_FUNDAMENTAL(Compare, size_t, sub_position, 0);
+    API_ACCESS_FUNDAMENTAL(Compare, size_t, sub_length, npos);
+  };
 
   String() = default;
 
@@ -207,6 +224,9 @@ public:
     return std::move(
       String(m_string.substr(options.position(), options.length())));
   }
+  inline String operator()(const GetSubstring &options) {
+    return std::move(get_substring(options));
+  }
 
   String get_substring_at_position(size_t position) const {
     if (position >= length()) {
@@ -232,6 +252,11 @@ public:
     return *this;
   }
 
+  inline String &
+  operator()(const String &string_to_insert, const Insert &options) {
+    return insert(string_to_insert, options);
+  }
+
   /*! \details Erases a portion of the string starting with the character at
    * \a pos.
    *
@@ -244,6 +269,8 @@ public:
     m_string.erase(options.position(), options.length());
     return *this;
   }
+
+  inline String &operator()(const Erase &options) { return erase(options); }
 
   String &erase(StringView string_to_erase, size_t position = 0);
 
@@ -264,6 +291,7 @@ public:
    */
 
   String &replace(const Replace &options);
+  inline String &operator()(const Replace &options) { return replace(options); }
 
   size_t count(var::StringView to_count) const;
   size_t length() const { return m_string.length(); }
@@ -424,6 +452,11 @@ public:
       options.position(),
       options.length());
     return *this;
+  }
+
+  inline String &
+  operator()(const String &string_to_append, const Append &options) {
+    return append(string_to_append, options);
   }
 
   /*! \details Appends \a c to this String.  */
@@ -617,7 +650,7 @@ public:
 
   u32 capacity() const { return m_string.capacity(); }
 
-  Vector<String> split(StringView delimiter) const;
+  StringViewList split(StringView delimiter) const;
 
   operator StringView() const { return StringView(cstring(), length()); }
 

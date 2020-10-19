@@ -18,8 +18,8 @@ namespace var {
 class Tokenizer : public api::ExecutionContext {
 public:
   class Construct {
-    API_ACCESS_COMPOUND(Construct, var::StringView, delimeters);
-    API_ACCESS_COMPOUND(Construct, var::StringView, ignore_between);
+    API_ACCESS_COMPOUND(Construct, StringView, delimeters);
+    API_ACCESS_COMPOUND(Construct, StringView, ignore_between);
     API_ACCESS_FUNDAMENTAL(Construct, u32, maximum_delimeter_count, 0);
   };
 
@@ -39,18 +39,16 @@ public:
   u32 count() const { return m_token_list.count(); }
 
   /*! \details Returns a pointer to the token specified by offset. */
-  const String &at(u32 n) const;
+  StringView at(u32 n) const;
 
-  const var::StringList &list() const { return m_token_list; }
+  const StringViewList &list() const { return m_token_list; }
 
-  var::StringList &list() { return m_token_list; }
-
-  var::String join(StringView delimeter) const;
+  String join(StringView delimeter) const;
 
 protected:
 private:
-  var::StringList m_token_list;
-
+  StringViewList m_token_list;
+  StringView m_input;
   void parse(StringView input, const Construct &options);
 };
 

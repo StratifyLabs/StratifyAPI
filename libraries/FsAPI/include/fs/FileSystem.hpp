@@ -76,6 +76,9 @@ public:
    *
    */
   const FileSystem &rename(const Rename &options) const;
+  inline const FileSystem &operator()(const Rename &options) const {
+    return rename(options);
+  }
 
   const FileSystem &touch(var::StringView path) const;
 

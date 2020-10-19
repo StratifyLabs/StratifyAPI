@@ -71,7 +71,7 @@ String Cli::at(u16 value) const {
   return arg;
 }
 
-var::String Cli::get_option(StringView name, StringView help) const {
+var::StringView Cli::get_option(StringView name, StringView help) const {
   var::String result;
   u32 args;
 
@@ -95,13 +95,13 @@ var::String Cli::get_option(StringView name, StringView help) const {
           if (tokens.count() > 1) {
             return tokens.at(1);
           } else {
-            return var::String("true");
+            return var::StringView("true");
           }
         } else if (String(name).to_upper() == String(tokens.at(0)).to_upper()) {
           if (tokens.count() > 1) {
             return tokens.at(1);
           } else {
-            return var::String("true");
+            return var::StringView("true");
           }
         }
       }

@@ -60,7 +60,7 @@ void Printer::set_color_code(u32 code) {
 
 #if defined __link
   if (is_bash()) {
-    interface_print_final(var::NumberToString(code, "\033[1;%dm"));
+    interface_print_final(var::NumberString(code, "\033[1;%dm"));
   }
 #endif
 
@@ -511,7 +511,7 @@ bool Printer::update_progress(int progress, int total) {
             interface_print_final("\b"); // backspace
           }
         } else {
-          interface_print_final(var::NumberToString(m_progress_state - 1));
+          interface_print_final(var::NumberString(m_progress_state - 1));
         }
 
       } else {
@@ -727,8 +727,8 @@ Printer &Printer::operator<<(var::View a) {
 #define USE_DEMANGLER 0
 
 Printer &Printer::operator<<(const api::Error &error_context) {
-  key("lineNumber", var::NumberToString(error_context.line_number()));
-  key("errorNumber", var::NumberToString(error_context.error_number()));
+  key("lineNumber", var::NumberString(error_context.line_number()));
+  key("errorNumber", var::NumberString(error_context.error_number()));
   key("message", var::StringView(error_context.message()));
 
   api::Error::Backtrace backtrace(error_context);

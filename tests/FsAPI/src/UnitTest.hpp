@@ -277,7 +277,7 @@ public:
           .write(F(dir_name_recursive + "/tmp.txt", OpenMode::read_only()))
           .data()
           .add_null_terminator()
-        == "Hello");
+        == StringView("Hello"));
 
       TEST_EXPECT(F(F::IsOverwrite::yes,
                     Path(dir_name_recursive).parent_directory() + "/tmp.txt")
@@ -291,7 +291,7 @@ public:
               OpenMode::read_only()))
           .data()
           .add_null_terminator()
-        == "Hello2");
+        == StringView("Hello2"));
 
       TEST_EXPECT(
         F(F::IsOverwrite::yes,
@@ -308,7 +308,7 @@ public:
             OpenMode::read_only()))
           .data()
           .add_null_terminator()
-        == "Hello3");
+        == StringView("Hello3"));
 
       TEST_EXPECT(FS().exists(dir_name_recursive) == true);
 
@@ -364,7 +364,7 @@ public:
           .write(F(new_name, OpenMode::read_only()))
           .data()
           .add_null_terminator()
-        == "Hello");
+        == StringView("Hello"));
     }
 
     return true;
@@ -378,7 +378,7 @@ public:
 
     constexpr const char *file_name = "tmp.txt";
 
-    const std::array<const char *, 5> test_strings = {
+    const std::array<StringView, 5> test_strings = {
       "Testing String 0\n",
       "Testing String 1\n",
       "Testing String 2\n",

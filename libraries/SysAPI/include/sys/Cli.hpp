@@ -89,9 +89,9 @@ public:
    * If `-<name>` or `--<name>` is given, the return value is set to "true".
    *
    */
-  var::String get_option(
+  var::StringView get_option(
     var::StringView name,
-    var::StringView help = var::StringView ()) const;
+    var::StringView help = var::StringView()) const;
 
   /*! \details Returns the number of arguments. */
   u32 count() const { return m_argc; }

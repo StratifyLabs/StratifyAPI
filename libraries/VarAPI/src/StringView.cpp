@@ -1,25 +1,31 @@
-/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for rights.
+/*! \file */ // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see
+             // LICENSE.md for rights.
 #include "var/StringView.hpp"
 #include "var/StackString.hpp"
 #include "var/String.hpp"
+#include "var/Tokenizer.hpp"
 
 using namespace var;
 
-String
-StringView::get_substring(const GetSubstring &options) const {
-  return std::move(String(*this).get_substring(options));
+StringView StringView::get_substring(const GetSubstring &options) const {
+  if (options.length() != StringView::npos) {
+    return StringView(
+      m_string_view.substr(options.position(), options.length()));
+  }
+  return StringView(m_string_view.substr(options.position()));
 }
 
-String StringView::get_substring_at_position(size_t position) const {
-  return std::move(String(*this).get_substring_at_position(position));
+StringView StringView::get_substring_at_position(size_t position) const {
+  return StringView(m_string_view.substr(position));
 }
 
-String StringView::get_substring_with_length(size_t length) const {
-  return std::move(String(*this).get_substring_with_length(length));
+StringView StringView::get_substring_with_length(size_t length) const {
+  return StringView(m_string_view.substr(0, length));
 }
 
-var::Vector<String> StringView::split(StringView delimeters) const {
-  return std::move(String(*this).split(delimeters));
+StringViewList StringView::split(StringView delimeters) const {
+  return std::move(
+    Tokenizer(*this, Tokenizer::Construct().set_delimeters(delimeters)).list());
 }
 
 float StringView::to_float() const {

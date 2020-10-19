@@ -38,42 +38,41 @@ public:
   explicit IpAddress4(in_addr_t value) : m_address(value) {}
 
   explicit IpAddress4(var::StringView value) {
-    var::StringList value_list = value.split(".");
+    var::StringViewList value_list = value.split(".");
     if (value_list.count() != 4) {
       return;
     }
-    m_address = (value_list.at(0).to_integer() << 24)
-                | (value_list.at(1).to_integer() << 16)
-                | (value_list.at(2).to_integer() << 8)
-                | (value_list.at(3).to_integer() << 0);
+    m_address = (var::NumberString(value_list.at(0)).to_integer() << 24)
+                | (var::NumberString(value_list.at(1)).to_integer() << 16)
+                | (var::NumberString(value_list.at(2)).to_integer() << 8)
+                | (var::NumberString(value_list.at(3)).to_integer() << 0);
   }
 
   IpAddress4(u8 a, u8 b, u8 c, u8 d) {
     m_address = a << 24 | b << 16 | c << 8 | d;
   }
 
-
-  var::String to_string() const {
-    return var::String().format(
+  var::NumberString to_string() const {
+    return std::move(var::NumberString().format(
       "%d.%d.%d.%d",
       ((m_address >> 24) & 0xff),
       ((m_address >> 16) & 0xff),
       ((m_address >> 8) & 0xff),
-      ((m_address >> 0) & 0xff));
+      ((m_address >> 0) & 0xff)));
   }
 
   static IpAddress4 from_string(const var::String &value) {
-    var::StringList list = value.split(".");
+    var::StringViewList list = value.split(".");
 
     if (list.count() < 4) {
       return IpAddress4();
     }
 
     return IpAddress4(
-      list.at(0).to_integer(),
-      list.at(1).to_integer(),
-      list.at(2).to_integer(),
-      list.at(3).to_integer());
+      var::NumberString(list.at(0)).to_integer(),
+      var::NumberString(list.at(1)).to_integer(),
+      var::NumberString(list.at(2)).to_integer(),
+      var::NumberString(list.at(3)).to_integer());
   }
 
   const in_addr_t &address() const { return m_address; }
@@ -87,7 +86,7 @@ public:
   IpAddress6(const struct in6_addr &address) : m_address(address) {}
 
   IpAddress6(var::StringView value) {
-    var::StringList value_list = value.split(":");
+    var::StringViewList value_list = value.split(":");
     API_ASSERT(value_list.count() == 8);
     var::View view(m_address);
     size_t i = 0;
@@ -101,22 +100,20 @@ public:
     var::View(m_address).copy(var::View(address));
   }
 
-  var::String to_string() const {
+  var::NumberString to_string() const {
     const var::View view(m_address);
-    return var::String().format(
-      "%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x",
-      view.to_u16()[0],
-      view.to_u16()[1],
-      view.to_u16()[2],
-      view.to_u16()[3],
-      view.to_u16()[4],
-      view.to_u16()[5],
-      view.to_u16()[6],
-      view.to_u16()[7]);
+    var::NumberString result;
+    for (size_t i = 0; i < 8; i++) {
+      result.append(var::NumberString(view.at_const_u16(i), "%04x").cstring());
+      if (i < 7) {
+        result.append(":");
+      }
+    }
+    return std::move(result);
   }
 
   static IpAddress6 from_string(const var::String &value) {
-    var::StringList list = value.split(":");
+    var::StringViewList list = value.split(":");
 
     API_ASSERT(list.count() == 8);
 

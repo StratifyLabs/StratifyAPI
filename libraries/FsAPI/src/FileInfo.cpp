@@ -32,11 +32,11 @@ printer::operator<<(printer::Printer &printer, const fs::FileInfo &a) {
   }
   printer.key("type", var::StringView(type.cstring()));
   if (a.is_file()) {
-    printer.key("size", var::NumberToString(a.size()));
+    printer.key("size", var::NumberString(a.size()));
   }
   printer.key(
     "mode",
-    var::NumberToString(a.permissions().permissions() & 0777, "0%o"));
+    var::NumberString(a.permissions().permissions() & 0777, "0%o"));
 
   return printer;
 }

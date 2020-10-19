@@ -18,11 +18,11 @@ using namespace inet;
 
 #define API_HANDLE_STATUS_CASE(c)                                              \
   case Status::c:                                                              \
-    result = String().format("%d %s", Status::c, MCU_STRINGIFY(c));            \
+    result = StackString64().format("%d %s", Status::c, MCU_STRINGIFY(c));     \
     break
 
-var::String Http::to_string(Status status) {
-  var::String result;
+var::StackString64 Http::to_string(Status status) {
+  var::StackString64 result;
   switch (status) {
     API_HANDLE_STATUS_CASE(null);
     API_HANDLE_STATUS_CASE(continue_);
@@ -89,18 +89,19 @@ var::String Http::to_string(Status status) {
     API_HANDLE_STATUS_CASE(network_authentication_required);
   }
 
-  result.replace(String::Replace().set_old_string("_").set_new_string(" "));
+  result(
+    StackString64::Replace().set_old_character('_').set_new_character(' '));
 
   return result;
 }
 
 #define API_HANDLE_METHOD_CASE(c)                                              \
   case Method::c:                                                              \
-    result = String(MCU_STRINGIFY(c)).to_upper();                              \
+    result = KeyString(MCU_STRINGIFY(c)).to_upper();                           \
     break
 
-var::String Http::to_string(Method method) {
-  var::String result;
+var::KeyString Http::to_string(Method method) {
+  var::KeyString result;
   switch (method) {
     API_HANDLE_METHOD_CASE(null);
     API_HANDLE_METHOD_CASE(get);
@@ -113,24 +114,24 @@ var::String Http::to_string(Method method) {
     API_HANDLE_METHOD_CASE(trace);
   }
 
-  return result;
+  return std::move(result);
 }
 
-Http::Method Http::method_from_string(const var::String &string) {
-  const var::String input = String(string).to_upper();
-  if (input == "GET") {
+Http::Method Http::method_from_string(var::StringView string) {
+  const var::KeyString input = KeyString(string).to_upper();
+  if (StringView(input.cstring()) == "GET") {
     return Method::get;
-  } else if (input == "POST") {
+  } else if (StringView(input.cstring()) == "POST") {
     return Method::post;
-  } else if (input == "PUT") {
+  } else if (StringView(input.cstring()) == "PUT") {
     return Method::put;
-  } else if (input == "HEAD") {
+  } else if (StringView(input.cstring()) == "HEAD") {
     return Method::head;
-  } else if (input == "DELETE") {
+  } else if (StringView(input.cstring()) == "DELETE") {
     return Method::delete_;
-  } else if (input == "PATCH") {
+  } else if (StringView(input.cstring()) == "PATCH") {
     return Method::patch;
-  } else if (input == "OPTIONS") {
+  } else if (StringView(input.cstring()) == "OPTIONS") {
     return Method::options;
   }
   return Method::null;
@@ -252,8 +253,8 @@ var::String Http::receive_header_fields() {
 
       if (attribute.key() == "CONTENT-TYPE") {
         // check for evnt streams
-        StringList tokens = attribute.value().split(" ;");
-        if (String(tokens.at(0)).to_upper() == "TEXT/EVENT-STREAM") {
+        StringViewList tokens = attribute.value().split(" ;");
+        if (KeyString(tokens.at(0)).to_upper() == "TEXT/EVENT-STREAM") {
           // accept data until the operation is cancelled
           m_content_length = static_cast<u32>(-1);
         }
@@ -414,11 +415,12 @@ HttpClient &HttpClient::connect(var::StringView domain_name, u16 port) {
 Http::HeaderField Http::HeaderField::from_string(var::StringView string) {
   const size_t colon_pos = string.find(":");
 
-  const String key = string.get_substring_with_length(colon_pos).to_upper();
+  const KeyString key = std::move(
+    KeyString(string.get_substring_with_length(colon_pos)).to_upper());
 
   String value;
   if (colon_pos != String::npos) {
-    value = string.get_substring_at_position(colon_pos + 1);
+    value = String(string.get_substring_at_position(colon_pos + 1));
     if (value.at(0) == ' ') {
       value.pop_front();
     }
@@ -427,7 +429,7 @@ Http::HeaderField Http::HeaderField::from_string(var::StringView string) {
       .replace(String::Replace().set_old_string("\n"))
       .to_upper();
   }
-  return std::move(Http::HeaderField(key, value));
+  return std::move(Http::HeaderField(var::String(key.cstring()), value));
 }
 
 HttpServer &HttpServer::listen(

@@ -28,14 +28,14 @@ Url::Url(var::StringView url) {
     }
 
     var::Tokenizer domain_name = var::Tokenizer(
-      url_tokens.at(2).cstring(),
+      url_tokens.at(2),
       var::Tokenizer::Construct().set_delimeters(":"));
 
     if (domain_name.count() > 1) {
       m_port = var::String(domain_name.at(1)).to_integer();
-      m_domain_name = domain_name.at(0);
+      m_domain_name = var::String(domain_name.at(0));
     } else {
-      m_domain_name = url_tokens.at(2);
+      m_domain_name = var::String(url_tokens.at(2));
     }
 
     m_path.clear();

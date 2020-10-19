@@ -113,9 +113,9 @@ public:
   using Post = ExecuteMethod;
   using Remove = ExecuteMethod;
 
-  static var::String to_string(Status status);
-  static var::String to_string(Method method);
-  static Method method_from_string(const var::String &string);
+  static var::StackString64 to_string(Status status);
+  static var::KeyString to_string(Method method);
+  static Method method_from_string(var::StringView string);
 
   class HeaderField : public var::Pair<var::String> {
   public:
@@ -136,23 +136,24 @@ public:
       : m_method(method), m_path(path), m_version(version) {}
 
     explicit Request(var::StringView plain_test) {
-      var::StringList list = plain_test.split(" \r\n");
+      var::StringViewList list = plain_test.split(" \r\n");
       if (list.count() < 3) {
         API_RETURN_ASSIGN_ERROR("", EINVAL);
       }
       m_method = method_from_string(list.at(0));
-      m_path = list.at(1);
+      m_path = var::String(list.at(1));
       m_version = list.at(2);
     }
 
     var::String to_string() const {
       return std::move(
-        Http::to_string(m_method) + " " + m_path + " " + m_version);
+        var::String(Http::to_string(m_method).cstring()) + " " + m_path + " "
+        + m_version.cstring());
     }
 
   private:
     API_RAF(Request, Method, method, Method::null);
-    API_RAC(Request, var::String, version);
+    API_RAC(Request, var::KeyString, version);
     API_RAC(Request, var::String, path);
   };
 
@@ -162,24 +163,27 @@ public:
     Response(var::StringView version, Status status)
       : m_status(status), m_version(version) {}
     explicit Response(var::StringView plain_test) {
-      var::StringList list = plain_test.split(" \r");
+      var::StringViewList list = plain_test.split(" \r");
 
       if (list.count() < 2) {
         API_RETURN_ASSIGN_ERROR("", EINVAL);
       }
       m_version = list.at(0);
-      m_status = static_cast<Status>(list.at(1).to_integer());
+      m_status
+        = static_cast<Status>(var::NumberString(list.at(1)).to_integer());
     }
 
-    var::String to_string() const {
-      return std::move(m_version + " " + Http::to_string(m_status));
+    var::StackString256 to_string() const {
+      return var::StackString256(m_version.cstring())
+        .append(" ")
+        .append(Http::to_string(m_status).cstring());
     }
 
     bool is_redirect() const { return (static_cast<int>(status()) / 100) == 3; }
 
   private:
     API_RAF(Response, Status, status, Status::null);
-    API_RAC(Response, var::String, version);
+    API_RAC(Response, var::KeyString, version);
   };
 
   Http(var::StringView http_version);
@@ -191,6 +195,9 @@ public:
   const var::String &traffic() const { return m_traffic; }
 
   var::String get_header_field(var::StringView key) const;
+
+  const Response &response() const { return m_response; }
+  const Request &request() const { return m_request; }
 
 protected:
   var::String m_traffic;
@@ -219,7 +226,7 @@ protected:
 
 private:
   API_AB(Http, transfer_encoding_chunked, false);
-  API_AC(Http, var::String, http_version);
+  API_AF(Http, var::StringView, http_version, "HTTP/1.1");
   API_AC(Http, var::String, header_fields);
 
   API_AF(Http, size_t, transfer_size, 1024);

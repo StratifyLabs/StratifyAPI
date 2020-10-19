@@ -20,7 +20,7 @@ Version Version::from_u16(u16 major_minor) {
 }
 
 u32 Version::to_bcd() const {
-  StringList tokens = m_version.split(".");
+  StringViewList tokens = m_version.split(".");
   u32 result = 0;
   u32 token_max = tokens.count() < 3 ? tokens.count() : 3;
   for (u32 i = 0; i < token_max; i++) {
@@ -30,8 +30,8 @@ u32 Version::to_bcd() const {
 }
 
 int Version::compare(const Version &a, const Version &b) {
-  StringList a_tokens = a.m_version.split(".");
-  StringList b_tokens = b.m_version.split(".");
+  StringViewList a_tokens = a.m_version.split(".");
+  StringViewList b_tokens = b.m_version.split(".");
 
   if (a_tokens.count() > b_tokens.count()) {
     return 1;

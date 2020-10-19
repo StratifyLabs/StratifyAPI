@@ -9,6 +9,7 @@ namespace var {
 
 template <class Derived, int Size> class StackStringObject {
 public:
+  using Base = StringView::Base;
   const char *cstring() const { return m_buffer; }
   Derived &clear() {
     m_buffer[0] = 0;
@@ -38,8 +39,40 @@ public:
 
   template <typename... Args>
   Derived &format(const char *format, Args... args) {
-    ::snprintf(m_buffer, Size - 1, format, args...);
+    ::snprintf(m_buffer, capacity(), format, args...);
     return static_cast<Derived &>(*this);
+  }
+
+  Derived &to_upper() {
+    for (size_t i = 0; i < capacity(); i++) {
+      m_buffer[i] = std::toupper(m_buffer[i]);
+    }
+    return static_cast<Derived &>(*this);
+  }
+
+  Derived &to_lower() {
+    for (size_t i = 0; i < capacity(); i++) {
+      m_buffer[i] = std::tolower(m_buffer[i]);
+    }
+    return static_cast<Derived &>(*this);
+  }
+
+  class Replace {
+    API_AF(Replace, char, old_character, 0);
+    API_AF(Replace, char, new_character, 0);
+  };
+
+  Derived &replace(const Replace &options) {
+    for (size_t i = 0; i < capacity(); i++) {
+      if (m_buffer[i] == options.old_character()) {
+        m_buffer[i] = options.new_character();
+      }
+    }
+    return static_cast<Derived &>(*this);
+  }
+
+  inline Derived &operator()(const Replace &options) {
+    return replace(options);
   }
 
 protected:
@@ -56,21 +89,16 @@ protected:
     strncpy(m_buffer, a, Size - 1);
   }
 
+  constexpr size_t capacity() const { return Size - 1; }
+
   char m_buffer[Size];
 };
 
-class StackString32 : public StackStringObject<StackString32, 32> {
+class KeyString : public StackStringObject<KeyString, 32> {
 public:
-  StackString32() {}
-  StackString32(const StringView a) : StackStringObject(a) {}
-  StackString32(const char *a) : StackStringObject(a) {}
-};
-
-class StackString64 : public StackStringObject<StackString64, 64> {
-public:
-  StackString64() {}
-  StackString64(const StringView a) : StackStringObject(a) {}
-  StackString64(const char *a) : StackStringObject(a) {}
+  KeyString() {}
+  KeyString(const StringView a) : StackStringObject(a) {}
+  KeyString(const char *a) : StackStringObject(a) {}
 };
 
 class StackString128 : public StackStringObject<StackString128, 128> {
@@ -87,41 +115,51 @@ public:
   StackString256(const char *a) : StackStringObject(a) {}
 };
 
-class NumberToString : public StackStringObject<NumberToString, 64> {
+class NumberString : public StackStringObject<NumberString, 64> {
 public:
-  template <typename T> NumberToString(T value, const char *fmt = nullptr) {
-
+  template <typename T> NumberString(T value) {
     // guarantee null termination
-    m_buffer[sizeof(m_buffer) - 1] = 0;
+    m_buffer[capacity()] = 0;
+    constexpr const char *fmt
+      = (std::is_same<T, int>::value || std::is_same<T, short>::value
+         || std::is_same<T, char>::value)
+          ? "%d"
+          : std::is_same<T, long>::value
+              ? "%ld"
+              : std::is_same<T, long long>::value
+                  ? "%lld"
+                  : (std::is_same<T, unsigned>::value
+                     || std::is_same<T, unsigned short>::value
+                     || std::is_same<T, unsigned char>::value)
+                      ? "%u"
+                      : std::is_same<T, unsigned long>::value
+                          ? "%lu"
+                          : std::is_same<T, unsigned long long>::value
+                              ? "%lld"
+                              : std::is_same<T, float>::value ? "%f" : nullptr;
+    static_assert(fmt != nullptr, "NumberString can't handle type");
 
-    if (fmt == nullptr) {
-      if (std::is_integral<T>::value == true) {
-        strncpy(m_buffer, std::to_string(value).c_str(), sizeof(m_buffer) - 1);
-      } else if (std::is_floating_point<T>::value == true) {
-
-        static_assert(
-          !(std::is_same<T, double>::value),
-          "Cannot convert double with NumberToString");
-
-        static_assert(
-          !(std::is_same<T, long double>::value),
-          "Cannot convert long double with NumberToString");
-
-        snprintf(
-          m_buffer,
-          sizeof(m_buffer) - 1,
-          "%f",
-          static_cast<float>(value));
-      }
-
-      return;
-    }
-
-    snprintf(m_buffer, sizeof(m_buffer) - 1, fmt, value);
+    snprintf(m_buffer, capacity(), fmt, value);
   }
+
+  template <typename T> NumberString(T value, const char *format) {
+    m_buffer[capacity()] = 0;
+    ::snprintf(m_buffer, capacity(), format, value);
+  }
+
+  NumberString() {}
+  NumberString(const StringView a) : StackStringObject(a) {}
+  NumberString(const char *a) : StackStringObject(a) {}
+
+  int to_integer() const;
+  float to_float() const;
+  long to_long(Base base = Base::decimal) const;
+  unsigned long to_unsigned_long(Base base = Base::decimal) const;
 };
 
-using Ntos = NumberToString;
+using StackString64 = NumberString;
+using StackString32 = KeyString;
+using Ntos = NumberString;
 
 } // namespace var
 

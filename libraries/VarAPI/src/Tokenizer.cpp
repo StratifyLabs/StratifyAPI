@@ -17,16 +17,16 @@ void Tokenizer::parse(var::StringView input, const Construct &options) {
 
   const u32 max_delimeter_count = options.maximum_delimeter_count();
   const u32 length = input.length();
-  m_token_list = StringList();
+
+  m_token_list = StringViewList();
   u32 cursor = 0;
   u32 sub_position = 0;
 
   while (cursor < length) {
     if (options.delimeters().find(input.at(cursor)) != String::npos) {
-      m_token_list.push_back(
-        String(input).get_substring(String::GetSubstring()
-                                      .set_position(sub_position)
-                                      .set_length(cursor - sub_position)));
+      m_token_list.push_back(input(StringView::GetSubstring()
+                                     .set_position(sub_position)
+                                     .set_length(cursor - sub_position)));
 
       sub_position = cursor + 1;
       if (
@@ -47,27 +47,26 @@ void Tokenizer::parse(var::StringView input, const Construct &options) {
   }
 
   // push the last token
-  m_token_list.push_back(
-    String(input).get_substring(String::GetSubstring()
-                                  .set_position(sub_position)
-                                  .set_length(cursor - sub_position)));
+  m_token_list.push_back(input(StringView::GetSubstring()
+                                 .set_position(sub_position)
+                                 .set_length(cursor - sub_position)));
 }
 
-const String &Tokenizer::at(u32 n) const {
+StringView Tokenizer::at(u32 n) const {
   if (n < m_token_list.count()) {
     return m_token_list.at(n);
   } else {
-    return String::empty_string();
+    return StringView();
   }
 }
 
 Tokenizer &Tokenizer::sort(SortBy sort_option) {
   switch (sort_option) {
   case SortBy::ascending:
-    m_token_list.sort(StringList::ascending);
+    m_token_list.sort(StringViewList::ascending);
     break;
   case SortBy::descending:
-    m_token_list.sort(StringList::descending);
+    m_token_list.sort(StringViewList::descending);
     break;
   case SortBy::none:
     break;
@@ -77,11 +76,15 @@ Tokenizer &Tokenizer::sort(SortBy sort_option) {
 
 var::String Tokenizer::join(StringView delimeter) const {
   var::String result;
+  result.reserve(m_input.length() + list().count() * delimeter.length());
+
   for (const auto &item : list()) {
     result += item + delimeter;
   }
+
   for (size_t i = 0; i < delimeter.length(); i++) {
     result.pop_back();
   }
+
   return std::move(result);
 }
