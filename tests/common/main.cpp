@@ -7,11 +7,11 @@
 void segfault(int a) { API_ASSERT(false); }
 
 int main(int argc, char *argv[]) {
-  sys::Cli cli(argc, argv);
-
 #if defined __link
   signal(11, segfault);
 #endif
+
+  sys::Cli cli(argc, argv);
 
   printer::Printer printer;
 

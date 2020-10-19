@@ -161,7 +161,7 @@ public:
     return *this;
   }
   String &operator+=(const String &a) {
-    m_string = a.m_string;
+    m_string += a.m_string;
     return *this;
   }
   String &operator+=(StringView a) {

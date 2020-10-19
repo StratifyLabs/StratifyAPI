@@ -13,19 +13,19 @@
 #include "var/Tokenizer.hpp"
 
 var::String var::operator+(var::StringView lhs, const var::String &rhs) {
-  return String(lhs) + rhs;
+  return std::move(String(lhs) + rhs);
 }
 
 var::String var::operator+(var::StringView lhs, var::String &&rhs) {
-  return String(lhs) + rhs;
+  return std::move(var::String(lhs) + std::move(rhs));
 }
 
 var::String var::operator+(var::StringView lhs, var::StringView rhs) {
-  return String(lhs) + rhs;
+  return std::move(var::String(lhs) + rhs);
 }
 
 var::String var::operator+(const var::String &lhs, var::StringView rhs) {
-  return String(lhs) + rhs;
+  return std::move(var::String(lhs) += rhs);
 }
 
 using namespace var;

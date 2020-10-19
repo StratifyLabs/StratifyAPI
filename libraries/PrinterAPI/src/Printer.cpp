@@ -145,11 +145,12 @@ void Printer::print(
       set_color_code(static_cast<int>(ColorCode::red));
     }
     if (m_print_flags & PrintFlags::key_quotes) {
-      const var::String s = "\"" + key + "\"";
-      interface_print_final(s.cstring());
+      interface_print_final("\"");
+      interface_print_final(key);
+      interface_print_final("\":");
     } else {
-      const var::String s = key + ": ";
-      interface_print_final(s.cstring());
+      interface_print_final(key);
+      interface_print_final(":");
     }
     if (m_print_flags & PrintFlags::bold_keys) {
       clear_format_code(static_cast<int>(FormatType::bold));
@@ -178,8 +179,9 @@ void Printer::print(
       set_color_code(static_cast<int>(ColorCode::cyan));
     }
     if (m_print_flags & PrintFlags::value_quotes) {
-      const var::String s = "\"" + value + "\"";
-      interface_print_final(s.cstring());
+      interface_print_final("\"");
+      interface_print_final(value);
+      interface_print_final("\"");
     } else {
       interface_print_final(value);
     }
@@ -226,9 +228,7 @@ Printer &Printer::close_array() {
   return *this;
 }
 
-void Printer::print_open_object(
-  Level verbose_level,
-  var::StringView key) {
+void Printer::print_open_object(Level verbose_level, var::StringView key) {
   print(verbose_level, key, "");
   m_indent++;
 }

@@ -205,13 +205,15 @@ public:
 
     {
 
-      PrinterObject po(printer(), "http://httpbin.org");
+      PrinterObject po(printer(), "http://httpbin.org/get");
       HttpClient http_client;
 
+      printer().key("is", StringView("connecting"));
       TEST_ASSERT(http_client.connect("httpbin.org").is_success());
 
       {
         DataFile response;
+        printer().key("is", StringView("getting"));
         TEST_EXPECT(
           http_client.get("/get", Http::ExecuteMethod().set_response(&response))
             .is_success());
@@ -219,6 +221,7 @@ public:
       }
 
       {
+        printer().key("is", StringView("putting"));
         DataFile request;
         request.data().copy(View(StringView("HelloWorld")));
         DataFile response;
@@ -248,7 +251,7 @@ public:
     }
 
     {
-      PrinterObject po(printer(), "https://httpbin.org");
+      PrinterObject po(printer(), "https://httpbin.org/get");
       HttpSecureClient http_client;
 
       TEST_ASSERT(http_client.connect("httpbin.org").is_success());

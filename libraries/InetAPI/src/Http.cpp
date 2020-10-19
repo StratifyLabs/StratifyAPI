@@ -147,8 +147,7 @@ void Http::add_header_field(var::StringView key, var::StringView value) {
     m_is_header_dirty = false;
   }
 
-  m_header_fields
-    += String(key).to_upper() + ": " + String(value).to_upper() + "\r\n";
+  (m_header_fields += key + ": " + value + "\r\n").to_upper();
 }
 
 void Http::add_header_fields(var::StringView fields) {
@@ -156,24 +155,25 @@ void Http::add_header_fields(var::StringView fields) {
     m_header_fields.clear();
     m_is_header_dirty = false;
   }
-  m_header_fields += fields;
+  (m_header_fields += fields).to_upper();
 }
 
 var::StringView Http::get_header_field(var::StringView key) const {
 
-  const size_t key_position = header_fields().find(String(key).to_upper());
-  if (key_position == String::npos) {
-    return var::String();
+  const size_t key_position
+    = header_fields().find(StackString64(key).to_upper());
+  if (key_position == StringView::npos) {
+    return var::StringView();
   }
 
   const size_t value_position = header_fields().find(":", key_position);
-  if (value_position == String::npos) {
-    return var::String();
+  if (value_position == StringView::npos) {
+    return var::StringView();
   }
 
   const size_t end_position = header_fields().find("\r", value_position);
-  if (end_position == String::npos) {
-    return var::String();
+  if (end_position == StringView::npos) {
+    return var::StringView();
   }
 
   const size_t adjusted_value_position
@@ -229,11 +229,8 @@ int Http::get_chunk_size() const {
 
 var::String Http::receive_header_fields() {
   var::String result;
-
-  result.clear();
-  socket().reset_error();
-
   var::String line;
+
   do {
     line = std::move(socket().gets('\n'));
 
@@ -270,7 +267,7 @@ var::String Http::receive_header_fields() {
            && (socket().is_success())); // while reading the header
 
   m_is_header_dirty = true;
-  return std::move(result);
+  return std::move(result.to_upper());
 }
 
 void Http::receive(
@@ -312,7 +309,9 @@ HttpClient &HttpClient::execute_method(
   var::StringView path,
   const ExecuteMethod &options) {
 
-  if (m_is_connected == false) {
+  if (
+    (m_is_connected == false) && (m_host.is_empty() == true)
+    && connect(m_host).is_error()) {
     return *this;
   }
 
@@ -350,7 +349,11 @@ HttpClient &HttpClient::execute_method(
   set_header_fields(receive_header_fields());
   API_RETURN_VALUE_IF_ERROR(*this);
 
-  printf("response is %s\n", to_string(m_response.status()).cstring());
+  if (StackString32(get_header_field("Connection")).to_upper() == "CLOSE") {
+    renew_socket();
+    m_is_connected = false;
+  }
+
   const bool is_redirected = m_is_follow_redirects && m_response.is_redirect();
 
   if (m_content_length || is_transfer_encoding_chunked()) {
@@ -364,7 +367,6 @@ HttpClient &HttpClient::execute_method(
   API_RETURN_VALUE_IF_ERROR(*this);
 
   if (is_redirected) {
-    // close_connection();
 
     if (options.response()) {
       options.response()->seek(get_file_pos, File::Whence::set);
@@ -394,8 +396,6 @@ HttpClient &HttpClient::connect(var::StringView domain_name, u16 port) {
 
   for (const SocketAddress &address : address_info.list()) {
     renew_socket();
-    Printer p;
-    p.object("address", address);
     socket().connect(address);
     if (is_success()) {
       m_is_connected = true;

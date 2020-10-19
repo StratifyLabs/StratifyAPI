@@ -29,6 +29,7 @@ using namespace var;
 using namespace sys;
 
 Cli::Cli(int argc, char *argv[]) {
+  printf("here\n");
   if (argc < 0) {
     argc = 0;
   }
@@ -68,7 +69,6 @@ StringView Cli::at(u16 value) const {
 }
 
 var::StringView Cli::get_option(StringView name, StringView help) const {
-  var::String result;
   u32 args;
 
   if (help.is_empty() == false) {
@@ -86,8 +86,8 @@ var::StringView Cli::get_option(StringView name, StringView help) const {
           .set_ignore_between("")
           .set_maximum_delimeter_count(1));
 
-      if (tokens.count() >= 1) {
-        if (is_case_senstive() && tokens.at(0) == name) {
+      if (tokens.count() > 0) {
+        if (is_case_senstive() && (tokens.at(0) == name)) {
           if (tokens.count() > 1) {
             return tokens.at(1);
           } else {
@@ -103,7 +103,7 @@ var::StringView Cli::get_option(StringView name, StringView help) const {
       }
     }
   }
-  return String();
+  return StringView();
 }
 
 var::StringView Cli::get_name() const {

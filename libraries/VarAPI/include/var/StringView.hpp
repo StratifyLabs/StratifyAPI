@@ -162,6 +162,7 @@ using StringViewList = Vector<StringView>;
 
 class CString {
 public:
+  CString() : m_value("") {}
   explicit CString(const char *value) : m_value(value) {}
 
   const char *cstring() const { return m_value; }
