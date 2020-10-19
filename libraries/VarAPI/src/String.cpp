@@ -13,19 +13,19 @@
 #include "var/Tokenizer.hpp"
 
 var::String var::operator+(var::StringView lhs, const var::String &rhs) {
-  return String(lhs).append(rhs);
+  return String(lhs) + rhs;
 }
 
 var::String var::operator+(var::StringView lhs, var::String &&rhs) {
-  return String(lhs).append(rhs);
+  return String(lhs) + rhs;
 }
 
 var::String var::operator+(var::StringView lhs, var::StringView rhs) {
-  return String(lhs).append(rhs);
+  return String(lhs) + rhs;
 }
 
 var::String var::operator+(const var::String &lhs, var::StringView rhs) {
-  return String(lhs).append(rhs);
+  return String(lhs) + rhs;
 }
 
 using namespace var;
@@ -77,7 +77,8 @@ String &String::vformat(const char *fmt, va_list list) {
 String &String::erase(StringView string_to_erase, size_t position) {
   size_t erase_pos;
   const size_t len = string_to_erase.length();
-  while ((erase_pos = find(string_to_erase, position)) != npos) {
+  while ((erase_pos = StringView(*this).find(string_to_erase, position))
+         != npos) {
     erase(Erase().set_position(erase_pos).set_length(len));
     position = erase_pos;
   }
@@ -89,8 +90,9 @@ String &String::replace(const Replace &options) {
   const size_t old_length = options.old_string().length();
   const size_t new_length = options.new_string().length();
   size_t replaced_count = 0;
-  while (((pos = find(options.old_string(), pos)) != String::npos)
-         && (options.count() ? replaced_count < options.count() : 1)) {
+  while (
+    ((pos = StringView(*this).find(options.old_string(), pos)) != String::npos)
+    && (options.count() ? replaced_count < options.count() : 1)) {
 
     erase(Erase().set_position(pos).set_length(old_length));
 
@@ -134,7 +136,7 @@ size_t String::count(var::StringView occurance) const {
   size_t pos = 0;
   u32 item_count = 0;
   while ((pos < length()) && (pos != String::npos)) {
-    pos = find(occurance, pos);
+    pos = StringView(*this).find(occurance, pos);
     if (pos != String::npos) {
       item_count++;
       pos += occurance.length();

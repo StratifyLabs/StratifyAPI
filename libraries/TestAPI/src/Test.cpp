@@ -31,9 +31,7 @@ Test::~Test() {
   // close the JSON object
   PrinterObject pg(printer(), "testResult");
   printer().key("result", m_test_result);
-  printer().key(
-    "score",
-    String::number(get_score(m_test_duration_microseconds)));
+  printer().key("score", NumberString(get_score(m_test_duration_microseconds)));
   printer().key("microseconds", m_test_duration_microseconds);
   printer().key("memoryLeak", m_test_data_info == var::DataInfo());
   printer().close_object();
@@ -84,10 +82,8 @@ void Test::close_case() {
   printer::PrinterObject po(printer(), "caseResult");
   m_test_duration_microseconds += m_case_timer.microseconds();
   printer().key("result", m_case_result);
-  printer().key(
-    "score",
-    String::number(get_score(m_case_timer.microseconds())));
-  printer().key("microseconds", String::number(m_case_timer.microseconds()));
+  printer().key("score", NumberString(get_score(m_case_timer.microseconds())));
+  printer().key("microseconds", NumberString(m_case_timer.microseconds()));
   printer().key("memoryLeak", m_case_data_info == var::DataInfo());
   m_case_result = true;
 }
@@ -177,11 +173,11 @@ void Test::finalize() {
     "finalResult",
     m_final_result ? StringView("___finalResultPass___")
                    : StringView("___finalResultFail___"));
-  printer().key("microseconds", String::number(m_final_duration_microseconds));
+  printer().key("microseconds", NumberString(m_final_duration_microseconds));
   printer().key("memoryLeak", m_final_data_info == var::DataInfo());
   printer().key(
     "score",
-    String::number(get_score(m_final_duration_microseconds)));
+    NumberString(get_score(m_final_duration_microseconds)));
 }
 
 void Test::execute_api_case() {

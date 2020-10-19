@@ -63,12 +63,8 @@ var::String Cli::to_string() const {
   return result;
 }
 
-String Cli::at(u16 value) const {
-  String arg;
-  if (value < m_argc) {
-    arg.assign(m_argv[value]);
-  }
-  return arg;
+StringView Cli::at(u16 value) const {
+  return (value < m_argc) ? StringView(m_argv[value]) : var::StringView();
 }
 
 var::StringView Cli::get_option(StringView name, StringView help) const {

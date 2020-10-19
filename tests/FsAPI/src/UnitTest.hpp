@@ -152,9 +152,9 @@ public:
       TEST_ASSERT(FS().directory_exists("tmp"));
       FS::PathList list = FS().read_directory(D("tmp"), FS::IsRecursive::yes);
       printer().object("files", list);
-      TEST_ASSERT(list.find(Path("tmp/test0.txt")) < list.count());
-      TEST_ASSERT(list.find(Path("tmp/test1.txt")) < list.count());
-      TEST_ASSERT(list.find(Path("tmp/test2.txt")) < list.count());
+      TEST_ASSERT(list.find(Path("tmp/test0.txt")) == Path("tmp/test0.txt"));
+      TEST_ASSERT(list.find(Path("tmp/test1.txt")) == Path("tmp/test1.txt"));
+      TEST_ASSERT(list.find(Path("tmp/test2.txt")) == Path("tmp/test2.txt"));
     }
 
     {
@@ -166,17 +166,17 @@ public:
           return entry.find("filesystem") != StringView::npos;
         });
       printer().object("files", list);
-      TEST_ASSERT(list.find(Path("tmp2/test0.txt")) < list.count());
-      TEST_ASSERT(list.find(Path("tmp2/filesystem.txt")) == list.count());
-      TEST_ASSERT(list.find(Path("tmp2/test2.txt")) < list.count());
+      TEST_ASSERT(list.find(Path("tmp2/test0.txt")) == Path("tmp2/test0.txt"));
+      TEST_ASSERT(list.find(Path("tmp2/filesystem.txt")) == Path());
+      TEST_ASSERT(list.find(Path("tmp2/test2.txt")) == Path("tmp2/test2.txt"));
     }
 
     {
       FS::PathList list = FS().read_directory(D("tmp"), FS::IsRecursive::no);
       printer().object("files", list);
-      TEST_ASSERT(list.find(Path("test0.txt")) < list.count());
-      TEST_ASSERT(list.find(Path("test1.txt")) < list.count());
-      TEST_ASSERT(list.find(Path("test2.txt")) < list.count());
+      TEST_ASSERT(list.find(Path("test0.txt")) == Path("test0.txt"));
+      TEST_ASSERT(list.find(Path("test1.txt")) == Path("test1.txt"));
+      TEST_ASSERT(list.find(Path("test2.txt")) == Path("test2.txt"));
     }
 
     TEST_ASSERT(FS()

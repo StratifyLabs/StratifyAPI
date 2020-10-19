@@ -186,7 +186,7 @@ var::String File::gets(char term) const {
   var::String result;
   while (c != term && is_success()) {
     if (read(var::View(c)).return_value() == 1) {
-      result.append(c);
+      result += c;
     }
   }
 

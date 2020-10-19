@@ -137,41 +137,24 @@ public:
   const T &operator[](size_t offset) const { return m_vector[offset]; }
   T &operator[](size_t offset) { return m_vector[offset]; }
 
-  /*! \details Finds an object in the array.
-   *
-   * @param a The equivalent object to find
-   * @return The index of the object or count() it if wasn't found
-   *
-   */
-  size_t find(const T &a) const {
-    return std::find(begin(), end(), a) - begin();
-  }
-
-  const T &match(const T &a) const {
-    u32 idx = find(a);
-    if (idx == count()) {
-      static T empty = T();
-      return empty;
+  const T &find(const T &a, const T &not_found = T()) const {
+    size_t offset = std::find(begin(), end(), a) - begin();
+    if (offset == count()) {
+      return not_found;
     }
-    return at(idx);
+    return at(offset);
   }
 
-  T &match(const T &a) {
-    u32 idx = find(a);
-    if (idx == count()) {
-      static T empty = T();
-      return empty;
-    }
-    return at(idx);
-  }
-
-  size_t find(const T &a, std::function<bool(const T &a, const T &b)> compare) {
+  const T &find(
+    const T &a,
+    bool (*compare)(const T &a, const T &b),
+    const T &not_found = T()) const {
     for (u32 i = 0; i < count(); i++) {
       if (compare(this->at(i), a)) {
-        return i;
+        return this->at(i);
       }
     }
-    return count();
+    return not_found;
   }
 
   T *search(const T &a) {
@@ -184,10 +167,6 @@ public:
       bsearch(&a, std::vector<T>::data(), count(), sizeof(T), compare));
   }
 
-  /*!
-   * \details Fills the vector will the specified value.
-   * \param value The value to assign to each element of the vector
-   */
   Vector<T> &fill(const T &value) {
     std::fill(begin(), end(), value);
     return *this;
@@ -219,17 +198,6 @@ public:
     return *this;
   }
 
-  size_t size() const { return count() * sizeof(T); }
-
-  /*! \details Returns the number of elemens in the Vector.
-   *
-   * The count includes the number of elements added to the vector
-   * using push_back() or insert(). If the resize() method is called,
-   * it will directly set the count() and ensure there is enough
-   * memory available to hold count() items.
-   *
-   *
-   */
   u32 count() const { return m_vector.size(); }
 
   Vector<T> operator+(const Vector<T> &a) const { return operate(a, add); }

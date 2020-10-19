@@ -102,23 +102,6 @@ public:
     API_AF(Erase, size_t, length, npos);
   };
 
-  class Append {
-    API_AF(Append, size_t, position, 0);
-    API_AF(Append, size_t, length, npos);
-  };
-
-  class Assign {
-    API_AF(Assign, size_t, position, 0);
-    API_AF(Assign, size_t, length, npos);
-  };
-
-  class Find {
-    API_AF(Find, size_t, position, 0);
-    API_AF(Find, size_t, length, npos);
-  };
-
-  using GetSubstring = StringView::GetSubstring;
-
   class Insert {
     API_ACCESS_FUNDAMENTAL(Insert, size_t, position, 0);
     API_ACCESS_FUNDAMENTAL(Insert, size_t, length, 0);
@@ -173,9 +156,18 @@ public:
 
   explicit String(const var::View &item);
 
-  String &operator+=(char a) { return append(a); }
-  String &operator+=(const String &a) { return append(a); }
-  String &operator+=(StringView a) { return append(a); }
+  String &operator+=(char a) {
+    m_string += a;
+    return *this;
+  }
+  String &operator+=(const String &a) {
+    m_string = a.m_string;
+    return *this;
+  }
+  String &operator+=(StringView a) {
+    m_string += a.m_string_view;
+    return *this;
+  }
 
   String &operator+=(std::initializer_list<char> il) {
     string() += il;
@@ -185,7 +177,7 @@ public:
   String &operator*=(u32 a) {
     reserve(a * length());
     for (u32 i = 0; i < a; i++) {
-      append(*this);
+      m_string += m_string;
     }
     return *this;
   }
@@ -194,7 +186,7 @@ public:
     String result;
     result.reserve(a * length());
     for (u32 i = 0; i < a; i++) {
-      result.append(*this);
+      result.m_string += m_string;
     }
     return result;
   }
@@ -206,38 +198,10 @@ public:
   String operator+(String &&rhs) const {
     return String(string() + std::move(rhs.string()));
   }
+
   String operator+(char rhs) const { return String(string() + rhs); }
 
   bool is_empty() const { return m_string.empty(); }
-
-  /*! \details Gets a sub string of the string.
-   *
-   * @param pos Starting position to look for the sub-string
-   * @param len The number of bytes in the String to search
-   * @return A new string object containing the sub string specified
-   *
-   */
-  String get_substring(const GetSubstring &options) const {
-    if (options.position() >= m_string.length()) {
-      return String();
-    }
-    return std::move(
-      String(m_string.substr(options.position(), options.length())));
-  }
-  inline String operator()(const GetSubstring &options) {
-    return std::move(get_substring(options));
-  }
-
-  String get_substring_at_position(size_t position) const {
-    if (position >= length()) {
-      return String();
-    }
-    return std::move(String(m_string.substr(position)));
-  }
-
-  String get_substring_with_length(size_t length) const {
-    return std::move(String(m_string.substr(0, length)));
-  }
 
   String &insert(const String &string_to_insert, const Insert &options) {
     if (options.sub_position() == npos) {
@@ -280,16 +244,6 @@ public:
     API_AF(Replace, size_t, position, 0);
     API_AF(Replace, size_t, count, 0);
   };
-
-  /*! \details Replaces one or more instances of a string with another string
-   *
-   * @param old_string The string to search for and replace
-   * @param new_string The string that will be inserted in place of the old
-   * string
-   * @return A reference to this string
-   *
-   */
-
   String &replace(const Replace &options);
   inline String &operator()(const Replace &options) { return replace(options); }
 
@@ -341,164 +295,10 @@ public:
     return *this;
   }
 
-  /*! \details Prints a formatted string to this String.
-   *
-   * @param format Formatted string (same as printf())
-   * @return A reference to this String
-   *
-   * If the formatted string exceeds the length of the string capacity,
-   * the string will be resized to accomate the full formatted string.
-   *
-   * \code
-   * #include <sapi/var.hpp>
-   * String serial_number;
-   * u32 serial_number_value[2] = { 0xAAAABBBB, 0xCCCCEEEE };
-   *
-   * //prints the formatted serial number to the string
-   * serial_number.format("%08lX%08lX",
-   *   serial_number_value[1],
-   *   serial_number_value[0]);
-   *
-   * //append to the serial number
-   * serial_number << " <- hex dec -> " << String().format("%ld, %ld",
-   *   serial_number_value[1],
-   *   serial_number_value[0]) << " shown in decimal too."
-   * \endcode
-   *
-   */
   String &format(const char *format, ...);
   String &vformat(const char *fmt, va_list list);
 
-  template <typename T>
-  static String number(T value, const char *fmt = nullptr) {
-    static_assert(
-      std::is_arithmetic<T>::value,
-      "Cannot convert non-arithmetic types to string");
-
-    if (fmt == nullptr) {
-      return String(std::to_string(value));
-    }
-
-    if (std::is_floating_point<T>::value == true) {
-      if (sizeof(T) > 4) {
-        // double can't fit in 64 characters
-        return String().format(fmt, value);
-      }
-    }
-
-    char buffer[64];
-    snprintf(buffer, 63, fmt, value);
-    return String(buffer);
-  }
-
-  String &assign(const String &string_to_assign) {
-    m_string.assign(string_to_assign.string());
-    return *this;
-  }
-
-  /*! \details Assigns a substring of \a a to this String. */
-  String &assign(const String &string_to_assign, const Assign &options) {
-    m_string.assign(
-      string_to_assign.string(),
-      options.position(),
-      options.length());
-    return *this;
-  }
-
-  /*! \details Assigns a maximum of \a n characters of \a a to this String. */
-  String &assign(const char *cstring_to_assign, size_t length) {
-    if (cstring_to_assign == nullptr) {
-      m_string.clear();
-    } else {
-      m_string.assign(cstring_to_assign, length);
-    }
-    return *this;
-  }
-
-  /*! \details Assigns \a a to this String.  */
-  String &assign(const char *cstring_to_assign) {
-    if (cstring_to_assign == nullptr) {
-      m_string.clear();
-    } else {
-      m_string.assign(cstring_to_assign);
-    }
-    return *this;
-  }
-
-  String &assign(char character_to_assign, size_t length) {
-    m_string.assign(character_to_assign, length);
-    return *this;
-  }
-
-  String &assign(String &&string_to_move) {
-    m_string.assign(std::move(string_to_move.m_string));
-    return *this;
-  }
-
-  /*! \details Appends \a a to this String.  */
-  String &append(const String &string_to_append) {
-    m_string.append(string_to_append.string());
-    return *this;
-  }
-
-  String &append(StringView string_to_append) {
-    m_string.append(string_to_append.string_view());
-    return *this;
-  }
-
-  String &append(const String &string_to_append, const Append &options) {
-    m_string.append(
-      string_to_append.string(),
-      options.position(),
-      options.length());
-    return *this;
-  }
-
-  inline String &
-  operator()(const String &string_to_append, const Append &options) {
-    return append(string_to_append, options);
-  }
-
-  /*! \details Appends \a c to this String.  */
-  String &append(char c) {
-    m_string.append(1, c);
-    return *this;
-  }
-
-  /*! \details Converts the string to upper case.
-   *
-   * This method operates on the current string (rather
-   * than returning a copy.
-   *
-   * \code
-   * #include <sapi/var.hpp>
-   *
-   * String hello("hello");
-   *
-   * hello.to_upper(); //hello is now "HELLO"
-   * hello.to_lower(); //hellos is now "hello"
-   *
-   * //making an uppercase copy of a string
-   *
-   * String hello_to_upper = hello.to_upper(); //both hello and hello_to_upper
-   * are "HELLO"
-   *
-   * String world = String(hello).to_upper(); //world is "HELLO", hello is
-   * still "hello"
-   *
-   * \endcode
-   *
-   */
   String &to_upper();
-
-  /*! \details Converts the string lower case.
-   *
-   * This method functions like to_upper() but converts
-   * to lower case instead of upper case.
-   *
-   * See to_upper() for code examples.
-   *
-   */
   String &to_lower();
 
   const char *cstring() const { return m_string.c_str(); }
@@ -507,30 +307,6 @@ public:
 
   int compare(const String &string_to_compare) const {
     return m_string.compare(string_to_compare.string());
-  }
-
-  size_t find(StringView a, size_t position = 0) const {
-    return m_string.find(a.string_view(), position);
-  }
-
-  size_t find_first_of(StringView a, size_t position = 0) const {
-    return m_string.find_first_of(a.string_view(), position);
-  }
-
-  size_t find_first_not_of(StringView a, size_t position = 0) const {
-    return m_string.find_first_not_of(a.string_view(), position);
-  }
-
-  size_t reverse_find(StringView a, size_t position = npos) const {
-    return m_string.rfind(a.string_view(), position);
-  }
-
-  size_t find_last_of(StringView a, size_t position = 0) const {
-    return m_string.find_last_of(a.string_view(), position);
-  }
-
-  size_t find_last_not_of(StringView a, size_t position = 0) const {
-    return m_string.find_last_not_of(a.string_view(), position);
   }
 
   /*! \details Compares the object to \a str.

@@ -159,7 +159,7 @@ void Http::add_header_fields(var::StringView fields) {
   m_header_fields += fields;
 }
 
-var::String Http::get_header_field(var::StringView key) const {
+var::StringView Http::get_header_field(var::StringView key) const {
 
   const size_t key_position = header_fields().find(String(key).to_upper());
   if (key_position == String::npos) {
@@ -180,10 +180,9 @@ var::String Http::get_header_field(var::StringView key) const {
     = (header_fields().at(value_position + 1) == ' ') ? value_position + 2
                                                       : value_position + 1;
 
-  return header_fields().get_substring(
-    StringView::GetSubstring()
-      .set_position(adjusted_value_position)
-      .set_length(end_position - adjusted_value_position));
+  return header_fields()(StringView::GetSubstring()
+                           .set_position(adjusted_value_position)
+                           .set_length(end_position - adjusted_value_position));
 }
 
 void Http::send(const Response &response) const {
@@ -371,7 +370,7 @@ HttpClient &HttpClient::execute_method(
       options.response()->seek(get_file_pos, File::Whence::set);
     }
 
-    var::String location = get_header_field("LOCATION");
+    var::StringView location = get_header_field("LOCATION");
     if (location.is_empty() == false) {
 
       if (location.find("/") != 0) {

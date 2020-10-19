@@ -68,7 +68,7 @@ public:
 
   var::String to_string() const;
 
-  var::String at(u16 value) const;
+  var::StringView at(u16 value) const;
 
   /*! \details Checks to see if the option exists and returns its value
    *  as a String.

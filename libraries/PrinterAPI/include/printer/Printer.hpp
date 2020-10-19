@@ -290,6 +290,7 @@ public:
   Printer &key(var::StringView key, bool value);
   Printer &key(var::StringView key, var::StringView a);
   Printer &key(var::StringView key, const var::String &a);
+
   template <class T>
   Printer &
   object(var::StringView key, const T &value, Level level = Level::fatal) {

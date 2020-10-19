@@ -194,7 +194,7 @@ public:
    */
   const var::String &traffic() const { return m_traffic; }
 
-  var::String get_header_field(var::StringView key) const;
+  var::StringView get_header_field(var::StringView key) const;
 
   const Response &response() const { return m_response; }
   const Request &request() const { return m_request; }
@@ -224,10 +224,19 @@ protected:
   virtual Socket &socket() = 0;
   virtual const Socket &socket() const = 0;
 
+  var::StringView header_fields() const {
+    return var::StringView(m_header_fields);
+  }
+
+  void set_header_fields(var::StringView a) {
+    m_header_fields = var::String(a);
+  }
+
 private:
   API_AB(Http, transfer_encoding_chunked, false);
   API_AF(Http, var::StringView, http_version, "HTTP/1.1");
-  API_AC(Http, var::String, header_fields);
+  // API_AC(Http, var::String, header_fields);
+  var::String m_header_fields;
 
   API_AF(Http, size_t, transfer_size, 1024);
 

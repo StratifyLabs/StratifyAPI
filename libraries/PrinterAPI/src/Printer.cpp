@@ -324,11 +324,6 @@ void Printer::print(const char * fmt, ...){
 }
 #endif
 
-Printer &Printer::operator<<(var::StringView a) {
-  interface_print_final(a);
-  return *this;
-}
-
 Printer &Printer::set_verbose_level(var::StringView level) {
   if (level == "debug") {
     set_verbose_level(Level::debug);
@@ -753,6 +748,11 @@ Printer &Printer::operator<<(const api::Error &error_context) {
     offset++;
   } while (symbol != nullptr);
 
+  return *this;
+}
+
+Printer &Printer::operator<<(var::StringView a) {
+  interface_print_final(a);
   return *this;
 }
 

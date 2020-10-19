@@ -8,15 +8,15 @@ using namespace var;
 Version Version::from_triple(u16 major, u8 minor, u8 patch) {
   Version result;
   return std::move(result.set_string(
-    String::number(major) + StringView(".") + String::number(minor)
-    + StringView(".") + String::number(patch)));
+    NumberString(major) + StringView(".") + NumberString(minor)
+    + StringView(".") + NumberString(patch)));
 }
 
 Version Version::from_u16(u16 major_minor) {
   Version result;
   return std::move(result.set_string(
-    String::number(major_minor >> 8) + StringView(".")
-    + String::number(major_minor & 0xff)));
+    NumberString(major_minor >> 8) + StringView(".")
+    + NumberString(major_minor & 0xff)));
 }
 
 u32 Version::to_bcd() const {

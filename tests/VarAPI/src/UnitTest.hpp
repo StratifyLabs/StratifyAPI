@@ -49,6 +49,24 @@ public:
       return false;
     }
 
+    if (!vector_api_case()) {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool vector_api_case() {
+    {
+      Vector<StringView> list
+        = Vector<StringView>().push_back("hello").push_back("world");
+
+      TEST_ASSERT(list.find("hello", StringView()) == "hello");
+      TEST_ASSERT(list.find("world", "") == "world");
+      TEST_ASSERT(list.find("test", "") == "");
+      TEST_ASSERT(list.find("go", "notempty") == "notempty");
+    }
+
     return true;
   }
 
@@ -503,6 +521,22 @@ public:
       TEST_EXPECT(sv.get_substring_at_position(2) == "sting");
       TEST_EXPECT(sv.get_substring_with_length(4) == "test");
 
+      {
+        const StringView s0("test0");
+        TEST_ASSERT(
+          s0.get_substring(SV::GetSubstring().set_position(0).set_length(2))
+          == "te");
+
+        TEST_ASSERT(
+          s0(SV::GetSubstring().set_position(0).set_length(2)) == "te");
+
+        TEST_ASSERT(s0.get_substring_at_position(2) == "st0");
+        TEST_ASSERT(s0.get_substring_at_position(100) == "");
+        TEST_ASSERT(s0.get_substring_with_length(0) == "");
+        TEST_ASSERT(s0.get_substring_with_length(0) == String());
+        TEST_ASSERT(s0.get_substring_with_length(100) == "test0");
+      }
+
       TEST_EXPECT(sv.find('e') == 1);
       TEST_EXPECT(sv.find('x') == SV::npos);
       TEST_EXPECT(sv.reverse_find('e') == 1);
@@ -713,19 +747,6 @@ public:
       S s = S("test");
       TEST_ASSERT(s == "test");
       TEST_ASSERT((s = s0) == "test0");
-    }
-
-    {
-      const String s0("test0");
-      TEST_ASSERT(
-        s0.get_substring(S::GetSubstring().set_position(0).set_length(2))
-        == "te");
-
-      TEST_ASSERT(s0.get_substring_at_position(2) == "st0");
-      TEST_ASSERT(s0.get_substring_at_position(100) == "");
-      TEST_ASSERT(s0.get_substring_with_length(0) == "");
-      TEST_ASSERT(s0.get_substring_with_length(0) == String());
-      TEST_ASSERT(s0.get_substring_with_length(100) == "test0");
     }
 
     {
