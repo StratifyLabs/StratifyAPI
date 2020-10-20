@@ -26,7 +26,7 @@ public:
   Random &seed(const var::View source_data);
 
   int transform(const Transform &options) const override {
-    randomize(var::View(options.output()));
+    randomize(options.output());
     return options.output().size();
   }
 

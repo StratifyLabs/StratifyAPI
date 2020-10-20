@@ -302,6 +302,7 @@ public:
   String &to_lower();
 
   const char *cstring() const { return m_string.c_str(); }
+  operator const char *() const { return m_string.c_str(); }
 
   char *to_char() { return &m_string[0]; }
 
@@ -329,19 +330,6 @@ public:
       options.sub_length());
   }
 
-  /*! \details Compares to another ConstString.
-   *
-   *
-   * ```
-   * ConstString a("hello");
-   * ConstString b("world");
-   *
-   * if( a == b ){
-   *   //won't get here
-   * }
-   * ```
-   *
-   */
   bool operator==(const String &a) const { return m_string == a.m_string; }
   bool operator==(StringView a) const { return m_string == a.string_view(); }
 
@@ -367,56 +355,14 @@ public:
     return m_string <= string_to_compare.m_string;
   }
 
-  /*! \details Converts the string to an integer.
-   *
-   * ```
-   * ConstString x = "10";
-   * printf("X is %d\n", x.to_integer());
-   * ```
-   *
-   */
   int to_integer() const { return ::atoi(cstring()); }
 
-  /*! \details Converts to a float.
-   *
-   * ```
-   * ConstString pi = "3.14";
-   * printf("pi is %0.2f\n", pi.to_float());
-   * ```
-   *
-   */
   float to_float() const;
 
-  /*! \details Converts the string to a long integer
-   * using the specified number base.
-   *
-   * ```
-   * ConstString number("1000");
-   * printf("Number is 0x%X\n",
-   *   number.to_long(
-   *     NumberBase(10)
-   *     )
-   *   );
-   * ```
-   *
-   */
   long to_long(Base base = Base::decimal) const {
     return ::strtol(cstring(), nullptr, static_cast<int>(base));
   }
 
-  /*! \details Converts the string to a long integer
-   * using the specified number base.
-   *
-   * ```
-   * String number("DEADBEEF");
-   * printf("Number is 0x%X\n",
-   *   number.to_long(
-   *     NumberBase(16)
-   *     )
-   *   );
-   * ```
-   *
-   */
   unsigned long to_unsigned_long(Base base = Base::decimal) const {
     return ::strtoul(cstring(), nullptr, static_cast<int>(base));
   }
@@ -429,6 +375,7 @@ public:
   StringViewList split(StringView delimiter) const;
 
   operator StringView() const { return StringView(cstring(), length()); }
+  StringView string_view() const { return StringView(cstring(), length()); }
 
   static const String &empty_string() { return m_empty_string; }
 

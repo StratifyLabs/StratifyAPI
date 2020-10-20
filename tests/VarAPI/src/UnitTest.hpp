@@ -132,8 +132,8 @@ public:
 
     const char test[] = "test1234567890\n";
     View view_test(test);
-    printer().key("view test size", Ntos(view_test.size()));
-    printer().key("test size", Ntos(sizeof(test)));
+    printer().key("view test size", Ntos(view_test.size()).string_view());
+    printer().key("test size", Ntos(sizeof(test)).string_view());
     TEST_ASSERT(view_test.size() == sizeof(test) - 1);
     TEST_ASSERT(view_test.to_char() == nullptr);
     TEST_ASSERT(view_test.to_const_char() == test);
@@ -535,7 +535,7 @@ public:
         TEST_ASSERT(s0.get_substring_at_position(2) == "st0");
         TEST_ASSERT(s0.get_substring_at_position(100) == "");
         TEST_ASSERT(s0.get_substring_with_length(0) == "");
-        TEST_ASSERT(s0.get_substring_with_length(0) == String());
+        TEST_ASSERT(s0.get_substring_with_length(0) == StringView());
         TEST_ASSERT(s0.get_substring_with_length(100) == "test0");
       }
 

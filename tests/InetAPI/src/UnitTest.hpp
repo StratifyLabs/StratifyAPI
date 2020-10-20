@@ -68,7 +68,7 @@ public:
 
           self->printer().key(
             "requestMethod",
-            Http::to_string(request.method()));
+            Http::to_string(request.method()).string_view());
 
           const StringView hello_world = "Hello World";
           DataFile incoming;
@@ -342,7 +342,8 @@ public:
       "address",
       SocketAddress4()
         .set_address(IpAddress4(0x12345678))
-        .get_address_string());
+        .get_address_string()
+        .string_view());
     TEST_ASSERT(
       SocketAddress4().set_address(IpAddress4(0x12345678)).get_address_string()
       == "18.52.86.120");
@@ -370,7 +371,8 @@ public:
       "address6",
       SocketAddress6()
         .set_address(IpAddress6("12:34:56:78:ab:cd:ef:01"))
-        .get_address_string());
+        .get_address_string()
+        .string_view());
     TEST_ASSERT(
       SocketAddress6()
         .set_address(IpAddress6("12:34:56:78:ab:cd:ef:01"))

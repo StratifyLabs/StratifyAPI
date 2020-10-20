@@ -205,4 +205,14 @@ private:                                                                       \
 #define API_CONST_CAST(type_value, function_value, ...)                        \
   const_cast<const type_value *>(this)->function_value(__VA_ARGS__);
 
+#define API_WRITE_ACCESS_COMPOUND_ALIAS(PARENT, DERIVED, TYPE, NAME)           \
+  DERIVED &set_##NAME(const TYPE &a) {                                         \
+    return static_cast<DERIVED &>(PARENT::set_##NAME(a));                      \
+  }
+
+#define API_WRITE_ACCESS_FUNDAMENTAL_ALIAS(PARENT, DERIVED, TYPE, NAME)        \
+  DERIVED &set_##NAME(TYPE a) {                                                \
+    return static_cast<DERIVED &>(PARENT::set_##NAME(a));                      \
+  }
+
 #endif // API_API_MACROS_HPP_

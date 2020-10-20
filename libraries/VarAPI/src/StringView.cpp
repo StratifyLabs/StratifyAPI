@@ -53,3 +53,9 @@ unsigned long StringView::to_unsigned_long(Base base) const {
     nullptr,
     static_cast<int>(base));
 }
+
+String StringView::get_string() const {
+  return std::move(String(data(), length()));
+}
+
+String CString::get_string() const { return std::move(String(cstring())); }

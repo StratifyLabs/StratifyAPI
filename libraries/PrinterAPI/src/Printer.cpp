@@ -722,8 +722,12 @@ Printer &Printer::operator<<(var::View a) {
 #define USE_DEMANGLER 0
 
 Printer &Printer::operator<<(const api::Error &error_context) {
-  key("lineNumber", var::NumberString(error_context.line_number()));
-  key("errorNumber", var::NumberString(error_context.error_number()));
+  key(
+    "lineNumber",
+    var::NumberString(error_context.line_number()).string_view());
+  key(
+    "errorNumber",
+    var::NumberString(error_context.error_number()).string_view());
   key("message", var::StringView(error_context.message()));
 
   api::Error::Backtrace backtrace(error_context);

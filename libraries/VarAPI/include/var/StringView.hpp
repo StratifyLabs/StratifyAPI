@@ -149,6 +149,8 @@ public:
   bool operator==(const char *a) const { return StringView(a) == *this; }
   bool operator!=(const char *a) const { return StringView(a) != *this; }
 
+  String get_string() const;
+
 private:
   friend class String;
   std::string_view m_string_view;
@@ -184,6 +186,8 @@ public:
   bool operator<(CString a) const {
     return StringView(m_value) < StringView(a.m_value);
   }
+
+  String get_string() const;
 
 private:
   const char *m_value;

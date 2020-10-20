@@ -98,8 +98,8 @@ public:
   };
 
   class ExecuteMethod {
-    API_AF(ExecuteMethod, fs::File *, response, nullptr);
-    API_AF(ExecuteMethod, fs::File *, request, nullptr);
+    API_AF(ExecuteMethod, const fs::File *, response, nullptr);
+    API_AF(ExecuteMethod, const fs::File *, request, nullptr);
     API_AF(
       ExecuteMethod,
       const api::ProgressCallback *,

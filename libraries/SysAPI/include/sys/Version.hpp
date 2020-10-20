@@ -5,23 +5,20 @@
 
 #include "var/String.hpp"
 
-namespace var {
+namespace sys {
 
 class Version {
 public:
   Version() = default;
+  Version(const var::StringView value) : m_version(value) {}
+  Version(const var::String &value) : m_version(value.string_view()) {}
 
   u32 to_bcd() const;
 
   u16 to_bcd16() const { return to_bcd() >> 8; }
 
-  Version from_triple(u16 major, u8 minor, u8 patch);
-  Version from_u16(u16 major_minor);
-
-  Version &set_string(StringView value) {
-    m_version = String(value);
-    return *this;
-  }
+  static Version from_triple(u16 major, u8 minor, u8 patch);
+  static Version from_u16(u16 major_minor);
 
   bool operator==(const Version &a) const { return compare(*this, a) == 0; }
 
@@ -41,7 +38,8 @@ public:
    */
   bool operator>=(const Version &a) const { return compare(*this, a) >= 0; }
 
-  const String &string() const { return m_version; }
+  const var::StringView string_view() const { return m_version.string_view(); }
+  const char *cstring() const { return m_version.cstring(); }
 
   /*! \details Compares two version strings.
    *
@@ -63,8 +61,8 @@ public:
   static int compare(const Version &a, const Version &b);
 
 private:
-  String m_version;
+  var::StackString32 m_version;
 };
-} // namespace var
+} // namespace sys
 
 #endif // SYSAPI_SYS_VERSION_HPP_

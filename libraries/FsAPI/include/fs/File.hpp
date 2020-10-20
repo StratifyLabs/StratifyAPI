@@ -35,7 +35,7 @@ public:
   explicit File(
     var::StringView name,
     OpenMode flags
-    = OpenMode::read_write() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
+    = OpenMode::read_only() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
 
   File(
     IsOverwrite is_overwrite,

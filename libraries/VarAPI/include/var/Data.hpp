@@ -224,6 +224,9 @@ public:
   u8 *data_u8() { return (m_data.data()); }
   const u8 *data_u8() const { return (m_data.data()); }
 
+  View view() { return View(*this); }
+  const View view() const { return View(*this); }
+
   size_t size() const { return m_data.size(); }
   ssize_t size_signed() const { return static_cast<ssize_t>(m_data.size()); }
 

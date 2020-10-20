@@ -129,7 +129,7 @@ public:
       int count = 0;
       Path e;
       while ((e = d.get_entry()).is_empty() == false) {
-        printer().key("tell", Ntos(d.tell()));
+        printer().key("tell", Ntos(d.tell()).string_view());
         printer().key(Ntos(count), StringView(e.cstring()));
         count++;
       }
@@ -143,7 +143,7 @@ public:
 
       TEST_ASSERT(d.rewind().is_success());
       if (System().is_macosx() == false) {
-        printer().key("tell", Ntos(d.tell()));
+        printer().key("tell", Ntos(d.tell()).string_view());
         TEST_ASSERT(d.tell() == 0);
       }
     }

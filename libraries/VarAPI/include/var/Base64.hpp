@@ -54,11 +54,6 @@ public:
   var::String encode(var::View input) const;
   var::Data decode(var::StringView input) const;
 
-  const Base64 &operation(const var::View view) const {
-    memcpy(view.to_void(), view.to_const_char(), 4);
-    return *this;
-  }
-
 private:
   friend class Base64Encoder;
   friend class Base64Decoder;

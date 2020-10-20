@@ -8,8 +8,8 @@
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const chrono::ClockTime &a) {
-  printer.key("seconds", var::Ntos(a.seconds()));
-  printer.key("nanoseconds", var::Ntos(a.nanoseconds()));
+  printer.key("seconds", var::Ntos(a.seconds()).string_view());
+  printer.key("nanoseconds", var::Ntos(a.nanoseconds()).string_view());
   return printer;
 }
 

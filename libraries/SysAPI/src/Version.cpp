@@ -3,35 +3,43 @@
 #include "sys/Version.hpp"
 #include "var/Tokenizer.hpp"
 
-using namespace var;
+using namespace sys;
 
 Version Version::from_triple(u16 major, u8 minor, u8 patch) {
   Version result;
-  return std::move(result.set_string(
-    NumberString(major) + StringView(".") + NumberString(minor)
-    + StringView(".") + NumberString(patch)));
+  result.m_version.format("%d.%d.%d", major, minor, patch);
+  return std::move(result);
 }
 
 Version Version::from_u16(u16 major_minor) {
   Version result;
-  return std::move(result.set_string(
-    NumberString(major_minor >> 8) + StringView(".")
-    + NumberString(major_minor & 0xff)));
+  result.m_version.format("%d.%d", major_minor >> 8, major_minor & 0xff);
+  return std::move(result);
 }
 
 u32 Version::to_bcd() const {
-  StringViewList tokens = m_version.split(".");
-  u32 result = 0;
-  u32 token_max = tokens.count() < 3 ? tokens.count() : 3;
-  for (u32 i = 0; i < token_max; i++) {
-    result |= (String(tokens.at(i)).to_integer() & 0xff) << (8 * (2 - i));
+  var::StringViewList tokens = m_version.string_view().split(".");
+  if (tokens.count() == 0) {
+    return 0;
   }
-  return result;
+
+  if (tokens.count() == 1) {
+    return tokens.at(0).to_unsigned_long();
+  }
+
+  if (tokens.count() == 2) {
+    return (tokens.at(0).to_unsigned_long() << 16)
+           | (tokens.at(1).to_unsigned_long() << 8);
+  }
+
+  return (tokens.at(0).to_unsigned_long() << 16)
+         | (tokens.at(1).to_unsigned_long() << 8)
+         | (tokens.at(2).to_unsigned_long());
 }
 
 int Version::compare(const Version &a, const Version &b) {
-  StringViewList a_tokens = a.m_version.split(".");
-  StringViewList b_tokens = b.m_version.split(".");
+  var::StringViewList a_tokens = a.m_version.string_view().split(".");
+  var::StringViewList b_tokens = b.m_version.string_view().split(".");
 
   if (a_tokens.count() > b_tokens.count()) {
     return 1;
@@ -43,14 +51,10 @@ int Version::compare(const Version &a, const Version &b) {
 
   // count is equal -- check the numbers
   for (u32 i = 0; i < a_tokens.count(); i++) {
-    if (
-      StringView(a_tokens.at(i)).to_unsigned_long()
-      > StringView(b_tokens.at(i)).to_unsigned_long()) {
+    if (a_tokens.at(i).to_unsigned_long() > b_tokens.at(i).to_unsigned_long()) {
       return 1;
     }
-    if (
-      StringView(a_tokens.at(i)).to_unsigned_long()
-      < StringView(b_tokens.at(i)).to_unsigned_long()) {
+    if (a_tokens.at(i).to_unsigned_long() < b_tokens.at(i).to_unsigned_long()) {
       return -1;
     }
   }

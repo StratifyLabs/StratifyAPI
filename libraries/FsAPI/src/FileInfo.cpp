@@ -30,13 +30,14 @@ printer::operator<<(printer::Printer &printer, const fs::FileInfo &a) {
   if (a.is_socket()) {
     type = "socket";
   }
-  printer.key("type", var::StringView(type.cstring()));
+  printer.key("type", type);
   if (a.is_file()) {
-    printer.key("size", var::NumberString(a.size()));
+    printer.key("size", var::NumberString(a.size()).string_view());
   }
   printer.key(
     "mode",
-    var::NumberString(a.permissions().permissions() & 0777, "0%o"));
+    var::NumberString(a.permissions().permissions() & 0777, "0%o")
+      .string_view());
 
   return printer;
 }

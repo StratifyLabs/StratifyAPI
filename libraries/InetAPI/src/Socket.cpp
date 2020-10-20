@@ -22,8 +22,8 @@ printer::operator<<(printer::Printer &printer, const inet::SocketAddress &a) {
     "family",
     (a.family() == inet::Socket::Family::inet) ? StringView("inet")
                                                : StringView("inet6"));
-  printer.key("port", Ntos(a.port()));
-  printer.key("address", a.get_address_string());
+  printer.key("port", Ntos(a.port()).string_view());
+  printer.key("address", a.get_address_string().string_view());
   printer.key("canonName", a.canon_name());
   return printer;
 }

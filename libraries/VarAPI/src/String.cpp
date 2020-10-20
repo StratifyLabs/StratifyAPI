@@ -33,10 +33,10 @@ using namespace var;
 String String::m_empty_string;
 
 String::String(const Data &data)
-  : m_string(var::View(data).to_const_char(), data.size()) {}
+  : m_string(data.view().to_const_char(), data.size()) {}
 
-String::String(const View &item) {
-  m_string.assign(item.to_const_char(), item.size());
+String::String(const View &view) {
+  m_string.assign(view.to_const_char(), view.size());
 }
 
 String &String::format(const char *format, ...) {

@@ -40,7 +40,7 @@ static char *strptime(const char *s, const char *f, struct tm *tm) {
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const chrono::DateTime &a) {
-  printer.key("ctime", var::NumberString(a.ctime()));
+  printer.key("ctime", var::NumberString(a.ctime()).string_view());
   return printer;
 }
 

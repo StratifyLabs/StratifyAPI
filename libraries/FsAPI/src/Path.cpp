@@ -8,7 +8,7 @@ var::StringView Path::suffix() const {
   size_t pos = path().reverse_find(".");
 
   if (pos == var::String::npos) {
-    return var::String();
+    return var::StringView();
   }
 
   return StringView(cstring() + pos + 1);
@@ -40,7 +40,7 @@ var::StringView Path::no_suffix() const {
   size_t pos = path().reverse_find('.');
 
   if (pos == StringView::npos) {
-    return StringView(cstring());
+    return string_view();
   }
 
   return StringView(cstring(), pos);

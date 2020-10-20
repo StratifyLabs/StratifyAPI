@@ -11,6 +11,8 @@ public:
   Path() {}
   explicit Path(var::StringView view)
     : var::StackStringObject<Path, PATH_MAX>(view) {}
+  explicit Path(const var::String &str)
+    : var::StackStringObject<Path, PATH_MAX>(str.string_view()) {}
   explicit Path(const char *a) : var::StackStringObject<Path, PATH_MAX>(a) {}
 
   bool operator==(const Path &a) const { return path() == a.path(); }

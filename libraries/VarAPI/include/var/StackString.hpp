@@ -10,7 +10,6 @@ namespace var {
 template <class Derived, int Size> class StackStringObject {
 public:
   using Base = StringView::Base;
-  const char *cstring() const { return m_buffer; }
   Derived &clear() {
     m_buffer[0] = 0;
     return static_cast<Derived &>(*this);
@@ -35,6 +34,12 @@ public:
   bool operator==(const char *a) { return strncmp(m_buffer, a, Size - 1) == 0; }
   bool operator!=(const char *a) { return strncmp(m_buffer, a, Size - 1) != 0; }
 
+  // explicit conversion
+  const char *cstring() const { return m_buffer; }
+  const StringView string_view() const { return StringView(m_buffer); }
+
+  // implicit conversion
+  operator const char *() const { return m_buffer; }
   operator StringView() { return StringView(m_buffer); }
 
   template <typename... Args>
