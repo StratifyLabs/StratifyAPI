@@ -30,12 +30,10 @@ Test::Test(var::StringView name) {
 Test::~Test() {
   // close the JSON object
   PrinterObject pg(printer(), "testResult");
-  printer().key("result", m_test_result);
-  printer().key(
-    "score",
-    NumberString(get_score(m_test_duration_microseconds)).string_view());
-  printer().key("microseconds", m_test_duration_microseconds);
-  printer().key("memoryLeak", m_test_data_info == var::DataInfo());
+  printer().key_bool("result", m_test_result);
+  printer().key("score", NumberString(get_score(m_test_duration_microseconds)));
+  printer().key("microseconds", NumberString(m_test_duration_microseconds));
+  printer().key_bool("memoryLeak", m_test_data_info == var::DataInfo());
   printer().close_object();
   m_final_duration_microseconds += m_test_duration_microseconds;
 }
@@ -83,14 +81,14 @@ void Test::close_case() {
   m_case_timer.stop();
   printer::PrinterObject po(printer(), "caseResult");
   m_test_duration_microseconds += m_case_timer.microseconds();
-  printer().key("result", m_case_result);
+  printer().key_bool("result", m_case_result);
   printer().key(
     "score",
     NumberString(get_score(m_case_timer.microseconds())).string_view());
   printer().key(
     "microseconds",
     NumberString(m_case_timer.microseconds()).string_view());
-  printer().key("memoryLeak", m_case_data_info == var::DataInfo());
+  printer().key_bool("memoryLeak", m_case_data_info == var::DataInfo());
   m_case_result = true;
 }
 
@@ -174,7 +172,7 @@ u32 Test::parse_test(const sys::Cli &cli, var::StringView name, u32 test_flag) {
 
 void Test::finalize() {
   PrinterObject pg(printer(), "finalResult");
-  printer().key("result", m_final_result);
+  printer().key_bool("result", m_final_result);
   printer().key(
     "finalResult",
     m_final_result ? StringView("___finalResultPass___")
@@ -182,7 +180,7 @@ void Test::finalize() {
   printer().key(
     "microseconds",
     NumberString(m_final_duration_microseconds).string_view());
-  printer().key("memoryLeak", m_final_data_info == var::DataInfo());
+  printer().key_bool("memoryLeak", m_final_data_info == var::DataInfo());
   printer().key(
     "score",
     NumberString(get_score(m_final_duration_microseconds)).string_view());

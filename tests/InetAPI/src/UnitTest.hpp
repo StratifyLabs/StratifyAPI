@@ -126,7 +126,7 @@ public:
             break;
           }
 
-          self->printer().key("close", is_connection_close);
+          self->printer().key_bool("close", is_connection_close);
           return is_connection_close ? Http::IsStop::yes : Http::IsStop::no;
         });
 
@@ -439,7 +439,7 @@ public:
     TEST_SELF_ASSERT(server.bind_and_listen(server_address).is_success());
     SocketAddress accept_address;
     self->m_is_listening = true;
-    self->printer().key("listening", self->m_is_listening);
+    self->printer().key_bool("listening", self->m_is_listening);
     Socket incoming = server.accept(accept_address);
     TEST_SELF_ASSERT(is_success());
 
@@ -572,7 +572,7 @@ public:
     Data incoming_data(64);
     printer().object("udpSendToAddress", address);
 
-    printer().key("udpProtocol", address.protocol() == S::Protocol::udp);
+    printer().key_bool("udpProtocol", address.protocol() == S::Protocol::udp);
 
     SocketAddress server_address
       = socket.send_to(address, View(outgoing)).receive_from(incoming_data);

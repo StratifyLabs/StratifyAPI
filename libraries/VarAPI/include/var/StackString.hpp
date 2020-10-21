@@ -34,13 +34,21 @@ public:
   bool operator==(const char *a) { return strncmp(m_buffer, a, Size - 1) == 0; }
   bool operator!=(const char *a) { return strncmp(m_buffer, a, Size - 1) != 0; }
 
+  bool operator==(const StackStringObject &a) const {
+    return string_view() == a.string_view();
+  }
+
+  bool operator!=(const StackStringObject &a) const {
+    return string_view() != a.string_view();
+  }
+
   // explicit conversion
   const char *cstring() const { return m_buffer; }
   const StringView string_view() const { return StringView(m_buffer); }
 
   // implicit conversion
   operator const char *() const { return m_buffer; }
-  operator StringView() { return StringView(m_buffer); }
+  operator const StringView() { return StringView(m_buffer); }
 
   template <typename... Args>
   Derived &format(const char *format, Args... args) {
@@ -104,6 +112,9 @@ public:
   KeyString() {}
   KeyString(const StringView a) : StackStringObject(a) {}
   KeyString(const char *a) : StackStringObject(a) {}
+  // implicit conversion
+  operator const char *() const { return m_buffer; }
+  operator const StringView() { return StringView(m_buffer); }
 };
 
 class StackString128 : public StackStringObject<StackString128, 128> {
@@ -111,6 +122,9 @@ public:
   StackString128() {}
   StackString128(const StringView a) : StackStringObject(a) {}
   StackString128(const char *a) : StackStringObject(a) {}
+  // implicit conversion
+  operator const char *() const { return m_buffer; }
+  operator const StringView() { return StringView(m_buffer); }
 };
 
 class StackString256 : public StackStringObject<StackString256, 256> {
@@ -118,6 +132,9 @@ public:
   StackString256() {}
   StackString256(const StringView a) : StackStringObject(a) {}
   StackString256(const char *a) : StackStringObject(a) {}
+  // implicit conversion
+  operator const char *() const { return m_buffer; }
+  operator const StringView() { return StringView(m_buffer); }
 };
 
 class NumberString : public StackStringObject<NumberString, 64> {
@@ -160,6 +177,10 @@ public:
   float to_float() const;
   long to_long(Base base = Base::decimal) const;
   unsigned long to_unsigned_long(Base base = Base::decimal) const;
+
+  // implicit conversion
+  operator const char *() const { return m_buffer; }
+  operator const StringView() { return StringView(m_buffer); }
 };
 
 using StackString64 = NumberString;

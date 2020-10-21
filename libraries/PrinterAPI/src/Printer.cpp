@@ -537,13 +537,13 @@ bool Printer::update_progress(int progress, int total) {
   return false;
 }
 
-Printer &Printer::key(var::StringView key, bool value) {
-  print(Level::info, key, value ? "true" : "false");
+Printer &Printer::key(var::StringView key, const var::String &a) {
+  print(Level::info, key, a.cstring());
   return *this;
 }
 
-Printer &Printer::key(var::StringView key, const var::String &a) {
-  print(Level::info, key, a.cstring());
+Printer &Printer::key_bool(var::StringView key, bool a) {
+  print(Level::info, key, a ? "true" : "false");
   return *this;
 }
 

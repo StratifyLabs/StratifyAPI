@@ -105,12 +105,13 @@ private:
 #endif
 };
 
-class TemporaryDirectory : public api::ExecutionContext, public Path {
+class TemporaryDirectory : public api::ExecutionContext {
 public:
   explicit TemporaryDirectory(var::StringView parent = "");
   ~TemporaryDirectory();
 
 private:
+  API_AC(TemporaryDirectory, Path, path);
 };
 
 } // namespace fs

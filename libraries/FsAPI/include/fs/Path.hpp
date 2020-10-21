@@ -15,13 +15,18 @@ public:
     : var::StackStringObject<Path, PATH_MAX>(str.string_view()) {}
   explicit Path(const char *a) : var::StackStringObject<Path, PATH_MAX>(a) {}
 
-  bool operator==(const Path &a) const { return path() == a.path(); }
-
-  bool operator!=(const Path &a) const {
-    return strncmp(cstring(), a.cstring(), PATH_MAX) != 0;
+  Path &operator/(const char *a) { return append("/").append(a); }
+  Path &operator/(const Path &a) { return append("/").append(a.cstring()); }
+  Path &operator/(const var::StringView a) { return append("/").append(a); }
+  Path &operator/(const var::String &a) {
+    return append("/").append(a.cstring());
   }
 
-  var::StringView path() const { return cstring(); }
+  // implicit conversion
+  operator const char *() const { return m_buffer; }
+  operator const var::StringView() {
+    return std::move(var::StringView(m_buffer));
+  }
 
   /*! \details Returns the file suffix ('txt' for '/home/test.txt'). */
   var::StringView suffix() const;

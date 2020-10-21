@@ -94,7 +94,7 @@ public:
   }
 
   size_t find(StringView a, size_t position = 0) const {
-    return m_string_view.find(a.string_view(), position);
+    return m_string_view.find(a.m_string_view, position);
   }
 
   size_t find(char a, size_t position = 0) const {
@@ -102,15 +102,15 @@ public:
   }
 
   size_t find_first_of(StringView a, size_t position = 0) const {
-    return m_string_view.find_first_of(a.string_view(), position);
+    return m_string_view.find_first_of(a.m_string_view, position);
   }
 
   size_t find_first_not_of(StringView a, size_t position = 0) const {
-    return m_string_view.find_first_not_of(a.string_view(), position);
+    return m_string_view.find_first_not_of(a.m_string_view, position);
   }
 
   size_t reverse_find(StringView a, size_t position = npos) const {
-    return m_string_view.rfind(a.string_view(), position);
+    return m_string_view.rfind(a.m_string_view, position);
   }
 
   size_t reverse_find(char a, size_t position = npos) const {
@@ -118,38 +118,38 @@ public:
   }
 
   size_t find_last_of(StringView a, size_t position = 0) const {
-    return m_string_view.find_last_of(a.string_view(), position);
+    return m_string_view.find_last_of(a.m_string_view, position);
   }
 
   size_t find_last_not_of(StringView a, size_t position = 0) const {
-    return m_string_view.find_last_not_of(a.string_view(), position);
+    return m_string_view.find_last_not_of(a.m_string_view, position);
   }
 
-  const std::string_view &string_view() const { return m_string_view; }
 
   bool operator==(StringView a) const {
-    return a.string_view() == string_view();
+    return a.m_string_view == m_string_view;
   }
 
   bool operator!=(StringView a) const {
-    return a.string_view() != string_view();
+    return a.m_string_view != m_string_view;
   }
 
-  bool operator>(StringView a) const { return string_view() > a.string_view(); }
+  bool operator>(StringView a) const { return m_string_view > a.m_string_view; }
 
-  bool operator<(StringView a) const { return string_view() < a.string_view(); }
+  bool operator<(StringView a) const { return m_string_view < a.m_string_view; }
 
   long to_long(Base base = Base::decimal) const;
   float to_float() const;
   unsigned long to_unsigned_long(Base base = Base::decimal) const;
 
-  // const char *cstring() const { return m_string_view.data(); }
   const char *data() const { return m_string_view.data(); }
 
   bool operator==(const char *a) const { return StringView(a) == *this; }
   bool operator!=(const char *a) const { return StringView(a) != *this; }
 
   String get_string() const;
+
+  // static StringView boolean(bool a) { return a ? "true" : "false"; }
 
 private:
   friend class String;

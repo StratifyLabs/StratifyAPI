@@ -5,7 +5,7 @@ using namespace fs;
 using namespace var;
 
 var::StringView Path::suffix() const {
-  size_t pos = path().reverse_find(".");
+  size_t pos = string_view().reverse_find(".");
 
   if (pos == var::String::npos) {
     return var::StringView();
@@ -15,17 +15,17 @@ var::StringView Path::suffix() const {
 }
 
 var::StringView Path::name() const {
-  size_t pos = path().reverse_find('/');
+  size_t pos = string_view().reverse_find('/');
 
   if (pos == var::String::npos) {
-    return path();
+    return string_view();
   }
 
   return StringView(cstring() + pos + 1);
 }
 
 var::StringView Path::parent_directory() const {
-  size_t pos = path().reverse_find('/');
+  size_t pos = string_view().reverse_find('/');
 
   if (pos == var::String::npos) {
     return var::StringView();
@@ -37,7 +37,7 @@ var::StringView Path::parent_directory() const {
 var::StringView Path::base_name() const { return Path(name()).no_suffix(); }
 
 var::StringView Path::no_suffix() const {
-  size_t pos = path().reverse_find('.');
+  size_t pos = string_view().reverse_find('.');
 
   if (pos == StringView::npos) {
     return string_view();
@@ -52,7 +52,7 @@ bool Path::is_hidden() const {
   }
 
   var::StringView parent = parent_directory();
-  if (parent != path()) {
+  if (parent != string_view()) {
     return Path(parent).is_hidden();
   }
 

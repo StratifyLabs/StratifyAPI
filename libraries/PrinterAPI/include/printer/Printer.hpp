@@ -287,7 +287,7 @@ public:
 
   PrintFlags o_flags() const { return m_print_flags; }
 
-  Printer &key(var::StringView key, bool value);
+  Printer &key_bool(var::StringView key, bool value);
   Printer &key(var::StringView key, var::StringView a);
   Printer &key(var::StringView key, const var::String &a);
 

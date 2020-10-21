@@ -15,7 +15,7 @@ printer::Printer &printer::operator<<(
   const fs::FileSystem::PathList &a) {
   size_t i = 0;
   for (const auto &item : a) {
-    printer.key(var::Ntos(i++), item.path());
+    printer.key(var::Ntos(i++), item.string_view());
   }
   return printer;
 }
@@ -130,13 +130,12 @@ FileSystem::PathList FileSystem::read_directory(
     }
 
     if (
-      (exclude == nullptr || !exclude(entry.path())) && !entry.path().is_empty()
-      && (entry.path() != ".") && (entry.path() != "..")) {
+      (exclude == nullptr || !exclude(entry.string_view())) && !entry.is_empty()
+      && (entry.string_view() != ".") && (entry.string_view() != "..")) {
 
       if (is_recursive == IsRecursive::yes) {
 
-        const Path entry_path
-          = Path(directory.path()).append("/").append(entry.path());
+        const Path entry_path = Path(directory.path()) / entry.string_view();
         FileInfo info = get_info(entry_path.cstring());
 
         if (info.is_directory()) {
@@ -262,20 +261,20 @@ int FileSystem::interface_rename(const char *old_name, const char *new_name)
 }
 
 TemporaryDirectory::TemporaryDirectory(var::StringView parent)
-  : Path(Path()
-           .append(
-             parent.is_empty()
-               ? (Path(sys::System::user_data_path()).append("/").cstring())
-               : "")
-           .append(chrono::ClockTime::get_unique_string().cstring())) {
-  FileSystem().create_directory(path());
+  : m_path(Path()
+             .append(
+               parent.is_empty()
+                 ? (Path(sys::System::user_data_path()).append("/").cstring())
+                 : "")
+             .append(chrono::ClockTime::get_unique_string().cstring())) {
+  FileSystem().create_directory(m_path);
   if (is_error()) {
-    clear();
+    m_path.clear();
   }
 }
 
 TemporaryDirectory::~TemporaryDirectory() {
-  if (is_empty() == false) {
-    FileSystem().remove_directory(path(), FileSystem::IsRecursive::yes);
+  if (m_path.is_empty() == false) {
+    FileSystem().remove_directory(m_path, FileSystem::IsRecursive::yes);
   }
 }

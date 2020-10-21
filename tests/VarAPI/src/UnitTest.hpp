@@ -92,8 +92,8 @@ public:
 
   bool data_api_case() {
 
-    printer().key("mininumSize", Data::minimum_capacity());
-    printer().key("blockSize", Data::minimum_capacity());
+    printer().key("mininumSize", NumberString(Data::minimum_capacity()));
+    printer().key("blockSize", NumberString(Data::minimum_capacity()));
 
     const Array<u32, 4> value_list(
       std::array<u32, 4>({0x11223344, 0x22334411, 0x33441122, 0x44332211}));

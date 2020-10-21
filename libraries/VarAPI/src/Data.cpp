@@ -8,6 +8,7 @@
 #include <errno.h>
 
 #include "var/Data.hpp"
+#include "var/StringView.hpp"
 #include "var/View.hpp"
 
 using namespace var;
@@ -70,4 +71,8 @@ Data &Data::copy(const View a, const Copy &options) {
 
 Data &Data::append(const View view) {
   return copy(view, Copy().set_destination_position(size()));
+}
+
+const StringView Data::string_view() const {
+  return StringView(reinterpret_cast<const char *>(data_u8()), size());
 }

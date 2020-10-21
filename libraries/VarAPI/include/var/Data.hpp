@@ -17,6 +17,8 @@
 
 namespace var {
 
+class StringView;
+
 class DataInfo {
 public:
   DataInfo() { refresh(); }
@@ -229,6 +231,8 @@ public:
 
   size_t size() const { return m_data.size(); }
   ssize_t size_signed() const { return static_cast<ssize_t>(m_data.size()); }
+
+  const StringView string_view() const;
 
 protected:
   void copy_object(const Data &a);

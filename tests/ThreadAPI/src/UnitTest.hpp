@@ -80,7 +80,7 @@ public:
       TEST_ASSERT(m_signal_number_io == 1);
 
       sa.send_pid(Sched::get_pid());
-      printer().key("sigqueue", m_signal_number_io == 100);
+      printer().key_bool("sigqueue", m_signal_number_io == 100);
     }
 
     return true;
@@ -133,7 +133,7 @@ public:
             self->m_did_execute = true;
             PRINTER_TRACE(self->printer(), "done");
             sem.post();
-            printer().key("error", is_error());
+            printer().key_bool("error", is_error());
             return nullptr;
           }),
         T::Attributes().set_detach_state(T::DetachState::joinable));
@@ -192,50 +192,50 @@ public:
     {
 
       printer::PrinterObject po(printer(), "Mutex::Attributes");
-      printer().key(
+      printer().key_bool(
         "protocolNoneOk",
         M::Attributes().set_protocol(M::Protocol::priority_none).get_protocol()
           == M::Protocol::priority_none);
 
-      printer().key(
+      printer().key_bool(
         "protocolInheritOk",
         M::Attributes()
             .set_protocol(M::Protocol::priority_inherit)
             .get_protocol()
           == M::Protocol::priority_inherit);
 
-      printer().key(
+      printer().key_bool(
         "protocolProtectOk",
         M::Attributes()
             .set_protocol(M::Protocol::priority_protect)
             .get_protocol()
           == M::Protocol::priority_protect);
 
-      printer().key(
+      printer().key_bool(
         "processSharedPrivateOk",
         M::Attributes()
             .set_process_shared(M::ProcessShared::private_)
             .get_process_shared()
           == M::ProcessShared::private_);
 
-      printer().key(
+      printer().key_bool(
         "processSharedOk",
         M::Attributes()
             .set_process_shared(M::ProcessShared::shared)
             .get_process_shared()
           == M::ProcessShared::shared);
 
-      printer().key(
+      printer().key_bool(
         "recursiveOk",
         M::Attributes().set_type(M::Type::recursive).get_type()
           == M::Type::recursive);
 
-      printer().key(
+      printer().key_bool(
         "normalOK",
         M::Attributes().set_type(M::Type::normal).get_type()
           == M::Type::normal);
 
-      printer().key(
+      printer().key_bool(
         "priority10Ok",
         M::Attributes().set_priority_ceiling(10).get_priority_ceiling() == 10);
     }
@@ -283,7 +283,7 @@ public:
         = T::Attributes().set_scope(T::ContentionScope::process);
 
       TEST_ASSERT(is_success());
-      printer().key(
+      printer().key_bool(
         "scopeProcessOk",
         attributes.get_scope() == T::ContentionScope::process);
       TEST_ASSERT(is_success());
@@ -291,7 +291,7 @@ public:
       attributes.set_scope(T::ContentionScope::system);
       TEST_ASSERT(is_success());
 
-      printer().key(
+      printer().key_bool(
         "scopeSystemOk",
         attributes.get_scope() == T::ContentionScope::system);
       TEST_ASSERT(is_success());
@@ -299,7 +299,7 @@ public:
       attributes = T::Attributes().set_inherit_sched(T::IsInherit::yes);
 
       TEST_ASSERT(is_success());
-      printer().key(
+      printer().key_bool(
         "inheritOk",
         attributes.get_inherit_sched() == T::IsInherit::yes);
 
@@ -311,7 +311,7 @@ public:
 
       attributes.set_inherit_sched(T::IsInherit::no);
 
-      printer().key(
+      printer().key_bool(
         "explicitOk",
         attributes.get_inherit_sched() == T::IsInherit::no);
 

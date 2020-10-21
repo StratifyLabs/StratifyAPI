@@ -96,7 +96,7 @@ String &String::replace(const Replace &options) {
 
     erase(Erase().set_position(pos).set_length(old_length));
 
-    m_string.insert(pos, options.new_string().string_view());
+    m_string.insert(pos, options.new_string().m_string_view);
     // insert(pos, options.new_string());
     pos += new_length;
     replaced_count++;

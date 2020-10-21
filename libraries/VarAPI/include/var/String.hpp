@@ -126,7 +126,7 @@ public:
 
   explicit String(const Data &data);
 
-  explicit String(StringView s) : m_string(s.string_view()) {}
+  explicit String(StringView s) : m_string(s.m_string_view) {}
   String(const String &s) : m_string(s.string()) {}
   String(const char *s, size_t length) : m_string(s, length) {}
   String(size_t length, char c) : m_string(length, c) {}
@@ -331,9 +331,9 @@ public:
   }
 
   bool operator==(const String &a) const { return m_string == a.m_string; }
-  bool operator==(StringView a) const { return m_string == a.string_view(); }
+  bool operator==(StringView a) const { return m_string == a.m_string_view; }
 
-  bool operator!=(StringView a) const { return m_string != a.string_view(); }
+  bool operator!=(StringView a) const { return m_string != a.m_string_view; }
 
   bool operator==(const char *a) const { return m_string == a; }
   bool operator!=(const char *a) const { return m_string != a; }

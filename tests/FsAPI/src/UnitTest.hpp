@@ -45,14 +45,14 @@ public:
 
   bool fileinfo_api_case() {
     printer::PrinterObject po(printer(), "fileinfo");
-    String temp_path;
+    fs::Path temp_path;
     {
       TemporaryDirectory td(".");
       TEST_ASSERT(FS().directory_exists(td.path()));
 
       const StringView new_test_contents = "new test file";
 
-      temp_path = String(td.path());
+      temp_path = td.path();
       TEST_ASSERT(F(F::IsOverwrite::yes,
                     td.path() + "/test.txt",
                     OpenMode::read_write(),
@@ -139,7 +139,7 @@ public:
       TEST_ASSERT(d.rewind().is_success());
       // const var::String entry = d.get_entry();
       // printf("entry is %s\n", entry.cstring());
-      TEST_ASSERT(d.get_entry() == Path("tmp/."));
+      TEST_ASSERT(d.get_entry() == "tmp/.");
 
       TEST_ASSERT(d.rewind().is_success());
       if (System().is_macosx() == false) {
@@ -189,7 +189,7 @@ public:
 
   bool path_api_case() {
     printer::PrinterObject po(printer(), "path");
-    TEST_ASSERT(P("data/test.json").path() == "data/test.json");
+    TEST_ASSERT(P("data/test.json") == "data/test.json");
     TEST_ASSERT(P("flat").name() == "flat");
     TEST_ASSERT(P("flat.json").name() == "flat.json");
     TEST_ASSERT(P("flat").suffix() == "");
