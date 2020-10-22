@@ -74,17 +74,15 @@ public:
   bool stack_string_api_case() {
 
     {
-      StackString32 s("012345678901234567890123456789123456789");
+      KeyString s("012345678901234567890123456789123456789");
       TEST_ASSERT(strlen(s.cstring()) == 31);
       TEST_ASSERT(
-        strlen(
-          StackString32("012345678901234567890123456789123456789").cstring())
+        strlen(KeyString("012345678901234567890123456789123456789").cstring())
         == 31);
 
-      TEST_ASSERT(StackString32("test") == "test");
-      TEST_ASSERT(StackString64("test") == "test");
-      TEST_ASSERT(StackString128("test") == "test");
-      TEST_ASSERT(StackString256("test") == "test");
+      TEST_ASSERT(KeyString("test") == "test");
+      TEST_ASSERT(NumberString("test") == "test");
+      TEST_ASSERT(GeneralString("test") == "test");
     }
 
     return true;
@@ -132,8 +130,8 @@ public:
 
     const char test[] = "test1234567890\n";
     View view_test(test);
-    printer().key("view test size", Ntos(view_test.size()).string_view());
-    printer().key("test size", Ntos(sizeof(test)).string_view());
+    printer().key("view test size", NumberString(view_test.size()).string_view());
+    printer().key("test size", NumberString(sizeof(test)).string_view());
     TEST_ASSERT(view_test.size() == sizeof(test) - 1);
     TEST_ASSERT(view_test.to_char() == nullptr);
     TEST_ASSERT(view_test.to_const_char() == test);
@@ -635,13 +633,13 @@ public:
     }
 
     {
-      TEST_ASSERT(StringView(Ntos(10)) == "10");
-      TEST_ASSERT(StringView(Ntos(100)) == "100");
-      TEST_ASSERT(StringView(Ntos(50UL)) == "50");
-      TEST_ASSERT(StringView(Ntos(-50)) == "-50");
-      TEST_ASSERT(StringView(Ntos(1.2f)) == "1.200000");
-      TEST_ASSERT(StringView(Ntos(-1.2f)) == "-1.200000");
-      TEST_ASSERT(StringView(Ntos(-1.2f, "%0.2f")) == "-1.20");
+      TEST_ASSERT(StringView(NumberString(10)) == "10");
+      TEST_ASSERT(StringView(NumberString(100)) == "100");
+      TEST_ASSERT(StringView(NumberString(50UL)) == "50");
+      TEST_ASSERT(StringView(NumberString(-50)) == "-50");
+      TEST_ASSERT(StringView(NumberString(1.2f)) == "1.200000");
+      TEST_ASSERT(StringView(NumberString(-1.2f)) == "-1.200000");
+      TEST_ASSERT(StringView(NumberString(-1.2f, "%0.2f")) == "-1.20");
     }
 
     {

@@ -35,7 +35,7 @@ namespace fs {
  * \code
  * #include <sapi/hal.hpp>
  * #include <sapi/sys.hpp>
- * #include <sapi/var.hpp>
+ * #include <var.hpp>
  *
  * int main(int argc, char * argv[]){
  * 	String buf = "Hello World!\n";

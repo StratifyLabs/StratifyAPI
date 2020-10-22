@@ -37,10 +37,10 @@ Cli::Cli(int argc, char *argv[]) {
   m_argv = argv;
 }
 
-void Cli::handle_version(const HandleVersion &options) const {
+const Cli &Cli::handle_version(const HandleVersion &options) const {
 #if !defined __link
   if (get_option("--version").is_empty() == false) {
-    var::StackString256 output = var::StackString256()
+    var::GeneralString output = var::GeneralString()
                                    .append(get_name())
                                    .append("version: ")
                                    .append(options.version())
@@ -51,6 +51,7 @@ void Cli::handle_version(const HandleVersion &options) const {
     exit(0);
   }
 #endif
+  return *this;
 }
 
 var::String Cli::to_string() const {

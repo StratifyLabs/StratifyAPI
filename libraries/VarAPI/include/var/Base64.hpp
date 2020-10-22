@@ -24,7 +24,7 @@ namespace var {
  * \code
  * //md2code:include
  * #include <sapi/calc.hpp>
- * #include <sapi/var.hpp>
+ * #include <var.hpp>
  * #include <sapi/fs.hpp>
  * \endcode
  *

@@ -19,7 +19,7 @@ typedef uint32_t in_addr_t;
 #include <unistd.h>
 #endif
 
-#include "var/String.hpp"
+#include "var/StackString.hpp"
 #include "var/View.hpp"
 
 namespace inet {

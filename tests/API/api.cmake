@@ -6,9 +6,9 @@ macro(api_test_executable NAME DIRECTORIES)
 	add_executable(${RELEASE_TARGET})
 	target_sources(${RELEASE_TARGET}
 		PRIVATE
-		${CMAKE_SOURCE_DIR}/tests/common/main.cpp
-		${CMAKE_SOURCE_DIR}/tests/${NAME}/src/sl_config.h
-		${CMAKE_SOURCE_DIR}/tests/${NAME}/src/UnitTest.hpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../common/main.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../${NAME}/src/sl_config.h
+		${CMAKE_CURRENT_SOURCE_DIR}/../${NAME}/src/UnitTest.hpp
 		)
 
 		target_compile_options(${RELEASE_TARGET}
@@ -32,7 +32,7 @@ macro(api_test_executable NAME DIRECTORIES)
 
 	target_include_directories(${RELEASE_TARGET}
 		PRIVATE
-		${CMAKE_SOURCE_DIR}/tests/${NAME}/src
+		${CMAKE_CURRENT_SOURCE_DIR}/../${NAME}/src
 		)
 
 

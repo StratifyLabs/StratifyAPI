@@ -12,17 +12,12 @@ class UnitTest : public test::Test {
 public:
   using FS = FileSystem;
   using F = File;
-  using P = Path;
   using D = Dir;
   using DF = fs::DataFile;
 
   UnitTest(var::StringView name) : test::Test(name) {}
 
   bool execute_class_api_case() {
-
-    if (!path_api_case()) {
-      return false;
-    }
 
     if (!file_api_case()) {
       return false;
@@ -45,7 +40,7 @@ public:
 
   bool fileinfo_api_case() {
     printer::PrinterObject po(printer(), "fileinfo");
-    fs::Path temp_path;
+    var::PathString temp_path;
     {
       TemporaryDirectory td(".");
       TEST_ASSERT(FS().directory_exists(td.path()));
@@ -119,7 +114,7 @@ public:
 
     {
       D d("tmp");
-      Vector<Path> dir_list = FS().read_directory(d);
+      Vector<var::PathString> dir_list = FS().read_directory(d);
       printer().object("list", dir_list);
       TEST_ASSERT(dir_list.count() == 3);
     }
@@ -127,10 +122,10 @@ public:
     {
       D d("tmp");
       int count = 0;
-      Path e;
+      var::PathString e;
       while ((e = d.get_entry()).is_empty() == false) {
-        printer().key("tell", Ntos(d.tell()).string_view());
-        printer().key(Ntos(count), StringView(e.cstring()));
+        printer().key("tell", NumberString(d.tell()).string_view());
+        printer().key(NumberString(count), StringView(e.cstring()));
         count++;
       }
       TEST_ASSERT(count == 5);
@@ -143,7 +138,7 @@ public:
 
       TEST_ASSERT(d.rewind().is_success());
       if (System().is_macosx() == false) {
-        printer().key("tell", Ntos(d.tell()).string_view());
+        printer().key("tell", NumberString(d.tell()).string_view());
         TEST_ASSERT(d.tell() == 0);
       }
     }
@@ -152,9 +147,15 @@ public:
       TEST_ASSERT(FS().directory_exists("tmp"));
       FS::PathList list = FS().read_directory(D("tmp"), FS::IsRecursive::yes);
       printer().object("files", list);
-      TEST_ASSERT(list.find(Path("tmp/test0.txt")) == Path("tmp/test0.txt"));
-      TEST_ASSERT(list.find(Path("tmp/test1.txt")) == Path("tmp/test1.txt"));
-      TEST_ASSERT(list.find(Path("tmp/test2.txt")) == Path("tmp/test2.txt"));
+      TEST_ASSERT(
+        list.find(var::PathString("tmp/test0.txt"))
+        == var::PathString("tmp/test0.txt"));
+      TEST_ASSERT(
+        list.find(var::PathString("tmp/test1.txt"))
+        == var::PathString("tmp/test1.txt"));
+      TEST_ASSERT(
+        list.find(var::PathString("tmp/test2.txt"))
+        == var::PathString("tmp/test2.txt"));
     }
 
     {
@@ -166,17 +167,28 @@ public:
           return entry.find("filesystem") != StringView::npos;
         });
       printer().object("files", list);
-      TEST_ASSERT(list.find(Path("tmp2/test0.txt")) == Path("tmp2/test0.txt"));
-      TEST_ASSERT(list.find(Path("tmp2/filesystem.txt")) == Path());
-      TEST_ASSERT(list.find(Path("tmp2/test2.txt")) == Path("tmp2/test2.txt"));
+      TEST_ASSERT(
+        list.find(var::PathString("tmp2/test0.txt"))
+        == var::PathString("tmp2/test0.txt"));
+      TEST_ASSERT(
+        list.find(var::PathString("tmp2/filesystem.txt")) == var::PathString());
+      TEST_ASSERT(
+        list.find(var::PathString("tmp2/test2.txt"))
+        == var::PathString("tmp2/test2.txt"));
     }
 
     {
       FS::PathList list = FS().read_directory(D("tmp"), FS::IsRecursive::no);
       printer().object("files", list);
-      TEST_ASSERT(list.find(Path("test0.txt")) == Path("test0.txt"));
-      TEST_ASSERT(list.find(Path("test1.txt")) == Path("test1.txt"));
-      TEST_ASSERT(list.find(Path("test2.txt")) == Path("test2.txt"));
+      TEST_ASSERT(
+        list.find(var::PathString("test0.txt"))
+        == var::PathString("test0.txt"));
+      TEST_ASSERT(
+        list.find(var::PathString("test1.txt"))
+        == var::PathString("test1.txt"));
+      TEST_ASSERT(
+        list.find(var::PathString("test2.txt"))
+        == var::PathString("test2.txt"));
     }
 
     TEST_ASSERT(FS()
@@ -184,26 +196,6 @@ public:
                   .remove_directory("tmp2", FS::IsRecursive::yes)
                   .is_success());
 
-    return true;
-  }
-
-  bool path_api_case() {
-    printer::PrinterObject po(printer(), "path");
-    TEST_ASSERT(P("data/test.json") == "data/test.json");
-    TEST_ASSERT(P("flat").name() == "flat");
-    TEST_ASSERT(P("flat.json").name() == "flat.json");
-    TEST_ASSERT(P("flat").suffix() == "");
-    TEST_ASSERT(P("flat.json").suffix() == "json");
-    TEST_ASSERT(P("data/test.json").suffix() == "json");
-    TEST_ASSERT(P("data/test.json").name() == "test.json");
-    TEST_ASSERT(P("data/test.json").base_name() == "test");
-    TEST_ASSERT(P("data/test.json").no_suffix() == "data/test");
-    TEST_ASSERT(P("data/test").no_suffix() == "data/test");
-    TEST_ASSERT(P("data/test.json").parent_directory() == "data");
-    TEST_ASSERT(P("/Users/data/test.json").parent_directory() == "/Users/data");
-    TEST_ASSERT(P("/Users/data/test.json").no_suffix() == "/Users/data/test");
-    TEST_ASSERT(P("data/.test.json").is_hidden());
-    TEST_ASSERT(P("data/test.json").is_hidden() == false);
     return true;
   }
 
@@ -279,33 +271,37 @@ public:
           .add_null_terminator()
         == StringView("Hello"));
 
-      TEST_EXPECT(F(F::IsOverwrite::yes,
-                    Path(dir_name_recursive).parent_directory() + "/tmp.txt")
-                    .write("Hello2")
-                    .is_success);
-
-      TEST_ASSERT(
-        DF()
-          .write(
-            F(Path(dir_name_recursive).parent_directory() + "/tmp.txt",
-              OpenMode::read_only()))
-          .data()
-          .add_null_terminator()
-        == StringView("Hello2"));
-
       TEST_EXPECT(
         F(F::IsOverwrite::yes,
-          Path(Path(dir_name_recursive).parent_directory()).parent_directory()
-            + "/tmp.txt")
-          .write("Hello3")
+          var::PathString(dir_name_recursive).parent_directory() + "/tmp.txt")
+          .write("Hello2")
           .is_success);
 
       TEST_ASSERT(
         DF()
           .write(F(
-            Path(Path(dir_name_recursive).parent_directory()).parent_directory()
-              + "/tmp.txt",
+            var::PathString(dir_name_recursive).parent_directory() + "/tmp.txt",
             OpenMode::read_only()))
+          .data()
+          .add_null_terminator()
+        == StringView("Hello2"));
+
+      TEST_EXPECT(F(F::IsOverwrite::yes,
+                    var::PathString(
+                      var::PathString(dir_name_recursive).parent_directory())
+                        .parent_directory()
+                      + "/tmp.txt")
+                    .write("Hello3")
+                    .is_success);
+
+      TEST_ASSERT(
+        DF()
+          .write(
+            F(var::PathString(
+                var::PathString(dir_name_recursive).parent_directory())
+                  .parent_directory()
+                + "/tmp.txt",
+              OpenMode::read_only()))
           .data()
           .add_null_terminator()
         == StringView("Hello3"));
@@ -313,11 +309,13 @@ public:
       TEST_EXPECT(FS().exists(dir_name_recursive) == true);
 
       TEST_EXPECT(
-        FS().exists(Path(dir_name_recursive).parent_directory()) == true);
+        FS().exists(var::PathString(dir_name_recursive).parent_directory())
+        == true);
 
       TEST_EXPECT(
-        FS().exists(
-          Path(Path(dir_name_recursive).parent_directory()).parent_directory())
+        FS().exists(var::PathString(
+                      var::PathString(dir_name_recursive).parent_directory())
+                      .parent_directory())
         == true);
 
       TEST_EXPECT(

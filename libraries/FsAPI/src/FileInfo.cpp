@@ -7,6 +7,7 @@
 
 #include "fs/FileInfo.hpp"
 #include "printer/Printer.hpp"
+#include "var/StackString.hpp"
 #include "var/String.hpp"
 
 printer::Printer &

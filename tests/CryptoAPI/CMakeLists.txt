@@ -18,7 +18,7 @@ project(${SOS_NAME} CXX C)
 # This will set the default RAM used by the application
 set(RAM_SIZE 32768)
 
-include(${CMAKE_SOURCE_DIR}/tests/API/api.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../API/api.cmake)
 
 set(DIRECTORIES
 	CryptoAPI

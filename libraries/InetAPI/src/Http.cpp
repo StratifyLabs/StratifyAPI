@@ -336,7 +336,7 @@ HttpClient &HttpClient::execute_method(
   }
 
   if (options.request()) {
-    add_header_field("content-length", Ntos(options.request()->size()));
+    add_header_field("content-length", NumberString(options.request()->size()));
   }
 
   send(Request(method, path, http_version()));
@@ -349,7 +349,7 @@ HttpClient &HttpClient::execute_method(
   set_header_fields(receive_header_fields());
   API_RETURN_VALUE_IF_ERROR(*this);
 
-  if (StackString32(get_header_field("Connection")).to_upper() == "CLOSE") {
+  if (KeyString(get_header_field("Connection")).to_upper() == "CLOSE") {
     renew_socket();
     m_is_connected = false;
   }
@@ -390,7 +390,7 @@ HttpClient &HttpClient::connect(var::StringView domain_name, u16 port) {
   AddressInfo address_info(
     AddressInfo::Construct()
       .set_node(domain_name)
-      .set_service(port != 0xffff ? StringView(Ntos(port)) : StringView(""))
+      .set_service(port != 0xffff ? StringView(NumberString(port)) : StringView(""))
       .set_family(Socket::Family::inet)
       .set_flags(AddressInfo::Flags::canon_name));
 
@@ -407,7 +407,7 @@ HttpClient &HttpClient::connect(var::StringView domain_name, u16 port) {
 
   API_RETURN_VALUE_ASSIGN_ERROR(
     *this,
-    var::StackString256(domain_name).cstring(),
+    var::GeneralString(domain_name).cstring(),
     ECONNREFUSED);
 }
 

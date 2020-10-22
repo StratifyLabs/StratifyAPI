@@ -9,7 +9,6 @@
 #include "api/api.hpp"
 
 #include "FileInfo.hpp"
-#include "Path.hpp"
 #include "chrono/MicroTime.hpp"
 #include "var/Base64.hpp"
 
@@ -31,6 +30,8 @@ public:
     end /*! Set the location relative to the end of the file or device */
     = LINK_SEEK_END
   };
+
+  File() = default;
 
   explicit File(
     var::StringView name,
@@ -67,11 +68,6 @@ public:
 
   /*! \details Return the file number for accessing the file or device. */
   int fileno() const;
-
-  File &set_keep_open(bool value = true) {
-    m_is_keep_open = value;
-    return *this;
-  }
 
   /*! \details Excute system fsync() on the file. */
   const File &sync() const;
@@ -227,9 +223,6 @@ public:
   }
 
 protected:
-  File() = default;
-
-  bool is_keep_open() const { return m_is_keep_open; }
 
   virtual int interface_lseek(int offset, int whence) const;
   virtual int interface_read(void *buf, int nbyte) const;
@@ -252,9 +245,8 @@ private:
 #ifdef __link
   API_AF(File, link_transport_mdriver_t *, driver, nullptr);
 #endif
-  constexpr static size_t m_gets_buffer_size = 128;
-  bool m_is_keep_open = false;
   int m_fd = -1;
+  constexpr static size_t m_gets_buffer_size = 128;
 
   int fstat(struct stat *st);
 
@@ -277,11 +269,6 @@ private:
 
 template <class Derived> class FileAccess : public File {
 public:
-
-  Derived &set_keep_open(bool value = true) {
-    return static_cast<Derived &>(File::set_keep_open(value));
-  }
-
   const Derived &sync() const {
     return static_cast<const Derived &>(File::sync());
   }
@@ -377,6 +364,10 @@ public:
 
 protected:
   FileAccess<Derived>() = default;
+  FileAccess<Derived>(
+    var::StringView path,
+    OpenMode open_mode FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST)
+    : File(path, open_mode FSAPI_LINK_INHERIT_DRIVER_LAST) {}
 
 private:
 };

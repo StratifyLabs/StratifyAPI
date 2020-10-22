@@ -3,11 +3,21 @@
 
 #include <sys/syslimits.h>
 
+#include "String.hpp"
 #include "StringView.hpp"
 
 namespace var {
 
-template <class Derived, int Size> class StackStringObject {
+#if 0
+class StackStringObject {
+public:
+private:
+  char *m_buffer_pointer;
+  size_t m_size;
+};
+#endif
+
+template <class Derived, int Size> class StackString {
 public:
   using Base = StringView::Base;
   Derived &clear() {
@@ -31,14 +41,18 @@ public:
     return static_cast<Derived &>(*this);
   }
 
+  Derived &operator+=(const char *a) { return append(a); }
+  Derived &operator+=(const StringView a) { return append(a); }
+  Derived &operator+=(const StackString &a) { return append(a.string_view()); }
+
   bool operator==(const char *a) { return strncmp(m_buffer, a, Size - 1) == 0; }
   bool operator!=(const char *a) { return strncmp(m_buffer, a, Size - 1) != 0; }
 
-  bool operator==(const StackStringObject &a) const {
+  bool operator==(const StackString &a) const {
     return string_view() == a.string_view();
   }
 
-  bool operator!=(const StackStringObject &a) const {
+  bool operator!=(const StackString &a) const {
     return string_view() != a.string_view();
   }
 
@@ -89,15 +103,15 @@ public:
   }
 
 protected:
-  StackStringObject() { m_buffer[0] = 0; }
-  StackStringObject(const StringView a) {
+  StackString() { m_buffer[0] = 0; }
+  StackString(const StringView a) {
     m_buffer[Size - 1] = 0;
     const size_t s = a.length() > Size - 1 ? Size - 1 : a.length();
     m_buffer[s] = 0;
     memcpy(m_buffer, a.data(), s);
   }
 
-  StackStringObject(const char *a) {
+  StackString(const char *a) {
     m_buffer[Size - 1] = 0;
     strncpy(m_buffer, a, Size - 1);
   }
@@ -107,37 +121,80 @@ protected:
   char m_buffer[Size];
 };
 
-class KeyString : public StackStringObject<KeyString, 32> {
+class KeyString : public StackString<KeyString, 48> {
 public:
   KeyString() {}
-  KeyString(const StringView a) : StackStringObject(a) {}
-  KeyString(const char *a) : StackStringObject(a) {}
+  KeyString(const StringView a) : StackString(a) {}
+  KeyString(const char *a) : StackString(a) {}
   // implicit conversion
   operator const char *() const { return m_buffer; }
   operator const StringView() { return StringView(m_buffer); }
 };
 
-class StackString128 : public StackStringObject<StackString128, 128> {
+class NameString : public StackString<NameString, NAME_MAX + 1> {
 public:
-  StackString128() {}
-  StackString128(const StringView a) : StackStringObject(a) {}
-  StackString128(const char *a) : StackStringObject(a) {}
+  NameString() {}
+  NameString(const StringView a) : StackString(a) {}
+  NameString(const char *a) : StackString(a) {}
+
   // implicit conversion
   operator const char *() const { return m_buffer; }
   operator const StringView() { return StringView(m_buffer); }
 };
 
-class StackString256 : public StackStringObject<StackString256, 256> {
+class PathString : public StackString<PathString, PATH_MAX> {
 public:
-  StackString256() {}
-  StackString256(const StringView a) : StackStringObject(a) {}
-  StackString256(const char *a) : StackStringObject(a) {}
+  PathString() {}
+  PathString(const StringView a) : StackString(a) {}
+  PathString(const char *a) : StackString(a) {}
+
+  PathString &operator/(const char *a) { return append("/").append(a); }
+
+  PathString &operator/(const PathString &a) {
+    append("/").append(a.cstring());
+    return *this;
+  }
+
+  PathString &operator/(const NameString &a) {
+    append("/").append(a.cstring());
+    return *this;
+  }
+
+  PathString &operator/(const var::StringView a) {
+    append("/").append(a);
+    return *this;
+  }
+
+  var::StringView suffix() const;
+  var::StringView name() const;
+  var::StringView parent_directory() const;
+  var::StringView base_name() const;
+  var::StringView no_suffix() const;
+  bool is_hidden() const;
+
+  static var::StringView suffix(const StringView path);
+  static var::StringView name(const StringView path);
+  static var::StringView parent_directory(const StringView path);
+  static var::StringView base_name(const StringView path);
+  static var::StringView no_suffix(const StringView path);
+  static bool is_hidden(const StringView path);
+
   // implicit conversion
   operator const char *() const { return m_buffer; }
   operator const StringView() { return StringView(m_buffer); }
 };
 
-class NumberString : public StackStringObject<NumberString, 64> {
+class GeneralString : public StackString<GeneralString, 256> {
+public:
+  GeneralString() {}
+  GeneralString(const StringView a) : StackString(a) {}
+  GeneralString(const char *a) : StackString(a) {}
+  // implicit conversion
+  operator const char *() const { return m_buffer; }
+  operator const StringView() { return StringView(m_buffer); }
+};
+
+class NumberString : public StackString<NumberString, 64> {
 public:
   template <typename T> NumberString(T value) {
     // guarantee null termination
@@ -170,8 +227,8 @@ public:
   }
 
   NumberString() {}
-  NumberString(const StringView a) : StackStringObject(a) {}
-  NumberString(const char *a) : StackStringObject(a) {}
+  NumberString(const StringView a) : StackString(a) {}
+  NumberString(const char *a) : StackString(a) {}
 
   int to_integer() const;
   float to_float() const;
@@ -184,8 +241,6 @@ public:
 };
 
 using StackString64 = NumberString;
-using StackString32 = KeyString;
-using Ntos = NumberString;
 
 } // namespace var
 

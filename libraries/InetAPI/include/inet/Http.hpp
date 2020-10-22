@@ -173,8 +173,8 @@ public:
         = static_cast<Status>(var::NumberString(list.at(1)).to_integer());
     }
 
-    var::StackString256 to_string() const {
-      return var::StackString256(m_version.cstring())
+    var::GeneralString to_string() const {
+      return var::GeneralString(m_version.cstring())
         .append(" ")
         .append(Http::to_string(m_status).cstring());
     }

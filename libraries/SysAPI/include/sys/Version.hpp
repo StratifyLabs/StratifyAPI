@@ -3,7 +3,7 @@
 #ifndef SYSAPI_SYS_VERSION_HPP_
 #define SYSAPI_SYS_VERSION_HPP_
 
-#include "var/String.hpp"
+#include "var/StackString.hpp"
 
 namespace sys {
 
@@ -61,7 +61,7 @@ public:
   static int compare(const Version &a, const Version &b);
 
 private:
-  var::StackString32 m_version;
+  var::KeyString m_version;
 };
 } // namespace sys
 

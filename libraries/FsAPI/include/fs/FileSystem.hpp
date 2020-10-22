@@ -56,7 +56,7 @@ public:
     IsRecursive is_recursive,
     const Permissions &permissions = Permissions(0)) const;
 
-  using PathList = var::Vector<Path>;
+  using PathList = var::Vector<var::PathString>;
 
   PathList read_directory(
     const fs::Dir &directory,
@@ -111,7 +111,7 @@ public:
   ~TemporaryDirectory();
 
 private:
-  API_AC(TemporaryDirectory, Path, path);
+  API_AC(TemporaryDirectory, var::PathString, path);
 };
 
 } // namespace fs

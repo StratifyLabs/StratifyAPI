@@ -7,7 +7,7 @@
 
 #include "fs/Dir.hpp"
 #include "fs/File.hpp"
-#include "var/String.hpp"
+#include "var/StackString.hpp"
 #include "var/Tokenizer.hpp"
 
 #include "fs/FileSystem.hpp"
@@ -24,11 +24,12 @@ Dir::~Dir() { close(); }
 
 Dir &Dir::open(var::StringView path) {
   API_RETURN_VALUE_IF_ERROR(*this);
+  const var::PathString path_string(path);
   m_dirp = API_SYSTEM_CALL_NULL(
-    Path(path).cstring(),
-    interface_opendir(Path(path).cstring()));
+    path_string.cstring(),
+    interface_opendir(path_string.cstring()));
   if (m_dirp) {
-    m_path = Path(path);
+    m_path = path_string;
   }
   return *this;
 }
@@ -78,14 +79,14 @@ const char *Dir::read() const {
   return m_entry.d_name;
 }
 
-Path Dir::get_entry() const {
+var::PathString Dir::get_entry() const {
   const char *entry = read();
 
   if (entry == nullptr) {
-    return Path();
+    return var::PathString();
   }
 
-  return Path()
+  return var::PathString()
     .append(m_path.cstring())
     .append((m_path.is_empty() == false) ? "/" : "")
     .append(entry);

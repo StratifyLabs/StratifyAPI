@@ -51,7 +51,7 @@ private:
  *
  * ```
  * //md2code:include
- * #include <sapi/var.hpp>
+ * #include <var.hpp>
  * ```
  *
  * ```
@@ -196,6 +196,7 @@ public:
       m_data.begin() + options.size());
     return *this;
   }
+  inline Data &operator()(const Erase &options) { return erase(options); }
 
 #if !defined __link
   /*! \details Releases heap space back to the stack.

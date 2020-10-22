@@ -5,45 +5,45 @@ using namespace fs;
 using namespace var;
 
 var::StringView Path::suffix() const {
-  size_t pos = string_view().reverse_find(".");
+  size_t pos = m_path.reverse_find(".");
 
   if (pos == var::String::npos) {
     return var::StringView();
   }
 
-  return StringView(cstring() + pos + 1);
+  return StringView(m_path.data() + pos + 1);
 }
 
 var::StringView Path::name() const {
-  size_t pos = string_view().reverse_find('/');
+  size_t pos = m_path.reverse_find('/');
 
   if (pos == var::String::npos) {
-    return string_view();
+    return m_path;
   }
 
-  return StringView(cstring() + pos + 1);
+  return StringView(m_path.data() + pos + 1);
 }
 
 var::StringView Path::parent_directory() const {
-  size_t pos = string_view().reverse_find('/');
+  size_t pos = m_path.reverse_find('/');
 
   if (pos == var::String::npos) {
     return var::StringView();
   }
 
-  return StringView(cstring(), pos);
+  return StringView(m_path.data(), pos);
 }
 
 var::StringView Path::base_name() const { return Path(name()).no_suffix(); }
 
 var::StringView Path::no_suffix() const {
-  size_t pos = string_view().reverse_find('.');
+  size_t pos = m_path.reverse_find('.');
 
   if (pos == StringView::npos) {
-    return string_view();
+    return m_path;
   }
 
-  return StringView(cstring(), pos);
+  return StringView(m_path.data(), pos);
 }
 
 bool Path::is_hidden() const {
@@ -52,7 +52,7 @@ bool Path::is_hidden() const {
   }
 
   var::StringView parent = parent_directory();
-  if (parent != string_view()) {
+  if (parent != m_path) {
     return Path(parent).is_hidden();
   }
 

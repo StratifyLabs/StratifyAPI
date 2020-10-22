@@ -94,7 +94,7 @@ function(stratify_api_add_test_executable NAME RAM_SIZE DEPENDENCIES)
 	set(LOCAL_NAME ${NAME})
 
 
-	sos_sdk_app_target(RELEASE ${LOCAL_NAME} "" release ${SOS_ARCH})
+	sos_sdk_app_target(RELEASE ${LOCAL_NAME} "unittest" release ${SOS_ARCH})
 	add_executable(${RELEASE_TARGET})
 	target_sources(${RELEASE_TARGET}
 		PRIVATE
@@ -116,7 +116,7 @@ function(stratify_api_add_test_executable NAME RAM_SIZE DEPENDENCIES)
 		sos_sdk_add_test(${LOCAL_NAME} release)
 		sos_sdk_add_test(${LOCAL_NAME} coverage)
 
-		sos_sdk_app_target(COVERAGE ${LOCAL_NAME} "" coverage ${SOS_ARCH})
+		sos_sdk_app_target(COVERAGE ${LOCAL_NAME} "unittest" coverage ${SOS_ARCH})
 		add_executable(${COVERAGE_TARGET})
 		sos_sdk_copy_target(${RELEASE_TARGET} ${COVERAGE_TARGET})
 

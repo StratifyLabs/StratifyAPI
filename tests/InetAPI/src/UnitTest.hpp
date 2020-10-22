@@ -39,7 +39,7 @@ public:
 
     AddressInfo address_info(AddressInfo::Construct()
                                .set_family(S::Family::inet)
-                               .set_service(Ntos(self->m_server_port))
+                               .set_service(NumberString(self->m_server_port))
                                .set_type(Socket::Type::stream)
                                .set_flags(AddressInfo::Flags::passive));
 
@@ -88,7 +88,7 @@ public:
 
           case Http::Method::get:
             server->receive(NullFile())
-              .add_header_field("content-length", Ntos(hello_world.length()))
+              .add_header_field("content-length", NumberString(hello_world.length()))
               .send(Http::Response(server->http_version(), Http::Status::ok))
               .send(ViewFile(View(hello_world)));
 
@@ -96,7 +96,7 @@ public:
 
           case Http::Method::post:
             server->receive(incoming)
-              .add_header_field("content-length", Ntos(incoming.size()))
+              .add_header_field("content-length", NumberString(incoming.size()))
               .send(Http::Response(server->http_version(), Http::Status::ok))
               .send(incoming.seek(0));
 
@@ -104,14 +104,14 @@ public:
 
           case Http::Method::put:
             server->receive(incoming)
-              .add_header_field("content-length", Ntos(incoming.size()))
+              .add_header_field("content-length", NumberString(incoming.size()))
               .send(Http::Response(server->http_version(), Http::Status::ok))
               .send(incoming.seek(0));
             break;
 
           case Http::Method::patch:
             server->receive(incoming)
-              .add_header_field("content-length", Ntos(incoming.size()))
+              .add_header_field("content-length", NumberString(incoming.size()))
               .send(Http::Response(server->http_version(), Http::Status::ok))
               .send(incoming.seek(0));
             break;
@@ -416,7 +416,7 @@ public:
     AddressInfo address_info(AddressInfo::Construct()
                                .set_family(self->m_family)
                                .set_node("")
-                               .set_service(Ntos(self->m_server_port))
+                               .set_service(NumberString(self->m_server_port))
                                .set_type(Socket::Type::stream)
                                .set_protocol(Socket::Protocol::tcp)
                                .set_flags(AddressInfo::Flags::passive));
@@ -466,7 +466,7 @@ public:
     AddressInfo address_info(AddressInfo::Construct()
                                .set_family(AddressInfo::Family::inet)
                                .set_node("localhost")
-                               .set_service(Ntos(m_server_port))
+                               .set_service(NumberString(m_server_port))
                                .set_type(Socket::Type::stream)
                                .set_flags(AddressInfo::Flags::passive));
 
@@ -493,7 +493,7 @@ public:
       AddressInfo address_info(AddressInfo::Construct()
                                  .set_family(self->m_family)
                                  .set_node("")
-                                 .set_service(Ntos(self->m_server_port))
+                                 .set_service(NumberString(self->m_server_port))
                                  .set_type(Socket::Type::datagram)
                                  .set_flags(AddressInfo::Flags::passive));
 
@@ -555,7 +555,7 @@ public:
     AddressInfo address_info(AddressInfo::Construct()
                                .set_family(AddressInfo::Family::inet)
                                .set_node("localhost")
-                               .set_service(Ntos(m_server_port))
+                               .set_service(NumberString(m_server_port))
                                .set_type(Socket::Type::datagram)
                                .set_flags(AddressInfo::Flags::passive));
 

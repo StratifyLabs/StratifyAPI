@@ -22,7 +22,7 @@ printer::operator<<(printer::Printer &printer, const inet::SocketAddress &a) {
     "family",
     (a.family() == inet::Socket::Family::inet) ? StringView("inet")
                                                : StringView("inet6"));
-  printer.key("port", Ntos(a.port()).string_view());
+  printer.key("port", NumberString(a.port()).string_view());
   printer.key("address", a.get_address_string().string_view());
   printer.key("canonName", a.canon_name());
   return printer;
@@ -32,7 +32,7 @@ printer::Printer &
 printer::operator<<(printer::Printer &printer, const inet::AddressInfo &a) {
   u32 i = 0;
   for (const auto &entry : a.list()) {
-    printer.object(Ntos(i++), entry);
+    printer.object(NumberString(i++), entry);
   }
   return printer;
 }
@@ -46,8 +46,8 @@ AddressInfo::AddressInfo(const Construct &options) {
 
   API_ASSERT(!options.service().is_empty() || !options.node().is_empty());
 
-  var::StackString256 node_string(options.node());
-  var::StackString32 service_string(options.service());
+  const var::GeneralString node_string(options.node());
+  const var::KeyString service_string(options.service());
 
   const char *service_cstring
     = service_string.is_empty() ? nullptr : service_string.cstring();

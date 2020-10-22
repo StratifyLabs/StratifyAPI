@@ -29,7 +29,7 @@ class Data;
  *
  * ```
  * //md2code:include
- * #include <sapi/var.hpp>
+ * #include <var.hpp>
  * #include <sapi/fs.hpp>
  * ```
  *
@@ -197,7 +197,7 @@ public:
    *
    * ```
    * //md2code:include
-   * #include <sapi/var.hpp>
+   * #include <var.hpp>
    * #include <sapi/hal.hpp>
    * ```
    *

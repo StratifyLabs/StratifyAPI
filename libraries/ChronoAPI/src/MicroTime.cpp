@@ -5,6 +5,7 @@
 
 #include "chrono/MicroTime.hpp"
 #include "printer/Printer.hpp"
+#include "var/StackString.hpp"
 
 printer::Printer &
 printer::operator<<(printer::Printer &printer, const chrono::MicroTime &a) {

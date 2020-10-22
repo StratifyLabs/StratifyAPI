@@ -40,7 +40,7 @@ macro(api_target NAME DIRECTORIES)
 		target_include_directories(${RELEASE_TARGET}
 			INTERFACE
 			$<INSTALL_INTERFACE:include/${NAME}>
-			$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libraries/${NAME}/include>
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 			)
 
 	endif()
@@ -49,7 +49,7 @@ macro(api_target NAME DIRECTORIES)
 		target_include_directories(${RELEASE_TARGET}
 			INTERFACE
 			$<INSTALL_INTERFACE:include/${DIRECTORY}>
-			$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libraries/${DIRECTORY}/include>
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../${DIRECTORY}/include>
 			)
 	endforeach(DIRECTORY)
 

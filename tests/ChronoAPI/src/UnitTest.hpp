@@ -61,7 +61,7 @@ public:
       DT t = DT(DT::Construct().set_time("2020-10-12 03:30:31"));
       TEST_ASSERT(t.second() == 31);
       TEST_ASSERT(t.minute() == 30);
-      printer().key("hour", Ntos(t.hour()).string_view());
+      printer().key("hour", NumberString(t.hour()).string_view());
 
       TEST_ASSERT(t + 60_minutes > t);
       printer().object("time", t);

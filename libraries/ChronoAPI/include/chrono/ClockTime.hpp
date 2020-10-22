@@ -9,7 +9,7 @@
 
 #include "DateTime.hpp"
 
-#include "var/String.hpp"
+#include "var/StackString.hpp"
 
 namespace chrono {
 
@@ -136,7 +136,7 @@ public:
   /*! \details Returns the nanoseconds component. */
   s32 nanoseconds() const { return m_value.tv_nsec; }
 
-  using UniqueString = var::StackString32;
+  using UniqueString = var::KeyString;
 
   static UniqueString get_unique_string() {
     return std::move(ClockTime::get_system_time().get_string());

@@ -38,10 +38,8 @@ File::File(
 }
 
 File::~File() {
-  if (is_keep_open() == false) {
-    if (fileno() >= 0) {
-      close();
-    }
+  if (fileno() >= 0) {
+    close();
   }
 }
 
@@ -82,11 +80,11 @@ void File::open(var::StringView path, OpenMode flags, Permissions permissions) {
   if (m_fd != -1) {
     close(); // close first so the fileno can be changed
   }
-
+  const var::PathString path_string(path);
   API_SYSTEM_CALL(
-    Path(path).cstring(),
+    path_string.cstring(),
     m_fd = internal_open(
-      Path(path).cstring(),
+      path_string.cstring(),
       flags.o_flags(),
       permissions.permissions()));
 }

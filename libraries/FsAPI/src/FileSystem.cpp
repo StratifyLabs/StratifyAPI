@@ -5,6 +5,7 @@
 #include "fs/Dir.hpp"
 #include "printer/Printer.hpp"
 #include "sys/System.hpp"
+#include "var/StackString.hpp"
 #include "var/Tokenizer.hpp"
 
 #include "fs/FileSystem.hpp"
@@ -15,7 +16,7 @@ printer::Printer &printer::operator<<(
   const fs::FileSystem::PathList &a) {
   size_t i = 0;
   for (const auto &item : a) {
-    printer.key(var::Ntos(i++), item.string_view());
+    printer.key(var::NumberString(i++), item.string_view());
   }
   return printer;
 }
@@ -28,7 +29,10 @@ FileSystem::FileSystem(FSAPI_LINK_DECLARE_DRIVER) {
 
 const FileSystem &FileSystem::remove(var::StringView path) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL("", interface_unlink(Path(path).cstring()));
+  const var::PathString path_string(path);
+  API_SYSTEM_CALL(
+    path_string.cstring(),
+    interface_unlink(path_string.cstring()));
   return *this;
 }
 
@@ -47,11 +51,11 @@ const FileSystem &FileSystem::touch(var::StringView path) const {
 
 const FileSystem &FileSystem::rename(const Rename &options) const {
   API_RETURN_VALUE_IF_ERROR(*this);
+  const var::PathString source_string(options.source());
+  const var::PathString dest_string(options.destination());
   API_SYSTEM_CALL(
-    Path(options.source()).cstring(),
-    interface_rename(
-      Path(options.source()).cstring(),
-      Path(options.destination()).cstring()));
+    source_string.cstring(),
+    interface_rename(source_string.cstring(), dest_string.cstring()));
   return *this;
 }
 
@@ -64,10 +68,11 @@ bool FileSystem::exists(var::StringView path) const {
 
 FileInfo FileSystem::get_info(var::StringView path) const {
   API_RETURN_VALUE_IF_ERROR(FileInfo());
+  const var::PathString path_string(path);
   struct stat stat = {0};
   API_SYSTEM_CALL(
-    Path(path).cstring(),
-    interface_stat(Path(path).cstring(), &stat));
+    path_string.cstring(),
+    interface_stat(path_string.cstring(), &stat));
   return FileInfo(stat);
 }
 
@@ -110,7 +115,10 @@ const FileSystem &FileSystem::remove_directory(
 
 const FileSystem &FileSystem::remove_directory(var::StringView path) const {
   API_RETURN_VALUE_IF_ERROR(*this);
-  API_SYSTEM_CALL(Path(path).cstring(), interface_rmdir(Path(path).cstring()));
+  const var::PathString path_string(path);
+  API_SYSTEM_CALL(
+    path_string.cstring(),
+    interface_rmdir(path_string.cstring()));
   return *this;
 }
 
@@ -123,7 +131,9 @@ FileSystem::PathList FileSystem::read_directory(
 
   do {
     const char *entry_result = directory.read();
-    const Path entry = (entry_result != nullptr) ? Path(entry_result) : Path();
+    const var::PathString entry = (entry_result != nullptr)
+                                    ? var::PathString(entry_result)
+                                    : var::PathString();
 
     if (entry.is_empty()) {
       is_the_end = true;
@@ -135,7 +145,8 @@ FileSystem::PathList FileSystem::read_directory(
 
       if (is_recursive == IsRecursive::yes) {
 
-        const Path entry_path = Path(directory.path()) / entry.string_view();
+        const var::PathString entry_path
+          = var::PathString(directory.path()) / entry.string_view();
         FileInfo info = get_info(entry_path.cstring());
 
         if (info.is_directory()) {
@@ -145,10 +156,8 @@ FileSystem::PathList FileSystem::read_directory(
             exclude);
 
           for (const auto &intermediate_entry : intermediate_result) {
-            const Path intermediate_path
-              = Path(entry_path)
-                  .append("/")
-                  .append(intermediate_entry.cstring());
+            const var::PathString intermediate_path
+              = var::PathString(entry_path) / intermediate_entry;
 
             result.push_back(intermediate_path);
           }
@@ -176,7 +185,7 @@ bool FileSystem::directory_exists(var::StringView path) const {
 }
 
 Permissions FileSystem::get_permissions(var::StringView path) const {
-  const var::StringView parent = Path(path).parent_directory();
+  const var::StringView parent = var::PathString::parent_directory(path);
   if (parent.is_empty()) {
     return get_info(".").permissions();
   }
@@ -191,9 +200,10 @@ const FileSystem &FileSystem::create_directory(
   const Permissions use_permissions
     = permissions.permissions() == 0 ? get_permissions(path) : permissions;
 
+  const var::PathString path_string(path);
   API_SYSTEM_CALL(
-    Path(path).cstring(),
-    interface_mkdir(Path(path).cstring(), use_permissions.permissions()));
+    path_string.cstring(),
+    interface_mkdir(path_string.cstring(), use_permissions.permissions()));
   return *this;
 }
 
@@ -231,7 +241,7 @@ const FileSystem &FileSystem::create_directory(
 
 #if !defined __link
 int FileSystem::access(var::StringView path, const Access &access) {
-  return ::access(Path(path).cstring(), static_cast<int>(access.o_access()));
+  return ::access(path_string.cstring(), static_cast<int>(access.o_access()));
 }
 #endif
 
@@ -261,12 +271,13 @@ int FileSystem::interface_rename(const char *old_name, const char *new_name)
 }
 
 TemporaryDirectory::TemporaryDirectory(var::StringView parent)
-  : m_path(Path()
-             .append(
-               parent.is_empty()
-                 ? (Path(sys::System::user_data_path()).append("/").cstring())
-                 : "")
-             .append(chrono::ClockTime::get_unique_string().cstring())) {
+  : m_path(
+    var::PathString()
+      .append(
+        parent.is_empty() ? (
+          var::PathString(sys::System::user_data_path()).append("/").cstring())
+                          : "")
+      .append(chrono::ClockTime::get_unique_string().cstring())) {
   FileSystem().create_directory(m_path);
   if (is_error()) {
     m_path.clear();

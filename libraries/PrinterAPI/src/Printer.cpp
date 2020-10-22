@@ -8,6 +8,7 @@
 
 #include <unistd.h>
 
+#include "var/StackString.hpp"
 #include "var/String.hpp"
 
 #include "printer/Printer.hpp"
@@ -43,7 +44,7 @@ Printer::Printer() {
 void Printer::set_format_code(u32 code) {
 #if defined __link
   if (is_bash()) {
-    interface_print_final(var::Ntos(code, "\033[1;%dm"));
+    interface_print_final(var::NumberString(code, "\033[1;%dm"));
   }
 #endif
 }
@@ -51,7 +52,7 @@ void Printer::set_format_code(u32 code) {
 void Printer::clear_format_code(u32 code) {
 #if defined __link
   if (is_bash()) {
-    interface_print_final(var::Ntos(code, "\033[1;2%dm"));
+    interface_print_final(var::NumberString(code, "\033[1;2%dm"));
   }
 #endif
 }
@@ -746,7 +747,7 @@ Printer &Printer::operator<<(const api::Error &error_context) {
 #endif
 
     if (symbol != nullptr) {
-      key(var::Ntos(offset), var::StringView(symbol));
+      key(var::NumberString(offset), var::StringView(symbol));
     }
 
     offset++;
@@ -767,7 +768,7 @@ Printer &Printer::operator<<(const var::String &a) {
 
 Printer &Printer::operator<<(const var::StringList &a) {
   for (u32 i = 0; i < a.count(); i++) {
-    key(var::Ntos(i), a.at(i));
+    key(var::NumberString(i), a.at(i));
   }
   return *this;
 }

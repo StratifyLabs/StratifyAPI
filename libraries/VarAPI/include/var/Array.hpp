@@ -19,7 +19,7 @@ namespace var {
  * safely.
  *
  * \code
- * #include <sapi/var.hpp>
+ * #include <var.hpp>
  * u32 c_array[64]; //C style array
  * Array<u32, 64> array; //var::Array
  *
@@ -114,7 +114,7 @@ public:
   /*! \details Returns the number of objects in the array.
    *
    * \code
-   * #include <sapi/var.hpp>
+   * #include <var.hpp>
    * Array<u32, 64> array;
    * for(u32 i=0; i < array.count(); i++){
    *   array.at(i) = i;

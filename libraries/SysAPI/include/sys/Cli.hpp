@@ -46,7 +46,10 @@ public:
    * \sa print_version()
    *
    */
-  void handle_version(const HandleVersion &options) const;
+  const Cli &handle_version(const HandleVersion &options) const;
+  inline const Cli &operator()(const HandleVersion &options) const {
+    return handle_version(options);
+  }
 
   /*! \details Sets whether the arguments are case sensitive. */
   Cli &set_case_sensitive(bool value = true) {

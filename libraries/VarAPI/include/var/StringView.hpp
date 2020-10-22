@@ -195,6 +195,5 @@ private:
 
 } // namespace var
 
-#include "StackString.hpp"
 
 #endif // VAR_API_STRING_VIEW_HPP
