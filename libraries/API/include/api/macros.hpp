@@ -122,6 +122,22 @@ private:                                                                       \
 
 #define API_AC(c, t, v) API_ACCESS_COMPOUND(c, t, v)
 
+#define API_ACCESS_STRING(PARENT_VALUE, VALUE_NAME)                            \
+public:                                                                        \
+  const var::StringView VALUE_NAME() const {                                   \
+    return m_##VALUE_NAME.string_view();                                       \
+  }                                                                            \
+  PARENT_VALUE &set_##VALUE_NAME(const var::StringView value) {                \
+    m_##VALUE_NAME = value.get_string();                                       \
+    return *this;                                                              \
+  }                                                                            \
+                                                                               \
+private:                                                                       \
+  var::String m_##VALUE_NAME
+
+#define API_AS(PARENT_VALUE, VALUE_NAME)                                       \
+  API_ACCESS_STRING(PARENT_VALUE, VALUE_NAME)
+
 #define API_READ_ACCESS_COMPOUND(c, t, v)                                      \
 public:                                                                        \
   const t &v() const { return m_##v; }                                         \

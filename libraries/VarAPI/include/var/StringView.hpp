@@ -15,6 +15,11 @@ namespace var {
 
 class String;
 class Data;
+class KeyString;
+class NumberString;
+class PathString;
+class NameString;
+class GeneralString;
 
 class StringView {
 public:
@@ -24,6 +29,12 @@ public:
 
   StringView() : m_string_view("") {}
   StringView(const char *value) { m_string_view = std::string_view(value); }
+  StringView(const String &value);
+  StringView(const KeyString &value);
+  StringView(const NumberString &value);
+  StringView(const PathString &value);
+  StringView(const NameString &value);
+  StringView(const GeneralString &value);
 
   StringView(const char *value, size_t length) {
     m_string_view = std::string_view(value, length);
@@ -35,6 +46,8 @@ public:
     m_string_view = std::string_view(nullptr, 0);
     return *this;
   }
+
+  bool is_null_terminated() const { return data() && (data()[length()] == 0); }
 
   char at(size_t value) const { return m_string_view.at(value); }
   char front() const { return m_string_view.front(); }
@@ -125,14 +138,19 @@ public:
     return m_string_view.find_last_not_of(a.m_string_view, position);
   }
 
-
-  bool operator==(StringView a) const {
+  bool operator==(const StringView a) const {
     return a.m_string_view == m_string_view;
   }
 
-  bool operator!=(StringView a) const {
+  bool operator!=(const StringView a) const {
     return a.m_string_view != m_string_view;
   }
+
+  bool operator==(const char *a) const { return StringView(a) == *this; }
+  bool operator!=(const char *a) const { return StringView(a) != *this; }
+
+  bool operator==(const String &a) const;
+  bool operator!=(const String &a) const;
 
   bool operator>(StringView a) const { return m_string_view > a.m_string_view; }
 
@@ -143,9 +161,6 @@ public:
   unsigned long to_unsigned_long(Base base = Base::decimal) const;
 
   const char *data() const { return m_string_view.data(); }
-
-  bool operator==(const char *a) const { return StringView(a) == *this; }
-  bool operator!=(const char *a) const { return StringView(a) != *this; }
 
   String get_string() const;
 
@@ -161,37 +176,6 @@ private:
 inline bool operator==(const char *lhs, StringView rhs) { return rhs == lhs; }
 
 using StringViewList = Vector<StringView>;
-
-class CString {
-public:
-  CString() : m_value("") {}
-  explicit CString(const char *value) : m_value(value) {}
-
-  const char *cstring() const { return m_value; }
-  operator const char *() const { return m_value; }
-  operator StringView() const { return StringView(m_value); }
-
-  bool operator==(CString a) const {
-    return StringView(m_value) == StringView(a.m_value);
-  }
-
-  bool operator!=(CString a) const {
-    return StringView(m_value) != StringView(a.m_value);
-  }
-
-  bool operator>(CString a) const {
-    return StringView(m_value) > StringView(a.m_value);
-  }
-
-  bool operator<(CString a) const {
-    return StringView(m_value) < StringView(a.m_value);
-  }
-
-  String get_string() const;
-
-private:
-  const char *m_value;
-};
 
 } // namespace var
 

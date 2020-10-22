@@ -27,26 +27,20 @@ public:
 
   bool is_empty() const { return m_buffer[0] == 0; }
 
-  Derived &append(const char *a) {
-    strncat(m_buffer, a, Size - 1);
-    return static_cast<Derived &>(*this);
-  }
-
   Derived &append(const StringView a) {
-    const size_t length = strlen(m_buffer);
-    const size_t s
-      = a.length() > Size - 1 - length ? Size - 1 - length : a.length();
-    m_buffer[s] = 0;
-    memcpy(m_buffer + length, a.data(), s);
+    const size_t len = strnlen(m_buffer, Size - 1);
+    const size_t s = a.length() > Size - 1 - len ? Size - 1 - len : a.length();
+    m_buffer[len + s] = 0;
+    memcpy(m_buffer + len, a.data(), s);
     return static_cast<Derived &>(*this);
   }
 
-  Derived &operator+=(const char *a) { return append(a); }
-  Derived &operator+=(const StringView a) { return append(a); }
-  Derived &operator+=(const StackString &a) { return append(a.string_view()); }
+  size_t length() const { return strnlen(m_buffer, Size - 1); }
 
-  bool operator==(const char *a) { return strncmp(m_buffer, a, Size - 1) == 0; }
-  bool operator!=(const char *a) { return strncmp(m_buffer, a, Size - 1) != 0; }
+  Derived &operator+=(const StringView a) { return append(a); }
+
+  bool operator==(const StringView a) const { return string_view() == a; }
+  bool operator!=(const StringView a) const { return string_view() != a; }
 
   bool operator==(const StackString &a) const {
     return string_view() == a.string_view();
@@ -56,13 +50,20 @@ public:
     return string_view() != a.string_view();
   }
 
+  bool operator==(const char *a) const {
+    return string_view() == StringView(a);
+  }
+
+  bool operator!=(const char *a) const {
+    return string_view() != StringView(a);
+  }
+
   // explicit conversion
   const char *cstring() const { return m_buffer; }
   const StringView string_view() const { return StringView(m_buffer); }
 
   // implicit conversion
   operator const char *() const { return m_buffer; }
-  operator const StringView() { return StringView(m_buffer); }
 
   template <typename... Args>
   Derived &format(const char *format, Args... args) {
@@ -128,7 +129,6 @@ public:
   KeyString(const char *a) : StackString(a) {}
   // implicit conversion
   operator const char *() const { return m_buffer; }
-  operator const StringView() { return StringView(m_buffer); }
 };
 
 class NameString : public StackString<NameString, NAME_MAX + 1> {
@@ -139,7 +139,6 @@ public:
 
   // implicit conversion
   operator const char *() const { return m_buffer; }
-  operator const StringView() { return StringView(m_buffer); }
 };
 
 class PathString : public StackString<PathString, PATH_MAX> {
@@ -167,7 +166,6 @@ public:
 
   // implicit conversion
   operator const char *() const { return m_buffer; }
-  operator const StringView() { return StringView(m_buffer); }
 };
 
 class GeneralString : public StackString<GeneralString, 256> {
@@ -177,7 +175,6 @@ public:
   GeneralString(const char *a) : StackString(a) {}
   // implicit conversion
   operator const char *() const { return m_buffer; }
-  operator const StringView() { return StringView(m_buffer); }
 };
 
 class NumberString : public StackString<NumberString, 64> {
@@ -223,7 +220,6 @@ public:
 
   // implicit conversion
   operator const char *() const { return m_buffer; }
-  operator const StringView() { return StringView(m_buffer); }
 };
 
 using StackString64 = NumberString;

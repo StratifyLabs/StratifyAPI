@@ -7,6 +7,18 @@
 
 using namespace var;
 
+StringView::StringView(const String &value) : m_string_view(value.m_string) {}
+StringView::StringView(const KeyString &value)
+  : m_string_view(value.cstring()) {}
+StringView::StringView(const NumberString &value)
+  : m_string_view(value.cstring()) {}
+StringView::StringView(const PathString &value)
+  : m_string_view(value.cstring()) {}
+StringView::StringView(const NameString &value)
+  : m_string_view(value.cstring()) {}
+StringView::StringView(const GeneralString &value)
+  : m_string_view(value.cstring()) {}
+
 StringView StringView::get_substring(const GetSubstring &options) const {
   if (options.length() != StringView::npos) {
     return StringView(
@@ -58,4 +70,10 @@ String StringView::get_string() const {
   return std::move(String(data(), length()));
 }
 
-String CString::get_string() const { return std::move(String(cstring())); }
+bool StringView::operator==(const String &a) const {
+  return m_string_view == a.m_string;
+}
+
+bool StringView::operator!=(const String &a) const {
+  return m_string_view != a.m_string;
+}

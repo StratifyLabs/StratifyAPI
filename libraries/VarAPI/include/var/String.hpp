@@ -127,7 +127,7 @@ public:
   explicit String(const Data &data);
 
   explicit String(StringView s) : m_string(s.m_string_view) {}
-  String(const String &s) : m_string(s.string()) {}
+  String(const String &s) : m_string(s.m_string) {}
   String(const char *s, size_t length) : m_string(s, length) {}
   String(size_t length, char c) : m_string(length, c) {}
   String(String &&s) noexcept : m_string(std::move(s.m_string)) {}
@@ -143,7 +143,7 @@ public:
     return *this;
   }
   String &operator=(const String &s) {
-    m_string = s.string();
+    m_string = s.m_string;
     return *this;
   }
   String &operator=(char c) {
@@ -170,7 +170,7 @@ public:
   }
 
   String &operator+=(std::initializer_list<char> il) {
-    string() += il;
+    m_string += il;
     return *this;
   }
 
@@ -192,24 +192,24 @@ public:
   }
 
   String operator+(const String &rhs) const {
-    return String(string() + rhs.string());
+    return String(m_string + rhs.m_string);
   }
 
   String operator+(String &&rhs) const {
-    return String(string() + std::move(rhs.string()));
+    return String(m_string + std::move(rhs.m_string));
   }
 
-  String operator+(char rhs) const { return String(string() + rhs); }
+  String operator+(char rhs) const { return String(m_string + rhs); }
 
   bool is_empty() const { return m_string.empty(); }
 
   String &insert(const String &string_to_insert, const Insert &options) {
     if (options.sub_position() == npos) {
-      m_string.insert(options.position(), string_to_insert.string());
+      m_string.insert(options.position(), string_to_insert.m_string);
     } else {
       m_string.insert(
         options.position(),
-        string_to_insert.string(),
+        string_to_insert.m_string,
         options.sub_position(),
         options.sub_length());
     }
@@ -307,7 +307,7 @@ public:
   char *to_char() { return &m_string[0]; }
 
   int compare(const String &string_to_compare) const {
-    return m_string.compare(string_to_compare.string());
+    return m_string.compare(string_to_compare.m_string);
   }
 
   /*! \details Compares the object to \a str.
@@ -325,35 +325,24 @@ public:
     return m_string.compare(
       options.position(),
       options.length(),
-      string_to_compare.string(),
+      string_to_compare.m_string,
       options.sub_position(),
       options.sub_length());
   }
 
   bool operator==(const String &a) const { return m_string == a.m_string; }
-  bool operator==(StringView a) const { return m_string == a.m_string_view; }
+  bool operator!=(const String &a) const { return m_string != a.m_string; }
 
+  bool operator==(StringView a) const { return m_string == a.m_string_view; }
   bool operator!=(StringView a) const { return m_string != a.m_string_view; }
 
   bool operator==(const char *a) const { return m_string == a; }
   bool operator!=(const char *a) const { return m_string != a; }
 
-  /*! \details Compares to a c-string (inequality). */
-  bool operator!=(const String &string_to_compare) const {
-    return m_string != string_to_compare.m_string;
-  }
-  bool operator>(const String &string_to_compare) const {
-    return m_string > string_to_compare.m_string;
-  }
-  bool operator<(const String &string_to_compare) const {
-    return m_string < string_to_compare.m_string;
-  }
-  bool operator>=(const String &string_to_compare) const {
-    return m_string >= string_to_compare.m_string;
-  }
-  bool operator<=(const String &string_to_compare) const {
-    return m_string <= string_to_compare.m_string;
-  }
+  bool operator>(const String &a) const { return m_string > a.m_string; }
+  bool operator<(const String &a) const { return m_string < a.m_string; }
+  bool operator>=(const String &a) const { return m_string >= a.m_string; }
+  bool operator<=(const String &a) const { return m_string <= a.m_string; }
 
   int to_integer() const { return ::atoi(cstring()); }
 
@@ -367,19 +356,16 @@ public:
     return ::strtoul(cstring(), nullptr, static_cast<int>(base));
   }
 
-  std::string &string() { return m_string; }
-  const std::string &string() const { return m_string; }
-
   u32 capacity() const { return m_string.capacity(); }
 
   StringViewList split(StringView delimiter) const;
 
-  operator StringView() const { return StringView(cstring(), length()); }
   StringView string_view() const { return StringView(cstring(), length()); }
 
   static const String &empty_string() { return m_empty_string; }
 
 private:
+  friend class StringView;
   std::string m_string;
   static String m_empty_string;
 };

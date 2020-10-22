@@ -86,8 +86,7 @@ var::PathString Dir::get_entry() const {
     return var::PathString();
   }
 
-  return var::PathString()
-    .append(m_path.cstring())
+  return var::PathString(m_path)
     .append((m_path.is_empty() == false) ? "/" : "")
     .append(entry);
 }

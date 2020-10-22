@@ -11,7 +11,7 @@ class Version {
 public:
   Version() = default;
   Version(const var::StringView value) : m_version(value) {}
-  Version(const var::String &value) : m_version(value.string_view()) {}
+  // Version(const var::String &value) : m_version(value.string_view()) {}
 
   u32 to_bcd() const;
 

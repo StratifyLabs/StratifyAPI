@@ -12,9 +12,8 @@
 #include "fs/Path.hpp"
 #include "local.h"
 
-printer::Printer &printer::operator<<(
-  printer::Printer &printer,
-  const fs::FileSystem::PathList &a) {
+printer::Printer &
+printer::operator<<(printer::Printer &printer, const fs::PathList &a) {
   size_t i = 0;
   for (const auto &item : a) {
     printer.key(var::NumberString(i++), item.string_view());
@@ -123,7 +122,7 @@ const FileSystem &FileSystem::remove_directory(var::StringView path) const {
   return *this;
 }
 
-FileSystem::PathList FileSystem::read_directory(
+PathList FileSystem::read_directory(
   const fs::Dir &directory,
   IsRecursive is_recursive,
   bool (*exclude)(var::StringView entry)) const {

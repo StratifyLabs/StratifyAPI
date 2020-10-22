@@ -74,11 +74,11 @@ public:
   bool stack_string_api_case() {
 
     {
-      KeyString s("012345678901234567890123456789123456789");
-      TEST_ASSERT(strlen(s.cstring()) == 31);
-      TEST_ASSERT(
-        strlen(KeyString("012345678901234567890123456789123456789").cstring())
-        == 31);
+      const char s0[] = "012345678901234567890123456789123456789";
+      KeyString s(s0);
+      PRINTER_TRACE(printer(), KeyString().format("length: %d", s.length()));
+      TEST_ASSERT(strlen(s.cstring()) == sizeof(s0) - 1);
+      TEST_ASSERT(strlen(KeyString(s0).cstring()) == sizeof(s0) - 1);
 
       TEST_ASSERT(KeyString("test") == "test");
       TEST_ASSERT(NumberString("test") == "test");
@@ -503,6 +503,7 @@ public:
       SV sv("testing");
       TEST_EXPECT(!sv.is_empty());
       TEST_EXPECT(!sv.is_null());
+      TEST_EXPECT(sv.is_null_terminated());
       TEST_EXPECT(sv.data() != nullptr);
       TEST_EXPECT(sv.data()[1] == 'e');
       TEST_EXPECT(sv == "testing");
@@ -520,6 +521,8 @@ public:
 
       TEST_EXPECT(sv.get_substring_at_position(2) == "sting");
       TEST_EXPECT(sv.get_substring_with_length(4) == "test");
+      TEST_EXPECT(
+        sv.get_substring_with_length(4).is_null_terminated() == false);
 
       {
         const StringView s0("test0");

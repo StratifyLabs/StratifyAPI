@@ -5,6 +5,8 @@
 
 namespace fs {
 
+using PathList = var::Vector<var::PathString>;
+
 class FileSystem : public api::ExecutionContext {
 public:
   using IsOverwrite = File::IsOverwrite;
@@ -56,7 +58,6 @@ public:
     IsRecursive is_recursive,
     const Permissions &permissions = Permissions(0)) const;
 
-  using PathList = var::Vector<var::PathString>;
 
   PathList read_directory(
     const fs::Dir &directory,
@@ -118,7 +119,7 @@ private:
 
 namespace printer {
 class Printer;
-Printer &operator<<(Printer &printer, const fs::FileSystem::PathList &a);
+Printer &operator<<(Printer &printer, const fs::PathList &a);
 } // namespace printer
 
 #endif // FSAPI_FS_FILESYSTEM_HPP
