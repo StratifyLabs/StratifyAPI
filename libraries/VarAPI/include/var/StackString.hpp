@@ -165,20 +165,6 @@ public:
     return *this;
   }
 
-  var::StringView suffix() const;
-  var::StringView name() const;
-  var::StringView parent_directory() const;
-  var::StringView base_name() const;
-  var::StringView no_suffix() const;
-  bool is_hidden() const;
-
-  static var::StringView suffix(const StringView path);
-  static var::StringView name(const StringView path);
-  static var::StringView parent_directory(const StringView path);
-  static var::StringView base_name(const StringView path);
-  static var::StringView no_suffix(const StringView path);
-  static bool is_hidden(const StringView path);
-
   // implicit conversion
   operator const char *() const { return m_buffer; }
   operator const StringView() { return StringView(m_buffer); }

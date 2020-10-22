@@ -95,6 +95,7 @@ function(stratify_api_add_test_executable NAME RAM_SIZE DEPENDENCIES)
 
 
 	sos_sdk_app_target(RELEASE ${LOCAL_NAME} "unittest" release ${SOS_ARCH})
+	message(STATUS "Stratify API Test Executable ${RELEASE_TARGET}")
 	add_executable(${RELEASE_TARGET})
 	target_sources(${RELEASE_TARGET}
 		PRIVATE
@@ -113,8 +114,8 @@ function(stratify_api_add_test_executable NAME RAM_SIZE DEPENDENCIES)
 	set(CTEST_OUTPUT_ON_FAILURE ON)
 	if(SOS_IS_LINK)
 
-		sos_sdk_add_test(${LOCAL_NAME} release)
-		sos_sdk_add_test(${LOCAL_NAME} coverage)
+		sos_sdk_add_test(${LOCAL_NAME} unittest release)
+		sos_sdk_add_test(${LOCAL_NAME} unittest coverage)
 
 		sos_sdk_app_target(COVERAGE ${LOCAL_NAME} "unittest" coverage ${SOS_ARCH})
 		add_executable(${COVERAGE_TARGET})

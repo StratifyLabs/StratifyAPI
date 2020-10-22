@@ -271,36 +271,30 @@ public:
           .add_null_terminator()
         == StringView("Hello"));
 
-      TEST_EXPECT(
-        F(F::IsOverwrite::yes,
-          var::PathString(dir_name_recursive).parent_directory() + "/tmp.txt")
-          .write("Hello2")
-          .is_success);
-
-      TEST_ASSERT(
-        DF()
-          .write(F(
-            var::PathString(dir_name_recursive).parent_directory() + "/tmp.txt",
-            OpenMode::read_only()))
-          .data()
-          .add_null_terminator()
-        == StringView("Hello2"));
-
       TEST_EXPECT(F(F::IsOverwrite::yes,
-                    var::PathString(
-                      var::PathString(dir_name_recursive).parent_directory())
-                        .parent_directory()
-                      + "/tmp.txt")
-                    .write("Hello3")
+                    fs::Path::parent_directory(dir_name_recursive) + "/tmp.txt")
+                    .write("Hello2")
                     .is_success);
 
       TEST_ASSERT(
         DF()
           .write(
-            F(var::PathString(
-                var::PathString(dir_name_recursive).parent_directory())
-                  .parent_directory()
-                + "/tmp.txt",
+            F(fs::Path::parent_directory(dir_name_recursive) + "/tmp.txt",
+              OpenMode::read_only()))
+          .data()
+          .add_null_terminator()
+        == StringView("Hello2"));
+
+      TEST_EXPECT(
+        F(F::IsOverwrite::yes,
+          fs::Path::parent_directory(dir_name_recursive, 2) + "/tmp.txt")
+          .write("Hello3")
+          .is_success);
+
+      TEST_ASSERT(
+        DF()
+          .write(
+            F(fs::Path::parent_directory(dir_name_recursive, 2) + "/tmp.txt",
               OpenMode::read_only()))
           .data()
           .add_null_terminator()
@@ -309,14 +303,10 @@ public:
       TEST_EXPECT(FS().exists(dir_name_recursive) == true);
 
       TEST_EXPECT(
-        FS().exists(var::PathString(dir_name_recursive).parent_directory())
-        == true);
+        FS().exists(fs::Path::parent_directory(dir_name_recursive)) == true);
 
       TEST_EXPECT(
-        FS().exists(var::PathString(
-                      var::PathString(dir_name_recursive).parent_directory())
-                      .parent_directory())
-        == true);
+        FS().exists(fs::Path::parent_directory(dir_name_recursive, 2)) == true);
 
       TEST_EXPECT(
         FS().remove_directory(dir_name, FS::IsRecursive::yes).is_success());

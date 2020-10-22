@@ -9,6 +9,7 @@
 #include "var/Tokenizer.hpp"
 
 #include "fs/FileSystem.hpp"
+#include "fs/Path.hpp"
 #include "local.h"
 
 printer::Printer &printer::operator<<(
@@ -185,7 +186,7 @@ bool FileSystem::directory_exists(var::StringView path) const {
 }
 
 Permissions FileSystem::get_permissions(var::StringView path) const {
-  const var::StringView parent = var::PathString::parent_directory(path);
+  const var::StringView parent = fs::Path::parent_directory(path);
   if (parent.is_empty()) {
     return get_info(".").permissions();
   }

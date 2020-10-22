@@ -7,16 +7,14 @@ namespace fs {
 
 class Path {
 public:
-  explicit Path(var::StringView view) : m_path(view) {}
-  explicit Path(const char *a) : m_path(a) {}
+  static var::StringView suffix(const var::StringView path);
+  static var::StringView name(const var::StringView path);
+  static var::StringView
+  parent_directory(const var::StringView path, size_t depth = 1);
+  static var::StringView base_name(const var::StringView path);
+  static var::StringView no_suffix(const var::StringView path);
 
-  var::StringView suffix() const;
-  var::StringView name() const;
-  var::StringView parent_directory() const;
-  var::StringView base_name() const;
-  var::StringView no_suffix() const;
-
-  bool is_hidden() const;
+  bool is_hidden(const var::StringView path);
 
 private:
   var::StringView m_path;

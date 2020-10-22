@@ -41,8 +41,8 @@ macro(api_test_executable NAME DIRECTORIES)
 
 	if(SOS_IS_LINK)
 
-		sos_sdk_add_test(${NAME} release)
-		sos_sdk_add_test(${NAME} coverage)
+		sos_sdk_add_test(${NAME} "" release)
+		sos_sdk_add_test(${NAME} "" coverage)
 
 		sos_sdk_app_target(COVERAGE ${NAME} "" coverage ${SOS_ARCH})
 		add_executable(${COVERAGE_TARGET})
