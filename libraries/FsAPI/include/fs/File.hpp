@@ -22,6 +22,7 @@ class File;
 class File : public api::ExecutionContext, public FileInfoFlags {
 public:
   enum class IsOverwrite { no, yes };
+  enum class IsNull { yes };
 
   enum class Whence {
     set /*! Set the location of the file descriptor */ = LINK_SEEK_SET,
