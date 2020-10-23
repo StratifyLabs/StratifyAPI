@@ -74,6 +74,8 @@ String StringView::get_string() const {
   return std::move(String(data(), length()));
 }
 
+String StringView::get_string(const StringView &a) { return a.get_string(); }
+
 bool StringView::operator==(const String &a) const {
   return m_string_view == a.m_string;
 }

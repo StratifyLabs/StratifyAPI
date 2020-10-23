@@ -61,6 +61,11 @@ public:
     return *this;
   }
 
+  StringView &pop_back(size_t length = 1) {
+    m_string_view.remove_suffix(length);
+    return *this;
+  }
+
   class GetSubstring {
     API_AF(GetSubstring, size_t, position, 0);
     API_AF(GetSubstring, size_t, length, npos);
@@ -166,6 +171,8 @@ public:
   String get_string() const;
 
   // static StringView boolean(bool a) { return a ? "true" : "false"; }
+
+  static String get_string(const StringView &a);
 
 private:
   friend class String;

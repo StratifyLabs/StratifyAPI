@@ -14,7 +14,7 @@ public:
   static var::StringView base_name(const var::StringView path);
   static var::StringView no_suffix(const var::StringView path);
 
-  bool is_hidden(const var::StringView path);
+  static bool is_hidden(const var::StringView path);
 
 private:
   var::StringView m_path;

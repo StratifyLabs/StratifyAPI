@@ -36,6 +36,13 @@ public:
   }
 
   size_t length() const { return strnlen(m_buffer, Size - 1); }
+  char back() const {
+    const size_t len = length();
+    if (len) {
+      return m_buffer[length() - 1];
+    }
+    return 0;
+  }
 
   Derived &operator+=(const StringView a) { return append(a); }
 

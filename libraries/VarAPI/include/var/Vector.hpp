@@ -180,6 +180,26 @@ public:
     return *this;
   }
 
+  template <typename ConvertedType> Vector<ConvertedType> convert() const {
+    Vector<ConvertedType> result;
+    result.reserve(count());
+    for (const auto &item : *this) {
+      result.push_back(item);
+    }
+    return std::move(result);
+  }
+
+  template <typename ConvertedType>
+  Vector<ConvertedType>
+  convert(ConvertedType (*convert_function)(const T &value)) const {
+    Vector<ConvertedType> result;
+    result.reserve(count());
+    for (const auto &item : *this) {
+      result.push_back(convert_function(item));
+    }
+    return std::move(result);
+  }
+
   static bool ascending(const T &a, const T &b) { return a < b; }
 
   static bool descending(const T &a, const T &b) { return b < a; }

@@ -766,6 +766,14 @@ public:
       TEST_ASSERT(greater >= greater_equal);
     }
 
+    {
+      StringViewList string_view_list = {"test", "test1", "test2"};
+      StringList string_list = string_view_list.convert(StringView::get_string);
+      for (u32 i = 0; i < string_view_list.count(); i++) {
+        TEST_ASSERT(string_list.at(i) == string_view_list.at(i));
+      }
+    }
+
     TEST_ASSERT(String().is_empty());
 
     return true;
