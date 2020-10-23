@@ -159,6 +159,7 @@ public:
   long to_long(Base base = Base::decimal) const;
   float to_float() const;
   unsigned long to_unsigned_long(Base base = Base::decimal) const;
+  int to_integer() const;
 
   const char *data() const { return m_string_view.data(); }
 

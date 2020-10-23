@@ -54,16 +54,20 @@ float StringView::to_float() const {
 
 long StringView::to_long(Base base) const {
   return ::strtol(
-    StackString64(*this).cstring(),
+    NumberString(*this).cstring(),
     nullptr,
     static_cast<int>(base));
 }
 
 unsigned long StringView::to_unsigned_long(Base base) const {
   return ::strtoul(
-    StackString64(*this).cstring(),
+    NumberString(*this).cstring(),
     nullptr,
     static_cast<int>(base));
+}
+
+int StringView::to_integer() const {
+  return ::atoi(NumberString(*this).cstring());
 }
 
 String StringView::get_string() const {

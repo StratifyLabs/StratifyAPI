@@ -59,6 +59,7 @@ public:
   }
 
   // explicit conversion
+  char *to_char() { return m_buffer; }
   const char *cstring() const { return m_buffer; }
   const StringView string_view() const { return StringView(m_buffer); }
 
@@ -103,6 +104,8 @@ public:
     return replace(options);
   }
 
+  constexpr size_t capacity() const { return Size - 1; }
+
 protected:
   StackString() { m_buffer[0] = 0; }
   StackString(const StringView a) {
@@ -117,7 +120,6 @@ protected:
     strncpy(m_buffer, a, Size - 1);
   }
 
-  constexpr size_t capacity() const { return Size - 1; }
 
   char m_buffer[Size];
 };

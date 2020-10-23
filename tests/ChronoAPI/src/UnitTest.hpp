@@ -95,7 +95,7 @@ public:
 
     ClockTimer start = ClockTimer().start();
     wait(10_milliseconds);
-    TEST_EXPECT(start.stop().milliseconds() >= 10);
+    TEST_EXPECT(start.stop().micro_time().milliseconds() >= 10);
 
     return true;
   }
@@ -106,7 +106,7 @@ public:
     using MT = chrono::MicroTime;
 
     T t = T().start();
-    while (t.micro_time() < 15_milliseconds) {
+    while (t < 15_milliseconds) {
       wait(100_microseconds);
     }
     t.stop();
@@ -114,10 +114,25 @@ public:
     t.resume();
     wait(10_milliseconds);
     TEST_EXPECT(t.micro_time() > 20_milliseconds);
+    TEST_EXPECT(t > 20_milliseconds);
+    TEST_EXPECT(t >= 20_milliseconds);
+    TEST_EXPECT(t < 5_seconds);
+    TEST_EXPECT(t <= 5_seconds);
+    TEST_EXPECT(5_seconds > t);
+    TEST_EXPECT(5_seconds >= t);
+    TEST_EXPECT(t != 5_seconds);
+    TEST_EXPECT(5_seconds != t);
+    t.stop();
     t.reset();
     TEST_EXPECT(t.microseconds() == 0);
     TEST_EXPECT(t.seconds() == 0);
     TEST_EXPECT(t.milliseconds() == 0);
+
+    TEST_EXPECT(t == t.micro_time());
+    TEST_EXPECT(t == 0_seconds);
+
+    TEST_EXPECT(0_seconds == t);
+    TEST_EXPECT(0_seconds == t.micro_time());
 
     return true;
   }

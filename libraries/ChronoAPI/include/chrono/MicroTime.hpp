@@ -112,7 +112,7 @@ public:
   }
 
   /*! \details Compares <= to another MicroTime object. */
-  bool operator<=(const MicroTime &a) {
+  bool operator<=(const MicroTime &a) const {
     return microseconds() <= a.microseconds();
   }
 

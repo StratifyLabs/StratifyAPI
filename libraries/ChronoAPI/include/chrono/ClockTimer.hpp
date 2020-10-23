@@ -213,14 +213,63 @@ public:
   /*! \details Returns the value of the timer as a ClockTime object. */
   ClockTime clock_time() const;
 
-  MicroTime micro_time() const { return MicroTime(microseconds()); }
+  MicroTime micro_time() const { return calc_value(); }
 
 private:
-  MicroTime calc_value() const;
-
   ClockTime m_start;
   ClockTime m_stop;
+
+  MicroTime calc_value() const;
 };
+
+inline bool operator==(const ClockTimer &lhs, const MicroTime &rhs) {
+  return lhs.micro_time() == rhs;
+}
+
+inline bool operator!=(const ClockTimer &lhs, const MicroTime &rhs) {
+  return lhs.micro_time() != rhs;
+}
+
+inline bool operator>(const ClockTimer &lhs, const MicroTime &rhs) {
+  return lhs.micro_time() > rhs;
+}
+
+inline bool operator<(const ClockTimer &lhs, const MicroTime &rhs) {
+  return lhs.micro_time() < rhs;
+}
+
+inline bool operator<=(const ClockTimer &lhs, const MicroTime &rhs) {
+  return lhs.micro_time() <= rhs;
+}
+
+inline bool operator>=(const ClockTimer &lhs, const MicroTime &rhs) {
+  return lhs.micro_time() >= rhs;
+}
+
+inline bool operator==(const MicroTime &lhs, const ClockTimer &rhs) {
+  return lhs == rhs.micro_time();
+}
+
+inline bool operator!=(const MicroTime &lhs, const ClockTimer &rhs) {
+  return lhs != rhs.micro_time();
+}
+
+inline bool operator>(const MicroTime &lhs, const ClockTimer &rhs) {
+  return lhs > rhs.micro_time();
+}
+
+inline bool operator<(const MicroTime &lhs, const ClockTimer &rhs) {
+  return lhs < rhs.micro_time();
+}
+
+inline bool operator<=(const MicroTime &lhs, const ClockTimer &rhs) {
+  return lhs <= rhs.micro_time();
+}
+
+inline bool operator>=(const MicroTime &lhs, const ClockTimer &rhs) {
+  return lhs >= rhs.micro_time();
+}
+
 } // namespace chrono
 
 #endif // CHRONO_API_CHRONO_TIMER_HPP_

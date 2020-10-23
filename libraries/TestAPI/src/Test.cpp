@@ -80,14 +80,15 @@ void Test::open_case(var::StringView case_name) {
 void Test::close_case() {
   m_case_timer.stop();
   printer::PrinterObject po(printer(), "caseResult");
-  m_test_duration_microseconds += m_case_timer.microseconds();
+  m_test_duration_microseconds += m_case_timer.micro_time().microseconds();
   printer().key_bool("result", m_case_result);
   printer().key(
     "score",
-    NumberString(get_score(m_case_timer.microseconds())).string_view());
+    NumberString(get_score(m_case_timer.micro_time().microseconds()))
+      .string_view());
   printer().key(
     "microseconds",
-    NumberString(m_case_timer.microseconds()).string_view());
+    NumberString(m_case_timer.micro_time().microseconds()).string_view());
   printer().key_bool("memoryLeak", m_case_data_info == var::DataInfo());
   m_case_result = true;
 }
