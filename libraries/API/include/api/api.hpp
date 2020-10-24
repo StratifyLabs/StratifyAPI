@@ -83,31 +83,7 @@ namespace api {
  */
 class ApiInfo {
 public:
-  /*! \details Returns a pointer to a string
-   * that shows the API version.
-   *
-   * ```
-   * //md2code:main
-   *	printf("The Stratify API version is %s\n",
-   *	  api::ApiInfo::version()
-   * );
-   * ```
-   *
-   */
   static const char *version();
-
-  /*! \details Returns a c-style string pointer
-   * to the git hash used to build the Stratify API.
-   *
-   * ```
-   * //md2code:main
-   *	printf("The Stratify API git hash is %s\n",
-   *	  api::ApiInfo::git_hash()
-   * );
-   * ```
-   *
-   *
-   */
   static const char *git_hash();
 
   static constexpr u32 malloc_start_chunk_size() {

@@ -29,7 +29,6 @@ using namespace var;
 using namespace sys;
 
 Cli::Cli(int argc, char *argv[]) {
-  printf("here\n");
   if (argc < 0) {
     argc = 0;
   }

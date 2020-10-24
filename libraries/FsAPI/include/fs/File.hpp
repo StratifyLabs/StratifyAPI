@@ -12,7 +12,6 @@
 #include "chrono/MicroTime.hpp"
 #include "var/Base64.hpp"
 
-#include "var/Data.hpp"
 #include "var/String.hpp"
 
 namespace fs {
@@ -84,14 +83,6 @@ public:
     return API_CONST_CAST_SELF(File, read, buf, size);
   }
 
-  /*! \details Reads the file into a var::Data object.
-   *
-   * @param data The destination data object
-   * @return The number of bytes read
-   *
-   * This method will read up to data.size() bytes.
-   *
-   */
   const File &read(var::View view) const {
     return read(view.to_void(), view.size());
   }
@@ -107,7 +98,6 @@ public:
     return API_CONST_CAST_SELF(File, write, buf, size);
   }
 
-  /*! \details Writes the file using a var::Data object. */
   const File &write(var::View view) const {
     return write(view.to_const_void(), view.size());
   }
@@ -363,6 +353,8 @@ public:
     return static_cast<Derived &>(File::set_fileno(file));
   }
 
+  Derived &&move() { return std::move(static_cast<Derived &>(*this)); }
+
 protected:
   FileAccess<Derived>() = default;
   FileAccess<Derived>(
@@ -371,107 +363,6 @@ protected:
     : File(path, open_mode FSAPI_LINK_INHERIT_DRIVER_LAST) {}
 
 private:
-};
-
-/*! \brief DataFile Class
- * \details The DataFile class is a class
- * that uses a var::Data object to allow
- * fs::File operations. This allows for an
- * easy way to have a valid fs::File object
- * that can be passed to methods that read/write
- * data from the file.
- *
- *
- */
-class DataFile : public FileAccess<DataFile> {
-public:
-  /*! \details Constructs a data file. */
-
-  DataFile(DataFile &&file) = default;
-  DataFile &operator=(DataFile &&file) = default;
-
-  DataFile(const OpenMode &flags = OpenMode::append_read_write())
-    : m_open_flags(flags) {
-    m_location = 0;
-  }
-
-  explicit DataFile(File &file_to_load);
-
-  DataFile &reserve(size_t size) {
-    m_data.reserve(size);
-    return *this;
-  }
-
-  DataFile &resize(size_t size) {
-    m_data.resize(size);
-    return *this;
-  }
-
-  DataFile &copy(var::View view) {
-    m_data.copy(view);
-    return *this;
-  }
-
-  DataFile &set_flags(OpenMode open_flags) {
-    m_open_flags = open_flags;
-    return *this;
-  }
-  const OpenMode &flags() const { return m_open_flags; }
-
-  /*! \details Accesses (read-only) the member data object. */
-  const var::Data &data() const { return m_data; }
-  /*! \details Accesses the member data object. */
-  var::Data &data() { return m_data; }
-
-private:
-  mutable int m_location = 0; // offset location for seeking/reading/writing
-  mutable OpenMode m_open_flags;
-  mutable var::Data m_data;
-
-  int interface_read(void *buf, int nbyte) const override;
-  int interface_write(const void *buf, int nbyte) const override;
-  int interface_lseek(int offset, int whence) const override;
-  int interface_ioctl(int request, void *argument) const override {
-    return fake_ioctl(request, argument);
-  }
-};
-
-class ViewFile : public FileAccess<ViewFile> {
-public:
-  /*! \details Constructs a data file. */
-
-  ViewFile(ViewFile &&view_file) = default;
-  ViewFile &operator=(ViewFile &&view_file) = default;
-
-  ViewFile(var::View view)
-    : m_open_flags(
-      view.is_read_only() ? OpenMode::read_only() : OpenMode::read_write()) {
-    m_view = view;
-  }
-
-  ViewFile &set_flags(const OpenMode &open_flags) {
-    m_open_flags = open_flags;
-    return *this;
-  }
-
-  const OpenMode &flags() const { return m_open_flags; }
-
-  /*! \details Accesses (read-only) the member data object. */
-  const var::View &item() const { return m_view; }
-  /*! \details Accesses the member data object. */
-  var::View &item() { return m_view; }
-
-private:
-  mutable int m_location = 0; // offset location for seeking/reading/writing
-  mutable OpenMode m_open_flags;
-  var::View m_view;
-
-  int interface_ioctl(int request, void *argument) const override {
-    return fake_ioctl(request, argument);
-  }
-  int interface_lseek(int offset, int whence) const override;
-  int interface_read(void *buf, int nbyte) const override;
-  int interface_write(const void *buf, int nbyte) const override;
 };
 
 class NullFile : public FileAccess<NullFile> {

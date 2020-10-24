@@ -4,6 +4,7 @@
 #include "api/api.hpp"
 #include "chrono.hpp"
 #include "fs.hpp"
+#include "printer.hpp"
 #include "sys.hpp"
 #include "test/Test.hpp"
 #include "var.hpp"
@@ -456,6 +457,47 @@ public:
           .data()
           .add_null_terminator()
         == test_strings.at(1));
+    }
+
+    {
+      PrinterObject po(printer(), "lambdaFile");
+      Data lambda_file_data;
+      printer().key("fileData", NumberString(&lambda_file_data, "%p"));
+      LambdaFile f
+        = LambdaFile()
+            .set_read_callback(
+              [](void *context, int location, var::View view) -> int {
+                Data *data = reinterpret_cast<Data *>(context);
+                View data_at_location = View(*data).pop_front(location);
+                const size_t size = data_at_location.size() > view.size()
+                                      ? view.size()
+                                      : data_at_location.size();
+                view.copy(View(*data).pop_front(location));
+                return size;
+              })
+            .set_write_callback(
+              [](void *context, int location, const var::View view) -> int {
+                Data *data = reinterpret_cast<Data *>(context);
+                data->append(view);
+                return view.size();
+              })
+            .set_context(&lambda_file_data)
+            .move();
+
+      const StringView hello = "hello";
+      DataFile incoming;
+      TEST_ASSERT(f.write(hello).is_success());
+
+      TEST_ASSERT(incoming.write(f.seek(0)).is_success());
+      PRINTER_TRACE(printer(), "");
+      printer().key(
+        "incoming",
+        StringView(View(incoming.data()).to_const_char(), incoming.size()));
+      TEST_ASSERT(incoming.size() == hello.length());
+      TEST_ASSERT(f.size() == hello.length());
+
+      TEST_ASSERT(incoming.data().add_null_terminator() == hello);
+      TEST_ASSERT(lambda_file_data.add_null_terminator() == hello);
     }
 
     return true;
