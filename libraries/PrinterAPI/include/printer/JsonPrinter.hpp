@@ -32,7 +32,7 @@ private:
     Level level,
     var::StringView key,
     var::StringView value,
-    Newline is_newline = Newline::yes) override;
+    IsNewline is_newline = IsNewline::yes) override;
 
   Container &container() { return m_container_list.back(); }
 

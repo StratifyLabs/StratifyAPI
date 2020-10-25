@@ -149,7 +149,7 @@ void MarkdownPrinter::print(
     level,
     key,
     value,
-    (is_print_newline && !is_suppress_newline) ? Newline::yes : Newline::no);
+    (is_print_newline && !is_suppress_newline) ? IsNewline::yes : IsNewline::no);
 }
 
 bool MarkdownPrinter::close_type(ContainerType type) {

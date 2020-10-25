@@ -15,7 +15,7 @@ void JsonPrinter::print(
   Level level,
   var::StringView key,
   var::StringView value,
-  Newline is_newline) {
+  IsNewline is_newline) {
 
   if (level > verbose_level()) {
     return;
@@ -33,7 +33,7 @@ void JsonPrinter::print(
     key = var::StringView().set_null();
   }
 
-  Printer::print(level, key, value, Newline::no);
+  Printer::print(level, key, value, IsNewline::no);
 }
 
 void JsonPrinter::print_open_object(Level level, var::StringView key) {

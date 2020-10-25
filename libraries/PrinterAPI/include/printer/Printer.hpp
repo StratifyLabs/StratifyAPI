@@ -252,6 +252,7 @@ public:
 
   /*! \details Used by progres_callback(). */
   static bool update_progress_callback(void *context, int progress, int total) {
+    API_ASSERT(context != nullptr);
     return static_cast<Printer *>(context)->update_progress(progress, total);
   }
 
@@ -318,13 +319,13 @@ public:
   print_open_array(Level verbose_level, var::StringView key);
   virtual void print_close_array();
 
-  enum class Newline { no, yes };
+  enum class IsNewline { no, yes };
 
   virtual void print(
     Level level,
     var::StringView key,
     var::StringView value,
-    Newline is_newline = Newline::yes);
+    IsNewline is_newline = IsNewline::yes);
 
 protected:
   virtual void interface_print_final(var::StringView view);

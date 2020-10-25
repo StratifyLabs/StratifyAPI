@@ -3,6 +3,7 @@
 
 #include "api/api.hpp"
 #include "chrono.hpp"
+#include "printer.hpp"
 #include "sys.hpp"
 #include "test/Test.hpp"
 #include "thread.hpp"
@@ -61,6 +62,39 @@ public:
     printer().key("message", StringView(error().message()));
     TEST_ASSERT(StringView(error().message()) == "message");
     TEST_ASSERT(context_count() == 2);
+
+    auto print_progress = [this]() {
+      {
+        PrinterObject po(printer(), "progress");
+
+        printer().set_progress_key("progressing");
+        for (u32 i = 0; i < 50; i++) {
+          wait(25_milliseconds);
+          printer().progress_callback()->update(i + 1, 50);
+        }
+        printer().progress_callback()->update(0, 0);
+      }
+
+      {
+        PrinterObject po(printer(), "spin");
+        printer().set_progress_key("spinning");
+        for (u32 i = 0; i < 10; i++) {
+          wait(50_milliseconds);
+          printer().progress_callback()->update(
+            i + 1,
+            api::ProgressCallback::indeterminate_progress_total());
+        }
+        printer().progress_callback()->update(0, 0);
+      }
+    };
+
+    print_progress();
+    printer().enable_flags(Printer::PrintFlags::simple_progress);
+    print_progress();
+    printer().disable_flags(Printer::PrintFlags::simple_progress);
+    print_progress();
+
+    TEST_ASSERT(is_success());
 
     return true;
   }

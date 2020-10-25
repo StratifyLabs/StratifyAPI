@@ -119,7 +119,7 @@ void Printer::print(
   Level verbose_level,
   var::StringView key,
   var::StringView value,
-  Newline is_newline) {
+  IsNewline is_newline) {
   // default flat printer behavior
   if (verbose_level > this->verbose_level()) {
     return;
@@ -148,10 +148,10 @@ void Printer::print(
     if (m_print_flags & PrintFlags::key_quotes) {
       interface_print_final("\"");
       interface_print_final(key);
-      interface_print_final("\":");
+      interface_print_final("\": ");
     } else {
       interface_print_final(key);
-      interface_print_final(":");
+      interface_print_final(": ");
     }
     if (m_print_flags & PrintFlags::bold_keys) {
       clear_format_code(static_cast<int>(FormatType::bold));
@@ -196,7 +196,7 @@ void Printer::print(
     }
   }
 
-  if (is_newline == Newline::yes) {
+  if (is_newline == IsNewline::yes) {
     interface_print_final("\n");
   }
 }
@@ -204,6 +204,7 @@ void Printer::print(
 void Printer::interface_print_final(var::StringView view) {
 #if defined __link
   fwrite(view.data(), view.length(), 1, stdout);
+  fflush(stdout);
 #else
   ::write(stdout->_file, view.data(), view.length());
 #endif
@@ -469,7 +470,11 @@ bool Printer::update_progress(int progress, int total) {
     if ((m_progress_state == 0) && total) {
 
       // only print the key once with total == -1
-      print(Level::info, m_progress_key, nullptr);
+      print(
+        Level::info,
+        m_progress_key,
+        var::StringView().set_null(),
+        IsNewline::no);
       if (total != -1) {
         if (m_print_flags & PrintFlags::value_quotes) {
           interface_print_final("\"");
@@ -526,7 +531,7 @@ bool Printer::update_progress(int progress, int total) {
       }
     }
     if (total == 0) {
-      if ((m_print_flags & PrintFlags::no_progress_newline) == 0) {
+      if ((m_print_flags & PrintFlags::no_progress_newline) == false) {
         interface_print_final("\n");
       }
       if (m_print_flags & PrintFlags::value_quotes) {

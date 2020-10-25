@@ -122,7 +122,7 @@ private:
     Level level,
     var::StringView key,
     var::StringView value,
-    Newline is_newline = Newline::yes);
+    IsNewline is_newline = IsNewline::yes);
 
   Container &container() { return m_container_list.back(); }
 

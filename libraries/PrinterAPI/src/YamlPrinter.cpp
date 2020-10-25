@@ -12,7 +12,7 @@ void YamlPrinter::print(
   Level level,
   var::StringView key,
   var::StringView value,
-  Newline is_newline) {
+  IsNewline is_newline) {
 
   if (level > verbose_level()) {
     return;
@@ -36,7 +36,7 @@ void YamlPrinter::print(
     level,
     key,
     value,
-    (value.is_null() == false) ? Newline::yes : Newline::no);
+    (value.is_null() == false) ? IsNewline::yes : IsNewline::no);
 }
 
 void YamlPrinter::print_open_object(Level level, var::StringView key) {
