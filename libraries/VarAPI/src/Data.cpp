@@ -33,7 +33,9 @@ Data Data::from_string(StringView value) {
 }
 
 Data &Data::resize(size_t s) {
-  API_RETURN_VALUE_IF_ERROR(*this);
+  if (s > size()) {
+    API_RETURN_VALUE_IF_ERROR(*this);
+  }
   m_data.resize(s);
   if (m_data.size() < s) {
     // set memory error
