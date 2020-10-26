@@ -34,9 +34,9 @@ int DataFile::interface_read(void *buf, int nbyte) const {
     size_ready = nbyte;
   }
 
-  if (size_ready < 0) {
+  if (size_ready <= 0) {
     // EOF
-    return -1;
+    return 0;
   }
 
   memcpy(buf, m_data.data_u8() + m_location, size_ready);

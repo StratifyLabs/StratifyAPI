@@ -90,14 +90,14 @@ public:
   }
 
   Vector<T> &operator<<(const Vector<T> &a) {
-    for (u32 i = 0; i < a.count(); i++) {
+    for (size_t i = 0; i < a.count(); i++) {
       *this << a.at(i);
     }
     return *this;
   }
 
-  T &at(u32 position) { return m_vector.at(position); }
-  const T &at(u32 position) const { return m_vector.at(position); }
+  T &at(size_t position) { return m_vector.at(position); }
+  const T &at(size_t position) const { return m_vector.at(position); }
 
   T &back() { return m_vector.back(); }
   const T &back() const { return m_vector.back(); }

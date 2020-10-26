@@ -127,9 +127,9 @@ float String::to_float() const {
 }
 
 StringViewList String::split(StringView delimiter) const {
-  Tokenizer tokens
-    = Tokenizer(cstring(), Tokenizer::Construct().set_delimeters(delimiter));
-  return tokens.list();
+  return std::move(
+    Tokenizer(cstring(), Tokenizer::Construct().set_delimeters(delimiter))
+      .list());
 }
 
 size_t String::count(var::StringView occurance) const {

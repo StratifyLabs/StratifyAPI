@@ -25,8 +25,9 @@ int ViewFile::interface_read(void *buf, int nbyte) const {
     size_ready = nbyte;
   }
 
-  if (size_ready < 0) {
-    return -1;
+  if (size_ready <= 0) {
+    // EOF
+    return 0;
   }
 
   memcpy(buf, item().to_const_u8() + m_location, size_ready);

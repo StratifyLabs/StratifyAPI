@@ -29,7 +29,7 @@ Test::Test(var::StringView name) {
 
 Test::~Test() {
   // close the JSON object
-  PrinterObject pg(printer(), "testResult");
+  Printer::Object pg(printer(), "testResult");
   printer().key_bool("result", m_test_result);
   printer().key("score", NumberString(get_score(m_test_duration_microseconds)));
   printer().key("microseconds", NumberString(m_test_duration_microseconds));
@@ -79,7 +79,7 @@ void Test::open_case(var::StringView case_name) {
 
 void Test::close_case() {
   m_case_timer.stop();
-  printer::PrinterObject po(printer(), "caseResult");
+  printer::Printer::Object po(printer(), "caseResult");
   m_test_duration_microseconds += m_case_timer.micro_time().microseconds();
   printer().key_bool("result", m_case_result);
   printer().key(
@@ -99,13 +99,13 @@ void Test::initialize(const Initialize &options) {
   m_final_duration_microseconds = 0;
 
   {
-    PrinterObject pg(printer(), "system");
+    Printer::Object pg(printer(), "system");
     printer().key("operatingSystem", sys::System::operating_system_name());
     printer().key("processor", sys::System::processor());
   }
 
   {
-    PrinterObject pg(printer(), "test");
+    Printer::Object pg(printer(), "test");
     printer().key("name", options.name());
     printer().key("version", options.version());
     printer().key("gitHash", options.git_hash());
@@ -172,7 +172,7 @@ u32 Test::parse_test(const sys::Cli &cli, var::StringView name, u32 test_flag) {
 }
 
 void Test::finalize() {
-  PrinterObject pg(printer(), "finalResult");
+  Printer::Object pg(printer(), "finalResult");
   printer().key_bool("result", m_final_result);
   printer().key(
     "finalResult",

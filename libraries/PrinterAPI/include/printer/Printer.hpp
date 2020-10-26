@@ -167,6 +167,7 @@ public:
   Printer &operator<<(var::View a);
   Printer &operator<<(const var::String &a);
   Printer &operator<<(const var::StringList &a);
+  Printer &operator<<(const var::StringViewList &a);
   Printer &operator<<(const api::Error &error_context);
 
   /*! \details Assign an effective verbose level to this object. */
@@ -301,25 +302,32 @@ public:
     return *this;
   }
 
-  Printer &open_object(var::StringView key, Level level = Level::fatal);
+  template <class T>
+  Printer &
+  array(var::StringView key, const T &value, Level level = Level::fatal) {
+    print_open_array(level, key);
+    *this << value;
+    print_close_array();
+    return *this;
+  }
 
+  Printer &open_object(var::StringView key, Level level = Level::fatal);
   Printer &close_object();
 
   Printer &open_array(var::StringView key, Level level = Level::fatal);
 
   Printer &close_array();
 
-  var::StringView  terminal_color_code(ColorCode code);
+  var::StringView terminal_color_code(ColorCode code);
 
-  virtual void
-  print_open_object(Level verbose_level, var::StringView key);
+  enum class IsNewline { no, yes };
+
+  virtual void print_open_object(Level verbose_level, var::StringView key);
   virtual void print_close_object();
 
   virtual void
   print_open_array(Level verbose_level, var::StringView key);
   virtual void print_close_array();
-
-  enum class IsNewline { no, yes };
 
   virtual void print(
     Level level,
@@ -327,7 +335,52 @@ public:
     var::StringView value,
     IsNewline is_newline = IsNewline::yes);
 
+  class Object {
+  public:
+    Object(Printer &printer, var::StringView name, Level level = Level::info)
+      : m_printer(printer) {
+      printer.open_object(name, level);
+    }
+
+    ~Object() { m_printer.close_object(); }
+
+  private:
+    Printer &m_printer;
+  };
+
+  class Array {
+  public:
+    Array(Printer &printer, var::StringView name, Level level = Level::info)
+      : m_printer(printer) {
+      printer.open_array(name, level);
+    }
+
+    ~Array() { m_printer.close_array(); }
+
+  private:
+    Printer &m_printer;
+  };
+
 protected:
+  template <typename T> class ContainerAccess {
+  public:
+    ContainerAccess(Level verbose_level, T type)
+      : m_type(type), m_count(1), m_verbose_level(verbose_level) {}
+
+    Level verbose_level() const { return m_verbose_level; }
+    void set_verbose_level(Level level) { m_verbose_level = level; }
+
+    const u32 &count() const { return m_count; }
+    u32 &count() { return m_count; }
+
+    T type() const { return m_type; }
+
+  private:
+    T m_type;
+    u32 m_count;
+    Level m_verbose_level;
+  };
+
   virtual void interface_print_final(var::StringView view);
 
 private:
@@ -357,58 +410,6 @@ protected:
     MCU_UNUSED_ARGUMENT(key);
     MCU_UNUSED_ARGUMENT(value);
   }
-};
-
-template <typename T> class PrinterContainer : public PrinterFlags {
-public:
-  PrinterContainer(Level verbose_level, T type)
-    : m_type(type), m_count(1), m_verbose_level(verbose_level) {}
-
-  Level verbose_level() const { return m_verbose_level; }
-
-  void set_verbose_level(Level level) { m_verbose_level = level; }
-
-  const u32 &count() const { return m_count; }
-  u32 &count() { return m_count; }
-
-  T type() const { return m_type; }
-
-private:
-  T m_type;
-  u32 m_count;
-  Level m_verbose_level;
-};
-
-class PrinterObject {
-public:
-  PrinterObject(
-    Printer &printer,
-    var::StringView name,
-    Printer::Level level = Printer::Level::info)
-    : m_printer(printer) {
-    printer.open_object(name, level);
-  }
-
-  ~PrinterObject() { m_printer.close_object(); }
-
-private:
-  Printer &m_printer;
-};
-
-class PrinterArray {
-public:
-  PrinterArray(
-    Printer &printer,
-    var::StringView name,
-    Printer::Level level = Printer::Level::info)
-    : m_printer(printer) {
-    printer.open_array(name, level);
-  }
-
-  ~PrinterArray() { m_printer.close_array(); }
-
-private:
-  Printer &m_printer;
 };
 
 } // namespace printer

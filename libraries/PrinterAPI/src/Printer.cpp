@@ -738,7 +738,7 @@ Printer &Printer::operator<<(const api::Error &error_context) {
 
   api::Error::Backtrace backtrace(error_context);
 
-  PrinterObject po(*this, "backtrace");
+  Printer::Object po(*this, "backtrace");
   const char *symbol;
   size_t offset = 0;
 #if USE_DEMANGLER
@@ -772,6 +772,13 @@ Printer &Printer::operator<<(const var::String &a) {
 }
 
 Printer &Printer::operator<<(const var::StringList &a) {
+  for (u32 i = 0; i < a.count(); i++) {
+    key(var::NumberString(i), a.at(i));
+  }
+  return *this;
+}
+
+Printer &Printer::operator<<(const var::StringViewList &a) {
   for (u32 i = 0; i < a.count(); i++) {
     key(var::NumberString(i), a.at(i));
   }

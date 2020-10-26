@@ -142,6 +142,8 @@ public:
     return std::move(ClockTime::get_system_time().get_string());
   }
 
+  ClockTime age() const { return get_system_time() - *this; }
+
   UniqueString get_string() const {
     return std::move(
       UniqueString().format("%ld.%09ld", seconds(), nanoseconds()));

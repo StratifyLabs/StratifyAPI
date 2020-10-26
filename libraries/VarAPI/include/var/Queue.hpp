@@ -25,68 +25,85 @@ public:
 
   ~Queue() {}
 
-  /*! \details Returns a reference to the back item.
-   *
-   * The back item is the one that has most recently
-   * been pushed using push().
-   *
-   */
-  T &back() { return m_deque.back(); }
+  using iterator = typename std::deque<T>::iterator;
+  using const_iterator = typename std::deque<T>::const_iterator;
+  using reverse_iterator = typename std::deque<T>::reverse_iterator;
+  using const_reverse_iterator =
+    typename std::vector<T>::const_reverse_iterator;
 
-  /*! \details Returns a read-only reference to the back item.
-   *
-   * The back item is the one that has most recently
-   * been pushed using push().
-   *
-   */
+  const_iterator begin() const noexcept { return m_deque.begin(); }
+  iterator begin() noexcept { return m_deque.begin(); }
+
+  const_iterator end() const noexcept { return m_deque.end(); }
+  iterator end() noexcept { return m_deque.end(); }
+
+  const_iterator cbegin() const noexcept { return m_deque.cbegin(); }
+  const_iterator cend() const noexcept { return m_deque.cend(); }
+
+  const_reverse_iterator rbegin() const noexcept { return m_deque.rbegin(); }
+  reverse_iterator rbegin() noexcept { return m_deque.rbegin(); }
+
+  const_reverse_iterator rend() const noexcept { return m_deque.rend(); }
+  reverse_iterator rend() noexcept { return m_deque.rend(); }
+
+  const_reverse_iterator crbegin() const noexcept { return m_deque.crbegin(); }
+  const_reverse_iterator crend() const noexcept { return m_deque.crend(); }
+
+  iterator insert(const_iterator position, const T &value) {
+    return m_deque.insert(position, value);
+  }
+
+  T &at(size_t position) { return m_deque.at(position); }
+  const T &at(size_t position) const { return m_deque.at(position); }
+
+  T &back() { return m_deque.back(); }
   const T &back() const { return m_deque.back(); }
 
-  /*! \details Returns a read-only reference to the front item.
-   *
-   * The front item is the one that has been in
-   * the queue the longest. It will be popped
-   * on the next call to pop().
-   */
   const T &front() const { return m_deque.front(); }
-
-  /*! \details Returns a reference to the front item.
-   *
-   * The front item is the one that has been in
-   * the queue the longest. It will be popped
-   * on the next call to pop().
-   */
   T &front() { return m_deque.front(); }
 
-  /*! \details Pushes an item on the queue.
-   *
-   * @param value The item to push
-   *
-   */
   Queue &push(const T &value) {
     m_deque.push_back(value);
     return *this;
   }
 
-  /*! \details Pops an item from the front of the queue. */
   Queue &pop() {
     m_deque.pop_front();
     return *this;
   }
 
-  /*! \details Returns true if the queue is empty. */
-  bool is_empty() const { return m_deque.empty(); }
+  class Erase {
+    API_AF(Erase, size_t, position, 0);
+    API_AF(Erase, size_t, count, 1);
+  };
 
-  /*! \details Returns the number of items in the queue. */
+  Queue &erase(const Erase &options) {
+    m_deque.erase(
+      m_deque.begin() + options.position(),
+      m_deque.begin() + options.position() + options.count());
+    return *this;
+  }
+  Queue &operator()(const Erase &options) { return erase(options); }
+
+  Queue &remove(u32 pos) { return erase(Erase().set_position(pos)); }
+
+  size_t find_offset(const T &a) const {
+    size_t offset = std::find(begin(), end(), a) - begin();
+    return offset;
+  }
+
+  const T &find(const T &a, const T &not_found = T()) const {
+    size_t offset = find_offset(a);
+    if (offset == count()) {
+      return not_found;
+    }
+    return at(offset);
+  }
+
+  bool is_empty() const { return m_deque.empty(); }
   u32 count() const { return m_deque.size(); }
 
-  /*! \details Clears the contents of the queue.
-   *
-   * This will empty the queue and free all the
-   * resources associated with it.
-   *
-   */
   Queue &clear() {
-    // deconstruct objects in the list using pop
     m_deque.clear();
     return *this;
   }

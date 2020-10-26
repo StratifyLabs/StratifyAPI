@@ -60,7 +60,7 @@ public:
 
   bool sched_api_case() { return true; }
   bool signal_api_case() {
-    printer::PrinterObject po(printer(), "signal_api_case()");
+    printer::Printer::Object po(printer(), "signal_api_case()");
     {
       m_signal_number_io = 0;
       SignalHandler handler
@@ -87,7 +87,7 @@ public:
   }
 
   bool sem_api_case() {
-    printer::PrinterObject po(printer(), "sem_api_case()");
+    printer::Printer::Object po(printer(), "sem_api_case()");
     {
 
       Sem::unlink("sem");
@@ -191,7 +191,7 @@ public:
     }
     {
 
-      printer::PrinterObject po(printer(), "Mutex::Attributes");
+      printer::Printer::Object po(printer(), "Mutex::Attributes");
       printer().key_bool(
         "protocolNoneOk",
         M::Attributes().set_protocol(M::Protocol::priority_none).get_protocol()
@@ -278,7 +278,7 @@ public:
     }
 
     {
-      printer::PrinterObject po(printer(), "Thread::Attributes");
+      printer::Printer::Object po(printer(), "Thread::Attributes");
       T::Attributes attributes
         = T::Attributes().set_scope(T::ContentionScope::process);
 

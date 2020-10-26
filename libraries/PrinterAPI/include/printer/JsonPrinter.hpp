@@ -16,7 +16,7 @@ public:
 private:
   enum class ContainerType { array, object };
 
-  using Container = PrinterContainer<ContainerType>;
+  using Container = ContainerAccess<ContainerType>;
   var::Vector<Container> m_container_list;
   var::Vector<Container> &container_list() { return m_container_list; }
   const var::Vector<Container> &container_list() const {

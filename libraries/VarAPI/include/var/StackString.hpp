@@ -8,15 +8,6 @@
 
 namespace var {
 
-#if 0
-class StackStringObject {
-public:
-private:
-  char *m_buffer_pointer;
-  size_t m_size;
-};
-#endif
-
 template <class Derived, int Size> class StackString {
 public:
   using Base = StringView::Base;

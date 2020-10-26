@@ -109,8 +109,94 @@ public:
   MarkdownPrinter &
   hyperlink(var::StringView text, var::StringView link);
 
-  MarkdownPrinter &
-  image(var::StringView text, var::StringView link);
+  MarkdownPrinter &image(var::StringView text, var::StringView link);
+
+  class Header {
+  public:
+    Header(
+      MarkdownPrinter &printer,
+      var::StringView header,
+      Level level = Level::info)
+      : m_printer(printer) {
+      printer.open_header(header, level);
+    }
+
+    ~Header() { m_printer.close_header(); }
+
+  private:
+    MarkdownPrinter &m_printer;
+  };
+
+  class Code {
+  public:
+    Code(
+      MarkdownPrinter &printer,
+      var::StringView language,
+      Level level = Level::info)
+      : m_printer(printer) {
+      printer.open_code(language, level);
+    }
+
+    ~Code() { m_printer.close_code(); }
+
+  private:
+    MarkdownPrinter &m_printer;
+  };
+
+  class BlockQuote {
+  public:
+    explicit BlockQuote(MarkdownPrinter &printer, Level level = Level::info)
+      : m_printer(printer) {
+      m_printer.open_blockquote(level);
+    }
+
+    ~BlockQuote() { m_printer.close_blockquote(); }
+
+  private:
+    MarkdownPrinter &m_printer;
+  };
+
+  class Paragraph {
+  public:
+    explicit Paragraph(MarkdownPrinter &printer, Level level = Level::info)
+      : m_printer(printer) {
+      m_printer.open_paragraph(level);
+    }
+
+    ~Paragraph() { m_printer.close_paragraph(); }
+
+  private:
+    MarkdownPrinter &m_printer;
+  };
+
+  class List {
+  public:
+    List(MarkdownPrinter &printer, ListType type, Level level = Level::info)
+      : m_printer(printer) {
+      printer.open_list(type, level);
+    }
+
+    ~List() { m_printer.close_list(); }
+
+  private:
+    MarkdownPrinter &m_printer;
+  };
+
+  class PrettyTable {
+  public:
+    PrettyTable(
+      MarkdownPrinter &printer,
+      const var::StringList &header,
+      Level level = Level::info)
+      : m_printer(printer) {
+      printer.open_pretty_table(header);
+    }
+
+    ~PrettyTable() { m_printer.close_pretty_table(); }
+
+  private:
+    MarkdownPrinter &m_printer;
+  };
 
 #if 0
 	using Printer::debug;
@@ -139,7 +225,7 @@ private:
     blockquote,
   };
 
-  using Container = PrinterContainer<ContainerType>;
+  using Container = ContainerAccess<ContainerType>;
   var::Vector<Container> m_container_list;
   bool m_is_last_close;
   Directive m_directive;
@@ -195,100 +281,6 @@ private:
   }
 
   bool close_type(ContainerType type);
-};
-
-class MarkdownHeader {
-public:
-  MarkdownHeader(
-    MarkdownPrinter &printer,
-    var::StringView header,
-    MarkdownPrinter::Level level = MarkdownPrinter::Level::info)
-    : m_printer(printer) {
-    printer.open_header(header, level);
-  }
-
-  ~MarkdownHeader() { m_printer.close_header(); }
-
-private:
-  MarkdownPrinter &m_printer;
-};
-
-class MarkdownCode {
-public:
-  MarkdownCode(
-    MarkdownPrinter &printer,
-    var::StringView language,
-    MarkdownPrinter::Level level = MarkdownPrinter::Level::info)
-    : m_printer(printer) {
-    printer.open_code(language, level);
-  }
-
-  ~MarkdownCode() { m_printer.close_code(); }
-
-private:
-  MarkdownPrinter &m_printer;
-};
-
-class MarkdownBlockQuote {
-public:
-  explicit MarkdownBlockQuote(
-    MarkdownPrinter &printer,
-    MarkdownPrinter::Level level = MarkdownPrinter::Level::info)
-    : m_printer(printer) {
-    m_printer.open_blockquote(level);
-  }
-
-  ~MarkdownBlockQuote() { m_printer.close_blockquote(); }
-
-private:
-  MarkdownPrinter &m_printer;
-};
-
-class MarkdownParagraph {
-public:
-  explicit MarkdownParagraph(
-    MarkdownPrinter &printer,
-    MarkdownPrinter::Level level = MarkdownPrinter::Level::info)
-    : m_printer(printer) {
-    m_printer.open_paragraph(level);
-  }
-
-  ~MarkdownParagraph() { m_printer.close_paragraph(); }
-
-private:
-  MarkdownPrinter &m_printer;
-};
-
-class MarkdownList {
-public:
-  MarkdownList(
-    MarkdownPrinter &printer,
-    MarkdownPrinter::ListType type,
-    MarkdownPrinter::Level level = MarkdownPrinter::Level::info)
-    : m_printer(printer) {
-    printer.open_list(type, level);
-  }
-
-  ~MarkdownList() { m_printer.close_list(); }
-
-private:
-  MarkdownPrinter &m_printer;
-};
-
-class MarkdownPrettyTable {
-public:
-  MarkdownPrettyTable(
-    MarkdownPrinter &printer,
-    const var::StringList &header,
-    MarkdownPrinter::Level level = MarkdownPrinter::Level::info)
-    : m_printer(printer) {
-    printer.open_pretty_table(header);
-  }
-
-  ~MarkdownPrettyTable() { m_printer.close_pretty_table(); }
-
-private:
-  MarkdownPrinter &m_printer;
 };
 
 } // namespace printer

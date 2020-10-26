@@ -10,6 +10,7 @@
 #include "var.hpp"
 
 class UnitTest : public test::Test {
+
 public:
   using FS = FileSystem;
   using F = File;
@@ -40,7 +41,7 @@ public:
   }
 
   bool fileinfo_api_case() {
-    printer::PrinterObject po(printer(), "fileinfo");
+    printer::Printer::Object po(printer(), "fileinfo");
     var::PathString temp_path;
     {
       TemporaryDirectory td(".");
@@ -199,10 +200,10 @@ public:
 
   bool file_system_api_case() {
 
-    printer::PrinterObject po(printer(), "file_system");
+    printer::Printer::Object po(printer(), "file_system");
 
     {
-      printer::PrinterObject po(printer(), "create/remove directories");
+      printer::Printer::Object po(printer(), "create/remove directories");
 
       constexpr const char *file_name = "filessytem.txt";
       const StringView dir_name = "tmpdir";
@@ -318,7 +319,7 @@ public:
     }
 
     {
-      printer::PrinterObject po(printer(), "directory permissions");
+      printer::Printer::Object po(printer(), "directory permissions");
       Permissions permissions = FS().get_info(".").permissions();
       const StringView dir_name = "permdir";
 
@@ -331,7 +332,7 @@ public:
     }
 
     {
-      printer::PrinterObject po(printer(), "utils");
+      printer::Printer::Object po(printer(), "utils");
       const StringView old_name = "old.txt";
       const StringView new_name = "new.txt";
 
@@ -360,7 +361,7 @@ public:
     using F = fs::File;
     using DF = fs::DataFile;
     using FS = fs::FileSystem;
-    printer::PrinterObject po(printer(), "file");
+    printer::Printer::Object po(printer(), "file");
 
     constexpr const char *file_name = "tmp.txt";
 
@@ -372,6 +373,22 @@ public:
       "Testing String 4\n"};
 
     reset_error();
+
+    DataFile f;
+
+    for (const auto &value : test_strings) {
+      f.write(value);
+    }
+
+    printer().key("size", NumberString(f.size()));
+    printer().object("contents", View(f.data()));
+    printer().key("line", f.gets().string_view());
+
+    TEST_ASSERT(f.seek(0).gets() == test_strings.at(0));
+    TEST_ASSERT(f.gets() == test_strings.at(1));
+    TEST_ASSERT(f.gets() == test_strings.at(2));
+    TEST_ASSERT(f.gets() == test_strings.at(3));
+    TEST_ASSERT(f.gets() == test_strings.at(4));
 
     TEST_ASSERT(
       F(F::IsOverwrite::yes, file_name).write(test_strings.at(0)).is_success());
@@ -460,7 +477,7 @@ public:
     }
 
     {
-      PrinterObject po(printer(), "lambdaFile");
+      Printer::Object po(printer(), "lambdaFile");
       Data lambda_file_data;
       printer().key("fileData", NumberString(&lambda_file_data, "%p"));
       LambdaFile f

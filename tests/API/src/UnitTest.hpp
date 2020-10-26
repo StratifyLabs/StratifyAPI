@@ -65,7 +65,7 @@ public:
 
     auto print_progress = [this]() {
       {
-        PrinterObject po(printer(), "progress");
+        Printer::Object po(printer(), "progress");
 
         printer().set_progress_key("progressing");
         for (u32 i = 0; i < 50; i++) {
@@ -76,7 +76,7 @@ public:
       }
 
       {
-        PrinterObject po(printer(), "spin");
+        Printer::Object po(printer(), "spin");
         printer().set_progress_key("spinning");
         for (u32 i = 0; i < 10; i++) {
           wait(50_milliseconds);

@@ -484,7 +484,7 @@ public:
   }
 
   bool string_view_api_case() {
-    PrinterObject po(printer(), "StringView");
+    Printer::Object po(printer(), "StringView");
     {
       SV sv;
       TEST_EXPECT(sv.is_empty());
