@@ -27,6 +27,15 @@ public:
     end = LINK_SEEK_END
   };
 
+  FileObject() = default;
+  FileObject(const FileObject &a) = delete;
+  FileObject &operator=(const FileObject &a) = delete;
+
+  FileObject(FileObject &&a) = default;
+  FileObject &operator=(FileObject &&a) = default;
+
+  virtual ~FileObject() {}
+
   /*! \details Returns the file size. */
   size_t size() const;
   ssize_t size_signed() const { return static_cast<ssize_t>(size()); }
@@ -185,7 +194,6 @@ private:
 
 template <class Derived> class FileAccess : public FileObject {
 public:
-
   const Derived &read(void *buf, size_t size) const {
     return static_cast<const Derived &>(FileObject::read(buf, size));
   }
@@ -279,7 +287,7 @@ private:
 
 class File : public FileAccess<File> {
 public:
-  File() = default;
+  File() {}
 
   explicit File(
     var::StringView name,
@@ -296,7 +304,7 @@ public:
   File(const File &file) = delete;
   File &operator=(const File &file) = delete;
 
-  File(File &&a) { std::swap(m_fd, a.m_fd); }
+  File(File &&a) {}
   File &operator=(File &&a) {
     std::swap(m_fd, a.m_fd);
     return *this;
