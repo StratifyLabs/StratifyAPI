@@ -4,6 +4,8 @@
 #define VAR_API_QUEUE_HPP_
 
 #include <cstdio>
+
+#include <algorithm>
 #include <deque>
 #include <new>
 
@@ -11,18 +13,9 @@
 
 namespace var {
 
-/*! \brief Queue Class
- * \details The Queue class is a FIFO data structure
- * that allows data to be pushed on the back
- * and popped from the front. It is similar to the
- * std::queue container class.
- *
- */
 template <typename T> class Queue : public api::ExecutionContext {
 public:
-  /*! \details Constructs a new Queue. */
   Queue() {}
-
   ~Queue() {}
 
   using iterator = typename std::deque<T>::iterator;

@@ -183,8 +183,10 @@ public:
     // guarantee null termination
     m_buffer[capacity()] = 0;
     constexpr const char *fmt
-      = (std::is_same<T, int>::value || std::is_same<T, short>::value
-         || std::is_same<T, char>::value)
+      = (std::is_same<T, int>::value || std::is_same<T, signed int>::value
+         || std::is_same<T, short>::value
+         || std::is_same<T, signed short>::value || std::is_same<T, char>::value
+         || std::is_same<T, signed char>::value)
           ? "%d"
           : std::is_same<T, long>::value
               ? "%ld"

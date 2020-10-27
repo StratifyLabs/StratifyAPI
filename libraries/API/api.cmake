@@ -36,14 +36,11 @@ macro(api_target NAME DIRECTORIES)
 		-Os
 		)
 
-	if(SOS_IS_LINK)
-		target_include_directories(${RELEASE_TARGET}
-			INTERFACE
-			$<INSTALL_INTERFACE:include/${NAME}>
-			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-			)
-
-	endif()
+	target_include_directories(${RELEASE_TARGET}
+		INTERFACE
+		$<INSTALL_INTERFACE:include/${NAME}>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+		)
 
 	foreach(DIRECTORY ${DIRECTORIES})
 		target_include_directories(${RELEASE_TARGET}
@@ -56,8 +53,13 @@ macro(api_target NAME DIRECTORIES)
 	string(COMPARE EQUAL ${NAME} API IS_API)
 	set(LOCAL_DIRECTORIES ${DIRECTORIES})
 	if(IS_API)
-		# this doesn't need to be added as a directory, just a dependency
-		list(APPEND LOCAL_DIRECTORIES StratifyOS)
+
+		if(SOS_IS_LINK)
+			# this doesn't need to be added as a directory, just a dependency
+			list(APPEND LOCAL_DIRECTORIES StratifyOS)
+		else()
+			list(APPEND LOCAL_DIRECTORIES StratifyOS_crt)
+		endif()
 		message(STATUS "DIRS ${LOCAL_DIRECTORIES}")
 	endif()
 

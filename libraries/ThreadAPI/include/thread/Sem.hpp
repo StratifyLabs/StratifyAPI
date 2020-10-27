@@ -4,7 +4,6 @@
 #ifndef THREADAPI_THREAD_SEM_HPP_
 #define THREADAPI_THREAD_SEM_HPP_
 
-#if defined __link
 
 #include <fcntl.h>
 #include <semaphore.h>
@@ -51,7 +50,7 @@ protected:
 private:
   friend class UnnamedSemaphore;
   friend class Semaphore;
-  sem_t *m_handle = SEM_FAILED;
+  sem_t *m_handle = reinterpret_cast<sem_t *>(SEM_FAILED);
 };
 
 template <class Derived> class SemAccess : public SemaphoreObject {
@@ -120,7 +119,5 @@ private:
 };
 
 } // namespace thread
-
-#endif
 
 #endif /* THREADAPI_THREAD_SEM_HPP_ */

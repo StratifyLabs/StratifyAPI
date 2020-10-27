@@ -6,17 +6,19 @@ endif()
 
 set(CMAKE_MODULE_PATH ${SOS_SDK_PATH}/Tools/gcc/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/sos-toolchain.cmake)
+
+set(STRATIFYAPI_PROJECT_VERSION 4.0.0 CACHE INTERNAL "Stratify API version")
+project(StratifyAPI
+	LANGUAGES CXX C
+	VERSION ${STRATIFYAPI_PROJECT_VERSION}
+	)
+
 include(sos-sdk)
 
 
 include(targets/StratifyOS)
 
-set(STRATIFYAPI_PROJECT_VERSION 4.0.0 CACHE INTERNAL "Stratify API version")
 
-project(StratifyAPI
-	LANGUAGES CXX C
-	VERSION ${STRATIFYAPI_PROJECT_VERSION}
-	)
 include(CTest)
 
 add_subdirectory(libraries/API API)

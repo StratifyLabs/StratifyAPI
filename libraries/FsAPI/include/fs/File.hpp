@@ -307,6 +307,9 @@ public:
   File(File &&a) {}
   File &operator=(File &&a) {
     std::swap(m_fd, a.m_fd);
+#if defined __link
+    std::swap(m_driver, a.m_driver);
+#endif
     return *this;
   }
 

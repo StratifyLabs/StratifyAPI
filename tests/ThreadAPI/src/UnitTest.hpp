@@ -36,7 +36,6 @@ public:
 
   bool execute_class_api_case() {
 
-    signal(11, signal_handler);
     if (!thread_api_case()) {
       return false;
     }

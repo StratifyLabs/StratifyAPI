@@ -174,10 +174,6 @@ PathList FileSystem::read_directory(
   return std::move(result);
 }
 
-u32 FileSystem::size(var::StringView name) const {
-  return get_info(name).size();
-}
-
 bool FileSystem::directory_exists(var::StringView path) const {
   API_RETURN_VALUE_IF_ERROR(false);
   bool result = Dir(path).is_success();
@@ -241,8 +237,14 @@ const FileSystem &FileSystem::create_directory(
 }
 
 #if !defined __link
-int FileSystem::access(var::StringView path, const Access &access) {
-  return ::access(path_string.cstring(), static_cast<int>(access.o_access()));
+Access FileSystem::access(var::StringView path) {
+  API_RETURN_VALUE_IF_ERROR(Access());
+  const var::PathString path_string(path);
+  Access result;
+  API_SYSTEM_CALL(
+    path_string.cstring(),
+    ::access(path_string.cstring(), static_cast<int>(result.o_access())));
+  return result;
 }
 #endif
 

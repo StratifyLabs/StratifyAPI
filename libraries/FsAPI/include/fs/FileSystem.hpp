@@ -15,33 +15,12 @@ public:
   FileSystem(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
 
 #if !defined __link
-  /*! \details Returns an error if the access is not allowed.
-   *
-   */
-  static int access(const var::String &path, const Access &o_access);
+  Access access(const var::StringView path);
 #endif
 
   bool exists(var::StringView path) const;
 
-  /*! \details Deletes a file.
-   *
-   * @return Zero on success
-   *
-   */
   const FileSystem &remove(var::StringView path) const;
-
-  /*! \details Gets the size of the file.
-   *
-   * @param path The path to the file
-   * @return The number of bytes in the file or less than zero for an error
-   *
-   */
-  u32 size(var::StringView path) const;
-
-  /*! \details Removes a file or directory.
-   *
-   * @return Zero on success or -1 for an error
-   */
   const FileSystem &remove_directory(var::StringView path) const;
 
   const FileSystem &

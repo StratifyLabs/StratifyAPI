@@ -236,7 +236,7 @@ public:
       TEST_ASSERT(
         F(F::IsOverwrite::yes, file_name).write(file_name2).is_success());
 
-      TEST_EXPECT(FS().size(file_name) == file_name2.length());
+      TEST_EXPECT(FS().get_info(file_name).size() == file_name2.length());
 
       TEST_ASSERT(FS().create_directory(dir_name).is_success());
       TEST_ASSERT(FS().remove_directory(dir_name).is_success());

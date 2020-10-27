@@ -1,7 +1,6 @@
 // Copyright 2011-2020 Tyler Gilbert and Stratify Labs, Inc; see LICENSE.md for
 // rights.
 
-#if defined __link
 
 #include "thread/Sem.hpp"
 
@@ -135,7 +134,3 @@ void Semaphore::open(
     m_name = name_string;
   }
 }
-
-#else
-int fs_api_fs_sem_unused;
-#endif
