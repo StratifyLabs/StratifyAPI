@@ -223,7 +223,7 @@ protected:
   Error &get_error();
 
   void free_context();
-  void update_error_context(int line, const char *message);
+  void update_error_context(int result, int line, const char *message);
 
 private:
   PrivateExecutionContext() : m_error(&(errno)) {}
@@ -238,7 +238,7 @@ public:
     if (value >= 0) {
       errno = value;
     } else {
-      m_private_context.update_error_context(line, message);
+      m_private_context.update_error_context(value, line, message);
     }
     return value;
   }
@@ -247,7 +247,7 @@ public:
   static T *
   handle_system_call_null_result(int line, const char *message, T *value) {
     if (value == nullptr) {
-      m_private_context.update_error_context(line, message);
+      m_private_context.update_error_context(-1, line, message);
     }
     return value;
   }

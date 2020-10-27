@@ -83,4 +83,3 @@ bool FileInfo::is_socket() const {
 
 u32 FileInfo::size() const { return m_stat.st_size; }
 
-bool FileInfo::is_executable() const { return false; }

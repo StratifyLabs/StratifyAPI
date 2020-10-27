@@ -213,6 +213,7 @@ void FileObject::fake_seek(
 File::File(
   var::StringView name,
   OpenMode flags FSAPI_LINK_DECLARE_DRIVER_LAST) {
+  LINK_SET_DRIVER((*this), link_driver);
   open(name, flags);
 }
 
@@ -308,10 +309,8 @@ int File::interface_lseek(int offset, int whence) const {
 }
 
 void File::open(var::StringView path, OpenMode flags, Permissions permissions) {
+  API_ASSERT(m_fd == -1);
   API_RETURN_IF_ERROR();
-  if (m_fd != -1) {
-    close(); // close first so the fileno can be changed
-  }
   const var::PathString path_string(path);
   API_SYSTEM_CALL(
     path_string.cstring(),

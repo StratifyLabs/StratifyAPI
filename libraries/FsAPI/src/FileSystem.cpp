@@ -41,7 +41,7 @@ const FileSystem &FileSystem::touch(var::StringView path) const {
   char c;
   API_SYSTEM_CALL(
     "",
-    File(path, OpenMode::read_write())
+    File(path, OpenMode::read_write() FSAPI_LINK_MEMBER_DRIVER_LAST)
       .read(var::View(c))
       .seek(0)
       .write(var::View(c))
@@ -61,7 +61,8 @@ const FileSystem &FileSystem::rename(const Rename &options) const {
 
 bool FileSystem::exists(var::StringView path) const {
   API_RETURN_VALUE_IF_ERROR(false);
-  bool result = File(path, OpenMode::read_only()).is_success();
+  bool result = File(path, OpenMode::read_only() FSAPI_LINK_MEMBER_DRIVER_LAST)
+                  .is_success();
   reset_error();
   return result;
 }
@@ -258,11 +259,11 @@ int FileSystem::interface_unlink(const char *path) const {
 }
 
 int FileSystem::interface_stat(const char *path, struct stat *stat) const {
-  return ::stat(path, stat);
+  return FSAPI_LINK_STAT(driver(), path, stat);
 }
 
 int FileSystem::interface_fstat(int fd, struct stat *stat) const {
-  return ::fstat(fd, stat);
+  return FSAPI_LINK_FSTAT(driver(), fd, stat);
 }
 
 int FileSystem::interface_rename(const char *old_name, const char *new_name)

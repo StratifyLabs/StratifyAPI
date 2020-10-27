@@ -81,6 +81,7 @@ void PrivateExecutionContext::free_context() {
 }
 
 void PrivateExecutionContext::update_error_context(
+  int result,
   int line,
   const char *message) {
   Error &error = get_error();
@@ -88,7 +89,7 @@ void PrivateExecutionContext::update_error_context(
   error.m_line_number = line;
   error.m_error_number = errno;
   error.capture_backtrace();
-  errno = -1;
+  errno = result;
 }
 
 #define RESULT_ERROR_CODE_CASE(c)                                              \

@@ -25,6 +25,7 @@
 #define FSAPI_LINK_INHERIT_DRIVER_LAST
 #define FSAPI_LINK_MEMBER_DRIVER
 #define FSAPI_LINK_MEMBER_DRIVER_LAST
+#define FSAPI_LINK_SET_DRIVER(x, y)
 #else
 #define FSAPI_LINK_STAT_STRUCT link_stat
 #define FSAPI_LINK_DECLARE_DRIVER_NULLPTR                                      \
@@ -38,6 +39,8 @@
 #define FSAPI_LINK_MEMBER_DRIVER driver()
 #define FSAPI_LINK_INHERIT_DRIVER_LAST , link_driver
 #define FSAPI_LINK_MEMBER_DRIVER_LAST , driver()
+#define FSAPI_LINK_SET_DRIVER(x, y) x.set_driver(y)
+
 #undef fileno
 #define MCU_INT_CAST(var) ((void *)(u64)var)
 #endif
@@ -287,88 +290,22 @@ private:
   AccessFlags m_access;
 };
 
-/*! \brief Stat Class
- * \details The Stat class is basically
- * a wrapper of `struct stat` and provides
- * information on the type and size
- * of the file.
- *
- * The file can be any filesystem object including
- * a file, directory, or device.
- *
- *
- * ```
- * #include <sapi/sys.hpp>
- *
- * Info info = File::get_info("/home/test.txt");
- *
- * if( info.is_file() ){
- *   printf("Is a file\n");
- * } else if( info.is_directory() ){
- *   printf("Is a directory\n");
- * }
- *
- * //grabbing the info of an already open file
- * File file;
- * file.open("/home/test.txt", File::RDONLY);
- * //grab the info from a file that is already open
- * info = file.get_info();
- * file.close();
- * ```
- *
- */
 class FileInfo : public OpenMode {
 public:
-  /*! \details Constructs a new object.
-   *
-   * For the newly constructed object,
-   * is_valid() returns false.
-   *
-   */
   FileInfo();
-
-  /*! \details Constructs a new object
-   * from the struct stat data provided.
-   *
-   */
   FileInfo(const struct stat &st) // cppcheck-suppress[noExplicitConstructor]
     : m_stat(st) {}
 
-  /*! \details Returns true if the object is valid. */
   bool is_valid() const { return m_stat.st_mode != 0; }
-
-  /*! \details Returns true if the file is a directory. */
   bool is_directory() const;
-
-  /*! \details Returns true if the file is a regular file. */
   bool is_file() const;
-
-  /*! \details Returns true if the file is a device (block or character). */
   bool is_device() const;
-
-  /*! \details Returns true if the file is a block device. */
   bool is_block_device() const;
-
-  /*! \details Returns true if the file is a character device. */
   bool is_character_device() const;
-
-  /*! \details Returns true if the file is a socket. */
   bool is_socket() const;
-
-  /*! \details Returns true if the file is a FIFO. */
   bool is_fifo() const;
-
-  /*! \details Returns the size of the file in bytes.
-   *
-   * This method is only valid for regular files (ie is_file() must return
-   * true).
-   */
   u32 size() const;
 
-  /*! \details Returns true if the file is executable. */
-  bool is_executable() const;
-
-  /*! \details Returns the file mode value. */
   Permissions permissions() const { return Permissions(m_stat.st_mode); }
 
   int owner() const { return m_stat.st_uid; }
