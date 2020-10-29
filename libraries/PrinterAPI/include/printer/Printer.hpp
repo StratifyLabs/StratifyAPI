@@ -81,7 +81,7 @@ struct PrinterFlags {
   };
 
   /*! \details Filtering levels. */
-  enum Level {
+  enum class Level {
     fatal /*! Prints fatal errors. */,
     error /*! Prints fatal and error messages. */,
     warning /*! Printers warnings and worse. */,

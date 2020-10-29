@@ -31,7 +31,7 @@ public:
     owner_read = 0400,
   };
 
-  enum OpenFlags {
+  enum class OpenFlags {
     null = 0,
     read_only /*! Open as read-only */ = LINK_O_RDONLY,
     write_only /*! Open as write-only */ = LINK_O_WRONLY,
@@ -139,7 +139,9 @@ private:
 class OpenMode : public FileInfoFlags {
 public:
   OpenMode() { m_flags = OpenFlags::null; }
-  explicit OpenMode(int flags) { m_flags = static_cast<OpenFlags>(flags); }
+  explicit OpenMode(OpenFlags flags) {
+    m_flags = static_cast<OpenFlags>(flags);
+  }
 
   static OpenMode create() {
     return OpenMode(OpenFlags::create | OpenFlags::read_write);
@@ -215,7 +217,7 @@ public:
     return *this;
   }
 
-  int o_flags() const { return m_flags; }
+  OpenFlags o_flags() const { return m_flags; }
 
 private:
   void clear_access() { m_flags &= ~OpenFlags::access_mode; }

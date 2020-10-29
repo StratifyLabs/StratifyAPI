@@ -316,7 +316,7 @@ void File::open(var::StringView path, OpenMode flags, Permissions permissions) {
     path_string.cstring(),
     m_fd = internal_open(
       path_string.cstring(),
-      flags.o_flags(),
+      static_cast<int>(flags.o_flags()),
       permissions.permissions()));
 }
 
