@@ -249,7 +249,7 @@ private:
 namespace sys {
 class Printer;
 #if !defined __link
-Printer &operator<<(sys::Printer &printer, const var::DataInfo &a);
+Printer &operator<<(printer::Printer &printer, const var::DataInfo &a);
 #endif
 } // namespace sys
 #endif

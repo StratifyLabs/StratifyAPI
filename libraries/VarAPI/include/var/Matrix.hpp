@@ -65,10 +65,10 @@ private:
 };
 
 template <typename T>
-sys::Printer &operator<<(sys::Printer &printer, const Matrix<T> &matrix) {
+printer::Printer &operator<<(printer::Printer &printer, const Matrix<T> &matrix) {
   u32 i = 0;
   for (const auto &row : matrix) {
-    sys::PrinterArray(
+    printer::PrinterArray(
       printer,
       String::number(i++, "[%04ld]"),
       printer.verbose_level());

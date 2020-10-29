@@ -15,6 +15,7 @@ namespace var {
 
 class String;
 class Data;
+class IdString;
 class KeyString;
 class NumberString;
 class PathString;
@@ -28,8 +29,10 @@ public:
   enum class Base { octal = 8, decimal = 10, hexidecimal = 16 };
 
   StringView() : m_string_view("") {}
-  StringView(const char *value) { m_string_view = std::string_view(value); }
+  StringView(const char value) : m_string_view(&value, 1) {}
+  StringView(const char *value) : m_string_view(value) {}
   StringView(const String &value);
+  StringView(const IdString &value);
   StringView(const KeyString &value);
   StringView(const NumberString &value);
   StringView(const PathString &value);

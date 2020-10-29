@@ -8,6 +8,8 @@
 using namespace var;
 
 StringView::StringView(const String &value) : m_string_view(value.m_string) {}
+StringView::StringView(const IdString &value)
+  : m_string_view(value.cstring()) {}
 StringView::StringView(const KeyString &value)
   : m_string_view(value.cstring()) {}
 StringView::StringView(const NumberString &value)
@@ -46,9 +48,9 @@ StringViewList StringView::split(StringView delimeters) const {
 
 float StringView::to_float() const {
 #ifndef __link
-  return ::atoff(StackString64(*this).cstring());
+  return ::atoff(NumberString(*this).cstring());
 #else
-  return ::atof(StackString64(*this).cstring());
+  return ::atof(NumberString(*this).cstring());
 #endif
 }
 

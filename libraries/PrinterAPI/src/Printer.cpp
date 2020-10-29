@@ -14,7 +14,7 @@
 #include "printer/Printer.hpp"
 
 #if defined __win32
-unsigned int sys::Printer::m_default_color = static_cast<unsigned int>(-1);
+unsigned int printer::Printer::m_default_color = static_cast<unsigned int>(-1);
 #endif
 
 using namespace printer;
