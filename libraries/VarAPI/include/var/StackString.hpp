@@ -122,11 +122,11 @@ protected:
   char m_buffer[Size];
 };
 
-class KeyString : public StackString<KeyString, 48> {
+class IdString : public StackString<IdString, 24> {
 public:
-  KeyString() {}
-  KeyString(const StringView a) : StackString(a) {}
-  KeyString(const char *a) : StackString(a) {}
+  IdString() {}
+  IdString(const StringView a) : StackString(a) {}
+  IdString(const char *a) : StackString(a) {}
   // implicit conversion
   operator const char *() const { return m_buffer; }
 };
@@ -137,6 +137,15 @@ public:
   NameString(const StringView a) : StackString(a) {}
   NameString(const char *a) : StackString(a) {}
 
+  // implicit conversion
+  operator const char *() const { return m_buffer; }
+};
+
+class KeyString : public StackString<KeyString, 48> {
+public:
+  KeyString() {}
+  KeyString(const StringView a) : StackString(a) {}
+  KeyString(const char *a) : StackString(a) {}
   // implicit conversion
   operator const char *() const { return m_buffer; }
 };

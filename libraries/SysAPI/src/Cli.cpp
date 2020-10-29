@@ -2,6 +2,7 @@
              // LICENSE.md for rights.
 
 #include "var/StackString.hpp"
+#include "var/Tokenizer.hpp"
 
 #include "printer/Printer.hpp"
 #include "sys/Cli.hpp"

@@ -16,7 +16,7 @@
 #include "File.hpp"
 
 namespace hal {
-class Device;
+class DeviceObject;
 }
 
 namespace fs {
@@ -64,7 +64,7 @@ namespace fs {
  *
  */
 class Aio : public api::ExecutionContext {
-  friend class hal::Device;
+  friend class hal::DeviceObject;
 
 public:
   /*! \details Constructs an empy AIO object. */

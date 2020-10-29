@@ -16,7 +16,7 @@ project(StratifyAPI
 include(sos-sdk)
 
 
-include(targets/StratifyOS)
+include(StratifyOS)
 
 
 include(CTest)

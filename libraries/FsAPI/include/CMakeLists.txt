@@ -9,6 +9,7 @@ set(SOURCES
 	fs/Path.hpp
 	fs/FileInfo.hpp
 	fs/FileSystem.hpp
+	fs/macros.hpp
 	fs.hpp
 	PARENT_SCOPE
 )

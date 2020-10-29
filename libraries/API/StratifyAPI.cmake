@@ -7,27 +7,36 @@ else()
 	set(STRATIFYAPI_CONFIG_LIST release debug)
 endif()
 
-include(targets/StratifyOS)
+include(StratifyOS)
 
-sos_sdk_include_target(API "${STRATIFYAPI_CONFIG_LIST}")
-sos_sdk_include_target(VarAPI "${STRATIFYAPI_CONFIG_LIST}")
-sos_sdk_include_target(PrinterAPI "${STRATIFYAPI_CONFIG_LIST}")
-sos_sdk_include_target(SysAPI "${STRATIFYAPI_CONFIG_LIST}")
-sos_sdk_include_target(ChronoAPI "${STRATIFYAPI_CONFIG_LIST}")
-sos_sdk_include_target(FsAPI "${STRATIFYAPI_CONFIG_LIST}")
-sos_sdk_include_target(ThreadAPI "${STRATIFYAPI_CONFIG_LIST}")
-sos_sdk_include_target(TestAPI "${STRATIFYAPI_CONFIG_LIST}")
-
+if(NOT DEFINED IS_SDK)
+	sos_sdk_include_target(API "${STRATIFYAPI_CONFIG_LIST}")
+	sos_sdk_include_target(VarAPI "${STRATIFYAPI_CONFIG_LIST}")
+	sos_sdk_include_target(PrinterAPI "${STRATIFYAPI_CONFIG_LIST}")
+	sos_sdk_include_target(SysAPI "${STRATIFYAPI_CONFIG_LIST}")
+	sos_sdk_include_target(ChronoAPI "${STRATIFYAPI_CONFIG_LIST}")
+	sos_sdk_include_target(FsAPI "${STRATIFYAPI_CONFIG_LIST}")
+	sos_sdk_include_target(ThreadAPI "${STRATIFYAPI_CONFIG_LIST}")
+	sos_sdk_include_target(TestAPI "${STRATIFYAPI_CONFIG_LIST}")
+endif()
 
 function(stratifyapi_add_api_library NAME DEPENDENCIES)
+	stratifyapi_add_api_library_option(${NAME} "${DEPENDENCIES}" "")
+endfunction()
+
+function(stratifyapi_add_api_library_option NAME DEPENDENCIES LIB_OPTION)
 
 	set(LOCAL_NAME ${NAME})
 	set(LIBRARIES ${DEPENDENCIES})
 
-	sos_sdk_add_subdirectory(PRIVATE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src)
-	sos_sdk_add_subdirectory(INTERFACE_SOURCES include)
 
-	sos_sdk_library_target(RELEASE ${LOCAL_NAME} "" release ${SOS_ARCH})
+	sos_sdk_library_target(RELEASE ${LOCAL_NAME} "${LIB_OPTION}" release ${SOS_ARCH})
+
+	#sos_sdk_add_subdirectory(PRIVATE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src)
+	sos_sdk_add_out_of_source_directory(PRIVATE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src ${RELEASE_TARGET}_src)
+	sos_sdk_add_out_of_source_directory(INTERFACE_SOURCES include ${RELEASE_TARGET}_include)
+	#sos_sdk_add_subdirectory(INTERFACE_SOURCES include)
+
 
 	add_library(${RELEASE_TARGET} STATIC)
 
@@ -110,10 +119,10 @@ function(stratify_api_add_test_executable NAME RAM_SIZE DEPENDENCIES)
 	set(CTEST_OUTPUT_ON_FAILURE ON)
 	if(SOS_IS_LINK)
 
-		sos_sdk_add_test(${LOCAL_NAME} unittest release)
-		sos_sdk_add_test(${LOCAL_NAME} unittest coverage)
+		sos_sdk_add_test(${LOCAL_NAME} ${LIB_OPTION}unittest release)
+		sos_sdk_add_test(${LOCAL_NAME} ${LIB_OPTION}unittest coverage)
 
-		sos_sdk_app_target(COVERAGE ${LOCAL_NAME} "unittest" coverage ${SOS_ARCH})
+		sos_sdk_app_target(COVERAGE ${LOCAL_NAME} "${LIB_OPTION}unittest" coverage ${SOS_ARCH})
 		add_executable(${COVERAGE_TARGET})
 		sos_sdk_copy_target(${RELEASE_TARGET} ${COVERAGE_TARGET})
 
