@@ -231,4 +231,6 @@ private:                                                                       \
     return static_cast<DERIVED &>(PARENT::set_##NAME(a));                      \
   }
 
+#define API_PRINTF_TRACE_LINE() printf("%s():%d\n", __FUNCTION__, __LINE__)
+
 #endif // API_API_MACROS_HPP_

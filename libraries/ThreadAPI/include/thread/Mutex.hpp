@@ -168,11 +168,20 @@ private:
 
 class MutexGuard {
 public:
-  explicit MutexGuard(Mutex &mutex) : m_mutex(mutex) { mutex.lock(); }
-  ~MutexGuard() { m_mutex.unlock(); }
+  explicit MutexGuard(Mutex *mutex) : m_mutex(mutex) {
+    if (mutex) {
+      mutex->lock();
+    }
+  }
+  explicit MutexGuard(Mutex &mutex) : m_mutex(&mutex) { mutex.lock(); }
+  ~MutexGuard() {
+    if (m_mutex) {
+      m_mutex->unlock();
+    }
+  }
 
 private:
-  Mutex &m_mutex;
+  Mutex *m_mutex;
 };
 
 } // namespace thread

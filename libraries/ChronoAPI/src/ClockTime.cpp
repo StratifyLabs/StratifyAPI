@@ -32,23 +32,23 @@ static int clock_gettime(int clk_id, struct timespec *t) {
 using namespace chrono;
 
 ClockTime ClockTime::get_system_time(ClockId clock_id) {
+  API_RETURN_VALUE_IF_ERROR(ClockTime());
   ClockTime clock_time;
-  if (clock_gettime(static_cast<clockid_t>(clock_id), clock_time) < 0) {
-    clock_time = ClockTime::invalid();
-  }
+  const int result = API_SYSTEM_CALL(
+    "",
+    clock_gettime(static_cast<clockid_t>(clock_id), clock_time));
   return clock_time;
 }
 
 ClockTime ClockTime::get_system_resolution(ClockId clock_id) {
+  API_RETURN_VALUE_IF_ERROR(ClockTime());
 #if defined __macosx
-
   ClockTime resolution = ClockTime().set_nanoseconds(1000);
-
 #else
   ClockTime resolution;
-  if (clock_getres(static_cast<clockid_t>(clock_id), resolution) < 0) {
-    resolution = ClockTime::invalid();
-  }
+  const int result = API_SYSTEM_CALL(
+    "",
+    clock_getres(static_cast<clockid_t>(clock_id), resolution));
 #endif
   return resolution;
 }
