@@ -17,22 +17,10 @@ public:
   using D = chrono::Date;
 
   bool execute_class_api_case() {
-    if (!execute_clocktime_api_case()) {
-      return false;
-    }
-
-    if (!execute_microtime_api_case()) {
-      return false;
-    }
-
-    if (!execute_clocktimer_api_case()) {
-      return false;
-    }
-
-    if (!execute_datetime_api_case()) {
-      return false;
-    }
-
+    TEST_ASSERT_RESULT(execute_clocktime_api_case());
+    TEST_ASSERT_RESULT(execute_microtime_api_case());
+    TEST_ASSERT_RESULT(execute_clocktimer_api_case());
+    TEST_ASSERT_RESULT(execute_datetime_api_case());
     return true;
   }
 

@@ -18,26 +18,33 @@
 
 namespace test {
 
-#define TEST_EXPECT(result_value)                                              \
-  PRINTER_TRACE(this->printer(), "");                                          \
-  this->expect(__PRETTY_FUNCTION__, __LINE__, result_value)
-
-#define TEST_ASSERT(result_value)                                              \
+#define TEST_ASSERT_RESULT(RESULT_VALUE)                                       \
   do {                                                                         \
-    PRINTER_TRACE(this->printer(), "");                                        \
-    if (this->expect(__PRETTY_FUNCTION__, __LINE__, result_value) == false) {  \
+    if ((RESULT_VALUE) == false) {                                             \
       return false;                                                            \
     }                                                                          \
   } while (0)
 
-#define TEST_SELF_EXPECT(result_value)                                         \
-  PRINTER_TRACE(self->printer(), "");                                          \
-  self->expect(__PRETTY_FUNCTION__, __LINE__, result_value)
+#define TEST_EXPECT(RESULT_VALUE)                                              \
+  PRINTER_TRACE(this->printer(), "");                                          \
+  this->expect(__PRETTY_FUNCTION__, __LINE__, RESULT_VALUE)
 
-#define TEST_SELF_ASSERT(result_value)                                         \
+#define TEST_ASSERT(RESULT_VALUE)                                              \
+  do {                                                                         \
+    PRINTER_TRACE(this->printer(), "");                                        \
+    if (this->expect(__PRETTY_FUNCTION__, __LINE__, RESULT_VALUE) == false) {  \
+      return false;                                                            \
+    }                                                                          \
+  } while (0)
+
+#define TEST_SELF_EXPECT(RESULT_VALUE)                                         \
+  PRINTER_TRACE(self->printer(), "");                                          \
+  self->expect(__PRETTY_FUNCTION__, __LINE__, RESULT_VALUE)
+
+#define TEST_SELF_ASSERT(RESULT_VALUE)                                         \
   do {                                                                         \
     PRINTER_TRACE(self->printer(), "");                                        \
-    if (self->expect(__PRETTY_FUNCTION__, __LINE__, result_value) == false) {  \
+    if (self->expect(__PRETTY_FUNCTION__, __LINE__, RESULT_VALUE) == false) {  \
       return false;                                                            \
     }                                                                          \
   } while (0)
