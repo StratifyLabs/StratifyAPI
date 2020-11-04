@@ -384,17 +384,13 @@ class File : public FileAccess<File> {
 public:
   File() {}
 
-  explicit File(
-    var::StringView name,
-    OpenMode flags
-    = OpenMode::read_only() FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
+  explicit File(var::StringView name, OpenMode flags = OpenMode::read_only());
 
   File(
     IsOverwrite is_overwrite,
     var::StringView path,
     OpenMode flags = OpenMode::read_write(),
-    Permissions perms
-    = Permissions(0666) FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
+    Permissions perms = Permissions(0666));
 
   File(const File &file) = delete;
   File &operator=(const File &file) = delete;

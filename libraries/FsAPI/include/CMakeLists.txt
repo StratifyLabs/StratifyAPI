@@ -7,6 +7,7 @@ set(SOURCES
 	fs/ViewFile.hpp
 	fs/LambdaFile.hpp
 	fs/Path.hpp
+	fs/dirent_windows.h
 	fs/FileInfo.hpp
 	fs/FileSystem.hpp
 	fs/macros.hpp

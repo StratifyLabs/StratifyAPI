@@ -35,7 +35,8 @@ public:
     return 0;
   }
 
-  Derived &operator+=(const StringView a) { return append(a); }
+  Derived &operator&(const StringView a) { return append(a); }
+  Derived &operator&=(const StringView a) { return append(a); }
 
   bool operator==(const StringView a) const { return string_view() == a; }
   bool operator!=(const StringView a) const { return string_view() != a; }

@@ -26,7 +26,7 @@ class StringView {
 public:
   constexpr static size_t npos = std::string_view::npos;
 
-  enum class Base { octal = 8, decimal = 10, hexidecimal = 16 };
+  enum class Base { octal = 8, decimal = 10, hexadecimal = 16 };
 
   StringView() : m_string_view("") {}
   StringView(const char value) : m_string_view(&value, 1) {}

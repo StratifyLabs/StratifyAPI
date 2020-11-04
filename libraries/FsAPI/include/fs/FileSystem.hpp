@@ -12,7 +12,7 @@ public:
   using IsOverwrite = File::IsOverwrite;
   using IsRecursive = Dir::IsRecursive;
 
-  FileSystem(FSAPI_LINK_DECLARE_DRIVER_NULLPTR);
+  FileSystem();
 
 #if !defined __link
   Access access(const var::StringView path);
@@ -37,9 +37,8 @@ public:
     IsRecursive is_recursive,
     const Permissions &permissions = Permissions(0)) const;
 
-
   PathList read_directory(
-    const fs::Dir &directory,
+    const fs::DirObject &directory,
     IsRecursive is_recursive = IsRecursive::no,
     bool (*exclude)(var::StringView) = nullptr) const;
 
@@ -48,13 +47,6 @@ public:
     API_AC(Rename, var::StringView, destination);
   };
 
-  /*! \details Renames a file.
-   *
-   * \param old_path Current path to the file (will be old path after rename)
-   * \param new_path New path to the file
-   * \return Zero on success
-   *
-   */
   const FileSystem &rename(const Rename &options) const;
   inline const FileSystem &operator()(const Rename &options) const {
     return rename(options);

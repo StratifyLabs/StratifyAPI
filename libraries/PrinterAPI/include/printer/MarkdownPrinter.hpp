@@ -237,13 +237,13 @@ private:
   }
 
   // re-implemented virtual functions from Printer
-  void print_open_object(Level level, const char *key);
-  void print_close_object();
+  void print_open_object(Level level, const var::StringView key) override;
+  void print_close_object() override;
   void print(
     Level level,
-    const char *key,
-    const char *value,
-    bool is_newline = true);
+    var::StringView key,
+    var::StringView value,
+    IsNewline is_newline = IsNewline::yes) override;
 
   Container &container() { return m_container_list.back(); }
 

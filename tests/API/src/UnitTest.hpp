@@ -15,6 +15,36 @@ public:
 
   bool execute_class_api_case() {
 
+    TEST_ASSERT_RESULT(markdown_printer_test());
+
+    return true;
+  }
+
+  bool markdown_printer_test() {
+
+    MarkdownPrinter md;
+
+    {
+      MarkdownPrinter::Header h(md, "Header");
+
+      {
+        MarkdownPrinter::Code c(md, "c++");
+        md << StringView("int main(int argc, char * argv[]){");
+        md << MarkdownPrinter::Directive::insert_newline;
+        md << StringView("  printf(\"HelloWorld\\n\")");
+        md << MarkdownPrinter::Directive::insert_newline;
+        md << StringView("  return 0;");
+        md << MarkdownPrinter::Directive::insert_newline;
+        md << StringView("}");
+        md << MarkdownPrinter::Directive::insert_newline;
+      }
+    }
+
+    return true;
+  }
+
+  bool api_case() {
+
     TEST_ASSERT(error().signature() == static_cast<const void *>(&(errno)));
 
     errno = EINVAL;
@@ -89,9 +119,9 @@ public:
     };
 
     print_progress();
-    printer().enable_flags(Printer::PrintFlags::simple_progress);
+    printer().enable_flags(Printer::Flags::simple_progress);
     print_progress();
-    printer().disable_flags(Printer::PrintFlags::simple_progress);
+    printer().disable_flags(Printer::Flags::simple_progress);
     print_progress();
 
     TEST_ASSERT(is_success());

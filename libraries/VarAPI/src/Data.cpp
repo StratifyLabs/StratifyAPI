@@ -27,7 +27,7 @@ Data Data::from_string(StringView value) {
   for (u32 i = 0; i < value.length() / 2; i++) {
     result.data_u8()[i]
       = value(StringView::GetSubstring().set_position(i * 2).set_length(2))
-          .to_unsigned_long(String::Base::hexidecimal);
+          .to_unsigned_long(String::Base::hexadecimal);
   }
   return std::move(result);
 }

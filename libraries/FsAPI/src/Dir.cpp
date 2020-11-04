@@ -15,10 +15,30 @@
 
 using namespace fs;
 
-Dir::Dir(var::StringView path FSAPI_LINK_DECLARE_DRIVER_LAST) {
-  LINK_SET_DRIVER((*this), link_driver);
-  open(path);
+const char *DirObject::read() const {
+  API_RETURN_VALUE_IF_ERROR(nullptr);
+  struct dirent *dirent_result = nullptr;
+  int result;
+  result = interface_readdir_r(&m_entry, &dirent_result);
+  if (dirent_result == nullptr) {
+    return nullptr;
+  }
+  return m_entry.d_name;
 }
+
+var::PathString DirObject::get_entry() const {
+  const char *entry = read();
+
+  if (entry == nullptr) {
+    return var::PathString();
+  }
+
+  return var::PathString(m_path)
+    .append((m_path.is_empty() == false) ? "/" : "")
+    .append(entry);
+}
+
+Dir::Dir(var::StringView path) { open(path); }
 
 Dir::~Dir() { close(); }
 
@@ -29,7 +49,7 @@ Dir &Dir::open(var::StringView path) {
     path_string.cstring(),
     interface_opendir(path_string.cstring()));
   if (m_dirp) {
-    m_path = path_string;
+    set_path(path_string);
   }
   return *this;
 }
@@ -68,63 +88,32 @@ int Dir::count() const {
 
 #endif
 
-const char *Dir::read() const {
-  API_RETURN_VALUE_IF_ERROR(nullptr);
-  struct dirent *dirent_result = nullptr;
-  int result;
-  result = interface_readdir_r(m_dirp, &m_entry, &dirent_result);
-  if (dirent_result == nullptr) {
-    return nullptr;
-  }
-  return m_entry.d_name;
-}
-
-var::PathString Dir::get_entry() const {
-  const char *entry = read();
-
-  if (entry == nullptr) {
-    return var::PathString();
-  }
-
-  return var::PathString(m_path)
-    .append((m_path.is_empty() == false) ? "/" : "")
-    .append(entry);
-}
-
 Dir &Dir::close() {
   API_RETURN_VALUE_IF_ERROR(*this);
   if (m_dirp) {
-    API_SYSTEM_CALL(m_path.cstring(), interface_closedir(m_dirp));
-    m_dirp = nullptr;
+    API_SYSTEM_CALL(path().cstring(), ::closedir(m_dirp));
   }
 
-  m_path.clear();
+  set_path("");
   return *this;
 }
 
 DIR *Dir::interface_opendir(const char *path) const {
-  return reinterpret_cast<DIR *>(FSAPI_LINK_OPENDIR(driver(), path));
+  return reinterpret_cast<DIR *>(::opendir(path));
 }
 
 int Dir::interface_readdir_r(
-  DIR *dirp,
   struct dirent *result,
   struct dirent **resultp) const {
-  return FSAPI_LINK_READDIR_R(driver(), dirp, result, resultp);
+  return ::readdir_r(m_dirp, result, resultp);
 }
 
-int Dir::interface_closedir(DIR *dirp) const {
-  return FSAPI_LINK_CLOSEDIR(driver(), dirp);
+int Dir::interface_closedir() const { return ::closedir(m_dirp); }
+
+int Dir::interface_telldir() const { return ::telldir(m_dirp); }
+
+void Dir::interface_seekdir(size_t location) const {
+  ::seekdir(m_dirp, location);
 }
 
-int Dir::interface_telldir(DIR *dirp) const {
-  return FSAPI_LINK_TELLDIR(driver(), dirp);
-}
-
-void Dir::interface_seekdir(DIR *dirp, size_t location) const {
-  FSAPI_LINK_SEEKDIR(driver(), dirp, location);
-}
-
-void Dir::interface_rewinddir(DIR *dirp) const {
-  FSAPI_LINK_REWINDDIR(driver(), dirp);
-}
+void Dir::interface_rewinddir() const { ::rewinddir(m_dirp); }

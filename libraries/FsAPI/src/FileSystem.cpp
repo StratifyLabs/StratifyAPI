@@ -23,9 +23,7 @@ printer::operator<<(printer::Printer &printer, const fs::PathList &a) {
 
 using namespace fs;
 
-FileSystem::FileSystem(FSAPI_LINK_DECLARE_DRIVER) {
-  LINK_SET_DRIVER((*this), link_driver);
-}
+FileSystem::FileSystem() {}
 
 const FileSystem &FileSystem::remove(var::StringView path) const {
   API_RETURN_VALUE_IF_ERROR(*this);
@@ -41,7 +39,7 @@ const FileSystem &FileSystem::touch(var::StringView path) const {
   char c;
   API_SYSTEM_CALL(
     "",
-    File(path, OpenMode::read_write() FSAPI_LINK_MEMBER_DRIVER_LAST)
+    File(path, OpenMode::read_write())
       .read(var::View(c))
       .seek(0)
       .write(var::View(c))
@@ -61,8 +59,7 @@ const FileSystem &FileSystem::rename(const Rename &options) const {
 
 bool FileSystem::exists(var::StringView path) const {
   API_RETURN_VALUE_IF_ERROR(false);
-  bool result = File(path, OpenMode::read_only() FSAPI_LINK_MEMBER_DRIVER_LAST)
-                  .is_success();
+  bool result = File(path, OpenMode::read_only()).is_success();
   reset_error();
   return result;
 }
@@ -89,7 +86,7 @@ const FileSystem &FileSystem::remove_directory(
   IsRecursive recursive) const {
 
   if (recursive == IsRecursive::yes) {
-    Dir d(path FSAPI_LINK_MEMBER_DRIVER_LAST);
+    Dir d(path);
 
     var::String entry;
     while ((entry = d.read()).is_empty() == false) {
@@ -124,7 +121,7 @@ const FileSystem &FileSystem::remove_directory(var::StringView path) const {
 }
 
 PathList FileSystem::read_directory(
-  const fs::Dir &directory,
+  const fs::DirObject &directory,
   IsRecursive is_recursive,
   bool (*exclude)(var::StringView entry)) const {
   PathList result;
@@ -151,10 +148,8 @@ PathList FileSystem::read_directory(
         FileInfo info = get_info(entry_path.cstring());
 
         if (info.is_directory()) {
-          PathList intermediate_result = read_directory(
-            Dir(entry_path.cstring() FSAPI_LINK_MEMBER_DRIVER_LAST),
-            is_recursive,
-            exclude);
+          PathList intermediate_result
+            = read_directory(Dir(entry_path), is_recursive, exclude);
 
           for (const auto &intermediate_entry : intermediate_result) {
             const var::PathString intermediate_path
@@ -249,28 +244,28 @@ Access FileSystem::access(var::StringView path) {
 #endif
 
 int FileSystem::interface_mkdir(const char *path, int mode) const {
-  return FSAPI_LINK_MKDIR(driver(), path, mode);
+  return ::mkdir(path, mode);
 }
 
 int FileSystem::interface_rmdir(const char *path) const {
-  return FSAPI_LINK_RMDIR(driver(), path);
+  return ::rmdir(path);
 }
 
 int FileSystem::interface_unlink(const char *path) const {
-  return FSAPI_LINK_UNLINK(driver(), path);
+  return ::unlink(path);
 }
 
 int FileSystem::interface_stat(const char *path, struct stat *stat) const {
-  return FSAPI_LINK_STAT(driver(), path, stat);
+  return ::stat(path, stat);
 }
 
 int FileSystem::interface_fstat(int fd, struct stat *stat) const {
-  return FSAPI_LINK_FSTAT(driver(), fd, stat);
+  return ::fstat(fd, stat);
 }
 
 int FileSystem::interface_rename(const char *old_name, const char *new_name)
   const {
-  return FSAPI_LINK_RENAME(driver(), old_name, new_name);
+  return ::rename(old_name, new_name);
 }
 
 TemporaryDirectory::TemporaryDirectory(var::StringView parent)

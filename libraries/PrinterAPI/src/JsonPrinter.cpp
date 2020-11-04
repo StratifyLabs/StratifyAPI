@@ -7,8 +7,7 @@ using namespace printer;
 JsonPrinter::JsonPrinter() {
   container_list().push_back(Container(Level::fatal, ContainerType::array));
   enable_flags(
-    PrintFlags::no_progress_newline | PrintFlags::key_quotes
-    | PrintFlags::value_quotes);
+    Flags::no_progress_newline | Flags::key_quotes | Flags::value_quotes);
 }
 
 void JsonPrinter::print(
@@ -44,8 +43,7 @@ void JsonPrinter::print_open_object(Level level, var::StringView key) {
       const var::String string_key = "\"" + key + "\":{";
       interface_print_final(string_key.cstring());
     } else {
-      const var::String string_key = "{" + key;
-      interface_print_final(string_key.cstring());
+      interface_print_final("{");
     }
   }
 
@@ -59,8 +57,7 @@ void JsonPrinter::print_open_array(Level level, var::StringView key) {
       const var::String string_key = "\"" + key + "\":[";
       interface_print_final(string_key.cstring());
     } else {
-      const var::String string_key = "[" + key;
-      interface_print_final(string_key.cstring());
+      interface_print_final("[");
     }
   }
   container_list().push_back(Container(level, ContainerType::array));

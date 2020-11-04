@@ -10,6 +10,7 @@
 
 #include <cstring>
 #include <errno.h>
+#include <sys/syslimits.h>
 
 #include <vector>
 
@@ -179,7 +180,7 @@ private:
   Error(void *signature) : m_signature(signature) {}
   friend class PrivateExecutionContext;
   friend class BacktraceSymbols;
-  static constexpr size_t m_message_size = 31;
+  static constexpr size_t m_message_size = PATH_MAX;
   static constexpr size_t m_backtrace_buffer_size =
 #if defined __link
     512

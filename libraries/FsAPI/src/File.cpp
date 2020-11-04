@@ -210,19 +210,13 @@ void FileObject::fake_seek(
   }
 }
 
-File::File(
-  var::StringView name,
-  OpenMode flags FSAPI_LINK_DECLARE_DRIVER_LAST) {
-  LINK_SET_DRIVER((*this), link_driver);
-  open(name, flags);
-}
+File::File(var::StringView name, OpenMode flags) { open(name, flags); }
 
 File::File(
   IsOverwrite is_overwrite,
   var::StringView path,
   OpenMode open_mode,
-  Permissions perms FSAPI_LINK_DECLARE_DRIVER_LAST) {
-  LINK_SET_DRIVER((*this), link_driver);
+  Permissions perms) {
   internal_create(is_overwrite, path, open_mode, perms);
 }
 

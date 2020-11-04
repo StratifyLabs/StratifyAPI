@@ -22,7 +22,7 @@ namespace printer {
 
 struct PrinterFlags {
   /*! \details Number printing flags. */
-  enum class PrintFlags {
+  enum class Flags {
     null = 0,
     hex /*! Print hex data */ = (1 << 0),
     type_unsigned /*! Print unsigned integers */ = (1 << 1),
@@ -92,7 +92,7 @@ struct PrinterFlags {
   };
 };
 
-API_OR_NAMED_FLAGS_OPERATOR(PrinterFlags, PrintFlags)
+API_OR_NAMED_FLAGS_OPERATOR(PrinterFlags, Flags)
 
 #define PRINTER_TRACE(printer, msg) (printer.trace(__FUNCTION__, __LINE__, msg))
 #define PRINTER_TRACE_ERROR(printer, x)                                        \
@@ -204,81 +204,51 @@ public:
 
   Printer &error(const api::PrivateExecutionContext result, u32 line_number);
 
-  Printer &enable_flags(PrintFlags value) {
+  Printer &enable_flags(Flags value) {
     m_print_flags |= value;
     return *this;
   }
-  Printer &disable_flags(PrintFlags value) {
+  Printer &disable_flags(Flags value) {
     m_print_flags &= ~value;
     return *this;
   }
 
-  PrintFlags flags() const { return m_print_flags; }
-  PrintFlags print_flags() const { return m_print_flags; }
+  Flags flags() const { return m_print_flags; }
+  Printer &set_flags(Flags value) {
+    m_print_flags = value;
+    return *this;
+  }
 
-  /*! \details Returns a pointer to the sys::ProgressCallback member.
-   *
-   * This method can be used for operations that use sys::ProgressCallback
-   * class to update the progress. The progess is printed to the screen
-   * with the key set to progress_key().
-   *
-   * ```
-   * //md2code:include
-   * #include <sapi/sys.hpp>
-   * #include <sapi/inet.hpp>
-   * #include <sapi/fs.hpp>
-   * ```
-   *
-   * ```
-   * //md2code:main
-   * Printer p;
-   *
-   * p.progress_key() = var::StringView ("downloading");
-   * Socket socket;
-   * HttpClient http_client(socket);
-   * DataFile data_file(OpenFlags::append_read_write());
-   *
-   * //download file to data_file and print the progress using #'s
-   * http_client.get(
-   *   arg::var::StringView ("http://some.url/file"),
-   *   arg::DestinationFile(data_file),
-   *   p.progress_callback()
-   *   );
-   * ```
-   *
-   */
+  class FlagGuard {
+  public:
+    FlagGuard(Printer &printer)
+      : m_printer(printer), m_flags(printer.flags()) {}
+
+    ~FlagGuard() { m_printer.set_flags(m_flags); }
+
+  private:
+    Flags m_flags;
+    Printer &m_printer;
+  };
+
   const api::ProgressCallback *progress_callback() const {
     return &m_progress_callback;
   }
 
-  /*! \details Used by progres_callback(). */
   static bool update_progress_callback(void *context, int progress, int total) {
     API_ASSERT(context != nullptr);
     return static_cast<Printer *>(context)->update_progress(progress, total);
   }
 
-  /*! \details Used by progres_callback(). */
   bool update_progress(int progress, int total);
 
-  /*! \details Access to the key to print during progress updates. */
   Printer &set_progress_key(var::StringView progress_key) {
     m_progress_key = progress_key;
     return *this;
   }
-  /*! \details Access (read-only) to the key to print during progress updates.
-   */
+
   var::StringView progress_key() const { return m_progress_key; }
 
-  /*! \details Returns a character that will be printed.
-   *
-   * @param color The color of the pixel
-   * @param bits_per_pixel The number of bits per pixel in the color
-   * @return A character (like '*') to be used for the color
-   *
-   * This method is used for printing 1, 2, and 4, bit per pixel
-   * colors.
-   *
-   */
   static char get_bitmap_pixel_character(u32 color, u8 bits_per_pixel);
   static u32 get_bitmap_pixel_color(char c, u8 bits_per_pixel);
 
@@ -287,7 +257,7 @@ public:
   void set_bash(bool value = true) { m_is_bash = value; }
 #endif
 
-  PrintFlags o_flags() const { return m_print_flags; }
+  Flags o_flags() const { return m_print_flags; }
 
   Printer &key_bool(var::StringView key, bool value);
   Printer &key(var::StringView key, var::StringView a);
@@ -393,7 +363,7 @@ private:
   u16 m_progress_state;
 
   u16 m_indent;
-  PrintFlags m_print_flags = PrintFlags::null;
+  Flags m_print_flags = Flags::null;
 
   var::StringView  m_progress_key;
 

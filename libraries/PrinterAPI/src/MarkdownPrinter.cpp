@@ -11,7 +11,7 @@ MarkdownPrinter::MarkdownPrinter() {
   m_directive = Directive::no_directive;
 }
 
-void MarkdownPrinter::print_open_object(Level level, const char *key) {
+void MarkdownPrinter::print_open_object(Level level, const StringView key) {
   if (level <= verbose_level()) {
     this->key(key, "");
   }
@@ -22,9 +22,9 @@ void MarkdownPrinter::print_close_object() { close_list(); }
 
 void MarkdownPrinter::print(
   Level level,
-  const char *key,
-  const char *value,
-  bool is_newline) {
+  var::StringView key,
+  var::StringView value,
+  IsNewline is_newline) {
 
   if (level > verbose_level()) {
     return;
@@ -38,10 +38,10 @@ void MarkdownPrinter::print(
 
   var::String content;
 
-  if (key != nullptr) {
+  if (key.is_null() == false) {
     content += String(key) + ": ";
   }
-  if (value != nullptr) {
+  if (value.is_null() == false) {
     content += value;
   }
 
@@ -51,7 +51,7 @@ void MarkdownPrinter::print(
   bool is_suppress_newline = false;
   bool is_print_newline = false;
 
-  if ((m_directive == Directive::suppress_newline) || (value == nullptr)) {
+  if ((m_directive == Directive::suppress_newline) || value.is_null()) {
     m_directive = Directive::no_directive;
     is_suppress_newline = true;
   }
@@ -166,7 +166,10 @@ bool MarkdownPrinter::close_type(ContainerType type) {
 }
 
 MarkdownPrinter &MarkdownPrinter::horizontal_line() {
-  print(verbose_level(), nullptr, "-------------------------------\n");
+  print(
+    verbose_level(),
+    StringView().set_null(),
+    "-------------------------------\n");
   return *this;
 }
 
@@ -175,7 +178,11 @@ MarkdownPrinter &MarkdownPrinter::hyperlink(
   var::StringView link) {
 
   var::String output = var::String("[") + text + "](" + link + ")";
-  print(this->verbose_level(), nullptr, output.cstring(), false);
+  print(
+    this->verbose_level(),
+    StringView().set_null(),
+    output.string_view(),
+    IsNewline::no);
   return *this;
 }
 
@@ -183,7 +190,11 @@ MarkdownPrinter &MarkdownPrinter::image(
   var::StringView text,
   var::StringView link) {
   var::String output = var::String("![") + text + "](" + link + ")";
-  print(this->verbose_level(), nullptr, output.cstring(), false);
+  print(
+    this->verbose_level(),
+    StringView().set_null(),
+    output.string_view(),
+    IsNewline::no);
   return *this;
 }
 
@@ -198,7 +209,7 @@ MarkdownPrinter::open_header(var::StringView header, Level level) {
   }
   header_output += " " + header;
 
-  print(level, nullptr, header_output.cstring());
+  print(level, StringView().set_null(), header_output.string_view());
   return *this;
 }
 
@@ -232,7 +243,10 @@ MarkdownPrinter &MarkdownPrinter::open_code(
   Level level) {
   m_is_last_close = false;
   container_list().push_back(Container(level, ContainerType::code));
-  print(level, nullptr, (var::String() + "```" + language).cstring());
+  print(
+    level,
+    StringView().set_null(),
+    (var::String() + "```" + language).string_view());
   return *this;
 }
 MarkdownPrinter &MarkdownPrinter::close_code() {

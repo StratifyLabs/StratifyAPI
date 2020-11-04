@@ -35,23 +35,16 @@
 
 namespace fs {
 
-/*! \brief Dir class
- *
- * \todo Add some examples
- *
- *
- */
-class Dir : public api::ExecutionContext {
+class DirObject : public api::ExecutionContext {
 public:
   enum class IsRecursive { no, yes };
 
-  /*! \details Constructs a Dir object. */
-  Dir(var::StringView path FSAPI_LINK_DECLARE_DRIVER_NULLPTR_LAST);
+  DirObject() {}
 
-  Dir(const Dir &dir) = delete;
-  Dir &operator=(const Dir &dir) = delete;
-  Dir(Dir &&dir) = default;
-  Dir &operator=(Dir &&dir) = default;
+  DirObject(const DirObject &dir) = delete;
+  DirObject &operator=(const DirObject &dir) = delete;
+  DirObject(DirObject &&dir) = default;
+  DirObject &operator=(DirObject &&dir) = default;
 
   static const var::String filter_hidden(const var::String &entry) {
     if (!entry.is_empty() && entry.front() == '.') {
@@ -66,95 +59,97 @@ public:
 #if defined __link
     API_AF(Copy, link_transport_mdriver_t *, source_driver, nullptr);
     API_AF(Copy, link_transport_mdriver_t *, destination_driver, nullptr);
-
 #endif
   };
 
-  /*! \details Destructs the object.
-   *
-   * If the object has a directory that is
-   * currently open, the directory will
-   * be closed upon destruction.
-   *
-   */
-  ~Dir();
-
-  /*! \details Returns true if the directory is open. */
-  bool is_open() const { return m_dirp != 0; }
-
-  /*! \details Returns a pointer to the next entry or 0 if no more entries
-   * exist.
-   */
   const char *read() const;
-
-  /*! \details Gets the next entry and writes the full path of the entry to the
-   * given string.
-   *
-   * @param path_dest The var::String that will hold the full path of the next
-   * entry.
-   * @return True if an entry was read or false for an error or no more entries
-   */
   var::PathString get_entry() const;
-
-  /*! \details Returns a pointer (const) to the name of the most recently read
-   * entry. */
   const char *entry_name() const { return m_entry.d_name; }
-
-  /*! \details Returns the serial number of the most recently read entry. */
   int ino() { return m_entry.d_ino; }
-
-  /*! \details Counts the total number of entries in the directory. */
   int count() const;
 
-  /*! \details Rewinds the directory pointer. */
-  const Dir &rewind() const {
+  const DirObject &rewind() const {
     API_RETURN_VALUE_IF_ERROR(*this);
-    interface_rewinddir(m_dirp);
-    return *this;
-  }
-  /*! \details Seeks to a location in the directory.
-   *
-   * Each entry in the directory occupies 1 location
-   * space. The first entry is at location 0.
-   *
-   *
-   */
-  const Dir &seek(size_t location) const {
-    API_RETURN_VALUE_IF_ERROR(*this);
-    interface_seekdir(m_dirp, location);
+    interface_rewinddir();
     return *this;
   }
 
-  /*! \details Returns the current location in the directory.
-   *
-   *
-   */
+  DirObject &rewind() { return API_CONST_CAST_SELF(DirObject, rewind); }
+
+  const DirObject &seek(size_t location) const {
+    API_RETURN_VALUE_IF_ERROR(*this);
+    interface_seekdir(location);
+    return *this;
+  }
+
+  DirObject &seek(size_t location) {
+    return API_CONST_CAST_SELF(DirObject, seek, location);
+  }
+
   inline long tell() const {
     API_RETURN_VALUE_IF_ERROR(-1);
-    return interface_telldir(m_dirp);
+    return interface_telldir();
   }
+
+  const var::PathString &path() const { return m_path; }
+
+protected:
+  void set_path(const var::StringView path) { m_path = path; }
+  virtual int interface_readdir_r(dirent *result, dirent **resultp) const = 0;
+
+  virtual int interface_closedir() const = 0;
+  virtual int interface_telldir() const = 0;
+  virtual void interface_seekdir(size_t location) const = 0;
+  virtual void interface_rewinddir() const = 0;
+
+private:
+  mutable struct dirent m_entry = {0};
+  var::PathString m_path;
+};
+
+template <class Derived> class DirAccess : public DirObject {
+public:
+  const Derived &rewind() const {
+    return static_cast<const Derived &>(DirObject::rewind());
+  }
+
+  Derived &rewind() { return static_cast<Derived &>(DirObject::rewind()); }
+
+  const Derived &seek(size_t location) const {
+    return static_cast<const Derived &>(DirObject::seek(location));
+  }
+
+  Derived &seek(size_t location) {
+    return static_cast<Derived &>(DirObject::seek(location));
+  }
+};
+
+class Dir : public DirAccess<Dir> {
+public:
+  Dir(var::StringView path);
+  Dir(const Dir &dir) = delete;
+  Dir &operator=(const Dir &dir) = delete;
+  Dir(Dir &&dir) { std::swap(m_dirp, dir.m_dirp); }
+  Dir &operator=(Dir &&dir) {
+    std::swap(m_dirp, dir.m_dirp);
+    return *this;
+  }
+  ~Dir();
+  bool is_open() const { return m_dirp != nullptr; }
+  int count() const;
 
 protected:
   Dir &open(var::StringView path);
   Dir &close();
 
-  virtual int
-  interface_readdir_r(DIR *dirp, dirent *result, dirent **resultp) const;
-
-  virtual int interface_closedir(DIR *dirp) const;
-  virtual int interface_telldir(DIR *dirp) const;
-  virtual void interface_seekdir(DIR *dirp, size_t location) const;
-  virtual void interface_rewinddir(DIR *dirp) const;
+  virtual int interface_readdir_r(dirent *result, dirent **resultp) const;
+  virtual int interface_closedir() const;
+  virtual int interface_telldir() const;
+  virtual void interface_seekdir(size_t location) const;
+  virtual void interface_rewinddir() const;
 
 private:
-  API_RAC(Dir, var::PathString, path);
-#ifdef __link
-  API_AF(Dir, link_transport_mdriver_t *, driver, nullptr);
-#endif
-
   DIR *m_dirp = nullptr;
-  mutable struct dirent m_entry = {0};
-
   DIR *interface_opendir(const char *path) const;
 };
 

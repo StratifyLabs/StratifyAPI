@@ -609,8 +609,8 @@ public:
 
     {
       SV sv("abcd");
-      TEST_EXPECT(sv.to_long(SV::Base::hexidecimal) == 0xabcd);
-      TEST_EXPECT(sv.to_unsigned_long(SV::Base::hexidecimal) == 0xabcd);
+      TEST_EXPECT(sv.to_long(SV::Base::hexadecimal) == 0xabcd);
+      TEST_EXPECT(sv.to_unsigned_long(SV::Base::hexadecimal) == 0xabcd);
     }
 
     {

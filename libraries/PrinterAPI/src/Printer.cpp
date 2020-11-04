@@ -22,7 +22,7 @@ using namespace printer;
 Printer::Printer() {
   m_progress_callback.set_callback(Printer::update_progress_callback)
     .set_context(this);
-  m_print_flags = PrintFlags::width_8 | PrintFlags::hex;
+  m_print_flags = Flags::width_8 | Flags::hex;
   m_indent = 0;
   m_progress_width = 50;
   m_progress_state = 0;
@@ -130,22 +130,22 @@ void Printer::print(
   }
 
   if (key.is_null() == false) {
-    if (m_print_flags & PrintFlags::bold_keys) {
+    if (m_print_flags & Flags::bold_keys) {
       set_format_code(FormatType::bold);
     }
-    if (m_print_flags & PrintFlags::cyan_keys) {
+    if (m_print_flags & Flags::cyan_keys) {
       set_color_code(static_cast<int>(ColorCode::cyan));
     }
-    if (m_print_flags & PrintFlags::yellow_keys) {
+    if (m_print_flags & Flags::yellow_keys) {
       set_color_code(static_cast<int>(ColorCode::yellow));
     }
-    if (m_print_flags & PrintFlags::magenta_keys) {
+    if (m_print_flags & Flags::magenta_keys) {
       set_color_code(static_cast<int>(ColorCode::magenta));
     }
-    if (m_print_flags & PrintFlags::red_keys) {
+    if (m_print_flags & Flags::red_keys) {
       set_color_code(static_cast<int>(ColorCode::red));
     }
-    if (m_print_flags & PrintFlags::key_quotes) {
+    if (m_print_flags & Flags::key_quotes) {
       interface_print_final("\"");
       interface_print_final(key);
       interface_print_final("\": ");
@@ -153,45 +153,45 @@ void Printer::print(
       interface_print_final(key);
       interface_print_final(": ");
     }
-    if (m_print_flags & PrintFlags::bold_keys) {
+    if (m_print_flags & Flags::bold_keys) {
       clear_format_code(static_cast<int>(FormatType::bold));
     }
     if (
       m_print_flags
-      & (PrintFlags::cyan_keys | PrintFlags::yellow_keys | PrintFlags::magenta_keys | PrintFlags::red_keys)) {
+      & (Flags::cyan_keys | Flags::yellow_keys | Flags::magenta_keys | Flags::red_keys)) {
       clear_color_code();
     }
   }
 
   if (value.is_null() == false) {
-    if (m_print_flags & PrintFlags::bold_values) {
+    if (m_print_flags & Flags::bold_values) {
       set_format_code(static_cast<int>(FormatType::bold));
     }
-    if (m_print_flags & PrintFlags::green_values) {
+    if (m_print_flags & Flags::green_values) {
       set_color_code(static_cast<int>(ColorCode::green));
     }
-    if (m_print_flags & PrintFlags::yellow_values) {
+    if (m_print_flags & Flags::yellow_values) {
       set_color_code(static_cast<int>(ColorCode::yellow));
     }
-    if (m_print_flags & PrintFlags::red_values) {
+    if (m_print_flags & Flags::red_values) {
       set_color_code(static_cast<int>(ColorCode::red));
     }
-    if (m_print_flags & PrintFlags::cyan_values) {
+    if (m_print_flags & Flags::cyan_values) {
       set_color_code(static_cast<int>(ColorCode::cyan));
     }
-    if (m_print_flags & PrintFlags::value_quotes) {
+    if (m_print_flags & Flags::value_quotes) {
       interface_print_final("\"");
       interface_print_final(value);
       interface_print_final("\"");
     } else {
       interface_print_final(value);
     }
-    if (m_print_flags & PrintFlags::bold_values) {
+    if (m_print_flags & Flags::bold_values) {
       clear_format_code(static_cast<int>(FormatType::bold));
     }
     if (
       m_print_flags
-      & (PrintFlags::green_values | PrintFlags::yellow_values | PrintFlags::red_values | PrintFlags::cyan_values)) {
+      & (Flags::green_values | Flags::yellow_values | Flags::red_values | Flags::cyan_values)) {
       clear_color_code();
     }
   }
@@ -476,10 +476,10 @@ bool Printer::update_progress(int progress, int total) {
         var::StringView().set_null(),
         IsNewline::no);
       if (total != -1) {
-        if (m_print_flags & PrintFlags::value_quotes) {
+        if (m_print_flags & Flags::value_quotes) {
           interface_print_final("\"");
         }
-        if ((m_print_flags & PrintFlags::simple_progress) == 0) {
+        if ((m_print_flags & Flags::simple_progress) == 0) {
           for (u32 i = 0; i < width; i++) {
             interface_print_final(".");
           }
@@ -497,12 +497,12 @@ bool Printer::update_progress(int progress, int total) {
       if (total == api::ProgressCallback::indeterminate_progress_total()) {
         var::String output;
         var::StringView  animation = "-\\|/";
-        if ((m_print_flags & PrintFlags::value_quotes) && (m_progress_state == 1)) {
+        if ((m_print_flags & Flags::value_quotes) && (m_progress_state == 1)) {
           interface_print_final("\"");
         }
         m_progress_state++;
 
-        if ((m_print_flags & PrintFlags::simple_progress) == 0) {
+        if ((m_print_flags & Flags::simple_progress) == 0) {
           output.format(
             "%c" F32U,
             animation.at(m_progress_state % animation.length()),
@@ -531,10 +531,10 @@ bool Printer::update_progress(int progress, int total) {
       }
     }
     if (total == 0) {
-      if ((m_print_flags & PrintFlags::no_progress_newline) == false) {
+      if ((m_print_flags & Flags::no_progress_newline) == false) {
         interface_print_final("\n");
       }
-      if (m_print_flags & PrintFlags::value_quotes) {
+      if (m_print_flags & Flags::value_quotes) {
         interface_print_final("\"");
       }
     }
@@ -574,11 +574,11 @@ Printer &Printer::message(var::StringView a) {
 }
 
 Printer &Printer::warning(var::StringView a) {
-  if (flags() & PrintFlags::yellow_warnings) {
+  if (flags() & Flags::yellow_warnings) {
     set_color_code(ColorCode::yellow);
   }
   print(Level::warning, "warning", a);
-  if (flags() & PrintFlags::yellow_warnings) {
+  if (flags() & Flags::yellow_warnings) {
     clear_color_code();
   }
   return *this;
@@ -586,22 +586,22 @@ Printer &Printer::warning(var::StringView a) {
 
 
 Printer &Printer::error(var::StringView a) {
-  if (flags() & PrintFlags::red_errors) {
+  if (flags() & Flags::red_errors) {
     set_color_code(ColorCode::red);
   }
   print(Level::error, "error", a);
-  if (flags() & PrintFlags::red_errors) {
+  if (flags() & Flags::red_errors) {
     clear_color_code();
   }
   return *this;
 }
 
 Printer &Printer::fatal(var::StringView a) {
-  if (flags() & PrintFlags::red_errors) {
+  if (flags() & Flags::red_errors) {
     set_color_code(ColorCode::red);
   }
   print(Level::fatal, "fatal", a);
-  if (flags() & PrintFlags::red_errors) {
+  if (flags() & Flags::red_errors) {
     clear_color_code();
   }
   return *this;
@@ -622,7 +622,7 @@ Printer::trace(const char *function, int line, var::StringView message) {
 }
 
 Printer &Printer::operator<<(var::View a) {
-  const PrintFlags o_flags = print_flags();
+  const Flags o_flags = flags();
   const s8 *ptrs8 = a.to_const_s8();
   const s16 *ptrs16 = a.to_const_s16();
   const s32 *ptrs32 = a.to_const_s32();
@@ -631,11 +631,11 @@ Printer &Printer::operator<<(var::View a) {
   const u32 *ptru32 = a.to_const_u32();
 
   int s;
-  if (o_flags & PrintFlags::width_32) {
+  if (o_flags & Flags::width_32) {
     s = a.size() / 4;
-  } else if (o_flags & PrintFlags::width_16) {
+  } else if (o_flags & Flags::width_16) {
     s = a.size() / 2;
-  } else if (o_flags & PrintFlags::blob) {
+  } else if (o_flags & Flags::blob) {
     s = (a.size() + 15) / 16;
   } else {
     s = a.size();
@@ -646,12 +646,12 @@ Printer &Printer::operator<<(var::View a) {
   var::String data_string;
 
   for (i = 0; i < s; i++) {
-    if (o_flags & PrintFlags::hex) {
-      if (o_flags & PrintFlags::width_32) {
+    if (o_flags & Flags::hex) {
+      if (o_flags & Flags::width_32) {
         data_string += var::String().format(F32X, ptru32[i]);
-      } else if (o_flags & PrintFlags::width_16) {
+      } else if (o_flags & Flags::width_16) {
         data_string += var::String().format("%X", ptru16[i]);
-      } else if (o_flags & PrintFlags::blob) {
+      } else if (o_flags & Flags::blob) {
         for (u32 j = 0; j < 16; j++) {
           data_string += var::String().format("%02X ", ptru8[i * 16 + j]);
           if (j < 15) {
@@ -667,12 +667,12 @@ Printer &Printer::operator<<(var::View a) {
       }
       data_string += " ";
     }
-    if (o_flags & PrintFlags::type_unsigned) {
-      if (o_flags & PrintFlags::width_32) {
+    if (o_flags & Flags::type_unsigned) {
+      if (o_flags & Flags::width_32) {
         data_string += var::String().format(F32U, ptru32[i]);
-      } else if (o_flags & PrintFlags::width_16) {
+      } else if (o_flags & Flags::width_16) {
         data_string += var::String().format("%u", ptru16[i]);
-      } else if (o_flags & PrintFlags::blob) {
+      } else if (o_flags & Flags::blob) {
         for (u32 j = 0; j < 16; j++) {
           data_string += var::String().format("%u", ptru8[i * 16 + j]);
           if (j < 15) {
@@ -684,12 +684,12 @@ Printer &Printer::operator<<(var::View a) {
       }
       data_string += " ";
     }
-    if (o_flags & PrintFlags::type_signed) {
-      if (o_flags & PrintFlags::width_32) {
+    if (o_flags & Flags::type_signed) {
+      if (o_flags & Flags::width_32) {
         data_string += var::String().format(F32D, ptrs32[i]);
-      } else if (o_flags & PrintFlags::width_16) {
+      } else if (o_flags & Flags::width_16) {
         data_string += var::String().format("%d", ptrs16[i]);
-      } else if (o_flags & PrintFlags::blob) {
+      } else if (o_flags & Flags::blob) {
         for (u32 j = 0; j < 16; j++) {
           data_string += var::String().format("%d", ptru8[i * 16 + j]);
           if (j < 15) {
@@ -701,7 +701,7 @@ Printer &Printer::operator<<(var::View a) {
       }
       data_string += " ";
     }
-    if (o_flags & PrintFlags::type_char) {
+    if (o_flags & Flags::type_char) {
       if (ptru8[i] == '\n') {
         data_string += (" \\n");
       } else if (ptru8[i] == '\r') {
