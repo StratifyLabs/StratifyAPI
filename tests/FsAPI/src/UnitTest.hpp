@@ -115,8 +115,7 @@ public:
     TEST_ASSERT(D("tmp").is_success());
 
     {
-      D d("tmp");
-      Vector<var::PathString> dir_list = FS().read_directory(d);
+      Vector<var::PathString> dir_list = FS().read_directory("tmp");
       printer().object("list", dir_list);
       TEST_ASSERT(dir_list.count() == 3);
     }
@@ -147,7 +146,7 @@ public:
 
     {
       TEST_ASSERT(FS().directory_exists("tmp"));
-      PathList list = FS().read_directory(D("tmp"), FS::IsRecursive::yes);
+      PathList list = FS().read_directory("tmp", FS::IsRecursive::yes);
       printer().object("files", list);
       TEST_ASSERT(
         list.find(var::PathString("tmp/test0.txt")) == "tmp/test0.txt");
@@ -160,7 +159,7 @@ public:
     {
       TEST_ASSERT(FS().directory_exists("tmp2"));
       PathList list = FS().read_directory(
-        D("tmp2"),
+        "tmp2",
         FS::IsRecursive::yes,
         [](StringView entry) -> bool {
           return entry.find("filesystem") != StringView::npos;
@@ -177,7 +176,7 @@ public:
     }
 
     {
-      PathList list = FS().read_directory(D("tmp"), FS::IsRecursive::no);
+      PathList list = FS().read_directory("tmp", FS::IsRecursive::no);
       printer().object("files", list);
       TEST_ASSERT(
         list.find(var::PathString("test0.txt"))

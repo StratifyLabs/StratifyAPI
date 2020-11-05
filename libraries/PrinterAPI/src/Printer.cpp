@@ -495,7 +495,6 @@ bool Printer::update_progress(int progress, int total) {
     if (m_progress_state > 0) {
 
       if (total == api::ProgressCallback::indeterminate_progress_total()) {
-        var::String output;
         var::StringView  animation = "-\\|/";
         if ((m_print_flags & Flags::value_quotes) && (m_progress_state == 1)) {
           interface_print_final("\"");
@@ -503,12 +502,13 @@ bool Printer::update_progress(int progress, int total) {
         m_progress_state++;
 
         if ((m_print_flags & Flags::simple_progress) == 0) {
+          var::NumberString output;
           output.format(
             "%c" F32U,
             animation.at(m_progress_state % animation.length()),
             progress);
           interface_print_final(output.cstring());
-          for (u32 i = 0; i < output.length(); i++) {
+          for (const auto c : output.string_view()) {
             interface_print_final("\b"); // backspace
           }
         } else {

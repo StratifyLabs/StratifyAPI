@@ -121,11 +121,13 @@ const FileSystem &FileSystem::remove_directory(var::StringView path) const {
 }
 
 PathList FileSystem::read_directory(
-  const fs::DirObject &directory,
+  const var::StringView path,
   IsRecursive is_recursive,
   bool (*exclude)(var::StringView entry)) const {
   PathList result;
   bool is_the_end = false;
+
+  Dir directory(path);
 
   do {
     const char *entry_result = directory.read();
@@ -149,7 +151,7 @@ PathList FileSystem::read_directory(
 
         if (info.is_directory()) {
           PathList intermediate_result
-            = read_directory(Dir(entry_path), is_recursive, exclude);
+            = read_directory(entry_path, is_recursive, exclude);
 
           for (const auto &intermediate_entry : intermediate_result) {
             const var::PathString intermediate_path

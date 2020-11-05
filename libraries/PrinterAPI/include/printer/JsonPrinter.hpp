@@ -39,6 +39,8 @@ private:
   const Container &container() const { return m_container_list.back(); }
 
   void insert_comma();
+
+  bool is_level_filtered() const;
 };
 
 } // namespace printer

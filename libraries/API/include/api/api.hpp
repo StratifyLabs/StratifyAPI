@@ -227,6 +227,7 @@ protected:
   void update_error_context(int result, int line, const char *message);
 
 private:
+  friend class ErrorGuard;
   PrivateExecutionContext() : m_error(&(errno)) {}
   Error m_error;
   std::vector<Error> *m_error_list = nullptr;
@@ -269,7 +270,17 @@ public:
   static inline int return_value() { return m_private_context.value(); }
 
 private:
+  friend class ErrorGuard;
   static PrivateExecutionContext m_private_context;
+};
+
+class ErrorGuard {
+public:
+  ErrorGuard() : m_error(ExecutionContext::m_private_context.m_error) {}
+  ~ErrorGuard() { ExecutionContext::m_private_context.m_error = m_error; }
+
+private:
+  Error m_error;
 };
 
 class ThreadExecutionContext {

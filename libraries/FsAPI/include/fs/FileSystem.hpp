@@ -38,7 +38,7 @@ public:
     const Permissions &permissions = Permissions(0)) const;
 
   PathList read_directory(
-    const fs::DirObject &directory,
+    const var::StringView path,
     IsRecursive is_recursive = IsRecursive::no,
     bool (*exclude)(var::StringView) = nullptr) const;
 
