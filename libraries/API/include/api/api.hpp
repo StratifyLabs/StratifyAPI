@@ -276,11 +276,17 @@ private:
 
 class ErrorGuard {
 public:
-  ErrorGuard() : m_error(ExecutionContext::m_private_context.m_error) {}
-  ~ErrorGuard() { ExecutionContext::m_private_context.m_error = m_error; }
+  ErrorGuard()
+    : m_error(ExecutionContext::m_private_context.m_error),
+      m_error_number(errno) {}
+  ~ErrorGuard() {
+    ExecutionContext::m_private_context.m_error = m_error;
+    errno = m_error_number;
+  }
 
 private:
   Error m_error;
+  int m_error_number;
 };
 
 class ThreadExecutionContext {

@@ -87,9 +87,9 @@ void PrivateExecutionContext::update_error_context(
   Error &error = get_error();
   strncpy(error.m_message, message, Error::m_message_size);
   error.m_line_number = line;
-  error.m_error_number = errno;
+  error.m_error_number = errno; // positive value set by system
   error.capture_backtrace();
-  errno = result;
+  errno = result; // mark the context as an error state
 }
 
 #define RESULT_ERROR_CODE_CASE(c)                                              \
