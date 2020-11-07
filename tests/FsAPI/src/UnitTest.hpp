@@ -21,21 +21,52 @@ public:
 
   bool execute_class_api_case() {
 
-    if (!file_api_case()) {
-      return false;
+    TEST_ASSERT_RESULT(file_api_case());
+    TEST_ASSERT_RESULT(file_system_api_case());
+    TEST_ASSERT_RESULT(dir_api_case());
+    TEST_ASSERT_RESULT(fileinfo_api_case());
+    TEST_ASSERT_RESULT(view_file_api_case());
+    TEST_ASSERT_RESULT(data_file_api_case());
+
+    return true;
+  }
+
+  bool data_file_api_case() {
+    const StringView contents
+      = "0123456789012345678901234567890123456789012345678901234567890123456789"
+        "0123456789";
+
+    API_ASSERT(DataFile().write(contents).return_value() == contents.length());
+
+    {
+      DataFile df(OpenMode::read_write());
+      df.seek(0).data().resize(contents.length());
+      Data buffer(contents.length() + 4);
+
+      API_ASSERT(df.read(buffer).return_value() == contents.length());
+      df.seek(0);
+      buffer.resize(7);
+      while (df.read(buffer).return_value() > 0) {
+        int result = return_value();
+        printer().key(
+          "read",
+          NumberString().format("%d of %d", result, df.size()));
+      }
     }
 
-    if (!file_system_api_case()) {
-      return false;
-    }
+    return true;
+  }
 
-    if (!dir_api_case()) {
-      return false;
-    }
+  bool view_file_api_case() {
 
-    if (!fileinfo_api_case()) {
-      return false;
-    }
+    const StringView contents
+      = "0123456789012345678901234567890123456789012345678901234567890123456789"
+        "0123456789";
+
+    u32 value;
+
+    API_ASSERT(
+      ViewFile(View(value)).write(contents).return_value() == sizeof(u32));
 
     return true;
   }
@@ -225,6 +256,8 @@ public:
                     .is_success());
 
       TEST_EXPECT(FS().exists(file_name));
+
+      TEST_ASSERT(FS().exists("does_not_exist") == false);
 
       // not exists should not affect the error context
       TEST_EXPECT(!FS().exists(file_name2) && is_success());

@@ -360,19 +360,19 @@ public:
     return static_cast<Derived &>(*this);
   }
   const Derived &ioctl(int request, void *arg) const {
-    ioctl(request, arg);
+    m_file_member_reference_access.ioctl(request, arg);
     return static_cast<const Derived &>(*this);
   }
   Derived &ioctl(int request, void *arg) {
-    ioctl(request, arg);
+    m_file_member_reference_access.ioctl(request, arg);
     return static_cast<Derived &>(*this);
   }
   const Derived &ioctl(const Ioctl &options) const {
-    ioctl(options);
+    m_file_member_reference_access.ioctl(options);
     return static_cast<const Derived &>(*this);
   }
   Derived &ioctl(const Ioctl &options) {
-    ioctl(options);
+    m_file_member_reference_access.ioctl(options);
     return static_cast<Derived &>(*this);
   }
 
